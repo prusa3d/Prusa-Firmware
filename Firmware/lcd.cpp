@@ -19,7 +19,7 @@
 #define LCD_DEFAULT_DELAY 100
 
 #if (defined(LCD_PINS_D0) && defined(LCD_PINS_D1) && defined(LCD_PINS_D2) && defined(LCD_PINS_D3))
-	#define LCD_8BIT
+#define LCD_8BIT
 #endif
 
 // #define VT100
@@ -99,10 +99,10 @@ void lcd_escape_write(uint8_t chr);
 #endif
 
 static void lcd_pulseEnable(void)
-{  
-	WRITE(LCD_PINS_ENABLE,HIGH);
-	_delay_us(1);    // enable pulse must be >450ns
-	WRITE(LCD_PINS_ENABLE,LOW);
+{
+	WRITE(LCD_PINS_ENABLE, HIGH);
+	_delay_us(1); // enable pulse must be >450ns
+	WRITE(LCD_PINS_ENABLE, LOW);
 }
 
 static void lcd_writebits(uint8_t value)
@@ -117,20 +117,20 @@ static void lcd_writebits(uint8_t value)
 	WRITE(LCD_PINS_D5, value & 0x20);
 	WRITE(LCD_PINS_D6, value & 0x40);
 	WRITE(LCD_PINS_D7, value & 0x80);
-	
+
 	lcd_pulseEnable();
 }
 
 static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAULT_DELAY)
 {
-	WRITE(LCD_PINS_RS,flags&LCD_RS_FLAG);
+	WRITE(LCD_PINS_RS, flags & LCD_RS_FLAG);
 	_delay_us(5);
 	lcd_writebits(data);
 #ifndef LCD_8BIT
 	if (!(flags & LCD_HALF_FLAG))
 	{
 		_delay_us(LCD_DEFAULT_DELAY);
-		lcd_writebits(data<<4);
+		lcd_writebits(data << 4);
 	}
 #endif
 	delayMicroseconds(duration);
@@ -145,16 +145,18 @@ static void lcd_write(uint8_t value)
 {
 	if (value == '\n')
 	{
-		if (lcd_currline > 3) lcd_currline = -1;
+		if (lcd_currline > 3)
+			lcd_currline = -1;
 		lcd_set_cursor(0, lcd_currline + 1); // LF
 		return;
 	}
-	#ifdef VT100
-	if (lcd_escape[0] || (value == 0x1b)){
+#ifdef VT100
+	if (lcd_escape[0] || (value == 0x1b))
+	{
 		lcd_escape_write(value);
 		return;
 	}
-	#endif
+#endif
 	lcd_send(value, HIGH);
 }
 
@@ -175,28 +177,30 @@ static void lcd_begin(uint8_t clear)
 	// finally, set # lines, font size, etc.0
 	lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);
 	// turn the display on with no cursor or blinking default
-	lcd_displaycontrol = LCD_CURSOROFF | LCD_BLINKOFF;  
+	lcd_displaycontrol = LCD_CURSOROFF | LCD_BLINKOFF;
 	lcd_display();
 	// clear it off
-	if (clear) lcd_clear();
+	if (clear)
+		lcd_clear();
 	// Initialize to default text direction (for romance languages)
 	lcd_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
 	// set the entry mode
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode);
-	
-	#ifdef VT100
+
+#ifdef VT100
 	lcd_escape[0] = 0;
-	#endif
+#endif
 }
 
-static void lcd_putchar(char c, FILE *)
+static int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
+	return 0;
 }
 
 void lcd_init(void)
 {
-	WRITE(LCD_PINS_ENABLE,LOW);
+	WRITE(LCD_PINS_ENABLE, LOW);
 	SET_OUTPUT(LCD_PINS_RS);
 	SET_OUTPUT(LCD_PINS_ENABLE);
 
@@ -210,45 +214,45 @@ void lcd_init(void)
 	SET_OUTPUT(LCD_PINS_D5);
 	SET_OUTPUT(LCD_PINS_D6);
 	SET_OUTPUT(LCD_PINS_D7);
-	
+
 #ifdef LCD_8BIT
 	lcd_displayfunction |= LCD_8BITMODE;
 #endif
 	lcd_displayfunction |= LCD_2LINE;
-	_delay_us(50000); 
-	lcd_begin(1); //first time init
+	_delay_us(50000);
+	lcd_begin(1);																										 //first time init
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 }
 
 void lcd_refresh(void)
 {
-    lcd_begin(1);
-    lcd_set_custom_characters();
+	lcd_begin(1);
+	lcd_set_custom_characters();
 }
 
 void lcd_refresh_noclear(void)
 {
-    lcd_begin(0);
-    lcd_set_custom_characters();
+	lcd_begin(0);
+	lcd_set_custom_characters();
 }
 
 void lcd_clear(void)
 {
-	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
+	lcd_command(LCD_CLEARDISPLAY, 1600); // clear display, set cursor position to zero
 	lcd_currline = 0;
 }
 
 void lcd_home(void)
 {
-	lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero
+	lcd_command(LCD_RETURNHOME, 1600); // set cursor position to zero
 	lcd_currline = 0;
 }
 
 // Turn the display on/off (quickly)
 void lcd_display(void)
 {
-    lcd_displaycontrol |= LCD_DISPLAYON;
-    lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
+	lcd_displaycontrol |= LCD_DISPLAYON;
+	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
 
 #if 0
@@ -330,21 +334,21 @@ void lcd_no_autoscroll(void)
 
 void lcd_set_cursor(uint8_t col, uint8_t row)
 {
-	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
+	int row_offsets[] = {0x00, 0x40, 0x14, 0x54};
 	if (row >= LCD_HEIGHT)
-		row = LCD_HEIGHT - 1;    // we count rows starting w/0
-	lcd_currline = row;  
+		row = LCD_HEIGHT - 1; // we count rows starting w/0
+	lcd_currline = row;
 	lcd_command(LCD_SETDDRAMADDR | (col + row_offsets[row]));
 }
 
 // Allows us to fill the first 8 CGRAM locations
 // with custom characters
-void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
+void lcd_createChar_P(uint8_t location, const uint8_t *charmap)
 {
-  location &= 0x7; // we only have 8 locations 0-7
-  lcd_command(LCD_SETCGRAMADDR | (location << 3));
-  for (int i=0; i<8; i++)
-    lcd_send(pgm_read_byte(&charmap[i]), HIGH);
+	location &= 0x7; // we only have 8 locations 0-7
+	lcd_command(LCD_SETCGRAMADDR | (location << 3));
+	for (int i = 0; i < 8; i++)
+		lcd_send(pgm_read_byte(&charmap[i]), HIGH);
 }
 
 #ifdef VT100
@@ -356,8 +360,8 @@ void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
 //CursorHide   "\x1b[?25l"
 void lcd_escape_write(uint8_t chr)
 {
-#define escape_cnt (lcd_escape[0])        //escape character counter
-#define is_num_msk (lcd_escape[1])        //numeric character bit mask
+#define escape_cnt (lcd_escape[0])		 //escape character counter
+#define is_num_msk (lcd_escape[1])		 //numeric character bit mask
 #define chr_is_num (is_num_msk & 0x01) //current character is numeric
 #define e_2_is_num (is_num_msk & 0x04) //escape char 2 is numeric
 #define e_3_is_num (is_num_msk & 0x08) //...
@@ -365,18 +369,18 @@ void lcd_escape_write(uint8_t chr)
 #define e_5_is_num (is_num_msk & 0x20)
 #define e_6_is_num (is_num_msk & 0x40)
 #define e_7_is_num (is_num_msk & 0x80)
-#define e2_num (lcd_escape[2] - '0')      //number from character 2
-#define e3_num (lcd_escape[3] - '0')      //number from character 3
-#define e23_num (10*e2_num+e3_num)     //number from characters 2 and 3
-#define e4_num (lcd_escape[4] - '0')      //number from character 4
-#define e5_num (lcd_escape[5] - '0')      //number from character 5
-#define e45_num (10*e4_num+e5_num)     //number from characters 4 and 5
-#define e6_num (lcd_escape[6] - '0')      //number from character 6
-#define e56_num (10*e5_num+e6_num)     //number from characters 5 and 6
-	if (escape_cnt > 1) // escape length > 1 = "\x1b["
+#define e2_num (lcd_escape[2] - '0')	 //number from character 2
+#define e3_num (lcd_escape[3] - '0')	 //number from character 3
+#define e23_num (10 * e2_num + e3_num) //number from characters 2 and 3
+#define e4_num (lcd_escape[4] - '0')	 //number from character 4
+#define e5_num (lcd_escape[5] - '0')	 //number from character 5
+#define e45_num (10 * e4_num + e5_num) //number from characters 4 and 5
+#define e6_num (lcd_escape[6] - '0')	 //number from character 6
+#define e56_num (10 * e5_num + e6_num) //number from characters 5 and 6
+	if (escape_cnt > 1)									 // escape length > 1 = "\x1b["
 	{
-		lcd_escape[escape_cnt] = chr; // store current char
-		if ((chr >= '0') && (chr <= '9')) // char is numeric
+		lcd_escape[escape_cnt] = chr;						 // store current char
+		if ((chr >= '0') && (chr <= '9'))				 // char is numeric
 			is_num_msk |= (1 | (1 << escape_cnt)); //set mask
 		else
 			is_num_msk &= ~1; //clear mask
@@ -384,34 +388,44 @@ void lcd_escape_write(uint8_t chr)
 	switch (escape_cnt++)
 	{
 	case 0:
-		if (chr == 0x1b) return;  // escape = "\x1b"
+		if (chr == 0x1b)
+			return; // escape = "\x1b"
 		break;
 	case 1:
 		is_num_msk = 0x00; // reset 'is number' bit mask
-		if (chr == '[') return; // escape = "\x1b["
+		if (chr == '[')
+			return; // escape = "\x1b["
 		break;
 	case 2:
 		switch (chr)
 		{
-		case '2': return; // escape = "\x1b[2"
-		case '?': return; // escape = "\x1b[?"
+		case '2':
+			return; // escape = "\x1b[2"
+		case '?':
+			return; // escape = "\x1b[?"
 		default:
-			if (chr_is_num) return; // escape = "\x1b[%1d"
+			if (chr_is_num)
+				return; // escape = "\x1b[%1d"
 		}
 		break;
 	case 3:
 		switch (lcd_escape[2])
 		{
 		case '?': // escape = "\x1b[?"
-			if (chr == '2') return; // escape = "\x1b[?2"
+			if (chr == '2')
+				return; // escape = "\x1b[?2"
 			break;
 		case '2':
 			if (chr == 'J') // escape = "\x1b[2J"
-				{ lcd_clear(); lcd_currline = 0; break; } // EraseScreen
+			{
+				lcd_clear();
+				lcd_currline = 0;
+				break;
+			} // EraseScreen
 		default:
-			if (e_2_is_num && // escape = "\x1b[%1d"
-				((chr == ';') || // escape = "\x1b[%1d;"
-				chr_is_num)) // escape = "\x1b[%2d"
+			if (e_2_is_num &&		 // escape = "\x1b[%1d"
+					((chr == ';') || // escape = "\x1b[%1d;"
+					 chr_is_num))		 // escape = "\x1b[%2d"
 				return;
 		}
 		break;
@@ -419,13 +433,16 @@ void lcd_escape_write(uint8_t chr)
 		switch (lcd_escape[2])
 		{
 		case '?': // "\x1b[?"
-			if ((lcd_escape[3] == '2') && (chr == '5')) return; // escape = "\x1b[?25"
+			if ((lcd_escape[3] == '2') && (chr == '5'))
+				return; // escape = "\x1b[?25"
 			break;
 		default:
 			if (e_2_is_num) // escape = "\x1b[%1d"
 			{
-				if ((lcd_escape[3] == ';') && chr_is_num) return; // escape = "\x1b[%1d;%1d"
-				else if (e_3_is_num && (chr == ';')) return; // escape = "\x1b[%2d;"
+				if ((lcd_escape[3] == ';') && chr_is_num)
+					return; // escape = "\x1b[%1d;%1d"
+				else if (e_3_is_num && (chr == ';'))
+					return; // escape = "\x1b[%2d;"
 			}
 		}
 		break;
@@ -436,10 +453,10 @@ void lcd_escape_write(uint8_t chr)
 			if ((lcd_escape[3] == '2') && (lcd_escape[4] == '5')) // escape = "\x1b[?25"
 				switch (chr)
 				{
-				case 'h': // escape = "\x1b[?25h"
-  					lcd_cursor(); // CursorShow
+				case 'h':				// escape = "\x1b[?25h"
+					lcd_cursor(); // CursorShow
 					break;
-				case 'l': // escape = "\x1b[?25l"
+				case 'l':					 // escape = "\x1b[?25l"
 					lcd_no_cursor(); // CursorHide
 					break;
 				}
@@ -449,7 +466,7 @@ void lcd_escape_write(uint8_t chr)
 			{
 				if ((lcd_escape[3] == ';') && e_4_is_num) // escape = "\x1b%1d;%1dH"
 				{
-					if (chr == 'H') // escape = "\x1b%1d;%1dH"
+					if (chr == 'H')										// escape = "\x1b%1d;%1dH"
 						lcd_set_cursor(e4_num, e2_num); // CursorHome
 					else if (chr_is_num)
 						return; // escape = "\x1b%1d;%2d"
@@ -463,20 +480,20 @@ void lcd_escape_write(uint8_t chr)
 		if (e_2_is_num) // escape = "\x1b[%1d"
 		{
 			if ((lcd_escape[3] == ';') && e_4_is_num && e_5_is_num && (chr == 'H')) // escape = "\x1b%1d;%2dH"
-				lcd_set_cursor(e45_num, e2_num); // CursorHome
-			else if (e_3_is_num && (lcd_escape[4] == ';') && e_5_is_num) // escape = "\x1b%2d;%1d"
+				lcd_set_cursor(e45_num, e2_num);																			// CursorHome
+			else if (e_3_is_num && (lcd_escape[4] == ';') && e_5_is_num)						// escape = "\x1b%2d;%1d"
 			{
-				if (chr == 'H') // escape = "\x1b%2d;%1dH"
+				if (chr == 'H')										 // escape = "\x1b%2d;%1dH"
 					lcd_set_cursor(e5_num, e23_num); // CursorHome
-				else if (chr_is_num) // "\x1b%2d;%2d"
+				else if (chr_is_num)							 // "\x1b%2d;%2d"
 					return;
 			}
 		}
 		break;
 	case 7:
 		if (e_2_is_num && e_3_is_num && (lcd_escape[4] == ';')) // "\x1b[%2d;"
-			if (e_5_is_num && e_6_is_num && (chr == 'H')) // "\x1b[%2d;%2dH"
-				lcd_set_cursor(e56_num, e23_num); // CursorHome
+			if (e_5_is_num && e_6_is_num && (chr == 'H'))					// "\x1b[%2d;%2dH"
+				lcd_set_cursor(e56_num, e23_num);										// CursorHome
 		break;
 	}
 	escape_cnt = 0; // reset escape
@@ -484,24 +501,23 @@ void lcd_escape_write(uint8_t chr)
 
 #endif //VT100
 
-
 int lcd_putc(int c)
 {
 	return fputc(c, lcdout);
 }
 
-int lcd_puts_P(const char* str)
+int lcd_puts_P(const char *str)
 {
 	return fputs_P(str, lcdout);
 }
 
-int lcd_puts_at_P(uint8_t c, uint8_t r, const char* str)
+int lcd_puts_at_P(uint8_t c, uint8_t r, const char *str)
 {
 	lcd_set_cursor(c, r);
 	return fputs_P(str, lcdout);
 }
 
-int lcd_printf_P(const char* format, ...)
+int lcd_printf_P(const char *format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -512,33 +528,34 @@ int lcd_printf_P(const char* format, ...)
 
 void lcd_space(uint8_t n)
 {
-	while (n--) lcd_putc(' ');
+	while (n--)
+		lcd_putc(' ');
 }
 
-
-void lcd_print(const char* s)
+void lcd_print(const char *s)
 {
-	while (*s) lcd_write(*(s++));
+	while (*s)
+		lcd_write(*(s++));
 }
 
 void lcd_print(char c, int base)
 {
-	lcd_print((long) c, base);
+	lcd_print((long)c, base);
 }
 
 void lcd_print(unsigned char b, int base)
 {
-	lcd_print((unsigned long) b, base);
+	lcd_print((unsigned long)b, base);
 }
 
 void lcd_print(int n, int base)
 {
-	lcd_print((long) n, base);
+	lcd_print((long)n, base);
 }
 
 void lcd_print(unsigned int n, int base)
 {
-	lcd_print((unsigned long) n, base);
+	lcd_print((unsigned long)n, base);
 }
 
 void lcd_print(long n, int base)
@@ -568,30 +585,29 @@ void lcd_print(unsigned long n, int base)
 
 void lcd_print(double n, int digits)
 {
-  lcd_printFloat(n, digits);
+	lcd_printFloat(n, digits);
 }
-
 
 void lcd_printNumber(unsigned long n, uint8_t base)
 {
-	unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars. 
+	unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars.
 	unsigned long i = 0;
 	if (n == 0)
 	{
 		lcd_print('0');
 		return;
-	} 
+	}
 	while (n > 0)
 	{
 		buf[i++] = n % base;
 		n /= base;
 	}
 	for (; i > 0; i--)
-		lcd_print((char) (buf[i - 1] < 10 ?	'0' + buf[i - 1] : 'A' + buf[i - 1] - 10));
+		lcd_print((char)(buf[i - 1] < 10 ? '0' + buf[i - 1] : 'A' + buf[i - 1] - 10));
 }
 
-void lcd_printFloat(double number, uint8_t digits) 
-{ 
+void lcd_printFloat(double number, uint8_t digits)
+{
 	// Handle negative numbers
 	if (number < 0.0)
 	{
@@ -600,7 +616,7 @@ void lcd_printFloat(double number, uint8_t digits)
 	}
 	// Round correctly so that print(1.999, 2) prints as "2.00"
 	double rounding = 0.5;
-	for (uint8_t i=0; i<digits; ++i)
+	for (uint8_t i = 0; i < digits; ++i)
 		rounding /= 10.0;
 	number += rounding;
 	// Extract the integer part of the number and print it
@@ -609,17 +625,16 @@ void lcd_printFloat(double number, uint8_t digits)
 	lcd_print(int_part);
 	// Print the decimal point, but only if there are digits beyond
 	if (digits > 0)
-		lcd_print('.'); 
+		lcd_print('.');
 	// Extract digits from the remainder one at a time
 	while (digits-- > 0)
 	{
 		remainder *= 10.0;
 		int toPrint = int(remainder);
 		lcd_print(toPrint);
-		remainder -= toPrint; 
-	} 
+		remainder -= toPrint;
+	}
 }
-
 
 uint8_t lcd_draw_update = 2;
 int32_t lcd_encoder = 0;
@@ -633,8 +648,6 @@ uint8_t lcd_update_enabled = 1;
 uint32_t lcd_next_update_millis = 0;
 uint8_t lcd_status_update_delay = 0;
 
-
-
 lcd_longpress_func_t lcd_longpress_func = 0;
 
 lcd_charsetup_func_t lcd_charsetup_func = 0;
@@ -644,7 +657,6 @@ lcd_lcdupdate_func_t lcd_lcdupdate_func = 0;
 static ShortTimer buttonBlanking;
 ShortTimer longPressTimer;
 LongTimer lcd_timeoutToStatus;
-
 
 //! @brief Was button clicked?
 //!
@@ -658,18 +670,18 @@ LongTimer lcd_timeoutToStatus;
 uint8_t lcd_clicked(void)
 {
 	bool clicked = LCD_CLICKED;
-	if(clicked)
+	if (clicked)
 	{
-	    lcd_consume_click();
+		lcd_consume_click();
 	}
-    return clicked;
+	return clicked;
 }
 
 void lcd_beeper_quick_feedback(void)
 {
-//-//
-Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-/*
+	//-//
+	Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+	/*
 	for(int8_t i = 0; i < 10; i++)
 	{
 		Sound_MakeCustom(100,0,false);
@@ -680,9 +692,9 @@ Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 
 void lcd_quick_feedback(void)
 {
-  lcd_draw_update = 2;
-  lcd_button_pressed = false;
-  lcd_beeper_quick_feedback();
+	lcd_draw_update = 2;
+	lcd_button_pressed = false;
+	lcd_beeper_quick_feedback();
 }
 
 void lcd_update(uint8_t lcdDrawUpdateOverride)
@@ -714,7 +726,8 @@ void lcd_update_enable(uint8_t enabled)
 			if (lcd_charsetup_func)
 				lcd_charsetup_func();
 			lcd_update(2);
-		} else
+		}
+		else
 		{
 			// Clear the LCD always, or let it to the caller?
 		}
@@ -723,52 +736,57 @@ void lcd_update_enable(uint8_t enabled)
 
 void lcd_buttons_update(void)
 {
-    static uint8_t lcd_long_press_active = 0;
+	static uint8_t lcd_long_press_active = 0;
 	uint8_t newbutton = 0;
-	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
-	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
+	if (READ(BTN_EN1) == 0)
+		newbutton |= EN_A;
+	if (READ(BTN_EN2) == 0)
+		newbutton |= EN_B;
 
-    if (READ(BTN_ENC) == 0)
-    { //button is pressed
-        lcd_timeoutToStatus.start();
-        if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
-            buttonBlanking.start();
-            safetyTimer.start();
-            if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
-            {
-                longPressTimer.start();
-                lcd_button_pressed = 1;
-            }
-            else if (longPressTimer.expired(LONG_PRESS_TIME))
-            {
-                lcd_long_press_active = 1;
-                //long press is not possible in modal mode
-                if (lcd_longpress_func && lcd_update_enabled)
-                    lcd_longpress_func();
-            }
-        }
-    }
-    else
-    { //button not pressed
-        if (lcd_button_pressed)
-        { //button was released
-            buttonBlanking.start();
-            if (lcd_long_press_active == 0)
-            { //button released before long press gets activated
-                newbutton |= EN_C;
-            }
-            //else if (menu_menu == lcd_move_z) lcd_quick_feedback();
-            //lcd_button_pressed is set back to false via lcd_quick_feedback function
-        }
-        else
-            lcd_long_press_active = 0;
-    }
+	if (READ(BTN_ENC) == 0)
+	{ //button is pressed
+		lcd_timeoutToStatus.start();
+		if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME))
+		{
+			buttonBlanking.start();
+			safetyTimer.start();
+			if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
+			{
+				longPressTimer.start();
+				lcd_button_pressed = 1;
+			}
+			else if (longPressTimer.expired(LONG_PRESS_TIME))
+			{
+				lcd_long_press_active = 1;
+				//long press is not possible in modal mode
+				if (lcd_longpress_func && lcd_update_enabled)
+					lcd_longpress_func();
+			}
+		}
+	}
+	else
+	{ //button not pressed
+		if (lcd_button_pressed)
+		{ //button was released
+			buttonBlanking.start();
+			if (lcd_long_press_active == 0)
+			{ //button released before long press gets activated
+				newbutton |= EN_C;
+			}
+			//else if (menu_menu == lcd_move_z) lcd_quick_feedback();
+			//lcd_button_pressed is set back to false via lcd_quick_feedback function
+		}
+		else
+			lcd_long_press_active = 0;
+	}
 
 	lcd_buttons = newbutton;
 	//manage encoder rotation
 	uint8_t enc = 0;
-	if (lcd_buttons & EN_A) enc |= B01;
-	if (lcd_buttons & EN_B) enc |= B10;
+	if (lcd_buttons & EN_A)
+		enc |= B01;
+	if (lcd_buttons & EN_B)
+		enc |= B10;
 	if (enc != lcd_encoder_bits)
 	{
 		switch (enc)
@@ -802,69 +820,68 @@ void lcd_buttons_update(void)
 	lcd_encoder_bits = enc;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Custom character data
 
 const uint8_t lcd_chardata_bedTemp[8] PROGMEM = {
-	B00000,
-	B11111,
-	B10101,
-	B10001,
-	B10101,
-	B11111,
-	B00000,
-	B00000}; //thanks Sonny Mounicou
+		B00000,
+		B11111,
+		B10101,
+		B10001,
+		B10101,
+		B11111,
+		B00000,
+		B00000}; //thanks Sonny Mounicou
 
 const uint8_t lcd_chardata_degree[8] PROGMEM = {
-	B01100,
-	B10010,
-	B10010,
-	B01100,
-	B00000,
-	B00000,
-	B00000,
-	B00000};
+		B01100,
+		B10010,
+		B10010,
+		B01100,
+		B00000,
+		B00000,
+		B00000,
+		B00000};
 
 const uint8_t lcd_chardata_thermometer[8] PROGMEM = {
-	B00100,
-	B01010,
-	B01010,
-	B01010,
-	B01010,
-	B10001,
-	B10001,
-	B01110};
+		B00100,
+		B01010,
+		B01010,
+		B01010,
+		B01010,
+		B10001,
+		B10001,
+		B01110};
 
 const uint8_t lcd_chardata_uplevel[8] PROGMEM = {
-	B00100,
-	B01110,
-	B11111,
-	B00100,
-	B11100,
-	B00000,
-	B00000,
-	B00000}; //thanks joris
+		B00100,
+		B01110,
+		B11111,
+		B00100,
+		B11100,
+		B00000,
+		B00000,
+		B00000}; //thanks joris
 
 const uint8_t lcd_chardata_refresh[8] PROGMEM = {
-	B00000,
-	B00110,
-	B11001,
-	B11000,
-	B00011,
-	B10011,
-	B01100,
-	B00000}; //thanks joris
+		B00000,
+		B00110,
+		B11001,
+		B11000,
+		B00011,
+		B10011,
+		B01100,
+		B00000}; //thanks joris
 
 const uint8_t lcd_chardata_folder[8] PROGMEM = {
-	B00000,
-	B11100,
-	B11111,
-	B10001,
-	B10001,
-	B11111,
-	B00000,
-	B00000}; //thanks joris
+		B00000,
+		B11100,
+		B11111,
+		B10001,
+		B10001,
+		B11111,
+		B00000,
+		B00000}; //thanks joris
 
 /*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B11100,
@@ -874,7 +891,8 @@ const uint8_t lcd_chardata_folder[8] PROGMEM = {
 	B00101,
 	B00110,
 	B00101,
-	B00000};*/ //thanks Sonny Mounicou
+	B00000};*/
+//thanks Sonny Mounicou
 
 /*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B11100,
@@ -897,46 +915,44 @@ const uint8_t lcd_chardata_folder[8] PROGMEM = {
 	B10011};*/
 
 const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	B00000,
-	B00100,
-	B10010,
-	B01001,
-	B10010,
-	B00100,
-	B00000,
-	B00000};
+		B00000,
+		B00100,
+		B10010,
+		B01001,
+		B10010,
+		B00100,
+		B00000,
+		B00000};
 
 const uint8_t lcd_chardata_clock[8] PROGMEM = {
-	B00000,
-	B01110,
-	B10011,
-	B10101,
-	B10001,
-	B01110,
-	B00000,
-	B00000}; //thanks Sonny Mounicou
+		B00000,
+		B01110,
+		B10011,
+		B10101,
+		B10001,
+		B01110,
+		B00000,
+		B00000}; //thanks Sonny Mounicou
 
 const uint8_t lcd_chardata_arrup[8] PROGMEM = {
-	B00100,
-	B01110,
-	B11111,
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B00000};
+		B00100,
+		B01110,
+		B11111,
+		B00000,
+		B00000,
+		B00000,
+		B00000,
+		B00000};
 
 const uint8_t lcd_chardata_arrdown[8] PROGMEM = {
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B10001,
-	B01010,
-	B00100};
-
-
+		B00000,
+		B00000,
+		B00000,
+		B00000,
+		B00000,
+		B10001,
+		B01010,
+		B00100};
 
 void lcd_set_custom_characters(void)
 {
@@ -958,14 +974,14 @@ void lcd_set_custom_characters_arrows(void)
 }
 
 const uint8_t lcd_chardata_progress[8] PROGMEM = {
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111};
+		B11111,
+		B11111,
+		B11111,
+		B11111,
+		B11111,
+		B11111,
+		B11111,
+		B11111};
 
 void lcd_set_custom_characters_progress(void)
 {
@@ -973,23 +989,23 @@ void lcd_set_custom_characters_progress(void)
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
-	B00000,
-	B00000,
-	B10001,
-	B01010,
-	B00100,
-	B10001,
-	B01010,
-	B00100};
+		B00000,
+		B00000,
+		B10001,
+		B01010,
+		B00100,
+		B10001,
+		B01010,
+		B00100};
 
 const uint8_t lcd_chardata_confirm[8] PROGMEM = {
-	B00000,
-	B00001,
-	B00011,
-	B10110,
-	B11100,
-	B01000,
-	B00000};
+		B00000,
+		B00001,
+		B00011,
+		B10110,
+		B11100,
+		B01000,
+		B00000};
 
 void lcd_set_custom_characters_nextpage(void)
 {
@@ -1001,4 +1017,3 @@ void lcd_set_custom_characters_degree(void)
 {
 	lcd_createChar_P(1, lcd_chardata_degree);
 }
-

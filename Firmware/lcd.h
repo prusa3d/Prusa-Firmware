@@ -11,7 +11,7 @@
 extern FILE _lcdout;
 
 #define lcdout (&_lcdout)
-extern void lcd_putchar(char c, FILE *stream);
+extern int lcd_putchar(char c, FILE *stream);
 
 extern void lcd_init(void);
 
