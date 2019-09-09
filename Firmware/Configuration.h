@@ -291,6 +291,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 #define Z_HEIGHT_HIDE_LIVE_ADJUST_MENU 2.0f
 
+#define HOME_Z_SEARCH_THRESHOLD 0.15f             // Threshold of the Z height in calibration
+
 //============================= Bed Auto Leveling ===========================
 
 //#define ENABLE_AUTO_BED_LEVELING // Delete the comment to enable (remove // at the start of the line)
