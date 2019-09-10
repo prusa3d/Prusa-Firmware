@@ -8,7 +8,7 @@
 
 #MSG_MEASURED_OFFSET
 "[0;0] point offset"
-"[0;0] przesuniecie punktu"
+"[0;0] przesun.punktu"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "Crash detection can\x0abe turned on only in\x0aNormal mode"
@@ -24,7 +24,7 @@
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Dostrajanie Z:"
+"Ustawianie Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
@@ -44,7 +44,7 @@
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
-"Obydwa konce osi dojechaly do gornych ogranicznikow?"
+"Obydwa konce osi sa na szczycie?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "SpoolJoin    [on]"
@@ -216,7 +216,7 @@
 
 #MSG_EXTRUDER_CORRECTION c=10
 "E-correct:"
-"Korekcja E:"
+"Korekcja-E:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
@@ -256,7 +256,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-"Went. ekstrudera:"
+"Went. ekstr:"
 
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Went. hotendu"
+"Went. Hotend"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Went. wydruku:"
+"Went.wydr:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Went. wydruku"
+"Went.wydr"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -972,19 +972,19 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort       [none]"
-"Sortuj     [brak]"
+"Sortowanie [brak]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
-"Sortuj     [czas]"
+"Sortowanie [czas]"
 
 #
 "Severe skew"
-"Znaczny skos"
+"ZnacznySkos"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
-"Sortuj  [alfabet]"
+"Sortowan[alfabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
@@ -1032,7 +1032,7 @@
 
 #MSG_STOP_PRINT
 "Stop print"
-"Zatrzymac druk"
+"Przerwanie druku"
 
 #MSG_STOPPED
 "STOPPED. "
@@ -1052,7 +1052,7 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Kalibr. temp.[wl]"
+"Kalibr.temp. [wl]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1200,7 +1200,7 @@
 
 #
 "X-correct:"
-"Korekcja X:"
+"Korekcja-X:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
@@ -1236,8 +1236,200 @@
 
 #
 "Y-correct:"
-"Korekcja Y:"
+"Korekcja-Y:"
 
 #MSG_OFF
 " [off]"
+" [wyl]"
+
+#
+"Back"
+"Wstecz"
+
+#
+"Checks"
+"Testy"
+
+#
+"False triggering"
+"Falszywy alarm"
+
+#
+"FINDA:"
 "\x00"
+
+#
+"Firmware   [none]"
+"Firmware   [brak]"
+
+#
+"Firmware [strict]"
+"Firmware [restr.]"
+
+#
+"Firmware   [warn]"
+"Firmware[ostrzez]"
+
+#
+"HW Setup"
+"Ustawienia HW"
+
+#
+"IR:"
+"\x00"
+
+#
+"Magnets comp.[N/A]"
+"Kor. magnesow [nd]"
+
+#
+"Magnets comp.[Off]"
+"Kor. magnesow[wyl]"
+
+#
+"Magnets comp. [On]"
+"Kor. magnesow [wl]"
+
+#
+"Mesh         [3x3]"
+"Siatka       [3x3]"
+
+#
+"Mesh         [7x7]"
+"Siatka       [7x7]"
+
+#
+"Mesh bed leveling"
+"Poziomowanie wg siatki"
+
+#
+"MK3S firmware detected on MK3 printer"
+"Wykryto firmware MK3S w drukarce MK3"
+
+#
+"MMU Mode [Normal]"
+"Tryb MMU[Normaln]"
+
+#
+"MMU Mode[Stealth]"
+"Tryb MMU[Stealth]"
+
+#
+"Mode change in progress ..."
+"Trwa zmiana trybu..."
+
+#
+"Model      [none]"
+"Model      [brak]"
+
+#
+"Model    [strict]"
+"Model [restrykc.]"
+
+#
+"Model      [warn]"
+"Model  [ostrzez.]"
+
+#
+"Nozzle d.  [0.25]"
+"Sr. dyszy  [0,25]"
+
+#
+"Nozzle d.  [0.40]"
+"Sr. dyszy  [0,40]"
+
+#
+"Nozzle d.  [0.60]"
+"Sr. dyszy  [0,60]"
+
+#
+"Nozzle     [none]"
+"Dysza      [brak]"
+
+#
+"Nozzle   [strict]"
+"Dysza [restrykc.]"
+
+#
+"Nozzle     [warn]"
+"Dysza  [ostrzez.]"
+
+#
+"G-code sliced for a different level. Continue?"
+"\x00"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+"G-code pociety na innym poziomie. Potnij model ponownie. Druk anulowany."
+
+#
+"G-code sliced for a different printer type. Continue?"
+"G-code pociety dla innej drukarki. Kontynuowac?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+"G-code pociety dla drukarki innego typu. Potnij model ponownie. Druk anulowany."
+
+#
+"G-code sliced for a newer firmware. Continue?"
+"G-code pociety dla nowszego firmware. Kontynuowac?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+"G-code pociety dla nowszego firmware. Zaktualizuj firmware. Druk anulowany."
+
+#
+"PINDA:"
+"\x00"
+
+#
+"Preheating to cut"
+"Nagrzewanie do obciecia"
+
+#
+"Preheating to eject"
+"Nagrzewanie do wysuniecia"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+"Srednica dyszy drukarki rozni sie od tej w G-code. Kontynuowac?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+"Srednica dyszy rozni sie od tej w G-code. Sprawdz ustawienia. Druk anulowany."
+
+#
+"Rename"
+"Zmien nazwe"
+
+#
+"Select"
+"Wybierz"
+
+#
+"Sensor info"
+"Info o sensorach"
+
+#
+"Sheet"
+"Plyta"
+
+#
+"Sound     [assist]"
+"Dzwiek    [asyst.]"
+
+#
+"Steel sheets"
+"Plyty stalowe"
+
+#
+"Z-correct:"
+"Korekcja-Z:"
+
+#
+"Z-probe nr.    [1]"
+"Pomiar-Z       [1]"
+
+#
+"Z-probe nr.    [3]"
+"Pomiar-Z       [3]"
