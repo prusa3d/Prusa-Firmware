@@ -3262,7 +3262,7 @@ static void gcode_PRUSA_SN()
 //! May be that's why the bad RAMBo's still produce some fan RPM reading, but not corresponding to reality
 static void gcode_PRUSA_BadRAMBoFanTest(){
     //printf_P(PSTR("Enter fan pin test\n"));
-#if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1 && defined(IR_SENSOR)
+#if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	fan_measuring = false; // prevent EXTINT7 breaking into the measurement
 	unsigned long tach1max = 0;
 	uint8_t tach1cntr = 0;
