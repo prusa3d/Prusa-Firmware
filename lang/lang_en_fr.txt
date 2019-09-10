@@ -24,7 +24,7 @@
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Ajust. de Z:"
+"Ajuster Z :"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
@@ -172,15 +172,15 @@
 
 #MSG_CRASHDETECT_ON
 "Crash det.   [on]"
-"Detect. crash[on]"
+"Detect.crash [on]"
 
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
-"Detect. crash [N/A]"
+"Detect.crash[N/A]"
 
 #MSG_CRASHDETECT_OFF
 "Crash det.  [off]"
-"Detect. crash[off]"
+"Detect.crash[off]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -288,7 +288,7 @@
 
 #MSG_FAN_SPEED c=14
 "Fan speed"
-"Vitesse ventil"
+"Vitesse vent."
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
@@ -604,7 +604,7 @@
 
 #MSG_STEALTH_MODE_ON
 "Mode    [Stealth]"
-"Mode [Furtif]"
+"Mode     [Furtif]"
 
 #MSG_AUTO_MODE_ON
 "Mode [auto power]"
@@ -612,7 +612,7 @@
 
 #MSG_SILENT_MODE_OFF
 "Mode [high power]"
-"Mode [haute puiss]"
+"Mode[haute puiss]"
 
 #
 "MMU2 connected"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Ventilateur buse"
+"Vent. buse"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -804,7 +804,7 @@
 
 #
 "Power failures"
-"Coupures de courant"
+"Coup.de courant"
 
 #MSG_PRINT_ABORTED c=20
 "Print aborted"
@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Ventilo impr. :"
+"Vent.impr:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Ventilo impression"
+"Vent.impr"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -868,7 +868,7 @@
 
 #MSG_CALIBRATE_BED_RESET
 "Reset XYZ calibr."
-"Reinit. calibr. XYZ"
+"Reinit.calibr. XYZ"
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
@@ -888,11 +888,11 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"Port RPi [on]"
+"Port RPi     [on]"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"Port RPi [off]"
+"Port RPi    [off]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -904,7 +904,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"Carte SD [flashAir]"
+"CarteSD[flashAir]"
 
 #
 "Right"
@@ -972,7 +972,7 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort       [none]"
-"Tri :     [aucun]"
+"Tri       [aucun]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
@@ -980,7 +980,7 @@
 
 #
 "Severe skew"
-"Deviation severe"
+"Deviat.sev."
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -992,15 +992,15 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Son [fort]"
+"Son        [fort]"
 
 #
 "Slight skew"
-"Deviation legere"
+"Deviat.leg."
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Son [muet]"
+"Son        [muet]"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -1008,11 +1008,11 @@
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Son [une fois]"
+"Son    [une fois]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Son [silencieux]"
+"Son  [silencieux]"
 
 #MSG_SPEED
 "Speed"
@@ -1240,4 +1240,196 @@
 
 #MSG_OFF
 " [off]"
+" [off]"
+
+#
+"Back"
+"Retour"
+
+#
+"Checks"
+"Verifications"
+
+#
+"False triggering"
+"Faux declenchement"
+
+#
+"FINDA:"
+"FINDA:"
+
+#
+"Firmware   [none]"
+"Firmware [aucune]"
+
+#
+"Firmware [strict]"
+"Firmware[stricte]"
+
+#
+"Firmware   [warn]"
+"Firmware  [avert]"
+
+#
+"HW Setup"
+"Config HW"
+
+#
+"IR:"
+"IR:"
+
+#
+"Magnets comp.[N/A]"
+"Comp. aimants[N/A]"
+
+#
+"Magnets comp.[Off]"
+"Comp. aimants[Off]"
+
+#
+"Magnets comp. [On]"
+"Comp. aimants [On]"
+
+#
+"Mesh         [3x3]"
 "\x00"
+
+#
+"Mesh         [7x7]"
+"\x00"
+
+#
+"Mesh bed leveling"
+"\x00"
+
+#
+"MK3S firmware detected on MK3 printer"
+"Firmware MK3S detecte sur imprimante MK3"
+
+#
+"MMU Mode [Normal]"
+"Mode MMU [Normal]"
+
+#
+"MMU Mode[Stealth]"
+"Mode MMU [Furtif]"
+
+#
+"Mode change in progress ..."
+"Changement de mode en cours..."
+
+#
+"Model      [none]"
+"Modele   [aucune]"
+
+#
+"Model    [strict]"
+"Modele  [stricte]"
+
+#
+"Model      [warn]"
+"Modele    [avert]"
+
+#
+"Nozzle d.  [0.25]"
+"Diam. buse [0.25]"
+
+#
+"Nozzle d.  [0.40]"
+"Diam. buse [0.40]"
+
+#
+"Nozzle d.  [0.60]"
+"Diam. buse [0.60]"
+
+#
+"Nozzle     [none]"
+"Buse     [aucune]"
+
+#
+"Nozzle   [strict]"
+"Buse    [stricte]"
+
+#
+"Nozzle     [warn]"
+"Buse      [avert]"
+
+#
+"G-code sliced for a different level. Continue?"
+"\x00"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+"\x00"
+
+#
+"G-code sliced for a different printer type. Continue?"
+"Le G-code a ete prepare pour une autre version de l'imprimante. Continuer?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+"Le G-code a ete prepare pour une autre version de l'imprimante. Veuillez decouper le modele a nouveau. L'impression a ete annulee. "
+
+#
+"G-code sliced for a newer firmware. Continue?"
+"Le G-code a ete prepare pour une version plus recente du firmware. Continuer?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+"Le G-code a ete prepare pour une version plus recente du firmware. Veuillez mettre a jour le firmware. L'impression  annulee."
+
+#
+"PINDA:"
+"PINDA:"
+
+#
+"Preheating to cut"
+"Prechauffage pour couper"
+
+#
+"Preheating to eject"
+"Prechauffage pour ejecter"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+"Diametre de la  buse de l'imprimante different du G-Code. Continuer ?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+"Diametre de la  buse de l'imprimante different du G-Code. Merci de verifier le parametre dans les reglages. Impression annulee."
+
+#
+"Rename"
+"Renommer"
+
+#
+"Select"
+"Selectionner"
+
+#
+"Sensor info"
+"Info capteur"
+
+#
+"Sheet"
+"Feuille"
+
+#
+"Sound     [assist]"
+"Son       [Assist]"
+
+#
+"Steel sheets"
+"Plaques en acier"
+
+#
+"Z-correct:"
+"Correct-Z:"
+
+#
+"Z-probe nr.    [1]"
+"Sonde-Z num.   [1]"
+
+#
+"Z-probe nr.    [3]"
+"Sonde-Z num.   [3]"
