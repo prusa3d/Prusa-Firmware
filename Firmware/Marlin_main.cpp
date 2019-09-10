@@ -10207,7 +10207,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
-	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
+	SERIAL_PROTOCOLLNRPGM(MSG_OK); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
 	saved_printing = false;
 }
