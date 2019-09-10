@@ -8523,8 +8523,23 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
-	move_menu_scale = 1.0;
-	menu_submenu(lcd_move_z);
+    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
+    {
+        // disable longpress during re-entry, while homing or calibration
+        lcd_quick_feedback();
+        return;
+    }
+
+    if (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU && (moves_planned() || IS_SD_PRINTING || is_usb_printing ))
+    {
+        lcd_clear();
+        menu_submenu(lcd_babystep_z);
+    }
+    else
+    {
+        move_menu_scale = 1.0;
+        menu_submenu(lcd_move_z);
+    }
 }
 
 void menu_lcd_charsetup_func(void)
