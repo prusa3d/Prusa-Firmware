@@ -10,8 +10,8 @@
 #include "mmu.h"
 #include <avr/pgmspace.h>
 
-//! @brief Preheat
-void lay1cal_preheat()
+//! @brief Wait for preheat
+void lay1cal_wait_preheat()
 {
     static const char cmd_preheat_0[] PROGMEM = "M107";
     static const char cmd_preheat_1[] PROGMEM = "M190";

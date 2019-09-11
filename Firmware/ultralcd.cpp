@@ -1370,7 +1370,7 @@ void lcd_commands()
                 lcd_commands_step = 11;
                 break;
             case 11:
-                lay1cal_preheat();
+                lay1cal_wait_preheat();
                 lcd_commands_step = 10;
                 break;
             case 10:
