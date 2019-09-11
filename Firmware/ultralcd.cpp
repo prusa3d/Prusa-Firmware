@@ -4692,7 +4692,7 @@ void lcd_v2_calibration()
 {
 	if (mmu_enabled)
 	{
-	    const uint8_t filament = choose_menu_P(_i("Select PLA filament:"),_T(MSG_FILAMENT),_i("Cancel")); ////c=20 r=1  ////c=19 r=1
+	    const uint8_t filament = choose_menu_P(_i("Select filament:"),_T(MSG_FILAMENT),_i("Cancel")); ////c=20 r=1  ////c=19 r=1
 	    if (filament < 5)
 	    {
 	        lcd_commands_step = 20 + filament;
@@ -4701,12 +4701,22 @@ void lcd_v2_calibration()
 	}
 	else
 	{
-		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
+	    bool loaded = false;
+	    if (fsensor_enabled && ir_sensor_detected)
+	    {
+	        loaded = (digitalRead(IR_SENSOR_PIN) == 0);
+	    }
+	    else
+	    {
+	        loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
+	    }
+
+
 		if (loaded) {
 			lcd_commands_type = LcdCommands::Layer1Cal;
 		}
 		else {
-			lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
+			lcd_display_message_fullscreen_P(_i("Please load filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
 			lcd_consume_click();
 			for (uint_least8_t i = 0; i < 20; i++) { //wait max. 2s
 				delay_keep_alive(100);
