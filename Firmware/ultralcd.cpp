@@ -302,18 +302,24 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
 {
     char c;
     int enc_dif = lcd_encoder_diff;
     uint8_t n = LCD_WIDTH - 1;
+
     for(uint_least8_t g = 0; g<4;g++){
       lcd_set_cursor(0, g);
     lcd_print(' ');
     }
-
     lcd_set_cursor(0, row);
     lcd_print('>');
+
+    if (longFilename[0] == '\0')
+    {
+        longFilename = filename;
+    }
+
     int i = 1;
     int j = 0;
     char* longFilenameTMP = longFilename;
@@ -529,7 +535,7 @@ static uint8_t menu_item_sdfile(const char*
 		if (lcd_draw_update)
 		{
 			if (lcd_encoder == menu_item)
-				lcd_implementation_drawmenu_sdfile_selected(menu_row, str_fnl);
+				lcd_implementation_drawmenu_sdfile_selected(menu_row, str_fn, str_fnl);
 			else
 				lcd_implementation_drawmenu_sdfile(menu_row, str_fn, str_fnl);
 		}
@@ -701,10 +707,10 @@ void lcdui_print_status_line(void)
 {
 	if (IS_SD_PRINTING)
 	{
-		if (strcmp(longFilenameOLD, card.longFilename) != 0)
+		if (strcmp(longFilenameOLD, (card.longFilename[0] ? card.longFilename : card.filename)) != 0)
 		{
 			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
-			sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
+			sprintf_P(longFilenameOLD, PSTR("%s"), (card.longFilename[0] ? card.longFilename : card.filename));
 			scrollstuff = 0;
 		}
 	}
@@ -752,16 +758,16 @@ void lcdui_print_status_line(void)
 	}
 	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status))
 	{ // If printing from SD, show what we are printing
-		if(strlen(card.longFilename) > LCD_WIDTH)
+		if(strlen(longFilenameOLD) > LCD_WIDTH)
 		{
 			int inters = 0;
 			int gh = scrollstuff;
 			while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
 			{
-				if (card.longFilename[gh] == '\0')
+				if (longFilenameOLD[gh] == '\0')
 				{
 					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(card.longFilename[gh - 1]);
+					lcd_print(longFilenameOLD[gh - 1]);
 					scrollstuff = 0;
 					gh = scrollstuff;
 					inters = 1;
@@ -769,7 +775,7 @@ void lcdui_print_status_line(void)
 				else
 				{
 					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(card.longFilename[gh - 1]);
+					lcd_print(longFilenameOLD[gh - 1]);
 					gh++;
 				}
 			}
@@ -777,7 +783,7 @@ void lcdui_print_status_line(void)
 		}
 		else
 		{
-			lcd_print(longFilenameOLD);
+			lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
 		}
 	}
 	else
