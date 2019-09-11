@@ -365,7 +365,6 @@ bool Stopped=false;
   Servo servos[NUM_SERVOS];
 #endif
 
-bool CooldownNoWait = true;
 bool target_direction;
 
 //Insert variables if CHDK is defined
@@ -6006,6 +6005,14 @@ Sigma_Exit:
     }
 
     //! ### M109 - Wait for extruder temperature
+    //! Parameters (not mandatory):
+    //! * S \<temp\> set extruder temperature
+    //! * R \<temp\> set extruder temperature
+    //!
+    //! Parameters S and R are treated identically.
+    //! Command always waits for both cool down and heat up.
+    //! If no parameters are supplied waits for previously
+    //! set extruder temperature.
     // -------------------------------------------------
     case 109:
     {
@@ -6022,10 +6029,8 @@ Sigma_Exit:
       #endif
       if (code_seen('S')) {
           setTargetHotendSafe(code_value(), extruder);
-              CooldownNoWait = true;
             } else if (code_seen('R')) {
                 setTargetHotendSafe(code_value(), extruder);
-        CooldownNoWait = false;
       }
       #ifdef AUTOTEMP
         if (code_seen('S')) autotemp_min=code_value();
@@ -6060,9 +6065,15 @@ Sigma_Exit:
       break;
 
     //! ### M190 - Wait for bed temperature
-    // ---------------------------------------
+    //! Parameters (not mandatory):
+    //! * S \<temp\> set extruder temperature and wait for heating
+    //! * R \<temp\> set extruder temperature and wait for heating or cooling
+    //!
+    //! If no parameter is supplied, waits for heating or cooling to previously set temperature.
     case 190: 
     #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
+    {
+        bool CooldownNoWait = false;
         LCD_MESSAGERPGM(_T(MSG_BED_HEATING));
 		heating_status = 3;
 		if (farm_mode) { prusa_statistics(1); };
@@ -6074,7 +6085,6 @@ Sigma_Exit:
 		else if (code_seen('R')) 
 		{
           setTargetBed(code_value());
-          CooldownNoWait = false;
         }
         codenum = _millis();
         
@@ -6108,6 +6118,7 @@ Sigma_Exit:
 		heating_status = 4;
 
         previous_millis_cmd = _millis();
+    }
     #endif
         break;
 
