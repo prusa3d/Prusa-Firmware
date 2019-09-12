@@ -3557,7 +3557,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 		lcd_puts_P(PSTR(">"));
 		lcd_puts_P(_T(MSG_NO));
 	}
-	bool yes = default_yes ? true : false;
+	int8_t retval = default_yes ? true : false;
 
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = _millis();
@@ -3566,24 +3566,27 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
 		if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
-			return -1;
+		{
+		    retval = -1;
+		    break;
+		}
 		manage_heater();
 		manage_inactivity(true);
 		if (abs(enc_dif - lcd_encoder_diff) > 4) {
 			lcd_set_cursor(0, 2);
-				if (enc_dif < lcd_encoder_diff && yes) {
+				if (enc_dif < lcd_encoder_diff && retval) {
 					lcd_puts_P((PSTR(" ")));
 					lcd_set_cursor(0, 3);
 					lcd_puts_P((PSTR(">")));
-					yes = false;
+					retval = 0;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 
 				}
-				else if (enc_dif > lcd_encoder_diff && !yes) {
+				else if (enc_dif > lcd_encoder_diff && !retval) {
 					lcd_puts_P((PSTR(">")));
 					lcd_set_cursor(0, 3);
 					lcd_puts_P((PSTR(" ")));
-					yes = true;
+					retval = 1;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}
 				enc_dif = lcd_encoder_diff;
@@ -3591,10 +3594,11 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 		if (lcd_clicked()) {
 			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			KEEPALIVE_STATE(IN_HANDLER);
-			lcd_encoder_diff = 0;
-			return yes;
+			break;
 		}
 	}
+    lcd_encoder_diff = 0;
+    return retval;
 }
 
 void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask)
