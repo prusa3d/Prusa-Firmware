@@ -4521,7 +4521,6 @@ void lcd_v2_calibration()
 	    else
 	    {
 	        menu_back();
-	        lcd_update_enable(true);
 	        return;
 	    }
 	}
