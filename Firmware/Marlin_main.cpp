@@ -8526,7 +8526,7 @@ if(0)
                               }
                               else
                               {
-                                   menu_submenu(mFilamentMenu);
+                                   menu_submenu(lcd_generic_preheat_menu);
                                    lcd_timeoutToStatus.start();
                               }
                          }

@@ -177,7 +177,7 @@ extern bool bFilamentPreheatState;
 extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentItemForce();
-void mFilamentMenu();
+void lcd_generic_preheat_menu();
 void unload_filament();
 
 void stack_error();

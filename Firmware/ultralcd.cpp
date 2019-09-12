@@ -1915,7 +1915,7 @@ static void lcd_menu_test_restore()
 static void lcd_preheat_menu()
 {
     eFilamentAction = FilamentAction::Preheat;
-    mFilamentMenu();
+    lcd_generic_preheat_menu();
 }
 
 static void lcd_support_menu()
@@ -2322,7 +2322,7 @@ void mFilamentBack()
     }
 }
 
-void mFilamentMenu()
+void lcd_generic_preheat_menu()
 {
     MENU_BEGIN();
     if (!wizard_active)
@@ -2377,7 +2377,7 @@ else {
           bFilamentPreheatState=true;
           mFilamentItem(target_temperature[0],target_temperature_bed);
           }
-     else mFilamentMenu();
+     else lcd_generic_preheat_menu();
      }
 }
 
@@ -2615,7 +2615,7 @@ if(0)
           bFilamentPreheatState=true;
           mFilamentItem(target_temperature[0],target_temperature_bed);
           }
-     else mFilamentMenu();
+     else lcd_generic_preheat_menu();
   }
 }
 
@@ -4554,7 +4554,7 @@ void lcd_v2_calibration()
 	}
 
 	eFilamentAction = FilamentAction::Lay1Cal;
-	menu_goto(mFilamentMenu, 0, true, true);
+	menu_goto(lcd_generic_preheat_menu, 0, true, true);
 	lcd_update_enable(true);
 }
 
@@ -5954,7 +5954,7 @@ static void mmu_load_to_nozzle_menu()
             bFilamentPreheatState = true;
             mFilamentItem(target_temperature[0], target_temperature_bed);
         }
-        else mFilamentMenu();
+        else lcd_generic_preheat_menu();
     }
 }
 
@@ -5986,7 +5986,7 @@ static void mmu_fil_eject_menu()
             bFilamentPreheatState = true;
             mFilamentItem(target_temperature[0], target_temperature_bed);
         }
-        else mFilamentMenu();
+        else lcd_generic_preheat_menu();
     }
 }
 
@@ -6014,7 +6014,7 @@ static void mmu_cut_filament_menu()
             bFilamentPreheatState=true;
             mFilamentItem(target_temperature[0],target_temperature_bed);
         }
-        else mFilamentMenu();
+        else lcd_generic_preheat_menu();
     }
 }
 #endif //MMU_HAS_CUTTER

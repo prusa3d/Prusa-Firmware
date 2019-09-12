@@ -1092,7 +1092,7 @@ else	{
           mFilamentItem(target_temperature[0],target_temperature_bed);
           }
 //     else menu_submenu(mFilamentMenu);
-     else mFilamentMenu();
+     else lcd_generic_preheat_menu();
 	}
 }
 
