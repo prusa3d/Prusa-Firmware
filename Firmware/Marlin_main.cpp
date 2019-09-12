@@ -3429,6 +3429,7 @@ extern uint8_t st_backlash_y;
 //!@n M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 //!@n M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 //!@n M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+//!@n M850 - Set sheet data S[id] Z[offset] L[label]
 //!@n M860 - Wait for PINDA thermistor to reach target temperature.
 //!@n M861 - Set / Read PINDA temperature compensation offsets
 //!@n M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
@@ -7209,6 +7210,89 @@ Sigma_Exit:
   case 603: {
 		lcd_print_stop();
 	}
+	
+  case 850: {
+	//! ### M850 - set sheet parameters
+	//! //!@n M850 - Set sheet data S[id] Z[offset] L[label]
+	bool bHasZ = false, bHasLabel = false;
+	uint8_t iSel = 0;
+	int16_t zraw = 0;
+	float z_val = 0;
+	char strLabel[8];
+	strLabel[7] = '\0'; // null terminate.
+	size_t max_sheets = sizeof(EEPROM_Sheets_base->s)/sizeof(EEPROM_Sheets_base->s[0]);
+	
+	if (code_seen('S')) {
+		iSel = code_value_uint8();
+		if (iSel>=max_sheets)
+		{
+			SERIAL_PROTOCOLPGM("Invalid sheet ID. Allowed: 0..");
+			SERIAL_PROTOCOL(max_sheets-1);
+			SERIAL_PROTOCOLLN("");
+			break; // invalid sheet ID
+		}	
+	} else {
+		break;
+	}
+	if (code_seen('Z')){
+		z_val = code_value_float();
+		zraw = z_val*cs.axis_steps_per_unit[Z_AXIS];
+		if ((zraw < Z_BABYSTEP_MIN) || (zraw > Z_BABYSTEP_MAX))
+		{
+			SERIAL_PROTOCOLLNPGM(" Z VALUE OUT OF RANGE");
+			break;
+		}	
+		bHasZ = true;
+	}
+	
+	if (code_seen('L'))
+	{
+		bHasLabel = true;
+		char *src = strchr_pointer + 1;
+		starpos = strchr(src, '*');
+		if (starpos != NULL) *(starpos) = '\0';
+		while (*src == ' ') ++src;
+		if (*src != '\0')
+		{
+			strncpy(strLabel,src,7);	
+		}
+	}
+	
+	SERIAL_PROTOCOLPGM("Sheet ");
+	SERIAL_PROTOCOL((int)iSel);
+	if (!bHasZ && !bHasLabel&& !eeprom_is_sheet_initialized(iSel))
+	{
+		SERIAL_PROTOCOLLNPGM(" NOT INITIALIZED");
+		break;
+	}
+	
+	if (bHasZ)
+	{
+		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)),zraw);
+	}
+	else
+	{
+		zraw = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)));
+		z_val = ((float)zraw/cs.axis_steps_per_unit[Z_AXIS]);
+	}
+	if (bHasLabel)
+	{
+		eeprom_update_block(strLabel,EEPROM_Sheets_base->s[iSel].name,sizeof(Sheet::name));
+	}
+	else
+	{
+		eeprom_read_block(strLabel, EEPROM_Sheets_base->s[iSel].name, 7);
+	}
+		
+	SERIAL_PROTOCOLPGM(" Z");
+	SERIAL_PROTOCOL_F(z_val,4);
+	SERIAL_PROTOCOLPGM(" R");
+	SERIAL_PROTOCOL((int)zraw);
+	SERIAL_PROTOCOLPGM(" L");
+	SERIAL_PROTOCOLLN(strLabel);
+
+	break;
+}
 
 #ifdef PINDA_THERMISTOR
   //! ### M860 - Wait for extruder temperature (PINDA)
