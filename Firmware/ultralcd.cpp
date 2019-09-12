@@ -131,6 +131,8 @@ static void lcd_menu_fails_stats_mmu_total();
 static void mmu_unload_filament();
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
+static void preheat_or_continue();
+
 #ifdef MMU_HAS_CUTTER
 static void mmu_cut_filament_menu();
 #endif //MMU_HAS_CUTTER
@@ -2362,25 +2364,13 @@ mFilamentItem(target_temperature[0],target_temperature_bed);
 void lcd_unLoadFilament()
 {
      eFilamentAction=FilamentAction::UnLoad;
-     bFilamentFirstRun=false;
-     if(target_temperature[0]>=EXTRUDE_MINTEMP)
-          {
-          bFilamentPreheatState=true;
-          mFilamentItem(target_temperature[0],target_temperature_bed);
-          }
-     else lcd_generic_preheat_menu();
+     preheat_or_continue();
 }
 
 static void mmu_unload_filament()
 {
     eFilamentAction = FilamentAction::MmuUnLoad;
-    bFilamentFirstRun = false;
-    if (target_temperature[0] >= EXTRUDE_MINTEMP)
-    {
-        bFilamentPreheatState = true;
-        mFilamentItem(target_temperature[0], target_temperature_bed);
-    }
-    else lcd_generic_preheat_menu();
+    preheat_or_continue();
 }
 
 
@@ -2596,9 +2586,8 @@ static void lcd_menu_AutoLoadFilament()
 }
 #endif //FILAMENT_SENSOR
 
-static void lcd_LoadFilament()
+static void preheat_or_continue()
 {
-    eFilamentAction = FilamentAction::Load;
     bFilamentFirstRun = false;
     if (target_temperature[0] >= EXTRUDE_MINTEMP)
     {
@@ -2606,6 +2595,12 @@ static void lcd_LoadFilament()
         mFilamentItem(target_temperature[0], target_temperature_bed);
     }
     else lcd_generic_preheat_menu();
+}
+
+static void lcd_LoadFilament()
+{
+    eFilamentAction = FilamentAction::Load;
+    preheat_or_continue();
 }
 
 
@@ -5937,13 +5932,7 @@ static void mmu_load_to_nozzle_menu()
     else
     {
         eFilamentAction = FilamentAction::MmuLoad;
-        bFilamentFirstRun = false;
-        if (target_temperature[0] >= EXTRUDE_MINTEMP)
-        {
-            bFilamentPreheatState = true;
-            mFilamentItem(target_temperature[0], target_temperature_bed);
-        }
-        else lcd_generic_preheat_menu();
+        preheat_or_continue();
     }
 }
 
@@ -5969,13 +5958,7 @@ static void mmu_fil_eject_menu()
     else
     {
         eFilamentAction = FilamentAction::MmuEject;
-        bFilamentFirstRun = false;
-        if (target_temperature[0] >= EXTRUDE_MINTEMP)
-        {
-            bFilamentPreheatState = true;
-            mFilamentItem(target_temperature[0], target_temperature_bed);
-        }
-        else lcd_generic_preheat_menu();
+        preheat_or_continue();
     }
 }
 
