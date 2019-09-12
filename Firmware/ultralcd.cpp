@@ -4518,6 +4518,8 @@ void lcd_v2_calibration()
 	    else
 	    {
 	        loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
+	        lcd_update_enabled = true;
+
 	    }
 
 
@@ -4531,15 +4533,14 @@ void lcd_v2_calibration()
 					break;
 				}
 			}
+			lcd_update_enabled = true;
 			menu_back();
-			lcd_update_enable(true);
 			return;
 		}
 	}
 
 	eFilamentAction = FilamentAction::Lay1Cal;
 	menu_goto(lcd_generic_preheat_menu, 0, true, true);
-	lcd_update_enable(true);
 }
 
 void lcd_wizard() {
