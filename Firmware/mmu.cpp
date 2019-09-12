@@ -1077,23 +1077,14 @@ void mmu_filament_ramming()
 //-//
 void extr_unload_()
 {
-//if(bFilamentAction)
-if(0)
-	{
-     bFilamentAction=false;
-     extr_unload();
-     }
-else	{
-     eFilamentAction=FilamentAction::MmuUnLoad;
-     bFilamentFirstRun=false;
-     if(target_temperature[0]>=EXTRUDE_MINTEMP)
-          {
-          bFilamentPreheatState=true;
-          mFilamentItem(target_temperature[0],target_temperature_bed);
-          }
-//     else menu_submenu(mFilamentMenu);
-     else lcd_generic_preheat_menu();
-	}
+    eFilamentAction = FilamentAction::MmuUnLoad;
+    bFilamentFirstRun = false;
+    if (target_temperature[0] >= EXTRUDE_MINTEMP)
+    {
+        bFilamentPreheatState = true;
+        mFilamentItem(target_temperature[0], target_temperature_bed);
+    }
+    else lcd_generic_preheat_menu();
 }
 
 //! @brief show which filament is currently unloaded

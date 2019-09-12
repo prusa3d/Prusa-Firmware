@@ -2363,13 +2363,6 @@ mFilamentItem(target_temperature[0],target_temperature_bed);
 
 void lcd_unLoadFilament()
 {
-//./if((degHotend0()>EXTRUDE_MINTEMP)&&bFilamentFirstRun)
-if(0)
-     {
-     menu_back();
-     enquecommand_P(PSTR("M702"));                // unload filament
-     }
-else {
      eFilamentAction=FilamentAction::UnLoad;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
@@ -2378,7 +2371,6 @@ else {
           mFilamentItem(target_temperature[0],target_temperature_bed);
           }
      else lcd_generic_preheat_menu();
-     }
 }
 
 
@@ -2596,27 +2588,14 @@ static void lcd_menu_AutoLoadFilament()
 
 static void lcd_LoadFilament()
 {
-//-//  if (degHotend0() > EXTRUDE_MINTEMP)
-if(0)
-  {
-//      menu_back();                                // not necessary (see "lcd_return_to_status()" below)
-      custom_message_type = CustomMsg::FilamentLoading;
-      loading_flag = true;
-      enquecommand_P(PSTR("M701")); //load filament
-      SERIAL_ECHOLN("Loading filament");
-      lcd_return_to_status();
-  }
-  else
-  {
-     eFilamentAction=FilamentAction::Load;
-     bFilamentFirstRun=false;
-     if(target_temperature[0]>=EXTRUDE_MINTEMP)
-          {
-          bFilamentPreheatState=true;
-          mFilamentItem(target_temperature[0],target_temperature_bed);
-          }
-     else lcd_generic_preheat_menu();
-  }
+    eFilamentAction = FilamentAction::Load;
+    bFilamentFirstRun = false;
+    if (target_temperature[0] >= EXTRUDE_MINTEMP)
+    {
+        bFilamentPreheatState = true;
+        mFilamentItem(target_temperature[0], target_temperature_bed);
+    }
+    else lcd_generic_preheat_menu();
 }
 
 
