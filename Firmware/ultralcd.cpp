@@ -3591,6 +3591,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 		if (lcd_clicked()) {
 			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			KEEPALIVE_STATE(IN_HANDLER);
+			lcd_encoder_diff = 0;
 			return yes;
 		}
 	}
