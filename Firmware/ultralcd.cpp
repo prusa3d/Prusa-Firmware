@@ -95,6 +95,8 @@ uint8_t lcd_status_message_level;
 char lcd_status_message[LCD_WIDTH + 1] = ""; //////WELCOME!
 unsigned char firstrun = 1;
 
+static uint8_t lay1cal_filament = 0;
+
 
 static const char separator[] PROGMEM = "--------------------";
 
@@ -1338,7 +1340,6 @@ void lcd_commands()
 	if (lcd_commands_type == LcdCommands::Layer1Cal)
 	{
 		char cmd1[30];
-		static uint8_t filament = 0;
 
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 
@@ -1349,32 +1350,12 @@ void lcd_commands()
             case 0:
                 lcd_commands_step = 11;
                 break;
-            case 20:
-                filament = 0;
-                lcd_commands_step = 11;
-                break;
-            case 21:
-                filament = 1;
-                lcd_commands_step = 11;
-                break;
-            case 22:
-                filament = 2;
-                lcd_commands_step = 11;
-                break;
-            case 23:
-                filament = 3;
-                lcd_commands_step = 11;
-                break;
-            case 24:
-                filament = 4;
-                lcd_commands_step = 11;
-                break;
             case 11:
                 lay1cal_wait_preheat();
                 lcd_commands_step = 10;
                 break;
             case 10:
-                lay1cal_load_filament(cmd1, filament);
+                lay1cal_load_filament(cmd1, lay1cal_filament);
                 lcd_commands_step = 9;
                 break;
             case 9:
@@ -2113,6 +2094,7 @@ switch(eFilamentAction)
      case FilamentAction::MmuCut:
      case FilamentAction::None:
      case FilamentAction::Preheat:
+     case FilamentAction::Lay1Cal:
           break;
      }
 if(lcd_clicked())
@@ -2142,6 +2124,7 @@ if(lcd_clicked())
           case FilamentAction::MmuCut:
           case FilamentAction::None:
           case FilamentAction::Preheat:
+          case FilamentAction::Lay1Cal:
                break;
           }
      }
@@ -2158,9 +2141,9 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     setTargetHotend0((float )nTemp);
     if (!wizard_active) setTargetBed((float) nTempBed);
 
-    if (eFilamentAction == FilamentAction::Preheat)
+    if (eFilamentAction == FilamentAction::Preheat || eFilamentAction == FilamentAction::Lay1Cal)
     {
-        eFilamentAction = FilamentAction::None;
+        if (eFilamentAction == FilamentAction::Lay1Cal) lcd_commands_type = LcdCommands::Layer1Cal;
         lcd_return_to_status();
         if (wizard_active) lcd_wizard(WizState::Unload);
         return;
@@ -2218,6 +2201,8 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             break;
         case FilamentAction::None:
         case FilamentAction::Preheat:
+        case FilamentAction::Lay1Cal:
+
             break;
         }
         if (bFilamentWaitingFlag) Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
@@ -2248,6 +2233,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             break;
         case FilamentAction::None:
         case FilamentAction::Preheat:
+        case FilamentAction::Lay1Cal:
             break;
         }
         lcd_set_cursor(0, 3);
@@ -2329,7 +2315,8 @@ void mFilamentBack()
 {
     menu_back();
     if (eFilamentAction == FilamentAction::AutoLoad ||
-            eFilamentAction == FilamentAction::Preheat)
+            eFilamentAction == FilamentAction::Preheat ||
+            eFilamentAction == FilamentAction::Lay1Cal)
     {
         eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
     }
@@ -2338,7 +2325,17 @@ void mFilamentBack()
 void mFilamentMenu()
 {
     MENU_BEGIN();
-    if (!wizard_active) MENU_ITEM_FUNCTION_P(_T(MSG_MAIN),mFilamentBack);
+    if (!wizard_active)
+    {
+        if (eFilamentAction == FilamentAction::Lay1Cal)
+        {
+            MENU_ITEM_FUNCTION_P(_T(MSG_BACK), mFilamentBack);
+        }
+        else
+        {
+            MENU_ITEM_FUNCTION_P(_T(MSG_MAIN), mFilamentBack);
+        }
+    }
     if (farm_mode)
     {
         MENU_ITEM_FUNCTION_P(PSTR("farm   -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FARM_PREHEAT_HPB_TEMP)), mFilamentItem_farm);
@@ -4519,8 +4516,13 @@ void lcd_v2_calibration()
 	    const uint8_t filament = choose_menu_P(_i("Select filament:"),_T(MSG_FILAMENT),_i("Cancel")); ////c=20 r=1  ////c=19 r=1
 	    if (filament < 5)
 	    {
-	        lcd_commands_step = 20 + filament;
-	        lcd_commands_type = LcdCommands::Layer1Cal;
+	        lay1cal_filament = filament;
+	    }
+	    else
+	    {
+	        menu_back();
+	        lcd_update_enable(true);
+	        return;
 	    }
 	}
 	else
@@ -4536,10 +4538,8 @@ void lcd_v2_calibration()
 	    }
 
 
-		if (loaded) {
-			lcd_commands_type = LcdCommands::Layer1Cal;
-		}
-		else {
+		if (!loaded)
+		{
 			lcd_display_message_fullscreen_P(_i("Please load filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
 			lcd_consume_click();
 			for (uint_least8_t i = 0; i < 20; i++) { //wait max. 2s
@@ -4548,9 +4548,14 @@ void lcd_v2_calibration()
 					break;
 				}
 			}
+			menu_back();
+			lcd_update_enable(true);
+			return;
 		}
 	}
-	lcd_return_to_status();
+
+	eFilamentAction = FilamentAction::Lay1Cal;
+	menu_goto(mFilamentMenu, 0, true, true);
 	lcd_update_enable(true);
 }
 
@@ -4811,6 +4816,7 @@ void lcd_wizard(WizState state)
 			lcd_show_fullscreen_message_and_wait_P(_i("Now I will calibrate distance between tip of the nozzle and heatbed surface."));////MSG_WIZARD_V2_CAL c=20 r=8
 			lcd_show_fullscreen_message_and_wait_P(_i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."));////MSG_WIZARD_V2_CAL_2 c=20 r=12
 			lcd_commands_type = LcdCommands::Layer1Cal;
+			lay1cal_filament = 0;
 			lcd_return_to_status();
 			end = true;
 			break;
@@ -5493,7 +5499,10 @@ static void lcd_calibration_menu()
   if (!isPrintPaused)
   {
 	MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17 r=1
-	MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+    if (lcd_commands_type == LcdCommands::Idle)
+    {
+         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+    }
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST
 #ifdef MK1BP
@@ -6427,7 +6436,10 @@ static void lcd_sheet_menu()
 	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18
 	}
 
-    MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);
+    if (lcd_commands_type == LcdCommands::Idle)
+    {
+        MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);
+    }
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
 	MENU_ITEM_FUNCTION_P(_i("Reset"), lcd_reset_sheet); //// c=18
 
