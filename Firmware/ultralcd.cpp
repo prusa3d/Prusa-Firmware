@@ -4519,7 +4519,7 @@ void lcd_v2_calibration()
 	        return;
 	    }
 	}
-	else
+	else if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 	{
 	    bool loaded = false;
 	    if (fsensor_enabled && ir_sensor_detected)
