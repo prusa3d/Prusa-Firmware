@@ -73,10 +73,6 @@ int current_voltage_raw_bed = 0;
 
 int current_temperature_bed_raw = 0;
 float current_temperature_bed = 0.0;
-#ifdef TEMP_SENSOR_1_AS_REDUNDANT
-  int redundant_temperature_raw = 0;
-  float redundant_temperature = 0.0;
-#endif
   
 
 #ifdef PIDTEMP
@@ -175,13 +171,8 @@ static int bed_minttemp_raw = HEATER_BED_RAW_LO_TEMP;
 static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 #endif
 
-#ifdef TEMP_SENSOR_1_AS_REDUNDANT
-  static void *heater_ttbl_map[2] = {(void *)HEATER_0_TEMPTABLE, (void *)HEATER_1_TEMPTABLE };
-  static uint8_t heater_ttbllen_map[2] = { HEATER_0_TEMPTABLE_LEN, HEATER_1_TEMPTABLE_LEN };
-#else
-  static void *heater_ttbl_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( (void *)HEATER_0_TEMPTABLE, (void *)HEATER_1_TEMPTABLE, (void *)HEATER_2_TEMPTABLE );
-  static uint8_t heater_ttbllen_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_TEMPTABLE_LEN, HEATER_1_TEMPTABLE_LEN, HEATER_2_TEMPTABLE_LEN );
-#endif
+static void *heater_ttbl_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( (void *)HEATER_0_TEMPTABLE, (void *)HEATER_1_TEMPTABLE, (void *)HEATER_2_TEMPTABLE );
+static uint8_t heater_ttbllen_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_TEMPTABLE_LEN, HEATER_1_TEMPTABLE_LEN, HEATER_2_TEMPTABLE_LEN );
 
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
@@ -194,11 +185,6 @@ enum TempRunawayStates
 	TempRunaway_PREHEAT = 1,
 	TempRunaway_ACTIVE = 2,
 };
-
-#ifdef WATCH_TEMP_PERIOD
-int watch_start_temp[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
-unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
-#endif //WATCH_TEMP_PERIOD
 
 #ifndef SOFT_PWM_SCALE
 #define SOFT_PWM_SCALE 0
@@ -728,34 +714,6 @@ void manage_heater()
     {
       soft_pwm[e] = 0;
     }
-
-    #ifdef WATCH_TEMP_PERIOD
-    if(watchmillis[e] && _millis() - watchmillis[e] > WATCH_TEMP_PERIOD)
-    {
-        if(degHotend(e) < watch_start_temp[e] + WATCH_TEMP_INCREASE)
-        {
-            setTargetHotend(0, e);
-            LCD_MESSAGEPGM("Heating failed");
-            SERIAL_ECHO_START;
-            SERIAL_ECHOLN("Heating failed");
-        }else{
-            watchmillis[e] = 0;
-        }
-    }
-    #endif
-    #ifdef TEMP_SENSOR_1_AS_REDUNDANT
-      if(fabs(current_temperature[0] - redundant_temperature) > MAX_REDUNDANT_TEMP_SENSOR_DIFF) {
-        disable_heater();
-        if(IsStopped() == false) {
-          SERIAL_ERROR_START;
-          SERIAL_ERRORLNPGM("Extruder switched off. Temperature difference between temp sensors is too high !");
-          LCD_ALERTMESSAGEPGM("Err: REDUNDANT TEMP ERROR");
-        }
-        #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-          Stop();
-        #endif
-      }
-    #endif
   } // End extruder for loop
 
 #define FAN_CHECK_PERIOD 5000 //5s
@@ -907,11 +865,7 @@ void manage_heater()
 // Derived from RepRap FiveD extruder::getTemperature()
 // For hot end temperature measurement.
 static float analog2temp(int raw, uint8_t e) {
-#ifdef TEMP_SENSOR_1_AS_REDUNDANT
-  if(e > EXTRUDERS)
-#else
   if(e >= EXTRUDERS)
-#endif
   {
       SERIAL_ERROR_START;
       SERIAL_ERROR((int)e);
@@ -1053,10 +1007,6 @@ static void updateTemperaturesFromRawValues()
 #else //DEBUG_HEATER_BED_SIM
 	current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
 #endif //DEBUG_HEATER_BED_SIM
-
-    #ifdef TEMP_SENSOR_1_AS_REDUNDANT
-      redundant_temperature = analog2temp(redundant_temperature_raw, 1);
-    #endif
 
     CRITICAL_SECTION_START;
     temp_meas_ready = false;
@@ -1219,20 +1169,6 @@ void tp_init()
 #endif
   }
 #endif //BED_MAXTEMP
-}
-
-void setWatch() 
-{  
-#ifdef WATCH_TEMP_PERIOD
-  for (int e = 0; e < EXTRUDERS; e++)
-  {
-    if(degHotend(e) < degTargetHotend(e) - (WATCH_TEMP_INCREASE * 2))
-    {
-      watch_start_temp[e] = degHotend(e);
-      watchmillis[e] = _millis();
-    } 
-  }
-#endif 
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
