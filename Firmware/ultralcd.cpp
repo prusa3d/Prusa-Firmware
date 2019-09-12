@@ -2139,13 +2139,13 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     nTargetOld = target_temperature[0];
     nTargetBedOld = target_temperature_bed;
     setTargetHotend0((float )nTemp);
-    if (!wizard_active) setTargetBed((float) nTempBed);
+    if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) setTargetBed((float) nTempBed);
 
     if (eFilamentAction == FilamentAction::Preheat || eFilamentAction == FilamentAction::Lay1Cal)
     {
         if (eFilamentAction == FilamentAction::Lay1Cal) lcd_commands_type = LcdCommands::Layer1Cal;
         lcd_return_to_status();
-        if (wizard_active) lcd_wizard(WizState::Unload);
+        if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) lcd_wizard(WizState::LoadFil);
         return;
     }
 
@@ -2325,7 +2325,7 @@ void mFilamentBack()
 void lcd_generic_preheat_menu()
 {
     MENU_BEGIN();
-    if (!wizard_active)
+    if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
     {
         if (eFilamentAction == FilamentAction::Lay1Cal)
         {
@@ -2351,7 +2351,7 @@ void lcd_generic_preheat_menu()
         MENU_ITEM_SUBMENU_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)),mFilamentItem_PP);
         MENU_ITEM_SUBMENU_P(PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)),mFilamentItem_FLEX);
     }
-    if (!wizard_active && eFilamentAction == FilamentAction::Preheat) MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
+    if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) && eFilamentAction == FilamentAction::Preheat) MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
     MENU_END();
 }
 
@@ -4602,38 +4602,16 @@ static void wait_preheat()
 	
 }
 
-static void lcd_wizard_unload()
-{
-	if(mmu_enabled)
-	{
-		int8_t unload = lcd_show_multiscreen_message_two_choices_and_wait_P(
-		_i("Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube.")
-		,false, true, _i("Unload"), _i("Eject"));
-		if (unload)
-		{
-			extr_unload_0();
-		} 
-		else
-		{
-		    mmu_eject_filament(0, true);
-		}
-	} 
-	else
-	{
-			unload_filament();
-	}
-}
-
 static void lcd_wizard_load()
 {
 	if (mmu_enabled)
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
 		tmp_extruder = 0;
 	} 
 	else
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 	}	
 	lcd_update_enable(false);
 	lcd_clear();
@@ -4657,18 +4635,12 @@ bool lcd_autoDepleteEnabled()
 //!
 //! @startuml
 //! [*] --> IsFil
-//! IsFil : Is filament 1 loaded?
-//! isPLA : Is filament 1 PLA?
-//! unload : Eject or Unload?
-//! load : Push the button to start loading PLA Filament 1
+//! IsFil : Is any filament loaded?
+//! load : Push the button to start loading Filament 1
 //!
-//! IsFil --> isPLA   : yes
+//! IsFil --> calibration : yes
 //! IsFil --> load    : no
-//! isPLA --> unload     : no
-//! unload --> load      : eject
-//! unload --> load      : unload
 //! load --> calibration : click
-//! isPLA --> calibration : yes
 //! @enduml
 //!
 //! @param state Entry point of the wizard
@@ -4699,7 +4671,6 @@ void lcd_wizard(WizState state)
 			// Btw. the flag may even trigger the viper situation on normal start this way and the user won't be able to find out why.			
 			saved_printing = false;
 			
-			wizard_active = true;
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
 				state = S::Restore;
@@ -4749,7 +4720,7 @@ void lcd_wizard(WizState state)
 				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));
 				wait_preheat();
 				//unload current filament
-				lcd_wizard_unload();
+				unload_filament();
 				//load filament
 				lcd_wizard_load();
 				setTargetHotend(0, 0); //we are finished, cooldown nozzle
@@ -4763,51 +4734,37 @@ void lcd_wizard(WizState state)
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			if (mmu_enabled)
 			{
-			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament 1 loaded?"), false);////c=20 r=2
+			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is any filament loaded?"), false);////c=20 r=2
 			} else
 			{
 			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 			}
-			if (wizard_event) state = S::IsPla;
+			if (wizard_event) state = S::Lay1Cal;
 			else
 			{
 			    if(mmu_enabled) state = S::LoadFil;
-			    else state = S::PreheatPla;
+			    else state = S::Preheat;
 			}
-			break;
-		case S::PreheatPla:
-#ifndef SNMM
-		    lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));////MSG_WIZARD_WILL_PREHEAT c=20 r=4
-		    wait_preheat();
-#endif //not SNMM
-			state = S::LoadFil;
 			break;
 		case S::Preheat:
 		    menu_goto(lcd_preheat_menu,0,false,true);
 		    lcd_show_fullscreen_message_and_wait_P(_i("Select nozzle preheat temperature which matches your material."));
 		    end = true; // Leave wizard temporarily for lcd_preheat_menu
 		    break;
-		case S::Unload:
-		    wait_preheat();
-			lcd_wizard_unload();
-            state = S::LoadFil;
-            break;
 		case S::LoadFil: //load filament
+		    wait_preheat();
 			lcd_wizard_load();
 			state = S::Lay1Cal;
 			break;
-		case S::IsPla:
-			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is it PLA filament?"), false, true);////MSG_WIZARD_PLA_FILAMENT c=20 r=2
-			if (wizard_event) state = S::Lay1Cal;
-			else state = S::Preheat;
-			break;
 		case S::Lay1Cal:
 			lcd_show_fullscreen_message_and_wait_P(_i("Now I will calibrate distance between tip of the nozzle and heatbed surface."));////MSG_WIZARD_V2_CAL c=20 r=8
-			lcd_show_fullscreen_message_and_wait_P(_i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."));////MSG_WIZARD_V2_CAL_2 c=20 r=12
-			lcd_commands_type = LcdCommands::Layer1Cal;
-			lay1cal_filament = 0;
-			lcd_return_to_status();
-			end = true;
+			if(mmu_enabled)
+			{
+			    lcd_show_fullscreen_message_and_wait_P(_i("First you will select filament you wish to use for calibration."));
+			}
+			lcd_show_fullscreen_message_and_wait_P(_i("Select temperature which matches your material. Then I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."));////MSG_WIZARD_V2_CAL_2 c=20 r=12
+			menu_goto(lcd_v2_calibration,0,false,true);
+			end = true; // Leave wizard temporarily for lcd_v2_calibration
 			break;
 		case S::RepeatLay1Cal: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Do you want to repeat last step to readjust distance between nozzle and heatbed?"), false);////MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
@@ -4853,7 +4810,6 @@ void lcd_wizard(WizState state)
 	}
 	if (!((S::Lay1Cal == state) || (S::Preheat == state))) {
 		lcd_show_fullscreen_message_and_wait_P(msg);
-		wizard_active = false;
 	}
 	lcd_update_enable(true);
 	lcd_update(2);

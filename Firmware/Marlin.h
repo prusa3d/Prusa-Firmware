@@ -391,8 +391,6 @@ extern uint16_t print_time_remaining_silent;
 extern uint16_t mcode_in_progress;
 extern uint16_t gcode_in_progress;
 
-extern bool wizard_active; //autoload temporarily disabled during wizard
-
 extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
