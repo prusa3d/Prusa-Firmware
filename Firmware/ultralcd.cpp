@@ -2139,13 +2139,19 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     nTargetOld = target_temperature[0];
     nTargetBedOld = target_temperature_bed;
     setTargetHotend0((float )nTemp);
-    if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) setTargetBed((float) nTempBed);
+
+    if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) ||
+            eFilamentAction == FilamentAction::Lay1Cal)
+    {
+        setTargetBed((float) nTempBed);
+    }
 
     if (eFilamentAction == FilamentAction::Preheat || eFilamentAction == FilamentAction::Lay1Cal)
     {
         if (eFilamentAction == FilamentAction::Lay1Cal) lcd_commands_type = LcdCommands::Layer1Cal;
         lcd_return_to_status();
-        if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) lcd_wizard(WizState::LoadFil);
+        if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) &&
+                eFilamentAction == FilamentAction::Preheat) lcd_wizard(WizState::LoadFil);
         return;
     }
 
