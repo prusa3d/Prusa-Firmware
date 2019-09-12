@@ -1617,7 +1617,7 @@ void lcd_return_to_status()
 	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, false, true);
 	menu_depth = 0;
-     eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
+    eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
 }
 
 //! @brief Pause print, disable nozzle heater, move to park position
@@ -2146,13 +2146,21 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         setTargetBed((float) nTempBed);
     }
 
-    if (eFilamentAction == FilamentAction::Preheat || eFilamentAction == FilamentAction::Lay1Cal)
     {
-        if (eFilamentAction == FilamentAction::Lay1Cal) lcd_commands_type = LcdCommands::Layer1Cal;
-        lcd_return_to_status();
-        if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) &&
-                eFilamentAction == FilamentAction::Preheat) lcd_wizard(WizState::LoadFil);
-        return;
+        const FilamentAction action = eFilamentAction;
+        if (action == FilamentAction::Preheat || action == FilamentAction::Lay1Cal)
+        {
+            lcd_return_to_status();
+            if (action == FilamentAction::Lay1Cal)
+            {
+                lcd_commands_type = LcdCommands::Layer1Cal;
+            }
+            else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+            {
+                lcd_wizard(WizState::LoadFil);
+            }
+            return;
+        }
     }
 
     lcd_timeoutToStatus.stop();
