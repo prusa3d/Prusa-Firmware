@@ -2860,7 +2860,8 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 #endif //TMC2130
 		enable_endstops(endstops_enabled);
 
-		if (st_get_position_mm(Z_AXIS) == MESH_HOME_Z_SEARCH)
+		if ((st_get_position_mm(Z_AXIS) <= (MESH_HOME_Z_SEARCH + HOME_Z_SEARCH_THRESHOLD)) &&
+		    (st_get_position_mm(Z_AXIS) >= (MESH_HOME_Z_SEARCH - HOME_Z_SEARCH_THRESHOLD)))
 		{
 			if (onlyZ)
 			{
@@ -3261,7 +3262,7 @@ static void gcode_PRUSA_SN()
 //! May be that's why the bad RAMBo's still produce some fan RPM reading, but not corresponding to reality
 static void gcode_PRUSA_BadRAMBoFanTest(){
     //printf_P(PSTR("Enter fan pin test\n"));
-#if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1 && defined(IR_SENSOR)
+#if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	fan_measuring = false; // prevent EXTINT7 breaking into the measurement
 	unsigned long tach1max = 0;
 	uint8_t tach1cntr = 0;
@@ -5891,7 +5892,6 @@ Sigma_Exit:
           {
               setTargetHotendSafe(code_value(), extruder);
           }
-          setWatch();
           break;
     }
 
@@ -6036,7 +6036,6 @@ Sigma_Exit:
         }
       #endif
 
-      setWatch();
       codenum = _millis();
 
       /* See if we are heating up or cooling down */
@@ -10207,7 +10206,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
-	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
+	SERIAL_PROTOCOLLNRPGM(MSG_OK); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
 	saved_printing = false;
 }
