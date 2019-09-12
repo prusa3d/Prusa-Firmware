@@ -131,6 +131,8 @@ static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
 //static void lcd_menu_show_sensors_state();      // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
+static void mmu_unload_filament();
+
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
 #ifdef MMU_HAS_CUTTER
@@ -2371,6 +2373,18 @@ void lcd_unLoadFilament()
           mFilamentItem(target_temperature[0],target_temperature_bed);
           }
      else lcd_generic_preheat_menu();
+}
+
+static void mmu_unload_filament()
+{
+    eFilamentAction = FilamentAction::MmuUnLoad;
+    bFilamentFirstRun = false;
+    if (target_temperature[0] >= EXTRUDE_MINTEMP)
+    {
+        bFilamentPreheatState = true;
+        mFilamentItem(target_temperature[0], target_temperature_bed);
+    }
+    else lcd_generic_preheat_menu();
 }
 
 
@@ -6543,7 +6557,7 @@ static void lcd_main_menu()
 		MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);
 //-//          MENU_ITEM_FUNCTION_P(_T(MSG_UNLOAD_FILAMENT), extr_unload);
 //bFilamentFirstRun=true;
-          MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), extr_unload_);
+          MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
 		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
 #ifdef  MMU_HAS_CUTTER
         MENU_ITEM_SUBMENU_P(_i("Cut filament"), mmu_cut_filament_menu);
