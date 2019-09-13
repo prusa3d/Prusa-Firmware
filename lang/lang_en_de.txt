@@ -979,8 +979,8 @@
 "Sort.      [Zeit]"
 
 #
-"Severe skew"
-"Schwer.Schr"
+"Severe skew:"
+"Schwer.Schr:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +995,8 @@
 "Sound      [laut]"
 
 #
-"Slight skew"
-"Leicht.Schr"
+"Slight skew:"
+"Leicht.Schr:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"

@@ -423,7 +423,7 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
     float factor = 1.0f + static_cast<float>(val) / 1000.0f;
     if (val <= _md->minEditValue)
     {
-        lcd_printf_P(menu_fmt_float13off, chr, str, " [off]");
+        lcd_printf_P(menu_fmt_float13off, chr, str, _i(" [off]"));
     }
     else
     {

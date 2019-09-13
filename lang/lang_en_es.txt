@@ -979,8 +979,8 @@
 "Ordenar  [tiempo]"
 
 #
-"Severe skew"
-"Incl.severa"
+"Severe skew:"
+"Incl.severa:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +995,8 @@
 "Sonido     [alto]"
 
 #
-"Slight skew"
-"Liger.incl."
+"Slight skew:"
+"Liger.incl.:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1240,7 +1240,7 @@
 
 #MSG_OFF
 " [off]"
-" [apagado]"
+"[apag]"
 
 #
 "Back"
