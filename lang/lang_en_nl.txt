@@ -12,7 +12,7 @@
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "Crash detection can\x0abe turned on only in\x0aNormal mode"
-"Crashdetectie kan\x0aalleen in normaal\x0astand aan staan"
+"Crashdetectie kan\x0aalleen in normaal\x0agebruikt worden"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
@@ -1309,3 +1309,199 @@
 #MSG_OFF
 " [off]"
 " [uit]"
+
+#
+"Back"
+"terug"
+
+#
+"Checks"
+"\x00"
+
+#
+"False triggering"
+"Valse triggering"
+
+#
+"FINDA:"
+"\x00"
+
+#
+"Firmware   [none]"
+"Firmware   [geen]"
+
+#
+"Firmware [strict]"
+"Firmware [strikt]"
+
+#
+"Firmware [alarm.]"
+"\x00"
+
+#
+"HW Setup"
+"HW Configuratie"
+
+#
+"IR:"
+"\x00"
+
+#
+"Magnets comp.[N/A]"
+"Magnet. comp.[N/V]"
+
+#
+"Magnets comp.[Off]"
+"Magnet. comp.[Uit]"
+
+#
+"Magnets comp. [On]"
+"Magnet. comp.[Aan]"
+
+#
+"Mesh         [3x3]"
+"\x00"
+
+#
+"Mesh         [7x7]"
+"\x00"
+
+#
+"Mesh bed leveling"
+"Mesh bed leveling"
+
+#
+"MK3S firmware detected on MK3 printer"
+"MK3S-firmware op MK3-printer ontdekt"
+
+#
+"MMU Mode [Normal]"
+"MMU Mod.[Normaal]"
+
+#
+"MMU Mode[Stealth]"
+"MMU Mod.[Stealth]"
+
+#
+"Mode change in progress ..."
+"Moduswijziging bezig..."
+
+#
+"Model      [none]"
+"Model      [geen]"
+
+#
+"Model    [strict]"
+"Model    [strikt]"
+
+#
+"Model      [warn]"
+"Model    [alarm.]"
+
+#
+"Nozzle d.  [0.25]"
+"Tuit d.    [0.25]"
+
+#
+"Nozzle d.  [0.40]"
+"Tuit d.    [0.40]"
+
+#
+"Z-probe nr.    [5]"
+"Z-probe nr.    [5]"
+
+#
+"Nozzle d.  [0.60]"
+"Tuit d.    [0.60]"
+
+#
+"Nozzle     [none]"
+"Tuit       [geen]"
+
+#
+"Nozzle   [strict]"
+"Tuit     [strikt]"
+
+#
+"Nozzle     [warn]"
+"Tuit     [alarm.]"
+
+#
+"G-code sliced for a different level. Continue?"
+"G-Code is voor een ander niveau geslict. Doorgaan?"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+"G-Code is voor een ander niveau geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
+
+#
+"G-code sliced for a different printer type. Continue?"
+"G-Code is voor een ander printertype geslict. Doorgaan?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+"G-Code is voor een ander printertype geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
+
+#
+"G-code sliced for a newer firmware. Continue?"
+"G-Code is voor een nieuwere firmware geslict. Doorgaan?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+"G-Code is voor een nieuwere firmware geslict. Update de firmware alsjeblieft. Druk geannuleerd."
+
+#
+"PINDA:"
+"\x00"
+
+#
+"Preheating to cut"
+"Opwarm. te snijden"
+
+#
+"Preheating to eject"
+"Opwarm.te uitwerpen"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+"De diameter van de tuit van de printer verschilt van de G-code. Doorgaan?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+"De diameter van de tuit van de printer verschilt van de G-code. Controleer de waarde in de instellingen. Afdrukken geannuleerd."
+
+#
+"Rename"
+"Hernoem"
+
+#
+"Select"
+"Selecteer"
+
+#
+"Sensor info"
+"Sensor info"
+
+#
+"Sheet"
+"Plaat"
+
+#
+"Sound    [assist]"
+"Geluid   [assist]"
+
+#
+"Steel sheets"
+"Staalplaten"
+
+#
+"Z-correct:"
+"Z-correctie:"
+
+#
+"Z-probe nr.    [1]"
+"Z-probe nr.    [1]"
+
+#
+"Z-probe nr.    [3]"
+"Z-probe nr.    [3]"

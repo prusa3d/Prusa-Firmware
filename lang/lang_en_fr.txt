@@ -1407,6 +1407,10 @@
 "Diam. buse [0.40]"
 
 #
+"Z-probe nr.    [5]"
+"Sonde-Z num.   [5]"
+
+#
 "Nozzle d.  [0.60]"
 "Diam. buse [0.60]"
 
@@ -1483,8 +1487,8 @@
 "Feuille"
 
 #
-"Sound     [assist]"
-"Son       [Assist]"
+"Sound    [assist]"
+"Son      [Assist]"
 
 #
 "Steel sheets"

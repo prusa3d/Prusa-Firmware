@@ -1058,6 +1058,9 @@
 "Nozzle d.  [0.40]"
 
 #
+"Z-probe nr.    [5]"
+
+#
 "Nozzle d.  [0.60]"
 
 #
@@ -1115,7 +1118,7 @@
 "Sheet"
 
 #
-"Sound     [assist]"
+"Sound    [assist]"
 
 #
 "Steel sheets"

@@ -1407,6 +1407,10 @@
 "Sr. dyszy  [0,40]"
 
 #
+"Z-probe nr.    [5]"
+"Pomiar-Z       [5]"
+
+#
 "Nozzle d.  [0.60]"
 "Sr. dyszy  [0,60]"
 
@@ -1483,8 +1487,8 @@
 "Plyta"
 
 #
-"Sound     [assist]"
-"Dzwiek    [asyst.]"
+"Sound    [assist]"
+"Dzwiek   [asyst.]"
 
 #
 "Steel sheets"

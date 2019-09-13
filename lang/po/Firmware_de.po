@@ -7,13 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Project-Id-Version: Prusa-Firmware\n"
-<<<<<<< HEAD
-"POT-Creation-Date: Wed, Apr 3, 2019 10:53:00 AM\n"
-"PO-Revision-Date: Wed, Apr 3, 2019 10:53:00 AM\n"
-=======
-"POT-Creation-Date: Wed Sep 4 16:13:46 CEST 2019\n"
-"PO-Revision-Date: Wed Sep 4 16:13:46 CEST 2019\n"
->>>>>>> Prusa/MK3_3.8.0
+"POT-Creation-Date: Sat, Sep 7, 2019 12:41:18 PM\n"
+"PO-Revision-Date: Sat, Sep 7, 2019 12:41:18 PM\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -26,47 +21,16 @@ msgid " of 4"
 msgstr " von 4"
 
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
-<<<<<<< HEAD
-#: messages.c:57
-=======
 #: messages.c:60
->>>>>>> Prusa/MK3_3.8.0
 msgid " of 9"
 msgstr " von 9"
 
 # MSG_MEASURED_OFFSET
-<<<<<<< HEAD
-#: ultralcd.cpp:3167
-=======
-#: ultralcd.cpp:3027
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3051
 msgid "[0;0] point offset"
 msgstr "[0;0] Punktversatz"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-<<<<<<< HEAD
-#: ultralcd.cpp:4485
-msgid "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-msgstr "\x1b[2JCrash Erkennung kann\x1b[1;0Hnur im Modus Normal\x1b[2;0Hgenutzt werden"
-
-# MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-#: ultralcd.cpp:4497
-msgid "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-msgstr "\x1b[2JWARNUNG:\x1b[1;0HCrash Erkennung\x1b[2;0Hdeaktiviert im\x1b[3;0HStealth Modus"
-
-# 
-#: ultralcd.cpp:2447
-msgid ">Cancel"
-msgstr ">Abbruch"
-
-# MSG_BABYSTEPPING_Z c=20
-#: ultralcd.cpp:3296
-msgid "Adjusting Z"
-msgstr "Z einstellen"
-
-# MSG_SELFTEST_CHECK_ALLCORRECT c=20
-#: ultralcd.cpp:7931
-=======
 #: 
 msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
 msgstr "Crash Erkennung kann\x0anur im Modus Normal\x0agenutzt werden"
@@ -77,82 +41,52 @@ msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 msgstr "WARNUNG:\x0aCrash Erkennung\x0adeaktiviert im\x0aStealth Modus"
 
 # 
-#: ultralcd.cpp:2290
+#: ultralcd.cpp:2314
 msgid ">Cancel"
 msgstr ">Abbruch"
 
 # MSG_BABYSTEPPING_Z c=15
-#: ultralcd.cpp:3147
+#: ultralcd.cpp:3171
 msgid "Adjusting Z:"
-msgstr "Z Anpassen:"
+msgstr "Z einstellen:"
 
 # MSG_SELFTEST_CHECK_ALLCORRECT c=20
-#: ultralcd.cpp:8209
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8234
 msgid "All correct      "
 msgstr "Alles richtig    "
 
 # MSG_WIZARD_DONE c=20 r=8
-<<<<<<< HEAD
-#: messages.c:96
-=======
 #: messages.c:101
->>>>>>> Prusa/MK3_3.8.0
 msgid "All is done. Happy printing!"
 msgstr "Alles abgeschlossen. Viel Spass beim Drucken!"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2130
-=======
-#: ultralcd.cpp:1974
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:1986
 msgid "Ambient"
 msgstr "Raumtemp."
 
 # MSG_PRESS c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:2726
-=======
-#: ultralcd.cpp:2576
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2600
 msgid "and press the knob"
 msgstr "und Knopf druecken"
 
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
-<<<<<<< HEAD
-#: ultralcd.cpp:3579
-=======
-#: ultralcd.cpp:3445
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3469
 msgid "Are left and right Z~carriages all up?"
 msgstr "Sind linke+rechte Z- Schlitten ganz oben?"
 
 # MSG_AUTO_DEPLETE_ON c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5235
-=======
-#: ultralcd.cpp:5114
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5138
 msgid "SpoolJoin    [on]"
 msgstr "SpoolJoin    [an]"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:5231
-msgid "SpoolJoin   [N/A]"
-msgstr "SpoolJoin   [N/V]"
-
-#  MSG_AUTO_DEPLETE_OFF c=17 r=1
-#: ultralcd.cpp:5239
-=======
-#: ultralcd.cpp:5110
+#: ultralcd.cpp:5134
 msgid "SpoolJoin   [N/A]"
 msgstr "SpoolJoin   [N/V]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
-#: ultralcd.cpp:5118
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5142
 msgid "SpoolJoin   [off]"
 msgstr "SpoolJoin   [aus]"
 
@@ -162,56 +96,32 @@ msgid "Auto home"
 msgstr "Startposition"
 
 # MSG_AUTOLOAD_FILAMENT c=17
-<<<<<<< HEAD
-#: ultralcd.cpp:6514
-=======
-#: ultralcd.cpp:6736
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6760
 msgid "AutoLoad filament"
 msgstr "Auto-Laden Filament"
 
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
-<<<<<<< HEAD
-#: ultralcd.cpp:4512
-=======
-#: ultralcd.cpp:4378
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4402
 msgid "Autoloading filament available only when filament sensor is turned on..."
 msgstr "Automatisches Laden Filament nur bei einge schaltetem Filament- sensor verfuegbar..."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
-<<<<<<< HEAD
-#: ultralcd.cpp:2918
-=======
-#: ultralcd.cpp:2771
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2795
 msgid "Autoloading filament is active, just press the knob and insert filament..."
 msgstr "Automatisches Laden Filament ist aktiv, Knopf druecken und Filament einlegen..."
 
 # MSG_SELFTEST_AXIS_LENGTH
-<<<<<<< HEAD
-#: ultralcd.cpp:7598
-=======
-#: ultralcd.cpp:7863
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7888
 msgid "Axis length"
 msgstr "Achsenlaenge"
 
 # MSG_SELFTEST_AXIS
-<<<<<<< HEAD
-#: ultralcd.cpp:7600
-=======
-#: ultralcd.cpp:7865
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7890
 msgid "Axis"
 msgstr "Achse"
 
 # MSG_SELFTEST_BEDHEATER
-<<<<<<< HEAD
-#: ultralcd.cpp:7542
-=======
-#: ultralcd.cpp:7807
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7832
 msgid "Bed / Heater"
 msgstr "Bett / Heizung"
 
@@ -226,11 +136,7 @@ msgid "Bed Heating"
 msgstr "Bett aufwaermen"
 
 # MSG_BED_CORRECTION_MENU
-<<<<<<< HEAD
-#: ultralcd.cpp:5541
-=======
-#: ultralcd.cpp:5682
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5706
 msgid "Bed level correct"
 msgstr "Ausgleich Bett ok"
 
@@ -239,58 +145,28 @@ msgstr "Ausgleich Bett ok"
 msgid "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 msgstr "Z-Kal. fehlgeschlg. Sensor nicht ausgeloest. Schmutzige Duese? Warte auf Reset."
 
-<<<<<<< HEAD
-# MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
-#: 
-msgid "Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
-msgstr "Z-Kalibrierung fehl- geschlagen. Sensor getrennt/Kabelbruch? Warte auf Reset."
-
-# MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
-#: 
-msgid "Bed leveling failed. Sensor triggered too high. Waiting for reset."
-msgstr "Z-Kalibrierung fehl- geschlagen. Sensor zu hoch ausgeloest. Warte auf Reset."
-
-=======
->>>>>>> Prusa/MK3_3.8.0
 # MSG_BED
 #: messages.c:15
 msgid "Bed"
-msgstr "Bett     "
+msgstr "Bett"
 
 # MSG_MENU_BELT_STATUS c=15 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:2168
-=======
-#: ultralcd.cpp:2002
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2026
 msgid "Belt status"
 msgstr "Riemstatus"
 
 # MSG_RECOVER_PRINT c=20 r=2
-<<<<<<< HEAD
-#: messages.c:68
-=======
 #: messages.c:71
->>>>>>> Prusa/MK3_3.8.0
 msgid "Blackout occurred. Recover print?"
 msgstr "Stromausfall! Druck wiederherstellen?"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:7933
+#: ultralcd.cpp:8236
 msgid "Calibrating home"
 msgstr "Kalib. Startpos"
 
 # MSG_CALIBRATE_BED
-#: ultralcd.cpp:5530
-=======
-#: ultralcd.cpp:8211
-msgid "Calibrating home"
-msgstr "Kalibriere Start"
-
-# MSG_CALIBRATE_BED
-#: ultralcd.cpp:5671
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5695
 msgid "Calibrate XYZ"
 msgstr "Kalibrierung XYZ"
 
@@ -300,20 +176,12 @@ msgid "Calibrate Z"
 msgstr "Kalibrierung Z"
 
 # MSG_CALIBRATE_PINDA c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:4703
-=======
-#: ultralcd.cpp:4570
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4594
 msgid "Calibrate"
 msgstr "Kalibrieren"
 
 # MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:3542
-=======
-#: ultralcd.cpp:3408
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3432
 msgid "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 msgstr "XYZ Kalibrieren: Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Anschliessend den Knopf druecken."
 
@@ -323,56 +191,32 @@ msgid "Calibrating Z"
 msgstr "Kalibrierung Z"
 
 # MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:3542
-=======
-#: ultralcd.cpp:3408
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3432
 msgid "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 msgstr "Z Kalibrieren: Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Anschliessend den Knopf druecken."
 
 # MSG_HOMEYZ_DONE
-<<<<<<< HEAD
-#: ultralcd.cpp:787
-=======
 #: ultralcd.cpp:813
->>>>>>> Prusa/MK3_3.8.0
 msgid "Calibration done"
 msgstr "Kalibrierung OK"
 
 # MSG_MENU_CALIBRATION
-<<<<<<< HEAD
-#: messages.c:58
-=======
 #: messages.c:61
->>>>>>> Prusa/MK3_3.8.0
 msgid "Calibration"
 msgstr "Kalibrierung"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:4828
-=======
-#: ultralcd.cpp:4695
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4719
 msgid "Cancel"
 msgstr "Abbruch"
 
 # MSG_SD_REMOVED
-<<<<<<< HEAD
-#: ultralcd.cpp:8293
-=======
-#: ultralcd.cpp:8578
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8603
 msgid "Card removed"
 msgstr "SD Karte entfernt"
 
 # MSG_NOT_COLOR
-<<<<<<< HEAD
-#: ultralcd.cpp:2826
-=======
-#: ultralcd.cpp:2676
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2700
 msgid "Color not correct"
 msgstr "Falsche Farbe"
 
@@ -382,11 +226,7 @@ msgid "Cooldown"
 msgstr "Abkuehlen"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:4636
-=======
-#: ultralcd.cpp:4503
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4527
 msgid "Copy selected language?"
 msgstr "Gewaehlte Sprache kopieren?"
 
@@ -411,47 +251,27 @@ msgid "Crash detected."
 msgstr "Crash erkannt."
 
 # 
-<<<<<<< HEAD
-#: Marlin_main.cpp:602
-=======
 #: Marlin_main.cpp:600
->>>>>>> Prusa/MK3_3.8.0
 msgid "Crash detected. Resume print?"
 msgstr "Crash erkannt. Druck fortfuehren?"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2022
-=======
 #: ultralcd.cpp:1876
->>>>>>> Prusa/MK3_3.8.0
 msgid "Crash"
 msgstr ""
 
 # MSG_CURRENT c=19 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5679
-=======
-#: ultralcd.cpp:5823
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5847
 msgid "Current"
 msgstr "Aktuell"
 
 # MSG_DATE c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:2268
-=======
-#: ultralcd.cpp:2102
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2126
 msgid "Date:"
 msgstr "Datum:"
 
 # MSG_DISABLE_STEPPERS
-<<<<<<< HEAD
-#: ultralcd.cpp:5434
-=======
-#: ultralcd.cpp:5568
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5592
 msgid "Disable steppers"
 msgstr "Motoren aus"
 
@@ -461,120 +281,52 @@ msgid "Distance between tip of the nozzle and the bed surface has not been set y
 msgstr "Der Abstand zwischen der Spitze der Duese und dem Bett ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, Kapitel Erste Schritte, Abschnitt Erste Schicht Kalibrierung."
 
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
-<<<<<<< HEAD
-#: ultralcd.cpp:5104
-msgid "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
-msgstr "Moechten Sie den letzten Schritt wiederholen, um den Abstand zwischen Duese und Druckbett neu einzustellen?"
-
-# MSG_EXTRUDER_CORRECTION c=9
-#: ultralcd.cpp:5165
-msgid "E-correct"
-msgstr "E-Korrektur"
-
-# MSG_EJECT_FILAMENT c=17 r=1
-#: ultralcd.cpp:6501
-=======
-#: ultralcd.cpp:4984
+#: ultralcd.cpp:5008
 msgid "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 msgstr "Moechten Sie den letzten Schritt wiederholen, um den Abstand zwischen Duese und Druckbett neu einzustellen?"
 
 # MSG_EXTRUDER_CORRECTION c=10
-#: ultralcd.cpp:5048
+#: ultralcd.cpp:5072
 msgid "E-correct:"
 msgstr "E-Korrektur:"
 
 # MSG_EJECT_FILAMENT c=17 r=1
 #: messages.c:53
->>>>>>> Prusa/MK3_3.8.0
 msgid "Eject filament"
 msgstr "Fil. auswerfen"
 
-<<<<<<< HEAD
-# MSG_EJECT_FILAMENT1 c=17 r=1
-#: ultralcd.cpp:5976
-msgid "Eject filament 1"
-msgstr "Fil.1 auswerfen"
-
-# MSG_EJECT_FILAMENT2 c=17 r=1
-#: ultralcd.cpp:5977
-msgid "Eject filament 2"
-msgstr "Fil.2 auswerfen"
-
-# MSG_EJECT_FILAMENT3 c=17 r=1
-#: ultralcd.cpp:5978
-msgid "Eject filament 3"
-msgstr "Fil.3 auswerfen"
-
-# MSG_EJECT_FILAMENT4 c=17 r=1
-#: ultralcd.cpp:5979
-msgid "Eject filament 4"
-msgstr "Fil.4 auswerfen"
-
-# MSG_EJECT_FILAMENT5 c=17 r=1
-#: ultralcd.cpp:5980
-msgid "Eject filament 5"
-msgstr "Fil.5 auswerfen"
-
 # 
-#: ultralcd.cpp:4916
-=======
-# 
-#: ultralcd.cpp:4783
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4807
 msgid "Eject"
 msgstr "Auswurf"
 
 # MSG_EJECTING_FILAMENT c=20 r=1
-<<<<<<< HEAD
-#: mmu.cpp:1421
-=======
 #: mmu.cpp:1434
->>>>>>> Prusa/MK3_3.8.0
 msgid "Ejecting filament"
 msgstr "werfe Filament aus"
 
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:7566
-=======
-#: ultralcd.cpp:7831
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7856
 msgid "Endstop not hit"
 msgstr "Ende nicht getroffen"
 
 # MSG_SELFTEST_ENDSTOP
-<<<<<<< HEAD
-#: ultralcd.cpp:7560
-=======
-#: ultralcd.cpp:7825
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7850
 msgid "Endstop"
 msgstr "Endanschlag"
 
 # MSG_SELFTEST_ENDSTOPS
-<<<<<<< HEAD
-#: ultralcd.cpp:7548
-=======
-#: ultralcd.cpp:7813
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7838
 msgid "Endstops"
 msgstr "Endschalter"
 
 # MSG_STACK_ERROR c=20 r=4
-<<<<<<< HEAD
-#: ultralcd.cpp:6555
-=======
-#: ultralcd.cpp:6773
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6797
 msgid "Error - static memory has been overwritten"
 msgstr "Fehler - statischer Speicher wurde ueberschrieben"
 
 # MSG_FSENS_NOT_RESPONDING c=20 r=4
-<<<<<<< HEAD
-#: ultralcd.cpp:4525
-=======
-#: ultralcd.cpp:4391
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4415
 msgid "ERROR: Filament sensor is not responding, please check connection."
 msgstr "FEHLER: Filament- sensor reagiert nicht, bitte Verbindung pruefen."
 
@@ -583,47 +335,13 @@ msgstr "FEHLER: Filament- sensor reagiert nicht, bitte Verbindung pruefen."
 msgid "ERROR:"
 msgstr "FEHLER:"
 
-<<<<<<< HEAD
-# 
-#: Marlin_main.cpp:1001
-msgid "External SPI flash W25X20CL not responding."
-msgstr "Der externe SPI Flash W25X20CL antwortet nicht."
-
-# 
-#: ultralcd.cpp:6051
-msgid "Extruder 1"
-msgstr ""
-
-# 
-#: ultralcd.cpp:6052
-msgid "Extruder 2"
-msgstr ""
-
-# 
-#: ultralcd.cpp:6053
-msgid "Extruder 3"
-msgstr ""
-
-# 
-#: ultralcd.cpp:6054
-msgid "Extruder 4"
-msgstr ""
-
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
-#: ultralcd.cpp:7940
-=======
-# MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
-#: ultralcd.cpp:8218
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8243
 msgid "Extruder fan:"
 msgstr "Extruder Luefter:"
 
 # MSG_INFO_EXTRUDER c=15 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:2299
-=======
-#: ultralcd.cpp:2133
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2157
 msgid "Extruder info"
 msgstr "Extruder Info"
 
@@ -633,20 +351,12 @@ msgid "Extruder"
 msgstr ""
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:6538
-=======
-#: ultralcd.cpp:6760
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6784
 msgid "Fail stats MMU"
 msgstr "MMU-Fehler"
 
 # MSG_FSENS_AUTOLOAD_ON c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5203
-=======
-#: ultralcd.cpp:5082
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5106
 msgid "F. autoload  [on]"
 msgstr "F.Autoladen  [an]"
 
@@ -656,24 +366,14 @@ msgid "F. autoload [N/A]"
 msgstr "F. Autoload  [nv]"
 
 # MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5205
-=======
-#: ultralcd.cpp:5084
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5108
 msgid "F. autoload [off]"
 msgstr "F. Autoload [aus]"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:6535
+#: ultralcd.cpp:6781
 msgid "Fail stats"
 msgstr "Fehlerstats"
-=======
-#: ultralcd.cpp:6757
-msgid "Fail stats"
-msgstr "Fehlerstatistik"
->>>>>>> Prusa/MK3_3.8.0
 
 # MSG_FAN_SPEED c=14
 #: messages.c:31
@@ -681,29 +381,17 @@ msgid "Fan speed"
 msgstr "Luefter-Tempo"
 
 # MSG_SELFTEST_FAN c=20
-<<<<<<< HEAD
-#: messages.c:75
-=======
 #: messages.c:78
->>>>>>> Prusa/MK3_3.8.0
 msgid "Fan test"
 msgstr "Lueftertest"
 
 # MSG_FANS_CHECK_ON c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5443
-=======
-#: ultralcd.cpp:5577
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5601
 msgid "Fans check   [on]"
 msgstr "Luefter Ktr. [an]"
 
 # MSG_FANS_CHECK_OFF c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5445
-=======
-#: ultralcd.cpp:5579
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5603
 msgid "Fans check  [off]"
 msgstr "Luefter Ktr.[aus]"
 
@@ -712,18 +400,8 @@ msgstr "Luefter Ktr.[aus]"
 msgid "Fil. sensor  [on]"
 msgstr "Fil. Sensor  [an]"
 
-<<<<<<< HEAD
-# MSG_RESPONSE_POOR c=20 r=2
-#: Marlin_main.cpp:3163
-msgid "Fil. sensor response is poor, disable it?"
-msgstr "Fil. Sensorsignal ist schlecht, ausschalten?"
-
 # MSG_FSENSOR_NA
-#: ultralcd.cpp:5183
-=======
-# MSG_FSENSOR_NA
-#: ultralcd.cpp:5062
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5086
 msgid "Fil. sensor [N/A]"
 msgstr "Fil. Sensor  [nv]"
 
@@ -733,15 +411,9 @@ msgid "Fil. sensor [off]"
 msgstr "Fil. Sensor [aus]"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2022
-msgid "Filam. runouts"
-msgstr "Fil. Auslaeufe"
-=======
 #: ultralcd.cpp:1876
 msgid "Filam. runouts"
 msgstr "Filam. Maengel"
->>>>>>> Prusa/MK3_3.8.0
 
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:32
@@ -749,53 +421,27 @@ msgid "Filament extruding & with correct color?"
 msgstr "Filament extrudiert + richtige Farbe?"
 
 # MSG_NOT_LOADED c=19
-<<<<<<< HEAD
-#: ultralcd.cpp:2822
-=======
-#: ultralcd.cpp:2672
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2696
 msgid "Filament not loaded"
 msgstr "Fil. nicht geladen"
 
 # MSG_FILAMENT_SENSOR c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:7614
-msgid "Filament sensor"
-msgstr "Filamentsensor"
-
-# MSG_SELFTEST_FILAMENT_SENSOR c=18
-#: ultralcd.cpp:7949
-msgid "Filament sensor:"
-msgstr "Filamentsensor:"
-
-# MSG_FILAMENT_USED c=19 r=1
-#: ultralcd.cpp:2989
-=======
 #: messages.c:84
 msgid "Filament sensor"
 msgstr "Filamentsensor"
 
 # MSG_FILAMENT_USED c=19 r=1
-#: ultralcd.cpp:2841
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2865
 msgid "Filament used"
 msgstr "Filament benutzt"
 
 # MSG_PRINT_TIME c=19 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:2991
-=======
-#: ultralcd.cpp:2841
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2865
 msgid "Print time"
 msgstr "Druckzeit"
 
 # MSG_FILE_INCOMPLETE c=20 r=2
-<<<<<<< HEAD
-#: ultralcd.cpp:8067
-=======
-#: ultralcd.cpp:8346
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8371
 msgid "File incomplete. Continue anyway?"
 msgstr "Datei unvollstaendig Trotzdem fortfahren?"
 
@@ -805,92 +451,52 @@ msgid "Finishing movements"
 msgstr "Bewegung beenden"
 
 # MSG_V2_CALIBRATION c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5521
-=======
 #: messages.c:105
->>>>>>> Prusa/MK3_3.8.0
 msgid "First layer cal."
 msgstr "Erste-Schicht Kal."
 
 # MSG_WIZARD_SELFTEST c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:5016
-=======
-#: ultralcd.cpp:4896
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4920
 msgid "First, I will run the selftest to check most common assembly problems."
 msgstr "Zunaechst fuehre ich den Selbsttest durch, um die haeufigsten Probleme beim Zusammenbau zu ueberpruefen."
 
 # 
-<<<<<<< HEAD
-#: mmu.cpp:714
-=======
 #: mmu.cpp:724
->>>>>>> Prusa/MK3_3.8.0
 msgid "Fix the issue and then press button on MMU unit."
 msgstr "Beseitigen Sie das Problem und druecken Sie dann den Knopf am MMU."
 
 # MSG_FLOW
-<<<<<<< HEAD
-#: ultralcd.cpp:6628
-=======
-#: ultralcd.cpp:6846
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6870
 msgid "Flow"
 msgstr "Durchfluss"
 
 # MSG_PRUSA3D_FORUM
-<<<<<<< HEAD
-#: ultralcd.cpp:2261
-=======
-#: ultralcd.cpp:2095
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2119
 msgid "forum.prusa3d.com"
 msgstr ""
 
 # MSG_SELFTEST_COOLING_FAN c=20
-<<<<<<< HEAD
-#: messages.c:72
-=======
 #: messages.c:75
->>>>>>> Prusa/MK3_3.8.0
 msgid "Front print fan?"
 msgstr "Vorderer Luefter?"
 
 # MSG_BED_CORRECTION_FRONT c=14 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:3354
-=======
-#: ultralcd.cpp:3220
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3244
 msgid "Front side[um]"
 msgstr "Vorne [um]"
 
 # MSG_SELFTEST_FANS
-<<<<<<< HEAD
-#: ultralcd.cpp:7606
-=======
-#: ultralcd.cpp:7871
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7896
 msgid "Front/left fans"
 msgstr "Vorderer/linke Luefter"
 
 # MSG_SELFTEST_HEATERTHERMISTOR
-<<<<<<< HEAD
-#: ultralcd.cpp:7536
-=======
-#: ultralcd.cpp:7801
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7826
 msgid "Heater/Thermistor"
 msgstr "Heizung/Thermistor"
 
 # MSG_BED_HEATING_SAFETY_DISABLED
-<<<<<<< HEAD
-#: Marlin_main.cpp:7611
-=======
 #: Marlin_main.cpp:8468
->>>>>>> Prusa/MK3_3.8.0
 msgid "Heating disabled by safety timer."
 msgstr "Heizung durch Sicherheitstimer deaktiviert."
 
@@ -905,119 +511,62 @@ msgid "Heating"
 msgstr "Aufwaermen"
 
 # MSG_WIZARD_WELCOME c=20 r=7
-<<<<<<< HEAD
-#: 
-=======
-#: ultralcd.cpp:4875
->>>>>>> Prusa/MK3_3.8.0
-msgid "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
-msgstr "Hallo, ich bin Ihr Original Prusa i3 Drucker. Moechten Sie, dass ich Sie durch den Einrich- tungsablauf fuehre?"
-
-# MSG_WIZARD_WELCOME c=20 r=7
-#: ultralcd.cpp:4995
+#: ultralcd.cpp:4899
 msgid "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
 msgstr "Hallo, ich bin Ihr Zaribo Drucker. Moechten Sie, dass ich Sie durch den Einrich- tungsablauf fuehre?"
 
 # MSG_PRUSA3D_HOWTO
-<<<<<<< HEAD
-#: ultralcd.cpp:2262
+#: ultralcd.cpp:2120
 msgid "howto.prusa3d.com"
 msgstr ""
 
-# 
-#: ultralcd.cpp:6510
-msgid "Change extruder"
-msgstr "Wechsel Extruder"
-
-=======
-#: ultralcd.cpp:2096
-msgid "howto.prusa3d.com"
-msgstr ""
-
->>>>>>> Prusa/MK3_3.8.0
 # MSG_FILAMENTCHANGE
 #: messages.c:37
 msgid "Change filament"
 msgstr "Filament-Wechsel"
 
 # MSG_CHANGE_SUCCESS
-<<<<<<< HEAD
-#: ultralcd.cpp:2737
-=======
-#: ultralcd.cpp:2587
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2611
 msgid "Change success!"
 msgstr "Wechsel erfolgr.!"
 
 # MSG_CORRECTLY c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:2814
-=======
-#: ultralcd.cpp:2664
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2688
 msgid "Changed correctly?"
 msgstr "Wechsel ok?"
 
 # MSG_SELFTEST_CHECK_BED c=20
-<<<<<<< HEAD
-#: messages.c:78
-=======
 #: messages.c:81
->>>>>>> Prusa/MK3_3.8.0
 msgid "Checking bed     "
 msgstr "Pruefe Bett "
 
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:7922
-=======
-#: ultralcd.cpp:8200
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8225
 msgid "Checking endstops"
 msgstr "Pruefe Endschalter"
 
 # MSG_SELFTEST_CHECK_HOTEND c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:7928
-=======
-#: ultralcd.cpp:8206
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8231
 msgid "Checking hotend  "
 msgstr "Pruefe Duese  "
 
 # MSG_SELFTEST_CHECK_FSENSOR c=20
-<<<<<<< HEAD
-#: messages.c:79
-=======
 #: messages.c:82
->>>>>>> Prusa/MK3_3.8.0
 msgid "Checking sensors "
 msgstr "Pruefe Sensoren "
 
 # MSG_SELFTEST_CHECK_X c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:7923
-=======
-#: ultralcd.cpp:8201
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8226
 msgid "Checking X axis  "
 msgstr "Pruefe X Achse "
 
 # MSG_SELFTEST_CHECK_Y c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:7924
-=======
-#: ultralcd.cpp:8202
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8227
 msgid "Checking Y axis  "
 msgstr "Pruefe Y Achse "
 
 # MSG_SELFTEST_CHECK_Z c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:7925
-=======
-#: ultralcd.cpp:8203
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8228
 msgid "Checking Z axis  "
 msgstr "Pruefe Z Achse "
 
@@ -1037,158 +586,82 @@ msgid "Filament"
 msgstr ""
 
 # MSG_WIZARD_XYZ_CAL c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:5025
-=======
-#: ultralcd.cpp:4905
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4929
 msgid "I will run xyz calibration now. It will take approx. 12 mins."
 msgstr "Ich werde jetzt die XYZ-Kalibrierung durchfuehren. Es wird ca. 12 Minuten dauern."
 
 # MSG_WIZARD_Z_CAL c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:5033
-=======
-#: ultralcd.cpp:4913
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4937
 msgid "I will run z calibration now."
 msgstr "Ich werde jetzt die Z Kalibrierung durchfuehren."
 
 # MSG_WIZARD_V2_CAL_2 c=20 r=12
-<<<<<<< HEAD
-#: ultralcd.cpp:5098
-msgid "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-msgstr "Ich werde jetzt eine Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken, indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Sehen Sie sich die Bilder in unserem Handbuch im Kapitel Kalibrierung an."
-
-# MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60
-#: mesh_bed_calibration.cpp:2503
-msgid "Improving bed calibration point"
-msgstr "Verbessere Bett Kalibrierpunkt"
-
-# MSG_WATCH
-#: messages.c:94
-=======
-#: ultralcd.cpp:4978
+#: ultralcd.cpp:5002
 msgid "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
 msgstr "Ich werde jetzt eine Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken, indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Sehen Sie sich die Bilder in unserem Handbuch im Kapitel Kalibrierung an."
 
 # MSG_WATCH
 #: messages.c:99
->>>>>>> Prusa/MK3_3.8.0
 msgid "Info screen"
 msgstr "Infoanzeige"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:5058
-=======
-#: ultralcd.cpp:4938
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4962
 msgid "Is filament 1 loaded?"
 msgstr "Wurde Filament 1 geladen?"
 
 # MSG_INSERT_FILAMENT c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:2722
-=======
-#: ultralcd.cpp:2572
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2596
 msgid "Insert filament"
 msgstr "Filament einlegen"
 
 # MSG_WIZARD_FILAMENT_LOADED c=20 r=2
-<<<<<<< HEAD
-#: ultralcd.cpp:5061
-=======
-#: ultralcd.cpp:4941
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4965
 msgid "Is filament loaded?"
 msgstr "Ist das Filament geladen?"
 
 # MSG_WIZARD_PLA_FILAMENT c=20 r=2
-<<<<<<< HEAD
-#: ultralcd.cpp:5092
-=======
-#: ultralcd.cpp:4972
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4996
 msgid "Is it PLA filament?"
 msgstr "Ist es wirklich PLA Filament?"
 
 # MSG_PLA_FILAMENT_LOADED c=20 r=2
-<<<<<<< HEAD
-#: ultralcd.cpp:4837
-=======
-#: ultralcd.cpp:4704
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4728
 msgid "Is PLA filament loaded?"
 msgstr "Ist PLA Filament geladen?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
-<<<<<<< HEAD
-#: messages.c:87
-msgid "Is steel sheet on heatbed?"
-msgstr "Liegt das Stahlblech auf dem Heizbett?"
-
-# MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20
-#: mesh_bed_calibration.cpp:2242
-msgid "Iteration "
-msgstr ""
-
-# 
-#: ultralcd.cpp:1985
-=======
 #: messages.c:92
 msgid "Is steel sheet on heatbed?"
 msgstr "Liegt das Stahlblech auf dem Heizbett?"
 
 # 
 #: ultralcd.cpp:1840
->>>>>>> Prusa/MK3_3.8.0
 msgid "Last print failures"
 msgstr "Letzte Druckfehler"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:1969
-=======
 #: ultralcd.cpp:1823
->>>>>>> Prusa/MK3_3.8.0
 msgid "Last print"
 msgstr "Letzter Druck"
 
 # MSG_SELFTEST_EXTRUDER_FAN c=20
-<<<<<<< HEAD
-#: messages.c:73
-=======
 #: messages.c:76
->>>>>>> Prusa/MK3_3.8.0
 msgid "Left hotend fan?"
 msgstr "Linker Luefter?"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3125
-=======
-#: ultralcd.cpp:2970
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2994
 msgid "Left"
 msgstr "Links"
 
 # MSG_BED_CORRECTION_LEFT c=14 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:3352
-=======
-#: ultralcd.cpp:3218
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3242
 msgid "Left side [um]"
 msgstr "Links [um]"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:5453
-=======
-#: ultralcd.cpp:5594
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5618
 msgid "Lin. correction"
 msgstr "Lineare Korrektur"
 
@@ -1203,11 +676,7 @@ msgid "Load filament"
 msgstr "Filament laden"
 
 # MSG_LOADING_COLOR
-<<<<<<< HEAD
-#: ultralcd.cpp:2762
-=======
-#: ultralcd.cpp:2612
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2636
 msgid "Loading color"
 msgstr "Lade Farbe"
 
@@ -1217,20 +686,12 @@ msgid "Loading filament"
 msgstr "Filament laedt"
 
 # MSG_LOOSE_PULLEY c=20 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:7590
-=======
-#: ultralcd.cpp:7855
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7880
 msgid "Loose pulley"
 msgstr "Lose Riemenscheibe"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:6497
-=======
-#: ultralcd.cpp:6719
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6743
 msgid "Load to nozzle"
 msgstr "In Druckduese laden"
 
@@ -1245,129 +706,72 @@ msgid "Main"
 msgstr "Hauptmenue"
 
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
-<<<<<<< HEAD
-#: messages.c:56
-=======
 #: messages.c:59
->>>>>>> Prusa/MK3_3.8.0
 msgid "Measuring reference height of calibration point"
 msgstr "Messen der Referenzhoehe des Kalibrierpunktes"
 
 # MSG_MESH_BED_LEVELING
-<<<<<<< HEAD
-#: ultralcd.cpp:5536
-=======
-#: ultralcd.cpp:5677
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5701
 msgid "Mesh Bed Leveling"
 msgstr "Mesh Bett Ausgleich"
 
 # MSG_MMU_OK_RESUMING_POSITION c=20 r=4
-<<<<<<< HEAD
-#: mmu.cpp:751
-=======
 #: mmu.cpp:762
->>>>>>> Prusa/MK3_3.8.0
 msgid "MMU OK. Resuming position..."
 msgstr "MMU OK. Position    wiederherstellen... "
 
 # MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
-<<<<<<< HEAD
-#: mmu.cpp:744
-=======
 #: mmu.cpp:755
->>>>>>> Prusa/MK3_3.8.0
 msgid "MMU OK. Resuming temperature..."
 msgstr "MMU OK. Temperatur wiederherstellen..."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3153
-=======
-#: ultralcd.cpp:3005
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3029
 msgid "Measured skew"
 msgstr "Schraeglauf"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:1986
-msgid "MMU fails"
-msgstr "MMU scheitert"
-
-# 
-#: mmu.cpp:1512
-=======
 #: ultralcd.cpp:1840
 msgid "MMU fails"
 msgstr "MMU Fehler"
 
 # 
 #: mmu.cpp:1613
->>>>>>> Prusa/MK3_3.8.0
 msgid "MMU load failed     "
 msgstr "MMU Ladefehler"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:1986
-=======
 #: ultralcd.cpp:1840
->>>>>>> Prusa/MK3_3.8.0
 msgid "MMU load fails"
 msgstr "MMU Ladefehler"
 
 # MSG_MMU_OK_RESUMING c=20 r=4
-<<<<<<< HEAD
-#: mmu.cpp:762
-=======
 #: mmu.cpp:773
->>>>>>> Prusa/MK3_3.8.0
 msgid "MMU OK. Resuming..."
 msgstr "MMU OK.  Weiterdrucken..."
 
 # MSG_STEALTH_MODE_OFF
-<<<<<<< HEAD
-#: messages.c:85
-=======
 #: messages.c:90
->>>>>>> Prusa/MK3_3.8.0
 msgid "Mode     [Normal]"
 msgstr "Modus    [Normal]"
 
 # MSG_SILENT_MODE_ON
-<<<<<<< HEAD
-#: messages.c:84
-=======
 #: messages.c:89
->>>>>>> Prusa/MK3_3.8.0
 msgid "Mode     [silent]"
 msgstr "Modus     [leise]"
 
 # 
-<<<<<<< HEAD
-#: mmu.cpp:709
-=======
 #: mmu.cpp:719
->>>>>>> Prusa/MK3_3.8.0
 msgid "MMU needs user attention."
 msgstr "MMU erfordert Benutzereingriff."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2003
-=======
 #: ultralcd.cpp:1857
->>>>>>> Prusa/MK3_3.8.0
 msgid "MMU power fails"
 msgstr "MMU Netzfehler"
 
 # MSG_STEALTH_MODE_ON
-<<<<<<< HEAD
-#: messages.c:86
-=======
 #: messages.c:91
->>>>>>> Prusa/MK3_3.8.0
 msgid "Mode    [Stealth]"
 msgstr "Modus   [Stealth]"
 
@@ -1377,110 +781,62 @@ msgid "Mode [auto power]"
 msgstr "Modus[Auto Power]"
 
 # MSG_SILENT_MODE_OFF
-<<<<<<< HEAD
-#: messages.c:83
-=======
 #: messages.c:88
->>>>>>> Prusa/MK3_3.8.0
 msgid "Mode [high power]"
 msgstr "Modus[Hohe Leist]"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2274
-=======
-#: ultralcd.cpp:2108
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2132
 msgid "MMU2 connected"
 msgstr "MMU2 verbunden"
 
 # MSG_SELFTEST_MOTOR
-<<<<<<< HEAD
-#: messages.c:80
-=======
 #: messages.c:83
->>>>>>> Prusa/MK3_3.8.0
 msgid "Motor"
 msgstr ""
 
 # MSG_MOVE_AXIS
-<<<<<<< HEAD
-#: ultralcd.cpp:5432
-=======
-#: ultralcd.cpp:5566
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5590
 msgid "Move axis"
 msgstr "Achse bewegen"
 
 # MSG_MOVE_X
-<<<<<<< HEAD
-#: ultralcd.cpp:4430
-=======
-#: ultralcd.cpp:4294
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4318
 msgid "Move X"
 msgstr "Bewege X"
 
 # MSG_MOVE_Y
-<<<<<<< HEAD
-#: ultralcd.cpp:4431
-=======
-#: ultralcd.cpp:4295
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4319
 msgid "Move Y"
 msgstr "Bewege Y"
 
 # MSG_MOVE_Z
-<<<<<<< HEAD
-#: ultralcd.cpp:4432
-=======
-#: ultralcd.cpp:4296
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4320
 msgid "Move Z"
 msgstr "Bewege Z"
 
 # MSG_NO_MOVE
-<<<<<<< HEAD
-#: Marlin_main.cpp:4981
-=======
 #: Marlin_main.cpp:5291
->>>>>>> Prusa/MK3_3.8.0
 msgid "No move."
 msgstr "Keine Bewegung."
 
 # MSG_NO_CARD
-<<<<<<< HEAD
-#: ultralcd.cpp:6477
-=======
-#: ultralcd.cpp:6686
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6710
 msgid "No SD card"
 msgstr "Keine SD Karte"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3131
-=======
-#: ultralcd.cpp:2976
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3000
 msgid "N/A"
 msgstr "N.V."
 
 # MSG_NO
-<<<<<<< HEAD
-#: messages.c:59
-=======
 #: messages.c:62
->>>>>>> Prusa/MK3_3.8.0
 msgid "No"
 msgstr "Nein"
 
 # MSG_SELFTEST_NOTCONNECTED
-<<<<<<< HEAD
-#: ultralcd.cpp:7538
-=======
-#: ultralcd.cpp:7803
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7828
 msgid "Not connected"
 msgstr "Nicht angeschlossen"
 
@@ -1490,128 +846,72 @@ msgid "New firmware version available:"
 msgstr "Neue Firmware- Version verfuegbar:"
 
 # MSG_SELFTEST_FAN_NO c=19
-<<<<<<< HEAD
-#: messages.c:76
-=======
 #: messages.c:79
->>>>>>> Prusa/MK3_3.8.0
 msgid "Not spinning"
 msgstr "Dreht sich nicht"
 
 # MSG_WIZARD_V2_CAL c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:5097
-=======
-#: ultralcd.cpp:4977
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5001
 msgid "Now I will calibrate distance between tip of the nozzle and heatbed surface."
 msgstr "Jetzt werde ich den Abstand zwischen Duesenspitze und Druckbett kalibrieren."
 
 # MSG_WIZARD_WILL_PREHEAT c=20 r=4
-<<<<<<< HEAD
-#: ultralcd.cpp:5041
-=======
-#: ultralcd.cpp:4921
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4945
 msgid "Now I will preheat nozzle for PLA."
 msgstr "Jetzt werde ich die Duese fuer PLA vorheizen."
 
 # MSG_NOZZLE
-<<<<<<< HEAD
-#: messages.c:60
-=======
 #: messages.c:63
->>>>>>> Prusa/MK3_3.8.0
 msgid "Nozzle"
 msgstr "Duese"
 
 # MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
-<<<<<<< HEAD
-#: Marlin_main.cpp:1517
-=======
 #: Marlin_main.cpp:1519
->>>>>>> Prusa/MK3_3.8.0
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr "Alte Einstellungen gefunden. Standard PID, E-Steps u.s.w. werden gesetzt."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:5032
-=======
-#: ultralcd.cpp:4912
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4936
 msgid "Now remove the test print from steel sheet."
 msgstr "Testdruck jetzt von Stahlblech entfernen."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:1928
-=======
 #: ultralcd.cpp:1782
->>>>>>> Prusa/MK3_3.8.0
 msgid "Nozzle FAN"
-msgstr "Duesen Luefter"
+msgstr "Duesevent."
 
 # MSG_PAUSE_PRINT
-<<<<<<< HEAD
-#: ultralcd.cpp:6447
-=======
-#: ultralcd.cpp:6649
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6673
 msgid "Pause print"
 msgstr "Druck pausieren"
 
 # MSG_PID_RUNNING c=20 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:1750
-=======
 #: ultralcd.cpp:1598
->>>>>>> Prusa/MK3_3.8.0
 msgid "PID cal.           "
 msgstr "PID Kal.           "
 
 # MSG_PID_FINISHED c=20 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:1756
-=======
 #: ultralcd.cpp:1604
->>>>>>> Prusa/MK3_3.8.0
 msgid "PID cal. finished"
 msgstr "PID Kalib. fertig"
 
 # MSG_PID_EXTRUDER c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5542
-=======
-#: ultralcd.cpp:5683
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5707
 msgid "PID calibration"
 msgstr "PID Kalibrierung"
 
 # MSG_PINDA_PREHEAT c=20 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:817
-=======
 #: ultralcd.cpp:843
->>>>>>> Prusa/MK3_3.8.0
 msgid "PINDA Heating"
 msgstr "PINDA erwaermen"
 
 # MSG_PAPER c=20 r=8
-<<<<<<< HEAD
-#: messages.c:61
-=======
 #: messages.c:64
->>>>>>> Prusa/MK3_3.8.0
 msgid "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 msgstr "Legen Sie ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier erfasst, den Drucker sofort ausschalten."
 
 # MSG_WIZARD_CLEAN_HEATBED c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:5106
-=======
-#: ultralcd.cpp:4986
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5010
 msgid "Please clean heatbed and then press the knob."
 msgstr "Bitte reinigen Sie das Heizbett und druecken Sie dann den Knopf."
 
@@ -1621,164 +921,92 @@ msgid "Please clean the nozzle for calibration. Click when done."
 msgstr "Bitte entfernen Sie ueberstehendes Filament von der Duese. Klicken wenn sauber."
 
 # MSG_SELFTEST_PLEASECHECK
-<<<<<<< HEAD
-#: ultralcd.cpp:7530
-=======
-#: ultralcd.cpp:7795
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7820
 msgid "Please check :"
 msgstr "Bitte pruefe:"
 
 # MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
-<<<<<<< HEAD
-#: messages.c:95
-=======
 #: messages.c:100
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 msgstr "Bitte lesen Sie unser Handbuch und beheben Sie das Problem. Fahren Sie dann mit dem Assistenten fort, indem Sie den Drucker neu starten."
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:4940
-=======
-#: ultralcd.cpp:4808
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4832
 msgid "Please insert PLA filament to the extruder, then press knob to load it."
 msgstr "Legen Sie bitte PLA Filament in den Extruder und druecken Sie den Knopf,  um es zu laden."
 
 # MSG_PLEASE_LOAD_PLA c=20 r=4
-<<<<<<< HEAD
-#: ultralcd.cpp:4842
-=======
-#: ultralcd.cpp:4709
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4733
 msgid "Please load PLA filament first."
 msgstr "Bitte laden Sie zuerst PLA Filament."
 
 # MSG_CHECK_IDLER c=20 r=4
-<<<<<<< HEAD
-#: Marlin_main.cpp:3042
-=======
 #: Marlin_main.cpp:3063
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please open idler and remove filament manually."
 msgstr "Bitte Spannrolle oeffnen und Fila- ment von Hand entfernen"
 
 # MSG_PLACE_STEEL_SHEET c=20 r=4
-<<<<<<< HEAD
-#: messages.c:62
-=======
 #: messages.c:65
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please place steel sheet on heatbed."
 msgstr "Bitte legen Sie das Stahlblech auf das Heizbett."
 
 # MSG_PRESS_TO_UNLOAD c=20 r=4
-<<<<<<< HEAD
-#: messages.c:65
-=======
 #: messages.c:68
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please press the knob to unload filament"
 msgstr "Bitte druecken Sie den Knopf um das Filament zu entladen."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:4936
-=======
-#: ultralcd.cpp:4803
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4827
 msgid "Please insert PLA filament to the first tube of MMU, then press the knob to load it."
 msgstr "Legen Sie bitte PLA Filament in den ersten Schlauch der MMU und druecken Sie den Knopf,  um es zu laden."
 
 # MSG_PULL_OUT_FILAMENT c=20 r=4
-<<<<<<< HEAD
-#: messages.c:67
-=======
 #: messages.c:70
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please pull out filament immediately"
 msgstr "Bitte ziehen Sie das Filament sofort heraus"
 
 # MSG_EJECT_REMOVE c=20 r=4
-<<<<<<< HEAD
-#: mmu.cpp:1427
-=======
 #: mmu.cpp:1440
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please remove filament and then press the knob."
 msgstr "Bitte Filament entfernen und dann den Knopf druecken"
 
 # MSG_REMOVE_STEEL_SHEET c=20 r=4
-<<<<<<< HEAD
-#: messages.c:71
-=======
 #: messages.c:74
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please remove steel sheet from heatbed."
 msgstr "Bitte entfernen Sie das Stahlblech vom Heizbett."
 
 # MSG_RUN_XYZ c=20 r=4
-<<<<<<< HEAD
-#: Marlin_main.cpp:4074
-=======
 #: Marlin_main.cpp:4354
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please run XYZ calibration first."
 msgstr "Bitte zuerst XYZ Kalibrierung ausfuehren."
 
 # MSG_UPDATE_MMU2_FW c=20 r=4
-<<<<<<< HEAD
-#: mmu.cpp:1349
-=======
 #: mmu.cpp:1359
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please update firmware in your MMU2. Waiting for reset."
 msgstr "Bitte aktualisieren Sie die Firmware in der MMU2. Warte auf Reset."
 
 # MSG_PLEASE_WAIT c=20
-<<<<<<< HEAD
-#: messages.c:63
-=======
 #: messages.c:66
->>>>>>> Prusa/MK3_3.8.0
 msgid "Please wait"
 msgstr "Bitte warten"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:5031
-=======
-#: ultralcd.cpp:4911
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4935
 msgid "Please remove shipping helpers first."
 msgstr "Bitte zuerst Transportsicherungen entfernen."
 
 # MSG_PREHEAT_NOZZLE c=20
-<<<<<<< HEAD
-#: messages.c:64
-=======
 #: messages.c:67
->>>>>>> Prusa/MK3_3.8.0
 msgid "Preheat the nozzle!"
 msgstr "Duese vorheizen!"
 
 # MSG_PREHEAT
-<<<<<<< HEAD
-#: ultralcd.cpp:6436
-=======
-#: ultralcd.cpp:6636
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6660
 msgid "Preheat"
 msgstr "Vorheizen"
 
 # MSG_WIZARD_HEATING c=20 r=3
-<<<<<<< HEAD
-#: messages.c:97
-=======
 #: messages.c:102
->>>>>>> Prusa/MK3_3.8.0
 msgid "Preheating nozzle. Please wait."
 msgstr "Vorheizen der Duese. Bitte warten."
 
@@ -1788,56 +1016,32 @@ msgid "Please upgrade."
 msgstr "Bitte aktualisieren."
 
 # MSG_PRESS_TO_PREHEAT c=20 r=4
-<<<<<<< HEAD
-#: Marlin_main.cpp:9494
-=======
 #: Marlin_main.cpp:10365
->>>>>>> Prusa/MK3_3.8.0
 msgid "Press knob to preheat nozzle and continue."
 msgstr "Bitte druecken Sie den Knopf um die Duese vorzuheizen und fortzufahren."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2022
-=======
 #: ultralcd.cpp:1876
->>>>>>> Prusa/MK3_3.8.0
 msgid "Power failures"
 msgstr "Netzfehler"
 
 # MSG_PRINT_ABORTED c=20
-<<<<<<< HEAD
-#: messages.c:66
-=======
 #: messages.c:69
->>>>>>> Prusa/MK3_3.8.0
 msgid "Print aborted"
 msgstr "Druck abgebrochen"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2433
-=======
-#: ultralcd.cpp:2276
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2300
 msgid "Preheating to load"
 msgstr "Heizen zum Laden"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2437
-=======
-#: ultralcd.cpp:2280
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2304
 msgid "Preheating to unload"
 msgstr "Heizen zum Entladen"
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
-<<<<<<< HEAD
-#: ultralcd.cpp:7943
-=======
-#: ultralcd.cpp:8221
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:8246
 msgid "Print fan:"
 msgstr "Druckvent.:"
 
@@ -1847,29 +1051,17 @@ msgid "Print from SD"
 msgstr "Drucken von SD"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2363
-=======
-#: ultralcd.cpp:2206
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2230
 msgid "Press the knob"
 msgstr "Knopf druecken"
 
 # MSG_PRINT_PAUSED c=20 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:1031
-=======
 #: ultralcd.cpp:1061
->>>>>>> Prusa/MK3_3.8.0
 msgid "Print paused"
 msgstr "Druck pausiert"
 
 # 
-<<<<<<< HEAD
-#: mmu.cpp:713
-=======
 #: mmu.cpp:723
->>>>>>> Prusa/MK3_3.8.0
 msgid "Press the knob to resume nozzle temperature."
 msgstr "Druecken Sie den Knopf um die Duesentemperatur wiederherzustellen"
 
@@ -1879,213 +1071,172 @@ msgid "Printer has not been calibrated yet. Please follow the manual, chapter Fi
 msgstr "Drucker wurde noch nicht kalibriert. Bitte folgen Sie dem Handbuch, Kapitel Erste Schritte, Abschnitt Kalibrie- rungsablauf."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:1930
+#: ultralcd.cpp:1784
 msgid "Print FAN"
-msgstr "Druckluefter"
+msgstr "Druckvent"
 
 # WELCOME_MSG c=20
-#: 
+#: 1_75mm_MK25-RAMBo10a-E3Dv6full.h:22
 msgid "Prusa i3 MK2.5"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: 
+#: 1_75mm_MK3-EINSy10a-E3Dv6full.h:23
 msgid "Prusa i3 MK3"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK25-320_1_75mm-RAMBo13a-E3Dv6full.h:18
+#: 
 msgid "Zaribo MK2.5-320"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK25-220_1_75mm-RAMBo13a-E3Dv6full.h:18
+#: 
 msgid "Zaribo MK2.5-220"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Configuration_prusa.h:18
+#: Zaribo_MK3-320-EINSy10a.h:23
 msgid "Zaribo MK3-320"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK3-220_1_75mm-EINSy10a-E3Dv6full.h:18
+#: Zaribo_MK3-220-EINSy10a.h:23
 msgid "Zaribo MK3-220"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK25-420_1_75mm-RAMBo13a-E3Dv6full.h:18
+#: 
 msgid "Zaribo MK2.5-420"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK3-420_1_75mm-EINSy10a-E3Dv6full.h:18
+#: Zaribo_MK3-420-EINSy10a.h:23
 msgid "Zaribo MK3-420"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK3S-220_1_75mm-EINSy10a-E3Dv6full.h:18
+#: Configuration_prusa.h:22
 msgid "Zaribo MK3S-220"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK3S-320_1_75mm-EINSy10a-E3Dv6full.h:18
+#: Zaribo_MK3S-320-EINSy10a.h:22
 msgid "Zaribo MK3S-320"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK3S-420_1_75mm-EINSy10a-E3Dv6full.h:18
+#: Zaribo_MK3S-420-EINSy10a.h:22
 msgid "Zaribo MK3S-420"
 msgstr ""
 
-# MSG_PRUSA3D
-#: ultralcd.cpp:2260
-=======
-#: ultralcd.cpp:1784
-msgid "Print FAN"
-msgstr "Druckluefter"
+# WELCOME_MSG c=20
+#: Zaribo_MK3-220-BMG18-EINSy10a.h:23
+msgid "Zaribo MK3-BMG-220"
+msgstr ""
+
+# WELCOME_MSG c=20
+#: Zaribo_MK3-320-BMG18-EINSy10a.h:23
+msgid "Zaribo MK3-BMG-320"
+msgstr ""
+
+# WELCOME_MSG c=20
+#: Zaribo_MK3-420-BMG18-EINSy10a.h:23
+msgid "Zaribo MK3-BMG-420"
+msgstr ""
+
+# WELCOME_MSG c=20
+#: Zaribo_MK3S-220-BMG18-EINSy10a.h:22
+msgid "Zaribo MK3S-BMG-220"
+msgstr ""
+
+# WELCOME_MSG c=20
+#: Zaribo_MK3S-320-BMG18-EINSy10a.h:22
+msgid "Zaribo MK3S-BMG-320"
+msgstr ""
+
+# WELCOME_MSG c=20
+#: Zaribo_MK3S-420-BMG18-EINSy10a.h:22
+msgid "Zaribo MK3S-BMG-420"
+msgstr ""
 
 # MSG_PRUSA3D
-#: ultralcd.cpp:2094
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2118
 msgid "prusa3d.com"
 msgstr ""
 
 # MSG_BED_CORRECTION_REAR c=14 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:3355
-=======
-#: ultralcd.cpp:3221
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3245
 msgid "Rear side [um]"
 msgstr "Hinten [um]"
 
 # MSG_RECOVERING_PRINT c=20 r=1
-<<<<<<< HEAD
-#: Marlin_main.cpp:8918
-=======
 #: Marlin_main.cpp:9765
->>>>>>> Prusa/MK3_3.8.0
 msgid "Recovering print    "
 msgstr "Druck wiederherst    "
 
 # MSG_REMOVE_OLD_FILAMENT c=20 r=4
-<<<<<<< HEAD
-#: mmu.cpp:819
-=======
 #: mmu.cpp:830
->>>>>>> Prusa/MK3_3.8.0
 msgid "Remove old filament and press the knob to start loading new filament."
 msgstr "Entfernen Sie das alte Filament und druecken Sie den Knopf, um das neue zu laden."
 
 # 
-#: 
+#: 1_75mm_MK3S-EINSy10a-E3Dv6full.h:22
 msgid "Prusa i3 MK3S"
 msgstr ""
 
-<<<<<<< HEAD
-# 
-#: 
-msgid "Prusa i3 MK2"
-msgstr ""
-
 # MSG_CALIBRATE_BED_RESET
-#: ultralcd.cpp:5547
-=======
-# MSG_CALIBRATE_BED_RESET
-#: ultralcd.cpp:5688
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5712
 msgid "Reset XYZ calibr."
 msgstr "XYZ Kalibr. zuruecksetzen."
 
 # MSG_BED_CORRECTION_RESET
-<<<<<<< HEAD
-#: ultralcd.cpp:3356
-=======
-#: ultralcd.cpp:3222
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3246
 msgid "Reset"
 msgstr "Ruecksetzen"
 
 # MSG_RESUME_PRINT
-<<<<<<< HEAD
-#: ultralcd.cpp:6451
-=======
-#: ultralcd.cpp:6656
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6680
 msgid "Resume print"
 msgstr "Druck fortsetzen"
 
 # MSG_RESUMING_PRINT c=20 r=1
-<<<<<<< HEAD
-#: messages.c:70
-=======
 #: messages.c:73
->>>>>>> Prusa/MK3_3.8.0
 msgid "Resuming print"
 msgstr "Druck fortgesetzt"
 
 # MSG_BED_CORRECTION_RIGHT c=14 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:3353
-=======
-#: ultralcd.cpp:3219
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3243
 msgid "Right side[um]"
 msgstr "Rechts    [um]"
 
 # MSG_SECOND_SERIAL_ON c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5465
-=======
-#: ultralcd.cpp:5606
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5630
 msgid "RPi port     [on]"
 msgstr "RPi Port     [an]"
 
 # MSG_SECOND_SERIAL_OFF c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5463
-=======
-#: ultralcd.cpp:5604
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5628
 msgid "RPi port    [off]"
 msgstr "RPi Port    [aus]"
 
 # MSG_WIZARD_RERUN c=20 r=7
-<<<<<<< HEAD
-#: ultralcd.cpp:4859
-=======
-#: ultralcd.cpp:4726
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4750
 msgid "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 msgstr "Der Assistent wird die aktuellen Kalibrierungsdaten loeschen und von vorne beginnen. Weiterfahren?"
 
 # MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5351
-=======
-#: ultralcd.cpp:5236
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5260
 msgid "SD card  [normal]"
 msgstr "SD Karte [normal]"
 
 # MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5349
-=======
-#: ultralcd.cpp:5234
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5258
 msgid "SD card [flshAir]"
 msgstr "SD Karte[flshAir]"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3126
-=======
-#: ultralcd.cpp:2971
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2995
 msgid "Right"
 msgstr "Rechts"
 
@@ -2095,134 +1246,69 @@ msgid "Searching bed calibration point"
 msgstr "Suche Bett Kalibrierpunkt"
 
 # MSG_LANGUAGE_SELECT
-<<<<<<< HEAD
-#: ultralcd.cpp:5472
-=======
-#: ultralcd.cpp:5613
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5637
 msgid "Select language"
 msgstr "Waehle Sprache"
 
 # MSG_SELFTEST_OK
-<<<<<<< HEAD
-#: ultralcd.cpp:7100
-=======
-#: ultralcd.cpp:7366
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7390
 msgid "Self test OK"
 msgstr "Selbsttest OK"
 
 # MSG_SELFTEST_START c=20
-<<<<<<< HEAD
-#: ultralcd.cpp:6919
-=======
-#: ultralcd.cpp:7152
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7176
 msgid "Self test start  "
 msgstr "Selbsttest start "
 
 # MSG_SELFTEST
-<<<<<<< HEAD
-#: ultralcd.cpp:5523
-=======
-#: ultralcd.cpp:5664
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5688
 msgid "Selftest         "
 msgstr "Selbsttest       "
 
 # MSG_SELFTEST_ERROR
-<<<<<<< HEAD
-#: ultralcd.cpp:7528
-=======
-#: ultralcd.cpp:7793
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7818
 msgid "Selftest error !"
 msgstr "Selbsttest Fehler!"
 
 # MSG_SELFTEST_FAILED c=20
-<<<<<<< HEAD
-#: messages.c:74
-msgid "Selftest failed  "
-msgstr "Selbsttest misslang  "
-
-# MSG_FORCE_SELFTEST c=20 r=8
-#: Marlin_main.cpp:1549
-=======
 #: messages.c:77
 msgid "Selftest failed  "
-msgstr "Selbsttest misslang"
+msgstr "Selbsttest misslang "
 
 # MSG_FORCE_SELFTEST c=20 r=8
 #: Marlin_main.cpp:1551
->>>>>>> Prusa/MK3_3.8.0
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
 msgstr "Selbsttest im Gang, um die genaue Rueck- kehr zum Nullpunkt ohne Sensor zu kalibrieren"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:5079
-=======
-#: ultralcd.cpp:4959
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4983
 msgid "Select nozzle preheat temperature which matches your material."
 msgstr "Bitte Vorheiztemperatur auswaehlen, die Ihrem Material entspricht."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:4828
-=======
-#: ultralcd.cpp:4695
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4719
 msgid "Select PLA filament:"
 msgstr "PLA Filament auswaehlen:"
 
 # MSG_SET_TEMPERATURE c=19 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:3364
-=======
-#: ultralcd.cpp:3230
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3254
 msgid "Set temperature:"
 msgstr "Temp. einstellen:"
 
 # MSG_SETTINGS
-<<<<<<< HEAD
-#: messages.c:82
-=======
 #: messages.c:86
->>>>>>> Prusa/MK3_3.8.0
 msgid "Settings"
 msgstr "Einstellungen"
 
 # MSG_SHOW_END_STOPS c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5544
-=======
-#: ultralcd.cpp:5685
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5709
 msgid "Show end stops"
 msgstr "Endschalter Status"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:4067
+#: ultralcd.cpp:3965
 msgid "Sensor state"
 msgstr "Sensorstatus"
-
-# 
-#: 
-msgid "Sensors info"
-msgstr "Sensoren Info"
-
-# 
-#: 
-msgid "Show pinda state"
-msgstr "Pinda-Status anzeigen"
-=======
-#: ultralcd.cpp:3941
-msgid "Sensor state"
-msgstr "Sensorstatus"
->>>>>>> Prusa/MK3_3.8.0
 
 # MSG_FILE_CNT c=20 r=4
 #: cardreader.cpp:739
@@ -2230,44 +1316,24 @@ msgid "Some files will not be sorted. Max. No. of files in 1 folder for sorting 
 msgstr "Einige Dateien wur- den nicht sortiert. Max. Dateien pro Verzeichnis = 100."
 
 # MSG_SORT_NONE c=17 r=1
-<<<<<<< HEAD
-#: 
-msgid "Sort:      [none]"
-msgstr "Sort.:    [Keine]"
-
-# MSG_SORT_TIME c=17 r=1
-#: 
-msgid "Sort:      [time]"
-msgstr "Sort.:     [Zeit]"
-
-# 
-#: ultralcd.cpp:3153
-=======
-#: ultralcd.cpp:5246
+#: ultralcd.cpp:5270
 msgid "Sort       [none]"
-msgstr "Sort.     [Keine]"
+msgstr "Sort.      [ohne]"
 
 # MSG_SORT_TIME c=17 r=1
-#: ultralcd.cpp:5244
+#: ultralcd.cpp:5268
 msgid "Sort       [time]"
 msgstr "Sort.      [Zeit]"
 
 # 
-#: ultralcd.cpp:3008
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3032
 msgid "Severe skew"
 msgstr "Sehr schraeg"
 
 # MSG_SORT_ALPHA c=17 r=1
-<<<<<<< HEAD
-#: 
-msgid "Sort:  [alphabet]"
-msgstr "Sort.: [Alphabet]"
-=======
-#: ultralcd.cpp:5245
+#: ultralcd.cpp:5269
 msgid "Sort   [alphabet]"
 msgstr "Sort.  [Alphabet]"
->>>>>>> Prusa/MK3_3.8.0
 
 # MSG_SORTING c=20 r=1
 #: cardreader.cpp:746
@@ -2280,11 +1346,7 @@ msgid "Sound      [loud]"
 msgstr "Sound      [laut]"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3153
-=======
-#: ultralcd.cpp:3007
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3031
 msgid "Slight skew"
 msgstr "Etwas schraeg"
 
@@ -2294,11 +1356,7 @@ msgid "Sound      [mute]"
 msgstr "Sound     [stumm]"
 
 # 
-<<<<<<< HEAD
-#: Marlin_main.cpp:4592
-=======
 #: Marlin_main.cpp:4870
->>>>>>> Prusa/MK3_3.8.0
 msgid "Some problem encountered, Z-leveling enforced ..."
 msgstr "Fehler aufgetreten, Z-Kalibrierung erforderlich..."
 
@@ -2313,146 +1371,82 @@ msgid "Sound    [silent]"
 msgstr "Sound     [leise]"
 
 # MSG_SPEED
-<<<<<<< HEAD
-#: ultralcd.cpp:6622
-=======
-#: ultralcd.cpp:6840
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6864
 msgid "Speed"
 msgstr "Geschwindigkeit"
 
 # MSG_SELFTEST_FAN_YES c=19
-<<<<<<< HEAD
-#: messages.c:77
-=======
 #: messages.c:80
->>>>>>> Prusa/MK3_3.8.0
 msgid "Spinning"
 msgstr "Dreht sich"
 
 # MSG_TEMP_CAL_WARNING c=20 r=4
-<<<<<<< HEAD
-#: Marlin_main.cpp:4087
-=======
 #: Marlin_main.cpp:4367
->>>>>>> Prusa/MK3_3.8.0
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
 msgstr "Stabile Umgebungs- temperatur 21-26C und feste Stand- flaeche erforderlich"
 
 # MSG_STATISTICS
-<<<<<<< HEAD
-#: ultralcd.cpp:6531
-=======
-#: ultralcd.cpp:6753
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6777
 msgid "Statistics  "
 msgstr "Statistiken "
 
 # MSG_STOP_PRINT
-<<<<<<< HEAD
-#: messages.c:88
-=======
 #: messages.c:93
->>>>>>> Prusa/MK3_3.8.0
 msgid "Stop print"
 msgstr "Druck abbrechen"
 
 # MSG_STOPPED
-<<<<<<< HEAD
-#: messages.c:89
-=======
 #: messages.c:94
->>>>>>> Prusa/MK3_3.8.0
 msgid "STOPPED. "
 msgstr "GESTOPPT."
 
 # MSG_SUPPORT
-<<<<<<< HEAD
-#: ultralcd.cpp:6540
-=======
-#: ultralcd.cpp:6762
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6786
 msgid "Support"
 msgstr ""
 
 # MSG_SELFTEST_SWAPPED
-<<<<<<< HEAD
-#: ultralcd.cpp:7608
-=======
-#: ultralcd.cpp:7873
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:7898
 msgid "Swapped"
 msgstr "Ausgetauscht"
 
 # MSG_TEMP_CALIBRATION c=20 r=1
-<<<<<<< HEAD
-#: messages.c:90
-=======
 #: messages.c:95
->>>>>>> Prusa/MK3_3.8.0
 msgid "Temp. cal.          "
 msgstr "Temp Kalib.         "
 
 # MSG_TEMP_CALIBRATION_ON c=20 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5459
-=======
-#: ultralcd.cpp:5600
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5624
 msgid "Temp. cal.   [on]"
-msgstr "Temp. Kal.   [AN]"
+msgstr "Temp. Kal.   [an]"
 
 # MSG_TEMP_CALIBRATION_OFF c=20 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5457
-=======
-#: ultralcd.cpp:5598
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5622
 msgid "Temp. cal.  [off]"
-msgstr "Temp. Kal.  [AUS]"
+msgstr "Temp. Kal.  [aus]"
 
 # MSG_CALIBRATION_PINDA_MENU c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5553
-=======
-#: ultralcd.cpp:5694
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5718
 msgid "Temp. calibration"
 msgstr "Temp. kalibrieren"
 
 # MSG_TEMP_CAL_FAILED c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:3993
-=======
-#: ultralcd.cpp:3867
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3891
 msgid "Temperature calibration failed"
 msgstr "Temperaturkalibrierung fehlgeschlagen"
 
 # MSG_TEMP_CALIBRATION_DONE c=20 r=12
-<<<<<<< HEAD
-#: messages.c:91
-=======
 #: messages.c:96
->>>>>>> Prusa/MK3_3.8.0
 msgid "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 msgstr "Temp.kalibrierung ist fertig + aktiv. Temp.kalibrierung kann ausgeschaltet werden im Menu Einstellungen -> Temp.kal."
 
 # MSG_TEMPERATURE
-<<<<<<< HEAD
-#: ultralcd.cpp:5430
-=======
-#: ultralcd.cpp:5564
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5588
 msgid "Temperature"
 msgstr "Temperatur"
 
 # MSG_MENU_TEMPERATURES c=15 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:2306
-=======
-#: ultralcd.cpp:2140
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2164
 msgid "Temperatures"
 msgstr "Temperaturen"
 
@@ -2462,224 +1456,122 @@ msgid "There is still a need to make Z calibration. Please follow the manual, ch
 msgstr "Es ist noch notwendig die Z-Kalibrierung auszufuehren. Bitte befolgen Sie das Handbuch, Kapitel Erste Schritte, Abschnitt Kalibrierablauf."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3016
-=======
-#: ultralcd.cpp:2863
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2887
 msgid "Total filament"
 msgstr "Gesamtes Filament"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3018
-=======
-#: ultralcd.cpp:2863
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2887
 msgid "Total print time"
 msgstr "Gesamte Druckzeit"
 
 # MSG_TUNE
-<<<<<<< HEAD
-#: ultralcd.cpp:6433
-=======
-#: ultralcd.cpp:6633
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:6657
 msgid "Tune"
 msgstr "Feineinstellung"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:4916
-=======
-#: ultralcd.cpp:4783
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4807
 msgid "Unload"
 msgstr "Entladen"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:6035
-msgid "Unload all"
-msgstr "Alles entladen"
-
-# 
-#: ultralcd.cpp:2003
+#: ultralcd.cpp:1857
 msgid "Total failures"
 msgstr "Fehler Total"
 
 # 
-#: ultralcd.cpp:2370
-=======
-#: ultralcd.cpp:1857
-msgid "Total failures"
-msgstr "Gesamte Fehler"
-
-# 
-#: ultralcd.cpp:2213
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2237
 msgid "to load filament"
 msgstr "zum Filament laden"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2374
-=======
-#: ultralcd.cpp:2217
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2241
 msgid "to unload filament"
 msgstr "zum Filament entladen"
 
 # MSG_UNLOAD_FILAMENT c=17
-<<<<<<< HEAD
-#: messages.c:92
-=======
 #: messages.c:97
->>>>>>> Prusa/MK3_3.8.0
 msgid "Unload filament"
 msgstr "Filament entladen"
 
 # MSG_UNLOADING_FILAMENT c=20 r=1
-<<<<<<< HEAD
-#: messages.c:93
-=======
 #: messages.c:98
->>>>>>> Prusa/MK3_3.8.0
 msgid "Unloading filament"
 msgstr "Filament auswerfen"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:1970
-=======
 #: ultralcd.cpp:1824
->>>>>>> Prusa/MK3_3.8.0
 msgid "Total"
 msgstr "Gesamt"
 
 # MSG_USED c=19 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5678
-=======
-#: ultralcd.cpp:5822
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5846
 msgid "Used during print"
 msgstr "Beim Druck benutzt"
 
 # MSG_MENU_VOLTAGES c=15 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:2309
-=======
-#: ultralcd.cpp:2143
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2167
 msgid "Voltages"
 msgstr "Spannungen"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:2282
-=======
-#: ultralcd.cpp:2116
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2140
 msgid "unknown"
 msgstr "unbekannt"
 
 # MSG_USERWAIT
-<<<<<<< HEAD
-#: Marlin_main.cpp:4949
-=======
 #: Marlin_main.cpp:5262
->>>>>>> Prusa/MK3_3.8.0
 msgid "Wait for user..."
 msgstr "Warte auf Benutzer.."
 
 # MSG_WAITING_TEMP c=20 r=3
-<<<<<<< HEAD
-#: ultralcd.cpp:3508
-=======
-#: ultralcd.cpp:3374
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3398
 msgid "Waiting for nozzle and bed cooling"
 msgstr "Warten bis Heizung und Bett abgekuehlt sind"
 
 # MSG_WAITING_TEMP_PINDA c=20 r=3
-<<<<<<< HEAD
-#: ultralcd.cpp:3472
-=======
-#: ultralcd.cpp:3338
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3362
 msgid "Waiting for PINDA probe cooling"
 msgstr "Warten, bis PINDA- Sonde abgekuehlt ist"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:4915
-=======
-#: ultralcd.cpp:4782
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:4806
 msgid "Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
 msgstr "Entladen Sie das Filament 1, wenn er aus dem hinteren MMU-Rohr herausragt. Verwenden Sie den Auswurf, wenn er im Rohr versteckt ist."
 
 # MSG_CHANGED_BOTH c=20 r=4
-<<<<<<< HEAD
-#: Marlin_main.cpp:1509
-=======
 #: Marlin_main.cpp:1511
->>>>>>> Prusa/MK3_3.8.0
 msgid "Warning: both printer type and motherboard type changed."
 msgstr "Warnung: Druckertyp und Platinentyp wurden beide geaendert."
 
 # MSG_CHANGED_MOTHERBOARD c=20 r=4
-<<<<<<< HEAD
-#: Marlin_main.cpp:1501
-=======
 #: Marlin_main.cpp:1503
->>>>>>> Prusa/MK3_3.8.0
 msgid "Warning: motherboard type changed."
 msgstr "Warnung: Platinentyp wurde geaendert."
 
 # MSG_CHANGED_PRINTER c=20 r=4
-<<<<<<< HEAD
-#: Marlin_main.cpp:1505
-=======
 #: Marlin_main.cpp:1507
->>>>>>> Prusa/MK3_3.8.0
 msgid "Warning: printer type changed."
 msgstr "Warnung: Druckertyp wurde geaendert."
 
 # MSG_UNLOAD_SUCCESSFUL c=20 r=2
-<<<<<<< HEAD
-#: Marlin_main.cpp:3031
-=======
 #: Marlin_main.cpp:3053
->>>>>>> Prusa/MK3_3.8.0
 msgid "Was filament unload successful?"
 msgstr "Konnten Sie das Filament entnehmen?"
 
 # MSG_SELFTEST_WIRINGERROR
-<<<<<<< HEAD
-#: messages.c:81
-=======
 #: messages.c:85
->>>>>>> Prusa/MK3_3.8.0
 msgid "Wiring error"
 msgstr "Verdrahtungsfehler"
 
 # MSG_WIZARD c=17 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:5520
-=======
-#: ultralcd.cpp:5661
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:5685
 msgid "Wizard"
 msgstr "Assistent"
 
 # MSG_XYZ_DETAILS c=19 r=1
-<<<<<<< HEAD
-#: ultralcd.cpp:2298
-=======
-#: ultralcd.cpp:2132
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2156
 msgid "XYZ cal. details"
 msgstr "XYZ Kal. Details"
 
@@ -2689,180 +1581,79 @@ msgid "XYZ calibration failed. Please consult the manual."
 msgstr "XYZ-Kalibrierung fehlgeschlagen. Bitte schauen Sie in das Handbuch."
 
 # MSG_YES
-<<<<<<< HEAD
-#: messages.c:99
-=======
 #: messages.c:104
->>>>>>> Prusa/MK3_3.8.0
 msgid "Yes"
 msgstr "Ja"
 
 # MSG_WIZARD_QUIT c=20 r=8
-<<<<<<< HEAD
-#: messages.c:98
-=======
 #: messages.c:103
->>>>>>> Prusa/MK3_3.8.0
 msgid "You can always resume the Wizard from Calibration -> Wizard."
 msgstr "Sie koennen den Assistenten immer im Menu neu starten: Kalibrierung -> Assistent"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:3964
-=======
-#: ultralcd.cpp:3838
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3862
 msgid "XYZ calibration all right. Skew will be corrected automatically."
 msgstr "XYZ Kalibrierung in Ordnung. Schraeglauf wird automatisch korrigiert."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:3961
-=======
-#: ultralcd.cpp:3835
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3859
 msgid "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 msgstr "XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schraeg."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:5161
-msgid "X-correct"
-msgstr "X-Korrektur"
-
-# MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
-#: ultralcd.cpp:3958
-=======
-#: ultralcd.cpp:5044
+#: ultralcd.cpp:5068
 msgid "X-correct:"
 msgstr "X-Korrektur:"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
-#: ultralcd.cpp:3832
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3856
 msgid "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
 msgstr "XYZ-Kalibrierung ok. X/Y-Achsen sind senkrecht zueinander Glueckwunsch!"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:3942
-=======
-#: ultralcd.cpp:3816
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3840
 msgid "XYZ calibration compromised. Front calibration points not reachable."
 msgstr "XYZ-Kalibrierung beeintraechtigt. Vordere Kalibrierpunkte nicht erreichbar."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
-<<<<<<< HEAD
-#: ultralcd.cpp:3945
-msgid "XYZ calibration compromised. Right front calibration point not reachable."
-msgstr "XYZ-Kalibrierung beeintraechtigt. Rechter vorderer Kalibrierpunkt nicht erreichbar."
-
-# MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
-#: ultralcd.cpp:3948
-msgid "XYZ calibration compromised. Left front calibration point not reachable."
-msgstr "XYZ-Kalibrierung beeintraechtigt. Linker vorderer Kalibrierpunkt nicht erreichbar."
-
-# MSG_LOAD_ALL c=17
-#: ultralcd.cpp:5919
-msgid "Load all"
-msgstr "Alle laden"
-
-# MSG_LOAD_FILAMENT_1 c=17
-#: ultralcd.cpp:5920
-msgid "Load filament 1"
-msgstr "Filament 1 laden"
-
-# 
-#: ultralcd.cpp:3924
-=======
-#: ultralcd.cpp:3819
+#: ultralcd.cpp:3843
 msgid "XYZ calibration compromised. Right front calibration point not reachable."
 msgstr "XYZ-Kalibrierung beeintraechtigt. Rechter vorderer Kalibrierpunkt nicht erreichbar."
 
 # MSG_LOAD_ALL c=17
-#: ultralcd.cpp:6080
+#: ultralcd.cpp:6104
 msgid "Load all"
 msgstr "Alle laden"
 
 # 
-#: ultralcd.cpp:3798
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3822
 msgid "XYZ calibration failed. Bed calibration point was not found."
 msgstr "XYZ-Kalibrierung fehlgeschlagen. Bett-Kalibrierpunkt nicht gefunden."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3930
-=======
-#: ultralcd.cpp:3804
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:3828
 msgid "XYZ calibration failed. Front calibration points not reachable."
 msgstr "XYZ-Kalibrierung fehlgeschlagen. Vordere Kalibrierpunkte nicht erreichbar."
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:3936
-msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr "XYZ-Kalibrierung fehlgeschlagen. Linker vorderer Kalibrierpunkt nicht erreichbar."
-
-# MSG_LOAD_FILAMENT_2 c=17
-#: ultralcd.cpp:5921
-msgid "Load filament 2"
-msgstr "Filament 2 laden"
-
-# 
-#: ultralcd.cpp:3933
+#: ultralcd.cpp:3831
 msgid "XYZ calibration failed. Right front calibration point not reachable."
 msgstr "XYZ-Kalibrierung fehlgeschlagen. Rechter vorderer Kalibrierpunkt ist nicht erreichbar."
 
-# MSG_LOAD_FILAMENT_3 c=17
-#: ultralcd.cpp:5922
-msgid "Load filament 3"
-msgstr "Filament 3 laden"
-
 # 
-#: ultralcd.cpp:3123
-=======
-#: ultralcd.cpp:3807
-msgid "XYZ calibration failed. Right front calibration point not reachable."
-msgstr "XYZ-Kalibrierung fehlgeschlagen. Rechter vorderer Kalibrierpunkt ist nicht erreichbar."
-
-"XYZ calibration failed. Right front calibration point not reachable."
-#: 
-msgid "XYZ-Kalibrierung fehlgeschlagen. Rechter vorderer Kalibrierpunkt ist nicht erreichbar."
-msgstr 
-
-# 
-#: ultralcd.cpp:2968
->>>>>>> Prusa/MK3_3.8.0
+#: ultralcd.cpp:2992
 msgid "Y distance from min"
 msgstr "Y Entfernung vom Min"
 
 # 
-<<<<<<< HEAD
-#: ultralcd.cpp:5162
-msgid "Y-correct"
-msgstr "Y-Korrektur"
-
-# MSG_LOAD_FILAMENT_4 c=17
-#: ultralcd.cpp:5923
-msgid "Load filament 4"
-msgstr "Filament 4 laden"
-
-# MSG_LOAD_FILAMENT_5 c=17
-#: ultralcd.cpp:5926
-msgid "Load filament 5"
-msgstr "Filament 5 laden"
-=======
-#: ultralcd.cpp:5045
+#: ultralcd.cpp:5069
 msgid "Y-correct:"
 msgstr "Y-Korrektur:"
 
 # MSG_OFF
 #: menu.cpp:426
 msgid " [off]"
-msgstr ""
+msgstr " [aus]"
 
 # 
 #: messages.c:57
@@ -2870,32 +1661,32 @@ msgid "Back"
 msgstr "Zurueck"
 
 # 
-#: ultralcd.cpp:5553
+#: ultralcd.cpp:5577
 msgid "Checks"
 msgstr ""
 
 # 
-#: ultralcd.cpp:7887
+#: ultralcd.cpp:7912
 msgid "False triggering"
 msgstr "Falschtriggerung"
 
 # 
-#: ultralcd.cpp:3946
+#: ultralcd.cpp:3970
 msgid "FINDA:"
 msgstr ""
 
 # 
-#: ultralcd.cpp:5459
+#: ultralcd.cpp:5483
 msgid "Firmware   [none]"
 msgstr "Firmware   [ohne]"
 
 # 
-#: ultralcd.cpp:5465
+#: ultralcd.cpp:5489
 msgid "Firmware [strict]"
 msgstr "Firmware [streng]"
 
 # 
-#: ultralcd.cpp:5462
+#: ultralcd.cpp:5486
 msgid "Firmware   [warn]"
 msgstr ""
 
@@ -2905,147 +1696,152 @@ msgid "HW Setup"
 msgstr "HW Einstellungen"
 
 # 
-#: ultralcd.cpp:3950
+#: ultralcd.cpp:3974
 msgid "IR:"
 msgstr ""
 
 # 
-#: ultralcd.cpp:6960
+#: ultralcd.cpp:6984
 msgid "Magnets comp.[N/A]"
 msgstr "Magnet Komp.  [nv]"
 
 # 
-#: ultralcd.cpp:6958
+#: ultralcd.cpp:6982
 msgid "Magnets comp.[Off]"
 msgstr "Magnet Komp. [Aus]"
 
 # 
-#: ultralcd.cpp:6957
+#: ultralcd.cpp:6981
 msgid "Magnets comp. [On]"
 msgstr "Magnet Komp.  [An]"
 
 # 
-#: ultralcd.cpp:6949
+#: ultralcd.cpp:6973
 msgid "Mesh         [3x3]"
 msgstr ""
 
 # 
-#: ultralcd.cpp:6950
+#: ultralcd.cpp:6974
 msgid "Mesh         [7x7]"
 msgstr ""
 
 # 
-#: ultralcd.cpp:5591
+#: ultralcd.cpp:5615
 msgid "Mesh bed leveling"
 msgstr "Mesh Bett Ausgleich"
 
 # 
 #: Marlin_main.cpp:856
 msgid "MK3S firmware detected on MK3 printer"
-msgstr ""
+msgstr "MK3S-Firmware auf MK3-Drucker erkannt"
 
 # 
-#: ultralcd.cpp:5220
+#: ultralcd.cpp:5244
 msgid "MMU Mode [Normal]"
 msgstr "MMU Modus[Normal]"
 
 # 
-#: ultralcd.cpp:5221
+#: ultralcd.cpp:5245
 msgid "MMU Mode[Stealth]"
 msgstr "MMU Mod.[Stealth]"
 
 # 
-#: ultralcd.cpp:4427
+#: ultralcd.cpp:4451
 msgid "Mode change in progress ..."
 msgstr "Moduswechsel erfolgt..."
 
 # 
-#: ultralcd.cpp:5420
+#: ultralcd.cpp:5444
 msgid "Model      [none]"
 msgstr "Modell     [ohne]"
 
 # 
-#: ultralcd.cpp:5426
+#: ultralcd.cpp:5450
 msgid "Model    [strict]"
 msgstr "Modell   [streng]"
 
 # 
-#: ultralcd.cpp:5423
+#: ultralcd.cpp:5447
 msgid "Model      [warn]"
 msgstr "Modell     [warn]"
 
 # 
-#: ultralcd.cpp:5381
+#: ultralcd.cpp:5405
 msgid "Nozzle d.  [0.25]"
 msgstr "Duese D.   [0.25]"
 
 # 
-#: ultralcd.cpp:5384
+#: ultralcd.cpp:5408
 msgid "Nozzle d.  [0.40]"
 msgstr "Duese D.   [0.40]"
 
 # 
-#: ultralcd.cpp:5387
+#: ultralcd.cpp:6977
+msgid "Z-probe nr.    [5]"
+msgstr "Z-Probe Nr.    [5]"
+
+# 
+#: ultralcd.cpp:5411
 msgid "Nozzle d.  [0.60]"
 msgstr "Duese D.   [0.60]"
 
 # 
-#: ultralcd.cpp:5335
+#: ultralcd.cpp:5359
 msgid "Nozzle     [none]"
 msgstr "Duese      [ohne]"
 
 # 
-#: ultralcd.cpp:5341
+#: ultralcd.cpp:5365
 msgid "Nozzle   [strict]"
 msgstr "Duese    [streng]"
 
 # 
-#: ultralcd.cpp:5338
+#: ultralcd.cpp:5362
 msgid "Nozzle     [warn]"
 msgstr "Duese      [warn]"
 
 # 
 #: util.cpp:510
 msgid "G-code sliced for a different level. Continue?"
-msgstr ""
+msgstr "G-Code ist fuer einen anderen Level geslict. Fortfahren?"
 
 # 
 #: util.cpp:516
 msgid "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
-msgstr ""
+msgstr "G-Code ist fuer einen anderen Level geslict. Bitte slicen Sie das Modell erneut. Druck abgebrochen."
 
 # 
 #: util.cpp:427
 msgid "G-code sliced for a different printer type. Continue?"
-msgstr ""
+msgstr "G-Code ist fuer einen anderen Drucker geslict. Fortfahren?"
 
 # 
 #: util.cpp:433
 msgid "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
-msgstr ""
+msgstr "G-Code ist fuer einen anderen Drucker geslict. Bitte slicen Sie das Modell erneut. Druck abgebrochen."
 
 # 
 #: util.cpp:477
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr ""
+msgstr "G-Code ist fuer eine neuere Firmware geslict. Fortfahren?"
 
 # 
 #: util.cpp:483
 msgid "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
-msgstr ""
+msgstr "G-Code ist fuer eine neuere Firmware geslict. Bitte die Firmware updaten. Druck abgebrochen."
 
 # 
-#: ultralcd.cpp:3942
+#: ultralcd.cpp:3966
 msgid "PINDA:"
 msgstr ""
 
 # 
-#: ultralcd.cpp:2286
+#: ultralcd.cpp:2310
 msgid "Preheating to cut"
 msgstr "Heizen zum Schnitt"
 
 # 
-#: ultralcd.cpp:2283
+#: ultralcd.cpp:2307
 msgid "Preheating to eject"
 msgstr "Heizen zum Auswurf"
 
@@ -3060,17 +1856,17 @@ msgid "Printer nozzle diameter differs from the G-code. Please check the value i
 msgstr "Der Durchmesser der Druckerduese weicht vom G-Code ab. Bitte ueberpruefen Sie den Wert in den Einstellungen. Druck abgebrochen."
 
 # 
-#: ultralcd.cpp:6597
+#: ultralcd.cpp:6621
 msgid "Rename"
 msgstr "Umbenennen"
 
 # 
-#: ultralcd.cpp:6593
+#: ultralcd.cpp:6617
 msgid "Select"
 msgstr "Auswahl"
 
 # 
-#: ultralcd.cpp:2134
+#: ultralcd.cpp:2158
 msgid "Sensor info"
 msgstr "Sensor Info"
 
@@ -3080,23 +1876,22 @@ msgid "Sheet"
 msgstr "Blech"
 
 # 
-#: 
-msgid "Sound     [assist]"
-msgstr ""
+#: sound.h:9
+msgid "Sound    [assist]"
+msgstr "Sound    [Assist]"
 
 # 
-#: ultralcd.cpp:5551
+#: ultralcd.cpp:5575
 msgid "Steel sheets"
-msgstr ""
+msgstr "Stahlbleche"
 
 # 
-#: ultralcd.cpp:5046
+#: ultralcd.cpp:5070
 msgid "Z-correct:"
 msgstr "Z-Korrektur:"
 
 # 
-#: ultralcd.cpp:6952
+#: ultralcd.cpp:6976
 msgid "Z-probe nr.    [1]"
 msgstr "Z-Probe Nr.    [1]"
->>>>>>> Prusa/MK3_3.8.0
 

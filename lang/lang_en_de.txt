@@ -48,7 +48,7 @@
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "SpoolJoin    [on]"
-"SpoolJoin    [an]"
+"SpoolJoin    [An]"
 
 #
 "SpoolJoin   [N/A]"
@@ -56,7 +56,7 @@
 
 #MSG_AUTO_DEPLETE_OFF c=17 r=1
 "SpoolJoin   [off]"
-"SpoolJoin   [aus]"
+"SpoolJoin   [Aus]"
 
 #MSG_AUTO_HOME
 "Auto home"
@@ -172,7 +172,7 @@
 
 #MSG_CRASHDETECT_ON
 "Crash det.   [on]"
-"Crash Erk.   [an]"
+"Crash Erk.   [An]"
 
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
@@ -180,7 +180,7 @@
 
 #MSG_CRASHDETECT_OFF
 "Crash det.  [off]"
-"Crash Erk.  [aus]"
+"Crash Erk.  [Aus]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -272,7 +272,7 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"F.Autoladen  [an]"
+"F.Autoladen  [An]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
@@ -280,7 +280,7 @@
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
-"F. Autoload [aus]"
+"F. Autoload [Aus]"
 
 #
 "Fail stats"
@@ -296,15 +296,15 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Luefter Ktr. [an]"
+"Luefter Ktr. [An]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Luefter Ktr.[aus]"
+"Luefter Ktr.[Aus]"
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
-"Fil. Sensor  [an]"
+"Fil. Sensor  [An]"
 
 #MSG_FSENSOR_NA
 "Fil. sensor [N/A]"
@@ -312,7 +312,7 @@
 
 #MSG_FSENSOR_OFF
 "Fil. sensor [off]"
-"Fil. Sensor [aus]"
+"Fil. Sensor [Aus]"
 
 #
 "Filam. runouts"
@@ -592,7 +592,7 @@
 
 #MSG_SILENT_MODE_ON
 "Mode     [silent]"
-"Modus     [leise]"
+"Modus     [Leise]"
 
 #
 "MMU needs user attention."
@@ -956,11 +956,11 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"RPi Port     [an]"
+"RPi Port     [An]"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"RPi Port    [aus]"
+"RPi Port    [Aus]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -968,7 +968,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 "SD card  [normal]"
-"SD Karte [normal]"
+"SD Karte [Normal]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
@@ -1040,7 +1040,7 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort       [none]"
-"Sort.      [ohne]"
+"Sort.     [Keine]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
@@ -1060,7 +1060,7 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Sound      [laut]"
+"Sound      [Laut]"
 
 #
 "Slight skew"
@@ -1068,7 +1068,7 @@
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Sound     [stumm]"
+"Sound     [Stumm]"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -1076,7 +1076,7 @@
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Sound    [einmal]"
+"Sound    [Einmal]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
@@ -1120,11 +1120,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Temp. Kal.   [an]"
+"Temp. Kal.   [An]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Temp. Kal.  [aus]"
+"Temp. Kal.  [Aus]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1308,7 +1308,7 @@
 
 #MSG_OFF
 " [off]"
-" [aus]"
+" [Aus]"
 
 #
 "Back"
@@ -1328,11 +1328,11 @@
 
 #
 "Firmware   [none]"
-"Firmware   [ohne]"
+"Firmware   [Ohne]"
 
 #
 "Firmware [strict]"
-"Firmware [streng]"
+"Firmware [Streng]"
 
 #
 "Firmware   [warn]"
@@ -1407,20 +1407,24 @@
 "Duese D.   [0.40]"
 
 #
+"Z-probe nr.    [5]"
+"Z-Probe Nr.    [5]"
+
+#
 "Nozzle d.  [0.60]"
 "Duese D.   [0.60]"
 
 #
 "Nozzle     [none]"
-"Duese      [ohne]"
+"Duese      [Ohne]"
 
 #
 "Nozzle   [strict]"
-"Duese    [streng]"
+"Duese    [Streng]"
 
 #
 "Nozzle     [warn]"
-"Duese      [warn]"
+"Duese      [Warn]"
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1483,8 +1487,8 @@
 "Blech"
 
 #
-"Sound     [assist]"
-"Sound     [Assist]"
+"Sound    [assist]"
+"Sound    [Assist]"
 
 #
 "Steel sheets"

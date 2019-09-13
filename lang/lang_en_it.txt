@@ -1407,6 +1407,10 @@
 "Diam.Ugello[0.40]"
 
 #
+"Z-probe nr.    [5]"
+"Z-probe nr.    [5]"
+
+#
 "Nozzle d.  [0.60]"
 "Diam.Ugello[0.60]"
 
@@ -1483,8 +1487,8 @@
 "Piano"
 
 #
-"Sound     [assist]"
-"Suono  [assistito]"
+"Sound    [assist]"
+"Suono [assistito]"
 
 #
 "Steel sheets"
