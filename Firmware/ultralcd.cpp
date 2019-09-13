@@ -4782,11 +4782,14 @@ void lcd_wizard(WizState state)
 			break;
 		case S::RepeatLay1Cal: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Do you want to repeat last step to readjust distance between nozzle and heatbed?"), false);////MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
-			if (wizard_event) {
+			if (wizard_event)
+			{
 				lcd_show_fullscreen_message_and_wait_P(_i("Please clean heatbed and then press the knob."));////MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 				state = S::Lay1Cal;
 			}
-			else {
+			else
+			{
+			    lcd_show_fullscreen_message_and_wait_P(_i("If you have more steel sheets you can calibrate additional presets in Settings / HW Setup / Steel sheets."));
 				state = S::Finish;
 			}
 			break;
