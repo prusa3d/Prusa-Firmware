@@ -7228,8 +7228,10 @@ Sigma_Exit:
 		else {
 			break;
 		}
-
-		LCD_MESSAGERPGM(_T(MSG_PLEASE_WAIT));
+		CustomMsg custom_message_type_old = custom_message_type;
+		unsigned int custom_message_state_old = custom_message_state;
+		custom_message_type = CustomMsg::TempCompWait;
+		custom_message_state = set_target_pinda*10;
 
 		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
 		SERIAL_PROTOCOL(set_target_pinda);
@@ -7246,6 +7248,7 @@ Sigma_Exit:
 		while ( ((!is_pinda_cooling) && (!cancel_heatup) && (current_temperature_pinda < set_target_pinda)) || (is_pinda_cooling && (current_temperature_pinda > set_target_pinda)) ) {
 			if ((_millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
 			{
+				custom_message_state = (int)(current_temperature_pinda*10);
 				SERIAL_PROTOCOLPGM("P:");
 				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
 				SERIAL_PROTOCOLPGM("/");
@@ -7257,8 +7260,9 @@ Sigma_Exit:
 			manage_inactivity();
 			lcd_update(0);
 		}
-		LCD_MESSAGERPGM(MSG_OK);
-
+		// Restore LCD status state.
+		custom_message_state = custom_message_state_old;
+		custom_message_type = custom_message_type_old;
 		break;
 	}
  

@@ -112,7 +112,8 @@ enum class CustomMsg : uint_least8_t
 	FilamentLoading, //!< Loading filament in progress
 	PidCal,          //!< PID tuning in progress
 	TempCal,         //!< PINDA temperature calibration
-	TempCompPreheat, //!< Temperature compensation preheat
+	TempCompPreheat, //!< Temperature compensation preheat (seconds)
+	TempCompWait,    //!< Temp wait, M860
 };
 
 extern CustomMsg custom_message_type;

@@ -839,9 +839,15 @@ void lcdui_print_status_line(void)
 			}
 			break;
 		case CustomMsg::TempCompPreheat: // temp compensation preheat
+		case CustomMsg::TempCompWait: // M860
 			lcd_set_cursor(0, 3);
 			lcd_puts_P(_i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
-			if (custom_message_state <= PINDA_HEAT_T)
+			if (custom_message_type == CustomMsg::TempCompWait)
+			{
+				lcd_puts_P(PSTR(": "));// Print temp C
+				lcd_printf_P(PSTR("%2.1f"),((float)custom_message_state)/10);
+			}
+			else if (custom_message_state <= PINDA_HEAT_T)
 			{
 				lcd_puts_P(PSTR(": "));
 				lcd_print(custom_message_state); //seconds
