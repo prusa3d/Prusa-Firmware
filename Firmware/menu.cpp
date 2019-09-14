@@ -184,7 +184,7 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
     lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
 }
 
-static void menu_draw_toggle_puts_P(const char* str, char* toggle, const uint8_t settings)
+static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const uint8_t settings)
 {
     //settings:
     //xxxxxcba
