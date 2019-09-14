@@ -174,4 +174,21 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 ## Prepare language part
 
+To prepare the acutal language translation files we need create the `lang_en_yy.txt` file.
+1. Copy and `lang_en.txt` as `lang_en_yy.txt`
+2. run `../lang/lang-export.sh`
+3. copy `../lang/po/Firmware_yy.po` file to `../lang/po/new/yy.po`
+4. translate all messages using POEdit or other tools.
+5. use `lang/lang-import.sh yy` to generate `lang_en_yy.txt` from translated po files
+6. move `../lang/po/new/lang_en_yy.txt` to `../lang/lang_en_yy.txt`
+7. cleanup `../lang/po/new` folder by deleting
+   ```
+   yy_filtered.po
+   yy_new.po
+   noasci.txt
+   ```
+
+
+
+
 ##
