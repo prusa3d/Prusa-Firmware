@@ -141,11 +141,11 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
  
   Example:
   ```
-   if [ -e lang_nl.bin ]; then
-    echo -n " Dutch  : " >&2
-    ./update_lang.sh nl 2>./update_lang_nl.out 1>/dev/null
-   if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
-   fi
+  if [ -e lang_nl.bin ]; then
+   echo -n " Dutch  : " >&2
+   ./update_lang.sh nl 2>./update_lang_nl.out 1>/dev/null
+  if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
+  fi
   ```
   
   In section `#create binary file with all languages` add `if [ -e lang_yy.bin ]; then cat lang_yy.bin >> lang.bin; fi`
@@ -166,7 +166,9 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   
   Example:
   `rm_if_exists firmware_nl.hex`
+  
   and
+  
   `rm_if_exists update_lang_nl.out`
 
 
