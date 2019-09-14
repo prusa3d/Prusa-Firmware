@@ -155,7 +155,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 - `../lang/fw-clean.sh`
 
-  In section `echo "fw-clean.sh started" >&2` add `
+  In section `echo "fw-clean.sh started" >&2` add
   
   ```
   rm_if_exists firmware_yy.hex
