@@ -42,6 +42,7 @@ lang_code_hex_data()
   *es*) echo '\x73\x65' ;;
   *fr*) echo '\x72\x66' ;;
   *it*) echo '\x74\x69' ;;
+  *nl*) echo '\x6c\x6e' ;;
   *pl*) echo '\x6c\x70' ;;
  esac
  echo '??'
@@ -133,6 +134,7 @@ if [ "$1" = "all" ]; then
  generate_binary 'de'
  generate_binary 'es'
  generate_binary 'fr'
+ generate_binary 'nl'
  generate_binary 'it'
  generate_binary 'pl'
 else
