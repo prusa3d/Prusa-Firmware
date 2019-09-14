@@ -11,7 +11,7 @@ yy = placehodler for language in lower case
 AB = palceholder for hexadecial
 
 Files needs to be modified
-- In `../Firmware/language.h` 
+- `../Firmware/language.h` 
 
   In section `/** @name Language codes (ISO639-1)*/` add the new `#define LANG_CODE_YY 0xABAB //!<'yy'`following ISO639-1 convention for YY.
 https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
@@ -19,7 +19,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   Example:
   `#define LANG_CODE_NL 0x6e6c //!<'nl'` where the hex value `0x6e6c` is in ascii `nl`
 
-- In `../Firmware/language.c`
+- `../Firmware/language.c`
 
   In section `const char* lang_get_name_by_code(uint16_t code)` add `case LANG_CODE_NL: return _n("Language");`
 
@@ -27,14 +27,14 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
   `case LANG_CODE_NL: return _n("Nederlands");` Where `Language` is native spoken version, here `Nederlands` (Netherlands) or `Vlaams` (Belgium). This will be displayed on the LCD menu.
 
-- In `../lang/lang-add.sh`
+- `../lang/lang-add.sh`
 
   In section `cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do` add `insert_yy "$new_s" 'yy'`where yy 
   
   Example:
   `insert_yy "$new_s" 'nl'` with yy value `nl`for Dutch
 
-- In `../lang/lang-build.sh`
+- `../lang/lang-build.sh`
 
   In section `#returns hexadecial data for lang code` add a case `*yy*) echo '0xAB\0xAB'`
   
@@ -46,7 +46,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   Example:
   `generate_binary 'nl'`
   
-- In `../lang/lang-check.py`
+- `../lang/lang-check.py`
 
   Add in `help` the new language `yy`
   
@@ -61,7 +61,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   `clean_lang nl`
   
 
-- In `../lang/lang-export.sh`
+- `../lang/lang-export.sh`
 
   In section `# if 'all' is selected, script will generate all po files and also pot file` add `./lang-export.sh yy`
   
@@ -77,7 +77,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   
 
   
-- In `../lang/lang-import.sh`
+- `../lang/lang-import.sh`
 
   In section `#replace in languages translation` add new rule set for the language.
   As the LCD screen doesn't not support äöüßéè and other special characters, it makes sense to "normalize" these.
@@ -128,7 +128,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   ```
 
 
-- In `../lang/fw-build.sh`
+- `../lang/fw-build.sh`
 
   In section `#update _SEC_LANG in binary file if language is selected` add
   ```
@@ -153,7 +153,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   Example:
   `if [ -e lang_nl.bin ]; then cat lang_nl.bin >> lang.bin; fi`
 
-- In `../lang/fw-clean.sh`
+- `../lang/fw-clean.sh`
 
   In section `echo "fw-clean.sh started" >&2` add `
   
