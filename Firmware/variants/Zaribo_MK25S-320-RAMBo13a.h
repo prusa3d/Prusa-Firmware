@@ -35,6 +35,10 @@
 //#define E3D_PT100_BED_NO_AMP
 
 
+// Uncomment the below for the Slice Engineering high temperature sensor
+//#define SLICE_HT_EXTRUDER
+
+
 /*------------------------------------
  AXIS SETTINGS
  *------------------------------------*/
@@ -179,6 +183,8 @@
 
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
+#define HEATER_0_MAXTEMP 410
+#elif defined (SLICE_HT_EXTRUDER)
 #define HEATER_0_MAXTEMP 410
 #else
 #define HEATER_0_MAXTEMP 305
@@ -453,6 +459,8 @@
 #define TEMP_SENSOR_0 247
 #elif defined(E3D_PT100_EXTRUDER_NO_AMP)
 #define TEMP_SENSOR_0 148
+#elif defined(SLICE_HT_EXTRUDER)
+#define TEMP_SENSOR_0 800
 #else
 #define TEMP_SENSOR_0 5
 #endif
