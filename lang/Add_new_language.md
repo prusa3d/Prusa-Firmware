@@ -5,7 +5,9 @@ We will use Dutch as an example here.
 ## Prepare Prusa Firmware
 
 YY = palceholder for language in upper case
+
 yy = placehodler for language in lower case
+
 AB = palceholder for hexadecial
 
 Files needs to be modified
@@ -83,47 +85,47 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   Example:
   ```
   #replace in dutch translation according to https://nl.wikipedia.org/wiki/Accenttekens_in_de_Nederlandse_spelling
-if [ "$LNG" = "nl" ]; then
- #replace 'ë' with 'e'
- sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
- #replace 'ï' with 'i'
- sed -i 's/\xc3\xaf/i/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
- sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'è' with 'e' (left)
- sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace 'ö' with 'o' (left)
- sed -i 's/\xc3\xb6/o/g' $LNG'_filtered.po'
- #replace 'ê' with 'e' (left)
- sed -i 's/\xc3\xaa/e/g' $LNG'_filtered.po'
- #replace 'ü' with 'u' (left)
- sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
- #replace 'ç' with 'c' (left)
- sed -i 's/\xc3\xa7/c/g' $LNG'_filtered.po'
- #replace 'á' with 'a' (left)
- sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace 'à' with 'a' (left)
- sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace 'ä' with 'a' (left)
- sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
- #replace 'û' with 'u' (left)
- sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
- #replace 'î' with 'i' (left)
- sed -i 's/\xc3\xae/i/g' $LNG'_filtered.po'
- #replace 'í' with 'i' (left)
- sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
- #replace 'ô' with 'o' (left)
- sed -i 's/\xc3\xb4/o/g' $LNG'_filtered.po'
- #replace 'ú' with 'u' (left)
- sed -i 's/\xc3\xba/u/g' $LNG'_filtered.po'
- #replace 'ñ' with 'n' (left)
- sed -i 's/\xc3\xb1/n/g' $LNG'_filtered.po'
- #replace 'â' with 'a' (left)
- sed -i 's/\xc3\xa2/a/g' $LNG'_filtered.po'
- #replace 'Å' with 'A' (left)
- sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
-fi
-```
+  if [ "$LNG" = "nl" ]; then
+   #replace 'ë' with 'e'
+   sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
+   #replace 'ï' with 'i'
+   sed -i 's/\xc3\xaf/i/g' $LNG'_filtered.po'
+   #replace 'é' with 'e'
+   sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+   #replace 'è' with 'e' (left)
+   sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
+   #replace 'ö' with 'o' (left)
+   sed -i 's/\xc3\xb6/o/g' $LNG'_filtered.po'
+   #replace 'ê' with 'e' (left)
+   sed -i 's/\xc3\xaa/e/g' $LNG'_filtered.po'
+   #replace 'ü' with 'u' (left)
+   sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
+   #replace 'ç' with 'c' (left)
+   sed -i 's/\xc3\xa7/c/g' $LNG'_filtered.po'
+   #replace 'á' with 'a' (left)
+   sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
+   #replace 'à' with 'a' (left)
+   sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
+   #replace 'ä' with 'a' (left)
+   sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+   #replace 'û' with 'u' (left)
+   sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
+   #replace 'î' with 'i' (left)
+   sed -i 's/\xc3\xae/i/g' $LNG'_filtered.po'
+   #replace 'í' with 'i' (left)
+   sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
+   #replace 'ô' with 'o' (left)
+   sed -i 's/\xc3\xb4/o/g' $LNG'_filtered.po'
+   #replace 'ú' with 'u' (left)
+   sed -i 's/\xc3\xba/u/g' $LNG'_filtered.po'
+   #replace 'ñ' with 'n' (left)
+   sed -i 's/\xc3\xb1/n/g' $LNG'_filtered.po'
+   #replace 'â' with 'a' (left)
+   sed -i 's/\xc3\xa2/a/g' $LNG'_filtered.po'
+   #replace 'Å' with 'A' (left)
+   sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
+  fi
+  ```
 
 
 - In `../lang/fw-build.sh`
