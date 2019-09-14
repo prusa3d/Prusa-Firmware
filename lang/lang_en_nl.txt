@@ -996,7 +996,7 @@
 
 #MSG_SELFTEST_START c=20
 "Self test start  "
-"Zelftest strat   "
+"Zelftest start   "
 
 #MSG_SELFTEST
 "Selftest         "
@@ -1339,7 +1339,7 @@
 "Firmware [strikt]"
 
 #
-"Firmware [alarm.]"
+"Firmware   [warn]"
 "\x00"
 
 #
