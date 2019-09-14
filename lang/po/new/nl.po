@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: nl\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat Sep 7 09:48:11 CEST 2019\n"
-"PO-Revision-Date: Sat Sep 7 09:48:11 CEST 2019\n"
+"POT-Creation-Date: Sat Sep 14 09:52:11 CEST 2019\n"
+"PO-Revision-Date: Sat Sep 14 09:52:11 CEST 2019\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -33,7 +33,7 @@ msgstr "[0;0] punt offset"
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
 msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Crashdetectie kan\x0aalleen in normaal\x0astand aan staan"
+msgstr "Crashdetectie kan\x0aalleen in normaal\x0agebruikt worden"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
@@ -509,6 +509,11 @@ msgstr "Opwarmen klaar."
 #: messages.c:46
 msgid "Heating"
 msgstr "Opwarmen"
+
+# MSG_WIZARD_WELCOME c=20 r=7
+#: 
+msgid "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+msgstr "Hallo, ik ben uw Original Prusa i3 printer. Zullen we beginnen met het installatieproces?"
 
 # MSG_WIZARD_WELCOME c=20 r=7
 #: ultralcd.cpp:4899
@@ -1116,12 +1121,12 @@ msgid "Zaribo MK3-420"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Configuration_prusa.h:22
+#: Zaribo_MK3S-220-EINSy10a.h:22
 msgid "Zaribo MK3S-220"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK3S-320-EINSy10a.h:22
+#: Configuration_prusa.h:22
 msgid "Zaribo MK3S-320"
 msgstr ""
 
@@ -1536,11 +1541,6 @@ msgid "Waiting for PINDA probe cooling"
 msgstr "Wachten op afkoelen van PINDA"
 
 # 
-#: ultralcd.cpp:6977
-msgid "Z-probe nr.    [5]"
-msgstr ""
-
-# 
 #: ultralcd.cpp:4806
 msgid "Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
 msgstr "Gebruik ontladen om filament 1 te verwijderen als het uitsteekt buiten de achterste MMU-buis. Gebruik uitwerpen als deze in de tube is verborgen."
@@ -1654,4 +1654,249 @@ msgstr "Y afstand van min"
 #: ultralcd.cpp:5069
 msgid "Y-correct:"
 msgstr "Y-correctie:"
+
+# MSG_OFF
+#: menu.cpp:426
+msgid " [off]"
+msgstr " [uit]"
+
+# 
+#: messages.c:57
+msgid "Back"
+msgstr "terug"
+
+# 
+#: ultralcd.cpp:5577
+msgid "Checks"
+msgstr ""
+
+# 
+#: ultralcd.cpp:7912
+msgid "False triggering"
+msgstr "Valse triggering"
+
+# 
+#: ultralcd.cpp:3970
+msgid "FINDA:"
+msgstr ""
+
+# 
+#: ultralcd.cpp:5483
+msgid "Firmware   [none]"
+msgstr "Firmware   [geen]"
+
+# 
+#: ultralcd.cpp:5489
+msgid "Firmware [strict]"
+msgstr "Firmware [strikt]"
+
+# 
+#: 
+msgid "Firmware [alarm.]"
+msgstr ""
+
+# 
+#: messages.c:87
+msgid "HW Setup"
+msgstr "HW Configuratie"
+
+# 
+#: ultralcd.cpp:3974
+msgid "IR:"
+msgstr ""
+
+# 
+#: ultralcd.cpp:6984
+msgid "Magnets comp.[N/A]"
+msgstr "Magnet. comp.[N/V]"
+
+# 
+#: ultralcd.cpp:6982
+msgid "Magnets comp.[Off]"
+msgstr "Magnet. comp.[Uit]"
+
+# 
+#: ultralcd.cpp:6981
+msgid "Magnets comp. [On]"
+msgstr "Magnet. comp.[Aan]"
+
+# 
+#: ultralcd.cpp:6973
+msgid "Mesh         [3x3]"
+msgstr ""
+
+# 
+#: ultralcd.cpp:6974
+msgid "Mesh         [7x7]"
+msgstr ""
+
+# 
+#: ultralcd.cpp:5615
+msgid "Mesh bed leveling"
+msgstr "Mesh bed leveling"
+
+# 
+#: Marlin_main.cpp:856
+msgid "MK3S firmware detected on MK3 printer"
+msgstr "MK3S-firmware op MK3-printer ontdekt"
+
+# 
+#: ultralcd.cpp:5244
+msgid "MMU Mode [Normal]"
+msgstr "MMU Mod.[Normaal]"
+
+# 
+#: ultralcd.cpp:5245
+msgid "MMU Mode[Stealth]"
+msgstr "MMU Mod.[Stealth]"
+
+# 
+#: ultralcd.cpp:4451
+msgid "Mode change in progress ..."
+msgstr "Moduswijziging bezig..."
+
+# 
+#: ultralcd.cpp:5444
+msgid "Model      [none]"
+msgstr "Model      [geen]"
+
+# 
+#: ultralcd.cpp:5450
+msgid "Model    [strict]"
+msgstr "Model    [strikt]"
+
+# 
+#: ultralcd.cpp:5447
+msgid "Model      [warn]"
+msgstr "Model    [alarm.]"
+
+# 
+#: ultralcd.cpp:5405
+msgid "Nozzle d.  [0.25]"
+msgstr "Tuit d.    [0.25]"
+
+# 
+#: ultralcd.cpp:5408
+msgid "Nozzle d.  [0.40]"
+msgstr "Tuit d.    [0.40]"
+
+# 
+#: ultralcd.cpp:6977
+msgid "Z-probe nr.    [5]"
+msgstr "Z-probe nr.    [5]"
+
+# 
+#: ultralcd.cpp:5411
+msgid "Nozzle d.  [0.60]"
+msgstr "Tuit d.    [0.60]"
+
+# 
+#: ultralcd.cpp:5359
+msgid "Nozzle     [none]"
+msgstr "Tuit       [geen]"
+
+# 
+#: ultralcd.cpp:5365
+msgid "Nozzle   [strict]"
+msgstr "Tuit     [strikt]"
+
+# 
+#: ultralcd.cpp:5362
+msgid "Nozzle     [warn]"
+msgstr "Tuit     [alarm.]"
+
+# 
+#: util.cpp:510
+msgid "G-code sliced for a different level. Continue?"
+msgstr "G-Code is voor een ander niveau geslict. Doorgaan?"
+
+# 
+#: util.cpp:516
+msgid "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+msgstr "G-Code is voor een ander niveau geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
+
+# 
+#: util.cpp:427
+msgid "G-code sliced for a different printer type. Continue?"
+msgstr "G-Code is voor een ander printertype geslict. Doorgaan?"
+
+# 
+#: util.cpp:433
+msgid "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+msgstr "G-Code is voor een ander printertype geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
+
+# 
+#: util.cpp:477
+msgid "G-code sliced for a newer firmware. Continue?"
+msgstr "G-Code is voor een nieuwere firmware geslict. Doorgaan?"
+
+# 
+#: util.cpp:483
+msgid "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+msgstr "G-Code is voor een nieuwere firmware geslict. Update de firmware alsjeblieft. Druk geannuleerd."
+
+# 
+#: ultralcd.cpp:3966
+msgid "PINDA:"
+msgstr ""
+
+# 
+#: ultralcd.cpp:2310
+msgid "Preheating to cut"
+msgstr "Opwarm. te snijden"
+
+# 
+#: ultralcd.cpp:2307
+msgid "Preheating to eject"
+msgstr "Opwarm.te uitwerpen"
+
+# 
+#: util.cpp:390
+msgid "Printer nozzle diameter differs from the G-code. Continue?"
+msgstr "De diameter van de tuit van de printer verschilt van de G-code. Doorgaan?"
+
+# 
+#: util.cpp:397
+msgid "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+msgstr "De diameter van de tuit van de printer verschilt van de G-code. Controleer de waarde in de instellingen. Afdrukken geannuleerd."
+
+# 
+#: ultralcd.cpp:6621
+msgid "Rename"
+msgstr "Hernoem"
+
+# 
+#: ultralcd.cpp:6617
+msgid "Select"
+msgstr "Selecteer"
+
+# 
+#: ultralcd.cpp:2158
+msgid "Sensor info"
+msgstr "Sensor info"
+
+# 
+#: messages.c:58
+msgid "Sheet"
+msgstr "Plaat"
+
+# 
+#: sound.h:9
+msgid "Sound    [assist]"
+msgstr "Geluid   [assist]"
+
+# 
+#: ultralcd.cpp:5575
+msgid "Steel sheets"
+msgstr "Staalplaten"
+
+# 
+#: ultralcd.cpp:5070
+msgid "Z-correct:"
+msgstr "Z-correctie:"
+
+# 
+#: ultralcd.cpp:6976
+msgid "Z-probe nr.    [1]"
+msgstr "Z-probe nr.    [1]"
 

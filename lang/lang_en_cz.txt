@@ -395,6 +395,10 @@
 "Zahrivani"
 
 #MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+"Dobry den, jsem vase tiskarna Original Prusa i3. Chcete abych Vas provedla kalibracnim procesem?"
+
+#MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
 "Dobry den, jsem vase tiskarna Zaribo. Chcete abych Vas provedla kalibracnim procesem?"
 

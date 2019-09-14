@@ -395,6 +395,10 @@
 "Chauffe"
 
 #MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+"Bonjour, je suis votre imprimante Original Prusa i3. Voulez-vous que je vous guide a travers le processus d'installation ?"
+
+#MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
 "Bonjour, je suis votre imprimante Zaribo. Voulez-vous que je vous guide a travers le processus d'installation ?"
 

@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: it\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat, Sep 7, 2019 12:46:01 PM\n"
-"PO-Revision-Date: Sat, Sep 7, 2019 12:46:01 PM\n"
+"POT-Creation-Date: Sat Sep 14 09:52:38 CEST 2019\n"
+"PO-Revision-Date: Sat Sep 14 09:52:38 CEST 2019\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -509,6 +509,11 @@ msgstr "Riscald. completo"
 #: messages.c:46
 msgid "Heating"
 msgstr "Riscaldamento..."
+
+# MSG_WIZARD_WELCOME c=20 r=7
+#: 
+msgid "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+msgstr "Ciao, sono la tua stampante Original Prusa i3. Gradiresti un aiuto nel processo di configurazione?"
 
 # MSG_WIZARD_WELCOME c=20 r=7
 #: ultralcd.cpp:4899
@@ -1116,12 +1121,12 @@ msgid "Zaribo MK3-420"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Configuration_prusa.h:22
+#: Zaribo_MK3S-220-EINSy10a.h:22
 msgid "Zaribo MK3S-220"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK3S-320-EINSy10a.h:22
+#: Configuration_prusa.h:22
 msgid "Zaribo MK3S-320"
 msgstr ""
 

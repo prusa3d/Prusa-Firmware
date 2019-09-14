@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat, Sep 7, 2019 12:41:18 PM\n"
-"PO-Revision-Date: Sat, Sep 7, 2019 12:41:18 PM\n"
+"POT-Creation-Date: Sat Sep 14 09:50:51 CEST 2019\n"
+"PO-Revision-Date: Sat Sep 14 09:50:51 CEST 2019\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -78,7 +78,7 @@ msgstr "Sind linke+rechte Z- Schlitten ganz oben?"
 # MSG_AUTO_DEPLETE_ON c=17 r=1
 #: ultralcd.cpp:5138
 msgid "SpoolJoin    [on]"
-msgstr "SpoolJoin    [an]"
+msgstr "SpoolJoin    [An]"
 
 # 
 #: ultralcd.cpp:5134
@@ -88,7 +88,7 @@ msgstr "SpoolJoin   [N/V]"
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 #: ultralcd.cpp:5142
 msgid "SpoolJoin   [off]"
-msgstr "SpoolJoin   [aus]"
+msgstr "SpoolJoin   [Aus]"
 
 # MSG_AUTO_HOME
 #: messages.c:11
@@ -233,7 +233,7 @@ msgstr "Gewaehlte Sprache kopieren?"
 # MSG_CRASHDETECT_ON
 #: messages.c:27
 msgid "Crash det.   [on]"
-msgstr "Crash Erk.   [an]"
+msgstr "Crash Erk.   [An]"
 
 # MSG_CRASHDETECT_NA
 #: messages.c:25
@@ -243,7 +243,7 @@ msgstr "Crash Erk.   [nv]"
 # MSG_CRASHDETECT_OFF
 #: messages.c:26
 msgid "Crash det.  [off]"
-msgstr "Crash Erk.  [aus]"
+msgstr "Crash Erk.  [Aus]"
 
 # MSG_CRASH_DETECTED c=20 r=1
 #: messages.c:24
@@ -358,7 +358,7 @@ msgstr "MMU-Fehler"
 # MSG_FSENS_AUTOLOAD_ON c=17 r=1
 #: ultralcd.cpp:5106
 msgid "F. autoload  [on]"
-msgstr "F.Autoladen  [an]"
+msgstr "F.Autoladen  [An]"
 
 # MSG_FSENS_AUTOLOAD_NA c=17 r=1
 #: messages.c:43
@@ -368,7 +368,7 @@ msgstr "F. Autoload  [nv]"
 # MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 #: ultralcd.cpp:5108
 msgid "F. autoload [off]"
-msgstr "F. Autoload [aus]"
+msgstr "F. Autoload [Aus]"
 
 # 
 #: ultralcd.cpp:6781
@@ -388,17 +388,17 @@ msgstr "Lueftertest"
 # MSG_FANS_CHECK_ON c=17 r=1
 #: ultralcd.cpp:5601
 msgid "Fans check   [on]"
-msgstr "Luefter Ktr. [an]"
+msgstr "Luefter Ktr. [An]"
 
 # MSG_FANS_CHECK_OFF c=17 r=1
 #: ultralcd.cpp:5603
 msgid "Fans check  [off]"
-msgstr "Luefter Ktr.[aus]"
+msgstr "Luefter Ktr.[Aus]"
 
 # MSG_FSENSOR_ON
 #: messages.c:45
 msgid "Fil. sensor  [on]"
-msgstr "Fil. Sensor  [an]"
+msgstr "Fil. Sensor  [An]"
 
 # MSG_FSENSOR_NA
 #: ultralcd.cpp:5086
@@ -408,7 +408,7 @@ msgstr "Fil. Sensor  [nv]"
 # MSG_FSENSOR_OFF
 #: messages.c:44
 msgid "Fil. sensor [off]"
-msgstr "Fil. Sensor [aus]"
+msgstr "Fil. Sensor [Aus]"
 
 # 
 #: ultralcd.cpp:1876
@@ -509,6 +509,11 @@ msgstr "Aufwaermen OK."
 #: messages.c:46
 msgid "Heating"
 msgstr "Aufwaermen"
+
+# MSG_WIZARD_WELCOME c=20 r=7
+#: 
+msgid "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+msgstr "Hallo, ich bin Ihr Original Prusa i3 Drucker. Moechten Sie, dass ich Sie durch den Einrich- tungsablauf fuehre?"
 
 # MSG_WIZARD_WELCOME c=20 r=7
 #: ultralcd.cpp:4899
@@ -758,7 +763,7 @@ msgstr "Modus    [Normal]"
 # MSG_SILENT_MODE_ON
 #: messages.c:89
 msgid "Mode     [silent]"
-msgstr "Modus     [leise]"
+msgstr "Modus     [Leise]"
 
 # 
 #: mmu.cpp:719
@@ -1116,12 +1121,12 @@ msgid "Zaribo MK3-420"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Configuration_prusa.h:22
+#: Zaribo_MK3S-220-EINSy10a.h:22
 msgid "Zaribo MK3S-220"
 msgstr ""
 
 # WELCOME_MSG c=20
-#: Zaribo_MK3S-320-EINSy10a.h:22
+#: Configuration_prusa.h:22
 msgid "Zaribo MK3S-320"
 msgstr ""
 
@@ -1213,12 +1218,12 @@ msgstr "Rechts    [um]"
 # MSG_SECOND_SERIAL_ON c=17 r=1
 #: ultralcd.cpp:5630
 msgid "RPi port     [on]"
-msgstr "RPi Port     [an]"
+msgstr "RPi Port     [An]"
 
 # MSG_SECOND_SERIAL_OFF c=17 r=1
 #: ultralcd.cpp:5628
 msgid "RPi port    [off]"
-msgstr "RPi Port    [aus]"
+msgstr "RPi Port    [Aus]"
 
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4750
@@ -1228,7 +1233,7 @@ msgstr "Der Assistent wird die aktuellen Kalibrierungsdaten loeschen und von vor
 # MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 #: ultralcd.cpp:5260
 msgid "SD card  [normal]"
-msgstr "SD Karte [normal]"
+msgstr "SD Karte [Normal]"
 
 # MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 #: ultralcd.cpp:5258
@@ -1318,7 +1323,7 @@ msgstr "Einige Dateien wur- den nicht sortiert. Max. Dateien pro Verzeichnis = 1
 # MSG_SORT_NONE c=17 r=1
 #: ultralcd.cpp:5270
 msgid "Sort       [none]"
-msgstr "Sort.      [ohne]"
+msgstr "Sort.     [Keine]"
 
 # MSG_SORT_TIME c=17 r=1
 #: ultralcd.cpp:5268
@@ -1343,7 +1348,7 @@ msgstr "Sortiere Dateien"
 # MSG_SOUND_LOUD c=17 r=1
 #: sound.h:6
 msgid "Sound      [loud]"
-msgstr "Sound      [laut]"
+msgstr "Sound      [Laut]"
 
 # 
 #: ultralcd.cpp:3031
@@ -1353,7 +1358,7 @@ msgstr "Etwas schraeg"
 # MSG_SOUND_MUTE c=17 r=1
 #: 
 msgid "Sound      [mute]"
-msgstr "Sound     [stumm]"
+msgstr "Sound     [Stumm]"
 
 # 
 #: Marlin_main.cpp:4870
@@ -1363,7 +1368,7 @@ msgstr "Fehler aufgetreten, Z-Kalibrierung erforderlich..."
 # MSG_SOUND_ONCE c=17 r=1
 #: sound.h:7
 msgid "Sound      [once]"
-msgstr "Sound    [einmal]"
+msgstr "Sound    [Einmal]"
 
 # MSG_SOUND_SILENT c=17 r=1
 #: sound.h:8
@@ -1418,12 +1423,12 @@ msgstr "Temp Kalib.         "
 # MSG_TEMP_CALIBRATION_ON c=20 r=1
 #: ultralcd.cpp:5624
 msgid "Temp. cal.   [on]"
-msgstr "Temp. Kal.   [an]"
+msgstr "Temp. Kal.   [An]"
 
 # MSG_TEMP_CALIBRATION_OFF c=20 r=1
 #: ultralcd.cpp:5622
 msgid "Temp. cal.  [off]"
-msgstr "Temp. Kal.  [aus]"
+msgstr "Temp. Kal.  [Aus]"
 
 # MSG_CALIBRATION_PINDA_MENU c=17 r=1
 #: ultralcd.cpp:5718
@@ -1653,7 +1658,7 @@ msgstr "Y-Korrektur:"
 # MSG_OFF
 #: menu.cpp:426
 msgid " [off]"
-msgstr " [aus]"
+msgstr " [Aus]"
 
 # 
 #: messages.c:57
@@ -1678,12 +1683,12 @@ msgstr ""
 # 
 #: ultralcd.cpp:5483
 msgid "Firmware   [none]"
-msgstr "Firmware   [ohne]"
+msgstr "Firmware   [Ohne]"
 
 # 
 #: ultralcd.cpp:5489
 msgid "Firmware [strict]"
-msgstr "Firmware [streng]"
+msgstr "Firmware [Streng]"
 
 # 
 #: ultralcd.cpp:5486
@@ -1788,17 +1793,17 @@ msgstr "Duese D.   [0.60]"
 # 
 #: ultralcd.cpp:5359
 msgid "Nozzle     [none]"
-msgstr "Duese      [ohne]"
+msgstr "Duese      [Ohne]"
 
 # 
 #: ultralcd.cpp:5365
 msgid "Nozzle   [strict]"
-msgstr "Duese    [streng]"
+msgstr "Duese    [Streng]"
 
 # 
 #: ultralcd.cpp:5362
 msgid "Nozzle     [warn]"
-msgstr "Duese      [warn]"
+msgstr "Duese      [Warn]"
 
 # 
 #: util.cpp:510

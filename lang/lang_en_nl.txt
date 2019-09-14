@@ -395,6 +395,10 @@
 "Opwarmen"
 
 #MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+"Hallo, ik ben uw Original Prusa i3 printer. Zullen we beginnen met het installatieproces?"
+
+#MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
 "Hallo, ik ben uw Zaribo printer. Zullen we beginnen met het installatieproces?"
 

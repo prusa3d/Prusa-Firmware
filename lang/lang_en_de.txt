@@ -395,6 +395,10 @@
 "Aufwaermen"
 
 #MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+"Hallo, ich bin Ihr Original Prusa i3 Drucker. Moechten Sie, dass ich Sie durch den Einrich- tungsablauf fuehre?"
+
+#MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
 "Hallo, ich bin Ihr Zaribo Drucker. Moechten Sie, dass ich Sie durch den Einrich- tungsablauf fuehre?"
 
