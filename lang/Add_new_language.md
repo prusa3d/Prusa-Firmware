@@ -127,7 +127,6 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   fi
   ```
 
-
 - `../lang/fw-build.sh`
 
   In section `#update _SEC_LANG in binary file if language is selected` add
@@ -137,7 +136,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
    ./update_lang.sh yy 2>./update_lang_yy.out 1>/dev/null
    if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
   fi
- ```
+  ```
  
   Example:
   ```
@@ -151,6 +150,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   In section `#create binary file with all languages` add `if [ -e lang_yy.bin ]; then cat lang_yy.bin >> lang.bin; fi`
   
   Example:
+  
   `if [ -e lang_nl.bin ]; then cat lang_nl.bin >> lang.bin; fi`
 
 - `../lang/fw-clean.sh`
