@@ -1327,6 +1327,7 @@
 "\x00"
 
 #
+
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-code pociety na innym poziomie. Potnij model ponownie. Druk anulowany."
 

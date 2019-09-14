@@ -164,7 +164,7 @@
 
 #MSG_CRASHDETECT
 "Crash det."
-"Detect. crash"
+"Detect.crash"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -1254,12 +1254,12 @@
 "Magnets comp. [On]"
 "Comp. aimants [On]"
 
-#
-"Mesh         [3x3]"
-"\x00"
-
 #MSG_ON
 "On"
+"\x00"
+
+#
+"Mesh         [3x3]"
 "\x00"
 
 #
