@@ -71,12 +71,13 @@
 #define HEATER_2_PIN        -1
 #define TEMP_2_PIN          -1
 
-#define TEMP_AMBIENT_PIN     5 //A5
+#define TEMP_AMBIENT_PIN     6 //A6
 
 #define TEMP_PINDA_PIN       3 //A3
 
 #define VOLT_PWR_PIN         4 //A4
 #define VOLT_BED_PIN         9 //A9
+#define VOLT_IR_PIN          8 //A8
 
 
 #define E0_TMC2130_CS       66

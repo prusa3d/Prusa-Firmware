@@ -27,6 +27,8 @@
   #include "stepper.h"
 #endif
 
+#include "config.h"
+
 
 #ifdef SYSTEM_TIMER_2
 
@@ -73,6 +75,10 @@ extern int current_voltage_raw_pwr;
 #ifdef VOLT_BED_PIN
 extern int current_voltage_raw_bed;
 #endif
+
+#if IR_SENSOR_ANALOG
+extern int current_voltage_raw_IR;
+#endif //IR_SENSOR_ANALOG
 
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
   extern float redundant_temperature;
