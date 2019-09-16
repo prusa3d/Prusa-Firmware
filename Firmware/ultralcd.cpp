@@ -4669,6 +4669,10 @@ void lcd_wizard(WizState state)
 	bool end = false;
 	int wizard_event;
 	const char *msg = NULL;
+	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
+	// other than WizState::Run - it is useful for debugging wizard.
+	if (state != S::Run) eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+
 	while (!end) {
 		printf_P(PSTR("Wizard state: %d\n"), state);
 		switch (state) {
