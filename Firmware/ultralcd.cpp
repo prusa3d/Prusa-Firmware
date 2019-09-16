@@ -4663,6 +4663,7 @@ bool lcd_autoDepleteEnabled()
 //!  ---------------------- | ----------------
 //! WizState::Run           | Main entry point
 //! WizState::RepeatLay1Cal | Entry point after passing 1st layer calibration
+//! WizState::LoadFil       | Entry point after temporarily left for preheat before load filament
 void lcd_wizard(WizState state)
 {
     using S = WizState;
