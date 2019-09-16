@@ -143,7 +143,7 @@ static void lcd_command(uint8_t value, uint16_t delayExtra = 0)
 
 static void lcd_write(uint8_t value)
 {
-	if (value == '\n' || value == '\r')
+	if (value == '\n')
 	{
 		if (lcd_currline > 3) lcd_currline = -1;
 		lcd_set_cursor(0, lcd_currline + 1); // LF
@@ -189,9 +189,10 @@ static void lcd_begin(uint8_t clear)
 	#endif
 }
 
-static void lcd_putchar(char c, FILE *)
+static int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
+	return 0;
 }
 
 void lcd_init(void)
@@ -257,7 +258,9 @@ void lcd_no_display(void)
 	lcd_displaycontrol &= ~LCD_DISPLAYON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
+#endif
 
+#ifdef VT100 //required functions for VT100
 // Turns the underline cursor on/off
 void lcd_no_cursor(void)
 {
@@ -270,7 +273,9 @@ void lcd_cursor(void)
 	lcd_displaycontrol |= LCD_CURSORON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
+#endif
 
+#if 0
 // Turn on and off the blinking cursor
 void lcd_no_blink(void)
 {

@@ -80,10 +80,6 @@ extern int current_voltage_raw_bed;
 extern int current_voltage_raw_IR;
 #endif //IR_SENSOR_ANALOG
 
-#ifdef TEMP_SENSOR_1_AS_REDUNDANT
-  extern float redundant_temperature;
-#endif
-
 #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
   extern unsigned char soft_pwm_bed;
 #endif
@@ -226,7 +222,6 @@ FORCE_INLINE bool isCoolingBed() {
 
 int getHeaterPower(int heater);
 void disable_heater();
-void setWatch();
 void updatePID();
 
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # lang_check.sh - multi-language support script
 #  check lang_xx.bin (language binary file)

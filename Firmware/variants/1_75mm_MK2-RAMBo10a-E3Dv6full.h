@@ -257,7 +257,7 @@ BED SETTINGS
 #define BED_ADJUSTMENT_UM_MAX 100
 
 #define MESH_HOME_Z_CALIB 0.2
-#define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
+#define MESH_HOME_Z_SEARCH 5.0f           // Z lift for homing, mesh bed leveling etc.
 
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
 #define Y_PROBE_OFFSET_FROM_EXTRUDER 9     // Z probe to nozzle Y offset: -front +behind
@@ -324,7 +324,11 @@ PREHEAT SETTINGS
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
 #define PLA_PREHEAT_HPB_TEMP 55
-#define PLA_PREHEAT_FAN_SPEED 0  
+#define PLA_PREHEAT_FAN_SPEED 0
+
+#define ASA_PREHEAT_HOTEND_TEMP 260
+#define ASA_PREHEAT_HPB_TEMP 105
+#define ASA_PREHEAT_FAN_SPEED 0
 
 #define ABS_PREHEAT_HOTEND_TEMP 255
 #define ABS_PREHEAT_HPB_TEMP 100
