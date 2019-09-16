@@ -5392,7 +5392,6 @@ do\
 while (0)
 #endif //IR_SENSOR_ANALOG
 
-void lcd_hw_setup_menu(void)                      // can not be "static"
 template <uint8_t number>
 static void select_sheet_menu()
 {
