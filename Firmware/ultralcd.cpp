@@ -2152,7 +2152,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             }
             else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
             {
-                lcd_wizard(WizState::LoadFil);
+                lcd_wizard(WizState::LoadFilHot);
             }
             return;
         }
@@ -4637,6 +4637,24 @@ bool lcd_autoDepleteEnabled()
     return (lcd_autoDeplete && fsensor_enabled);
 }
 
+static void wizard_lay1cal_message(bool cold)
+{
+    lcd_show_fullscreen_message_and_wait_P(
+            _i("Now I will calibrate distance between tip of the nozzle and heatbed surface.")); ////MSG_WIZARD_V2_CAL c=20 r=8
+    if (mmu_enabled)
+    {
+        lcd_show_fullscreen_message_and_wait_P(
+                _i("First you will select filament you wish to use for calibration. Then select temperature which matches your material."));
+    }
+    else if (cold)
+    {
+        lcd_show_fullscreen_message_and_wait_P(
+                _i("Select temperature which matches your material."));
+    }
+    lcd_show_fullscreen_message_and_wait_P(
+            _i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration.")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12
+}
+
 //! @brief Printer first run wizard (Selftest and calibration)
 //!
 //!
@@ -4753,10 +4771,10 @@ void lcd_wizard(WizState state)
 			{
 			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), true);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 			}
-			if (wizard_event) state = S::Lay1Cal;
+			if (wizard_event) state = S::Lay1CalCold;
 			else
 			{
-			    if(mmu_enabled) state = S::LoadFil;
+			    if(mmu_enabled) state = S::LoadFilCold;
 			    else state = S::Preheat;
 			}
 			break;
@@ -4765,27 +4783,31 @@ void lcd_wizard(WizState state)
 		    lcd_show_fullscreen_message_and_wait_P(_i("Select nozzle preheat temperature which matches your material."));
 		    end = true; // Leave wizard temporarily for lcd_preheat_menu
 		    break;
-		case S::LoadFil: //load filament
+		case S::LoadFilHot: //load filament
 		    wait_preheat();
 			lcd_wizard_load();
-			state = S::Lay1Cal;
+			state = S::Lay1CalHot;
 			break;
-		case S::Lay1Cal:
-			lcd_show_fullscreen_message_and_wait_P(_i("Now I will calibrate distance between tip of the nozzle and heatbed surface."));////MSG_WIZARD_V2_CAL c=20 r=8
-			if(mmu_enabled)
-			{
-			    lcd_show_fullscreen_message_and_wait_P(_i("First you will select filament you wish to use for calibration."));
-			}
-			lcd_show_fullscreen_message_and_wait_P(_i("Select temperature which matches your material. Then I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."));////MSG_WIZARD_V2_CAL_2 c=20 r=12
+        case S::LoadFilCold: //load filament
+            lcd_wizard_load();
+            state = S::Lay1CalCold;
+            break;
+		case S::Lay1CalCold:
+            wizard_lay1cal_message(true);
 			menu_goto(lcd_v2_calibration,0,false,true);
 			end = true; // Leave wizard temporarily for lcd_v2_calibration
 			break;
+        case S::Lay1CalHot:
+            wizard_lay1cal_message(false);
+            lcd_commands_type = LcdCommands::Layer1Cal;
+            end = true; // Leave wizard temporarily for lcd_v2_calibration
+            break;
 		case S::RepeatLay1Cal: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Do you want to repeat last step to readjust distance between nozzle and heatbed?"), false);////MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 			if (wizard_event)
 			{
 				lcd_show_fullscreen_message_and_wait_P(_i("Please clean heatbed and then press the knob."));////MSG_WIZARD_CLEAN_HEATBED c=20 r=8
-				state = S::Lay1Cal;
+				state = S::Lay1CalCold;
 			}
 			else
 			{
@@ -4825,7 +4847,8 @@ void lcd_wizard(WizState state)
 		break;
 
 	}
-	if (!((S::Lay1Cal == state) || (S::Preheat == state))) {
+	if (!((S::Lay1CalCold == state) || (S::Lay1CalHot == state) || (S::Preheat == state)))
+	{
 		lcd_show_fullscreen_message_and_wait_P(msg);
 	}
 	lcd_update_enable(true);
