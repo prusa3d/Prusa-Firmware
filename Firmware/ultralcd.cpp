@@ -4688,10 +4688,10 @@ void lcd_wizard(WizState state)
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
 				state = S::Restore;
-				eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+				eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
 			}
 			else {
-				eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
+				eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 				end = true;
 			}
 			break;
@@ -4701,7 +4701,7 @@ void lcd_wizard(WizState state)
 			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = S::Xyz; break; //run xyz cal.
 			case CALIBRATION_STATUS_Z_CALIBRATION: state = S::Z; break; //run z cal.
 			case CALIBRATION_STATUS_LIVE_ADJUST: state = S::IsFil; break; //run live adjust
-			case CALIBRATION_STATUS_CALIBRATED: end = true; eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0); break;
+			case CALIBRATION_STATUS_CALIBRATED: end = true; eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0); break;
 			default: state = S::Selftest; break; //if calibration status is unknown, run wizard from the beginning
 			}
 			break; 
@@ -4794,7 +4794,7 @@ void lcd_wizard(WizState state)
 			}
 			break;
 		case S::Finish: //we are finished
-			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
+			eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 			end = true;
 			break;
 
