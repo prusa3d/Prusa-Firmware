@@ -1863,11 +1863,11 @@ static void lcd_menu_temperatures()
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	lcd_home();
 	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
-#ifdef AMBIENT_THERMISTOR
+#if defined (AMBIENT_THERMISTOR) && defined (PINDA_THERMISTOR)
 	lcd_printf_P(PSTR(" %S:  %d%c\n" " PINDA:    %d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
-#else //AMBIENT_THERMISTOR
+#elif defined (PINDA_THERMISTOR)
 	lcd_printf_P(PSTR(" PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
-#endif //AMBIENT_THERMISTOR
+#endif
 
     menu_back_if_clicked();
 }
@@ -2969,9 +2969,11 @@ static void lcd_babystep_z()
 		eeprom_update_byte(&(EEPROM_Sheets_base->s[(eeprom_read_byte(
 		        &(EEPROM_Sheets_base->active_sheet)))].bed_temp),
 		        target_temperature_bed);
+#ifdef PINDA_THERMISTOR
 		eeprom_update_byte(&(EEPROM_Sheets_base->s[(eeprom_read_byte(
 		        &(EEPROM_Sheets_base->active_sheet)))].pinda_temp),
 		        current_temperature_pinda);
+#endif //PINDA_THERMISTOR
 		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 	}
 	if (LCD_CLICKED) menu_back();
@@ -3140,6 +3142,7 @@ void lcd_adjust_z() {
 
 }*/
 
+#ifdef PINDA_THERMISTOR
 bool lcd_wait_for_pinda(float temp) {
 	lcd_set_custom_characters_degree();
 	setAllTargetHotends(0);
@@ -3168,6 +3171,7 @@ bool lcd_wait_for_pinda(float temp) {
 	lcd_update_enable(true);
 	return target_temp_reached;
 }
+#endif //PINDA_THERMISTOR
 
 void lcd_wait_for_heater() {
 		lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));

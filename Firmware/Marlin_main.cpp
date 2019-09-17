@@ -397,6 +397,9 @@ static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
+static void temp_compensation_start();
+static void temp_compensation_apply();
+
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -4617,7 +4620,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
+#ifndef PINDA_THERMISTOR
         static bool run = false;
+#endif // ndef PINDA_THERMISTOR
 
 #ifdef SUPPORT_VERBOSITY
 		int8_t verbosity_level = 0;
@@ -4665,13 +4670,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		}
 		bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 		
-		bool temp_comp_start = true;
-#ifdef PINDA_THERMISTOR
-		temp_comp_start = false;
-#endif //PINDA_THERMISTOR
-
-		if (temp_comp_start)
-		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
+#ifndef PINDA_THERMISTOR
+		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50)
+		{
 			if (lcd_commands_type != LcdCommands::StopPrint) {
 				temp_compensation_start();
 				run = true;
@@ -4683,7 +4684,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			}
 			break;
 		}
-		run = false;
+        run = false;
+#endif //PINDA_THERMISTOR
 		if (lcd_commands_type == LcdCommands::StopPrint) {
 			mesh_bed_leveling_flag = false;
 			break;
@@ -4900,12 +4902,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		clean_up_after_endstop_move(l_feedmultiply);
 //		SERIAL_ECHOLNPGM("clean up finished ");
 
-		bool apply_temp_comp = true;
-#ifdef PINDA_THERMISTOR
-		apply_temp_comp = false;
-#endif
-		if (apply_temp_comp)
+#ifndef PINDA_THERMISTOR
 		if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
+#endif
 		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
 //		SERIAL_ECHOLNPGM("babystep applied");
 		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
@@ -9354,7 +9353,8 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 }
 #endif //HEATBED_ANALYSIS
 
-void temp_compensation_start() {
+#ifndef PINDA_THERMISTOR
+static void temp_compensation_start() {
 	
 	custom_message_type = CustomMsg::TempCompPreheat;
 	custom_message_state = PINDA_HEAT_T + 1;
@@ -9381,7 +9381,7 @@ void temp_compensation_start() {
 	custom_message_state = 0;
 }
 
-void temp_compensation_apply() {
+static void temp_compensation_apply() {
 	int i_add;
 	int z_shift = 0;
 	float z_shift_mm;
@@ -9404,6 +9404,7 @@ void temp_compensation_apply() {
 		//we have no temp compensation data
 	}
 }
+#endif //ndef PINDA_THERMISTOR
 
 float temp_comp_interpolation(float inp_temperature) {
 

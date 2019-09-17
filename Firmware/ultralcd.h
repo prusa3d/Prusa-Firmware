@@ -197,7 +197,9 @@ void lcd_wait_for_cool_down();
 void lcd_extr_cal_reset();
 
 void lcd_temp_cal_show_result(bool result);
+#ifdef PINDA_THERMISTOR
 bool lcd_wait_for_pinda(float temp);
+#endif //PINDA_THERMISTOR
 
 
 void bowden_menu();
