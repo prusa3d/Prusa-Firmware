@@ -24,11 +24,11 @@
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Z Einstellung:"
+"Z Anpassen:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
-"Alles richtig "
+"Alles richtig    "
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Duesen Luefter"
+"Duesevent."
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Druckluefter"
+"Druckvent"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -884,7 +884,7 @@
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
-"Rechts [um]"
+"Rechts    [um]"
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
@@ -928,7 +928,7 @@
 
 #MSG_SELFTEST
 "Selftest         "
-"Selbsttest "
+"Selbsttest       "
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"
@@ -972,7 +972,7 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort       [none]"
-"Sort.     [Keine]"
+"Sort.      [ohne]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
@@ -980,7 +980,7 @@
 
 #
 "Severe skew"
-"Schwerer Schraeglauf"
+"Schwer.Schr"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -996,7 +996,7 @@
 
 #
 "Slight skew"
-"Leichter Schraeglauf"
+"Leicht.Schr"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1036,7 +1036,7 @@
 
 #MSG_STOPPED
 "STOPPED. "
-"GESTOPPT. "
+"GESTOPPT."
 
 #MSG_SUPPORT
 "Support"
@@ -1048,15 +1048,15 @@
 
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
-"Temp Kalib. "
+"Temp Kalib.         "
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Temp. Kal.   [AN]"
+"Temp. Kal.   [an]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Temp. Kal.  [AUS]"
+"Temp. Kal.  [aus]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1241,4 +1241,196 @@
 
 #MSG_OFF
 " [off]"
+" [aus]"
+
+#
+"Back"
+"Zurueck"
+
+#
+"Checks"
 "\x00"
+
+#
+"False triggering"
+"Falschtriggerung"
+
+#
+"FINDA:"
+"\x00"
+
+#
+"Firmware   [none]"
+"Firmware   [ohne]"
+
+#
+"Firmware [strict]"
+"Firmware [streng]"
+
+#
+"Firmware   [warn]"
+"\x00"
+
+#
+"HW Setup"
+"HW Einstellungen"
+
+#
+"IR:"
+"\x00"
+
+#
+"Magnets comp.[N/A]"
+"Magnet Komp.  [nv]"
+
+#
+"Magnets comp.[Off]"
+"Magnet Komp. [Aus]"
+
+#
+"Magnets comp. [On]"
+"Magnet Komp.  [An]"
+
+#
+"Mesh         [3x3]"
+"\x00"
+
+#
+"Mesh         [7x7]"
+"\x00"
+
+#
+"Mesh bed leveling"
+"Mesh Bett Ausgleich"
+
+#
+"MK3S firmware detected on MK3 printer"
+"MK3S-Firmware auf MK3-Drucker erkannt"
+
+#
+"MMU Mode [Normal]"
+"MMU Modus[Normal]"
+
+#
+"MMU Mode[Stealth]"
+"MMU Mod.[Stealth]"
+
+#
+"Mode change in progress ..."
+"Moduswechsel erfolgt..."
+
+#
+"Model      [none]"
+"Modell     [ohne]"
+
+#
+"Model    [strict]"
+"Modell   [streng]"
+
+#
+"Model      [warn]"
+"Modell     [warn]"
+
+#
+"Nozzle d.  [0.25]"
+"Duese D.   [0.25]"
+
+#
+"Nozzle d.  [0.40]"
+"Duese D.   [0.40]"
+
+#
+"Nozzle d.  [0.60]"
+"Duese D.   [0.60]"
+
+#
+"Nozzle     [none]"
+"Duese      [ohne]"
+
+#
+"Nozzle   [strict]"
+"Duese    [streng]"
+
+#
+"Nozzle     [warn]"
+"Duese      [warn]"
+
+#
+"G-code sliced for a different level. Continue?"
+"G-Code ist fuer einen anderen Level geslict. Fortfahren?"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+"G-Code ist fuer einen anderen Level geslict. Bitte slicen Sie das Modell erneut. Druck abgebrochen."
+
+#
+"G-code sliced for a different printer type. Continue?"
+"G-Code ist fuer einen anderen Drucker geslict. Fortfahren?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+"G-Code ist fuer einen anderen Drucker geslict. Bitte slicen Sie das Modell erneut. Druck abgebrochen."
+
+#
+"G-code sliced for a newer firmware. Continue?"
+"G-Code ist fuer eine neuere Firmware geslict. Fortfahren?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+"G-Code ist fuer eine neuere Firmware geslict. Bitte die Firmware updaten. Druck abgebrochen."
+
+#
+"PINDA:"
+"\x00"
+
+#
+"Preheating to cut"
+"Heizen zum Schnitt"
+
+#
+"Preheating to eject"
+"Heizen zum Auswurf"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+"Der Durchmesser der Druckerduese weicht vom G-Code ab. Fortfahren?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+"Der Durchmesser der Druckerduese weicht vom G-Code ab. Bitte ueberpruefen Sie den Wert in den Einstellungen. Druck abgebrochen."
+
+#
+"Rename"
+"Umbenennen"
+
+#
+"Select"
+"Auswahl"
+
+#
+"Sensor info"
+"Sensor Info"
+
+#
+"Sheet"
+"Blech"
+
+#
+"Sound     [assist]"
+"Sound     [Assist]"
+
+#
+"Steel sheets"
+"Stahlbleche"
+
+#
+"Z-correct:"
+"Z-Korrektur:"
+
+#
+"Z-probe nr.    [1]"
+"Z-Probe Nr.    [1]"
+
+#
+"Z-probe nr.    [3]"
+"Z-Probe Nr.    [3]"
