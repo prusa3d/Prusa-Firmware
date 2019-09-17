@@ -223,12 +223,12 @@ bool lcd_autoDepleteEnabled();
 //! @brief Wizard state
 enum class WizState : uint8_t
 {
-    Run,            //!< run wizard? Entry point.
+    Run,            //!< run wizard? Main entry point.
     Restore,        //!< restore calibration status
-    Selftest,
+    Selftest,       //!< self test
     Xyz,            //!< xyz calibration
     Z,              //!< z calibration
-    IsFil,          //!< Is filament loaded? Entry point for 1st layer calibration
+    IsFil,          //!< Is filament loaded? First step of 1st layer calibration
     PreheatPla,     //!< waiting for preheat nozzle for PLA
     Preheat,        //!< Preheat for any material
     LoadFilCold,    //!< Load filament for MMU

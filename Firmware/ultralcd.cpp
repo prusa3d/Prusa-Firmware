@@ -4663,11 +4663,25 @@ static void wizard_lay1cal_message(bool cold)
 //! @startuml
 //! [*] --> IsFil
 //! IsFil : Is any filament loaded?
-//! load : Push the button to start loading Filament 1
+//! LoadFilCold : Push the button to start loading Filament 1
 //!
-//! IsFil --> calibration : yes
-//! IsFil --> load    : no
-//! load --> calibration : click
+//! IsFil       --> Lay1CalCold : yes
+//! IsFil       --> LoadFilCold : no
+//! LoadFilCold --> Lay1CalCold : click
+//! @enduml
+//!
+//! First layer calibration without MMU state diagram
+//!
+//! @startuml
+//! [*] --> IsFil
+//! IsFil : Is filament loaded?
+//! Preheat : Select nozle temperature which matches your material.
+//! LoadFilHot : Insert filament to extruder and press the knob.
+//!
+//! IsFil   --> Lay1CalCold : yes
+//! IsFil   --> Preheat    : no
+//! Preheat --> LoadFilHot : select
+//! LoadFilHot --> Lay1CalHot : click
 //! @enduml
 //!
 //! @param state Entry point of the wizard
@@ -4676,7 +4690,7 @@ static void wizard_lay1cal_message(bool cold)
 //!  ---------------------- | ----------------
 //! WizState::Run           | Main entry point
 //! WizState::RepeatLay1Cal | Entry point after passing 1st layer calibration
-//! WizState::LoadFil       | Entry point after temporarily left for preheat before load filament
+//! WizState::LoadFilHot    | Entry point after temporarily left for preheat before load filament
 void lcd_wizard(WizState state)
 {
     using S = WizState;
@@ -4713,7 +4727,7 @@ void lcd_wizard(WizState state)
 				end = true;
 			}
 			break;
-		case S::Restore: // restore calibration status
+		case S::Restore:
 			switch (calibration_status()) {
 			case CALIBRATION_STATUS_ASSEMBLED: state = S::Selftest; break; //run selftest
 			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = S::Xyz; break; //run xyz cal.
@@ -4732,13 +4746,13 @@ void lcd_wizard(WizState state)
 			}
 			else end = true;
 			break;
-		case S::Xyz: //xyz calibration
+		case S::Xyz:
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run xyz calibration now. It will take approx. 12 mins."));////MSG_WIZARD_XYZ_CAL c=20 r=8
 			wizard_event = gcode_M45(false, 0);
 			if (wizard_event) state = S::IsFil;
 			else end = true;
 			break;
-		case S::Z: //z calibration
+		case S::Z:
 			lcd_show_fullscreen_message_and_wait_P(_i("Please remove shipping helpers first."));
 			lcd_show_fullscreen_message_and_wait_P(_i("Now remove the test print from steel sheet."));
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run z calibration now."));////MSG_WIZARD_Z_CAL c=20 r=8
@@ -4760,8 +4774,8 @@ void lcd_wizard(WizState state)
 			}
 			else end = true;
 			break;
-		case S::IsFil: //is filament loaded?
-				//start to preheat nozzle and bed to save some time later
+		case S::IsFil:
+		    //start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			if (mmu_enabled)
@@ -4783,12 +4797,12 @@ void lcd_wizard(WizState state)
 		    lcd_show_fullscreen_message_and_wait_P(_i("Select nozzle preheat temperature which matches your material."));
 		    end = true; // Leave wizard temporarily for lcd_preheat_menu
 		    break;
-		case S::LoadFilHot: //load filament
+		case S::LoadFilHot:
 		    wait_preheat();
 			lcd_wizard_load();
 			state = S::Lay1CalHot;
 			break;
-        case S::LoadFilCold: //load filament
+        case S::LoadFilCold:
             lcd_wizard_load();
             state = S::Lay1CalCold;
             break;
@@ -4802,7 +4816,7 @@ void lcd_wizard(WizState state)
             lcd_commands_type = LcdCommands::Layer1Cal;
             end = true; // Leave wizard temporarily for lcd_v2_calibration
             break;
-		case S::RepeatLay1Cal: //repeat first layer cal.?
+		case S::RepeatLay1Cal:
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Do you want to repeat last step to readjust distance between nozzle and heatbed?"), false);////MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 			if (wizard_event)
 			{
@@ -4815,7 +4829,7 @@ void lcd_wizard(WizState state)
 				state = S::Finish;
 			}
 			break;
-		case S::Finish: //we are finished
+		case S::Finish:
 			eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 			end = true;
 			break;
