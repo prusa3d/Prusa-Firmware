@@ -3023,7 +3023,7 @@ static void lcd_menu_xyz_offset()
 
     for (uint_least8_t i = 0; i < 2; i++)
     {
-        lcd_puts_at_P((cntr[i] < 0) ? 10 : 11, i + 2, PSTR(""));
+        lcd_set_cursor((cntr[i] < 0) ? 10 : 11, i+2);
         lcd_print(cntr[i]);
         lcd_puts_at_P(16, i + 2, PSTR("mm"));
     }
