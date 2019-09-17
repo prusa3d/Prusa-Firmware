@@ -4621,7 +4621,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	{
 		mesh_bed_leveling_flag = true;
 #ifndef PINDA_THERMISTOR
-        static bool run = false;
+        static bool run = false; // thermistor-less PINDA temperature compensation is running
 #endif // ndef PINDA_THERMISTOR
 
 #ifdef SUPPORT_VERBOSITY
