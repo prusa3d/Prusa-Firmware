@@ -1416,8 +1416,8 @@
 "Blech"
 
 #
-"Sound     [assist]"
-"Sound     [Assist]"
+"Sound    [assist]"
+"Sound    [Assist]"
 
 #
 "Steel sheets"

@@ -1415,8 +1415,8 @@
 "Lamina"
 
 #
-"Sound     [assist]"
-"Sonido  [asistido]"
+"Sound    [assist]"
+"Sonido [asistido]"
 
 #
 "Steel sheets"
@@ -1433,3 +1433,7 @@
 #
 "Z-probe nr.    [3]"
 "Z-sensor nr.   [3]"
+
+#
+"Z-probe nr.    [5]"
+"Z-sensor nr.   [5]"

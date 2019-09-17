@@ -1415,8 +1415,8 @@
 "Piano"
 
 #
-"Sound     [assist]"
-"Suono  [assistito]"
+"Sound    [assist]"
+"Suono [assistito]"
 
 #
 "Steel sheets"
@@ -1433,3 +1433,7 @@
 #
 "Z-probe nr.    [3]"
 "Z-probe nr.    [3]"
+
+#
+"Z-probe nr.    [5]"
+"Z-probe nr.    [5]"

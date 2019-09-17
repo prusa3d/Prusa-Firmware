@@ -1415,8 +1415,8 @@
 "Plat"
 
 #
-"Sound     [assist]"
-"Zvuk      [Asist.]"
+"Sound    [assist]"
+"Zvuk     [Asist.]"
 
 #
 "Steel sheets"
@@ -1433,3 +1433,7 @@
 #
 "Z-probe nr.    [3]"
 "Pocet mereni Z [3]"
+
+#
+"Z-probe nr.    [5]"
+"Pocet mereni Z [5]"

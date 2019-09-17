@@ -1415,8 +1415,8 @@
 "Plaque"
 
 #
-"Sound     [assist]"
-"Son       [assist]"
+"Sound    [assist]"
+"Son      [assist]"
 
 #
 "Steel sheets"
