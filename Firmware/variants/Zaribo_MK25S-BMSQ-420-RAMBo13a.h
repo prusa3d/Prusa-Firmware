@@ -198,6 +198,10 @@
 #define  DEFAULT_Kp 21.70
 #define  DEFAULT_Ki 1.60
 #define  DEFAULT_Kd 73.76
+#elif defined (SLICE_HT_EXTRUDER)
+#define  DEFAULT_Kp 29.09
+#define  DEFAULT_Ki 3.52
+#define  DEFAULT_Kd 60.04
 #else
 // Define PID constants for extruder
 //#define  DEFAULT_Kp 40.925
