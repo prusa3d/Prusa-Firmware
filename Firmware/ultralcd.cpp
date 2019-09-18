@@ -1674,9 +1674,12 @@ static void lcd_cooldown()
 //! It would have been much easier if there was a ':' in the labels.
 //! But since the texts like Bed, Nozzle and PINDA are used in other places
 //! it is better to reuse these texts even though it requires some extra formatting code.
+//! @param [in] ipgmLabel pointer to string in PROGMEM
+//! @param [out] pointer to string in RAM which will receive the formatted text. Must be allocated to appropriate size
+//! @param [in] dstSize allocated length of dst
 static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize){
     uint8_t i = 0;
-    for(; i < dstSize - 2; ++i){ // 1 byte less than buffer, we'd be adding a ':' to the end
+    for(; i < dstSize - 2; ++i){ // 2 byte less than buffer, we'd be adding a ':' to the end
         uint8_t b = pgm_read_byte(ipgmLabel + i);
         if( ! b )
             break;
@@ -1686,7 +1689,7 @@ static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize
     ++i;
     for(; i < dstSize - 1; ++i) // fill the rest with spaces
         dst[i] = ' ';
-    dst[dstSize-1] = 0;         // terminate the string properly
+    dst[dstSize-1] = '\0';      // terminate the string properly
 }
 
 void lcd_menu_extruder_info()                     // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
@@ -1701,9 +1704,10 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
     // Display Nozzle fan RPM
     lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
-    char nozzle[12], print[12];
-    pgmtext_with_colon(_i("Nozzle FAN"), nozzle, 12);
-    pgmtext_with_colon(_i("Print FAN"), print, 12);
+    static const size_t maxChars = 12;
+    char nozzle[maxChars], print[maxChars];
+    pgmtext_with_colon(_i("Nozzle FAN"), nozzle, maxChars);
+    pgmtext_with_colon(_i("Print FAN"), print, maxChars);
     lcd_printf_P(_N("%s %4d RPM\n" "%s %4d RPM\n"), nozzle, 60*fan_speed[0], print, 60*fan_speed[1] ); 
 
 #ifdef PAT9125
@@ -1888,9 +1892,12 @@ static void lcd_menu_debug()
 #endif /* DEBUG_BUILD */
 
 //! @brief common line print for lcd_menu_temperatures
+//! @param [in] ipgmLabel pointer to string in PROGMEM
+//! @param [in] value to be printed behind the label
 static void lcd_menu_temperatures_line(const char *ipgmLabel, int value){
-    char tmp[15];
-    pgmtext_with_colon(ipgmLabel, tmp, 15);
+    static const size_t maxChars = 15;    
+    char tmp[maxChars];
+    pgmtext_with_colon(ipgmLabel, tmp, maxChars);
     lcd_printf_P(PSTR(" %s%3d\x01 \n"), tmp, value); // no need to add -14.14 to string alignment
 }
 static void lcd_menu_temperatures()
