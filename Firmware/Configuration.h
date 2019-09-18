@@ -113,11 +113,6 @@ extern PGM_P sPrinterName;
 // #define PS_DEFAULT_OFF
 
 
-
-// This makes temp sensor 1 a redundant sensor for sensor 0. If the temperatures difference between these sensors is to high the print will be aborted.
-//#define TEMP_SENSOR_1_AS_REDUNDANT
-#define MAX_REDUNDANT_TEMP_SENSOR_DIFF 10
-
 // Actual temperature must be close to target for this long before M109 returns success
 #define TEMP_RESIDENCY_TIME 3  // (seconds)
 #define TEMP_HYSTERESIS 5       // (degC) range of +/- temperatures considered "close" to the target one
@@ -290,6 +285,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 #define Z_MAX_LENGTH (Z_MAX_POS - Z_MIN_POS)
 
 #define Z_HEIGHT_HIDE_LIVE_ADJUST_MENU 2.0f
+
+#define HOME_Z_SEARCH_THRESHOLD 0.15f             // Threshold of the Z height in calibration
 
 //============================= Bed Auto Leveling ===========================
 
