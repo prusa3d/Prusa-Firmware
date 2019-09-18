@@ -24,7 +24,7 @@
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Ajustando Z:"
+"Ajustar-Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
@@ -216,7 +216,7 @@
 
 #MSG_EXTRUDER_CORRECTION c=10
 "E-correct:"
-"Correccion-E:"
+"Corregir-E:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
@@ -1200,7 +1200,7 @@
 
 #
 "X-correct:"
-"Correccion-X:"
+"Corregir-X:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
@@ -1236,7 +1236,7 @@
 
 #
 "Y-correct:"
-"Correccion-Y:"
+"Corregir-Y:"
 
 #MSG_OFF
 " [off]"
@@ -1424,7 +1424,7 @@
 
 #
 "Z-correct:"
-"Correccion-Z:"
+"Corregir-Z:"
 
 #
 "Z-probe nr.    [1]"

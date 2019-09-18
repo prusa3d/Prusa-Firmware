@@ -108,7 +108,7 @@
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
-"Stato delle cinghie"
+"Stato cinghie"
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
@@ -272,7 +272,7 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"Autocar.filam[on]"
+"Autocar.fil. [on]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
@@ -304,15 +304,15 @@
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
-"Sensor filam.[on]"
+"Sensore fil. [on]"
 
 #MSG_FSENSOR_NA
 "Fil. sensor [N/A]"
-"Sensor filam[N/A]"
+"Sensore fil.[N/A]"
 
 #MSG_FSENSOR_OFF
 "Fil. sensor [off]"
-"Sensor filam[off]"
+"Sensore fil.[off]"
 
 #
 "Filam. runouts"
@@ -348,7 +348,7 @@
 
 #MSG_V2_CALIBRATION c=17 r=1
 "First layer cal."
-"Calibrazione primo layer."
+"Cal. primo strato"
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
@@ -516,7 +516,7 @@
 
 #
 "Lin. correction"
-"Correzione lin."
+"Correzione lineare"
 
 #MSG_BABYSTEP_Z
 "Live adjust Z"
@@ -976,7 +976,7 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
-"Ordina    [tempo]"
+"Ordina   [chron.]"
 
 #
 "Severe skew:"

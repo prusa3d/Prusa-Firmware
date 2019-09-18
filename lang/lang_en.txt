@@ -1061,7 +1061,7 @@
 "Sheet"
 
 #
-"Sound     [assist]"
+"Sound    [assist]"
 
 #
 "Steel sheets"
