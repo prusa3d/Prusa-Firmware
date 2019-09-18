@@ -123,10 +123,10 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
 - Download and install the 64bit Git version https://git-scm.com/download/win
 - Also follow these instructions https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058
 - Download and install 7z-zip from its official website https://www.7-zip.org/
-  By default, it is installed under the directory /c/Program Files/7-Zip in Windows 10
+  By default, it is installed under the directory /c/Program\ Files/7-Zip in Windows 10
 - Run `Git-Bash` under Administrator privilege
-- navigate to the directory /c/Program Files/Git/mingw64/bin
-- run `ln -s /c/Program Files/7-Zip/7z.exe zip.exe`
+- navigate to the directory /c/Program\ Files/Git/mingw64/bin
+- run `ln -s /c/Program\ Files/7-Zip/7z.exe zip.exe`
 
 #### Compile Prusa-firmware with Git-bash installed
 - open Git-bash
