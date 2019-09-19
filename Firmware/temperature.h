@@ -241,6 +241,7 @@ void checkExtruderAutoFans();
 
 enum { 
 	EFCE_OK = 0,   //!< normal operation, both fans are ok
+	EFCE_FIXED,    //!< previous fan error was fixed
 	EFCE_DETECTED, //!< fan error detected, but not reported yet
 	EFCE_REPORTED  //!< fan error detected and reported to LCD and serial
 };

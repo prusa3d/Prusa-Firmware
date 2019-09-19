@@ -142,10 +142,6 @@
 //Macro for print fan speed
 #define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms
 
-#define PRINTING_TYPE_SD 0
-#define PRINTING_TYPE_USB 1
-#define PRINTING_TYPE_NONE 2
-
 //filament types 
 #define FILAMENT_DEFAULT 0
 #define FILAMENT_FLEX 1
@@ -378,7 +374,7 @@ boolean chdkActive = false;
 //! @{
 bool saved_printing = false; //!< Print is paused and saved in RAM
 static uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
-static uint8_t saved_printing_type = PRINTING_TYPE_SD;
+uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { 0, 0, 0, 0 };
 //! Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
 static float saved_feedrate2 = 0;
@@ -1751,12 +1747,22 @@ void loop()
 	{
 		is_usb_printing = false;
 	}
-
+    
+#ifdef FANCHECK
+    if ((saved_printing_type == PRINTING_TYPE_USB) && fan_check_error)
+    {
+        process_commands(); //used to process pausing
+        KEEPALIVE_STATE(PAUSED_FOR_USER);
+        host_keepalive(); //prevent timeouts since usb processing is disabled until print is resumed. This is for a crude way of pausing a print on all hosts.
+    }
+    else
+#endif
     if (prusa_sd_card_upload)
     {
         //we read byte-by byte
         serial_read_stream();
-    } else 
+    } 
+    else 
     {
 
         get_command();
@@ -3450,22 +3456,16 @@ extern uint8_t st_backlash_y;
 
 void process_commands()
 {
-  #ifdef FANCHECK
-  if (fan_check_error){
-	if( fan_check_error == EFCE_DETECTED ){
-		fan_check_error = EFCE_REPORTED;
-      
-      if(is_usb_printing){
-        SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
-      }
-      else{
-        lcd_pause_print();
-      }
-
-    } // otherwise it has already been reported, so just ignore further processing
-    return;
-  }
-  #endif
+#ifdef FANCHECK
+    if(fan_check_error){
+        if(fan_check_error == EFCE_DETECTED){
+            fan_check_error = EFCE_REPORTED;
+            // SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
+            lcd_pause_print();
+        } // otherwise it has already been reported, so just ignore further processing
+        if(saved_printing_type == PRINTING_TYPE_USB) return; //ignore usb stream.
+    }
+#endif
 
 	if (!buflen) return; //empty command
   #ifdef FILAMENT_RUNOUT_SUPPORT
@@ -10154,7 +10154,8 @@ void restore_print_from_ram_and_continue(float e_move)
 	
 #ifdef FANCHECK
 	// Do not allow resume printing if fans are still not ok
-	if( fan_check_error != EFCE_OK )return;
+	if ((fan_check_error != EFCE_OK) && (fan_check_error != EFCE_FIXED)) return;
+    if (fan_check_error == EFCE_FIXED) fan_check_error = EFCE_OK; //reenable serial stream processing if printing from usb
 #endif
 	
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
@@ -10208,6 +10209,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	}
 	SERIAL_PROTOCOLLNRPGM(MSG_OK); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
+    saved_printing_type = PRINTING_TYPE_NONE;
 	saved_printing = false;
 }
 

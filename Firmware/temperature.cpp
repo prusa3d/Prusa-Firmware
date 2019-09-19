@@ -503,7 +503,7 @@ void checkFanSpeed()
 	// drop the fan_check_error flag when both fans are ok
 	if( fan_speed_errors[0] == 0 && fan_speed_errors[1] == 0 && fan_check_error == EFCE_REPORTED){
 		// we may even send some info to the LCD from here
-		fan_check_error = EFCE_OK;
+		fan_check_error = EFCE_FIXED;
 	}
 
 	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled) {
@@ -529,21 +529,21 @@ static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 }
 
 void fanSpeedError(unsigned char _fan) {
-	if (get_message_level() != 0 && isPrintPaused) return; 
-	//to ensure that target temp. is not set to zero in case taht we are resuming print 
+	if (get_message_level() != 0 && isPrintPaused) return;
+	//to ensure that target temp. is not set to zero in case that we are resuming print
 	if (card.sdprinting || is_usb_printing) {
 		if (heating_status != 0) {
 			lcd_print_stop();
 		}
 		else {
-			fan_check_error = EFCE_DETECTED;
+			fan_check_error = EFCE_DETECTED; //plans error for next processed command
 		}
 	}
 	else {
-			SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //for octoprint
-			setTargetHotend0(0);
-      heating_status = 0;
-      fan_check_error = EFCE_REPORTED;
+		// SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //Why pause octoprint? is_usb_printing would be true in that case, so there is no need for this.
+		setTargetHotend0(0);
+        heating_status = 0;
+        fan_check_error = EFCE_REPORTED;
 	}
 	switch (_fan) {
 	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
@@ -553,7 +553,7 @@ void fanSpeedError(unsigned char _fan) {
 		fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), PSTR("Err: PRINT FAN ERROR") );
 		break;
 	}
-  SERIAL_PROTOCOLLNRPGM(MSG_OK);
+    // SERIAL_PROTOCOLLNRPGM(MSG_OK); //This ok messes things up with octoprint.
 }
 #endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 
