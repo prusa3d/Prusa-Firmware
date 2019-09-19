@@ -1817,6 +1817,8 @@ static void lcd_menu_fails_stats_mmu_total()
 }
 
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
+static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-7.7SX %-3d  Y %-3d";
+
 //! @brief Show Total Failures Statistics MMU
 //!
 //! @code{.unparsed}
