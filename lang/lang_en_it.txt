@@ -72,7 +72,7 @@
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Il caricamento automatico e attivo, premete la manopola e inserite il filamento..."
+"Caricamento automatico attivo, premi la manopola e inserisci il filamento."
 
 #MSG_SELFTEST_AXIS_LENGTH
 "Axis length"
@@ -172,15 +172,15 @@
 
 #MSG_CRASHDETECT_ON
 "Crash det.   [on]"
-"Rilevam.imp. [on]"
+"Rileva.crash [on]"
 
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
-"Rilevam.imp.[N/A]"
+"Rileva.crash[N/A]"
 
 #MSG_CRASHDETECT_OFF
 "Crash det.  [off]"
-"Rilevam.imp.[off]"
+"Rileva.crash[off]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -556,7 +556,7 @@
 
 #MSG_MESH_BED_LEVELING
 "Mesh Bed Leveling"
-"Mesh livel. letto"
+"Livel. piatto"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -588,11 +588,11 @@
 
 #MSG_STEALTH_MODE_OFF
 "Mode     [Normal]"
-"Modo    [normale]"
+"Mod.    [normale]"
 
 #MSG_SILENT_MODE_ON
 "Mode     [silent]"
-"Modo [silenzioso]"
+"Mod. [silenziosa]"
 
 #
 "MMU needs user attention."
@@ -604,15 +604,15 @@
 
 #MSG_STEALTH_MODE_ON
 "Mode    [Stealth]"
-"Modo [Silenziosa]"
+"Mod. [silenziosa]"
 
 #MSG_AUTO_MODE_ON
 "Mode [auto power]"
-"Modo       [auto]"
+"Mod.       [auto]"
 
 #MSG_SILENT_MODE_OFF
 "Mode [high power]"
-"Mode      [forte]"
+"Mod.      [forte]"
 
 #
 "MMU2 connected"
@@ -976,7 +976,7 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
-"Ordina   [chron.]"
+"Ordina    [cron.]"
 
 #
 "Severe skew:"
@@ -1416,7 +1416,7 @@
 
 #
 "Sound    [assist]"
-"Suono [assistito]"
+"Suono   [assist.]"
 
 #
 "Steel sheets"

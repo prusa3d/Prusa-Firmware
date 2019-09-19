@@ -976,7 +976,7 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
-"Ordenar  [tiempo]"
+"Ordenar   [fecha]"
 
 #
 "Severe skew:"
