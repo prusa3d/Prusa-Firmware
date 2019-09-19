@@ -92,7 +92,7 @@
 
 #MSG_BED_HEATING
 "Bed Heating"
-"Zahrivani bed"
+"Zahrivani bedu"
 
 #MSG_BED_CORRECTION_MENU
 "Bed level correct"
@@ -508,7 +508,7 @@
 
 #
 "Left"
-"Vlevo:"
+"Vlevo"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Tryska V."
+"Vent. trysky"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -819,8 +819,8 @@
 "Predehrev k vyjmuti"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
-"Print fan:"
-"Tiskovy v:"
+"Print fan"
+"Tiskovy vent."
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Tiskovy v"
+"Tiskovy vent."
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -979,8 +979,8 @@
 "Trideni     [cas]"
 
 #
-"Severe skew"
-"Tezke zkoseni"
+"Severe skew:"
+"Tezke zkoseni:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +995,8 @@
 "Zvuk    [hlasity]"
 
 #
-"Slight skew"
-"Lehke zkoseni"
+"Slight skew:"
+"Lehke zkoseni:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1415,8 +1415,8 @@
 "Plat"
 
 #
-"Sound     [assist]"
-"Zvuk      [Asist.]"
+"Sound    [assist]"
+"Zvuk     [Asist.]"
 
 #
 "Steel sheets"
@@ -1433,3 +1433,7 @@
 #
 "Z-probe nr.    [3]"
 "Pocet mereni Z [3]"
+
+#
+"Z-probe nr.    [5]"
+"Pocet mereni Z [5]"
