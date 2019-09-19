@@ -1670,6 +1670,27 @@ static void lcd_cooldown()
   lcd_return_to_status();
 }
 
+//! @brief append text label with a colon and format it into a fixed size output buffer
+//! It would have been much easier if there was a ':' in the labels.
+//! But since the texts like Bed, Nozzle and PINDA are used in other places
+//! it is better to reuse these texts even though it requires some extra formatting code.
+//! @param [in] ipgmLabel pointer to string in PROGMEM
+//! @param [out] pointer to string in RAM which will receive the formatted text. Must be allocated to appropriate size
+//! @param [in] dstSize allocated length of dst
+static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize){
+    uint8_t i = 0;
+    for(; i < dstSize - 2; ++i){ // 2 byte less than buffer, we'd be adding a ':' to the end
+        uint8_t b = pgm_read_byte(ipgmLabel + i);
+        if( ! b )
+            break;
+        dst[i] = b;
+    }
+    dst[i] = ':';               // append the colon
+    ++i;
+    for(; i < dstSize - 1; ++i) // fill the rest with spaces
+        dst[i] = ' ';
+    dst[dstSize-1] = '\0';      // terminate the string properly
+}
 
 void lcd_menu_extruder_info()                     // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
@@ -1679,23 +1700,15 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 //|Fil. Xd:    Yd:     |
 //|Int:      Shut:     |
 //----------------------
-	int fan_speed_RPM[2];
-	// Display Nozzle fan RPM
-	fan_speed_RPM[0] = 60*fan_speed[0];
-	fan_speed_RPM[1] = 60*fan_speed[1];
 
-	lcd_timeoutToStatus.stop(); //infinite timeout
-
-	lcd_home();
-	lcd_printf_P(_N(
-	  "%S: %4d RPM\n"
-	  "%S:  %4d RPM\n"
-	 ),
-	 _i("Nozzle FAN"),
-	 fan_speed_RPM[0],
-	 _i("Print FAN"),
-	 fan_speed_RPM[1]
-	);
+    // Display Nozzle fan RPM
+    lcd_timeoutToStatus.stop(); //infinite timeout
+    lcd_home();
+    static const size_t maxChars = 12;
+    char nozzle[maxChars], print[maxChars];
+    pgmtext_with_colon(_i("Nozzle FAN"), nozzle, maxChars);
+    pgmtext_with_colon(_i("Print FAN"), print, maxChars);
+    lcd_printf_P(_N("%s %4d RPM\n" "%s %4d RPM\n"), nozzle, 60*fan_speed[0], print, 60*fan_speed[1] ); 
 
 #ifdef PAT9125
 	// Display X and Y difference from Filament sensor    
@@ -1745,12 +1758,12 @@ static void lcd_menu_fails_stats_mmu_print()
 // MMU load fails  000
 //
 //////////////////////
-	lcd_timeoutToStatus.stop(); //infinite timeout
+    lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
-	lcd_home();
-	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d"), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
-	menu_back_if_clicked_fb();
+    lcd_home();
+    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
+    menu_back_if_clicked_fb();
 }
 
 static void lcd_menu_fails_stats_mmu_total()
@@ -1761,16 +1774,17 @@ static void lcd_menu_fails_stats_mmu_total()
 // MMU load fails  000
 //
 //////////////////////
-	mmu_command(MmuCmd::S3);
-	lcd_timeoutToStatus.stop(); //infinite timeout
+    mmu_command(MmuCmd::S3);
+    lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
-	lcd_home();
-	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S %-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);
-	menu_back_if_clicked_fb();
+    lcd_home();
+    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);
+    menu_back_if_clicked_fb();
 }
 
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
+static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-7.7SX %-3d  Y %-3d";
 static void lcd_menu_fails_stats_total()
 {
 //01234567890123456789
@@ -1779,14 +1793,14 @@ static void lcd_menu_fails_stats_total()
 // Filam. runouts  000
 // Crash  X 000  Y 000
 //////////////////////
-	lcd_timeoutToStatus.stop(); //infinite timeout
+    lcd_timeoutToStatus.stop(); //infinite timeout
     uint16_t power = eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
-	lcd_home();
-	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S  X %-3d  Y %-3d"), _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
-	menu_back_if_clicked_fb();
+    lcd_home();
+    lcd_printf_P(failStatsFmt, _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+    menu_back_if_clicked_fb();
 }
 
 static void lcd_menu_fails_stats_print()
@@ -1797,14 +1811,14 @@ static void lcd_menu_fails_stats_print()
 // Filam. runouts  000
 // Crash  X 000  Y 000
 //////////////////////
-	lcd_timeoutToStatus.stop(); //infinite timeout
+    lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t power = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
-	lcd_home();
-	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
-	menu_back_if_clicked_fb();
+    lcd_home();
+    lcd_printf_P(failStatsFmt, _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+    menu_back_if_clicked_fb();
 }
 
 /**
@@ -1877,16 +1891,26 @@ static void lcd_menu_debug()
 }
 #endif /* DEBUG_BUILD */
 
+//! @brief common line print for lcd_menu_temperatures
+//! @param [in] ipgmLabel pointer to string in PROGMEM
+//! @param [in] value to be printed behind the label
+static void lcd_menu_temperatures_line(const char *ipgmLabel, int value){
+    static const size_t maxChars = 15;    
+    char tmp[maxChars];
+    pgmtext_with_colon(ipgmLabel, tmp, maxChars);
+    lcd_printf_P(PSTR(" %s%3d\x01 \n"), tmp, value); // no need to add -14.14 to string alignment
+}
 static void lcd_menu_temperatures()
 {
-	lcd_timeoutToStatus.stop(); //infinite timeout
-	lcd_home();
-	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
+    lcd_timeoutToStatus.stop(); //infinite timeout
+    lcd_home();
+    lcd_menu_temperatures_line( _T(MSG_NOZZLE), (int)current_temperature[0] );
+    lcd_menu_temperatures_line( _T(MSG_BED), (int)current_temperature_bed );
 #ifdef AMBIENT_THERMISTOR
-	lcd_printf_P(PSTR(" %S:  %d%c\n" " PINDA:    %d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
-#else //AMBIENT_THERMISTOR
-	lcd_printf_P(PSTR(" PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
-#endif //AMBIENT_THERMISTOR
+    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );
+#endif
+    lcd_menu_temperatures_line( _i("PINDA"), (int)current_temperature_pinda );
+
 
     menu_back_if_clicked();
 }
@@ -2659,7 +2683,7 @@ void lcd_menu_statistics()
 		lcd_clear();
 		lcd_printf_P(_N(
 			"%S:\n"
-			"%8.2fm\n"
+			"%17.2fm  \n"
 			"%S:\n"
 			"%2dh %02dm %02ds"
 		),_i("Filament used"), _met, _i("Print time"), _h, _m, _s);
@@ -2681,7 +2705,7 @@ void lcd_menu_statistics()
 		lcd_clear();
 		lcd_printf_P(_N(
 			"%S:\n"
-			"%8.2fm\n"
+			"%17.2fm  \n"
 			"%S:\n"
 			"%7ldd :%2hhdh :%02hhdm"
 		), _i("Total filament"), _filament_m, _i("Total print time"), _days, _hours, _minutes);
@@ -2823,17 +2847,17 @@ static void lcd_menu_xyz_skew()
 	lcd_printf_P(_N(
 	  "%S:\n"
 	  "%S\n"
-	  "%S:  %5.2f\x01\n"
-	  "%S:  %5.2f\x01"
+	  "%-15.15S%3.2f\x01\n"
+	  "%-15.15S%3.2f\x01"
 	 ),
 	 _i("Measured skew"),
 	 separator,
-	 _i("Slight skew"), _deg(bed_skew_angle_mild),
-	 _i("Severe skew"), _deg(bed_skew_angle_extreme)
+	 _i("Slight skew:"), _deg(bed_skew_angle_mild),
+	 _i("Severe skew:"), _deg(bed_skew_angle_extreme)
 	);
 	if (angleDiff < 100){
 		lcd_set_cursor(15,0);
-		lcd_printf_P(_N("%4.2f\x01"), _deg(angleDiff));
+		lcd_printf_P(_N("%3.2f\x01"), _deg(angleDiff));
 	}
 	else{
 		lcd_set_cursor(15,0);

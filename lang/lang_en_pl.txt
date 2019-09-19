@@ -52,7 +52,7 @@
 
 #
 "SpoolJoin   [N/A]"
-"SpoolJoin    [nd]"
+"SpoolJoin   [N/D]"
 
 #MSG_AUTO_DEPLETE_OFF c=17 r=1
 "SpoolJoin   [off]"
@@ -64,7 +64,7 @@
 
 #MSG_AUTOLOAD_FILAMENT c=17
 "AutoLoad filament"
-"AutoLadowanie fil."
+"Autoladowanie fil."
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
@@ -96,7 +96,7 @@
 
 #MSG_BED_CORRECTION_MENU
 "Bed level correct"
-"Korekta poziomowania stolu"
+"Korekta stolu"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -176,7 +176,7 @@
 
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
-"Wykr.zderzen[n/d]"
+"Wykr.zderzen[N/D]"
 
 #MSG_CRASHDETECT_OFF
 "Crash det.  [off]"
@@ -204,7 +204,7 @@
 
 #MSG_DISABLE_STEPPERS
 "Disable steppers"
-"Wylaczenie silnikow"
+"Wylacz silniki"
 
 #MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
@@ -256,11 +256,11 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-"Went. ekstr:"
+"WentHotend:"
 
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
-"Informacje o ekstruderze"
+"Ekstruder - info"
 
 #MSG_MOVE_E
 "Extruder"
@@ -272,7 +272,7 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"Autolad. fil [wl]"
+"Autolad.fil. [wl]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
@@ -320,7 +320,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filament wychodzi z dyszy a kolor jest czysty?"
+"Filament wychodzi z dyszy, kolor jest ok?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -516,7 +516,7 @@
 
 #
 "Lin. correction"
-"Korekcja lin."
+"Korekcja liniowa"
 
 #MSG_BABYSTEP_Z
 "Live adjust Z"
@@ -604,7 +604,7 @@
 
 #MSG_STEALTH_MODE_ON
 "Mode    [Stealth]"
-"Tryb    [Stealth]"
+"Tryb      [cichy]"
 
 #MSG_AUTO_MODE_ON
 "Mode [auto power]"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Went. Hotend"
+"WentHotend"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -720,7 +720,7 @@
 
 #MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 "Please clean the nozzle for calibration. Click when done."
-"Dla prawidl. kalibracji nalezy oczyscic dysze. Potw. guzikiem."
+"Dla prawidlowej kalibracji nalezy oczyscic dysze. Potwierdz guzikiem."
 
 #MSG_SELFTEST_PLEASECHECK
 "Please check :"
@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Went.wydr:"
+"WentWydruk:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -840,11 +840,11 @@
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
-"Drukarka nie zostala jeszcze skalibrowana. Kieruj sie Samouczkiem: rozdzial Pierwsze Kroki, sekcja Konfiguracja przed drukowaniem."
+"Drukarka nie byla jeszcze kalibrowana. Kieruj sie Samouczkiem: rozdzial Pierwsze Kroki, sekcja Konfiguracja przed drukowaniem."
 
 #
 "Print FAN"
-"Went.wydr"
+"WentWydruk"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -924,7 +924,7 @@
 
 #MSG_SELFTEST_START c=20
 "Self test start  "
-"Rozpoczynanie Selftestu"
+"Selftest startuje"
 
 #MSG_SELFTEST
 "Selftest         "
@@ -932,7 +932,7 @@
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"
-"Blad selftest !"
+"Blad selftest!"
 
 #MSG_SELFTEST_FAILED c=20
 "Selftest failed  "
@@ -952,7 +952,7 @@
 
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
-"Ustaw. temperatury:"
+"Ustaw temperature:"
 
 #MSG_SETTINGS
 "Settings"
@@ -979,12 +979,12 @@
 "Sortowanie [czas]"
 
 #
-"Severe skew"
-"ZnacznySkos"
+"Severe skew:"
+"Znaczny skos:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
-"Sortowan[alfabet]"
+"Sortowanie[alfab]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
@@ -992,19 +992,19 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Dzwiek   [Glosny]"
+"Dzwiek   [glosny]"
 
 #
-"Slight skew"
-"Lekki skos"
+"Slight skew:"
+"Lekki skos:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Dzwiek[Wylaczony]"
+"Dzwiek[wylaczony]"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
-"Wykryto problem, wymuszono poziomowanie osi Z ..."
+"Wykryto problem, wymuszono poziomowanie osi Z."
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1012,7 +1012,7 @@
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Dzwiek    [Cichy]"
+"Dzwiek    [cichy]"
 
 #MSG_SPEED
 "Speed"
@@ -1084,11 +1084,11 @@
 
 #
 "Total filament"
-"Calkowita dlugosc filamentu"
+"Zuzycie filamentu"
 
 #
 "Total print time"
-"Calkowity czas druku"
+"Laczny czas druku"
 
 #MSG_TUNE
 "Tune"
@@ -1280,7 +1280,7 @@
 
 #
 "Magnets comp.[N/A]"
-"Kor. magnesow [nd]"
+"Kor. magnesow[N/D]"
 
 #
 "Magnets comp.[Off]"
@@ -1300,7 +1300,7 @@
 
 #
 "Mesh bed leveling"
-"Poziomowanie wg siatki"
+"Poziomowanie stolu"
 
 #
 "MK3S firmware detected on MK3 printer"
@@ -1413,10 +1413,9 @@
 #
 "Sheet"
 "Plyta"
-
 #
-"Sound     [assist]"
-"Dzwiek    [asyst.]"
+"Sound    [assist]"
+"Dzwiek   [asyst.]"
 
 #
 "Steel sheets"
@@ -1428,8 +1427,12 @@
 
 #
 "Z-probe nr.    [1]"
-"Pomiar-Z       [1]"
+"Ilosc Pomiarow [1]"
 
 #
 "Z-probe nr.    [3]"
-"Pomiar-Z       [3]"
+"Ilosc Pomiarow [3]"
+
+#
+"Z-probe nr.    [5]"
+"Ilosc Pomiarow [5]"
