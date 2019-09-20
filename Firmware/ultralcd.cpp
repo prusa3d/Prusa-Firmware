@@ -1742,7 +1742,8 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 				pat9125_update();
 			lcd_printf_P(_N(
 				"Fil. Xd:%3d Yd:%3d\n" ////c=4 r=1
-				"Int: %3d  Shut: %3d" ////c=4 r=1  ////c=4 r=1
+				"Int: %3d  " ////c=4 r=1
+				"Shut: %3d"  ////c=4 r=1
 			),
 				pat9125_x, pat9125_y,
 				pat9125_b, pat9125_s
@@ -1790,7 +1791,10 @@ static void lcd_menu_fails_stats_mmu_print()
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
     lcd_home();
-    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);  ////c=20 r=1  ////c=14 r=1 ////c=14 r=1
+    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
+        _i("Last print failures"), ////c=20 r=1
+        _i("MMU fails"), fails, ////c=14 r=1
+        _i("MMU load fails"), load_fails); ////c=14 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -1812,7 +1816,11 @@ static void lcd_menu_fails_stats_mmu_total()
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
     lcd_home();
-    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);  ////c=20 r=1  ////c=14 r=1  ////c=14 r=1  ////c=14 r=1
+    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
+        _i("Total failures"), ////c=20 r=1
+        _i("MMU fails"), fails, ////c=14 r=1
+        _i("MMU load fails"), load_fails, ////c=14 r=1
+        _i("MMU power fails"), mmu_power_failures); ////c=14 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -1838,7 +1846,11 @@ static void lcd_menu_fails_stats_total()
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
     lcd_home();
-    lcd_printf_P(failStatsFmt, _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);  ////c=20 r=1  ////c=14 r=1  ////c=14 r=1  ////c=7 r=1
+    lcd_printf_P(failStatsFmt, 
+        _i("Total failures"),   ////c=20 r=1
+        _i("Power failures"), power,   ////c=14 r=1
+        _i("Filam. runouts"), filam,   ////c=14 r=1
+        _i("Crash"), crashX, crashY);  ////c=7 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -1861,7 +1873,11 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
     lcd_home();
-    lcd_printf_P(failStatsFmt, _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);  ////c=20 r=1  ////c=14 r=1  ////c=14 r=1  ////c=7 r=1
+    lcd_printf_P(failStatsFmt,
+        _i("Last print failures"),  ////c=20 r=1
+        _i("Power failures"), power,  ////c=14 r=1
+        _i("Filam. runouts"), filam,  ////c=14 r=1
+        _i("Crash"), crashX, crashY);  ////c=7 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -1912,7 +1928,10 @@ static void lcd_menu_fails_stats()
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
 	lcd_home();
-    lcd_printf_P(PSTR("Last print failures\n" " Filam. runouts  %-3d\n" "Total failures\n" " Filam. runouts  %-3d"), filamentLast, filamentTotal);  ////c=20 r=1  ////c=14 r=1  ////c=20 r=1  ////c=14 r=1
+    lcd_printf_P(PSTR("Last print failures\n"  ////c=20 r=1 
+        " Filam. runouts  %-3d\n"   ////c=14 r=1
+        "Total failures\n"  ////c=20 r=1
+        " Filam. runouts  %-3d"), filamentLast, filamentTotal);  ////c=14 r=1
     menu_back_if_clicked();
 }
 #else
@@ -1948,7 +1967,10 @@ static void lcd_menu_debug()
 {
 #ifdef DEBUG_STACK_MONITOR
 	lcd_home();
-	lcd_printf_P(PSTR("RAM statistics\n" " SP_min: 0x%04x\n" " heap_start: 0x%04x\n" " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);  ////c=20 r=1  ////c=14 r=1  ////c=14 r=1  ////c=14 r=1
+	lcd_printf_P(PSTR("RAM statistics\n"  ////c=20 r=1
+        " SP_min: 0x%04x\n"   ////c=14 r=1
+        " heap_start: 0x%04x\n"   ////c=14 r=1
+        " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);  ////c=14 r=1
 #endif //DEBUG_STACK_MONITOR
 
 	menu_back_if_clicked_fb();
@@ -2859,7 +2881,9 @@ void lcd_menu_statistics()
 			"%17.2fm  \n"
 			"%S:\n"
 			"%2dh %02dm %02ds"
-		),_i("Filament used"), _met, _i("Print time"), _h, _m, _s);  ////c=18 r=1  ////c=18 r=1
+		    ),
+            _i("Filament used"), _met,  ////c=18 r=1
+            _i("Print time"), _h, _m, _s);  ////c=18 r=1
 		menu_back_if_clicked_fb();
 	}
 	else
@@ -4752,7 +4776,9 @@ void lcd_v2_calibration()
 {
 	if (mmu_enabled)
 	{
-	    const uint8_t filament = choose_menu_P(_i("Select PLA filament:"),_T(MSG_FILAMENT),_i("Cancel")); ////c=20 r=1  ////c=19 r=1
+	    const uint8_t filament = choose_menu_P(
+            _i("Select PLA filament:"), ////c=20 r=1
+            _T(MSG_FILAMENT),_i("Cancel"));  ////c=19 r=1
 	    if (filament < 5)
 	    {
 	        lcd_commands_step = 20 + filament;
