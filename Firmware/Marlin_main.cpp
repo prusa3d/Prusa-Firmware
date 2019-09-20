@@ -1747,6 +1747,10 @@ void loop()
 	{
 		is_usb_printing = false;
 	}
+    if (isPrintPaused && saved_printing_type == PRINTING_TYPE_USB) //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
+	{
+		is_usb_printing = true;
+	}
     
 #ifdef FANCHECK
     if ((saved_printing_type == PRINTING_TYPE_USB) && fan_check_error)
@@ -3463,7 +3467,7 @@ void process_commands()
             // SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
             lcd_pause_print();
         } // otherwise it has already been reported, so just ignore further processing
-        if(saved_printing_type == PRINTING_TYPE_USB) return; //ignore usb stream.
+        return; //ignore usb stream. It is reenabled by selecting resume from the lcd.
     }
 #endif
 

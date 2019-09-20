@@ -6847,6 +6847,7 @@ void lcd_print_stop()
           SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
           }
 	saved_printing = false;
+    saved_printing_type = PRINTING_TYPE_NONE;
 	cancel_heatup = true;
 #ifdef MESH_BED_LEVELING
 	mbl.active = false;
