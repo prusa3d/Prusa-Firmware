@@ -1416,8 +1416,8 @@
 "Plaat"
 
 #
-"Sound     [assist]"
-"Geluid    [assist]"
+"Sound    [assist]"
+"Geluid   [assist]"
 
 #
 "Steel sheets"
@@ -1434,3 +1434,8 @@
 #
 "Z-probe nr.    [3]"
 "Z-probe nr.    [3]"
+
+#
+"Z-probe nr.    [5]"
+"Z-probe nr.    [5]"
+
