@@ -16,7 +16,7 @@
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-"ATTENTION:\x0aDetection de crash\x0adesactivee en\x0amode Furtif"
+"ATTENTION:\x0aDetection de crash\x0adesactivee en\x0amode feutre"
 
 #
 ">Cancel"
@@ -24,7 +24,7 @@
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Ajuster Z :"
+"Ajuster Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
@@ -32,7 +32,7 @@
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
-"Tout est pret. Bonne impression !"
+"Tout est pret. Bonne impression!"
 
 #
 "Ambient"
@@ -62,9 +62,9 @@
 "Auto home"
 "Mise a 0 des axes"
 
-#MSG_AUTOLOAD_FILAMENT c=17
+#MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
-"AutoCharge du filament"
+"Autocharge du fil."
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
@@ -72,7 +72,7 @@
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Chargement auto du filament actif, appuyez sur le btn et inserez le fil."
+"Chargement auto. du fil. active, appuyez sur le bouton et inserez le fil."
 
 #MSG_SELFTEST_AXIS_LENGTH
 "Axis length"
@@ -100,7 +100,7 @@
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
-"Echec bed leveling. Capt. non declenche. Debris sur buse ? En attente d'un reset."
+"Echec bed leveling. Capt. non declenche. Debris sur buse? En attente d'un reset."
 
 #MSG_BED
 "Bed"
@@ -112,7 +112,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"Coupure detectee. Recup. impression ?"
+"Coupure detectee. Reprendre impression?"
 
 #
 "Calibrating home"
@@ -132,15 +132,15 @@
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-"Calibration de XYZ. Tournez le bouton pour monter le chariot de l'axe Z jusqu'aux butees. Cliquez une fois fait."
+"Calibration de XYZ. Tournez le bouton pour faire monter l'extrudeur dans l'axe Z jusqu'aux butees. Cliquez une fois fait."
 
 #MSG_CALIBRATE_Z_AUTO c=20 r=2
 "Calibrating Z"
-"Calibration de Z"
+"Calibration Z"
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-"Calibration de Z. Tournez le bouton pour monter le chariot de l'axe Z jusqu'aux butees. Cliquez une fois fait."
+"Calibration de Z. Tournez le bouton pour faire monter l'extrudeur dans l'axe Z jusqu'aux butees. Cliquez une fois fait."
 
 #MSG_HOMEYZ_DONE
 "Calibration done"
@@ -168,7 +168,7 @@
 
 #
 "Copy selected language?"
-"Copier la langue selectionne ?"
+"Copier la langue selectionne?"
 
 #MSG_CRASHDETECT_ON
 "Crash det.   [on]"
@@ -188,7 +188,7 @@
 
 #
 "Crash detected. Resume print?"
-"Crash detecte. Poursuivre l'impression ?"
+"Crash detecte. Poursuivre l'impression?"
 
 #
 "Crash"
@@ -200,7 +200,7 @@
 
 #MSG_DATE c=17 r=1
 "Date:"
-"Date :"
+"Date:"
 
 #MSG_DISABLE_STEPPERS
 "Disable steppers"
@@ -212,7 +212,7 @@
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
-"Voulez-vous repeter la derniere etape pour reajuster la distance entre la buse et le plateau chauffant ?"
+"Voulez-vous repeter la derniere etape pour reajuster la distance entre la buse et le plateau chauffant?"
 
 #MSG_EXTRUDER_CORRECTION c=10
 "E-correct:"
@@ -220,15 +220,15 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Ejecter le fil."
+"Remonter le fil."
 
 #
 "Eject"
-"Ejecter"
+"Remonter"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
-"Ejection filament"
+"Le fil. remonte"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
@@ -248,11 +248,11 @@
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"ERREUR : Le capteur de filament ne repond pas, verifiez le branchement."
+"ERREUR: Le capteur de filament ne repond pas, verifiez le branchement."
 
 #MSG_ERROR
 "ERROR:"
-"ERREUR :"
+"ERREUR:"
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
@@ -268,23 +268,23 @@
 
 #
 "Fail stats MMU"
-"Stat. echecs MMU"
+"Stat. d'echec MMU"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"ChargAuto f. [on]"
+"Autochargeur [on]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
-"AutoCharg F [N/A]"
+"Autochargeur[N/A]"
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
-"AutoCharg F [off]"
+"Autochargeur[off]"
 
 #
 "Fail stats"
-"Statist. d'echec"
+"Stat. d'echec"
 
 #MSG_FAN_SPEED c=14
 "Fan speed"
@@ -292,15 +292,15 @@
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
-"Test ventilateur"
+"Test du ventilateur"
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Verif ventilo[on]"
+"Verif vent.  [on]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Verif venti [off]"
+"Verif vent. [off]"
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
@@ -308,7 +308,7 @@
 
 #MSG_FSENSOR_NA
 "Fil. sensor [N/A]"
-"Capteur Fil. [N/A]"
+"Capteur Fil.[N/A]"
 
 #MSG_FSENSOR_OFF
 "Fil. sensor [off]"
@@ -320,7 +320,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filament extrude et avec bonne couleur ?"
+"Filament extrude et avec bonne couleur?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -340,11 +340,11 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
-"Fichier incomplet. Continuer qd meme ?"
+"Fichier incomplet. Continuer qd meme?"
 
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
-"Mouvements de fin"
+"Mouvement final"
 
 #MSG_V2_CALIBRATION c=17 r=1
 "First layer cal."
@@ -352,11 +352,11 @@
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
-"D'abord, je vais lancer le Selftest pour verifier les problemes d'assemblage les plus communs."
+"D'abord, je vais lancer le Auto-test pour verifier les problemes d'assemblage les plus communs."
 
 #
 "Fix the issue and then press button on MMU unit."
-"Corrigez le probleme et appuyez sur le bouton de l'unite MMU."
+"Corrigez le probleme et appuyez sur le bouton sur la MMU."
 
 #MSG_FLOW
 "Flow"
@@ -368,7 +368,7 @@
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
-"Ventilo impr avant ?"
+"Ventilo impr avant?"
 
 #MSG_BED_CORRECTION_FRONT c=14 r=1
 "Front side[um]"
@@ -384,7 +384,7 @@
 
 #MSG_BED_HEATING_SAFETY_DISABLED
 "Heating disabled by safety timer."
-"Chauffe desactivee par le compteur de securite."
+"Chauffage desactivee par le compteur de securite."
 
 #MSG_HEATING_COMPLETE c=20
 "Heating done."
@@ -396,7 +396,7 @@
 
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
-"Bonjour, je suis votre imprimante Original Prusa i3. Voulez-vous que je vous guide a travers le processus d'installation ?"
+"Bonjour, je suis votre imprimante Original Prusa i3. Voulez-vous que je vous guide a travers le processus d'installation?"
 
 #MSG_PRUSA3D_HOWTO
 "howto.prusa3d.com"
@@ -420,11 +420,11 @@
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
 "Checking endstops"
-"Verifications butees"
+"Verification butees"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
 "Checking hotend  "
-"Verif. tete impr."
+"Verif. du hotend"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
 "Checking sensors "
@@ -444,11 +444,11 @@
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
-"Choisir extrudeur :"
+"Choisir extrudeur:"
 
 #MSG_CHOOSE_FILAMENT c=20 r=1
 "Choose filament:"
-"Choix du filament :"
+"Choix du filament:"
 
 #MSG_FILAMENT c=17 r=1
 "Filament"
@@ -456,11 +456,11 @@
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
-"Je vais maintenant lancer la calibration xyz. Cela prendra 12 min environ."
+"Je vais maintenant lancer la calibration XYZ. Cela prendra 12 min environ."
 
 #MSG_WIZARD_Z_CAL c=20 r=8
 "I will run z calibration now."
-"Je vais maintenant lancer la calibration z."
+"Je vais maintenant lancer la calibration Z."
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
@@ -472,7 +472,7 @@
 
 #
 "Is filament 1 loaded?"
-"Le filament 1 est-il charge ?"
+"Fil.1 est-il charge?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -480,27 +480,27 @@
 
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
-"Le filament est-il charge ?"
+"Fil. est-il charge?"
 
 #MSG_WIZARD_PLA_FILAMENT c=20 r=2
 "Is it PLA filament?"
-"Est-ce du filament PLA ?"
+"Est-ce du filament PLA?"
 
 #MSG_PLA_FILAMENT_LOADED c=20 r=2
 "Is PLA filament loaded?"
-"Le filament PLA est-il charge ?"
+"Fil. PLA est-il charge?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"Feuille d'acier sur plateau chauffant ?"
+"Plaque d'impression sur le lit chauffant?"
 
 #
 "Last print failures"
-"Echecs derniere impr"
+"Echecs derniere imp."
 
 #
 "Last print"
-"Derniere impression"
+"Derniere impres."
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20
 "Left hotend fan?"
@@ -520,7 +520,7 @@
 
 #MSG_BABYSTEP_Z
 "Live adjust Z"
-"Ajuster Z en direct"
+"Ajuster Z en dir."
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
@@ -528,11 +528,11 @@
 
 #MSG_LOADING_COLOR
 "Loading color"
-"Chargement couleur"
+"Charg. de la couleur"
 
 #MSG_LOADING_FILAMENT c=20
 "Loading filament"
-"Chargement filament"
+"Chargement du fil."
 
 #MSG_LOOSE_PULLEY c=20 r=1
 "Loose pulley"
@@ -540,7 +540,7 @@
 
 #
 "Load to nozzle"
-"Charger dans la buse"
+"Charger la buse"
 
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
@@ -548,7 +548,7 @@
 
 #MSG_MAIN
 "Main"
-"Principal"
+"Menu principal"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
@@ -564,15 +564,15 @@
 
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
-"MMU OK. Remontee en temperature..."
+"MMU OK. Rechauffage de la buse..."
 
 #
 "Measured skew"
-"Deviation mesuree"
+"Deviat.mesuree"
 
 #
 "MMU fails"
-"Echec MMU"
+"Echecs MMU"
 
 #
 "MMU load failed     "
@@ -592,7 +592,7 @@
 
 #MSG_SILENT_MODE_ON
 "Mode     [silent]"
-"Mode [silencieux]"
+"Mode     [feutre]"
 
 #
 "MMU needs user attention."
@@ -604,7 +604,7 @@
 
 #MSG_STEALTH_MODE_ON
 "Mode    [Stealth]"
-"Mode     [Furtif]"
+"Mode     [furtif]"
 
 #MSG_AUTO_MODE_ON
 "Mode [auto power]"
@@ -684,7 +684,7 @@
 
 #
 "Now remove the test print from steel sheet."
-"Retirez maintenant l'impression de test de la feuille d'acier."
+"Retirez maintenant l'impression de test de la plaque en acier."
 
 #
 "Nozzle FAN"
@@ -716,7 +716,7 @@
 
 #MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 "Please clean heatbed and then press the knob."
-"Nettoyez le plateau chauffant et appuyez sur le bouton."
+"Nettoyez la plaque en acier et appuyez sur le bouton."
 
 #MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 "Please clean the nozzle for calibration. Click when done."
@@ -724,11 +724,11 @@
 
 #MSG_SELFTEST_PLEASECHECK
 "Please check :"
-"Verifiez :"
+"Verifiez:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
-"Merci de verifier notre manuel et de corriger le probleme. Poursuivez alors l'assistant en redemarrant l'imprimante."
+"Merci de consulter notre manuel et de corriger le probleme. Poursuivez alors l'assistant en redemarrant l'imprimante."
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 "Please insert PLA filament to the extruder, then press knob to load it."
@@ -744,7 +744,7 @@
 
 #MSG_PLACE_STEEL_SHEET c=20 r=4
 "Please place steel sheet on heatbed."
-"Placez la feuille d'acier sur le plateau chauffant."
+"Placez la plaque en acier sur le plateau chauffant."
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
@@ -752,7 +752,7 @@
 
 #
 "Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"Veuillez inserer du filament PLA dans le premier tube du MMU, et pressez sur le bouton pour le charger."
+"Inserez du PLA dans le 1er tube du MMU, appuyez sur le bouton pour le charger."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -764,7 +764,7 @@
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
-"Retirez la feuille d'acier du plateau chauffant."
+"Retirez la plaque en acier du plateau chauffant."
 
 #MSG_RUN_XYZ c=20 r=4
 "Please run XYZ calibration first."
@@ -780,7 +780,7 @@
 
 #
 "Please remove shipping helpers first."
-"Veuillez retirer d'abord les protections d'envoi."
+"Retirez d'abord les protections de transport."
 
 #MSG_PREHEAT_NOZZLE c=20
 "Preheat the nozzle!"
@@ -810,21 +810,21 @@
 "Print aborted"
 "Impression annulee"
 
-#
+# c=20 r=1
 "Preheating to load"
 "Chauffe pour charger"
 
-#
+# c=20 r=1
 "Preheating to unload"
-"Chauffe pr decharger"
+"Chauf.pour decharger"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Vent.impr:"
+"Vent. impr:"
 
 #MSG_CARD_MENU
 "Print from SD"
-"Impr depuis la SD"
+"Impr. depuis la SD"
 
 #
 "Press the knob"
@@ -836,7 +836,7 @@
 
 #
 "Press the knob to resume nozzle temperature."
-"Appuyez sur le bouton pour poursuivre la mise en temperature de la buse."
+"Appuyez sur le bouton pour rechauffer la buse."
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Vent.impr"
+"Vent. impr"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -868,7 +868,7 @@
 
 #MSG_CALIBRATE_BED_RESET
 "Reset XYZ calibr."
-"Reinit.calibr. XYZ"
+"Reinit. calib. XYZ"
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
@@ -896,7 +896,7 @@
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-"Lancer l'Assistant supprimera les resultats actuels de calibration et commencera du debut. Continuer ?"
+"Lancement de l'Assistant supprimera les resultats actuels de calibration et commencera du debut. Continuer?"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 "SD card  [normal]"
@@ -904,7 +904,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"CarteSD[flashAir]"
+"CarteSD [flshAir]"
 
 #
 "Right"
@@ -932,7 +932,7 @@
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"
-"Erreur auto-test !"
+"Erreur auto-test!"
 
 #MSG_SELFTEST_FAILED c=20
 "Selftest failed  "
@@ -948,11 +948,11 @@
 
 #
 "Select PLA filament:"
-"Selectionnez le filament PLA :"
+"Selectionnez le fil. PLA:"
 
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
-"Regler temp. :"
+"Regler temp.:"
 
 #MSG_SETTINGS
 "Settings"
@@ -979,8 +979,8 @@
 "Tri       [heure]"
 
 #
-"Severe skew"
-"Deviat.sev."
+"Severe skew:"
+"Deviat.sev.:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +995,8 @@
 "Son        [fort]"
 
 #
-"Slight skew"
-"Deviat.leg."
+"Slight skew:"
+"Deviat.leg.:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1004,7 +1004,7 @@
 
 #
 "Some problem encountered, Z-leveling enforced ..."
-"Problemes rencontres, nivellement de l'axe Z applique..."
+"Probleme rencontre, cliquez sur le bouton pour niveller l'axe Z..."
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1012,7 +1012,7 @@
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Son  [silencieux]"
+"Son      [feutre]"
 
 #MSG_SPEED
 "Speed"
@@ -1080,7 +1080,7 @@
 
 #MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
-"Il y a encore besoin d'effectuer la calibration Z. Veuillez suivre le manuel, chapitre Premiers pas, section Processus de calibration."
+"Il faut toujours effectuer la Calibration Z. Veuillez suivre le manuel, chapitre Premiers pas, section Processus de calibration."
 
 #
 "Total filament"
@@ -1148,23 +1148,23 @@
 
 #
 "Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
-"Utilisez decharger pour retirer le filament 1 s'il depasse du  tube arriere du MMU. Utilisez ejecter s'il est cache dans le tube."
+"Utilisez Remonter le fil. pour retirer le filament 1 s'il depasse du tube arriere du MMU. Utilisez ejecter s'il est cache dans le tube."
 
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
-"Attention : Types d'imprimante et de carte mere modifies"
+"Attention: Types d'imprimante et de carte mere modifies"
 
 #MSG_CHANGED_MOTHERBOARD c=20 r=4
 "Warning: motherboard type changed."
-"Attention : Type de carte mere modifie."
+"Attention: Type de carte mere modifie."
 
 #MSG_CHANGED_PRINTER c=20 r=4
 "Warning: printer type changed."
-"Attention : Type d'imprimante modifie"
+"Attention: Type d'imprimante modifie"
 
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
-"Dechargement du filament reussi ?"
+"Dechargement du filament reussi?"
 
 #MSG_SELFTEST_WIRINGERROR
 "Wiring error"
@@ -1188,7 +1188,7 @@
 
 #MSG_WIZARD_QUIT c=20 r=8
 "You can always resume the Wizard from Calibration -> Wizard."
-"Vous pouvez toujours relancer l'assistant dans Calibration-> Assistant."
+"Vous pouvez toujours relancer l'Assistant dans Calibration > Assistant."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 "XYZ calibration all right. Skew will be corrected automatically."
@@ -1196,7 +1196,7 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-"Calibration XYZ OK. Les axes X/Y sont legerement non perpendiculaires. Bon boulot !"
+"Calibration XYZ OK. Les axes X/Y sont legerement non perpendiculaires. Bon boulot!"
 
 #
 "X-correct:"
@@ -1204,11 +1204,11 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-"Calibration XYZ OK. Les axes X/Y sont perpendiculaires. Felicitations !"
+"Calibration XYZ OK. Les axes X/Y sont perpendiculaires. Felicitations!"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 "XYZ calibration compromised. Front calibration points not reachable."
-"Calibration XYZ compromise. Les points de calibration avant ne sont pas atteignables."
+"Calibration XYZ compromise. Les points de calibration en avant ne sont pas atteignables."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
@@ -1216,7 +1216,7 @@
 
 #MSG_LOAD_ALL c=17
 "Load all"
-"Tout charger"
+"Charger un par un"
 
 #
 "XYZ calibration failed. Bed calibration point was not found."
@@ -1224,7 +1224,7 @@
 
 #
 "XYZ calibration failed. Front calibration points not reachable."
-"Echec calibration XYZ. Les points de calibration avant ne sont pas atteignables."
+"Echec calibration XYZ. Les points de calibration en avant ne sont pas atteignables."
 
 #
 "XYZ calibration failed. Right front calibration point not reachable."
@@ -1280,15 +1280,15 @@
 
 #
 "Magnets comp.[N/A]"
-"Comp. aimants[N/A]"
+"Compens. aim.[N/A]"
 
 #
 "Magnets comp.[Off]"
-"Comp. aimants[Off]"
+"Compens. aim.[off]"
 
 #
 "Magnets comp. [On]"
-"Comp. aimants [On]"
+"Compens. aim. [on]"
 
 #
 "Mesh         [3x3]"
@@ -1308,11 +1308,11 @@
 
 #
 "MMU Mode [Normal]"
-"Mode MMU [Normal]"
+"Mode MMU [normal]"
 
 #
 "MMU Mode[Stealth]"
-"Mode MMU [Furtif]"
+"Mode MMU [feutre]"
 
 #
 "Mode change in progress ..."
@@ -1368,7 +1368,7 @@
 
 #
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
-"Le G-code a ete prepare pour une autre version de l'imprimante. Veuillez decouper le modele a nouveau. L'impression a ete annulee. "
+"Le G-code a ete prepare pour une autre version de l'imprimante. Veuillez decouper le modele a nouveau. L'impression a ete annulee."
 
 #
 "G-code sliced for a newer firmware. Continue?"
@@ -1376,27 +1376,27 @@
 
 #
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
-"Le G-code a ete prepare pour une version plus recente du firmware. Veuillez mettre a jour le firmware. L'impression  annulee."
+"Le G-code a ete prepare pour une version plus recente du firmware. Veuillez mettre a jour le firmware. L'impression annulee."
 
 #
 "PINDA:"
 "PINDA:"
 
-#
+# c=20 r=1
 "Preheating to cut"
-"Prechauffage pour couper"
+"Chauffe pour couper"
 
-#
+# c=20 r=1
 "Preheating to eject"
-"Prechauffage pour ejecter"
+"Chauf. pour remonter"
 
 #
 "Printer nozzle diameter differs from the G-code. Continue?"
-"Diametre de la  buse de l'imprimante different du G-Code. Continuer ?"
+"Diametre de la buse dans les reglages ne correspond pas a celui dans le G-Code. Continuer?"
 
 #
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
-"Diametre de la  buse de l'imprimante different du G-Code. Merci de verifier le parametre dans les reglages. Impression annulee."
+"Diametre de la buse dans les reglages ne correspond pas a celui dans le G-Code. Merci de verifier le parametre dans les reglages. Impression annulee."
 
 #
 "Rename"
@@ -1412,11 +1412,11 @@
 
 #
 "Sheet"
-"Feuille"
+"Plaque"
 
 #
-"Sound     [assist]"
-"Son       [Assist]"
+"Sound    [assist]"
+"Son      [assist]"
 
 #
 "Steel sheets"
@@ -1428,8 +1428,13 @@
 
 #
 "Z-probe nr.    [1]"
-"Sonde-Z num.   [1]"
+"Mesurer x-fois [1]"
 
 #
 "Z-probe nr.    [3]"
-"Sonde-Z num.   [3]"
+"Mesurer x-fois [3]"
+
+#
+"Z-probe nr.    [5]"
+"Mesurer x-fois [5]"
+ 

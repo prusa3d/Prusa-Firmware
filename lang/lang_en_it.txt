@@ -72,7 +72,7 @@
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Il caricamento automatico e attivo, premete la manopola e inserite il filamento..."
+"Caricamento automatico attivo, premi la manopola e inserisci il filamento."
 
 #MSG_SELFTEST_AXIS_LENGTH
 "Axis length"
@@ -108,7 +108,7 @@
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
-"Stato delle cinghie"
+"Stato cinghie"
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
@@ -172,15 +172,15 @@
 
 #MSG_CRASHDETECT_ON
 "Crash det.   [on]"
-"Rilevam.imp. [on]"
+"Rileva.crash [on]"
 
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
-"Rilevam.imp.[N/A]"
+"Rileva.crash[N/A]"
 
 #MSG_CRASHDETECT_OFF
 "Crash det.  [off]"
-"Rilevam.imp.[off]"
+"Rileva.crash[off]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -272,7 +272,7 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"Autocar.filam[on]"
+"Autocar.fil. [on]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
@@ -304,15 +304,15 @@
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
-"Sensor filam.[on]"
+"Sensore fil. [on]"
 
 #MSG_FSENSOR_NA
 "Fil. sensor [N/A]"
-"Sensor filam[N/A]"
+"Sensore fil.[N/A]"
 
 #MSG_FSENSOR_OFF
 "Fil. sensor [off]"
-"Sensor filam[off]"
+"Sensore fil.[off]"
 
 #
 "Filam. runouts"
@@ -348,7 +348,7 @@
 
 #MSG_V2_CALIBRATION c=17 r=1
 "First layer cal."
-"Calibrazione primo layer."
+"Cal. primo strato"
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
@@ -516,7 +516,7 @@
 
 #
 "Lin. correction"
-"Correzione lin."
+"Correzione lineare"
 
 #MSG_BABYSTEP_Z
 "Live adjust Z"
@@ -556,7 +556,7 @@
 
 #MSG_MESH_BED_LEVELING
 "Mesh Bed Leveling"
-"Mesh livel. letto"
+"Livel. piatto"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -588,11 +588,11 @@
 
 #MSG_STEALTH_MODE_OFF
 "Mode     [Normal]"
-"Modo    [normale]"
+"Mod.    [normale]"
 
 #MSG_SILENT_MODE_ON
 "Mode     [silent]"
-"Modo [silenzioso]"
+"Mod. [silenziosa]"
 
 #
 "MMU needs user attention."
@@ -604,15 +604,15 @@
 
 #MSG_STEALTH_MODE_ON
 "Mode    [Stealth]"
-"Modo [Silenziosa]"
+"Mod. [silenziosa]"
 
 #MSG_AUTO_MODE_ON
 "Mode [auto power]"
-"Modo       [auto]"
+"Mod.       [auto]"
 
 #MSG_SILENT_MODE_OFF
 "Mode [high power]"
-"Mode      [forte]"
+"Mod.      [forte]"
 
 #
 "MMU2 connected"
@@ -976,11 +976,11 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
-"Ordina    [tempo]"
+"Ordina    [cron.]"
 
 #
-"Severe skew"
-"Devia.grave"
+"Severe skew:"
+"Devia.grave:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +995,8 @@
 "Suono     [forte]"
 
 #
-"Slight skew"
-"Devia.lieve"
+"Slight skew:"
+"Devia.lieve:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1415,8 +1415,8 @@
 "Piano"
 
 #
-"Sound     [assist]"
-"Suono  [assistito]"
+"Sound    [assist]"
+"Suono   [assist.]"
 
 #
 "Steel sheets"
@@ -1433,3 +1433,7 @@
 #
 "Z-probe nr.    [3]"
 "Z-probe nr.    [3]"
+
+#
+"Z-probe nr.    [5]"
+"Z-probe nr.    [5]"
