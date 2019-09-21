@@ -64,7 +64,7 @@
 
 #MSG_AUTOLOAD_FILAMENT c=17
 "AutoLoad filament"
-"Auto-Laden Filament"
+"AutoLaden Filament"
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
@@ -320,7 +320,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filament extrudiert + richtige Farbe?"
+"Filament extrudiert mit richtiger Farbe?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -556,11 +556,11 @@
 
 #MSG_MESH_BED_LEVELING
 "Mesh Bed Leveling"
-"Mesh Bett Ausgleich"
+"MeshBett Ausgleich"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
-"MMU OK. Position    wiederherstellen... "
+"MMU OK. Position wiederherstellen..."
 
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
@@ -828,7 +828,7 @@
 
 #
 "Press the knob"
-"Knopf druecken"
+"Knopf druecken zum"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Druckvent"
+"Druckvent."
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -868,7 +868,7 @@
 
 #MSG_CALIBRATE_BED_RESET
 "Reset XYZ calibr."
-"XYZ Kalibr. zuruecksetzen."
+"Reset XYZ Kalibr."
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
@@ -936,7 +936,7 @@
 
 #MSG_SELFTEST_FAILED c=20
 "Selftest failed  "
-"Selbsttest misslang  "
+"Selbsttest Error "
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -979,8 +979,8 @@
 "Sort.      [Zeit]"
 
 #
-"Severe skew"
-"Schwer.Schr"
+"Severe skew:"
+"Schwer.Schr:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +995,8 @@
 "Sound      [laut]"
 
 #
-"Slight skew"
-"Leicht.Schr"
+"Slight skew:"
+"Leicht.Schr:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1104,11 +1104,11 @@
 
 #
 "to load filament"
-"zum Filament laden"
+"Filament laden"
 
 #
 "to unload filament"
-"zum Filament entladen"
+"Filament entladen"
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
@@ -1249,7 +1249,7 @@
 
 #
 "Checks"
-"\x00"
+"Kontrolle"
 
 #
 "False triggering"
@@ -1265,11 +1265,11 @@
 
 #
 "Firmware [strict]"
-"Firmware [streng]"
+"Firmware [strikt]"
 
 #
 "Firmware   [warn]"
-"\x00"
+"Firmware [warnen]"
 
 #
 "HW Setup"
@@ -1293,15 +1293,15 @@
 
 #
 "Mesh         [3x3]"
-"\x00"
+"Gitter       [3x3]"
 
 #
 "Mesh         [7x7]"
-"\x00"
+"Gitter       [7x7]"
 
 #
 "Mesh bed leveling"
-"Mesh Bett Ausgleich"
+"MeshBett Ausgleich"
 
 #
 "MK3S firmware detected on MK3 printer"
@@ -1325,11 +1325,11 @@
 
 #
 "Model    [strict]"
-"Modell   [streng]"
+"Modell   [strikt]"
 
 #
 "Model      [warn]"
-"Modell     [warn]"
+"Modell   [warnen]"
 
 #
 "Nozzle d.  [0.25]"
@@ -1349,11 +1349,11 @@
 
 #
 "Nozzle   [strict]"
-"Duese    [streng]"
+"Duese    [strikt]"
 
 #
 "Nozzle     [warn]"
-"Duese      [warn]"
+"Duese    [warnen]"
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1416,8 +1416,8 @@
 "Blech"
 
 #
-"Sound     [assist]"
-"Sound     [Assist]"
+"Sound    [assist]"
+"Sound    [Assist]"
 
 #
 "Steel sheets"
@@ -1434,3 +1434,7 @@
 #
 "Z-probe nr.    [3]"
 "Z-Probe Nr.    [3]"
+
+#
+"Z-probe nr.    [5]"
+"Z-Probe Nr.    [5]"

@@ -734,7 +734,7 @@
 "Sort       [time]"
 
 #
-"Severe skew"
+"Severe skew:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -746,7 +746,7 @@
 "Sound      [loud]"
 
 #
-"Slight skew"
+"Slight skew:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1061,7 +1061,7 @@
 "Sheet"
 
 #
-"Sound     [assist]"
+"Sound    [assist]"
 
 #
 "Steel sheets"
@@ -1074,3 +1074,6 @@
 
 #
 "Z-probe nr.    [3]"
+
+#
+"Z-probe nr.    [5]"
