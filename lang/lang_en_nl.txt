@@ -979,8 +979,8 @@
 "Sortering  [tijd]"
 
 #
-"Severe skew"
-"Erg scheef"
+"Severe skew:"
+"Erg scheef:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +995,8 @@
 "Geluid     [hard]"
 
 #
-"Slight skew"
-"Iets scheef"
+"Slight skew:"
+"Iets scheef:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
