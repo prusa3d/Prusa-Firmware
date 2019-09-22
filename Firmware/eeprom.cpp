@@ -97,14 +97,66 @@ void eeprom_init()
 
 //! @brief Get default sheet name for index
 //!
+//! | index | sheetName |
+//! | ----- | --------- |
+//! | 0     | Smooth1   |
+//! | 1     | Smooth2   |
+//! | 2     | Textur1   |
+//! | 3     | Textur2   |
+//! | 4     | Custom1   |
+//! | 5     | Custom2   |
+//! | 6     | Custom3   |
+//! | 7     | Custom4   |
+//!
 //! @param[in] index
 //! @param[out] sheetName
 void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
 {
     static_assert(8 == sizeof(SheetName),"Default sheet name needs to be adjusted.");
-    sprintf_P(sheetName.c, PSTR("%-6.6S"), _T(MSG_SHEET));
 
-    sheetName.c[6] = '1' + index;
+    if (index < 2)
+    {
+        strcpy_P(sheetName.c, PSTR("Smooth"));
+    }
+    else if (index < 4)
+    {
+        strcpy_P(sheetName.c, PSTR("Textur"));
+    }
+    else
+    {
+        strcpy_P(sheetName.c, PSTR("Custom"));
+    }
+
+    switch (index)
+    {
+    case 0:
+        sheetName.c[6] = '1';
+        break;
+    case 1:
+        sheetName.c[6] = '2';
+        break;
+    case 2:
+        sheetName.c[6] = '1';
+        break;
+    case 3:
+        sheetName.c[6] = '2';
+        break;
+    case 4:
+        sheetName.c[6] = '1';
+        break;
+    case 5:
+        sheetName.c[6] = '2';
+        break;
+    case 6:
+        sheetName.c[6] = '3';
+        break;
+    case 7:
+        sheetName.c[6] = '4';
+        break;
+    default:
+        break;
+    }
+
     sheetName.c[7] = '\0';
 }
 
