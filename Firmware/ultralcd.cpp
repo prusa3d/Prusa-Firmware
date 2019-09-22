@@ -6463,7 +6463,6 @@ static void lcd_main_menu()
 
 
 #ifdef FANCHECK
-  checkFanSpeed(); //Check manually to get most recent fan speed status
   if((fan_check_error == EFCE_FIXED) && (saved_printing_type == PRINTING_TYPE_USB))
     MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 #endif
