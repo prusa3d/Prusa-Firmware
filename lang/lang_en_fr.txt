@@ -62,7 +62,7 @@
 "Auto home"
 "Mise a 0 des axes"
 
-#MSG_AUTOLOAD_FILAMENT c=18
+#MSG_AUTOLOAD_FILAMENT c=17
 "AutoLoad filament"
 "Autocharge du fil."
 
