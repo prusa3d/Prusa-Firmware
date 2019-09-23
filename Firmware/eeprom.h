@@ -25,6 +25,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #endif
 
 #define EEPROM_EMPTY_VALUE 0xFF
+#define EEPROM_EMPTY_VALUE16 0xFFFF
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
