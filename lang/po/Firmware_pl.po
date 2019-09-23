@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat, Sep 21, 2019 1:48:09 PM\n"
-"PO-Revision-Date: Sat, Sep 21, 2019 1:48:09 PM\n"
+"POT-Creation-Date: Sun, Sep 22, 2019 2:08:35 PM\n"
+"PO-Revision-Date: Sun, Sep 22, 2019 2:08:35 PM\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -1779,6 +1779,11 @@ msgstr "Wybierz"
 #: ultralcd.cpp:2245
 msgid "Sensor info"
 msgstr "Info o sensorach"
+
+# 
+#: messages.c:58
+msgid "Sheet"
+msgstr "Plyta"
 
 # 
 #: sound.h:9

@@ -819,8 +819,8 @@
 "Predehrev k vyjmuti"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
-"Print fan"
-"Tiskovy vent."
+"Print fan:"
+"Tiskovy vent.:"
 
 #MSG_CARD_MENU
 "Print from SD"

@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat, Sep 21, 2019 1:44:51 PM\n"
-"PO-Revision-Date: Sat, Sep 21, 2019 1:44:51 PM\n"
+"POT-Creation-Date: Sun, Sep 22, 2019 2:06:22 PM\n"
+"PO-Revision-Date: Sun, Sep 22, 2019 2:06:22 PM\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -95,7 +95,7 @@ msgstr ""
 msgid "Auto home"
 msgstr "Mise a 0 des axes"
 
-# MSG_AUTOLOAD_FILAMENT c=18
+# MSG_AUTOLOAD_FILAMENT c=17
 #: ultralcd.cpp:6822
 msgid "AutoLoad filament"
 msgstr "Autocharge du fil."
