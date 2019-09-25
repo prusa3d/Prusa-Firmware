@@ -6325,6 +6325,39 @@ void lcd_resume_print()
     lcd_reset_alert_level();
     lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
     lcd_reset_alert_level(); //for fan speed error
+
+#ifdef FANCHECK
+    fanSpeed = 255;
+#ifdef FAN_SOFT_PWM
+	fanSpeedSoftPwm = 255;
+#endif //FAN_SOFT_PWM
+    manage_heater(); //enables print fan
+    setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, 1); //force enables the extruder fan untill the first manage_heater() call.
+#ifdef FAN_SOFT_PWM
+    extruder_autofan_last_check = _millis();
+    fan_measuring = true;
+#endif //FAN_SOFT_PWM
+    _delay(2000); //delay_keep_alive would turn off extruder fan, because temerature is too low (maybe)
+    manage_heater();
+    fanSpeed = 0;
+#ifdef FAN_SOFT_PWM
+    fanSpeedSoftPwm = 0;
+#endif //FAN_SOFT_PWM
+    manage_heater();
+#ifdef TACH_0
+    if (!fan_speed[0]) { //extruder fan error
+        LCD_ALERTMESSAGERPGM(PSTR("Err: EXTR. FAN ERROR"));
+        return;
+    }
+#endif
+#ifdef TACH_1
+    if (!fan_speed[1]) { //print fan error
+        LCD_ALERTMESSAGERPGM(PSTR("Err: PRINT FAN ERROR"));
+        return;
+    }
+#endif
+#endif //FANCHECK
+
     restore_print_from_ram_and_continue(0.0);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
