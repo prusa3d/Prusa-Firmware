@@ -1753,7 +1753,7 @@ void loop()
 	}
     
 #ifdef FANCHECK
-    if ((saved_printing_type == PRINTING_TYPE_USB) && fan_check_error)
+    if (fan_check_error)
     {
         process_commands(); //used to process pausing
         KEEPALIVE_STATE(PAUSED_FOR_USER);
