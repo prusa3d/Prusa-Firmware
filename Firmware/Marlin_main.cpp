@@ -1755,12 +1755,11 @@ void loop()
 #ifdef FANCHECK
     if (fan_check_error && isPrintPaused)
     {
-        process_commands(); //used to process pausing
         KEEPALIVE_STATE(PAUSED_FOR_USER);
         host_keepalive(); //prevent timeouts since usb processing is disabled until print is resumed. This is for a crude way of pausing a print on all hosts.
     }
-    else
 #endif
+
     if (prusa_sd_card_upload)
     {
         //we read byte-by byte
