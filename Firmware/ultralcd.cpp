@@ -6337,7 +6337,7 @@ void lcd_resume_print()
     extruder_autofan_last_check = _millis();
     fan_measuring = true;
 #endif //FAN_SOFT_PWM
-    _delay(2000); //delay_keep_alive would turn off extruder fan, because temerature is too low (maybe)
+    _delay(1000); //delay_keep_alive would turn off extruder fan, because temerature is too low (maybe)
     manage_heater();
     fanSpeed = 0;
 #ifdef FAN_SOFT_PWM
@@ -6345,13 +6345,13 @@ void lcd_resume_print()
 #endif //FAN_SOFT_PWM
     manage_heater();
 #ifdef TACH_0
-    if (!fan_speed[0]) { //extruder fan error
+    if (fan_speed[0] <= 20) { //extruder fan error
         LCD_ALERTMESSAGERPGM(PSTR("Err: EXTR. FAN ERROR"));
         return;
     }
 #endif
 #ifdef TACH_1
-    if (!fan_speed[1]) { //print fan error
+    if (fan_speed[1] <= 20) { //print fan error
         LCD_ALERTMESSAGERPGM(PSTR("Err: PRINT FAN ERROR"));
         return;
     }
