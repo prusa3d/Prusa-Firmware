@@ -1753,7 +1753,7 @@ void loop()
 	}
     
 #ifdef FANCHECK
-    if (fan_check_error)
+    if (fan_check_error && isPrintPaused)
     {
         process_commands(); //used to process pausing
         KEEPALIVE_STATE(PAUSED_FOR_USER);
