@@ -6513,7 +6513,7 @@ static void lcd_main_menu()
 			else
 			{
 				#ifdef FANCHECK
-					if(fan_check_error == EFCE_FIXED)
+					if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
 						MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 				#else
 					MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
