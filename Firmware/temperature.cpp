@@ -506,11 +506,11 @@ void checkFanSpeed()
 		fan_check_error = EFCE_FIXED;
 	}
 
-	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled) {
+	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled && (fan_check_error == EFCE_OK)) {
 		fan_speed_errors[0] = 0;
 		fanSpeedError(0); //extruder fan
 	}
-	if ((fan_speed_errors[1] > max_print_fan_errors) && fans_check_enabled) {
+	if ((fan_speed_errors[1] > max_print_fan_errors) && fans_check_enabled && (fan_check_error == EFCE_OK)) {
 		fan_speed_errors[1] = 0;
 		fanSpeedError(1); //print fan
 	}
