@@ -7444,11 +7444,12 @@ Sigma_Exit:
     break;
 #endif
 
-    //! ### M907 - Set digital trimpot motor current using axis codes
+    //! ### M907 - Set digital trimpot motor current in mA using axis codes
     // ---------------------------------------------------------------
     case 907:
     {
 #ifdef TMC2130
+        //! See tmc2130_cur2val() for translation to 0 .. 63 range
         for (int i = 0; i < NUM_AXIS; i++)
 			if(code_seen(axis_codes[i]))
 			{
