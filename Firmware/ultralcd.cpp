@@ -6316,7 +6316,7 @@ static void lcd_test_menu()
 }
 #endif //LCD_TEST
 
-static void fan_error_selftest()
+static bool fan_error_selftest()
 {
 #ifdef FANCHECK
 
@@ -6340,15 +6340,16 @@ static void fan_error_selftest()
 #ifdef TACH_0
     if (fan_speed[0] <= 20) { //extruder fan error
         LCD_ALERTMESSAGERPGM(MSG_FANCHECK_EXTRUDER);
-        return;
+        return 1;
     }
 #endif
 #ifdef TACH_1
     if (fan_speed[1] <= 20) { //print fan error
         LCD_ALERTMESSAGERPGM(MSG_FANCHECK_PRINT);
-        return;
+        return 1;
     }
 #endif
+    return 0;
 
 #endif //FANCHECK   
 }
@@ -6363,7 +6364,7 @@ void lcd_resume_print()
     lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
     lcd_reset_alert_level(); //for fan speed error
 
-    fan_error_selftest();
+    if (fan_error_selftest()) return; //abort if error persists
 
     restore_print_from_ram_and_continue(0.0);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
