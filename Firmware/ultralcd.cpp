@@ -4774,6 +4774,12 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 
 void lcd_v2_calibration()
 {
+    if(lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Start from zero offset?"), false, false))////r=15
+    {
+        eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+                s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].z_offset)),0xffff);
+    }
+
 	if (mmu_enabled)
 	{
 	    const uint8_t filament = choose_menu_P(
