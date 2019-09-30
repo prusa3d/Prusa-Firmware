@@ -24,7 +24,7 @@
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Ajustando Z:"
+"Ajustar-Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
@@ -216,7 +216,7 @@
 
 #MSG_EXTRUDER_CORRECTION c=10
 "E-correct:"
-"Correccion-E:"
+"Corregir-E:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
@@ -944,11 +944,11 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort       [time]"
-"Ordenar  [tiempo]"
+"Ordenar   [fecha]"
 
 #
-"Severe skew"
-"Incl.severa"
+"Severe skew:"
+"Incl.severa:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -963,8 +963,8 @@
 "Sonido     [alto]"
 
 #
-"Slight skew"
-"Liger.incl."
+"Slight skew:"
+"Liger.incl.:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1168,7 +1168,7 @@
 
 #
 "X-correct:"
-"Correccion-X:"
+"Corregir-X:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
@@ -1204,11 +1204,11 @@
 
 #
 "Y-correct:"
-"Correccion-Y:"
+"Corregir-Y:"
 
 #MSG_OFF
 " [off]"
-" [apagado]"
+"[apag]"
 
 #
 "Back"
@@ -1383,8 +1383,8 @@
 "Lamina"
 
 #
-"Sound     [assist]"
-"Sonido  [asistido]"
+"Sound    [assist]"
+"Sonido [asistido]"
 
 #
 "Steel sheets"
@@ -1392,7 +1392,7 @@
 
 #
 "Z-correct:"
-"Correccion-Z:"
+"Corregir-Z:"
 
 #
 "Z-probe nr.    [1]"
@@ -1401,3 +1401,7 @@
 #
 "Z-probe nr.    [3]"
 "Z-sensor nr.   [3]"
+
+#
+"Z-probe nr.    [5]"
+"Z-sensor nr.   [5]"
