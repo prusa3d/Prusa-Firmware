@@ -6339,13 +6339,13 @@ static void fan_error_selftest()
     manage_heater();
 #ifdef TACH_0
     if (fan_speed[0] <= 20) { //extruder fan error
-        LCD_ALERTMESSAGERPGM(PSTR("Err: EXTR. FAN ERROR"));
+        LCD_ALERTMESSAGERPGM(MSG_FANCHECK_EXTRUDER);
         return;
     }
 #endif
 #ifdef TACH_1
     if (fan_speed[1] <= 20) { //print fan error
-        LCD_ALERTMESSAGERPGM(PSTR("Err: PRINT FAN ERROR"));
+        LCD_ALERTMESSAGERPGM(MSG_FANCHECK_PRINT);
         return;
     }
 #endif
@@ -6883,7 +6883,7 @@ void lcd_print_stop()
 //-//
      if(!card.sdprinting)
           {
-          SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
+          SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
           }
 	saved_printing = false;
     saved_printing_type = PRINTING_TYPE_NONE;
