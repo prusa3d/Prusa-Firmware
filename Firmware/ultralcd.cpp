@@ -6316,17 +6316,10 @@ static void lcd_test_menu()
 }
 #endif //LCD_TEST
 
-//! @brief Resume paused print
-//! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
-//! as restore_print_from_ram_and_continue() calls lcd_update() internally.
-void lcd_resume_print()
+static void fan_error_selftest()
 {
-    lcd_return_to_status();
-    lcd_reset_alert_level();
-    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
-    lcd_reset_alert_level(); //for fan speed error
-
 #ifdef FANCHECK
+
     fanSpeed = 255;
 #ifdef FAN_SOFT_PWM
 	fanSpeedSoftPwm = 255;
@@ -6356,7 +6349,21 @@ void lcd_resume_print()
         return;
     }
 #endif
-#endif //FANCHECK
+
+#endif //FANCHECK   
+}
+
+//! @brief Resume paused print
+//! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
+//! as restore_print_from_ram_and_continue() calls lcd_update() internally.
+void lcd_resume_print()
+{
+    lcd_return_to_status();
+    lcd_reset_alert_level();
+    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
+    lcd_reset_alert_level(); //for fan speed error
+
+    fan_error_selftest();
 
     restore_print_from_ram_and_continue(0.0);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
