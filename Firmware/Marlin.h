@@ -376,6 +376,10 @@ extern char dir_names[3][9];
 extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
+extern uint8_t saved_printing_type;
+#define PRINTING_TYPE_SD 0
+#define PRINTING_TYPE_USB 1
+#define PRINTING_TYPE_NONE 2
 
 //save/restore printing in case that mmu is not responding
 extern bool mmu_print_saved;
