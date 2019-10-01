@@ -4772,6 +4772,17 @@ void lcd_toshiba_flash_air_compatibility_toggle()
    eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
 }
 
+void lcd_first_layer_calibration_reset()
+{
+    SheetFormatBuffer buffer;
+    menu_format_sheet_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], buffer);
+    lcd_set_cursor(0, 0);
+    lcd_print(buffer.c);
+    lcd_set_cursor(0, 1);
+    float offset = static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))/cs.axis_steps_per_unit[Z_AXIS];
+    lcd_printf_P(PSTR("%.14S%+5.3f"), _i("Adjusting Z:"), offset); //// c=14
+}
+
 void lcd_v2_calibration()
 {
     if(lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Start from zero offset?"), false, false))////r=15
@@ -5751,7 +5762,7 @@ static void lcd_calibration_menu()
   if (!isPrintPaused)
   {
 	MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17 r=1
-	MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+	MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_first_layer_calibration_reset);
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST
 #ifdef MK1BP
@@ -6673,7 +6684,7 @@ static void lcd_reset_sheet()
 static void activate_calibrate_sheet()
 {
     eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
-    lcd_v2_calibration();
+    lcd_first_layer_calibration_reset();
 }
 
 static void lcd_sheet_menu()
