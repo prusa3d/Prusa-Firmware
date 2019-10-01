@@ -1523,7 +1523,7 @@ void setup()
 		  calibration_status() == CALIBRATION_STATUS_UNKNOWN || 
 		  calibration_status() == CALIBRATION_STATUS_XYZ_CALIBRATION) {
 		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
-		  eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+            eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 		  // Show the message.
 		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_CALIBRATION_FLOW));
 	  }
@@ -2703,6 +2703,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       previous_millis_cmd = _millis();
       endstops_hit_on_purpose();
 #ifndef MESH_BED_LEVELING
+//-// Oct 2019 :: this part of code is (from) now probably un-compilable
       // If MESH_BED_LEVELING is not active, then it is the original Prusa i3.
       // Offer the user to load the baby step value, which has been adjusted at the previous print session.
       if(card.sdprinting && eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z))
@@ -2895,7 +2896,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			{
 				// Reset the baby step value and the baby step applied flag.
 				calibration_status_store(CALIBRATION_STATUS_XYZ_CALIBRATION);
-				eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+                    eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 				// Complete XYZ calibration.
 				uint8_t point_too_far_mask = 0;
 				BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
@@ -3739,7 +3740,7 @@ void process_commands()
 	  lang_reset();
 
 	} else if(code_seen("Lz")) { // PRUSA Lz
-      EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
+      eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
 	} else if(code_seen("Beat")) { // PRUSA Beat
         // Kick farm link timer
@@ -5510,7 +5511,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 		// Reset the baby step value and the baby step applied flag.
 		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
-		eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+          eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
         // Reset the skew and offset in both RAM and EEPROM.
         reset_bed_offset_and_skew();
