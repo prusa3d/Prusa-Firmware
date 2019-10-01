@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_9
+# Version: 1.0.6-Build_19
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -112,7 +112,9 @@
 #                          Changed Hex-files folder to PF-build-hex as requested in PR
 # 23 Jul 2019, 3d-gussner, Added Finding OS version routine so supporting new OS should get easier
 # 26 Jul 2019, 3d-gussner, Change JSON repository to prusa3d after PR https://github.com/prusa3d/Arduino_Boards/pull/1 was merged
-
+# 20 Sep 2019, 3d-gussner, Changing naming convention for Zaribo hex files
+# 23 Sep 2019, 3d-gussner, Prepare PF-build.sh for comming Prusa3d/Arduino_Boards version 1.0.2 Pull Request
+# 01 Oct 2019, 3d-gussner, Update script to new naming convention
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -211,7 +213,8 @@ fi
 #### Set build environment 
 ARDUINO_ENV="1.8.5"
 BUILD_ENV="1.0.6"
-BOARD="PrusaResearchRambo"
+BOARD="rambo"
+BOARD_PACKAGE_NAME="PrusaResearchRambo"
 BOARD_VERSION="1.0.1"
 BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_FILENAME="prusa3drambo"
@@ -219,6 +222,7 @@ BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/
 PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env/releases/download/$BUILD_ENV/PF-build-env-$BUILD_ENV.zip"
 LIB="PrusaLibrary"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+MULTI_LANGUAGE=("MULTI" "CZ" "DE" "ES" "FR" "IT" "NL" "PL")
 
 # List few useful data
 echo
@@ -229,6 +233,7 @@ echo ""
 echo "Ardunio IDE :" $ARDUINO_ENV
 echo "Build env   :" $BUILD_ENV
 echo "Board       :" $BOARD
+echo "Package name:" $BOARD_PACKAGE_NAME
 echo "Specific Lib:" $LIB
 echo ""
 
@@ -317,7 +322,7 @@ if [ ! -e ../PF-build-env-$BUILD_ENV/Preferences-$TARGET_OS-$Processor.txt ]; th
 	echo "update.check"
 	sed -i 's/update.check = true/update.check = false/g' ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/lib/preferences.txt
 	echo "board"
-	sed -i 's/board = uno/board = rambo/g' ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/lib/preferences.txt
+	sed -i 's/board = uno/board = $BOARD/g' ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/lib/preferences.txt
 	echo "editor.linenumbers"
 	sed -i 's/editor.linenumbers = false/editor.linenumbers = true/g' ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/lib/preferences.txt
 	echo "boardsmanager.additional.urls"
@@ -336,24 +341,24 @@ if [ ! -f "$BOARD_FILENAME-$BOARD_VERSION.tar.bz2" ]; then
 	sleep 2
 	wget $BOARD_FILE_URL || exit 9
 fi
-if [[ ! -d "../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD/hardware/avr/$BOARD_VERSION" || ! -e "../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
-	echo "$(tput setaf 6)Unzipping $BOARD Arduino IDE portable...$(tput setaf 2)"
+if [[ ! -d "../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION" || ! -e "../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
+	echo "$(tput setaf 6)Unzipping $BOARD_PACKAGE_NAME Arduino IDE portable...$(tput setaf 2)"
 	sleep 2
 	tar -xvf $BOARD_FILENAME-$BOARD_VERSION.tar.bz2 -C ../PF-build-env-$BUILD_ENV/ || exit 10
-	if [ ! -d ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD ]; then
-		mkdir ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD
+	if [ ! -d ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME ]; then
+		mkdir ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME
 	fi
-	if [ ! -d ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD ]; then
-		mkdir ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD
+	if [ ! -d ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME ]; then
+		mkdir ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME
 	fi
-	if [ ! -d ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD/hardware ]; then
-		mkdir ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD/hardware
+	if [ ! -d ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware ]; then
+		mkdir ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware
 	fi
-	if [ ! -d ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD/hardware/avr ]; then
-		mkdir ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD/hardware/avr
+	if [ ! -d ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr ]; then
+		mkdir ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr
 	fi
 	
-	mv ../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$BOARD_VERSION ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD/hardware/avr/$BOARD_VERSION
+	mv ../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$BOARD_VERSION ../PF-build-env-$BUILD_ENV/$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION
 	echo "# $BOARD_FILENAME-$BOARD_VERSION" >> ../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$BOARD_VERSION-$TARGET_OS-$Processor.txt
 	echo "$(tput sgr 0)"
 fi	
@@ -558,23 +563,29 @@ do
 	OUTPUT_FOLDER="PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD"
 	
 	#Check if exactly the same hexfile already exists
-	if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex"  &&  "$LANGUAGES" == "ALL" ]]; then
+	for i in "${MULTI_LANGUAGE[@]}"
+	do
+		MULTI_CHECK=$i
+		echo $MULTI_CHECK
+		if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-$MULTI_CHECK.hex"  &&  "$LANGUAGES" == "ALL" ]]; then
+			echo "$i"
+			ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-$MULTI_CHECK.hex | xargs -n1 basename
+			echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
+			read -t 10 -p "Press Enter to continue..."
+		fi
+	done
+	if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-EN.hex"  &&  "$LANGUAGES" == "EN_ONLY" ]]; then
 		echo ""
-		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex | xargs -n1 basename
-		echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
-		read -t 10 -p "Press Enter to continue..."
-	elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex"  &&  "$LANGUAGES" == "EN_ONLY" ]]; then
-		echo ""
-		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex | xargs -n1 basename
+		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-EN.hex | xargs -n1 basename
 		echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
 		read -t 10 -p "Press Enter to continue..."
 	fi
-	if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip"  &&  "$LANGUAGES" == "ALL" ]]; then
-		echo ""
-		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip | xargs -n1 basename
-		echo "$(tput setaf 6)This zip file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
-		read -t 10 -p "Press Enter to continue..."
-	fi
+#	if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD.zip"  &&  "$LANGUAGES" == "ALL" ]]; then
+#		echo ""
+#		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip | xargs -n1 basename
+#		echo "$(tput setaf 6)This zip file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
+#		read -t 10 -p "Press Enter to continue..."
+#	fi
 	
 	#List some useful data
 	echo "$(tput setaf 2)$(tput setab 7) "
@@ -587,7 +598,6 @@ do
 	echo "Languages  :" $LANGUAGES
 	echo "Hex-file Folder:" $OUTPUT_FOLDER
 	echo "$(tput sgr0)"
-
 	#Prepare Firmware to be compiled by copying variant as Configuration_prusa.h
 	if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
 		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 28
@@ -634,8 +644,8 @@ do
 	echo "Start to build Prusa Firmware ..."
 	echo "Using variant $VARIANT$(tput setaf 3)"
 	sleep 2
-	#$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
-	$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
+	#$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -ide-version=10805 -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
+	$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -ide-version=10805 -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
 	echo "$(tput sgr 0)"
 
 	if [ $LANGUAGES ==  "ALL" ]; then
@@ -676,22 +686,22 @@ do
 		# If the motherboard is an EINSY just copy one hexfile
 		if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
 			echo "$(tput setaf 2)Copying multi language firmware for MK3/Einsy board to PF-build-hex folder$(tput sgr 0)"
-			cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+			cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-MULTI.hex
 		else
 			echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
-			cp -f firmware_cz.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-cz.hex
-			cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-de.hex
-			cp -f firmware_es.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-es.hex
-			cp -f firmware_fr.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-fr.hex
-			cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-it.hex
-			cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-nl.hex
-			cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-pl.hex
-			if [ $TARGET_OS == "windows" ]; then 
-				zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
-				rm $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
-			elif [ $TARGET_OS == "linux" ]; then
-				zip -m -j ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
-			fi
+			cp -f firmware_cz.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-CZ.hex
+			cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-DE.hex
+			cp -f firmware_es.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-ES.hex
+			cp -f firmware_fr.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-FR.hex
+			cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-IT.hex
+			cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-NL.hex
+			cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-PL.hex
+#			if [ $TARGET_OS == "windows" ]; then 
+#				zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
+#				rm $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
+#			elif [ $TARGET_OS == "linux" ]; then
+#				zip -m -j ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
+#			fi
 		fi
 		# Cleanup after build
 		echo "$(tput setaf 3)"
@@ -700,7 +710,7 @@ do
 		echo "$(tput sgr 0)"
 	else
 		echo "$(tput setaf 2)Copying English only firmware to PF-build-hex folder$(tput sgr 0)"
-		cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 34
+		cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-$VARIANT-Build$BUILD-EN.hex || exit 34
 	fi
 
 	# Cleanup Firmware

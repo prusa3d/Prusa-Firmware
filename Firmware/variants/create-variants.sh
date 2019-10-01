@@ -5,7 +5,7 @@
 # Creates special variants
 # TYPE		= Printer type			: MK25, MK25S, MK3, MK3S
 #
-# BOARD		= Controller board		: EINSy10a, RAMBo13a, RAMBo10a
+# BOARD		= Controller board		: EINSy10a, RAMBo13a
 # 
 # HEIGHT	= Height of printer		: 210, 220, 320, 420
 #
@@ -15,10 +15,15 @@
 # HeightsArray is an array of printer hights
 # ModArray is an array of printer mods
 #
+#
+# Version 1.0.4
 ################################################################################
 # 3 Jul 2019, vertigo235, Inital varaiants script
 # 8 Aug 2019, 3d-gussner, Modified for Zaribo needs
 # 14 Sep 2019, 3d-gussner, Added MOD BMSQ and BMSQHT Bondtech Mosquito / High Temperature
+# 20 Sep 2019, 3d-gussner, New Naming convention for the variants.
+#                          As we just support EINSy10a and RAMBo13a boards
+# 01 Oct 2019, 3d-gussner, Fixed MK2.5 issue
 ################################################################################
 
 # Constants
@@ -34,7 +39,7 @@ HEIGHT="210"
 BASE="1_75mm_$TYPE-$BOARD-E3Dv6full.h"
 
 # Arrays
-declare -a TypesArray=( "MK3" "MK3S" "MK25" "MK25S")
+declare -a TypesArray=( "MK3" "MK3S" "MK25" "MK25S" )
 declare -a HeightsArray=( 220 320 420)
 declare -a ModArray=( "BMG" "BMSQ" "BMSQHT")
 #
@@ -54,14 +59,21 @@ for TYPE in ${TypesArray[@]}; do
 	BASE="1_75mm_$TYPE-$BOARD-E3Dv6full.h"
 	for HEIGHT in ${HeightsArray[@]};
 	do
-		VARIANT="Zaribo_$TYPE-$HEIGHT-$BOARD.h"
+		VARIANT="Zaribo_$TYPE-$HEIGHT.h"
 		#echo $BASE
 		#echo $TYPE
 		#echo $HEIGHT
 		echo $VARIANT
 		cp ${BASE} ${VARIANT}
 		# Printer Display Name
-		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Prusa i3 '$TYPE'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$HEIGHT'"/g' ${VARIANT}
+		if [ $TYPE == "MK25" ]; then
+			PRUSA_TYPE="MK2.5"
+		elif [ $TYPE == "MK25S" ]; then
+			PRUSA_TYPE="MK2.5S"
+		else
+			PRUSA_TYPE=$TYPE
+		fi
+		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Prusa i3 '$PRUSA_TYPE'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$HEIGHT'"/g' ${VARIANT}
 		# Inverted Y-Motor
 		sed -i -e "s/^#define INVERT_Y_DIR 0*/#define INVERT_Y_DIR 1/g" ${VARIANT}
 		# Printer Height
@@ -86,8 +98,8 @@ for TYPE in ${TypesArray[@]}; do
 	fi
 	for HEIGHT in ${HeightsArray[@]};
 	do
-		BASE="Zaribo_$TYPE-$HEIGHT-$BOARD.h"
-		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT-$BOARD.h"
+		BASE="Zaribo_$TYPE-$HEIGHT.h"
+		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
 		#echo $BASE
 		#echo $TYPE
 		#echo $HEIGHT
@@ -121,8 +133,8 @@ for TYPE in ${BMSQArray[@]}; do
 	fi
 	for HEIGHT in ${HeightsArray[@]};
 	do
-		BASE="Zaribo_$TYPE-BMG-$HEIGHT-$BOARD.h"
-		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT-$BOARD.h"
+		BASE="Zaribo_$TYPE-BMG-$HEIGHT.h"
+		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
 		#echo $BASE
 		#echo $TYPE
 		#echo $HEIGHT
@@ -147,8 +159,8 @@ for TYPE in ${BMSQArray[@]}; do
 	fi
 	for HEIGHT in ${HeightsArray[@]};
 	do
-		BASE="Zaribo_$TYPE-BMSQ-$HEIGHT-$BOARD.h"
-		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT-$BOARD.h"
+		BASE="Zaribo_$TYPE-BMSQ-$HEIGHT.h"
+		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
 		#echo $BASE
 		#echo $TYPE
 		#echo $HEIGHT
