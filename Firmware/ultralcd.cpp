@@ -8618,11 +8618,13 @@ void menu_lcd_longpress_func(void)
     // explicitely listed menus which are allowed to rise the move-z or live-adj-z functions
     // The lists are not the same for both functions, so first decide which function is to be performed
     // @@TODO - handle full-screen modal dialogs safely - i.e. they should not hang the printer while doing long press
-    if (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU && (moves_planned() || IS_SD_PRINTING || is_usb_printing ))
-    { // long press as live-adj-z
-        if(menu_menu == lcd_status_screen
-        || menu_menu == lcd_tune_menu
-        || menu_menu == lcd_support_menu
+    if ( (moves_planned() || IS_SD_PRINTING || is_usb_printing )){ // long press as live-adj-z
+        if(( current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU ) // only allow live-adj-z up to 2mm of print height
+        && ( menu_menu == lcd_status_screen // and in listed menus...
+          || menu_menu == lcd_main_menu
+          || menu_menu == lcd_tune_menu
+          || menu_menu == lcd_support_menu
+           )
         ){
             lcd_clear();
             menu_submenu(lcd_babystep_z);
