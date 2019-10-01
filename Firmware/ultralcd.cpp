@@ -4777,10 +4777,10 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Sheet Smooth1 actual|  c=a, c=b, a+b = 13
-//! |Z offset: -1.480 mm |  c=a, c=b, a+b = 14
-//! |>Continue           |  c=19
-//! | Start from zero    |  c=19
+//! |[Smooth1]Live adj. Z|  c=11
+//! |value set, continue |  c=20
+//! |or start from zero? |  c=20
+//! |>Continue Reset     |  c=a, c=b, a+b = 18
 //! ----------------------
 //! @endcode
 void lcd_first_layer_calibration_reset()
@@ -4818,9 +4818,8 @@ void lcd_first_layer_calibration_reset()
     char sheet_name[sizeof(Sheet::name)];
     eeprom_read_block(sheet_name, &EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, sizeof(Sheet::name));
     lcd_set_cursor(0, 0);
-    float offset = static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))/cs.axis_steps_per_unit[Z_AXIS];
-    lcd_printf_P(_i("Sheet %.7s actual\nZ offset: %+1.3f mm\n%cContinue\n%cStart from zero"), //// \n denotes line break, %.7s is replaced by 7 character long sheet name, %+1.3f is replaced by 6 character long floating point number, %c is replaced by > or white space (one character) based on whether first or second option is selected. % denoted place holders can not be reordered. r=4
-            sheet_name, offset, menuData->reset ? ' ' : '>', menuData->reset ? '>' : ' ');
+    lcd_printf_P(_i("[%.7s]Live adj. Z\nvalue set, continue\nor start from zero?\n%cContinue%cReset"), //// \n denotes line break, %.7s is replaced by 7 character long sheet name, %+1.3f is replaced by 6 character long floating point number, %c is replaced by > or white space (one character) based on whether first or second option is selected. % denoted place holders can not be reordered. r=4
+            sheet_name, menuData->reset ? ' ' : '>', menuData->reset ? '>' : ' ');
 
 }
 
