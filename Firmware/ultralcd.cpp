@@ -4774,13 +4774,12 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 
 void lcd_first_layer_calibration_reset()
 {
-    SheetFormatBuffer buffer;
-    menu_format_sheet_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], buffer);
+
+    char sheet_name[7];
+    eeprom_read_block(sheet_name, &EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, 7);
     lcd_set_cursor(0, 0);
-    lcd_print(buffer.c);
-    lcd_set_cursor(0, 1);
     float offset = static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))/cs.axis_steps_per_unit[Z_AXIS];
-    lcd_printf_P(PSTR("%.14S%+5.3f"), _i("Adjusting Z:"), offset); //// c=14
+    lcd_printf_P(_i("Sheet %.7s actual\nZ offset: %+1.3f\n%cContinue\n%cStart from zero"), sheet_name, offset); //// r=4
 }
 
 void lcd_v2_calibration()
