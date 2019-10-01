@@ -8606,7 +8606,6 @@ uint8_t get_message_level()
 	return lcd_status_message_level;
 }
 
-
 void menu_lcd_longpress_func(void)
 {
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
@@ -8616,15 +8615,41 @@ void menu_lcd_longpress_func(void)
         return;
     }
 
+    // explicitely listed menus which are allowed to rise the move-z or live-adj-z functions
+    // The lists are not the same for both functions, so first decide which function is to be performed
+    // @@TODO - handle full-screen modal dialogs safely - i.e. they should not hang the printer while doing long press
     if (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU && (moves_planned() || IS_SD_PRINTING || is_usb_printing ))
-    {
-        lcd_clear();
-        menu_submenu(lcd_babystep_z);
-    }
-    else
-    {
-        move_menu_scale = 1.0;
-        menu_submenu(lcd_move_z);
+    { // long press as live-adj-z
+        if(menu_menu == lcd_status_screen
+        || menu_menu == lcd_tune_menu
+        || menu_menu == lcd_support_menu
+        ){
+            lcd_clear();
+            menu_submenu(lcd_babystep_z);
+        } else {
+            // otherwise consume the long press as normal click
+            // consume the loreturns to sheet menu
+            menu_back();
+        }
+    } else { // long press as move-z
+        if(menu_menu == lcd_status_screen
+        || menu_menu == lcd_main_menu
+        || menu_menu == lcd_preheat_menu
+        || menu_menu == lcd_sdcard_menu
+        || menu_menu == lcd_settings_menu
+        || menu_menu == lcd_control_temperature_menu
+#if (LANG_MODE != 0)
+        || menu_menu == lcd_language
+#endif
+        || menu_menu == lcd_support_menu
+        ){
+            move_menu_scale = 1.0;
+            menu_submenu(lcd_move_z);
+        } else {
+            // otherwise consume the long press as normal click
+            // consume the loreturns to sheet menu
+            menu_back();
+        }
     }
 }
 
