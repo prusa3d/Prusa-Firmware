@@ -761,8 +761,7 @@ void lcd_buttons_update(void)
             //else if (menu_menu == lcd_move_z) lcd_quick_feedback();
             //lcd_button_pressed is set back to false via lcd_quick_feedback function
         }
-        else
-            lcd_long_press_active = 0;
+        lcd_long_press_active = 0;
     }
 
 	lcd_buttons = newbutton;
