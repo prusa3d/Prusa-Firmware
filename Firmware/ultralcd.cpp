@@ -132,6 +132,9 @@ static void lcd_menu_fails_stats_mmu();
 static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
 static void mmu_unload_filament();
+static void lcd_v2_calibration();
+//static void lcd_menu_show_sensors_state();      // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
 static void preheat_or_continue();
@@ -4766,6 +4769,56 @@ void lcd_toshiba_flash_air_compatibility_toggle()
    eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
 }
 
+//! @brief Continue first layer calibration with previous value or start from zero?
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |[Smooth1]Live adj. Z|  c=11
+//! |value set, continue |  c=20
+//! |or start from zero? |  c=20
+//! |>Continue Reset     |  c=a, c=b, a+b = 18
+//! ----------------------
+//! @endcode
+void lcd_first_layer_calibration_reset()
+{
+    typedef struct
+    {
+        bool reset;
+    } MenuData;
+    static_assert(sizeof(menu_data)>= sizeof(MenuData),"_menu_data_t doesn't fit into menu_data");
+    MenuData* menuData = (MenuData*)&(menu_data[0]);
+
+    if(LCD_CLICKED || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
+            (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST) ||
+            (0 == static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>
+            (&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))))
+    {
+        if (menuData->reset)
+        {
+            eeprom_update_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset), 0xffff);
+        }
+        menu_goto(lcd_v2_calibration,0,true,true);
+    }
+
+    if (lcd_encoder > 0)
+    {
+        menuData->reset = true;
+        lcd_encoder = 1;
+    }
+    else if (lcd_encoder < 1)
+    {
+        menuData->reset = false;
+        lcd_encoder = 0;
+    }
+
+    char sheet_name[sizeof(Sheet::name)];
+    eeprom_read_block(sheet_name, &EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, sizeof(Sheet::name));
+    lcd_set_cursor(0, 0);
+    lcd_printf_P(_i("[%.7s]Live adj. Z\nvalue set, continue\nor start from zero?\n%cContinue%cReset"), //// \n denotes line break, %.7s is replaced by 7 character long sheet name, %+1.3f is replaced by 6 character long floating point number, %c is replaced by > or white space (one character) based on whether first or second option is selected. % denoted place holders can not be reordered. r=4
+            sheet_name, menuData->reset ? ' ' : '>', menuData->reset ? '>' : ' ');
+
+}
+
 void lcd_v2_calibration()
 {
 	if (mmu_enabled)
@@ -5761,7 +5814,7 @@ static void lcd_calibration_menu()
 	MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17 r=1
     if (lcd_commands_type == LcdCommands::Idle)
     {
-         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_first_layer_calibration_reset);
     }
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST
@@ -6714,7 +6767,7 @@ static void lcd_reset_sheet()
 static void activate_calibrate_sheet()
 {
     eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
-    lcd_v2_calibration();
+    lcd_first_layer_calibration_reset();
 }
 
 static void lcd_sheet_menu()
@@ -8660,7 +8713,6 @@ uint8_t get_message_level()
 	return lcd_status_message_level;
 }
 
-
 void menu_lcd_longpress_func(void)
 {
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
@@ -8670,15 +8722,42 @@ void menu_lcd_longpress_func(void)
         return;
     }
 
-    if (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU && (moves_planned() || IS_SD_PRINTING || is_usb_printing ))
-    {
-        lcd_clear();
-        menu_submenu(lcd_babystep_z);
-    }
-    else
-    {
-        move_menu_scale = 1.0;
-        menu_submenu(lcd_move_z);
+    // explicitely listed menus which are allowed to rise the move-z or live-adj-z functions
+    // The lists are not the same for both functions, so first decide which function is to be performed
+    if ( (moves_planned() || IS_SD_PRINTING || is_usb_printing )){ // long press as live-adj-z
+        if(( current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU ) // only allow live-adj-z up to 2mm of print height
+        && ( menu_menu == lcd_status_screen // and in listed menus...
+          || menu_menu == lcd_main_menu
+          || menu_menu == lcd_tune_menu
+          || menu_menu == lcd_support_menu
+           )
+        ){
+            lcd_clear();
+            menu_submenu(lcd_babystep_z);
+        } else {
+            // otherwise consume the long press as normal click
+            if( menu_menu != lcd_status_screen )
+                menu_back();
+        }
+    } else { // long press as move-z
+        if(menu_menu == lcd_status_screen
+        || menu_menu == lcd_main_menu
+        || menu_menu == lcd_preheat_menu
+        || menu_menu == lcd_sdcard_menu
+        || menu_menu == lcd_settings_menu
+        || menu_menu == lcd_control_temperature_menu
+#if (LANG_MODE != 0)
+        || menu_menu == lcd_language
+#endif
+        || menu_menu == lcd_support_menu
+        ){
+            move_menu_scale = 1.0;
+            menu_submenu(lcd_move_z);
+        } else {
+            // otherwise consume the long press as normal click
+            if( menu_menu != lcd_status_screen )
+                menu_back();
+        }
     }
 }
 
