@@ -1658,7 +1658,7 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
-	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //pause for octoprint
+	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
 }
 
 
@@ -6578,19 +6578,61 @@ static void lcd_test_menu()
 }
 #endif //LCD_TEST
 
+static bool fan_error_selftest()
+{
+#ifdef FANCHECK
+
+    fanSpeed = 255;
+#ifdef FAN_SOFT_PWM
+	fanSpeedSoftPwm = 255;
+#endif //FAN_SOFT_PWM
+    manage_heater(); //enables print fan
+    setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, 1); //force enables the extruder fan untill the first manage_heater() call.
+#ifdef FAN_SOFT_PWM
+    extruder_autofan_last_check = _millis();
+    fan_measuring = true;
+#endif //FAN_SOFT_PWM
+    _delay(1000); //delay_keep_alive would turn off extruder fan, because temerature is too low (maybe)
+    manage_heater();
+    fanSpeed = 0;
+#ifdef FAN_SOFT_PWM
+    fanSpeedSoftPwm = 0;
+#endif //FAN_SOFT_PWM
+    manage_heater();
+#ifdef TACH_0
+    if (fan_speed[0] <= 20) { //extruder fan error
+        LCD_ALERTMESSAGERPGM(MSG_FANCHECK_EXTRUDER);
+        return 1;
+    }
+#endif
+#ifdef TACH_1
+    if (fan_speed[1] <= 20) { //print fan error
+        LCD_ALERTMESSAGERPGM(MSG_FANCHECK_PRINT);
+        return 1;
+    }
+#endif
+    return 0;
+
+#endif //FANCHECK   
+}
+
 //! @brief Resume paused print
 //! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
 //! as restore_print_from_ram_and_continue() calls lcd_update() internally.
 void lcd_resume_print()
 {
     lcd_return_to_status();
-		lcd_reset_alert_level();
+    lcd_reset_alert_level();
     lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
     lcd_reset_alert_level(); //for fan speed error
+
+    if (fan_error_selftest()) return; //abort if error persists
+
     restore_print_from_ram_and_continue(0.0);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
     isPrintPaused = false;
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
 }
 
 static void change_sheet()
@@ -6723,6 +6765,10 @@ static void lcd_main_menu()
   }
 
 
+#ifdef FANCHECK
+  if((fan_check_error == EFCE_FIXED) && (saved_printing_type == PRINTING_TYPE_USB))
+    MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+#endif
 
 #ifdef SDSUPPORT
   if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal)
@@ -6737,9 +6783,8 @@ static void lcd_main_menu()
 			else
 			{
 				#ifdef FANCHECK
-					checkFanSpeed(); //Check manually to get most recent fan speed status
-					if(fan_check_error == EFCE_OK)
-							MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+					if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+						MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 				#else
 					MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 				#endif
@@ -7101,9 +7146,10 @@ void lcd_print_stop()
 //-//
      if(!card.sdprinting)
           {
-          SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
+          SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
           }
 	saved_printing = false;
+    saved_printing_type = PRINTING_TYPE_NONE;
 	cancel_heatup = true;
 #ifdef MESH_BED_LEVELING
 	mbl.active = false;
