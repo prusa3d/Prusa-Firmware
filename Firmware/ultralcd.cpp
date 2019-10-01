@@ -130,6 +130,7 @@ static void lcd_menu_xyz_offset();
 static void lcd_menu_fails_stats_mmu();
 static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
+static void lcd_v2_calibration();
 //static void lcd_menu_show_sensors_state();      // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
 static void mmu_fil_eject_menu();
@@ -4772,24 +4773,59 @@ void lcd_toshiba_flash_air_compatibility_toggle()
    eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
 }
 
+//! @brief Continue first layer calibration with previous value or start from zero?
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Sheet Smooth1 actual|  c=a, c=b, a+b = 13
+//! |Z offset: -1.480 mm |  c=a, c=b, a+b = 14
+//! |>Continue           |  c=19
+//! | Start from zero    |  c=19
+//! ----------------------
+//! @endcode
 void lcd_first_layer_calibration_reset()
 {
+    typedef struct
+    {
+        bool reset;
+    } MenuData;
+    static_assert(sizeof(menu_data)>= sizeof(MenuData),"_menu_data_t doesn't fit into menu_data");
+    MenuData* menuData = (MenuData*)&(menu_data[0]);
 
-    char sheet_name[7];
-    eeprom_read_block(sheet_name, &EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, 7);
+    if(LCD_CLICKED || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
+            (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST) ||
+            (0 == static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>
+            (&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))))
+    {
+        if (menuData->reset)
+        {
+            eeprom_update_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset), 0xffff);
+        }
+        menu_goto(lcd_v2_calibration,0,true,true);
+    }
+
+    if (lcd_encoder > 0)
+    {
+        menuData->reset = true;
+        lcd_encoder = 1;
+    }
+    else if (lcd_encoder < 1)
+    {
+        menuData->reset = false;
+        lcd_encoder = 0;
+    }
+
+    char sheet_name[sizeof(Sheet::name)];
+    eeprom_read_block(sheet_name, &EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, sizeof(Sheet::name));
     lcd_set_cursor(0, 0);
     float offset = static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))/cs.axis_steps_per_unit[Z_AXIS];
-    lcd_printf_P(_i("Sheet %.7s actual\nZ offset: %+1.3f\n%cContinue\n%cStart from zero"), sheet_name, offset); //// r=4
+    lcd_printf_P(_i("Sheet %.7s actual\nZ offset: %+1.3f mm\n%cContinue\n%cStart from zero"), //// \n denotes line break, %.7s is replaced by 7 character long sheet name, %+1.3f is replaced by 6 character long floating point number, %c is replaced by > or white space (one character) based on whether first or second option is selected. % denoted place holders can not be reordered. r=4
+            sheet_name, offset, menuData->reset ? ' ' : '>', menuData->reset ? '>' : ' ');
+
 }
 
 void lcd_v2_calibration()
 {
-    if(lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Start from zero offset?"), false, false))////r=15
-    {
-        eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
-                s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].z_offset)),0xffff);
-    }
-
 	if (mmu_enabled)
 	{
 	    const uint8_t filament = choose_menu_P(
