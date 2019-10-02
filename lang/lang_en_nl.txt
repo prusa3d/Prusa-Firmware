@@ -222,10 +222,6 @@
 "Eject filament"
 "Fil. uitwerpen"
 
-#
-"Eject"
-"Uitwerpen"
-
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 "Werp filament uit"
@@ -462,17 +458,9 @@
 "I will run z calibration now."
 "Begin nu met z-kalibratie."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-"Begin de Kal.-lijn te printen, draai de knop tot je de optimale hoogte bereikt. Controleer de afbeeldingen in ons handboek in hoofdstuk Calibration."
-
 #MSG_WATCH
 "Info screen"
 "Info scherm"
-
-#
-"Is filament 1 loaded?"
-"Is filament 1 geladen?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -481,14 +469,6 @@
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Is filament geladen?"
-
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-"Is het PLA filament?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-"Is PLA filament geladen?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
@@ -730,14 +710,6 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Controleer aub ons handboek en los het probleem op. Hervat vervolgens de wizard door de printer opnieuw te starten."
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-"Voer PLA filament in de extruder, druk dan op knop om het te laden."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-"Voer eerst PLA filament aub."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 "Open rondsel en verwijder filament handmatig."
@@ -749,10 +721,6 @@
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
 "Druk op de knop om filament te verwijderen"
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"Voer PLA-filament in de eerste buis van de MMU en druk op de knop om deze te laden."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -1438,4 +1406,3 @@
 #
 "Z-probe nr.    [5]"
 "Z-probe nr.    [5]"
-
