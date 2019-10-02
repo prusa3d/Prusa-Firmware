@@ -10,32 +10,28 @@
 #include "mmu.h"
 #include <avr/pgmspace.h>
 
-//! @brief Preheat
-void lay1cal_preheat()
+//! @brief Wait for preheat
+void lay1cal_wait_preheat()
 {
     static const char cmd_preheat_0[] PROGMEM = "M107";
-    static const char cmd_preheat_1[] PROGMEM = "M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP);
-    static const char cmd_preheat_2[] PROGMEM = "M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP);
-    static const char cmd_preheat_3[] PROGMEM = "M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP);
-    static const char cmd_preheat_4[] PROGMEM = "M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP);
-    static const char cmd_preheat_5[] PROGMEM = "G28";
-    static const char cmd_preheat_6[] PROGMEM = "G92 E0.0";
+    static const char cmd_preheat_1[] PROGMEM = "M190";
+    static const char cmd_preheat_2[] PROGMEM = "M109";
+    static const char cmd_preheat_4[] PROGMEM = "G28";
+    static const char cmd_preheat_5[] PROGMEM = "G92 E0.0";
 
-    static const char * const preheat_cmd[] PROGMEM =
+    const char * const preheat_cmd[] =
     {
         cmd_preheat_0,
         cmd_preheat_1,
         cmd_preheat_2,
-        cmd_preheat_3,
+        _T(MSG_M117_V2_CALIBRATION),
         cmd_preheat_4,
-        cmd_preheat_5, //call MSG_M117_V2_CALIBRATION before
-        cmd_preheat_6,
+        cmd_preheat_5,
     };
 
     for (uint8_t i = 0; i < (sizeof(preheat_cmd)/sizeof(preheat_cmd[0])); ++i)
     {
-        if (5 == i)  enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
-        enquecommand_P(static_cast<char*>(pgm_read_ptr(&preheat_cmd[i])));
+        enquecommand_P(preheat_cmd[i]);
     }
 
 }

@@ -15,7 +15,7 @@
 
 extern int32_t lcd_encoder;
 
-#define MENU_DEPTH_MAX       6
+#define MENU_DEPTH_MAX       7
 
 static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
