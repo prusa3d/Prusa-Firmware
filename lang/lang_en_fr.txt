@@ -222,10 +222,6 @@
 "Eject filament"
 "Remonter le fil."
 
-#
-"Eject"
-"Remonter"
-
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 "Le fil. remonte"
@@ -462,17 +458,9 @@
 "I will run z calibration now."
 "Je vais maintenant lancer la calibration Z."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-"Je vais commencer a imprimer une ligne et vous baisserez au fur et a mesure la buse en tournant le bouton jusqu'a atteindre la hauteur optimale. Regardez les photos dans notre manuel au chapitre Calibration"
-
 #MSG_WATCH
 "Info screen"
 "Ecran d'info"
-
-#
-"Is filament 1 loaded?"
-"Fil.1 est-il charge?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -481,14 +469,6 @@
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Fil. est-il charge?"
-
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-"Est-ce du filament PLA?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-"Fil. PLA est-il charge?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
@@ -730,14 +710,6 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Merci de consulter notre manuel et de corriger le probleme. Poursuivez alors l'assistant en redemarrant l'imprimante."
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-"Inserez du filament PLA dans l'extrudeur puis appuyez sur le bouton pour le charger."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-"Chargez d'abord le filament PLA."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 "Ouvrez l'idler et retirez le filament manuellement."
@@ -749,10 +721,6 @@
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
 "Appuyez sur le bouton pour decharger le filament"
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"Inserez du PLA dans le 1er tube du MMU, appuyez sur le bouton pour le charger."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
