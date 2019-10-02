@@ -991,7 +991,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
         update_current_position_z();
 		//printf_P(PSTR("Zs: %f, Z: %f, delta Z: %f"), z_bckp, current_position[Z_AXIS], (z_bckp - current_position[Z_AXIS]));
 		if (abs(current_position[Z_AXIS] - z_bckp) < 0.025) {
-			//printf_P(PSTR("PINDA triggered immediately, move Z higher and repeat measurement\n")); 
+			printf_P(PSTR("PINDA triggered immediately, move Z higher and repeat measurement\n")); 
 			current_position[Z_AXIS] += 0.5;
 			go_to_current(homing_feedrate[Z_AXIS]/60);
 			current_position[Z_AXIS] = minimum_z;
@@ -1019,10 +1019,10 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
 		//printf_P(PSTR("Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
-		//printf_P(PSTR("Z- measurement deviation from avg value %f um\n"), dz);
+		printf_P(PSTR("Z- measurement deviation from avg value %f um\n"), dz);
 		if (dz > 0.05) { //deviation > 50um
 			if (high_deviation_occured == false) { //first occurence may be caused in some cases by mechanic resonance probably especially if printer is placed on unstable surface 
-				//printf_P(PSTR("high dev. first occurence\n"));
+				printf_P(PSTR("high dev. first occurence\n"));
 				delay_keep_alive(500); //damping
 				//start measurement from the begining, but this time with higher movements in Z axis which should help to reduce mechanical resonance
 				high_deviation_occured = true;
@@ -1033,7 +1033,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 				goto error;
 			}
 		}
-		//printf_P(PSTR("PINDA triggered at %f\n"), current_position[Z_AXIS]);
+		printf_P(PSTR("PINDA triggered at %f\n"), current_position[Z_AXIS]);
     }
     current_position[Z_AXIS] = z;
     if (n_iter > 1)
