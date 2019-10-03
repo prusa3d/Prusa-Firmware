@@ -1,10 +1,14 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Ajust. du Z\x0aValeur enreg, contin\x0aou depart a zero?\x0a%cContinuer%cReset"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
-"de 4"
+" de 4"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
 " of 9"
-"de 9"
+" de 9"
 
 #MSG_MEASURED_OFFSET
 "[0;0] point offset"
@@ -872,7 +876,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"CarteSD [flshAir]"
+"Carte SD[flshAir]"
 
 #
 "Right"
