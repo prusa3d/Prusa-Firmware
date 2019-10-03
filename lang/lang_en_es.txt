@@ -1,3 +1,7 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Ajuste Z\x0aAjustado, continuar\x0ao empezar de nuevo?\x0a%cContinuar%cRepetir"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " de 4"
@@ -812,7 +816,7 @@
 
 #
 "Print FAN"
-"Vent.extr"
+"Vent. extr"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -1052,11 +1056,11 @@
 
 #
 "Total filament"
-"Filamento total:"
+"Filamento total"
 
 #
 "Total print time"
-"Tiempo total :"
+"Tiempo total"
 
 #MSG_TUNE
 "Tune"

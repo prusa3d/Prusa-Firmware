@@ -1,10 +1,14 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Set valori\x0aComp. Z, continuare\x0ao iniziare da zero?\x0a%cContinua%cReset"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " su 4"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
 " of 9"
-"su 9"
+" su 9"
 
 #MSG_MEASURED_OFFSET
 "[0;0] point offset"
@@ -492,7 +496,7 @@
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
-"Sinistra  [um]"
+"Sinistra [um]"
 
 #
 "Lin. correction"
