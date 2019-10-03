@@ -1,3 +1,7 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Z Einstell.\x0aWert gesetzt,weiter\x0aoder mit 0 beginnen?\x0a%cWeiter%cNeu beginnen"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " von 4"
@@ -852,7 +856,7 @@
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
-"Rechts    [um]"
+"Rechts [um]"
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"

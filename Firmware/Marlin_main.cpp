@@ -1234,6 +1234,21 @@ void setup()
 	plan_init();  // Initialize planner;
 
 	factory_reset();
+	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
+	        eeprom_read_dword((uint32_t*)(EEPROM_TOP - 8)) == 0x0ffffffff)
+	{
+        // Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
+        // where all the EEPROM entries are set to 0x0ff.
+        // Once a firmware boots up, it forces at least a language selection, which changes
+        // EEPROM_LANG to number lower than 0x0ff.
+        // 1) Set a high power mode.
+#ifdef TMC2130
+        eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
+        tmc2130_mode = TMC2130_MODE_NORMAL;
+#endif //TMC2130
+        eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
+    }
+
     lcd_encoder_diff=0;
 
 #ifdef TMC2130
@@ -1344,20 +1359,6 @@ void setup()
 
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
-
-	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
-		eeprom_read_dword((uint32_t*)(EEPROM_TOP - 8)) == 0x0ffffffff) {
-		// Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
-		// where all the EEPROM entries are set to 0x0ff.
-		// Once a firmware boots up, it forces at least a language selection, which changes
-		// EEPROM_LANG to number lower than 0x0ff.
-		// 1) Set a high power mode.
-#ifdef TMC2130
-		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
-		tmc2130_mode = TMC2130_MODE_NORMAL;
-#endif //TMC2130
-		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
-	}
 
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
