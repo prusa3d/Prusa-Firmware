@@ -1,3 +1,7 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Ajuste Z\x0aAjustado, continuar\x0ao empezar de nuevo?\x0a%cContinuar%cRepetir"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " de 4"
@@ -221,10 +225,6 @@
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
 "Expulsar filamento"
-
-#
-"Eject"
-"Expulsar"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -462,17 +462,9 @@
 "I will run z calibration now."
 "Voy a hacer Calibracion Z ahora."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-"Voy a comenzar a imprimir la linea y tu bajaras el nozzle gradualmente al rotar el dial, hasta que llegues a la altura optima. Mira las imagenes del capitulo Calibracion en el manual."
-
 #MSG_WATCH
 "Info screen"
 "Monitorizar"
-
-#
-"Is filament 1 loaded?"
-"?Esta cargado el filamento 1?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -481,14 +473,6 @@
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Esta el filamento cargado?"
-
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-"Es el filamento PLA?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-"Esta el filamento PLA cargado?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
@@ -730,14 +714,6 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Lee el manual y resuelve el problema. Despues, reinicia la impresora y continua con el Wizard"
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-"Inserta, por favor, filamento PLA en el extrusor. Despues haz clic para cargarlo."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-"Carga el filamento PLA primero por favor."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 "Por favor abate el rodillo de empuje (idler) y retira el filamento manualmente."
@@ -749,10 +725,6 @@
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
 "Por favor, pulsa el dial para descargar el filamento"
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"Por favor introduce el filamento al primer tubo MMU, despues presiona el dial para imprimirlo."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -844,7 +816,7 @@
 
 #
 "Print FAN"
-"Vent.extr"
+"Vent. extr"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -1084,11 +1056,11 @@
 
 #
 "Total filament"
-"Filamento total:"
+"Filamento total"
 
 #
 "Total print time"
-"Tiempo total :"
+"Tiempo total"
 
 #MSG_TUNE
 "Tune"
