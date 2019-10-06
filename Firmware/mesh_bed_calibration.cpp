@@ -6,6 +6,7 @@
 #include "mesh_bed_leveling.h"
 #include "stepper.h"
 #include "ultralcd.h"
+#include "temperature.h"
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -23,7 +24,6 @@ float   world2machine_shift[2];
 #define WEIGHT_FIRST_ROW_Y_HIGH (0.3f)
 #define WEIGHT_FIRST_ROW_Y_LOW  (0.0f)
 
-extern bool bedPWMDisabled;
 
 
 // Scaling of the real machine axes against the programmed dimensions in the firmware.
