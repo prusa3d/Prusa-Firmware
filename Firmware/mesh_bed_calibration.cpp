@@ -23,6 +23,7 @@ float   world2machine_shift[2];
 #define WEIGHT_FIRST_ROW_Y_HIGH (0.3f)
 #define WEIGHT_FIRST_ROW_Y_LOW  (0.0f)
 
+extern bool bedPWMDisabled;
 
 
 // Scaling of the real machine axes against the programmed dimensions in the firmware.
@@ -946,6 +947,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
         )
 {
 	bool high_deviation_occured = false; 
+    bedPWMDisabled = 1;
 #ifdef TMC2130
 	FORCE_HIGH_POWER_START;
 #endif
@@ -1044,6 +1046,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 #ifdef TMC2130
 	FORCE_HIGH_POWER_END;
 #endif
+    bedPWMDisabled = 0;
 	return true;
 
 error:
@@ -1053,6 +1056,7 @@ error:
 #ifdef TMC2130
 	FORCE_HIGH_POWER_END;
 #endif
+    bedPWMDisabled = 0;
 	return false;
 }
 

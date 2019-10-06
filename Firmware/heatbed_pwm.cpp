@@ -61,6 +61,8 @@ enum class States : uint8_t {
 ///! Inner states of the finite automaton
 static States state = States::ZERO_START;
 
+bool bedPWMDisabled = 0;
+
 ///! Fast PWM counter is used in the RISE and FALL states (62.5kHz)
 static uint8_t slowCounter = 0;
 ///! Slow PWM counter is used in the ZERO and ONE states (62.5kHz/8 or 64)
@@ -93,6 +95,7 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
 {
 	switch(state){
 	case States::ZERO_START:
+		if (bedPWMDisabled) break;
 		pwm = soft_pwm_bed << 1;// expecting soft_pwm_bed to be 7bit!
 		if( pwm != 0 ){
 			state = States::ZERO;     // do nothing, let it tick once again after the 30Hz period
@@ -143,6 +146,9 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
 		if( (soft_pwm_bed << 1) >= (255 - slowInc - 1) ){  //@@TODO simplify & explain
 			// if slowInc==2, soft_pwm == 251 will be the first to do short drops to zero. 252 will keep full heating
 			return;           // want full duty for the next ONE cycle again - so keep on heating and just wait for the next timer ovf
+		}
+		if (bedPWMDisabled){
+			return;
 		}
 		// otherwise moving towards FALL
 		// @@TODO it looks like ONE_TO_FALL isn't necessary, there are no artefacts at all
