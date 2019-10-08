@@ -1219,6 +1219,8 @@ void lcd_implementation_drawedit_2(const char* pstr, char* value)
 
 static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* pstr, const char* filename, char* longFilename)
 {
+    UNUSED(pstr); UNUSED(filename);
+
     char c;
     int enc_dif = encoderDiff;
     uint8_t n = LCD_WIDTH - 1;
@@ -1272,6 +1274,8 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 }
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* pstr, const char* filename, char* longFilename)
 {
+    UNUSED(pstr);
+
     char c;
     uint8_t n = LCD_WIDTH - 1;
     lcd.setCursor(0, row);
@@ -1292,6 +1296,8 @@ static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* pstr, co
 }
 static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const char* pstr, const char* filename, char* longFilename)
 {
+    UNUSED(pstr);
+
     char c;
     uint8_t n = LCD_WIDTH - 2;
     lcd.setCursor(0, row);
@@ -1313,6 +1319,8 @@ static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const 
 }
 static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* pstr, const char* filename, char* longFilename)
 {
+    UNUSED(pstr);
+
     char c;
     uint8_t n = LCD_WIDTH - 2;
     lcd.setCursor(0, row);

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
-#include "Arduino.h"
+#include "Marlin.h"
 
 // When the display powers up, it is configured as follows:
 //
@@ -83,6 +83,8 @@ void LiquidCrystal::init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t en
 }
 
 void LiquidCrystal::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
+  UNUSED(cols);
+
   if (lines > 1) {
     _displayfunction |= LCD_2LINE;
   }
@@ -161,6 +163,8 @@ void LiquidCrystal::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 
 
 void LiquidCrystal::begin_noclear(uint8_t cols, uint8_t lines, uint8_t dotsize) {
+  UNUSED(cols);
+
   if (lines > 1) {
     _displayfunction |= LCD_2LINE;
   }
