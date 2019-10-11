@@ -201,9 +201,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_SHEETS_BASE (EEPROM_CHECK_GCODE - EEPROM_SHEETS_SIZEOF) // Sheets
 static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
+#define EEPROM_BACKLIGHT_LEVEL (EEPROM_SHEETS_BASE-1) // uint8
 
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_SHEETS_BASE
+#define EEPROM_LAST_ITEM EEPROM_BACKLIGHT_LEVEL
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

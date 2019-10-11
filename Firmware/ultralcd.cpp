@@ -18,6 +18,7 @@
 
 #include "lcd.h"
 #include "menu.h"
+#include "backlight.h"
 
 #include "util.h"
 #include "mesh_bed_leveling.h"
@@ -5768,6 +5769,8 @@ static void lcd_settings_menu()
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;
+    
+    MENU_ITEM_EDIT_int3_P(_i("Backlight"), &backlightLevel, 0, 255);
 
 	if (farm_mode)
 	{
@@ -8567,6 +8570,7 @@ void ultralcd_init()
         else lcd_autoDeplete = autoDepleteRaw;
 
     }
+    backlight_init();
 	lcd_init();
 	lcd_refresh();
 	lcd_longpress_func = menu_lcd_longpress_func;
@@ -8813,6 +8817,7 @@ void menu_lcd_lcdupdate_func(void)
 		}
 	}
 #endif//CARDINSERTED
+    backlight_update();
 	if (lcd_next_update_millis < _millis())
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
