@@ -7468,21 +7468,27 @@ bool lcd_selftest()
 #ifdef TMC2130
 		tmc2130_home_exit();
 		enable_endstops(false);
-		current_position[X_AXIS] = current_position[X_AXIS] + 14;
-		current_position[Y_AXIS] = current_position[Y_AXIS] + 12;
 #endif
 
 		//homeaxis(X_AXIS);
 		//homeaxis(Y_AXIS);
+        current_position[X_AXIS] += pgm_read_float(bed_ref_points_4);
+		current_position[Y_AXIS] += pgm_read_float(bed_ref_points_4+1);
+#ifdef TMC2130
+		//current_position[X_AXIS] += 0;
+		current_position[Y_AXIS] += 4;
+#endif //TMC2130
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
 		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
+        set_destination_to_current();
 		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 1500);
-		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
-		if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) {
-			enquecommand_P(PSTR("G28 W"));
-			enquecommand_P(PSTR("G1 Z15 F1000"));
-		}
+		_result = homeaxis(Z_AXIS, 0);
+
+		//raise Z to not damage the bed during and hotend testing
+		current_position[Z_AXIS] += 20;
+		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+		st_synchronize();
 	}
 
 #ifdef TMC2130
@@ -7793,7 +7799,9 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		{
 			lcd_selftest_error(TestError::Motor, _error_1, _error_2);
 		}
-	}
+	}    
+	current_position[_axis] = 0; //simulate axis home to avoid negative numbers for axis position, especially Z.
+	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
 	return _stepresult;
 }
@@ -7843,9 +7851,6 @@ static bool lcd_selfcheck_pulleys(int axis)
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
 			endstop_triggered = true;
 			if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
-				current_position[axis] += (axis == X_AXIS) ? 13 : 9;
-				plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
-				st_synchronize();
 				return(true);
 			}
 			else {

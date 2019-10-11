@@ -309,9 +309,9 @@ extern int fanSpeed;
 extern int8_t lcd_change_fil_state;
 
 #ifdef TMC2130
-void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+bool homeaxis(int axis, bool doError = 1, uint8_t cnt = 1, uint8_t* pstep = 0);
 #else
-void homeaxis(int axis, uint8_t cnt = 1);
+bool homeaxis(int axis, bool doError = 1, uint8_t cnt = 1);
 #endif //TMC2130
 
 

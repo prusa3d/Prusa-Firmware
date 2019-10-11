@@ -1898,10 +1898,6 @@ static void axis_is_at_home(int axis) {
   max_pos[axis] =          base_max_pos(axis) + cs.add_homing[axis];
 }
 
-
-inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
-inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
-
 //! @return original feedmultiply
 static int setup_for_endstop_move(bool enable_endstops_now = true) {
     saved_feedrate = feedrate;
@@ -2144,9 +2140,9 @@ bool calibrate_z_auto()
 #endif //TMC2130
 
 #ifdef TMC2130
-void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
+bool homeaxis(int axis, bool doError, uint8_t cnt, uint8_t* pstep)
 #else
-void homeaxis(int axis, uint8_t cnt)
+bool homeaxis(int axis, bool doError, uint8_t cnt)
 #endif //TMC2130
 {
 	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homing
@@ -2261,8 +2257,8 @@ void homeaxis(int axis, uint8_t cnt)
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 			FORCE_HIGH_POWER_END;
-			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			return; 
+			if (doError) kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+			return 0; 
 		}
 #endif //TMC2130
         current_position[axis] = 0;
@@ -2277,8 +2273,8 @@ void homeaxis(int axis, uint8_t cnt)
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 			FORCE_HIGH_POWER_END;
-			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			return; 
+			if (doError) kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+			return 0; 
 		}
 #endif //TMC2130
         axis_is_at_home(axis);
@@ -2291,6 +2287,7 @@ void homeaxis(int axis, uint8_t cnt)
 #endif	
     }
     enable_endstops(endstops_enabled);
+    return 1;
 }
 
 /**/
