@@ -10,6 +10,8 @@
 // #include "Timer.h"
 // #include "Configuration.h"
 
+#ifdef LCD_BL_PIN
+
 int16_t backlightLevel = 0;
 int16_t backlightLevel_old = 0;
 // uint16_t backlightCounter = 0;
@@ -31,3 +33,5 @@ void backlight_init()
     backlightLevel = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL);
     backlight_update();
 }
+
+#endif //LCD_BL_PIN
