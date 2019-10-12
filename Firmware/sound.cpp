@@ -105,8 +105,6 @@ switch(eSoundMode)
                Sound_DoSound_Alert(false);
           break;
      case e_SOUND_MODE_ONCE:
-          if(eSoundType==e_SOUND_TYPE_ButtonEcho)
-              Sound_DoSound_Echo();
           if(eSoundType==e_SOUND_TYPE_StandardPrompt)
                Sound_DoSound_Prompt();
           if(eSoundType==e_SOUND_TYPE_StandardAlert)
