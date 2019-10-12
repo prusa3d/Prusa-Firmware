@@ -7483,7 +7483,11 @@ bool lcd_selftest()
 		st_synchronize();
         set_destination_to_current();
 		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 1500);
+#ifdef TMC2130
 		_result = homeaxis(Z_AXIS, 0);
+#else
+        _result = lcd_selfcheck_axis(Z_AXIS, Z_MAX_POS);
+#endif //TMC2130
 
 		//raise Z to not damage the bed during and hotend testing
 		current_position[Z_AXIS] += 20;
@@ -7700,7 +7704,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 }
 #endif //TMC2130
 
-//#ifndef TMC2130
+#ifndef TMC2130
 
 static bool lcd_selfcheck_axis(int _axis, int _travel)
 {
@@ -7806,7 +7810,6 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 	return _stepresult;
 }
 
-#ifndef TMC2130
 static bool lcd_selfcheck_pulleys(int axis)
 {
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
