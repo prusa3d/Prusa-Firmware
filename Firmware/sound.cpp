@@ -6,6 +6,13 @@
 //#include <avr/eeprom.h>
 //#include "eeprom.h"
 
+/*
+SOUND MODES:
+SILENT: 1 beep alerts
+ONCE: 1 beep alerts, prompts, custom sounds
+LOUD: 3 beep alerts, prompts, custom sounds, menu click
+ASSIST: 3 beep alerts, prompts, custom sounds, menu click+assist
+*/
 
 //eSOUND_MODE eSoundMode=e_SOUND_MODE_LOUD;
 // nema vyznam, pokud se bude volat Sound_Init (tzn. poc. hodnota je v EEPROM)
