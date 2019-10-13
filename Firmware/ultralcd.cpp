@@ -8726,6 +8726,7 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
+	backlightTimer_reset();
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
     {
         // disable longpress during re-entry, while homing or calibration
@@ -8837,9 +8838,14 @@ void menu_lcd_lcdupdate_func(void)
 			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 			lcd_encoder_diff = 0;
 			lcd_timeoutToStatus.start();
+			backlightTimer_reset();
 		}
 
-		if (LCD_CLICKED) lcd_timeoutToStatus.start();
+		if (LCD_CLICKED)
+		{
+			lcd_timeoutToStatus.start();
+			backlightTimer_reset();
+		}
 
 		(*menu_menu)();
 
