@@ -8369,10 +8369,6 @@ void clamp_to_software_endstops(float target[3])
         }
         // The rest of the path.
         plan_buffer_line(x, y, z, e, feed_rate, extruder);
-        current_position[X_AXIS] = x;
-        current_position[Y_AXIS] = y;
-        current_position[Z_AXIS] = z;
-        current_position[E_AXIS] = e;
     }
 #endif  // MESH_BED_LEVELING
     
