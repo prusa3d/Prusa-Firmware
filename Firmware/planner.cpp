@@ -666,8 +666,8 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 
   // If the buffer is full: good! That means we are well ahead of the robot. 
   // Rest here until there is room in the buffer.
+  waiting_inside_plan_buffer_line_print_aborted = false;
   if (block_buffer_tail == next_buffer_head) {
-      waiting_inside_plan_buffer_line_print_aborted = false;
       do {
           manage_heater(); 
           // Vojtech: Don't disable motors inside the planner!

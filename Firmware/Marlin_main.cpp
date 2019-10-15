@@ -8363,6 +8363,8 @@ void clamp_to_software_endstops(float target[3])
                                  current_position[Z_AXIS] + t * dz,
                                  current_position[E_AXIS] + t * de,
                                  feed_rate, extruder);
+                if (waiting_inside_plan_buffer_line_print_aborted)
+                    return;
             }
         }
         // The rest of the path.
@@ -8390,6 +8392,8 @@ void prepare_move()
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #endif
   }
+  if (waiting_inside_plan_buffer_line_print_aborted)
+      return;
 
   for(int8_t i=0; i < NUM_AXIS; i++) {
     current_position[i] = destination[i];
@@ -10264,10 +10268,12 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
+
 	SERIAL_PROTOCOLLNRPGM(MSG_OK); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
     saved_printing_type = PRINTING_TYPE_NONE;
 	saved_printing = false;
+    waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
 }
 
 void print_world_coordinates()
