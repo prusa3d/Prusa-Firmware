@@ -8391,9 +8391,7 @@ void prepare_move()
   if (waiting_inside_plan_buffer_line_print_aborted)
       return;
 
-  for(int8_t i=0; i < NUM_AXIS; i++) {
-    current_position[i] = destination[i];
-  }
+  set_current_to_destination();
 }
 
 void prepare_arc_move(char isclockwise) {
@@ -9114,10 +9112,8 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 		destination[X_AXIS] = ix * (x_dimension / (x_points_num - 1)) + shift_x;
 		destination[Y_AXIS] = iy * (y_dimension / (y_points_num - 1)) + shift_y;
 
-		mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], XY_AXIS_FEEDRATE/6, active_extruder);
-		for(int8_t i=0; i < NUM_AXIS; i++) {
-			current_position[i] = destination[i];
-		}
+        mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], XY_AXIS_FEEDRATE/6, active_extruder);
+        set_current_to_destination();
 		st_synchronize();
 
 	//	printf_P(PSTR("X = %f; Y= %f \n"), current_position[X_AXIS], current_position[Y_AXIS]);
