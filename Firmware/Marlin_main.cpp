@@ -8864,6 +8864,8 @@ void delay_keep_alive(unsigned int ms)
 }
 
 static void wait_for_heater(long codenum, uint8_t extruder) {
+    if (!degTargetHotend(extruder))
+        return;
 
 #ifdef TEMP_RESIDENCY_TIME
 	long residencyStart;
