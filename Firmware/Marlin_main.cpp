@@ -309,6 +309,8 @@ bool no_response = false;
 uint8_t important_status;
 uint8_t saved_filament_type;
 
+#define SAVED_TARGET_UNSET (X_MIN_POS-1)
+float saved_target[NUM_AXIS] = {SAVED_TARGET_UNSET, 0, 0, 0};
 
 // save/restore printing in case that mmu was not responding 
 bool mmu_print_saved = false;
@@ -4043,8 +4045,19 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
         #endif
 
+            get_coordinates(); // For X Y Z E F
 
-        get_coordinates(); // For X Y Z E F
+            // When recovering from a previous print move, restore the originally
+            // calculated target position on the first USB/SD command. This accounts
+            // properly for relative moves
+            if ((saved_target[0] != SAVED_TARGET_UNSET) &&
+                ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) ||
+                 (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)))
+            {
+                memcpy(destination, saved_target, sizeof(destination));
+                saved_target[0] = SAVED_TARGET_UNSET;
+            }
+
 		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
 			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
 		}
@@ -8339,30 +8352,37 @@ void clamp_to_software_endstops(float target[3])
 }
 
 #ifdef MESH_BED_LEVELING
-    void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
+void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
         float dx = x - current_position[X_AXIS];
         float dy = y - current_position[Y_AXIS];
-        float dz = z - current_position[Z_AXIS];
         int n_segments = 0;
-		
+
         if (mbl.active) {
             float len = abs(dx) + abs(dy);
             if (len > 0)
                 // Split to 3cm segments or shorter.
                 n_segments = int(ceil(len / 30.f));
         }
-        
+
         if (n_segments > 1) {
+            // In a multi-segment move explicitly set the final target in the plan
+            // as the move will be recalculated in it's entirety
+            float gcode_target[NUM_AXIS];
+            gcode_target[X_AXIS] = x;
+            gcode_target[Y_AXIS] = y;
+            gcode_target[Z_AXIS] = z;
+            gcode_target[E_AXIS] = e;
+
+            float dz = z - current_position[Z_AXIS];
             float de = e - current_position[E_AXIS];
+
             for (int i = 1; i < n_segments; ++ i) {
                 float t = float(i) / float(n_segments);
-                if (saved_printing || (mbl.active == false)) return;
-                plan_buffer_line(
-                                 current_position[X_AXIS] + t * dx,
+                plan_buffer_line(current_position[X_AXIS] + t * dx,
                                  current_position[Y_AXIS] + t * dy,
                                  current_position[Z_AXIS] + t * dz,
                                  current_position[E_AXIS] + t * de,
-                                 feed_rate, extruder);
+                                 feed_rate, extruder, gcode_target);
                 if (waiting_inside_plan_buffer_line_print_aborted)
                     return;
             }
@@ -9602,6 +9622,12 @@ void uvlo_()
     // Backup the feedrate in mm/min.
     int feedrate_bckp = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
 
+    // save the original target position of the current move
+    if (blocks_queued())
+        memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+    else
+        saved_target[0] = SAVED_TARGET_UNSET;
+
     // After this call, the planner queue is emptied and the current_position is set to a current logical coordinate.
     // The logical coordinate will likely differ from the machine coordinate if the skew calibration and mesh bed leveling
     // are in action.
@@ -9679,6 +9705,11 @@ void uvlo_()
 #endif
 #endif
 	eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
+    // Store the saved target
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4), saved_target[X_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4), saved_target[Y_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4), saved_target[Z_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4), saved_target[E_AXIS]);
 
     // Finaly store the "power outage" flag.
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
@@ -9927,6 +9958,12 @@ void recover_machine_state_after_power_panic(bool bTiny)
 #endif
 #endif
   extrudemultiply = (int)eeprom_read_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY));
+
+  // 9) Recover the saved target
+  saved_target[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4));
+  saved_target[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4));
+  saved_target[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4));
+  saved_target[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4));
 }
 
 void restore_print_from_eeprom() {
@@ -10142,6 +10179,12 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   // Speed is in mm/min.
   saved_feedrate2 = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
 #endif
+
+  // save the original target position of the current move
+  if (blocks_queued())
+      memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+  else
+      saved_target[0] = SAVED_TARGET_UNSET;
 
 	planner_abort_hard(); //abort printing
 	memcpy(saved_pos, current_position, sizeof(saved_pos));

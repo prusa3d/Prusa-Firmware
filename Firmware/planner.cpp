@@ -659,7 +659,7 @@ float junction_deviation = 0.1;
 // Add a new linear movement to the buffer. steps_x, _y and _z is the absolute position in 
 // mm. Microseconds specify how many microseconds the move should take to perform. To aid acceleration
 // calculation the caller must also provide the physical length of the line in millimeters.
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder)
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target)
 {
     // Calculate the buffer head after we push this byte
   int next_buffer_head = next_block_index(block_buffer_head);
@@ -686,6 +686,26 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 #ifdef PLANNER_DIAGNOSTICS
   planner_update_queue_min_counter();
 #endif /* PLANNER_DIAGNOSTICS */
+
+  // Prepare to set up new block
+  block_t *block = &block_buffer[block_buffer_head];
+
+  // Set sdlen for calculating sd position
+  block->sdlen = 0;
+
+  // Mark block as not busy (Not executed by the stepper interrupt, could be still tinkered with.)
+  block->busy = false;
+
+  // Save original destination of the move
+  if (gcode_target)
+      memcpy(block->gcode_target, gcode_target, sizeof(block_t::gcode_target));
+  else
+  {
+      block->gcode_target[X_AXIS] = x;
+      block->gcode_target[Y_AXIS] = y;
+      block->gcode_target[Z_AXIS] = z;
+      block->gcode_target[E_AXIS] = e;
+  }
 
 #ifdef ENABLE_AUTO_BED_LEVELING
   apply_rotation_xyz(plan_bed_level_matrix, x, y, z);
@@ -785,15 +805,6 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
     #endif
   }
   #endif
-
-  // Prepare to set up new block
-  block_t *block = &block_buffer[block_buffer_head];
-
-  // Set sdlen for calculating sd position
-  block->sdlen = 0;
-
-  // Mark block as not busy (Not executed by the stepper interrupt, could be still tinkered with.)
-  block->busy = false;
 
   // Number of steps for each axis
 #ifndef COREXY

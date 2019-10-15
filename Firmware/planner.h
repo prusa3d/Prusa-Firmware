@@ -116,7 +116,8 @@ typedef struct {
   unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
 #endif
 
-  uint16_t sdlen;
+  float gcode_target[NUM_AXIS];     // Target (abs mm) of the original Gcode instruction
+  uint16_t sdlen;                   // Length of the Gcode instruction
 } block_t;
 
 #ifdef LIN_ADVANCE
@@ -147,7 +148,7 @@ vector_3 plan_get_position();
 /// The performance penalty is negligible, since these planned lines are usually maintenance moves with the extruder.
 void plan_buffer_line_curposXYZE(float feed_rate, uint8_t extruder);
 
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder);
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target = NULL);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
 #endif // ENABLE_AUTO_BED_LEVELING
 
