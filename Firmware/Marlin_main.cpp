@@ -3657,7 +3657,7 @@ void process_commands()
     
     Set of internal PRUSA commands
       
-          PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+          PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
       
       - `Ping` 
       - `PRN` - Prints revision of the printer
@@ -3665,7 +3665,6 @@ void process_commands()
       - `fn` - Prints farm no.
       - `thx` 
       - `uvlo` 
-      - `fsensor_recover` - Filament sensor recover - restore print and continue
       - `MMURES` - Reset MMU
       - `RESET` - (Careful!)
       - `fv`  - ?
@@ -3715,12 +3714,6 @@ void process_commands()
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
-#ifdef FILAMENT_SENSOR
-		else if (code_seen("fsensor_recover")) // PRUSA fsensor_recover
-		{
-               fsensor_restore_print_and_continue();
-		}	
-#endif //FILAMENT_SENSOR
 		else if (code_seen("MMURES")) // PRUSA MMURES
 		{
 			mmu_reset();
