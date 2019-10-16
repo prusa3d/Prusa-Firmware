@@ -72,7 +72,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Automaticke zavadeni filamentu je dostupne pouze pri zapnutem filament senzoru..."
+"Automaticke zavadeni filamentu je mozne pouze pri zapnutem filament senzoru..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."

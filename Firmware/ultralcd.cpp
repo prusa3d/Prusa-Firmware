@@ -1843,8 +1843,8 @@ static void lcd_menu_fails_stats_total()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | Power failures: 000|	c=14 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Power failures  000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! | Crash   X:000 Y:000|	c=7 r=1
 //! ----------------------
 //! @endcode
@@ -1890,6 +1890,7 @@ static void lcd_menu_fails_stats()
 }
 
 #elif defined(FILAMENT_SENSOR)
+static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-16.16S%-3d\n";
 //! 
 //! @brief Print last print and total filament run outs
 //! 
@@ -1900,9 +1901,9 @@ static void lcd_menu_fails_stats()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! |Total failures      |	c=20 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1912,11 +1913,13 @@ static void lcd_menu_fails_stats()
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
 	lcd_home();
-    lcd_printf_P(PSTR("Last print failures\n"  ////c=20 r=1 
-        " Filam. runouts  %-3d\n"   ////c=14 r=1
-        "Total failures\n"  ////c=20 r=1
-        " Filam. runouts  %-3d"), filamentLast, filamentTotal);  ////c=14 r=1
-    menu_back_if_clicked();
+	lcd_printf_P(failStatsFmt, 
+        _i("Last print failures"),   ////c=20 r=1
+        _i("Filam. runouts"), filamentLast,   ////c=14 r=1
+        _i("Total failures"),  ////c=20 r=1
+        _i("Filam. runouts"), filamentTotal);   ////c=14 r=1
+
+	menu_back_if_clicked();
 }
 #else
 static void lcd_menu_fails_stats()
