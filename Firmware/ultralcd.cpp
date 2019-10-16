@@ -5774,7 +5774,10 @@ static void lcd_settings_menu()
 	SETTINGS_SOUND;
 
 #ifdef LCD_BL_PIN
-    MENU_ITEM_EDIT_int3_P(_i("Backlight"), &backlightLevel, 0, 255);
+    if (backlightSupport)
+    {
+        MENU_ITEM_EDIT_int3_P(_i("Backlight"), &backlightLevel, 0, 255);
+    }
 #endif //LCD_BL_PIN
 
 	if (farm_mode)

@@ -5,6 +5,7 @@
 #include <inttypes.h>
 
 extern int16_t backlightLevel;
+extern bool backlightSupport;
 
 extern void backlight_update();
 extern void backlight_init();

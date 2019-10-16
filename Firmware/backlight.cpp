@@ -12,6 +12,7 @@
 
 #ifdef LCD_BL_PIN
 
+bool backlightSupport = 0;
 int16_t backlightLevel = 0;
 int16_t backlightLevel_old = 0;
 unsigned long backlightTimer_period = 10000ul;
@@ -21,7 +22,7 @@ LongTimer backlightTimer;
 static void backlightDim()
 {
     // if (backlightIsDimmed) return;
-    backlightLevel /= 4; //make the display half as bright.
+    backlightLevel /= 4; //make the display dimmer.
     backlightIsDimmed = true;
 }
 
@@ -40,6 +41,7 @@ void backlightTimer_reset() //used for resetting the timer and waking the displa
 
 void backlight_update()
 {
+    if (!backlightSupport) return;
     if (backlightTimer.expired(backlightTimer_period)) backlightDim();
     
     if (backlightLevel != backlightLevel_old) //update pwm duty cycle
@@ -53,6 +55,14 @@ void backlight_update()
 
 void backlight_init()
 {
+//check for backlight support on lcd
+    SET_INPUT(LCD_BL_PIN);
+    WRITE(LCD_BL_PIN,HIGH);
+    _delay(10);
+    backlightSupport = !READ(LCD_BL_PIN);
+    if (backlightSupport == 0) return;
+
+//initialize backlight pin
     SET_OUTPUT(LCD_BL_PIN);
     WRITE(LCD_BL_PIN,0);
     backlightTimer_reset(); //initializes eeprom data and starts backlightTimer
