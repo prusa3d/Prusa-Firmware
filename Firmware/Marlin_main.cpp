@@ -989,10 +989,6 @@ void setup()
 
 	ultralcd_init();
 
-#if (LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
-	analogWrite(LCD_BL_PIN, 255); //set full brightnes
-#endif //(LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
-
 	spi_init();
 
 	lcd_splash();
