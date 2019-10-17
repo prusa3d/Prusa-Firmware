@@ -56,6 +56,7 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
+static void lcd_backlight_menu();
 
 int8_t ReInitLCD = 0;
 
@@ -5776,7 +5777,7 @@ static void lcd_settings_menu()
 #ifdef LCD_BL_PIN
     if (backlightSupport)
     {
-        MENU_ITEM_EDIT_int3_P(_i("Backlight"), &backlightLevel, 0, 255);
+        MENU_ITEM_SUBMENU_P(_i("Brightness"), lcd_backlight_menu);
     }
 #endif //LCD_BL_PIN
 
@@ -7163,6 +7164,38 @@ static void lcd_mesh_bed_leveling_settings()
 	else					        menu_item_text_P(_i("Magnets comp.[N/A]")); ////MSG_MAGNETS_COMP_NA c=18
 	MENU_END();
 	//SETTINGS_MBL_MODE;
+}
+
+static void backlight_mode_toggle()
+{
+    switch (backlightMode)
+    {
+        case BACKLIGHT_MODE_BRIGHT: backlightMode = BACKLIGHT_MODE_DIM; break;
+        case BACKLIGHT_MODE_DIM: backlightMode = BACKLIGHT_MODE_AUTO; break;
+        case BACKLIGHT_MODE_AUTO: backlightMode = BACKLIGHT_MODE_BRIGHT; break;
+        default: backlightMode = BACKLIGHT_MODE_BRIGHT; break;
+    }
+    backlight_save();
+}
+
+static void lcd_backlight_menu()
+{
+    MENU_BEGIN();
+    ON_MENU_LEAVE(
+        backlight_save();
+    );
+    
+    MENU_ITEM_BACK_P(_T(MSG_BACK));
+    MENU_ITEM_EDIT_int3_P(_i("Level Bright"), &backlightLevel_HIGH, 0, 255);
+    MENU_ITEM_EDIT_int3_P(_i("Level Dimmed"), &backlightLevel_LOW, 0, 255);
+    switch (backlightMode)
+    {
+        case BACKLIGHT_MODE_BRIGHT: MENU_ITEM_FUNCTION_P(_i("Mode   [Always on]"), backlight_mode_toggle); break;
+        case BACKLIGHT_MODE_DIM: MENU_ITEM_FUNCTION_P(_i("Mode  [Always off]"), backlight_mode_toggle); break;
+        default: MENU_ITEM_FUNCTION_P(_i("Mode        [Auto]"), backlight_mode_toggle); break;
+    }
+    
+    MENU_END();
 }
 
 static void lcd_control_temperature_menu()
