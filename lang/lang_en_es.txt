@@ -72,11 +72,11 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"La carga automatica de filamento solo funciona si el sensor de filamento esta activado..."
+"La carga automatica solo funciona si el sensor de filamento esta activado..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"La carga automatica de filamento esta activada, pulse el dial e inserte el filamento..."
+"La carga automatica esta activada, pulse el dial e inserte el filamento..."
 
 #MSG_SELFTEST_AXIS_LENGTH
 "Axis length"
