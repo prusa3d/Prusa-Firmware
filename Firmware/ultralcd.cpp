@@ -7166,6 +7166,7 @@ static void lcd_mesh_bed_leveling_settings()
 	//SETTINGS_MBL_MODE;
 }
 
+#ifdef LCD_BL_PIN
 static void backlight_mode_toggle()
 {
     switch (backlightMode)
@@ -7197,6 +7198,7 @@ static void lcd_backlight_menu()
     
     MENU_END();
 }
+#endif //LCD_BL_PIN
 
 static void lcd_control_temperature_menu()
 {
