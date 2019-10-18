@@ -18,6 +18,21 @@ uint8_t backlightMode = BACKLIGHT_MODE_BRIGHT;
 int16_t backlightTimer_period = 10;
 LongTimer backlightTimer;
 
+void force_bl_on(bool section_start)
+{
+    if (section_start)
+    {
+        backlightMode = BACKLIGHT_MODE_BRIGHT;
+        if (backlightLevel_HIGH < 30) backlightLevel_HIGH = 30;
+    }
+    else
+    {
+        backlightMode = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_MODE);
+        backlightLevel_HIGH = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH);
+    }
+    backlight_update();
+}
+
 void backlight_save() //saves all backlight data to eeprom.
 {
     eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, (uint8_t)backlightLevel_HIGH);

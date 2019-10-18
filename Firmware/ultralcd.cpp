@@ -5019,7 +5019,7 @@ void lcd_wizard(WizState state)
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
 	if (state != S::Run) eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
-
+	FORCE_BL_ON_START;
 	while (!end) {
 		printf_P(PSTR("Wizard state: %d\n"), state);
 		switch (state) {
@@ -5157,6 +5157,7 @@ void lcd_wizard(WizState state)
 		}
 	}
 
+	FORCE_BL_ON_END;
 	printf_P(_N("Wizard end state: %d\n"), state);
 	switch (state) { //final message
 	case S::Restore: //printer was already calibrated
@@ -7393,6 +7394,7 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
+    FORCE_BL_ON_START;
 	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 
@@ -7612,6 +7614,7 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_END;
 	#endif // TMC2130
+    FORCE_BL_ON_END;
 	KEEPALIVE_STATE(NOT_BUSY);
 	return(_result);
 }
@@ -8021,6 +8024,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 static void lcd_selftest_error(TestError testError, const char *_error_1, const char *_error_2)
 {
 	lcd_beeper_quick_feedback();
+    FORCE_BL_ON_END;
 
 	target_temperature[0] = 0;
 	target_temperature_bed = 0;

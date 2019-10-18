@@ -63,6 +63,7 @@
 
 #include "menu.h"
 #include "ultralcd.h"
+#include "backlight.h"
 
 #include "planner.h"
 #include "stepper.h"
@@ -2768,6 +2769,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	#ifdef TMC2130
 	FORCE_HIGH_POWER_START;
 	#endif // TMC2130
+	FORCE_BL_ON_START;
 	// Only Z calibration?
 	if (!onlyZ)
 	{
@@ -2956,6 +2958,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 #ifdef TMC2130
 	FORCE_HIGH_POWER_END;
 #endif // TMC2130
+	FORCE_BL_ON_END;
 	return final_result;
 }
 
