@@ -15,7 +15,7 @@ bool backlightSupport = 0; //only if it's true will any of the settings be visib
 int16_t backlightLevel_HIGH = 0;
 int16_t backlightLevel_LOW = 0;
 uint8_t backlightMode = BACKLIGHT_MODE_BRIGHT;
-unsigned long backlightTimer_period = 10000ul;
+int16_t backlightTimer_period = 10;
 LongTimer backlightTimer;
 
 void backlight_save() //saves all backlight data to eeprom.
@@ -23,6 +23,7 @@ void backlight_save() //saves all backlight data to eeprom.
     eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, (uint8_t)backlightLevel_HIGH);
     eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW, (uint8_t)backlightLevel_LOW);
     eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_MODE, backlightMode);
+    eeprom_update_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT, backlightTimer_period);
 }
 
 void backlightTimer_reset() //used for resetting the timer and waking the display. Triggered on events such as knob click, rotate and on full screen notifications.
@@ -37,7 +38,7 @@ void backlight_update()
     
     if (backlightMode == BACKLIGHT_MODE_AUTO)
     {
-        if (backlightTimer.expired(backlightTimer_period)) analogWrite(LCD_BL_PIN, backlightLevel_LOW);
+        if (backlightTimer.expired((uint32_t)backlightTimer_period * 1000ul)) analogWrite(LCD_BL_PIN, backlightLevel_LOW);
         else if (backlightTimer.running()) analogWrite(LCD_BL_PIN, backlightLevel_HIGH);
         else {/*do nothing*/;} //display is dimmed.
     }
@@ -61,10 +62,12 @@ void backlight_init()
         backlightMode = BACKLIGHT_MODE_AUTO;
         backlightLevel_HIGH = 130;
         backlightLevel_LOW = 50;
+        backlightTimer_period = 10; //in seconds
         backlight_save();
     }
     backlightLevel_HIGH = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH);
     backlightLevel_LOW = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW);
+    backlightTimer_period = eeprom_read_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT);
     
     SET_OUTPUT(LCD_BL_PIN);
     backlightTimer_reset();

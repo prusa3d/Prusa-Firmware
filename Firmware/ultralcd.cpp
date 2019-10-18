@@ -7187,14 +7187,15 @@ static void lcd_backlight_menu()
     );
     
     MENU_ITEM_BACK_P(_T(MSG_BACK));
-    MENU_ITEM_EDIT_int3_P(_i("Level Bright"), &backlightLevel_HIGH, 0, 255);
-    MENU_ITEM_EDIT_int3_P(_i("Level Dimmed"), &backlightLevel_LOW, 0, 255);
+    MENU_ITEM_EDIT_int3_P(_i("Level Bright"), &backlightLevel_HIGH, backlightLevel_LOW, 255);
+    MENU_ITEM_EDIT_int3_P(_i("Level Dimmed"), &backlightLevel_LOW, 0, backlightLevel_HIGH);
     switch (backlightMode)
     {
-        case BACKLIGHT_MODE_BRIGHT: MENU_ITEM_FUNCTION_P(_i("Mode   [Always on]"), backlight_mode_toggle); break;
-        case BACKLIGHT_MODE_DIM: MENU_ITEM_FUNCTION_P(_i("Mode  [Always off]"), backlight_mode_toggle); break;
+        case BACKLIGHT_MODE_BRIGHT: MENU_ITEM_FUNCTION_P(_i("Mode      [Bright]"), backlight_mode_toggle); break;
+        case BACKLIGHT_MODE_DIM: MENU_ITEM_FUNCTION_P(_i("Mode         [Dim]"), backlight_mode_toggle); break;
         default: MENU_ITEM_FUNCTION_P(_i("Mode        [Auto]"), backlight_mode_toggle); break;
     }
+    MENU_ITEM_EDIT_int3_P(_i("Timeout"), &backlightTimer_period, 1, 999);
     
     MENU_END();
 }
