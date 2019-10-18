@@ -2184,7 +2184,10 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(PSTR("Firmware:"));
   MENU_ITEM_BACK_P(PSTR(" " FW_VERSION_FULL));
 #if (FW_DEV_VERSION != FW_VERSION_GOLD) && (FW_DEV_VERSION != FW_VERSION_RC)
-  MENU_ITEM_BACK_P(PSTR(" repo " FW_REPOSITORY));
+  MENU_ITEM_BACK_P(PSTR(" " FW_REPOSITORY));
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
+  MENU_ITEM_BACK_P(PSTR("BETA FIRMWARE!"));
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
 #endif
   // Ideally this block would be optimized out by the compiler.
 /*  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
