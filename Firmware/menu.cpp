@@ -15,7 +15,7 @@
 
 extern int32_t lcd_encoder;
 
-#define MENU_DEPTH_MAX       6
+#define MENU_DEPTH_MAX       7
 
 static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
@@ -399,7 +399,7 @@ const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
 
-const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6s";
+const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6S";
 
 template<typename T>
 static void menu_draw_P(char chr, const char* str, int16_t val);
@@ -423,7 +423,7 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
     float factor = 1.0f + static_cast<float>(val) / 1000.0f;
     if (val <= _md->minEditValue)
     {
-        lcd_printf_P(menu_fmt_float13off, chr, str, " [off]");
+        lcd_printf_P(menu_fmt_float13off, chr, str, _i(" [off]"));
     }
     else
     {

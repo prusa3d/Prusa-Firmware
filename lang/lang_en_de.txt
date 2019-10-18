@@ -1,3 +1,7 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Z Einstell.\x0aWert gesetzt,weiter\x0aoder mit 0 beginnen?\x0a%cWeiter%cNeu beginnen"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " von 4"
@@ -64,7 +68,7 @@
 
 #MSG_AUTOLOAD_FILAMENT c=17
 "AutoLoad filament"
-"Auto-Laden Filament"
+"AutoLaden Filament"
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
@@ -222,10 +226,6 @@
 "Eject filament"
 "Filamentauswurf"
 
-#
-"Eject"
-"Auswurf"
-
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 "werfe Filament aus"
@@ -320,7 +320,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filament extrudiert + richtige Farbe?"
+"Filament extrudiert mit richtiger Farbe?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -462,17 +462,9 @@
 "I will run z calibration now."
 "Ich werde jetzt die Z Kalibrierung durchfuehren."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-"Ich werde jetzt eine Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken, indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Sehen Sie sich die Bilder in unserem Handbuch im Kapitel Kalibrierung an."
-
 #MSG_WATCH
 "Info screen"
 "Infoanzeige"
-
-#
-"Is filament 1 loaded?"
-"Wurde Filament 1 geladen?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -481,14 +473,6 @@
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Ist das Filament geladen?"
-
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-"Ist es wirklich PLA Filament?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-"Ist PLA Filament geladen?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
@@ -556,11 +540,11 @@
 
 #MSG_MESH_BED_LEVELING
 "Mesh Bed Leveling"
-"Mesh Bett Ausgleich"
+"MeshBett Ausgleich"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
-"MMU OK. Position    wiederherstellen... "
+"MMU OK. Position wiederherstellen..."
 
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
@@ -730,14 +714,6 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Bitte lesen Sie unser Handbuch und beheben Sie das Problem. Fahren Sie dann mit dem Assistenten fort, indem Sie den Drucker neu starten."
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-"Legen Sie bitte PLA Filament in den Extruder und druecken Sie den Knopf,  um es zu laden."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-"Bitte laden Sie zuerst PLA Filament."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 "Bitte Spannrolle oeffnen und Fila- ment von Hand entfernen"
@@ -749,10 +725,6 @@
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
 "Bitte druecken Sie den Knopf um das Filament zu entladen."
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"Legen Sie bitte PLA Filament in den ersten Schlauch der MMU und druecken Sie den Knopf,  um es zu laden."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -828,7 +800,7 @@
 
 #
 "Press the knob"
-"Knopf druecken"
+"Knopf druecken zum"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -844,7 +816,7 @@
 
 #
 "Print FAN"
-"Druckvent"
+"Druckvent."
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -868,7 +840,7 @@
 
 #MSG_CALIBRATE_BED_RESET
 "Reset XYZ calibr."
-"XYZ Kalibr. zuruecksetzen."
+"Reset XYZ Kalibr."
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
@@ -884,7 +856,7 @@
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
-"Rechts    [um]"
+"Rechts [um]"
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
@@ -936,7 +908,7 @@
 
 #MSG_SELFTEST_FAILED c=20
 "Selftest failed  "
-"Selbsttest misslang  "
+"Selbsttest Error "
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -979,8 +951,8 @@
 "Sort.      [Zeit]"
 
 #
-"Severe skew"
-"Schwer.Schr"
+"Severe skew:"
+"Schwer.Schr:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +967,8 @@
 "Sound      [laut]"
 
 #
-"Slight skew"
-"Leicht.Schr"
+"Slight skew:"
+"Leicht.Schr:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1104,11 +1076,11 @@
 
 #
 "to load filament"
-"zum Filament laden"
+"Filament laden"
 
 #
 "to unload filament"
-"zum Filament entladen"
+"Filament entladen"
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
@@ -1249,7 +1221,7 @@
 
 #
 "Checks"
-"\x00"
+"Kontrolle"
 
 #
 "False triggering"
@@ -1265,11 +1237,11 @@
 
 #
 "Firmware [strict]"
-"Firmware [streng]"
+"Firmware [strikt]"
 
 #
 "Firmware   [warn]"
-"\x00"
+"Firmware [warnen]"
 
 #
 "HW Setup"
@@ -1293,15 +1265,15 @@
 
 #
 "Mesh         [3x3]"
-"\x00"
+"Gitter       [3x3]"
 
 #
 "Mesh         [7x7]"
-"\x00"
+"Gitter       [7x7]"
 
 #
 "Mesh bed leveling"
-"Mesh Bett Ausgleich"
+"MeshBett Ausgleich"
 
 #
 "MK3S firmware detected on MK3 printer"
@@ -1325,11 +1297,11 @@
 
 #
 "Model    [strict]"
-"Modell   [streng]"
+"Modell   [strikt]"
 
 #
 "Model      [warn]"
-"Modell     [warn]"
+"Modell   [warnen]"
 
 #
 "Nozzle d.  [0.25]"
@@ -1349,11 +1321,11 @@
 
 #
 "Nozzle   [strict]"
-"Duese    [streng]"
+"Duese    [strikt]"
 
 #
 "Nozzle     [warn]"
-"Duese      [warn]"
+"Duese    [warnen]"
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1416,8 +1388,8 @@
 "Blech"
 
 #
-"Sound     [assist]"
-"Sound     [Assist]"
+"Sound    [assist]"
+"Sound    [Assist]"
 
 #
 "Steel sheets"
@@ -1434,3 +1406,7 @@
 #
 "Z-probe nr.    [3]"
 "Z-Probe Nr.    [3]"
+
+#
+"Z-probe nr.    [5]"
+"Z-Probe Nr.    [5]"

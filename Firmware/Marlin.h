@@ -395,8 +395,6 @@ extern uint16_t print_time_remaining_silent;
 extern uint16_t mcode_in_progress;
 extern uint16_t gcode_in_progress;
 
-extern bool wizard_active; //autoload temporarily disabled during wizard
-
 extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
@@ -429,8 +427,6 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
 #endif //HEATBED_ANALYSIS
 float temp_comp_interpolation(float temperature);
-void temp_compensation_apply();
-void temp_compensation_start();
 void show_fw_version_warnings();
 uint8_t check_printer_version();
 
