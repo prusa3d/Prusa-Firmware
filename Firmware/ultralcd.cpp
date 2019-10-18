@@ -94,6 +94,7 @@ float pid_temp = DEFAULT_PID_TEMP;
 static bool forceMenuExpire = false;
 static bool lcd_autoDeplete;
 
+bool bearCalibration = 0;
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
 
@@ -3549,7 +3550,9 @@ calibrated:
 	if ((PRINTER_TYPE == PRINTER_MK25) || (PRINTER_TYPE == PRINTER_MK2) || (PRINTER_TYPE == PRINTER_MK2_SNMM)) {
 		current_position[Z_AXIS] = Z_MAX_POS-3.f;
 	}
-	else {
+	else if (bearCalibration == 1){
+        current_position[Z_AXIS] = Z_MAX_POS-3.f;
+    } else {
 		current_position[Z_AXIS] = Z_MAX_POS+4.f;
 	}
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -4684,6 +4687,14 @@ void lcd_second_serial_set() {
 }
 #endif //HAS_SECOND_SERIAL_PORT
 
+void set_bear() {
+    bearCalibration = eeprom_read_byte((unsigned char *)EEPROM_BEARMODE);
+
+    if(bearCalibration == 0) bearCalibration = 1;
+    else bearCalibration = 0;
+    eeprom_update_byte((unsigned char *)EEPROM_BEARMODE, bearCalibration);
+}
+
 void lcd_calibrate_pinda() {
 	enquecommand_P(PSTR("G76"));
 	lcd_return_to_status();
@@ -5797,6 +5808,11 @@ static void lcd_settings_menu()
         MENU_ITEM_SUBMENU_P(_i("Brightness"), lcd_backlight_menu);
     }
 #endif //LCD_BL_PIN
+
+    if (bearCalibration == 0)
+        MENU_ITEM_FUNCTION_P(_i("Bear Cal.   [off]"), set_bear);
+    else 
+        MENU_ITEM_FUNCTION_P(_i("Bear Cal.    [on]"), set_bear);
 
 	if (farm_mode)
 	{

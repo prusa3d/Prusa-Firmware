@@ -83,6 +83,7 @@ extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
 
 extern void lcd_diag_show_end_stops();
 
+extern bool bearCalibration;
 
 #define LCD_MESSAGEPGM(x) lcd_setstatuspgm(PSTR(x))
 #define LCD_ALERTMESSAGEPGM(x) lcd_setalertstatuspgm(PSTR(x))
