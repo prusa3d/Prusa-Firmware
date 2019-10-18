@@ -318,7 +318,7 @@ const char STR_SEPARATOR[] PROGMEM = "------------";
 static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
 {
     char c;
-    int enc_dif = lcd_encoder_diff;
+    int enc_dif = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
     uint8_t n = LCD_WIDTH - 1;
 
     for(uint_least8_t g = 0; g<4;g++){
@@ -350,7 +350,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
           n = LCD_WIDTH - 1;
           for(int g = 0; g<300 ;g++){
 			  manage_heater();
-            if(LCD_CLICKED || ( enc_dif != lcd_encoder_diff )){
+            if(LCD_CLICKED || ( enc_dif != (lcd_encoder_diff / ENCODER_PULSES_PER_STEP))){
 				longFilenameTMP = longFilename;
 				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
 				i = 1;
