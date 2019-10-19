@@ -7119,7 +7119,12 @@ static void lcd_tune_menu()
           default:
                MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
           }
-
+#ifdef LCD_BL_PIN
+    if (backlightSupport)
+    {
+        MENU_ITEM_SUBMENU_P(_i("Brightness"), lcd_backlight_menu);
+    }
+#endif //LCD_BL_PIN
 	MENU_END();
 }
 
