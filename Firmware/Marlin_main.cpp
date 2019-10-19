@@ -383,7 +383,7 @@ bool saved_printing = false; //!< Print is paused and saved in RAM
 static uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
 uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { 0, 0, 0, 0 };
-static float saved_feedrate2 = 0;
+static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
 static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
@@ -9621,7 +9621,7 @@ void uvlo_()
     }
 
     // save the global state at planning time
-    int feedrate_bckp;
+    uint16_t feedrate_bckp;
     if (blocks_queued())
     {
         memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
@@ -9698,7 +9698,7 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z , current_position[Z_AXIS]);
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
-    EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
+	eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, feedrate_bckp);
     EEPROM_save_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
@@ -9982,7 +9982,7 @@ void restore_print_from_eeprom() {
 	char dir_name[9];
 
 	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
-	EEPROM_read_B(EEPROM_UVLO_FEEDRATE, &feedrate_rec);
+    feedrate_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDRATE);
 	EEPROM_read_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply_rec);
 	SERIAL_ECHOPGM("Feedrate:");
 	MYSERIAL.print(feedrate_rec);
