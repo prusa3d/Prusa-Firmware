@@ -116,7 +116,9 @@ typedef struct {
   unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
 #endif
 
+  // Save/recovery state data
   float gcode_target[NUM_AXIS];     // Target (abs mm) of the original Gcode instruction
+  float gcode_feedrate;             // Original feedrate
   uint16_t sdlen;                   // Length of the Gcode instruction
 } block_t;
 

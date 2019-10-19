@@ -331,7 +331,15 @@ float destination[NUM_AXIS] = {  0.0, 0.0, 0.0, 0.0};
 
 // For tracing an arc
 static float offset[3] = {0.0, 0.0, 0.0};
-static float feedrate = 1500.0, next_feedrate, saved_feedrate;
+
+// Current feedrate
+float feedrate = 1500.0;
+
+// Feedrate for the next move
+static float next_feedrate;
+
+// Original feedrate saved during homing moves
+static float saved_feedrate;
 
 // Determines Absolute or Relative Coordinates.
 // Also there is bool axis_relative_modes[] per axis flag.
@@ -9612,11 +9620,18 @@ void uvlo_()
       if (sd_position < 0) sd_position = 0;
     }
 
-    // save the original target position of the current move
+    // save the global state at planning time
+    int feedrate_bckp;
     if (blocks_queued())
+    {
         memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+        feedrate_bckp = current_block->gcode_feedrate;
+    }
     else
+    {
         saved_target[0] = SAVED_TARGET_UNSET;
+        feedrate_bckp = feedrate;
+    }
 
     // After this call, the planner queue is emptied and the current_position is set to a current logical coordinate.
     // The logical coordinate will likely differ from the machine coordinate if the skew calibration and mesh bed leveling
@@ -9683,8 +9698,7 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z , current_position[Z_AXIS]);
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
-    int i_feedrate = feedrate;
-    EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &i_feedrate);
+    EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
     EEPROM_save_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
@@ -10170,15 +10184,20 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 #endif
 
-  // save the original target position of the current move
+  // save the global state at planning time
   if (blocks_queued())
+  {
       memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+      saved_feedrate2 = current_block->gcode_feedrate;
+  }
   else
+  {
       saved_target[0] = SAVED_TARGET_UNSET;
+      saved_feedrate2 = feedrate;
+  }
 
 	planner_abort_hard(); //abort printing
 	memcpy(saved_pos, current_position, sizeof(saved_pos));
-    saved_feedrate2 = feedrate; //save feedrate
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);

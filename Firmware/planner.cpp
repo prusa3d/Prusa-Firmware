@@ -690,11 +690,11 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Prepare to set up new block
   block_t *block = &block_buffer[block_buffer_head];
 
-  // Set sdlen for calculating sd position
-  block->sdlen = 0;
-
   // Mark block as not busy (Not executed by the stepper interrupt, could be still tinkered with.)
   block->busy = false;
+
+  // Set sdlen for calculating sd position
+  block->sdlen = 0;
 
   // Save original destination of the move
   if (gcode_target)
@@ -706,6 +706,9 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
       block->gcode_target[Z_AXIS] = z;
       block->gcode_target[E_AXIS] = e;
   }
+
+  // Save the global feedrate at scheduling time
+  block->gcode_feedrate = feedrate;
 
 #ifdef ENABLE_AUTO_BED_LEVELING
   apply_rotation_xyz(plan_bed_level_matrix, x, y, z);
