@@ -375,8 +375,8 @@ bool saved_printing = false; //!< Print is paused and saved in RAM
 static uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
 uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { 0, 0, 0, 0 };
-//! Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
 static float saved_feedrate2 = 0;
+static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
 static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
 static bool saved_extruder_under_pressure = false;
@@ -9612,9 +9612,6 @@ void uvlo_()
       if (sd_position < 0) sd_position = 0;
     }
 
-    // Backup the feedrate in mm/min.
-    int feedrate_bckp = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
-
     // save the original target position of the current move
     if (blocks_queued())
         memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
@@ -9686,7 +9683,9 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z , current_position[Z_AXIS]);
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
-    EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
+    int i_feedrate = feedrate;
+    EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &i_feedrate);
+    EEPROM_save_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
@@ -9961,6 +9960,7 @@ void recover_machine_state_after_power_panic(bool bTiny)
 
 void restore_print_from_eeprom() {
 	int feedrate_rec;
+	int feedmultiply_rec;
 	uint8_t fan_speed_rec;
 	char cmd[30];
 	char filename[13];
@@ -9969,8 +9969,11 @@ void restore_print_from_eeprom() {
 
 	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
 	EEPROM_read_B(EEPROM_UVLO_FEEDRATE, &feedrate_rec);
+	EEPROM_read_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply_rec);
 	SERIAL_ECHOPGM("Feedrate:");
-	MYSERIAL.println(feedrate_rec);
+	MYSERIAL.print(feedrate_rec);
+	SERIAL_ECHOPGM(", feedmultiply:");
+	MYSERIAL.println(feedmultiply_rec);
 
 	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 	
@@ -10011,8 +10014,10 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
   // Unretract.
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(2*default_retraction)" F480"));
-  // Set the feedrate saved at the power panic.
+  // Set the feedrates saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
+	enquecommand(cmd);
+	sprintf_P(cmd, PSTR("M220 S%d"), feedmultiply_rec);
 	enquecommand(cmd);
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
 	{
@@ -10165,14 +10170,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 #endif
 
-#if 0
-  saved_feedrate2 = feedrate; //save feedrate
-#else
-  // Try to deduce the feedrate from the first block of the planner.
-  // Speed is in mm/min.
-  saved_feedrate2 = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
-#endif
-
   // save the original target position of the current move
   if (blocks_queued())
       memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
@@ -10181,6 +10178,8 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 	planner_abort_hard(); //abort printing
 	memcpy(saved_pos, current_position, sizeof(saved_pos));
+    saved_feedrate2 = feedrate; //save feedrate
+    saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
 
@@ -10258,7 +10257,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		wait_for_heater(_millis(), saved_active_extruder);
 		heating_status = 2;
 	}
-	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
@@ -10280,6 +10278,10 @@ void restore_print_from_ram_and_continue(float e_move)
   #ifdef FANCHECK
     fans_check_enabled = true;
   #endif
+
+    // restore original feedrate/feedmultiply _after_ restoring the extruder position
+	feedrate = saved_feedrate2;
+	feedmultiply = saved_feedmultiply2;
 
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
 	memcpy(destination, current_position, sizeof(destination));
