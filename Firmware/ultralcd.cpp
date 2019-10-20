@@ -4108,7 +4108,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		{   
 			prusa_statistics_case0(15);
 		}
-		else if (isPrintPaused || card.paused) 
+		else if (isPrintPaused)
 		{
 			prusa_statistics_case0(14);
 		}

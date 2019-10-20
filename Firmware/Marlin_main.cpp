@@ -5377,20 +5377,18 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       card.openFile(strchr_pointer + 4,true);
       break;
 
-    //! ### M24 - Start SD print
+    //! ### M24 - Start/resume SD print
     // ----------------------------------
     case 24:
-	  if (!card.paused) 
-		failstats_reset_print();
-      card.startFileprint();
-      starttime=_millis();
+	  if (isPrintPaused)
+          lcd_resume_print();
+      else
+      {
+          failstats_reset_print();
+          card.startFileprint();
+          starttime=_millis();
+      }
 	  break;
-
-    //! ### M25 - Pause SD print
-    // ----------------------------------
-    case 25:
-      card.pauseSDPrint();
-      break;
 
     //! ### M26 S\<index\> - Set SD index
     //! Set position in SD card file to index in bytes.
@@ -7246,26 +7244,34 @@ Sigma_Exit:
     break;
     #endif //FILAMENTCHANGEENABLE
 
+  //! ### M25 - Pause SD print
   //! ### M601 - Pause print
+  //! ### M125 - Pause print (TODO: not implemented)
   // -------------------------------
+	case 25:
 	case 601:
 	{
-		cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
-		lcd_pause_print();
+        if (!isPrintPaused)
+        {
+            st_synchronize();
+            cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
+            lcd_pause_print();
+        }
 	}
 	break;
 
   //! ### M602 - Resume print
   // -------------------------------
 	case 602: {
-		lcd_resume_print();
+	  if (isPrintPaused)
+          lcd_resume_print();
 	}
 	break;
 
   //! ### M603 - Stop print
   // -------------------------------
 	case 603: {
-		lcd_print_stop();
+		Stop();
 	}
 	break;
 
