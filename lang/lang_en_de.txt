@@ -72,7 +72,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Automatisches Laden Filament nur bei einge schaltetem Filament- sensor verfuegbar..."
+"Automatisches Laden Filament nur bei einge schaltetem Filamentsensor verfuegbar..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -248,7 +248,7 @@
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"FEHLER: Filament- sensor reagiert nicht, bitte Verbindung pruefen."
+"FEHLER: Filamentsensor reagiert nicht, bitte Verbindung pruefen."
 
 #MSG_ERROR
 "ERROR:"
@@ -340,7 +340,7 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
-"Datei unvollstaendig Trotzdem fortfahren?"
+"Datei unvollstaendig. Trotzdem fortfahren?"
 
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
