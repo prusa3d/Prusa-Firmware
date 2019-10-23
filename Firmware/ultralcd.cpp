@@ -4932,12 +4932,12 @@ static void lcd_wizard_load()
 {
 	if (mmu_enabled)
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the first tube of the MMU, then press the knob to load it."));////c=20 r=8
 		tmp_extruder = 0;
 	} 
 	else
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the extruder, then press the knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 	}	
 	lcd_update_enable(false);
 	lcd_clear();
@@ -4961,7 +4961,7 @@ static void wizard_lay1cal_message(bool cold)
     if (mmu_enabled)
     {
         lcd_show_fullscreen_message_and_wait_P(
-                _i("First you will select filament you wish to use for calibration. Then select temperature which matches your material."));
+                _i("Choose a filament for the First Layer Calibration and select it in the on-screen menu."));
     }
     else if (cold)
     {
@@ -4969,7 +4969,7 @@ static void wizard_lay1cal_message(bool cold)
                 _i("Select temperature which matches your material."));
     }
     lcd_show_fullscreen_message_and_wait_P(
-            _i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration.")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12
+            _i("The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter).")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12
 }
 
 //! @brief Printer first run wizard (Selftest and calibration)
@@ -5097,7 +5097,7 @@ void lcd_wizard(WizState state)
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			if (mmu_enabled)
 			{
-			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is any filament loaded?"), true);////c=20 r=2
+			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), true);////c=20 r=2
 			} else
 			{
 			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), true);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
@@ -5142,7 +5142,7 @@ void lcd_wizard(WizState state)
 			}
 			else
 			{
-			    lcd_show_fullscreen_message_and_wait_P(_i("If you have more steel sheets you can calibrate additional presets in Settings / HW Setup / Steel sheets."));
+			    lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));
 				state = S::Finish;
 			}
 			break;

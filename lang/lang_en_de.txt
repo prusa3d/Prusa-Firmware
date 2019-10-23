@@ -178,6 +178,10 @@
 "Crash det.   [on]"
 "Crash Erk.   [an]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Waehlen Sie ein Filament fuer Erste Schichtkalibrierung aus und waehlen Sie es im On-Screen-Menu aus."
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 "Crash Erk.   [nv]"
@@ -481,6 +485,10 @@
 #
 "Last print failures"
 "Letzte Druckfehler"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Wenn Sie zusaetzliche Stahlbleche haben, kalibrieren Sie deren Voreinstellungen unter Einstellungen - HW Setup - Stahlbleche."
 
 #
 "Last print"
@@ -818,6 +826,18 @@
 "Print FAN"
 "Druckvent."
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Bitte legen Sie das Filament in den Extruder ein und druecken Sie dann den Knopf, um es zu laden."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Bitte stecken Sie das Filament in den ersten Schlauch der MMU und druecken Sie dann den Knopf, um es zu laden."
+
+#
+"Please load filament first."
+"Bitte laden Sie zuerst das Filament."
+
 #MSG_PRUSA3D
 "prusa3d.com"
 "\x00"
@@ -918,10 +938,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Bitte Vorheiztemperatur auswaehlen, die Ihrem Material entspricht."
 
-#
-"Select PLA filament:"
-"PLA Filament auswaehlen:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Temp. einstellen:"
@@ -1018,6 +1034,10 @@
 "Swapped"
 "Ausgetauscht"
 
+#
+"Select filament:"
+"Filament auswaehlen:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Temp Kalib.         "
@@ -1025,6 +1045,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Temp. Kal.   [an]"
+
+#
+"Select temperature which matches your material."
+"Waehlen Sie die Temperatur, die zu Ihrem Material passt."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1202,10 +1226,13 @@
 "XYZ calibration failed. Right front calibration point not reachable."
 "XYZ-Kalibrierung fehlgeschlagen. Rechter vorderer Kalibrierpunkt ist nicht erreichbar."
 
-
 #
 "Y distance from min"
 "Y Entfernung vom Min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"

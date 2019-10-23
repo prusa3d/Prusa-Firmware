@@ -178,6 +178,10 @@
 "Crash det.   [on]"
 "Crash det.  [zap]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Zvolte filament pro kalibraci prvni vrstvy z nasledujiciho menu"
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 "\x00"
@@ -481,6 +485,10 @@
 #
 "Last print failures"
 "Selhani posl. tisku"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Mate-li vice tiskovych platu, kalibrujte je v menu Nastaveni - HW nastaveni - Tiskove platy"
 
 #
 "Last print"
@@ -818,6 +826,18 @@
 "Print FAN"
 "Tiskovy vent."
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Prosim vlozte filament do extruderu a stisknete tlacitko k jeho zavedeni"
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Prosim vlozte filament do prvni trubicky MMU a stisknete tlacitko k jeho zavedeni"
+
+#
+"Please load filament first."
+"Prosim nejdriv zavedte filament"
+
 #MSG_PRUSA3D
 "prusa3d.com"
 "\x00"
@@ -918,10 +938,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
 
-#
-"Select PLA filament:"
-"Vyberte PLA filament:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Nastavte teplotu:"
@@ -1018,6 +1034,10 @@
 "Swapped"
 "Prohozene"
 
+#
+"Select filament:"
+"Zvolte filament:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Tepl. kal. "
@@ -1025,6 +1045,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Tepl. kal.  [zap]"
+
+#
+"Select temperature which matches your material."
+"Zvolte teplotu, ktera odpovida vasemu materialu."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1205,6 +1229,10 @@
 #
 "Y distance from min"
 "Y vzdalenost od min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"

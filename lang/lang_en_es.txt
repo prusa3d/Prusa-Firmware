@@ -178,6 +178,10 @@
 "Crash det.   [on]"
 "Det. choque [act]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Escoge un filamento para la Calibracion de la Primera Capa y seleccionalo en el menu en pantalla."
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 "Dec. choque [N/D]"
@@ -481,6 +485,10 @@
 #
 "Last print failures"
 "Ultimas impresiones fallidas"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Si tienes planchas de acero adicionales, calibra sus ajustes en Ajustes - Ajustes HW - Planchas acero."
 
 #
 "Last print"
@@ -818,6 +826,18 @@
 "Print FAN"
 "Vent. extr"
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Por favor, coloca el filamento en el extrusor, luego presiona el dial para cargarlo."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Por favor, coloca el filamento en el primer tubo de la MMU, luego pulsa el dial para cargarlo."
+
+#
+"Please load filament first."
+"Por favor, cargar primero el filamento. "
+
 #MSG_PRUSA3D
 "prusa3d.com"
 "prusa3d.es"
@@ -918,10 +938,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Selecciona la temperatura para precalentar la boquilla que se ajuste a tu material. "
 
-#
-"Select PLA filament:"
-"Seleccionar filamento PLA:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Establecer temp.:"
@@ -1018,6 +1034,10 @@
 "Swapped"
 "Intercambiado"
 
+#
+"Select filament:"
+"Selecciona filamento:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Cal. temp. "
@@ -1025,6 +1045,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Cal. temp.   [on]"
+
+#
+"Select temperature which matches your material."
+"Selecciona la temperatura adecuada a tu material."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1205,6 +1229,10 @@
 #
 "Y distance from min"
 "Distancia en Y desde el min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"

@@ -178,6 +178,10 @@
 "Crash det.   [on]"
 "Wykr.zderzen [wl]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Wybierz filament do Kalibracji Pierwszej Warstwy i potwierdz w menu ekranowym."
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 "Wykr.zderzen[N/D]"
@@ -481,6 +485,10 @@
 #
 "Last print failures"
 "Ostatnie bledy druku"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Jesli masz dodatkowe plyty stalowe, to skalibruj ich ustawienia w menu Ustawienia - Ustawienia HW - Plyty stalowe."
 
 #
 "Last print"
@@ -818,6 +826,18 @@
 "Print FAN"
 "WentWydruk"
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Wsun filament do ekstrudera i nacisnij pokretlo, aby go zaladowac."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Wsun filament do pierwszego kanalu w MMU2 i nacisnij pokretlo, aby go zaladowac."
+
+#
+"Please load filament first."
+"Najpierw zaladuj filament."
+
 #MSG_PRUSA3D
 "prusa3d.com"
 "\x00"
@@ -918,10 +938,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Wybierz temperature grzania dyszy odpowiednia dla materialu."
 
-#
-"Select PLA filament:"
-"Wybierz filament PLA:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Ustaw temperature:"
@@ -1018,6 +1034,10 @@
 "Swapped"
 "Zamieniono"
 
+#
+"Select filament:"
+"Wybierz filament:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Kalibracja temp."
@@ -1025,6 +1045,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Kalibr.temp. [wl]"
+
+#
+"Select temperature which matches your material."
+"Wybierz temperature, ktora odpowiada Twojemu filamentowi."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1205,6 +1229,10 @@
 #
 "Y distance from min"
 "Dystans od 0 w osi Y"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"
