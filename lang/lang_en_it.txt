@@ -178,6 +178,10 @@
 "Crash det.   [on]"
 "Rileva.crash [on]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Scegli un filamento per la calibrazione del primo strato e selezionalo nel menu sullo schermo."
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 "Rileva.crash[N/A]"
@@ -481,6 +485,10 @@
 #
 "Last print failures"
 "Fallimenti ultima stampa"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Se hai piastre d'acciaio aggiuntive, calibra i preset in Impostazioni - Setup HW - Piastre in Acciaio."
 
 #
 "Last print"
@@ -818,6 +826,18 @@
 "Print FAN"
 "Ventola di stampa"
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Inserisci il filamento nell'estrusore, poi premi la manopola per caricarlo."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Per favore inserisci il filamento nel primo tubo del MMU, poi premi la manopola per caricarlo."
+
+#
+"Please load filament first."
+"Per favore prima carica il filamento."
+
 #MSG_PRUSA3D
 "prusa3d.com"
 "\x00"
@@ -918,10 +938,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Selezionate la temperatura per il preriscaldamento dell'ugello adatta al vostro materiale."
 
-#
-"Select PLA filament:"
-"Selezionate filamento PLA:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Imposta temperatura:"
@@ -1018,6 +1034,10 @@
 "Swapped"
 "Scambiato"
 
+#
+"Select filament:"
+"Seleziona il filamento:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Calib. temp. "
@@ -1025,6 +1045,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Calib. temp. [on]"
+
+#
+"Select temperature which matches your material."
+"Seleziona la temperatura appropriata per il tuo materiale."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1205,6 +1229,10 @@
 #
 "Y distance from min"
 "Distanza Y dal min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"
