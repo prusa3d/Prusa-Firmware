@@ -72,7 +72,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Automatisches Laden Filament nur bei einge schaltetem Filament- sensor verfuegbar..."
+"Automatisches Laden Filament nur bei eingeschaltetem Fil. sensor verfuegbar..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
