@@ -178,6 +178,10 @@
 "Crash det.   [on]"
 "Crashdet.   [aan]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Kies een filament voor de kalibratie van de eerste laag en selecteer deze in het schermmenu."
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 "Crashdet.   [N/V]"
@@ -481,6 +485,10 @@
 #
 "Last print failures"
 "Laatste printfouten"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Als u extra staalplaten hebt, kalibreert u hun voorinstellingen in Instellingen - HW Setup - Staalplaten."
 
 #
 "Last print"
@@ -818,6 +826,18 @@
 "Print FAN"
 "Print fan"
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Steek a.u.b. filament in de extruder en druk op de knop om het te laden."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Steek a.u.b. filament in de eerste buis van de MMU en druk op de knop om het te laden."
+
+#
+"Please load filament first."
+"Laad a.u.b. eerst filament."
+
 #MSG_PRUSA3D
 "prusa3d.com"
 "\x00"
@@ -918,10 +938,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Selecteer de voorverwarmingstemperatuur van de tuit die overeenkomt met uw materiaal."
 
-#
-"Select PLA filament:"
-"Selecteer PLA-filament:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Temp. instellen:"
@@ -1018,6 +1034,10 @@
 "Swapped"
 "Gewisseld"
 
+#
+"Select filament:"
+"Kies filament:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Tempkalibratie      "
@@ -1025,6 +1045,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Tempkal.    [aan]"
+
+#
+"Select temperature which matches your material."
+"Selecteer de temperatuur die overeenkomt met uw materiaal."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1205,6 +1229,10 @@
 #
 "Y distance from min"
 "Y afstand van min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"
