@@ -3322,8 +3322,7 @@ extern uint8_t st_backlash_y;
 
 //! @brief Parse and process commands
 //!
-//! look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
-//! http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
+//! look here for descriptions of G-codes: https://reprap.org/wiki/G-code
 //!
 //!
 //! Implemented Codes 
@@ -3663,7 +3662,7 @@ void process_commands()
 
         } else if( code_seen("FANPINTST") ){
             gcode_PRUSA_BadRAMBoFanTest();
-        }else if (code_seen("FAN")) { //! PRUSA FAN
+        }else if (code_seen("FAN")) { // PRUSA FAN
 			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
 		}else if (code_seen("fn")) { // PRUSA fn
 		  if (farm_mode) {
@@ -3838,7 +3837,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     switch (gcode_in_progress)
     {
 
-    //! ### G0, G1 - Coordinated movement X Y Z E
+    //! ### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a>
     // --------------------------------------      
     case 0: // G0 -> G1
     case 1: // G1
@@ -4038,7 +4037,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    //! ### G2 - CW ARC
+    //! ### G2 - CW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
     // ------------------------------     
     case 2: 
       if(Stopped == false) {
@@ -4048,7 +4047,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
  
 
-    //! ### G3  - CCW ARC
+    //! ### G3 - CCW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
     // -------------------------------
     case 3: 
       if(Stopped == false) {
@@ -4058,7 +4057,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
 
-    //! ### G4 - Dwell
+    //! ### G4 - Dwell <a href="https://reprap.org/wiki/G-code#G4:_Dwell">G4: Dwell</a>
     // -------------------------------
     case 4: 
       codenum = 0;
@@ -4077,7 +4076,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       #ifdef FWRETRACT
       
 
-    //! ### G10 Retract
+    //! ### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
     // ------------------------------
     case 10: 
        #if EXTRUDERS > 1
@@ -4089,7 +4088,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
       
 
-    //! ### G11 - Retract recover
+    //! ### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
     // ----------------------------- 
     case 11: 
        #if EXTRUDERS > 1
@@ -4101,8 +4100,21 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       #endif //FWRETRACT
     
 
-    //! ### G28 - Home all Axis one at a time
-    // --------------------------------------------
+    /*!
+    *
+    ### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
+    Unsing G28 without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while the default G-code G28 is just homeing the printer
+      
+          G28 [ X | Y | Z | W | C ]
+      
+      - `X` - Flag to go back to the X axis origin
+      - `Y` - Flag to go back to the Y axis origin
+      - `Z` - Flag to go back to the Z axis origin
+      - `W` - Suppress mesh bed leveling
+      - `C` - Calibrate X and Y origin (home)
+    *
+	*/
+    // ------------------------------     
     case 28: 
     {
       long home_x_value = 0;
@@ -4134,7 +4146,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifdef ENABLE_AUTO_BED_LEVELING
     
 
-    //! ### G29 - Detailed Z-Probe
+    //! ### G29 - Detailed Z-Probe <a href="https://reprap.org/wiki/G-code#G29:_Detailed_Z-Probe">G29: Detailed Z-Probe</a>
     // --------------------------------    
     case 29: 
         {
@@ -4280,7 +4292,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         break;
 #ifndef Z_PROBE_SLED
 
-    //! ### G30 - Single Z Probe
+    //! ### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
     // ------------------------------------        
     case 30: 
         {
@@ -4305,14 +4317,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         break;
 #else
 
-    //! ### G31 - Dock the sled
+    //! ### G31 - Dock the sled <a href="https://reprap.org/wiki/G-code#G31:_Dock_Z_Probe_sled">G31: Dock Z Probe sled</a>
     // ---------------------------
     case 31: 
         dock_sled(true);
         break;
 
 
-    //! ### G32 - Undock the sled
+    //! ### G32 - Undock the sled <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------     
     case 32: 
         dock_sled(false);
