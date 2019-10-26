@@ -178,6 +178,10 @@
 "Crash det.   [on]"
 "Detect.crash [on]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Choisissez un filament pour la Calibration de la Premiere Couche et selectionnez-le depuis le menu a l'ecran."
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 "Detect.crash[N/A]"
@@ -485,6 +489,10 @@
 #
 "Last print failures"
 "Echecs derniere imp."
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Si vous avez d'autres feuilles d'acier,  calibrez leurs pre-reglages dans Reglages - Config HW - Feuilles d'acier."
 
 #
 "Last print"
@@ -889,6 +897,17 @@
 #WELCOME_MSG c=20
 "Zaribo MK3S-BMG-420"
 "\x00"
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Veuillez inserer le filament dans l'extrudeur, puis appuyez sur le bouton pour le charger."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Veuillez inserer le filament dans le premier tube du MMU, puis appuyez sur le bouton pour le charger."
+
+#
+"Please load filament first."
+"Veuillez d'abord charger un filament."
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -990,10 +1009,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Selectionnez la temperature de prechauffage de la buse qui correspond a votre materiau."
 
-#
-"Select PLA filament:"
-"Selectionnez le fil. PLA:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Regler temp.:"
@@ -1090,6 +1105,10 @@
 "Swapped"
 "Echange"
 
+#
+"Select filament:"
+"Selectionnez le filament:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Calib. Temp."
@@ -1097,6 +1116,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Calib. Temp. [on]"
+
+#
+"Select temperature which matches your material."
+"Selectionnez la temperature qui correspond a votre materiau."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1277,6 +1300,10 @@
 #
 "Y distance from min"
 "Distance Y du min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"
@@ -1481,4 +1508,3 @@
 #
 "Z-probe nr.    [5]"
 "Mesurer x-fois [5]"
-

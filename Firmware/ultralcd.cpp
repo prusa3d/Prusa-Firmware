@@ -1843,8 +1843,8 @@ static void lcd_menu_fails_stats_total()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | Power failures: 000|	c=14 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Power failures  000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! | Crash   X:000 Y:000|	c=7 r=1
 //! ----------------------
 //! @endcode
@@ -1890,6 +1890,7 @@ static void lcd_menu_fails_stats()
 }
 
 #elif defined(FILAMENT_SENSOR)
+static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-16.16S%-3d\n";
 //! 
 //! @brief Print last print and total filament run outs
 //! 
@@ -1900,29 +1901,25 @@ static void lcd_menu_fails_stats()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! |Total failures      |	c=20 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats()
 {
-//|01234567890123456789|
-//|Last print failures | c=20
-//| Filam. runouts: 000| c=15
-//|Total failures      | c=20
-//| Filam. runouts: 000| c=15
-//////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
 	lcd_home();
-    lcd_printf_P(PSTR("Last print failures\n"  ////c=20 r=1 
-        " Filam. runouts  %-3d\n"   ////c=14 r=1
-        "Total failures\n"  ////c=20 r=1
-        " Filam. runouts  %-3d"), filamentLast, filamentTotal);  ////c=14 r=1
-    menu_back_if_clicked();
+	lcd_printf_P(failStatsFmt, 
+        _i("Last print failures"),   ////c=20 r=1
+        _i("Filam. runouts"), filamentLast,   ////c=14 r=1
+        _i("Total failures"),  ////c=20 r=1
+        _i("Filam. runouts"), filamentTotal);   ////c=14 r=1
+
+	menu_back_if_clicked();
 }
 #else
 static void lcd_menu_fails_stats()
@@ -2022,12 +2019,6 @@ static void lcd_menu_temperatures()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_voltages()
 {
-//|01234567890123456789|
-//|                    |
-//| PWR:         00.0V | c=12
-//| Bed:         00.0V | c=12
-//|                    | 
-//////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
@@ -2051,12 +2042,6 @@ static void lcd_menu_voltages()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_belt_status()
 {
-//|01234567890123456789|
-//| Belt status        | c=19
-//|  X:            000 | c=13
-//|  Y:            000 | c=13
-//|                    | 
-//////////////////////
 	lcd_home();
     lcd_printf_P(PSTR("%S\n" " X %d\n" " Y %d"), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     menu_back_if_clicked();
@@ -4947,12 +4932,12 @@ static void lcd_wizard_load()
 {
 	if (mmu_enabled)
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the first tube of the MMU, then press the knob to load it."));////c=20 r=8
 		tmp_extruder = 0;
 	} 
 	else
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the extruder, then press the knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 	}	
 	lcd_update_enable(false);
 	lcd_clear();
@@ -4976,7 +4961,7 @@ static void wizard_lay1cal_message(bool cold)
     if (mmu_enabled)
     {
         lcd_show_fullscreen_message_and_wait_P(
-                _i("First you will select filament you wish to use for calibration. Then select temperature which matches your material."));
+                _i("Choose a filament for the First Layer Calibration and select it in the on-screen menu."));
     }
     else if (cold)
     {
@@ -4984,7 +4969,7 @@ static void wizard_lay1cal_message(bool cold)
                 _i("Select temperature which matches your material."));
     }
     lcd_show_fullscreen_message_and_wait_P(
-            _i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration.")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12
+            _i("The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter).")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12
 }
 
 //! @brief Printer first run wizard (Selftest and calibration)
@@ -5112,7 +5097,7 @@ void lcd_wizard(WizState state)
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			if (mmu_enabled)
 			{
-			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is any filament loaded?"), true);////c=20 r=2
+			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), true);////c=20 r=2
 			} else
 			{
 			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), true);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
@@ -5157,7 +5142,7 @@ void lcd_wizard(WizState state)
 			}
 			else
 			{
-			    lcd_show_fullscreen_message_and_wait_P(_i("If you have more steel sheets you can calibrate additional presets in Settings / HW Setup / Steel sheets."));
+			    lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));
 				state = S::Finish;
 			}
 			break;

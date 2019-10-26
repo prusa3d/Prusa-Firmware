@@ -72,11 +72,11 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"La carga automatica de filamento solo funciona si el sensor de filamento esta activado..."
+"La carga automatica solo funciona si el sensor de filamento esta activado..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"La carga automatica de filamento esta activada, pulse el dial e inserte el filamento..."
+"La carga automatica esta activada, pulse el dial e inserte el filamento..."
 
 #MSG_SELFTEST_AXIS_LENGTH
 "Axis length"
@@ -177,6 +177,10 @@
 #MSG_CRASHDETECT_ON
 "Crash det.   [on]"
 "Det. choque [act]"
+
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Escoge un filamento para la Calibracion de la Primera Capa y seleccionalo en el menu en pantalla."
 
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
@@ -485,6 +489,10 @@
 #
 "Last print failures"
 "Ultimas impresiones fallidas"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Si tienes planchas de acero adicionales, calibra sus ajustes en Ajustes - Ajustes HW - Planchas acero."
 
 #
 "Last print"
@@ -889,6 +897,17 @@
 #WELCOME_MSG c=20
 "Zaribo MK3S-BMG-420"
 "\x00"
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Por favor, coloca el filamento en el extrusor, luego presiona el dial para cargarlo."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Por favor, coloca el filamento en el primer tubo de la MMU, luego pulsa el dial para cargarlo."
+
+#
+"Please load filament first."
+"Por favor, cargar primero el filamento. "
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -990,10 +1009,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Selecciona la temperatura para precalentar la boquilla que se ajuste a tu material. "
 
-#
-"Select PLA filament:"
-"Seleccionar filamento PLA:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Establecer temp.:"
@@ -1090,6 +1105,10 @@
 "Swapped"
 "Intercambiado"
 
+#
+"Select filament:"
+"Selecciona filamento:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Cal. temp. "
@@ -1097,6 +1116,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Cal. temp.   [on]"
+
+#
+"Select temperature which matches your material."
+"Selecciona la temperatura adecuada a tu material."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1277,6 +1300,10 @@
 #
 "Y distance from min"
 "Distancia en Y desde el min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"
