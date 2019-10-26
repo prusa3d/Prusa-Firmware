@@ -189,9 +189,10 @@ static void lcd_begin(uint8_t clear)
 	#endif
 }
 
-static void lcd_putchar(char c, FILE *)
+static int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
+	return 0;
 }
 
 void lcd_init(void)
@@ -760,8 +761,7 @@ void lcd_buttons_update(void)
             //else if (menu_menu == lcd_move_z) lcd_quick_feedback();
             //lcd_button_pressed is set back to false via lcd_quick_feedback function
         }
-        else
-            lcd_long_press_active = 0;
+        lcd_long_press_active = 0;
     }
 
 	lcd_buttons = newbutton;
