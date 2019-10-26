@@ -51,9 +51,9 @@ declare -a ModArray=( "BMG" "BMQ" "BMQH" "OLED" "BMGO" "BMQO" "BQHO")
 #
 
 ##### MK25/MK25S/MK3/MK3S Variants
-
+echo "Start Zaribo"
 for TYPE in ${TypesArray[@]}; do
-	echo $TYPE
+	echo "Type: $TYPE"
 	if [[ "$TYPE" == "MK3" || "$TYPE" == "MK3S" ]]; then
 		BOARD="EINSy10a"
 	elif [[ $TYPE == "MK25" || $TYPE == "MK25S" ]]; then
@@ -90,11 +90,13 @@ for TYPE in ${TypesArray[@]}; do
 	done
 	echo
 done
+echo "End Zaribo"
 
-## MODS 
+## MODS
+echo "Start BMG"
 MOD="BMG" ##Bondtech Prusa Edition Extruder for MK25/MK25S/MK3/MK3S
 for TYPE in ${TypesArray[@]}; do
-	echo $TYPE
+	echo "Type: $TYPE Mod: $MOD"
 	if [[ "$TYPE" == "MK3" || "$TYPE" == "MK3S" ]]; then
 		BOARD="EINSy10a"
 	elif [[ $TYPE == "MK25" || $TYPE == "MK25S" ]]; then
@@ -125,14 +127,17 @@ for TYPE in ${TypesArray[@]}; do
 	done
 	echo
 done
+echo "End BMG"
 
+echo "Start BMQ"
+BASE_MOD=$MOD
 MOD="BMQ" ##Bondtech Prusa Mosquito Edition for MK2.5S and MK3S
 declare -a BMQArray=( "MK3S" "MK25S")
-for TYPE in ${BMSQArray[@]}; do
-	echo $TYPE
-	if [ "$TYPE" == "MK3S" ]; then
+for TYPE in ${BMQArray[@]}; do
+	echo "Type: $TYPE Base_MOD= $BASE_MOD MOD: $MOD"
+	if [[ "$TYPE" == "MK3" || "$TYPE" == "MK3S" ]]; then
 		BOARD="EINSy10a"
-	elif [ $TYPE == "MK25S" ]; then
+	elif [[ $TYPE == "MK25" || $TYPE == "MK25S" ]]; then
 		BOARD="RAMBo13a"
 	else
 		echo "Unsupported controller"
@@ -140,26 +145,29 @@ for TYPE in ${BMSQArray[@]}; do
 	fi
 	for HEIGHT in ${HeightsArray[@]};
 	do
-		BASE="Zaribo_$TYPE-BMG-$HEIGHT.h"
+		BASE="Zaribo_$TYPE-$BASE_MOD-$HEIGHT.h"
 		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
 		#echo $BASE
 		#echo $TYPE
 		#echo $HEIGHT
 		echo $VARIANT
 		cp ${BASE} ${VARIANT}
-		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-BMG-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
+		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$BASE_MOD'-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
 		# Hotend Type 
 		sed -i -e 's/#define NOZZLE_TYPE "E3Dv6full"*/#define NOZZLE_TYPE "Mosquito"/' ${VARIANT}
 	done
 	echo
 done
+echo "End BMQ"
 
+echo "Start BMQH"
+BASE_MOD=$MOD
 MOD="BMQH" ##Bondtech Prusa Mosquito Edition for MK2.5S and MK3S High Temperature
-for TYPE in ${BMSQArray[@]}; do
-	echo $TYPE
-	if [ "$TYPE" == "MK3S" ]; then
+for TYPE in ${BMQArray[@]}; do
+	echo "Type: $TYPE Base_MOD: $BASE_MOD MOD: $MOD"
+	if [[ "$TYPE" == "MK3" || "$TYPE" == "MK3S" ]]; then
 		BOARD="EINSy10a"
-	elif [ $TYPE == "MK25S" ]; then
+	elif [[ $TYPE == "MK25" || $TYPE == "MK25S" ]]; then
 		BOARD="RAMBo13a"
 	else
 		echo "Unsupported controller"
@@ -167,71 +175,51 @@ for TYPE in ${BMSQArray[@]}; do
 	fi
 	for HEIGHT in ${HeightsArray[@]};
 	do
-		BASE="Zaribo_$TYPE-BMQ-$HEIGHT.h"
+		BASE="Zaribo_$TYPE-$BASE_MOD-$HEIGHT.h"
 		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
 		#echo $BASE
 		#echo $TYPE
 		#echo $HEIGHT
 		echo $VARIANT
 		cp ${BASE} ${VARIANT}
-		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-BMQ-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
+		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$BASE_MOD'-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
 		# Enable Slice High Temperature Thermistor
 		sed -i -e "s/\/\/#define SLICE_HT_EXTRUDER*/#define SLICE_HT_EXTRUDER/g" ${VARIANT}
 	done
 	echo
 done
-
+echo "End BMQH"
+: '
+BASE_MOD=BMG
 MOD="BMGO" ##Bondtech Prusa Mosquito Edition with WEH002004 OLED Display for MK3S
 declare -a BMGOArray=( "MK3S")
 for TYPE in ${BMGOArray[@]}; do
-	echo $TYPE
-	if [ "$TYPE" == "MK3S" ]; then
+	echo "Type: $TYPE MOD: $MOD"
+	if [[ "$TYPE" == "MK3" || "$TYPE" == "MK3S" ]]; then
 		BOARD="EINSy10a"
+	elif [[ $TYPE == "MK25" || $TYPE == "MK25S" ]]; then
+		BOARD="RAMBo13a"
 	else
 		echo "Unsupported controller"
 		exit 1
 	fi
 	for HEIGHT in ${HeightsArray[@]};
 	do
-		BASE="Zaribo_$TYPE-BMG-$HEIGHT.h"
+		BASE="Zaribo_$TYPE-$BASE_MOD-$HEIGHT.h"
 		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
-		#echo $BASE
-		#echo $TYPE
-		#echo $HEIGHT
+		echo $BASE
+		echo $TYPE
+		echo $HEIGHT
 		echo $VARIANT
 		cp ${BASE} ${VARIANT}
-		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-BMG-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
+		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$BASE_MOD'-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
 		# Display Type 
 		sed -i -e "s/\/\/#define WEH002004_OLED*/#define WEH002004_OLED/g" ${VARIANT}
 	done
 	echo
 done
 
-MOD="OLED" ##Bondtech Prusa Mosquito Edition with WEH002004 OLED Display for MK3S
-declare -a OLEDArray=( "MK3S")
-for TYPE in ${OLEDArray[@]}; do
-	echo $TYPE
-	if [ "$TYPE" == "MK3S" ]; then
-		BOARD="EINSy10a"
-	else
-		echo "Unsupported controller"
-		exit 1
-	fi
-	for HEIGHT in ${HeightsArray[@]};
-	do
-		BASE="Zaribo_$TYPE-$HEIGHT.h"
-		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
-		#echo $BASE
-		#echo $TYPE
-		#echo $HEIGHT
-		echo $VARIANT
-		cp ${BASE} ${VARIANT}
-		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
-		# Display Type 
-		sed -i -e "s/\/\/#define WEH002004_OLED*/#define WEH002004_OLED/g" ${VARIANT}
-	done
-	echo
-done
+BASE_MOD=$MOD
 MOD="BMQO" ##Bondtech Prusa Mosquito Edition with WEH002004 OLED Display for MK3S
 declare -a BMGOArray=( "MK3S")
 for TYPE in ${BMGOArray[@]}; do
@@ -244,17 +232,46 @@ for TYPE in ${BMGOArray[@]}; do
 	fi
 	for HEIGHT in ${HeightsArray[@]};
 	do
-		BASE="Zaribo_$TYPE-BMGO-$HEIGHT.h"
+		BASE="Zaribo_$TYPE-$BASE_MOD-$HEIGHT.h"
 		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
-		#echo $BASE
-		#echo $TYPE
-		#echo $HEIGHT
+		echo $BASE
+		echo $TYPE
+		echo $HEIGHT
 		echo $VARIANT
 		cp ${BASE} ${VARIANT}
-		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-BMG-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
+		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$BASE_MOD'-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
 		# Display Type 
 		sed -i -e "s/\/\/#define WEH002004_OLED*/#define WEH002004_OLED/g" ${VARIANT}
 	done
 	echo
 done
 
+MOD="OLED" ##Bondtech Prusa Mosquito Edition with WEH002004 OLED Display for MK3S
+declare -a OLEDArray=( "MK3S")
+for TYPE in ${OLEDArray[@]}; do
+	echo "Type: $TYPE MOD: $MOD"
+	if [[ "$TYPE" == "MK3" || "$TYPE" == "MK3S" ]]; then
+		BOARD="EINSy10a"
+	elif [[ $TYPE == "MK25" || $TYPE == "MK25S" ]]; then
+		BOARD="RAMBo13a"
+	else
+		echo "Unsupported controller"
+		exit 1
+	fi
+	for HEIGHT in ${HeightsArray[@]};
+	do
+		BASE="Zaribo_$TYPE-$HEIGHT.h"
+		VARIANT="Zaribo_$TYPE-$MOD-$HEIGHT.h"
+		echo $BASE
+		echo $TYPE
+		echo $HEIGHT
+		echo $VARIANT
+		cp ${BASE} ${VARIANT}
+		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
+		# Display Type 
+		sed -i -e "s/\/\/#define WEH002004_OLED*/#define WEH002004_OLED/g" ${VARIANT}
+	done
+	echo
+done
+
+'
