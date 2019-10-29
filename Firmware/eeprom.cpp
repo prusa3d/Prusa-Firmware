@@ -57,6 +57,9 @@ void eeprom_init()
     eeprom_init_default_dword((uint32_t*)EEPROM_TOTALTIME, 0);
     eeprom_init_default_dword((uint32_t*)EEPROM_FILAMENTUSED, 0);
     eeprom_init_default_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
+
+    eeprom_init_default_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, 1);
+
 }
 
 //! @brief Get default sheet name for index
