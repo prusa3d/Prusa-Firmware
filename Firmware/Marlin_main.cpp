@@ -4173,7 +4173,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G29 - Detailed Z-Probe <a href="https://reprap.org/wiki/G-code#G29:_Detailed_Z-Probe">G29: Detailed Z-Probe</a>
-	See `G81`
+	See G81
     */ --------------------------------    
     case 29: 
         {
@@ -4319,8 +4319,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         break;
 #ifndef Z_PROBE_SLED
 
-    /**
-	*### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
+    /*!
+	### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
     */ ------------------------------------        
     case 30: 
         {
@@ -4345,16 +4345,16 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         break;
 #else
 
-    /**
-	*### G31 - Dock the sled <a href="https://reprap.org/wiki/G-code#G31:_Dock_Z_Probe_sled">G31: Dock Z Probe sled</a>
+    /*!
+	### G31 - Dock the sled <a href="https://reprap.org/wiki/G-code#G31:_Dock_Z_Probe_sled">G31: Dock Z Probe sled</a>
     */ ---------------------------
     case 31: 
         dock_sled(true);
         break;
 
 
-    /**
-	*### G32 - Undock the sled <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    /*!
+	### G32 - Undock the sled <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     */ ----------------------------     
     case 32: 
         dock_sled(false);
@@ -4364,8 +4364,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             
 #ifdef MESH_BED_LEVELING
 
-    /**
-	*### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
+    /*!
+	### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
     */ ----------------------------    
     case 30: 
         {
@@ -4383,9 +4383,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         }
         break;
 	
-  /**
-  *### G75 - Print temperature interpolation <a href="https://reprap.org/wiki/G-code#G75:_Print_temperature_interpolation">G75: Print temperature interpolation</a>
-  *Show/print PINDA temperature interpolating.
+  /*!
+  ### G75 - Print temperature interpolation <a href="https://reprap.org/wiki/G-code#G75:_Print_temperature_interpolation">G75: Print temperature interpolation</a>
+  Show/print PINDA temperature interpolating.
   */ ---------------------------------------------
 	case 75:
 	{
@@ -4394,13 +4394,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	}
 	break;
 
-  /**
-  *### G76 - PINDA probe temperature calibration <a href="https://reprap.org/wiki/G-code#G76:_PINDA_probe_temperature_calibration">G76: PINDA probe temperature calibration</a>
-  *This G-code is used to calibrate the temperature drift of the PINDA (inductive Sensor).
-  *
-  *The PINDAv2 sensor has a built-in thermistor which has the advantage that the calibration can be done once for all materials.
-  *
-  *The Original i3 Prusa MK2/s uses PINDAv1 and this calibration improves the temperature drift, but not as good as the PINDAv2.
+  /*!
+  ### G76 - PINDA probe temperature calibration <a href="https://reprap.org/wiki/G-code#G76:_PINDA_probe_temperature_calibration">G76: PINDA probe temperature calibration</a>
+  This G-code is used to calibrate the temperature drift of the PINDA (inductive Sensor).
+  
+  The PINDAv2 sensor has a built-in thermistor which has the advantage that the calibration can be done once for all materials.
+  
+  The Original i3 Prusa MK2/s uses PINDAv1 and this calibration improves the temperature drift, but not as good as the PINDAv2.
   */
   ------------------------------------------------
   case 76: 
@@ -4660,22 +4660,22 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	break;
 
 
-    /**
-    *### G80 - Mesh-based Z probe <a href="https://reprap.org/wiki/G-code#G80:_Mesh-based_Z_probe">G80: Mesh-based Z probe</a>
-    *Default 3x3 grid can be changed on MK2.5/s and MK3/s to 7x7 grid.
-    *  
-    *      G80 [ N | R | V | L | R | F | B ]
-    *  
-    *  - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
-    *  - `R` - Probe retries. Default 3 max. 10
-    *  - `V` - Verbosity level 1=low, 10=mid, 20=high. It can be only used if firmware has been compiled with SUPPORT_VERBOSITY active.
-    *  
-    *  Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
-
-    *  - `L` - Left Bed Level correct value in um.
-    *  - `R` - Right Bed Level correct value in um.
-    *  - `F` - Front Bed Level correct value in um.
-    *  - `B` - Back Bed Level correct value in um.
+    /*!
+    ### G80 - Mesh-based Z probe <a href="https://reprap.org/wiki/G-code#G80:_Mesh-based_Z_probe">G80: Mesh-based Z probe</a>
+    Default 3x3 grid can be changed on MK2.5/s and MK3/s to 7x7 grid.
+      
+          G80 [ N | R | V | L | R | F | B ]
+      
+      - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
+      - `R` - Probe retries. Default 3 max. 10
+      - `V` - Verbosity level 1=low, 10=mid, 20=high. It can be only used if firmware has been compiled with SUPPORT_VERBOSITY active.
+      
+      Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
+      
+      - `L` - Left Bed Level correct value in um.
+      - `R` - Right Bed Level correct value in um.
+      - `F` - Front Bed Level correct value in um.
+      - `B` - Back Bed Level correct value in um.
     */
   // -----------------------------------
   
@@ -5105,10 +5105,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	}
 	break;
 
-        /**
-		*### G81 - Mesh bed leveling status <a href="https://reprap.org/wiki/G-code#G81:_Mesh_bed_leveling_status">G81: Mesh bed leveling status</a>
+        /*!
+		### G81 - Mesh bed leveling status <a href="https://reprap.org/wiki/G-code#G81:_Mesh_bed_leveling_status">G81: Mesh bed leveling status</a>
         
-		*Prints mesh bed leveling status and bed profile if activated.
+		Prints mesh bed leveling status and bed profile if activated.
 		*/ -----------------------------------------
 
          /*
@@ -5136,11 +5136,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             break;
             
 #if 0
-        /**
-        *### G82: Single Z probe at current location - Not active <a href="https://reprap.org/wiki/G-code#G82:_Single_Z_probe_at_current_location">G82: Single Z probe at current location</a>
-        *
-        *WARNING! USE WITH CAUTION! If you'll try to probe where is no leveling pad, nasty things can happen!
-         **/
+        /*!
+        ### G82: Single Z probe at current location - Not active <a href="https://reprap.org/wiki/G-code#G82:_Single_Z_probe_at_current_location">G82: Single Z probe at current location</a>
+        
+        WARNING! USE WITH CAUTION! If you'll try to probe where is no leveling pad, nasty things can happen!
+        */
         case 82:
             SERIAL_PROTOCOLLNPGM("Finding bed ");
             int l_feedmultiply = setup_for_endstop_move();
@@ -5151,8 +5151,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             SERIAL_PROTOCOLPGM("\n");
             break;
 
-         /*
-         *### G83: Babystep in Z and store to EEPROM - Not active <a href="https://reprap.org/wiki/G-code#G83:_Babystep_in_Z_and_store_to_EEPROM">G83: Babystep in Z and store to EEPROM</a>
+         /*!
+         ### G83: Babystep in Z and store to EEPROM - Not active <a href="https://reprap.org/wiki/G-code#G83:_Babystep_in_Z_and_store_to_EEPROM">G83: Babystep in Z and store to EEPROM</a>
          */
         case 83:
         {
@@ -5176,50 +5176,50 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             
         }
         break;
-        /**
-        *### G84: UNDO Babystep Z (move Z axis back) - Not active <a href="https://reprap.org/wiki/G-code#G84:_UNDO_Babystep_Z_.28move_Z_axis_back.29">G84: UNDO Babystep Z (move Z axis back)</a>
+        /*!
+        ### G84: UNDO Babystep Z (move Z axis back) - Not active <a href="https://reprap.org/wiki/G-code#G84:_UNDO_Babystep_Z_.28move_Z_axis_back.29">G84: UNDO Babystep Z (move Z axis back)</a>
         */
         case 84:
             babystepsTodoZsubtract(babystepLoadZ);
             // babystepLoadZ = 0;
             break;
             
-        /**
-        * ### G85: Pick best babystep - Not active <a href="https://reprap.org/wiki/G-code#G85:_Pick_best_babystep>G85: Pick best babystep</a>
+        /*!
+        ### G85: Pick best babystep - Not active <a href="https://reprap.org/wiki/G-code#G85:_Pick_best_babystep>G85: Pick best babystep</a>
         */
         case 85:
             lcd_pick_babystep();
             break;
 #endif
             
-        /**
-        *### G86 - Disable babystep correction after home <a href="https://reprap.org/wiki/G-code#G86:_Disable_babystep_correction_after_home">G86: Disable babystep correction after home</a>
-        * 
-        * This G-code will be performed at the start of a calibration script.
-        * (Prusa3D specific)
+        /*!
+        ### G86 - Disable babystep correction after home <a href="https://reprap.org/wiki/G-code#G86:_Disable_babystep_correction_after_home">G86: Disable babystep correction after home</a>
+        
+        This G-code will be performed at the start of a calibration script.
+        (Prusa3D specific)
         */
         case 86:
             calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
             break;
            
 
-        /**
-         * ### G87 - Enable babystep correction after home <a href="https://reprap.org/wiki/G-code#G87:_Enable_babystep_correction_after_home">G87: Enable babystep correction after home</a>
-         * 
-         *
-         * This G-code will be performed at the end of a calibration script.
-         * (Prusa3D specific)
-         */
+        /*!
+        ### G87 - Enable babystep correction after home <a href="https://reprap.org/wiki/G-code#G87:_Enable_babystep_correction_after_home">G87: Enable babystep correction after home</a>
+        
+        
+		This G-code will be performed at the end of a calibration script.
+        (Prusa3D specific)
+        */
         case 87:
 			calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
             break;
 
 
-        /**
-         * ### G88 - Reserved <a href="https://reprap.org/wiki/G-code#G88:_Reserved">G88: Reserved</a>
-         *
-         * Currently has no effect. 
-         */
+        /*!
+        ### G88 - Reserved <a href="https://reprap.org/wiki/G-code#G88:_Reserved">G88: Reserved</a>
+        
+        Currently has no effect. 
+        */
 
         // Prusa3D specific: Don't know what it is for, it is in V2Calibration.gcode
 
@@ -5229,21 +5229,21 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 #endif  // ENABLE_MESH_BED_LEVELING
             
-    /**
-	*### G90 - Switch off relative mode <a href="https://reprap.org/wiki/G-code#G90:_Set_to_Absolute_Positioning">G90: Set to Absolute Positioning</a>
+    /*!
+	### G90 - Switch off relative mode <a href="https://reprap.org/wiki/G-code#G90:_Set_to_Absolute_Positioning">G90: Set to Absolute Positioning</a>
     */ -------------------------------
     case 90:
       relative_mode = false;
       break;
 
-    //! ### G91 - Switch on relative mode <a href="https://reprap.org/wiki/G-code#G91:_Set_to_Relative_Positioning">G91: Set to Relative Positioning</a>
-    // -------------------------------
+    /*! ### G91 - Switch on relative mode <a href="https://reprap.org/wiki/G-code#G91:_Set_to_Relative_Positioning">G91: Set to Relative Positioning</a>
+    */ -------------------------------
     case 91:
       relative_mode = true;
       break;
 
-    /**
-	*### G92 - Set position <a href="https://reprap.org/wiki/G-code#G92:_Set_Position">G92: Set Position</a>
+    /*!
+	### G92 - Set position <a href="https://reprap.org/wiki/G-code#G92:_Set_Position">G92: Set Position</a>
     */ -----------------------------
     case 92:
       if(!code_seen(axis_codes[E_AXIS]))
@@ -5263,9 +5263,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
 
-  /**
-  *### G98 - Activate farm mode <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode</a>
-  */ -----------------------------------    
+    /*!
+    ### G98 - Activate farm mode <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode</a>
+    */ -----------------------------------    
 	case 98:
 		farm_mode = 1;
 		PingTime = _millis();
@@ -5276,8 +5276,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
           fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 
-  //! ### G99 - Deactivate farm mode <a href="https://reprap.org/wiki/G-code#G99:_Deactivate_farm_mode">G99: Deactivate farm mode</a>
-  // -------------------------------------
+    /*! ### G99 - Deactivate farm mode <a href="https://reprap.org/wiki/G-code#G99:_Deactivate_farm_mode">G99: Deactivate farm mode</a>
+    */ -------------------------------------
 	case 99:
 		farm_mode = 0;
 		lcd_printer_connected();
@@ -5293,10 +5293,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   } // end if(code_seen('G'))
 
 
-  /**
-  *---------------------------------------------------------------------------------
-  * # M Commands
-  * 
+  /*!
+  ---------------------------------------------------------------------------------
+  # M Commands
+  
   */
 
   else if(code_seen('M'))
@@ -5317,8 +5317,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     switch(mcode_in_progress)
     {
 
-    //! ### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------------------------------
+    /*!
+	### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ ---------------------------------------------------------------
     case 0: // M0 - Unconditional stop - Wait for user button press on LCD
     case 1: // M1 - Conditional stop - Wait for user button press on LCD
     {
