@@ -3458,7 +3458,11 @@ extern uint8_t st_backlash_y;
 
 /** \ingroup GCodes */
 
-//! _This is a list of currently implemented G Codes in Prusa firmware (dynamically generated from doxygen)_
+//! _This is a list of currently implemented G Codes in Prusa firmware (dynamically generated from doxygen)._ 
+/**
+They are shown in order of appierence in the code.
+There are reasons why some G Codes aren't in numerical order.
+*/
 
 
 void process_commands()
@@ -3502,7 +3506,22 @@ void process_commands()
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
 #endif
+  /**
+  *---------------------------------------------------------------------------------
+  *### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
   
+  *This causes the given message to be shown in the status line on an attached LCD.
+  *
+  *It is also used by internal to display status messages on LCD.
+  *  Here the internal status messages:
+  *  Only on MK3/s (TMC2130)
+  *  - CRASH DETECTED
+  *  - CRASH RECOVER
+  *  - CRASH_CANCEL
+  *  - TMC_SET_WAVE
+  *  - TMC_SET_STEP
+  *  - TMC_SET_CHOP
+ */
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
@@ -3514,7 +3533,7 @@ void process_commands()
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
 	{
 
-    //! ### CRASH_DETECTED - TMC2130
+    // ### CRASH_DETECTED - TMC2130
     // ---------------------------------
 	  if(code_seen("CRASH_DETECTED"))
 	  {
@@ -3524,12 +3543,12 @@ void process_commands()
 		  crashdet_detected(mask);
 	  }
 
-    //! ### CRASH_RECOVER - TMC2130
+    // ### CRASH_RECOVER - TMC2130
     // ----------------------------------
 	  else if(code_seen("CRASH_RECOVER"))
 		  crashdet_recover();
 
-    //! ### CRASH_CANCEL - TMC2130
+    // ### CRASH_CANCEL - TMC2130
     // ----------------------------------
 	  else if(code_seen("CRASH_CANCEL"))
 		  crashdet_cancel();
@@ -3537,7 +3556,7 @@ void process_commands()
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("TMC_"), 4) == 0)
 	{
     
-    //! ### TMC_SET_WAVE_ 
+    // ### TMC_SET_WAVE_ 
     // --------------------
 		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_"), 9) == 0)
 		{
@@ -3550,7 +3569,7 @@ void process_commands()
 			}
 		}
     
-    //! ### TMC_SET_STEP_
+    // ### TMC_SET_STEP_
     //  ------------------
 		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_"), 9) == 0)
 		{
@@ -3564,7 +3583,7 @@ void process_commands()
 			}
 		}
 
-    //! ### TMC_SET_CHOP_
+    // ### TMC_SET_CHOP_
     //  -------------------
 		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_CHOP_"), 9) == 0)
 		{
@@ -3618,36 +3637,35 @@ void process_commands()
 #endif //BACKLASH_Y
 #endif //TMC2130
   else if(code_seen("PRUSA")){ 
-    /*!
+    /**
+    *---------------------------------------------------------------------------------
+    *### PRUSA - Internal command set <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode - Notes</a>
     *
-    ### PRUSA - Internal command set
-    
-    Set of internal PRUSA commands
-      
-          PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
-      
-      - `Ping` 
-      - `PRN` - Prints revision of the printer
-      - `FAN` - Prints fan details
-      - `fn` - Prints farm no.
-      - `thx` 
-      - `uvlo` 
-      - `fsensor_recover` - Filament sensor recover - restore print and continue
-      - `MMURES` - Reset MMU
-      - `RESET` - (Careful!)
-      - `fv`  - ?
-      - `M28` 
-      - `SN` 
-      - `Fir` - Prints firmware version
-      - `Rev`- Prints filament size, elelectronics, nozzle type
-      - `Lang` - Reset the language
-      - `Lz` 
-      - `Beat` - Kick farm link timer
-      - `FR` - Full factory reset
-      - `nozzle set <diameter>` - set nozzle diameter (farm mode only), e.g. `PRUSA nozzle set 0.4`
-      - `nozzle D<diameter>` - check the nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle D0.4`
-      - `nozzle` - prints nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle`
-    *
+    *Set of internal PRUSA commands
+    * 
+    *     PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+    * 
+    * - `Ping` 
+    * - `PRN` - Prints revision of the printer
+    * - `FAN` - Prints fan details
+    * - `fn` - Prints farm no.
+    * - `thx` 
+    * - `uvlo` 
+    * - `fsensor_recover` - Filament sensor recover - restore print and continue
+    * - `MMURES` - Reset MMU
+    * - `RESET` - (Careful!)
+    * - `fv`  - ?
+    * - `M28` 
+    * - `SN` 
+    * - `Fir` - Prints firmware version
+    * - `Rev`- Prints filament size, elelectronics, nozzle type
+    * - `Lang` - Reset the language
+    * - `Lz` 
+    * - `Beat` - Kick farm link timer
+    * - `FR` - Full factory reset
+    * - `nozzle set <diameter>` - set nozzle diameter (farm mode only), e.g. `PRUSA nozzle set 0.4`
+    * - `nozzle D<diameter>` - check the nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle D0.4`
+    * - `nozzle` - prints nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle`
     */
 
 
@@ -3837,8 +3855,11 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     switch (gcode_in_progress)
     {
 
-    //! ### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a>
-    // --------------------------------------      
+    /**
+    *---------------------------------------------------------------------------------
+	* # G Codes
+	*### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a>
+    */ --------------------------------------      
     case 0: // G0 -> G1
     case 1: // G1
       if(Stopped == false) {
@@ -4037,8 +4058,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    //! ### G2 - CW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
-    // ------------------------------     
+    /**
+	*### G2 - CW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
+    */ ------------------------------     
     case 2: 
       if(Stopped == false) {
         get_arc_coordinates();
@@ -4047,8 +4069,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
  
 
-    //! ### G3 - CCW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
-    // -------------------------------
+    /**
+	*### G3 - CCW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
+    */ -------------------------------
     case 3: 
       if(Stopped == false) {
         get_arc_coordinates();
@@ -4057,8 +4080,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
 
-    //! ### G4 - Dwell <a href="https://reprap.org/wiki/G-code#G4:_Dwell">G4: Dwell</a>
-    // -------------------------------
+    /**
+	*### G4 - Dwell <a href="https://reprap.org/wiki/G-code#G4:_Dwell">G4: Dwell</a>
+    */ -------------------------------
     case 4: 
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
@@ -4076,8 +4100,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       #ifdef FWRETRACT
       
 
-    //! ### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
-    // ------------------------------
+    /**
+	*### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
+    */ ------------------------------
     case 10: 
        #if EXTRUDERS > 1
         retracted_swap[active_extruder]=(code_seen('S') && code_value_long() == 1); // checks for swap retract argument
@@ -4088,8 +4113,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
       
 
-    //! ### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
-    // ----------------------------- 
+    /**
+	*### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
+    */ ----------------------------- 
     case 11: 
        #if EXTRUDERS > 1
         retract(false,retracted_swap[active_extruder]);
@@ -4100,19 +4126,17 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       #endif //FWRETRACT
     
 
-    /*!
-    *
-    ### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
+    /**
+    *### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
     Unsing G28 without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while the default G-code G28 is just homeing the printer
-      
-          G28 [ X | Y | Z | W | C ]
-      
-      - `X` - Flag to go back to the X axis origin
-      - `Y` - Flag to go back to the Y axis origin
-      - `Z` - Flag to go back to the Z axis origin
-      - `W` - Suppress mesh bed leveling
-      - `C` - Calibrate X and Y origin (home)
-    *
+    * 
+    *     G28 [ X | Y | Z | W | C ]
+    * 
+    * - `X` - Flag to go back to the X axis origin
+    * - `Y` - Flag to go back to the Y axis origin
+    * - `Z` - Flag to go back to the Z axis origin
+    * - `W` - Suppress mesh bed leveling
+    * - `C` - Calibrate X and Y origin (home) - Only on MK3/s
 	*/
     // ------------------------------     
     case 28: 
@@ -4146,8 +4170,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifdef ENABLE_AUTO_BED_LEVELING
     
 
-    //! ### G29 - Detailed Z-Probe <a href="https://reprap.org/wiki/G-code#G29:_Detailed_Z-Probe">G29: Detailed Z-Probe</a>
-    // --------------------------------    
+    /**
+	*### G29 - Detailed Z-Probe <a href="https://reprap.org/wiki/G-code#G29:_Detailed_Z-Probe">G29: Detailed Z-Probe</a>
+	*See G81
+    */ --------------------------------    
     case 29: 
         {
             #if Z_MIN_PIN == -1
@@ -4292,8 +4318,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         break;
 #ifndef Z_PROBE_SLED
 
-    //! ### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
-    // ------------------------------------        
+    /**
+	*### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
+    */ ------------------------------------        
     case 30: 
         {
             st_synchronize();
@@ -4317,15 +4344,17 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         break;
 #else
 
-    //! ### G31 - Dock the sled <a href="https://reprap.org/wiki/G-code#G31:_Dock_Z_Probe_sled">G31: Dock Z Probe sled</a>
-    // ---------------------------
+    /**
+	*### G31 - Dock the sled <a href="https://reprap.org/wiki/G-code#G31:_Dock_Z_Probe_sled">G31: Dock Z Probe sled</a>
+    */ ---------------------------
     case 31: 
         dock_sled(true);
         break;
 
 
-    //! ### G32 - Undock the sled <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------     
+    /**
+	*### G32 - Undock the sled <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ ----------------------------     
     case 32: 
         dock_sled(false);
         break;
@@ -4334,8 +4363,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             
 #ifdef MESH_BED_LEVELING
 
-    //! ### G30 - Single Z Probe
-    // ----------------------------    
+    /**
+	*### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
+    */ ----------------------------    
     case 30: 
         {
             st_synchronize();
@@ -4352,8 +4382,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         }
         break;
 	
-  //! ### G75 - Print temperature interpolation
-  // ---------------------------------------------
+  /**
+  *### G75 - Print temperature interpolation <a href="https://reprap.org/wiki/G-code#G75:_Print_temperature_interpolation">G75: Print temperature interpolation</a>
+  *Show/print PINDA temperature interpolating.
+  */ ---------------------------------------------
 	case 75:
 	{
 		for (int i = 40; i <= 110; i++)
@@ -4361,9 +4393,16 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	}
 	break;
 
-  //! ### G76 - PINDA probe temperature calibration
-  // ------------------------------------------------
-	case 76: 
+  /**
+  *### G76 - PINDA probe temperature calibration <a href="https://reprap.org/wiki/G-code#G76:_PINDA_probe_temperature_calibration">G76: PINDA probe temperature calibration</a>
+  *This G-code is used to calibrate the temperature drift of the PINDA (inductive Sensor).
+  *
+  *The PINDAv2 sensor has a built-in thermistor which has the advantage that the calibration can be done once for all materials.
+  *
+  *The Original i3 Prusa MK2/s uses PINDAv1 and this calibration improves the temperature drift, but not as good as the PINDAv2.
+  */
+  ------------------------------------------------
+  case 76: 
 	{
 #ifdef PINDA_THERMISTOR
 		if (true)
@@ -4620,7 +4659,23 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	break;
 
 
-	//! ### G80 - Mesh-based Z probe 
+    /**
+    *### G80 - Mesh-based Z probe <a href="https://reprap.org/wiki/G-code#G80:_Mesh-based_Z_probe">G80: Mesh-based Z probe</a>
+    *Default 3x3 grid can be changed on MK2.5/s and MK3/s to 7x7 grid.
+    *  
+    *      G80 [ N | R | V | L | R | F | B ]
+    *  
+    *  - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
+    *  - `R` - Probe retries. Default 3 max. 10
+    *  - `V` - Verbosity level 1=low, 10=mid, 20=high. It can be only used if firmware has been compiled with SUPPORT_VERBOSITY active.
+    *  
+    *  Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
+
+    *  - `L` - Left Bed Level correct value in um.
+    *  - `R` - Right Bed Level correct value in um.
+    *  - `F` - Front Bed Level correct value in um.
+    *  - `B` - Back Bed Level correct value in um.
+    */
   // -----------------------------------
   
 	/*
@@ -5049,8 +5104,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	}
 	break;
 
-        //! ### G81 - Mesh bed leveling status
-        // -----------------------------------------
+        /**
+		*### G81 - Mesh bed leveling status <a href="https://reprap.org/wiki/G-code#G81:_Mesh_bed_leveling_status">G81: Mesh bed leveling status</a>
+        
+		*Prints mesh bed leveling status and bed profile if activated.
+		*/ -----------------------------------------
 
          /*
          * Prints mesh bed leveling status and bed profile if activated
@@ -5077,12 +5135,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             break;
             
 #if 0
-        /*
-         * G82: Single Z probe at current location
-         *
-         * WARNING! USE WITH CAUTION! If you'll try to probe where is no leveling pad, nasty things can happen!
-         *
-         */
+        /**
+        *### G82: Single Z probe at current location - Not active <a href="https://reprap.org/wiki/G-code#G82:_Single_Z_probe_at_current_location">G82: Single Z probe at current location</a>
+        *
+        *WARNING! USE WITH CAUTION! If you'll try to probe where is no leveling pad, nasty things can happen!
+         **/
         case 82:
             SERIAL_PROTOCOLLNPGM("Finding bed ");
             int l_feedmultiply = setup_for_endstop_move();
@@ -5093,9 +5150,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             SERIAL_PROTOCOLPGM("\n");
             break;
 
-            /*
-             * G83: Prusa3D specific: Babystep in Z and store to EEPROM
-             */
+         /**
+         *### G83: Babystep in Z and store to EEPROM - Not active <a href="https://reprap.org/wiki/G-code#G83:_Babystep_in_Z_and_store_to_EEPROM">G83: Babystep in Z and store to EEPROM</a>
+         */
         case 83:
         {
             int babystepz = code_seen('S') ? code_value() : 0;
@@ -5118,35 +5175,35 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             
         }
         break;
-            /*
-             * G84: Prusa3D specific: UNDO Babystep Z (move Z axis back)
-             */
+        /**
+        *### G84: UNDO Babystep Z (move Z axis back) - Not active <a href="https://reprap.org/wiki/G-code#G84:_UNDO_Babystep_Z_.28move_Z_axis_back.29">G84: UNDO Babystep Z (move Z axis back)</a>
+        */
         case 84:
             babystepsTodoZsubtract(babystepLoadZ);
             // babystepLoadZ = 0;
             break;
             
-            /*
-             * G85: Prusa3D specific: Pick best babystep
-             */
+        /**
+        * ### G85: Pick best babystep - Not active <a href="https://reprap.org/wiki/G-code#G85:_Pick_best_babystep>G85: Pick best babystep</a>
+        */
         case 85:
             lcd_pick_babystep();
             break;
 #endif
             
         /**
-         * ### G86 - Disable babystep correction after home
-         *
-         * This G-code will be performed at the start of a calibration script.
-         * (Prusa3D specific)
-         */
+        *### G86 - Disable babystep correction after home <a href="https://reprap.org/wiki/G-code#G86:_Disable_babystep_correction_after_home">G86: Disable babystep correction after home</a>
+        * 
+        * This G-code will be performed at the start of a calibration script.
+        * (Prusa3D specific)
+        */
         case 86:
             calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
             break;
            
 
         /**
-         * ### G87 - Enable babystep correction after home
+         * ### G87 - Enable babystep correction after home <a href="https://reprap.org/wiki/G-code#G87:_Enable_babystep_correction_after_home">G87: Enable babystep correction after home</a>
          * 
          *
          * This G-code will be performed at the end of a calibration script.
@@ -5158,7 +5215,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 
         /**
-         * ### G88 - Reserved
+         * ### G88 - Reserved <a href="https://reprap.org/wiki/G-code#G88:_Reserved">G88: Reserved</a>
          *
          * Currently has no effect. 
          */
@@ -5171,20 +5228,22 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 #endif  // ENABLE_MESH_BED_LEVELING
             
-    //! ### G90 - Switch off relative mode
-    // -------------------------------
+    /**
+	*### G90 - Switch off relative mode <a href="https://reprap.org/wiki/G-code#G90:_Set_to_Absolute_Positioning">G90: Set to Absolute Positioning</a>
+    */ -------------------------------
     case 90:
       relative_mode = false;
       break;
 
-    //! ### G91 - Switch on relative mode
+    //! ### G91 - Switch on relative mode <a href="https://reprap.org/wiki/G-code#G91:_Set_to_Relative_Positioning">G91: Set to Relative Positioning</a>
     // -------------------------------
     case 91:
       relative_mode = true;
       break;
 
-    //! ### G92 - Set position
-    // -----------------------------
+    /**
+	*### G92 - Set position <a href="https://reprap.org/wiki/G-code#G92:_Set_Position">G92: Set Position</a>
+    */ -----------------------------
     case 92:
       if(!code_seen(axis_codes[E_AXIS]))
         st_synchronize();
@@ -5203,8 +5262,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
 
-  //! ### G98 - Activate farm mode
-  // -----------------------------------    
+  /**
+  *### G98 - Activate farm mode <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode</a>
+  */ -----------------------------------    
 	case 98:
 		farm_mode = 1;
 		PingTime = _millis();
@@ -5215,7 +5275,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
           fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 
-  //! ### G99 - Deactivate farm mode
+  //! ### G99 - Deactivate farm mode <a href="https://reprap.org/wiki/G-code#G99:_Deactivate_farm_mode">G99: Deactivate farm mode</a>
   // -------------------------------------
 	case 99:
 		farm_mode = 0;
@@ -5232,7 +5292,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   } // end if(code_seen('G'))
 
 
-  //! ---------------------------------------------------------------------------------
+  /**
+  *---------------------------------------------------------------------------------
+  * # M Commands
+  * 
+  */
 
   else if(code_seen('M'))
   {
@@ -5252,7 +5316,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     switch(mcode_in_progress)
     {
 
-    //! ### M0, M1 - Stop the printer
+    //! ### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------------------------------
     case 0: // M0 - Unconditional stop - Wait for user button press on LCD
     case 1: // M1 - Conditional stop - Wait for user button press on LCD
@@ -5302,7 +5366,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     }
     break;
 
-    //! ### M17 - Enable axes
+    //! ### M17 - Enable axes <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
@@ -5316,7 +5380,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 #ifdef SDSUPPORT
 
-    //! ### M20 - SD Card file list
+    //! ### M20 - SD Card file list <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------
     case 20:
       SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST
@@ -5324,19 +5388,19 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST
       break;
 
-    //! ### M21 - Init SD card
+    //! ### M21 - Init SD card <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ------------------------------------
     case 21:
       card.initsd();
       break;
 
-    //! ### M22 - Release SD card
+    //! ### M22 - Release SD card <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------
     case 22: 
       card.release();
       break;
 
-    //! ### M23 - Select file
+    //! ### M23 - Select file <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------
     case 23: 
       starpos = (strchr(strchr_pointer + 4,'*'));
@@ -5345,7 +5409,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       card.openFile(strchr_pointer + 4,true);
       break;
 
-    //! ### M24 - Start SD print
+    //! ### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------
     case 24:
 	  if (!card.paused) 
@@ -5354,13 +5418,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       starttime=_millis();
 	  break;
 
-    //! ### M25 - Pause SD print
+    //! ### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------
     case 25:
       card.pauseSDPrint();
       break;
 
-    //! ### M26 S\<index\> - Set SD index
+    //! ### M26 S\<index\> - Set SD index <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     //! Set position in SD card file to index in bytes.
     //! This command is expected to be called after M23 and before M24.
     //! Otherwise effect of this command is undefined.
@@ -5375,13 +5439,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    //! ### M27 - Get SD status
+    //! ### M27 - Get SD status <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------
     case 27:
       card.getStatus();
       break;
 
-    //! ### M28 - Start SD write
+    //! ### M28 - Start SD write <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------  
     case 28: 
       starpos = (strchr(strchr_pointer + 4,'*'));
@@ -5393,7 +5457,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       card.openFile(strchr_pointer+4,false);
       break;
 
-    //! ### M29 - Stop SD write
+    //! ### M29 - Stop SD write <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -------------------------------------
     //! Currently has no effect.
     case 29:
@@ -5401,7 +5465,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       //card,saving = false;
       break;
 
-    //! ### M30 - Delete file  <filename> 
+    //! ### M30 - Delete file  <filename> <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------
     case 30:
       if (card.cardOK){
@@ -5416,7 +5480,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    //! ### M32 - Select file and start SD print
+    //! ### M32 - Select file and start SD print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ------------------------------------
     case 32:
     {
@@ -5454,7 +5518,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
     } break;
 
-    //! ### M982 - Start SD write
+    //! ### M982 - Start SD write <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------
     case 928: 
       starpos = (strchr(strchr_pointer + 5,'*'));
@@ -5468,7 +5532,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 #endif //SDSUPPORT
 
-    //! ### M31 - Report current print time
+    //! ### M31 - Report current print time <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------------------
     case 31: //M31 take time since the start of the SD print or an M109 command
       {
@@ -5486,7 +5550,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    //! ### M42 - Set pin state
+    //! ### M42 - Set pin state <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------
     case 42:
       if (code_seen('S'))
@@ -5517,7 +5581,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
      break;
 
 
-    //! ### M44 - Reset the bed skew and offset calibration (Prusa specific)
+    //! ### M44 - Reset the bed skew and offset calibration (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------------------------------------
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
 
@@ -5533,7 +5597,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         world2machine_revert_to_uncorrected();
         break;
 
-    //! ### M45 - Bed skew and offset with manual Z up (Prusa specific)
+    //! ### M45 - Bed skew and offset with manual Z up (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ------------------------------------------------------
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
@@ -5574,7 +5638,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     }
     */
 
-    //! ### M47 - Show end stops dialog on the display (Prusa specific)
+    //! ### M47 - Show end stops dialog on the display (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------------------- 
     case 47:
         
@@ -5623,7 +5687,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifdef ENABLE_AUTO_BED_LEVELING
 #ifdef Z_PROBE_REPEATABILITY_TEST 
 
-    //! ### M48 - Z-Probe repeatability measurement function.
+    //! ### M48 - Z-Probe repeatability measurement function. <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ------------------------------------------------------
     //!
     //! _Usage:_
@@ -5877,7 +5941,7 @@ Sigma_Exit:
 #endif		// Z_PROBE_REPEATABILITY_TEST 
 #endif		// ENABLE_AUTO_BED_LEVELING
 
-  //! ### M73 - Set/get print progress 
+  //! ### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -------------------------------------
   //! _Usage:_
   //! 
@@ -5896,7 +5960,7 @@ Sigma_Exit:
 		}
 		break;
 
-    //! ### M104 - Set hotend temperature
+    //! ### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------------
     case 104: // M104
     {
@@ -5911,19 +5975,19 @@ Sigma_Exit:
           break;
     }
 
-    //! ### M112 - Emergency stop
+    //! ### M112 - Emergency stop <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------------
     case 112: 
       kill(_n(""), 3);
       break;
 
-    //! ### M140 - Set bed temperature
+    //! ### M140 - Set bed temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------------
     case 140: 
       if (code_seen('S')) setTargetBed(code_value());
       break;
 
-    //! ### M105 - Report temperatures
+    //! ### M105 - Report temperatures <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------- 
     case 105:
     {
@@ -6020,7 +6084,7 @@ Sigma_Exit:
       break;
     }
 
-    //! ### M109 - Wait for extruder temperature
+    //! ### M109 - Wait for extruder temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     //! Parameters (not mandatory):
     //! * S \<temp\> set extruder temperature
     //! * R \<temp\> set extruder temperature
@@ -6079,7 +6143,7 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M190 - Wait for bed temperature
+    //! ### M190 - Wait for bed temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     //! Parameters (not mandatory):
     //! * S \<temp\> set extruder temperature and wait for heating
     //! * R \<temp\> set extruder temperature and wait for heating or cooling
@@ -6139,7 +6203,7 @@ Sigma_Exit:
 
     #if defined(FAN_PIN) && FAN_PIN > -1
 
-      //! ### M106 - Set fan speed
+      //! ### M106 - Set fan speed <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
       // -------------------------------------------
       case 106: // M106 Sxxx Fan On S<speed> 0 .. 255
         if (code_seen('S')){
@@ -6159,7 +6223,7 @@ Sigma_Exit:
 
     #if defined(PS_ON_PIN) && PS_ON_PIN > -1
 
-      //! ### M80 - Turn on the Power Supply
+      //! ### M80 - Turn on the Power Supply <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
       // -------------------------------
       case 80:
         SET_OUTPUT(PS_ON_PIN); //GND
@@ -6179,7 +6243,7 @@ Sigma_Exit:
         break;
       #endif
 
-      //! ### M81 - Turn off Power Supply
+      //! ### M81 - Turn off Power Supply <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
       // --------------------------------------
       case 81: 
         disable_heater();
@@ -6202,19 +6266,19 @@ Sigma_Exit:
         lcd_update(0);
 	  break;
 
-    //! ### M82 - Set E axis to absolute mode
+    //! ### M82 - Set E axis to absolute mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------
     case 82:
       axis_relative_modes[3] = false;
       break;
 
-    //! ### M83 - Set E axis to relative mode
+    //! ### M83 - Set E axis to relative mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------  
     case 83:
       axis_relative_modes[3] = true;
       break;
 
-    //! ### M84, M18 - Disable steppers
+    //! ### M84, M18 - Disable steppers <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     //---------------------------------------
     //! This command can be used to set the stepper inactivity timeout (`S`) or to disable steppers (`X`,`Y`,`Z`,`E`)
     //! 
@@ -6256,7 +6320,7 @@ Sigma_Exit:
 	  snmm_filaments_used = 0;
       break;
 
-    //! ### M85 - Set max inactive time
+    //! ### M85 - Set max inactive time <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------
     case 85: // M85
       if(code_seen('S')) {
@@ -6265,7 +6329,7 @@ Sigma_Exit:
       break;
 #ifdef SAFETYTIMER
 
-  //! ### M86 - Set safety timer expiration time
+  //! ### M86 - Set safety timer expiration time <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   //!
   //! _Usage:_
   //!     M86 S<seconds>
@@ -6280,7 +6344,7 @@ Sigma_Exit:
 	  break;
 #endif
 
-    //! ### M92 Set Axis steps-per-unit
+    //! ### M92 Set Axis steps-per-unit <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------
     //! Same syntax as G92
     case 92:
@@ -6305,14 +6369,14 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M110 - Set Line number
+    //! ### M110 - Set Line number <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------
     case 110:
       if (code_seen('N'))
 	    gcode_LastN = code_value_long();
     break;
 
-  //! ### M113 - Get or set host keep-alive interval
+  //! ### M113 - Get or set host keep-alive interval <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // ------------------------------------------ 
 	case 113:
 		if (code_seen('S')) {
@@ -6326,7 +6390,7 @@ Sigma_Exit:
 		}
 		break;
 
-    //! ### M115 - Firmware info
+    //! ### M115 - Firmware info <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------
     //! Print the firmware info and capabilities
     //! 
@@ -6357,7 +6421,7 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M114 - Get current position
+    //! ### M114 - Get current position <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -------------------------------------
     case 114:
 		gcode_M114();
@@ -6365,7 +6429,7 @@ Sigma_Exit:
 
 
 
-      //! ### M117 - Set LCD Message
+      //! ### M117 - Set LCD Message <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
       // -------------------------------------- 
       
       /*
@@ -6378,19 +6442,19 @@ Sigma_Exit:
       lcd_setstatus(strchr_pointer + 5);
       break;*/
 
-    //! ### M120 - Disable endstops
+    //! ### M120 - Disable endstops <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------
     case 120:
       enable_endstops(false) ;
       break;
 
-    //! ### M121 - Enable endstops
+    //! ### M121 - Enable endstops <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------
     case 121:
       enable_endstops(true) ;
       break;
 
-    //! ### M119 - Get endstop states
+    //! ### M119 - Get endstop states <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------
     case 119:
     SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT
@@ -6454,7 +6518,7 @@ Sigma_Exit:
     
     #ifdef BLINKM
 
-    //! ### M150 - Set RGB(W) Color
+    //! ### M150 - Set RGB(W) Color <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -------------------------------------------
     case 150:
       {
@@ -6471,7 +6535,7 @@ Sigma_Exit:
       break;
     #endif //BLINKM
 
-    //! ### M200 - Set filament diameter
+    //! ### M200 - Set filament diameter <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------
     case 200: // M200 D<millimeters> set filament diameter and set E axis units to cubic millimeters (use S0 to set back to millimeters).
       {
@@ -6512,7 +6576,7 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M201 - Set Print Max Acceleration
+    //! ### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -------------------------------------------
     case 201:
 		for (int8_t i = 0; i < NUM_AXIS; i++)
@@ -6547,7 +6611,7 @@ Sigma_Exit:
       break;
     #endif
 
-    //! ### M203 - Set Max Feedrate
+    //! ### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------
     case 203: // M203 max feedrate mm/sec
 		for (int8_t i = 0; i < NUM_AXIS; i++)
@@ -6573,7 +6637,7 @@ Sigma_Exit:
 		}
 		break;
 
-    //! ### M204 - Acceleration settings
+    //! ### M204 - Acceleration settings <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ------------------------------------------
     //! Supporting old format: 
     //!
@@ -6607,7 +6671,7 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M205 - Set advanced settings
+    //! ### M205 - Set advanced settings <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------------- 
     //! Set some advanced settings related to movement.
     //!
@@ -6632,7 +6696,7 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M206 - Set additional homing offsets
+    //! ### M206 - Set additional homing offsets <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------------
     case 206:
       for(int8_t i=0; i < 3; i++)
@@ -6642,7 +6706,7 @@ Sigma_Exit:
       break;
     #ifdef FWRETRACT
 
-    //! ### M207 - Set firmware retraction
+    //! ### M207 - Set firmware retraction <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------------------
     case 207: //M207 - set retract length S[positive mm] F[feedrate mm/min] Z[additional zlift/hop]
     {
@@ -6660,7 +6724,7 @@ Sigma_Exit:
       }
     }break;
 
-    //! ### M208 - Set retract recover length
+    //! ### M208 - Set retract recover length <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------------
     case 208: // M208 - set retract recover length S[positive mm surplus to the M207 S*] F[feedrate mm/min]
     {
@@ -6674,7 +6738,7 @@ Sigma_Exit:
       }
     }break;
 
-    //! ### M209 - Enable/disable automatict retract
+    //! ### M209 - Enable/disable automatict retract <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------------
     case 209: // M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.
     {
@@ -6746,7 +6810,7 @@ Sigma_Exit:
     }break;
     #endif
 
-    //! ### M220 Set feedrate percentage
+    //! ### M220 Set feedrate percentage <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------------------
     case 220: // M220 S<factor in percent>- set speed factor override percentage
     {
@@ -6764,7 +6828,7 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M221 - Set extrude factor override percentage
+    //! ### M221 - Set extrude factor override percentage <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------------------
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
     {
@@ -6788,7 +6852,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M226 - Wait for Pin state
+  //! ### M226 - Wait for Pin state <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // ------------------------------------------
 	case 226: // M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
 	{
@@ -6844,7 +6908,7 @@ Sigma_Exit:
 
     #if NUM_SERVOS > 0
 
-    //! ### M280 - Set/Get servo position
+    //! ### M280 - Set/Get servo position <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------------
     case 280: // M280 - set servo position absolute. P: servo index, S: angle or microseconds
       {
@@ -6885,7 +6949,7 @@ Sigma_Exit:
 
     #if (LARGE_FLASH == true && ( BEEPER > 0 || defined(ULTRALCD) || defined(LCD_USE_I2C_BUZZER)))
     
-    //! ### M300 - Play tone
+    //! ### M300 - Play tone <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------
     case 300: // M300
     {
@@ -6907,7 +6971,7 @@ Sigma_Exit:
 
     #ifdef PIDTEMP
 
-    //! ### M301 - Set hotend PID
+    //! ### M301 - Set hotend PID <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------
     case 301:
       {
@@ -6938,7 +7002,7 @@ Sigma_Exit:
     #endif //PIDTEMP
     #ifdef PIDTEMPBED
 
-    //! ### M304 - Set bed PID 
+    //! ### M304 - Set bed PID  <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------
     case 304:
       {
@@ -6959,7 +7023,7 @@ Sigma_Exit:
       break;
     #endif //PIDTEMP
 
-    //! ### M240 - Trigger camera
+    //! ### M240 - Trigger camera <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------------
     case 240: // M240  Triggers a camera by emulating a Canon RC-1 : http://www.doc-diy.net/photo/rc-1_hacked/
      {
@@ -6994,7 +7058,7 @@ Sigma_Exit:
     break;
     #ifdef PREVENT_DANGEROUS_EXTRUDE
 
-    //! ### M302 - Allow cold extrude, or set minimum extrude temperature
+    //! ### M302 - Allow cold extrude, or set minimum extrude temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -------------------------------------------------------------------
     case 302:
     {
@@ -7005,7 +7069,7 @@ Sigma_Exit:
     break;
 	#endif
 
-    //! ### M303 - PID autotune
+    //! ### M303 - PID autotune <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -------------------------------------
     case 303:
     {
@@ -7021,7 +7085,7 @@ Sigma_Exit:
     }
     break;
     
-    //! ### M400 - Wait for all moves to finish
+    //! ### M400 - Wait for all moves to finish <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------------
     case 400:
     {
@@ -7029,7 +7093,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M403 - Set filament type (material) for particular extruder and notify the MMU
+  //! ### M403 - Set filament type (material) for particular extruder and notify the MMU <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
 	// ----------------------------------------------
   case 403:
 	{
@@ -7047,7 +7111,7 @@ Sigma_Exit:
 	}
 	break;
 
-    //! ### M500 - Store settings in EEPROM
+    //! ### M500 - Store settings in EEPROM <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------------
     case 500:
     {
@@ -7055,7 +7119,7 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M501 - Read settings from EEPROM
+    //! ### M501 - Read settings from EEPROM <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------
     case 501:
     {
@@ -7063,7 +7127,7 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M502 - Revert all settings to factory default
+    //! ### M502 - Revert all settings to factory default <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -------------------------------------------------
     case 502:
     {
@@ -7071,7 +7135,7 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M503 - Repport all settings currently in memory
+    //! ### M503 - Repport all settings currently in memory <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -------------------------------------------------
     case 503:
     {
@@ -7079,7 +7143,7 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M509 - Force language selection
+    //! ### M509 - Force language selection <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ------------------------------------------------
     case 509:
     {
@@ -7090,7 +7154,7 @@ Sigma_Exit:
     break;
     #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 
-    //! ### M540 - Abort print on endstop hit (enable/disable)
+    //! ### M540 - Abort print on endstop hit (enable/disable) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------------------------
     case 540:
     {
@@ -7137,7 +7201,7 @@ Sigma_Exit:
 
     #ifdef FILAMENTCHANGEENABLE
 
-    //! ### M600 - Initiate Filament change procedure
+    //! ### M600 - Initiate Filament change procedure <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // --------------------------------------
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 	{
@@ -7214,7 +7278,7 @@ Sigma_Exit:
     break;
     #endif //FILAMENTCHANGEENABLE
 
-  //! ### M601 - Pause print
+  //! ### M601 - Pause print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -------------------------------
 	case 601:
 	{
@@ -7223,21 +7287,21 @@ Sigma_Exit:
 	}
 	break;
 
-  //! ### M602 - Resume print
+  //! ### M602 - Resume print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -------------------------------
 	case 602: {
 		lcd_resume_print();
 	}
 	break;
 
-  //! ### M603 - Stop print
+  //! ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -------------------------------
   case 603: {
 		lcd_print_stop();
 	}
 
 #ifdef PINDA_THERMISTOR
-  //! ### M860 - Wait for extruder temperature (PINDA)
+  //! ### M860 - Wait for extruder temperature (PINDA) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // --------------------------------------------------------------
   /*! 
       Wait for PINDA thermistor to reach target temperature
@@ -7289,7 +7353,7 @@ Sigma_Exit:
 		break;
 	}
  
-  //! ### M861 - Set/Get PINDA temperature compensation offsets
+  //! ### M861 - Set/Get PINDA temperature compensation offsets <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -----------------------------------------------------------
   /*!
       
@@ -7372,7 +7436,7 @@ Sigma_Exit:
 
 #endif //PINDA_THERMISTOR
    
-    //! ### M862 - Print checking
+    //! ### M862 - Print checking <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------------
     /*!     
         Checks the parameters of the printer and gcode and performs compatibility check
@@ -7465,14 +7529,14 @@ Sigma_Exit:
     break;
 
 #ifdef LIN_ADVANCE
-    //! ### M900 - Set Linear advance options
+    //! ### M900 - Set Linear advance options <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ----------------------------------------------
     case 900:
         gcode_M900();
     break;
 #endif
 
-    //! ### M907 - Set digital trimpot motor current in mA using axis codes
+    //! ### M907 - Set digital trimpot motor current in mA using axis codes <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------------------------------
     case 907:
     {
@@ -7507,7 +7571,7 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M908 - Control digital trimpot directly
+    //! ### M908 - Control digital trimpot directly <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------------------------
     case 908:
     {
@@ -7522,7 +7586,7 @@ Sigma_Exit:
 
 #ifdef TMC2130_SERVICE_CODES_M910_M918
 
-  //! ### M910 - TMC2130 init
+  //! ### M910 - TMC2130 init <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -----------------------------------------------
 	case 910:
     {
@@ -7530,7 +7594,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M911 - Set TMC2130 holding currents
+  //! ### M911 - Set TMC2130 holding currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -------------------------------------------------
 	case 911: 
     {
@@ -7541,7 +7605,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M912 - Set TMC2130 running currents
+  //! ### M912 - Set TMC2130 running currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -----------------------------------------------
 	case 912: 
     {
@@ -7552,7 +7616,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M913 - Print TMC2130 currents
+  //! ### M913 - Print TMC2130 currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -----------------------------
 	case 913:
     {
@@ -7560,7 +7624,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M914 - Set TMC2130 normal mode
+  //! ### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // ------------------------------
         case 914:
     {
@@ -7570,7 +7634,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M95 - Set TMC2130 silent mode
+  //! ### M915 - Set TMC2130 silent mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // ------------------------------
         case 915:
     {
@@ -7580,7 +7644,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M916 - Set TMC2130 Stallguard sensitivity threshold
+  //! ### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -------------------------------------------------------
 	case 916:
     {
@@ -7593,7 +7657,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl)
+  //! ### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // --------------------------------------------------------------
 	case 917:
     {
@@ -7604,7 +7668,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad)
+  //! ### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -------------------------------------------------------------
 	case 918:
     {
@@ -7617,7 +7681,7 @@ Sigma_Exit:
 
 #endif //TMC2130_SERVICE_CODES_M910_M918
 
-    //! ### M350 - Set microstepping mode
+    //! ### M350 - Set microstepping mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ---------------------------------------------------
     //!  Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     case 350: 
@@ -7658,7 +7722,7 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M351 - Toggle Microstep Pins
+    //! ### M351 - Toggle Microstep Pins <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // -----------------------------------
     //! Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.
     //!
@@ -7682,7 +7746,7 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M701 - Load filament
+  //! ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // -------------------------
 	case 701:
 	{
@@ -7692,7 +7756,7 @@ Sigma_Exit:
 	}
 	break;
 
-  //! ### M702 - Unload filament
+  //! ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
   // ------------------------
   /*! 
       
@@ -7724,7 +7788,7 @@ Sigma_Exit:
 	}
 	break;
 
-    //! ### M999 - Restart after being stopped
+    //! ### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
     // ------------------------------------
     case 999:
       Stopped = false;
@@ -7937,8 +8001,10 @@ Sigma_Exit:
       }
   } // end if(code_seen('T')) (end of T codes)
 
-  //! ----------------------------------------------------------------------------------------------
-
+  /**
+  *---------------------------------------------------------------------------------
+  *# D codes
+  */
   else if (code_seen('D')) // D codes (debug)
   {
     switch((int)code_value())
