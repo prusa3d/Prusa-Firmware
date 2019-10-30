@@ -3506,21 +3506,22 @@ void process_commands()
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
 #endif
-  /**
-  *---------------------------------------------------------------------------------
-  *### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
+  /*!
   
-  *This causes the given message to be shown in the status line on an attached LCD.
-  *
-  *It is also used by internal to display status messages on LCD.
-  *  Here the internal status messages:
-  *  Only on MK3/s (TMC2130)
-  *  - CRASH DETECTED
-  *  - CRASH RECOVER
-  *  - CRASH_CANCEL
-  *  - TMC_SET_WAVE
-  *  - TMC_SET_STEP
-  *  - TMC_SET_CHOP
+  ---------------------------------------------------------------------------------
+  ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
+  
+  This causes the given message to be shown in the status line on an attached LCD.
+  
+  It is also used by internal to display status messages on LCD.
+    Here the internal status messages:
+    Only on MK3/s (TMC2130)
+    - CRASH DETECTED
+    - CRASH RECOVER
+    - CRASH_CANCEL
+    - TMC_SET_WAVE
+    - TMC_SET_STEP
+    - TMC_SET_CHOP
  */
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
@@ -3637,35 +3638,35 @@ void process_commands()
 #endif //BACKLASH_Y
 #endif //TMC2130
   else if(code_seen("PRUSA")){ 
-    /**
-    *---------------------------------------------------------------------------------
-    *### PRUSA - Internal command set <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode - Notes</a>
-    *
-    *Set of internal PRUSA commands
-    * 
-    *     PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
-    * 
-    * - `Ping` 
-    * - `PRN` - Prints revision of the printer
-    * - `FAN` - Prints fan details
-    * - `fn` - Prints farm no.
-    * - `thx` 
-    * - `uvlo` 
-    * - `fsensor_recover` - Filament sensor recover - restore print and continue
-    * - `MMURES` - Reset MMU
-    * - `RESET` - (Careful!)
-    * - `fv`  - ?
-    * - `M28` 
-    * - `SN` 
-    * - `Fir` - Prints firmware version
-    * - `Rev`- Prints filament size, elelectronics, nozzle type
-    * - `Lang` - Reset the language
-    * - `Lz` 
-    * - `Beat` - Kick farm link timer
-    * - `FR` - Full factory reset
-    * - `nozzle set <diameter>` - set nozzle diameter (farm mode only), e.g. `PRUSA nozzle set 0.4`
-    * - `nozzle D<diameter>` - check the nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle D0.4`
-    * - `nozzle` - prints nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle`
+    /*!
+    ---------------------------------------------------------------------------------
+    ### PRUSA - Internal command set <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode - Notes</a>
+    
+    Set of internal PRUSA commands
+     
+         PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+     
+     - `Ping` 
+     - `PRN` - Prints revision of the printer
+     - `FAN` - Prints fan details
+     - `fn` - Prints farm no.
+     - `thx` 
+     - `uvlo` 
+     - `fsensor_recover` - Filament sensor recover - restore print and continue
+     - `MMURES` - Reset MMU
+     - `RESET` - (Careful!)
+     - `fv`  - ?
+     - `M28` 
+     - `SN` 
+     - `Fir` - Prints firmware version
+     - `Rev`- Prints filament size, elelectronics, nozzle type
+     - `Lang` - Reset the language
+     - `Lz` 
+     - `Beat` - Kick farm link timer
+     - `FR` - Full factory reset
+     - `nozzle set <diameter>` - set nozzle diameter (farm mode only), e.g. `PRUSA nozzle set 0.4`
+     - `nozzle D<diameter>` - check the nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle D0.4`
+     - `nozzle` - prints nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle`
     */
 
 
@@ -3855,10 +3856,10 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     switch (gcode_in_progress)
     {
 
-    /**
-    *---------------------------------------------------------------------------------
-	* # G Codes
-	*### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a>
+    /*!
+    ---------------------------------------------------------------------------------
+	 # G Codes
+	### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a>
     */ --------------------------------------      
     case 0: // G0 -> G1
     case 1: // G1
@@ -4058,8 +4059,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    /**
-	*### G2 - CW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
+    /*!
+	### G2 - CW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
     */ ------------------------------     
     case 2: 
       if(Stopped == false) {
@@ -4069,8 +4070,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
  
 
-    /**
-	*### G3 - CCW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
+    /*!
+	### G3 - CCW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
     */ -------------------------------
     case 3: 
       if(Stopped == false) {
@@ -4080,8 +4081,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
 
-    /**
-	*### G4 - Dwell <a href="https://reprap.org/wiki/G-code#G4:_Dwell">G4: Dwell</a>
+    /*!
+	### G4 - Dwell <a href="https://reprap.org/wiki/G-code#G4:_Dwell">G4: Dwell</a>
     */ -------------------------------
     case 4: 
       codenum = 0;
@@ -4100,8 +4101,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       #ifdef FWRETRACT
       
 
-    /**
-	*### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
+    /*!
+	### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
     */ ------------------------------
     case 10: 
        #if EXTRUDERS > 1
@@ -4113,8 +4114,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
       
 
-    /**
-	*### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
+    /*!
+	### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
     */ ----------------------------- 
     case 11: 
        #if EXTRUDERS > 1
@@ -4126,17 +4127,17 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       #endif //FWRETRACT
     
 
-    /**
-    *### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
+    /*!
+    ### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
     Unsing G28 without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while the default G-code G28 is just homeing the printer
-    * 
-    *     G28 [ X | Y | Z | W | C ]
-    * 
-    * - `X` - Flag to go back to the X axis origin
-    * - `Y` - Flag to go back to the Y axis origin
-    * - `Z` - Flag to go back to the Z axis origin
-    * - `W` - Suppress mesh bed leveling
-    * - `C` - Calibrate X and Y origin (home) - Only on MK3/s
+    
+         G28 [ X | Y | Z | W | C ]
+    
+     - `X` - Flag to go back to the X axis origin
+     - `Y` - Flag to go back to the Y axis origin
+     - `Z` - Flag to go back to the Z axis origin
+     - `W` - Suppress mesh bed leveling
+     - `C` - Calibrate X and Y origin (home) - Only on MK3/s
 	*/
     // ------------------------------     
     case 28: 
@@ -4170,9 +4171,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifdef ENABLE_AUTO_BED_LEVELING
     
 
-    /**
-	*### G29 - Detailed Z-Probe <a href="https://reprap.org/wiki/G-code#G29:_Detailed_Z-Probe">G29: Detailed Z-Probe</a>
-	*See G81
+    /*!
+	### G29 - Detailed Z-Probe <a href="https://reprap.org/wiki/G-code#G29:_Detailed_Z-Probe">G29: Detailed Z-Probe</a>
+	See `G81`
     */ --------------------------------    
     case 29: 
         {
@@ -5150,7 +5151,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             SERIAL_PROTOCOLPGM("\n");
             break;
 
-         /**
+         /*
          *### G83: Babystep in Z and store to EEPROM - Not active <a href="https://reprap.org/wiki/G-code#G83:_Babystep_in_Z_and_store_to_EEPROM">G83: Babystep in Z and store to EEPROM</a>
          */
         case 83:
@@ -6676,7 +6677,7 @@ Sigma_Exit:
     //! Set some advanced settings related to movement.
     //!
     //!          M205 [S] [T] [B] [X] [Y] [Z] [E]
-    /*!
+    /**
     - `S` - Minimum feedrate for print moves (unit/s)
     - `T` - Minimum feedrate for travel moves (units/s)
     - `B` - Minimum segment time (us)
