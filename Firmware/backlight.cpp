@@ -11,6 +11,8 @@
 
 #ifdef LCD_BL_PIN
 
+#define BL_FLASH_DELAY_MS 25
+
 bool backlightSupport = 0; //only if it's true will any of the settings be visible to the user
 int16_t backlightLevel_HIGH = 0;
 int16_t backlightLevel_LOW = 0;
@@ -33,6 +35,24 @@ void force_bl_on(bool section_start)
     backlight_update();
 }
 
+void backlight_wake(const uint8_t flashNo)
+{
+    if (!backlightSupport) return;
+    
+    if (flashNo)
+    {
+        uint8_t backlightMode_bck = backlightMode;
+        for (uint8_t i = 0; i < (((backlightMode_bck == BACKLIGHT_MODE_AUTO) && !backlightTimer.running()) + (flashNo * 2)); i++)
+        {
+            backlightMode = !backlightMode; //toggles between BACKLIGHT_MODE_BRIGHT and BACKLIGHT_MODE_DIM
+            backlight_update();
+            _delay(BL_FLASH_DELAY_MS);
+        }
+        backlightMode = backlightMode_bck;
+    }
+    backlightTimer_reset();
+}
+
 void backlight_save() //saves all backlight data to eeprom.
 {
     eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, (uint8_t)backlightLevel_HIGH);
@@ -41,10 +61,11 @@ void backlight_save() //saves all backlight data to eeprom.
     eeprom_update_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT, backlightTimer_period);
 }
 
-void backlightTimer_reset() //used for resetting the timer and waking the display. Triggered on events such as knob click, rotate and on full screen notifications.
+void backlightTimer_reset() //used for resetting the timer and waking the display. Triggered on user interactions.
 {
     if (!backlightSupport) return;
     backlightTimer.start();
+    backlight_update();
 }
 
 void backlight_update()
@@ -86,7 +107,6 @@ void backlight_init()
     
     SET_OUTPUT(LCD_BL_PIN);
     backlightTimer_reset();
-    backlight_update(); //sets brightness
 }
 
 #endif //LCD_BL_PIN

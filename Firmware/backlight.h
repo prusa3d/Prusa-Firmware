@@ -8,8 +8,8 @@
 
 enum Backlight_Mode
 {
-	BACKLIGHT_MODE_BRIGHT  = 0,
-	BACKLIGHT_MODE_DIM     = 1,
+	BACKLIGHT_MODE_DIM     = 0,
+	BACKLIGHT_MODE_BRIGHT  = 1,
 	BACKLIGHT_MODE_AUTO    = 2,
 };
 
@@ -27,6 +27,7 @@ extern void backlight_update();
 extern void backlight_init();
 extern void backlightTimer_reset();
 extern void backlight_save();
+extern void backlight_wake(const uint8_t flashNo = 0);
 
 
 #endif //_BACKLIGHT_H

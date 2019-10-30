@@ -8868,6 +8868,7 @@ void menu_lcd_lcdupdate_func(void)
 		lcd_draw_update = 2;
 		lcd_oldcardstatus = IS_SD_INSERTED;
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
+        backlight_wake();
 		if (lcd_oldcardstatus)
 		{
 			card.initsd();
