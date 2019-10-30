@@ -5318,7 +5318,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     {
 
     /*!
-	### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#M0:_Stop_or_Unconditional_stop">M0: Stop or Unconditional stop</a>
     */ ---------------------------------------------------------------
     case 0: // M0 - Unconditional stop - Wait for user button press on LCD
     case 1: // M1 - Conditional stop - Wait for user button press on LCD
@@ -5368,7 +5368,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     }
     break;
 
-    //! ### M17 - Enable axes <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    //! ### M17 - Enable axes <a href="https://reprap.org/wiki/G-code#M17:_Enable.2FPower_all_stepper_motors">M17: Enable/Power all stepper motors</a>
     // ---------------------------------
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
@@ -5382,28 +5382,32 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 #ifdef SDSUPPORT
 
-    //! ### M20 - SD Card file list <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------
+    /*!
+	### M20 - SD Card file list <a href="https://reprap.org/wiki/G-code#M20:_List_SD_card">M20: List SD card</a>
+    */ -----------------------------------
     case 20:
       SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST
       card.ls();
       SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST
       break;
 
-    //! ### M21 - Init SD card <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ------------------------------------
+    /*!
+	### M21 - Init SD card <a href="https://reprap.org/wiki/G-code#M21:_Initialize_SD_card">M21: Initialize SD card</a>
+    */ ------------------------------------
     case 21:
       card.initsd();
       break;
 
-    //! ### M22 - Release SD card <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------
+    /*!
+	### M22 - Release SD card <a href="https://reprap.org/wiki/G-code#M22:_Release_SD_card">M22: Release SD card</a>
+    */ -----------------------------------
     case 22: 
       card.release();
       break;
 
-    //! ### M23 - Select file <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------
+    /*!
+	### M23 - Select file <a href="https://reprap.org/wiki/G-code#M23:_Select_SD_file">M23: Select SD file</a>
+    */ -----------------------------------
     case 23: 
       starpos = (strchr(strchr_pointer + 4,'*'));
 	  if(starpos!=NULL)
@@ -5411,8 +5415,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       card.openFile(strchr_pointer + 4,true);
       break;
 
-    //! ### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------
+    /*!
+	### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#M24:_Start.2Fresume_SD_print">M24: Start/resume SD print</a>
+    */ ----------------------------------
     case 24:
 	  if (!card.paused) 
 		failstats_reset_print();
@@ -5420,17 +5425,19 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       starttime=_millis();
 	  break;
 
-    //! ### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------
+    /*!
+	### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
+    */ ----------------------------------
     case 25:
       card.pauseSDPrint();
       break;
 
-    //! ### M26 S\<index\> - Set SD index <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    //! Set position in SD card file to index in bytes.
-    //! This command is expected to be called after M23 and before M24.
-    //! Otherwise effect of this command is undefined.
-    // ----------------------------------
+    /*!
+	### M26 S\<index\> - Set SD index <a href="https://reprap.org/wiki/G-code#M26:_Set_SD_position">M26: Set SD position</a>
+    Set position in SD card file to index in bytes.
+    This command is expected to be called after M23 and before M24.
+    Otherwise effect of this command is undefined.
+    */ ----------------------------------
     case 26: 
       if(card.cardOK && code_seen('S')) {
         long index = code_value_long();
@@ -5441,14 +5448,16 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    //! ### M27 - Get SD status <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------
+    /*!
+	### M27 - Get SD status <a href="https://reprap.org/wiki/G-code#M27:_Report_SD_print_status">M27: Report SD print status</a>
+    */ ----------------------------------
     case 27:
       card.getStatus();
       break;
 
-    //! ### M28 - Start SD write <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------  
+    /*!
+	### M28 - Start SD write <a href="https://reprap.org/wiki/G-code#M28:_Begin_write_to_SD_card">M28: Begin write to SD card</a>
+    */ ---------------------------------  
     case 28: 
       starpos = (strchr(strchr_pointer + 4,'*'));
       if(starpos != NULL){
@@ -5459,16 +5468,17 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       card.openFile(strchr_pointer+4,false);
       break;
 
-    //! ### M29 - Stop SD write <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -------------------------------------
-    //! Currently has no effect.
+    /*! ### M29 - Stop SD write <a href="https://reprap.org/wiki/G-code#M29:_Stop_writing_to_SD_card">M29: Stop writing to SD card</a>
+	Currently has no effect.
+    */ -------------------------------------
     case 29:
       //processed in write to file routine above
       //card,saving = false;
       break;
 
-    //! ### M30 - Delete file  <filename> <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------
+    /*!
+	### M30 - Delete file  <filename> <a href="https://reprap.org/wiki/G-code#M30:_Delete_a_file_on_the_SD_card">M30: Delete a file on the SD card</a>
+    */ ----------------------------------
     case 30:
       if (card.cardOK){
         card.closefile();
@@ -5482,8 +5492,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    //! ### M32 - Select file and start SD print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ------------------------------------
+    /*!
+	### M32 - Select file and start SD print <a href="https://reprap.org/wiki/G-code#M32:_Select_file_and_start_SD_print">M32: Select file and start SD print</a>
+	@todo What are the parameters P and S for in M32?
+    */ ------------------------------------
     case 32:
     {
       if(card.sdprinting) {
@@ -5520,8 +5532,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
     } break;
 
-    //! ### M982 - Start SD write <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------
+    /*! ### M982 - Start SD logging <a href="https://reprap.org/wiki/G-code#M928:_Start_SD_logging">M928: Start SD logging</a>
+    */ ---------------------------------
     case 928: 
       starpos = (strchr(strchr_pointer + 5,'*'));
       if(starpos != NULL){
@@ -5534,8 +5546,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 #endif //SDSUPPORT
 
-    //! ### M31 - Report current print time <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------------------
+    /*!
+	### M31 - Report current print time <a href="https://reprap.org/wiki/G-code#M31:_Output_time_since_last_M109_or_SD_card_start_to_serial">M31: Output time since last M109 or SD card start to serial</a>
+    */ --------------------------------------------------
     case 31: //M31 take time since the start of the SD print or an M109 command
       {
       stoptime=_millis();
@@ -5552,8 +5565,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
 
-    //! ### M42 - Set pin state <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------
+    /*!
+	### M42 - Set pin state <a href="https://reprap.org/wiki/G-code#M42:_Switch_I.2FO_pin">M42: Switch I/O pin</a>
+    */ -----------------------------
     case 42:
       if (code_seen('S'))
       {
@@ -5583,8 +5597,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
      break;
 
 
-    //! ### M44 - Reset the bed skew and offset calibration (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------------------------------------
+    /*!
+	### M44 - Reset the bed skew and offset calibration (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">M44: Reset the bed skew and offset calibration</a>
+    */ --------------------------------------------------------------------
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
 
 		// Reset the baby step value and the baby step applied flag.
@@ -5599,8 +5614,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         world2machine_revert_to_uncorrected();
         break;
 
-    //! ### M45 - Bed skew and offset with manual Z up (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ------------------------------------------------------
+    /*!
+	### M45 - Bed skew and offset with manual Z up (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">M45: Bed skew and offset with manual Z up</a>
+	  
+	    G80 [ V ]
+	  - V Verbosity level 1, 10 and 20 (low, mid, high). Only when SUPPORT_VERBOSITY is defined.
+    */ ------------------------------------------------------
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
 		int8_t verbosity_level = 0;
@@ -5640,8 +5659,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     }
     */
 
-    //! ### M47 - Show end stops dialog on the display (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------------------- 
+    /*!
+	### M47 - Show end stops dialog on the display<a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">M47: Show end stops dialog on the display</a>
+    */ ---------------------------------------------------- 
     case 47:
         
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
@@ -5689,22 +5709,22 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifdef ENABLE_AUTO_BED_LEVELING
 #ifdef Z_PROBE_REPEATABILITY_TEST 
 
-    //! ### M48 - Z-Probe repeatability measurement function. <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ------------------------------------------------------
-    //!
-    //! _Usage:_
-    //!    
-    //!     M48 <n #_samples> <X X_position_for_samples> <Y Y_position_for_samples> <V Verbose_Level> <L legs_of_movement_prior_to_doing_probe>
-    //! 
-    //! This function assumes the bed has been homed.  Specifically, that a G28 command
-    //! as been issued prior to invoking the M48 Z-Probe repeatability measurement function.
-    //! Any information generated by a prior G29 Bed leveling command will be lost and need to be
-    //! regenerated.
-    //!
-    //! The number of samples will default to 10 if not specified.  You can use upper or lower case
-    //! letters for any of the options EXCEPT n.  n must be in lower case because Marlin uses a capital
-    //! N for its communication protocol and will get horribly confused if you send it a capital N.
-    //!
+    /*!
+	### M48 - Z-Probe repeatability measurement function. <a href="https://reprap.org/wiki/G-code#M48:_Measure_Z-Probe_repeatability">M48: Measure Z-Probe repeatability</a>
+    
+     This function assumes the bed has been homed.  Specifically, that a G28 command as been issued prior to invoking the M48 Z-Probe repeatability measurement function. Any information generated by a prior G29 Bed leveling command will be lost and need to be regenerated.
+     
+     The number of samples will default to 10 if not specified.  You can use upper or lower case letters for any of the options EXCEPT n.  n must be in lower case because Marlin uses a capital N for its communication protocol and will get horribly confused if you send it a capital N.
+	 
+	     M48 [ n | X | Y | V | L ]
+       - n - Number of samples. Valid values 4-50
+	   - X - X position for samples
+	   - Y - Y position for samples
+	   - V - Verbose level. Valid values 1-4
+	   - L - Legs of movementprior to doing probe. Valid values 1-15
+     
+
+    */
     case 48: // M48 Z-Probe repeatability
         {
             #if Z_MIN_PIN == -1
@@ -5943,12 +5963,17 @@ Sigma_Exit:
 #endif		// Z_PROBE_REPEATABILITY_TEST 
 #endif		// ENABLE_AUTO_BED_LEVELING
 
-  //! ### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -------------------------------------
-  //! _Usage:_
-  //! 
-  //!     M73 P<percent> R<time_remaining> Q<percent_silent> S<time_remaining_silent>
-  //! 
+	/*!
+	### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
+	Prusa firmware just shows percent done and time remaining.
+	
+	    M73 [ P | R | Q | S ]
+	
+       - P - Percent in normal mode
+       - R - Time remaining in normal mode
+       - Q - Percent in silent mode
+       - S - Time in silent mode
+   */
 	case 73: //M73 show percent done and time remaining
 		if(code_seen('P')) print_percent_done_normal = code_value();
 		if(code_seen('R')) print_time_remaining_normal = code_value();
@@ -5962,8 +5987,13 @@ Sigma_Exit:
 		}
 		break;
 
-    //! ### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------------
+    /*!
+	### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
+	
+	    M104 [ S ]
+	
+       - S - Target temperature
+    */ -----------------------------------------
     case 104: // M104
     {
           uint8_t extruder;
@@ -5977,20 +6007,37 @@ Sigma_Exit:
           break;
     }
 
-    //! ### M112 - Emergency stop <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------------
+    /*!
+	### M112 - Emergency stop <a href="https://reprap.org/wiki/G-code#M112:_Full_.28Emergency.29_Stop">M112: Full (Emergency) Stop</a>
+    */ -----------------------------------------
     case 112: 
       kill(_n(""), 3);
       break;
 
-    //! ### M140 - Set bed temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------------
+    /*!
+	### M140 - Set bed temperature <a href="https://reprap.org/wiki/G-code#M140:_Set_Bed_Temperature_.28Fast.29">M140: Set Bed Temperature (Fast)</a>
+    */ -----------------------------------------
     case 140: 
       if (code_seen('S')) setTargetBed(code_value());
       break;
 
-    //! ### M105 - Report temperatures <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------- 
+    /*!
+	### M105 - Report temperatures <a href="https://reprap.org/wiki/G-code#M105:_Get_Extruder_Temperature">M105: Get Extruder Temperature</a>
+	Prints temperatures:
+	
+	  - T:  - Hotend (actual / target)
+	  - B:  - Bed (actual / target)
+	  - Tx: - x Tool (actual / target)
+	  - @:  - Hotend power
+	  - B@: - Bed power
+	  - P:  - PINDAv2 actual (only MK2.5/s and MK3.5/s)
+	  - A:  - Ambient actual (only MK3/s)
+	
+	_Example:_
+	
+	    ok T:20.2 /0.0 B:19.1 /0.0 T0:20.2 /0.0 @:0 B@:0 P:19.8 A:26.4
+	
+    */ ----------------------------------------- 
     case 105:
     {
       uint8_t extruder;
