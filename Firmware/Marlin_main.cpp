@@ -6366,16 +6366,16 @@ Sigma_Exit:
       lcd_setstatus(strchr_pointer + 5);
       break;*/
 
-    //! ### M120 - Disable endstops
+    //! ### M120 - Ensable endstops
     // ----------------------------------------
     case 120:
-      enable_endstops(false) ;
+      enable_endstops(true) ;
       break;
 
-    //! ### M121 - Enable endstops
+    //! ### M121 - Disable endstops
     // ----------------------------------------
     case 121:
-      enable_endstops(true) ;
+      enable_endstops(false) ;
       break;
 
     //! ### M119 - Get endstop states
