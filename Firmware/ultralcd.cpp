@@ -19,9 +19,7 @@
 #include "lcd.h"
 #include "menu.h"
 
-#ifdef LCD_BL_PIN
 #include "backlight.h"
-#endif //LCD_BL_PIN
 
 #include "util.h"
 #include "mesh_bed_leveling.h"
@@ -5019,10 +5017,10 @@ void lcd_wizard(WizState state)
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
 	if (state != S::Run) eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
-    #ifdef LCD_BL_PIN
-        FORCE_BL_ON_START;
-    #endif // LCD_BL_PIN
-	while (!end) {
+    
+    FORCE_BL_ON_START;
+	
+    while (!end) {
 		printf_P(PSTR("Wizard state: %d\n"), state);
 		switch (state) {
 		case S::Run: //Run wizard?
@@ -5158,10 +5156,9 @@ void lcd_wizard(WizState state)
 		default: break;
 		}
 	}
-
-    #ifdef LCD_BL_PIN
-        FORCE_BL_ON_END;
-    #endif // LCD_BL_PIN
+    
+    FORCE_BL_ON_END;
+    
 	printf_P(_N("Wizard end state: %d\n"), state);
 	switch (state) { //final message
 	case S::Restore: //printer was already calibrated
@@ -7403,9 +7400,9 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-    #ifdef LCD_BL_PIN
-        FORCE_BL_ON_START;
-    #endif // LCD_BL_PIN
+    
+    FORCE_BL_ON_START;
+    
 	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 
@@ -7625,10 +7622,10 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_END;
 	#endif // TMC2130
-    #ifdef LCD_BL_PIN
-        FORCE_BL_ON_END;
-    #endif // LCD_BL_PIN
-	KEEPALIVE_STATE(NOT_BUSY);
+    
+    FORCE_BL_ON_END;
+	
+    KEEPALIVE_STATE(NOT_BUSY);
 	return(_result);
 }
 
@@ -8037,10 +8034,9 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 static void lcd_selftest_error(TestError testError, const char *_error_1, const char *_error_2)
 {
 	lcd_beeper_quick_feedback();
-    #ifdef LCD_BL_PIN
-        FORCE_BL_ON_END;
-    #endif // LCD_BL_PIN
-
+    
+    FORCE_BL_ON_END;
+    
 	target_temperature[0] = 0;
 	target_temperature_bed = 0;
 	manage_heater();
@@ -8633,9 +8629,7 @@ void ultralcd_init()
         else lcd_autoDeplete = autoDepleteRaw;
 
     }
-#ifdef LCD_BL_PIN
     backlight_init();
-#endif //LCD_BL_PIN
 	lcd_init();
 	lcd_refresh();
 	lcd_longpress_func = menu_lcd_longpress_func;
@@ -8784,9 +8778,7 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
-#ifdef LCD_BL_PIN
-	backlightTimer_reset();
-#endif //LCD_BL_PIN
+	backlight_wake();
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
     {
         // disable longpress during re-entry, while homing or calibration
@@ -8886,9 +8878,7 @@ void menu_lcd_lcdupdate_func(void)
 		}
 	}
 #endif//CARDINSERTED
-#ifdef LCD_BL_PIN
     backlight_update();
-#endif //LCD_BL_PIN
 	if (lcd_next_update_millis < _millis())
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
@@ -8899,17 +8889,13 @@ void menu_lcd_lcdupdate_func(void)
 			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 			lcd_encoder_diff = 0;
 			lcd_timeoutToStatus.start();
-#ifdef LCD_BL_PIN
-			backlightTimer_reset();
-#endif //LCD_BL_PIN
+			backlight_wake();
 		}
 
 		if (LCD_CLICKED)
 		{
 			lcd_timeoutToStatus.start();
-#ifdef LCD_BL_PIN
-			backlightTimer_reset();
-#endif //LCD_BL_PIN
+			backlight_wake();
 		}
 
 		(*menu_menu)();

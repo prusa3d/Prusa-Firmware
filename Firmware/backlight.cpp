@@ -20,6 +20,13 @@ uint8_t backlightMode = BACKLIGHT_MODE_BRIGHT;
 int16_t backlightTimer_period = 10;
 LongTimer backlightTimer;
 
+static void backlightTimer_reset() //used for resetting the timer and waking the display. Triggered on user interactions.
+{
+    if (!backlightSupport) return;
+    backlightTimer.start();
+    backlight_update();
+}
+
 void force_bl_on(bool section_start)
 {
     if (section_start)
@@ -59,13 +66,6 @@ void backlight_save() //saves all backlight data to eeprom.
     eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW, (uint8_t)backlightLevel_LOW);
     eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_MODE, backlightMode);
     eeprom_update_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT, backlightTimer_period);
-}
-
-void backlightTimer_reset() //used for resetting the timer and waking the display. Triggered on user interactions.
-{
-    if (!backlightSupport) return;
-    backlightTimer.start();
-    backlight_update();
 }
 
 void backlight_update()
@@ -108,5 +108,13 @@ void backlight_init()
     SET_OUTPUT(LCD_BL_PIN);
     backlightTimer_reset();
 }
+
+#else //LCD_BL_PIN
+
+void force_bl_on(__attribute__((unused)) bool section_start) {}
+void backlight_update() {}
+void backlight_init() {}
+void backlight_save() {}
+void backlight_wake(__attribute__((unused)) const uint8_t flashNo) {}
 
 #endif //LCD_BL_PIN

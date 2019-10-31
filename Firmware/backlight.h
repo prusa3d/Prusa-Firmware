@@ -25,7 +25,6 @@ extern int16_t backlightTimer_period;
 extern void force_bl_on(bool section_start);
 extern void backlight_update();
 extern void backlight_init();
-extern void backlightTimer_reset();
 extern void backlight_save();
 extern void backlight_wake(const uint8_t flashNo = 0);
 

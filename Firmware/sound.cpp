@@ -64,7 +64,7 @@ Sound_SaveMode();
 
 //if critical is true then silend and once mode is ignored
 void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
-    backlight_wake(1);
+    backlight_wake();
      if (!critical){
           if (eSoundMode != e_SOUND_MODE_SILENT){
                if(!tone_){
