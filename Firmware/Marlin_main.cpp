@@ -5618,7 +5618,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	### M45 - Bed skew and offset with manual Z up (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">M45: Bed skew and offset with manual Z up</a>
 	  
 	    G80 [ V ]
-	  - V Verbosity level 1, 10 and 20 (low, mid, high). Only when SUPPORT_VERBOSITY is defined.
+	  - `V` - Verbosity level 1, 10 and 20 (low, mid, high). Only when SUPPORT_VERBOSITY is defined.
     */ ------------------------------------------------------
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
@@ -5717,11 +5717,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
      The number of samples will default to 10 if not specified.  You can use upper or lower case letters for any of the options EXCEPT n.  n must be in lower case because Marlin uses a capital N for its communication protocol and will get horribly confused if you send it a capital N.
 	 
 	     M48 [ n | X | Y | V | L ]
-       - n - Number of samples. Valid values 4-50
-	   - X - X position for samples
-	   - Y - Y position for samples
-	   - V - Verbose level. Valid values 1-4
-	   - L - Legs of movementprior to doing probe. Valid values 1-15
+       - `n` - Number of samples. Valid values 4-50
+	   - `X` - X position for samples
+	   - `Y` - Y position for samples
+	   - `V` - Verbose level. Valid values 1-4
+	   - `L` - Legs of movementprior to doing probe. Valid values 1-15
      
 
     */
@@ -5969,10 +5969,10 @@ Sigma_Exit:
 	
 	    M73 [ P | R | Q | S ]
 	
-       - P - Percent in normal mode
-       - R - Time remaining in normal mode
-       - Q - Percent in silent mode
-       - S - Time in silent mode
+       - `P` - Percent in normal mode
+       - `R` - Time remaining in normal mode
+       - `Q` - Percent in silent mode
+       - `S` - Time in silent mode
    */
 	case 73: //M73 show percent done and time remaining
 		if(code_seen('P')) print_percent_done_normal = code_value();
@@ -5992,7 +5992,7 @@ Sigma_Exit:
 	
 	    M104 [ S ]
 	
-       - S - Target temperature
+       - `S` - Target temperature
     */ -----------------------------------------
     case 104: // M104
     {
@@ -6025,13 +6025,13 @@ Sigma_Exit:
 	### M105 - Report temperatures <a href="https://reprap.org/wiki/G-code#M105:_Get_Extruder_Temperature">M105: Get Extruder Temperature</a>
 	Prints temperatures:
 	
-	  - T:  - Hotend (actual / target)
-	  - B:  - Bed (actual / target)
-	  - Tx: - x Tool (actual / target)
-	  - @:  - Hotend power
-	  - B@: - Bed power
-	  - P:  - PINDAv2 actual (only MK2.5/s and MK3.5/s)
-	  - A:  - Ambient actual (only MK3/s)
+	  - `T:`  - Hotend (actual / target)
+	  - `B:`  - Bed (actual / target)
+	  - `Tx:` - x Tool (actual / target)
+	  - `@:`  - Hotend power
+	  - `B@:` - Bed power
+	  - `P:`  - PINDAv2 actual (only MK2.5/s and MK3.5/s)
+	  - `A:`  - Ambient actual (only MK3/s)
 	
 	_Example:_
 	
@@ -6133,16 +6133,19 @@ Sigma_Exit:
       break;
     }
 
-    //! ### M109 - Wait for extruder temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    //! Parameters (not mandatory):
-    //! * S \<temp\> set extruder temperature
-    //! * R \<temp\> set extruder temperature
-    //!
-    //! Parameters S and R are treated identically.
-    //! Command always waits for both cool down and heat up.
-    //! If no parameters are supplied waits for previously
-    //! set extruder temperature.
-    // -------------------------------------------------
+    /*!
+	### M109 - Wait for extruder temperature <a href="https://reprap.org/wiki/G-code#M109:_Set_Extruder_Temperature_and_Wait">M109: Set Extruder Temperature and Wait</a>
+    Parameters (not mandatory):
+     
+	  - `S` - Set extruder temperature
+      - `R` - Set extruder temperature
+	  - `B` - Set max. extruder temperature, while `S` is min. temperature. Not active in default, only if AUTOTEMP is defined in source code.
+    
+    Parameters S and R are treated identically.
+    Command always waits for both cool down and heat up.
+    If no parameters are supplied waits for previously
+     set extruder temperature.
+    */ -------------------------------------------------
     case 109:
     {
       uint8_t extruder;
@@ -6192,12 +6195,15 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M190 - Wait for bed temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    //! Parameters (not mandatory):
-    //! * S \<temp\> set extruder temperature and wait for heating
-    //! * R \<temp\> set extruder temperature and wait for heating or cooling
-    //!
-    //! If no parameter is supplied, waits for heating or cooling to previously set temperature.
+    /*!
+	### M190 - Wait for bed temperature <a href="https://reprap.org/wiki/G-code#M190:_Wait_for_bed_temperature_to_reach_target_temp">M190: Wait for bed temperature to reach target temp</a>
+    Parameters (not mandatory):
+    
+	  - `S` - Set extruder temperature and wait for heating
+      - `R` - Set extruder temperature and wait for heating or cooling
+    
+    If no parameter is supplied, waits for heating or cooling to previously set temperature.
+	*/
     case 190: 
     #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
     {
@@ -6252,8 +6258,9 @@ Sigma_Exit:
 
     #if defined(FAN_PIN) && FAN_PIN > -1
 
-      //! ### M106 - Set fan speed <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-      // -------------------------------------------
+      /*!
+	  ### M106 - Set fan speed <a href="https://reprap.org/wiki/G-code#M106:_Fan_On">M106: Fan On</a>
+      */ -------------------------------------------
       case 106: // M106 Sxxx Fan On S<speed> 0 .. 255
         if (code_seen('S')){
            fanSpeed=constrain(code_value(),0,255);
@@ -6263,8 +6270,9 @@ Sigma_Exit:
         }
         break;
 
-      //! ### M107 - Fan off
-      // -------------------------------
+      /*!
+	  ### M107 - Fan off <a href="https://reprap.org/wiki/G-code#M107:_Fan_Off">M107: Fan Off</a>
+      */ -------------------------------
       case 107:
         fanSpeed = 0;
         break;
@@ -6272,8 +6280,9 @@ Sigma_Exit:
 
     #if defined(PS_ON_PIN) && PS_ON_PIN > -1
 
-      //! ### M80 - Turn on the Power Supply <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-      // -------------------------------
+      /*!
+	  ### M80 - Turn on the Power Supply <a href="https://reprap.org/wiki/G-code#M80:_ATX_Power_On">M80: ATX Power On</a>
+      */ -------------------------------
       case 80:
         SET_OUTPUT(PS_ON_PIN); //GND
         WRITE(PS_ON_PIN, PS_ON_AWAKE);
@@ -6292,8 +6301,9 @@ Sigma_Exit:
         break;
       #endif
 
-      //! ### M81 - Turn off Power Supply <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-      // --------------------------------------
+      /*!
+	  ### M81 - Turn off Power Supply <a href="https://reprap.org/wiki/G-code#M81:_ATX_Power_Off">M81: ATX Power Off</a>
+      */ --------------------------------------
       case 81: 
         disable_heater();
         st_synchronize();
@@ -6315,24 +6325,40 @@ Sigma_Exit:
         lcd_update(0);
 	  break;
 
-    //! ### M82 - Set E axis to absolute mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------
+    /*!
+	### M82 - Set E axis to absolute mode <a href="https://reprap.org/wiki/G-code#M82:_Set_extruder_to_absolute_mode">M82: Set extruder to absolute mode</a>
+	Makes the extruder interpret extrusion as absolute positions.
+    */ ---------------------------------------
     case 82:
       axis_relative_modes[3] = false;
       break;
 
-    //! ### M83 - Set E axis to relative mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------  
+    /*!
+	### M83 - Set E axis to relative mode <a href="https://reprap.org/wiki/G-code#M83:_Set_extruder_to_relative_mode">M83: Set extruder to relative mode</a>
+	Makes the extruder interpret extrusion values as relative positions.
+    */ ---------------------------------------  
     case 83:
       axis_relative_modes[3] = true;
       break;
 
-    //! ### M84, M18 - Disable steppers <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    //---------------------------------------
-    //! This command can be used to set the stepper inactivity timeout (`S`) or to disable steppers (`X`,`Y`,`Z`,`E`)
-    //! 
-    //!     M84 [E<flag>] [S<seconds>] [X<flag>] [Y<flag>] [Z<flag>]  
-    //! 
+    /*!
+	### M84 - Disable steppers <a href="https://reprap.org/wiki/G-code#M84:_Stop_idle_hold">M84: Stop idle hold</a>
+		
+    This command can be used to set the stepper inactivity timeout (`S`) or to disable steppers (`X`,`Y`,`Z`,`E`)
+    
+	_This command can be used without any additional parameters._
+	
+        M84 [ S | X | Y | Z | E ]
+	
+	  - `S` - Seconds
+	  - `X` - X axsis
+	  - `Y` - Y axis
+	  - `Z` - Z axis
+	  - `E` - Exruder drive(s)
+
+	### M18 - Disable steppers <a href="https://reprap.org/wiki/G-code#M18:_Disable_all_stepper_motors">M18: Disable all stepper motors</a>
+	Equal to M84 (compatibility)
+    */
     case 18: //compatibility
     case 84: // M84
       if(code_seen('S')){
@@ -6369,8 +6395,10 @@ Sigma_Exit:
 	  snmm_filaments_used = 0;
       break;
 
-    //! ### M85 - Set max inactive time <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------
+    /*!
+	### M85 - Set max inactive time <a href="https://reprap.org/wiki/G-code#M85:_Set_Inactivity_Shutdown_Timer">M85: Set Inactivity Shutdown Timer</a>
+	Set Inactivity Shutdown Timer with parameter S<seconds>. "M85 S0" will disable the inactivity shutdown time (default)
+    */ ---------------------------------------
     case 85: // M85
       if(code_seen('S')) {
         max_inactive_time = code_value() * 1000;
@@ -6378,13 +6406,17 @@ Sigma_Exit:
       break;
 #ifdef SAFETYTIMER
 
-  //! ### M86 - Set safety timer expiration time <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  //!
-  //! _Usage:_
-  //!     M86 S<seconds>
-  //! 
-  //! Sets the safety timer expiration time in seconds. M86 S0 will disable safety timer.
-  //! When safety timer expires, heatbed and nozzle target temperatures are set to zero.
+    /*!
+    ### M86 - Set safety timer expiration time <a href="https://reprap.org/wiki/G-code#M86:_Set_Safety_Timer_expiration_time">M86: Set Safety Timer expiration time</a>
+    Sets the safety timer expiration time in seconds.
+	
+    When safety timer expires, heatbed and nozzle target temperatures are set to zero.
+    
+        M86 [ S ]
+    
+      - `S` - Seconds  Setting it to 0 will disable safety timer.
+	
+    */
 	case 86: 
 	  if (code_seen('S')) {
 	    safetytimer_inactive_time = code_value() * 1000;
@@ -6393,9 +6425,17 @@ Sigma_Exit:
 	  break;
 #endif
 
-    //! ### M92 Set Axis steps-per-unit <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------
-    //! Same syntax as G92
+    /*!
+	### M92 Set Axis steps-per-unit <a href="https://reprap.org/wiki/G-code#M92:_Set_axis_steps_per_unit">M92: Set axis_steps_per_unit</a>
+	Allows programming of steps per unit (usually mm) for motor drives. These values are reset to firmware defaults on power on, unless saved to EEPROM if available (M500 in Marlin)
+	
+	    M92 [ X | Y | Z | E ]
+	
+	  - `X` - Steps per unit for the X drive
+	  - `Y` - Steps per unit for the Y drive
+	  - `Z` - Steps per unit for the Z drive
+	  - `E` - Steps per unit for the extruder drive(s)
+    */ ---------------------------------------
     case 92:
       for(int8_t i=0; i < NUM_AXIS; i++)
       {
@@ -6418,15 +6458,27 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M110 - Set Line number <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------
+    /*!
+	### M110 - Set Line number <a href="https://reprap.org/wiki/G-code#M110:_Set_Current_Line_Number">M110: Set Current Line Number</a>
+	Sets the line number in G-code
+	
+	    M110 [ N ]
+	
+	  - `N` - Line number
+    */ ---------------------------------------
     case 110:
       if (code_seen('N'))
 	    gcode_LastN = code_value_long();
     break;
 
-  //! ### M113 - Get or set host keep-alive interval <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // ------------------------------------------ 
+    /*!
+    ### M113 - Get or set host keep-alive interval <a href="https://reprap.org/wiki/G-code#M113:_Host_Keepalive">M113: Host Keepalive</a>
+    During some lengthy processes, such as G29, Marlin may appear to the host to have “gone away.” The “host keepalive” feature will send messages to the host when Marlin is busy or waiting for user response so the host won’t try to reconnect.
+    
+        M113 [ S ]
+	
+	  - `S` - Seconds  Default is 2 seconds between "busy" messages 
+    */ ------------------------------------------ 
 	case 113:
 		if (code_seen('S')) {
 			host_keepalive_interval = (uint8_t)code_value_short();
@@ -6439,16 +6491,34 @@ Sigma_Exit:
 		}
 		break;
 
-    //! ### M115 - Firmware info <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------
-    //! Print the firmware info and capabilities
-    //! 
-    //!     M115 [V] [U<version>] 
-    //! 
-    //! Without any arguments, prints Prusa firmware version number, machine type, extruder count and UUID.
-    //! `M115 U` Checks the firmware version provided. If the firmware version provided by the U code is higher than the currently running firmware,
-    //!  pause the print for 30s and ask the user to upgrade the firmware. 
-    case 115: // M115
+    /*!
+	### M115 - Firmware info <a href="https://reprap.org/wiki/G-code#M115:_Get_Firmware_Version_and_Capabilities">M115: Get Firmware Version and Capabilities</a>
+    Print the firmware info and capabilities
+    
+        M115 [ V | U ]
+	
+	  - V - Report current installed firmware version
+	  - U - Firmware version provided by G-code to be compared to current one.
+	  
+    
+    Without any arguments, prints Prusa firmware version number, machine type, extruder count and UUID.
+    `M115 U` Checks the firmware version provided. If the firmware version provided by the U code is higher than the currently running firmware, it will pause the print for 30s and ask the user to upgrade the firmware.
+	
+	_Examples:_
+	
+	`M115` results:
+	
+	`FIRMWARE_NAME:Prusa-Firmware 3.8.1 based on Marlin FIRMWARE_URL:https://github.com/prusa3d/Prusa-Firmware PROTOCOL_VERSION:1.0 MACHINE_TYPE:Prusa i3 MK3S EXTRUDER_COUNT:1 UUID:00000000-0000-0000-0000-000000000000`
+	
+	`M115 V` results:
+	
+	`3.8.1`
+	
+	`M115 U3.8.2-RC1` results on LCD display for 30s or user interaction:
+	
+	`New firmware version available: 3.8.2-RC1 Please upgrade.`
+	*/
+	case 115: // M115
       if (code_seen('V')) {
           // Report the Prusa version number.
           SERIAL_PROTOCOLLNRPGM(FW_VERSION_STR_P());
@@ -6470,16 +6540,13 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M114 - Get current position <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -------------------------------------
+    /*!
+	### M114 - Get current position <a href="https://reprap.org/wiki/G-code#M114:_Get_Current_Position">M114: Get Current Position</a>
+    */ -------------------------------------
     case 114:
 		gcode_M114();
       break;
 
-
-
-      //! ### M117 - Set LCD Message <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-      // -------------------------------------- 
       
       /*
         M117 moved up to get the high priority
@@ -6491,20 +6558,24 @@ Sigma_Exit:
       lcd_setstatus(strchr_pointer + 5);
       break;*/
 
-    //! ### M120 - Disable endstops <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------
+    /*!
+	### M120 - Enable endstops <a href="https://reprap.org/wiki/G-code#M120:_Enable_endstop_detection>M120: Enable endstop detection</a>
+    */ ----------------------------------------
     case 120:
       enable_endstops(false) ;
       break;
 
-    //! ### M121 - Enable endstops <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------
+    /*!
+	### M121 - Disable endstops <a href="https://reprap.org/wiki/G-code#M121:_Disable_endstop_detection">M121: Disable endstop detection</a>
+    */ ----------------------------------------
     case 121:
       enable_endstops(true) ;
       break;
 
-    //! ### M119 - Get endstop states <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------
+    /*!
+	### M119 - Get endstop states <a href="https://reprap.org/wiki/G-code#M119:_Get_Endstop_Status">M119: Get Endstop Status</a>
+	Returns the current state of the configured X, Y, Z endstops. Takes into account any 'inverted endstop' settings, so one can confirm that the machine is interpreting the endstops correctly.
+    */ ----------------------------------------
     case 119:
     SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT
     SERIAL_PROTOCOLLN("");
@@ -6565,10 +6636,12 @@ Sigma_Exit:
       break;
       //TODO: update for all axis, use for loop
     
-    #ifdef BLINKM
 
-    //! ### M150 - Set RGB(W) Color <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -------------------------------------------
+    #ifdef BLINKM
+    /*!
+	### M150 - Set RGB(W) Color <a href="https://reprap.org/wiki/G-code#M150:_Set_LED_color">M150: Set LED color</a>
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code by defining BLINKM and its dependencies.
+    */ -------------------------------------------
     case 150:
       {
         byte red;
@@ -6584,8 +6657,14 @@ Sigma_Exit:
       break;
     #endif //BLINKM
 
-    //! ### M200 - Set filament diameter <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------
+    /*!
+	### M200 - Set filament diameter <a href="https://reprap.org/wiki/G-code#M200:_Set_filament_diameter">M200: Set filament diameter</a>
+	
+	    M200 [ D | T ]
+	
+	  - `D` - Diameter in mm
+	  - `T` - Number of extruder (MMUs)
+    */ ----------------------------------------
     case 200: // M200 D<millimeters> set filament diameter and set E axis units to cubic millimeters (use S0 to set back to millimeters).
       {
 
@@ -6610,10 +6689,10 @@ Sigma_Exit:
 			// make sure all extruders have some sane value for the filament size
 			cs.filament_size[0] = (cs.filament_size[0] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[0]);
             #if EXTRUDERS > 1
-			cs.filament_size[1] = (cs.filament_size[1] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[1]);
-            #if EXTRUDERS > 2
-			cs.filament_size[2] = (cs.filament_size[2] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[2]);
-            #endif
+				cs.filament_size[1] = (cs.filament_size[1] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[1]);
+				#if EXTRUDERS > 2
+					cs.filament_size[2] = (cs.filament_size[2] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[2]);
+				#endif
             #endif
 			cs.volumetric_enabled = true;
 		  }
