@@ -72,7 +72,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Automatisches Laden Filament nur bei eingeschaltetem Fil. sensor verfuegbar..."
+"Automatisches Filamentladen nur bei eingeschaltetem Fil. sensor verfuegbar..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -732,7 +732,7 @@
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
-"Bitte druecken Sie den Knopf um das Filament zu entladen."
+"Bitte druecken Sie den Knopf um das Fil. zu entladen."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -792,7 +792,7 @@
 
 #
 "Preheating to load"
-"Heizen zum Laden"
+"Zum Laden vorheizen"
 
 #
 "Preheating to unload"
@@ -804,7 +804,7 @@
 
 #MSG_CARD_MENU
 "Print from SD"
-"Drucken von SD"
+"Von SD drucken"
 
 #
 "Press the knob"
@@ -1064,7 +1064,7 @@
 
 #MSG_TEMP_CALIBRATION_DONE c=20 r=12
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Temp.kalibrierung ist fertig + aktiv. Temp.kalibrierung kann ausgeschaltet werden im Menu Einstellungen -> Temp.kal."
+"Temp.kalibrierung ist fertig + aktiv. Temp.kalibrierung kann unter Menu Einstellungen -> Temp.kal. ausgeschaltet werden"
 
 #MSG_TEMPERATURE
 "Temperature"
@@ -1104,7 +1104,7 @@
 
 #
 "to unload filament"
-"Filament entladen"
+"Fil. entladen"
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
