@@ -33,7 +33,7 @@ void lcd_alright();
 void show_preheat_nozzle_warning();
 void EEPROM_save_B(int pos, int* value);
 void EEPROM_read_B(int pos, int* value);
-void lcd_wait_interact();
+void lcd_wait_interact(int filament_index);
 void lcd_loading_filament();
 void lcd_change_success();
 void lcd_loading_color();
