@@ -3449,6 +3449,8 @@ void lcd_wait_for_cool_down() {
 	lcd_set_custom_characters_degree();
 	setAllTargetHotends(0);
 	setTargetBed(0);
+	int fanSpeedBckp = fanSpeed;
+	fanSpeed = 255;
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(_i("Waiting for nozzle and bed cooling"));////MSG_WAITING_TEMP c=20 r=3
 
@@ -3467,6 +3469,7 @@ void lcd_wait_for_cool_down() {
 		delay_keep_alive(1000);
 		serialecho_temperatures();
 	}
+	fanSpeed = fanSpeedBckp;
 	lcd_set_custom_characters_arrows();
 	lcd_update_enable(true);
 }
