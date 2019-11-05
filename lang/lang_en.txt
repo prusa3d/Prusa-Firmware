@@ -133,6 +133,9 @@
 #MSG_CRASHDETECT_ON
 "Crash det.   [on]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 
@@ -360,6 +363,9 @@
 
 #
 "Last print failures"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 
 #
 "Last print"
@@ -613,6 +619,15 @@
 #
 "Print FAN"
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+
+#
+"Please load filament first."
+
 #MSG_PRUSA3D
 "prusa3d.com"
 
@@ -688,9 +703,6 @@
 #
 "Select nozzle preheat temperature which matches your material."
 
-#
-"Select PLA filament:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 
@@ -763,11 +775,17 @@
 #MSG_SELFTEST_SWAPPED
 "Swapped"
 
+#
+"Select filament:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
+
+#
+"Select temperature which matches your material."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -903,6 +921,9 @@
 
 #
 "Y distance from min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 
 #
 "Y-correct:"
