@@ -3643,30 +3643,30 @@ void process_commands()
     ### PRUSA - Internal command set <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode - Notes</a>
     
     Set of internal PRUSA commands
-     
-         PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
-     
-     - `Ping` 
-     - `PRN` - Prints revision of the printer
-     - `FAN` - Prints fan details
-     - `fn` - Prints farm no.
-     - `thx` 
-     - `uvlo` 
-     - `fsensor_recover` - Filament sensor recover - restore print and continue
-     - `MMURES` - Reset MMU
-     - `RESET` - (Careful!)
-     - `fv`  - ?
-     - `M28` 
-     - `SN` 
-     - `Fir` - Prints firmware version
-     - `Rev`- Prints filament size, elelectronics, nozzle type
-     - `Lang` - Reset the language
-     - `Lz` 
-     - `Beat` - Kick farm link timer
-     - `FR` - Full factory reset
-     - `nozzle set <diameter>` - set nozzle diameter (farm mode only), e.g. `PRUSA nozzle set 0.4`
-     - `nozzle D<diameter>` - check the nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle D0.4`
-     - `nozzle` - prints nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle`
+      
+         P RUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+      
+      - `Ping` 
+      - `PRN` - Prints revision of the printer
+      - `FAN` - Prints fan details
+      - `fn` - Prints farm no.
+      - `thx` 
+      - `uvlo` 
+      - `fsensor_recover` - Filament sensor recover - restore print and continue
+      - `MMURES` - Reset MMU
+      - `RESET` - (Careful!)
+      - `fv`  - ?
+      - `M28` 
+      - `SN` 
+      - `Fir` - Prints firmware version
+      - `Rev`- Prints filament size, elelectronics, nozzle type
+      - `Lang` - Reset the language
+      - `Lz` 
+      - `Beat` - Kick farm link timer
+      - `FR` - Full factory reset
+      - `nozzle set <diameter>` - set nozzle diameter (farm mode only), e.g. `PRUSA nozzle set 0.4`
+      - `nozzle D<diameter>` - check the nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle D0.4`
+      - `nozzle` - prints nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle`
     */
 
 
@@ -7934,7 +7934,7 @@ Sigma_Exit:
   // end if(code_seen('M')) (end of M codes)
 
   //! -----------------------------------------------------------------------------------------
-  //! T Codes
+  //! # T Codes
   //! 
   //! T<extruder nr.> - select extruder in case of multi extruder printer
   //! select filament in case of MMU_V2
