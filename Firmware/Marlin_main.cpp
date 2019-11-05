@@ -5598,7 +5598,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 
     /*!
-	### M44 - Reset the bed skew and offset calibration (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">M44: Reset the bed skew and offset calibration</a>
+	### M44 - Reset the bed skew and offset calibration<a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">M44: Reset the bed skew and offset calibration</a>
     */ --------------------------------------------------------------------
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
 
@@ -5615,7 +5615,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         break;
 
     /*!
-	### M45 - Bed skew and offset with manual Z up (Prusa specific) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">M45: Bed skew and offset with manual Z up</a>
+	### M45 - Bed skew and offset with manual Z up<a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">M45: Bed skew and offset with manual Z up</a>
 	  
 	    G80 [ V ]
 	  - `V` - Verbosity level 1, 10 and 20 (low, mid, high). Only when SUPPORT_VERBOSITY is defined.
@@ -6559,7 +6559,7 @@ Sigma_Exit:
       break;*/
 
     /*!
-	### M120 - Enable endstops <a href="https://reprap.org/wiki/G-code#M120:_Enable_endstop_detection>M120: Enable endstop detection</a>
+	### M120 - Enable endstops <a href="https://reprap.org/wiki/G-code#M120:_Enable_endstop_detection">M120: Enable endstop detection</a>
     */ ----------------------------------------
     case 120:
       enable_endstops(false) ;
@@ -6704,8 +6704,9 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -------------------------------------------
+    /*!
+	### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#M201:_Set_max_printing_acceleration">M201: Set max printing acceleration</a>
+    */ -------------------------------------------
     case 201:
 		for (int8_t i = 0; i < NUM_AXIS; i++)
 		{
@@ -6739,8 +6740,9 @@ Sigma_Exit:
       break;
     #endif
 
-    //! ### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------
+    /*!
+	### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#M203:_Set_maximum_feedrate">M203: Set maximum feedrate</a>
+    */ ---------------------------------------
     case 203: // M203 max feedrate mm/sec
 		for (int8_t i = 0; i < NUM_AXIS; i++)
 		{
@@ -6765,15 +6767,22 @@ Sigma_Exit:
 		}
 		break;
 
-    //! ### M204 - Acceleration settings <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ------------------------------------------
-    //! Supporting old format: 
-    //!
-    //!         M204 S[normal moves] T[filmanent only moves]
-    //!
-    //! and new format:        
-    //!
-    //!         M204 P[printing moves] R[filmanent only moves] T[travel moves] (as of now T is ignored)
+    /*!
+	### M204 - Acceleration settings <a href="https://reprap.org/wiki/G-code#M204:_Set_default_acceleration">M204: Set default acceleration</a>
+    */ ------------------------------------------
+    /*! Supporting old format: 
+    
+             M204 [ S | T ]
+    - `S` - normal moves 
+    - `T` - filmanent only moves
+    
+    and new format:        
+    
+             M204 [ P | R | T ]
+    - `P` - printing moves
+    - `R` - filmanent only moves
+    - `T` - travel moves (as of now T is ignored)
+	*/
     case 204:
       {
         if(code_seen('S')) {
@@ -6799,16 +6808,20 @@ Sigma_Exit:
       }
       break;
 
-    //! ### M205 - Set advanced settings <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------------- 
-    //! Set some advanced settings related to movement.
-    //!
-    //!          M205 [S] [T] [B] [X] [Y] [Z] [E]
-    /**
+    /*!
+	### M205 - Set advanced settings <a href="https://reprap.org/wiki/G-code#M205:_Advanced_settings">M205: Advanced settings</a>
+    */ --------------------------------------------- 
+    /*! Set some advanced settings related to movement.
+    
+               M205 [ S | T | B | X | Y | Z | E ]
+    
     - `S` - Minimum feedrate for print moves (unit/s)
     - `T` - Minimum feedrate for travel moves (units/s)
     - `B` - Minimum segment time (us)
-    - `X` - Maximum X jerk (units/s), similarly for other axes
+    - `X` - Maximum X jerk (units/s)
+    - `Y` - Maximum Y jerk (units/s)
+    - `Z` - Maximum Z jerk (units/s)
+    - `E` - Maximum E jerk (units/s)
     */
     case 205: 
     {
@@ -6824,8 +6837,15 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M206 - Set additional homing offsets <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------------
+    /*!
+	### M206 - Set additional homing offsets <a href="https://reprap.org/wiki/G-code#M206:_Offset_axes">M206: Offset axes</a>
+    
+               M206 [ X | Y | Z]
+    
+    - `X` - X axis offset
+    - `Y` - Y axis offset
+    - `Z` - Z axis offset
+	*/ ----------------------------------------------
     case 206:
       for(int8_t i=0; i < 3; i++)
       {
@@ -6834,8 +6854,15 @@ Sigma_Exit:
       break;
     #ifdef FWRETRACT
 
-    //! ### M207 - Set firmware retraction <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------------------
+    /*!
+	### M207 - Set firmware retraction <a href="https://reprap.org/wiki/G-code#M207:_Set_retract_length">M207: Set retract length</a>
+	
+               M207 [ S | F | Z]
+    
+    - `S` - positive length to retract, in mm
+    - `F` - retraction feedrate, in mm/min
+    - `Z` - additional zlift/hop
+    */ --------------------------------------------------
     case 207: //M207 - set retract length S[positive mm] F[feedrate mm/min] Z[additional zlift/hop]
     {
       if(code_seen('S'))
@@ -6852,8 +6879,14 @@ Sigma_Exit:
       }
     }break;
 
-    //! ### M208 - Set retract recover length <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------------
+    /*!
+	### M208 - Set retract recover length <a href="https://reprap.org/wiki/G-code#M208:_Set_unretract_length">M208: Set unretract length</a>
+	
+               M208 [ S | F ]
+    
+    - `S` - positive length surplus to the M207 Snnn, in mm
+    - `F` - feedrate, in mm/sec
+    */ --------------------------------------------
     case 208: // M208 - set retract recover length S[positive mm surplus to the M207 S*] F[feedrate mm/min]
     {
       if(code_seen('S'))
@@ -6866,8 +6899,15 @@ Sigma_Exit:
       }
     }break;
 
-    //! ### M209 - Enable/disable automatict retract <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------------
+    /*!
+	### M209 - Enable/disable automatict retract <a href="https://reprap.org/wiki/G-code#M209:_Enable_automatic_retract">M209: Enable automatic retract</a>
+	
+               M209 [ S ]
+    
+    - `S` - 1=true or 0=false
+	
+	This boolean value S 1=true or 0=false enables automatic retract detect if the slicer did not support G10/G11: every normal extrude-only move will be classified as retract depending on the direction.
+    */ ---------------------------------------------
     case 209: // M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.
     {
       if(code_seen('S'))
@@ -6909,8 +6949,10 @@ Sigma_Exit:
     #endif // FWRETRACT
     #if EXTRUDERS > 1
 
-    // ### M218 - Set hotend offset
-    // ----------------------------------------
+    /*!
+	### M218 - Set hotend offset <a href="https://reprap.org/wiki/G-code#M218:_Set_Hotend_Offset">M218: Set Hotend Offset</a>
+	In Prusa Firmware this G-code is only active if `EXTRUDERS` is higher then 1 in the source code. On Original i3 Prusa MK2/s MK2.5/s MK3/s it is not active.
+    */ ----------------------------------------
     case 218: // M218 - set hotend offset (in mm), T<extruder_number> X<offset_on_X> Y<offset_on_Y>
     {
       uint8_t extruder;
@@ -6938,8 +6980,16 @@ Sigma_Exit:
     }break;
     #endif
 
-    //! ### M220 Set feedrate percentage <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------------------
+    /*!
+	### M220 Set feedrate percentage <a href="https://reprap.org/wiki/G-code#M220:_Set_speed_factor_override_percentage">M220: Set speed factor override percentage</a>
+	
+	          M220 [ B | S | R ]
+      
+      - `B` - Backup current speed factor
+	  - `S` - Speed factor override percentage (0..100 or higher)
+	  - `R` - Restore previous speed factor
+	
+    */ -----------------------------------------------
     case 220: // M220 S<factor in percent>- set speed factor override percentage
     {
       if (code_seen('B')) //backup current speed factor
@@ -6956,8 +7006,15 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M221 - Set extrude factor override percentage <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------------------
+    /*!
+	### M221 - Set extrude factor override percentage <a href="https://reprap.org/wiki/G-code#M221:_Set_extrude_factor_override_percentage">M221: Set extrude factor override percentage</a>
+	
+	          M221 [ S | T ]
+      
+	  - `S` - Extrude factor override percentage (0..100 or higher), default 100%
+	  - `T` - Extruder drive number (Prusa Firmware only), default 0 if not set.
+	  
+    */ ----------------------------------------------------
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
     {
       if(code_seen('S'))
@@ -6980,8 +7037,16 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M226 - Wait for Pin state <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // ------------------------------------------
+    /*!
+    ### M226 - Wait for Pin state <a href="https://reprap.org/wiki/G-code#M226:_Wait_for_pin_state">M226: Wait for pin state</a>
+    
+            M226 [ P | S ]
+    
+      - `P` - pin number
+      - `S` - pin state
+	
+    Wait until the specified pin reaches the state required
+    */ ------------------------------------------
 	case 226: // M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
 	{
       if(code_seen('P')){
@@ -7036,8 +7101,10 @@ Sigma_Exit:
 
     #if NUM_SERVOS > 0
 
-    //! ### M280 - Set/Get servo position <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------------
+    /*!
+	### M280 - Set/Get servo position <a href="https://reprap.org/wiki/G-code#M280:_Set_servo_position">M280: Set servo position</a>
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+    */ --------------------------------------------
     case 280: // M280 - set servo position absolute. P: servo index, S: angle or microseconds
       {
         int servo_index = -1;
@@ -7077,8 +7144,16 @@ Sigma_Exit:
 
     #if (LARGE_FLASH == true && ( BEEPER > 0 || defined(ULTRALCD) || defined(LCD_USE_I2C_BUZZER)))
     
-    //! ### M300 - Play tone <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------
+    /*!
+	### M300 - Play tone <a href="https://reprap.org/wiki/G-code#M300:_Play_beep_sound">M300: Play beep sound</a>
+	
+          M300 [ S | P ]
+      
+      - `S` - frequency in Hz
+      - `P` - duration in milliseconds
+	
+	In Prusa Firmware the defaults are `100Hz` and `1000ms`, so that `M300` without parameters will beep for a second.
+    */ -----------------------
     case 300: // M300
     {
       int beepS = code_seen('S') ? code_value() : 110;
@@ -7099,8 +7174,20 @@ Sigma_Exit:
 
     #ifdef PIDTEMP
 
-    //! ### M301 - Set hotend PID <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------
+    /*!
+	### M301 - Set hotend PID <a href="https://reprap.org/wiki/G-code#M301:_Set_PID_parameters">M301: Set PID parameters</a>
+	  
+          M301 [ P | I | D | C ]
+      
+      - `P` - proportional (Kp)
+      - `I` - integral (Ki)
+      - `D` - derivative (Kd)
+      - `C` - heating power=Kc*(e_speed0)
+	  
+	Sets Proportional (P), Integral (I) and Derivative (D) values for hot end.
+	
+	See also <a href="https://reprap.org/wiki/PID_Tuning">PID Tuning.</a>
+    */ ---------------------------------------
     case 301:
       {
         if(code_seen('P')) cs.Kp = code_value();
@@ -7130,8 +7217,19 @@ Sigma_Exit:
     #endif //PIDTEMP
     #ifdef PIDTEMPBED
 
-    //! ### M304 - Set bed PID  <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------
+    /*!
+	### M304 - Set bed PID  <a href="https://reprap.org/wiki/G-code#M304:_Set_PID_parameters_-_Bed">M304: Set PID parameters - Bed</a>
+	  
+          M304 [ P | I | D ]
+      
+      - `P` - proportional (Kp)
+      - `I` - integral (Ki)
+      - `D` - derivative (Kd)
+	  
+	Sets Proportional (P), Integral (I) and Derivative (D) values for bed.
+	
+	See also <a href="https://reprap.org/wiki/PID_Tuning">PID Tuning.</a>
+    */ --------------------------------------
     case 304:
       {
         if(code_seen('P')) cs.bedKp = code_value();
@@ -7151,8 +7249,13 @@ Sigma_Exit:
       break;
     #endif //PIDTEMP
 
-    //! ### M240 - Trigger camera <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------------
+    /*!
+	### M240 - Trigger camera <a href="https://reprap.org/wiki/G-code#M240:_Trigger_camera">M240: Trigger camera</a>
+	
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+	
+	You need to define `CHDK` and assign a `PHOTOGRAPH_PIN` to bea ble to use it.
+    */ --------------------------------------------
     case 240: // M240  Triggers a camera by emulating a Canon RC-1 : http://www.doc-diy.net/photo/rc-1_hacked/
      {
      	#ifdef CHDK
