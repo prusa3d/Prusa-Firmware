@@ -5291,7 +5291,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 //	printf_P(_N("END G-CODE=%u\n"), gcode_in_progress);
 	gcode_in_progress = 0;
   } // end if(code_seen('G'))
-
+  /*!
+  #### End of G-Codes
+  */
 
   /*!
   ---------------------------------------------------------------------------------
@@ -7289,8 +7291,15 @@ Sigma_Exit:
     break;
     #ifdef PREVENT_DANGEROUS_EXTRUDE
 
-    //! ### M302 - Allow cold extrude, or set minimum extrude temperature <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -------------------------------------------------------------------
+    /*!
+	### M302 - Allow cold extrude, or set minimum extrude temperature <a href="https://reprap.org/wiki/G-code#M302:_Allow_cold_extrudes">M302: Allow cold extrudes</a>
+	  
+          M302 [ S ]
+      
+      - `S` - Cold extrude minimum temperature
+	  
+	This tells the printer to allow movement of the extruder motor above a certain temperature, or if disabled, to allow extruder movement when the hotend is below a safe printing temperature.
+    */ -------------------------------------------------------------------
     case 302:
     {
 	  float temp = .0;
@@ -7300,8 +7309,17 @@ Sigma_Exit:
     break;
 	#endif
 
-    //! ### M303 - PID autotune <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -------------------------------------
+    /*!
+	### M303 - PID autotune <a href="https://reprap.org/wiki/G-code#M303:_Run_PID_tuning">M303: Run PID tuning</a>
+      
+          M303 [ E | S | C ]
+      
+      - `E` - Extruder, default `E0`.
+      - `S` - Target temperature, default `210°C`
+      - `C` - Cycles, default `5`
+    
+	PID Tuning refers to a control algorithm used in some repraps to tune heating behavior for hot ends and heated beds. This command generates Proportional (Kp), Integral (Ki), and Derivative (Kd) values for the hotend or bed (`E-1`). Send the appropriate code and wait for the output to update the firmware.
+	*/ -------------------------------------
     case 303:
     {
       float temp = 150.0;
@@ -7316,17 +7334,30 @@ Sigma_Exit:
     }
     break;
     
-    //! ### M400 - Wait for all moves to finish <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------------
+    /*!
+	### M400 - Wait for all moves to finish <a href="https://reprap.org/wiki/G-code#M400:_Wait_for_current_moves_to_finish">M400: Wait for current moves to finish</a>
+	
+	Finishes all current moves and and thus clears the buffer. 
+    */ -----------------------------------------
     case 400:
     {
       st_synchronize();
     }
     break;
 
-  //! ### M403 - Set filament type (material) for particular extruder and notify the MMU <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-	// ----------------------------------------------
-  case 403:
+    /*!
+	### M403 - Set filament type (material) for particular extruder and notify the MMU <a href="https://reprap.org/wiki/G-code#M403:Set_filament_type_(material)_for_particular extruder_and_notify_the_MMU">M403 - Set filament type (material) for particular extruder and notify the MMU</a>
+      
+          M403 [ E | F ]
+      
+      - `E` - Extruder number
+      - `F` - Filament type
+      
+	  Currently three different materials are needed (default, flex and PVA).
+	  
+	  And storing this information for different load/unload profiles etc. in the future firmware does not have to wait for "ok" from MMU.
+	*/ ----------------------------------------------
+    case 403:
 	{
 		// currently three different materials are needed (default, flex and PVA)
 		// add storing this information for different load/unload profiles etc. in the future
@@ -7342,40 +7373,56 @@ Sigma_Exit:
 	}
 	break;
 
-    //! ### M500 - Store settings in EEPROM <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------------
+    /*!
+	### M500 - Store settings in EEPROM <a href="https://reprap.org/wiki/G-code#M500:_Store_parameters_in_non-volatile_storage">M500: Store parameters in non-volatile storage</a>
+	
+	Save current parameters to EEPROM, SD card or other non-volatile storage.
+    */ -----------------------------------------
     case 500:
     {
         Config_StoreSettings();
     }
     break;
 
-    //! ### M501 - Read settings from EEPROM <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------
+    /*!
+	### M501 - Read settings from EEPROM <a href="https://reprap.org/wiki/G-code#M501:_Read_parameters_from_EEPROM">M501: Read parameters from EEPROM</a>
+	
+	Set the active parameters to those stored in the EEPROM, SD card or other non-volatile storage. This is useful to revert parameters after experimenting with them.
+    */ ----------------------------------------
     case 501:
     {
         Config_RetrieveSettings();
     }
     break;
 
-    //! ### M502 - Revert all settings to factory default <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -------------------------------------------------
+    /*!
+	### M502 - Revert all settings to factory default <a href="https://reprap.org/wiki/G-code#M502:_Restore_Default_Settings">M502: Restore Default Settings</a>
+	
+	This command resets all tunable parameters to their default values, as set in the firmware's configuration files. This doesn't reset any parameters stored in the EEPROM, so it must be followed with M500 to reboot with default settings.
+    */ -------------------------------------------------
     case 502:
     {
         Config_ResetDefault();
     }
     break;
 
-    //! ### M503 - Repport all settings currently in memory <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -------------------------------------------------
+    /*!
+	### M503 - Repport all settings currently in memory <a href="https://reprap.org/wiki/G-code#M503:_Report_Current_Settings">M503: Report Current Settings</a>
+	
+	This command asks the firmware to reply with the current print settings as set in memory. Settings will differ from EEPROM contents if changed since the last load / save. The reply output includes the G-Code commands to produce each setting. For example, Steps-Per-Unit values are displayed as an M92 command.
+    */ -------------------------------------------------
     case 503:
     {
         Config_PrintSettings();
     }
     break;
 
-    //! ### M509 - Force language selection <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ------------------------------------------------
+    /*!
+	### M509 - Force language selection <a href="https://reprap.org/wiki/G-code#M509:_Force_language_selection">M509: Force language selection</a>
+    
+	Resets the language to English.
+	Only on Original Prusa i3 MK2.5/s and MK3/s with multiple languages.
+	*/ ------------------------------------------------
     case 509:
     {
 		lang_reset();
@@ -7385,8 +7432,11 @@ Sigma_Exit:
     break;
     #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 
-    //! ### M540 - Abort print on endstop hit (enable/disable) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------------------------
+    /*!
+	### M540 - Abort print on endstop hit (enable/disable) <a href="https://reprap.org/wiki/G-code#M540_in_Marlin:_Enable.2FDisable_.22Stop_SD_Print_on_Endstop_Hit.22">M540 in Marlin: Enable/Disable "Stop SD Print on Endstop Hit"</a>
+    
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code. You must define `ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED`.
+	*/ -----------------------------------------------------
     case 540:
     {
         if(code_seen('S')) abort_on_endstop_hit = code_value() > 0;
@@ -7394,6 +7444,17 @@ Sigma_Exit:
     break;
     #endif
 
+	/*!
+	### M851 - Set Z-Probe Offset <a href="https://reprap.org/wiki/G-code#M851:_Set_Z-Probe_Offset">M851: Set Z-Probe Offset"</a>
+      
+          M4861 [ Z ]
+      
+      - `Z` - Z offset probe to nozzle. 
+    
+	Sets the Z-probe Z offset. This offset is used to determine the actual Z position of the nozzle when using a probe to home Z with G28. This value may also be used by G81 (Prusa) / G29 (Marlin) to apply correction to the Z position.
+	
+	This value represents the distance from nozzle to the bed surface at the point where the probe is triggered. This value will be negative for typical switch probes, inductive probes, and setups where the nozzle makes a circuit with a raised metal contact. This setting will be greater than zero on machines where the nozzle itself is used as the probe, pressing down on the bed to press a switch. (This is a common setup on delta machines.)
+	*/ -----------------------------------------------------
     #ifdef CUSTOM_M_CODE_SET_Z_PROBE_OFFSET
     case CUSTOM_M_CODE_SET_Z_PROBE_OFFSET:
     {
@@ -7432,8 +7493,22 @@ Sigma_Exit:
 
     #ifdef FILAMENTCHANGEENABLE
 
-    //! ### M600 - Initiate Filament change procedure <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // --------------------------------------
+    /*!
+	### M600 - Initiate Filament change procedure <a href="https://reprap.org/wiki/G-code#M600:_Filament_change_pause">M600: Filament change pause</a>
+      
+          M600 [ X | Y | Z | E | L | AUTO ]
+      
+      - `X`    - X position, default 211
+      - `Y`    - Y position, default 0
+      - `Z`    - relative lift Z, default 2.
+	  - `E`    - initial retract, default -2
+	  - `L`    - later retract distance for removal, default -80
+	  - `AUTO` - Automatically (only with MMU)
+	  
+	Initiates Filament change, it is also used during Filament Runout Sensor process.
+	
+	If the `M600` is triggered under 25mm it will do a Z-lift of 25mm to prevent a filament blob.
+    */ --------------------------------------
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 	{
 		st_synchronize();
@@ -7509,8 +7584,9 @@ Sigma_Exit:
     break;
     #endif //FILAMENTCHANGEENABLE
 
-  //! ### M601 - Pause print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -------------------------------
+    /*!
+    ### M601 - Pause print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -------------------------------
 	case 601:
 	{
 		cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
@@ -7518,28 +7594,31 @@ Sigma_Exit:
 	}
 	break;
 
-  //! ### M602 - Resume print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -------------------------------
+    /*!
+	### M602 - Resume print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -------------------------------
 	case 602: {
 		lcd_resume_print();
 	}
 	break;
 
-  //! ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -------------------------------
-  case 603: {
+    /*!
+    ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -------------------------------
+    case 603: {
 		lcd_print_stop();
 	}
 
 #ifdef PINDA_THERMISTOR
-  //! ### M860 - Wait for extruder temperature (PINDA) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // --------------------------------------------------------------
-  /*! 
-      Wait for PINDA thermistor to reach target temperature
+    /*!
+	### M860 - Wait for extruder temperature (PINDA) <a href="https://reprap.org/wiki/G-code#M860_Wait_for_Probe_Temperature">M860 Wait for Probe Temperature</a>
       
-                M860 [S<target_temperature>]
+          M860 [ S ]
       
-  */
+	  - `S` - Target temperature
+	  
+    Wait for PINDA thermistor to reach target temperature
+    */ --------------------------------------------------------------
 	case 860: 
 	{
 		int set_target_pinda = 0;
@@ -7584,17 +7663,19 @@ Sigma_Exit:
 		break;
 	}
  
-  //! ### M861 - Set/Get PINDA temperature compensation offsets <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -----------------------------------------------------------
-  /*!
+    /*!
+    ### M861 - Set/Get PINDA temperature compensation offsets <a href="https://reprap.org/wiki/G-code#M861_Set_Probe_Thermal_Compensation">M861 Set Probe Thermal Compensation</a>
       
-        M861 [ ? | ! | Z | S<microsteps> [I<table_index>] ]
+        M861 [ ? | ! | Z | S | I ]
       
       - `?` - Print current EEPROM offset values
       - `!` - Set factory default values
       - `Z` - Set all values to 0 (effectively disabling PINDA temperature compensation)
-      - `S<microsteps>` `I<table_index>` - Set compensation ustep value S for compensation table index I
-  */
+      - `S` - Microsteps
+	  - `I` - Table index
+	  
+	  Set compensation ustep value `S` for compensation table index `I`.
+    */ -----------------------------------------------------------
 	case 861:
 		if (code_seen('?')) { // ? - Print out current EEPROM offset values
 			uint8_t cal_status = calibration_status_pinda();
@@ -7667,39 +7748,41 @@ Sigma_Exit:
 
 #endif //PINDA_THERMISTOR
    
-    //! ### M862 - Print checking <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------------
-    /*!     
-        Checks the parameters of the printer and gcode and performs compatibility check
-          - M862.1 { P<nozzle_diameter> | Q }
-          - M862.2 { P<model_code> | Q }
-          - M862.3 { P"<model_name>" | Q }
-          - M862.4 { P<fw_version> | Q }
-          - M862.5 { P<gcode_level> | Q }
-
-        When run with P<> argument, the check is performed against the input value.
-        When run with Q argument, the current value is shown.
-		  
-        M862.3 accepts text identifiers of printer types too.
-        The syntax of M862.3 is (note the quotes around the type):
-		
-                M862.3 P "MK3S"
-		  
-        Accepted printer type identifiers and their numeric counterparts:
-          - MK1         (100)
-          - MK2         (200)       
-          - MK2MM       (201)     
-          - MK2S        (202)      
-          - MK2SMM      (203)    
-          - MK2.5       (250)     
-          - MK2.5MMU2   (20250) 
-          - MK2.5S      (252)    
-          - MK2.5SMMU2S (20252)
-          - MK3         (300)
-          - MK3MMU2     (20300)
-          - MK3S        (302)
-          - MK3SMMU2S	(20302)
-    */
+    /*!
+	### M862 - Print checking <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    Checks the parameters of the printer and gcode and performs compatibility check
+	
+      - M862.1 { P<nozzle_diameter> | Q }
+      - M862.2 { P<model_code> | Q }
+      - M862.3 { P"<model_name>" | Q }
+      - M862.4 { P<fw_version> | Q }
+      - M862.5 { P<gcode_level> | Q }
+    
+    When run with P<> argument, the check is performed against the input value.
+    When run with Q argument, the current value is shown.
+	
+    M862.3 accepts text identifiers of printer types too.
+    The syntax of M862.3 is (note the quotes around the type):
+	  
+          M862.3 P "MK3S"
+	  
+    Accepted printer type identifiers and their numeric counterparts:
+	
+      - MK1         (100)
+      - MK2         (200)       
+      - MK2MM       (201)     
+      - MK2S        (202)      
+      - MK2SMM      (203)    
+      - MK2.5       (250)     
+      - MK2.5MMU2   (20250) 
+      - MK2.5S      (252)    
+      - MK2.5SMMU2S (20252)
+      - MK3         (300)
+      - MK3MMU2     (20300)
+      - MK3S        (302)
+      - MK3SMMU2S	(20302)
+	
+    */ ----------------------------------------------
     case 862: // M862: print checking
           float nDummy;
           uint8_t nCommand;
@@ -7760,19 +7843,42 @@ Sigma_Exit:
     break;
 
 #ifdef LIN_ADVANCE
-    //! ### M900 - Set Linear advance options <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ----------------------------------------------
+    /*!
+	### M900 - Set Linear advance options <a href="https://reprap.org/wiki/G-code#M900_Set_Linear_Advance_Scaling_Factors">M900 Set Linear Advance Scaling Factors</a>
+	Sets the advance extrusion factors for Linear Advance. If any of the R, W, H, or D parameters are set to zero the ratio will be computed dynamically during printing.
+	  
+	      M900 [ K | R | W | H | D]
+	  
+	  - `K` -  Advance K factor
+	  - `R` - Set ratio directly (overrides WH/D)
+	  - `W` - Width
+	  - `H` - Height
+	  - `D` - Diameter Set ratio from WH/D
+    */ ----------------------------------------------
     case 900:
         gcode_M900();
     break;
 #endif
 
-    //! ### M907 - Set digital trimpot motor current in mA using axis codes <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------------------------------
+    /*!
+	### M907 - Set digital trimpot motor current in mA using axis codes <a href="https://reprap.org/wiki/G-code#M907:_Set_digital_trimpot_motor">M907: Set digital trimpot motor</a>
+	Set digital trimpot motor current using axis codes (X, Y, Z, E, B, S).
+	
+	      M907 [ X | Y | Z | E | B | S ]
+	  
+	  - `X` - X motor driver
+	  - `Y` - Y motor driver
+	  - `Z` - Z motor driver
+	  - `E` - Extruder motor driver
+	  - `B` - ??
+	  - `S` - ??
+	  
+	@todo What are `B` and `S` in M907?
+    */ ---------------------------------------------------------------
     case 907:
     {
 #ifdef TMC2130
-        //! See tmc2130_cur2val() for translation to 0 .. 63 range
+        // See tmc2130_cur2val() for translation to 0 .. 63 range
         for (int i = 0; i < NUM_AXIS; i++)
 			if(code_seen(axis_codes[i]))
 			{
@@ -7802,8 +7908,10 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M908 - Control digital trimpot directly <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------------------------
+    /*!
+	### M908 - Control digital trimpot directly <a href="https://reprap.org/wiki/G-code#M908:_Control_digital_trimpot_directly">M908: Control digital trimpot directly</a>
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+    */ ---------------------------------------------------------
     case 908:
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
@@ -7817,16 +7925,18 @@ Sigma_Exit:
 
 #ifdef TMC2130_SERVICE_CODES_M910_M918
 
-  //! ### M910 - TMC2130 init <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -----------------------------------------------
+    /*!
+	### M910 - TMC2130 init <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -----------------------------------------------
 	case 910:
     {
 		tmc2130_init();
     }
     break;
 
-  //! ### M911 - Set TMC2130 holding currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -------------------------------------------------
+    /*!
+	### M911 - Set TMC2130 holding currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -------------------------------------------------
 	case 911: 
     {
 		if (code_seen('X')) tmc2130_set_current_h(0, code_value());
@@ -7836,8 +7946,9 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M912 - Set TMC2130 running currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -----------------------------------------------
+    /*!
+	### M912 - Set TMC2130 running currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -----------------------------------------------
 	case 912: 
     {
 		if (code_seen('X')) tmc2130_set_current_r(0, code_value());
@@ -7847,17 +7958,19 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M913 - Print TMC2130 currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -----------------------------
+    /*!
+	### M913 - Print TMC2130 currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -----------------------------
 	case 913:
     {
 		tmc2130_print_currents();
     }
     break;
 
-  //! ### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // ------------------------------
-        case 914:
+    /*!
+	### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ ------------------------------
+    case 914:
     {
 		tmc2130_mode = TMC2130_MODE_NORMAL;
 		update_mode_profile();
@@ -7865,9 +7978,10 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M915 - Set TMC2130 silent mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // ------------------------------
-        case 915:
+    /*!
+	### M915 - Set TMC2130 silent mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ ------------------------------
+    case 915:
     {
 		tmc2130_mode = TMC2130_MODE_SILENT;
 		update_mode_profile();
@@ -7875,8 +7989,9 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -------------------------------------------------------
+    /*!
+	### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -------------------------------------------------------
 	case 916:
     {
 		if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value();
@@ -7888,8 +8003,9 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // --------------------------------------------------------------
+    /*!
+	### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ --------------------------------------------------------------
 	case 917:
     {
 		if (code_seen('X')) tmc2130_set_pwm_ampl(0, code_value());
@@ -7899,8 +8015,9 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -------------------------------------------------------------
+    /*!
+	### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+    */ -------------------------------------------------------------
 	case 918:
     {
 		if (code_seen('X')) tmc2130_set_pwm_grad(0, code_value());
@@ -7912,9 +8029,10 @@ Sigma_Exit:
 
 #endif //TMC2130_SERVICE_CODES_M910_M918
 
-    //! ### M350 - Set microstepping mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ---------------------------------------------------
-    //!  Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
+    /*!
+	### M350 - Set microstepping mode <a href="https://reprap.org/wiki/G-code#M350:_Set_microstepping_mode">M350: Set microstepping mode</a>
+    Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
+    */ ---------------------------------------------------
     case 350: 
     {
 	#ifdef TMC2130
@@ -7953,11 +8071,12 @@ Sigma_Exit:
     }
     break;
 
-    //! ### M351 - Toggle Microstep Pins <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // -----------------------------------
-    //! Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.
-    //!
-    //!         M351 [B<0|1>] [E<0|1>] S<1|2> [X<0|1>] [Y<0|1>] [Z<0|1>] 
+    /*!
+	### M351 - Toggle Microstep Pins <a href="https://reprap.org/wiki/G-code#M351:_Toggle_MS1_MS2_pins_directly">M351: Toggle MS1 MS2 pins directly</a>
+    Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.
+    
+             M351 [B<0|1>] [E<0|1>] S<1|2> [X<0|1>] [Y<0|1>] [Z<0|1>] 
+    */ -----------------------------------
     case 351:
     {
       #if defined(X_MS1_PIN) && X_MS1_PIN > -1
@@ -7977,8 +8096,10 @@ Sigma_Exit:
     }
     break;
 
-  //! ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // -------------------------
+  /*!
+  ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
+  
+  */ -------------------------
 	case 701:
 	{
 		if (mmu_enabled && code_seen('E'))
@@ -7987,16 +8108,15 @@ Sigma_Exit:
 	}
 	break;
 
-  //! ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-  // ------------------------
-  /*! 
+    /*!
+    ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">G32: Undock Z Probe sled</a>
       
-          M702 [U C]
+          M702 [ U | C]
       
-      - `U` Unload all filaments used in current print
-      - `C` Unload just current filament
+      - `U` - Unload all filaments used in current print
+      - `C` - Unload just current filament
       - without any parameters unload all filaments
-  */
+    */ ------------------------
 	case 702:
 	{
 #ifdef SNMM
@@ -8019,14 +8139,18 @@ Sigma_Exit:
 	}
 	break;
 
-    //! ### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    // ------------------------------------
+    /*!
+	### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#M999:_Restart_after_being_stopped_by_error">M999: Restart after being stopped by error</a>
+    */ ------------------------------------
     case 999:
       Stopped = false;
       lcd_reset_alert_level();
       gcode_LastN = Stopped_gcode_LastN;
       FlushSerialRequestResend();
     break;
+	/*!
+	#### End of M-Commands
+    */ ------------------------------------
 	default: 
 		printf_P(PSTR("Unknown M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
@@ -8231,6 +8355,9 @@ Sigma_Exit:
           }
       }
   } // end if(code_seen('T')) (end of T codes)
+  /*!
+  #### End of T-Codes
+  */
 
   /**
   *---------------------------------------------------------------------------------
@@ -8460,7 +8587,9 @@ Sigma_Exit:
   ClearToSend();
 }
 
-
+/*!
+#### End of D-Codes
+*/
 
   /** @defgroup GCodes G-Code List 
   */
