@@ -3510,7 +3510,6 @@ void process_commands()
   
   ---------------------------------------------------------------------------------
   ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
-  
   This causes the given message to be shown in the status line on an attached LCD.
   
   It is also used by internal to display status messages on LCD.
@@ -3643,9 +3642,11 @@ void process_commands()
     ### PRUSA - Internal command set <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode - Notes</a>
     
     Set of internal PRUSA commands
-      
+    #### Usage
+	
          P RUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
-      
+    
+	#### Parameters
       - `Ping` 
       - `PRN` - Prints revision of the printer
       - `FAN` - Prints fan details
@@ -3859,7 +3860,20 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     /*!
     ---------------------------------------------------------------------------------
 	 # G Codes
-	### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a>
+	### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a> 
+	In Prusa Frimware G0 and G1 are the same.
+	#### Usage
+	
+	      G0 [ X | Y | Z | E | F | S ]
+		  G1 [ X | Y | Z | E | F | S ]
+	
+	#### Parameters
+	  - `X` - The position to move to on the X axis
+	  - `Y` - The position to move to on the Y axis
+	  - `Z` - The position to move to on the Z axis
+	  - `E` - The amount to extrude between the starting point and ending point
+	  - `F` - The feedrate per minute of the move between the starting point and ending point (if supplied)
+	  
     */ --------------------------------------      
     case 0: // G0 -> G1
     case 1: // G1
@@ -4060,7 +4074,21 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
     /*!
-	### G2 - CW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
+	### G2, G3 - Controlled Arc Move <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
+	
+	#### Usage
+	
+	      G2 [ X | Y | I | E | F ] (Clockwise Arc)
+		  G3 [ X | Y | I | E | F ] (Counter-Clockwise Arc)
+	
+	#### Parameters
+	  - `X` - The position to move to on the X axis
+	  - `Y` - The position to move to on the Y axis
+	  - `I` - The point in X space from the current X position to maintain a constant distance from
+	  - `J` - The point in Y space from the current Y position to maintain a constant distance from
+	  - `E` - The amount to extrude between the starting point and ending point
+	  - `F` - The feedrate per minute of the move between the starting point and ending point (if supplied)
+	
     */ ------------------------------     
     case 2: 
       if(Stopped == false) {
@@ -4069,10 +4097,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
       break;
  
-
-    /*!
-	### G3 - CCW ARC <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
-    */ -------------------------------
+    // -------------------------------
     case 3: 
       if(Stopped == false) {
         get_arc_coordinates();
@@ -4083,6 +4108,16 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G4 - Dwell <a href="https://reprap.org/wiki/G-code#G4:_Dwell">G4: Dwell</a>
+	Pause the machine for a period of time.
+	
+	#### Usage
+	
+	    G4 [ P | S ]
+	
+	#### Parameters
+	  - `P` - Time to wait, in milliseconds
+	  - `S` - Time to wait, in seconds
+	
     */ -------------------------------
     case 4: 
       codenum = 0;
@@ -4103,6 +4138,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
+	Retracts filament according to settings of `M207`
+	
+	#### Usage
+	
+	      G10
+	
     */ ------------------------------
     case 10: 
        #if EXTRUDERS > 1
@@ -4116,6 +4157,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
+	Unretracts/recovers filament according to settings of `M208`
+	#### Usage
+	
+	      G11
+	
     */ ----------------------------- 
     case 11: 
        #if EXTRUDERS > 1
@@ -4129,10 +4175,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
     ### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
-    Unsing G28 without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while the default G-code G28 is just homeing the printer
-    
+    Unsing `G28` without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while `G28 W` will just home the printer
+    #### Usage
+	
          G28 [ X | Y | Z | W | C ]
     
+	#### Parameters
      - `X` - Flag to go back to the X axis origin
      - `Y` - Flag to go back to the Y axis origin
      - `Z` - Flag to go back to the Z axis origin
@@ -4173,7 +4221,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G29 - Detailed Z-Probe <a href="https://reprap.org/wiki/G-code#G29:_Detailed_Z-Probe">G29: Detailed Z-Probe</a>
-	See G81
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+	
+	See `G81`
     */ --------------------------------    
     case 29: 
         {
@@ -4321,6 +4371,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
     */ ------------------------------------        
     case 30: 
         {
@@ -4347,6 +4398,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G31 - Dock the sled <a href="https://reprap.org/wiki/G-code#G31:_Dock_Z_Probe_sled">G31: Dock Z Probe sled</a>
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
     */ ---------------------------
     case 31: 
         dock_sled(true);
@@ -4355,6 +4407,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G32 - Undock the sled <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
     */ ----------------------------     
     case 32: 
         dock_sled(false);
@@ -4386,6 +4439,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   /*!
   ### G75 - Print temperature interpolation <a href="https://reprap.org/wiki/G-code#G75:_Print_temperature_interpolation">G75: Print temperature interpolation</a>
   Show/print PINDA temperature interpolating.
+  #### Usage
+  
+        G75
+  
   */ ---------------------------------------------
 	case 75:
 	{
@@ -4401,6 +4458,21 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   The PINDAv2 sensor has a built-in thermistor which has the advantage that the calibration can be done once for all materials.
   
   The Original i3 Prusa MK2/s uses PINDAv1 and this calibration improves the temperature drift, but not as good as the PINDAv2.
+  
+  #### Usage
+  
+        G76
+  
+  #### Example
+  
+  ```
+  G76
+  
+  echo PINDA probe calibration start
+  echo start temperature: 35.0°
+  echo ...
+  echo PINDA temperature -- Z shift (mm): 0.---
+  ```
   */
   ------------------------------------------------
   case 76: 
@@ -4663,15 +4735,17 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
     ### G80 - Mesh-based Z probe <a href="https://reprap.org/wiki/G-code#G80:_Mesh-based_Z_probe">G80: Mesh-based Z probe</a>
     Default 3x3 grid can be changed on MK2.5/s and MK3/s to 7x7 grid.
-      
+    #### Usage
+	  
           G80 [ N | R | V | L | R | F | B ]
       
+	#### Parameters
       - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
       - `R` - Probe retries. Default 3 max. 10
       - `V` - Verbosity level 1=low, 10=mid, 20=high. It can be only used if firmware has been compiled with SUPPORT_VERBOSITY active.
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
-      
+	  #### Additional Parameters
       - `L` - Left Bed Level correct value in um.
       - `R` - Right Bed Level correct value in um.
       - `F` - Front Bed Level correct value in um.
@@ -5107,13 +5181,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
         /*!
 		### G81 - Mesh bed leveling status <a href="https://reprap.org/wiki/G-code#G81:_Mesh_bed_leveling_status">G81: Mesh bed leveling status</a>
-        
 		Prints mesh bed leveling status and bed profile if activated.
+		#### Usage
+		
+			  G81
+		
 		*/ -----------------------------------------
-
-         /*
-         * Prints mesh bed leveling status and bed profile if activated
-         */
         case 81:
             if (mbl.active) {
                 SERIAL_PROTOCOLPGM("Num X,Y: ");
@@ -5140,7 +5213,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         ### G82: Single Z probe at current location - Not active <a href="https://reprap.org/wiki/G-code#G82:_Single_Z_probe_at_current_location">G82: Single Z probe at current location</a>
         
         WARNING! USE WITH CAUTION! If you'll try to probe where is no leveling pad, nasty things can happen!
-        */
+		In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+		*/ -----------------------------------------
         case 82:
             SERIAL_PROTOCOLLNPGM("Finding bed ");
             int l_feedmultiply = setup_for_endstop_move();
@@ -5151,9 +5225,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             SERIAL_PROTOCOLPGM("\n");
             break;
 
-         /*!
-         ### G83: Babystep in Z and store to EEPROM - Not active <a href="https://reprap.org/wiki/G-code#G83:_Babystep_in_Z_and_store_to_EEPROM">G83: Babystep in Z and store to EEPROM</a>
-         */
+        /*!
+        ### G83: Babystep in Z and store to EEPROM - Not active <a href="https://reprap.org/wiki/G-code#G83:_Babystep_in_Z_and_store_to_EEPROM">G83: Babystep in Z and store to EEPROM</a>
+		In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+		*/ -----------------------------------------
         case 83:
         {
             int babystepz = code_seen('S') ? code_value() : 0;
@@ -5178,7 +5253,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         break;
         /*!
         ### G84: UNDO Babystep Z (move Z axis back) - Not active <a href="https://reprap.org/wiki/G-code#G84:_UNDO_Babystep_Z_.28move_Z_axis_back.29">G84: UNDO Babystep Z (move Z axis back)</a>
-        */
+		In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+		*/ -----------------------------------------
         case 84:
             babystepsTodoZsubtract(babystepLoadZ);
             // babystepLoadZ = 0;
@@ -5186,7 +5262,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             
         /*!
         ### G85: Pick best babystep - Not active <a href="https://reprap.org/wiki/G-code#G85:_Pick_best_babystep>G85: Pick best babystep</a>
-        */
+		In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+		*/ -----------------------------------------
         case 85:
             lcd_pick_babystep();
             break;
@@ -5206,14 +5283,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         /*!
         ### G87 - Enable babystep correction after home <a href="https://reprap.org/wiki/G-code#G87:_Enable_babystep_correction_after_home">G87: Enable babystep correction after home</a>
         
-        
 		This G-code will be performed at the end of a calibration script.
         (Prusa3D specific)
         */
         case 87:
 			calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
             break;
-
 
         /*!
         ### G88 - Reserved <a href="https://reprap.org/wiki/G-code#G88:_Reserved">G88: Reserved</a>
@@ -5231,19 +5306,42 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             
     /*!
 	### G90 - Switch off relative mode <a href="https://reprap.org/wiki/G-code#G90:_Set_to_Absolute_Positioning">G90: Set to Absolute Positioning</a>
+	#### Usage
+	
+	      G90
+	
+	All coordinates from now on are absolute relative to the origin of the machine.
     */ -------------------------------
     case 90:
       relative_mode = false;
       break;
 
     /*! ### G91 - Switch on relative mode <a href="https://reprap.org/wiki/G-code#G91:_Set_to_Relative_Positioning">G91: Set to Relative Positioning</a>
-    */ -------------------------------
+	#### Usage
+	
+	      G91
+	
+    All coordinates from now on are relative to the last position. 
+	*/ -------------------------------
     case 91:
       relative_mode = true;
       break;
 
     /*!
 	### G92 - Set position <a href="https://reprap.org/wiki/G-code#G92:_Set_Position">G92: Set Position</a>
+	#### Usage
+	
+	      G92 [ X | Y | Z | E ]
+	
+	#### Parameters
+	  - `X` - new X axis position
+	  - `Y` - new Y axis position
+	  - `Z` - new Z axis position
+	  - `E` - new extruder position
+	
+	Allows programming of absolute zero point, by reseting the current position to the values specified. This would set the machine's X coordinate to 10, and the extrude coordinate to 90. No physical motion will occur.
+	
+	A G92 without coordinates will reset all axes to zero on some firmware.
     */ -----------------------------
     case 92:
       if(!code_seen(axis_codes[E_AXIS]))
@@ -5265,6 +5363,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
     ### G98 - Activate farm mode <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode</a>
+	Enable Prusa-specific Farm functions and g-code.
+	#### Usage
+	
+		  G98
+	
+	See Internal Prusa commands
     */ -----------------------------------    
 	case 98:
 		farm_mode = 1;
@@ -5277,7 +5381,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		break;
 
     /*! ### G99 - Deactivate farm mode <a href="https://reprap.org/wiki/G-code#G99:_Deactivate_farm_mode">G99: Deactivate farm mode</a>
-    */ -------------------------------------
+ 	Disables Prusa-specific Farm functions and g-code.
+	#### Usage
+	
+		  G99
+	
+   */ -------------------------------------
 	case 99:
 		farm_mode = 0;
 		lcd_printer_connected();
@@ -5292,7 +5401,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	gcode_in_progress = 0;
   } // end if(code_seen('G'))
   /*!
-  #### End of G-Codes
+  ### End of G-Codes
   */
 
   /*!
