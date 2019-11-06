@@ -49,7 +49,7 @@
 //#define LANG_MODE              0 // primary language only
 #define LANG_MODE              1 // sec. language support
 
-#define LANG_SIZE_RESERVED     0x2800 // reserved space for secondary language (10240 bytes)
+#define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes)
 
 
 #endif //_CONFIG_H

@@ -3,15 +3,12 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-void eeprom_init();
-extern bool is_sheet_initialized(uint8_t sheet_num);
-#endif
-
+#define MAX_SHEETS 8
+#define MAX_SHEET_NAME_LENGTH 7
 
 typedef struct
 {
-    char name[7];     //!< Can be null terminated, doesn't need to be null terminated
+    char name[MAX_SHEET_NAME_LENGTH]; //!< Can be null terminated, doesn't need to be null terminated
     int16_t z_offset; //!< Z_BABYSTEP_MIN .. Z_BABYSTEP_MAX = Z_BABYSTEP_MIN*2/1000 [mm] .. Z_BABYSTEP_MAX*2/1000 [mm]
     uint8_t bed_temp; //!< 0 .. 254 [°C]
     uint8_t pinda_temp; //!< 0 .. 254 [°C]
@@ -19,26 +16,27 @@ typedef struct
 
 typedef struct
 {
-    Sheet s[3];
+    Sheet s[MAX_SHEETS];
     uint8_t active_sheet;
 } Sheets;
 // sizeof(Sheets). Do not change it unless EEPROM_Sheets_base is last item in EEPROM.
 // Otherwise it would move following items.
-#define EEPROM_SHEETS_SIZEOF 34
+#define EEPROM_SHEETS_SIZEOF 89
 
 #ifdef __cplusplus
 static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEPROM_SHEETS_SIZEOF.");
 #endif
 
 #define EEPROM_EMPTY_VALUE 0xFF
+#define EEPROM_EMPTY_VALUE16 0xFFFF
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
 #define EEPROM_SILENT 4095
 #define EEPROM_LANG 4094
-#define EEPROM_BABYSTEP_X 4092
-#define EEPROM_BABYSTEP_Y 4090
-#define EEPROM_BABYSTEP_Z 4088
+#define EEPROM_BABYSTEP_X 4092 //unused
+#define EEPROM_BABYSTEP_Y 4090 //unused
+#define EEPROM_BABYSTEP_Z 4088 //legacy, multiple values stored now in EEPROM_Sheets_base
 #define EEPROM_CALIBRATION_STATUS 4087
 #define EEPROM_BABYSTEP_Z0 4085
 #define EEPROM_FILAMENTUSED 4081
@@ -235,5 +233,16 @@ enum
     EEPROM_MMU_CUTTER_ENABLED_always = 2,
 };
 
+#ifdef __cplusplus
+void eeprom_init();
+bool eeprom_is_sheet_initialized(uint8_t sheet_num);
+struct SheetName
+{
+    char c[sizeof(Sheet::name) + 1];
+};
+void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName);
+int8_t eeprom_next_initialized_sheet(int8_t sheet);
+void eeprom_switch_to_next_sheet();
+#endif
 
 #endif // EEPROM_H

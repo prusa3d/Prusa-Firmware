@@ -15,7 +15,7 @@
 
 extern int32_t lcd_encoder;
 
-#define MENU_DEPTH_MAX       6
+#define MENU_DEPTH_MAX       7
 
 static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
@@ -203,9 +203,13 @@ void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 void menu_format_sheet_select_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 {
     uint_least8_t index = sprintf_P(buffer.c,PSTR("%-9.9S["), _T(MSG_SHEET));
-    eeprom_read_block(&(buffer.c[index]), sheet_E.name, 7);
-	buffer.c[index + 7] = ']';
-    buffer.c[index + 8] = '\0';
+    eeprom_read_block(&(buffer.c[index]), sheet_E.name, sizeof(sheet_E.name)/sizeof(sheet_E.name[0]));
+    for (const uint_least8_t start = index; static_cast<uint_least8_t>(index - start) < sizeof(sheet_E.name)/sizeof(sheet_E.name[0]); ++index)
+    {
+        if (buffer.c[index] == '\0') break;
+    }
+	buffer.c[index] = ']';
+    buffer.c[index + 1] = '\0';
 }
 
 static void menu_draw_item_select_sheet_E(char type_char, const Sheet &sheet)
@@ -290,14 +294,18 @@ uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu)
     return 0;
 }
 
-uint8_t menu_item_submenu_select_sheet_E(const Sheet &sheet, menu_func_t submenu)
+uint8_t menu_item_function_E(const Sheet &sheet, menu_func_t func)
 {
     if (menu_item == menu_line)
     {
-        if (lcd_draw_update) menu_draw_item_select_sheet_E(LCD_STR_ARROW_RIGHT[0], sheet);
+        if (lcd_draw_update) menu_draw_item_select_sheet_E(' ', sheet);
         if (menu_clicked && (lcd_encoder == menu_item))
         {
-            menu_submenu(submenu);
+            menu_clicked = false;
+            lcd_consume_click();
+            lcd_update_enabled = 0;
+            if (func) func();
+            lcd_update_enabled = 1;
             return menu_item_ret();
         }
     }
@@ -391,7 +399,7 @@ const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
 
-const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6s";
+const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6S";
 
 template<typename T>
 static void menu_draw_P(char chr, const char* str, int16_t val);
@@ -415,7 +423,7 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
     float factor = 1.0f + static_cast<float>(val) / 1000.0f;
     if (val <= _md->minEditValue)
     {
-        lcd_printf_P(menu_fmt_float13off, chr, str, " [off]");
+        lcd_printf_P(menu_fmt_float13off, chr, str, _i(" [off]"));
     }
     else
     {

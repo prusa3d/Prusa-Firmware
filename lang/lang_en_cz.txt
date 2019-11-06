@@ -1,3 +1,7 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Doladeni Z\x0auz nastaveno, pouzit\x0anebo reset od nuly?\x0a%cPokracovat%cReset"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " z 4"
@@ -24,7 +28,7 @@
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Dostavovani Z:"
+"Doladeni Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
@@ -68,7 +72,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Automaticke zavadeni filamentu je dostupne pouze pri zapnutem filament senzoru..."
+"Automaticke zavadeni filamentu je mozne pouze pri zapnutem filament senzoru..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -92,7 +96,7 @@
 
 #MSG_BED_HEATING
 "Bed Heating"
-"Zahrivani bed"
+"Zahrivani bedu"
 
 #MSG_BED_CORRECTION_MENU
 "Bed level correct"
@@ -174,6 +178,10 @@
 "Crash det.   [on]"
 "Crash det.  [zap]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Zvolte filament pro kalibraci prvni vrstvy z nasledujiciho menu"
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 "\x00"
@@ -221,10 +229,6 @@
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
 "Vysunout filament"
-
-#
-"Eject"
-"Vysunout"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -316,7 +320,7 @@
 
 #
 "Filam. runouts"
-"Vypadky filamentu"
+"Vypadky filam."
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -462,17 +466,9 @@
 "I will run z calibration now."
 "Nyni provedu z kalibraci."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-"Zacnu tisknout linku a Vy budete postupne snizovat trysku otacenim tlacitka dokud nedosahnete optimalni vysky. Prohlednete si obrazky v nasi prirucce v kapitole Kalibrace."
-
 #MSG_WATCH
 "Info screen"
 "Informace"
-
-#
-"Is filament 1 loaded?"
-"Je filament 1 zaveden?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -482,14 +478,6 @@
 "Is filament loaded?"
 "Je filament zaveden?"
 
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-"Je to PLA filament?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-"Je PLA filament zaveden?"
-
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 "Je tiskovy plat na podlozce?"
@@ -497,6 +485,10 @@
 #
 "Last print failures"
 "Selhani posl. tisku"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Mate-li vice tiskovych platu, kalibrujte je v menu Nastaveni - HW nastaveni - Tiskove platy"
 
 #
 "Last print"
@@ -508,7 +500,7 @@
 
 #
 "Left"
-"Vlevo:"
+"Vlevo"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -688,7 +680,7 @@
 
 #
 "Nozzle FAN"
-"Trysk. vent."
+"Vent. trysky"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -730,14 +722,6 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Prosim nahlednete do prirucky 3D tiskare a opravte problem. Pote obnovte Pruvodce restartovanim tiskarny."
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-"Prosim vlozte PLA filament do extruderu, pote stisknete tlacitko pro zavedeni filamentu."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-"Nejdrive prosim zavedte PLA filament."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 "Prosim otevrete idler a manualne odstrante filament."
@@ -749,10 +733,6 @@
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
 "Pro vysunuti filamentu stisknete prosim tlacitko"
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"Prosim vlozte PLA filament do trubicky MMU, pote stisknete tlacitko pro zavedeni filamentu."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -792,7 +772,7 @@
 
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
-"Predehrivam trysku. Prosim cekejte."
+"Predehrev trysky. Prosim cekejte."
 
 #
 "Please upgrade."
@@ -812,11 +792,11 @@
 
 #
 "Preheating to load"
-"Predehrivam k zavedeni"
+"Predehrev k zavedeni"
 
 #
 "Preheating to unload"
-"Predehrivam k vyjmuti"
+"Predehrev k vyjmuti"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
@@ -828,7 +808,7 @@
 
 #
 "Press the knob"
-"Stisknete tlacitko"
+"Stisknete hl. tlacitko"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -845,6 +825,18 @@
 #
 "Print FAN"
 "Tiskovy vent."
+
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Prosim vlozte filament do extruderu a stisknete tlacitko k jeho zavedeni"
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Prosim vlozte filament do prvni trubicky MMU a stisknete tlacitko k jeho zavedeni"
+
+#
+"Please load filament first."
+"Prosim nejdriv zavedte filament"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -946,10 +938,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
 
-#
-"Select PLA filament:"
-"Vyberte PLA filament:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Nastavte teplotu:"
@@ -979,8 +967,8 @@
 "Trideni     [cas]"
 
 #
-"Severe skew"
-"Tezke zkoseni"
+"Severe skew:"
+"Tezke zkoseni:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -995,8 +983,8 @@
 "Zvuk    [hlasity]"
 
 #
-"Slight skew"
-"Lehke zkoseni"
+"Slight skew:"
+"Lehke zkoseni:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1046,6 +1034,10 @@
 "Swapped"
 "Prohozene"
 
+#
+"Select filament:"
+"Zvolte filament:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Tepl. kal. "
@@ -1053,6 +1045,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Tepl. kal.  [zap]"
+
+#
+"Select temperature which matches your material."
+"Zvolte teplotu, ktera odpovida vasemu materialu."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1235,9 +1231,209 @@
 "Y vzdalenost od min"
 
 #
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
+
+#
 "Y-correct:"
 "Korekce Y:"
 
 #MSG_OFF
 " [off]"
+" [vyp]"
+
+#
+"Back"
+"Zpet"
+
+#
+"Checks"
+"Kontrola"
+
+#
+"False triggering"
+"Falesne spusteni"
+
+#
+"FINDA:"
 "\x00"
+
+#
+"Firmware   [none]"
+"Firmware  [Zadne]"
+
+#
+"Firmware [strict]"
+"Firmware [Prisne]"
+
+#
+"Firmware   [warn]"
+"Firmware[Varovat]"
+
+#
+"HW Setup"
+"HW nastaveni"
+
+#
+"IR:"
+"\x00"
+
+#
+"Magnets comp.[N/A]"
+"Komp. magnetu[N/A]"
+
+#
+"Magnets comp.[Off]"
+"Komp. magnetu[Vyp]"
+
+#
+"Magnets comp. [On]"
+"Komp. magnetu[Zap]"
+
+#
+"Mesh         [3x3]"
+"Mesh         [3x3]"
+
+#
+"Mesh         [7x7]"
+"Mesh         [7x7]"
+
+#
+"Mesh bed leveling"
+"Mesh Bed Leveling"
+
+#
+"MK3S firmware detected on MK3 printer"
+"MK3S firmware detekovan na tiskarne MK3"
+
+#
+"MMU Mode [Normal]"
+"MMU mod  [Normal]"
+
+#
+"MMU Mode[Stealth]"
+"MMU Mod   [Tichy]"
+
+#
+"Mode change in progress ..."
+"Probiha zmena modu..."
+
+#
+"Model      [none]"
+"Model     [Zadne]"
+
+#
+"Model    [strict]"
+"Model    [Prisne]"
+
+#
+"Model      [warn]"
+"Model   [Varovat]"
+
+#
+"Nozzle d.  [0.25]"
+"Tryska     [0.25]"
+
+#
+"Nozzle d.  [0.40]"
+"Tryska     [0.40]"
+
+#
+"Nozzle d.  [0.60]"
+"Tryska     [0.60]"
+
+#
+"Nozzle     [none]"
+"Tryska    [Zadne]"
+
+#
+"Nozzle   [strict]"
+"Tryska   [Prisne]"
+
+#
+"Nozzle     [warn]"
+"Tryska  [Varovat]"
+
+#
+"G-code sliced for a different level. Continue?"
+"\x00"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+"\x00"
+
+#
+"G-code sliced for a different printer type. Continue?"
+"G-code je pripraven pro jiny typ tiskarny. Pokracovat?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+"G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. Tisk zrusen."
+
+#
+"G-code sliced for a newer firmware. Continue?"
+"G-code je pripraven pro novejsi firmware. Pokracovat?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+"G-code je pripraven pro novejsi firmware. Prosim aktualizujte firmware. Tisk zrusen."
+
+#
+"PINDA:"
+"\x00"
+
+#
+"Preheating to cut"
+"Predehrev k ustrizeni"
+
+#
+"Preheating to eject"
+"Predehrev k vysunuti"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+"Prumer trysky tiskarny se lisi od G-code. Pokracovat?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+"Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. Tisk zrusen."
+
+#
+"Rename"
+"Prejmenovat"
+
+#
+"Select"
+"Vybrat"
+
+#
+"Sensor info"
+"Senzor info"
+
+#
+"Sheet"
+"Plat"
+
+#
+"Sound    [assist]"
+"Zvuk     [Asist.]"
+
+#
+"Steel sheets"
+"Tiskove platy"
+
+#
+"Z-correct:"
+"Korekce Z:"
+
+#
+"Z-probe nr.    [1]"
+"Pocet mereni Z [1]"
+
+#
+"Z-probe nr.    [3]"
+"Pocet mereni Z [3]"
+
+#
+"Z-probe nr.    [5]"
+"Pocet mereni Z [5]"

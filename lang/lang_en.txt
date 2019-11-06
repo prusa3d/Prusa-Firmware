@@ -1,3 +1,6 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 
@@ -130,6 +133,9 @@
 #MSG_CRASHDETECT_ON
 "Crash det.   [on]"
 
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+
 #MSG_CRASHDETECT_NA
 "Crash det.  [N/A]"
 
@@ -165,9 +171,6 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-
-#
-"Eject"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -346,14 +349,8 @@
 #MSG_WIZARD_Z_CAL c=20 r=8
 "I will run z calibration now."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-
 #MSG_WATCH
 "Info screen"
-
-#
-"Is filament 1 loaded?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -361,17 +358,14 @@
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 
 #
 "Last print failures"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 
 #
 "Last print"
@@ -547,12 +541,6 @@
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 
@@ -561,9 +549,6 @@
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -633,6 +618,15 @@
 
 #
 "Print FAN"
+
+#
+"Please insert filament into the extruder, then press the knob to load it."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+
+#
+"Please load filament first."
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -709,9 +703,6 @@
 #
 "Select nozzle preheat temperature which matches your material."
 
-#
-"Select PLA filament:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 
@@ -734,7 +725,7 @@
 "Sort       [time]"
 
 #
-"Severe skew"
+"Severe skew:"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -746,7 +737,7 @@
 "Sound      [loud]"
 
 #
-"Slight skew"
+"Slight skew:"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -784,11 +775,17 @@
 #MSG_SELFTEST_SWAPPED
 "Swapped"
 
+#
+"Select filament:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
+
+#
+"Select temperature which matches your material."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -926,7 +923,157 @@
 "Y distance from min"
 
 #
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+
+#
 "Y-correct:"
 
 #MSG_OFF
 " [off]"
+
+#
+"Back"
+
+#
+"Checks"
+
+#
+"False triggering"
+
+#
+"FINDA:"
+
+#
+"Firmware   [none]"
+
+#
+"Firmware [strict]"
+
+#
+"Firmware   [warn]"
+
+#
+"HW Setup"
+
+#
+"IR:"
+
+#
+"Magnets comp.[N/A]"
+
+#
+"Magnets comp.[Off]"
+
+#
+"Magnets comp. [On]"
+
+#
+"Mesh         [3x3]"
+
+#
+"Mesh         [7x7]"
+
+#
+"Mesh bed leveling"
+
+#
+"MK3S firmware detected on MK3 printer"
+
+#
+"MMU Mode [Normal]"
+
+#
+"MMU Mode[Stealth]"
+
+#
+"Mode change in progress ..."
+
+#
+"Model      [none]"
+
+#
+"Model    [strict]"
+
+#
+"Model      [warn]"
+
+#
+"Nozzle d.  [0.25]"
+
+#
+"Nozzle d.  [0.40]"
+
+#
+"Nozzle d.  [0.60]"
+
+#
+"Nozzle     [none]"
+
+#
+"Nozzle   [strict]"
+
+#
+"Nozzle     [warn]"
+
+#
+"G-code sliced for a different level. Continue?"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+
+#
+"G-code sliced for a different printer type. Continue?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+
+#
+"G-code sliced for a newer firmware. Continue?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+
+#
+"PINDA:"
+
+#
+"Preheating to cut"
+
+#
+"Preheating to eject"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+
+#
+"Rename"
+
+#
+"Select"
+
+#
+"Sensor info"
+
+#
+"Sheet"
+
+#
+"Sound    [assist]"
+
+#
+"Steel sheets"
+
+#
+"Z-correct:"
+
+#
+"Z-probe nr.    [1]"
+
+#
+"Z-probe nr.    [3]"
+
+#
+"Z-probe nr.    [5]"

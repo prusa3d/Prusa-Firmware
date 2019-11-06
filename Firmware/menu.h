@@ -103,8 +103,8 @@ extern uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu);
 #define MENU_ITEM_SUBMENU_E(sheet, submenu) do { if (menu_item_submenu_E(sheet, submenu)) return; } while (0)
 extern uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu);
 
-#define MENU_ITEM_SUBMENU_SELECT_SHEET_E(sheet, submenu) do { if (menu_item_submenu_select_sheet_E(sheet, submenu)) return; } while (0)
-extern uint8_t menu_item_submenu_select_sheet_E(const Sheet &sheet, menu_func_t submenu);
+#define MENU_ITEM_FUNCTION_E(sheet, submenu) do { if (menu_item_function_E(sheet, submenu)) return; } while (0)
+extern uint8_t menu_item_function_E(const Sheet &sheet, menu_func_t func);
 
 #define MENU_ITEM_BACK_P(str) do { if (menu_item_back_P(str)) return; } while (0)
 extern uint8_t menu_item_back_P(const char* str);

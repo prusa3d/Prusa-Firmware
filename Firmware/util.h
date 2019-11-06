@@ -35,6 +35,8 @@ inline void eeprom_update_int8(unsigned char* addr, int8_t v) {
 
 
 //-//
+#define EEPROM_NOZZLE_DIAMETER_uM_DEFAULT 400
+
 enum class ClPrintChecking:uint_least8_t
 {
     _Nozzle=1,

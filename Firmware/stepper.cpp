@@ -1561,10 +1561,10 @@ void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 
 
 void st_current_init() //Initialize Digipot Motor Current
-{  
-uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+{
+#ifdef MOTOR_CURRENT_PWM_XY_PIN
+  uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
   SilentModeMenu = SilentMode;
-  #ifdef MOTOR_CURRENT_PWM_XY_PIN
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_E_PIN, OUTPUT);
@@ -1586,7 +1586,7 @@ uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
     st_current_set(2, motor_current_setting[2]);
     //Set timer5 to 31khz so the PWM of the motor power is as constant as possible. (removes a buzzing noise)
     TCCR5B = (TCCR5B & ~(_BV(CS50) | _BV(CS51) | _BV(CS52))) | _BV(CS50);
-  #endif
+#endif
 }
 
 
