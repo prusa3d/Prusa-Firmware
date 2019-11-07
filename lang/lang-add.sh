@@ -51,7 +51,7 @@ if ! [ -e lang_add.txt ]; then
 fi
 
 cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
-	if grep "$new_s" lang_en.txt >/dev/nul; then
+	if grep "$new_s" lang_en.txt >/dev/null; then
 		echo "text already exist:"
 		echo "$new_s"
 		echo

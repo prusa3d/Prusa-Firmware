@@ -1,3 +1,7 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Doladeni Z\x0auz nastaveno, pouzit\x0anebo reset od nuly?\x0a%cPokracovat%cReset"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " z 4"
@@ -60,7 +64,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Automaticke zavadeni filamentu je dostupne pouze pri zapnutem filament senzoru..."
+"Automaticke zavadeni filamentu je mozne pouze pri zapnutem filament senzoru..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -84,7 +88,7 @@
 
 #MSG_BED_HEATING
 "Bed Heating"
-"Zahrivani bed"
+"Zahrivani bedu"
 
 #MSG_BED_CORRECTION_MENU
 "Bed level correct"
@@ -166,6 +170,10 @@
 "Crash det."
 "\x00"
 
+#
+"Zvolte filament pro kalibraci prvni vrstvy z nasledujiciho menu"
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
 "Detekovan naraz."
@@ -205,10 +213,6 @@
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
 "Vysunout filament"
-
-#
-"Eject"
-"Vysunout"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -426,17 +430,9 @@
 "I will run z calibration now."
 "Nyni provedu z kalibraci."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-"Zacnu tisknout linku a Vy budete postupne snizovat trysku otacenim tlacitka dokud nedosahnete optimalni vysky. Prohlednete si obrazky v nasi prirucce v kapitole Kalibrace."
-
 #MSG_WATCH
 "Info screen"
 "Informace"
-
-#
-"Is filament 1 loaded?"
-"Je filament 1 zaveden?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -446,14 +442,6 @@
 "Is filament loaded?"
 "Je filament zaveden?"
 
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-"Je to PLA filament?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-"Je PLA filament zaveden?"
-
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 "Je tiskovy plat na podlozce?"
@@ -461,6 +449,10 @@
 #
 "Last print failures"
 "Selhani posl. tisku"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Mate-li vice tiskovych platu, kalibrujte je v menu Nastaveni - HW nastaveni - Tiskove platy"
 
 #
 "Last print"
@@ -472,7 +464,7 @@
 
 #
 "Left"
-"Vlevo:"
+"Vlevo"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -656,7 +648,7 @@
 
 #
 "Nozzle FAN"
-"Tryska V."
+"Vent. trysky"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -698,14 +690,6 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Prosim nahlednete do prirucky 3D tiskare a opravte problem. Pote obnovte Pruvodce restartovanim tiskarny."
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-"Prosim vlozte PLA filament do extruderu, pote stisknete tlacitko pro zavedeni filamentu."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-"Nejdrive prosim zavedte PLA filament."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 "Prosim otevrete idler a manualne odstrante filament."
@@ -717,10 +701,6 @@
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
 "Pro vysunuti filamentu stisknete prosim tlacitko"
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"Prosim vlozte PLA filament do trubicky MMU, pote stisknete tlacitko pro zavedeni filamentu."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -788,7 +768,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Tiskovy v:"
+"Tiskovy vent.:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -812,7 +792,19 @@
 
 #
 "Print FAN"
-"Tiskovy v"
+"Tiskovy vent."
+
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Prosim vlozte filament do extruderu a stisknete tlacitko k jeho zavedeni"
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Prosim vlozte filament do prvni trubicky MMU a stisknete tlacitko k jeho zavedeni"
+
+#
+"Please load filament first."
+"Prosim nejdriv zavedte filament"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -910,10 +902,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
 
-#
-"Select PLA filament:"
-"Vyberte PLA filament:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Nastavte teplotu:"
@@ -947,8 +935,8 @@
 "Cas"
 
 #
-"Severe skew"
-"Tezke zkoseni"
+"Severe skew:"
+"Tezke zkoseni:"
 
 #MSG_SORT_ALPHA
 "Alphabet"
@@ -963,8 +951,8 @@
 "Hlasity"
 
 #
-"Slight skew"
-"Lehke zkoseni"
+"Slight skew:"
+"Lehke zkoseni:"
 
 #MSG_SOUND
 "Sound"
@@ -1010,6 +998,10 @@
 "Swapped"
 "Prohozene"
 
+#
+"Select filament:"
+"Zvolte filament:"
+
 #MSG_TEMP_CALIBRATION c=20 r=1
 "Temp. cal.          "
 "Tepl. kal. "
@@ -1017,6 +1009,10 @@
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
 "Tepl. kal.  [zap]"
+
+#
+"Select temperature which matches your material."
+"Zvolte teplotu, ktera odpovida vasemu materialu."
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1197,6 +1193,10 @@
 #
 "Y distance from min"
 "Y vzdalenost od min"
+
+#
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"\x00"
 
 #
 "Y-correct:"
@@ -1383,8 +1383,8 @@
 "Plat"
 
 #
-"Sound     [assist]"
-"Zvuk      [Asist.]"
+"Sound    [assist]"
+"Zvuk     [Asist.]"
 
 #
 "Steel sheets"
@@ -1401,3 +1401,7 @@
 #
 "Z-probe nr.    [3]"
 "Pocet mereni Z [3]"
+
+#
+"Z-probe nr.    [5]"
+"Pocet mereni Z [5]"
