@@ -1355,7 +1355,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         manage_response(true, true, MMU_TCODE_MOVE);
         mmu_continue_loading(false);
         mmu_extruder = tmp_extruder; //filament change is finished
-        marlin_rise_z();
+        raise_z_above(MIN_Z_FOR_LOAD, false);
         mmu_load_to_nozzle();
         load_filament_final_feed();
         st_synchronize();
@@ -1556,19 +1556,23 @@ void mmu_continue_loading(bool blocking)
             increment_load_fail();
             // no break
         case Ls::Retry:
-#ifdef MMU_HAS_CUTTER
-            if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+            ++retry; // overflow not handled, as it is not dangerous.
+            if (retry >= max_retry)
             {
-                mmu_command(MmuCmd::K0 + tmp_extruder);
-                manage_response(true, true, MMU_UNLOAD_MOVE);
-            }
+                state = Ls::Unload;
+#ifdef MMU_HAS_CUTTER
+                if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+                {
+                    mmu_command(MmuCmd::K0 + tmp_extruder);
+                    manage_response(true, true, MMU_UNLOAD_MOVE);
+                }
 #endif //MMU_HAS_CUTTER
+            }
             mmu_command(MmuCmd::T0 + tmp_extruder);
             manage_response(true, true, MMU_TCODE_MOVE);
             success = load_more();
             if (success) success = can_load();
-            ++retry; // overflow not handled, as it is not dangerous.
-            if (retry >= max_retry) state = Ls::Unload;
+
             break;
         case Ls::Unload:
             stop_and_save_print_to_ram(0, 0);
