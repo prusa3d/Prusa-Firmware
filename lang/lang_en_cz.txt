@@ -1206,6 +1206,10 @@
 "Off"
 "Vyp"
 
+#MSG_ON
+"On"
+"Zap"
+
 #
 "Back"
 "Zpet"
@@ -1221,10 +1225,6 @@
 #
 "FINDA:"
 "\x00"
-
-#MSG_ON
-"On"
-"Zap"
 
 #
 "Firmware   [none]"

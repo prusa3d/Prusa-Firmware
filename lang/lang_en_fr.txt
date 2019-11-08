@@ -1203,6 +1203,10 @@
 "Off"
 "\x00"
 
+#MSG_ON
+"On"
+"\x00"
+
 #
 "Back"
 "Retour"
@@ -1250,10 +1254,6 @@
 #
 "Magnets comp. [On]"
 "Compens. aim. [on]"
-
-#MSG_ON
-"On"
-"\x00"
 
 #
 "Mesh         [3x3]"

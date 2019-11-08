@@ -1206,6 +1206,10 @@
 "Off"
 "Ina"
 
+#MSG_ON
+"On"
+"Act"
+
 #
 "Back"
 "atras"
@@ -1241,10 +1245,6 @@
 #
 "IR:"
 "\x00"
-
-#MSG_ON
-"On"
-"Act"
 
 #
 "Magnets comp.[N/A]"

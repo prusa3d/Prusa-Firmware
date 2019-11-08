@@ -1204,6 +1204,10 @@
 "Off"
 "Wyl"
 
+#MSG_ON
+"On"
+"Wl"
+
 #
 "Back"
 "Wstecz"
@@ -1219,10 +1223,6 @@
 #
 "FINDA:"
 "\x00"
-
-#MSG_ON
-"On"
-"Wl"
 
 #
 "Firmware   [none]"

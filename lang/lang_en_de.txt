@@ -1206,6 +1206,10 @@
 "Off"
 "Aus"
 
+#MSG_ON
+"On"
+"An"
+
 #
 "Back"
 "Zurueck"
@@ -1213,10 +1217,6 @@
 #
 "Checks"
 "Kontrolle"
-
-#MSG_ON
-"On"
-"An"
 
 #
 "False triggering"
