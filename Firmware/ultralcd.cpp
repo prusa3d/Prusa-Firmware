@@ -310,18 +310,24 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
 {
     char c;
-    int enc_dif = lcd_encoder_diff;
+    int enc_dif = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
     uint8_t n = LCD_WIDTH - 1;
+
     for(uint_least8_t g = 0; g<4;g++){
       lcd_set_cursor(0, g);
     lcd_print(' ');
     }
-
     lcd_set_cursor(0, row);
     lcd_print('>');
+
+    if (longFilename[0] == '\0')
+    {
+        longFilename = filename;
+    }
+
     int i = 1;
     int j = 0;
     char* longFilenameTMP = longFilename;
@@ -339,7 +345,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longF
           n = LCD_WIDTH - 1;
           for(int g = 0; g<300 ;g++){
 			  manage_heater();
-            if(LCD_CLICKED || ( enc_dif != lcd_encoder_diff )){
+            if(LCD_CLICKED || ( enc_dif != (lcd_encoder_diff / ENCODER_PULSES_PER_STEP))){
 				longFilenameTMP = longFilename;
 				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
 				i = 1;
@@ -537,7 +543,7 @@ static uint8_t menu_item_sdfile(const char*
 		if (lcd_draw_update)
 		{
 			if (lcd_encoder == menu_item)
-				lcd_implementation_drawmenu_sdfile_selected(menu_row, str_fnl);
+				lcd_implementation_drawmenu_sdfile_selected(menu_row, str_fn, str_fnl);
 			else
 				lcd_implementation_drawmenu_sdfile(menu_row, str_fn, str_fnl);
 		}
@@ -709,10 +715,10 @@ void lcdui_print_status_line(void)
 {
 	if (IS_SD_PRINTING)
 	{
-		if (strcmp(longFilenameOLD, card.longFilename) != 0)
+		if (strcmp(longFilenameOLD, (card.longFilename[0] ? card.longFilename : card.filename)) != 0)
 		{
 			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
-			sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
+			sprintf_P(longFilenameOLD, PSTR("%s"), (card.longFilename[0] ? card.longFilename : card.filename));
 			scrollstuff = 0;
 		}
 	}
@@ -760,16 +766,16 @@ void lcdui_print_status_line(void)
 	}
 	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status))
 	{ // If printing from SD, show what we are printing
-		if(strlen(card.longFilename) > LCD_WIDTH)
+		if(strlen(longFilenameOLD) > LCD_WIDTH)
 		{
 			int inters = 0;
 			int gh = scrollstuff;
 			while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
 			{
-				if (card.longFilename[gh] == '\0')
+				if (longFilenameOLD[gh] == '\0')
 				{
 					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(card.longFilename[gh - 1]);
+					lcd_print(longFilenameOLD[gh - 1]);
 					scrollstuff = 0;
 					gh = scrollstuff;
 					inters = 1;
@@ -777,7 +783,7 @@ void lcdui_print_status_line(void)
 				else
 				{
 					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(card.longFilename[gh - 1]);
+					lcd_print(longFilenameOLD[gh - 1]);
 					gh++;
 				}
 			}
@@ -785,7 +791,7 @@ void lcdui_print_status_line(void)
 		}
 		else
 		{
-			lcd_print(longFilenameOLD);
+			lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
 		}
 	}
 	else
@@ -1072,12 +1078,8 @@ void lcd_commands()
 		if (!blocks_queued() && !homing_flag)
 		{
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
-			long_pause();
-               if (lcd_commands_type == LcdCommands::LongPause) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
-               {
-                    lcd_commands_type = LcdCommands::Idle;
-                    lcd_commands_step = 0;
-               }
+            lcd_commands_type = LcdCommands::Idle;
+            lcd_commands_step = 0;
 		}
 	}
 
@@ -1636,7 +1638,7 @@ void lcd_pause_print()
 {
     lcd_return_to_status();
     stop_and_save_print_to_ram(0.0,0.0);
-    setAllTargetHotends(0);
+    long_pause();
     isPrintPaused = true;
     if (LcdCommands::Idle == lcd_commands_type)
     {
@@ -2374,9 +2376,11 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             {
                 lcd_commands_type = LcdCommands::Layer1Cal;
             }
-            else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+            else
             {
-                lcd_wizard(WizState::LoadFilHot);
+                raise_z_above(MIN_Z_FOR_PREHEAT);
+                if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+                    lcd_wizard(WizState::LoadFilHot);
             }
             return;
         }
@@ -6362,6 +6366,8 @@ void unload_filament()
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
+
+    raise_z_above(MIN_Z_FOR_UNLOAD);
 
 	//		extr_unload2();
 

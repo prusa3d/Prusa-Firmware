@@ -2104,6 +2104,52 @@ bool check_commands() {
 	
 }
 
+
+// raise_z_above: slowly raise Z to the requested height
+//
+// contrarily to a simple move, this function will carefully plan a move
+// when the current Z position is unknown. In such cases, stallguard is
+// enabled and will prevent prolonged pushing against the Z tops
+void raise_z_above(float target, bool plan)
+{
+    if (current_position[Z_AXIS] >= target)
+        return;
+
+    // Z needs raising
+    current_position[Z_AXIS] = target;
+
+    if (axis_known_position[Z_AXIS])
+    {
+        // current position is known, it's safe to raise Z
+        if(plan) plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+        return;
+    }
+
+    // ensure Z is powered in normal mode to overcome initial load
+    enable_z();
+    st_synchronize();
+
+    // rely on crashguard to limit damage
+    bool z_endstop_enabled = enable_z_endstop(true);
+#ifdef TMC2130
+    tmc2130_home_enter(Z_AXIS_MASK);
+#endif //TMC2130
+    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
+    st_synchronize();
+#ifdef TMC2130
+    if (endstop_z_hit_on_purpose())
+    {
+        // not necessarily exact, but will avoid further vertical moves
+        current_position[Z_AXIS] = max_pos[Z_AXIS];
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS],
+                          current_position[Z_AXIS], current_position[E_AXIS]);
+    }
+    tmc2130_home_exit();
+#endif //TMC2130
+    enable_z_endstop(z_endstop_enabled);
+}
+
+
 #ifdef TMC2130
 bool calibrate_z_auto()
 {
@@ -2484,9 +2530,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 
 	//if we are homing all axes, first move z higher to protect heatbed/steel sheet
 	if (home_all_axes) {
-		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
-		feedrate = homing_feedrate[Z_AXIS];
-		plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
+        raise_z_above(MESH_HOME_Z_SEARCH);
 		st_synchronize();
 	}
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -2597,26 +2641,21 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
         #ifndef Z_SAFE_HOMING
           if(home_z) {
             #if defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
-              destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
-              feedrate = max_feedrate[Z_AXIS];
-              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
+              raise_z_above(Z_RAISE_BEFORE_HOMING);
               st_synchronize();
             #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
             #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))  // If Mesh bed leveling, move X&Y to safe position for home
-      			  if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] )) 
-      			  {
-                homeaxis(X_AXIS);
-                homeaxis(Y_AXIS);
-      			  } 
+              raise_z_above(MESH_HOME_Z_SEARCH);
+              st_synchronize();
+              if (!axis_known_position[X_AXIS]) homeaxis(X_AXIS);
+              if (!axis_known_position[Y_AXIS]) homeaxis(Y_AXIS);
               // 1st mesh bed leveling measurement point, corrected.
               world2machine_initialize();
               world2machine(pgm_read_float(bed_ref_points_4), pgm_read_float(bed_ref_points_4+1), destination[X_AXIS], destination[Y_AXIS]);
               world2machine_reset();
               if (destination[Y_AXIS] < Y_MIN_POS)
                   destination[Y_AXIS] = Y_MIN_POS;
-              destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
-              feedrate = homing_feedrate[Z_AXIS]/10;
-              current_position[Z_AXIS] = 0;
+              feedrate = homing_feedrate[X_AXIS] / 20;
               enable_endstops(false);
 #ifdef DEBUG_BUILD
               SERIAL_ECHOLNPGM("plan_set_position()");
@@ -3143,15 +3182,6 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     custom_message_type = CustomMsg::Status;
 }
 
-//! @brief Rise Z if too low to avoid blob/jam before filament loading
-//!
-//! It doesn't plan_buffer_line(), as it expects plan_buffer_line() to be called after
-//! during extruding (loading) filament.
-void marlin_rise_z(void)
-{
-    if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
-}
-
 void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
@@ -3180,7 +3210,7 @@ void gcode_M701()
 		plan_buffer_line_curposXYZE(400 / 60, active_extruder); //fast sequence
 		st_synchronize();
 
-		marlin_rise_z();
+        raise_z_above(MIN_Z_FOR_LOAD, false);
 		current_position[E_AXIS] += 30;
 		plan_buffer_line_curposXYZE(400 / 60, active_extruder); //fast sequence
 		
@@ -8145,27 +8175,33 @@ Sigma_Exit:
     case 350: 
     {
 	#ifdef TMC2130
-		if(code_seen('E'))
+		for (int i=0; i<NUM_AXIS; i++) 
 		{
-			uint16_t res_new = code_value();
-			if ((res_new == 8) || (res_new == 16) || (res_new == 32) || (res_new == 64) || (res_new == 128))
+			if(code_seen(axis_codes[i]))
 			{
-				st_synchronize();
-				uint8_t axis = E_AXIS;
-				uint16_t res = tmc2130_get_res(axis);
-				tmc2130_set_res(axis, res_new);
-				cs.axis_ustep_resolution[axis] = res_new;
-				if (res_new > res)
+				uint16_t res_new = code_value();
+				bool res_valid = (res_new == 8) || (res_new == 16) || (res_new == 32); // resolutions valid for all axis
+				res_valid |= (i != E_AXIS) && ((res_new == 1) || (res_new == 2) || (res_new == 4)); // resolutions valid for X Y Z only
+				res_valid |= (i == E_AXIS) && ((res_new == 64) || (res_new == 128)); // resolutions valid for E only
+				if (res_valid)
 				{
-					uint16_t fac = (res_new / res);
-					cs.axis_steps_per_unit[axis] *= fac;
-					position[E_AXIS] *= fac;
-				}
-				else
-				{
-					uint16_t fac = (res / res_new);
-					cs.axis_steps_per_unit[axis] /= fac;
-					position[E_AXIS] /= fac;
+					
+					st_synchronize();
+					uint16_t res = tmc2130_get_res(i);
+					tmc2130_set_res(i, res_new);
+					cs.axis_ustep_resolution[i] = res_new;
+					if (res_new > res)
+					{
+						uint16_t fac = (res_new / res);
+						cs.axis_steps_per_unit[i] *= fac;
+						position[i] *= fac;
+					}
+					else
+					{
+						uint16_t fac = (res / res_new);
+						cs.axis_steps_per_unit[i] /= fac;
+						position[i] /= fac;
+					}
 				}
 			}
 		}
@@ -10057,10 +10093,9 @@ void long_pause() //long pause print
 	current_position[Y_AXIS] = Y_PAUSE_POS;
 	plan_buffer_line_curposXYZE(50, active_extruder);
 
-	// Turn off the print fan
+	// Turn off the hotends and print fan
+    setAllTargetHotends(0);
 	fanSpeed = 0;
-
-	st_synchronize();
 }
 
 void serialecho_temperatures() {

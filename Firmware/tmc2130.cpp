@@ -427,7 +427,7 @@ void tmc2130_check_overtemp()
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
-	uint8_t intpol = 1;
+	uint8_t intpol = (mres != 0); // intpol to 256 only if microsteps aren't 256
 	uint8_t toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
 	uint8_t hstrt = tmc2130_chopper_config[axis].hstr; //initial 4, modified to 5
 	uint8_t hend = tmc2130_chopper_config[axis].hend; //original value = 1
@@ -600,7 +600,7 @@ void tmc2130_wr_THIGH(uint8_t axis, uint32_t val32)
 
 uint8_t tmc2130_usteps2mres(uint16_t usteps)
 {
-	uint8_t mres = 8; while (mres && (usteps >>= 1)) mres--;
+	uint8_t mres = 8; while (usteps >>= 1) mres--;
 	return mres;
 }
 
