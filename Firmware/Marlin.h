@@ -358,9 +358,6 @@ extern int fan_speed[2];
 // Handling multiple extruders pins
 extern uint8_t active_extruder;
 
-
-#endif
-
 //Long pause
 extern unsigned long pause_time;
 extern unsigned long start_pause_print;
@@ -513,4 +510,6 @@ void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
 void marlin_wait_for_click();
-void marlin_rise_z(void);
+void raise_z_above(float target, bool plan=true);
+
+#endif

@@ -2374,9 +2374,11 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             {
                 lcd_commands_type = LcdCommands::Layer1Cal;
             }
-            else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+            else
             {
-                lcd_wizard(WizState::LoadFilHot);
+                raise_z_above(MIN_Z_FOR_PREHEAT);
+                if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+                    lcd_wizard(WizState::LoadFilHot);
             }
             return;
         }
@@ -6362,6 +6364,8 @@ void unload_filament()
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
+
+    raise_z_above(MIN_Z_FOR_UNLOAD);
 
 	//		extr_unload2();
 
