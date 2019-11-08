@@ -7553,16 +7553,15 @@ Sigma_Exit:
 					uint16_t res = tmc2130_get_res(i);
 					tmc2130_set_res(i, res_new);
 					cs.axis_ustep_resolution[i] = res_new;
-					uint16_t fac;
 					if (res_new > res)
 					{
-						fac = (res_new / res);
+						uint16_t fac = (res_new / res);
 						cs.axis_steps_per_unit[i] *= fac;
 						position[i] *= fac;
 					}
 					else
 					{
-						fac = (res / res_new);
+						uint16_t fac = (res / res_new);
 						cs.axis_steps_per_unit[i] /= fac;
 						position[i] /= fac;
 					}
