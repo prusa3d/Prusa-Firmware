@@ -90,7 +90,7 @@ const char MSG_STEALTH[] PROGMEM_I1 = ISTR("Stealth"); ////
 const char MSG_STEEL_SHEET_CHECK[] PROGMEM_I1 = ISTR("Is steel sheet on heatbed?"); ////c=20 r=2
 const char MSG_STOP_PRINT[] PROGMEM_I1 = ISTR("Stop print"); ////
 const char MSG_STOPPED[] PROGMEM_I1 = ISTR("STOPPED. "); ////
-const char MSG_TEMP_CALIBRATION[] PROGMEM_I1 = ISTR("Temp. cal.          "); ////c=20 r=1
+const char MSG_TEMP_CALIBRATION[] PROGMEM_I1 = ISTR("Temp. cal."); ////c=12 r=1
 const char MSG_TEMP_CALIBRATION_DONE[] PROGMEM_I1 = ISTR("Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."); ////c=20 r=12
 const char MSG_UNLOAD_FILAMENT[] PROGMEM_I1 = ISTR("Unload filament"); ////c=17
 const char MSG_UNLOADING_FILAMENT[] PROGMEM_I1 = ISTR("Unloading filament"); ////c=20 r=1

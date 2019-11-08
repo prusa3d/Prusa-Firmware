@@ -1002,21 +1002,13 @@
 "Select filament:"
 "Zvolte filament:"
 
-#MSG_TEMP_CALIBRATION c=20 r=1
-"Temp. cal.          "
-"Tepl. kal. "
-
-#MSG_TEMP_CALIBRATION_ON c=20 r=1
-"Temp. cal.   [on]"
-"Tepl. kal.  [zap]"
+#MSG_TEMP_CALIBRATION c=12 r=1
+"Temp. cal."
+"Tepl. kal."
 
 #
 "Select temperature which matches your material."
 "Zvolte teplotu, ktera odpovida vasemu materialu."
-
-#MSG_TEMP_CALIBRATION_OFF c=20 r=1
-"Temp. cal.  [off]"
-"Tepl. kal.  [vyp]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"

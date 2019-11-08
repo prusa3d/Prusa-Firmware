@@ -838,12 +838,13 @@ void lcdui_print_status_line(void)
 			break;
 		case CustomMsg::TempCal: // PINDA temp calibration in progress
 			{
+				char statusLine[LCD_WIDTH + 1];
+				sprintf_P(statusLine, PSTR("%-20S"), _T(MSG_TEMP_CALIBRATION));
 				char progress[4];
+				sprintf_P(progress, PSTR("%d/6"), custom_message_state);
+				memcpy(statusLine + 12, progress, sizeof(progress) - 1);
 				lcd_set_cursor(0, 3);
-				lcd_puts_P(_T(MSG_TEMP_CALIBRATION));
-				lcd_set_cursor(12, 3);
-				sprintf(progress, "%d/6", custom_message_state);
-				lcd_print(progress);
+				lcd_print(statusLine);
 			}
 			break;
 		case CustomMsg::TempCompPreheat: // temp compensation preheat
@@ -5742,10 +5743,7 @@ static void lcd_settings_menu()
     MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
 #endif //LINEARITY_CORRECTION && TMC2130
 
-  if (temp_cal_active == false)
-	  MENU_ITEM_FUNCTION_P(_i("Temp. cal.  [off]"), lcd_temp_calibration_set);////MSG_TEMP_CALIBRATION_OFF c=20 r=1
-  else
-	  MENU_ITEM_FUNCTION_P(_i("Temp. cal.   [on]"), lcd_temp_calibration_set);////MSG_TEMP_CALIBRATION_ON c=20 r=1
+	MENU_ITEM_TOGGLE_P(_T(MSG_TEMP_CALIBRATION), temp_cal_active ? _T(MSG_ON) : _T(MSG_OFF), lcd_temp_calibration_set);
 
 #ifdef HAS_SECOND_SERIAL_PORT
     MENU_ITEM_TOGGLE_P(_T(MSG_RPI_PORT), (selectedSerialPort == 0) ? _T(MSG_OFF) : _T(MSG_ON), lcd_second_serial_set);
