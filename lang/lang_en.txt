@@ -912,14 +912,14 @@
 #
 "FINDA:"
 
-#
-"Firmware   [none]"
+#MSG_FIRMWARE
+"Firmware"
 
-#
-"Firmware [strict]"
+#MSG_STRICT
+"Strict"
 
-#
-"Firmware   [warn]"
+#MSG_WARN
+"Warn"
 
 #
 "HW Setup"
@@ -927,20 +927,11 @@
 #
 "IR:"
 
-#
-"Magnets comp.[N/A]"
+#MSG_MAGNETS_COMP
+"Magnets comp."
 
-#
-"Magnets comp.[Off]"
-
-#
-"Magnets comp. [On]"
-
-#
-"Mesh         [3x3]"
-
-#
-"Mesh         [7x7]"
+#MSG_MESH
+"Mesh"
 
 #
 "Mesh bed leveling"
@@ -948,41 +939,17 @@
 #
 "MK3S firmware detected on MK3 printer"
 
-#
-"MMU Mode [Normal]"
-
-#
-"MMU Mode[Stealth]"
+#MSG_MMU_MODE
+"MMU Mode"
 
 #
 "Mode change in progress ..."
 
-#
-"Model      [none]"
+#MSG_MODEL
+"Model"
 
-#
-"Model    [strict]"
-
-#
-"Model      [warn]"
-
-#
-"Nozzle d.  [0.25]"
-
-#
-"Nozzle d.  [0.40]"
-
-#
-"Nozzle d.  [0.60]"
-
-#
-"Nozzle     [none]"
-
-#
-"Nozzle   [strict]"
-
-#
-"Nozzle     [warn]"
+#MSG_NOZZLE_DIAMETER
+"Nozzle d."
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1029,8 +996,8 @@
 #
 "Sheet"
 
-#
-"Sound    [assist]"
+#MSG_SOUND_BLIND
+"Assist"
 
 #
 "Steel sheets"
@@ -1038,11 +1005,5 @@
 #
 "Z-correct:"
 
-#
-"Z-probe nr.    [1]"
-
-#
-"Z-probe nr.    [3]"
-
-#
-"Z-probe nr.    [5]"
+#MSG_Z_PROBE_NR
+"Z-probe nr."

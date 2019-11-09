@@ -1217,17 +1217,17 @@
 "FINDA:"
 "\x00"
 
-#
-"Firmware   [none]"
-"Firmware[nessuno]"
+#MSG_FIRMWARE
+"Firmware"
+"\x00"
 
-#
-"Firmware [strict]"
-"Firmware [esatto]"
+#MSG_STRICT
+"Strict"
+"Esatto"
 
-#
-"Firmware   [warn]"
-"Firmware [avviso]"
+#MSG_WARN
+"Warn"
+"Avviso"
 
 #
 "HW Setup"
@@ -1237,25 +1237,13 @@
 "IR:"
 "\x00"
 
-#
-"Magnets comp.[N/A]"
-"Comp. Magneti[N/A]"
+#MSG_MAGNETS_COMP
+"Magnets comp."
+"Comp. Magneti"
 
-#
-"Magnets comp.[Off]"
-"Comp. Magneti[off]"
-
-#
-"Magnets comp. [On]"
-"Comp. Magneti [on]"
-
-#
-"Mesh         [3x3]"
-"Griglia      [3x3]"
-
-#
-"Mesh         [7x7]"
-"Griglia      [7x7]"
+#MSG_MESH
+"Mesh"
+"Griglia"
 
 #
 "Mesh bed leveling"
@@ -1265,53 +1253,21 @@
 "MK3S firmware detected on MK3 printer"
 "Firmware MK3S rilevato su stampante MK3"
 
-#
-"MMU Mode [Normal]"
-"Modalita MMU [Normale]"
-
-#
-"MMU Mode[Stealth]"
-"Modalita MMU [Silenziosa]"
+#MSG_MMU_MODE
+"MMU Mode"
+"Mod. MMU"
 
 #
 "Mode change in progress ..."
 "Cambio modalita in corso ..."
 
-#
-"Model      [none]"
-"Modello [nessuno]"
+#MSG_MODEL
+"Model"
+"Modello"
 
-#
-"Model    [strict]"
-"Modello  [esatto]"
-
-#
-"Model      [warn]"
-"Modello  [avviso]"
-
-#
-"Nozzle d.  [0.25]"
-"Diam.Ugello[0.25]"
-
-#
-"Nozzle d.  [0.40]"
-"Diam.Ugello[0.40]"
-
-#
-"Nozzle d.  [0.60]"
-"Diam.Ugello[0.60]"
-
-#
-"Nozzle     [none]"
-"Ugello  [nessuno]"
-
-#
-"Nozzle   [strict]"
-"Ugello   [esatto]"
-
-#
-"Nozzle     [warn]"
-"Ugello   [avviso]"
+#MSG_NOZZLE_DIAMETER
+"Nozzle d."
+"Diam.Ugello"
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1373,9 +1329,9 @@
 "Sheet"
 "Piano"
 
-#
-"Sound    [assist]"
-"Suono   [assist.]"
+#MSG_SOUND_BLIND
+"Assist"
+"Assist."
 
 #
 "Steel sheets"
@@ -1385,14 +1341,6 @@
 "Z-correct:"
 "Correzione-Z:"
 
-#
-"Z-probe nr.    [1]"
-"Z-probe nr.    [1]"
-
-#
-"Z-probe nr.    [3]"
-"Z-probe nr.    [3]"
-
-#
-"Z-probe nr.    [5]"
-"Z-probe nr.    [5]"
+#MSG_Z_PROBE_NR
+"Z-probe nr."
+"\x00"

@@ -53,6 +53,7 @@
 #MSG_AUTO_DEPLETE c=17 r=1
 "SpoolJoin"
 "\x00"
+
 #MSG_AUTO_HOME
 "Auto home"
 "Auto zerowanie"
@@ -1216,17 +1217,17 @@
 "FINDA:"
 "\x00"
 
-#
-"Firmware   [none]"
-"Firmware   [brak]"
+#MSG_FIRMWARE
+"Firmware"
+"\x00"
 
-#
-"Firmware [strict]"
-"Firmware [restr.]"
+#MSG_STRICT
+"Strict"
+"Restr."
 
-#
-"Firmware   [warn]"
-"Firmware[ostrzez]"
+#MSG_WARN
+"Warn"
+"Ostrzez"
 
 #
 "HW Setup"
@@ -1236,25 +1237,13 @@
 "IR:"
 "\x00"
 
-#
-"Magnets comp.[N/A]"
-"Kor. magnesow[N/D]"
+#MSG_MAGNETS_COMP
+"Magnets comp."
+"Kor. magnesow"
 
-#
-"Magnets comp.[Off]"
-"Kor. magnesow[wyl]"
-
-#
-"Magnets comp. [On]"
-"Kor. magnesow [wl]"
-
-#
-"Mesh         [3x3]"
-"Siatka       [3x3]"
-
-#
-"Mesh         [7x7]"
-"Siatka       [7x7]"
+#MSG_MESH
+"Mesh"
+"Siatka"
 
 #
 "Mesh bed leveling"
@@ -1264,53 +1253,21 @@
 "MK3S firmware detected on MK3 printer"
 "Wykryto firmware MK3S w drukarce MK3"
 
-#
-"MMU Mode [Normal]"
-"Tryb MMU[Normaln]"
-
-#
-"MMU Mode[Stealth]"
-"Tryb MMU[Stealth]"
+#MSG_MMU_MODE
+"MMU Mode"
+"Tryb MMU"
 
 #
 "Mode change in progress ..."
 "Trwa zmiana trybu..."
 
-#
-"Model      [none]"
-"Model      [brak]"
+#MSG_MODEL
+"Model"
+"\x00"
 
-#
-"Model    [strict]"
-"Model [restrykc.]"
-
-#
-"Model      [warn]"
-"Model  [ostrzez.]"
-
-#
-"Nozzle d.  [0.25]"
-"Sr. dyszy  [0,25]"
-
-#
-"Nozzle d.  [0.40]"
-"Sr. dyszy  [0,40]"
-
-#
-"Nozzle d.  [0.60]"
-"Sr. dyszy  [0,60]"
-
-#
-"Nozzle     [none]"
-"Dysza      [brak]"
-
-#
-"Nozzle   [strict]"
-"Dysza [restrykc.]"
-
-#
-"Nozzle     [warn]"
-"Dysza  [ostrzez.]"
+#MSG_NOZZLE_DIAMETER
+"Nozzle d."
+"Sr. dyszy"
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1372,9 +1329,9 @@
 "Sheet"
 "Plyta"
 
-#
-"Sound    [assist]"
-"Dzwiek   [asyst.]"
+#MSG_SOUND_BLIND
+"Assist"
+"Asyst."
 
 #
 "Steel sheets"
@@ -1384,14 +1341,6 @@
 "Z-correct:"
 "Korekcja-Z:"
 
-#
-"Z-probe nr.    [1]"
-"Ilosc Pomiarow [1]"
-
-#
-"Z-probe nr.    [3]"
-"Ilosc Pomiarow [3]"
-
-#
-"Z-probe nr.    [5]"
-"Ilosc Pomiarow [5]"
+#MSG_Z_PROBE_NR
+"Z-probe nr."
+"Ilosc Pomiarow"

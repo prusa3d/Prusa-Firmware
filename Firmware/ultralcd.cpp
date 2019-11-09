@@ -5530,7 +5530,6 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
 #define SETTINGS_NOZZLE \
 do\
 {\
-    char sNozzleDiam[5];/*enough for two decimals*/\
     float fNozzleDiam;\
     switch(oNozzleDiameter)\
     {\
@@ -5539,8 +5538,7 @@ do\
         case ClNozzleDiameter::_Diameter_600: fNozzleDiam = 0.6f; break;\
         default: fNozzleDiam = 0.4f; break;\
     }\
-    sprintf_P(sNozzleDiam, PSTR("%.2f"), fNozzleDiam);\
-    MENU_ITEM_TOGGLE(_T(MSG_NOZZLE_DIAMETER), sNozzleDiam, lcd_nozzle_diameter_set);\
+    MENU_ITEM_TOGGLE(_T(MSG_NOZZLE_DIAMETER), ftostr12ns(fNozzleDiam), lcd_nozzle_diameter_set);\
 }\
 while (0)
 
@@ -7105,21 +7103,19 @@ static void lcd_mesh_bed_leveling_settings()
 	
 	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 	uint8_t points_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+	char sToggle[4]; //enough for nxn format
 
 	MENU_BEGIN();
-	MENU_ITEM_BACK_P(_T(MSG_SETTINGS)); 
-	if(points_nr == 3) MENU_ITEM_FUNCTION_P(_i("Mesh         [3x3]"), mbl_mesh_toggle); ////MSG_MESH_3x3 c=18
-	else			   MENU_ITEM_FUNCTION_P(_i("Mesh         [7x7]"), mbl_mesh_toggle); ////MSG_MESH_7x7 c=18
-	switch (mbl_z_probe_nr) {
-		case 1: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [1]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18
-		case 5: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [5]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18
-		default: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [3]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18
-	}
-	if (points_nr == 7) {
-		if (magnet_elimination) MENU_ITEM_FUNCTION_P(_i("Magnets comp. [On]"), mbl_magnets_elimination_toggle); ////MSG_MAGNETS_COMP_ON c=18
-		else				    MENU_ITEM_FUNCTION_P(_i("Magnets comp.[Off]"), mbl_magnets_elimination_toggle); ////MSG_MAGNETS_COMP_OFF c=18
-	}
-	else					        menu_item_text_P(_i("Magnets comp.[N/A]")); ////MSG_MAGNETS_COMP_NA c=18
+	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+	sToggle[0] = points_nr + '0';
+	sToggle[1] = 'x';
+	sToggle[2] = points_nr + '0';
+	sToggle[3] = 0;
+	MENU_ITEM_TOGGLE(_T(MSG_MESH), sToggle, mbl_mesh_toggle);
+	sToggle[0] = mbl_z_probe_nr + '0';
+	sToggle[1] = 0;
+	MENU_ITEM_TOGGLE(_T(MSG_Z_PROBE_NR), sToggle, mbl_probe_nr_toggle);
+	MENU_ITEM_TOGGLE_P(_T(MSG_MAGNETS_COMP), (points_nr == 7) ? (magnet_elimination ? _T(MSG_ON): _T(MSG_OFF)) : _T(MSG_NA), mbl_magnets_elimination_toggle);
 	MENU_END();
 	//SETTINGS_MBL_MODE;
 }

@@ -1218,17 +1218,17 @@
 "FINDA:"
 "\x00"
 
-#
-"Firmware   [none]"
-"Firmware  [Zadne]"
+#MSG_FIRMWARE
+"Firmware"
+"\x00"
 
-#
-"Firmware [strict]"
-"Firmware [Prisne]"
+#MSG_STRICT
+"Strict"
+"Prisne"
 
-#
-"Firmware   [warn]"
-"Firmware[Varovat]"
+#MSG_WARN
+"Warn"
+"Varovat"
 
 #
 "HW Setup"
@@ -1238,25 +1238,13 @@
 "IR:"
 "\x00"
 
-#
-"Magnets comp.[N/A]"
-"Komp. magnetu[N/A]"
+#MSG_MAGNETS_COMP
+"Magnets comp."
+"Komp. magnetu"
 
-#
-"Magnets comp.[Off]"
-"Komp. magnetu[Vyp]"
-
-#
-"Magnets comp. [On]"
-"Komp. magnetu[Zap]"
-
-#
-"Mesh         [3x3]"
-"Mesh         [3x3]"
-
-#
-"Mesh         [7x7]"
-"Mesh         [7x7]"
+#MSG_MESH
+"Mesh"
+"\x00"
 
 #
 "Mesh bed leveling"
@@ -1266,53 +1254,21 @@
 "MK3S firmware detected on MK3 printer"
 "MK3S firmware detekovan na tiskarne MK3"
 
-#
-"MMU Mode [Normal]"
-"MMU mod  [Normal]"
-
-#
-"MMU Mode[Stealth]"
-"MMU Mod   [Tichy]"
+#MSG_MMU_MODE
+"MMU Mode"
+"MMU mod"
 
 #
 "Mode change in progress ..."
 "Probiha zmena modu..."
 
-#
-"Model      [none]"
-"Model     [Zadne]"
+#MSG_MODEL
+"Model"
+"\x00"
 
-#
-"Model    [strict]"
-"Model    [Prisne]"
-
-#
-"Model      [warn]"
-"Model   [Varovat]"
-
-#
-"Nozzle d.  [0.25]"
-"Tryska     [0.25]"
-
-#
-"Nozzle d.  [0.40]"
-"Tryska     [0.40]"
-
-#
-"Nozzle d.  [0.60]"
-"Tryska     [0.60]"
-
-#
-"Nozzle     [none]"
-"Tryska    [Zadne]"
-
-#
-"Nozzle   [strict]"
-"Tryska   [Prisne]"
-
-#
-"Nozzle     [warn]"
-"Tryska  [Varovat]"
+#MSG_NOZZLE_DIAMETER
+"Nozzle d."
+"Tryska"
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1374,9 +1330,9 @@
 "Sheet"
 "Plat"
 
-#
-"Sound    [assist]"
-"Zvuk     [Asist.]"
+#MSG_SOUND_BLIND
+"Assist"
+"Asist."
 
 #
 "Steel sheets"
@@ -1386,14 +1342,6 @@
 "Z-correct:"
 "Korekce Z:"
 
-#
-"Z-probe nr.    [1]"
-"Pocet mereni Z [1]"
-
-#
-"Z-probe nr.    [3]"
-"Pocet mereni Z [3]"
-
-#
-"Z-probe nr.    [5]"
-"Pocet mereni Z [5]"
+#MSG_Z_PROBE_NR
+"Z-probe nr."
+"Pocet mereni Z"
