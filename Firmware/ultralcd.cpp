@@ -310,18 +310,24 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
 {
     char c;
-    int enc_dif = lcd_encoder_diff;
+    int enc_dif = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
     uint8_t n = LCD_WIDTH - 1;
+
     for(uint_least8_t g = 0; g<4;g++){
       lcd_set_cursor(0, g);
     lcd_print(' ');
     }
-
     lcd_set_cursor(0, row);
     lcd_print('>');
+
+    if (longFilename[0] == '\0')
+    {
+        longFilename = filename;
+    }
+
     int i = 1;
     int j = 0;
     char* longFilenameTMP = longFilename;
@@ -339,7 +345,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longF
           n = LCD_WIDTH - 1;
           for(int g = 0; g<300 ;g++){
 			  manage_heater();
-            if(LCD_CLICKED || ( enc_dif != lcd_encoder_diff )){
+            if(LCD_CLICKED || ( enc_dif != (lcd_encoder_diff / ENCODER_PULSES_PER_STEP))){
 				longFilenameTMP = longFilename;
 				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
 				i = 1;
@@ -537,7 +543,7 @@ static uint8_t menu_item_sdfile(const char*
 		if (lcd_draw_update)
 		{
 			if (lcd_encoder == menu_item)
-				lcd_implementation_drawmenu_sdfile_selected(menu_row, str_fnl);
+				lcd_implementation_drawmenu_sdfile_selected(menu_row, str_fn, str_fnl);
 			else
 				lcd_implementation_drawmenu_sdfile(menu_row, str_fn, str_fnl);
 		}
@@ -709,10 +715,10 @@ void lcdui_print_status_line(void)
 {
 	if (IS_SD_PRINTING)
 	{
-		if (strcmp(longFilenameOLD, card.longFilename) != 0)
+		if (strcmp(longFilenameOLD, (card.longFilename[0] ? card.longFilename : card.filename)) != 0)
 		{
 			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
-			sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
+			sprintf_P(longFilenameOLD, PSTR("%s"), (card.longFilename[0] ? card.longFilename : card.filename));
 			scrollstuff = 0;
 		}
 	}
@@ -760,16 +766,16 @@ void lcdui_print_status_line(void)
 	}
 	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status))
 	{ // If printing from SD, show what we are printing
-		if(strlen(card.longFilename) > LCD_WIDTH)
+		if(strlen(longFilenameOLD) > LCD_WIDTH)
 		{
 			int inters = 0;
 			int gh = scrollstuff;
 			while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
 			{
-				if (card.longFilename[gh] == '\0')
+				if (longFilenameOLD[gh] == '\0')
 				{
 					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(card.longFilename[gh - 1]);
+					lcd_print(longFilenameOLD[gh - 1]);
 					scrollstuff = 0;
 					gh = scrollstuff;
 					inters = 1;
@@ -777,7 +783,7 @@ void lcdui_print_status_line(void)
 				else
 				{
 					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(card.longFilename[gh - 1]);
+					lcd_print(longFilenameOLD[gh - 1]);
 					gh++;
 				}
 			}
@@ -785,7 +791,7 @@ void lcdui_print_status_line(void)
 		}
 		else
 		{
-			lcd_print(longFilenameOLD);
+			lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
 		}
 	}
 	else
@@ -1072,12 +1078,8 @@ void lcd_commands()
 		if (!blocks_queued() && !homing_flag)
 		{
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
-			long_pause();
-               if (lcd_commands_type == LcdCommands::LongPause) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
-               {
-                    lcd_commands_type = LcdCommands::Idle;
-                    lcd_commands_step = 0;
-               }
+            lcd_commands_type = LcdCommands::Idle;
+            lcd_commands_step = 0;
 		}
 	}
 
@@ -1636,7 +1638,7 @@ void lcd_pause_print()
 {
     lcd_return_to_status();
     stop_and_save_print_to_ram(0.0,0.0);
-    setAllTargetHotends(0);
+    long_pause();
     isPrintPaused = true;
     if (LcdCommands::Idle == lcd_commands_type)
     {
@@ -1843,8 +1845,8 @@ static void lcd_menu_fails_stats_total()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | Power failures: 000|	c=14 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Power failures  000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! | Crash   X:000 Y:000|	c=7 r=1
 //! ----------------------
 //! @endcode
@@ -1890,6 +1892,7 @@ static void lcd_menu_fails_stats()
 }
 
 #elif defined(FILAMENT_SENSOR)
+static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-16.16S%-3d\n";
 //! 
 //! @brief Print last print and total filament run outs
 //! 
@@ -1900,9 +1903,9 @@ static void lcd_menu_fails_stats()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! |Total failures      |	c=20 r=1
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Filam. runouts  000|	c=14 r=1
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1912,11 +1915,13 @@ static void lcd_menu_fails_stats()
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
 	lcd_home();
-    lcd_printf_P(PSTR("Last print failures\n"  ////c=20 r=1 
-        " Filam. runouts  %-3d\n"   ////c=14 r=1
-        "Total failures\n"  ////c=20 r=1
-        " Filam. runouts  %-3d"), filamentLast, filamentTotal);  ////c=14 r=1
-    menu_back_if_clicked();
+	lcd_printf_P(failStatsFmt, 
+        _i("Last print failures"),   ////c=20 r=1
+        _i("Filam. runouts"), filamentLast,   ////c=14 r=1
+        _i("Total failures"),  ////c=20 r=1
+        _i("Filam. runouts"), filamentTotal);   ////c=14 r=1
+
+	menu_back_if_clicked();
 }
 #else
 static void lcd_menu_fails_stats()
@@ -2371,9 +2376,11 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             {
                 lcd_commands_type = LcdCommands::Layer1Cal;
             }
-            else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+            else
             {
-                lcd_wizard(WizState::LoadFilHot);
+                raise_z_above(MIN_Z_FOR_PREHEAT);
+                if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+                    lcd_wizard(WizState::LoadFilHot);
             }
             return;
         }
@@ -3446,6 +3453,8 @@ void lcd_wait_for_cool_down() {
 	lcd_set_custom_characters_degree();
 	setAllTargetHotends(0);
 	setTargetBed(0);
+	int fanSpeedBckp = fanSpeed;
+	fanSpeed = 255;
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(_i("Waiting for nozzle and bed cooling"));////MSG_WAITING_TEMP c=20 r=3
 
@@ -3464,6 +3473,7 @@ void lcd_wait_for_cool_down() {
 		delay_keep_alive(1000);
 		serialecho_temperatures();
 	}
+	fanSpeed = fanSpeedBckp;
 	lcd_set_custom_characters_arrows();
 	lcd_update_enable(true);
 }
@@ -4929,12 +4939,12 @@ static void lcd_wizard_load()
 {
 	if (mmu_enabled)
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the first tube of the MMU, then press the knob to load it."));////c=20 r=8
 		tmp_extruder = 0;
 	} 
 	else
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the extruder, then press the knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 	}	
 	lcd_update_enable(false);
 	lcd_clear();
@@ -4958,7 +4968,7 @@ static void wizard_lay1cal_message(bool cold)
     if (mmu_enabled)
     {
         lcd_show_fullscreen_message_and_wait_P(
-                _i("First you will select filament you wish to use for calibration. Then select temperature which matches your material."));
+                _i("Choose a filament for the First Layer Calibration and select it in the on-screen menu."));
     }
     else if (cold)
     {
@@ -4966,7 +4976,7 @@ static void wizard_lay1cal_message(bool cold)
                 _i("Select temperature which matches your material."));
     }
     lcd_show_fullscreen_message_and_wait_P(
-            _i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration.")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12
+            _i("The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter).")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12
 }
 
 //! @brief Printer first run wizard (Selftest and calibration)
@@ -5094,7 +5104,7 @@ void lcd_wizard(WizState state)
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			if (mmu_enabled)
 			{
-			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is any filament loaded?"), true);////c=20 r=2
+			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), true);////c=20 r=2
 			} else
 			{
 			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), true);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
@@ -5139,7 +5149,7 @@ void lcd_wizard(WizState state)
 			}
 			else
 			{
-			    lcd_show_fullscreen_message_and_wait_P(_i("If you have more steel sheets you can calibrate additional presets in Settings / HW Setup / Steel sheets."));
+			    lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));
 				state = S::Finish;
 			}
 			break;
@@ -6356,6 +6366,8 @@ void unload_filament()
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
+
+    raise_z_above(MIN_Z_FOR_UNLOAD);
 
 	//		extr_unload2();
 

@@ -505,7 +505,10 @@ void checkFanSpeed()
 		// we may even send some info to the LCD from here
 		fan_check_error = EFCE_FIXED;
 	}
-
+	if ((fan_check_error == EFCE_FIXED) && !PRINTER_ACTIVE){
+		fan_check_error = EFCE_OK; //if the issue is fixed while the printer is doing nothing, reenable processing immediately.
+		lcd_reset_alert_level(); //for another fan speed error
+	}
 	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled && (fan_check_error == EFCE_OK)) {
 		fan_speed_errors[0] = 0;
 		fanSpeedError(0); //extruder fan
