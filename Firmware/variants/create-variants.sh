@@ -135,7 +135,7 @@ for TYPE in ${TypesArray[@]}; do
 		# Microsteps
 		sed -i -e 's/#define TMC2130_USTEPS_E    32*/#define TMC2130_USTEPS_E    16/' ${VARIANT}
 		# Filament Load Distances (BPE gears are farther from the hotend)
-		sed -i -e 's/#define LOAD_FILAMENT_1 "G1 E70 F100"*/#define LOAD_FILAMENT_2 "G1 E80 F100"/' ${VARIANT}
+		sed -i -e 's/#define LOAD_FILAMENT_1 "G1 E70 F400"*/#define LOAD_FILAMENT_1 "G1 E80 F400"/' ${VARIANT}
 		sed -i -e 's/#define UNLOAD_FILAMENT_1 "G1 E-80 F7000"*/#define UNLOAD_FILAMENT_1 "G1 E-95 F7000"/' ${VARIANT}
 		sed -i -e 's/#define FILAMENTCHANGE_FINALRETRACT -80*/#define FILAMENTCHANGE_FINALRETRACT -95/' ${VARIANT}
 		sed -i -e 's/#define FILAMENTCHANGE_FINALFEED 70*/#define FILAMENTCHANGE_FINALFEED 80/' ${VARIANT}
@@ -244,7 +244,7 @@ for TYPE in ${BMGOArray[@]}; do
 		sed -i -e 's/#define NOZZLE_TYPE "Mosquito"*/#define NOZZLE_TYPE "Mosquito Magnum"/' ${VARIANT}
 		# Enable Bondtech Mosquito MMU settings
 		sed -i -e "s/#define BONDTECH_MOSQUITO*/\/\/#define BONDTECH_MOSQUITO/g" ${VARIANT}
-		sed -i -e "s/\/\/#define BONDTECH_MOSQUITO_MAGNUM*/#define BONDTECH_MOSQUITO_MAGNUM/g" ${VARIANT}
+		sed -i -e "s/\/\/#define BONDTECH_M_MAGNUM*/#define BONDTECH_M_MAGNUM/g" ${VARIANT}
 	done
 	echo
 done

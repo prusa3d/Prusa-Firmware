@@ -42,7 +42,7 @@
 // Extruder
 //#define BONDTECH_MK3S
 //#define BONDTECH_MOSQUITO
-//#define BONDTECH_MOSQUITO_MAGNUM
+//#define BONDTECH_M_MAGNUM
 
 // Uncomment the below for the Slice Engineering high temperature sensor
 //#define SLICE_HT_EXTRUDER
