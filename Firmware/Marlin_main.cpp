@@ -6332,9 +6332,9 @@ Sigma_Exit:
           // pause the print for 30s and ask the user to upgrade the firmware.
           show_upgrade_dialog_if_version_newer(++ strchr_pointer);
       } else {
-          SERIAL_ECHOPGM("FIRMWARE_NAME:Prusa-Firmware ");
+          SERIAL_ECHOPGM("FIRMWARE_NAME:Zaribo-Firmware ");
           SERIAL_ECHORPGM(FW_VERSION_STR_P());
-          SERIAL_ECHOPGM(" based on Marlin FIRMWARE_URL:https://github.com/prusa3d/Prusa-Firmware PROTOCOL_VERSION:");
+          SERIAL_ECHOPGM(" based on Marlin FIRMWARE_URL:https://github.com/Zaribo/Zaribo-Firmware PROTOCOL_VERSION:");
           SERIAL_ECHOPGM(PROTOCOL_VERSION);
           SERIAL_ECHOPGM(" MACHINE_TYPE:");
           SERIAL_ECHOPGM(CUSTOM_MENDEL_NAME); 
