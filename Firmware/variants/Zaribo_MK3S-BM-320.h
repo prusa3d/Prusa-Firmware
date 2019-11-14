@@ -19,7 +19,10 @@
 #define DEVELOPER
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Zaribo MK3S-BMQ-420"
+#define CUSTOM_MENDEL_NAME "Zaribo MK3S-BM-320"
+
+// WEH002004 OLED Display uncomment WEH002004_OLED if have this kind of display
+#define WEH002004_OLED
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
@@ -36,6 +39,10 @@
 //#define E3D_PT100_BED_WITH_AMP
 //#define E3D_PT100_BED_NO_AMP
 
+// Extruder
+//#define BONDTECH_MK3S
+#define BONDTECH_MOSQUITO
+#define BONDTECH_MOSQUITO_MAGNUM
 
 // Uncomment the below for the Slice Engineering high temperature sensor
 //#define SLICE_HT_EXTRUDER
@@ -73,7 +80,7 @@
 #define X_MIN_POS 0
 #define Y_MAX_POS 212.5
 #define Y_MIN_POS -4 //orig -4
-#define Z_MAX_POS 420
+#define Z_MAX_POS 317
 #define Z_MIN_POS 0.15
 
 // Canceled home position
@@ -349,11 +356,11 @@
 // Load filament commands
 #define LOAD_FILAMENT_0 "M83"
 #define LOAD_FILAMENT_1 "G1 E70 F400"
-#define LOAD_FILAMENT_2 "G1 E50 F100"
+#define LOAD_FILAMENT_2 "G1 E40 F100"
 
 // Unload filament commands
 #define UNLOAD_FILAMENT_0 "M83"
-#define UNLOAD_FILAMENT_1 "G1 E-100 F7000"
+#define UNLOAD_FILAMENT_1 "G1 E-95 F7000"
 
 /*------------------------------------
  CHANGE FILAMENT SETTINGS
@@ -366,10 +373,10 @@
 #define FILAMENTCHANGE_YPOS 0
 #define FILAMENTCHANGE_ZADD 2
 #define FILAMENTCHANGE_FIRSTRETRACT -2
-#define FILAMENTCHANGE_FINALRETRACT -100
+#define FILAMENTCHANGE_FINALRETRACT -95
 
 #define FILAMENTCHANGE_FIRSTFEED 70 //E distance in mm for fast filament loading sequence used used in filament change (M600)
-#define FILAMENTCHANGE_FINALFEED 35 //E distance in mm for slow filament loading sequence used used in filament change (M600) and filament load (M701) 
+#define FILAMENTCHANGE_FINALFEED 25 //E distance in mm for slow filament loading sequence used used in filament change (M600) and filament load (M701) 
 #define FILAMENTCHANGE_RECFEED 5
 
 #define FILAMENTCHANGE_XYFEED 50

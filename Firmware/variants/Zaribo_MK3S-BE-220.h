@@ -2,17 +2,16 @@
 #define CONFIGURATION_PRUSA_H
 
 #include <limits.h>
-//-//
 #include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
  *------------------------------------*/
 
 // Printer revision
-#define PRINTER_TYPE PRINTER_MK3
-#define PRINTER_NAME PRINTER_MK3_NAME
-#define PRINTER_MMU_TYPE PRINTER_MK3_MMU2
-#define PRINTER_MMU_NAME PRINTER_MK3_MMU2_NAME
+#define PRINTER_TYPE PRINTER_MK3S
+#define PRINTER_NAME PRINTER_MK3S_NAME
+#define PRINTER_MMU_TYPE PRINTER_MK3S_MMU2
+#define PRINTER_MMU_NAME PRINTER_MK3S_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK3"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -20,12 +19,18 @@
 #define DEVELOPER
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Zaribo MK3-BMG-220"
+#define CUSTOM_MENDEL_NAME "Zaribo MK3S-BE-220"
+
+// WEH002004 OLED Display uncomment WEH002004_OLED if have this kind of display
+#define WEH002004_OLED
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
 #define STEEL_SHEET
 #define HAS_SECOND_SERIAL_PORT
+
+// PSU
+//#define PSU_Delta                                 // uncomment if DeltaElectronics PSU installed
 
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
@@ -33,6 +38,14 @@
 //#define E3D_PT100_EXTRUDER_NO_AMP
 //#define E3D_PT100_BED_WITH_AMP
 //#define E3D_PT100_BED_NO_AMP
+
+// Extruder
+#define BONDTECH_MK3S
+//#define BONDTECH_MOSQUITO
+//#define BONDTECH_MOSQUITO_MAGNUM
+
+// Uncomment the below for the Slice Engineering high temperature sensor
+//#define SLICE_HT_EXTRUDER
 
 
 /*------------------------------------
@@ -67,7 +80,7 @@
 #define X_MIN_POS 0
 #define Y_MAX_POS 212.5
 #define Y_MIN_POS -4 //orig -4
-#define Z_MAX_POS 220
+#define Z_MAX_POS 217
 #define Z_MIN_POS 0.15
 
 // Canceled home position
@@ -140,7 +153,7 @@
 
 // Filament sensor
 #define FILAMENT_SENSOR
-#define PAT9125
+#define IR_SENSOR
 
 // Backlash - 
 //#define BACKLASH_X
@@ -296,6 +309,8 @@
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
 #define HEATER_0_MAXTEMP 410
+#elif defined (SLICE_HT_EXTRUDER)
+#define HEATER_0_MAXTEMP 410
 #else
 #define HEATER_0_MAXTEMP 305
 #endif
@@ -308,6 +323,10 @@
 #define  DEFAULT_Kp 21.70
 #define  DEFAULT_Ki 1.60
 #define  DEFAULT_Kd 73.76
+#elif defined (SLICE_HT_EXTRUDER)
+#define  DEFAULT_Kp 29.09
+#define  DEFAULT_Ki 3.52
+#define  DEFAULT_Kd 60.04
 #else
 // Define PID constants for extruder
 //#define  DEFAULT_Kp 40.925
@@ -337,11 +356,11 @@
 // Load filament commands
 #define LOAD_FILAMENT_0 "M83"
 #define LOAD_FILAMENT_1 "G1 E70 F400"
-#define LOAD_FILAMENT_2 "G1 E50 F100"
+#define LOAD_FILAMENT_2 "G1 E40 F100"
 
 // Unload filament commands
 #define UNLOAD_FILAMENT_0 "M83"
-#define UNLOAD_FILAMENT_1 "G1 E-100 F7000"
+#define UNLOAD_FILAMENT_1 "G1 E-95 F7000"
 
 /*------------------------------------
  CHANGE FILAMENT SETTINGS
@@ -354,10 +373,10 @@
 #define FILAMENTCHANGE_YPOS 0
 #define FILAMENTCHANGE_ZADD 2
 #define FILAMENTCHANGE_FIRSTRETRACT -2
-#define FILAMENTCHANGE_FINALRETRACT -100
+#define FILAMENTCHANGE_FINALRETRACT -95
 
 #define FILAMENTCHANGE_FIRSTFEED 70 //E distance in mm for fast filament loading sequence used used in filament change (M600)
-#define FILAMENTCHANGE_FINALFEED 35 //E distance in mm for slow filament loading sequence used used in filament change (M600) and filament load (M701) 
+#define FILAMENTCHANGE_FINALFEED 25 //E distance in mm for slow filament loading sequence used used in filament change (M600) and filament load (M701) 
 #define FILAMENTCHANGE_RECFEED 5
 
 #define FILAMENTCHANGE_XYFEED 50
@@ -549,11 +568,14 @@
 // 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
 // 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
+// 800 Slice Engineering 450c thermistors
 
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP)
 #define TEMP_SENSOR_0 247
 #elif defined(E3D_PT100_EXTRUDER_NO_AMP)
 #define TEMP_SENSOR_0 148
+#elif defined(SLICE_HT_EXTRUDER)
+#define TEMP_SENSOR_0 800
 #else
 #define TEMP_SENSOR_0 5
 #endif
@@ -629,6 +651,14 @@
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
 //#define MMU_HAS_CUTTER
+
+// This is experimental feature requested by our test department.
+// There is no known use for ordinary user. If enabled by this macro
+// and enabled from printer menu (not enabled by default). It cuts filament
+// every time when switching filament from gcode. MMU_HAS_CUTTER needs to be
+// defined.
+
+//#define MMU_ALWAYS_CUT
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 #endif //__CONFIGURATION_PRUSA_H

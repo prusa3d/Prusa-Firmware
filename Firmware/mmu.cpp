@@ -806,7 +806,18 @@ void mmu_load_to_nozzle()
     float feedrate = 562;
 	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
     st_synchronize();
-	current_position[E_AXIS] += 14.4f;
+
+  #ifdef BONDTECH_MK25S
+    current_position[E_AXIS] += 25.4f; //Bondtech MK2.5s 11 mm longer t melt zone
+  #elif defined(BONDTECH_MK3S)
+    current_position[E_AXIS] += 25.4f; //Bondtech MK3s 11 mm longer t melt zone
+  #elif defined(BONDTECH_MOSQUITO)
+    current_position[E_AXIS] += 23.4f; //Bondtech Mosquito 9 mm longer t melt zone
+  #elif defined(BONDTECH_MOSQUITO_MAGNUM)
+    current_position[E_AXIS] += 18.4f; //Bondtech Mosquito Magnum 5 mm longer t melt zone
+  #else
+	 current_position[E_AXIS] += 14.4f;
+  #endif
 	feedrate = 871;
 	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
     st_synchronize();
@@ -814,7 +825,15 @@ void mmu_load_to_nozzle()
 	feedrate = 1393;
 	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
     st_synchronize();
-	current_position[E_AXIS] += 14.4f;
+
+//Distance through heat block is longer with Mosquito / Mosquito Magnum
+  #ifdef BONDTECH_MOSQUITO
+    current_position[E_AXIS] += 16.4f; //2mm further through Mosquito heat block
+  #elif defined(BONDTECH_MOSQUITO_MAGNUM)
+    current_position[E_AXIS] += 21.4f; //7mm further through Mosquito Magnum heat block
+  #else
+	  current_position[E_AXIS] += 14.4f;
+  #endif
 	feedrate = 871;
 	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
     st_synchronize();
@@ -1442,10 +1461,31 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 //! @retval false Doesn't fit
 static bool can_load()
 {
-    current_position[E_AXIS] += 60;
+    #ifdef BONDTECH_MK25S //feed to melt zone
+      current_position[E_AXIS] += 71; //Bondtech_V6 71mm from drive gear to melt zone
+    #elif defined(BONDTECH_MK3S)
+      current_position[E_AXIS] += 71; //Bondtech_V6 71mm from drive gear to melt zone
+    #elif defined(BONDTECH_MOSQUITO)
+      current_position[E_AXIS] += 70; //Bondtech_Mosquito 70mm from drive gear to melt zone
+    #elif defined(BONDTECH_MOSQUITO_MAGNUM)
+      current_position[E_AXIS] += 62; //Bondtech_Mosquito_Magnum 62mm from drive gear to melt zone
+    #else
+      current_position[E_AXIS] += 60;
+    #endif
     plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
-    current_position[E_AXIS] -= 52;
-    plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
+
+    #ifdef BONDTECH_MK25S//pull back to 8 mm below drive gear to check if filament path was blocked
+      current_position[E_AXIS] -= 63; // Pull back 63mm, 8 mm below drive gear
+    #elif defined(BONDTECH_MK3S)
+      current_position[E_AXIS] -= 63; // Pull back 63mm, 8 mm below drive gear
+    #elif defined(BONDTECH_MOSQUITO)
+      current_position[E_AXIS] -= 62; // Pull back 62mm, 8 mm below drive gear
+    #elif defined(BONDTECH_MOSQUITO_MAGNUM)
+      current_position[E_AXIS] -= 54; // Pull back 54mm, 8 mm below drive gear
+    #else
+      current_position[E_AXIS] -= 52;
+    #endif
+        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
     st_synchronize();
 
     uint_least8_t filament_detected_count = 0;

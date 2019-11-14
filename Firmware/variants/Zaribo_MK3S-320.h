@@ -21,6 +21,9 @@
 // Printer name
 #define CUSTOM_MENDEL_NAME "Zaribo MK3S-320"
 
+// WEH002004 OLED Display uncomment WEH002004_OLED if have this kind of display
+//#define WEH002004_OLED
+
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
 #define STEEL_SHEET
@@ -36,6 +39,10 @@
 //#define E3D_PT100_BED_WITH_AMP
 //#define E3D_PT100_BED_NO_AMP
 
+// Extruder
+//#define BONDTECH_MK3S
+//#define BONDTECH_MOSQUITO
+//#define BONDTECH_MOSQUITO_MAGNUM
 
 // Uncomment the below for the Slice Engineering high temperature sensor
 //#define SLICE_HT_EXTRUDER
