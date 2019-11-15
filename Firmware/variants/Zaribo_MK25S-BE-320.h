@@ -38,7 +38,7 @@
 //#define E3D_PT100_BED_NO_AMP
 
 // Extruder
-#define BONDTECH_MK3S
+//#define BONDTECH_MK25S
 //#define BONDTECH_MOSQUITO
 //#define BONDTECH_M_MAGNUM
 
