@@ -4027,7 +4027,8 @@ static void lcd_show_sensors_state()
 	uint8_t idler_state = STATE_NA;
 
 	pinda_state = READ(Z_MIN_PIN);
-	if (mmu_enabled) {
+	if (mmu_enabled && ((_millis() - mmu_last_finda_response) < 1000ul) )
+	{
 		finda_state = mmu_finda;
 	}
 	if (ir_sensor_detected) {
