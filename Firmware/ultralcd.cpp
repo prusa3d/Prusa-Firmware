@@ -6959,7 +6959,6 @@ void lcd_belttest_print(const char* msg, uint16_t X, uint16_t Y)
     lcd_clear();
     lcd_printf_P(
               _N(
-                 ESC_H(0,0)
                  "%S:\n"
                  "%S\n"
                  "X:%d\n"
