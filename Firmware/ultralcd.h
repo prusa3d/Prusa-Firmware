@@ -47,6 +47,7 @@ unsigned char lcd_choose_color();
 void lcd_load_filament_color_check();
 //void lcd_mylang();
 
+extern void lcd_belttest();
 extern bool lcd_selftest();
 
 void lcd_menu_statistics(); 
