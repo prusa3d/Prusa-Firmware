@@ -19,7 +19,7 @@
 # ModArray is an array of printer mods
 #
 #
-# Version 1.0.7
+# Version 1.0.8
 ################################################################################
 # 3 Jul 2019, vertigo235, Inital varaiants script
 # 8 Aug 2019, 3d-gussner, Modified for Zaribo needs
@@ -31,6 +31,7 @@
 # 12 Nov 2019, 3d-gussner, Update Bondtech Extruder variants, as they are longer than Zaribo Extruder
 #                          Also implementing Bondtech Mosquito MMU length settings
 # 14 Nov 2019, 3d-gussner, Merge OLED as default
+# 15 Nov 2019, 3d-gussner, Fix Bondtech Steps on MK25 and MK25s. Thanks to Bernd pointing it out.
 ################################################################################
 
 # Constants
@@ -130,11 +131,17 @@ for TYPE in ${TypesArray[@]}; do
 		sed -i -e 's/^#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$HEIGHT'"*/#define CUSTOM_MENDEL_NAME "Zaribo '$TYPE'-'$MOD'-'$HEIGHT'"/g' ${VARIANT}
 		# Printer Height
 		sed -i -e "s/^#define Z_MAX_POS ${HEIGHT}*/#define Z_MAX_POS ${BMGHEIGHT}/g" ${VARIANT}
-		# E Steps 
-		sed -i -e 's/#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200\/8,280}*/#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200\/8,415}/' ${VARIANT}
+		if [[ "$TYPE" == "MK3" || "$TYPE" == "MK3S" ]]; then
+			# E Steps for MK3 and MK3S with Bondetch extruder
+			sed -i -e 's/#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200\/8,280}*/#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200\/8,415}/' ${VARIANT}
+		elif [[ $TYPE == "MK25" || $TYPE == "MK25S" ]]; then
+			# E Steps for MK25 and MK25S with Bondetch extruder
+			sed -i -e 's/#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200\/8,133}*/#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200\/8,415}/' ${VARIANT}
+		fi
 		# Microsteps
 		sed -i -e 's/#define TMC2130_USTEPS_E    32*/#define TMC2130_USTEPS_E    16/' ${VARIANT}
 		# Filament Load Distances (BPE gears are farther from the hotend)
+		sed -i -e 's/#define FILAMENTCHANGE_FIRSTFEED 70*/#define FILAMENTCHANGE_FIRSTFEED 80/' ${VARIANT}
 		sed -i -e 's/#define LOAD_FILAMENT_1 "G1 E70 F400"*/#define LOAD_FILAMENT_1 "G1 E80 F400"/' ${VARIANT}
 		sed -i -e 's/#define UNLOAD_FILAMENT_1 "G1 E-80 F7000"*/#define UNLOAD_FILAMENT_1 "G1 E-95 F7000"/' ${VARIANT}
 		sed -i -e 's/#define FILAMENTCHANGE_FINALRETRACT -80*/#define FILAMENTCHANGE_FINALRETRACT -95/' ${VARIANT}
