@@ -6652,6 +6652,7 @@ static void lcd_test_menu()
 static bool fan_error_selftest()
 {
 #ifdef FANCHECK
+    if (!fans_check_enabled) return 0;
 
     fanSpeed = 255;
 #ifdef FAN_SOFT_PWM
@@ -6682,9 +6683,8 @@ static bool fan_error_selftest()
         return 1;
     }
 #endif
+#endif //FANCHECK
     return 0;
-
-#endif //FANCHECK   
 }
 
 //! @brief Resume paused print
