@@ -137,8 +137,8 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 						SERIAL_ECHOPGM("Access date: ");
 						MYSERIAL.println(p.lastAccessDate);
 						SERIAL_ECHOLNPGM("");*/
-						creationDate = p.creationDate;
-						creationTime = p.creationTime;
+						modificationDate = p.lastWriteDate;
+						modificationTime = p.lastWriteTime;
 						//writeDate = p.lastAccessDate;
 						if (match != NULL) {
 							if (strcasecmp(match, filename) == 0) return;
@@ -763,8 +763,8 @@ void CardReader::presort() {
 		#endif
 		#elif SDSORT_USES_STACK
 		char sortnames[fileCnt][LONG_FILENAME_LENGTH];
-		uint16_t creation_time[fileCnt];
-		uint16_t creation_date[fileCnt];
+		uint16_t modification_time[fileCnt];
+		uint16_t modification_date[fileCnt];
 		#endif
 
 		// Folder sorting needs 1 bit per entry for flags.
@@ -784,8 +784,8 @@ void CardReader::presort() {
 		// retaining only two filenames at a time. This is very
 		// slow but is safest and uses minimal RAM.
 		char name1[LONG_FILENAME_LENGTH + 1];
-		uint16_t creation_time_bckp;
-		uint16_t creation_date_bckp;
+		uint16_t modification_time_bckp;
+		uint16_t modification_date_bckp;
 
 		#endif
 		position = 0;
@@ -811,8 +811,8 @@ void CardReader::presort() {
 				#else
 				// Copy filenames into the static array
 				strcpy(sortnames[i], LONGEST_FILENAME);
-				creation_time[i] = creationTime;
-				creation_date[i] = creationDate;
+				modification_time[i] = modificationTime;
+				modification_date[i] = modificationDate;
 				#if SDSORT_CACHE_NAMES
 				strcpy(sortshort[i], filename);
 				#endif
@@ -837,12 +837,12 @@ void CardReader::presort() {
 			// Compare names from the array or just the two buffered names
 			#if SDSORT_USES_RAM
 			#define _SORT_CMP_NODIR() (strcasecmp(sortnames[o1], sortnames[o2]) > 0)
-			#define _SORT_CMP_TIME_NODIR() (((creation_date[o1] == creation_date[o2]) && (creation_time[o1] < creation_time[o2])) || \
-																	(creation_date[o1] < creation_date [o2]))
+			#define _SORT_CMP_TIME_NODIR() (((modification_date[o1] == modification_date[o2]) && (modification_time[o1] < modification_time[o2])) || \
+																	(modification_date[o1] < modification_date [o2]))
 			#else
 			#define _SORT_CMP_NODIR() (strcasecmp(name1, name2) > 0) //true if lowercase(name1) > lowercase(name2)
-			#define _SORT_CMP_TIME_NODIR() (((creation_date_bckp == creationDate) && (creation_time_bckp > creationTime)) || \
-																	(creation_date_bckp > creationDate))
+			#define _SORT_CMP_TIME_NODIR() (((modification_date_bckp == modificationDate) && (modification_time_bckp > modificationTime)) || \
+																	(modification_date_bckp > modificationDate))
 
 			#endif
 
@@ -893,8 +893,8 @@ void CardReader::presort() {
 					counter++;
 					getfilename_simple(positions[o1]);
 					strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
-					creation_date_bckp = creationDate;
-					creation_time_bckp = creationTime;
+					modification_date_bckp = modificationDate;
+					modification_time_bckp = modificationTime;
 					#if HAS_FOLDER_SORTING
 					bool dir1 = filenameIsDir;
 					#endif
