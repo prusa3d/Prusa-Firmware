@@ -2270,7 +2270,9 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
+#ifdef FANCHECK
 	if (fans_check_enabled == false) fan_check_error = EFCE_OK; //reset error if fanCheck is disabled during error. Allows resuming print.
+#endif //FANCHECK
 }
 
 #ifdef MMU_HAS_CUTTER
