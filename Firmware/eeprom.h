@@ -3,9 +3,12 @@
 
 #include <stdint.h>
 
+#define MAX_SHEETS 8
+#define MAX_SHEET_NAME_LENGTH 7
+
 typedef struct
 {
-    char name[7];     //!< Can be null terminated, doesn't need to be null terminated
+    char name[MAX_SHEET_NAME_LENGTH]; //!< Can be null terminated, doesn't need to be null terminated
     int16_t z_offset; //!< Z_BABYSTEP_MIN .. Z_BABYSTEP_MAX = Z_BABYSTEP_MIN*2/1000 [mm] .. Z_BABYSTEP_MAX*2/1000 [mm]
     uint8_t bed_temp; //!< 0 .. 254 [°C]
     uint8_t pinda_temp; //!< 0 .. 254 [°C]
@@ -13,7 +16,7 @@ typedef struct
 
 typedef struct
 {
-    Sheet s[8];
+    Sheet s[MAX_SHEETS];
     uint8_t active_sheet;
 } Sheets;
 // sizeof(Sheets). Do not change it unless EEPROM_Sheets_base is last item in EEPROM.
@@ -25,6 +28,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #endif
 
 #define EEPROM_EMPTY_VALUE 0xFF
+#define EEPROM_EMPTY_VALUE16 0xFFFF
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
