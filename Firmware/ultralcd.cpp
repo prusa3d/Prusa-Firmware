@@ -5726,10 +5726,10 @@ do\
     switch(oFsensorActionNA)\
          {\
          case ClFsensorActionNA::_Continue:\
-              MENU_ITEM_FUNCTION_P(_i("FS Action [cont.]"),lcd_fsensor_actionNA_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_CONTINUE), lcd_fsensor_actionNA_set);\
               break;\
          case ClFsensorActionNA::_Pause:\
-              MENU_ITEM_FUNCTION_P(_i("FS Action [pause]"),lcd_fsensor_actionNA_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_PAUSE), lcd_fsensor_actionNA_set);\
               break;\
          default:\
               oFsensorActionNA=ClFsensorActionNA::_Continue;\
@@ -7107,11 +7107,11 @@ static void lcd_tune_menu()
 	if (FSensorStateMenu == 0) {
           if (fsensor_not_responding && (mmu_enabled == false)) {
                /* Filament sensor not working*/
-               MENU_ITEM_FUNCTION_P(_i("Fil. sensor [N/A]"), lcd_fsensor_state_set);
+               MENU_ITEM_TOGGLE_P(_T(MSG_MSG_FSENSOR), _T(MSG_NA), lcd_fsensor_state_set);
           }
           else {
                /* Filament sensor turned off, working, no problems*/
-               MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_OFF), lcd_fsensor_state_set);
+               MENU_ITEM_TOGGLE_P(_T(MSG_MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
           }
 	}
 	else {
