@@ -7107,11 +7107,11 @@ static void lcd_tune_menu()
 	if (FSensorStateMenu == 0) {
           if (fsensor_not_responding && (mmu_enabled == false)) {
                /* Filament sensor not working*/
-               MENU_ITEM_TOGGLE_P(_T(MSG_MSG_FSENSOR), _T(MSG_NA), lcd_fsensor_state_set);
+               MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_NA), lcd_fsensor_state_set);
           }
           else {
                /* Filament sensor turned off, working, no problems*/
-               MENU_ITEM_TOGGLE_P(_T(MSG_MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
+               MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
           }
 	}
 	else {
