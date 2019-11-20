@@ -111,6 +111,15 @@ static void menu_back_no_reset(void)
 	}
 }
 
+void menu_back_no_feedback(void)
+{
+	if (menu_depth > 0)
+	{
+		menu_depth--;		
+		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, false, true);
+	}
+}
+
 void menu_back_if_clicked(void)
 {
 	if (lcd_clicked())
@@ -143,6 +152,16 @@ static void menu_submenu_no_reset(menu_func_t submenu)
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
 		menu_goto(submenu, 0, true, false);
+	}
+}
+
+void menu_submenu_scroll(menu_func_t submenu)
+{
+	if (menu_depth < MENU_DEPTH_MAX)
+	{
+		menu_stack[menu_depth].menu = menu_menu;
+		menu_stack[menu_depth++].position = lcd_encoder;
+		menu_goto(submenu, menu_row, false, true);
 	}
 }
 
