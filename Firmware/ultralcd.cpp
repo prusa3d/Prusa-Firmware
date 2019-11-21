@@ -326,25 +326,30 @@ static void lcd_filename_scroll() //this is a submenu
 	if (_md->status == 0)
 	{
 		_md->status = 1;
-		_md->encoderInitial = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
+		_md->encoderInitial = lcd_encoder;
 		lcd_scrollTimer.start();
 	}
-	if (LCD_CLICKED || (_md->encoderInitial != (lcd_encoder_diff / ENCODER_PULSES_PER_STEP))) //go back to sd_menu.
+	if (LCD_CLICKED || (_md->encoderInitial != lcd_encoder)) //go back to sd_menu.
 	{
-		lcd_scrollTimer.stop();
+		lcd_scrollTimer.start();
 		// menu_depth--;
 		// menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position + lcd_encoder_diff / ENCODER_PULSES_PER_STEP, false, true);
-		menu_back_no_feedback();
+		menu_back_scroll(lcd_encoder - _md->encoderInitial);
 	}
-	if(lcd_scrollTimer.expired(300))
+	if(lcd_scrollTimer.expired(200) && (scrollPointer != NULL))
 	{
 		uint8_t i = LCD_WIDTH - 1;
-		lcd_set_cursor(0, lcd_encoder);
+		lcd_set_cursor(0, _md->encoderInitial = lcd_encoder);
 		lcd_print('>');
 		for (; i != 0; i--)
 		{
-			char c = *(scrollPointer + LCD_WIDTH - i);
-			if (c == '\0') break; //stop at the end of the string
+			char c = *(scrollPointer + ((LCD_WIDTH - 1) - i));
+			if (c == '\0')
+			{
+				scrollPointer = NULL; //invalidate string
+				lcd_scrollTimer.stop();
+				break; //stop at the end of the string
+			}
 			else
 			{
 				lcd_print(c);
@@ -424,7 +429,9 @@ static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFile
     char c;
     uint8_t n = LCD_WIDTH - 1;
     lcd_set_cursor(0, row);
-    lcd_print((lcd_encoder == menu_item)?'>':' ');
+	if (lcd_encoder == menu_item) lcd_print('>');
+	else lcd_print(' ');
+    // lcd_print((lcd_encoder == menu_item)?'>':' ');
     while( ((c = *longFilename) != '\0') && (n>0) )
     {
         lcd_print(c);
@@ -540,12 +547,14 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 {
 	if (menu_item == menu_line)
 	{
-		if (lcd_draw_update)
+		if (lcd_draw_update || !lcd_scrollTimer.running())
 		{
 			scrollPointer = (str_fnl[0] == '\0') ? str_fn : str_fnl;
-			if (lcd_encoder == menu_item)
+			if (lcd_encoder == menu_item && !lcd_scrollTimer.running())
 			{
-				if (lcd_scrollTimer.expired(1000)) menu_submenu_scroll(lcd_filename_scroll);
+				// lcd_beeper_quick_feedback();
+				menu_submenu_scroll(lcd_filename_scroll);
+				return 1;
 			}
 			else lcd_implementation_drawmenu_sdfile(menu_row, scrollPointer);
 		}
@@ -7272,12 +7281,17 @@ void lcd_sdcard_menu()
 	  presort_flag = false;
 	  card.presort();
   }
-  if (lcd_draw_update == 0 && LCD_CLICKED == 0)
-    //_delay(100);
+  if (!lcd_scrollTimer.running()) lcd_scrollTimer.start();
+  bool scrollEnter = lcd_scrollTimer.expired(500);
+  if (lcd_draw_update == 0 && LCD_CLICKED == 0 && !scrollEnter && !menu_entering)
     return; // nothing to do (so don't thrash the SD card)
   uint16_t fileCnt = card.getnrfilenames();
-
-  lcd_scrollTimer.start();
+  if (menu_entering)
+  {
+    menu_entering = 0; //clear entering flag
+	lcd_draw_update = 1; //draw lines again
+  }
+  if (!scrollEnter) lcd_scrollTimer.start();
   MENU_BEGIN();
   MENU_ITEM_BACK_P(_T(bMain?MSG_MAIN:MSG_BACK));  // i.e. default menu-item / menu-item after card insertion
   card.getWorkDirName();
