@@ -419,7 +419,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
         lcd_print(' ');
 }
 */
-static void lcd_implementation_drawmenu_sdfile(uint8_t row, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
     char c;
     uint8_t n = LCD_WIDTH - 1;
@@ -547,13 +547,14 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 			{
 				if (lcd_scrollTimer.expired(1000)) menu_submenu_scroll(lcd_filename_scroll);
 			}
-			else lcd_implementation_drawmenu_sdfile(menu_row, str_fnl);
+			else lcd_implementation_drawmenu_sdfile(menu_row, scrollPointer);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 		    lcd_consume_click();
 			menu_action_sdfile(str_fn);
-			return menu_item_ret();
+			// return menu_item_ret();
+			return 1;
 		}
 	}
 	menu_item++;
