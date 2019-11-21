@@ -162,7 +162,7 @@ void menu_submenu_scroll(menu_func_t submenu)
 	{
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
-		menu_goto(submenu, menu_row, false, true);
+		menu_goto(submenu, 0, false, false);
 	}
 }
 
