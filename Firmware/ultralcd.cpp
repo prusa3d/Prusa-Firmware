@@ -337,12 +337,13 @@ static void lcd_filename_scroll() //this is a submenu
 	}
 	if(lcd_scrollTimer.expired(200) && (scrollPointer != NULL))
 	{
-		uint8_t i = LCD_WIDTH - 1;
+		uint8_t i = LCD_WIDTH - ((_md->isDir)?2:1);
 		lcd_set_cursor(0, _md->row);
 		lcd_print('>');
+		if (_md->isDir) lcd_print(LCD_STR_FOLDER[0]);
 		for (; i != 0; i--)
 		{
-			char c = *(scrollPointer + ((LCD_WIDTH - 1) - i));
+			char c = *(scrollPointer + ((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
 			if (c == '\0')
 			{
 				scrollPointer = NULL; //invalidate string
@@ -414,7 +415,7 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 				_md->isDir = 1;
 				_md->row = menu_row;
 				menu_submenu_scroll(lcd_filename_scroll);
-				return 1;
+				return 1; //stop menu generation early
 			}
 			else lcd_implementation_drawmenu_sddirectory(menu_row, scrollPointer);
 		}
@@ -424,7 +425,7 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 			lcd_update_enabled = 0;
 			menu_action_sddirectory(str_fn);
 			lcd_update_enabled = 1;
-			// return menu_item_ret();
+			/* return */ menu_item_ret();
 			return 1;
 		}
 	}
@@ -454,7 +455,7 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 		{
 		    lcd_consume_click();
 			menu_action_sdfile(str_fn);
-			// return menu_item_ret();
+			/* return */ menu_item_ret();
 			return 1;
 		}
 	}

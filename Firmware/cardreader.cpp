@@ -960,6 +960,7 @@ void CardReader::presort() {
 	lcd_set_degree();
 	lcd_clear();
 #endif
+	lcd_scrollTimer.start();
 	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);
 	lcd_timeoutToStatus.start();
