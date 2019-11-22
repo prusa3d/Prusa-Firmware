@@ -335,7 +335,7 @@ static void lcd_filename_scroll() //this is a submenu
 		lcd_scrollTimer.start();
 		menu_back_scroll(lcd_encoder);
 	}
-	if(lcd_scrollTimer.expired(200) && (scrollPointer != NULL))
+	if(lcd_scrollTimer.expired(300) && (scrollPointer != NULL))
 	{
 		uint8_t i = LCD_WIDTH - ((_md->isDir)?2:1);
 		lcd_set_cursor(0, _md->row);
