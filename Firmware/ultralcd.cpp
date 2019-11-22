@@ -8759,6 +8759,8 @@ void menu_lcd_lcdupdate_func(void)
 		{
                if(menu_menu==lcd_sdcard_menu)
                     menu_back();
+               else if (menu_menu==lcd_filename_scroll)
+                    menu_back(2); //back 2 levels. Exit lcd_filename_scroll and lcd sd_card_menu
 			card.release();
 			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED
 		}
