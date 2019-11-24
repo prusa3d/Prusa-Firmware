@@ -46,10 +46,6 @@
 #include "first_lay_cal.h"
 
 
-//filename scrolling
-const char* scrollPointer;
-
-
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 
@@ -315,27 +311,24 @@ const char STR_SEPARATOR[] PROGMEM = "------------";
 
 typedef struct
 {
-	int8_t status;
+	uint8_t offset = 0;
 	bool isDir = 0;
 	uint8_t row = 0;
+	const char* scrollPointer;
 } _menu_data_scroll_t;
 static_assert(sizeof(menu_data)>= sizeof(_menu_data_scroll_t),"_menu_data_scroll_t doesn't fit into menu_data");
 
 static void lcd_filename_scroll() //this is a submenu
 {
 	_menu_data_scroll_t* _md = (_menu_data_scroll_t*)&(menu_data[0]);
-
-	if (_md->status == 0)
+	if (menu_entering)
 	{
-		_md->status = 1;
+		menu_entering = 0; //clear entering flag
 		lcd_scrollTimer.start();
 	}
-	if (LCD_CLICKED || (lcd_encoder != 0)) //go back to sd_menu.
-	{
-		lcd_scrollTimer.start();
-		menu_back_scroll(lcd_encoder);
-	}
-	if(lcd_scrollTimer.expired(300) && (scrollPointer != NULL))
+	bool rewindFlag = LCD_CLICKED || (lcd_encoder != 0); //go back to sd_menu.
+	if (rewindFlag == 1) _md->offset = 0;
+	if (lcd_scrollTimer.expired(300) || rewindFlag)
 	{
 		uint8_t i = LCD_WIDTH - ((_md->isDir)?2:1);
 		lcd_set_cursor(0, _md->row);
@@ -343,10 +336,9 @@ static void lcd_filename_scroll() //this is a submenu
 		if (_md->isDir) lcd_print(LCD_STR_FOLDER[0]);
 		for (; i != 0; i--)
 		{
-			char c = *(scrollPointer + ((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
+			char c = *(_md->scrollPointer + _md->offset +((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
 			if (c == '\0')
 			{
-				scrollPointer = NULL; //invalidate string
 				lcd_scrollTimer.stop();
 				break; //stop at the end of the string
 			}
@@ -360,7 +352,12 @@ static void lcd_filename_scroll() //this is a submenu
 		{
 			lcd_space(i);
 		}
-		scrollPointer++;
+		_md->offset++;
+	}
+	if (rewindFlag) //go back to sd_menu.
+	{
+		lcd_scrollTimer.start();
+		menu_back_scroll(lcd_encoder);
 	}
 }
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
@@ -407,17 +404,17 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 	{
 		if (lcd_draw_update || !lcd_scrollTimer.running())
 		{
-			scrollPointer = (str_fnl[0] == '\0') ? str_fn : str_fnl;
 			if (lcd_encoder == menu_item && !lcd_scrollTimer.running())
 			{
 				// lcd_beeper_quick_feedback();
 				_menu_data_scroll_t* _md = (_menu_data_scroll_t*)&(menu_data[0]);
 				_md->isDir = 1;
 				_md->row = menu_row;
+				_md->scrollPointer = (str_fnl[0] == '\0') ? str_fn : str_fnl;
 				menu_submenu_scroll(lcd_filename_scroll);
 				return 1; //stop menu generation early
 			}
-			else lcd_implementation_drawmenu_sddirectory(menu_row, scrollPointer);
+			else lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
@@ -439,17 +436,17 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 	{
 		if (lcd_draw_update || !lcd_scrollTimer.running())
 		{
-			scrollPointer = (str_fnl[0] == '\0') ? str_fn : str_fnl;
 			if (lcd_encoder == menu_item && !lcd_scrollTimer.running())
 			{
 				// lcd_beeper_quick_feedback();
 				_menu_data_scroll_t* _md = (_menu_data_scroll_t*)&(menu_data[0]);
 				_md->isDir = 0;
 				_md->row = menu_row;
+				_md->scrollPointer = (str_fnl[0] == '\0') ? str_fn : str_fnl;
 				menu_submenu_scroll(lcd_filename_scroll);
 				return 1;
 			}
-			else lcd_implementation_drawmenu_sdfile(menu_row, scrollPointer);
+			else lcd_implementation_drawmenu_sdfile(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{

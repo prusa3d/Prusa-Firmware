@@ -54,8 +54,8 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 			// Resets the global shared C union.
 			// This ensures, that the menu entered will find out, that it shall initialize itself.
 			memset(&menu_data, 0, sizeof(menu_data));
-			menu_entering = 1; //next menu that supports entering will clear this flag on first enter. Used for initializing some menus only one time.
 		}
+		menu_entering = 1; //next menu that supports entering will clear this flag on first enter. Used for initializing some menus only one time.
 		if (feedback) lcd_quick_feedback();
 	}
 	else
