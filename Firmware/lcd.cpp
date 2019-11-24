@@ -96,11 +96,11 @@ volatile uint8_t vga_map[VGA_MAP_SIZE]; //bitmap for changes on the display. Ind
 // 3  77778888888899999999
 
 volatile uint8_t lcd_status = 0;
-//xxxxdcba
+//xxxxdxba
 //a: timer enabled status
-//b: bit is set only if the timer is enabled and is used in the ISR to disable itself after required time has passed to send commands to it. ie: lcd_refresh();
-//c: nibble: it is used for the 4bit lcd interface to keep track of what part of the byte has to be sent on the next ISR
+//b: bit is set only if the timer is enabled and is used in the ISR to disable itself after required time has passed to send commands to it. ie: lcd_refresh(); 
 //d: current command type. 1=lcd_set_cursor (jump); 0=character. Used by the ISR for the second nibble and also to decide whether a jump command is necessary (eg. next character is on the next line).
+//x: unused. Do not change.
 
 //vga
 uint8_t vga_currline; //these two are used for puting data into the vga buffer.
@@ -218,7 +218,7 @@ static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAUL
 #ifndef LCD_8BIT
 	if (!(flags & LCD_HALF_FLAG))
 	{
-		_delay_us(LCD_DEFAULT_DELAY);
+		_delay_us(1);
 		lcd_writebits(data<<4);
 	}
 #endif
@@ -293,7 +293,6 @@ static void lcd_begin()
 	lcd_escape[0] = 0;
 	#endif
 	
-	lcd_status |= 0x04; //sync nibble
 	LcdTimerDisabler_END;
 }
 
@@ -322,8 +321,7 @@ static void vga_init(void) //vga
 	TCCRxA &= ~(3<<COM3C0);
 	OCRxA = (LCD_DEFAULT_DELAY * 2 * (F_CPU/1000000/8)) - 1; //set timer TOP value with an 8x prescaler. The push speed is slowed down a bit.
 	
-	lcd_status &= ~0x0f;
-	lcd_status |= 0x04;
+	lcd_status &= ~0x0b;
 	lcd_timer_disable();
 	
 	// enable interrupt
@@ -419,17 +417,10 @@ void lcd_set_cursor(uint8_t col, uint8_t row) //vga
 static void lcd_set_cursor_hardware(uint8_t col, uint8_t row, bool nibbleLess = 0) //lcd
 {
 	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-#ifdef LCD_8BIT
 	if (nibbleLess)
 		lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), LOW, 100);
 	else
 		lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), LOW, 0);
-#else
-	if (nibbleLess)
-		lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), LOW, 100);
-	else
-		lcd_send((lcd_status & 0x04)?(LCD_SETDDRAMADDR | (col + row_offsets[row])):((LCD_SETDDRAMADDR | (col + row_offsets[row])) << 4), LOW | LCD_HALF_FLAG, 0);
-#endif
 }
 
 // Allows us to fill the first 8 CGRAM locations
@@ -444,80 +435,59 @@ static void lcd_createChar_P(uint8_t location, const uint8_t* charmap) //lcd
 
 ISR(TIMERx_COMPA_vect)
 {
-	if ((lcd_status & 0x04) && (lcd_status & 0x02)) //if lcd_timer_disable() is waiting and the nibble is in sync we can safetly disable the ISR
+	if (lcd_status & 0x02) //if lcd_timer_disable() is waiting and the nibble is in sync we can safetly disable the ISR
 	{
 		lcd_status &= ~0x01;
 		lcd_timer_disable();
 		return;
 	}
-	if (lcd_status & 0x04) //nibble is set. Start new command.
+	uint8_t next_command_type = 0; //0: no char found; 1: lcd_curpos needs to be printed; 2: mandatory jump
+	if (vga_map[lcd_curpos >> 3] & (1 << (7 - (lcd_curpos & 0x07)))) next_command_type = 1;
+	else
 	{
-/* 		uint8_t distance_to_next_char = 0;
-		while (distance_to_next_char < LCD_WIDTH * LCD_HEIGHT)
+		for (int i = 0; (i < VGA_MAP_SIZE) && (next_command_type == 0); i++)
 		{
-			if (vga_map[lcd_curpos >> 3] & (1 << (7 - (lcd_curpos & 0x07)))) break; //next character found
-			lcd_curpos++;
-			if (lcd_curpos == LCD_WIDTH * LCD_HEIGHT) lcd_curpos = 0;
-			distance_to_next_char++;
-		} */
-		uint8_t next_command_type = 0; //0: no char found; 1: lcd_curpos needs to be printed; 2: mandatory jump
-		if (vga_map[lcd_curpos >> 3] & (1 << (7 - (lcd_curpos & 0x07)))) next_command_type = 1;
-		else
-		{
-			for (int i = 0; (i < VGA_MAP_SIZE) && (next_command_type == 0); i++)
+			if (vga_map[i] != 0)
 			{
-				if (vga_map[i] != 0)
+				for (int j = 0; (j < 8) && (next_command_type == 0); j++)
 				{
-					for (int j = 0; (j < 8) && (next_command_type == 0); j++)
+					if (vga_map[i] & (1 << (7 - j)))
 					{
-						if (vga_map[i] & (1 << (7 - j)))
-						{
-							lcd_curpos = (i << 3) + j;
-							next_command_type = 2;
-						}
+						lcd_curpos = (i << 3) + j;
+						next_command_type = 2;
 					}
 				}
 			}
 		}
-		
-		if ((next_command_type == 1) && !(!(lcd_status & 0x08) && (lcd_curpos % LCD_WIDTH == 0))) //print current char and last char was jump
-		{
-#ifdef LCD_DEBUG
-			MYSERIAL.print("ISR:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
-#endif
-			lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH], HIGH | LCD_HALF_FLAG, 0);
-			vga_map[lcd_curpos >> 3] &= ~(1 << (7 - (lcd_curpos & 0x07))); //clear bit in vga_map
-			lcd_status &= ~0x08; //this char is data
-		}
-		else if (next_command_type == 0) //no character to print was found. vga_map is empty. disable timer.
-		{
-#ifdef LCD_DEBUG
-			MYSERIAL.println("ISR:disable");
-#endif
-			lcd_status &= ~0x01;
-			lcd_timer_disable();
-			return;
-		}
-		else //a jump command is required to the destination lcd_curpos
-		{
-#ifdef LCD_DEBUG
-			MYSERIAL.print("ISR:jump: "); MYSERIAL.println(lcd_curpos, DEC);
-#endif
-			lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH);
-			lcd_status |= 0x08; // the data is jump
-		}
-		lcd_status &= ~0x04; //nibble is cleared for all commands except disable
 	}
-	else //nibble is clear. Continue last command
+	
+	if ((next_command_type == 1) && !(!(lcd_status & 0x08) && (lcd_curpos % LCD_WIDTH == 0))) //print current char and last char was jump
 	{
-		if (lcd_status & 0x08) lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH);
-		else
-		{
-			lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH] << 4, HIGH | LCD_HALF_FLAG, 0);
-			lcd_curpos++;
-			if (lcd_curpos == LCD_WIDTH * LCD_HEIGHT) lcd_curpos = 0;
-		}
-		lcd_status |= 0x04; //set nibble
+#ifdef LCD_DEBUG
+		MYSERIAL.print("VGA:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
+#endif
+		lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH], HIGH, 0);
+		vga_map[lcd_curpos >> 3] &= ~(1 << (7 - (lcd_curpos & 0x07))); //clear bit in vga_map
+		lcd_status &= ~0x08; //this char is data
+		lcd_curpos++;
+		if (lcd_curpos == LCD_WIDTH * LCD_HEIGHT) lcd_curpos = 0;
+	}
+	else if (next_command_type == 0) //no character to print was found. vga_map is empty. disable timer.
+	{
+#ifdef LCD_DEBUG
+		MYSERIAL.println("ISR:disable");
+#endif
+		lcd_status &= ~0x01;
+		lcd_timer_disable();
+		return;
+	}
+	else //a jump command is required to the destination lcd_curpos
+	{
+#ifdef LCD_DEBUG
+		MYSERIAL.print("VGA:jump: "); MYSERIAL.println(lcd_curpos, DEC);
+#endif
+		lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH);
+		lcd_status |= 0x08; // the data is jump
 	}
 	TCNTx = 0; //clear timer value to make sure timing is correct
 }
