@@ -1,3 +1,5 @@
+//! @file
+
 #include "Marlin.h"
 
 #ifdef TMC2130
@@ -425,7 +427,7 @@ void tmc2130_check_overtemp()
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
-	uint8_t intpol = 1;
+	uint8_t intpol = (mres != 0); // intpol to 256 only if microsteps aren't 256
 	uint8_t toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
 	uint8_t hstrt = tmc2130_chopper_config[axis].hstr; //initial 4, modified to 5
 	uint8_t hend = tmc2130_chopper_config[axis].hend; //original value = 1
@@ -598,7 +600,7 @@ void tmc2130_wr_THIGH(uint8_t axis, uint32_t val32)
 
 uint8_t tmc2130_usteps2mres(uint16_t usteps)
 {
-	uint8_t mres = 8; while (mres && (usteps >>= 1)) mres--;
+	uint8_t mres = 8; while (usteps >>= 1) mres--;
 	return mres;
 }
 
@@ -1008,6 +1010,79 @@ bool tmc2130_home_calibrate(uint8_t axis)
 	else if (axis == Y_AXIS) eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_ORIGIN, tmc2130_home_origin[Y_AXIS]);
 	return true;
 }
+
+
+//! @brief Translate current to tmc2130 vsense and IHOLD or IRUN
+//! @param cur current in mA
+//! @return 0 .. 63
+//! @n most significant bit is CHOPCONF vsense bit (sense resistor voltage based current scaling)
+//! @n rest is to be used in IRUN or IHOLD register
+//!
+//! | mA   | trinamic register | note |
+//! | ---  | ---               | ---  |
+//! |    0 |  0 | doesn't mean current off, lowest current is 1/32 current with vsense low range |
+//! |   30 |  1 | |
+//! |   40 |  2 | |
+//! |   60 |  3 | |
+//! |   90 |  4 | |
+//! |  100 |  5 | |
+//! |  120 |  6 | |
+//! |  130 |  7 | |
+//! |  150 |  8 | |
+//! |  180 |  9 | |
+//! |  190 | 10 | |
+//! |  210 | 11 | |
+//! |  230 | 12 | |
+//! |  240 | 13 | |
+//! |  250 | 13 | |
+//! |  260 | 14 | |
+//! |  280 | 15 | |
+//! |  300 | 16 | |
+//! |  320 | 17 | |
+//! |  340 | 18 | |
+//! |  350 | 19 | |
+//! |  370 | 20 | |
+//! |  390 | 21 | |
+//! |  410 | 22 | |
+//! |  430 | 23 | |
+//! |  450 | 24 | |
+//! |  460 | 25 | |
+//! |  480 | 26 | |
+//! |  500 | 27 | |
+//! |  520 | 28 | |
+//! |  535 | 29 | |
+//! |  N/D | 30 | extruder default |
+//! |  540 | 33 | |
+//! |  560 | 34 | |
+//! |  580 | 35 | |
+//! |  590 | 36 | farm mode extruder default |
+//! |  610 | 37 | |
+//! |  630 | 38 | |
+//! |  640 | 39 | |
+//! |  660 | 40 | |
+//! |  670 | 41 | |
+//! |  690 | 42 | |
+//! |  710 | 43 | |
+//! |  720 | 44 | |
+//! |  730 | 45 | |
+//! |  760 | 46 | |
+//! |  770 | 47 | |
+//! |  790 | 48 | |
+//! |  810 | 49 | |
+//! |  820 | 50 | |
+//! |  840 | 51 | |
+//! |  850 | 52 | |
+//! |  870 | 53 | |
+//! |  890 | 54 | |
+//! |  900 | 55 | |
+//! |  920 | 56 | |
+//! |  940 | 57 | |
+//! |  950 | 58 | |
+//! |  970 | 59 | |
+//! |  980 | 60 | |
+//! | 1000 | 61 | |
+//! | 1020 | 62 | |
+//! | 1029 | 63 | |
 
 uint8_t tmc2130_cur2val(float cur)
 {
