@@ -45,6 +45,10 @@
 #include "io_atmega2560.h"
 #include "first_lay_cal.h"
 
+#include "fsensor.h"
+#include "adc.h"
+#include "config.h"
+
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
@@ -60,9 +64,6 @@ int8_t SilentModeMenu = SILENT_MODE_OFF;
 uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
-
-extern bool fsensor_enable();
-extern void fsensor_disable();
 
 
 #ifdef SDCARD_SORT_ALPHA
@@ -197,6 +198,7 @@ enum class TestError : uint_least8_t
     SwappedFan,
     WiringFsensor,
     TriggeringFsensor,
+    FsensorLevel
 };
 
 static int  lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
@@ -228,6 +230,9 @@ static FanCheck lcd_selftest_fan_auto(int _fan);
 static bool lcd_selftest_fsensor();
 #endif //PAT9125
 static bool selftest_irsensor();
+#if IR_SENSOR_ANALOG
+static bool lcd_selftest_IRsensor();
+#endif //IR_SENSOR_ANALOG
 static void lcd_selftest_error(TestError error, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
 #ifdef SNMM
@@ -2018,11 +2023,11 @@ static void lcd_menu_temperatures()
     menu_back_if_clicked();
 }
 
-#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
+#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || IR_SENSOR_ANALOG
 #define VOLT_DIV_R1 10000
 #define VOLT_DIV_R2 2370
 #define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
-#define VOLT_DIV_REF 5
+
 //! @brief Show Voltages
 //!
 //! @code{.unparsed}
@@ -2040,10 +2045,17 @@ static void lcd_menu_voltages()
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 	lcd_home();
-	lcd_printf_P(PSTR(" PWR:      %d.%01dV\n" " BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
-    menu_back_if_clicked();
+#if !IR_SENSOR_ANALOG
+	lcd_printf_P(PSTR("\n"));
+#endif //!IR_SENSOR_ANALOG
+     lcd_printf_P(PSTR(" PWR:      %4.1fV\n" " BED:      %4.1fV"), volt_pwr, volt_bed);
+#if IR_SENSOR_ANALOG
+     float volt_IR = VOLT_DIV_REF * ((float)current_voltage_raw_IR / (1023 * OVERSAMPLENR));
+     lcd_printf_P(PSTR("\n IR :       %3.1fV"),volt_IR);
+#endif //IR_SENSOR_ANALOG
+     menu_back_if_clicked();
 }
-#endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
+#endif //defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || IR_SENSOR_ANALOG
 
 #ifdef TMC2130
 //! @brief Show Belt Status
@@ -5691,6 +5703,41 @@ SETTINGS_VERSION;
 MENU_END();
 }
 
+#if IR_SENSOR_ANALOG
+static void lcd_fsensor_actionNA_set(void)
+{
+switch(oFsensorActionNA)
+     {
+     case ClFsensorActionNA::_Continue:
+          oFsensorActionNA=ClFsensorActionNA::_Pause;
+          break;
+     case ClFsensorActionNA::_Pause:
+          oFsensorActionNA=ClFsensorActionNA::_Continue;
+          break;
+     default:
+          oFsensorActionNA=ClFsensorActionNA::_Continue;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA,(uint8_t)oFsensorActionNA);
+}
+
+#define FSENSOR_ACTION_NA \
+do\
+{\
+    switch(oFsensorActionNA)\
+         {\
+         case ClFsensorActionNA::_Continue:\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_CONTINUE), lcd_fsensor_actionNA_set);\
+              break;\
+         case ClFsensorActionNA::_Pause:\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_PAUSE), lcd_fsensor_actionNA_set);\
+              break;\
+         default:\
+              oFsensorActionNA=ClFsensorActionNA::_Continue;\
+         }\
+}\
+while (0)
+#endif //IR_SENSOR_ANALOG
+
 template <uint8_t number>
 static void select_sheet_menu()
 {
@@ -5722,6 +5769,9 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     SETTINGS_NOZZLE;
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
 
+#if IR_SENSOR_ANALOG
+    FSENSOR_ACTION_NA;
+#endif //IR_SENSOR_ANALOG
     MENU_END();
 }
 
@@ -7055,11 +7105,21 @@ static void lcd_tune_menu()
 
 #ifdef FILAMENT_SENSOR
 	if (FSensorStateMenu == 0) {
-		MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
+          if (fsensor_not_responding && (mmu_enabled == false)) {
+               /* Filament sensor not working*/
+               MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_NA), lcd_fsensor_state_set);
+          }
+          else {
+               /* Filament sensor turned off, working, no problems*/
+               MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
+          }
 	}
 	else {
 		MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);
 	}
+#if IR_SENSOR_ANALOG
+     FSENSOR_ACTION_NA;
+#endif //IR_SENSOR_ANALOG
 #endif //FILAMENT_SENSOR
 
 	SETTINGS_AUTO_DEPLETE;
@@ -7377,6 +7437,42 @@ void lcd_belttest()
 }
 #endif //TMC2130
 
+#if IR_SENSOR_ANALOG
+static bool lcd_selftest_IRsensor()
+{
+bool bAction;
+bool bPCBrev03b;
+uint16_t volt_IR_int;
+float volt_IR;
+
+volt_IR_int=current_voltage_raw_IR;
+bPCBrev03b=(volt_IR_int<((int)IRsensor_Hopen_TRESHOLD));
+volt_IR=VOLT_DIV_REF*((float)volt_IR_int/(1023*OVERSAMPLENR));
+printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"),volt_IR);
+if(volt_IR_int<((int)IRsensor_Hmin_TRESHOLD))
+     {
+     lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
+     return(false);
+     }
+lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament (but not load them!) into extruder and then press the knob."));
+volt_IR_int=current_voltage_raw_IR;
+volt_IR=VOLT_DIV_REF*((float)volt_IR_int/(1023*OVERSAMPLENR));
+printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"),volt_IR);
+if(volt_IR_int>((int)IRsensor_Lmax_TRESHOLD))
+     {
+     lcd_selftest_error(TestError::FsensorLevel,"LOW","");
+     return(false);
+     }
+if((bPCBrev03b?1:0)!=(uint8_t)oFsensorPCB)        // safer then "(uint8_t)bPCBrev03b"
+     {
+     printf_P(PSTR("Filament sensor board change detected: revision %S\n"),bPCBrev03b?PSTR("03b or newer"):PSTR("03 or older"));
+     oFsensorPCB=bPCBrev03b?ClFsensorPCB::_Rev03b:ClFsensorPCB::_Old;
+     eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+     }
+return(true);
+}
+#endif //IR_SENSOR_ANALOG
+
 static void lcd_selftest_v()
 {
 	(void)lcd_selftest();
@@ -7393,8 +7489,16 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-	_delay(2000);
+#if !IR_SENSOR_ANALOG
+     _delay(2000);
+#endif //!IR_SENSOR_ANALOG
 	KEEPALIVE_STATE(IN_HANDLER);
+#if IR_SENSOR_ANALOG
+     bool bAction;
+     bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament unloaded?"),false,true);
+     if(!bAction)
+          return(false);
+#endif //IR_SENSOR_ANALOG
 
 	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_0))
@@ -7580,12 +7684,20 @@ bool lcd_selftest()
         {
 #ifdef PAT9125
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
-            _result = lcd_selftest_fsensor();
+               _result = lcd_selftest_fsensor();
 			if (_result)
 			{
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //PAT9125
+#if IR_SENSOR_ANALOG
+			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
+               _result = lcd_selftest_IRsensor();
+			if (_result)
+			{
+				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //filament sensor OK
+			}
+#endif //IR_SENSOR_ANALOG
         }
     }
 #endif //FILAMENT_SENSOR
@@ -8121,11 +8233,17 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_puts_P(_T(MSG_SELFTEST_WIRINGERROR));
 		break;
 	case TestError::TriggeringFsensor:
-	    lcd_set_cursor(0, 2);
-        lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
-        lcd_set_cursor(0, 3);
-        lcd_puts_P(_i("False triggering"));////c=20
-        break;
+          lcd_set_cursor(0, 2);
+          lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
+          lcd_set_cursor(0, 3);
+          lcd_puts_P(_i("False triggering"));////c=20
+          break;
+	case TestError::FsensorLevel:
+          lcd_set_cursor(0, 2);
+          lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
+          lcd_set_cursor(0, 3);
+          lcd_printf_P(_i("%s level expected"),_error_1);////c=20
+          break;
 	}
 
 	_delay(1000);

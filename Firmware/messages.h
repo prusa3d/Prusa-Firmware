@@ -128,6 +128,9 @@ extern const char MSG_SOUND_BLIND[];
 extern const char MSG_MESH[];
 extern const char MSG_Z_PROBE_NR[];
 extern const char MSG_MAGNETS_COMP[];
+extern const char MSG_FS_ACTION[];
+extern const char MSG_FS_CONTINUE[];
+extern const char MSG_FS_PAUSE[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
