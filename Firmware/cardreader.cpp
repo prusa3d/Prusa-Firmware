@@ -741,9 +741,6 @@ void CardReader::presort() {
 			fileCnt = SDSORT_LIMIT;
 		}
 		lcd_clear();
-		#if !SDSORT_USES_RAM
-			lcd_set_progress();
-		#endif
 		lcd_puts_at_P(0, 1, _i("Sorting files"));////MSG_SORTING c=20 r=1
 
 		// Sort order is always needed. May be static or dynamic.
@@ -837,11 +834,26 @@ void CardReader::presort() {
 #define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs > 0 ? dir1 : !dir1))
 #define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
 
-			for (int16_t gap = fileCnt/2; gap > 0; gap /= 2)
+			uint16_t counter = 0;
+			uint16_t total = 0;
+			for (uint16_t i = fileCnt/2; i > 0; i /= 2) total += fileCnt - i; //total runs for progress bar
+			
+			for (uint16_t gap = fileCnt/2; gap > 0; gap /= 2)
 			{
-				for (int16_t i = gap; i < fileCnt; i++)
+				for (uint16_t i = gap; i < fileCnt; i++)
 				{
 					if (!IS_SD_INSERTED) return;
+					
+					int8_t percent = (counter * 100) / total;
+					for (int column = 0; column < 20; column++) {
+						if (column < (percent / 5))
+						{
+							lcd_set_cursor(column, 2);
+							lcd_print('\xFF'); //simple progress bar
+						}
+					}
+					counter++;
+					
 					manage_heater();
 					uint8_t orderBckp = sort_order[i];
 					getfilename_simple(positions[orderBckp]);
@@ -852,7 +864,7 @@ void CardReader::presort() {
 					bool dir1 = filenameIsDir;
 					#endif
 					
-					int16_t j = i;
+					uint16_t j = i;
 					getfilename_simple(positions[sort_order[j - gap]]);
 					char *name2 = LONGEST_FILENAME; // use the string in-place
 					#if HAS_FOLDER_SORTING
@@ -877,7 +889,6 @@ void CardReader::presort() {
 					sort_order[j] = orderBckp;
 				}
 			}
-
 
 #else //Bubble Sort
 			uint32_t counter = 0;
@@ -924,7 +935,7 @@ void CardReader::presort() {
 					if (column < (percent / 5))
 					{
 						lcd_set_cursor(column, 2);
-						lcd_print('\x01'); //simple progress bar
+						lcd_print('\xFF'); //simple progress bar
 					}
 				}
 				counter++;
@@ -1010,10 +1021,9 @@ void CardReader::presort() {
 	for (int column = 0; column <= 19; column++)
 	{
 		lcd_set_cursor(column, 2);
-		lcd_print('\x01'); //simple progress bar
+		lcd_print('\xFF'); //simple progress bar
 	}
 	_delay(300);
-	lcd_set_degree();
 	lcd_clear();
 #endif
 	lcd_update(2);
