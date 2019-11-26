@@ -7899,7 +7899,7 @@ Sigma_Exit:
       - M862.2 { P<model_code> | Q }
       - M862.3 { P"<model_name>" | Q }
       - M862.4 { P<fw_version> | Q }
-      - M862.5 { P<gcode_level> | Q } 0 = none, 1 = warn, 2 = strict
+      - M862.5 { P<gcode_level> | Q }
     
     When run with P<> argument, the check is performed against the input value.
     When run with Q argument, the current value is shown.
