@@ -830,7 +830,55 @@ void CardReader::presort() {
 
 #ifdef QUICKSORT
 			quicksort(0, fileCnt - 1);
-#else //Qicksort not defined, use Bubble Sort
+#elif defined(SHELLSORT)
+
+#define _SORT_CMP_NODIR() (strcasecmp(name2, name1) > 0)
+#define _SORT_CMP_TIME_NODIR() (((modification_date_bckp == modificationDate) && (modification_time_bckp < modificationTime)) || (modification_date_bckp < modificationDate))
+#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs > 0 ? dir1 : !dir1))
+#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
+
+			for (int16_t gap = fileCnt/2; gap > 0; gap /= 2)
+			{
+				for (int16_t i = gap; i < fileCnt; i++)
+				{
+					if (!IS_SD_INSERTED) return;
+					manage_heater();
+					uint8_t orderBckp = sort_order[i];
+					getfilename_simple(positions[orderBckp]);
+					strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
+					modification_date_bckp = modificationDate;
+					modification_time_bckp = modificationTime;
+					#if HAS_FOLDER_SORTING
+					bool dir1 = filenameIsDir;
+					#endif
+					
+					int16_t j = i;
+					getfilename_simple(positions[sort_order[j - gap]]);
+					char *name2 = LONGEST_FILENAME; // use the string in-place
+					#if HAS_FOLDER_SORTING
+					for (; j >= gap && ((sdSort == SD_SORT_TIME && _SORT_CMP_TIME_DIR(FOLDER_SORTING)) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_DIR(FOLDER_SORTING)));)
+					#else
+					for (; j >= gap && ((sdSort == SD_SORT_TIME && _SORT_CMP_TIME_NODIR()) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_NODIR()));)
+					#endif
+					{
+						sort_order[j] = sort_order[j - gap];
+						j -= gap;
+						for (uint16_t z = 0; z < fileCnt; z++)
+						{
+							printf_P(PSTR("%2u "), sort_order[z]);
+						}
+						printf_P(PSTR("i%2d j%2d gap%2d orderBckp%2d"), i, j, gap, orderBckp);
+						MYSERIAL.println();
+						if (j < gap) break;
+						getfilename_simple(positions[sort_order[j - gap]]);
+						name2 = LONGEST_FILENAME; // use the string in-place
+					}
+					sort_order[j] = orderBckp;
+				}
+			}
+
+
+#else //Bubble Sort
 			uint32_t counter = 0;
 			uint16_t total = 0.5*(fileCnt - 1)*(fileCnt);
 
@@ -884,6 +932,11 @@ void CardReader::presort() {
 				//MYSERIAL.println(int(i));
 				for (uint16_t j = 0; j < i; ++j) {
 					if (!IS_SD_INSERTED) return;
+	for (uint16_t z = 0; z < fileCnt; z++)
+	{
+		printf_P(PSTR("%2u "), sort_order[z]);
+	}
+	MYSERIAL.println();
 					manage_heater();
 					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];
 
