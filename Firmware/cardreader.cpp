@@ -863,12 +863,13 @@ void CardReader::presort() {
 					{
 						sort_order[j] = sort_order[j - gap];
 						j -= gap;
+						#ifdef SORTING_DUMP
 						for (uint16_t z = 0; z < fileCnt; z++)
 						{
 							printf_P(PSTR("%2u "), sort_order[z]);
 						}
-						printf_P(PSTR("i%2d j%2d gap%2d orderBckp%2d"), i, j, gap, orderBckp);
-						MYSERIAL.println();
+						printf_P(PSTR("i%2d j%2d gap%2d orderBckp%2d\n"), i, j, gap, orderBckp);
+						#endif
 						if (j < gap) break;
 						getfilename_simple(positions[sort_order[j - gap]]);
 						name2 = LONGEST_FILENAME; // use the string in-place
@@ -932,11 +933,13 @@ void CardReader::presort() {
 				//MYSERIAL.println(int(i));
 				for (uint16_t j = 0; j < i; ++j) {
 					if (!IS_SD_INSERTED) return;
-	for (uint16_t z = 0; z < fileCnt; z++)
-	{
-		printf_P(PSTR("%2u "), sort_order[z]);
-	}
-	MYSERIAL.println();
+					#ifdef SORTING_DUMP
+					for (uint16_t z = 0; z < fileCnt; z++)
+					{
+						printf_P(PSTR("%2u "), sort_order[z]);
+					}
+					MYSERIAL.println();
+					#endif
 					manage_heater();
 					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];
 
