@@ -831,8 +831,8 @@ void CardReader::presort() {
 
 #define _SORT_CMP_NODIR() (strcasecmp(name2, name1) > 0)
 #define _SORT_CMP_TIME_NODIR() (((modification_date_bckp == modificationDate) && (modification_time_bckp < modificationTime)) || (modification_date_bckp < modificationDate))
-#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs > 0 ? dir1 : !dir1))
-#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
+#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs > 0 ? !dir1 : dir1))
+#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? !dir1 : dir1))
 
 			uint16_t counter = 0;
 			uint16_t total = 0;
