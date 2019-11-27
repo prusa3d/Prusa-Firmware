@@ -8517,73 +8517,173 @@ Sigma_Exit:
     switch((int)code_value())
     {
 
-  //! ### D-1 - Endless loop
-  // -------------------
+    /*!
+    *
+    ### D-1 - Endless Loop <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">D-1: Endless Loop</a>
+      
+          D-1
+      
+    *
+    */
 	case -1:
 		dcode__1(); break;
 #ifdef DEBUG_DCODES
 
-  //! ### D0 - Reset
-  // -------------- 
+    /*!
+    *
+    ### D0 - Reset <a href="https://reprap.org/wiki/G-code#D0:_Reset">D0: Reset</a>
+      
+          D0 [ B ]
+      
+      - `B` - Bootloader
+    *
+    */
 	case 0:
 		dcode_0(); break;
 
-  //! ### D1 - Clear EEPROM
-  // ------------------
+    /*!
+    *
+    ### D1 - Clear EEPROM and RESET <a href="https://reprap.org/wiki/G-code#D1:_Clear_EEPROM_and_RESET">D1: Clear EEPROM and RESET</a>
+      
+          D1
+      
+    *
+    */
 	case 1:
 		dcode_1(); break;
 
-  //! ### D2 - Read/Write RAM
-  // --------------------
+    /*!
+    *
+    ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
+    This command can be used without any additional parameters. It will read the entire eeprom.
+      
+          D3 [ A | C | X ]
+      
+      - `A` - Address (0x0000-0x1fff)
+      - `C` - Count (0x0001-0x2000)
+      - `X` - Data
+    *
+    */
 	case 2:
 		dcode_2(); break;
 #endif //DEBUG_DCODES
 #ifdef DEBUG_DCODE3
 
-  //! ### D3 - Read/Write EEPROM
-  // -----------------------
+    /*!
+    *
+    ### D3 - Read/Write EEPROM <a href="https://reprap.org/wiki/G-code#D3:_Read.2FWrite_EEPROM">D3: Read/Write EEPROM</a>
+    This command can be used without any additional parameters. It will read the entire eeprom.
+      
+          D3 [ A | C | X ]
+      
+      - `A` - Address (0x0000-0x0fff)
+      - `C` - Count (0x0001-0x1000)
+      - `X` - Data
+    *
+    */
 	case 3:
 		dcode_3(); break;
 #endif //DEBUG_DCODE3
 #ifdef DEBUG_DCODES
 
-  //! ### D4 - Read/Write PIN
-  // ---------------------
+    /*!
+    *
+    ### D4 - Read/Write PIN <a href="https://reprap.org/wiki/G-code#D4:_Read.2FWrite_PIN">D4: Read/Write PIN</a>
+    
+    To read the digital value of a pin you need only to define the pin number.
+      
+          D4 [ P | F | V ]
+      
+      - `P` - Pin (0-255)
+      - `F` - Function in/out (0/1)
+      - `V` - Value (0/1)
+    *
+    */
 	case 4:
 		dcode_4(); break;
 #endif //DEBUG_DCODES
 #ifdef DEBUG_DCODE5
 
-  //! ### D5 - Read/Write FLASH
-  // ------------------------
+    /*!
+    *
+    ### D5 - Read/Write FLASH <a href="https://reprap.org/wiki/G-code#D5:_Read.2FWrite_FLASH">D5: Read/Write Flash</a>
+    This command can be used without any additional parameters. It will read the 1kb FLASH.
+      
+          D3 [ A | C | X | E ]
+      
+      - `A` - Address (0x00000-0x3ffff)
+      - `C` - Count (0x0001-0x2000)
+      - `X` - Data
+      - `E` - Erase
+    *
+    */
 	case 5:
 		dcode_5(); break;
 		break;
 #endif //DEBUG_DCODE5
 #ifdef DEBUG_DCODES
 
-  //! ### D6 - Read/Write external FLASH
-  // ---------------------------------------
+    /*!
+    *
+    ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
+    
+    Reserved
+   *
+   */
 	case 6:
 		dcode_6(); break;
 
-  //! ### D7 - Read/Write Bootloader
-  // -------------------------------
+    /*!
+    *
+    ### D7 - Read/Write Bootloader <a href="https://reprap.org/wiki/G-code#D7:_Read.2FWrite_Bootloader">D7: Read/Write Bootloader</a>
+    
+    Reserved
+   *
+   */
 	case 7:
 		dcode_7(); break;
 
-  //! ### D8 - Read/Write PINDA
-  // ---------------------------
+    /*!
+    *
+    ### D8 - Read/Write PINDA <a href="https://reprap.org/wiki/G-code#D8:_Read.2FWrite_PINDA">D8: Read/Write PINDA</a>
+      
+          D8 [ ? | ! | P | Z ]
+      
+      - `?` - Read PINDA temperature shift values
+      - `!` - Reset PINDA temperature shift values to default
+      - `P` - Pinda temperature [C]
+      - `Z` - Z Offset [mm]
+    *
+    */
 	case 8:
 		dcode_8(); break;
 
-  // ### D9 - Read/Write ADC
-  // ------------------------
+    /*!
+    *
+    ### D9 - Read ADC <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9: Read ADC</a>
+      
+          D9 [ I | V ]
+      
+      - `I` - ADC channel index 
+         - `0` - Heater 0 temperature
+         - `1` - Heater 1 temperature
+         - `2` - Bed temperature
+         - `3` - PINDA temperature
+         - `4` - PWR voltage
+         - `5` - Ambient temperature
+         - `6` - BED voltage
+      - `V` Value to be written as simulated
+    *
+    */
 	case 9:
 		dcode_9(); break;
 
-  //! ### D10 - XYZ calibration = OK
-  // ------------------------------
+    /*!
+    *
+    ### D10 - Set XYZ calibration = OK <a href="https://reprap.org/wiki/G-code#D10:_Set_XYZ_calibration_.3D_OK">D10: Set XYZ calibration = OK</a>
+    
+   *
+   */
 	case 10:
 		dcode_10(); break;
 #endif //DEBUG_DCODES
@@ -8715,8 +8815,20 @@ Sigma_Exit:
 
 #if (defined (FILAMENT_SENSOR) && defined(PAT9125))
 
-        //! ### D9125 - FILAMENT_SENSOR
-        // ---------------------------------
+    /*!
+    *
+    ### D9125 - PAT9125 filament sensor <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9125: PAT9125 filament sensor</a>
+      
+          D9125 [ ? | ! | R | X | Y | L ]
+      
+      - `?` - Print values
+      - `!` - Print values
+      - `R` - Resolution. Not active in code
+      - `X` - X values
+      - `Y` - Y values
+      - `L` - Activate filament sensor log
+    *
+    */
 	case 9125:
 		dcode_9125(); break;
 #endif //FILAMENT_SENSOR
