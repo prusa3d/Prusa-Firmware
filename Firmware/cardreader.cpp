@@ -870,9 +870,9 @@ void CardReader::presort() {
 					getfilename_simple(positions[sort_order[j - gap]]);
 					char *name2 = LONGEST_FILENAME; // use the string in-place
 					#if HAS_FOLDER_SORTING
-					for (; j >= gap && ((sdSort == SD_SORT_TIME)?(_SORT_CMP_TIME_DIR(FOLDER_SORTING)):(_SORT_CMP_DIR(FOLDER_SORTING)));)
+					while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_DIR(FOLDER_SORTING):_SORT_CMP_DIR(FOLDER_SORTING)))
 					#else
-					for (; j >= gap && ((sdSort == SD_SORT_TIME)?(_SORT_CMP_TIME_NODIR()):(_SORT_CMP_NODIR()));)
+					while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_NODIR():_SORT_CMP_NODIR()))
 					#endif
 					{
 						sort_order[j] = sort_order[j - gap];
