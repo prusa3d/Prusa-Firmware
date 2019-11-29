@@ -21,6 +21,8 @@ extern bool fsensor_oq_meassure_enabled;
 extern void fsensor_stop_and_save_print(void);
 //! restore print - restore position and heatup to original temperature
 extern void fsensor_restore_print_and_continue(void);
+//! split the current gcode stream to insert new instructions
+extern void fsensor_checkpoint_print(void);
 //! @}
 
 //! initialize
