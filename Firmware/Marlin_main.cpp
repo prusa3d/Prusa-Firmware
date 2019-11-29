@@ -7253,9 +7253,10 @@ Sigma_Exit:
 
   //! ### M603 - Stop print
   // -------------------------------
-  case 603: {
+	case 603: {
 		lcd_print_stop();
 	}
+	break;
 
 #ifdef PINDA_THERMISTOR
   //! ### M860 - Wait for extruder temperature (PINDA)
