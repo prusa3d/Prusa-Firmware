@@ -5944,7 +5944,7 @@ Sigma_Exit:
     //! ### M112 - Emergency stop
     // -----------------------------------------
     case 112: 
-      kill(_n(""), 3);
+      kill(MSG_M112_KILL, 3);
       break;
 
     //! ### M140 - Set bed temperature
@@ -8626,7 +8626,7 @@ if(0)
 
   if( (_millis() - previous_millis_cmd) >  max_inactive_time )
     if(max_inactive_time)
-      kill(_n(""), 4);
+      kill(_n("Inactivity Shutdown"), 4);
   if(stepper_inactive_time)  {
     if( (_millis() - previous_millis_cmd) >  stepper_inactive_time )
     {
@@ -8667,7 +8667,7 @@ if(0)
     // ----------------------------------------------------------------
     if ( killCount >= KILL_DELAY)
     {
-       kill("", 5);
+       kill(NULL, 5);
     }
   #endif
     
