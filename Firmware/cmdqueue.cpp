@@ -224,9 +224,13 @@ void cmdqueue_dump_to_serial_single_line(int nr, const char *p)
     SERIAL_ECHOPGM("Entry nr: ");
     SERIAL_ECHO(nr);
     SERIAL_ECHOPGM(", type: ");
-    SERIAL_ECHO(int(*p));
+    int type = *p;
+    SERIAL_ECHO(type);
+    SERIAL_ECHOPGM(", size: ");
+    unsigned int size = *(unsigned int*)(p + 1);
+    SERIAL_ECHO(size);
     SERIAL_ECHOPGM(", cmd: ");
-    SERIAL_ECHO(p+1);  
+    SERIAL_ECHO(p + CMDHDRSIZE);
     SERIAL_ECHOLNPGM("");
 }
 
@@ -247,7 +251,7 @@ void cmdqueue_dump_to_serial()
             for (const char *p = cmdbuffer + bufindr; p < cmdbuffer + bufindw; ++ nr) {
                 cmdqueue_dump_to_serial_single_line(nr, p);
                 // Skip the command.
-                for (++p; *p != 0; ++ p);
+                for (p += CMDHDRSIZE; *p != 0; ++ p);
                 // Skip the gaps.
                 for (++p; p < cmdbuffer + bufindw && *p == 0; ++ p);
             }
@@ -255,14 +259,14 @@ void cmdqueue_dump_to_serial()
             for (const char *p = cmdbuffer + bufindr; p < cmdbuffer + sizeof(cmdbuffer); ++ nr) {
                 cmdqueue_dump_to_serial_single_line(nr, p);
                 // Skip the command.
-                for (++p; *p != 0; ++ p);
+                for (p += CMDHDRSIZE; *p != 0; ++ p);
                 // Skip the gaps.
                 for (++p; p < cmdbuffer + sizeof(cmdbuffer) && *p == 0; ++ p);
             }
             for (const char *p = cmdbuffer; p < cmdbuffer + bufindw; ++ nr) {
                 cmdqueue_dump_to_serial_single_line(nr, p);
                 // Skip the command.
-                for (++p; *p != 0; ++ p);
+                for (p += CMDHDRSIZE; *p != 0; ++ p);
                 // Skip the gaps.
                 for (++p; p < cmdbuffer + bufindw && *p == 0; ++ p);
             }
@@ -578,30 +582,8 @@ void get_command()
        ((serial_char == '#' || serial_char == ':') && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
     {
-      if(card.eof()){
-        SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
-        stoptime=_millis();
-        char time[30];
-        unsigned long t=(stoptime-starttime-pause_time)/1000;
-        pause_time = 0;
-        int hours, minutes;
-        minutes=(t/60)%60;
-        hours=t/60/60;
-        save_statistics(total_filament_used, t);
-        sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
-        SERIAL_ECHO_START;
-        SERIAL_ECHOLN(time);
-        lcd_setstatus(time);
-        card.printingHasFinished();
-        card.checkautostart(true);
+      if(card.eof()) break;
 
-        if (farm_mode)
-        {
-            prusa_statistics(6);
-            lcd_commands_type = LcdCommands::FarmModeConfirm;
-        }
-
-      }
       if(serial_char=='#')
         stop_buffering=true;
 
@@ -658,6 +640,37 @@ void get_command()
       if(serial_char == ';') comment_mode = true;
       else if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
     }
+  }
+  if(card.eof())
+  {
+      // file was fully buffered, but commands might still need to be planned!
+      // do *not* clear sdprinting until all SD commands are consumed to ensure
+      // SD state can be resumed from a saved printing state. sdprinting is only
+      // cleared by printingHasFinished after peforming all remaining moves.
+      if(!cmdqueue_calc_sd_length())
+      {
+          SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
+          stoptime=_millis();
+          char time[30];
+          unsigned long t=(stoptime-starttime-pause_time)/1000;
+          pause_time = 0;
+          int hours, minutes;
+          minutes=(t/60)%60;
+          hours=t/60/60;
+          save_statistics(total_filament_used, t);
+          sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
+          SERIAL_ECHO_START;
+          SERIAL_ECHOLN(time);
+          lcd_setstatus(time);
+          card.printingHasFinished();
+          card.checkautostart(true);
+
+          if (farm_mode)
+          {
+              prusa_statistics(6);
+              lcd_commands_type = LcdCommands::FarmModeConfirm;
+          }
+      }
   }
 
   #endif //SDSUPPORT

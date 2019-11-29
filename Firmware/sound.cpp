@@ -135,10 +135,15 @@ switch(eSoundMode)
 
 static void Sound_DoSound_Blind_Alert(void)
 {
-     _tone(BEEPER,300);
-     _delay_ms(75);
-     _noTone(BEEPER);
-     _delay_ms(75);
+     uint8_t nI;
+
+     for(nI=0; nI<20; nI++)
+     {
+         WRITE(BEEPER,HIGH);
+         delayMicroseconds(94);
+         WRITE(BEEPER,LOW);
+         delayMicroseconds(94);
+     }
 }
 
  static void Sound_DoSound_Encoder_Move(void)

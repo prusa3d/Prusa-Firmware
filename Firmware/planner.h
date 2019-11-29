@@ -116,7 +116,10 @@ typedef struct {
   unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
 #endif
 
-  uint16_t sdlen;
+  // Save/recovery state data
+  float gcode_target[NUM_AXIS];     // Target (abs mm) of the original Gcode instruction
+  uint16_t gcode_feedrate;          // Default and/or move feedrate
+  uint16_t sdlen;                   // Length of the Gcode instruction
 } block_t;
 
 #ifdef LIN_ADVANCE
@@ -140,7 +143,14 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 // Get the position applying the bed level matrix if enabled
 vector_3 plan_get_position();
 #else
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const uint8_t &extruder);
+
+/// Extracting common call of 
+/// plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], ...
+/// saves almost 5KB.
+/// The performance penalty is negligible, since these planned lines are usually maintenance moves with the extruder.
+void plan_buffer_line_curposXYZE(float feed_rate, uint8_t extruder);
+
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target = NULL);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
 #endif // ENABLE_AUTO_BED_LEVELING
 
@@ -231,6 +241,7 @@ FORCE_INLINE bool planner_queue_full() {
 // wait for the steppers to stop,
 // update planner's current position and the current_position of the front end.
 extern void planner_abort_hard();
+extern bool waiting_inside_plan_buffer_line_print_aborted;
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
 void set_extrude_min_temp(float temp);

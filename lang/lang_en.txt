@@ -1,3 +1,6 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 
@@ -34,14 +37,8 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 
-#MSG_AUTO_DEPLETE_ON c=17 r=1
-"SpoolJoin    [on]"
-
-#
-"SpoolJoin   [N/A]"
-
-#MSG_AUTO_DEPLETE_OFF c=17 r=1
-"SpoolJoin   [off]"
+#MSG_AUTO_DEPLETE c=17 r=1
+"SpoolJoin"
 
 #MSG_AUTO_HOME
 "Auto home"
@@ -127,14 +124,10 @@
 #
 "Copy selected language?"
 
-#MSG_CRASHDETECT_ON
-"Crash det.   [on]"
-
-#MSG_CRASHDETECT_NA
-"Crash det.  [N/A]"
-
-#MSG_CRASHDETECT_OFF
-"Crash det.  [off]"
+#MSG_CRASHDETECT
+"Crash det."
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -165,9 +158,6 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-
-#
-"Eject"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -202,14 +192,8 @@
 #
 "Fail stats MMU"
 
-#MSG_FSENS_AUTOLOAD_ON c=17 r=1
-"F. autoload  [on]"
-
-#MSG_FSENS_AUTOLOAD_NA c=17 r=1
-"F. autoload [N/A]"
-
-#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-"F. autoload [off]"
+#MSG_FSENSOR_AUTOLOAD
+"F. autoload"
 
 #
 "Fail stats"
@@ -220,20 +204,11 @@
 #MSG_SELFTEST_FAN c=20
 "Fan test"
 
-#MSG_FANS_CHECK_ON c=17 r=1
-"Fans check   [on]"
+#MSG_FANS_CHECK
+"Fans check"
 
-#MSG_FANS_CHECK_OFF c=17 r=1
-"Fans check  [off]"
-
-#MSG_FSENSOR_ON
-"Fil. sensor  [on]"
-
-#MSG_FSENSOR_NA
-"Fil. sensor [N/A]"
-
-#MSG_FSENSOR_OFF
-"Fil. sensor [off]"
+#MSG_FSENSOR
+"Fil. sensor"
 
 #
 "Filam. runouts"
@@ -346,14 +321,8 @@
 #MSG_WIZARD_Z_CAL c=20 r=8
 "I will run z calibration now."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-
 #MSG_WATCH
 "Info screen"
-
-#
-"Is filament 1 loaded?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -361,17 +330,14 @@
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 
 #
 "Last print failures"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 
 #
 "Last print"
@@ -439,11 +405,14 @@
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
+#MSG_MODE
+"Mode"
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
+#MSG_NORMAL
+"Normal"
+
+#MSG_SILENT
+"Silent"
 
 #
 "MMU needs user attention."
@@ -451,14 +420,14 @@
 #
 "MMU power fails"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
+#MSG_STEALTH
+"Stealth"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
+#MSG_AUTO_POWER
+"Auto power"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
+#MSG_HIGH_POWER
+"High power"
 
 #
 "MMU2 connected"
@@ -484,7 +453,7 @@
 #MSG_NO_CARD
 "No SD card"
 
-#
+#MSG_NA
 "N/A"
 
 #MSG_NO
@@ -547,12 +516,6 @@
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 
@@ -561,9 +524,6 @@
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -634,6 +594,15 @@
 #
 "Print FAN"
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+
+#
+"Please load filament first."
+
 #MSG_PRUSA3D
 "prusa3d.com"
 
@@ -664,20 +633,17 @@
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
 
-#MSG_SECOND_SERIAL_ON c=17 r=1
-"RPi port     [on]"
-
-#MSG_SECOND_SERIAL_OFF c=17 r=1
-"RPi port    [off]"
+#MSG_RPI_PORT
+"RPi port"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
-"SD card  [normal]"
+#MSG_SD_CARD
+"SD card"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [flshAir]"
+#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY
+"FlashAir"
 
 #
 "Right"
@@ -709,9 +675,6 @@
 #
 "Select nozzle preheat temperature which matches your material."
 
-#
-"Select PLA filament:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 
@@ -727,38 +690,38 @@
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 
-#MSG_SORT_NONE c=17 r=1
-"Sort       [none]"
+#MSG_SORT
+"Sort"
 
-#MSG_SORT_TIME c=17 r=1
-"Sort       [time]"
+#MSG_NONE
+"None"
+
+#MSG_SORT_TIME
+"Time"
 
 #
-"Severe skew"
+"Severe skew:"
 
-#MSG_SORT_ALPHA c=17 r=1
-"Sort   [alphabet]"
+#MSG_SORT_ALPHA
+"Alphabet"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
 
-#MSG_SOUND_LOUD c=17 r=1
-"Sound      [loud]"
+#MSG_SOUND_LOUD
+"Loud"
 
 #
-"Slight skew"
+"Slight skew:"
 
-#MSG_SOUND_MUTE c=17 r=1
-"Sound      [mute]"
+#MSG_SOUND
+"Sound"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
 
-#MSG_SOUND_ONCE c=17 r=1
-"Sound      [once]"
-
-#MSG_SOUND_SILENT c=17 r=1
-"Sound    [silent]"
+#MSG_SOUND_ONCE
+"Once"
 
 #MSG_SPEED
 "Speed"
@@ -784,14 +747,14 @@
 #MSG_SELFTEST_SWAPPED
 "Swapped"
 
-#MSG_TEMP_CALIBRATION c=20 r=1
-"Temp. cal.          "
+#
+"Select filament:"
 
-#MSG_TEMP_CALIBRATION_ON c=20 r=1
-"Temp. cal.   [on]"
+#MSG_TEMP_CALIBRATION c=12 r=1
+"Temp. cal."
 
-#MSG_TEMP_CALIBRATION_OFF c=20 r=1
-"Temp. cal.  [off]"
+#
+"Select temperature which matches your material."
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -926,7 +889,121 @@
 "Y distance from min"
 
 #
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+
+#
 "Y-correct:"
 
 #MSG_OFF
-" [off]"
+"Off"
+
+#MSG_ON
+"On"
+
+#
+"Back"
+
+#
+"Checks"
+
+#
+"False triggering"
+
+#
+"FINDA:"
+
+#MSG_FIRMWARE
+"Firmware"
+
+#MSG_STRICT
+"Strict"
+
+#MSG_WARN
+"Warn"
+
+#
+"HW Setup"
+
+#
+"IR:"
+
+#MSG_MAGNETS_COMP
+"Magnets comp."
+
+#MSG_MESH
+"Mesh"
+
+#
+"Mesh bed leveling"
+
+#
+"MK3S firmware detected on MK3 printer"
+
+#MSG_MMU_MODE
+"MMU Mode"
+
+#
+"Mode change in progress ..."
+
+#MSG_MODEL
+"Model"
+
+#MSG_NOZZLE_DIAMETER
+"Nozzle d."
+
+#
+"G-code sliced for a different level. Continue?"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+
+#
+"G-code sliced for a different printer type. Continue?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+
+#
+"G-code sliced for a newer firmware. Continue?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+
+#
+"PINDA:"
+
+#
+"Preheating to cut"
+
+#
+"Preheating to eject"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+
+#
+"Rename"
+
+#
+"Select"
+
+#
+"Sensor info"
+
+#
+"Sheet"
+
+#MSG_SOUND_BLIND
+"Assist"
+
+#
+"Steel sheets"
+
+#
+"Z-correct:"
+
+#MSG_Z_PROBE_NR
+"Z-probe nr."
