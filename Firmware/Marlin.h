@@ -296,6 +296,7 @@ void setPwmFrequency(uint8_t pin, int val);
 extern bool fans_check_enabled;
 extern float homing_feedrate[];
 extern bool axis_relative_modes[];
+extern float feedrate;
 extern int feedmultiply;
 extern int extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders
 extern int extruder_multiply[EXTRUDERS]; // sets extrude multiply factor (in percent) for each extruder individually
@@ -395,7 +396,7 @@ extern uint16_t gcode_in_progress;
 extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
-#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || card.paused || mmu_print_saved)
+#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || mmu_print_saved)
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue

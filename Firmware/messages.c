@@ -128,6 +128,9 @@ const char MSG_SOUND_BLIND[] PROGMEM_I1 = ISTR("Assist"); ////
 const char MSG_MESH[] PROGMEM_I1 = ISTR("Mesh"); ////
 const char MSG_Z_PROBE_NR[] PROGMEM_I1 = ISTR("Z-probe nr."); ////
 const char MSG_MAGNETS_COMP[] PROGMEM_I1 = ISTR("Magnets comp."); ////
+const char MSG_FS_ACTION[] PROGMEM_I1 = ISTR("FS Action"); ////
+const char MSG_FS_CONTINUE[] PROGMEM_I1 = ISTR("Cont."); ////
+const char MSG_FS_PAUSE[] PROGMEM_I1 = ISTR("Pause"); ////
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
