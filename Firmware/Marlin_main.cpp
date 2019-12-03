@@ -8415,8 +8415,6 @@ void prepare_move()
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #endif
   }
-  if (waiting_inside_plan_buffer_line_print_aborted)
-      return;
 
   set_current_to_destination();
 }
