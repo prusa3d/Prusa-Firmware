@@ -253,7 +253,7 @@ void dcode_1()
     /*!
     *
     ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
-    This command can be used without any additional parameters. It will read the entire eeprom.
+    This command can be used without any additional parameters. It will read the entire RAM.
       
           D3 [ A | C | X ]
       

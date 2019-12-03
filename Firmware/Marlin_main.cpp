@@ -5574,10 +5574,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
     /*!
-	### M26 S\<index\> - Set SD index <a href="https://reprap.org/wiki/G-code#M26:_Set_SD_position">M26: Set SD position</a>
+	### M26 - Set SD index <a href="https://reprap.org/wiki/G-code#M26:_Set_SD_position">M26: Set SD position</a>
     Set position in SD card file to index in bytes.
     This command is expected to be called after M23 and before M24.
     Otherwise effect of this command is undefined.
+          M26 [ S ]
+      
+      - `S` - Index in bytes
     */ ----------------------------------
     case 26: 
       if(card.cardOK && code_seen('S')) {
@@ -8519,7 +8522,7 @@ Sigma_Exit:
 
     /*!
     *
-    ### D-1 - Endless Loop <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">D-1: Endless Loop</a>
+    ### D-1 - Endless Loop <a href="https://reprap.org/wiki/G-code#D-1:_Endless_Loop">D-1: Endless Loop</a>
       
           D-1
       
@@ -8555,7 +8558,7 @@ Sigma_Exit:
     /*!
     *
     ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
-    This command can be used without any additional parameters. It will read the entire eeprom.
+    This command can be used without any additional parameters. It will read the entire RAM.
       
           D3 [ A | C | X ]
       
@@ -8682,22 +8685,35 @@ Sigma_Exit:
     *
     ### D10 - Set XYZ calibration = OK <a href="https://reprap.org/wiki/G-code#D10:_Set_XYZ_calibration_.3D_OK">D10: Set XYZ calibration = OK</a>
     
-   *
-   */
+    *
+    */
 	case 10:
 		dcode_10(); break;
+
+    /*!
+    *
+    ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
+    
+    Writes the actual time in the log file.
+    *
+    */
+
 #endif //DEBUG_DCODES
 #ifdef HEATBED_ANALYSIS
 
-  //! ### D80 - Bed check
-  // ---------------------
-  /*! 
-    - `E` - dimension x
-    - `F` - dimention y
-    - `G` - points_x
-    - `H` - points_y
-    - `I` - offset_x
-    - `J` - offset_y
+    /*!
+    *
+    ### D80 - Bed check <a href="https://reprap.org/wiki/G-code#D80:_Bed_check">D80: Bed check</a>
+    This command will log data to SD card file "mesh.txt".
+      
+          D80 [ E | F | G | H | I | J ]
+      
+    - `E` - Dimension X (default 40)
+    - `F` - Dimention Y (default 40)
+    - `G` - Points X (default 40)
+    - `H` - Points Y (default 40)
+    - `I` - Offset X (default 74)
+    - `J` - Offset Y (default 34)
   */
 	case 80:
 	{
@@ -8723,15 +8739,19 @@ Sigma_Exit:
  		bed_check(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
 	}break;
 
-  //! ### D81 - Bed analysis
-  // -----------------------------
-  /*! 
-    - `E` - dimension x
-    - `F` - dimention y
-    - `G` - points_x
-    - `H` - points_y
-    - `I` - offset_x
-    - `J` - offset_y
+    /*!
+    *
+    ### D81 - Bed analysis <a href="https://reprap.org/wiki/G-code#D81:_Bed_analysis">D80: Bed analysis</a>
+    This command will log data to SD card file "wldsd.txt".
+      
+          D81 [ E | F | G | H | I | J ]
+      
+    - `E` - Dimension X (default 40)
+    - `F` - Dimention Y (default 40)
+    - `G` - Points X (default 40)
+    - `H` - Points Y (default 40)
+    - `I` - Offset X (default 74)
+    - `J` - Offset Y (default 34)
   */
 	case 81:
 	{
@@ -8756,8 +8776,10 @@ Sigma_Exit:
 #endif //HEATBED_ANALYSIS
 #ifdef DEBUG_DCODES
 
-  //! ### D106 print measured fan speed for different pwm values
-  // --------------------------------------------------------------
+    /*!
+    *
+    ### D106 - Print measured fan speed for different pwm values <a href="https://reprap.org/wiki/G-code#D106:_Print_measured_fan_speed_for_different_pwm_values">D106: Print measured fan speed for different pwm values</a>
+    */
 	case 106:
 	{
 		for (int i = 255; i > 0; i = i - 5) {
