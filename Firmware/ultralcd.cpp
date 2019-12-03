@@ -1100,6 +1100,7 @@ void lcd_commands()
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
             lcd_commands_type = LcdCommands::Idle;
             lcd_commands_step = 0;
+            long_pause();
 		}
 	}
 
@@ -1656,9 +1657,8 @@ void lcd_return_to_status()
 //! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
-    lcd_return_to_status();
     stop_and_save_print_to_ram(0.0,0.0);
-    long_pause();
+    lcd_return_to_status();
     isPrintPaused = true;
     if (LcdCommands::Idle == lcd_commands_type)
     {
