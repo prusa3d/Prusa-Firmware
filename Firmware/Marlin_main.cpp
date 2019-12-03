@@ -9555,8 +9555,10 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda)
 void long_pause() //long pause print
 {
 	st_synchronize();
-	
 	start_pause_print = _millis();
+
+    // Stop heaters
+    setAllTargetHotends(0);
 
 	//retract
 	current_position[E_AXIS] -= default_retraction;
@@ -9572,8 +9574,7 @@ void long_pause() //long pause print
 	current_position[Y_AXIS] = Y_PAUSE_POS;
 	plan_buffer_line_curposXYZE(50, active_extruder);
 
-	// Turn off the hotends and print fan
-    setAllTargetHotends(0);
+	// Turn off the print fan
 	fanSpeed = 0;
 }
 
