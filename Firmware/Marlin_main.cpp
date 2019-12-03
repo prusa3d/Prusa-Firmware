@@ -10221,7 +10221,9 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	sei();
 	if ((z_move != 0) || (e_move != 0)) { // extruder or z move
 #if 1
-    // Rather than calling plan_buffer_line directly, push the move into the command queue, 
+    // Rather than calling plan_buffer_line directly, push the move into the command queue so that
+    // the caller can continue processing. This is used during powerpanic to save the state as we
+    // move away from the print.
     char buf[48];
 
 	// First unretract (relative extrusion)
