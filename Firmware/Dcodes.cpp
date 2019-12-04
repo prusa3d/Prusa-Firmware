@@ -111,7 +111,7 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
       - `X` - Data
     *
     */
-	void dcode_3()
+void dcode_3()
 {
 	DBG(_N("D3 - Read/Write EEPROM\n"));
 	uint16_t address = 0x0000; //default 0x0000
