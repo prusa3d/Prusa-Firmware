@@ -5569,14 +5569,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       card.openFile(strchr_pointer + 4,true);
       break;
 
-<<<<<<< HEAD
     /*!
 	### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#M24:_Start.2Fresume_SD_print">M24: Start/resume SD print</a>
     */ ----------------------------------
-=======
-    //! ### M24 - Start/resume SD print
-    // ----------------------------------
->>>>>>> upstream/MK3
     case 24:
 	  if (isPrintPaused)
           lcd_resume_print();
@@ -5588,14 +5583,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       }
 	  break;
 
-<<<<<<< HEAD
-    /*!
-	### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
-    */ ----------------------------------
-    case 25:
-      card.pauseSDPrint();
-      break;
-
     /*!
 	### M26 - Set SD index <a href="https://reprap.org/wiki/G-code#M26:_Set_SD_position">M26: Set SD position</a>
     Set position in SD card file to index in bytes.
@@ -5605,13 +5592,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       
       - `S` - Index in bytes
     */ ----------------------------------
-=======
-    //! ### M26 S\<index\> - Set SD index
-    //! Set position in SD card file to index in bytes.
-    //! This command is expected to be called after M23 and before M24.
-    //! Otherwise effect of this command is undefined.
-    // ----------------------------------
->>>>>>> upstream/MK3
     case 26: 
       if(card.cardOK && code_seen('S')) {
         long index = code_value_long();
@@ -7759,17 +7739,16 @@ Sigma_Exit:
     break;
     #endif //FILAMENTCHANGEENABLE
 
-<<<<<<< HEAD
     /*!
     ### M601 - Pause print <a href="https://reprap.org/wiki/G-code#M601:_Pause_print">M601: Pause print</a>
     */ -------------------------------
-=======
-  //! ### M25 - Pause SD print
-  //! ### M601 - Pause print
-  //! ### M125 - Pause print (TODO: not implemented)
-  // -------------------------------
+    /*!
+    ### M125 - Pause print (TODO: not implemented)
+    */ -------------------------------
+    /*!
+	### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
+    */ ----------------------------------
 	case 25:
->>>>>>> upstream/MK3
 	case 601:
 	{
         if (!isPrintPaused)
@@ -7790,18 +7769,11 @@ Sigma_Exit:
 	}
 	break;
 
-<<<<<<< HEAD
     /*!
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */ -------------------------------
-    case 603: {
-		lcd_print_stop();
-=======
-  //! ### M603 - Stop print
-  // -------------------------------
 	case 603: {
 		Stop();
->>>>>>> upstream/MK3
 	}
 	break;
 
