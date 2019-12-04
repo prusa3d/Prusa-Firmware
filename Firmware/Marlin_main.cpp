@@ -8182,7 +8182,7 @@ Sigma_Exit:
     break;
 
     /*!
-	### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#M917:_Set_TMC2130_PWM_amplitude_offset_(pwm_ampl)">M917: Set TMC2130 PWM amplitude offset (pwm_ampl)</a>
+	### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#M917:_Set_TMC2130_PWM_amplitude_offset_.28pwm_ampl.29">M917: Set TMC2130 PWM amplitude offset (pwm_ampl)</a>
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
       
           M917 [ X | Y | Z | E ]
@@ -8203,7 +8203,7 @@ Sigma_Exit:
     break;
 
     /*!
-	### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#M918:_Set_TMC2130_PWM_amplitude_gradient_(pwm_grad)">M918: Set TMC2130 PWM amplitude gradient (pwm_grad)</a>
+	### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#M918:_Set_TMC2130_PWM_amplitude_gradient_.28pwm_grad.29">M918: Set TMC2130 PWM amplitude gradient (pwm_grad)</a>
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
       
           M918 [ X | Y | Z | E ]
