@@ -45,6 +45,8 @@ extern bool cmdbuffer_front_already_processed;
 // Debugging information will be sent to serial line.
 //#define CMDBUFFER_DEBUG
 
+extern uint32_t sdpos_atomic;
+
 extern int serial_count;
 extern boolean comment_mode;
 extern char *strchr_pointer;

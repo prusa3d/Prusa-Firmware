@@ -16,8 +16,8 @@ extern uint16_t nPrinterType;
 extern PGM_P sPrinterName;
 
 // Firmware version
-#define FW_VERSION "3.7.2"
-#define FW_COMMIT_NR   2363
+#define FW_VERSION "3.8.1"
+#define FW_COMMIT_NR   2869
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
@@ -112,11 +112,6 @@ extern PGM_P sPrinterName;
 // Define this to have the electronics keep the power supply off on startup. If you don't know what this is leave it.
 // #define PS_DEFAULT_OFF
 
-
-
-// This makes temp sensor 1 a redundant sensor for sensor 0. If the temperatures difference between these sensors is to high the print will be aborted.
-//#define TEMP_SENSOR_1_AS_REDUNDANT
-#define MAX_REDUNDANT_TEMP_SENSOR_DIFF 10
 
 // Actual temperature must be close to target for this long before M109 returns success
 #define TEMP_RESIDENCY_TIME 3  // (seconds)
@@ -291,6 +286,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 #define Z_HEIGHT_HIDE_LIVE_ADJUST_MENU 2.0f
 
+#define HOME_Z_SEARCH_THRESHOLD 0.15f             // Threshold of the Z height in calibration
+
 //============================= Bed Auto Leveling ===========================
 
 //#define ENABLE_AUTO_BED_LEVELING // Delete the comment to enable (remove // at the start of the line)
@@ -348,7 +345,7 @@ your extruder heater takes 2 minutes to hit the target on heating.
   #define Y_PROBE_OFFSET_FROM_EXTRUDER -29
   #define Z_PROBE_OFFSET_FROM_EXTRUDER -12.35
 
-  #define Z_RAISE_BEFORE_HOMING 4       // (in mm) Raise Z before homing (G28) for Probe Clearance.
+  #define Z_RAISE_BEFORE_HOMING 5       // (in mm) Raise Z before homing (G28) for Probe Clearance.
                                         // Be sure you have this distance over your Z_MAX_POS in case
 
   #define XY_TRAVEL_SPEED 8000         // X and Y axis travel speed between probes, in mm/min
@@ -551,6 +548,12 @@ enum CalibrationStatus
     // Currently the G86 sets the calibration status to 
     CALIBRATION_STATUS_UNKNOWN = 0,
 };
+
+// Try to maintain a minimum distance from the bed even when Z is
+// unknown when doing the following operations
+#define MIN_Z_FOR_LOAD    50
+#define MIN_Z_FOR_UNLOAD  20
+#define MIN_Z_FOR_PREHEAT 10
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"

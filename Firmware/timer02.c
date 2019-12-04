@@ -26,7 +26,7 @@ void timer0_init(void)
 	OCR0B = 255;
 	// Set fast PWM mode and inverting mode.
 	TCCR0A = (1 << WGM01) | (1 << WGM00) | (1 << COM0B1) | (1 << COM0B0);  
-	TCCR0B = (1 << CS00);    // no clock prescaling
+	TCCR0B = (1 << CS01);    // CLK/8 prescaling
 	TIMSK0 |= (1 << TOIE0);  // enable timer overflow interrupt
 	
 	// Everything, that used to be on timer0 was moved to timer2 (delay, beeping, millis etc.)

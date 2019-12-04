@@ -142,10 +142,6 @@
 //Macro for print fan speed
 #define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms
 
-#define PRINTING_TYPE_SD 0
-#define PRINTING_TYPE_USB 1
-#define PRINTING_TYPE_NONE 2
-
 //filament types 
 #define FILAMENT_DEFAULT 0
 #define FILAMENT_FLEX 1
@@ -313,6 +309,8 @@ bool no_response = false;
 uint8_t important_status;
 uint8_t saved_filament_type;
 
+#define SAVED_TARGET_UNSET (X_MIN_POS-1)
+float saved_target[NUM_AXIS] = {SAVED_TARGET_UNSET, 0, 0, 0};
 
 // save/restore printing in case that mmu was not responding 
 bool mmu_print_saved = false;
@@ -322,8 +320,6 @@ uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
-
-bool wizard_active = false; //autoload temporarily disabled during wizard
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -335,7 +331,15 @@ float destination[NUM_AXIS] = {  0.0, 0.0, 0.0, 0.0};
 
 // For tracing an arc
 static float offset[3] = {0.0, 0.0, 0.0};
-static float feedrate = 1500.0, next_feedrate, saved_feedrate;
+
+// Current feedrate
+float feedrate = 1500.0;
+
+// Feedrate for the next move
+static float next_feedrate;
+
+// Original feedrate saved during homing moves
+static float saved_feedrate;
 
 // Determines Absolute or Relative Coordinates.
 // Also there is bool axis_relative_modes[] per axis flag.
@@ -362,7 +366,6 @@ bool Stopped=false;
   Servo servos[NUM_SERVOS];
 #endif
 
-bool CooldownNoWait = true;
 bool target_direction;
 
 //Insert variables if CHDK is defined
@@ -375,10 +378,10 @@ boolean chdkActive = false;
 //! @{
 bool saved_printing = false; //!< Print is paused and saved in RAM
 static uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
-static uint8_t saved_printing_type = PRINTING_TYPE_SD;
+uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { 0, 0, 0, 0 };
-//! Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
-static float saved_feedrate2 = 0;
+static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
+static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
 static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
 static bool saved_extruder_relative_mode = false;
@@ -396,6 +399,9 @@ static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
+static void temp_compensation_start();
+static void temp_compensation_apply();
+
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -520,24 +526,6 @@ bool fans_check_enabled = true;
 
 #ifdef TMC2130
 
-extern int8_t CrashDetectMenu;
-
-void crashdet_enable()
-{
-	tmc2130_sg_stop_on_crash = true;
-	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0xFF); 
-	CrashDetectMenu = 1;
-
-}
-
-void crashdet_disable()
-{
-	tmc2130_sg_stop_on_crash = false;
-	tmc2130_sg_crash = 0;
-	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
-	CrashDetectMenu = 0;
-}
-
 void crashdet_stop_and_save_print()
 {
 	stop_and_save_print_to_ram(10, -default_retraction); //XY - no change, Z 10mm up, E -1mm retract
@@ -627,7 +615,7 @@ void crashdet_detected(uint8_t mask)
 void crashdet_recover()
 {
 	crashdet_restore_print_and_continue();
-	tmc2130_sg_stop_on_crash = true;
+	if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
 }
 
 void crashdet_cancel()
@@ -637,7 +625,7 @@ void crashdet_cancel()
 	if (saved_printing_type == PRINTING_TYPE_SD) {
 		lcd_print_stop();
 	}else if(saved_printing_type == PRINTING_TYPE_USB){
-		SERIAL_ECHOLNPGM("// action:cancel"); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
+		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
 		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 	}
 }
@@ -1252,21 +1240,36 @@ void setup()
 	plan_init();  // Initialize planner;
 
 	factory_reset();
+	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
+	        eeprom_read_dword((uint32_t*)(EEPROM_TOP - 8)) == 0x0ffffffff)
+	{
+        // Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
+        // where all the EEPROM entries are set to 0x0ff.
+        // Once a firmware boots up, it forces at least a language selection, which changes
+        // EEPROM_LANG to number lower than 0x0ff.
+        // 1) Set a high power mode.
+	    eeprom_update_byte((uint8_t*)EEPROM_SILENT, SILENT_MODE_OFF);
+#ifdef TMC2130
+        tmc2130_mode = TMC2130_MODE_NORMAL;
+#endif //TMC2130
+        eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
+    }
+
     lcd_encoder_diff=0;
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	if (silentMode == 0xff) silentMode = 0;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
-	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
-	if (crashdet && !farm_mode)
+
+	if (lcd_crash_detect_enabled() && !farm_mode)
 	{
-		crashdet_enable();
+		lcd_crash_detect_enable();
 	    puts_P(_N("CrashDetect ENABLED!"));
 	}
 	else
 	{
-		crashdet_disable();
+	    lcd_crash_detect_disable();
 	    puts_P(_N("CrashDetect DISABLED"));
 	}
 
@@ -1362,20 +1365,6 @@ void setup()
 
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
-
-	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
-		eeprom_read_dword((uint32_t*)(EEPROM_TOP - 8)) == 0x0ffffffff) {
-		// Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
-		// where all the EEPROM entries are set to 0x0ff.
-		// Once a firmware boots up, it forces at least a language selection, which changes
-		// EEPROM_LANG to number lower than 0x0ff.
-		// 1) Set a high power mode.
-#ifdef TMC2130
-		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
-		tmc2130_mode = TMC2130_MODE_NORMAL;
-#endif //TMC2130
-		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
-	}
 
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
@@ -1505,8 +1494,10 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-  check_if_fw_is_on_right_printer();
-  show_fw_version_warnings();
+  if (!farm_mode) {
+    check_if_fw_is_on_right_printer();
+    show_fw_version_warnings();    
+  }
 
   switch (hw_changed) { 
 	  //if motherboard or printer type was changed inform user as it can indicate flashing wrong firmware version
@@ -1539,7 +1530,7 @@ void setup()
 		  calibration_status() == CALIBRATION_STATUS_UNKNOWN || 
 		  calibration_status() == CALIBRATION_STATUS_XYZ_CALIBRATION) {
 		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
-		  eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+            eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 		  // Show the message.
 		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_CALIBRATION_FLOW));
 	  }
@@ -1763,12 +1754,25 @@ void loop()
 	{
 		is_usb_printing = false;
 	}
+    if (isPrintPaused && saved_printing_type == PRINTING_TYPE_USB) //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
+	{
+		is_usb_printing = true;
+	}
+    
+#ifdef FANCHECK
+    if (fan_check_error && isPrintPaused)
+    {
+        KEEPALIVE_STATE(PAUSED_FOR_USER);
+        host_keepalive(); //prevent timeouts since usb processing is disabled until print is resumed. This is for a crude way of pausing a print on all hosts.
+    }
+#endif
 
     if (prusa_sd_card_upload)
     {
         //we read byte-by byte
         serial_read_stream();
-    } else 
+    } 
+    else 
     {
 
         get_command();
@@ -2019,14 +2023,14 @@ static void do_blocking_move_to(float x, float y, float z) {
     feedrate = homing_feedrate[Z_AXIS];
 
     current_position[Z_AXIS] = z;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
+    plan_buffer_line_curposXYZE(feedrate/60, active_extruder);
     st_synchronize();
 
     feedrate = XY_TRAVEL_SPEED;
 
     current_position[X_AXIS] = x;
     current_position[Y_AXIS] = y;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
+    plan_buffer_line_curposXYZE(feedrate/60, active_extruder);
     st_synchronize();
 
     feedrate = oldFeedRate;
@@ -2093,6 +2097,52 @@ bool check_commands() {
 	return end_command_found;
 	
 }
+
+
+// raise_z_above: slowly raise Z to the requested height
+//
+// contrarily to a simple move, this function will carefully plan a move
+// when the current Z position is unknown. In such cases, stallguard is
+// enabled and will prevent prolonged pushing against the Z tops
+void raise_z_above(float target, bool plan)
+{
+    if (current_position[Z_AXIS] >= target)
+        return;
+
+    // Z needs raising
+    current_position[Z_AXIS] = target;
+
+    if (axis_known_position[Z_AXIS])
+    {
+        // current position is known, it's safe to raise Z
+        if(plan) plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+        return;
+    }
+
+    // ensure Z is powered in normal mode to overcome initial load
+    enable_z();
+    st_synchronize();
+
+    // rely on crashguard to limit damage
+    bool z_endstop_enabled = enable_z_endstop(true);
+#ifdef TMC2130
+    tmc2130_home_enter(Z_AXIS_MASK);
+#endif //TMC2130
+    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
+    st_synchronize();
+#ifdef TMC2130
+    if (endstop_z_hit_on_purpose())
+    {
+        // not necessarily exact, but will avoid further vertical moves
+        current_position[Z_AXIS] = max_pos[Z_AXIS];
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS],
+                          current_position[Z_AXIS], current_position[E_AXIS]);
+    }
+    tmc2130_home_exit();
+#endif //TMC2130
+    enable_z_endstop(z_endstop_enabled);
+}
+
 
 #ifdef TMC2130
 bool calibrate_z_auto()
@@ -2344,77 +2394,77 @@ void ramming() {
 
 		max_feedrate[E_AXIS] = 50;
 		//current_position[E_AXIS] -= 8;
-		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2100 / 60, active_extruder);
+		//plan_buffer_line_curposXYZE(2100 / 60, active_extruder);
 		//current_position[E_AXIS] += 8;
-		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2100 / 60, active_extruder);
+		//plan_buffer_line_curposXYZE(2100 / 60, active_extruder);
 		current_position[E_AXIS] += 5.4;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2800 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(2800 / 60, active_extruder);
 		current_position[E_AXIS] += 3.2;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 		current_position[E_AXIS] += 3;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3400 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(3400 / 60, active_extruder);
 		st_synchronize();
 		max_feedrate[E_AXIS] = 80;
 		current_position[E_AXIS] -= 82;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 9500 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(9500 / 60, active_extruder);
 		max_feedrate[E_AXIS] = 50;//tmp[E_AXIS];
 		current_position[E_AXIS] -= 20;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1200 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(1200 / 60, active_extruder);
 		current_position[E_AXIS] += 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(400 / 60, active_extruder);
 		current_position[E_AXIS] += 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
 		current_position[E_AXIS] -= 10;
 		st_synchronize();
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
 		current_position[E_AXIS] += 10;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
 		current_position[E_AXIS] -= 10;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(800 / 60, active_extruder);
 		current_position[E_AXIS] += 10;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(800 / 60, active_extruder);
 		current_position[E_AXIS] -= 10;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(800 / 60, active_extruder);
 		st_synchronize();
 	}
 	else {
 		//ABS
 		max_feedrate[E_AXIS] = 50;
 		//current_position[E_AXIS] -= 8;
-		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2100 / 60, active_extruder);
+		//plan_buffer_line_curposXYZE(2100 / 60, active_extruder);
 		//current_position[E_AXIS] += 8;
-		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2100 / 60, active_extruder);
+		//plan_buffer_line_curposXYZE(2100 / 60, active_extruder);
 		current_position[E_AXIS] += 3.1;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(2000 / 60, active_extruder);
 		current_position[E_AXIS] += 3.1;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(2500 / 60, active_extruder);
 		current_position[E_AXIS] += 4;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 		st_synchronize();
 		//current_position[X_AXIS] += 23; //delay
-		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
+		//plan_buffer_line_curposXYZE(600/60, active_extruder); //delay
 		//current_position[X_AXIS] -= 23; //delay
-		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
+		//plan_buffer_line_curposXYZE(600/60, active_extruder); //delay
 		_delay(4700);
 		max_feedrate[E_AXIS] = 80;
 		current_position[E_AXIS] -= 92;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 9900 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(9900 / 60, active_extruder);
 		max_feedrate[E_AXIS] = 50;//tmp[E_AXIS];
 		current_position[E_AXIS] -= 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(800 / 60, active_extruder);
 		current_position[E_AXIS] += 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(400 / 60, active_extruder);
 		current_position[E_AXIS] -= 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
 		st_synchronize();
 		current_position[E_AXIS] += 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
 		current_position[E_AXIS] -= 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
 		current_position[E_AXIS] += 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
 		current_position[E_AXIS] -= 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
 		st_synchronize();
 
 	}
@@ -2423,6 +2473,9 @@ void ramming() {
 
 #ifdef TMC2130
 void force_high_power_mode(bool start_high_power_section) {
+#ifdef PSU_Delta
+	if (start_high_power_section == true) enable_force_z();
+#endif //PSU_Delta
 	uint8_t silent;
 	silent = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	if (silent == 1) {
@@ -2471,9 +2524,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 
 	//if we are homing all axes, first move z higher to protect heatbed/steel sheet
 	if (home_all_axes) {
-		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
-		feedrate = homing_feedrate[Z_AXIS];
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
+        raise_z_above(MESH_HOME_Z_SEARCH);
 		st_synchronize();
 	}
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -2584,26 +2635,21 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
         #ifndef Z_SAFE_HOMING
           if(home_z) {
             #if defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
-              destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
-              feedrate = max_feedrate[Z_AXIS];
-              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
+              raise_z_above(Z_RAISE_BEFORE_HOMING);
               st_synchronize();
             #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
             #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))  // If Mesh bed leveling, move X&Y to safe position for home
-      			  if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] )) 
-      			  {
-                homeaxis(X_AXIS);
-                homeaxis(Y_AXIS);
-      			  } 
+              raise_z_above(MESH_HOME_Z_SEARCH);
+              st_synchronize();
+              if (!axis_known_position[X_AXIS]) homeaxis(X_AXIS);
+              if (!axis_known_position[Y_AXIS]) homeaxis(Y_AXIS);
               // 1st mesh bed leveling measurement point, corrected.
               world2machine_initialize();
               world2machine(pgm_read_float(bed_ref_points_4), pgm_read_float(bed_ref_points_4+1), destination[X_AXIS], destination[Y_AXIS]);
               world2machine_reset();
               if (destination[Y_AXIS] < Y_MIN_POS)
                   destination[Y_AXIS] = Y_MIN_POS;
-              destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
-              feedrate = homing_feedrate[Z_AXIS]/10;
-              current_position[Z_AXIS] = 0;
+              feedrate = homing_feedrate[X_AXIS] / 20;
               enable_endstops(false);
 #ifdef DEBUG_BUILD
               SERIAL_ECHOLNPGM("plan_set_position()");
@@ -2694,6 +2740,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       previous_millis_cmd = _millis();
       endstops_hit_on_purpose();
 #ifndef MESH_BED_LEVELING
+//-// Oct 2019 :: this part of code is (from) now probably un-compilable
       // If MESH_BED_LEVELING is not active, then it is the original Prusa i3.
       // Offer the user to load the baby step value, which has been adjusted at the previous print session.
       if(card.sdprinting && eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z))
@@ -2791,7 +2838,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	enable_endstops(false);
 	current_position[X_AXIS] += 5;
 	current_position[Y_AXIS] += 5;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+	plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40, active_extruder);
 	st_synchronize();
 
 	// Let the user move the Z axes up to the end stoppers.
@@ -2841,7 +2888,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			
 		bool endstops_enabled  = enable_endstops(false);
         current_position[Z_AXIS] -= 1; //move 1mm down with disabled endstop
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40, active_extruder);
         st_synchronize();
 
 		// Move the print head close to the bed.
@@ -2852,7 +2899,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		tmc2130_home_enter(Z_AXIS_MASK);
 #endif //TMC2130
 
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40, active_extruder);
 
 		st_synchronize();
 #ifdef TMC2130
@@ -2860,7 +2907,8 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 #endif //TMC2130
 		enable_endstops(endstops_enabled);
 
-		if (st_get_position_mm(Z_AXIS) == MESH_HOME_Z_SEARCH)
+		if ((st_get_position_mm(Z_AXIS) <= (MESH_HOME_Z_SEARCH + HOME_Z_SEARCH_THRESHOLD)) &&
+		    (st_get_position_mm(Z_AXIS) >= (MESH_HOME_Z_SEARCH - HOME_Z_SEARCH_THRESHOLD)))
 		{
 			if (onlyZ)
 			{
@@ -2885,14 +2933,14 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			{
 				// Reset the baby step value and the baby step applied flag.
 				calibration_status_store(CALIBRATION_STATUS_XYZ_CALIBRATION);
-				eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+                    eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 				// Complete XYZ calibration.
 				uint8_t point_too_far_mask = 0;
 				BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
 				clean_up_after_endstop_move(l_feedmultiply);
 				// Print head up.
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40, active_extruder);
 				st_synchronize();
 //#ifndef NEW_XYZCAL
 				if (result >= 0)
@@ -2912,7 +2960,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					clean_up_after_endstop_move(l_feedmultiply);
 					// Print head up.
 					current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+					plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40, active_extruder);
 					st_synchronize();
 					// if (result >= 0) babystep_apply();					
 					#endif //HEATBED_V2
@@ -3022,21 +3070,18 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     //Retract E
     current_position[E_AXIS] += e_shift;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
-            current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED, active_extruder);
     st_synchronize();
 
     //Lift Z
     current_position[Z_AXIS] += z_shift;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
-            current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_ZFEED, active_extruder);
     st_synchronize();
 
     //Move XY to side
     current_position[X_AXIS] = x_position;
     current_position[Y_AXIS] = y_position;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
-            current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED, active_extruder);
     st_synchronize();
 
     //Beep, manage nozzle heater and wait for user to start unload filament
@@ -3061,8 +3106,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 			lcd_set_cursor(0, 2);
 			lcd_puts_P(_T(MSG_PLEASE_WAIT));
 			current_position[X_AXIS] -= 100;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
-				current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+			plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED, active_extruder);
 			st_synchronize();
 			lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
         }
@@ -3099,8 +3143,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     if (!automatic)
     {
         current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
-                current_position[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder);
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED, active_extruder);
     }
 
     //Move XY back
@@ -3133,15 +3176,6 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     custom_message_type = CustomMsg::Status;
 }
 
-//! @brief Rise Z if too low to avoid blob/jam before filament loading
-//!
-//! It doesn't plan_buffer_line(), as it expects plan_buffer_line() to be called after
-//! during extruding (loading) filament.
-void marlin_rise_z(void)
-{
-    if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
-}
-
 void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
@@ -3167,12 +3201,12 @@ void gcode_M701()
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 		current_position[E_AXIS] += 40;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+		plan_buffer_line_curposXYZE(400 / 60, active_extruder); //fast sequence
 		st_synchronize();
 
-		marlin_rise_z();
+        raise_z_above(MIN_Z_FOR_LOAD, false);
 		current_position[E_AXIS] += 30;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+		plan_buffer_line_curposXYZE(400 / 60, active_extruder); //fast sequence
 		
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
@@ -3249,6 +3283,56 @@ static void gcode_PRUSA_SN()
     } else {
         puts_P(_N("Not in farm mode."));
     }
+}
+//! Detection of faulty RAMBo 1.1b boards equipped with bigger capacitors
+//! at the TACH_1 pin, which causes bad detection of print fan speed.
+//! Warning: This function is not to be used by ordinary users, it is here only for automated testing purposes,
+//!   it may even interfere with other functions of the printer! You have been warned!
+//! The test idea is to measure the time necessary to charge the capacitor.
+//! So the algorithm is as follows:
+//! 1. Set TACH_1 pin to INPUT mode and LOW
+//! 2. Wait a few ms
+//! 3. disable interrupts and measure the time until the TACH_1 pin reaches HIGH
+//! Repeat 1.-3. several times
+//! Good RAMBo's times are in the range of approx. 260-320 us
+//! Bad RAMBo's times are approx. 260-1200 us
+//! So basically we are interested in maximum time, the minima are mostly the same.
+//! May be that's why the bad RAMBo's still produce some fan RPM reading, but not corresponding to reality
+static void gcode_PRUSA_BadRAMBoFanTest(){
+    //printf_P(PSTR("Enter fan pin test\n"));
+#if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
+	fan_measuring = false; // prevent EXTINT7 breaking into the measurement
+	unsigned long tach1max = 0;
+	uint8_t tach1cntr = 0;
+	for( /* nothing */; tach1cntr < 100; ++tach1cntr){
+		//printf_P(PSTR("TACH_1: %d\n"), tach1cntr);
+		SET_OUTPUT(TACH_1);
+		WRITE(TACH_1, LOW);
+		_delay(20); // the delay may be lower
+		unsigned long tachMeasure = _micros();
+		cli();
+		SET_INPUT(TACH_1);
+		// just wait brutally in an endless cycle until we reach HIGH
+		// if this becomes a problem it may be improved to non-endless cycle
+		while( READ(TACH_1) == 0 ) ;
+		sei();
+		tachMeasure = _micros() - tachMeasure;
+		if( tach1max < tachMeasure )
+		tach1max = tachMeasure;
+		//printf_P(PSTR("TACH_1: %d: capacitor check time=%lu us\n"), (int)tach1cntr, tachMeasure);
+	}	
+	//printf_P(PSTR("TACH_1: max=%lu us\n"), tach1max);
+	SERIAL_PROTOCOLPGM("RAMBo FAN ");
+	if( tach1max > 500 ){
+		// bad RAMBo
+		SERIAL_PROTOCOLLNPGM("BAD");
+	} else {
+		SERIAL_PROTOCOLLNPGM("OK");
+    }
+	// cleanup after the test function
+	SET_INPUT(TACH_1);
+	WRITE(TACH_1, HIGH);
+#endif
 }
 
 #ifdef BACKLASH_X
@@ -3404,22 +3488,16 @@ extern uint8_t st_backlash_y;
 
 void process_commands()
 {
-  #ifdef FANCHECK
-  if (fan_check_error){
-	if( fan_check_error == EFCE_DETECTED ){
-		fan_check_error = EFCE_REPORTED;
-      
-      if(is_usb_printing){
-        SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
-      }
-      else{
-        lcd_pause_print();
-      }
-
-    } // otherwise it has already been reported, so just ignore further processing
-    return;
-  }
-  #endif
+#ifdef FANCHECK
+    if(fan_check_error){
+        if(fan_check_error == EFCE_DETECTED){
+            fan_check_error = EFCE_REPORTED;
+            // SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
+            lcd_pause_print();
+        } // otherwise it has already been reported, so just ignore further processing
+        return; //ignore usb stream. It is reenabled by selecting resume from the lcd.
+    }
+#endif
 
 	if (!buflen) return; //empty command
   #ifdef FILAMENT_RUNOUT_SUPPORT
@@ -3571,7 +3649,7 @@ void process_commands()
     
     Set of internal PRUSA commands
       
-          PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+          PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
       
       - `Ping` 
       - `PRN` - Prints revision of the printer
@@ -3579,7 +3657,6 @@ void process_commands()
       - `fn` - Prints farm no.
       - `thx` 
       - `uvlo` 
-      - `fsensor_recover` - Filament sensor recover - restore print and continue
       - `MMURES` - Reset MMU
       - `RESET` - (Careful!)
       - `fv`  - ?
@@ -3607,7 +3684,9 @@ void process_commands()
 		else if (code_seen("PRN")) { // PRUSA PRN
 		  printf_P(_N("%d"), status_number);
 
-        }else if (code_seen("FAN")) { // PRUSA FAN
+        } else if( code_seen("FANPINTST") ){
+            gcode_PRUSA_BadRAMBoFanTest();
+        }else if (code_seen("FAN")) { //! PRUSA FAN
 			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
 		}else if (code_seen("fn")) { // PRUSA fn
 		  if (farm_mode) {
@@ -3627,12 +3706,6 @@ void process_commands()
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
-#ifdef FILAMENT_SENSOR
-		else if (code_seen("fsensor_recover")) // PRUSA fsensor_recover
-		{
-               fsensor_restore_print_and_continue();
-		}	
-#endif //FILAMENT_SENSOR
 		else if (code_seen("MMURES")) // PRUSA MMURES
 		{
 			mmu_reset();
@@ -3688,7 +3761,7 @@ void process_commands()
 	  lang_reset();
 
 	} else if(code_seen("Lz")) { // PRUSA Lz
-      EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
+      eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
 	} else if(code_seen("Beat")) { // PRUSA Beat
         // Kick farm link timer
@@ -3768,10 +3841,14 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
 		//  lcd_calibration();
 	  // }
 
-  }  
-  else if (code_seen('^')) {
-    // nothing, this is a version line
-  } else if(code_seen('G'))
+  } 
+  // This prevents reading files with "^" in their names.
+  // Since it is unclear, if there is some usage of this construct,
+  // it will be deprecated in 3.9 alpha a possibly completely removed in the future:
+  // else if (code_seen('^')) {
+  //  // nothing, this is a version line
+  // }
+  else if(code_seen('G'))
   {
 	gcode_in_progress = (int)code_value();
 //	printf_P(_N("BEGIN G-CODE=%u\n"), gcode_in_progress);
@@ -3953,8 +4030,19 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
         #endif
 
+            get_coordinates(); // For X Y Z E F
 
-        get_coordinates(); // For X Y Z E F
+            // When recovering from a previous print move, restore the originally
+            // calculated target position on the first USB/SD command. This accounts
+            // properly for relative moves
+            if ((saved_target[0] != SAVED_TARGET_UNSET) &&
+                ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) ||
+                 (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)))
+            {
+                memcpy(destination, saved_target, sizeof(destination));
+                saved_target[0] = SAVED_TARGET_UNSET;
+            }
+
 		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
 			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
 		}
@@ -4319,15 +4407,15 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if (result)
 			{
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				current_position[Z_AXIS] = 50;
 				current_position[Y_AXIS] = 180;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				st_synchronize();
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
 				current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
 				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				st_synchronize();
 				gcode_G28(false, false, true);
 
@@ -4335,7 +4423,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
 				//waiting for PIDNA probe to cool down in case that we are not in farm mode
 				current_position[Z_AXIS] = 100;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				if (lcd_wait_for_pinda(35) == false) { //waiting for PINDA probe to cool, if this takes more then time expected, temp. cal. fails
 					lcd_temp_cal_show_result(false);
 					break;
@@ -4359,12 +4447,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			custom_message_state = 1;
 			lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
 			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 			current_position[X_AXIS] = PINDA_PREHEAT_X;
 			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 			st_synchronize();
 
 			while (current_temperature_pinda < start_temp)
@@ -4376,10 +4464,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
 
 			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 			current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
 			current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 			st_synchronize();
 
 			bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
@@ -4407,12 +4495,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				setTargetBed(50 + 10 * (temp - 30) / 5);
 //				setTargetHotend(255, 0);
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				current_position[X_AXIS] = PINDA_PREHEAT_X;
 				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				st_synchronize();
 				while (current_temperature_pinda < temp)
 				{
@@ -4420,10 +4508,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 					serialecho_temperatures();
 				}
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
 				current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 				st_synchronize();
 				find_z_result = find_bed_induction_sensor_point_z(-1.f);
 				if (find_z_result == false) {
@@ -4463,7 +4551,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
 		current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 		current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 		st_synchronize();
 		
 		while (abs(degBed() - PINDA_MIN_T) > 1) {
@@ -4479,11 +4567,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
 
 		current_position[Z_AXIS] = 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 
 		current_position[X_AXIS] = BED_X0;
 		current_position[Y_AXIS] = BED_Y0;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 		st_synchronize();
 		
 		find_bed_induction_sensor_point_z(-1.f);
@@ -4500,7 +4588,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			current_position[X_AXIS] = PINDA_PREHEAT_X;
 			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 			st_synchronize();
 			while (degBed() < t_c) {
 				delay_keep_alive(1000);
@@ -4511,10 +4599,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				serialecho_temperatures();
 			}
 			current_position[Z_AXIS] = 5;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 			current_position[X_AXIS] = BED_X0;
 			current_position[Y_AXIS] = BED_Y0;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 			st_synchronize();
 			find_bed_induction_sensor_point_z(-1.f);
 			z_shift = (int)((current_position[Z_AXIS] - zero_z)*cs.axis_steps_per_unit[Z_AXIS]);
@@ -4568,7 +4656,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-        static bool run = false;
+#ifndef PINDA_THERMISTOR
+        static bool run = false; // thermistor-less PINDA temperature compensation is running
+#endif // ndef PINDA_THERMISTOR
 
 #ifdef SUPPORT_VERBOSITY
 		int8_t verbosity_level = 0;
@@ -4616,13 +4706,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		}
 		bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 		
-		bool temp_comp_start = true;
-#ifdef PINDA_THERMISTOR
-		temp_comp_start = false;
-#endif //PINDA_THERMISTOR
-
-		if (temp_comp_start)
-		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
+#ifndef PINDA_THERMISTOR
+		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50)
+		{
 			if (lcd_commands_type != LcdCommands::StopPrint) {
 				temp_compensation_start();
 				run = true;
@@ -4634,7 +4720,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			}
 			break;
 		}
-		run = false;
+        run = false;
+#endif //PINDA_THERMISTOR
 		if (lcd_commands_type == LcdCommands::StopPrint) {
 			mesh_bed_leveling_flag = false;
 			break;
@@ -4655,7 +4742,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		// Cycle through all points and probe them
 		// First move up. During this first movement, the babystepping will be reverted.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
+		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
 		// The move to the first calibration point.
 		current_position[X_AXIS] = BED_X0;
 		current_position[Y_AXIS] = BED_Y0;
@@ -4670,7 +4757,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 		#endif //SUPPORT_VERBOSITY
 
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS] / 30, active_extruder);
+		plan_buffer_line_curposXYZE(homing_feedrate[X_AXIS] / 30, active_extruder);
 		// Wait until the move is finished.
 		st_synchronize();
 
@@ -4722,7 +4809,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if((ix == 0) && (iy == 0)) current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 			else current_position[Z_AXIS] += 2.f / nMeasPoints; //use relative movement from Z coordinate where PINDa triggered on previous point. This makes calibration faster.
 			float init_z_bckp = current_position[Z_AXIS];
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+			plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
 			st_synchronize();
 
 			// Move to XY position of the sensor point.
@@ -4743,7 +4830,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			#endif // SUPPORT_VERBOSITY
 
 			//printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
+			plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE, active_extruder);
 			st_synchronize();
 
 			// Go down until endstop is hit
@@ -4755,7 +4842,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if (init_z_bckp - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
 				//printf_P(PSTR("Another attempt! Current Z position: %f\n"), current_position[Z_AXIS]);
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+				plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
 				st_synchronize();
 
 				if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
@@ -4810,7 +4897,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			MYSERIAL.print(current_position[Z_AXIS], 5);
 		}
 		#endif // SUPPORT_VERBOSITY
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+		plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
 		st_synchronize();
 		if (mesh_point != nMeasPoints * nMeasPoints) {
                Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
@@ -4827,14 +4914,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                     // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
                     bState=enable_z_endstop(false);
                     current_position[Z_AXIS] -= 1;
-                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+                    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40, active_extruder);
                     st_synchronize();
                     enable_z_endstop(true);
 #ifdef TMC2130
                     tmc2130_home_enter(Z_AXIS_MASK);
 #endif // TMC2130
                     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+                    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40, active_extruder);
                     st_synchronize();
 #ifdef TMC2130
                     tmc2130_home_exit();
@@ -4851,12 +4938,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		clean_up_after_endstop_move(l_feedmultiply);
 //		SERIAL_ECHOLNPGM("clean up finished ");
 
-		bool apply_temp_comp = true;
-#ifdef PINDA_THERMISTOR
-		apply_temp_comp = false;
-#endif
-		if (apply_temp_comp)
+#ifndef PINDA_THERMISTOR
 		if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
+#endif
 		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
 //		SERIAL_ECHOLNPGM("babystep applied");
 		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
@@ -4967,7 +5051,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		//unretract (after PINDA preheat retraction)
 		if (degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
 			current_position[E_AXIS] += default_retraction;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
+			plan_buffer_line_curposXYZE(400, active_extruder);
 		}
 		KEEPALIVE_STATE(NOT_BUSY);
 		// Restore custom message state
@@ -5272,31 +5356,36 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     // -----------------------------------
     case 23: 
       starpos = (strchr(strchr_pointer + 4,'*'));
-      if(starpos!=NULL)
+	  if(starpos!=NULL)
         *(starpos)='\0';
       card.openFile(strchr_pointer + 4,true);
       break;
 
-    //! ### M24 - Start SD print
+    //! ### M24 - Start/resume SD print
     // ----------------------------------
     case 24:
-	  if (!card.paused) 
-		failstats_reset_print();
-      card.startFileprint();
-      starttime=_millis();
+	  if (isPrintPaused)
+          lcd_resume_print();
+      else
+      {
+          failstats_reset_print();
+          card.startFileprint();
+          starttime=_millis();
+      }
 	  break;
 
-    //! ### M25 - Pause SD print
-    // ----------------------------------
-    case 25:
-      card.pauseSDPrint();
-      break;
-
-    //! ### M26 - Set SD index
+    //! ### M26 S\<index\> - Set SD index
+    //! Set position in SD card file to index in bytes.
+    //! This command is expected to be called after M23 and before M24.
+    //! Otherwise effect of this command is undefined.
     // ----------------------------------
     case 26: 
       if(card.cardOK && code_seen('S')) {
-        card.setIndex(code_value_long());
+        long index = code_value_long();
+        card.setIndex(index);
+        // We don't disable interrupt during update of sdpos_atomic
+        // as we expect, that SD card print is not active in this moment
+        sdpos_atomic = index;
       }
       break;
 
@@ -5448,7 +5537,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 		// Reset the baby step value and the baby step applied flag.
 		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
-		eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+          eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
         // Reset the skew and offset in both RAM and EEPROM.
         reset_bed_offset_and_skew();
@@ -5833,7 +5922,6 @@ Sigma_Exit:
           {
               setTargetHotendSafe(code_value(), extruder);
           }
-          setWatch();
           break;
     }
 
@@ -5947,6 +6035,14 @@ Sigma_Exit:
     }
 
     //! ### M109 - Wait for extruder temperature
+    //! Parameters (not mandatory):
+    //! * S \<temp\> set extruder temperature
+    //! * R \<temp\> set extruder temperature
+    //!
+    //! Parameters S and R are treated identically.
+    //! Command always waits for both cool down and heat up.
+    //! If no parameters are supplied waits for previously
+    //! set extruder temperature.
     // -------------------------------------------------
     case 109:
     {
@@ -5963,10 +6059,8 @@ Sigma_Exit:
       #endif
       if (code_seen('S')) {
           setTargetHotendSafe(code_value(), extruder);
-              CooldownNoWait = true;
             } else if (code_seen('R')) {
                 setTargetHotendSafe(code_value(), extruder);
-        CooldownNoWait = false;
       }
       #ifdef AUTOTEMP
         if (code_seen('S')) autotemp_min=code_value();
@@ -5978,7 +6072,6 @@ Sigma_Exit:
         }
       #endif
 
-      setWatch();
       codenum = _millis();
 
       /* See if we are heating up or cooling down */
@@ -6001,9 +6094,15 @@ Sigma_Exit:
       break;
 
     //! ### M190 - Wait for bed temperature
-    // ---------------------------------------
+    //! Parameters (not mandatory):
+    //! * S \<temp\> set extruder temperature and wait for heating
+    //! * R \<temp\> set extruder temperature and wait for heating or cooling
+    //!
+    //! If no parameter is supplied, waits for heating or cooling to previously set temperature.
     case 190: 
     #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
+    {
+        bool CooldownNoWait = false;
         LCD_MESSAGERPGM(_T(MSG_BED_HEATING));
 		heating_status = 3;
 		if (farm_mode) { prusa_statistics(1); };
@@ -6015,7 +6114,6 @@ Sigma_Exit:
 		else if (code_seen('R')) 
 		{
           setTargetBed(code_value());
-          CooldownNoWait = false;
         }
         codenum = _millis();
         
@@ -6049,6 +6147,7 @@ Sigma_Exit:
 		heating_status = 4;
 
         previous_millis_cmd = _millis();
+    }
     #endif
         break;
 
@@ -7129,27 +7228,36 @@ Sigma_Exit:
     break;
     #endif //FILAMENTCHANGEENABLE
 
+  //! ### M25 - Pause SD print
   //! ### M601 - Pause print
+  //! ### M125 - Pause print (TODO: not implemented)
   // -------------------------------
+	case 25:
 	case 601:
 	{
-		cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
-		lcd_pause_print();
+        if (!isPrintPaused)
+        {
+            st_synchronize();
+            cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
+            lcd_pause_print();
+        }
 	}
 	break;
 
   //! ### M602 - Resume print
   // -------------------------------
 	case 602: {
-		lcd_resume_print();
+	  if (isPrintPaused)
+          lcd_resume_print();
 	}
 	break;
 
   //! ### M603 - Stop print
   // -------------------------------
-  case 603: {
-		lcd_print_stop();
+	case 603: {
+		Stop();
 	}
+	break;
 
 #ifdef PINDA_THERMISTOR
   //! ### M860 - Wait for extruder temperature (PINDA)
@@ -7291,17 +7399,17 @@ Sigma_Exit:
     // ----------------------------------------------
     /*!     
         Checks the parameters of the printer and gcode and performs compatibility check
-          - M862.1 [ P<nozzle_diameter> | Q ]
-          - M862.2 [ P<model_code> | Q ]
-          - M862.3 [ P<model_name> | Q ]
-          - M862.4 [ P<fw_version> | Q]
-          - M862.5 [ P<gcode_level> | Q]
+          - M862.1 { P<nozzle_diameter> | Q }
+          - M862.2 { P<model_code> | Q }
+          - M862.3 { P"<model_name>" | Q }
+          - M862.4 { P<fw_version> | Q }
+          - M862.5 { P<gcode_level> | Q }
 
         When run with P<> argument, the check is performed against the input value.
         When run with Q argument, the current value is shown.
 		  
         M862.3 accepts text identifiers of printer types too.
-        The syntax of M862.3 is (note the space between P and the printer type name and the quotes around the type):
+        The syntax of M862.3 is (note the quotes around the type):
 		
                 M862.3 P "MK3S"
 		  
@@ -7387,11 +7495,12 @@ Sigma_Exit:
     break;
 #endif
 
-    //! ### M907 - Set digital trimpot motor current using axis codes
+    //! ### M907 - Set digital trimpot motor current in mA using axis codes
     // ---------------------------------------------------------------
     case 907:
     {
 #ifdef TMC2130
+        //! See tmc2130_cur2val() for translation to 0 .. 63 range
         for (int i = 0; i < NUM_AXIS; i++)
 			if(code_seen(axis_codes[i]))
 			{
@@ -7537,27 +7646,33 @@ Sigma_Exit:
     case 350: 
     {
 	#ifdef TMC2130
-		if(code_seen('E'))
+		for (int i=0; i<NUM_AXIS; i++) 
 		{
-			uint16_t res_new = code_value();
-			if ((res_new == 8) || (res_new == 16) || (res_new == 32) || (res_new == 64) || (res_new == 128))
+			if(code_seen(axis_codes[i]))
 			{
-				st_synchronize();
-				uint8_t axis = E_AXIS;
-				uint16_t res = tmc2130_get_res(axis);
-				tmc2130_set_res(axis, res_new);
-				cs.axis_ustep_resolution[axis] = res_new;
-				if (res_new > res)
+				uint16_t res_new = code_value();
+				bool res_valid = (res_new == 8) || (res_new == 16) || (res_new == 32); // resolutions valid for all axis
+				res_valid |= (i != E_AXIS) && ((res_new == 1) || (res_new == 2) || (res_new == 4)); // resolutions valid for X Y Z only
+				res_valid |= (i == E_AXIS) && ((res_new == 64) || (res_new == 128)); // resolutions valid for E only
+				if (res_valid)
 				{
-					uint16_t fac = (res_new / res);
-					cs.axis_steps_per_unit[axis] *= fac;
-					position[E_AXIS] *= fac;
-				}
-				else
-				{
-					uint16_t fac = (res / res_new);
-					cs.axis_steps_per_unit[axis] /= fac;
-					position[E_AXIS] /= fac;
+					
+					st_synchronize();
+					uint16_t res = tmc2130_get_res(i);
+					tmc2130_set_res(i, res_new);
+					cs.axis_ustep_resolution[i] = res_new;
+					if (res_new > res)
+					{
+						uint16_t fac = (res_new / res);
+						cs.axis_steps_per_unit[i] *= fac;
+						position[i] *= fac;
+					}
+					else
+					{
+						uint16_t fac = (res / res_new);
+						cs.axis_steps_per_unit[i] /= fac;
+						position[i] /= fac;
+					}
 				}
 			}
 		}
@@ -7698,7 +7813,7 @@ Sigma_Exit:
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
-			mmu_continue_loading(is_usb_printing);
+			mmu_continue_loading(is_usb_printing  || (lcd_commands_type == LcdCommands::Layer1Cal));
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
 		}
@@ -7742,7 +7857,7 @@ Sigma_Exit:
 #endif //defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
 				  manage_response(true, true, MMU_TCODE_MOVE);
-		          mmu_continue_loading(is_usb_printing);
+		          mmu_continue_loading(is_usb_printing  || (lcd_commands_type == LcdCommands::Layer1Cal));
 
 				  mmu_extruder = tmp_extruder; //filament change is finished
 
@@ -8221,38 +8336,43 @@ void clamp_to_software_endstops(float target[3])
 }
 
 #ifdef MESH_BED_LEVELING
-    void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
+void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
         float dx = x - current_position[X_AXIS];
         float dy = y - current_position[Y_AXIS];
-        float dz = z - current_position[Z_AXIS];
         int n_segments = 0;
-		
+
         if (mbl.active) {
             float len = abs(dx) + abs(dy);
             if (len > 0)
                 // Split to 3cm segments or shorter.
                 n_segments = int(ceil(len / 30.f));
         }
-        
+
         if (n_segments > 1) {
+            // In a multi-segment move explicitly set the final target in the plan
+            // as the move will be recalculated in it's entirety
+            float gcode_target[NUM_AXIS];
+            gcode_target[X_AXIS] = x;
+            gcode_target[Y_AXIS] = y;
+            gcode_target[Z_AXIS] = z;
+            gcode_target[E_AXIS] = e;
+
+            float dz = z - current_position[Z_AXIS];
             float de = e - current_position[E_AXIS];
+
             for (int i = 1; i < n_segments; ++ i) {
                 float t = float(i) / float(n_segments);
-                if (saved_printing || (mbl.active == false)) return;
-                plan_buffer_line(
-                                 current_position[X_AXIS] + t * dx,
+                plan_buffer_line(current_position[X_AXIS] + t * dx,
                                  current_position[Y_AXIS] + t * dy,
                                  current_position[Z_AXIS] + t * dz,
                                  current_position[E_AXIS] + t * de,
-                                 feed_rate, extruder);
+                                 feed_rate, extruder, gcode_target);
+                if (waiting_inside_plan_buffer_line_print_aborted)
+                    return;
             }
         }
         // The rest of the path.
         plan_buffer_line(x, y, z, e, feed_rate, extruder);
-        current_position[X_AXIS] = x;
-        current_position[Y_AXIS] = y;
-        current_position[Z_AXIS] = z;
-        current_position[E_AXIS] = e;
     }
 #endif  // MESH_BED_LEVELING
     
@@ -8272,10 +8392,10 @@ void prepare_move()
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #endif
   }
+  if (waiting_inside_plan_buffer_line_print_aborted)
+      return;
 
-  for(int8_t i=0; i < NUM_AXIS; i++) {
-    current_position[i] = destination[i];
-  }
+  set_current_to_destination();
 }
 
 void prepare_arc_move(char isclockwise) {
@@ -8420,7 +8540,7 @@ bool bInhibitFlag;
 #endif // IR_SENSOR
           if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
 		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && !wizard_active)
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
 				if (fsensor_check_autoload())
 				{
@@ -8451,7 +8571,7 @@ if(0)
                               }
                               else
                               {
-                                   menu_submenu(mFilamentMenu);
+                                   menu_submenu(lcd_generic_preheat_menu);
                                    lcd_timeoutToStatus.start();
                               }
                          }
@@ -8786,6 +8906,8 @@ void delay_keep_alive(unsigned int ms)
 }
 
 static void wait_for_heater(long codenum, uint8_t extruder) {
+    if (!degTargetHotend(extruder))
+        return;
 
 #ifdef TEMP_RESIDENCY_TIME
 	long residencyStart;
@@ -8945,7 +9067,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 	card.openFile(filename_wldsd, false);
 
 	/*destination[Z_AXIS] = mesh_home_z_search;
-	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+	//plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
 
 	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 	for(int8_t i=0; i < NUM_AXIS; i++) {
@@ -8979,7 +9101,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 		if (iy & 1) ix = (x_points_num - 1) - ix; // Zig zag
 		float z0 = 0.f;
 		/*destination[Z_AXIS] = mesh_home_z_search;
-		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+		//plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
 
 		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 		for(int8_t i=0; i < NUM_AXIS; i++) {
@@ -8994,10 +9116,8 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 		destination[X_AXIS] = ix * (x_dimension / (x_points_num - 1)) + shift_x;
 		destination[Y_AXIS] = iy * (y_dimension / (y_points_num - 1)) + shift_y;
 
-		mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], XY_AXIS_FEEDRATE/6, active_extruder);
-		for(int8_t i=0; i < NUM_AXIS; i++) {
-			current_position[i] = destination[i];
-		}
+        mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], XY_AXIS_FEEDRATE/6, active_extruder);
+        set_current_to_destination();
 		st_synchronize();
 
 	//	printf_P(PSTR("X = %f; Y= %f \n"), current_position[X_AXIS], current_position[Y_AXIS]);
@@ -9143,7 +9263,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	card.openFile(filename_wldsd, false);
 
 	current_position[Z_AXIS] = mesh_home_z_search;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
+	plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
 
 	int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
 	int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
@@ -9168,14 +9288,14 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 		if (iy & 1) ix = (x_points_num - 1) - ix; // Zig zag
 		float z0 = 0.f;
 		current_position[Z_AXIS] = mesh_home_z_search;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+		plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
 		st_synchronize();
 
 
 		current_position[X_AXIS] = 13.f + ix * (x_dimension / (x_points_num - 1)) - bed_zero_ref_x + shift_x;
 		current_position[Y_AXIS] = 6.4f + iy * (y_dimension / (y_points_num - 1)) - bed_zero_ref_y + shift_y;
 
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
+		plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE, active_extruder);
 		st_synchronize();
 
 		if (!find_bed_induction_sensor_point_z(-10.f)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
@@ -9281,7 +9401,8 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 }
 #endif //HEATBED_ANALYSIS
 
-void temp_compensation_start() {
+#ifndef PINDA_THERMISTOR
+static void temp_compensation_start() {
 	
 	custom_message_type = CustomMsg::TempCompPreheat;
 	custom_message_state = PINDA_HEAT_T + 1;
@@ -9289,12 +9410,12 @@ void temp_compensation_start() {
 	if (degHotend(active_extruder) > EXTRUDE_MINTEMP) {
 		current_position[E_AXIS] -= default_retraction;
 	}
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
+	plan_buffer_line_curposXYZE(400, active_extruder);
 	
 	current_position[X_AXIS] = PINDA_PREHEAT_X;
 	current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 	current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+	plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
 	st_synchronize();
 	while (fabs(degBed() - target_temperature_bed) > 1) delay_keep_alive(1000);
 
@@ -9308,7 +9429,7 @@ void temp_compensation_start() {
 	custom_message_state = 0;
 }
 
-void temp_compensation_apply() {
+static void temp_compensation_apply() {
 	int i_add;
 	int z_shift = 0;
 	float z_shift_mm;
@@ -9331,6 +9452,7 @@ void temp_compensation_apply() {
 		//we have no temp compensation data
 	}
 }
+#endif //ndef PINDA_THERMISTOR
 
 float temp_comp_interpolation(float inp_temperature) {
 
@@ -9415,22 +9537,21 @@ void long_pause() //long pause print
 
 	//retract
 	current_position[E_AXIS] -= default_retraction;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
+	plan_buffer_line_curposXYZE(400, active_extruder);
 
 	//lift z
 	current_position[Z_AXIS] += Z_PAUSE_LIFT;
 	if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
+	plan_buffer_line_curposXYZE(15, active_extruder);
 
 	//Move XY to side
 	current_position[X_AXIS] = X_PAUSE_POS;
 	current_position[Y_AXIS] = Y_PAUSE_POS;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+	plan_buffer_line_curposXYZE(50, active_extruder);
 
-	// Turn off the print fan
+	// Turn off the hotends and print fan
+    setAllTargetHotends(0);
 	fanSpeed = 0;
-
-	st_synchronize();
 }
 
 void serialecho_temperatures() {
@@ -9443,7 +9564,7 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
 }
-extern uint32_t sdpos_atomic;
+
 #ifdef UVLO_SUPPORT
 
 void uvlo_()
@@ -9482,8 +9603,18 @@ void uvlo_()
       if (sd_position < 0) sd_position = 0;
     }
 
-    // Backup the feedrate in mm/min.
-    int feedrate_bckp = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
+    // save the global state at planning time
+    uint16_t feedrate_bckp;
+    if (blocks_queued())
+    {
+        memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+        feedrate_bckp = current_block->gcode_feedrate;
+    }
+    else
+    {
+        saved_target[0] = SAVED_TARGET_UNSET;
+        feedrate_bckp = feedrate;
+    }
 
     // After this call, the planner queue is emptied and the current_position is set to a current logical coordinate.
     // The logical coordinate will likely differ from the machine coordinate if the skew calibration and mesh bed leveling
@@ -9530,7 +9661,6 @@ void uvlo_()
     st_synchronize();
 
     disable_e0();
-    disable_z();
     // Move Z up to the next 0th full step.
     // Write the file position.
     eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
@@ -9551,7 +9681,8 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z , current_position[Z_AXIS]);
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
-    EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
+	eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, feedrate_bckp);
+    EEPROM_save_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
@@ -9563,6 +9694,13 @@ void uvlo_()
 #endif
 #endif
 	eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
+
+    // Store the saved target
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4), saved_target[X_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4), saved_target[Y_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4), saved_target[Z_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4), saved_target[E_AXIS]);
+
 #ifdef LIN_ADVANCE
 	eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
 #endif
@@ -9572,8 +9710,6 @@ void uvlo_()
 
     st_synchronize();
     printf_P(_N("stps%d\n"), tmc2130_rd_MSCNT(Z_AXIS));
-
-    disable_z();
     
     // Increment power failure counter
 	eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
@@ -9583,7 +9719,7 @@ void uvlo_()
 #if 0
     // Move the print head to the side of the print until all the power stored in the power supply capacitors is depleted.
     current_position[X_AXIS] = (current_position[X_AXIS] < 0.5f * (X_MIN_POS + X_MAX_POS)) ? X_MIN_POS : X_MAX_POS;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+    plan_buffer_line_curposXYZE(500, active_extruder);
     st_synchronize();
 #endif
 wdt_enable(WDTO_500MS);
@@ -9612,7 +9748,6 @@ tmc2130_set_current_r(Z_AXIS, 20);
 z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
 #endif //TMC2130
 planner_abort_hard();
-disable_z();
 
 //save current position only in case, where the printer is moving on Z axis, which is only when EEPROM_UVLO is 1
 //EEPROM_UVLO is 1 after normal uvlo or after recover_print(), when the extruder is moving on Z axis after rehome
@@ -9817,6 +9952,13 @@ void recover_machine_state_after_power_panic(bool bTiny)
 #endif
 #endif
   extrudemultiply = (int)eeprom_read_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY));
+
+  // 9) Recover the saved target
+  saved_target[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4));
+  saved_target[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4));
+  saved_target[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4));
+  saved_target[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4));
+
 #ifdef LIN_ADVANCE
   extruder_advance_K = eeprom_read_float((float*)EEPROM_UVLO_LA_K);
 #endif
@@ -9824,6 +9966,7 @@ void recover_machine_state_after_power_panic(bool bTiny)
 
 void restore_print_from_eeprom() {
 	int feedrate_rec;
+	int feedmultiply_rec;
 	uint8_t fan_speed_rec;
 	char cmd[30];
 	char filename[13];
@@ -9831,9 +9974,12 @@ void restore_print_from_eeprom() {
 	char dir_name[9];
 
 	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
-	EEPROM_read_B(EEPROM_UVLO_FEEDRATE, &feedrate_rec);
+    feedrate_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDRATE);
+	EEPROM_read_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply_rec);
 	SERIAL_ECHOPGM("Feedrate:");
-	MYSERIAL.println(feedrate_rec);
+	MYSERIAL.print(feedrate_rec);
+	SERIAL_ECHOPGM(", feedmultiply:");
+	MYSERIAL.println(feedmultiply_rec);
 
 	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 	
@@ -9874,8 +10020,10 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
   // Unretract.
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(2*default_retraction)" F480"));
-  // Set the feedrate saved at the power panic.
+  // Set the feedrates saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
+	enquecommand(cmd);
+	sprintf_P(cmd, PSTR("M220 S%d"), feedmultiply_rec);
 	enquecommand(cmd);
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
 	{
@@ -10028,16 +10176,21 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 #endif
 
-#if 0
-  saved_feedrate2 = feedrate; //save feedrate
-#else
-  // Try to deduce the feedrate from the first block of the planner.
-  // Speed is in mm/min.
-  saved_feedrate2 = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
-#endif
+  // save the global state at planning time
+  if (blocks_queued())
+  {
+      memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+      saved_feedrate2 = current_block->gcode_feedrate;
+  }
+  else
+  {
+      saved_target[0] = SAVED_TARGET_UNSET;
+      saved_feedrate2 = feedrate;
+  }
 
 	planner_abort_hard(); //abort printing
 	memcpy(saved_pos, current_position, sizeof(saved_pos));
+    saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
 	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
@@ -10098,7 +10251,8 @@ void restore_print_from_ram_and_continue(float e_move)
 	
 #ifdef FANCHECK
 	// Do not allow resume printing if fans are still not ok
-	if( fan_check_error != EFCE_OK )return;
+	if ((fan_check_error != EFCE_OK) && (fan_check_error != EFCE_FIXED)) return;
+    if (fan_check_error == EFCE_FIXED) fan_check_error = EFCE_OK; //reenable serial stream processing if printing from usb
 #endif
 	
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
@@ -10112,7 +10266,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		wait_for_heater(_millis(), saved_active_extruder);
 		heating_status = 2;
 	}
-	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
@@ -10135,6 +10288,10 @@ void restore_print_from_ram_and_continue(float e_move)
     fans_check_enabled = true;
   #endif
 
+    // restore original feedrate/feedmultiply _after_ restoring the extruder position
+	feedrate = saved_feedrate2;
+	feedmultiply = saved_feedmultiply2;
+
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
 	memcpy(destination, current_position, sizeof(destination));
 	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
@@ -10150,9 +10307,12 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
-	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
+
+	SERIAL_PROTOCOLLNRPGM(MSG_OK); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
+    saved_printing_type = PRINTING_TYPE_NONE;
 	saved_printing = false;
+    waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
 }
 
 void print_world_coordinates()
@@ -10221,7 +10381,7 @@ static void print_time_remaining_init()
 void load_filament_final_feed()
 {
 	current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED_FINAL, active_extruder);
+	plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FINAL, active_extruder);
 }
 
 //! @brief Wait for user to check the state
@@ -10351,22 +10511,22 @@ void M600_load_filament_movements()
 	do
 	{
 		current_position[E_AXIS] += 0.002;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+		plan_buffer_line_curposXYZE(500, active_extruder);
 		delay_keep_alive(2);
 	}
 	while (!lcd_clicked());
 	st_synchronize();
 	current_position[E_AXIS] += bowden_length[mmu_extruder];
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000, active_extruder);
+	plan_buffer_line_curposXYZE(3000, active_extruder);
 	current_position[E_AXIS] += FIL_LOAD_LENGTH - 60;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1400, active_extruder);
+	plan_buffer_line_curposXYZE(1400, active_extruder);
 	current_position[E_AXIS] += 40;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
+	plan_buffer_line_curposXYZE(400, active_extruder);
 	current_position[E_AXIS] += 10;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+	plan_buffer_line_curposXYZE(50, active_extruder);
 #else
 	current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED_FIRST, active_extruder); 
+	plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST, active_extruder); 
 #endif                
 	load_filament_final_feed();
 	lcd_loading_filament();
@@ -10461,34 +10621,20 @@ if(!(bEnableForce_z||eeprom_read_byte((uint8_t*)EEPROM_SILENT)))
 
 void disable_force_z()
 {
-uint16_t z_microsteps=0;
+    uint16_t z_microsteps=0;
 
-if(!bEnableForce_z)
-     return;                                      // motor already disabled (may be ;-p )
-bEnableForce_z=false;
+    if(!bEnableForce_z) return;   // motor already disabled (may be ;-p )
 
-// alignment to full-step
+    bEnableForce_z=false;
+
+    // switching to silent mode
 #ifdef TMC2130
-z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
-#endif // TMC2130
-planner_abort_hard();
-sei();
-plan_buffer_line(
-     current_position[X_AXIS], 
-     current_position[Y_AXIS], 
-     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS], 
-     current_position[E_AXIS],
-     40, active_extruder);
-st_synchronize();
-
-// switching to silent mode
-#ifdef TMC2130
-tmc2130_mode=TMC2130_MODE_SILENT;
-update_mode_profile();
-tmc2130_init(true);
+    tmc2130_mode=TMC2130_MODE_SILENT;
+    update_mode_profile();
+    tmc2130_init(true);
 #endif // TMC2130
 
-axis_known_position[Z_AXIS]=false; 
+    axis_known_position[Z_AXIS]=false;
 }
 
 

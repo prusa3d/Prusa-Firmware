@@ -341,13 +341,17 @@ if(oCheckMode==ClCheckMode::_Undef)
      eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)oCheckMode);
      }
 if(farm_mode)
+     {
      oCheckMode=ClCheckMode::_Strict;
+     if(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)==EEPROM_EMPTY_VALUE16)
+          eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,EEPROM_NOZZLE_DIAMETER_uM_DEFAULT);
+     }
 oNozzleDiameter=(ClNozzleDiameter)eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER);
 if((oNozzleDiameter==ClNozzleDiameter::_Diameter_Undef)&& !farm_mode)
      {
      oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
      eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
-     eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,400);
+     eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,EEPROM_NOZZLE_DIAMETER_uM_DEFAULT);
      }
 oCheckModel=(ClCheckModel)eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODEL);
 if(oCheckModel==ClCheckModel::_Undef)
@@ -401,8 +405,11 @@ lcd_update_enable(true);           // display / status-line recovery
      case ClCheckMode::_Undef:
           break;
      }
-bSettings=false;                                  // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
-menu_submenu(lcd_hw_setup_menu);
+if(!farm_mode)
+     {
+     bSettings=false;                             // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
+     menu_submenu(lcd_hw_setup_menu);
+     }
 }
 
 void printer_model_check(uint16_t nPrinterModel)
