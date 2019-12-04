@@ -309,6 +309,8 @@ bool no_response = false;
 uint8_t important_status;
 uint8_t saved_filament_type;
 
+#define SAVED_TARGET_UNSET (X_MIN_POS-1)
+float saved_target[NUM_AXIS] = {SAVED_TARGET_UNSET, 0, 0, 0};
 
 // save/restore printing in case that mmu was not responding 
 bool mmu_print_saved = false;
@@ -329,7 +331,15 @@ float destination[NUM_AXIS] = {  0.0, 0.0, 0.0, 0.0};
 
 // For tracing an arc
 static float offset[3] = {0.0, 0.0, 0.0};
-static float feedrate = 1500.0, next_feedrate, saved_feedrate;
+
+// Current feedrate
+float feedrate = 1500.0;
+
+// Feedrate for the next move
+static float next_feedrate;
+
+// Original feedrate saved during homing moves
+static float saved_feedrate;
 
 // Determines Absolute or Relative Coordinates.
 // Also there is bool axis_relative_modes[] per axis flag.
@@ -373,8 +383,8 @@ bool saved_printing = false; //!< Print is paused and saved in RAM
 static uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
 uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { 0, 0, 0, 0 };
-//! Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
-static float saved_feedrate2 = 0;
+static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
+static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
 static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
 static bool saved_extruder_under_pressure = false;
@@ -3673,17 +3683,15 @@ void process_commands()
     
     Set of internal PRUSA commands
     #### Usage
-	
-         P RUSA [ Ping | PRN | FAN | fn | thx | uvlo | fsensor_recover | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+         P RUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
     
-	#### Parameters
+    #### Parameters
       - `Ping` 
       - `PRN` - Prints revision of the printer
       - `FAN` - Prints fan details
       - `fn` - Prints farm no.
       - `thx` 
       - `uvlo` 
-      - `fsensor_recover` - Filament sensor recover - restore print and continue
       - `MMURES` - Reset MMU
       - `RESET` - (Careful!)
       - `fv`  - ?
@@ -3732,12 +3740,6 @@ void process_commands()
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
-#ifdef FILAMENT_SENSOR
-		else if (code_seen("fsensor_recover")) // PRUSA fsensor_recover
-		{
-               fsensor_restore_print_and_continue();
-		}	
-#endif //FILAMENT_SENSOR
 		else if (code_seen("MMURES")) // PRUSA MMURES
 		{
 			mmu_reset();
@@ -4078,8 +4080,19 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
         #endif
 
+            get_coordinates(); // For X Y Z E F
 
-        get_coordinates(); // For X Y Z E F
+            // When recovering from a previous print move, restore the originally
+            // calculated target position on the first USB/SD command. This accounts
+            // properly for relative moves
+            if ((saved_target[0] != SAVED_TARGET_UNSET) &&
+                ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) ||
+                 (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)))
+            {
+                memcpy(destination, saved_target, sizeof(destination));
+                saved_target[0] = SAVED_TARGET_UNSET;
+            }
+
 		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
 			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
 		}
@@ -5556,16 +5569,26 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       card.openFile(strchr_pointer + 4,true);
       break;
 
+<<<<<<< HEAD
     /*!
 	### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#M24:_Start.2Fresume_SD_print">M24: Start/resume SD print</a>
     */ ----------------------------------
+=======
+    //! ### M24 - Start/resume SD print
+    // ----------------------------------
+>>>>>>> upstream/MK3
     case 24:
-	  if (!card.paused) 
-		failstats_reset_print();
-      card.startFileprint();
-      starttime=_millis();
+	  if (isPrintPaused)
+          lcd_resume_print();
+      else
+      {
+          failstats_reset_print();
+          card.startFileprint();
+          starttime=_millis();
+      }
 	  break;
 
+<<<<<<< HEAD
     /*!
 	### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
     */ ----------------------------------
@@ -5582,6 +5605,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       
       - `S` - Index in bytes
     */ ----------------------------------
+=======
+    //! ### M26 S\<index\> - Set SD index
+    //! Set position in SD card file to index in bytes.
+    //! This command is expected to be called after M23 and before M24.
+    //! Otherwise effect of this command is undefined.
+    // ----------------------------------
+>>>>>>> upstream/MK3
     case 26: 
       if(card.cardOK && code_seen('S')) {
         long index = code_value_long();
@@ -7729,13 +7759,25 @@ Sigma_Exit:
     break;
     #endif //FILAMENTCHANGEENABLE
 
+<<<<<<< HEAD
     /*!
     ### M601 - Pause print <a href="https://reprap.org/wiki/G-code#M601:_Pause_print">M601: Pause print</a>
     */ -------------------------------
+=======
+  //! ### M25 - Pause SD print
+  //! ### M601 - Pause print
+  //! ### M125 - Pause print (TODO: not implemented)
+  // -------------------------------
+	case 25:
+>>>>>>> upstream/MK3
 	case 601:
 	{
-		cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
-		lcd_pause_print();
+        if (!isPrintPaused)
+        {
+            st_synchronize();
+            cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
+            lcd_pause_print();
+        }
 	}
 	break;
 
@@ -7743,15 +7785,23 @@ Sigma_Exit:
 	### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
     */ -------------------------------
 	case 602: {
-		lcd_resume_print();
+	  if (isPrintPaused)
+          lcd_resume_print();
 	}
 	break;
 
+<<<<<<< HEAD
     /*!
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */ -------------------------------
     case 603: {
 		lcd_print_stop();
+=======
+  //! ### M603 - Stop print
+  // -------------------------------
+	case 603: {
+		Stop();
+>>>>>>> upstream/MK3
 	}
 	break;
 
@@ -9091,38 +9141,43 @@ void clamp_to_software_endstops(float target[3])
 }
 
 #ifdef MESH_BED_LEVELING
-    void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
+void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
         float dx = x - current_position[X_AXIS];
         float dy = y - current_position[Y_AXIS];
-        float dz = z - current_position[Z_AXIS];
         int n_segments = 0;
-		
+
         if (mbl.active) {
             float len = abs(dx) + abs(dy);
             if (len > 0)
                 // Split to 3cm segments or shorter.
                 n_segments = int(ceil(len / 30.f));
         }
-        
+
         if (n_segments > 1) {
+            // In a multi-segment move explicitly set the final target in the plan
+            // as the move will be recalculated in it's entirety
+            float gcode_target[NUM_AXIS];
+            gcode_target[X_AXIS] = x;
+            gcode_target[Y_AXIS] = y;
+            gcode_target[Z_AXIS] = z;
+            gcode_target[E_AXIS] = e;
+
+            float dz = z - current_position[Z_AXIS];
             float de = e - current_position[E_AXIS];
+
             for (int i = 1; i < n_segments; ++ i) {
                 float t = float(i) / float(n_segments);
-                if (saved_printing || (mbl.active == false)) return;
-                plan_buffer_line(
-                                 current_position[X_AXIS] + t * dx,
+                plan_buffer_line(current_position[X_AXIS] + t * dx,
                                  current_position[Y_AXIS] + t * dy,
                                  current_position[Z_AXIS] + t * dz,
                                  current_position[E_AXIS] + t * de,
-                                 feed_rate, extruder);
+                                 feed_rate, extruder, gcode_target);
+                if (waiting_inside_plan_buffer_line_print_aborted)
+                    return;
             }
         }
         // The rest of the path.
         plan_buffer_line(x, y, z, e, feed_rate, extruder);
-        current_position[X_AXIS] = x;
-        current_position[Y_AXIS] = y;
-        current_position[Z_AXIS] = z;
-        current_position[E_AXIS] = e;
     }
 #endif  // MESH_BED_LEVELING
     
@@ -9142,10 +9197,10 @@ void prepare_move()
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #endif
   }
+  if (waiting_inside_plan_buffer_line_print_aborted)
+      return;
 
-  for(int8_t i=0; i < NUM_AXIS; i++) {
-    current_position[i] = destination[i];
-  }
+  set_current_to_destination();
 }
 
 void prepare_arc_move(char isclockwise) {
@@ -9866,10 +9921,8 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 		destination[X_AXIS] = ix * (x_dimension / (x_points_num - 1)) + shift_x;
 		destination[Y_AXIS] = iy * (y_dimension / (y_points_num - 1)) + shift_y;
 
-		mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], XY_AXIS_FEEDRATE/6, active_extruder);
-		for(int8_t i=0; i < NUM_AXIS; i++) {
-			current_position[i] = destination[i];
-		}
+        mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], XY_AXIS_FEEDRATE/6, active_extruder);
+        set_current_to_destination();
 		st_synchronize();
 
 	//	printf_P(PSTR("X = %f; Y= %f \n"), current_position[X_AXIS], current_position[Y_AXIS]);
@@ -10355,8 +10408,18 @@ void uvlo_()
       if (sd_position < 0) sd_position = 0;
     }
 
-    // Backup the feedrate in mm/min.
-    int feedrate_bckp = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
+    // save the global state at planning time
+    uint16_t feedrate_bckp;
+    if (blocks_queued())
+    {
+        memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+        feedrate_bckp = current_block->gcode_feedrate;
+    }
+    else
+    {
+        saved_target[0] = SAVED_TARGET_UNSET;
+        feedrate_bckp = feedrate;
+    }
 
     // After this call, the planner queue is emptied and the current_position is set to a current logical coordinate.
     // The logical coordinate will likely differ from the machine coordinate if the skew calibration and mesh bed leveling
@@ -10423,7 +10486,8 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z , current_position[Z_AXIS]);
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
-    EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
+	eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, feedrate_bckp);
+    EEPROM_save_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
@@ -10435,6 +10499,11 @@ void uvlo_()
 #endif
 #endif
 	eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
+    // Store the saved target
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4), saved_target[X_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4), saved_target[Y_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4), saved_target[Z_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4), saved_target[E_AXIS]);
 
     // Finaly store the "power outage" flag.
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
@@ -10683,10 +10752,17 @@ void recover_machine_state_after_power_panic(bool bTiny)
 #endif
 #endif
   extrudemultiply = (int)eeprom_read_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY));
+
+  // 9) Recover the saved target
+  saved_target[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4));
+  saved_target[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4));
+  saved_target[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4));
+  saved_target[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4));
 }
 
 void restore_print_from_eeprom() {
 	int feedrate_rec;
+	int feedmultiply_rec;
 	uint8_t fan_speed_rec;
 	char cmd[30];
 	char filename[13];
@@ -10694,9 +10770,12 @@ void restore_print_from_eeprom() {
 	char dir_name[9];
 
 	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
-	EEPROM_read_B(EEPROM_UVLO_FEEDRATE, &feedrate_rec);
+    feedrate_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDRATE);
+	EEPROM_read_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply_rec);
 	SERIAL_ECHOPGM("Feedrate:");
-	MYSERIAL.println(feedrate_rec);
+	MYSERIAL.print(feedrate_rec);
+	SERIAL_ECHOPGM(", feedmultiply:");
+	MYSERIAL.println(feedmultiply_rec);
 
 	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 	
@@ -10737,8 +10816,10 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
   // Unretract.
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(2*default_retraction)" F480"));
-  // Set the feedrate saved at the power panic.
+  // Set the feedrates saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
+	enquecommand(cmd);
+	sprintf_P(cmd, PSTR("M220 S%d"), feedmultiply_rec);
 	enquecommand(cmd);
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
 	{
@@ -10891,16 +10972,21 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 #endif
 
-#if 0
-  saved_feedrate2 = feedrate; //save feedrate
-#else
-  // Try to deduce the feedrate from the first block of the planner.
-  // Speed is in mm/min.
-  saved_feedrate2 = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
-#endif
+  // save the global state at planning time
+  if (blocks_queued())
+  {
+      memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+      saved_feedrate2 = current_block->gcode_feedrate;
+  }
+  else
+  {
+      saved_target[0] = SAVED_TARGET_UNSET;
+      saved_feedrate2 = feedrate;
+  }
 
 	planner_abort_hard(); //abort printing
 	memcpy(saved_pos, current_position, sizeof(saved_pos));
+    saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
 
@@ -10978,7 +11064,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		wait_for_heater(_millis(), saved_active_extruder);
 		heating_status = 2;
 	}
-	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
@@ -11001,6 +11086,10 @@ void restore_print_from_ram_and_continue(float e_move)
     fans_check_enabled = true;
   #endif
 
+    // restore original feedrate/feedmultiply _after_ restoring the extruder position
+	feedrate = saved_feedrate2;
+	feedmultiply = saved_feedmultiply2;
+
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
 	memcpy(destination, current_position, sizeof(destination));
 	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
@@ -11016,10 +11105,12 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
+
 	SERIAL_PROTOCOLLNRPGM(MSG_OK); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
     saved_printing_type = PRINTING_TYPE_NONE;
 	saved_printing = false;
+    waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
 }
 
 void print_world_coordinates()

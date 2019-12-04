@@ -57,15 +57,8 @@ bool fsensor_enabled = true;
 bool fsensor_watch_runout = true;
 //! not responding - is set if any communication error occurred during initialization or readout
 bool fsensor_not_responding = false;
-//! printing saved
-bool fsensor_printing_saved = false;
 //! enable/disable quality meassurement
 bool fsensor_oq_meassure_enabled = false;
-//! as explained in the CHECK_FSENSOR macro: this flag is set to true when fsensor posts
-//! the M600 into the command queue, which elliminates the hazard of having posted multiple M600's
-//! before the first one gets read and started processing.
-//! Btw., the IR fsensor could do up to 6 posts before the command queue managed to start processing the first M600 ;)
-static bool fsensor_m600_enqueued = false;
 
 //! number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
@@ -137,10 +130,17 @@ void fsensor_stop_and_save_print(void)
 void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
-	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
-	fsensor_m600_enqueued = false;
     restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+}
+
+// fsensor_checkpoint_print cuts the current print job at the current position,
+// allowing new instructions to be inserted in the middle
+void fsensor_checkpoint_print(void)
+{
+    printf_P(PSTR("fsensor_checkpoint_print\n"));
+    stop_and_save_print_to_ram(0, 0);
+    restore_print_from_ram_and_continue(0);
 }
 
 void fsensor_init(void)
@@ -565,8 +565,6 @@ void fsensor_enque_M600(){
 	printf_P(PSTR("fsensor_update - M600\n"));
 	eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 	eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-	enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
-	fsensor_m600_enqueued = true;
 	enquecommand_front_P((PSTR("M600")));
 }
 
@@ -578,7 +576,7 @@ void fsensor_enque_M600(){
 void fsensor_update(void)
 {
 #ifdef PAT9125
-		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX) && ( ! fsensor_m600_enqueued) )
+		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
 			bool autoload_enabled_tmp = fsensor_autoload_enabled;
 			fsensor_autoload_enabled = false;
@@ -611,22 +609,18 @@ void fsensor_update(void)
 			err |= (fsensor_oq_er_sum > 2);
 			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
 
-			if (!err)
-			{
-				printf_P(PSTR("fsensor_err_cnt = 0\n"));
-				fsensor_restore_print_and_continue();
-			}
-			else
-			{
-				fsensor_enque_M600();
-				fsensor_watch_runout = false;
-			}
+            fsensor_restore_print_and_continue();
 			fsensor_autoload_enabled = autoload_enabled_tmp;
 			fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
+
+			if (!err)
+				printf_P(PSTR("fsensor_err_cnt = 0\n"));
+			else
+				fsensor_enque_M600();
 		}
 #else //PAT9125
-		if (CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected && ( ! fsensor_m600_enqueued) )
-          {
+		if (CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected)
+        {
                if(digitalRead(IR_SENSOR_PIN))
                {                                  // IR_SENSOR_PIN ~ H
 #if IR_SENSOR_ANALOG
@@ -670,8 +664,8 @@ void fsensor_update(void)
                               else
                               {
 #endif //IR_SENSOR_ANALOG
-                                   fsensor_stop_and_save_print();
-                                   fsensor_enque_M600();
+                                  fsensor_checkpoint_print();
+                                  fsensor_enque_M600();
 #if IR_SENSOR_ANALOG
                               }
                          }

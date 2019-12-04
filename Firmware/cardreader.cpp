@@ -25,7 +25,6 @@ CardReader::CardReader()
    sdpos = 0;
    sdprinting = false;
    cardOK = false;
-   paused = false;
    saving = false;
    logging = false;
    autostart_atmillis=0;
@@ -242,23 +241,12 @@ void CardReader::startFileprint()
   if(cardOK)
   {
     sdprinting = true;
-	paused = false;
-     Stopped = false;
+    Stopped = false;
 	#ifdef SDCARD_SORT_ALPHA
 		//flush_presort();
 	#endif
   }
 }
-
-void CardReader::pauseSDPrint()
-{
-  if(sdprinting)
-  {
-    sdprinting = false;
-	paused = true;
-  }
-}
-
 
 void CardReader::openLogFile(const char* name)
 {
@@ -408,9 +396,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
     SERIAL_ECHOLN(name);
   }
   sdprinting = false;
-  paused = false;
-  
- 
+
   SdFile myDir;
   const char *fname=name;
   diveSubfolder(fname,myDir);
@@ -492,24 +478,27 @@ uint32_t CardReader::getFileSize()
 
 void CardReader::getStatus()
 {
-  if(sdprinting){
-    SERIAL_PROTOCOL(longFilename);
-    SERIAL_PROTOCOLPGM("\n");
-    SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE
-    SERIAL_PROTOCOL(sdpos);
-    SERIAL_PROTOCOLPGM("/");
-    SERIAL_PROTOCOLLN(filesize);
-    uint16_t time = _millis()/60000 - starttime/60000;
-    SERIAL_PROTOCOL(itostr2(time/60));
-    SERIAL_PROTOCOL(':');
-    SERIAL_PROTOCOL(itostr2(time%60));
-    SERIAL_PROTOCOLPGM("\n");
-  }
-  else if (paused) {
-	SERIAL_PROTOCOLLNPGM("SD print paused");
-  }
-  else if (saved_printing) {
-	SERIAL_PROTOCOLLNPGM("Print saved");
+  if(sdprinting)
+  {
+      if (isPrintPaused) {
+          SERIAL_PROTOCOLLNPGM("SD print paused");
+      }
+      else if (saved_printing) {
+          SERIAL_PROTOCOLLNPGM("Print saved");
+      }
+      else {
+          SERIAL_PROTOCOL(longFilename);
+          SERIAL_PROTOCOLPGM("\n");
+          SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE
+          SERIAL_PROTOCOL(sdpos);
+          SERIAL_PROTOCOLPGM("/");
+          SERIAL_PROTOCOLLN(filesize);
+          uint16_t time = _millis()/60000 - starttime/60000;
+          SERIAL_PROTOCOL(itostr2(time/60));
+          SERIAL_PROTOCOL(':');
+          SERIAL_PROTOCOL(itostr2(time%60));
+          SERIAL_PROTOCOLPGM("\n");
+      }
   }
   else {
     SERIAL_PROTOCOLLNPGM("Not SD printing");
