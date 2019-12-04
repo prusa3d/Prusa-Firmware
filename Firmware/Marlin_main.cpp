@@ -8829,7 +8829,59 @@ Sigma_Exit:
 
     D2130E!wave220 ...    (sin(x))^1.1 extruder microstep compensation curve used
   */
-
+    /*!
+    *
+    ### D2130 - Trinamic stepper controller <a href="https://reprap.org/wiki/G-code#G28:_Trinamic_stepper_controller">D2130: Trinamic stepper controller</a>
+    Unsing G28 without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while the default G-code G28 is just homeing the printer
+      
+          D2130 [ Axis | Command | Subcommand | Value ]
+      
+    - Axis
+      - `X` - X stepper driver
+      - `Y` - Y stepper driver
+      - `Z` - Z stepper driver
+      - `E` - Extruder stepper driver
+    - Commands
+      - `0`   - Current off
+      - `1`   - Current on
+      - `+`   - Single step
+      - `-`   - Single step oposite direction
+      - `NNN` - Value sereval steps
+      - `?`   - Read register
+      - Subcommands for read register
+        - `mres`     - Micro step resolution. More information in datasheet '5.5.2 CHOPCONF – Chopper Configuration'
+        - `step`     - Step
+        - `mscnt`    - Microstep counter. More information in datasheet '5.5 Motor Driver Registers'
+        - `mscuract` - Actual microstep current for motor. More information in datasheet '5.5 Motor Driver Registers'
+        - `wave`     - Microstep linearity compensation curve
+      - `!`   - Set register
+      - Subcommands for set register
+        - `mres`     - Micro step resolution
+        - `step`     - Step
+        - `wave`     - Microstep linearity compensation curve
+        - Values for set register
+          - `0, 180 --> 250` - Off
+          - `0.9 --> 1.25`   - Valid values (recommended is 1.1)
+      - `@`   - Home calibrate axis
+    
+    Examples:
+      
+          D2130E?wave
+      
+      Print extruder microstep linearity compensation curve
+      
+          D2130E!wave0
+      
+      Disable extruder linearity compensation curve, (sine curve is used)
+      
+          D2130E!wave220
+      
+      (sin(x))^1.1 extruder microstep compensation curve used
+    
+    Notes:
+      For more information see https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf
+    *
+	*/
 
 	case 2130:
 		dcode_2130(); break;
