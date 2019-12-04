@@ -7746,7 +7746,7 @@ Sigma_Exit:
     ### M125 - Pause print (TODO: not implemented)
     */ -------------------------------
     /*!
-	### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
+    ### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
     */ ----------------------------------
 	case 25:
 	case 601:
