@@ -8072,7 +8072,9 @@ Sigma_Exit:
 #ifdef TMC2130_SERVICE_CODES_M910_M918
 
     /*!
-	### M910 - TMC2130 init <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M910 - TMC2130 init <a href="https://reprap.org/wiki/G-code#M910:_TMC2130_init">M910: TMC2130 init</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+	
     */ -----------------------------------------------
 	case 910:
     {
@@ -8081,8 +8083,16 @@ Sigma_Exit:
     break;
 
     /*!
-	### M911 - Set TMC2130 holding currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
-    */ -------------------------------------------------
+    ### M911 - Set TMC2130 holding currents <a href="https://reprap.org/wiki/G-code#M911:_Set_TMC2130_holding_currents">M911: Set TMC2130 holding currents</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+      
+          M911 [ X | Y | Z | E ]
+      
+      - `X` - X stepper driver holding current value
+      - `Y` - Y stepper driver holding current value
+      - `Z` - Z stepper driver holding current value
+      - `E` - Extruder stepper driver holding current value
+ */ -------------------------------------------------
 	case 911: 
     {
 		if (code_seen('X')) tmc2130_set_current_h(0, code_value());
@@ -8093,7 +8103,16 @@ Sigma_Exit:
     break;
 
     /*!
-	### M912 - Set TMC2130 running currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M912 - Set TMC2130 running currents <a href="https://reprap.org/wiki/G-code#M912:_Set_TMC2130_running_currents">M912: Set TMC2130 running currents</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+      
+          M912 [ X | Y | Z | E ]
+      
+      
+      - `X` - X stepper driver running current value
+      - `Y` - Y stepper driver running current value
+      - `Z` - Z stepper driver running current value
+      - `E` - Extruder stepper driver running current value
     */ -----------------------------------------------
 	case 912: 
     {
@@ -8105,7 +8124,9 @@ Sigma_Exit:
     break;
 
     /*!
-	### M913 - Print TMC2130 currents <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M913 - Print TMC2130 currents <a href="https://reprap.org/wiki/G-code#M913:_Print_TMC2130_currents">M913: Print TMC2130 currents</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+	Shows TMC2130 currents.
     */ -----------------------------
 	case 913:
     {
@@ -8114,7 +8135,8 @@ Sigma_Exit:
     break;
 
     /*!
-	### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#M914:_Set_TMC2130_normal_mode">M914: Set TMC2130 normal mode</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
     */ ------------------------------
     case 914:
     {
@@ -8125,7 +8147,8 @@ Sigma_Exit:
     break;
 
     /*!
-	### M915 - Set TMC2130 silent mode <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M915 - Set TMC2130 silent mode <a href="https://reprap.org/wiki/G-code#M915:_Set_TMC2130_silent_mode">M915: Set TMC2130 silent mode</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
     */ ------------------------------
     case 915:
     {
@@ -8136,7 +8159,16 @@ Sigma_Exit:
     break;
 
     /*!
-	### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#M916:_Set_TMC2130_Stallguard_sensitivity_threshold">M916: Set TMC2130 Stallguard sensitivity threshold</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+      
+          M916 [ X | Y | Z | E ]
+      
+      
+      - `X` - X stepper driver stallguard sensitivity threshold value
+      - `Y` - Y stepper driver stallguard sensitivity threshold value
+      - `Z` - Z stepper driver stallguard sensitivity threshold value
+      - `E` - Extruder stepper driver stallguard sensitivity threshold value
     */ -------------------------------------------------------
 	case 916:
     {
@@ -8150,7 +8182,16 @@ Sigma_Exit:
     break;
 
     /*!
-	### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#M917:_Set_TMC2130_PWM_amplitude_offset_(pwm_ampl)">M917: Set TMC2130 PWM amplitude offset (pwm_ampl)</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+      
+          M917 [ X | Y | Z | E ]
+      
+      
+      - `X` - X stepper driver PWM amplitude offset  value
+      - `Y` - Y stepper driver PWM amplitude offset  value
+      - `Z` - Z stepper driver PWM amplitude offset  value
+      - `E` - Extruder stepper driver PWM amplitude offset  value
     */ --------------------------------------------------------------
 	case 917:
     {
@@ -8162,7 +8203,16 @@ Sigma_Exit:
     break;
 
     /*!
-	### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#G32:_Undock_Z_Probe_sled">G32: Undock Z Probe sled</a>
+	### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#M918:_Set_TMC2130_PWM_amplitude_gradient_(pwm_grad)">M918: Set TMC2130 PWM amplitude gradient (pwm_grad)</a>
+	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+      
+          M918 [ X | Y | Z | E ]
+      
+      
+      - `X` - X stepper driver PWM amplitude gradient  value
+      - `Y` - Y stepper driver PWM amplitude gradient  value
+      - `Z` - Z stepper driver PWM amplitude gradient  value
+      - `E` - Extruder stepper driver PWM amplitude gradient  value
     */ -------------------------------------------------------------
 	case 918:
     {
@@ -8794,45 +8844,11 @@ Sigma_Exit:
 	}break;
 
 #ifdef TMC2130
-  //! ### D2130 - TMC2130 Trinamic stepper controller
-  // ---------------------------
-
-  
-  /*!
-  
-  
-        D2130<axis><command>[subcommand][value]
-
-   - <command>:
-       - '0' current off
-       - '1' current on
-       - '+' single step
-       - * value sereval steps
-       - '-' dtto oposite direction
-       - '?' read register
-       - * "mres"
-       - * "step"
-       - * "mscnt"
-       - * "mscuract"
-       - * "wave"
-       - '!' set register
-       - * "mres"
-       - * "step"
-       - * "wave"
-       - '@' home calibrate axis
-
-    Example:
-
-    D2130E?wave ...        print extruder microstep linearity compensation curve
-
-    D2130E!wave0 ...       disable extruder linearity compensation curve, (sine curve is used)
-
-    D2130E!wave220 ...    (sin(x))^1.1 extruder microstep compensation curve used
-  */
     /*!
     *
-    ### D2130 - Trinamic stepper controller <a href="https://reprap.org/wiki/G-code#G28:_Trinamic_stepper_controller">D2130: Trinamic stepper controller</a>
-    Unsing G28 without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while the default G-code G28 is just homeing the printer
+    ### D2130 - Trinamic stepper controller <a href="https://reprap.org/wiki/G-code#D2130:_Trinamic_stepper_controller">D2130: Trinamic stepper controller</a>
+    
+    @todo Please review by owner of the code. RepRap Wiki Gcode needs to be updated after review of owner as well.
       
           D2130 [ Axis | Command | Subcommand | Value ]
       
