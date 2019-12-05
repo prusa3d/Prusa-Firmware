@@ -131,6 +131,9 @@ const char MSG_MAGNETS_COMP[] PROGMEM_I1 = ISTR("Magnets comp."); ////
 const char MSG_FS_ACTION[] PROGMEM_I1 = ISTR("FS Action"); ////
 const char MSG_FS_CONTINUE[] PROGMEM_I1 = ISTR("Cont."); ////
 const char MSG_FS_PAUSE[] PROGMEM_I1 = ISTR("Pause"); ////
+#ifdef LA_LIVE_K
+const char MSG_ADVANCE_K[] PROGMEM_I1 = ISTR("Advance K:"); ////
+#endif
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////

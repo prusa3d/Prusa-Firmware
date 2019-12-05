@@ -131,6 +131,9 @@ extern const char MSG_MAGNETS_COMP[];
 extern const char MSG_FS_ACTION[];
 extern const char MSG_FS_CONTINUE[];
 extern const char MSG_FS_PAUSE[];
+#ifdef LA_LIVE_K
+extern const char MSG_ADVANCE_K[];
+#endif
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

@@ -132,8 +132,6 @@ extern const char menu_fmt_int3[];
 
 extern const char menu_fmt_float31[];
 extern const char menu_fmt_float13[];
-extern const char menu_fmt_float13off[];
-
 
 extern void menu_draw_float31(const char* str, float val);
 
