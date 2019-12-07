@@ -6102,6 +6102,7 @@ Sigma_Exit:
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
 		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = 2;
+    starttime=_millis();
 		if (farm_mode) { prusa_statistics(2); };
         
         //starttime=_millis();
@@ -6283,6 +6284,17 @@ Sigma_Exit:
       }
 	  //in the end of print set estimated time to end of print and extruders used during print to default values for next print
 	  print_time_remaining_init();
+
+    //save Stats
+    stoptime=_millis();
+    char time[30];
+    unsigned long t;
+    t=(stoptime-starttime-pause_time)/1000;    
+    pause_time = 0;
+    int hours, minutes;
+    minutes=(t/60)%60;
+    hours=t/60/60;
+    save_statistics(total_filament_used, t);
 	  snmm_filaments_used = 0;
       break;
 
@@ -10392,6 +10404,8 @@ static void print_time_remaining_init()
 	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
 	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+
+  //Save Stats
 }
 
 void load_filament_final_feed()
