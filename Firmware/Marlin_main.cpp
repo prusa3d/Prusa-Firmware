@@ -6265,6 +6265,9 @@ Sigma_Exit:
           disable_e1();
           disable_e2();
           finishAndDisableSteppers();
+
+          // Clear the USB printing counter, show "real" menus
+          usb_printing_counter = 0;
         }
         else
         {
