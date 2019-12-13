@@ -7271,7 +7271,7 @@ Sigma_Exit:
   //! ### M603 - Stop print
   // -------------------------------
 	case 603: {
-		Stop();
+		lcd_print_stop();
 	}
 	break;
 
@@ -8745,6 +8745,16 @@ void kill(const char *full_screen_message, unsigned char id)
   } // Wait for reset
 }
 
+// Stop: Emergency stop used by overtemp functions which allows recovery
+//
+//   In addition to stopping the print, this prevents subsequent G[0-3] commands to be
+//   processed via USB (using "Stopped") until the print is resumed via M999 or
+//   manually started from scratch with the LCD.
+//
+//   Note that the current instruction is completely discarded, so resuming from Stop()
+//   will introduce either over/under extrusion on the current segment, and will not
+//   survive a power panic. Switching Stop() to use the pause machinery instead (with
+//   the addition of disabling the headers) could allow true recovery in the future.
 void Stop()
 {
   disable_heater();
