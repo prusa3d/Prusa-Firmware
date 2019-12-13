@@ -8415,8 +8415,6 @@ void prepare_move()
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #endif
   }
-  if (waiting_inside_plan_buffer_line_print_aborted)
-      return;
 
   set_current_to_destination();
 }
@@ -9565,8 +9563,10 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda)
 void long_pause() //long pause print
 {
 	st_synchronize();
-	
 	start_pause_print = _millis();
+
+    // Stop heaters
+    setAllTargetHotends(0);
 
 	//retract
 	current_position[E_AXIS] -= default_retraction;
@@ -9582,8 +9582,7 @@ void long_pause() //long pause print
 	current_position[Y_AXIS] = Y_PAUSE_POS;
 	plan_buffer_line_curposXYZE(50, active_extruder);
 
-	// Turn off the hotends and print fan
-    setAllTargetHotends(0);
+	// Turn off the print fan
 	fanSpeed = 0;
 }
 
@@ -10230,7 +10229,9 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	sei();
 	if ((z_move != 0) || (e_move != 0)) { // extruder or z move
 #if 1
-    // Rather than calling plan_buffer_line directly, push the move into the command queue, 
+    // Rather than calling plan_buffer_line directly, push the move into the command queue so that
+    // the caller can continue processing. This is used during powerpanic to save the state as we
+    // move away from the print.
     char buf[48];
 
 	// First unretract (relative extrusion)
@@ -10259,6 +10260,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     memcpy(current_position, saved_pos, sizeof(saved_pos));
     memcpy(destination, current_position, sizeof(destination));
 #endif
+    waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
   }
 }
 
