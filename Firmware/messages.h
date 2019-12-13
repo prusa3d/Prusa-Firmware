@@ -161,6 +161,7 @@ extern const char MSG_OCTOPRINT_RESUMED[];
 extern const char MSG_OCTOPRINT_CANCEL[];
 extern const char MSG_FANCHECK_EXTRUDER[];
 extern const char MSG_FANCHECK_PRINT[];
+extern const char MSG_M112_KILL[];
 
 #if defined(__cplusplus)
 }
