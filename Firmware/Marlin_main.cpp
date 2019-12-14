@@ -9571,10 +9571,6 @@ void long_pause() //long pause print
     // Stop heaters
     setAllTargetHotends(0);
 
-	//retract
-	current_position[E_AXIS] -= default_retraction;
-	plan_buffer_line_curposXYZE(400, active_extruder);
-
 	//lift z
 	current_position[Z_AXIS] += Z_PAUSE_LIFT;
 	if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;

@@ -1662,7 +1662,7 @@ void lcd_return_to_status()
 //! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
-    stop_and_save_print_to_ram(0.0,0.0);
+    stop_and_save_print_to_ram(0.0, -default_retraction);
     lcd_return_to_status();
     isPrintPaused = true;
     if (LcdCommands::Idle == lcd_commands_type)
@@ -6771,7 +6771,7 @@ void lcd_resume_print()
     if (fan_error_selftest()) return; //abort if error persists
 
     isPrintPaused = false;
-    restore_print_from_ram_and_continue(0.0);
+    restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
