@@ -807,15 +807,15 @@ void tmc2130_goto_step(uint8_t axis, uint8_t step, uint8_t dir, uint16_t delay_u
 	{
 		dir = tmc2130_get_inv(axis)?0:1;
 		int steps = (int)step - (int)(mscnt >> shift);
-		if (steps < 0)
-		{
-			dir ^= 1;
-			steps = -steps;
-		}
 		if (steps > static_cast<int>(cnt / 2))
 		{
 			dir ^= 1;
-			steps = cnt - steps;
+			steps = cnt - steps; // This can create a negative step value
+		}
+        if (steps < 0)
+		{
+			dir ^= 1;
+			steps = -steps;
 		}
 		cnt = steps;
 	}
