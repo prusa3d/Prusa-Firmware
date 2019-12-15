@@ -112,7 +112,9 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
 
 /* Different menus */
 static void lcd_status_screen();
+#if (LANG_MODE != 0)
 static void lcd_language_menu();
+#endif
 static void lcd_main_menu();
 static void lcd_tune_menu();
 //static void lcd_move_menu();
@@ -4929,6 +4931,7 @@ void lcd_wizard() {
 	}
 }
 
+#if (LANG_MODE != 0)
 void lcd_language()
 {
 	lcd_update_enable(true);
@@ -4948,6 +4951,7 @@ void lcd_language()
 	else
 		lang_select(LANG_ID_PRI);
 }
+#endif
 
 static void wait_preheat()
 {
