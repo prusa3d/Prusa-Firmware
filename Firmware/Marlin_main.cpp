@@ -6210,7 +6210,6 @@ Sigma_Exit:
           LCD_MESSAGERPGM(_T(WELCOME_MSG));
           lcd_update(0);
         break;
-      #endif
 
       //! ### M81 - Turn off Power Supply
       // --------------------------------------
@@ -6234,6 +6233,7 @@ Sigma_Exit:
         LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR(".")));
         lcd_update(0);
 	  break;
+    #endif
 
     //! ### M82 - Set E axis to absolute mode
     // ---------------------------------------
