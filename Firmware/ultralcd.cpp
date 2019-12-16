@@ -57,7 +57,7 @@ static void lcd_mesh_bed_leveling_settings();
 static void lcd_backlight_menu();
 
 int8_t ReInitLCD = 0;
-
+uint8_t scrollstuff = 0;
 
 int8_t SilentModeMenu = SILENT_MODE_OFF;
 uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
@@ -325,6 +325,7 @@ typedef struct
 	bool isDir = 0;
 	uint8_t row = 0;
 	const char* scrollPointer;
+    uint16_t fileCnt;
 } _menu_data_scroll_t;
 static_assert(sizeof(menu_data)>= sizeof(_menu_data_scroll_t),"_menu_data_scroll_t doesn't fit into menu_data");
 
@@ -634,16 +635,6 @@ void lcdui_print_time(void)
 //Print status line on status screen
 void lcdui_print_status_line(void)
 {
-/* 	if (IS_SD_PRINTING)
-	{
-		if (strcmp(longFilenameOLD, (card.longFilename[0] ? card.longFilename : card.filename)) != 0)
-		{
-			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
-			sprintf_P(longFilenameOLD, PSTR("%s"), (card.longFilename[0] ? card.longFilename : card.filename));
-			scrollstuff = 0;
-		}
-	} */
-
 	if (heating_status)
 	{ // If heating flag, show progress of heating
 		heating_status_counter++;
@@ -687,7 +678,8 @@ void lcdui_print_status_line(void)
 	}
 	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status))
 	{ // If printing from SD, show what we are printing
-		/* if(strlen(longFilenameOLD) > LCD_WIDTH)
+		const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
+		if(strlen(longFilenameOLD) > LCD_WIDTH)
 		{
 			int inters = 0;
 			int gh = scrollstuff;
@@ -713,7 +705,7 @@ void lcdui_print_status_line(void)
 		else
 		{
 			lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
-		} */
+		}
 	}
 	else
 	{ // Otherwise check for other special events
@@ -7292,11 +7284,12 @@ void lcd_sdcard_menu()
   bool scrollEnter = lcd_scrollTimer.expired(500);
   if (lcd_draw_update == 0 && LCD_CLICKED == 0 && !scrollEnter && !menu_entering)
     return; // nothing to do (so don't thrash the SD card)
-  uint16_t fileCnt = card.getnrfilenames();
+  _menu_data_scroll_t* _md = (_menu_data_scroll_t*)&(menu_data[0]);
   if (menu_entering)
   {
     menu_entering = 0; //clear entering flag
 	lcd_draw_update = 1; //draw lines again
+    _md->fileCnt = card.getnrfilenames();
   }
   if (!scrollEnter) lcd_scrollTimer.start();
   MENU_BEGIN();
@@ -7311,17 +7304,11 @@ void lcd_sdcard_menu()
     MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir);
   }
 
-  for (uint16_t i = 0; i < fileCnt; i++)
+  for (uint16_t i = 0; i < _md->fileCnt; i++)
   {
     if (menu_item == menu_line)
     {
-		const uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode || (sdSort == SD_SORT_TIME)) ? (fileCnt - 1 - i) : i;
-		/*#ifdef SDCARD_RATHERRECENTFIRST
-			#ifndef SDCARD_SORT_ALPHA
-				fileCnt - 1 -
-			#endif
-		#endif
-		i;*/
+		const uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode || (sdSort == SD_SORT_TIME)) ? (_md->fileCnt - 1 - i) : i;
 		#ifdef SDCARD_SORT_ALPHA
 			if (sdSort == SD_SORT_NONE) card.getfilename(nr);
 			else card.getfilename_sorted(nr);
