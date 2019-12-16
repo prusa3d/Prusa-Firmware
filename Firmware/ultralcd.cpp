@@ -7262,7 +7262,7 @@ void lcd_print_stop()
         SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
     }
 
-    cli();
+    CRITICAL_SECTION_START;
 
     // Clear any saved printing state
     cancel_saved_printing();
@@ -7274,7 +7274,8 @@ void lcd_print_stop()
 	card.sdprinting = false;
 	card.closefile();
     st_reset_timer();
-    sei();
+
+    CRITICAL_SECTION_END;
 
 	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
 	stoptime = _millis();
