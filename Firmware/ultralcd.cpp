@@ -6770,10 +6770,10 @@ void lcd_resume_print()
 
     if (fan_error_selftest()) return; //abort if error persists
 
+    isPrintPaused = false;
     restore_print_from_ram_and_continue(0.0);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
-    isPrintPaused = false;
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
 }
 
@@ -6925,7 +6925,7 @@ static void lcd_main_menu()
 			{
 				MENU_ITEM_FUNCTION_P(_i("Pause print"), lcd_pause_print);////MSG_PAUSE_PRINT
 			}
-			else
+			else if(isPrintPaused)
 			{
 				#ifdef FANCHECK
 					if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
