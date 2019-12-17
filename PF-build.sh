@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_12
+# Version: 1.0.6-Build_13
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -117,6 +117,7 @@
 #                          board-versions.
 # 15 Dec 2019, 3d-gussner, Prepare for switch to Prusa3d/PF-build-env repository
 # 15 Dec 2019, 3d-gussner, Fix Audrino user preferences for the chosen board.
+# 17 Dec 2019, 3d-gussner, Fix "timer0_fract = 0" warning by using Arduino_boards v1.0.3
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -209,20 +210,22 @@ if ! type python > /dev/null; then
 	fi
 fi
 
-#### End prepare bash environment
+#### End prepare bash / Linux environment
 
 
 #### Set build environment 
 ARDUINO_ENV="1.8.5"
 BUILD_ENV="1.0.6"
 BOARD="prusa_einsy_rambo"
-BOARD_PACKAGE_NAME="PrusaResearchRambo"
-BOARD_VERSION="1.0.2"
+BOARD_PACKAGE_NAME="PrusaResearch"
+BOARD_VERSION="1.0.3"
+#BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/Prusa_Merge_v1.0.3/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_FILENAME="prusa3dboards"
-BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.2.tar.bz2"
-PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
-#PF_BUILD_FILE_URL="https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
+#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/Prusa_Merge_v1.0.3/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
+BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
+#PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
+PF_BUILD_FILE_URL="https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
 LIB="PrusaLibrary"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
@@ -236,6 +239,7 @@ echo "Ardunio IDE :" $ARDUINO_ENV
 echo "Build env   :" $BUILD_ENV
 echo "Board       :" $BOARD
 echo "Package name:" $BOARD_PACKAGE_NAME
+echo "Board v.    :" $BOARD_VERSION
 echo "Specific Lib:" $LIB
 echo ""
 
