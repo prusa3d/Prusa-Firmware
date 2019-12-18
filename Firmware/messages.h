@@ -131,9 +131,13 @@ extern const char MSG_MAGNETS_COMP[];
 extern const char MSG_FS_ACTION[];
 extern const char MSG_FS_CONTINUE[];
 extern const char MSG_FS_PAUSE[];
-#ifdef LA_LIVE_K
-extern const char MSG_ADVANCE_K[];
-#endif
+extern const char MSG_BRIGHTNESS[];
+extern const char MSG_BL_HIGH[];
+extern const char MSG_BL_LOW[];
+extern const char MSG_TIMEOUT[];
+extern const char MSG_BRIGHT[];
+extern const char MSG_DIM[];
+extern const char MSG_AUTO[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
@@ -164,6 +168,8 @@ extern const char MSG_OCTOPRINT_RESUMED[];
 extern const char MSG_OCTOPRINT_CANCEL[];
 extern const char MSG_FANCHECK_EXTRUDER[];
 extern const char MSG_FANCHECK_PRINT[];
+extern const char MSG_M112_KILL[];
+extern const char MSG_ADVANCE_K[];
 
 #if defined(__cplusplus)
 }

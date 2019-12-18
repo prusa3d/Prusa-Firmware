@@ -178,6 +178,7 @@ Example:
 
 # 4. Documentation
 run [doxygen](http://www.doxygen.nl/) in Firmware folder
+or visit https://prusa3d.github.io/Prusa-Firmware-Doc for doxygen generated output
 
 # 5. FAQ
 Q:I built firmware using Arduino and I see "?" instead of numbers in printer user interface.
