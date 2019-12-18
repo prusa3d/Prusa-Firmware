@@ -630,7 +630,7 @@ void lcdui_print_percent_done(void)
 	{
 		eeprom_read_block(sheet, EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].name, 7);
 		sheet[7] = '\0';
-		lcd_printf_P(PSTR("%s"),sheet);
+		lcd_printf_P(PSTR("%-7s"),sheet);
 	}
 	else
 	{
