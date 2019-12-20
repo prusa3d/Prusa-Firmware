@@ -342,10 +342,6 @@ static float next_feedrate;
 // Original feedrate saved during homing moves
 static float saved_feedrate;
 
-// Determines Absolute or Relative Coordinates.
-// Also there is bool axis_relative_modes[] per axis flag.
-static bool relative_mode = false;  
-
 const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
 
 //static float tt = 0;
@@ -5208,15 +5204,19 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             
     //! ### G90 - Switch off relative mode
     // -------------------------------
-    case 90:
-      relative_mode = false;
-      break;
+    case 90: {
+        for(uint8_t i = 0; i != NUM_AXIS; ++i)
+            axis_relative_modes[i] = false;
+    }
+    break;
 
     //! ### G91 - Switch on relative mode
     // -------------------------------
-    case 91:
-      relative_mode = true;
-      break;
+    case 91: {
+        for(uint8_t i = 0; i != NUM_AXIS; ++i)
+            axis_relative_modes[i] = true;
+    }
+    break;
 
     //! ### G92 - Set position
     // -----------------------------
@@ -6238,13 +6238,13 @@ Sigma_Exit:
     //! ### M82 - Set E axis to absolute mode
     // ---------------------------------------
     case 82:
-      axis_relative_modes[3] = false;
+      axis_relative_modes[E_AXIS] = false;
       break;
 
     //! ### M83 - Set E axis to relative mode
     // ---------------------------------------  
     case 83:
-      axis_relative_modes[3] = true;
+      axis_relative_modes[E_AXIS] = true;
       break;
 
     //! ### M84, M18 - Disable steppers
@@ -8279,7 +8279,7 @@ void get_coordinates()
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
-      bool relative = axis_relative_modes[i] || relative_mode;
+      bool relative = axis_relative_modes[i];
       destination[i] = (float)code_value();
       if (i == E_AXIS) {
         float emult = extruder_multiplier[active_extruder];
