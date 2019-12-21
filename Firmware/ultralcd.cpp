@@ -2118,10 +2118,20 @@ static void lcd_unLoadFilament()
 }
 
 void lcd_wait_interact() {
+    char lcd_load_message[1] = "";
+    lcd_load_message[0] = '\0';
+    lcd_wait_interact(lcd_load_message);
+}
+
+void lcd_wait_interact(const char* lcd_load_message) {
 
   lcd_clear();
 
-  lcd_puts_at_P(0, 1, _i("Insert filament"));////MSG_INSERT_FILAMENT c=20
+  lcd_puts_at_P(0, 0, _i("Insert filament"));////MSG_INSERT_FILAMENT c=20
+  if (lcd_load_message) {
+      lcd_set_cursor(0, 1);
+      lcd_print(lcd_load_message);
+  }
 #ifdef FILAMENT_SENSOR
   if (!fsensor.getAutoLoadEnabled())
 #endif //FILAMENT_SENSOR

@@ -3401,7 +3401,7 @@ static void mmu_M600_load_filament(bool automatic) {
     st_synchronize();
 }
 
-static void gcode_M600(const bool automatic, const float x_position, const float y_position, const float z_shift, const float e_shift, const float e_shift_late) {
+static void gcode_M600(const bool automatic, const float x_position, const float y_position, const float z_shift, const float e_shift, const float e_shift_late, const char* lcd_load_message) {
     st_synchronize();
 
     // When using an MMU, save the currently use slot number
@@ -3461,7 +3461,7 @@ static void gcode_M600(const bool automatic, const float x_position, const float
                 st_synchronize();
                 lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=4
             }
-            M600_load_filament();
+            M600_load_filament(lcd_load_message);
         }
         else // MMU is enabled
         {
@@ -7702,7 +7702,7 @@ Sigma_Exit:
     - `L`    - later retract distance for removal, default FILAMENTCHANGE_FINALRETRACT
     - `AUTO` - Automatically (only with MMU)
     */
-    case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
+    case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal] C[Custom message to show during loading]
     {
     st_synchronize();
 
@@ -7728,10 +7728,22 @@ Sigma_Exit:
     if (code_seen('X')) x_position = code_value();
     if (code_seen('Y')) y_position = code_value();
 
+    // Add a custom message, during the loading.
+    // It should be the last parameter of the command
+    char lcd_load_message[LCD_WIDTH + 1] = "";
+    if (code_seen('C')) {
+        unquoted_string str = unquoted_string(strchr_pointer);
+        if (str.WasFound()) {
+            const uint8_t len = min(str.GetLength(), LCD_WIDTH);
+            memcpy(lcd_load_message, str.GetUnquotedString(), len);
+            lcd_load_message[len] = '\0';
+        }
+    }
+
     if (MMU2::mmu2.Enabled() && code_seen_P(PSTR("AUTO")))
         automatic = true;
 
-    gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+    gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late, lcd_load_message);
 
     // From this point forward, power panic should not use
     // the partial backup in RAM since the extruder is no
@@ -11076,9 +11088,9 @@ void M600_load_filament_movements()
 	st_synchronize();
 }
 
-void M600_load_filament() {
+void M600_load_filament(const char* lcd_load_message) {
 	//load filament for single material and MMU
-	lcd_wait_interact();
+	lcd_wait_interact(lcd_load_message);
 
 	//load_filament_time = _millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);

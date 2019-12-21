@@ -443,7 +443,7 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex);
 #define UVLO !(PINE & (1<<4))
 
 
-void M600_load_filament();
+void M600_load_filament(const char* lcd_load_message);
 void M600_load_filament_movements();
 void M600_wait_for_user();
 void M600_check_state();
