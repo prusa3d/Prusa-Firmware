@@ -83,6 +83,9 @@
 #include "Dcodes.h"
 #include "AutoDeplete.h"
 
+#ifndef LA_NOCOMPAT
+#include "la10compat.h"
+#endif
 
 #ifdef SWSPI
 #include "swspi.h"
@@ -2068,12 +2071,23 @@ static float probe_pt(float x, float y, float z_before) {
     */
 inline void gcode_M900() {
     st_synchronize();
-    
+
     const float newK = code_seen('K') ? code_value_float() : -1;
+#ifdef LA_NOCOMPAT
     if (newK >= 0 && newK < 10)
-      extruder_advance_K = newK;
+        extruder_advance_K = newK;
     else
-      SERIAL_ECHOLNPGM("K out of allowed range!");
+        SERIAL_ECHOLNPGM("K out of allowed range!");
+#else
+    if (newK == 0) {
+        la10c_reset();
+        extruder_advance_K = 0;
+    }
+    else if(newK > 0)
+        extruder_advance_K = la10c_value(newK);
+    else
+        SERIAL_ECHOLNPGM("K out of allowed range!");
+#endif
 
     SERIAL_ECHO_START;
     SERIAL_ECHOPGM("Advance K=");
@@ -4136,6 +4150,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     // --------------------------------------------
     case 28: 
     {
+#ifndef LA_NOCOMPAT
+      la10c_reset();
+#endif
       long home_x_value = 0;
       long home_y_value = 0;
       long home_z_value = 0;
@@ -5372,6 +5389,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       else
       {
           failstats_reset_print();
+#ifndef LA_NOCOMPAT
+          la10c_reset();
+#endif
           card.startFileprint();
           starttime=_millis();
       }
@@ -5465,6 +5485,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         if(code_seen('S'))
           if(strchr_pointer<namestartpos) //only if "S" is occuring _before_ the filename
             card.setIndex(code_value_long());
+#ifndef LA_NOCOMPAT
+        la10c_reset();
+#endif
         card.startFileprint();
         if(!call_procedure)
           starttime=_millis(); //procedure calls count as normal print time.

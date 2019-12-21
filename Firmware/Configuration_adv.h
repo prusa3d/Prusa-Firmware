@@ -287,6 +287,7 @@
 
 #ifdef LIN_ADVANCE
   #define LIN_ADVANCE_K 0  // Unit: mm compression per 1mm/s extruder speed
+  //#define LA_NOCOMPAT    // Disable Linear Advance 1.0 compatibility
   //#define LA_LIVE_K      // Allow adjusting K in the Tune menu
   //#define LA_DEBUG       // If enabled, this will generate debug information output over USB.
   //#define LA_DEBUG_LOGIC // @wavexx: setup logic channels for isr debugging
