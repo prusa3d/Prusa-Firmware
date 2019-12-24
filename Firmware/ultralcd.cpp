@@ -2861,7 +2861,12 @@ static void lcd_menu_AutoLoadFilament()
 static void preheat_or_continue()
 {
     bFilamentFirstRun = false;
-    if (target_temperature[0] >= EXTRUDE_MINTEMP)
+    if (isPrintPaused)
+    {
+        bFilamentPreheatState = true;
+        mFilamentItem(saved_extruder_temperature, target_temperature_bed);
+    }
+    else if (target_temperature[0] >= EXTRUDE_MINTEMP)
     {
         bFilamentPreheatState = true;
         mFilamentItem(target_temperature[0], target_temperature_bed);

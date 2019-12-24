@@ -378,6 +378,7 @@ extern uint8_t saved_printing_type;
 #define PRINTING_TYPE_SD 0
 #define PRINTING_TYPE_USB 1
 #define PRINTING_TYPE_NONE 2
+extern float saved_extruder_temperature;
 
 //save/restore printing in case that mmu is not responding
 extern bool mmu_print_saved;
