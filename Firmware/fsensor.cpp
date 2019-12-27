@@ -591,20 +591,15 @@ void fsensor_update(void)
             plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
             st_synchronize();
 
+            // check the filament in isolation
 			fsensor_err_cnt = 0;
 			fsensor_oq_meassure_start(0);
-
-			enquecommand_front_P((PSTR("G1 E-3 F200")));
-			process_commands();
-			KEEPALIVE_STATE(IN_HANDLER);
-			cmdqueue_pop_front();
-			st_synchronize();
-
-			enquecommand_front_P((PSTR("G1 E3 F200")));
-			process_commands();
-			KEEPALIVE_STATE(IN_HANDLER);
-			cmdqueue_pop_front();
-			st_synchronize();
+            float e_tmp = current_position[E_AXIS];
+            current_position[E_AXIS] -= 3;
+            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            current_position[E_AXIS] = e_tmp;
+            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            st_synchronize();
 
 			uint8_t err_cnt = fsensor_err_cnt;
 			fsensor_oq_meassure_stop();
