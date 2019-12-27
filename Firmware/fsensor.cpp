@@ -585,6 +585,11 @@ void fsensor_update(void)
 			bool oq_meassure_enabled_tmp = fsensor_oq_meassure_enabled;
 			fsensor_oq_meassure_enabled = true;
 
+            // move the nozzle away while checking the filament
+            current_position[Z_AXIS] += 0.8;
+            if(current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+            plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+            st_synchronize();
 
 			fsensor_err_cnt = 0;
 			fsensor_oq_meassure_start(0);
