@@ -124,14 +124,16 @@ unsigned long nIRsensorLastTime;
 void fsensor_stop_and_save_print(void)
 {
     printf_P(PSTR("fsensor_stop_and_save_print\n"));
-    stop_and_save_print_to_ram(0, 0); //XYZE - no change
+    stop_and_save_print_to_ram(0, 0);
+    fsensor_watch_runout = false;
 }
 
 void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
+    fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
-    restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+    restore_print_from_ram_and_continue(0);
 }
 
 // fsensor_checkpoint_print cuts the current print job at the current position,
@@ -379,7 +381,6 @@ void fsensor_oq_meassure_start(uint8_t skip)
 	fsensor_oq_sh_sum = 0;
 	pat9125_update();
 	pat9125_y = 0;
-	fsensor_watch_runout = false;
 	fsensor_oq_meassure = true;
 }
 
@@ -391,7 +392,6 @@ void fsensor_oq_meassure_stop(void)
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * fsensor_chunk_len / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
 	fsensor_oq_meassure = false;
-	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
 }
 
@@ -578,12 +578,13 @@ void fsensor_update(void)
 #ifdef PAT9125
 		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
+			fsensor_stop_and_save_print();
+
 			bool autoload_enabled_tmp = fsensor_autoload_enabled;
 			fsensor_autoload_enabled = false;
 			bool oq_meassure_enabled_tmp = fsensor_oq_meassure_enabled;
 			fsensor_oq_meassure_enabled = true;
 
-			fsensor_stop_and_save_print();
 
 			fsensor_err_cnt = 0;
 			fsensor_oq_meassure_start(0);
