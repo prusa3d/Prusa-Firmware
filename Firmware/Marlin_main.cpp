@@ -3856,13 +3856,13 @@ void gcode_M701()
 #endif //FSENSOR_QUALITY
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
-		current_position[E_AXIS] += 40;
-		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
+		current_position[E_AXIS] += FILAMENTCHANGE_FIRSTFEED - 30;
+		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
 		st_synchronize();
 
         raise_z_above(MIN_Z_FOR_LOAD, false);
 		current_position[E_AXIS] += 30;
-		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
+		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
 		
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
