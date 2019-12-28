@@ -1589,6 +1589,7 @@ void mmu_continue_loading(bool blocking)
             if (blocking)
             {
                 marlin_wait_for_click();
+                st_synchronize();
                 restore_print_from_ram_and_continue(0);
                 state = Ls::Retry;
             }
