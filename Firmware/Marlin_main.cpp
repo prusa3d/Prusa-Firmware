@@ -10312,12 +10312,10 @@ void restore_print_from_ram_and_continue(float e_move)
 
 	//first move print head in XY to the saved position:
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
-	st_synchronize();
 	//then move Z
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
-	st_synchronize();
 	//and finaly unretract (35mm/s)
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], 35, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
 	st_synchronize();
 
   #ifdef FANCHECK
