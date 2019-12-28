@@ -6849,7 +6849,7 @@ static void lcd_main_menu()
   }
 
 
-  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
+  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || isPrintPaused || (lcd_commands_type == LcdCommands::Layer1Cal))
   {
     MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE
   } else 
