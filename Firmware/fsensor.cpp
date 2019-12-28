@@ -579,6 +579,7 @@ void fsensor_update(void)
 		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
 			fsensor_stop_and_save_print();
+            KEEPALIVE_STATE(IN_HANDLER);
 
 			bool autoload_enabled_tmp = fsensor_autoload_enabled;
 			fsensor_autoload_enabled = false;
