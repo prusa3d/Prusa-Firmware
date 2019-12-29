@@ -2070,8 +2070,6 @@ static float probe_pt(float x, float y, float z_before) {
     *  K<factor>                  Set advance K factor
     */
 inline void gcode_M900() {
-    st_synchronize();
-
     const float newK = code_seen('K') ? code_value_float() : -1;
 #ifdef LA_NOCOMPAT
     if (newK >= 0 && newK < 10)
