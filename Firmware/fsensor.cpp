@@ -615,7 +615,7 @@ void fsensor_enque_M600(){
 	printf_P(PSTR("fsensor_update - M600\n"));
 	eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 	eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-	enquecommand_front_P((PSTR("M600")));
+	enquecommand_front_P((PSTR("M600 R")));
 }
 
 //! @brief filament sensor update (perform M600 on filament runout)
