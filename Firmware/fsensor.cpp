@@ -576,7 +576,7 @@ void fsensor_enque_M600(){
 void fsensor_update(void)
 {
 #ifdef PAT9125
-		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
+		if (fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
 			fsensor_stop_and_save_print();
             KEEPALIVE_STATE(IN_HANDLER);
@@ -621,7 +621,7 @@ void fsensor_update(void)
 				fsensor_enque_M600();
 		}
 #else //PAT9125
-		if (CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected)
+		if (CHECK_FSENSOR && ir_sensor_detected)
         {
                if(digitalRead(IR_SENSOR_PIN))
                {                                  // IR_SENSOR_PIN ~ H

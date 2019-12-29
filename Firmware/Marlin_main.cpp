@@ -8606,7 +8606,8 @@ if(0)
 #ifdef PAT9125
 				fsensor_autoload_check_stop();
 #endif //PAT9125
-				fsensor_update();
+                if (fsensor_enabled && !saved_printing)
+                    fsensor_update();
 			}
 		}
 	}
