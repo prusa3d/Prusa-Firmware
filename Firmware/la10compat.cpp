@@ -31,10 +31,18 @@ static float la10c_convert(float k)
 float la10c_value(float k)
 {
     if(la10c_mode == LA10C_UNKNOWN)
+    {
+        // do not autodetect until a valid value is seen
+        if(k == 0)
+            return 0;
+        else if(k < 0)
+            return -1;
+
         la10c_mode_change(k < 10? LA10C_LA15: LA10C_LA10);
+    }
 
     if(la10c_mode == LA10C_LA15)
-        return k;
+        return (k >= 0 && k < 10? k: -1);
     else
-        return la10c_convert(k);
+        return (k >= 0? la10c_convert(k): -1);
 }

@@ -2070,20 +2070,25 @@ static float probe_pt(float x, float y, float z_before) {
     *  K<factor>                  Set advance K factor
     */
 inline void gcode_M900() {
-    const float newK = code_seen('K') ? code_value_float() : -1;
+    float newK = code_seen('K') ? code_value_float() : -2;
 #ifdef LA_NOCOMPAT
     if (newK >= 0 && newK < 10)
         extruder_advance_K = newK;
     else
         SERIAL_ECHOLNPGM("K out of allowed range!");
 #else
-    if (newK == 0) {
+    if (newK == 0)
         extruder_advance_K = 0;
-    }
-    else if(newK > 0)
-        extruder_advance_K = la10c_value(newK);
+    else if (newK == -1)
+        la10c_reset();
     else
-        SERIAL_ECHOLNPGM("K out of allowed range!");
+    {
+        newK = la10c_value(newK);
+        if (newK < 0)
+            SERIAL_ECHOLNPGM("K out of allowed range!");
+        else
+            extruder_advance_K = newK;
+    }
 #endif
 
     SERIAL_ECHO_START;
