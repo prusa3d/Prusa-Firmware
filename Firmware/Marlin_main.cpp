@@ -3853,7 +3853,10 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 	fsensor_check_autoload();
 #endif //IR_SENSOR
 
-    lcd_setstatuspgm(MSG_WELCOME);
+    if (isPrintPaused)
+        lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
+    else
+        lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 }
 
