@@ -2298,12 +2298,8 @@ if(lcd_clicked())
 
 void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 {
-    static int nTargetOld;
-    static int nTargetBedOld;
     uint8_t nLevel;
 
-    nTargetOld = target_temperature[0];
-    nTargetBedOld = target_temperature_bed;
     setTargetHotend0((float)nTemp);
     if (!shouldPreheatOnlyNozzle()) setTargetBed((float)nTempBed);
 
@@ -2434,11 +2430,6 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 setTargetHotend0(0.0);
                 if (!isPrintPaused) setTargetBed(0.0);
                 menu_back();
-            }
-            else
-            {
-                setTargetHotend0(isPrintPaused ? 0.0 : (float)nTargetOld);
-                setTargetBed((float)nTargetBedOld);
             }
             menu_back();
             if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
