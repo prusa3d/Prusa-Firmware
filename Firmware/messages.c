@@ -131,6 +131,13 @@ const char MSG_MAGNETS_COMP[] PROGMEM_I1 = ISTR("Magnets comp."); ////
 const char MSG_FS_ACTION[] PROGMEM_I1 = ISTR("FS Action"); ////
 const char MSG_FS_CONTINUE[] PROGMEM_I1 = ISTR("Cont."); ////
 const char MSG_FS_PAUSE[] PROGMEM_I1 = ISTR("Pause"); ////
+const char MSG_BRIGHTNESS[] PROGMEM_I1 = ISTR("Brightness"); ////
+const char MSG_BL_HIGH[] PROGMEM_I1 = ISTR("Level Bright"); ////
+const char MSG_BL_LOW[] PROGMEM_I1 = ISTR("Level Dimmed"); ////
+const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////
+const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////
+const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////
+const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////

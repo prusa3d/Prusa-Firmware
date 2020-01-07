@@ -63,6 +63,7 @@
 
 #include "menu.h"
 #include "ultralcd.h"
+#include "backlight.h"
 
 #include "planner.h"
 #include "stepper.h"
@@ -998,10 +999,6 @@ void setup()
 	mmu_init();
 
 	ultralcd_init();
-
-#if (LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
-	analogWrite(LCD_BL_PIN, 255); //set full brightnes
-#endif //(LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
 
 	spi_init();
 
@@ -2824,7 +2821,10 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	#ifdef TMC2130
 	FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-	// Only Z calibration?
+    
+    FORCE_BL_ON_START;
+	
+    // Only Z calibration?
 	if (!onlyZ)
 	{
 		setTargetBed(0);
@@ -3012,6 +3012,9 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 #ifdef TMC2130
 	FORCE_HIGH_POWER_END;
 #endif // TMC2130
+    
+    FORCE_BL_ON_END;
+    
 	return final_result;
 }
 
@@ -6207,7 +6210,6 @@ Sigma_Exit:
           LCD_MESSAGERPGM(_T(WELCOME_MSG));
           lcd_update(0);
         break;
-      #endif
 
       //! ### M81 - Turn off Power Supply
       // --------------------------------------
@@ -6231,6 +6233,7 @@ Sigma_Exit:
         LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR(".")));
         lcd_update(0);
 	  break;
+    #endif
 
     //! ### M82 - Set E axis to absolute mode
     // ---------------------------------------
@@ -9604,6 +9607,11 @@ void uvlo_()
 	unsigned long time_start = _millis();
 	bool sd_print = card.sdprinting;
     // Conserve power as soon as possible.
+#ifdef LCD_BL_PIN
+    backlightMode = BACKLIGHT_MODE_DIM;
+    backlightLevel_LOW = 0;
+    backlight_update();
+#endif //LCD_BL_PIN
     disable_x();
     disable_y();
     
