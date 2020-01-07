@@ -1578,18 +1578,7 @@ void mmu_continue_loading(bool blocking)
             break;
         case Ls::Unload:
             stop_and_save_print_to_ram(0, 0);
-
-            //lift z
-            current_position[Z_AXIS] += Z_PAUSE_LIFT;
-            if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-            plan_buffer_line_curposXYZE(15, active_extruder);
-            st_synchronize();
-
-            //Move XY to side
-            current_position[X_AXIS] = X_PAUSE_POS;
-            current_position[Y_AXIS] = Y_PAUSE_POS;
-            plan_buffer_line_curposXYZE(50, active_extruder);
-            st_synchronize();
+            long_pause();
 
             mmu_command(MmuCmd::U0);
             manage_response(false, true, MMU_UNLOAD_MOVE);

@@ -500,7 +500,7 @@ void get_command()
 
         //If command was e-stop process now
         if(strcmp(cmdbuffer+bufindw+CMDHDRSIZE, "M112") == 0)
-          kill("", 2);
+          kill(MSG_M112_KILL, 2);
         
         // Store the current line into buffer, move to the next line.
 		// Store type of entry

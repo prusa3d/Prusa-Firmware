@@ -359,10 +359,10 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
     {
      if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1)
      {
-       SERIAL_ERROR_START;
-       SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
-       SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
-       kill("", 1);
+       // SERIAL_ERROR_START;
+       // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
+       // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
+       kill(_n("trying to call sub-gcode files with too many levels."), 1);
        return;
      }
      

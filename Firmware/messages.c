@@ -131,6 +131,13 @@ const char MSG_MAGNETS_COMP[] PROGMEM_I1 = ISTR("Magnets comp."); ////
 const char MSG_FS_ACTION[] PROGMEM_I1 = ISTR("FS Action"); ////
 const char MSG_FS_CONTINUE[] PROGMEM_I1 = ISTR("Cont."); ////
 const char MSG_FS_PAUSE[] PROGMEM_I1 = ISTR("Pause"); ////
+const char MSG_BRIGHTNESS[] PROGMEM_I1 = ISTR("Brightness"); ////
+const char MSG_BL_HIGH[] PROGMEM_I1 = ISTR("Level Bright"); ////
+const char MSG_BL_LOW[] PROGMEM_I1 = ISTR("Level Dimmed"); ////
+const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////
+const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////
+const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////
+const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
@@ -160,3 +167,4 @@ const char MSG_OCTOPRINT_RESUMED[] PROGMEM_N1 = "// action:resumed"; ////
 const char MSG_OCTOPRINT_CANCEL[] PROGMEM_N1 = "// action:cancel"; ////
 const char MSG_FANCHECK_EXTRUDER[] PROGMEM_N1 = "Err: EXTR. FAN ERROR"; ////c=20
 const char MSG_FANCHECK_PRINT[] PROGMEM_N1 = "Err: PRINT FAN ERROR"; ////c=20
+const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20

@@ -19,6 +19,8 @@
 #include "lcd.h"
 #include "menu.h"
 
+#include "backlight.h"
+
 #include "util.h"
 #include "mesh_bed_leveling.h"
 #include "mesh_bed_calibration.h"
@@ -56,6 +58,7 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
+static void lcd_backlight_menu();
 
 int8_t ReInitLCD = 0;
 
@@ -112,7 +115,9 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
 
 /* Different menus */
 static void lcd_status_screen();
+#if (LANG_MODE != 0)
 static void lcd_language_menu();
+#endif
 static void lcd_main_menu();
 static void lcd_tune_menu();
 //static void lcd_move_menu();
@@ -1100,6 +1105,7 @@ void lcd_commands()
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
             lcd_commands_type = LcdCommands::Idle;
             lcd_commands_step = 0;
+            long_pause();
 		}
 	}
 
@@ -1656,9 +1662,8 @@ void lcd_return_to_status()
 //! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
-    lcd_return_to_status();
     stop_and_save_print_to_ram(0.0,0.0);
-    long_pause();
+    lcd_return_to_status();
     isPrintPaused = true;
     if (LcdCommands::Idle == lcd_commands_type)
     {
@@ -2282,6 +2287,9 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
+#ifdef FANCHECK
+	if (fans_check_enabled == false) fan_check_error = EFCE_OK; //reset error if fanCheck is disabled during error. Allows resuming print.
+#endif //FANCHECK
 }
 
 #ifdef MMU_HAS_CUTTER
@@ -4919,6 +4927,7 @@ void lcd_wizard() {
 	}
 }
 
+#if (LANG_MODE != 0)
 void lcd_language()
 {
 	lcd_update_enable(true);
@@ -4938,6 +4947,7 @@ void lcd_language()
 	else
 		lang_select(LANG_ID_PRI);
 }
+#endif
 
 static void wait_preheat()
 {
@@ -5046,8 +5056,10 @@ void lcd_wizard(WizState state)
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
 	if (state != S::Run) eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
-
-	while (!end) {
+    
+    FORCE_BL_ON_START;
+	
+    while (!end) {
 		printf_P(PSTR("Wizard state: %d\n"), state);
 		switch (state) {
 		case S::Run: //Run wizard?
@@ -5183,7 +5195,9 @@ void lcd_wizard(WizState state)
 		default: break;
 		}
 	}
-
+    
+    FORCE_BL_ON_END;
+    
 	printf_P(_N("Wizard end state: %d\n"), state);
 	switch (state) { //final message
 	case S::Restore: //printer was already calibrated
@@ -5819,6 +5833,13 @@ static void lcd_settings_menu()
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;
+
+#ifdef LCD_BL_PIN
+    if (backlightSupport)
+    {
+        MENU_ITEM_SUBMENU_P(_T(MSG_BRIGHTNESS), lcd_backlight_menu);
+    }
+#endif //LCD_BL_PIN
 
 	if (farm_mode)
 	{
@@ -6695,6 +6716,7 @@ static void lcd_test_menu()
 static bool fan_error_selftest()
 {
 #ifdef FANCHECK
+    if (!fans_check_enabled) return 0;
 
     fanSpeed = 255;
 #ifdef FAN_SOFT_PWM
@@ -6725,9 +6747,8 @@ static bool fan_error_selftest()
         return 1;
     }
 #endif
+#endif //FANCHECK
     return 0;
-
-#endif //FANCHECK   
 }
 
 //! @brief Resume paused print
@@ -6742,10 +6763,10 @@ void lcd_resume_print()
 
     if (fan_error_selftest()) return; //abort if error persists
 
+    isPrintPaused = false;
     restore_print_from_ram_and_continue(0.0);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
-    isPrintPaused = false;
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
 }
 
@@ -6897,7 +6918,7 @@ static void lcd_main_menu()
 			{
 				MENU_ITEM_FUNCTION_P(_i("Pause print"), lcd_pause_print);////MSG_PAUSE_PRINT
 			}
-			else
+			else if(isPrintPaused)
 			{
 				#ifdef FANCHECK
 					if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
@@ -7149,6 +7170,12 @@ static void lcd_tune_menu()
 #endif //TMC2130
 	SETTINGS_MMU_MODE;
     SETTINGS_SOUND;
+#ifdef LCD_BL_PIN
+    if (backlightSupport)
+    {
+        MENU_ITEM_SUBMENU_P(_T(MSG_BRIGHTNESS), lcd_backlight_menu);
+    }
+#endif //LCD_BL_PIN
 	MENU_END();
 }
 
@@ -7197,6 +7224,36 @@ static void lcd_mesh_bed_leveling_settings()
 	MENU_END();
 	//SETTINGS_MBL_MODE;
 }
+
+#ifdef LCD_BL_PIN
+static void backlight_mode_toggle()
+{
+    switch (backlightMode)
+    {
+        case BACKLIGHT_MODE_BRIGHT: backlightMode = BACKLIGHT_MODE_DIM; break;
+        case BACKLIGHT_MODE_DIM: backlightMode = BACKLIGHT_MODE_AUTO; break;
+        case BACKLIGHT_MODE_AUTO: backlightMode = BACKLIGHT_MODE_BRIGHT; break;
+        default: backlightMode = BACKLIGHT_MODE_BRIGHT; break;
+    }
+    backlight_save();
+}
+
+static void lcd_backlight_menu()
+{
+    MENU_BEGIN();
+    ON_MENU_LEAVE(
+        backlight_save();
+    );
+    
+    MENU_ITEM_BACK_P(_T(MSG_BACK));
+    MENU_ITEM_EDIT_int3_P(_T(MSG_BL_HIGH), &backlightLevel_HIGH, backlightLevel_LOW, 255);
+    MENU_ITEM_EDIT_int3_P(_T(MSG_BL_LOW), &backlightLevel_LOW, 0, backlightLevel_HIGH);
+	MENU_ITEM_TOGGLE_P(_T(MSG_MODE), ((backlightMode==BACKLIGHT_MODE_BRIGHT) ? _T(MSG_BRIGHT) : ((backlightMode==BACKLIGHT_MODE_DIM) ? _T(MSG_DIM) : _T(MSG_AUTO))), backlight_mode_toggle);
+    MENU_ITEM_EDIT_int3_P(_T(MSG_TIMEOUT), &backlightTimer_period, 1, 999);
+    
+    MENU_END();
+}
+#endif //LCD_BL_PIN
 
 static void lcd_control_temperature_menu()
 {
@@ -7485,6 +7542,10 @@ bool lcd_selftest()
 #if !IR_SENSOR_ANALOG
      _delay(2000);
 #endif //!IR_SENSOR_ANALOG
+    
+    FORCE_BL_ON_START;
+    
+	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 #if IR_SENSOR_ANALOG
      bool bAction;
@@ -7717,7 +7778,10 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_END;
 	#endif // TMC2130
-	KEEPALIVE_STATE(NOT_BUSY);
+    
+    FORCE_BL_ON_END;
+	
+    KEEPALIVE_STATE(NOT_BUSY);
 	return(_result);
 }
 
@@ -8126,7 +8190,9 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 static void lcd_selftest_error(TestError testError, const char *_error_1, const char *_error_2)
 {
 	lcd_beeper_quick_feedback();
-
+    
+    FORCE_BL_ON_END;
+    
 	target_temperature[0] = 0;
 	target_temperature_bed = 0;
 	manage_heater();
@@ -8725,6 +8791,7 @@ void ultralcd_init()
         else lcd_autoDeplete = autoDepleteRaw;
 
     }
+    backlight_init();
 	lcd_init();
 	lcd_refresh();
 	lcd_longpress_func = menu_lcd_longpress_func;
@@ -8871,6 +8938,7 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
+	backlight_wake();
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
     {
         // disable longpress during re-entry, while homing or calibration
@@ -8952,6 +9020,7 @@ void menu_lcd_lcdupdate_func(void)
 		lcd_draw_update = 2;
 		lcd_oldcardstatus = IS_SD_INSERTED;
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
+        backlight_wake();
 		if (lcd_oldcardstatus)
 		{
 			card.initsd();
@@ -8969,6 +9038,7 @@ void menu_lcd_lcdupdate_func(void)
 		}
 	}
 #endif//CARDINSERTED
+    backlight_update();
 	if (lcd_next_update_millis < _millis())
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
@@ -8979,9 +9049,14 @@ void menu_lcd_lcdupdate_func(void)
 			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 			lcd_encoder_diff = 0;
 			lcd_timeoutToStatus.start();
+			backlight_wake();
 		}
 
-		if (LCD_CLICKED) lcd_timeoutToStatus.start();
+		if (LCD_CLICKED)
+		{
+			lcd_timeoutToStatus.start();
+			backlight_wake();
+		}
 
 		(*menu_menu)();
 

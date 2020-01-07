@@ -63,6 +63,7 @@
 
 #include "menu.h"
 #include "ultralcd.h"
+#include "backlight.h"
 
 #include "planner.h"
 #include "stepper.h"
@@ -998,10 +999,6 @@ void setup()
 	mmu_init();
 
 	ultralcd_init();
-
-#if (LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
-	analogWrite(LCD_BL_PIN, 255); //set full brightnes
-#endif //(LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
 
 	spi_init();
 
@@ -2824,7 +2821,10 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	#ifdef TMC2130
 	FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-	// Only Z calibration?
+    
+    FORCE_BL_ON_START;
+	
+    // Only Z calibration?
 	if (!onlyZ)
 	{
 		setTargetBed(0);
@@ -3012,6 +3012,9 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 #ifdef TMC2130
 	FORCE_HIGH_POWER_END;
 #endif // TMC2130
+    
+    FORCE_BL_ON_END;
+    
 	return final_result;
 }
 
@@ -5944,7 +5947,7 @@ Sigma_Exit:
     //! ### M112 - Emergency stop
     // -----------------------------------------
     case 112: 
-      kill(_n(""), 3);
+      kill(MSG_M112_KILL, 3);
       break;
 
     //! ### M140 - Set bed temperature
@@ -6207,7 +6210,6 @@ Sigma_Exit:
           LCD_MESSAGERPGM(_T(WELCOME_MSG));
           lcd_update(0);
         break;
-      #endif
 
       //! ### M81 - Turn off Power Supply
       // --------------------------------------
@@ -6231,6 +6233,7 @@ Sigma_Exit:
         LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR(".")));
         lcd_update(0);
 	  break;
+    #endif
 
     //! ### M82 - Set E axis to absolute mode
     // ---------------------------------------
@@ -7271,7 +7274,7 @@ Sigma_Exit:
   //! ### M603 - Stop print
   // -------------------------------
 	case 603: {
-		Stop();
+		lcd_print_stop();
 	}
 	break;
 
@@ -8415,8 +8418,6 @@ void prepare_move()
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #endif
   }
-  if (waiting_inside_plan_buffer_line_print_aborted)
-      return;
 
   set_current_to_destination();
 }
@@ -8626,7 +8627,7 @@ if(0)
 
   if( (_millis() - previous_millis_cmd) >  max_inactive_time )
     if(max_inactive_time)
-      kill(_n(""), 4);
+      kill(_n("Inactivity Shutdown"), 4);
   if(stepper_inactive_time)  {
     if( (_millis() - previous_millis_cmd) >  stepper_inactive_time )
     {
@@ -8667,7 +8668,7 @@ if(0)
     // ----------------------------------------------------------------
     if ( killCount >= KILL_DELAY)
     {
-       kill("", 5);
+       kill(NULL, 5);
     }
   #endif
     
@@ -8745,6 +8746,16 @@ void kill(const char *full_screen_message, unsigned char id)
   } // Wait for reset
 }
 
+// Stop: Emergency stop used by overtemp functions which allows recovery
+//
+//   In addition to stopping the print, this prevents subsequent G[0-3] commands to be
+//   processed via USB (using "Stopped") until the print is resumed via M999 or
+//   manually started from scratch with the LCD.
+//
+//   Note that the current instruction is completely discarded, so resuming from Stop()
+//   will introduce either over/under extrusion on the current segment, and will not
+//   survive a power panic. Switching Stop() to use the pause machinery instead (with
+//   the addition of disabling the headers) could allow true recovery in the future.
 void Stop()
 {
   disable_heater();
@@ -9555,8 +9566,10 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda)
 void long_pause() //long pause print
 {
 	st_synchronize();
-	
 	start_pause_print = _millis();
+
+    // Stop heaters
+    setAllTargetHotends(0);
 
 	//retract
 	current_position[E_AXIS] -= default_retraction;
@@ -9572,8 +9585,7 @@ void long_pause() //long pause print
 	current_position[Y_AXIS] = Y_PAUSE_POS;
 	plan_buffer_line_curposXYZE(50, active_extruder);
 
-	// Turn off the hotends and print fan
-    setAllTargetHotends(0);
+	// Turn off the print fan
 	fanSpeed = 0;
 }
 
@@ -9595,6 +9607,11 @@ void uvlo_()
 	unsigned long time_start = _millis();
 	bool sd_print = card.sdprinting;
     // Conserve power as soon as possible.
+#ifdef LCD_BL_PIN
+    backlightMode = BACKLIGHT_MODE_DIM;
+    backlightLevel_LOW = 0;
+    backlight_update();
+#endif //LCD_BL_PIN
     disable_x();
     disable_y();
     
@@ -10220,7 +10237,9 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	sei();
 	if ((z_move != 0) || (e_move != 0)) { // extruder or z move
 #if 1
-    // Rather than calling plan_buffer_line directly, push the move into the command queue, 
+    // Rather than calling plan_buffer_line directly, push the move into the command queue so that
+    // the caller can continue processing. This is used during powerpanic to save the state as we
+    // move away from the print.
     char buf[48];
 
 	// First unretract (relative extrusion)
@@ -10249,6 +10268,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     memcpy(current_position, saved_pos, sizeof(saved_pos));
     memcpy(destination, current_position, sizeof(destination));
 #endif
+    waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
   }
 }
 
