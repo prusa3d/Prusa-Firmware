@@ -1058,7 +1058,6 @@ static void lcd_status_screen()
 	}
 
 	if (current_click
-		// && (lcd_commands_type != LcdCommands::StopPrint) //click is aborted unless stop print finishes
 		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
 	)
 	{
@@ -1468,99 +1467,6 @@ void lcd_commands()
 		}
 
 #endif // not SNMM
-/* 
-	if (lcd_commands_type == LcdCommands::StopPrint)   /// stop print
-	{
-		
-
-		if (lcd_commands_step == 0) 
-		{ 
-			lcd_commands_step = 6; 
-		}
-
-		if (lcd_commands_step == 1 && !blocks_queued())
-		{
-			lcd_commands_step = 0;
-			lcd_commands_type = LcdCommands::Idle;
-			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = CustomMsg::Status;
-			isPrintPaused = false;
-		}
-		if (lcd_commands_step == 2 && !blocks_queued())
-		{
-			setTargetBed(0);
-			enquecommand_P(PSTR("M104 S0")); //set hotend temp to 0
-
-			manage_heater();
-			lcd_setstatuspgm(_T(WELCOME_MSG));
-			cancel_heatup = false;
-			lcd_commands_step = 1;
-		}
-		if (lcd_commands_step == 3 && !blocks_queued())
-		{
-      // M84: Disable steppers.
-			enquecommand_P(PSTR("M84"));
-			autotempShutdown();
-			lcd_commands_step = 2;
-		}
-		if (lcd_commands_step == 4 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PLEASE_WAIT));
-      // G90: Absolute positioning.
-			enquecommand_P(PSTR("G90"));
-      // M83: Set extruder to relative mode.
-			enquecommand_P(PSTR("M83"));
-			#ifdef X_CANCEL_POS 
-			enquecommand_P(PSTR("G1 X"  STRINGIFY(X_CANCEL_POS) " Y" STRINGIFY(Y_CANCEL_POS) " E0 F7000"));
-			#else
-			enquecommand_P(PSTR("G1 X50 Y" STRINGIFY(Y_MAX_POS) " E0 F7000"));
-			#endif
-			lcd_ignore_click(false);
-			if (mmu_enabled)
-				lcd_commands_step = 8;
-			else
-				lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 5 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-      // G91: Set to relative positioning.
-			enquecommand_P(PSTR("G91"));
-      // Lift up.
-			enquecommand_P(PSTR("G1 Z15 F1500"));
-			if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) lcd_commands_step = 4;
-			else lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 6 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-			cancel_heatup = true;
-			setTargetBed(0);
-			if (mmu_enabled)
-				setAllTargetHotends(0);
-			manage_heater();
-			custom_message_type = CustomMsg::FilamentLoading;
-			lcd_commands_step = 5;
-		}
-		if (lcd_commands_step == 7 && !blocks_queued())
-		{
-			if (mmu_enabled)
-				enquecommand_P(PSTR("M702 C")); //current
-			else
-				switch(snmm_stop_print_menu())
-				{
-				case 0: enquecommand_P(PSTR("M702")); break;//all 
-				case 1: enquecommand_P(PSTR("M702 U")); break; //used
-				case 2: enquecommand_P(PSTR("M702 C")); break; //current
-				default: enquecommand_P(PSTR("M702")); break;
-				}
-			lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 8 && !blocks_queued()) { //step 8 is here for delay (going to next step after execution of all gcodes from step 4)
-			lcd_commands_step = 7; 
-		}
-	}
-*/
 
 	if (lcd_commands_type == LcdCommands::FarmModeConfirm)   /// farm mode confirm
 	{
