@@ -7281,6 +7281,8 @@ void lcd_print_stop()
     axis_relative_modes[Y_AXIS] = false;
     axis_relative_modes[Z_AXIS] = false;
     axis_relative_modes[E_AXIS] = true;
+    
+    isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
 }
 
 void lcd_sdcard_stop()
