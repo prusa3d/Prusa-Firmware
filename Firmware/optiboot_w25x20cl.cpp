@@ -258,11 +258,11 @@ void optiboot_w25x20cl_enter()
         uint32_t addr = (((uint32_t)rampz) << 16) | address;
         // During a single bootloader run, only erase a 64kB block once.
         // An 8bit bitmask 'pages_erased' covers 512kB of FLASH memory.
-        if (address == 0 && (pages_erased & (1 << addr)) == 0) {
+        if ((address == 0) && (pages_erased & (1 << (addr >> 16))) == 0) {
           w25x20cl_wait_busy();
           w25x20cl_enable_wr();
           w25x20cl_block64_erase(addr);
-          pages_erased |= (1 << addr);
+          pages_erased |= (1 << (addr >> 16));
         }
         w25x20cl_wait_busy();
         w25x20cl_enable_wr();
