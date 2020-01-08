@@ -10357,6 +10357,14 @@ void restore_print_from_ram_and_continue(float e_move)
     waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
 }
 
+// Cancel the state related to a currently saved print
+void cancel_saved_printing()
+{
+    saved_target[0] = SAVED_TARGET_UNSET;
+    saved_printing_type = PRINTING_TYPE_NONE;
+    saved_printing = false;
+}
+
 void print_world_coordinates()
 {
 	printf_P(_N("world coordinates: (%.3f, %.3f, %.3f)\n"), current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS]);

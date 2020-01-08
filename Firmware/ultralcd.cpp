@@ -7312,30 +7312,26 @@ static void lcd_sd_updir()
 
 void lcd_print_stop()
 {
-//-//
-     if(!card.sdprinting)
-          {
-          SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
-          }
-	saved_printing = false;
-    saved_printing_type = PRINTING_TYPE_NONE;
+    if (!card.sdprinting) {
+        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
+    }
+
+    CRITICAL_SECTION_START;
+
+    // Clear any saved printing state
+    cancel_saved_printing();
 	cancel_heatup = true;
-#ifdef MESH_BED_LEVELING
-	mbl.active = false;
-#endif
-	// Stop the stoppers, update the position from the stoppers.
-	if (mesh_bed_leveling_flag == false && homing_flag == false)
-	{
-		planner_abort_hard();
-		// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
-		// Z baystep is no more applied. Reset it.
-		babystep_reset();
-	}
-	// Clean the input command queue.
+
+    // Abort the planner/queue/sd
+    planner_abort_hard();
 	cmdqueue_reset();
-	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
 	card.sdprinting = false;
 	card.closefile();
+    st_reset_timer();
+
+    CRITICAL_SECTION_END;
+
+	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
 	stoptime = _millis();
 	unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
 	pause_time = 0;

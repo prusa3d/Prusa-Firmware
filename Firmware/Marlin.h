@@ -455,6 +455,7 @@ extern void print_mesh_bed_leveling_table();
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
+extern void cancel_saved_printing();
 
 
 //estimated time to end of the print
