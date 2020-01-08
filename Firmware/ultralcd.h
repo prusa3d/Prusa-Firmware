@@ -144,6 +144,8 @@ extern uint8_t SilentModeMenu_MMU;
 extern bool cancel_heatup;
 extern bool isPrintPaused;
 
+extern uint8_t scrollstuff;
+
 
 void lcd_ignore_click(bool b=true);
 void lcd_commands();

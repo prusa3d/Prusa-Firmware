@@ -55,6 +55,7 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 			// This ensures, that the menu entered will find out, that it shall initialize itself.
 			memset(&menu_data, 0, sizeof(menu_data));
 		}
+		menu_entering = 1; //next menu that supports entering will clear this flag on first enter. Used for initializing some menus only one time.
 		if (feedback) lcd_quick_feedback();
 	}
 	else
@@ -111,6 +112,15 @@ static void menu_back_no_reset(void)
 	}
 }
 
+void menu_back_scroll(int scrollback)
+{
+	if (menu_depth > 0)
+	{
+		menu_depth--;
+		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position + scrollback, false, true);
+	}
+}
+
 void menu_back_if_clicked(void)
 {
 	if (lcd_clicked())
@@ -143,6 +153,16 @@ static void menu_submenu_no_reset(menu_func_t submenu)
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
 		menu_goto(submenu, 0, true, false);
+	}
+}
+
+void menu_submenu_scroll(menu_func_t submenu)
+{
+	if (menu_depth < MENU_DEPTH_MAX)
+	{
+		menu_stack[menu_depth].menu = menu_menu;
+		menu_stack[menu_depth++].position = lcd_encoder;
+		menu_goto(submenu, 0, false, false);
 	}
 }
 
