@@ -7300,7 +7300,7 @@ void lcd_sdcard_menu()
   {
     if (menu_item == menu_line)
     {
-		const uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode || (sdSort == SD_SORT_TIME)) ? (_md->fileCnt - 1 - i) : i;
+		const uint16_t nr = _md->fileCnt - 1 - i;
 		#ifdef SDCARD_SORT_ALPHA
 			if (sdSort == SD_SORT_NONE) card.getfilename(nr);
 			else card.getfilename_sorted(nr);

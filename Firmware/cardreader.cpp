@@ -749,8 +749,12 @@ void CardReader::presort() {
 		char name1[LONG_FILENAME_LENGTH + 1];
 		uint16_t modification_time_bckp;
 		uint16_t modification_date_bckp;
+		#if HAS_FOLDER_SORTING
+		uint16_t dirCnt = 0;
+		#endif
 
 		position = 0;
+		//might need to also load the file at position 0 for filenameIsDir to work on the first file
 		if (fileCnt > 1) {
 			// Init sort order.
 			for (uint16_t i = 0; i < fileCnt; i++) {
@@ -759,72 +763,95 @@ void CardReader::presort() {
 				sort_order[i] = i;
 				sort_positions[i] = position;
 				getfilename(i);
+				#if HAS_FOLDER_SORTING
+				if (filenameIsDir) dirCnt++;
+				#endif
 			}
 
 #ifdef QUICKSORT
 			quicksort(0, fileCnt - 1);
 #elif defined(SHELLSORT)
 
-#define _SORT_CMP_NODIR() (strcasecmp(name2, name1) > 0)
+#define _SORT_CMP_NODIR() (strcasecmp(name2, name1) < 0)
 #define _SORT_CMP_TIME_NODIR() (((modification_date_bckp == modificationDate) && (modification_time_bckp < modificationTime)) || (modification_date_bckp < modificationDate))
 #if HAS_FOLDER_SORTING
-#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs > 0 ? filenameIsDir : !filenameIsDir))
+#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs < 0 ? filenameIsDir : !filenameIsDir))
 #define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? filenameIsDir : !filenameIsDir))
 #endif
-
-			uint16_t counter = 0;
-			uint16_t total = 0;
-			for (uint16_t i = fileCnt/2; i > 0; i /= 2) total += fileCnt - i; //total runs for progress bar
-			
-			for (uint16_t gap = fileCnt/2; gap > 0; gap /= 2)
+			for (uint8_t runs = 0; runs < 2; runs++)
 			{
-				for (uint16_t i = gap; i < fileCnt; i++)
+				uint8_t* sortingBaseArray;
+				//run=0: sorts all files and moves folders to the beginning
+				//run=1: assumes all folders are at the beginning of the list and sorts them
+				uint16_t sortCountFiles = 0;
+				if (runs == 0)
 				{
-					if (!IS_SD_INSERTED) return;
-					
-					int8_t percent = (counter * 100) / total;
-					for (int column = 0; column < 20; column++) {
-						if (column < (percent / 5))
-						{
-							lcd_set_cursor(column, 2);
-							lcd_print('\xFF'); //simple progress bar
-						}
-					}
-					counter++;
-					
-					manage_heater();
-					uint8_t orderBckp = sort_order[i];
-					getfilename_simple(positions[orderBckp]);
-					strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
-					modification_date_bckp = modificationDate;
-					modification_time_bckp = modificationTime;
-					#if HAS_FOLDER_SORTING
-					bool dir1 = filenameIsDir;
-					#endif
-					
-					uint16_t j = i;
-					getfilename_simple(positions[sort_order[j - gap]]);
-					char *name2 = LONGEST_FILENAME; // use the string in-place
-					#if HAS_FOLDER_SORTING
-					while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_DIR(FOLDER_SORTING):_SORT_CMP_DIR(FOLDER_SORTING)))
-					#else
-					while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_NODIR():_SORT_CMP_NODIR()))
-					#endif
+					sortingBaseArray = sort_order;
+					sortCountFiles = fileCnt;
+				}
+				#if HAS_FOLDER_SORTING
+				else
+				{
+					sortingBaseArray = sort_order + /* sizeof(sort_order[0]) * */ (fileCnt - dirCnt);
+					sortCountFiles = dirCnt;
+				}
+				#endif
+				if (sortCountFiles < 2) break;
+				
+				uint16_t counter = 0;
+				uint16_t total = 0;
+				for (uint16_t i = sortCountFiles/2; i > 0; i /= 2) total += sortCountFiles - i; //total runs for progress bar
+				
+				for (uint16_t gap = sortCountFiles/2; gap > 0; gap /= 2)
+				{
+					for (uint16_t i = gap; i < sortCountFiles; i++)
 					{
-						sort_order[j] = sort_order[j - gap];
-						j -= gap;
-						#ifdef SORTING_DUMP
-						for (uint16_t z = 0; z < fileCnt; z++)
-						{
-							printf_P(PSTR("%2u "), sort_order[z]);
+						if (!IS_SD_INSERTED) return;
+						
+						int8_t percent = (counter * 100) / total;
+						for (int column = 0; column < 20; column++) {
+							if (column < (percent / 5))
+							{
+								lcd_set_cursor(column, 2);
+								lcd_print('\xFF'); //simple progress bar
+							}
 						}
-						printf_P(PSTR("i%2d j%2d gap%2d orderBckp%2d\n"), i, j, gap, orderBckp);
+						counter++;
+						
+						manage_heater();
+						uint8_t orderBckp = sortingBaseArray[i];
+						getfilename_simple(sort_positions[orderBckp]);
+						strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
+						modification_date_bckp = modificationDate;
+						modification_time_bckp = modificationTime;
+						#if HAS_FOLDER_SORTING
+						bool dir1 = filenameIsDir;
 						#endif
-						if (j < gap) break;
-						getfilename_simple(positions[sort_order[j - gap]]);
-						name2 = LONGEST_FILENAME; // use the string in-place
+						
+						uint16_t j = i;
+						getfilename_simple(sort_positions[sortingBaseArray[j - gap]]);
+						char *name2 = LONGEST_FILENAME; // use the string in-place
+						#if HAS_FOLDER_SORTING
+						while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_DIR(FOLDER_SORTING):_SORT_CMP_DIR(FOLDER_SORTING)))
+						#else
+						while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_NODIR():_SORT_CMP_NODIR()))
+						#endif
+						{
+							sortingBaseArray[j] = sortingBaseArray[j - gap];
+							j -= gap;
+							#ifdef SORTING_DUMP
+							for (uint16_t z = 0; z < sortCountFiles; z++)
+							{
+								printf_P(PSTR("%2u "), sortingBaseArray[z]);
+							}
+							printf_P(PSTR("i%2d j%2d gap%2d orderBckp%2d\n"), i, j, gap, orderBckp);
+							#endif
+							if (j < gap) break;
+							getfilename_simple(sort_positions[sortingBaseArray[j - gap]]);
+							name2 = LONGEST_FILENAME; // use the string in-place
+						}
+						sortingBaseArray[j] = orderBckp;
 					}
-					sort_order[j] = orderBckp;
 				}
 			}
 
@@ -833,11 +860,11 @@ void CardReader::presort() {
 			uint16_t total = 0.5*(fileCnt - 1)*(fileCnt);
 
 			// Compare names from the array or just the two buffered names
-			#define _SORT_CMP_NODIR() (strcasecmp(name1, name2) > 0) //true if lowercase(name1) > lowercase(name2)
+			#define _SORT_CMP_NODIR() (strcasecmp(name1, name2) < 0) //true if lowercase(name1) < lowercase(name2)
 			#define _SORT_CMP_TIME_NODIR() (((modification_date_bckp == modificationDate) && (modification_time_bckp > modificationTime)) || (modification_date_bckp > modificationDate))
 
 			#if HAS_FOLDER_SORTING
-			#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs > 0 ? dir1 : !dir1))
+			#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs < 0 ? dir1 : !dir1))
 			#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
 			#endif
 
