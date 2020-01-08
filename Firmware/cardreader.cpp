@@ -739,7 +739,6 @@ void CardReader::presort() {
 			fileCnt = SDSORT_LIMIT;
 		}
 		lcd_clear();
-        lcd_set_progress();
 		lcd_puts_at_P(0, 1, _i("Sorting files"));////MSG_SORTING c=20 r=1
 
 		// uint32_t positions[fileCnt];
@@ -764,7 +763,72 @@ void CardReader::presort() {
 
 #ifdef QUICKSORT
 			quicksort(0, fileCnt - 1);
-#else //Qicksort not defined, use Bubble Sort
+#elif defined(SHELLSORT)
+
+#define _SORT_CMP_NODIR() (strcasecmp(name2, name1) > 0)
+#define _SORT_CMP_TIME_NODIR() (((modification_date_bckp == modificationDate) && (modification_time_bckp < modificationTime)) || (modification_date_bckp < modificationDate))
+#if HAS_FOLDER_SORTING
+#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs > 0 ? filenameIsDir : !filenameIsDir))
+#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? filenameIsDir : !filenameIsDir))
+#endif
+
+			uint16_t counter = 0;
+			uint16_t total = 0;
+			for (uint16_t i = fileCnt/2; i > 0; i /= 2) total += fileCnt - i; //total runs for progress bar
+			
+			for (uint16_t gap = fileCnt/2; gap > 0; gap /= 2)
+			{
+				for (uint16_t i = gap; i < fileCnt; i++)
+				{
+					if (!IS_SD_INSERTED) return;
+					
+					int8_t percent = (counter * 100) / total;
+					for (int column = 0; column < 20; column++) {
+						if (column < (percent / 5))
+						{
+							lcd_set_cursor(column, 2);
+							lcd_print('\xFF'); //simple progress bar
+						}
+					}
+					counter++;
+					
+					manage_heater();
+					uint8_t orderBckp = sort_order[i];
+					getfilename_simple(positions[orderBckp]);
+					strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
+					modification_date_bckp = modificationDate;
+					modification_time_bckp = modificationTime;
+					#if HAS_FOLDER_SORTING
+					bool dir1 = filenameIsDir;
+					#endif
+					
+					uint16_t j = i;
+					getfilename_simple(positions[sort_order[j - gap]]);
+					char *name2 = LONGEST_FILENAME; // use the string in-place
+					#if HAS_FOLDER_SORTING
+					while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_DIR(FOLDER_SORTING):_SORT_CMP_DIR(FOLDER_SORTING)))
+					#else
+					while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_NODIR():_SORT_CMP_NODIR()))
+					#endif
+					{
+						sort_order[j] = sort_order[j - gap];
+						j -= gap;
+						#ifdef SORTING_DUMP
+						for (uint16_t z = 0; z < fileCnt; z++)
+						{
+							printf_P(PSTR("%2u "), sort_order[z]);
+						}
+						printf_P(PSTR("i%2d j%2d gap%2d orderBckp%2d\n"), i, j, gap, orderBckp);
+						#endif
+						if (j < gap) break;
+						getfilename_simple(positions[sort_order[j - gap]]);
+						name2 = LONGEST_FILENAME; // use the string in-place
+					}
+					sort_order[j] = orderBckp;
+				}
+			}
+
+#else //Bubble Sort
 			uint32_t counter = 0;
 			uint16_t total = 0.5*(fileCnt - 1)*(fileCnt);
 
@@ -786,7 +850,7 @@ void CardReader::presort() {
 					if (column < (percent / 5))
 					{
 						lcd_set_cursor(column, 2);
-						lcd_print('\x01'); //simple progress bar
+						lcd_print('\xFF'); //simple progress bar
 					}
 				}
 				counter++;
@@ -794,6 +858,13 @@ void CardReader::presort() {
 				//MYSERIAL.println(int(i));
 				for (uint16_t j = 0; j < i; ++j) {
 					if (!IS_SD_INSERTED) return;
+					#ifdef SORTING_DUMP
+					for (uint16_t z = 0; z < fileCnt; z++)
+					{
+						printf_P(PSTR("%2u "), sort_order[z]);
+					}
+					MYSERIAL.println();
+					#endif
 					manage_heater();
 					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];
 
@@ -841,10 +912,9 @@ void CardReader::presort() {
 	for (int column = 0; column <= 19; column++)
 	{
 		lcd_set_cursor(column, 2);
-		lcd_print('\x01'); //simple progress bar
+		lcd_print('\xFF'); //simple progress bar
 	}
 	_delay(300);
-	lcd_set_degree();
 	lcd_clear();
 #endif
 	lcd_scrollTimer.start();
