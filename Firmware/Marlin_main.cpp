@@ -2125,9 +2125,15 @@ void raise_z_above(float target, bool plan)
     // Z needs raising
     current_position[Z_AXIS] = target;
 
-    if (axis_known_position[Z_AXIS])
+#if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
+    bool z_min_endstop = (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
+#else
+    bool z_min_endstop = false;
+#endif
+
+    if (axis_known_position[Z_AXIS] || z_min_endstop)
     {
-        // current position is known, it's safe to raise Z
+        // current position is known or very low, it's safe to raise Z
         if(plan) plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
         return;
     }
