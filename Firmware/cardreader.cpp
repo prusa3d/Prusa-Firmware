@@ -809,12 +809,10 @@ void CardReader::presort() {
 						if (!IS_SD_INSERTED) return;
 						
 						int8_t percent = (counter * 100) / total;
+						lcd_set_cursor(0, 2);
 						for (int column = 0; column < 20; column++) {
-							if (column < (percent / 5))
-							{
-								lcd_set_cursor(column, 2);
-								lcd_print('\xFF'); //simple progress bar
-							}
+							if (column < (percent / 5)) lcd_print('\xFF'); //simple progress bar
+							else lcd_print(' ');
 						}
 						counter++;
 						
@@ -873,12 +871,10 @@ void CardReader::presort() {
 				bool didSwap = false;
 
 				int8_t percent = (counter * 100) / total;//((counter * 100) / pow((fileCnt-1),2));
+				lcd_set_cursor(0, 2);
 				for (int column = 0; column < 20; column++) {
-					if (column < (percent / 5))
-					{
-						lcd_set_cursor(column, 2);
-						lcd_print('\xFF'); //simple progress bar
-					}
+					if (column < (percent / 5)) lcd_print('\xFF'); //simple progress bar
+					else lcd_print(' ');
 				}
 				counter++;
 
@@ -936,11 +932,8 @@ void CardReader::presort() {
 		sort_count = fileCnt;
 	}
 #if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
-	for (int column = 0; column <= 19; column++)
-	{
-		lcd_set_cursor(column, 2);
-		lcd_print('\xFF'); //simple progress bar
-	}
+	lcd_set_cursor(0, 2);
+	for (int column = 0; column <= 19; column++) lcd_print('\xFF'); //simple progress bar
 	_delay(300);
 	lcd_clear();
 #endif
