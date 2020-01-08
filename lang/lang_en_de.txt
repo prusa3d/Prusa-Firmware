@@ -1188,7 +1188,7 @@
 
 #
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-"\x00"
+"Der Drucker beginnt mit dem Drucken einer Zickzacklinie. Drehen Sie den Knopf, bis Sie die optimale Hoehe erreicht haben. Ueberpruefen Sie die Bilder im Handbuch (Kapitel Kalibrierung)."
 
 #
 "Y-correct:"
