@@ -586,7 +586,7 @@ void lcdui_print_Z_coord(void)
     if (custom_message_type == CustomMsg::MeshBedLeveling)
         lcd_puts_P(_N("Z   --- "));
     else
-		lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
+		lcd_printf_P(_N("Z%6.2f%c"), current_position[Z_AXIS], axis_known_position[Z_AXIS]?' ':'?');
 }
 
 #ifdef PLANNER_DIAGNOSTICS
