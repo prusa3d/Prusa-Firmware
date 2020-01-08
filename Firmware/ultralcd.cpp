@@ -622,21 +622,24 @@ void lcdui_print_feedrate(void)
 // Print percent done in form "USB---%", " SD---%", "   ---%" (7 chars total)
 void lcdui_print_percent_done(void)
 {
-	char sheet[8];
 	const char* src = is_usb_printing?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
 	char per[4];
 	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
 	if (!num || heating_status) // either not printing or heating
 	{
-		eeprom_read_block(sheet, EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].name, 7);
-		sheet[7] = '\0';
-		lcd_printf_P(PSTR("%s"),sheet);
+		const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+		const int8_t nextSheet = eeprom_next_initialized_sheet(sheetNR);
+		if ((nextSheet >= 0) && (sheetNR != nextSheet))
+		{
+			char sheet[8];
+			eeprom_read_block(sheet, EEPROM_Sheets_base->s[sheetNR].name, 7);
+			sheet[7] = '\0';
+			lcd_printf_P(PSTR("%-7s"),sheet);
+			return; //do not also print the percentage
+		}
 	}
-	else
-	{
-		sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
-		lcd_printf_P(_N("%3S%3s%%"), src, per);
-	}
+	sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
+	lcd_printf_P(_N("%3S%3s%%"), src, per);
 }
 
 // Print extruder status (5 chars total)
