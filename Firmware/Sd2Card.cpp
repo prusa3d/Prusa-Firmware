@@ -319,6 +319,22 @@ bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
       goto fail;
     }
   }
+
+  // send 0xFF until 0xFF received to give card some clock cycles
+  t0 = (uint16_t)_millis();
+  SERIAL_ECHOLNRPGM(PSTR("Sending 0xFF"));
+  spiSend(0XFF);
+  while ((status_ = spiRec()) != 0xFF)
+  {
+    spiSend(0XFF);
+    if (((uint16_t)_millis() - t0) > SD_CARD_ERROR_FF_TIMEOUT)
+    {
+      error(SD_CARD_ERROR_CMD8);
+      SERIAL_ECHOLNRPGM(PSTR("No 0xFF received"));
+      goto fail;
+    }
+  }
+
   // check SD version
   if ((cardCommand(CMD8, 0x1AA) & R1_ILLEGAL_COMMAND)) {
     type(SD_CARD_TYPE_SD1);

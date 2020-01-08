@@ -50,16 +50,8 @@
 "Are left and right Z~carriages all up?"
 "Z~carriages gauche + droite tout en haut?"
 
-#MSG_AUTO_DEPLETE_ON c=17 r=1
-"SpoolJoin    [on]"
-"\x00"
-
-#
-"SpoolJoin   [N/A]"
-"\x00"
-
-#MSG_AUTO_DEPLETE_OFF c=17 r=1
-"SpoolJoin   [off]"
+#MSG_AUTO_DEPLETE c=17 r=1
+"SpoolJoin"
 "\x00"
 
 #MSG_AUTO_HOME
@@ -174,21 +166,13 @@
 "Copy selected language?"
 "Copier la langue selectionne?"
 
-#MSG_CRASHDETECT_ON
-"Crash det.   [on]"
-"Detect.crash [on]"
+#MSG_CRASHDETECT
+"Crash det."
+"Detect.crash"
 
 #
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Choisissez un filament pour la Calibration de la Premiere Couche et selectionnez-le depuis le menu a l'ecran."
-
-#MSG_CRASHDETECT_NA
-"Crash det.  [N/A]"
-"Detect.crash[N/A]"
-
-#MSG_CRASHDETECT_OFF
-"Crash det.  [off]"
-"Detect.crash[off]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -274,18 +258,9 @@
 "Fail stats MMU"
 "Stat. d'echec MMU"
 
-#MSG_FSENS_AUTOLOAD_ON c=17 r=1
-"F. autoload  [on]"
-"Autochargeur [on]"
-
-#MSG_FSENS_AUTOLOAD_NA c=17 r=1
-"F. autoload [N/A]"
-"Autochargeur[N/A]"
-
-#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-"F. autoload [off]"
-"Autochargeur[off]"
-
+#MSG_FSENSOR_AUTOLOAD
+"F. autoload"
+"Autochargeur"
 #
 "Fail stats"
 "Stat. d'echec"
@@ -298,26 +273,13 @@
 "Fan test"
 "Test du ventilateur"
 
-#MSG_FANS_CHECK_ON c=17 r=1
-"Fans check   [on]"
-"Verif vent.  [on]"
+#MSG_FANS_CHECK
+"Fans check"
+"Verif vent."
 
-#MSG_FANS_CHECK_OFF c=17 r=1
-"Fans check  [off]"
-"Verif vent. [off]"
-
-#MSG_FSENSOR_ON
-"Fil. sensor  [on]"
-"Capteur Fil. [on]"
-
-#MSG_FSENSOR_NA
-"Fil. sensor [N/A]"
-"Capteur Fil.[N/A]"
-
-#MSG_FSENSOR_OFF
-"Fil. sensor [off]"
-"Capteur Fil.[off]"
-
+#MSG_FSENSOR
+"Fil. sensor"
+"Capteur Fil."
 #
 "Filam. runouts"
 "Fins de filament"
@@ -578,13 +540,17 @@
 "MMU OK. Resuming..."
 "MMU OK. Reprise ..."
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
+#MSG_MODE
+"Mode"
 "\x00"
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
-"Mode     [feutre]"
+#MSG_NORMAL
+"Normal"
+"\x00"
+
+#MSG_SILENT
+"Silent"
+"Feutre"
 
 #
 "MMU needs user attention."
@@ -594,17 +560,17 @@
 "MMU power fails"
 "Echecs alim. MMU"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
-"Mode     [furtif]"
+#MSG_STEALTH
+"Stealth"
+"Furtif"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
-"Mode [puiss.auto]"
+#MSG_AUTO_POWER
+"Auto power"
+"Puiss.auto"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
-"Mode[haute puiss]"
+#MSG_HIGH_POWER
+"High power"
+"Haute puiss"
 
 #
 "MMU2 connected"
@@ -638,7 +604,7 @@
 "No SD card"
 "Pas de carte SD"
 
-#
+#MSG_NA
 "N/A"
 "\x00"
 
@@ -878,25 +844,21 @@
 "Right side[um]"
 "Droite [um]"
 
-#MSG_SECOND_SERIAL_ON c=17 r=1
-"RPi port     [on]"
-"Port RPi     [on]"
-
-#MSG_SECOND_SERIAL_OFF c=17 r=1
-"RPi port    [off]"
-"Port RPi    [off]"
+#MSG_RPI_PORT
+"RPi port"
+"Port RPi"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 "Lancement de l'Assistant supprimera les resultats actuels de calibration et commencera du debut. Continuer?"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
-"SD card  [normal]"
-"Carte SD [normal]"
+#MSG_SD_CARD
+"SD card"
+"Carte SD"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [flshAir]"
-"Carte SD[flshAir]"
+#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY
+"FlashAir"
+"FlshAir"
 
 #
 "Right"
@@ -958,50 +920,49 @@
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Certains fichiers ne seront pas tries. Max 100 fichiers tries par dossier."
 
-#MSG_SORT_NONE c=17 r=1
-"Sort       [none]"
-"Tri       [aucun]"
+#MSG_SORT
+"Sort"
+"Tri"
 
-#MSG_SORT_TIME c=17 r=1
-"Sort       [time]"
-"Tri       [heure]"
+#MSG_NONE
+"None"
+"Aucun"
+
+#MSG_SORT_TIME
+"Time"
+"Heure"
 
 #
 "Severe skew:"
 "Deviat.sev.:"
 
-#MSG_SORT_ALPHA c=17 r=1
-"Sort   [alphabet]"
-"Tri    [alphabet]"
+#MSG_SORT_ALPHA
+"Alphabet"
+"\x00"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
 "Tri des fichiers"
 
-#MSG_SOUND_LOUD c=17 r=1
-"Sound      [loud]"
-"Son        [fort]"
+#MSG_SOUND_LOUD
+"Loud"
+"Fort"
 
 #
 "Slight skew:"
 "Deviat.leg.:"
 
-#MSG_SOUND_MUTE c=17 r=1
-"Sound      [mute]"
-"Son        [muet]"
+#MSG_SOUND
+"Sound"
+"Son"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
 "Probleme rencontre, cliquez sur le bouton pour niveller l'axe Z..."
 
-#MSG_SOUND_ONCE c=17 r=1
-"Sound      [once]"
-"Son    [une fois]"
-
-#MSG_SOUND_SILENT c=17 r=1
-"Sound    [silent]"
-"Son      [feutre]"
-
+#MSG_SOUND_ONCE
+"Once"
+"Une fois"
 #MSG_SPEED
 "Speed"
 "Vitesse"
@@ -1038,21 +999,13 @@
 "Select filament:"
 "Selectionnez le filament:"
 
-#MSG_TEMP_CALIBRATION c=20 r=1
-"Temp. cal.          "
+#MSG_TEMP_CALIBRATION c=12 r=1
+"Temp. cal."
 "Calib. Temp."
-
-#MSG_TEMP_CALIBRATION_ON c=20 r=1
-"Temp. cal.   [on]"
-"Calib. Temp. [on]"
 
 #
 "Select temperature which matches your material."
 "Selectionnez la temperature qui correspond a votre materiau."
-
-#MSG_TEMP_CALIBRATION_OFF c=20 r=1
-"Temp. cal.  [off]"
-"Calib. Temp.[off]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1232,15 +1185,19 @@
 
 #
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-"\x00"
+"L'imprimante commencera a  imprimer une ligne en zig-zag. Tournez le bouton jusqu'a atteindre la hauteur optimale. Consultez les photos dans le manuel (chapitre Calibration)."
 
 #
 "Y-correct:"
 "Correct-Y:"
 
 #MSG_OFF
-" [off]"
-" [off]"
+"Off"
+"\x00"
+
+#MSG_ON
+"On"
+"\x00"
 
 #
 "Back"
@@ -1258,17 +1215,17 @@
 "FINDA:"
 "FINDA:"
 
-#
-"Firmware   [none]"
-"Firmware [aucune]"
+#MSG_FIRMWARE
+"Firmware"
+"\x00"
 
-#
-"Firmware [strict]"
-"Firmware[stricte]"
+#MSG_STRICT
+"Strict"
+"Stricte"
 
-#
-"Firmware   [warn]"
-"Firmware  [avert]"
+#MSG_WARN
+"Warn"
+"Avert"
 
 #
 "HW Setup"
@@ -1278,24 +1235,12 @@
 "IR:"
 "IR:"
 
-#
-"Magnets comp.[N/A]"
-"Compens. aim.[N/A]"
+#MSG_MAGNETS_COMP
+"Magnets comp."
+"Compens. aim."
 
-#
-"Magnets comp.[Off]"
-"Compens. aim.[off]"
-
-#
-"Magnets comp. [On]"
-"Compens. aim. [on]"
-
-#
-"Mesh         [3x3]"
-"\x00"
-
-#
-"Mesh         [7x7]"
+#MSG_MESH
+"Mesh"
 "\x00"
 
 #
@@ -1306,53 +1251,21 @@
 "MK3S firmware detected on MK3 printer"
 "Firmware MK3S detecte sur imprimante MK3"
 
-#
-"MMU Mode [Normal]"
-"Mode MMU [normal]"
-
-#
-"MMU Mode[Stealth]"
-"Mode MMU [feutre]"
+#MSG_MMU_MODE
+"MMU Mode"
+"Mode MMU"
 
 #
 "Mode change in progress ..."
 "Changement de mode en cours..."
 
-#
-"Model      [none]"
-"Modele   [aucune]"
+#MSG_MODEL
+"Model"
+"Modele"
 
-#
-"Model    [strict]"
-"Modele  [stricte]"
-
-#
-"Model      [warn]"
-"Modele    [avert]"
-
-#
-"Nozzle d.  [0.25]"
-"Diam. buse [0.25]"
-
-#
-"Nozzle d.  [0.40]"
-"Diam. buse [0.40]"
-
-#
-"Nozzle d.  [0.60]"
-"Diam. buse [0.60]"
-
-#
-"Nozzle     [none]"
-"Buse     [aucune]"
-
-#
-"Nozzle   [strict]"
-"Buse    [stricte]"
-
-#
-"Nozzle     [warn]"
-"Buse      [avert]"
+#MSG_NOZZLE_DIAMETER
+"Nozzle d."
+"Diam. buse"
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1414,9 +1327,9 @@
 "Sheet"
 "Plaque"
 
-#
-"Sound    [assist]"
-"Son      [assist]"
+#MSG_SOUND_BLIND
+"Assist"
+"\x00"
 
 #
 "Steel sheets"
@@ -1426,15 +1339,6 @@
 "Z-correct:"
 "Correct-Z:"
 
-#
-"Z-probe nr.    [1]"
-"Mesurer x-fois [1]"
-
-#
-"Z-probe nr.    [3]"
-"Mesurer x-fois [3]"
-
-#
-"Z-probe nr.    [5]"
-"Mesurer x-fois [5]"
- 
+#MSG_Z_PROBE_NR
+"Z-probe nr."
+"Mesurer x-fois"

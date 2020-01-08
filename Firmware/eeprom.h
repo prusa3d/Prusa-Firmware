@@ -74,7 +74,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_UVLO_CURRENT_POSITION_Z	(EEPROM_FILE_POSITION - 4) //float for current position in Z
 #define EEPROM_UVLO_TARGET_HOTEND		(EEPROM_UVLO_CURRENT_POSITION_Z - 1)
 #define EEPROM_UVLO_TARGET_BED			(EEPROM_UVLO_TARGET_HOTEND - 1)
-#define EEPROM_UVLO_FEEDRATE			(EEPROM_UVLO_TARGET_BED - 2)
+#define EEPROM_UVLO_FEEDRATE			(EEPROM_UVLO_TARGET_BED - 2) //uint16_t
 #define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1) 
 #define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
 #define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
@@ -201,9 +201,20 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_SHEETS_BASE (EEPROM_CHECK_GCODE - EEPROM_SHEETS_SIZEOF) // Sheets
 static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
+#define EEPROM_FSENSOR_PCB (EEPROM_SHEETS_BASE-1) // uint8
+#define EEPROM_FSENSOR_ACTION_NA (EEPROM_FSENSOR_PCB-1) // uint8
+
+#define EEPROM_UVLO_SAVED_TARGET (EEPROM_FSENSOR_ACTION_NA - 4*4) // 4 x float for saved target for all axes
+#define EEPROM_UVLO_FEEDMULTIPLY (EEPROM_UVLO_SAVED_TARGET - 2) // uint16_t for feedmultiply
+
+#define EEPROM_BACKLIGHT_LEVEL_HIGH (EEPROM_UVLO_FEEDMULTIPLY-1) // uint8
+#define EEPROM_BACKLIGHT_LEVEL_LOW (EEPROM_BACKLIGHT_LEVEL_HIGH-1) // uint8
+#define EEPROM_BACKLIGHT_MODE (EEPROM_BACKLIGHT_LEVEL_LOW-1) // uint8
+#define EEPROM_BACKLIGHT_TIMEOUT (EEPROM_BACKLIGHT_MODE-2) // uint16
+
 
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_SHEETS_BASE
+#define EEPROM_LAST_ITEM EEPROM_BACKLIGHT_TIMEOUT
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

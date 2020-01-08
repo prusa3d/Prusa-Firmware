@@ -44,6 +44,8 @@
 #include "Timer.h"
 #include "Configuration_prusa.h"
 
+#include "config.h"
+
 //===========================================================================
 //=============================public variables============================
 //===========================================================================
@@ -70,6 +72,10 @@ int current_voltage_raw_pwr = 0;
 #ifdef VOLT_BED_PIN
 int current_voltage_raw_bed = 0;
 #endif
+
+#if IR_SENSOR_ANALOG
+int current_voltage_raw_IR = 0;
+#endif //IR_SENSOR_ANALOG
 
 int current_temperature_bed_raw = 0;
 float current_temperature_bed = 0.0;
@@ -873,7 +879,7 @@ static float analog2temp(int raw, uint8_t e) {
       SERIAL_ERROR_START;
       SERIAL_ERROR((int)e);
       SERIAL_ERRORLNPGM(" - Invalid extruder number !");
-      kill(PSTR(""), 6);
+      kill(NULL, 6);
       return 0.0;
   } 
   #ifdef HEATER_0_USES_MAX6675
@@ -1576,11 +1582,14 @@ void adc_ready(void) //callback from adc when sampling finished
 	current_voltage_raw_pwr = adc_values[ADC_PIN_IDX(VOLT_PWR_PIN)];
 #endif
 #ifdef AMBIENT_THERMISTOR
-	current_temperature_raw_ambient = adc_values[ADC_PIN_IDX(TEMP_AMBIENT_PIN)];
+	current_temperature_raw_ambient = adc_values[ADC_PIN_IDX(TEMP_AMBIENT_PIN)]; // 5->6
 #endif //AMBIENT_THERMISTOR
 #ifdef VOLT_BED_PIN
 	current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
 #endif
+#if IR_SENSOR_ANALOG
+     current_voltage_raw_IR = adc_values[ADC_PIN_IDX(VOLT_IR_PIN)];
+#endif //IR_SENSOR_ANALOG
 	temp_meas_ready = true;
 }
 
