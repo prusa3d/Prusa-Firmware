@@ -198,7 +198,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 			SERIAL_ECHOLN("}");
 			status_number = 15;
 		}
-		else if (isPrintPaused || card.paused) 
+		else if (isPrintPaused)
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(14);
@@ -490,7 +490,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		{   
 			prusa_statistics_case0(15);
 		}
-		else if (isPrintPaused || card.paused) 
+		else if (isPrintPaused)
 		{
 			prusa_statistics_case0(14);
 		}
@@ -753,7 +753,6 @@ TEST_CASE("Prusa_statistics test", "[prusa_stats]")
 				SERIALS_RESET();
 
 				isPrintPaused = 0;
-				card.paused = 0;
 				IS_SD_PRINTING = 1;
 				old_code::prusa_statistics(test_codes[i],0);
 				new_code::prusa_statistics(test_codes[i],0);
