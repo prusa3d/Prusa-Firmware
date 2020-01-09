@@ -3069,7 +3069,7 @@ static T gcode_M600_filament_change_z_shift()
 #endif
 }	
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
+static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/, int next_extruder)
 {
     st_synchronize();
     float lastpos[4];
@@ -3151,7 +3151,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         mmu_M600_load_filament(automatic, HotendTempBckp);
     }
     else
-        M600_load_filament();
+        M600_load_filament(next_extruder);
 
     if (!automatic) M600_check_state(HotendTempBckp);
 
@@ -3931,7 +3931,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
                         //LCD_ALERTMESSAGEPGM(_T(MSG_FILAMENTCHANGE));
                         uint8_t cnt=0;
                         int counterBeep = 0;
-                        lcd_wait_interact();
+                        lcd_wait_interact(-1);
                         while(!lcd_clicked()){
                           cnt++;
                           manage_heater();
@@ -7175,7 +7175,7 @@ Sigma_Exit:
 
     //! ### M600 - Initiate Filament change procedure
     // --------------------------------------
-    case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
+    case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal] T[extruder index]
 	{
 		st_synchronize();
 
@@ -7184,6 +7184,7 @@ Sigma_Exit:
 		float z_shift = 0; // is it necessary to be a float?
 		float e_shift_init = 0;
 		float e_shift_late = 0;
+		int next_extruder = -1;
 		bool automatic = false;
 		
         //Retract extruder
@@ -7208,6 +7209,11 @@ Sigma_Exit:
 		  #ifdef FILAMENTCHANGE_FINALRETRACT
 			e_shift_late = FILAMENTCHANGE_FINALRETRACT;
 		  #endif	
+		}
+		
+		if (code_seen('T'))
+		{
+			next_extruder = (int) code_value_long();
 		}
 
         //Lift Z
@@ -7244,7 +7250,7 @@ Sigma_Exit:
 		if (mmu_enabled && code_seen("AUTO"))
 			automatic = true;
 
-		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late, next_extruder);
 	
 	}
     break;
@@ -10581,9 +10587,9 @@ void M600_load_filament_movements()
 	st_synchronize();
 }
 
-void M600_load_filament() {
+void M600_load_filament(int filament_index) {
 	//load filament for single material and SNMM 
-	lcd_wait_interact();
+	lcd_wait_interact(filament_index);
 
 	//load_filament_time = _millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
