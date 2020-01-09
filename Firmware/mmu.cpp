@@ -1547,7 +1547,7 @@ void mmu_continue_loading(bool blocking)
     };
     Ls state = Ls::Enter;
 
-    const uint_least8_t max_retry = 2;
+    const uint_least8_t max_retry = 3;
     uint_least8_t retry = 0;
 
     while (!success)
