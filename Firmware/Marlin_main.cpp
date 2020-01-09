@@ -4699,13 +4699,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			// We don't know where we are! HOME!
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
-			if (lcd_commands_type != LcdCommands::StopPrint) {
-				repeatcommand_front(); // repeat G80 with all its parameters
-				enquecommand_front_P((PSTR("G28 W0")));
-			}
-			else {
-				mesh_bed_leveling_flag = false;
-			}
+			repeatcommand_front(); // repeat G80 with all its parameters
+			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		} 
 		
@@ -4735,23 +4730,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifndef PINDA_THERMISTOR
 		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50)
 		{
-			if (lcd_commands_type != LcdCommands::StopPrint) {
-				temp_compensation_start();
-				run = true;
-				repeatcommand_front(); // repeat G80 with all its parameters
-				enquecommand_front_P((PSTR("G28 W0")));
-			}
-			else {
-				mesh_bed_leveling_flag = false;
-			}
+			temp_compensation_start();
+			run = true;
+			repeatcommand_front(); // repeat G80 with all its parameters
+			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
         run = false;
 #endif //PINDA_THERMISTOR
-		if (lcd_commands_type == LcdCommands::StopPrint) {
-			mesh_bed_leveling_flag = false;
-			break;
-		}
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
 		CustomMsg custom_message_type_old = custom_message_type;
 		unsigned int custom_message_state_old = custom_message_state;
@@ -8958,6 +8944,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 	residencyStart = -1;
 	/* continue to loop until we have reached the target temp
 	_and_ until TEMP_RESIDENCY_TIME hasn't passed since we reached it */
+    cancel_heatup = false;
 	while ((!cancel_heatup) && ((residencyStart == -1) ||
 		(residencyStart >= 0 && (((unsigned int)(_millis() - residencyStart)) < (TEMP_RESIDENCY_TIME * 1000UL))))) {
 #else

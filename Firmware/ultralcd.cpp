@@ -250,7 +250,9 @@ static void fil_unload_menu();
 static void lcd_disable_farm_mode();
 static void lcd_set_fan_check();
 static void lcd_cutter_enabled();
+#ifdef SNMM
 static char snmm_stop_print_menu();
+#endif //SNMM
 #ifdef SDCARD_SORT_ALPHA
  static void lcd_sort_type_set();
 #endif
@@ -1059,7 +1061,6 @@ static void lcd_status_screen()
 	}
 
 	if (current_click
-		&& (lcd_commands_type != LcdCommands::StopPrint) //click is aborted unless stop print finishes
 		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
 	)
 	{
@@ -1469,98 +1470,6 @@ void lcd_commands()
 		}
 
 #endif // not SNMM
-
-	if (lcd_commands_type == LcdCommands::StopPrint)   /// stop print
-	{
-		
-
-		if (lcd_commands_step == 0) 
-		{ 
-			lcd_commands_step = 6; 
-		}
-
-		if (lcd_commands_step == 1 && !blocks_queued())
-		{
-			lcd_commands_step = 0;
-			lcd_commands_type = LcdCommands::Idle;
-			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = CustomMsg::Status;
-			isPrintPaused = false;
-		}
-		if (lcd_commands_step == 2 && !blocks_queued())
-		{
-			setTargetBed(0);
-			enquecommand_P(PSTR("M104 S0")); //set hotend temp to 0
-
-			manage_heater();
-			lcd_setstatuspgm(_T(WELCOME_MSG));
-			cancel_heatup = false;
-			lcd_commands_step = 1;
-		}
-		if (lcd_commands_step == 3 && !blocks_queued())
-		{
-      // M84: Disable steppers.
-			enquecommand_P(PSTR("M84"));
-			autotempShutdown();
-			lcd_commands_step = 2;
-		}
-		if (lcd_commands_step == 4 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PLEASE_WAIT));
-      // G90: Absolute positioning.
-			enquecommand_P(PSTR("G90"));
-      // M83: Set extruder to relative mode.
-			enquecommand_P(PSTR("M83"));
-			#ifdef X_CANCEL_POS 
-			enquecommand_P(PSTR("G1 X"  STRINGIFY(X_CANCEL_POS) " Y" STRINGIFY(Y_CANCEL_POS) " E0 F7000"));
-			#else
-			enquecommand_P(PSTR("G1 X50 Y" STRINGIFY(Y_MAX_POS) " E0 F7000"));
-			#endif
-			lcd_ignore_click(false);
-			if (mmu_enabled)
-				lcd_commands_step = 8;
-			else
-				lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 5 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-      // G91: Set to relative positioning.
-			enquecommand_P(PSTR("G91"));
-      // Lift up.
-			enquecommand_P(PSTR("G1 Z15 F1500"));
-			if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) lcd_commands_step = 4;
-			else lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 6 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-			cancel_heatup = true;
-			setTargetBed(0);
-			if (mmu_enabled)
-				setAllTargetHotends(0);
-			manage_heater();
-			custom_message_type = CustomMsg::FilamentLoading;
-			lcd_commands_step = 5;
-		}
-		if (lcd_commands_step == 7 && !blocks_queued())
-		{
-			if (mmu_enabled)
-				enquecommand_P(PSTR("M702 C")); //current
-			else
-				switch(snmm_stop_print_menu())
-				{
-				case 0: enquecommand_P(PSTR("M702")); break;//all 
-				case 1: enquecommand_P(PSTR("M702 U")); break; //used
-				case 2: enquecommand_P(PSTR("M702 C")); break; //current
-				default: enquecommand_P(PSTR("M702")); break;
-				}
-			lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 8 && !blocks_queued()) { //step 8 is here for delay (going to next step after execution of all gcodes from step 4)
-			lcd_commands_step = 7; 
-		}
-	}
 
 	if (lcd_commands_type == LcdCommands::FarmModeConfirm)   /// farm mode confirm
 	{
@@ -6054,7 +5963,7 @@ void bowden_menu() {
 	}
 }
 
-//#ifdef SNMM
+#ifdef SNMM
 
 static char snmm_stop_print_menu() { //menu for choosing which filaments will be unloaded in stop print
 	lcd_clear();
@@ -6104,6 +6013,8 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	}
 	
 }
+
+#endif //SNMM
 
 //! @brief Select one of numbered items
 //!
@@ -7380,7 +7291,6 @@ void lcd_print_stop()
 
     // Clear any saved printing state
     cancel_saved_printing();
-	cancel_heatup = true;
 
     // Abort the planner/queue/sd
     planner_abort_hard();
@@ -7391,19 +7301,48 @@ void lcd_print_stop()
 
     CRITICAL_SECTION_END;
 
+#ifdef MESH_BED_LEVELING
+    mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
+#endif
+
 	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
 	stoptime = _millis();
 	unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
 	pause_time = 0;
 	save_statistics(total_filament_used, t);
-	lcd_return_to_status();
-	lcd_ignore_click(true);
-	lcd_commands_step = 0;
-	lcd_commands_type = LcdCommands::StopPrint;
-	// Turn off the print fan
-	SET_OUTPUT(FAN_PIN);
-	WRITE(FAN_PIN, 0);
-	fanSpeed = 0;
+
+    lcd_commands_step = 0;
+    lcd_commands_type = LcdCommands::Idle;
+
+    lcd_cooldown(); //turns off heaters and fan; goes to status screen.
+    cancel_heatup = true; //unroll temperature wait loop stack.
+
+    current_position[Z_AXIS] += 10; //lift Z.
+    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60, active_extruder);
+
+    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
+    {
+        current_position[X_AXIS] = X_CANCEL_POS;
+        current_position[Y_AXIS] = Y_CANCEL_POS;
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    }
+    st_synchronize();
+
+    if (mmu_enabled) extr_unload(); //M702 C
+
+    finishAndDisableSteppers(); //M84
+
+    lcd_setstatuspgm(_T(WELCOME_MSG));
+    custom_message_type = CustomMsg::Status;
+
+    planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
+    
+    axis_relative_modes[X_AXIS] = false;
+    axis_relative_modes[Y_AXIS] = false;
+    axis_relative_modes[Z_AXIS] = false;
+    axis_relative_modes[E_AXIS] = true;
+    
+    isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
 }
 
 void lcd_sdcard_stop()
