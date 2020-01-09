@@ -4699,8 +4699,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			// We don't know where we are! HOME!
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
-			repeatcommand_front(); // repeat G80 with all its parameters
-			enquecommand_front_P((PSTR("G28 W0")));
+			if (lcd_commands_type != LcdCommands::StopPrint) {
+				repeatcommand_front(); // repeat G80 with all its parameters
+				enquecommand_front_P((PSTR("G28 W0")));
+			}
+			else {
+				mesh_bed_leveling_flag = false;
+			}
 			break;
 		} 
 		
@@ -4730,14 +4735,23 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifndef PINDA_THERMISTOR
 		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50)
 		{
-			temp_compensation_start();
-			run = true;
-			repeatcommand_front(); // repeat G80 with all its parameters
-			enquecommand_front_P((PSTR("G28 W0")));
+			if (lcd_commands_type != LcdCommands::StopPrint) {
+				temp_compensation_start();
+				run = true;
+				repeatcommand_front(); // repeat G80 with all its parameters
+				enquecommand_front_P((PSTR("G28 W0")));
+			}
+			else {
+				mesh_bed_leveling_flag = false;
+			}
 			break;
 		}
         run = false;
 #endif //PINDA_THERMISTOR
+		if (lcd_commands_type == LcdCommands::StopPrint) {
+			mesh_bed_leveling_flag = false;
+			break;
+		}
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
 		CustomMsg custom_message_type_old = custom_message_type;
 		unsigned int custom_message_state_old = custom_message_state;
@@ -6163,6 +6177,7 @@ Sigma_Exit:
           manage_heater();
           manage_inactivity();
           lcd_update(0);
+		  if (cancel_heatup) break;
         }
         LCD_MESSAGERPGM(_T(MSG_BED_DONE));
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -7328,6 +7343,7 @@ Sigma_Exit:
 			manage_heater();
 			manage_inactivity();
 			lcd_update(0);
+			if (cancel_heatup) break;
 		}
 		LCD_MESSAGERPGM(MSG_OK);
 

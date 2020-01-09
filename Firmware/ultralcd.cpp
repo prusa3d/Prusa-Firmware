@@ -1061,6 +1061,7 @@ static void lcd_status_screen()
 	}
 
 	if (current_click
+		&& (lcd_commands_type != LcdCommands::StopPrint) //click is aborted unless stop print finishes
 		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
 	)
 	{
@@ -1470,6 +1471,43 @@ void lcd_commands()
 		}
 
 #endif // not SNMM
+
+	if (lcd_commands_type == LcdCommands::StopPrint)   /// stop print
+	{
+		if (lcd_commands_step == 0) lcd_commands_step = 1;
+		else if (lcd_commands_step == 1)
+		{
+			current_position[Z_AXIS] += 10; //lift Z.
+			plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60, active_extruder);
+
+			if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
+			{
+				current_position[X_AXIS] = X_CANCEL_POS;
+				current_position[Y_AXIS] = Y_CANCEL_POS;
+				plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+			}
+			st_synchronize();
+
+			if (mmu_enabled) extr_unload(); //M702 C
+
+			finishAndDisableSteppers(); //M84
+
+			lcd_setstatuspgm(_T(WELCOME_MSG));
+			custom_message_type = CustomMsg::Status;
+
+			// planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
+			
+			axis_relative_modes[X_AXIS] = false;
+			axis_relative_modes[Y_AXIS] = false;
+			axis_relative_modes[Z_AXIS] = false;
+			axis_relative_modes[E_AXIS] = true;
+			
+			isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
+			
+			lcd_commands_step = 0;
+			lcd_commands_type = LcdCommands::Idle;
+		}
+	}
 
 	if (lcd_commands_type == LcdCommands::FarmModeConfirm)   /// farm mode confirm
 	{
@@ -7311,38 +7349,11 @@ void lcd_print_stop()
 	pause_time = 0;
 	save_statistics(total_filament_used, t);
 
-    lcd_commands_step = 0;
-    lcd_commands_type = LcdCommands::Idle;
-
     lcd_cooldown(); //turns off heaters and fan; goes to status screen.
     cancel_heatup = true; //unroll temperature wait loop stack.
 
-    current_position[Z_AXIS] += 10; //lift Z.
-    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60, active_extruder);
-
-    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
-    {
-        current_position[X_AXIS] = X_CANCEL_POS;
-        current_position[Y_AXIS] = Y_CANCEL_POS;
-        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
-    }
-    st_synchronize();
-
-    if (mmu_enabled) extr_unload(); //M702 C
-
-    finishAndDisableSteppers(); //M84
-
-    lcd_setstatuspgm(_T(WELCOME_MSG));
-    custom_message_type = CustomMsg::Status;
-
-    planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
-    
-    axis_relative_modes[X_AXIS] = false;
-    axis_relative_modes[Y_AXIS] = false;
-    axis_relative_modes[Z_AXIS] = false;
-    axis_relative_modes[E_AXIS] = true;
-    
-    isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
+	lcd_commands_step = 0;
+    lcd_commands_type = LcdCommands::StopPrint; //these run after all stacks are unrolled
 }
 
 void lcd_sdcard_stop()
