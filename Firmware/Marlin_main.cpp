@@ -83,6 +83,9 @@
 #include "Dcodes.h"
 #include "AutoDeplete.h"
 
+#ifndef LA_NOCOMPAT
+#include "la10compat.h"
+#endif
 
 #ifdef SWSPI
 #include "swspi.h"
@@ -357,9 +360,6 @@ unsigned long starttime=0;
 unsigned long stoptime=0;
 unsigned long _usb_timer = 0;
 
-bool extruder_under_pressure = true;
-
-
 bool Stopped=false;
 
 #if NUM_SERVOS > 0
@@ -384,7 +384,6 @@ static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float
 static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
 static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
-static bool saved_extruder_under_pressure = false;
 static bool saved_extruder_relative_mode = false;
 static int saved_fanSpeed = 0; //!< Print fan speed
 //! @}
@@ -2062,35 +2061,36 @@ static float probe_pt(float x, float y, float z_before) {
 
 #ifdef LIN_ADVANCE
    /**
-    * M900: Set and/or Get advance K factor and WH/D ratio
+    * M900: Set and/or Get advance K factor
     *
     *  K<factor>                  Set advance K factor
-    *  R<ratio>                   Set ratio directly (overrides WH/D)
-    *  W<width> H<height> D<diam> Set ratio from WH/D
     */
 inline void gcode_M900() {
-    st_synchronize();
-    
-    const float newK = code_seen('K') ? code_value_float() : -1;
-    if (newK >= 0) extruder_advance_k = newK;
-    
-    float newR = code_seen('R') ? code_value_float() : -1;
-    if (newR < 0) {
-        const float newD = code_seen('D') ? code_value_float() : -1,
-        newW = code_seen('W') ? code_value_float() : -1,
-        newH = code_seen('H') ? code_value_float() : -1;
-        if (newD >= 0 && newW >= 0 && newH >= 0)
-            newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
+    float newK = code_seen('K') ? code_value_float() : -2;
+#ifdef LA_NOCOMPAT
+    if (newK >= 0 && newK < 10)
+        extruder_advance_K = newK;
+    else
+        SERIAL_ECHOLNPGM("K out of allowed range!");
+#else
+    if (newK == 0)
+        extruder_advance_K = 0;
+    else if (newK == -1)
+        la10c_reset();
+    else
+    {
+        newK = la10c_value(newK);
+        if (newK < 0)
+            SERIAL_ECHOLNPGM("K out of allowed range!");
+        else
+            extruder_advance_K = newK;
     }
-    if (newR >= 0) advance_ed_ratio = newR;
-    
+#endif
+
     SERIAL_ECHO_START;
     SERIAL_ECHOPGM("Advance K=");
-    SERIAL_ECHOLN(extruder_advance_k);
-    SERIAL_ECHOPGM(" E/D=");
-    const float ratio = advance_ed_ratio;
-    if (ratio) SERIAL_ECHOLN(ratio); else SERIAL_ECHOLNPGM("Auto");
-    }
+    SERIAL_ECHOLN(extruder_advance_K);
+}
 #endif // LIN_ADVANCE
 
 bool check_commands() {
@@ -4677,6 +4677,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
+#ifndef LA_NOCOMPAT
+        // When printing via USB there's no clear boundary between prints. Abuse MBL to indicate
+        // the beginning of a new print, allowing a new autodetected setting just after G80.
+        la10c_reset();
+#endif
 #ifndef PINDA_THERMISTOR
         static bool run = false; // thermistor-less PINDA temperature compensation is running
 #endif // ndef PINDA_THERMISTOR
@@ -5394,6 +5399,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       else
       {
           failstats_reset_print();
+#ifndef LA_NOCOMPAT
+          la10c_reset();
+#endif
           card.startFileprint();
           starttime=_millis();
       }
@@ -5487,6 +5495,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         if(code_seen('S'))
           if(strchr_pointer<namestartpos) //only if "S" is occuring _before_ the filename
             card.setIndex(code_value_long());
+#ifndef LA_NOCOMPAT
+        la10c_reset();
+#endif
         card.startFileprint();
         if(!call_procedure)
           starttime=_millis(); //procedure calls count as normal print time.
@@ -7895,14 +7906,7 @@ Sigma_Exit:
           else
           {
 #ifdef SNMM
-
-#ifdef LIN_ADVANCE
-              if (mmu_extruder != tmp_extruder)
-                  clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
-#endif
-
               mmu_extruder = tmp_extruder;
-
 
               _delay(100);
 
@@ -9740,11 +9744,16 @@ void uvlo_()
 #endif
 #endif
 	eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
+
     // Store the saved target
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4), saved_target[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4), saved_target[Y_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4), saved_target[Z_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4), saved_target[E_AXIS]);
+
+#ifdef LIN_ADVANCE
+	eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
+#endif
 
     // Finaly store the "power outage" flag.
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
@@ -9999,6 +10008,10 @@ void recover_machine_state_after_power_panic(bool bTiny)
   saved_target[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4));
   saved_target[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4));
   saved_target[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4));
+
+#ifdef LIN_ADVANCE
+  extruder_advance_K = eeprom_read_float((float*)EEPROM_UVLO_LA_K);
+#endif
 }
 
 void restore_print_from_eeprom() {
@@ -10230,8 +10243,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
-
-	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
 	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	saved_fanSpeed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
