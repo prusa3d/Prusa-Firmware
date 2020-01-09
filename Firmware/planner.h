@@ -110,10 +110,14 @@ typedef struct {
 
   // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
   float speed_factor;
-    
+
 #ifdef LIN_ADVANCE
-  bool use_advance_lead;
-  unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
+  bool use_advance_lead;            // Whether the current block uses LA
+  uint16_t advance_rate,            // Step-rate for extruder speed
+           max_adv_steps,           // max. advance steps to get cruising speed pressure (not always nominal_speed!)
+           final_adv_steps;         // advance steps due to exit speed
+  uint8_t advance_step_loops;       // Number of stepper ticks for each advance isr
+  float adv_comp;                   // Precomputed E compression factor
 #endif
 
   // Save/recovery state data
@@ -123,7 +127,7 @@ typedef struct {
 } block_t;
 
 #ifdef LIN_ADVANCE
-  extern float extruder_advance_k, advance_ed_ratio;
+extern float extruder_advance_K;    // Linear-advance K factor
 #endif
 
 #ifdef ENABLE_AUTO_BED_LEVELING

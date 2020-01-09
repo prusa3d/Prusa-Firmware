@@ -588,7 +588,7 @@ void lcdui_print_Z_coord(void)
     if (custom_message_type == CustomMsg::MeshBedLeveling)
         lcd_puts_P(_N("Z   --- "));
     else
-		lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
+		lcd_printf_P(_N("Z%6.2f%c"), current_position[Z_AXIS], axis_known_position[Z_AXIS]?' ':'?');
 }
 
 #ifdef PLANNER_DIAGNOSTICS
@@ -624,21 +624,24 @@ void lcdui_print_feedrate(void)
 // Print percent done in form "USB---%", " SD---%", "   ---%" (7 chars total)
 void lcdui_print_percent_done(void)
 {
-	char sheet[8];
 	const char* src = is_usb_printing?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
 	char per[4];
 	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
 	if (!num || heating_status) // either not printing or heating
 	{
-		eeprom_read_block(sheet, EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].name, 7);
-		sheet[7] = '\0';
-		lcd_printf_P(PSTR("%s"),sheet);
+		const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+		const int8_t nextSheet = eeprom_next_initialized_sheet(sheetNR);
+		if ((nextSheet >= 0) && (sheetNR != nextSheet))
+		{
+			char sheet[8];
+			eeprom_read_block(sheet, EEPROM_Sheets_base->s[sheetNR].name, 7);
+			sheet[7] = '\0';
+			lcd_printf_P(PSTR("%-7s"),sheet);
+			return; //do not also print the percentage
+		}
 	}
-	else
-	{
-		sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
-		lcd_printf_P(_N("%3S%3s%%"), src, per);
-	}
+	sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
+	lcd_printf_P(_N("%3S%3s%%"), src, per);
 }
 
 // Print extruder status (5 chars total)
@@ -6993,6 +6996,60 @@ static void lcd_colorprint_change() {
 	lcd_draw_update = 3;
 }
 
+
+#ifdef LA_LIVE_K
+// @wavexx: looks like there's no generic float editing function in menu.cpp so we
+//          redefine our custom handling functions to mimick other tunables
+const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6S";
+
+static void lcd_advance_draw_K(char chr, float val)
+{
+    if (val <= 0)
+        lcd_printf_P(menu_fmt_float13off, chr, MSG_ADVANCE_K, _T(MSG_OFF));
+    else
+        lcd_printf_P(menu_fmt_float13, chr, MSG_ADVANCE_K, val);
+}
+
+static void lcd_advance_edit_K(void)
+{
+    if (lcd_draw_update)
+    {
+        if (lcd_encoder < 0) lcd_encoder = 0;
+        if (lcd_encoder > 999) lcd_encoder = 999;
+        lcd_set_cursor(0, 1);
+        lcd_advance_draw_K(' ', 0.01 * lcd_encoder);
+    }
+    if (LCD_CLICKED)
+    {
+        extruder_advance_K = 0.01 * lcd_encoder;
+        menu_back_no_reset();
+    }
+}
+
+static uint8_t lcd_advance_K()
+{
+    if (menu_item == menu_line)
+    {
+        if (lcd_draw_update)
+        {
+            lcd_set_cursor(0, menu_row);
+            lcd_advance_draw_K((lcd_encoder == menu_item)?'>':' ', extruder_advance_K);
+        }
+        if (menu_clicked && (lcd_encoder == menu_item))
+        {
+            menu_submenu_no_reset(lcd_advance_edit_K);
+            lcd_encoder = 100. * extruder_advance_K;
+            return menu_item_ret();
+        }
+    }
+    menu_item++;
+    return 0;
+}
+
+#define MENU_ITEM_EDIT_advance_K() do { if (lcd_advance_K()) return; } while (0)
+#endif
+
+
 static void lcd_tune_menu()
 {
 	typedef struct
@@ -7031,8 +7088,11 @@ static void lcd_tune_menu()
 
 	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);//5
 	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);//6////MSG_FLOW
+#ifdef LA_LIVE_K
+	MENU_ITEM_EDIT_advance_K();//7
+#endif
 #ifdef FILAMENTCHANGEENABLE
-	MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//7
+	MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 #endif
 
 #ifdef FILAMENT_SENSOR

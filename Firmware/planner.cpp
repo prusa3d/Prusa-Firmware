@@ -126,9 +126,8 @@ float extrude_min_temp=EXTRUDE_MINTEMP;
 #endif
 
 #ifdef LIN_ADVANCE
-    float extruder_advance_k = LIN_ADVANCE_K,
-    advance_ed_ratio = LIN_ADVANCE_E_D_RATIO,
-    position_float[NUM_AXIS] = { 0 };
+float extruder_advance_K = LIN_ADVANCE_K;
+float position_float[NUM_AXIS];
 #endif
 
 // Returns the index of the next block in the ring buffer
@@ -262,6 +261,13 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
     }
   }
 
+#ifdef LIN_ADVANCE
+  uint16_t final_adv_steps = 0;
+  if (block->use_advance_lead) {
+      final_adv_steps = exit_speed * block->adv_comp;
+  }
+#endif
+
   CRITICAL_SECTION_START;  // Fill variables used by the stepper in a critical section
   // This block locks the interrupts globally for 4.38 us,
   // which corresponds to a maximum repeat frequency of 228.57 kHz.
@@ -272,6 +278,9 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
     block->decelerate_after = accelerate_steps+plateau_steps;
     block->initial_rate = initial_rate;
     block->final_rate = final_rate;
+#ifdef LIN_ADVANCE
+    block->final_adv_steps = final_adv_steps;
+#endif
   }
   CRITICAL_SECTION_END;
 }
@@ -424,9 +433,9 @@ void plan_init() {
   block_buffer_head = 0;
   block_buffer_tail = 0;
   memset(position, 0, sizeof(position)); // clear position
-#ifdef LIN_ADVANCE
-  memset(position_float, 0, sizeof(position)); // clear position
-#endif
+  #ifdef LIN_ADVANCE
+  memset(position_float, 0, sizeof(position_float)); // clear position
+  #endif
   previous_speed[0] = 0.0;
   previous_speed[1] = 0.0;
   previous_speed[2] = 0.0;
@@ -639,7 +648,9 @@ void planner_abort_hard()
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
     memcpy(destination, current_position, sizeof(destination));
-
+#ifdef LIN_ADVANCE
+    memcpy(position_float, current_position, sizeof(position_float));
+#endif
     // Resets planner junction speeds. Assumes start from rest.
     previous_nominal_speed = 0.0;
     previous_speed[0] = 0.0;
@@ -775,21 +786,15 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 #endif // ENABLE_MESH_BED_LEVELING
   target[E_AXIS] = lround(e*cs.axis_steps_per_unit[E_AXIS]);
   
-#ifdef LIN_ADVANCE
-    const float mm_D_float = sqrt(sq(x - position_float[X_AXIS]) + sq(y - position_float[Y_AXIS]));
-    float de_float = e - position_float[E_AXIS];
-#endif
-    
   #ifdef PREVENT_DANGEROUS_EXTRUDE
   if(target[E_AXIS]!=position[E_AXIS])
   {
     if(degHotend(active_extruder)<extrude_min_temp)
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
-#ifdef LIN_ADVANCE
+      #ifdef LIN_ADVANCE
       position_float[E_AXIS] = e;
-      de_float = 0;
-#endif
+      #endif
       SERIAL_ECHO_START;
       SERIAL_ECHOLNRPGM(_n(" cold extrusion prevented"));////MSG_ERR_COLD_EXTRUDE_STOP
     }
@@ -798,10 +803,9 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
     if(labs(target[E_AXIS]-position[E_AXIS])>cs.axis_steps_per_unit[E_AXIS]*EXTRUDE_MAXLENGTH)
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
-#ifdef LIN_ADVANCE
-        position_float[E_AXIS] = e;
-        de_float = 0;
-#endif
+      #ifdef LIN_ADVANCE
+      position_float[E_AXIS] = e;
+      #endif
       SERIAL_ECHO_START;
       SERIAL_ECHOLNRPGM(_n(" too long extrusion prevented"));////MSG_ERR_LONG_EXTRUDE_STOP
     }
@@ -1012,6 +1016,9 @@ Having the real displacement of the head, we can calculate the total movement le
     block->nominal_rate *= speed_factor;
   }
 
+#ifdef LIN_ADVANCE
+  float e_D_ratio = 0;
+#endif
   // Compute and limit the acceleration rate for the trapezoid generator.  
   // block->step_event_count ... event count of the fastest axis
   // block->millimeters ... Euclidian length of the XYZ movement or the E length, if no XYZ movement.
@@ -1019,10 +1026,51 @@ Having the real displacement of the head, we can calculate the total movement le
   if(block->steps_x.wide == 0 && block->steps_y.wide == 0 && block->steps_z.wide == 0)
   {
     block->acceleration_st = ceil(cs.retract_acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
+    #ifdef LIN_ADVANCE
+    block->use_advance_lead = false;
+    #endif
   }
   else
   {
     block->acceleration_st = ceil(cs.acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
+
+    #ifdef LIN_ADVANCE
+    /**
+     * Use LIN_ADVANCE within this block if all these are true:
+     *
+     * block->steps_e           : This is a print move, because we checked for X, Y, Z steps before.
+     * extruder_advance_K       : There is an advance factor set.
+     * delta_mm[E_AXIS] > 0     : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
+     * |delta_mm[Z_AXIS]| < 0.5 : Z is only moved for leveling (_not_ for priming)
+     */
+    block->use_advance_lead = block->steps_e.wide
+                              && extruder_advance_K
+                              && delta_mm[E_AXIS] > 0
+                              && abs(delta_mm[Z_AXIS]) < 0.5;
+    if (block->use_advance_lead) {
+        e_D_ratio = (e - position_float[E_AXIS]) /
+                    sqrt(sq(x - position_float[X_AXIS])
+                         + sq(y - position_float[Y_AXIS])
+                         + sq(z - position_float[Z_AXIS]));
+
+        // Check for unusual high e_D ratio to detect if a retract move was combined with the last
+        // print move due to min. steps per segment. Never execute this with advance! This assumes
+        // no one will use a retract length of 0mm < retr_length < ~0.2mm and no one will print
+        // 100mm wide lines using 3mm filament or 35mm wide lines using 1.75mm filament.
+        if (e_D_ratio > 3.0)
+            block->use_advance_lead = false;
+        else {
+            const uint32_t max_accel_steps_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * e_D_ratio) * steps_per_mm;
+            if (block->acceleration_st > max_accel_steps_per_s2) {
+                block->acceleration_st = max_accel_steps_per_s2;
+                #ifdef LA_DEBUG
+                SERIAL_ECHOLNPGM("LA: Block acceleration limited due to max E-jerk");
+                #endif
+            }
+        }
+    }
+    #endif
+
     // Limit acceleration per axis
     //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
     if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
@@ -1054,6 +1102,40 @@ Having the real displacement of the head, we can calculate the total movement le
 #endif
 
   block->acceleration_rate = (long)((float)block->acceleration_st * (16777216.0 / (F_CPU / 8.0)));
+
+#ifdef LIN_ADVANCE
+  if (block->use_advance_lead) {
+      // the nominal speed doesn't change past this point: calculate the compression ratio for the
+      // segment and the required advance steps
+      block->adv_comp = extruder_advance_K * e_D_ratio * cs.axis_steps_per_unit[E_AXIS];
+      block->max_adv_steps = block->nominal_speed * block->adv_comp;
+
+      // to save more space we avoid another copy of calc_timer and go through slow division, but we
+      // still need to replicate the *exact* same step grouping policy (see below)
+      float advance_speed = (extruder_advance_K * e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
+      if (advance_speed > MAX_STEP_FREQUENCY) advance_speed = MAX_STEP_FREQUENCY;
+      block->advance_rate = (F_CPU / 8.0) / advance_speed;
+      if (block->advance_rate > 20000) {
+          block->advance_rate = (block->advance_rate >> 2)&0x3fff;
+          block->advance_step_loops = 4;
+      }
+      else if (block->advance_rate > 10000) {
+          block->advance_rate = (block->advance_rate >> 1)&0x7fff;
+          block->advance_step_loops = 2;
+      }
+      else
+          block->advance_step_loops = 1;
+
+      #ifdef LA_DEBUG
+      if (block->advance_step_loops > 2)
+          // @wavexx: we should really check for the difference between step_loops and
+          //          advance_step_loops instead. A difference of more than 1 will lead
+          //          to uneven speed and *should* be adjusted here by furthermore
+          //          reducing the speed.
+          SERIAL_ECHOLNPGM("LA: More than 2 steps per eISR loop executed.");
+      #endif
+  }
+#endif
 
   // Start with a safe speed.
   // Safe speed is the speed, from which the machine may halt to stop immediately.
@@ -1171,37 +1253,6 @@ Having the real displacement of the head, we can calculate the total movement le
   previous_nominal_speed = block->nominal_speed;
   previous_safe_speed = safe_speed;
 
-#ifdef LIN_ADVANCE
-
-    //
-    // Use LIN_ADVANCE for blocks if all these are true:
-    //
-    // esteps                                          : We have E steps todo (a printing move)
-    //
-    // block->steps[X_AXIS] || block->steps[Y_AXIS]    : We have a movement in XY direction (i.e., not retract / prime).
-    //
-    // extruder_advance_k                              : There is an advance factor set.
-    //
-    // block->steps[E_AXIS] != block->step_event_count : A problem occurs if the move before a retract is too small.
-    //                                                   In that case, the retract and move will be executed together.
-    //                                                   This leads to too many advance steps due to a huge e_acceleration.
-    //                                                   The math is good, but we must avoid retract moves with advance!
-    // de_float > 0.0                                  : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
-    //
-    block->use_advance_lead =  block->steps_e.wide
-                           && (block->steps_x.wide || block->steps_y.wide)
-                           && extruder_advance_k
-                           && (uint32_t)block->steps_e.wide != block->step_event_count.wide
-                           && de_float > 0.0;
-    if (block->use_advance_lead)
-        block->abs_adv_steps_multiplier8 = lround(
-                          extruder_advance_k
-                          * ((advance_ed_ratio < 0.000001) ? de_float / mm_D_float : advance_ed_ratio) // Use the fixed ratio, if set
-                          * (block->nominal_speed / (float)block->nominal_rate)
-                          * cs.axis_steps_per_unit[E_AXIS] * 256.0
-                          );
-#endif
-    
   // Precalculate the division, so when all the trapezoids in the planner queue get recalculated, the division is not repeated.
   block->speed_factor = block->nominal_rate / block->nominal_speed;
   calculate_trapezoid_for_block(block, block->entry_speed, safe_speed);
@@ -1215,12 +1266,12 @@ Having the real displacement of the head, we can calculate the total movement le
   // Update position
   memcpy(position, target, sizeof(target)); // position[] = target[]
 
-#ifdef LIN_ADVANCE
+  #ifdef LIN_ADVANCE
   position_float[X_AXIS] = x;
   position_float[Y_AXIS] = y;
   position_float[Z_AXIS] = z;
   position_float[E_AXIS] = e;
-#endif
+  #endif
     
   // Recalculate the trapezoids to maximize speed at the segment transitions while respecting
   // the machine limits (maximum acceleration and maximum jerk).
@@ -1283,12 +1334,12 @@ void plan_set_position(float x, float y, float z, const float &e)
   position[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
 #endif // ENABLE_MESH_BED_LEVELING
   position[E_AXIS] = lround(e*cs.axis_steps_per_unit[E_AXIS]);
-#ifdef LIN_ADVANCE
+  #ifdef LIN_ADVANCE
   position_float[X_AXIS] = x;
   position_float[Y_AXIS] = y;
   position_float[Z_AXIS] = z;
   position_float[E_AXIS] = e;
-#endif
+  #endif
   st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
   previous_nominal_speed = 0.0; // Resets planner junction speeds. Assumes start from rest.
   previous_speed[0] = 0.0;
@@ -1300,11 +1351,11 @@ void plan_set_position(float x, float y, float z, const float &e)
 // Only useful in the bed leveling routine, when the mesh bed leveling is off.
 void plan_set_z_position(const float &z)
 {
-	#ifdef LIN_ADVANCE
-	position_float[Z_AXIS] = z;
-	#endif
-    position[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
-    st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
+  #ifdef LIN_ADVANCE
+  position_float[Z_AXIS] = z;
+  #endif
+  position[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
+  st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
 }
 
 void plan_set_e_position(const float &e)
