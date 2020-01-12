@@ -5584,28 +5584,32 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     }
 	break;
 
-    /*
+    //! ### M46 - Show the assigned IP address (Prusa specific)
+    // --------------------------------------------------------------------
     case 46:
     {
         // M46: Prusa3D: Show the assigned IP address.
-        uint8_t ip[4];
-        bool hasIP = card.ToshibaFlashAir_GetIP(ip);
-        if (hasIP) {
-            SERIAL_ECHOPGM("Toshiba FlashAir current IP: ");
-            SERIAL_ECHO(int(ip[0]));
-            SERIAL_ECHOPGM(".");
-            SERIAL_ECHO(int(ip[1]));
-            SERIAL_ECHOPGM(".");
-            SERIAL_ECHO(int(ip[2]));
-            SERIAL_ECHOPGM(".");
-            SERIAL_ECHO(int(ip[3]));
-            SERIAL_ECHOLNPGM("");
+        if (card.ToshibaFlashAir_isEnabled()) {
+            uint8_t ip[4];
+            bool hasIP = card.ToshibaFlashAir_GetIP(ip);
+            if (hasIP) {
+                // SERIAL_PROTOCOLPGM("Toshiba FlashAir current IP: ");
+                SERIAL_PROTOCOL(int(ip[0]));
+                SERIAL_PROTOCOLPGM(".");
+                SERIAL_PROTOCOL(int(ip[1]));
+                SERIAL_PROTOCOLPGM(".");
+                SERIAL_PROTOCOL(int(ip[2]));
+                SERIAL_PROTOCOLPGM(".");
+                SERIAL_PROTOCOL(int(ip[3]));
+                SERIAL_PROTOCOLPGM("\n");
+            } else {
+                SERIAL_PROTOCOLPGM("?Toshiba FlashAir GetIP failed\n");          
+            }
         } else {
-            SERIAL_ECHOLNPGM("Toshiba FlashAir GetIP failed");          
+            SERIAL_PROTOCOLPGM("n/a\n");          
         }
         break;
     }
-    */
 
     //! ### M47 - Show end stops dialog on the display (Prusa specific)
     // ---------------------------------------------------- 
