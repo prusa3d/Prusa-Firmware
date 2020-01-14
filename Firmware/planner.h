@@ -44,6 +44,8 @@ enum BlockFlag {
     // than 32767, therefore the DDA algorithm may run with 16bit resolution only.
     // In addition, the stepper routine will not do any end stop checking for higher performance.
     BLOCK_FLAG_DDA_LOWRES = 8,
+    // Block starts with Zeroed E counter
+    BLOCK_FLAG_E_RESET = 16,
 };
 
 union dda_isteps_t
@@ -167,6 +169,9 @@ void plan_set_position(float x, float y, float z, const float &e);
 
 void plan_set_z_position(const float &z);
 void plan_set_e_position(const float &e);
+
+// Reset the E position to zero at the start of the next segment
+void plan_reset_next_e();
 
 extern bool e_active();
 
