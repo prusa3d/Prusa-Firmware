@@ -7012,20 +7012,22 @@ Sigma_Exit:
 
     /*!
 	### M204 - Acceleration settings <a href="https://reprap.org/wiki/G-code#M204:_Set_default_acceleration">M204: Set default acceleration</a>
-    #### Usage
-    Old format:
+
+    #### Old format:
+    ##### Usage
     
-         M204 [ S | T ]
-    New format:
-    
-         M204 [ P | R | T ]
-         
-    #### Parameters
-    Old format:
+        M204 [ S | T ]
+        
+    ##### Parameters
     - `S` - normal moves
     - `T` - filmanent only moves
     
-    New format:
+    #### New format:
+    ##### Usage
+    
+        M204 [ P | R | T ]
+    
+    ##### Parameters
     - `P` - printing moves
     - `R` - filmanent only moves
     - `T` - travel moves (as of now T is ignored)
