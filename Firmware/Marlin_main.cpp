@@ -3548,7 +3548,7 @@ extern uint8_t st_backlash_y;
 
 //! _This is a list of currently implemented G Codes in Prusa firmware (dynamically generated from doxygen)._ 
 /**
-They are shown in order of appierence in the code.
+They are shown in order of appearance in the code.
 There are reasons why some G Codes aren't in numerical order.
 */
 
