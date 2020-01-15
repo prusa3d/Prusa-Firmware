@@ -83,6 +83,9 @@
 #include "Dcodes.h"
 #include "AutoDeplete.h"
 
+#ifndef LA_NOCOMPAT
+#include "la10compat.h"
+#endif
 
 #ifdef SWSPI
 #include "swspi.h"
@@ -357,9 +360,6 @@ unsigned long starttime=0;
 unsigned long stoptime=0;
 unsigned long _usb_timer = 0;
 
-bool extruder_under_pressure = true;
-
-
 bool Stopped=false;
 
 #if NUM_SERVOS > 0
@@ -384,7 +384,6 @@ static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float
 static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
 static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
-static bool saved_extruder_under_pressure = false;
 static bool saved_extruder_relative_mode = false;
 static int saved_fanSpeed = 0; //!< Print fan speed
 //! @}
@@ -2062,35 +2061,36 @@ static float probe_pt(float x, float y, float z_before) {
 
 #ifdef LIN_ADVANCE
    /**
-    * M900: Set and/or Get advance K factor and WH/D ratio
+    * M900: Set and/or Get advance K factor
     *
     *  K<factor>                  Set advance K factor
-    *  R<ratio>                   Set ratio directly (overrides WH/D)
-    *  W<width> H<height> D<diam> Set ratio from WH/D
     */
 inline void gcode_M900() {
-    st_synchronize();
-    
-    const float newK = code_seen('K') ? code_value_float() : -1;
-    if (newK >= 0) extruder_advance_k = newK;
-    
-    float newR = code_seen('R') ? code_value_float() : -1;
-    if (newR < 0) {
-        const float newD = code_seen('D') ? code_value_float() : -1,
-        newW = code_seen('W') ? code_value_float() : -1,
-        newH = code_seen('H') ? code_value_float() : -1;
-        if (newD >= 0 && newW >= 0 && newH >= 0)
-            newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
+    float newK = code_seen('K') ? code_value_float() : -2;
+#ifdef LA_NOCOMPAT
+    if (newK >= 0 && newK < 10)
+        extruder_advance_K = newK;
+    else
+        SERIAL_ECHOLNPGM("K out of allowed range!");
+#else
+    if (newK == 0)
+        extruder_advance_K = 0;
+    else if (newK == -1)
+        la10c_reset();
+    else
+    {
+        newK = la10c_value(newK);
+        if (newK < 0)
+            SERIAL_ECHOLNPGM("K out of allowed range!");
+        else
+            extruder_advance_K = newK;
     }
-    if (newR >= 0) advance_ed_ratio = newR;
-    
+#endif
+
     SERIAL_ECHO_START;
     SERIAL_ECHOPGM("Advance K=");
-    SERIAL_ECHOLN(extruder_advance_k);
-    SERIAL_ECHOPGM(" E/D=");
-    const float ratio = advance_ed_ratio;
-    if (ratio) SERIAL_ECHOLN(ratio); else SERIAL_ECHOLNPGM("Auto");
-    }
+    SERIAL_ECHOLN(extruder_advance_K);
+}
 #endif // LIN_ADVANCE
 
 bool check_commands() {
@@ -3355,6 +3355,49 @@ static void gcode_PRUSA_BadRAMBoFanTest(){
 	WRITE(TACH_1, HIGH);
 #endif
 }
+
+
+// G92 - Set current position to coordinates given
+static void gcode_G92()
+{
+    bool codes[NUM_AXIS];
+    float values[NUM_AXIS];
+
+    // Check which axes need to be set
+    for(uint8_t i = 0; i < NUM_AXIS; ++i)
+    {
+        codes[i] = code_seen(axis_codes[i]);
+        if(codes[i])
+            values[i] = code_value();
+    }
+
+    if((codes[E_AXIS] && values[E_AXIS] == 0) &&
+       (!codes[X_AXIS] && !codes[Y_AXIS] && !codes[Z_AXIS]))
+    {
+        // As a special optimization, when _just_ clearing the E position
+        // we schedule a flag asynchronously along with the next block to
+        // reset the starting E position instead of stopping the planner
+        current_position[E_AXIS] = 0;
+        plan_reset_next_e();
+    }
+    else
+    {
+        // In any other case we're forced to synchronize
+        st_synchronize();
+        for(uint8_t i = 0; i < 3; ++i)
+        {
+            if(codes[i])
+                current_position[i] = values[i] + cs.add_homing[i];
+        }
+        if(codes[E_AXIS])
+            current_position[E_AXIS] = values[E_AXIS];
+
+        // Set all at once
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS],
+                          current_position[Z_AXIS], current_position[E_AXIS]);
+    }
+}
+
 
 #ifdef BACKLASH_X
 extern uint8_t st_backlash_x;
@@ -4815,6 +4858,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
+#ifndef LA_NOCOMPAT
+        // When printing via USB there's no clear boundary between prints. Abuse MBL to indicate
+        // the beginning of a new print, allowing a new autodetected setting just after G80.
+        la10c_reset();
+#endif
 #ifndef PINDA_THERMISTOR
         static bool run = false; // thermistor-less PINDA temperature compensation is running
 #endif // ndef PINDA_THERMISTOR
@@ -4832,13 +4880,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			// We don't know where we are! HOME!
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
-			if (lcd_commands_type != LcdCommands::StopPrint) {
-				repeatcommand_front(); // repeat G80 with all its parameters
-				enquecommand_front_P((PSTR("G28 W0")));
-			}
-			else {
-				mesh_bed_leveling_flag = false;
-			}
+			repeatcommand_front(); // repeat G80 with all its parameters
+			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		} 
 		
@@ -4868,23 +4911,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifndef PINDA_THERMISTOR
 		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50)
 		{
-			if (lcd_commands_type != LcdCommands::StopPrint) {
-				temp_compensation_start();
-				run = true;
-				repeatcommand_front(); // repeat G80 with all its parameters
-				enquecommand_front_P((PSTR("G28 W0")));
-			}
-			else {
-				mesh_bed_leveling_flag = false;
-			}
+			temp_compensation_start();
+			run = true;
+			repeatcommand_front(); // repeat G80 with all its parameters
+			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
         run = false;
 #endif //PINDA_THERMISTOR
-		if (lcd_commands_type == LcdCommands::StopPrint) {
-			mesh_bed_leveling_flag = false;
-			break;
-		}
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
 		CustomMsg custom_message_type_old = custom_message_type;
 		unsigned int custom_message_state_old = custom_message_state;
@@ -5394,22 +5428,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	
 	A G92 without coordinates will reset all axes to zero on some firmware.
     */
-    case 92:
-      if(!code_seen(axis_codes[E_AXIS]))
-        st_synchronize();
-      for(int8_t i=0; i < NUM_AXIS; i++) {
-        if(code_seen(axis_codes[i])) {
-           if(i == E_AXIS) {
-             current_position[i] = code_value();
-             plan_set_e_position(current_position[E_AXIS]);
-           }
-           else {
-		current_position[i] = code_value()+cs.add_homing[i];
-            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-           }
-        }
-      }
-      break;
+    case 92: {
+        gcode_G92();
+    }
+    break;
 
 
     /*!
@@ -5587,6 +5609,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       else
       {
           failstats_reset_print();
+#ifndef LA_NOCOMPAT
+          la10c_reset();
+#endif
           card.startFileprint();
           starttime=_millis();
       }
@@ -5689,6 +5714,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         if(code_seen('S'))
           if(strchr_pointer<namestartpos) //only if "S" is occuring _before_ the filename
             card.setIndex(code_value_long());
+#ifndef LA_NOCOMPAT
+        la10c_reset();
+#endif
         card.startFileprint();
         if(!call_procedure)
           starttime=_millis(); //procedure calls count as normal print time.
@@ -8494,14 +8522,7 @@ Sigma_Exit:
           else
           {
 #ifdef SNMM
-
-#ifdef LIN_ADVANCE
-              if (mmu_extruder != tmp_extruder)
-                  clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
-#endif
-
               mmu_extruder = tmp_extruder;
-
 
               _delay(100);
 
@@ -9709,6 +9730,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 	residencyStart = -1;
 	/* continue to loop until we have reached the target temp
 	_and_ until TEMP_RESIDENCY_TIME hasn't passed since we reached it */
+    cancel_heatup = false;
 	while ((!cancel_heatup) && ((residencyStart == -1) ||
 		(residencyStart >= 0 && (((unsigned int)(_millis() - residencyStart)) < (TEMP_RESIDENCY_TIME * 1000UL))))) {
 #else
@@ -10332,10 +10354,6 @@ void long_pause() //long pause print
     // Stop heaters
     setAllTargetHotends(0);
 
-	//retract
-	current_position[E_AXIS] -= default_retraction;
-	plan_buffer_line_curposXYZE(400, active_extruder);
-
 	//lift z
 	current_position[Z_AXIS] += Z_PAUSE_LIFT;
 	if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
@@ -10495,11 +10513,16 @@ void uvlo_()
 #endif
 #endif
 	eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
+
     // Store the saved target
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4), saved_target[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4), saved_target[Y_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4), saved_target[Z_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4), saved_target[E_AXIS]);
+
+#ifdef LIN_ADVANCE
+	eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
+#endif
 
     // Finaly store the "power outage" flag.
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
@@ -10754,6 +10777,10 @@ void recover_machine_state_after_power_panic(bool bTiny)
   saved_target[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4));
   saved_target[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4));
   saved_target[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4));
+
+#ifdef LIN_ADVANCE
+  extruder_advance_K = eeprom_read_float((float*)EEPROM_UVLO_LA_K);
+#endif
 }
 
 void restore_print_from_eeprom() {
@@ -10985,8 +11012,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
-
-	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
 	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	saved_fanSpeed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
@@ -11003,23 +11028,29 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     // move away from the print.
     char buf[48];
 
-	// First unretract (relative extrusion)
-	if(!saved_extruder_relative_mode){
-		enquecommand(PSTR("M83"), true);
-	}
-	//retract 45mm/s
-	// A single sprintf may not be faster, but is definitely 20B shorter
-	// than a sequence of commands building the string piece by piece
-	// A snprintf would have been a safer call, but since it is not used
-	// in the whole program, its implementation would bring more bytes to the total size
-	// The behavior of dtostrf 8,3 should be roughly the same as %-0.3
-	sprintf_P(buf, PSTR("G1 E%-0.3f F2700"), e_move);
-	enquecommand(buf, false);
+    if(e_move)
+    {
+        // First unretract (relative extrusion)
+        if(!saved_extruder_relative_mode){
+            enquecommand(PSTR("M83"), true);
+        }
+        //retract 45mm/s
+        // A single sprintf may not be faster, but is definitely 20B shorter
+        // than a sequence of commands building the string piece by piece
+        // A snprintf would have been a safer call, but since it is not used
+        // in the whole program, its implementation would bring more bytes to the total size
+        // The behavior of dtostrf 8,3 should be roughly the same as %-0.3
+        sprintf_P(buf, PSTR("G1 E%-0.3f F2700"), e_move);
+        enquecommand(buf, false);
+    }
 
-	// Then lift Z axis
-	sprintf_P(buf, PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]); 
-    // At this point the command queue is empty.
-    enquecommand(buf, false);
+    if(z_move)
+    {
+        // Then lift Z axis
+        sprintf_P(buf, PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]);
+        enquecommand(buf, false);
+    }
+
     // If this call is invoked from the main Arduino loop() function, let the caller know that the command
     // in the command queue is not the original command, but a new one, so it should not be removed from the queue.
     repeatcommand_front();
@@ -11073,12 +11104,10 @@ void restore_print_from_ram_and_continue(float e_move)
 
 	//first move print head in XY to the saved position:
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
-	st_synchronize();
 	//then move Z
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
-	st_synchronize();
 	//and finaly unretract (35mm/s)
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], 35, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
 	st_synchronize();
 
   #ifdef FANCHECK

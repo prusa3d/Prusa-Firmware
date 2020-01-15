@@ -44,6 +44,8 @@ enum BlockFlag {
     // than 32767, therefore the DDA algorithm may run with 16bit resolution only.
     // In addition, the stepper routine will not do any end stop checking for higher performance.
     BLOCK_FLAG_DDA_LOWRES = 8,
+    // Block starts with Zeroed E counter
+    BLOCK_FLAG_E_RESET = 16,
 };
 
 union dda_isteps_t
@@ -110,10 +112,14 @@ typedef struct {
 
   // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
   float speed_factor;
-    
+
 #ifdef LIN_ADVANCE
-  bool use_advance_lead;
-  unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
+  bool use_advance_lead;            // Whether the current block uses LA
+  uint16_t advance_rate,            // Step-rate for extruder speed
+           max_adv_steps,           // max. advance steps to get cruising speed pressure (not always nominal_speed!)
+           final_adv_steps;         // advance steps due to exit speed
+  uint8_t advance_step_loops;       // Number of stepper ticks for each advance isr
+  float adv_comp;                   // Precomputed E compression factor
 #endif
 
   // Save/recovery state data
@@ -123,7 +129,7 @@ typedef struct {
 } block_t;
 
 #ifdef LIN_ADVANCE
-  extern float extruder_advance_k, advance_ed_ratio;
+extern float extruder_advance_K;    // Linear-advance K factor
 #endif
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -163,6 +169,9 @@ void plan_set_position(float x, float y, float z, const float &e);
 
 void plan_set_z_position(const float &z);
 void plan_set_e_position(const float &e);
+
+// Reset the E position to zero at the start of the next segment
+void plan_reset_next_e();
 
 extern bool e_active();
 

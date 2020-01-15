@@ -6,12 +6,9 @@
 #include <avr/pgmspace.h>
 #include "pat9125.h"
 #include "stepper.h"
-#include "planner.h"
-#include "fastio.h"
 #include "io_atmega2560.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
-#include "ConfigurationStore.h"
 #include "mmu.h"
 #include "cardreader.h"
 
@@ -261,7 +258,7 @@ void fsensor_autoload_check_start(void)
 	if (!fsensor_enabled) return;
 	if (!fsensor_autoload_enabled) return;
 	if (fsensor_watch_autoload) return;
-	if (!pat9125_update_y()) //update sensor
+	if (!pat9125_update()) //update sensor
 	{
 		fsensor_disable();
 		fsensor_not_responding = true;
@@ -534,23 +531,11 @@ void fsensor_setup_interrupt(void)
 
 #endif //PAT9125
 
-void fsensor_st_block_begin(block_t* bl)
+void fsensor_st_block_chunk(int cnt)
 {
 	if (!fsensor_enabled) return;
-	if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
-		((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
-	{
-// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
-	}
-}
-
-void fsensor_st_block_chunk(block_t* bl, int cnt)
-{
-	if (!fsensor_enabled) return;
-	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
-	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
+	fsensor_st_cnt += cnt;
+	if (abs(fsensor_st_cnt) >= fsensor_chunk_len)
 	{
 // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
 		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
