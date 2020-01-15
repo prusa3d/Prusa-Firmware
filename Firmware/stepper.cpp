@@ -362,6 +362,10 @@ FORCE_INLINE void stepper_next_block()
     LA_phase = -1;
 #endif
 
+    if (current_block->flag & BLOCK_FLAG_E_RESET) {
+        count_position[E_AXIS] = 0;
+    }
+
     if (current_block->flag & BLOCK_FLAG_DDA_LOWRES) {
       counter_x.lo = -(current_block->step_event_count.lo >> 1);
       counter_y.lo = counter_x.lo;

@@ -130,6 +130,10 @@ float extruder_advance_K = LIN_ADVANCE_K;
 float position_float[NUM_AXIS];
 #endif
 
+// Request the next block to start at zero E count
+static bool plan_reset_next_e_queue;
+static bool plan_reset_next_e_sched;
+
 // Returns the index of the next block in the ring buffer
 // NOTE: Removed modulo (%) operator, which uses an expensive divide and multiplication.
 static inline int8_t next_block_index(int8_t block_index) {
@@ -441,6 +445,8 @@ void plan_init() {
   previous_speed[2] = 0.0;
   previous_speed[3] = 0.0;
   previous_nominal_speed = 0.0;
+  plan_reset_next_e_queue = false;
+  plan_reset_next_e_sched = false;
 }
 
 
@@ -658,6 +664,9 @@ void planner_abort_hard()
     previous_speed[2] = 0.0;
     previous_speed[3] = 0.0;
 
+    plan_reset_next_e_queue = false;
+    plan_reset_next_e_sched = false;
+
     // Relay to planner wait routine, that the current line shall be canceled.
     waiting_inside_plan_buffer_line_print_aborted = true;
 }
@@ -720,6 +729,20 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 
   // Save the global feedrate at scheduling time
   block->gcode_feedrate = feedrate;
+
+  // Reset the starting E position when requested
+  if (plan_reset_next_e_queue)
+  {
+      position[E_AXIS] = 0;
+#ifdef LIN_ADVANCE
+      position_float[E_AXIS] = 0;
+#endif
+
+      // the block might still be discarded later, but we need to ensure the lower-level
+      // count_position is also reset correctly for consistent results!
+      plan_reset_next_e_queue = false;
+      plan_reset_next_e_sched = true;
+  }
 
 #ifdef ENABLE_AUTO_BED_LEVELING
   apply_rotation_xyz(plan_bed_level_matrix, x, y, z);
@@ -1165,6 +1188,13 @@ Having the real displacement of the head, we can calculate the total movement le
   // Reset the block flag.
   block->flag = 0;
 
+  if (plan_reset_next_e_sched)
+  {
+      // finally propagate a pending reset
+      block->flag |= BLOCK_FLAG_E_RESET;
+      plan_reset_next_e_sched = false;
+  }
+
   // Initial limit on the segment entry velocity.
   float vmax_junction;
 
@@ -1365,6 +1395,11 @@ void plan_set_e_position(const float &e)
   #endif
   position[E_AXIS] = lround(e*cs.axis_steps_per_unit[E_AXIS]);  
   st_set_e_position(position[E_AXIS]);
+}
+
+void plan_reset_next_e()
+{
+    plan_reset_next_e_queue = true;
 }
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE

@@ -3356,6 +3356,49 @@ static void gcode_PRUSA_BadRAMBoFanTest(){
 #endif
 }
 
+
+// G92 - Set current position to coordinates given
+static void gcode_G92()
+{
+    bool codes[NUM_AXIS];
+    float values[NUM_AXIS];
+
+    // Check which axes need to be set
+    for(uint8_t i = 0; i < NUM_AXIS; ++i)
+    {
+        codes[i] = code_seen(axis_codes[i]);
+        if(codes[i])
+            values[i] = code_value();
+    }
+
+    if((codes[E_AXIS] && values[E_AXIS] == 0) &&
+       (!codes[X_AXIS] && !codes[Y_AXIS] && !codes[Z_AXIS]))
+    {
+        // As a special optimization, when _just_ clearing the E position
+        // we schedule a flag asynchronously along with the next block to
+        // reset the starting E position instead of stopping the planner
+        current_position[E_AXIS] = 0;
+        plan_reset_next_e();
+    }
+    else
+    {
+        // In any other case we're forced to synchronize
+        st_synchronize();
+        for(uint8_t i = 0; i < 3; ++i)
+        {
+            if(codes[i])
+                current_position[i] = values[i] + cs.add_homing[i];
+        }
+        if(codes[E_AXIS])
+            current_position[E_AXIS] = values[E_AXIS];
+
+        // Set all at once
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS],
+                          current_position[Z_AXIS], current_position[E_AXIS]);
+    }
+}
+
+
 #ifdef BACKLASH_X
 extern uint8_t st_backlash_x;
 #endif //BACKLASH_X
@@ -5217,22 +5260,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     //! ### G92 - Set position
     // -----------------------------
-    case 92:
-      if(!code_seen(axis_codes[E_AXIS]))
-        st_synchronize();
-      for(int8_t i=0; i < NUM_AXIS; i++) {
-        if(code_seen(axis_codes[i])) {
-           if(i == E_AXIS) {
-             current_position[i] = code_value();
-             plan_set_e_position(current_position[E_AXIS]);
-           }
-           else {
-		current_position[i] = code_value()+cs.add_homing[i];
-            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-           }
-        }
-      }
-      break;
+    case 92: {
+        gcode_G92();
+    }
+    break;
 
 
   //! ### G98 - Activate farm mode
