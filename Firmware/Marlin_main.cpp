@@ -3945,7 +3945,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     ---------------------------------------------------------------------------------
 	 # G Codes
 	### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a> 
-	In Prusa Frimware G0 and G1 are the same.
+	In Prusa Firmware G0 and G1 are the same.
 	#### Usage
 	
 	      G0 [ X | Y | Z | E | F | S ]
@@ -4171,6 +4171,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
 	### G2, G3 - Controlled Arc Move <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
 	
+    These commands don't propperly work with MBL enabled. The compensation only happens at the end of the move, so avoid long arcs.
+    
 	#### Usage
 	
 	      G2 [ X | Y | I | E | F ] (Clockwise Arc)
@@ -4270,7 +4272,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
     ### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
-    Unsing `G28` without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while `G28 W` will just home the printer
+    Using `G28` without any parameters will perfom home of all Axis AND mesh bed leveling, while `G28 W` will just home the printer.
     #### Usage
 	
          G28 [ X | Y | Z | W | C ]
@@ -4279,7 +4281,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
      - `X` - Flag to go back to the X axis origin
      - `Y` - Flag to go back to the Y axis origin
      - `Z` - Flag to go back to the Z axis origin
-     - `W` - Suppress mesh bed leveling
+     - `W` - Suppress mesh bed leveling if `X`, `Y` or `Z` are not provided
      - `C` - Calibrate X and Y origin (home) - Only on MK3/s
 	*/
     case 28: 
@@ -4513,6 +4515,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
+    Sensor must be over the bed.
+    The maximum travel distance before an error is triggered is 10mm.
     */
     case 30: 
         {
