@@ -7542,7 +7542,9 @@ Sigma_Exit:
          chdkHigh = _millis();
          chdkActive = true;
        
-        #elif defined(PHOTOGRAPH_PIN) && PHOTOGRAPH_PIN > -1
+       #else
+     	
+      	#if defined(PHOTOGRAPH_PIN) && PHOTOGRAPH_PIN > -1
 	const uint8_t NUM_PULSES=16;
 	const float PULSE_LENGTH=0.01524;
 	for(int i=0; i < NUM_PULSES; i++) {
@@ -7559,6 +7561,7 @@ Sigma_Exit:
         _delay_ms(PULSE_LENGTH);
         }
       	#endif
+      #endif //chdk end if
      }
     break;
     #ifdef PREVENT_DANGEROUS_EXTRUDE
