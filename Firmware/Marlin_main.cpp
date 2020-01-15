@@ -3731,7 +3731,7 @@ void process_commands()
     
     Set of internal PRUSA commands
     #### Usage
-         P RUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+         PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
     
     #### Parameters
       - `Ping` 
