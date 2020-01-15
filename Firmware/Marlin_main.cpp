@@ -6344,6 +6344,7 @@ Sigma_Exit:
     #### Usage
     
 	    M104 [ B | R | S ]
+    
     #### Parameters (not mandatory)
      
 	  - `S` - Set extruder temperature
