@@ -9568,10 +9568,6 @@ void long_pause() //long pause print
     // Stop heaters
     setAllTargetHotends(0);
 
-	//retract
-	current_position[E_AXIS] -= default_retraction;
-	plan_buffer_line_curposXYZE(400, active_extruder);
-
 	//lift z
 	current_position[Z_AXIS] += Z_PAUSE_LIFT;
 	if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
@@ -10246,23 +10242,29 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     // move away from the print.
     char buf[48];
 
-	// First unretract (relative extrusion)
-	if(!saved_extruder_relative_mode){
-		enquecommand(PSTR("M83"), true);
-	}
-	//retract 45mm/s
-	// A single sprintf may not be faster, but is definitely 20B shorter
-	// than a sequence of commands building the string piece by piece
-	// A snprintf would have been a safer call, but since it is not used
-	// in the whole program, its implementation would bring more bytes to the total size
-	// The behavior of dtostrf 8,3 should be roughly the same as %-0.3
-	sprintf_P(buf, PSTR("G1 E%-0.3f F2700"), e_move);
-	enquecommand(buf, false);
+    if(e_move)
+    {
+        // First unretract (relative extrusion)
+        if(!saved_extruder_relative_mode){
+            enquecommand(PSTR("M83"), true);
+        }
+        //retract 45mm/s
+        // A single sprintf may not be faster, but is definitely 20B shorter
+        // than a sequence of commands building the string piece by piece
+        // A snprintf would have been a safer call, but since it is not used
+        // in the whole program, its implementation would bring more bytes to the total size
+        // The behavior of dtostrf 8,3 should be roughly the same as %-0.3
+        sprintf_P(buf, PSTR("G1 E%-0.3f F2700"), e_move);
+        enquecommand(buf, false);
+    }
 
-	// Then lift Z axis
-	sprintf_P(buf, PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]); 
-    // At this point the command queue is empty.
-    enquecommand(buf, false);
+    if(z_move)
+    {
+        // Then lift Z axis
+        sprintf_P(buf, PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]);
+        enquecommand(buf, false);
+    }
+
     // If this call is invoked from the main Arduino loop() function, let the caller know that the command
     // in the command queue is not the original command, but a new one, so it should not be removed from the queue.
     repeatcommand_front();
