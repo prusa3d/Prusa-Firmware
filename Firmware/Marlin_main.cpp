@@ -5327,7 +5327,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             break;
             
         /*!
-        ### G85: Pick best babystep - Not active <a href="https://reprap.org/wiki/G-code#G85:_Pick_best_babystep>G85: Pick best babystep</a>
+        ### G85: Pick best babystep - Not active <a href="https://reprap.org/wiki/G-code#G85:_Pick_best_babystep">G85: Pick best babystep</a>
 		In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
 		*/
         case 85:
