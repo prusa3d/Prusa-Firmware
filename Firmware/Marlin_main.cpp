@@ -4262,7 +4262,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
     ### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
-    Using `G28` without any parameters will perfom home of all Axis AND mesh bed leveling, while `G28 W` will just home the printer.
+    Using `G28` without any parameters will perfom homing of all axis AND mesh bed leveling, while `G28 W` will just home all axis (no mesh bed leveling).
     #### Usage
 	
          G28 [ X | Y | Z | W | C ]
