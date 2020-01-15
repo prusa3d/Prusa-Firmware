@@ -3599,16 +3599,7 @@ void process_commands()
   ---------------------------------------------------------------------------------
   ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
   This causes the given message to be shown in the status line on an attached LCD.
-  
-  It is also used by internal to display status messages on LCD.
-    Here the internal status messages:
-    Only on MK3/s (TMC2130)
-    - CRASH DETECTED
-    - CRASH RECOVER
-    - CRASH_CANCEL
-    - TMC_SET_WAVE
-    - TMC_SET_STEP
-    - TMC_SET_CHOP
+  It is processed early as to allow printing messages that contain G, M, N or T.
  */
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
@@ -3618,6 +3609,19 @@ void process_commands()
   }
 
 #ifdef TMC2130
+  /*!
+  ---------------------------------------------------------------------------------
+  ### Special internal commands
+  These are used by internal functions to process certain actions in the right order. Some of these are also usable by the user.
+  They are processed early as the commands are complex (strings).
+  These are only available on the MK3(S) as these require TMC2130 drivers:
+    - CRASH DETECTED
+    - CRASH RECOVER
+    - CRASH_CANCEL
+    - TMC_SET_WAVE
+    - TMC_SET_STEP
+    - TMC_SET_CHOP
+  */
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
 	{
 
