@@ -5415,7 +5415,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     }
     break;
 
-
     /*!
     ### G98 - Activate farm mode <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode</a>
 	Enable Prusa-specific Farm functions and g-code.
