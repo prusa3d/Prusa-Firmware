@@ -6824,10 +6824,15 @@ static void lcd_main_menu()
   }
 
 
+  if(isPrintPaused && saved_printing_type == PRINTING_TYPE_USB)
+  {
 #ifdef FANCHECK
-  if((fan_check_error == EFCE_FIXED) && (saved_printing_type == PRINTING_TYPE_USB))
-    MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+      if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+          MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+#else
+      MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 #endif
+  }
 
 #ifdef SDSUPPORT
   if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal)
