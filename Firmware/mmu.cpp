@@ -1547,7 +1547,7 @@ void mmu_continue_loading(bool blocking)
     };
     Ls state = Ls::Enter;
 
-    const uint_least8_t max_retry = 2;
+    const uint_least8_t max_retry = 3;
     uint_least8_t retry = 0;
 
     while (!success)
@@ -1589,6 +1589,7 @@ void mmu_continue_loading(bool blocking)
             if (blocking)
             {
                 marlin_wait_for_click();
+                st_synchronize();
                 restore_print_from_ram_and_continue(0);
                 state = Ls::Retry;
             }

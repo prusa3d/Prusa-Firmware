@@ -308,6 +308,7 @@ extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
 extern int8_t lcd_change_fil_state;
+extern float default_retraction;
 
 #ifdef TMC2130
 void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
@@ -455,6 +456,7 @@ extern void print_mesh_bed_leveling_table();
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
+extern void cancel_saved_printing();
 
 
 //estimated time to end of the print

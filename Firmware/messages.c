@@ -168,3 +168,6 @@ const char MSG_OCTOPRINT_CANCEL[] PROGMEM_N1 = "// action:cancel"; ////
 const char MSG_FANCHECK_EXTRUDER[] PROGMEM_N1 = "Err: EXTR. FAN ERROR"; ////c=20
 const char MSG_FANCHECK_PRINT[] PROGMEM_N1 = "Err: PRINT FAN ERROR"; ////c=20
 const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
+#ifdef LA_LIVE_K
+const char MSG_ADVANCE_K[] PROGMEM_N1 = "Advance K:"; ////c=13
+#endif

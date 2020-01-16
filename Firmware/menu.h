@@ -76,6 +76,7 @@ void menu_start(void);
 extern void menu_end(void);
 
 extern void menu_back(void);
+extern void menu_back_no_reset(void);
 extern void menu_back(uint8_t nLevel);
 
 extern void menu_back_if_clicked(void);
@@ -83,6 +84,7 @@ extern void menu_back_if_clicked(void);
 extern void menu_back_if_clicked_fb(void);
 
 extern void menu_submenu(menu_func_t submenu);
+extern void menu_submenu_no_reset(menu_func_t submenu);
 
 extern uint8_t menu_item_ret(void);
 
@@ -130,7 +132,6 @@ extern const char menu_fmt_int3[];
 
 extern const char menu_fmt_float31[];
 extern const char menu_fmt_float13[];
-
 
 extern void menu_draw_float31(const char* str, float val);
 
