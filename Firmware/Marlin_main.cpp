@@ -5829,8 +5829,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
 	### M46 - Show the assigned IP address <a href="https://reprap.org/wiki/G-code#M46:_Show_the_assigned_IP_address">M46: Show the assigned IP address.</a>
     */
-    /*
-     case 46:
+    case 46:
     {
         // M46: Prusa3D: Show the assigned IP address.
         if (card.ToshibaFlashAir_isEnabled()) {
