@@ -3429,7 +3429,7 @@ extern uint8_t st_backlash_y;
 //!@n G4  - Dwell S<seconds> or P<milliseconds>
 //!@n G10 - retract filament according to settings of M207
 //!@n G11 - retract recover filament according to settings of M208
-//!@n G28 - Home all Axis
+//!@n G28 - Home all Axes
 //!@n G29 - Detailed Z-Probe, probes the bed at 3 or more points.  Will fail if you haven't homed yet.
 //!@n G30 - Single Z Probe, probes bed at current XY location.
 //!@n G31 - Dock sled (Z_PROBE_SLED only)
@@ -3548,7 +3548,7 @@ extern uint8_t st_backlash_y;
 
 //! _This is a list of currently implemented G Codes in Prusa firmware (dynamically generated from doxygen)._ 
 /**
-They are shown in order of appierence in the code.
+They are shown in order of appearance in the code.
 There are reasons why some G Codes aren't in numerical order.
 */
 
@@ -3599,10 +3599,13 @@ void process_commands()
   ---------------------------------------------------------------------------------
   ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
   This causes the given message to be shown in the status line on an attached LCD.
+  It is processed early as to allow printing messages that contain G, M, N or T.
   
-  It is also used by internal to display status messages on LCD.
-    Here the internal status messages:
-    Only on MK3/s (TMC2130)
+  ---------------------------------------------------------------------------------
+  ### Special internal commands
+  These are used by internal functions to process certain actions in the right order. Some of these are also usable by the user.
+  They are processed early as the commands are complex (strings).
+  These are only available on the MK3(S) as these require TMC2130 drivers:
     - CRASH DETECTED
     - CRASH RECOVER
     - CRASH_CANCEL
@@ -3731,7 +3734,7 @@ void process_commands()
     
     Set of internal PRUSA commands
     #### Usage
-         P RUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+         PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
     
     #### Parameters
       - `Ping` 
@@ -3941,7 +3944,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     ---------------------------------------------------------------------------------
 	 # G Codes
 	### G0, G1 - Coordinated movement X Y Z E <a href="https://reprap.org/wiki/G-code#G0_.26_G1:_Move">G0 & G1: Move</a> 
-	In Prusa Frimware G0 and G1 are the same.
+	In Prusa Firmware G0 and G1 are the same.
 	#### Usage
 	
 	      G0 [ X | Y | Z | E | F | S ]
@@ -4167,6 +4170,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
 	### G2, G3 - Controlled Arc Move <a href="https://reprap.org/wiki/G-code#G2_.26_G3:_Controlled_Arc_Move">G2 & G3: Controlled Arc Move</a>
 	
+    These commands don't propperly work with MBL enabled. The compensation only happens at the end of the move, so avoid long arcs.
+    
 	#### Usage
 	
 	      G2 [ X | Y | I | E | F ] (Clockwise Arc)
@@ -4230,11 +4235,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
 	### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
 	Retracts filament according to settings of `M207`
-	
-	#### Usage
-	
-	      G10
-	
     */
     case 10: 
        #if EXTRUDERS > 1
@@ -4249,10 +4249,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
 	### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
 	Unretracts/recovers filament according to settings of `M208`
-	#### Usage
-	
-	      G11
-	
     */
     case 11: 
        #if EXTRUDERS > 1
@@ -4265,8 +4261,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     
 
     /*!
-    ### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
-    Unsing `G28` without any paramters will perfom on the Prusa i3 printers home AND mesh bed leveling, while `G28 W` will just home the printer
+    ### G28 - Home all Axes one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
+    Using `G28` without any parameters will perfom homing of all axes AND mesh bed leveling, while `G28 W` will just home all axes (no mesh bed leveling).
     #### Usage
 	
          G28 [ X | Y | Z | W | C ]
@@ -4275,7 +4271,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
      - `X` - Flag to go back to the X axis origin
      - `Y` - Flag to go back to the Y axis origin
      - `Z` - Flag to go back to the Z axis origin
-     - `W` - Suppress mesh bed leveling
+     - `W` - Suppress mesh bed leveling if `X`, `Y` or `Z` are not provided
      - `C` - Calibrate X and Y origin (home) - Only on MK3/s
 	*/
     case 28: 
@@ -4509,6 +4505,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G30 - Single Z Probe <a href="https://reprap.org/wiki/G-code#G30:_Single_Z-Probe">G30: Single Z-Probe</a>
+    Sensor must be over the bed.
+    The maximum travel distance before an error is triggered is 10mm.
     */
     case 30: 
         {
@@ -4529,10 +4527,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   /*!
   ### G75 - Print temperature interpolation <a href="https://reprap.org/wiki/G-code#G75:_Print_temperature_interpolation">G75: Print temperature interpolation</a>
   Show/print PINDA temperature interpolating.
-  #### Usage
-  
-        G75
-  
   */
 	case 75:
 	{
@@ -4548,11 +4542,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   The PINDAv2 sensor has a built-in thermistor which has the advantage that the calibration can be done once for all materials.
   
   The Original i3 Prusa MK2/s uses PINDAv1 and this calibration improves the temperature drift, but not as good as the PINDAv2.
-  
-  #### Usage
-  
-        G76
-  
+
   #### Example
   
   ```
@@ -4831,10 +4821,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	#### Parameters
       - `N` - Number of mesh points on x axis. Default is 3. Valid values are 3 and 7.
       - `R` - Probe retries. Default 3 max. 10
-      - `V` - Verbosity level 1=low, 10=mid, 20=high. It can be only used if firmware has been compiled with SUPPORT_VERBOSITY active.
+      - `V` - Verbosity level 1=low, 10=mid, 20=high. It only can be used if the firmware has been compiled with SUPPORT_VERBOSITY active.
       
       Using the following parameters enables additional "manual" bed leveling correction. Valid values are -100 microns to 100 microns.
-	  #### Additional Parameters
+    #### Additional Parameters
       - `L` - Left Bed Level correct value in um.
       - `R` - Right Bed Level correct value in um.
       - `F` - Front Bed Level correct value in um.
@@ -4842,7 +4832,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     */
   
 	/*
-  * Probes a grid and produces a mesh to compensate for variable bed height
+    * Probes a grid and produces a mesh to compensate for variable bed height
 	* The S0 report the points as below
 	*  +----> X-axis
 	*  |
@@ -5261,11 +5251,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         /*!
 		### G81 - Mesh bed leveling status <a href="https://reprap.org/wiki/G-code#G81:_Mesh_bed_leveling_status">G81: Mesh bed leveling status</a>
 		Prints mesh bed leveling status and bed profile if activated.
-		#### Usage
-		
-			  G81
-		
-		*/
+        */
         case 81:
             if (mbl.active) {
                 SERIAL_PROTOCOLPGM("Num X,Y: ");
@@ -5340,7 +5326,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             break;
             
         /*!
-        ### G85: Pick best babystep - Not active <a href="https://reprap.org/wiki/G-code#G85:_Pick_best_babystep>G85: Pick best babystep</a>
+        ### G85: Pick best babystep - Not active <a href="https://reprap.org/wiki/G-code#G85:_Pick_best_babystep">G85: Pick best babystep</a>
 		In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
 		*/
         case 85:
@@ -5386,11 +5372,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G90 - Switch off relative mode <a href="https://reprap.org/wiki/G-code#G90:_Set_to_Absolute_Positioning">G90: Set to Absolute Positioning</a>
-	#### Usage
-	
-	      G90
-	
-	All coordinates from now on are absolute relative to the origin of the machine.
+	All coordinates from now on are absolute relative to the origin of the machine. E axis is also switched to absolute mode.
     */
     case 90: {
         for(uint8_t i = 0; i != NUM_AXIS; ++i)
@@ -5400,11 +5382,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G91 - Switch on relative mode <a href="https://reprap.org/wiki/G-code#G91:_Set_to_Relative_Positioning">G91: Set to Relative Positioning</a>
-	#### Usage
-	
-	      G91
-	
-    All coordinates from now on are relative to the last position. 
+    All coordinates from now on are relative to the last position. E axis is also switched to relative mode.
 	*/
     case 91: {
         for(uint8_t i = 0; i != NUM_AXIS; ++i)
@@ -5414,7 +5392,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G92 - Set position <a href="https://reprap.org/wiki/G-code#G92:_Set_Position">G92: Set Position</a>
-	#### Usage
+    
+    It is used for setting the current position of each axis. The parameters are always absolute to the origin.
+    If a parameter is omitted, that axis will not be affected.
+    If `X`, `Y`, or `Z` axis are specified, the move afterwards might stutter because of Mesh Bed Leveling. `E` axis is not affected if the target position is 0 (`G92 E0`).
+	A G92 without coordinates will reset all axes to zero on some firmware. This is not the case for Prusa-Firmware!
+    
+    #### Usage
 	
 	      G92 [ X | Y | Z | E ]
 	
@@ -5424,9 +5408,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	  - `Z` - new Z axis position
 	  - `E` - new extruder position
 	
-	Allows programming of absolute zero point, by reseting the current position to the values specified. This would set the machine's X coordinate to 10, and the extrude coordinate to 90. No physical motion will occur.
-	
-	A G92 without coordinates will reset all axes to zero on some firmware.
     */
     case 92: {
         gcode_G92();
@@ -5436,11 +5417,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
     ### G98 - Activate farm mode <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode</a>
 	Enable Prusa-specific Farm functions and g-code.
-	#### Usage
-	
-		  G98
-	
-	See Internal Prusa commands
+    See Internal Prusa commands.
     */
 	case 98:
 		farm_mode = 1;
@@ -5454,10 +5431,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*! ### G99 - Deactivate farm mode <a href="https://reprap.org/wiki/G-code#G99:_Deactivate_farm_mode">G99: Deactivate farm mode</a>
  	Disables Prusa-specific Farm functions and g-code.
-	#### Usage
-	
-		  G99
-	
    */
 	case 99:
 		farm_mode = 0;
@@ -5552,7 +5525,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     break;
 
     /*!
-	### M17 - Enable axes <a href="https://reprap.org/wiki/G-code#M17:_Enable.2FPower_all_stepper_motors">M17: Enable/Power all stepper motors</a>
+	### M17 - Enable all axes <a href="https://reprap.org/wiki/G-code#M17:_Enable.2FPower_all_stepper_motors">M17: Enable/Power all stepper motors</a>
     */
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
@@ -5591,6 +5564,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### M23 - Select file <a href="https://reprap.org/wiki/G-code#M23:_Select_SD_file">M23: Select SD file</a>
+    #### Usage
+    
+        M23 [filename]
+    
     */
     case 23: 
       starpos = (strchr(strchr_pointer + 4,'*'));
@@ -5621,9 +5598,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     Set position in SD card file to index in bytes.
     This command is expected to be called after M23 and before M24.
     Otherwise effect of this command is undefined.
-          M26 [ S ]
-      
-      - `S` - Index in bytes
+    #### Usage
+	
+	      M26 [ S ]
+	
+	#### Parameters
+	  - `S` - Index in bytes
     */
     case 26: 
       if(card.cardOK && code_seen('S')) {
@@ -5656,7 +5636,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
     /*! ### M29 - Stop SD write <a href="https://reprap.org/wiki/G-code#M29:_Stop_writing_to_SD_card">M29: Stop writing to SD card</a>
-	Currently has no effect.
+	Stops writing to the SD file signaling the end of the uploaded file. It is processed very early and it's not written to the card.
     */
     case 29:
       //processed in write to file routine above
@@ -5664,7 +5644,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       break;
 
     /*!
-	### M30 - Delete file  <filename> <a href="https://reprap.org/wiki/G-code#M30:_Delete_a_file_on_the_SD_card">M30: Delete a file on the SD card</a>
+	### M30 - Delete file <a href="https://reprap.org/wiki/G-code#M30:_Delete_a_file_on_the_SD_card">M30: Delete a file on the SD card</a>
+    #### Usage
+    
+        M30 [filename]
+    
     */
     case 30:
       if (card.cardOK){
@@ -5723,7 +5707,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     } break;
 
     /*!
-	### M982 - Start SD logging <a href="https://reprap.org/wiki/G-code#M928:_Start_SD_logging">M928: Start SD logging</a>
+	### M928 - Start SD logging <a href="https://reprap.org/wiki/G-code#M928:_Start_SD_logging">M928: Start SD logging</a>
+    #### Usage
+    
+        M928 [filename]
+    
     */
     case 928: 
       starpos = (strchr(strchr_pointer + 5,'*'));
@@ -5758,6 +5746,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### M42 - Set pin state <a href="https://reprap.org/wiki/G-code#M42:_Switch_I.2FO_pin">M42: Switch I/O pin</a>
+    #### Usage
+    
+        M42 [ P | S ]
+        
+    #### Parameters
+    - `P` - Pin number.
+    - `S` - Pin value. If the pin is analog, values are from 0 to 255. If the pin is digital, values are from 0 to 1.
+    
     */
     case 42:
       if (code_seen('S'))
@@ -5807,9 +5803,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### M45 - Bed skew and offset with manual Z up <a href="https://reprap.org/wiki/G-code#M45:_Bed_skew_and_offset_with_manual_Z_up">M45: Bed skew and offset with manual Z up</a>
-	  
-	    M45 [ V ]
-	  - `V` - Verbosity level 1, 10 and 20 (low, mid, high). Only when SUPPORT_VERBOSITY is defined.
+	#### Usage
+    
+        M45 [ V ]
+    #### Parameters
+	- `V` - Verbosity level 1, 10 and 20 (low, mid, high). Only when SUPPORT_VERBOSITY is defined. Optional.
+    - `Z` - If it is provided, only Z calibration will run. Otherwise full calibration is executed.
     */
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
@@ -5906,18 +5905,21 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
 	### M48 - Z-Probe repeatability measurement function <a href="https://reprap.org/wiki/G-code#M48:_Measure_Z-Probe_repeatability">M48: Measure Z-Probe repeatability</a>
     
-     This function assumes the bed has been homed.  Specifically, that a G28 command as been issued prior to invoking the M48 Z-Probe repeatability measurement function. Any information generated by a prior G29 Bed leveling command will be lost and need to be regenerated.
+     This function assumes the bed has been homed.  Specifically, that a G28 command as been issued prior to invoking the M48 Z-Probe repeatability measurement function. Any information generated by a prior G29 Bed leveling command will be lost and needs to be regenerated.
      
      The number of samples will default to 10 if not specified.  You can use upper or lower case letters for any of the options EXCEPT n.  n must be in lower case because Marlin uses a capital N for its communication protocol and will get horribly confused if you send it a capital N.
+     @todo Why would you check for both uppercase and lowercase? Seems wasteful.
 	 
+     #### Usage
+     
 	     M48 [ n | X | Y | V | L ]
+     
+     #### Parameters
        - `n` - Number of samples. Valid values 4-50
 	   - `X` - X position for samples
 	   - `Y` - Y position for samples
 	   - `V` - Verbose level. Valid values 1-4
 	   - `L` - Legs of movementprior to doing probe. Valid values 1-15
-     
-
     */
     case 48: // M48 Z-Probe repeatability
         {
@@ -6159,14 +6161,15 @@ Sigma_Exit:
 
 	/*!
 	### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
-	Prusa firmware just shows percent done and time remaining.
-	
+	#### Usage
+    
 	    M73 [ P | R | Q | S ]
-	
-       - `P` - Percent in normal mode
-       - `R` - Time remaining in normal mode
-       - `Q` - Percent in silent mode
-       - `S` - Time in silent mode
+    
+	#### Parameters
+    - `P` - Percent in normal mode
+    - `R` - Time remaining in normal mode
+    - `Q` - Percent in silent mode
+    - `S` - Time in silent mode
    */
 	case 73: //M73 show percent done and time remaining
 		if(code_seen('P')) print_percent_done_normal = code_value();
@@ -6183,9 +6186,11 @@ Sigma_Exit:
 
     /*!
 	### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
-	
+	#### Usage
+    
 	    M104 [ S ]
-	
+    
+	#### Parameters
        - `S` - Target temperature
     */
     case 104: // M104
@@ -6203,6 +6208,7 @@ Sigma_Exit:
 
     /*!
 	### M112 - Emergency stop <a href="https://reprap.org/wiki/G-code#M112:_Full_.28Emergency.29_Stop">M112: Full (Emergency) Stop</a>
+    It is processed much earlier as to bypass the cmdqueue.
     */
     case 112: 
       kill(MSG_M112_KILL, 3);
@@ -6210,6 +6216,12 @@ Sigma_Exit:
 
     /*!
 	### M140 - Set bed temperature <a href="https://reprap.org/wiki/G-code#M140:_Set_Bed_Temperature_.28Fast.29">M140: Set Bed Temperature (Fast)</a>
+    #### Usage
+    
+	    M140 [ S ]
+    
+	#### Parameters
+       - `S` - Target temperature
     */
     case 140: 
       if (code_seen('S')) setTargetBed(code_value());
@@ -6224,7 +6236,7 @@ Sigma_Exit:
 	  - `Tx:` - x Tool (actual / target)
 	  - `@:`  - Hotend power
 	  - `B@:` - Bed power
-	  - `P:`  - PINDAv2 actual (only MK2.5/s and MK3.5/s)
+	  - `P:`  - PINDAv2 actual (only MK2.5/s and MK3/s)
 	  - `A:`  - Ambient actual (only MK3/s)
 	
 	_Example:_
@@ -6329,7 +6341,11 @@ Sigma_Exit:
 
     /*!
 	### M109 - Wait for extruder temperature <a href="https://reprap.org/wiki/G-code#M109:_Set_Extruder_Temperature_and_Wait">M109: Set Extruder Temperature and Wait</a>
-    Parameters (not mandatory):
+    #### Usage
+    
+	    M104 [ B | R | S ]
+    
+    #### Parameters (not mandatory)
      
 	  - `S` - Set extruder temperature
       - `R` - Set extruder temperature
@@ -6337,8 +6353,7 @@ Sigma_Exit:
     
     Parameters S and R are treated identically.
     Command always waits for both cool down and heat up.
-    If no parameters are supplied waits for previously
-     set extruder temperature.
+    If no parameters are supplied waits for previously set extruder temperature.
     */
     case 109:
     {
@@ -6391,7 +6406,11 @@ Sigma_Exit:
 
     /*!
 	### M190 - Wait for bed temperature <a href="https://reprap.org/wiki/G-code#M190:_Wait_for_bed_temperature_to_reach_target_temp">M190: Wait for bed temperature to reach target temp</a>
-    Parameters (not mandatory):
+    #### Usage
+    
+        M190 [ R | S ]
+    
+    #### Parameters (not mandatory)
     
 	  - `S` - Set extruder temperature and wait for heating
       - `R` - Set extruder temperature and wait for heating or cooling
@@ -6454,6 +6473,12 @@ Sigma_Exit:
 
       /*!
 	  ### M106 - Set fan speed <a href="https://reprap.org/wiki/G-code#M106:_Fan_On">M106: Fan On</a>
+      #### Usage
+      
+        M106 [ S ]
+        
+      #### Parameters
+      - `S` - Specifies the duty cycle of the print fan. Allowed values are 0-255. If it's omitted, a value of 255 is used.
       */
       case 106: // M106 Sxxx Fan On S<speed> 0 .. 255
         if (code_seen('S')){
@@ -6476,6 +6501,7 @@ Sigma_Exit:
 
       /*!
 	  ### M80 - Turn on the Power Supply <a href="https://reprap.org/wiki/G-code#M80:_ATX_Power_On">M80: ATX Power On</a>
+      Only works if the firmware is compiled with PS_ON_PIN defined.
       */
       case 80:
         SET_OUTPUT(PS_ON_PIN); //GND
@@ -6496,6 +6522,7 @@ Sigma_Exit:
 
       /*!
 	  ### M81 - Turn off Power Supply <a href="https://reprap.org/wiki/G-code#M81:_ATX_Power_Off">M81: ATX Power Off</a>
+      Only works if the firmware is compiled with PS_ON_PIN defined.
       */
       case 81: 
         disable_heater();
@@ -6537,18 +6564,18 @@ Sigma_Exit:
 
     /*!
 	### M84 - Disable steppers <a href="https://reprap.org/wiki/G-code#M84:_Stop_idle_hold">M84: Stop idle hold</a>
-		
     This command can be used to set the stepper inactivity timeout (`S`) or to disable steppers (`X`,`Y`,`Z`,`E`)
+	This command can be used without any additional parameters. In that case all steppers are disabled.
     
-	_This command can be used without any additional parameters._
+    The file completeness check uses this parameter to detect an incomplete file. It has to be present at the end of a file with no parameters.
 	
         M84 [ S | X | Y | Z | E ]
 	
 	  - `S` - Seconds
-	  - `X` - X axsis
+	  - `X` - X axis
 	  - `Y` - Y axis
 	  - `Z` - Z axis
-	  - `E` - Exruder drive(s)
+	  - `E` - Exruder
 
 	### M18 - Disable steppers <a href="https://reprap.org/wiki/G-code#M18:_Disable_all_stepper_motors">M18: Disable all stepper motors</a>
 	Equal to M84 (compatibility)
@@ -6591,7 +6618,12 @@ Sigma_Exit:
 
     /*!
 	### M85 - Set max inactive time <a href="https://reprap.org/wiki/G-code#M85:_Set_Inactivity_Shutdown_Timer">M85: Set Inactivity Shutdown Timer</a>
-	Set Inactivity Shutdown Timer with parameter S<seconds>. "M85 S0" will disable the inactivity shutdown time (default)
+    #### Usage
+    
+        M85 [ S ]
+    
+    #### Parameters
+    - `S` - specifies the time in seconds. If a value of 0 is specified, the timer is disabled.
     */
     case 85: // M85
       if(code_seen('S')) {
@@ -6601,15 +6633,14 @@ Sigma_Exit:
 #ifdef SAFETYTIMER
 
     /*!
-    ### M86 - Set safety timer expiration time <a href="https://reprap.org/wiki/G-code#M86:_Set_Safety_Timer_expiration_time">M86: Set Safety Timer expiration time</a>
-    Sets the safety timer expiration time in seconds.
-	
+    ### M86 - Set safety timer expiration time <a href="https://reprap.org/wiki/G-code#M86:_Set_Safety_Timer_expiration_time">M86: Set Safety Timer expiration time</a>	
     When safety timer expires, heatbed and nozzle target temperatures are set to zero.
+    #### Usage
     
         M86 [ S ]
     
-      - `S` - Seconds  Setting it to 0 will disable safety timer.
-	
+    #### Parameters
+    - `S` - specifies the time in seconds. If a value of 0 is specified, the timer is disabled.
     */
 	case 86: 
 	  if (code_seen('S')) {
@@ -6622,13 +6653,15 @@ Sigma_Exit:
     /*!
 	### M92 Set Axis steps-per-unit <a href="https://reprap.org/wiki/G-code#M92:_Set_axis_steps_per_unit">M92: Set axis_steps_per_unit</a>
 	Allows programming of steps per unit (usually mm) for motor drives. These values are reset to firmware defaults on power on, unless saved to EEPROM if available (M500 in Marlin)
-	
+	#### Usage
+    
 	    M92 [ X | Y | Z | E ]
 	
-	  - `X` - Steps per unit for the X drive
-	  - `Y` - Steps per unit for the Y drive
-	  - `Z` - Steps per unit for the Z drive
-	  - `E` - Steps per unit for the extruder drive(s)
+    #### Parameters
+	- `X` - Steps per unit for the X drive
+	- `Y` - Steps per unit for the Y drive
+	- `Z` - Steps per unit for the Z drive
+	- `E` - Steps per unit for the extruder drive
     */
     case 92:
       for(int8_t i=0; i < NUM_AXIS; i++)
@@ -6655,10 +6688,12 @@ Sigma_Exit:
     /*!
 	### M110 - Set Line number <a href="https://reprap.org/wiki/G-code#M110:_Set_Current_Line_Number">M110: Set Current Line Number</a>
 	Sets the line number in G-code
-	
+	#### Usage
+    
 	    M110 [ N ]
 	
-	  - `N` - Line number
+    #### Parameters
+	- `N` - Line number
     */
     case 110:
       if (code_seen('N'))
@@ -6667,11 +6702,13 @@ Sigma_Exit:
 
     /*!
     ### M113 - Get or set host keep-alive interval <a href="https://reprap.org/wiki/G-code#M113:_Host_Keepalive">M113: Host Keepalive</a>
-    During some lengthy processes, such as G29, Marlin may appear to the host to have “gone away.” The “host keepalive” feature will send messages to the host when Marlin is busy or waiting for user response so the host won’t try to reconnect.
+    During some lengthy processes, such as G29, Marlin may appear to the host to have “gone away.” The “host keepalive” feature will send messages to the host when Marlin is busy or waiting for user response so the host won’t try to reconnect (or disconnect).
+    #### Usage
     
         M113 [ S ]
 	
-	  - `S` - Seconds  Default is 2 seconds between "busy" messages 
+    #### Parameters
+	- `S` - Seconds. Default is 2 seconds between "busy" messages
     */
 	case 113:
 		if (code_seen('S')) {
@@ -6688,13 +6725,6 @@ Sigma_Exit:
     /*!
 	### M115 - Firmware info <a href="https://reprap.org/wiki/G-code#M115:_Get_Firmware_Version_and_Capabilities">M115: Get Firmware Version and Capabilities</a>
     Print the firmware info and capabilities
-    
-        M115 [ V | U ]
-	
-	  - V - Report current installed firmware version
-	  - U - Firmware version provided by G-code to be compared to current one.
-	  
-    
     Without any arguments, prints Prusa firmware version number, machine type, extruder count and UUID.
     `M115 U` Checks the firmware version provided. If the firmware version provided by the U code is higher than the currently running firmware, it will pause the print for 30s and ask the user to upgrade the firmware.
 	
@@ -6711,6 +6741,13 @@ Sigma_Exit:
 	`M115 U3.8.2-RC1` results on LCD display for 30s or user interaction:
 	
 	`New firmware version available: 3.8.2-RC1 Please upgrade.`
+    #### Usage
+    
+        M115 [ V | U ]
+	
+    #### Parameters
+	- V - Report current installed firmware version
+	- U - Firmware version provided by G-code to be compared to current one.  
 	*/
 	case 115: // M115
       if (code_seen('V')) {
@@ -6828,13 +6865,21 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       break;
-      //TODO: update for all axis, use for loop
+      //!@todo update for all axes, use for loop
     
 
     #ifdef BLINKM
     /*!
 	### M150 - Set RGB(W) Color <a href="https://reprap.org/wiki/G-code#M150:_Set_LED_color">M150: Set LED color</a>
 	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code by defining BLINKM and its dependencies.
+    #### Usage
+    
+        M150 [ R | U | B ]
+    
+    #### Parameters
+    - `R` - Red color value
+    - `U` - Green color value. It is NOT `G`!
+    - `B` - Blue color value
     */
     case 150:
       {
@@ -6853,9 +6898,11 @@ Sigma_Exit:
 
     /*!
 	### M200 - Set filament diameter <a href="https://reprap.org/wiki/G-code#M200:_Set_filament_diameter">M200: Set filament diameter</a>
-	
+	#### Usage
+    
 	    M200 [ D | T ]
 	
+    #### Parameters
 	  - `D` - Diameter in mm
 	  - `T` - Number of extruder (MMUs)
     */
@@ -6900,6 +6947,7 @@ Sigma_Exit:
 
     /*!
 	### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#M201:_Set_max_printing_acceleration">M201: Set max printing acceleration</a>
+    For each axis individually.
     */
     case 201:
 		for (int8_t i = 0; i < NUM_AXIS; i++)
@@ -6936,6 +6984,7 @@ Sigma_Exit:
 
     /*!
 	### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#M203:_Set_maximum_feedrate">M203: Set maximum feedrate</a>
+    For each axis individually.
     */
     case 203: // M203 max feedrate mm/sec
 		for (int8_t i = 0; i < NUM_AXIS; i++)
@@ -6963,16 +7012,22 @@ Sigma_Exit:
 
     /*!
 	### M204 - Acceleration settings <a href="https://reprap.org/wiki/G-code#M204:_Set_default_acceleration">M204: Set default acceleration</a>
-    */
-    /*! Supporting old format: 
+
+    #### Old format:
+    ##### Usage
     
-             M204 [ S | T ]
-    - `S` - normal moves 
+        M204 [ S | T ]
+        
+    ##### Parameters
+    - `S` - normal moves
     - `T` - filmanent only moves
     
-    and new format:        
+    #### New format:
+    ##### Usage
     
-             M204 [ P | R | T ]
+        M204 [ P | R | T ]
+    
+    ##### Parameters
     - `P` - printing moves
     - `R` - filmanent only moves
     - `T` - travel moves (as of now T is ignored)
@@ -6995,7 +7050,9 @@ Sigma_Exit:
             cs.retract_acceleration = code_value();
           if(code_seen('T')) {
             // Interpret the T value as the travel acceleration in the new Marlin format.
-            //FIXME Prusa3D firmware currently does not support travel acceleration value independent from the extruding acceleration value.
+            /*!
+            @todo Prusa3D firmware currently does not support travel acceleration value independent from the extruding acceleration value.
+            */
             // travel_acceleration = code_value();
           }
         }
@@ -7004,11 +7061,12 @@ Sigma_Exit:
 
     /*!
 	### M205 - Set advanced settings <a href="https://reprap.org/wiki/G-code#M205:_Advanced_settings">M205: Advanced settings</a>
-    */
-    /*! Set some advanced settings related to movement.
+    Set some advanced settings related to movement.
+    #### Usage
     
-               M205 [ S | T | B | X | Y | Z | E ]
-    
+        M205 [ S | T | B | X | Y | Z | E ]
+        
+    #### Parameters
     - `S` - Minimum feedrate for print moves (unit/s)
     - `T` - Minimum feedrate for travel moves (units/s)
     - `B` - Minimum segment time (us)
@@ -7033,9 +7091,11 @@ Sigma_Exit:
 
     /*!
 	### M206 - Set additional homing offsets <a href="https://reprap.org/wiki/G-code#M206:_Offset_axes">M206: Offset axes</a>
+    #### Usage
     
-               M206 [ X | Y | Z]
+        M206 [ X | Y | Z ]
     
+    #### Parameters
     - `X` - X axis offset
     - `Y` - Y axis offset
     - `Z` - Z axis offset
@@ -7050,9 +7110,11 @@ Sigma_Exit:
 
     /*!
 	### M207 - Set firmware retraction <a href="https://reprap.org/wiki/G-code#M207:_Set_retract_length">M207: Set retract length</a>
-	
-               M207 [ S | F | Z]
+	#### Usage
     
+        M207 [ S | F | Z ]
+    
+    #### Parameters
     - `S` - positive length to retract, in mm
     - `F` - retraction feedrate, in mm/min
     - `Z` - additional zlift/hop
@@ -7075,9 +7137,11 @@ Sigma_Exit:
 
     /*!
 	### M208 - Set retract recover length <a href="https://reprap.org/wiki/G-code#M208:_Set_unretract_length">M208: Set unretract length</a>
-	
-               M208 [ S | F ]
+	#### Usage
     
+        M208 [ S | F ]
+    
+    #### Parameters
     - `S` - positive length surplus to the M207 Snnn, in mm
     - `F` - feedrate, in mm/sec
     */
@@ -7095,12 +7159,13 @@ Sigma_Exit:
 
     /*!
 	### M209 - Enable/disable automatict retract <a href="https://reprap.org/wiki/G-code#M209:_Enable_automatic_retract">M209: Enable automatic retract</a>
-	
-               M209 [ S ]
-    
-    - `S` - 1=true or 0=false
-	
 	This boolean value S 1=true or 0=false enables automatic retract detect if the slicer did not support G10/G11: every normal extrude-only move will be classified as retract depending on the direction.
+    #### Usage
+    
+        M209 [ S ]
+        
+    #### Parameters
+    - `S` - 1=true or 0=false
     */
     case 209: // M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.
     {
@@ -7146,6 +7211,13 @@ Sigma_Exit:
     /*!
 	### M218 - Set hotend offset <a href="https://reprap.org/wiki/G-code#M218:_Set_Hotend_Offset">M218: Set Hotend Offset</a>
 	In Prusa Firmware this G-code is only active if `EXTRUDERS` is higher then 1 in the source code. On Original i3 Prusa MK2/s MK2.5/s MK3/s it is not active.
+    #### Usage
+    
+        M218 [ X | Y ]
+        
+    #### Parameters
+    - `X` - X offset
+    - `Y` - Y offset
     */
     case 218: // M218 - set hotend offset (in mm), T<extruder_number> X<offset_on_X> Y<offset_on_Y>
     {
@@ -7176,13 +7248,14 @@ Sigma_Exit:
 
     /*!
 	### M220 Set feedrate percentage <a href="https://reprap.org/wiki/G-code#M220:_Set_speed_factor_override_percentage">M220: Set speed factor override percentage</a>
-	
-	          M220 [ B | S | R ]
-      
-      - `B` - Backup current speed factor
-	  - `S` - Speed factor override percentage (0..100 or higher)
-	  - `R` - Restore previous speed factor
-	
+	#### Usage
+    
+        M220 [ B | S | R ]
+    
+    #### Parameters
+    - `B` - Backup current speed factor
+	- `S` - Speed factor override percentage (0..100 or higher)
+	- `R` - Restore previous speed factor
     */
     case 220: // M220 S<factor in percent>- set speed factor override percentage
     {
@@ -7202,12 +7275,13 @@ Sigma_Exit:
 
     /*!
 	### M221 - Set extrude factor override percentage <a href="https://reprap.org/wiki/G-code#M221:_Set_extrude_factor_override_percentage">M221: Set extrude factor override percentage</a>
-	
-	          M221 [ S | T ]
-      
-	  - `S` - Extrude factor override percentage (0..100 or higher), default 100%
-	  - `T` - Extruder drive number (Prusa Firmware only), default 0 if not set.
-	  
+	#### Usage
+    
+        M221 [ S | T ]
+    
+    #### Parameters
+	- `S` - Extrude factor override percentage (0..100 or higher), default 100%
+	- `T` - Extruder drive number (Prusa Firmware only), default 0 if not set.
     */
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
     {
@@ -7233,13 +7307,14 @@ Sigma_Exit:
 
     /*!
     ### M226 - Wait for Pin state <a href="https://reprap.org/wiki/G-code#M226:_Wait_for_pin_state">M226: Wait for pin state</a>
-    
-            M226 [ P | S ]
-    
-      - `P` - pin number
-      - `S` - pin state
-	
     Wait until the specified pin reaches the state required
+    #### Usage
+    
+        M226 [ P | S ]
+    
+    #### Parameters
+    - `P` - pin number
+    - `S` - pin state
     */
 	case 226: // M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
 	{
@@ -7298,6 +7373,13 @@ Sigma_Exit:
     /*!
 	### M280 - Set/Get servo position <a href="https://reprap.org/wiki/G-code#M280:_Set_servo_position">M280: Set servo position</a>
 	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+    #### Usage
+    
+        M280 [ P | S ]
+    
+    #### Parameters
+    - `P` - Servo index (id)
+    - `S` - Target position
     */
     case 280: // M280 - set servo position absolute. P: servo index, S: angle or microseconds
       {
@@ -7340,13 +7422,14 @@ Sigma_Exit:
     
     /*!
 	### M300 - Play tone <a href="https://reprap.org/wiki/G-code#M300:_Play_beep_sound">M300: Play beep sound</a>
-	
-          M300 [ S | P ]
-      
-      - `S` - frequency in Hz
-      - `P` - duration in milliseconds
-	
 	In Prusa Firmware the defaults are `100Hz` and `1000ms`, so that `M300` without parameters will beep for a second.
+    #### Usage
+    
+        M300 [ S | P ]
+    
+    #### Parameters
+    - `S` - frequency in Hz. Not all firmware versions support this parameter
+    - `P` - duration in milliseconds
     */
     case 300: // M300
     {
@@ -7370,17 +7453,17 @@ Sigma_Exit:
 
     /*!
 	### M301 - Set hotend PID <a href="https://reprap.org/wiki/G-code#M301:_Set_PID_parameters">M301: Set PID parameters</a>
-	  
-          M301 [ P | I | D | C ]
-      
-      - `P` - proportional (Kp)
-      - `I` - integral (Ki)
-      - `D` - derivative (Kd)
-      - `C` - heating power=Kc*(e_speed0)
-	  
 	Sets Proportional (P), Integral (I) and Derivative (D) values for hot end.
-	
-	See also <a href="https://reprap.org/wiki/PID_Tuning">PID Tuning.</a>
+    See also <a href="https://reprap.org/wiki/PID_Tuning">PID Tuning.</a>
+    #### Usage
+    
+        M301 [ P | I | D | C ]
+    
+    #### Parameters
+    - `P` - proportional (Kp)
+    - `I` - integral (Ki)
+    - `D` - derivative (Kd)
+    - `C` - heating power=Kc*(e_speed0)  
     */
     case 301:
       {
@@ -7413,16 +7496,16 @@ Sigma_Exit:
 
     /*!
 	### M304 - Set bed PID  <a href="https://reprap.org/wiki/G-code#M304:_Set_PID_parameters_-_Bed">M304: Set PID parameters - Bed</a>
-	  
-          M304 [ P | I | D ]
-      
-      - `P` - proportional (Kp)
-      - `I` - integral (Ki)
-      - `D` - derivative (Kd)
-	  
 	Sets Proportional (P), Integral (I) and Derivative (D) values for bed.
-	
-	See also <a href="https://reprap.org/wiki/PID_Tuning">PID Tuning.</a>
+    See also <a href="https://reprap.org/wiki/PID_Tuning">PID Tuning.</a>
+    #### Usage
+    
+        M304 [ P | I | D ]
+    
+    #### Parameters
+    - `P` - proportional (Kp)
+    - `I` - integral (Ki)
+    - `D` - derivative (Kd)
     */
     case 304:
       {
@@ -7448,7 +7531,7 @@ Sigma_Exit:
 	
 	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
 	
-	You need to define `CHDK` and assign a `PHOTOGRAPH_PIN` to bea ble to use it.
+	You need to (re)define and assign `CHDK` or `PHOTOGRAPH_PIN` the correct pin number to be able to use the feature.
     */
     case 240: // M240  Triggers a camera by emulating a Canon RC-1 : http://www.doc-diy.net/photo/rc-1_hacked/
      {
@@ -7485,12 +7568,13 @@ Sigma_Exit:
 
     /*!
 	### M302 - Allow cold extrude, or set minimum extrude temperature <a href="https://reprap.org/wiki/G-code#M302:_Allow_cold_extrudes">M302: Allow cold extrudes</a>
-	  
-          M302 [ S ]
-      
-      - `S` - Cold extrude minimum temperature
-	  
-	This tells the printer to allow movement of the extruder motor above a certain temperature, or if disabled, to allow extruder movement when the hotend is below a safe printing temperature.
+    This tells the printer to allow movement of the extruder motor above a certain temperature, or if disabled, to allow extruder movement when the hotend is below a safe printing temperature.
+    #### Usage
+    
+        M302 [ S ]
+    
+    #### Parameters
+    - `S` - Cold extrude minimum temperature
     */
     case 302:
     {
@@ -7503,14 +7587,15 @@ Sigma_Exit:
 
     /*!
 	### M303 - PID autotune <a href="https://reprap.org/wiki/G-code#M303:_Run_PID_tuning">M303: Run PID tuning</a>
-      
-          M303 [ E | S | C ]
-      
-      - `E` - Extruder, default `E0`.
-      - `S` - Target temperature, default `210°C`
-      - `C` - Cycles, default `5`
+    PID Tuning refers to a control algorithm used in some repraps to tune heating behavior for hot ends and heated beds. This command generates Proportional (Kp), Integral (Ki), and Derivative (Kd) values for the hotend or bed. Send the appropriate code and wait for the output to update the firmware values.
+    #### Usage
     
-	PID Tuning refers to a control algorithm used in some repraps to tune heating behavior for hot ends and heated beds. This command generates Proportional (Kp), Integral (Ki), and Derivative (Kd) values for the hotend or bed (`E-1`). Send the appropriate code and wait for the output to update the firmware.
+        M303 [ E | S | C ]
+    
+    #### Parameters
+      - `E` - Extruder, default `E0`. Use `E-1` to calibrate the bed PID
+      - `S` - Target temperature, default `210°C` for hotend, 70 for bed
+      - `C` - Cycles, default `5`
 	*/
     case 303:
     {
@@ -7528,8 +7613,8 @@ Sigma_Exit:
     
     /*!
 	### M400 - Wait for all moves to finish <a href="https://reprap.org/wiki/G-code#M400:_Wait_for_current_moves_to_finish">M400: Wait for current moves to finish</a>
-	
-	Finishes all current moves and and thus clears the buffer. 
+	Finishes all current moves and and thus clears the buffer.
+    Equivalent to `G4` with no parameters.
     */
     case 400:
     {
@@ -7539,15 +7624,15 @@ Sigma_Exit:
 
     /*!
 	### M403 - Set filament type (material) for particular extruder and notify the MMU <a href="https://reprap.org/wiki/G-code#M403:_Set_filament_type_.28material.29_for_particular_extruder_and_notify_the_MMU.">M403 - Set filament type (material) for particular extruder and notify the MMU</a>
-      
-          M403 [ E | F ]
-      
-      - `E` - Extruder number
-      - `F` - Filament type
-      
-	  Currently three different materials are needed (default, flex and PVA).
-	  
-	  And storing this information for different load/unload profiles etc. in the future firmware does not have to wait for "ok" from MMU.
+    Currently three different materials are needed (default, flex and PVA).  
+    And storing this information for different load/unload profiles etc. in the future firmware does not have to wait for "ok" from MMU.
+    #### Usage
+    
+        M403 [ E | F ]
+    
+    #### Parameters
+    - `E` - Extruder number. 0-indexed.
+    - `F` - Filament type
 	*/
     case 403:
 	{
@@ -7567,8 +7652,7 @@ Sigma_Exit:
 
     /*!
 	### M500 - Store settings in EEPROM <a href="https://reprap.org/wiki/G-code#M500:_Store_parameters_in_non-volatile_storage">M500: Store parameters in non-volatile storage</a>
-	
-	Save current parameters to EEPROM, SD card or other non-volatile storage.
+	Save current parameters to EEPROM.
     */
     case 500:
     {
@@ -7578,8 +7662,7 @@ Sigma_Exit:
 
     /*!
 	### M501 - Read settings from EEPROM <a href="https://reprap.org/wiki/G-code#M501:_Read_parameters_from_EEPROM">M501: Read parameters from EEPROM</a>
-	
-	Set the active parameters to those stored in the EEPROM, SD card or other non-volatile storage. This is useful to revert parameters after experimenting with them.
+	Set the active parameters to those stored in the EEPROM. This is useful to revert parameters after experimenting with them.
     */
     case 501:
     {
@@ -7589,8 +7672,7 @@ Sigma_Exit:
 
     /*!
 	### M502 - Revert all settings to factory default <a href="https://reprap.org/wiki/G-code#M502:_Restore_Default_Settings">M502: Restore Default Settings</a>
-	
-	This command resets all tunable parameters to their default values, as set in the firmware's configuration files. This doesn't reset any parameters stored in the EEPROM, so it must be followed with M500 to reboot with default settings.
+	This command resets all tunable parameters to their default values, as set in the firmware's configuration files. This doesn't reset any parameters stored in the EEPROM, so it must be followed by M500 to write the default settings.
     */
     case 502:
     {
@@ -7600,7 +7682,6 @@ Sigma_Exit:
 
     /*!
 	### M503 - Repport all settings currently in memory <a href="https://reprap.org/wiki/G-code#M503:_Report_Current_Settings">M503: Report Current Settings</a>
-	
 	This command asks the firmware to reply with the current print settings as set in memory. Settings will differ from EEPROM contents if changed since the last load / save. The reply output includes the G-Code commands to produce each setting. For example, Steps-Per-Unit values are displayed as an M92 command.
     */
     case 503:
@@ -7611,7 +7692,6 @@ Sigma_Exit:
 
     /*!
 	### M509 - Force language selection <a href="https://reprap.org/wiki/G-code#M509:_Force_language_selection">M509: Force language selection</a>
-    
 	Resets the language to English.
 	Only on Original Prusa i3 MK2.5/s and MK3/s with multiple languages.
 	*/
@@ -7626,8 +7706,13 @@ Sigma_Exit:
 
     /*!
 	### M540 - Abort print on endstop hit (enable/disable) <a href="https://reprap.org/wiki/G-code#M540_in_Marlin:_Enable.2FDisable_.22Stop_SD_Print_on_Endstop_Hit.22">M540 in Marlin: Enable/Disable "Stop SD Print on Endstop Hit"</a>
-    
 	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code. You must define `ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED`.
+    #### Usage
+    
+        M540 [ S ]
+    
+    #### Parameters
+    - `S` - disabled=0, enabled=1
 	*/
     case 540:
     {
@@ -7638,14 +7723,14 @@ Sigma_Exit:
 
 	/*!
 	### M851 - Set Z-Probe Offset <a href="https://reprap.org/wiki/G-code#M851:_Set_Z-Probe_Offset">M851: Set Z-Probe Offset"</a>
-      
-          M4861 [ Z ]
-      
-      - `Z` - Z offset probe to nozzle. 
-    
-	Sets the Z-probe Z offset. This offset is used to determine the actual Z position of the nozzle when using a probe to home Z with G28. This value may also be used by G81 (Prusa) / G29 (Marlin) to apply correction to the Z position.
-	
+    Sets the Z-probe Z offset. This offset is used to determine the actual Z position of the nozzle when using a probe to home Z with G28. This value may also be used by G81 (Prusa) / G29 (Marlin) to apply correction to the Z position.
 	This value represents the distance from nozzle to the bed surface at the point where the probe is triggered. This value will be negative for typical switch probes, inductive probes, and setups where the nozzle makes a circuit with a raised metal contact. This setting will be greater than zero on machines where the nozzle itself is used as the probe, pressing down on the bed to press a switch. (This is a common setup on delta machines.)
+    #### Usage
+    
+        M851 [ Z ]
+    
+    #### Parameters
+    - `Z` - Z offset probe to nozzle.
 	*/
     #ifdef CUSTOM_M_CODE_SET_Z_PROBE_OFFSET
     case CUSTOM_M_CODE_SET_Z_PROBE_OFFSET:
@@ -7687,19 +7772,18 @@ Sigma_Exit:
 
     /*!
 	### M600 - Initiate Filament change procedure <a href="https://reprap.org/wiki/G-code#M600:_Filament_change_pause">M600: Filament change pause</a>
-      
-          M600 [ X | Y | Z | E | L | AUTO ]
-      
-      - `X`    - X position, default 211
-      - `Y`    - Y position, default 0
-      - `Z`    - relative lift Z, default 2.
-	  - `E`    - initial retract, default -2
-	  - `L`    - later retract distance for removal, default -80
-	  - `AUTO` - Automatically (only with MMU)
-	  
-	Initiates Filament change, it is also used during Filament Runout Sensor process.
-	
+    Initiates Filament change, it is also used during Filament Runout Sensor process.
 	If the `M600` is triggered under 25mm it will do a Z-lift of 25mm to prevent a filament blob.
+    #### Usage
+    
+        M600 [ X | Y | Z | E | L | AUTO ]
+      
+    - `X`    - X position, default 211
+    - `Y`    - Y position, default 0
+    - `Z`    - relative lift Z, default 2.
+    - `E`    - initial retract, default -2
+    - `L`    - later retract distance for removal, default -80
+    - `AUTO` - Automatically (only with MMU)
     */
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 	{
@@ -7817,12 +7901,13 @@ Sigma_Exit:
 #ifdef PINDA_THERMISTOR
     /*!
 	### M860 - Wait for extruder temperature (PINDA) <a href="https://reprap.org/wiki/G-code#M860_Wait_for_Probe_Temperature">M860 Wait for Probe Temperature</a>
-      
-          M860 [ S ]
-      
-	  - `S` - Target temperature
-	  
     Wait for PINDA thermistor to reach target temperature
+    #### Usage
+    
+        M860 [ S ]
+    
+    #### Parameters
+    - `S` - Target temperature
     */
 	case 860: 
 	{
@@ -7870,16 +7955,17 @@ Sigma_Exit:
  
     /*!
     ### M861 - Set/Get PINDA temperature compensation offsets <a href="https://reprap.org/wiki/G-code#M861_Set_Probe_Thermal_Compensation">M861 Set Probe Thermal Compensation</a>
-      
+    Set compensation ustep value `S` for compensation table index `I`.
+    #### Usage
+    
         M861 [ ? | ! | Z | S | I ]
-      
-      - `?` - Print current EEPROM offset values
-      - `!` - Set factory default values
-      - `Z` - Set all values to 0 (effectively disabling PINDA temperature compensation)
-      - `S` - Microsteps
-	  - `I` - Table index
-	  
-	  Set compensation ustep value `S` for compensation table index `I`.
+    
+    #### Parameters
+    - `?` - Print current EEPROM offset values
+    - `!` - Set factory default values
+    - `Z` - Set all values to 0 (effectively disabling PINDA temperature compensation)
+    - `S` - Microsteps
+    - `I` - Table index
     */
 	case 861:
 		if (code_seen('?')) { // ? - Print out current EEPROM offset values
@@ -8051,14 +8137,16 @@ Sigma_Exit:
     /*!
 	### M900 - Set Linear advance options <a href="https://reprap.org/wiki/G-code#M900_Set_Linear_Advance_Scaling_Factors">M900 Set Linear Advance Scaling Factors</a>
 	Sets the advance extrusion factors for Linear Advance. If any of the R, W, H, or D parameters are set to zero the ratio will be computed dynamically during printing.
-	  
-	      M900 [ K | R | W | H | D]
-	  
-	  - `K` -  Advance K factor
-	  - `R` - Set ratio directly (overrides WH/D)
-	  - `W` - Width
-	  - `H` - Height
-	  - `D` - Diameter Set ratio from WH/D
+	#### Usage
+    
+        M900 [ K | R | W | H | D]
+    
+    #### Parameters
+    - `K` -  Advance K factor
+    - `R` - Set ratio directly (overrides WH/D)
+    - `W` - Width
+    - `H` - Height
+    - `D` - Diameter Set ratio from WH/D
     */
     case 900:
         gcode_M900();
@@ -8068,17 +8156,17 @@ Sigma_Exit:
     /*!
 	### M907 - Set digital trimpot motor current in mA using axis codes <a href="https://reprap.org/wiki/G-code#M907:_Set_digital_trimpot_motor">M907: Set digital trimpot motor</a>
 	Set digital trimpot motor current using axis codes (X, Y, Z, E, B, S).
+	#### Usage
+    
+        M907 [ X | Y | Z | E | B | S ]
 	
-	      M907 [ X | Y | Z | E | B | S ]
-	  
-	  - `X` - X motor driver
-	  - `Y` - Y motor driver
-	  - `Z` - Z motor driver
-	  - `E` - Extruder motor driver
-	  - `B` - ??
-	  - `S` - ??
-	  
-	@todo What are `B` and `S` in M907?
+    #### Parameters
+    - `X` - X motor driver
+    - `Y` - Y motor driver
+    - `Z` - Z motor driver
+    - `E` - Extruder motor driver
+    - `B` - Second Extruder motor driver
+    - `S` - All motors
     */
     case 907:
     {
@@ -8115,7 +8203,14 @@ Sigma_Exit:
 
     /*!
 	### M908 - Control digital trimpot directly <a href="https://reprap.org/wiki/G-code#M908:_Control_digital_trimpot_directly">M908: Control digital trimpot directly</a>
-	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code.
+	In Prusa Firmware this G-code is deactivated by default, must be turned on in the source code. Not usable on Prusa printers.
+    #### Usage
+    
+        M908 [ P | S ]
+    
+    #### Parameters
+    - `P` - channel
+    - `S` - current
     */
     case 908:
     {
@@ -8144,13 +8239,15 @@ Sigma_Exit:
     /*!
     ### M911 - Set TMC2130 holding currents <a href="https://reprap.org/wiki/G-code#M911:_Set_TMC2130_holding_currents">M911: Set TMC2130 holding currents</a>
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
-      
-          M911 [ X | Y | Z | E ]
-      
-      - `X` - X stepper driver holding current value
-      - `Y` - Y stepper driver holding current value
-      - `Z` - Z stepper driver holding current value
-      - `E` - Extruder stepper driver holding current value
+    #### Usage
+    
+        M911 [ X | Y | Z | E ]
+    
+    #### Parameters
+    - `X` - X stepper driver holding current value
+    - `Y` - Y stepper driver holding current value
+    - `Z` - Z stepper driver holding current value
+    - `E` - Extruder stepper driver holding current value
     */
 	case 911: 
     {
@@ -8164,14 +8261,15 @@ Sigma_Exit:
     /*!
 	### M912 - Set TMC2130 running currents <a href="https://reprap.org/wiki/G-code#M912:_Set_TMC2130_running_currents">M912: Set TMC2130 running currents</a>
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
-      
-          M912 [ X | Y | Z | E ]
-      
-      
-      - `X` - X stepper driver running current value
-      - `Y` - Y stepper driver running current value
-      - `Z` - Z stepper driver running current value
-      - `E` - Extruder stepper driver running current value
+    #### Usage
+    
+        M912 [ X | Y | Z | E ]
+    
+    #### Parameters
+    - `X` - X stepper driver running current value
+    - `Y` - Y stepper driver running current value
+    - `Z` - Z stepper driver running current value
+    - `E` - Extruder stepper driver running current value
     */
 	case 912: 
     {
@@ -8220,14 +8318,15 @@ Sigma_Exit:
     /*!
 	### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#M916:_Set_TMC2130_Stallguard_sensitivity_threshold">M916: Set TMC2130 Stallguard sensitivity threshold</a>
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
-      
-          M916 [ X | Y | Z | E ]
-      
-      
-      - `X` - X stepper driver stallguard sensitivity threshold value
-      - `Y` - Y stepper driver stallguard sensitivity threshold value
-      - `Z` - Z stepper driver stallguard sensitivity threshold value
-      - `E` - Extruder stepper driver stallguard sensitivity threshold value
+    #### Usage
+    
+        M916 [ X | Y | Z | E ]
+    
+    #### Parameters
+    - `X` - X stepper driver stallguard sensitivity threshold value
+    - `Y` - Y stepper driver stallguard sensitivity threshold value
+    - `Z` - Z stepper driver stallguard sensitivity threshold value
+    - `E` - Extruder stepper driver stallguard sensitivity threshold value
     */
 	case 916:
     {
@@ -8243,14 +8342,15 @@ Sigma_Exit:
     /*!
 	### M917 - Set TMC2130 PWM amplitude offset (pwm_ampl) <a href="https://reprap.org/wiki/G-code#M917:_Set_TMC2130_PWM_amplitude_offset_.28pwm_ampl.29">M917: Set TMC2130 PWM amplitude offset (pwm_ampl)</a>
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
-      
-          M917 [ X | Y | Z | E ]
-      
-      
-      - `X` - X stepper driver PWM amplitude offset  value
-      - `Y` - Y stepper driver PWM amplitude offset  value
-      - `Z` - Z stepper driver PWM amplitude offset  value
-      - `E` - Extruder stepper driver PWM amplitude offset  value
+    #### Usage
+    
+        M917 [ X | Y | Z | E ]
+    
+    #### Parameters
+    - `X` - X stepper driver PWM amplitude offset value
+    - `Y` - Y stepper driver PWM amplitude offset value
+    - `Z` - Z stepper driver PWM amplitude offset value
+    - `E` - Extruder stepper driver PWM amplitude offset value
     */
 	case 917:
     {
@@ -8264,14 +8364,15 @@ Sigma_Exit:
     /*!
 	### M918 - Set TMC2130 PWM amplitude gradient (pwm_grad) <a href="https://reprap.org/wiki/G-code#M918:_Set_TMC2130_PWM_amplitude_gradient_.28pwm_grad.29">M918: Set TMC2130 PWM amplitude gradient (pwm_grad)</a>
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
-      
-          M918 [ X | Y | Z | E ]
-      
-      
-      - `X` - X stepper driver PWM amplitude gradient  value
-      - `Y` - Y stepper driver PWM amplitude gradient  value
-      - `Z` - Z stepper driver PWM amplitude gradient  value
-      - `E` - Extruder stepper driver PWM amplitude gradient  value
+    #### Usage
+    
+        M918 [ X | Y | Z | E ]
+    
+    #### Parameters
+    - `X` - X stepper driver PWM amplitude gradient value
+    - `Y` - Y stepper driver PWM amplitude gradient value
+    - `Z` - Z stepper driver PWM amplitude gradient value
+    - `E` - Extruder stepper driver PWM amplitude gradient value
     */
 	case 918:
     {
@@ -8286,7 +8387,21 @@ Sigma_Exit:
 
     /*!
 	### M350 - Set microstepping mode <a href="https://reprap.org/wiki/G-code#M350:_Set_microstepping_mode">M350: Set microstepping mode</a>
-    Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
+    Printers with TMC2130 drivers have `X`, `Y`, `Z` and `E` as options. The steps-per-unit value is updated accordingly. Not all resolutions are valid!
+    Printers without TMC2130 drivers also have `B` and `S` options. In this case, the steps-per-unit value in not changed!
+    #### Usage
+    
+        M350 [ X | Y | Z | E | B | S ]
+    
+    #### Parameters
+    - `X` - X new resolution
+    - `Y` - Y new resolution
+    - `Z` - Z new resolution
+    - `E` - E new resolution
+    
+    Only valid for MK2.5(S) or printers without TMC2130 drivers
+    - `B` - Second extruder new resolution
+    - `S` - All axes new resolution
     */
     case 350: 
     {
@@ -8334,9 +8449,18 @@ Sigma_Exit:
 
     /*!
 	### M351 - Toggle Microstep Pins <a href="https://reprap.org/wiki/G-code#M351:_Toggle_MS1_MS2_pins_directly">M351: Toggle MS1 MS2 pins directly</a>
-    Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.
+    Toggle MS1 MS2 pins directly.
+    #### Usage
     
-             M351 [B<0|1>] [E<0|1>] S<1|2> [X<0|1>] [Y<0|1>] [Z<0|1>] 
+        M351 [B<0|1>] [E<0|1>] S<1|2> [X<0|1>] [Y<0|1>] [Z<0|1>]
+    
+    #### Parameters
+    - `X` - Update X axis
+    - `Y` - Update Y axis
+    - `Z` - Update Z axis
+    - `E` - Update E axis
+    - `S` - which MSx pin to toggle
+    - `B` - new pin value
     */
     case 351:
     {
@@ -8371,12 +8495,14 @@ Sigma_Exit:
 
     /*!
     ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">G32: Undock Z Probe sled</a>
-      
-          M702 [ U | C]
-      
-      - `U` - Unload all filaments used in current print
-      - `C` - Unload just current filament
-      - without any parameters unload all filaments
+    #### Usage
+    
+        M702 [ U | C ]
+    
+    #### Parameters
+    - `U` - Unload all filaments used in current print
+    - `C` - Unload just current filament
+    - without any parameters unload all filaments
     */
 	case 702:
 	{
@@ -8402,6 +8528,7 @@ Sigma_Exit:
 
     /*!
 	### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#M999:_Restart_after_being_stopped_by_error">M999: Restart after being stopped by error</a>
+    @todo Usually doesn't work. Should be fixed or removed. Most of the time, if `Stopped` it set, the print fails and is unrecoverable.
     */
     case 999:
       Stopped = false;
@@ -8420,19 +8547,16 @@ Sigma_Exit:
 	}
   }
   // end if(code_seen('M')) (end of M codes)
-
-  //! -----------------------------------------------------------------------------------------
-  //! # T Codes
-  //! 
-  //! T<extruder nr.> - select extruder in case of multi extruder printer
-  //! select filament in case of MMU_V2
-  //! if extruder is "?", open menu to let the user select extruder/filament
-  //!
-  //!  For MMU_V2:
-  //! @n T<n> Gcode to extrude at least 38.10 mm at feedrate 19.02 mm/s must follow immediately to load to extruder wheels.
-  //! @n T? Gcode to extrude shouldn't have to follow, load to extruder wheels is done automatically
-  //! @n Tx Same as T?, except nozzle doesn't have to be preheated. Tc must be placed after extruder nozzle is preheated to finish filament load.
-  //! @n Tc Load to nozzle after filament was prepared by Tc and extruder nozzle is already heated.
+  /*!
+  -----------------------------------------------------------------------------------------
+  # T Codes
+  T<extruder nr.> - select extruder in case of multi extruder printer. select filament in case of MMU_V2.
+  #### For MMU_V2:
+  T<n> Gcode to extrude at least 38.10 mm at feedrate 19.02 mm/s must follow immediately to load to extruder wheels.
+  @n T? Gcode to extrude shouldn't have to follow, load to extruder wheels is done automatically
+  @n Tx Same as T?, except nozzle doesn't have to be preheated. Tc must be placed after extruder nozzle is preheated to finish filament load.
+  @n Tc Load to nozzle after filament was prepared by Tc and extruder nozzle is already heated.
+  */
   else if(code_seen('T'))
   {
       int index;
@@ -8623,25 +8747,20 @@ Sigma_Exit:
     {
 
     /*!
-    *
     ### D-1 - Endless Loop <a href="https://reprap.org/wiki/G-code#D-1:_Endless_Loop">D-1: Endless Loop</a>
-      
-          D-1
-      
-    *
     */
 	case -1:
 		dcode__1(); break;
 #ifdef DEBUG_DCODES
 
     /*!
-    *
     ### D0 - Reset <a href="https://reprap.org/wiki/G-code#D0:_Reset">D0: Reset</a>
-      
-          D0 [ B ]
-      
-      - `B` - Bootloader
-    *
+    #### Usage
+    
+        D0 [ B ]
+    
+    #### Parameters
+    - `B` - Bootloader
     */
 	case 0:
 		dcode_0(); break;
@@ -8658,16 +8777,16 @@ Sigma_Exit:
 		dcode_1(); break;
 
     /*!
-    *
     ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
     This command can be used without any additional parameters. It will read the entire RAM.
-      
-          D3 [ A | C | X ]
-      
-      - `A` - Address (0x0000-0x1fff)
-      - `C` - Count (0x0001-0x2000)
-      - `X` - Data
-    *
+    #### Usage
+    
+        D3 [ A | C | X ]
+    
+    #### Parameters
+    - `A` - Address (0x0000-0x1fff)
+    - `C` - Count (0x0001-0x2000)
+    - `X` - Data
     */
 	case 2:
 		dcode_2(); break;
@@ -8675,16 +8794,16 @@ Sigma_Exit:
 #ifdef DEBUG_DCODE3
 
     /*!
-    *
     ### D3 - Read/Write EEPROM <a href="https://reprap.org/wiki/G-code#D3:_Read.2FWrite_EEPROM">D3: Read/Write EEPROM</a>
     This command can be used without any additional parameters. It will read the entire eeprom.
-      
-          D3 [ A | C | X ]
-      
-      - `A` - Address (0x0000-0x0fff)
-      - `C` - Count (0x0001-0x1000)
-      - `X` - Data
-    *
+    #### Usage
+    
+        D3 [ A | C | X ]
+    
+    #### Parameters
+    - `A` - Address (0x0000-0x0fff)
+    - `C` - Count (0x0001-0x1000)
+    - `X` - Data
     */
 	case 3:
 		dcode_3(); break;
@@ -8692,17 +8811,17 @@ Sigma_Exit:
 #ifdef DEBUG_DCODES
 
     /*!
-    *
-    ### D4 - Read/Write PIN <a href="https://reprap.org/wiki/G-code#D4:_Read.2FWrite_PIN">D4: Read/Write PIN</a>
     
+    ### D4 - Read/Write PIN <a href="https://reprap.org/wiki/G-code#D4:_Read.2FWrite_PIN">D4: Read/Write PIN</a>
     To read the digital value of a pin you need only to define the pin number.
-      
-          D4 [ P | F | V ]
-      
-      - `P` - Pin (0-255)
-      - `F` - Function in/out (0/1)
-      - `V` - Value (0/1)
-    *
+    #### Usage
+    
+        D4 [ P | F | V ]
+    
+    #### Parameters
+    - `P` - Pin (0-255)
+    - `F` - Function in/out (0/1)
+    - `V` - Value (0/1)
     */
 	case 4:
 		dcode_4(); break;
@@ -8710,17 +8829,17 @@ Sigma_Exit:
 #ifdef DEBUG_DCODE5
 
     /*!
-    *
     ### D5 - Read/Write FLASH <a href="https://reprap.org/wiki/G-code#D5:_Read.2FWrite_FLASH">D5: Read/Write Flash</a>
     This command can be used without any additional parameters. It will read the 1kb FLASH.
-      
-          D3 [ A | C | X | E ]
-      
-      - `A` - Address (0x00000-0x3ffff)
-      - `C` - Count (0x0001-0x2000)
-      - `X` - Data
-      - `E` - Erase
-    *
+    #### Usage
+    
+        D3 [ A | C | X | E ]
+    
+    #### Parameters
+    - `A` - Address (0x00000-0x3ffff)
+    - `C` - Count (0x0001-0x2000)
+    - `X` - Data
+    - `E` - Erase
     */
 	case 5:
 		dcode_5(); break;
@@ -8729,87 +8848,76 @@ Sigma_Exit:
 #ifdef DEBUG_DCODES
 
     /*!
-    *
     ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
-    
     Reserved
-   *
-   */
+    */
 	case 6:
 		dcode_6(); break;
 
     /*!
-    *
     ### D7 - Read/Write Bootloader <a href="https://reprap.org/wiki/G-code#D7:_Read.2FWrite_Bootloader">D7: Read/Write Bootloader</a>
-    
     Reserved
-   *
-   */
+    */
 	case 7:
 		dcode_7(); break;
 
     /*!
-    *
     ### D8 - Read/Write PINDA <a href="https://reprap.org/wiki/G-code#D8:_Read.2FWrite_PINDA">D8: Read/Write PINDA</a>
-      
-          D8 [ ? | ! | P | Z ]
-      
-      - `?` - Read PINDA temperature shift values
-      - `!` - Reset PINDA temperature shift values to default
-      - `P` - Pinda temperature [C]
-      - `Z` - Z Offset [mm]
-    *
+    #### Usage
+    
+        D8 [ ? | ! | P | Z ]
+    
+    #### Parameters
+    - `?` - Read PINDA temperature shift values
+    - `!` - Reset PINDA temperature shift values to default
+    - `P` - Pinda temperature [C]
+    - `Z` - Z Offset [mm]
     */
 	case 8:
 		dcode_8(); break;
 
     /*!
-    *
     ### D9 - Read ADC <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9: Read ADC</a>
-      
-          D9 [ I | V ]
-      
-      - `I` - ADC channel index 
-         - `0` - Heater 0 temperature
-         - `1` - Heater 1 temperature
-         - `2` - Bed temperature
-         - `3` - PINDA temperature
-         - `4` - PWR voltage
-         - `5` - Ambient temperature
-         - `6` - BED voltage
-      - `V` Value to be written as simulated
-    *
+    #### Usage
+    
+        D9 [ I | V ]
+    
+    #### Parameters
+    - `I` - ADC channel index 
+        - `0` - Heater 0 temperature
+        - `1` - Heater 1 temperature
+        - `2` - Bed temperature
+        - `3` - PINDA temperature
+        - `4` - PWR voltage
+        - `5` - Ambient temperature
+        - `6` - BED voltage
+    - `V` Value to be written as simulated
     */
 	case 9:
 		dcode_9(); break;
 
     /*!
-    *
     ### D10 - Set XYZ calibration = OK <a href="https://reprap.org/wiki/G-code#D10:_Set_XYZ_calibration_.3D_OK">D10: Set XYZ calibration = OK</a>
-    
-    *
     */
 	case 10:
 		dcode_10(); break;
 
     /*!
-    *
     ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
-    
     Writes the actual time in the log file.
-    *
     */
 
 #endif //DEBUG_DCODES
 #ifdef HEATBED_ANALYSIS
 
     /*!
-    *
     ### D80 - Bed check <a href="https://reprap.org/wiki/G-code#D80:_Bed_check">D80: Bed check</a>
     This command will log data to SD card file "mesh.txt".
-      
-          D80 [ E | F | G | H | I | J ]
-      
+    #### Usage
+    
+        D80 [ E | F | G | H | I | J ]
+    
+    #### Parameters
     - `E` - Dimension X (default 40)
     - `F` - Dimention Y (default 40)
     - `G` - Points X (default 40)
@@ -8842,12 +8950,13 @@ Sigma_Exit:
 	}break;
 
     /*!
-    *
     ### D81 - Bed analysis <a href="https://reprap.org/wiki/G-code#D81:_Bed_analysis">D80: Bed analysis</a>
     This command will log data to SD card file "wldsd.txt".
-      
-          D81 [ E | F | G | H | I | J ]
-      
+    #### Usage
+    
+        D81 [ E | F | G | H | I | J ]
+    
+    #### Parameters
     - `E` - Dimension X (default 40)
     - `F` - Dimention Y (default 40)
     - `G` - Points X (default 40)
@@ -8879,7 +8988,6 @@ Sigma_Exit:
 #ifdef DEBUG_DCODES
 
     /*!
-    *
     ### D106 - Print measured fan speed for different pwm values <a href="https://reprap.org/wiki/G-code#D106:_Print_measured_fan_speed_for_different_pwm_values">D106: Print measured fan speed for different pwm values</a>
     */
 	case 106:
@@ -8897,13 +9005,14 @@ Sigma_Exit:
 
 #ifdef TMC2130
     /*!
-    *
     ### D2130 - Trinamic stepper controller <a href="https://reprap.org/wiki/G-code#D2130:_Trinamic_stepper_controller">D2130: Trinamic stepper controller</a>
-    
     @todo Please review by owner of the code. RepRap Wiki Gcode needs to be updated after review of owner as well.
-      
-          D2130 [ Axis | Command | Subcommand | Value ]
-      
+    
+    #### Usage
+    
+        D2130 [ Axis | Command | Subcommand | Value ]
+    
+    #### Parameters
     - Axis
       - `X` - X stepper driver
       - `Y` - Y stepper driver
@@ -8958,18 +9067,18 @@ Sigma_Exit:
 #if (defined (FILAMENT_SENSOR) && defined(PAT9125))
 
     /*!
-    *
     ### D9125 - PAT9125 filament sensor <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9125: PAT9125 filament sensor</a>
-      
-          D9125 [ ? | ! | R | X | Y | L ]
-      
-      - `?` - Print values
-      - `!` - Print values
-      - `R` - Resolution. Not active in code
-      - `X` - X values
-      - `Y` - Y values
-      - `L` - Activate filament sensor log
-    *
+    #### Usage
+    
+        D9125 [ ? | ! | R | X | Y | L ]
+    
+    #### Parameters
+    - `?` - Print values
+    - `!` - Print values
+    - `R` - Resolution. Not active in code
+    - `X` - X values
+    - `Y` - Y values
+    - `L` - Activate filament sensor log
     */
 	case 9125:
 		dcode_9125(); break;
