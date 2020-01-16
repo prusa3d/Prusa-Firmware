@@ -3429,7 +3429,7 @@ extern uint8_t st_backlash_y;
 //!@n G4  - Dwell S<seconds> or P<milliseconds>
 //!@n G10 - retract filament according to settings of M207
 //!@n G11 - retract recover filament according to settings of M208
-//!@n G28 - Home all Axis
+//!@n G28 - Home all Axes
 //!@n G29 - Detailed Z-Probe, probes the bed at 3 or more points.  Will fail if you haven't homed yet.
 //!@n G30 - Single Z Probe, probes bed at current XY location.
 //!@n G31 - Dock sled (Z_PROBE_SLED only)
@@ -4261,8 +4261,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     
 
     /*!
-    ### G28 - Home all Axis one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
-    Using `G28` without any parameters will perfom homing of all axis AND mesh bed leveling, while `G28 W` will just home all axis (no mesh bed leveling).
+    ### G28 - Home all Axes one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
+    Using `G28` without any parameters will perfom homing of all axes AND mesh bed leveling, while `G28 W` will just home all axes (no mesh bed leveling).
     #### Usage
 	
          G28 [ X | Y | Z | W | C ]
@@ -5525,7 +5525,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     break;
 
     /*!
-	### M17 - Enable all axis <a href="https://reprap.org/wiki/G-code#M17:_Enable.2FPower_all_stepper_motors">M17: Enable/Power all stepper motors</a>
+	### M17 - Enable all axes <a href="https://reprap.org/wiki/G-code#M17:_Enable.2FPower_all_stepper_motors">M17: Enable/Power all stepper motors</a>
     */
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
@@ -6572,7 +6572,7 @@ Sigma_Exit:
         M84 [ S | X | Y | Z | E ]
 	
 	  - `S` - Seconds
-	  - `X` - X axsis
+	  - `X` - X axis
 	  - `Y` - Y axis
 	  - `Z` - Z axis
 	  - `E` - Exruder
@@ -6865,7 +6865,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       break;
-      //TODO: update for all axis, use for loop
+      //!@todo update for all axes, use for loop
     
 
     #ifdef BLINKM
@@ -8401,7 +8401,7 @@ Sigma_Exit:
     
     Only valid for MK2.5(S) or printers without TMC2130 drivers
     - `B` - Second extruder new resolution
-    - `S` - All axis new resolution
+    - `S` - All axes new resolution
     */
     case 350: 
     {
