@@ -15,7 +15,7 @@
 
 extern int32_t lcd_encoder;
 
-#define MENU_DEPTH_MAX       6
+#define MENU_DEPTH_MAX       7
 
 static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
@@ -102,7 +102,7 @@ void menu_back(void)
 menu_back(1);
 }
 
-static void menu_back_no_reset(void)
+void menu_back_no_reset(void)
 {
 	if (menu_depth > 0)
 	{
@@ -136,7 +136,7 @@ void menu_submenu(menu_func_t submenu)
 	}
 }
 
-static void menu_submenu_no_reset(menu_func_t submenu)
+void menu_submenu_no_reset(menu_func_t submenu)
 {
 	if (menu_depth < MENU_DEPTH_MAX)
 	{
@@ -182,6 +182,22 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
     lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
+}
+
+static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const uint8_t settings)
+{
+    //settings:
+    //xxxxxcba
+    //a = selection mark. If it's set(1), then '>' will be used as the first character on the line. Else leave blank
+    //b = toggle string is from progmem
+    //c = do not set cursor at all. Must be handled externally.
+    char lineStr[LCD_WIDTH + 1];
+    const char eol = (toggle == NULL)?LCD_STR_ARROW_RIGHT[0]:' ';
+    if (toggle == NULL) toggle = _T(MSG_NA);
+    sprintf_P(lineStr, PSTR("%c%-18.18S"), (settings & 0x01)?'>':' ', str);
+    sprintf_P(lineStr + LCD_WIDTH - ((settings & 0x02)?strlen_P(toggle):strlen(toggle)) - 3, (settings & 0x02)?PSTR("[%S]%c"):PSTR("[%s]%c"), toggle, eol);
+    if (!(settings & 0x04)) lcd_set_cursor(0, menu_row);
+    fputs(lineStr, lcdout);
 }
 
 //! @brief Format sheet name
@@ -375,6 +391,33 @@ uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t)
     return 0;
 }
 
+uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func, const uint8_t settings)
+{
+	if (menu_item == menu_line)
+	{
+		if (lcd_draw_update) menu_draw_toggle_puts_P(str, toggle, settings | (menu_selection_mark()=='>'));
+		if (menu_clicked && (lcd_encoder == menu_item))
+		{
+			if (toggle == NULL) // print N/A warning message
+			{
+				menu_submenu(func);
+				return menu_item_ret();
+			}
+			else // do the actual toggling
+			{
+				menu_clicked = false;
+				lcd_consume_click();
+				lcd_update_enabled = 0;
+				if (func) func();
+				lcd_update_enabled = 1;
+				return menu_item_ret();
+			}
+		}
+	}
+	menu_item++;
+	return 0;
+}
+
 uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 {
 	if (menu_item == menu_line)
@@ -390,16 +433,11 @@ uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 	return 0;
 }
 
-
-const char menu_20x_space[] PROGMEM = "                    ";
-
 const char menu_fmt_int3[] PROGMEM = "%c%.15S:%s%3d";
 
 const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
-
-const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6s";
 
 template<typename T>
 static void menu_draw_P(char chr, const char* str, int16_t val);
@@ -409,8 +447,8 @@ void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 {
 	int text_len = strlen_P(str);
 	if (text_len > 15) text_len = 15;
-	char spaces[21];
-	strcpy_P(spaces, menu_20x_space);
+	char spaces[LCD_WIDTH + 1] = {0};
+    memset(spaces,' ', LCD_WIDTH);
 	if (val <= -100) spaces[15 - text_len - 1] = 0;
 	else spaces[15 - text_len] = 0;
 	lcd_printf_P(menu_fmt_int3, chr, str, spaces, val);
@@ -423,7 +461,7 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
     float factor = 1.0f + static_cast<float>(val) / 1000.0f;
     if (val <= _md->minEditValue)
     {
-        lcd_printf_P(menu_fmt_float13off, chr, str, " [off]");
+        menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
     }
     else
     {

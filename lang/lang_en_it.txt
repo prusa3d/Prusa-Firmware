@@ -1,10 +1,14 @@
+#
+"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
+"[%.7s]Set valori\x0aComp. Z, continuare\x0ao iniziare da zero?\x0a%cContinua%cReset"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " su 4"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
 " of 9"
-"su 9"
+" su 9"
 
 #MSG_MEASURED_OFFSET
 "[0;0] point offset"
@@ -46,16 +50,8 @@
 "Are left and right Z~carriages all up?"
 "I carrelli Z sin/des sono altezza max?"
 
-#MSG_AUTO_DEPLETE_ON c=17 r=1
-"SpoolJoin    [on]"
-"\x00"
-
-#
-"SpoolJoin   [N/A]"
-"\x00"
-
-#MSG_AUTO_DEPLETE_OFF c=17 r=1
-"SpoolJoin   [off]"
+#MSG_AUTO_DEPLETE c=17 r=1
+"SpoolJoin"
 "\x00"
 
 #MSG_AUTO_HOME
@@ -72,7 +68,7 @@
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Il caricamento automatico e attivo, premete la manopola e inserite il filamento..."
+"Caricamento automatico attivo, premi la manopola e inserisci il filamento."
 
 #MSG_SELFTEST_AXIS_LENGTH
 "Axis length"
@@ -108,7 +104,7 @@
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
-"Stato delle cinghie"
+"Stato cinghie"
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
@@ -170,17 +166,13 @@
 "Copy selected language?"
 "Copiare la lingua selezionata?"
 
-#MSG_CRASHDETECT_ON
-"Crash det.   [on]"
-"Rilevam.imp. [on]"
+#MSG_CRASHDETECT
+"Crash det."
+"Rileva.crash"
 
-#MSG_CRASHDETECT_NA
-"Crash det.  [N/A]"
-"Rilevam.imp.[N/A]"
-
-#MSG_CRASHDETECT_OFF
-"Crash det.  [off]"
-"Rilevam.imp.[off]"
+#
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Scegli un filamento per la calibrazione del primo strato e selezionalo nel menu sullo schermo."
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -221,10 +213,6 @@
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
 "Espelli filamento "
-
-#
-"Eject"
-"Espellere"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -270,17 +258,9 @@
 "Fail stats MMU"
 "Stat.fall. MMU"
 
-#MSG_FSENS_AUTOLOAD_ON c=17 r=1
-"F. autoload  [on]"
-"Autocar.filam[on]"
-
-#MSG_FSENS_AUTOLOAD_NA c=17 r=1
-"F. autoload [N/A]"
-"Autocar.fil.[N/A]"
-
-#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-"F. autoload [off]"
-"Autocar.fil.[off]"
+#MSG_FSENSOR_AUTOLOAD
+"F. autoload"
+"Autocar.fil."
 
 #
 "Fail stats"
@@ -294,26 +274,13 @@
 "Fan test"
 "Test ventola"
 
-#MSG_FANS_CHECK_ON c=17 r=1
-"Fans check   [on]"
-"Control.vent [on]"
+#MSG_FANS_CHECK
+"Fans check"
+"Control.vent"
 
-#MSG_FANS_CHECK_OFF c=17 r=1
-"Fans check  [off]"
-"Control.vent[off]"
-
-#MSG_FSENSOR_ON
-"Fil. sensor  [on]"
-"Sensor filam.[on]"
-
-#MSG_FSENSOR_NA
-"Fil. sensor [N/A]"
-"Sensor filam[N/A]"
-
-#MSG_FSENSOR_OFF
-"Fil. sensor [off]"
-"Sensor filam[off]"
-
+#MSG_FSENSOR
+"Fil. sensor"
+"Sensore fil."
 #
 "Filam. runouts"
 "Filam. esauriti"
@@ -348,7 +315,7 @@
 
 #MSG_V2_CALIBRATION c=17 r=1
 "First layer cal."
-"Calibrazione primo layer."
+"Cal. primo strato"
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
@@ -462,17 +429,9 @@
 "I will run z calibration now."
 "Adesso avviero la Calibrazione Z."
 
-#MSG_WIZARD_V2_CAL_2 c=20 r=12
-"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-"Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello poco per volta ruotando la manopola sino a raggiungere una altezza ottimale. Per favore dai uno sguardo all'immagine del nostro manuale, cap.Calibrazione."
-
 #MSG_WATCH
 "Info screen"
 "Schermata info"
-
-#
-"Is filament 1 loaded?"
-"Il filamento 1 e caricato?"
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
@@ -482,14 +441,6 @@
 "Is filament loaded?"
 "Il filamento e stato caricato?"
 
-#MSG_WIZARD_PLA_FILAMENT c=20 r=2
-"Is it PLA filament?"
-"E' un filamento di PLA?"
-
-#MSG_PLA_FILAMENT_LOADED c=20 r=2
-"Is PLA filament loaded?"
-"E' stato caricato il filamento di PLA?"
-
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 "La piastra d'acciaio e sul piano riscaldato?"
@@ -497,6 +448,10 @@
 #
 "Last print failures"
 "Fallimenti ultima stampa"
+
+#
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Se hai piastre d'acciaio aggiuntive, calibra i preset in Impostazioni - Setup HW - Piastre in Acciaio."
 
 #
 "Last print"
@@ -512,11 +467,11 @@
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
-"Sinistra  [um]"
+"Sinistra [um]"
 
 #
 "Lin. correction"
-"Correzione lin."
+"Correzione lineare"
 
 #MSG_BABYSTEP_Z
 "Live adjust Z"
@@ -556,7 +511,7 @@
 
 #MSG_MESH_BED_LEVELING
 "Mesh Bed Leveling"
-"Mesh livel. letto"
+"Livel. piatto"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -586,13 +541,17 @@
 "MMU OK. Resuming..."
 "MMU OK. Riprendendo... "
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
-"Modo    [normale]"
+#MSG_MODE
+"Mode"
+"Mod."
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
-"Modo [silenzioso]"
+#MSG_NORMAL
+"Normal"
+"Normale"
+
+#MSG_SILENT
+"Silent"
+"Silenzioso"
 
 #
 "MMU needs user attention."
@@ -602,17 +561,17 @@
 "MMU power fails"
 "Manc. corr. MMU"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
-"Modo [Silenziosa]"
+#MSG_STEALTH
+"Stealth"
+"Silenziosa"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
-"Modo       [auto]"
+#MSG_AUTO_POWER
+"Auto power"
+"Auto"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
-"Mode      [forte]"
+#MSG_HIGH_POWER
+"High power"
+"Forte"
 
 #
 "MMU2 connected"
@@ -646,7 +605,7 @@
 "No SD card"
 "Nessuna SD"
 
-#
+#MSG_NA
 "N/A"
 "\x00"
 
@@ -730,14 +689,6 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Per favore consulta il nostro manuale per risolvere il problema. Poi riprendi il Wizard dopo aver riavviato la stampante."
 
-#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-"Please insert PLA filament to the extruder, then press knob to load it."
-"Per favore inserisci il filamento di PLA nell'estrusore, poi premi la manopola per caricare."
-
-#MSG_PLEASE_LOAD_PLA c=20 r=4
-"Please load PLA filament first."
-"Per favore prima carica il filamento di PLA."
-
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
 "Aprire la guida filam. e rimuovere il filam. a mano"
@@ -749,10 +700,6 @@
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
 "Premete la manopola per scaricare il filamento "
-
-#
-"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"Per favore inserite del filamento PLA nel primo tubo del MMU, poi premete la manopola per caricarlo."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -846,6 +793,18 @@
 "Print FAN"
 "Ventola di stampa"
 
+#
+"Please insert filament into the extruder, then press the knob to load it."
+"Inserisci il filamento nell'estrusore, poi premi la manopola per caricarlo."
+
+#
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Per favore inserisci il filamento nel primo tubo del MMU, poi premi la manopola per caricarlo."
+
+#
+"Please load filament first."
+"Per favore prima carica il filamento."
+
 #MSG_PRUSA3D
 "prusa3d.com"
 "\x00"
@@ -886,25 +845,21 @@
 "Right side[um]"
 "Destra [um]"
 
-#MSG_SECOND_SERIAL_ON c=17 r=1
-"RPi port     [on]"
-"Porta RPi    [on]"
-
-#MSG_SECOND_SERIAL_OFF c=17 r=1
-"RPi port    [off]"
-"Porta RPi   [off]"
+#MSG_RPI_PORT
+"RPi port"
+"Porta RPi"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 "Se avvi il Wizard perderai la calibrazione preesistente e dovrai ricominciare dall'inizio. Continuare?"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
-"SD card  [normal]"
-"Mem. SD [normale]"
+#MSG_SD_CARD
+"SD card"
+"Mem. SD"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [flshAir]"
-"Mem. SD [flshAir]"
+#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY
+"FlashAir"
+"\x00"
 
 #
 "Right"
@@ -946,10 +901,6 @@
 "Select nozzle preheat temperature which matches your material."
 "Selezionate la temperatura per il preriscaldamento dell'ugello adatta al vostro materiale."
 
-#
-"Select PLA filament:"
-"Selezionate filamento PLA:"
-
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Imposta temperatura:"
@@ -970,49 +921,49 @@
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Alcuni file non saranno ordinati. Il numero massimo di file in una cartella e 100 perche siano ordinati."
 
-#MSG_SORT_NONE c=17 r=1
-"Sort       [none]"
-"Ordina  [nessuno]"
+#MSG_SORT
+"Sort"
+"Ordina"
 
-#MSG_SORT_TIME c=17 r=1
-"Sort       [time]"
-"Ordina    [tempo]"
+#MSG_NONE
+"None"
+"Nessuno"
+
+#MSG_SORT_TIME
+"Time"
+"Cron."
 
 #
-"Severe skew"
-"Devia.grave"
+"Severe skew:"
+"Devia.grave:"
 
-#MSG_SORT_ALPHA c=17 r=1
-"Sort   [alphabet]"
-"Ordine [alfabeti]"
+#MSG_SORT_ALPHA
+"Alphabet"
+"Alfabeti"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
 "Ordinando i file"
 
-#MSG_SOUND_LOUD c=17 r=1
-"Sound      [loud]"
-"Suono     [forte]"
+#MSG_SOUND_LOUD
+"Loud"
+"Forte"
 
 #
-"Slight skew"
-"Devia.lieve"
+"Slight skew:"
+"Devia.lieve:"
 
-#MSG_SOUND_MUTE c=17 r=1
-"Sound      [mute]"
-"Suono      [mute]"
+#MSG_SOUND
+"Sound"
+"Suono"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
 "Sono stati rilevati problemi, avviato livellamento Z ..."
 
-#MSG_SOUND_ONCE c=17 r=1
-"Sound      [once]"
-"Suono   [singolo]"
-
-#MSG_SOUND_SILENT c=17 r=1
-"Sound    [silent]"
-"Suono[silenzioso]"
+#MSG_SOUND_ONCE
+"Once"
+"Singolo"
 
 #MSG_SPEED
 "Speed"
@@ -1046,17 +997,17 @@
 "Swapped"
 "Scambiato"
 
-#MSG_TEMP_CALIBRATION c=20 r=1
-"Temp. cal.          "
-"Calib. temp. "
+#
+"Select filament:"
+"Seleziona il filamento:"
 
-#MSG_TEMP_CALIBRATION_ON c=20 r=1
-"Temp. cal.   [on]"
-"Calib. temp. [on]"
+#MSG_TEMP_CALIBRATION c=12 r=1
+"Temp. cal."
+"Calib. temp."
 
-#MSG_TEMP_CALIBRATION_OFF c=20 r=1
-"Temp. cal.  [off]"
-"Calib. temp.[off]"
+#
+"Select temperature which matches your material."
+"Seleziona la temperatura appropriata per il tuo materiale."
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1235,11 +1186,19 @@
 "Distanza Y dal min"
 
 #
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"La stampante iniziera a stampare una linea a zig-zag. Gira la manopola fino a che non hai raggiungo l'altezza ottimale. Verifica con le immagini nel manuale (capitolo sulla calibrazione):"
+
+#
 "Y-correct:"
 "Correzione-Y:"
 
 #MSG_OFF
-" [off]"
+"Off"
+"\x00"
+
+#MSG_ON
+"On"
 "\x00"
 
 #
@@ -1258,17 +1217,17 @@
 "FINDA:"
 "\x00"
 
-#
-"Firmware   [none]"
-"Firmware[nessuno]"
+#MSG_FIRMWARE
+"Firmware"
+"\x00"
 
-#
-"Firmware [strict]"
-"Firmware [esatto]"
+#MSG_STRICT
+"Strict"
+"Esatto"
 
-#
-"Firmware   [warn]"
-"Firmware [avviso]"
+#MSG_WARN
+"Warn"
+"Avviso"
 
 #
 "HW Setup"
@@ -1278,25 +1237,13 @@
 "IR:"
 "\x00"
 
-#
-"Magnets comp.[N/A]"
-"Comp. Magneti[N/A]"
+#MSG_MAGNETS_COMP
+"Magnets comp."
+"Comp. Magneti"
 
-#
-"Magnets comp.[Off]"
-"Comp. Magneti[off]"
-
-#
-"Magnets comp. [On]"
-"Comp. Magneti [on]"
-
-#
-"Mesh         [3x3]"
-"Griglia      [3x3]"
-
-#
-"Mesh         [7x7]"
-"Griglia      [7x7]"
+#MSG_MESH
+"Mesh"
+"Griglia"
 
 #
 "Mesh bed leveling"
@@ -1306,53 +1253,21 @@
 "MK3S firmware detected on MK3 printer"
 "Firmware MK3S rilevato su stampante MK3"
 
-#
-"MMU Mode [Normal]"
-"Modalita MMU [Normale]"
-
-#
-"MMU Mode[Stealth]"
-"Modalita MMU [Silenziosa]"
+#MSG_MMU_MODE
+"MMU Mode"
+"Mod. MMU"
 
 #
 "Mode change in progress ..."
 "Cambio modalita in corso ..."
 
-#
-"Model      [none]"
-"Modello [nessuno]"
+#MSG_MODEL
+"Model"
+"Modello"
 
-#
-"Model    [strict]"
-"Modello  [esatto]"
-
-#
-"Model      [warn]"
-"Modello  [avviso]"
-
-#
-"Nozzle d.  [0.25]"
-"Diam.Ugello[0.25]"
-
-#
-"Nozzle d.  [0.40]"
-"Diam.Ugello[0.40]"
-
-#
-"Nozzle d.  [0.60]"
-"Diam.Ugello[0.60]"
-
-#
-"Nozzle     [none]"
-"Ugello  [nessuno]"
-
-#
-"Nozzle   [strict]"
-"Ugello   [esatto]"
-
-#
-"Nozzle     [warn]"
-"Ugello   [avviso]"
+#MSG_NOZZLE_DIAMETER
+"Nozzle d."
+"Diam.Ugello"
 
 #
 "G-code sliced for a different level. Continue?"
@@ -1414,9 +1329,9 @@
 "Sheet"
 "Piano"
 
-#
-"Sound     [assist]"
-"Suono  [assistito]"
+#MSG_SOUND_BLIND
+"Assist"
+"Assist."
 
 #
 "Steel sheets"
@@ -1426,10 +1341,6 @@
 "Z-correct:"
 "Correzione-Z:"
 
-#
-"Z-probe nr.    [1]"
-"Z-probe nr.    [1]"
-
-#
-"Z-probe nr.    [3]"
-"Z-probe nr.    [3]"
+#MSG_Z_PROBE_NR
+"Z-probe nr."
+"\x00"

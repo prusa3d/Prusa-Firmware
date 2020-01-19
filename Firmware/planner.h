@@ -44,6 +44,8 @@ enum BlockFlag {
     // than 32767, therefore the DDA algorithm may run with 16bit resolution only.
     // In addition, the stepper routine will not do any end stop checking for higher performance.
     BLOCK_FLAG_DDA_LOWRES = 8,
+    // Block starts with Zeroed E counter
+    BLOCK_FLAG_E_RESET = 16,
 };
 
 union dda_isteps_t
@@ -110,17 +112,24 @@ typedef struct {
 
   // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
   float speed_factor;
-    
+
 #ifdef LIN_ADVANCE
-  bool use_advance_lead;
-  unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
+  bool use_advance_lead;            // Whether the current block uses LA
+  uint16_t advance_rate,            // Step-rate for extruder speed
+           max_adv_steps,           // max. advance steps to get cruising speed pressure (not always nominal_speed!)
+           final_adv_steps;         // advance steps due to exit speed
+  uint8_t advance_step_loops;       // Number of stepper ticks for each advance isr
+  float adv_comp;                   // Precomputed E compression factor
 #endif
 
-  uint16_t sdlen;
+  // Save/recovery state data
+  float gcode_target[NUM_AXIS];     // Target (abs mm) of the original Gcode instruction
+  uint16_t gcode_feedrate;          // Default and/or move feedrate
+  uint16_t sdlen;                   // Length of the Gcode instruction
 } block_t;
 
 #ifdef LIN_ADVANCE
-  extern float extruder_advance_k, advance_ed_ratio;
+extern float extruder_advance_K;    // Linear-advance K factor
 #endif
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -147,7 +156,7 @@ vector_3 plan_get_position();
 /// The performance penalty is negligible, since these planned lines are usually maintenance moves with the extruder.
 void plan_buffer_line_curposXYZE(float feed_rate, uint8_t extruder);
 
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder);
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target = NULL);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
 #endif // ENABLE_AUTO_BED_LEVELING
 
@@ -160,6 +169,9 @@ void plan_set_position(float x, float y, float z, const float &e);
 
 void plan_set_z_position(const float &z);
 void plan_set_e_position(const float &e);
+
+// Reset the E position to zero at the start of the next segment
+void plan_reset_next_e();
 
 extern bool e_active();
 
@@ -238,6 +250,7 @@ FORCE_INLINE bool planner_queue_full() {
 // wait for the steppers to stop,
 // update planner's current position and the current_position of the front end.
 extern void planner_abort_hard();
+extern bool waiting_inside_plan_buffer_line_print_aborted;
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
 void set_extrude_min_temp(float temp);

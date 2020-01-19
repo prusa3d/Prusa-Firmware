@@ -6,6 +6,9 @@
 #include "conv2str.h"
 #include "menu.h"
 #include "mesh_bed_calibration.h"
+#include "config.h"
+
+#include "config.h"
 
 extern void menu_lcd_longpress_func(void);
 extern void menu_lcd_charsetup_func(void);
@@ -47,6 +50,7 @@ unsigned char lcd_choose_color();
 void lcd_load_filament_color_check();
 //void lcd_mylang();
 
+extern void lcd_belttest();
 extern bool lcd_selftest();
 
 void lcd_menu_statistics(); 
@@ -167,6 +171,8 @@ enum class FilamentAction : uint_least8_t
     MmuUnLoad,
     MmuEject,
     MmuCut,
+    Preheat,
+    Lay1Cal,
 };
 
 extern FilamentAction eFilamentAction;
@@ -175,7 +181,7 @@ extern bool bFilamentPreheatState;
 extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentItemForce();
-void mFilamentMenu();
+void lcd_generic_preheat_menu();
 void unload_filament();
 
 void stack_error();
@@ -195,7 +201,9 @@ void lcd_wait_for_cool_down();
 void lcd_extr_cal_reset();
 
 void lcd_temp_cal_show_result(bool result);
+#ifdef PINDA_THERMISTOR
 bool lcd_wait_for_pinda(float temp);
+#endif //PINDA_THERMISTOR
 
 
 void bowden_menu();
@@ -213,7 +221,9 @@ void lcd_set_degree();
 void lcd_set_progress();
 #endif
 
+#if (LANG_MODE != 0)
 void lcd_language();
+#endif
 
 void lcd_wizard();
 bool lcd_autoDepleteEnabled();
@@ -221,22 +231,31 @@ bool lcd_autoDepleteEnabled();
 //! @brief Wizard state
 enum class WizState : uint8_t
 {
-    Run,            //!< run wizard? Entry point.
+    Run,            //!< run wizard? Main entry point.
     Restore,        //!< restore calibration status
-    Selftest,
+    Selftest,       //!< self test
     Xyz,            //!< xyz calibration
     Z,              //!< z calibration
-    IsFil,          //!< Is filament loaded? Entry point for 1st layer calibration
+    IsFil,          //!< Is filament loaded? First step of 1st layer calibration
     PreheatPla,     //!< waiting for preheat nozzle for PLA
     Preheat,        //!< Preheat for any material
-    Unload,         //!< Unload filament
-    LoadFil,        //!< Load filament
+    LoadFilCold,    //!< Load filament for MMU
+    LoadFilHot,     //!< Load filament without MMU
     IsPla,          //!< Is PLA filament?
-    Lay1Cal,        //!< First layer calibration
+    Lay1CalCold,    //!< First layer calibration, temperature not selected yet
+    Lay1CalHot,     //!< First layer calibration, temperature already selected
     RepeatLay1Cal,  //!< Repeat first layer calibration?
     Finish,         //!< Deactivate wizard
 };
 
 void lcd_wizard(WizState state);
+
+#define VOLT_DIV_REF 5
+#if IR_SENSOR_ANALOG
+#define IRsensor_Hmin_TRESHOLD (3.0*1023*OVERSAMPLENR/VOLT_DIV_REF) // ~3.0V (0.6*Vcc)
+#define IRsensor_Lmax_TRESHOLD (1.5*1023*OVERSAMPLENR/VOLT_DIV_REF) // ~1.5V (0.3*Vcc)
+#define IRsensor_Hopen_TRESHOLD (4.6*1023*OVERSAMPLENR/VOLT_DIV_REF) // ~4.6V (N.C. @ Ru~20-50k, Rd'=56k, Ru'=10k)
+#define IRsensor_Ldiode_TRESHOLD (0.3*1023*OVERSAMPLENR/VOLT_DIV_REF) // ~0.3V
+#endif //IR_SENSOR_ANALOG
 
 #endif //ULTRALCD_H

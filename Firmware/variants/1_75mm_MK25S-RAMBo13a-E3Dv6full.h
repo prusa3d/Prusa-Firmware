@@ -378,35 +378,27 @@
 
 #define FARM_PREHEAT_HOTEND_TEMP 250
 #define FARM_PREHEAT_HPB_TEMP 80
-#define FARM_PREHEAT_FAN_SPEED 0
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
 #define PLA_PREHEAT_HPB_TEMP 60
-#define PLA_PREHEAT_FAN_SPEED 0
 
 #define ASA_PREHEAT_HOTEND_TEMP 260
 #define ASA_PREHEAT_HPB_TEMP 105
-#define ASA_PREHEAT_FAN_SPEED 0
 
 #define ABS_PREHEAT_HOTEND_TEMP 255
 #define ABS_PREHEAT_HPB_TEMP 100
-#define ABS_PREHEAT_FAN_SPEED 0
 
 #define HIPS_PREHEAT_HOTEND_TEMP 220
 #define HIPS_PREHEAT_HPB_TEMP 100
-#define HIPS_PREHEAT_FAN_SPEED 0
 
 #define PP_PREHEAT_HOTEND_TEMP 254
 #define PP_PREHEAT_HPB_TEMP 100
-#define PP_PREHEAT_FAN_SPEED 0
 
 #define PET_PREHEAT_HOTEND_TEMP 230
 #define PET_PREHEAT_HPB_TEMP 85
-#define PET_PREHEAT_FAN_SPEED 0
 
 #define FLEX_PREHEAT_HOTEND_TEMP 240
 #define FLEX_PREHEAT_HPB_TEMP 50
-#define FLEX_PREHEAT_FAN_SPEED 0
 
 /*------------------------------------
  THERMISTORS SETTINGS
@@ -513,7 +505,7 @@
 #define MMU_REQUIRED_FW_BUILDNR 132
 #define MMU_FORCE_STEALTH_MODE
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
-//#define MMU_HAS_CUTTER
+#define MMU_HAS_CUTTER
 
 // This is experimental feature requested by our test department.
 // There is no known use for ordinary user. If enabled by this macro

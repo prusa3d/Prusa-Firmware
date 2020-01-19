@@ -10,14 +10,6 @@
 #endif
 #define BED_CHECK_INTERVAL 5000 //ms between checks in bang-bang control
 
-//// Heating sanity check:
-// This waits for the watch period in milliseconds whenever an M104 or M109 increases the target temperatureLCD_PROGRESS_BAR
-// If the temperature has not increased at the end of that period, the target temperature is set to zero.
-// It can be reset with another M104/M109. This check is also only triggered if the target temperature and the current temperature
-//  differ by at least 2x WATCH_TEMP_INCREASE
-//#define WATCH_TEMP_PERIOD 40000 //40 seconds
-//#define WATCH_TEMP_INCREASE 10  //Heat up at least 10 degree in 20 seconds
-
 #ifdef PIDTEMP
   // this adds an experimental additional term to the heating power, proportional to the extrusion speed.
   // if Kc is chosen well, the additional required power due to increased melting should be compensated.
@@ -276,43 +268,29 @@
 #endif
 
 /**
-    * Implementation of linear pressure control
-    *
-    * Assumption: advance = k * (delta velocity)
-    * K=0 means advance disabled.
-    * See Marlin documentation for calibration instructions.
-    */
+ * Linear Pressure Control v1.5
+ *
+ * Assumption: advance [steps] = k * (delta velocity [steps/s])
+ * K=0 means advance disabled.
+ *
+ * NOTE: K values for LIN_ADVANCE 1.5 differs from earlier versions!
+ *
+ * Set K around 0.22 for 3mm PLA Direct Drive with ~6.5cm between the drive gear and heatbreak.
+ * Larger K values will be needed for flexible filament and greater distances.
+ * If this algorithm produces a higher speed offset than the extruder can handle (compared to E jerk)
+ * print acceleration will be reduced during the affected moves to keep within the limit.
+ *
+ * See http://marlinfw.org/docs/features/lin_advance.html for full instructions.
+ * Mention @Sebastianv650 on GitHub to alert the author of any issues.
+ */
 #define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
-  #define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.
-
- /**
-        * Some Slicers produce Gcode with randomly jumping extrusion widths occasionally.
-        * For example within a 0.4mm perimeter it may produce a single segment of 0.05mm width.
-        * While this is harmless for normal printing (the fluid nature of the filament will
-        * close this very, very tiny gap), it throws off the LIN_ADVANCE pressure adaption.
-        *
-        * For this case LIN_ADVANCE_E_D_RATIO can be used to set the extrusion:distance ratio
-        * to a fixed value. Note that using a fixed ratio will lead to wrong nozzle pressures
-        * if the slicer is using variable widths or layer heights within one print!
-        *
-        * This option sets the default E:D ratio at startup. Use `M900` to override this value.
-        *
-        * Example: `M900 W0.4 H0.2 D1.75`, where:
-        *   - W is the extrusion width in mm
-        *   - H is the layer height in mm
-        *   - D is the filament diameter in mm
-        *
-        * Example: `M900 R0.0458` to set the ratio directly.
-        *
-        * Set to 0 to auto-detect the ratio based on given Gcode G1 print moves.
-        *
-        * Slic3r (including Prusa Slic3r) produces Gcode compatible with the automatic mode.
-        * Cura (as of this writing) may produce Gcode incompatible with the automatic mode.
-        */
-#define LIN_ADVANCE_E_D_RATIO 0 // The calculated ratio (or 0) according to the formula W * H / ((D / 2) ^ 2 * PI)
-                                // Example: 0.4 * 0.2 / ((1.75 / 2) ^ 2 * PI) = 0.033260135
+  #define LIN_ADVANCE_K 0  // Unit: mm compression per 1mm/s extruder speed
+  //#define LA_NOCOMPAT    // Disable Linear Advance 1.0 compatibility
+  //#define LA_LIVE_K      // Allow adjusting K in the Tune menu
+  //#define LA_DEBUG       // If enabled, this will generate debug information output over USB.
+  //#define LA_DEBUG_LOGIC // @wavexx: setup logic channels for isr debugging
 #endif
 
 // Arc interpretation settings:
@@ -399,10 +377,6 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 //===========================================================================
 //=============================  Define Defines  ============================
 //===========================================================================
-
-#if EXTRUDERS > 1 && defined TEMP_SENSOR_1_AS_REDUNDANT
-  #error "You cannot use TEMP_SENSOR_1_AS_REDUNDANT if EXTRUDERS > 1"
-#endif
 
 #if EXTRUDERS > 1 && defined HEATERS_PARALLEL
   #error "You cannot use HEATERS_PARALLEL if EXTRUDERS > 1"

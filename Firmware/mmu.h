@@ -14,6 +14,7 @@ extern uint8_t mmu_extruder;
 extern uint8_t tmp_extruder;
 
 extern int8_t mmu_finda;
+extern uint32_t mmu_last_finda_response;
 extern bool ir_sensor_detected;
 
 extern int16_t mmu_version;
@@ -105,8 +106,7 @@ extern int get_ext_nr();
 extern void display_loading();
 extern void extr_adj(uint8_t extruder);
 extern void extr_unload();
-//-//
-extern void extr_unload_();
+
 extern void extr_adj_0();
 extern void extr_adj_1();
 extern void extr_adj_2();
