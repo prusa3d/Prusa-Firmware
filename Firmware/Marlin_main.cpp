@@ -10833,12 +10833,11 @@ void recover_machine_state_after_power_panic(bool bTiny)
     UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) 
     + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS];
   }
-  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS)) {
-	  current_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
-	  sprintf_P(cmd, PSTR("G92 E"));
-	  dtostrf(current_position[E_AXIS], 6, 3, cmd + strlen(cmd));
-	  enquecommand(cmd);
-  }
+  //restore E position.
+  current_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
+  sprintf_P(cmd, PSTR("G92 E"));
+  dtostrf(current_position[E_AXIS], 6, 3, cmd + strlen(cmd));
+  enquecommand(cmd);
 
   memcpy(destination, current_position, sizeof(destination));
 
@@ -10947,6 +10946,10 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
   // Unretract.
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(2*default_retraction)" F480"));
+  //restore previous E position (again after unretract)
+    sprintf_P(cmd, PSTR("G92 E"));
+    dtostrf(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E)), 6, 3, cmd + strlen(cmd));
+   enquecommand(cmd);
   // Set the feedrates saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
 	enquecommand(cmd);
