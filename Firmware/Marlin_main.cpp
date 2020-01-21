@@ -10549,7 +10549,7 @@ void uvlo_()
     planner_abort_hard();
 
 	// Store the current extruder position.
-	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
+	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
     // Clean the input command queue.
     cmdqueue_reset();
