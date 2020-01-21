@@ -10563,37 +10563,26 @@ void uvlo_()
     sei();
 
     // retract
-		plan_buffer_line(
-      current_position[X_AXIS], 
-      current_position[Y_AXIS], 
-      current_position[Z_AXIS], 
-      current_position[E_AXIS] - default_retraction,
-      95, active_extruder);
-    
-        st_synchronize();
-        disable_e0();
-    
-    plan_buffer_line(
-      current_position[X_AXIS],
-      current_position[Y_AXIS],
-      current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS],
-      current_position[E_AXIS] - default_retraction,
-      40, active_extruder);
+    plan_buffer_line(current_position[X_AXIS],
+                     current_position[Y_AXIS],
+                     current_position[Z_AXIS],
+                     current_position[E_AXIS] - default_retraction,
+                     95, active_extruder);
     st_synchronize();
     disable_e0();
 
-    plan_buffer_line(
-      current_position[X_AXIS],
-      current_position[Y_AXIS],
-      current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS],
-      current_position[E_AXIS] - default_retraction,
-      40, active_extruder);
+    // Move Z up and to the next 0th full step.
+    plan_buffer_line(current_position[X_AXIS],
+                     current_position[Y_AXIS],
+                     current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS],
+                     current_position[E_AXIS] - default_retraction,
+                     40, active_extruder);
     st_synchronize();
+    disable_z();
 
-    disable_e0();
-    // Move Z up to the next 0th full step.
     // Write the file position.
     eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
+
     // Store the mesh bed leveling offsets. This is 2*7*7=98 bytes, which takes 98*3.4us=333us in worst case.
     for (int8_t mesh_point = 0; mesh_point < MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS; ++ mesh_point) {
       uint8_t ix = mesh_point % MESH_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
