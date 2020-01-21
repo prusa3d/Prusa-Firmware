@@ -10551,15 +10551,18 @@ void uvlo_()
 	// Store the current extruder position.
 	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
-    // Clean the input command queue.
+
+    // Clean the input command queue, inhibit serial processing using saved_printing
     cmdqueue_reset();
     card.sdprinting = false;
-//    card.closefile();    
-    // Enable stepper driver interrupt to move Z axis.
-    // This should be fine as the planner and command queues are empty and the SD card printing is disabled.
-    //FIXME one may want to disable serial lines at this point of time to avoid interfering with the command queue,
-    // though it should not happen that the command queue is touched as the plan_buffer_line always succeed without blocking.
-		sei();
+//  card.closefile();
+    saved_printing = true;
+
+    // Enable stepper driver interrupt to move Z axis. This should be fine as the planner and
+    // command queues are empty, SD card printing is disabled, usb is inhibited.
+    sei();
+
+    // retract
 		plan_buffer_line(
       current_position[X_AXIS], 
       current_position[Y_AXIS], 
