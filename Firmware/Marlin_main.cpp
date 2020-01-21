@@ -10509,7 +10509,6 @@ void uvlo_()
 	tmc2130_set_current_r(E_AXIS, 20);
 #endif //TMC2130
 
-
     // Indicate that the interrupt has been triggered.
 	//	SERIAL_ECHOLNPGM("UVLO");
 
@@ -10591,17 +10590,19 @@ void uvlo_()
       int16_t v = mbl.active ? int16_t(floor(mbl.z_values[iy][ix] * 1000.f + 0.5f)) : 0;
       eeprom_update_word((uint16_t*)(EEPROM_UVLO_MESH_BED_LEVELING_FULL +2*mesh_point), *reinterpret_cast<uint16_t*>(&v));
     }
-    // Read out the current Z motor microstep counter. This will be later used
+
+    // Write the current Z motor microstep counter. This will be later used
     // for reaching the zero full step before powering off.
     eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), z_microsteps);
-    // Store the current position.
 
+    // Store the current position.
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z , current_position[Z_AXIS]);
+
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
 	eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, feedrate_bckp);
-    EEPROM_save_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply);
+    eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY, feedmultiply);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
@@ -10897,7 +10898,7 @@ void restore_print_from_eeprom() {
 
 	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
     feedrate_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDRATE);
-	EEPROM_read_B(EEPROM_UVLO_FEEDMULTIPLY, &feedmultiply_rec);
+    feedmultiply_rec = eeprom_read_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY);
 	SERIAL_ECHOPGM("Feedrate:");
 	MYSERIAL.print(feedrate_rec);
 	SERIAL_ECHOPGM(", feedmultiply:");
