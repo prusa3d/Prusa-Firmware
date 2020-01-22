@@ -70,6 +70,7 @@ uint8_t mmu_extruder = MMU_FILAMENT_UNKNOWN;
 uint8_t tmp_extruder = MMU_FILAMENT_UNKNOWN;
 
 int8_t mmu_finda = -1;
+uint32_t mmu_last_finda_response = 0;
 
 int16_t mmu_version = -1;
 
@@ -264,6 +265,7 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+			mmu_last_finda_response = _millis();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
@@ -376,11 +378,11 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+			mmu_last_finda_response = _millis();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
-				fsensor_stop_and_save_print();
-				enquecommand_front_P(PSTR("PRUSA fsensor_recover")); //then recover
+				fsensor_checkpoint_print();
 				ad_markDepleted(mmu_extruder);
 				if (lcd_autoDepleteEnabled() && !ad_allDepleted())
 				{
@@ -1355,7 +1357,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         manage_response(true, true, MMU_TCODE_MOVE);
         mmu_continue_loading(false);
         mmu_extruder = tmp_extruder; //filament change is finished
-        marlin_rise_z();
+        raise_z_above(MIN_Z_FOR_LOAD, false);
         mmu_load_to_nozzle();
         load_filament_final_feed();
         st_synchronize();
@@ -1545,7 +1547,7 @@ void mmu_continue_loading(bool blocking)
     };
     Ls state = Ls::Enter;
 
-    const uint_least8_t max_retry = 2;
+    const uint_least8_t max_retry = 3;
     uint_least8_t retry = 0;
 
     while (!success)
@@ -1556,34 +1558,27 @@ void mmu_continue_loading(bool blocking)
             increment_load_fail();
             // no break
         case Ls::Retry:
-#ifdef MMU_HAS_CUTTER
-            if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+            ++retry; // overflow not handled, as it is not dangerous.
+            if (retry >= max_retry)
             {
-                mmu_command(MmuCmd::K0 + tmp_extruder);
-                manage_response(true, true, MMU_UNLOAD_MOVE);
-            }
+                state = Ls::Unload;
+#ifdef MMU_HAS_CUTTER
+                if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+                {
+                    mmu_command(MmuCmd::K0 + tmp_extruder);
+                    manage_response(true, true, MMU_UNLOAD_MOVE);
+                }
 #endif //MMU_HAS_CUTTER
+            }
             mmu_command(MmuCmd::T0 + tmp_extruder);
             manage_response(true, true, MMU_TCODE_MOVE);
             success = load_more();
             if (success) success = can_load();
-            ++retry; // overflow not handled, as it is not dangerous.
-            if (retry >= max_retry) state = Ls::Unload;
+
             break;
         case Ls::Unload:
             stop_and_save_print_to_ram(0, 0);
-
-            //lift z
-            current_position[Z_AXIS] += Z_PAUSE_LIFT;
-            if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-            plan_buffer_line_curposXYZE(15, active_extruder);
-            st_synchronize();
-
-            //Move XY to side
-            current_position[X_AXIS] = X_PAUSE_POS;
-            current_position[Y_AXIS] = Y_PAUSE_POS;
-            plan_buffer_line_curposXYZE(50, active_extruder);
-            st_synchronize();
+            long_pause();
 
             mmu_command(MmuCmd::U0);
             manage_response(false, true, MMU_UNLOAD_MOVE);
@@ -1594,6 +1589,7 @@ void mmu_continue_loading(bool blocking)
             if (blocking)
             {
                 marlin_wait_for_click();
+                st_synchronize();
                 restore_print_from_ram_and_continue(0);
                 state = Ls::Retry;
             }
