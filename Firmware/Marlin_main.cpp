@@ -11249,6 +11249,7 @@ void restore_print_from_ram_and_continue(float e_move)
 // Cancel the state related to a currently saved print
 void cancel_saved_printing()
 {
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
     saved_target[0] = SAVED_TARGET_UNSET;
     saved_printing_type = PRINTING_TYPE_NONE;
     saved_printing = false;
