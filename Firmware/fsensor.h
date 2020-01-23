@@ -60,12 +60,15 @@ extern void fsensor_oq_meassure_stop(void);
 extern bool fsensor_oq_result(void);
 //! @}
 
-
-#include "planner.h"
 //! @name callbacks from stepper
 //! @{
-extern void fsensor_st_block_begin(block_t* bl);
-extern void fsensor_st_block_chunk(block_t* bl, int cnt);
+extern void fsensor_st_block_chunk(int cnt);
+
+// There's really nothing to do in block_begin: the stepper ISR likely has
+// called us already at the end of the last block, making this integration
+// redundant. LA1.5 might not always do that during a coasting move, so attempt
+// to drain fsensor_st_cnt anyway at the beginning of the new block.
+#define fsensor_st_block_begin(rev) fsensor_st_block_chunk(0)
 //! @}
 
 
