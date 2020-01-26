@@ -1327,29 +1327,12 @@ void setup()
 	SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
 #endif
 
-
 	setup_homepin();
 
-#ifdef TMC2130
-
-  if (1) {
-    // try to run to zero phase before powering the Z motor.    
-    // Move in negative direction
-    WRITE(Z_DIR_PIN,INVERT_Z_DIR);
-    // Round the current micro-micro steps to micro steps.
-    for (uint16_t phase = (tmc2130_rd_MSCNT(Z_AXIS) + 8) >> 4; phase > 0; -- phase) {
-      // Until the phase counter is reset to zero.
-      WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
-      _delay(2);
-      WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
-      _delay(2);
-    }
-  }
-#endif //TMC2130
-
-#if defined(Z_AXIS_ALWAYS_ON) && !defined(PSU_Delta)
-	enable_z();
+#if defined(Z_AXIS_ALWAYS_ON)
+    enable_z();
 #endif
+
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == static_cast<int>(0xFFFF))) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
