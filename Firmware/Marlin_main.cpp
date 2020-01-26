@@ -10625,10 +10625,11 @@ void uvlo_()
     plan_buffer_line_curposXYZE(500, active_extruder);
     st_synchronize();
 #endif
-wdt_enable(WDTO_500MS);
-WRITE(BEEPER,HIGH);
-while(1)
-     ;
+
+    // burn all that residual power
+    wdt_enable(WDTO_1S);
+    WRITE(BEEPER,HIGH);
+    while(1);
 }
 
 
@@ -10672,10 +10673,10 @@ eeprom_update_byte((uint8_t*)EEPROM_UVLO,2);
 // Increment power failure counter
 eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
 eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
-wdt_enable(WDTO_500MS);
-WRITE(BEEPER,HIGH);
-while(1)
-     ;
+    // burn all that residual power
+    wdt_enable(WDTO_1S);
+    WRITE(BEEPER,HIGH);
+    while(1);
 }
 #endif //UVLO_SUPPORT
 
