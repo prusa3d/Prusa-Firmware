@@ -10617,18 +10617,17 @@ void uvlo_()
     // Increment power failure counter
 	eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
 	eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
-      printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
 
-#if 0
-    // Move the print head to the side of the print until all the power stored in the power supply capacitors is depleted.
+    printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
+    WRITE(BEEPER,HIGH);
+
+    // All is set: with all the juice left, try to move extruder away to detach the nozzle completely from the print
+    enable_z();
     current_position[X_AXIS] = (current_position[X_AXIS] < 0.5f * (X_MIN_POS + X_MAX_POS)) ? X_MIN_POS : X_MAX_POS;
     plan_buffer_line_curposXYZE(500, active_extruder);
     st_synchronize();
-#endif
 
-    // burn all that residual power
     wdt_enable(WDTO_1S);
-    WRITE(BEEPER,HIGH);
     while(1);
 }
 
