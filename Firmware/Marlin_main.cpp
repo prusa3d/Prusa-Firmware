@@ -10942,7 +10942,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 
     // Move to the XY print position in logical coordinates, where the print has been killed, but
     // without shifting Z along the way. This requires performing the move without mbl.
-	sprintf_P(cmd, PSTR("G1 X%f Y%f F2000"),
+	sprintf_P(cmd, PSTR("G1 X%f Y%f F3000"),
               eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0)),
               eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4)));
 	enquecommand(cmd);
