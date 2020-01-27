@@ -10505,7 +10505,7 @@ void uvlo_()
 
     // Stop all heaters
     uint8_t saved_target_temperature_bed = target_temperature_bed;
-    uint8_t saved_target_temperature_ext = target_temperature[active_extruder];
+    uint16_t saved_target_temperature_ext = target_temperature[active_extruder];
     setAllTargetHotends(0);
     setTargetBed(0);
 
@@ -10605,7 +10605,7 @@ void uvlo_()
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
 	eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, feedrate_bckp);
     eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDMULTIPLY, feedmultiply);
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, saved_target_temperature_ext);
+    eeprom_update_word((uint16_t*)EEPROM_UVLO_TARGET_HOTEND, saved_target_temperature_ext);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, saved_target_temperature_bed);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
 	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0), extruder_multiplier[0]);
@@ -10871,7 +10871,7 @@ bool recover_machine_state_after_power_panic()
   enable_z();
 
   // 7) Recover the target temperatures.
-  target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
+  target_temperature[active_extruder] = eeprom_read_word((uint16_t*)EEPROM_UVLO_TARGET_HOTEND);
   target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
 
   // 8) Recover extruder multipilers
