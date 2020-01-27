@@ -7547,13 +7547,10 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
+	FORCE_BL_ON_START;
 #if !IR_SENSOR_ANALOG
      _delay(2000);
 #endif //!IR_SENSOR_ANALOG
-    
-    FORCE_BL_ON_START;
-    
-	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 #if IR_SENSOR_ANALOG
      bool bAction;
