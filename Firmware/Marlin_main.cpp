@@ -9595,7 +9595,7 @@ void kill(const char *full_screen_message, unsigned char id)
   disable_x();
 //  SERIAL_ECHOLNPGM("kill - disable Y");
   disable_y();
-  disable_z();
+  poweroff_z();
   disable_e0();
   disable_e1();
   disable_e2();
@@ -10579,7 +10579,7 @@ void uvlo_()
                                 + UVLO_Z_AXIS_SHIFT;
     plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60, active_extruder);
     st_synchronize();
-    disable_z();
+    poweroff_z();
 
     // Write the file position.
     eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
@@ -10638,7 +10638,7 @@ void uvlo_()
     WRITE(BEEPER,HIGH);
 
     // All is set: with all the juice left, try to move extruder away to detach the nozzle completely from the print
-    enable_z();
+    poweron_z();
     current_position[X_AXIS] = (current_position[X_AXIS] < 0.5f * (X_MIN_POS + X_MAX_POS)) ? X_MIN_POS : X_MAX_POS;
     plan_buffer_line_curposXYZE(500, active_extruder);
     st_synchronize();
@@ -10693,7 +10693,7 @@ void uvlo_tiny()
                                     + UVLO_TINY_Z_AXIS_SHIFT;
         plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60, active_extruder);
         st_synchronize();
-        disable_z();
+        poweroff_z();
 
         // Update Z position
         eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_position[Z_AXIS]);
