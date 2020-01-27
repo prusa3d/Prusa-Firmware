@@ -1345,14 +1345,7 @@ void plan_set_position(float x, float y, float z, const float &e)
     apply_rotation_xyz(plan_bed_level_matrix, x, y, z);
 #endif // ENABLE_AUTO_BED_LEVELING
 
-    // Apply the machine correction matrix.
-    if (world2machine_correction_mode != WORLD2MACHINE_CORRECTION_NONE)
-    {
-        float tmpx = x;
-        float tmpy = y;
-        x = world2machine_rotation_and_skew[0][0] * tmpx + world2machine_rotation_and_skew[0][1] * tmpy + world2machine_shift[0];
-        y = world2machine_rotation_and_skew[1][0] * tmpx + world2machine_rotation_and_skew[1][1] * tmpy + world2machine_shift[1];
-    }
+    world2machine(x, y);
 
   position[X_AXIS] = lround(x*cs.axis_steps_per_unit[X_AXIS]);
   position[Y_AXIS] = lround(y*cs.axis_steps_per_unit[Y_AXIS]);

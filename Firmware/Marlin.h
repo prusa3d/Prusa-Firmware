@@ -445,9 +445,8 @@ void setup_uvlo_interrupt();
 void setup_fan_interrupt();
 #endif
 
-//extern void recover_machine_state_after_power_panic();
-extern void recover_machine_state_after_power_panic(bool bTiny);
-extern void restore_print_from_eeprom();
+extern bool recover_machine_state_after_power_panic();
+extern void restore_print_from_eeprom(bool mbl_was_active);
 extern void position_menu();
 
 extern void print_world_coordinates();
