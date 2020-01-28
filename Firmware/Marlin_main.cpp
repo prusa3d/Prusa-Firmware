@@ -10529,7 +10529,7 @@ void uvlo_()
 
     // save the global state at planning time
     uint16_t feedrate_bckp;
-    if (blocks_queued())
+    if (current_block)
     {
         memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
         feedrate_bckp = current_block->gcode_feedrate;
@@ -11129,7 +11129,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 #endif
 
   // save the global state at planning time
-  if (blocks_queued())
+  if (current_block)
   {
       memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
       saved_feedrate2 = current_block->gcode_feedrate;
