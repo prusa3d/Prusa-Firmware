@@ -10798,10 +10798,13 @@ void recover_print(uint8_t automatic) {
   // Recover position, temperatures and extrude_multipliers
   bool mbl_was_active = recover_machine_state_after_power_panic();
 
-  // Attempt to lift the print head on the first recovery, so one may remove the excess priming material.
-  bool raise_z = (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1);
-  if(raise_z && (current_position[Z_AXIS]<25))
-      enquecommand_P(PSTR("G1 Z25 F800"));
+  // Lift the print head 25mm, first to avoid collisions with oozed material with the print,
+  // and second also so one may remove the excess priming material.
+  if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1)
+  {
+      sprintf_P(cmd, PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + 25);
+      enquecommand(cmd);
+  }
 
   // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine
   // transformation status. G28 will not touch Z when MBL is off.
