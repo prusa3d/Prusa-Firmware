@@ -95,7 +95,7 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
 {
 	switch(state){
 	case States::ZERO_START:
-		if (bedPWMDisabled) break;
+		if (bedPWMDisabled) return;
 		pwm = soft_pwm_bed << 1;// expecting soft_pwm_bed to be 7bit!
 		if( pwm != 0 ){
 			state = States::ZERO;     // do nothing, let it tick once again after the 30Hz period
