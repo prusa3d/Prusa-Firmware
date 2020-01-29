@@ -618,6 +618,10 @@
 // The following example, 12 * (4 * 16 / 400) = 12 * 0.16mm = 1.92mm.
 //#define UVLO_Z_AXIS_SHIFT 1.92
 #define UVLO_Z_AXIS_SHIFT 0.64
+// When powered off during PP recovery, the Z axis position can still be re-adjusted. In this case
+// we just need to shift to the nearest fullstep, but we need a move which is at least
+// "dropsegments" steps long. All the above rules still need to apply.
+#define UVLO_TINY_Z_AXIS_SHIFT 0.16
 // If power panic occured, and the current temperature is higher then target temperature before interrupt minus this offset, print will be recovered automatically. 
 #define AUTOMATIC_UVLO_BED_TEMP_OFFSET 5 
 
@@ -630,7 +634,7 @@
 #define MMU_REQUIRED_FW_BUILDNR 83
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
-//#define MMU_HAS_CUTTER
+#define MMU_HAS_CUTTER
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 #endif //__CONFIGURATION_PRUSA_H
