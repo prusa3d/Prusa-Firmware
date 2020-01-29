@@ -11563,8 +11563,6 @@ if(!(bEnableForce_z||eeprom_read_byte((uint8_t*)EEPROM_SILENT)))
 
 void disable_force_z()
 {
-    // uint16_t z_microsteps=0;
-
     if(!bEnableForce_z) return;   // motor already disabled (may be ;-p )
 
     bEnableForce_z=false;
@@ -11575,8 +11573,6 @@ void disable_force_z()
     update_mode_profile();
     tmc2130_init(true);
 #endif // TMC2130
-
-    // axis_known_position[Z_AXIS]=false;
 }
 
 
