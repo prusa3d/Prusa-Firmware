@@ -139,18 +139,14 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
 		break;
 	case States::ONE:             // state ONE - we'll either stay in ONE or change to FALL
 		OCR0B = 255;
+		if (bedPWMDisabled) return;
 		slowCounter += slowInc;   // this does software timer_clk/256 or less
-		if (!bedPWMDisabled){ //disable heating as soon as possible
-			if( slowCounter < pwm ){
-				return;
-			}
-			if( (soft_pwm_bed << 1) >= (255 - slowInc - 1) ){  //@@TODO simplify & explain
-				// if slowInc==2, soft_pwm == 251 will be the first to do short drops to zero. 252 will keep full heating
-				return;           // want full duty for the next ONE cycle again - so keep on heating and just wait for the next timer ovf
-			}
-		}
-		else if (pwm > 200){ //if duty cycle is high and BED PWM is disabled keep heater on. Prevents overcooling
+		if( slowCounter < pwm ){
 			return;
+		}
+		if( (soft_pwm_bed << 1) >= (255 - slowInc - 1) ){  //@@TODO simplify & explain
+			// if slowInc==2, soft_pwm == 251 will be the first to do short drops to zero. 252 will keep full heating
+			return;           // want full duty for the next ONE cycle again - so keep on heating and just wait for the next timer ovf
 		}
 		// otherwise moving towards FALL
 		// @@TODO it looks like ONE_TO_FALL isn't necessary, there are no artefacts at all
