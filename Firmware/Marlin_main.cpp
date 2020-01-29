@@ -10772,7 +10772,7 @@ void setup_uvlo_interrupt() {
 	EIMSK |= (1 << 4);
 
     // check if power was lost before we armed the interrupt
-    if(!(PINE & (1 << 4)))
+    if(!(PINE & (1 << 4)) && eeprom_read_byte((uint8_t*)EEPROM_UVLO))
     {
         SERIAL_ECHOLNPGM("INT4");
         uvlo_drain_reset();
