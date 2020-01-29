@@ -10485,6 +10485,8 @@ void uvlo_drain_reset()
     // burn all that residual power
     wdt_enable(WDTO_1S);
     WRITE(BEEPER,HIGH);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, MSG_POWERPANIC_DETECTED);
     while(1);
 }
 

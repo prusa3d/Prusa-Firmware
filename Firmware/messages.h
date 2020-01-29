@@ -170,6 +170,7 @@ extern const char MSG_FANCHECK_EXTRUDER[];
 extern const char MSG_FANCHECK_PRINT[];
 extern const char MSG_M112_KILL[];
 extern const char MSG_ADVANCE_K[];
+extern const char MSG_POWERPANIC_DETECTED[];
 
 #if defined(__cplusplus)
 }
