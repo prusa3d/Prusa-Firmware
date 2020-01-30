@@ -5466,16 +5466,16 @@ uint16_t nDiameter;
 switch(oNozzleDiameter)
      {
      case ClNozzleDiameter::_Diameter_250:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_250;
+          nDiameter=250;
+          break;
+     case ClNozzleDiameter::_Diameter_400:
           oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
           nDiameter=400;
           break;
-     case ClNozzleDiameter::_Diameter_400:
+     case ClNozzleDiameter::_Diameter_600:
           oNozzleDiameter=ClNozzleDiameter::_Diameter_600;
           nDiameter=600;
-          break;
-     case ClNozzleDiameter::_Diameter_600:
-          oNozzleDiameter=ClNozzleDiameter::_Diameter_250;
-          nDiameter=250;
           break;
      default:
           oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
