@@ -10480,6 +10480,16 @@ void serialecho_temperatures() {
 }
 
 #ifdef UVLO_SUPPORT
+void uvlo_drain_reset()
+{
+    // burn all that residual power
+    wdt_enable(WDTO_1S);
+    WRITE(BEEPER,HIGH);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, MSG_POWERPANIC_DETECTED);
+    while(1);
+}
+
 
 void uvlo_()
 {
@@ -10709,11 +10719,7 @@ void uvlo_tiny()
     eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
 
     printf_P(_N("UVLO_TINY - end %d\n"), _millis() - time_start);
-
-    // burn all that residual power
-    wdt_enable(WDTO_1S);
-    WRITE(BEEPER,HIGH);
-    while(1);
+    uvlo_drain_reset();
 }
 #endif //UVLO_SUPPORT
 
@@ -10760,12 +10766,19 @@ void setup_uvlo_interrupt() {
 	DDRE &= ~(1 << 4); //input pin
 	PORTE &= ~(1 << 4); //no internal pull-up
 
-						//sensing falling edge
+    // sensing falling edge
 	EICRB |= (1 << 0);
 	EICRB &= ~(1 << 1);
 
-	//enable INT4 interrupt
+	// enable INT4 interrupt
 	EIMSK |= (1 << 4);
+
+    // check if power was lost before we armed the interrupt
+    if(!(PINE & (1 << 4)) && eeprom_read_byte((uint8_t*)EEPROM_UVLO))
+    {
+        SERIAL_ECHOLNPGM("INT4");
+        uvlo_drain_reset();
+    }
 }
 
 ISR(INT4_vect) {
