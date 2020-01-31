@@ -2003,6 +2003,8 @@ void check_max_temp()
 //! number of repeating the same state with consecutive step() calls
 //! used to slow down text switching
 struct alert_automaton_mintemp {
+	const char *m2;
+	alert_automaton_mintemp(const char *m2):m2(m2){}
 private:
 	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
 	enum class States : uint8_t { Init = 0, TempAboveMintemp, ShowPleaseRestart, ShowMintemp };
@@ -2022,7 +2024,6 @@ public:
 	//! @param current_temp current hotend/bed temperature (for computing simple hysteresis)
 	//! @param mintemp minimal temperature including hysteresis to check current_temp against
 	void step(float current_temp, float mintemp){
-		static const char m2[] PROGMEM = "MINTEMP fixed";
 		static const char m1[] PROGMEM = "Please restart";
 		switch(state){
 		case States::Init: // initial state - check hysteresis
@@ -2050,8 +2051,9 @@ public:
 		}
 	}
 };
-
-static alert_automaton_mintemp alert_automaton_hotend, alert_automaton_bed;
+static const char m2hotend[] PROGMEM = "MINTEMP HEATER fixed";
+static const char m2bed[] PROGMEM = "MINTEMP BED fixed";
+static alert_automaton_mintemp alert_automaton_hotend(m2hotend), alert_automaton_bed(m2bed);
 
 void check_min_temp_heater0()
 {
