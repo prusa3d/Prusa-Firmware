@@ -252,10 +252,10 @@ void dcode_1()
 
     /*!
     *
-    ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
+    ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D2: Read/Write RAM</a>
     This command can be used without any additional parameters. It will read the entire RAM.
       
-          D3 [ A | C | X ]
+          D2 [ A | C | X ]
       
       - `A` - Address (0x0000-0x1fff)
       - `C` - Count (0x0001-0x2000)
@@ -355,7 +355,7 @@ void dcode_4()
     ### D5 - Read/Write FLASH <a href="https://reprap.org/wiki/G-code#D5:_Read.2FWrite_FLASH">D5: Read/Write Flash</a>
     This command can be used without any additional parameters. It will read the 1kb FLASH.
       
-          D3 [ A | C | X | E ]
+          D5 [ A | C | X | E ]
       
       - `A` - Address (0x00000-0x3ffff)
       - `C` - Count (0x0001-0x2000)
