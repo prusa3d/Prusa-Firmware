@@ -7541,26 +7541,24 @@ bool lcd_selftest()
 	int _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
+#if IR_SENSOR_ANALOG
+     bool bAction;
+     bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
+     if(!bAction)
+          return(false);
+#endif //IR_SENSOR_ANALOG
 	lcd_wait_for_cool_down();
 	lcd_clear();
 	lcd_set_cursor(0, 0); lcd_puts_P(_i("Self test start  "));////MSG_SELFTEST_START c=20
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-#if !IR_SENSOR_ANALOG
      _delay(2000);
-#endif //!IR_SENSOR_ANALOG
     
     FORCE_BL_ON_START;
     
 	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
-#if IR_SENSOR_ANALOG
-     bool bAction;
-     bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament unloaded?"),false,true);
-     if(!bAction)
-          return(false);
-#endif //IR_SENSOR_ANALOG
 
 	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_0))
