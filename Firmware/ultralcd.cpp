@@ -7554,7 +7554,7 @@ bool lcd_selftest()
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
 	FORCE_BL_ON_START;
-     _delay(2000);
+	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 
 	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
