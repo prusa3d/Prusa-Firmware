@@ -146,38 +146,37 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 #if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1 
 	#if defined(Z_AXIS_ALWAYS_ON)
 		  #ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		  #else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define  disable_z() {}
+			#define  poweron_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+			#define poweroff_z() {}
 		  #endif
 	#else
 		#ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		#else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		#endif
 	#endif
 #else
-  #define enable_z() {}
-  #define disable_z() {}
+    #define  poweron_z() {}
+    #define poweroff_z() {}
 #endif
 
-#ifdef PSU_Delta
+#ifndef PSU_Delta
+    #define  enable_z()  poweron_z()
+    #define disable_z() poweroff_z()
+#else
     void init_force_z();
     void check_force_z();
-    #undef disable_z
-    #define disable_z() disable_force_z()
-    void disable_force_z();
-    #undef enable_z
-    #define enable_z() enable_force_z()
     void enable_force_z();
+    void disable_force_z();
+    #define  enable_z()  enable_force_z()
+    #define disable_z() disable_force_z()
 #endif // PSU_Delta
-
-
 
 
 //#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1

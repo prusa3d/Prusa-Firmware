@@ -121,14 +121,16 @@ unsigned long nIRsensorLastTime;
 void fsensor_stop_and_save_print(void)
 {
     printf_P(PSTR("fsensor_stop_and_save_print\n"));
-    stop_and_save_print_to_ram(0, 0); //XYZE - no change
+    stop_and_save_print_to_ram(0, 0);
+    fsensor_watch_runout = false;
 }
 
 void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
+    fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
-    restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+    restore_print_from_ram_and_continue(0);
 }
 
 // fsensor_checkpoint_print cuts the current print job at the current position,
@@ -376,7 +378,6 @@ void fsensor_oq_meassure_start(uint8_t skip)
 	fsensor_oq_sh_sum = 0;
 	pat9125_update();
 	pat9125_y = 0;
-	fsensor_watch_runout = false;
 	fsensor_oq_meassure = true;
 }
 
@@ -388,7 +389,6 @@ void fsensor_oq_meassure_stop(void)
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * fsensor_chunk_len / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
 	fsensor_oq_meassure = false;
-	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
 }
 
@@ -561,29 +561,31 @@ void fsensor_enque_M600(){
 void fsensor_update(void)
 {
 #ifdef PAT9125
-		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
+		if (fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
+			fsensor_stop_and_save_print();
+            KEEPALIVE_STATE(IN_HANDLER);
+
 			bool autoload_enabled_tmp = fsensor_autoload_enabled;
 			fsensor_autoload_enabled = false;
 			bool oq_meassure_enabled_tmp = fsensor_oq_meassure_enabled;
 			fsensor_oq_meassure_enabled = true;
 
-			fsensor_stop_and_save_print();
+            // move the nozzle away while checking the filament
+            current_position[Z_AXIS] += 0.8;
+            if(current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+            plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+            st_synchronize();
 
+            // check the filament in isolation
 			fsensor_err_cnt = 0;
 			fsensor_oq_meassure_start(0);
-
-			enquecommand_front_P((PSTR("G1 E-3 F200")));
-			process_commands();
-			KEEPALIVE_STATE(IN_HANDLER);
-			cmdqueue_pop_front();
-			st_synchronize();
-
-			enquecommand_front_P((PSTR("G1 E3 F200")));
-			process_commands();
-			KEEPALIVE_STATE(IN_HANDLER);
-			cmdqueue_pop_front();
-			st_synchronize();
+            float e_tmp = current_position[E_AXIS];
+            current_position[E_AXIS] -= 3;
+            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            current_position[E_AXIS] = e_tmp;
+            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            st_synchronize();
 
 			uint8_t err_cnt = fsensor_err_cnt;
 			fsensor_oq_meassure_stop();
@@ -604,7 +606,7 @@ void fsensor_update(void)
 				fsensor_enque_M600();
 		}
 #else //PAT9125
-		if (CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected)
+		if (CHECK_FSENSOR && ir_sensor_detected)
         {
                if(digitalRead(IR_SENSOR_PIN))
                {                                  // IR_SENSOR_PIN ~ H

@@ -1298,10 +1298,6 @@ void setup()
 
 	st_init();    // Initialize stepper, this enables interrupts!
   
-#ifdef UVLO_SUPPORT
-    setup_uvlo_interrupt();
-#endif //UVLO_SUPPORT
-
 #ifdef TMC2130
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	update_mode_profile();
@@ -1596,12 +1592,14 @@ void setup()
               lcd_update(2); 
               lcd_setstatuspgm(_T(WELCOME_MSG)); 
           } 
-           
       }
-
-	   
   }
+
+  // Only arm the uvlo interrupt _after_ a recovering print has been initialized and
+  // the entire state machine initialized.
+  setup_uvlo_interrupt();
 #endif //UVLO_SUPPORT
+
   fCheckModeInit();
   fSetMmuMode(mmu_enabled);
   KEEPALIVE_STATE(NOT_BUSY);
@@ -9490,7 +9488,8 @@ if(0)
 #ifdef PAT9125
 				fsensor_autoload_check_stop();
 #endif //PAT9125
-				fsensor_update();
+                if (fsensor_enabled && !saved_printing)
+                    fsensor_update();
 			}
 		}
 	}
@@ -9595,7 +9594,7 @@ void kill(const char *full_screen_message, unsigned char id)
   disable_x();
 //  SERIAL_ECHOLNPGM("kill - disable Y");
   disable_y();
-  disable_z();
+  poweroff_z();
   disable_e0();
   disable_e1();
   disable_e2();
@@ -10482,6 +10481,16 @@ void serialecho_temperatures() {
 }
 
 #ifdef UVLO_SUPPORT
+void uvlo_drain_reset()
+{
+    // burn all that residual power
+    wdt_enable(WDTO_1S);
+    WRITE(BEEPER,HIGH);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, MSG_POWERPANIC_DETECTED);
+    while(1);
+}
+
 
 void uvlo_()
 {
@@ -10521,7 +10530,7 @@ void uvlo_()
 
     // save the global state at planning time
     uint16_t feedrate_bckp;
-    if (blocks_queued())
+    if (current_block)
     {
         memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
         feedrate_bckp = current_block->gcode_feedrate;
@@ -10579,7 +10588,7 @@ void uvlo_()
                                 + UVLO_Z_AXIS_SHIFT;
     plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60, active_extruder);
     st_synchronize();
-    disable_z();
+    poweroff_z();
 
     // Write the file position.
     eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
@@ -10638,7 +10647,7 @@ void uvlo_()
     WRITE(BEEPER,HIGH);
 
     // All is set: with all the juice left, try to move extruder away to detach the nozzle completely from the print
-    enable_z();
+    poweron_z();
     current_position[X_AXIS] = (current_position[X_AXIS] < 0.5f * (X_MIN_POS + X_MAX_POS)) ? X_MIN_POS : X_MAX_POS;
     plan_buffer_line_curposXYZE(500, active_extruder);
     st_synchronize();
@@ -10693,7 +10702,7 @@ void uvlo_tiny()
                                     + UVLO_TINY_Z_AXIS_SHIFT;
         plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60, active_extruder);
         st_synchronize();
-        disable_z();
+        poweroff_z();
 
         // Update Z position
         eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_position[Z_AXIS]);
@@ -10711,11 +10720,7 @@ void uvlo_tiny()
     eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
 
     printf_P(_N("UVLO_TINY - end %d\n"), _millis() - time_start);
-
-    // burn all that residual power
-    wdt_enable(WDTO_1S);
-    WRITE(BEEPER,HIGH);
-    while(1);
+    uvlo_drain_reset();
 }
 #endif //UVLO_SUPPORT
 
@@ -10762,12 +10767,19 @@ void setup_uvlo_interrupt() {
 	DDRE &= ~(1 << 4); //input pin
 	PORTE &= ~(1 << 4); //no internal pull-up
 
-						//sensing falling edge
+    // sensing falling edge
 	EICRB |= (1 << 0);
 	EICRB &= ~(1 << 1);
 
-	//enable INT4 interrupt
+	// enable INT4 interrupt
 	EIMSK |= (1 << 4);
+
+    // check if power was lost before we armed the interrupt
+    if(!(PINE & (1 << 4)) && eeprom_read_byte((uint8_t*)EEPROM_UVLO))
+    {
+        SERIAL_ECHOLNPGM("INT4");
+        uvlo_drain_reset();
+    }
 }
 
 ISR(INT4_vect) {
@@ -10787,10 +10799,13 @@ void recover_print(uint8_t automatic) {
   // Recover position, temperatures and extrude_multipliers
   bool mbl_was_active = recover_machine_state_after_power_panic();
 
-  // Attempt to lift the print head on the first recovery, so one may remove the excess priming material.
-  bool raise_z = (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1);
-  if(raise_z && (current_position[Z_AXIS]<25))
-      enquecommand_P(PSTR("G1 Z25 F800"));
+  // Lift the print head 25mm, first to avoid collisions with oozed material with the print,
+  // and second also so one may remove the excess priming material.
+  if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1)
+  {
+      sprintf_P(cmd, PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + 25);
+      enquecommand(cmd);
+  }
 
   // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine
   // transformation status. G28 will not touch Z when MBL is off.
@@ -11118,7 +11133,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 #endif
 
   // save the global state at planning time
-  if (blocks_queued())
+  if (current_block)
   {
       memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
       saved_feedrate2 = current_block->gcode_feedrate;
@@ -11578,8 +11593,6 @@ if(!(bEnableForce_z||eeprom_read_byte((uint8_t*)EEPROM_SILENT)))
 
 void disable_force_z()
 {
-    uint16_t z_microsteps=0;
-
     if(!bEnableForce_z) return;   // motor already disabled (may be ;-p )
 
     bEnableForce_z=false;
@@ -11590,8 +11603,6 @@ void disable_force_z()
     update_mode_profile();
     tmc2130_init(true);
 #endif // TMC2130
-
-    axis_known_position[Z_AXIS]=false;
 }
 
 
