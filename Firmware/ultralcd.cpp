@@ -7554,9 +7554,7 @@ bool lcd_selftest()
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
 	FORCE_BL_ON_START;
-#if !IR_SENSOR_ANALOG
      _delay(2000);
-#endif //!IR_SENSOR_ANALOG
 	KEEPALIVE_STATE(IN_HANDLER);
 
 	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
