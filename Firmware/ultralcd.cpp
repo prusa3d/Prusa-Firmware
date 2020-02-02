@@ -5465,7 +5465,19 @@ uint16_t nDiameter;
 
 switch(oNozzleDiameter)
      {
+     case ClNozzleDiameter::_Diameter_150:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_200;
+          nDiameter=200;
+          break;
+     case ClNozzleDiameter::_Diameter_200:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_250;
+          nDiameter=250;
+          break;
      case ClNozzleDiameter::_Diameter_250:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_300;
+          nDiameter=300;
+          break;
+     case ClNozzleDiameter::_Diameter_300:
           oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
           nDiameter=400;
           break;
@@ -5474,6 +5486,14 @@ switch(oNozzleDiameter)
           nDiameter=600;
           break;
      case ClNozzleDiameter::_Diameter_600:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_800;
+          nDiameter=800;
+          break;
+     case ClNozzleDiameter::_Diameter_800:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_1000;
+          nDiameter=1000;
+          break;
+     case ClNozzleDiameter::_Diameter_1000:
           oNozzleDiameter=ClNozzleDiameter::_Diameter_250;
           nDiameter=250;
           break;
@@ -5491,9 +5511,14 @@ do\
     float fNozzleDiam;\
     switch(oNozzleDiameter)\
     {\
+        case ClNozzleDiameter::_Diameter_150: fNozzleDiam = 0.15f; break;\
+        case ClNozzleDiameter::_Diameter_200: fNozzleDiam = 0.20f; break;\
         case ClNozzleDiameter::_Diameter_250: fNozzleDiam = 0.25f; break;\
-        case ClNozzleDiameter::_Diameter_400: fNozzleDiam = 0.4f; break;\
-        case ClNozzleDiameter::_Diameter_600: fNozzleDiam = 0.6f; break;\
+        case ClNozzleDiameter::_Diameter_300: fNozzleDiam = 0.30f; break;\
+        case ClNozzleDiameter::_Diameter_400: fNozzleDiam = 0.40f; break;\
+        case ClNozzleDiameter::_Diameter_600: fNozzleDiam = 0.60f; break;\
+        case ClNozzleDiameter::_Diameter_800: fNozzleDiam = 0.80f; break;\
+        case ClNozzleDiameter::_Diameter_1000: fNozzleDiam = 1.0f; break;\
         default: fNozzleDiam = 0.4f; break;\
     }\
     MENU_ITEM_TOGGLE(_T(MSG_NOZZLE_DIAMETER), ftostr12ns(fNozzleDiam), lcd_nozzle_diameter_set);\

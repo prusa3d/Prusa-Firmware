@@ -48,9 +48,14 @@ enum class ClPrintChecking:uint_least8_t
 
 enum class ClNozzleDiameter:uint_least8_t
 {
+    _Diameter_150=15,
+    _Diameter_200=20,
     _Diameter_250=25,
+    _Diameter_300=30,
     _Diameter_400=40,
     _Diameter_600=60,
+    _Diameter_800=80,
+    _Diameter_1000=100,
     _Diameter_Undef=EEPROM_EMPTY_VALUE
 };
 
