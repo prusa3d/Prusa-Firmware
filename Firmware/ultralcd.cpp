@@ -326,7 +326,7 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* filename, char* longFilename)
 {
     char c;
     int enc_dif = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
@@ -455,7 +455,7 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* fil
 
 #define MENU_ITEM_SDFILE(str, str_fn, str_fnl) do { if (menu_item_sdfile(str, str_fn, str_fnl)) return; } while (0)
 //#define MENU_ITEM_SDFILE(str, str_fn, str_fnl) MENU_ITEM(sdfile, str, str_fn, str_fnl)
-//extern uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl);
+//extern uint8_t menu_item_sdfile(const char* str, char* str_fn, char* str_fnl);
 
 
 uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
@@ -508,11 +508,8 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 #endif //NEW_SD_MENU
 }
 
-static uint8_t menu_item_sdfile(const char*
-#ifdef NEW_SD_MENU
-        str
-#endif //NEW_SD_MENU
-         ,const char* str_fn, char* str_fnl)
+static uint8_t menu_item_sdfile(const char* str __attribute__((unused))
+         ,char* str_fn, char* str_fnl)
 {
 #ifdef NEW_SD_MENU
 //	printf_P(PSTR("menu sdfile\n"));
@@ -663,7 +660,7 @@ void lcdui_print_extruder(void)
 // Print farm number (5 chars total)
 void lcdui_print_farm(void)
 {
-	int chars = lcd_printf_P(_N(" F0  "));
+//	int chars = lcd_printf_P(_N(" F0  "));
 //	lcd_space(5 - chars);
 /*
 	// Farm number display
@@ -5578,6 +5575,7 @@ do\
 }\
 while (0)
 
+#if 0 // temorarily unused
 static void lcd_check_gcode_set(void)
 {
 switch(oCheckGcode)
@@ -5596,6 +5594,7 @@ switch(oCheckGcode)
      }
 eeprom_update_byte((uint8_t*)EEPROM_CHECK_GCODE,(uint8_t)oCheckGcode);
 }
+#endif
 
 #define SETTINGS_GCODE \
 do\
@@ -7461,7 +7460,6 @@ void lcd_belttest_print(const char* msg, uint16_t X, uint16_t Y)
 }
 void lcd_belttest()
 {
-    int _progress = 0;
     bool _result = true;
     uint16_t   X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
     uint16_t   Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
@@ -7498,7 +7496,6 @@ void lcd_belttest()
 #if IR_SENSOR_ANALOG
 static bool lcd_selftest_IRsensor()
 {
-bool bAction;
 bool bPCBrev03b;
 uint16_t volt_IR_int;
 float volt_IR;

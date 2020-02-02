@@ -59,7 +59,7 @@ enum class States : uint8_t {
 	RISE,          ///< 16 fast PWM cycles with increasing duty up to steady ON
 	RISE_TO_ONE,   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 	ONE,           ///< steady 1 (ON), no change for the whole period 
-	ONE_TO_FALL,   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
+	// ONE_TO_FALL,   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 	FALL,          ///< 16 fast PWM cycles with decreasing duty down to steady OFF
 	FALL_TO_ZERO   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 };
