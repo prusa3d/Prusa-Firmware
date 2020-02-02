@@ -1137,17 +1137,24 @@ Having the real displacement of the head, we can calculate the total movement le
       // still need to replicate the *exact* same step grouping policy (see below)
       float advance_speed = (extruder_advance_K * e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
       if (advance_speed > MAX_STEP_FREQUENCY) advance_speed = MAX_STEP_FREQUENCY;
-      block->advance_rate = (F_CPU / 8.0) / advance_speed;
-      if (block->advance_rate > 20000) {
-          block->advance_rate = (block->advance_rate >> 2)&0x3fff;
+      float advance_rate = (F_CPU / 8.0) / advance_speed;
+      if (advance_speed > 20000) {
+          block->advance_rate = advance_rate * 4;
           block->advance_step_loops = 4;
       }
-      else if (block->advance_rate > 10000) {
-          block->advance_rate = (block->advance_rate >> 1)&0x7fff;
+      else if (advance_speed > 10000) {
+          block->advance_rate = advance_rate * 2;
           block->advance_step_loops = 2;
       }
       else
+      {
+          // never overflow the internal accumulator with very low rates
+          if (advance_rate < UINT16_MAX)
+              block->advance_rate = advance_rate;
+          else
+              block->advance_rate = UINT16_MAX;
           block->advance_step_loops = 1;
+      }
 
       #ifdef LA_DEBUG
       if (block->advance_step_loops > 2)
