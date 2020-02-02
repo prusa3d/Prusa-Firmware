@@ -1681,36 +1681,6 @@ msgid "Model      [warn]"
 msgstr "Model   [Varovat]"
 
 # 
-#: ultralcd.cpp:5467
-msgid "Nozzle d.  [0.25]"
-msgstr "Tryska     [0.25]"
-
-# 
-#: ultralcd.cpp:5470
-msgid "Nozzle d.  [0.40]"
-msgstr "Tryska     [0.40]"
-
-# 
-#: ultralcd.cpp:5473
-msgid "Nozzle d.  [0.60]"
-msgstr "Tryska     [0.60]"
-
-# 
-#: ultralcd.cpp:5421
-msgid "Nozzle     [none]"
-msgstr "Tryska    [Zadne]"
-
-# 
-#: ultralcd.cpp:5427
-msgid "Nozzle   [strict]"
-msgstr "Tryska   [Prisne]"
-
-# 
-#: ultralcd.cpp:5424
-msgid "Nozzle     [warn]"
-msgstr "Tryska  [Varovat]"
-
-# 
 #: util.cpp:510
 msgid "G-code sliced for a different level. Continue?"
 msgstr ""

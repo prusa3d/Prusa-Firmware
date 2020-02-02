@@ -1686,36 +1686,6 @@ msgid "Model      [warn]"
 msgstr "Modell   [warnen]"
 
 # 
-#: ultralcd.cpp:5467
-msgid "Nozzle d.  [0.25]"
-msgstr "Duese D.   [0.25]"
-
-# 
-#: ultralcd.cpp:5470
-msgid "Nozzle d.  [0.40]"
-msgstr "Duese D.   [0.40]"
-
-# 
-#: ultralcd.cpp:5473
-msgid "Nozzle d.  [0.60]"
-msgstr "Duese D.   [0.60]"
-
-# 
-#: ultralcd.cpp:5421
-msgid "Nozzle     [none]"
-msgstr "Duese      [ohne]"
-
-# 
-#: ultralcd.cpp:5427
-msgid "Nozzle   [strict]"
-msgstr "Duese    [strikt]"
-
-# 
-#: ultralcd.cpp:5424
-msgid "Nozzle     [warn]"
-msgstr "Duese    [warnen]"
-
-# 
 #: util.cpp:510
 msgid "G-code sliced for a different level. Continue?"
 msgstr "G-Code ist fuer einen anderen Level geslict. Fortfahren?"

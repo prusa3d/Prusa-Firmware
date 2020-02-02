@@ -1681,36 +1681,6 @@ msgid "Model      [warn]"
 msgstr ""
 
 # 
-#: ultralcd.cpp:5467
-msgid "Nozzle d.  [0.25]"
-msgstr ""
-
-# 
-#: ultralcd.cpp:5470
-msgid "Nozzle d.  [0.40]"
-msgstr ""
-
-# 
-#: ultralcd.cpp:5473
-msgid "Nozzle d.  [0.60]"
-msgstr ""
-
-# 
-#: ultralcd.cpp:5421
-msgid "Nozzle     [none]"
-msgstr ""
-
-# 
-#: ultralcd.cpp:5427
-msgid "Nozzle   [strict]"
-msgstr ""
-
-# 
-#: ultralcd.cpp:5424
-msgid "Nozzle     [warn]"
-msgstr ""
-
-# 
 #: util.cpp:510
 msgid "G-code sliced for a different level. Continue?"
 msgstr ""
