@@ -424,7 +424,7 @@ your extruder heater takes 2 minutes to hit the target on heating.
 #define DEFAULT_XJERK                10       // (mm/sec)
 #define DEFAULT_YJERK                10       // (mm/sec)
 #define DEFAULT_ZJERK                 0.4     // (mm/sec)
-#define DEFAULT_EJERK                 2.5     // (mm/sec)
+#define DEFAULT_EJERK                 4.5     // (mm/sec)
 
 //===========================================================================
 //=============================Additional Features===========================
