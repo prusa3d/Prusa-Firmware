@@ -5,6 +5,9 @@
 // compatbility mode is active the K factor is converted to a LA15
 // equivalent (that is, the return value is always a LA15 value).
 //
+// E-jerk<2 is also bumped in LA10 mode to restore the the printing speed
+// to values comparable to existing settings.
+//
 // Once the interpretation mode has been set it is kept until the mode
 // is explicitly reset. This is done to handle transparent fallback for
 // old firmware revisions in combination with the following gcode
@@ -31,9 +34,13 @@ enum __attribute__((packed)) LA10C_MODE
     LA10C_LA10    = 2
 };
 
-// Explicitly set/reset the interpretation mode for la10c_value()
+// Explicitly set/get/reset the interpretation mode for la10c_value()
 void la10c_mode_change(LA10C_MODE mode);
+LA10C_MODE la10c_mode_get();
 static inline void la10c_reset() { la10c_mode_change(LA10C_UNKNOWN); }
 
 // Return a LA15 K value according to the supplied value and mode
 float la10c_value(float k);
+
+// Return an updated LA15 E-jerk value according to the current mode
+float la10c_jerk(float j);
