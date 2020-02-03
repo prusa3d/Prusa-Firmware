@@ -2830,8 +2830,8 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%10ldh %02hhdm %02hhds"
 		    ),
-            _i("Filament used"), _met,  ////c=18 r=1
-            _i("Print time"), _h, _m, _s);  ////c=18 r=1
+            _i("Filament used"), _met,  ////c=19 r=1
+            _i("Print time"), _h, _m, _s);  ////c=19 r=1
 		menu_back_if_clicked_fb();
 	}
 	else
@@ -2852,8 +2852,8 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%10ldd %02hhdh %02hhdm"
             ),
-            _i("Total filament"), _filament_m,
-            _i("Total print time"), _days, _hours, _minutes);
+            _i("Total filament"), _filament_m,  ////c=19 r=1
+            _i("Total print time"), _days, _hours, _minutes);  ////c=19 r=1
         menu_back_if_clicked_fb();
 	}
 }
