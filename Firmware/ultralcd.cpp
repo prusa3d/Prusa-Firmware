@@ -2794,9 +2794,9 @@ static void lcd_LoadFilament()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Filament used:      | c=18 r=1
-//! |         00.00m     |
-//! |Print time:         | c=18 r=1
+//! |Filament used:      | c=19 r=1
+//! |           0000.00m |
+//! |Print time:         | c=19 r=1
 //! |        00h 00m 00s |
 //! ----------------------
 //! @endcode
@@ -2805,32 +2805,33 @@ static void lcd_LoadFilament()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Total filament :    | c=18 r=1
-//! |           000.00 m |
-//! |Total print time :  | c=18 r=1
-//! |     00d :00h :00 m |
+//! |Total filament:     | c=19 r=1
+//! |           0000.00m |
+//! |Total print time:   | c=19 r=1
+//! |        00d 00h 00m |
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations. Translations missing for "d"days, "h"ours, "m"inutes", "s"seconds".
 void lcd_menu_statistics()
 {
+    lcd_timeoutToStatus.stop(); //infinite timeout
 	if (IS_SD_PRINTING)
 	{
 		const float _met = ((float)total_filament_used) / (100000.f);
 		const uint32_t _t = (_millis() - starttime) / 1000ul;
-		const int _h = _t / 3600;
-		const int _m = (_t - (_h * 3600ul)) / 60ul;
-		const int _s = _t - ((_h * 3600ul) + (_m * 60ul));
+		const uint32_t _h = _t / 3600;
+		const uint8_t _m = (_t - (_h * 3600ul)) / 60ul;
+		const uint8_t _s = _t - ((_h * 3600ul) + (_m * 60ul));
 
-		lcd_clear();
+        lcd_home();
 		lcd_printf_P(_N(
 			"%S:\n"
-			"%17.2fm  \n"
+			"%18.2fm \n"
 			"%S:\n"
-			"%2dh %02dm %02ds"
+			"%10ldh %02hhdm %02hhds"
 		    ),
-            _i("Filament used"), _met,  ////c=18 r=1
-            _i("Print time"), _h, _m, _s);  ////c=18 r=1
+            _i("Filament used"), _met,  ////c=19 r=1
+            _i("Print time"), _h, _m, _s);  ////c=19 r=1
 		menu_back_if_clicked_fb();
 	}
 	else
@@ -2840,29 +2841,20 @@ void lcd_menu_statistics()
 		uint8_t _hours, _minutes;
 		uint32_t _days;
 		float _filament_m = (float)_filament/100;
-//		int _filament_km = (_filament >= 100000) ? _filament / 100000 : 0;
-//		if (_filament_km > 0)  _filament_m = _filament - (_filament_km * 100000);
 		_days = _time / 1440;
 		_hours = (_time - (_days * 1440)) / 60;
 		_minutes = _time - ((_days * 1440) + (_hours * 60));
 
-		lcd_clear();
+		lcd_home();
 		lcd_printf_P(_N(
 			"%S:\n"
-			"%17.2fm  \n"
+			"%18.2fm \n"
 			"%S:\n"
-			"%7ldd :%2hhdh :%02hhdm"
-		), _i("Total filament"), _filament_m, _i("Total print time"), _days, _hours, _minutes);
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-		while (!lcd_clicked())
-		{
-			manage_heater();
-			manage_inactivity(true);
-			_delay(100);
-		}
-		KEEPALIVE_STATE(NOT_BUSY);
-		lcd_quick_feedback();
-		menu_back();
+			"%10ldd %02hhdh %02hhdm"
+            ),
+            _i("Total filament"), _filament_m,  ////c=19 r=1
+            _i("Total print time"), _days, _hours, _minutes);  ////c=19 r=1
+        menu_back_if_clicked_fb();
 	}
 }
 
