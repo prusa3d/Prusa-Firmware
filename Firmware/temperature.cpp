@@ -2051,7 +2051,7 @@ public:
 		}
 	}
 };
-static const char m2hotend[] PROGMEM = "MINTEMP HEATER fixed";
+static const char m2hotend[] PROGMEM = "MINTEMP HOTEND fixed";
 static const char m2bed[] PROGMEM = "MINTEMP BED fixed";
 static alert_automaton_mintemp alert_automaton_hotend(m2hotend), alert_automaton_bed(m2bed);
 
