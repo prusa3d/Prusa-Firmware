@@ -422,7 +422,6 @@ FORCE_INLINE void stepper_next_block()
       count_direction[E_AXIS] = 1;
     }
 #if defined(FILAMENT_SENSOR) && defined(PAT9125)
-    fsensor_counter = 0;
     fsensor_st_block_begin(count_direction[E_AXIS] < 0);
 #endif //FILAMENT_SENSOR
   }

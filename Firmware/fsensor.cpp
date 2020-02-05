@@ -18,8 +18,8 @@
 
 //! @name Basic parameters
 //! @{
-#define FSENSOR_CHUNK_LEN    0.64F  //!< filament sensor chunk length 0.64mm
-#define FSENSOR_ERR_MAX          9  //!< filament sensor maximum error count for runout detection
+#define FSENSOR_CHUNK_LEN      1.25 //!< filament sensor chunk length (mm)
+#define FSENSOR_ERR_MAX           4 //!< filament sensor maximum error/chunk count for runout detection
 
 #define FSENSOR_SOFTERR_CMAX      3 //!< number of contiguous soft failures before a triggering a runout
 #define FSENSOR_SOFTERR_DELTA 30000 //!< maximum interval (ms) to consider soft failures contiguous
@@ -64,8 +64,6 @@ bool fsensor_oq_meassure_enabled = false;
 uint8_t fsensor_err_cnt = 0;
 //! variable for accumulating step count (updated callbacks from stepper and ISR)
 int16_t fsensor_st_cnt = 0;
-//! last dy value from pat9125 sensor (used in ISR)
-int16_t fsensor_dy_old = 0;
 //! count of total sensor "soft" failures (filament status checks)
 uint8_t fsensor_softfail = 0;
 //! timestamp of last soft failure
@@ -226,7 +224,6 @@ bool fsensor_enable(bool bUpdateEEPROM)
 		fsensor_watch_runout = true;
 		fsensor_oq_meassure = false;
         fsensor_reset_err_cnt();
-		fsensor_dy_old = 0;
 		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled ? 0x01 : 0x00);
 		FSensorStateMenu = fsensor_enabled ? 1 : 0;
 	}
@@ -477,53 +474,56 @@ ISR(FSENSOR_INT_PIN_VECT)
 		fsensor_not_responding = true;
 		printf_P(ERRMSG_PAT9125_NOT_RESP, 1);
 	}
+
 	if (st_cnt != 0)
-	{ //movement
-		if (st_cnt > 0) //positive movement
-		{
-			if (pat9125_y < 0)
-			{
-                fsensor_err_cnt++;
-			}
-			else if (pat9125_y > 0)
-			{
-				if (fsensor_err_cnt)
-					fsensor_err_cnt--;
-			}
-			else //(pat9125_y == 0)
-				if (((fsensor_dy_old <= 0) || (fsensor_err_cnt)) && (st_cnt > (fsensor_chunk_len >> 1)))
-					fsensor_err_cnt++;
-			if (fsensor_oq_meassure)
-			{
-				if (fsensor_oq_skipchunk)
-				{
-					fsensor_oq_skipchunk--;
-					fsensor_err_cnt = 0;
-				}
-				else
-				{
-					if (st_cnt == fsensor_chunk_len)
-					{
-						if (pat9125_y > 0) if (fsensor_oq_yd_min > pat9125_y) fsensor_oq_yd_min = (fsensor_oq_yd_min + pat9125_y) / 2;
-						if (pat9125_y >= 0) if (fsensor_oq_yd_max < pat9125_y) fsensor_oq_yd_max = (fsensor_oq_yd_max + pat9125_y) / 2;
-					}
-					fsensor_oq_samples++;
-					fsensor_oq_st_sum += st_cnt;
-					if (pat9125_y > 0) fsensor_oq_yd_sum += pat9125_y;
-					if (fsensor_err_cnt > old_err_cnt)
-						fsensor_oq_er_sum += (fsensor_err_cnt - old_err_cnt);
-					if (fsensor_oq_er_max < fsensor_err_cnt)
-						fsensor_oq_er_max = fsensor_err_cnt;
-					fsensor_oq_sh_sum += pat9125_s;
-				}
-			}
-		}
-		else //negative movement
-		{
-		}
-	}
-	else
-	{ //no movement
+	{
+        // movement was planned, check for sensor movement
+        int8_t st_dir = st_cnt >= 0;
+        int8_t pat9125_dir = pat9125_y >= 0;
+
+        if (pat9125_y == 0)
+        {
+            // no movement detected: increase error count only when extruding, since fast retracts
+            // cannot always be seen. We also need to ensure that no runout is generated while
+            // retracting as it's not currently handled everywhere
+            if (st_dir) ++fsensor_err_cnt;
+        }
+        else if (pat9125_dir != st_dir)
+        {
+            // detected direction opposite of motor movement
+            if (st_dir) ++fsensor_err_cnt;
+        }
+        else if (pat9125_dir == st_dir)
+        {
+            // direction agreeing with planned movement
+            if (fsensor_err_cnt) --fsensor_err_cnt;
+        }
+
+        if (st_dir && fsensor_oq_meassure)
+        {
+            // extruding with quality assessment
+            if (fsensor_oq_skipchunk)
+            {
+                fsensor_oq_skipchunk--;
+                fsensor_err_cnt = 0;
+            }
+            else
+            {
+                if (st_cnt == fsensor_chunk_len)
+                {
+                    if (pat9125_y > 0) if (fsensor_oq_yd_min > pat9125_y) fsensor_oq_yd_min = (fsensor_oq_yd_min + pat9125_y) / 2;
+                    if (pat9125_y >= 0) if (fsensor_oq_yd_max < pat9125_y) fsensor_oq_yd_max = (fsensor_oq_yd_max + pat9125_y) / 2;
+                }
+                fsensor_oq_samples++;
+                fsensor_oq_st_sum += st_cnt;
+                if (pat9125_y > 0) fsensor_oq_yd_sum += pat9125_y;
+                if (fsensor_err_cnt > old_err_cnt)
+                    fsensor_oq_er_sum += (fsensor_err_cnt - old_err_cnt);
+                if (fsensor_oq_er_max < fsensor_err_cnt)
+                    fsensor_oq_er_max = fsensor_err_cnt;
+                fsensor_oq_sh_sum += pat9125_s;
+            }
+        }
 	}
 
 #ifdef DEBUG_FSENSOR_LOG
@@ -534,9 +534,7 @@ ISR(FSENSOR_INT_PIN_VECT)
 	}
 #endif //DEBUG_FSENSOR_LOG
 
-	fsensor_dy_old = pat9125_y;
 	pat9125_y = 0;
-
 	_lock = false;
 	return;
 }
