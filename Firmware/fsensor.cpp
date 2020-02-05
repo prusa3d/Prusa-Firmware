@@ -460,12 +460,17 @@ ISR(FSENSOR_INT_PIN_VECT)
 	if (mmu_enabled || ir_sensor_detected) return;
 	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
 	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
+
+    // prevent isr re-entry
 	static bool _lock = false;
 	if (_lock) return;
 	_lock = true;
+
+    // fetch fsensor_st_cnt atomically
 	int st_cnt = fsensor_st_cnt;
 	fsensor_st_cnt = 0;
 	sei();
+
 	uint8_t old_err_cnt = fsensor_err_cnt;
 	uint8_t pat9125_res = fsensor_oq_meassure?pat9125_update():pat9125_update_y();
 	if (!pat9125_res)
