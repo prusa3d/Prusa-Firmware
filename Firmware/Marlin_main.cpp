@@ -634,13 +634,15 @@ void crashdet_cancel()
 
 void failstats_reset_print()
 {
-    fsensor_softfail = 0;
 	eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
+    fsensor_softfail = 0;
+#endif
 }
 
 
@@ -6682,7 +6684,9 @@ Sigma_Exit:
               axis_steps_per_sqr_second[i] *= factor;
             }
             cs.axis_steps_per_unit[i] = value;
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
             fsensor_set_axis_steps_per_unit(value);
+#endif
           }
           else {
             cs.axis_steps_per_unit[i] = code_value();
@@ -8446,8 +8450,10 @@ Sigma_Exit:
 						cs.axis_steps_per_unit[i] /= fac;
 						position[i] /= fac;
 					}
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
                     if (i == E_AXIS)
                         fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[i]);
+#endif
 				}
 			}
 		}

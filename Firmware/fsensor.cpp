@@ -47,25 +47,32 @@ const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 #define FSENSOR_INT_PIN_PCMSK_BIT PCINT13         // PinChange Interrupt / PinChange Enable Mask @ PJ4
 #define FSENSOR_INT_PIN_PCICR_BIT PCIE1           // PinChange Interrupt Enable / Flag @ PJ4
 
-//uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
-uint8_t fsensor_int_pin_old = 0;
-int16_t fsensor_chunk_len = 0;
-
 //! enabled = initialized and sampled every chunk event
 bool fsensor_enabled = true;
 //! runout watching is done in fsensor_update (called from main loop)
 bool fsensor_watch_runout = true;
 //! not responding - is set if any communication error occurred during initialization or readout
 bool fsensor_not_responding = false;
+
+#ifdef PAT9125
+uint8_t fsensor_int_pin_old = 0;
+//! optical checking "chunk lenght" (already in steps)
+int16_t fsensor_chunk_len = 0;
 //! enable/disable quality meassurement
 bool fsensor_oq_meassure_enabled = false;
-
 //! number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
 //! variable for accumulating step count (updated callbacks from stepper and ISR)
 int16_t fsensor_st_cnt = 0;
 //! last dy value from pat9125 sensor (used in ISR)
 int16_t fsensor_dy_old = 0;
+//! count of total sensor "soft" failures (filament status checks)
+uint8_t fsensor_softfail = 0;
+//! timestamp of last soft failure
+unsigned long fsensor_softfail_last = 0;
+//! count of soft failures within the configured time
+uint8_t fsensor_softfail_ccnt = 0;
+#endif
 
 //! log flag: 0=log disabled, 1=log enabled
 uint8_t fsensor_log = 1;
@@ -78,6 +85,8 @@ uint8_t fsensor_log = 1;
 bool fsensor_autoload_enabled = true;
 //! autoload watching enable/disable flag
 bool fsensor_watch_autoload = false;
+
+#ifdef PAT9125
 //
 uint16_t fsensor_autoload_y;
 //
@@ -86,11 +95,8 @@ uint8_t fsensor_autoload_c;
 uint32_t fsensor_autoload_last_millis;
 //
 uint8_t fsensor_autoload_sum;
-//
-uint8_t fsensor_softfail = 0;
-uint8_t fsensor_softfail_ccnt = 0;
-unsigned long fsensor_softfail_last = 0;
 //! @}
+#endif
 
 
 //! @name filament optical quality measurement variables
@@ -136,7 +142,9 @@ void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
     fsensor_watch_runout = true;
+#ifdef PAT9125
 	fsensor_err_cnt = 0;
+#endif
     restore_print_from_ram_and_continue(0);
 }
 
@@ -368,6 +376,7 @@ bool fsensor_check_autoload(void)
 	return false;
 }
 
+#ifdef PAT9125
 void fsensor_oq_meassure_set(bool State)
 {
 	fsensor_oq_meassure_enabled = State;
@@ -439,7 +448,7 @@ bool fsensor_oq_result(void)
 	printf_P(_N("fsensor_oq_result %S\n"), (res?_OK:_NG));
 	return res;
 }
-#ifdef PAT9125
+
 ISR(FSENSOR_INT_PIN_VECT)
 {
 	if (mmu_enabled || ir_sensor_detected) return;
@@ -538,8 +547,6 @@ void fsensor_setup_interrupt(void)
      PCICR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // enable corresponding PinChangeInterrupt (set of pins)
 }
 
-#endif //PAT9125
-
 void fsensor_st_block_chunk(int cnt)
 {
 	if (!fsensor_enabled) return;
@@ -551,6 +558,7 @@ void fsensor_st_block_chunk(int cnt)
 		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 	}
 }
+#endif //PAT9125
 
 
 //! Common code for enqueing M600 and supplemental codes into the command queue.
