@@ -183,9 +183,9 @@ uint8_t pat9125_update(void)
 		if (pat9125_PID1 == 0xff) return 0;
 		if (ucMotion & 0x80)
 		{
-			uint8_t ucXL = pat9125_rd_reg(PAT9125_DELTA_XL);
-			uint8_t ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
-			uint8_t ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
+			uint16_t ucXL = pat9125_rd_reg(PAT9125_DELTA_XL);
+			uint16_t ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
+			uint16_t ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
 			if (pat9125_PID1 == 0xff) return 0;
 			int16_t iDX = ucXL | ((ucXYH << 4) & 0xf00);
 			int16_t iDY = ucYL | ((ucXYH << 8) & 0xf00);
@@ -207,8 +207,8 @@ uint8_t pat9125_update_y(void)
 		if (pat9125_PID1 == 0xff) return 0;
 		if (ucMotion & 0x80)
 		{
-			uint8_t ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
-			uint8_t ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
+			uint16_t ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
+			uint16_t ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
 			if (pat9125_PID1 == 0xff) return 0;
 			int16_t iDY = ucYL | ((ucXYH << 8) & 0xf00);
 			if (iDY & 0x800) iDY -= 4096;
