@@ -8708,21 +8708,19 @@ static bool check_file(const char* filename) {
 	filesize = card.getFileSize();
 	if (filesize > END_FILE_SECTION) {
 		card.setIndex(filesize - END_FILE_SECTION);
-		
 	}
-	
-    while (!card.eof() && !result) {
+
+	while (!card.eof() && !result) {
 		card.sdprinting = true;
 		get_command();
 		result = check_commands();
-		
 	}
+
 	cmdqueue_reset();
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
 	lcd_finishstatus();
 	return result;
-	
 }
 
 static void menu_action_sdfile(const char* filename)
