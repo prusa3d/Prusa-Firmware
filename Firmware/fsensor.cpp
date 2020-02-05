@@ -149,6 +149,11 @@ void fsensor_checkpoint_print(void)
     restore_print_from_ram_and_continue(0);
 }
 
+void fsensor_set_axis_steps_per_unit(float u)
+{
+	fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * u);
+}
+
 void fsensor_init(void)
 {
 #ifdef PAT9125
@@ -161,7 +166,7 @@ void fsensor_init(void)
 #ifdef PAT9125
 	uint8_t oq_meassure_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_OQ_MEASS_ENABLED);
 	fsensor_oq_meassure_enabled = (oq_meassure_enabled == 1)?true:false;
-	fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * cs.axis_steps_per_unit[E_AXIS]);
+    fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[E_AXIS]);
 
 	if (!pat9125)
 	{

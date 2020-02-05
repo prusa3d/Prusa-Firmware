@@ -29,6 +29,9 @@ extern void fsensor_checkpoint_print(void);
 //! initialize
 extern void fsensor_init(void);
 
+//! update axis resolution
+extern void fsensor_set_axis_steps_per_unit(float u);
+
 //! @name enable/disable
 //! @{
 extern bool fsensor_enable(bool bUpdateEEPROM=true);
