@@ -138,12 +138,28 @@ void fsensor_stop_and_save_print(void)
     fsensor_watch_runout = false;
 }
 
+#ifdef PAT9125
+// Reset all internal counters to zero, including stepper callbacks
+void fsensor_reset_err_cnt()
+{
+    fsensor_err_cnt = 0;
+    pat9125_y = 0;
+    st_reset_fsensor();
+}
+
+void fsensor_set_axis_steps_per_unit(float u)
+{
+    fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * u);
+}
+#endif
+
+
 void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
     fsensor_watch_runout = true;
 #ifdef PAT9125
-	fsensor_err_cnt = 0;
+    fsensor_reset_err_cnt();
 #endif
     restore_print_from_ram_and_continue(0);
 }
@@ -155,11 +171,6 @@ void fsensor_checkpoint_print(void)
     printf_P(PSTR("fsensor_checkpoint_print\n"));
     stop_and_save_print_to_ram(0, 0);
     restore_print_from_ram_and_continue(0);
-}
-
-void fsensor_set_axis_steps_per_unit(float u)
-{
-	fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * u);
 }
 
 void fsensor_init(void)
@@ -214,7 +225,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
 		fsensor_enabled = pat9125 ? true : false;
 		fsensor_watch_runout = true;
 		fsensor_oq_meassure = false;
-		fsensor_err_cnt = 0;
+        fsensor_reset_err_cnt();
 		fsensor_dy_old = 0;
 		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled ? 0x01 : 0x00);
 		FSensorStateMenu = fsensor_enabled ? 1 : 0;
@@ -295,12 +306,11 @@ void fsensor_autoload_check_start(void)
 	fsensor_autoload_last_millis = _millis();
 	fsensor_watch_runout = false;
 	fsensor_watch_autoload = true;
-	fsensor_err_cnt = 0;
 }
+
 
 void fsensor_autoload_check_stop(void)
 {
-
 //	puts_P(_N("fsensor_autoload_check_stop\n"));
 	if (!fsensor_enabled) return;
 //	puts_P(_N("fsensor_autoload_check_stop 1\n"));
@@ -311,7 +321,7 @@ void fsensor_autoload_check_stop(void)
 	fsensor_autoload_sum = 0;
 	fsensor_watch_autoload = false;
 	fsensor_watch_runout = true;
-	fsensor_err_cnt = 0;
+    fsensor_reset_err_cnt();
 }
 #endif //PAT9125
 
@@ -410,7 +420,6 @@ void fsensor_oq_meassure_stop(void)
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * fsensor_chunk_len / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
 	fsensor_oq_meassure = false;
-	fsensor_err_cnt = 0;
 }
 
 const char _OK[] PROGMEM = "OK";
@@ -595,7 +604,7 @@ void fsensor_update(void)
             st_synchronize();
 
             // check the filament in isolation
-			fsensor_err_cnt = 0;
+            fsensor_reset_err_cnt();
 			fsensor_oq_meassure_start(0);
             float e_tmp = current_position[E_AXIS];
             current_position[E_AXIS] -= 3;
@@ -603,13 +612,10 @@ void fsensor_update(void)
             current_position[E_AXIS] = e_tmp;
             plan_buffer_line_curposXYZE(200/60, active_extruder);
             st_synchronize();
-
-			uint8_t err_cnt = fsensor_err_cnt;
 			fsensor_oq_meassure_stop();
 
 			bool err = false;
-			err |= (err_cnt > 1);
-
+			err |= (fsensor_err_cnt > 1);
 			err |= (fsensor_oq_er_sum > 2);
 			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
 

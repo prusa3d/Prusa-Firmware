@@ -1357,8 +1357,6 @@ void quickStop()
 }
 
 #ifdef BABYSTEPPING
-
-
 void babystep(const uint8_t axis,const bool direction)
 {
   //MUST ONLY BE CALLED BY A ISR, it depends on that no other ISR interrupts this
@@ -1594,3 +1592,13 @@ void microstep_readings()
       #endif
 }
 #endif //TMC2130
+
+
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
+void st_reset_fsensor()
+{
+    CRITICAL_SECTION_START;
+    fsensor_counter = 0;
+    CRITICAL_SECTION_END;
+}
+#endif //FILAMENT_SENSOR
