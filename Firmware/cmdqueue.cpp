@@ -94,6 +94,7 @@ void cmdqueue_reset()
     bufindr = 0;
     bufindw = 0;
     buflen = 0;
+    serial_count = 0;
 
 	//commands are removed from command queue after process_command() function is finished
 	//reseting command queue and enqueing new commands during some (usually long running) command processing would cause that new commands are immediately removed from queue (or damaged)

@@ -8711,12 +8711,13 @@ static bool check_file(const char* filename) {
 		
 	}
 	
-		while (!card.eof() && !result) {
+    while (!card.eof() && !result) {
 		card.sdprinting = true;
 		get_command();
 		result = check_commands();
 		
 	}
+	cmdqueue_reset();
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
 	lcd_finishstatus();
