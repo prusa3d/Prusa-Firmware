@@ -563,12 +563,10 @@ void fsensor_st_block_chunk(int cnt)
 {
 	if (!fsensor_enabled) return;
 	fsensor_st_cnt += cnt;
-	if (abs(fsensor_st_cnt) >= fsensor_chunk_len)
-	{
-// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
-	}
+
+    // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
+    if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
+    else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 }
 #endif //PAT9125
 
