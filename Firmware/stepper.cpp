@@ -36,9 +36,9 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
-#ifdef FILAMENT_SENSOR
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
 #include "fsensor.h"
-int fsensor_counter = 0; //counter for e-steps
+int fsensor_counter; //counter for e-steps
 #endif //FILAMENT_SENSOR
 
 #include "mmu.h"
@@ -421,9 +421,8 @@ FORCE_INLINE void stepper_next_block()
 #endif /* LIN_ADVANCE */
       count_direction[E_AXIS] = 1;
     }
-#ifdef FILAMENT_SENSOR
-	fsensor_counter = 0;
-	fsensor_st_block_begin(count_direction[E_AXIS] < 0);
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
+    fsensor_st_block_begin(count_direction[E_AXIS] < 0);
 #endif //FILAMENT_SENSOR
   }
   else {
@@ -973,13 +972,13 @@ FORCE_INLINE void advance_isr_scheduler() {
             WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
             e_steps += (rev? 1: -1);
             WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
-#ifdef FILAMENT_SENSOR
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
             fsensor_counter += (rev? -1: 1);
 #endif
         }
         while(--max_ticks);
 
-#ifdef FILAMENT_SENSOR
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
         if (abs(fsensor_counter) >= fsensor_chunk_len)
         {
             fsensor_st_block_chunk(fsensor_counter);
@@ -1357,8 +1356,6 @@ void quickStop()
 }
 
 #ifdef BABYSTEPPING
-
-
 void babystep(const uint8_t axis,const bool direction)
 {
   //MUST ONLY BE CALLED BY A ISR, it depends on that no other ISR interrupts this
@@ -1594,3 +1591,13 @@ void microstep_readings()
       #endif
 }
 #endif //TMC2130
+
+
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
+void st_reset_fsensor()
+{
+    CRITICAL_SECTION_START;
+    fsensor_counter = 0;
+    CRITICAL_SECTION_END;
+}
+#endif //FILAMENT_SENSOR

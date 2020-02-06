@@ -1796,11 +1796,23 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
     lcd_home();
+#ifndef PAT9125
     lcd_printf_P(failStatsFmt,
         _i("Last print failures"),  ////c=20 r=1
         _i("Power failures"), power,  ////c=14 r=1
         _i("Filam. runouts"), filam,  ////c=14 r=1
         _i("Crash"), crashX, crashY);  ////c=7 r=1
+#else
+    // On the MK3 include detailed PAT9125 statistics about soft failures
+    lcd_printf_P(PSTR("%S\n"
+                      " %-16.16S%-3d\n"
+                      " %-7.7S H %-3d S %-3d\n"
+                      " %-7.7S X %-3d Y %-3d"),
+                 _i("Last print failures"), ////c=20 r=1
+                 _i("Power failures"), power, ////c=14 r=1
+                 _i("Runouts"), filam, fsensor_softfail, //c=7 r=1
+                 _i("Crash"), crashX, crashY);  ////c=7 r=1
+#endif
     menu_back_if_clicked_fb();
 }
 
@@ -2231,10 +2243,12 @@ void lcd_set_filament_autoload() {
      fsensor_autoload_set(!fsensor_autoload_enabled);
 }
 
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
 void lcd_set_filament_oq_meass()
 {
      fsensor_oq_meassure_set(!fsensor_oq_meassure_enabled);
 }
+#endif
 
 
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
