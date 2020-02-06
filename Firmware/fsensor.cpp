@@ -624,7 +624,7 @@ void fsensor_update(void)
 			fsensor_oq_meassure_start(0);
             float e_tmp = current_position[E_AXIS];
             current_position[E_AXIS] -= 3;
-            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            plan_buffer_line_curposXYZE(250/60, active_extruder);
             current_position[E_AXIS] = e_tmp;
             plan_buffer_line_curposXYZE(200/60, active_extruder);
             st_synchronize();
