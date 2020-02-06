@@ -25,7 +25,6 @@ public:
   void closefile(bool store_location=false);
   void release();
   void startFileprint();
-  void pauseSDPrint();
   uint32_t getFileSize();
   void getStatus();
   void printingHasFinished();
@@ -75,7 +74,6 @@ public:
   bool logging;
   bool sdprinting ;  
   bool cardOK ;
-  bool paused ;
   char filename[13];
   uint16_t modificationTime, modificationDate;
   uint32_t cluster, position;

@@ -6,14 +6,15 @@
 #include <avr/pgmspace.h>
 #include "pat9125.h"
 #include "stepper.h"
-#include "planner.h"
-#include "fastio.h"
 #include "io_atmega2560.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
-#include "ConfigurationStore.h"
 #include "mmu.h"
 #include "cardreader.h"
+
+#include "adc.h"
+#include "temperature.h"
+#include "config.h"
 
 //! @name Basic parameters
 //! @{
@@ -53,15 +54,8 @@ bool fsensor_enabled = true;
 bool fsensor_watch_runout = true;
 //! not responding - is set if any communication error occurred during initialization or readout
 bool fsensor_not_responding = false;
-//! printing saved
-bool fsensor_printing_saved = false;
 //! enable/disable quality meassurement
 bool fsensor_oq_meassure_enabled = false;
-//! as explained in the CHECK_FSENSOR macro: this flag is set to true when fsensor posts
-//! the M600 into the command queue, which elliminates the hazard of having posted multiple M600's
-//! before the first one gets read and started processing.
-//! Btw., the IR fsensor could do up to 6 posts before the command queue managed to start processing the first M600 ;)
-static bool fsensor_m600_enqueued = false;
 
 //! number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
@@ -117,29 +111,46 @@ int16_t fsensor_oq_yd_max;
 uint16_t fsensor_oq_sh_sum;
 //! @}
 
+#if IR_SENSOR_ANALOG
+ClFsensorPCB oFsensorPCB;
+ClFsensorActionNA oFsensorActionNA;
+bool bIRsensorStateFlag=false;
+unsigned long nIRsensorLastTime;
+#endif //IR_SENSOR_ANALOG
+
 void fsensor_stop_and_save_print(void)
 {
     printf_P(PSTR("fsensor_stop_and_save_print\n"));
-    stop_and_save_print_to_ram(0, 0); //XYZE - no change
+    stop_and_save_print_to_ram(0, 0);
+    fsensor_watch_runout = false;
 }
 
 void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
-	fsensor_watch_runout = true;
+    fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
-	fsensor_m600_enqueued = false;
-    restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+    restore_print_from_ram_and_continue(0);
+}
+
+// fsensor_checkpoint_print cuts the current print job at the current position,
+// allowing new instructions to be inserted in the middle
+void fsensor_checkpoint_print(void)
+{
+    printf_P(PSTR("fsensor_checkpoint_print\n"));
+    stop_and_save_print_to_ram(0, 0);
+    restore_print_from_ram_and_continue(0);
 }
 
 void fsensor_init(void)
 {
 #ifdef PAT9125
 	uint8_t pat9125 = pat9125_init();
-    printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
+     printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
 #endif //PAT9125
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
+     fsensor_not_responding = false;
 #ifdef PAT9125
 	uint8_t oq_meassure_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_OQ_MEASS_ENABLED);
 	fsensor_oq_meassure_enabled = (oq_meassure_enabled == 1)?true:false;
@@ -150,19 +161,27 @@ void fsensor_init(void)
 		fsensor = 0; //disable sensor
 		fsensor_not_responding = true;
 	}
-	else
-		fsensor_not_responding = false;
 #endif //PAT9125
+#if IR_SENSOR_ANALOG
+     bIRsensorStateFlag=false;
+     oFsensorPCB=(ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
+     oFsensorActionNA=(ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
+#endif //IR_SENSOR_ANALOG
 	if (fsensor)
-		fsensor_enable();
+		fsensor_enable(false);                  // (in this case) EEPROM update is not necessary
 	else
-		fsensor_disable();
-	printf_P(PSTR("FSensor %S\n"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED\n")));
+		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
+	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
+#if IR_SENSOR_ANALOG
+     printf_P(PSTR(" (sensor board revision: %S)\n"),(oFsensorPCB==ClFsensorPCB::_Rev03b)?PSTR("03b or newer"):PSTR("03 or older"));
+#else //IR_SENSOR_ANALOG
+     printf_P(PSTR("\n"));
+#endif //IR_SENSOR_ANALOG
 	if (check_for_ir_sensor()) ir_sensor_detected = true;
 
 }
 
-bool fsensor_enable(void)
+bool fsensor_enable(bool bUpdateEEPROM)
 {
 #ifdef PAT9125
 	if (mmu_enabled == false) { //filament sensor is pat9125, enable only if it is working
@@ -187,18 +206,34 @@ bool fsensor_enable(void)
 		FSensorStateMenu = 1;
 	}
 #else // PAT9125
-	fsensor_enabled = true;
-	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
-	FSensorStateMenu = 1;
-#endif // PAT9125
+#if IR_SENSOR_ANALOG
+     if(!fsensor_IR_check())
+          {
+          bUpdateEEPROM=true;
+          fsensor_enabled=false;
+          fsensor_not_responding=true;
+          FSensorStateMenu=0;
+          }
+     else {
+#endif //IR_SENSOR_ANALOG
+     fsensor_enabled=true;
+     fsensor_not_responding=false;
+     FSensorStateMenu=1;
+#if IR_SENSOR_ANALOG
+          }
+#endif //IR_SENSOR_ANALOG
+     if(bUpdateEEPROM)
+          eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, FSensorStateMenu);
+#endif //PAT9125
 	return fsensor_enabled;
 }
 
-void fsensor_disable(void)
-{
+void fsensor_disable(bool bUpdateEEPROM)
+{ 
 	fsensor_enabled = false;
-	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
 	FSensorStateMenu = 0;
+     if(bUpdateEEPROM)
+          eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
 }
 
 void fsensor_autoload_set(bool State)
@@ -225,7 +260,7 @@ void fsensor_autoload_check_start(void)
 	if (!fsensor_enabled) return;
 	if (!fsensor_autoload_enabled) return;
 	if (fsensor_watch_autoload) return;
-	if (!pat9125_update_y()) //update sensor
+	if (!pat9125_update()) //update sensor
 	{
 		fsensor_disable();
 		fsensor_not_responding = true;
@@ -343,7 +378,6 @@ void fsensor_oq_meassure_start(uint8_t skip)
 	fsensor_oq_sh_sum = 0;
 	pat9125_update();
 	pat9125_y = 0;
-	fsensor_watch_runout = false;
 	fsensor_oq_meassure = true;
 }
 
@@ -355,7 +389,6 @@ void fsensor_oq_meassure_stop(void)
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * fsensor_chunk_len / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
 	fsensor_oq_meassure = false;
-	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
 }
 
@@ -498,23 +531,11 @@ void fsensor_setup_interrupt(void)
 
 #endif //PAT9125
 
-void fsensor_st_block_begin(block_t* bl)
+void fsensor_st_block_chunk(int cnt)
 {
 	if (!fsensor_enabled) return;
-	if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
-		((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
-	{
-// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
-	}
-}
-
-void fsensor_st_block_chunk(block_t* bl, int cnt)
-{
-	if (!fsensor_enabled) return;
-	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
-	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
+	fsensor_st_cnt += cnt;
+	if (abs(fsensor_st_cnt) >= fsensor_chunk_len)
 	{
 // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
 		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
@@ -529,8 +550,6 @@ void fsensor_enque_M600(){
 	printf_P(PSTR("fsensor_update - M600\n"));
 	eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 	eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-	enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
-	fsensor_m600_enqueued = true;
 	enquecommand_front_P((PSTR("M600")));
 }
 
@@ -542,29 +561,31 @@ void fsensor_enque_M600(){
 void fsensor_update(void)
 {
 #ifdef PAT9125
-		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX) && ( ! fsensor_m600_enqueued) )
+		if (fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
+			fsensor_stop_and_save_print();
+            KEEPALIVE_STATE(IN_HANDLER);
+
 			bool autoload_enabled_tmp = fsensor_autoload_enabled;
 			fsensor_autoload_enabled = false;
 			bool oq_meassure_enabled_tmp = fsensor_oq_meassure_enabled;
 			fsensor_oq_meassure_enabled = true;
 
-			fsensor_stop_and_save_print();
+            // move the nozzle away while checking the filament
+            current_position[Z_AXIS] += 0.8;
+            if(current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+            plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+            st_synchronize();
 
+            // check the filament in isolation
 			fsensor_err_cnt = 0;
 			fsensor_oq_meassure_start(0);
-
-			enquecommand_front_P((PSTR("G1 E-3 F200")));
-			process_commands();
-			KEEPALIVE_STATE(IN_HANDLER);
-			cmdqueue_pop_front();
-			st_synchronize();
-
-			enquecommand_front_P((PSTR("G1 E3 F200")));
-			process_commands();
-			KEEPALIVE_STATE(IN_HANDLER);
-			cmdqueue_pop_front();
-			st_synchronize();
+            float e_tmp = current_position[E_AXIS];
+            current_position[E_AXIS] -= 3;
+            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            current_position[E_AXIS] = e_tmp;
+            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            st_synchronize();
 
 			uint8_t err_cnt = fsensor_err_cnt;
 			fsensor_oq_meassure_stop();
@@ -575,24 +596,86 @@ void fsensor_update(void)
 			err |= (fsensor_oq_er_sum > 2);
 			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
 
-			if (!err)
-			{
-				printf_P(PSTR("fsensor_err_cnt = 0\n"));
-				fsensor_restore_print_and_continue();
-			}
-			else
-			{
-				fsensor_enque_M600();
-				fsensor_watch_runout = false;
-			}
+            fsensor_restore_print_and_continue();
 			fsensor_autoload_enabled = autoload_enabled_tmp;
 			fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
+
+			if (!err)
+				printf_P(PSTR("fsensor_err_cnt = 0\n"));
+			else
+				fsensor_enque_M600();
 		}
 #else //PAT9125
-		if ((digitalRead(IR_SENSOR_PIN) == 1) && CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected && ( ! fsensor_m600_enqueued) )
-		{
-			fsensor_stop_and_save_print();
-			fsensor_enque_M600();
+		if (CHECK_FSENSOR && ir_sensor_detected)
+        {
+               if(digitalRead(IR_SENSOR_PIN))
+               {                                  // IR_SENSOR_PIN ~ H
+#if IR_SENSOR_ANALOG
+                    if(!bIRsensorStateFlag)
+                    {
+                         bIRsensorStateFlag=true;
+                         nIRsensorLastTime=_millis();
+                    }
+                    else
+                    {
+                         if((_millis()-nIRsensorLastTime)>IR_SENSOR_STEADY)
+                         {
+                              uint8_t nMUX1,nMUX2;
+                              uint16_t nADC;
+                              bIRsensorStateFlag=false;
+                              // sequence for direct data reading from AD converter
+                              DISABLE_TEMPERATURE_INTERRUPT();
+                              nMUX1=ADMUX;        // ADMUX saving
+                              nMUX2=ADCSRB;
+                              adc_setmux(VOLT_IR_PIN);
+                              ADCSRA|=(1<<ADSC);  // first conversion after ADMUX change discarded (preventively)
+                              while(ADCSRA&(1<<ADSC))
+                                   ;
+                              ADCSRA|=(1<<ADSC);  // second conversion used
+                              while(ADCSRA&(1<<ADSC))
+                                   ;
+                              nADC=ADC;
+                              ADMUX=nMUX1;        // ADMUX restoring
+                              ADCSRB=nMUX2;
+                              ENABLE_TEMPERATURE_INTERRUPT();
+                              // end of sequence for ...
+                              if((oFsensorPCB==ClFsensorPCB::_Rev03b)&&((nADC*OVERSAMPLENR)>((int)IRsensor_Hopen_TRESHOLD)))
+                              {
+                                   fsensor_disable();
+                                   fsensor_not_responding = true;
+                                   printf_P(PSTR("IR sensor not responding (%d)!\n"),1);
+                                   if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
+                                   if(oFsensorActionNA==ClFsensorActionNA::_Pause)
+                                        lcd_pause_print();
+                              }
+                              else
+                              {
+#endif //IR_SENSOR_ANALOG
+                                  fsensor_checkpoint_print();
+                                  fsensor_enque_M600();
+#if IR_SENSOR_ANALOG
+                              }
+                         }
+                    }
+               }
+               else
+               {                                  // IR_SENSOR_PIN ~ L
+                    bIRsensorStateFlag=false;
+#endif //IR_SENSOR_ANALOG
+               }
 		}
 #endif //PAT9125
 }
+
+#if IR_SENSOR_ANALOG
+bool fsensor_IR_check()
+{
+uint16_t volt_IR_int;
+bool bCheckResult;
+
+volt_IR_int=current_voltage_raw_IR;
+bCheckResult=(volt_IR_int<((int)IRsensor_Lmax_TRESHOLD))||(volt_IR_int>((int)IRsensor_Hmin_TRESHOLD));
+bCheckResult=bCheckResult&&(!((oFsensorPCB==ClFsensorPCB::_Rev03b)&&(volt_IR_int>((int)IRsensor_Hopen_TRESHOLD))));
+return(bCheckResult);
+}
+#endif //IR_SENSOR_ANALOG

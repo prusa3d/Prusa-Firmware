@@ -46,7 +46,7 @@ _Note: Multi language build is not supported._
 
 * Open Arduino and navigate to File -> Preferences -> Settings
 * To the text field `"Additional Boards Manager URLSs"` add `https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json`
-* Open Board manager (`Tools->Board->Board manager`), and install `Prusa Research AVR MK3 RAMBo EINSy board`
+* Open Board manager (`Tools->Board->Board manager`), and install `Prusa Research AVR Boards by Prusa Research`
 
 **c.** Modify compiler flags in `platform.txt` file
      
@@ -178,6 +178,7 @@ Example:
 
 # 4. Documentation
 run [doxygen](http://www.doxygen.nl/) in Firmware folder
+or visit https://prusa3d.github.io/Prusa-Firmware-Doc for doxygen generated output
 
 # 5. FAQ
 Q:I built firmware using Arduino and I see "?" instead of numbers in printer user interface.

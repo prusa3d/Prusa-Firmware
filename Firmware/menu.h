@@ -76,6 +76,7 @@ void menu_start(void);
 extern void menu_end(void);
 
 extern void menu_back(void);
+extern void menu_back_no_reset(void);
 extern void menu_back(uint8_t nLevel);
 
 extern void menu_back_if_clicked(void);
@@ -83,6 +84,7 @@ extern void menu_back_if_clicked(void);
 extern void menu_back_if_clicked_fb(void);
 
 extern void menu_submenu(menu_func_t submenu);
+extern void menu_submenu_no_reset(menu_func_t submenu);
 
 extern uint8_t menu_item_ret(void);
 
@@ -118,6 +120,10 @@ extern uint8_t menu_item_function_P(const char* str, menu_func_t func);
 #define MENU_ITEM_FUNCTION_NR_P(str, number, func, fn_par) do { if (menu_item_function_P(str, number, func, fn_par)) return; } while (0)
 extern uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t), uint8_t fn_par);
 
+#define MENU_ITEM_TOGGLE_P(str, toggle, func) do { if (menu_item_toggle_P(str, toggle, func, 0x02)) return; } while (0)
+#define MENU_ITEM_TOGGLE(str, toggle, func) do { if (menu_item_toggle_P(str, toggle, func, 0x00)) return; } while (0)
+extern uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func, const uint8_t settings);
+
 #define MENU_ITEM_GCODE_P(str, str_gcode) do { if (menu_item_gcode_P(str, str_gcode)) return; } while (0)
 extern uint8_t menu_item_gcode_P(const char* str, const char* str_gcode);
 
@@ -126,7 +132,6 @@ extern const char menu_fmt_int3[];
 
 extern const char menu_fmt_float31[];
 extern const char menu_fmt_float13[];
-
 
 extern void menu_draw_float31(const char* str, float val);
 
