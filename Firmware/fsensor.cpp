@@ -488,10 +488,25 @@ ISR(FSENSOR_INT_PIN_VECT)
 
         if (pat9125_y == 0)
         {
-            // no movement detected: increase error count only when extruding, since fast retracts
-            // cannot always be seen. We also need to ensure that no runout is generated while
-            // retracting as it's not currently handled everywhere
-            if (st_dir) ++fsensor_err_cnt;
+            if (st_dir)
+            {
+                // no movement detected: we might be within a blind sensor range,
+                // update the frame and shutter parameters we didn't earlier
+                if (!fsensor_oq_meassure)
+                    pat9125_update_bs();
+
+                // increment the error count only if underexposed: filament likely missing
+                if ((pat9125_b < 80) && (pat9125_s > 10))
+                {
+                    // check for a dark frame (<30% avg brightness) with long exposure
+                    ++fsensor_err_cnt;
+                }
+                else
+                {
+                    // good frame, filament likely present
+                    if(fsensor_err_cnt) --fsensor_err_cnt;
+                }
+            }
         }
         else if (pat9125_dir != st_dir)
         {

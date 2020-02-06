@@ -19,9 +19,9 @@ extern uint8_t pat9125_b;
 extern uint8_t pat9125_s;
 
 extern uint8_t pat9125_init(void);
-extern uint8_t pat9125_update(void);
-extern uint8_t pat9125_update_y(void);
-extern uint8_t pat9125_update_y2(void);
+extern uint8_t pat9125_update(void);    // update all sensor data
+extern uint8_t pat9125_update_y(void);  // update _y only
+extern uint8_t pat9125_update_bs(void); // update _b/_s only
 
 
 #if defined(__cplusplus)

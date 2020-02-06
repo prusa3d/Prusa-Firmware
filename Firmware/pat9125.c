@@ -219,19 +219,13 @@ uint8_t pat9125_update_y(void)
 	return 0;
 }
 
-uint8_t pat9125_update_y2(void)
+uint8_t pat9125_update_bs(void)
 {
 	if ((pat9125_PID1 == 0x31) && (pat9125_PID2 == 0x91))
 	{
-		uint8_t ucMotion = pat9125_rd_reg(PAT9125_MOTION);
-		if (pat9125_PID1 == 0xff) return 0; //NOACK error
-		if (ucMotion & 0x80)
-		{
-			int8_t dy = pat9125_rd_reg(PAT9125_DELTA_YL);
-			if (pat9125_PID1 == 0xff) return 0; //NOACK error
-			pat9125_y -= dy; //negative number, because direction switching does not work
-		}
-		return 1;
+		pat9125_b = pat9125_rd_reg(PAT9125_FRAME);
+		pat9125_s = pat9125_rd_reg(PAT9125_SHUTTER);
+		if (pat9125_PID1 == 0xff) return 0;
 	}
 	return 0;
 }
