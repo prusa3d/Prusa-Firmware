@@ -27,13 +27,10 @@
 
 //! @name Optical quality measurement parameters
 //! @{
-#define FSENSOR_OQ_MAX_ES      6    //!< maximum error sum while loading (length ~64mm = 100chunks)
-#define FSENSOR_OQ_MAX_EM      2    //!< maximum error counter value while loading
-#define FSENSOR_OQ_MIN_YD      2    //!< minimum yd per chunk (applied to avg value)
-#define FSENSOR_OQ_MAX_YD      200  //!< maximum yd per chunk (applied to avg value)
-#define FSENSOR_OQ_MAX_PD      4    //!< maximum positive deviation (= yd_max/yd_avg)
-#define FSENSOR_OQ_MAX_ND      5    //!< maximum negative deviation (= yd_avg/yd_min)
-#define FSENSOR_OQ_MAX_SH      13   //!< maximum shutter value
+#define FSENSOR_OQ_MAX_ES      2    //!< maximum sum of error blocks during filament recheck
+#define FSENSOR_OQ_MIN_YD      2    //!< minimum yd sum during filament check (counts per inch)
+#define FSENSOR_OQ_MIN_BR      80   //!< minimum brightness value
+#define FSENSOR_OQ_MAX_SH      10   //!< maximum shutter value
 //! @}
 
 const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
@@ -401,7 +398,7 @@ void fsensor_oq_meassure_start(uint8_t skip)
 	fsensor_oq_yd_sum = 0;
 	fsensor_oq_er_sum = 0;
 	fsensor_oq_er_max = 0;
-	fsensor_oq_yd_min = FSENSOR_OQ_MAX_YD;
+	fsensor_oq_yd_min = INT16_MAX;
 	fsensor_oq_yd_max = 0;
 	fsensor_oq_sh_sum = 0;
 	pat9125_update();
@@ -419,6 +416,7 @@ void fsensor_oq_meassure_stop(void)
 	fsensor_oq_meassure = false;
 }
 
+#ifdef FSENSOR_QUALITY
 const char _OK[] PROGMEM = "OK";
 const char _NG[] PROGMEM = "NG!";
 
@@ -454,6 +452,7 @@ bool fsensor_oq_result(void)
 	printf_P(_N("fsensor_oq_result %S\n"), (res?_OK:_NG));
 	return res;
 }
+#endif //FSENSOR_QUALITY
 
 ISR(FSENSOR_INT_PIN_VECT)
 {
@@ -496,7 +495,7 @@ ISR(FSENSOR_INT_PIN_VECT)
                     pat9125_update_bs();
 
                 // increment the error count only if underexposed: filament likely missing
-                if ((pat9125_b < 80) && (pat9125_s > 10))
+                if ((pat9125_b < FSENSOR_OQ_MIN_BR) && (pat9125_s > FSENSOR_OQ_MAX_SH))
                 {
                     // check for a dark frame (<30% avg brightness) with long exposure
                     ++fsensor_err_cnt;
@@ -631,9 +630,9 @@ void fsensor_update(void)
 			fsensor_oq_meassure_stop();
 
 			bool err = false;
-			err |= (fsensor_err_cnt > 1);
-			err |= (fsensor_oq_er_sum > 2);
-			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
+			err |= (fsensor_err_cnt > 0);                   // final error count is non-zero
+			err |= (fsensor_oq_er_sum > FSENSOR_OQ_MAX_ES); // total error count is above limit
+			err |= (fsensor_oq_yd_sum < FSENSOR_OQ_MIN_YD); // total measured distance is below limit
 
             fsensor_restore_print_and_continue();
             fsensor_autoload_enabled = autoload_enabled_tmp;
