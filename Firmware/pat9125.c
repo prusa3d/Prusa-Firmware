@@ -226,6 +226,7 @@ uint8_t pat9125_update_bs(void)
 		pat9125_b = pat9125_rd_reg(PAT9125_FRAME);
 		pat9125_s = pat9125_rd_reg(PAT9125_SHUTTER);
 		if (pat9125_PID1 == 0xff) return 0;
+		return 1;
 	}
 	return 0;
 }
