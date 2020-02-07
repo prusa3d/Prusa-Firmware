@@ -7455,6 +7455,11 @@ void lcd_belttest()
 {
     int _progress = 0;
     bool _result = true;
+    
+    #ifdef TMC2130 // Belttest requires high power mode. Enable it.
+	    FORCE_HIGH_POWER_START;
+    #endif
+    
     uint16_t   X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
     uint16_t   Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
     lcd_belttest_print(_i("Checking X..."), X, Y);
@@ -7482,6 +7487,10 @@ void lcd_belttest()
 
     lcd_belttest_print(_i("Done"), X, Y);
 
+    #ifdef TMC2130
+	    FORCE_HIGH_POWER_END;
+    #endif
+    
     KEEPALIVE_STATE(NOT_BUSY);
     _delay(3000);
 }
