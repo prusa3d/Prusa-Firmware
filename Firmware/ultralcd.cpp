@@ -5441,7 +5441,7 @@ static void lcd_tune_menu()
     if (!farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);
 #endif
-    if (isPrintPaused) // Don't allow rehome if actively printing. Maaaaybe it could work to insert on the fly, seems too risky.
+    if (isPrintPaused) {// Don't allow rehome if actively printing. Maaaaybe it could work to insert on the fly, seems too risky.
         MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 X Y"));
     }
 #ifdef FILAMENT_SENSOR
