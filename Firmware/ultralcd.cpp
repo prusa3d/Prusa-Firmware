@@ -7463,7 +7463,6 @@ void lcd_belttest()
     uint16_t   Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
     lcd_belttest_print(_i("Checking X..."), X, Y);
 
-    _delay(2000);
     KEEPALIVE_STATE(IN_HANDLER);
     
     _result = lcd_selfcheck_axis_sg(X_AXIS);
