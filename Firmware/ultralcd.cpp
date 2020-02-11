@@ -7436,52 +7436,39 @@ static void lcd_belttest_v()
     lcd_belttest();
     menu_back_if_clicked();
 }
-void lcd_belttest_print(const char* msg, uint16_t X, uint16_t Y)
-{
-    lcd_clear();
-    lcd_printf_P(
-              _N(
-                 "%S:\n"
-                 "%S\n"
-                 "X:%d\n"
-                 "Y:%d"
-                 ),
-              _i("Belt status"),
-              msg,
-              X,Y
-            );
-}
+
 void lcd_belttest()
 {
     bool _result = true;
     
-    #ifdef TMC2130 // Belttest requires high power mode. Enable it.
-	    FORCE_HIGH_POWER_START;
-    #endif
+	// Belttest requires high power mode. Enable it.
+	FORCE_HIGH_POWER_START;
     
     uint16_t   X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
     uint16_t   Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
-    lcd_belttest_print(_i("Checking X..."), X, Y);
+	lcd_puts_at_P(0,0,_i("Checking X..."));
 
     KEEPALIVE_STATE(IN_HANDLER);
     
     _result = lcd_selfcheck_axis_sg(X_AXIS);
     X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
+	lcd_set_cursor(0,1), lcd_printf_P(PSTR("X: %d "),X); // Trailing space for done/error spacing if !_result
     if (_result){
-        lcd_belttest_print(_i("Checking Y..."), X, Y);
+		lcd_printf_P(_i("Done"));
+        lcd_puts_at_P(0,2,_i("Checking Y..."));
         _result = lcd_selfcheck_axis_sg(Y_AXIS);
         Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
+		lcd_set_cursor(0,3), lcd_printf_P(PSTR("Y: %d "),Y);
     }
     
-    if (!_result) {
-        lcd_belttest_print(_i("Error"), X, Y);
+    if (!_result) { // If error on X, error appears after X measurement, else done or error after Y measurement.
+        lcd_printf_P(_i("Error"));
     } else {
-        lcd_belttest_print(_i("Done"), X, Y);
+        lcd_printf_P(_i("Done"));
     }   
 
-    #ifdef TMC2130
-	    FORCE_HIGH_POWER_END;
-    #endif
+	lcd_puts_at_P(19,3,char(2)); // Checkmark
+	FORCE_HIGH_POWER_END;
     
     KEEPALIVE_STATE(NOT_BUSY);
     _delay(3000);
