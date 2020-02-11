@@ -382,8 +382,7 @@ void mmu_loop(void)
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
-				fsensor_stop_and_save_print();
-				enquecommand_front_P(PSTR("PRUSA fsensor_recover")); //then recover
+				fsensor_checkpoint_print();
 				ad_markDepleted(mmu_extruder);
 				if (lcd_autoDepleteEnabled() && !ad_allDepleted())
 				{
@@ -1548,7 +1547,7 @@ void mmu_continue_loading(bool blocking)
     };
     Ls state = Ls::Enter;
 
-    const uint_least8_t max_retry = 2;
+    const uint_least8_t max_retry = 3;
     uint_least8_t retry = 0;
 
     while (!success)
@@ -1579,18 +1578,7 @@ void mmu_continue_loading(bool blocking)
             break;
         case Ls::Unload:
             stop_and_save_print_to_ram(0, 0);
-
-            //lift z
-            current_position[Z_AXIS] += Z_PAUSE_LIFT;
-            if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-            plan_buffer_line_curposXYZE(15, active_extruder);
-            st_synchronize();
-
-            //Move XY to side
-            current_position[X_AXIS] = X_PAUSE_POS;
-            current_position[Y_AXIS] = Y_PAUSE_POS;
-            plan_buffer_line_curposXYZE(50, active_extruder);
-            st_synchronize();
+            long_pause();
 
             mmu_command(MmuCmd::U0);
             manage_response(false, true, MMU_UNLOAD_MOVE);
@@ -1601,6 +1589,7 @@ void mmu_continue_loading(bool blocking)
             if (blocking)
             {
                 marlin_wait_for_click();
+                st_synchronize();
                 restore_print_from_ram_and_continue(0);
                 state = Ls::Retry;
             }
