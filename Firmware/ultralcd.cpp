@@ -7810,9 +7810,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 	enable_endstops(true);
 
 	if (axis == X_AXIS) { //there is collision between cables and PSU cover in X axis if Z coordinate is too low
-		
-		current_position[Z_AXIS] += 17;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+		raise_z_above(17,true);
 		tmc2130_home_enter(Z_AXIS_MASK);
 		st_synchronize();
 		tmc2130_home_exit();
