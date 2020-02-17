@@ -51,9 +51,11 @@ namespace
     };
 }
 
+
 bool mmu_enabled = false;
 bool mmu_ready = false;
 bool mmu_fil_loaded = false; //if true: blocks execution of duplicit T-codes
+bool mmu_E_jam_detected=false; // If true, M600 displays a different user message because filament grinding was detected at the extruder.
 
 static S mmu_state = S::Disabled;
 
@@ -381,18 +383,26 @@ void mmu_loop(void)
 			mmu_last_finda_response = _millis();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
-			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
-				fsensor_checkpoint_print();
-				ad_markDepleted(mmu_extruder);
-				if (lcd_autoDepleteEnabled() && !ad_allDepleted())
-				{
-				    enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
+			if (CHECK_FSENSOR && fsensor_enabled) {
+				if (!mmu_finda) { // Traditional FINDA runout
+					fsensor_checkpoint_print();
+					ad_markDepleted(mmu_extruder);
+					if (lcd_autoDepleteEnabled() && !ad_allDepleted())
+					{
+						enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
+					}
+					else
+					{
+						enquecommand_front_P(PSTR("M600")); //save print and run M600 command
+					}
+				} elseif (mmu_finda && PIN_GET(IR_SENSOR_PIN)) { // Filament grinding likely...
+					mmu_E_jam_detected = true;
+					fsensor_checkpoint_print(): // We probably have no grip on the filament anymore, so user interaction required...
+					enquecommand_front_P(PSTR("M600")); //save print and run M600 command. This will come back to us via eject_filament and then M600_wait_and_beep 
+					printf_P(PSTR("Jam detected, no filament @ IR! \n"));
+					// since unload will likely fail.
 				}
-				else
-				{
-				    enquecommand_front_P(PSTR("M600")); //save print and run M600 command
-				}
-			}
+			} 
 			mmu_state = S::Idle;
 			if (mmu_cmd == MmuCmd::None)
 				mmu_ready = true;
@@ -829,7 +839,15 @@ void mmu_M600_wait_and_beep() {
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 		int counterBeep = 0;
-		lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));
+		if (mmu_E_jam_detected)
+		{
+			lcd_display_message_fullscreen_P(_i("Possible extruder jam detected (IR=0). Fix problem and press knob."));
+			mmu_E_jam_detected = false; // Clear flag, we'll proceed with normal M600 change from hereon.
+		}
+		else
+		{
+			lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));
+		}
 		bool bFirst=true;
 
 		while (!lcd_clicked()){
