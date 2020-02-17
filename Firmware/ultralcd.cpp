@@ -4520,14 +4520,11 @@ switch(oFSensorMode)
 			oFSensorMode=ClFSensorMode::_On_And_Jam;
 			break;
      case ClFSensorMode::_On_And_Jam:
-			oFSensorMode=ClFSensorMode::_On;
+				oFSensorMode=mmu_enabled?ClFSensorMode::_On:ClFSensorMode::_Off; // Skip second "On" option if no MMU, e.g. only 0/1, no 2.
 			break;
      case ClFSensorMode::_On:
 			oFSensorMode=ClFSensorMode::_Off;
-			fsensor_disable(); // This sets FSensorStateMenu
-			if (fsensor_autoload_enabled && !mmu_enabled)
-				menu_submenu(lcd_filament_autoload_info);
-			return;
+			break;
      default:
           oFSensorMode=ClFSensorMode::_On_And_Jam;
      }
@@ -4537,6 +4534,13 @@ switch(oFSensorMode)
 		if (fsensor_not_responding && !mmu_enabled)
 			menu_submenu(lcd_fsensor_fail);
 	 }
+	 else // Off
+	 {
+		 fsensor_disable(); // This sets FSensorStateMenu
+			if (fsensor_autoload_enabled && !mmu_enabled)
+				menu_submenu(lcd_filament_autoload_info);
+	 }
+	 
 }
 #endif //FILAMENT_SENSOR
 
