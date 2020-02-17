@@ -4512,19 +4512,31 @@ static void crash_mode_switch()
  
 
 #ifdef FILAMENT_SENSOR
-static void lcd_fsensor_state_set()
+static void lcd_fsensor_state_set(void)
 {
-	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
-	if (!FSensorStateMenu) {
-		fsensor_disable();
-		if (fsensor_autoload_enabled && !mmu_enabled)
-			menu_submenu(lcd_filament_autoload_info);
-	}
-	else {
-		fsensor_enable();
+switch(oFSensorMode)
+     {
+     case ClFSensorMode::_Off:
+			oFSensorMode=ClFSensorMode::_On_And_Jam;
+			break;
+     case ClFSensorMode::_On_And_Jam:
+			oFSensorMode=ClFSensorMode::_On;
+			break;
+     case ClFSensorMode::_On:
+			oFSensorMode=ClFSensorMode::_Off;
+			fsensor_disable(); // This sets FSensorStateMenu
+			if (fsensor_autoload_enabled && !mmu_enabled)
+				menu_submenu(lcd_filament_autoload_info);
+			return;
+     default:
+          oFSensorMode=ClFSensorMode::_On_And_Jam;
+     }
+	 if (oFSensorMode!=ClFSensorMode::_Off) 
+	 {
+	 	fsensor_enable(); // This sets FSensorStateMenu
 		if (fsensor_not_responding && !mmu_enabled)
 			menu_submenu(lcd_fsensor_fail);
-	}
+	 }
 }
 #endif //FILAMENT_SENSOR
 
@@ -5199,7 +5211,14 @@ do\
     else\
     {\
         /* Filament sensor turned on, working, no problems*/\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);\
+		if (oFSensorMode==ClFSensorMode::_On_And_Jam && mmu_enabled)\
+		{\
+        	MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON_JAM), lcd_fsensor_state_set);\
+		}\
+		else\
+		{\
+			MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);\
+		}\
         if (mmu_enabled == false)\
         {\
             if (fsensor_autoload_enabled)\

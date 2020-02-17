@@ -98,8 +98,17 @@ enum class ClFsensorActionNA:uint_least8_t
     _Undef=EEPROM_EMPTY_VALUE
 };
 
+enum class ClFSensorMode:uint_least8_t
+{
+    _Off, 
+    _On_And_Jam,
+    _On,
+    _Undef = EEPROM_EMPTY_VALUE
+};
+
 extern ClFsensorPCB oFsensorPCB;
 extern ClFsensorActionNA oFsensorActionNA;
+extern ClFSensorMode oFSensorMode;
 
 extern bool fsensor_IR_check();
 #endif //IR_SENSOR_ANALOG

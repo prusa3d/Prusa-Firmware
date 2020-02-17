@@ -104,6 +104,7 @@ extern const char MSG_V2_CALIBRATION[];
 extern const char WELCOME_MSG[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
+extern const char MSG_ON_JAM[];
 extern const char MSG_NA[];
 extern const char MSG_AUTO_DEPLETE[];
 extern const char MSG_CUTTER[];
