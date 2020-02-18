@@ -80,6 +80,15 @@ extern void fsensor_st_block_chunk(int cnt);
 //! @}
 #endif //PAT9125
 
+enum class ClFSensorMode:uint_least8_t
+{
+    _Off, 
+    _On_And_Jam,
+    _On,
+    _Undef = EEPROM_EMPTY_VALUE
+};
+extern ClFSensorMode oFSensorMode;
+
 
 #if IR_SENSOR_ANALOG
 #define IR_SENSOR_STEADY 10                       // [ms]
@@ -98,18 +107,10 @@ enum class ClFsensorActionNA:uint_least8_t
     _Undef=EEPROM_EMPTY_VALUE
 };
 
-enum class ClFSensorMode:uint_least8_t
-{
-    _Off, 
-    _On_And_Jam,
-    _On,
-    _Undef = EEPROM_EMPTY_VALUE
-};
+
 
 extern ClFsensorPCB oFsensorPCB;
 extern ClFsensorActionNA oFsensorActionNA;
-extern ClFSensorMode oFSensorMode;
-
 extern bool fsensor_IR_check();
 #endif //IR_SENSOR_ANALOG
 
