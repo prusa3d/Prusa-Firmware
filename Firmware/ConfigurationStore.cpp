@@ -247,10 +247,6 @@ bool Config_RetrieveSettings()
     {
 
         EEPROM_readData(reinterpret_cast<uint8_t*>(EEPROM_M500_base), reinterpret_cast<uint8_t*>(&cs), sizeof(cs), "cs");
-
-        
-		if (cs.max_jerk[X_AXIS] > DEFAULT_XJERK) cs.max_jerk[X_AXIS] = DEFAULT_XJERK;
-		if (cs.max_jerk[Y_AXIS] > DEFAULT_YJERK) cs.max_jerk[Y_AXIS] = DEFAULT_YJERK;
         calculate_extruder_multipliers();
 
 		//if max_feedrate_silent and max_acceleration_units_per_sq_second_silent were never stored to eeprom, use default values:
