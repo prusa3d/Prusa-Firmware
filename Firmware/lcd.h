@@ -20,7 +20,7 @@ extern void lcd_timer_enable(void);
 
 extern void lcd_timer_disable(void);
 
-extern void lcd_refresh(void);
+extern void lcd_redraw(bool forceRedraw = false);
 
 extern void lcd_clear(void);
 

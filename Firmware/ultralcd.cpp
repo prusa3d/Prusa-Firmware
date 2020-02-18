@@ -60,9 +60,6 @@ static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 static void lcd_backlight_menu();
 
-int8_t ReInitLCD = 0;
-
-
 int8_t SilentModeMenu = SILENT_MODE_OFF;
 uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
@@ -1000,13 +997,6 @@ static void lcd_status_screen()
 
 	if (lcd_draw_update)
 	{
-		ReInitLCD++;
-		if (ReInitLCD == 15)
-		{
-			lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-			ReInitLCD = 0;
-		}
-
 		lcdui_print_status_screen();
 
 		if (farm_mode)
@@ -8791,7 +8781,7 @@ void ultralcd_init()
     }
     backlight_init();
 	lcd_init();
-	lcd_refresh();
+	lcd_redraw(true); //forced redraw. Might be redundant.
 	lcd_longpress_func = menu_lcd_longpress_func;
 	lcd_charsetup_func = menu_lcd_charsetup_func;
 	lcd_lcdupdate_func = menu_lcd_lcdupdate_func;

@@ -16,7 +16,8 @@
 //-//
 #include "sound.h"
 
-#define LCD_DEFAULT_DELAY 100
+#define LCD_DEFAULT_DELAY 100 //ms
+#define LCD_REDRAW_PERIOD (30 * 1000) //ms
 
 #if (defined(LCD_PINS_D0) && defined(LCD_PINS_D1) && defined(LCD_PINS_D2) && defined(LCD_PINS_D3))
 	#define LCD_8BIT
@@ -98,7 +99,7 @@ volatile uint8_t vga_map[VGA_MAP_SIZE]; //bitmap for changes on the display. Ind
 volatile uint8_t lcd_status = 0;
 //xxxxdxba
 //a: timer enabled status
-//b: bit is set only if the timer is enabled and is used in the ISR to disable itself after required time has passed to send commands to it. ie: lcd_refresh(); 
+//b: bit is set only if the timer is enabled and is used in the ISR to disable itself after required time has passed to send commands to it. ie: lcd_redraw(); 
 //d: current command type. 1=lcd_set_cursor (jump); 0=character. Used by the ISR for the second nibble and also to decide whether a jump command is necessary (eg. next character is on the next line).
 //x: unused. Do not change.
 
@@ -107,6 +108,8 @@ uint8_t vga_currline; //these two are used for puting data into the vga buffer.
 uint8_t vga_currcol;
 
 uint8_t vga[LCD_WIDTH][LCD_HEIGHT]; //vga buffer.
+
+LongTimer lcd_redraw_timer; // Software timer used for redrawing the lcd at a set interval (LCD_REDRAW_PERIOD).
 
 static void lcd_display(void);
 #if 0
@@ -329,6 +332,7 @@ static void vga_init(void) //vga
 	CRITICAL_SECTION_END;
 	
 	fdev_setup_stream(lcdout, vga_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
+	lcd_redraw_timer.start();
 }
 
 void lcd_init(void) //lcd
@@ -358,12 +362,15 @@ void lcd_init(void) //lcd
 	lcd_timer_enable();
 }
 
-void lcd_refresh(void)
+//uses lcd_redraw_timer and redraws the entire display every (LCD_REDRAW_PERIOD).
+void lcd_redraw(bool forceRedraw)
 {
+	if (!lcd_redraw_timer.expired(LCD_REDRAW_PERIOD) && !forceRedraw) return;
 	lcd_timer_disable();
     lcd_begin();
     lcd_set_custom_characters();
 	lcd_timer_enable();
+	lcd_redraw_timer.start();
 }
 
 void lcd_clear(void) //vga
@@ -833,6 +840,7 @@ void lcd_quick_feedback(void)
 
 void lcd_update(uint8_t lcdDrawUpdateOverride)
 {
+	lcd_redraw();
 	if (lcd_draw_update < lcdDrawUpdateOverride)
 		lcd_draw_update = lcdDrawUpdateOverride;
 	if (!lcd_update_enabled)
