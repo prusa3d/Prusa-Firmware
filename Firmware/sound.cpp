@@ -163,10 +163,18 @@ uint8_t nI;
      }
 }
 
-static void Sound_DoSound_Echo(void) //non-blocking
+static void Sound_DoSound_Echo(void)
 {
-	backlight_wake();
-	_tone(BEEPER, 5000, 2);
+    backlight_wake();
+uint8_t nI;
+
+for(nI=0;nI<10;nI++)
+     {
+     WRITE(BEEPER,HIGH);
+     delayMicroseconds(100);
+     WRITE(BEEPER,LOW);
+     delayMicroseconds(100);
+     }
 }
 
 static void Sound_DoSound_Prompt(void)
