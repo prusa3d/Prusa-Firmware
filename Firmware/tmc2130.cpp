@@ -428,6 +428,11 @@ void tmc2130_check_overtemp()
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
 	uint8_t intpol = (mres != 0); // intpol to 256 only if microsteps aren't 256
+#ifdef TMC2130_DEDGE_STEPPING
+	uint8_t dedge = 1;
+#else
+	uint8_t dedge = 0;
+#endif
 	uint8_t toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
 	uint8_t hstrt = tmc2130_chopper_config[axis].hstr; //initial 4, modified to 5
 	uint8_t hend = tmc2130_chopper_config[axis].hend; //original value = 1
@@ -464,12 +469,12 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 //	DBG(_n(" toff=%hhd, hstr=%hhd, hend=%hhd, tbl=%hhd\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
 	{
-		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, 0, 0);
+		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, dedge, 0);
 		tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
 	}
 	else
 	{
-		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 0, 0, 0, 0, mres, intpol, 0, 0);
+		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 0, 0, 0, 0, mres, intpol, dedge, 0);
 		tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((current_r >> 1) & 0x1f) << 8) | ((current_h >> 1) & 0x1f));
 	}
 }
@@ -706,10 +711,17 @@ static uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
 #define _SET_DIR_Z(dir) { WRITE(Z_DIR_PIN, dir?INVERT_Z_DIR:!INVERT_Z_DIR); asm("nop"); }
 #define _SET_DIR_E(dir) { WRITE(E0_DIR_PIN, dir?INVERT_E0_DIR:!INVERT_E0_DIR); asm("nop"); }
 
+#ifdef TMC2130_DEDGE_STEPPING
+#define _DO_STEP_X      { TOGGLE(X_STEP_PIN); asm("nop"); }
+#define _DO_STEP_Y      { TOGGLE(Y_STEP_PIN); asm("nop"); }
+#define _DO_STEP_Z      { TOGGLE(Z_STEP_PIN); asm("nop"); }
+#define _DO_STEP_E      { TOGGLE(E0_STEP_PIN); asm("nop"); }
+#else
 #define _DO_STEP_X      { WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); asm("nop"); WRITE(X_STEP_PIN, INVERT_X_STEP_PIN); asm("nop"); }
 #define _DO_STEP_Y      { WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); asm("nop"); WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN); asm("nop"); }
 #define _DO_STEP_Z      { WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); asm("nop"); WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN); asm("nop"); }
 #define _DO_STEP_E      { WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN); asm("nop"); WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN); asm("nop"); }
+#endif
 
 
 uint16_t tmc2130_get_res(uint8_t axis)
