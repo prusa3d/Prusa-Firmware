@@ -8229,9 +8229,9 @@ Sigma_Exit:
     }
     break;
 
+#endif // TMC2130_SERVICE_CODES_M910_M918
     /*!
 	### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#M914:_Set_TMC2130_normal_mode">M914: Set TMC2130 normal mode</a>
-	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
     */
     case 914:
     {
@@ -8253,6 +8253,7 @@ Sigma_Exit:
     }
     break;
 
+#ifdef TMC2130_SERVICE_CODES_M910_M918
     /*!
 	### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#M916:_Set_TMC2130_Stallguard_sensitivity_threshold">M916: Set TMC2130 Stallguard sensitivity threshold</a>
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.

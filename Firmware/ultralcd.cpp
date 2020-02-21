@@ -4223,7 +4223,16 @@ do\
 {\
     if(!farm_mode)\
     {\
-        if (SilentModeMenu == SILENT_MODE_NORMAL)\
+		bool bDesync = SilentModeMenu != tmc2130_mode; \
+		if (SilentModeMenu == SILENT_MODE_NORMAL && bDesync) \
+		{\
+			MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M915"), lcd_silent_mode_set);\
+		}\
+		else if (bDesync) \
+		{\
+			MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M914") , lcd_silent_mode_set);\
+		}\
+        else if (SilentModeMenu == SILENT_MODE_NORMAL)\
         {\
             MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);\
         }\
