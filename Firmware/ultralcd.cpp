@@ -7446,30 +7446,28 @@ void lcd_belttest()
     uint16_t   X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
     uint16_t   Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
 	lcd_puts_at_P(0,0,_i("Checking X axis  ")); // share message with selftest
-	lcd_set_cursor(0,1), lcd_printf_P(PSTR("X: %d "),X);
+	lcd_set_cursor(0,1), lcd_printf_P(PSTR("X: %d -> ..."),X);
     KEEPALIVE_STATE(IN_HANDLER);
     
 	// N.B: it doesn't make sense to handle !lcd_selfcheck...() because selftest_sg throws its own error screen
 	// that clobbers ours, with more info than we could provide. So on fail we just fall through to take us back to status.
     if (lcd_selfcheck_axis_sg(X_AXIS)){
 		X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
-		lcd_printf_P(PSTR("-> %d"),X); // Show new X value next to old one.
+		lcd_set_cursor(9,1), lcd_printf_P(PSTR("%d"),X); // Show new X value next to old one.
         lcd_puts_at_P(0,2,_i("Checking Y axis  "));
-		lcd_set_cursor(0,3), lcd_printf_P(PSTR("Y: %d "),Y);
+		lcd_set_cursor(0,3), lcd_printf_P(PSTR("Y: %d -> ..."),Y);
 		if (lcd_selfcheck_axis_sg(Y_AXIS))
 		{
 			Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
-			lcd_printf_P(PSTR("-> %d"),Y);
-			lcd_set_custom_characters_nextpage();
+			lcd_set_cursor(9,3),lcd_printf_P(PSTR("%d"),Y);
 			lcd_set_cursor(19, 3);
-			lcd_print(char(2));
+			lcd_print(LCD_STR_UPLEVEL);
 			lcd_wait_for_click_delay(10);
 		}
     }
 	
 	FORCE_HIGH_POWER_END;
     KEEPALIVE_STATE(NOT_BUSY);
-	lcd_set_custom_characters(); // restore status screen chars.
 }
 #endif //TMC2130
 
