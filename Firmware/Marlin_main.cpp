@@ -8233,11 +8233,17 @@ Sigma_Exit:
     /*!
 	### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#M914:_Set_TMC2130_normal_mode">M914: Set TMC2130 normal mode</a>
     */
+#ifdef TMC2130
     case 914:
     {
-		tmc2130_mode = TMC2130_MODE_NORMAL;
+    printf_P(_n("tmc2130mode/smm/eep: %d %d %d\n"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT));
+    if (tmc2130_mode != TMC2130_MODE_NORMAL)
+      {
+        tmc2130_mode = TMC2130_MODE_NORMAL;
 		update_mode_profile();
 		tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
+        printf_P(_n("tmc2130mode/smm/eep: %d %d %d\n"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT));
+      }
     }
     break;
 
@@ -8246,13 +8252,23 @@ Sigma_Exit:
 	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
     */
     case 915:
-    {
-		tmc2130_mode = TMC2130_MODE_SILENT;
-		update_mode_profile();
-		tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
+    { 
+      printf_P(_n("tmc2130mode/smm/eep: %d %d %d\n"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT));
+      if (tmc2130_mode != TMC2130_MODE_SILENT)
+      { // This is basically the equivalent of force_high_power_mode for silent mode.
+        st_synchronize();
+        cli();
+        tmc2130_mode = TMC2130_MODE_SILENT;
+        update_mode_profile();
+        tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
+        printf_P(_n("tmc2130mode/smm/eep: %d %d %d\n"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT));
+        st_reset_timer();
+		    sei();
+      }
     }
     break;
 
+#endif // TMC2130
 #ifdef TMC2130_SERVICE_CODES_M910_M918
     /*!
 	### M916 - Set TMC2130 Stallguard sensitivity threshold <a href="https://reprap.org/wiki/G-code#M916:_Set_TMC2130_Stallguard_sensitivity_threshold">M916: Set TMC2130 Stallguard sensitivity threshold</a>

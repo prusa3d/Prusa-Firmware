@@ -4223,20 +4223,22 @@ do\
 {\
     if(!farm_mode)\
     {\
-		bool bDesync = SilentModeMenu != tmc2130_mode; \
-		if (SilentModeMenu == SILENT_MODE_NORMAL && bDesync) \
-		{\
-			MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M915"), lcd_silent_mode_set);\
-		}\
-		else if (bDesync) \
-		{\
-			MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M914") , lcd_silent_mode_set);\
-		}\
-        else if (SilentModeMenu == SILENT_MODE_NORMAL)\
+		/* M914/5 do not update eeprom, only tmc2130_mode */\
+		bool bDesync = tmc2130_mode ^ eeprom_read_byte((uint8_t*)EEPROM_SILENT);\
+		if (SilentModeMenu == SILENT_MODE_NORMAL) \
         {\
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);\
+			if (bDesync)\
+				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M915"), lcd_silent_mode_set);\
+			else\
+            	MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);\
         }\
-        else MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);\
+        else\
+		{\
+			if (bDesync)\
+				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M914") , lcd_silent_mode_set);\
+			else\
+				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);\
+		}\ 
         if (SilentModeMenu == SILENT_MODE_NORMAL)\
         {\
             if (lcd_crash_detect_enabled()) MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_ON), crash_mode_switch);\
