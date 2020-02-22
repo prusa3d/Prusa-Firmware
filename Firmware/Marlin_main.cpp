@@ -2482,7 +2482,12 @@ void force_high_power_mode(bool start_high_power_section) {
 		cli();
 		tmc2130_mode = (start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
 		update_mode_profile();
-		tmc2130_init();
+    #ifdef PSU_DELTA
+      bEnableForce_z = true;
+		  tmc2130_init(true); // need this to bypass disable_force_z and re-wake motors e.g. M914
+    #else
+      tmc2130_init();
+    #endif
     // We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
     // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
     st_reset_timer();
@@ -8304,28 +8309,51 @@ Sigma_Exit:
     break;
 
 #endif // TMC2130_SERVICE_CODES_M910_M918
-    /*!
+   /*!
 	### M914 - Set TMC2130 normal mode <a href="https://reprap.org/wiki/G-code#M914:_Set_TMC2130_normal_mode">M914: Set TMC2130 normal mode</a>
+  Updates EEPROM only if "P" is given, otherwise temporary (lasts until reset or motor idle timeout)
+      #### Usage
+    
+        M914 [P]
+    
+    #### Parameters
+    - `P` - Make the mode change permanent (write to EEPROM)
     */
 #ifdef TMC2130
     case 914:
     {
-    printf_P(_n("tmc2130mode/smm/eep: %d %d %d\n"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT));
-    if (tmc2130_mode != TMC2130_MODE_NORMAL)
+      if (code_seen('P'))
+      {
+          eeprom_update_byte((unsigned char *)EEPROM_SILENT, SILENT_MODE_NORMAL);
+          SilentModeMenu = SILENT_MODE_NORMAL;
+      }
+      //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
+      if (tmc2130_mode != TMC2130_MODE_NORMAL)
       {
         FORCE_HIGH_POWER_START;
-        printf_P(_n("tmc2130mode/smm/eep: %d %d %d\n"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT));
+        //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
       }
     }
     break;
 
     /*!
 	### M915 - Set TMC2130 silent mode <a href="https://reprap.org/wiki/G-code#M915:_Set_TMC2130_silent_mode">M915: Set TMC2130 silent mode</a>
-	Not active in default, only if `TMC2130_SERVICE_CODES_M910_M918` is defined in source code.
+    Updates EEPROM only if "P" is given, otherwise temporary (lasts until reset or motor idle timeout)
+      #### Usage
+    
+        M915 [P]
+    
+    #### Parameters
+    - `P` - Make the mode change permanent (write to EEPROM)
     */
     case 915:
     { 
-      printf_P(_n("tmc2130mode/smm/eep: %d %d %d\n"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT));
+      if (code_seen('P'))
+      {
+          eeprom_update_byte((unsigned char *)EEPROM_SILENT, SILENT_MODE_STEALTH);
+          SilentModeMenu = SILENT_MODE_STEALTH;
+      }
+      //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
       if (tmc2130_mode != TMC2130_MODE_SILENT)
       { // This is basically the equivalent of force_high_power_mode for silent mode.
         st_synchronize();
@@ -8333,7 +8361,7 @@ Sigma_Exit:
         tmc2130_mode = TMC2130_MODE_SILENT;
         update_mode_profile();
         tmc2130_init();
-        printf_P(_n("tmc2130mode/smm/eep: %d %d %d\n"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT));
+        //printf_P(_n("tmc2130mode/smm/eep: %d %d %d %d"),tmc2130_mode,SilentModeMenu,eeprom_read_byte((uint8_t*)EEPROM_SILENT), bEnableForce_z);
         st_reset_timer();
 		    sei();
       }
