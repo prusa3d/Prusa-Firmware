@@ -173,6 +173,7 @@ void manage_inactivity(bool ignore_stepper_queue=false);
     #define  enable_z()  poweron_z()
     #define disable_z() poweroff_z()
 #else
+    extern bool bEnableForce_z; // Used by ultralcd stealth toggle
     void init_force_z();
     void check_force_z();
     void enable_force_z();

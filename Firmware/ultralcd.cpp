@@ -4218,16 +4218,25 @@ static void mmu_reset()
 }
 
 #ifdef TMC2130
+
+
+#ifdef PSU_Delta // This setup changes to "stealth" mode on timeout, need to check for that.
+#define SILENT_DESYNC_IF if (bDesync && bEnableForce_z) 
+#else
+#define SILENT_DESYNC_IF if (bDesync)
+#endif
+
+
 #define SETTINGS_SILENT_MODE \
 do\
 {\
     if(!farm_mode)\
     {\
-		/* M914/5 do not update eeprom, only tmc2130_mode */\
+		/* M914/5 do not update SilentModeMenu, only tmc2130_mode */\
 		bool bDesync = tmc2130_mode ^ eeprom_read_byte((uint8_t*)EEPROM_SILENT);\
 		if (SilentModeMenu == SILENT_MODE_NORMAL) \
         {\
-			if (bDesync)\
+			SILENT_DESYNC_IF\
 				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M915"), lcd_silent_mode_set);\
 			else\
             	MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);\
@@ -4238,7 +4247,7 @@ do\
 				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M914") , lcd_silent_mode_set);\
 			else\
 				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);\
-		}\ 
+		}\
         if (SilentModeMenu == SILENT_MODE_NORMAL)\
         {\
             if (lcd_crash_detect_enabled()) MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_ON), crash_mode_switch);\
@@ -5618,15 +5627,24 @@ static void lcd_tune_menu()
 #ifdef TMC2130
     if(!farm_mode)
     {
+        bool bDesync = tmc2130_mode ^ eeprom_read_byte((uint8_t*)EEPROM_SILENT);
         if (SilentModeMenu == SILENT_MODE_NORMAL) {
-              MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
+			SILENT_DESYNC_IF {
+				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M915"), lcd_silent_mode_set);
+            } else {
+            	MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
+            }
             if (lcd_crash_detect_enabled()) {
                 MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_ON), crash_mode_switch);
             } else {
                 MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_OFF), crash_mode_switch);
             }
         } else {
-            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
+            if (bDesync) {
+				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), PSTR("M914") , lcd_silent_mode_set);
+            } else {
+				MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
+            }
             MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
         }
     }
