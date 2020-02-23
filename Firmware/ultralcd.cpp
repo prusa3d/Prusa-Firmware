@@ -7141,7 +7141,12 @@ static void lcd_tune_menu()
                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
           }
 	}
-	else {
+	else if (oFSensorMode==ClFSensorMode::_On_And_Jam && mmu_enabled)
+	{	// Jam detect mode
+       	MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON_JAM), lcd_fsensor_state_set);
+	}
+	else
+	{	// Just normal on.
 		MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);
 	}
 #if IR_SENSOR_ANALOG
