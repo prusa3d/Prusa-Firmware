@@ -2151,6 +2151,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17 r=1
   MENU_ITEM_BACK_P(PSTR(__DATE__));
 
+#if IR_SENSOR_ANALOG
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
   switch(oFsensorPCB)
@@ -2167,6 +2168,7 @@ static void lcd_support_menu()
        default:
             MENU_ITEM_BACK_P(PSTR(" unknown"));
        }
+#endif // IR_SENSOR_ANALOG
 
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
 	if (mmu_enabled)

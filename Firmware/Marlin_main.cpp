@@ -46,6 +46,7 @@
 //-//
 #include "Configuration.h"
 #include "Marlin.h"
+#include "config.h"
   
 #ifdef ENABLE_AUTO_BED_LEVELING
 #include "vector_3.h"
@@ -9452,7 +9453,7 @@ bool bInhibitFlag;
 #endif // PAT9125
 #ifdef IR_SENSOR
           bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
-#ifdef IR_SENSOR_ANALOG
+#if IR_SENSOR_ANALOG
           bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Settings::HWsetup::FSdetect menu active
 #endif // IR_SENSOR_ANALOG
 #endif // IR_SENSOR
@@ -9460,7 +9461,7 @@ bool bInhibitFlag;
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
-#ifdef IR_SENSOR_ANALOG
+#if IR_SENSOR_ANALOG
                     bool bTemp=current_voltage_raw_IR>14000; // nahradit prumerem @ vicero hodnot
                     bTemp=bTemp&&(target_temperature[0]==0); // & bed (& dalsi extrudery)
                     bTemp=bTemp&&(menu_menu==lcd_status_screen);
