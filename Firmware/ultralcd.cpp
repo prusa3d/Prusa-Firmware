@@ -68,6 +68,10 @@ uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
+#if IR_SENSOR_ANALOG
+bool bMenuFSDetect=false;
+#endif //IR_SENSOR_ANALOG
+
 
 #ifdef SDCARD_SORT_ALPHA
 bool presort_flag = false;
@@ -114,8 +118,7 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
 // void copy_and_scalePID_d();
 
 /* Different menus */
-//-//static void lcd_status_screen();
-  void lcd_status_screen();
+//static void lcd_status_screen();                // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 #if (LANG_MODE != 0)
 static void lcd_language_menu();
 #endif
@@ -237,8 +240,8 @@ static bool lcd_selftest_fsensor();
 #endif //PAT9125
 static bool selftest_irsensor();
 #if IR_SENSOR_ANALOG
-static bool lcd_selftest_IRsensor(bool bStandalone = false);
-//-//static lcd_detect_IRsensor();
+static bool lcd_selftest_IRsensor(bool bStandalone=false);
+static void lcd_detect_IRsensor();
 #endif //IR_SENSOR_ANALOG
 static void lcd_selftest_error(TestError error, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
@@ -977,7 +980,7 @@ void lcdui_print_status_screen(void)
 }
 
 // Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent
-static void lcd_status_screen()
+void lcd_status_screen()                          // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
 	if (firstrun == 1) 
 	{
@@ -7552,24 +7555,22 @@ if((bPCBrev03b?1:0)!=(uint8_t)oFsensorPCB)        // safer then "(uint8_t)bPCBre
 return(true);
 }
 
-bool bMenuDetect=false;
-//static void lcd_detect_IRsensor()
-void lcd_detect_IRsensor()
+static void lcd_detect_IRsensor()
 {
 bool bAction;
 
-bMenuDetect=true;
+bMenuFSDetect=true;                               // inhibits some code inside "manage_inactivity()"
 bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
 if(!bAction)
      {
-     lcd_show_fullscreen_message_and_wait_P(_i("... vyjmi & opakuj ..."));
+     lcd_show_fullscreen_message_and_wait_P(_i("... so unload the filament and repeat action!"));
      return;
      }
 bAction=lcd_selftest_IRsensor(true);
 if(bAction)
-     lcd_show_fullscreen_message_and_wait_P(_i("... povedlo se - VYJMI!!! ..."));
-else lcd_show_fullscreen_message_and_wait_P(_i("... NEpovedlo se - VYJMI!!!..."));
-bMenuDetect=false;
+     lcd_show_fullscreen_message_and_wait_P(_i("PCB check successful - withdraw the filament now!"));
+else lcd_show_fullscreen_message_and_wait_P(_i("PCB check unsuccessful - withdraw the filament now!"));
+bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
 }
 #endif //IR_SENSOR_ANALOG
 

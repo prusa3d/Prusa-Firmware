@@ -55,10 +55,9 @@ extern bool lcd_selftest();
 
 void lcd_menu_statistics(); 
 
+void lcd_status_screen();                         // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 void lcd_menu_show_sensors_state();               // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
-
-   void lcd_detect_IRsensor(); // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
 #ifdef TMC2130
 bool lcd_crash_detect_enabled();
@@ -140,6 +139,10 @@ extern uint8_t farm_status;
 #define SILENT_MODE_AUTO 2
 #define SILENT_MODE_OFF SILENT_MODE_POWER
 #endif
+
+#if IR_SENSOR_ANALOG
+extern bool bMenuFSDetect;
+#endif //IR_SENSOR_ANALOG
 
 extern int8_t SilentModeMenu;
 extern uint8_t SilentModeMenu_MMU;

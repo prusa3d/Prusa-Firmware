@@ -9439,12 +9439,11 @@ static void handleSafetyTimer()
 }
 #endif //SAFETYTIMER
 
-extern bool bMenuDetect; / -> .h
-extern void lcd_status_screen(); / -> .h & 'static'
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
-bool bInhibitFlag;
 #ifdef FILAMENT_SENSOR
+bool bInhibitFlag;
+
 	if (mmu_enabled == false)
 	{
 //-//		if (mcode_in_progress != 600) //M600 not in progress
@@ -9453,38 +9452,28 @@ bool bInhibitFlag;
 #endif // PAT9125
 #ifdef IR_SENSOR
           bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
-//MYSERIAL.print("inhibit :: ");
-//MYSERIAL.println(bInhibitFlag);
-// & IR_SENSOR_ANALOG ???
-//bInhibitFlag|=(menu_menu==lcd_detect_IRsensor); // Settings::HWsetup::FSdetect menu active
-//.bInhibitFlag=bInhibitFlag||(menu_menu==lcd_detect_IRsensor); // Settings::HWsetup::FSdetect menu active
-bInhibitFlag=bInhibitFlag||bMenuDetect; // Settings::HWsetup::FSdetect menu active
-//MYSERIAL.print("        :: ");
-//MYSERIAL.println(bInhibitFlag);
-//MYSERIAL.println(current_voltage_raw_IR);
+#ifdef IR_SENSOR_ANALOG
+          bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Settings::HWsetup::FSdetect menu active
+#endif // IR_SENSOR_ANALOG
 #endif // IR_SENSOR
           if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
-// *****
-// & IR_SENSOR_ANALOG ???
-bool bTemp;
-bTemp=current_voltage_raw_IR>14000; // nahradit prumerem @ vicero hodnot
-bTemp=bTemp&&(target_temperature[0]==0); // & bed (& dalsi extrudery)
-bTemp=bTemp&&(menu_menu==lcd_status_screen);
-bTemp=bTemp&&((oFsensorPCB==ClFsensorPCB::_Old)||(oFsensorPCB==ClFsensorPCB::_Undef));
-bTemp=bTemp&&fsensor_enabled;
-if(bTemp)
-     {
-     MYSERIAL.println(current_voltage_raw_IR);
-     MYSERIAL.println("!!!!! -> 03b !!!!!");
-     oFsensorPCB=ClFsensorPCB::_Rev03b;
-     //bTemp=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("?potvrdit?"),false,true);
-     //MYSERIAL.println(bTemp);
-     lcd_setstatuspgm(_i("!!! -> 03b !!!"));
-     }
-// *****
+#ifdef IR_SENSOR_ANALOG
+                    bool bTemp=current_voltage_raw_IR>14000; // nahradit prumerem @ vicero hodnot
+                    bTemp=bTemp&&(target_temperature[0]==0); // & bed (& dalsi extrudery)
+                    bTemp=bTemp&&(menu_menu==lcd_status_screen);
+                    bTemp=bTemp&&((oFsensorPCB==ClFsensorPCB::_Old)||(oFsensorPCB==ClFsensorPCB::_Undef));
+                    bTemp=bTemp&&fsensor_enabled;
+                    if(bTemp)
+                    {
+                         oFsensorPCB=ClFsensorPCB::_Rev03b;
+//                         eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+                         printf_P(PSTR("Filament sensor board change detected: revision 03b or newer\n"));
+                         lcd_setstatuspgm(_i("FS rev. 03b or newer"));
+                    }
+#endif // IR_SENSOR_ANALOG
 				if (fsensor_check_autoload())
 				{
 #ifdef PAT9125
