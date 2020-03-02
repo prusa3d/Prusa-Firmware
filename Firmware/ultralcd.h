@@ -57,6 +57,9 @@ void lcd_menu_statistics();
 
 void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 void lcd_menu_show_sensors_state();               // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+
+   void lcd_detect_IRsensor(); // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+
 #ifdef TMC2130
 bool lcd_crash_detect_enabled();
 void lcd_crash_detect_enable();

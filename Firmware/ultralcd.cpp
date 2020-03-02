@@ -114,7 +114,8 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
 // void copy_and_scalePID_d();
 
 /* Different menus */
-static void lcd_status_screen();
+//-//static void lcd_status_screen();
+  void lcd_status_screen();
 #if (LANG_MODE != 0)
 static void lcd_language_menu();
 #endif
@@ -236,7 +237,8 @@ static bool lcd_selftest_fsensor();
 #endif //PAT9125
 static bool selftest_irsensor();
 #if IR_SENSOR_ANALOG
-static bool lcd_selftest_IRsensor();
+static bool lcd_selftest_IRsensor(bool bStandalone = false);
+//-//static lcd_detect_IRsensor();
 #endif //IR_SENSOR_ANALOG
 static void lcd_selftest_error(TestError error, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
@@ -2145,6 +2147,23 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17 r=1
   MENU_ITEM_BACK_P(PSTR(__DATE__));
+
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
+  MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
+  switch(oFsensorPCB)
+       {
+       case ClFsensorPCB::_Old:
+            MENU_ITEM_BACK_P(PSTR(" 03 or older"));
+            break;
+       case ClFsensorPCB::_Rev03b:
+            MENU_ITEM_BACK_P(PSTR(" 03b or newer"));
+            break;
+       case ClFsensorPCB::_Undef:
+            MENU_ITEM_BACK_P(PSTR(" N/A"));
+            break;
+       default:
+            MENU_ITEM_BACK_P(PSTR(" unknown"));
+       }
 
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
 	if (mmu_enabled)
@@ -5697,6 +5716,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 #if IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;
+    MENU_ITEM_FUNCTION_P(PSTR("FS Detect"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
     MENU_END();
 }
@@ -7496,7 +7516,7 @@ void lcd_belttest()
 #endif //TMC2130
 
 #if IR_SENSOR_ANALOG
-static bool lcd_selftest_IRsensor()
+static bool lcd_selftest_IRsensor(bool bStandalone)
 {
 bool bAction;
 bool bPCBrev03b;
@@ -7509,7 +7529,8 @@ volt_IR=VOLT_DIV_REF*((float)volt_IR_int/(1023*OVERSAMPLENR));
 printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"),volt_IR);
 if(volt_IR_int<((int)IRsensor_Hmin_TRESHOLD))
      {
-     lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
+     if(!bStandalone)
+          lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
      return(false);
      }
 lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament (but not load them!) into extruder and then press the knob."));
@@ -7518,7 +7539,8 @@ volt_IR=VOLT_DIV_REF*((float)volt_IR_int/(1023*OVERSAMPLENR));
 printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"),volt_IR);
 if(volt_IR_int>((int)IRsensor_Lmax_TRESHOLD))
      {
-     lcd_selftest_error(TestError::FsensorLevel,"LOW","");
+     if(!bStandalone)
+          lcd_selftest_error(TestError::FsensorLevel,"LOW","");
      return(false);
      }
 if((bPCBrev03b?1:0)!=(uint8_t)oFsensorPCB)        // safer then "(uint8_t)bPCBrev03b"
@@ -7528,6 +7550,26 @@ if((bPCBrev03b?1:0)!=(uint8_t)oFsensorPCB)        // safer then "(uint8_t)bPCBre
      eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
      }
 return(true);
+}
+
+bool bMenuDetect=false;
+//static void lcd_detect_IRsensor()
+void lcd_detect_IRsensor()
+{
+bool bAction;
+
+bMenuDetect=true;
+bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
+if(!bAction)
+     {
+     lcd_show_fullscreen_message_and_wait_P(_i("... vyjmi & opakuj ..."));
+     return;
+     }
+bAction=lcd_selftest_IRsensor(true);
+if(bAction)
+     lcd_show_fullscreen_message_and_wait_P(_i("... povedlo se - VYJMI!!! ..."));
+else lcd_show_fullscreen_message_and_wait_P(_i("... NEpovedlo se - VYJMI!!!..."));
+bMenuDetect=false;
 }
 #endif //IR_SENSOR_ANALOG
 
