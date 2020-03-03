@@ -7173,6 +7173,9 @@ static void lcd_sd_updir()
 {
   card.updir();
   menu_top = 0;
+  lcd_encoder = 0;
+  lcd_scrollTimer.start();
+  menu_entering = 1;
 }
 
 void lcd_print_stop()
@@ -7279,6 +7282,8 @@ void lcd_sdcard_menu()
   if (presort_flag == true) {
 	  presort_flag = false;
 	  card.presort();
+	  lcd_scrollTimer.start();
+	  lcd_draw_update = 1;
   }
   if (!lcd_scrollTimer.running()) lcd_scrollTimer.start();
   bool scrollEnter = lcd_scrollTimer.expired(500);
@@ -8672,6 +8677,8 @@ void menu_action_sddirectory(const char* filename)
 	MYSERIAL.println(dir_names[depth]);
   card.chdir(filename);
   lcd_encoder = 0;
+  lcd_scrollTimer.start();
+  menu_entering = 1;
 }
 
 /** LCD API **/
