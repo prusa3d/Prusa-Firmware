@@ -246,7 +246,9 @@ static void fil_unload_menu();
 static void lcd_disable_farm_mode();
 static void lcd_set_fan_check();
 static void lcd_cutter_enabled();
+#ifdef SNMM
 static char snmm_stop_print_menu();
+#endif //SNMM
 #ifdef SDCARD_SORT_ALPHA
  static void lcd_sort_type_set();
 #endif
@@ -948,7 +950,6 @@ static void lcd_status_screen()
 	}
 
 	if (current_click
-		&& (lcd_commands_type != LcdCommands::StopPrint) //click is aborted unless stop print finishes
 		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
 	)
 	{
@@ -1359,98 +1360,6 @@ void lcd_commands()
 
 #endif // not SNMM
 
-	if (lcd_commands_type == LcdCommands::StopPrint)   /// stop print
-	{
-		
-
-		if (lcd_commands_step == 0) 
-		{ 
-			lcd_commands_step = 6; 
-		}
-
-		if (lcd_commands_step == 1 && !blocks_queued())
-		{
-			lcd_commands_step = 0;
-			lcd_commands_type = LcdCommands::Idle;
-			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = CustomMsg::Status;
-			isPrintPaused = false;
-		}
-		if (lcd_commands_step == 2 && !blocks_queued())
-		{
-			setTargetBed(0);
-			enquecommand_P(PSTR("M104 S0")); //set hotend temp to 0
-
-			manage_heater();
-			lcd_setstatuspgm(_T(WELCOME_MSG));
-			cancel_heatup = false;
-			lcd_commands_step = 1;
-		}
-		if (lcd_commands_step == 3 && !blocks_queued())
-		{
-      // M84: Disable steppers.
-			enquecommand_P(PSTR("M84"));
-			autotempShutdown();
-			lcd_commands_step = 2;
-		}
-		if (lcd_commands_step == 4 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PLEASE_WAIT));
-      // G90: Absolute positioning.
-			enquecommand_P(PSTR("G90"));
-      // M83: Set extruder to relative mode.
-			enquecommand_P(PSTR("M83"));
-			#ifdef X_CANCEL_POS 
-			enquecommand_P(PSTR("G1 X"  STRINGIFY(X_CANCEL_POS) " Y" STRINGIFY(Y_CANCEL_POS) " E0 F7000"));
-			#else
-			enquecommand_P(PSTR("G1 X50 Y" STRINGIFY(Y_MAX_POS) " E0 F7000"));
-			#endif
-			lcd_ignore_click(false);
-			if (mmu_enabled)
-				lcd_commands_step = 8;
-			else
-				lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 5 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-      // G91: Set to relative positioning.
-			enquecommand_P(PSTR("G91"));
-      // Lift up.
-			enquecommand_P(PSTR("G1 Z15 F1500"));
-			if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) lcd_commands_step = 4;
-			else lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 6 && !blocks_queued())
-		{
-			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-			cancel_heatup = true;
-			setTargetBed(0);
-			if (mmu_enabled)
-				setAllTargetHotends(0);
-			manage_heater();
-			custom_message_type = CustomMsg::FilamentLoading;
-			lcd_commands_step = 5;
-		}
-		if (lcd_commands_step == 7 && !blocks_queued())
-		{
-			if (mmu_enabled)
-				enquecommand_P(PSTR("M702 C")); //current
-			else
-				switch(snmm_stop_print_menu())
-				{
-				case 0: enquecommand_P(PSTR("M702")); break;//all 
-				case 1: enquecommand_P(PSTR("M702 U")); break; //used
-				case 2: enquecommand_P(PSTR("M702 C")); break; //current
-				default: enquecommand_P(PSTR("M702")); break;
-				}
-			lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 8 && !blocks_queued()) { //step 8 is here for delay (going to next step after execution of all gcodes from step 4)
-			lcd_commands_step = 7; 
-		}
-	}
-
 	if (lcd_commands_type == LcdCommands::FarmModeConfirm)   /// farm mode confirm
 	{
 
@@ -1554,7 +1463,7 @@ void lcd_return_to_status()
 //! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
-    stop_and_save_print_to_ram(0.0,0.0);
+    stop_and_save_print_to_ram(0.0, -default_retraction);
     lcd_return_to_status();
     isPrintPaused = true;
     if (LcdCommands::Idle == lcd_commands_type)
@@ -1776,11 +1685,23 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
     lcd_home();
+#ifndef PAT9125
     lcd_printf_P(failStatsFmt,
         _i("Last print failures"),  ////c=20 r=1
         _i("Power failures"), power,  ////c=14 r=1
         _i("Filam. runouts"), filam,  ////c=14 r=1
         _i("Crash"), crashX, crashY);  ////c=7 r=1
+#else
+    // On the MK3 include detailed PAT9125 statistics about soft failures
+    lcd_printf_P(PSTR("%S\n"
+                      " %-16.16S%-3d\n"
+                      " %-7.7S H %-3d S %-3d\n"
+                      " %-7.7S X %-3d Y %-3d"),
+                 _i("Last print failures"), ////c=20 r=1
+                 _i("Power failures"), power, ////c=14 r=1
+                 _i("Runouts"), filam, fsensor_softfail, //c=7 r=1
+                 _i("Crash"), crashX, crashY);  ////c=7 r=1
+#endif
     menu_back_if_clicked_fb();
 }
 
@@ -2211,10 +2132,12 @@ void lcd_set_filament_autoload() {
      fsensor_autoload_set(!fsensor_autoload_enabled);
 }
 
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
 void lcd_set_filament_oq_meass()
 {
      fsensor_oq_meassure_set(!fsensor_oq_meassure_enabled);
 }
+#endif
 
 
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
@@ -2774,9 +2697,9 @@ static void lcd_LoadFilament()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Filament used:      | c=18 r=1
-//! |         00.00m     |
-//! |Print time:         | c=18 r=1
+//! |Filament used:      | c=19 r=1
+//! |           0000.00m |
+//! |Print time:         | c=19 r=1
 //! |        00h 00m 00s |
 //! ----------------------
 //! @endcode
@@ -2785,32 +2708,33 @@ static void lcd_LoadFilament()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Total filament :    | c=18 r=1
-//! |           000.00 m |
-//! |Total print time :  | c=18 r=1
-//! |     00d :00h :00 m |
+//! |Total filament:     | c=19 r=1
+//! |           0000.00m |
+//! |Total print time:   | c=19 r=1
+//! |        00d 00h 00m |
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations. Translations missing for "d"days, "h"ours, "m"inutes", "s"seconds".
 void lcd_menu_statistics()
 {
+    lcd_timeoutToStatus.stop(); //infinite timeout
 	if (IS_SD_PRINTING)
 	{
 		const float _met = ((float)total_filament_used) / (100000.f);
 		const uint32_t _t = (_millis() - starttime) / 1000ul;
-		const int _h = _t / 3600;
-		const int _m = (_t - (_h * 3600ul)) / 60ul;
-		const int _s = _t - ((_h * 3600ul) + (_m * 60ul));
+		const uint32_t _h = _t / 3600;
+		const uint8_t _m = (_t - (_h * 3600ul)) / 60ul;
+		const uint8_t _s = _t - ((_h * 3600ul) + (_m * 60ul));
 
-		lcd_clear();
+        lcd_home();
 		lcd_printf_P(_N(
 			"%S:\n"
-			"%17.2fm  \n"
+			"%18.2fm \n"
 			"%S:\n"
-			"%2dh %02dm %02ds"
+			"%10ldh %02hhdm %02hhds"
 		    ),
-            _i("Filament used"), _met,  ////c=18 r=1
-            _i("Print time"), _h, _m, _s);  ////c=18 r=1
+            _i("Filament used"), _met,  ////c=19 r=1
+            _i("Print time"), _h, _m, _s);  ////c=19 r=1
 		menu_back_if_clicked_fb();
 	}
 	else
@@ -2820,29 +2744,20 @@ void lcd_menu_statistics()
 		uint8_t _hours, _minutes;
 		uint32_t _days;
 		float _filament_m = (float)_filament/100;
-//		int _filament_km = (_filament >= 100000) ? _filament / 100000 : 0;
-//		if (_filament_km > 0)  _filament_m = _filament - (_filament_km * 100000);
 		_days = _time / 1440;
 		_hours = (_time - (_days * 1440)) / 60;
 		_minutes = _time - ((_days * 1440) + (_hours * 60));
 
-		lcd_clear();
+		lcd_home();
 		lcd_printf_P(_N(
 			"%S:\n"
-			"%17.2fm  \n"
+			"%18.2fm \n"
 			"%S:\n"
-			"%7ldd :%2hhdh :%02hhdm"
-		), _i("Total filament"), _filament_m, _i("Total print time"), _days, _hours, _minutes);
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-		while (!lcd_clicked())
-		{
-			manage_heater();
-			manage_inactivity(true);
-			_delay(100);
-		}
-		KEEPALIVE_STATE(NOT_BUSY);
-		lcd_quick_feedback();
-		menu_back();
+			"%10ldd %02hhdh %02hhdm"
+            ),
+            _i("Total filament"), _filament_m,  ////c=19 r=1
+            _i("Total print time"), _days, _hours, _minutes);  ////c=19 r=1
+        menu_back_if_clicked_fb();
 	}
 }
 
@@ -5936,7 +5851,7 @@ void bowden_menu() {
 	}
 }
 
-//#ifdef SNMM
+#ifdef SNMM
 
 static char snmm_stop_print_menu() { //menu for choosing which filaments will be unloaded in stop print
 	lcd_clear();
@@ -5986,6 +5901,8 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	}
 	
 }
+
+#endif //SNMM
 
 //! @brief Select one of numbered items
 //!
@@ -6649,14 +6566,15 @@ static bool fan_error_selftest()
 void lcd_resume_print()
 {
     lcd_return_to_status();
-    lcd_reset_alert_level();
-    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
     lcd_reset_alert_level(); //for fan speed error
-
     if (fan_error_selftest()) return; //abort if error persists
 
+    lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
+    st_synchronize();
+
+    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
     isPrintPaused = false;
-    restore_print_from_ram_and_continue(0.0);
+    restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
@@ -6795,10 +6713,15 @@ static void lcd_main_menu()
   }
 
 
+  if(isPrintPaused && saved_printing_type == PRINTING_TYPE_USB)
+  {
 #ifdef FANCHECK
-  if((fan_check_error == EFCE_FIXED) && (saved_printing_type == PRINTING_TYPE_USB))
-    MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+      if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+          MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+#else
+      MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 #endif
+  }
 
 #ifdef SDSUPPORT
   if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal)
@@ -6967,6 +6890,60 @@ static void lcd_colorprint_change() {
 	lcd_draw_update = 3;
 }
 
+
+#ifdef LA_LIVE_K
+// @wavexx: looks like there's no generic float editing function in menu.cpp so we
+//          redefine our custom handling functions to mimick other tunables
+const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6S";
+
+static void lcd_advance_draw_K(char chr, float val)
+{
+    if (val <= 0)
+        lcd_printf_P(menu_fmt_float13off, chr, MSG_ADVANCE_K, _T(MSG_OFF));
+    else
+        lcd_printf_P(menu_fmt_float13, chr, MSG_ADVANCE_K, val);
+}
+
+static void lcd_advance_edit_K(void)
+{
+    if (lcd_draw_update)
+    {
+        if (lcd_encoder < 0) lcd_encoder = 0;
+        if (lcd_encoder > 999) lcd_encoder = 999;
+        lcd_set_cursor(0, 1);
+        lcd_advance_draw_K(' ', 0.01 * lcd_encoder);
+    }
+    if (LCD_CLICKED)
+    {
+        extruder_advance_K = 0.01 * lcd_encoder;
+        menu_back_no_reset();
+    }
+}
+
+static uint8_t lcd_advance_K()
+{
+    if (menu_item == menu_line)
+    {
+        if (lcd_draw_update)
+        {
+            lcd_set_cursor(0, menu_row);
+            lcd_advance_draw_K((lcd_encoder == menu_item)?'>':' ', extruder_advance_K);
+        }
+        if (menu_clicked && (lcd_encoder == menu_item))
+        {
+            menu_submenu_no_reset(lcd_advance_edit_K);
+            lcd_encoder = 100. * extruder_advance_K;
+            return menu_item_ret();
+        }
+    }
+    menu_item++;
+    return 0;
+}
+
+#define MENU_ITEM_EDIT_advance_K() do { if (lcd_advance_K()) return; } while (0)
+#endif
+
+
 static void lcd_tune_menu()
 {
 	typedef struct
@@ -7005,8 +6982,11 @@ static void lcd_tune_menu()
 
 	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);//5
 	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);//6////MSG_FLOW
+#ifdef LA_LIVE_K
+	MENU_ITEM_EDIT_advance_K();//7
+#endif
 #ifdef FILAMENTCHANGEENABLE
-	MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//7
+	MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 #endif
 
 #ifdef FILAMENT_SENSOR
@@ -7205,7 +7185,6 @@ void lcd_print_stop()
 
     // Clear any saved printing state
     cancel_saved_printing();
-	cancel_heatup = true;
 
     // Abort the planner/queue/sd
     planner_abort_hard();
@@ -7216,19 +7195,48 @@ void lcd_print_stop()
 
     CRITICAL_SECTION_END;
 
+#ifdef MESH_BED_LEVELING
+    mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
+#endif
+
 	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
 	stoptime = _millis();
 	unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
 	pause_time = 0;
 	save_statistics(total_filament_used, t);
-	lcd_return_to_status();
-	lcd_ignore_click(true);
-	lcd_commands_step = 0;
-	lcd_commands_type = LcdCommands::StopPrint;
-	// Turn off the print fan
-	SET_OUTPUT(FAN_PIN);
-	WRITE(FAN_PIN, 0);
-	fanSpeed = 0;
+
+    lcd_commands_step = 0;
+    lcd_commands_type = LcdCommands::Idle;
+
+    lcd_cooldown(); //turns off heaters and fan; goes to status screen.
+    cancel_heatup = true; //unroll temperature wait loop stack.
+
+    current_position[Z_AXIS] += 10; //lift Z.
+    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60, active_extruder);
+
+    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
+    {
+        current_position[X_AXIS] = X_CANCEL_POS;
+        current_position[Y_AXIS] = Y_CANCEL_POS;
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    }
+    st_synchronize();
+
+    if (mmu_enabled) extr_unload(); //M702 C
+
+    finishAndDisableSteppers(); //M84
+
+    lcd_setstatuspgm(_T(WELCOME_MSG));
+    custom_message_type = CustomMsg::Status;
+
+    planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
+    
+    axis_relative_modes[X_AXIS] = false;
+    axis_relative_modes[Y_AXIS] = false;
+    axis_relative_modes[Z_AXIS] = false;
+    axis_relative_modes[E_AXIS] = true;
+    
+    isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
 }
 
 void lcd_sdcard_stop()
@@ -7420,26 +7428,24 @@ bool lcd_selftest()
 	int _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
+#if IR_SENSOR_ANALOG
+     bool bAction;
+     bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
+     if(!bAction)
+          return(false);
+#endif //IR_SENSOR_ANALOG
 	lcd_wait_for_cool_down();
 	lcd_clear();
 	lcd_set_cursor(0, 0); lcd_puts_P(_i("Self test start  "));////MSG_SELFTEST_START c=20
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-#if !IR_SENSOR_ANALOG
      _delay(2000);
-#endif //!IR_SENSOR_ANALOG
     
     FORCE_BL_ON_START;
     
 	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
-#if IR_SENSOR_ANALOG
-     bool bAction;
-     bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament unloaded?"),false,true);
-     if(!bAction)
-          return(false);
-#endif //IR_SENSOR_ANALOG
 
 	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_0))
