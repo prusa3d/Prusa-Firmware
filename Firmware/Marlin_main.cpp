@@ -9463,7 +9463,7 @@ bool bInhibitFlag;
 			{
 #if IR_SENSOR_ANALOG
                     bool bTemp=current_voltage_raw_IR>14000; // nahradit prumerem @ vicero hodnot
-                    bTemp=bTemp&&(target_temperature[0]==0); // & bed (& dalsi extrudery)
+                    bTemp=bTemp&&(!CHECK_ALL_HEATERS);
                     bTemp=bTemp&&(menu_menu==lcd_status_screen);
                     bTemp=bTemp&&((oFsensorPCB==ClFsensorPCB::_Old)||(oFsensorPCB==ClFsensorPCB::_Undef));
                     bTemp=bTemp&&fsensor_enabled;

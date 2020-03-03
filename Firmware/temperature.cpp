@@ -210,6 +210,14 @@ static void temp_runaway_check(int _heater_id, float _target_temperature, float 
 static void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
+// return "false", if all extruder-heaters are 'off' (ie. "true", if any heater is 'on')
+bool checkAllHotends(void)
+{
+    bool result=false;
+    for(int i=0;i<EXTRUDERS;i++) result=(result||(target_temperature[i]!=0));
+    return(result);
+}
+
   void PID_autotune(float temp, int extruder, int ncycles)
   {
   pid_number_of_cycles = ncycles;
