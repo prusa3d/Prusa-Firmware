@@ -7162,13 +7162,20 @@ static void lcd_control_temperature_menu()
 }
 
 
-#if SDCARDDETECT == -1
+
 static void lcd_sd_refresh()
 {
+#if SDCARDDETECT == -1
   card.initsd();
-  menu_top = 0;
-}
+#else
+  card.presort();
 #endif
+  menu_top = 0;
+  lcd_encoder = 0;
+  lcd_scrollTimer.start();
+  menu_entering = 1;
+}
+
 static void lcd_sd_updir()
 {
   card.updir();
@@ -7304,6 +7311,8 @@ void lcd_sdcard_menu()
   {
 #if SDCARDDETECT == -1
     MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh);
+#else
+	if (card.ToshibaFlashAir_isEnabled()) MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh);
 #endif
   } else {
     MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir);
