@@ -8877,6 +8877,7 @@ void menu_lcd_longpress_func(void)
         || menu_menu == lcd_main_menu
         || menu_menu == lcd_preheat_menu
         || menu_menu == lcd_sdcard_menu
+        || menu_menu == lcd_filename_scroll
         || menu_menu == lcd_settings_menu
         || menu_menu == lcd_control_temperature_menu
 #if (LANG_MODE != 0)
@@ -8884,6 +8885,7 @@ void menu_lcd_longpress_func(void)
 #endif
         || menu_menu == lcd_support_menu
         ){
+			if (menu_menu == lcd_filename_scroll) menu_back();
             move_menu_scale = 1.0;
             menu_submenu(lcd_move_z);
         } else {
