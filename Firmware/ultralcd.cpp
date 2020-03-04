@@ -7231,6 +7231,7 @@ void lcd_sdcard_menu()
 		const char* scrollPointer;
 		uint16_t fileCnt;
 		uint8_t row;
+		uint8_t sdSort;
 		ShortTimer lcd_scrollTimer;
 	} _menu_data_sdcard_t;
 	static_assert(sizeof(menu_data)>= sizeof(_menu_data_sdcard_t),"_menu_data_sdcard_t doesn't fit into menu_data");
@@ -7245,6 +7246,7 @@ void lcd_sdcard_menu()
 				card.presort();
 			}
 			_md->fileCnt = card.getnrfilenames();
+			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 			_md->menuState = 1;
 		} //Begin the first menu state instantly.
 		case 1: //normal menu structure.
@@ -7268,7 +7270,6 @@ void lcd_sdcard_menu()
 			
 			_md->scrollPointer = NULL; //clear scrollPointer. Used for differentiating between a file/dir and another menu item that is selected.
 			
-			const uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 			MENU_BEGIN();
 			MENU_ITEM_BACK_P(_T(bMain?MSG_MAIN:MSG_BACK));  // i.e. default menu-item / menu-item after card insertion
 			card.getWorkDirName();
@@ -7290,7 +7291,7 @@ void lcd_sdcard_menu()
 					
 					//load filename to memory.
 #ifdef SDCARD_SORT_ALPHA
-					if (sdSort == SD_SORT_NONE) card.getfilename(nr);
+					if (_md->sdSort == SD_SORT_NONE) card.getfilename(nr);
 					else card.getfilename_sorted(nr);
 #else
 					card.getfilename(nr);
