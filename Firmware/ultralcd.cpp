@@ -7100,9 +7100,7 @@ static void lcd_sd_refresh()
 #endif
   menu_top = 0;
   lcd_encoder = 0;
-  //todo: clear menu data. Resets sdcard_menu state and timer
-  // lcd_scrollTimer.start();
-  // menu_entering = 1;
+  memset(&menu_data, 0, sizeof(menu_data)); //reset menu state. Forces reloading of cached variables.
 }
 
 static void lcd_sd_updir()
