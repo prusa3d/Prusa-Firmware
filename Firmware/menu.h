@@ -64,7 +64,7 @@ extern uint8_t menu_leaving;
 //function pointer to the currently active menu
 extern menu_func_t menu_menu;
 
-
+extern void menu_data_reset(void);
 
 extern void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state);
 

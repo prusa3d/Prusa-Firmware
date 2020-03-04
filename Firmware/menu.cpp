@@ -39,6 +39,12 @@ menu_func_t menu_menu = 0;
 
 static_assert(sizeof(menu_data)>= sizeof(menu_data_edit_t),"menu_data_edit_t doesn't fit into menu_data");
 
+void menu_data_reset(void)
+{
+	// Resets the global shared C union.
+	// This ensures, that the menu entered will find out, that it shall initialize itself.
+	memset(&menu_data, 0, sizeof(menu_data));
+}
 
 void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state)
 {
@@ -49,11 +55,8 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 		lcd_encoder = encoder;
 		CRITICAL_SECTION_END;
 		if (reset_menu_state)
-		{
-			// Resets the global shared C union.
-			// This ensures, that the menu entered will find out, that it shall initialize itself.
-			memset(&menu_data, 0, sizeof(menu_data));
-		}
+			menu_data_reset();
+
 		if (feedback) lcd_quick_feedback();
 	}
 	else

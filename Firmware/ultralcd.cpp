@@ -7100,7 +7100,7 @@ static void lcd_sd_refresh()
 #endif
   menu_top = 0;
   lcd_encoder = 0;
-  memset(&menu_data, 0, sizeof(menu_data)); //reset menu state. Forces reloading of cached variables.
+  menu_data_reset(); //Forces reloading of cached variables.
 }
 
 static void lcd_sd_updir()
@@ -7108,7 +7108,7 @@ static void lcd_sd_updir()
   card.updir();
   menu_top = 0;
   lcd_encoder = 0;
-  memset(&menu_data, 0, sizeof(menu_data)); //reset menu state. Forces reloading of cached variables.
+  menu_data_reset(); //Forces reloading of cached variables.
 }
 
 void lcd_print_stop()
@@ -8683,7 +8683,7 @@ void menu_action_sddirectory(const char* filename)
 	MYSERIAL.println(dir_names[depth]);
   card.chdir(filename);
   lcd_encoder = 0;
-  memset(&menu_data, 0, sizeof(menu_data)); //reset menu state. Forces reloading of cached variables.
+  menu_data_reset(); //Forces reloading of cached variables.
 }
 
 /** LCD API **/
