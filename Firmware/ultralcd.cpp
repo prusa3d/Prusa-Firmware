@@ -363,19 +363,9 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 {
 	if (menu_item == menu_line)
 	{
-		if (lcd_draw_update/*  || !lcd_scrollTimer.running() */)
+		if (lcd_draw_update)
 		{
-/* 			if (lcd_encoder == menu_item && !lcd_scrollTimer.running())
-			{
-				// lcd_beeper_quick_feedback();
-				_menu_data_sdcard_t* _md = (_menu_data_sdcard_t*)&(menu_data[0]);
-				_md->isDir = 1;
-				_md->row = menu_row;
-				_md->scrollPointer = (str_fnl[0] == '\0') ? str_fn : str_fnl;
-				menu_submenu_scroll(lcd_filename_scroll);
-				return 1; //stop menu generation early
-			}
-			else  */lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
+			lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
