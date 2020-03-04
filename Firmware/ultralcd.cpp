@@ -321,58 +321,6 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
-typedef struct
-{
-	uint8_t offset = 0;
-	bool isDir = 0;
-	uint8_t row = 0;
-	const char* scrollPointer;
-    uint16_t fileCnt;
-} _menu_data_scroll_t;
-static_assert(sizeof(menu_data)>= sizeof(_menu_data_scroll_t),"_menu_data_scroll_t doesn't fit into menu_data");
-
-static void lcd_filename_scroll() //this is a submenu
-{
-	_menu_data_scroll_t* _md = (_menu_data_scroll_t*)&(menu_data[0]);
-	if (menu_entering)
-	{
-		menu_entering = 0; //clear entering flag
-		lcd_scrollTimer.start();
-	}
-	bool rewindFlag = LCD_CLICKED || (lcd_encoder != 0); //go back to sd_menu.
-	if (rewindFlag == 1) _md->offset = 0;
-	if (lcd_scrollTimer.expired(300) || rewindFlag)
-	{
-		uint8_t i = LCD_WIDTH - ((_md->isDir)?2:1);
-		lcd_set_cursor(0, _md->row);
-		lcd_print('>');
-		if (_md->isDir) lcd_print(LCD_STR_FOLDER[0]);
-		for (; i != 0; i--)
-		{
-			char c = *(_md->scrollPointer + _md->offset +((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
-			if (c == '\0')
-			{
-				lcd_scrollTimer.stop();
-				break; //stop at the end of the string
-			}
-			else
-			{
-				lcd_print(c);
-				lcd_scrollTimer.start();
-			}
-		}
-		if (i != 0) //adds spaces if string is incomplete or at the end (instead of null).
-		{
-			lcd_space(i);
-		}
-		_md->offset++;
-	}
-	if (rewindFlag) //go back to sd_menu.
-	{
-		lcd_scrollTimer.start();
-		menu_back_scroll(lcd_encoder);
-	}
-}
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
     char c;
@@ -415,19 +363,19 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 {
 	if (menu_item == menu_line)
 	{
-		if (lcd_draw_update || !lcd_scrollTimer.running())
+		if (lcd_draw_update/*  || !lcd_scrollTimer.running() */)
 		{
-			if (lcd_encoder == menu_item && !lcd_scrollTimer.running())
+/* 			if (lcd_encoder == menu_item && !lcd_scrollTimer.running())
 			{
 				// lcd_beeper_quick_feedback();
-				_menu_data_scroll_t* _md = (_menu_data_scroll_t*)&(menu_data[0]);
+				_menu_data_sdcard_t* _md = (_menu_data_sdcard_t*)&(menu_data[0]);
 				_md->isDir = 1;
 				_md->row = menu_row;
 				_md->scrollPointer = (str_fnl[0] == '\0') ? str_fn : str_fnl;
 				menu_submenu_scroll(lcd_filename_scroll);
 				return 1; //stop menu generation early
 			}
-			else lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
+			else  */lcd_implementation_drawmenu_sddirectory(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
@@ -447,19 +395,9 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 {
 	if (menu_item == menu_line)
 	{
-		if (lcd_draw_update || !lcd_scrollTimer.running())
+		if (lcd_draw_update)
 		{
-			if (lcd_encoder == menu_item && !lcd_scrollTimer.running())
-			{
-				// lcd_beeper_quick_feedback();
-				_menu_data_scroll_t* _md = (_menu_data_scroll_t*)&(menu_data[0]);
-				_md->isDir = 0;
-				_md->row = menu_row;
-				_md->scrollPointer = (str_fnl[0] == '\0') ? str_fn : str_fnl;
-				menu_submenu_scroll(lcd_filename_scroll);
-				return 1;
-			}
-			else lcd_implementation_drawmenu_sdfile(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
+			lcd_implementation_drawmenu_sdfile(menu_row, (str_fnl[0] == '\0') ? str_fn : str_fnl);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
@@ -7172,8 +7110,9 @@ static void lcd_sd_refresh()
 #endif
   menu_top = 0;
   lcd_encoder = 0;
-  lcd_scrollTimer.start();
-  menu_entering = 1;
+  //todo: clear menu data. Resets sdcard_menu state and timer
+  // lcd_scrollTimer.start();
+  // menu_entering = 1;
 }
 
 static void lcd_sd_updir()
@@ -7181,8 +7120,8 @@ static void lcd_sd_updir()
   card.updir();
   menu_top = 0;
   lcd_encoder = 0;
-  lcd_scrollTimer.start();
-  menu_entering = 1;
+  // lcd_scrollTimer.start();
+  // menu_entering = 1;
 }
 
 void lcd_print_stop()
@@ -7284,60 +7223,130 @@ void lcd_sdcard_stop()
 
 void lcd_sdcard_menu()
 {
-  uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
-
-  if (presort_flag == true) {
-	  presort_flag = false;
-	  card.presort();
-	  lcd_scrollTimer.start();
-	  lcd_draw_update = 1;
-  }
-  if (!lcd_scrollTimer.running()) lcd_scrollTimer.start();
-  bool scrollEnter = lcd_scrollTimer.expired(500);
-  if (lcd_draw_update == 0 && LCD_CLICKED == 0 && !scrollEnter && !menu_entering)
-    return; // nothing to do (so don't thrash the SD card)
-  _menu_data_scroll_t* _md = (_menu_data_scroll_t*)&(menu_data[0]);
-  if (menu_entering)
-  {
-    menu_entering = 0; //clear entering flag
-	lcd_draw_update = 1; //draw lines again
-    _md->fileCnt = card.getnrfilenames();
-  }
-  if (!scrollEnter) lcd_scrollTimer.start();
-  MENU_BEGIN();
-  MENU_ITEM_BACK_P(_T(bMain?MSG_MAIN:MSG_BACK));  // i.e. default menu-item / menu-item after card insertion
-  card.getWorkDirName();
-  if (card.filename[0] == '/')
-  {
+	typedef struct
+	{
+		uint8_t menuState = 0; //start as uninitialized
+		uint8_t offset;
+		bool isDir;
+		const char* scrollPointer;
+		uint16_t fileCnt;
+		uint8_t row;
+		ShortTimer lcd_scrollTimer;
+	} _menu_data_sdcard_t;
+	static_assert(sizeof(menu_data)>= sizeof(_menu_data_sdcard_t),"_menu_data_sdcard_t doesn't fit into menu_data");
+	_menu_data_sdcard_t* _md = (_menu_data_sdcard_t*)&(menu_data[0]);
+	
+	switch(_md->menuState)
+	{
+		case 0: //Initialize menu data
+		{
+			if (presort_flag == true) { //used to force resorting if sorting type is changed.
+				presort_flag = false;
+				card.presort();
+			}
+			_md->fileCnt = card.getnrfilenames();
+			_md->menuState = 1;
+		} //Begin the first menu state instantly.
+		case 1: //normal menu structure.
+		{
+			if (!_md->lcd_scrollTimer.running()) //if the timer is not running, then the menu state was just switched, so redraw the screen.
+			{
+				_md->lcd_scrollTimer.start();
+				lcd_draw_update = 1;
+			}
+			if (_md->lcd_scrollTimer.expired(500) && _md->scrollPointer) //switch to the scrolling state on timeout if a file/dir is selected.
+			{
+				_md->menuState = 2;
+				_md->offset = 0;
+				_md->lcd_scrollTimer.start();
+				lcd_draw_update = 1; //forces last load before switching to state:2.
+			}
+			if (lcd_draw_update == 0 && !LCD_CLICKED) return; // nothing to do (so don't thrash the SD card)
+			
+			//if we reached this point it means that the encoder moved or clicked or the state is being switched. Reset the scrollTimer.
+			_md->lcd_scrollTimer.start();
+			
+			_md->scrollPointer = NULL; //clear scrollPointer. Used for differentiating between a file/dir and another menu item that is selected.
+			
+			const uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
+			MENU_BEGIN();
+			MENU_ITEM_BACK_P(_T(bMain?MSG_MAIN:MSG_BACK));  // i.e. default menu-item / menu-item after card insertion
+			card.getWorkDirName();
+			if (card.filename[0] == '/')
+			{
 #if SDCARDDETECT == -1
-    MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh);
+				MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh);
 #else
-	if (card.ToshibaFlashAir_isEnabled()) MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh);
+				if (card.ToshibaFlashAir_isEnabled()) MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh); //show the refresh option if in flashAir mode.
 #endif
-  } else {
-    MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir);
-  }
+			}
+			else MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir); //Show the updir button if in a subdir.
 
-  for (uint16_t i = 0; i < _md->fileCnt; i++)
-  {
-    if (menu_item == menu_line)
-    {
-		const uint16_t nr = _md->fileCnt - 1 - i;
-		#ifdef SDCARD_SORT_ALPHA
-			if (sdSort == SD_SORT_NONE) card.getfilename(nr);
-			else card.getfilename_sorted(nr);
-		#else
-			 card.getfilename(nr);
-		#endif
-		if (card.filenameIsDir)
-			MENU_ITEM_SDDIR(card.filename, card.longFilename);
- 		else
-			MENU_ITEM_SDFILE(card.filename, card.longFilename);
-    } else {
-      MENU_ITEM_DUMMY();
-    }
-  }
-  MENU_END();
+			for (uint16_t i = 0; i < _md->fileCnt; i++) // Every file, from top to bottom.
+			{
+				if (menu_item == menu_line) //If the file is on the screen.
+				{
+					const uint16_t nr = _md->fileCnt - 1 - i; //file index inversion.
+					
+					//load filename to memory.
+#ifdef SDCARD_SORT_ALPHA
+					if (sdSort == SD_SORT_NONE) card.getfilename(nr);
+					else card.getfilename_sorted(nr);
+#else
+					card.getfilename(nr);
+#endif
+					if (lcd_encoder == menu_item) //If the file is selected.
+					{
+						_md->scrollPointer = (card.longFilename[0] == '\0') ? card.filename : card.longFilename;
+						_md->isDir = card.filenameIsDir;
+						_md->row = menu_row;
+						if(_md->menuState == 2) return; //return early if switching states. At this point the selected filename should be loaded into memory.
+					}
+					if (card.filenameIsDir) MENU_ITEM_SDDIR(card.filename, card.longFilename);
+					else MENU_ITEM_SDFILE(card.filename, card.longFilename);
+				}
+				else MENU_ITEM_DUMMY(); //dummy item that just increments the internal menu counters.
+			}
+			MENU_END();
+		} break;
+		case 2: //scrolling filename
+		{
+			const bool rewindFlag = LCD_CLICKED || lcd_draw_update; //flag that says whether the menu should return to state:1.
+			if (rewindFlag == 1) _md->offset = 0; //redraw once again from the beginning.
+			if (_md->lcd_scrollTimer.expired(300) || rewindFlag)
+			{
+				uint8_t i = LCD_WIDTH - ((_md->isDir)?2:1);
+				lcd_set_cursor(0, _md->row);
+				lcd_print('>');
+				if (_md->isDir) lcd_print(LCD_STR_FOLDER[0]);
+				for (; i != 0; i--)
+				{
+					char c = *(_md->scrollPointer + _md->offset +((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
+					if (c == '\0')
+					{
+						_md->lcd_scrollTimer.stop();
+						break; //stop at the end of the string
+					}
+					else
+					{
+						lcd_print(c);
+						_md->lcd_scrollTimer.start();
+					}
+				}
+				if (i != 0) //adds spaces if string is incomplete or at the end (instead of null).
+				{
+					lcd_space(i);
+				}
+				_md->offset++;
+			}
+			if (rewindFlag) //go back to sd_menu.
+			{
+				_md->lcd_scrollTimer.stop(); //forces redraw in state:1
+				_md->menuState = 1;
+			}
+		} break;
+		default: _md->menuState = 0; //shouldn't ever happen. Anyways, initialize the menu.
+	}
 }
 #ifdef TMC2130
 static void lcd_belttest_v()
@@ -8686,8 +8695,8 @@ void menu_action_sddirectory(const char* filename)
 	MYSERIAL.println(dir_names[depth]);
   card.chdir(filename);
   lcd_encoder = 0;
-  lcd_scrollTimer.start();
-  menu_entering = 1;
+  // lcd_scrollTimer.start();
+  // menu_entering = 1;
 }
 
 /** LCD API **/
@@ -8877,7 +8886,6 @@ void menu_lcd_longpress_func(void)
         || menu_menu == lcd_main_menu
         || menu_menu == lcd_preheat_menu
         || menu_menu == lcd_sdcard_menu
-        || menu_menu == lcd_filename_scroll
         || menu_menu == lcd_settings_menu
         || menu_menu == lcd_control_temperature_menu
 #if (LANG_MODE != 0)
@@ -8885,7 +8893,6 @@ void menu_lcd_longpress_func(void)
 #endif
         || menu_menu == lcd_support_menu
         ){
-			if (menu_menu == lcd_filename_scroll) menu_back();
             move_menu_scale = 1.0;
             menu_submenu(lcd_move_z);
         } else {
@@ -8944,8 +8951,6 @@ void menu_lcd_lcdupdate_func(void)
 		{
                if(menu_menu==lcd_sdcard_menu)
                     menu_back();
-               else if (menu_menu==lcd_filename_scroll)
-                    menu_back(2); //back 2 levels. Exit lcd_filename_scroll and lcd sd_card_menu
 			card.release();
 			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED
 		}

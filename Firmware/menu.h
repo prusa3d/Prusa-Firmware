@@ -59,7 +59,6 @@ extern uint8_t menu_top;
 
 extern uint8_t menu_clicked;
 
-extern uint8_t menu_entering;
 extern uint8_t menu_leaving;
 
 //function pointer to the currently active menu
@@ -79,16 +78,12 @@ extern void menu_back(void);
 extern void menu_back_no_reset(void);
 extern void menu_back(uint8_t nLevel);
 
-extern void menu_back_scroll(int scrollback);
-
 extern void menu_back_if_clicked(void);
 
 extern void menu_back_if_clicked_fb(void);
 
 extern void menu_submenu(menu_func_t submenu);
 extern void menu_submenu_no_reset(menu_func_t submenu);
-
-extern void menu_submenu_scroll(menu_func_t submenu);
 
 extern uint8_t menu_item_ret(void);
 

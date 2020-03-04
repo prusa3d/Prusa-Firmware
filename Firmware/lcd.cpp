@@ -645,7 +645,6 @@ lcd_lcdupdate_func_t lcd_lcdupdate_func = 0;
 static ShortTimer buttonBlanking;
 ShortTimer longPressTimer;
 LongTimer lcd_timeoutToStatus;
-ShortTimer lcd_scrollTimer;
 
 
 //! @brief Was button clicked?

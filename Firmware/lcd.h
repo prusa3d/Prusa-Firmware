@@ -102,8 +102,6 @@ extern uint8_t lcd_update_enabled;
 
 extern LongTimer lcd_timeoutToStatus;
 
-extern ShortTimer lcd_scrollTimer;
-
 extern uint32_t lcd_next_update_millis;
 
 extern uint8_t lcd_status_update_delay;
