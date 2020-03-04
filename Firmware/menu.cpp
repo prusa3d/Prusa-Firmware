@@ -42,12 +42,12 @@ static_assert(sizeof(menu_data)>= sizeof(menu_data_edit_t),"menu_data_edit_t doe
 
 void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state)
 {
-	asm("cli");
+	CRITICAL_SECTION_START;
 	if (menu_menu != menu)
 	{
 		menu_menu = menu;
 		lcd_encoder = encoder;
-		asm("sei");
+		CRITICAL_SECTION_END;
 		if (reset_menu_state)
 		{
 			// Resets the global shared C union.
@@ -57,7 +57,7 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 		if (feedback) lcd_quick_feedback();
 	}
 	else
-		asm("sei");
+		CRITICAL_SECTION_END;
 }
 
 void menu_start(void)
