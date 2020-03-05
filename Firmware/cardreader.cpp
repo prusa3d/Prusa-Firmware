@@ -739,7 +739,6 @@ void CardReader::presort() {
 			fileCnt = SDSORT_LIMIT;
 		}
 		lcd_clear();
-		lcd_puts_at_P(0, 1, _i("Sorting files"));////MSG_SORTING c=20 r=1
 
 		// uint32_t positions[fileCnt];
 
@@ -783,6 +782,10 @@ void CardReader::presort() {
 				uint8_t* sortingBaseArray;
 				//run=0: sorts all files and moves folders to the beginning
 				//run=1: assumes all folders are at the beginning of the list and sorts them
+				
+				lcd_set_cursor(0, 1);
+				lcd_printf_P(PSTR("%-20.20S"), (runs == 0)?_i("Sorting files"):_i("Sorting folders"));
+				
 				uint16_t sortCountFiles = 0;
 				if (runs == 0)
 				{
