@@ -3894,9 +3894,6 @@ void lcd_temp_cal_show_result(bool result) {
 	
 	custom_message_type = CustomMsg::Status;
 	finishAndDisableSteppers(); //M84
-	
-    lcd_setstatuspgm(_T(WELCOME_MSG));
-    custom_message_type = CustomMsg::Status;
 	setTargetBed(0); //set bed target temperature back to 0
 
 	if (result == true) {
