@@ -555,6 +555,9 @@ enum CalibrationStatus
 #define MIN_Z_FOR_UNLOAD  20
 #define MIN_Z_FOR_PREHEAT 10
 
+// PINDA temperature drift calibration version. This is used for validating EEPROM data between versions and to allow future improvements to the algorithm.
+#define TEMP_CAL_VERSION 1
+
 #include "Configuration_adv.h"
 #include "thermistortables.h"
 
