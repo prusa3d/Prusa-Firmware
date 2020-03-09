@@ -1439,12 +1439,18 @@ void setup()
 	} else temp_cal_active = eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE);
 
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
-		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
-		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-		temp_compensation_set(0.f, 0.f);
+		temp_compensation_set(); //load defaults
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 		temp_cal_active = false;
 	}
+	if (temp_cal_active && (eeprom_read_byte((uint8_t*)(EEPROM_TEMP_CAL_VERSION)) != TEMP_CAL_VERSION))
+	{
+		lcd_show_fullscreen_message_and_wait_P(_i("Temp. cal. values are outdated. Please run the calibration again.")); ////c=20 r=4
+		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate data
+		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
+		temp_cal_active = false;
+	}
+	
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
 	}
@@ -4754,7 +4760,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		
 		// we will only save quadratic and linear term, absolute is just a matter of choosing zero position
 		temp_compensation_set(grey_pinda ? 0.f : equations[2][3], equations[1][3]);
-		eeprom_update_byte((uint8_t*)(EEPROM_TEMP_CAL_VERSION), TEMP_CAL_VERSION);
 
 		lcd_temp_cal_show_result(true);
 
@@ -8048,12 +8053,10 @@ Sigma_Exit:
 			temp_compensation_print_values();
 		}
 		else if (code_seen('!')) { // ! - Set factory default values
-			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 			temp_compensation_set(); //set defaults
 			SERIAL_PROTOCOLLN("factory restored");
 		}
 		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
-			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 			temp_compensation_set(0.f, 0.f);
 			SERIAL_PROTOCOLLN("zerorized");
 		}
@@ -10410,6 +10413,8 @@ void temp_compensation_set(float quadratic_coefficient, float linear_coefficient
 {
 	eeprom_update_float((float*)(EEPROM_PROBE_TEMP_SHIFT + 0 * sizeof(float)), quadratic_coefficient);
 	eeprom_update_float((float*)(EEPROM_PROBE_TEMP_SHIFT + 1 * sizeof(float)), linear_coefficient);
+	eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1); //validate data
+	eeprom_update_byte((uint8_t*)(EEPROM_TEMP_CAL_VERSION), TEMP_CAL_VERSION);
 }
 
 void temp_compensation_print_values()
