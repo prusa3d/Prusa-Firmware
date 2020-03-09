@@ -9440,10 +9440,14 @@ static void handleSafetyTimer()
 }
 #endif //SAFETYTIMER
 
+#define FS_CHECK_COUNT 15
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
 bool bInhibitFlag;
+#if IR_SENSOR_ANALOG
+static uint8_t nFSCheckCount=0;
+#endif // IR_SENSOR_ANALOG
 
 	if (mmu_enabled == false)
 	{
@@ -9462,18 +9466,25 @@ bool bInhibitFlag;
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
 #if IR_SENSOR_ANALOG
-                    bool bTemp=current_voltage_raw_IR>14000; // nahradit prumerem @ vicero hodnot
+                    bool bTemp=current_voltage_raw_IR>IRsensor_Hmin_TRESHOLD;
+                    bTemp=bTemp&&current_voltage_raw_IR<IRsensor_Hopen_TRESHOLD;
                     bTemp=bTemp&&(!CHECK_ALL_HEATERS);
                     bTemp=bTemp&&(menu_menu==lcd_status_screen);
                     bTemp=bTemp&&((oFsensorPCB==ClFsensorPCB::_Old)||(oFsensorPCB==ClFsensorPCB::_Undef));
                     bTemp=bTemp&&fsensor_enabled;
                     if(bTemp)
                     {
-                         oFsensorPCB=ClFsensorPCB::_Rev03b;
-//                         eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
-                         printf_P(PSTR("Filament sensor board change detected: revision 03b or newer\n"));
-                         lcd_setstatuspgm(_i("FS rev. 03b or newer"));
+                         nFSCheckCount++;
+                         if(nFSCheckCount>FS_CHECK_COUNT)
+                         {
+                              nFSCheckCount=0;    // not necessary
+                              oFsensorPCB=ClFsensorPCB::_Rev03b;
+//                              eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+                              printf_P(PSTR("Filament sensor board change detected: revision 03b or newer\n"));
+                              lcd_setstatuspgm(_i("FS rev. 03b or newer"));
+                         }
                     }
+                    else nFSCheckCount=0;
 #endif // IR_SENSOR_ANALOG
 				if (fsensor_check_autoload())
 				{
