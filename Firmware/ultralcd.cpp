@@ -875,9 +875,9 @@ void lcdui_print_status_line(void)
 			{
 				char statusLine[LCD_WIDTH + 1];
 				sprintf_P(statusLine, PSTR("%-20S"), _T(MSG_TEMP_CALIBRATION));
-				char progress[5];
+				char progress[6];
 				sprintf_P(progress, PSTR("%d/%d"), custom_message_state, max(custom_message_state, 8));
-				memcpy(statusLine + 12, progress, sizeof(progress) - 1);
+				strcpy(statusLine + LCD_WIDTH - strlen(progress) - 1, progress);
 				lcd_set_cursor(0, 3);
 				lcd_print(statusLine);
 			}
