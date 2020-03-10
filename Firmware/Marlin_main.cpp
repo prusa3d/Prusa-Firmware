@@ -4664,7 +4664,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				if (abs(current_position[Z_AXIS]) > 1.f)
 				{
 					SERIAL_ERROR_START;
-					SERIAL_ERRORLNPGM("Out of range.");
+					SERIAL_ERRORLNPGM("Out of range");
 					lcd_temp_cal_show_result(false);
 					success = false;
 				}
@@ -4706,7 +4706,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
 		
-		if (N < 7) success = false; // abort if less than 7 data points were measured
+		if (N < 7)
+		{
+			success = false; // abort if not enough data points were measureds
+			SERIAL_ERROR_START;
+			SERIAL_ERRORLNPGM("Not enough data points");
+		}
 		if (!success) // abort if loop failed.
 		{
 			lcd_temp_cal_show_result(false);
