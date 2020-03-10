@@ -4678,6 +4678,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				
  				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
+				
+				if (timeout > 360) break;
+				
 				current_position[X_AXIS] = PINDA_PREHEAT_X;
 				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 				plan_buffer_line_curposXYZE(homing_feedrate[X_AXIS] / 60, active_extruder);
@@ -4685,7 +4688,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
 				st_synchronize();
 
-				if (timeout > 360) break;
 				counter = 0;
 				timeout = 0;
 				++N;
@@ -4703,8 +4705,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				++timeout;
 		}
 		setTargetBed(0);
-		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
 		
 		if (N < 7)
 		{
