@@ -9479,7 +9479,7 @@ static uint8_t nFSCheckCount=0;
                          {
                               nFSCheckCount=0;    // not necessary
                               oFsensorPCB=ClFsensorPCB::_Rev03b;
-//                              eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+                              eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
                               printf_P(PSTR("Filament sensor board change detected: revision 03b or newer\n"));
                               lcd_setstatuspgm(_i("FS rev. 03b or newer"));
                          }

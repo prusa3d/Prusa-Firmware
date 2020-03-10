@@ -7586,7 +7586,8 @@ bool lcd_selftest()
 	int _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
-#if IR_SENSOR_ANALOG
+//#if IR_SENSOR_ANALOG
+#if (0)
      bool bAction;
      bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
      if(!bAction)
@@ -7598,7 +7599,7 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-     _delay(2000);
+//     _delay(2000);
     
     FORCE_BL_ON_START;
     
@@ -7795,7 +7796,8 @@ bool lcd_selftest()
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //PAT9125
-#if IR_SENSOR_ANALOG
+//#if IR_SENSOR_ANALOG
+#if (0)
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
                _result = lcd_selftest_IRsensor();
 			if (_result)
