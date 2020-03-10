@@ -4643,11 +4643,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				if (N == 0)
 					last_temp = cur_temp_pinda; // so that cooling isnt triggered after initial measurement
 				
-				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+				current_position[Z_AXIS] = max(MESH_HOME_Z_SEARCH, current_position[Z_AXIS]);
 				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
 				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
 				current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
 				plan_buffer_line_curposXYZE(homing_feedrate[X_AXIS] / 60, active_extruder);
+				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
 				st_synchronize();
 				
 				if (find_bed_induction_sensor_point_z(-1.f) == false) {
@@ -4692,7 +4694,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if (counter == 0 && ( cur_temp_pinda > last_temp + 5 || timeout == 360 )) { //raise Z if either the probe heated up 5C higher than last point or 6 minutes pass since last measurement (timeout).
 				counter = 1;
 				if (timeout < 360)    // in case we cannot heat up anymore we can stay where we are to avoid cooling
-					current_position[Z_AXIS] += (cur_temp_pinda <= 35 ? 2 : 1) * exp((63 - cur_temp_pinda) / 10.f); // go twice as high for small temperatures, they heat the probe more easily than the formula predicts
+					current_position[Z_AXIS] += constrain((cur_temp_pinda <= 35 ? 2 : 1) * exp((63 - cur_temp_pinda) / 10.f), 0, Z_MAX_POS / 2); // go twice as high for small temperatures, they heat the probe more easily than the formula predicts
 				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
 				st_synchronize();
 				last_temp = cur_temp_pinda;
