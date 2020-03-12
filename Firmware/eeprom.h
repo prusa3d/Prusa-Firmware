@@ -342,7 +342,6 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 // Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
 #define EEPROM_FIRMWARE_PRUSA_MAGIC 0
 
-
 #ifdef __cplusplus
 #include "ConfigurationStore.h"
 static_assert(EEPROM_FIRMWARE_VERSION_END < 20, "Firmware version EEPROM address conflicts with EEPROM_M500_base");
@@ -369,4 +368,3 @@ void eeprom_switch_to_next_sheet();
 #endif
 
 #endif // EEPROM_H
-
