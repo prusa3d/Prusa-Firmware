@@ -287,6 +287,8 @@ bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
   errorCode_ = type_ = 0;
   chipSelectPin_ = chipSelectPin;
   // 16-bit init start time allows over a minute
+  // However, when considering reinitializing the SD card,
+  // it is necessary to change from 16-bits to 32-bits.
   uint32_t t0 = _millis();
   uint32_t arg;
 
