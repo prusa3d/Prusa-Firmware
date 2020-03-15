@@ -767,6 +767,9 @@ uint8_t Sd2Card::waitStartBlock(void) {
 
 // Toshiba FlashAir support, copied from 
 // https://flashair-developers.com/en/documents/tutorials/arduino/
+// However, the official website was closed in September 2019.
+// There is an archived website (written in Japanese).
+// https://flashair-developers.github.io/website/docs/tutorials/arduino/2.html
 
 //------------------------------------------------------------------------------
 /** Perform Extention Read. */
