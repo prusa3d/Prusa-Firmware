@@ -50,95 +50,93 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 
 
   ---------------------------------------------------------------------------------
+  
+  ## EEPROM Tabel
+  
+| Adress begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Debug code
+| :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:
+| 0x0FFFh 4095		| uchar    	| EEPROM_SILENT 						| 00h 0			| ffh 255				| TMC Stealth mode off / miniRambo Power mode		| D3 Ax0fff C1
+| ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode on / miniRambo Silent mode		| ^ 
+| 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255				| English / LANG_ID_PRI								| D3 Ax0ffe C1 
+| ^ 				| ^ 		| ^										| 01h 1			| ^						| Other language LANG_ID_SEC						| ^ 
+| 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ffh 255				| Babystep for X axis _unsued_						| D3 Ax0ffc C2
+| 0x0FFAh 4090		| uint16	| EEPROM_BABYSTEP_Y						| ???			| ffh 255				| Babystep for Y axis _unsued_						| D3 Ax0ffa C2
+| 0x0FF8h 4088		| uint16	| EEPROM_BABYSTEP_Z						| ???			| ffh 255				| Babystep for Z axis _lagacy_						| D3 Ax0ff8 C2
+| ^ 				| ^ 		| ^										| ^				| ^						| multiple values stored now in EEPROM_Sheets_base	| ^
+| 0x0FF7h 4087		| uint8		| EEPROM_CALIBRATION_STATUS				| 00h 0			| ffh 255				| Unknown											| D3 Ax0ff7 C1
+| ^ 				| ^ 		| ^										| 01h 1			| ^						| Calibrated										| ^
+| ^ 				| ^ 		| ^										| E6h 230		| ^						| needs Live Z adjustment							| ^
+| ^ 				| ^ 		| ^										| F0h 240		| ^						| needs Z calibration								| ^
+| ^ 				| ^ 		| ^										| FAh 250		| ^						| needs XYZ calibration								| ^ 
+| ^ 				| ^ 		| ^										| FFh 255		| ^						| Assbemled _default_								| ^
+| 0x0FF5h 4085		| uint16	| EEPROM_BABYSTEP_Z0					| ???			| ???					| Babystep for Z ???								| D3 Ax0ff5 C2
+| 0x0FF1h 4081		| uint32	| EEPROM_FILAMENTUSED					| ???			| 00h 0					| Filament used in meters							| D3 Ax0ff1 C4
+| 0x0FEDh 4077		| uint32	| EEPROM_TOTALTIME						| ???			| 00h 0					| Total print time									| D3 Ax0fed C4
+| 0x0FE5h 4069		| float		| EEPROM_BED_CALIBRATION_CENTER			| ???			| ???					| ???											 	| D3 Ax0fe5 C8
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| 0x0FDDh 4061		| float		| EEPROM_BED_CALIBRATION_VEC_X			| ???			| ???					| ???											 	| D3 Ax0fdd C8
+| ^					| ^			| ^										| ???			| ???					| ???												| ^	
+| 0x0FD5h 4053		| float		| EEPROM_BED_CALIBRATION_VEC_Y			| ???			| ???					| ???											 	| D3 Ax0fd5 C8
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| 0x0FC5h 4037		| int16		| EEPROM_BED_CALIBRATION_Z_JITTER		| ???			| ???					| ???											 	| D3 Ax0fc5 C16
+| ^					| ^			| ^										| ???			| ???					| ???												| ^	
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| 00h 0					| Prusa farm mode off								| D3 Ax0fc4 C1
+| ^					| ^			| ^										| ???			| ffh 255				| Prusa farm mode on								| ^
+| 0x0FC1h 4033		| int16		| EEPROM_FARM_NUMBER					| ???			| ff ff ffh				| Prusa farm number									| D3 Ax0fc1 C3
+| 0x0FC0h 4032		| bool		| EEPROM_BED_CORRECTION_VALID			| 00h 0			| 00h 0					| Bed correction invalid							| D3 Ax0fc0 C1
+| ^					| ^			| ^										| ffh 255		| 						| Bed correction valid	^							| ^
+| 0x0FBFh 4031		| char		| EEPROM_BED_CORRECTION_LEFT			| 00h FFh		| 00h 0					| Bed manual correction left						| D3 Ax0fbf C1
+| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^
+| 0x0FBEh 4030		| char		| EEPROM_BED_CORRECTION_RIGHT			| 00h FFh		| 00h 0					| Bed manual correction right						| D3 Ax0fbe C1
+| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^
+| 0x0FBDh 4029		| char		| EEPROM_BED_CORRECTION_FRONT			| 00h FFh		| 00h 0					| Bed manual correction front						| D3 Ax0fbd C1
+| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^
+| 0x0FBCh 4028		| char		| EEPROM_BED_CORRECTION_BACK			| 00h FFh		| 00h 0					| Bed manual correction back						| D3 Ax0fbc C1
+| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^
+| 0x0FBBh 4027		| bool		| EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY	| 00h 0			| 00h 0					| Toshiba Air off									| D3 Ax0fbb C1
+| ^					| ^			| ^										| ??? 			| ffh 255				| Toshiba Air oon									| ^	
+| 0x0FBAh 4026		| uchar		| EEPROM_PRINT_FLAG						| ???			| ???					| _unsued_											| D3 Ax0fba C1
+| 0x0FB0h 4016		| int16		| EEPROM_PROBE_TEMP_SHIFT				| ???			| ???					| ???												| D3 Ax0fb0 C10
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^
+| 0x0FAFh 4015		| bool		| EEPROM_TEMP_CAL_ACTIVE				| 00h 0			| 00h 0					| PINDA Temp cal. inactive							| D3 Ax0faf C1
+| ^					| ^			| ^										| ffh 255		| ^						| PINDA Temp cal. active							| ^
+| 0x0FA7h 4007		| uint32	| EEPROM_BOWDEN_LENGTH					| ???			| ff 00 ff ffh			| Bowden length										| D3 Ax0fae C8
+| ^					| ^			| ^										| ???			| ff ff ff ffh			| ^													| ^
+| 0x0FA6h 4006		| uint8		| EEPROM_CALIBRATION_STATUS_PINDA		| 00h 0			| ffh 255				| PINDA Temp not calibrated							| D3 Ax0fa6 C1
+| ^					| ^			| ^										| 01h 1			| ^						| PINDA Temp calibrated								| ^
+| 0x0FA5h 4005		| uint8		| EEPROM_UVLO							| 00h 0			| ffh 255				| Power Panic flag inactive 						| D3 Ax0fa5 C1
+| ^					| ^			| ^										| 01h 1			| ^						| Power Panic flag active							| ^
+| ^					| ^			| ^										| 02h 2			| ^						| Power Panic flag ???								| ^
+| 0x0F9Dh 3997		| float		| EEPROM_UVLO_CURRENT_POSITION			| ???			| ffh 255				| Power Panic position 								| D3 Ax0f9d C8
+| ^					| ^			| ^										| ???			| ^						| ^													| ^
+| 0x0F95h 3989		| char		| EEPROM_FILENAME						| ???			| ffh 255				| Power Panic Filename 								| D3 Ax0f95 C8
+| ^					| ^			| ^										| ???			| ^						| ^													| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^
+| 0x0F91h 39851		| unit32	| EEPROM_FILE_POSITION					| ???			| ff ff ff ffh			| Power Panic File Postion 							| D3 Ax0f91 C4
+| 0x0F8Dh 3981		| float		| EEPROM_UVLO_CURRENT_POSITION_Z		| ???			| ff ff ff ffh			| Power Panic Z Position	 						| D3 Ax0f8d C4
+| 0x0F8Ch 3980		| ???		| EEPROM_UVLO_UNUSED_001				| ??? 			| ffh 255				| Power Panic UNUSED 								| D3 Ax0f8c C1
+| 0x0F8Bh 3979		| uint8		| EEPROM_UVLO_TARGET_BED				| ???			| ffh 255				| Power Panic Bed temperature						| D3 Ax0f8b C1
+| 0x0F89h 3977		| uint16	| EEPROM_UVLO_FEEDRATE					| ???			| ff ffh 65535			| Power Panic Feedrate								| D3 Ax0f89 C2
+| 0x0F88h 3976		| uint8		| EEPROM_UVLO_FAN_SPEED					| ???			| ffh 255				| Power Panic Fan speed								| D3 Ax0f88 C1
+| 0x0F87h 3975		| uint8		| EEPROM_FAN_CHECK_ENABLED				| 00h 0			| ???					| Fan Check disabled								| D3 Ax0f87 C1
+| ^					| ^			| ^										| 01h 1			| ffh 255				| Fan Check enabled (exception ffh=01h)				| ^
 
-<table>
-<caption id="multi_row">EEPROM Table</caption>
-<tr>            <th>Adress begin     		<th>Bit/Type		<th>Name										<th>Valid values		<th>Default/FactoryReset<th>Description												<th>Debug code
-<tr><td rowspan="3">0x0FFFh 4095<td rowspan="3">uchar<td rowspan="3">EEPROM_SILENT								<td>00h 0	<td rowspan="3">???					<td>TMC Stealth mode off / miniRambo Power mode	<td rowspan="3">D3 Ax0fff C1
-<tr>																											<td>01h 1										<td>TMC Stealth mode on / miniRambo Silent mode	
-<tr>																											<td>02h 2										<td>Auto mode		
-<tr><td rowspan="2">0x0FFEh 4094<td rowspan="2">uchar<td rowspan="2">EEPROM_LANG								<td>00h 0	<td rowspan="2">00h 0				<td>English / LANG_ID_PRI						<td rowspan="2">D3 Ax0ffe C1
-<tr>																											<td>01h 1										<td>Other language LANG_ID_SEC
-<tr><td rowspan="1">0x0FFCh 4092			<td>uint16			<td>EEPROM_BABYSTEP_X							<td>???					<td>ffh 255				<td>Babystep for X axis _unsued_							<td>D3 Ax0ffc C2
-<tr><td rowspan="1">0x0FFAh 4090			<td>uint16			<td>EEPROM_BABYSTEP_Y							<td>???					<td>ffh 222				<td>Babystep for Y axis _unsued_							<td>D3 Ax0ffa C2
-<tr><td rowspan="2">0x0FF8h 4088<td rowspan="2">uint16<td rowspan="2">EEPROM_BABYSTEP_Z				<td rowspan="2">???		<td rowspan="2">ffh 255				<td>Babystep for Z axis _lagacy_				<td rowspan="2">D3 Ax0ff8 C2
-<tr>																																							<td>multiple values stored now in EEPROM_Sheets_base
-<tr><td rowspan="6">0x0FF7h 4087<td rowspan="6">uint8<td rowspan="6">EEPROM_CALIBRATION_STATUS					<td>00h 0	<td rowspan="6">ffh 255				<td>Unknown										<td rowspan="6">D3 Ax0ff7 C1
-<tr>																											<td>01h 1										<td>Calibrated
-<tr>																											<td>E6h 230										<td>needs Live Z adjustment
-<tr>																											<td>F0h 240										<td>needs Z calibration
-<tr>																											<td>FAh 250										<td>needs XYZ calibration 
-<tr>																											<td>FFh 255										<td>Assbemled _default_
-<tr><td rowspan="1">0x0FF5h 4085			<td>uint16			<td>EEPROM_BABYSTEP_Z0							<td>???					<td>???					<td>Babystep for Z ???										<td>D3 Ax0ff5 C2
-<tr><td rowspan="1">0x0FF1h 4081			<td>uint32			<td>EEPROM_FILAMENTUSED							<td>???					<td>00h 0				<td>Filament used in meters									<td>D3 Ax0ff1 C4
-<tr><td rowspan="1">0x0FEDh 4077			<td>uint32			<td>EEPROM_TOTALTIME							<td>???					<td>00h 0				<td>Total print time										<td>D3 Ax0fed C4
-<tr><td rowspan="2">0x0FE5h 4069<td rowspan="2">float<td rowspan="2">EEPROM_BED_CALIBRATION_CENTER	<td rowspan="2">???		<td rowspan="2">???					<td>???											 <td rowspan="2">D3 Ax0fe5 C8
-<tr>																																							<td>???
-<tr><td rowspan="2">0x0FDDh 4061<td rowspan="2">float<td rowspan="2">EEPROM_BED_CALIBRATION_VEC_X	<td rowspan="2">???		<td rowspan="2">???					<td>???											 <td rowspan="2">D3 Ax0fdd C8
-<tr>																																							<td>???
-<tr><td rowspan="2">0x0FD5h 4053<td rowspan="2">float<td rowspan="2">EEPROM_BED_CALIBRATION_VEC_Y	<td rowspan="2">???		<td rowspan="2">???					<td>???											 <td rowspan="2">D3 Ax0fd5 C8
-<tr>																																							<td>???
-<tr><td rowspan="8">0x0FC5h 4037<td rowspan="8">int16<td rowspan="8">EEPROM_BED_CALIBRATION_Z_JITTER<td rowspan="8">???		<td rowspan="8">???					<td>???											 <td rowspan="8">D3 Ax0fc5 C16
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr><td rowspan="2">0x0FC4h 4036<td rowspan="2">bool<td rowspan="2">EEPROM_FARM_MODE							<td>00h 0	<td rowspan="2">00h 0				<td>Prusa farm mode off							<td rowspan="2">D3 Ax0fc4 C1
-<tr>																											<td>ffh 255										<td>Prusa farm mode on
-<tr><td rowspan="1">0x0FC1h 4033			<td>int16			<td>EEPROM_FARM_NUMBER							<td>???					<td>ff ff ffh			<td>Prusa farm number										<td>D3 Ax0fc1 C3
-<tr><td rowspan="2">0x0FC0h 4032<td rowspan="2">bool<td rowspan="2">EEPROM_BED_CORRECTION_VALID					<td>00h 0	<td rowspan="2">00h 0				<td>Bed correction invalid						<td rowspan="2">D3 Ax0fc0 C1
-<tr>																											<td>ffh 255										<td>Bed correction valid
-<tr><td rowspan="2">0x0FBFh 4031<td rowspan="2">char<td rowspan="2">EEPROM_BED_CORRECTION_LEFT		<td rowspan="2">00h FFh	<td rowspan="2">00h 0				<td>Bed manual correction left					<td rowspan="2">D3 Ax0fbf C1
-<tr>																																							<td>At this moment limited to +-100um
-<tr><td rowspan="2">0x0FBEh 4030<td rowspan="2">char<td rowspan="2">EEPROM_BED_CORRECTION_RIGHT		<td rowspan="2">00h FFh	<td rowspan="2">00h 0				<td>Bed manual correction right					<td rowspan="2">D3 Ax0fbe C1
-<tr>																																							<td>At this moment limited to +-100um
-<tr><td rowspan="2">0x0FBDh 4029<td rowspan="2">char<td rowspan="2">EEPROM_BED_CORRECTION_FRONT		<td rowspan="2">00h FFh	<td rowspan="2">00h 0				<td>Bed manual correction front					<td rowspan="2">D3 Ax0fbd C1
-<tr>																																							<td>At this moment limited to +-100um
-<tr><td rowspan="2">0x0FBCh 4028<td rowspan="2">char<td rowspan="2">EEPROM_BED_CORRECTION_BACK		<td rowspan="2">00h FFh	<td rowspan="2">00h 0				<td>Bed manual correction back					<td rowspan="2">D3 Ax0fbc C1
-<tr>																																							<td>At this moment limited to +-100um
-<tr><td rowspan="2">0x0FBBh 4027<td rowspan="2">bool<td rowspan="2">EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY		<td>00h 0		<td rowspan="2">00h 0			<td>Toshiba Air off								<td rowspan="2">D3 Ax0fbb C1
-<tr>																											<td>ffh 255										<td>Toshiba Air oon
-<tr><td rowspan="1">0x0FBAh 4026			<td>uchar			<td>EEPROM_PRINT_FLAG							<td>???					<td>???					<td>_unsued_												<td>D3 Ax0fba C1
-<tr><td rowspan="5">0x0FB0h 4016<td rowspan="5">int16<td rowspan="5">EEPROM_PROBE_TEMP_SHIFT		<td rowspan="5">???		<td rowspan="5">???					<td>???											<td rowspan="5">D3 Ax0fb0 C10
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr>																																							<td>???
-<tr><td rowspan="2">0x0FAFh 4015<td rowspan="2">bool<td rowspan="2">EEPROM_TEMP_CAL_ACTIVE						<td>00h 0	<td rowspan="2">00h 0				<td>PINDA Temp cal. inactive					<td rowspan="2">D3 Ax0faf C1
-<tr>																											<td>FFh 255										<td>PINDA Temp cal. active
-<tr><td rowspan="2">0x0FA7h 4007<td rowspan="2">uint32<td rowspan="2">EEPROM_BOWDEN_LENGTH			<td rowspan="2">???		<td>ff 00 ff ffh					<td rowspan="2">Bowden length					<td rowspan="2">D3 Ax0fae C8
-<tr>																														<td>ff ff ff ffh
-<tr><td rowspan="2">0x0FA6h 4006<td rowspan="2">uint8<td rowspan="2">EEPROM_CALIBRATION_STATUS_PINDA			<td>00h 0	<td rowspan="2">ffh 255				<td>PINDA Temp not calibrated					<td rowspan="2">D3 Ax0fa6 C1
-<tr>																											<td>01h 1										<td>PINDA Temp calibrated
-<tr><td rowspan="3">0x0FA5h 4005<td rowspan="3">uint8<td rowspan="3">EEPROM_UVLO								<td>00h 0	<td rowspan="3">ffh 255				<td>Power Panic flag inactive 					<td rowspan="3">D3 Ax0fa5 C1
-<tr>																											<td>01h 1										<td>Power Panic flag active
-<tr>																											<td>02h 2										<td>Power Panic flag ???
-<tr><td rowspan="2">0x0F9Dh 3997<td rowspan="2">float<td rowspan="2">EEPROM_UVLO_CURRENT_POSITION				<td>???		<td rowspan="2">ffh 255	<td rowspan="2">Power Panic position 						<td rowspan="2">D3 Ax0f9d C8
-<tr>																											<td>???
-<tr><td rowspan="8">0x0F95h 3989<td rowspan="8">char<td rowspan="8">EEPROM_FILENAME								<td>???		<td rowspan="8">ffh 255	<td rowspan="8">Power Panic Filename 						<td rowspan="8">D3 Ax0f95 C8
-<tr>																											<td>???
-<tr>																											<td>???
-<tr>																											<td>???
-<tr>																											<td>???
-<tr>																											<td>???
-<tr>																											<td>???
-<tr>																											<td>???
-<tr>			<td>0x0F91h 39851			<td>unit32			<td>EEPROM_FILE_POSITION						<td>???		<td>ff ff ff ffh					<td>Power Panic File Postion 								<td>D3 Ax0f91 C4
-<tr>			<td>0x0F8Dh 3981			<td>float			<td>EEPROM_UVLO_CURRENT_POSITION_Z				<td>???		<td>ff ff ff ffh					<td>Power Panic Z Position	 								<td>D3 Ax0f8d C4
-<tr><td rowspan="1">0x0F8Ch 3980<td rowspan="1">???<td rowspan="1">EEPROM_UVLO_UNUSED_001						<td>??? 	<td rowspan="1">ffh 255	<td rowspan="1">Power Panic UNUSED 							<td rowspan="1">D3 Ax0f8c C1
-<tr><td rowspan="1">0x0F8Bh 3979<td rowspan="1">uint8<td rowspan="1">EEPROM_UVLO_TARGET_BED						<td>???		<td rowspan="1">ffh 255				<td>Power Panic Bed temperature					<td rowspan="1">D3 Ax0f8b C1
-<tr><td rowspan="1">0x0F89h 3977<td rowspan="1">uint16<td rowspan="1">EEPROM_UVLO_FEEDRATE						<td>???		<td rowspan="1">ff ffh 65535		<td>Power Panic Feedrate						<td rowspan="1">D3 Ax0f89 C2
-<tr><td rowspan="1">0x0F88h 3976<td rowspan="1">uint8<td rowspan="1">EEPROM_UVLO_FAN_SPEED						<td>???		<td rowspan="1">ffh 255				<td>Power Panic Fan speed						<td rowspan="1">D3 Ax0f88 C1
-<tr><td rowspan="2">0x0F87h 3975<td rowspan="2">uint8<td rowspan="2">EEPROM_FAN_CHECK_ENABLED					<td>00h 0				<td>					<td>Fan Check disabled							<td rowspan="2">D3 Ax0f87 C1
-<tr>																											<td>01h 1				<td>ffh 255				<td>Fan Check enabled (exception ffh=01h)
 
-
-</table>
-*/
-
+ */
 #define EEPROM_EMPTY_VALUE 0xFF
 #define EEPROM_EMPTY_VALUE16 0xFFFF
 // The total size of the EEPROM is
