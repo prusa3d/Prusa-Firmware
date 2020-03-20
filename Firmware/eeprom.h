@@ -53,90 +53,124 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   
   ## EEPROM Tabel
   
-| Adress begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Debug code
-| :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:
-| 0x0FFFh 4095		| uchar    	| EEPROM_SILENT 						| 00h 0			| ffh 255				| TMC Stealth mode off / miniRambo Power mode		| D3 Ax0fff C1
-| ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode on / miniRambo Silent mode		| ^ 
-| 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255				| English / LANG_ID_PRI								| D3 Ax0ffe C1 
-| ^ 				| ^ 		| ^										| 01h 1			| ^						| Other language LANG_ID_SEC						| ^ 
-| 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ffh 255				| Babystep for X axis _unsued_						| D3 Ax0ffc C2
-| 0x0FFAh 4090		| uint16	| EEPROM_BABYSTEP_Y						| ???			| ffh 255				| Babystep for Y axis _unsued_						| D3 Ax0ffa C2
-| 0x0FF8h 4088		| uint16	| EEPROM_BABYSTEP_Z						| ???			| ffh 255				| Babystep for Z axis _lagacy_						| D3 Ax0ff8 C2
-| ^ 				| ^ 		| ^										| ^				| ^						| multiple values stored now in EEPROM_Sheets_base	| ^
-| 0x0FF7h 4087		| uint8		| EEPROM_CALIBRATION_STATUS				| 00h 0			| ffh 255				| Unknown											| D3 Ax0ff7 C1
-| ^ 				| ^ 		| ^										| 01h 1			| ^						| Calibrated										| ^
-| ^ 				| ^ 		| ^										| E6h 230		| ^						| needs Live Z adjustment							| ^
-| ^ 				| ^ 		| ^										| F0h 240		| ^						| needs Z calibration								| ^
-| ^ 				| ^ 		| ^										| FAh 250		| ^						| needs XYZ calibration								| ^ 
-| ^ 				| ^ 		| ^										| FFh 255		| ^						| Assbemled _default_								| ^
-| 0x0FF5h 4085		| uint16	| EEPROM_BABYSTEP_Z0					| ???			| ???					| Babystep for Z ???								| D3 Ax0ff5 C2
-| 0x0FF1h 4081		| uint32	| EEPROM_FILAMENTUSED					| ???			| 00h 0					| Filament used in meters							| D3 Ax0ff1 C4
-| 0x0FEDh 4077		| uint32	| EEPROM_TOTALTIME						| ???			| 00h 0					| Total print time									| D3 Ax0fed C4
-| 0x0FE5h 4069		| float		| EEPROM_BED_CALIBRATION_CENTER			| ???			| ???					| ???											 	| D3 Ax0fe5 C8
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| 0x0FDDh 4061		| float		| EEPROM_BED_CALIBRATION_VEC_X			| ???			| ???					| ???											 	| D3 Ax0fdd C8
-| ^					| ^			| ^										| ???			| ???					| ???												| ^	
-| 0x0FD5h 4053		| float		| EEPROM_BED_CALIBRATION_VEC_Y			| ???			| ???					| ???											 	| D3 Ax0fd5 C8
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| 0x0FC5h 4037		| int16		| EEPROM_BED_CALIBRATION_Z_JITTER		| ???			| ???					| ???											 	| D3 Ax0fc5 C16
-| ^					| ^			| ^										| ???			| ???					| ???												| ^	
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| 00h 0					| Prusa farm mode off								| D3 Ax0fc4 C1
-| ^					| ^			| ^										| ???			| ffh 255				| Prusa farm mode on								| ^
-| 0x0FC1h 4033		| int16		| EEPROM_FARM_NUMBER					| ???			| ff ff ffh				| Prusa farm number									| D3 Ax0fc1 C3
-| 0x0FC0h 4032		| bool		| EEPROM_BED_CORRECTION_VALID			| 00h 0			| 00h 0					| Bed correction invalid							| D3 Ax0fc0 C1
-| ^					| ^			| ^										| ffh 255		| 						| Bed correction valid	^							| ^
-| 0x0FBFh 4031		| char		| EEPROM_BED_CORRECTION_LEFT			| 00h FFh		| 00h 0					| Bed manual correction left						| D3 Ax0fbf C1
-| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^
-| 0x0FBEh 4030		| char		| EEPROM_BED_CORRECTION_RIGHT			| 00h FFh		| 00h 0					| Bed manual correction right						| D3 Ax0fbe C1
-| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^
-| 0x0FBDh 4029		| char		| EEPROM_BED_CORRECTION_FRONT			| 00h FFh		| 00h 0					| Bed manual correction front						| D3 Ax0fbd C1
-| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^
-| 0x0FBCh 4028		| char		| EEPROM_BED_CORRECTION_BACK			| 00h FFh		| 00h 0					| Bed manual correction back						| D3 Ax0fbc C1
-| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^
-| 0x0FBBh 4027		| bool		| EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY	| 00h 0			| 00h 0					| Toshiba Air off									| D3 Ax0fbb C1
-| ^					| ^			| ^										| ??? 			| ffh 255				| Toshiba Air oon									| ^	
-| 0x0FBAh 4026		| uchar		| EEPROM_PRINT_FLAG						| ???			| ???					| _unsued_											| D3 Ax0fba C1
-| 0x0FB0h 4016		| int16		| EEPROM_PROBE_TEMP_SHIFT				| ???			| ???					| ???												| D3 Ax0fb0 C10
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^
-| 0x0FAFh 4015		| bool		| EEPROM_TEMP_CAL_ACTIVE				| 00h 0			| 00h 0					| PINDA Temp cal. inactive							| D3 Ax0faf C1
-| ^					| ^			| ^										| ffh 255		| ^						| PINDA Temp cal. active							| ^
-| 0x0FA7h 4007		| uint32	| EEPROM_BOWDEN_LENGTH					| ???			| ff 00 ff ffh			| Bowden length										| D3 Ax0fae C8
-| ^					| ^			| ^										| ???			| ff ff ff ffh			| ^													| ^
-| 0x0FA6h 4006		| uint8		| EEPROM_CALIBRATION_STATUS_PINDA		| 00h 0			| ffh 255				| PINDA Temp not calibrated							| D3 Ax0fa6 C1
-| ^					| ^			| ^										| 01h 1			| ^						| PINDA Temp calibrated								| ^
-| 0x0FA5h 4005		| uint8		| EEPROM_UVLO							| 00h 0			| ffh 255				| Power Panic flag inactive 						| D3 Ax0fa5 C1
-| ^					| ^			| ^										| 01h 1			| ^						| Power Panic flag active							| ^
-| ^					| ^			| ^										| 02h 2			| ^						| Power Panic flag ???								| ^
-| 0x0F9Dh 3997		| float		| EEPROM_UVLO_CURRENT_POSITION			| ???			| ffh 255				| Power Panic position 								| D3 Ax0f9d C8
-| ^					| ^			| ^										| ???			| ^						| ^													| ^
-| 0x0F95h 3989		| char		| EEPROM_FILENAME						| ???			| ffh 255				| Power Panic Filename 								| D3 Ax0f95 C8
-| ^					| ^			| ^										| ???			| ^						| ^													| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^
-| 0x0F91h 39851		| unit32	| EEPROM_FILE_POSITION					| ???			| ff ff ff ffh			| Power Panic File Postion 							| D3 Ax0f91 C4
-| 0x0F8Dh 3981		| float		| EEPROM_UVLO_CURRENT_POSITION_Z		| ???			| ff ff ff ffh			| Power Panic Z Position	 						| D3 Ax0f8d C4
-| 0x0F8Ch 3980		| ???		| EEPROM_UVLO_UNUSED_001				| ??? 			| ffh 255				| Power Panic UNUSED 								| D3 Ax0f8c C1
-| 0x0F8Bh 3979		| uint8		| EEPROM_UVLO_TARGET_BED				| ???			| ffh 255				| Power Panic Bed temperature						| D3 Ax0f8b C1
-| 0x0F89h 3977		| uint16	| EEPROM_UVLO_FEEDRATE					| ???			| ff ffh 65535			| Power Panic Feedrate								| D3 Ax0f89 C2
-| 0x0F88h 3976		| uint8		| EEPROM_UVLO_FAN_SPEED					| ???			| ffh 255				| Power Panic Fan speed								| D3 Ax0f88 C1
-| 0x0F87h 3975		| uint8		| EEPROM_FAN_CHECK_ENABLED				| 00h 0			| ???					| Fan Check disabled								| D3 Ax0f87 C1
-| ^					| ^			| ^										| 01h 1			| ffh 255				| Fan Check enabled (exception ffh=01h)				| ^
-
-
- */
+| Adress begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
+| :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
+| 0x0FFFh 4095		| uchar    	| EEPROM_SILENT 						| 00h 0			| ffh 255				| TMC Stealth mode off / miniRambo Power mode		| LCD menu		| D3 Ax0fff C1
+| ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode on / miniRambo Silent mode		| ^				| ^ 
+| 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255				| English / LANG_ID_PRI								| LCD menu		| D3 Ax0ffe C1 
+| ^ 				| ^ 		| ^										| 01h 1			| ^						| Other language LANG_ID_SEC						| ^ 			| ^
+| 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ffh 255				| Babystep for X axis _unsued_						| ??? 			| D3 Ax0ffc C2
+| 0x0FFAh 4090		| uint16	| EEPROM_BABYSTEP_Y						| ???			| ffh 255				| Babystep for Y axis _unsued_						| ^ 			| D3 Ax0ffa C2
+| 0x0FF8h 4088		| uint16	| EEPROM_BABYSTEP_Z						| ???			| ffh 255				| Babystep for Z axis _lagacy_						| ^ 			| D3 Ax0ff8 C2
+| ^ 				| ^ 		| ^										| ^				| ^						| multiple values stored now in EEPROM_Sheets_base	| ^ 			| ^
+| 0x0FF7h 4087		| uint8		| EEPROM_CALIBRATION_STATUS				| 00h 0			| ffh 255				| Unknown											| ??? 			| D3 Ax0ff7 C1
+| ^ 				| ^ 		| ^										| 01h 1			| ^						| Calibrated										| ^ 			| ^
+| ^ 				| ^ 		| ^										| E6h 230		| ^						| needs Live Z adjustment							| ^ 			| ^
+| ^ 				| ^ 		| ^										| F0h 240		| ^						| needs Z calibration								| ^ 			| ^
+| ^ 				| ^ 		| ^										| FAh 250		| ^						| needs XYZ calibration								| ^ 			| ^ 
+| ^ 				| ^ 		| ^										| FFh 255		| ^						| Assbemled _default_								| ^ 			| ^
+| 0x0FF5h 4085		| uint16	| EEPROM_BABYSTEP_Z0					| ???			| ???					| Babystep for Z ???								| ??? 			| D3 Ax0ff5 C2
+| 0x0FF1h 4081		| uint32	| EEPROM_FILAMENTUSED					| ???			| 00h 0					| Filament used in meters							| ??? 			| D3 Ax0ff1 C4
+| 0x0FEDh 4077		| uint32	| EEPROM_TOTALTIME						| ???			| 00h 0					| Total print time									| ??? 			| D3 Ax0fed C4
+| 0x0FE5h 4069		| float		| EEPROM_BED_CALIBRATION_CENTER			| ???			| ???					| ???											 	| ??? 			| D3 Ax0fe5 C8
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| 0x0FDDh 4061		| float		| EEPROM_BED_CALIBRATION_VEC_X			| ???			| ???					| ???											 	| ??? 			| D3 Ax0fdd C8
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^	
+| 0x0FD5h 4053		| float		| EEPROM_BED_CALIBRATION_VEC_Y			| ???			| ???					| ???											 	| ??? 			| D3 Ax0fd5 C8
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| 0x0FC5h 4037		| int16		| EEPROM_BED_CALIBRATION_Z_JITTER		| ???			| ???					| ???											 	| ??? 			| D3 Ax0fc5 C16
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^	
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| ffh 255				| Prusa farm mode off								| G99 			| D3 Ax0fc4 C1
+| ^					| ^			| ^										| 01h 1			| ^						| Prusa farm mode on								| G98			| ^
+| 0x0FC1h 4033		| int16		| EEPROM_FARM_NUMBER					| ???			| ff ff ffh				| Prusa farm number									| ??? 			| D3 Ax0fc1 C3
+| 0x0FC0h 4032		| bool		| EEPROM_BED_CORRECTION_VALID			| 00h 0			| 00h 0					| Bed correction invalid							| ??? 			| D3 Ax0fc0 C1
+| ^					| ^			| ^										| ffh 255		| 						| Bed correction valid	^							| ??? 			| ^
+| 0x0FBFh 4031		| char		| EEPROM_BED_CORRECTION_LEFT			| 00h FFh		| 00h 0					| Bed manual correction left						| LCD menu 		| D3 Ax0fbf C1
+| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^ 			| ^
+| 0x0FBEh 4030		| char		| EEPROM_BED_CORRECTION_RIGHT			| 00h FFh		| 00h 0					| Bed manual correction right						| LCD menu 		| D3 Ax0fbe C1
+| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^ 			| ^
+| 0x0FBDh 4029		| char		| EEPROM_BED_CORRECTION_FRONT			| 00h FFh		| 00h 0					| Bed manual correction front						| LCD menu 		| D3 Ax0fbd C1
+| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^ 			| ^
+| 0x0FBCh 4028		| char		| EEPROM_BED_CORRECTION_BACK			| 00h FFh		| 00h 0					| Bed manual correction back						| LCD menu 		| D3 Ax0fbc C1
+| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| ^ 			| ^
+| 0x0FBBh 4027		| bool		| EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY	| 00h 0			| 00h 0					| Toshiba Air off									| LCD menu 		| D3 Ax0fbb C1
+| ^					| ^			| ^										| ??? 			| ffh 255				| Toshiba Air oon									| ^ 			| ^	
+| 0x0FBAh 4026		| uchar		| EEPROM_PRINT_FLAG						| ???			| ???					| _unsued_											| ??? 			| D3 Ax0fba C1
+| 0x0FB0h 4016		| int16		| EEPROM_PROBE_TEMP_SHIFT				| ???			| ???					| ???												| ??? 			| D3 Ax0fb0 C10
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| 0x0FAFh 4015		| bool		| EEPROM_TEMP_CAL_ACTIVE				| 00h 0			| 00h 0					| PINDA Temp cal. inactive							| LCD menu		| D3 Ax0faf C1
+| ^					| ^			| ^										| ffh 255		| ^						| PINDA Temp cal. active							| ^ 			| ^
+| 0x0FA7h 4007		| uint32	| EEPROM_BOWDEN_LENGTH					| ???			| ff 00 ff ffh			| Bowden length										| ??? 			| D3 Ax0fae C8
+| ^					| ^			| ^										| ???			| ff ff ff ffh			| ^													| ^ 			| ^
+| 0x0FA6h 4006		| uint8		| EEPROM_CALIBRATION_STATUS_PINDA		| 00h 0			| ffh 255				| PINDA Temp not calibrated							| ??? 			| D3 Ax0fa6 C1
+| ^					| ^			| ^										| 01h 1			| ^						| PINDA Temp calibrated								| ^ 			| ^
+| 0x0FA5h 4005		| uint8		| EEPROM_UVLO							| 00h 0			| ffh 255				| Power Panic flag inactive 						| ??? 			| D3 Ax0fa5 C1
+| ^					| ^			| ^										| 01h 1			| ^						| Power Panic flag active							| ^ 			| ^
+| ^					| ^			| ^										| 02h 2			| ^						| Power Panic flag ???								| ^ 			| ^
+| 0x0F9Dh 3997		| float		| EEPROM_UVLO_CURRENT_POSITION			| ???			| ffh 255				| Power Panic position 								| ??? 			| D3 Ax0f9d C8
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| 0x0F95h 3989		| char		| EEPROM_FILENAME						| ???			| ffh 255				| Power Panic Filename 								| ??? 			| D3 Ax0f95 C8
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| 0x0F91h 39851		| uint32	| EEPROM_FILE_POSITION					| ???			| ff ff ff ffh			| Power Panic File Postion 							| ??? 			| D3 Ax0f91 C4
+| 0x0F8Dh 3981		| float		| EEPROM_UVLO_CURRENT_POSITION_Z		| ???			| ff ff ff ffh			| Power Panic Z Position	 						| ^ 			| D3 Ax0f8d C4
+| 0x0F8Ch 3980		| ???		| EEPROM_UVLO_UNUSED_001				| ??? 			| ffh 255				| Power Panic UNUSED 								| ^ 			| D3 Ax0f8c C1
+| 0x0F8Bh 3979		| uint8		| EEPROM_UVLO_TARGET_BED				| ???			| ffh 255				| Power Panic Bed temperature						| ^ 			| D3 Ax0f8b C1
+| 0x0F89h 3977		| uint16	| EEPROM_UVLO_FEEDRATE					| ???			| ff ffh 65535			| Power Panic Feedrate								| ^ 			| D3 Ax0f89 C2
+| 0x0F88h 3976		| uint8		| EEPROM_UVLO_FAN_SPEED					| ???			| ffh 255				| Power Panic Fan speed								| ^ 			| D3 Ax0f88 C1
+| 0x0F87h 3975		| uint8		| EEPROM_FAN_CHECK_ENABLED				| 00h 0			| ???					| Fan Check disabled								| LCD menu		| D3 Ax0f87 C1
+| ^					| ^			| ^										| 01h 1			| ffh 255				| Fan Check enabled (exception ffh=01h)				| ^ 			| ^
+| 0x0F75h 3957		| uint16	| EEPROM_UVLO_MESH_BED_LEVELING			| ???			| ff ffh 65535			| Power Panic Mesh Bed Leveling						| ???			| D3 Ax0f75 C18 
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| 0x0F73h 3955		| uint16	| EEPROM_UVLO_Z_MICROSTEPS				| ???			| ff ffh 65535			| Power Panic Z microsteps							| ???			| D3 Ax0f73 C2 
+| 0x0F72h 3954		| uint8		| EEPROM_UVLO_E_ABS						| ???			| ffh 255				| Power Panic ??? position							| ???			| D3 Ax0f72 C1
+| 0x0F6Eh 3950		| foat		| EEPROM_UVLO_CURRENT_POSITION_E		| ???			| ff ff ff ffh			| Power Panic E position							| ???			| D3 Ax0f6e C4
+| 0x0F69h 3945		| uint8		| EEPROM_CRASH_DET						| ffh 255		| ffh 255				| Crash detection enabled							| LCD menu		| D3 Ax0f69 C5
+| ^					| ^			| ^										| 00h 0			| ^						| Crash detection disabled							| LCD menu		| ^
+| ^					| ^			| ^										| ???			| ???					| ^													| ??? 			| ^
+| ^					| ^			| ^										| ???			| ???					| ^													| ??? 			| ^
+| ^					| ^			| ^										| ???			| ???					| ^													| ??? 			| ^
+| 0x0F68h 3944		| uint8		| EEPROM_CRASH_COUNT_Y					| 00h-ffh 0-255	| ffh 255				| Crashes detected on y axis						| ???			| D3 Ax0f68 C1
+| 0x0F67h 3943		| uint8		| EEPROM_FSENSOR						| 01h 1			| ffh 255				| Filament sensor enabled							| LCD menu		| D3 Ax0f67 C1
+| 0x0F65h 3942		| uint8		| EEPROM_CRASH_COUNT_X					| 00h-ffh 0-255	| ffh 255				| Crashes detected on x axis						| ???			| D3 Ax0f66 C1
+| 0x0F65h 3941		| uint8		| EEPROM_FERROR_COUNT					| 00h-ffh 0-255	| ffh 255				| Filament sensor error counter						| ???			| D3 Ax0f65 C1
+| 0x0F64h 3940		| uint8		| EEPROM_POWER_COUNT					| 00h-ffh 0-255	| ffh 255				| Power failure counter								| ???			| D3 Ax0f64 C1
+| 0x0F60h 3936		| float		| EEPROM_XYZ_CAL_SKEW					| ???			| ff ff ff ffh			| XYZ skew value									| ???			| D3 Ax0f60 C4
+| 0x0F5Fh 3935		| uint8		| EEPROM_WIZARD_ACTIVE					| 00h 0			| ???					| Wizard active										| ???			| D3 Ax0f5f C1
+| ^					| ^			| ^										| 01h 1			| ???					| ^													| ^ 			| ^
+| 0x0F5Dh 3933		| uint16	| EEPROM_BELTSTATUS_X					| ???			| ff ffh				| X Beltstatus 										| ???			| D3 Ax0f5d C2
+| 0x0F5Bh 3931		| uint16	| EEPROM_BELTSTATUS_Y					| ???			| ff ffh				| Y Beltstatus 										| ???			| D3 Ax0f5b C2
+| 0x0F5Ah 3930		| uint8		| EEPROM_DIR_DEPTH						| 00h-ffh 0-255	| ffh 255				| Directory depth									| ???			| D3 Ax0f5a C1
+| 0x0F0Ah 3850		| uint8		| EEPROM_DIRS							| ???			| ffh 255				| Directories ???									| ???			| D3 Ax0f0a C80
+| 0x0F09h 3849		| uint8		| EEPROM_SD_SORT						| 00h 0			| ffh 255				| SD card sort by time								| LCD menu		| D3 Ax0f09 C1
+| ^					| ^			| ^										| 01h 1			| ^						| SD card sort by alphabet							| LCD menu		| ^
+| ^					| ^			| ^										| 02h 1			| ^						| SD card not sorted 								| LCD menu		| ^
+| 0x0F08h 3848		| uint8		| EEPROM_SECOND_SERIAL_ACTIVE			| 00h 0			| ffh 255				| RPi Port disabled									| LCD menu		| D3 Ax0f08 C1
+| ^					| ^			| ^										| 01h 1			| ^						| RPi Port enabled									| LCD menu		| ^
+| 0x0F07h 3847		| uint8		| EEPROM_FSENS_AUTOLOAD_ENABLED			| 01h 1			| ffh 255				| Filament autoload enabled							| LCD menu		| D3 Ax0f07 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Filament autoload disabled						| LCD menu		| ^
+*/
 #define EEPROM_EMPTY_VALUE 0xFF
 #define EEPROM_EMPTY_VALUE16 0xFFFF
 // The total size of the EEPROM is
