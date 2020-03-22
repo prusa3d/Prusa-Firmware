@@ -323,7 +323,6 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D30 3376		| uint16	| EEPROM_BACKLIGHT_TIMEOUT				| 01 00 - ff ff | ff ffh 65535			| LCD backlight timeout: __10__ seconds				| LCD menu		| D3 Ax0d30 C2
 | 0x0D2C 3372		| float		| EEPROM_UVLO_LA_K						| ???			| ff ff ff ffh			| Power panic saved Linear Advanced K value			| ???			| D3 Ax0d2c C4
 
- ## End of EEPROM Table
   
 | Adress begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
