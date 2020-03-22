@@ -1,6 +1,7 @@
 
 /**
  * @file
+ * @author 3d-gussner
  */
  /** \ingroup eeprom_table */
  //! _This is a EEPROM table of currently implemented in Prusa firmware (dynamically generated from doxygen)._
@@ -53,6 +54,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   - _Pronterface_ does <b>not</b> support D-codes
 
   ### !!! D-codes are case sensitive so please don't use upper case A,C or X in the address you want to read !!!
+  
+  Version 0.9
   
   ---------------------------------------------------------------------------------
   
