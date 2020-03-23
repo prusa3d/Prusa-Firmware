@@ -4,6 +4,7 @@
  * @author 3d-gussner
  */
  /** \ingroup eeprom_table */
+ 
  //! _This is a EEPROM table of currently implemented in Prusa firmware (dynamically generated from doxygen)._
 
 
@@ -43,7 +44,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   
   EEPROM 16-bit Empty value = 0xFFFFh 65535
   
-  _Italic = unsued or default_
+  _Italic = unused or default_
   
   __Bold = Status__
   
@@ -55,7 +56,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 
   ### !!! D-codes are case sensitive so please don't use upper case A,C or X in the address you want to read !!!
    
-  #### Usefull tools/links:
+  #### Useful tools/links:
   To convert hex to ascii 		https://www.rapidtables.com/convert/number/hex-to-ascii.html
   
   To convert hex to dec 		https://www.rapidtables.com/convert/number/hex-to-decimal.html
@@ -65,7 +66,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   ---------------------------------------------------------------------------------
   
   
-| Adress begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
+| Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--				| :-- 		| :-- 									| :--:			| :--:					| :--												| :--:			| :--:
 | 0x0FFFh 4095		| uchar    	| EEPROM_SILENT 						| 00h 0			| ffh 255				| TMC Stealth mode: __off__ / miniRambo Power mode	| LCD menu		| D3 Ax0fff C1
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode: __on__ / miniRambo Silent mode	| ^				| ^ 
@@ -75,7 +76,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0FFAh 4090		| uint16	| EEPROM_BABYSTEP_Y						| ???			| ff ffh 65535			| Babystep for Y axis _unsued_						| ^ 			| D3 Ax0ffa C2
 | 0x0FF8h 4088		| uint16	| EEPROM_BABYSTEP_Z						| ???			| ff ffh 65535			| Babystep for Z axis _lagacy_						| ^ 			| D3 Ax0ff8 C2
 | ^ 				| ^ 		| ^										| ^				| ^						| multiple values stored now in EEPROM_Sheets_base	| ^ 			| ^
-| 0x0FF7h 4087		| uint8		| EEPROM_CALIBRATION_STATUS				| ffh 255		| ffh 255				| Assbemled _default_								| ??? 			| D3 Ax0ff7 C1
+| 0x0FF7h 4087		| uint8		| EEPROM_CALIBRATION_STATUS				| ffh 255		| ffh 255				| Assembled _default_								| ??? 			| D3 Ax0ff7 C1
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| Calibrated										| ^ 			| ^
 | ^ 				| ^ 		| ^										| e6h 230		| ^						| needs Live Z adjustment							| ^ 			| ^
 | ^ 				| ^ 		| ^										| f0h 240		| ^						| needs Z calibration								| ^ 			| ^
@@ -139,7 +140,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| 0x0F91h 39851		| uint32	| EEPROM_FILE_POSITION					| ???			| ff ff ff ffh			| Power Panic File Postion 							| ??? 			| D3 Ax0f91 C4
+| 0x0F91h 39851		| uint32	| EEPROM_FILE_POSITION					| ???			| ff ff ff ffh			| Power Panic File Position							| ??? 			| D3 Ax0f91 C4
 | 0x0F8Dh 3981		| float		| EEPROM_UVLO_CURRENT_POSITION_Z		| ???			| ff ff ff ffh			| Power Panic Z Position	 						| ^ 			| D3 Ax0f8d C4
 | 0x0F8Ch 3980		| ???		| EEPROM_UVLO_UNUSED_001				| ??? 			| ffh 255				| Power Panic _unused_								| ^ 			| D3 Ax0f8c C1
 | 0x0F8Bh 3979		| uint8		| EEPROM_UVLO_TARGET_BED				| ???			| ffh 255				| Power Panic Bed temperature						| ^ 			| D3 Ax0f8b C1
@@ -185,8 +186,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| RPi Port: __enabled__								| LCD menu		| ^
 | 0x0F07h 3847		| uint8		| EEPROM_FSENS_AUTOLOAD_ENABLED			| 01h 1			| ffh 255				| Filament autoload: __enabled__					| LCD menu		| D3 Ax0f07 C1
 | ^					| ^			| ^										| 00h 0			| ^						| Filament autoload: __disabled__					| LCD menu		| ^
-| 0x0F05h 3845		| uint16	| EEPROM_CRASH_COUNT_X_TOT				| 0000-fffe		| ff ffh				| Total charshes on x axis  						| ???			| D3 Ax0f05 C2
-| 0x0F03h 3843		| uint16	| EEPROM_CRASH_COUNT_Y_TOT				| 0000-fffe		| ff ffh				| Total charshes on y axis  						| ???			| D3 Ax0f03 C2
+| 0x0F05h 3845		| uint16	| EEPROM_CRASH_COUNT_X_TOT				| 0000-fffe		| ff ffh				| Total crashes on x axis	  						| ???			| D3 Ax0f05 C2
+| 0x0F03h 3843		| uint16	| EEPROM_CRASH_COUNT_Y_TOT				| 0000-fffe		| ff ffh				| Total crashes on y axis  							| ???			| D3 Ax0f03 C2
 | 0x0F01h 3841		| uint16	| EEPROM_FERROR_COUNT_TOT				| 0000-fffe		| ff ffh				| Total filament sensor errors 						| ???			| D3 Ax0f01 C2
 | 0x0EFFh 3839		| uint16	| EEPROM_POWER_COUNT_TOT				| 0000-fffe		| ff ffh				| Total power failures		  						| ???			| D3 Ax0eff C2
 | 0x0EFEh 3838		| uint8		| EEPROM_TMC2130_HOME_X_ORIGIN			| ???			| ffh 255				| ???						  						| ???			| D3 Ax0efe C1
@@ -227,7 +228,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0EE0 3808		| float		| EEPROM_EXTRUDER_MULTIPLIER_2			| ???			| ff ff ff ffh			| Power panic Extruder 2 multiplier					| ???			| D3 Ax0ee0 C4
 | 0x0EDE 3806		| uint16	| EEPROM_EXTRUDEMULTIPLY				| ???			| ff ffh 65535			| Power panic Extruder multiplier					| ???			| D3 Ax0ede C2
 | 0x0EDA 3802		| float		| EEPROM_UVLO_TINY_CURRENT_POSITION_Z	| ???			| ff ff ff ffh			| Power panic Z position							| ???			| D3 Ax0eda C4
-| 0x0ED8 3800		| uint16	| EEPROM_UVLO_TARGET_HOTEND				| ???			| ff ffh 65535			| Power panic traget Hotend temperature				| ???			| D3 Ax0ed8 C2
+| 0x0ED8 3800		| uint16	| EEPROM_UVLO_TARGET_HOTEND				| ???			| ff ffh 65535			| Power panic target Hotend temperature				| ???			| D3 Ax0ed8 C2
 | 0x0ED7 3799		| uint8		| EEPROM_SOUND_MODE						| 00h 0			| ffh 255				| Sound mode: __loud__								| ???			| D3 Ax0ed7 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Sound mode: __once__								| ^				| ^
 | ^					| ^			| ^										| 02h 1			| ^						| Sound mode: __silent__							| ^				| ^
@@ -347,7 +348,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D2C 3372		| float		| EEPROM_UVLO_LA_K						| ???			| ff ff ff ffh			| Power panic saved Linear Advanced K value			| ???			| D3 Ax0d2c C4
 
   
-| Adress begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
+| Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
 | 0x0012 18			| uint16	| EEPROM_FIRMWARE_VERSION_END			| ???			| ff ffh 65535			| ???												| ???			| D3 Ax0012 C2
 | 0x0010 16			| uint16	| EEPROM_FIRMWARE_VERSION_FLAVOR		| ???			| ff ffh 65535			| ???												| ???			| D3 Ax0010 C2
