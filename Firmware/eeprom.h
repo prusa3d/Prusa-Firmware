@@ -331,6 +331,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x000E 14			| uint16	| EEPROM_FIRMWARE_VERSION_REVISION		| ???			| ff ffh 65535			| Firmware version revision number DEV/ALPHA/BETA/RC| ???			| D3 Ax000e C2
 | 0x000C 12			| uint16	| EEPROM_FIRMWARE_VERSION_MINOR			| ???			| ff ffh 65535			| Firmware version minor number						| ???			| D3 Ax000c C2
 | 0x000A 10			| uint16	| EEPROM_FIRMWARE_VERSION_MAJOR			| ???			| ff ffh 65535			| Firmware version major number 					| ???			| D3 Ax000a C2
+| 0x0000 0			| char		| FW_PRUSA3D_MAGIC						| ???			| ffffffffffffffffffff	| __`PRUSA3DFW`__				 					| ???			| D3 Ax0000 C10
 */
 
 #define EEPROM_EMPTY_VALUE 0xFF
