@@ -178,7 +178,11 @@ float default_retraction = DEFAULT_RETRACTION;
 
 
 float homing_feedrate[] = HOMING_FEEDRATE;
+
+//Although this flag and many others like this could be represented with a struct/bitfield for each axis (more readable and efficient code), the implementation
+//would not be standard across all platforms. That being said, the code will continue to use bitmasks for independent axis.
 uint8_t axis_relative_modes = 0;
+
 int feedmultiply=100; //100->1 200->2
 int extrudemultiply=100; //100->1 200->2
 int extruder_multiply[EXTRUDERS] = {100
