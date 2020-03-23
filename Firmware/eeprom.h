@@ -51,11 +51,16 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   How can you use the debug codes?
   - Serial terminal like Putty.
   - Octoprint does support D-codes
-  - _Pronterface_ does <b>not</b> support D-codes
+  - _Pronterface_ does __not__ support D-codes
 
   ### !!! D-codes are case sensitive so please don't use upper case A,C or X in the address you want to read !!!
+   
+  #### Usefull tools/links:
+  To convert hex to ascii 		https://www.rapidtables.com/convert/number/hex-to-ascii.html
   
-  Version 0.9
+  To convert hex to dec 		https://www.rapidtables.com/convert/number/hex-to-decimal.html
+  
+  Version: 0.9.1
   
   ---------------------------------------------------------------------------------
   
@@ -66,73 +71,74 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode: __on__ / miniRambo Silent mode	| ^				| ^ 
 | 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255				| English / LANG_ID_PRI								| LCD menu		| D3 Ax0ffe C1 
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| Other language LANG_ID_SEC						| ^ 			| ^
-| 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ffh 255				| Babystep for X axis _unsued_						| ??? 			| D3 Ax0ffc C2
-| 0x0FFAh 4090		| uint16	| EEPROM_BABYSTEP_Y						| ???			| ffh 255				| Babystep for Y axis _unsued_						| ^ 			| D3 Ax0ffa C2
-| 0x0FF8h 4088		| uint16	| EEPROM_BABYSTEP_Z						| ???			| ffh 255				| Babystep for Z axis _lagacy_						| ^ 			| D3 Ax0ff8 C2
+| 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ff ffh 65535			| Babystep for X axis _unsued_						| ??? 			| D3 Ax0ffc C2
+| 0x0FFAh 4090		| uint16	| EEPROM_BABYSTEP_Y						| ???			| ff ffh 65535			| Babystep for Y axis _unsued_						| ^ 			| D3 Ax0ffa C2
+| 0x0FF8h 4088		| uint16	| EEPROM_BABYSTEP_Z						| ???			| ff ffh 65535			| Babystep for Z axis _lagacy_						| ^ 			| D3 Ax0ff8 C2
 | ^ 				| ^ 		| ^										| ^				| ^						| multiple values stored now in EEPROM_Sheets_base	| ^ 			| ^
-| 0x0FF7h 4087		| uint8		| EEPROM_CALIBRATION_STATUS				| 00h 0			| ffh 255				| Unknown											| ??? 			| D3 Ax0ff7 C1
+| 0x0FF7h 4087		| uint8		| EEPROM_CALIBRATION_STATUS				| ffh 255		| ffh 255				| Assbemled _default_								| ??? 			| D3 Ax0ff7 C1
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| Calibrated										| ^ 			| ^
-| ^ 				| ^ 		| ^										| E6h 230		| ^						| needs Live Z adjustment							| ^ 			| ^
-| ^ 				| ^ 		| ^										| F0h 240		| ^						| needs Z calibration								| ^ 			| ^
-| ^ 				| ^ 		| ^										| FAh 250		| ^						| needs XYZ calibration								| ^ 			| ^ 
-| ^ 				| ^ 		| ^										| FFh 255		| ^						| Assbemled _default_								| ^ 			| ^
-| 0x0FF5h 4085		| uint16	| EEPROM_BABYSTEP_Z0					| ???			| ???					| Babystep for Z ???								| ??? 			| D3 Ax0ff5 C2
-| 0x0FF1h 4081		| uint32	| EEPROM_FILAMENTUSED					| ???			| 00h 0					| Filament used in meters							| ??? 			| D3 Ax0ff1 C4
-| 0x0FEDh 4077		| uint32	| EEPROM_TOTALTIME						| ???			| 00h 0					| Total print time									| ??? 			| D3 Ax0fed C4
-| 0x0FE5h 4069		| float		| EEPROM_BED_CALIBRATION_CENTER			| ???			| ???					| ???											 	| ??? 			| D3 Ax0fe5 C8
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| 0x0FDDh 4061		| float		| EEPROM_BED_CALIBRATION_VEC_X			| ???			| ???					| ???											 	| ??? 			| D3 Ax0fdd C8
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^	
-| 0x0FD5h 4053		| float		| EEPROM_BED_CALIBRATION_VEC_Y			| ???			| ???					| ???											 	| ??? 			| D3 Ax0fd5 C8
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| 0x0FC5h 4037		| int16		| EEPROM_BED_CALIBRATION_Z_JITTER		| ???			| ???					| ???											 	| ??? 			| D3 Ax0fc5 C16
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^	
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^ 				| ^ 		| ^										| e6h 230		| ^						| needs Live Z adjustment							| ^ 			| ^
+| ^ 				| ^ 		| ^										| f0h 240		| ^						| needs Z calibration								| ^ 			| ^
+| ^ 				| ^ 		| ^										| fah 250		| ^						| needs XYZ calibration								| ^ 			| ^ 
+| ^ 				| ^ 		| ^										| 00h 0			| ^						| Unknown											| ^ 			| ^
+| 0x0FF5h 4085		| uint16	| EEPROM_BABYSTEP_Z0					| ???			| ff ffh 65535			| Babystep for Z ???								| ??? 			| D3 Ax0ff5 C2
+| 0x0FF1h 4081		| uint32	| EEPROM_FILAMENTUSED					| ???			| 00 00 00 00h 0		| Filament used in meters							| ??? 			| D3 Ax0ff1 C4
+| 0x0FEDh 4077		| uint32	| EEPROM_TOTALTIME						| ???			| 00 00 00 00h 0		| Total print time									| ??? 			| D3 Ax0fed C4
+| 0x0FE5h 4069		| float		| EEPROM_BED_CALIBRATION_CENTER			| ???			| ff ff ff ffh			| ???											 	| ??? 			| D3 Ax0fe5 C8
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| 0x0FDDh 4061		| float		| EEPROM_BED_CALIBRATION_VEC_X			| ???			| ff ff ff ffh			| ???											 	| ??? 			| D3 Ax0fdd C8
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^	
+| 0x0FD5h 4053		| float		| EEPROM_BED_CALIBRATION_VEC_Y			| ???			| ff ff ff ffh			| ???											 	| ??? 			| D3 Ax0fd5 C8
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| 0x0FC5h 4037		| int16		| EEPROM_BED_CALIBRATION_Z_JITTER		| ???			| ff ffh 65535			| ???											 	| ??? 			| D3 Ax0fc5 C16
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^	
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| ffh 255				| Prusa farm mode: __off__							| G99 			| D3 Ax0fc4 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Prusa farm mode: __on__							| G98			| ^
-| 0x0FC1h 4033		| int16		| EEPROM_FARM_NUMBER					| ???			| ff ff ffh				| Prusa farm number									| ??? 			| D3 Ax0fc1 C3
+| 0x0FC3h 4035		| free		| _EEPROM_FREE_NR1_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0fc3 C1
+| 0x0FC1h 4033		| ???		| EEPROM_FARM_NUMBER					| 000-999		| ff ffh = 00 00		| Prusa farm number	_only 0-9 are allowed: 000-999_	| LCD menu		| D3 Ax0fc1 C2
 | 0x0FC0h 4032		| bool		| EEPROM_BED_CORRECTION_VALID			| 00h 0			| 00h 0					| Bed correction invalid							| ??? 			| D3 Ax0fc0 C1
 | ^					| ^			| ^										| ffh 255		| 						| Bed correction valid								| ??? 			| ^
-| 0x0FBFh 4031		| char		| EEPROM_BED_CORRECTION_LEFT			| 00h FFh		| 00h 0					| Bed manual correction left						| LCD menu 		| D3 Ax0fbf C1
-| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| G80 Lxxx 			| ^
-| 0x0FBEh 4030		| char		| EEPROM_BED_CORRECTION_RIGHT			| 00h FFh		| 00h 0					| Bed manual correction right						| LCD menu 		| D3 Ax0fbe C1
-| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| G80 Rxxx 			| ^
-| 0x0FBDh 4029		| char		| EEPROM_BED_CORRECTION_FRONT			| 00h FFh		| 00h 0					| Bed manual correction front						| LCD menu 		| D3 Ax0fbd C1
-| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| G80 Fxxx 			| ^
-| 0x0FBCh 4028		| char		| EEPROM_BED_CORRECTION_BACK			| 00h FFh		| 00h 0					| Bed manual correction back						| LCD menu 		| D3 Ax0fbc C1
-| ^					| ^			| ^										| ???			| ???					| At this moment limited to +-100um					| G80 Bxxx 			| ^
+| 0x0FBFh 4031		| char		| EEPROM_BED_CORRECTION_LEFT			| 00h ffh		| 00h 0					| Bed manual correction left						| LCD menu 		| D3 Ax0fbf C1
+| ^					| ^			| ^										| ^				| ^						| At this moment limited to +-100um					| G80 Lxxx 			| ^
+| 0x0FBEh 4030		| char		| EEPROM_BED_CORRECTION_RIGHT			| 00h ffh		| 00h 0					| Bed manual correction right						| LCD menu 		| D3 Ax0fbe C1
+| ^					| ^			| ^										| ^				| ^						| At this moment limited to +-100um					| G80 Rxxx 			| ^
+| 0x0FBDh 4029		| char		| EEPROM_BED_CORRECTION_FRONT			| 00h ffh		| 00h 0					| Bed manual correction front						| LCD menu 		| D3 Ax0fbd C1
+| ^					| ^			| ^										| ^				| ^						| At this moment limited to +-100um					| G80 Fxxx 			| ^
+| 0x0FBCh 4028		| char		| EEPROM_BED_CORRECTION_BACK			| 00h ffh		| 00h 0					| Bed manual correction back						| LCD menu 		| D3 Ax0fbc C1
+| ^					| ^			| ^										| ^				| ^						| At this moment limited to +-100um					| G80 Bxxx 			| ^
 | 0x0FBBh 4027		| bool		| EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY	| 00h 0			| 00h 0					| Toshiba Air: __off__								| LCD menu 		| D3 Ax0fbb C1
-| ^					| ^			| ^										| ??? 			| ffh 255				| Toshiba Air: __on__								| ^ 			| ^	
+| ^					| ^			| ^										| 01h 1			| ffh 255				| Toshiba Air: __on__								| ^ 			| ^	
 | 0x0FBAh 4026		| uchar		| EEPROM_PRINT_FLAG						| ???			| ???					| _unsued_											| ??? 			| D3 Ax0fba C1
 | 0x0FB0h 4016		| int16		| EEPROM_PROBE_TEMP_SHIFT				| ???			| ???					| ???												| ??? 			| D3 Ax0fb0 C10
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
-| ^					| ^			| ^										| ???			| ???					| ???												| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0FAFh 4015		| bool		| EEPROM_TEMP_CAL_ACTIVE				| 00h 0			| 00h 0					| PINDA Temp cal.: __inactive__						| LCD menu		| D3 Ax0faf C1
 | ^					| ^			| ^										| ffh 255		| ^						| PINDA Temp cal.: __active__						| ^ 			| ^
 | 0x0FA7h 4007		| uint32	| EEPROM_BOWDEN_LENGTH					| ???			| ff 00 ff ffh			| Bowden length										| ??? 			| D3 Ax0fae C8
-| ^					| ^			| ^										| ???			| ff ff ff ffh			| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ff ff ff ffh			| ^													| ^ 			| ^
 | 0x0FA6h 4006		| uint8		| EEPROM_CALIBRATION_STATUS_PINDA		| 00h 0			| ffh 255				| PINDA Temp: __not calibrated__					| ??? 			| D3 Ax0fa6 C1
 | ^					| ^			| ^										| 01h 1			| ^						| PINDA Temp: __calibrated__						| ^ 			| ^
 | 0x0FA5h 4005		| uint8		| EEPROM_UVLO							| 00h 0			| ffh 255				| Power Panic flag: __inactive__					| ??? 			| D3 Ax0fa5 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Power Panic flag: __active__						| ^ 			| ^
 | ^					| ^			| ^										| 02h 2			| ^						| Power Panic flag: __???__							| ^ 			| ^
 | 0x0F9Dh 3997		| float		| EEPROM_UVLO_CURRENT_POSITION			| ???			| ffh 255				| Power Panic position 								| ??? 			| D3 Ax0f9d C8
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0F95h 3989		| char		| EEPROM_FILENAME						| ???			| ffh 255				| Power Panic Filename 								| ??? 			| D3 Ax0f95 C8
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0F91h 39851		| uint32	| EEPROM_FILE_POSITION					| ???			| ff ff ff ffh			| Power Panic File Postion 							| ??? 			| D3 Ax0f91 C4
 | 0x0F8Dh 3981		| float		| EEPROM_UVLO_CURRENT_POSITION_Z		| ???			| ff ff ff ffh			| Power Panic Z Position	 						| ^ 			| D3 Ax0f8d C4
 | 0x0F8Ch 3980		| ???		| EEPROM_UVLO_UNUSED_001				| ??? 			| ffh 255				| Power Panic _unused_								| ^ 			| D3 Ax0f8c C1
@@ -142,22 +148,23 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F87h 3975		| uint8		| EEPROM_FAN_CHECK_ENABLED				| 00h 0			| ???					| Fan Check disabled								| LCD menu		| D3 Ax0f87 C1
 | ^					| ^			| ^										| 01h 1			| ffh 255				| Fan Check enabled (exception ffh=01h)				| ^ 			| ^
 | 0x0F75h 3957		| uint16	| EEPROM_UVLO_MESH_BED_LEVELING			| ???			| ff ffh 65535			| Power Panic Mesh Bed Leveling						| ???			| D3 Ax0f75 C18 
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
+| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0F73h 3955		| uint16	| EEPROM_UVLO_Z_MICROSTEPS				| ???			| ff ffh 65535			| Power Panic Z microsteps							| ???			| D3 Ax0f73 C2 
 | 0x0F72h 3954		| uint8		| EEPROM_UVLO_E_ABS						| ???			| ffh 255				| Power Panic ??? position							| ???			| D3 Ax0f72 C1
 | 0x0F6Eh 3950		| foat		| EEPROM_UVLO_CURRENT_POSITION_E		| ???			| ff ff ff ffh			| Power Panic E position							| ???			| D3 Ax0f6e C4
-| 0x0F69h 3945		| uint8		| EEPROM_CRASH_DET						| ffh 255		| ffh 255				| Crash detection: __enabled__						| LCD menu		| D3 Ax0f69 C5
+| 0x0F6Dh 3949		| ???		| _EEPROM_FREE_NR2_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6d C1
+| 0x0F6Ch 3948		| ???		| _EEPROM_FREE_NR3_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6c C1
+| 0x0F6Bh 3947		| ???		| _EEPROM_FREE_NR4_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6b C1
+| 0x0F6Ah 3946		| ???		| _EEPROM_FREE_NR5_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6a C1
+| 0x0F69h 3945		| uint8		| EEPROM_CRASH_DET						| ffh 255		| ffh 255				| Crash detection: __enabled__						| LCD menu		| D3 Ax0f69 C1
 | ^					| ^			| ^										| 00h 0			| ^						| Crash detection: __disabled__						| LCD menu		| ^
-| ^					| ^			| ^										| ???			| ???					| ^													| ??? 			| ^
-| ^					| ^			| ^										| ???			| ???					| ^													| ??? 			| ^
-| ^					| ^			| ^										| ???			| ???					| ^													| ??? 			| ^
 | 0x0F68h 3944		| uint8		| EEPROM_CRASH_COUNT_Y					| 00h-ffh 0-255	| ffh 255				| Crashes detected on y axis						| ???			| D3 Ax0f68 C1
 | 0x0F67h 3943		| uint8		| EEPROM_FSENSOR						| 01h 1			| ffh 255				| Filament sensor: __enabled__						| LCD menu		| D3 Ax0f67 C1
 | ^					| ^			| ^										| 00h 0			| ^						| Filament sensor: __disabled__						| LCD menu		| ^
@@ -198,7 +205,23 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0EF1h 3825		| uint8		| EEPROM_TMC2130_Z_MRES					| ???			| ffh 255				| ???						  						| ???			| D3 Ax0ef1 C1
 | 0x0EF0h 3824		| uint8		| EEPROM_TMC2130_E_MRES					| ???			| ffh 255				| ???						  						| ???			| D3 Ax0ef0 C1
 | 0x0EEE 3822		| uint16 	| EEPROM_PRINTER_TYPE					| ???			| ff ffh 65535			| Printer Type										| ???			| D3 Ax0eee C2
+| ^					| ^			| ^										| 64 00h 100	| ^						| PRINTER_MK1										| ???			| ^
+| ^					| ^			| ^										| c8 00h 200	| ^						| PRINTER_MK2										| ???			| ^
+| ^					| ^			| ^										| c9 00h 201	| ^						| PRINTER_MK2 with MMU1								| ???			| ^
+| ^					| ^			| ^										| ca 00h 202	| ^						| PRINTER_MK2S										| ???			| ^
+| ^					| ^			| ^										| cb 00h 203	| ^						| PRINTER_MK2S with MMU1							| ???			| ^
+| ^					| ^			| ^										| fa 00h 250	| ^						| PRINTER_MK2.5										| ???			| ^
+| ^					| ^			| ^										| 1a 4fh 20250	| ^						| PRINTER_MK2.5 with MMU2							| ???			| ^
+| ^					| ^			| ^										| fc 00h 252	| ^						| PRINTER_MK2.5S									| ???			| ^
+| ^					| ^			| ^										| 1c 4fh 20250	| ^						| PRINTER_MK2.5S with MMU2S							| ???			| ^
+| ^					| ^			| ^										| 0c 12h 300	| ^						| PRINTER_MK3										| ???			| ^
+| ^					| ^			| ^										| 4c 4fh 20300	| ^						| PRINTER_MK3 with MMU2								| ???			| ^
+| ^					| ^			| ^										| 0e 12h 302	| ^						| PRINTER_MK3S										| ???			| ^
+| ^					| ^			| ^										| 4e 4fh 20302	| ^						| PRINTER_MK3S with MMU2S							| ???			| ^
 | 0x0EEC 3820		| uint16	| EEPROM_BOARD_TYPE						| ???			| ff ffh 65535			| Board Type										| ???			| D3 Ax0eec C2
+| ^					| ^			| ^										| c8 00h 200	| ^						| BOARD_RAMBO_MINI_1_0								| ???			| ^
+| ^					| ^			| ^										| cb 00h 203	| ^						| BOARD_RAMBO_MINI_1_3								| ???			| ^
+| ^					| ^			| ^										| 36 01h 310	| ^						| BOARD_EINSY_1_0a									| ???			| ^
 | 0x0EE8 3816		| float		| EEPROM_EXTRUDER_MULTIPLIER_0			| ???			| ff ff ff ffh			| Power panic Extruder 0 multiplier					| ???			| D3 Ax0ee8 C4
 | 0x0EE4 3812		| float		| EEPROM_EXTRUDER_MULTIPLIER_1			| ???			| ff ff ff ffh			| Power panic Extruder 1 multiplier					| ???			| D3 Ax0ee4 C4
 | 0x0EE0 3808		| float		| EEPROM_EXTRUDER_MULTIPLIER_2			| ???			| ff ff ff ffh			| Power panic Extruder 2 multiplier					| ???			| D3 Ax0ee0 C4
@@ -250,7 +273,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 07h 7			| ^						| Mesh bed leveling points: __7x7__					| ^				| ^
 | 0x0DAA 3498		| uint8		| EEPROM_MBL_PROBE_NR					| 03h 3			| ffh 255				| MBL times measurements for each point: __3__ 		| LCD menu		| D3 Ax0daa C1
 | ^					| ^			| ^										| 05h 5			| ^						| MBL times measurements for each point: __5__		| ^				| ^
-| ^					| ^			| ^										| 01h 1			| ^						| MBL times measurements for each point: __7__		| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| MBL times measurements for each point: __1__		| ^				| ^
 | 0x0DA9 3497		| uint8		| EEPROM_MMU_STEALTH					| 01h 1			| ffh 255				| MMU2/s Silent mode: __on__						| ???			| D3 Ax0da9 C1
 | ^					| ^			| ^										| 00h 0			| ^						| MMU2/s Silent mode: __off__						| ^				| ^
 | 0x0DA8 3496		| uint8		| EEPROM_CHECK_MODE						| 01h 1			| ffh 255				| Check mode for nozzle is: __warn__				| LCD menu		| D3 Ax0da8 C1
@@ -358,7 +381,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 // The offsets are saved as 16bit signed int, scaled to tenths of microns.
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
 #define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
-#define EEPROM_FARM_NUMBER (EEPROM_FARM_MODE-3)
+#define EEPROM_FREE_NR1 (EEPROM_FARM_MODE-1)
+#define EEPROM_FARM_NUMBER (EEPROM_FREE_NR1-2)
 
 // Correction of the bed leveling, in micrometers.
 // Maximum 50 micrometers allowed.
@@ -390,8 +414,12 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
 #define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4)                 //float for current position in E
 
+#dedine EEPROM_FREE_NR2         (EEPROM_UVLO_CURRENT_POSITION_E - 1)			// FREE EEPROM SPACE
+#dedine EEPROM_FREE_NR3         (EEPROM_FREE_NR2 - 1)							// FREE EEPROM SPACE
+#dedine EEPROM_FREE_NR4         (EEPROM_FREE_NR3 - 1)							// FREE EEPROM SPACE
+#dedine EEPROM_FREE_NR5         (EEPROM_FREE_NR4 - 1)							// FREE EEPROM SPACE
 // Crash detection mode EEPROM setting 
-#define EEPROM_CRASH_DET         (EEPROM_UVLO_CURRENT_POSITION_E - 5)           // float (orig EEPROM_UVLO_MESH_BED_LEVELING-12) 
+#define EEPROM_CRASH_DET         (EEPROM_FREE_NR5 - 1)       				    // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-12) 
 // Crash detection counter Y (last print)
 #define EEPROM_CRASH_COUNT_Y       (EEPROM_CRASH_DET - 1)                       // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-15)
 // Filament sensor on/off EEPROM setting 
