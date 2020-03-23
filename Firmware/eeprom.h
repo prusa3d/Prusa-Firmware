@@ -122,8 +122,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0FAFh 4015		| bool		| EEPROM_TEMP_CAL_ACTIVE				| 00h 0			| 00h 0					| PINDA Temp cal.: __inactive__						| LCD menu		| D3 Ax0faf C1
 | ^					| ^			| ^										| ffh 255		| ^						| PINDA Temp cal.: __active__						| ^ 			| ^
-| 0x0FA7h 4007		| uint32	| EEPROM_BOWDEN_LENGTH					| ???			| ff 00 ff ffh			| Bowden length										| ??? 			| D3 Ax0fae C8
-| ^					| ^			| ^										| ^				| ff ff ff ffh			| ^													| ^ 			| ^
+| 0x0FA7h 4007		| uint32	| EEPROM_BOWDEN_LENGTH					| ???			| ff 00 00 00h			| Bowden length										| ??? 			| D3 Ax0fae C8
+| ^					| ^			| ^										| ^				| 00 00 00 00h			| ^													| ^ 			| ^
 | 0x0FA6h 4006		| uint8		| EEPROM_CALIBRATION_STATUS_PINDA		| 00h 0			| ffh 255				| PINDA Temp: __not calibrated__					| ??? 			| D3 Ax0fa6 C1
 | ^					| ^			| ^										| 01h 1			| ^						| PINDA Temp: __calibrated__						| ^ 			| ^
 | 0x0FA5h 4005		| uint8		| EEPROM_UVLO							| 00h 0			| ffh 255				| Power Panic flag: __inactive__					| ??? 			| D3 Ax0fa5 C1
