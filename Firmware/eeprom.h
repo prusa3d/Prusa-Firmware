@@ -50,11 +50,14 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   
   In Default/FactoryReset column the 
   
+   - __L__		Language
    - __S__ 		Statistics
    - __P__ 		Shipping prep
    - __S/P__	Statistics and Shipping prep
    
   will overwrite existing values to 0 or default.
+  A FactoryReset All Data will overwrite the hole EEPROM with ffh and some values will be initialized automatically,
+  others need a reset / reboot.
   
   ---------------------------------------------------------------------------------
   How can you use the debug codes?
@@ -78,7 +81,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | :--				| :-- 		| :-- 									| :--:			| :--:					| :--												| :--:			| :--:
 | 0x0FFFh 4095		| uchar    	| EEPROM_SILENT 						| 00h 0			| ffh 255				| TMC Stealth mode: __off__ / miniRambo Power mode	| LCD menu		| D3 Ax0fff C1
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode: __on__ / miniRambo Silent mode	| ^				| ^ 
-| 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255				| English / LANG_ID_PRI								| LCD menu		| D3 Ax0ffe C1 
+| 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255		__L__	| English / LANG_ID_PRI								| LCD menu		| D3 Ax0ffe C1 
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| Other language LANG_ID_SEC						| ^ 			| ^
 | 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ff ffh 65535			| Babystep for X axis _unsued_						| ??? 			| D3 Ax0ffc C2
 | 0x0FFAh 4090		| uint16	| EEPROM_BABYSTEP_Y						| ???			| ff ffh 65535			| Babystep for Y axis _unsued_						| ^ 			| D3 Ax0ffa C2
@@ -87,7 +90,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0FF7h 4087		| uint8		| EEPROM_CALIBRATION_STATUS				| ffh 255		| ffh 255				| Assembled _default_								| ??? 			| D3 Ax0ff7 C1
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| Calibrated										| ^ 			| ^
 | ^ 				| ^ 		| ^										| e6h 230		| ^						| needs Live Z adjustment							| ^ 			| ^
-| ^ 				| ^ 		| ^										| f0h 240		| ^						| needs Z calibration								| ^ 			| ^
+| ^ 				| ^ 		| ^										| f0h 240		| ^				__P__	| needs Z calibration								| ^ 			| ^
 | ^ 				| ^ 		| ^										| fah 250		| ^						| needs XYZ calibration								| ^ 			| ^ 
 | ^ 				| ^ 		| ^										| 00h 0			| ^						| Unknown											| ^ 			| ^
 | 0x0FF5h 4085		| uint16	| EEPROM_BABYSTEP_Z0					| ???			| ff ffh 65535			| Babystep for Z ???								| ??? 			| D3 Ax0ff5 C2
@@ -107,10 +110,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| ffh 255		__P__	| Prusa farm mode: __off__							| G99 			| D3 Ax0fc4 C1
+| 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| ffh 255 		__P__	| Prusa farm mode: __off__							| G99 			| D3 Ax0fc4 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Prusa farm mode: __on__							| G98			| ^
 | 0x0FC3h 4035		| free		| _EEPROM_FREE_NR1_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0fc3 C1
-| 0x0FC1h 4033		| ???		| EEPROM_FARM_NUMBER					| 000-999		| ff ffh		__P__	| Prusa farm number	_only 0-9 are allowed: 000-999_	| LCD menu		| D3 Ax0fc1 C2
+| 0x0FC1h 4033		| ???		| EEPROM_FARM_NUMBER					| 000-999		| ff ffh / 000	__P__	| Prusa farm number	_only 0-9 are allowed: 000-999_	| LCD menu		| D3 Ax0fc1 C2
 | 0x0FC0h 4032		| bool		| EEPROM_BED_CORRECTION_VALID			| 00h 0			| 00h 0					| Bed correction invalid							| ??? 			| D3 Ax0fc0 C1
 | ^					| ^			| ^										| ffh 255		| 						| Bed correction valid								| ??? 			| ^
 | 0x0FBFh 4031		| char		| EEPROM_BED_CORRECTION_LEFT			| 00h ffh		| 00h 0					| Bed manual correction left						| LCD menu 		| D3 Ax0fbf C1
