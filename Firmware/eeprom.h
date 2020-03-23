@@ -48,6 +48,14 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   
   __Bold = Status__
   
+  In Default/FactoryReset column the 
+  
+   - __S__ 		Statistics
+   - __P__ 		Shipping prep
+   - __S/P__	Statistics and Shipping prep
+   
+  will overwrite existing values to 0 or default.
+  
   ---------------------------------------------------------------------------------
   How can you use the debug codes?
   - Serial terminal like Putty.
@@ -83,8 +91,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^ 				| ^ 		| ^										| fah 250		| ^						| needs XYZ calibration								| ^ 			| ^ 
 | ^ 				| ^ 		| ^										| 00h 0			| ^						| Unknown											| ^ 			| ^
 | 0x0FF5h 4085		| uint16	| EEPROM_BABYSTEP_Z0					| ???			| ff ffh 65535			| Babystep for Z ???								| ??? 			| D3 Ax0ff5 C2
-| 0x0FF1h 4081		| uint32	| EEPROM_FILAMENTUSED					| ???			| 00 00 00 00h 0		| Filament used in meters							| ??? 			| D3 Ax0ff1 C4
-| 0x0FEDh 4077		| uint32	| EEPROM_TOTALTIME						| ???			| 00 00 00 00h 0		| Total print time									| ??? 			| D3 Ax0fed C4
+| 0x0FF1h 4081		| uint32	| EEPROM_FILAMENTUSED					| ???			| 00 00 00 00h 0 __S/P__| Filament used in meters							| ??? 			| D3 Ax0ff1 C4
+| 0x0FEDh 4077		| uint32	| EEPROM_TOTALTIME						| ???			| 00 00 00 00h 0 __S/P__| Total print time									| ??? 			| D3 Ax0fed C4
 | 0x0FE5h 4069		| float		| EEPROM_BED_CALIBRATION_CENTER			| ???			| ff ff ff ffh			| ???											 	| ??? 			| D3 Ax0fe5 C8
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0FDDh 4061		| float		| EEPROM_BED_CALIBRATION_VEC_X			| ???			| ff ff ff ffh			| ???											 	| ??? 			| D3 Ax0fdd C8
@@ -99,10 +107,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| ffh 255				| Prusa farm mode: __off__							| G99 			| D3 Ax0fc4 C1
+| 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| ffh 255		__P__	| Prusa farm mode: __off__							| G99 			| D3 Ax0fc4 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Prusa farm mode: __on__							| G98			| ^
 | 0x0FC3h 4035		| free		| _EEPROM_FREE_NR1_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0fc3 C1
-| 0x0FC1h 4033		| ???		| EEPROM_FARM_NUMBER					| 000-999		| ff ffh				| Prusa farm number	_only 0-9 are allowed: 000-999_	| LCD menu		| D3 Ax0fc1 C2
+| 0x0FC1h 4033		| ???		| EEPROM_FARM_NUMBER					| 000-999		| ff ffh		__P__	| Prusa farm number	_only 0-9 are allowed: 000-999_	| LCD menu		| D3 Ax0fc1 C2
 | 0x0FC0h 4032		| bool		| EEPROM_BED_CORRECTION_VALID			| 00h 0			| 00h 0					| Bed correction invalid							| ??? 			| D3 Ax0fc0 C1
 | ^					| ^			| ^										| ffh 255		| 						| Bed correction valid								| ??? 			| ^
 | 0x0FBFh 4031		| char		| EEPROM_BED_CORRECTION_LEFT			| 00h ffh		| 00h 0					| Bed manual correction left						| LCD menu 		| D3 Ax0fbf C1
@@ -166,15 +174,15 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F6Ah 3946		| ???		| _EEPROM_FREE_NR5_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6a C1
 | 0x0F69h 3945		| uint8		| EEPROM_CRASH_DET						| ffh 255		| ffh 255				| Crash detection: __enabled__						| LCD menu		| D3 Ax0f69 C1
 | ^					| ^			| ^										| 00h 0			| ^						| Crash detection: __disabled__						| LCD menu		| ^
-| 0x0F68h 3944		| uint8		| EEPROM_CRASH_COUNT_Y					| 00h-ffh 0-255	| ffh 255				| Crashes detected on y axis						| ???			| D3 Ax0f68 C1
-| 0x0F67h 3943		| uint8		| EEPROM_FSENSOR						| 01h 1			| ffh 255				| Filament sensor: __enabled__						| LCD menu		| D3 Ax0f67 C1
+| 0x0F68h 3944		| uint8		| EEPROM_CRASH_COUNT_Y					| 00h-ffh 0-255	| ffh 255		__S/P__	| Crashes detected on y axis						| ???			| D3 Ax0f68 C1
+| 0x0F67h 3943		| uint8		| EEPROM_FSENSOR						| 01h 1			| ffh 255		__P__	| Filament sensor: __enabled__						| LCD menu		| D3 Ax0f67 C1
 | ^					| ^			| ^										| 00h 0			| ^						| Filament sensor: __disabled__						| LCD menu		| ^
-| 0x0F65h 3942		| uint8		| EEPROM_CRASH_COUNT_X					| 00h-ffh 0-255	| ffh 255				| Crashes detected on x axis						| ???			| D3 Ax0f66 C1
-| 0x0F65h 3941		| uint8		| EEPROM_FERROR_COUNT					| 00h-ffh 0-255	| ffh 255				| Filament sensor error counter						| ???			| D3 Ax0f65 C1
-| 0x0F64h 3940		| uint8		| EEPROM_POWER_COUNT					| 00h-ffh 0-255	| ffh 255				| Power failure counter								| ???			| D3 Ax0f64 C1
+| 0x0F65h 3942		| uint8		| EEPROM_CRASH_COUNT_X					| 00h-ffh 0-255	| ffh 255		__S/P__	| Crashes detected on x axis						| ???			| D3 Ax0f66 C1
+| 0x0F65h 3941		| uint8		| EEPROM_FERROR_COUNT					| 00h-ffh 0-255	| ffh 255		__S/P__	| Filament sensor error counter						| ???			| D3 Ax0f65 C1
+| 0x0F64h 3940		| uint8		| EEPROM_POWER_COUNT					| 00h-ffh 0-255	| ffh 255		__S/P__	| Power failure counter								| ???			| D3 Ax0f64 C1
 | 0x0F60h 3936		| float		| EEPROM_XYZ_CAL_SKEW					| ???			| ff ff ff ffh			| XYZ skew value									| ???			| D3 Ax0f60 C4
-| 0x0F5Fh 3935		| uint8		| EEPROM_WIZARD_ACTIVE					| 00h 0			| ???					| Wizard active										| ???			| D3 Ax0f5f C1
-| ^					| ^			| ^										| 01h 1			| ???					| ^													| ^ 			| ^
+| 0x0F5Fh 3935		| uint8		| EEPROM_WIZARD_ACTIVE					| 01h 1			| 01h 1			__P__	| Wizard __active__									| ???			| D3 Ax0f5f C1
+| ^					| ^			| ^										| 00h 0			| ^						| Wizard __inactive__								| ^ 			| ^
 | 0x0F5Dh 3933		| uint16	| EEPROM_BELTSTATUS_X					| ???			| ff ffh				| X Beltstatus 										| ???			| D3 Ax0f5d C2
 | 0x0F5Bh 3931		| uint16	| EEPROM_BELTSTATUS_Y					| ???			| ff ffh				| Y Beltstatus 										| ???			| D3 Ax0f5b C2
 | 0x0F5Ah 3930		| uint8		| EEPROM_DIR_DEPTH						| 00h-ffh 0-255	| ffh 255				| Directory depth									| ???			| D3 Ax0f5a C1
@@ -184,12 +192,12 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 02h 1			| ^						| SD card:			__not sorted__					| LCD menu		| ^
 | 0x0F08h 3848		| uint8		| EEPROM_SECOND_SERIAL_ACTIVE			| 00h 0			| ffh 255				| RPi Port: __disabled__							| LCD menu		| D3 Ax0f08 C1
 | ^					| ^			| ^										| 01h 1			| ^						| RPi Port: __enabled__								| LCD menu		| ^
-| 0x0F07h 3847		| uint8		| EEPROM_FSENS_AUTOLOAD_ENABLED			| 01h 1			| ffh 255				| Filament autoload: __enabled__					| LCD menu		| D3 Ax0f07 C1
+| 0x0F07h 3847		| uint8		| EEPROM_FSENS_AUTOLOAD_ENABLED			| 01h 1			| ffh 255		__P__	| Filament autoload: __enabled__					| LCD menu		| D3 Ax0f07 C1
 | ^					| ^			| ^										| 00h 0			| ^						| Filament autoload: __disabled__					| LCD menu		| ^
-| 0x0F05h 3845		| uint16	| EEPROM_CRASH_COUNT_X_TOT				| 0000-fffe		| ff ffh				| Total crashes on x axis	  						| ???			| D3 Ax0f05 C2
-| 0x0F03h 3843		| uint16	| EEPROM_CRASH_COUNT_Y_TOT				| 0000-fffe		| ff ffh				| Total crashes on y axis  							| ???			| D3 Ax0f03 C2
-| 0x0F01h 3841		| uint16	| EEPROM_FERROR_COUNT_TOT				| 0000-fffe		| ff ffh				| Total filament sensor errors 						| ???			| D3 Ax0f01 C2
-| 0x0EFFh 3839		| uint16	| EEPROM_POWER_COUNT_TOT				| 0000-fffe		| ff ffh				| Total power failures		  						| ???			| D3 Ax0eff C2
+| 0x0F05h 3845		| uint16	| EEPROM_CRASH_COUNT_X_TOT				| 0000-fffe		| ff ffh		__S/P__	| Total crashes on x axis	  						| ???			| D3 Ax0f05 C2
+| 0x0F03h 3843		| uint16	| EEPROM_CRASH_COUNT_Y_TOT				| 0000-fffe		| ff ffh		__S/P__	| Total crashes on y axis  							| ???			| D3 Ax0f03 C2
+| 0x0F01h 3841		| uint16	| EEPROM_FERROR_COUNT_TOT				| 0000-fffe		| ff ffh		__S/P__	| Total filament sensor errors 						| ???			| D3 Ax0f01 C2
+| 0x0EFFh 3839		| uint16	| EEPROM_POWER_COUNT_TOT				| 0000-fffe		| ff ffh		__S/P__	| Total power failures		  						| ???			| D3 Ax0eff C2
 | 0x0EFEh 3838		| uint8		| EEPROM_TMC2130_HOME_X_ORIGIN			| ???			| ffh 255				| ???						  						| ???			| D3 Ax0efe C1
 | 0x0EFDh 3837		| uint8		| EEPROM	MC2130_HOME_X_BSTEPS			| ???			| ffh 255			| ???						  						| ???			| D3 Ax0efd C1
 | 0x0EFCh 3836		| uint8		| EEPROM_TMC2130_HOME_X_FSTEPS			| ???			| ffh 255				| ???						  						| ???			| D3 Ax0efc C1
@@ -237,10 +245,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| MMU2/s autodeplete: __off__						| ^				| ^
 | 0x0ED5 3797		| bool		| EEPROM_FSENS_OQ_MEASS_ENABLED			| ???			| ffh 255				| PAT1925 ???										| ???			| D3 Ax0ed5 C1
 | ^					| ^			| ^										| ???			| ^						| PAT1925 ???										| ^				| ^
-| 0x0ED3 3795		| uint16	| EEPROM_MMU_FAIL_TOT					| ???			| ff ffh 65535			| MMU2/s total failures								| ???			| D3 Ax0ed3 C2
-| 0x0ED2 3794		| uint8		| EEPROM_MMU_FAIL						| ???			| ffh 255				| MMU2/s fails during print							| ???			| D3 Ax0ed2 C1
-| 0x0ED0 3792		| uint16	| EEPROM_MMU_LOAD_FAIL_TOT				| ???			| ff ffh 65535			| MMU2/s total load failures						| ???			| D3 Ax0ed0 C2
-| 0x0ECF 3791		| uint8		| EEPROM_MMU_LOAD_FAIL					| ???			| ffh 255				| MMU2/s load failures during print					| ???			| D3 Ax0ecf C1
+| 0x0ED3 3795		| uint16	| EEPROM_MMU_FAIL_TOT					| ???			| ff ffh 65535	__S/P__	| MMU2/s total failures								| ???			| D3 Ax0ed3 C2
+| 0x0ED2 3794		| uint8		| EEPROM_MMU_FAIL						| ???			| ffh 255		__S/P__	| MMU2/s fails during print							| ???			| D3 Ax0ed2 C1
+| 0x0ED0 3792		| uint16	| EEPROM_MMU_LOAD_FAIL_TOT				| ???			| ff ffh 65535	__S/P__	| MMU2/s total load failures						| ???			| D3 Ax0ed0 C2
+| 0x0ECF 3791		| uint8		| EEPROM_MMU_LOAD_FAIL					| ???			| ffh 255		__S/P__	| MMU2/s load failures during print					| ???			| D3 Ax0ecf C1
 | 0x0ECE 3790		| uint8		| EEPROM_MMU_CUTTER_ENABLED				| 00h 0			| ffh 255				| MMU2/s cutter: __disabled__						| LCD menu		| D3 Ax0ece C1
 | ^					| ^			| ^										| 01h 1			| ^						| MMU2/s cutter: __enabled__						| ^				| ^
 | ^					| ^			| ^										| 02h 2			| ^						| MMU2/s cutter: __always__							| ^				| ^
