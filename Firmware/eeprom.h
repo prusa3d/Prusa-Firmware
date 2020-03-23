@@ -101,7 +101,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| ffh 255				| Prusa farm mode: __off__							| G99 			| D3 Ax0fc4 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Prusa farm mode: __on__							| G98			| ^
 | 0x0FC3h 4035		| free		| _EEPROM_FREE_NR1_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0fc3 C1
-| 0x0FC1h 4033		| ???		| EEPROM_FARM_NUMBER					| 000-999		| ff ffh = 00 00		| Prusa farm number	_only 0-9 are allowed: 000-999_	| LCD menu		| D3 Ax0fc1 C2
+| 0x0FC1h 4033		| ???		| EEPROM_FARM_NUMBER					| 000-999		| ff ffh				| Prusa farm number	_only 0-9 are allowed: 000-999_	| LCD menu		| D3 Ax0fc1 C2
 | 0x0FC0h 4032		| bool		| EEPROM_BED_CORRECTION_VALID			| 00h 0			| 00h 0					| Bed correction invalid							| ??? 			| D3 Ax0fc0 C1
 | ^					| ^			| ^										| ffh 255		| 						| Bed correction valid								| ??? 			| ^
 | 0x0FBFh 4031		| char		| EEPROM_BED_CORRECTION_LEFT			| 00h ffh		| 00h 0					| Bed manual correction left						| LCD menu 		| D3 Ax0fbf C1
@@ -112,8 +112,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| ^				| ^						| At this moment limited to +-100um					| G80 Fxxx 			| ^
 | 0x0FBCh 4028		| char		| EEPROM_BED_CORRECTION_BACK			| 00h ffh		| 00h 0					| Bed manual correction back						| LCD menu 		| D3 Ax0fbc C1
 | ^					| ^			| ^										| ^				| ^						| At this moment limited to +-100um					| G80 Bxxx 			| ^
-| 0x0FBBh 4027		| bool		| EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY	| 00h 0			| 00h 0					| Toshiba Air: __off__								| LCD menu 		| D3 Ax0fbb C1
-| ^					| ^			| ^										| 01h 1			| ffh 255				| Toshiba Air: __on__								| ^ 			| ^	
+| 0x0FBBh 4027		| bool		| EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY	| 00h 0			| ffh 255				| Toshiba Air: __off__								| LCD menu 		| D3 Ax0fbb C1
+| ^					| ^			| ^										| 01h 1			| ^						| Toshiba Air: __on__								| ^ 			| ^	
 | 0x0FBAh 4026		| uchar		| EEPROM_PRINT_FLAG						| ???			| ???					| _unsued_											| ??? 			| D3 Ax0fba C1
 | 0x0FB0h 4016		| int16		| EEPROM_PROBE_TEMP_SHIFT				| ???			| ???					| ???												| ??? 			| D3 Ax0fb0 C10
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
@@ -145,8 +145,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F8Bh 3979		| uint8		| EEPROM_UVLO_TARGET_BED				| ???			| ffh 255				| Power Panic Bed temperature						| ^ 			| D3 Ax0f8b C1
 | 0x0F89h 3977		| uint16	| EEPROM_UVLO_FEEDRATE					| ???			| ff ffh 65535			| Power Panic Feedrate								| ^ 			| D3 Ax0f89 C2
 | 0x0F88h 3976		| uint8		| EEPROM_UVLO_FAN_SPEED					| ???			| ffh 255				| Power Panic Fan speed								| ^ 			| D3 Ax0f88 C1
-| 0x0F87h 3975		| uint8		| EEPROM_FAN_CHECK_ENABLED				| 00h 0			| ???					| Fan Check disabled								| LCD menu		| D3 Ax0f87 C1
-| ^					| ^			| ^										| 01h 1			| ffh 255				| Fan Check enabled (exception ffh=01h)				| ^ 			| ^
+| 0x0F87h 3975		| uint8		| EEPROM_FAN_CHECK_ENABLED				| 00h 0			| ???					| Fan Check __disabled__							| LCD menu		| D3 Ax0f87 C1
+| ^					| ^			| ^										| 01h 1			| ffh 255				| Fan Check __enabled__ 							| ^ 			| ^
 | 0x0F75h 3957		| uint16	| EEPROM_UVLO_MESH_BED_LEVELING			| ???			| ff ffh 65535			| Power Panic Mesh Bed Leveling						| ???			| D3 Ax0f75 C18 
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
@@ -338,7 +338,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| ???			| ^						| Power panic saved target y-axis					| ^				| D3 Ax0d3b C4
 | ^					| ^			| ^										| ???			| ^						| Power panic saved target x-axis					| ^				| D3 Ax0d37 C4
 | 0x0D35 3381		| uint16	| EEPROM_UVLO_FEEDMULTIPLY				| ???			| ff ffh 65355			| Power panic saved feed multiplier					| ???			| D3 Ax0d35 C2
-| 0x0D34 3380		| uint8		| EEPROM_BACKLIGHT_LEVEL_HIGH			| 00h - ffh 	| 80h 128				| LCD backlight bright:	__128__	Dim value to 255	| LCD menu		| D3 Ax0d34 C1
+| 0x0D34 3380		| uint8		| EEPROM_BACKLIGHT_LEVEL_HIGH			| 00h - ffh 	| 82h 130				| LCD backlight bright:	__128__	Dim value to 255	| LCD menu		| D3 Ax0d34 C1
 | 0x0D33 3379		| uint8		| EEPROM_BACKLIGHT_LEVEL_LOW			| 00h - ffh		| 32h 50				| LCD backlight dim:	__50__ 	0 to Bright value	| LCD menu		| D3 Ax0d33 C1
 | 0x0D32 3378		| uint8		| EEPROM_BACKLIGHT_MODE					| 02h 2			| ffh 255				| LCD backlight mode: __Auto__						| LCD menu		| D3 Ax0d32 C1
 | ^					| ^			| ^										| 01h 1			| ^						| LCD backlight mode: __Bright__					| ^				| ^
