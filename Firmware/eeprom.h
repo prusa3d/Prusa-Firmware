@@ -414,10 +414,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
 #define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4)                 //float for current position in E
 
-#dedine EEPROM_FREE_NR2         (EEPROM_UVLO_CURRENT_POSITION_E - 1)			// FREE EEPROM SPACE
-#dedine EEPROM_FREE_NR3         (EEPROM_FREE_NR2 - 1)							// FREE EEPROM SPACE
-#dedine EEPROM_FREE_NR4         (EEPROM_FREE_NR3 - 1)							// FREE EEPROM SPACE
-#dedine EEPROM_FREE_NR5         (EEPROM_FREE_NR4 - 1)							// FREE EEPROM SPACE
+#define EEPROM_FREE_NR2         (EEPROM_UVLO_CURRENT_POSITION_E - 1)			// FREE EEPROM SPACE
+#define EEPROM_FREE_NR3         (EEPROM_FREE_NR2 - 1)							// FREE EEPROM SPACE
+#define EEPROM_FREE_NR4         (EEPROM_FREE_NR3 - 1)							// FREE EEPROM SPACE
+#define EEPROM_FREE_NR5         (EEPROM_FREE_NR4 - 1)							// FREE EEPROM SPACE
 // Crash detection mode EEPROM setting 
 #define EEPROM_CRASH_DET         (EEPROM_FREE_NR5 - 1)       				    // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-12) 
 // Crash detection counter Y (last print)
