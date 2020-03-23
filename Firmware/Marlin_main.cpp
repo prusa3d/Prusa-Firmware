@@ -5365,7 +5365,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G90 - Switch off relative mode <a href="https://reprap.org/wiki/G-code#G90:_Set_to_Absolute_Positioning">G90: Set to Absolute Positioning</a>
-	All coordinates from now on are absolute relative to the origin of the machine.
+	All coordinates from now on are absolute relative to the origin of the machine. E axis is left intact.
     */
     case 90: {
 		axis_relative_modes &= ~(X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK);
@@ -5374,7 +5374,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G91 - Switch on relative mode <a href="https://reprap.org/wiki/G-code#G91:_Set_to_Relative_Positioning">G91: Set to Relative Positioning</a>
-    All coordinates from now on are relative to the last position.
+    All coordinates from now on are relative to the last position. E axis is left intact.
 	*/
     case 91: {
 		axis_relative_modes |= X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK;
