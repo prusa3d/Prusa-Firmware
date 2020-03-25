@@ -9105,7 +9105,6 @@ Sigma_Exit:
       For more information see https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf
     *
 	*/
-
 	case 2130:
 		dcode_2130(); break;
 #endif //TMC2130
