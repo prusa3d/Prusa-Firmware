@@ -56,7 +56,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
    - __S/P__	Statistics and Shipping prep
    
   will overwrite existing values to 0 or default.
-  A FactoryReset All Data will overwrite the hole EEPROM with ffh and some values will be initialized automatically,
+  A FactoryReset All Data will overwrite the whole EEPROM with ffh and some values will be initialized automatically,
   others need a reset / reboot.
   
   ---------------------------------------------------------------------------------
