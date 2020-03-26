@@ -75,7 +75,9 @@ public:
   bool sdprinting ;  
   bool cardOK ;
   char filename[13];
-  uint16_t modificationTime, modificationDate;
+  // There are scenarios when simple modification time is not enough (on MS Windows)
+  // Therefore these timestamps hold the most recent one of creation/modification date/times
+  uint16_t crmodTime, crmodDate;
   uint32_t cluster, position;
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;

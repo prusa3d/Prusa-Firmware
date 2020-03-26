@@ -1313,10 +1313,17 @@ void setup()
 	setup_photpin();
 
 	servo_init();
+
 	// Reset the machine correction matrix.
 	// It does not make sense to load the correction matrix until the machine is homed.
 	world2machine_reset();
-    
+
+    // Initialize current_position accounting for software endstops to
+    // avoid unexpected initial shifts on the first move
+    clamp_to_software_endstops(current_position);
+    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS],
+                      current_position[Z_AXIS], current_position[E_AXIS]);
+
 #ifdef FILAMENT_SENSOR
 	fsensor_init();
 #endif //FILAMENT_SENSOR
@@ -4999,7 +5006,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 1) {
-				clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+				bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 				SERIAL_PROTOCOL(mesh_point);
 				clamped ? SERIAL_PROTOCOLPGM(": xy clamped.\n") : SERIAL_PROTOCOLPGM(": no xy clamping\n");
 			}
@@ -8802,12 +8809,18 @@ Sigma_Exit:
     This command can be used without any additional parameters. It will read the entire RAM.
     #### Usage
     
-        D3 [ A | C | X ]
+        D2 [ A | C | X ]
     
     #### Parameters
-    - `A` - Address (0x0000-0x1fff)
-    - `C` - Count (0x0001-0x2000)
+    - `A` - Address (x0000-x1fff)
+    - `C` - Count (1-8192)
     - `X` - Data
+
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
     */
 	case 2:
 		dcode_2(); break;
@@ -8822,9 +8835,15 @@ Sigma_Exit:
         D3 [ A | C | X ]
     
     #### Parameters
-    - `A` - Address (0x0000-0x0fff)
-    - `C` - Count (0x0001-0x1000)
-    - `X` - Data
+    - `A` - Address (x0000-x0fff)
+    - `C` - Count (1-4096)
+    - `X` - Data (hex)
+	
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
     */
 	case 3:
 		dcode_3(); break;
@@ -8854,14 +8873,20 @@ Sigma_Exit:
     This command can be used without any additional parameters. It will read the 1kb FLASH.
     #### Usage
     
-        D3 [ A | C | X | E ]
+        D5 [ A | C | X | E ]
     
     #### Parameters
-    - `A` - Address (0x00000-0x3ffff)
-    - `C` - Count (0x0001-0x2000)
+    - `A` - Address (x00000-x3ffff)
+    - `C` - Count (1-8192)
     - `X` - Data
     - `E` - Erase
-    */
+ 	
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
+   */
 	case 5:
 		dcode_5(); break;
 		break;
@@ -8925,7 +8950,7 @@ Sigma_Exit:
 
     /*!
     ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
-    Writes the actual time in the log file.
+    Writes the current time in the log file.
     */
 
 #endif //DEBUG_DCODES
@@ -9080,7 +9105,6 @@ Sigma_Exit:
       For more information see https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf
     *
 	*/
-
 	case 2130:
 		dcode_2130(); break;
 #endif //TMC2130
@@ -9124,8 +9148,8 @@ Sigma_Exit:
 #### End of D-Codes
 */
 
-  /** @defgroup GCodes G-Code List 
-  */
+/** @defgroup GCodes G-Code List 
+*/
 
 // ---------------------------------------------------
 
