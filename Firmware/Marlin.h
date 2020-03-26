@@ -311,9 +311,9 @@ extern int8_t lcd_change_fil_state;
 extern float default_retraction;
 
 #ifdef TMC2130
-bool homeaxis(int axis, bool doError = 1, uint8_t cnt = 1, uint8_t* pstep = 0);
+bool homeaxis(int axis, bool doError = true, uint8_t cnt = 1, uint8_t* pstep = 0);
 #else
-bool homeaxis(int axis, bool doError = 1, uint8_t cnt = 1);
+bool homeaxis(int axis, bool doError = true, uint8_t cnt = 1);
 #endif //TMC2130
 
 

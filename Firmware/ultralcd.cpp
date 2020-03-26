@@ -7697,7 +7697,7 @@ bool lcd_selftest()
         set_destination_to_current();
 		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 1500);
 #ifdef TMC2130
-		_result = homeaxis(Z_AXIS, 0);
+		_result = homeaxis(Z_AXIS, false);
 #else
         _result = lcd_selfcheck_axis(Z_AXIS, Z_MAX_POS);
 #endif //TMC2130
