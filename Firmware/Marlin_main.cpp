@@ -9445,7 +9445,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 {
 #ifdef FILAMENT_SENSOR
 bool bInhibitFlag;
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 static uint8_t nFSCheckCount=0;
 #endif // IR_SENSOR_ANALOG
 
@@ -9457,7 +9457,7 @@ static uint8_t nFSCheckCount=0;
 #endif // PAT9125
 #ifdef IR_SENSOR
           bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
           bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Settings::HWsetup::FSdetect menu active
 #endif // IR_SENSOR_ANALOG
 #endif // IR_SENSOR
@@ -9465,7 +9465,7 @@ static uint8_t nFSCheckCount=0;
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
                     bool bTemp=current_voltage_raw_IR>IRsensor_Hmin_TRESHOLD;
                     bTemp=bTemp&&current_voltage_raw_IR<IRsensor_Hopen_TRESHOLD;
                     bTemp=bTemp&&(!CHECK_ALL_HEATERS);

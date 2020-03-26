@@ -73,7 +73,7 @@ int current_voltage_raw_pwr = 0;
 int current_voltage_raw_bed = 0;
 #endif
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 int current_voltage_raw_IR = 0;
 #endif //IR_SENSOR_ANALOG
 
@@ -1595,7 +1595,7 @@ void adc_ready(void) //callback from adc when sampling finished
 #ifdef VOLT_BED_PIN
 	current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
 #endif
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      current_voltage_raw_IR = adc_values[ADC_PIN_IDX(VOLT_IR_PIN)];
 #endif //IR_SENSOR_ANALOG
 	temp_meas_ready = true;

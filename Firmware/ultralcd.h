@@ -140,7 +140,7 @@ extern uint8_t farm_status;
 #define SILENT_MODE_OFF SILENT_MODE_POWER
 #endif
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 extern bool bMenuFSDetect;
 #endif //IR_SENSOR_ANALOG
 
@@ -257,7 +257,7 @@ enum class WizState : uint8_t
 void lcd_wizard(WizState state);
 
 #define VOLT_DIV_REF 5
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 #define IRsensor_Hmin_TRESHOLD (3.0*1023*OVERSAMPLENR/VOLT_DIV_REF) // ~3.0V (0.6*Vcc)
 #define IRsensor_Lmax_TRESHOLD (1.5*1023*OVERSAMPLENR/VOLT_DIV_REF) // ~1.5V (0.3*Vcc)
 #define IRsensor_Hopen_TRESHOLD (4.6*1023*OVERSAMPLENR/VOLT_DIV_REF) // ~4.6V (N.C. @ Ru~20-50k, Rd'=56k, Ru'=10k)

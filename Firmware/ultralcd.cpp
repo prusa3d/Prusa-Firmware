@@ -68,7 +68,7 @@ uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 bool bMenuFSDetect=false;
 #endif //IR_SENSOR_ANALOG
 
@@ -239,7 +239,7 @@ static FanCheck lcd_selftest_fan_auto(int _fan);
 static bool lcd_selftest_fsensor();
 #endif //PAT9125
 static bool selftest_irsensor();
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 static bool lcd_selftest_IRsensor(bool bStandalone=false);
 static void lcd_detect_IRsensor();
 #endif //IR_SENSOR_ANALOG
@@ -1945,7 +1945,7 @@ static void lcd_menu_temperatures()
     menu_back_if_clicked();
 }
 
-#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || IR_SENSOR_ANALOG
+#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || defined(IR_SENSOR_ANALOG)
 #define VOLT_DIV_R1 10000
 #define VOLT_DIV_R2 2370
 #define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
@@ -1957,27 +1957,24 @@ static void lcd_menu_temperatures()
 //! |                    |
 //! | PWR:         00.0V |	c=12 r=1
 //! | Bed:         00.0V |	c=12 r=1
-//! |                    |
+//! | IR :         00.0V |  c=12 r=1 optional
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_voltages()
 {
-	lcd_timeoutToStatus.stop(); //infinite timeout
-	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-	lcd_home();
-#if !IR_SENSOR_ANALOG
-	lcd_printf_P(PSTR("\n"));
-#endif //!IR_SENSOR_ANALOG
-     lcd_printf_P(PSTR(" PWR:      %4.1fV\n" " BED:      %4.1fV"), volt_pwr, volt_bed);
-#if IR_SENSOR_ANALOG
-     float volt_IR = VOLT_DIV_REF * ((float)current_voltage_raw_IR / (1023 * OVERSAMPLENR));
-     lcd_printf_P(PSTR("\n IR :       %3.1fV"),volt_IR);
+    lcd_timeoutToStatus.stop(); //infinite timeout
+    float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
+    float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
+    lcd_home();
+    lcd_printf_P(PSTR(" PWR:      %4.1fV\n" " BED:      %4.1fV"), volt_pwr, volt_bed);
+#ifdef IR_SENSOR_ANALOG
+    float volt_IR = VOLT_DIV_REF * ((float)current_voltage_raw_IR / (1023 * OVERSAMPLENR));
+    lcd_printf_P(PSTR("\n IR :       %3.1fV"),volt_IR);
 #endif //IR_SENSOR_ANALOG
-     menu_back_if_clicked();
+    menu_back_if_clicked();
 }
-#endif //defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || IR_SENSOR_ANALOG
+#endif //defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || defined(IR_SENSOR_ANALOG)
 
 #ifdef TMC2130
 //! @brief Show Belt Status
@@ -2151,7 +2148,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17 r=1
   MENU_ITEM_BACK_P(PSTR(__DATE__));
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
   switch(oFsensorPCB)
@@ -5653,7 +5650,7 @@ SETTINGS_VERSION;
 MENU_END();
 }
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 static void lcd_fsensor_actionNA_set(void)
 {
 switch(oFsensorActionNA)
@@ -5719,7 +5716,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     SETTINGS_NOZZLE;
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;
     MENU_ITEM_FUNCTION_P(PSTR("FS Detect"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
@@ -7140,7 +7137,7 @@ static void lcd_tune_menu()
 	else {
 		MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);
 	}
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      FSENSOR_ACTION_NA;
 #endif //IR_SENSOR_ANALOG
 #endif //FILAMENT_SENSOR
@@ -7520,7 +7517,7 @@ void lcd_belttest()
 }
 #endif //TMC2130
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 static bool lcd_selftest_IRsensor(bool bStandalone)
 {
 bool bAction;
@@ -7586,7 +7583,7 @@ bool lcd_selftest()
 	int _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
-//#if IR_SENSOR_ANALOG
+//#ifdef IR_SENSOR_ANALOG
 #if (0)
      bool bAction;
      bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
@@ -7796,7 +7793,7 @@ bool lcd_selftest()
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //PAT9125
-//#if IR_SENSOR_ANALOG
+//#ifdef IR_SENSOR_ANALOG
 #if (0)
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
                _result = lcd_selftest_IRsensor();

@@ -78,7 +78,7 @@ extern int current_voltage_raw_pwr;
 extern int current_voltage_raw_bed;
 #endif
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 extern int current_voltage_raw_IR;
 #endif //IR_SENSOR_ANALOG
 
