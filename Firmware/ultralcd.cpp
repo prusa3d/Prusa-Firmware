@@ -7601,10 +7601,7 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-//     _delay(2000);
-    
-    FORCE_BL_ON_START;
-    
+	FORCE_BL_ON_START;
 	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 
