@@ -294,7 +294,7 @@ void setPwmFrequency(uint8_t pin, int val);
 
 extern bool fans_check_enabled;
 extern float homing_feedrate[];
-extern bool axis_relative_modes[];
+extern uint8_t axis_relative_modes;
 extern float feedrate;
 extern int feedmultiply;
 extern int extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders

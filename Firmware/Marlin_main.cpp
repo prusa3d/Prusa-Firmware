@@ -179,9 +179,13 @@ float default_retraction = DEFAULT_RETRACTION;
 
 
 float homing_feedrate[] = HOMING_FEEDRATE;
-// Currently only the extruder axis may be switched to a relative mode.
-// Other axes are always absolute or relative based on the common relative_mode flag.
-bool axis_relative_modes[] = AXIS_RELATIVE_MODES;
+
+//Although this flag and many others like this could be represented with a struct/bitfield for each axis (more readable and efficient code), the implementation
+//would not be standard across all platforms. That being said, the code will continue to use bitmasks for independent axis.
+//Moreover, according to C/C++ standard, the ordering of bits is platform/compiler dependent and the compiler is allowed to align the bits arbitrarily,
+//thus bit operations like shifting and masking may stop working and will be very hard to fix.
+uint8_t axis_relative_modes = 0;
+
 int feedmultiply=100; //100->1 200->2
 int extrudemultiply=100; //100->1 200->2
 int extruder_multiply[EXTRUDERS] = {100
@@ -5376,21 +5380,19 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G90 - Switch off relative mode <a href="https://reprap.org/wiki/G-code#G90:_Set_to_Absolute_Positioning">G90: Set to Absolute Positioning</a>
-	All coordinates from now on are absolute relative to the origin of the machine. E axis is also switched to absolute mode.
+	All coordinates from now on are absolute relative to the origin of the machine. E axis is left intact.
     */
     case 90: {
-        for(uint8_t i = 0; i != NUM_AXIS; ++i)
-            axis_relative_modes[i] = false;
+		axis_relative_modes &= ~(X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK);
     }
     break;
 
     /*!
 	### G91 - Switch on relative mode <a href="https://reprap.org/wiki/G-code#G91:_Set_to_Relative_Positioning">G91: Set to Relative Positioning</a>
-    All coordinates from now on are relative to the last position. E axis is also switched to relative mode.
+    All coordinates from now on are relative to the last position. E axis is left intact.
 	*/
     case 91: {
-        for(uint8_t i = 0; i != NUM_AXIS; ++i)
-            axis_relative_modes[i] = true;
+		axis_relative_modes |= X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK;
     }
     break;
 
@@ -6567,7 +6569,7 @@ Sigma_Exit:
 	Makes the extruder interpret extrusion as absolute positions.
     */
     case 82:
-      axis_relative_modes[E_AXIS] = false;
+      axis_relative_modes &= ~E_AXIS_MASK;
       break;
 
     /*!
@@ -6575,7 +6577,7 @@ Sigma_Exit:
 	Makes the extruder interpret extrusion values as relative positions.
     */
     case 83:
-      axis_relative_modes[E_AXIS] = true;
+      axis_relative_modes |= E_AXIS_MASK;
       break;
 
     /*!
@@ -9216,7 +9218,7 @@ void get_coordinates()
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
-      bool relative = axis_relative_modes[i];
+      bool relative = axis_relative_modes & (1 << i);
       destination[i] = (float)code_value();
       if (i == E_AXIS) {
         float emult = extruder_multiplier[active_extruder];
@@ -10644,7 +10646,7 @@ void uvlo_()
 
     // Store the print E position before we lose track
 	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, (axis_relative_modes & E_AXIS_MASK)?0:1);
 
     // Clean the input command queue, inhibit serial processing using saved_printing
     cmdqueue_reset();
@@ -11233,7 +11235,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
-	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
+	saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
 	saved_fanSpeed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
@@ -11315,7 +11317,7 @@ void restore_print_from_ram_and_continue(float e_move)
 		wait_for_heater(_millis(), saved_active_extruder);
 		heating_status = 2;
 	}
-	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
+	axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
   

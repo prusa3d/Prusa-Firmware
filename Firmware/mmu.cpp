@@ -796,8 +796,8 @@ void mmu_load_to_nozzle()
 {
 	st_synchronize();
 	
-	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
-	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = true;
+	const bool saved_e_relative_mode = axis_relative_modes & E_AXIS_MASK;
+	if (!saved_e_relative_mode) axis_relative_modes |= E_AXIS_MASK;
 	if (ir_sensor_detected)
 	{
 		current_position[E_AXIS] += 3.0f;
@@ -821,7 +821,7 @@ void mmu_load_to_nozzle()
 	feedrate = 871;
 	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
     st_synchronize();
-	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
+	if (!saved_e_relative_mode) axis_relative_modes &= ~E_AXIS_MASK;
 }
 
 void mmu_M600_wait_and_beep() {
