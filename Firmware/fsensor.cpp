@@ -119,7 +119,7 @@ int16_t fsensor_oq_yd_max;
 uint16_t fsensor_oq_sh_sum;
 //! @}
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 ClFsensorPCB oFsensorPCB;
 ClFsensorActionNA oFsensorActionNA;
 bool bIRsensorStateFlag=false;
@@ -188,7 +188,7 @@ void fsensor_init(void)
 		fsensor_not_responding = true;
 	}
 #endif //PAT9125
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      bIRsensorStateFlag=false;
      oFsensorPCB=(ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
      oFsensorActionNA=(ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
@@ -198,7 +198,7 @@ void fsensor_init(void)
 	else
 		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
 	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      printf_P(PSTR(" (sensor board revision: %S)\n"),(oFsensorPCB==ClFsensorPCB::_Rev03b)?PSTR("03b or newer"):PSTR("03 or older"));
 #else //IR_SENSOR_ANALOG
      printf_P(PSTR("\n"));
@@ -231,7 +231,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
 		FSensorStateMenu = 1;
 	}
 #else // PAT9125
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      if(!fsensor_IR_check())
           {
           bUpdateEEPROM=true;
@@ -244,7 +244,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
      fsensor_enabled=true;
      fsensor_not_responding=false;
      FSensorStateMenu=1;
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
           }
 #endif //IR_SENSOR_ANALOG
      if(bUpdateEEPROM)
@@ -660,7 +660,7 @@ void fsensor_update(void)
         {
                if(digitalRead(IR_SENSOR_PIN))
                {                                  // IR_SENSOR_PIN ~ H
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
                     if(!bIRsensorStateFlag)
                     {
                          bIRsensorStateFlag=true;
@@ -703,7 +703,7 @@ void fsensor_update(void)
 #endif //IR_SENSOR_ANALOG
                                   fsensor_checkpoint_print();
                                   fsensor_enque_M600();
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
                               }
                          }
                     }
@@ -717,7 +717,7 @@ void fsensor_update(void)
 #endif //PAT9125
 }
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 bool fsensor_IR_check()
 {
 uint16_t volt_IR_int;

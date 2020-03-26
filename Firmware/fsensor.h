@@ -81,7 +81,7 @@ extern void fsensor_st_block_chunk(int cnt);
 #endif //PAT9125
 
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 #define IR_SENSOR_STEADY 10                       // [ms]
 
 enum class ClFsensorPCB:uint_least8_t

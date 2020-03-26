@@ -46,6 +46,7 @@
 //-//
 #include "Configuration.h"
 #include "Marlin.h"
+#include "config.h"
   
 #ifdef ENABLE_AUTO_BED_LEVELING
 #include "vector_3.h"
@@ -9484,10 +9485,15 @@ static void handleSafetyTimer()
 }
 #endif //SAFETYTIMER
 
+#define FS_CHECK_COUNT 15
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
-bool bInhibitFlag;
 #ifdef FILAMENT_SENSOR
+bool bInhibitFlag;
+#ifdef IR_SENSOR_ANALOG
+static uint8_t nFSCheckCount=0;
+#endif // IR_SENSOR_ANALOG
+
 	if (mmu_enabled == false)
 	{
 //-//		if (mcode_in_progress != 600) //M600 not in progress
@@ -9496,11 +9502,35 @@ bool bInhibitFlag;
 #endif // PAT9125
 #ifdef IR_SENSOR
           bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
+#ifdef IR_SENSOR_ANALOG
+          bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Settings::HWsetup::FSdetect menu active
+#endif // IR_SENSOR_ANALOG
 #endif // IR_SENSOR
           if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
+#ifdef IR_SENSOR_ANALOG
+                    bool bTemp=current_voltage_raw_IR>IRsensor_Hmin_TRESHOLD;
+                    bTemp=bTemp&&current_voltage_raw_IR<IRsensor_Hopen_TRESHOLD;
+                    bTemp=bTemp&&(!CHECK_ALL_HEATERS);
+                    bTemp=bTemp&&(menu_menu==lcd_status_screen);
+                    bTemp=bTemp&&((oFsensorPCB==ClFsensorPCB::_Old)||(oFsensorPCB==ClFsensorPCB::_Undef));
+                    bTemp=bTemp&&fsensor_enabled;
+                    if(bTemp)
+                    {
+                         nFSCheckCount++;
+                         if(nFSCheckCount>FS_CHECK_COUNT)
+                         {
+                              nFSCheckCount=0;    // not necessary
+                              oFsensorPCB=ClFsensorPCB::_Rev03b;
+                              eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+                              printf_IRSensorAnalogBoardChange(true);
+                              lcd_setstatuspgm(_i("FS rev. 03b or newer"));
+                         }
+                    }
+                    else nFSCheckCount=0;
+#endif // IR_SENSOR_ANALOG
 				if (fsensor_check_autoload())
 				{
 #ifdef PAT9125
