@@ -173,6 +173,9 @@ void plan_set_e_position(const float &e);
 // Reset the E position to zero at the start of the next segment
 void plan_reset_next_e();
 
+inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
+inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
+
 extern bool e_active();
 
 void check_axes_activity();

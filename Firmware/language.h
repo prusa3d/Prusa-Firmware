@@ -6,7 +6,9 @@
 
 #include "config.h"
 #include <inttypes.h>
-//#include <stdio.h>
+#ifdef DEBUG_SEC_LANG
+    #include <stdio.h>
+#endif //DEBUG_SEC_LANG
 
 #define PROTOCOL_VERSION "1.0"
 
