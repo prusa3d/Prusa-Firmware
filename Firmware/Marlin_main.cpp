@@ -8809,12 +8809,18 @@ Sigma_Exit:
     This command can be used without any additional parameters. It will read the entire RAM.
     #### Usage
     
-        D3 [ A | C | X ]
+        D2 [ A | C | X ]
     
     #### Parameters
-    - `A` - Address (0x0000-0x1fff)
-    - `C` - Count (0x0001-0x2000)
+    - `A` - Address (x0000-x1fff)
+    - `C` - Count (1-8192)
     - `X` - Data
+
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
     */
 	case 2:
 		dcode_2(); break;
@@ -8829,9 +8835,15 @@ Sigma_Exit:
         D3 [ A | C | X ]
     
     #### Parameters
-    - `A` - Address (0x0000-0x0fff)
-    - `C` - Count (0x0001-0x1000)
-    - `X` - Data
+    - `A` - Address (x0000-x0fff)
+    - `C` - Count (1-4096)
+    - `X` - Data (hex)
+	
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
     */
 	case 3:
 		dcode_3(); break;
@@ -8861,14 +8873,20 @@ Sigma_Exit:
     This command can be used without any additional parameters. It will read the 1kb FLASH.
     #### Usage
     
-        D3 [ A | C | X | E ]
+        D5 [ A | C | X | E ]
     
     #### Parameters
-    - `A` - Address (0x00000-0x3ffff)
-    - `C` - Count (0x0001-0x2000)
+    - `A` - Address (x00000-x3ffff)
+    - `C` - Count (1-8192)
     - `X` - Data
     - `E` - Erase
-    */
+ 	
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
+   */
 	case 5:
 		dcode_5(); break;
 		break;
@@ -8932,7 +8950,7 @@ Sigma_Exit:
 
     /*!
     ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
-    Writes the actual time in the log file.
+    Writes the current time in the log file.
     */
 
 #endif //DEBUG_DCODES
@@ -9087,7 +9105,6 @@ Sigma_Exit:
       For more information see https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf
     *
 	*/
-
 	case 2130:
 		dcode_2130(); break;
 #endif //TMC2130
