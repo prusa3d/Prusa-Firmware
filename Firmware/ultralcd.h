@@ -142,6 +142,7 @@ extern uint8_t farm_status;
 
 #ifdef IR_SENSOR_ANALOG
 extern bool bMenuFSDetect;
+void printf_IRSensorAnalogBoardChange(bool bPCBrev03b);
 #endif //IR_SENSOR_ANALOG
 
 extern int8_t SilentModeMenu;

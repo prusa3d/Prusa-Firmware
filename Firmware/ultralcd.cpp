@@ -2160,10 +2160,8 @@ static void lcd_support_menu()
             MENU_ITEM_BACK_P(PSTR(" 03b or newer"));
             break;
        case ClFsensorPCB::_Undef:
-            MENU_ITEM_BACK_P(PSTR(" N/A"));
-            break;
        default:
-            MENU_ITEM_BACK_P(PSTR(" unknown"));
+            MENU_ITEM_BACK_P(PSTR(" state unknown"));
        }
 #endif // IR_SENSOR_ANALOG
 
@@ -5718,7 +5716,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 #ifdef IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;
-    MENU_ITEM_FUNCTION_P(PSTR("FS Detect"), lcd_detect_IRsensor);
+    MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
     MENU_END();
 }
@@ -7518,58 +7516,59 @@ void lcd_belttest()
 #endif //TMC2130
 
 #ifdef IR_SENSOR_ANALOG
-static bool lcd_selftest_IRsensor(bool bStandalone)
-{
-bool bAction;
-bool bPCBrev03b;
-uint16_t volt_IR_int;
-float volt_IR;
-
-volt_IR_int=current_voltage_raw_IR;
-bPCBrev03b=(volt_IR_int<((int)IRsensor_Hopen_TRESHOLD));
-volt_IR=VOLT_DIV_REF*((float)volt_IR_int/(1023*OVERSAMPLENR));
-printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"),volt_IR);
-if(volt_IR_int<((int)IRsensor_Hmin_TRESHOLD))
-     {
-     if(!bStandalone)
-          lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
-     return(false);
-     }
-lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament (but not load them!) into extruder and then press the knob."));
-volt_IR_int=current_voltage_raw_IR;
-volt_IR=VOLT_DIV_REF*((float)volt_IR_int/(1023*OVERSAMPLENR));
-printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"),volt_IR);
-if(volt_IR_int>((int)IRsensor_Lmax_TRESHOLD))
-     {
-     if(!bStandalone)
-          lcd_selftest_error(TestError::FsensorLevel,"LOW","");
-     return(false);
-     }
-if((bPCBrev03b?1:0)!=(uint8_t)oFsensorPCB)        // safer then "(uint8_t)bPCBrev03b"
-     {
-     printf_P(PSTR("Filament sensor board change detected: revision %S\n"),bPCBrev03b?PSTR("03b or newer"):PSTR("03 or older"));
-     oFsensorPCB=bPCBrev03b?ClFsensorPCB::_Rev03b:ClFsensorPCB::_Old;
-     eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
-     }
-return(true);
+// called also from marlin_main.cpp
+void printf_IRSensorAnalogBoardChange(bool bPCBrev03b){
+    printf_P(PSTR("Filament sensor board change detected: revision %S\n"), bPCBrev03b ? PSTR("03b or newer") : PSTR("03 or older"));
 }
 
-static void lcd_detect_IRsensor()
+static bool lcd_selftest_IRsensor(bool bStandalone)
 {
-bool bAction;
+    bool bAction;
+    bool bPCBrev03b;
+    uint16_t volt_IR_int;
+    float volt_IR;
 
-bMenuFSDetect=true;                               // inhibits some code inside "manage_inactivity()"
-bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
-if(!bAction)
-     {
-     lcd_show_fullscreen_message_and_wait_P(_i("... so unload the filament and repeat action!"));
-     return;
-     }
-bAction=lcd_selftest_IRsensor(true);
-if(bAction)
-     lcd_show_fullscreen_message_and_wait_P(_i("PCB check successful - withdraw the filament now!"));
-else lcd_show_fullscreen_message_and_wait_P(_i("PCB check unsuccessful - withdraw the filament now!"));
-bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
+    volt_IR_int=current_voltage_raw_IR;
+    bPCBrev03b=(volt_IR_int<((int)IRsensor_Hopen_TRESHOLD));
+    volt_IR=VOLT_DIV_REF*((float)volt_IR_int/(1023*OVERSAMPLENR));
+    printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"),volt_IR);
+    if(volt_IR_int < ((int)IRsensor_Hmin_TRESHOLD)){
+        if(!bStandalone)
+            lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
+        return(false);
+    }
+    lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament (but not load them!) into extruder and then press the knob."));
+    volt_IR_int=current_voltage_raw_IR;
+    volt_IR=VOLT_DIV_REF*((float)volt_IR_int/(1023*OVERSAMPLENR));
+    printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"),volt_IR);
+    if(volt_IR_int > ((int)IRsensor_Lmax_TRESHOLD)){
+        if(!bStandalone)
+            lcd_selftest_error(TestError::FsensorLevel,"LOW","");
+        return(false);
+    }
+    if((bPCBrev03b?1:0)!=(uint8_t)oFsensorPCB){        // safer then "(uint8_t)bPCBrev03b"
+        printf_IRSensorAnalogBoardChange(bPCBrev03b);
+        oFsensorPCB=bPCBrev03b?ClFsensorPCB::_Rev03b:ClFsensorPCB::_Old;
+        eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+    }
+    return(true);
+}
+
+static void lcd_detect_IRsensor(){
+    bool bAction;
+
+    bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
+    bAction = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament loaded?"), false, false);
+    if(!bAction){
+        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
+        return;
+    }
+    bAction = lcd_selftest_IRsensor(true);
+    if(bAction)
+        lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));
+    else
+        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));
+    bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
 }
 #endif //IR_SENSOR_ANALOG
 
