@@ -8950,7 +8950,7 @@ Sigma_Exit:
 
     /*!
     ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
-    Writes the actual time in the log file.
+    Writes the current time in the log file.
     */
 
 #endif //DEBUG_DCODES
