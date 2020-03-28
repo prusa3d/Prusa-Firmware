@@ -8882,7 +8882,7 @@ Sigma_Exit:
     #### Parameters
     - `A` - Address (x00000-x3ffff)
     - `C` - Count (1-8192)
-    - `X` - Data
+    - `X` - Data (hex)
     - `E` - Erase
  	
 	#### Notes
