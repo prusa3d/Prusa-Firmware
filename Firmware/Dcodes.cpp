@@ -1,5 +1,6 @@
 #include "Dcodes.h"
 //#include "Marlin.h"
+#include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
 #include <stdio.h>
@@ -185,7 +186,6 @@ void dcode_3()
 #define BOOT_APP_FLG_COPY  0x02
 #define BOOT_APP_FLG_FLASH 0x04
 
-extern uint8_t fsensor_log;
 extern float current_temperature_pinda;
 extern float axis_steps_per_unit[NUM_AXIS];
 
@@ -843,11 +843,13 @@ void dcode_9125()
 		pat9125_y = (int)code_value();
 		LOG("pat9125_y=%d\n", pat9125_y);
 	}
+#ifdef DEBUG_FSENSOR_LOG
 	if (code_seen('L'))
 	{
 		fsensor_log = (int)code_value();
 		LOG("fsensor_log=%d\n", fsensor_log);
 	}
+#endif //DEBUG_FSENSOR_LOG
 }
 #endif //PAT9125
 
