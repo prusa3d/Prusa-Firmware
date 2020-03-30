@@ -72,7 +72,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   
   To convert hex to dec 		https://www.rapidtables.com/convert/number/hex-to-decimal.html
   
-  Version: 1.0
+  Version: 1.0.1
   
   ---------------------------------------------------------------------------------
   
