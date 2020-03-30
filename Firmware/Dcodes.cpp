@@ -1,6 +1,6 @@
 #include "Dcodes.h"
 //#include "Marlin.h"
-#include "configuration.h"
+#include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
 #include <stdio.h>
