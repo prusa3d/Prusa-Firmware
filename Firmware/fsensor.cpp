@@ -69,8 +69,10 @@ unsigned long fsensor_softfail_last = 0;
 uint8_t fsensor_softfail_ccnt = 0;
 #endif
 
+#ifdef DEBUG_FSENSOR_LOG
 //! log flag: 0=log disabled, 1=log enabled
 uint8_t fsensor_log = 1;
+#endif //DEBUG_FSENSOR_LOG
 
 
 //! @name filament autoload variables
