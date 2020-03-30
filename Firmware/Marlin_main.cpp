@@ -713,18 +713,18 @@ static void factory_reset(char level)
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
 
-			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+            eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+            eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
 
 			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
 			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
 			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
 			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
 
-			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
 
 			eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
 			eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
