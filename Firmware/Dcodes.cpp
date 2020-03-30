@@ -1,5 +1,6 @@
 #include "Dcodes.h"
 //#include "Marlin.h"
+#include "configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
 #include <stdio.h>
@@ -185,7 +186,6 @@ void dcode_3()
 #define BOOT_APP_FLG_COPY  0x02
 #define BOOT_APP_FLG_FLASH 0x04
 
-extern uint8_t fsensor_log;
 extern float current_temperature_pinda;
 extern float axis_steps_per_unit[NUM_AXIS];
 
@@ -193,6 +193,8 @@ extern float axis_steps_per_unit[NUM_AXIS];
 #define LOG(args...) printf(args)
 #endif //0
 #define LOG(args...)
+
+extern uint8_t fsensor_log;
 
     /*!
     *
