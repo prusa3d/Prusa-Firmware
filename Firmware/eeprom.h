@@ -72,7 +72,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   
   To convert hex to dec 		https://www.rapidtables.com/convert/number/hex-to-decimal.html
   
-  Version: 1.0
+  Version: 1.0.1
   
   ---------------------------------------------------------------------------------
   
@@ -355,7 +355,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D32 3378		| uint8		| EEPROM_BACKLIGHT_MODE					| 02h 2			| ffh 255				| LCD backlight mode: __Auto__						| LCD menu		| D3 Ax0d32 C1
 | ^					| ^			| ^										| 01h 1			| ^						| LCD backlight mode: __Bright__					| ^				| ^
 | ^					| ^			| ^										| 00h 0			| ^						| LCD backlight mode: __Dim__						| ^				| ^
-| 0x0D30 3376		| uint16	| EEPROM_BACKLIGHT_TIMEOUT				| 00 00 - ff ff | 0a 00h 65535			| LCD backlight timeout: __10__ seconds				| LCD menu		| D3 Ax0d30 C2
+| 0x0D30 3376		| uint16	| EEPROM_BACKLIGHT_TIMEOUT				| 01 00 - ff ff | 0a 00h 65535			| LCD backlight timeout: __10__ seconds				| LCD menu		| D3 Ax0d30 C2
 | 0x0D2C 3372		| float		| EEPROM_UVLO_LA_K						| ???			| ff ff ff ffh			| Power panic saved Linear Advanced K value			| ???			| D3 Ax0d2c C4
 
   
