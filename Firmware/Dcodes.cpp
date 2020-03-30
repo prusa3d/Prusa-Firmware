@@ -194,8 +194,6 @@ extern float axis_steps_per_unit[NUM_AXIS];
 #endif //0
 #define LOG(args...)
 
-extern uint8_t fsensor_log;
-
     /*!
     *
     ### D-1 - Endless Loop <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">D-1: Endless Loop</a>
@@ -845,11 +843,13 @@ void dcode_9125()
 		pat9125_y = (int)code_value();
 		LOG("pat9125_y=%d\n", pat9125_y);
 	}
+#ifdef DEBUG_FSENSOR_LOG
 	if (code_seen('L'))
 	{
 		fsensor_log = (int)code_value();
 		LOG("fsensor_log=%d\n", fsensor_log);
 	}
+#endif //DEBUG_FSENSOR_LOG
 }
 #endif //PAT9125
 
