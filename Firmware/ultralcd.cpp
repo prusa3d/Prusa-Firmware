@@ -1717,7 +1717,7 @@ static void lcd_menu_fails_stats_mmu_print()
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
         _i("Last print failures"), ////c=20 r=1
         _i("MMU fails"), fails, ////c=14 r=1
-        _i("MMU load fails"), load_fails); ////c=14 r=1
+        _i("MMU load f."), load_fails); ////c=14 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -1726,9 +1726,9 @@ static void lcd_menu_fails_stats_mmu_print()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Total failures      |	c=20 r=1
-//! | MMU fails:      000|	c=14 r=1
-//! | MMU load fails: 000|	c=14 r=1
-//! | MMU power fails:000|	c=14 r=1
+//! | MMU fails:    00000|	c=13 r=1
+//! | MMU load f.:  00000|	c=13 r=1
+//! | MMU power f.:   000|	c=14 r=1
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1736,14 +1736,14 @@ static void lcd_menu_fails_stats_mmu_total()
 {
 	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
-    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
-    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
+    uint16_t fails = eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT);
+    uint16_t load_fails = eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT);
     lcd_home();
-    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
+    lcd_printf_P(PSTR("%S\n" " %-14.14S%-5d\n" " %-14.14S%-5d\n" " %-16.16S%-3d"), 
         _i("Total failures"), ////c=20 r=1
-        _i("MMU fails"), fails, ////c=14 r=1
-        _i("MMU load fails"), load_fails, ////c=14 r=1
-        _i("MMU power fails"), mmu_power_failures); ////c=14 r=1
+        _i("MMU fails"), fails, ////c=13 r=1
+        _i("MMU load f."), load_fails, ////c=13 r=1
+        _i("MMU power f."), mmu_power_failures); ////c=14 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -2073,7 +2073,7 @@ static void lcd_preheat_menu()
 //! | --------------     |	STR_SEPARATOR
 //! | XYZ cal. details   |	MSG_XYZ_DETAILS
 //! | Extruder info      |	MSG_INFO_EXTRUDER
-//! | XYZ cal. details   |	MSG_INFO_SENSORS
+//! | Sensor info        |	MSG_INFO_SENSORS
 //! @endcode
 //! 
 //! If TMC2130 defined
