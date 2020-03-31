@@ -183,9 +183,9 @@ uint8_t pat9125_update(void)
 		if (pat9125_PID1 == 0xff) return 0;
 		if (ucMotion & 0x80)
 		{
-			uint8_t ucXL = pat9125_rd_reg(PAT9125_DELTA_XL);
-			uint8_t ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
-			uint8_t ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
+			uint16_t ucXL = pat9125_rd_reg(PAT9125_DELTA_XL);
+			uint16_t ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
+			uint16_t ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
 			if (pat9125_PID1 == 0xff) return 0;
 			int16_t iDX = ucXL | ((ucXYH << 4) & 0xf00);
 			int16_t iDY = ucYL | ((ucXYH << 8) & 0xf00);
@@ -207,8 +207,8 @@ uint8_t pat9125_update_y(void)
 		if (pat9125_PID1 == 0xff) return 0;
 		if (ucMotion & 0x80)
 		{
-			uint8_t ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
-			uint8_t ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
+			uint16_t ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
+			uint16_t ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
 			if (pat9125_PID1 == 0xff) return 0;
 			int16_t iDY = ucYL | ((ucXYH << 8) & 0xf00);
 			if (iDY & 0x800) iDY -= 4096;
@@ -219,18 +219,13 @@ uint8_t pat9125_update_y(void)
 	return 0;
 }
 
-uint8_t pat9125_update_y2(void)
+uint8_t pat9125_update_bs(void)
 {
 	if ((pat9125_PID1 == 0x31) && (pat9125_PID2 == 0x91))
 	{
-		uint8_t ucMotion = pat9125_rd_reg(PAT9125_MOTION);
-		if (pat9125_PID1 == 0xff) return 0; //NOACK error
-		if (ucMotion & 0x80)
-		{
-			int8_t dy = pat9125_rd_reg(PAT9125_DELTA_YL);
-			if (pat9125_PID1 == 0xff) return 0; //NOACK error
-			pat9125_y -= dy; //negative number, because direction switching does not work
-		}
+		pat9125_b = pat9125_rd_reg(PAT9125_FRAME);
+		pat9125_s = pat9125_rd_reg(PAT9125_SHUTTER);
+		if (pat9125_PID1 == 0xff) return 0;
 		return 1;
 	}
 	return 0;

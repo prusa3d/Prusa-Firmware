@@ -994,7 +994,7 @@ bool tmc2130_home_calibrate(uint8_t axis)
 	uint8_t step[16];
 	uint8_t cnt[16];
 	uint8_t val[16];
-	homeaxis(axis, 16, step);
+	homeaxis(axis, true, 16, step);
 	bubblesort_uint8(step, 16, 0);
 	printf_P(PSTR("sorted samples:\n"));
 	for (uint8_t i = 0; i < 16; i++)
