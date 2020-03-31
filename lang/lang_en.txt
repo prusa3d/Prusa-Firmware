@@ -393,14 +393,14 @@
 #
 "Measured skew"
 
-#
+# c=13 r=1
 "MMU fails"
 
 #
 "MMU load failed     "
 
-#
-"MMU load fails"
+# c=13 r=1
+"MMU load f."
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -417,8 +417,8 @@
 #
 "MMU needs user attention."
 
-#
-"MMU power fails"
+# c=14 r=1
+"MMU power f."
 
 #MSG_STEALTH
 "Stealth"

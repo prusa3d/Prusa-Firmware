@@ -526,7 +526,7 @@
 "Measured skew"
 "Zmierzony skos"
 
-#
+# c=13 r=1
 "MMU fails"
 "Bledy MMU"
 
@@ -534,8 +534,8 @@
 "MMU load failed     "
 "Blad ladowania MMU"
 
-#
-"MMU load fails"
+# c=13 r=1
+"MMU load f."
 "Bledy ladow. MMU"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
@@ -558,8 +558,8 @@
 "MMU needs user attention."
 "MMU wymaga uwagi uzytkownika."
 
-#
-"MMU power fails"
+# c=14 r=1
+"MMU power f."
 "Zaniki zasil. MMU"
 
 #MSG_STEALTH

@@ -526,7 +526,7 @@
 "Measured skew"
 "Merene zkoseni"
 
-#
+# c=13 r=1
 "MMU fails"
 "Selhani MMU"
 
@@ -534,8 +534,8 @@
 "MMU load failed     "
 "Zavedeni MMU selhalo"
 
-#
-"MMU load fails"
+# c=13 r=1
+"MMU load f."
 "MMU selhani zavadeni"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
@@ -558,8 +558,8 @@
 "MMU needs user attention."
 "MMU potrebuje zasah uzivatele."
 
-#
-"MMU power fails"
+# c=14 r=1
+"MMU power f."
 "MMU vypadky proudu"
 
 #MSG_STEALTH

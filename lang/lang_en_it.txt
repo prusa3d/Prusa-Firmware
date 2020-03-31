@@ -525,7 +525,7 @@
 "Measured skew"
 "Deviazione mis"
 
-#
+# c=13 r=1
 "MMU fails"
 "Fallimenti MMU"
 
@@ -533,8 +533,8 @@
 "MMU load failed     "
 "Caricamento MMU fallito"
 
-#
-"MMU load fails"
+# c=13 r=1
+"MMU load f."
 "Caricamenti MMU falliti"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
@@ -557,8 +557,8 @@
 "MMU needs user attention."
 "Il MMU richiede attenzione dall'utente."
 
-#
-"MMU power fails"
+# c=14 r=1
+"MMU power f."
 "Manc. corr. MMU"
 
 #MSG_STEALTH
