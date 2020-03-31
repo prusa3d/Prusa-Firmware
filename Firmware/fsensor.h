@@ -72,6 +72,9 @@ extern bool fsensor_oq_result(void);
 //! @{
 extern void fsensor_st_block_chunk(int cnt);
 
+// debugging
+extern uint8_t fsensor_log;
+
 // There's really nothing to do in block_begin: the stepper ISR likely has
 // called us already at the end of the last block, making this integration
 // redundant. LA1.5 might not always do that during a coasting move, so attempt
@@ -81,7 +84,7 @@ extern void fsensor_st_block_chunk(int cnt);
 #endif //PAT9125
 
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 #define IR_SENSOR_STEADY 10                       // [ms]
 
 enum class ClFsensorPCB:uint_least8_t
