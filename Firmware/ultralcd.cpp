@@ -1500,12 +1500,7 @@ void lcd_commands()
 		lcd_setstatuspgm(_T(WELCOME_MSG));
 		custom_message_type = CustomMsg::Status;
 
-		// planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
-		
-		axis_relative_modes[X_AXIS] = false;
-		axis_relative_modes[Y_AXIS] = false;
-		axis_relative_modes[Z_AXIS] = false;
-		axis_relative_modes[E_AXIS] = true;
+		axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
 		
 		isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
 	}
