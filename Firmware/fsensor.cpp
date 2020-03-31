@@ -18,19 +18,19 @@
 
 //! @name Basic parameters
 //! @{
-#define FSENSOR_CHUNK_LEN    0.64F  //!< filament sensor chunk length 0.64mm
-#define FSENSOR_ERR_MAX         17  //!< filament sensor maximum error count for runout detection
+#define FSENSOR_CHUNK_LEN      1.25 //!< filament sensor chunk length (mm)
+#define FSENSOR_ERR_MAX           4 //!< filament sensor maximum error/chunk count for runout detection
+
+#define FSENSOR_SOFTERR_CMAX      3 //!< number of contiguous soft failures before a triggering a runout
+#define FSENSOR_SOFTERR_DELTA 30000 //!< maximum interval (ms) to consider soft failures contiguous
 //! @}
 
 //! @name Optical quality measurement parameters
 //! @{
-#define FSENSOR_OQ_MAX_ES      6    //!< maximum error sum while loading (length ~64mm = 100chunks)
-#define FSENSOR_OQ_MAX_EM      2    //!< maximum error counter value while loading
-#define FSENSOR_OQ_MIN_YD      2    //!< minimum yd per chunk (applied to avg value)
-#define FSENSOR_OQ_MAX_YD      200  //!< maximum yd per chunk (applied to avg value)
-#define FSENSOR_OQ_MAX_PD      4    //!< maximum positive deviation (= yd_max/yd_avg)
-#define FSENSOR_OQ_MAX_ND      5    //!< maximum negative deviation (= yd_avg/yd_min)
-#define FSENSOR_OQ_MAX_SH      13   //!< maximum shutter value
+#define FSENSOR_OQ_MAX_ES      2    //!< maximum sum of error blocks during filament recheck
+#define FSENSOR_OQ_MIN_YD      2    //!< minimum yd sum during filament check (counts per inch)
+#define FSENSOR_OQ_MIN_BR      80   //!< minimum brightness value
+#define FSENSOR_OQ_MAX_SH      10   //!< maximum shutter value
 //! @}
 
 const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
@@ -44,28 +44,35 @@ const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 #define FSENSOR_INT_PIN_PCMSK_BIT PCINT13         // PinChange Interrupt / PinChange Enable Mask @ PJ4
 #define FSENSOR_INT_PIN_PCICR_BIT PCIE1           // PinChange Interrupt Enable / Flag @ PJ4
 
-//uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
-uint8_t fsensor_int_pin_old = 0;
-int16_t fsensor_chunk_len = 0;
-
 //! enabled = initialized and sampled every chunk event
 bool fsensor_enabled = true;
 //! runout watching is done in fsensor_update (called from main loop)
 bool fsensor_watch_runout = true;
 //! not responding - is set if any communication error occurred during initialization or readout
 bool fsensor_not_responding = false;
+
+#ifdef PAT9125
+uint8_t fsensor_int_pin_old = 0;
+//! optical checking "chunk lenght" (already in steps)
+int16_t fsensor_chunk_len = 0;
 //! enable/disable quality meassurement
 bool fsensor_oq_meassure_enabled = false;
-
 //! number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
 //! variable for accumulating step count (updated callbacks from stepper and ISR)
 int16_t fsensor_st_cnt = 0;
-//! last dy value from pat9125 sensor (used in ISR)
-int16_t fsensor_dy_old = 0;
+//! count of total sensor "soft" failures (filament status checks)
+uint8_t fsensor_softfail = 0;
+//! timestamp of last soft failure
+unsigned long fsensor_softfail_last = 0;
+//! count of soft failures within the configured time
+uint8_t fsensor_softfail_ccnt = 0;
+#endif
 
+#ifdef DEBUG_FSENSOR_LOG
 //! log flag: 0=log disabled, 1=log enabled
 uint8_t fsensor_log = 1;
+#endif //DEBUG_FSENSOR_LOG
 
 
 //! @name filament autoload variables
@@ -75,6 +82,8 @@ uint8_t fsensor_log = 1;
 bool fsensor_autoload_enabled = true;
 //! autoload watching enable/disable flag
 bool fsensor_watch_autoload = false;
+
+#ifdef PAT9125
 //
 uint16_t fsensor_autoload_y;
 //
@@ -84,6 +93,7 @@ uint32_t fsensor_autoload_last_millis;
 //
 uint8_t fsensor_autoload_sum;
 //! @}
+#endif
 
 
 //! @name filament optical quality measurement variables
@@ -111,7 +121,7 @@ int16_t fsensor_oq_yd_max;
 uint16_t fsensor_oq_sh_sum;
 //! @}
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 ClFsensorPCB oFsensorPCB;
 ClFsensorActionNA oFsensorActionNA;
 bool bIRsensorStateFlag=false;
@@ -125,11 +135,29 @@ void fsensor_stop_and_save_print(void)
     fsensor_watch_runout = false;
 }
 
+#ifdef PAT9125
+// Reset all internal counters to zero, including stepper callbacks
+void fsensor_reset_err_cnt()
+{
+    fsensor_err_cnt = 0;
+    pat9125_y = 0;
+    st_reset_fsensor();
+}
+
+void fsensor_set_axis_steps_per_unit(float u)
+{
+    fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * u);
+}
+#endif
+
+
 void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
     fsensor_watch_runout = true;
-	fsensor_err_cnt = 0;
+#ifdef PAT9125
+    fsensor_reset_err_cnt();
+#endif
     restore_print_from_ram_and_continue(0);
 }
 
@@ -154,7 +182,7 @@ void fsensor_init(void)
 #ifdef PAT9125
 	uint8_t oq_meassure_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_OQ_MEASS_ENABLED);
 	fsensor_oq_meassure_enabled = (oq_meassure_enabled == 1)?true:false;
-	fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * cs.axis_steps_per_unit[E_AXIS]);
+    fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[E_AXIS]);
 
 	if (!pat9125)
 	{
@@ -162,7 +190,7 @@ void fsensor_init(void)
 		fsensor_not_responding = true;
 	}
 #endif //PAT9125
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      bIRsensorStateFlag=false;
      oFsensorPCB=(ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
      oFsensorActionNA=(ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
@@ -172,7 +200,7 @@ void fsensor_init(void)
 	else
 		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
 	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      printf_P(PSTR(" (sensor board revision: %S)\n"),(oFsensorPCB==ClFsensorPCB::_Rev03b)?PSTR("03b or newer"):PSTR("03 or older"));
 #else //IR_SENSOR_ANALOG
      printf_P(PSTR("\n"));
@@ -194,8 +222,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
 		fsensor_enabled = pat9125 ? true : false;
 		fsensor_watch_runout = true;
 		fsensor_oq_meassure = false;
-		fsensor_err_cnt = 0;
-		fsensor_dy_old = 0;
+        fsensor_reset_err_cnt();
 		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled ? 0x01 : 0x00);
 		FSensorStateMenu = fsensor_enabled ? 1 : 0;
 	}
@@ -206,7 +233,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
 		FSensorStateMenu = 1;
 	}
 #else // PAT9125
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      if(!fsensor_IR_check())
           {
           bUpdateEEPROM=true;
@@ -219,7 +246,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
      fsensor_enabled=true;
      fsensor_not_responding=false;
      FSensorStateMenu=1;
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
           }
 #endif //IR_SENSOR_ANALOG
      if(bUpdateEEPROM)
@@ -275,12 +302,11 @@ void fsensor_autoload_check_start(void)
 	fsensor_autoload_last_millis = _millis();
 	fsensor_watch_runout = false;
 	fsensor_watch_autoload = true;
-	fsensor_err_cnt = 0;
 }
+
 
 void fsensor_autoload_check_stop(void)
 {
-
 //	puts_P(_N("fsensor_autoload_check_stop\n"));
 	if (!fsensor_enabled) return;
 //	puts_P(_N("fsensor_autoload_check_stop 1\n"));
@@ -291,7 +317,7 @@ void fsensor_autoload_check_stop(void)
 	fsensor_autoload_sum = 0;
 	fsensor_watch_autoload = false;
 	fsensor_watch_runout = true;
-	fsensor_err_cnt = 0;
+    fsensor_reset_err_cnt();
 }
 #endif //PAT9125
 
@@ -356,6 +382,7 @@ bool fsensor_check_autoload(void)
 	return false;
 }
 
+#ifdef PAT9125
 void fsensor_oq_meassure_set(bool State)
 {
 	fsensor_oq_meassure_enabled = State;
@@ -373,7 +400,7 @@ void fsensor_oq_meassure_start(uint8_t skip)
 	fsensor_oq_yd_sum = 0;
 	fsensor_oq_er_sum = 0;
 	fsensor_oq_er_max = 0;
-	fsensor_oq_yd_min = FSENSOR_OQ_MAX_YD;
+	fsensor_oq_yd_min = INT16_MAX;
 	fsensor_oq_yd_max = 0;
 	fsensor_oq_sh_sum = 0;
 	pat9125_update();
@@ -389,9 +416,9 @@ void fsensor_oq_meassure_stop(void)
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * fsensor_chunk_len / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
 	fsensor_oq_meassure = false;
-	fsensor_err_cnt = 0;
 }
 
+#ifdef FSENSOR_QUALITY
 const char _OK[] PROGMEM = "OK";
 const char _NG[] PROGMEM = "NG!";
 
@@ -427,18 +454,24 @@ bool fsensor_oq_result(void)
 	printf_P(_N("fsensor_oq_result %S\n"), (res?_OK:_NG));
 	return res;
 }
-#ifdef PAT9125
+#endif //FSENSOR_QUALITY
+
 ISR(FSENSOR_INT_PIN_VECT)
 {
 	if (mmu_enabled || ir_sensor_detected) return;
 	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
 	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
+
+    // prevent isr re-entry
 	static bool _lock = false;
 	if (_lock) return;
 	_lock = true;
+
+    // fetch fsensor_st_cnt atomically
 	int st_cnt = fsensor_st_cnt;
 	fsensor_st_cnt = 0;
 	sei();
+
 	uint8_t old_err_cnt = fsensor_err_cnt;
 	uint8_t pat9125_res = fsensor_oq_meassure?pat9125_update():pat9125_update_y();
 	if (!pat9125_res)
@@ -447,56 +480,71 @@ ISR(FSENSOR_INT_PIN_VECT)
 		fsensor_not_responding = true;
 		printf_P(ERRMSG_PAT9125_NOT_RESP, 1);
 	}
+
 	if (st_cnt != 0)
-	{ //movement
-		if (st_cnt > 0) //positive movement
-		{
-			if (pat9125_y < 0)
-			{
-				if (fsensor_err_cnt)
-					fsensor_err_cnt += 2;
-				else
-					fsensor_err_cnt++;
-			}
-			else if (pat9125_y > 0)
-			{
-				if (fsensor_err_cnt)
-					fsensor_err_cnt--;
-			}
-			else //(pat9125_y == 0)
-				if (((fsensor_dy_old <= 0) || (fsensor_err_cnt)) && (st_cnt > (fsensor_chunk_len >> 1)))
-					fsensor_err_cnt++;
-			if (fsensor_oq_meassure)
-			{
-				if (fsensor_oq_skipchunk)
-				{
-					fsensor_oq_skipchunk--;
-					fsensor_err_cnt = 0;
-				}
-				else
-				{
-					if (st_cnt == fsensor_chunk_len)
-					{
-						if (pat9125_y > 0) if (fsensor_oq_yd_min > pat9125_y) fsensor_oq_yd_min = (fsensor_oq_yd_min + pat9125_y) / 2;
-						if (pat9125_y >= 0) if (fsensor_oq_yd_max < pat9125_y) fsensor_oq_yd_max = (fsensor_oq_yd_max + pat9125_y) / 2;
-					}
-					fsensor_oq_samples++;
-					fsensor_oq_st_sum += st_cnt;
-					if (pat9125_y > 0) fsensor_oq_yd_sum += pat9125_y;
-					if (fsensor_err_cnt > old_err_cnt)
-						fsensor_oq_er_sum += (fsensor_err_cnt - old_err_cnt);
-					if (fsensor_oq_er_max < fsensor_err_cnt)
-						fsensor_oq_er_max = fsensor_err_cnt;
-					fsensor_oq_sh_sum += pat9125_s;
-				}
-			}
-		}
-		else //negative movement
-		{
-		}
-	}
-	else
-	{ //no movement
+	{
+        // movement was planned, check for sensor movement
+        int8_t st_dir = st_cnt >= 0;
+        int8_t pat9125_dir = pat9125_y >= 0;
+
+        if (pat9125_y == 0)
+        {
+            if (st_dir)
+            {
+                // no movement detected: we might be within a blind sensor range,
+                // update the frame and shutter parameters we didn't earlier
+                if (!fsensor_oq_meassure)
+                    pat9125_update_bs();
+
+                // increment the error count only if underexposed: filament likely missing
+                if ((pat9125_b < FSENSOR_OQ_MIN_BR) && (pat9125_s > FSENSOR_OQ_MAX_SH))
+                {
+                    // check for a dark frame (<30% avg brightness) with long exposure
+                    ++fsensor_err_cnt;
+                }
+                else
+                {
+                    // good frame, filament likely present
+                    if(fsensor_err_cnt) --fsensor_err_cnt;
+                }
+            }
+        }
+        else if (pat9125_dir != st_dir)
+        {
+            // detected direction opposite of motor movement
+            if (st_dir) ++fsensor_err_cnt;
+        }
+        else if (pat9125_dir == st_dir)
+        {
+            // direction agreeing with planned movement
+            if (fsensor_err_cnt) --fsensor_err_cnt;
+        }
+
+        if (st_dir && fsensor_oq_meassure)
+        {
+            // extruding with quality assessment
+            if (fsensor_oq_skipchunk)
+            {
+                fsensor_oq_skipchunk--;
+                fsensor_err_cnt = 0;
+            }
+            else
+            {
+                if (st_cnt == fsensor_chunk_len)
+                {
+                    if (pat9125_y > 0) if (fsensor_oq_yd_min > pat9125_y) fsensor_oq_yd_min = (fsensor_oq_yd_min + pat9125_y) / 2;
+                    if (pat9125_y >= 0) if (fsensor_oq_yd_max < pat9125_y) fsensor_oq_yd_max = (fsensor_oq_yd_max + pat9125_y) / 2;
+                }
+                fsensor_oq_samples++;
+                fsensor_oq_st_sum += st_cnt;
+                if (pat9125_y > 0) fsensor_oq_yd_sum += pat9125_y;
+                if (fsensor_err_cnt > old_err_cnt)
+                    fsensor_oq_er_sum += (fsensor_err_cnt - old_err_cnt);
+                if (fsensor_oq_er_max < fsensor_err_cnt)
+                    fsensor_oq_er_max = fsensor_err_cnt;
+                fsensor_oq_sh_sum += pat9125_s;
+            }
+        }
 	}
 
 #ifdef DEBUG_FSENSOR_LOG
@@ -507,9 +555,7 @@ ISR(FSENSOR_INT_PIN_VECT)
 	}
 #endif //DEBUG_FSENSOR_LOG
 
-	fsensor_dy_old = pat9125_y;
 	pat9125_y = 0;
-
 	_lock = false;
 	return;
 }
@@ -529,19 +575,16 @@ void fsensor_setup_interrupt(void)
      PCICR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // enable corresponding PinChangeInterrupt (set of pins)
 }
 
-#endif //PAT9125
-
 void fsensor_st_block_chunk(int cnt)
 {
 	if (!fsensor_enabled) return;
 	fsensor_st_cnt += cnt;
-	if (abs(fsensor_st_cnt) >= fsensor_chunk_len)
-	{
-// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
-	}
+
+    // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
+    if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
+    else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 }
+#endif //PAT9125
 
 
 //! Common code for enqueing M600 and supplemental codes into the command queue.
@@ -578,39 +621,48 @@ void fsensor_update(void)
             st_synchronize();
 
             // check the filament in isolation
-			fsensor_err_cnt = 0;
+            fsensor_reset_err_cnt();
 			fsensor_oq_meassure_start(0);
             float e_tmp = current_position[E_AXIS];
             current_position[E_AXIS] -= 3;
-            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            plan_buffer_line_curposXYZE(250/60, active_extruder);
             current_position[E_AXIS] = e_tmp;
             plan_buffer_line_curposXYZE(200/60, active_extruder);
             st_synchronize();
-
-			uint8_t err_cnt = fsensor_err_cnt;
 			fsensor_oq_meassure_stop();
 
 			bool err = false;
-			err |= (err_cnt > 1);
-
-			err |= (fsensor_oq_er_sum > 2);
-			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
+			err |= (fsensor_err_cnt > 0);                   // final error count is non-zero
+			err |= (fsensor_oq_er_sum > FSENSOR_OQ_MAX_ES); // total error count is above limit
+			err |= (fsensor_oq_yd_sum < FSENSOR_OQ_MIN_YD); // total measured distance is below limit
 
             fsensor_restore_print_and_continue();
-			fsensor_autoload_enabled = autoload_enabled_tmp;
-			fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
+            fsensor_autoload_enabled = autoload_enabled_tmp;
+            fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
 
-			if (!err)
-				printf_P(PSTR("fsensor_err_cnt = 0\n"));
-			else
-				fsensor_enque_M600();
+            unsigned long now = _millis();
+            if (!err && (now - fsensor_softfail_last) > FSENSOR_SOFTERR_DELTA)
+                fsensor_softfail_ccnt = 0;
+            if (!err && fsensor_softfail_ccnt <= FSENSOR_SOFTERR_CMAX)
+            {
+                printf_P(PSTR("fsensor_err_cnt = 0\n"));
+                ++fsensor_softfail;
+                ++fsensor_softfail_ccnt;
+                fsensor_softfail_last = now;
+            }
+            else
+            {
+                fsensor_softfail_ccnt = 0;
+                fsensor_softfail_last = 0;
+                fsensor_enque_M600();
+            }
 		}
 #else //PAT9125
 		if (CHECK_FSENSOR && ir_sensor_detected)
         {
                if(digitalRead(IR_SENSOR_PIN))
                {                                  // IR_SENSOR_PIN ~ H
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
                     if(!bIRsensorStateFlag)
                     {
                          bIRsensorStateFlag=true;
@@ -653,7 +705,7 @@ void fsensor_update(void)
 #endif //IR_SENSOR_ANALOG
                                   fsensor_checkpoint_print();
                                   fsensor_enque_M600();
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
                               }
                          }
                     }
@@ -667,7 +719,7 @@ void fsensor_update(void)
 #endif //PAT9125
 }
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 bool fsensor_IR_check()
 {
 uint16_t volt_IR_int;

@@ -383,8 +383,9 @@ void mmu_loop(void)
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
 				fsensor_checkpoint_print();
-				ad_markDepleted(mmu_extruder);
-				if (lcd_autoDepleteEnabled() && !ad_allDepleted())
+				if (mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't deplete unknown extruder.
+                    ad_markDepleted(mmu_extruder);
+				if (lcd_autoDepleteEnabled() && !ad_allDepleted() && mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't auto if F=?
 				{
 				    enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
 				}
@@ -795,8 +796,8 @@ void mmu_load_to_nozzle()
 {
 	st_synchronize();
 	
-	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
-	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = true;
+	const bool saved_e_relative_mode = axis_relative_modes & E_AXIS_MASK;
+	if (!saved_e_relative_mode) axis_relative_modes |= E_AXIS_MASK;
 	if (ir_sensor_detected)
 	{
 		current_position[E_AXIS] += 3.0f;
@@ -820,7 +821,7 @@ void mmu_load_to_nozzle()
 	feedrate = 871;
 	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
     st_synchronize();
-	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
+	if (!saved_e_relative_mode) axis_relative_modes &= ~E_AXIS_MASK;
 }
 
 void mmu_M600_wait_and_beep() {
