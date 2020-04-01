@@ -2314,9 +2314,15 @@ bool homeaxis(int axis, bool doError, uint8_t cnt)
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 			FORCE_HIGH_POWER_END;
-			if (doError) kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-            current_position[axis] = -5; //assume that nozzle crashed into bed
-            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+			if (doError)
+			{
+				current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
+				plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+				st_synchronize();
+				kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+			}
+			current_position[axis] = -MESH_HOME_Z_SEARCH; //assume that nozzle crashed into bed
+			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			return 0; 
 		}
 #endif //TMC2130
@@ -2332,9 +2338,15 @@ bool homeaxis(int axis, bool doError, uint8_t cnt)
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 			FORCE_HIGH_POWER_END;
-			if (doError) kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-            current_position[axis] = -5; //assume that nozzle crashed into bed
-            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+			if (doError)
+			{
+				current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
+				plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+				st_synchronize();
+				kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+			}
+			current_position[axis] = -MESH_HOME_Z_SEARCH; //assume that nozzle crashed into bed
+			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			return 0; 
 		}
 #endif //TMC2130
