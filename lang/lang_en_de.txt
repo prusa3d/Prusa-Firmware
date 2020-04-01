@@ -278,13 +278,9 @@
 "Fans check"
 "Luefter Chk."
 
-#MSG_FSENSOR
+#MSG_FSENSOR c=11 r=1
 "Fil. sensor"
 "\x00"
-
-# c=13 r=1
-"FilSens"
-"Filam. Maengel"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"

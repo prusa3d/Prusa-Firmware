@@ -278,13 +278,9 @@
 "Fans check"
 "Control.vent"
 
-#MSG_FSENSOR
+#MSG_FSENSOR c=11 r=1
 "Fil. sensor"
 "Sensore fil."
-
-# c=13 r=1
-"FilSens"
-"Filam. esauriti"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
