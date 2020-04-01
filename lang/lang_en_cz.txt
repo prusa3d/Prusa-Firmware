@@ -182,7 +182,7 @@
 "Crash detected. Resume print?"
 "Detekovan naraz. Obnovit tisk?"
 
-#
+# c=5 r=1
 "Crash"
 "Naraz"
 
@@ -282,8 +282,8 @@
 "Fil. sensor"
 "Fil. senzor"
 
-#
-"Filam. runouts"
+# c=13 r=1
+"FilSens"
 "Vypadky filam."
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -558,7 +558,7 @@
 "MMU needs user attention."
 "MMU potrebuje zasah uzivatele."
 
-# c=14 r=1
+# c=13 r=1
 "MMU power f."
 "MMU vypadky proudu"
 
@@ -750,8 +750,8 @@
 "Press knob to preheat nozzle and continue."
 "Pro nahrati trysky a pokracovani stisknete tlacitko."
 
-#
-"Power failures"
+# c=13 r=1
+"Power fails"
 "Vypadky proudu"
 
 #MSG_PRINT_ABORTED c=20

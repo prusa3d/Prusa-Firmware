@@ -182,7 +182,7 @@
 "Crash detected. Resume print?"
 "Wykryto zderzenie. Wznowic druk?"
 
-#
+# c=5 r=1
 "Crash"
 "Zderzenie"
 
@@ -282,8 +282,8 @@
 "Fil. sensor"
 "Czuj. filam."
 
-#
-"Filam. runouts"
+# c=13 r=1
+"FilSens"
 "Konc. filamentu"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -558,7 +558,7 @@
 "MMU needs user attention."
 "MMU wymaga uwagi uzytkownika."
 
-# c=14 r=1
+# c=13 r=1
 "MMU power f."
 "Zaniki zasil. MMU"
 
@@ -750,8 +750,8 @@
 "Press knob to preheat nozzle and continue."
 "Wcisnij pokretlo aby rozgrzac dysze i kontynuowac."
 
-#
-"Power failures"
+# c=13 r=1
+"Power fails"
 "Zaniki zasilania"
 
 #MSG_PRINT_ABORTED c=20

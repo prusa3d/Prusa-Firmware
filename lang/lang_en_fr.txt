@@ -182,7 +182,7 @@
 "Crash detected. Resume print?"
 "Crash detecte. Poursuivre l'impression?"
 
-#
+# c=5 r=1
 "Crash"
 "\x00"
 
@@ -280,8 +280,8 @@
 #MSG_FSENSOR
 "Fil. sensor"
 "Capteur Fil."
-#
-"Filam. runouts"
+# c=13 r=1
+"FilSens"
 "Fins de filament"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -556,7 +556,7 @@
 "MMU needs user attention."
 "Le MMU necessite l'attention de l'utilisateur."
 
-# c=14 r=1
+# c=13 r=1
 "MMU power f."
 "Echecs alim. MMU"
 
@@ -748,8 +748,8 @@
 "Press knob to preheat nozzle and continue."
 "Appuyez sur le bouton pour prechauffer la buse et continuer."
 
-#
-"Power failures"
+# c=13 r=1
+"Power fails"
 "Coup.de courant"
 
 #MSG_PRINT_ABORTED c=20
