@@ -333,7 +333,7 @@
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 
-#
+# c=20 r=1
 "Last print failures"
 
 #
@@ -417,7 +417,7 @@
 #
 "MMU needs user attention."
 
-# c=13 r=1
+# c=14 r=1
 "MMU power f."
 
 #MSG_STEALTH
@@ -786,7 +786,7 @@
 #
 "Unload"
 
-#
+# c=20 r=1
 "Total failures"
 
 #

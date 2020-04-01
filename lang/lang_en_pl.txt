@@ -446,7 +446,7 @@
 "Is steel sheet on heatbed?"
 "Czy plyta stal. jest na podgrzew. stole?"
 
-#
+# c=20 r=1
 "Last print failures"
 "Ostatnie bledy druku"
 
@@ -558,7 +558,7 @@
 "MMU needs user attention."
 "MMU wymaga uwagi uzytkownika."
 
-# c=13 r=1
+# c=14 r=1
 "MMU power f."
 "Zaniki zasil. MMU"
 
@@ -965,6 +965,7 @@
 #MSG_SOUND_ONCE
 "Once"
 "1-raz"
+
 #MSG_SPEED
 "Speed"
 "Predkosc"
@@ -1049,7 +1050,7 @@
 "Unload"
 "Rozladuj"
 
-#
+# c=20 r=1
 "Total failures"
 "Suma bledow"
 

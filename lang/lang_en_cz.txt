@@ -446,7 +446,7 @@
 "Is steel sheet on heatbed?"
 "Je tiskovy plat na podlozce?"
 
-#
+# c=20 r=1
 "Last print failures"
 "Selhani posl. tisku"
 
@@ -558,7 +558,7 @@
 "MMU needs user attention."
 "MMU potrebuje zasah uzivatele."
 
-# c=13 r=1
+# c=14 r=1
 "MMU power f."
 "MMU vypadky proudu"
 
@@ -1050,7 +1050,7 @@
 "Unload"
 "Vysunout"
 
-#
+# c=20 r=1
 "Total failures"
 "Celkem selhani"
 

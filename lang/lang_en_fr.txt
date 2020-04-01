@@ -261,6 +261,7 @@
 #MSG_FSENSOR_AUTOLOAD
 "F. autoload"
 "Autochargeur"
+
 #
 "Fail stats"
 "Stat. d'echec"
@@ -280,6 +281,7 @@
 #MSG_FSENSOR
 "Fil. sensor"
 "Capteur Fil."
+
 # c=13 r=1
 "FilSens"
 "Fins de filament"
@@ -444,7 +446,7 @@
 "Is steel sheet on heatbed?"
 "Plaque d'impression sur le lit chauffant?"
 
-#
+# c=20 r=1
 "Last print failures"
 "Echecs derniere imp."
 
@@ -556,7 +558,7 @@
 "MMU needs user attention."
 "Le MMU necessite l'attention de l'utilisateur."
 
-# c=13 r=1
+# c=14 r=1
 "MMU power f."
 "Echecs alim. MMU"
 
@@ -963,6 +965,7 @@
 #MSG_SOUND_ONCE
 "Once"
 "Une fois"
+
 #MSG_SPEED
 "Speed"
 "Vitesse"
@@ -1047,7 +1050,7 @@
 "Unload"
 "Decharger"
 
-#
+# c=20 r=1
 "Total failures"
 "Total des echecs"
 

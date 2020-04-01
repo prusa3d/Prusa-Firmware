@@ -1761,7 +1761,7 @@ static void lcd_menu_fails_stats_mmu_total()
 //! |01234567890123456789|
 //! |Total failures      |	c=20 r=1
 //! | Power fails   00000|	c=13 r=1
-//! | FilSens       00000|	c=13 r=1
+//! | Fil. sensor   00000|	c=11 r=1
 //! | Crash X00000 Y00000|	c=5 r=1
 //! ----------------------
 //! @endcode
@@ -1777,7 +1777,7 @@ static void lcd_menu_fails_stats_total()
     lcd_printf_P(PSTR("%S\n" " %-14.14S%-5u\n" " %-14.14S%-5u\n" " %-6.6SX%-5u Y%-5u"),
         _i("Total failures"),   ////c=20 r=1
         _i("Power fails"), power,   ////c=13 r=1
-        _i("FilSens"), filam,   ////c=13 r=1
+        _i("Fil. sensor"), filam,   ////c=11 r=1
         _i("Crash"), crashX, crashY);  ////c=5 r=1
     menu_back_if_clicked_fb();
 }
@@ -1788,7 +1788,7 @@ static void lcd_menu_fails_stats_total()
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
 //! | Power fails     000|	c=13 r=1
-//! | FilSens         000|	c=7 r=1
+//! | Fil. sensor     000|	c=11 r=1
 //! | Crash   X 000 Y 000|	c=5 r=1
 //! ----------------------
 //! @endcode
@@ -1802,28 +1802,37 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
     lcd_home();
 #ifndef PAT9125
-    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-7.7SX %-3d  Y %-3d"),
-        _i("Last print failures"),  ////c=20 r=1
-        _i("Power fails"), power,  ////c=13 r=1
-        _i("FilSens"), filam,  ////c=7 r=1
-        _i("Crash"), crashX, crashY);  ////c=5 r=1
-#else
-    // On the MK3 include detailed PAT9125 statistics about soft failures
 //! @brief Show Last Print Failures Statistics
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
 //! | Power fails     000|	c=13 r=1
-//! | FilSens H 000 S 000|	c=7 r=1
+//! | Fil. sensor     000|	c=11 r=1
 //! | Crash   X 000 Y 000|	c=5 r=1
 //! ----------------------
 //! @endcode
-    lcd_printf_P(PSTR("%S\n"
-                      " %-16.16S%-3d\n" " %-7.7S H %-3d S %-3d\n" " %-7.7S X %-3d Y %-3d"),
+    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-7.7SX %-3d  Y %-3d"),
+        _i("Last print failures"),  ////c=20 r=1
+        _i("Power fails"), power,  ////c=13 r=1
+        _i("Fil. sensor"), filam,  ////c=11 r=1
+        _i("Crash"), crashX, crashY);  ////c=5 r=1
+#else
+    // On the MK3 include detailed PAT9125 statistics about soft failures
+//! @brief Show Last Print Failures Statistics with PAT9125
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Last print failures |	c=20 r=1
+//! | Power fails     000|	c=13 r=1
+//! | Fil. sensorH000S000|	c=11 r=1
+//! | Crash   X 000 Y 000|	c=5 r=1
+//! ----------------------
+//! @endcode
+    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-11.11SH%-3dS%-3d\n" " %-7.7S X %-3d Y %-3d"),
                  _i("Last print failures"), ////c=20 r=1
                  _i("Power fails"), power, ////c=13 r=1
-                 _i("FilSens"), filam, fsensor_softfail, //c=7 r=1
+                 _i("Fil. sensor"), filam, fsensor_softfail, //c=13 r=1
                  _i("Crash"), crashX, crashY);  ////c=7 r=1
 #endif
     menu_back_if_clicked_fb();
@@ -1854,7 +1863,7 @@ static void lcd_menu_fails_stats()
 }
 
 #elif defined(FILAMENT_SENSOR)
-static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-16.16S%-3d\n";
+//static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-16.16S%-3d\n";
 //! 
 //! @brief Print last print and total filament run outs
 //! 
@@ -1865,9 +1874,9 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-1
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | Filam. runouts  000|	c=14 r=1
+//! | Fil. sensor     000|	c=11 r=1
 //! |Total failures      |	c=20 r=1
-//! | Filam. runouts  000|	c=14 r=1
+//! | Fil. sensor   00000|	c=11 r=1
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1877,11 +1886,11 @@ static void lcd_menu_fails_stats()
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
 	lcd_home();
-	lcd_printf_P(failStatsFmt, 
+	lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" "%S\n" " %-14.14S%-5u\n"), 
         _i("Last print failures"),   ////c=20 r=1
-        _i("Filam. runouts"), filamentLast,   ////c=14 r=1
+        _i("Fil. sensor"), filamentLast,   ////c=11 r=1
         _i("Total failures"),  ////c=20 r=1
-        _i("Filam. runouts"), filamentTotal);   ////c=14 r=1
+        _i("Fil. sensor"), filamentTotal);   ////c=11 r=1
 
 	menu_back_if_clicked();
 }

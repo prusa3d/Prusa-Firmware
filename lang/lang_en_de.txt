@@ -446,7 +446,7 @@
 "Is steel sheet on heatbed?"
 "Liegt das Stahlblech auf dem Heizbett?"
 
-#
+# c=20 r=1
 "Last print failures"
 "Letzte Druckfehler"
 
@@ -558,7 +558,7 @@
 "MMU needs user attention."
 "MMU erfordert Benutzereingriff."
 
-# c=13 r=1
+# c=14 r=1
 "MMU power f."
 "MMU Netzfehler"
 
@@ -1050,7 +1050,7 @@
 "Unload"
 "Entladen"
 
-#
+# c=20 r=1
 "Total failures"
 "Gesamte Fehler"
 

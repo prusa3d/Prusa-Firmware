@@ -446,7 +446,7 @@
 "Is steel sheet on heatbed?"
 "La piastra d'acciaio e sul piano riscaldato?"
 
-#
+# c=20 r=1
 "Last print failures"
 "Fallimenti ultima stampa"
 
@@ -558,7 +558,7 @@
 "MMU needs user attention."
 "Il MMU richiede attenzione dall'utente."
 
-# c=13 r=1
+# c=14 r=1
 "MMU power f."
 "Manc. corr. MMU"
 
@@ -1050,7 +1050,7 @@
 "Unload"
 "Scarica"
 
-#
+# c=20 r=1
 "Total failures"
 "Totale fallimenti"
 
