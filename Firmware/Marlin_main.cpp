@@ -2377,38 +2377,44 @@ void refresh_cmd_timeout(void)
 }
 
 #ifdef FWRETRACT
-  void retract(bool retracting, bool swapretract = false) {
+void retract(bool retracting, bool swapretract = false) {
+    // Perform FW retraction, just if needed, but behave as if the move has never took place in
+    // order to keep E/Z coordinates unchanged. This is done by manipulating the internal planner
+    // position, which requires a sync
     if(retracting && !retracted[active_extruder]) {
-      destination[X_AXIS]=current_position[X_AXIS];
-      destination[Y_AXIS]=current_position[Y_AXIS];
-      destination[Z_AXIS]=current_position[Z_AXIS];
-      destination[E_AXIS]=current_position[E_AXIS];
-      current_position[E_AXIS]+=(swapretract?retract_length_swap:cs.retract_length)*float(extrudemultiply)*0.01f;
-      plan_set_e_position(current_position[E_AXIS]);
-      float oldFeedrate = feedrate;
-      feedrate=cs.retract_feedrate*60;
-      retracted[active_extruder]=true;
-      prepare_move();
-      current_position[Z_AXIS]-=cs.retract_zlift;
-      plan_set_position_curposXYZE();
-      prepare_move();
-      feedrate = oldFeedrate;
+        st_synchronize();
+        set_destination_to_current();
+        current_position[E_AXIS]+=(swapretract?retract_length_swap:cs.retract_length)*float(extrudemultiply)*0.01f;
+        plan_set_e_position(current_position[E_AXIS]);
+        float oldFeedrate = feedrate;
+        feedrate=cs.retract_feedrate*60;
+        retracted[active_extruder]=true;
+        prepare_move();
+        if(cs.retract_zlift) {
+            st_synchronize();
+            current_position[Z_AXIS]-=cs.retract_zlift;
+            plan_set_position_curposXYZE();
+            prepare_move();
+        }
+        feedrate = oldFeedrate;
     } else if(!retracting && retracted[active_extruder]) {
-      destination[X_AXIS]=current_position[X_AXIS];
-      destination[Y_AXIS]=current_position[Y_AXIS];
-      destination[Z_AXIS]=current_position[Z_AXIS];
-      destination[E_AXIS]=current_position[E_AXIS];
-      current_position[Z_AXIS]+=cs.retract_zlift;
-      plan_set_position_curposXYZE();
-      current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(cs.retract_length+cs.retract_recover_length))*float(extrudemultiply)*0.01f;
-      plan_set_e_position(current_position[E_AXIS]);
-      float oldFeedrate = feedrate;
-      feedrate=cs.retract_recover_feedrate*60;
-      retracted[active_extruder]=false;
-      prepare_move();
-      feedrate = oldFeedrate;
+        st_synchronize();
+        set_destination_to_current();
+        float oldFeedrate = feedrate;
+        feedrate=cs.retract_recover_feedrate*60;
+        if(cs.retract_zlift) {
+            current_position[Z_AXIS]+=cs.retract_zlift;
+            plan_set_position_curposXYZE();
+            prepare_move();
+            st_synchronize();
+        }
+        current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(cs.retract_length+cs.retract_recover_length))*float(extrudemultiply)*0.01f;
+        plan_set_e_position(current_position[E_AXIS]);
+        retracted[active_extruder]=false;
+        prepare_move();
+        feedrate = oldFeedrate;
     }
-  } //retract
+} //retract
 #endif //FWRETRACT
 
 void trace() {
@@ -4170,21 +4176,22 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
 			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
 		}
-          #ifdef FWRETRACT
-            if(cs.autoretract_enabled)
+
+#ifdef FWRETRACT
+        if(cs.autoretract_enabled) {
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
-              float echange=destination[E_AXIS]-current_position[E_AXIS];
-
-              if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
-                  current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
-                  plan_set_e_position(current_position[E_AXIS]); //AND from the planner
-                  retract(!retracted[active_extruder]);
-                  return;
-              }
-
-
+                float echange=destination[E_AXIS]-current_position[E_AXIS];
+                if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
+                    st_synchronize();
+                    current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
+                    plan_set_e_position(current_position[E_AXIS]); //AND from the planner
+                    retract(!retracted[active_extruder]);
+                    return;
+                }
             }
-          #endif //FWRETRACT
+        }
+#endif //FWRETRACT
+
         prepare_move();
         //ClearToSend();
       }
@@ -4252,9 +4259,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         lcd_update(0);
       }
       break;
-      #ifdef FWRETRACT
-      
 
+
+#ifdef FWRETRACT
     /*!
 	### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
 	Retracts filament according to settings of `M207`
@@ -4267,7 +4274,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         retract(true);
        #endif
       break;
-      
+
 
     /*!
 	### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
@@ -4280,8 +4287,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         retract(false);
        #endif 
       break;
-      #endif //FWRETRACT
-    
+#endif //FWRETRACT
+
 
     /*!
     ### G28 - Home all Axes one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
@@ -7147,8 +7154,9 @@ Sigma_Exit:
         if(code_seen(axis_codes[i])) cs.add_homing[i] = code_value();
       }
       break;
-    #ifdef FWRETRACT
 
+
+#ifdef FWRETRACT
     /*!
 	### M207 - Set firmware retraction <a href="https://reprap.org/wiki/G-code#M207:_Set_retract_length">M207: Set retract length</a>
 	#### Usage
@@ -7246,7 +7254,9 @@ Sigma_Exit:
       }
 
     }break;
-    #endif // FWRETRACT
+#endif // FWRETRACT
+
+
     #if EXTRUDERS > 1
 
     /*!
