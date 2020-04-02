@@ -1741,14 +1741,18 @@ static void lcd_menu_fails_stats_mmu_total()
 {
 	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
-    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
-    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
+    uint16_t fails = eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT);
+    uint16_t load_fails = eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT);
+	if (fails > 999) fails = 999;
+	if (load_fails > 999) load_fails = 999;
+	uint16_t mmu_power_fails = mmu_power_failures;
+	if (mmu_power_fails > 999) mmu_power_fails = 999;
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
         _i("Total failures"), ////c=20 r=1
         _i("MMU fails"), fails, ////c=14 r=1
         _i("MMU load fails"), load_fails, ////c=14 r=1
-        _i("MMU power fails"), mmu_power_failures); ////c=14 r=1
+        _i("MMU power fails"), mmu_power_fails); ////c=14 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -1773,7 +1777,11 @@ static void lcd_menu_fails_stats_total()
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
-    lcd_home();
+    if (power > 999) power = 999;
+	if (filam > 999) filam = 999;
+	if (crashX > 999) crashX = 999;
+	if (crashY > 999) crashY = 999;
+	lcd_home();
     lcd_printf_P(failStatsFmt, 
         _i("Total failures"),   ////c=20 r=1
         _i("Power failures"), power,   ////c=14 r=1
@@ -1792,6 +1800,17 @@ static void lcd_menu_fails_stats_total()
 //! | Crash   X:000 Y:000|	c=7 r=1
 //! ----------------------
 //! @endcode
+//! @brief Show Last Print Failures Statistics with PAT9125
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Last print failures |	c=20 r=1
+//! | Power failures  000|	c=14 r=1
+//! | Runouts H 000 S 000|	c=14 r=1
+//! | Crash   X:000 Y:000|	c=7 r=1
+//! ----------------------
+//! @endcode
+
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_print()
 {
@@ -1868,6 +1887,7 @@ static void lcd_menu_fails_stats()
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
+	if (filamentTotal > 999) filamentTotal = 999;
 	lcd_home();
 	lcd_printf_P(failStatsFmt, 
         _i("Last print failures"),   ////c=20 r=1
