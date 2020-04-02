@@ -98,7 +98,7 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
 	}
 }
 
-#ifdef DEBUG_DCODE3
+#if defined DEBUG_DCODE3 || defined DEBUG_DCODES
 #define EEPROM_SIZE 0x1000
     /*!
     ### D3 - Read/Write EEPROM <a href="https://reprap.org/wiki/G-code#D3:_Read.2FWrite_EEPROM">D3: Read/Write EEPROM</a>
@@ -360,7 +360,7 @@ void dcode_4()
 }
 #endif //DEBUG_DCODES
 
-#ifdef DEBUG_DCODE5
+#if defined DEBUG_DCODE5 || defined DEBUG_DCODES
 
     /*!
     ### D5 - Read/Write FLASH <a href="https://reprap.org/wiki/G-code#D5:_Read.2FWrite_FLASH">D5: Read/Write Flash</a>
@@ -372,7 +372,7 @@ void dcode_4()
     #### Parameters
     - `A` - Address (x00000-x3ffff)
     - `C` - Count (1-8192)
-    - `X` - Data
+    - `X` - Data (hex)
     - `E` - Erase
  	
 	#### Notes
