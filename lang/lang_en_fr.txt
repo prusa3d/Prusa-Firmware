@@ -20,7 +20,7 @@
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-"ATTENTION:\x0aDetection de crash\x0adesactivee en\x0amode feutre"
+"ATTENTION:\x0aDetection de crash\x0adesactivee en\x0amode furtif"
 
 #
 ">Cancel"
@@ -550,7 +550,7 @@
 
 #MSG_SILENT
 "Silent"
-"Feutre"
+"Furtif"
 
 #
 "MMU needs user attention."
