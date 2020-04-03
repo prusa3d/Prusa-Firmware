@@ -8984,28 +8984,7 @@ Sigma_Exit:
     - `J` - Offset Y (default 34)
   */
 	case 80:
-	{
-		float dimension_x = 40;
-		float dimension_y = 40;
-		int points_x = 40;
-		int points_y = 40;
-		float offset_x = 74;
-		float offset_y = 33;
-
-		if (code_seen('E')) dimension_x = code_value();
-		if (code_seen('F')) dimension_y = code_value();
-		if (code_seen('G')) {points_x = code_value(); }
-		if (code_seen('H')) {points_y = code_value(); }
-		if (code_seen('I')) {offset_x = code_value(); }
-		if (code_seen('J')) {offset_y = code_value(); }
-		printf_P(PSTR("DIM X: %f\n"), dimension_x);
-		printf_P(PSTR("DIM Y: %f\n"), dimension_y);
-		printf_P(PSTR("POINTS X: %d\n"), points_x);
-		printf_P(PSTR("POINTS Y: %d\n"), points_y);
-		printf_P(PSTR("OFFSET X: %f\n"), offset_x);
-		printf_P(PSTR("OFFSET Y: %f\n"), offset_y);
- 		bed_check(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
-	}break;
+		dcode_80(); break;
 
     /*!
     ### D81 - Bed analysis <a href="https://reprap.org/wiki/G-code#D81:_Bed_analysis">D80: Bed analysis</a>
@@ -9023,24 +9002,7 @@ Sigma_Exit:
     - `J` - Offset Y (default 34)
   */
 	case 81:
-	{
-		float dimension_x = 40;
-		float dimension_y = 40;
-		int points_x = 40;
-		int points_y = 40;
-		float offset_x = 74;
-		float offset_y = 33;
-
-		if (code_seen('E')) dimension_x = code_value();
-		if (code_seen('F')) dimension_y = code_value();
-		if (code_seen("G")) { strchr_pointer+=1; points_x = code_value(); }
-		if (code_seen("H")) { strchr_pointer+=1; points_y = code_value(); }
-		if (code_seen("I")) { strchr_pointer+=1; offset_x = code_value(); }
-		if (code_seen("J")) { strchr_pointer+=1; offset_y = code_value(); }
-		
-		bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
-		
-	} break;
+		dcode_81(); break;
 	
 #endif //HEATBED_ANALYSIS
 #ifdef DEBUG_DCODES
@@ -9049,17 +9011,7 @@ Sigma_Exit:
     ### D106 - Print measured fan speed for different pwm values <a href="https://reprap.org/wiki/G-code#D106:_Print_measured_fan_speed_for_different_pwm_values">D106: Print measured fan speed for different pwm values</a>
     */
 	case 106:
-	{
-		for (int i = 255; i > 0; i = i - 5) {
-			fanSpeed = i;
-			//delay_keep_alive(2000);
-			for (int j = 0; j < 100; j++) {
-				delay_keep_alive(100);
-
-			}
-			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
-		}
-	}break;
+		dcode_106(); break;
 
 #ifdef TMC2130
     /*!
