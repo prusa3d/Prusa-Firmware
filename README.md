@@ -21,7 +21,7 @@
    - For MK3 --> skip to step 3. 
    - If you have a different printer model, follow step [2.b](#2b) from Windows build
    
-3. Run `sudo ./build.sh`
+3. Run `./build.sh`
    - Output hex file is at `"PrusaFirmware/lang/firmware.hex"` . In the same folder you can hex files for other languages as well.
 
 4. Connect your printer and flash with PrusaSlicer ( Configuration --> Flash printer firmware ) or Slic3r PE.
