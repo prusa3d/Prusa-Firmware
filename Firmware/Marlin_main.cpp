@@ -2197,9 +2197,24 @@ bool calibrate_z_auto()
 #endif //TMC2130
 
 #ifdef TMC2130
-bool homeaxis(int axis, bool doError, uint8_t cnt, uint8_t* pstep)
+static void check_Z_crash(void)
+{
+	if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
+		FORCE_HIGH_POWER_END;
+		current_position[Z_AXIS] = 0;
+		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
+		plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+		st_synchronize();
+		kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+	}
+}
+#endif //TMC2130
+
+#ifdef TMC2130
+void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 #else
-bool homeaxis(int axis, bool doError, uint8_t cnt)
+void homeaxis(int axis, uint8_t cnt)
 #endif //TMC2130
 {
 	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homing
@@ -2312,13 +2327,7 @@ bool homeaxis(int axis, bool doError, uint8_t cnt)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 #ifdef TMC2130
-		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
-			FORCE_HIGH_POWER_END;
-			if (doError) kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-            current_position[axis] = -5; //assume that nozzle crashed into bed
-            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-			return 0; 
-		}
+        check_Z_crash();
 #endif //TMC2130
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -2330,13 +2339,7 @@ bool homeaxis(int axis, bool doError, uint8_t cnt)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 #ifdef TMC2130
-		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
-			FORCE_HIGH_POWER_END;
-			if (doError) kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-            current_position[axis] = -5; //assume that nozzle crashed into bed
-            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-			return 0; 
-		}
+        check_Z_crash();
 #endif //TMC2130
         axis_is_at_home(axis);
         destination[axis] = current_position[axis];
@@ -2348,7 +2351,6 @@ bool homeaxis(int axis, bool doError, uint8_t cnt)
 #endif	
     }
     enable_endstops(endstops_enabled);
-    return 1;
 }
 
 /**/

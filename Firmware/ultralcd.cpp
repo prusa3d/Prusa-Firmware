@@ -168,10 +168,10 @@ static void reset_crash_det(unsigned char axis);
 static bool lcd_selfcheck_axis_sg(unsigned char axis);
 static bool lcd_selfcheck_axis(int _axis, int _travel);
 #else
-static bool lcd_selfcheck_endstops();
 static bool lcd_selfcheck_axis(int _axis, int _travel);
 static bool lcd_selfcheck_pulleys(int axis);
 #endif //TMC2130
+static bool lcd_selfcheck_endstops();
 
 static bool lcd_selfcheck_check_heater(bool _isbed);
 enum class TestScreen : uint_least8_t
@@ -7667,11 +7667,7 @@ bool lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(TestScreen::FansOk, _progress, 3, true, 2000);
-#ifndef TMC2130
-		_result = lcd_selfcheck_endstops();
-#else
-		_result = true;
-#endif
+		_result = lcd_selfcheck_endstops(); //With TMC2130, only the Z probe is tested.
 	}
 
 	if (_result)
@@ -7738,7 +7734,7 @@ bool lcd_selftest()
         set_destination_to_current();
 		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 1500);
 #ifdef TMC2130
-		_result = homeaxis(Z_AXIS, false);
+		homeaxis(Z_AXIS); //In case of failure, the code gets stuck in this function.
 #else
         _result = lcd_selfcheck_axis(Z_AXIS, Z_MAX_POS);
 #endif //TMC2130
@@ -8137,31 +8133,42 @@ static bool lcd_selfcheck_pulleys(int axis)
 	}
 	return(true);
 }
+#endif //not defined TMC2130
 
 
 static bool lcd_selfcheck_endstops()
 {
 	bool _result = true;
 
-	if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+	if (
+	#ifndef TMC2130
+		((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 		((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
+	#endif //!TMC2130
 		((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 	{
+	#ifndef TMC2130
 		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) current_position[0] += 10;
 		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) current_position[1] += 10;
+	#endif //!TMC2130
 		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) current_position[2] += 10;
 	}
 	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
-	_delay(500);
+	st_synchronize();
 
-	if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+	if (
+	#ifndef TMC2130
+		((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 		((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
+	#endif //!TMC2130
 		((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 	{
 		_result = false;
 		char _error[4] = "";
+	#ifndef TMC2130
 		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "X");
 		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Y");
+	#endif //!TMC2130
 		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Z");
 		lcd_selftest_error(TestError::Endstops, _error, "");
 	}
@@ -8169,7 +8176,6 @@ static bool lcd_selfcheck_endstops()
 	manage_inactivity(true);
 	return _result;
 }
-#endif //not defined TMC2130
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {
