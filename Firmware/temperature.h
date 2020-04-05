@@ -47,6 +47,8 @@
 void tp_init();  //initialize the heating
 void manage_heater(); //it is critical that this is called periodically.
 
+extern bool checkAllHotends(void);
+
 // low level conversion routines
 // do not use these routines and variables outside of temperature.cpp
 extern int target_temperature[EXTRUDERS];  
@@ -76,7 +78,7 @@ extern int current_voltage_raw_pwr;
 extern int current_voltage_raw_bed;
 #endif
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 extern int current_voltage_raw_IR;
 #endif //IR_SENSOR_ANALOG
 
@@ -221,6 +223,9 @@ FORCE_INLINE bool isCoolingBed() {
 #if EXTRUDERS > 3
 #error Invalid number of extruders
 #endif
+
+// return "false", if all heaters are 'off' (ie. "true", if any heater is 'on')
+#define CHECK_ALL_HEATERS (checkAllHotends()||(target_temperature_bed!=0))
 
 int getHeaterPower(int heater);
 void disable_heater();
