@@ -7,6 +7,9 @@
 #include "Timer.h"
 
 
+// #define VT100
+// #define LCD_DEBUG
+
 
 extern FILE _lcdout;
 
@@ -71,8 +74,6 @@ extern void lcd_print(double, int = 2);
 
 typedef void (*lcd_longpress_func_t)(void);
 
-typedef void (*lcd_charsetup_func_t)(void);
-
 typedef void (*lcd_lcdupdate_func_t)(void);
 
 //Set to none-zero when the LCD needs to draw, decreased after every draw. Set to 2 in LCD routines so the LCD gets at least 1 full redraw (first redraw is partial)
@@ -99,8 +100,6 @@ extern uint32_t lcd_next_update_millis;
 extern uint8_t lcd_status_update_delay;
 
 extern lcd_longpress_func_t lcd_longpress_func;
-
-extern lcd_charsetup_func_t lcd_charsetup_func;
 
 extern lcd_lcdupdate_func_t lcd_lcdupdate_func;
 
@@ -184,22 +183,34 @@ extern void lcd_debug();
 
 
 //Custom characters defined in the first 8 characters of the LCD
-#define LCD_STR_BEDTEMP     "\x00"
-#define LCD_STR_DEGREE      "\x01"
-#define LCD_STR_THERMOMETER "\x02"
-#define LCD_STR_UPLEVEL     "\x03"
-#define LCD_STR_REFRESH     "\x04"
-#define LCD_STR_FOLDER      "\x05"
-#define LCD_STR_FEEDRATE    "\x06"
-#define LCD_STR_CLOCK       "\x07"
-#define LCD_STR_ARROW_UP    "\x0B"
-#define LCD_STR_ARROW_DOWN  "\x01"
-#define LCD_STR_ARROW_RIGHT "\x7E" //from the default character set
 
-extern void lcd_set_custom_characters(void);
-extern void lcd_set_custom_characters_arrows(void);
-extern void lcd_set_custom_characters_nextpage(void);
-extern void lcd_set_custom_characters_degree(void);
+//It is split into two memory banks. On the actual LCD, only one is in memory at a time.
+//Data from the two banks can be mixed together, but one must make sure the symbols of the same 3 bit address don't overlap.
+//for example, you can't have LCD_STR_BEDTEMP[0] and LCD_STR_ARROW_DOWN[0] on the screen at the same time,
+//but LCD_STR_THERMOMETER[0], LCD_STR_DEGREE[0] and LCD_STR_ARROW_DOWN[0] can all be used together.
+//Also, since we are overwriting the standard ASCII table with the custom characters, 0x0A must remain the NL character.
+
+//BANK 0:
+#define LCD_STR_BEDTEMP       "\x00"
+#define LCD_STR_DEGREE        "\x01"
+#define LCD_STR_THERMOMETER   "\x02"
+#define LCD_STR_UPLEVEL       "\x03"
+#define LCD_STR_REFRESH       "\x04"
+#define LCD_STR_FOLDER        "\x05"
+#define LCD_STR_FEEDRATE      "\x06"
+#define LCD_STR_CLOCK         "\x07"
+//BANK 1:
+#define LCD_STR_ARROW_DOWN    "\x08"
+#define LCD_STR_ARROW_2_DOWN  "\x09"
+#define LCD_STR_RESERVED_NL   "\x0A" //this is the newLine character. It is reserved for it's original purpose.
+#define LCD_STR_CONFIRM       "\x0B"
+
+//BANK DEFAULT - from the default character set
+#define LCD_STR_ARROW_RIGHT   "\x7E"
+#define LCD_STR_PROGRESS      "\xFF"
+
+extern uint8_t lcd_custom_character_bank;
+
 
 //! @brief Consume click event
 inline void lcd_consume_click()

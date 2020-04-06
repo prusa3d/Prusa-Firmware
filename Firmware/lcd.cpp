@@ -23,9 +23,6 @@
 	#define LCD_8BIT
 #endif
 
-// #define VT100
-// #define LCD_DEBUG
-
 // commands
 #define LCD_CLEARDISPLAY 0x01
 #define LCD_RETURNHOME 0x02
@@ -109,7 +106,13 @@ uint8_t vga_currcol;
 
 uint8_t vga[LCD_WIDTH][LCD_HEIGHT]; //vga buffer.
 
+//dictates the bank to use for each custom character cell. Two banks are available.
+uint8_t lcd_custom_character_bank = 0;
+
 LongTimer lcd_redraw_timer; // Software timer used for redrawing the lcd at a set interval (LCD_REDRAW_PERIOD).
+
+static void lcd_init_custom_characters(void);
+static void lcd_set_custom_character(uint8_t charID);
 
 static void lcd_display(void);
 #if 0
@@ -249,6 +252,10 @@ static void lcd_write(uint8_t value) //vga
 		vga_linefeed();
 		return;
 	}
+	if (value <= 0x0F) //custom character
+		if ((value / 8) != bool(lcd_custom_character_bank & (1 << (value & 0x07)))) //if value is different in the bank cache.
+			lcd_set_custom_character(value);
+	
 	if (vga_currcol == LCD_WIDTH) vga_linefeed();
 	#ifdef VT100
 	if (lcd_escape[0] || (value == 0x1b)){
@@ -368,7 +375,7 @@ void lcd_redraw(bool forceRedraw)
 	if (!lcd_redraw_timer.expired(LCD_REDRAW_PERIOD) && !forceRedraw) return;
 	lcd_timer_disable();
     lcd_begin();
-    lcd_set_custom_characters();
+    lcd_init_custom_characters();
 	lcd_timer_enable();
 	lcd_redraw_timer.start();
 }
@@ -790,8 +797,6 @@ uint8_t lcd_status_update_delay = 0;
 
 lcd_longpress_func_t lcd_longpress_func = 0;
 
-lcd_charsetup_func_t lcd_charsetup_func = 0;
-
 lcd_lcdupdate_func_t lcd_lcdupdate_func = 0;
 
 static ShortTimer buttonBlanking;
@@ -857,8 +862,6 @@ void lcd_update_enable(uint8_t enabled)
 			lcd_next_update_millis = _millis() - 1;
 			// Full update.
 			lcd_clear();
-			if (lcd_charsetup_func)
-				lcd_charsetup_func();
 			lcd_update(2);
 		} else
 		{
@@ -950,8 +953,8 @@ void lcd_buttons_update(void)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Custom character data
-
-const uint8_t lcd_chardata_bedTemp[8] PROGMEM = {
+const uint8_t lcd_custom_character_set[][8] PROGMEM = {
+	{//LCD_STR_BEDTEMP
 	B00000,
 	B11111,
 	B10101,
@@ -959,9 +962,9 @@ const uint8_t lcd_chardata_bedTemp[8] PROGMEM = {
 	B10101,
 	B11111,
 	B00000,
-	B00000}; //thanks Sonny Mounicou
+	B00000}, //thanks Sonny Mounicou
 
-const uint8_t lcd_chardata_degree[8] PROGMEM = {
+	{//LCD_STR_DEGREE
 	B01100,
 	B10010,
 	B10010,
@@ -969,9 +972,9 @@ const uint8_t lcd_chardata_degree[8] PROGMEM = {
 	B00000,
 	B00000,
 	B00000,
-	B00000};
+	B00000},
 
-const uint8_t lcd_chardata_thermometer[8] PROGMEM = {
+	{//LCD_STR_THERMOMETER
 	B00100,
 	B01010,
 	B01010,
@@ -979,9 +982,9 @@ const uint8_t lcd_chardata_thermometer[8] PROGMEM = {
 	B01010,
 	B10001,
 	B10001,
-	B01110};
+	B01110},
 
-const uint8_t lcd_chardata_uplevel[8] PROGMEM = {
+	{//LCD_STR_UPLEVEL
 	B00100,
 	B01110,
 	B11111,
@@ -989,9 +992,9 @@ const uint8_t lcd_chardata_uplevel[8] PROGMEM = {
 	B11100,
 	B00000,
 	B00000,
-	B00000}; //thanks joris
+	B00000}, //thanks joris
 
-const uint8_t lcd_chardata_refresh[8] PROGMEM = {
+	{//LCD_STR_REFRESH
 	B00000,
 	B00110,
 	B11001,
@@ -999,9 +1002,9 @@ const uint8_t lcd_chardata_refresh[8] PROGMEM = {
 	B00011,
 	B10011,
 	B01100,
-	B00000}; //thanks joris
+	B00000}, //thanks joris
 
-const uint8_t lcd_chardata_folder[8] PROGMEM = {
+	{//LCD_STR_FOLDER
 	B00000,
 	B11100,
 	B11111,
@@ -1009,9 +1012,9 @@ const uint8_t lcd_chardata_folder[8] PROGMEM = {
 	B10001,
 	B11111,
 	B00000,
-	B00000}; //thanks joris
+	B00000}, //thanks joris
 
-/*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
+/*	{//LCD_STR_FEEDRATE
 	B11100,
 	B10000,
 	B11000,
@@ -1019,9 +1022,9 @@ const uint8_t lcd_chardata_folder[8] PROGMEM = {
 	B00101,
 	B00110,
 	B00101,
-	B00000};*/ //thanks Sonny Mounicou
+	B00000},*/ //thanks Sonny Mounicou
 
-/*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
+/*	{//LCD_STR_FEEDRATE
 	B11100,
 	B10100,
 	B11000,
@@ -1029,9 +1032,9 @@ const uint8_t lcd_chardata_folder[8] PROGMEM = {
 	B00000,
 	B00111,
 	B00010,
-	B00010};*/
+	B00010},*/
 
-/*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
+/*	{//LCD_STR_FEEDRATE
 	B01100,
 	B10011,
 	B00000,
@@ -1039,9 +1042,9 @@ const uint8_t lcd_chardata_folder[8] PROGMEM = {
 	B10011,
 	B00000,
 	B01100,
-	B10011};*/
+	B10011},*/
 
-const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
+	{//LCD_STR_FEEDRATE
 	B00000,
 	B00100,
 	B10010,
@@ -1049,9 +1052,9 @@ const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B10010,
 	B00100,
 	B00000,
-	B00000};
+	B00000},
 
-const uint8_t lcd_chardata_clock[8] PROGMEM = {
+	{//LCD_STR_CLOCK
 	B00000,
 	B01110,
 	B10011,
@@ -1059,19 +1062,9 @@ const uint8_t lcd_chardata_clock[8] PROGMEM = {
 	B10001,
 	B01110,
 	B00000,
-	B00000}; //thanks Sonny Mounicou
+	B00000}, //thanks Sonny Mounicou
 
-const uint8_t lcd_chardata_arrup[8] PROGMEM = {
-	B00100,
-	B01110,
-	B11111,
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B00000};
-
-const uint8_t lcd_chardata_arrdown[8] PROGMEM = {
+	{//LCD_STR_ARROW_DOWN
 	B00000,
 	B00000,
 	B00000,
@@ -1079,36 +1072,9 @@ const uint8_t lcd_chardata_arrdown[8] PROGMEM = {
 	B00000,
 	B10001,
 	B01010,
-	B00100};
+	B00100},
 
-
-
-void lcd_set_custom_characters(void)
-{
-	LcdTimerDisabler_START;
-	lcd_createChar_P(LCD_STR_BEDTEMP[0], lcd_chardata_bedTemp);
-	lcd_createChar_P(LCD_STR_DEGREE[0], lcd_chardata_degree);
-	lcd_createChar_P(LCD_STR_THERMOMETER[0], lcd_chardata_thermometer);
-	lcd_createChar_P(LCD_STR_UPLEVEL[0], lcd_chardata_uplevel);
-	lcd_createChar_P(LCD_STR_REFRESH[0], lcd_chardata_refresh); //unused?
-	lcd_createChar_P(LCD_STR_FOLDER[0], lcd_chardata_folder);
-	lcd_createChar_P(LCD_STR_FEEDRATE[0], lcd_chardata_feedrate);
-	lcd_createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
-	//lcd_createChar_P(LCD_STR_ARROW_UP[0], lcd_chardata_arrup);
-	//lcd_createChar_P(LCD_STR_ARROW_DOWN[0], lcd_chardata_arrdown);
-	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
-	LcdTimerDisabler_END;
-}
-
-void lcd_set_custom_characters_arrows(void)
-{
-	LcdTimerDisabler_START;
-	lcd_createChar_P(1, lcd_chardata_arrdown);
-	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
-	LcdTimerDisabler_END;
-}
-
-const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
+	{//LCD_STR_ARROW_2_DOWN
 	B00000,
 	B00000,
 	B10001,
@@ -1116,31 +1082,39 @@ const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
 	B00100,
 	B10001,
 	B01010,
-	B00100};
+	B00100},
 
-const uint8_t lcd_chardata_confirm[8] PROGMEM = {
+	{/* LCD_STR_RESERVED_NL */},
+	
+	{//LCD_STR_CONFIRM
 	B00000,
 	B00001,
 	B00011,
 	B10110,
 	B11100,
 	B01000,
-	B00000};
+	B00000},
+};
 
-void lcd_set_custom_characters_nextpage(void)
+//sends all 8 custom characters to the lcd
+static void lcd_init_custom_characters(void)
 {
 	LcdTimerDisabler_START;
-	lcd_createChar_P(1, lcd_chardata_arr2down);
-	lcd_createChar_P(2, lcd_chardata_confirm);
+	
+	for (uint8_t i = 0; i < 8; i++)
+		lcd_createChar_P(i, &lcd_custom_character_set[i + ((lcd_custom_character_bank >> i) & 1) * 8][0]);
+	
 	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
 	LcdTimerDisabler_END;
 }
 
-void lcd_set_custom_characters_degree(void)
+static void lcd_set_custom_character(uint8_t charID)
 {
 	LcdTimerDisabler_START;
-	lcd_createChar_P(1, lcd_chardata_degree);
+	
+	lcd_createChar_P(charID, &lcd_custom_character_set[charID][0]);
+	lcd_custom_character_bank = (lcd_custom_character_bank & ~(1 << (charID & 0x07))) | (((charID / 8) & 1) << (charID & 0x07)); //set the bank information
+	
 	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
 	LcdTimerDisabler_END;
 }
-
