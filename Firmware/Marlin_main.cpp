@@ -8901,7 +8901,6 @@ Sigma_Exit:
    */
 	case 5:
 		dcode_5(); break;
-		break;
 #endif //DEBUG_DCODE5
 #ifdef DEBUG_DCODES
 
