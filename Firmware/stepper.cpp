@@ -354,10 +354,10 @@ FORCE_INLINE void stepper_next_block()
         max_adv_steps = current_block->max_adv_steps;
         e_step_loops = current_block->advance_step_loops;
     } else {
-        e_steps = 0;
         e_step_loops = 1;
         current_adv_steps = 0;
     }
+    e_steps = 0;
     nextAdvanceISR = ADV_NEVER;
     LA_phase = -1;
 #endif
