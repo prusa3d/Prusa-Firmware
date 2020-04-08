@@ -128,9 +128,7 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
   static uint16_t eISR_Err;
 
   static uint16_t current_adv_steps;
-  static uint16_t final_adv_steps;
-  static uint16_t max_adv_steps;
-  static uint32_t LA_decelerate_after;
+  static uint16_t target_adv_steps;
 
   static int8_t e_steps;
   static uint8_t e_step_loops;
@@ -349,10 +347,8 @@ FORCE_INLINE void stepper_next_block()
 
 #ifdef LIN_ADVANCE
     if (current_block->use_advance_lead) {
-        LA_decelerate_after = current_block->decelerate_after;
-        final_adv_steps = current_block->final_adv_steps;
-        max_adv_steps = current_block->max_adv_steps;
         e_step_loops = current_block->advance_step_loops;
+        target_adv_steps = current_block->max_adv_steps;
     } else {
         e_step_loops = 1;
         current_adv_steps = 0;
@@ -827,11 +823,14 @@ FORCE_INLINE void isr() {
         uint16_t timer = calc_timer(step_rate, step_loops);
         _NEXT_ISR(timer);
         deceleration_time += timer;
+
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
             la_state = ADV_DECELERATE;
-            if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops)
+            if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops) {
+                target_adv_steps = current_block->final_adv_steps;
                 la_state |= ADV_INIT;
+            }
         }
 #endif
       }
@@ -898,7 +897,7 @@ FORCE_INLINE void isr() {
 // Timer interrupt for E. e_steps is set in the main routine.
 
 FORCE_INLINE void advance_isr() {
-    if (step_events_completed.wide > LA_decelerate_after && current_adv_steps > final_adv_steps) {
+    if (current_adv_steps > target_adv_steps) {
         // decompression
         e_steps -= e_step_loops;
         if (e_steps) WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
@@ -908,7 +907,7 @@ FORCE_INLINE void advance_isr() {
             current_adv_steps = 0;
         nextAdvanceISR = eISR_Rate;
     }
-    else if (step_events_completed.wide < LA_decelerate_after && current_adv_steps < max_adv_steps) {
+    else if (current_adv_steps < target_adv_steps) {
         // compression
         e_steps += e_step_loops;
         if (e_steps) WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
@@ -1233,9 +1232,6 @@ void st_init()
   nextMainISR = 0;
   nextAdvanceISR = ADV_NEVER;
   main_Rate = ADV_NEVER;
-  e_steps = 0;
-  e_step_loops = 1;
-  LA_phase = -1;
   current_adv_steps = 0;
 #endif
 
