@@ -351,7 +351,6 @@ FORCE_INLINE void stepper_next_block()
         target_adv_steps = current_block->max_adv_steps;
     } else {
         e_step_loops = 1;
-        current_adv_steps = 0;
     }
     e_steps = 0;
     nextAdvanceISR = ADV_NEVER;
@@ -840,6 +839,24 @@ FORCE_INLINE void isr() {
           // the initial interrupt blocking.
           OCR1A_nominal = calc_timer(uint16_t(current_block->nominal_rate), step_loops);
           step_loops_nominal = step_loops;
+
+#ifdef LIN_ADVANCE
+          if(current_block->use_advance_lead) {
+              if(current_adv_steps < target_adv_steps) {
+                  // after reaching cruising speed, halt compression. if we couldn't accumulate the
+                  // required pressure in the acceleration phase due to lost ticks it's unlikely we
+                  // could undo all of it during deceleration either
+                  target_adv_steps = current_adv_steps;
+              }
+              else if (!nextAdvanceISR && current_adv_steps > target_adv_steps) {
+                  // we're cruising in a block with excess backpressure and without a previous
+                  // acceleration phase - this *cannot* happen during a regular block, but it's
+                  // likely in result of chained a wipe move. release the pressure earlier by
+                  // forcedly enabling LA while cruising!
+                  la_state = ADV_INIT;
+              }
+          }
+#endif
         }
         _NEXT_ISR(OCR1A_nominal);
       }
