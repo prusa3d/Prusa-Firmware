@@ -7563,7 +7563,7 @@ static void lcd_detect_IRsensor(){
 
     bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
     bAction = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament loaded?"), false, false);
-    if(!bAction){
+    if(bAction){
         lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
         return;
     }
