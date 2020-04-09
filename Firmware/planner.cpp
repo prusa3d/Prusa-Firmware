@@ -1081,9 +1081,9 @@ Having the real displacement of the head, we can calculate the total movement le
         if (e_D_ratio > 3.0)
             block->use_advance_lead = false;
         else if (e_D_ratio > 0) {
-            const uint32_t max_accel_steps_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * e_D_ratio) * steps_per_mm;
-            if (block->acceleration_st > max_accel_steps_per_s2) {
-                block->acceleration_st = max_accel_steps_per_s2;
+            const float max_accel_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * e_D_ratio);
+            if (cs.acceleration > max_accel_per_s2) {
+                block->acceleration_st = ceil(max_accel_per_s2 * steps_per_mm);
                 #ifdef LA_DEBUG
                 SERIAL_ECHOLNPGM("LA: Block acceleration limited due to max E-jerk");
                 #endif
