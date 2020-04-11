@@ -117,8 +117,8 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
   void advance_isr();
 
   static const uint16_t ADV_NEVER      = 0xFFFF;
-  static const uint8_t  ADV_INIT       = 0b01;
-  static const uint8_t  ADV_DECELERATE = 0b10;
+  static const uint8_t  ADV_INIT       = 0b01; // initialize LA
+  static const uint8_t  ADV_ACC_VARY   = 0b10; // varying acceleration phase
 
   static uint16_t nextMainISR;
   static uint16_t nextAdvanceISR;
@@ -130,9 +130,10 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
   static uint16_t current_adv_steps;
   static uint16_t target_adv_steps;
 
-  static int8_t e_steps;
-  static uint8_t e_step_loops;
-  static int8_t LA_phase;
+  static int8_t e_steps;        // scheduled e-steps during each isr loop
+  static uint8_t e_step_loops;  // e-steps to execute at most in each isr loop
+  static uint8_t e_extruding;   // current move is an extrusion move
+  static int8_t LA_phase;       // LA compensation phase
 
   #define _NEXT_ISR(T)    main_Rate = nextMainISR = T
 #else
@@ -366,11 +367,17 @@ FORCE_INLINE void stepper_next_block()
       counter_y.lo = counter_x.lo;
       counter_z.lo = counter_x.lo;
       counter_e.lo = counter_x.lo;
+#ifdef LIN_ADVANCE
+      e_extruding = current_block->steps_e.lo != 0;
+#endif
     } else {
       counter_x.wide = -(current_block->step_event_count.wide >> 1);
       counter_y.wide = counter_x.wide;
       counter_z.wide = counter_x.wide;
       counter_e.wide = counter_x.wide;
+#ifdef LIN_ADVANCE
+      e_extruding = current_block->steps_e.wide != 0;
+#endif
     }
     step_events_completed.wide = 0;
     // Set directions.
@@ -806,7 +813,7 @@ FORCE_INLINE void isr() {
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
             if (step_events_completed.wide <= (unsigned long int)step_loops)
-                la_state = ADV_INIT;
+                la_state = ADV_INIT | ADV_ACC_VARY;
         }
 #endif
       }
@@ -825,10 +832,9 @@ FORCE_INLINE void isr() {
 
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-            la_state = ADV_DECELERATE;
             if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops) {
                 target_adv_steps = current_block->final_adv_steps;
-                la_state |= ADV_INIT;
+                la_state = ADV_INIT | ADV_ACC_VARY;
             }
         }
 #endif
@@ -842,17 +848,10 @@ FORCE_INLINE void isr() {
 
 #ifdef LIN_ADVANCE
           if(current_block->use_advance_lead) {
-              if(current_adv_steps < target_adv_steps) {
-                  // after reaching cruising speed, halt compression. if we couldn't accumulate the
-                  // required pressure in the acceleration phase due to lost ticks it's unlikely we
-                  // could undo all of it during deceleration either
-                  target_adv_steps = current_adv_steps;
-              }
-              else if (!nextAdvanceISR && current_adv_steps > target_adv_steps) {
-                  // we're cruising in a block with excess backpressure and without a previous
-                  // acceleration phase - this *cannot* happen during a regular block, but it's
-                  // likely in result of chained a wipe move. release the pressure earlier by
-                  // forcedly enabling LA while cruising!
+              if (!nextAdvanceISR) {
+                  // Due to E-jerk, there can be discontinuities in pressure state where an
+                  // acceleration or deceleration can be skipped or joined with the previous block.
+                  // If LA was not previously active, re-check the pressure level
                   la_state = ADV_INIT;
               }
           }
@@ -865,10 +864,23 @@ FORCE_INLINE void isr() {
 
 #ifdef LIN_ADVANCE
     // avoid multiple instances or function calls to advance_spread
-    if (la_state & ADV_INIT) eISR_Err = current_block->advance_rate / 4;
+    if (la_state & ADV_INIT) {
+        if (current_adv_steps == target_adv_steps) {
+            // nothing to be done in this phase
+            la_state = 0;
+        }
+        else {
+            eISR_Err = current_block->advance_rate / 4;
+            if ((la_state & ADV_ACC_VARY) && e_extruding && (current_adv_steps > target_adv_steps)) {
+                // LA could reverse the direction of extrusion in this phase
+                LA_phase = 0;
+            }
+        }
+    }
     if (la_state & ADV_INIT || nextAdvanceISR != ADV_NEVER) {
+        // update timers & phase for the next iteration
         advance_spread(main_Rate);
-        if (la_state & ADV_DECELERATE) {
+        if (LA_phase >= 0) {
             if (step_loops == e_step_loops)
                 LA_phase = (eISR_Rate > main_Rate);
             else {

@@ -1065,10 +1065,12 @@ Having the real displacement of the head, we can calculate the total movement le
      * delta_mm[E_AXIS] >= 0    : Extruding or traveling, but _not_ retracting.
      * |delta_mm[Z_AXIS]| < 0.5 : Z is only moved for leveling (_not_ for priming)
      */
-    block->use_advance_lead = extruder_advance_K
+    block->use_advance_lead = extruder_advance_K > 0
                               && delta_mm[E_AXIS] >= 0
                               && abs(delta_mm[Z_AXIS]) < 0.5;
     if (block->use_advance_lead) {
+        // all extrusion moves with LA require a compression which is proportional to the
+        // extrusion_length to distance ratio (e/D)
         e_D_ratio = (e - position_float[E_AXIS]) /
                     sqrt(sq(x - position_float[X_AXIS])
                          + sq(y - position_float[Y_AXIS])
