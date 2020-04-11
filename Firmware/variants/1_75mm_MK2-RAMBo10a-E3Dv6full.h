@@ -390,6 +390,7 @@ THERMISTORS SETTINGS
 // 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
 // 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
+// 800 is Slice 450c thermistor
 
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP)
 #define TEMP_SENSOR_0 247
