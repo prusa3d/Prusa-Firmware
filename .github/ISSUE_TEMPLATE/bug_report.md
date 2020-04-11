@@ -15,6 +15,9 @@ Please, before you create a new bug report, please make sure you searched in ope
 **MMU Upgrade** - [e.g. MMU2S, MMU2, MMU1]
 **MMU upgrade firmware version [e.g. 1.0.6, 1.0.6-RC2, ...]
 
+**SD card or USB/Octoprint**
+  Please let us know if you print via SD card or USB/Octoprint
+
 **Describe the bug**
   A clear and concise description of what the bug is.
   
