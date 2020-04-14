@@ -6,13 +6,13 @@ extern void dcode_0(); //D0 - Reset
 extern void dcode_1(); //D1 - Clear EEPROM
 extern void dcode_2(); //D2 - Read/Write RAM
 
-#ifdef DEBUG_DCODE3
+#if defined DEBUG_DCODE3 || defined DEBUG_DCODES
 extern void dcode_3(); //D3 - Read/Write EEPROM
 #endif //DEBUG_DCODE3
 
 extern void dcode_4(); //D4 - Read/Write PIN
 
-#ifdef DEBUG_DCODE5
+#if defined DEBUG_DCODE5 || defined DEBUG_DCODES
 extern void dcode_5(); //D5 - Read/Write FLASH
 #endif //DEBUG_DCODE5
 
