@@ -9498,33 +9498,29 @@ static uint8_t nFSCheckCount=0;
 					fsensor_autoload_check_stop();
 #endif //PAT9125
 //-//					if (degHotend0() > EXTRUDE_MINTEMP)
-if(0)
-					{
-            Sound_MakeCustom(50,1000,false);
-						loading_flag = true;
-						enquecommand_front_P((PSTR("M701")));
-					}
-					else
-					{
+if(0){
+  Sound_MakeCustom(50,1000,false);
+	loading_flag = true;
+	enquecommand_front_P((PSTR("M701")));
+} else {
+  if(IsStopped() == false){
 /*
 						lcd_update_enable(false);
 						show_preheat_nozzle_warning();
 						lcd_update_enable(true);
 */
-                              eFilamentAction=FilamentAction::AutoLoad;
-                              bFilamentFirstRun=false;
-                              if(target_temperature[0]>=EXTRUDE_MINTEMP)
-                              {
-                                   bFilamentPreheatState=true;
+  eFilamentAction=FilamentAction::AutoLoad;
+  bFilamentFirstRun=false;
+  if(target_temperature[0]>=EXTRUDE_MINTEMP) {
+    bFilamentPreheatState=true;
 //                                   mFilamentItem(target_temperature[0],target_temperature_bed);
-                                   menu_submenu(mFilamentItemForce);
-                              }
-                              else
-                              {
-                                   menu_submenu(lcd_generic_preheat_menu);
-                                   lcd_timeoutToStatus.start();
-                              }
-                         }
+    menu_submenu(mFilamentItemForce);
+  } else {
+    menu_submenu(lcd_generic_preheat_menu);
+    lcd_timeoutToStatus.start();
+  }
+}
+}
 				}
 			}
 			else
