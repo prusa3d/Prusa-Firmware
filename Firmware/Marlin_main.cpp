@@ -7116,7 +7116,6 @@ Sigma_Exit:
       {
           float e = code_value();
 #ifndef LA_NOCOMPAT
-
           e = la10c_jerk(e);
 #endif
           cs.max_jerk[E_AXIS] = e;
