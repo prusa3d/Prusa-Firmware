@@ -7875,7 +7875,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 	st_synchronize();
 
 	current_position[axis] += axis_length;
-	plan_buffer_line_curposXYZE(hmanual_feedrate[0] / 60, active_extruder);
+	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
 
 	st_synchronize();
 
@@ -7891,11 +7891,11 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 
 	current_position[axis] -= margin;
-	plan_buffer_line_curposXYZE(manual_feedrate[0]  / 60, active_extruder);
+	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
 	st_synchronize();	
 
 	current_position[axis] -= (axis_length + margin);
-	plan_buffer_line_curposXYZE(manual_feedrate[0]  / 60, active_extruder);
+	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
 		
 	st_synchronize();
 
