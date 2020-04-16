@@ -7832,7 +7832,7 @@ bool lcd_selftest()
 
 static void reset_crash_det(unsigned char axis) {
 	current_position[axis] += 10;
-	plan_buffer_line_curposXYZE(homing_feedrate[axis] / 60, active_extruder);
+	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
 	st_synchronize();
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET)) tmc2130_sg_stop_on_crash = true;
 }
@@ -7861,7 +7861,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 // first axis length measurement begin	
 	
 	current_position[axis] -= (axis_length + margin);
-	plan_buffer_line_curposXYZE(homing_feedrate[axis] / 60, active_extruder);
+	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
 
 	
 	st_synchronize();
@@ -7871,11 +7871,11 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 	current_position_init = st_get_position_mm(axis);
 
 	current_position[axis] += 2 * margin;
-	plan_buffer_line_curposXYZE(homing_feedrate[axis]  / 60, active_extruder);
+	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
 	st_synchronize();
 
 	current_position[axis] += axis_length;
-	plan_buffer_line_curposXYZE(homing_feedrate[axis]  / 60, active_extruder);
+	plan_buffer_line_curposXYZE(hmanual_feedrate[0] / 60, active_extruder);
 
 	st_synchronize();
 
@@ -7891,11 +7891,11 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 
 	current_position[axis] -= margin;
-	plan_buffer_line_curposXYZE(homing_feedrate[axis]  / 60, active_extruder);
+	plan_buffer_line_curposXYZE(manual_feedrate[0]  / 60, active_extruder);
 	st_synchronize();	
 
 	current_position[axis] -= (axis_length + margin);
-	plan_buffer_line_curposXYZE(homing_feedrate[axis]  / 60, active_extruder);
+	plan_buffer_line_curposXYZE(manual_feedrate[0]  / 60, active_extruder);
 		
 	st_synchronize();
 
