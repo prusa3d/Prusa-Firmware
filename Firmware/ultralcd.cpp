@@ -8114,6 +8114,9 @@ static bool lcd_selfcheck_pulleys(int axis)
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
 			endstop_triggered = true;
 			if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
+				current_position[axis] += 10;
+				plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+				st_synchronize();
 				return(true);
 			}
 			else {
