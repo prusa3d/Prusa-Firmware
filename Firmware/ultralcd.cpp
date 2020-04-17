@@ -7705,8 +7705,8 @@ bool lcd_selftest()
 
 		//homeaxis(X_AXIS);
 		//homeaxis(Y_AXIS);
-        current_position[X_AXIS] += pgm_read_float(bed_ref_points_4);
-		current_position[Y_AXIS] += pgm_read_float(bed_ref_points_4+1);
+        current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
+		current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4+1);
 #ifdef TMC2130
 		//current_position[X_AXIS] += 0;
 		current_position[Y_AXIS] += 4;
