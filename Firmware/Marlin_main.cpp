@@ -4277,6 +4277,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     
 
     /*!
+	### G21 - Sets Units to Millimters <a href="https://reprap.org/wiki/G-code#G21:_Set_Units_to_Millimeters">G21: Set Units to Millimeters</a>
+	Units are in millimeters. Prusa doesn't support inches.
+    */
+    case 21: 
+      break; //Doing nothing. This is just to prevent serial UNKOWN warnings.
+    
+
+    /*!
     ### G28 - Home all Axes one at a time <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">G28: Move to Origin (Home)</a>
     Using `G28` without any parameters will perfom homing of all axes AND mesh bed leveling, while `G28 W` will just home all axes (no mesh bed leveling).
     #### Usage
