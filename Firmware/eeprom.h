@@ -72,7 +72,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
   
   To convert hex to dec 		https://www.rapidtables.com/convert/number/hex-to-decimal.html
   
-  Version: 1.0
+  Version: 1.0.1
   
   ---------------------------------------------------------------------------------
   
@@ -225,10 +225,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| fa 00h 250	| ^						| PRINTER_MK2.5										| ???			| ^
 | ^					| ^			| ^										| 1a 4fh 20250	| ^						| PRINTER_MK2.5 with MMU2							| ???			| ^
 | ^					| ^			| ^										| fc 00h 252	| ^						| PRINTER_MK2.5S									| ???			| ^
-| ^					| ^			| ^										| 1c 4fh 20250	| ^						| PRINTER_MK2.5S with MMU2S							| ???			| ^
-| ^					| ^			| ^										| 0c 12h 300	| ^						| PRINTER_MK3										| ???			| ^
+| ^					| ^			| ^										| 1c 4fh 20252	| ^						| PRINTER_MK2.5S with MMU2S							| ???			| ^
+| ^					| ^			| ^										| 2c 01h 300	| ^						| PRINTER_MK3										| ???			| ^
 | ^					| ^			| ^										| 4c 4fh 20300	| ^						| PRINTER_MK3 with MMU2								| ???			| ^
-| ^					| ^			| ^										| 0e 12h 302	| ^						| PRINTER_MK3S										| ???			| ^
+| ^					| ^			| ^										| 2e 01h 302	| ^						| PRINTER_MK3S										| ???			| ^
 | ^					| ^			| ^										| 4e 4fh 20302	| ^						| PRINTER_MK3S with MMU2S							| ???			| ^
 | 0x0EEC 3820		| uint16	| EEPROM_BOARD_TYPE						| ???			| ff ffh 65535			| Board Type										| ???			| D3 Ax0eec C2
 | ^					| ^			| ^										| c8 00h 200	| ^						| BOARD_RAMBO_MINI_1_0								| ???			| ^
@@ -355,7 +355,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D32 3378		| uint8		| EEPROM_BACKLIGHT_MODE					| 02h 2			| ffh 255				| LCD backlight mode: __Auto__						| LCD menu		| D3 Ax0d32 C1
 | ^					| ^			| ^										| 01h 1			| ^						| LCD backlight mode: __Bright__					| ^				| ^
 | ^					| ^			| ^										| 00h 0			| ^						| LCD backlight mode: __Dim__						| ^				| ^
-| 0x0D30 3376		| uint16	| EEPROM_BACKLIGHT_TIMEOUT				| 01 00 - ff ff | ff ffh 65535			| LCD backlight timeout: __10__ seconds				| LCD menu		| D3 Ax0d30 C2
+| 0x0D30 3376		| uint16	| EEPROM_BACKLIGHT_TIMEOUT				| 01 00 - ff ff | 0a 00h 65535			| LCD backlight timeout: __10__ seconds				| LCD menu		| D3 Ax0d30 C2
 | 0x0D2C 3372		| float		| EEPROM_UVLO_LA_K						| ???			| ff ff ff ffh			| Power panic saved Linear Advanced K value			| ???			| D3 Ax0d2c C4
 
   

@@ -1,5 +1,6 @@
 #include "Dcodes.h"
 //#include "Marlin.h"
+#include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
 #include <stdio.h>
@@ -97,7 +98,7 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
 	}
 }
 
-#ifdef DEBUG_DCODE3
+#if defined DEBUG_DCODE3 || defined DEBUG_DCODES
 #define EEPROM_SIZE 0x1000
     /*!
     ### D3 - Read/Write EEPROM <a href="https://reprap.org/wiki/G-code#D3:_Read.2FWrite_EEPROM">D3: Read/Write EEPROM</a>
@@ -185,7 +186,6 @@ void dcode_3()
 #define BOOT_APP_FLG_COPY  0x02
 #define BOOT_APP_FLG_FLASH 0x04
 
-extern uint8_t fsensor_log;
 extern float current_temperature_pinda;
 extern float axis_steps_per_unit[NUM_AXIS];
 
@@ -360,7 +360,7 @@ void dcode_4()
 }
 #endif //DEBUG_DCODES
 
-#ifdef DEBUG_DCODE5
+#if defined DEBUG_DCODE5 || defined DEBUG_DCODES
 
     /*!
     ### D5 - Read/Write FLASH <a href="https://reprap.org/wiki/G-code#D5:_Read.2FWrite_FLASH">D5: Read/Write Flash</a>
@@ -372,7 +372,7 @@ void dcode_4()
     #### Parameters
     - `A` - Address (x00000-x3ffff)
     - `C` - Count (1-8192)
-    - `X` - Data
+    - `X` - Data (hex)
     - `E` - Erase
  	
 	#### Notes
@@ -635,6 +635,98 @@ void dcode_12()
 
 }
 
+#ifdef HEATBED_ANALYSIS
+    /*!
+    ### D80 - Bed check <a href="https://reprap.org/wiki/G-code#D80:_Bed_check">D80: Bed check</a>
+    This command will log data to SD card file "mesh.txt".
+    #### Usage
+    
+        D80 [ E | F | G | H | I | J ]
+    
+    #### Parameters
+    - `E` - Dimension X (default 40)
+    - `F` - Dimention Y (default 40)
+    - `G` - Points X (default 40)
+    - `H` - Points Y (default 40)
+    - `I` - Offset X (default 74)
+    - `J` - Offset Y (default 34)
+  */
+void dcode_80()
+{
+	float dimension_x = 40;
+	float dimension_y = 40;
+	int points_x = 40;
+	int points_y = 40;
+	float offset_x = 74;
+	float offset_y = 33;
+
+	if (code_seen('E')) dimension_x = code_value();
+	if (code_seen('F')) dimension_y = code_value();
+	if (code_seen('G')) {points_x = code_value(); }
+	if (code_seen('H')) {points_y = code_value(); }
+	if (code_seen('I')) {offset_x = code_value(); }
+	if (code_seen('J')) {offset_y = code_value(); }
+	printf_P(PSTR("DIM X: %f\n"), dimension_x);
+	printf_P(PSTR("DIM Y: %f\n"), dimension_y);
+	printf_P(PSTR("POINTS X: %d\n"), points_x);
+	printf_P(PSTR("POINTS Y: %d\n"), points_y);
+	printf_P(PSTR("OFFSET X: %f\n"), offset_x);
+	printf_P(PSTR("OFFSET Y: %f\n"), offset_y);
+		bed_check(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
+}
+
+
+    /*!
+    ### D81 - Bed analysis <a href="https://reprap.org/wiki/G-code#D81:_Bed_analysis">D80: Bed analysis</a>
+    This command will log data to SD card file "wldsd.txt".
+    #### Usage
+    
+        D81 [ E | F | G | H | I | J ]
+    
+    #### Parameters
+    - `E` - Dimension X (default 40)
+    - `F` - Dimention Y (default 40)
+    - `G` - Points X (default 40)
+    - `H` - Points Y (default 40)
+    - `I` - Offset X (default 74)
+    - `J` - Offset Y (default 34)
+  */
+void dcode_81()
+{
+	float dimension_x = 40;
+	float dimension_y = 40;
+	int points_x = 40;
+	int points_y = 40;
+	float offset_x = 74;
+	float offset_y = 33;
+
+	if (code_seen('E')) dimension_x = code_value();
+	if (code_seen('F')) dimension_y = code_value();
+	if (code_seen("G")) { strchr_pointer+=1; points_x = code_value(); }
+	if (code_seen("H")) { strchr_pointer+=1; points_y = code_value(); }
+	if (code_seen("I")) { strchr_pointer+=1; offset_x = code_value(); }
+	if (code_seen("J")) { strchr_pointer+=1; offset_y = code_value(); }
+	
+	bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
+	
+}
+
+#endif //HEATBED_ANALYSIS
+
+    /*!
+    ### D106 - Print measured fan speed for different pwm values <a href="https://reprap.org/wiki/G-code#D106:_Print_measured_fan_speed_for_different_pwm_values">D106: Print measured fan speed for different pwm values</a>
+    */
+void dcode_106()
+{
+	for (int i = 255; i > 0; i = i - 5) {
+		fanSpeed = i;
+		//delay_keep_alive(2000);
+		for (int j = 0; j < 100; j++) {
+			delay_keep_alive(100);
+			}
+			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
+	}
+}
 
 #ifdef TMC2130
 #include "planner.h"
@@ -843,11 +935,13 @@ void dcode_9125()
 		pat9125_y = (int)code_value();
 		LOG("pat9125_y=%d\n", pat9125_y);
 	}
+#ifdef DEBUG_FSENSOR_LOG
 	if (code_seen('L'))
 	{
 		fsensor_log = (int)code_value();
 		LOG("fsensor_log=%d\n", fsensor_log);
 	}
+#endif //DEBUG_FSENSOR_LOG
 }
 #endif //PAT9125
 
