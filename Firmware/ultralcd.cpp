@@ -7467,55 +7467,38 @@ static void lcd_belttest_v()
     lcd_belttest();
     menu_back_if_clicked();
 }
-void lcd_belttest_print(const char* msg, uint16_t X, uint16_t Y)
-{
-    lcd_clear();
-    lcd_printf_P(
-              _N(
-                 "%S:\n"
-                 "%S\n"
-                 "X:%d\n"
-                 "Y:%d"
-                 ),
-              _i("Belt status"),
-              msg,
-              X,Y
-            );
-}
+
 void lcd_belttest()
 {
-    bool _result = true;
-    
-    #ifdef TMC2130 // Belttest requires high power mode. Enable it.
-	    FORCE_HIGH_POWER_START;
-    #endif
+    lcd_clear();
+	// Belttest requires high power mode. Enable it.
+	FORCE_HIGH_POWER_START;
     
     uint16_t   X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
     uint16_t   Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
-    lcd_belttest_print(_i("Checking X..."), X, Y);
-
+	lcd_printf_P(_i("Checking X axis  ")); // share message with selftest
+	lcd_set_cursor(0,1), lcd_printf_P(PSTR("X: %u -> ..."),X);
     KEEPALIVE_STATE(IN_HANDLER);
     
-    _result = lcd_selfcheck_axis_sg(X_AXIS);
-    X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
-    if (_result){
-        lcd_belttest_print(_i("Checking Y..."), X, Y);
-        _result = lcd_selfcheck_axis_sg(Y_AXIS);
-        Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
+	// N.B: it doesn't make sense to handle !lcd_selfcheck...() because selftest_sg throws its own error screen
+	// that clobbers ours, with more info than we could provide. So on fail we just fall through to take us back to status.
+    if (lcd_selfcheck_axis_sg(X_AXIS)){
+		X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
+		lcd_set_cursor(10,1), lcd_printf_P(PSTR("%u"),X); // Show new X value next to old one.
+        lcd_puts_at_P(0,2,_i("Checking Y axis  "));
+		lcd_set_cursor(0,3), lcd_printf_P(PSTR("Y: %u -> ..."),Y);
+		if (lcd_selfcheck_axis_sg(Y_AXIS))
+		{
+			Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
+			lcd_set_cursor(10,3),lcd_printf_P(PSTR("%u"),Y);
+			lcd_set_cursor(19, 3);
+			lcd_print(LCD_STR_UPLEVEL);
+			lcd_wait_for_click_delay(10);
+		}
     }
-    
-    if (!_result) {
-        lcd_belttest_print(_i("Error"), X, Y);
-    } else {
-        lcd_belttest_print(_i("Done"), X, Y);
-    }   
-
-    #ifdef TMC2130
-	    FORCE_HIGH_POWER_END;
-    #endif
-    
+	
+	FORCE_HIGH_POWER_END;
     KEEPALIVE_STATE(NOT_BUSY);
-    _delay(3000);
 }
 #endif //TMC2130
 
@@ -7722,8 +7705,8 @@ bool lcd_selftest()
 
 		//homeaxis(X_AXIS);
 		//homeaxis(Y_AXIS);
-        current_position[X_AXIS] += pgm_read_float(bed_ref_points_4);
-		current_position[Y_AXIS] += pgm_read_float(bed_ref_points_4+1);
+        current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
+		current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4+1);
 #ifdef TMC2130
 		//current_position[X_AXIS] += 0;
 		current_position[Y_AXIS] += 4;
@@ -7866,12 +7849,10 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 	tmc2130_home_exit();
 	enable_endstops(true);
 
-	if (axis == X_AXIS) { //there is collision between cables and PSU cover in X axis if Z coordinate is too low
-		raise_z_above(17,true);
-		tmc2130_home_enter(Z_AXIS_MASK);
-		st_synchronize();
-		tmc2130_home_exit();
-	}
+
+	raise_z_above(MESH_HOME_Z_SEARCH);
+	st_synchronize();
+	tmc2130_home_enter(1 << axis);
 
 // first axis length measurement begin	
 	
@@ -7918,6 +7899,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 	measured_axis_length[1] = abs(current_position_final - current_position_init);
 
+	tmc2130_home_exit();
 
 //end of second measurement, now check for possible errors:
 
@@ -7936,6 +7918,8 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
+			enable_endstops(true);
+			endstops_hit_on_purpose();
 			return false;
 		}
 	}
@@ -7954,12 +7938,13 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
-
+			endstops_hit_on_purpose();
 			return false;
 		}
 		current_position[axis] = 0;
 		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 		reset_crash_det(axis);
+		endstops_hit_on_purpose();
 		return true;
 }
 #endif //TMC2130
@@ -8114,6 +8099,9 @@ static bool lcd_selfcheck_pulleys(int axis)
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
 			endstop_triggered = true;
 			if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
+				current_position[axis] += 10;
+				plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+				st_synchronize();
 				return(true);
 			}
 			else {
