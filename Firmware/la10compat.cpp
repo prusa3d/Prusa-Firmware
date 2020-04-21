@@ -52,11 +52,11 @@ float la10c_value(float k)
         else if(k < 0)
             return -1;
 
-        la10c_mode_change(k < 10? LA10C_LA15: LA10C_LA10);
+        la10c_mode_change(k <= LIN_ADVANCE_15_K_MAX? LA10C_LA15: LA10C_LA10);
     }
 
     if(la10c_mode == LA10C_LA15)
-        return (k >= 0 && k < 10? k: -1);
+        return (k >= 0 && k <= LIN_ADVANCE_15_K_MAX? k: -1);
     else
         return (k >= 0? la10c_convert(k): -1);
 }
