@@ -39,6 +39,10 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+#ifndef LA_NOCOMPAT
+#include "la10compat.h"
+#endif
+
 #include "sound.h"
 
 #include "mmu.h"
@@ -7351,6 +7355,10 @@ void lcd_print_stop()
 
     current_position[Z_AXIS] += 10; //lift Z.
     plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60, active_extruder);
+
+#ifndef LA_NOCOMPAT
+    la10c_reset(); //reset LA1.0 conversion lock
+#endif
 
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
     {
