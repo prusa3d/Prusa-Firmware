@@ -286,14 +286,12 @@
 
 #ifdef LIN_ADVANCE
   #define LIN_ADVANCE_K 0  // Unit: mm compression per 1mm/s extruder speed
-  #define LIN_ADVANCE_15_K_MAX 10 // Linear Advanced 1.5 max vaule to determine if it is LA15 or LA10
+  #define LIN_ADVANCE_15_K_MAX 9.99 // Linear Advanced 1.5 max vaule to determine if it is LA15 or LA10
   //#define LA_NOCOMPAT    // Disable Linear Advance 1.0 compatibility
   //#define LA_LIVE_K      // Allow adjusting K in the Tune menu
   //#define LA_DEBUG       // If enabled, this will generate debug information output over USB.
   //#define LA_DEBUG_LOGIC // @wavexx: setup logic channels for isr debugging
 #endif
-
-
 
 // Arc interpretation settings:
 #define MM_PER_ARC_SEGMENT 1
