@@ -2072,10 +2072,9 @@ inline void gcode_M900() {
         SERIAL_ECHOLNPGM("K out of allowed range!");
 #else
     if (newK == 0)
-    {
         extruder_advance_K = 0;
+    else if (newK == -1)
         la10c_reset();
-    }
     else
     {
         newK = la10c_value(newK);
@@ -4865,6 +4864,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
+#ifndef LA_NOCOMPAT
+        // When printing via USB there's no clear boundary between prints. Abuse MBL to indicate
+        // the beginning of a new print, allowing a new autodetected setting just after G80.
+        la10c_reset();
+#endif
 #ifndef PINDA_THERMISTOR
         static bool run = false; // thermistor-less PINDA temperature compensation is running
 #endif // ndef PINDA_THERMISTOR
