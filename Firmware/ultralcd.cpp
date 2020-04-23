@@ -2237,19 +2237,23 @@ bool shouldPreheatOnlyNozzle() {
     }
 }
 
+void lcd_print_target_temps_first_line(){
+    lcd_set_cursor(0, 0);
+    lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
+    lcd_set_cursor(10, 0);
+    int targetBedTemp = (int) degTargetBed();
+    if (targetBedTemp) {
+        lcdui_print_temp(LCD_STR_BEDTEMP[0], (int) degBed(), targetBedTemp);
+    } else {
+        lcd_space(10);
+    }
+}
+
 static void mFilamentPrompt()
 {
 uint8_t nLevel;
 
-lcd_set_cursor(0,0);
-lcdui_print_temp(LCD_STR_THERMOMETER[0],(int)degHotend(0),(int)degTargetHotend(0));
-lcd_set_cursor(10, 0);
-int targetBedTemp = (int) degTargetBed();
-if (targetBedTemp) {
-    lcdui_print_temp(LCD_STR_BEDTEMP[0], (int) degBed(), targetBedTemp);
-} else {
-    lcd_space(10);
-}
+lcd_print_target_temps_first_line();
 lcd_puts_at_P(0,2, _i("Press the knob"));                 ////MSG_ c=20 r=1
 lcd_set_cursor(0,3);
 switch(eFilamentAction)
@@ -2390,15 +2394,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     }
     else
     {
-        lcd_set_cursor(0, 0);
-        lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
-        lcd_set_cursor(10, 0);
-        int targetBedTemp = (int) degTargetBed();
-        if (targetBedTemp) {
-            lcdui_print_temp(LCD_STR_BEDTEMP[0], (int) degBed(), targetBedTemp);
-        } else {
-            lcd_space(10);
-        }
+        lcd_print_target_temps_first_line();
         if (!bFilamentWaitingFlag)
         {
             // First run after the filament preheat selection:
