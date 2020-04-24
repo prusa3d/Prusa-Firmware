@@ -9484,10 +9484,10 @@ static uint8_t nFSCheckCount=0;
                          if(nFSCheckCount>FS_CHECK_COUNT)
                          {
                               nFSCheckCount=0;    // not necessary
-                              oFsensorPCB=ClFsensorPCB::_Rev03b;
+                              oFsensorPCB=ClFsensorPCB::_Rev04;
                               eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
                               printf_IRSensorAnalogBoardChange(true);
-                              lcd_setstatuspgm(_i("FS rev. 03b or newer"));
+                              lcd_setstatuspgm(_i("FS v0.4 or newer"));
                          }
                     }
                     else nFSCheckCount=0;

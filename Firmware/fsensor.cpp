@@ -201,7 +201,7 @@ void fsensor_init(void)
 		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
 	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
 #ifdef IR_SENSOR_ANALOG
-     printf_P(PSTR(" (sensor board revision: %S)\n"),(oFsensorPCB==ClFsensorPCB::_Rev03b)?PSTR("03b or newer"):PSTR("03 or older"));
+     printf_P(PSTR(" (sensor board revision: %S)\n"),(oFsensorPCB==ClFsensorPCB::_Rev04) ? MSG_04_OR_NEWER : MSG_03_OR_OLDER);
 #else //IR_SENSOR_ANALOG
      printf_P(PSTR("\n"));
 #endif //IR_SENSOR_ANALOG
@@ -691,7 +691,7 @@ void fsensor_update(void)
                               ADCSRB=nMUX2;
                               ENABLE_TEMPERATURE_INTERRUPT();
                               // end of sequence for ...
-                              if((oFsensorPCB==ClFsensorPCB::_Rev03b)&&((nADC*OVERSAMPLENR)>((int)IRsensor_Hopen_TRESHOLD)))
+                              if((oFsensorPCB==ClFsensorPCB::_Rev04)&&((nADC*OVERSAMPLENR)>((int)IRsensor_Hopen_TRESHOLD)))
                               {
                                    fsensor_disable();
                                    fsensor_not_responding = true;
@@ -727,7 +727,7 @@ bool bCheckResult;
 
 volt_IR_int=current_voltage_raw_IR;
 bCheckResult=(volt_IR_int<((int)IRsensor_Lmax_TRESHOLD))||(volt_IR_int>((int)IRsensor_Hmin_TRESHOLD));
-bCheckResult=bCheckResult&&(!((oFsensorPCB==ClFsensorPCB::_Rev03b)&&(volt_IR_int>((int)IRsensor_Hopen_TRESHOLD))));
+bCheckResult=bCheckResult&&(!((oFsensorPCB==ClFsensorPCB::_Rev04)&&(volt_IR_int>((int)IRsensor_Hopen_TRESHOLD))));
 return(bCheckResult);
 }
 #endif //IR_SENSOR_ANALOG
