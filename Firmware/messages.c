@@ -138,9 +138,11 @@ const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////
 const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////
 const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////
 const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////
+#ifdef IR_SENSOR_ANALOG
 // Beware - the space at the beginning is necessary since it is reused in LCD menu items which are to be with a space
 const char MSG_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");
 const char MSG_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");
+#endif
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
