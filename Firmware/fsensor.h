@@ -90,7 +90,7 @@ extern uint8_t fsensor_log;
 enum class ClFsensorPCB:uint_least8_t
 {
     _Old=0,
-    _Rev03b=1,
+    _Rev04=1,
     _Undef=EEPROM_EMPTY_VALUE
 };
 
