@@ -9478,12 +9478,11 @@ static uint16_t nFSCheckCount=0;
 				if( current_voltage_raw_IR > maxVolt )maxVolt = current_voltage_raw_IR;
 				if( current_voltage_raw_IR < minVolt )minVolt = current_voltage_raw_IR;
 				
-#if 1
+#if 0
 				{ // debug print
 					static uint16_t lastVolt = ~0U;
 					if( current_voltage_raw_IR != lastVolt ){
 						printf_P(PSTR("fs volt=%4.2fV (min=%4.2f max=%4.2f)\n"), Raw2Voltage(current_voltage_raw_IR), Raw2Voltage(minVolt), Raw2Voltage(maxVolt) );
-									  //"(Hmin=%dV < raw=%dV < Hopen=%dV)\n"), voltI * 0.001F, IRsensor_Hmin_TRESHOLD, current_voltage_raw_IR, IRsensor_Hopen_TRESHOLD );
 						lastVolt = current_voltage_raw_IR;
 					}
 				}

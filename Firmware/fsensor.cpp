@@ -691,12 +691,16 @@ void fsensor_update(void)
                               ADCSRB=nMUX2;
                               ENABLE_TEMPERATURE_INTERRUPT();
                               // end of sequence for ...
-                              if((oFsensorPCB==ClFsensorPCB::_Rev04)&&((nADC*OVERSAMPLENR)>((int)IRsensor_Hopen_TRESHOLD)))
+							  // Detection of correct function of fsensor v04 - it must NOT read >4.6V
+							  // If it does, it means a disconnected cables or faulty board
+                              if( (oFsensorPCB == ClFsensorPCB::_Rev04) && ( (nADC*OVERSAMPLENR) > IRsensor_Hopen_TRESHOLD ) )
                               {
                                    fsensor_disable();
                                    fsensor_not_responding = true;
                                    printf_P(PSTR("IR sensor not responding (%d)!\n"),1);
-                                   if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
+								   if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
+
+								   // if we are printing and FS action is set to "Pause", force pause the print
                                    if(oFsensorActionNA==ClFsensorActionNA::_Pause)
                                         lcd_pause_print();
                               }
@@ -735,7 +739,7 @@ bool fsensor_IR_check(){
 	if( oFsensorPCB == ClFsensorPCB::_Rev04 ){
 		// newer IR sensor cannot normally produce 4.6-5V, this is considered a failure/bad mount
 		if( IRsensor_Hopen_TRESHOLD <= current_voltage_raw_IR && current_voltage_raw_IR <= IRsensor_VMax_TRESHOLD ){
-			printf_P(PSTR("fsensor v04 in fault range 4.6-5V - unconnected\n"));
+			printf_P(PSTR("fsensor v0.4 in fault range 4.6-5V - unconnected\n"));
 			return false;
 		}
 	}
