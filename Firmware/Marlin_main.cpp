@@ -9478,7 +9478,7 @@ static uint16_t nFSCheckCount=0;
 				if( current_voltage_raw_IR > maxVolt )maxVolt = current_voltage_raw_IR;
 				if( current_voltage_raw_IR < minVolt )minVolt = current_voltage_raw_IR;
 				
-#if 0				
+#if 1
 				{ // debug print
 					static uint16_t lastVolt = ~0U;
 					if( current_voltage_raw_IR != lastVolt ){
