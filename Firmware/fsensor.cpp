@@ -720,14 +720,64 @@ void fsensor_update(void)
 }
 
 #ifdef IR_SENSOR_ANALOG
-bool fsensor_IR_check()
-{
-uint16_t volt_IR_int;
-bool bCheckResult;
 
-volt_IR_int=current_voltage_raw_IR;
-bCheckResult=(volt_IR_int<((int)IRsensor_Lmax_TRESHOLD))||(volt_IR_int>((int)IRsensor_Hmin_TRESHOLD));
-bCheckResult=bCheckResult&&(!((oFsensorPCB==ClFsensorPCB::_Rev04)&&(volt_IR_int>((int)IRsensor_Hopen_TRESHOLD))));
-return(bCheckResult);
+/// This function object encapsulates continuous checking of a value
+/// being in some range for some time period.
+template<typename VALUETYPE>
+struct IsWithinRangeForXs {
+	VALUETYPE minV, maxV;
+	uint16_t mustLastForMillis; ///< how many milliseconds must the event last
+	mutable uint32_t millisStart;
+	
+	inline IsWithinRangeForXs(VALUETYPE minV, VALUETYPE maxV, uint8_t seconds):minV(minV), maxV(maxV), mustLastForMillis(seconds), millisStart(0) { }
+	/// @return true, if v is within preset range for at least mustLastForMillis
+	/// otherwise return false
+	bool Check(VALUETYPE v, uint32_t currentMillis)const {
+		if( v >= minV && v <= maxV ){
+			uint32_t delta = (currentMillis - millisStart);
+			if( delta > mustLastForMillis * 2 ){
+				// too long interval between measurements, ignore - let it fall through here and reset start time
+				// - avoiding situations when this functor doesn't get called frequently enough
+			} else if( delta > mustLastForMillis ){
+				// event duration exceeded time period
+				return true;
+			}
+		}
+		millisStart = currentMillis;
+		return false;
+	}	
+};
+
+bool fsensor_IR_check(){
+	//uint16_t volt_IR_int;
+	uint32_t currentMillis = _millis();
+	static IsWithinRangeForXs<uint16_t> forbiddenVoltageRange15_30(IRsensor_Lmax_TRESHOLD, IRsensor_Hmin_TRESHOLD, 30000);
+	
+//	bool bCheckResult;
+		
+	// This was bullsh*t - I can create 1.5-3V by hand just by putting the filament into the machine
+	// there must be some temporal dependency - like the voltage 1.5-3V lasts for a minute or so
+//	bCheckResult=(volt_IR_int<((int)IRsensor_Lmax_TRESHOLD))||(volt_IR_int>((int)IRsensor_Hmin_TRESHOLD));
+	
+	if( forbiddenVoltageRange15_30.Check(current_voltage_raw_IR, currentMillis) ){
+		// if the voltage has been in forbidden range for preset period of time, the fsensor is ok, but the lever is mounted
+		// improperly. Or the user is so creative so that he can hold a piece of fillament in the hole in such a genius way,
+		// that the IR fsensor reading is within 1.5 and 3V for more than 30 seconds ... this would have been highly unusual
+		// and would have been considered more like a sabotage than normal printer operation
+		return false; 
+	}
+
+	
+	if( oFsensorPCB == ClFsensorPCB::_Rev04 ){
+		// newer IR sensor cannot normally produce 4.6-5V, this is considered a failure/bad mount
+		// For safety reasons and to eliminate voltage spikes (if any), the timeout is 2s
+		static IsWithinRangeForXs<uint16_t> forbiddenVoltageRange46_50(IRsensor_Hopen_TRESHOLD, IRsensor_VMax_TRESHOLD, 2000);
+		if( forbiddenVoltageRange46_50.Check( current_voltage_raw_IR, currentMillis ) ){
+			return false;
+		}
+	}
+
+	// otherwise the IR fsensor is considered working correctly
+	return true;
 }
 #endif //IR_SENSOR_ANALOG
