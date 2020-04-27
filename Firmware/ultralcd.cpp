@@ -7546,10 +7546,14 @@ static void lcd_detect_IRsensor(){
         return;
     }
     bAction = lcd_selftest_IRsensor(true);
-    if(bAction)
+	if(bAction){
         lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));
-    else
+		// the fsensor board has been successfully identified, any previous "not responding" may be cleared now
+		fsensor_not_responding = false;
+    } else {
         lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));
+		// here it is unclear what to to with the fsensor_not_responding flag
+	}
     bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
 }
 #endif //IR_SENSOR_ANALOG

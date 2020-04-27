@@ -174,39 +174,46 @@ void fsensor_init(void)
 {
 #ifdef PAT9125
 	uint8_t pat9125 = pat9125_init();
-     printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
+	printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
 #endif //PAT9125
-	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+	uint8_t fsensor_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
-     fsensor_not_responding = false;
+	fsensor_not_responding = false;
 #ifdef PAT9125
 	uint8_t oq_meassure_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_OQ_MEASS_ENABLED);
 	fsensor_oq_meassure_enabled = (oq_meassure_enabled == 1)?true:false;
-    fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[E_AXIS]);
-
-	if (!pat9125)
-	{
-		fsensor = 0; //disable sensor
+	fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[E_AXIS]);
+	
+	if (!pat9125){
+		fsensor_enabled = 0; //disable sensor
 		fsensor_not_responding = true;
 	}
 #endif //PAT9125
 #ifdef IR_SENSOR_ANALOG
-     bIRsensorStateFlag=false;
-     oFsensorPCB=(ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
-     oFsensorActionNA=(ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
+	bIRsensorStateFlag=false;
+	oFsensorPCB = (ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
+	oFsensorActionNA = (ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
+
+	// If the fsensor is not responding even at the start of the printer,
+	// set this flag accordingly to show N/A in Settings->Filament sensor.
+	// This is even valid for both fsensor board revisions (0.3 or older and 0.4).
+	// Must be done after reading what type of fsensor board we have
+	fsensor_not_responding = ! fsensor_IR_check();
 #endif //IR_SENSOR_ANALOG
-	if (fsensor)
+	if (fsensor_enabled){
 		fsensor_enable(false);                  // (in this case) EEPROM update is not necessary
-	else
+	} else {
 		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
+	}
 	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
 #ifdef IR_SENSOR_ANALOG
-     printf_P(PSTR(" (sensor board revision:%S)\n"),(oFsensorPCB==ClFsensorPCB::_Rev04) ? _T(MSG_04_OR_NEWER) : _T(MSG_03_OR_OLDER));
+     printf_P(PSTR(" (sensor board revision:%S)\n"), (oFsensorPCB==ClFsensorPCB::_Rev04) ? _T(MSG_04_OR_NEWER) : _T(MSG_03_OR_OLDER));
 #else //IR_SENSOR_ANALOG
      printf_P(PSTR("\n"));
 #endif //IR_SENSOR_ANALOG
-	if (check_for_ir_sensor()) ir_sensor_detected = true;
-
+	if (check_for_ir_sensor()){
+		ir_sensor_detected = true;
+	}
 }
 
 bool fsensor_enable(bool bUpdateEEPROM)
