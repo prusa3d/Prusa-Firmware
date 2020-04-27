@@ -138,6 +138,10 @@ extern const char MSG_TIMEOUT[];
 extern const char MSG_BRIGHT[];
 extern const char MSG_DIM[];
 extern const char MSG_AUTO[];
+#ifdef IR_SENSOR_ANALOG
+extern const char MSG_04_OR_NEWER[];
+extern const char MSG_03_OR_OLDER[];
+#endif
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
@@ -170,6 +174,7 @@ extern const char MSG_FANCHECK_EXTRUDER[];
 extern const char MSG_FANCHECK_PRINT[];
 extern const char MSG_M112_KILL[];
 extern const char MSG_ADVANCE_K[];
+extern const char MSG_POWERPANIC_DETECTED[];
 
 #if defined(__cplusplus)
 }

@@ -73,7 +73,7 @@ int current_voltage_raw_pwr = 0;
 int current_voltage_raw_bed = 0;
 #endif
 
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 int current_voltage_raw_IR = 0;
 #endif //IR_SENSOR_ANALOG
 
@@ -209,6 +209,14 @@ static int temp_runaway_error_counter[4];
 static void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
 static void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
+
+// return "false", if all extruder-heaters are 'off' (ie. "true", if any heater is 'on')
+bool checkAllHotends(void)
+{
+    bool result=false;
+    for(int i=0;i<EXTRUDERS;i++) result=(result||(target_temperature[i]!=0));
+    return(result);
+}
 
   void PID_autotune(float temp, int extruder, int ncycles)
   {
@@ -1403,6 +1411,7 @@ void disable_heater()
     target_temperature_bed=0;
     soft_pwm_bed=0;
 	timer02_set_pwm0(soft_pwm_bed << 1);
+	bedPWMDisabled = 0;
     #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
       //WRITE(HEATER_BED_PIN,LOW);
     #endif
@@ -1587,7 +1596,7 @@ void adc_ready(void) //callback from adc when sampling finished
 #ifdef VOLT_BED_PIN
 	current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
 #endif
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      current_voltage_raw_IR = adc_values[ADC_PIN_IDX(VOLT_IR_PIN)];
 #endif //IR_SENSOR_ANALOG
 	temp_meas_ready = true;
@@ -2002,6 +2011,8 @@ void check_max_temp()
 //! number of repeating the same state with consecutive step() calls
 //! used to slow down text switching
 struct alert_automaton_mintemp {
+	const char *m2;
+	alert_automaton_mintemp(const char *m2):m2(m2){}
 private:
 	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
 	enum class States : uint8_t { Init = 0, TempAboveMintemp, ShowPleaseRestart, ShowMintemp };
@@ -2021,7 +2032,6 @@ public:
 	//! @param current_temp current hotend/bed temperature (for computing simple hysteresis)
 	//! @param mintemp minimal temperature including hysteresis to check current_temp against
 	void step(float current_temp, float mintemp){
-		static const char m2[] PROGMEM = "MINTEMP fixed";
 		static const char m1[] PROGMEM = "Please restart";
 		switch(state){
 		case States::Init: // initial state - check hysteresis
@@ -2049,8 +2059,9 @@ public:
 		}
 	}
 };
-
-static alert_automaton_mintemp alert_automaton_hotend, alert_automaton_bed;
+static const char m2hotend[] PROGMEM = "MINTEMP HOTEND fixed";
+static const char m2bed[] PROGMEM = "MINTEMP BED fixed";
+static alert_automaton_mintemp alert_automaton_hotend(m2hotend), alert_automaton_bed(m2bed);
 
 void check_min_temp_heater0()
 {

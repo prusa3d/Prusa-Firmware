@@ -146,38 +146,37 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 #if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1 
 	#if defined(Z_AXIS_ALWAYS_ON)
 		  #ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		  #else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define  disable_z() {}
+			#define  poweron_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+			#define poweroff_z() {}
 		  #endif
 	#else
 		#ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		#else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		#endif
 	#endif
 #else
-  #define enable_z() {}
-  #define disable_z() {}
+    #define  poweron_z() {}
+    #define poweroff_z() {}
 #endif
 
-#ifdef PSU_Delta
+#ifndef PSU_Delta
+    #define  enable_z()  poweron_z()
+    #define disable_z() poweroff_z()
+#else
     void init_force_z();
     void check_force_z();
-    #undef disable_z
-    #define disable_z() disable_force_z()
-    void disable_force_z();
-    #undef enable_z
-    #define enable_z() enable_force_z()
     void enable_force_z();
+    void disable_force_z();
+    #define  enable_z()  enable_force_z()
+    #define disable_z() disable_force_z()
 #endif // PSU_Delta
-
-
 
 
 //#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
@@ -295,7 +294,7 @@ void setPwmFrequency(uint8_t pin, int val);
 
 extern bool fans_check_enabled;
 extern float homing_feedrate[];
-extern bool axis_relative_modes[];
+extern uint8_t axis_relative_modes;
 extern float feedrate;
 extern int feedmultiply;
 extern int extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders
@@ -445,9 +444,8 @@ void setup_uvlo_interrupt();
 void setup_fan_interrupt();
 #endif
 
-//extern void recover_machine_state_after_power_panic();
-extern void recover_machine_state_after_power_panic(bool bTiny);
-extern void restore_print_from_eeprom();
+extern bool recover_machine_state_after_power_panic();
+extern void restore_print_from_eeprom(bool mbl_was_active);
 extern void position_menu();
 
 extern void print_world_coordinates();

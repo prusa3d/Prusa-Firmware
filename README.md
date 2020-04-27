@@ -21,7 +21,7 @@
    - For MK3 --> skip to step 3. 
    - If you have a different printer model, follow step [2.b](#2b) from Windows build
    
-3. Run `sudo ./build.sh`
+3. Run `./build.sh`
    - Output hex file is at `"PrusaFirmware/lang/firmware.hex"` . In the same folder you can hex files for other languages as well.
 
 4. Connect your printer and flash with PrusaSlicer ( Configuration --> Flash printer firmware ) or Slic3r PE.
@@ -46,7 +46,7 @@ _Note: Multi language build is not supported._
 
 * Open Arduino and navigate to File -> Preferences -> Settings
 * To the text field `"Additional Boards Manager URLSs"` add `https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json`
-* Open Board manager (`Tools->Board->Board manager`), and install `Prusa Research AVR MK3 RAMBo EINSy board`
+* Open Board manager (`Tools->Board->Board manager`), and install `Prusa Research AVR Boards by Prusa Research`
 
 **c.** Modify compiler flags in `platform.txt` file
      

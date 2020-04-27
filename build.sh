@@ -1,5 +1,5 @@
 #!/bin/bash 
-BUILD_ENV="1.0.6"
+BUILD_ENV="1.0.6.1"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 if [ ! -d "build-env" ]; then
@@ -8,7 +8,8 @@ fi
 cd build-env || exit 2
 
 if [ ! -f "PF-build-env-Linux64-$BUILD_ENV.zip" ]; then
-    wget https://github.com/mkbel/PF-build-env/releases/download/$BUILD_ENV/PF-build-env-Linux64-$BUILD_ENV.zip || exit 3
+    #wget https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-Linux64/PF-build-env-Linux64-$BUILD_ENV.zip || exit 3
+	wget https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-Linux64/PF-build-env-Linux64-$BUILD_ENV.zip || exit 3
 fi
 
 if [ ! -d "../../PF-build-env-$BUILD_ENV" ]; then
