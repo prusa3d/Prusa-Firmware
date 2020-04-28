@@ -3724,6 +3724,16 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 	lcd_consume_click();
 	//KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
+		if (msg_next == NULL) {
+			lcd_set_cursor(0, 3);
+			if (yes) lcd_puts_P(PSTR(">"));
+			lcd_set_cursor(1, 3);
+			lcd_puts_P(first_choice);
+			lcd_set_cursor(7, 3);
+			if (!yes) lcd_puts_P(PSTR(">"));
+			lcd_set_cursor(8, 3);
+			lcd_puts_P(second_choice);
+		}
 		for (uint8_t i = 0; i < 100; ++i) {
 			delay_keep_alive(50);
 			if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
@@ -3770,16 +3780,6 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 				msg_next = msg;
 			}
 			msg_next = lcd_display_message_fullscreen_P(msg_next);
-		}
-		if (msg_next == NULL) {
-			lcd_set_cursor(0, 3);
-			if (yes) lcd_puts_P(PSTR(">"));
-			lcd_set_cursor(1, 3);
-			lcd_puts_P(first_choice);
-			lcd_set_cursor(7, 3);
-			if (!yes) lcd_puts_P(PSTR(">"));
-			lcd_set_cursor(8, 3);
-			lcd_puts_P(second_choice);
 		}
 	}
 }
