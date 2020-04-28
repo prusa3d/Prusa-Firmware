@@ -2066,7 +2066,7 @@ static float probe_pt(float x, float y, float z_before) {
 inline void gcode_M900() {
     float newK = code_seen('K') ? code_value_float() : -2;
 #ifdef LA_NOCOMPAT
-    if (newK >= 0 && newK < 10)
+    if (newK >= 0 && newK < LA_K_MAX)
         extruder_advance_K = newK;
     else
         SERIAL_ECHOLNPGM("K out of allowed range!");
