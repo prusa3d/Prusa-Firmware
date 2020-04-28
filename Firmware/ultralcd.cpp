@@ -51,6 +51,10 @@
 #include "adc.h"
 #include "config.h"
 
+#ifndef LA_NOCOMPAT
+#include "la10compat.h"
+#endif
+
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
@@ -7335,6 +7339,9 @@ void lcd_print_stop()
 
 #ifdef MESH_BED_LEVELING
     mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
+#endif
+#ifndef LA_NOCOMPAT
+    la10c_reset();
 #endif
 
 	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
