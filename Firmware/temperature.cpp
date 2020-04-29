@@ -74,7 +74,7 @@ int current_voltage_raw_bed = 0;
 #endif
 
 #ifdef IR_SENSOR_ANALOG
-int current_voltage_raw_IR = 0;
+uint16_t current_voltage_raw_IR = 0;
 #endif //IR_SENSOR_ANALOG
 
 int current_temperature_bed_raw = 0;
