@@ -4864,11 +4864,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-#ifndef LA_NOCOMPAT
-        // When printing via USB there's no clear boundary between prints. Abuse MBL to indicate
-        // the beginning of a new print, allowing a new autodetected setting just after G80.
-        la10c_reset();
-#endif
 #ifndef PINDA_THERMISTOR
         static bool run = false; // thermistor-less PINDA temperature compensation is running
 #endif // ndef PINDA_THERMISTOR
@@ -9697,6 +9692,24 @@ void Stop()
 }
 
 bool IsStopped() { return Stopped; };
+
+void finishAndDisableSteppers()
+{
+  st_synchronize();
+  disable_x();
+  disable_y();
+  disable_z();
+  disable_e0();
+  disable_e1();
+  disable_e2();
+
+#ifndef LA_NOCOMPAT
+  // Steppers are disabled both when a print is stopped and also via M84 (which is additionally
+  // checked-for to indicate a complete file), so abuse this function to reset the LA detection
+  // state for the next print.
+  la10c_reset();
+#endif
+}
 
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val)
