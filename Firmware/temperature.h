@@ -79,7 +79,7 @@ extern int current_voltage_raw_bed;
 #endif
 
 #ifdef IR_SENSOR_ANALOG
-extern int current_voltage_raw_IR;
+extern uint16_t current_voltage_raw_IR;
 #endif //IR_SENSOR_ANALOG
 
 #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
