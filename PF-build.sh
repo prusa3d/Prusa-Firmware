@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_13
+# Version: 1.0.6-Build_14
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -118,6 +118,7 @@
 # 15 Dec 2019, 3d-gussner, Prepare for switch to Prusa3d/PF-build-env repository
 # 15 Dec 2019, 3d-gussner, Fix Audrino user preferences for the chosen board.
 # 17 Dec 2019, 3d-gussner, Fix "timer0_fract = 0" warning by using Arduino_boards v1.0.3
+# 28 Apr 2020, 3d-gussner, Added RC3 detection
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -527,7 +528,7 @@ do
 	# Check development status
 	DEV_CHECK=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g'|cut -d '-' -f2)
 	if [ -z "$DEV_STATUS_SELECTED" ] ; then
-		if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2" ]] ; then
+		if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2"  ||  "$DEV_CHECK" == "RC3" ]] ; then
 			DEV_STATUS="RC"
 		elif [[ "$DEV_CHECK" == "ALPHA" ]]; then
 			DEV_STATUS="ALPHA"
