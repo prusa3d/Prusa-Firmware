@@ -4,11 +4,11 @@
 
 #MSG_03_OR_OLDER c=18
 " 0.3 or older"
-"\x00"
+" 0.3 oder aelter"
 
 #MSG_04_OR_NEWER c=18
 " 0.4 or newer"
-"\x00"
+" 04. oder neuer"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -108,7 +108,7 @@
 
 #MSG_BELTTEST c=17
 "Belt test        "
-"\x00"
+"Riementest       "
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -116,11 +116,11 @@
 
 #MSG_BRIGHT c=6
 "Bright"
-"\x00"
+"Hell"
 
 #MSG_BRIGHTNESS c=18
 "Brightness"
-"\x00"
+"Helligkeit"
 
 #MSG_BED
 "Bed"
@@ -264,15 +264,15 @@
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
-"\x00"
+"Fil. schneiden"
 
 #MSG_CUTTER c=9
 "Cutter"
-"\x00"
+"Messer"
 
 #c=18
 "Cutting filament"
-"\x00"
+"Schneide filament"
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -280,7 +280,7 @@
 
 #MSG_DIM c=6
 "Dim"
-"\x00"
+"Dimm"
 
 #MSG_ERROR
 "ERROR:"
@@ -352,11 +352,11 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-"\x00"
+"FS Aktion"
 
 #c=18
 "FS v0.4 or newer"
-"\x00"
+"FS v0.4 oder neuer"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -532,7 +532,7 @@
 
 #c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
-"\x00"
+"Stecken Sie das Filament(nicht laden) in den Extruder und druecken Sie dann den Knopf."
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
@@ -564,11 +564,11 @@
 
 #MSG_BL_HIGH c=12
 "Level Bright"
-"\x00"
+"Hell.wert"
 
 #MSG_BL_LOW c=12
 "Level Dimmed"
-"\x00"
+"Dim Wert"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
@@ -612,7 +612,7 @@
 
 #c=20 r=3
 "MK3 firmware detected on MK3S printer"
-"\x00"
+"MK3 Firmware am MK3s Drucker erkannt"
 
 #MSG_NORMAL
 "Normal"
@@ -636,7 +636,7 @@
 
 #MSG_AUTO_POWER
 "Auto power"
-"\x00"
+"Auto leist"
 
 #MSG_HIGH_POWER
 "High power"
@@ -892,7 +892,7 @@
 
 #c=20 r=4
 "Please unload the filament first, then repeat this action."
-"\x00"
+"Bitte entladen Sie erst das Filament und versuchen Sie es nochmal."
 
 #MSG_RECOVERING_PRINT c=20 r=1
 "Recovering print    "
@@ -1120,7 +1120,7 @@
 
 #c=20 r=3
 "Sensor verified, remove the filament now."
-"\x00"
+"Sensor ueberprueft, entladen Sie jetzt das Filament."
 
 #MSG_TEMPERATURE
 "Temperature"
@@ -1252,7 +1252,7 @@
 
 #MSG_TIMEOUT c=12
 "Timeout"
-"\x00"
+"Auszeit"
 
 #
 "X-correct:"
@@ -1296,7 +1296,7 @@
 
 #c=20 r=4
 "Verification failed, remove the filament and try again."
-"\x00"
+"Ueberpruefung fehl- geschlagen, entladen Sie das Filament und versuchen Sie es erneut."
 
 #
 "Y-correct:"
