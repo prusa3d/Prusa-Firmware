@@ -270,7 +270,7 @@
 "Cutter"
 "\x00"
 
-#c=18
+# c=18
 "Cutting filament"
 "\x00"
 
@@ -354,7 +354,7 @@
 "FS Action"
 "\x00"
 
-#c=18
+# c=18
 "FS v0.4 or newer"
 "\x00"
 
@@ -530,7 +530,8 @@
 "Live adjust Z"
 "Compensazione Z"
 
-#c=20 r=6
+# c=20 r=6
+
 "Insert the filament (do not load it) into the extruder and then press the knob."
 "\x00"
 
@@ -610,7 +611,7 @@
 "Mode"
 "Mod."
 
-#c=20 r=3
+# c=20 r=3
 "MK3 firmware detected on MK3S printer"
 "\x00"
 
@@ -810,7 +811,7 @@
 "Preheating nozzle. Please wait."
 "Preriscaldando l'ugello. Attendere prego."
 
-#c=14
+# c=14
 "PINDA"
 "\x00"
 
@@ -834,11 +835,11 @@
 "Print aborted"
 "Stampa interrotta"
 
-#c=20
+# c=20
 "Preheating to load"
 "Preriscaldamento per caricare"
 
-#c=20
+# c=20
 "Preheating to unload"
 "Preriscaldamento per scaricare"
 
@@ -890,7 +891,7 @@
 "Rear side [um]"
 "Retro [um]"
 
-#c=20 r=4
+# c=20 r=4
 "Please unload the filament first, then repeat this action."
 "\x00"
 
@@ -902,7 +903,7 @@
 "Remove old filament and press the knob to start loading new filament."
 "Rimuovi il filamento precedente e premi la manopola per caricare il nuovo filamento. "
 
-#c=20
+# c=20
 "Prusa i3 MK3S OK."
 "\x00"
 
@@ -986,15 +987,15 @@
 "Set temperature:"
 "Imposta temperatura:"
 
-#c=20
+# c=20
 "Prusa i3 MK2.5 OK."
 "\x00"
 
-#c=20
+# c=20
 "Prusa i3 MK2.5S OK."
 "\x00"
 
-#c=20
+# c=20
 "Prusa i3 MK3 OK."
 "\x00"
 
@@ -1050,7 +1051,7 @@
 "Sound"
 "Suono"
 
-#c=7
+# c=7
 "Runouts"
 "\x00"
 
@@ -1118,7 +1119,7 @@
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 "Calibrazione temperatura completata e attiva. Puo essere disattivata dal menu Impostazioni ->Cal. Temp."
 
-#c=20 r=3
+# c=20 r=3
 "Sensor verified, remove the filament now."
 "\x00"
 
@@ -1294,7 +1295,7 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "La stampante iniziera a stampare una linea a zig-zag. Gira la manopola fino a che non hai raggiungo l'altezza ottimale. Verifica con le immagini nel manuale (capitolo sulla calibrazione):"
 
-#c=20 r=4
+# c=20 r=4
 "Verification failed, remove the filament and try again."
 "\x00"
 
@@ -1406,11 +1407,11 @@
 "PINDA:"
 "\x00"
 
-#c=20
+# c=20
 "Preheating to cut"
 "Preriscaldamento per taglio"
 
-#c=20
+# c=20
 "Preheating to eject"
 "Preriscaldamento per espulsione"
 
