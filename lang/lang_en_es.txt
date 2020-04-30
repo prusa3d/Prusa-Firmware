@@ -4,11 +4,11 @@
 
 #MSG_03_OR_OLDER c=18
 " 0.3 or older"
-"\x00"
+" 0.3 o mayor"
 
 #MSG_04_OR_NEWER c=18
 " 0.4 or newer"
-"\x00"
+" 0.4 o mas nueva"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -108,7 +108,7 @@
 
 #MSG_BELTTEST c=17
 "Belt test        "
-"\x00"
+"Test cinturon"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -116,11 +116,11 @@
 
 #MSG_BRIGHT c=6
 "Bright"
-"\x00"
+"Brill."
 
 #MSG_BRIGHTNESS c=18
 "Brightness"
-"\x00"
+"Brillo"
 
 #MSG_BED
 "Bed"
@@ -264,15 +264,15 @@
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
-"\x00"
+"Cortar filament"
 
 #MSG_CUTTER c=9
 "Cutter"
-"\x00"
+"Cuchillo"
 
 #c=18
 "Cutting filament"
-"\x00"
+"Corte de filament"
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -352,11 +352,11 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-"\x00"
+"FS accion"
 
 #c=18
 "FS v0.4 or newer"
-"\x00"
+"FS v0.4 o +nueva"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -532,7 +532,7 @@
 
 #c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
-"\x00"
+"Inserte el filamento (no lo cargue) en el extrusor y luego presione el dial."
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
@@ -564,7 +564,7 @@
 
 #MSG_BL_HIGH c=12
 "Level Bright"
-"\x00"
+"Valor brill."
 
 #MSG_BL_LOW c=12
 "Level Dimmed"
@@ -612,7 +612,7 @@
 
 #c=20 r=3
 "MK3 firmware detected on MK3S printer"
-"\x00"
+"Firmware MK3 detectado en impresora MK3S"
 
 #MSG_NORMAL
 "Normal"
@@ -824,7 +824,7 @@
 
 #MSG_FS_PAUSE c=5
 "Pause"
-"\x00"
+"Pausa"
 
 #
 "Power failures"
@@ -892,7 +892,7 @@
 
 #c=20 r=4
 "Please unload the filament first, then repeat this action."
-"\x00"
+"Primero descargue el filamento, luego repita esta accion."
 
 #MSG_RECOVERING_PRINT c=20 r=1
 "Recovering print    "
@@ -964,7 +964,7 @@
 
 #MSG_SELFTEST
 "Selftest         "
-"Selftest"
+"\x00"
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"
@@ -1120,7 +1120,7 @@
 
 #c=20 r=3
 "Sensor verified, remove the filament now."
-"\x00"
+"Sensor verificado, retire el filamento ahora."
 
 #MSG_TEMPERATURE
 "Temperature"
@@ -1252,7 +1252,7 @@
 
 #MSG_TIMEOUT c=12
 "Timeout"
-"\x00"
+"Expirar"
 
 #
 "X-correct:"
@@ -1296,7 +1296,7 @@
 
 #c=20 r=4
 "Verification failed, remove the filament and try again."
-"\x00"
+"La verificacion fallo, retire el filamento e intente nuevamente."
 
 #
 "Y-correct:"
