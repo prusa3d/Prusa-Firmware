@@ -532,7 +532,7 @@
 
 #c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
-"Stecken Sie das Filament(nicht laden) in den Extruder und druecken Sie dann den Knopf."
+"Stecken Sie das Filament (nicht laden) in den Extruder und druecken Sie dann den Knopf."
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
