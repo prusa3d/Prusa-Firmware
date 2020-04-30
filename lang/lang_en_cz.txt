@@ -4,11 +4,11 @@
 
 #MSG_03_OR_OLDER c=18
 " 0.3 or older"
-"\x00"
+" 0.3 nebo starsi"
 
 #MSG_04_OR_NEWER c=18
 " 0.4 or newer"
-"\x00"
+" 0.4 nebo novejsi"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -108,7 +108,7 @@
 
 #MSG_BELTTEST c=17
 "Belt test        "
-"\x00"
+"Test remenu      "
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -116,11 +116,11 @@
 
 #MSG_BRIGHT c=6
 "Bright"
-"\x00"
+"Jasny"
 
 #MSG_BRIGHTNESS c=18
 "Brightness"
-"\x00"
+"Podsviceni"
 
 #MSG_BED
 "Bed"
@@ -228,7 +228,7 @@
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-"\x00"
+"Pokr."
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
@@ -264,23 +264,23 @@
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
-"\x00"
+"Ustrihnout"
 
 #MSG_CUTTER c=9
 "Cutter"
-"\x00"
+"Strihani"
 
 #c=18
 "Cutting filament"
-"\x00"
+"Strihani filamentu"
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"CHYBA: Filament senzor nereaguje, zkontrolujte zapojeni."
+"CHYBA: Filament senzor nereaguje, zkontrolujte prosim zapojeni."
 
 #MSG_DIM c=6
 "Dim"
-"\x00"
+"Temny"
 
 #MSG_ERROR
 "ERROR:"
@@ -352,11 +352,11 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-"\x00"
+"FS reakce"
 
 #c=18
 "FS v0.4 or newer"
-"\x00"
+"FS v0.4 nebo novejsi"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -532,7 +532,7 @@
 
 #c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
-"\x00"
+"Vlozte filament (nezavadejte) do extruderu a stisknete tlacitko"
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
@@ -892,11 +892,11 @@
 
 #c=20 r=4
 "Please unload the filament first, then repeat this action."
-"\x00"
+"Prosim vyjmete filament a zopakujte tuto akci"
 
 #MSG_RECOVERING_PRINT c=20 r=1
 "Recovering print    "
-"Obnovovani tisku "
+"Obnovovani tisku    "
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
@@ -1120,7 +1120,7 @@
 
 #c=20 r=3
 "Sensor verified, remove the filament now."
-"\x00"
+"Senzor overen, vyjmete filament."
 
 #MSG_TEMPERATURE
 "Temperature"
@@ -1296,7 +1296,7 @@
 
 #c=20 r=4
 "Verification failed, remove the filament and try again."
-"\x00"
+"Overeni selhalo, vyjmete filament a zkuste znovu."
 
 #
 "Y-correct:"
