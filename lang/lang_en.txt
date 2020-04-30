@@ -851,6 +851,9 @@
 #MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 
+# c=20 r=4
+"Sheet %.7sx0aZ offset: %+1.3f mmx0a%cContinuex0a%cStart from zero"
+
 #
 "Total filament"
 
@@ -1066,6 +1069,9 @@
 
 #
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+
+# c=20
+"%s level expected"
 
 #
 "Rename"

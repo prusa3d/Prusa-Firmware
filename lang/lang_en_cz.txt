@@ -537,7 +537,7 @@
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
-"Zavest filament              "
+"Zavest filament"
 
 #MSG_LOADING_COLOR
 "Loading color"
@@ -1135,6 +1135,10 @@
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "Je potreba kalibrovat osu Z. Prosim postupujte dle prirucky, kapitola Zaciname, sekce Postup kalibrace."
 
+# c=20 r=4
+"Sheet %.7sx0aZ offset: %+1.3f mmx0a%cContinuex0a%cStart from zero"
+"\x00"
+
 #
 "Total filament"
 "Filament celkem"
@@ -1422,6 +1426,10 @@
 #
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. Tisk zrusen."
+
+# c=20
+"%s level expected"
+"\x00"
 
 #
 "Rename"

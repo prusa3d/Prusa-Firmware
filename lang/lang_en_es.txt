@@ -1135,6 +1135,10 @@
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "Todavia es necesario hacer una calibracion Z. Por favor siga el manual, capitulo Primeros pasos, seccion Calibracion del flujo."
 
+# c=20 r=4
+"Sheet %.7sx0aZ offset: %+1.3f mmx0a%cContinuex0a%cStart from zero"
+"\x00"
+
 #
 "Total filament"
 "Filamento total"
@@ -1422,6 +1426,10 @@
 #
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Diametro nozzle Impresora difiere de cod.G. Comprueba los valores en ajustes. Impresion cancelada."
+
+# c=20
+"%s level expected"
+"\x00"
 
 #
 "Rename"
