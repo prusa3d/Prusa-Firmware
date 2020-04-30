@@ -568,7 +568,7 @@
 
 #MSG_BL_LOW c=12
 "Level Dimmed"
-"Dim Wert"
+"Dimmwert"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
