@@ -8,7 +8,7 @@
 
 #MSG_04_OR_NEWER c=18
 " 0.4 or newer"
-" 04. oder neuer"
+" 0.4 oder neuer"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -636,7 +636,7 @@
 
 #MSG_AUTO_POWER
 "Auto power"
-"Auto leist"
+"Auto Leist"
 
 #MSG_HIGH_POWER
 "High power"
