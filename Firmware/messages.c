@@ -21,7 +21,7 @@ const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////
 const char MSG_CONFIRM_NOZZLE_CLEAN[] PROGMEM_I1 = ISTR("Please clean the nozzle for calibration. Click when done."); ////c=20 r=8
 const char MSG_COOLDOWN[] PROGMEM_I1 = ISTR("Cooldown"); ////
 const char MSG_CRASH_DETECTED[] PROGMEM_I1 = ISTR("Crash detected."); ////c=20 r=1
-const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////
+const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////c=10
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17 r=1
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17 r=1
@@ -106,7 +106,7 @@ const char MSG_OFF[] PROGMEM_I1 = ISTR("Off"); ////
 const char MSG_ON[] PROGMEM_I1 = ISTR("On"); ////
 const char MSG_NA[] PROGMEM_I1 = ISTR("N/A"); ////
 const char MSG_AUTO_DEPLETE[] PROGMEM_I1 = ISTR("SpoolJoin"); ////
-const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////
+const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////c=9
 const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////
 const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////
 const char MSG_STRICT[] PROGMEM_I1 = ISTR("Strict"); ////
@@ -128,20 +128,20 @@ const char MSG_SOUND_BLIND[] PROGMEM_I1 = ISTR("Assist"); ////
 const char MSG_MESH[] PROGMEM_I1 = ISTR("Mesh"); ////
 const char MSG_Z_PROBE_NR[] PROGMEM_I1 = ISTR("Z-probe nr."); ////
 const char MSG_MAGNETS_COMP[] PROGMEM_I1 = ISTR("Magnets comp."); ////
-const char MSG_FS_ACTION[] PROGMEM_I1 = ISTR("FS Action"); ////
-const char MSG_FS_CONTINUE[] PROGMEM_I1 = ISTR("Cont."); ////
-const char MSG_FS_PAUSE[] PROGMEM_I1 = ISTR("Pause"); ////
-const char MSG_BRIGHTNESS[] PROGMEM_I1 = ISTR("Brightness"); ////
-const char MSG_BL_HIGH[] PROGMEM_I1 = ISTR("Level Bright"); ////
-const char MSG_BL_LOW[] PROGMEM_I1 = ISTR("Level Dimmed"); ////
-const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////
-const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////
-const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////
-const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////
+const char MSG_FS_ACTION[] PROGMEM_I1 = ISTR("FS Action"); ////c=10
+const char MSG_FS_CONTINUE[] PROGMEM_I1 = ISTR("Cont."); ////c=5
+const char MSG_FS_PAUSE[] PROGMEM_I1 = ISTR("Pause"); ////c=5
+const char MSG_BRIGHTNESS[] PROGMEM_I1 = ISTR("Brightness"); ////c=18
+const char MSG_BL_HIGH[] PROGMEM_I1 = ISTR("Level Bright"); ////c=12
+const char MSG_BL_LOW[] PROGMEM_I1 = ISTR("Level Dimmed"); ////c=12
+const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////c=12
+const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////c=6
+const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////c=6
+const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////c=6
 #ifdef IR_SENSOR_ANALOG
 // Beware - the space at the beginning is necessary since it is reused in LCD menu items which are to be with a space
-const char MSG_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");
-const char MSG_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");
+const char MSG_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////MSG_04_OR_NEWER c=18
+const char MSG_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////MSG_03_OR_OLDER c=18
 #endif
 
 //not internationalized messages

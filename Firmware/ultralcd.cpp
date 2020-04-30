@@ -1815,7 +1815,7 @@ static void lcd_menu_fails_stats_print()
                       " %-7.7S X %-3d Y %-3d"),
                  _i("Last print failures"), ////c=20 r=1
                  _i("Power failures"), power, ////c=14 r=1
-                 _i("Runouts"), filam, fsensor_softfail, //c=7 r=1
+                 _i("Runouts"), filam, fsensor_softfail, //c=7
                  _i("Crash"), crashX, crashY);  ////c=7 r=1
 #endif
     menu_back_if_clicked_fb();
@@ -1952,7 +1952,7 @@ static void lcd_menu_temperatures()
     lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////c=14 r=1
 #endif //AMBIENT_THERMISTOR
 #ifdef PINDA_THERMISTOR
-    lcd_menu_temperatures_line( _i("PINDA"), (int)current_temperature_pinda );  ////c=14 r=1
+    lcd_menu_temperatures_line( _i("PINDA"), (int)current_temperature_pinda );  ////c=14
 #endif //PINDA_THERMISTOR
     menu_back_if_clicked();
 }
@@ -2435,17 +2435,17 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         case FilamentAction::Load:
         case FilamentAction::AutoLoad:
         case FilamentAction::MmuLoad:
-            lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20 r=1
+            lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
             break;
         case FilamentAction::UnLoad:
         case FilamentAction::MmuUnLoad:
-            lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20 r=1
+            lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
             break;
         case FilamentAction::MmuEject:
-            lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20 r=1
+            lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
             break;
         case FilamentAction::MmuCut:
-            lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20 r=1
+            lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20
             break;
         case FilamentAction::None:
         case FilamentAction::Preheat:
@@ -5834,9 +5834,9 @@ static void lcd_calibration_menu()
     }
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 #ifdef TMC2130
-	MENU_ITEM_FUNCTION_P(_i("Belt test        "), lcd_belttest_v);////MSG_BELTTEST
+	MENU_ITEM_FUNCTION_P(_i("Belt test        "), lcd_belttest_v);////MSG_BELTTEST c=17
 #endif //TMC2130
-	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST
+	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST c=17
 #ifdef MK1BP
     // MK1
     // "Calibrate Z"
@@ -7520,7 +7520,7 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
         return(false);
     }
-    lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));
+    lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));////c=20 r=6
     volt_IR_int = current_voltage_raw_IR;
     printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"), Raw2Voltage(volt_IR_int));
     if(volt_IR_int > (IRsensor_Lmax_TRESHOLD)){
@@ -7542,16 +7542,16 @@ static void lcd_detect_IRsensor(){
     bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
     bAction = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false, false);
     if(bAction){
-        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
+        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));////c=20 r=4
         return;
     }
     bAction = lcd_selftest_IRsensor(true);
 	if(bAction){
-        lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));
+        lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////c=20 r=3
 		// the fsensor board has been successfully identified, any previous "not responding" may be cleared now
 		fsensor_not_responding = false;
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));
+        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////c=20 r=4
 		// here it is unclear what to to with the fsensor_not_responding flag
 	}
     bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"

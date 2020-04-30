@@ -1385,7 +1385,7 @@ void mmu_cut_filament(uint8_t filament_nr)
     {
         LcdUpdateDisabler disableLcdUpdate;
         lcd_clear();
-        lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18 r=1
+        lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18
         lcd_print(" ");
         lcd_print(filament_nr + 1);
         mmu_filament_ramming();

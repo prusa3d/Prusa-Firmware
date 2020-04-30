@@ -2,6 +2,14 @@
 "[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
 "[%.7s]Ajust. du Z\x0aValeur enreg, contin\x0aou depart a zero?\x0a%cContinuer%cReset"
 
+#MSG_03_OR_OLDER c=18
+" 0.3 or older"
+"\x00"
+
+#MSG_04_OR_NEWER c=18
+" 0.4 or newer"
+"\x00"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 " de 4"
@@ -41,6 +49,10 @@
 #
 "Ambient"
 "Ambiant"
+
+#MSG_AUTO c=6
+"Auto"
+"\x00"
 
 #MSG_PRESS c=20
 "and press the knob"
@@ -94,9 +106,21 @@
 "Bed level correct"
 "Corr. niveau plateau"
 
+#MSG_BELTTEST c=17
+"Belt test        "
+"\x00"
+
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 "Echec bed leveling. Capt. non declenche. Debris sur buse? En attente d'un reset."
+
+#MSG_BRIGHT c=6
+"Bright"
+"\x00"
+
+#MSG_BRIGHTNESS c=18
+"Brightness"
+"\x00"
 
 #MSG_BED
 "Bed"
@@ -166,7 +190,7 @@
 "Copy selected language?"
 "Copier la langue selectionne?"
 
-#MSG_CRASHDETECT
+#MSG_CRASHDETECT c=10
 "Crash det."
 "Detect.crash"
 
@@ -202,6 +226,10 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "La distance entre la pointe de la buse et la surface du plateau n'a pas encore ete reglee. Suivez le manuel, chapitre Premiers pas, section Calibration de la premiere couche."
 
+#MSG_FS_CONTINUE c=5
+"Cont."
+"\x00"
+
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 "Voulez-vous repeter la derniere etape pour reajuster la distance entre la buse et le plateau chauffant?"
@@ -234,9 +262,25 @@
 "Error - static memory has been overwritten"
 "Erreur - la memoire statique a ete ecrasee"
 
+#MSG_CUT_FILAMENT c=16
+"Cut filament"
+"\x00"
+
+#MSG_CUTTER c=9
+"Cutter"
+"\x00"
+
+#c=18
+"Cutting filament"
+"\x00"
+
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
 "ERREUR: Le capteur de filament ne repond pas, verifiez le branchement."
+
+#MSG_DIM c=6
+"Dim"
+"\x00"
 
 #MSG_ERROR
 "ERROR:"
@@ -261,6 +305,7 @@
 #MSG_FSENSOR_AUTOLOAD
 "F. autoload"
 "Autochargeur"
+
 #
 "Fail stats"
 "Stat. d'echec"
@@ -280,6 +325,7 @@
 #MSG_FSENSOR
 "Fil. sensor"
 "Capteur Fil."
+
 #
 "Filam. runouts"
 "Fins de filament"
@@ -303,6 +349,14 @@
 #MSG_PRINT_TIME c=19 r=1
 "Print time"
 "Temps d'impression"
+
+#MSG_FS_ACTION c=10
+"FS Action"
+"\x00"
+
+#c=18
+"FS v0.4 or newer"
+"\x00"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -476,6 +530,10 @@
 "Live adjust Z"
 "Ajuster Z en dir."
 
+#c=20 r=6
+"Insert the filament (do not load it) into the extruder and then press the knob."
+"\x00"
+
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
 "Charger filament"
@@ -503,6 +561,14 @@
 #MSG_MAIN
 "Main"
 "Menu principal"
+
+#MSG_BL_HIGH c=12
+"Level Bright"
+"\x00"
+
+#MSG_BL_LOW c=12
+"Level Dimmed"
+"\x00"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
@@ -542,6 +608,10 @@
 
 #MSG_MODE
 "Mode"
+"\x00"
+
+#c=20 r=3
+"MK3 firmware detected on MK3S printer"
 "\x00"
 
 #MSG_NORMAL
@@ -740,6 +810,10 @@
 "Preheating nozzle. Please wait."
 "Prechauffage de la buse. Merci de patienter."
 
+#c=14
+"PINDA"
+"\x00"
+
 #
 "Please upgrade."
 "Mettez a jour le FW."
@@ -747,6 +821,10 @@
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
 "Appuyez sur le bouton pour prechauffer la buse et continuer."
+
+#MSG_FS_PAUSE c=5
+"Pause"
+"\x00"
 
 #
 "Power failures"
@@ -756,11 +834,11 @@
 "Print aborted"
 "Impression annulee"
 
-# c=20 r=1
+#c=20
 "Preheating to load"
 "Chauffe pour charger"
 
-# c=20 r=1
+#c=20
 "Preheating to unload"
 "Chauf.pour decharger"
 
@@ -812,6 +890,10 @@
 "Rear side [um]"
 "Arriere [um]"
 
+#c=20 r=4
+"Please unload the filament first, then repeat this action."
+"\x00"
+
 #MSG_RECOVERING_PRINT c=20 r=1
 "Recovering print    "
 "Recup. impression"
@@ -820,7 +902,7 @@
 "Remove old filament and press the knob to start loading new filament."
 "Retirez l'ancien filament puis appuyez sur le bouton pour charger le nouveau."
 
-#
+#c=20
 "Prusa i3 MK3S OK."
 "\x00"
 
@@ -904,6 +986,18 @@
 "Set temperature:"
 "Regler temp.:"
 
+#c=20
+"Prusa i3 MK2.5 OK."
+"\x00"
+
+#c=20
+"Prusa i3 MK2.5S OK."
+"\x00"
+
+#c=20
+"Prusa i3 MK3 OK."
+"\x00"
+
 #MSG_SETTINGS
 "Settings"
 "Reglages"
@@ -956,6 +1050,10 @@
 "Sound"
 "Son"
 
+#c=7
+"Runouts"
+"\x00"
+
 #
 "Some problem encountered, Z-leveling enforced ..."
 "Probleme rencontre, cliquez sur le bouton pour niveller l'axe Z..."
@@ -963,6 +1061,7 @@
 #MSG_SOUND_ONCE
 "Once"
 "Une fois"
+
 #MSG_SPEED
 "Speed"
 "Vitesse"
@@ -1018,6 +1117,10 @@
 #MSG_TEMP_CALIBRATION_DONE c=20 r=12
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 "La calibration en temperature est terminee et activee. La calibration en temperature peut etre desactivee dans le menu Reglages-> Cal. Temp."
+
+#c=20 r=3
+"Sensor verified, remove the filament now."
+"\x00"
 
 #MSG_TEMPERATURE
 "Temperature"
@@ -1147,6 +1250,10 @@
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 "Calibration XYZ OK. Les axes X/Y sont legerement non perpendiculaires. Bon boulot!"
 
+#MSG_TIMEOUT c=12
+"Timeout"
+"\x00"
+
 #
 "X-correct:"
 "Correct-X:"
@@ -1186,6 +1293,10 @@
 #
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "L'imprimante commencera a  imprimer une ligne en zig-zag. Tournez le bouton jusqu'a atteindre la hauteur optimale. Consultez les photos dans le manuel (chapitre Calibration)."
+
+#c=20 r=4
+"Verification failed, remove the filament and try again."
+"\x00"
 
 #
 "Y-correct:"
@@ -1295,11 +1406,11 @@
 "PINDA:"
 "PINDA:"
 
-# c=20 r=1
+#c=20
 "Preheating to cut"
 "Chauffe pour couper"
 
-# c=20 r=1
+#c=20
 "Preheating to eject"
 "Chauf. pour remonter"
 
