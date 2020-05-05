@@ -8,7 +8,7 @@ msgstr ""
 "Language: it\n"
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue May 5 13:55:16 CEST 2020\n"
-"PO-Revision-Date: 2020-05-05 16:14+0200\n"
+"PO-Revision-Date: 2020-05-05 16:24+0200\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -298,7 +298,7 @@ msgstr "Disabilita motori"
 # MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: messages.c:13
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-msgstr "Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo Primi Passi, sezione Calibrazione primo layer."
+msgstr "Distanza tra la punta dell'ugello e la superficie del letto non ancora impostata. Si prega di seguire il manuale, capitolo Primi Passi, sezione Calibrazione primo layer."
 
 # MSG_FS_CONTINUE c=5
 #: messages.c:132
@@ -343,7 +343,7 @@ msgstr "Finecorsa"
 # MSG_STACK_ERROR c=20 r=4
 #: ultralcd.cpp:6994
 msgid "Error - static memory has been overwritten"
-msgstr "Errore - la memoria statica e stata sovrascritta"
+msgstr "Errore - la memoria statica e' stata sovrascritta"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:50
@@ -488,7 +488,7 @@ msgstr "Per primo avviero l'autotest per controllare gli errori di assemblaggio 
 # 
 #: mmu.cpp:727
 msgid "Fix the issue and then press button on MMU unit."
-msgstr "Risolvi il problema e quindi premi il bottone sull'unita MMU. "
+msgstr "Risolvere il problema e premere il bottone sull'unita MMU. "
 
 # MSG_FLOW
 #: ultralcd.cpp:7121
@@ -633,12 +633,12 @@ msgstr "Inserire filamento"
 # MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 #: ultralcd.cpp:4831
 msgid "Is filament loaded?"
-msgstr "Il filamento e stato caricato?"
+msgstr "Il filamento e' stato caricato?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:90
 msgid "Is steel sheet on heatbed?"
-msgstr "La piastra d'acciaio e sul piano riscaldato?"
+msgstr "La piastra d'acciaio e' sul piano riscaldato?"
 
 # 
 #: ultralcd.cpp:1723
