@@ -8,7 +8,7 @@ msgstr ""
 "Language: it\n"
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue May 5 13:55:16 CEST 2020\n"
-"PO-Revision-Date: Tue May 5 13:55:16 CEST 2020\n"
+"PO-Revision-Date: 2020-05-05 16:14+0200\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -23,12 +23,12 @@ msgstr "[%.7s]Set valori\x0aComp. Z, continuare\x0ao iniziare da zero?\x0a%cCont
 # MSG_03_OR_OLDER c=18
 #: messages.c:144
 msgid " 0.3 or older"
-msgstr ""
+msgstr " 0.3 o inferiore"
 
 # MSG_04_OR_NEWER c=18
 #: messages.c:143
 msgid " 0.4 or newer"
-msgstr ""
+msgstr " 0.4 o maggiore"
 
 # MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 #: messages.c:36
@@ -83,7 +83,7 @@ msgstr "Ambiente"
 # MSG_AUTO c=6
 #: messages.c:140
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 # MSG_PRESS c=20
 #: ultralcd.cpp:2605
@@ -153,7 +153,7 @@ msgstr "Correz. liv.letto"
 # MSG_BELTTEST c=17
 #: ultralcd.cpp:5837
 msgid "Belt test        "
-msgstr ""
+msgstr "Test cinghie     "
 
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 #: messages.c:17
@@ -163,12 +163,12 @@ msgstr "Livellamento letto fallito.NoRispSensore.Residui su ugello? In attesa di
 # MSG_BRIGHT c=6
 #: messages.c:138
 msgid "Bright"
-msgstr ""
+msgstr "Chiaro"
 
 # MSG_BRIGHTNESS c=18
 #: messages.c:134
 msgid "Brightness"
-msgstr ""
+msgstr "Luminosita'"
 
 # MSG_BED
 #: messages.c:14
@@ -303,7 +303,7 @@ msgstr "Distanza tra la punta dell'ugello e la superficie del letto non ancora i
 # MSG_FS_CONTINUE c=5
 #: messages.c:132
 msgid "Cont."
-msgstr ""
+msgstr "Cont."
 
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5121
@@ -348,17 +348,17 @@ msgstr "Errore - la memoria statica e stata sovrascritta"
 # MSG_CUT_FILAMENT c=16
 #: messages.c:50
 msgid "Cut filament"
-msgstr ""
+msgstr "Taglia filamento"
 
 # MSG_CUTTER c=9
 #: messages.c:109
 msgid "Cutter"
-msgstr ""
+msgstr "Tagliatrice"
 
 #  c=18
 #: mmu.cpp:1388
 msgid "Cutting filament"
-msgstr ""
+msgstr "Tagliando filam."
 
 # MSG_FSENS_NOT_RESPONDING c=20 r=4
 #: ultralcd.cpp:4454
@@ -368,7 +368,7 @@ msgstr "ERRORE: il sensore filam. non risponde,Controllare conness."
 # MSG_DIM c=6
 #: messages.c:139
 msgid "Dim"
-msgstr ""
+msgstr "Scuro"
 
 # MSG_ERROR
 #: messages.c:25
@@ -683,7 +683,7 @@ msgstr "Compensazione Z"
 #  c=20 r=6
 #: ultralcd.cpp:7523
 msgid "Insert the filament (do not load it) into the extruder and then press the knob."
-msgstr ""
+msgstr "Inserire filamento (senza caricarlo) nell'estrusore e premere la manopola."
 
 # MSG_LOAD_FILAMENT c=17
 #: messages.c:47
@@ -723,12 +723,12 @@ msgstr "Menu principale"
 # MSG_BL_HIGH c=12
 #: messages.c:135
 msgid "Level Bright"
-msgstr ""
+msgstr "Liv. Chiaro"
 
 # MSG_BL_LOW c=12
 #: messages.c:136
 msgid "Level Dimmed"
-msgstr ""
+msgstr "Liv. Scuro"
 
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 #: messages.c:55
@@ -783,7 +783,7 @@ msgstr "Mod."
 #  c=20 r=3
 #: Marlin_main.cpp:879
 msgid "MK3 firmware detected on MK3S printer"
-msgstr ""
+msgstr "Firmware MK3 rilevato su stampante MK3S"
 
 # MSG_NORMAL
 #: messages.c:88
@@ -863,12 +863,12 @@ msgstr "Nessuna SD"
 # MSG_NA
 #: messages.c:107
 msgid "N/A"
-msgstr ""
+msgstr "N/D"
 
 # MSG_NO
 #: messages.c:58
 msgid "No"
-msgstr ""
+msgstr "No"
 
 # MSG_SELFTEST_NOTCONNECTED
 #: ultralcd.cpp:8263
@@ -1048,7 +1048,7 @@ msgstr "Premete la manopola per preriscaldare l'ugello e continuare."
 # MSG_FS_PAUSE c=5
 #: fsensor.cpp:710
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 # 
 #: ultralcd.cpp:1779
@@ -1133,7 +1133,7 @@ msgstr "Retro [um]"
 #  c=20 r=4
 #: ultralcd.cpp:7545
 msgid "Please unload the filament first, then repeat this action."
-msgstr ""
+msgstr "Scaricare prima il filamento, poi ripetere l'operazione."
 
 # MSG_RECOVERING_PRINT c=20 r=1
 #: Marlin_main.cpp:10869
@@ -1158,7 +1158,7 @@ msgstr "Reset calibrazione XYZ."
 # MSG_BED_CORRECTION_RESET
 #: ultralcd.cpp:3264
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 # MSG_RESUME_PRINT
 #: ultralcd.cpp:6857
@@ -1333,7 +1333,7 @@ msgstr "Suono"
 #  c=7
 #: ultralcd.cpp:1818
 msgid "Runouts"
-msgstr ""
+msgstr "Esaurim"
 
 # 
 #: Marlin_main.cpp:5105
@@ -1418,12 +1418,12 @@ msgstr "Calibrazione temperatura completata e attiva. Puo essere disattivata dal
 #  c=20 r=3
 #: ultralcd.cpp:7550
 msgid "Sensor verified, remove the filament now."
-msgstr ""
+msgstr "Sensore verificato, rimuovere il filamento."
 
 # MSG_TEMPERATURE
 #: ultralcd.cpp:5735
 msgid "Temperature"
-msgstr ""
+msgstr "Temperature"
 
 # MSG_MENU_TEMPERATURES c=15 r=1
 #: ultralcd.cpp:2214
@@ -1638,7 +1638,7 @@ msgstr "La stampante iniziera a stampare una linea a zig-zag. Gira la manopola f
 #  c=20 r=4
 #: ultralcd.cpp:7554
 msgid "Verification failed, remove the filament and try again."
-msgstr ""
+msgstr "Verifica fallita, rimuovere il filamento e riprovare."
 
 # 
 #: ultralcd.cpp:5187
@@ -1798,7 +1798,7 @@ msgstr "Diametro ugello diverso dal G-Code. Controlla il valore nelle impostazio
 #  c=20
 #: ultralcd.cpp:8353
 msgid "%s level expected"
-msgstr ""
+msgstr "atteso livello %s"
 
 # 
 #: ultralcd.cpp:6810
@@ -1838,5 +1838,5 @@ msgstr "Correzione-Z:"
 # MSG_Z_PROBE_NR
 #: messages.c:129
 msgid "Z-probe nr."
-msgstr ""
+msgstr "Nr. Z-test"
 
