@@ -1443,7 +1443,7 @@
 "Sensor info"
 "Info Sensore"
 
-#
+#MSG_SHEET c=10
 "Sheet"
 "Piano"
 

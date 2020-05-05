@@ -1443,7 +1443,7 @@
 "Sensor info"
 "Info o sensorach"
 
-#
+#MSG_SHEET c=10
 "Sheet"
 "Plyta"
 

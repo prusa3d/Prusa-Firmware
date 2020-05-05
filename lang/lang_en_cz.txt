@@ -1443,7 +1443,7 @@
 "Sensor info"
 "Senzor info"
 
-#
+#MSG_SHEET c=10
 "Sheet"
 "Plat"
 

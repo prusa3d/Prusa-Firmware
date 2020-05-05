@@ -1443,7 +1443,7 @@
 "Sensor info"
 "Info sensor"
 
-#
+#MSG_SHEET c=10
 "Sheet"
 "Lamina"
 

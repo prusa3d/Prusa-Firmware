@@ -1137,7 +1137,7 @@
 
 # c=20 r=4
 "Sheet %.7sx0aZ offset: %+1.3f mmx0a%cContinuex0a%cStart from zero"
-"\x00"
+"Blech %.7sx0aZ offset: %+1.3f mmx0a%cWeiterx0a%cBeginn von Null"
 
 #
 "Total filament"
@@ -1443,7 +1443,7 @@
 "Sensor info"
 "Sensor Info"
 
-#
+#MSG_SHEET c=10
 "Sheet"
 "Blech"
 

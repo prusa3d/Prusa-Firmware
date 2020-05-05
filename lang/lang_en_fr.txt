@@ -1443,7 +1443,7 @@
 "Sensor info"
 "Info capteur"
 
-#
+#MSG_SHEET c=10
 "Sheet"
 "Plaque"
 

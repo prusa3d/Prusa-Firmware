@@ -1082,7 +1082,7 @@
 #
 "Sensor info"
 
-#
+#MSG_SHEET c=10
 "Sheet"
 
 #MSG_SOUND_BLIND
