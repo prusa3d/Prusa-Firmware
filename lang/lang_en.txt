@@ -398,7 +398,6 @@
 "Live adjust Z"
 
 # c=20 r=6
-
 "Insert the filament (do not load it) into the extruder and then press the knob."
 
 #MSG_LOAD_FILAMENT c=17
@@ -1093,3 +1092,4 @@
 
 #MSG_Z_PROBE_NR
 "Z-probe nr."
+

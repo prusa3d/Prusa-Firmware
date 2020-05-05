@@ -531,7 +531,6 @@
 "Ajuster Z en dir."
 
 # c=20 r=6
-
 "Insert the filament (do not load it) into the extruder and then press the knob."
 "Veuillez inserer le filament (ne pour le charger) dans l'extrudeur, puis appuyez sur le bouton."
 
@@ -1458,3 +1457,4 @@
 #MSG_Z_PROBE_NR
 "Z-probe nr."
 "Mesurer x-fois"
+

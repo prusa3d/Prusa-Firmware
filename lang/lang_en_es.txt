@@ -531,7 +531,6 @@
 "Micropaso Eje Z"
 
 # c=20 r=6
-
 "Insert the filament (do not load it) into the extruder and then press the knob."
 "Inserte el filamento (no lo cargue) en el extrusor y luego presione el dial."
 
@@ -1458,3 +1457,4 @@
 #MSG_Z_PROBE_NR
 "Z-probe nr."
 "Z-sensor nr."
+
