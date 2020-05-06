@@ -8,7 +8,7 @@ msgstr ""
 "Language: it\n"
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue May 5 13:55:16 CEST 2020\n"
-"PO-Revision-Date: 2020-05-05 16:26+0200\n"
+"PO-Revision-Date: 2020-05-05 17:52+0200\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -353,7 +353,7 @@ msgstr "Taglia filamento"
 # MSG_CUTTER c=9
 #: messages.c:109
 msgid "Cutter"
-msgstr "Tagliatrice"
+msgstr "Tagliatr."
 
 #  c=18
 #: mmu.cpp:1388
@@ -458,12 +458,12 @@ msgstr "Tempo di stampa"
 # MSG_FS_ACTION c=10
 #: messages.c:131
 msgid "FS Action"
-msgstr ""
+msgstr "Azione FS"
 
 #  c=18
 #: Marlin_main.cpp:9516
 msgid "FS v0.4 or newer"
-msgstr ""
+msgstr "FS v0.4 o superiore"
 
 # MSG_FILE_INCOMPLETE c=20 r=2
 #: ultralcd.cpp:8812
