@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_15
+# Version: 1.0.6-Build_16
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -120,6 +120,8 @@
 # 17 Dec 2019, 3d-gussner, Fix "timer0_fract = 0" warning by using Arduino_boards v1.0.3
 # 28 Apr 2020, 3d-gussner, Added RC3 detection
 # 03 May 2020, deliopoulos, Accept all RCx as RC versions
+# 05 May 2020, 3d-gussner, Make a copy of `not_tran.txt`and `not_used.txt` as `not_tran_$VARIANT.txt`and `not_used_$VARIANT.txt`
+#                          After compiling All multilanguage vairants it makes it easier to find missing or unused transltions.  
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -684,6 +686,8 @@ do
 		./lang-build.sh || exit 32
 		# Combine compiled firmware with languages 
 		./fw-build.sh || exit 33
+		cp not_tran.txt not_tran_$VARIANT.txt
+		cp not_used.txt not_used_$VARIANT.txt
 		echo "$(tput sgr 0)"
 		# Check if the motherboard is an EINSY and if so only one hex file will generated
 		MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
