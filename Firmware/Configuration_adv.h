@@ -285,11 +285,13 @@
 #define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
-  #define LIN_ADVANCE_K 0  // Unit: mm compression per 1mm/s extruder speed
-  //#define LA_NOCOMPAT    // Disable Linear Advance 1.0 compatibility
-  //#define LA_LIVE_K      // Allow adjusting K in the Tune menu
-  //#define LA_DEBUG       // If enabled, this will generate debug information output over USB.
-  //#define LA_DEBUG_LOGIC // @wavexx: setup logic channels for isr debugging
+  #define LA_K_DEF    0        // Default K factor (Unit: mm compression per 1mm/s extruder speed)
+  #define LA_K_MAX    10       // Maximum acceptable K factor (exclusive, see notes in planner.cpp:plan_buffer_line)
+  #define LA_LA10_MIN LA_K_MAX // Lin. Advance 1.0 threshold value (inclusive)
+  //#define LA_NOCOMPAT        // Disable Linear Advance 1.0 compatibility
+  //#define LA_LIVE_K          // Allow adjusting K in the Tune menu
+  //#define LA_DEBUG           // If enabled, this will generate debug information output over USB.
+  //#define LA_DEBUG_LOGIC     // @wavexx: setup logic channels for isr debugging
 #endif
 
 // Arc interpretation settings:

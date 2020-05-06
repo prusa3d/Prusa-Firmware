@@ -1356,17 +1356,6 @@ float st_get_position_mm(uint8_t axis)
 }
 
 
-void finishAndDisableSteppers()
-{
-  st_synchronize();
-  disable_x();
-  disable_y();
-  disable_z();
-  disable_e0();
-  disable_e1();
-  disable_e2();
-}
-
 void quickStop()
 {
   DISABLE_STEPPER_DRIVER_INTERRUPT();

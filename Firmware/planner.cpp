@@ -126,7 +126,7 @@ float extrude_min_temp=EXTRUDE_MINTEMP;
 #endif
 
 #ifdef LIN_ADVANCE
-float extruder_advance_K = LIN_ADVANCE_K;
+float extruder_advance_K = LA_K_DEF;
 float position_float[NUM_AXIS];
 #endif
 

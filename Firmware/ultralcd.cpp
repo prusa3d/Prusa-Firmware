@@ -51,6 +51,10 @@
 #include "adc.h"
 #include "config.h"
 
+#ifndef LA_NOCOMPAT
+#include "la10compat.h"
+#endif
+
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
