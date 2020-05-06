@@ -4,11 +4,11 @@
 
 #MSG_03_OR_OLDER c=18
 " 0.3 or older"
-"\x00"
+" 0.3 o inferiore"
 
 #MSG_04_OR_NEWER c=18
 " 0.4 or newer"
-"\x00"
+" 0.4 o superiore"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -52,7 +52,7 @@
 
 #MSG_AUTO c=6
 "Auto"
-"\x00"
+
 
 #MSG_PRESS c=20
 "and press the knob"
@@ -64,7 +64,7 @@
 
 #MSG_AUTO_DEPLETE c=17 r=1
 "SpoolJoin"
-"\x00"
+""
 
 #MSG_AUTO_HOME
 "Auto home"
@@ -108,7 +108,7 @@
 
 #MSG_BELTTEST c=17
 "Belt test        "
-"\x00"
+"Test cinghie     "
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -116,11 +116,11 @@
 
 #MSG_BRIGHT c=6
 "Bright"
-"\x00"
+"Chiaro"
 
 #MSG_BRIGHTNESS c=18
 "Brightness"
-"\x00"
+"Luminosita'"
 
 #MSG_BED
 "Bed"
@@ -224,11 +224,11 @@
 
 #MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-"Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo Primi Passi, sezione Calibrazione primo layer."
+"Distanza tra la punta dell'ugello e la superficie del letto non ancora impostata. Si prega di seguire il manuale, capitolo Primi Passi, sezione Calibrazione primo layer."
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-"\x00"
+
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
@@ -260,19 +260,19 @@
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
-"Errore - la memoria statica e stata sovrascritta"
+"Errore - la memoria statica e' stata sovrascritta"
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
-"\x00"
+"Taglia filamento"
 
 #MSG_CUTTER c=9
 "Cutter"
-"\x00"
+"Tagliatrice"
 
 # c=18
 "Cutting filament"
-"\x00"
+"Tagliando filam."
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -280,7 +280,7 @@
 
 #MSG_DIM c=6
 "Dim"
-"\x00"
+"Scuro"
 
 #MSG_ERROR
 "ERROR:"
@@ -352,11 +352,11 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-"\x00"
+""
 
 # c=18
 "FS v0.4 or newer"
-"\x00"
+""
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -376,7 +376,7 @@
 
 #
 "Fix the issue and then press button on MMU unit."
-"Risolvi il problema e quindi premi il bottone sull'unita MMU. "
+"Risolvere il problema e premere il bottone sull'unita MMU. "
 
 #MSG_FLOW
 "Flow"
@@ -384,7 +384,7 @@
 
 #MSG_PRUSA3D_FORUM
 "forum.prusa3d.com"
-"\x00"
+""
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
@@ -420,7 +420,7 @@
 
 #MSG_PRUSA3D_HOWTO
 "howto.prusa3d.com"
-"\x00"
+""
 
 #MSG_FILAMENTCHANGE
 "Change filament"
@@ -492,11 +492,11 @@
 
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
-"Il filamento e stato caricato?"
+"Il filamento e' stato caricato?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"La piastra d'acciaio e sul piano riscaldato?"
+"La piastra d'acciaio e' sul piano riscaldato?"
 
 #
 "Last print failures"
@@ -532,7 +532,7 @@
 
 # c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
-"\x00"
+"Inserire filamento (senza caricarlo) nell'estrusore e premere la manopola."
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
@@ -564,11 +564,11 @@
 
 #MSG_BL_HIGH c=12
 "Level Bright"
-"\x00"
+"Liv. Chiaro"
 
 #MSG_BL_LOW c=12
 "Level Dimmed"
-"\x00"
+"Liv. Scuro"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
@@ -612,7 +612,7 @@
 
 # c=20 r=3
 "MK3 firmware detected on MK3S printer"
-"\x00"
+"Firmware MK3 rilevato su stampante MK3S"
 
 #MSG_NORMAL
 "Normal"
@@ -676,11 +676,11 @@
 
 #MSG_NA
 "N/A"
-"\x00"
+"N/D"
 
 #MSG_NO
 "No"
-"\x00"
+
 
 #MSG_SELFTEST_NOTCONNECTED
 "Not connected"
@@ -812,7 +812,7 @@
 
 # c=14
 "PINDA"
-"\x00"
+""
 
 #
 "Please upgrade."
@@ -824,7 +824,7 @@
 
 #MSG_FS_PAUSE c=5
 "Pause"
-"\x00"
+"Pausa"
 
 #
 "Power failures"
@@ -884,7 +884,7 @@
 
 #MSG_PRUSA3D
 "prusa3d.com"
-"\x00"
+""
 
 #MSG_BED_CORRECTION_REAR c=14 r=1
 "Rear side [um]"
@@ -892,7 +892,7 @@
 
 # c=20 r=4
 "Please unload the filament first, then repeat this action."
-"\x00"
+"Scaricare prima il filamento, poi ripetere l'operazione."
 
 #MSG_RECOVERING_PRINT c=20 r=1
 "Recovering print    "
@@ -904,7 +904,7 @@
 
 # c=20
 "Prusa i3 MK3S OK."
-"\x00"
+""
 
 #MSG_CALIBRATE_BED_RESET
 "Reset XYZ calibr."
@@ -912,7 +912,7 @@
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
-"\x00"
+
 
 #MSG_RESUME_PRINT
 "Resume print"
@@ -940,7 +940,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY
 "FlashAir"
-"\x00"
+""
 
 #
 "Right"
@@ -988,15 +988,15 @@
 
 # c=20
 "Prusa i3 MK2.5 OK."
-"\x00"
+""
 
 # c=20
 "Prusa i3 MK2.5S OK."
-"\x00"
+""
 
 # c=20
 "Prusa i3 MK3 OK."
-"\x00"
+""
 
 #MSG_SETTINGS
 "Settings"
@@ -1052,7 +1052,7 @@
 
 # c=7
 "Runouts"
-"\x00"
+"Esaurim"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -1120,11 +1120,11 @@
 
 # c=20 r=3
 "Sensor verified, remove the filament now."
-"\x00"
+"Sensore verificato, rimuovere il filamento."
 
 #MSG_TEMPERATURE
 "Temperature"
-"\x00"
+
 
 #MSG_MENU_TEMPERATURES c=15 r=1
 "Temperatures"
@@ -1224,7 +1224,7 @@
 
 #MSG_WIZARD c=17 r=1
 "Wizard"
-"\x00"
+""
 
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"
@@ -1252,7 +1252,7 @@
 
 #MSG_TIMEOUT c=12
 "Timeout"
-"\x00"
+""
 
 #
 "X-correct:"
@@ -1296,7 +1296,7 @@
 
 # c=20 r=4
 "Verification failed, remove the filament and try again."
-"\x00"
+"Verifica fallita, rimuovere il filamento e riprovare."
 
 #
 "Y-correct:"
@@ -1304,11 +1304,11 @@
 
 #MSG_OFF
 "Off"
-"\x00"
+""
 
 #MSG_ON
 "On"
-"\x00"
+""
 
 #
 "Back"
@@ -1324,11 +1324,11 @@
 
 #
 "FINDA:"
-"\x00"
+""
 
 #MSG_FIRMWARE
 "Firmware"
-"\x00"
+""
 
 #MSG_STRICT
 "Strict"
@@ -1344,7 +1344,7 @@
 
 #
 "IR:"
-"\x00"
+""
 
 #MSG_MAGNETS_COMP
 "Magnets comp."
@@ -1404,7 +1404,7 @@
 
 #
 "PINDA:"
-"\x00"
+""
 
 # c=20
 "Preheating to cut"
@@ -1424,7 +1424,7 @@
 
 # c=20
 "%s level expected"
-"\x00"
+"atteso livello %s"
 
 #
 "Rename"
@@ -1456,5 +1456,5 @@
 
 #MSG_Z_PROBE_NR
 "Z-probe nr."
-"\x00"
+"Nr. Z-test"
 
