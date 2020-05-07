@@ -4162,6 +4162,7 @@ extern uint8_t st_backlash_y;
 //!@n M207 - set retract length S[positive mm] F[feedrate mm/min] Z[additional zlift/hop], stays in mm regardless of M200 setting
 //!@n M208 - set recover=unretract length S[positive mm surplus to the M207 S*] F[feedrate mm/sec]
 //!@n M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.
+//!@n M214 - Set Arc Parameters (Use M500 to store in eeprom) P<MM_PER_ARC_SEGMENT> S<MIN_MM_PER_ARC_SEGMENT> R<MIN_ARC_SEGMENTS> F<ARC_SEGMENTS_PER_SEC>
 //!@n M218 - set hotend offset (in mm): T<extruder_number> X<offset_on_X> Y<offset_on_Y>
 //!@n M220 S<factor in percent>- set speed factor override percentage
 //!@n M221 S<factor in percent>- set extrude factor override percentage
@@ -7508,10 +7509,10 @@ Sigma_Exit:
 
     #### Usage
 
-        M214 [N] [S] [R] [F]
+        M214 [P] [S] [R] [F]
 
     #### Parameters
-    - `N` - A float representing the max and default millimeters per arc segment.  Must be greater than 0.
+    - `P` - A float representing the max and default millimeters per arc segment.  Must be greater than 0.
     - `S` - A float representing the minimum allowable millimeters per arc segment.  Set to 0 to disable
     - `R` - An int representing the minimum number of segments per arcs of any radius,
             except when the results in segment lengths greater than or less than the minimum
@@ -7519,36 +7520,29 @@ Sigma_Exit:
     - 'F' - An int representing the number of segments per second, unless this results in segment lengths
             greater than or less than the minimum and maximum segment length.  Set to 0 to disable.
     */
-    case 214: //!@n M214 - Set Arc Parameters (Use M500 to store in eeprom) N<MM_PER_ARC_SEGMENT> S<MIN_MM_PER_ARC_SEGMENT> R<MIN_ARC_SEGMENTS> F<ARC_SEGMENTS_PER_SEC>
+    case 214: //!@n M214 - Set Arc Parameters (Use M500 to store in eeprom) P<MM_PER_ARC_SEGMENT> S<MIN_MM_PER_ARC_SEGMENT> R<MIN_ARC_SEGMENTS> F<ARC_SEGMENTS_PER_SEC>
     {
         // Extract N
-        float n = cs.mm_per_arc_segment;
+        float p = cs.mm_per_arc_segment;
         float s = cs.min_mm_per_arc_segment;
-        int r = cs.min_arc_segments;
-        int f = cs.arc_segments_per_sec;
+        uint16_t r = cs.min_arc_segments;
+        uint16_t f = cs.arc_segments_per_sec;
+
         // Extract N
-        if (code_seen('N'))
+        if (code_seen('P'))
         {
-            n = code_value();
-            if (n <= 0 || (s != 0 && n <= s))
+            p = code_value_float();
+            if (p <= 0 || (s != 0 && p <= s))
             {
-                SERIAL_ECHO_START;
-                SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
-                SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
-                SERIAL_ECHOLNPGM("\"(1)");
                 break;
             }
         }
         // Extract S
         if (code_seen('S'))
         {
-            s = code_value();
-            if (s < 0 || s >= n)
+            s = code_value_float();
+            if (s < 0 || s >= p)
             {
-                SERIAL_ECHO_START;
-                SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
-                SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
-                SERIAL_ECHOLNPGM("\"(1)");
                 break;
             }
         }
@@ -7559,10 +7553,6 @@ Sigma_Exit:
             r = code_value();
             if (r < 0)
             {
-                SERIAL_ECHO_START;
-                SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
-                SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
-                SERIAL_ECHOLNPGM("\"(1)");
                 break;
             }
         }
@@ -7572,14 +7562,10 @@ Sigma_Exit:
             f = code_value();
             if (f < 0)
             {
-                SERIAL_ECHO_START;
-                SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
-                SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
-                SERIAL_ECHOLNPGM("\"(1)");
                 break;
             }
         }
-        cs.mm_per_arc_segment = n;
+        cs.mm_per_arc_segment = p;
         cs.min_mm_per_arc_segment = s;
         cs.min_arc_segments = r;
         cs.arc_segments_per_sec = f;

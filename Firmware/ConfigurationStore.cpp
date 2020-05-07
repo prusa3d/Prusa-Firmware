@@ -171,7 +171,7 @@ void Config_PrintSettings(uint8_t level)
 	}
     // Arc Interpolation Settings
     printf_P(PSTR(
-        "%SArc Settings: N=Arc segment length max (mm) S=Arc segment length Min (mm), R=Min arc segments, F=Arc segments per second.\n%S  M214 N%.2f S%.2f R%d F%d\n"),
+        "%SArc Settings: P=Arc segment length max (mm) S=Arc segment length Min (mm), R=Min arc segments, F=Arc segments per second.\n%S  M214 P%.2f S%.2f R%d F%d\n"),
         echomagic, echomagic, cs.mm_per_arc_segment, cs.min_mm_per_arc_segment, cs.min_arc_segments, cs.arc_segments_per_sec);
 }
 #endif
@@ -282,10 +282,11 @@ bool Config_RetrieveSettings()
             }
         }
         // Initialize arc interpolation settings if they are not already (Not sure about this bit, please review)
-        if (0xff == cs.mm_per_arc_segment) cs.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
-        if (0xff == cs.min_mm_per_arc_segment) cs.min_mm_per_arc_segment = DEFAULT_MIN_MM_PER_ARC_SEGMENT;
-        if (0xff == cs.min_arc_segments) cs.min_arc_segments = DEFAULT_MIN_ARC_SEGMENTS;
-        if (0xff == cs.arc_segments_per_sec) cs.arc_segments_per_sec = DEFAULT_ARC_SEGMENTS_PER_SEC;
+        if (is_uninitialized(cs.mm_per_arc_segment, sizeof(float))) cs.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
+        if (is_uninitialized(cs.min_mm_per_arc_segment, sizeof(float))) cs.min_mm_per_arc_segment = DEFAULT_MIN_MM_PER_ARC_SEGMENT;
+        if (is_uninitialized(cs.min_arc_segments, sizeof(uint16_t))) cs.min_arc_segments = DEFAULT_MIN_ARC_SEGMENTS;
+        if (is_uninitialized(cs.arc_segments_per_sec, sizeof(uint16_t))) cs.arc_segments_per_sec = DEFAULT_ARC_SEGMENTS_PER_SEC;
+
 
 #ifdef TMC2130
 		for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)
@@ -357,3 +358,4 @@ SERIAL_ECHO_START;
 SERIAL_ECHOLNPGM("Hardcoded Default Settings Loaded");
 
 }
+

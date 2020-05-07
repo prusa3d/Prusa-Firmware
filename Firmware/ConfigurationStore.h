@@ -42,8 +42,8 @@ typedef struct
     // Arc Interpolation Settings, configurable via M214
     float mm_per_arc_segment;
     float min_mm_per_arc_segment;
-    int min_arc_segments; // If less than or equal to zero, this is disabled
-    int arc_segments_per_sec; // If less than or equal to zero, this is disabled
+    uint16_t min_arc_segments; // If less than or equal to zero, this is disabled
+    uint16_t arc_segments_per_sec; // If less than or equal to zero, this is disabled
 } M500_conf;
 
 extern M500_conf cs;
@@ -67,5 +67,4 @@ FORCE_INLINE void Config_RetrieveSettings() { Config_ResetDefault(); Config_Prin
 inline uint8_t calibration_status() { return eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS); }
 inline void calibration_status_store(uint8_t status) { eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS, status); }
 inline bool calibration_status_pinda() { return eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA); }
-
 #endif//CONFIG_STORE_H

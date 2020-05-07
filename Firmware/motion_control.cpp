@@ -28,26 +28,15 @@
 // segment is configured in settings.mm_per_arc_segment.  
 void mc_arc(float* position, float* target, float* offset, float feed_rate, float radius, uint8_t isclockwise, uint8_t extruder)
 {
-    // Extract the position to reduce indexing at the cost of a few bytes of mem
-    float p_x = position[X_AXIS];
-    float p_y = position[Y_AXIS];
-    float p_z = position[Z_AXIS];
-    float p_e = position[E_AXIS];
-
-    float t_x = target[X_AXIS];
-    float t_y = target[Y_AXIS];
-    float t_z = target[Z_AXIS];
-    float t_e = target[E_AXIS];
-
     float r_axis_x = -offset[X_AXIS];  // Radius vector from center to current location
     float r_axis_y = -offset[Y_AXIS];
-    float center_axis_x = p_x - r_axis_x;
-    float center_axis_y = p_y - r_axis_y;
-    float travel_z = t_z - p_z;
-    float extruder_travel_total = t_e - p_e;
+    float center_axis_x = position[X_AXIS] - r_axis_x;
+    float center_axis_y = position[Y_AXIS] - r_axis_y;
+    float travel_z = target[Z_AXIS] - position[Z_AXIS];
+    float extruder_travel_total = target[E_AXIS] - position[E_AXIS];
 
-    float rt_x = t_x - center_axis_x;
-    float rt_y = t_y - center_axis_y;
+    float rt_x = target[X_AXIS] - center_axis_x;
+    float rt_y = target[Y_AXIS] - center_axis_y;
     // 20200419 - Add a variable that will be used to hold the arc segment length
     float mm_per_arc_segment = cs.mm_per_arc_segment;
 
@@ -90,7 +79,7 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
 
     //20141002:full circle for G03 did not work, e.g. G03 X80 Y80 I20 J0 F2000 is giving an Angle of zero so head is not moving
     //to compensate when start pos = target pos && angle is zero -> angle = 2Pi
-    if (p_x == t_x && p_y == t_y && angular_travel_total == 0)
+    if (position[X_AXIS] == target[X_AXIS] && position[Y_AXIS] == target[Y_AXIS] && angular_travel_total == 0)
     {
         angular_travel_total += 2 * M_PI;
     }
@@ -148,18 +137,18 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
             r_axis_y = r_axisi;
 
             // Update arc_target location
-            p_x = center_axis_x + r_axis_x;
-            p_y = center_axis_y + r_axis_y;
-            p_z += linear_per_segment;
-            p_e += segment_extruder_travel;
+            position[X_AXIS] = center_axis_x + r_axis_x;
+            position[Y_AXIS] = center_axis_y + r_axis_y;
+            position[Z_AXIS] += linear_per_segment;
+            position[E_AXIS] += segment_extruder_travel;
             // We can't clamp to the target because we are interpolating!  We would need to update a position, clamp to it
             // after updating from calculated values.
-            //clamp_to_software_endstops(position);
-            plan_buffer_line(p_x, p_y, p_z, p_e, feed_rate, extruder);
+            clamp_to_software_endstops(position);
+            plan_buffer_line(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS], feed_rate, extruder);
         }
     }
     // Ensure last segment arrives at target location.
     // Here we could clamp, but why bother.  We would need to update our current position, clamp to it
-    //clamp_to_software_endstops(target);
-    plan_buffer_line(t_x, t_y, t_z, t_e, feed_rate, extruder);
+    clamp_to_software_endstops(target);
+    plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], feed_rate, extruder);
 }
