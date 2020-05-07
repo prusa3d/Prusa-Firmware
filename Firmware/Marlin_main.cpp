@@ -7502,9 +7502,88 @@ Sigma_Exit:
       }
 
     }break;
-#endif // FWRETRACT
+    #endif // FWRETRACT
+    /*!
+    ### M214 - Set Arc configuration values (Use M500 to store in eeprom)
 
+    #### Usage
 
+        M214 [N] [S] [R] [F]
+
+    #### Parameters
+    - `N` - A float representing the max and default millimeters per arc segment.  Must be greater than 0.
+    - `S` - A float representing the minimum allowable millimeters per arc segment.  Set to 0 to disable
+    - `R` - An int representing the minimum number of segments per arcs of any radius,
+            except when the results in segment lengths greater than or less than the minimum
+            and maximum segment length.  Set to 0 to disable.
+    - 'F' - An int representing the number of segments per second, unless this results in segment lengths
+            greater than or less than the minimum and maximum segment length.  Set to 0 to disable.
+    */
+    case 214: //!@n M214 - Set Arc Parameters (Use M500 to store in eeprom) N<MM_PER_ARC_SEGMENT> S<MIN_MM_PER_ARC_SEGMENT> R<MIN_ARC_SEGMENTS> F<ARC_SEGMENTS_PER_SEC>
+    {
+        // Extract N
+        float n = cs.mm_per_arc_segment;
+        float s = cs.min_mm_per_arc_segment;
+        int r = cs.min_arc_segments;
+        int f = cs.arc_segments_per_sec;
+        // Extract N
+        if (code_seen('N'))
+        {
+            n = code_value();
+            if (n <= 0 || (s != 0 && n <= s))
+            {
+                SERIAL_ECHO_START;
+                SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
+                SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
+                SERIAL_ECHOLNPGM("\"(1)");
+                break;
+            }
+        }
+        // Extract S
+        if (code_seen('S'))
+        {
+            s = code_value();
+            if (s < 0 || s >= n)
+            {
+                SERIAL_ECHO_START;
+                SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
+                SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
+                SERIAL_ECHOLNPGM("\"(1)");
+                break;
+            }
+        }
+        // Extract R
+        if (code_seen('R'))
+        {
+
+            r = code_value();
+            if (r < 0)
+            {
+                SERIAL_ECHO_START;
+                SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
+                SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
+                SERIAL_ECHOLNPGM("\"(1)");
+                break;
+            }
+        }
+        // Extract F
+        if (code_seen('F'))
+        {
+            f = code_value();
+            if (f < 0)
+            {
+                SERIAL_ECHO_START;
+                SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
+                SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
+                SERIAL_ECHOLNPGM("\"(1)");
+                break;
+            }
+        }
+        cs.mm_per_arc_segment = n;
+        cs.min_mm_per_arc_segment = s;
+        cs.min_arc_segments = r;
+        cs.arc_segments_per_sec = f;
+    }break;
     #if EXTRUDERS > 1
 
     /*!
@@ -9641,18 +9720,15 @@ void prepare_move()
   set_current_to_destination();
 }
 
-void prepare_arc_move(bool isclockwise) {
-  float r = hypot(offset[X_AXIS], offset[Y_AXIS]); // Compute arc radius for mc_arc
-
-  // Trace the arc
-  mc_arc(current_position, destination, offset, X_AXIS, Y_AXIS, Z_AXIS, feedrate*feedmultiply/60/100.0, r, isclockwise, active_extruder);
-
-  // As far as the parser is concerned, the position is now == target. In reality the
-  // motion control system might still be processing the action and the real tool position
-  // in any intermediate location.
-  set_current_to_destination();
-
-  previous_millis_cmd.start();
+void prepare_arc_move(char isclockwise) {
+    float r = hypot(offset[X_AXIS], offset[Y_AXIS]); // Compute arc radius for mc_arc
+    // Trace the arc
+    mc_arc(current_position, destination, offset, feedrate * feedmultiply / 60 / 100.0, r, isclockwise, active_extruder);
+    // As far as the parser is concerned, the position is now == target. In reality the
+    // motion control system might still be processing the action and the real tool position
+    // in any intermediate location.
+    set_current_to_destination();
+    previous_millis_cmd.start();
 }
 
 #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1

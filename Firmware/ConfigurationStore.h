@@ -39,6 +39,11 @@ typedef struct
     unsigned long max_acceleration_units_per_sq_second_silent[4];
     unsigned char axis_ustep_resolution[4];
     float travel_acceleration; //!< travel acceleration mm/s^2
+    // Arc Interpolation Settings, configurable via M214
+    float mm_per_arc_segment;
+    float min_mm_per_arc_segment;
+    int min_arc_segments; // If less than or equal to zero, this is disabled
+    int arc_segments_per_sec; // If less than or equal to zero, this is disabled
 } M500_conf;
 
 extern M500_conf cs;

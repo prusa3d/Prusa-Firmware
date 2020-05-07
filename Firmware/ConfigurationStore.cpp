@@ -169,6 +169,10 @@ void Config_PrintSettings(uint8_t level)
                  echomagic, echomagic, extruder_advance_K);
 #endif //LIN_ADVANCE
 	}
+    // Arc Interpolation Settings
+    printf_P(PSTR(
+        "%SArc Settings: N=Arc segment length max (mm) S=Arc segment length Min (mm), R=Min arc segments, F=Arc segments per second.\n%S  M214 N%.2f S%.2f R%d F%d\n"),
+        echomagic, echomagic, cs.mm_per_arc_segment, cs.min_mm_per_arc_segment, cs.min_arc_segments, cs.arc_segments_per_sec);
 }
 #endif
 
@@ -184,7 +188,7 @@ static_assert (false, "zprobe_zoffset was not initialized in printers in field t
         "0.0, if this is not acceptable, increment EEPROM_VERSION to force use default_conf");
 #endif
 
-static_assert (sizeof(M500_conf) == 196, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
+static_assert (sizeof(M500_conf) == 208, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
         "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized."
         "If this is caused by change to more then 8bit processor, decide whether make this struct packed to save EEPROM,"
         "leave as it is to keep fast code, or reorder struct members to pack more tightly.");
@@ -233,6 +237,10 @@ static const M500_conf default_conf PROGMEM =
     {16,16,16,16},
 #endif
     DEFAULT_TRAVEL_ACCELERATION,
+    DEFAULT_MM_PER_ARC_SEGMENT,
+    DEFAULT_MIN_MM_PER_ARC_SEGMENT,
+    DEFAULT_MIN_ARC_SEGMENTS,
+    DEFAULT_ARC_SEGMENTS_PER_SEC
 };
 
 
@@ -273,6 +281,11 @@ bool Config_RetrieveSettings()
                 memcpy_P(&cs.max_acceleration_units_per_sq_second_silent[i],&default_conf.max_acceleration_units_per_sq_second_silent[i],sizeof(cs.max_acceleration_units_per_sq_second_silent[i]));
             }
         }
+        // Initialize arc interpolation settings if they are not already (Not sure about this bit, please review)
+        if (0xff == cs.mm_per_arc_segment) cs.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
+        if (0xff == cs.min_mm_per_arc_segment) cs.min_mm_per_arc_segment = DEFAULT_MIN_MM_PER_ARC_SEGMENT;
+        if (0xff == cs.min_arc_segments) cs.min_arc_segments = DEFAULT_MIN_ARC_SEGMENTS;
+        if (0xff == cs.arc_segments_per_sec) cs.arc_segments_per_sec = DEFAULT_ARC_SEGMENTS_PER_SEC;
 
 #ifdef TMC2130
 		for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)

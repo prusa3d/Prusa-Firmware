@@ -529,4 +529,12 @@
 //#define HEATBED_ANALYSIS //for meash bed leveling and heatbed analysis D-codes D80 and D81
 //#define MICROMETER_LOGGING //related to D-codes D80 and D81, currently works on MK2.5 only (MK3 board pin definitions missing)
 
+// Default Arc Interpolation Settings (Now configurable via M214)
+#define DEFAULT_MM_PER_ARC_SEGMENT 1.0f // REQUIRED - The enforced maximum length of an arc segment
+#define DEFAULT_MIN_MM_PER_ARC_SEGMENT 0.5f /* OPTIONAL - the enforced minimum length of an interpolated segment.  Must be smaller than
+    MM_PER_ARC_SEGMENT.  Only has an effect if MIN_ARC_SEGMENTS > 0 or ARC_SEGMENTS_PER_SEC > 0 */
+    // If both MIN_ARC_SEGMENTS and ARC_SEGMENTS_PER_SEC is defined, the minimum calculated segment length is used.
+#define DEFAULT_MIN_ARC_SEGMENTS 20 // OPTIONAL - The enforced minimum segments in a full circle of the same radius.
+#define DEFAULT_ARC_SEGMENTS_PER_SEC 0 // OPTIONAL - Use feedrate to choose segment length.
+
 #endif //__CONFIGURATION_PRUSA_H
