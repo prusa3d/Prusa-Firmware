@@ -1681,36 +1681,6 @@ msgid "Model      [warn]"
 msgstr "Modelo    [aviso]"
 
 # 
-#: ultralcd.cpp:5467
-msgid "Nozzle d.  [0.25]"
-msgstr "Diam. nozzl[0.25]"
-
-# 
-#: ultralcd.cpp:5470
-msgid "Nozzle d.  [0.40]"
-msgstr "Diam. nozzl[0.40]"
-
-# 
-#: ultralcd.cpp:5473
-msgid "Nozzle d.  [0.60]"
-msgstr "Diam. nozzl[0.60]"
-
-# 
-#: ultralcd.cpp:5421
-msgid "Nozzle     [none]"
-msgstr "Nozzle  [ninguno]"
-
-# 
-#: ultralcd.cpp:5427
-msgid "Nozzle   [strict]"
-msgstr "Nozzle [estricto]"
-
-# 
-#: ultralcd.cpp:5424
-msgid "Nozzle     [warn]"
-msgstr "Nozzle    [aviso]"
-
-# 
 #: util.cpp:510
 msgid "G-code sliced for a different level. Continue?"
 msgstr "Codigo G laminado para un nivel diferente. ?Continuar?"
