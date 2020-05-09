@@ -661,11 +661,22 @@ void lcdui_print_extruder(void)
 		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) chars = lcd_printf_P(_N(" F?"));
 		else chars = lcd_printf_P(_N(" F%u"), mmu_extruder + 1);
 	}
-	else
+	else if ((mmu_extruder != MMU_FILAMENT_UNKNOWN && (mmu_extruder + 1) > 9)  ||  (tmp_extruder + 1) > 9)
 	{
-		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) chars = lcd_printf_P(_N(" ?>%u"), tmp_extruder + 1);
-		else chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder + 1, tmp_extruder + 1);
+    //mmu status too long; alternate text
+    if ((uint16_t)floor(_millis()/1000) % 2 == 0)
+    {
+	    chars = lcd_printf_P(_N(" >%u"), tmp_extruder + 1);
+    }
+    else
+    {
+      chars = (mmu_extruder == MMU_FILAMENT_UNKNOWN) ? lcd_printf_P(_N(" ?>"), mmu_extruder + 1) : lcd_printf_P(_N(" %u>"), mmu_extruder + 1);
+    }
 	}
+  else
+  {
+    chars = (mmu_extruder == MMU_FILAMENT_UNKNOWN) ? lcd_printf_P(_N(" ?>%u"), tmp_extruder + 1) : lcd_printf_P(_N(" %u>%u"), mmu_extruder + 1, tmp_extruder + 1);
+  }
 	lcd_space(5 - chars);
 }
 
@@ -6259,14 +6270,14 @@ static void fil_load_menu()
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     MENU_ITEM_FUNCTION_P(_i("Load all"), load_all); ////MSG_LOAD_ALL c=17
-    MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '1', extr_adj, 0); ////MSG_LOAD_FILAMENT_1 c=16
-    MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '2', extr_adj, 1); ////MSG_LOAD_FILAMENT_2 c=17
-    MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '3', extr_adj, 2); ////MSG_LOAD_FILAMENT_3 c=17
-    MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '4', extr_adj, 3); ////MSG_LOAD_FILAMENT_4 c=17
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), 1, extr_adj, 0); ////MSG_LOAD_FILAMENT_1 c=16
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), 2, extr_adj, 1); ////MSG_LOAD_FILAMENT_2 c=17
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), 3, extr_adj, 2); ////MSG_LOAD_FILAMENT_3 c=17
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), 4, extr_adj, 3); ////MSG_LOAD_FILAMENT_4 c=17
 
     if (mmu_enabled)
     {
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '5', extr_adj, 4);
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), 5, extr_adj, 4);
     }
     MENU_END();
 }
@@ -6277,11 +6288,9 @@ static void mmu_load_to_nozzle_menu()
     {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '1', lcd_mmu_load_to_nozzle, 0);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '2', lcd_mmu_load_to_nozzle, 1);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '3', lcd_mmu_load_to_nozzle, 2);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '4', lcd_mmu_load_to_nozzle, 3);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), '5', lcd_mmu_load_to_nozzle, 4);
+        for (int8_t i=0; i<mmu_filament_count; i++) {
+            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i+1, lcd_mmu_load_to_nozzle, i);
+        }
         MENU_END();
     }
     else
@@ -6303,11 +6312,9 @@ static void mmu_fil_eject_menu()
     {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '1', mmu_eject_filament, 0);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '2', mmu_eject_filament, 1);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '3', mmu_eject_filament, 2);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '4', mmu_eject_filament, 3);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '5', mmu_eject_filament, 4);
+        for (int8_t i=0; i<mmu_filament_count; i++) {
+            MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), i+1, mmu_eject_filament, i);
+        }
         MENU_END();
     }
     else
@@ -6325,11 +6332,9 @@ static void mmu_cut_filament_menu()
     {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '1', mmu_cut_filament, 0);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '2', mmu_cut_filament, 1);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '3', mmu_cut_filament, 2);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '4', mmu_cut_filament, 3);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '5', mmu_cut_filament, 4);
+        for (int8_t i=0; i<mmu_filament_count; i++) {
+            MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), i+1, mmu_eject_filament, i);
+        }
         MENU_END();
     }
     else

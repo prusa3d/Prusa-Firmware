@@ -799,7 +799,7 @@
 "Unload filament"
 
 #MSG_UNLOADING_FILAMENT c=20 r=1
-"Unloading filament"
+"Unloading filam."
 
 #
 "Total"

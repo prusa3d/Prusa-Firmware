@@ -212,11 +212,11 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Expulsar filamento"
+"Expulsar filam."
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
-"Expulsando filamento"
+"Expulsando filam."
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
@@ -488,7 +488,7 @@
 
 #MSG_LOADING_FILAMENT c=20
 "Loading filament"
-"Introduciendo filam."
+"Introduciendo f."
 
 #MSG_LOOSE_PULLEY c=20 r=1
 "Loose pulley"
@@ -1067,8 +1067,8 @@
 "Soltar filamento"
 
 #MSG_UNLOADING_FILAMENT c=20 r=1
-"Unloading filament"
-"Soltando filamento"
+"Unloading filam."
+"Soltando filam."
 
 #
 "Total"

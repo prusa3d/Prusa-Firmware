@@ -8600,7 +8600,7 @@ Sigma_Exit:
 
 	  *(strchr_pointer + index) = tolower(*(strchr_pointer + index));
 
-      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '4') && *(strchr_pointer + index) != '?' && *(strchr_pointer + index) != 'x' && *(strchr_pointer + index) != 'c') {
+      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?' && *(strchr_pointer + index) != 'x' && *(strchr_pointer + index) != 'c') {
           SERIAL_ECHOLNPGM("Invalid T code.");
       }
 	  else if (*(strchr_pointer + index) == 'x'){ //load to bondtech gears; if mmu is not present do nothing
@@ -8641,7 +8641,7 @@ Sigma_Exit:
               }
           }
           else {
-              tmp_extruder = code_value();
+              tmp_extruder = min(code_value(), mmu_filament_count-1);
               if (mmu_enabled && lcd_autoDepleteEnabled())
               {
                   tmp_extruder = ad_getAlternative(tmp_extruder);

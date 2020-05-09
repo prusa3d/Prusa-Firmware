@@ -65,6 +65,7 @@ bool ir_sensor_detected = false;
 static bool mmu_loading_flag = false; //when set to true, we assume that mmu2 unload was finished and loading phase is now performed; printer can send 'A' to mmu2 to abort loading process
 
 uint8_t mmu_extruder = MMU_FILAMENT_UNKNOWN;
+uint8_t mmu_filament_count = 5;  // creating as variable so maybe later it can updated dynamically from MMU status query
 
 //! This variable probably has no meaning and is planed to be removed
 uint8_t tmp_extruder = MMU_FILAMENT_UNKNOWN;
@@ -278,7 +279,7 @@ void mmu_loop(void)
 	case S::Idle:
 		if (mmu_cmd != MmuCmd::None) //command request ?
 		{
-			if ((mmu_cmd >= MmuCmd::T0) && (mmu_cmd <= MmuCmd::T4))
+			if ((mmu_cmd >= MmuCmd::T0) && (mmu_cmd <= MmuCmd::T31))
 			{
 				const uint8_t filament = mmu_cmd - MmuCmd::T0;
 				DEBUG_PRINTF_P(PSTR("MMU <= 'T%d'\n"), filament);
@@ -287,7 +288,7 @@ void mmu_loop(void)
 				mmu_fil_loaded = true;
 				mmu_idl_sens = 1;
 			}
-			else if ((mmu_cmd >= MmuCmd::L0) && (mmu_cmd <= MmuCmd::L4))
+			else if ((mmu_cmd >= MmuCmd::L0) && (mmu_cmd <= MmuCmd::L31))
 			{
 			    const uint8_t filament = mmu_cmd - MmuCmd::L0;
 			    DEBUG_PRINTF_P(PSTR("MMU <= 'L%d'\n"), filament);
@@ -308,7 +309,7 @@ void mmu_loop(void)
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
 			}
-			else if ((mmu_cmd >= MmuCmd::E0) && (mmu_cmd <= MmuCmd::E4))
+			else if ((mmu_cmd >= MmuCmd::E0) && (mmu_cmd <= MmuCmd::E31))
 			{
 			    const uint8_t filament = mmu_cmd - MmuCmd::E0;
 				DEBUG_PRINTF_P(PSTR("MMU <= 'E%d'\n"), filament);
@@ -316,7 +317,7 @@ void mmu_loop(void)
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
 			}
-			else if ((mmu_cmd >= MmuCmd::K0) && (mmu_cmd <= MmuCmd::K4))
+			else if ((mmu_cmd >= MmuCmd::K0) && (mmu_cmd <= MmuCmd::K31))
             {
                 const uint8_t filament = mmu_cmd - MmuCmd::K0;
                 DEBUG_PRINTF_P(PSTR("MMU <= 'K%d'\n"), filament);
@@ -429,7 +430,7 @@ void mmu_loop(void)
 			if (mmu_last_cmd != MmuCmd::None)
 			{
 				if (mmu_attempt_nr++ < MMU_MAX_RESEND_ATTEMPTS &&
-				    mmu_last_cmd >= MmuCmd::T0 && mmu_last_cmd <= MmuCmd::T4)
+				    mmu_last_cmd >= MmuCmd::T0 && mmu_last_cmd <= MmuCmd::T31)
 				{
 				    DEBUG_PRINTF_P(PSTR("MMU retry attempt nr. %d\n"), mmu_attempt_nr - 1);
 					mmu_cmd = mmu_last_cmd;
@@ -515,7 +516,7 @@ int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament)
 //! If T or L command is enqueued, it marks filament loaded in AutoDeplete module.
 void mmu_command(MmuCmd cmd)
 {
-	if ((cmd >= MmuCmd::T0) && (cmd <= MmuCmd::T4))
+	if ((cmd >= MmuCmd::T0) && (cmd <= MmuCmd::T31))
 	{
 		//disable extruder motor
 #ifdef TMC2130
@@ -524,7 +525,7 @@ void mmu_command(MmuCmd cmd)
 		//printf_P(PSTR("E-axis disabled\n"));
 		ad_markLoaded(cmd - MmuCmd::T0);
 	}
-    if ((cmd >= MmuCmd::L0) && (cmd <= MmuCmd::L4))
+    if ((cmd >= MmuCmd::L0) && (cmd <= MmuCmd::L31))
     {
         ad_markLoaded(cmd - MmuCmd::L0);
     }
@@ -981,7 +982,7 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 {
 #ifndef SNMM
     MmuCmd cmd = MmuCmd::L0 + extruder;
-    if (extruder > (MmuCmd::L4 - MmuCmd::L0))
+    if (extruder > (MmuCmd::L31 - MmuCmd::L0))
     {
         printf_P(PSTR("Filament out of range %d \n"),extruder);
         return;

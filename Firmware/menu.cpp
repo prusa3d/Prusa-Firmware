@@ -245,11 +245,12 @@ static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
     lcd_printf_P(PSTR("%c%-18.18s%c"), menu_selection_mark(), buffer.c, type_char);
 }
 
-static void menu_draw_item_puts_P(char type_char, const char* str, char num)
+static void menu_draw_item_puts_P(char type_char, const char* str, int8_t num)
 {
     lcd_set_cursor(0, menu_row);
     lcd_printf_P(PSTR("%c%-.16S "), menu_selection_mark(), str);
-    lcd_putc(num);
+    //lcd_putc(num);
+    lcd_printf_P(_N("%2d"), num);
     lcd_set_cursor(19, menu_row);
     lcd_putc(type_char);
 }
@@ -372,7 +373,7 @@ uint8_t menu_item_function_P(const char* str, menu_func_t func)
 //! @param fn_par value to be passed to function
 //! @retval 0
 //! @retval 1 Item was clicked
-uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t), uint8_t fn_par)
+uint8_t menu_item_function_P(const char* str, int8_t number, void (*func)(uint8_t), uint8_t fn_par)
 {
     if (menu_item == menu_line)
     {
