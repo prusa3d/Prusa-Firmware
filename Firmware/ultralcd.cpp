@@ -2169,14 +2169,16 @@ static void lcd_support_menu()
   switch(oFsensorPCB)
        {
        case ClFsensorPCB::_Old:
-            MENU_ITEM_BACK_P(_T(MSG_03_OR_OLDER));
+            MENU_ITEM_BACK_P(_T(MSG_IR_03_OR_OLDER));
             break;
        case ClFsensorPCB::_Rev04:
-            MENU_ITEM_BACK_P(_T(MSG_04_OR_NEWER));
+            MENU_ITEM_BACK_P(_T(MSG_IR_04_OR_NEWER));
             break;
        case ClFsensorPCB::_Undef:
+            MENU_ITEM_BACK_P(_T(MSG_IR_UNKNOWN));
+            break;
        default:
-            MENU_ITEM_BACK_P(PSTR(" unknown state"));
+            MENU_ITEM_BACK_P(_T(MSG_IR_UNKNOWN));
        }
 #endif // IR_SENSOR_ANALOG
 
@@ -7508,7 +7510,7 @@ void lcd_belttest()
 #ifdef IR_SENSOR_ANALOG
 // called also from marlin_main.cpp
 void printf_IRSensorAnalogBoardChange(bool bPCBrev04){
-    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), bPCBrev04 ? _T(MSG_04_OR_NEWER) : _T(MSG_03_OR_OLDER));
+    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), bPCBrev04 ? _T(MSG_IR_04_OR_NEWER) : _T(MSG_IR_03_OR_OLDER));
 }
 
 static bool lcd_selftest_IRsensor(bool bStandalone)

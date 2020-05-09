@@ -207,7 +207,7 @@ void fsensor_init(void)
 	}
 	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
 #ifdef IR_SENSOR_ANALOG
-     printf_P(PSTR(" (sensor board revision:%S)\n"), (oFsensorPCB==ClFsensorPCB::_Rev04) ? _T(MSG_04_OR_NEWER) : _T(MSG_03_OR_OLDER));
+     printf_P(PSTR(" (sensor board revision:%S)\n"), (oFsensorPCB==ClFsensorPCB::_Rev04) ? _T(MSG_IR_04_OR_NEWER) : _T(MSG_IR_03_OR_OLDER));
 #else //IR_SENSOR_ANALOG
      printf_P(PSTR("\n"));
 #endif //IR_SENSOR_ANALOG
