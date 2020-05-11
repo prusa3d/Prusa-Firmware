@@ -40,7 +40,7 @@
 #MSG_AUTO c=6
 "Auto"
 
-#MSG_PRESS c=20
+#MSG_PRESS c=20 r=2
 "and press the knob"
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
@@ -82,7 +82,7 @@
 #MSG_BELTTEST c=17
 "Belt test        "
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 
 #MSG_BRIGHT c=6
@@ -184,7 +184,7 @@
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 
-#MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
+#MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
 
 #MSG_SELFTEST_ENDSTOP
@@ -271,7 +271,7 @@
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
 
-#MSG_FINISHING_MOVEMENTS c=20 r=1
+#MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
 
 #MSG_V2_CALIBRATION c=18
@@ -415,7 +415,7 @@
 #
 "Load to nozzle"
 
-#MSG_M117_V2_CALIBRATION c=25 r=1
+#MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
 
 #MSG_MAIN

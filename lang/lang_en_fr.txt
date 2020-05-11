@@ -54,7 +54,7 @@
 "Auto"
 "\x00"
 
-#MSG_PRESS c=20
+#MSG_PRESS c=20 r=2
 "and press the knob"
 "et appuyez sur le bouton"
 
@@ -110,7 +110,7 @@
 "Belt test        "
 "Test de courroie "
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 "Capt. non declenche pendant que je nivele le plateau. Debris sur buse? En attente d'un reset."
 
@@ -246,7 +246,7 @@
 "Ejecting filament"
 "Le fil. remonte"
 
-#MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
+#MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
 "Butee non atteinte"
 
@@ -362,7 +362,7 @@
 "File incomplete. Continue anyway?"
 "Fichier incomplet. Continuer qd meme?"
 
-#MSG_FINISHING_MOVEMENTS c=20 r=1
+#MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
 "Mouvement final"
 
@@ -496,7 +496,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"Est la plaque en acier sur le plateau chauffant?"
+"Est la plaque sur le plat. chauffant?"
 
 #
 "Last print failures"
@@ -554,7 +554,7 @@
 "Load to nozzle"
 "Charger la buse"
 
-#MSG_M117_V2_CALIBRATION c=25 r=1
+#MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
 "M117 Cal. 1ere couche"
 
