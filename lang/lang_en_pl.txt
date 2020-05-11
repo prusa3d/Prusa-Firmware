@@ -1052,7 +1052,7 @@
 
 # c=7
 "Runouts"
-"\x00"
+"Koniec"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
