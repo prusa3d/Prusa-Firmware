@@ -234,7 +234,7 @@
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 "Desideri ripetere l'ultimo passaggio per migliorare la distanza fra ugello e piatto?"
 
-#MSG_EXTRUDER_CORRECTION c=10
+#MSG_EXTRUDER_CORRECTION c=13
 "E-correct:"
 "Correzione-E:"
 
@@ -342,9 +342,9 @@
 "Filament sensor"
 "Sensore filam."
 
-#MSG_FILAMENT_USED c=19 r=1
+#MSG_FILAMENT_USED c=19
 "Filament used"
-"Filamento utilizzato"
+"Fil. utilizzato"
 
 #MSG_PRINT_TIME c=19 r=1
 "Print time"
@@ -358,7 +358,7 @@
 "FS v0.4 or newer"
 ""
 
-#MSG_FILE_INCOMPLETE c=20 r=2
+#MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
 "File incompleto. Continuare comunque?"
 
@@ -894,13 +894,13 @@
 "Please unload the filament first, then repeat this action."
 "Scaricare prima il filamento, poi ripetere l'operazione."
 
-#MSG_RECOVERING_PRINT c=20 r=1
+#MSG_RECOVERING_PRINT c=20
 "Recovering print    "
-"Recupero stampa"
+"Recupero stampa     "
 
-#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+#MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
-"Rimuovi il filamento precedente e premi la manopola per caricare il nuovo filamento. "
+"Rimuovi il filamento precedente e premi la manopola per caricare il nuovo filamento."
 
 # c=20
 "Prusa i3 MK3S OK."
@@ -1002,7 +1002,7 @@
 "Settings"
 "Impostazioni"
 
-#MSG_SHOW_END_STOPS c=17 r=1
+#MSG_SHOW_END_STOPS c=18
 "Show end stops"
 "Stato finecorsa"
 
@@ -1010,7 +1010,7 @@
 "Sensor state"
 "Stato sensore"
 
-#MSG_FILE_CNT c=20 r=4
+#MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Alcuni file non saranno ordinati. Il numero massimo di file in una cartella e 100 perche siano ordinati."
 
@@ -1130,7 +1130,7 @@
 "Temperatures"
 "Temperature"
 
-#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "E ancora necessario effettuare la calibrazione Z. Segui il manuale, capitolo Primi Passi, sezione Sequenza di Calibrazione. "
 
@@ -1254,7 +1254,7 @@
 "Timeout"
 ""
 
-#
+#MSG_X_CORRECTION c=13
 "X-correct:"
 "Correzione-X:"
 
@@ -1294,11 +1294,11 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "La stampante iniziera a stampare una linea a zig-zag. Gira la manopola fino a che non hai raggiungo l'altezza ottimale. Verifica con le immagini nel manuale (capitolo sulla calibrazione):"
 
-# c=20 r=4
+# c=20 r=5
 "Verification failed, remove the filament and try again."
 "Verifica fallita, rimuovere il filamento e riprovare."
 
-#
+#MSG_Y_CORRECTION c=13
 "Y-correct:"
 "Correzione-Y:"
 
@@ -1450,7 +1450,7 @@
 "Steel sheets" c=18
 "Piani d'acciaio"
 
-#
+#MSG_Z_CORRECTION c=13
 "Z-correct:"
 "Correzione-Z:"
 

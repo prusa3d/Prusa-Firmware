@@ -2830,7 +2830,7 @@ static void lcd_LoadFilament()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Filament used:      | c=19 r=1
+//! |Filament used:      | c=19
 //! |           0000.00m |
 //! |Print time:         | c=19 r=1
 //! |        00h 00m 00s |
@@ -2866,7 +2866,7 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%10ldh %02hhdm %02hhds"
 		    ),
-            _i("Filament used"), _met,  ////c=19 r=1
+            _i("Filament used"), _met,  ////c=19
             _i("Print time"), _h, _m, _s);  ////c=19 r=1
 		menu_back_if_clicked_fb();
 	}
@@ -5187,11 +5187,11 @@ void lcd_settings_linearity_correction_menu(void)
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
 	//tmc2130_wave_fac[X_AXIS]
 
-	MENU_ITEM_EDIT_int3_P(_i("X-correct:"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=10
-	MENU_ITEM_EDIT_int3_P(_i("Y-correct:"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=10
-	MENU_ITEM_EDIT_int3_P(_i("Z-correct:"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=10
+	MENU_ITEM_EDIT_int3_P(_i("X-correct:"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_X_CORRECTION c=13
+	MENU_ITEM_EDIT_int3_P(_i("Y-correct:"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_Y_CORRECTION c=13
+	MENU_ITEM_EDIT_int3_P(_i("Z-correct:"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_Z_CORRECTION c=13
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
-	MENU_ITEM_EDIT_int3_P(_i("E-correct:"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=10
+	MENU_ITEM_EDIT_int3_P(_i("E-correct:"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=13
 	MENU_END();
 }
 #endif // TMC2130
@@ -5834,7 +5834,7 @@ static void lcd_calibration_menu()
 	MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17 r=1
     if (lcd_commands_type == LcdCommands::Idle)
     {
-         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_first_layer_calibration_reset);
+         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_first_layer_calibration_reset);////MSG_V2_CALIBRATION c=18
     }
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 #ifdef TMC2130
@@ -5861,7 +5861,7 @@ static void lcd_calibration_menu()
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17 r=1
 #ifndef TMC2130
-    MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=17 r=1
+    MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=18
 #endif
 #ifndef MK1BP
     MENU_ITEM_GCODE_P(_i("Reset XYZ calibr."), PSTR("M44"));////MSG_CALIBRATE_BED_RESET
@@ -6809,7 +6809,7 @@ static void lcd_sheet_menu()
 
     if (lcd_commands_type == LcdCommands::Idle)
     {
-        MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);
+        MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);////MSG_V2_CALIBRATION c=18
     }
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
 	MENU_ITEM_FUNCTION_P(_i("Reset"), lcd_reset_sheet); //// c=18
@@ -7555,7 +7555,7 @@ static void lcd_detect_IRsensor(){
 		// the fsensor board has been successfully identified, any previous "not responding" may be cleared now
 		fsensor_not_responding = false;
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////c=20 r=4
+        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////c=20 r=5
 		// here it is unclear what to to with the fsensor_not_responding flag
 	}
     bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
@@ -8813,7 +8813,7 @@ static void menu_action_sdfile(const char* filename)
   }
   
   if (!check_file(filename)) {
-	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=2
+	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=3
 	  lcd_update_enable(true);
   }
   if (result) {

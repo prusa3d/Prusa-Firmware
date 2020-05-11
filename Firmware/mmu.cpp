@@ -830,7 +830,7 @@ void mmu_M600_wait_and_beep() {
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 		int counterBeep = 0;
-		lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));
+		lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
 		bool bFirst=true;
 
 		while (!lcd_clicked()){
