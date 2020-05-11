@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed May 6 18:28:55 CEST 2020\n"
-"PO-Revision-Date: Wed May 6 18:28:55 CEST 2020\n"
+"POT-Creation-Date: Mon May 11 12:34:57 CEST 2020\n"
+"PO-Revision-Date: Mon May 11 12:34:57 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -395,7 +395,7 @@ msgstr ""
 msgid "Fail stats MMU"
 msgstr "MMU-Fehler"
 
-# MSG_FSENSOR_AUTOLOAD
+# MSG_FSENSOR_AUTOLOAD c=13
 #: messages.c:40
 msgid "F. autoload"
 msgstr "F. autoladen"
@@ -425,7 +425,7 @@ msgstr "Luefter Chk."
 msgid "Fil. sensor"
 msgstr ""
 
-# 
+#  c=14
 #: ultralcd.cpp:1784
 msgid "Filam. runouts"
 msgstr "Filam. Maengel"
@@ -1826,8 +1826,8 @@ msgid "Assist"
 msgstr ""
 
 # 
-#: ultralcd.cpp:5722
-msgid "Steel sheets"
+#: 
+msgid "Steel sheets" c=18
 msgstr "Stahlbleche"
 
 # 

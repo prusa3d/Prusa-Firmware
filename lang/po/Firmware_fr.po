@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed May 6 18:29:43 CEST 2020\n"
-"PO-Revision-Date: Wed May 6 18:29:43 CEST 2020\n"
+"POT-Creation-Date: Mon May 11 12:35:44 CEST 2020\n"
+"PO-Revision-Date: Mon May 11 12:35:44 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -23,12 +23,12 @@ msgstr "[%.7s]Ajust. du Z\x0aValeur enreg, contin\x0aou depart a zero?\x0a%cCont
 # MSG_03_OR_OLDER c=18
 #: messages.c:144
 msgid " 0.3 or older"
-msgstr " 0.3 ou plus vieux"
+msgstr " 0.3 ou +ancien"
 
 # MSG_04_OR_NEWER c=18
 #: messages.c:143
 msgid " 0.4 or newer"
-msgstr "0.4 ou plus recent"
+msgstr " 0.4 ou +recent"
 
 # MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 #: messages.c:36
@@ -88,7 +88,7 @@ msgstr ""
 # MSG_PRESS c=20
 #: ultralcd.cpp:2609
 msgid "and press the knob"
-msgstr "et pressez le bouton"
+msgstr "et appuyez sur le bouton"
 
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3506
@@ -158,7 +158,7 @@ msgstr "Test de courroie "
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
-msgstr "Echec bed leveling. Capt. non declenche. Debris sur buse? En attente d'un reset."
+msgstr "Capt. non declenche pendant que je nivele le plateau. Debris sur buse? En attente d'un reset."
 
 # MSG_BRIGHT c=6
 #: messages.c:138
@@ -253,7 +253,7 @@ msgstr "Refroidissement"
 # 
 #: ultralcd.cpp:4570
 msgid "Copy selected language?"
-msgstr "Copier la langue selectionne?"
+msgstr "Copier la langue choisie?"
 
 # MSG_CRASHDETECT c=10
 #: messages.c:24
@@ -308,7 +308,7 @@ msgstr ""
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5125
 msgid "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
-msgstr "Voulez-vous repeter la derniere etape pour reajuster la distance entre la buse et le plateau chauffant?"
+msgstr "Voulez-vous refaire l'etape pour reajuster la hauteur entre la buse et le plateau chauffant?"
 
 # MSG_EXTRUDER_CORRECTION c=10
 #: ultralcd.cpp:5194
@@ -358,7 +358,7 @@ msgstr "Coupeur"
 #  c=18
 #: mmu.cpp:1388
 msgid "Cutting filament"
-msgstr "Coupe filament"
+msgstr "Je coupe filament"
 
 # MSG_FSENS_NOT_RESPONDING c=20 r=4
 #: ultralcd.cpp:4458
@@ -395,10 +395,10 @@ msgstr "Extrudeur"
 msgid "Fail stats MMU"
 msgstr "Stat. d'echec MMU"
 
-# MSG_FSENSOR_AUTOLOAD
+# MSG_FSENSOR_AUTOLOAD c=13
 #: messages.c:40
 msgid "F. autoload"
-msgstr "Autochargeur"
+msgstr "F. autocharg."
 
 # 
 #: ultralcd.cpp:6982
@@ -425,10 +425,10 @@ msgstr "Verif vent."
 msgid "Fil. sensor"
 msgstr "Capteur Fil."
 
-# 
+#  c=14
 #: ultralcd.cpp:1784
 msgid "Filam. runouts"
-msgstr "Fins de filament"
+msgstr "Fins filament"
 
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:29
@@ -563,7 +563,7 @@ msgstr "Change correctement?"
 # MSG_SELFTEST_CHECK_BED c=20
 #: messages.c:77
 msgid "Checking bed     "
-msgstr "Verification du lit"
+msgstr "Verif. plateau chauf"
 
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ultralcd.cpp:8670
@@ -638,7 +638,7 @@ msgstr "Fil. est-il charge?"
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:90
 msgid "Is steel sheet on heatbed?"
-msgstr "Plaque d'impression sur le lit chauffant?"
+msgstr "Est la plaque en acier sur le plateau chauffant?"
 
 # 
 #: ultralcd.cpp:1727
@@ -648,7 +648,7 @@ msgstr "Echecs derniere imp."
 # 
 #: ultralcd.cpp:5133
 msgid "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
-msgstr "Si vous avez d'autres feuilles d'acier,  calibrez leurs pre-reglages dans Reglages - Config HW - Feuilles d'acier."
+msgstr "Si vous avez d'autres feuilles d'acier,  calibrez leurs pre-reglages dans Reglages - Config HW - Plaque en acier."
 
 # 
 #: ultralcd.cpp:1704
@@ -658,7 +658,7 @@ msgstr "Derniere impres."
 # MSG_SELFTEST_EXTRUDER_FAN c=20
 #: messages.c:72
 msgid "Left hotend fan?"
-msgstr "Ventilo tete gauche?"
+msgstr "Ventilo gauche?"
 
 # 
 #: ultralcd.cpp:2993
@@ -683,7 +683,7 @@ msgstr "Ajuster Z en dir."
 #  c=20 r=6
 #: ultralcd.cpp:7527
 msgid "Insert the filament (do not load it) into the extruder and then press the knob."
-msgstr "Veuillez inserer le filament (ne pour le charger) dans l'extrudeur, puis appuyez sur le bouton."
+msgstr "Veuillez inserer le filament ( ne le chargez pas) dans l'extrudeur, puis appuyez sur le bouton."
 
 # MSG_LOAD_FILAMENT c=17
 #: messages.c:47
@@ -733,7 +733,7 @@ msgstr ""
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 #: messages.c:55
 msgid "Measuring reference height of calibration point"
-msgstr "Mesure de la hauteur de reference du point de calibration"
+msgstr "Je mesure la hauteur de reference de la point de calibrage"
 
 # MSG_MESH_BED_LEVELING
 #: ultralcd.cpp:5856
@@ -948,7 +948,7 @@ msgstr "Placez une feuille de papier sous la buse pendant la calibration des 4 p
 # MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ultralcd.cpp:5128
 msgid "Please clean heatbed and then press the knob."
-msgstr "Nettoyez la plaque en acier et appuyez sur le bouton."
+msgstr "Nettoyez plateau chauffant en acier et appuyez sur le bouton."
 
 # MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 #: messages.c:21
@@ -1133,7 +1133,7 @@ msgstr "Arriere [um]"
 #  c=20 r=4
 #: ultralcd.cpp:7549
 msgid "Please unload the filament first, then repeat this action."
-msgstr "Veuillez d'abord decharger le filament, puis repetez cette action."
+msgstr "SVP, dechargez le filament et reessayez."
 
 # MSG_RECOVERING_PRINT c=20 r=1
 #: Marlin_main.cpp:10883
@@ -1203,7 +1203,7 @@ msgstr "Droite"
 # MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60
 #: messages.c:35
 msgid "Searching bed calibration point"
-msgstr "Recherche du point de calibration du lit"
+msgstr "Recherche du point de calibration du plateau chauffant"
 
 # MSG_LANGUAGE_SELECT
 #: ultralcd.cpp:5779
@@ -1508,7 +1508,7 @@ msgstr "Attente utilisateur..."
 # MSG_WAITING_TEMP c=20 r=3
 #: ultralcd.cpp:3434
 msgid "Waiting for nozzle and bed cooling"
-msgstr "Attente du refroidissement des buse et plateau"
+msgstr "Attente du refroidissement des buse et plateau chauffant"
 
 # MSG_WAITING_TEMP_PINDA c=20 r=3
 #: ultralcd.cpp:3395
@@ -1638,7 +1638,7 @@ msgstr "L'imprimante commencera a  imprimer une ligne en zig-zag. Tournez le bou
 #  c=20 r=4
 #: ultralcd.cpp:7558
 msgid "Verification failed, remove the filament and try again."
-msgstr "Echec de la verification, retirez le filament et reessayez."
+msgstr "Verification en echec, retirez le filament et reessayez."
 
 # 
 #: ultralcd.cpp:5191
@@ -1826,8 +1826,8 @@ msgid "Assist"
 msgstr ""
 
 # 
-#: ultralcd.cpp:5722
-msgid "Steel sheets"
+#: 
+msgid "Steel sheets" c=18
 msgstr "Plaques en acier"
 
 # 
