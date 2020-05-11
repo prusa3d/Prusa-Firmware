@@ -81,6 +81,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | :--				| :-- 		| :-- 									| :--:			| :--:					| :--												| :--:			| :--:
 | 0x0FFFh 4095		| uchar    	| EEPROM_SILENT 						| 00h 0			| ffh 255				| TMC Stealth mode: __off__ / miniRambo Power mode	| LCD menu		| D3 Ax0fff C1
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode: __on__ / miniRambo Silent mode	| ^				| ^ 
+| ^ 				| ^ 		| ^										| 02h 2			| ^						| miniRambo Auto mode								| ^				| ^ 
 | 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255		__L__	| English / LANG_ID_PRI								| LCD menu		| D3 Ax0ffe C1 
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| Other language LANG_ID_SEC						| ^ 			| ^
 | 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ff ffh 65535			| Babystep for X axis _unsued_						| ??? 			| D3 Ax0ffc C2
