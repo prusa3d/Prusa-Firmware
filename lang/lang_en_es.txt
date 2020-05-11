@@ -302,7 +302,7 @@
 "Fail stats MMU"
 "Estadistica de fallos MMU"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 "Autocarg.fil."
 
@@ -326,7 +326,7 @@
 "Fil. sensor"
 "Sensor Fil."
 
-#
+# c=14
 "Filam. runouts"
 "Filam. acabado"
 
@@ -1447,7 +1447,7 @@
 "Asistido"
 
 #
-"Steel sheets"
+"Steel sheets" c=18
 "Lamina de acero"
 
 #

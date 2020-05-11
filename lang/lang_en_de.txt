@@ -302,7 +302,7 @@
 "Fail stats MMU"
 "MMU-Fehler"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 "F. autoladen"
 
@@ -326,7 +326,7 @@
 "Fil. sensor"
 "\x00"
 
-#
+# c=14
 "Filam. runouts"
 "Filam. Maengel"
 
@@ -1447,7 +1447,7 @@
 "\x00"
 
 #
-"Steel sheets"
+"Steel sheets" c=18
 "Stahlbleche"
 
 #

@@ -226,7 +226,7 @@
 #
 "Fail stats MMU"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 
 #
@@ -244,7 +244,7 @@
 #MSG_FSENSOR
 "Fil. sensor"
 
-#
+# c=14
 "Filam. runouts"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -1085,7 +1085,7 @@
 "Assist"
 
 #
-"Steel sheets"
+"Steel sheets" c=18
 
 #
 "Z-correct:"

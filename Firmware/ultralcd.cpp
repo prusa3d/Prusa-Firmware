@@ -5719,7 +5719,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 
-    MENU_ITEM_SUBMENU_P(_i("Steel sheets"), sheets_menu);
+    MENU_ITEM_SUBMENU_P(_i("Steel sheets"), sheets_menu); ////MSG_STEEL_SHEETS c=18
     SETTINGS_NOZZLE;
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
 
@@ -6801,7 +6801,7 @@ static void activate_calibrate_sheet()
 static void lcd_sheet_menu()
 {
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_i("Steel sheets"));
+    MENU_ITEM_BACK_P(_i("Steel sheets")); ////MSG_STEEL_SHEETS c=18
 
 	if(eeprom_is_sheet_initialized(selected_sheet)){
 	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18

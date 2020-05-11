@@ -302,7 +302,7 @@
 "Fail stats MMU"
 "Selhani MMU"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 "F. autozav."
 
@@ -326,7 +326,7 @@
 "Fil. sensor"
 "Fil. senzor"
 
-#
+# c=14
 "Filam. runouts"
 "Vypadky filam."
 
@@ -1447,7 +1447,7 @@
 "Asist."
 
 #
-"Steel sheets"
+"Steel sheets" c=18
 "Tiskove platy"
 
 #

@@ -302,7 +302,7 @@
 "Fail stats MMU"
 "Bledy MMU"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 "Autolad. fil."
 
@@ -326,7 +326,7 @@
 "Fil. sensor"
 "Czuj. filam."
 
-#
+# c=14
 "Filam. runouts"
 "Konc. filamentu"
 
@@ -1447,7 +1447,7 @@
 "Asyst."
 
 #
-"Steel sheets"
+"Steel sheets" c=18
 "Plyty stalowe"
 
 #
