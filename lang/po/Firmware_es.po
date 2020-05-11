@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Mon May 11 12:35:21 CEST 2020\n"
-"PO-Revision-Date: Mon May 11 12:35:21 CEST 2020\n"
+"POT-Creation-Date: Mon May 11 15:49:20 CEST 2020\n"
+"PO-Revision-Date: Mon May 11 15:49:20 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -85,7 +85,7 @@ msgstr "Ambiente"
 msgid "Auto"
 msgstr ""
 
-# MSG_PRESS c=20
+# MSG_PRESS c=20 r=2
 #: ultralcd.cpp:2609
 msgid "and press the knob"
 msgstr "Haz clic"
@@ -108,7 +108,7 @@ msgstr "Llevar al origen"
 # MSG_AUTOLOAD_FILAMENT c=17
 #: ultralcd.cpp:6961
 msgid "AutoLoad filament"
-msgstr "Carga automatica de filamento"
+msgstr "Carga auto. filam."
 
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4445
@@ -155,7 +155,7 @@ msgstr "Corr. de la cama"
 msgid "Belt test        "
 msgstr "Test cinturon    "
 
-# MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
+# MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 msgstr "Nivelacion fallada. Sensor no funciona. Restos en boquilla? Esperando reset."
@@ -175,10 +175,10 @@ msgstr "Brillo"
 msgid "Bed"
 msgstr "Base"
 
-# MSG_MENU_BELT_STATUS c=15 r=1
+# MSG_MENU_BELT_STATUS c=18
 #: ultralcd.cpp:2009
 msgid "Belt status"
-msgstr "Estado de la correa"
+msgstr "Estado de correa"
 
 # MSG_RECOVER_PRINT c=20 r=2
 #: messages.c:67
@@ -255,7 +255,7 @@ msgstr "Enfriar"
 msgid "Copy selected language?"
 msgstr "Copiar idioma seleccionado?"
 
-# MSG_CRASHDETECT c=10
+# MSG_CRASHDETECT c=13
 #: messages.c:24
 msgid "Crash det."
 msgstr "Det. choque"
@@ -310,7 +310,7 @@ msgstr ""
 msgid "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 msgstr "Quieres repetir el ultimo paso para reajustar la distancia boquilla-base?"
 
-# MSG_EXTRUDER_CORRECTION c=10
+# MSG_EXTRUDER_CORRECTION c=13
 #: ultralcd.cpp:5194
 msgid "E-correct:"
 msgstr "Corregir-E:"
@@ -318,14 +318,14 @@ msgstr "Corregir-E:"
 # MSG_EJECT_FILAMENT c=17 r=1
 #: messages.c:49
 msgid "Eject filament"
-msgstr "Expulsar filamento"
+msgstr "Expulsar fil."
 
 # MSG_EJECTING_FILAMENT c=20 r=1
 #: mmu.cpp:1416
 msgid "Ejecting filament"
 msgstr "Expulsando filamento"
 
-# MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
+# MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ultralcd.cpp:8295
 msgid "Endstop not hit"
 msgstr "Endstop no alcanzado"
@@ -380,10 +380,10 @@ msgstr ""
 msgid "Extruder fan:"
 msgstr "Vent.extrusor:"
 
-# MSG_INFO_EXTRUDER c=15 r=1
+# MSG_INFO_EXTRUDER c=18
 #: ultralcd.cpp:2211
 msgid "Extruder info"
-msgstr "Informacion del extrusor"
+msgstr "Info. del extrusor"
 
 # MSG_MOVE_E
 #: messages.c:26
@@ -408,7 +408,7 @@ msgstr "Estadistica de fallos"
 # MSG_FAN_SPEED c=14
 #: messages.c:28
 msgid "Fan speed"
-msgstr "Velocidad Vent."
+msgstr "Velocidad Vent"
 
 # MSG_SELFTEST_FAN c=20
 #: messages.c:74
@@ -445,7 +445,7 @@ msgstr "Fil. no introducido"
 msgid "Filament sensor"
 msgstr "Sensor de filamento"
 
-# MSG_FILAMENT_USED c=19 r=1
+# MSG_FILAMENT_USED c=19
 #: ultralcd.cpp:2869
 msgid "Filament used"
 msgstr "Filamento usado"
@@ -465,17 +465,17 @@ msgstr "FS accion"
 msgid "FS v0.4 or newer"
 msgstr "FS v0.4 o +nueva"
 
-# MSG_FILE_INCOMPLETE c=20 r=2
+# MSG_FILE_INCOMPLETE c=20 r=3
 #: ultralcd.cpp:8816
 msgid "File incomplete. Continue anyway?"
 msgstr "Archivo incompleto. ?Continuar de todos modos?"
 
-# MSG_FINISHING_MOVEMENTS c=20 r=1
+# MSG_FINISHING_MOVEMENTS c=20
 #: messages.c:37
 msgid "Finishing movements"
 msgstr "Term. movimientos"
 
-# MSG_V2_CALIBRATION c=17 r=1
+# MSG_V2_CALIBRATION c=18
 #: messages.c:103
 msgid "First layer cal."
 msgstr "Cal. primera cap."
@@ -528,7 +528,7 @@ msgstr "Calentadores desactivados por el temporizador de seguridad."
 # MSG_HEATING_COMPLETE c=20
 #: messages.c:43
 msgid "Heating done."
-msgstr "Calentamiento acabado."
+msgstr "Calentando acabado."
 
 # MSG_HEATING
 #: messages.c:42
@@ -578,7 +578,7 @@ msgstr "Control fusor"
 # MSG_SELFTEST_CHECK_FSENSOR c=20
 #: messages.c:78
 msgid "Checking sensors "
-msgstr "Comprobando los sensores"
+msgstr "Comprobando sensores"
 
 # MSG_SELFTEST_CHECK_X c=20
 #: ultralcd.cpp:7482
@@ -638,7 +638,7 @@ msgstr "Esta el filamento cargado?"
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:90
 msgid "Is steel sheet on heatbed?"
-msgstr "?Esta colocada la lamina de acero sobre la base?"
+msgstr "?Esta colocada la lamina sobre la base"
 
 # 
 #: ultralcd.cpp:1727
@@ -710,7 +710,7 @@ msgstr "Polea suelta"
 msgid "Load to nozzle"
 msgstr "Cargar a la boquilla"
 
-# MSG_M117_V2_CALIBRATION c=25 r=1
+# MSG_M117_V2_CALIBRATION c=25
 #: messages.c:51
 msgid "M117 First layer cal."
 msgstr "M117 Cal. primera cap."
@@ -900,7 +900,7 @@ msgstr "Ahora precalentare la boquilla para PLA."
 msgid "Nozzle"
 msgstr "Boquilla"
 
-# MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+# MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 #: Marlin_main.cpp:1518
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr "Se han encontrado ajustes anteriores. Se ajustara el PID, los pasos del extrusor, etc"
@@ -940,7 +940,7 @@ msgstr "Calibracion PID"
 msgid "PINDA Heating"
 msgstr "Calentando PINDA"
 
-# MSG_PAPER c=20 r=8
+# MSG_PAPER c=20 r=10
 #: messages.c:60
 msgid "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 msgstr "Colocar una hoja de papel sobre la superficie de impresion durante la calibracion de los primeros 4 puntos. Si la boquilla mueve el papel, apagar impresora inmediatamente."
@@ -1018,7 +1018,7 @@ msgstr "Por favor retira los soportes de envio primero."
 # MSG_PREHEAT_NOZZLE c=20
 #: messages.c:63
 msgid "Preheat the nozzle!"
-msgstr "Precalienta extrusor!"
+msgstr "Precalienta extrusor"
 
 # MSG_PREHEAT
 #: ultralcd.cpp:6853
@@ -1063,12 +1063,12 @@ msgstr "Impresion cancelada"
 #  c=20
 #: ultralcd.cpp:2442
 msgid "Preheating to load"
-msgstr "Precalentar para cargar"
+msgstr "Precalent. cargar"
 
 #  c=20
 #: ultralcd.cpp:2446
 msgid "Preheating to unload"
-msgstr "Precalentar para descargar"
+msgstr "Precalent. descargar"
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8691
@@ -1135,12 +1135,12 @@ msgstr "Trasera [um]"
 msgid "Please unload the filament first, then repeat this action."
 msgstr "Primero descargue el filamento, luego repita esta accion."
 
-# MSG_RECOVERING_PRINT c=20 r=1
+# MSG_RECOVERING_PRINT c=20
 #: Marlin_main.cpp:10883
 msgid "Recovering print    "
-msgstr "Recuperando impresion"
+msgstr "Recuper. impresion  "
 
-# MSG_REMOVE_OLD_FILAMENT c=20 r=4
+# MSG_REMOVE_OLD_FILAMENT c=20 r=5
 #: mmu.cpp:833
 msgid "Remove old filament and press the knob to start loading new filament."
 msgstr "Retire el filamento viejo y presione el dial para comenzar a cargar el nuevo filamento."
@@ -1165,10 +1165,10 @@ msgstr ""
 msgid "Resume print"
 msgstr "Reanudar impres."
 
-# MSG_RESUMING_PRINT c=20 r=1
+# MSG_RESUMING_PRINT c=20
 #: messages.c:69
 msgid "Resuming print"
-msgstr "Continuando impresion"
+msgstr "Continuan. impresion"
 
 # MSG_BED_CORRECTION_RIGHT c=14 r=1
 #: ultralcd.cpp:3265
@@ -1270,7 +1270,7 @@ msgstr ""
 msgid "Settings"
 msgstr "Configuracion"
 
-# MSG_SHOW_END_STOPS c=17 r=1
+# MSG_SHOW_END_STOPS c=18
 #: ultralcd.cpp:5864
 msgid "Show end stops"
 msgstr "Mostrar endstops"
@@ -1280,7 +1280,7 @@ msgstr "Mostrar endstops"
 msgid "Sensor state"
 msgstr "Estado del sensor"
 
-# MSG_FILE_CNT c=20 r=4
+# MSG_FILE_CNT c=20 r=6
 #: cardreader.cpp:738
 msgid "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 msgstr "Algunos archivos no se ordenaran. Maximo 100 archivos por carpeta para ordenar. "
@@ -1390,7 +1390,7 @@ msgstr "Intercambiado"
 msgid "Select filament:"
 msgstr "Selecciona filamento:"
 
-# MSG_TEMP_CALIBRATION c=12 r=1
+# MSG_TEMP_CALIBRATION c=14
 #: messages.c:93
 msgid "Temp. cal."
 msgstr "Cal. temp."
@@ -1430,7 +1430,7 @@ msgstr "Temperatura"
 msgid "Temperatures"
 msgstr "Temperaturas"
 
-# MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+# MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 #: messages.c:39
 msgid "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 msgstr "Todavia es necesario hacer una calibracion Z. Por favor siga el manual, capitulo Primeros pasos, seccion Calibracion del flujo."
@@ -1550,10 +1550,10 @@ msgstr "Error de conexion"
 msgid "Wizard"
 msgstr ""
 
-# MSG_XYZ_DETAILS c=19 r=1
+# MSG_XYZ_DETAILS c=18
 #: ultralcd.cpp:2210
 msgid "XYZ cal. details"
-msgstr "Detalles de calibracion XYZ"
+msgstr "Detalles cal. XYZ"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: messages.c:18
@@ -1585,7 +1585,7 @@ msgstr "Calibracion XYZ correcta. Los ejes X / Y estan ligeramente inclinados. B
 msgid "Timeout"
 msgstr "Expirar"
 
-# 
+# MSG_X_CORRECTION c=13
 #: ultralcd.cpp:5190
 msgid "X-correct:"
 msgstr "Corregir-X:"
@@ -1635,12 +1635,12 @@ msgstr "Distancia en Y desde el min"
 msgid "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 msgstr "La impresora comenzara a imprimir una linea en zig-zag. Gira el dial hasta que la linea alcance la altura optima. Mira las fotos del manual (Capitulo de calibracion)."
 
-#  c=20 r=4
+#  c=20 r=5
 #: ultralcd.cpp:7558
 msgid "Verification failed, remove the filament and try again."
 msgstr "La verificacion fallo, retire el filamento e intente nuevamente."
 
-# 
+# MSG_Y_CORRECTION c=13
 #: ultralcd.cpp:5191
 msgid "Y-correct:"
 msgstr "Corregir-Y:"
@@ -1778,12 +1778,12 @@ msgstr "PINDA:"
 #  c=20
 #: ultralcd.cpp:2452
 msgid "Preheating to cut"
-msgstr "Precalentando para laminar"
+msgstr "Precalent. laminar"
 
 #  c=20
 #: ultralcd.cpp:2449
 msgid "Preheating to eject"
-msgstr "Precalentar para expulsar"
+msgstr "Precalent. expulsar"
 
 # 
 #: util.cpp:394
@@ -1830,7 +1830,7 @@ msgstr "Asistido"
 msgid "Steel sheets" c=18
 msgstr "Lamina de acero"
 
-# 
+# MSG_Z_CORRECTION c=13
 #: ultralcd.cpp:5192
 msgid "Z-correct:"
 msgstr "Corregir-Z:"

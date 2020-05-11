@@ -328,11 +328,11 @@
 
 # c=14
 "Filam. runouts"
-"Konc. filamentu"
+"Konc.filamentu"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filament wychodzi z dyszy, kolor jest ok?"
+"Filament wychodzi z dyszy,kolor jest ok?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -448,7 +448,7 @@
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
 "Checking sensors "
-"Sprawdzanie czujnikow"
+"Kontrola czujnikow"
 
 #MSG_SELFTEST_CHECK_X c=20
 "Checking X axis  "
@@ -836,7 +836,7 @@
 
 # c=20
 "Preheating to load"
-"Nagrzew. do ladowania"
+"Nagrzew.do ladowania"
 
 # c=20
 "Preheating to unload"
@@ -1098,7 +1098,7 @@
 "Select filament:"
 "Wybierz filament:"
 
-#MSG_TEMP_CALIBRATION c=12 r=1
+#MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
 "Kalibracja temp."
 
@@ -1408,11 +1408,11 @@
 
 # c=20
 "Preheating to cut"
-"Nagrzewanie do obciecia"
+"Nagrzew. obciecia"
 
 # c=20
 "Preheating to eject"
-"Nagrzewanie do wysuniecia"
+"Nagrzew. wysuniecia"
 
 #
 "Printer nozzle diameter differs from the G-code. Continue?"
