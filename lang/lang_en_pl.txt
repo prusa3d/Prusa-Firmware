@@ -126,7 +126,7 @@
 "Bed"
 "Stol"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 "Stan paskow"
 
@@ -290,7 +290,7 @@
 "Extruder fan:"
 "WentHotend:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 "Ekstruder - info"
 
@@ -706,7 +706,7 @@
 "Nozzle"
 "Dysza"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 "Znaleziono stare ustawienia. Zostana przywrocone domyslne ust. PID, Esteps, itp."
 
@@ -738,7 +738,7 @@
 "PINDA Heating"
 "Grzanie sondy PINDA"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 "Umiesc kartke papieru na stole roboczym i podczas pomiaru pierwszych 4 punktow. Jesli dysza zahaczy o papier, natychmiast wylacz drukarke."
 
@@ -918,7 +918,7 @@
 "Resume print"
 "Wznowic wydruk"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 "Wznawianie druku"
 
@@ -1226,7 +1226,7 @@
 "Wizard"
 "Asystent"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 "Szczegoly kal. XYZ"
 

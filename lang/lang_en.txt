@@ -94,7 +94,7 @@
 #MSG_BED
 "Bed"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 
 #MSG_RECOVER_PRINT c=20 r=2
@@ -142,7 +142,7 @@
 #
 "Copy selected language?"
 
-#MSG_CRASHDETECT c=10
+#MSG_CRASHDETECT c=13
 "Crash det."
 
 #
@@ -217,7 +217,7 @@
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 
 #MSG_MOVE_E
@@ -529,7 +529,7 @@
 #MSG_NOZZLE
 "Nozzle"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 
 #
@@ -553,7 +553,7 @@
 #MSG_PINDA_PREHEAT c=20 r=1
 "PINDA Heating"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #MSG_WIZARD_CLEAN_HEATBED c=20 r=8
@@ -688,7 +688,7 @@
 #MSG_RESUME_PRINT
 "Resume print"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
@@ -919,7 +919,7 @@
 #MSG_WIZARD c=17 r=1
 "Wizard"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8

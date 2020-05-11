@@ -126,7 +126,7 @@
 "Bed"
 "Lit"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 "Statut courroie"
 
@@ -190,7 +190,7 @@
 "Copy selected language?"
 "Copier la langue choisie?"
 
-#MSG_CRASHDETECT c=10
+#MSG_CRASHDETECT c=13
 "Crash det."
 "Detect.crash"
 
@@ -290,7 +290,7 @@
 "Extruder fan:"
 "Ventilo extrudeur:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 "Infos extrudeur"
 
@@ -706,7 +706,7 @@
 "Nozzle"
 "Buse"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 "Anciens reglages trouves. Le PID, les Esteps etc. par defaut seront regles"
 
@@ -738,7 +738,7 @@
 "PINDA Heating"
 "Chauffe de la PINDA"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 "Placez une feuille de papier sous la buse pendant la calibration des 4 premiers points. Si la buse accroche le papier, eteignez vite l'imprimante."
 
@@ -918,7 +918,7 @@
 "Resume print"
 "Reprendre impression"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 "Reprise de l'impr."
 
@@ -1226,7 +1226,7 @@
 "Wizard"
 "Assistant"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 "Details calib. XYZ"
 

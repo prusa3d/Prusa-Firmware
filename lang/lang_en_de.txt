@@ -126,7 +126,7 @@
 "Bed"
 "Bett"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 "Gurtstatus"
 
@@ -190,7 +190,7 @@
 "Copy selected language?"
 "Gewaehlte Sprache kopieren?"
 
-#MSG_CRASHDETECT c=10
+#MSG_CRASHDETECT c=13
 "Crash det."
 "Crash Erk."
 
@@ -290,7 +290,7 @@
 "Extruder fan:"
 "Extruder Luefter:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 "Extruder Info"
 
@@ -706,7 +706,7 @@
 "Nozzle"
 "Duese"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 "Alte Einstellungen gefunden. Standard PID, E-Steps u.s.w. werden gesetzt."
 
@@ -738,7 +738,7 @@
 "PINDA Heating"
 "PINDA erwaermen"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 "Legen Sie ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier erfasst, den Drucker sofort ausschalten."
 
@@ -918,7 +918,7 @@
 "Resume print"
 "Druck fortsetzen"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 "Druck fortgesetzt"
 
@@ -1226,7 +1226,7 @@
 "Wizard"
 "Assistent"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 "XYZ Kal. Details"
 

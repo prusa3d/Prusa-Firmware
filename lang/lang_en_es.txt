@@ -72,7 +72,7 @@
 
 #MSG_AUTOLOAD_FILAMENT c=17
 "AutoLoad filament"
-"Carga automatica de filamento"
+"Carga auto. filam."
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
@@ -126,9 +126,9 @@
 "Bed"
 "Base"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
-"Estado de la correa"
+"Estado de correa"
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
@@ -190,7 +190,7 @@
 "Copy selected language?"
 "Copiar idioma seleccionado?"
 
-#MSG_CRASHDETECT c=10
+#MSG_CRASHDETECT c=13
 "Crash det."
 "Det. choque"
 
@@ -240,7 +240,7 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Expulsar filamento"
+"Expulsar fil."
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -290,9 +290,9 @@
 "Extruder fan:"
 "Vent.extrusor:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
-"Informacion del extrusor"
+"Info. del extrusor"
 
 #MSG_MOVE_E
 "Extruder"
@@ -312,7 +312,7 @@
 
 #MSG_FAN_SPEED c=14
 "Fan speed"
-"Velocidad Vent."
+"Velocidad Vent"
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
@@ -408,7 +408,7 @@
 
 #MSG_HEATING_COMPLETE c=20
 "Heating done."
-"Calentamiento acabado."
+"Calentando acabado."
 
 #MSG_HEATING
 "Heating"
@@ -448,7 +448,7 @@
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
 "Checking sensors "
-"Comprobando los sensores"
+"Comprobando sensores"
 
 #MSG_SELFTEST_CHECK_X c=20
 "Checking X axis  "
@@ -496,7 +496,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"?Esta colocada la lamina de acero sobre la base?"
+"?Esta colocada la lamina sobre la base"
 
 #
 "Last print failures"
@@ -706,7 +706,7 @@
 "Nozzle"
 "Boquilla"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 "Se han encontrado ajustes anteriores. Se ajustara el PID, los pasos del extrusor, etc"
 
@@ -738,7 +738,7 @@
 "PINDA Heating"
 "Calentando PINDA"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 "Colocar una hoja de papel sobre la superficie de impresion durante la calibracion de los primeros 4 puntos. Si la boquilla mueve el papel, apagar impresora inmediatamente."
 
@@ -800,7 +800,7 @@
 
 #MSG_PREHEAT_NOZZLE c=20
 "Preheat the nozzle!"
-"Precalienta extrusor!"
+"Precalienta extrusor"
 
 #MSG_PREHEAT
 "Preheat"
@@ -836,11 +836,11 @@
 
 # c=20
 "Preheating to load"
-"Precalentar para cargar"
+"Precalent. cargar"
 
 # c=20
 "Preheating to unload"
-"Precalentar para descargar"
+"Precalent. descargar"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
@@ -918,9 +918,9 @@
 "Resume print"
 "Reanudar impres."
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
-"Continuando impresion"
+"Continuan. impresion"
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
@@ -1226,9 +1226,9 @@
 "Wizard"
 "\x00"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
-"Detalles de calibracion XYZ"
+"Detalles cal. XYZ"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 "XYZ calibration failed. Please consult the manual."
@@ -1408,11 +1408,11 @@
 
 # c=20
 "Preheating to cut"
-"Precalentando para laminar"
+"Precalent. laminar"
 
 # c=20
 "Preheating to eject"
-"Precalentar para expulsar"
+"Precalent. expulsar"
 
 #
 "Printer nozzle diameter differs from the G-code. Continue?"

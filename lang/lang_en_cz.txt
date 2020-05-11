@@ -126,7 +126,7 @@
 "Bed"
 "Podlozka"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 "Stav remenu"
 
@@ -190,7 +190,7 @@
 "Copy selected language?"
 "Kopirovat vybrany jazyk?"
 
-#MSG_CRASHDETECT c=10
+#MSG_CRASHDETECT c=13
 "Crash det."
 "\x00"
 
@@ -290,7 +290,7 @@
 "Extruder fan:"
 "Levy vent.:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 "\x00"
 
@@ -706,7 +706,7 @@
 "Nozzle"
 "Tryska"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 "Neplatne hodnoty nastaveni. Bude pouzito vychozi PID, Esteps atd."
 
@@ -738,7 +738,7 @@
 "PINDA Heating"
 "Nahrivani PINDA"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 "Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, okamzite vypnete tiskarnu."
 
@@ -918,7 +918,7 @@
 "Resume print"
 "Pokracovat"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 "Obnoveni tisku"
 
@@ -1226,7 +1226,7 @@
 "Wizard"
 "Pruvodce"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 "Detaily XYZ kal."
 

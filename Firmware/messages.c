@@ -21,7 +21,7 @@ const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////
 const char MSG_CONFIRM_NOZZLE_CLEAN[] PROGMEM_I1 = ISTR("Please clean the nozzle for calibration. Click when done."); ////c=20 r=8
 const char MSG_COOLDOWN[] PROGMEM_I1 = ISTR("Cooldown"); ////
 const char MSG_CRASH_DETECTED[] PROGMEM_I1 = ISTR("Crash detected."); ////c=20 r=1
-const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////c=10
+const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////c=13
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17 r=1
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17 r=1
@@ -57,7 +57,7 @@ const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); 
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////
 const char MSG_NO[] PROGMEM_I1 = ISTR("No"); ////
 const char MSG_NOZZLE[] PROGMEM_I1 = ISTR("Nozzle"); ////
-const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=8
+const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=10
 const char MSG_PLACE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please place steel sheet on heatbed."); ////c=20 r=4
 const char MSG_PLEASE_WAIT[] PROGMEM_I1 = ISTR("Please wait"); ////c=20
 const char MSG_PREHEAT_NOZZLE[] PROGMEM_I1 = ISTR("Preheat the nozzle!"); ////c=20

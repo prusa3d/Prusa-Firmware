@@ -126,7 +126,7 @@
 "Bed"
 "Letto"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 "Stato cinghie"
 
@@ -190,7 +190,7 @@
 "Copy selected language?"
 "Copiare la lingua selezionata?"
 
-#MSG_CRASHDETECT c=10
+#MSG_CRASHDETECT c=13
 "Crash det."
 "Rileva.crash"
 
@@ -290,7 +290,7 @@
 "Extruder fan:"
 "Ventola estr:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 "Info estrusore"
 
@@ -706,7 +706,7 @@
 "Nozzle"
 "Ugello"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 "Sono state trovate impostazioni vecchie. Verranno impostati i valori predefiniti di PID, Esteps etc."
 
@@ -738,7 +738,7 @@
 "PINDA Heating"
 "Riscaldamento PINDA"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 "Posizionare un foglio sotto l'ugello durante la calibrazione dei primi 4 punti. In caso l'ugello muova il foglio spegnere subito la stampante."
 
@@ -1226,7 +1226,7 @@
 "Wizard"
 ""
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 "XYZ Cal. dettagli"
 
