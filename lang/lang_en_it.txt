@@ -70,7 +70,7 @@
 "Auto home"
 "Trova origine"
 
-#MSG_AUTOLOAD_FILAMENT c=17
+#MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
 "Autocaric. filam."
 

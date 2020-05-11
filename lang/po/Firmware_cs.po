@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: cs\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Mon May 11 16:07:56 CEST 2020\n"
-"PO-Revision-Date: Mon May 11 16:07:56 CEST 2020\n"
+"POT-Creation-Date: Mon May 11 16:51:39 CEST 2020\n"
+"PO-Revision-Date: Mon May 11 16:51:39 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -105,7 +105,7 @@ msgstr ""
 msgid "Auto home"
 msgstr ""
 
-# MSG_AUTOLOAD_FILAMENT c=17
+# MSG_AUTOLOAD_FILAMENT c=18
 #: ultralcd.cpp:6961
 msgid "AutoLoad filament"
 msgstr "AutoZavedeni fil."
@@ -463,7 +463,7 @@ msgstr "FS reakce"
 #  c=18
 #: Marlin_main.cpp:9512
 msgid "FS v0.4 or newer"
-msgstr "FS v0.4 nebo novejsi"
+msgstr "FS v0.4 a novejsi"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
 #: ultralcd.cpp:8816
@@ -1778,7 +1778,7 @@ msgstr ""
 #  c=20
 #: ultralcd.cpp:2452
 msgid "Preheating to cut"
-msgstr "Predehrev k ustrizeni"
+msgstr "Predehrev ke strihu"
 
 #  c=20
 #: ultralcd.cpp:2449

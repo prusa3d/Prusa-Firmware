@@ -70,7 +70,7 @@
 "Auto home"
 "Auto zerowanie"
 
-#MSG_AUTOLOAD_FILAMENT c=17
+#MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
 "Autoladowanie fil."
 
@@ -1100,7 +1100,7 @@
 
 #MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
-"Kalibracja temp."
+"Kalib. temp."
 
 #
 "Select temperature which matches your material."

@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Mon May 11 16:10:11 CEST 2020\n"
-"PO-Revision-Date: Mon May 11 16:10:11 CEST 2020\n"
+"POT-Creation-Date: Mon May 11 16:53:36 CEST 2020\n"
+"PO-Revision-Date: Mon May 11 16:53:36 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -105,7 +105,7 @@ msgstr ""
 msgid "Auto home"
 msgstr "Auto zerowanie"
 
-# MSG_AUTOLOAD_FILAMENT c=17
+# MSG_AUTOLOAD_FILAMENT c=18
 #: ultralcd.cpp:6961
 msgid "AutoLoad filament"
 msgstr "Autoladowanie fil."
@@ -303,7 +303,7 @@ msgstr "Odleglosc dyszy od powierzchni druku nie jest skalibrowana. Postepuj zgo
 # MSG_FS_CONTINUE c=5
 #: messages.c:132
 msgid "Cont."
-msgstr ""
+msgstr "Kont."
 
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5125
@@ -348,17 +348,17 @@ msgstr "Blad - pamiec statyczna zostala nadpisana"
 # MSG_CUT_FILAMENT c=16
 #: messages.c:50
 msgid "Cut filament"
-msgstr ""
+msgstr "Ciecie filamentu"
 
 # MSG_CUTTER c=9
 #: messages.c:109
 msgid "Cutter"
-msgstr ""
+msgstr "Nozyk"
 
 #  c=18
 #: mmu.cpp:1388
 msgid "Cutting filament"
-msgstr ""
+msgstr "Obcinanie fil."
 
 # MSG_FSENS_NOT_RESPONDING c=20 r=4
 #: ultralcd.cpp:4458
@@ -368,7 +368,7 @@ msgstr "BLAD: Czujnik filamentu nie odpowiada, sprawdz polaczenie."
 # MSG_DIM c=6
 #: messages.c:139
 msgid "Dim"
-msgstr ""
+msgstr "Sciemn"
 
 # MSG_ERROR
 #: messages.c:25
@@ -458,12 +458,12 @@ msgstr "Czas druku"
 # MSG_FS_ACTION c=10
 #: messages.c:131
 msgid "FS Action"
-msgstr ""
+msgstr "Akcja FS"
 
 #  c=18
 #: Marlin_main.cpp:9512
 msgid "FS v0.4 or newer"
-msgstr ""
+msgstr "FS v0.4 lub nowszy"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
 #: ultralcd.cpp:8816
@@ -683,7 +683,7 @@ msgstr "Ustaw. Live Z"
 #  c=20 r=6
 #: ultralcd.cpp:7527
 msgid "Insert the filament (do not load it) into the extruder and then press the knob."
-msgstr ""
+msgstr "Wsun filament (nie uzywaj funkcji ladowania) do ekstrudera i nacisnij pokretlo."
 
 # MSG_LOAD_FILAMENT c=17
 #: messages.c:47
@@ -723,12 +723,12 @@ msgstr "Menu glowne"
 # MSG_BL_HIGH c=12
 #: messages.c:135
 msgid "Level Bright"
-msgstr ""
+msgstr "Poziom jasn."
 
 # MSG_BL_LOW c=12
 #: messages.c:136
 msgid "Level Dimmed"
-msgstr ""
+msgstr "Poziom ciem."
 
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 #: messages.c:55
@@ -783,7 +783,7 @@ msgstr "Tryb"
 #  c=20 r=3
 #: Marlin_main.cpp:879
 msgid "MK3 firmware detected on MK3S printer"
-msgstr ""
+msgstr "Wykryto firmware MK3 w drukarce MK3S"
 
 # MSG_NORMAL
 #: messages.c:88
@@ -1048,7 +1048,7 @@ msgstr "Wcisnij pokretlo aby rozgrzac dysze i kontynuowac."
 # MSG_FS_PAUSE c=5
 #: fsensor.cpp:710
 msgid "Pause"
-msgstr ""
+msgstr "Pauza"
 
 # 
 #: ultralcd.cpp:1783
@@ -1133,7 +1133,7 @@ msgstr "Tyl [um]"
 #  c=20 r=4
 #: ultralcd.cpp:7549
 msgid "Please unload the filament first, then repeat this action."
-msgstr ""
+msgstr "Najpierw rozladuj filament, nastepnie powtorz czynnosc."
 
 # MSG_RECOVERING_PRINT c=20
 #: Marlin_main.cpp:10883
@@ -1393,7 +1393,7 @@ msgstr "Wybierz filament:"
 # MSG_TEMP_CALIBRATION c=14
 #: messages.c:93
 msgid "Temp. cal."
-msgstr "Kalibracja temp."
+msgstr "Kalib. temp."
 
 # 
 #: ultralcd.cpp:4955
@@ -1418,7 +1418,7 @@ msgstr "Kalibracja temperaturowa zakonczona i wlaczona. Moze byc wylaczona z men
 #  c=20 r=3
 #: ultralcd.cpp:7554
 msgid "Sensor verified, remove the filament now."
-msgstr ""
+msgstr "Czujnik sprawdzony, wyciagnij filament."
 
 # MSG_TEMPERATURE
 #: ultralcd.cpp:5739
@@ -1583,7 +1583,7 @@ msgstr "Kalibracja XYZ prawidlowa. Osie X/Y lekko skosne. Dobra robota!"
 # MSG_TIMEOUT c=12
 #: messages.c:137
 msgid "Timeout"
-msgstr ""
+msgstr "Wyl. czas."
 
 # MSG_X_CORRECTION c=13
 #: ultralcd.cpp:5190
@@ -1638,7 +1638,7 @@ msgstr "Drukarka zacznie drukowanie linii w ksztalcie zygzaka. Ustaw optymalna w
 #  c=20 r=5
 #: ultralcd.cpp:7558
 msgid "Verification failed, remove the filament and try again."
-msgstr ""
+msgstr "Niepowodzenie sprawdzenia, wyciagnij filament i sprobuj ponownie."
 
 # MSG_Y_CORRECTION c=13
 #: ultralcd.cpp:5191
@@ -1743,7 +1743,7 @@ msgstr "Sr. dyszy"
 # 
 #: util.cpp:514
 msgid "G-code sliced for a different level. Continue?"
-msgstr ""
+msgstr "G-code pociety dla innej wersji. Kontynuowac?"
 
 # 
 #: util.cpp:520
@@ -1798,7 +1798,7 @@ msgstr "Srednica dyszy rozni sie od tej w G-code. Sprawdz ustawienia. Druk anulo
 #  c=20
 #: ultralcd.cpp:8357
 msgid "%s level expected"
-msgstr ""
+msgstr "Oczekiwano wersji %s"
 
 # 
 #: ultralcd.cpp:6814

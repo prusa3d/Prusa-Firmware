@@ -6958,7 +6958,7 @@ static void lcd_main_menu()
 #endif
 #ifdef FILAMENT_SENSOR
 		if ((fsensor_autoload_enabled == true) && (fsensor_enabled == true) && (mmu_enabled == false))
-			MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17
+			MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=18
 		else
 #endif //FILAMENT_SENSOR
           {
