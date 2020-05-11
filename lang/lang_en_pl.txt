@@ -54,7 +54,7 @@
 "Auto"
 "Auto"
 
-#MSG_PRESS c=20
+#MSG_PRESS c=20 r=2
 "and press the knob"
 "i nacisnij pokretlo"
 
@@ -110,7 +110,7 @@
 "Belt test        "
 "Test paskow"
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 "Kalibracja nieudana. Sensor nie aktywowal sie. Zanieczysz. dysza? Czekam na reset."
 
@@ -126,7 +126,7 @@
 "Bed"
 "Stol"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 "Stan paskow"
 
@@ -234,7 +234,7 @@
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 "Chcesz powtorzyc ostatni krok i ponownie ustawic odleglosc miedzy dysza a stolikiem?"
 
-#MSG_EXTRUDER_CORRECTION c=10
+#MSG_EXTRUDER_CORRECTION c=13
 "E-correct:"
 "Korekcja-E:"
 
@@ -246,7 +246,7 @@
 "Ejecting filament"
 "Wysuwanie filamentu"
 
-#MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
+#MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
 "Krancowka nie aktyw."
 
@@ -290,7 +290,7 @@
 "Extruder fan:"
 "WentHotend:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 "Ekstruder - info"
 
@@ -302,7 +302,7 @@
 "Fail stats MMU"
 "Bledy MMU"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 "Autolad. fil."
 
@@ -326,13 +326,13 @@
 "Fil. sensor"
 "Czuj. filam."
 
-#
+# c=14
 "Filam. runouts"
-"Konc. filamentu"
+"Konc.filamentu"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filament wychodzi z dyszy, kolor jest ok?"
+"Filament wychodzi z dyszy,kolor jest ok?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -342,7 +342,7 @@
 "Filament sensor"
 "Czujnik filamentu"
 
-#MSG_FILAMENT_USED c=19 r=1
+#MSG_FILAMENT_USED c=19
 "Filament used"
 "Uzyty filament"
 
@@ -358,15 +358,15 @@
 "FS v0.4 or newer"
 "FS v0.4 lub nowszy"
 
-#MSG_FILE_INCOMPLETE c=20 r=2
+#MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
 "Plik niekompletny. Kontynowac?"
 
-#MSG_FINISHING_MOVEMENTS c=20 r=1
+#MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
 "Konczenie druku"
 
-#MSG_V2_CALIBRATION c=17 r=1
+#MSG_V2_CALIBRATION c=18
 "First layer cal."
 "Kal. 1. warstwy"
 
@@ -448,7 +448,7 @@
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
 "Checking sensors "
-"Sprawdzanie czujnikow"
+"Kontrola czujnikow"
 
 #MSG_SELFTEST_CHECK_X c=20
 "Checking X axis  "
@@ -554,7 +554,7 @@
 "Load to nozzle"
 "Zaladuj do dyszy"
 
-#MSG_M117_V2_CALIBRATION c=25 r=1
+#MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
 "M117 Kal. 1. warstwy"
 
@@ -706,7 +706,7 @@
 "Nozzle"
 "Dysza"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 "Znaleziono stare ustawienia. Zostana przywrocone domyslne ust. PID, Esteps, itp."
 
@@ -738,7 +738,7 @@
 "PINDA Heating"
 "Grzanie sondy PINDA"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 "Umiesc kartke papieru na stole roboczym i podczas pomiaru pierwszych 4 punktow. Jesli dysza zahaczy o papier, natychmiast wylacz drukarke."
 
@@ -836,7 +836,7 @@
 
 # c=20
 "Preheating to load"
-"Nagrzew. do ladowania"
+"Nagrzew.do ladowania"
 
 # c=20
 "Preheating to unload"
@@ -894,11 +894,11 @@
 "Please unload the filament first, then repeat this action."
 "Najpierw rozladuj filament, nastepnie powtorz czynnosc."
 
-#MSG_RECOVERING_PRINT c=20 r=1
+#MSG_RECOVERING_PRINT c=20
 "Recovering print    "
-"Wznawianie wydruku"
+"Wznawianie wydruku  "
 
-#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+#MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
 "Wyciagnij poprzedni filament i nacisnij pokretlo aby zaladowac nowy."
 
@@ -918,7 +918,7 @@
 "Resume print"
 "Wznowic wydruk"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 "Wznawianie druku"
 
@@ -1002,7 +1002,7 @@
 "Settings"
 "Ustawienia"
 
-#MSG_SHOW_END_STOPS c=17 r=1
+#MSG_SHOW_END_STOPS c=18
 "Show end stops"
 "Pokaz krancowki"
 
@@ -1010,7 +1010,7 @@
 "Sensor state"
 "Stan czujnikow"
 
-#MSG_FILE_CNT c=20 r=4
+#MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Niektore pliki nie zostana posortowane. Max. liczba plikow w 1 folderze = 100."
 
@@ -1098,7 +1098,7 @@
 "Select filament:"
 "Wybierz filament:"
 
-#MSG_TEMP_CALIBRATION c=12 r=1
+#MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
 "Kalibracja temp."
 
@@ -1130,7 +1130,7 @@
 "Temperatures"
 "Temperatury"
 
-#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "Musimy przeprowadzic kalibracje Z. Kieruj sie Samouczkiem: rozdzial Pierwsze Kroki, sekcja Kalibracja."
 
@@ -1226,7 +1226,7 @@
 "Wizard"
 "Asystent"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 "Szczegoly kal. XYZ"
 
@@ -1254,7 +1254,7 @@
 "Timeout"
 "Wyl. czas."
 
-#
+#MSG_X_CORRECTION c=13
 "X-correct:"
 "Korekcja-X:"
 
@@ -1294,11 +1294,11 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "Drukarka zacznie drukowanie linii w ksztalcie zygzaka. Ustaw optymalna wysokosc obracajac pokretlo. Porownaj z ilustracjami w Podreczniku (rozdzial Kalibracja)."
 
-# c=20 r=4
+# c=20 r=5
 "Verification failed, remove the filament and try again."
 "Niepowodzenie sprawdzenia, wyciagnij filament i sprobuj ponownie."
 
-#
+#MSG_Y_CORRECTION c=13
 "Y-correct:"
 "Korekcja-Y:"
 
@@ -1408,11 +1408,11 @@
 
 # c=20
 "Preheating to cut"
-"Nagrzewanie do obciecia"
+"Nagrzew. obciecia"
 
 # c=20
 "Preheating to eject"
-"Nagrzewanie do wysuniecia"
+"Nagrzew. wysuniecia"
 
 #
 "Printer nozzle diameter differs from the G-code. Continue?"
@@ -1447,10 +1447,10 @@
 "Asyst."
 
 #
-"Steel sheets"
+"Steel sheets" c=18
 "Plyty stalowe"
 
-#
+#MSG_Z_CORRECTION c=13
 "Z-correct:"
 "Korekcja-Z:"
 

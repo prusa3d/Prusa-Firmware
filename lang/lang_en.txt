@@ -40,7 +40,7 @@
 #MSG_AUTO c=6
 "Auto"
 
-#MSG_PRESS c=20
+#MSG_PRESS c=20 r=2
 "and press the knob"
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
@@ -82,7 +82,7 @@
 #MSG_BELTTEST c=17
 "Belt test        "
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 
 #MSG_BRIGHT c=6
@@ -94,7 +94,7 @@
 #MSG_BED
 "Bed"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 
 #MSG_RECOVER_PRINT c=20 r=2
@@ -142,7 +142,7 @@
 #
 "Copy selected language?"
 
-#MSG_CRASHDETECT c=10
+#MSG_CRASHDETECT c=13
 "Crash det."
 
 #
@@ -175,7 +175,7 @@
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 
-#MSG_EXTRUDER_CORRECTION c=10
+#MSG_EXTRUDER_CORRECTION c=13
 "E-correct:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
@@ -184,7 +184,7 @@
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 
-#MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
+#MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
 
 #MSG_SELFTEST_ENDSTOP
@@ -217,7 +217,7 @@
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 
 #MSG_MOVE_E
@@ -226,7 +226,7 @@
 #
 "Fail stats MMU"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 
 #
@@ -244,7 +244,7 @@
 #MSG_FSENSOR
 "Fil. sensor"
 
-#
+# c=14
 "Filam. runouts"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -256,7 +256,7 @@
 #MSG_FILAMENT_SENSOR c=20
 "Filament sensor"
 
-#MSG_FILAMENT_USED c=19 r=1
+#MSG_FILAMENT_USED c=19
 "Filament used"
 
 #MSG_PRINT_TIME c=19 r=1
@@ -268,13 +268,13 @@
 # c=18
 "FS v0.4 or newer"
 
-#MSG_FILE_INCOMPLETE c=20 r=2
+#MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
 
-#MSG_FINISHING_MOVEMENTS c=20 r=1
+#MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
 
-#MSG_V2_CALIBRATION c=17 r=1
+#MSG_V2_CALIBRATION c=18
 "First layer cal."
 
 #MSG_WIZARD_SELFTEST c=20 r=8
@@ -415,7 +415,7 @@
 #
 "Load to nozzle"
 
-#MSG_M117_V2_CALIBRATION c=25 r=1
+#MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
 
 #MSG_MAIN
@@ -529,7 +529,7 @@
 #MSG_NOZZLE
 "Nozzle"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 
 #
@@ -553,7 +553,7 @@
 #MSG_PINDA_PREHEAT c=20 r=1
 "PINDA Heating"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #MSG_WIZARD_CLEAN_HEATBED c=20 r=8
@@ -670,10 +670,10 @@
 # c=20 r=4
 "Please unload the filament first, then repeat this action."
 
-#MSG_RECOVERING_PRINT c=20 r=1
+#MSG_RECOVERING_PRINT c=20
 "Recovering print    "
 
-#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+#MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
 
 # c=20
@@ -688,7 +688,7 @@
 #MSG_RESUME_PRINT
 "Resume print"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
@@ -751,13 +751,13 @@
 #MSG_SETTINGS
 "Settings"
 
-#MSG_SHOW_END_STOPS c=17 r=1
+#MSG_SHOW_END_STOPS c=18
 "Show end stops"
 
 #
 "Sensor state"
 
-#MSG_FILE_CNT c=20 r=4
+#MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 
 #MSG_SORT
@@ -823,7 +823,7 @@
 #
 "Select filament:"
 
-#MSG_TEMP_CALIBRATION c=12 r=1
+#MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
 
 #
@@ -847,7 +847,7 @@
 #MSG_MENU_TEMPERATURES c=15 r=1
 "Temperatures"
 
-#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 
 #
@@ -919,7 +919,7 @@
 #MSG_WIZARD c=17 r=1
 "Wizard"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
@@ -940,7 +940,7 @@
 #MSG_TIMEOUT c=12
 "Timeout"
 
-#
+#MSG_X_CORRECTION c=13
 "X-correct:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
@@ -970,10 +970,10 @@
 #
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 
-# c=20 r=4
+# c=20 r=5
 "Verification failed, remove the filament and try again."
 
-#
+#MSG_Y_CORRECTION c=13
 "Y-correct:"
 
 #MSG_OFF
@@ -1085,9 +1085,9 @@
 "Assist"
 
 #
-"Steel sheets"
+"Steel sheets" c=18
 
-#
+#MSG_Z_CORRECTION c=13
 "Z-correct:"
 
 #MSG_Z_PROBE_NR

@@ -1,0 +1,2 @@
+Sheet %.7s\x0aZ offset: %+1.3f mm\x0a%cContinue\x0a%cStart from zero
+Steel sheets

@@ -1,0 +1,27 @@
+TEXT NF \ 
+ 0.3 or older
+ 0.4 or newer
+Are left and right Z~carriages all up?
+Auto power
+Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.
+Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.
+Cont.
+Current
+FS Action
+FS v0.4 or newer
+High power
+Insert the filament (do not load it) into the extruder and then press the knob.
+MK3S firmware detected on MK3 printer
+Pause
+Please unload the filament first, then repeat this action.
+Prusa i3 MK2.5 OK.
+Prusa i3 MK2.5S OK.
+Prusa i3 MK3S OK.
+Sensor verified, remove the filament now.
+Show end stops
+Steel sheets" c=18
+Unload
+Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube.
+Used during print
+Verification failed, remove the filament and try again.
+[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset

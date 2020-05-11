@@ -54,7 +54,7 @@
 "Auto"
 
 
-#MSG_PRESS c=20
+#MSG_PRESS c=20 r=2
 "and press the knob"
 "e cliccare manopola"
 
@@ -110,9 +110,9 @@
 "Belt test        "
 "Test cinghie     "
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
-"Livellamento letto fallito.NoRispSensore.Residui su ugello? In attesa di reset."
+"Livellamento letto fallito. NoRispSensore. Residui su ugello? In attesa di reset."
 
 #MSG_BRIGHT c=6
 "Bright"
@@ -126,13 +126,13 @@
 "Bed"
 "Letto"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 "Stato cinghie"
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"C'e stato un Blackout. Recuperare la stampa?"
+"C'e stato Blackout. Recuper. la stampa?"
 
 #
 "Calibrating home"
@@ -190,7 +190,7 @@
 "Copy selected language?"
 "Copiare la lingua selezionata?"
 
-#MSG_CRASHDETECT c=10
+#MSG_CRASHDETECT c=13
 "Crash det."
 "Rileva.crash"
 
@@ -234,21 +234,21 @@
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 "Desideri ripetere l'ultimo passaggio per migliorare la distanza fra ugello e piatto?"
 
-#MSG_EXTRUDER_CORRECTION c=10
+#MSG_EXTRUDER_CORRECTION c=13
 "E-correct:"
 "Correzione-E:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Espelli filamento "
+"Espelli filamento"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
-"Espellendo filamento "
+"Espellendo filamento"
 
-#MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
+#MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
-"Finecorsa fuori portata"
+"Finec. fuori portata"
 
 #MSG_SELFTEST_ENDSTOP
 "Endstop"
@@ -268,7 +268,7 @@
 
 #MSG_CUTTER c=9
 "Cutter"
-"Tagliatrice"
+"Tagliatr."
 
 # c=18
 "Cutting filament"
@@ -290,7 +290,7 @@
 "Extruder fan:"
 "Ventola estr:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 "Info estrusore"
 
@@ -302,7 +302,7 @@
 "Fail stats MMU"
 "Stat.fall. MMU"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 "Autocar.fil."
 
@@ -326,13 +326,13 @@
 "Fil. sensor"
 "Sensore fil."
 
-#
+# c=14
 "Filam. runouts"
-"Filam. esauriti"
+"Fil. esauriti"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filamento estruso & con il giusto colore?"
+"Filamento estruso & c. il giusto colore?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -342,9 +342,9 @@
 "Filament sensor"
 "Sensore filam."
 
-#MSG_FILAMENT_USED c=19 r=1
+#MSG_FILAMENT_USED c=19
 "Filament used"
-"Filamento utilizzato"
+"Fil. utilizzato"
 
 #MSG_PRINT_TIME c=19 r=1
 "Print time"
@@ -358,13 +358,13 @@
 "FS v0.4 or newer"
 ""
 
-#MSG_FILE_INCOMPLETE c=20 r=2
+#MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
 "File incompleto. Continuare comunque?"
 
-#MSG_FINISHING_MOVEMENTS c=20 r=1
+#MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
-"Finalizzando gli spostamenti"
+"Finaliz. spostamenti"
 
 #MSG_V2_CALIBRATION c=17 r=1
 "First layer cal."
@@ -432,7 +432,7 @@
 
 #MSG_CORRECTLY c=20
 "Changed correctly?"
-"Cambiato correttamente?"
+"Cambiato corretta.?"
 
 #MSG_SELFTEST_CHECK_BED c=20
 "Checking bed     "
@@ -496,7 +496,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"La piastra d'acciaio e' sul piano riscaldato?"
+"La piastra d'acciaio sul piano riscald.?"
 
 #
 "Last print failures"
@@ -554,9 +554,9 @@
 "Load to nozzle"
 "Carica ugello"
 
-#MSG_M117_V2_CALIBRATION c=25 r=1
+#MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
-"M117 Calibrazione primo layer."
+"M117 Calibra. primo layer"
 
 #MSG_MAIN
 "Main"
@@ -706,7 +706,7 @@
 "Nozzle"
 "Ugello"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 "Sono state trovate impostazioni vecchie. Verranno impostati i valori predefiniti di PID, Esteps etc."
 
@@ -738,7 +738,7 @@
 "PINDA Heating"
 "Riscaldamento PINDA"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 "Posizionare un foglio sotto l'ugello durante la calibrazione dei primi 4 punti. In caso l'ugello muova il foglio spegnere subito la stampante."
 
@@ -836,11 +836,11 @@
 
 # c=20
 "Preheating to load"
-"Preriscaldamento per caricare"
+"Preriscald. caricare"
 
 # c=20
 "Preheating to unload"
-"Preriscaldamento per scaricare"
+"Preriscald.scaricare"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
@@ -894,13 +894,13 @@
 "Please unload the filament first, then repeat this action."
 "Scaricare prima il filamento, poi ripetere l'operazione."
 
-#MSG_RECOVERING_PRINT c=20 r=1
+#MSG_RECOVERING_PRINT c=20
 "Recovering print    "
-"Recupero stampa"
+"Recupero stampa     "
 
-#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+#MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
-"Rimuovi il filamento precedente e premi la manopola per caricare il nuovo filamento. "
+"Rimuovi il filamento precedente e premi la manopola per caricare il nuovo filamento."
 
 # c=20
 "Prusa i3 MK3S OK."
@@ -984,7 +984,7 @@
 
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
-"Imposta temperatura:"
+"Imposta temperatura"
 
 # c=20
 "Prusa i3 MK2.5 OK."
@@ -1002,7 +1002,7 @@
 "Settings"
 "Impostazioni"
 
-#MSG_SHOW_END_STOPS c=17 r=1
+#MSG_SHOW_END_STOPS c=18
 "Show end stops"
 "Stato finecorsa"
 
@@ -1010,7 +1010,7 @@
 "Sensor state"
 "Stato sensore"
 
-#MSG_FILE_CNT c=20 r=4
+#MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Alcuni file non saranno ordinati. Il numero massimo di file in una cartella e 100 perche siano ordinati."
 
@@ -1098,7 +1098,7 @@
 "Select filament:"
 "Seleziona il filamento:"
 
-#MSG_TEMP_CALIBRATION c=12 r=1
+#MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
 "Calib. temp."
 
@@ -1130,7 +1130,7 @@
 "Temperatures"
 "Temperature"
 
-#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "E ancora necessario effettuare la calibrazione Z. Segui il manuale, capitolo Primi Passi, sezione Sequenza di Calibrazione. "
 
@@ -1226,7 +1226,7 @@
 "Wizard"
 ""
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 "XYZ Cal. dettagli"
 
@@ -1254,7 +1254,7 @@
 "Timeout"
 ""
 
-#
+#MSG_X_CORRECTION c=13
 "X-correct:"
 "Correzione-X:"
 
@@ -1294,11 +1294,11 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "La stampante iniziera a stampare una linea a zig-zag. Gira la manopola fino a che non hai raggiungo l'altezza ottimale. Verifica con le immagini nel manuale (capitolo sulla calibrazione):"
 
-# c=20 r=4
+# c=20 r=5
 "Verification failed, remove the filament and try again."
 "Verifica fallita, rimuovere il filamento e riprovare."
 
-#
+#MSG_Y_CORRECTION c=13
 "Y-correct:"
 "Correzione-Y:"
 
@@ -1408,11 +1408,11 @@
 
 # c=20
 "Preheating to cut"
-"Preriscaldamento per taglio"
+"Preriscalda. taglio"
 
 # c=20
 "Preheating to eject"
-"Preriscaldamento per espulsione"
+"Preriscalda. espuls."
 
 #
 "Printer nozzle diameter differs from the G-code. Continue?"
@@ -1447,10 +1447,10 @@
 "Assist."
 
 #
-"Steel sheets"
+"Steel sheets" c=18
 "Piani d'acciaio"
 
-#
+#MSG_Z_CORRECTION c=13
 "Z-correct:"
 "Correzione-Z:"
 

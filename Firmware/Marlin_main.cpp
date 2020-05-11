@@ -1515,7 +1515,7 @@ void setup()
   }
 
   if (!previous_settings_retrieved) {
-	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 	  Config_StoreSettings();
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
@@ -2066,15 +2066,16 @@ static float probe_pt(float x, float y, float z_before) {
 inline void gcode_M900() {
     float newK = code_seen('K') ? code_value_float() : -2;
 #ifdef LA_NOCOMPAT
-    if (newK >= 0 && newK < 10)
+    if (newK >= 0 && newK < LA_K_MAX)
         extruder_advance_K = newK;
     else
         SERIAL_ECHOLNPGM("K out of allowed range!");
 #else
     if (newK == 0)
+    {
         extruder_advance_K = 0;
-    else if (newK == -1)
         la10c_reset();
+    }
     else
     {
         newK = la10c_value(newK);
@@ -4864,11 +4865,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-#ifndef LA_NOCOMPAT
-        // When printing via USB there's no clear boundary between prints. Abuse MBL to indicate
-        // the beginning of a new print, allowing a new autodetected setting just after G80.
-        la10c_reset();
-#endif
 #ifndef PINDA_THERMISTOR
         static bool run = false; // thermistor-less PINDA temperature compensation is running
 #endif // ndef PINDA_THERMISTOR
@@ -9726,6 +9722,24 @@ void Stop()
 
 bool IsStopped() { return Stopped; };
 
+void finishAndDisableSteppers()
+{
+  st_synchronize();
+  disable_x();
+  disable_y();
+  disable_z();
+  disable_e0();
+  disable_e1();
+  disable_e2();
+
+#ifndef LA_NOCOMPAT
+  // Steppers are disabled both when a print is stopped and also via M84 (which is additionally
+  // checked-for to indicate a complete file), so abuse this function to reset the LA detection
+  // state for the next print.
+  la10c_reset();
+#endif
+}
+
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val)
 {
@@ -10866,7 +10880,7 @@ void recover_print(uint8_t automatic) {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
-  lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20 r=1
+  lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20
 
   // Recover position, temperatures and extrude_multipliers
   bool mbl_was_active = recover_machine_state_after_power_panic();

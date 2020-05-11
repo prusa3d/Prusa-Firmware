@@ -1,0 +1,18 @@
+TEXT NF \ 
+Are left and right Z~carriages all up?
+Auto power
+Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.
+Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.
+Current
+High power
+MK3 firmware detected on MK3S printer
+Prusa i3 MK2.5 OK.
+Prusa i3 MK2.5S OK.
+Prusa i3 MK3 OK.
+Runouts
+Show end stops
+Steel sheets" c=18
+Unload
+Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube.
+Used during print
+[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset
