@@ -52,7 +52,7 @@
 
 #MSG_AUTO c=6
 "Auto"
-"\x00"
+"Auto"
 
 #MSG_PRESS c=20 r=2
 "and press the knob"
@@ -64,7 +64,7 @@
 
 #MSG_AUTO_DEPLETE c=17 r=1
 "SpoolJoin"
-"\x00"
+"SpoolJoin"
 
 #MSG_AUTO_HOME
 "Auto home"
@@ -228,7 +228,7 @@
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-"\x00"
+"Kont."
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
@@ -264,15 +264,15 @@
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
-"\x00"
+"Ciecie filamentu"
 
 #MSG_CUTTER c=9
 "Cutter"
-"\x00"
+"Nozyk"
 
 # c=18
 "Cutting filament"
-"\x00"
+"Obcinanie fil."
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -280,7 +280,7 @@
 
 #MSG_DIM c=6
 "Dim"
-"\x00"
+"Sciemn"
 
 #MSG_ERROR
 "ERROR:"
@@ -352,11 +352,11 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-"\x00"
+"Akcja FS"
 
 # c=18
 "FS v0.4 or newer"
-"\x00"
+"FS v0.4 lub nowszy"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -532,7 +532,7 @@
 
 # c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
-"\x00"
+"Wsun filament (nie uzywaj funkcji ladowania) do ekstrudera i nacisnij pokretlo."
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
@@ -564,11 +564,11 @@
 
 #MSG_BL_HIGH c=12
 "Level Bright"
-"\x00"
+"Poziom jasn."
 
 #MSG_BL_LOW c=12
 "Level Dimmed"
-"\x00"
+"Poziom ciem."
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
@@ -612,7 +612,7 @@
 
 # c=20 r=3
 "MK3 firmware detected on MK3S printer"
-"\x00"
+"Wykryto firmware MK3 w drukarce MK3S"
 
 #MSG_NORMAL
 "Normal"
@@ -824,7 +824,7 @@
 
 #MSG_FS_PAUSE c=5
 "Pause"
-"\x00"
+"Pauza"
 
 #
 "Power failures"
@@ -892,7 +892,7 @@
 
 # c=20 r=4
 "Please unload the filament first, then repeat this action."
-"\x00"
+"Najpierw rozladuj filament, nastepnie powtorz czynnosc."
 
 #MSG_RECOVERING_PRINT c=20
 "Recovering print    "
@@ -912,7 +912,7 @@
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
-"\x00"
+"Reset"
 
 #MSG_RESUME_PRINT
 "Resume print"
@@ -1120,7 +1120,7 @@
 
 # c=20 r=3
 "Sensor verified, remove the filament now."
-"\x00"
+"Czujnik sprawdzony, wyciagnij filament."
 
 #MSG_TEMPERATURE
 "Temperature"
@@ -1252,7 +1252,7 @@
 
 #MSG_TIMEOUT c=12
 "Timeout"
-"\x00"
+"Wyl. czas."
 
 #MSG_X_CORRECTION c=13
 "X-correct:"
@@ -1296,7 +1296,7 @@
 
 # c=20 r=5
 "Verification failed, remove the filament and try again."
-"\x00"
+"Niepowodzenie sprawdzenia, wyciagnij filament i sprobuj ponownie."
 
 #MSG_Y_CORRECTION c=13
 "Y-correct:"
@@ -1380,7 +1380,7 @@
 
 #
 "G-code sliced for a different level. Continue?"
-"\x00"
+"G-code pociety dla innej wersji. Kontynuowac?"
 
 #
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
@@ -1424,7 +1424,7 @@
 
 # c=20
 "%s level expected"
-"\x00"
+"Oczekiwano wersji %s"
 
 #
 "Rename"
