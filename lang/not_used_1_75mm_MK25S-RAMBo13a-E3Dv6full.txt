@@ -39,6 +39,7 @@ Runouts
 Selftest will be run to calibrate accurate sensorless rehoming.
 Sensor verified, remove the filament now.
 Stealth
+Steel sheets" c=18
 Timeout
 Unload
 Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube.
