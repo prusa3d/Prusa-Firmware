@@ -52,7 +52,7 @@
 
 #MSG_AUTO c=6
 "Auto"
-"Auto"
+"\x00"
 
 #MSG_PRESS c=20 r=2
 "and press the knob"
@@ -64,7 +64,7 @@
 
 #MSG_AUTO_DEPLETE c=17 r=1
 "SpoolJoin"
-"SpoolJoin"
+"\x00"
 
 #MSG_AUTO_HOME
 "Auto home"
@@ -912,7 +912,7 @@
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
-"Reset"
+"\x00"
 
 #MSG_RESUME_PRINT
 "Resume print"
