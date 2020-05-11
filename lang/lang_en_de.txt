@@ -1446,8 +1446,8 @@
 "Assist"
 "\x00"
 
-#
-"Steel sheets" c=18
+# c=18
+"Steel sheets"
 "Stahlbleche"
 
 #MSG_Z_CORRECTION c=13

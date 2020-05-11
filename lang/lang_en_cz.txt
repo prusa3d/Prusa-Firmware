@@ -1446,8 +1446,8 @@
 "Assist"
 "Asist."
 
-#
-"Steel sheets" c=18
+# c=18
+"Steel sheets"
 "Tiskove platy"
 
 #MSG_Z_CORRECTION c=13

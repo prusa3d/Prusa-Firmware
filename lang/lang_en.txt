@@ -1084,8 +1084,8 @@
 #MSG_SOUND_BLIND
 "Assist"
 
-#
-"Steel sheets" c=18
+# c=18
+"Steel sheets"
 
 #MSG_Z_CORRECTION c=13
 "Z-correct:"

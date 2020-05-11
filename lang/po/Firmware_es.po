@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Mon May 11 15:49:20 CEST 2020\n"
-"PO-Revision-Date: Mon May 11 15:49:20 CEST 2020\n"
+"POT-Creation-Date: Mon May 11 16:08:51 CEST 2020\n"
+"PO-Revision-Date: Mon May 11 16:08:51 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -1825,9 +1825,9 @@ msgstr "Lamina"
 msgid "Assist"
 msgstr "Asistido"
 
-# 
-#: 
-msgid "Steel sheets" c=18
+#  c=18
+#: ultralcd.cpp:5722
+msgid "Steel sheets"
 msgstr "Lamina de acero"
 
 # MSG_Z_CORRECTION c=13

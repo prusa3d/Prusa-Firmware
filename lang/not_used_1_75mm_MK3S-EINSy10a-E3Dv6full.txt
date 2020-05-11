@@ -11,7 +11,6 @@ Prusa i3 MK2.5S OK.
 Prusa i3 MK3 OK.
 Runouts
 Show end stops
-Steel sheets" c=18
 Unload
 Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube.
 Used during print
