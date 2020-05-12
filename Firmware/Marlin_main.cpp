@@ -7447,6 +7447,20 @@ Sigma_Exit:
 	}
 	break;
 
+#ifdef FILAMENT_SENSOR
+    case 405: // M405 Enable Filament Sensor
+    {
+        fsensor_enable();
+    }
+    break;
+
+    case 406: // M406 Disable Filament Sensor
+    {
+        fsensor_disable();
+    }
+	break;
+#endif
+
     /*!
 	### M500 - Store settings in EEPROM <a href="https://reprap.org/wiki/G-code#M500:_Store_parameters_in_non-volatile_storage">M500: Store parameters in non-volatile storage</a>
 	Save current parameters to EEPROM.
