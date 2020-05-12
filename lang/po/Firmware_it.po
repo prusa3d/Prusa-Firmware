@@ -8,7 +8,7 @@ msgstr ""
 "Language: it\n"
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Mon May 11 15:50:08 CEST 2020\n"
-"PO-Revision-Date: Mon May 11 15:50:08 CEST 2020\n"
+"PO-Revision-Date: 2020-05-11 22:34+0200\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -138,7 +138,7 @@ msgstr "Assi"
 # MSG_SELFTEST_BEDHEATER
 #: ultralcd.cpp:8271
 msgid "Bed / Heater"
-msgstr "Letto/Riscald."
+msgstr "Piano/Riscald."
 
 # MSG_BED_DONE
 #: messages.c:15
@@ -148,12 +148,12 @@ msgstr "Piano fatto."
 # MSG_BED_HEATING
 #: messages.c:16
 msgid "Bed Heating"
-msgstr "Riscald. letto"
+msgstr "Riscald. piano"
 
 # MSG_BED_CORRECTION_MENU
 #: ultralcd.cpp:5861
 msgid "Bed level correct"
-msgstr "Correz. liv.letto"
+msgstr "Correz. liv.piano"
 
 # MSG_BELTTEST c=17
 #: ultralcd.cpp:5841
@@ -163,7 +163,7 @@ msgstr "Test cinghie     "
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
-msgstr "Livellamento letto fallito. NoRispSensore. Residui su ugello? In attesa di reset."
+msgstr "Livellamento piano fallito. Sensore KO? Residui su ugello? In attesa di reset."
 
 # MSG_BRIGHT c=6
 #: messages.c:138
@@ -178,7 +178,7 @@ msgstr "Luminosita'"
 # MSG_BED
 #: messages.c:14
 msgid "Bed"
-msgstr "Letto"
+msgstr "Piano"
 
 # MSG_MENU_BELT_STATUS c=18
 #: ultralcd.cpp:2009
@@ -188,7 +188,7 @@ msgstr "Stato cinghie"
 # MSG_RECOVER_PRINT c=20 r=2
 #: messages.c:67
 msgid "Blackout occurred. Recover print?"
-msgstr "C'e stato Blackout. Recuper. la stampa?"
+msgstr "Blackout rilevato. Recuperare la stampa?"
 
 # 
 #: ultralcd.cpp:8681
@@ -303,7 +303,7 @@ msgstr "Disabilita motori"
 # MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: messages.c:13
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-msgstr "Distanza tra la punta dell'ugello e la superficie del letto non ancora impostata. Si prega di seguire il manuale, capitolo Primi Passi, sezione Calibrazione primo layer."
+msgstr "Distanza tra la punta dell'ugello e la superficie del piano non ancora impostata. Si prega di seguire il manuale, capitolo Primi Passi, sezione Calibrazione primo strato."
 
 # MSG_FS_CONTINUE c=5
 #: messages.c:132
@@ -443,7 +443,7 @@ msgstr "Fil. esauriti"
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:29
 msgid "Filament extruding & with correct color?"
-msgstr "Filamento estruso & c. il giusto colore?"
+msgstr "Filamento estruso e con colore corretto?"
 
 # MSG_NOT_LOADED c=19
 #: ultralcd.cpp:2705
@@ -568,7 +568,7 @@ msgstr "Cambio riuscito!"
 # MSG_CORRECTLY c=20
 #: ultralcd.cpp:2697
 msgid "Changed correctly?"
-msgstr "Cambiato corretta.?"
+msgstr "Cambio corretto?"
 
 # MSG_SELFTEST_CHECK_BED c=20
 #: messages.c:77
@@ -648,7 +648,7 @@ msgstr "Il filamento e' stato caricato?"
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:90
 msgid "Is steel sheet on heatbed?"
-msgstr "La piastra d'acciaio sul piano riscald.?"
+msgstr "Piastra d'acciaio su piano riscaldato?"
 
 # 
 #: ultralcd.cpp:1727
@@ -723,7 +723,7 @@ msgstr "Carica ugello"
 # MSG_M117_V2_CALIBRATION c=25
 #: messages.c:51
 msgid "M117 First layer cal."
-msgstr "M117 Calibra. primo layer"
+msgstr "M117 Calibr. primo strato"
 
 # MSG_MAIN
 #: messages.c:52
@@ -748,7 +748,7 @@ msgstr "Misura altezza di rif. del punto di calib."
 # MSG_MESH_BED_LEVELING
 #: ultralcd.cpp:5856
 msgid "Mesh Bed Leveling"
-msgstr "Livel. piatto"
+msgstr "Liv. grilia piano"
 
 # MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 #: mmu.cpp:765
@@ -1078,12 +1078,12 @@ msgstr "Stampa interrotta"
 #  c=20
 #: ultralcd.cpp:2442
 msgid "Preheating to load"
-msgstr "Preriscald. caricare"
+msgstr "Preriscald. carico"
 
 #  c=20
 #: ultralcd.cpp:2446
 msgid "Preheating to unload"
-msgstr "Preriscald.scaricare"
+msgstr "Preriscald. scarico"
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8691
@@ -1638,7 +1638,7 @@ msgstr "Caricare tutti"
 # 
 #: ultralcd.cpp:3864
 msgid "XYZ calibration failed. Bed calibration point was not found."
-msgstr "Calibrazione XYZ fallita. Il punto di calibrazione sul letto non e' stato trovato."
+msgstr "Calibrazione XYZ fallita. Il punto di calibrazione sul piano non e' stato trovato."
 
 # 
 #: ultralcd.cpp:3870
@@ -1738,7 +1738,7 @@ msgstr "Griglia"
 # 
 #: ultralcd.cpp:5763
 msgid "Mesh bed leveling"
-msgstr "Mesh livel. letto"
+msgstr "Liv. griglia piano"
 
 # 
 #: Marlin_main.cpp:872
