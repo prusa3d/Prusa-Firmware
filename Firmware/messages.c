@@ -14,14 +14,14 @@ const char MSG_BABYSTEP_Z_NOT_SET[] PROGMEM_I1 = ISTR("Distance between tip of t
 const char MSG_BED[] PROGMEM_I1 = ISTR("Bed"); ////
 const char MSG_BED_DONE[] PROGMEM_I1 = ISTR("Bed done"); ////
 const char MSG_BED_HEATING[] PROGMEM_I1 = ISTR("Bed Heating"); ////
-const char MSG_BED_LEVELING_FAILED_POINT_LOW[] PROGMEM_I1 = ISTR("Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."); ////c=20 r=4
+const char MSG_BED_LEVELING_FAILED_POINT_LOW[] PROGMEM_I1 = ISTR("Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."); ////c=20 r=5
 const char MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED[] PROGMEM_I1 = ISTR("XYZ calibration failed. Please consult the manual."); ////c=20 r=8
 const char MSG_CALIBRATE_Z_AUTO[] PROGMEM_I1 = ISTR("Calibrating Z"); ////c=20 r=2
 const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////
 const char MSG_CONFIRM_NOZZLE_CLEAN[] PROGMEM_I1 = ISTR("Please clean the nozzle for calibration. Click when done."); ////c=20 r=8
 const char MSG_COOLDOWN[] PROGMEM_I1 = ISTR("Cooldown"); ////
 const char MSG_CRASH_DETECTED[] PROGMEM_I1 = ISTR("Crash detected."); ////c=20 r=1
-const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////
+const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////c=13
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17 r=1
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17 r=1
@@ -34,10 +34,10 @@ const char MSG_FILAMENT_LOADING_T3[] PROGMEM_I1 = ISTR("Insert filament into ext
 const char MSG_FILAMENTCHANGE[] PROGMEM_I1 = ISTR("Change filament"); ////
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[] PROGMEM_I1 = ISTR("Searching bed calibration point"); ////c=60
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2[] PROGMEM_I1 = ISTR(" of 4"); ////c=14
-const char MSG_FINISHING_MOVEMENTS[] PROGMEM_I1 = ISTR("Finishing movements"); ////c=20 r=1
+const char MSG_FINISHING_MOVEMENTS[] PROGMEM_I1 = ISTR("Finishing movements"); ////c=20
 const char MSG_FOLLOW_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
-const char MSG_FOLLOW_Z_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
-const char MSG_FSENSOR_AUTOLOAD[] PROGMEM_I1 = ISTR("F. autoload"); ////c=17 r=1
+const char MSG_FOLLOW_Z_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=9
+const char MSG_FSENSOR_AUTOLOAD[] PROGMEM_I1 = ISTR("F. autoload"); ////c=13
 const char MSG_FSENSOR[] PROGMEM_I1 = ISTR("Fil. sensor"); ////
 const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20
@@ -48,7 +48,7 @@ const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); //// Number 1
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////c=20
 const char MSG_EJECT_FILAMENT[] PROGMEM_I1 = ISTR("Eject filament"); //// Number 1 to 5 is added behind text e.g. "Eject filament 1" c=16
 const char MSG_CUT_FILAMENT[] PROGMEM_I1 = ISTR("Cut filament"); //// Number 1 to 5 is added behind text e.g. "Cut filament 1" c=16
-const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////c=25 r=1
+const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////c=25
 const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////
 const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////
 const char MSG_SHEET[] PROGMEM_I1 = ISTR("Sheet"); ////c=10
@@ -57,7 +57,7 @@ const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); 
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////
 const char MSG_NO[] PROGMEM_I1 = ISTR("No"); ////
 const char MSG_NOZZLE[] PROGMEM_I1 = ISTR("Nozzle"); ////
-const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=8
+const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=10
 const char MSG_PLACE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please place steel sheet on heatbed."); ////c=20 r=4
 const char MSG_PLEASE_WAIT[] PROGMEM_I1 = ISTR("Please wait"); ////c=20
 const char MSG_PREHEAT_NOZZLE[] PROGMEM_I1 = ISTR("Preheat the nozzle!"); ////c=20
@@ -90,7 +90,7 @@ const char MSG_STEALTH[] PROGMEM_I1 = ISTR("Stealth"); ////
 const char MSG_STEEL_SHEET_CHECK[] PROGMEM_I1 = ISTR("Is steel sheet on heatbed?"); ////c=20 r=2
 const char MSG_STOP_PRINT[] PROGMEM_I1 = ISTR("Stop print"); ////
 const char MSG_STOPPED[] PROGMEM_I1 = ISTR("STOPPED. "); ////
-const char MSG_TEMP_CALIBRATION[] PROGMEM_I1 = ISTR("Temp. cal."); ////c=12 r=1
+const char MSG_TEMP_CALIBRATION[] PROGMEM_I1 = ISTR("Temp. cal."); ////c=14
 const char MSG_TEMP_CALIBRATION_DONE[] PROGMEM_I1 = ISTR("Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."); ////c=20 r=12
 const char MSG_UNLOAD_FILAMENT[] PROGMEM_I1 = ISTR("Unload filament"); ////c=17
 const char MSG_UNLOADING_FILAMENT[] PROGMEM_I1 = ISTR("Unloading filament"); ////c=20 r=1
@@ -100,13 +100,13 @@ const char MSG_WIZARD_DONE[] PROGMEM_I1 = ISTR("All is done. Happy printing!"); 
 const char MSG_WIZARD_HEATING[] PROGMEM_I1 = ISTR("Preheating nozzle. Please wait."); ////c=20 r=3
 const char MSG_WIZARD_QUIT[] PROGMEM_I1 = ISTR("You can always resume the Wizard from Calibration -> Wizard."); ////c=20 r=8
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////
-const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=17 r=1
+const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=18
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
 const char MSG_OFF[] PROGMEM_I1 = ISTR("Off"); ////
 const char MSG_ON[] PROGMEM_I1 = ISTR("On"); ////
 const char MSG_NA[] PROGMEM_I1 = ISTR("N/A"); ////
 const char MSG_AUTO_DEPLETE[] PROGMEM_I1 = ISTR("SpoolJoin"); ////
-const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////
+const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////c=9
 const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////
 const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////
 const char MSG_STRICT[] PROGMEM_I1 = ISTR("Strict"); ////
@@ -128,20 +128,20 @@ const char MSG_SOUND_BLIND[] PROGMEM_I1 = ISTR("Assist"); ////
 const char MSG_MESH[] PROGMEM_I1 = ISTR("Mesh"); ////
 const char MSG_Z_PROBE_NR[] PROGMEM_I1 = ISTR("Z-probe nr."); ////
 const char MSG_MAGNETS_COMP[] PROGMEM_I1 = ISTR("Magnets comp."); ////
-const char MSG_FS_ACTION[] PROGMEM_I1 = ISTR("FS Action"); ////
-const char MSG_FS_CONTINUE[] PROGMEM_I1 = ISTR("Cont."); ////
-const char MSG_FS_PAUSE[] PROGMEM_I1 = ISTR("Pause"); ////
-const char MSG_BRIGHTNESS[] PROGMEM_I1 = ISTR("Brightness"); ////
-const char MSG_BL_HIGH[] PROGMEM_I1 = ISTR("Level Bright"); ////
-const char MSG_BL_LOW[] PROGMEM_I1 = ISTR("Level Dimmed"); ////
-const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////
-const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////
-const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////
-const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////
+const char MSG_FS_ACTION[] PROGMEM_I1 = ISTR("FS Action"); ////c=10
+const char MSG_FS_CONTINUE[] PROGMEM_I1 = ISTR("Cont."); ////c=5
+const char MSG_FS_PAUSE[] PROGMEM_I1 = ISTR("Pause"); ////c=5
+const char MSG_BRIGHTNESS[] PROGMEM_I1 = ISTR("Brightness"); ////c=18
+const char MSG_BL_HIGH[] PROGMEM_I1 = ISTR("Level Bright"); ////c=12
+const char MSG_BL_LOW[] PROGMEM_I1 = ISTR("Level Dimmed"); ////c=12
+const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////c=12
+const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////c=6
+const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////c=6
+const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////c=6
 #ifdef IR_SENSOR_ANALOG
 // Beware - the space at the beginning is necessary since it is reused in LCD menu items which are to be with a space
-const char MSG_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");
-const char MSG_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");
+const char MSG_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////c=18
+const char MSG_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////c=18
 #endif
 
 //not internationalized messages
