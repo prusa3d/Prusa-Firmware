@@ -5727,7 +5727,9 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 #ifdef IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;
-    MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
+	//! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
+	//! @todo Don't forget to remove this as soon Fsensot Deetction works with mmu
+	if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
     MENU_END();
 }
@@ -7544,14 +7546,19 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
 
 static void lcd_detect_IRsensor(){
     bool bAction;
-
+	bool loaded;
     bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
-    bAction = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false, false);
-    if(bAction){
+	//! Check if filament is loaded. If it is loaded stop detection.
+	//! @todo Add autodetection with MMU2s
+	loaded = (digitalRead(IR_SENSOR_PIN) == 0);
+    if(loaded ){
         lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
         return;
     }
-    bAction = lcd_selftest_IRsensor(true);
+	else {
+		lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connections and filament is unloaded."));
+		bAction = lcd_selftest_IRsensor(true);
+	}
 	if(bAction){
         lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));
 		// the fsensor board has been successfully identified, any previous "not responding" may be cleared now
@@ -7574,12 +7581,19 @@ bool lcd_selftest()
 	int _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
-//#ifdef IR_SENSOR_ANALOG
-#if (0)
-     bool bAction;
-     bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
-     if(!bAction)
-          return(false);
+#ifdef IR_SENSOR_ANALOG
+//#if (0)
+	//!   Check if IR sensor is in unknown state, if so run Fsensor Detection
+	//!   As the Fsensor Detection isn't yet ready for the mmu2s we set temporarily the IR sensor 0.3 or older for mmu2s
+	//! @todo Don't forget to remove this as soon Fsensot Detection works with mmu
+	if( oFsensorPCB == ClFsensorPCB::_Undef) {
+		if (!mmu_enabled) {
+			lcd_detect_IRsensor();
+		}
+		else {
+			eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,0);
+		}
+	}
 #endif //IR_SENSOR_ANALOG
 	lcd_wait_for_cool_down();
 	lcd_clear();
@@ -7658,6 +7672,7 @@ bool lcd_selftest()
 		_result = lcd_selfcheck_endstops(); //With TMC2130, only the Z probe is tested.
 	}
 
+#if (0)
 	if (_result)
 	{
 		//current_position[Z_AXIS] += 15;									//move Z axis higher to avoid false triggering of Z end stop in case that we are very low - just above heatbed
@@ -7765,6 +7780,7 @@ bool lcd_selftest()
 	{
 		_progress = lcd_selftest_screen(TestScreen::HotendOk, _progress, 3, true, 2000); //nozzle ok
 	}
+#endif if
 #ifdef FILAMENT_SENSOR
     if (_result)
     {
@@ -7787,8 +7803,8 @@ bool lcd_selftest()
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //PAT9125
-//#ifdef IR_SENSOR_ANALOG
-#if (0)
+#ifdef IR_SENSOR_ANALOG
+//#if (0)
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
                _result = lcd_selftest_IRsensor();
 			if (_result)

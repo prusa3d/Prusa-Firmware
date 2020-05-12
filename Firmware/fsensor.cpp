@@ -207,7 +207,7 @@ void fsensor_init(void)
 	}
 	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
 #ifdef IR_SENSOR_ANALOG
-     printf_P(PSTR(" (sensor board revision:%S)\n"), (oFsensorPCB==ClFsensorPCB::_Rev04) ? _T(MSG_IR_04_OR_NEWER) : _T(MSG_IR_03_OR_OLDER));
+     printf_P(PSTR(" (sensor board revision:%S)\n"), ((oFsensorPCB==ClFsensorPCB::_Undef) ? _T(MSG_IR_UNKNOWN): ((oFsensorPCB==ClFsensorPCB::_Rev04) ? _T(MSG_IR_04_OR_NEWER) : _T(MSG_IR_03_OR_OLDER))));
 #else //IR_SENSOR_ANALOG
      printf_P(PSTR("\n"));
 #endif //IR_SENSOR_ANALOG
@@ -749,6 +749,11 @@ bool fsensor_IR_check(){
 			printf_P(PSTR("fsensor v0.4 in fault range 4.6-5V - unconnected\n"));
 			return false;
 		}
+	}
+	//! If IR sensor is "uknown state" and filament is not loaded > 1.5V return false
+	if( (oFsensorPCB == ClFsensorPCB::_Undef) && ( current_voltage_raw_IR > IRsensor_Lmax_TRESHOLD ) ){
+			printf_P(PSTR("Unknown IR sensor version and no filament loaded detected.\n"));
+			return false;
 	}
 
 	// otherwise the IR fsensor is considered working correctly
