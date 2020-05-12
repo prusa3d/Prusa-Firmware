@@ -7572,12 +7572,10 @@ bool lcd_selftest()
 	int _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
-//#ifdef IR_SENSOR_ANALOG
-#if (0)
-     bool bAction;
-     bAction=lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is the filament unloaded?"),false,true);
-     if(!bAction)
-          return(false);
+#ifdef IR_SENSOR_ANALOG
+	//!   Check if IR sensor is in unknown state, set it temporarily to 0.3 or older
+	//! @todo This has to be improved
+	if( oFsensorPCB == ClFsensorPCB::_Undef) eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,0);
 #endif //IR_SENSOR_ANALOG
 	lcd_wait_for_cool_down();
 	lcd_clear();
