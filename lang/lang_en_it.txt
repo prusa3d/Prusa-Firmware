@@ -92,7 +92,7 @@
 
 #MSG_SELFTEST_BEDHEATER
 "Bed / Heater"
-"Letto/Riscald."
+"Piano/Riscald."
 
 #MSG_BED_DONE
 "Bed done"
@@ -100,11 +100,11 @@
 
 #MSG_BED_HEATING
 "Bed Heating"
-"Riscald. letto"
+"Riscald. piano"
 
 #MSG_BED_CORRECTION_MENU
 "Bed level correct"
-"Correz. liv.letto"
+"Correz. liv.piano"
 
 #MSG_BELTTEST c=17
 "Belt test        "
@@ -112,7 +112,7 @@
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
-"Livellamento letto fallito. NoRispSensore. Residui su ugello? In attesa di reset."
+"Livellamento piano fallito. Sensore KO? Residui su ugello? In attesa di reset."
 
 #MSG_BRIGHT c=6
 "Bright"
@@ -124,7 +124,7 @@
 
 #MSG_BED
 "Bed"
-"Letto"
+"Piano"
 
 #MSG_MENU_BELT_STATUS c=18
 "Belt status"
@@ -132,7 +132,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"C'e stato Blackout. Recuper. la stampa?"
+"Blackout rilevato. Recuperare la stampa?"
 
 #
 "Calibrating home"
@@ -224,7 +224,7 @@
 
 #MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-"Distanza tra la punta dell'ugello e la superficie del letto non ancora impostata. Si prega di seguire il manuale, capitolo Primi Passi, sezione Calibrazione primo layer."
+"Distanza tra la punta dell'ugello e la superficie del piano non ancora impostata. Si prega di seguire il manuale, capitolo Primi Passi, sezione Calibrazione primo strato."
 
 #MSG_FS_CONTINUE c=5
 "Cont."
@@ -332,7 +332,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filamento estruso & c. il giusto colore?"
+"Filamento estruso e con colore corretto?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -432,7 +432,7 @@
 
 #MSG_CORRECTLY c=20
 "Changed correctly?"
-"Cambiato corretta.?"
+"Cambio corretto?"
 
 #MSG_SELFTEST_CHECK_BED c=20
 "Checking bed     "
@@ -496,7 +496,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"La piastra d'acciaio sul piano riscald.?"
+"Piastra d'acciaio su piano riscaldato?"
 
 #
 "Last print failures"
@@ -556,7 +556,7 @@
 
 #MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
-"M117 Calibra. primo layer"
+"M117 Calibr. primo strato"
 
 #MSG_MAIN
 "Main"
@@ -576,7 +576,7 @@
 
 #MSG_MESH_BED_LEVELING
 "Mesh Bed Leveling"
-"Livel. piatto"
+"Liv. grilia piano"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -836,11 +836,11 @@
 
 # c=20
 "Preheating to load"
-"Preriscald. caricare"
+"Preriscald. carico"
 
 # c=20
 "Preheating to unload"
-"Preriscald.scaricare"
+"Preriscald. scarico"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
@@ -1276,7 +1276,7 @@
 
 #
 "XYZ calibration failed. Bed calibration point was not found."
-"Calibrazione XYZ fallita. Il punto di calibrazione sul letto non e' stato trovato."
+"Calibrazione XYZ fallita. Il punto di calibrazione sul piano non e' stato trovato."
 
 #
 "XYZ calibration failed. Front calibration points not reachable."
@@ -1356,7 +1356,7 @@
 
 #
 "Mesh bed leveling"
-"Mesh livel. letto"
+"Liv. griglia piano"
 
 #
 "MK3S firmware detected on MK3 printer"

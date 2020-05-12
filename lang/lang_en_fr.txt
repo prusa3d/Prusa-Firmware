@@ -572,7 +572,7 @@
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
-"Je mesure la hauteur de reference de la point de calibrage"
+"Je mesure la hauteur de reference du point de calibrage"
 
 #MSG_MESH_BED_LEVELING
 "Mesh Bed Leveling"
