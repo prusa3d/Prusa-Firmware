@@ -52,7 +52,7 @@
 
 #MSG_AUTO c=6
 "Auto"
-
+""
 
 #MSG_PRESS c=20 r=2
 "and press the knob"
@@ -228,7 +228,7 @@
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-
+""
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
@@ -680,7 +680,7 @@
 
 #MSG_NO
 "No"
-
+""
 
 #MSG_SELFTEST_NOTCONNECTED
 "Not connected"
@@ -912,7 +912,7 @@
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
-
+""
 
 #MSG_RESUME_PRINT
 "Resume print"
@@ -1124,7 +1124,7 @@
 
 #MSG_TEMPERATURE
 "Temperature"
-
+""
 
 #MSG_MENU_TEMPERATURES c=15 r=1
 "Temperatures"
