@@ -671,8 +671,16 @@ void planner_abort_hard()
     waiting_inside_plan_buffer_line_print_aborted = true;
 }
 
-void plan_buffer_line_curposXYZE(float feed_rate, uint8_t extruder) { 
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feed_rate, extruder );
+void plan_buffer_line_curposXYZE(float feed_rate) {
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feed_rate, active_extruder );
+}
+
+void plan_buffer_line_destinationXYZE(float feed_rate) {
+    plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feed_rate, active_extruder);
+}
+
+void plan_set_position_curposXYZE(){
+    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 }
 
 float junction_deviation = 0.1;

@@ -154,7 +154,11 @@ vector_3 plan_get_position();
 /// plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], ...
 /// saves almost 5KB.
 /// The performance penalty is negligible, since these planned lines are usually maintenance moves with the extruder.
-void plan_buffer_line_curposXYZE(float feed_rate, uint8_t extruder);
+void plan_buffer_line_curposXYZE(float feed_rate);
+
+void plan_buffer_line_destinationXYZE(float feed_rate);
+
+void plan_set_position_curposXYZE();
 
 void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target = NULL);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);

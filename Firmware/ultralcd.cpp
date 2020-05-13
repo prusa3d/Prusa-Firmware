@@ -2919,7 +2919,7 @@ static void _lcd_move(const char *name, int axis, int min, int max)
 			if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
 			lcd_encoder = 0;
 			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-			plan_buffer_line_curposXYZE(manual_feedrate[axis] / 60, active_extruder);
+            plan_buffer_line_curposXYZE(manual_feedrate[axis] / 60);
 			lcd_draw_update = 1;
 		}
 	}
@@ -2944,7 +2944,7 @@ static void lcd_move_e()
 			{
 				current_position[E_AXIS] += float((int)lcd_encoder) * move_menu_scale;
 				lcd_encoder = 0;
-				plan_buffer_line_curposXYZE(manual_feedrate[E_AXIS] / 60, active_extruder);
+                plan_buffer_line_curposXYZE(manual_feedrate[E_AXIS] / 60);
 				lcd_draw_update = 1;
 			}
 		}
@@ -3462,7 +3462,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
 {
     // Don't know where we are. Let's claim we are Z=0, so the soft end stops will not be triggered when moving up.
     current_position[Z_AXIS] = 0;
-    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+    plan_set_position_curposXYZE();
 
     // Until confirmed by the confirmation dialog.
     for (;;) {
@@ -3520,7 +3520,7 @@ calibrated:
 	else {
 		current_position[Z_AXIS] = Z_MAX_POS+4.f;
 	}
-    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+    plan_set_position_curposXYZE();
     return true;
 
 canceled:
@@ -4899,7 +4899,7 @@ void lcd_language()
 static void wait_preheat()
 {
     current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
     delay_keep_alive(2000);
     lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 	lcd_set_custom_characters();
@@ -6387,13 +6387,13 @@ void unload_filament()
 	//		extr_unload2();
 
 	current_position[E_AXIS] -= 45;
-	plan_buffer_line_curposXYZE(5200 / 60, active_extruder);
+    plan_buffer_line_curposXYZE(5200 / 60);
 	st_synchronize();
 	current_position[E_AXIS] -= 15;
-	plan_buffer_line_curposXYZE(1000 / 60, active_extruder);
+    plan_buffer_line_curposXYZE(1000 / 60);
 	st_synchronize();
 	current_position[E_AXIS] -= 20;
-	plan_buffer_line_curposXYZE(1000 / 60, active_extruder);
+    plan_buffer_line_curposXYZE(1000 / 60);
 	st_synchronize();
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
@@ -7353,13 +7353,13 @@ void lcd_print_stop()
     cancel_heatup = true; //unroll temperature wait loop stack.
 
     current_position[Z_AXIS] += 10; //lift Z.
-    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
 
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
     {
         current_position[X_AXIS] = X_CANCEL_POS;
         current_position[Y_AXIS] = Y_CANCEL_POS;
-        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
     }
     st_synchronize();
 
@@ -7713,7 +7713,7 @@ bool lcd_selftest()
 		current_position[Y_AXIS] += 4;
 #endif //TMC2130
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 		st_synchronize();
         set_destination_to_current();
 		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 1500);
@@ -7725,7 +7725,7 @@ bool lcd_selftest()
 
 		//raise Z to not damage the bed during and hotend testing
 		current_position[Z_AXIS] += 20;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 		st_synchronize();
 	}
 
@@ -7733,7 +7733,7 @@ bool lcd_selftest()
 	if (_result)
 	{
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 		st_synchronize();
 		_progress = lcd_selftest_screen(TestScreen::Home, 0, 2, true, 0);
 		bool bres = tmc2130_home_calibrate(X_AXIS);
@@ -7829,7 +7829,7 @@ bool lcd_selftest()
 
 static void reset_crash_det(unsigned char axis) {
 	current_position[axis] += 10;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	st_synchronize();
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET)) tmc2130_sg_stop_on_crash = true;
 }
@@ -7858,7 +7858,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 // first axis length measurement begin	
 	
 	current_position[axis] -= (axis_length + margin);
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 
 	
 	st_synchronize();
@@ -7868,11 +7868,11 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 	current_position_init = st_get_position_mm(axis);
 
 	current_position[axis] += 2 * margin;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	st_synchronize();
 
 	current_position[axis] += axis_length;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 
 	st_synchronize();
 
@@ -7888,11 +7888,11 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 
 	current_position[axis] -= margin;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	st_synchronize();	
 
 	current_position[axis] -= (axis_length + margin);
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 		
 	st_synchronize();
 
@@ -7917,7 +7917,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 			lcd_selftest_error(TestError::Axis, _error_1, "");
 			current_position[axis] = 0;
-			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+            plan_set_position_curposXYZE();
 			reset_crash_det(axis);
 			enable_endstops(true);
 			endstops_hit_on_purpose();
@@ -7937,13 +7937,13 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 			lcd_selftest_error(TestError::Pulley, _error_1, "");
 			current_position[axis] = 0;
-			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+            plan_set_position_curposXYZE();
 			reset_crash_det(axis);
 			endstops_hit_on_purpose();
 			return false;
 		}
 		current_position[axis] = 0;
-		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        plan_set_position_curposXYZE();
 		reset_crash_det(axis);
 		endstops_hit_on_purpose();
 		return true;
@@ -8051,7 +8051,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 	}    
 	current_position[_axis] = 0; //simulate axis home to avoid negative numbers for axis position, especially Z.
-	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+    plan_set_position_curposXYZE();
 
 	return _stepresult;
 }
@@ -8142,7 +8142,7 @@ static bool lcd_selfcheck_endstops()
 	#endif //!TMC2130
 		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) current_position[2] += 10;
 	}
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	st_synchronize();
 
 	if (
