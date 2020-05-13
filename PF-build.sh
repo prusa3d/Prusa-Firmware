@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_17
+# Version: 1.0.6-Build_18
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -123,6 +123,7 @@
 # 05 May 2020, 3d-gussner, Make a copy of `not_tran.txt`and `not_used.txt` as `not_tran_$VARIANT.txt`and `not_used_$VARIANT.txt`
 #                          After compiling All multilanguage vairants it makes it easier to find missing or unused transltions.
 # 12 May 2020, DRracer   , Cleanup double MK2/s MK25/s `not_tran` and `not_used` files
+# 13 May 2020, leptun    , If cleanup files do not exist don't try to.
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -723,8 +724,22 @@ do
 
 	# Cleanup Firmware
 	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 36
-	rm $SCRIPT_PATH/lang/*RAMBo10a*.txt
-	rm $SCRIPT_PATH/lang/*MK2-RAMBo13a*.txt
+	if find $SCRIPT_PATH/lang/ -name '*RAMBo10a*.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/*RAMBo10a*.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name '*MK2-RAMBo13a*' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/*MK2-RAMBo13a*.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name 'not_tran.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/not_tran.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name 'not_used.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/not_used.txt
+	fi
 	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
 	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
 	echo $MULTI_LANGUAGE_CHECK
