@@ -4,6 +4,7 @@
 
 #MSG_03_OR_OLDER c=18
 " 0.3 or older"
+" 0.3 o inferiore"
 
 # c=18
 "FS v0.3 or older"
