@@ -23,6 +23,8 @@ clean_lang()
 {
  if [ "$1" = "en" ]; then
   rm_if_exists lang_$1.tmp
+  rm_if_exists lang_$1.cnt
+  rm_if_exists lang_$1.max
  else
   rm_if_exists lang_$1.tmp
   rm_if_exists lang_en_$1.tmp

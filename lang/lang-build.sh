@@ -10,6 +10,8 @@
 #  lang_xx.bin
 #
 # Temporary files:
+#  lang_en.cnt //calculated number of messages in english
+#  lang_en.max //maximum size determined by reading "../Firmware/config.h"
 #  lang_xx.tmp
 #  lang_xx.dat
 #
@@ -93,6 +95,16 @@ generate_binary()
  if [ "$1" = "en" ]; then
   #remove comments and empty lines
   cat lang_en.txt | sed '/^$/d;/^#/d'
+  #calculate number of strings
+  count=$(grep -c '^"' lang_en.txt)
+  echo "count="$count >&2
+  #Calculate the number of strings and save to temporary file
+  echo $count >lang_en.cnt
+  #read the allowed maxsize from "../Firmware/config.h" and save to temporary file
+  maxsize=$(($(grep "#define LANG_SIZE_RESERVED" ../Firmware/config.h|sed -e's/  */ /g' |cut -d ' ' -f3)))
+
+  echo "maxsize="$maxsize >&2
+  echo $maxsize >lang_en.max
  else
   #remove comments and empty lines, print lines with translated text only
   cat lang_en_$1.txt | sed '/^$/d;/^#/d' | sed -n 'n;p'
@@ -103,12 +115,30 @@ generate_binary()
  #calculate number of strings
  count=$(grep -c '^"' lang_$1.tmp)
  echo "count="$count >&2
+	
+ # read string count of English and compare it with the translation
+ encount=$(cat lang_en.cnt)
+ if [ "$count" -eq "$encount" ]; then
+	echo "OK:"$1"="$count" is equal to en="$encount >&2
+ else
+	echo "Error:"$1"="$count" is NOT equal to en="$encount >&2
+	finish 1
+ fi
  #calculate text data offset
  offs=$((16 + 2 * $count))
  echo "offs="$offs >&2
  #calculate text data size
  size=$(($offs + $(wc -c lang_$1.dat | cut -f1 -d' ')))
  echo "size="$size >&2
+ # read maxsize and compare with the translation
+ maxsize=$(cat lang_en.max)
+ if [ "$size" -lt "$maxsize" ]; then
+	echo "OK:"$1"="$size" is less than "$maxsize >&2
+ else
+	echo "Error:"$1"="$size" is higer than "$maxsize >&2
+	finish 1
+ fi
+
  #write header with empty signature and checksum
  write_header $1 $size $count 0x0000 0x00000000
  #write offset table
