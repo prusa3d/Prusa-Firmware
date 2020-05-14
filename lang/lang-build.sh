@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# Version 1.0.1
+#
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
 #
@@ -9,13 +11,20 @@
 # Output files:
 #  lang_xx.bin
 #
+# Depending on files:
+#  ../Firmware/config.h to read the max allowed size for translations
+#
 # Temporary files:
 #  lang_en.cnt //calculated number of messages in english
 #  lang_en.max //maximum size determined by reading "../Firmware/config.h"
 #  lang_xx.tmp
 #  lang_xx.dat
 #
-
+#############################################################################
+# Change log:
+# 14 May 2020, 3d-gussner, Add message and size count comparison
+#############################################################################
+#
 #awk code to format ui16 variables for dd
 awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
 

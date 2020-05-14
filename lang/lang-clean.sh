@@ -1,8 +1,15 @@
 #!/bin/sh
 #
+# Version 1.0.1
+#
 # clean.sh - multi-language support script
 #  Remove all language output files from lang folder.
 #
+#############################################################################
+# Change log:
+# 14 May 2020, 3d-gussner, Also remove temporally files which have been generated
+#                          for message and size count comparison
+#############################################################################
 
 result=0
 
