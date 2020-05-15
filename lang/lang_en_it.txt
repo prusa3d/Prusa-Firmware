@@ -272,7 +272,7 @@
 
 # c=18
 "Cutting filament"
-"Taglierino filam."
+"Tagliando filam."
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
