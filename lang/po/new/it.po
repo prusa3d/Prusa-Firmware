@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: it\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed May 13 17:42:36 CEST 2020\n"
-"PO-Revision-Date: Wed May 13 17:42:36 CEST 2020\n"
+"POT-Creation-Date: Fri May 15 18:16:31 CEST 2020\n"
+"PO-Revision-Date: Fri May 15 18:16:31 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -458,12 +458,12 @@ msgstr "Tempo di stampa"
 # MSG_FS_ACTION c=10
 #: messages.c:131
 msgid "FS Action"
-msgstr ""
+msgstr "Azione FS"
 
 #  c=18
 #: Marlin_main.cpp:9512
 msgid "FS v0.4 or newer"
-msgstr ""
+msgstr "FS 0.4 o superiore"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
 #: ultralcd.cpp:8814
@@ -1693,7 +1693,7 @@ msgstr "Avviso"
 # 
 #: messages.c:83
 msgid "HW Setup"
-msgstr "Installazione HW"
+msgstr "Impostazioni HW"
 
 # 
 #: ultralcd.cpp:4017

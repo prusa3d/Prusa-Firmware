@@ -352,11 +352,11 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-"\x00"
+"Azione FS"
 
 # c=18
 "FS v0.4 or newer"
-"\x00"
+"FS 0.4 o superiore"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -1340,7 +1340,7 @@
 
 #
 "HW Setup"
-"Installazione HW"
+"Impostazioni HW"
 
 #
 "IR:"

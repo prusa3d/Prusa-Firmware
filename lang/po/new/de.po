@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed May 13 17:41:25 CEST 2020\n"
-"PO-Revision-Date: Wed May 13 17:41:25 CEST 2020\n"
+"POT-Creation-Date: Fri May 15 16:44:45 CEST 2020\n"
+"PO-Revision-Date: Fri May 15 16:44:45 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -423,7 +423,7 @@ msgstr "Luefter Chk."
 # MSG_FSENSOR
 #: messages.c:41
 msgid "Fil. sensor"
-msgstr ""
+msgstr "Fil. Sensor"
 
 #  c=14
 #: ultralcd.cpp:1784
@@ -1328,7 +1328,7 @@ msgstr "Leicht.Schr:"
 # MSG_SOUND
 #: messages.c:124
 msgid "Sound"
-msgstr ""
+msgstr "Ton"
 
 #  c=7
 #: ultralcd.cpp:1822
@@ -1583,7 +1583,7 @@ msgstr "XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schraeg."
 # MSG_TIMEOUT c=12
 #: messages.c:137
 msgid "Timeout"
-msgstr "Auszeit"
+msgstr "Verzoegerung"
 
 # MSG_X_CORRECTION c=13
 #: ultralcd.cpp:5190
@@ -1818,7 +1818,7 @@ msgstr "Sensor Info"
 # MSG_SHEET c=10
 #: messages.c:54
 msgid "Sheet"
-msgstr "Blech"
+msgstr "Stahlblech"
 
 # MSG_SOUND_BLIND
 #: messages.c:127
