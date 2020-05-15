@@ -5725,7 +5725,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 #ifdef IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;
-    MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_DETECTION), lcd_detect_IRsensor); ////MSG_FSENSOR_DETECTION c=18
+    MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
     MENU_END();
 }
