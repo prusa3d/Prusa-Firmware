@@ -1340,7 +1340,7 @@
 
 #
 "HW Setup"
-"Installazione HW"
+"Impostazioni HW"
 
 #
 "IR:"
