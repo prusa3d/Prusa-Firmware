@@ -272,7 +272,7 @@
 
 # c=18
 "Cutting filament"
-"Tagliando filam."
+"Taglierino filam."
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -352,7 +352,7 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-"\x00"
+"Azione FS"
 
 # c=18
 "FS v0.4 or newer"
