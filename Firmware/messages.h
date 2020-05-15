@@ -141,6 +141,7 @@ extern const char MSG_AUTO[];
 #ifdef IR_SENSOR_ANALOG
 extern const char MSG_04_OR_NEWER[];
 extern const char MSG_03_OR_OLDER[];
+extern const char MSG_FSENSOR_DETECTION[];
 #endif
 
 //not internationalized messages
