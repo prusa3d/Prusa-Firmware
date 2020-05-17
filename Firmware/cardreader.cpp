@@ -415,14 +415,14 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
     if (file.open(curDir, fname, O_READ)) 
     {
       filesize = file.fileSize();
+      getfilename(0, fname);
       SERIAL_PROTOCOLRPGM(_N("File opened: "));////MSG_SD_FILE_OPENED
-      SERIAL_PROTOCOL(fname);
+      SERIAL_PROTOCOL(longFilename[0] ? longFilename : fname);
       SERIAL_PROTOCOLRPGM(_n(" Size: "));////MSG_SD_SIZE
       SERIAL_PROTOCOLLN(filesize);
       sdpos = 0;
       
       SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED
-      getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
       lcd_setstatus("SD-PRINTING         ");
     }
