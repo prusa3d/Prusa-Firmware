@@ -5253,11 +5253,11 @@ do\
         /* Filament sensor turned on, show jam detection too*/\
 		if (oFSensorMode==ClFSensorMode::_On_And_Jam && mmu_enabled)\
 		{\
-        	MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM), _T(MSG_ON), lcd_fsensor_jam_set);\
+        	MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM), _T(MSG_ON), lcd_fsensor_jam_set); /*////MSG_FSENSOR_JAM */\
 		}\
 		else if (mmu_enabled)\
 		{\
-			MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM), _T(MSG_OFF), lcd_fsensor_jam_set);\
+			MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM), _T(MSG_OFF), lcd_fsensor_jam_set); /*////MSG_FSENSOR_JAM */\
 		}\
         if (mmu_enabled == false)\
         {\
