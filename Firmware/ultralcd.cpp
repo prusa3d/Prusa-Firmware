@@ -5249,7 +5249,7 @@ do\
     }\
     else\
     {\
-	\   MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);\
+	    MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);\
         /* Filament sensor turned on, show jam detection too*/\
 		if (oFSensorMode==ClFSensorMode::_On_And_Jam && mmu_enabled)\
 		{\

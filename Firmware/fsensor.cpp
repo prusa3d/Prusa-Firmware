@@ -122,7 +122,7 @@ uint16_t fsensor_oq_sh_sum;
 //! @}
 
 ClFSensorMode oFSensorMode;
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
 ClFsensorPCB oFsensorPCB;
 ClFsensorActionNA oFsensorActionNA;
 bool bIRsensorStateFlag=false;
@@ -202,6 +202,7 @@ void fsensor_init(void)
 	fsensor_not_responding = ! fsensor_IR_check();
 #endif //IR_SENSOR_ANALOG
 	if (oFSensorMode!=ClFSensorMode::_Off)
+	{
 		fsensor_enable(false);                  // (in this case) EEPROM update is not necessary
 	} else {
 		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
@@ -263,7 +264,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
      if(bUpdateEEPROM)
           eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, (uint8_t)oFSensorMode);
 #endif //PAT9125
-	return fsensor_enabled;
+	return fsensor_enabled;	
 }
 
 void fsensor_disable(bool bUpdateEEPROM)
