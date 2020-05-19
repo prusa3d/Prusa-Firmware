@@ -71,5 +71,5 @@ else
  echo 'binary data NG!'
 fi
 
-read
+read -t 5
 exit

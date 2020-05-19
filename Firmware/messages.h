@@ -138,6 +138,10 @@ extern const char MSG_TIMEOUT[];
 extern const char MSG_BRIGHT[];
 extern const char MSG_DIM[];
 extern const char MSG_AUTO[];
+#ifdef IR_SENSOR_ANALOG
+extern const char MSG_04_OR_NEWER[];
+extern const char MSG_03_OR_OLDER[];
+#endif
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
