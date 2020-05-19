@@ -46,6 +46,7 @@
 //-//
 #include "Configuration.h"
 #include "Marlin.h"
+#include "config.h"
   
 #ifdef ENABLE_AUTO_BED_LEVELING
 #include "vector_3.h"
@@ -178,9 +179,13 @@ float default_retraction = DEFAULT_RETRACTION;
 
 
 float homing_feedrate[] = HOMING_FEEDRATE;
-// Currently only the extruder axis may be switched to a relative mode.
-// Other axes are always absolute or relative based on the common relative_mode flag.
-bool axis_relative_modes[] = AXIS_RELATIVE_MODES;
+
+//Although this flag and many others like this could be represented with a struct/bitfield for each axis (more readable and efficient code), the implementation
+//would not be standard across all platforms. That being said, the code will continue to use bitmasks for independent axis.
+//Moreover, according to C/C++ standard, the ordering of bits is platform/compiler dependent and the compiler is allowed to align the bits arbitrarily,
+//thus bit operations like shifting and masking may stop working and will be very hard to fix.
+uint8_t axis_relative_modes = 0;
+
 int feedmultiply=100; //100->1 200->2
 int extrudemultiply=100; //100->1 200->2
 int extruder_multiply[EXTRUDERS] = {100
@@ -710,6 +715,12 @@ static void factory_reset(char level)
 
             eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
             eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+
+			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+
             eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
             eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
             eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
@@ -858,14 +869,14 @@ static void check_if_fw_is_on_right_printer(){
     swi2c_init();
     const uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
       if (pat9125_detected){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}
+        lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}////c=20 r=3
     #endif //IR_SENSOR
 
     #ifdef PAT9125
       //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
       const uint8_t ir_detected = !(PIN_GET(IR_SENSOR_PIN));
       if (ir_detected){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}
+        lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}////c=20 r=3
     #endif //PAT9125
   }
 #endif //FILAMENT_SENSOR
@@ -1313,10 +1324,17 @@ void setup()
 	setup_photpin();
 
 	servo_init();
+
 	// Reset the machine correction matrix.
 	// It does not make sense to load the correction matrix until the machine is homed.
 	world2machine_reset();
-    
+
+    // Initialize current_position accounting for software endstops to
+    // avoid unexpected initial shifts on the first move
+    clamp_to_software_endstops(current_position);
+    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS],
+                      current_position[Z_AXIS], current_position[E_AXIS]);
+
 #ifdef FILAMENT_SENSOR
 	fsensor_init();
 #endif //FILAMENT_SENSOR
@@ -1497,7 +1515,7 @@ void setup()
   }
 
   if (!previous_settings_retrieved) {
-	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 	  Config_StoreSettings();
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
@@ -1884,10 +1902,6 @@ static void axis_is_at_home(int axis) {
   max_pos[axis] =          base_max_pos(axis) + cs.add_homing[axis];
 }
 
-
-inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
-inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
-
 //! @return original feedmultiply
 static int setup_for_endstop_move(bool enable_endstops_now = true) {
     saved_feedrate = feedrate;
@@ -2052,15 +2066,16 @@ static float probe_pt(float x, float y, float z_before) {
 inline void gcode_M900() {
     float newK = code_seen('K') ? code_value_float() : -2;
 #ifdef LA_NOCOMPAT
-    if (newK >= 0 && newK < 10)
+    if (newK >= 0 && newK < LA_K_MAX)
         extruder_advance_K = newK;
     else
         SERIAL_ECHOLNPGM("K out of allowed range!");
 #else
     if (newK == 0)
+    {
         extruder_advance_K = 0;
-    else if (newK == -1)
         la10c_reset();
+    }
     else
     {
         newK = la10c_value(newK);
@@ -2183,6 +2198,21 @@ bool calibrate_z_auto()
 #endif //TMC2130
 
 #ifdef TMC2130
+static void check_Z_crash(void)
+{
+	if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
+		FORCE_HIGH_POWER_END;
+		current_position[Z_AXIS] = 0;
+		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
+		plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+		st_synchronize();
+		kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+	}
+}
+#endif //TMC2130
+
+#ifdef TMC2130
 void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 #else
 void homeaxis(int axis, uint8_t cnt)
@@ -2298,11 +2328,7 @@ void homeaxis(int axis, uint8_t cnt)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 #ifdef TMC2130
-		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
-			FORCE_HIGH_POWER_END;
-			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			return; 
-		}
+        check_Z_crash();
 #endif //TMC2130
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -2314,11 +2340,7 @@ void homeaxis(int axis, uint8_t cnt)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 #ifdef TMC2130
-		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
-			FORCE_HIGH_POWER_END;
-			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			return; 
-		}
+        check_Z_crash();
 #endif //TMC2130
         axis_is_at_home(axis);
         destination[axis] = current_position[axis];
@@ -4843,11 +4865,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-#ifndef LA_NOCOMPAT
-        // When printing via USB there's no clear boundary between prints. Abuse MBL to indicate
-        // the beginning of a new print, allowing a new autodetected setting just after G80.
-        la10c_reset();
-#endif
 #ifndef PINDA_THERMISTOR
         static bool run = false; // thermistor-less PINDA temperature compensation is running
 #endif // ndef PINDA_THERMISTOR
@@ -4999,7 +5016,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 1) {
-				clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+				bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 				SERIAL_PROTOCOL(mesh_point);
 				clamped ? SERIAL_PROTOCOLPGM(": xy clamped.\n") : SERIAL_PROTOCOLPGM(": no xy clamping\n");
 			}
@@ -5367,21 +5384,19 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### G90 - Switch off relative mode <a href="https://reprap.org/wiki/G-code#G90:_Set_to_Absolute_Positioning">G90: Set to Absolute Positioning</a>
-	All coordinates from now on are absolute relative to the origin of the machine. E axis is also switched to absolute mode.
+	All coordinates from now on are absolute relative to the origin of the machine. E axis is left intact.
     */
     case 90: {
-        for(uint8_t i = 0; i != NUM_AXIS; ++i)
-            axis_relative_modes[i] = false;
+		axis_relative_modes &= ~(X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK);
     }
     break;
 
     /*!
 	### G91 - Switch on relative mode <a href="https://reprap.org/wiki/G-code#G91:_Set_to_Relative_Positioning">G91: Set to Relative Positioning</a>
-    All coordinates from now on are relative to the last position. E axis is also switched to relative mode.
+    All coordinates from now on are relative to the last position. E axis is left intact.
 	*/
     case 91: {
-        for(uint8_t i = 0; i != NUM_AXIS; ++i)
-            axis_relative_modes[i] = true;
+		axis_relative_modes |= X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK;
     }
     break;
 
@@ -6558,7 +6573,7 @@ Sigma_Exit:
 	Makes the extruder interpret extrusion as absolute positions.
     */
     case 82:
-      axis_relative_modes[E_AXIS] = false;
+      axis_relative_modes &= ~E_AXIS_MASK;
       break;
 
     /*!
@@ -6566,7 +6581,7 @@ Sigma_Exit:
 	Makes the extruder interpret extrusion values as relative positions.
     */
     case 83:
-      axis_relative_modes[E_AXIS] = true;
+      axis_relative_modes |= E_AXIS_MASK;
       break;
 
     /*!
@@ -7097,7 +7112,6 @@ Sigma_Exit:
       {
           float e = code_value();
 #ifndef LA_NOCOMPAT
-
           e = la10c_jerk(e);
 #endif
           cs.max_jerk[E_AXIS] = e;
@@ -8802,17 +8816,23 @@ Sigma_Exit:
     This command can be used without any additional parameters. It will read the entire RAM.
     #### Usage
     
-        D3 [ A | C | X ]
+        D2 [ A | C | X ]
     
     #### Parameters
-    - `A` - Address (0x0000-0x1fff)
-    - `C` - Count (0x0001-0x2000)
+    - `A` - Address (x0000-x1fff)
+    - `C` - Count (1-8192)
     - `X` - Data
+
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
     */
 	case 2:
 		dcode_2(); break;
 #endif //DEBUG_DCODES
-#ifdef DEBUG_DCODE3
+#if defined DEBUG_DCODE3 || defined DEBUG_DCODES
 
     /*!
     ### D3 - Read/Write EEPROM <a href="https://reprap.org/wiki/G-code#D3:_Read.2FWrite_EEPROM">D3: Read/Write EEPROM</a>
@@ -8822,9 +8842,15 @@ Sigma_Exit:
         D3 [ A | C | X ]
     
     #### Parameters
-    - `A` - Address (0x0000-0x0fff)
-    - `C` - Count (0x0001-0x1000)
-    - `X` - Data
+    - `A` - Address (x0000-x0fff)
+    - `C` - Count (1-4096)
+    - `X` - Data (hex)
+	
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
     */
 	case 3:
 		dcode_3(); break;
@@ -8847,24 +8873,29 @@ Sigma_Exit:
 	case 4:
 		dcode_4(); break;
 #endif //DEBUG_DCODES
-#ifdef DEBUG_DCODE5
+#if defined DEBUG_DCODE5 || defined DEBUG_DCODES
 
     /*!
     ### D5 - Read/Write FLASH <a href="https://reprap.org/wiki/G-code#D5:_Read.2FWrite_FLASH">D5: Read/Write Flash</a>
     This command can be used without any additional parameters. It will read the 1kb FLASH.
     #### Usage
     
-        D3 [ A | C | X | E ]
+        D5 [ A | C | X | E ]
     
     #### Parameters
-    - `A` - Address (0x00000-0x3ffff)
-    - `C` - Count (0x0001-0x2000)
-    - `X` - Data
+    - `A` - Address (x00000-x3ffff)
+    - `C` - Count (1-8192)
+    - `X` - Data (hex)
     - `E` - Erase
-    */
+ 	
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
+   */
 	case 5:
 		dcode_5(); break;
-		break;
 #endif //DEBUG_DCODE5
 #ifdef DEBUG_DCODES
 
@@ -8925,7 +8956,7 @@ Sigma_Exit:
 
     /*!
     ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
-    Writes the actual time in the log file.
+    Writes the current time in the log file.
     */
 
 #endif //DEBUG_DCODES
@@ -8947,28 +8978,7 @@ Sigma_Exit:
     - `J` - Offset Y (default 34)
   */
 	case 80:
-	{
-		float dimension_x = 40;
-		float dimension_y = 40;
-		int points_x = 40;
-		int points_y = 40;
-		float offset_x = 74;
-		float offset_y = 33;
-
-		if (code_seen('E')) dimension_x = code_value();
-		if (code_seen('F')) dimension_y = code_value();
-		if (code_seen('G')) {points_x = code_value(); }
-		if (code_seen('H')) {points_y = code_value(); }
-		if (code_seen('I')) {offset_x = code_value(); }
-		if (code_seen('J')) {offset_y = code_value(); }
-		printf_P(PSTR("DIM X: %f\n"), dimension_x);
-		printf_P(PSTR("DIM Y: %f\n"), dimension_y);
-		printf_P(PSTR("POINTS X: %d\n"), points_x);
-		printf_P(PSTR("POINTS Y: %d\n"), points_y);
-		printf_P(PSTR("OFFSET X: %f\n"), offset_x);
-		printf_P(PSTR("OFFSET Y: %f\n"), offset_y);
- 		bed_check(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
-	}break;
+		dcode_80(); break;
 
     /*!
     ### D81 - Bed analysis <a href="https://reprap.org/wiki/G-code#D81:_Bed_analysis">D80: Bed analysis</a>
@@ -8986,24 +8996,7 @@ Sigma_Exit:
     - `J` - Offset Y (default 34)
   */
 	case 81:
-	{
-		float dimension_x = 40;
-		float dimension_y = 40;
-		int points_x = 40;
-		int points_y = 40;
-		float offset_x = 74;
-		float offset_y = 33;
-
-		if (code_seen('E')) dimension_x = code_value();
-		if (code_seen('F')) dimension_y = code_value();
-		if (code_seen("G")) { strchr_pointer+=1; points_x = code_value(); }
-		if (code_seen("H")) { strchr_pointer+=1; points_y = code_value(); }
-		if (code_seen("I")) { strchr_pointer+=1; offset_x = code_value(); }
-		if (code_seen("J")) { strchr_pointer+=1; offset_y = code_value(); }
-		
-		bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
-		
-	} break;
+		dcode_81(); break;
 	
 #endif //HEATBED_ANALYSIS
 #ifdef DEBUG_DCODES
@@ -9012,17 +9005,7 @@ Sigma_Exit:
     ### D106 - Print measured fan speed for different pwm values <a href="https://reprap.org/wiki/G-code#D106:_Print_measured_fan_speed_for_different_pwm_values">D106: Print measured fan speed for different pwm values</a>
     */
 	case 106:
-	{
-		for (int i = 255; i > 0; i = i - 5) {
-			fanSpeed = i;
-			//delay_keep_alive(2000);
-			for (int j = 0; j < 100; j++) {
-				delay_keep_alive(100);
-
-			}
-			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
-		}
-	}break;
+		dcode_106(); break;
 
 #ifdef TMC2130
     /*!
@@ -9080,7 +9063,6 @@ Sigma_Exit:
       For more information see https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf
     *
 	*/
-
 	case 2130:
 		dcode_2130(); break;
 #endif //TMC2130
@@ -9124,8 +9106,8 @@ Sigma_Exit:
 #### End of D-Codes
 */
 
-  /** @defgroup GCodes G-Code List 
-  */
+/** @defgroup GCodes G-Code List 
+*/
 
 // ---------------------------------------------------
 
@@ -9190,7 +9172,7 @@ void get_coordinates()
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
-      bool relative = axis_relative_modes[i];
+      bool relative = axis_relative_modes & (1 << i);
       destination[i] = (float)code_value();
       if (i == E_AXIS) {
         float emult = extruder_multiplier[active_extruder];
@@ -9460,10 +9442,15 @@ static void handleSafetyTimer()
 }
 #endif //SAFETYTIMER
 
+#define FS_CHECK_COUNT 250
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
-bool bInhibitFlag;
 #ifdef FILAMENT_SENSOR
+bool bInhibitFlag;
+#ifdef IR_SENSOR_ANALOG
+static uint16_t nFSCheckCount=0;
+#endif // IR_SENSOR_ANALOG
+
 	if (mmu_enabled == false)
 	{
 //-//		if (mcode_in_progress != 600) //M600 not in progress
@@ -9472,11 +9459,63 @@ bool bInhibitFlag;
 #endif // PAT9125
 #ifdef IR_SENSOR
           bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
+#ifdef IR_SENSOR_ANALOG
+          bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Settings::HWsetup::FSdetect menu active
+#endif // IR_SENSOR_ANALOG
 #endif // IR_SENSOR
           if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
+#ifdef IR_SENSOR_ANALOG
+				static uint16_t minVolt = Voltage2Raw(6.F), maxVolt = 0;
+				// detect min-max, some long term sliding window for filtration may be added
+				// avoiding floating point operations, thus computing in raw
+				if( current_voltage_raw_IR > maxVolt )maxVolt = current_voltage_raw_IR;
+				if( current_voltage_raw_IR < minVolt )minVolt = current_voltage_raw_IR;
+				
+#if 0
+				{ // debug print
+					static uint16_t lastVolt = ~0U;
+					if( current_voltage_raw_IR != lastVolt ){
+						printf_P(PSTR("fs volt=%4.2fV (min=%4.2f max=%4.2f)\n"), Raw2Voltage(current_voltage_raw_IR), Raw2Voltage(minVolt), Raw2Voltage(maxVolt) );
+						lastVolt = current_voltage_raw_IR;
+					}
+				}
+#endif
+				// the trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
+				// to be detected as the new fsensor
+				// We can either fake it by extending the detection window to a looooong time
+				// or do some other countermeasures
+				
+				// what we want to detect:
+				// if minvolt gets below ~0.6V, it means there is an old fsensor
+				// if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
+				// So I'm waiting for a situation, when minVolt gets to range <0, 0.7> and maxVolt gets into range <4.4, 5>
+				// If and only if minVolt is in range <0.6, 0.7> and maxVolt is in range <4.4, 4.5>, I'm considering a situation with the new fsensor
+				// otherwise, I don't care
+				
+				if( minVolt >= Voltage2Raw(0.3F) && minVolt <= Voltage2Raw(0.5F) 
+				 && maxVolt >= Voltage2Raw(4.2F) && maxVolt <= Voltage2Raw(4.6F)
+				){
+                    bool bTemp = (!CHECK_ALL_HEATERS);
+                    bTemp = bTemp && (menu_menu==lcd_status_screen);
+                    bTemp = bTemp && ((oFsensorPCB==ClFsensorPCB::_Old)||(oFsensorPCB==ClFsensorPCB::_Undef));
+                    bTemp = bTemp && fsensor_enabled;
+                    if(bTemp){
+                         nFSCheckCount++;
+                         if(nFSCheckCount>FS_CHECK_COUNT){
+                              nFSCheckCount=0;    // not necessary
+                              oFsensorPCB=ClFsensorPCB::_Rev04;
+                              eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+                              printf_IRSensorAnalogBoardChange(true);
+                              lcd_setstatuspgm(_i("FS v0.4 or newer"));////c=18
+                         }
+                    } else {
+						nFSCheckCount=0;
+					}
+				}
+#endif // IR_SENSOR_ANALOG
 				if (fsensor_check_autoload())
 				{
 #ifdef PAT9125
@@ -9682,6 +9721,24 @@ void Stop()
 }
 
 bool IsStopped() { return Stopped; };
+
+void finishAndDisableSteppers()
+{
+  st_synchronize();
+  disable_x();
+  disable_y();
+  disable_z();
+  disable_e0();
+  disable_e1();
+  disable_e2();
+
+#ifndef LA_NOCOMPAT
+  // Steppers are disabled both when a print is stopped and also via M84 (which is additionally
+  // checked-for to indicate a complete file), so abuse this function to reset the LA detection
+  // state for the next print.
+  la10c_reset();
+#endif
+}
 
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val)
@@ -10589,7 +10646,7 @@ void uvlo_()
 
     // Store the print E position before we lose track
 	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, (axis_relative_modes & E_AXIS_MASK)?0:1);
 
     // Clean the input command queue, inhibit serial processing using saved_printing
     cmdqueue_reset();
@@ -10823,7 +10880,7 @@ void recover_print(uint8_t automatic) {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
-  lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20 r=1
+  lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20
 
   // Recover position, temperatures and extrude_multipliers
   bool mbl_was_active = recover_machine_state_after_power_panic();
@@ -11178,7 +11235,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
-	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
+	saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
 	saved_fanSpeed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
@@ -11260,7 +11317,7 @@ void restore_print_from_ram_and_continue(float e_move)
 		wait_for_heater(_millis(), saved_active_extruder);
 		heating_status = 2;
 	}
-	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
+	axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
   

@@ -1,3 +1,12 @@
+# Prusa Firmware MK3
+
+This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3/MK2.5S/MK2.5 line of printers.
+
+The latest official builds can be downloaded from [Prusa Drivers](https://www.prusa3d.com/drivers/). Pre-built development releases are also [available here](https://github.com/prusa3d/Prusa-Firmware/releases).
+
+The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.x](https://github.com/MarlinFirmware/Marlin/) by Scott Lahteine (@thinkyhead) et al. and is distributed under the terms of the [GNU GPL 3 license](LICENSE).
+
+
 # Table of contents
 
 <!--ts-->
@@ -21,7 +30,7 @@
    - For MK3 --> skip to step 3. 
    - If you have a different printer model, follow step [2.b](#2b) from Windows build
    
-3. Run `sudo ./build.sh`
+3. Run `./build.sh`
    - Output hex file is at `"PrusaFirmware/lang/firmware.hex"` . In the same folder you can hex files for other languages as well.
 
 4. Connect your printer and flash with PrusaSlicer ( Configuration --> Flash printer firmware ) or Slic3r PE.

@@ -386,7 +386,8 @@ void mmu_loop(void)
 			if (CHECK_FSENSOR && fsensor_enabled) {
 				if (!mmu_finda) { // Traditional FINDA runout
 					fsensor_checkpoint_print();
-					ad_markDepleted(mmu_extruder);
+					if (mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't deplete unknown extruder.
+						ad_markDepleted(mmu_extruder);
 					if (lcd_autoDepleteEnabled() && !ad_allDepleted())
 					{
 						enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
@@ -805,8 +806,8 @@ void mmu_load_to_nozzle()
 {
 	st_synchronize();
 	
-	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
-	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = true;
+	const bool saved_e_relative_mode = axis_relative_modes & E_AXIS_MASK;
+	if (!saved_e_relative_mode) axis_relative_modes |= E_AXIS_MASK;
 	if (ir_sensor_detected)
 	{
 		current_position[E_AXIS] += 3.0f;
@@ -830,7 +831,7 @@ void mmu_load_to_nozzle()
 	feedrate = 871;
 	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
     st_synchronize();
-	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
+	if (!saved_e_relative_mode) axis_relative_modes &= ~E_AXIS_MASK;
 }
 
 void mmu_M600_wait_and_beep() {
@@ -846,7 +847,7 @@ void mmu_M600_wait_and_beep() {
 		}
 		else
 		{
-			lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));
+			lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));  ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
 		}
 		bool bFirst=true;
 
@@ -1402,7 +1403,7 @@ void mmu_cut_filament(uint8_t filament_nr)
     {
         LcdUpdateDisabler disableLcdUpdate;
         lcd_clear();
-        lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18 r=1
+        lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18
         lcd_print(" ");
         lcd_print(filament_nr + 1);
         mmu_filament_ramming();

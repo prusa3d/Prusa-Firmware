@@ -1,5 +1,6 @@
 #include "la10compat.h"
 #include "Marlin.h"
+#include <float.h>
 
 
 static LA10C_MODE la10c_mode = LA10C_UNKNOWN; // Current LA compatibility mode
@@ -37,8 +38,10 @@ void la10c_mode_change(LA10C_MODE mode)
 // Approximate a LA10 value to a LA15 equivalent.
 static float la10c_convert(float k)
 {
-    float new_K = k * 0.004 - 0.06;
-    return (new_K < 0? 0: new_K);
+    float new_K = k * 0.004 - 0.05;
+    return new_K < 0? 0:
+           new_K > (LA_K_MAX - FLT_EPSILON)? (LA_K_MAX - FLT_EPSILON):
+           new_K;
 }
 
 
@@ -52,11 +55,11 @@ float la10c_value(float k)
         else if(k < 0)
             return -1;
 
-        la10c_mode_change(k < 10? LA10C_LA15: LA10C_LA10);
+        la10c_mode_change(k < LA_LA10_MIN? LA10C_LA15: LA10C_LA10);
     }
 
     if(la10c_mode == LA10C_LA15)
-        return (k >= 0 && k < 10? k: -1);
+        return (k >= 0 && k < LA_K_MAX? k: -1);
     else
         return (k >= 0? la10c_convert(k): -1);
 }

@@ -69,8 +69,10 @@ unsigned long fsensor_softfail_last = 0;
 uint8_t fsensor_softfail_ccnt = 0;
 #endif
 
+#ifdef DEBUG_FSENSOR_LOG
 //! log flag: 0=log disabled, 1=log enabled
 uint8_t fsensor_log = 1;
+#endif //DEBUG_FSENSOR_LOG
 
 
 //! @name filament autoload variables
@@ -173,40 +175,46 @@ void fsensor_init(void)
 {
 #ifdef PAT9125
 	uint8_t pat9125 = pat9125_init();
-     printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
+	printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
 #endif //PAT9125
 	oFSensorMode=(ClFSensorMode)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
-     fsensor_not_responding = false;
+	fsensor_not_responding = false;
 #ifdef PAT9125
 	uint8_t oq_meassure_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_OQ_MEASS_ENABLED);
 	fsensor_oq_meassure_enabled = (oq_meassure_enabled == 1)?true:false;
-    fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[E_AXIS]);
-
-	if (!pat9125)
-	{
+	fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[E_AXIS]);
+	
+	if (!pat9125){
 		oFSensorMode = ClFSensorMode::_Off; //disable sensor
 		fsensor_not_responding = true;
 	}
 #endif //PAT9125
-#if IR_SENSOR_ANALOG
-     bIRsensorStateFlag=false;
-     oFsensorPCB=(ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
-     oFsensorActionNA=(ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
-	 
+#ifdef IR_SENSOR_ANALOG
+	bIRsensorStateFlag=false;
+	oFsensorPCB = (ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
+	oFsensorActionNA = (ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
+
+	// If the fsensor is not responding even at the start of the printer,
+	// set this flag accordingly to show N/A in Settings->Filament sensor.
+	// This is even valid for both fsensor board revisions (0.3 or older and 0.4).
+	// Must be done after reading what type of fsensor board we have
+	fsensor_not_responding = ! fsensor_IR_check();
 #endif //IR_SENSOR_ANALOG
 	if (oFSensorMode!=ClFSensorMode::_Off)
 		fsensor_enable(false);                  // (in this case) EEPROM update is not necessary
-	else
+	} else {
 		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
+	}
 	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
-#if IR_SENSOR_ANALOG
-     printf_P(PSTR(" (sensor board revision: %S)\n"),(oFsensorPCB==ClFsensorPCB::_Rev03b)?PSTR("03b or newer"):PSTR("03 or older"));
+#ifdef IR_SENSOR_ANALOG
+     printf_P(PSTR(" (sensor board revision:%S)\n"), (oFsensorPCB==ClFsensorPCB::_Rev04) ? _T(MSG_04_OR_NEWER) : _T(MSG_03_OR_OLDER));
 #else //IR_SENSOR_ANALOG
      printf_P(PSTR("\n"));
 #endif //IR_SENSOR_ANALOG
-	if (check_for_ir_sensor()) ir_sensor_detected = true;
-
+	if (check_for_ir_sensor()){
+		ir_sensor_detected = true;
+	}
 }
 
 bool fsensor_enable(bool bUpdateEEPROM)
@@ -235,7 +243,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
 		FSensorStateMenu = 1;
 	}
 #else // PAT9125
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
      if(!fsensor_IR_check())
           {
           bUpdateEEPROM=true;
@@ -249,7 +257,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
      fsensor_enabled=true;
      fsensor_not_responding=false;
      FSensorStateMenu=1;
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
           }
 #endif //IR_SENSOR_ANALOG
      if(bUpdateEEPROM)
@@ -665,7 +673,7 @@ void fsensor_update(void)
         {
                if(digitalRead(IR_SENSOR_PIN))
                {                                  // IR_SENSOR_PIN ~ H
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
                     if(!bIRsensorStateFlag)
                     {
                          bIRsensorStateFlag=true;
@@ -694,12 +702,16 @@ void fsensor_update(void)
                               ADCSRB=nMUX2;
                               ENABLE_TEMPERATURE_INTERRUPT();
                               // end of sequence for ...
-                              if((oFsensorPCB==ClFsensorPCB::_Rev03b)&&((nADC*OVERSAMPLENR)>((int)IRsensor_Hopen_TRESHOLD)))
+							  // Detection of correct function of fsensor v04 - it must NOT read >4.6V
+							  // If it does, it means a disconnected cables or faulty board
+                              if( (oFsensorPCB == ClFsensorPCB::_Rev04) && ( (nADC*OVERSAMPLENR) > IRsensor_Hopen_TRESHOLD ) )
                               {
                                    fsensor_disable();
                                    fsensor_not_responding = true;
                                    printf_P(PSTR("IR sensor not responding (%d)!\n"),1);
-                                   if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
+								   if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
+
+								   // if we are printing and FS action is set to "Pause", force pause the print
                                    if(oFsensorActionNA==ClFsensorActionNA::_Pause)
                                         lcd_pause_print();
                               }
@@ -708,7 +720,7 @@ void fsensor_update(void)
 #endif //IR_SENSOR_ANALOG
                                   fsensor_checkpoint_print();
                                   fsensor_enque_M600();
-#if IR_SENSOR_ANALOG
+#ifdef IR_SENSOR_ANALOG
                               }
                          }
                     }
@@ -722,15 +734,28 @@ void fsensor_update(void)
 #endif //PAT9125
 }
 
-#if IR_SENSOR_ANALOG
-bool fsensor_IR_check()
-{
-uint16_t volt_IR_int;
-bool bCheckResult;
+#ifdef IR_SENSOR_ANALOG
+/// This is called only upon start of the printer or when switching the fsensor ON in the menu
+/// We cannot do temporal window checks here (aka the voltage has been in some range for a period of time)
+bool fsensor_IR_check(){
+	if( IRsensor_Lmax_TRESHOLD <= current_voltage_raw_IR && current_voltage_raw_IR <= IRsensor_Hmin_TRESHOLD ){
+		// If the voltage is in forbidden range, the fsensor is ok, but the lever is mounted improperly.
+		// Or the user is so creative so that he can hold a piece of fillament in the hole in such a genius way,
+		// that the IR fsensor reading is within 1.5 and 3V ... this would have been highly unusual
+		// and would have been considered more like a sabotage than normal printer operation
+		printf_P(PSTR("fsensor in forbidden range 1.5-3V - bad lever\n"));
+		return false; 
+	}
+	
+	if( oFsensorPCB == ClFsensorPCB::_Rev04 ){
+		// newer IR sensor cannot normally produce 4.6-5V, this is considered a failure/bad mount
+		if( IRsensor_Hopen_TRESHOLD <= current_voltage_raw_IR && current_voltage_raw_IR <= IRsensor_VMax_TRESHOLD ){
+			printf_P(PSTR("fsensor v0.4 in fault range 4.6-5V - unconnected\n"));
+			return false;
+		}
+	}
 
-volt_IR_int=current_voltage_raw_IR;
-bCheckResult=(volt_IR_int<((int)IRsensor_Lmax_TRESHOLD))||(volt_IR_int>((int)IRsensor_Hmin_TRESHOLD));
-bCheckResult=bCheckResult&&(!((oFsensorPCB==ClFsensorPCB::_Rev03b)&&(volt_IR_int>((int)IRsensor_Hopen_TRESHOLD))));
-return(bCheckResult);
+	// otherwise the IR fsensor is considered working correctly
+	return true;
 }
 #endif //IR_SENSOR_ANALOG
