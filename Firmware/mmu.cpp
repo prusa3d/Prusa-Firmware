@@ -842,7 +842,7 @@ void mmu_M600_wait_and_beep() {
 		int counterBeep = 0;
 		if (mmu_E_jam_detected)
 		{
-			lcd_display_message_fullscreen_P(_i("Possible extruder jam detected (IR=0). Fix problem and press knob."));
+			lcd_display_message_fullscreen_P(_i("Possible extruder jam detected (IR=0). Fix problem and press knob.")); ////MSG_MMU_JAM_DETECTED c=20 r=5
 			mmu_E_jam_detected = false; // Clear flag, we'll proceed with normal M600 change from hereon.
 		}
 		else

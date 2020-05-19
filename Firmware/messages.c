@@ -39,6 +39,7 @@ const char MSG_FOLLOW_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("Printer has not been
 const char MSG_FOLLOW_Z_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=9
 const char MSG_FSENSOR_AUTOLOAD[] PROGMEM_I1 = ISTR("F. autoload"); ////c=13
 const char MSG_FSENSOR[] PROGMEM_I1 = ISTR("Fil. sensor"); ////
+const char MSG_FSENSOR_JAM[] PROGMEM_I1 = ISTR("MMU Jam det."); ////
 const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20
 const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////
@@ -104,7 +105,6 @@ const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=18
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
 const char MSG_OFF[] PROGMEM_I1 = ISTR("Off"); ////
 const char MSG_ON[] PROGMEM_I1 = ISTR("On"); ////
-const char MSG_ON_JAM[] PROGMEM_I1 = ISTR("+Jam"); ////
 const char MSG_NA[] PROGMEM_I1 = ISTR("N/A"); ////
 const char MSG_AUTO_DEPLETE[] PROGMEM_I1 = ISTR("SpoolJoin"); ////
 const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////c=9

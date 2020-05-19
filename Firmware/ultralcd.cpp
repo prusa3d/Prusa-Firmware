@@ -4539,16 +4539,14 @@ static void lcd_fsensor_state_set(void)
 switch(oFSensorMode)
      {
      case ClFSensorMode::_Off:
-			oFSensorMode=ClFSensorMode::_On_And_Jam;
+			oFSensorMode=ClFSensorMode::_On;
 			break;
-     case ClFSensorMode::_On_And_Jam:
-				oFSensorMode=mmu_enabled?ClFSensorMode::_On:ClFSensorMode::_Off; // Skip second "On" option if no MMU, e.g. only 0/1, no 2.
-			break;
-     case ClFSensorMode::_On:
+     case ClFSensorMode::_On: // Both on and jam will turn it off if toggled.
+	 case ClFSensorMode::_On_And_Jam:
 			oFSensorMode=ClFSensorMode::_Off;
 			break;
      default:
-          oFSensorMode=ClFSensorMode::_On_And_Jam;
+          oFSensorMode=ClFSensorMode::_On;
      }
 	 if (oFSensorMode!=ClFSensorMode::_Off) 
 	 {
@@ -4563,6 +4561,21 @@ switch(oFSensorMode)
 				menu_submenu(lcd_filament_autoload_info);
 	 }
 	 
+}
+
+static void lcd_fsensor_jam_set(void)
+{
+	switch(oFSensorMode)
+	{
+		case ClFSensorMode::_On:
+			oFSensorMode = ClFSensorMode::_On_And_Jam;
+			break;
+		case ClFSensorMode::_On_And_Jam:
+			oFSensorMode = ClFSensorMode::_On;
+			break;
+		default:
+			oFSensorMode = ClFSensorMode::_On;
+	}
 }
 #endif //FILAMENT_SENSOR
 
@@ -5236,14 +5249,15 @@ do\
     }\
     else\
     {\
-        /* Filament sensor turned on, working, no problems*/\
+	\   MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);\
+        /* Filament sensor turned on, show jam detection too*/\
 		if (oFSensorMode==ClFSensorMode::_On_And_Jam && mmu_enabled)\
 		{\
-        	MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON_JAM), lcd_fsensor_state_set);\
+        	MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM), _T(MSG_ON), lcd_fsensor_jam_set);\
 		}\
-		else\
+		else if (mmu_enabled)\
 		{\
-			MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);\
+			MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM), _T(MSG_OFF), lcd_fsensor_jam_set);\
 		}\
         if (mmu_enabled == false)\
         {\
@@ -7164,13 +7178,17 @@ static void lcd_tune_menu()
                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
           }
 	}
-	else if (oFSensorMode==ClFSensorMode::_On_And_Jam && mmu_enabled)
-	{	// Jam detect mode
-       	MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON_JAM), lcd_fsensor_state_set);
-	}
 	else
-	{	// Just normal on.
+	{
 		MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);
+		if (oFSensorMode==ClFSensorMode::_On_And_Jam && mmu_enabled)
+		{	// Jam detect mode
+	       	MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM), _T(MSG_ON), lcd_fsensor_state_set);
+		}
+		else
+		{
+			MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM), _T(MSG_OFF), lcd_fsensor_state_set);
+		}
 	}
 #ifdef IR_SENSOR_ANALOG
      FSENSOR_ACTION_NA;
