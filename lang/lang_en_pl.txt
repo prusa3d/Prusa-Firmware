@@ -616,7 +616,7 @@
 
 #MSG_NORMAL
 "Normal"
-"Normalny"
+"Normalni"
 
 #MSG_SILENT
 "Silent"

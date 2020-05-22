@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Tue May 12 21:09:21 CEST 2020\n"
-"PO-Revision-Date: Tue May 12 21:09:21 CEST 2020\n"
+"POT-Creation-Date: Wed May 13 17:41:49 CEST 2020\n"
+"PO-Revision-Date: Wed May 13 17:41:49 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -66,7 +66,7 @@ msgid "Adjusting Z:"
 msgstr "Ajustar-Z:"
 
 # MSG_SELFTEST_CHECK_ALLCORRECT c=20
-#: ultralcd.cpp:8679
+#: ultralcd.cpp:8677
 msgid "All correct      "
 msgstr "Todo bien"
 
@@ -121,17 +121,17 @@ msgid "Autoloading filament is active, just press the knob and insert filament..
 msgstr "La carga automatica esta activada, pulse el dial e inserte el filamento..."
 
 # MSG_SELFTEST_AXIS_LENGTH
-#: ultralcd.cpp:8327
+#: ultralcd.cpp:8325
 msgid "Axis length"
 msgstr "Longitud del eje"
 
 # MSG_SELFTEST_AXIS
-#: ultralcd.cpp:8329
+#: ultralcd.cpp:8327
 msgid "Axis"
 msgstr "Eje"
 
 # MSG_SELFTEST_BEDHEATER
-#: ultralcd.cpp:8271
+#: ultralcd.cpp:8269
 msgid "Bed / Heater"
 msgstr "Base / Calentador"
 
@@ -186,7 +186,7 @@ msgid "Blackout occurred. Recover print?"
 msgstr "Se fue la luz. ?Reanudar la impresion?"
 
 # 
-#: ultralcd.cpp:8681
+#: ultralcd.cpp:8679
 msgid "Calibrating home"
 msgstr "Calibrando posicion inicial"
 
@@ -236,7 +236,7 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 # MSG_SD_REMOVED
-#: ultralcd.cpp:9092
+#: ultralcd.cpp:9090
 msgid "Card removed"
 msgstr "Tarjeta retirada"
 
@@ -326,17 +326,17 @@ msgid "Ejecting filament"
 msgstr "Expulsando filamento"
 
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
-#: ultralcd.cpp:8295
+#: ultralcd.cpp:8293
 msgid "Endstop not hit"
 msgstr "Endstop no alcanzado"
 
 # MSG_SELFTEST_ENDSTOP
-#: ultralcd.cpp:8289
+#: ultralcd.cpp:8287
 msgid "Endstop"
 msgstr ""
 
 # MSG_SELFTEST_ENDSTOPS
-#: ultralcd.cpp:8277
+#: ultralcd.cpp:8275
 msgid "Endstops"
 msgstr ""
 
@@ -376,7 +376,7 @@ msgid "ERROR:"
 msgstr ""
 
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
-#: ultralcd.cpp:8688
+#: ultralcd.cpp:8686
 msgid "Extruder fan:"
 msgstr "Vent.extrusor:"
 
@@ -466,7 +466,7 @@ msgid "FS v0.4 or newer"
 msgstr "FS v0.4 o +nueva"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
-#: ultralcd.cpp:8816
+#: ultralcd.cpp:8814
 msgid "File incomplete. Continue anyway?"
 msgstr "Archivo incompleto. ?Continuar de todos modos?"
 
@@ -511,12 +511,12 @@ msgid "Front side[um]"
 msgstr "Frontal [um]"
 
 # MSG_SELFTEST_FANS
-#: ultralcd.cpp:8335
+#: ultralcd.cpp:8333
 msgid "Front/left fans"
 msgstr "Ventiladores frontal/izquierdo"
 
 # MSG_SELFTEST_HEATERTHERMISTOR
-#: ultralcd.cpp:8265
+#: ultralcd.cpp:8263
 msgid "Heater/Thermistor"
 msgstr "Calentador/Termistor"
 
@@ -566,12 +566,12 @@ msgid "Checking bed     "
 msgstr "Control base cal."
 
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
-#: ultralcd.cpp:8670
+#: ultralcd.cpp:8668
 msgid "Checking endstops"
 msgstr "Control endstops"
 
 # MSG_SELFTEST_CHECK_HOTEND c=20
-#: ultralcd.cpp:8676
+#: ultralcd.cpp:8674
 msgid "Checking hotend  "
 msgstr "Control fusor"
 
@@ -591,7 +591,7 @@ msgid "Checking Y axis  "
 msgstr "Control sensor Y"
 
 # MSG_SELFTEST_CHECK_Z c=20
-#: ultralcd.cpp:8673
+#: ultralcd.cpp:8671
 msgid "Checking Z axis  "
 msgstr "Control sensor Z"
 
@@ -701,7 +701,7 @@ msgid "Loading filament"
 msgstr "Introduciendo filam."
 
 # MSG_LOOSE_PULLEY c=20 r=1
-#: ultralcd.cpp:8319
+#: ultralcd.cpp:8317
 msgid "Loose pulley"
 msgstr "Polea suelta"
 
@@ -871,7 +871,7 @@ msgid "No"
 msgstr ""
 
 # MSG_SELFTEST_NOTCONNECTED
-#: ultralcd.cpp:8267
+#: ultralcd.cpp:8265
 msgid "Not connected"
 msgstr "No hay conexion "
 
@@ -956,7 +956,7 @@ msgid "Please clean the nozzle for calibration. Click when done."
 msgstr "Limpia boquilla para calibracion. Click cuando acabes."
 
 # MSG_SELFTEST_PLEASECHECK
-#: ultralcd.cpp:8259
+#: ultralcd.cpp:8257
 msgid "Please check :"
 msgstr "Controla :"
 
@@ -1071,7 +1071,7 @@ msgid "Preheating to unload"
 msgstr "Precalent. descargar"
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
-#: ultralcd.cpp:8691
+#: ultralcd.cpp:8689
 msgid "Print fan:"
 msgstr "Vent.fusor:"
 
@@ -1211,12 +1211,12 @@ msgid "Select language"
 msgstr "Cambiar el idioma"
 
 # MSG_SELFTEST_OK
-#: ultralcd.cpp:7814
+#: ultralcd.cpp:7812
 msgid "Self test OK"
 msgstr ""
 
 # MSG_SELFTEST_START c=20
-#: ultralcd.cpp:7584
+#: ultralcd.cpp:7582
 msgid "Self test start  "
 msgstr "Iniciar Selftest"
 
@@ -1226,7 +1226,7 @@ msgid "Selftest         "
 msgstr ""
 
 # MSG_SELFTEST_ERROR
-#: ultralcd.cpp:8257
+#: ultralcd.cpp:8255
 msgid "Selftest error !"
 msgstr "Error Selftest !"
 
@@ -1381,7 +1381,7 @@ msgid "Support"
 msgstr "Soporte"
 
 # MSG_SELFTEST_SWAPPED
-#: ultralcd.cpp:8337
+#: ultralcd.cpp:8335
 msgid "Swapped"
 msgstr "Intercambiado"
 
@@ -1666,7 +1666,7 @@ msgid "Checks"
 msgstr "Comprobaciones"
 
 # 
-#: ultralcd.cpp:8351
+#: ultralcd.cpp:8349
 msgid "False triggering"
 msgstr "Falsa activacion"
 
@@ -1796,7 +1796,7 @@ msgid "Printer nozzle diameter differs from the G-code. Please check the value i
 msgstr "Diametro nozzle Impresora difiere de cod.G. Comprueba los valores en ajustes. Impresion cancelada."
 
 #  c=20
-#: ultralcd.cpp:8357
+#: ultralcd.cpp:8355
 msgid "%s level expected"
 msgstr ""
 

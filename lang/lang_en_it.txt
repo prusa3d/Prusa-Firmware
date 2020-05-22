@@ -52,7 +52,7 @@
 
 #MSG_AUTO c=6
 "Auto"
-
+"\x00"
 
 #MSG_PRESS c=20 r=2
 "and press the knob"
@@ -228,7 +228,7 @@
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-
+"\x00"
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
@@ -352,11 +352,11 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-""
+"Azione FS"
 
 # c=18
 "FS v0.4 or newer"
-""
+"FS 0.4 o superiore"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -366,7 +366,7 @@
 "Finishing movements"
 "Finaliz. spostamenti"
 
-#MSG_V2_CALIBRATION c=17 r=1
+#MSG_V2_CALIBRATION c=18
 "First layer cal."
 "Cal. primo strato"
 
@@ -384,7 +384,7 @@
 
 #MSG_PRUSA3D_FORUM
 "forum.prusa3d.com"
-""
+"\x00"
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
@@ -420,7 +420,7 @@
 
 #MSG_PRUSA3D_HOWTO
 "howto.prusa3d.com"
-""
+"\x00"
 
 #MSG_FILAMENTCHANGE
 "Change filament"
@@ -680,7 +680,7 @@
 
 #MSG_NO
 "No"
-
+"\x00"
 
 #MSG_SELFTEST_NOTCONNECTED
 "Not connected"
@@ -812,7 +812,7 @@
 
 # c=14
 "PINDA"
-""
+"\x00"
 
 #
 "Please upgrade."
@@ -884,7 +884,7 @@
 
 #MSG_PRUSA3D
 "prusa3d.com"
-""
+"\x00"
 
 #MSG_BED_CORRECTION_REAR c=14 r=1
 "Rear side [um]"
@@ -904,7 +904,7 @@
 
 # c=20
 "Prusa i3 MK3S OK."
-""
+"\x00"
 
 #MSG_CALIBRATE_BED_RESET
 "Reset XYZ calibr."
@@ -912,13 +912,13 @@
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
-
+"\x00"
 
 #MSG_RESUME_PRINT
 "Resume print"
 "Riprendi stampa"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 "Riprendi stampa"
 
@@ -940,7 +940,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY
 "FlashAir"
-""
+"\x00"
 
 #
 "Right"
@@ -964,7 +964,7 @@
 
 #MSG_SELFTEST
 "Selftest         "
-"Autotest"
+"Autotest         "
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"
@@ -988,15 +988,15 @@
 
 # c=20
 "Prusa i3 MK2.5 OK."
-""
+"\x00"
 
 # c=20
 "Prusa i3 MK2.5S OK."
-""
+"\x00"
 
 # c=20
 "Prusa i3 MK3 OK."
-""
+"\x00"
 
 #MSG_SETTINGS
 "Settings"
@@ -1124,7 +1124,7 @@
 
 #MSG_TEMPERATURE
 "Temperature"
-
+"\x00"
 
 #MSG_MENU_TEMPERATURES c=15 r=1
 "Temperatures"
@@ -1224,7 +1224,7 @@
 
 #MSG_WIZARD c=17 r=1
 "Wizard"
-""
+"\x00"
 
 #MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
@@ -1252,7 +1252,7 @@
 
 #MSG_TIMEOUT c=12
 "Timeout"
-""
+"\x00"
 
 #MSG_X_CORRECTION c=13
 "X-correct:"
@@ -1304,11 +1304,11 @@
 
 #MSG_OFF
 "Off"
-""
+"\x00"
 
 #MSG_ON
 "On"
-""
+"\x00"
 
 #
 "Back"
@@ -1324,11 +1324,11 @@
 
 #
 "FINDA:"
-""
+"\x00"
 
 #MSG_FIRMWARE
 "Firmware"
-""
+"\x00"
 
 #MSG_STRICT
 "Strict"
@@ -1340,11 +1340,11 @@
 
 #
 "HW Setup"
-"Installazione HW"
+"Impostazioni HW"
 
 #
 "IR:"
-""
+"\x00"
 
 #MSG_MAGNETS_COMP
 "Magnets comp."
@@ -1404,7 +1404,7 @@
 
 #
 "PINDA:"
-""
+"\x00"
 
 # c=20
 "Preheating to cut"
