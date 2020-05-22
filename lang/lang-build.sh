@@ -128,9 +128,9 @@ generate_binary()
  # read string count of English and compare it with the translation
  encount=$(cat lang_en.cnt)
  if [ "$count" -eq "$encount" ]; then
-	echo "OK:"$1"="$count" is equal to en="$encount >&2
+	echo "$(tput setaf 2)OK:"$1"="$count" is equal to en="$encount"$(tput sgr 0)" >&2
  else
-	echo "Error:"$1"="$count" is NOT equal to en="$encount >&2
+	echo "$(tput setaf 1)Error:"$1"="$count" is NOT equal to en="$encount"$(tput sgr 0)" >&2
 	finish 1
  fi
  #calculate text data offset
@@ -142,9 +142,10 @@ generate_binary()
  # read maxsize and compare with the translation
  maxsize=$(cat lang_en.max)
  if [ "$size" -lt "$maxsize" ]; then
-	echo "OK:"$1"="$size" is less than "$maxsize >&2
+	free_space=$(($maxsize - $size))
+	echo "$(tput setaf 2)OK:"$1"="$size" is less than "$maxsize". Free space:"$free_space"$(tput sgr 0)" >&2
  else
-	echo "Error:"$1"="$size" is higer than "$maxsize >&2
+	echo "$(tput setaf 1)Error:"$1"="$size" is higer than "$maxsize"$(tput sgr 0)" >&2
 	finish 1
  fi
 
