@@ -4038,7 +4038,7 @@ void prusa_statistics_err(char c){
 }
 
 static void prusa_statistics_case0(uint8_t statnr){
-	SERIAL_ECHO("{");
+    SERIAL_ECHO('{');
 	prusa_stat_printerstatus(statnr);
 	prusa_stat_farm_number();
 	prusa_stat_printinfo();
@@ -4066,7 +4066,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		}
 		else
 		{
-			SERIAL_ECHO("{");
+            SERIAL_ECHO('{');
 			prusa_stat_printerstatus(1);
 			prusa_stat_farm_number();
 			prusa_stat_diameter();

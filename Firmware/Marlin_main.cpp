@@ -5265,7 +5265,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             if (mbl.active) {
                 SERIAL_PROTOCOLPGM("Num X,Y: ");
                 SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
-                SERIAL_PROTOCOLPGM(",");
+                SERIAL_PROTOCOL(',');
                 SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
                 SERIAL_PROTOCOLPGM("\nZ search height: ");
                 SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
@@ -5275,7 +5275,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                         SERIAL_PROTOCOLPGM("  ");
                         SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
                     }
-                    SERIAL_PROTOCOLPGM("\n");
+                    SERIAL_PROTOCOLLN();
                 }
             }
             else
@@ -6283,7 +6283,7 @@ Sigma_Exit:
         for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
           SERIAL_PROTOCOLPGM(" T");
           SERIAL_PROTOCOL(cur_extruder);
-          SERIAL_PROTOCOLPGM(":");
+          SERIAL_PROTOCOL(':');
           SERIAL_PROTOCOL_F(degHotend(cur_extruder),1);
           SERIAL_PROTOCOLPGM(" /");
           SERIAL_PROTOCOL_F(degTargetHotend(cur_extruder),1);
@@ -7968,9 +7968,8 @@ Sigma_Exit:
 			{
 				SERIAL_PROTOCOLPGM("P:");
 				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
-				SERIAL_PROTOCOLPGM("/");
-				SERIAL_PROTOCOL(set_target_pinda);
-				SERIAL_PROTOCOLLN("");
+                SERIAL_PROTOCOL('/');
+                SERIAL_PROTOCOLLN(set_target_pinda);
 				codenum = _millis();
 			}
 			manage_heater();
@@ -8719,7 +8718,7 @@ Sigma_Exit:
 #else //SNMM
               if (tmp_extruder >= EXTRUDERS) {
                   SERIAL_ECHO_START;
-                  SERIAL_ECHOPGM("T");
+                  SERIAL_ECHO('T');
                   SERIAL_PROTOCOLLN((int)tmp_extruder);
                   SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER
               }
@@ -9937,7 +9936,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 				}
 				else
 				{
-					SERIAL_PROTOCOLLN("?");
+                    SERIAL_PROTOCOLLN('?');
 				}
 			}
 #else
@@ -11386,9 +11385,9 @@ void print_mesh_bed_leveling_table()
   for (int8_t y = 0; y < MESH_NUM_Y_POINTS; ++ y)
     for (int8_t x = 0; x < MESH_NUM_Y_POINTS; ++ x) {
       MYSERIAL.print(mbl.z_values[y][x], 3);
-      SERIAL_ECHOPGM(" ");
+      SERIAL_ECHO(' ');
     }
-  SERIAL_ECHOLNPGM("");
+  SERIAL_ECHOLN();
 }
 
 uint16_t print_time_remaining() {
