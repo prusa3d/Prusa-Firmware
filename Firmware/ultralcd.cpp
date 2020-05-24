@@ -1131,6 +1131,7 @@ void lcd_commands()
 		float length = 20 - width;
 		float extr = count_e(0.2, width, length);
 		float extr_short_segment = count_e(0.2, width, width);
+		uint16_t m=nozzle_diameter_multiplier();
 
 		if (lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 		if (lcd_commands_step == 0)
@@ -1184,23 +1185,65 @@ void lcd_commands()
 		{
 			lcd_timeoutToStatus.start();
 
-
 			enquecommand_P(PSTR("G1 X50 Y155"));
-			enquecommand_P(PSTR("G1 X60 Y155 E4"));
+
+			strcpy(cmd1, "G1 X60 Y155 E"); //E4
+			strcat(cmd1, ftostr43(4000 * m / 1000000));
+                        enquecommand(cmd1);
+
 			enquecommand_P(PSTR("G1 F1080"));
-			enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
-			enquecommand_P(PSTR("G1 X100 Y155 E2"));
-			enquecommand_P(PSTR("G1 X200 Y155 E2.62773"));
-			enquecommand_P(PSTR("G1 X200 Y135 E0.66174"));
-			enquecommand_P(PSTR("G1 X50 Y135 E3.62773"));
-			enquecommand_P(PSTR("G1 X50 Y115 E0.49386"));
-			enquecommand_P(PSTR("G1 X200 Y115 E3.62773"));
-			enquecommand_P(PSTR("G1 X200 Y95 E0.49386"));
-			enquecommand_P(PSTR("G1 X50 Y95 E3.62773"));
-			enquecommand_P(PSTR("G1 X50 Y75 E0.49386"));
-			enquecommand_P(PSTR("G1 X200 Y75 E3.62773"));
-			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
-			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
+
+			strcpy(cmd1, "G1 X75 Y155 E"); //E2.5
+                        strcat(cmd1, ftostr43(2500 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X100 Y155 E"); //E2
+                        strcat(cmd1, ftostr43(2000 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X200 Y155 E"); //E2.628
+                        strcat(cmd1, ftostr43(2628 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X200 Y135 E"); //E0.662
+                        strcat(cmd1, ftostr43(662 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X50 Y135 E"); //E3.628
+                        strcat(cmd1, ftostr43(3628 * m / 1000000));
+                        enquecommand(cmd1);
+ 
+			strcpy(cmd1, "G1 X50 Y115 E"); //E0.494
+                        strcat(cmd1, ftostr43(494 * m / 1000000));
+                        enquecommand(cmd1);
+ 
+			strcpy(cmd1, "G1 X200 Y115 E"); //E3.628
+                        strcat(cmd1, ftostr43(3628 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X200 Y95 E"); //E0.494
+                        strcat(cmd1, ftostr43(494 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X50 Y95 E"); //E3.628
+                        strcat(cmd1, ftostr43(3628 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X50 Y75 E"); //E0.494
+                        strcat(cmd1, ftostr43(494 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X200 Y75 E"); //E3.628
+                        strcat(cmd1, ftostr43(3628 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X200 Y55 E"); //E0.494
+                        strcat(cmd1, ftostr43(494 * m / 1000000));
+                        enquecommand(cmd1);
+
+			strcpy(cmd1, "G1 X50 Y55 E"); //E3.628
+                        strcat(cmd1, ftostr43(3628 * m / 1000000));
+                        enquecommand(cmd1);
 
 			lcd_commands_step = 7;
 		}

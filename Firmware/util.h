@@ -102,6 +102,7 @@ extern ClCheckGcode oCheckGcode;
 
 void fCheckModeInit();
 void nozzle_diameter_check(uint16_t nDiameter);
+uint16_t nozzle_diameter_multiplier();
 void printer_model_check(uint16_t nPrinterModel);
 void printer_smodel_check(char* pStrPos);
 void fw_version_check(const char *pVersion);

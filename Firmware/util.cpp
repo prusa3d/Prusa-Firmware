@@ -412,6 +412,18 @@ if(!farm_mode)
      }
 }
 
+uint16_t nozzle_diameter_multiplier()
+{
+    uint8_t oDiameter;
+    oDiameter=eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER);
+
+    switch(oDiameter){
+        case 25: return 625;  //0.625
+        case 40: return 1000; //1.000
+        case 60: return 1500; //1.500
+    }
+}
+
 void printer_model_check(uint16_t nPrinterModel)
 {
 if(oCheckModel==ClCheckModel::_None)
