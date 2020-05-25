@@ -2982,7 +2982,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					clean_up_after_endstop_move(l_feedmultiply);
 					// Print head up.
 					current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-					plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40, active_extruder);
+                    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
 					st_synchronize();
 					// if (result >= 0) babystep_apply();					
 					#endif //HEATBED_V2

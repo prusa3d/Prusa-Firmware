@@ -3484,7 +3484,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
                     // Only move up, whatever direction the user rotates the encoder.
                     current_position[Z_AXIS] += fabs(lcd_encoder);
                     lcd_encoder = 0;
-                    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60, active_extruder);
+                    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
                 }
             }
             if (lcd_clicked()) {
@@ -7965,13 +7965,13 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 
 	if (_axis == X_AXIS) {
 		current_position[Z_AXIS] += 17;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	}
 
 	do {
 		current_position[_axis] = current_position[_axis] - 1;
 
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 		st_synchronize();
 #ifdef TMC2130
 		if ((READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING))
@@ -8074,17 +8074,17 @@ static bool lcd_selfcheck_pulleys(int axis)
 	current_position_init = current_position[axis];
 
 	current_position[axis] += 2;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+    plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	for (i = 0; i < 5; i++) {
 		refresh_cmd_timeout();
 		current_position[axis] = current_position[axis] + move;
 		st_current_set(0, 850); //set motor current higher
-		plan_buffer_line_curposXYZE(200, active_extruder);
+        plan_buffer_line_curposXYZE(200);
 		st_synchronize();
           if (SilentModeMenu != SILENT_MODE_OFF) st_current_set(0, tmp_motor[0]); //set back to normal operation currents
 		else st_current_set(0, tmp_motor_loud[0]); //set motor current back			
 		current_position[axis] = current_position[axis] - move;
-		plan_buffer_line_curposXYZE(50, active_extruder);
+        plan_buffer_line_curposXYZE(50);
 		st_synchronize();
 		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
@@ -8101,7 +8101,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 			endstop_triggered = true;
 			if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
 				current_position[axis] += 10;
-				plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+                plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 				st_synchronize();
 				return(true);
 			}
@@ -8112,7 +8112,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 		}
 		else {
 			current_position[axis] -= 1;
-			plan_buffer_line_curposXYZE(manual_feedrate[0] / 60, active_extruder);
+            plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 			st_synchronize();
 			if (_millis() > timeout_counter) {
 				lcd_selftest_error(TestError::Pulley, (axis == 0) ? "X" : "Y", "");
