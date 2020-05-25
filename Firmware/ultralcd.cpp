@@ -6152,34 +6152,38 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 }
 
 char reset_menu() {
+    const uint8_t items_no =
 #ifdef SNMM
-	int items_no = 5;
+        5;
 #else
-	int items_no = 4;
+        4;
 #endif
-	static int first = 0;
-	int enc_dif = 0;
+    static int8_t first = 0;
+    int8_t enc_dif = 0;
 	char cursor_pos = 0;
-	const char *item [items_no];
-	
-	item[0] = "Language";
-	item[1] = "Statistics";
-	item[2] = "Shipping prep";
-	item[3] = "All Data";
-#ifdef SNMM
-	item[4] = "Bowden length";
-#endif // SNMM
 
+    static const char iLa[] PROGMEM = "Language";
+    static const char iSt[] PROGMEM = "Statistics";
+    static const char iSh[] PROGMEM = "Shipping prep";
+    static const char iAl[] PROGMEM = "All Data";
+    static const char iBl[] PROGMEM = "Bowden length";
+
+    static const char *const item [items_no] PROGMEM = { iLa, iSt, iSh, iAl
+#ifdef SNMM
+        , iBl
+#endif
+    };
+	
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
 	lcd_set_cursor(0, 0);
-	lcd_print(">");
+    lcd_putc('>');
 	lcd_consume_click();
 	while (1) {		
 
 		for (uint_least8_t i = 0; i < 4; i++) {
 			lcd_set_cursor(1, i);
-			lcd_print(item[first + i]);
+            lcd_puts_P(item[first + i]);
 		}
 
 		manage_heater();
@@ -6214,15 +6218,15 @@ char reset_menu() {
 					}
 				}
 				lcd_set_cursor(0, 0);
-				lcd_print(" ");
+                lcd_space(1);
 				lcd_set_cursor(0, 1);
-				lcd_print(" ");
+                lcd_space(1);
 				lcd_set_cursor(0, 2);
-				lcd_print(" ");
+                lcd_space(1);
 				lcd_set_cursor(0, 3);
-				lcd_print(" ");
+                lcd_space(1);
 				lcd_set_cursor(0, cursor_pos);
-				lcd_print(">");
+                lcd_putc('>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
