@@ -139,10 +139,7 @@
 #include "cmdqueue.h"
 #include "io_atmega2560.h"
 
-// Macros for bit masks
-#define BIT(b) (1<<(b))
-#define TEST(n,b) (((n)&BIT(b))!=0)
-#define SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (BIT(b))
+#include "macros.h"
 
 //Macro for print fan speed
 #define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms

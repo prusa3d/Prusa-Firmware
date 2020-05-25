@@ -59,6 +59,7 @@
  *
  * Why double up on these macros? see http://gcc.gnu.org/onlinedocs/cpp/Stringification.html
  */
+#include "macros.h"
 
 #define _READ(IO)             TEST(DIO ## IO ## _RPORT, DIO ## IO ## _PIN)
 
