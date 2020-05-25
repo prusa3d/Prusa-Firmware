@@ -175,4 +175,10 @@ const char MSG_FANCHECK_PRINT[] PROGMEM_N1 = "Err: PRINT FAN ERROR"; ////c=20
 const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
 const char MSG_ADVANCE_K[] PROGMEM_N1 = "Advance K:"; ////c=13
 const char MSG_POWERPANIC_DETECTED[] PROGMEM_N1 = "POWER PANIC DETECTED"; ////c=20
+const char MSG_OK_UPPER[] PROGMEM_N1 = "OK"; ////
+const char MSG_PROGRESS_0[] PROGMEM_N1 = "-"; ////
+const char MSG_PROGRESS_1[] PROGMEM_N1 = "|"; ////
+const char MSG_X[] PROGMEM_N1 = "X"; ////
+const char MSG_Y[] PROGMEM_N1 = "Y"; ////
+const char MSG_Z[] PROGMEM_N1 = "Z"; ////
 
