@@ -880,7 +880,7 @@ void mmu_M600_load_filament(bool automatic, float nozzle_temp)
     lcd_update_enable(false);
     lcd_clear();
     lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-    lcd_print(" ");
+    lcd_space(1);
     lcd_print(tmp_extruder + 1);
     snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
@@ -995,7 +995,7 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 	//if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd.setCursor(0, 1);
 	//else lcd.print(" ");
-	lcd_print(" ");
+    lcd_space(1);
 	lcd_print(extruder + 1);
 
 	// get response
@@ -1035,7 +1035,7 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 	lcd_clear();
 	lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 	if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd_set_cursor(0, 1);
-	else lcd_print(" ");
+    else lcd_space(1);
 	lcd_print(mmu_extruder + 1);
 	lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
 	st_synchronize();
@@ -1083,8 +1083,8 @@ void extr_unload_view()
 {
     lcd_clear();
     lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-    lcd_print(" ");
-    if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
+    lcd_space(1);
+    if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_space(1);
     else lcd_print(mmu_extruder + 1);
 }
 
@@ -1116,7 +1116,7 @@ void extr_unload()
 		lcd_display_message_fullscreen_P(PSTR(""));
 		max_feedrate[E_AXIS] = 50;
 		lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-		lcd_print(" ");
+        lcd_space(1);
 		lcd_print(mmu_extruder + 1);
 		lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
 		if (current_position[Z_AXIS] < 15) {
@@ -1352,7 +1352,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         lcd_clear();
         lcd_set_cursor(0, 1);
         lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-        lcd_print(" ");
+        lcd_space(1);
         lcd_print(tmp_extruder + 1);
         mmu_command(MmuCmd::T0 + tmp_extruder);
         manage_response(true, true, MMU_TCODE_MOVE);
@@ -1386,7 +1386,7 @@ void mmu_cut_filament(uint8_t filament_nr)
         LcdUpdateDisabler disableLcdUpdate;
         lcd_clear();
         lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18
-        lcd_print(" ");
+        lcd_space(1);
         lcd_print(filament_nr + 1);
         mmu_filament_ramming();
         mmu_command(MmuCmd::K0 + filament_nr);
