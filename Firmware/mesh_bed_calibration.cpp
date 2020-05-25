@@ -3054,7 +3054,9 @@ void babystep_apply()
 {
     babystep_load();
 #ifdef BABYSTEP_LOADZ_BY_PLANNER
-    shift_z(- float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
+    float babysteps_mm = - float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]);
+    shift_z(babysteps_mm);
+    printf_P(_N("babystep applied:%.3f\n"), babysteps_mm);
 #else
     babystepsTodoZadd(babystepLoadZ);
 #endif /* BABYSTEP_LOADZ_BY_PLANNER */

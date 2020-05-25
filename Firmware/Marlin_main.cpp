@@ -5137,7 +5137,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
 #endif
 		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
-//		SERIAL_ECHOLNPGM("babystep applied");
 		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 1) {
