@@ -6498,10 +6498,10 @@ unsigned char lcd_choose_color() {
 	//function returns index of currently chosen item
 	//following part can be modified from 2 to 255 items:
 	//-----------------------------------------------------
-	unsigned char items_no = 2;
-	const char *item[items_no];
-	item[0] = "Orange";
-	item[1] = "Black";
+	static const unsigned char items_no = 2;
+	static const char orange[] PROGMEM = "Orange";
+	static const char black[] PROGMEM = "Black";
+	static const char * const item[items_no] PROGMEM = { orange, black };
 	//-----------------------------------------------------
 	uint_least8_t active_rows;
 	static int first = 0;
@@ -6518,7 +6518,7 @@ unsigned char lcd_choose_color() {
 		lcd_puts_at_P(0, 0, PSTR("Choose color:"));
 		for (uint_least8_t i = 0; i < active_rows; i++) {
 			lcd_set_cursor(1, i+1);
-			lcd_print(item[first + i]);
+			lcd_puts_P(item[first + i]);
 		}
 
 		manage_heater();
