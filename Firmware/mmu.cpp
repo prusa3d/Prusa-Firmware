@@ -758,7 +758,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 					lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature..."));
 					delay_keep_alive(3000);
 				}
-                mmu_wait_for_heater_blocking();
+				mmu_wait_for_heater_blocking();
 			  }			  
 			  if (move_axes) {
 				  lcd_clear();
@@ -995,7 +995,7 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 	//if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd.setCursor(0, 1);
 	//else lcd.print(" ");
-    lcd_space(1);
+	lcd_space(1);
 	lcd_print(extruder + 1);
 
 	// get response
@@ -1035,7 +1035,7 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 	lcd_clear();
 	lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 	if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd_set_cursor(0, 1);
-    else lcd_space(1);
+	else lcd_space(1);
 	lcd_print(mmu_extruder + 1);
 	lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
 	st_synchronize();
@@ -1116,7 +1116,7 @@ void extr_unload()
 		lcd_display_message_fullscreen_P(PSTR(""));
 		max_feedrate[E_AXIS] = 50;
 		lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-        lcd_space(1);
+		lcd_space(1);
 		lcd_print(mmu_extruder + 1);
 		lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
 		if (current_position[Z_AXIS] < 15) {
