@@ -69,5 +69,5 @@ cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
 	fi
 done
 
-read x
+read -t 5
 exit 0

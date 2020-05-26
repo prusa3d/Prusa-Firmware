@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_16
+# Version: 1.0.6-Build_18
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -121,7 +121,9 @@
 # 28 Apr 2020, 3d-gussner, Added RC3 detection
 # 03 May 2020, deliopoulos, Accept all RCx as RC versions
 # 05 May 2020, 3d-gussner, Make a copy of `not_tran.txt`and `not_used.txt` as `not_tran_$VARIANT.txt`and `not_used_$VARIANT.txt`
-#                          After compiling All multilanguage vairants it makes it easier to find missing or unused transltions.  
+#                          After compiling All multilanguage vairants it makes it easier to find missing or unused transltions.
+# 12 May 2020, DRracer   , Cleanup double MK2/s MK25/s `not_tran` and `not_used` files
+# 13 May 2020, leptun    , If cleanup files do not exist don't try to.
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -460,6 +462,16 @@ else
 fi
 
 #Second argument defines if it is an english only version. Known values EN_ONLY / ALL
+#Check for "config.tmp" 
+if [ ! -f "$SCRIPT_PATH/Firmware/config.tmp" ]; then
+	cp -f $SCRIPT_PATH/Firmware/config.h $SCRIPT_PATH/Firmware/config.tmp
+	echo "No config.tmp"
+else
+	cp -f $SCRIPT_PATH/Firmware/config.tmp $SCRIPT_PATH/Firmware/config.h
+	echo "Found config.tmp restore config.h"
+fi
+
+
 #Check default language mode
 MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "^#define LANG_MODE *" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
@@ -604,6 +616,16 @@ do
 	echo "Hex-file Folder:" $OUTPUT_FOLDER
 	echo "$(tput sgr0)"
 
+	#Check if script has been canceled or failed.
+	#Check for "Configuration.tmp" 
+	if [ ! -f "$SCRIPT_PATH/Firmware/Configuration.tmp" ]; then
+		cp -f $SCRIPT_PATH/Firmware/Configuration.h $SCRIPT_PATH/Firmware/Configuration.tmp
+		echo "No Confguration.tmp"
+	else
+		cp -f $SCRIPT_PATH/Firmware/Configuration.tmp $SCRIPT_PATH/Firmware/Configuration.h
+		echo "Found Confguration.tmp restore Configuration.h"
+	fi
+
 	#Prepare Firmware to be compiled by copying variant as Configuration_prusa.h
 	if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
 		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 28
@@ -722,12 +744,36 @@ do
 
 	# Cleanup Firmware
 	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 36
+	if find $SCRIPT_PATH/lang/ -name '*RAMBo10a*.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/*RAMBo10a*.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name '*MK2-RAMBo13a*' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/*MK2-RAMBo13a*.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name 'not_tran.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/not_tran.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name 'not_used.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/not_used.txt
+	fi
 	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
 	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
 	echo $MULTI_LANGUAGE_CHECK
 	#sed -i -- "s/^#define LANG_MODE * /#define LANG_MODE              $MULTI_LANGUAGE_CHECK/g" $SCRIPT_PATH/Firmware/config.h
 	sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
 	sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
+	#Check for "config.tmp" and delete it
+	if [ -e "$SCRIPT_PATH/Firmware/Configuration.tmp" ]; then
+		rm $SCRIPT_PATH/Firmware/Configuration.tmp
+	fi
+	#Check for "config.tmp" and delete it
+	if [ -e "$SCRIPT_PATH/Firmware/config.tmp" ]; then
+		rm $SCRIPT_PATH/Firmware/config.tmp
+	fi
 	sleep 5
 done
 
