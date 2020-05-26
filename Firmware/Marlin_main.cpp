@@ -2166,22 +2166,22 @@ bool calibrate_z_auto()
 	int axis_up_dir = -home_dir(Z_AXIS);
 	tmc2130_home_enter(Z_AXIS_MASK);
 	current_position[Z_AXIS] = 0;
-    plan_set_position_curposXYZE();
+	plan_set_position_curposXYZE();
 	set_destination_to_current();
 	destination[Z_AXIS] += (1.1 * max_length(Z_AXIS) * axis_up_dir);
 	feedrate = homing_feedrate[Z_AXIS];
-    plan_buffer_line_destinationXYZE(feedrate / 60);
+	plan_buffer_line_destinationXYZE(feedrate / 60);
 	st_synchronize();
 	//	current_position[axis] = 0;
-    //	plan_set_position_curposXYZE();
+	//	plan_set_position_curposXYZE();
 	tmc2130_home_exit();
 	enable_endstops(false);
 	current_position[Z_AXIS] = 0;
-    plan_set_position_curposXYZE();
+	plan_set_position_curposXYZE();
 	set_destination_to_current();
 	destination[Z_AXIS] += 10 * axis_up_dir; //10mm up
 	feedrate = homing_feedrate[Z_AXIS] / 2;
-    plan_buffer_line_destinationXYZE(feedrate / 60);
+	plan_buffer_line_destinationXYZE(feedrate / 60);
 	st_synchronize();
 	enable_endstops(endstops_enabled);
 	if (PRINTER_TYPE == PRINTER_MK3) {
@@ -2190,7 +2190,7 @@ bool calibrate_z_auto()
 	else {
 		current_position[Z_AXIS] = Z_MAX_POS + 9.0;
 	}
-    plan_set_position_curposXYZE();
+	plan_set_position_curposXYZE();
 	return true;
 }
 #endif //TMC2130
@@ -2201,9 +2201,9 @@ static void check_Z_crash(void)
 	if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 		FORCE_HIGH_POWER_END;
 		current_position[Z_AXIS] = 0;
-        plan_set_position_curposXYZE();
+		plan_set_position_curposXYZE();
 		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
-        plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
+		plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
 		st_synchronize();
 		kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 	}
@@ -2258,9 +2258,9 @@ void homeaxis(int axis, uint8_t cnt)
 			endstops_hit_on_purpose();
 			enable_endstops(false);
 			current_position[axis] = 0;
-            plan_set_position_curposXYZE();
+			plan_set_position_curposXYZE();
 			destination[axis] = -10.f * axis_home_dir;
-            plan_buffer_line_destinationXYZE(feedrate/60);
+			plan_buffer_line_destinationXYZE(feedrate/60);
 			st_synchronize();
 			endstops_hit_on_purpose();
 			// Now move left up to the collision, this time with a repeatable velocity.
@@ -2271,7 +2271,7 @@ void homeaxis(int axis, uint8_t cnt)
 #else //TMC2130
 			feedrate = homing_feedrate[axis] / 2;
 #endif //TMC2130
-            plan_buffer_line_destinationXYZE(feedrate/60);
+			plan_buffer_line_destinationXYZE(feedrate/60);
 			st_synchronize();
 #ifdef TMC2130
 			uint16_t mscnt = tmc2130_rd_MSCNT(axis);
@@ -2860,7 +2860,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	enable_endstops(false);
 	current_position[X_AXIS] += 5;
 	current_position[Y_AXIS] += 5;
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+	plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
 	st_synchronize();
 
 	// Let the user move the Z axes up to the end stoppers.
@@ -2921,7 +2921,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		tmc2130_home_enter(Z_AXIS_MASK);
 #endif //TMC2130
 
-        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
 
 		st_synchronize();
 #ifdef TMC2130
@@ -2962,7 +2962,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				clean_up_after_endstop_move(l_feedmultiply);
 				// Print head up.
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
 				st_synchronize();
 //#ifndef NEW_XYZCAL
 				if (result >= 0)
@@ -2982,7 +2982,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					clean_up_after_endstop_move(l_feedmultiply);
 					// Print head up.
 					current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+					plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
 					st_synchronize();
 					// if (result >= 0) babystep_apply();					
 					#endif //HEATBED_V2
@@ -3131,7 +3131,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 			lcd_set_cursor(0, 2);
 			lcd_puts_P(_T(MSG_PLEASE_WAIT));
 			current_position[X_AXIS] -= 100;
-            plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
+			plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
 			st_synchronize();
 			lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
         }
@@ -3226,12 +3226,12 @@ void gcode_M701()
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 		current_position[E_AXIS] += 40;
-        plan_buffer_line_curposXYZE(400 / 60); //fast sequence
+		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
 		st_synchronize();
 
         raise_z_above(MIN_Z_FOR_LOAD, false);
 		current_position[E_AXIS] += 30;
-        plan_buffer_line_curposXYZE(400 / 60); //fast sequence
+		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
 		
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
@@ -4596,15 +4596,15 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if (result)
 			{
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				current_position[Z_AXIS] = 50;
 				current_position[Y_AXIS] = 180;
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				st_synchronize();
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
 				current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
 				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				st_synchronize();
 				gcode_G28(false, false, true);
 
@@ -4612,7 +4612,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
 				//waiting for PIDNA probe to cool down in case that we are not in farm mode
 				current_position[Z_AXIS] = 100;
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				if (lcd_wait_for_pinda(35) == false) { //waiting for PINDA probe to cool, if this takes more then time expected, temp. cal. fails
 					lcd_temp_cal_show_result(false);
 					break;
@@ -4636,12 +4636,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			custom_message_state = 1;
 			lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
 			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-            plan_buffer_line_curposXYZE(3000 / 60);
+			plan_buffer_line_curposXYZE(3000 / 60);
 			current_position[X_AXIS] = PINDA_PREHEAT_X;
 			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-            plan_buffer_line_curposXYZE(3000 / 60);
+			plan_buffer_line_curposXYZE(3000 / 60);
 			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-            plan_buffer_line_curposXYZE(3000 / 60);
+			plan_buffer_line_curposXYZE(3000 / 60);
 			st_synchronize();
 
 			while (current_temperature_pinda < start_temp)
@@ -4653,10 +4653,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
 
 			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-            plan_buffer_line_curposXYZE(3000 / 60);
+			plan_buffer_line_curposXYZE(3000 / 60);
 			current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
 			current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
-            plan_buffer_line_curposXYZE(3000 / 60);
+			plan_buffer_line_curposXYZE(3000 / 60);
 			st_synchronize();
 
 			bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
@@ -4684,12 +4684,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				setTargetBed(50 + 10 * (temp - 30) / 5);
 //				setTargetHotend(255, 0);
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				current_position[X_AXIS] = PINDA_PREHEAT_X;
 				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				st_synchronize();
 				while (current_temperature_pinda < temp)
 				{
@@ -4697,10 +4697,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 					serialecho_temperatures();
 				}
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
 				current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
-                plan_buffer_line_curposXYZE(3000 / 60);
+				plan_buffer_line_curposXYZE(3000 / 60);
 				st_synchronize();
 				find_z_result = find_bed_induction_sensor_point_z(-1.f);
 				if (find_z_result == false) {
@@ -4756,11 +4756,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
 
 		current_position[Z_AXIS] = 5;
-        plan_buffer_line_curposXYZE(3000 / 60);
+		plan_buffer_line_curposXYZE(3000 / 60);
 
 		current_position[X_AXIS] = BED_X0;
 		current_position[Y_AXIS] = BED_Y0;
-        plan_buffer_line_curposXYZE(3000 / 60);
+		plan_buffer_line_curposXYZE(3000 / 60);
 		st_synchronize();
 		
 		find_bed_induction_sensor_point_z(-1.f);
@@ -4777,7 +4777,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			current_position[X_AXIS] = PINDA_PREHEAT_X;
 			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-            plan_buffer_line_curposXYZE(3000 / 60);
+			plan_buffer_line_curposXYZE(3000 / 60);
 			st_synchronize();
 			while (degBed() < t_c) {
 				delay_keep_alive(1000);
@@ -4788,10 +4788,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				serialecho_temperatures();
 			}
 			current_position[Z_AXIS] = 5;
-            plan_buffer_line_curposXYZE(3000 / 60);
+			plan_buffer_line_curposXYZE(3000 / 60);
 			current_position[X_AXIS] = BED_X0;
 			current_position[Y_AXIS] = BED_Y0;
-            plan_buffer_line_curposXYZE(3000 / 60);
+			plan_buffer_line_curposXYZE(3000 / 60);
 			st_synchronize();
 			find_bed_induction_sensor_point_z(-1.f);
 			z_shift = (int)((current_position[Z_AXIS] - zero_z)*cs.axis_steps_per_unit[Z_AXIS]);
@@ -4934,7 +4934,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		// Cycle through all points and probe them
 		// First move up. During this first movement, the babystepping will be reverted.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
+		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
 		// The move to the first calibration point.
 		current_position[X_AXIS] = BED_X0;
 		current_position[Y_AXIS] = BED_Y0;
@@ -4949,7 +4949,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 		#endif //SUPPORT_VERBOSITY
 
-        plan_buffer_line_curposXYZE(homing_feedrate[X_AXIS] / 30);
+		plan_buffer_line_curposXYZE(homing_feedrate[X_AXIS] / 30);
 		// Wait until the move is finished.
 		st_synchronize();
 
@@ -5001,7 +5001,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if((ix == 0) && (iy == 0)) current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 			else current_position[Z_AXIS] += 2.f / nMeasPoints; //use relative movement from Z coordinate where PINDa triggered on previous point. This makes calibration faster.
 			float init_z_bckp = current_position[Z_AXIS];
-            plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
+			plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
 			st_synchronize();
 
 			// Move to XY position of the sensor point.
@@ -5022,7 +5022,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			#endif // SUPPORT_VERBOSITY
 
 			//printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
-            plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
+			plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
 			st_synchronize();
 
 			// Go down until endstop is hit
@@ -5034,7 +5034,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if (init_z_bckp - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
 				//printf_P(PSTR("Another attempt! Current Z position: %f\n"), current_position[Z_AXIS]);
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
+				plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
 				st_synchronize();
 
 				if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
@@ -5089,7 +5089,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			MYSERIAL.print(current_position[Z_AXIS], 5);
 		}
 		#endif // SUPPORT_VERBOSITY
-        plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
+		plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
 		st_synchronize();
 		if (mesh_point != nMeasPoints * nMeasPoints) {
                Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
@@ -5243,7 +5243,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		//unretract (after PINDA preheat retraction)
 		if (degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
 			current_position[E_AXIS] += default_retraction;
-            plan_buffer_line_curposXYZE(400);
+			plan_buffer_line_curposXYZE(400);
 		}
 		KEEPALIVE_STATE(NOT_BUSY);
 		// Restore custom message state
@@ -7968,8 +7968,8 @@ Sigma_Exit:
 			{
 				SERIAL_PROTOCOLPGM("P:");
 				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
-                SERIAL_PROTOCOL('/');
-                SERIAL_PROTOCOLLN(set_target_pinda);
+				SERIAL_PROTOCOL('/');
+				SERIAL_PROTOCOLLN(set_target_pinda);
 				codenum = _millis();
 			}
 			manage_heater();
@@ -9936,7 +9936,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 				}
 				else
 				{
-                    SERIAL_PROTOCOLLN('?');
+					SERIAL_PROTOCOLLN('?');
 				}
 			}
 #else
@@ -10069,14 +10069,14 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 	/*destination[Z_AXIS] = mesh_home_z_search;
 	//plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
 
-    plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
+	plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
 	for(int8_t i=0; i < NUM_AXIS; i++) {
 		current_position[i] = destination[i];
 	}
 	st_synchronize();
 	*/
 		destination[Z_AXIS] = measure_z_height;
-        plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
+		plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
 		for(int8_t i=0; i < NUM_AXIS; i++) {
 			current_position[i] = destination[i];
 		}
@@ -10103,7 +10103,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 		/*destination[Z_AXIS] = mesh_home_z_search;
 		//plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
 
-        plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
+		plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
 		for(int8_t i=0; i < NUM_AXIS; i++) {
 			current_position[i] = destination[i];
 		}
@@ -10540,12 +10540,12 @@ void long_pause() //long pause print
 	//lift z
 	current_position[Z_AXIS] += Z_PAUSE_LIFT;
 	if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-    plan_buffer_line_curposXYZE(15);
+	plan_buffer_line_curposXYZE(15);
 
 	//Move XY to side
 	current_position[X_AXIS] = X_PAUSE_POS;
 	current_position[Y_AXIS] = Y_PAUSE_POS;
-    plan_buffer_line_curposXYZE(50);
+	plan_buffer_line_curposXYZE(50);
 
 	// Turn off the print fan
 	fanSpeed = 0;
@@ -11435,7 +11435,7 @@ static void print_time_remaining_init()
 void load_filament_final_feed()
 {
 	current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FINAL);
+	plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FINAL);
 }
 
 //! @brief Wait for user to check the state
@@ -11580,7 +11580,7 @@ void M600_load_filament_movements()
 	plan_buffer_line_curposXYZE(50, active_extruder);
 #else
 	current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST);
+	plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST);
 #endif                
 	load_filament_final_feed();
 	lcd_loading_filament();
