@@ -107,8 +107,8 @@
 "Corr. niveau plateau"
 
 #MSG_BELTTEST c=17
-"Belt test        "
-"Test de courroie "
+"Belt test"
+"Test de courroie"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -963,7 +963,7 @@
 "Debut auto-test"
 
 #MSG_SELFTEST
-"Selftest         "
+"Selftest"
 "Auto-test"
 
 #MSG_SELFTEST_ERROR

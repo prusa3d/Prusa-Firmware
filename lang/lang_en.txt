@@ -80,7 +80,7 @@
 "Bed level correct"
 
 #MSG_BELTTEST c=17
-"Belt test        "
+"Belt test"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -722,7 +722,7 @@
 "Self test start  "
 
 #MSG_SELFTEST
-"Selftest         "
+"Selftest"
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"

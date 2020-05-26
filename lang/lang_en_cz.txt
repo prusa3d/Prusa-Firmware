@@ -107,8 +107,8 @@
 "Korekce podlozky"
 
 #MSG_BELTTEST c=17
-"Belt test        "
-"Test remenu      "
+"Belt test"
+"Test remenu"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -963,8 +963,8 @@
 "Self test start "
 
 #MSG_SELFTEST
-"Selftest         "
-"Selftest "
+"Selftest"
+"\x00"
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"

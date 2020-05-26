@@ -107,8 +107,8 @@
 "Correz. liv.piano"
 
 #MSG_BELTTEST c=17
-"Belt test        "
-"Test cinghie     "
+"Belt test"
+"Test cinghie"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -963,8 +963,8 @@
 "Avvia autotest"
 
 #MSG_SELFTEST
-"Selftest         "
-"Autotest         "
+"Selftest"
+"Autotest"
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"

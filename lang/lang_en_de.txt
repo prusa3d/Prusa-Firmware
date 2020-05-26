@@ -107,8 +107,8 @@
 "Ausgleich Bett ok"
 
 #MSG_BELTTEST c=17
-"Belt test        "
-"Riementest       "
+"Belt test"
+"Riementest"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -963,8 +963,8 @@
 "Selbsttest start "
 
 #MSG_SELFTEST
-"Selftest         "
-"Selbsttest       "
+"Selftest"
+"Selbsttest"
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"

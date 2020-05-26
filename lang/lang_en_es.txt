@@ -107,8 +107,8 @@
 "Corr. de la cama"
 
 #MSG_BELTTEST c=17
-"Belt test        "
-"Test cinturon    "
+"Belt test"
+"Test cinturon"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -963,7 +963,7 @@
 "Iniciar Selftest"
 
 #MSG_SELFTEST
-"Selftest         "
+"Selftest"
 "\x00"
 
 #MSG_SELFTEST_ERROR

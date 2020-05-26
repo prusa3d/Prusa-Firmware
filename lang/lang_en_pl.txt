@@ -107,7 +107,7 @@
 "Korekta stolu"
 
 #MSG_BELTTEST c=17
-"Belt test        "
+"Belt test"
 "Test paskow"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
@@ -963,8 +963,8 @@
 "Selftest startuje"
 
 #MSG_SELFTEST
-"Selftest         "
-"Selftest "
+"Selftest"
+"\x00"
 
 #MSG_SELFTEST_ERROR
 "Selftest error !"

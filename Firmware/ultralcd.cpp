@@ -5834,9 +5834,9 @@ static void lcd_calibration_menu()
     }
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 #ifdef TMC2130
-	MENU_ITEM_FUNCTION_P(_i("Belt test        "), lcd_belttest_v);////MSG_BELTTEST c=17
+	MENU_ITEM_FUNCTION_P(_i("Belt test"), lcd_belttest_v);////MSG_BELTTEST c=17
 #endif //TMC2130
-	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST c=17
+	MENU_ITEM_FUNCTION_P(_i("Selftest"), lcd_selftest_v);////MSG_SELFTEST c=17
 #ifdef MK1BP
     // MK1
     // "Calibrate Z"
@@ -5881,8 +5881,7 @@ void bowden_menu() {
 	lcd_set_cursor(0, 0);
 	lcd_putc('>');
 	for (uint_least8_t i = 0; i < 4; i++) {
-		lcd_set_cursor(1, i);
-        lcd_puts_P(extruder);
+		lcd_puts_at_P(1, i, extruder);
 		lcd_print(i);
         lcd_puts_P(colon_space);
 		EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
@@ -5939,8 +5938,7 @@ void bowden_menu() {
 				manage_heater();
 				manage_inactivity(true);
 
-				lcd_set_cursor(1, 1);
-                lcd_puts_P(extruder);
+				lcd_puts_at_P(1, 1, extruder);
 				lcd_print(cursor_pos);
                 lcd_puts_P(colon_space);
 				lcd_set_cursor(13, 1);
@@ -5972,8 +5970,7 @@ void bowden_menu() {
 						lcd_set_cursor(0, cursor_pos);
 						lcd_putc('>');
 						for (uint_least8_t i = 0; i < 4; i++) {
-							lcd_set_cursor(1, i);
-							lcd_puts_P(extruder);
+							lcd_puts_at_P(1, i, extruder);
 							lcd_print(i);
 							lcd_puts_P(colon_space);
 							EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
@@ -6159,24 +6156,18 @@ char reset_menu() {
     int8_t enc_dif = 0;
 	char cursor_pos = 0;
 
-    static const char iLa[] PROGMEM = "Language";
-    static const char iSt[] PROGMEM = "Statistics";
-    static const char iSh[] PROGMEM = "Shipping prep";
-    static const char iAl[] PROGMEM = "All Data";
-    static const char iBl[] PROGMEM = "Bowden length";
-
-    static const char *const item [items_no] PROGMEM = { iLa, iSt, iSh, iAl
+	const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("All Data")
 #ifdef SNMM
-        , iBl
+		, PSTR("Bowden length")
 #endif
-    };
-	
+	};
+
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
 	lcd_set_cursor(0, 0);
     lcd_putc('>');
 	lcd_consume_click();
-	while (1) {		
+	while (1) {
 
 		for (uint_least8_t i = 0; i < 4; i++) {
 			lcd_set_cursor(1, i);
@@ -6492,10 +6483,8 @@ unsigned char lcd_choose_color() {
 	//function returns index of currently chosen item
 	//following part can be modified from 2 to 255 items:
 	//-----------------------------------------------------
-	unsigned char items_no = 2;
-	const char *item[items_no];
-	item[0] = "Orange";
-	item[1] = "Black";
+	const uint8_t items_no = 2;
+	const char *const item[items_no] PROGMEM = {PSTR("Orange"), PSTR("Black")};
 	//-----------------------------------------------------
 	uint_least8_t active_rows;
 	static int first = 0;
@@ -6504,15 +6493,14 @@ unsigned char lcd_choose_color() {
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
 	lcd_set_cursor(0, 1);
-    lcd_putc('>');
+	lcd_putc('>');
 
 	active_rows = items_no < 3 ? items_no : 3;
 	lcd_consume_click();
 	while (1) {
 		lcd_puts_at_P(0, 0, PSTR("Choose color:"));
 		for (uint_least8_t i = 0; i < active_rows; i++) {
-			lcd_set_cursor(1, i+1);
-			lcd_print(item[first + i]);
+			lcd_puts_at_P(1, i + 1, item[first + i]);
 		}
 
 		manage_heater();
@@ -6546,13 +6534,13 @@ unsigned char lcd_choose_color() {
 					}
 				}
 				lcd_set_cursor(0, 1);
-                lcd_space(1);
+				lcd_space(1);
 				lcd_set_cursor(0, 2);
-                lcd_space(1);
+				lcd_space(1);
 				lcd_set_cursor(0, 3);
-                lcd_space(1);
+				lcd_space(1);
 				lcd_set_cursor(0, cursor_pos);
-                lcd_putc('>');
+				lcd_putc('>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
@@ -8892,10 +8880,15 @@ static void lcd_connect_printer() {
 			t = 0;
 		}
 		if (READ(BTN_ENC)) { //if button is not pressed
-			i = 0; 
-			lcd_puts_at_P(0, 3, PSTR("                    "));
+			i = 0;
+			lcd_set_cursor(0, 3);
+			lcd_space(20);
 		}
-		if (i!=0) lcd_puts_at_P((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3, "\x01");
+		if (i!=0)
+		{
+			lcd_set_cursor((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3);
+			lcd_putc('\x01');
+		}
 		if (i == NC_BUTTON_LONG_PRESS * 10) {
 			no_response = false;
 		}
