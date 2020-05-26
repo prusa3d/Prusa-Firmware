@@ -9442,7 +9442,7 @@ static void handleSafetyTimer()
 }
 #endif //SAFETYTIMER
 
-#define FS_CHECK_COUNT 250
+#define FS_CHECK_COUNT 16
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
@@ -9489,14 +9489,14 @@ static uint16_t nFSCheckCount=0;
 				// or do some other countermeasures
 				
 				// what we want to detect:
-				// if minvolt gets below ~0.6V, it means there is an old fsensor
+				// if minvolt gets below ~0.3V, it means there is an old fsensor
 				// if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
-				// So I'm waiting for a situation, when minVolt gets to range <0, 0.7> and maxVolt gets into range <4.4, 5>
-				// If and only if minVolt is in range <0.6, 0.7> and maxVolt is in range <4.4, 4.5>, I'm considering a situation with the new fsensor
-				// otherwise, I don't care
+				// So I'm waiting for a situation, when minVolt gets to range <0, 1.5> and maxVolt gets into range <3.0, 5>
+				// If and only if minVolt is in range <0.3, 1.5> and maxVolt is in range <3.0, 4.6>, I'm considering a situation with the new fsensor
+				// 
 				
-				if( minVolt >= Voltage2Raw(0.3F) && minVolt <= Voltage2Raw(0.5F) 
-				 && maxVolt >= Voltage2Raw(4.2F) && maxVolt <= Voltage2Raw(4.6F)
+				if( minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD 
+				 && maxVolt >= IRsensor_Hmin_TRESHOLD && maxVolt <= IRsensor_Hopen_TRESHOLD
 				){
                     bool bTemp = (!CHECK_ALL_HEATERS);
                     bTemp = bTemp && (menu_menu==lcd_status_screen);
