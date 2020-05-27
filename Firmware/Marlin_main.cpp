@@ -1014,8 +1014,9 @@ void setup()
 	lcd_splash();
     Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
 
-	selectedSerialPort = eeprom_read_byte((uint8_t*)EEPROM_SECOND_SERIAL_ACTIVE);
+	selectedSerialPort = eeprom_read_byte((uint8_t *)EEPROM_SECOND_SERIAL_ACTIVE);
 	if (selectedSerialPort == 0xFF) selectedSerialPort = 0;
+	eeprom_update_byte((uint8_t *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
 	stdout = uartout;
@@ -1070,7 +1071,7 @@ void setup()
 #ifndef W25X20CL
 	SERIAL_PROTOCOLLNPGM("start");
 #else
-	if (optiboot_status == 1)
+	if ((optiboot_status != 0) || (selectedSerialPort != 0))
 		SERIAL_PROTOCOLLNPGM("start");
 #endif
 	SERIAL_ECHO_START;

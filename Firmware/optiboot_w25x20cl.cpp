@@ -122,12 +122,14 @@ uint8_t optiboot_w25x20cl_enter()
     unsigned long  boot_timer = 0;
     const char    *ptr = entry_magic_send;
     const char    *end = strlen_P(entry_magic_send) + ptr;
+    const uint8_t selectedSerialPort_bak = selectedSerialPort;
     // Flush the serial line.
     while (RECV_READY) {
       watchdogReset();
       // Dummy register read (discard)
       (void)(*(char *)UDR0);
     }
+    selectedSerialPort = 0; //switch to Serial0
     MYSERIAL.flush(); //clear RX buffer
     int SerialHead = rx_buffer.head;
     // Send the initial magic string.
@@ -143,14 +145,20 @@ uint8_t optiboot_w25x20cl_enter()
         watchdogReset();
         delayMicroseconds(1);
         if (++ boot_timer > boot_timeout)
+        {
           // Timeout expired, continue with the application.
+          selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
           return 0;
+        }
       }
       ch = rx_buffer.buffer[SerialHead];
       SerialHead = (unsigned int)(SerialHead + 1) % RX_BUFFER_SIZE;
       if (pgm_read_byte(ptr ++) != ch)
+      {
           // Magic was not received correctly, continue with the application
+          selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
           return 0;
+      }
       watchdogReset();
     }
     cbi(UCSR0B, RXCIE0); //disable the MarlinSerial0 interrupt
