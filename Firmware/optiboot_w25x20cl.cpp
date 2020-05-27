@@ -99,9 +99,9 @@ struct block_t;
 extern struct block_t *block_buffer;
 
 //! @brief Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-void optiboot_w25x20cl_enter()
+uint8_t optiboot_w25x20cl_enter()
 {
-  if (boot_app_flags & BOOT_APP_FLG_USER0) return;
+  if (boot_app_flags & BOOT_APP_FLG_USER0) return 1;
   uint8_t ch;
   uint8_t rampz = 0;
   register uint16_t address = 0;
@@ -144,12 +144,12 @@ void optiboot_w25x20cl_enter()
         delayMicroseconds(1);
         if (++ boot_timer > boot_timeout)
           // Timeout expired, continue with the application.
-          return;
+          return 0;
       }
       ch = UDR0;
       if (pgm_read_byte(ptr ++) != ch)
           // Magic was not received correctly, continue with the application
-          return;
+          return 0;
       watchdogReset();
     }
     // Send the cfm magic string.

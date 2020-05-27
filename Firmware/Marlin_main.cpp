@@ -1016,9 +1016,10 @@ void setup()
 
 #ifdef W25X20CL
     bool w25x20cl_success = w25x20cl_init();
+	uint8_t optiboot_status = 1;
 	if (w25x20cl_success)
 	{
-	    optiboot_w25x20cl_enter();
+		optiboot_status = optiboot_w25x20cl_enter();
 #if (LANG_MODE != 0) //secondary language support
         update_sec_lang_from_external_flash();
 #endif //(LANG_MODE != 0)
@@ -1064,9 +1065,12 @@ void setup()
 	}
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
-#ifndef W25X20CL
+#if !((LANG_MODE == 1) && defined(W25X20CL)) || (LANG_MODE == 0)
 	SERIAL_PROTOCOLLNPGM("start");
-#endif //W25X20CL
+#else
+	if (optiboot_status == 1)
+		SERIAL_PROTOCOLLNPGM("start");
+#endif
 	stdout = uartout;
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
