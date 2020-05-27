@@ -245,7 +245,7 @@ FORCE_INLINE void autotempShutdown(){
 
 void PID_autotune(float temp, int extruder, int ncycles);
 
-void setExtruderAutoFanState(int pin, bool state);
+void setExtruderAutoFanState(uint8_t state);
 void checkExtruderAutoFans();
 
 
@@ -270,10 +270,12 @@ void check_fans();
 void check_min_temp();
 void check_max_temp();
 
-
-#endif
+#ifdef EXTRUDER_ALTFAN_DETECT
+  extern bool extruder_altfan_detect();
+#endif //EXTRUDER_ALTFAN_DETECT
 
 extern unsigned long extruder_autofan_last_check;
 extern uint8_t fanSpeedBckp;
 extern bool fan_measuring;
 
+#endif
