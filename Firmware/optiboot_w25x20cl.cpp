@@ -122,38 +122,38 @@ uint8_t optiboot_w25x20cl_enter()
     unsigned long  boot_timer = 0;
     const char    *ptr = entry_magic_send;
     const char    *end = strlen_P(entry_magic_send) + ptr;
-    // Initialize the serial line.
-    UCSR0A |= (1 << U2X0);
-    UBRR0L = (((float)(F_CPU))/(((float)(115200))*8.0)-1.0+0.5);
-    UCSR0B = (1 << RXEN0) | (1 << TXEN0);
     // Flush the serial line.
     while (RECV_READY) {
       watchdogReset();
       // Dummy register read (discard)
       (void)(*(char *)UDR0);
     }
+    MYSERIAL.flush(); //clear RX buffer
+    int SerialHead = rx_buffer.head;
     // Send the initial magic string.
     while (ptr != end)
       putch(pgm_read_byte(ptr ++));
     watchdogReset();
-    // Wait for one second until a magic string (constant entry_magic) is received
+    // Wait for two seconds until a magic string (constant entry_magic) is received
     // from the serial line.
     ptr = entry_magic_receive;
     end = strlen_P(entry_magic_receive) + ptr;
     while (ptr != end) {
-      while (! RECV_READY) {
+      while (rx_buffer.head == SerialHead) {
         watchdogReset();
         delayMicroseconds(1);
         if (++ boot_timer > boot_timeout)
           // Timeout expired, continue with the application.
           return 0;
       }
-      ch = UDR0;
+      ch = rx_buffer.buffer[SerialHead];
+      SerialHead = (unsigned int)(SerialHead + 1) % RX_BUFFER_SIZE;
       if (pgm_read_byte(ptr ++) != ch)
           // Magic was not received correctly, continue with the application
           return 0;
       watchdogReset();
     }
+    cbi(UCSR0B, RXCIE0); //disable the MarlinSerial0 interrupt
     // Send the cfm magic string.
     ptr = entry_magic_cfm;
     while (ptr != end)
