@@ -747,7 +747,8 @@ static void factory_reset(char level)
 
       Sound_MakeCustom(100,0,false);
 			er_progress = 0;
-			lcd_puts_at_P(3, 3, PSTR("      "));
+			lcd_set_cursor(3, 3);
+			lcd_space(6);
 			lcd_set_cursor(3, 3);
 			lcd_print(er_progress);
 
@@ -757,10 +758,11 @@ static void factory_reset(char level)
 
 				if (i % 41 == 0) {
 					er_progress++;
-					lcd_puts_at_P(3, 3, PSTR("      "));
+					lcd_set_cursor(3, 3);
+					lcd_space(6);
 					lcd_set_cursor(3, 3);
 					lcd_print(er_progress);
-					lcd_puts_P(PSTR("%"));
+					lcd_putc('%');
 				}
 
 			}
@@ -3815,7 +3817,7 @@ void process_commands()
 #endif //WATCHDOG
             }
             else {
-                MYSERIAL.println("Not in farm mode.");
+                SERIAL_ECHOLNPGM("Not in farm mode.");
             }
 		}else if (code_seen("fv")) { // PRUSA fv
         // get file version
@@ -3846,7 +3848,7 @@ void process_commands()
 
     } else if(code_seen("Rev")){ // PRUSA Rev
 
-      SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
+      SERIAL_PROTOCOLLNPGM(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
     } else if(code_seen("Lang")) { // PRUSA Lang
 	  lang_reset();
@@ -7269,9 +7271,9 @@ Sigma_Exit:
       SERIAL_ECHORPGM(MSG_HOTEND_OFFSET);
       for(extruder = 0; extruder < EXTRUDERS; extruder++)
       {
-         SERIAL_ECHO(" ");
+         SERIAL_ECHOPGM(" ");
          SERIAL_ECHO(extruder_offset[X_AXIS][extruder]);
-         SERIAL_ECHO(",");
+         SERIAL_ECHOPGM(",");
          SERIAL_ECHO(extruder_offset[Y_AXIS][extruder]);
       }
       SERIAL_ECHOLN("");
@@ -7439,12 +7441,7 @@ Sigma_Exit:
           }
         }
         else if (servo_index >= 0) {
-          SERIAL_PROTOCOL(MSG_OK);
-          SERIAL_PROTOCOL(" Servo ");
-          SERIAL_PROTOCOL(servo_index);
-          SERIAL_PROTOCOL(": ");
-          SERIAL_PROTOCOL(servos[servo_index].read());
-          SERIAL_PROTOCOLLN("");
+          printf_P(PSTR("%S Servo %i: %i\n"), MSG_OK, servo_index, servos[servo_index].read());
         }
       }
       break;
@@ -7508,15 +7505,9 @@ Sigma_Exit:
         #endif
 
         updatePID();
-        SERIAL_PROTOCOLRPGM(MSG_OK);
-        SERIAL_PROTOCOL(" p:");
-        SERIAL_PROTOCOL(cs.Kp);
-        SERIAL_PROTOCOL(" i:");
-        SERIAL_PROTOCOL(unscalePID_i(cs.Ki));
-        SERIAL_PROTOCOL(" d:");
-        SERIAL_PROTOCOL(unscalePID_d(cs.Kd));
+        printf_P(PSTR("%S p:%f i:%f d:%f"), MSG_OK, cs.Kp, unscalePID_i(cs.Ki), unscalePID_d(cs.Kd));
         #ifdef PID_ADD_EXTRUSION_RATE
-        SERIAL_PROTOCOL(" c:");
+        SERIAL_PROTOCOLPGM(" c:");
         //Kc does not have scaling applied above, or in resetting defaults
         SERIAL_PROTOCOL(Kc);
         #endif
@@ -7546,14 +7537,7 @@ Sigma_Exit:
         if(code_seen('D')) cs.bedKd = scalePID_d(code_value());
 
         updatePID();
-       	SERIAL_PROTOCOLRPGM(MSG_OK);
-        SERIAL_PROTOCOL(" p:");
-        SERIAL_PROTOCOL(cs.bedKp);
-        SERIAL_PROTOCOL(" i:");
-        SERIAL_PROTOCOL(unscalePID_i(cs.bedKi));
-        SERIAL_PROTOCOL(" d:");
-        SERIAL_PROTOCOL(unscalePID_d(cs.bedKd));
-        SERIAL_PROTOCOLLN("");
+        printf_P(PSTR("%S p:%f i:%f d:%f\n"), MSG_OK, cs.bedKp, unscalePID_i(cs.bedKi), unscalePID_d(cs.bedKd));
       }
       break;
     #endif //PIDTEMP
@@ -8693,7 +8677,7 @@ Sigma_Exit:
 
               _delay(100);
               SERIAL_ECHO_START;
-              SERIAL_ECHO("T:");
+              SERIAL_ECHOPGM("T:");
               SERIAL_ECHOLN((int)tmp_extruder);
               switch (tmp_extruder) {
               case 1:

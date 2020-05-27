@@ -542,7 +542,7 @@
 "Pause print"
 
 #MSG_PID_RUNNING c=20 r=1
-"PID cal.           "
+"PID cal."
 
 #MSG_PID_FINISHED c=20 r=1
 "PID cal. finished"

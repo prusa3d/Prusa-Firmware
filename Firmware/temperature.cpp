@@ -250,13 +250,13 @@ bool checkAllHotends(void)
        ||(extruder < 0)
   #endif
        ){
-          SERIAL_ECHOLN("PID Autotune failed. Bad extruder number.");
+          SERIAL_ECHOLNPGM("PID Autotune failed. Bad extruder number.");
 		  pid_tuning_finished = true;
 		  pid_cycle = 0;
           return;
         }
 	
-  SERIAL_ECHOLN("PID Autotune start");
+  SERIAL_ECHOLNPGM("PID Autotune start");
   
   disable_heater(); // switch off all heaters.
 

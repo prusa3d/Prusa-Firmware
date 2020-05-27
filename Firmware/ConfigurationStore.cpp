@@ -71,7 +71,7 @@ static void EEPROM_readData(uint8_t* pos, uint8_t* value, uint8_t size, const ch
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings()
 {
-  strcpy(cs.version,"000"); //!< invalidate data first @TODO use erase to save one erase cycle
+  strcpy_P(cs.version, PSTR("000")); //!< invalidate data first @TODO use erase to save one erase cycle
   
   if (EEPROM_writeData(reinterpret_cast<uint8_t*>(EEPROM_M500_base),reinterpret_cast<uint8_t*>(&cs),sizeof(cs),0), "cs, invalid version")
   {

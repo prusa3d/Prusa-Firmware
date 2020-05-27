@@ -1185,13 +1185,7 @@ inline bool find_bed_induction_sensor_point_xy(int
 		}
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
-			SERIAL_ECHO("First hit");
-			SERIAL_ECHO("- X: ");
-			MYSERIAL.print(current_position[X_AXIS]);
-			SERIAL_ECHO("; Y: ");
-			MYSERIAL.print(current_position[Y_AXIS]);
-			SERIAL_ECHO("; Z: ");
-			MYSERIAL.println(current_position[Z_AXIS]);
+			printf_P(PSTR("First hit- X: %f; Y: %f; Z: %f\n"), current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS]);
 		}
 		#endif //SUPPORT_VERBOSITY
 		//lcd_show_fullscreen_message_and_wait_P(PSTR("First hit"));
@@ -1337,7 +1331,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 	return xyzcal_find_bed_induction_sensor_point_xy();
 #else //NEW_XYZCAL
 	#ifdef SUPPORT_VERBOSITY
-	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
+	if (verbosity_level >= 10) SERIAL_ECHOLNPGM("find bed induction sensor point xy");
 	#endif // SUPPORT_VERBOSITY
 	float feedrate = homing_feedrate[X_AXIS] / 60.f;
 	bool found = false;
@@ -1628,15 +1622,7 @@ inline bool improve_bed_induction_sensor_point()
 #ifndef NEW_XYZCAL
 static inline void debug_output_point(const char *type, const float &x, const float &y, const float &z)
 {
-    SERIAL_ECHOPGM("Measured ");
-    SERIAL_ECHORPGM(type);
-    SERIAL_ECHOPGM(" ");
-    MYSERIAL.print(x, 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(y, 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(z, 5);
-    SERIAL_ECHOLNPGM("");
+	printf_P(PSTR("Measured %S %.5f, %.5f, %.5f\n"), type, x, y, z);
 }
 #endif //NEW_XYZCAL
 

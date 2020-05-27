@@ -723,7 +723,7 @@
 "Metti in pausa"
 
 #MSG_PID_RUNNING c=20 r=1
-"PID cal.           "
+"PID cal."
 "Calibrazione PID"
 
 #MSG_PID_FINISHED c=20 r=1

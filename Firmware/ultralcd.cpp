@@ -713,9 +713,11 @@ void lcdui_print_farm(void)
 void lcdui_print_cmd_diag(void)
 {
 	lcd_set_cursor(LCD_WIDTH - 8 -1, 2);
-	lcd_puts_P(PSTR("      C"));
+	lcd_space(6);
+	lcd_putc('C');
 	lcd_print(buflen);	// number of commands in cmd buffer
-	if (buflen < 9) lcd_puts_P(" ");
+	if (buflen < 9)
+		lcd_space(1);
 }
 #endif //CMD_DIAGNOSTICS
 
@@ -770,7 +772,7 @@ void lcdui_print_status_line(void)
 			heating_status_counter = 0;
 		}
 		lcd_set_cursor(7, 3);
-		lcd_puts_P(PSTR("             "));
+		lcd_space(13);
 
 		for (unsigned int dots = 0; dots < heating_status_counter; dots++)
 		{
@@ -843,12 +845,11 @@ void lcdui_print_status_line(void)
 		case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
 			if (custom_message_state > 10)
 			{
+				char statusString[LCD_WIDTH + 1] = { 0 };
+				int stringLen = sprintf_P(statusString, PSTR("%.15S : %2u"), _T(MSG_CALIBRATE_Z_AUTO), custom_message_state - 10);
+				memset(statusString + stringLen, ' ', LCD_WIDTH - stringLen);
 				lcd_set_cursor(0, 3);
-				lcd_puts_P(PSTR("                    "));
-				lcd_set_cursor(0, 3);
-				lcd_puts_P(_T(MSG_CALIBRATE_Z_AUTO));
-				lcd_puts_P(PSTR(" : "));
-				lcd_print(custom_message_state-10);
+				lcd_print(statusString);
 			}
 			else
 			{
@@ -861,9 +862,7 @@ void lcdui_print_status_line(void)
 				if (custom_message_state > 3 && custom_message_state <= 10 )
 				{
 					lcd_set_cursor(0, 3);
-					lcd_puts_P(PSTR("                   "));
-					lcd_set_cursor(0, 3);
-					lcd_puts_P(_i("Calibration done"));////MSG_HOMEYZ_DONE
+					lcd_printf_P(PSTR("%-20.20S"), _i("Calibration done"));////MSG_HOMEYZ_DONE
 					custom_message_state--;
 				}
 			}
@@ -1533,11 +1532,10 @@ void lcd_commands()
 			lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
-			strcpy(cmd1, "M303 E0 S");
-			strcat(cmd1, ftostr3(pid_temp));
+			sprintf_P(cmd1, PSTR("M303 E0 S%i"), (int)pid_temp);
 			// setting the correct target temperature (for visualization) is done in PID_autotune
 			enquecommand(cmd1);
-			lcd_setstatuspgm(_i("PID cal.           "));////MSG_PID_RUNNING c=20 r=1
+			lcd_setstatuspgm(_i("PID cal."));////MSG_PID_RUNNING c=20 r=1
 			lcd_commands_step = 2;
 		}
 		if (lcd_commands_step == 2 && pid_tuning_finished) { //saving to eeprom
@@ -1546,14 +1544,9 @@ void lcd_commands()
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20 r=1
 			setAllTargetHotends(0);  // reset all hotends temperature including the number displayed on the main screen
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
-			strcpy(cmd1, "M301 P");
-			strcat(cmd1, ftostr32(_Kp));
-			strcat(cmd1, " I");
-			strcat(cmd1, ftostr32(_Ki));
-			strcat(cmd1, " D");
-			strcat(cmd1, ftostr32(_Kd));
-			enquecommand(cmd1);
-			enquecommand_P(PSTR("M500"));
+				sprintf_P(cmd1, PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
+				enquecommand(cmd1);
+				enquecommand_P(PSTR("M500"));
 			}
 			else {
 				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
@@ -2124,8 +2117,8 @@ static void lcd_support_menu()
         _md->status = 1;
         _md->is_flash_air = card.ToshibaFlashAir_isEnabled() && card.ToshibaFlashAir_GetIP(_md->ip);
         if (_md->is_flash_air)
-            sprintf_P(_md->ip_str, PSTR("%d.%d.%d.%d"), 
-                _md->ip[0], _md->ip[1], 
+            sprintf_P(_md->ip_str, PSTR("%hu.%hu.%hu.%hu"),
+                _md->ip[0], _md->ip[1],
                 _md->ip[2], _md->ip[3]);
     } else if (_md->is_flash_air && 
         _md->ip[0] == 0 && _md->ip[1] == 0 && 
@@ -3736,16 +3729,16 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 				if (msg_next == NULL) {
 					lcd_set_cursor(0, 3);
 					if (enc_dif < lcd_encoder_diff && yes) {
-						lcd_puts_P((PSTR(" ")));
+						lcd_space(1);
 						lcd_set_cursor(7, 3);
-						lcd_puts_P((PSTR(">")));
+						lcd_putc('>');
 						yes = false;
 						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
 					else if (enc_dif > lcd_encoder_diff && !yes) {
-						lcd_puts_P((PSTR(">")));
+						lcd_putc('>');
 						lcd_set_cursor(7, 3);
-						lcd_puts_P((PSTR(" ")));
+						lcd_space(1);
 						yes = true;
 						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
@@ -3774,11 +3767,11 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 		}
 		if (msg_next == NULL) {
 			lcd_set_cursor(0, 3);
-			if (yes) lcd_puts_P(PSTR(">"));
+			if (yes) lcd_putc('>');
 			lcd_set_cursor(1, 3);
 			lcd_puts_P(first_choice);
 			lcd_set_cursor(7, 3);
-			if (!yes) lcd_puts_P(PSTR(">"));
+			if (!yes) lcd_putc('>');
 			lcd_set_cursor(8, 3);
 			lcd_puts_P(second_choice);
 		}
@@ -3799,7 +3792,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 	
 	if (default_yes) {
 		lcd_set_cursor(0, 2);
-		lcd_puts_P(PSTR(">"));
+		lcd_putc('>');
 		lcd_puts_P(_T(MSG_YES));
 		lcd_set_cursor(1, 3);
 		lcd_puts_P(_T(MSG_NO));
@@ -3808,7 +3801,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 		lcd_set_cursor(1, 2);
 		lcd_puts_P(_T(MSG_YES));
 		lcd_set_cursor(0, 3);
-		lcd_puts_P(PSTR(">"));
+		lcd_putc('>');
 		lcd_puts_P(_T(MSG_NO));
 	}
 	int8_t retval = default_yes ? true : false;
@@ -3829,17 +3822,17 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 		if (abs(enc_dif - lcd_encoder_diff) > 4) {
 			lcd_set_cursor(0, 2);
 				if (enc_dif < lcd_encoder_diff && retval) {
-					lcd_puts_P((PSTR(" ")));
+					lcd_space(1);
 					lcd_set_cursor(0, 3);
-					lcd_puts_P((PSTR(">")));
+					lcd_putc('>');
 					retval = 0;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 
 				}
 				else if (enc_dif > lcd_encoder_diff && !retval) {
-					lcd_puts_P((PSTR(">")));
+					lcd_putc('>');
 					lcd_set_cursor(0, 3);
-					lcd_puts_P((PSTR(" ")));
+					lcd_space(1);
 					retval = 1;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}

@@ -424,7 +424,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
       SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED
       getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
-      lcd_setstatus("SD-PRINTING         ");
+      lcd_setstatuspgm(PSTR("SD-PRINTING"));
     }
     else
     {
@@ -545,7 +545,7 @@ void CardReader::write_command_no_newline(char *buf)
   {
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
-    MYSERIAL.println("An error while writing to the SD Card.");
+    SERIAL_ECHOLNPGM("An error while writing to the SD Card.");
   }
 }
 

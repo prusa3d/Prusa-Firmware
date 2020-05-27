@@ -353,7 +353,7 @@ void dcode_4()
 			else
 			{
 				int val = (digitalRead(pin) != LOW)?1:0;
-				printf("PIN%d=%d", pin, val);
+				printf_P(PSTR("PIN%d=%d"), pin, val);
 			}
 		}
 	}
@@ -702,10 +702,10 @@ void dcode_81()
 
 	if (code_seen('E')) dimension_x = code_value();
 	if (code_seen('F')) dimension_y = code_value();
-	if (code_seen("G")) { strchr_pointer+=1; points_x = code_value(); }
-	if (code_seen("H")) { strchr_pointer+=1; points_y = code_value(); }
-	if (code_seen("I")) { strchr_pointer+=1; offset_x = code_value(); }
-	if (code_seen("J")) { strchr_pointer+=1; offset_y = code_value(); }
+	if (code_seen('G')) { strchr_pointer+=1; points_x = code_value(); }
+	if (code_seen('H')) { strchr_pointer+=1; points_y = code_value(); }
+	if (code_seen('I')) { strchr_pointer+=1; offset_x = code_value(); }
+	if (code_seen('J')) { strchr_pointer+=1; offset_y = code_value(); }
 	
 	bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
 	
