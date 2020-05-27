@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Version 1.0.1
+#
 # postbuild.sh - multi-language support script
 #  Generate binary with secondary language.
 #
@@ -17,6 +19,10 @@
 #  $PROGMEM.txt
 #  textaddr.txt
 #
+#############################################################################
+# Change log:
+# 14 May 2020, 3d-gussner, Add check for not translated messages using a parameter
+#############################################################################
 #
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
@@ -24,11 +30,12 @@ if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 
 #
 # Selected language:
 LNG=$1
-#if [ -z "$LNG" ]; then LNG='cz'; fi
-#
-# Params:
-IGNORE_MISSING_TEXT=1
-
+#Set default to ignore missing text
+  CHECK_MISSING_TEXT=0
+#Check if script should check for missing messages in the source code aren't translated by using parameter "--check-missing-text"
+if [ "$1" = "--check-missing-text" ]; then
+  CHECK_MISSING_TEXT=1
+fi
 
 finish()
 {
@@ -36,7 +43,7 @@ finish()
  if [ "$1" = "0" ]; then
   echo "postbuild.sh finished with success" >&2
  else
-  echo "postbuild.sh finished with errors!" >&2
+  echo "$(tput setaf 1)postbuild.sh finished with errors!$(tput sgr 0)" >&2
  fi
  case "$-" in
   *i*) echo "press enter key"; read ;;
@@ -72,11 +79,13 @@ echo -n " checking textaddr.txt..." >&2
 cat textaddr.txt | grep "^TEXT NF" | sed "s/[^\"]*\"//;s/\"$//" >not_used.txt
 cat textaddr.txt | grep "^ADDR NF" | sed "s/[^\"]*\"//;s/\"$//" >not_tran.txt
 if cat textaddr.txt | grep "^ADDR NF" >/dev/null; then
- echo "NG! - some texts not found in lang_en.txt!"
- if [ $IGNORE_MISSING_TEXT -eq 0 ]; then
-  finish 1
+ echo "$(tput setaf 5)NG! - some texts not found in lang_en.txt!$(tput sgr0)"
+ if [ $CHECK_MISSING_TEXT -eq 1 ]; then
+  echo "$(tput setaf 1)Missing text found, please update the language files!$(tput setaf 6)" >&2
+  cat not_tran.txt >&2
+ finish 1
  else
-  echo "  missing text ignored!" >&2
+  echo "$(tput setaf 3)  missing text ignored!$(tput sgr0)" >&2
  fi
 else
  echo "OK" >&2
