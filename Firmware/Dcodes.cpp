@@ -487,30 +487,15 @@ void dcode_7()
 void dcode_8()
 {
 	printf_P(PSTR("D8 - Read/Write PINDA\n"));
-	uint8_t cal_status = calibration_status_pinda();
 	float temp_pinda = current_temperature_pinda;
 	float offset_z = temp_compensation_pinda_thermistor_offset(temp_pinda);
 	if ((strchr_pointer[1+1] == '?') || (strchr_pointer[1+1] == 0))
 	{
-		printf_P(PSTR("cal_status=%d\n"), cal_status?1:0);
-		for (uint8_t i = 0; i < 6; i++)
-		{
-			uint16_t offs = 0;
-			if (i > 0) offs = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
-			float foffs = ((float)offs) / cs.axis_steps_per_unit[Z_AXIS];
-			offs = 1000 * foffs;
-			printf_P(PSTR("temp_pinda=%dC temp_shift=%dum\n"), 35 + i * 5, offs);
-		}
+		temp_compensation_print_values();
 	}
 	else if (strchr_pointer[1+1] == '!')
 	{
-		cal_status = 1;
-		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, cal_status);
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0,   8); //40C -  20um -   8usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1,  24); //45C -  60um -  24usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2,  48); //50C - 120um -  48usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3,  80); //55C - 200um -  80usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+		temp_compensation_set(); //set defaults
 	}
 	else
 	{

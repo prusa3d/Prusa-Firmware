@@ -884,9 +884,9 @@ void lcdui_print_status_line(void)
 			{
 				char statusLine[LCD_WIDTH + 1];
 				sprintf_P(statusLine, PSTR("%-20S"), _T(MSG_TEMP_CALIBRATION));
-				char progress[4];
-				sprintf_P(progress, PSTR("%d/6"), custom_message_state);
-				memcpy(statusLine + 12, progress, sizeof(progress) - 1);
+				char progress[6];
+				sprintf_P(progress, PSTR("%d/%d"), custom_message_state, max(custom_message_state, 8));
+				strcpy(statusLine + LCD_WIDTH - strlen(progress) - 1, progress);
 				lcd_set_cursor(0, 3);
 				lcd_print(statusLine);
 			}
@@ -3390,6 +3390,8 @@ bool lcd_wait_for_pinda(float temp) {
 	LongTimer pinda_timeout;
 	pinda_timeout.start();
 	bool target_temp_reached = true;
+	int fanSpeedBckp = fanSpeed;
+	fanSpeed = 255;
 
 	while (current_temperature_pinda > temp){
 		lcd_display_message_fullscreen_P(_i("Waiting for PINDA probe cooling"));////MSG_WAITING_TEMP_PINDA c=20 r=3
@@ -3409,6 +3411,7 @@ bool lcd_wait_for_pinda(float temp) {
 	}
 	lcd_set_custom_characters_arrows();
 	lcd_update_enable(true);
+	fanSpeed = fanSpeedBckp;
 	return target_temp_reached;
 }
 #endif //PINDA_THERMISTOR
@@ -3912,23 +3915,16 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
 void lcd_temp_cal_show_result(bool result) {
 	
 	custom_message_type = CustomMsg::Status;
-	disable_x();
-	disable_y();
-	disable_z();
-	disable_e0();
-	disable_e1();
-	disable_e2();
+	finishAndDisableSteppers(); //M84
 	setTargetBed(0); //set bed target temperature back to 0
 
 	if (result == true) {
-		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 		SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_TEMP_CALIBRATION_DONE));
 		temp_cal_active = true;
 		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
 	}
 	else {
-		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 		SERIAL_ECHOLNPGM("Temperature calibration failed. Continue with pressing the knob.");
 		lcd_show_fullscreen_message_and_wait_P(_i("Temperature calibration failed"));////MSG_TEMP_CAL_FAILED c=20 r=8
 		temp_cal_active = false;
