@@ -99,6 +99,8 @@ struct block_t;
 extern struct block_t *block_buffer;
 
 //! @brief Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+//! @return 1 if "start\n" was not sent. Optiboot was skipped
+//! @return 0 if "start\n" was sent. Optiboot ran normally. No need to send "start\n" in setup()
 uint8_t optiboot_w25x20cl_enter()
 {
   if (boot_app_flags & BOOT_APP_FLG_USER0) return 1;
