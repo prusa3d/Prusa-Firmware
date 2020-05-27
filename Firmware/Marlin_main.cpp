@@ -9474,7 +9474,7 @@ static uint16_t nFSCheckCount=0;
 				if( current_voltage_raw_IR > maxVolt )maxVolt = current_voltage_raw_IR;
 				if( current_voltage_raw_IR < minVolt )minVolt = current_voltage_raw_IR;
 				
-#if 0
+//#if 0 //! Start: IR Sensor debug info
 				{ // debug print
 					static uint16_t lastVolt = ~0U;
 					if( current_voltage_raw_IR != lastVolt ){
@@ -9482,17 +9482,17 @@ static uint16_t nFSCheckCount=0;
 						lastVolt = current_voltage_raw_IR;
 					}
 				}
-#endif
-				// the trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
-				// to be detected as the new fsensor
-				// We can either fake it by extending the detection window to a looooong time
-				// or do some other countermeasures
+///#endif //! End: IR Sensor debug info
+				//! The trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
+				//! to be detected as the new fsensor
+				//! We can either fake it by extending the detection window to a looooong time
+				//! or do some other countermeasures
 				
-				// what we want to detect:
-				// if minvolt gets below ~0.3V, it means there is an old fsensor
-				// if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
-				// So I'm waiting for a situation, when minVolt gets to range <0, 1.5> and maxVolt gets into range <3.0, 5>
-				// If and only if minVolt is in range <0.3, 1.5> and maxVolt is in range <3.0, 4.6>, I'm considering a situation with the new fsensor
+				//! what we want to detect:
+				//! if minvolt gets below ~0.3V, it means there is an old fsensor
+				//! if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
+				//! So I'm waiting for a situation, when minVolt gets to range <0, 1.5> and maxVolt gets into range <3.0, 5>
+				//! If and only if minVolt is in range <0.3, 1.5> and maxVolt is in range <3.0, 4.6>, I'm considering a situation with the new fsensor
 				// 
 				
 				if( minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD 
@@ -9510,6 +9510,27 @@ static uint16_t nFSCheckCount=0;
                               eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
                               printf_IRSensorAnalogBoardChange(true);
                               lcd_setstatuspgm(_i("FS v0.4 or newer"));////c=18
+                         }
+                    } else {
+						nFSCheckCount=0;
+					}
+        } 
+				//! If and only if minVolt is in range <0.0, 0.3> and maxVolt is in range  <4.6, 5.0V>, I'm considering a situation with the old fsensor
+  			else if( minVolt < IRsensor_Ldiode_TRESHOLD 
+				 && maxVolt > IRsensor_Hopen_TRESHOLD && maxVolt <= IRsensor_VMax_TRESHOLD
+				){
+                    bool bTemp = (!CHECK_ALL_HEATERS);
+                    bTemp = bTemp && (menu_menu==lcd_status_screen);
+                    bTemp = bTemp && ((oFsensorPCB==ClFsensorPCB::_Rev04)||(oFsensorPCB==ClFsensorPCB::_Undef));
+                    bTemp = bTemp && fsensor_enabled;
+                    if(bTemp){
+                         nFSCheckCount++;
+                         if(nFSCheckCount>FS_CHECK_COUNT){
+                              nFSCheckCount=0;    // not necessary
+                              oFsensorPCB=ClFsensorPCB::_Old;
+                              eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
+                              printf_IRSensorAnalogBoardChange(false);
+                              lcd_setstatuspgm(_i("FS v0.3 or older"));////c=18
                          }
                     } else {
 						nFSCheckCount=0;

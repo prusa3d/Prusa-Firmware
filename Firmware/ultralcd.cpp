@@ -5728,7 +5728,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 #ifdef IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;
 	//! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
-	//! @todo Don't forget to remove this as soon Fsensot Deetction works with mmu
+	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
 	if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
     MENU_END();
@@ -7585,7 +7585,7 @@ bool lcd_selftest()
 //#if (0)
 	//!   Check if IR sensor is in unknown state, if so run Fsensor Detection
 	//!   As the Fsensor Detection isn't yet ready for the mmu2s we set temporarily the IR sensor 0.3 or older for mmu2s
-	//! @todo Don't forget to remove this as soon Fsensot Detection works with mmu
+	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
 	if( oFsensorPCB == ClFsensorPCB::_Undef) {
 		if (!mmu_enabled) {
 			lcd_detect_IRsensor();
