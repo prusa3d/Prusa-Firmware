@@ -39,8 +39,7 @@ bool cmdqueue_pop_front()
     if (buflen > 0) {
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHOPGM("Dequeing ");
-        SERIAL_ECHO(cmdbuffer+bufindr+CMDHDRSIZE);
-        SERIAL_ECHOLNPGM("");
+        SERIAL_ECHOLN(cmdbuffer+bufindr+CMDHDRSIZE);
         SERIAL_ECHOPGM("Old indices: buflen ");
         SERIAL_ECHO(buflen);
         SERIAL_ECHOPGM(", bufindr ");
@@ -50,8 +49,7 @@ bool cmdqueue_pop_front()
         SERIAL_ECHOPGM(", serial_count ");
         SERIAL_ECHO(serial_count);
         SERIAL_ECHOPGM(", bufsize ");
-        SERIAL_ECHO(sizeof(cmdbuffer));
-        SERIAL_ECHOLNPGM("");
+        SERIAL_ECHOLN(sizeof(cmdbuffer));
 #endif /* CMDBUFFER_DEBUG */
         if (-- buflen == 0) {
             // Empty buffer.
@@ -80,8 +78,7 @@ bool cmdqueue_pop_front()
             SERIAL_ECHOPGM(", serial_count ");
             SERIAL_ECHO(serial_count);
             SERIAL_ECHOPGM(" new command on the top: ");
-            SERIAL_ECHO(cmdbuffer+bufindr+CMDHDRSIZE);
-            SERIAL_ECHOLNPGM("");
+            SERIAL_ECHOLN(cmdbuffer+bufindr+CMDHDRSIZE);
 #endif /* CMDBUFFER_DEBUG */
         }
         return true;
@@ -230,8 +227,7 @@ void cmdqueue_dump_to_serial_single_line(int nr, const char *p)
     unsigned int size = *(unsigned int*)(p + 1);
     SERIAL_ECHO(size);
     SERIAL_ECHOPGM(", cmd: ");
-    SERIAL_ECHO(p + CMDHDRSIZE);
-    SERIAL_ECHOLNPGM("");
+    SERIAL_ECHOLN(p + CMDHDRSIZE);
 }
 
 void cmdqueue_dump_to_serial()
@@ -244,8 +240,7 @@ void cmdqueue_dump_to_serial()
         SERIAL_ECHOPGM(", indr ");
         SERIAL_ECHO(bufindr);
         SERIAL_ECHOPGM(", indw ");
-        SERIAL_ECHO(bufindw);
-        SERIAL_ECHOLNPGM("");
+        SERIAL_ECHOLN(bufindw);
         int nr = 0;
         if (bufindr < bufindw) {
             for (const char *p = cmdbuffer + bufindr; p < cmdbuffer + bufindw; ++ nr) {
@@ -508,8 +503,7 @@ void get_command()
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
-        SERIAL_ECHO(cmdbuffer+bufindw+CMDHDRSIZE);
-        SERIAL_ECHOLNPGM("");
+        SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);
 #endif /* CMDBUFFER_DEBUG */
         bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
         if (bufindw == sizeof(cmdbuffer))
@@ -517,8 +511,7 @@ void get_command()
         ++ buflen;
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHOPGM("Number of commands in the buffer: ");
-        SERIAL_ECHO(buflen);
-        SERIAL_ECHOLNPGM("");
+        SERIAL_ECHOLN(buflen);
 #endif /* CMDBUFFER_DEBUG */
       } // end of 'not comment mode'
       serial_count = 0; //clear buffer

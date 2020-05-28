@@ -496,17 +496,8 @@ void CardReader::getStatus()
           SERIAL_PROTOCOLLNPGM("Print saved");
       }
       else {
-          SERIAL_PROTOCOL(longFilename);
-          SERIAL_PROTOCOLPGM("\n");
-          SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE
-          SERIAL_PROTOCOL(sdpos);
-          SERIAL_PROTOCOLPGM("/");
-          SERIAL_PROTOCOLLN(filesize);
-          uint16_t time = _millis()/60000 - starttime/60000;
-          SERIAL_PROTOCOL(itostr2(time/60));
-          SERIAL_PROTOCOL(':');
-          SERIAL_PROTOCOL(itostr2(time%60));
-          SERIAL_PROTOCOLPGM("\n");
+          const uint16_t time = _millis()/60000 - starttime/60000;
+          printf_P(PSTR("%s\nSD printing byte %lu/%lu\n%u:%u\n"), longFilename, sdpos, filesize, (time / 60), (time % 60));
       }
   }
   else {

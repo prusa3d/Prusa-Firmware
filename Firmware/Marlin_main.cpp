@@ -1183,9 +1183,8 @@ void setup()
 		int b = eeprom_read_byte((unsigned char*)i);
 		if (b != 255) {
 			SERIAL_ECHO(i);
-			SERIAL_ECHO(":");
-			SERIAL_ECHO(b);
-			SERIAL_ECHOLN("");
+			MYSERIAL.write(':');
+			SERIAL_ECHOLN(b);
 		}
 	}
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: done");
@@ -3046,9 +3045,7 @@ void gcode_M114()
 	SERIAL_PROTOCOLPGM(" Z:");
 	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / cs.axis_steps_per_unit[Z_AXIS]);
 	SERIAL_PROTOCOLPGM(" E:");
-	SERIAL_PROTOCOL(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
-
-	SERIAL_PROTOCOLLN("");
+	SERIAL_PROTOCOLLN(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
 }
 
 //! extracted code to compute z_shift for M600 in case of filament change operation 
@@ -3581,11 +3578,9 @@ void process_commands()
 
 #ifdef CMDBUFFER_DEBUG
   SERIAL_ECHOPGM("Processing a GCODE command: ");
-  SERIAL_ECHO(cmdbuffer+bufindr+CMDHDRSIZE);
-  SERIAL_ECHOLNPGM("");
+  SERIAL_ECHOLN(cmdbuffer+bufindr+CMDHDRSIZE);
   SERIAL_ECHOPGM("In cmdqueue: ");
-  SERIAL_ECHO(buflen);
-  SERIAL_ECHOLNPGM("");
+  SERIAL_ECHOLN(buflen);
 #endif /* CMDBUFFER_DEBUG */
   
   unsigned long codenum; //throw away variable
@@ -5058,11 +5053,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 10) {
 				SERIAL_ECHOPGM("X: ");
-				MYSERIAL.print(current_position[X_AXIS], 5);
-				SERIAL_ECHOLNPGM("");
+				MYSERIAL.println(current_position[X_AXIS], 5);
 				SERIAL_ECHOPGM("Y: ");
-				MYSERIAL.print(current_position[Y_AXIS], 5);
-				SERIAL_PROTOCOLPGM("\n");
+				MYSERIAL.println(current_position[Y_AXIS], 5);
 			}
 			#endif // SUPPORT_VERBOSITY
 			float offset_z = 0;
@@ -5268,19 +5261,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         */
         case 81:
             if (mbl.active) {
-                SERIAL_PROTOCOLPGM("Num X,Y: ");
-                SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
-                SERIAL_PROTOCOLPGM(",");
-                SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
-                SERIAL_PROTOCOLPGM("\nZ search height: ");
-                SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
-                SERIAL_PROTOCOLLNPGM("\nMeasured points:");
+                printf_P(PSTR("Num X,Y: " STRINGIFY(MESH_NUM_X_POINTS) "," STRINGIFY(MESH_NUM_Y_POINTS) "\nZ search height: %.2f\nMeasured points:"), MESH_HOME_Z_SEARCH);
                 for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
                     for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
                         SERIAL_PROTOCOLPGM("  ");
                         SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
                     }
-                    SERIAL_PROTOCOLPGM("\n");
+                    MYSERIAL.println();
                 }
             }
             else
@@ -6104,7 +6091,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 				if (verbose_level>3 ) {
 					SERIAL_ECHOPAIR("x: ", X_current);
 					SERIAL_ECHOPAIR("y: ", Y_current);
-					SERIAL_PROTOCOLLNPGM("");
+					MYSERIAL.println();
 				}
 
 				do_blocking_move_to( X_current, Y_current, Z_current );
@@ -6357,7 +6344,7 @@ Sigma_Exit:
             SERIAL_PROTOCOL_F(raw, 5);
           }}
         #endif
-		SERIAL_PROTOCOLLN("");
+		MYSERIAL.println();
 		KEEPALIVE_STATE(NOT_BUSY);
       return;
       break;
@@ -6475,7 +6462,7 @@ Sigma_Exit:
 				  SERIAL_PROTOCOL((int)active_extruder);
 				  SERIAL_PROTOCOLPGM(" B:");
 				  SERIAL_PROTOCOL_F(degBed(), 1);
-				  SERIAL_PROTOCOLLN("");
+				  MYSERIAL.println();
 			  }
 				  codenum = _millis();
 			  
@@ -6745,7 +6732,7 @@ Sigma_Exit:
 		else {
 			SERIAL_ECHO_START;
 			SERIAL_ECHOPAIR("M113 S", (unsigned long)host_keepalive_interval);
-			SERIAL_PROTOCOLLN("");
+			MYSERIAL.println();
 		}
 		break;
 
@@ -6835,61 +6822,54 @@ Sigma_Exit:
 	Returns the current state of the configured X, Y, Z endstops. Takes into account any 'inverted endstop' settings, so one can confirm that the machine is interpreting the endstops correctly.
     */
     case 119:
-    SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT
-    SERIAL_PROTOCOLLN("");
+    SERIAL_PROTOCOLLNRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX
         if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN
         if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX
         if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MIN);
         if(READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MAX);
         if(READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+          SERIAL_PROTOCOLLNRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
       #endif
       break;
       //!@todo update for all axes, use for loop
@@ -7271,12 +7251,12 @@ Sigma_Exit:
       SERIAL_ECHORPGM(MSG_HOTEND_OFFSET);
       for(extruder = 0; extruder < EXTRUDERS; extruder++)
       {
-         SERIAL_ECHOPGM(" ");
+         MYSERIAL.write(' ');
          SERIAL_ECHO(extruder_offset[X_AXIS][extruder]);
-         SERIAL_ECHOPGM(",");
+         MYSERIAL.write(',');
          SERIAL_ECHO(extruder_offset[Y_AXIS][extruder]);
       }
-      SERIAL_ECHOLN("");
+	  MYSERIAL.println();
     }break;
     #endif
 
@@ -7511,7 +7491,7 @@ Sigma_Exit:
         //Kc does not have scaling applied above, or in resetting defaults
         SERIAL_PROTOCOL(Kc);
         #endif
-        SERIAL_PROTOCOLLN("");
+        MYSERIAL.println();
       }
       break;
     #endif //PIDTEMP
@@ -7760,7 +7740,6 @@ Sigma_Exit:
           cs.zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
           SERIAL_ECHO_START;
           SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", MSG_OK,PSTR("")));
-          SERIAL_PROTOCOLLN("");
         }
         else
         {
@@ -7769,16 +7748,14 @@ Sigma_Exit:
           SERIAL_ECHORPGM(MSG_Z_MIN);
           SERIAL_ECHO(Z_PROBE_OFFSET_RANGE_MIN);
           SERIAL_ECHORPGM(MSG_Z_MAX);
-          SERIAL_ECHO(Z_PROBE_OFFSET_RANGE_MAX);
-          SERIAL_PROTOCOLLN("");
+          SERIAL_ECHOLN(Z_PROBE_OFFSET_RANGE_MAX);
         }
       }
       else
       {
           SERIAL_ECHO_START;
           SERIAL_ECHOLNRPGM(CAT2(MSG_ZPROBE_ZOFFSET, PSTR(" : ")));
-          SERIAL_ECHO(-cs.zprobe_zoffset);
-          SERIAL_PROTOCOLLN("");
+          SERIAL_ECHOLN(-cs.zprobe_zoffset);
       }
       break;
     }
@@ -7939,8 +7916,7 @@ Sigma_Exit:
 		LCD_MESSAGERPGM(_T(MSG_PLEASE_WAIT));
 
 		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
-		SERIAL_PROTOCOL(set_target_pinda);
-		SERIAL_PROTOCOLLN("");
+		SERIAL_PROTOCOLLN(set_target_pinda);
 
 		codenum = _millis();
 		cancel_heatup = false;
@@ -7956,8 +7932,7 @@ Sigma_Exit:
 				SERIAL_PROTOCOLPGM("P:");
 				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
 				SERIAL_PROTOCOLPGM("/");
-				SERIAL_PROTOCOL(set_target_pinda);
-				SERIAL_PROTOCOLLN("");
+				SERIAL_PROTOCOLLN(set_target_pinda);
 				codenum = _millis();
 			}
 			manage_heater();
@@ -9910,10 +9885,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 		if ((_millis() - codenum) > 1000UL)
 		{ //Print Temp Reading and remaining time every 1 second while heating up/cooling down
 			if (!farm_mode) {
-				SERIAL_PROTOCOLPGM("T:");
-				SERIAL_PROTOCOL_F(degHotend(extruder), 1);
-				SERIAL_PROTOCOLPGM(" E:");
-				SERIAL_PROTOCOL((int)extruder);
+				printf_P(PSTR("T:%.1f E:%hu"), degHotend(extruder), extruder);
 
 #ifdef TEMP_RESIDENCY_TIME
 				SERIAL_PROTOCOLPGM(" W:");
@@ -9924,7 +9896,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 				}
 				else
 				{
-					SERIAL_PROTOCOLLN("?");
+					MYSERIAL.write('?');
 				}
 			}
 #else
@@ -10540,14 +10512,7 @@ void long_pause() //long pause print
 }
 
 void serialecho_temperatures() {
-	float tt = degHotend(active_extruder);
-	SERIAL_PROTOCOLPGM("T:");
-	SERIAL_PROTOCOL(tt);
-	SERIAL_PROTOCOLPGM(" E:");
-	SERIAL_PROTOCOL((int)active_extruder);
-	SERIAL_PROTOCOLPGM(" B:");
-	SERIAL_PROTOCOL_F(degBed(), 1);
-	SERIAL_PROTOCOLLN("");
+	printf_P(PSTR("T:%.2f E:%hu B:%.1f\n"), degHotend(active_extruder), active_extruder, degBed());
 }
 
 #ifdef UVLO_SUPPORT
@@ -11373,9 +11338,9 @@ void print_mesh_bed_leveling_table()
   for (int8_t y = 0; y < MESH_NUM_Y_POINTS; ++ y)
     for (int8_t x = 0; x < MESH_NUM_Y_POINTS; ++ x) {
       MYSERIAL.print(mbl.z_values[y][x], 3);
-      SERIAL_ECHOPGM(" ");
+      MYSERIAL.write(' ');
     }
-  SERIAL_ECHOLNPGM("");
+  MYSERIAL.println();
 }
 
 uint16_t print_time_remaining() {

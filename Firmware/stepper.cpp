@@ -166,7 +166,7 @@ void checkHitEndstops()
      SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/cs.axis_steps_per_unit[Z_AXIS]);
 //     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT), MSG_Z));
    }
-   SERIAL_ECHOLN("");
+   MYSERIAL.println();
    endstop_x_hit=false;
    endstop_y_hit=false;
    endstop_z_hit=false;

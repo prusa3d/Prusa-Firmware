@@ -349,7 +349,7 @@ void xyzcal_scan_pixels_32x32(int16_t cx, int16_t cy, int16_t min_z, int16_t max
 		if (pixels)
 			for (uint8_t c = 0; c < 32; c++)
 				DBG(_n("%02x"), pixels[((uint16_t)r<<5) + c]);
-		DBG(_n("\n"));
+		MYSERIAL.println();
 	}
 //	xyzcal_lineXYZ_to(cx, cy, z, 2*delay_us, 0);
 }
@@ -409,7 +409,7 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 	{
 		for (uint8_t c = 0; c < 32; c++)
 			DBG(_n("%02x"), pixels[((uint16_t)r<<5) + c]);
-		DBG(_n("\n"));
+		MYSERIAL.println();
 	}
 }
 

@@ -6962,8 +6962,7 @@ void stepper_timer_overflow() {
   if (stepper_timer_overflow_last > stepper_timer_overflow_max)
     stepper_timer_overflow_max = stepper_timer_overflow_last;
   SERIAL_ECHOPGM("Stepper timer overflow: ");
-  MYSERIAL.print(msg);
-  SERIAL_ECHOLNPGM("");
+  MYSERIAL.println(msg);
 
   WRITE(BEEPER, LOW);
 }
