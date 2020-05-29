@@ -462,16 +462,6 @@ else
 fi
 
 #Second argument defines if it is an english only version. Known values EN_ONLY / ALL
-#Check for "config.tmp" 
-if [ ! -f "$SCRIPT_PATH/Firmware/config.tmp" ]; then
-	cp -f $SCRIPT_PATH/Firmware/config.h $SCRIPT_PATH/Firmware/config.tmp
-	echo "No config.tmp"
-else
-	cp -f $SCRIPT_PATH/Firmware/config.tmp $SCRIPT_PATH/Firmware/config.h
-	echo "Found config.tmp restore config.h"
-fi
-
-
 #Check default language mode
 MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "^#define LANG_MODE *" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
@@ -616,16 +606,6 @@ do
 	echo "Hex-file Folder:" $OUTPUT_FOLDER
 	echo "$(tput sgr0)"
 
-	#Check if script has been canceled or failed.
-	#Check for "Configuration.tmp" 
-	if [ ! -f "$SCRIPT_PATH/Firmware/Configuration.tmp" ]; then
-		cp -f $SCRIPT_PATH/Firmware/Configuration.h $SCRIPT_PATH/Firmware/Configuration.tmp
-		echo "No Confguration.tmp"
-	else
-		cp -f $SCRIPT_PATH/Firmware/Configuration.tmp $SCRIPT_PATH/Firmware/Configuration.h
-		echo "Found Confguration.tmp restore Configuration.h"
-	fi
-
 	#Prepare Firmware to be compiled by copying variant as Configuration_prusa.h
 	if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
 		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 28
@@ -766,14 +746,6 @@ do
 	#sed -i -- "s/^#define LANG_MODE * /#define LANG_MODE              $MULTI_LANGUAGE_CHECK/g" $SCRIPT_PATH/Firmware/config.h
 	sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
 	sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
-	#Check for "config.tmp" and delete it
-	if [ -e "$SCRIPT_PATH/Firmware/Configuration.tmp" ]; then
-		rm $SCRIPT_PATH/Firmware/Configuration.tmp
-	fi
-	#Check for "config.tmp" and delete it
-	if [ -e "$SCRIPT_PATH/Firmware/config.tmp" ]; then
-		rm $SCRIPT_PATH/Firmware/config.tmp
-	fi
 	sleep 5
 done
 
