@@ -2098,7 +2098,7 @@ bool check_commands() {
 	
 		while (buflen)
 		{
-		if ((code_seen("M84")) || (code_seen("M 84"))) end_command_found = true;
+		if ((code_seen_P(PSTR("M84"))) || (code_seen_P(PSTR("M 84")))) end_command_found = true;
 		if (!cmdbuffer_front_already_processed)
 			 cmdqueue_pop_front();
 		cmdbuffer_front_already_processed = false;
@@ -3616,7 +3616,7 @@ void process_commands()
     - TMC_SET_STEP
     - TMC_SET_CHOP
  */
-  if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
+  if (code_seen_P(PSTR("M117"))) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
 		  *(starpos) = '\0';
@@ -3629,7 +3629,7 @@ void process_commands()
 
     // ### CRASH_DETECTED - TMC2130
     // ---------------------------------
-	  if(code_seen("CRASH_DETECTED"))
+	  if(code_seen_P(PSTR("CRASH_DETECTED")))
 	  {
 		  uint8_t mask = 0;
 		  if (code_seen('X')) mask |= X_AXIS_MASK;
@@ -3639,12 +3639,12 @@ void process_commands()
 
     // ### CRASH_RECOVER - TMC2130
     // ----------------------------------
-	  else if(code_seen("CRASH_RECOVER"))
+	  else if(code_seen_P(PSTR("CRASH_RECOVER")))
 		  crashdet_recover();
 
     // ### CRASH_CANCEL - TMC2130
     // ----------------------------------
-	  else if(code_seen("CRASH_CANCEL"))
+	  else if(code_seen_P(PSTR("CRASH_CANCEL")))
 		  crashdet_cancel();
 	}
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("TMC_"), 4) == 0)
@@ -3730,7 +3730,7 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-  else if(code_seen("PRUSA")){ 
+  else if(code_seen_P(PSTR("PRUSA"))){ 
     /*!
     ---------------------------------------------------------------------------------
     ### PRUSA - Internal command set <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode - Notes</a>
@@ -3763,20 +3763,20 @@ void process_commands()
     */
 
 
-		if (code_seen("Ping")) {  // PRUSA Ping
+		if (code_seen_P(PSTR("Ping"))) {  // PRUSA Ping
 			if (farm_mode) {
 				PingTime = _millis();
 				//MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
 			}	  
 		}
-		else if (code_seen("PRN")) { // PRUSA PRN
+		else if (code_seen_P(PSTR("PRN"))) { // PRUSA PRN
 		  printf_P(_N("%d"), status_number);
 
-        } else if( code_seen("FANPINTST") ){
+        } else if( code_seen_P(PSTR("FANPINTST"))){
             gcode_PRUSA_BadRAMBoFanTest();
-        }else if (code_seen("FAN")) { // PRUSA FAN
+        }else if (code_seen_P(PSTR("FAN"))) { // PRUSA FAN
 			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
-		}else if (code_seen("fn")) { // PRUSA fn
+		}else if (code_seen_P(PSTR("fn"))) { // PRUSA fn
 		  if (farm_mode) {
 			printf_P(_N("%d"), farm_no);
 		  }
@@ -3785,20 +3785,20 @@ void process_commands()
 		  }
 		  
 		}
-		else if (code_seen("thx")) // PRUSA thx
+		else if (code_seen_P(PSTR("thx"))) // PRUSA thx
 		{
 			no_response = false;
 		}	
-		else if (code_seen("uvlo")) // PRUSA uvlo
+		else if (code_seen_P(PSTR("uvlo"))) // PRUSA uvlo
 		{
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
-		else if (code_seen("MMURES")) // PRUSA MMURES
+		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
 		{
 			mmu_reset();
 		}
-		else if (code_seen("RESET")) { // PRUSA RESET
+		else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
             // careful!
             if (farm_mode) {
 #if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
@@ -3814,7 +3814,7 @@ void process_commands()
             else {
                 SERIAL_ECHOLNPGM("Not in farm mode.");
             }
-		}else if (code_seen("fv")) { // PRUSA fv
+		}else if (code_seen_P(PSTR("fv"))) { // PRUSA fv
         // get file version
         #ifdef SDSUPPORT
         card.openFile(strchr_pointer + 3,true);
@@ -3829,38 +3829,38 @@ void process_commands()
 
         #endif // SDSUPPORT
 
-    } else if (code_seen("M28")) { // PRUSA M28
+    } else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
         trace();
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
 
-	} else if (code_seen("SN")) { // PRUSA SN
+	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         gcode_PRUSA_SN();
 
-	} else if(code_seen("Fir")){ // PRUSA Fir
+	} else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
 
       SERIAL_PROTOCOLLN(FW_VERSION_FULL);
 
-    } else if(code_seen("Rev")){ // PRUSA Rev
+    } else if(code_seen_P(PSTR("Rev"))){ // PRUSA Rev
 
       SERIAL_PROTOCOLLNPGM(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
-    } else if(code_seen("Lang")) { // PRUSA Lang
+    } else if(code_seen_P(PSTR("Lang"))) { // PRUSA Lang
 	  lang_reset();
 
-	} else if(code_seen("Lz")) { // PRUSA Lz
+	} else if(code_seen_P(PSTR("Lz"))) { // PRUSA Lz
       eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
-	} else if(code_seen("Beat")) { // PRUSA Beat
+	} else if(code_seen_P(PSTR("Beat"))) { // PRUSA Beat
         // Kick farm link timer
         kicktime = _millis();
 
-    } else if(code_seen("FR")) { // PRUSA FR
+    } else if(code_seen_P(PSTR("FR"))) { // PRUSA FR
         // Factory full reset
         factory_reset(0);
-    } else if(code_seen("MBL")) { // PRUSA MBL
+    } else if(code_seen_P(PSTR("MBL"))) { // PRUSA MBL
         // Change the MBL status without changing the logical Z position.
-        if(code_seen("V")) {
+        if(code_seen('V')) {
             bool value = code_value_short();
             st_synchronize();
             if(value != mbl.active) {
@@ -3872,27 +3872,27 @@ void process_commands()
 
 //-//
 /*
-    } else if(code_seen("rrr")) {
+    } else if(code_seen_P(PSTR("rrr"))) {
 MYSERIAL.println("=== checking ===");
 MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODE),DEC);
 MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER),DEC);
 MYSERIAL.println(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM),DEC);
 MYSERIAL.println(farm_mode,DEC);
 MYSERIAL.println(eCheckMode,DEC);
-    } else if(code_seen("www")) {
+    } else if(code_seen_P(PSTR("www"))) {
 MYSERIAL.println("=== @ FF ===");
 eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,0xFF);
 eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,0xFF);
 eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
 */
-    } else if (code_seen("nozzle")) { // PRUSA nozzle
+    } else if (code_seen_P(PSTR("nozzle"))) { // PRUSA nozzle
           uint16_t nDiameter;
           if(code_seen('D'))
                {
                nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
                nozzle_diameter_check(nDiameter);
                }
-          else if(code_seen("set") && farm_mode)
+          else if(code_seen_P(PSTR("set")) && farm_mode)
                {
                strchr_pointer++;                  // skip 1st char (~ 's')
                strchr_pointer++;                  // skip 2nd char (~ 'e')
@@ -3905,7 +3905,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
 //-// !!! SupportMenu
 /*
 // musi byt PRED "PRUSA model"
-    } else if (code_seen("smodel")) { //! PRUSA smodel
+    } else if (code_seen_P(PSTR("smodel"))) { //! PRUSA smodel
           size_t nOffset;
 // ! -> "l"
           strchr_pointer+=5*sizeof(*strchr_pointer); // skip 1st - 5th char (~ 'smode')
@@ -3913,21 +3913,21 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
           if(*(strchr_pointer+1+nOffset))
                printer_smodel_check(strchr_pointer);
           else SERIAL_PROTOCOLLN(PRINTER_NAME);
-    } else if (code_seen("model")) { //! PRUSA model
+    } else if (code_seen_P(PSTR("model"))) { //! PRUSA model
           uint16_t nPrinterModel;
           strchr_pointer+=4*sizeof(*strchr_pointer); // skip 1st - 4th char (~ 'mode')
           nPrinterModel=(uint16_t)code_value_long();
           if(nPrinterModel!=0)
                printer_model_check(nPrinterModel);
           else SERIAL_PROTOCOLLN(PRINTER_TYPE);
-    } else if (code_seen("version")) { //! PRUSA version
+    } else if (code_seen_P(PSTR("version"))) { //! PRUSA version
           strchr_pointer+=7*sizeof(*strchr_pointer); // skip 1st - 7th char (~ 'version')
           while(*strchr_pointer==' ')             // skip leading spaces
                strchr_pointer++;
           if(*strchr_pointer!=0)
                fw_version_check(strchr_pointer);
           else SERIAL_PROTOCOLLN(FW_VERSION);
-    } else if (code_seen("gcode")) { //! PRUSA gcode
+    } else if (code_seen_P(PSTR("gcode"))) { //! PRUSA gcode
           uint16_t nGcodeLevel;
           strchr_pointer+=4*sizeof(*strchr_pointer); // skip 1st - 4th char (~ 'gcod')
           nGcodeLevel=(uint16_t)code_value_long();
@@ -3936,7 +3936,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
           else SERIAL_PROTOCOLLN(GCODE_LEVEL);
 */
 	}	
-    //else if (code_seen('Cal')) {
+    //else if (code_seen_P(PSTR("Cal"))) {
 		//  lcd_calibration();
 	  // }
 
@@ -7844,7 +7844,7 @@ Sigma_Exit:
           #endif
         }
 
-		if (mmu_enabled && code_seen("AUTO"))
+		if (mmu_enabled && code_seen_P(PSTR("AUTO")))
 			automatic = true;
 
 		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
