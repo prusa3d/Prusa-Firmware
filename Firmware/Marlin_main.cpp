@@ -7886,6 +7886,8 @@ Sigma_Exit:
 		if (mmu_enabled && code_seen("AUTO"))
 			automatic = true;
 
+		SERIAL_PROTOCOLLNPGM("Filament change - M600");
+
 		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
 	
 	}
