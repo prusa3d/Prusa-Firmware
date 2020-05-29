@@ -7552,7 +7552,7 @@ static void lcd_detect_IRsensor(){
 	//! @todo Add autodetection with MMU2s
 	loaded = (digitalRead(IR_SENSOR_PIN) == 0);
     if(loaded ){
-        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
+		lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
         return;
     }
 	else {
@@ -7582,7 +7582,6 @@ bool lcd_selftest()
 	bool _result = true;
 	bool _swapped_fan = false;
 #ifdef IR_SENSOR_ANALOG
-//#if (0)
 	//!   Check if IR sensor is in unknown state, if so run Fsensor Detection
 	//!   As the Fsensor Detection isn't yet ready for the mmu2s we set temporarily the IR sensor 0.3 or older for mmu2s
 	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
@@ -7802,7 +7801,6 @@ bool lcd_selftest()
 			}
 #endif //PAT9125
 #ifdef IR_SENSOR_ANALOG
-//#if (0)
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
                _result = lcd_selftest_IRsensor();
 			if (_result)
