@@ -5724,9 +5724,9 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 #ifdef IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;
-	//! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
-	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
-	if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
+    //! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
+    //! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
+    if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
     MENU_END();
 }
@@ -7543,27 +7543,27 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
 
 static void lcd_detect_IRsensor(){
     bool bAction;
-	bool loaded;
+    bool loaded;
     bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
-	//! Check if filament is loaded. If it is loaded stop detection.
-	//! @todo Add autodetection with MMU2s
-	loaded = (digitalRead(IR_SENSOR_PIN) == 0);
+    /// Check if filament is loaded. If it is loaded stop detection.
+    /// @todo Add autodetection with MMU2s
+    loaded = (digitalRead(IR_SENSOR_PIN) == 0);
     if(loaded ){
-		lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
+        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
         return;
     }
-	else {
-		lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connections and filament is unloaded."));
-		bAction = lcd_selftest_IRsensor(true);
-	}
-	if(bAction){
+    else {
+        lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connections and filament is unloaded."));
+        bAction = lcd_selftest_IRsensor(true);
+    }
+    if(bAction){
         lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////c=20 r=3
-		// the fsensor board has been successfully identified, any previous "not responding" may be cleared now
-		fsensor_not_responding = false;
+        // the fsensor board has been successfully identified, any previous "not responding" may be cleared now
+        fsensor_not_responding = false;
     } else {
         lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////c=20 r=5
-		// here it is unclear what to to with the fsensor_not_responding flag
-	}
+        // here it is unclear what to to with the fsensor_not_responding flag
+    }
     bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
 }
 #endif //IR_SENSOR_ANALOG
