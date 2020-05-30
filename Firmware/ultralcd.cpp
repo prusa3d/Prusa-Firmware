@@ -2174,9 +2174,6 @@ static void lcd_support_menu()
        case ClFsensorPCB::_Rev04:
             MENU_ITEM_BACK_P(_T(MSG_IR_04_OR_NEWER));
             break;
-       case ClFsensorPCB::_Undef:
-            MENU_ITEM_BACK_P(_T(MSG_IR_UNKNOWN));
-            break;
        default:
             MENU_ITEM_BACK_P(_T(MSG_IR_UNKNOWN));
        }
