@@ -3388,7 +3388,7 @@ bool lcd_wait_for_pinda(float temp) {
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
 		lcd_print(ftostr3(current_temperature_pinda));
-		lcd_putc('>');
+		lcd_putc('/');
 		lcd_print(ftostr3(temp));
 		lcd_print(LCD_STR_DEGREE);
 		delay_keep_alive(1000);
@@ -8666,7 +8666,7 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 
 static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator)
 {
-	lcd_puts_at_P(_row, _col, _name);
+	lcd_puts_at_P(_col, _row, _name);
 	if (_state)
 		lcd_putc(':');
 	switch (_state)
