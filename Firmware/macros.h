@@ -30,7 +30,4 @@
   #define CBI(A,B) (A &= ~(1 << (B)))
 #endif
 
-// Macros for bit masks
-#define BIT(b) (1<<(b))
-#define TEST(n,b) (((n)&BIT(b))!=0)
-#define SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (BIT(b))
+#define TEST(n,b) (((n)&_BV(b))!=0)
