@@ -170,6 +170,21 @@ void fsensor_checkpoint_print(void)
     restore_print_from_ram_and_continue(0);
 }
 
+#ifdef IR_SENSOR_ANALOG
+const char* FsensorIRVersionText()
+{
+	switch(oFsensorPCB)
+	{
+		case ClFsensorPCB::_Old:
+			return _T(MSG_IR_03_OR_OLDER);
+		case ClFsensorPCB::_Rev04:
+			return _T(MSG_IR_04_OR_NEWER);
+		default:
+			return _T(MSG_IR_UNKNOWN);
+	}
+}
+#endif //IR_SENSOR_ANALOG
+
 void fsensor_init(void)
 {
 #ifdef PAT9125
@@ -207,9 +222,9 @@ void fsensor_init(void)
 	}
 	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
 #ifdef IR_SENSOR_ANALOG
-     printf_P(PSTR(" (sensor board revision:%S)\n"), ((oFsensorPCB==ClFsensorPCB::_Undef) ? _T(MSG_IR_UNKNOWN): ((oFsensorPCB==ClFsensorPCB::_Rev04) ? _T(MSG_IR_04_OR_NEWER) : _T(MSG_IR_03_OR_OLDER))));
+	printf_P(PSTR(" (sensor board revision:%S)\n"), FsensorIRVersionText());
 #else //IR_SENSOR_ANALOG
-     printf_P(PSTR("\n"));
+	MYSERIAL.println();
 #endif //IR_SENSOR_ANALOG
 	if (check_for_ir_sensor()){
 		ir_sensor_detected = true;

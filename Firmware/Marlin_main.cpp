@@ -9508,7 +9508,7 @@ static uint16_t nFSCheckCount=0;
 							nFSCheckCount=0;    // not necessary
  							oFsensorPCB=ClFsensorPCB::_Rev04;
 							eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
-							printf_IRSensorAnalogBoardChange(true);
+							printf_IRSensorAnalogBoardChange();
 							lcd_setstatuspgm(_i("FS v0.4 or newer"));////c=18
 						}
 					} else {
@@ -9529,7 +9529,7 @@ static uint16_t nFSCheckCount=0;
 							nFSCheckCount=0;    // not necessary
 							oFsensorPCB=ClFsensorPCB::_Old;
 							eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
-							printf_IRSensorAnalogBoardChange(false);
+							printf_IRSensorAnalogBoardChange();
 							lcd_setstatuspgm(_i("FS v0.3 or older"));////c=18
 						}
 					} else {

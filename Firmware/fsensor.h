@@ -104,6 +104,7 @@ enum class ClFsensorActionNA:uint_least8_t
 
 extern ClFsensorPCB oFsensorPCB;
 extern ClFsensorActionNA oFsensorActionNA;
+extern const char* FsensorIRVersionText();
 
 extern bool fsensor_IR_check();
 constexpr uint16_t Voltage2Raw(float V){
