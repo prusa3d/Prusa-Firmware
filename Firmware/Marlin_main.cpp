@@ -9251,7 +9251,7 @@ void clamp_to_software_endstops(float target[3])
 }
 
 #ifdef MESH_BED_LEVELING
-void mesh_planXX_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
+void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
         float dx = x - current_position[X_AXIS];
         float dy = y - current_position[Y_AXIS];
         int n_segments = 0;
@@ -9302,7 +9302,7 @@ void prepare_move()
   }
   else {
 #ifdef MESH_BED_LEVELING
-    mesh_planXX_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
+    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #else
      plan_buffer_line_destinationXYZE(feedrate*feedmultiply*(1./(60.f*100.f)));
 #endif
