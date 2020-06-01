@@ -21,11 +21,8 @@
 
 void timer4_init(void)
 {
-	//save sreg
-	uint8_t _sreg = SREG;
-	//disable interrupts for sure
-	cli();
-
+	CRITICAL_SECTION_START;
+	
 	SET_OUTPUT(BEEPER);
 	WRITE(BEEPER, LOW);
 	
@@ -37,9 +34,8 @@ void timer4_init(void)
 	OCR4B = 255;
 	OCR4C = 255;
 	TIMSK4 = 0;
-
-	//restore sreg (enable interrupts)
-	SREG = _sreg;
+	
+	CRITICAL_SECTION_END;
 }
 
 #ifdef EXTRUDER_0_AUTO_FAN_PIN
@@ -53,9 +49,11 @@ void timer4_set_fan0(uint8_t duty)
 	}
 	else
 	{
+		CRITICAL_SECTION_START;
 		TCCR4A |= (1 << COM4C1);
 		// OCR4C = duty;
 		OCR4C = (((uint32_t)duty) * ((uint32_t)((TIMSK4 & (1 << OCIE4A))?OCR4A:255))) / ((uint32_t)255);
+		CRITICAL_SECTION_END;
 	}
 }
 #endif //EXTRUDER_0_AUTO_FAN_PIN
@@ -81,15 +79,14 @@ void tone4(__attribute__((unused)) uint8_t _pin, unsigned int frequency)
 		prescalarbits = 0b011;
 	}
 	
-	uint8_t _sreg = SREG;
-	cli();
+	CRITICAL_SECTION_START;
 	TCCR4B = (TCCR4B & 0b11111000) | prescalarbits;
 #ifdef EXTRUDER_0_AUTO_FAN_PIN
 	OCR4C = (((uint32_t)OCR4C) * ocr) / (uint32_t)((TIMSK4 & (1 << OCIE4A))?OCR4A:255);
 #endif //EXTRUDER_0_AUTO_FAN_PIN
 	OCR4A = ocr;
 	TIMSK4 |= (1 << OCIE4A) | (1 << TOIE4);
-	SREG = _sreg;
+	CRITICAL_SECTION_END;
 }
 
 void noTone4(__attribute__((unused)) uint8_t _pin)
