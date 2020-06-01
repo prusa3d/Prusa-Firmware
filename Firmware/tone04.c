@@ -91,15 +91,14 @@ void tone4(__attribute__((unused)) uint8_t _pin, uint16_t frequency)
 
 void noTone4(__attribute__((unused)) uint8_t _pin)
 {
-	uint8_t _sreg = SREG;
-	cli();
+	CRITICAL_SECTION_START;
 	TCCR4B = (TCCR4B & 0b11111000) | (1 << CS42) | (1 << CS40);
 #ifdef EXTRUDER_0_AUTO_FAN_PIN
 	OCR4C = (((uint32_t)OCR4C) * (uint32_t)255) / (uint32_t)((TIMSK4 & (1 << OCIE4A))?OCR4A:255);
 #endif //EXTRUDER_0_AUTO_FAN_PIN
 	OCR4A = 255;
 	TIMSK4 &= ~((1 << OCIE4A) | (1 << TOIE4));
-	SREG = _sreg;
+	CRITICAL_SECTION_END;
 	WRITE(BEEPER, 0);
 }
 
