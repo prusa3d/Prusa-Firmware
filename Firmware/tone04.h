@@ -14,7 +14,7 @@ extern void timer4_init(void);
 
 extern void timer4_set_fan0(uint8_t duty);
 
-extern void tone4(uint8_t _pin, unsigned int frequency);
+extern void tone4(uint8_t _pin, uint16_t frequency);
 
 extern void noTone4(uint8_t _pin);
 

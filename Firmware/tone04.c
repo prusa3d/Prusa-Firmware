@@ -68,7 +68,7 @@ ISR(TIMER4_OVF_vect)
 	WRITE(BEEPER, 0);
 }
 
-void tone4(__attribute__((unused)) uint8_t _pin, unsigned int frequency)
+void tone4(__attribute__((unused)) uint8_t _pin, uint16_t frequency)
 {
 	uint8_t prescalarbits = 0b001;
 	uint32_t ocr = F_CPU / frequency / 2 - 1;
