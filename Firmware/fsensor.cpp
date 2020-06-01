@@ -624,7 +624,7 @@ void fsensor_update(void)
             // move the nozzle away while checking the filament
             current_position[Z_AXIS] += 0.8;
             if(current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-            plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS], active_extruder);
+            plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
             st_synchronize();
 
             // check the filament in isolation
@@ -632,9 +632,9 @@ void fsensor_update(void)
 			fsensor_oq_meassure_start(0);
             float e_tmp = current_position[E_AXIS];
             current_position[E_AXIS] -= 3;
-            plan_buffer_line_curposXYZE(250/60, active_extruder);
+            plan_buffer_line_curposXYZE(250/60);
             current_position[E_AXIS] = e_tmp;
-            plan_buffer_line_curposXYZE(200/60, active_extruder);
+            plan_buffer_line_curposXYZE(200/60);
             st_synchronize();
 			fsensor_oq_meassure_stop();
 
