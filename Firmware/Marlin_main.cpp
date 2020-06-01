@@ -1014,11 +1014,19 @@ void setup()
 	lcd_splash();
     Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
 
+	selectedSerialPort = eeprom_read_byte((uint8_t *)EEPROM_SECOND_SERIAL_ACTIVE);
+	if (selectedSerialPort == 0xFF) selectedSerialPort = 0;
+	eeprom_update_byte((uint8_t *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
+	MYSERIAL.begin(BAUDRATE);
+	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
+	stdout = uartout;
+
 #ifdef W25X20CL
     bool w25x20cl_success = w25x20cl_init();
+	uint8_t optiboot_status = 1;
 	if (w25x20cl_success)
 	{
-	    optiboot_w25x20cl_enter();
+		optiboot_status = optiboot_w25x20cl_enter();
 #if (LANG_MODE != 0) //secondary language support
         update_sec_lang_from_external_flash();
 #endif //(LANG_MODE != 0)
@@ -1040,15 +1048,13 @@ void setup()
 	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF)) 
 		farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
 	if ((uint16_t)farm_no == 0xFFFF) farm_no = 0;
-	
-	selectedSerialPort = eeprom_read_byte((uint8_t*)EEPROM_SECOND_SERIAL_ACTIVE);
-	if (selectedSerialPort == 0xFF) selectedSerialPort = 0;
 	if (farm_mode)
 	{
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
 		selectedSerialPort = 1;
+		MYSERIAL.begin(BAUDRATE);
 #ifdef TMC2130
 		//increased extruder current (PFW363)
 		tmc2130_current_h[E_AXIS] = 36;
@@ -1062,12 +1068,12 @@ void setup()
           if(!(eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED)))
                eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED,true);
 	}
-	MYSERIAL.begin(BAUDRATE);
-	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
 #ifndef W25X20CL
 	SERIAL_PROTOCOLLNPGM("start");
-#endif //W25X20CL
-	stdout = uartout;
+#else
+	if ((optiboot_status != 0) || (selectedSerialPort != 0))
+		SERIAL_PROTOCOLLNPGM("start");
+#endif
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
