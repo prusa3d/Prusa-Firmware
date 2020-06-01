@@ -121,6 +121,7 @@ int16_t fsensor_oq_yd_max;
 uint16_t fsensor_oq_sh_sum;
 //! @}
 
+ClFSensorMode oFSensorMode;
 #ifdef IR_SENSOR_ANALOG
 ClFsensorPCB oFsensorPCB;
 ClFsensorActionNA oFsensorActionNA;
@@ -176,7 +177,7 @@ void fsensor_init(void)
 	uint8_t pat9125 = pat9125_init();
 	printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
 #endif //PAT9125
-	uint8_t fsensor_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+	oFSensorMode=(ClFSensorMode)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
 	fsensor_not_responding = false;
 #ifdef PAT9125
@@ -185,7 +186,7 @@ void fsensor_init(void)
 	fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[E_AXIS]);
 	
 	if (!pat9125){
-		fsensor_enabled = 0; //disable sensor
+		oFSensorMode = ClFSensorMode::_Off; //disable sensor
 		fsensor_not_responding = true;
 	}
 #endif //PAT9125
@@ -200,7 +201,8 @@ void fsensor_init(void)
 	// Must be done after reading what type of fsensor board we have
 	fsensor_not_responding = ! fsensor_IR_check();
 #endif //IR_SENSOR_ANALOG
-	if (fsensor_enabled){
+	if (oFSensorMode!=ClFSensorMode::_Off)
+	{
 		fsensor_enable(false);                  // (in this case) EEPROM update is not necessary
 	} else {
 		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
@@ -227,16 +229,18 @@ bool fsensor_enable(bool bUpdateEEPROM)
 		else
 			fsensor_not_responding = true;
 		fsensor_enabled = pat9125 ? true : false;
+		if (!fsensor_enable)
+			oFSensorMode = ClFSensorMode::_Off;
 		fsensor_watch_runout = true;
 		fsensor_oq_meassure = false;
         fsensor_reset_err_cnt();
-		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled ? 0x01 : 0x00);
+		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, (uint8_t*)oFSensorMode);
 		FSensorStateMenu = fsensor_enabled ? 1 : 0;
 	}
 	else //filament sensor is FINDA, always enable 
 	{
 		fsensor_enabled = true;
-		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
+		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, (uint8_t*)oFSensorMode);
 		FSensorStateMenu = 1;
 	}
 #else // PAT9125
@@ -247,6 +251,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
           fsensor_enabled=false;
           fsensor_not_responding=true;
           FSensorStateMenu=0;
+		  oFSensorMode = ClFSensorMode::_Off;
           }
      else {
 #endif //IR_SENSOR_ANALOG
@@ -257,9 +262,9 @@ bool fsensor_enable(bool bUpdateEEPROM)
           }
 #endif //IR_SENSOR_ANALOG
      if(bUpdateEEPROM)
-          eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, FSensorStateMenu);
+          eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, (uint8_t)oFSensorMode);
 #endif //PAT9125
-	return fsensor_enabled;
+	return fsensor_enabled;	
 }
 
 void fsensor_disable(bool bUpdateEEPROM)
