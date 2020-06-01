@@ -2603,7 +2603,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
         } else {
           feedrate *= sqrt(pow(max_length(X_AXIS) / max_length(Y_AXIS), 2) + 1);
         }
-        plan_buffer_line_destinationXYZE(feedrate/60, active_extruder);
+        plan_buffer_line_destinationXYZE(feedrate/60);
         st_synchronize();
 
         axis_is_at_home(X_AXIS);
@@ -2611,7 +2611,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
         plan_set_position_curposXYZE();
         destination[X_AXIS] = current_position[X_AXIS];
         destination[Y_AXIS] = current_position[Y_AXIS];
-        plan_buffer_line_destinationXYZE(feedrate/60, active_extruder);
+        plan_buffer_line_destinationXYZE(feedrate/60);
         feedrate = 0.0;
         st_synchronize();
         endstops_hit_on_purpose();
@@ -4740,7 +4740,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
 		current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 		current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-        plan_buffer_line_curposXYZE(3000 / 60);
+		plan_buffer_line_curposXYZE(3000 / 60);
 		st_synchronize();
 		
 		while (abs(degBed() - PINDA_MIN_T) > 1) {
@@ -10067,16 +10067,16 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 	card.openFile(filename_wldsd, false);
 
 	/*destination[Z_AXIS] = mesh_home_z_search;
-	//plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
+	//plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
 
-	plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
+	plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE);
 	for(int8_t i=0; i < NUM_AXIS; i++) {
 		current_position[i] = destination[i];
 	}
 	st_synchronize();
 	*/
 		destination[Z_AXIS] = measure_z_height;
-		plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
+		plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE);
 		for(int8_t i=0; i < NUM_AXIS; i++) {
 			current_position[i] = destination[i];
 		}
@@ -10101,9 +10101,9 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 		if (iy & 1) ix = (x_points_num - 1) - ix; // Zig zag
 		float z0 = 0.f;
 		/*destination[Z_AXIS] = mesh_home_z_search;
-		//plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE, active_extruder);
+		//plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
 
-		plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE, active_extruder);
+		plan_buffer_line_destinationXYZE(Z_LIFT_FEEDRATE);
 		for(int8_t i=0; i < NUM_AXIS; i++) {
 			current_position[i] = destination[i];
 		}
@@ -10116,8 +10116,8 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 		destination[X_AXIS] = ix * (x_dimension / (x_points_num - 1)) + shift_x;
 		destination[Y_AXIS] = iy * (y_dimension / (y_points_num - 1)) + shift_y;
 
-        mesh_plan_buffer_line_destinationXYZE(XY_AXIS_FEEDRATE/6, active_extruder);
-        set_current_to_destination();
+		mesh_plan_buffer_line_destinationXYZE(XY_AXIS_FEEDRATE/6);
+		set_current_to_destination();
 		st_synchronize();
 
 	//	printf_P(PSTR("X = %f; Y= %f \n"), current_position[X_AXIS], current_position[Y_AXIS]);
