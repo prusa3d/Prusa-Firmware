@@ -1165,7 +1165,6 @@ void tp_init()
 #endif //MAXTEMP 2
 
 #ifdef BED_MINTEMP
-  /* No bed MINTEMP error implemented?!? */
   while(analog2tempBed(bed_minttemp_raw) < BED_MINTEMP) {
 #if HEATER_BED_RAW_LO_TEMP < HEATER_BED_RAW_HI_TEMP
     bed_minttemp_raw += OVERSAMPLENR;
@@ -1173,7 +1172,6 @@ void tp_init()
     bed_minttemp_raw -= OVERSAMPLENR;
 #endif
   }
-  
 #endif //BED_MINTEMP
 #ifdef BED_MAXTEMP
   while(analog2tempBed(bed_maxttemp_raw) > BED_MAXTEMP) {
