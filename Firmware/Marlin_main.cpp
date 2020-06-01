@@ -2702,7 +2702,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
             current_position[Z_AXIS] = 0;
 
             plan_set_position_curposXYZE();
-            plan_buffer_line_destinationXYZE(feedrate, active_extruder);
+            plan_buffer_line_destinationXYZE(feedrate);
             st_synchronize();
             current_position[X_AXIS] = destination[X_AXIS];
             current_position[Y_AXIS] = destination[Y_AXIS];
@@ -2721,7 +2721,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
               plan_set_position_curposXYZE();
               destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
               feedrate = max_feedrate[Z_AXIS];
-              plan_buffer_line_destinationXYZE(feedrate, active_extruder);
+              plan_buffer_line_destinationXYZE(feedrate);
               st_synchronize();
 
               homeaxis(Z_AXIS);
