@@ -1252,6 +1252,13 @@ void setup()
 	    w25x20cl_err_msg();
 	    printf_P(_n("W25X20CL not responding.\n"));
 	}
+#ifdef EXTRUDER_ALTFAN_DETECT
+	SERIAL_ECHORPGM(_n("Extruder fan type: "));
+	if (extruder_altfan_detect())
+		SERIAL_ECHOLNRPGM(PSTR("ALTFAN"));
+	else
+		SERIAL_ECHOLNRPGM(PSTR("NOCTUA"));
+#endif //EXTRUDER_ALTFAN_DETECT
 
 	plan_init();  // Initialize planner;
 
