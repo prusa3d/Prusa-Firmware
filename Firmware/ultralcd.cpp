@@ -7538,12 +7538,11 @@ static void lcd_detect_IRsensor(){
     bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
     /// Check if filament is loaded. If it is loaded stop detection.
     /// @todo Add autodetection with MMU2s
-    loaded = (digitalRead(IR_SENSOR_PIN) == 0);
+    loaded = ! READ(IR_SENSOR_PIN);
     if(loaded ){
         lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
         return;
-    }
-    else {
+    } else {
         lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connections and filament is unloaded."));
         bAction = lcd_selftest_IRsensor(true);
     }
@@ -7788,9 +7787,12 @@ bool lcd_selftest()
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //PAT9125
-#ifdef IR_SENSOR_ANALOG
+#if 0
+	// Intentionally disabled - that's why we moved the detection to runtime by just checking the two voltages.
+	// The idea is not to force the user to remove and insert the filament on an assembled printer.
+//def IR_SENSOR_ANALOG
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
-               _result = lcd_selftest_IRsensor();
+			_result = lcd_selftest_IRsensor();
 			if (_result)
 			{
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //filament sensor OK
