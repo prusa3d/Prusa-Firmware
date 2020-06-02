@@ -704,34 +704,34 @@ void fsensor_update(void)
                         ADCSRA|=(1<<ADSC);  // first conversion after ADMUX change discarded (preventively)
                         while(ADCSRA&(1<<ADSC))
                             ;
-                            ADCSRA|=(1<<ADSC);  // second conversion used
-                            while(ADCSRA&(1<<ADSC))
-                                ;
-                                nADC=ADC;
-                                ADMUX=nMUX1;        // ADMUX restoring
-                                ADCSRB=nMUX2;
-                                ENABLE_TEMPERATURE_INTERRUPT();
-                                // end of sequence for ...
-                                // Detection of correct function of fsensor v04 - it must NOT read >4.6V
-                                // If it does, it means a disconnected cables or faulty board
-                                if( (oFsensorPCB == ClFsensorPCB::_Rev04) && ( (nADC*OVERSAMPLENR) > IRsensor_Hopen_TRESHOLD ) )
-                                {
-                                    fsensor_disable();
-                                    fsensor_not_responding = true;
-                                    printf_P(PSTR("IR sensor not responding (%d)!\n"),1);
-                                    if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
+                        ADCSRA|=(1<<ADSC);  // second conversion used
+                        while(ADCSRA&(1<<ADSC))
+                            ;
+                        nADC=ADC;
+                        ADMUX=nMUX1;        // ADMUX restoring
+                        ADCSRB=nMUX2;
+                        ENABLE_TEMPERATURE_INTERRUPT();
+                        // end of sequence for ...
+                        // Detection of correct function of fsensor v04 - it must NOT read >4.6V
+                        // If it does, it means a disconnected cables or faulty board
+                        if( (oFsensorPCB == ClFsensorPCB::_Rev04) && ( (nADC*OVERSAMPLENR) > IRsensor_Hopen_TRESHOLD ) )
+                        {
+                            fsensor_disable();
+                            fsensor_not_responding = true;
+                            printf_P(PSTR("IR sensor not responding (%d)!\n"),1);
+                            if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
 
-                                    // if we are printing and FS action is set to "Pause", force pause the print
-                                    if(oFsensorActionNA==ClFsensorActionNA::_Pause)
-                                        lcd_pause_print();
-                                }
-                                else
-                                {
+                            // if we are printing and FS action is set to "Pause", force pause the print
+                            if(oFsensorActionNA==ClFsensorActionNA::_Pause)
+                                lcd_pause_print();
+                        }
+                        else
+                        {
 #endif //IR_SENSOR_ANALOG
-                                    fsensor_checkpoint_print();
-                                    fsensor_enque_M600();
+                            fsensor_checkpoint_print();
+                            fsensor_enque_M600();
 #ifdef IR_SENSOR_ANALOG
-                                }
+                        }
                     }
                 }
                    }
