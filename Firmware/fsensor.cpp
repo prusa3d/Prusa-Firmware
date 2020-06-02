@@ -664,20 +664,20 @@ void fsensor_update(void)
             unsigned long now = _millis();
             if (!err && (now - fsensor_softfail_last) > FSENSOR_SOFTERR_DELTA)
                 fsensor_softfail_ccnt = 0;
-                if (!err && fsensor_softfail_ccnt <= FSENSOR_SOFTERR_CMAX)
-                {
-                    printf_P(PSTR("fsensor_err_cnt = 0\n"));
-                    ++fsensor_softfail;
-                    ++fsensor_softfail_ccnt;
-                    fsensor_softfail_last = now;
-                }
-                else
-                {
-                    fsensor_softfail_ccnt = 0;
-                    fsensor_softfail_last = 0;
-                    fsensor_enque_M600();
-                }
+            if (!err && fsensor_softfail_ccnt <= FSENSOR_SOFTERR_CMAX)
+            {
+                printf_P(PSTR("fsensor_err_cnt = 0\n"));
+                ++fsensor_softfail;
+                ++fsensor_softfail_ccnt;
+                fsensor_softfail_last = now;
             }
+            else
+            {
+                fsensor_softfail_ccnt = 0;
+                fsensor_softfail_last = 0;
+                fsensor_enque_M600();
+            }
+        }
 #else //PAT9125
         if (CHECK_FSENSOR && ir_sensor_detected)
         {
