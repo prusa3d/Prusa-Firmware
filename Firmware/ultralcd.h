@@ -142,7 +142,7 @@ extern uint8_t farm_status;
 
 #ifdef IR_SENSOR_ANALOG
 extern bool bMenuFSDetect;
-void printf_IRSensorAnalogBoardChange(bool bPCBrev04);
+void printf_IRSensorAnalogBoardChange();
 #endif //IR_SENSOR_ANALOG
 
 extern int8_t SilentModeMenu;
@@ -256,22 +256,5 @@ enum class WizState : uint8_t
 };
 
 void lcd_wizard(WizState state);
-
-#define VOLT_DIV_REF 5
-#ifdef IR_SENSOR_ANALOG
-constexpr uint16_t Voltage2Raw(float V){
-	return ( V * 1023 * OVERSAMPLENR / VOLT_DIV_REF ) + 0.5F;
-}
-constexpr float Raw2Voltage(uint16_t raw){
-	return VOLT_DIV_REF*(raw / (1023.F * OVERSAMPLENR) );
-}
-constexpr uint16_t IRsensor_Hmin_TRESHOLD = Voltage2Raw(3.0F); // ~3.0V (0.6*Vcc), raw value=9821
-constexpr uint16_t IRsensor_Lmax_TRESHOLD = Voltage2Raw(1.5F); // ~1.5V (0.3*Vcc), raw value=4910
-constexpr uint16_t IRsensor_Hopen_TRESHOLD = Voltage2Raw(4.6F); // ~4.6V (N.C. @ Ru~20-50k, Rd'=56k, Ru'=10k), raw value=15059
-constexpr uint16_t IRsensor_Ldiode_TRESHOLD = Voltage2Raw(0.3F); // ~0.3V, raw value=982
-constexpr uint16_t IRsensor_VMax_TRESHOLD = Voltage2Raw(5.F); // ~5V, raw value=16368
-
-
-#endif //IR_SENSOR_ANALOG
 
 #endif //ULTRALCD_H

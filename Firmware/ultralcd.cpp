@@ -2166,18 +2166,7 @@ static void lcd_support_menu()
 #ifdef IR_SENSOR_ANALOG
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
-  switch(oFsensorPCB)
-       {
-       case ClFsensorPCB::_Old:
-            MENU_ITEM_BACK_P(_T(MSG_03_OR_OLDER));
-            break;
-       case ClFsensorPCB::_Rev04:
-            MENU_ITEM_BACK_P(_T(MSG_04_OR_NEWER));
-            break;
-       case ClFsensorPCB::_Undef:
-       default:
-            MENU_ITEM_BACK_P(PSTR(" unknown state"));
-       }
+  MENU_ITEM_BACK_P(FsensorIRVersionText());
 #endif // IR_SENSOR_ANALOG
 
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
@@ -5725,7 +5714,9 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 #ifdef IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;
-    MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
+    //! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
+    //! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
+    if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
     MENU_END();
 }
@@ -7508,8 +7499,8 @@ void lcd_belttest()
 
 #ifdef IR_SENSOR_ANALOG
 // called also from marlin_main.cpp
-void printf_IRSensorAnalogBoardChange(bool bPCBrev04){
-    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), bPCBrev04 ? _T(MSG_04_OR_NEWER) : _T(MSG_03_OR_OLDER));
+void printf_IRSensorAnalogBoardChange(){
+    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), FsensorIRVersionText());
 }
 
 static bool lcd_selftest_IRsensor(bool bStandalone)
@@ -7534,8 +7525,8 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
         return(false);
     }
     if((bPCBrev04 ? 1 : 0) != (uint8_t)oFsensorPCB){        // safer then "(uint8_t)bPCBrev04"
-        printf_IRSensorAnalogBoardChange(bPCBrev04);
         oFsensorPCB=bPCBrev04 ? ClFsensorPCB::_Rev04 : ClFsensorPCB::_Old;
+        printf_IRSensorAnalogBoardChange();
         eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
     }
     return(true);
@@ -7543,22 +7534,26 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
 
 static void lcd_detect_IRsensor(){
     bool bAction;
-
+    bool loaded;
     bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
-    bAction = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false, false);
-    if(bAction){
-        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));////c=20 r=4
+    /// Check if filament is loaded. If it is loaded stop detection.
+    /// @todo Add autodetection with MMU2s
+    loaded = ! READ(IR_SENSOR_PIN);
+    if(loaded ){
+        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
         return;
+    } else {
+        lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connections and filament is unloaded."));
+        bAction = lcd_selftest_IRsensor(true);
     }
-    bAction = lcd_selftest_IRsensor(true);
-	if(bAction){
+    if(bAction){
         lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////c=20 r=3
-		// the fsensor board has been successfully identified, any previous "not responding" may be cleared now
-		fsensor_not_responding = false;
+        // the fsensor board has been successfully identified, any previous "not responding" may be cleared now
+        fsensor_not_responding = false;
     } else {
         lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////c=20 r=5
-		// here it is unclear what to to with the fsensor_not_responding flag
-	}
+        // here it is unclear what to to with the fsensor_not_responding flag
+    }
     bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
 }
 #endif //IR_SENSOR_ANALOG
@@ -7574,9 +7569,17 @@ bool lcd_selftest()
 	bool _result = true;
 	bool _swapped_fan = false;
 #ifdef IR_SENSOR_ANALOG
-	//!   Check if IR sensor is in unknown state, set it temporarily to 0.3 or older
-	//! @todo This has to be improved
-	if( oFsensorPCB == ClFsensorPCB::_Undef) eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,0);
+	//!   Check if IR sensor is in unknown state, if so run Fsensor Detection
+	//!   As the Fsensor Detection isn't yet ready for the mmu2s we set temporarily the IR sensor 0.3 or older for mmu2s
+	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
+	if( oFsensorPCB == ClFsensorPCB::_Undef) {
+		if (!mmu_enabled) {
+			lcd_detect_IRsensor();
+		}
+		else {
+			eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,0);
+		}
+	}
 #endif //IR_SENSOR_ANALOG
 	lcd_wait_for_cool_down();
 	lcd_clear();
@@ -7784,10 +7787,12 @@ bool lcd_selftest()
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //PAT9125
-//#ifdef IR_SENSOR_ANALOG
-#if (0)
+#if 0
+	// Intentionally disabled - that's why we moved the detection to runtime by just checking the two voltages.
+	// The idea is not to force the user to remove and insert the filament on an assembled printer.
+//def IR_SENSOR_ANALOG
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
-               _result = lcd_selftest_IRsensor();
+			_result = lcd_selftest_IRsensor();
 			if (_result)
 			{
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //filament sensor OK
