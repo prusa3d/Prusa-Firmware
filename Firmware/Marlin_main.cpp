@@ -8417,6 +8417,15 @@ Sigma_Exit:
 
 #endif //TMC2130_SERVICE_CODES_M910_M918
 
+    */
+	case 919:
+    {
+#ifdef TMC2130
+		printf_P(_N("SILENT MODE: %S\n"), (tmc2130_mode==TMC2130_MODE_SILENT)?_N("ENABLED"):_N("DISABLED"));
+#endif //TMC2130
+    }
+    break;
+
     /*!
 	### M350 - Set microstepping mode <a href="https://reprap.org/wiki/G-code#M350:_Set_microstepping_mode">M350: Set microstepping mode</a>
     Printers with TMC2130 drivers have `X`, `Y`, `Z` and `E` as options. The steps-per-unit value is updated accordingly. Not all resolutions are valid!
