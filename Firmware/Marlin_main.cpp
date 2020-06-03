@@ -8417,6 +8417,9 @@ Sigma_Exit:
 
 #endif //TMC2130_SERVICE_CODES_M910_M918
 
+    /*!
+	### M919 - Get silent mode status <a href="https://reprap.org/wiki/G-code#M919:_Report_silent_mode_status">M919: Report silent mode status</a>
+	
     */
 	case 919:
     {
