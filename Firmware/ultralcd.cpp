@@ -8569,7 +8569,7 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
 		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
 
-		if (!fan_speed[0]) {
+		if (fan_speed[0] < 20) {
 			return FanCheck::ExtruderFan;
 		}
 #ifdef FAN_SOFT_PWM
