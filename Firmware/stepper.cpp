@@ -71,8 +71,7 @@ static dda_isteps_t
                counter_z,
                counter_e;
 volatile dda_usteps_t step_events_completed; // The number of step events executed in the current block
-static int32_t  acceleration_time, deceleration_time;
-//static unsigned long accelerate_until, decelerate_after, acceleration_rate, initial_rate, final_rate, nominal_rate;
+static uint32_t  acceleration_time, deceleration_time;
 static uint16_t acc_step_rate; // needed for deccelaration start point
 static uint8_t  step_loops;
 static uint16_t OCR1A_nominal;
@@ -799,7 +798,7 @@ FORCE_INLINE void isr() {
     // 25.12us for acceleration / deceleration.
     {
       //WRITE_NC(LOGIC_ANALYZER_CH1, true);
-      if (step_events_completed.wide <= (unsigned long int)current_block->accelerate_until) {
+      if (step_events_completed.wide <= current_block->accelerate_until) {
         // v = t * a   ->   acc_step_rate = acceleration_time * current_block->acceleration_rate
         MultiU24X24toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
         acc_step_rate += uint16_t(current_block->initial_rate);
@@ -817,12 +816,12 @@ FORCE_INLINE void isr() {
         }
 #endif
       }
-      else if (step_events_completed.wide > (unsigned long int)current_block->decelerate_after) {
+      else if (step_events_completed.wide > current_block->decelerate_after) {
         uint16_t step_rate;
         MultiU24X24toH16(step_rate, deceleration_time, current_block->acceleration_rate);
         step_rate = acc_step_rate - step_rate; // Decelerate from aceleration end point.
-        if ((step_rate & 0x8000) || step_rate < uint16_t(current_block->final_rate)) {
-          // Result is negative or too small.
+        if (step_rate < uint16_t(current_block->final_rate)) {
+          // Result is too small.
           step_rate = uint16_t(current_block->final_rate);
         }
         // Step_rate to timer interval.
@@ -832,7 +831,7 @@ FORCE_INLINE void isr() {
 
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-            if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops) {
+            if (step_events_completed.wide <= current_block->decelerate_after + step_loops) {
                 target_adv_steps = current_block->final_adv_steps;
                 la_state = ADV_INIT | ADV_ACC_VARY;
             }
