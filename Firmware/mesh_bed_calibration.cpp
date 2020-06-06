@@ -920,7 +920,7 @@ static inline void go_xy(float x, float y, float fr)
 
 static inline void go_to_current(float fr)
 {
-    plan_buffer_line_curposXYZE(fr, active_extruder);
+    plan_buffer_line_curposXYZE(fr);
     st_synchronize();
 }
 
@@ -929,7 +929,7 @@ static inline void update_current_position_xyz()
       current_position[X_AXIS] = st_get_position_mm(X_AXIS);
       current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
       current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
-      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+      plan_set_position_curposXYZE();
 }
 
 static inline void update_current_position_z()

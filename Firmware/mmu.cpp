@@ -540,7 +540,7 @@ void mmu_command(MmuCmd cmd)
 void mmu_load_step(bool synchronize)
 {
 		current_position[E_AXIS] = current_position[E_AXIS] + MMU_LOAD_FEEDRATE * 0.1;
-		plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
+		plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
 		if (synchronize) st_synchronize();
 }
 
@@ -605,7 +605,7 @@ bool mmu_get_response(uint8_t move)
 				    {
                         printf_P(PSTR("Unload 1\n"));
                         current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
-                        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
+                        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
                         st_synchronize();
 				    }
 				}
@@ -623,7 +623,7 @@ bool mmu_get_response(uint8_t move)
                     {
                         printf_P(PSTR("Unload 2\n"));
                         current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
-                        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
+                        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
                         st_synchronize();
                     }
 				}
@@ -701,13 +701,13 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 					  //lift z
 					  current_position[Z_AXIS] += Z_PAUSE_LIFT;
 					  if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-					  plan_buffer_line_curposXYZE(15, active_extruder);
+					  plan_buffer_line_curposXYZE(15);
 					  st_synchronize();
 					  					  
 					  //Move XY to side
 					  current_position[X_AXIS] = X_PAUSE_POS;
 					  current_position[Y_AXIS] = Y_PAUSE_POS;
-					  plan_buffer_line_curposXYZE(50, active_extruder);
+					  plan_buffer_line_curposXYZE(50);
 					  st_synchronize();
 				  }
 				  if (turn_off_nozzle) {
@@ -758,17 +758,17 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 					lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature..."));
 					delay_keep_alive(3000);
 				}
-                mmu_wait_for_heater_blocking();
+				mmu_wait_for_heater_blocking();
 			  }			  
 			  if (move_axes) {
 				  lcd_clear();
 				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming position..."));
 				  current_position[X_AXIS] = x_position_bckp;
 				  current_position[Y_AXIS] = y_position_bckp;
-				  plan_buffer_line_curposXYZE(50, active_extruder);
+				  plan_buffer_line_curposXYZE(50);
 				  st_synchronize();
 				  current_position[Z_AXIS] = z_position_bckp;
-				  plan_buffer_line_curposXYZE(15, active_extruder);
+				  plan_buffer_line_curposXYZE(15);
 				  st_synchronize();
 			  }
 			  else {
@@ -807,19 +807,19 @@ void mmu_load_to_nozzle()
 		current_position[E_AXIS] += 7.2f;
 	}
     float feedrate = 562;
-	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
+	plan_buffer_line_curposXYZE(feedrate / 60);
     st_synchronize();
 	current_position[E_AXIS] += 14.4f;
 	feedrate = 871;
-	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
+	plan_buffer_line_curposXYZE(feedrate / 60);
     st_synchronize();
 	current_position[E_AXIS] += 36.0f;
 	feedrate = 1393;
-	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
+	plan_buffer_line_curposXYZE(feedrate / 60);
     st_synchronize();
 	current_position[E_AXIS] += 14.4f;
 	feedrate = 871;
-	plan_buffer_line_curposXYZE(feedrate / 60, active_extruder);
+	plan_buffer_line_curposXYZE(feedrate / 60);
     st_synchronize();
 	if (!saved_e_relative_mode) axis_relative_modes &= ~E_AXIS_MASK;
 }
@@ -830,7 +830,7 @@ void mmu_M600_wait_and_beep() {
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 		int counterBeep = 0;
-		lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));
+		lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
 		bool bFirst=true;
 
 		while (!lcd_clicked()){
@@ -1072,7 +1072,7 @@ void mmu_filament_ramming()
     for(uint8_t i = 0; i < (sizeof(ramming_sequence)/sizeof(E_step));++i)
     {
         current_position[E_AXIS] += pgm_read_float(&(ramming_sequence[i].extrude));
-        plan_buffer_line_curposXYZE(pgm_read_float(&(ramming_sequence[i].feed_rate)), active_extruder);
+        plan_buffer_line_curposXYZE(pgm_read_float(&(ramming_sequence[i].feed_rate)));
         st_synchronize();
     }
 }
@@ -1385,7 +1385,7 @@ void mmu_cut_filament(uint8_t filament_nr)
     {
         LcdUpdateDisabler disableLcdUpdate;
         lcd_clear();
-        lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18 r=1
+        lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18
         lcd_print(" ");
         lcd_print(filament_nr + 1);
         mmu_filament_ramming();
@@ -1446,9 +1446,9 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 static bool can_load()
 {
     current_position[E_AXIS] += 60;
-    plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
+    plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
     current_position[E_AXIS] -= 52;
-    plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
+    plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
     st_synchronize();
 
     uint_least8_t filament_detected_count = 0;
@@ -1458,7 +1458,7 @@ static bool can_load()
     for(uint_least8_t i = 0; i < steps; ++i)
     {
         current_position[E_AXIS] -= e_increment;
-        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE, active_extruder);
+        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
         st_synchronize();
         if(0 == PIN_GET(IR_SENSOR_PIN))
         {

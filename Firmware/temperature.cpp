@@ -74,7 +74,7 @@ int current_voltage_raw_bed = 0;
 #endif
 
 #ifdef IR_SENSOR_ANALOG
-int current_voltage_raw_IR = 0;
+uint16_t current_voltage_raw_IR = 0;
 #endif //IR_SENSOR_ANALOG
 
 int current_temperature_bed_raw = 0;
@@ -143,14 +143,18 @@ static volatile bool temp_meas_ready = false;
 #ifdef FAN_SOFT_PWM
   static unsigned char soft_pwm_fan;
 #endif
-#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
-  unsigned long extruder_autofan_last_check = _millis();
-  uint8_t fanSpeedBckp = 255;
-  bool fan_measuring = false;
 
-#endif  
+uint8_t fanSpeedBckp = 255;
+
+#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
+  unsigned long extruder_autofan_last_check = _millis();
+  
+  bool fan_measuring = false;
+  uint8_t fanState = 0;
+#ifdef EXTRUDER_ALTFAN_DETECT
+  bool extruderFanIsAltfan = false; //set to Noctua
+#endif //EXTRUDER_ALTFAN_DETECT
+#endif
 
 
 #if EXTRUDERS > 3
@@ -210,6 +214,35 @@ static void temp_runaway_check(int _heater_id, float _target_temperature, float 
 static void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
+#ifdef EXTRUDER_ALTFAN_DETECT
+ISR(INT6_vect) {
+	fan_edge_counter[0]++;
+}
+
+bool extruder_altfan_detect()
+{
+	setExtruderAutoFanState(3);
+
+	SET_INPUT(TACH_0);
+	CRITICAL_SECTION_START;
+	EICRB &= ~(1 << ISC61);
+	EICRB |= (1 << ISC60);
+	EIMSK |= (1 << INT6);
+	fan_edge_counter[0] = 0;
+	CRITICAL_SECTION_END;
+	extruder_autofan_last_check = _millis();
+
+	_delay(1000);
+
+	EIMSK &= ~(1 << INT6);
+
+	countFanSpeed();
+	extruderFanIsAltfan = fan_speed[0] > 100;
+	setExtruderAutoFanState(1);
+	return extruderFanIsAltfan;
+}
+#endif //EXTRUDER_ALTFAN_DETECT
+
 // return "false", if all extruder-heaters are 'off' (ie. "true", if any heater is 'on')
 bool checkAllHotends(void)
 {
@@ -239,9 +272,7 @@ bool checkAllHotends(void)
   const uint8_t safety_check_cycles_count = (extruder < 0) ? 45 : 10; //10 cycles / 20s delay for extruder and 45 cycles / 90s for heatbed
   float temp_ambient;
 
-#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
   unsigned long extruder_autofan_last_check = _millis();
 #endif
 
@@ -289,9 +320,7 @@ bool checkAllHotends(void)
       max=max(max,input);
       min=min(min,input);
 
-      #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-          (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-          (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+      #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
       if(_millis() - extruder_autofan_last_check > 2500) {
         checkExtruderAutoFans();
         extruder_autofan_last_check = _millis();
@@ -447,29 +476,31 @@ int getHeaterPower(int heater) {
   return soft_pwm[heater];
 }
 
-#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
 
   #if defined(FAN_PIN) && FAN_PIN > -1
     #if EXTRUDER_0_AUTO_FAN_PIN == FAN_PIN 
        #error "You cannot set EXTRUDER_0_AUTO_FAN_PIN equal to FAN_PIN"
     #endif
-    #if EXTRUDER_1_AUTO_FAN_PIN == FAN_PIN 
-       #error "You cannot set EXTRUDER_1_AUTO_FAN_PIN equal to FAN_PIN"
-    #endif
-    #if EXTRUDER_2_AUTO_FAN_PIN == FAN_PIN 
-       #error "You cannot set EXTRUDER_2_AUTO_FAN_PIN equal to FAN_PIN"
-    #endif
-  #endif 
+  #endif
 
-void setExtruderAutoFanState(int pin, bool state)
+void setExtruderAutoFanState(uint8_t state)
 {
-  unsigned char newFanSpeed = (state != 0) ? EXTRUDER_AUTO_FAN_SPEED : 0;
-  // this idiom allows both digital and PWM fan outputs (see M42 handling).
-  pinMode(pin, OUTPUT);
-  digitalWrite(pin, newFanSpeed);
-  //analogWrite(pin, newFanSpeed);
+	//If bit 1 is set (0x02), then the extruder fan speed won't be adjusted according to temperature. Useful for forcing
+	//the fan to either On or Off during certain tests/errors.
+
+	fanState = state;
+	uint8_t newFanSpeed = 0;
+	if (fanState & 0x01)
+	{
+#ifdef EXTRUDER_ALTFAN_DETECT
+		if (extruderFanIsAltfan) newFanSpeed = EXTRUDER_ALTFAN_SPEED_SILENT;
+		else newFanSpeed = EXTRUDER_AUTO_FAN_SPEED;
+#else //EXTRUDER_ALTFAN_DETECT
+		newFanSpeed = EXTRUDER_AUTO_FAN_SPEED;
+#endif //EXTRUDER_ALTFAN_DETECT
+	}
+	timer4_set_fan0(newFanSpeed);
 }
 
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
@@ -503,7 +534,7 @@ void checkFanSpeed()
 	  fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
-	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)){ fan_speed_errors[0]++;}
+	if ((fan_speed[0] < 20) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)){ fan_speed_errors[0]++;}
 	else{
     fan_speed_errors[0] = 0;
     host_keepalive();
@@ -577,47 +608,14 @@ void fanSpeedError(unsigned char _fan) {
 
 void checkExtruderAutoFans()
 {
-  uint8_t fanState = 0;
-
-  // which fan pins need to be turned on?      
-  #if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
-  if (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)
-	  fanState |= 1;
-  #endif
-  #if defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1
-    if (current_temperature[1] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
-    {
-      if (EXTRUDER_1_AUTO_FAN_PIN == EXTRUDER_0_AUTO_FAN_PIN) 
-        fanState |= 1;
-      else
-        fanState |= 2;
-    }
-  #endif
-  #if defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1
-    if (current_temperature[2] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
-    {
-      if (EXTRUDER_2_AUTO_FAN_PIN == EXTRUDER_0_AUTO_FAN_PIN) 
-        fanState |= 1;
-      else if (EXTRUDER_2_AUTO_FAN_PIN == EXTRUDER_1_AUTO_FAN_PIN) 
-        fanState |= 2;
-      else
-        fanState |= 4;
-    }
-  #endif
-  
-  // update extruder auto fan states
-  #if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
-    setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, (fanState & 1) != 0);
-  #endif 
-  #if defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1
-    if (EXTRUDER_1_AUTO_FAN_PIN != EXTRUDER_0_AUTO_FAN_PIN) 
-      setExtruderAutoFanState(EXTRUDER_1_AUTO_FAN_PIN, (fanState & 2) != 0);
-  #endif 
-  #if defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1
-    if (EXTRUDER_2_AUTO_FAN_PIN != EXTRUDER_0_AUTO_FAN_PIN 
-        && EXTRUDER_2_AUTO_FAN_PIN != EXTRUDER_1_AUTO_FAN_PIN)
-      setExtruderAutoFanState(EXTRUDER_2_AUTO_FAN_PIN, (fanState & 4) != 0);
-  #endif 
+#if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
+	if (!(fanState & 0x02))
+	{
+		fanState &= ~1;
+		fanState |= current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE;
+	}
+	setExtruderAutoFanState(fanState);
+#endif 
 }
 
 #endif // any extruder auto fan pins set
@@ -737,9 +735,7 @@ void manage_heater()
 #define FAN_CHECK_DURATION 100 //100ms
 
 #ifndef DEBUG_DISABLE_FANCHECK
-  #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-      (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-      (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+  #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
 
 #ifdef FAN_SOFT_PWM
 #ifdef FANCHECK
@@ -1098,7 +1094,9 @@ void tp_init()
 
   timer0_init();
   OCR2B = 128;
-  TIMSK2 |= (1<<OCIE2B);  
+  TIMSK2 |= (1<<OCIE2B);
+  
+  timer4_init(); //for tone and Extruder fan PWM
   
   // Wait for temperature measurement to settle
   _delay(250);
@@ -1357,9 +1355,11 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 		isBed ? LCD_ALERTMESSAGEPGM("BED PREHEAT ERROR") : LCD_ALERTMESSAGEPGM("PREHEAT ERROR");
 		SERIAL_ERROR_START;
 		isBed ? SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HEATBED)") : SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HOTEND)");
-		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+#ifdef EXTRUDER_ALTFAN_DETECT
+		extruderFanIsAltfan = false; //full speed
+#endif //EXTRUDER_ALTFAN_DETECT
+		setExtruderAutoFanState(3);
 		SET_OUTPUT(FAN_PIN);
-		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
 #ifdef FAN_SOFT_PWM
 		fanSpeedSoftPwm = 255;
 #else //FAN_SOFT_PWM
@@ -1441,12 +1441,14 @@ void max_temp_error(uint8_t e) {
 
     
   #endif
-    SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
     SET_OUTPUT(FAN_PIN);
     SET_OUTPUT(BEEPER);
     WRITE(FAN_PIN, 1);
-    WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
     WRITE(BEEPER, 1);
+#ifdef EXTRUDER_ALTFAN_DETECT
+    extruderFanIsAltfan = false; //full speed
+#endif //EXTRUDER_ALTFAN_DETECT
+    setExtruderAutoFanState(3);
     // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;
 	if (farm_mode) { prusa_statistics(93); }
