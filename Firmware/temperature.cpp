@@ -2002,7 +2002,6 @@ void check_max_temp()
 #else
     if (current_temperature_bed_raw >= bed_maxttemp_raw) {
 #endif
-       target_temperature_bed = 0;
        bed_max_temp_error();
     }
 #endif
