@@ -639,6 +639,7 @@ void manage_heater()
     return; 
 // more precisely - this condition partially stabilizes time interval for regulation values evaluation (@ ~ 230ms)
 
+  // ADC values need to be converted before checking: converted values are later used in MINTEMP
   updateTemperaturesFromRawValues();
 
   check_max_temp();
