@@ -180,6 +180,12 @@ static int bed_minttemp_raw = HEATER_BED_RAW_LO_TEMP;
 #ifdef BED_MAXTEMP
 static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 #endif
+#ifdef AMBIENT_MINTEMP
+static int ambient_minttemp_raw = AMBIENT_RAW_LO_TEMP;
+#endif
+#ifdef AMBIENT_MAXTEMP
+static int ambient_maxttemp_raw = AMBIENT_RAW_HI_TEMP;
+#endif
 
 static void *heater_ttbl_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( (void *)HEATER_0_TEMPTABLE, (void *)HEATER_1_TEMPTABLE, (void *)HEATER_2_TEMPTABLE );
 static uint8_t heater_ttbllen_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_TEMPTABLE_LEN, HEATER_1_TEMPTABLE_LEN, HEATER_2_TEMPTABLE_LEN );
@@ -1183,6 +1189,25 @@ void tp_init()
 #endif
   }
 #endif //BED_MAXTEMP
+
+#ifdef AMBIENT_MINTEMP
+  while(analog2tempAmbient(ambient_minttemp_raw) < AMBIENT_MINTEMP) {
+#if HEATER_AMBIENT_RAW_LO_TEMP < HEATER_AMBIENT_RAW_HI_TEMP
+    ambient_minttemp_raw += OVERSAMPLENR;
+#else
+    ambient_minttemp_raw -= OVERSAMPLENR;
+#endif
+  }
+#endif //AMBIENT_MINTEMP
+#ifdef AMBIENT_MAXTEMP
+  while(analog2tempAmbient(ambient_maxttemp_raw) > AMBIENT_MAXTEMP) {
+#if HEATER_AMBIENT_RAW_LO_TEMP < HEATER_AMBIENT_RAW_HI_TEMP
+    ambient_maxttemp_raw -= OVERSAMPLENR;
+#else
+    ambient_maxttemp_raw += OVERSAMPLENR;
+#endif
+  }
+#endif //AMBIENT_MAXTEMP
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
@@ -1508,6 +1533,35 @@ void bed_min_temp_error(void) {
     Stop();
 #endif
 }
+
+
+#ifdef AMBIENT_THERMISTOR
+void ambient_max_temp_error(void) {
+    if(IsStopped() == false) {
+        SERIAL_ERROR_START;
+        SERIAL_ERRORLNPGM("Heaters switched off. MAXTEMP AMBIENT triggered !");
+        LCD_ALERTMESSAGEPGM("Err: MAXTEMP AMBIENT");
+    }
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+    Stop();
+#endif
+}
+
+void ambient_min_temp_error(void) {
+#ifdef DEBUG_DISABLE_MINTEMP
+	return;
+#endif
+    if(IsStopped() == false) {
+        SERIAL_ERROR_START;
+        SERIAL_ERRORLNPGM("Heaters switched off. MINTEMP AMBIENT triggered !");
+        LCD_ALERTMESSAGEPGM("Err: MINTEMP AMBIENT");
+    }
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+    Stop();
+#endif
+}
+#endif
+
 
 #ifdef HEATER_0_USES_MAX6675
 #define MAX6675_HEAT_INTERVAL 250
@@ -1994,7 +2048,16 @@ void check_max_temp()
        bed_max_temp_error();
     }
 #endif
-
+//ambient
+#if defined(AMBIENT_MAXTEMP) && (TEMP_SENSOR_AMBIENT != 0)
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+    if (current_temperature_raw_ambient <= ambient_maxttemp_raw) {
+#else
+    if (current_temperature_raw_ambient >= ambient_maxttemp_raw) {
+#endif
+       ambient_max_temp_error();
+    }
+#endif
 }
 //! number of repeating the same state with consecutive step() calls
 //! used to slow down text switching
@@ -2089,12 +2152,32 @@ void check_min_temp_bed()
 	}
 }
 
+#ifdef AMBIENT_MINTEMP
+void check_min_temp_ambient()
+{
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+	if (current_temperature_raw_ambient >= ambient_minttemp_raw) {
+#else
+	if (current_temperature_raw_ambient <= ambient_minttemp_raw) {
+#endif
+		ambient_min_temp_error();
+	}
+}
+#endif
+
 void check_min_temp()
 {
 static bool bCheckingOnHeater=false;              // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over heaterMintemp)
 static bool bCheckingOnBed=false;                 // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over bedMintemp)
 #ifdef AMBIENT_THERMISTOR
-if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type, so operator is ">" ;-)
+#ifdef AMBIENT_MINTEMP
+check_min_temp_ambient();
+#endif
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type
+#else
+if(current_temperature_raw_ambient=<(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW))
+#endif
      {                                            // ambient temperature is low
 #endif //AMBIENT_THERMISTOR
 // *** 'common' part of code for MK2.5 & MK3
