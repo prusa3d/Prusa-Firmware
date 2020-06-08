@@ -1426,19 +1426,16 @@ enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_
 uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
 
 void max_temp_error(uint8_t e) {
-  disable_heater();
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
     SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Extruder switched off. MAXTEMP triggered !");
+    SERIAL_ERRORLNPGM(": Heaters switched off. MAXTEMP triggered !");
     LCD_ALERTMESSAGEPGM("Err: MAXTEMP");
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
-    
-
-    
   #endif
+
     SET_OUTPUT(FAN_PIN);
     SET_OUTPUT(BEEPER);
     WRITE(FAN_PIN, 1);
@@ -1457,12 +1454,11 @@ void min_temp_error(uint8_t e) {
 	return;
 #endif
 //if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
-  disable_heater();
 	static const char err[] PROGMEM = "Err: MINTEMP";
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
     SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Extruder switched off. MINTEMP triggered !");
+    SERIAL_ERRORLNPGM(": Heaters switched off. MINTEMP triggered !");
     lcd_setalertstatuspgm(err);
     last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
   } else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
@@ -1482,32 +1478,24 @@ void min_temp_error(uint8_t e) {
 }
 
 void bed_max_temp_error(void) {
-#if HEATER_BED_PIN > -1
-  //WRITE(HEATER_BED_PIN, 0);
-#endif
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM("Temperature heated bed switched off. MAXTEMP triggered !");
+    SERIAL_ERRORLNPGM("Heaters switched off. MAXTEMP BED triggered !");
     LCD_ALERTMESSAGEPGM("Err: MAXTEMP BED");
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
   #endif
-
 }
 
 void bed_min_temp_error(void) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
-//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
-#if HEATER_BED_PIN > -1
-    //WRITE(HEATER_BED_PIN, 0);
-#endif
 	static const char err[] PROGMEM = "Err: MINTEMP BED";
     if(IsStopped() == false) {
         SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM("Temperature heated bed switched off. MINTEMP triggered !");
+        SERIAL_ERRORLNPGM("Heaters switched off. MINTEMP BED triggered !");
 		lcd_setalertstatuspgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
 	} else if( last_alert_sent_to_lcd != LCDALERT_BEDMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
