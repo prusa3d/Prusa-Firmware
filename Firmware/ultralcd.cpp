@@ -335,7 +335,7 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* filename, char* longFilename)
 {
     char c;
     int enc_dif = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
@@ -464,7 +464,7 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* fil
 
 #define MENU_ITEM_SDFILE(str, str_fn, str_fnl) do { if (menu_item_sdfile(str, str_fn, str_fnl)) return; } while (0)
 //#define MENU_ITEM_SDFILE(str, str_fn, str_fnl) MENU_ITEM(sdfile, str, str_fn, str_fnl)
-//extern uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl);
+//extern uint8_t menu_item_sdfile(const char* str, char* str_fn, char* str_fnl);
 
 
 uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
@@ -521,7 +521,7 @@ static uint8_t menu_item_sdfile(const char*
 #ifdef NEW_SD_MENU
         str
 #endif //NEW_SD_MENU
-         ,const char* str_fn, char* str_fnl)
+         ,char* str_fn, char* str_fnl)
 {
 #ifdef NEW_SD_MENU
 //	printf_P(PSTR("menu sdfile\n"));
@@ -5602,6 +5602,7 @@ do\
 }\
 while (0)
 
+#if 0 // temorarily unused
 static void lcd_check_gcode_set(void)
 {
 switch(oCheckGcode)
@@ -5620,6 +5621,7 @@ switch(oCheckGcode)
      }
 eeprom_update_byte((uint8_t*)EEPROM_CHECK_GCODE,(uint8_t)oCheckGcode);
 }
+#endif
 
 #define SETTINGS_GCODE \
 do\
