@@ -594,10 +594,16 @@ void lcdui_print_temp(char type, int val_current, int val_target)
 // Print Z-coordinate (8 chars total)
 void lcdui_print_Z_coord(void)
 {
+    char endSymbol = ' ';
+    if (!axis_known_position[Z_AXIS])
+        endSymbol = '?';
+    if (farm_mode && ((_millis() - kicktime) < 60000))
+        endSymbol = 'L';
+
     if (custom_message_type == CustomMsg::MeshBedLeveling)
         lcd_puts_P(_N("Z   --- "));
     else
-		lcd_printf_P(_N("Z%6.2f%c"), current_position[Z_AXIS], axis_known_position[Z_AXIS]?' ':'?');
+        lcd_printf_P(_N("Z%6.2f%c"), current_position[Z_AXIS], endSymbol);
 }
 
 #ifdef PLANNER_DIAGNOSTICS
@@ -667,44 +673,6 @@ void lcdui_print_extruder(void)
 		else chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder + 1, tmp_extruder + 1);
 	}
 	lcd_space(5 - chars);
-}
-
-// Print farm number (5 chars total)
-void lcdui_print_farm(void)
-{
-	int chars = lcd_printf_P(_N(" F0  "));
-//	lcd_space(5 - chars);
-/*
-	// Farm number display
-	if (farm_mode)
-	{
-		lcd_set_cursor(6, 2);
-		lcd_puts_P(PSTR(" F"));
-		lcd_print(farm_no);
-		lcd_puts_P(PSTR("  "));
-        
-        // Beat display
-        lcd_set_cursor(LCD_WIDTH - 1, 0);
-        if ( (_millis() - kicktime) < 60000 ) {
-        
-            lcd_puts_P(PSTR("L"));
-        
-        }else{
-            lcd_puts_P(PSTR(" "));
-        }
-        
-	}
-	else {
-#ifdef SNMM
-		lcd_puts_P(PSTR(" E"));
-		lcd_print(get_ext_nr() + 1);
-
-#else
-		lcd_set_cursor(LCD_WIDTH - 8 - 2, 2);
-		lcd_puts_P(PSTR(" "));
-#endif
-	}
-*/
 }
 
 #ifdef CMD_DIAGNOSTICS
@@ -963,7 +931,7 @@ void lcdui_print_status_screen(void)
 		lcdui_print_extruder();
 	else if (farm_mode)
 		//Print farm number (5 chars)
-		lcdui_print_farm();
+		lcd_printf_P(PSTR(" F%-3i"), farm_no);
 	else
 		lcd_space(5); //5 spaces
 
