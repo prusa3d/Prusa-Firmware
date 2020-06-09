@@ -53,7 +53,7 @@ def main():
     """Main function."""
     parser = ArgumentParser(
         description=__doc__,
-        usage="$(prog)s lang")
+        usage="%(prog)s lang")
     parser.add_argument(
         "lang", nargs='?', default="en", type=str,
         help="Check lang file (en|cs|de|es|fr|nl|it|pl)")
