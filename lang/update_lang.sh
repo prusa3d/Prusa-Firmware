@@ -1,12 +1,20 @@
 #!/bin/sh
 #
+# Version 1.0.1
+#
 # update_lang.sh - multi-language support script
 #  Update secondary language in binary file.
 #
+#############################################################################
+# Change log:
+# 9 June 2020, 3d-gussner, Added version and Change log
+# 9 June 2020, 3d-gussner, colored output
+#############################################################################
+#
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$OBJCOPY" ]; then echo 'variable OBJCOPY not set!' >&2; exit 1; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+if [ -z "$OBJCOPY" ]; then echo '$(tput setaf 1)variable OBJCOPY not set!$(tput sgr0)' >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo '$(tput setaf 1)Config NG!$(tput sgr0)' >&2; exit 1; fi
 #
 # Selected language:
 LNG=$1
@@ -17,9 +25,9 @@ finish()
 {
  echo
  if [ "$1" = "0" ]; then
-  echo "update_lang.sh finished with success" >&2
+  echo "$(tput setaf 2)update_lang.sh finished with success$(tput sgr0)" >&2
  else
-  echo "update_lang.sh finished with errors!" >&2
+  echo "$(tput setaf 1)update_lang.sh finished with errors!$(tput sgr0)" >&2
  fi
  case "$-" in
   *i*) echo "press enter key" >&2; read ;;
@@ -27,14 +35,14 @@ finish()
  exit $1
 }
 
-echo "update_lang.sh started" >&2
+echo "$(tput setaf 2)update_lang.sh started$(tput sgr0)" >&2
 echo " selected language=$LNG" >&2
 
 echo -n " checking files..." >&2
-if [ ! -e text.sym ]; then echo "NG!  file text.sym not found!" >&2; finish 1; fi
-if [ ! -e lang_$LNG.bin ]; then echo "NG!  file lang_$LNG.bin not found!" >&2; finish 1; fi
-if [ ! -e firmware.bin ]; then echo "NG!  file firmware.bin not found!" >&2; finish 1; fi
-echo "OK" >&2
+if [ ! -e text.sym ]; then echo "$(tput setaf 1)NG!  file text.sym not found!$(tput sgr0)" >&2; finish 1; fi
+if [ ! -e lang_$LNG.bin ]; then echo "$(tput setaf 1)NG!  file lang_$LNG.bin not found!$(tput sgr0)" >&2; finish 1; fi
+if [ ! -e firmware.bin ]; then echo "$(tput setaf 1)NG!  file firmware.bin not found!$(tput sgr0)" >&2; finish 1; fi
+echo "$(tput setaf 2)OK$(tput sgr0)" >&2
 
 echo -n " checking symbols..." >&2
 #find symbol _SEC_LANG in section '.text'
@@ -43,7 +51,7 @@ if [ -z "$sec_lang" ]; then echo "NG!\n  symbol _SEC_LANG not found!" >&2; finis
 #find symbol _PRI_LANG_SIGNATURE in section '.text'
 pri_lang=$(cat text.sym | grep -E "\b_PRI_LANG_SIGNATURE\b")
 if [ -z "$pri_lang" ]; then echo "NG!\n  symbol _PRI_LANG_SIGNATURE not found!" >&2; finish 1; fi
-echo "OK" >&2
+echo "$(tput setaf 2)OK$(tput sgr0)" >&2
 
 echo " calculating vars:" >&2
 #get pri_lang addres

@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Version 1.0.1
+#
 # progmem.sh - multi-language support script
 #  Examine content of progmem sections (default is progmem1).
 #
@@ -16,14 +18,19 @@
 #  $PROGMEM.var - variables - strings
 #  $PROGMEM.txt - text data only (not used)
 #
+#############################################################################
+# Change log:
+# 9 June 2020, 3d-gussner, Added version and Change log
+# 9 June 2020, 3d-gussner, colored output
+#############################################################################
 #
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$OUTDIR" ]; then echo 'variable OUTDIR not set!' >&2; exit 1; fi
-if [ -z "$OBJDIR" ]; then echo 'variable OBJDIR not set!' >&2; exit 1; fi
-if [ -z "$INOELF" ]; then echo 'variable INOELF not set!' >&2; exit 1; fi
-if [ -z "$OBJDUMP" ]; then echo 'variable OBJDUMP not set!' >&2; exit 1; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+if [ -z "$OUTDIR" ]; then echo '$(tput setaf 1)variable OUTDIR not set!$(tput sgr0)' >&2; exit 1; fi
+if [ -z "$OBJDIR" ]; then echo '$(tput setaf 1)variable OBJDIR not set!$(tput sgr0)' >&2; exit 1; fi
+if [ -z "$INOELF" ]; then echo '$(tput setaf 1)variable INOELF not set!$(tput sgr0)' >&2; exit 1; fi
+if [ -z "$OBJDUMP" ]; then echo '$(tput setaf 1)variable OBJDUMP not set!$(tput sgr0)' >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr0)" >&2; exit 1; fi
 #
 # Program memory used
 PROGMEM=progmem$1

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Version 1.0.1
+# Version 1.0.2
 #
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
@@ -23,21 +23,24 @@
 #############################################################################
 # Change log:
 # 14 May 2020, 3d-gussner, Add message and size count comparison
+# 14 May 2020, 3d-gussner, Added version and Change log
+# 9 June 2020, 3d-gussner, colored output
+#############################################################################
 #############################################################################
 #
 #awk code to format ui16 variables for dd
 awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
 
 #startup message
-echo "lang-build.sh started" >&2
+echo "$(tput setaf 2)lang-build.sh started$(tput sgr0)" >&2
 
 #exiting function
 finish()
 {
  if [ $1 -eq 0 ]; then
-  echo "lang-build.sh finished with success" >&2
+  echo "$(tput setaf 2)lang-build.sh finished with success$(tput sgr0)" >&2
  else
-  echo "lang-build.sh finished with errors!" >&2
+  echo "$(tput setaf 1)lang-build.sh finished with errors!$(tput sgr0)" >&2
  fi
  exit $1
 }
@@ -99,7 +102,11 @@ generate_binary()
  rm -f lang_$1.dat
  LNG=$1
  #check lang dictionary
+<<<<<<< HEAD
  ./lang-check.py $1 --no-warning
+=======
+ /usr/bin/env python lang-check.py $1 #--no-warning
+>>>>>>> 2e5b383f... Added textwrap to `lang-check.py`
  #create lang_xx.tmp - different processing for 'en' language
  if [ "$1" = "en" ]; then
   #remove comments and empty lines

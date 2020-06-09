@@ -1,8 +1,15 @@
 #!/bin/bash
 #
+# Version 1.0.1
+#
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
 #
+#############################################################################
+# Change log:
+# 9 June 2020, 3d-gussner, Added version and Change log
+# 9 June 2020, 3d-gussner, colored output
+#############################################################################
 
 # relative path to source folder
 SRCDIR="../Firmware"

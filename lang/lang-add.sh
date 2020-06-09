@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Version 1.0.1
+#
 # lang-add.sh - multi-language support script
 #  add new texts from list (lang_add.txt) to all dictionary files
 #
@@ -8,6 +10,11 @@
 # Updated files:
 #  lang_en.txt and all lang_en_xx.txt
 #
+#############################################################################
+# Change log:
+# 9 June 2020, 3d-gussner, Added version and Change log
+# 9 June 2020, 3d-gussner, colored output
+#############################################################################
 
 
 # insert single text to english dictionary

@@ -1,7 +1,15 @@
 #!/bin/bash
 #
+# Version 1.0.1
+#
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
+#
+#############################################################################
+# Change log:
+# 9 June 2020, 3d-gussner, Added version and Change log
+# 9 June 2020, 3d-gussner, colored output
+#############################################################################
 
 LNG=$1
 # if no arguments, 'all' is selected (all po and also pot will be generated)
@@ -29,7 +37,7 @@ cd po/new
 
 # check if input file exists
 if ! [ -e $LNGISO.po ]; then
- echo "Input file $LNGISO.po not found!" >&2
+ echo "$(tput setaf 1)Input file $LNGISO.po not found!$(tput sgr0)" >&2
  exit -1
 fi
 

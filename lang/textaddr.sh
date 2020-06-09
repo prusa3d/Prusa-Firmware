@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# Version 1.0.1
+#
 # textaddr.sh - multi-language support script
 #  Compile progmem1.var and lang_en.txt files to textaddr.txt file (mapping of progmem addreses to text idenifiers)
 #
@@ -19,11 +21,16 @@
 #  after sort this will generate pairs of lines (line from progmem1 first)
 #  result of sort is compiled with simple script and stored into file textaddr.txt
 #
+#############################################################################
+# Change log:
+# 9 June 2020, 3d-gussner, Added version and Change log
+# 9 June 2020, 3d-gussner, colored output
+#############################################################################
 
-echo "textaddr.sh started" >&2
+echo "$(tput setaf 2)textaddr.sh started$(tput sgr0)" >&2
 
-if [ ! -e progmem1.var ]; then echo 'textaddr.sh - file progmem1.var not found!' >&2; exit 1; fi 
-if [ ! -e lang_en.txt ]; then echo 'textaddr.sh - file lang_en.txt not found!' >&2; exit 1; fi 
+if [ ! -e progmem1.var ]; then echo '$(tput setaf 1)textaddr.sh - file progmem1.var not found!$(tput sgr0)' >&2; exit 1; fi 
+if [ ! -e lang_en.txt ]; then echo '$(tput setaf 1)textaddr.sh - file lang_en.txt not found!$(tput sgr0)' >&2; exit 1; fi 
 addr=''
 text=''
 (cat progmem1.var | sed -E "s/^([^ ]*) ([^ ]*) (.*)/\1 \"\3\"/";\
@@ -63,6 +70,6 @@ text=''
  fi
 done > textaddr.txt
 
-echo "textaddr.sh finished" >&2
+echo "$(tput setaf 2)textaddr.sh finished$(tput sgr0)" >&2
 
 exit 0

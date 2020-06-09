@@ -1,25 +1,32 @@
 #!/bin/bash
 #
+# Version 1.0.1
+#
 # fw-clean.sh - multi-language support script
 #  Remove all firmware output files from lang folder.
 #
+#############################################################################
+# Change log:
+# 9 June 2020, 3d-gussner, Added version and Change log
+# 9 June 2020, 3d-gussner, colored output
+#############################################################################
 
 result=0
 
 rm_if_exists()
 {
  if [ -e $1 ]; then
-  echo -n " removing '$1'..." >&2
+  echo -n "$(tput sgr0) removing '$1'...$(tput sgr0)" >&2
   if rm $1; then
-   echo "OK" >&2
+   echo "$(tput setaf 2)OK" >&2
   else
-   echo "NG!" >&2
+   echo "$(tput setaf 1)NG!" >&2
    result=1
   fi
  fi
 }
 
-echo "fw-clean.sh started" >&2
+echo "$(tput setaf 2)fw-clean.sh started$(tput sgr0)" >&2
 
 rm_if_exists text.sym
 rm_if_exists progmem1.sym
@@ -59,9 +66,9 @@ rm_if_exists firmware_nl.hex
 
 echo -n "fw-clean.sh finished" >&2
 if [ $result -eq 0 ]; then
- echo " with success" >&2
+ echo " with success$(tput sgr0)" >&2
 else
- echo " with errors!" >&2
+ echo " with errors!$(tput sgr0)" >&2
 fi
 
 case "$-" in
