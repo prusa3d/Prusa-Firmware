@@ -6201,8 +6201,18 @@ Sigma_Exit:
 
 		{
 			const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %d; print time remaining in mins: %d\n");
-			printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal);
-			printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent);
+#ifdef TMC2130
+			if(tmc2130_mode==TMC2130_MODE_NORMAL) 
+			{
+#endif
+				printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal);
+#ifdef TMC2130
+			}
+			if(tmc2130_mode==TMC2130_MODE_SILENT) 
+			{
+				printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent);
+			}
+#endif
 		}
 		break;
 
