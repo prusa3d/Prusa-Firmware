@@ -635,7 +635,12 @@ void lcdui_print_percent_done(void)
 {
 	const char* src = is_usb_printing?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
 	char per[4];
-	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
+#ifdef TMC2130
+	uint8_t print_percent_done_current = ((tmc2130_mode == TMC2130_MODE_SILENT) ? print_percent_done_silent : print_percent_done_normal);
+#else
+	uint8_t print_percent_done_current = print_percent_done_normal;
+#endif
+	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_current != PRINT_PERCENT_DONE_INIT));
 	if (!num || heating_status) // either not printing or heating
 	{
 		const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
