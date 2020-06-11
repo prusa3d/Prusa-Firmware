@@ -4637,7 +4637,6 @@ void lcd_pinda_calibration_menu()
 void lcd_temp_calibration_set() {
 	temp_cal_active = !temp_cal_active;
 	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
-	st_current_init();
 }
 
 #ifdef HAS_SECOND_SERIAL_PORT
