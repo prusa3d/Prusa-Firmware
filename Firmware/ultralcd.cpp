@@ -723,16 +723,19 @@ void lcdui_print_time(void)
 {
 	//if remaining print time estimation is available print it else print elapsed time
 	uint16_t print_t = 0;
-	if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-		print_t = print_time_remaining();
+	uint16_t print_time_remaining_result = 0;
+	
+	print_time_remaining_result = print_time_remaining();
+	if (print_time_remaining_result != PRINT_TIME_REMAINING_INIT)
+		print_t = print_time_remaining_result;
 	else if(starttime != 0)
 		print_t = _millis() / 60000 - starttime / 60000;
 	int chars = 0;
-	if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
+	if ((PRINTER_ACTIVE) && ((print_time_remaining_result != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
 	{
           char suff = ' ';
           char suff_doubt = ' ';
-		if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+		if (print_time_remaining_result != PRINT_TIME_REMAINING_INIT)
           {
                suff = 'R';
                if (feedmultiply != 100)
