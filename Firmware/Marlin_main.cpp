@@ -4562,6 +4562,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   ### G76 - PINDA probe temperature calibration <a href="https://reprap.org/wiki/G-code#G76:_PINDA_probe_temperature_calibration">G76: PINDA probe temperature calibration</a>
   This G-code is used to calibrate the temperature drift of the PINDA (inductive Sensor).
   
+  superPINDA sensor
+
   The PINDAv2 sensor has a built-in thermistor which has the advantage that the calibration can be done once for all materials.
   
   The Original i3 Prusa MK2/s uses PINDAv1 and this calibration improves the temperature drift, but not as good as the PINDAv2.
@@ -4580,8 +4582,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   case 76: 
 	{
 #ifdef PINDA_THERMISTOR
-		if (has_temperature_compensation())
+		if (true)
 		{
+		    if (!has_temperature_compensation())
+		    {
+		        SERIAL_ECHOLNPGM("No PINDA thermistor");
+		        break;
+		    }
 
 			if (calibration_status() >= CALIBRATION_STATUS_XYZ_CALIBRATION) {
 				//we need to know accurate position of first calibration point
@@ -4727,7 +4734,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 			break;
 		}
-#endif //PINDA_THERMISTOR
+#else //PINDA_THERMISTOR
 
 		setTargetBed(PINDA_MIN_T);
 		float zero_z;
@@ -4828,7 +4835,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		lcd_update(2);		
 
 		
-
+#endif //PINDA_THERMISTOR
 	}
 	break;
 
