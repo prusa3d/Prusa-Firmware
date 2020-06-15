@@ -3,3 +3,49 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+
+.settings	.pio
+.project	.vscode/.browse.c_cpp.db*
+.cproject	.vscode/c_cpp_properties.json
+Debug	.vscode/launch.json
+src/Configuration_prusa.h	.vscode/ipch
+src/Doc	
+/html	
+/latex	
+/Doxyfile	
+/src/builds/1_75mm_MK3-EINY04-E3Dv6full	
+/src/Configuration_prusa.h.bak	
+/src/Configuration_prusa_backup.h	
+/src/ultralcd_implementation_hitachi_HD44780.h.bak	
+/src/ultralcd.cpp.bak	
+/src/temperature.cpp.bak	
+/src/pins.h.bak	
+/src/Marlin_main.cpp.bak	
+/src/language_pl.h.bak	
+/src/language_it.h.bak	
+/src/language_es.h.bak	
+/src/language_en.h.bak	
+/src/language_de.h.bak	
+/src/language_cz.h.bak	
+/src/variants/1_75mm_MK2-MultiMaterial-RAMBo13a-E3Dv6full.h	
+/src/variants/1_75mm_MK2-MultiMaterial-RAMBo10a-E3Dv6full.h	
+/src/variants/1_75mm_MK2-EINY01-E3Dv6full.h.bak	
+/src/variants/1_75mm_MK1-RAMBo13a-E3Dv6full.h	
+/src/variants/1_75mm_MK1-RAMBo10a-E3Dv6full.h	
+/lang/*.bin	
+/lang/*.hex	
+/lang/*.dat	
+/lang/*.tmp	
+/lang/*.out	
+/lang/not_tran*.txt	
+/lang/not_used*.txt	
+/lang/progmem1.chr	
+/lang/progmem1.lss	
+/lang/progmem1.txt	
+/lang/progmem1.var	
+/lang/text.sym	
+/lang/textaddr.txt	
+/build-env/	
+/src/Configuration_prusa_bckp.h	
+/src/variants/printers.h
