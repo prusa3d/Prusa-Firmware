@@ -4580,7 +4580,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   case 76: 
 	{
 #ifdef PINDA_THERMISTOR
-		if (true)
+		if (has_temperature_compensation())
 		{
 
 			if (calibration_status() >= CALIBRATION_STATUS_XYZ_CALIBRATION) {
