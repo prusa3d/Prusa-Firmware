@@ -334,15 +334,6 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
-static bool has_temperature_compensation()
-{
-#ifdef DETECT_SUPERPINDA
-    return (current_temperature_pinda >= PINDA_MINTEMP) ? true : false;
-#else
-    return true;
-#endif
-}
-
 
 static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
 {

@@ -2196,4 +2196,15 @@ float unscalePID_d(float d)
 
 #endif //PIDTEMP
 
+#ifdef PINDA_THERMISTOR
+bool has_temperature_compensation()
+{
+#ifdef DETECT_SUPERPINDA
+    return (current_temperature_pinda >= PINDA_MINTEMP) ? true : false;
+#else
+    return true;
+#endif
+}
+#endif //PINDA_THERMISTOR
+
 
