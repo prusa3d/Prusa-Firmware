@@ -63,6 +63,7 @@ extern float current_temperature_bed;
 #ifdef PINDA_THERMISTOR
 extern uint16_t current_temperature_raw_pinda;
 extern float current_temperature_pinda;
+bool has_temperature_compensation();
 #endif
 
 #ifdef AMBIENT_THERMISTOR
