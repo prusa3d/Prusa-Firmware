@@ -2197,6 +2197,11 @@ float unscalePID_d(float d)
 #endif //PIDTEMP
 
 #ifdef PINDA_THERMISTOR
+//! @brief PINDA thermistor detected
+//!
+//! @retval true firmware should do temperature compensation and allow calibration
+//! @retval false PINDA thermistor is not detected, disable temperature compensation and calibration
+//!
 bool has_temperature_compensation()
 {
 #ifdef DETECT_SUPERPINDA

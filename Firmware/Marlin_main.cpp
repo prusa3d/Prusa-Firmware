@@ -4561,12 +4561,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   /*!
   ### G76 - PINDA probe temperature calibration <a href="https://reprap.org/wiki/G-code#G76:_PINDA_probe_temperature_calibration">G76: PINDA probe temperature calibration</a>
   This G-code is used to calibrate the temperature drift of the PINDA (inductive Sensor).
-  
-  superPINDA sensor
 
   The PINDAv2 sensor has a built-in thermistor which has the advantage that the calibration can be done once for all materials.
   
   The Original i3 Prusa MK2/s uses PINDAv1 and this calibration improves the temperature drift, but not as good as the PINDAv2.
+
+  superPINDA sensor has internal temperature compensation and no thermistor output. There is no point of doing temperature calibration in such case.
+  If PINDA_THERMISTOR and DETECT_SUPERPINDA is defined during compilation, calibration is skipped with serial message "No PINDA thermistor".
+  This can be caused also if PINDA thermistor connection is broken or PINDA temperature is lower than PINDA_MINTEMP.
 
   #### Example
   
@@ -10493,7 +10495,11 @@ float temp_comp_interpolation(float inp_temperature) {
 		if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &shift[i]); //read shift in steps from EEPROM
 		temp_C[i] = 50 + i * 10; //temperature in C
 #ifdef PINDA_THERMISTOR
-		temp_C[i] = 35 + i * 5; //temperature in C
+		constexpr int start_compensating_temp = 35;
+		temp_C[i] = start_compensating_temp + i * 5; //temperature in degrees C
+#ifdef DETECT_SUPERPINDA
+		static_assert(start_compensating_temp >= PINDA_MINTEMP, "Temperature compensation start point is lower than PINDA_MINTEMP.");
+#endif //DETECT_SUPERPINDA
 #else
 		temp_C[i] = 50 + i * 10; //temperature in C
 #endif
