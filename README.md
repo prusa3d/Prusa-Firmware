@@ -15,9 +15,9 @@ The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.
      * [Using Arduino](#using-arduino)
      * [Using Linux subsystem](#using-linux-subsystem-under-windows-10-64-bit)
      * [Using Git-bash](#using-git-bash-under-windows-10-64-bit)
-   * [Automated tests](#3-automated-tests)
-   * [Documentation](#4-documentation)
-   * [FAQ](#5-faq)
+   * [Automated tests](#automated-tests)
+   * [Documentation](#documentation)
+   * [FAQ](#faq)
 <!--te-->
 
 
