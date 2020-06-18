@@ -67,7 +67,8 @@
 #     - platformio ci --lib="." --board=ID_1 --board=ID_2 --board=ID_N
 
 
-
+os: linux
+dist: bionic
 language: python
 python:
     - "2.7"
