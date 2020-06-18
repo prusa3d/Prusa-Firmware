@@ -10,6 +10,7 @@ The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.
 # Table of contents
 
 <!--ts-->
+   * [Cross-Platform build](#cross-platform)
    * [Linux build](#linux)
    * Windows build
      * [Using Arduino](#using-arduino)
@@ -22,6 +23,15 @@ The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.
 
 
 # Build
+## Cross-Platform
+### Using PlatformIO
+
+#### 1. Development environment preparation
+
+**a.** Install `"Visual Studio Code"` from the official website `https://code.visualstudio.com/` 
+
+**b.** Install `"PlatformIO IDE"` from the Extension Marketplace
+
 ## Linux
 
 1. Clone this repository and checkout the correct branch for your desired release version.
