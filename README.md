@@ -41,11 +41,11 @@ The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.
 * Open the folder in Visual Studio Code
 
 * In the bottom-right corner there will be several icons
-![Icons](vscodeicons.png)
+  * ![Icons](vscodeicons.png)
 
-* Click the right-arrow icon `PlatformIO: Upload`. It will compile and upload the code.
+* Click the `Right-arrow Icon` or `PlatformIO: Upload`. It will compile and upload the code.
 
-* or you can also save the output code to the file (in so called `HEX`-format) `"firmware.hex"`:  Click on the Tick Icon `PlatformIO: Build` and then upload it to the printer using the program `"FirmwareUpdater"`  
+* or you can also save the output code to the file (in so called `HEX`-format) `"firmware.hex"`:  Click on the `Tick Icon` or `PlatformIO: Build` and then upload it to the printer using the program `"FirmwareUpdater"`  
 _note: this file is created in the directory `"build/prusa_rambo/"`_  
 
 ## Linux
