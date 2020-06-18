@@ -226,11 +226,14 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
   // Size of Plateau of Nominal Rate.
   uint32_t plateau_steps     = 0;
 
+  float max_speed;
+
   // Is the Plateau of Nominal Rate smaller than nothing? That means no cruising, and we will
   // have to use intersection_distance() to calculate when to abort acceleration and start braking
   // in order to reach the final_rate exactly at the end of this block.
   if (accel_decel_steps < block->step_event_count.wide) {
     plateau_steps = block->step_event_count.wide - accel_decel_steps;
+    max_speed = block->nominal_speed;
   } else {
     uint32_t acceleration_x4  = acceleration << 2;
     // Avoid negative numbers
@@ -263,12 +266,18 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
             decelerate_steps = block->step_event_count.wide;
         accelerate_steps = block->step_event_count.wide - decelerate_steps;
     }
+
+    // TODO: not for production
+    float dist = intersection_distance(entry_speed, exit_speed, block->acceleration, block->millimeters);
+    max_speed = sqrt(2 * block->acceleration * dist + entry_speed*entry_speed);
   }
 
 #ifdef LIN_ADVANCE
   uint16_t final_adv_steps = 0;
+  uint16_t max_adv_steps = 0;
   if (block->use_advance_lead) {
       final_adv_steps = exit_speed * block->adv_comp;
+      max_adv_steps = max_speed * block->adv_comp;
   }
 #endif
 
@@ -284,6 +293,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
     block->final_rate = final_rate;
 #ifdef LIN_ADVANCE
     block->final_adv_steps = final_adv_steps;
+    block->max_adv_steps = max_adv_steps;
 #endif
   }
   CRITICAL_SECTION_END;
@@ -1169,13 +1179,13 @@ Having the real displacement of the head, we can calculate the total movement le
           block->advance_step_loops = 1;
       }
 
-      #ifdef LA_DEBUG
-      if (block->advance_step_loops > 2)
+      #if 1
+      if (block->advance_step_loops != 1)
           // @wavexx: we should really check for the difference between step_loops and
           //          advance_step_loops instead. A difference of more than 1 will lead
           //          to uneven speed and *should* be adjusted here by furthermore
           //          reducing the speed.
-          SERIAL_ECHOLNPGM("LA: More than 2 steps per eISR loop executed.");
+          SERIAL_ECHOLNPGM("LA: More than 1 steps per eISR loop executed.");
       #endif
   }
 #endif
