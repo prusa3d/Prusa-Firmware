@@ -32,6 +32,12 @@ The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.
 
 **b.** Install `"PlatformIO IDE"` from the Extension Marketplace
 
+#### 2. Source code compilation
+
+* Clone this repository and checkout the correct branch for your desired release version.
+
+* <a name="2b"></a> In the subdirectory `"Firmware/variants/"` select the configuration file (`.h`) corresponding to your printer model, make copy named `"Configuration_prusa.h"` (or make simple renaming) and copy it into `"Firmware/"` directory. 
+
 ## Linux
 
 1. Clone this repository and checkout the correct branch for your desired release version.
