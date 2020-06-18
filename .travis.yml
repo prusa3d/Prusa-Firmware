@@ -65,3 +65,43 @@
 #
 # script:
 #     - platformio ci --lib="." --board=ID_1 --board=ID_2 --board=ID_N
+
+
+
+language: python
+python:
+    - "2.7"
+
+sudo: false
+cache:
+    directories:
+        - "~/.platformio"
+
+install:
+    - pip install -U platformio
+    - platformio update
+
+script:
+  - cp Firmware/variants/1_75mm_MK3S-EINSy10a-E3Dv6full.h Firmware/Configuration_prusa.h
+  - platformio run || { echo "1_75mm_MK3S-EINSy10a-E3Dv6full variant failed" && false; }
+  - rm Firmware/Configuration_prusa.h
+  - cp Firmware/variants/1_75mm_MK3-EINSy10a-E3Dv6full.h Firmware/Configuration_prusa.h
+  - platformio run || { echo "1_75mm_MK3-EINSy10a-E3Dv6full variant failed" && false; }
+  - rm Firmware/Configuration_prusa.h
+  - cp Firmware/variants/1_75mm_MK25S-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
+  - platformio run || { echo "1_75mm_MK25S-RAMBo13a-E3Dv6full variant failed" && false; }
+  - rm Firmware/Configuration_prusa.h
+  - cp Firmware/variants/1_75mm_MK25S-RAMBo10a-E3Dv6full.h Firmware/Configuration_prusa.h
+  - platformio run || { echo "1_75mm_MK25S-RAMBo10a-E3Dv6full variant failed" && false; }
+  - rm Firmware/Configuration_prusa.h
+  - cp Firmware/variants/1_75mm_MK25-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
+  - platformio run || { echo "1_75mm_MK25-RAMBo13a-E3Dv6full variant failed" && false; }
+  - rm Firmware/Configuration_prusa.h
+  - cp Firmware/variants/1_75mm_MK25-RAMBo10a-E3Dv6full.h Firmware/Configuration_prusa.h
+  - platformio run || { echo "1_75mm_MK25-RAMBo10a-E3Dv6full variant failed" && false; }
+  - rm Firmware/Configuration_prusa.h
+  - cp Firmware/variants/1_75mm_MK2-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
+  - platformio run || { echo "1_75mm_MK2-RAMBo13a-E3Dv6full variant failed" && false; }
+  - rm Firmware/Configuration_prusa.h
+  - cp Firmware/variants/1_75mm_MK2-RAMBo10a-E3Dv6full.h Firmware/Configuration_prusa.h
+  - platformio run || { echo "1_75mm_MK2-RAMBo10a-E3Dv6full variant failed" && false; }
