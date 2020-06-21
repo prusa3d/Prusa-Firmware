@@ -1016,7 +1016,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 
     // Schedule the next closest tick, ignoring advance if scheduled too
     // soon in order to avoid skewing the regular stepper acceleration
-    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + TCNT1 + 40) < nextMainISR)
+    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + 40) < nextMainISR)
         OCR1A = nextAdvanceISR;
     else
         OCR1A = nextMainISR;
