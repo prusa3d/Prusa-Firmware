@@ -267,9 +267,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
         accelerate_steps = block->step_event_count.wide - decelerate_steps;
     }
 
-    // TODO: not for production
-    float dist = intersection_distance(entry_speed, exit_speed, block->acceleration, block->millimeters);
-    max_speed = sqrt(2 * block->acceleration * dist + entry_speed*entry_speed);
+    max_speed = sqrt(acceleration_x2 * accelerate_steps + initial_rate_sqr) / block->speed_factor;
   }
 
 #ifdef LIN_ADVANCE
