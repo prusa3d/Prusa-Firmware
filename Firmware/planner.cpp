@@ -225,15 +225,24 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
   uint32_t accel_decel_steps = accelerate_steps + decelerate_steps;
   // Size of Plateau of Nominal Rate.
   uint32_t plateau_steps     = 0;
-  // Maximum effective speed reached in the trapezoid (step/min)
-  float max_rate;
+
+#ifdef LIN_ADVANCE
+  uint16_t final_adv_steps = 0;
+  uint16_t max_adv_steps = 0;
+  if (block->use_advance_lead) {
+      final_adv_steps = final_rate * block->adv_comp;
+  }
+#endif
 
   // Is the Plateau of Nominal Rate smaller than nothing? That means no cruising, and we will
   // have to use intersection_distance() to calculate when to abort acceleration and start braking
   // in order to reach the final_rate exactly at the end of this block.
   if (accel_decel_steps < block->step_event_count.wide) {
     plateau_steps = block->step_event_count.wide - accel_decel_steps;
-    max_rate = block->nominal_rate;
+#ifdef LIN_ADVANCE
+    if (block->use_advance_lead)
+        max_adv_steps = block->nominal_rate * block->adv_comp;
+#endif
   } else {
     uint32_t acceleration_x4  = acceleration << 2;
     // Avoid negative numbers
@@ -267,17 +276,19 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
         accelerate_steps = block->step_event_count.wide - decelerate_steps;
     }
 
-    max_rate = sqrt(acceleration_x2 * accelerate_steps + initial_rate_sqr);
-  }
-
 #ifdef LIN_ADVANCE
-  uint16_t final_adv_steps = 0;
-  uint16_t max_adv_steps = 0;
-  if (block->use_advance_lead) {
-      final_adv_steps = final_rate * block->adv_comp;
-      max_adv_steps = max_rate * block->adv_comp;
-  }
+    if (block->use_advance_lead) {
+        if(!accelerate_steps || !decelerate_steps) {
+            // accelerate_steps=0: deceleration-only ramp, max_rate is effectively unused
+            // decelerate_steps=0: acceleration-only ramp, max_rate _is_ final_rate
+            max_adv_steps = final_adv_steps;
+        } else {
+            uint16_t max_rate = sqrt(acceleration_x2 * accelerate_steps + initial_rate_sqr);
+            max_adv_steps = max_rate * block->adv_comp;
+        }
+    }
 #endif
+  }
 
   CRITICAL_SECTION_START;  // Fill variables used by the stepper in a critical section
   // This block locks the interrupts globally for 4.38 us,
