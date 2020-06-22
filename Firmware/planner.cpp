@@ -283,7 +283,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
             // decelerate_steps=0: acceleration-only ramp, max_rate _is_ final_rate
             max_adv_steps = final_adv_steps;
         } else {
-            uint16_t max_rate = sqrt(acceleration_x2 * accelerate_steps + initial_rate_sqr);
+            float max_rate = sqrt(acceleration_x2 * accelerate_steps + initial_rate_sqr);
             max_adv_steps = max_rate * block->adv_comp;
         }
     }
