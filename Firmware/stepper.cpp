@@ -848,12 +848,10 @@ FORCE_INLINE void isr() {
 
 #ifdef LIN_ADVANCE
           if(current_block->use_advance_lead) {
-              if (!nextAdvanceISR) {
-                  // Due to E-jerk, there can be discontinuities in pressure state where an
-                  // acceleration or deceleration can be skipped or joined with the previous block.
-                  // If LA was not previously active, re-check the pressure level
-                  la_state = ADV_INIT;
-              }
+              // Due to E-jerk, there can be discontinuities in pressure state where an
+              // acceleration or deceleration can be skipped or joined with the previous block.
+              // If LA was not previously active, re-check the pressure level
+              la_state = ADV_INIT;
           }
 #endif
         }
@@ -865,6 +863,7 @@ FORCE_INLINE void isr() {
 #ifdef LIN_ADVANCE
     // avoid multiple instances or function calls to advance_spread
     if (la_state & ADV_INIT) {
+        LA_phase = -1;
         if (current_adv_steps == target_adv_steps) {
             // nothing to be done in this phase
             la_state = 0;
@@ -1017,7 +1016,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 
     // Schedule the next closest tick, ignoring advance if scheduled too
     // soon in order to avoid skewing the regular stepper acceleration
-    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + TCNT1 + 40) < nextMainISR)
+    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + 40) < nextMainISR)
         OCR1A = nextAdvanceISR;
     else
         OCR1A = nextMainISR;
