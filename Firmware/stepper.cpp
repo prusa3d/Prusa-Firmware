@@ -864,9 +864,11 @@ FORCE_INLINE void isr() {
     // avoid multiple instances or function calls to advance_spread
     if (la_state & ADV_INIT) {
         LA_phase = -1;
+
         if (current_adv_steps == target_adv_steps) {
-            // nothing to be done in this phase
+            // nothing to be done in this phase, cancel any pending eisr
             la_state = 0;
+            nextAdvanceISR = ADV_NEVER;
         }
         else {
             eISR_Err = current_block->advance_rate / 4;
@@ -933,20 +935,21 @@ FORCE_INLINE void advance_isr() {
             current_adv_steps -= e_step_loops;
         else
             current_adv_steps = 0;
-        nextAdvanceISR = eISR_Rate;
     }
     else if (current_adv_steps < target_adv_steps) {
         // compression
         e_steps += e_step_loops;
         if (e_steps) WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
         current_adv_steps += e_step_loops;
-        nextAdvanceISR = eISR_Rate;
     }
-    else {
+
+    if (current_adv_steps == target_adv_steps) {
         // advance steps completed
         nextAdvanceISR = ADV_NEVER;
-        LA_phase = -1;
-        e_step_loops = 1;
+    }
+    else {
+        // schedule another tick
+        nextAdvanceISR = eISR_Rate;
     }
 }
 
