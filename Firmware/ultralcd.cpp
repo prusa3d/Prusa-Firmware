@@ -3920,14 +3920,12 @@ void lcd_temp_cal_show_result(bool result) {
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 		SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_TEMP_CALIBRATION_DONE));
-		temp_cal_active = true;
 		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
 	}
 	else {
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 		SERIAL_ECHOLNPGM("Temperature calibration failed. Continue with pressing the knob.");
 		lcd_show_fullscreen_message_and_wait_P(_i("Temperature calibration failed"));////MSG_TEMP_CAL_FAILED c=20 r=8
-		temp_cal_active = false;
 		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 0);
 	}
 	lcd_update_enable(true);
@@ -4635,6 +4633,7 @@ void lcd_pinda_calibration_menu()
 }
 
 void lcd_temp_calibration_set() {
+	bool temp_cal_active = eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE);
 	temp_cal_active = !temp_cal_active;
 	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
 }
@@ -5764,8 +5763,10 @@ static void lcd_settings_menu()
 #if defined (TMC2130) && defined (LINEARITY_CORRECTION)
     MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
 #endif //LINEARITY_CORRECTION && TMC2130
-
-	MENU_ITEM_TOGGLE_P(_T(MSG_TEMP_CALIBRATION), temp_cal_active ? _T(MSG_ON) : _T(MSG_OFF), lcd_temp_calibration_set);
+    if(has_temperature_compensation())
+    {
+	    MENU_ITEM_TOGGLE_P(_T(MSG_TEMP_CALIBRATION), eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE) ? _T(MSG_ON) : _T(MSG_OFF), lcd_temp_calibration_set);
+    }
 
 #ifdef HAS_SECOND_SERIAL_PORT
     MENU_ITEM_TOGGLE_P(_T(MSG_RPI_PORT), (selectedSerialPort == 0) ? _T(MSG_OFF) : _T(MSG_ON), lcd_second_serial_set);
@@ -5869,7 +5870,10 @@ static void lcd_calibration_menu()
 	//MENU_ITEM_FUNCTION_P(MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
 #endif
 #ifndef MK1BP
-	MENU_ITEM_SUBMENU_P(_i("Temp. calibration"), lcd_pinda_calibration_menu);////MSG_CALIBRATION_PINDA_MENU c=17 r=1
+    if(has_temperature_compensation())
+    {
+	    MENU_ITEM_SUBMENU_P(_i("Temp. calibration"), lcd_pinda_calibration_menu);////MSG_CALIBRATION_PINDA_MENU c=17 r=1
+    }
 #endif //MK1BP
   }
   
