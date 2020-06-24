@@ -883,11 +883,13 @@ FORCE_INLINE void isr() {
         advance_spread(main_Rate);
         if (LA_phase >= 0) {
             if (step_loops == e_step_loops)
-                LA_phase = (eISR_Rate > main_Rate);
+                LA_phase = (current_block->advance_rate > main_Rate);
             else {
                 // avoid overflow through division. warning: we need to _guarantee_ step_loops
                 // and e_step_loops are <= 4 due to fastdiv's limit
-                LA_phase = (fastdiv(eISR_Rate, step_loops) > fastdiv(main_Rate, e_step_loops));
+                auto adv_rate_n = fastdiv(current_block->advance_rate, step_loops);
+                auto main_rate_n = fastdiv(main_Rate, e_step_loops);
+                LA_phase = (adv_rate_n > main_rate_n);
             }
         }
     }
