@@ -242,8 +242,8 @@
 #define FILAMENTCHANGE_FIRSTFEED 70 // E distance in mm for fast filament loading sequence used used in filament change (M600)
 #define FILAMENTCHANGE_FINALFEED 25 // E distance in mm for slow filament loading sequence used used in filament change (M600) and filament load (M701)
 
-#define FILAMENTCHANGE_PRIMEFEED  2 // E priming distance performed after resuming
-#define FILAMENTCHANGE_UNLOADFEED 5 // E priming distance performed before unloading
+#define FILAMENTCHANGE_PRIMEFEED   2 // E priming distance performed after resuming
+#define FILAMENTCHANGE_UNLOADFEED 10 // E priming distance performed before unloading
 
 #define FILAMENTCHANGE_XYFEED 50
 #define FILAMENTCHANGE_ZFEED 15
