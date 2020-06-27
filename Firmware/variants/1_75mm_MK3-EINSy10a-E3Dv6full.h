@@ -294,6 +294,8 @@
 #if BED_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see BED_MINTEMP_DELAY definition)"
 #endif
+#define DETECT_SUPERPINDA
+#define PINDA_MINTEMP BED_MINTEMP
 
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
@@ -495,6 +497,9 @@
 
 #define ASA_PREHEAT_HOTEND_TEMP 260
 #define ASA_PREHEAT_HPB_TEMP 105
+
+#define PC_PREHEAT_HOTEND_TEMP 275
+#define PC_PREHEAT_HPB_TEMP 110
 
 #define ABS_PREHEAT_HOTEND_TEMP 255
 #define ABS_PREHEAT_HPB_TEMP 100

@@ -81,6 +81,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | :--				| :-- 		| :-- 									| :--:			| :--:					| :--												| :--:			| :--:
 | 0x0FFFh 4095		| uchar    	| EEPROM_SILENT 						| 00h 0			| ffh 255				| TMC Stealth mode: __off__ / miniRambo Power mode	| LCD menu		| D3 Ax0fff C1
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode: __on__ / miniRambo Silent mode	| ^				| ^ 
+| ^ 				| ^ 		| ^										| 02h 2			| ^						| miniRambo Auto mode								| ^				| ^ 
 | 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255		__L__	| English / LANG_ID_PRI								| LCD menu		| D3 Ax0ffe C1 
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| Other language LANG_ID_SEC						| ^ 			| ^
 | 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ff ffh 65535			| Babystep for X axis _unsued_						| ??? 			| D3 Ax0ffc C2
@@ -340,8 +341,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D9F 3487		| uint8		| ^										| 00h 0			| ffh 255				| 8th sheet - bed temp 								| ^				| D3 Ax0d9f C1	
 | 0x0DA0 3488		| uint8		| ^										| 00h 0			| ffh 255				| 8th sheet - PINDA temp 							| ^				| D3 Ax0da0 C1	
 | 0x0DA1 3489		| uint8		| ???									| 00h 0			| ffh 255				| ???												| ???			| D3 Ax0da1 C1
-| 0x0D48 3400		| uint8		| EEPROM_FSENSOR_PCB					| ???			| ffh 255				| Filament Sensor type old vs new					| ???			| D3 Ax0d48 C1
-| ^					| ^			| ^										| ???			| ^						| Filament Sensor type ???							| ^				| ^
+| 0x0D48 3400		| uint8		| EEPROM_FSENSOR_PCB					| ffh 255		| ffh 255				| Filament Sensor type IR unknown					| LCD Support	| D3 Ax0d48 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Filament Sensor type IR 0.3 or older				| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor type IR 0.4 or newer				| ^				| ^
 | 0x0D47 3399		| uint8		| EEPROM_FSENSOR_ACTION_NA				| 00h 0			| ffh 255				| Filament Sensor action: __Continue__				| LCD menu		| D3 Ax0d47 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor action: __Pause__					| ^				| ^
 | 0x0D37 3383		| float		| EEPROM_UVLO_SAVED_TARGET				| ???			| ff ff ff ffh			| Power panic saved target all-axis					| ???			| D3 Ax0d37 C16

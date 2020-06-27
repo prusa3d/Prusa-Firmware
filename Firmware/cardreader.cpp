@@ -331,7 +331,7 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 {
                     SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
                     SERIAL_PROTOCOL(subdirname);
-                    SERIAL_PROTOCOLLNPGM(".");
+                    SERIAL_PROTOCOLLN('.');
                     return;
                 }
                 else
@@ -430,7 +430,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
     {
       SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
       SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLLNPGM(".");
+      SERIAL_PROTOCOLLN('.');
     }
   }
   else 
@@ -439,7 +439,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
     {
       SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
       SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLLNPGM(".");
+      SERIAL_PROTOCOLLN('.');
     }
     else
     {
@@ -496,17 +496,15 @@ void CardReader::getStatus()
           SERIAL_PROTOCOLLNPGM("Print saved");
       }
       else {
-          SERIAL_PROTOCOL(longFilename);
-          SERIAL_PROTOCOLPGM("\n");
+          SERIAL_PROTOCOLLN(longFilename);
           SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE
           SERIAL_PROTOCOL(sdpos);
-          SERIAL_PROTOCOLPGM("/");
+          SERIAL_PROTOCOL('/');
           SERIAL_PROTOCOLLN(filesize);
-          uint16_t time = _millis()/60000 - starttime/60000;
+          uint16_t time = ( _millis() - starttime ) / 60000U;
           SERIAL_PROTOCOL(itostr2(time/60));
           SERIAL_PROTOCOL(':');
-          SERIAL_PROTOCOL(itostr2(time%60));
-          SERIAL_PROTOCOLPGM("\n");
+          SERIAL_PROTOCOLLN(itostr2(time%60));
       }
   }
   else {
@@ -735,7 +733,7 @@ void CardReader::presort() {
 		// Never sort more than the max allowed
 		// If you use folders to organize, 20 may be enough
 		if (fileCnt > SDSORT_LIMIT) {
-			lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=4
+			lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=6
 			fileCnt = SDSORT_LIMIT;
 		}
 		lcd_clear();

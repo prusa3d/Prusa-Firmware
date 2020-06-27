@@ -238,8 +238,8 @@ void get_coordinates();
 void prepare_move();
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void Stop();
-
 bool IsStopped();
+void finishAndDisableSteppers();
 
 //put an ASCII command at the end of the current buffer.
 void enquecommand(const char *cmd, bool from_progmem = false);
@@ -334,7 +334,6 @@ extern unsigned long stoptime;
 extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
-extern bool temp_cal_active;
 extern bool loading_flag;
 extern unsigned int usb_printing_counter;
 
