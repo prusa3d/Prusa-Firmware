@@ -1605,7 +1605,7 @@ static void lcd_cooldown()
 {
   setAllTargetHotends(0);
   setTargetBed(0);
-  fanSpeed = 0;
+  fanSpeed = 255;
   eFilamentAction = FilamentAction::None;
   lcd_return_to_status();
 }
