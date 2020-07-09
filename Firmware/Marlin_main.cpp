@@ -3799,9 +3799,11 @@ void process_commands()
 		else if (code_seen("RESET")) { // PRUSA RESET
             // careful!
             if (farm_mode) {
-#if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
+#ifdef WATCHDOG
+#if defined(W25X20CL) && defined(BOOTAPP)
                 boot_app_magic = BOOT_APP_MAGIC;
                 boot_app_flags = BOOT_APP_FLG_RUN;
+#endif //defined(W25X20CL) && defined(BOOTAPP)
 				wdt_enable(WDTO_15MS);
 				cli();
 				while(1);
