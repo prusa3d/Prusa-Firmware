@@ -6845,6 +6845,8 @@ static void lcd_main_menu()
  
   if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
+	if (farm_mode)
+		MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 	MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
   }
 
@@ -7131,7 +7133,8 @@ static void lcd_tune_menu()
 	MENU_ITEM_EDIT_advance_K();//7
 #endif
 #ifdef FILAMENTCHANGEENABLE
-	MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
+    if (!farm_mode)
+        MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 #endif
 
 #ifdef FILAMENT_SENSOR
