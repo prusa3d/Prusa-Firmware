@@ -1051,7 +1051,9 @@ void setup()
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
+#ifdef HAS_SECOND_SERIAL_PORT
 		selectedSerialPort = 1;
+#endif //HAS_SECOND_SERIAL_PORT
 		MYSERIAL.begin(BAUDRATE);
 #ifdef TMC2130
 		//increased extruder current (PFW363)
@@ -3297,14 +3299,18 @@ static void gcode_PRUSA_SN()
         while (numbersRead < 19) {
             while (MSerial.available() > 0) {
                 uint8_t serial_char = MSerial.read();
+#ifdef HAS_SECOND_SERIAL_PORT
                 selectedSerialPort = 1;
+#endif //HAS_SECOND_SERIAL_PORT
                 putchar(serial_char);
                 numbersRead++;
                 selectedSerialPort = 0;
             }
             if (timeout.expired(100u)) break;
         }
+#ifdef HAS_SECOND_SERIAL_PORT
         selectedSerialPort = 1;
+#endif //HAS_SECOND_SERIAL_PORT
         putchar('\n');
 #if 0
         for (int b = 0; b < 3; b++) {
