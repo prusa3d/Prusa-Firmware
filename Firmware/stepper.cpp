@@ -809,8 +809,11 @@ FORCE_INLINE void isr() {
         acceleration_time += timer;
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-            if (step_events_completed.wide <= (unsigned long int)step_loops)
+            if (step_events_completed.wide <= (unsigned long int)step_loops) {
                 la_state = ADV_INIT | ADV_ACC_VARY;
+                if (e_extruding && current_adv_steps > target_adv_steps)
+                    target_adv_steps = current_adv_steps;
+            }
         }
 #endif
       }
@@ -832,6 +835,8 @@ FORCE_INLINE void isr() {
             if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops) {
                 target_adv_steps = current_block->final_adv_steps;
                 la_state = ADV_INIT | ADV_ACC_VARY;
+                if (e_extruding && current_adv_steps < target_adv_steps)
+                    target_adv_steps = current_adv_steps;
             }
         }
 #endif
@@ -849,6 +854,8 @@ FORCE_INLINE void isr() {
               // acceleration or deceleration can be skipped or joined with the previous block.
               // If LA was not previously active, re-check the pressure level
               la_state = ADV_INIT;
+              if (e_extruding)
+                  target_adv_steps = current_adv_steps;
           }
 #endif
         }
