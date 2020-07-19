@@ -1098,7 +1098,7 @@ Having the real displacement of the head, we can calculate the total movement le
     if (block->use_advance_lead) {
         // all extrusion moves with LA require a compression which is proportional to the
         // extrusion_length to distance ratio (e/D)
-        e_D_ratio = (e - position_float[E_AXIS]) /
+        e_D_ratio = ((e - position_float[E_AXIS]) / extruder_multiplier[extruder]) /
                     sqrt(sq(x - position_float[X_AXIS])
                          + sq(y - position_float[Y_AXIS])
                          + sq(z - position_float[Z_AXIS]));
