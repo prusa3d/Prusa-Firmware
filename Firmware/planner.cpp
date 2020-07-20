@@ -1096,12 +1096,20 @@ Having the real displacement of the head, we can calculate the total movement le
                               && delta_mm[E_AXIS] >= 0
                               && abs(delta_mm[Z_AXIS]) < 0.5;
     if (block->use_advance_lead) {
+#ifdef LA_FLOWADJ
+        // M221/FLOW should change uniformly the extrusion thickness
+        float delta_e = (e - position_float[E_AXIS]) / extruder_multiplier[extruder];
+#else
+        // M221/FLOW only adjusts for an incorrect source diameter
+        float delta_e = (e - position_float[E_AXIS]);
+#endif
+        float delta_D = sqrt(sq(x - position_float[X_AXIS])
+                             + sq(y - position_float[Y_AXIS])
+                             + sq(z - position_float[Z_AXIS]));
+
         // all extrusion moves with LA require a compression which is proportional to the
         // extrusion_length to distance ratio (e/D)
-        e_D_ratio = ((e - position_float[E_AXIS]) / extruder_multiplier[extruder]) /
-                    sqrt(sq(x - position_float[X_AXIS])
-                         + sq(y - position_float[Y_AXIS])
-                         + sq(z - position_float[Z_AXIS]));
+        e_D_ratio = delta_e / delta_D;
 
         // Check for unusual high e_D ratio to detect if a retract move was combined with the last
         // print move due to min. steps per segment. Never execute this with advance! This assumes
