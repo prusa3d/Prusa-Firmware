@@ -9160,3 +9160,15 @@ void lcd_crash_detect_disable()
     eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00);
 }
 #endif
+
+void lcd_experimental_menu()
+{
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_BACK));
+
+#ifdef EXTRUDER_ALTFAN_DETECT
+    MENU_ITEM_TOGGLE_P(_N("ALTFAN det."), altfanOverride_get()?_T(MSG_OFF):_T(MSG_ON), altfanOverride_toggle);
+#endif //EXTRUDER_ALTFAN_DETECT
+
+    MENU_END();
+}

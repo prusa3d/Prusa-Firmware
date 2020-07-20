@@ -153,6 +153,7 @@ uint8_t fanSpeedBckp = 255;
   uint8_t fanState = 0;
 #ifdef EXTRUDER_ALTFAN_DETECT
   bool extruderFanIsAltfan = false; //set to Noctua
+  uint8_t altfanOverride = 0;
 #endif //EXTRUDER_ALTFAN_DETECT
 #endif
 
@@ -224,6 +225,14 @@ bool extruder_altfan_detect()
 	setExtruderAutoFanState(3);
 
 	SET_INPUT(TACH_0);
+
+	altfanOverride = eeprom_read_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE);
+	if (altfanOverride == EEPROM_EMPTY_VALUE)
+	{
+		altfanOverride = 0;
+		eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, altfanOverride);
+	}
+
 	CRITICAL_SECTION_START;
 	EICRB &= ~(1 << ISC61);
 	EICRB |= (1 << ISC60);
@@ -241,6 +250,18 @@ bool extruder_altfan_detect()
 	setExtruderAutoFanState(1);
 	return extruderFanIsAltfan;
 }
+
+void altfanOverride_toggle()
+{
+    altfanOverride = !altfanOverride;
+    eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, altfanOverride);
+}
+
+bool altfanOverride_get()
+{
+    return altfanOverride;
+}
+
 #endif //EXTRUDER_ALTFAN_DETECT
 
 // return "false", if all extruder-heaters are 'off' (ie. "true", if any heater is 'on')
@@ -494,7 +515,7 @@ void setExtruderAutoFanState(uint8_t state)
 	if (fanState & 0x01)
 	{
 #ifdef EXTRUDER_ALTFAN_DETECT
-		if (extruderFanIsAltfan) newFanSpeed = EXTRUDER_ALTFAN_SPEED_SILENT;
+		if (extruderFanIsAltfan && !altfanOverride) newFanSpeed = EXTRUDER_ALTFAN_SPEED_SILENT;
 		else newFanSpeed = EXTRUDER_AUTO_FAN_SPEED;
 #else //EXTRUDER_ALTFAN_DETECT
 		newFanSpeed = EXTRUDER_AUTO_FAN_SPEED;
@@ -1356,7 +1377,7 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 		SERIAL_ERROR_START;
 		isBed ? SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HEATBED)") : SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HOTEND)");
 #ifdef EXTRUDER_ALTFAN_DETECT
-		extruderFanIsAltfan = false; //full speed
+		altfanOverride = true; //full speed
 #endif //EXTRUDER_ALTFAN_DETECT
 		setExtruderAutoFanState(3);
 		SET_OUTPUT(FAN_PIN);
@@ -1446,7 +1467,7 @@ void max_temp_error(uint8_t e) {
     WRITE(FAN_PIN, 1);
     WRITE(BEEPER, 1);
 #ifdef EXTRUDER_ALTFAN_DETECT
-    extruderFanIsAltfan = false; //full speed
+    altfanOverride = true; //full speed
 #endif //EXTRUDER_ALTFAN_DETECT
     setExtruderAutoFanState(3);
     // fanSpeed will consumed by the check_axes_activity() routine.

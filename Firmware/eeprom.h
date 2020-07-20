@@ -561,8 +561,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
 #define EEPROM_UVLO_LA_K (EEPROM_BACKLIGHT_TIMEOUT-4) // float
 
+#define EEPROM_ALTFAN_OVERRIDE (EEPROM_UVLO_LA_K-1) //uint8
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_UVLO_LA_K
+#define EEPROM_LAST_ITEM EEPROM_ALTFAN_OVERRIDE
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
