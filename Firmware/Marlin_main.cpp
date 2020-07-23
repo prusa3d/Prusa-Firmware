@@ -393,6 +393,11 @@ static int saved_fanSpeed = 0; //!< Print fan speed
 
 static int saved_feedmultiply_mm = 100;
 
+#ifdef AUTO_REPORT_TEMPERATURES
+static LongTimer auto_report_temp_timer;
+static uint8_t auto_report_temp_period = 0;
+#endif //AUTO_REPORT_TEMPERATURES
+
 //===========================================================================
 //=============================Routines======================================
 //===========================================================================
@@ -402,6 +407,7 @@ static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
+static void gcode_M115(uint8_t extruder);
 static void temp_compensation_start();
 static void temp_compensation_apply();
 
@@ -1720,6 +1726,18 @@ void host_keepalive() {
 #endif //HOST_KEEPALIVE_FEATURE
   if (farm_mode) return;
   long ms = _millis();
+
+#ifdef AUTO_REPORT_TEMPERATURES
+  if (auto_report_temp_timer.running())
+  {
+    if (auto_report_temp_timer.expired(auto_report_temp_period * 1000ul))
+    {
+      gcode_M115(active_extruder);
+      auto_report_temp_timer.start();
+    }
+  }
+#endif //AUTO_REPORT_TEMPERATURES
+
   if (host_keepalive_interval && busy_state != NOT_BUSY) {
     if ((ms - prev_busy_signal_ms) < (long)(1000L * host_keepalive_interval)) return;
      switch (busy_state) {
@@ -2522,6 +2540,96 @@ void force_high_power_mode(bool start_high_power_section) {
 	}
 }
 #endif //TMC2130
+
+void gcode_M115(uint8_t extruder)
+{
+#if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
+    SERIAL_PROTOCOLPGM("T:");
+    SERIAL_PROTOCOL_F(degHotend(extruder),1);
+    SERIAL_PROTOCOLPGM(" /");
+    SERIAL_PROTOCOL_F(degTargetHotend(extruder),1);
+#if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
+    SERIAL_PROTOCOLPGM(" B:");
+    SERIAL_PROTOCOL_F(degBed(),1);
+    SERIAL_PROTOCOLPGM(" /");
+    SERIAL_PROTOCOL_F(degTargetBed(),1);
+#endif //TEMP_BED_PIN
+    for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
+        SERIAL_PROTOCOLPGM(" T");
+        SERIAL_PROTOCOL(cur_extruder);
+        SERIAL_PROTOCOL(':');
+        SERIAL_PROTOCOL_F(degHotend(cur_extruder),1);
+        SERIAL_PROTOCOLPGM(" /");
+        SERIAL_PROTOCOL_F(degTargetHotend(cur_extruder),1);
+    }
+#else
+    SERIAL_ERROR_START;
+    SERIAL_ERRORLNRPGM(_i("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS
+#endif
+
+    SERIAL_PROTOCOLPGM(" @:");
+#ifdef EXTRUDER_WATTS
+    SERIAL_PROTOCOL((EXTRUDER_WATTS * getHeaterPower(tmp_extruder))/127);
+    SERIAL_PROTOCOLPGM("W");
+#else
+    SERIAL_PROTOCOL(getHeaterPower(extruder));
+#endif
+
+    SERIAL_PROTOCOLPGM(" B@:");
+#ifdef BED_WATTS
+    SERIAL_PROTOCOL((BED_WATTS * getHeaterPower(-1))/127);
+    SERIAL_PROTOCOLPGM("W");
+#else
+    SERIAL_PROTOCOL(getHeaterPower(-1));
+#endif
+
+#ifdef PINDA_THERMISTOR
+    SERIAL_PROTOCOLPGM(" P:");
+    SERIAL_PROTOCOL_F(current_temperature_pinda,1);
+#endif //PINDA_THERMISTOR
+
+#ifdef AMBIENT_THERMISTOR
+    SERIAL_PROTOCOLPGM(" A:");
+    SERIAL_PROTOCOL_F(current_temperature_ambient,1);
+#endif //AMBIENT_THERMISTOR
+
+
+#ifdef SHOW_TEMP_ADC_VALUES
+    {
+        float raw = 0.0;
+#if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
+        SERIAL_PROTOCOLPGM("    ADC B:");
+        SERIAL_PROTOCOL_F(degBed(),1);
+        SERIAL_PROTOCOLPGM("C->");
+        raw = rawBedTemp();
+        SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
+        SERIAL_PROTOCOLPGM(" Rb->");
+        SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
+        SERIAL_PROTOCOLPGM(" Rxb->");
+        SERIAL_PROTOCOL_F(raw, 5);
+#endif
+        for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
+            SERIAL_PROTOCOLPGM("  T");
+            SERIAL_PROTOCOL(cur_extruder);
+            SERIAL_PROTOCOLPGM(":");
+            SERIAL_PROTOCOL_F(degHotend(cur_extruder),1);
+            SERIAL_PROTOCOLPGM("C->");
+            raw = rawHotendTemp(cur_extruder);
+            SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
+            SERIAL_PROTOCOLPGM(" Rt");
+            SERIAL_PROTOCOL(cur_extruder);
+            SERIAL_PROTOCOLPGM("->");
+            SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
+            SERIAL_PROTOCOLPGM(" Rx");
+            SERIAL_PROTOCOL(cur_extruder);
+            SERIAL_PROTOCOLPGM("->");
+            SERIAL_PROTOCOL_F(raw, 5);
+        }
+    }
+#endif
+    SERIAL_PROTOCOLLN("");
+    KEEPALIVE_STATE(NOT_BUSY);
+}
 
 #ifdef TMC2130
 static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl)
@@ -6280,95 +6388,29 @@ Sigma_Exit:
       uint8_t extruder;
       if(setTargetedHotend(105, extruder)){
         break;
-        }
-      #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
-        SERIAL_PROTOCOLPGM("ok T:");
-        SERIAL_PROTOCOL_F(degHotend(extruder),1);
-        SERIAL_PROTOCOLPGM(" /");
-        SERIAL_PROTOCOL_F(degTargetHotend(extruder),1);
-        #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
-          SERIAL_PROTOCOLPGM(" B:");
-          SERIAL_PROTOCOL_F(degBed(),1);
-          SERIAL_PROTOCOLPGM(" /");
-          SERIAL_PROTOCOL_F(degTargetBed(),1);
-        #endif //TEMP_BED_PIN
-        for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
-          SERIAL_PROTOCOLPGM(" T");
-          SERIAL_PROTOCOL(cur_extruder);
-          SERIAL_PROTOCOL(':');
-          SERIAL_PROTOCOL_F(degHotend(cur_extruder),1);
-          SERIAL_PROTOCOLPGM(" /");
-          SERIAL_PROTOCOL_F(degTargetHotend(cur_extruder),1);
-        }
-      #else
-        SERIAL_ERROR_START;
-        SERIAL_ERRORLNRPGM(_i("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS
-      #endif
-
-        SERIAL_PROTOCOLPGM(" @:");
-      #ifdef EXTRUDER_WATTS
-        SERIAL_PROTOCOL((EXTRUDER_WATTS * getHeaterPower(tmp_extruder))/127);
-        SERIAL_PROTOCOLPGM("W");
-      #else
-        SERIAL_PROTOCOL(getHeaterPower(extruder));
-      #endif
-
-        SERIAL_PROTOCOLPGM(" B@:");
-      #ifdef BED_WATTS
-        SERIAL_PROTOCOL((BED_WATTS * getHeaterPower(-1))/127);
-        SERIAL_PROTOCOLPGM("W");
-      #else
-        SERIAL_PROTOCOL(getHeaterPower(-1));
-      #endif
-
-#ifdef PINDA_THERMISTOR
-		SERIAL_PROTOCOLPGM(" P:");
-		SERIAL_PROTOCOL_F(current_temperature_pinda,1);
-#endif //PINDA_THERMISTOR
-
-#ifdef AMBIENT_THERMISTOR
-		SERIAL_PROTOCOLPGM(" A:");
-		SERIAL_PROTOCOL_F(current_temperature_ambient,1);
-#endif //AMBIENT_THERMISTOR
-
-
-        #ifdef SHOW_TEMP_ADC_VALUES
-          {float raw = 0.0;
-
-          #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
-            SERIAL_PROTOCOLPGM("    ADC B:");
-            SERIAL_PROTOCOL_F(degBed(),1);
-            SERIAL_PROTOCOLPGM("C->");
-            raw = rawBedTemp();
-            SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
-            SERIAL_PROTOCOLPGM(" Rb->");
-            SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
-            SERIAL_PROTOCOLPGM(" Rxb->");
-            SERIAL_PROTOCOL_F(raw, 5);
-          #endif
-          for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
-            SERIAL_PROTOCOLPGM("  T");
-            SERIAL_PROTOCOL(cur_extruder);
-            SERIAL_PROTOCOLPGM(":");
-            SERIAL_PROTOCOL_F(degHotend(cur_extruder),1);
-            SERIAL_PROTOCOLPGM("C->");
-            raw = rawHotendTemp(cur_extruder);
-            SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
-            SERIAL_PROTOCOLPGM(" Rt");
-            SERIAL_PROTOCOL(cur_extruder);
-            SERIAL_PROTOCOLPGM("->");
-            SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
-            SERIAL_PROTOCOLPGM(" Rx");
-            SERIAL_PROTOCOL(cur_extruder);
-            SERIAL_PROTOCOLPGM("->");
-            SERIAL_PROTOCOL_F(raw, 5);
-          }}
-        #endif
-		SERIAL_PROTOCOLLN("");
-		KEEPALIVE_STATE(NOT_BUSY);
+      }
+      
+      SERIAL_PROTOCOLPGM("ok ");
+      gcode_M115(extruder);
+      
       return;
       break;
     }
+
+#ifdef AUTO_REPORT_TEMPERATURES
+    case 155:
+    {
+        if (code_seen('S'))
+        {
+            auto_report_temp_period = code_value_uint8();
+            if (auto_report_temp_period != 0)
+                auto_report_temp_timer.start();
+            else
+                auto_report_temp_timer.stop();
+        }
+    }
+    break;
+#endif //AUTO_REPORT_TEMPERATURES
 
     /*!
 	### M109 - Wait for extruder temperature <a href="https://reprap.org/wiki/G-code#M109:_Set_Extruder_Temperature_and_Wait">M109: Set Extruder Temperature and Wait</a>
