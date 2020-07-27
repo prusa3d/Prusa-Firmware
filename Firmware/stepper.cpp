@@ -125,7 +125,7 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
   static uint16_t main_Rate;
   static uint16_t eISR_Rate;
-  static uint16_t eISR_Err;
+  static uint32_t eISR_Err;
 
   static uint16_t current_adv_steps;
   static uint16_t target_adv_steps;
@@ -733,38 +733,30 @@ FORCE_INLINE uint16_t fastdiv(uint16_t q, uint8_t d)
 
 FORCE_INLINE void advance_spread(uint16_t timer)
 {
-    if(eISR_Err > timer)
+    eISR_Err += timer;
+
+    uint8_t ticks = 0;
+    while(eISR_Err >= current_block->advance_rate)
     {
-        // advance-step skipped
-        eISR_Err -= timer;
+        ++ticks;
+        eISR_Err -= current_block->advance_rate;
+    }
+    if(!ticks)
+    {
         eISR_Rate = timer;
         nextAdvanceISR = timer;
         return;
     }
 
-    // at least one step
-    uint8_t ticks = 1;
-    uint32_t block = current_block->advance_rate;
-    uint16_t max_t = timer - eISR_Err;
-    while (block < max_t)
-    {
-        ++ticks;
-        block += current_block->advance_rate;
-    }
-    if (block > timer)
-        eISR_Err += block - timer;
-    else
-        eISR_Err -= timer - block;
-
-    if (ticks <= 4)
-        eISR_Rate = fastdiv(timer, ticks);
+    if (ticks <= 3)
+        eISR_Rate = fastdiv(timer, ticks + 1);
     else
     {
         // >4 ticks are still possible on slow moves
-        eISR_Rate = timer / ticks;
+        eISR_Rate = timer / (ticks + 1);
     }
 
-    nextAdvanceISR = eISR_Rate / 2;
+    nextAdvanceISR = eISR_Rate;
 }
 #endif
 
@@ -876,11 +868,12 @@ FORCE_INLINE void isr() {
         }
         else {
             // reset error and iterations per loop for this phase
-            eISR_Err = current_block->advance_rate / 4;
+            eISR_Err = current_block->advance_rate;
             e_step_loops = current_block->advance_step_loops;
 
             if ((la_state & ADV_ACC_VARY) && e_extruding && (current_adv_steps > target_adv_steps)) {
                 // LA could reverse the direction of extrusion in this phase
+                eISR_Err += current_block->advance_rate;
                 LA_phase = 0;
             }
         }
