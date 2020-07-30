@@ -1452,6 +1452,7 @@ enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_
 uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
 
 void max_temp_error(uint8_t e) {
+  disable_heater();
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
     SERIAL_ERRORLN((int)e);
@@ -1479,6 +1480,7 @@ void min_temp_error(uint8_t e) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
+  disable_heater();
 //if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
 	static const char err[] PROGMEM = "Err: MINTEMP";
   if(IsStopped() == false) {
@@ -1504,6 +1506,7 @@ void min_temp_error(uint8_t e) {
 }
 
 void bed_max_temp_error(void) {
+  disable_heater();
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
     SERIAL_ERRORLNPGM("Heaters switched off. MAXTEMP BED triggered !");
@@ -1518,7 +1521,8 @@ void bed_min_temp_error(void) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
-	static const char err[] PROGMEM = "Err: MINTEMP BED";
+    disable_heater();
+	static const char err[] PROGMEM = "MINTEMP BED";
     if(IsStopped() == false) {
         SERIAL_ERROR_START;
         SERIAL_ERRORLNPGM("Heaters switched off. MINTEMP BED triggered !");
@@ -1537,6 +1541,7 @@ void bed_min_temp_error(void) {
 
 #ifdef AMBIENT_THERMISTOR
 void ambient_max_temp_error(void) {
+    disable_heater();
     if(IsStopped() == false) {
         SERIAL_ERROR_START;
         SERIAL_ERRORLNPGM("Heaters switched off. MAXTEMP AMBIENT triggered !");
@@ -1551,6 +1556,7 @@ void ambient_min_temp_error(void) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
+    disable_heater();
     if(IsStopped() == false) {
         SERIAL_ERROR_START;
         SERIAL_ERRORLNPGM("Heaters switched off. MINTEMP AMBIENT triggered !");
