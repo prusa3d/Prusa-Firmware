@@ -1451,13 +1451,42 @@ enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_
 //! to prevent flicker and improve speed
 uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
 
+
+//! update the current temperature error message
+//! @param type short error abbreviation (PROGMEM)
+//! @param func optional lcd update function (lcd_setalertstatus when first setting the error)
+void temp_update_messagepgm(const char* PROGMEM type, void (*func)(const char*) = lcd_updatestatus)
+{
+    char msg[LCD_WIDTH];
+    strcpy_P(msg, PSTR("Err: "));
+    strcat_P(msg, type);
+    (*func)(msg);
+}
+
+//! signal a temperature error on both the lcd and serial
+//! @param type short error abbreviation (PROGMEM)
+//! @param e optional extruder index for hotend errors
+void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDERS)
+{
+    temp_update_messagepgm(type, lcd_setalertstatus);
+
+    SERIAL_ERROR_START;
+
+    if(e != EXTRUDERS) {
+        SERIAL_ERROR((int)e);
+        SERIAL_ERRORPGM(": ");
+    }
+
+    SERIAL_ERRORPGM("Heaters switched off. ");
+    SERIAL_ERRORRPGM(type);
+    SERIAL_ERRORLNPGM(" triggered!");
+}
+
+
 void max_temp_error(uint8_t e) {
   disable_heater();
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Heaters switched off. MAXTEMP triggered !");
-    LCD_ALERTMESSAGEPGM("Err: MAXTEMP");
+    temp_error_messagepgm(PSTR("MAXTEMP"), e);
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
@@ -1482,16 +1511,13 @@ void min_temp_error(uint8_t e) {
 #endif
   disable_heater();
 //if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
-	static const char err[] PROGMEM = "Err: MINTEMP";
+	static const char err[] PROGMEM = "MINTEMP";
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Heaters switched off. MINTEMP triggered !");
-    lcd_setalertstatuspgm(err);
+    temp_error_messagepgm(err, e);
     last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
   } else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
 	// we are already stopped due to some error, only update the status message without flickering
-	lcd_updatestatuspgm(err);
+    temp_update_messagepgm(err);
 	last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
@@ -1508,9 +1534,7 @@ void min_temp_error(uint8_t e) {
 void bed_max_temp_error(void) {
   disable_heater();
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM("Heaters switched off. MAXTEMP BED triggered !");
-    LCD_ALERTMESSAGEPGM("Err: MAXTEMP BED");
+    temp_error_messagepgm(PSTR("MAXTEMP BED"));
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
@@ -1524,13 +1548,11 @@ void bed_min_temp_error(void) {
     disable_heater();
 	static const char err[] PROGMEM = "MINTEMP BED";
     if(IsStopped() == false) {
-        SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM("Heaters switched off. MINTEMP BED triggered !");
-		lcd_setalertstatuspgm(err);
+        temp_error_messagepgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
 	} else if( last_alert_sent_to_lcd != LCDALERT_BEDMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
 		// we are already stopped due to some error, only update the status message without flickering
-		lcd_updatestatuspgm(err);
+        temp_update_messagepgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
@@ -1543,9 +1565,7 @@ void bed_min_temp_error(void) {
 void ambient_max_temp_error(void) {
     disable_heater();
     if(IsStopped() == false) {
-        SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM("Heaters switched off. MAXTEMP AMBIENT triggered !");
-        LCD_ALERTMESSAGEPGM("Err: MAXTEMP AMBIENT");
+        temp_error_messagepgm(PSTR("MAXTEMP AMB"));
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     Stop();
@@ -1558,9 +1578,7 @@ void ambient_min_temp_error(void) {
 #endif
     disable_heater();
     if(IsStopped() == false) {
-        SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM("Heaters switched off. MINTEMP AMBIENT triggered !");
-        LCD_ALERTMESSAGEPGM("Err: MINTEMP AMBIENT");
+        temp_error_messagepgm(PSTR("MINTEMP AMB"));
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     Stop();
