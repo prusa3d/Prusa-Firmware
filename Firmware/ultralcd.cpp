@@ -6848,13 +6848,14 @@ static void lcd_main_menu()
 	MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
   }
 
-
+  if (!IsStopped()) {
   if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
   {
     MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE
   } else 
   {
     MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
+  }
   }
 
 
@@ -6898,11 +6899,13 @@ static void lcd_main_menu()
 	{
 		if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
 		{
+			if (!IsStopped()) {
 			//if (farm_mode) MENU_ITEM_SUBMENU_P(MSG_FARM_CARD_MENU, lcd_farm_sdcard_menu);
 			/*else*/ {
                         bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
                         MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
                         }
+			}
 		}
 #if SDCARDDETECT < 1
       MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user////MSG_CNG_SDCARD
@@ -6942,6 +6945,7 @@ static void lcd_main_menu()
   } 
   else 
   {
+	if (!IsStopped()){
 	if (mmu_enabled)
 	{
 		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
@@ -6971,6 +6975,7 @@ static void lcd_main_menu()
           }
           bFilamentFirstRun=true;
 		MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
+	}
 	}
 	MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
@@ -7282,6 +7287,7 @@ static void lcd_control_temperature_menu()
 
   MENU_BEGIN();
   MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+if (!IsStopped()) {
 #if TEMP_SENSOR_0 != 0
   MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
 #endif
@@ -7294,6 +7300,7 @@ static void lcd_control_temperature_menu()
 #if TEMP_SENSOR_BED != 0
   MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 3);
 #endif
+}
   MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
 #if defined AUTOTEMP && (TEMP_SENSOR_0 != 0)
 //MENU_ITEM_EDIT removed, following code must be redesigned if AUTOTEMP enabled
