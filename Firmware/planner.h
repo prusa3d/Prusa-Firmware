@@ -77,8 +77,8 @@ typedef struct {
   unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
   unsigned char active_extruder;            // Selects the active extruder
   // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
-  uint32_t accelerate_until;                    // The index of the step event on which to stop acceleration
-  uint32_t decelerate_after;                    // The index of the step event on which to start decelerating
+  uint32_t accelerate_until;                // The index of the step event on which to stop acceleration
+  uint32_t decelerate_after;                // The index of the step event on which to start decelerating
 
   // Fields used by the motion planner to manage acceleration
 //  float speed_x, speed_y, speed_z, speed_e;        // Nominal mm/sec for each axis
