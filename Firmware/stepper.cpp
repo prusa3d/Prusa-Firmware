@@ -819,11 +819,18 @@ FORCE_INLINE void isr() {
       else if (step_events_completed.wide > current_block->decelerate_after) {
         uint16_t step_rate;
         MultiU24X24toH16(step_rate, deceleration_time, current_block->acceleration_rate);
-        step_rate = acc_step_rate - step_rate; // Decelerate from aceleration end point.
-        if (step_rate < uint16_t(current_block->final_rate)) {
-          // Result is too small.
-          step_rate = uint16_t(current_block->final_rate);
+
+        if (step_rate > acc_step_rate) { // Check step_rate stays positive
+            step_rate = uint16_t(current_block->final_rate);
         }
+        else {
+            step_rate = acc_step_rate - step_rate; // Decelerate from acceleration end point.
+
+            // lower limit
+            if (step_rate < current_block->final_rate)
+                step_rate = uint16_t(current_block->final_rate);
+        }
+
         // Step_rate to timer interval.
         uint16_t timer = calc_timer(step_rate, step_loops);
         _NEXT_ISR(timer);
