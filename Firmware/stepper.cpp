@@ -233,7 +233,7 @@ void invert_z_endstop(bool endstop_invert)
 //  The trapezoid is the shape the speed curve over time. It starts at block->initial_rate, accelerates
 //  first block->accelerate_until step_events_completed, then keeps going at constant speed until
 //  step_events_completed reaches block->decelerate_after after which it decelerates until the trapezoid generator is reset.
-//  The slope of acceleration is calculated with the leib ramp alghorithm.
+//  The slope of acceleration is calculated using v = u + at where t is the accumulated timer values of the steps so far.
 
 // "The Stepper Driver Interrupt" - This timer interrupt is the workhorse.
 // It pops blocks from the block_buffer and executes them by pulsing the stepper pins appropriately.
