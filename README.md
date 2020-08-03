@@ -182,7 +182,7 @@ Example:
 
 `ninja`
 
-## Runing
+## Running
 `./tests`
 
 # 4. Documentation
