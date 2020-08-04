@@ -1546,7 +1546,7 @@ void bed_min_temp_error(void) {
 	return;
 #endif
     disable_heater();
-	static const char err[] PROGMEM = "MINTEMP BED";
+    static const char err[] PROGMEM = "MINTEMP BED";
     if(IsStopped() == false) {
         temp_error_messagepgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
