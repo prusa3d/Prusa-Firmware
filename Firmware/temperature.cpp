@@ -1377,7 +1377,7 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 		SERIAL_ERROR_START;
 		isBed ? SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HEATBED)") : SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HOTEND)");
 #ifdef EXTRUDER_ALTFAN_DETECT
-		altfanOverride = true; //full speed
+		altfanOverride = 1; //full speed
 #endif //EXTRUDER_ALTFAN_DETECT
 		setExtruderAutoFanState(3);
 		SET_OUTPUT(FAN_PIN);
@@ -1467,7 +1467,7 @@ void max_temp_error(uint8_t e) {
     WRITE(FAN_PIN, 1);
     WRITE(BEEPER, 1);
 #ifdef EXTRUDER_ALTFAN_DETECT
-    altfanOverride = true; //full speed
+    altfanOverride = 1; //full speed
 #endif //EXTRUDER_ALTFAN_DETECT
     setExtruderAutoFanState(3);
     // fanSpeed will consumed by the check_axes_activity() routine.
