@@ -2116,7 +2116,7 @@ static void lcd_support_menu()
 		bool is_flash_air;             // 1byte
 		uint8_t ip[4];                 // 4bytes
 		char ip_str[3*4+3+1];          // 16bytes
-        uint8_t experimental_menu_visibility; //1byte
+		uint8_t experimental_menu_visibility; // 1byte
 	} _menu_data_t;
     static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);

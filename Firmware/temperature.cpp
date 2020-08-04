@@ -152,8 +152,11 @@ uint8_t fanSpeedBckp = 255;
   bool fan_measuring = false;
   uint8_t fanState = 0;
 #ifdef EXTRUDER_ALTFAN_DETECT
-  bool extruderFanIsAltfan = false; //set to Noctua
-  uint8_t altfanOverride = 0;
+  struct
+  {
+    uint8_t isAltfan : 1;
+    uint8_t altfanOverride : 1;
+  } altfanStatus;
 #endif //EXTRUDER_ALTFAN_DETECT
 #endif
 
@@ -226,12 +229,13 @@ bool extruder_altfan_detect()
 
 	SET_INPUT(TACH_0);
 
-	altfanOverride = eeprom_read_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE);
-	if (altfanOverride == EEPROM_EMPTY_VALUE)
+	uint8_t overrideVal = eeprom_read_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE);
+	if (overrideVal == EEPROM_EMPTY_VALUE)
 	{
-		altfanOverride = 0;
-		eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, altfanOverride);
+		overrideVal = 0;
+		eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, overrideVal);
 	}
+	altfanStatus.altfanOverride = overrideVal;
 
 	CRITICAL_SECTION_START;
 	EICRB &= ~(1 << ISC61);
@@ -246,20 +250,20 @@ bool extruder_altfan_detect()
 	EIMSK &= ~(1 << INT6);
 
 	countFanSpeed();
-	extruderFanIsAltfan = fan_speed[0] > 100;
+	altfanStatus.isAltfan = fan_speed[0] > 100;
 	setExtruderAutoFanState(1);
-	return extruderFanIsAltfan;
+	return altfanStatus.isAltfan;
 }
 
 void altfanOverride_toggle()
 {
-    altfanOverride = !altfanOverride;
-    eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, altfanOverride);
+    altfanStatus.altfanOverride = !altfanStatus.altfanOverride;
+    eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, altfanStatus.altfanOverride);
 }
 
 bool altfanOverride_get()
 {
-    return altfanOverride;
+    return altfanStatus.altfanOverride;
 }
 
 #endif //EXTRUDER_ALTFAN_DETECT
@@ -515,7 +519,7 @@ void setExtruderAutoFanState(uint8_t state)
 	if (fanState & 0x01)
 	{
 #ifdef EXTRUDER_ALTFAN_DETECT
-		if (extruderFanIsAltfan && !altfanOverride) newFanSpeed = EXTRUDER_ALTFAN_SPEED_SILENT;
+		if (altfanStatus.isAltfan && !altfanStatus.altfanOverride) newFanSpeed = EXTRUDER_ALTFAN_SPEED_SILENT;
 		else newFanSpeed = EXTRUDER_AUTO_FAN_SPEED;
 #else //EXTRUDER_ALTFAN_DETECT
 		newFanSpeed = EXTRUDER_AUTO_FAN_SPEED;
@@ -1377,7 +1381,7 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 		SERIAL_ERROR_START;
 		isBed ? SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HEATBED)") : SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HOTEND)");
 #ifdef EXTRUDER_ALTFAN_DETECT
-		altfanOverride = 1; //full speed
+		altfanStatus.altfanOverride = 1; //full speed
 #endif //EXTRUDER_ALTFAN_DETECT
 		setExtruderAutoFanState(3);
 		SET_OUTPUT(FAN_PIN);
@@ -1467,7 +1471,7 @@ void max_temp_error(uint8_t e) {
     WRITE(FAN_PIN, 1);
     WRITE(BEEPER, 1);
 #ifdef EXTRUDER_ALTFAN_DETECT
-    altfanOverride = 1; //full speed
+    altfanStatus.altfanOverride = 1; //full speed
 #endif //EXTRUDER_ALTFAN_DETECT
     setExtruderAutoFanState(3);
     // fanSpeed will consumed by the check_axes_activity() routine.
