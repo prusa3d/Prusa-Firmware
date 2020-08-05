@@ -8951,13 +8951,14 @@ void lcd_finishstatus() {
   lcd_draw_update = 2;
 
 }
+
 void lcd_setstatus(const char* message)
 {
   if (lcd_status_message_level > 0)
     return;
-  strncpy(lcd_status_message, message, LCD_WIDTH);
-  lcd_finishstatus();
+  lcd_updatestatus(message);
 }
+
 void lcd_updatestatuspgm(const char *message){
 	strncpy_P(lcd_status_message, message, LCD_WIDTH);
 	lcd_status_message[LCD_WIDTH] = 0;
@@ -8972,12 +8973,29 @@ void lcd_setstatuspgm(const char* message)
     return;
   lcd_updatestatuspgm(message);
 }
+
+void lcd_updatestatus(const char *message){
+	strncpy(lcd_status_message, message, LCD_WIDTH);
+	lcd_status_message[LCD_WIDTH] = 0;
+	lcd_finishstatus();
+	// hack lcd_draw_update to 1, i.e. without clear
+	lcd_draw_update = 1;
+}
+
 void lcd_setalertstatuspgm(const char* message)
 {
   lcd_setstatuspgm(message);
   lcd_status_message_level = 1;
   lcd_return_to_status();
 }
+
+void lcd_setalertstatus(const char* message)
+{
+  lcd_setstatus(message);
+  lcd_status_message_level = 1;
+  lcd_return_to_status();
+}
+
 void lcd_reset_alert_level()
 {
   lcd_status_message_level = 0;

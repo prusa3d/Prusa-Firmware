@@ -180,6 +180,12 @@ static int bed_minttemp_raw = HEATER_BED_RAW_LO_TEMP;
 #ifdef BED_MAXTEMP
 static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 #endif
+#ifdef AMBIENT_MINTEMP
+static int ambient_minttemp_raw = AMBIENT_RAW_LO_TEMP;
+#endif
+#ifdef AMBIENT_MAXTEMP
+static int ambient_maxttemp_raw = AMBIENT_RAW_HI_TEMP;
+#endif
 
 static void *heater_ttbl_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( (void *)HEATER_0_TEMPTABLE, (void *)HEATER_1_TEMPTABLE, (void *)HEATER_2_TEMPTABLE );
 static uint8_t heater_ttbllen_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_TEMPTABLE_LEN, HEATER_1_TEMPTABLE_LEN, HEATER_2_TEMPTABLE_LEN );
@@ -639,6 +645,7 @@ void manage_heater()
     return; 
 // more precisely - this condition partially stabilizes time interval for regulation values evaluation (@ ~ 230ms)
 
+  // ADC values need to be converted before checking: converted values are later used in MINTEMP
   updateTemperaturesFromRawValues();
 
   check_max_temp();
@@ -1165,7 +1172,6 @@ void tp_init()
 #endif //MAXTEMP 2
 
 #ifdef BED_MINTEMP
-  /* No bed MINTEMP error implemented?!? */
   while(analog2tempBed(bed_minttemp_raw) < BED_MINTEMP) {
 #if HEATER_BED_RAW_LO_TEMP < HEATER_BED_RAW_HI_TEMP
     bed_minttemp_raw += OVERSAMPLENR;
@@ -1173,7 +1179,6 @@ void tp_init()
     bed_minttemp_raw -= OVERSAMPLENR;
 #endif
   }
-  
 #endif //BED_MINTEMP
 #ifdef BED_MAXTEMP
   while(analog2tempBed(bed_maxttemp_raw) > BED_MAXTEMP) {
@@ -1184,6 +1189,25 @@ void tp_init()
 #endif
   }
 #endif //BED_MAXTEMP
+
+#ifdef AMBIENT_MINTEMP
+  while(analog2tempAmbient(ambient_minttemp_raw) < AMBIENT_MINTEMP) {
+#if HEATER_AMBIENT_RAW_LO_TEMP < HEATER_AMBIENT_RAW_HI_TEMP
+    ambient_minttemp_raw += OVERSAMPLENR;
+#else
+    ambient_minttemp_raw -= OVERSAMPLENR;
+#endif
+  }
+#endif //AMBIENT_MINTEMP
+#ifdef AMBIENT_MAXTEMP
+  while(analog2tempAmbient(ambient_maxttemp_raw) > AMBIENT_MAXTEMP) {
+#if HEATER_AMBIENT_RAW_LO_TEMP < HEATER_AMBIENT_RAW_HI_TEMP
+    ambient_maxttemp_raw -= OVERSAMPLENR;
+#else
+    ambient_maxttemp_raw += OVERSAMPLENR;
+#endif
+  }
+#endif //AMBIENT_MAXTEMP
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
@@ -1427,20 +1451,47 @@ enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_
 //! to prevent flicker and improve speed
 uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
 
+
+//! update the current temperature error message
+//! @param type short error abbreviation (PROGMEM)
+//! @param func optional lcd update function (lcd_setalertstatus when first setting the error)
+void temp_update_messagepgm(const char* PROGMEM type, void (*func)(const char*) = lcd_updatestatus)
+{
+    char msg[LCD_WIDTH];
+    strcpy_P(msg, PSTR("Err: "));
+    strcat_P(msg, type);
+    (*func)(msg);
+}
+
+//! signal a temperature error on both the lcd and serial
+//! @param type short error abbreviation (PROGMEM)
+//! @param e optional extruder index for hotend errors
+void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDERS)
+{
+    temp_update_messagepgm(type, lcd_setalertstatus);
+
+    SERIAL_ERROR_START;
+
+    if(e != EXTRUDERS) {
+        SERIAL_ERROR((int)e);
+        SERIAL_ERRORPGM(": ");
+    }
+
+    SERIAL_ERRORPGM("Heaters switched off. ");
+    SERIAL_ERRORRPGM(type);
+    SERIAL_ERRORLNPGM(" triggered!");
+}
+
+
 void max_temp_error(uint8_t e) {
   disable_heater();
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Extruder switched off. MAXTEMP triggered !");
-    LCD_ALERTMESSAGEPGM("Err: MAXTEMP");
+    temp_error_messagepgm(PSTR("MAXTEMP"), e);
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
-    
-
-    
   #endif
+
     SET_OUTPUT(FAN_PIN);
     SET_OUTPUT(BEEPER);
     WRITE(FAN_PIN, 1);
@@ -1458,18 +1509,15 @@ void min_temp_error(uint8_t e) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
-//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
   disable_heater();
-	static const char err[] PROGMEM = "Err: MINTEMP";
+//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
+	static const char err[] PROGMEM = "MINTEMP";
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Extruder switched off. MINTEMP triggered !");
-    lcd_setalertstatuspgm(err);
+    temp_error_messagepgm(err, e);
     last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
   } else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
 	// we are already stopped due to some error, only update the status message without flickering
-	lcd_updatestatuspgm(err);
+    temp_update_messagepgm(err);
 	last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
@@ -1484,43 +1532,60 @@ void min_temp_error(uint8_t e) {
 }
 
 void bed_max_temp_error(void) {
-#if HEATER_BED_PIN > -1
-  //WRITE(HEATER_BED_PIN, 0);
-#endif
+  disable_heater();
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM("Temperature heated bed switched off. MAXTEMP triggered !");
-    LCD_ALERTMESSAGEPGM("Err: MAXTEMP BED");
+    temp_error_messagepgm(PSTR("MAXTEMP BED"));
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
   #endif
-
 }
 
 void bed_min_temp_error(void) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
-//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
-#if HEATER_BED_PIN > -1
-    //WRITE(HEATER_BED_PIN, 0);
-#endif
-	static const char err[] PROGMEM = "Err: MINTEMP BED";
+    disable_heater();
+    static const char err[] PROGMEM = "MINTEMP BED";
     if(IsStopped() == false) {
-        SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM("Temperature heated bed switched off. MINTEMP triggered !");
-		lcd_setalertstatuspgm(err);
+        temp_error_messagepgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
 	} else if( last_alert_sent_to_lcd != LCDALERT_BEDMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
 		// we are already stopped due to some error, only update the status message without flickering
-		lcd_updatestatuspgm(err);
+        temp_update_messagepgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     Stop();
 #endif
 }
+
+
+#ifdef AMBIENT_THERMISTOR
+void ambient_max_temp_error(void) {
+    disable_heater();
+    if(IsStopped() == false) {
+        temp_error_messagepgm(PSTR("MAXTEMP AMB"));
+    }
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+    Stop();
+#endif
+}
+
+void ambient_min_temp_error(void) {
+#ifdef DEBUG_DISABLE_MINTEMP
+	return;
+#endif
+    disable_heater();
+    if(IsStopped() == false) {
+        temp_error_messagepgm(PSTR("MINTEMP AMB"));
+    }
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+    Stop();
+#endif
+}
+#endif
+
 
 #ifdef HEATER_0_USES_MAX6675
 #define MAX6675_HEAT_INTERVAL 250
@@ -2004,11 +2069,19 @@ void check_max_temp()
 #else
     if (current_temperature_bed_raw >= bed_maxttemp_raw) {
 #endif
-       target_temperature_bed = 0;
        bed_max_temp_error();
     }
 #endif
-
+//ambient
+#if defined(AMBIENT_MAXTEMP) && (TEMP_SENSOR_AMBIENT != 0)
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+    if (current_temperature_raw_ambient <= ambient_maxttemp_raw) {
+#else
+    if (current_temperature_raw_ambient >= ambient_maxttemp_raw) {
+#endif
+       ambient_max_temp_error();
+    }
+#endif
 }
 //! number of repeating the same state with consecutive step() calls
 //! used to slow down text switching
@@ -2103,12 +2176,32 @@ void check_min_temp_bed()
 	}
 }
 
+#ifdef AMBIENT_MINTEMP
+void check_min_temp_ambient()
+{
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+	if (current_temperature_raw_ambient >= ambient_minttemp_raw) {
+#else
+	if (current_temperature_raw_ambient <= ambient_minttemp_raw) {
+#endif
+		ambient_min_temp_error();
+	}
+}
+#endif
+
 void check_min_temp()
 {
 static bool bCheckingOnHeater=false;              // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over heaterMintemp)
 static bool bCheckingOnBed=false;                 // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over bedMintemp)
 #ifdef AMBIENT_THERMISTOR
-if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type, so operator is ">" ;-)
+#ifdef AMBIENT_MINTEMP
+check_min_temp_ambient();
+#endif
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type
+#else
+if(current_temperature_raw_ambient=<(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW))
+#endif
      {                                            // ambient temperature is low
 #endif //AMBIENT_THERMISTOR
 // *** 'common' part of code for MK2.5 & MK3
