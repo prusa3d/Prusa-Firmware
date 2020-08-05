@@ -125,7 +125,7 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
   static uint16_t main_Rate;
   static uint16_t eISR_Rate;
-  static uint16_t eISR_Err;
+  static uint32_t eISR_Err;
 
   static uint16_t current_adv_steps;
   static uint16_t target_adv_steps;
@@ -348,10 +348,7 @@ FORCE_INLINE void stepper_next_block()
 
 #ifdef LIN_ADVANCE
     if (current_block->use_advance_lead) {
-        e_step_loops = current_block->advance_step_loops;
         target_adv_steps = current_block->max_adv_steps;
-    } else {
-        e_step_loops = 1;
     }
     e_steps = 0;
     nextAdvanceISR = ADV_NEVER;
@@ -736,38 +733,30 @@ FORCE_INLINE uint16_t fastdiv(uint16_t q, uint8_t d)
 
 FORCE_INLINE void advance_spread(uint16_t timer)
 {
-    if(eISR_Err > timer)
+    eISR_Err += timer;
+
+    uint8_t ticks = 0;
+    while(eISR_Err >= current_block->advance_rate)
     {
-        // advance-step skipped
-        eISR_Err -= timer;
+        ++ticks;
+        eISR_Err -= current_block->advance_rate;
+    }
+    if(!ticks)
+    {
         eISR_Rate = timer;
         nextAdvanceISR = timer;
         return;
     }
 
-    // at least one step
-    uint8_t ticks = 1;
-    uint32_t block = current_block->advance_rate;
-    uint16_t max_t = timer - eISR_Err;
-    while (block < max_t)
-    {
-        ++ticks;
-        block += current_block->advance_rate;
-    }
-    if (block > timer)
-        eISR_Err += block - timer;
-    else
-        eISR_Err -= timer - block;
-
-    if (ticks <= 4)
-        eISR_Rate = fastdiv(timer, ticks);
+    if (ticks <= 3)
+        eISR_Rate = fastdiv(timer, ticks + 1);
     else
     {
         // >4 ticks are still possible on slow moves
-        eISR_Rate = timer / ticks;
+        eISR_Rate = timer / (ticks + 1);
     }
 
-    nextAdvanceISR = eISR_Rate / 2;
+    nextAdvanceISR = eISR_Rate;
 }
 #endif
 
@@ -812,8 +801,11 @@ FORCE_INLINE void isr() {
         acceleration_time += timer;
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-            if (step_events_completed.wide <= (unsigned long int)step_loops)
+            if (step_events_completed.wide <= (unsigned long int)step_loops) {
                 la_state = ADV_INIT | ADV_ACC_VARY;
+                if (e_extruding && current_adv_steps > target_adv_steps)
+                    target_adv_steps = current_adv_steps;
+            }
         }
 #endif
       }
@@ -835,6 +827,8 @@ FORCE_INLINE void isr() {
             if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops) {
                 target_adv_steps = current_block->final_adv_steps;
                 la_state = ADV_INIT | ADV_ACC_VARY;
+                if (e_extruding && current_adv_steps < target_adv_steps)
+                    target_adv_steps = current_adv_steps;
             }
         }
 #endif
@@ -848,12 +842,12 @@ FORCE_INLINE void isr() {
 
 #ifdef LIN_ADVANCE
           if(current_block->use_advance_lead) {
-              if (!nextAdvanceISR) {
-                  // Due to E-jerk, there can be discontinuities in pressure state where an
-                  // acceleration or deceleration can be skipped or joined with the previous block.
-                  // If LA was not previously active, re-check the pressure level
-                  la_state = ADV_INIT;
-              }
+              // Due to E-jerk, there can be discontinuities in pressure state where an
+              // acceleration or deceleration can be skipped or joined with the previous block.
+              // If LA was not previously active, re-check the pressure level
+              la_state = ADV_INIT;
+              if (e_extruding)
+                  target_adv_steps = current_adv_steps;
           }
 #endif
         }
@@ -865,14 +859,21 @@ FORCE_INLINE void isr() {
 #ifdef LIN_ADVANCE
     // avoid multiple instances or function calls to advance_spread
     if (la_state & ADV_INIT) {
+        LA_phase = -1;
+
         if (current_adv_steps == target_adv_steps) {
-            // nothing to be done in this phase
+            // nothing to be done in this phase, cancel any pending eisr
             la_state = 0;
+            nextAdvanceISR = ADV_NEVER;
         }
         else {
-            eISR_Err = current_block->advance_rate / 4;
+            // reset error and iterations per loop for this phase
+            eISR_Err = current_block->advance_rate;
+            e_step_loops = current_block->advance_step_loops;
+
             if ((la_state & ADV_ACC_VARY) && e_extruding && (current_adv_steps > target_adv_steps)) {
                 // LA could reverse the direction of extrusion in this phase
+                eISR_Err += current_block->advance_rate;
                 LA_phase = 0;
             }
         }
@@ -882,11 +883,13 @@ FORCE_INLINE void isr() {
         advance_spread(main_Rate);
         if (LA_phase >= 0) {
             if (step_loops == e_step_loops)
-                LA_phase = (eISR_Rate > main_Rate);
+                LA_phase = (current_block->advance_rate < main_Rate);
             else {
                 // avoid overflow through division. warning: we need to _guarantee_ step_loops
                 // and e_step_loops are <= 4 due to fastdiv's limit
-                LA_phase = (fastdiv(eISR_Rate, step_loops) > fastdiv(main_Rate, e_step_loops));
+                auto adv_rate_n = fastdiv(current_block->advance_rate, step_loops);
+                auto main_rate_n = fastdiv(main_Rate, e_step_loops);
+                LA_phase = (adv_rate_n < main_rate_n);
             }
         }
     }
@@ -928,26 +931,34 @@ FORCE_INLINE void isr() {
 FORCE_INLINE void advance_isr() {
     if (current_adv_steps > target_adv_steps) {
         // decompression
+        if (e_step_loops != 1) {
+            uint16_t d_steps = current_adv_steps - target_adv_steps;
+            if (d_steps < e_step_loops)
+                e_step_loops = d_steps;
+        }
         e_steps -= e_step_loops;
         if (e_steps) WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
-        if(current_adv_steps > e_step_loops)
-            current_adv_steps -= e_step_loops;
-        else
-            current_adv_steps = 0;
-        nextAdvanceISR = eISR_Rate;
+        current_adv_steps -= e_step_loops;
     }
     else if (current_adv_steps < target_adv_steps) {
         // compression
+        if (e_step_loops != 1) {
+            uint16_t d_steps = target_adv_steps - current_adv_steps;
+            if (d_steps < e_step_loops)
+                e_step_loops = d_steps;
+        }
         e_steps += e_step_loops;
         if (e_steps) WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
         current_adv_steps += e_step_loops;
-        nextAdvanceISR = eISR_Rate;
     }
-    else {
+
+    if (current_adv_steps == target_adv_steps) {
         // advance steps completed
         nextAdvanceISR = ADV_NEVER;
-        LA_phase = -1;
-        e_step_loops = 1;
+    }
+    else {
+        // schedule another tick
+        nextAdvanceISR = eISR_Rate;
     }
 }
 
@@ -1017,7 +1028,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 
     // Schedule the next closest tick, ignoring advance if scheduled too
     // soon in order to avoid skewing the regular stepper acceleration
-    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + TCNT1 + 40) < nextMainISR)
+    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + 40) < nextMainISR)
         OCR1A = nextAdvanceISR;
     else
         OCR1A = nextMainISR;
