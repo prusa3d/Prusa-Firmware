@@ -259,4 +259,7 @@ enum class WizState : uint8_t
 
 void lcd_wizard(WizState state);
 
+extern void lcd_experimental_toggle();
+extern void lcd_experimental_menu();
+
 #endif //ULTRALCD_H
