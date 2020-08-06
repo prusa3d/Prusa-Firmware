@@ -1696,18 +1696,8 @@ void adc_ready(void) //callback from adc when sampling finished
 
 } // extern "C"
 
-// Timer2 (originaly timer0) is shared with millies
-#ifdef SYSTEM_TIMER_2
-ISR(TIMER2_COMPB_vect)
-#else //SYSTEM_TIMER_2
-ISR(TIMER0_COMPB_vect)
-#endif //SYSTEM_TIMER_2
+FORCE_INLINE static void temperature_isr()
 {
-	static bool _lock = false;
-	if (_lock) return;
-	_lock = true;
-	asm("sei");
-
 	if (!temp_meas_ready) adc_cycle();
 	lcd_buttons_update();
 
@@ -2073,8 +2063,24 @@ ISR(TIMER0_COMPB_vect)
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
   check_fans();
 #endif //(defined(TACH_0))
+}
 
-	_lock = false;
+// Timer2 (originaly timer0) is shared with millies
+#ifdef SYSTEM_TIMER_2
+ISR(TIMER2_COMPB_vect)
+#else //SYSTEM_TIMER_2
+ISR(TIMER0_COMPB_vect)
+#endif //SYSTEM_TIMER_2
+{
+    static bool _lock = false;
+    if (!_lock)
+    {
+        _lock = true;
+        sei();
+        temperature_isr();
+        cli();
+        _lock = false;
+    }
 }
 
 void check_max_temp()
