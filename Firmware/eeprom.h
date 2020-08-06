@@ -359,8 +359,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| LCD backlight mode: __Dim__						| ^				| ^
 | 0x0D30 3376		| uint16	| EEPROM_BACKLIGHT_TIMEOUT				| 01 00 - ff ff | 0a 00h 65535			| LCD backlight timeout: __10__ seconds				| LCD menu		| D3 Ax0d30 C2
 | 0x0D2C 3372		| float		| EEPROM_UVLO_LA_K						| ???			| ff ff ff ffh			| Power panic saved Linear Advanced K value			| ???			| D3 Ax0d2c C4
-| 0x0D2B 3371		| uint8		| EEPROM_ALTFAN_OVERRIDE				| 0-1			| 00h					| ALTFAN override									| LCD menu		| D3 Ax0d2b C1
-| 0x0D2A 3370		| uint8		| EEPROM_EXPERIMENTAL_VISIBILITY		| 0-1			| 00h					| Experimental menu visibility						| LCD menu		| D3 Ax0d2a C1
+| 0x0D2B 3371		| uint8		| EEPROM_ALTFAN_OVERRIDE				| 0-1			| 00h 0					| ALTFAN override									| LCD menu		| D3 Ax0d2b C1
+| 0x0D2A 3370		| uint8		| EEPROM_EXPERIMENTAL_VISIBILITY		| 0-1			| 00h 0					| Experimental menu visibility						| LCD menu		| D3 Ax0d2a C1
 
   
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
