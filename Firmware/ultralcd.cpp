@@ -2098,7 +2098,7 @@ static void lcd_preheat_menu()
 //! 	@endcode
 //!
 //!
-//! 	| Experimental       |	c=18 r=1
+//! 	| Experimental       |	c=18
 //! 
 //! 
 //! If DEBUG_BUILD is defined
@@ -2224,7 +2224,7 @@ static void lcd_support_menu()
 
   if (_md->experimental_menu_visibility)
   {
-    MENU_ITEM_SUBMENU_P(PSTR("Experimental"), lcd_experimental_menu);
+    MENU_ITEM_SUBMENU_P(PSTR("Experimental"), lcd_experimental_menu);////MSG_MENU_EXPERIMENTAL c=18
   }
 
 
@@ -9220,7 +9220,7 @@ void lcd_experimental_menu()
     MENU_ITEM_BACK_P(_T(MSG_BACK));
 
 #ifdef EXTRUDER_ALTFAN_DETECT
-    MENU_ITEM_TOGGLE_P(_N("ALTFAN det."), altfanOverride_get()?_T(MSG_OFF):_T(MSG_ON), altfanOverride_toggle);
+    MENU_ITEM_TOGGLE_P(_N("ALTFAN det."), altfanOverride_get()?_T(MSG_OFF):_T(MSG_ON), altfanOverride_toggle);////MSG_MENU_ALTFAN c=18
 #endif //EXTRUDER_ALTFAN_DETECT
 
     MENU_END();
