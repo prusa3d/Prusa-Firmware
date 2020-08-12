@@ -2096,9 +2096,6 @@ static void lcd_preheat_menu()
 //! 	@code{.unparsed}
 //! 	| Voltages           |	MSG_MENU_VOLTAGES
 //! 	@endcode
-//!
-//!
-//! 	| Experimental       |	c=18
 //! 
 //! 
 //! If DEBUG_BUILD is defined
@@ -2111,12 +2108,11 @@ static void lcd_preheat_menu()
 static void lcd_support_menu()
 {
 	typedef struct
-	{	// 23bytes total
+	{	// 22bytes total
 		int8_t status;                 // 1byte
 		bool is_flash_air;             // 1byte
 		uint8_t ip[4];                 // 4bytes
 		char ip_str[3*4+3+1];          // 16bytes
-		uint8_t experimental_menu_visibility; // 1byte
 	} _menu_data_t;
     static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
@@ -2130,13 +2126,6 @@ static void lcd_support_menu()
             sprintf_P(_md->ip_str, PSTR("%d.%d.%d.%d"), 
                 _md->ip[0], _md->ip[1], 
                 _md->ip[2], _md->ip[3]);
-        
-        _md->experimental_menu_visibility = eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY);
-        if (_md->experimental_menu_visibility == EEPROM_EMPTY_VALUE)
-        {
-            _md->experimental_menu_visibility = 0;
-            eeprom_update_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY, _md->experimental_menu_visibility);
-        }
         
     } else if (_md->is_flash_air && 
         _md->ip[0] == 0 && _md->ip[1] == 0 && 
@@ -2221,11 +2210,6 @@ static void lcd_support_menu()
 #if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
   MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18 r=1
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
-
-  if (_md->experimental_menu_visibility)
-  {
-    MENU_ITEM_SUBMENU_P(PSTR("Experimental"), lcd_experimental_menu);////MSG_MENU_EXPERIMENTAL c=18
-  }
 
 
 #ifdef DEBUG_BUILD
@@ -5730,6 +5714,25 @@ static void sheets_menu()
 
 void lcd_hw_setup_menu(void)                      // can not be "static"
 {
+    typedef struct
+    {// 2bytes total
+        int8_t status;
+        uint8_t experimental_menu_visibility;
+    } _menu_data_t;
+    static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
+    _menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
+
+    if (_md->status == 0 || lcd_draw_update)
+    {
+        _md->experimental_menu_visibility = eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY);
+        if (_md->experimental_menu_visibility == EEPROM_EMPTY_VALUE)
+        {
+            _md->experimental_menu_visibility = 0;
+            eeprom_update_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY, _md->experimental_menu_visibility);
+        }
+    }
+
+
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 
@@ -5743,6 +5746,12 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     //! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
     if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
+
+    if (_md->experimental_menu_visibility)
+    {
+        MENU_ITEM_SUBMENU_P(PSTR("Experimental"), lcd_experimental_menu);////MSG_MENU_EXPERIMENTAL c=18
+    }
+
     MENU_END();
 }
 
