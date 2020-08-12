@@ -762,6 +762,7 @@ static void factory_reset(char level)
 				}
 
 			}
+			softReset();
 
 
 			break;
@@ -3813,9 +3814,7 @@ void process_commands()
 #if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
                 boot_app_magic = BOOT_APP_MAGIC;
                 boot_app_flags = BOOT_APP_FLG_RUN;
-				wdt_enable(WDTO_15MS);
-				cli();
-				while(1);
+                softReset();
 #else //WATCHDOG
                 asm volatile("jmp 0x3E000");
 #endif //WATCHDOG
@@ -11716,6 +11715,12 @@ void disable_force_z()
 #endif // TMC2130
 }
 
+void softReset()
+{
+    cli();
+    wdt_enable(WDTO_15MS);
+    while(1);
+}
 
 void enable_force_z()
 {
