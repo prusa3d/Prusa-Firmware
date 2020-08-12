@@ -512,6 +512,6 @@ void load_filament_final_feed();
 void marlin_wait_for_click();
 void raise_z_above(float target, bool plan=true);
 
-void softReset();
+extern "C" void softReset();
 
 #endif

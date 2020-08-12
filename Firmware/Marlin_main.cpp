@@ -648,6 +648,12 @@ void failstats_reset_print()
 #endif
 }
 
+void softReset()
+{
+    cli();
+    wdt_enable(WDTO_15MS);
+    while(1);
+}
 
 
 #ifdef MESH_BED_LEVELING
@@ -11713,13 +11719,6 @@ void disable_force_z()
     update_mode_profile();
     tmc2130_init(true);
 #endif // TMC2130
-}
-
-void softReset()
-{
-    cli();
-    wdt_enable(WDTO_15MS);
-    while(1);
 }
 
 void enable_force_z()
