@@ -3287,25 +3287,23 @@ void gcode_M701()
 static void gcode_PRUSA_SN()
 {
     uint8_t selectedSerialPort_bak = selectedSerialPort;
+    char SN[20];
     selectedSerialPort = 0;
-    putchar(';');
-    putchar('S');
-    int numbersRead = 0;
+    SERIAL_ECHOLNRPGM(PSTR(";S"));
+    uint8_t numbersRead = 0;
     ShortTimer timeout;
     timeout.start();
 
-    while (numbersRead < 19) {
-        while (MSerial.available() > 0) {
-            uint8_t serial_char = MSerial.read();
-            selectedSerialPort = selectedSerialPort_bak;
-            putchar(serial_char);
+    while (numbersRead < (sizeof(SN) - 1)) {
+        if (MSerial.available() > 0) {
+            SN[numbersRead] = MSerial.read();
             numbersRead++;
-            selectedSerialPort = 0;
         }
         if (timeout.expired(100u)) break;
     }
+    SN[numbersRead] = 0;
     selectedSerialPort = selectedSerialPort_bak;
-    putchar('\n');
+    SERIAL_ECHOLN(SN);
 }
 //! Detection of faulty RAMBo 1.1b boards equipped with bigger capacitors
 //! at the TACH_1 pin, which causes bad detection of print fan speed.
