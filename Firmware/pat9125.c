@@ -31,7 +31,7 @@
 #elif defined(PAT9125_SWI2C)
 #include "swi2c.h"
 #elif defined(PAT9125_I2C)
-#error not implemented
+#include "twi.h"
 #else
 #error unknown PAT9125 communication method
 #endif
@@ -253,39 +253,48 @@ uint8_t pat9125_update_bs(void)
 uint8_t pat9125_rd_reg(uint8_t addr)
 {
 	uint8_t data = 0;
-#ifdef PAT9125_SWSPI
+#if defined(PAT9125_SWSPI)
 	swspi_start();
 	swspi_tx(addr & 0x7f);
 	data = swspi_rx();
 	swspi_stop();
-#endif //PAT9125_SWSPI
-#ifdef PAT9125_SWI2C
+#elif defined(PAT9125_SWI2C)
 	if (!swi2c_readByte_A8(PAT9125_I2C_ADDR, addr, &data)) //NO ACK error
-	{
-		pat9125_PID1 = 0xff;
-		pat9125_PID2 = 0xff;
-		return 0;
-	}
-#endif //PAT9125_SWI2C
+        goto error;
+#elif defined(PAT9125_I2C)
+	if (twi_writeTo(PAT9125_I2C_ADDR,&addr,1,1,0) != 0 ||
+        twi_readFrom(PAT9125_I2C_ADDR,&data,1,1) != 1)
+        goto error;
+#endif
 	return data;
+
+ error:
+    pat9125_PID1 = 0xff;
+    pat9125_PID2 = 0xff;
+    return 0;
 }
 
 void pat9125_wr_reg(uint8_t addr, uint8_t data)
 {
-#ifdef PAT9125_SWSPI
+#if defined(PAT9125_SWSPI)
 	swspi_start();
 	swspi_tx(addr | 0x80);
 	swspi_tx(data);
 	swspi_stop();
-#endif //PAT9125_SWSPI
-#ifdef PAT9125_SWI2C
+#elif defined(PAT9125_SWI2C)
 	if (!swi2c_writeByte_A8(PAT9125_I2C_ADDR, addr, &data)) //NO ACK error
-	{
-		pat9125_PID1 = 0xff;
-		pat9125_PID2 = 0xff;
-		return;
-	}
-#endif //PAT9125_SWI2C
+        goto error;
+#elif defined(PAT9125_I2C)
+	if (twi_writeTo(PAT9125_I2C_ADDR,&addr,1,1,0) != 0 ||
+        twi_writeTo(PAT9125_I2C_ADDR,&data,1,1,1) != 0)
+        goto error;
+#endif
+    return;
+
+ error:
+    pat9125_PID1 = 0xff;
+    pat9125_PID2 = 0xff;
+    return;
 }
 
 uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data)
