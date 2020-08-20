@@ -238,7 +238,7 @@ bool extruder_altfan_detect()
 	uint8_t overrideVal = eeprom_read_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE);
 	if (overrideVal == EEPROM_EMPTY_VALUE)
 	{
-		overrideVal = 0;
+		overrideVal = (calibration_status() == CALIBRATION_STATUS_CALIBRATED) ? 1 : 0;
 		eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, overrideVal);
 	}
 	altfanStatus.altfanOverride = overrideVal;
