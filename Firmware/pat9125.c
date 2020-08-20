@@ -110,7 +110,7 @@ uint8_t pat9125_probe()
 {
 #if defined(PAT9125_SWSPI)
     swspi_init();
-    //#error not implemented
+  #error not implemented
 #elif defined(PAT9125_SWI2C)
     swi2c_init();
     return swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
