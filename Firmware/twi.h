@@ -1,5 +1,5 @@
 /*
-  twi.h - TWI/I2C library for Wiring & Arduino
+  twi.h - Stripped-down TWI/I2C library
   Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
 
   This library is free software; you can redistribute it and/or
@@ -17,39 +17,37 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef twi_h
-#define twi_h
+#pragma once
 
-  #include <inttypes.h>
+#include <inttypes.h>
+#include <compat/twi.h>
 
-  //#define ATMEGA8
-
-  #ifndef TWI_FREQ
-  #define TWI_FREQ 400000L
-  #endif
-
-  #ifndef TWI_BUFFER_LENGTH
-  #define TWI_BUFFER_LENGTH 32
-  #endif
-
-  #define TWI_READY 0
-  #define TWI_MRX   1
-  #define TWI_MTX   2
-  #define TWI_SRX   3
-  #define TWI_STX   4
-  
-  void twi_init(void);
-  void twi_disable(void);
-  void twi_setAddress(uint8_t);
-  void twi_setFrequency(uint32_t);
-  uint8_t twi_readFrom(uint8_t, uint8_t*, uint8_t, uint8_t);
-  uint8_t twi_writeTo(uint8_t, uint8_t*, uint8_t, uint8_t, uint8_t);
-  uint8_t twi_transmit(const uint8_t*, uint8_t);
-  void twi_attachSlaveRxEvent( void (*)(uint8_t*, int) );
-  void twi_attachSlaveTxEvent( void (*)(void) );
-  void twi_reply(uint8_t);
-  void twi_stop(void);
-  void twi_releaseBus(void);
-
+#ifndef TWI_FREQ
+#define TWI_FREQ 400000L
 #endif
 
+/*
+ * Function twi_init
+ * Desc     readys twi pins and sets twi bitrate
+ * Input    none
+ * Output   none
+ */
+void twi_init(void);
+
+/*
+ * Function twi_disable
+ * Desc     disables twi pins
+ * Input    none
+ * Output   none
+ */
+void twi_disable(void);
+
+/*
+ * Function twi_rw8
+ * Desc     read/write a single byte from a device
+ * Input    address: 7bit i2c device address
+ *          mode: TW_READ or TW_WRITE
+ *          data: pointer to byte
+ * Output   0 on success
+ */
+uint8_t twi_rw8(uint8_t address, uint8_t mode, uint8_t* data);

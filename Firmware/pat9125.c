@@ -118,9 +118,10 @@ uint8_t pat9125_probe()
     twi_init();
   #ifdef IR_SENSOR
     // NOTE: this is called from the MK3S variant, so it should be kept minimal
-    #error not implemented
+    uint8_t addr = PAT9125_PID1;
+    return (twi_rw8(PAT9125_I2C_ADDR,TW_READ,&addr) == 0);
   #else
-	return pat9125_rd_reg(PAT9125_PID1) != 0;
+    return (pat9125_rd_reg(PAT9125_PID1) != 0);
   #endif
 #endif
 }
@@ -262,8 +263,8 @@ uint8_t pat9125_rd_reg(uint8_t addr)
 	if (!swi2c_readByte_A8(PAT9125_I2C_ADDR, addr, &data)) //NO ACK error
         goto error;
 #elif defined(PAT9125_I2C)
-	if (twi_writeTo(PAT9125_I2C_ADDR,&addr,1,1,0) != 0 ||
-        twi_readFrom(PAT9125_I2C_ADDR,&data,1,1) != 1)
+	if (twi_rw8(PAT9125_I2C_ADDR,TW_WRITE,&addr) ||
+        twi_rw8(PAT9125_I2C_ADDR,TW_READ,&data))
         goto error;
 #endif
 	return data;
@@ -285,8 +286,8 @@ void pat9125_wr_reg(uint8_t addr, uint8_t data)
 	if (!swi2c_writeByte_A8(PAT9125_I2C_ADDR, addr, &data)) //NO ACK error
         goto error;
 #elif defined(PAT9125_I2C)
-	if (twi_writeTo(PAT9125_I2C_ADDR,&addr,1,1,0) != 0 ||
-        twi_writeTo(PAT9125_I2C_ADDR,&data,1,1,1) != 0)
+	if (twi_rw8(PAT9125_I2C_ADDR,TW_WRITE,&addr) ||
+        twi_rw8(PAT9125_I2C_ADDR,TW_READ,&data))
         goto error;
 #endif
     return;
