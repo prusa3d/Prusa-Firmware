@@ -57,34 +57,52 @@ void twi_disable(void)
   digitalWrite(SCL, 0);
 }
 
-uint8_t twi_waitfor(uint8_t status)
+static void twi_wait()
 {
     while(!(TWCR & _BV(TWINT)));
-    return (TW_STATUS != status);
 }
 
 uint8_t twi_rw8(uint8_t address, uint8_t mode, uint8_t* data)
 {
   // send start condition
   TWCR = _BV(TWEN) | _BV(TWINT) | _BV(TWSTA);
-  if(twi_waitfor(TW_START))
+  twi_wait();
+  if(TW_STATUS != TW_START)
       return 1;
 
   // send address
   TWDR = mode;
   TWDR |= (address << 1);
   TWCR = _BV(TWEN) | _BV(TWINT);
-  if(twi_waitfor(mode == TW_READ? TW_MR_SLA_ACK: TW_MT_SLA_ACK))
-      return 2;
+  twi_wait();
 
-  // send or receive data
   if(mode == TW_WRITE)
+  {
+      if(TW_STATUS != TW_MT_SLA_ACK)
+          return 2;
+
+      // send data
       TWDR = *data;
-  TWCR = _BV(TWEN) | _BV(TWINT);
-  if(twi_waitfor(mode == TW_READ? TW_MR_DATA_NACK: TW_MT_DATA_ACK))
-      return 3;
-  if(mode == TW_READ)
+      TWCR = _BV(TWEN) | _BV(TWINT);
+      twi_wait();
+      if(TW_STATUS != TW_MT_DATA_ACK)
+          return 3;
+  }
+  else
+  {
+      if(TW_STATUS != TW_MR_SLA_ACK)
+          return 2;
+
+      // receive data
+      TWCR = _BV(TWEN) | _BV(TWINT);
+      twi_wait();
+
+      // accept ACK or NACK (since only 1 byte is read)
+      if(!(TW_STATUS & TW_MR_DATA_ACK))
+          return 3;
+
       *data = TWDR;
+  }
 
   // send stop
   TWCR = _BV(TWEN) | _BV(TWINT) | _BV(TWSTO);
