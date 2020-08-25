@@ -200,7 +200,7 @@ void tmc2130_init()
 		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, 0);
 		tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SILENT);
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
-		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
+		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS_E);
 #endif //TMC2130_STEALTH_E
 	}
 
