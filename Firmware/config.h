@@ -30,9 +30,9 @@
 #define SWI2C_TMO         2048 //2048 cycles timeout
 
 //PAT9125 configuration
-//#define PAT9125_SWSPI
-//#define PAT9125_SWI2C
-#define PAT9125_I2C
+//#define PAT9125_SWSPI // software SPI mode (incomplete)
+//#define PAT9125_SWI2C // software I2C mode
+#define PAT9125_I2C     // hardware I2C mode
 
 #define PAT9125_I2C_ADDR  0x75  //ID=LO
 //#define PAT9125_I2C_ADDR  0x79  //ID=HI
