@@ -1023,22 +1023,26 @@ Having the real displacement of the head, we can calculate the total movement le
     // Calculate speed in mm/second for each axis. No divide by zero due to previous checks.
   float inverse_second = feed_rate * inverse_millimeters;
 
-  int moves_queued = moves_planned();
+  uint8_t moves_queued = moves_planned();
 
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
 #ifdef SLOWDOWN
-  static float slowdown_multiplier = -1; // negative means disabled
-  if (!moves_queued) {
-    slowdown_multiplier = -1f; // disable slow down on empty buffer
-  }
-  else if (moves_queued < (BLOCK_BUFFER_SIZE - 3)) {
+  {
+    static float slowdown_multiplier = -1; // negative means disabled
+    static uint8_t last_moves_queued = 0;
+    if (!moves_queued) {
+    slowdown_multiplier = -1.f; // disable slow down on empty buffer
+    }
+    else if (moves_queued < (BLOCK_BUFFER_SIZE - 3) && (moves_queued < last_moves_queued)) {
     if (slowdown_multiplier > 0.02f) slowdown_multiplier *= 0.9f;
-  }
-  else if (moves_queued > (BLOCK_BUFFER_SIZE - 3)) {
+    }
+    else if (moves_queued > (BLOCK_BUFFER_SIZE - 3)) {
       slowdown_multiplier *= 1.1111111111f;
-      if (slowdown_multiplier < 0f || slowdown_multiplier > 1f) slowdown_multiplier = 1f;
+      if (slowdown_multiplier < 0.f || slowdown_multiplier > 1.f) slowdown_multiplier = 1.f;
+    }
+    if ((slowdown_multiplier > 0) && (block->steps_e.wide != 0)) inverse_second *= slowdown_multiplier;
+    last_moves_queued = moves_queued;
   }
-  if (slowdown_multiplier > 0) inverse_second *= slowdown_multiplier;
 #endif // SLOWDOWN
 
   block->nominal_speed = block->millimeters * inverse_second; // (mm/sec) Always > 0
