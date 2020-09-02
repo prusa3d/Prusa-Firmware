@@ -1027,15 +1027,18 @@ Having the real displacement of the head, we can calculate the total movement le
 
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
 #ifdef SLOWDOWN
-  //FIXME Vojtech: Why moves_queued > 1? Why not >=1?
-  // Can we somehow differentiate the filling of the buffer at the start of a g-code from a buffer draining situation?
-  if (moves_queued > 1 && moves_queued < (BLOCK_BUFFER_SIZE >> 1)) {
-      // segment time in micro seconds
-      unsigned long segment_time = lround(1000000.0/inverse_second);
-      if (segment_time < cs.minsegmenttime)
-          // buffer is draining, add extra time.  The amount of time added increases if the buffer is still emptied more.
-          inverse_second=1000000.0/(segment_time+lround(2*(cs.minsegmenttime-segment_time)/moves_queued));
+  static float slowdown_multiplier = -1; // negative means disabled
+  if (!moves_queued) {
+    slowdown_multiplier = -1f; // disable slow down on empty buffer
   }
+  else if (moves_queued < (BLOCK_BUFFER_SIZE - 3)) {
+    if (slowdown_multiplier > 0.02f) slowdown_multiplier *= 0.9f;
+  }
+  else if (moves_queued > (BLOCK_BUFFER_SIZE - 3)) {
+      slowdown_multiplier *= 1.1111111111f;
+      if (slowdown_multiplier < 0f || slowdown_multiplier > 1f) slowdown_multiplier = 1f;
+  }
+  if (slowdown_multiplier > 0) inverse_second *= slowdown_multiplier;
 #endif // SLOWDOWN
 
   block->nominal_speed = block->millimeters * inverse_second; // (mm/sec) Always > 0
