@@ -1033,8 +1033,10 @@ Having the real displacement of the head, we can calculate the total movement le
     if (!moves_queued) {
     slowdown_multiplier = -1.f; // disable slow down on empty buffer
     }
-    else if (moves_queued < (BLOCK_BUFFER_SIZE - 3) && (moves_queued < last_moves_queued)) {
-    if (slowdown_multiplier > 0.02f) slowdown_multiplier *= 0.9f;
+    else if (moves_queued < (BLOCK_BUFFER_SIZE - 3) && (moves_queued < last_moves_queued)
+             && (slowdown_multiplier > 0.02f)
+             && (static_cast<unsigned long>(lround(1000000.0f / (inverse_second * slowdown_multiplier))) < cs.minsegmenttime)) {
+      slowdown_multiplier *= 0.9f;
     }
     else if (moves_queued > (BLOCK_BUFFER_SIZE - 3)) {
       slowdown_multiplier *= 1.1111111111f;
