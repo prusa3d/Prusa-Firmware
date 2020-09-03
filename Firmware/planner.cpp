@@ -1028,21 +1028,20 @@ Having the real displacement of the head, we can calculate the total movement le
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
 #ifdef SLOWDOWN
   {
-    static float slowdown_multiplier = -1; // negative means disabled
+    static float slowdown_multiplier = 1;
     static uint8_t last_moves_queued = 0;
-    if (!moves_queued) {
-    slowdown_multiplier = -1.f; // disable slow down on empty buffer
-    }
-    else if (moves_queued < (BLOCK_BUFFER_SIZE - 3) && (moves_queued < last_moves_queued)
+
+    if (moves_queued < (BLOCK_BUFFER_SIZE - 3) && (moves_queued < last_moves_queued)
              && (slowdown_multiplier > 0.02f)
              && (static_cast<unsigned long>(lround(1000000.0f / (inverse_second * slowdown_multiplier))) < cs.minsegmenttime)) {
-      slowdown_multiplier *= 0.9f;
+      if (slowdown_multiplier > 0.5) slowdown_multiplier -= 0.07f/slowdown_multiplier;
+      else slowdown_multiplier *= 0.7f;
     }
     else if (moves_queued > (BLOCK_BUFFER_SIZE - 3)) {
       slowdown_multiplier *= 1.1111111111f;
-      if (slowdown_multiplier < 0.f || slowdown_multiplier > 1.f) slowdown_multiplier = 1.f;
+      if (slowdown_multiplier > 1.f) slowdown_multiplier = 1.f;
     }
-    if ((slowdown_multiplier > 0) && (block->steps_e.wide != 0)) inverse_second *= slowdown_multiplier;
+    if (block->steps_e.wide != 0) inverse_second *= slowdown_multiplier;
     last_moves_queued = moves_queued;
   }
 #endif // SLOWDOWN
