@@ -1050,6 +1050,7 @@ Having the real displacement of the head, we can calculate the total movement le
         slowdown_multiplier = maximum_slowdown_multiplier;
         const_rate_mode = true;
       }
+      else if ((slowdown_multiplier - maximum_slowdown_multiplier) < 0.12f) const_rate_mode = true;
     }
     else if ((maximum_slowdown_multiplier - slowdown_multiplier) > 0.12f) {
       slowdown_multiplier = maximum_slowdown_multiplier;
