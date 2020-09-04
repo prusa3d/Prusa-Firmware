@@ -1032,9 +1032,9 @@ Having the real displacement of the head, we can calculate the total movement le
     static float slowdown_multiplier = 1.f;
     static uint8_t last_moves_queued = 0;
     static bool const_rate_mode = false;
+    const float maximum_slowdown_multiplier = 1000000.0f / (inverse_second * cs.minsegmenttime);
 
     if (const_rate_mode) {
-      const float maximum_slowdown_multiplier = 1000000.0f / (inverse_second * cs.minsegmenttime);
       if (maximum_slowdown_multiplier > 1.f) {
         slowdown_multiplier = 1.f;
         const_rate_mode = false;
@@ -1046,16 +1046,18 @@ Having the real displacement of the head, we can calculate the total movement le
     else if (moves_queued < (BLOCK_BUFFER_SIZE - 3) && (moves_queued < last_moves_queued)
         && (static_cast<unsigned long>(lround(1000000.0f / (inverse_second * slowdown_multiplier))) < cs.minsegmenttime)) {
       slowdown_multiplier -= 0.0833f * (last_moves_queued - moves_queued);
-      const float maximum_slowdown_multiplier = 1000000.0f / (inverse_second * cs.minsegmenttime);
       if (slowdown_multiplier < maximum_slowdown_multiplier) {
         slowdown_multiplier = maximum_slowdown_multiplier;
         const_rate_mode = true;
       }
     }
+    else if ((maximum_slowdown_multiplier - slowdown_multiplier) > 0.12f) {
+      slowdown_multiplier = maximum_slowdown_multiplier;
+    }
     else if (moves_queued > (BLOCK_BUFFER_SIZE - 3)) {
       slowdown_multiplier += 0.0833f;
-      if (slowdown_multiplier > 1.f) slowdown_multiplier = 1.f;
     }
+    if (slowdown_multiplier > 1.f) slowdown_multiplier = 1.f;
     if (block->steps_e.wide != 0) inverse_second *= slowdown_multiplier;
     last_moves_queued = moves_queued;
   }
