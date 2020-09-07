@@ -38,7 +38,7 @@ void la10c_mode_change(LA10C_MODE mode)
 // Approximate a LA10 value to a LA15 equivalent.
 static float la10c_convert(float k)
 {
-    float new_K = k * 0.004 - 0.05;
+    float new_K = k * 0.002 - 0.01;
     return new_K < 0? 0:
            new_K > (LA_K_MAX - FLT_EPSILON)? (LA_K_MAX - FLT_EPSILON):
            new_K;
