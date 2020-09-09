@@ -1001,6 +1001,36 @@ void lcd_status_screen()                          // NOT static due to using ins
 		}
 	}
 
+#ifdef ULTIPANEL_FEEDMULTIPLY
+	// Dead zone at 100% feedrate
+	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
+		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
+	{
+		lcd_encoder = 0;
+		feedmultiply = 100;
+	}
+	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
+	{
+		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
+		lcd_encoder = 0;
+	}
+	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
+	{
+		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
+		lcd_encoder = 0;
+	}
+	else if (feedmultiply != 100)
+	{
+		feedmultiply += int(lcd_encoder);
+		lcd_encoder = 0;
+	}
+#endif //ULTIPANEL_FEEDMULTIPLY
+
+	if (feedmultiply < 10)
+		feedmultiply = 10;
+	else if (feedmultiply > 999)
+		feedmultiply = 999;
+
 	if (lcd_status_update_delay)
 		lcd_status_update_delay--;
 	else
@@ -1077,36 +1107,6 @@ void lcd_status_screen()                          // NOT static due to using ins
 		menu_submenu(lcd_main_menu);
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	}
-
-#ifdef ULTIPANEL_FEEDMULTIPLY
-	// Dead zone at 100% feedrate
-	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
-		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
-	{
-		lcd_encoder = 0;
-		feedmultiply = 100;
-	}
-	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply != 100)
-	{
-		feedmultiply += int(lcd_encoder);
-		lcd_encoder = 0;
-	}
-#endif //ULTIPANEL_FEEDMULTIPLY
-
-	if (feedmultiply < 10)
-		feedmultiply = 10;
-	else if (feedmultiply > 999)
-		feedmultiply = 999;
 }
 
 void lcd_commands()
