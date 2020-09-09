@@ -44,6 +44,8 @@ enum BlockFlag {
     // than 32767, therefore the DDA algorithm may run with 16bit resolution only.
     // In addition, the stepper routine will not do any end stop checking for higher performance.
     BLOCK_FLAG_DDA_LOWRES = 8,
+    // Block starts with Zeroed E counter
+    BLOCK_FLAG_E_RESET = 16,
 };
 
 union dda_isteps_t
@@ -71,12 +73,12 @@ typedef struct {
   // steps_x.y,z, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
   dda_isteps_t steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
   dda_usteps_t step_event_count;            // The number of step events required to complete this block
-  long acceleration_rate;                   // The acceleration rate used for acceleration calculation
+  uint32_t acceleration_rate;               // The acceleration rate used for acceleration calculation
   unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
   unsigned char active_extruder;            // Selects the active extruder
   // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
-  long accelerate_until;                    // The index of the step event on which to stop acceleration
-  long decelerate_after;                    // The index of the step event on which to start decelerating
+  uint32_t accelerate_until;                // The index of the step event on which to stop acceleration
+  uint32_t decelerate_after;                // The index of the step event on which to start decelerating
 
   // Fields used by the motion planner to manage acceleration
 //  float speed_x, speed_y, speed_z, speed_e;        // Nominal mm/sec for each axis
@@ -98,22 +100,25 @@ typedef struct {
 
   // Settings for the trapezoid generator (runs inside an interrupt handler).
   // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
-  //FIXME nominal_rate, initial_rate and final_rate are limited to uint16_t by MultiU24X24toH16 in the stepper interrupt anyway!
   unsigned long nominal_rate;                        // The nominal step rate for this block in step_events/sec 
   unsigned long initial_rate;                        // The jerk-adjusted step rate at start of block  
   unsigned long final_rate;                          // The minimal rate at exit
   unsigned long acceleration_st;                     // acceleration steps/sec^2
-  //FIXME does it have to be unsigned long? Probably uint8_t would be just fine.
-  unsigned long fan_speed;
+  //FIXME does it have to be int? Probably uint8_t would be just fine. Need to change in other places as well
+  int fan_speed;
   volatile char busy;
 
 
   // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
   float speed_factor;
-    
+
 #ifdef LIN_ADVANCE
-  bool use_advance_lead;
-  unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
+  bool use_advance_lead;            // Whether the current block uses LA
+  uint16_t advance_rate,            // Step-rate for extruder speed
+           max_adv_steps,           // max. advance steps to get cruising speed pressure (not always nominal_speed!)
+           final_adv_steps;         // advance steps due to exit speed
+  uint8_t advance_step_loops;       // Number of stepper ticks for each advance isr
+  float adv_comp;                   // Precomputed E compression factor
 #endif
 
   // Save/recovery state data
@@ -123,7 +128,7 @@ typedef struct {
 } block_t;
 
 #ifdef LIN_ADVANCE
-  extern float extruder_advance_k, advance_ed_ratio;
+extern float extruder_advance_K;    // Linear-advance K factor
 #endif
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -148,7 +153,11 @@ vector_3 plan_get_position();
 /// plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], ...
 /// saves almost 5KB.
 /// The performance penalty is negligible, since these planned lines are usually maintenance moves with the extruder.
-void plan_buffer_line_curposXYZE(float feed_rate, uint8_t extruder);
+void plan_buffer_line_curposXYZE(float feed_rate);
+
+void plan_buffer_line_destinationXYZE(float feed_rate);
+
+void plan_set_position_curposXYZE();
 
 void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target = NULL);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
@@ -163,6 +172,12 @@ void plan_set_position(float x, float y, float z, const float &e);
 
 void plan_set_z_position(const float &z);
 void plan_set_e_position(const float &e);
+
+// Reset the E position to zero at the start of the next segment
+void plan_reset_next_e();
+
+inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
+inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
 
 extern bool e_active();
 

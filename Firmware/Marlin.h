@@ -146,38 +146,37 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 #if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1 
 	#if defined(Z_AXIS_ALWAYS_ON)
 		  #ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		  #else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define  disable_z() {}
+			#define  poweron_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+			#define poweroff_z() {}
 		  #endif
 	#else
 		#ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		#else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+			#define  poweron_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+			#define poweroff_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		#endif
 	#endif
 #else
-  #define enable_z() {}
-  #define disable_z() {}
+    #define  poweron_z() {}
+    #define poweroff_z() {}
 #endif
 
-#ifdef PSU_Delta
+#ifndef PSU_Delta
+    #define  enable_z()  poweron_z()
+    #define disable_z() poweroff_z()
+#else
     void init_force_z();
     void check_force_z();
-    #undef disable_z
-    #define disable_z() disable_force_z()
-    void disable_force_z();
-    #undef enable_z
-    #define enable_z() enable_force_z()
     void enable_force_z();
+    void disable_force_z();
+    #define  enable_z()  enable_force_z()
+    #define disable_z() disable_force_z()
 #endif // PSU_Delta
-
-
 
 
 //#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
@@ -239,8 +238,8 @@ void get_coordinates();
 void prepare_move();
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void Stop();
-
 bool IsStopped();
+void finishAndDisableSteppers();
 
 //put an ASCII command at the end of the current buffer.
 void enquecommand(const char *cmd, bool from_progmem = false);
@@ -295,12 +294,12 @@ void setPwmFrequency(uint8_t pin, int val);
 
 extern bool fans_check_enabled;
 extern float homing_feedrate[];
-extern bool axis_relative_modes[];
+extern uint8_t axis_relative_modes;
 extern float feedrate;
 extern int feedmultiply;
 extern int extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders
 extern int extruder_multiply[EXTRUDERS]; // sets extrude multiply factor (in percent) for each extruder individually
-extern float volumetric_multiplier[EXTRUDERS]; // reciprocal of cross-sectional area of filament (in square millimeters), stored this way to reduce computational burden in planner
+extern float extruder_multiplier[EXTRUDERS]; // reciprocal of cross-sectional area of filament (in square millimeters), stored this way to reduce computational burden in planner
 extern float current_position[NUM_AXIS] ;
 extern float destination[NUM_AXIS] ;
 extern float min_pos[3];
@@ -308,6 +307,7 @@ extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
 extern int8_t lcd_change_fil_state;
+extern float default_retraction;
 
 #ifdef TMC2130
 void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
@@ -334,7 +334,6 @@ extern unsigned long stoptime;
 extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
-extern bool temp_cal_active;
 extern bool loading_flag;
 extern unsigned int usb_printing_counter;
 
@@ -444,9 +443,8 @@ void setup_uvlo_interrupt();
 void setup_fan_interrupt();
 #endif
 
-//extern void recover_machine_state_after_power_panic();
-extern void recover_machine_state_after_power_panic(bool bTiny);
-extern void restore_print_from_eeprom();
+extern bool recover_machine_state_after_power_panic();
+extern void restore_print_from_eeprom(bool mbl_was_active);
 extern void position_menu();
 
 extern void print_world_coordinates();
@@ -513,5 +511,7 @@ void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
 void marlin_wait_for_click();
 void raise_z_above(float target, bool plan=true);
+
+extern "C" void softReset();
 
 #endif

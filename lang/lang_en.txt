@@ -1,6 +1,12 @@
 #
 "[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
 
+#MSG_03_OR_OLDER c=18
+" 0.3 or older"
+
+#MSG_04_OR_NEWER c=18
+" 0.4 or newer"
+
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
 
@@ -31,7 +37,10 @@
 #
 "Ambient"
 
-#MSG_PRESS c=20
+#MSG_AUTO c=6
+"Auto"
+
+#MSG_PRESS c=20 r=2
 "and press the knob"
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
@@ -43,7 +52,7 @@
 #MSG_AUTO_HOME
 "Auto home"
 
-#MSG_AUTOLOAD_FILAMENT c=17
+#MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
@@ -70,13 +79,22 @@
 #MSG_BED_CORRECTION_MENU
 "Bed level correct"
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
+#MSG_BELTTEST c=17
+"Belt test        "
+
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
+
+#MSG_BRIGHT c=6
+"Bright"
+
+#MSG_BRIGHTNESS c=18
+"Brightness"
 
 #MSG_BED
 "Bed"
 
-#MSG_MENU_BELT_STATUS c=15 r=1
+#MSG_MENU_BELT_STATUS c=18
 "Belt status"
 
 #MSG_RECOVER_PRINT c=20 r=2
@@ -124,8 +142,9 @@
 #
 "Copy selected language?"
 
-#MSG_CRASHDETECT
+#MSG_CRASHDETECT c=13
 "Crash det."
+
 #
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 
@@ -150,10 +169,13 @@
 #MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 
+#MSG_FS_CONTINUE c=5
+"Cont."
+
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 
-#MSG_EXTRUDER_CORRECTION c=10
+#MSG_EXTRUDER_CORRECTION c=13
 "E-correct:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
@@ -162,7 +184,7 @@
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 
-#MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
+#MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
 
 #MSG_SELFTEST_ENDSTOP
@@ -174,8 +196,20 @@
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
 
+#MSG_CUT_FILAMENT c=16
+"Cut filament"
+
+#MSG_CUTTER c=9
+"Cutter"
+
+# c=18
+"Cutting filament"
+
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
+
+#MSG_DIM c=6
+"Dim"
 
 #MSG_ERROR
 "ERROR:"
@@ -183,7 +217,7 @@
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
 
-#MSG_INFO_EXTRUDER c=15 r=1
+#MSG_INFO_EXTRUDER c=18
 "Extruder info"
 
 #MSG_MOVE_E
@@ -192,7 +226,7 @@
 #
 "Fail stats MMU"
 
-#MSG_FSENSOR_AUTOLOAD
+#MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 
 #
@@ -210,7 +244,7 @@
 #MSG_FSENSOR
 "Fil. sensor"
 
-#
+# c=14
 "Filam. runouts"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -222,19 +256,25 @@
 #MSG_FILAMENT_SENSOR c=20
 "Filament sensor"
 
-#MSG_FILAMENT_USED c=19 r=1
+#MSG_FILAMENT_USED c=19
 "Filament used"
 
 #MSG_PRINT_TIME c=19 r=1
 "Print time"
 
-#MSG_FILE_INCOMPLETE c=20 r=2
+#MSG_FS_ACTION c=10
+"FS Action"
+
+# c=18
+"FS v0.4 or newer"
+
+#MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
 
-#MSG_FINISHING_MOVEMENTS c=20 r=1
+#MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
 
-#MSG_V2_CALIBRATION c=17 r=1
+#MSG_V2_CALIBRATION c=18
 "First layer cal."
 
 #MSG_WIZARD_SELFTEST c=20 r=8
@@ -357,6 +397,9 @@
 #MSG_BABYSTEP_Z
 "Live adjust Z"
 
+# c=20 r=6
+"Insert the filament (do not load it) into the extruder and then press the knob."
+
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
 
@@ -372,11 +415,17 @@
 #
 "Load to nozzle"
 
-#MSG_M117_V2_CALIBRATION c=25 r=1
+#MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
 
 #MSG_MAIN
 "Main"
+
+#MSG_BL_HIGH c=12
+"Level Bright"
+
+#MSG_BL_LOW c=12
+"Level Dimmed"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
@@ -407,6 +456,9 @@
 
 #MSG_MODE
 "Mode"
+
+# c=20 r=3
+"MK3 firmware detected on MK3S printer"
 
 #MSG_NORMAL
 "Normal"
@@ -477,7 +529,7 @@
 #MSG_NOZZLE
 "Nozzle"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 "Old settings found. Default PID, Esteps etc. will be set."
 
 #
@@ -501,7 +553,7 @@
 #MSG_PINDA_PREHEAT c=20 r=1
 "PINDA Heating"
 
-#MSG_PAPER c=20 r=8
+#MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #MSG_WIZARD_CLEAN_HEATBED c=20 r=8
@@ -555,11 +607,17 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 
+# c=14
+"PINDA"
+
 #
 "Please upgrade."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
+
+#MSG_FS_PAUSE c=5
+"Pause"
 
 #
 "Power failures"
@@ -567,10 +625,10 @@
 #MSG_PRINT_ABORTED c=20
 "Print aborted"
 
-#
+# c=20
 "Preheating to load"
 
-#
+# c=20
 "Preheating to unload"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
@@ -609,13 +667,16 @@
 #MSG_BED_CORRECTION_REAR c=14 r=1
 "Rear side [um]"
 
-#MSG_RECOVERING_PRINT c=20 r=1
+# c=20 r=4
+"Please unload the filament first, then repeat this action."
+
+#MSG_RECOVERING_PRINT c=20
 "Recovering print    "
 
-#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+#MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
 
-#
+# c=20
 "Prusa i3 MK3S OK."
 
 #MSG_CALIBRATE_BED_RESET
@@ -627,7 +688,7 @@
 #MSG_RESUME_PRINT
 "Resume print"
 
-#MSG_RESUMING_PRINT c=20 r=1
+#MSG_RESUMING_PRINT c=20
 "Resuming print"
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
@@ -678,16 +739,25 @@
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 
+# c=20
+"Prusa i3 MK2.5 OK."
+
+# c=20
+"Prusa i3 MK2.5S OK."
+
+# c=20
+"Prusa i3 MK3 OK."
+
 #MSG_SETTINGS
 "Settings"
 
-#MSG_SHOW_END_STOPS c=17 r=1
+#MSG_SHOW_END_STOPS c=18
 "Show end stops"
 
 #
 "Sensor state"
 
-#MSG_FILE_CNT c=20 r=4
+#MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 
 #MSG_SORT
@@ -716,6 +786,9 @@
 
 #MSG_SOUND
 "Sound"
+
+# c=7
+"Runouts"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -750,7 +823,7 @@
 #
 "Select filament:"
 
-#MSG_TEMP_CALIBRATION c=12 r=1
+#MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
 
 #
@@ -765,13 +838,16 @@
 #MSG_TEMP_CALIBRATION_DONE c=20 r=12
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 
+# c=20 r=3
+"Sensor verified, remove the filament now."
+
 #MSG_TEMPERATURE
 "Temperature"
 
 #MSG_MENU_TEMPERATURES c=15 r=1
 "Temperatures"
 
-#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 
 #
@@ -843,7 +919,7 @@
 #MSG_WIZARD c=17 r=1
 "Wizard"
 
-#MSG_XYZ_DETAILS c=19 r=1
+#MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
@@ -861,7 +937,10 @@
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 
-#
+#MSG_TIMEOUT c=12
+"Timeout"
+
+#MSG_X_CORRECTION c=13
 "X-correct:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
@@ -891,7 +970,10 @@
 #
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 
-#
+# c=20 r=5
+"Verification failed, remove the filament and try again."
+
+#MSG_Y_CORRECTION c=13
 "Y-correct:"
 
 #MSG_OFF
@@ -972,10 +1054,10 @@
 #
 "PINDA:"
 
-#
+# c=20
 "Preheating to cut"
 
-#
+# c=20
 "Preheating to eject"
 
 #
@@ -983,6 +1065,9 @@
 
 #
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+
+# c=20
+"%s level expected"
 
 #
 "Rename"
@@ -993,17 +1078,18 @@
 #
 "Sensor info"
 
-#
+#MSG_SHEET c=10
 "Sheet"
 
 #MSG_SOUND_BLIND
 "Assist"
 
-#
+# c=18
 "Steel sheets"
 
-#
+#MSG_Z_CORRECTION c=13
 "Z-correct:"
 
 #MSG_Z_PROBE_NR
 "Z-probe nr."
+

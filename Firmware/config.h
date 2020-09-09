@@ -5,10 +5,12 @@
 #include "Configuration_prusa.h"
 #include "pins.h"
 
-#define IR_SENSOR_ANALOG (defined(VOLT_IR_PIN) && defined(IR_SENSOR))
+#if (defined(VOLT_IR_PIN) && defined(IR_SENSOR))
+# define IR_SENSOR_ANALOG
+#endif
 
 //ADC configuration
-#if !IR_SENSOR_ANALOG
+#ifndef IR_SENSOR_ANALOG
 #define ADC_CHAN_MSK      0b0000001001011111 //used AD channels bit mask (0,1,2,3,4,6,9)
 #define ADC_DIDR_MSK      0b0000001001011111 //AD channels DIDR mask (1 ~ disabled digital input)
 #define ADC_CHAN_CNT      7         //number of used channels)
@@ -34,7 +36,8 @@
 //#define PAT9125_I2C_ADDR  0x79  //ID=HI
 //#define PAT9125_I2C_ADDR  0x73  //ID=NC
 #define PAT9125_XRES      0
-#define PAT9125_YRES      240
+#define PAT9125_YRES      240                   // maximum resolution (5*X cpi)
+#define PAT9124_YRES_MM   (5*PAT9125_YRES/25.4) // counts per mm
 
 //SM4 configuration
 #define SM4_DEFDELAY      500       //default step delay [us]
@@ -55,7 +58,7 @@
 #define W25X20CL_SPSR          SPI_SPSR(W25X20CL_SPI_RATE)
 
 //LANG - Multi-language support
-//define LANG_MODE              0 // primary language only
+//#define LANG_MODE              0 // primary language only
 #define LANG_MODE              1 // sec. language support
 
 #define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes)

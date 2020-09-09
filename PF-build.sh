@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_10
+# Version: 1.0.6-Build_18
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -114,7 +114,16 @@
 # 26 Jul 2019, 3d-gussner, Change JSON repository to prusa3d after PR https://github.com/prusa3d/Arduino_Boards/pull/1 was merged
 # 23 Sep 2019, 3d-gussner, Prepare PF-build.sh for comming Prusa3d/Arduino_Boards version 1.0.2 Pull Request
 # 17 Oct 2019, 3d-gussner, Changed folder and check file names to have seperated build enviroments depening on Arduino IDE version and
-#                          board-versions. 
+#                          board-versions.
+# 15 Dec 2019, 3d-gussner, Prepare for switch to Prusa3d/PF-build-env repository
+# 15 Dec 2019, 3d-gussner, Fix Audrino user preferences for the chosen board.
+# 17 Dec 2019, 3d-gussner, Fix "timer0_fract = 0" warning by using Arduino_boards v1.0.3
+# 28 Apr 2020, 3d-gussner, Added RC3 detection
+# 03 May 2020, deliopoulos, Accept all RCx as RC versions
+# 05 May 2020, 3d-gussner, Make a copy of `not_tran.txt`and `not_used.txt` as `not_tran_$VARIANT.txt`and `not_used_$VARIANT.txt`
+#                          After compiling All multilanguage vairants it makes it easier to find missing or unused transltions.
+# 12 May 2020, DRracer   , Cleanup double MK2/s MK25/s `not_tran` and `not_used` files
+# 13 May 2020, leptun    , If cleanup files do not exist don't try to.
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -207,19 +216,22 @@ if ! type python > /dev/null; then
 	fi
 fi
 
-#### End prepare bash environment
+#### End prepare bash / Linux environment
 
 
 #### Set build environment 
 ARDUINO_ENV="1.8.5"
 BUILD_ENV="1.0.6"
-BOARD="rambo"
-BOARD_PACKAGE_NAME="PrusaResearchRambo"
-BOARD_VERSION="1.0.1"
+BOARD="prusa_einsy_rambo"
+BOARD_PACKAGE_NAME="PrusaResearch"
+BOARD_VERSION="1.0.3"
+#BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/Prusa_Merge_v1.0.3/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
-BOARD_FILENAME="prusa3drambo"
-BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3drambo-1.0.1.tar.bz2"
-PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env/releases/download/$BUILD_ENV/PF-build-env-$BUILD_ENV.zip"
+BOARD_FILENAME="prusa3dboards"
+#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/Prusa_Merge_v1.0.3/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
+BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
+#PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
+PF_BUILD_FILE_URL="https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
 LIB="PrusaLibrary"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
@@ -233,6 +245,7 @@ echo "Ardunio IDE :" $ARDUINO_ENV
 echo "Build env   :" $BUILD_ENV
 echo "Board       :" $BOARD
 echo "Package name:" $BOARD_PACKAGE_NAME
+echo "Board v.    :" $BOARD_VERSION
 echo "Specific Lib:" $LIB
 echo ""
 
@@ -321,7 +334,7 @@ if [ ! -e ../PF-build-env-$BUILD_ENV/Preferences-$ARDUINO_ENV-$BOARD_VERSION-$TA
 	echo "update.check"
 	sed -i 's/update.check = true/update.check = false/g' ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
 	echo "board"
-	sed -i 's/board = uno/board = $BOARD/g' ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
+	sed -i "s/board = uno/board = $BOARD/g" ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
 	echo "editor.linenumbers"
 	sed -i 's/editor.linenumbers = false/editor.linenumbers = true/g' ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
 	echo "boardsmanager.additional.urls"
@@ -364,7 +377,7 @@ if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$P
 fi	
 
 # Download and extract Prusa Firmware specific library files
-if [ ! -f "PF-build-env-$BUILD_ENV.zip" ]; then
+if [ ! -f "PF-build-env-WinLin-$BUILD_ENV.zip" ]; then
 	echo "$(tput setaf 6)Downloading Prusa Firmware build environment...$(tput setaf 2)"
 	sleep 2
 	wget $PF_BUILD_FILE_URL || exit 11
@@ -373,7 +386,7 @@ fi
 if [ ! -e "../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]; then
 	echo "$(tput setaf 6)Unzipping Prusa Firmware build environment...$(tput setaf 2)"
 	sleep 2
-	unzip -o PF-build-env-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 12
+	unzip -o PF-build-env-WinLin-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 12
 	echo "# PF-build-env-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor-$BUILD_ENV" >> ../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
 	echo "$(tput sgr0)"
 fi
@@ -520,7 +533,7 @@ do
 	# Check development status
 	DEV_CHECK=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g'|cut -d '-' -f2)
 	if [ -z "$DEV_STATUS_SELECTED" ] ; then
-		if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2" ]] ; then
+		if [[ "$DEV_CHECK" == *"RC"* ]] ; then
 			DEV_STATUS="RC"
 		elif [[ "$DEV_CHECK" == "ALPHA" ]]; then
 			DEV_STATUS="ALPHA"
@@ -675,6 +688,8 @@ do
 		./lang-build.sh || exit 32
 		# Combine compiled firmware with languages 
 		./fw-build.sh || exit 33
+		cp not_tran.txt not_tran_$VARIANT.txt
+		cp not_used.txt not_used_$VARIANT.txt
 		echo "$(tput sgr 0)"
 		# Check if the motherboard is an EINSY and if so only one hex file will generated
 		MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
@@ -709,6 +724,22 @@ do
 
 	# Cleanup Firmware
 	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 36
+	if find $SCRIPT_PATH/lang/ -name '*RAMBo10a*.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/*RAMBo10a*.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name '*MK2-RAMBo13a*' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/*MK2-RAMBo13a*.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name 'not_tran.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/not_tran.txt
+	fi
+	if find $SCRIPT_PATH/lang/ -name 'not_used.txt' -printf 1 -quit | grep -q 1
+	then
+		rm $SCRIPT_PATH/lang/not_used.txt
+	fi
 	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
 	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
 	echo $MULTI_LANGUAGE_CHECK

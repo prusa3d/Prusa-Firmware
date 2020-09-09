@@ -1,5 +1,6 @@
 #include "Dcodes.h"
-//#include "Marlin.h"
+#include "Marlin.h"
+#include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
 #include <stdio.h>
@@ -97,8 +98,26 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
 	}
 }
 
-#ifdef DEBUG_DCODE3
+#if defined DEBUG_DCODE3 || defined DEBUG_DCODES
 #define EEPROM_SIZE 0x1000
+    /*!
+    ### D3 - Read/Write EEPROM <a href="https://reprap.org/wiki/G-code#D3:_Read.2FWrite_EEPROM">D3: Read/Write EEPROM</a>
+    This command can be used without any additional parameters. It will read the entire eeprom.
+    #### Usage
+    
+        D3 [ A | C | X ]
+    
+    #### Parameters
+    - `A` - Address (x0000-x0fff)
+    - `C` - Count (1-4096)
+    - `X` - Data (hex)
+	
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
+    */
 void dcode_3()
 {
 	DBG(_N("D3 - Read/Write EEPROM\n"));
@@ -167,7 +186,6 @@ void dcode_3()
 #define BOOT_APP_FLG_COPY  0x02
 #define BOOT_APP_FLG_FLASH 0x04
 
-extern uint8_t fsensor_log;
 extern float current_temperature_pinda;
 extern float axis_steps_per_unit[NUM_AXIS];
 
@@ -176,6 +194,14 @@ extern float axis_steps_per_unit[NUM_AXIS];
 #endif //0
 #define LOG(args...)
 
+    /*!
+    *
+    ### D-1 - Endless Loop <a href="https://reprap.org/wiki/G-code#G28:_Move_to_Origin_.28Home.29">D-1: Endless Loop</a>
+      
+          D-1
+      
+    *
+    */
 void dcode__1()
 {
 	printf_P(PSTR("D-1 - Endless loop\n"));
@@ -185,15 +211,22 @@ void dcode__1()
 
 #ifdef DEBUG_DCODES
 
+    /*!
+    ### D0 - Reset <a href="https://reprap.org/wiki/G-code#D0:_Reset">D0: Reset</a>
+    #### Usage
+    
+        D0 [ B ]
+    
+    #### Parameters
+    - `B` - Bootloader
+    */
 void dcode_0()
 {
 	if (*(strchr_pointer + 1) == 0) return;
 	LOG("D0 - Reset\n");
 	if (code_seen('B')) //bootloader
 	{
-		cli();
-		wdt_enable(WDTO_15MS);
-		while(1);
+		softReset();
 	}
 	else //reset
 	{
@@ -203,16 +236,41 @@ void dcode_0()
 	}
 }
 
+    /*!
+    *
+    ### D1 - Clear EEPROM and RESET <a href="https://reprap.org/wiki/G-code#D1:_Clear_EEPROM_and_RESET">D1: Clear EEPROM and RESET</a>
+      
+          D1
+      
+    *
+    */
 void dcode_1()
 {
 	LOG("D1 - Clear EEPROM and RESET\n");
 	cli();
 	for (int i = 0; i < 8192; i++)
 		eeprom_write_byte((unsigned char*)i, (unsigned char)0xff);
-	wdt_enable(WDTO_15MS);
-	while(1);
+	softReset();
 }
 
+    /*!
+    ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
+    This command can be used without any additional parameters. It will read the entire RAM.
+    #### Usage
+    
+        D2 [ A | C | X ]
+    
+    #### Parameters
+    - `A` - Address (x0000-x1fff)
+    - `C` - Count (1-8192)
+    - `X` - Data
+
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
+    */
 void dcode_2()
 {
 	LOG("D2 - Read/Write RAM\n");
@@ -256,6 +314,19 @@ void dcode_2()
 	}*/
 }
 
+    /*!
+    
+    ### D4 - Read/Write PIN <a href="https://reprap.org/wiki/G-code#D4:_Read.2FWrite_PIN">D4: Read/Write PIN</a>
+    To read the digital value of a pin you need only to define the pin number.
+    #### Usage
+    
+        D4 [ P | F | V ]
+    
+    #### Parameters
+    - `P` - Pin (0-255)
+    - `F` - Function in/out (0/1)
+    - `V` - Value (0/1)
+    */
 void dcode_4()
 {
 	LOG("D4 - Read/Write PIN\n");
@@ -286,8 +357,27 @@ void dcode_4()
 }
 #endif //DEBUG_DCODES
 
-#ifdef DEBUG_DCODE5
+#if defined DEBUG_DCODE5 || defined DEBUG_DCODES
 
+    /*!
+    ### D5 - Read/Write FLASH <a href="https://reprap.org/wiki/G-code#D5:_Read.2FWrite_FLASH">D5: Read/Write Flash</a>
+    This command can be used without any additional parameters. It will read the 1kb FLASH.
+    #### Usage
+    
+        D5 [ A | C | X | E ]
+    
+    #### Parameters
+    - `A` - Address (x00000-x3ffff)
+    - `C` - Count (1-8192)
+    - `X` - Data (hex)
+    - `E` - Erase
+ 	
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal 
+	- The hex data needs to be lowercase
+	
+   */
 void dcode_5()
 {
 	printf_P(PSTR("D5 - Read/Write FLASH\n"));
@@ -327,8 +417,7 @@ void dcode_5()
 		boot_dst_addr = (uint32_t)address;
 		boot_src_addr = (uint32_t)(&data);
 		bootapp_print_vars();
-		wdt_enable(WDTO_15MS);
-		while(1);
+		softReset();
 	}
 	while (count)
 	{
@@ -351,11 +440,19 @@ void dcode_5()
 
 #ifdef DEBUG_DCODES
 
+    /*!
+    ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
+    Reserved
+    */
 void dcode_6()
 {
 	LOG("D6 - Read/Write external FLASH\n");
 }
 
+    /*!
+    ### D7 - Read/Write Bootloader <a href="https://reprap.org/wiki/G-code#D7:_Read.2FWrite_Bootloader">D7: Read/Write Bootloader</a>
+    Reserved
+    */
 void dcode_7()
 {
 	LOG("D7 - Read/Write Bootloader\n");
@@ -366,11 +463,22 @@ void dcode_7()
 	boot_copy_size = (uint16_t)0xc00;
 	boot_src_addr = (uint32_t)0x0003e400;
 	boot_dst_addr = (uint32_t)0x0003f400;
-	wdt_enable(WDTO_15MS);
-	while(1);
+	softReset();
 */
 }
 
+    /*!
+    ### D8 - Read/Write PINDA <a href="https://reprap.org/wiki/G-code#D8:_Read.2FWrite_PINDA">D8: Read/Write PINDA</a>
+    #### Usage
+    
+        D8 [ ? | ! | P | Z ]
+    
+    #### Parameters
+    - `?` - Read PINDA temperature shift values
+    - `!` - Reset PINDA temperature shift values to default
+    - `P` - Pinda temperature [C]
+    - `Z` - Z Offset [mm]
+    */
 void dcode_8()
 {
 	printf_P(PSTR("D8 - Read/Write PINDA\n"));
@@ -412,6 +520,23 @@ void dcode_8()
 	printf_P(PSTR("temp_pinda=%d offset_z=%d.%03d\n"), (int)temp_pinda, (int)offset_z, ((int)(1000 * offset_z) % 1000));
 }
 
+    /*!
+    ### D9 - Read ADC <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9: Read ADC</a>
+    #### Usage
+    
+        D9 [ I | V ]
+    
+    #### Parameters
+    - `I` - ADC channel index 
+        - `0` - Heater 0 temperature
+        - `1` - Heater 1 temperature
+        - `2` - Bed temperature
+        - `3` - PINDA temperature
+        - `4` - PWR voltage
+        - `5` - Ambient temperature
+        - `6` - BED voltage
+    - `V` Value to be written as simulated
+    */
 const char* dcode_9_ADC_name(uint8_t i)
 {
 	switch (i)
@@ -485,11 +610,19 @@ void dcode_9()
 	}
 }
 
+    /*!
+    ### D10 - Set XYZ calibration = OK <a href="https://reprap.org/wiki/G-code#D10:_Set_XYZ_calibration_.3D_OK">D10: Set XYZ calibration = OK</a>
+    */
 void dcode_10()
 {//Tell the printer that XYZ calibration went OK
 	LOG("D10 - XYZ calibration = OK\n");
 	calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
 }
+
+    /*!
+    ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
+    Writes the current time in the log file.
+    */
 
 void dcode_12()
 {//Time
@@ -497,43 +630,158 @@ void dcode_12()
 
 }
 
+#ifdef HEATBED_ANALYSIS
+    /*!
+    ### D80 - Bed check <a href="https://reprap.org/wiki/G-code#D80:_Bed_check">D80: Bed check</a>
+    This command will log data to SD card file "mesh.txt".
+    #### Usage
+    
+        D80 [ E | F | G | H | I | J ]
+    
+    #### Parameters
+    - `E` - Dimension X (default 40)
+    - `F` - Dimention Y (default 40)
+    - `G` - Points X (default 40)
+    - `H` - Points Y (default 40)
+    - `I` - Offset X (default 74)
+    - `J` - Offset Y (default 34)
+  */
+void dcode_80()
+{
+	float dimension_x = 40;
+	float dimension_y = 40;
+	int points_x = 40;
+	int points_y = 40;
+	float offset_x = 74;
+	float offset_y = 33;
+
+	if (code_seen('E')) dimension_x = code_value();
+	if (code_seen('F')) dimension_y = code_value();
+	if (code_seen('G')) {points_x = code_value(); }
+	if (code_seen('H')) {points_y = code_value(); }
+	if (code_seen('I')) {offset_x = code_value(); }
+	if (code_seen('J')) {offset_y = code_value(); }
+	printf_P(PSTR("DIM X: %f\n"), dimension_x);
+	printf_P(PSTR("DIM Y: %f\n"), dimension_y);
+	printf_P(PSTR("POINTS X: %d\n"), points_x);
+	printf_P(PSTR("POINTS Y: %d\n"), points_y);
+	printf_P(PSTR("OFFSET X: %f\n"), offset_x);
+	printf_P(PSTR("OFFSET Y: %f\n"), offset_y);
+		bed_check(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
+}
+
+
+    /*!
+    ### D81 - Bed analysis <a href="https://reprap.org/wiki/G-code#D81:_Bed_analysis">D80: Bed analysis</a>
+    This command will log data to SD card file "wldsd.txt".
+    #### Usage
+    
+        D81 [ E | F | G | H | I | J ]
+    
+    #### Parameters
+    - `E` - Dimension X (default 40)
+    - `F` - Dimention Y (default 40)
+    - `G` - Points X (default 40)
+    - `H` - Points Y (default 40)
+    - `I` - Offset X (default 74)
+    - `J` - Offset Y (default 34)
+  */
+void dcode_81()
+{
+	float dimension_x = 40;
+	float dimension_y = 40;
+	int points_x = 40;
+	int points_y = 40;
+	float offset_x = 74;
+	float offset_y = 33;
+
+	if (code_seen('E')) dimension_x = code_value();
+	if (code_seen('F')) dimension_y = code_value();
+	if (code_seen("G")) { strchr_pointer+=1; points_x = code_value(); }
+	if (code_seen("H")) { strchr_pointer+=1; points_y = code_value(); }
+	if (code_seen("I")) { strchr_pointer+=1; offset_x = code_value(); }
+	if (code_seen("J")) { strchr_pointer+=1; offset_y = code_value(); }
+	
+	bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
+	
+}
+
+#endif //HEATBED_ANALYSIS
+
+    /*!
+    ### D106 - Print measured fan speed for different pwm values <a href="https://reprap.org/wiki/G-code#D106:_Print_measured_fan_speed_for_different_pwm_values">D106: Print measured fan speed for different pwm values</a>
+    */
+void dcode_106()
+{
+	for (int i = 255; i > 0; i = i - 5) {
+		fanSpeed = i;
+		//delay_keep_alive(2000);
+		for (int j = 0; j < 100; j++) {
+			delay_keep_alive(100);
+			}
+			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
+	}
+}
 
 #ifdef TMC2130
 #include "planner.h"
 #include "tmc2130.h"
 extern void st_synchronize();
-/**
- * @brief D2130 Trinamic stepper controller
- * D2130<axis><command>[subcommand][value]
- *  * Axis
- *  * * 'X'
- *  * * 'Y'
- *  * * 'Z'
- *  * * 'E'
- *  * command
- *  * * '0' current off
- *  * * '1' current on
- *  * * '+' single step
- *  * * * value sereval steps
- *  * * '-' dtto oposite direction
- *  * * '?' read register
- *  * * * "mres"
- *  * * * "step"
- *  * * * "mscnt"
- *  * * * "mscuract"
- *  * * * "wave"
- *  * * '!' set register
- *  * * * "mres"
- *  * * * "step"
- *  * * * "wave"
- *  * * * *0, 180..250 meaning: off, 0.9..1.25, recommended value is 1.1
- *  * * '@' home calibrate axis
- *
- *  Example:
- *  D2130E?wave //print extruder microstep linearity compensation curve
- *  D2130E!wave0 //disable extruder linearity compensation curve, (sine curve is used)
- *  D2130E!wave220 // (sin(x))^1.1 extruder microstep compensation curve used
- */
+    /*!
+    ### D2130 - Trinamic stepper controller <a href="https://reprap.org/wiki/G-code#D2130:_Trinamic_stepper_controller">D2130: Trinamic stepper controller</a>
+    @todo Please review by owner of the code. RepRap Wiki Gcode needs to be updated after review of owner as well.
+    
+    #### Usage
+    
+        D2130 [ Axis | Command | Subcommand | Value ]
+    
+    #### Parameters
+    - Axis
+      - `X` - X stepper driver
+      - `Y` - Y stepper driver
+      - `Z` - Z stepper driver
+      - `E` - Extruder stepper driver
+    - Commands
+      - `0`   - Current off
+      - `1`   - Current on
+      - `+`   - Single step
+      - `-`   - Single step oposite direction
+      - `NNN` - Value sereval steps
+      - `?`   - Read register
+      - Subcommands for read register
+        - `mres`     - Micro step resolution. More information in datasheet '5.5.2 CHOPCONF – Chopper Configuration'
+        - `step`     - Step
+        - `mscnt`    - Microstep counter. More information in datasheet '5.5 Motor Driver Registers'
+        - `mscuract` - Actual microstep current for motor. More information in datasheet '5.5 Motor Driver Registers'
+        - `wave`     - Microstep linearity compensation curve
+      - `!`   - Set register
+      - Subcommands for set register
+        - `mres`     - Micro step resolution
+        - `step`     - Step
+        - `wave`     - Microstep linearity compensation curve
+        - Values for set register
+          - `0, 180 --> 250` - Off
+          - `0.9 --> 1.25`   - Valid values (recommended is 1.1)
+      - `@`   - Home calibrate axis
+    
+    Examples:
+      
+          D2130E?wave
+      
+      Print extruder microstep linearity compensation curve
+      
+          D2130E!wave0
+      
+      Disable extruder linearity compensation curve, (sine curve is used)
+      
+          D2130E!wave220
+      
+      (sin(x))^1.1 extruder microstep compensation curve used
+    
+    Notes:
+      For more information see https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf
+    *
+	*/
 void dcode_2130()
 {
 	printf_P(PSTR("D2130 - TMC2130\n"));
@@ -636,6 +884,20 @@ void dcode_2130()
 #endif //TMC2130
 
 #ifdef PAT9125
+    /*!
+    ### D9125 - PAT9125 filament sensor <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9125: PAT9125 filament sensor</a>
+    #### Usage
+    
+        D9125 [ ? | ! | R | X | Y | L ]
+    
+    #### Parameters
+    - `?` - Print values
+    - `!` - Print values
+    - `R` - Resolution. Not active in code
+    - `X` - X values
+    - `Y` - Y values
+    - `L` - Activate filament sensor log
+    */
 void dcode_9125()
 {
 	LOG("D9125 - PAT9125\n");
@@ -668,11 +930,13 @@ void dcode_9125()
 		pat9125_y = (int)code_value();
 		LOG("pat9125_y=%d\n", pat9125_y);
 	}
+#ifdef DEBUG_FSENSOR_LOG
 	if (code_seen('L'))
 	{
 		fsensor_log = (int)code_value();
 		LOG("fsensor_log=%d\n", fsensor_log);
 	}
+#endif //DEBUG_FSENSOR_LOG
 }
 #endif //PAT9125
 
