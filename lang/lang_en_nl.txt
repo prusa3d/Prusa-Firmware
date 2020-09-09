@@ -244,7 +244,7 @@
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
-"Werp filament uit"
+"Fil. word ontladen"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
@@ -1228,7 +1228,7 @@
 
 #MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
-"XZY kal. details"
+"XYZ kal. details"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 "XYZ calibration failed. Please consult the manual."

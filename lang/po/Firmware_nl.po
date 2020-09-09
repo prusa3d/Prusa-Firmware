@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: nl\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed Sep 9 11:32:59 CEST 2020\n"
-"PO-Revision-Date: Wed Sep 9 11:32:59 CEST 2020\n"
+"POT-Creation-Date: Wed Sep 9 12:29:41 CEST 2020\n"
+"PO-Revision-Date: Wed Sep 9 12:29:41 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -323,7 +323,7 @@ msgstr "Fil. uitwerpen"
 # MSG_EJECTING_FILAMENT c=20 r=1
 #: mmu.cpp:1416
 msgid "Ejecting filament"
-msgstr "Werp filament uit"
+msgstr "Fil. word ontladen"
 
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ultralcd.cpp:8338
@@ -1553,7 +1553,7 @@ msgstr "Wizard"
 # MSG_XYZ_DETAILS c=18
 #: ultralcd.cpp:2200
 msgid "XYZ cal. details"
-msgstr "XZY kal. details"
+msgstr "XYZ kal. details"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: messages.c:18
