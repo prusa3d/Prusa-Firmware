@@ -121,6 +121,8 @@
 
 #define IR_SENSOR_PIN 62 //idler sensor @PK0 (digital pin 62/A8)
 
+#define MMU_RST_PIN 76
+
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.
 #define LOGIC_ANALYZER_CH0		X_MIN_PIN		// PB6
