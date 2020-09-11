@@ -376,6 +376,11 @@ const unsigned int dropsegments=5; //everything with less than this number of st
   #endif
 #endif
 
+/**
+ * Include capabilities in M115 output
+ */
+// #define EXTENDED_CAPABILITIES_REPORT
+
 //===========================================================================
 //=============================  Define Defines  ============================
 //===========================================================================

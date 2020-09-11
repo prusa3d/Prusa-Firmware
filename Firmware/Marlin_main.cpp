@@ -3404,6 +3404,17 @@ static void gcode_G92()
     }
 }
 
+#ifdef EXTENDED_CAPABILITIES_REPORT
+
+static void cap_line(const char* name, bool ena = false) {
+    printf_P(PSTR("Cap:%S:%c\n"), name, (char)ena + '0');
+}
+
+static void extended_capabilities_report()
+{
+    //@todo
+}
+#endif //EXTENDED_CAPABILITIES_REPORT
 
 #ifdef BACKLASH_X
 extern uint8_t st_backlash_x;
@@ -6803,6 +6814,11 @@ Sigma_Exit:
           SERIAL_ECHOPGM(" UUID:"); 
           SERIAL_ECHOLNPGM(MACHINE_UUID);
       }
+      
+#ifdef EXTENDED_CAPABILITIES_REPORT
+      extended_capabilities_report();
+#endif //EXTENDED_CAPABILITIES_REPORT
+      
       break;
 
     /*!
