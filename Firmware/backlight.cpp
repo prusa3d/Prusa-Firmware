@@ -111,10 +111,10 @@ void backlight_init()
 
 #else //LCD_BL_PIN
 
-void force_bl_on(_UNUSED bool section_start) {}
+void force_bl_on(bool) {}
 void backlight_update() {}
 void backlight_init() {}
 void backlight_save() {}
-void backlight_wake(_UNUSED const uint8_t flashNo) {}
+void backlight_wake(const uint8_t) {}
 
 #endif //LCD_BL_PIN
