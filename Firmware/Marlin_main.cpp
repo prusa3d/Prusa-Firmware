@@ -47,7 +47,9 @@
 #include "Configuration.h"
 #include "Marlin.h"
 #include "config.h"
-  
+
+#include "macros.h"
+
 #ifdef ENABLE_AUTO_BED_LEVELING
 #include "vector_3.h"
   #ifdef AUTO_BED_LEVELING_GRID
@@ -138,11 +140,6 @@
 
 #include "cmdqueue.h"
 #include "io_atmega2560.h"
-
-// Macros for bit masks
-#define BIT(b) (1<<(b))
-#define TEST(n,b) (((n)&BIT(b))!=0)
-#define SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (BIT(b))
 
 //Macro for print fan speed
 #define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms
