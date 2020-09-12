@@ -53,6 +53,7 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 	{
 		menu_menu = menu;
 		lcd_encoder = encoder;
+		menu_top = 0; //reset menu view. Needed if menu_back() is called from deep inside a menu, such as Support
 		CRITICAL_SECTION_END;
 		if (reset_menu_state)
 			menu_data_reset();

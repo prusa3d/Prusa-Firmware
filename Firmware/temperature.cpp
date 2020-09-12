@@ -143,14 +143,22 @@ static volatile bool temp_meas_ready = false;
 #ifdef FAN_SOFT_PWM
   static unsigned char soft_pwm_fan;
 #endif
-#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
-  unsigned long extruder_autofan_last_check = _millis();
-  uint8_t fanSpeedBckp = 255;
-  bool fan_measuring = false;
 
-#endif  
+uint8_t fanSpeedBckp = 255;
+
+#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
+  unsigned long extruder_autofan_last_check = _millis();
+  
+  bool fan_measuring = false;
+  uint8_t fanState = 0;
+#ifdef EXTRUDER_ALTFAN_DETECT
+  struct
+  {
+    uint8_t isAltfan : 1;
+    uint8_t altfanOverride : 1;
+  } altfanStatus;
+#endif //EXTRUDER_ALTFAN_DETECT
+#endif
 
 
 #if EXTRUDERS > 3
@@ -175,6 +183,12 @@ static int bed_minttemp_raw = HEATER_BED_RAW_LO_TEMP;
 #endif
 #ifdef BED_MAXTEMP
 static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
+#endif
+#ifdef AMBIENT_MINTEMP
+static int ambient_minttemp_raw = AMBIENT_RAW_LO_TEMP;
+#endif
+#ifdef AMBIENT_MAXTEMP
+static int ambient_maxttemp_raw = AMBIENT_RAW_HI_TEMP;
 #endif
 
 static void *heater_ttbl_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( (void *)HEATER_0_TEMPTABLE, (void *)HEATER_1_TEMPTABLE, (void *)HEATER_2_TEMPTABLE );
@@ -210,6 +224,56 @@ static void temp_runaway_check(int _heater_id, float _target_temperature, float 
 static void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
+#ifdef EXTRUDER_ALTFAN_DETECT
+ISR(INT6_vect) {
+	fan_edge_counter[0]++;
+}
+
+bool extruder_altfan_detect()
+{
+	setExtruderAutoFanState(3);
+
+	SET_INPUT(TACH_0);
+
+	uint8_t overrideVal = eeprom_read_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE);
+	if (overrideVal == EEPROM_EMPTY_VALUE)
+	{
+		overrideVal = (calibration_status() == CALIBRATION_STATUS_CALIBRATED) ? 1 : 0;
+		eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, overrideVal);
+	}
+	altfanStatus.altfanOverride = overrideVal;
+
+	CRITICAL_SECTION_START;
+	EICRB &= ~(1 << ISC61);
+	EICRB |= (1 << ISC60);
+	EIMSK |= (1 << INT6);
+	fan_edge_counter[0] = 0;
+	CRITICAL_SECTION_END;
+	extruder_autofan_last_check = _millis();
+
+	_delay(1000);
+
+	EIMSK &= ~(1 << INT6);
+
+	countFanSpeed();
+	altfanStatus.isAltfan = fan_speed[0] > 100;
+	setExtruderAutoFanState(1);
+	return altfanStatus.isAltfan;
+}
+
+void altfanOverride_toggle()
+{
+    altfanStatus.altfanOverride = !altfanStatus.altfanOverride;
+    eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, altfanStatus.altfanOverride);
+}
+
+bool altfanOverride_get()
+{
+    return altfanStatus.altfanOverride;
+}
+
+#endif //EXTRUDER_ALTFAN_DETECT
+
 // return "false", if all extruder-heaters are 'off' (ie. "true", if any heater is 'on')
 bool checkAllHotends(void)
 {
@@ -239,9 +303,7 @@ bool checkAllHotends(void)
   const uint8_t safety_check_cycles_count = (extruder < 0) ? 45 : 10; //10 cycles / 20s delay for extruder and 45 cycles / 90s for heatbed
   float temp_ambient;
 
-#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
   unsigned long extruder_autofan_last_check = _millis();
 #endif
 
@@ -289,9 +351,7 @@ bool checkAllHotends(void)
       max=max(max,input);
       min=min(min,input);
 
-      #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-          (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-          (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+      #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
       if(_millis() - extruder_autofan_last_check > 2500) {
         checkExtruderAutoFans();
         extruder_autofan_last_check = _millis();
@@ -447,29 +507,31 @@ int getHeaterPower(int heater) {
   return soft_pwm[heater];
 }
 
-#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-    (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
 
   #if defined(FAN_PIN) && FAN_PIN > -1
     #if EXTRUDER_0_AUTO_FAN_PIN == FAN_PIN 
        #error "You cannot set EXTRUDER_0_AUTO_FAN_PIN equal to FAN_PIN"
     #endif
-    #if EXTRUDER_1_AUTO_FAN_PIN == FAN_PIN 
-       #error "You cannot set EXTRUDER_1_AUTO_FAN_PIN equal to FAN_PIN"
-    #endif
-    #if EXTRUDER_2_AUTO_FAN_PIN == FAN_PIN 
-       #error "You cannot set EXTRUDER_2_AUTO_FAN_PIN equal to FAN_PIN"
-    #endif
-  #endif 
+  #endif
 
-void setExtruderAutoFanState(int pin, bool state)
+void setExtruderAutoFanState(uint8_t state)
 {
-  unsigned char newFanSpeed = (state != 0) ? EXTRUDER_AUTO_FAN_SPEED : 0;
-  // this idiom allows both digital and PWM fan outputs (see M42 handling).
-  pinMode(pin, OUTPUT);
-  digitalWrite(pin, newFanSpeed);
-  //analogWrite(pin, newFanSpeed);
+	//If bit 1 is set (0x02), then the extruder fan speed won't be adjusted according to temperature. Useful for forcing
+	//the fan to either On or Off during certain tests/errors.
+
+	fanState = state;
+	uint8_t newFanSpeed = 0;
+	if (fanState & 0x01)
+	{
+#ifdef EXTRUDER_ALTFAN_DETECT
+		if (altfanStatus.isAltfan && !altfanStatus.altfanOverride) newFanSpeed = EXTRUDER_ALTFAN_SPEED_SILENT;
+		else newFanSpeed = EXTRUDER_AUTO_FAN_SPEED;
+#else //EXTRUDER_ALTFAN_DETECT
+		newFanSpeed = EXTRUDER_AUTO_FAN_SPEED;
+#endif //EXTRUDER_ALTFAN_DETECT
+	}
+	timer4_set_fan0(newFanSpeed);
 }
 
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
@@ -503,7 +565,7 @@ void checkFanSpeed()
 	  fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
-	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)){ fan_speed_errors[0]++;}
+	if ((fan_speed[0] < 20) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)){ fan_speed_errors[0]++;}
 	else{
     fan_speed_errors[0] = 0;
     host_keepalive();
@@ -577,47 +639,14 @@ void fanSpeedError(unsigned char _fan) {
 
 void checkExtruderAutoFans()
 {
-  uint8_t fanState = 0;
-
-  // which fan pins need to be turned on?      
-  #if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
-  if (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)
-	  fanState |= 1;
-  #endif
-  #if defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1
-    if (current_temperature[1] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
-    {
-      if (EXTRUDER_1_AUTO_FAN_PIN == EXTRUDER_0_AUTO_FAN_PIN) 
-        fanState |= 1;
-      else
-        fanState |= 2;
-    }
-  #endif
-  #if defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1
-    if (current_temperature[2] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
-    {
-      if (EXTRUDER_2_AUTO_FAN_PIN == EXTRUDER_0_AUTO_FAN_PIN) 
-        fanState |= 1;
-      else if (EXTRUDER_2_AUTO_FAN_PIN == EXTRUDER_1_AUTO_FAN_PIN) 
-        fanState |= 2;
-      else
-        fanState |= 4;
-    }
-  #endif
-  
-  // update extruder auto fan states
-  #if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
-    setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, (fanState & 1) != 0);
-  #endif 
-  #if defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1
-    if (EXTRUDER_1_AUTO_FAN_PIN != EXTRUDER_0_AUTO_FAN_PIN) 
-      setExtruderAutoFanState(EXTRUDER_1_AUTO_FAN_PIN, (fanState & 2) != 0);
-  #endif 
-  #if defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1
-    if (EXTRUDER_2_AUTO_FAN_PIN != EXTRUDER_0_AUTO_FAN_PIN 
-        && EXTRUDER_2_AUTO_FAN_PIN != EXTRUDER_1_AUTO_FAN_PIN)
-      setExtruderAutoFanState(EXTRUDER_2_AUTO_FAN_PIN, (fanState & 4) != 0);
-  #endif 
+#if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
+	if (!(fanState & 0x02))
+	{
+		fanState &= ~1;
+		fanState |= current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE;
+	}
+	setExtruderAutoFanState(fanState);
+#endif 
 }
 
 #endif // any extruder auto fan pins set
@@ -641,6 +670,7 @@ void manage_heater()
     return; 
 // more precisely - this condition partially stabilizes time interval for regulation values evaluation (@ ~ 230ms)
 
+  // ADC values need to be converted before checking: converted values are later used in MINTEMP
   updateTemperaturesFromRawValues();
 
   check_max_temp();
@@ -737,9 +767,7 @@ void manage_heater()
 #define FAN_CHECK_DURATION 100 //100ms
 
 #ifndef DEBUG_DISABLE_FANCHECK
-  #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
-      (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
-      (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+  #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
 
 #ifdef FAN_SOFT_PWM
 #ifdef FANCHECK
@@ -1098,7 +1126,9 @@ void tp_init()
 
   timer0_init();
   OCR2B = 128;
-  TIMSK2 |= (1<<OCIE2B);  
+  TIMSK2 |= (1<<OCIE2B);
+  
+  timer4_init(); //for tone and Extruder fan PWM
   
   // Wait for temperature measurement to settle
   _delay(250);
@@ -1167,7 +1197,6 @@ void tp_init()
 #endif //MAXTEMP 2
 
 #ifdef BED_MINTEMP
-  /* No bed MINTEMP error implemented?!? */
   while(analog2tempBed(bed_minttemp_raw) < BED_MINTEMP) {
 #if HEATER_BED_RAW_LO_TEMP < HEATER_BED_RAW_HI_TEMP
     bed_minttemp_raw += OVERSAMPLENR;
@@ -1175,7 +1204,6 @@ void tp_init()
     bed_minttemp_raw -= OVERSAMPLENR;
 #endif
   }
-  
 #endif //BED_MINTEMP
 #ifdef BED_MAXTEMP
   while(analog2tempBed(bed_maxttemp_raw) > BED_MAXTEMP) {
@@ -1186,6 +1214,25 @@ void tp_init()
 #endif
   }
 #endif //BED_MAXTEMP
+
+#ifdef AMBIENT_MINTEMP
+  while(analog2tempAmbient(ambient_minttemp_raw) < AMBIENT_MINTEMP) {
+#if HEATER_AMBIENT_RAW_LO_TEMP < HEATER_AMBIENT_RAW_HI_TEMP
+    ambient_minttemp_raw += OVERSAMPLENR;
+#else
+    ambient_minttemp_raw -= OVERSAMPLENR;
+#endif
+  }
+#endif //AMBIENT_MINTEMP
+#ifdef AMBIENT_MAXTEMP
+  while(analog2tempAmbient(ambient_maxttemp_raw) > AMBIENT_MAXTEMP) {
+#if HEATER_AMBIENT_RAW_LO_TEMP < HEATER_AMBIENT_RAW_HI_TEMP
+    ambient_maxttemp_raw -= OVERSAMPLENR;
+#else
+    ambient_maxttemp_raw += OVERSAMPLENR;
+#endif
+  }
+#endif //AMBIENT_MAXTEMP
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
@@ -1357,9 +1404,11 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 		isBed ? LCD_ALERTMESSAGEPGM("BED PREHEAT ERROR") : LCD_ALERTMESSAGEPGM("PREHEAT ERROR");
 		SERIAL_ERROR_START;
 		isBed ? SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HEATBED)") : SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HOTEND)");
-		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+#ifdef EXTRUDER_ALTFAN_DETECT
+		altfanStatus.altfanOverride = 1; //full speed
+#endif //EXTRUDER_ALTFAN_DETECT
+		setExtruderAutoFanState(3);
 		SET_OUTPUT(FAN_PIN);
-		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
 #ifdef FAN_SOFT_PWM
 		fanSpeedSoftPwm = 255;
 #else //FAN_SOFT_PWM
@@ -1427,26 +1476,55 @@ enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_
 //! to prevent flicker and improve speed
 uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
 
+
+//! update the current temperature error message
+//! @param type short error abbreviation (PROGMEM)
+//! @param func optional lcd update function (lcd_setalertstatus when first setting the error)
+void temp_update_messagepgm(const char* PROGMEM type, void (*func)(const char*) = lcd_updatestatus)
+{
+    char msg[LCD_WIDTH];
+    strcpy_P(msg, PSTR("Err: "));
+    strcat_P(msg, type);
+    (*func)(msg);
+}
+
+//! signal a temperature error on both the lcd and serial
+//! @param type short error abbreviation (PROGMEM)
+//! @param e optional extruder index for hotend errors
+void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDERS)
+{
+    temp_update_messagepgm(type, lcd_setalertstatus);
+
+    SERIAL_ERROR_START;
+
+    if(e != EXTRUDERS) {
+        SERIAL_ERROR((int)e);
+        SERIAL_ERRORPGM(": ");
+    }
+
+    SERIAL_ERRORPGM("Heaters switched off. ");
+    SERIAL_ERRORRPGM(type);
+    SERIAL_ERRORLNPGM(" triggered!");
+}
+
+
 void max_temp_error(uint8_t e) {
   disable_heater();
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Extruder switched off. MAXTEMP triggered !");
-    LCD_ALERTMESSAGEPGM("Err: MAXTEMP");
+    temp_error_messagepgm(PSTR("MAXTEMP"), e);
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
-    
-
-    
   #endif
-    SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+
     SET_OUTPUT(FAN_PIN);
     SET_OUTPUT(BEEPER);
     WRITE(FAN_PIN, 1);
-    WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
     WRITE(BEEPER, 1);
+#ifdef EXTRUDER_ALTFAN_DETECT
+    altfanStatus.altfanOverride = 1; //full speed
+#endif //EXTRUDER_ALTFAN_DETECT
+    setExtruderAutoFanState(3);
     // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;
 	if (farm_mode) { prusa_statistics(93); }
@@ -1456,18 +1534,15 @@ void min_temp_error(uint8_t e) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
-//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
   disable_heater();
-	static const char err[] PROGMEM = "Err: MINTEMP";
+//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
+	static const char err[] PROGMEM = "MINTEMP";
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Extruder switched off. MINTEMP triggered !");
-    lcd_setalertstatuspgm(err);
+    temp_error_messagepgm(err, e);
     last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
   } else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
 	// we are already stopped due to some error, only update the status message without flickering
-	lcd_updatestatuspgm(err);
+    temp_update_messagepgm(err);
 	last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
@@ -1482,43 +1557,60 @@ void min_temp_error(uint8_t e) {
 }
 
 void bed_max_temp_error(void) {
-#if HEATER_BED_PIN > -1
-  //WRITE(HEATER_BED_PIN, 0);
-#endif
+  disable_heater();
   if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM("Temperature heated bed switched off. MAXTEMP triggered !");
-    LCD_ALERTMESSAGEPGM("Err: MAXTEMP BED");
+    temp_error_messagepgm(PSTR("MAXTEMP BED"));
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
   #endif
-
 }
 
 void bed_min_temp_error(void) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
-//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
-#if HEATER_BED_PIN > -1
-    //WRITE(HEATER_BED_PIN, 0);
-#endif
-	static const char err[] PROGMEM = "Err: MINTEMP BED";
+    disable_heater();
+    static const char err[] PROGMEM = "MINTEMP BED";
     if(IsStopped() == false) {
-        SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM("Temperature heated bed switched off. MINTEMP triggered !");
-		lcd_setalertstatuspgm(err);
+        temp_error_messagepgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
 	} else if( last_alert_sent_to_lcd != LCDALERT_BEDMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
 		// we are already stopped due to some error, only update the status message without flickering
-		lcd_updatestatuspgm(err);
+        temp_update_messagepgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     Stop();
 #endif
 }
+
+
+#ifdef AMBIENT_THERMISTOR
+void ambient_max_temp_error(void) {
+    disable_heater();
+    if(IsStopped() == false) {
+        temp_error_messagepgm(PSTR("MAXTEMP AMB"));
+    }
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+    Stop();
+#endif
+}
+
+void ambient_min_temp_error(void) {
+#ifdef DEBUG_DISABLE_MINTEMP
+	return;
+#endif
+    disable_heater();
+    if(IsStopped() == false) {
+        temp_error_messagepgm(PSTR("MINTEMP AMB"));
+    }
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+    Stop();
+#endif
+}
+#endif
+
 
 #ifdef HEATER_0_USES_MAX6675
 #define MAX6675_HEAT_INTERVAL 250
@@ -1604,18 +1696,8 @@ void adc_ready(void) //callback from adc when sampling finished
 
 } // extern "C"
 
-// Timer2 (originaly timer0) is shared with millies
-#ifdef SYSTEM_TIMER_2
-ISR(TIMER2_COMPB_vect)
-#else //SYSTEM_TIMER_2
-ISR(TIMER0_COMPB_vect)
-#endif //SYSTEM_TIMER_2
+FORCE_INLINE static void temperature_isr()
 {
-	static bool _lock = false;
-	if (_lock) return;
-	_lock = true;
-	asm("sei");
-
 	if (!temp_meas_ready) adc_cycle();
 	lcd_buttons_update();
 
@@ -1981,8 +2063,24 @@ ISR(TIMER0_COMPB_vect)
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
   check_fans();
 #endif //(defined(TACH_0))
+}
 
-	_lock = false;
+// Timer2 (originaly timer0) is shared with millies
+#ifdef SYSTEM_TIMER_2
+ISR(TIMER2_COMPB_vect)
+#else //SYSTEM_TIMER_2
+ISR(TIMER0_COMPB_vect)
+#endif //SYSTEM_TIMER_2
+{
+    static bool _lock = false;
+    if (!_lock)
+    {
+        _lock = true;
+        sei();
+        temperature_isr();
+        cli();
+        _lock = false;
+    }
 }
 
 void check_max_temp()
@@ -2002,11 +2100,19 @@ void check_max_temp()
 #else
     if (current_temperature_bed_raw >= bed_maxttemp_raw) {
 #endif
-       target_temperature_bed = 0;
        bed_max_temp_error();
     }
 #endif
-
+//ambient
+#if defined(AMBIENT_MAXTEMP) && (TEMP_SENSOR_AMBIENT != 0)
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+    if (current_temperature_raw_ambient <= ambient_maxttemp_raw) {
+#else
+    if (current_temperature_raw_ambient >= ambient_maxttemp_raw) {
+#endif
+       ambient_max_temp_error();
+    }
+#endif
 }
 //! number of repeating the same state with consecutive step() calls
 //! used to slow down text switching
@@ -2101,12 +2207,32 @@ void check_min_temp_bed()
 	}
 }
 
+#ifdef AMBIENT_MINTEMP
+void check_min_temp_ambient()
+{
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+	if (current_temperature_raw_ambient >= ambient_minttemp_raw) {
+#else
+	if (current_temperature_raw_ambient <= ambient_minttemp_raw) {
+#endif
+		ambient_min_temp_error();
+	}
+}
+#endif
+
 void check_min_temp()
 {
 static bool bCheckingOnHeater=false;              // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over heaterMintemp)
 static bool bCheckingOnBed=false;                 // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over bedMintemp)
 #ifdef AMBIENT_THERMISTOR
-if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type, so operator is ">" ;-)
+#ifdef AMBIENT_MINTEMP
+check_min_temp_ambient();
+#endif
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type
+#else
+if(current_temperature_raw_ambient=<(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW))
+#endif
      {                                            // ambient temperature is low
 #endif //AMBIENT_THERMISTOR
 // *** 'common' part of code for MK2.5 & MK3
@@ -2193,5 +2319,21 @@ float unscalePID_d(float d)
 }
 
 #endif //PIDTEMP
+
+#ifdef PINDA_THERMISTOR
+//! @brief PINDA thermistor detected
+//!
+//! @retval true firmware should do temperature compensation and allow calibration
+//! @retval false PINDA thermistor is not detected, disable temperature compensation and calibration
+//!
+bool has_temperature_compensation()
+{
+#ifdef DETECT_SUPERPINDA
+    return (current_temperature_pinda >= PINDA_MINTEMP) ? true : false;
+#else
+    return true;
+#endif
+}
+#endif //PINDA_THERMISTOR
 
 
