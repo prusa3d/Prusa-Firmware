@@ -3291,18 +3291,14 @@ static void gcode_PRUSA_SN()
         while (numbersRead < 19) {
             while (MSerial.available() > 0) {
                 uint8_t serial_char = MSerial.read();
-#ifdef HAS_SECOND_SERIAL_PORT
                 selectedSerialPort = 1;
-#endif //HAS_SECOND_SERIAL_PORT
                 putchar(serial_char);
                 numbersRead++;
                 selectedSerialPort = 0;
             }
             if (timeout.expired(100u)) break;
         }
-#ifdef HAS_SECOND_SERIAL_PORT
         selectedSerialPort = 1;
-#endif //HAS_SECOND_SERIAL_PORT
         putchar('\n');
 #if 0
         for (int b = 0; b < 3; b++) {
