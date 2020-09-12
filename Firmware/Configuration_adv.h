@@ -288,6 +288,7 @@
   #define LA_K_DEF    0        // Default K factor (Unit: mm compression per 1mm/s extruder speed)
   #define LA_K_MAX    10       // Maximum acceptable K factor (exclusive, see notes in planner.cpp:plan_buffer_line)
   #define LA_LA10_MIN LA_K_MAX // Lin. Advance 1.0 threshold value (inclusive)
+  //#define LA_FLOWADJ         // Adjust LA along with flow/M221 for uniform width
   //#define LA_NOCOMPAT        // Disable Linear Advance 1.0 compatibility
   //#define LA_LIVE_K          // Allow adjusting K in the Tune menu
   //#define LA_DEBUG           // If enabled, this will generate debug information output over USB.
@@ -435,6 +436,10 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 #if TEMP_SENSOR_BED == 0
   #undef BED_MINTEMP
   #undef BED_MAXTEMP
+#endif
+#if TEMP_SENSOR_AMBIENT == 0
+  #undef AMBIENT_MINTEMP
+  #undef AMBIENT_MAXTEMP
 #endif
 
 
