@@ -273,6 +273,8 @@ void check_max_temp();
 
 #ifdef EXTRUDER_ALTFAN_DETECT
   extern bool extruder_altfan_detect();
+  extern void altfanOverride_toggle();
+  extern bool altfanOverride_get();
 #endif //EXTRUDER_ALTFAN_DETECT
 
 extern unsigned long extruder_autofan_last_check;
