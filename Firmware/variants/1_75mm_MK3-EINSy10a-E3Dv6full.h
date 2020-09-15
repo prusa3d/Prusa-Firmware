@@ -296,6 +296,7 @@
 #endif
 #define DETECT_SUPERPINDA
 #define PINDA_MINTEMP BED_MINTEMP
+#define AMBIENT_MINTEMP -30
 
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
@@ -306,6 +307,7 @@
 #define HEATER_1_MAXTEMP 305
 #define HEATER_2_MAXTEMP 305
 #define BED_MAXTEMP 125
+#define AMBIENT_MAXTEMP 100
 
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
 // Define PID constants for extruder with PT100

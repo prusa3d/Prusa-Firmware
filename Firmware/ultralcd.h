@@ -23,9 +23,11 @@ void lcd_setstatuspgm(const char* message);
 //! - always returns the display to the main status screen
 //! - always makes lcd_reset (which is slow and causes flicker)
 //! - does not update the message if there is already one (i.e. lcd_status_message_level > 0)
+void lcd_setalertstatus(const char* message);
 void lcd_setalertstatuspgm(const char* message);
 //! only update the alert message on the main status screen
 //! has no sideeffects, may be called multiple times
+void lcd_updatestatus(const char *message);
 void lcd_updatestatuspgm(const char *message);
 
 void lcd_reset_alert_level();
@@ -256,5 +258,8 @@ enum class WizState : uint8_t
 };
 
 void lcd_wizard(WizState state);
+
+extern void lcd_experimental_toggle();
+extern void lcd_experimental_menu();
 
 #endif //ULTRALCD_H

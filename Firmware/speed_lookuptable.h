@@ -80,15 +80,21 @@ asm volatile ( \
 
 #else //_NO_ASM
 
-// NOTE: currently not implemented
-void MultiU16X8toH16(unsigned short& intRes, unsigned char& charIn1, unsigned short& intIn2);
-void MultiU24X24toH16(uint16_t& intRes, int32_t& longIn1, long& longIn2);
+static inline void MultiU16X8toH16(uint16_t& intRes, uint8_t& charIn1, uint16_t& intIn2)
+{
+    intRes = ((uint32_t)charIn1 * (uint32_t)intIn2) >> 16;
+}
+
+static inline void MultiU24X24toH16(uint16_t& intRes, uint32_t& longIn1, uint32_t& longIn2)
+{
+    intRes = ((uint64_t)longIn1 * (uint64_t)longIn2) >> 24;
+}
 
 #endif //_NO_ASM
 
 
 FORCE_INLINE unsigned short calc_timer(uint16_t step_rate, uint8_t& step_loops) {
-  unsigned short timer;
+  uint16_t timer;
   if(step_rate > MAX_STEP_FREQUENCY) step_rate = MAX_STEP_FREQUENCY;
 
   if(step_rate > 20000) { // If steprate > 20kHz >> step 4 times
@@ -108,7 +114,7 @@ FORCE_INLINE unsigned short calc_timer(uint16_t step_rate, uint8_t& step_loops) 
   if(step_rate >= (8*256)){ // higher step rate
     unsigned short table_address = (unsigned short)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
     unsigned char tmp_step_rate = (step_rate & 0x00ff);
-    unsigned short gain = (unsigned short)pgm_read_word_near(table_address+2);
+    uint16_t gain = (uint16_t)pgm_read_word_near(table_address+2);
     MultiU16X8toH16(timer, tmp_step_rate, gain);
     timer = (unsigned short)pgm_read_word_near(table_address) - timer;
   }
