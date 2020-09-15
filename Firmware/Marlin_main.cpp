@@ -3516,6 +3516,7 @@ static void cap_line(const char* name, bool ena = false) {
 
 static void extended_capabilities_report()
 {
+    cap_line(PSTR("AUTOREPORT_TEMP"), ENABLED(AUTO_REPORT_TEMPERATURES));
     //@todo
 }
 #endif //EXTENDED_CAPABILITIES_REPORT
