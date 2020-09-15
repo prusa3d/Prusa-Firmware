@@ -1,10 +1,10 @@
 //backlight.cpp
 
 #include "backlight.h"
+#include "macros.h"
 #include <avr/eeprom.h>
 #include <Arduino.h>
 #include "eeprom.h"
-#include "Marlin.h"
 #include "pins.h"
 #include "fastio.h"
 #include "Timer.h"
@@ -111,10 +111,10 @@ void backlight_init()
 
 #else //LCD_BL_PIN
 
-void force_bl_on(__attribute__((unused)) bool section_start) {}
+void force_bl_on(bool) {}
 void backlight_update() {}
 void backlight_init() {}
 void backlight_save() {}
-void backlight_wake(__attribute__((unused)) const uint8_t flashNo) {}
+void backlight_wake(const uint8_t) {}
 
 #endif //LCD_BL_PIN
