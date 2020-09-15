@@ -403,7 +403,7 @@ static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
-static void gcode_M115(uint8_t extruder);
+static void gcode_M105(uint8_t extruder);
 static void temp_compensation_start();
 static void temp_compensation_apply();
 
@@ -1735,7 +1735,7 @@ void host_keepalive() {
   {
     if (auto_report_temp_timer.expired(auto_report_temp_period * 1000ul))
     {
-      gcode_M115(active_extruder);
+      gcode_M105(active_extruder);
       auto_report_temp_timer.start();
     }
   }
@@ -2544,7 +2544,7 @@ void force_high_power_mode(bool start_high_power_section) {
 }
 #endif //TMC2130
 
-void gcode_M115(uint8_t extruder)
+void gcode_M105(uint8_t extruder)
 {
 #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
     SERIAL_PROTOCOLPGM("T:");
@@ -6399,7 +6399,7 @@ Sigma_Exit:
       }
       
       SERIAL_PROTOCOLPGM("ok ");
-      gcode_M115(extruder);
+      gcode_M105(extruder);
       
       return;
       break;
