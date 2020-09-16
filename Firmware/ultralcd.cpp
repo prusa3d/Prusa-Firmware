@@ -5724,6 +5724,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
     if (_md->status == 0 || lcd_draw_update)
     {
+        _md->status = 1;
         _md->experimental_menu_visibility = eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY);
         if (_md->experimental_menu_visibility == EEPROM_EMPTY_VALUE)
         {
