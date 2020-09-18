@@ -1148,7 +1148,7 @@ msgstr "SVP, dechargez le filament et reessayez."
 #  c=20 r=4
 #: ultralcd.cpp:7586
 msgid "Please check the IR sensor connection, unload filament if present."
-msgstr "SVP, verifiez la connexion du capteur IR et si le filament est decharge."
+msgstr "SVP, verifiez la connexion du capteur IR et decharge le filament."
 
 # MSG_RECOVERING_PRINT c=20
 #: Marlin_main.cpp:10913
