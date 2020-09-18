@@ -8,15 +8,15 @@
 
 # c=18
 "FS v0.3 or older"
-"FS v0.3 o mayor"
+"FS 0.3 o mayor"
 
 #MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
-" 0.4 o +nueva"
+" 0.4 o mas nueva"
 
 # c=18
 "FS v0.4 or newer"
-"FS v0.4 o +nueva"
+"FS 0.4 o mas nueva"
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"

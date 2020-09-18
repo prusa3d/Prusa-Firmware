@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Fri Sep 18 09:19:18 CEST 2020\n"
-"PO-Revision-Date: Fri Sep 18 09:19:18 CEST 2020\n"
+"POT-Creation-Date: Fri Sep 18 15:24:02 CEST 2020\n"
+"PO-Revision-Date: Fri Sep 18 15:24:02 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -26,8 +26,8 @@ msgid " 0.3 or older"
 msgstr " 0.3 o mayor"
 
 #  c=18
-#: 
-msgid "FS 0.3 or older"
+#: Marlin_main.cpp:9463
+msgid "FS v0.3 or older"
 msgstr "FS 0.3 o mayor"
 
 # MSG_IR_04_OR_NEWER c=18
@@ -36,8 +36,8 @@ msgid " 0.4 or newer"
 msgstr " 0.4 o mas nueva"
 
 #  c=18
-#: 
-msgid "FS 0.4 or newer"
+#: Marlin_main.cpp:9462
+msgid "FS v0.4 or newer"
 msgstr "FS 0.4 o mas nueva"
 
 # MSG_IR_UNKNOWN c=18
@@ -474,11 +474,6 @@ msgstr "Tiempo de imp.:"
 #: messages.c:131
 msgid "FS Action"
 msgstr "FS accion"
-
-#  c=18
-#: Marlin_main.cpp:9462
-msgid "FS v0.4 or newer"
-msgstr "FS v0.4 o +nueva"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
 #: ultralcd.cpp:8841
@@ -1152,7 +1147,7 @@ msgstr "Primero descargue el filamento, luego repita esta accion."
 
 #  c=20 r=4
 #: ultralcd.cpp:7586
-msgid "Please check the IR sensor connections and filament is unloaded."
+msgid "Please check the IR sensor connection, unload filament if present."
 msgstr "Por favor comprueba la conexion del IR sensor y filamento esta descargado."
 
 # MSG_RECOVERING_PRINT c=20

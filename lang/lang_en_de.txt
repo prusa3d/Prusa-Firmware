@@ -8,7 +8,7 @@
 
 # c=18
 "FS v0.3 or older"
-"FS v0.3 oder aelter"
+"FS 0.3 oder aelter"
 
 #MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
@@ -16,7 +16,7 @@
 
 # c=18
 "FS v0.4 or newer"
-"FS v0.4 oder neuer"
+"FS 0.4 oder neuer"
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
