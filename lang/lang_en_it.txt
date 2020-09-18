@@ -907,7 +907,7 @@
 "Scaricare prima il filamento, poi ripetere l'operazione."
 
 # c=20 r=4
-"Please check the IR sensor connections and filament is unloaded."
+"Please check the IR sensor connection, unload filament if present."
 "Controllare il collegamento al sensore e rimuovere il filamento."
 
 #MSG_RECOVERING_PRINT c=20

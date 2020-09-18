@@ -907,7 +907,7 @@
 "Prosim vyjmete filament a zopakujte tuto akci"
 
 # c=20 r=4
-"Please check the IR sensor connections and filament is unloaded."
+"Please check the IR sensor connection, unload filament if present."
 "Prosim zkontrolujte zapojeni IR senzoru a vyjmuty filament"
 
 #MSG_RECOVERING_PRINT c=20
