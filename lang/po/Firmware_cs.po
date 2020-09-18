@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: cs\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Thu Sep 17 18:56:58 CEST 2020\n"
-"PO-Revision-Date: Thu Sep 17 18:56:58 CEST 2020\n"
+"POT-Creation-Date: Fri Sep 18 09:18:07 CEST 2020\n"
+"PO-Revision-Date: Fri Sep 18 09:18:07 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -43,7 +43,7 @@ msgstr "FS 0.4 nebo novejsi"
 # MSG_IR_UNKNOWN c=18
 #: messages.c:145
 msgid "unknown state"
-msgstr ""
+msgstr "neznamy stav"
 
 # MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 #: messages.c:36
@@ -1153,7 +1153,7 @@ msgstr "Prosim vyjmete filament a zopakujte tuto akci"
 #  c=20 r=4
 #: ultralcd.cpp:7586
 msgid "Please check the IR sensor connections and filament is unloaded."
-msgstr ""
+msgstr "Prosim zkontrolujte zapojeni IR senzoru a vyjmuty filament"
 
 # MSG_RECOVERING_PRINT c=20
 #: Marlin_main.cpp:10913

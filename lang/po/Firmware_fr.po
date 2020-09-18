@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Thu Sep 17 18:58:45 CEST 2020\n"
-"PO-Revision-Date: Thu Sep 17 18:58:45 CEST 2020\n"
+"POT-Creation-Date: Fri Sep 18 09:23:38 CEST 2020\n"
+"PO-Revision-Date: Fri Sep 18 09:23:38 CEST 2020\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -43,7 +43,7 @@ msgstr "FS 0.4 ou +recent"
 # MSG_IR_UNKNOWN c=18
 #: messages.c:145
 msgid "unknown state"
-msgstr ""
+msgstr "Etat inconnu"
 
 # MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 #: messages.c:36
@@ -1153,7 +1153,7 @@ msgstr "SVP, dechargez le filament et reessayez."
 #  c=20 r=4
 #: ultralcd.cpp:7586
 msgid "Please check the IR sensor connections and filament is unloaded."
-msgstr "SVP, verifier les connection du IR capteur et dechargez le filament."
+msgstr "SVP, verifier la connexion du capteur IR et dechargez le filament."
 
 # MSG_RECOVERING_PRINT c=20
 #: Marlin_main.cpp:10913
