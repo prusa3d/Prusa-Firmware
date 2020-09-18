@@ -2,21 +2,21 @@
 "[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
 "[%.7s]Set valori\x0aComp. Z, continuare\x0ao iniziare da zero?\x0a%cContinua%cReset"
 
-#MSG_IR_04_OR_NEWER c=18
-" 0.4 or newer"
-" 0.4 ou +recent"
+#MSG_03_OR_OLDER c=18
+" 0.3 or older"
+" 0.3 o inferiore"
 
 # c=18
-"FS 0.4 or newer"
-"FS 0.4 ou +recent"
+"FS v0.3 or older"
+"FS v0.3 o inferiore"
 
 #MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 " 0.4 o superiore"
 
 # c=18
-"FS 0.4 or newer"
-"FS 0.4 o superiore"
+"FS v0.4 or newer"
+"FS v0.4 o superiore"
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
@@ -365,10 +365,6 @@
 #MSG_FS_ACTION c=10
 "FS Action"
 "Azione FS"
-
-# c=18
-"FS v0.4 or newer"
-"FS 0.4 o superiore"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
