@@ -5,13 +5,13 @@
 " 0.3 or older"
 
 # c=18
-"FS 0.3 or older"
+"FS v0.3 or older"
 
 #MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 
 # c=18
-"FS 0.4 or newer"
+"FS v0.4 or newer"
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
@@ -273,9 +273,6 @@
 
 #MSG_FS_ACTION c=10
 "FS Action"
-
-# c=18
-"FS v0.4 or newer"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
