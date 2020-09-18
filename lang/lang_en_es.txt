@@ -12,7 +12,7 @@
 
 #MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
-" 0.4 o mas nueva"
+" 0.4 o +nueva"
 
 # c=18
 "FS v0.4 or newer"

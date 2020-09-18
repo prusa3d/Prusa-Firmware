@@ -20,7 +20,7 @@
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
-"stan nieznany"
+"Stan nieznany"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"

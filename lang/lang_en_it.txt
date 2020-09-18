@@ -16,7 +16,7 @@
 
 # c=18
 "FS v0.4 or newer"
-"FS v0.4 o superiore"
+"FS v0.4 o sup."
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
