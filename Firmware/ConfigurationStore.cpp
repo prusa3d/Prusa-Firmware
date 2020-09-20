@@ -235,6 +235,18 @@ static const M500_conf default_conf PROGMEM =
     DEFAULT_TRAVEL_ACCELERATION,
 };
 
+
+static bool is_uninitialized(void* addr, uint8_t len)
+{
+    while(len--)
+    {
+        if(reinterpret_cast<uint8_t*>(addr)[len] != 0xff)
+            return false;
+    }
+    return true;
+}
+
+
 //! @brief Read M500 configuration
 //! @retval true Succeeded. Stored settings retrieved or default settings retrieved in case EEPROM has been erased.
 //! @retval false Failed. Default settings has been retrieved, because of older version or corrupted data.
@@ -293,6 +305,9 @@ bool Config_RetrieveSettings()
 		tmc2130_set_res(Z_AXIS, cs.axis_ustep_resolution[Z_AXIS]);
 		tmc2130_set_res(E_AXIS, cs.axis_ustep_resolution[E_AXIS]);
 #endif //TMC2130
+
+        if(is_uninitialized(&cs.travel_acceleration, sizeof(cs.travel_acceleration)))
+            cs.travel_acceleration = cs.acceleration;
 
 		reset_acceleration_rates();
 
