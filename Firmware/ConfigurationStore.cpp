@@ -184,7 +184,7 @@ static_assert (false, "zprobe_zoffset was not initialized in printers in field t
         "0.0, if this is not acceptable, increment EEPROM_VERSION to force use default_conf");
 #endif
 
-static_assert (sizeof(M500_conf) == 192, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
+static_assert (sizeof(M500_conf) == 196, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
         "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized."
         "If this is caused by change to more then 8bit processor, decide whether make this struct packed to save EEPROM,"
         "leave as it is to keep fast code, or reorder struct members to pack more tightly.");
@@ -232,6 +232,7 @@ static const M500_conf default_conf PROGMEM =
 #else // TMC2130
     {16,16,16,16},
 #endif
+    DEFAULT_TRAVEL_ACCELERATION,
 };
 
 //! @brief Read M500 configuration
