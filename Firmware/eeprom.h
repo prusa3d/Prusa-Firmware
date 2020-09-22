@@ -341,8 +341,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D9F 3487		| uint8		| ^										| 00h 0			| ffh 255				| 8th sheet - bed temp 								| ^				| D3 Ax0d9f C1	
 | 0x0DA0 3488		| uint8		| ^										| 00h 0			| ffh 255				| 8th sheet - PINDA temp 							| ^				| D3 Ax0da0 C1	
 | 0x0DA1 3489		| uint8		| ???									| 00h 0			| ffh 255				| ???												| ???			| D3 Ax0da1 C1
-| 0x0D48 3400		| uint8		| EEPROM_FSENSOR_PCB					| ???			| ffh 255				| Filament Sensor type old vs new					| ???			| D3 Ax0d48 C1
-| ^					| ^			| ^										| ???			| ^						| Filament Sensor type ???							| ^				| ^
+| 0x0D48 3400		| uint8		| EEPROM_FSENSOR_PCB					| ffh 255		| ffh 255				| Filament Sensor type IR unknown					| LCD Support	| D3 Ax0d48 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Filament Sensor type IR 0.3 or older				| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor type IR 0.4 or newer				| ^				| ^
 | 0x0D47 3399		| uint8		| EEPROM_FSENSOR_ACTION_NA				| 00h 0			| ffh 255				| Filament Sensor action: __Continue__				| LCD menu		| D3 Ax0d47 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor action: __Pause__					| ^				| ^
 | 0x0D37 3383		| float		| EEPROM_UVLO_SAVED_TARGET				| ???			| ff ff ff ffh			| Power panic saved target all-axis					| ???			| D3 Ax0d37 C16
@@ -358,6 +359,12 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| LCD backlight mode: __Dim__						| ^				| ^
 | 0x0D30 3376		| uint16	| EEPROM_BACKLIGHT_TIMEOUT				| 01 00 - ff ff | 0a 00h 65535			| LCD backlight timeout: __10__ seconds				| LCD menu		| D3 Ax0d30 C2
 | 0x0D2C 3372		| float		| EEPROM_UVLO_LA_K						| ???			| ff ff ff ffh			| Power panic saved Linear Advanced K value			| ???			| D3 Ax0d2c C4
+| 0x0D2B 3371		| uint8		| EEPROM_ALTFAN_OVERRIDE				| ffh 255		| ffh 255				| ALTFAN override unknown state						| LCD menu		| D3 Ax0d2b C1
+| ^					| ^			| ^										| 00h 0			| ^						| ALTFAN override deactivated						| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| ALTFAN override activated 						| ^				| ^
+| 0x0D2A 3370		| uint8		| EEPROM_EXPERIMENTAL_VISIBILITY		| ffh 255		| ffh 255				| Experimental menu visibility unknown state		| LCD menu		| D3 Ax0d2a C1
+| ^					| ^			| ^										| 00h 0			| ^						| Experimental menu visibility hidden				| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| Experimental menu visibility visible				| ^				| ^
 
   
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
@@ -560,8 +567,11 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
 #define EEPROM_UVLO_LA_K (EEPROM_BACKLIGHT_TIMEOUT-4) // float
 
+#define EEPROM_ALTFAN_OVERRIDE (EEPROM_UVLO_LA_K-1) //uint8
+#define EEPROM_EXPERIMENTAL_VISIBILITY (EEPROM_ALTFAN_OVERRIDE-1) //uint8
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_UVLO_LA_K
+#define EEPROM_LAST_ITEM EEPROM_EXPERIMENTAL_VISIBILITY
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

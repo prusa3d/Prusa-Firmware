@@ -9,6 +9,8 @@
 extern FILE _uartout;
 #define uartout (&_uartout)
 
+extern void softReset();
+
 void bootapp_print_vars(void)
 {
 	fprintf_P(uartout, PSTR("boot_src_addr  =0x%08lx\n"), boot_src_addr);
@@ -39,8 +41,7 @@ void bootapp_ram2flash(uint16_t rptr, uint16_t fptr, uint16_t size)
 	boot_src_addr = (uint32_t)rptr;
 	boot_dst_addr = (uint32_t)fptr;
 	bootapp_print_vars();
-	wdt_enable(WDTO_15MS);
-	while(1);
+	softReset();
 }
 
 void bootapp_reboot_user0(uint8_t reserved)
@@ -50,6 +51,5 @@ void bootapp_reboot_user0(uint8_t reserved)
 	boot_app_flags = BOOT_APP_FLG_USER0;
 	boot_reserved = reserved;
 	bootapp_print_vars();
-	wdt_enable(WDTO_15MS);
-	while(1);
+	softReset();
 }

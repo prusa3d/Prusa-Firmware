@@ -38,7 +38,7 @@ void la10c_mode_change(LA10C_MODE mode)
 // Approximate a LA10 value to a LA15 equivalent.
 static float la10c_convert(float k)
 {
-    float new_K = k * 0.004 - 0.05;
+    float new_K = k * 0.002 - 0.01;
     return new_K < 0? 0:
            new_K > (LA_K_MAX - FLT_EPSILON)? (LA_K_MAX - FLT_EPSILON):
            new_K;
@@ -78,10 +78,10 @@ float la10c_jerk(float j)
         return j;
 
     // bring low E-jerk values into equivalent LA 1.5 values by
-    // flattening the response in the (1-4.5) range using a piecewise
+    // flattening the response in the (0.3-4.5) range using a piecewise
     // function. Is it truly worth to preserve the difference between
     // 1.5/2.5 E-jerk for LA1.0? Probably not, but we try nonetheless.
-    j = j < 1.0? j * 3.625:
+    j = j < 0.3? j * 11.5:
         j < 4.5? j * 0.25 + 3.375:
         j;
 

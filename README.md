@@ -26,14 +26,28 @@ The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.
 
 1. Clone this repository and checkout the correct branch for your desired release version.
 
-2. Set your printer model. 
+1. Set your printer model. 
    - For MK3 --> skip to step 3. 
    - If you have a different printer model, follow step [2.b](#2b) from Windows build
+1. Install GNU AWK  `sudo apt-get install gawk`  
+If you use mawk instead of gawk you get strange errors when multi language support is generated like:  
+`awk: line 2: function strtonum never defined
+sed: couldn't write 4 items to stdout: Broken pipe
+./lang-build.sh: 121: ./lang-build.sh: arithmetic expression: expecting EOF: "0x"awk: line 2: function strtonum never defined
+sed: couldn't write 4 items to stdout: Broken pipe
+tr: write error: Broken pipe
+./lang-build.sh: 121: ./lang-build.sh: arithmetic expression: expecting EOF: "0x"awk: line 2: function strtonum never defined
+sed: couldn't write 4 items to stdout: Broken pipe
+tr: write error: Broken pipe
+tr: write error
+cut: write error: Broken pipeNG! - some texts not found in lang_en.txt! updating binary:
+  primary language ids...awk: line 2: function strtonum never defined
+sed: couldn't flush stdout: Broken pipe`
    
-3. Run `./build.sh`
+1. Run `./build.sh`
    - Output hex file is at `"PrusaFirmware/lang/firmware.hex"` . In the same folder you can hex files for other languages as well.
 
-4. Connect your printer and flash with PrusaSlicer ( Configuration --> Flash printer firmware ) or Slic3r PE.
+1. Connect your printer and flash with PrusaSlicer ( Configuration --> Flash printer firmware ) or Slic3r PE.
    - If you wish to flash from Arduino, follow step [2.c](#2c) from Windows build first.
 
 
@@ -182,7 +196,7 @@ Example:
 
 `ninja`
 
-## Runing
+## Running
 `./tests`
 
 # 4. Documentation
