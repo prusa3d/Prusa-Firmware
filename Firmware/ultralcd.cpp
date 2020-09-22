@@ -5724,6 +5724,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
     if (_md->status == 0 || lcd_draw_update)
     {
+        _md->status = 1;
         _md->experimental_menu_visibility = eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY);
         if (_md->experimental_menu_visibility == EEPROM_EMPTY_VALUE)
         {
@@ -7582,7 +7583,7 @@ static void lcd_detect_IRsensor(){
         lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
         return;
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connections and filament is unloaded."));
+        lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connection, unload filament if present."));
         bAction = lcd_selftest_IRsensor(true);
     }
     if(bAction){

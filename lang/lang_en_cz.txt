@@ -2,13 +2,25 @@
 "[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
 "[%.7s]Doladeni Z\x0auz nastaveno, pouzit\x0anebo reset od nuly?\x0a%cPokracovat%cReset"
 
-#MSG_03_OR_OLDER c=18
+#MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 nebo starsi"
 
-#MSG_04_OR_NEWER c=18
+# c=18
+"FS v0.3 or older"
+"FS 0.3 nebo starsi"
+
+#MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 " 0.4 nebo novejsi"
+
+# c=18
+"FS v0.4 or newer"
+"FS 0.4 a novejsi"
+
+#MSG_IR_UNKNOWN c=18
+"unknown state"
+"neznamy stav"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -353,10 +365,6 @@
 #MSG_FS_ACTION c=10
 "FS Action"
 "FS reakce"
-
-# c=18
-"FS v0.4 or newer"
-"FS v0.4 a novejsi"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -893,6 +901,10 @@
 # c=20 r=4
 "Please unload the filament first, then repeat this action."
 "Prosim vyjmete filament a zopakujte tuto akci"
+
+# c=20 r=4
+"Please check the IR sensor connection, unload filament if present."
+"Prosim zkontrolujte zapojeni IR senzoru a vyjmuty filament"
 
 #MSG_RECOVERING_PRINT c=20
 "Recovering print    "
