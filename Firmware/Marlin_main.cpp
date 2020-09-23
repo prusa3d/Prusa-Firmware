@@ -1278,7 +1278,7 @@ void setup()
         // Once a firmware boots up, it forces at least a language selection, which changes
         // EEPROM_LANG to number lower than 0x0ff.
         // 1) Set a high power mode.
-	    eeprom_update_byte((uint8_t*)EEPROM_SILENT, SILENT_MODE_OFF);
+	    eeprom_update_byte_notify((uint8_t*)EEPROM_SILENT, SILENT_MODE_OFF);
 #ifdef TMC2130
         tmc2130_mode = TMC2130_MODE_NORMAL;
 #endif //TMC2130
@@ -4015,7 +4015,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
                strchr_pointer++;                  // skip 1st char (~ 's')
                strchr_pointer++;                  // skip 2nd char (~ 'e')
                nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
-               eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
+               eeprom_update_byte_notify((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
                eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
                }
           else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
@@ -5561,7 +5561,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
           SilentModeMenu = SILENT_MODE_OFF;
-          eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+          eeprom_update_byte_notify((unsigned char *)EEPROM_SILENT, SilentModeMenu);
           fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 

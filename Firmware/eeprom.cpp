@@ -64,7 +64,7 @@ void eeprom_init()
     if (eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
     if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == EEPROM_EMPTY_VALUE)
     {
-        eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
+        eeprom_update_byte_notify(&(EEPROM_Sheets_base->active_sheet), 0);
         // When upgrading from version older version (before multiple sheets were implemented in v3.8.0)
         // Sheet 1 uses the previous Live adjust Z (@EEPROM_BABYSTEP_Z)
         int last_babystep = eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z);
@@ -183,5 +183,15 @@ void eeprom_switch_to_next_sheet()
     int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
 
     sheet = eeprom_next_initialized_sheet(sheet);
-    if (sheet >= 0) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet);
+    if (sheet >= 0) eeprom_update_byte_notify(&(EEPROM_Sheets_base->active_sheet), sheet);
+}
+
+static void eeprom_update_notify(const void *dst){
+    SERIAL_ECHOPGM("EEPROMChng ");
+    SERIAL_ECHOLN(reinterpret_cast<const uint16_t>(dst));
+}
+
+void eeprom_update_byte_notify(uint8_t *dst, uint8_t value){
+    eeprom_update_byte(dst, value);
+    eeprom_update_notify(dst);
 }
