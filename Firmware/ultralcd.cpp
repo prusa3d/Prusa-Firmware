@@ -4484,7 +4484,7 @@ static void lcd_silent_mode_set() {
 	default: SilentModeMenu = SILENT_MODE_POWER; break; // (probably) not needed
 #endif //TMC2130
 	}
-  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+  eeprom_update_byte_notify((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
   lcd_display_message_fullscreen_P(_i("Mode change in progress ..."));
   // Wait until the planner queue is drained and the stepper routine achieves
@@ -5504,7 +5504,7 @@ switch(oNozzleDiameter)
           oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
           nDiameter=400;
      }
-eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
+eeprom_update_byte_notify((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
 eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
 }
 
@@ -6754,7 +6754,7 @@ void lcd_resume_print()
 
 static void change_sheet()
 {
-	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
+	eeprom_update_byte_notify(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
     menu_back(3);
 }
 
@@ -6825,7 +6825,7 @@ static void lcd_reset_sheet()
 //! @brief Activate selected_sheet and run first layer calibration
 static void activate_calibrate_sheet()
 {
-    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
+    eeprom_update_byte_notify(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
     lcd_first_layer_calibration_reset();
 }
 

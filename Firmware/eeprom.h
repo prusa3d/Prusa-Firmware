@@ -611,6 +611,10 @@ struct SheetName
 void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName);
 int8_t eeprom_next_initialized_sheet(int8_t sheet);
 void eeprom_switch_to_next_sheet();
+
+/// Updates eeprom byte and notifies the changed eeprom address (just the address!) onto the serial line
+void eeprom_update_byte_notify(uint8_t *dst, uint8_t value);
+
 #endif
 
 #endif // EEPROM_H

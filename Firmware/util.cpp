@@ -350,7 +350,7 @@ oNozzleDiameter=(ClNozzleDiameter)eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAME
 if((oNozzleDiameter==ClNozzleDiameter::_Diameter_Undef)&& !farm_mode)
      {
      oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
-     eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
+     eeprom_update_byte_notify((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
      eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,EEPROM_NOZZLE_DIAMETER_uM_DEFAULT);
      }
 oCheckModel=(ClCheckModel)eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODEL);
