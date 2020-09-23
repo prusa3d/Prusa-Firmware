@@ -44,7 +44,6 @@
 #include "mmu.h"
 
 #include "static_assert.h"
-#include "io_atmega2560.h"
 #include "first_lay_cal.h"
 
 #include "fsensor.h"
@@ -3999,7 +3998,7 @@ static void lcd_show_sensors_state()
 		finda_state = mmu_finda;
 	}
 	if (ir_sensor_detected) {
-		idler_state = !PIN_GET(IR_SENSOR_PIN);
+		idler_state = !READ(IR_SENSOR_PIN);
 	}
 	lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(1, 1, _i("PINDA:"));
@@ -8475,7 +8474,7 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (PIN_GET(IR_SENSOR_PIN) == 0)
+            if (READ(IR_SENSOR_PIN) == 0)
             {
                 lcd_selftest_error(TestError::TriggeringFsensor, "", "");
                 return false;
