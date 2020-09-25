@@ -243,6 +243,8 @@ void CardReader::release()
 {
   sdprinting = false;
   cardOK = false;
+  SERIAL_ECHO_START;
+  SERIAL_ECHOLNRPGM(_n("SD card released"));////MSG_SD_CARD_RELEASED
 }
 
 void CardReader::startFileprint()
