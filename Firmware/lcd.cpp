@@ -1022,36 +1022,6 @@ const uint8_t lcd_custom_character_set[][8] PROGMEM = {
 	B00000,
 	B00000}, //thanks joris
 
-/*	{//LCD_STR_FEEDRATE
-	B11100,
-	B10000,
-	B11000,
-	B10111,
-	B00101,
-	B00110,
-	B00101,
-	B00000},*/ //thanks Sonny Mounicou
-
-/*	{//LCD_STR_FEEDRATE
-	B11100,
-	B10100,
-	B11000,
-	B10100,
-	B00000,
-	B00111,
-	B00010,
-	B00010},*/
-
-/*	{//LCD_STR_FEEDRATE
-	B01100,
-	B10011,
-	B00000,
-	B01100,
-	B10011,
-	B00000,
-	B01100,
-	B10011},*/
-
 	{//LCD_STR_FEEDRATE
 	B00000,
 	B00100,
