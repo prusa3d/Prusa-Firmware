@@ -9,7 +9,6 @@
 
 #include "Configuration.h"
 #include "pins.h"
-#include <binary.h>
 #include <Arduino.h>
 #include "Marlin.h"
 #include "fastio.h"
@@ -963,115 +962,115 @@ void lcd_buttons_update(void)
 // Custom character data
 const uint8_t lcd_custom_character_set[][8] PROGMEM = {
 	{//LCD_STR_BEDTEMP
-	B00000,
-	B11111,
-	B10101,
-	B10001,
-	B10101,
-	B11111,
-	B00000,
-	B00000}, //thanks Sonny Mounicou
+	0b00000,
+	0b11111,
+	0b10101,
+	0b10001,
+	0b10101,
+	0b11111,
+	0b00000,
+	0b00000}, //thanks Sonny Mounicou
 
 	{//LCD_STR_DEGREE
-	B01100,
-	B10010,
-	B10010,
-	B01100,
-	B00000,
-	B00000,
-	B00000,
-	B00000},
+	0b01100,
+	0b10010,
+	0b10010,
+	0b01100,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000},
 
 	{//LCD_STR_THERMOMETER
-	B00100,
-	B01010,
-	B01010,
-	B01010,
-	B01010,
-	B10001,
-	B10001,
-	B01110},
+	0b00100,
+	0b01010,
+	0b01010,
+	0b01010,
+	0b01010,
+	0b10001,
+	0b10001,
+	0b01110},
 
 	{//LCD_STR_UPLEVEL
-	B00100,
-	B01110,
-	B11111,
-	B00100,
-	B11100,
-	B00000,
-	B00000,
-	B00000}, //thanks joris
+	0b00100,
+	0b01110,
+	0b11111,
+	0b00100,
+	0b11100,
+	0b00000,
+	0b00000,
+	0b00000}, //thanks joris
 
 	{//LCD_STR_REFRESH
-	B00000,
-	B00110,
-	B11001,
-	B11000,
-	B00011,
-	B10011,
-	B01100,
-	B00000}, //thanks joris
+	0b00000,
+	0b00110,
+	0b11001,
+	0b11000,
+	0b00011,
+	0b10011,
+	0b01100,
+	0b00000}, //thanks joris
 
 	{//LCD_STR_FOLDER
-	B00000,
-	B11100,
-	B11111,
-	B10001,
-	B10001,
-	B11111,
-	B00000,
-	B00000}, //thanks joris
+	0b00000,
+	0b11100,
+	0b11111,
+	0b10001,
+	0b10001,
+	0b11111,
+	0b00000,
+	0b00000}, //thanks joris
 
 	{//LCD_STR_FEEDRATE
-	B00000,
-	B00100,
-	B10010,
-	B01001,
-	B10010,
-	B00100,
-	B00000,
-	B00000},
+	0b00000,
+	0b00100,
+	0b10010,
+	0b01001,
+	0b10010,
+	0b00100,
+	0b00000,
+	0b00000},
 
 	{//LCD_STR_CLOCK
-	B00000,
-	B01110,
-	B10011,
-	B10101,
-	B10001,
-	B01110,
-	B00000,
-	B00000}, //thanks Sonny Mounicou
+	0b00000,
+	0b01110,
+	0b10011,
+	0b10101,
+	0b10001,
+	0b01110,
+	0b00000,
+	0b00000}, //thanks Sonny Mounicou
 
 	{//LCD_STR_ARROW_DOWN
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B10001,
-	B01010,
-	B00100},
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b00000,
+	0b10001,
+	0b01010,
+	0b00100},
 
 	{//LCD_STR_ARROW_2_DOWN
-	B00000,
-	B00000,
-	B10001,
-	B01010,
-	B00100,
-	B10001,
-	B01010,
-	B00100},
+	0b00000,
+	0b00000,
+	0b10001,
+	0b01010,
+	0b00100,
+	0b10001,
+	0b01010,
+	0b00100},
 
 	{/* LCD_STR_RESERVED_NL */},
 	
 	{//LCD_STR_CONFIRM
-	B00000,
-	B00001,
-	B00011,
-	B10110,
-	B11100,
-	B01000,
-	B00000},
+	0b00000,
+	0b00001,
+	0b00011,
+	0b10110,
+	0b11100,
+	0b01000,
+	0b00000},
 };
 
 //sends all 8 custom characters to the lcd
