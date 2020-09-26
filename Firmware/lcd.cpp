@@ -142,6 +142,7 @@ uint8_t lcd_escape[8];
 	#define TIMERx_COMPA_vect TIMER5_COMPA_vect
 #endif
 
+#ifdef LCD_DEBUG
 void lcd_debug(){
 	MYSERIAL.println("VGA:");
 	for (int i = 0; i < LCD_HEIGHT; i++){
@@ -162,6 +163,7 @@ void lcd_debug(){
 	MYSERIAL.print("timer_status:"); MYSERIAL.println(lcd_status, BIN);
 	MYSERIAL.print("TCCRxB:"); MYSERIAL.println(TCCRxB, BIN);
 }
+#endif //LCD_DEBUG
 
 void lcd_timer_enable(void)
 {	
@@ -179,9 +181,10 @@ void lcd_timer_disable(void)
 	if ((lcd_status & 0x01) && !(lcd_status & 0x02)) //do not wait recursively
 	{
 		lcd_status |= 0x02;
-		while(lcd_status & 0x02) 
+		while(lcd_status & 0x02) //wait for isr to finish what it has to do. The ISR might run a second time to make sure the nibble doesn't get out of sync.
+		{
 			// lcd_debug();
-			asm ("nop"); //wait for isr to finish what it has to do. The ISR might run a second time to make sure the nibble doesn't get out of sync.
+		}
 		return; //the ISR disables itself. no need to also disable it here.
 	}
 	CRITICAL_SECTION_START; //prevent unwanted timer interrupts while messing with the timer.
@@ -230,7 +233,7 @@ static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAUL
 	delayMicroseconds(duration);
 #ifdef LCD_DEBUG
 	MYSERIAL.print("SEND:"); MYSERIAL.print((flags&LCD_RS_FLAG)?1:0, BIN); MYSERIAL.print(' '); MYSERIAL.println(data, HEX);
-#endif
+#endif //LCD_DEBUG
 }
 
 static void lcd_command(uint8_t value, uint16_t delayExtra = 0) //lcd
@@ -478,7 +481,7 @@ ISR(TIMERx_COMPA_vect)
 	{
 #ifdef LCD_DEBUG
 		MYSERIAL.print("VGA:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
-#endif
+#endif //LCD_DEBUG
 		lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH], HIGH, 0);
 		vga_map[lcd_curpos >> 3] &= ~(1 << (7 - (lcd_curpos & 0x07))); //clear bit in vga_map
 		lcd_status &= ~0x08; //this char is data
@@ -489,7 +492,7 @@ ISR(TIMERx_COMPA_vect)
 	{
 #ifdef LCD_DEBUG
 		MYSERIAL.println("ISR:disable");
-#endif
+#endif //LCD_DEBUG
 		lcd_status &= ~0x01;
 		lcd_timer_disable();
 		return;
@@ -498,7 +501,7 @@ ISR(TIMERx_COMPA_vect)
 	{
 #ifdef LCD_DEBUG
 		MYSERIAL.print("VGA:jump: "); MYSERIAL.println(lcd_curpos, DEC);
-#endif
+#endif //LCD_DEBUG
 		lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH);
 		lcd_status |= 0x08; // the data is jump
 	}

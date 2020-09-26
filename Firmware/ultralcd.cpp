@@ -2213,7 +2213,7 @@ static void lcd_support_menu()
 
 #ifdef LCD_DEBUG
   MENU_ITEM_FUNCTION_P(PSTR("LCD char test"), lcd_lcd_test_menu);
-#endif
+#endif //LCD_DEBUG
 
 #ifdef DEBUG_BUILD
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////c=18 r=1

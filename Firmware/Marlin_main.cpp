@@ -8647,9 +8647,12 @@ Sigma_Exit:
 #endif //SNMM
 	}
 	break;
+#ifdef LCD_DEBUG
+	// temporary. Will be removed in the future alongside all the debug code in lcd.cpp
 	case 998:
 		lcd_debug();
-		break;
+	break;
+#endif //LCD_DEBUG
 
 
     /*!
