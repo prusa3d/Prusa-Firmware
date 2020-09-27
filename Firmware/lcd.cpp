@@ -10,6 +10,7 @@
 #include "Configuration.h"
 #include "pins.h"
 #include <Arduino.h>
+#include "static_assert.h"
 #include "Marlin.h"
 #include "fastio.h"
 //-//
@@ -21,6 +22,8 @@
 #if (defined(LCD_PINS_D0) && defined(LCD_PINS_D1) && defined(LCD_PINS_D2) && defined(LCD_PINS_D3))
 	#define LCD_8BIT
 #endif
+
+static_assert(LCD_WIDTH == 20 && LCD_HEIGHT == 4, "Only 20x4 LCDs are supported");
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
