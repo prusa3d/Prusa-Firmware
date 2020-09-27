@@ -22,14 +22,6 @@
 #include <math.h>
 #include "Arduino.h" // for digitalWrite
 
-#ifndef cbi
-#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
-#endif
-
-#ifndef sbi
-#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
-#endif
-
 #include "twi.h"
 
 
@@ -40,8 +32,7 @@ void twi_init(void)
   digitalWrite(SCL, 1);
 
   // initialize twi prescaler and bit rate
-  cbi(TWSR, TWPS0);
-  cbi(TWSR, TWPS1);
+  TWSR &= ~(_BV(TWPS0) | _BV(TWPS1));
   TWBR = ((F_CPU / TWI_FREQ) - 16) / 2;
 
   /* twi bit rate formula from atmega128 manual pg 204
