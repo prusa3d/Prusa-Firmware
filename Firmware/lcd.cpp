@@ -477,7 +477,7 @@ ISR(TIMERx_COMPA_vect)
 	if ((next_command_type == 1) && !(!(lcd_status & 0x08) && (lcd_curpos % LCD_WIDTH == 0))) //print current char and last char was jump
 	{
 #ifdef LCD_DEBUG
-		MYSERIAL.print("VGA:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
+		MYSERIAL.print("ISR:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
 #endif //LCD_DEBUG
 		lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH], HIGH, 0);
 		vga_map[lcd_curpos >> 3] &= ~(1 << (7 - (lcd_curpos & 0x07))); //clear bit in vga_map
@@ -497,7 +497,7 @@ ISR(TIMERx_COMPA_vect)
 	else //a jump command is required to the destination lcd_curpos
 	{
 #ifdef LCD_DEBUG
-		MYSERIAL.print("VGA:jump: "); MYSERIAL.println(lcd_curpos, DEC);
+		MYSERIAL.print("ISR:jump: "); MYSERIAL.println(lcd_curpos, DEC);
 #endif //LCD_DEBUG
 		lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH);
 		lcd_status |= 0x08; // the data is jump
