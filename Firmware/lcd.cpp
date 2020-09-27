@@ -193,10 +193,9 @@ static void lcd_writebits(uint8_t value) //lcd
 	lcd_pulseEnable();
 }
 
-static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAULT_DELAY) //lcd
+static void lcd_send(uint8_t data, uint8_t flags) //lcd
 {
 	WRITE(LCD_PINS_RS,flags&LCD_RS_FLAG);
-	// _delay_us(5);
 	lcd_writebits(data);
 #ifndef LCD_8BIT
 	if (!(flags & LCD_HALF_FLAG))
@@ -205,15 +204,15 @@ static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAUL
 		lcd_writebits(data<<4);
 	}
 #endif
-	_delay(duration);
 #ifdef LCD_DEBUG
 	MYSERIAL.print("SEND:"); MYSERIAL.print((flags&LCD_RS_FLAG)?1:0, BIN); MYSERIAL.print(' '); MYSERIAL.println(data, HEX);
 #endif //LCD_DEBUG
 }
 
-static void lcd_command(uint8_t value, uint16_t delayExtra = 0) //lcd
+static void lcd_command(uint8_t value) //lcd
 {
-	lcd_send(value, 0, LCD_DEFAULT_DELAY + delayExtra);
+	lcd_send(value, 0);
+	_delay_us(LCD_DEFAULT_DELAY);
 }
 
 static void vga_linefeed(void) //vga
@@ -254,14 +253,18 @@ static void lcd_clear_hardware(void);
 static void lcd_begin()
 {
 	LcdTimerDisabler_START;
-	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 |LCD_HALF_FLAG, 4500); // wait min 4.1ms
+	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 |LCD_HALF_FLAG); // wait min 4.1ms
+	_delay_us(4500);
 	// second try
-	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 | LCD_HALF_FLAG, 150);
+	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 | LCD_HALF_FLAG);
+	_delay_us(150);
 	// third go!
-	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 | LCD_HALF_FLAG, 150);
+	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 | LCD_HALF_FLAG);
+	_delay_us(150);
 #ifndef LCD_8BIT
 	// set to 4-bit interface
-	lcd_send(LCD_FUNCTIONSET, 0 | LCD_HALF_FLAG, 150);
+	lcd_send(LCD_FUNCTIONSET, 0 | LCD_HALF_FLAG);
+	_delay_us(150);
 #endif
 
 	// finally, set # lines, font size, etc.0
@@ -368,7 +371,8 @@ void lcd_clear(void) //vga
 
 static void lcd_clear_hardware(void) //lcd
 {
-	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
+	lcd_command(LCD_CLEARDISPLAY);  // clear display, set cursor position to zero
+	_delay_us(1600); //extra delay according to datasheet
 	lcd_curpos = 0;
 	for (uint8_t i = 0; i < sizeof(vga_map); i++) vga_map[i] = 0xff; //force entire screen update.
 	lcd_status &= ~0x08;
@@ -412,20 +416,22 @@ void lcd_set_cursor(uint8_t col, uint8_t row) //vga
 static void lcd_set_cursor_hardware(uint8_t col, uint8_t row, bool nibbleLess = 0) //lcd
 {
 	constexpr uint8_t row_offsets[] = {0x00, 0x40, 0x14, 0x54};
+	lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), 0); 
 	if (nibbleLess)
-		lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), 0, 100);
-	else
-		lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), 0, 0);
+		_delay_us(100);
 }
 
 // Allows us to fill the first 8 CGRAM locations
 // with custom characters
 static void lcd_createChar_P(uint8_t location, const uint8_t* charmap) //lcd
 {
-  location &= 0x7; // we only have 8 locations 0-7
-  lcd_command(LCD_SETCGRAMADDR | (location << 3));
-  for (int i=0; i<8; i++)
-    lcd_send(pgm_read_byte(&charmap[i]), 1);
+	location &= 0x7; // we only have 8 locations 0-7
+	lcd_command(LCD_SETCGRAMADDR | (location << 3));
+	for (uint8_t i = 0; i < 8; i++)
+	{
+		lcd_send(pgm_read_byte(&charmap[i]), 1);
+		_delay_us(LCD_DEFAULT_DELAY);
+	}
 }
 
 ISR(TIMERx_COMPA_vect)
@@ -461,7 +467,7 @@ ISR(TIMERx_COMPA_vect)
 #ifdef LCD_DEBUG
 		MYSERIAL.print("ISR:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
 #endif //LCD_DEBUG
-		lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH], 1, 0);
+		lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH], 1);
 		vga_map[lcd_curpos >> 3] &= ~(1 << (7 - (lcd_curpos & 0x07))); //clear bit in vga_map
 		lcd_status &= ~0x08; //this char is data
 		lcd_curpos++;
