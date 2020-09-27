@@ -106,25 +106,16 @@ static void lcd_no_display(void);
 uint8_t lcd_escape[8];
 #endif
 
-#if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
-	#define TCCRxA TCCR3A
-	#define TCCRxB TCCR3B
-	#define TCCRxC TCCR3C
-	#define TCNTx TCNT3
-	#define OCRxA OCR3A
-	#define TIMSKx TIMSK3
-	#define TIFRx TIFR3
-	#define TIMERx_COMPA_vect TIMER3_COMPA_vect
-#elif ((MOTHERBOARD == BOARD_EINSY_1_0a))
-	#define TCCRxA TCCR5A
-	#define TCCRxB TCCR5B
-	#define TCCRxC TCCR5C
-	#define TCNTx TCNT5
-	#define OCRxA OCR5A
-	#define TIMSKx TIMSK5
-	#define TIFRx TIFR5
-	#define TIMERx_COMPA_vect TIMER5_COMPA_vect
-#endif
+#define LCD_TIMER_REGNAME(registerbase,number,suffix) _REGNAME(registerbase,number,suffix)
+
+#define TCCRxA LCD_TIMER_REGNAME(TCCR, LCD_TIMER, A)
+#define TCCRxB LCD_TIMER_REGNAME(TCCR, LCD_TIMER, B)
+#define TCCRxC LCD_TIMER_REGNAME(TCCR, LCD_TIMER, C)
+#define TCNTx LCD_TIMER_REGNAME(TCNT, LCD_TIMER,)
+#define OCRxA LCD_TIMER_REGNAME(OCR, LCD_TIMER, A)
+#define TIMSKx LCD_TIMER_REGNAME(TIMSK, LCD_TIMER,)
+#define TIFRx LCD_TIMER_REGNAME(TIFR, LCD_TIMER,)
+#define TIMERx_COMPA_vect LCD_TIMER_REGNAME(TIMER, LCD_TIMER, _COMPA_vect)
 
 #ifdef LCD_DEBUG
 void lcd_debug(){
