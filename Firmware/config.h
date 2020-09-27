@@ -31,8 +31,11 @@
 
 //PAT9125 configuration
 //#define PAT9125_SWSPI // software SPI mode (incomplete)
-//#define PAT9125_SWI2C // software I2C mode
+#ifdef SWI2C_SCL
+#define PAT9125_SWI2C   // software I2C mode
+#else
 #define PAT9125_I2C     // hardware I2C mode
+#endif
 
 #define PAT9125_I2C_ADDR  0x75  //ID=LO
 //#define PAT9125_I2C_ADDR  0x79  //ID=HI
