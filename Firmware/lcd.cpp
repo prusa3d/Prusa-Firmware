@@ -37,32 +37,22 @@ static_assert(LCD_WIDTH == 20 && LCD_HEIGHT == 4, "Only 20x4 LCDs are supported"
 #define LCD_SETDDRAMADDR 0x80
 
 // flags for display entry mode
-#define LCD_ENTRYRIGHT 0x00
 #define LCD_ENTRYLEFT 0x02
 #define LCD_ENTRYSHIFTINCREMENT 0x01
-#define LCD_ENTRYSHIFTDECREMENT 0x00
 
 // flags for display on/off control
 #define LCD_DISPLAYON 0x04
-#define LCD_DISPLAYOFF 0x00
 #define LCD_CURSORON 0x02
-#define LCD_CURSOROFF 0x00
 #define LCD_BLINKON 0x01
-#define LCD_BLINKOFF 0x00
 
 // flags for display/cursor shift
 #define LCD_DISPLAYMOVE 0x08
-#define LCD_CURSORMOVE 0x00
 #define LCD_MOVERIGHT 0x04
-#define LCD_MOVELEFT 0x00
 
 // flags for function set
 #define LCD_8BITMODE 0x10
-#define LCD_4BITMODE 0x00
 #define LCD_2LINE 0x08
-#define LCD_1LINE 0x00
 #define LCD_5x10DOTS 0x04
-#define LCD_5x8DOTS 0x00
 
 // bitmasks for flag argument settings
 #define LCD_RS_FLAG 0x01
@@ -283,18 +273,18 @@ static void lcd_begin()
 	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 150);
 #ifndef LCD_8BIT
 	// set to 4-bit interface
-	lcd_send(LCD_FUNCTIONSET | LCD_4BITMODE, LOW | LCD_HALF_FLAG, 150);
+	lcd_send(LCD_FUNCTIONSET, LOW | LCD_HALF_FLAG, 150);
 #endif
 
 	// finally, set # lines, font size, etc.0
 	lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);
 	// turn the display on with no cursor or blinking default
-	lcd_displaycontrol = LCD_CURSOROFF | LCD_BLINKOFF;  
+	lcd_displaycontrol = 0;  
 	lcd_display();
 	// clear lcd and set all bits to be updated
 	lcd_clear_hardware();
 	// Initialize to default text direction (for romance languages)
-	lcd_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
+	lcd_displaymode = LCD_ENTRYLEFT;
 	// set the entry mode
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode);
 	
