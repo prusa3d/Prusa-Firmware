@@ -75,12 +75,6 @@ uint8_t lcd_displayfunction = 0;
 uint8_t lcd_displaycontrol = 0;
 uint8_t lcd_displaymode = 0;
 
-#ifdef LCD_DEBUG
-	#define DEBUG(x) MYSERIAL.println(x);
-#else
-	#define DEBUG(x)
-#endif
-
 volatile uint8_t lcd_curpos;
 //xbbbbaaa: cursor position from 0 to (LCD_WIDTH * LCD_HEIGHT)-1
 //bbbb: index of the cluster in vga_map to search. From 0 to sizeof(vga_map)-1
