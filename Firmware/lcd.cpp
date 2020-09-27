@@ -15,6 +15,7 @@
 #include "fastio.h"
 //-//
 #include "sound.h"
+#include "macros.h"
 
 #define LCD_DEFAULT_DELAY 100 //ms
 #define LCD_REDRAW_PERIOD (30 * 1000) //ms
@@ -74,7 +75,6 @@ uint8_t lcd_displayfunction = 0;
 uint8_t lcd_displaycontrol = 0;
 uint8_t lcd_displaymode = 0;
 
-#define VGA_MAP_SIZE ((LCD_WIDTH * LCD_HEIGHT) / 8)
 #ifdef LCD_DEBUG
 	#define DEBUG(x) MYSERIAL.println(x);
 #else
@@ -83,11 +83,11 @@ uint8_t lcd_displaymode = 0;
 
 volatile uint8_t lcd_curpos;
 //xbbbbaaa: cursor position from 0 to (LCD_WIDTH * LCD_HEIGHT)-1
-//bbbb: index of the cluster in vga_map to search. From 0 to VGA_MAP_SIZE-1
+//bbbb: index of the cluster in vga_map to search. From 0 to sizeof(vga_map)-1
 //aaa: Rshift value for the bit to search. From 0 to 7
 //x: unused. Leave it clear.
 
-volatile uint8_t vga_map[VGA_MAP_SIZE]; //bitmap for changes on the display. Individual bits are set when lcd_write() is used
+volatile uint8_t vga_map[DIVIDE_ROUND_UP(LCD_WIDTH * LCD_HEIGHT, 8)]; //bitmap for changes on the display. Individual bits are set when lcd_write() is used
 //    01234567890123456789
   
 // 0  00000000111111112222
@@ -155,7 +155,7 @@ void lcd_debug(){
 		MYSERIAL.print("\n");
 	}
 	
-	for (int i = 0; i < 10; i++)
+	for (uint8_t i = 0; i < sizeof(vga_map); i++)
 	{
 		MYSERIAL.print(vga_map[i], HEX);
 		MYSERIAL.print(' ');
@@ -390,7 +390,7 @@ void lcd_clear(void) //vga
 	for (int i = 0; i < LCD_WIDTH; i++)
 		for (int j = 0; j < LCD_HEIGHT; j++)
 			vga[i][j] = ' ';
-	for (int i = 0; i < VGA_MAP_SIZE; i++) vga_map[i] = 0xff; //force entire screen update.
+	for (uint8_t i = 0; i < sizeof(vga_map); i++) vga_map[i] = 0xff; //force entire screen update.
 	lcd_home();
 }
 
@@ -398,7 +398,7 @@ static void lcd_clear_hardware(void) //lcd
 {
 	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
 	lcd_curpos = 0;
-	for (int i = 0; i < VGA_MAP_SIZE; i++) vga_map[i] = 0xff; //force entire screen update.
+	for (uint8_t i = 0; i < sizeof(vga_map); i++) vga_map[i] = 0xff; //force entire screen update.
 	lcd_status &= ~0x08;
 }
 
@@ -464,7 +464,7 @@ ISR(TIMERx_COMPA_vect)
 	if (vga_map[lcd_curpos >> 3] & (1 << (7 - (lcd_curpos & 0x07)))) next_command_type = 1;
 	else
 	{
-		for (int i = 0; (i < VGA_MAP_SIZE) && (next_command_type == 0); i++)
+		for (uint8_t i = 0; (i < sizeof(vga_map)) && (next_command_type == 0); i++)
 		{
 			if (vga_map[i] != 0)
 			{

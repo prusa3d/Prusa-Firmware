@@ -11,6 +11,8 @@
   #define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
+#define DIVIDE_ROUND_UP(x, y) (((x) - 1) / (y) + 1)
+
 // Macros to make a string from a macro
 #define STRINGIFY_(M) #M
 #define STRINGIFY(M) STRINGIFY_(M)
