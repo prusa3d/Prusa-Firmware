@@ -9347,8 +9347,8 @@ void lcd_buttons_update(void)
 	lcd_buttons = newbutton;
 	//manage encoder rotation
 	uint8_t enc = 0;
-	if (lcd_buttons & EN_A) enc |= B01;
-	if (lcd_buttons & EN_B) enc |= B10;
+	if (lcd_buttons & EN_A) enc |= 0b01;
+	if (lcd_buttons & EN_B) enc |= 0b10;
 	if (enc != lcd_encoder_bits)
 	{
 		switch (enc)

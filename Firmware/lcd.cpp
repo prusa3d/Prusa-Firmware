@@ -107,6 +107,7 @@ uint8_t lcd_escape[8];
 #endif
 
 #define LCD_TIMER_REGNAME(registerbase,number,suffix) _REGNAME(registerbase,number,suffix)
+#undef B0 //Necessary hack because of "binary.h" included in "Arduino.h" included in "system_timer.h" included in this file...
 
 #define TCCRxA LCD_TIMER_REGNAME(TCCR, LCD_TIMER, A)
 #define TCCRxB LCD_TIMER_REGNAME(TCCR, LCD_TIMER, B)
@@ -116,6 +117,18 @@ uint8_t lcd_escape[8];
 #define TIMSKx LCD_TIMER_REGNAME(TIMSK, LCD_TIMER,)
 #define TIFRx LCD_TIMER_REGNAME(TIFR, LCD_TIMER,)
 #define TIMERx_COMPA_vect LCD_TIMER_REGNAME(TIMER, LCD_TIMER, _COMPA_vect)
+#define CSx0 LCD_TIMER_REGNAME(CS, LCD_TIMER, 0)
+#define CSx1 LCD_TIMER_REGNAME(CS, LCD_TIMER, 1)
+#define CSx2 LCD_TIMER_REGNAME(CS, LCD_TIMER, 2)
+#define WGMx0 LCD_TIMER_REGNAME(WGM, LCD_TIMER, 0)
+#define WGMx1 LCD_TIMER_REGNAME(WGM, LCD_TIMER, 1)
+#define WGMx2 LCD_TIMER_REGNAME(WGM, LCD_TIMER, 2)
+#define WGMx3 LCD_TIMER_REGNAME(WGM, LCD_TIMER, 3)
+#define COMxA0 LCD_TIMER_REGNAME(COM, LCD_TIMER, A0)
+#define COMxB0 LCD_TIMER_REGNAME(COM, LCD_TIMER, B0)
+#define COMxC0 LCD_TIMER_REGNAME(COM, LCD_TIMER, C0)
+#define OCIExA LCD_TIMER_REGNAME(OCIE, LCD_TIMER, A)
+#define OCFxA LCD_TIMER_REGNAME(OCF, LCD_TIMER, A)
 
 #ifdef LCD_DEBUG
 void lcd_debug(){
@@ -145,9 +158,9 @@ void lcd_timer_enable(void)
 	CRITICAL_SECTION_START; //prevent unwanted timer interrupts while messing with the timer.
 	lcd_status |= 0x01; //set timer enabled flag
 	lcd_status &= ~0x02; //clear timer force disable flag. Shouldn't be needed, but just to be safe.
-	TCCRxB |= 0x02; //start timer. Set clock source
+	TCCRxB |= _BV(CSx1); //start timer. Set clock source
 	TCNTx = 0; //clear timer value
-	TIFRx |= (1 << OCF3A); //clear interrupt flag by writing 1 in register.
+	TIFRx |= _BV(OCFxA); //clear interrupt flag by writing 1 in register.
 	CRITICAL_SECTION_END;
 }
 
@@ -164,7 +177,7 @@ void lcd_timer_disable(void)
 	}
 	CRITICAL_SECTION_START; //prevent unwanted timer interrupts while messing with the timer.
 	lcd_status &= ~0x03; //clear both timer flags
-	TCCRxB &= ~(0x07); //stop timer
+	TCCRxB &= ~(_BV(CSx2) | _BV(CSx1) | _BV(CSx0)); //stop timer
 	TCNTx = 0; //clear timer value
 	TIFRx |= (1 << OCF3A); //clear interrupt flag by writing 1 in register.
 	CRITICAL_SECTION_END;
@@ -300,22 +313,22 @@ static void vga_init(void) //vga
 	
 	CRITICAL_SECTION_START;
 	// waveform generation = 0100 = CTC
-	TCCRxB &= ~(1<<WGM33);
-	TCCRxB |=  (1<<WGM32);
-	TCCRxA &= ~(1<<WGM31);
-	TCCRxA &= ~(1<<WGM30);
+	TCCRxB &= ~_BV(WGMx3);
+	TCCRxB |= _BV(WGMx2);
+	TCCRxA &= ~_BV(WGMx1);
+	TCCRxA &= ~_BV(WGMx0);
 	
 	// output mode = 00 (disconnected)
-	TCCRxA &= ~(3<<COM3A0);
-	TCCRxA &= ~(3<<COM3B0);
-	TCCRxA &= ~(3<<COM3C0);
+	TCCRxA &= ~(3 << COMxA0);
+	TCCRxA &= ~(3 << COMxB0);
+	TCCRxA &= ~(3 << COMxC0);
 	OCRxA = (LCD_DEFAULT_DELAY * 2 * (F_CPU/1000000/8)) - 1; //set timer TOP value with an 8x prescaler. The push speed is slowed down a bit.
 	
 	lcd_status = 0;
 	lcd_timer_disable();
 	
 	// enable interrupt
-	TIMSKx = 0x02;
+	TIMSKx = _BV(OCIExA);
 	CRITICAL_SECTION_END;
 	
 	fdev_setup_stream(lcdout, vga_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
