@@ -37,22 +37,22 @@ static_assert(LCD_WIDTH == 20 && LCD_HEIGHT == 4, "Only 20x4 LCDs are supported"
 #define LCD_SETDDRAMADDR 0x80
 
 // flags for display entry mode
-#define LCD_ENTRYLEFT 0x02
-#define LCD_ENTRYSHIFTINCREMENT 0x01
+#define LCD_ENTRYMODESET_DIRECTION 0x02 //else decrement cursor address.
+#define LCD_ENTRYMODESET_SHIFT 0x01 //moves display. Cursor remains stationary. Direction dictated by increment flag.
 
 // flags for display on/off control
-#define LCD_DISPLAYON 0x04
-#define LCD_CURSORON 0x02
-#define LCD_BLINKON 0x01
+#define LCD_DISPLAYCONTROL_DISPLAYON 0x04
+#define LCD_DISPLAYCONTROL_CURSORON 0x02
+#define LCD_DISPLAYCONTROL_BLINKON 0x01
 
 // flags for display/cursor shift
-#define LCD_DISPLAYMOVE 0x08
-#define LCD_MOVERIGHT 0x04
+#define LCD_CURSORSHIFT_DISPLAYMOVE 0x08
+#define LCD_CURSORSHIFT_DIRECTION 0x04
 
 // flags for function set
-#define LCD_8BITMODE 0x10
-#define LCD_2LINE 0x08
-#define LCD_5x10DOTS 0x04
+#define LCD_FUNCTIONSET_8BITMODE 0x10
+#define LCD_FUNCTIONSET_2LINE 0x08
+#define LCD_FUNCTIONSET_5x10DOTS 0x04
 
 // bitmasks for flag argument settings
 #define LCD_RS_FLAG 0x01
@@ -266,11 +266,11 @@ static void lcd_clear_hardware(void);
 static void lcd_begin()
 {
 	LcdTimerDisabler_START;
-	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 4500); // wait min 4.1ms
+	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, LOW | LCD_HALF_FLAG, 4500); // wait min 4.1ms
 	// second try
-	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 150);
+	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, LOW | LCD_HALF_FLAG, 150);
 	// third go!
-	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 150);
+	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, LOW | LCD_HALF_FLAG, 150);
 #ifndef LCD_8BIT
 	// set to 4-bit interface
 	lcd_send(LCD_FUNCTIONSET, LOW | LCD_HALF_FLAG, 150);
@@ -284,7 +284,7 @@ static void lcd_begin()
 	// clear lcd and set all bits to be updated
 	lcd_clear_hardware();
 	// Initialize to default text direction (for romance languages)
-	lcd_displaymode = LCD_ENTRYLEFT;
+	lcd_displaymode = LCD_ENTRYMODESET_DIRECTION;
 	// set the entry mode
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode);
 	
@@ -349,9 +349,9 @@ void lcd_init(void) //lcd
 	SET_OUTPUT(LCD_PINS_D7);
 	
 #ifdef LCD_8BIT
-	lcd_displayfunction |= LCD_8BITMODE;
+	lcd_displayfunction |= LCD_FUNCTIONSET_8BITMODE;
 #endif
-	lcd_displayfunction |= LCD_2LINE;
+	lcd_displayfunction |= LCD_FUNCTIONSET_2LINE;
 	vga_init();
 	_delay_us(50000);
 	lcd_begin();
@@ -396,8 +396,8 @@ void lcd_home(void) //vga
 void lcd_display(void) //lcd
 {
 	LcdTimerDisabler_START;
-    lcd_displaycontrol |= LCD_DISPLAYON;
-    lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
+	lcd_displaycontrol |= LCD_DISPLAYCONTROL_DISPLAYON;
+	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 	LcdTimerDisabler_END;
 }
 
@@ -405,7 +405,7 @@ void lcd_display(void) //lcd
 void lcd_no_display(void)
 {
 	LcdTimerDisabler_START;
-	lcd_displaycontrol &= ~LCD_DISPLAYON;
+	lcd_displaycontrol &= ~LCD_DISPLAYCONTROL_DISPLAYON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 	LcdTimerDisabler_END;
 }
