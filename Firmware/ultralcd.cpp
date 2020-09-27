@@ -9202,3 +9202,189 @@ void lcd_experimental_menu()
 
     MENU_END();
 }
+
+// hardware ultralcd stuff
+
+uint8_t lcd_draw_update = 2;
+int32_t lcd_encoder = 0;
+uint8_t lcd_encoder_bits = 0;
+int8_t lcd_encoder_diff = 0;
+
+uint8_t lcd_buttons = 0;
+uint8_t lcd_button_pressed = 0;
+uint8_t lcd_update_enabled = 1;
+
+uint32_t lcd_next_update_millis = 0;
+uint8_t lcd_status_update_delay = 0;
+
+
+
+lcd_longpress_func_t lcd_longpress_func = 0;
+
+lcd_lcdupdate_func_t lcd_lcdupdate_func = 0;
+
+static ShortTimer buttonBlanking;
+ShortTimer longPressTimer;
+LongTimer lcd_timeoutToStatus;
+
+
+//! @brief Was button clicked?
+//!
+//! Consume click event, following call would return 0.
+//! See #LCD_CLICKED macro for version not consuming the event.
+//!
+//! Generally is used in modal dialogs.
+//!
+//! @retval 0 not clicked
+//! @retval nonzero clicked
+uint8_t lcd_clicked(void)
+{
+	bool clicked = LCD_CLICKED;
+	if(clicked)
+	{
+	    lcd_consume_click();
+	}
+    return clicked;
+}
+
+void lcd_beeper_quick_feedback(void)
+{
+//-//
+Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+/*
+	for(int8_t i = 0; i < 10; i++)
+	{
+		Sound_MakeCustom(100,0,false);
+		_delay_us(100);
+	}
+*/
+}
+
+void lcd_quick_feedback(void)
+{
+  lcd_draw_update = 2;
+  lcd_button_pressed = false;
+  lcd_beeper_quick_feedback();
+}
+
+void lcd_update(uint8_t lcdDrawUpdateOverride)
+{
+	lcd_redraw();
+	if (lcd_draw_update < lcdDrawUpdateOverride)
+		lcd_draw_update = lcdDrawUpdateOverride;
+	if (!lcd_update_enabled)
+		return;
+	if (lcd_lcdupdate_func)
+		lcd_lcdupdate_func();
+}
+
+void lcd_update_enable(uint8_t enabled)
+{
+	if (lcd_update_enabled != enabled)
+	{
+		lcd_update_enabled = enabled;
+		if (enabled)
+		{ // Reset encoder position. This is equivalent to re-entering a menu.
+			lcd_encoder = 0;
+			lcd_encoder_diff = 0;
+			// Enabling the normal LCD update procedure.
+			// Reset the timeout interval.
+			lcd_timeoutToStatus.start();
+			// Force the keypad update now.
+			lcd_next_update_millis = _millis() - 1;
+			// Full update.
+			lcd_clear();
+			lcd_update(2);
+		} else
+		{
+			// Clear the LCD always, or let it to the caller?
+		}
+	}
+}
+
+void lcd_buttons_update(void)
+{
+    static uint8_t lcd_long_press_active = 0;
+	uint8_t newbutton = 0;
+	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
+	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
+
+    if (READ(BTN_ENC) == 0)
+    { //button is pressed
+        lcd_timeoutToStatus.start();
+        if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
+            buttonBlanking.start();
+            safetyTimer.start();
+            if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
+            {
+                longPressTimer.start();
+                lcd_button_pressed = 1;
+            }
+            else if (longPressTimer.expired(LONG_PRESS_TIME))
+            {
+                lcd_long_press_active = 1;
+                //long press is not possible in modal mode
+                if (lcd_longpress_func && lcd_update_enabled)
+                    lcd_longpress_func();
+            }
+        }
+    }
+    else
+    { //button not pressed
+        if (lcd_button_pressed)
+        { //button was released
+            buttonBlanking.start();
+            if (lcd_long_press_active == 0)
+            { //button released before long press gets activated
+                newbutton |= EN_C;
+            }
+            //else if (menu_menu == lcd_move_z) lcd_quick_feedback();
+            //lcd_button_pressed is set back to false via lcd_quick_feedback function
+        }
+        lcd_long_press_active = 0;
+    }
+
+	lcd_buttons = newbutton;
+	//manage encoder rotation
+	uint8_t enc = 0;
+	if (lcd_buttons & EN_A) enc |= B01;
+	if (lcd_buttons & EN_B) enc |= B10;
+	if (enc != lcd_encoder_bits)
+	{
+		switch (enc)
+		{
+		case encrot0:
+			if (lcd_encoder_bits == encrot3)
+				lcd_encoder_diff++;
+			else if (lcd_encoder_bits == encrot1)
+				lcd_encoder_diff--;
+			break;
+		case encrot1:
+			if (lcd_encoder_bits == encrot0)
+				lcd_encoder_diff++;
+			else if (lcd_encoder_bits == encrot2)
+				lcd_encoder_diff--;
+			break;
+		case encrot2:
+			if (lcd_encoder_bits == encrot1)
+				lcd_encoder_diff++;
+			else if (lcd_encoder_bits == encrot3)
+				lcd_encoder_diff--;
+			break;
+		case encrot3:
+			if (lcd_encoder_bits == encrot2)
+				lcd_encoder_diff++;
+			else if (lcd_encoder_bits == encrot0)
+				lcd_encoder_diff--;
+			break;
+		}
+	}
+	lcd_encoder_bits = enc;
+}
+
+//! @brief Consume click event
+void lcd_consume_click()
+{
+	lcd_button_pressed = 0;
+	lcd_buttons &= 0xff^EN_C;
+}
