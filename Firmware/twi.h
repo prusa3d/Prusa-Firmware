@@ -43,11 +43,21 @@ void twi_init(void);
 void twi_disable(void);
 
 /*
- * Function twi_rw8
- * Desc     read/write a single byte from a device
+ * Function twi_r8
+ * Desc     read a single byte from a device
  * Input    address: 7bit i2c device address
- *          mode: TW_READ or TW_WRITE
- *          data: pointer to byte
+ *          reg: register address
+ *          data: pointer to byte for result
  * Output   0 on success
  */
-uint8_t twi_rw8(uint8_t address, uint8_t mode, uint8_t* data);
+uint8_t twi_r8(uint8_t address, uint8_t reg, uint8_t* data);
+
+/*
+ * Function twi_w8
+ * Desc     write a single byte from a device
+ * Input    address: 7bit i2c device address
+ *          reg: register address
+ *          data: byte to write
+ * Output   0 on success
+ */
+uint8_t twi_w8(uint8_t address, uint8_t reg, uint8_t data);
