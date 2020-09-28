@@ -118,8 +118,8 @@ uint8_t pat9125_probe()
     twi_init();
   #ifdef IR_SENSOR
     // NOTE: this is called from the MK3S variant, so it should be kept minimal
-    uint8_t addr = PAT9125_PID1;
-    return (twi_rw8(PAT9125_I2C_ADDR,TW_READ,&addr) == 0);
+    uint8_t data;
+    return (twi_r8(PAT9125_I2C_ADDR,PAT9125_PID1,&data) == 0);
   #else
     return (pat9125_rd_reg(PAT9125_PID1) != 0);
   #endif
