@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_18
+# Version: 1.0.6-Build_27
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -124,6 +124,8 @@
 #                          After compiling All multilanguage vairants it makes it easier to find missing or unused transltions.
 # 12 May 2020, DRracer   , Cleanup double MK2/s MK25/s `not_tran` and `not_used` files
 # 13 May 2020, leptun    , If cleanup files do not exist don't try to.
+# 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_ONLY. Thank to @leptun for pointing out.
+#                          Change Build number to scrpit commits
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -473,12 +475,10 @@ if [ -z "$2" ] ; then
 		case $yn in
 			"Multi languages")
 				LANGUAGES="ALL"
-				sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
 				break
 				;;
 			"English only") 
 				LANGUAGES="EN_ONLY"
-				sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
 				break
 				;;
 			*)
@@ -622,13 +622,15 @@ do
 	sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 	#Prepare english only or multilanguage version to be build
-	if [ $LANGUAGES == "ALL" ]; then
+	if [ $LANGUAGES == "EN_ONLY" ]; then
 		echo " "
-		echo "Multi-language firmware will be built"
+		echo "English only language firmware will be built"
+		sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
 		echo " "
 	else
 		echo " "
-		echo "English only language firmware will be built"
+		echo "Multi-language firmware will be built"
+		sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
 		echo " "
 	fi
 		
