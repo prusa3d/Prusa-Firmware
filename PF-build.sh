@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_27
+# Version: 1.0.6-Build_28
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -126,6 +126,7 @@
 # 13 May 2020, leptun    , If cleanup files do not exist don't try to.
 # 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_ONLY. Thank to @leptun for pointing out.
 #                          Change Build number to scrpit commits
+# 02 Oct 2020, 3d-gussner, Add UNKNOWN as argument option
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -497,11 +498,11 @@ else
 fi
 #Check if DEV_STATUS is selected via argument 3
 if [ ! -z "$3" ] ; then
-	if [[ "$3" == "GOLD" || "$3" == "RC" || "$3" == "BETA" || "$3" == "ALPHA" || "$3" == "DEVEL" || "$3" == "DEBUG" ]] ; then
+	if [[ "$3" == "GOLD" || "$3" == "RC" || "$3" == "BETA" || "$3" == "ALPHA" || "$3" == "DEVEL" || "$3" == "DEBUG" || "$3" == "UNKNOWN" ]] ; then
 		DEV_STATUS_SELECTED=$3
 	else
 		echo "$(tput setaf 1)Development argument is wrong!$(tput sgr0)"
-		echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL' or 'DEBUG'$(tput sgr0) are allowed as 3rd argument!$(tput sgr0)"
+		echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL', 'DEBUG' or 'UNKOWN' $(tput sgr0) are allowed as 3rd argument!$(tput sgr0)"
 		exit 23
 	fi
 fi
