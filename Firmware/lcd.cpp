@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <avr/pgmspace.h>
 #include <util/delay.h>
+#include <util/atomic.h>
 #include "Timer.h"
 
 #include "Configuration.h"
@@ -14,8 +15,9 @@
 #include "fastio.h"
 #include "macros.h"
 
-#define LCD_DEFAULT_DELAY 100 //ms
+#define LCD_DEFAULT_DELAY 100 //us
 #define LCD_REDRAW_PERIOD (30 * 1000) //ms
+#define LCD_ISR_DELAY_MULTIPLIER 1 //increase this to make the drawing slower
 
 #if (defined(LCD_PINS_D0) && defined(LCD_PINS_D1) && defined(LCD_PINS_D2) && defined(LCD_PINS_D3))
 	#define LCD_8BIT
@@ -130,38 +132,40 @@ uint8_t lcd_escape[8];
 #define OCIExA LCD_TIMER_REGNAME(OCIE, LCD_TIMER, A)
 #define OCFxA LCD_TIMER_REGNAME(OCF, LCD_TIMER, A)
 
+#define LCD_TIMER_IS_ENABLED() (TIMSKx & _BV(OCIExA))
+
 #ifdef LCD_DEBUG
 void lcd_debug(){
-	MYSERIAL.println("VGA:");
+	puts_P(PSTR("VGA:"));
 	for (int i = 0; i < LCD_HEIGHT; i++){
 		for (int j = 0; j < LCD_WIDTH; j++){
-			MYSERIAL.print(vga[j][i]);
+			putchar(vga[j][i]);
 		}
-		MYSERIAL.print("\n");
+		putchar('\n');
 	}
 	
 	for (uint8_t i = 0; i < sizeof(vga_map); i++)
 	{
-		MYSERIAL.print(vga_map[i], HEX);
-		MYSERIAL.print(' ');
+		printf_P(PSTR("%02hX "), vga_map[i]);
 	}
-	MYSERIAL.print('\n');
+	putchar('\n');
 	
-	MYSERIAL.print("curpos:"); MYSERIAL.println(lcd_curpos, DEC);
-	MYSERIAL.print("timer_status:"); MYSERIAL.println(lcd_status, BIN);
-	MYSERIAL.print("TCCRxB:"); MYSERIAL.println(TCCRxB, BIN);
+	printf_P(PSTR("lcd_curpos: %02hX\n"), lcd_curpos);
+	printf_P(PSTR("lcd_status: %02hX\n"), lcd_status);
+	printf_P(PSTR("TCCRxB: %02hX\n"), TCCRxB);
 }
 #endif //LCD_DEBUG
 
 void lcd_timer_enable(void)
-{	
-	CRITICAL_SECTION_START; //prevent unwanted timer interrupts while messing with the timer.
-	lcd_status |= 0x01; //set timer enabled flag
-	lcd_status &= ~0x02; //clear timer force disable flag. Shouldn't be needed, but just to be safe.
-	TCCRxB |= _BV(CSx1); //start timer. Set clock source
-	TCNTx = 0; //clear timer value
-	TIFRx |= _BV(OCFxA); //clear interrupt flag by writing 1 in register.
-	CRITICAL_SECTION_END;
+{
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+	{
+		lcd_status |= 0x01; //set timer enabled flag
+		lcd_status &= ~0x02; //clear timer force disable flag. Shouldn't be needed, but just to be safe.
+		TCNTx = 0; //clear timer value
+		TIMSKx |= _BV(OCIExA); // enable interrupt
+		TIFRx |= _BV(OCFxA); //clear interrupt flag by writing 1 in register.
+	}
 }
 
 void lcd_timer_disable(void)
@@ -175,12 +179,11 @@ void lcd_timer_disable(void)
 		}
 		return; //the ISR disables itself. no need to also disable it here.
 	}
-	CRITICAL_SECTION_START; //prevent unwanted timer interrupts while messing with the timer.
-	lcd_status &= ~0x03; //clear both timer flags
-	TCCRxB &= ~(_BV(CSx2) | _BV(CSx1) | _BV(CSx0)); //stop timer
-	TCNTx = 0; //clear timer value
-	TIFRx |= (1 << OCF3A); //clear interrupt flag by writing 1 in register.
-	CRITICAL_SECTION_END;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+	{
+		lcd_status &= ~0x03; //clear both timer flags
+		TIMSKx &= ~_BV(OCIExA); // disable interrupt
+	}
 }
 
 class LcdTimerDisabler
@@ -209,15 +212,15 @@ static void lcd_pulseEnable(void) //lcd
 static void lcd_writebits(uint8_t value) //lcd
 {
 #ifdef LCD_8BIT
-	WRITE(LCD_PINS_D0, value & 0x01);
-	WRITE(LCD_PINS_D1, value & 0x02);
-	WRITE(LCD_PINS_D2, value & 0x04);
-	WRITE(LCD_PINS_D3, value & 0x08);
+	WRITE(LCD_PINS_D0, value & _BV(0));
+	WRITE(LCD_PINS_D1, value & _BV(1));
+	WRITE(LCD_PINS_D2, value & _BV(2));
+	WRITE(LCD_PINS_D3, value & _BV(3));
 #endif
-	WRITE(LCD_PINS_D4, value & 0x10);
-	WRITE(LCD_PINS_D5, value & 0x20);
-	WRITE(LCD_PINS_D6, value & 0x40);
-	WRITE(LCD_PINS_D7, value & 0x80);
+	WRITE(LCD_PINS_D4, value & _BV(4));
+	WRITE(LCD_PINS_D5, value & _BV(5));
+	WRITE(LCD_PINS_D6, value & _BV(6));
+	WRITE(LCD_PINS_D7, value & _BV(7));
 	
 	lcd_pulseEnable();
 }
@@ -234,7 +237,7 @@ static void lcd_send(uint8_t data, uint8_t flags) //lcd
 	}
 #endif
 #ifdef LCD_DEBUG
-	MYSERIAL.print("SEND:"); MYSERIAL.print((flags&LCD_RS_FLAG)?1:0, BIN); MYSERIAL.print(' '); MYSERIAL.println(data, HEX);
+	printf_P(PSTR("lcd_send: %02hX, %c\n"), data, (flags&LCD_RS_FLAG)?1:0);
 #endif //LCD_DEBUG
 }
 
@@ -325,25 +328,21 @@ static void vga_init(void) //vga
 	
 	//setup lcd_timer
 	
-	CRITICAL_SECTION_START;
-	// waveform generation = 0100 = CTC
-	TCCRxB &= ~_BV(WGMx3);
-	TCCRxB |= _BV(WGMx2);
-	TCCRxA &= ~_BV(WGMx1);
-	TCCRxA &= ~_BV(WGMx0);
-	
-	// output mode = 00 (disconnected)
-	TCCRxA &= ~(3 << COMxA0);
-	TCCRxA &= ~(3 << COMxB0);
-	TCCRxA &= ~(3 << COMxC0);
-	OCRxA = (LCD_DEFAULT_DELAY * 2 * (F_CPU/1000000/8)) - 1; //set timer TOP value with an 8x prescaler. The push speed is slowed down a bit.
-	
-	lcd_status = 0;
-	lcd_timer_disable();
-	
-	// enable interrupt
-	TIMSKx = _BV(OCIExA);
-	CRITICAL_SECTION_END;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+	{
+		TCCRxA = 0;
+		TCCRxB = 0;
+		
+		// waveform generation = 0100 = CTC
+		TCCRxB |= _BV(WGMx2);
+		OCRxA = (LCD_DEFAULT_DELAY * LCD_ISR_DELAY_MULTIPLIER * (F_CPU/1000000/8)) - 1; //set timer TOP value with an 8x prescaler.
+		
+		lcd_status = 0;
+		lcd_timer_disable();
+		
+		//start timer. Set clock source
+		TCCRxB |= _BV(CSx1);
+	}
 	
 	fdev_setup_stream(lcdout, vga_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 	lcd_redraw_timer.start();
@@ -436,11 +435,11 @@ void lcd_set_cursor(uint8_t col, uint8_t row) //vga
 	NOMORE(vga_currline, LCD_HEIGHT - 1);
 }
 
-static void lcd_set_cursor_hardware(uint8_t col, uint8_t row, bool nibbleLess = 0) //lcd
+static void lcd_set_cursor_hardware(uint8_t col, uint8_t row, bool doDelay = false) //lcd
 {
 	constexpr uint8_t row_offsets[] = {0x00, 0x40, 0x14, 0x54};
 	lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), 0); 
-	if (nibbleLess)
+	if (doDelay)
 		_delay_us(100);
 }
 
@@ -488,7 +487,7 @@ ISR(TIMERx_COMPA_vect)
 	if ((next_command_type == 1) && !(!(lcd_status & 0x08) && (lcd_curpos % LCD_WIDTH == 0))) //print current char and last char was jump
 	{
 #ifdef LCD_DEBUG
-		MYSERIAL.print("ISR:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
+		printf_P(PSTR("ISR:print: %c\n"), vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
 #endif //LCD_DEBUG
 		lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH], 1);
 		vga_map[lcd_curpos >> 3] &= ~(1 << (7 - (lcd_curpos & 0x07))); //clear bit in vga_map
@@ -499,7 +498,7 @@ ISR(TIMERx_COMPA_vect)
 	else if (next_command_type == 0) //no character to print was found. vga_map is empty. disable timer.
 	{
 #ifdef LCD_DEBUG
-		MYSERIAL.println("ISR:disable");
+		puts_P(PSTR("ISR:disable"));
 #endif //LCD_DEBUG
 		lcd_status &= ~0x01;
 		lcd_timer_disable();
@@ -508,7 +507,7 @@ ISR(TIMERx_COMPA_vect)
 	else //a jump command is required to the destination lcd_curpos
 	{
 #ifdef LCD_DEBUG
-		MYSERIAL.print("ISR:jump: "); MYSERIAL.println(lcd_curpos, DEC);
+		printf_P(PSTR("ISR:jump: %02hX\n"));
 #endif //LCD_DEBUG
 		lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH);
 		lcd_status |= 0x08; // the data is jump
