@@ -64,10 +64,6 @@ extern void lcd_print(double, int = 2);
 #define ESC_H(c,r) "\x1b["#r";"#c"H"
 
 
-
-#define LcdTimerDisabler_START bool oldTimerStatus = lcd_status & 0x01; lcd_timer_disable();
-#define LcdTimerDisabler_END if (oldTimerStatus) lcd_timer_enable();
-
 #ifdef LCD_DEBUG
 extern void lcd_debug();
 #endif //LCD_DEBUG
@@ -100,6 +96,8 @@ extern void lcd_debug();
 #define LCD_STR_ARROW_RIGHT   "\x7E"
 #define LCD_STR_PROGRESS      "\xFF"
 
+#ifdef LCD_DEBUG
 extern uint8_t lcd_custom_character_bank;
+#endif //LCD_DEBUG
 
 #endif //_LCD_H

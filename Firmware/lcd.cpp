@@ -183,10 +183,26 @@ void lcd_timer_disable(void)
 	CRITICAL_SECTION_END;
 }
 
+class LcdTimerDisabler
+{
+public:
+	LcdTimerDisabler(): m_updateEnabled(LCD_TIMER_IS_ENABLED())
+	{
+		lcd_timer_disable();
+	}
+	~LcdTimerDisabler()
+	{
+		if (m_updateEnabled)
+			lcd_timer_enable();
+	}
+private:
+	bool m_updateEnabled;
+};
+
 static void lcd_pulseEnable(void) //lcd
-{  
+{
 	WRITE(LCD_PINS_ENABLE, 1);
-	_delay_us(1);    // enable pulse must be >450ns
+	_delay_us(1); // enable pulse must be >450ns
 	WRITE(LCD_PINS_ENABLE, 0);
 }
 
@@ -265,8 +281,8 @@ static void lcd_clear_hardware(void);
 
 static void lcd_begin()
 {
-	LcdTimerDisabler_START;
-	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 |LCD_HALF_FLAG); // wait min 4.1ms
+	LcdTimerDisabler _LcdTimerDisabler;
+	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 | LCD_HALF_FLAG); // wait min 4.1ms
 	_delay_us(4500);
 	// second try
 	lcd_send(LCD_FUNCTIONSET | LCD_FUNCTIONSET_8BITMODE, 0 | LCD_HALF_FLAG);
@@ -295,8 +311,6 @@ static void lcd_begin()
 	#ifdef VT100
 	lcd_escape[0] = 0;
 	#endif
-	
-	LcdTimerDisabler_END;
 }
 
 static int vga_putchar(char c, FILE *) //vga
@@ -400,19 +414,17 @@ void lcd_home(void) //vga
 // Turn the display on/off (quickly)
 void lcd_display(void) //lcd
 {
-	LcdTimerDisabler_START;
+	LcdTimerDisabler _LcdTimerDisabler;
 	lcd_displaycontrol |= LCD_DISPLAYCONTROL_DISPLAYON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
-	LcdTimerDisabler_END;
 }
 
 #if 0
 void lcd_no_display(void)
 {
-	LcdTimerDisabler_START;
+	LcdTimerDisabler _LcdTimerDisabler;
 	lcd_displaycontrol &= ~LCD_DISPLAYCONTROL_DISPLAYON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
-	LcdTimerDisabler_END;
 }
 #endif
 
@@ -897,22 +909,20 @@ const uint8_t lcd_custom_character_set[][8] PROGMEM = {
 //sends all 8 custom characters to the lcd
 static void lcd_init_custom_characters(void)
 {
-	LcdTimerDisabler_START;
+	LcdTimerDisabler _LcdTimerDisabler;
 	
 	for (uint8_t i = 0; i < 8; i++)
 		lcd_createChar_P(i, &lcd_custom_character_set[i + ((lcd_custom_character_bank >> i) & 1) * 8][0]);
 	
 	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
-	LcdTimerDisabler_END;
 }
 
 static void lcd_set_custom_character(uint8_t charID)
 {
-	LcdTimerDisabler_START;
+	LcdTimerDisabler _LcdTimerDisabler;
 	
 	lcd_createChar_P(charID, &lcd_custom_character_set[charID][0]);
 	lcd_custom_character_bank = (lcd_custom_character_bank & ~(1 << (charID & 0x07))) | (((charID / 8) & 1) << (charID & 0x07)); //set the bank information
 	
 	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
-	LcdTimerDisabler_END;
 }
