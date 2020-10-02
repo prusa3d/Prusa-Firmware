@@ -502,7 +502,7 @@ if [ ! -z "$3" ] ; then
 		DEV_STATUS_SELECTED=$3
 	else
 		echo "$(tput setaf 1)Development argument is wrong!$(tput sgr0)"
-		echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL', 'DEBUG' or 'UNKOWN' $(tput sgr0) are allowed as 3rd argument!$(tput sgr0)"
+		echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL', 'DEBUG' or 'UNKNOWN' $(tput sgr0) are allowed as 3rd argument!$(tput sgr0)"
 		exit 23
 	fi
 fi
