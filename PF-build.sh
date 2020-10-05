@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_28
+# Version: 1.0.6-Build_29
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -127,6 +127,8 @@
 # 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_ONLY. Thank to @leptun for pointing out.
 #                          Change Build number to scrpit commits
 # 02 Oct 2020, 3d-gussner, Add UNKNOWN as argument option
+# 05 Oct 2020, 3d-gussner, Disable pause and warnings using command line with all needed arguments
+#                          Install needed apps under linux if needed.
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -201,13 +203,14 @@ if ! type zip > /dev/null; then
 	elif [ $TARGET_OS == "linux" ]; then
 		echo "$(tput setaf 1)Missing 'zip' which is important to run this script"
 		echo "install it with the command $(tput setaf 2)'sudo apt-get install zip'$(tput sgr0)"
+		sudo apt-get update && apt-get install zip
 		exit 3
 	fi
 fi
 # Check python ... needed during language build
 if ! type python > /dev/null; then
 	if [ $TARGET_OS == "windows" ]; then
-		echo "$(tput setaf 1)Missing 'python' which is important to run this script"
+		echo "$(tput setaf 1)Missing 'python3' which is important to run this script"
 		exit 4
 	elif [ $TARGET_OS == "linux" ]; then
 		echo "$(tput setaf 1)Missing 'python' which is important to run this script"
@@ -215,6 +218,7 @@ if ! type python > /dev/null; then
 		echo "install it with the command $(tput setaf 2)'sudo apt-get install python3'."
 		echo "Check which version of Python3 has been installed using 'ls /usr/bin/python3*'"
 		echo "Use 'sudo ln -sf /usr/bin/python3.x /usr/bin/python' (where 'x' is your version number) to make it default.$(tput sgr0)"
+		sudo apt-get update && apt-get install python3 && ln -sf /usr/bin/python3 /usr/bin/python
 		exit 4
 	fi
 fi
@@ -507,6 +511,14 @@ if [ ! -z "$3" ] ; then
 	fi
 fi
 
+# check if script has been started with arguments 
+if [ "$#" -eq  "0" ] ; then
+	OUTPUT=1
+else
+	OUTPUT=0
+fi
+#echo "Output is:" $OUTPUT
+
 #Set BUILD_ENV_PATH
 cd ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 24
 BUILD_ENV_PATH="$( pwd -P )"
@@ -581,18 +593,24 @@ do
 		echo ""
 		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex | xargs -n1 basename
 		echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
-		read -t 10 -p "Press Enter to continue..."
+		if [ $OUTPUT == "1" ] ; then
+			read -t 10 -p "Press Enter to continue..."
+		fi
 	elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex"  &&  "$LANGUAGES" == "EN_ONLY" ]]; then
 		echo ""
 		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex | xargs -n1 basename
 		echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
-		read -t 10 -p "Press Enter to continue..."
+		if [ $OUTPUT == "1" ] ; then
+			read -t 10 -p "Press Enter to continue..."
+		fi
 	fi
 	if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip"  &&  "$LANGUAGES" == "ALL" ]]; then
 		echo ""
 		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip | xargs -n1 basename
 		echo "$(tput setaf 6)This zip file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
-		read -t 10 -p "Press Enter to continue..."
+		if [ $OUTPUT == "1" ] ; then
+			read -t 10 -p "Press Enter to continue..."
+		fi
 	fi
 	
 	#List some useful data
@@ -654,7 +672,9 @@ do
 
 	echo "Start to build Prusa Firmware ..."
 	echo "Using variant $VARIANT$(tput setaf 3)"
-	sleep 2
+	if [ $OUTPUT == "1" ] ; then
+		sleep 2
+	fi
 	#$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
 	$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
 	echo "$(tput sgr 0)"
@@ -664,7 +684,9 @@ do
 
 		echo "Building multi language firmware" $MULTI_LANGUAGE_CHECK
 		echo "$(tput sgr 0)"
-		sleep 2
+		if [ $OUTPUT == "1" ] ; then
+			sleep 2
+		fi
 		cd $SCRIPT_PATH/lang
 		echo "$(tput setaf 3)"
 		./config.sh || exit 31
@@ -673,7 +695,9 @@ do
 		if [ -f "lang_en.tmp" ]; then
 			echo ""
 			echo "$(tput setaf 6)Previous lang build files already exist these will be cleaned up in 10 seconds.$(tput sgr 0)"
-			read -t 10 -p "Press Enter to continue..."
+			if [ $OUTPUT == "1" ] ; then
+				read -t 10 -p "Press Enter to continue..."
+			fi
 			echo "$(tput setaf 3)"
 			./lang-clean.sh
 			echo "$(tput sgr 0)"
@@ -681,7 +705,9 @@ do
 		if [ -f "progmem.out" ]; then
 			echo ""
 			echo "$(tput setaf 6)Previous firmware build files already exist these will be cleaned up in 10 seconds.$(tput sgr 0)"
-			read -t 10 -p "Press Enter to continue..."
+			if [ $OUTPUT == "1" ] ; then
+				read -t 10 -p "Press Enter to continue..."
+			fi
 			echo "$(tput setaf 3)"
 			./fw-clean.sh
 			echo "$(tput sgr 0)"
@@ -749,7 +775,9 @@ do
 	#sed -i -- "s/^#define LANG_MODE * /#define LANG_MODE              $MULTI_LANGUAGE_CHECK/g" $SCRIPT_PATH/Firmware/config.h
 	sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
 	sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
-	sleep 5
+	if [ $OUTPUT == "1" ] ; then
+		sleep 5
+	fi
 done
 
 # Switch to hex path and list build files
