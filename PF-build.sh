@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_29
+# Version: 1.0.6-Build_30
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -129,6 +129,7 @@
 # 02 Oct 2020, 3d-gussner, Add UNKNOWN as argument option
 # 05 Oct 2020, 3d-gussner, Disable pause and warnings using command line with all needed arguments
 #                          Install needed apps under linux if needed.
+#                          Clean PF-Firmware build when changing git branch
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -519,6 +520,26 @@ else
 fi
 #echo "Output is:" $OUTPUT
 
+#Check git branch has changed
+if ! type git > /dev/null; then
+	BRANCH=""
+	CLEAN_PF_FW_BUILD=0
+else
+	BRANCH=$(git branch --show-current)
+	echo "Branch is:" $BRANCH
+	if [ ! -f "$SCRIPT_PATH/../PF-build.branch" ]; then
+		echo "$BRANCH" >| $SCRIPT_PATH/../PF-build.branch
+		echo "created PF-build.branch file"
+	else
+		PRE_BRANCH=$(cat "$SCRIPT_PATH/../PF-build.branch")
+		echo "Previous branch was:" $PRE_BRANCH
+		if [ ! "$BRANCH" == "$PRE_BRANCH" ] ; then
+			CLEAN_PF_FW_BUILD=1
+			echo "$BRANCH" >| $SCRIPT_PATH/../PF-build.branch
+		fi
+	fi
+fi
+
 #Set BUILD_ENV_PATH
 cd ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 24
 BUILD_ENV_PATH="$( pwd -P )"
@@ -533,6 +554,14 @@ fi
 #Set the BUILD_PATH for Arduino IDE
 cd Prusa-Firmware-build || exit 26
 BUILD_PATH="$( pwd -P )"
+
+#Check git branch has changed
+if [ "$CLEAN_PF_FW_BUILD" == "1" ]; then
+	read -t 10 -p "Branch changed, cleaning Prusa-Firmware-build folder"
+	rm -r *
+else
+	echo "Nothing to clean up"
+fi
 
 for v in ${VARIANTS[*]}
 do
