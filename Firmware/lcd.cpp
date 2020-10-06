@@ -64,13 +64,13 @@ uint8_t lcd_displayfunction = 0;
 uint8_t lcd_displaycontrol = 0;
 uint8_t lcd_displaymode = 0;
 
-volatile uint8_t lcd_curpos;
+uint8_t lcd_curpos;
 //xbbbbaaa: cursor position from 0 to (LCD_WIDTH * LCD_HEIGHT)-1
 //bbbb: index of the cluster in vga_map to search. From 0 to sizeof(vga_map)-1
 //aaa: Rshift value for the bit to search. From 0 to 7
 //x: unused. Leave it clear.
 
-volatile uint8_t vga_map[DIVIDE_ROUND_UP(LCD_WIDTH * LCD_HEIGHT, 8)]; //bitmap for changes on the display. Individual bits are set when lcd_write() is used
+uint8_t vga_map[DIVIDE_ROUND_UP(LCD_WIDTH * LCD_HEIGHT, 8)]; //bitmap for changes on the display. Individual bits are set when lcd_write() is used
 //    01234567890123456789
   
 // 0  00000000111111112222
