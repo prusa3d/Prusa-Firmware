@@ -26,6 +26,11 @@
 #define PRINTER_MK25S_NAME         "MK2.5S"
 #define PRINTER_MK25S_MMU2         20252
 #define PRINTER_MK25S_MMU2_NAME    "MK2.5SMMU2S"
+// *** MK2.5S Bear
+#define PRINTER_MK25S_Bear	     	254
+#define PRINTER_MK25S_Bear_NAME         "MK2.5SBear"
+#define PRINTER_MK25S_Bear_MMU2         20254
+#define PRINTER_MK25S_Bear_MMU2_NAME    "MK2.5SBearMMU2S"
 // *** MK3
 #define PRINTER_MK3                300
 #define PRINTER_MK3_NAME           "MK3"

@@ -2,25 +2,23 @@
 #ifndef _UART2_H
 #define _UART2_H
 
+#define USART2_BAUDRATE  38400UL
+#define MMU_F_CPU       16000000UL
+#define BAUD_PRESCALE (((MMU_F_CPU / (USART2_BAUDRATE * 16UL))) - 1)
+#define BLK                0x2D    // Blank data filler "-"
+
 #include <inttypes.h>
 #include <stdio.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include "mmu.h"
+#include "Arduino.h"
 
+extern volatile unsigned char rxData1, rxData2, rxData3, rxData4, rxData5, rxFINDA;
+extern volatile bool confirmedPayload, confirmedFINDA, atomic_MMU_IRSENS;
 
-#if defined(__cplusplus)
-extern "C" {
-#endif //defined(__cplusplus)
-
-
-extern FILE _uart2io;
-#define uart2io (&_uart2io)
-
+extern void uart2_txPayload(unsigned char*);
 
 extern void uart2_init(void);
 
-extern int8_t uart2_rx_str_P(const char* str);
-
-
-#if defined(__cplusplus)
-}
-#endif //defined(__cplusplus)
 #endif //_UART2_H

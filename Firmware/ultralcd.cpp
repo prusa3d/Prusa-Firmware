@@ -718,6 +718,13 @@ void lcdui_print_cmd_diag(void)
 }
 #endif //CMD_DIAGNOSTICS
 
+// Print M860 Pinda Wait to SetTemp Status (8 chars total)
+void lcdui_print_m860()
+{
+	int chars = 0;
+	chars = lcd_printf_P(_N("P%4.1f/%2d"), current_temperature_pinda, set_target_pinda);
+	lcd_space(8 - chars);
+}
 // Print time (8 chars total)
 void lcdui_print_time(void)
 {
@@ -971,8 +978,8 @@ void lcdui_print_status_screen(void)
     //Print cmd queue diagnostics (8chars)
 	lcdui_print_cmd_diag();
 #else
-    //Print time (8chars)
-	lcdui_print_time();
+	if (m860Active) lcdui_print_m860(); //Print PINDA temp (8chars)
+	else lcdui_print_time(); //Print time (8chars)
 #endif //CMD_DIAGNOSTICS
 
     lcd_set_cursor(0, 3); //line 3
@@ -2489,6 +2496,12 @@ static void mFilamentItem_farm_nozzle()
     mFilamentItem(FARM_PREHEAT_HOTEND_TEMP, 0);
 }
 
+static void mFilamentItem_PRE()
+{
+    bFilamentPreheatState = false;
+    mFilamentItem(previous_target_temperature[active_extruder], target_temperature_bed);
+}
+
 static void mFilamentItem_PLA()
 {
     bFilamentPreheatState = false;
@@ -2563,6 +2576,9 @@ void lcd_generic_preheat_menu()
     }
     else
     {
+		if (previous_target_temperature[active_extruder] > 0) {
+			MENU_ITEM_SUBMENU_P(PSTR("Previous EXT"), mFilamentItem_PRE);
+		}
         MENU_ITEM_SUBMENU_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)),mFilamentItem_PLA);
         MENU_ITEM_SUBMENU_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)),mFilamentItem_PET);
         MENU_ITEM_SUBMENU_P(PSTR("ASA  -  " STRINGIFY(ASA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ASA_PREHEAT_HPB_TEMP)),mFilamentItem_ASA);
@@ -3514,7 +3530,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
 calibrated:
     // Let the machine think the Z axis is a bit higher than it is, so it will not home into the bed
     // during the search for the induction points.
-	if ((PRINTER_TYPE == PRINTER_MK25) || (PRINTER_TYPE == PRINTER_MK2) || (PRINTER_TYPE == PRINTER_MK2_SNMM)) {
+	if ((PRINTER_TYPE == PRINTER_MK25) || (PRINTER_TYPE == PRINTER_MK2) || (PRINTER_TYPE == PRINTER_MK2_SNMM) || PRINTER_TYPE == PRINTER_MK25S_Bear) {
 		current_position[Z_AXIS] = Z_MAX_POS-3.f;
 	}
 	else {
@@ -6299,7 +6315,7 @@ static void mmu_eject_filament(uint8_t filament)
 
 static void mmu_fil_eject_menu()
 {
-    if (bFilamentAction)
+    if (bFilamentAction || !isEXTLoaded)
     {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));

@@ -201,6 +201,8 @@ int bowden_length[4] = {385, 385, 385, 385};
 
 bool is_usb_printing = false;
 bool homing_flag = false;
+bool m860Active = false;
+int set_target_pinda = 0;
 
 bool temp_cal_active = false;
 
@@ -2186,12 +2188,16 @@ bool calibrate_z_auto()
 	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate / 60, active_extruder);
 	st_synchronize();
 	enable_endstops(endstops_enabled);
-	if (PRINTER_TYPE == PRINTER_MK3) {
-		current_position[Z_AXIS] = Z_MAX_POS + 2.0;
+#ifdef Z_MAX_POS_XYZ_CALIBRATION_CORRECTION
+    current_position[Z_AXIS] = Z_MAX_POS + Z_MAX_POS_XYZ_CALIBRATION_CORRECTION;
+#else   
+	if (PRINTER_TYPE == PRINTER_MK3 || PRINTER_TYPE == PRINTER_MK25S_Bear) {		current_position[Z_AXIS] = Z_MAX_POS + 2.0;
+      current_position[Z_AXIS] = Z_MAX_POS + 2.0;
 	}
 	else {
 		current_position[Z_AXIS] = Z_MAX_POS + 9.0;
 	}
+  #endif //Z_MAX_POS_XYZ_CALIBRATION_CORRECTION
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	return true;
 }
@@ -3142,17 +3148,13 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     if (mmu_enabled)
     {
         if (!automatic) {
-            if (saved_printing) mmu_eject_filament(mmu_extruder, false); //if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
+            mmu_eject_filament(mmu_extruder, false); //if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
             mmu_M600_wait_and_beep();
-            if (saved_printing) {
-
-                lcd_clear();
-                lcd_set_cursor(0, 2);
-                lcd_puts_P(_T(MSG_PLEASE_WAIT));
-
-                mmu_command(MmuCmd::R0);
-                manage_response(false, false);
-            }
+            lcd_clear();
+            lcd_set_cursor(0, 2);
+            lcd_puts_P(_T(MSG_PLEASE_WAIT));
+            mmu_command(MmuCmd::R0);
+            manage_response(false, false);
         }
         mmu_M600_load_filament(automatic, HotendTempBckp);
     }
@@ -7943,10 +7945,9 @@ Sigma_Exit:
     */
 	case 860: 
 	{
-		int set_target_pinda = 0;
-
 		if (code_seen('S')) {
 			set_target_pinda = code_value();
+            m860Active = true;
 		}
 		else {
 			break;
@@ -7980,6 +7981,7 @@ Sigma_Exit:
 			manage_inactivity();
 			lcd_update(0);
 		}
+    m860Active = false;
 		LCD_MESSAGERPGM(MSG_OK);
 
 		break;
@@ -8615,7 +8617,7 @@ Sigma_Exit:
 			{
 				st_synchronize();
 				mmu_command(MmuCmd::T0 + tmp_extruder);
-				manage_response(true, true, MMU_TCODE_MOVE);
+				manage_response(true, true);
 			}
 		}
 	  }
@@ -8623,7 +8625,7 @@ Sigma_Exit:
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
-			mmu_continue_loading(is_usb_printing  || (lcd_commands_type == LcdCommands::Layer1Cal));
+			mmu_continue_loading();
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
 		}
@@ -8662,12 +8664,12 @@ Sigma_Exit:
 			      if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
                   {
                       mmu_command(MmuCmd::K0 + tmp_extruder);
-                      manage_response(true, true, MMU_UNLOAD_MOVE);
+                      manage_response(true, true);
                   }
 #endif //defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
-				  manage_response(true, true, MMU_TCODE_MOVE);
-		          mmu_continue_loading(is_usb_printing  || (lcd_commands_type == LcdCommands::Layer1Cal));
+				  manage_response(true, true);
+		          mmu_continue_loading();
 
 				  mmu_extruder = tmp_extruder; //filament change is finished
 
@@ -10974,6 +10976,7 @@ bool recover_machine_state_after_power_panic()
   // 7) Recover the target temperatures.
   target_temperature[active_extruder] = eeprom_read_word((uint16_t*)EEPROM_UVLO_TARGET_HOTEND);
   target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
+    previous_target_temperature[active_extruder] = target_temperature[active_extruder];
 
   // 8) Recover extruder multipilers
   extruder_multiplier[0] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0));
