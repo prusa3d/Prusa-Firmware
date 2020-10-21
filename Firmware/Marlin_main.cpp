@@ -7994,9 +7994,17 @@ Sigma_Exit:
 	{
         if (!isPrintPaused)
         {
-            st_synchronize();
-            cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
-            lcd_pause_print();
+            if(CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB){
+              st_synchronize();
+              cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
+              lcd_pause_print();
+              CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE;
+            }
+            else{
+              st_synchronize();
+              cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
+              lcd_pause_print();
+            }
         }
 	}
 	break;
@@ -9210,8 +9218,13 @@ void FlushSerialRequestResend()
 void ClearToSend()
 {
     previous_millis_cmd = _millis();
-	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)) 
-		SERIAL_PROTOCOLLNRPGM(MSG_OK);
+	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)){
+    SERIAL_PROTOCOLLNRPGM(MSG_OK);
+  } 
+	else if(CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE){
+      SERIAL_PROTOCOLLNRPGM(MSG_OK);
+      CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_UI;
+  }
 }
 
 #if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
