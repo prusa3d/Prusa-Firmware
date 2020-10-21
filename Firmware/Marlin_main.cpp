@@ -8000,7 +8000,7 @@ Sigma_Exit:
           cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
           lcd_pause_print();
         
-          if(CMDBufferType == 1){                                                                 // it only starts when the display came via the usb / serial line
+          if(CMDBufferType == CMDBUFFER_CURRENT_TYPE_USB){                                                                 // it only starts when the display came via the usb / serial line
             CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE;                         // CMDBUFFER_CURRENT_TYPE set tu usb multiple comacnd 
           }   
         }
