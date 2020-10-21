@@ -7996,7 +7996,7 @@ Sigma_Exit:
         {
           uint8_t usbCall = 0;
           if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB){
-            usbCall = 1 
+            usbCall = 1; 
           }
         
           st_synchronize();
