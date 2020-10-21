@@ -7994,17 +7994,14 @@ Sigma_Exit:
 	{
         if (!isPrintPaused)
         {
-          uint8_t usbCall = 0;
-          if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB){
-            usbCall = 1; 
-          }
+          uint8_t CMDBufferType = CMDBUFFER_CURRENT_TYPE;                                         // save CMDBUFFER CURRENT_TYPE value before function cmdqueue_pop_front()
         
           st_synchronize();
           cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
           lcd_pause_print();
         
-          if(usbCall == 1){
-            CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE;
+          if(CMDBufferType == 1){                                                                 // it only starts when the display came via the usb / serial line
+            CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE;                         // CMDBUFFER_CURRENT_TYPE set tu usb multiple comacnd 
           }   
         }
 	}
@@ -9224,7 +9221,7 @@ void ClearToSend()
   } 
 	else if(CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE){
     SERIAL_PROTOCOLLNRPGM(MSG_OK);
-    CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_UI;
+    CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_UI;                                     // CMDBUFFER_CURRENT_TYPE is set back to UI, that means no more OK will be printed to serial line
   }
 }
 
