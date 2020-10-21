@@ -7994,17 +7994,18 @@ Sigma_Exit:
 	{
         if (!isPrintPaused)
         {
-            if(CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB){
-              st_synchronize();
-              cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
-              lcd_pause_print();
-              CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE;
-            }
-            else{
-              st_synchronize();
-              cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
-              lcd_pause_print();
-            }
+          uint8_t usbCall = 0;
+          if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB){
+            usbCall = 1 
+          }
+        
+          st_synchronize();
+          cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
+          lcd_pause_print();
+        
+          if(usbCall == 1){
+            CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE;
+          }   
         }
 	}
 	break;
@@ -9222,8 +9223,8 @@ void ClearToSend()
     SERIAL_PROTOCOLLNRPGM(MSG_OK);
   } 
 	else if(CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_MULTIPLE){
-      SERIAL_PROTOCOLLNRPGM(MSG_OK);
-      CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_UI;
+    SERIAL_PROTOCOLLNRPGM(MSG_OK);
+    CMDBUFFER_CURRENT_TYPE = CMDBUFFER_CURRENT_TYPE_UI;
   }
 }
 
