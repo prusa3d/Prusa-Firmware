@@ -8968,6 +8968,7 @@ void lcd_ignore_click(bool b)
 }
 
 void lcd_finishstatus() {
+  SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
   int len = strlen(lcd_status_message);
   if (len > 0) {
     while (len < LCD_WIDTH) {
