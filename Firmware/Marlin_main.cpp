@@ -2631,7 +2631,6 @@ void gcode_M105(uint8_t extruder)
     }
 #endif
     SERIAL_PROTOCOLLN("");
-    KEEPALIVE_STATE(NOT_BUSY);
 }
 
 #ifdef TMC2130
