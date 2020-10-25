@@ -6863,12 +6863,10 @@ Sigma_Exit:
           SERIAL_ECHOPGM(STRINGIFY(EXTRUDERS)); 
           SERIAL_ECHOPGM(" UUID:"); 
           SERIAL_ECHOLNPGM(MACHINE_UUID);
-      }
-      
 #ifdef EXTENDED_CAPABILITIES_REPORT
-      extended_capabilities_report();
+          extended_capabilities_report();
 #endif //EXTENDED_CAPABILITIES_REPORT
-      
+      }
       break;
 
     /*!
