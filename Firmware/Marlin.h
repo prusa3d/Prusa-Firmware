@@ -116,7 +116,6 @@ void serial_echopair_P(const char *s_P, unsigned long v);
 void serialprintPGM(const char *str);
 
 bool is_buffer_empty();
-void get_command();
 void process_commands();
 void ramming();
 
