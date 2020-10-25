@@ -582,8 +582,6 @@ void get_command()
        ((serial_char == '#' || serial_char == ':') && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
     {
-      if(card.eof()) break;
-
       if(serial_char=='#')
         stop_buffering=true;
 
@@ -631,6 +629,9 @@ void get_command()
 
       comment_mode = false; //for new command
       serial_count = 0; //clear buffer
+    
+      if(card.eof()) break;
+    
       // The following line will reserve buffer space if available.
       if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
           return;
