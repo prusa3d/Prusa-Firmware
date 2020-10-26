@@ -24,12 +24,16 @@ extern uint16_t mmu_power_failures;
 
 #define MMU_FILAMENT_UNKNOWN 255
 
+#define MMU_NUM_EXTRUDERS 5
+#define MMU_NUM_FILAMENT_TYPES 3
+
 #define MMU_NO_MOVE 0
 #define MMU_UNLOAD_MOVE 1
 #define MMU_LOAD_MOVE 2
 #define MMU_TCODE_MOVE 3
 
-#define MMU_LOAD_FEEDRATE 19.02f //mm/s
+#define MMU_DEFAULT_LOAD_FEEDRATE 19.02f //mm/s
+#define MMU_LOAD_FEEDRATE mmu_load_feedrate()
 #define MMU_LOAD_TIME_MS 2000 //should be fine tuned to load time for shortest allowed PTFE tubing and maximum loading speed
 
 enum class MmuCmd : uint_least8_t
@@ -87,7 +91,7 @@ extern void mmu_loop(void);
 
 extern void mmu_reset(void);
 
-extern int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament);
+extern int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament, float rel_load_speed, float rel_unload_speed);
 
 extern void mmu_command(MmuCmd cmd);
 

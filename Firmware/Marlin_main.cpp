@@ -7759,9 +7759,17 @@ Sigma_Exit:
 		{
 			uint8_t extruder = 255;
 			uint8_t filament = FILAMENT_UNDEFINED;
+			float relative_speed = 1.0;
+			float relative_unload_speed = 1.0;
 			if(code_seen('E')) extruder = code_value();
 			if(code_seen('F')) filament = code_value();
-			mmu_set_filament_type(extruder, filament);
+			if(code_seen('S'))
+			  relative_speed = relative_unload_speed = code_value();
+			if(code_seen('U')) relative_unload_speed = code_value();
+			mmu_set_filament_type(extruder,
+					      filament,
+					      relative_speed,
+					      relative_unload_speed);
 		}
 	}
 	break;
