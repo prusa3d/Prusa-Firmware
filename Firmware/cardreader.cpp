@@ -1,4 +1,5 @@
 #include "Marlin.h"
+#include "cmdqueue.h"
 #include "cardreader.h"
 #include "ultralcd.h"
 #include "stepper.h"

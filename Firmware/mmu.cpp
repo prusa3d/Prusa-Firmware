@@ -9,6 +9,7 @@
 #include "Configuration_prusa.h"
 #include "fsensor.h"
 #include "cardreader.h"
+#include "cmdqueue.h"
 #include "ultralcd.h"
 #include "sound.h"
 #include "printers.h"

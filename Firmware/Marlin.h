@@ -240,22 +240,11 @@ void Stop();
 bool IsStopped();
 void finishAndDisableSteppers();
 
-//put an ASCII command at the end of the current buffer.
-void enquecommand(const char *cmd, bool from_progmem = false);
-
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
 
-//put an ASCII command at the begin of the current buffer
-void enquecommand_front(const char *cmd, bool from_progmem = false);
-
 //put an ASCII command at the begin of the current buffer, read from flash
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
-
-void repeatcommand_front();
-
-// Remove all lines from the command queue.
-void cmdqueue_reset();
 
 void prepare_arc_move(char isclockwise);
 void clamp_to_software_endstops(float target[3]);

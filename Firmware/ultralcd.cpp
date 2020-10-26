@@ -1582,6 +1582,7 @@ void lcd_return_to_status()
 //! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
     stop_and_save_print_to_ram(0.0, -default_retraction);
     lcd_return_to_status();
     isPrintPaused = true;
@@ -1589,7 +1590,6 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
-	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
 }
 
 
@@ -6740,6 +6740,7 @@ void lcd_resume_print()
     lcd_return_to_status();
     lcd_reset_alert_level(); //for fan speed error
     if (fan_error_selftest()) return; //abort if error persists
+    cmdqueue_serial_disabled = false;
 
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
@@ -7352,6 +7353,7 @@ void lcd_print_stop()
     if (!card.sdprinting) {
         SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
     }
+    cmdqueue_serial_disabled = false; //for when canceling a print with a fancheck
 
     CRITICAL_SECTION_START;
 
@@ -8780,27 +8782,29 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 /** Menu action functions **/
 
 static bool check_file(const char* filename) {
-	if (farm_mode) return true;
+	if (farm_mode)
+		return true;
 	bool result = false;
 	uint32_t filesize;
 	card.openFile((char*)filename, true);
 	filesize = card.getFileSize();
 	if (filesize > END_FILE_SECTION) {
 		card.setIndex(filesize - END_FILE_SECTION);
-		
 	}
+	cmdqueue_reset();
+	cmdqueue_serial_disabled = true;
 	
-		while (!card.eof() && !result) {
+	while (!card.eof() && !result) {
 		card.sdprinting = true;
 		get_command();
 		result = check_commands();
-		
 	}
+	
+	cmdqueue_serial_disabled = false;
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
 	lcd_finishstatus();
 	return result;
-	
 }
 
 static void menu_action_sdfile(const char* filename)
