@@ -97,8 +97,7 @@ void cmdqueue_reset()
 {
 	while (buflen)
 	{
-		uint8_t cmdqueue_current_type = *(cmdbuffer+bufindr);
-		// printf_P(PSTR("dumping: \"%s\" of type %hu\n"), cmdbuffer+bufindr+CMDHDRSIZE, cmdqueue_current_type);
+		// printf_P(PSTR("dumping: \"%s\" of type %hu\n"), cmdbuffer+bufindr+CMDHDRSIZE, CMDBUFFER_CURRENT_TYPE);
 		ClearToSend();
 		cmdqueue_pop_front();
 	}
