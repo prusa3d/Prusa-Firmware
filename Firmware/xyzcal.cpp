@@ -497,7 +497,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	if (has_temperature_compensation())
 		z0 = _Z - 20; // normal PINDA
 	else
-		z0 = _Z + 20; // super PINDA
+		z0 = _Z + 10; // super PINDA
 
 	xyzcal_lineXYZ_to(_X, _Y, z0, 500, 0);
 
