@@ -868,7 +868,7 @@ void dcode_2130()
 			}
 			else if (strncmp(strchr_pointer + 7, "wave", 4) == 0)
 			{
-				uint8_t fac1000 = atoi(strchr_pointer + 11) & 0xffff;
+				int8_t fac1000 = atoi(strchr_pointer + 11) & 0xffff;
 				if (fac1000 < TMC2130_WAVE_FAC1000_MIN) fac1000 = 0;
 				if (fac1000 > TMC2130_WAVE_FAC1000_MAX) fac1000 = TMC2130_WAVE_FAC1000_MAX;
 				tmc2130_set_wave(axis, 247, fac1000);
