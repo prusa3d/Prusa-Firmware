@@ -731,7 +731,9 @@ do
 		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 29
 	else
 		echo "$(tput setaf 6)Configuration_prusa.h already exist it will be overwritten in 10 seconds by the chosen variant.$(tput sgr 0)"
-		read -t 10 -p "Press Enter to continue..."
+		if [ $OUTPUT == "1" ] ; then
+			read -t 10 -p "Press Enter to continue..."
+		fi
 		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 29
 	fi
 
