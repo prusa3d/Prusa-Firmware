@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_30
+# Version: 1.0.6-Build_32
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -125,11 +125,15 @@
 # 12 May 2020, DRracer   , Cleanup double MK2/s MK25/s `not_tran` and `not_used` files
 # 13 May 2020, leptun    , If cleanup files do not exist don't try to.
 # 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_ONLY. Thank to @leptun for pointing out.
-#                          Change Build number to scrpit commits
+#                          Change Build number to scrpit commits 'git rev-list --count HEAD PF-build.sh'
 # 02 Oct 2020, 3d-gussner, Add UNKNOWN as argument option
 # 05 Oct 2020, 3d-gussner, Disable pause and warnings using command line with all needed arguments
 #                          Install needed apps under linux if needed.
 #                          Clean PF-Firmware build when changing git branch
+# 02 Nov 2020, 3d-gussner, Check for "gawk" on Linux
+#                          Add argument to change build number automatically to current commit or define own number
+#                          Update exit numbers 1-13 for prepare build env 21-29 for prepare compiling 30-36 compiling
+
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
 
@@ -220,6 +224,16 @@ if ! type python > /dev/null; then
 		echo "Check which version of Python3 has been installed using 'ls /usr/bin/python3*'"
 		echo "Use 'sudo ln -sf /usr/bin/python3.x /usr/bin/python' (where 'x' is your version number) to make it default.$(tput sgr0)"
 		sudo apt-get update && apt-get install python3 && ln -sf /usr/bin/python3 /usr/bin/python
+		exit 4
+	fi
+fi
+
+# Check gawk ... needed during language build
+if ! type gawk > /dev/null; then
+	if [ $TARGET_OS == "linux" ]; then
+		echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
+		echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
+		sudo apt-get update && apt-get install gawk
 		exit 4
 	fi
 fi
@@ -430,8 +444,36 @@ fi
 #### Start 
 cd $SCRIPT_PATH
 
-# First argument defines which variant of the Prusa Firmware will be compiled 
-if [ -z "$1" ] ; then
+# Check if git is availible
+if type git > /dev/null; then
+	git_availible="1"
+fi
+
+#arguments
+#'-v' Variant "All" or variant file name
+#'-l' Languages "ALL" for multi language or "EN_ONLY" for english only
+#'-d' Devel build "GOLD", "RC", "BETA", "ALPHA", "DEBUG", "DEVEL" and "UNKNOWN"
+#'-b' Build/commit number "Auto" needs git or a number
+#'-o' Output "1" force or "0" block output and delays 
+while getopts v:l:d:b:o: flag
+	do
+	    case "${flag}" in
+	        v) variant_flag=${OPTARG};;
+	        l) language_flag=${OPTARG};;
+	        d) devel_flag=${OPTARG};;
+			b) build_flag=${OPTARG};;
+			o) output_flag=${OPTARG};;
+	    esac
+	done
+#echo "variant_flag: $variant_flag";
+#echo "language_flag: $language_flag";
+#echo "devel_flag: $devel_flag";
+#echo "build_flag: $build_flag";
+#echo "output_flag: $output_flag";
+
+#
+# '-v' argument defines which variant of the Prusa Firmware will be compiled 
+if [ -z "$variant_flag" ] ; then
 	# Select which variant of the Prusa Firmware will be compiled, like
 	PS3="Select a variant: "
 	while IFS= read -r -d $'\0' f; do
@@ -451,7 +493,7 @@ if [ -z "$1" ] ; then
 				;;
 			"Quit")
 				echo "You chose to stop"
-					exit
+					exit 20
 					;;
 			*)
 				echo "$(tput setaf 1)This is not a valid variant$(tput sgr0)"
@@ -459,21 +501,28 @@ if [ -z "$1" ] ; then
 		esac
 	done
 else
-	if [ -f "$SCRIPT_PATH/Firmware/variants/$1" ] ; then 
-		VARIANTS=$1
+	if [ -f "$SCRIPT_PATH/Firmware/variants/$variant_flag" ] ; then 
+		VARIANTS=$variant_flag
+	elif [ "$variant_flag" == "All" ] ; then
+		while IFS= read -r -d $'\0' f; do
+			options[i++]="$f"
+		done < <(find Firmware/variants/ -maxdepth 1 -type f -name "*.h" -print0 )
+		VARIANT="All"
+		VARIANTS=${options[*]}
 	else
-		echo "$(tput setaf 1)$1 could not be found in Firmware/variants please choose a valid one$(tput setaf 2)"
+		echo "$(tput setaf 1)Argument $variant_flag could not be found in Firmware/variants please choose a valid one.$(tput sgr0)"
+		echo "Only $(tput setaf 2)'All'$(tput sgr0) and file names below are allowed as variant '-v' argument.$(tput setaf 2)"
 		ls -1 $SCRIPT_PATH/Firmware/variants/*.h | xargs -n1 basename
 		echo "$(tput sgr0)"
 		exit 21
 	fi
 fi
 
-#Second argument defines if it is an english only version. Known values EN_ONLY / ALL
+#'-l' argument defines if it is an english only version. Known values EN_ONLY / ALL
 #Check default language mode
 MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "^#define LANG_MODE *" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
-if [ -z "$2" ] ; then
+if [ -z "$language_flag" ] ; then
 	PS3="Select a language: "
 	echo
 	echo "Which lang-build do you want?"
@@ -493,27 +542,43 @@ if [ -z "$2" ] ; then
 		esac
 	done
 else
-	if [[ "$2" == "ALL" || "$2" == "EN_ONLY" ]] ; then
-		LANGUAGES=$2
+	if [[ "$language_flag" == "ALL" || "$language_flag" == "EN_ONLY" ]] ; then
+		LANGUAGES=$language_flag
 	else
 		echo "$(tput setaf 1)Language argument is wrong!$(tput sgr0)"
-		echo "Only $(tput setaf 2)'ALL'$(tput sgr0) or $(tput setaf 2)'EN_ONLY'$(tput sgr0) are allowed as 2nd argument!"
+		echo "Only $(tput setaf 2)'ALL'$(tput sgr0) or $(tput setaf 2)'EN_ONLY'$(tput sgr0) are allowed as language '-l' argument!"
 		exit 22
 	fi
 fi
-#Check if DEV_STATUS is selected via argument 3
-if [ ! -z "$3" ] ; then
-	if [[ "$3" == "GOLD" || "$3" == "RC" || "$3" == "BETA" || "$3" == "ALPHA" || "$3" == "DEVEL" || "$3" == "DEBUG" || "$3" == "UNKNOWN" ]] ; then
-		DEV_STATUS_SELECTED=$3
+#Check if DEV_STATUS is selected via argument '-d'
+if [ ! -z "$devel_flag" ] ; then
+	if [[ "$devel_flag" == "GOLD" || "$devel_flag" == "RC" || "$devel_flag" == "BETA" || "$devel_flag" == "ALPHA" || "$devel_flag" == "DEVEL" || "$devel_flag" == "DEBUG" || "$devel_flag" == "UNKNOWN" ]] ; then
+		DEV_STATUS_SELECTED=$devel_flag
 	else
 		echo "$(tput setaf 1)Development argument is wrong!$(tput sgr0)"
-		echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL', 'DEBUG' or 'UNKNOWN' $(tput sgr0) are allowed as 3rd argument!$(tput sgr0)"
+		echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL', 'DEBUG' or 'UNKNOWN' $(tput sgr0) are allowed as devel '-d' argument!$(tput sgr0)"
 		exit 23
 	fi
 fi
 
+#Check if Build is selected via argument '-b'
+if [ ! -z "$build_flag" ] ; then
+	if [[ "$build_flag" == "Auto" && "$git_availible" == "1" ]] ; then
+		echo "Build changed to $build_flag"
+		BUILD=$(git rev-list --count HEAD)
+	elif [[ $build_flag =~ ^[0-9]+$ ]] ; then
+		BUILD=$build_flag
+	else
+		echo "$(tput setaf 1)Build number argument is wrong!$(tput sgr0)"
+		echo "Only $(tput setaf 2)'Auto' (git needed) or numbers $(tput sgr0) are allowed as build '-b' argument!$(tput sgr0)"
+		exit 24
+
+	fi
+	echo "New Build number is: $BUILD"
+fi
+
 # check if script has been started with arguments 
-if [ "$#" -eq  "0" ] ; then
+if [[ "$#" -eq  "0" || "$output_flag" == 1 ]] ; then
 	OUTPUT=1
 else
 	OUTPUT=0
@@ -521,12 +586,12 @@ fi
 #echo "Output is:" $OUTPUT
 
 #Check git branch has changed
-if ! type git > /dev/null; then
+if [ ! -z "git_availible" ]; then
 	BRANCH=""
 	CLEAN_PF_FW_BUILD=0
 else
 	BRANCH=$(git branch --show-current)
-	echo "Branch is:" $BRANCH
+	echo "Current branch is:" $BRANCH
 	if [ ! -f "$SCRIPT_PATH/../PF-build.branch" ]; then
 		echo "$BRANCH" >| $SCRIPT_PATH/../PF-build.branch
 		echo "created PF-build.branch file"
@@ -541,18 +606,18 @@ else
 fi
 
 #Set BUILD_ENV_PATH
-cd ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 24
+cd ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 25
 BUILD_ENV_PATH="$( pwd -P )"
 
 cd ../..
 
 #Checkif BUILD_PATH exists and if not creates it
 if [ ! -d "Prusa-Firmware-build" ]; then
-    mkdir Prusa-Firmware-build  || exit 25
+    mkdir Prusa-Firmware-build  || exit 26
 fi
 
 #Set the BUILD_PATH for Arduino IDE
-cd Prusa-Firmware-build || exit 26
+cd Prusa-Firmware-build || exit 27
 BUILD_PATH="$( pwd -P )"
 
 #Check git branch has changed
@@ -568,8 +633,15 @@ do
 	VARIANT=$(basename "$v" ".h")
 	# Find firmware version in Configuration.h file and use it to generate the hex filename
 	FW=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g')
-	# Find build version in Configuration.h file and use it to generate the hex filename
-	BUILD=$(grep --max-count=1 "\bFW_COMMIT_NR\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d ' ' -f3)
+	if [ -z "$BUILD" ] ; then	
+		# Find build version in Configuration.h file and use it to generate the hex filename
+		BUILD=$(grep --max-count=1 "\bFW_COMMIT_NR\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d ' ' -f3)
+	else
+		# Find and replace build version in Configuration.h file
+		BUILD_ORG=$(grep --max-count=1 "\bFW_COMMIT_NR\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d ' ' -f3)
+		echo "Original build number: $BUILD_ORG"
+		sed -i -- "s/^#define FW_COMMIT_NR.*/#define FW_COMMIT_NR $BUILD/g" $SCRIPT_PATH/Firmware/Configuration.h
+	fi
 	# Check if the motherboard is an EINSY and if so only one hex file will generated
 	MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
 	# Check development status
@@ -613,7 +685,7 @@ do
 	fi
 	#Prepare hex files folders
 	if [ ! -d "$SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD" ]; then
-		mkdir -p $SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD || exit 27
+		mkdir -p $SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD || exit 28
 	fi
 	OUTPUT_FOLDER="PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD"
 	
@@ -656,11 +728,11 @@ do
 
 	#Prepare Firmware to be compiled by copying variant as Configuration_prusa.h
 	if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
-		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 28
+		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 29
 	else
 		echo "$(tput setaf 6)Configuration_prusa.h already exist it will be overwritten in 10 seconds by the chosen variant.$(tput sgr 0)"
 		read -t 10 -p "Press Enter to continue..."
-		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 28
+		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 29
 	fi
 
 	#Prepare Configuration.h to use the correct FW_DEV_VERSION to prevent LCD messages when connecting with OctoPrint
@@ -705,7 +777,7 @@ do
 		sleep 2
 	fi
 	#$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
-	$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
+	$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 30
 	echo "$(tput sgr 0)"
 
 	if [ $LANGUAGES ==  "ALL" ]; then
@@ -798,8 +870,12 @@ do
 	then
 		rm $SCRIPT_PATH/lang/not_used.txt
 	fi
+	# Restore files to previous state
 	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
 	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
+	if [ ! -z "$BUILD_ORG" ] ; then
+		sed -i -- "s/^#define FW_COMMIT_NR.*/#define FW_COMMIT_NR $BUILD_ORG/g" $SCRIPT_PATH/Firmware/Configuration.h
+	fi
 	echo $MULTI_LANGUAGE_CHECK
 	#sed -i -- "s/^#define LANG_MODE * /#define LANG_MODE              $MULTI_LANGUAGE_CHECK/g" $SCRIPT_PATH/Firmware/config.h
 	sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
