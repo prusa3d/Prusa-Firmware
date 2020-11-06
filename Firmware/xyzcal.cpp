@@ -494,7 +494,11 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	xyzcal_lineXYZ_to(_X, _Y, z0 + 400, 500, -1);
 	xyzcal_lineXYZ_to(_X, _Y, z0 - 400, 500, 1);
 
-	z0 = _Z - 20;
+	if (has_temperature_compensation())
+	    z0 = _Z - 20; // normal PINDA
+	else
+	    z0 = _Z + 10; // alternate PINDA
+
 	xyzcal_lineXYZ_to(_X, _Y, z0, 500, 0);
 
 //	xyzcal_lineXYZ_to(x0, y0, z0 - 100, 500, 1);
