@@ -6399,7 +6399,8 @@ Sigma_Exit:
       SERIAL_PROTOCOLPGM("ok ");
       gcode_M105(extruder);
       
-      return;
+      cmdqueue_pop_front(); //prevent an ok after the command since this command uses an ok at the beginning.
+      
       break;
     }
 
