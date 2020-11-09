@@ -499,7 +499,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
         return xyzcal_find_point_center2A(x0, y0, z0, delay_us);
     } else {
         // try searching harder, each PINDA is different
-        for(z0 = _Z - 20; z0 < _Z + 60; z0 += 20 ){ // alternate PINDA
+        for(z0 = _Z - 20; z0 <= _Z + 140; z0 += 20 ){ // alternate PINDA
             int8_t rv = xyzcal_find_point_center2A(x0, y0, z0, delay_us);
             printf_P(PSTR(" z0=%d"), z0);
             if( rv != 0 ){
