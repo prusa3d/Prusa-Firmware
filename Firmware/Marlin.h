@@ -4,7 +4,7 @@
 #ifndef MARLIN_H
 #define MARLIN_H
 
-#define  FORCE_INLINE __attribute__((always_inline)) inline
+#include "macros.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -238,8 +238,8 @@ void get_coordinates();
 void prepare_move();
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void Stop();
-
 bool IsStopped();
+void finishAndDisableSteppers();
 
 //put an ASCII command at the end of the current buffer.
 void enquecommand(const char *cmd, bool from_progmem = false);
@@ -287,11 +287,6 @@ FORCE_INLINE unsigned long millis_nc() {
 void setPwmFrequency(uint8_t pin, int val);
 #endif
 
-#ifndef CRITICAL_SECTION_START
-  #define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
-  #define CRITICAL_SECTION_END    SREG = _sreg;
-#endif //CRITICAL_SECTION_START
-
 extern bool fans_check_enabled;
 extern float homing_feedrate[];
 extern uint8_t axis_relative_modes;
@@ -299,7 +294,7 @@ extern float feedrate;
 extern int feedmultiply;
 extern int extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders
 extern int extruder_multiply[EXTRUDERS]; // sets extrude multiply factor (in percent) for each extruder individually
-extern float volumetric_multiplier[EXTRUDERS]; // reciprocal of cross-sectional area of filament (in square millimeters), stored this way to reduce computational burden in planner
+extern float extruder_multiplier[EXTRUDERS]; // reciprocal of cross-sectional area of filament (in square millimeters), stored this way to reduce computational burden in planner
 extern float current_position[NUM_AXIS] ;
 extern float destination[NUM_AXIS] ;
 extern float min_pos[3];
@@ -310,9 +305,9 @@ extern int8_t lcd_change_fil_state;
 extern float default_retraction;
 
 #ifdef TMC2130
-bool homeaxis(int axis, bool doError = true, uint8_t cnt = 1, uint8_t* pstep = 0);
+void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 #else
-bool homeaxis(int axis, bool doError = true, uint8_t cnt = 1);
+void homeaxis(int axis, uint8_t cnt = 1);
 #endif //TMC2130
 
 
@@ -334,7 +329,6 @@ extern unsigned long stoptime;
 extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
-extern bool temp_cal_active;
 extern bool loading_flag;
 extern unsigned int usb_printing_counter;
 
@@ -512,5 +506,7 @@ void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
 void marlin_wait_for_click();
 void raise_z_above(float target, bool plan=true);
+
+extern "C" void softReset();
 
 #endif

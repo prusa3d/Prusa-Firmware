@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "io_atmega2560.h"
 
 // All this is about silencing the heat bed, as it behaves like a loudspeaker.
 // Basically, we want the PWM heating switched at 30Hz (or so) which is a well ballanced
@@ -59,7 +58,6 @@ enum class States : uint8_t {
 	RISE,          ///< 16 fast PWM cycles with increasing duty up to steady ON
 	RISE_TO_ONE,   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 	ONE,           ///< steady 1 (ON), no change for the whole period 
-	ONE_TO_FALL,   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 	FALL,          ///< 16 fast PWM cycles with decreasing duty down to steady OFF
 	FALL_TO_ZERO   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 };
@@ -155,12 +153,7 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
 			return;           // want full duty for the next ONE cycle again - so keep on heating and just wait for the next timer ovf
 		}
 		// otherwise moving towards FALL
-		// @@TODO it looks like ONE_TO_FALL isn't necessary, there are no artefacts at all
 		state = States::ONE;//_TO_FALL;
-//		TCCR0B = (1 << CS00);      // change prescaler to 1, i.e. 62.5kHz
-//		break;
-//	case States::ONE_TO_FALL:
-//		OCR0B = 255;              // zero duty
 		state=States::FALL;
 		fastCounter = fastMax - 1;// we'll do 16-1 cycles of RISE
 		TCNT0 = 255;              // force overflow on the next clock cycle
