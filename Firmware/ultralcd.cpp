@@ -8795,7 +8795,6 @@ static bool check_file(const char* filename) {
 	lcd_clear();
 	lcd_puts_at_P(0, 1, _i("Checking file"));////c=20 r=1
 	lcd_set_cursor(0, 2);
-	printf_P(PSTR("startPos=%lu\n"), startPos);
 	while (!card.eof() && !result) {
 		for (; blocksPrinted < (((card.get_sdpos() - startPos) * LCD_WIDTH) / bytesToCheck); blocksPrinted++)
 			lcd_print('\xFF'); //simple progress bar
