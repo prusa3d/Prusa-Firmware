@@ -478,7 +478,7 @@ int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 
 #define MAX_DIAMETR 600
 #define XYZCAL_FIND_CENTER_DIAGONAL
-
+int8_t xyzcal_find_point_center2A(int16_t x0, int16_t y0, int16_t z0, uint16_t delay_us);
 int8_t xyzcal_find_point_center2(uint16_t delay_us)
 {
 	printf_P(PSTR("xyzcal_find_point_center2\n"));
@@ -494,7 +494,25 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	xyzcal_lineXYZ_to(_X, _Y, z0 + 400, 500, -1);
 	xyzcal_lineXYZ_to(_X, _Y, z0 - 400, 500, 1);
 
-	z0 = _Z - 20;
+    if (has_temperature_compensation()){
+	    z0 = _Z - 20; // normal PINDA
+        return xyzcal_find_point_center2A(x0, y0, z0, delay_us);
+    } else {
+        // try searching harder, each PINDA is different
+        for(z0 = _Z - 20; z0 <= _Z + 140; z0 += 20 ){ // alternate PINDA
+            int8_t rv = xyzcal_find_point_center2A(x0, y0, z0, delay_us);
+            printf_P(PSTR(" z0=%d"), z0);
+            if( rv != 0 ){
+                printf_P(PSTR("ok\n"));
+                return rv;
+            } else {
+                printf_P(PSTR("fail\n"));
+            }
+        }
+    }
+}
+
+int8_t xyzcal_find_point_center2A(int16_t x0, int16_t y0, int16_t z0, uint16_t delay_us){
 	xyzcal_lineXYZ_to(_X, _Y, z0, 500, 0);
 
 //	xyzcal_lineXYZ_to(x0, y0, z0 - 100, 500, 1);
