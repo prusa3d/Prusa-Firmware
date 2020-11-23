@@ -142,11 +142,11 @@ uint16_t xyzcal_calc_delay(uint16_t, uint16_t)
 }
 #endif //SM4_ACCEL_TEST
 
-bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda)
+bool xyzcal_lineXYZ_to(float x, float y, int16_t z, uint16_t delay_us, int8_t check_pinda)
 {
 //	DBG(_n("xyzcal_lineXYZ_to x=%d y=%d z=%d  check=%d\n"), x, y, z, check_pinda);
-	x -= (int16_t)count_position[0];
-	y -= (int16_t)count_position[1];
+	x -= (float)count_position[0];
+	y -= (float)count_position[1];
 	z -= (int16_t)count_position[2];
 	xyzcal_dm = ((x<0)?1:0) | ((y<0)?2:0) | ((z<0)?4:0);
 	sm4_set_dir_bits(xyzcal_dm);
@@ -429,7 +429,7 @@ void xyzcal_draw_pattern_12x12_in_32x32(uint8_t* pattern, uint32_t* pixels, int 
 }
 */
 
-int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r)
+int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, float c, float r)
 {
 	uint8_t thr = 16;
 	int16_t match = 0;
@@ -438,6 +438,7 @@ int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, 
 		{
 			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue; //skip corners
 			if (((j == 0) || (j == 11)) && ((i < 2) || (i >= 10))) continue;
+			///TODO
 			uint16_t idx = (c + j) + 32 * (r + i);
 			uint8_t val = pixels[idx];
 			if (pattern[i] & (1 << j))
@@ -454,10 +455,10 @@ int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, 
 	return match;
 }
 
-int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, uint8_t* pc, uint8_t* pr)
+int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, float* pc, float* pr)
 {
-	uint8_t max_c = 0;
-	uint8_t max_r = 0;
+	float max_c = 0;
+	float max_r = 0;
 	int16_t max_match = 0;
 	for (uint8_t r = 0; r < (32 - 12); r++)
 		for (uint8_t c = 0; c < (32 - 12); c++)
@@ -770,16 +771,16 @@ bool xyzcal_scan_and_process(void)
 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
 //		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
 	}
-	uint8_t c = 0;
-	uint8_t r = 0;
+	float c = 0;
+	float r = 0;
 	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c, &r) > 66) //total pixels=144, corner=12 (1/2 = 66)
 	{
 		DBG(_n(" pattern found at %d %d\n"), c, r);
-		c += 6;
-		r += 6;
-		x += ((int16_t)c - 16) << 6;
-		y += ((int16_t)r - 16) << 6;
-		DBG(_n(" x=%d y=%d z=%d\n"), x, y, z);
+		c += 5.5;
+		r += 5.5;
+		x += ((int16_t)c - 16) * 64;
+		y += ((int16_t)r - 16) * 64;
+		DBG(_n(" x=%f y=%f z=%d\n"), x, y, z);
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		ret = true;
 	}
