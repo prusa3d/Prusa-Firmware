@@ -230,7 +230,11 @@ void fsensor_init(void)
 	}
 }
 
+#ifdef PAT9125
+bool fsensor_enable(bool)
+#else // PAT9125
 bool fsensor_enable(bool bUpdateEEPROM)
+#endif // PAT9125
 {
 #ifdef PAT9125
 	if (mmu_enabled == false) { //filament sensor is pat9125, enable only if it is working
