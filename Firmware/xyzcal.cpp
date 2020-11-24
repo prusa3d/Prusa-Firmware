@@ -142,11 +142,11 @@ uint16_t xyzcal_calc_delay(uint16_t, uint16_t)
 }
 #endif //SM4_ACCEL_TEST
 
-bool xyzcal_lineXYZ_to(float x, float y, int16_t z, uint16_t delay_us, int8_t check_pinda)
+bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda)
 {
 //	DBG(_n("xyzcal_lineXYZ_to x=%d y=%d z=%d  check=%d\n"), x, y, z, check_pinda);
-	x -= (float)count_position[0];
-	y -= (float)count_position[1];
+	x -= (int16_t)count_position[0];
+	y -= (int16_t)count_position[1];
 	z -= (int16_t)count_position[2];
 	xyzcal_dm = ((x<0)?1:0) | ((y<0)?2:0) | ((z<0)?4:0);
 	sm4_set_dir_bits(xyzcal_dm);
@@ -156,6 +156,17 @@ bool xyzcal_lineXYZ_to(float x, float y, int16_t z, uint16_t delay_us, int8_t ch
 	bool ret = sm4_line_xyze_ui(abs(x), abs(y), abs(z), 0)?true:false;
 //	u = _micros() - u;
 	return ret;
+}
+
+bool xyzcal_lineXYZ_to(float x, float y, int16_t z, uint16_t delay_us, int8_t check_pinda){
+	x -= (float)count_position[0];
+	y -= (float)count_position[1];
+	z -= (int16_t)count_position[2];
+	xyzcal_dm = ((x<0)?1:0) | ((y<0)?2:0) | ((z<0)?4:0);
+	sm4_set_dir_bits(xyzcal_dm);
+	sm4_stop_cb = check_pinda?((check_pinda<0)?check_pinda_0:check_pinda_1):0;
+	xyzcal_sm4_delay = delay_us;
+	return sm4_line_xyz_xyfloat(abs(x), abs(y), abs(z))?true:false;
 }
 
 bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radius, int16_t rotation, uint16_t delay_us, int8_t check_pinda, uint16_t* pad)
