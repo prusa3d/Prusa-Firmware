@@ -39,11 +39,20 @@ void mc_arc(float *position, float *target, float *offset, uint8_t axis_0, uint8
   float rt_axis0 = target[axis_0] - center_axis0;
   float rt_axis1 = target[axis_1] - center_axis1;
   
-  // CCW angle between position and target from circle center. Only one atan2() trig computation required.
+  // Angle of rotation between position and target from the circle center.
   float angular_travel = atan2(r_axis0*rt_axis1-r_axis1*rt_axis0, r_axis0*rt_axis0+r_axis1*rt_axis1);
-  if (angular_travel < 0) { angular_travel += 2*M_PI; }
-  if (isclockwise) { angular_travel -= 2*M_PI; }
-  
+ 
+  // possible values for switch statement below:
+  // 0 : means atan2 angle > 0 and user has not specified clockwise motion -> no angular correction needed since atan2 already returns the correct CCW angle
+  // 1 : means atan2 angle > 0 but user has specified clockwise motion -> thus atan2 returns a CCW angle but we need CW angle. We must subtract 2pi radians to get CW angle.
+  // 2 : means atan2 angle < 0 but user has specified counter-clockwise motion -> thus atan2 returns a CW angle but we need CCW angle. We must add 2pi radians to get CCW angle.
+  // 3 : means atan2 angle < 0 and user has not specified counter-clockwise motion ->  no angular correction needed since atan2 already returns the correect CW angle 
+    
+   switch (((angular_travel < 0) << 1) | isclockwise) {
+       case 1: angular_travel -= 2*M_PI; break; // Positive but CW? Reverse direction.
+       case 2: angular_travel += 2*M_PI; break; // Negative but CCW? Reverse direction.
+  }
+
   //20141002:full circle for G03 did not work, e.g. G03 X80 Y80 I20 J0 F2000 is giving an Angle of zero so head is not moving
   //to compensate when start pos = target pos && angle is zero -> angle = 2Pi
   if (position[axis_0] == target[axis_0] && position[axis_1] == target[axis_1] && angular_travel == 0)
