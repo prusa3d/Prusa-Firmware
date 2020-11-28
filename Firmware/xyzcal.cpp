@@ -158,17 +158,6 @@ bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_
 	return ret;
 }
 
-bool xyzcal_lineXYZ_to(float x, float y, int16_t z, uint16_t delay_us, int8_t check_pinda){
-	x -= (float)count_position[0];
-	y -= (float)count_position[1];
-	z -= (int16_t)count_position[2];
-	xyzcal_dm = ((x<0)?1:0) | ((y<0)?2:0) | ((z<0)?4:0);
-	sm4_set_dir_bits(xyzcal_dm);
-	sm4_stop_cb = check_pinda?((check_pinda<0)?check_pinda_0:check_pinda_1):0;
-	xyzcal_sm4_delay = delay_us;
-	return sm4_line_xyz_xyfloat(abs(x), abs(y), abs(z))?true:false;
-}
-
 bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radius, int16_t rotation, uint16_t delay_us, int8_t check_pinda, uint16_t* pad)
 {
 	bool ret = false;
@@ -440,8 +429,7 @@ void xyzcal_draw_pattern_12x12_in_32x32(uint8_t* pattern, uint32_t* pixels, int 
 }
 */
 
-int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, float c, float r)
-{
+int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r){
 	uint8_t thr = 16;
 	int16_t match = 0;
 	for (uint8_t i = 0; i < 12; i++)
@@ -449,7 +437,6 @@ int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, 
 		{
 			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue; //skip corners
 			if (((j == 0) || (j == 11)) && ((i < 2) || (i >= 10))) continue;
-			///TODO
 			uint16_t idx = (c + j) + 32 * (r + i);
 			uint8_t val = pixels[idx];
 			if (pattern[i] & (1 << j))
@@ -466,25 +453,116 @@ int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, 
 	return match;
 }
 
-int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, float* pc, float* pr)
-{
-	float max_c = 0;
-	float max_r = 0;
+/// Compute rate of matching with bilinear resampling
+int16_t xyzcal_match_pattern_12x12_in_32x32_float(uint16_t* pattern, uint8_t* pixels, float c, float r){
+	if (c < 0 || c > 31 || r < 0 || r > 31) return 0;
+	uint8_t thr = 16;
+	int16_t match = 0;
+	/// calculate weights of nearby points
+	const float wc1 = c - (uint16_t)c;
+	const float wr1 = r - (uint16_t)r;
+	const float wc0 = 1 - wc1;
+	const float wr0 = 1 - wr1;
+
+	const float w00 = wc0 * wr0;
+	const float w01 = wc0 * wr1;
+	const float w10 = wc1 * wr0;
+	const float w11 = wc1 * wr1;
+
+	for (uint8_t i = 0; i < 12; i++)
+		for (uint8_t j = 0; j < 12; j++){
+			/// skip 3 points in each corner
+			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue;
+			if (((j == 0) || (j == 11)) && ((i < 2) || (i >= 10))) continue;
+
+			const uint16_t c0 = c + j;
+			const uint16_t c1 = c0 + 1;
+			const uint16_t r0 = r + i;
+			const uint16_t r1 = r0 + 1;
+
+			const uint16_t idx00 = c0 + 32 * r0;
+			const uint16_t idx01 = c0 + 32 * r1;
+			const uint16_t idx10 = c1 + 32 * r0;
+			const uint16_t idx11 = c1 + 32 * r1;
+
+			/// bilinear resampling
+			uint8_t val = w00 * pixels[idx00] + w01 * pixels[idx01] + w10 * pixels[idx10] + w11 * pixels[idx11];
+
+			/// TODO: use XOR instead of ifs
+			if (pattern[i] & (1 << j)){
+				if (val > thr) match ++;
+				else match --;
+			} else {
+				if (val <= thr) match ++;
+				else match --;
+			}
+		}
+	return match;
+}
+
+/// Searches for best match of pattern by shifting it
+int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, float* pc, float* pr){
+	uint8_t max_c = 0;
+	uint8_t max_r = 0;
 	int16_t max_match = 0;
-	for (uint8_t r = 0; r < (32 - 12); r++)
-		for (uint8_t c = 0; c < (32 - 12); c++)
-		{
+	
+	/// pixel precision
+	for (uint8_t r = 0; r < (32 - 12); r++){
+		for (uint8_t c = 0; c < (32 - 12); c++){
 			int16_t match = xyzcal_match_pattern_12x12_in_32x32(pattern, pixels, c, r);
-			if (max_match < match)
-			{
+			if (max_match < match){
 				max_c = c;
 				max_r = r;
 				max_match = match;
 			}
 		}
-	DBG(_n("max_c=%d max_r=%d max_match=%d\n"), max_c, max_r, max_match);
-	if (pc) *pc = max_c;
-	if (pr) *pr = max_r;
+	}
+	DBG(_n("max_c=%d max_r=%d max_match=%d pixel\n"), max_c, max_r, max_match);
+
+	/// subpixel precision - first run
+	/// search +/- pixel around the current one
+	float x, y;
+	float max_sc = max_c;
+	float max_sr = max_r;
+	int8_t split_factor = 8; ///< 128 at most
+	float div = 1.f/split_factor; ///< precompute
+	int16_t match;
+	for (int8_t sr = split_factor - 1; sr > -split_factor; --sr){
+		for (int8_t sc = split_factor-1; sc > -split_factor; --sc){
+			x = (float)sc * div + max_c; 
+			y = (float)sr * div + max_r;
+			match = xyzcal_match_pattern_12x12_in_32x32_float(pattern, pixels, x, y);
+			if (max_match < match){
+				max_sc = x;
+				max_sr = y;
+				max_match = match;
+			}
+		}
+		// DBG(_n("max_column=%f max_row=%f max_match=%d match=%d\n"), max_sc, max_sr, max_match, match);
+	}
+	DBG(_n("max_c=%f max_r=%f max_match=%d subpixel\n"), max_sc, max_sr, max_match);
+
+	/// subpixel precision - second run
+	float max_ssc = max_sc;
+	float max_ssr = max_sr;
+	div = 1.f/((float)split_factor*split_factor); ///< precompute
+	for (int8_t ssr = split_factor - 1; ssr > -split_factor; --ssr){
+		for (int8_t ssc = split_factor-1; ssc > -split_factor; --ssc){
+			x = (float)ssc * div + max_sc; 
+			y = (float)ssr * div + max_sr;
+			match = xyzcal_match_pattern_12x12_in_32x32_float(pattern, pixels, x, y);
+			if (max_match < match){
+				max_ssc = x;
+				max_ssr = y;
+				max_match = match;
+			}
+		}
+		// DBG(_n("max_column=%f max_row=%f max_match=%d match=%d\n"), max_ssc, max_ssr, max_match, match);
+	}
+	DBG(_n("max_c=%f max_r=%f max_match=%d supersubpixel\n"), max_ssc, max_ssr, max_match);
+
+	if (pc) *pc = max_ssc;
+	if (pr) *pr = max_ssr;
 	return max_match;
 }
 
@@ -786,12 +864,12 @@ bool xyzcal_scan_and_process(void)
 	float r = 0;
 	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c, &r) > 66) //total pixels=144, corner=12 (1/2 = 66)
 	{
-		DBG(_n(" pattern found at %d %d\n"), c, r);
-		c += 5.5;
-		r += 5.5;
-		x += ((int16_t)c - 16) * 64;
-		y += ((int16_t)r - 16) * 64;
-		DBG(_n(" x=%f y=%f z=%d\n"), x, y, z);
+		DBG(_n(" pattern found at %f %f\n"), c, r);
+		c += 5.5; ///< move to center of the pattern
+		r += 5.5; ///< move to center of the pattern
+		x += (int16_t)(0.5+(c - 16) * 64);
+		y += (int16_t)(0.5+(r - 16) * 64);
+		DBG(_n(" x=%d y=%d z=%d\n"), x, y, z);
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		ret = true;
 	}
