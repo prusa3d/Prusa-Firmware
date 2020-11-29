@@ -896,7 +896,7 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void)
 	{
 		int16_t z = _Z;
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		xyzcal_scan_and_process();
+		ret = xyzcal_scan_and_process();
 	}
 	xyzcal_meassure_leave();
 	return ret;
