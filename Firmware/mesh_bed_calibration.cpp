@@ -2234,7 +2234,8 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 
     // Collect the rear 2x3 points.
 	current_position[Z_AXIS] = MESH_HOME_Z_SEARCH + FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP * iteration * 0.3;
-	for (int k = 0; k < 4; ++k) {
+	// for (int k = 0; k < 4; ++k) {
+	for (int k = 2; k < 3; ++k) { ///< test 3rd point only
 		// Don't let the manage_inactivity() function remove power from the motors.
 		refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
@@ -2271,7 +2272,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		/*}
 		else {
 			// if first iteration failed, count corrected point coordinates as initial
-			// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+			// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
 			
 			current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[0] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[0];
 			current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[1];
@@ -2300,8 +2301,9 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		if (verbosity_level >= 10)
 			delay_keep_alive(3000);
 		#endif // SUPPORT_VERBOSITY
-		if (!find_bed_induction_sensor_point_xy(verbosity_level))
-			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+        for (int8_t m=0; m<9;++m) ///< repeat for statistical reasons
+            if (!find_bed_induction_sensor_point_xy(verbosity_level))
+                return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 #ifndef NEW_XYZCAL
 #ifndef HEATBED_V2
 		
