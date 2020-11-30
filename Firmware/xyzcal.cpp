@@ -278,7 +278,7 @@ int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t d
 
 void xyzcal_scan_pixels_32x32(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixels)
 {
-	DBG(_n("xyzcal_scan_pixels_32x32 cx=%d cy=%d min_z=%d max_z=%d\n"), cx, cy, min_z, max_z);
+	//DBG(_n("xyzcal_scan_pixels_32x32 cx=%d cy=%d min_z=%d max_z=%d\n"), cx, cy, min_z, max_z);
 //	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, max_z, 2*delay_us, 0);
 //	xyzcal_lineXYZ_to(cx, cy, max_z, delay_us, 0);
 	int16_t z = (int16_t)count_position[2];
@@ -346,10 +346,10 @@ void xyzcal_scan_pixels_32x32(int16_t cx, int16_t cy, int16_t min_z, int16_t max
 			count_position[0] += (r&1)?-64:64;
 			count_position[2] = z;
 		}
-		if (pixels)
-			for (uint8_t c = 0; c < 32; c++)
-				DBG(_n("%02x"), pixels[((uint16_t)r<<5) + c]);
-		DBG(_n("\n"));
+		// if (pixels)
+		// 	for (uint8_t c = 0; c < 32; c++)
+		// 		DBG(_n("%02x"), pixels[((uint16_t)r<<5) + c]);
+		// DBG(_n("\n"));
 	}
 //	xyzcal_lineXYZ_to(cx, cy, z, 2*delay_us, 0);
 }
@@ -364,8 +364,8 @@ void xyzcal_histo_pixels_32x32(uint8_t* pixels, uint16_t* histo)
 			uint8_t pix = pixels[((uint16_t)r<<5) + c];
 			histo[pix >> 4]++;
 		}
-	for (uint8_t l = 0; l < 16; l++)
-		DBG(_n(" %2d %d\n"), l, histo[l]);
+	// for (uint8_t l = 0; l < 16; l++)
+	// 	DBG(_n(" %2d %d\n"), l, histo[l]);
 }
 
 void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
@@ -382,7 +382,7 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 			max_l = l;
 		}
 	}
-	DBG(_n("max_c=%2d max_l=%d\n"), max_c, max_l);
+	// DBG(_n("max_c=%2d max_l=%d\n"), max_c, max_l);
 	for (l = 14; l > 8; l--)
 		if (histo[l] >= 10)
 			break;
@@ -393,7 +393,7 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 		pix_min = (max_l << 4) / 2;
 	}
 	uint8_t pix_dif = pix_max - pix_min;
-	DBG(_n(" min=%d max=%d dif=%d\n"), pix_min, pix_max, pix_dif);
+	// DBG(_n(" min=%d max=%d dif=%d\n"), pix_min, pix_max, pix_dif);
 	for (int16_t i = 0; i < 32*32; i++)
 	{
 		uint16_t pix = pixels[i];
@@ -407,9 +407,9 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 	}
 	for (uint8_t r = 0; r < 32; r++)
 	{
-		for (uint8_t c = 0; c < 32; c++)
-			DBG(_n("%02x"), pixels[((uint16_t)r<<5) + c]);
-		DBG(_n("\n"));
+		// for (uint8_t c = 0; c < 32; c++)
+		// 	DBG(_n("%02x"), pixels[((uint16_t)r<<5) + c]);
+		// DBG(_n("\n"));
 	}
 }
 
@@ -446,6 +446,27 @@ int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, 
 			}
 			else
 			{
+				if (val <= thr) match ++;
+				else match --;
+			}
+		}
+	return match;
+}
+
+int16_t xyzcal_match_pattern_12x12_in_32x32_even(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r){
+	uint8_t thr = 16;
+	int16_t match = 0;
+	for (uint8_t i = 0; i < 12; i++)
+		for (uint8_t j = 0; j < 12; j++){
+			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue; //skip corners
+			if (((j == 0) || (j == 11)) && ((i < 2) || (i >= 10))) continue;
+			if ((r + i) % 2) continue; ///< skip odd rows
+			uint16_t idx = (c + j) + 32 * (r + i);
+			uint8_t val = pixels[idx];
+			if (pattern[i] & (1 << j)){
+				if (val > thr) match ++;
+				else match --;
+			} else {
 				if (val <= thr) match ++;
 				else match --;
 			}
@@ -500,69 +521,127 @@ int16_t xyzcal_match_pattern_12x12_in_32x32_float(uint16_t* pattern, uint8_t* pi
 	return match;
 }
 
-/// Searches for best match of pattern by shifting it
-int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, float* pc, float* pr){
-	uint8_t max_c = 0;
-	uint8_t max_r = 0;
-	int16_t max_match = 0;
-	
-	/// pixel precision
-	for (uint8_t r = 0; r < (32 - 12); r++){
-		for (uint8_t c = 0; c < (32 - 12); c++){
-			int16_t match = xyzcal_match_pattern_12x12_in_32x32(pattern, pixels, c, r);
-			if (max_match < match){
-				max_c = c;
-				max_r = r;
-				max_match = match;
+int16_t xyzcal_match_pattern_12x12_in_32x32_float_even(uint16_t* pattern, uint8_t* pixels, float c, float r){
+	if (c < 0 || c > 31 || r < 0 || r > 31) return 0;
+	uint8_t thr = 16;
+	int16_t match = 0;
+	/// calculate weights of nearby points
+	const float wc1 = c - (uint16_t)c;
+	const float wr1 = r - (uint16_t)r;
+	const float wc0 = 1 - wc1;
+	const float wr0 = 1 - wr1;
+
+	const float w00 = wc0 * wr0;
+	const float w01 = wc0 * wr1;
+	const float w10 = wc1 * wr0;
+	const float w11 = wc1 * wr1;
+
+	for (uint8_t i = 0; i < 12; i+=2)
+		for (uint8_t j = 0; j < 12; j++){
+			/// skip 3 points in each corner
+			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue;
+			if (((j == 0) || (j == 11)) && ((i < 2) || (i >= 10))) continue;
+
+			const uint16_t c0 = c + j;
+			const uint16_t c1 = c0 + 1;
+			const uint16_t r0 = r + i;
+			const uint16_t r1 = r0 + 2;
+
+			const uint16_t idx00 = c0 + 32 * r0;
+			const uint16_t idx01 = c0 + 32 * r1;
+			const uint16_t idx10 = c1 + 32 * r0;
+			const uint16_t idx11 = c1 + 32 * r1;
+
+			/// bilinear resampling
+			uint8_t val = w00 * pixels[idx00] + w01 * pixels[idx01] + w10 * pixels[idx10] + w11 * pixels[idx11];
+
+			/// TODO: use XOR instead of ifs
+			if (pattern[i] & (1 << j)){
+				if (val > thr) match ++;
+				else match --;
+			} else {
+				if (val <= thr) match ++;
+				else match --;
 			}
 		}
+	return match;
+}
+
+/// Searches for best match of pattern by shifting it
+int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, float* pc0, float* pr0, float* pc1, float* pr1){
+	uint8_t max_c[2] = {0,0};
+	uint8_t max_r[2] = {0,0};
+	int16_t max_match[2] = {0,0};
+	int16_t match;
+	
+	/// pixel precision
+	for (uint8_t d = 0; d < 2; d++){
+		for (uint8_t r = 0; r < (32 - 12); ++r){
+			for (uint8_t c = 0; c < (32 - 12); ++c){
+				 match = xyzcal_match_pattern_12x12_in_32x32_even(pattern, pixels[32 * d], c, r);
+				if (max_match[d] < match){
+					max_c[d] = c;
+					max_r[d] = r;
+					max_match[d] = match;
+				}
+			}
+		}
+		DBG(_n("max_c=%d max_r=%d max_match=%d pixel\n"), max_c[d], max_r[d], max_match[d]);
 	}
-	DBG(_n("max_c=%d max_r=%d max_match=%d pixel\n"), max_c, max_r, max_match);
 
 	/// subpixel precision - first run
 	/// search +/- pixel around the current one
 	float x, y;
-	float max_sc = max_c;
-	float max_sr = max_r;
 	int8_t split_factor = 8; ///< 128 at most
 	float div = 1.f/split_factor; ///< precompute
-	int16_t match;
-	for (int8_t sr = split_factor - 1; sr > -split_factor; --sr){
-		for (int8_t sc = split_factor-1; sc > -split_factor; --sc){
-			x = (float)sc * div + max_c; 
-			y = (float)sr * div + max_r;
-			match = xyzcal_match_pattern_12x12_in_32x32_float(pattern, pixels, x, y);
-			if (max_match < match){
-				max_sc = x;
-				max_sr = y;
-				max_match = match;
+	float max_sc[2];
+	float max_sr[2];
+
+	for (uint8_t d = 0; d < 2; d++){
+		max_sc[d] = max_c[d];
+		max_sr[d] = max_r[d];
+		for (int8_t sr = split_factor - 1; sr > -split_factor; --sr){
+			for (int8_t sc = split_factor-1; sc > -split_factor; --sc){
+				x = (float)sc * div + max_c[d]; 
+				y = (float)sr * div + max_r[d];
+				match = xyzcal_match_pattern_12x12_in_32x32_float_even(pattern, pixels[32 * d], x, y);
+				if (max_match < match){
+					max_sc[d] = x;
+					max_sr[d] = y;
+					max_match[d] = match;
+				}
 			}
 		}
-		// DBG(_n("max_column=%f max_row=%f max_match=%d match=%d\n"), max_sc, max_sr, max_match, match);
+		DBG(_n("max_c=%f max_r=%f max_match=%d subpixel\n"), max_sc[d], max_sr[d], max_match[d]);
 	}
-	DBG(_n("max_c=%f max_r=%f max_match=%d subpixel\n"), max_sc, max_sr, max_match);
 
 	/// subpixel precision - second run
-	float max_ssc = max_sc;
-	float max_ssr = max_sr;
-	div = 1.f/((float)split_factor*split_factor); ///< precompute
-	for (int8_t ssr = split_factor - 1; ssr > -split_factor; --ssr){
-		for (int8_t ssc = split_factor-1; ssc > -split_factor; --ssc){
-			x = (float)ssc * div + max_sc; 
-			y = (float)ssr * div + max_sr;
-			match = xyzcal_match_pattern_12x12_in_32x32_float(pattern, pixels, x, y);
-			if (max_match < match){
-				max_ssc = x;
-				max_ssr = y;
-				max_match = match;
+	float max_ssc[2];
+	float max_ssr[2];
+	for (uint8_t d = 0; d < 2; d++){
+		max_ssc[d] = max_sc[d];
+		max_ssr[d] = max_sr[d];
+		div = 1.f/((float)split_factor*split_factor); ///< precompute
+		for (int8_t ssr = split_factor - 1; ssr > -split_factor; --ssr){
+			for (int8_t ssc = split_factor-1; ssc > -split_factor; --ssc){
+				x = (float)ssc * div + max_sc[d];
+				y = (float)ssr * div + max_sr[d];
+				match = xyzcal_match_pattern_12x12_in_32x32_float_even(pattern, pixels[32 * d], x, y);
+				if (max_match[d] < match){
+					max_ssc[d] = x;
+					max_ssr[d] = y;
+					max_match[d] = match;
+				}
 			}
+			// DBG(_n("max_column=%f max_row=%f max_match=%d match=%d\n"), max_ssc, max_ssr, max_match, match);
 		}
-		// DBG(_n("max_column=%f max_row=%f max_match=%d match=%d\n"), max_ssc, max_ssr, max_match, match);
+		DBG(_n("max_c=%f max_r=%f max_match=%d supersubpixel\n"), max_ssc[d], max_ssr[d], max_match[d]);
 	}
-	DBG(_n("max_c=%f max_r=%f max_match=%d supersubpixel\n"), max_ssc, max_ssr, max_match);
 
-	if (pc) *pc = max_ssc;
-	if (pr) *pr = max_ssr;
+	if (pc0) *pc0 = max_ssc[0];
+	if (pr0) *pr0 = max_ssr[0];
+	if (pc1) *pc1 = max_ssc[1];
+	if (pr1) *pr1 = max_ssr[1];
 	return max_match;
 }
 
@@ -852,21 +931,33 @@ bool xyzcal_scan_and_process(void)
 	xyzcal_adjust_pixels(pixels, histo);
 
 	uint16_t* pattern = (uint16_t*)(histo + 2*16);
-	for (uint8_t i = 0; i < 12; i++)
-	{
+	for (uint8_t i = 0; i < 12; i++){
 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
 //		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
 	}
-	float c = 0;
-	float r = 0;
-	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c, &r) > 66) //total pixels=144, corner=12 (1/2 = 66)
-	{
-		DBG(_n(" pattern found at %f %f\n"), c, r);
-		c += 5.5; ///< move to center of the pattern
-		r += 5.5; ///< move to center of the pattern
-		x += (int16_t)(0.5+(c - 16) * 64);
-		y += (int16_t)(0.5+(r - 16) * 64);
-		DBG(_n(" x=%d y=%d z=%d\n"), x, y, z);
+	
+	/// save found coordinates to these variables
+	/// 0 = even rows, 1 = odd rows
+	float c0 = 0;
+	float r0 = 0;
+	float c1 = 0;
+	float r1 = 0;
+	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c0, &r0, &c1, &r1) > 66){ //total pixels=144, corner=12 (1/2 = 66)
+		DBG(_n(" [%f, %f] even row pattern center\n"), c0, r0);
+		DBG(_n(" [%f, %f] odd  row pattern center\n"), c1, r1);
+		/// move to center of the pattern
+		c0 += 5.5; 
+		r0 += 5.5;
+		c1 += 5.5;
+		r1 += 5.5;
+		
+		/// average of results
+		const float x01 = ((c0 + c1) * 0.5f - 16) * 64;
+		const float y01 = ((r0 + r1) * 0.5f - 16) * 64;
+		x += (int16_t)(0.5f + x01);
+		y += (int16_t)(0.5f + y01);
+		DBG(_n(" [%f %f] mm pattern center\n"), x01 * .01f, y01 * .01f);
+
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		ret = true;
 	}
@@ -893,26 +984,7 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void)
 	{
 		int16_t z = _Z;
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		if (xyzcal_scan_and_process())
-		{
-			if (xyzcal_find_point_center2(500))
-			{
-				uint32_t x_avg = 0;
-				uint32_t y_avg = 0;
-				uint8_t n;
-				for (n = 0; n < 4; n++)
-				{
-					if (!xyzcal_find_point_center2(1000)) break;
-					x_avg += _X;
-					y_avg += _Y;	
-				}
-				if (n == 4)
-				{
-					xyzcal_lineXYZ_to(x_avg >> 2, y_avg >> 2, _Z, 200, 0);
-					ret = true;
-				}
-			}
-		}
+		ret = xyzcal_scan_and_process();
 	}
 	xyzcal_meassure_leave();
 	return ret;
