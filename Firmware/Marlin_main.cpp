@@ -631,7 +631,7 @@ void crashdet_cancel()
 		lcd_print_stop();
 	}else if(saved_printing_type == PRINTING_TYPE_USB){
 		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
-		SERIAL_PROTOCOLLNRPGM(MSG_OK);
+		cmdqueue_reset();
 	}
 }
 
@@ -2631,7 +2631,6 @@ void gcode_M105(uint8_t extruder)
     }
 #endif
     SERIAL_PROTOCOLLN("");
-    KEEPALIVE_STATE(NOT_BUSY);
 }
 
 #ifdef TMC2130
@@ -3679,14 +3678,12 @@ There are reasons why some G Codes aren't in numerical order.
 void process_commands()
 {
 #ifdef FANCHECK
-    if(fan_check_error){
-        if(fan_check_error == EFCE_DETECTED){
-            fan_check_error = EFCE_REPORTED;
-            // SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
-            lcd_pause_print();
-        } // otherwise it has already been reported, so just ignore further processing
-        return; //ignore usb stream. It is reenabled by selecting resume from the lcd.
-    }
+	if(fan_check_error == EFCE_DETECTED){
+		fan_check_error = EFCE_REPORTED;
+		// SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
+		lcd_pause_print();
+		cmdqueue_serial_disabled = true;
+	}
 #endif
 
 	if (!buflen) return; //empty command
@@ -6402,7 +6399,8 @@ Sigma_Exit:
       SERIAL_PROTOCOLPGM("ok ");
       gcode_M105(extruder);
       
-      return;
+      cmdqueue_pop_front(); //prevent an ok after the command since this command uses an ok at the beginning.
+      
       break;
     }
 
@@ -6864,12 +6862,10 @@ Sigma_Exit:
           SERIAL_ECHOPGM(STRINGIFY(EXTRUDERS)); 
           SERIAL_ECHOPGM(" UUID:"); 
           SERIAL_ECHOLNPGM(MACHINE_UUID);
-      }
-      
 #ifdef EXTENDED_CAPABILITIES_REPORT
-      extended_capabilities_report();
+          extended_capabilities_report();
 #endif //EXTENDED_CAPABILITIES_REPORT
-      
+      }
       break;
 
     /*!
@@ -7995,6 +7991,7 @@ Sigma_Exit:
         if (!isPrintPaused)
         {
             st_synchronize();
+            ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
             lcd_pause_print();
         }
@@ -9209,8 +9206,8 @@ void FlushSerialRequestResend()
 // Execution of a command from a SD card will not be confirmed.
 void ClearToSend()
 {
-    previous_millis_cmd = _millis();
-	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)) 
+	previous_millis_cmd = _millis();
+	if (buflen && ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)))
 		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
@@ -11461,7 +11458,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		//not sd printing nor usb printing
 	}
 
-	SERIAL_PROTOCOLLNRPGM(MSG_OK); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
     saved_printing_type = PRINTING_TYPE_NONE;
 	saved_printing = false;

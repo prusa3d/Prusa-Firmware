@@ -30,6 +30,7 @@
 
 
 #include "Marlin.h"
+#include "cmdqueue.h"
 #include "ultralcd.h"
 #include "sound.h"
 #include "temperature.h"
@@ -632,7 +633,6 @@ void fanSpeedError(unsigned char _fan) {
 		fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), MSG_FANCHECK_PRINT);
 		break;
 	}
-    // SERIAL_PROTOCOLLNRPGM(MSG_OK); //This ok messes things up with octoprint.
 }
 #endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 
