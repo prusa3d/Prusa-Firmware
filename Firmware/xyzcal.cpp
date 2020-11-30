@@ -896,7 +896,26 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void)
 	{
 		int16_t z = _Z;
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		ret = xyzcal_scan_and_process();
+		if (xyzcal_scan_and_process())
+		{
+			if (xyzcal_find_point_center2(500))
+			{
+				uint32_t x_avg = 0;
+				uint32_t y_avg = 0;
+				uint8_t n;
+				for (n = 0; n < 4; n++)
+				{
+					if (!xyzcal_find_point_center2(1000)) break;
+					x_avg += _X;
+					y_avg += _Y;	
+				}
+				if (n == 4)
+				{
+					xyzcal_lineXYZ_to(x_avg >> 2, y_avg >> 2, _Z, 200, 0);
+					ret = true;
+				}
+			}
+		}
 	}
 	xyzcal_meassure_leave();
 	return ret;
