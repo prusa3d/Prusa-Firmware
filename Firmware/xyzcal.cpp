@@ -575,9 +575,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t x0 = _X;
 	int16_t y0 = _Y;
 	int16_t z0 = _Z;
-	printf_P(PSTR(" x0=%d\n"), x0);
-	printf_P(PSTR(" y0=%d\n"), y0);
-	printf_P(PSTR(" z0=%d\n"), z0);
+	printf_P(PSTR(" [x,y,z]=[%d, %d, %d]\n"), x0, y0, z0);
 
 	xyzcal_lineXYZ_to(_X, _Y, z0 + 400, 500, -1);
 	xyzcal_lineXYZ_to(_X, _Y, z0 - 400, 500, 1);
@@ -643,8 +641,7 @@ int8_t xyzcal_find_point_center2A(int16_t x0, int16_t y0, int16_t z0, uint16_t d
 		printf_P(PSTR("OK\n"), ad);
 		x0 = xc / 4;
 		y0 = yc / 4;
-		printf_P(PSTR(" x0=%d\n"), x0);
-		printf_P(PSTR(" y0=%d\n"), y0);
+		printf_P(PSTR(" [x,y]=[%d, %d]\n"), x0, y0);
 	}
 
 #else //XYZCAL_FIND_CENTER_DIAGONAL
