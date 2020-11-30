@@ -628,7 +628,7 @@ void crashdet_cancel()
 	saved_printing = false;
 	tmc2130_sg_stop_on_crash = true;
 	if (saved_printing_type == PRINTING_TYPE_SD) {
-		lcd_print_stop();
+		action_cancel_print();
 	}else if(saved_printing_type == PRINTING_TYPE_USB){
 		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
 		cmdqueue_reset();
@@ -3681,7 +3681,7 @@ void process_commands()
 	if(fan_check_error == EFCE_DETECTED){
 		fan_check_error = EFCE_REPORTED;
 		// SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
-		lcd_pause_print();
+		action_pause_print();
 		cmdqueue_serial_disabled = true;
 	}
 #endif
@@ -5714,7 +5714,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     */
     case 24:
 	  if (isPrintPaused)
-          lcd_resume_print();
+          action_resume_print();
       else
       {
           if (!card.get_sdpos())
@@ -7993,7 +7993,7 @@ Sigma_Exit:
             st_synchronize();
             ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
-            lcd_pause_print();
+            action_pause_print(false);
         }
 	}
 	break;
@@ -8003,7 +8003,7 @@ Sigma_Exit:
     */
 	case 602: {
 	  if (isPrintPaused)
-          lcd_resume_print();
+          action_resume_print(false);
 	}
 	break;
 
@@ -8011,7 +8011,7 @@ Sigma_Exit:
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */
 	case 603: {
-		lcd_print_stop();
+		action_cancel_print(false);
 	}
 	break;
 
@@ -9809,7 +9809,7 @@ void Stop()
   disable_heater();
   if(Stopped == false) {
     Stopped = true;
-    lcd_print_stop();
+    action_cancel_print();
     Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);

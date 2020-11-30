@@ -727,7 +727,7 @@ void fsensor_update(void)
 
                             // if we are printing and FS action is set to "Pause", force pause the print
                             if(oFsensorActionNA==ClFsensorActionNA::_Pause)
-                                lcd_pause_print();
+                                action_pause_print();
                         }
                         else
                         {

@@ -1108,6 +1108,21 @@ void lcd_status_screen()                          // NOT static due to using ins
 	}
 }
 
+void lcd_pause_print()
+{
+    action_pause_print();
+}
+
+void lcd_resume_print()
+{
+    action_resume_print();
+}
+
+void lcd_cancel_print()
+{
+    action_cancel_print();
+}
+
 void lcd_commands()
 {
 	if (lcd_commands_type == LcdCommands::LongPause)
@@ -1577,19 +1592,6 @@ void lcd_return_to_status()
 	menu_goto(lcd_status_screen, 0, false, true);
 	menu_depth = 0;
     eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
-}
-
-//! @brief Pause print, disable nozzle heater, move to park position
-void lcd_pause_print()
-{
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
-    stop_and_save_print_to_ram(0.0, -default_retraction);
-    lcd_return_to_status();
-    isPrintPaused = true;
-    if (LcdCommands::Idle == lcd_commands_type)
-    {
-        lcd_commands_type = LcdCommands::LongPause;
-    }
 }
 
 
@@ -6731,28 +6733,6 @@ static bool fan_error_selftest()
 #endif //FANCHECK
     return 0;
 }
-
-//! @brief Resume paused print
-//! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
-//! as restore_print_from_ram_and_continue() calls lcd_update() internally.
-void lcd_resume_print()
-{
-    lcd_return_to_status();
-    lcd_reset_alert_level(); //for fan speed error
-    if (fan_error_selftest()) return; //abort if error persists
-    cmdqueue_serial_disabled = false;
-
-    lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
-    st_synchronize();
-
-    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT)); ////MSG_RESUMING_PRINT c=20
-    isPrintPaused = false;
-    restore_print_from_ram_and_continue(default_retraction);
-    pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
-    refresh_cmd_timeout();
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
-}
-
 static void change_sheet()
 {
 	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
@@ -7348,68 +7328,6 @@ static void lcd_sd_updir()
   menu_top = 0;
 }
 
-void lcd_print_stop()
-{
-    if (!card.sdprinting) {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
-    }
-    cmdqueue_serial_disabled = false; //for when canceling a print with a fancheck
-
-    CRITICAL_SECTION_START;
-
-    // Clear any saved printing state
-    cancel_saved_printing();
-
-    // Abort the planner/queue/sd
-    planner_abort_hard();
-	cmdqueue_reset();
-	card.sdprinting = false;
-	card.closefile();
-    st_reset_timer();
-
-    CRITICAL_SECTION_END;
-
-#ifdef MESH_BED_LEVELING
-    mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
-#endif
-
-	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-	stoptime = _millis();
-	unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
-	pause_time = 0;
-	save_statistics(total_filament_used, t);
-
-    lcd_commands_step = 0;
-    lcd_commands_type = LcdCommands::Idle;
-
-    lcd_cooldown(); //turns off heaters and fan; goes to status screen.
-    cancel_heatup = true; //unroll temperature wait loop stack.
-
-    current_position[Z_AXIS] += 10; //lift Z.
-    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
-
-    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
-    {
-        current_position[X_AXIS] = X_CANCEL_POS;
-        current_position[Y_AXIS] = Y_CANCEL_POS;
-        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-    }
-    st_synchronize();
-
-    if (mmu_enabled) extr_unload(); //M702 C
-
-    finishAndDisableSteppers(); //M84
-
-    lcd_setstatuspgm(_T(WELCOME_MSG));
-    custom_message_type = CustomMsg::Status;
-
-    planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
-    
-    axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
-    
-    isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
-}
-
 void lcd_sdcard_stop()
 {
 
@@ -7437,7 +7355,7 @@ void lcd_sdcard_stop()
 		}
 		if ((int32_t)lcd_encoder == 2)
 		{
-			lcd_print_stop();
+			action_cancel_print();
 		}
 	}
 
@@ -9252,4 +9170,102 @@ void lcd_experimental_menu()
 #endif //EXTRUDER_ALTFAN_DETECT
 
     MENU_END();
+}
+
+void action_pause_print(bool sendAction)
+{
+    if (sendAction)
+        SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
+    stop_and_save_print_to_ram(0.0, -default_retraction);
+    lcd_return_to_status();
+    isPrintPaused = true;
+    if (LcdCommands::Idle == lcd_commands_type)
+    {
+        lcd_commands_type = LcdCommands::LongPause;
+    }
+}
+
+//! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
+//! as restore_print_from_ram_and_continue() calls lcd_update() internally.
+void action_resume_print(bool sendAction)
+{
+    lcd_return_to_status();
+    lcd_reset_alert_level(); //for fan speed error
+    if (fan_error_selftest())
+        return; //abort if error persists
+    cmdqueue_serial_disabled = false;
+
+    lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
+    st_synchronize();
+
+    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT)); ////MSG_RESUMING_PRINT c=20
+    isPrintPaused = false;
+    restore_print_from_ram_and_continue(default_retraction);
+    pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
+    refresh_cmd_timeout();
+    if (sendAction)
+        SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
+}
+
+void action_cancel_print(bool sendAction)
+{
+    if (sendAction)
+        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint.
+    
+    cmdqueue_serial_disabled = false; //for when canceling a print with a fancheck
+
+    CRITICAL_SECTION_START;
+
+    // Clear any saved printing state
+    cancel_saved_printing();
+
+    // Abort the planner/queue/sd
+    planner_abort_hard();
+    cmdqueue_reset();
+    card.sdprinting = false;
+    card.closefile();
+    st_reset_timer();
+
+    CRITICAL_SECTION_END;
+
+#ifdef MESH_BED_LEVELING
+    mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
+#endif
+
+    lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
+    stoptime = _millis();
+    unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
+    pause_time = 0;
+    save_statistics(total_filament_used, t);
+
+    lcd_commands_step = 0;
+    lcd_commands_type = LcdCommands::Idle;
+
+    lcd_cooldown(); //turns off heaters and fan; goes to status screen.
+    cancel_heatup = true; //unroll temperature wait loop stack.
+
+    current_position[Z_AXIS] += 10; //lift Z.
+    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
+
+    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
+    {
+        current_position[X_AXIS] = X_CANCEL_POS;
+        current_position[Y_AXIS] = Y_CANCEL_POS;
+        plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
+    }
+    st_synchronize();
+
+    if (mmu_enabled)
+        extr_unload(); //M702 C
+
+    finishAndDisableSteppers(); //M84
+
+    lcd_setstatuspgm(_T(WELCOME_MSG));
+    custom_message_type = CustomMsg::Status;
+
+    planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
+    
+    axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
+    
+    isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
 }

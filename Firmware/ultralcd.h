@@ -43,9 +43,6 @@ void lcd_loading_filament();
 void lcd_change_success();
 void lcd_loading_color();
 void lcd_sdcard_stop();
-void lcd_pause_print();
-void lcd_resume_print();
-void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
 void lcd_confirm_print();
 unsigned char lcd_choose_color();
@@ -261,5 +258,10 @@ void lcd_wizard(WizState state);
 
 extern void lcd_experimental_toggle();
 extern void lcd_experimental_menu();
+
+// system actions
+extern void action_pause_print(bool sendAction = true);
+extern void action_resume_print(bool sendAction = true);
+extern void action_cancel_print(bool sendAction = true);
 
 #endif //ULTRALCD_H

@@ -613,7 +613,7 @@ void fanSpeedError(unsigned char _fan) {
 	//to ensure that target temp. is not set to zero in case that we are resuming print
 	if (card.sdprinting || is_usb_printing) {
 		if (heating_status != 0) {
-			lcd_print_stop();
+			action_cancel_print();
 		}
 		else {
 			fan_check_error = EFCE_DETECTED; //plans error for next processed command
@@ -1548,7 +1548,7 @@ void min_temp_error(uint8_t e) {
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
 //	if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){
 //		last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
-//		lcd_print_stop();
+//		action_cancel_print();
 //	}
   Stop();
   #endif
