@@ -7993,7 +7993,7 @@ Sigma_Exit:
             st_synchronize();
             ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
-            action_pause_print(false);
+            action_pause_print(!((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)));
         }
 	}
 	break;
@@ -8003,7 +8003,7 @@ Sigma_Exit:
     */
 	case 602: {
 	  if (isPrintPaused)
-          action_resume_print(false);
+          action_resume_print(!((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)));
 	}
 	break;
 
@@ -8011,7 +8011,7 @@ Sigma_Exit:
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */
 	case 603: {
-		action_cancel_print(false);
+		action_cancel_print(!((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)));
 	}
 	break;
 
