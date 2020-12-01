@@ -2302,11 +2302,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			delay_keep_alive(3000);
 		#endif // SUPPORT_VERBOSITY
         
-        find_bed_induction_sensor_point_xy(verbosity_level);
-        current_position[Z_AXIS] += 3.f + FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP * iteration * 0.3;
-        continue;
-
-        // if (!find_bed_induction_sensor_point_xy(verbosity_level))
+        if (!find_bed_induction_sensor_point_xy(verbosity_level))
         return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 #ifndef NEW_XYZCAL
 #ifndef HEATBED_V2
