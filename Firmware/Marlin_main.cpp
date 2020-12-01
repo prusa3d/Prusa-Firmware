@@ -2992,7 +2992,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	{
 #endif //TMC2130
 		
-		lcd_show_fullscreen_message_and_wait_P(_T(MSG_CONFIRM_NOZZLE_CLEAN));
+		// lcd_show_fullscreen_message_and_wait_P(_T(MSG_CONFIRM_NOZZLE_CLEAN));
 		if(onlyZ){
 			lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1));
 			lcd_set_cursor(0, 3);
@@ -3017,10 +3017,10 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		{
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			#ifdef STEEL_SHEET
-			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
-			if(result) lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
+			// bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
+			// if(result) lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
 			#endif //STEEL_SHEET
-		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
+		    // lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
 			lcd_set_cursor(0, 2);
@@ -3126,7 +3126,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		}
 		else
 		{
-			lcd_show_fullscreen_message_and_wait_P(PSTR("Calibration failed! Check the axes and run again."));
+			// lcd_show_fullscreen_message_and_wait_P(PSTR("Calibration failed! Check the axes and run again."));
 			final_result = false;
 		}
 	}
@@ -5970,7 +5970,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
 		}
 		#endif //SUPPORT_VERBOSITY
-		gcode_M45(only_Z, verbosity_level);
+  	for (int8_t m_constant = 0; m_constant < 9; ++m_constant) ///< repeat for statistical reasons
+      gcode_M45(only_Z, verbosity_level);
     }
 	break;
 
