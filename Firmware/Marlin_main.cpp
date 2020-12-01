@@ -5970,7 +5970,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
 		}
 		#endif //SUPPORT_VERBOSITY
-  	for (int8_t m_constant = 0; m_constant < 9; ++m_constant) ///< repeat for statistical reasons
       gcode_M45(only_Z, verbosity_level);
     }
 	break;

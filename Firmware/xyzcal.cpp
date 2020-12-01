@@ -37,6 +37,18 @@ uint8_t check_pinda_1();
 void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de);
 uint16_t xyzcal_calc_delay(uint16_t nd, uint16_t dd);
 
+/// converts millimeters to internal position system (deka-micro-meter)
+uint16_t mm_2_pos(float mm){
+	return (uint16_t)(0.5f + mm * 100);
+}
+
+/// converts internal position system (deka-micro-meter) to millimeters
+float pos_2_mm(uint16_t pos){
+	return pos * 0.01f;
+}
+float pos_2_mm(float pos){
+	return pos * 0.01f;
+}
 
 void xyzcal_meassure_enter(void)
 {
@@ -142,6 +154,7 @@ uint16_t xyzcal_calc_delay(uint16_t, uint16_t)
 }
 #endif //SM4_ACCEL_TEST
 
+/// Moves printer to absolute position [x,y,z] defined in integer position system
 bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda)
 {
 //	DBG(_n("xyzcal_lineXYZ_to x=%d y=%d z=%d  check=%d\n"), x, y, z, check_pinda);
@@ -152,10 +165,15 @@ bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_
 	sm4_set_dir_bits(xyzcal_dm);
 	sm4_stop_cb = check_pinda?((check_pinda<0)?check_pinda_0:check_pinda_1):0;
 	xyzcal_sm4_delay = delay_us;
-//	uint32_t u = _micros();
-	bool ret = sm4_line_xyze_ui(abs(x), abs(y), abs(z), 0)?true:false;
-//	u = _micros() - u;
+	//	uint32_t u = _micros();
+	bool ret = sm4_line_xyze_ui(abs(x), abs(y), abs(z), 0) ? true : false;
+	//	u = _micros() - u;
 	return ret;
+}
+
+/// Moves printer to absolute position [x,y,z] defined in millimeters
+bool xyzcal_lineXYZ_to_float(float x, float y, float z, uint16_t delay_us, int8_t check_pinda){
+	return xyzcal_lineXYZ_to(mm_2_pos(x), mm_2_pos(y), mm_2_pos(z), delay_us, check_pinda);
 }
 
 bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radius, int16_t rotation, uint16_t delay_us, int8_t check_pinda, uint16_t* pad)
@@ -916,7 +934,7 @@ const int16_t xyzcal_point_ycoords[4] PROGMEM = {700, 700, 19800, 19800};
 
 const uint16_t xyzcal_point_pattern[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 
-bool xyzcal_searchZ(bool force)
+bool xyzcal_searchZ(void)
 {
 	DBG(_n("xyzcal_searchZ x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	int16_t x0 = _X;
@@ -924,7 +942,7 @@ bool xyzcal_searchZ(bool force)
 	int16_t z0 = _Z;
 //	int16_t min_z = -6000;
 //	int16_t dz = 100;
-	int16_t z = force ? 2000 : z0;
+	int16_t z = z0;
 	while (z > -2300) //-6mm + 0.25mm
 	{
 		uint16_t ad = 0;
@@ -987,16 +1005,16 @@ bool xyzcal_scan_and_process(void)
 		float yR = (float)y + (rR - 16) * 64;
 		float xL = (float)x + (cL - 16) * 64;
 		float yL = (float)y + (rL - 16) * 64;
-		DBG(_n(" [%f %f] mm right pattern center\n"), xR * .01f, yR * .01f);
-		DBG(_n(" [%f %f] mm  left pattern center\n"), xL * .01f, yL * .01f);
+		DBG(_n(" [%f %f] mm right pattern center\n"), pos_2_mm(xR), pos_2_mm(yR));
+		DBG(_n(" [%f %f] mm  left pattern center\n"), pos_2_mm(xL), pos_2_mm(yL));
 
 		float xf = (float)x + ((cR + cL) * 0.5f - 16) * 64;
 		float yf = (float)y + ((rR + rL) * 0.5f - 16) * 64;
-		DBG(_n(" [%f %f] mm pattern center\n"), xf * .01f, yf * .01f);
+		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
 		x += (int16_t)(0.5f + xf);
 		y += (int16_t)(0.5f + yf);
 
-		xyzcal_lineXYZ_to(x, y, z, 200, 0);
+		// xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		ret = true;
 	}
 	for (uint16_t i = 0; i < sizeof(block_t)*BLOCK_BUFFER_SIZE; i++)
@@ -1004,8 +1022,15 @@ bool xyzcal_scan_and_process(void)
 	return ret;
 }
 
-bool xyzcal_find_bed_induction_sensor_point_xy(void)
-{
+
+#define BED_PRINT_ZERO_REF_X 2.f
+#define BED_PRINT_ZERO_REF_Y 9.4f
+#define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
+#define Y_PROBE_OFFSET_FROM_EXTRUDER 5     // Z probe to nozzle Y offset: -front +behind
+#define SHEET_PRINT_ZERO_REF_X 0.f
+#define SHEET_PRINT_ZERO_REF_Y -2.f
+
+bool xyzcal_find_bed_induction_sensor_point_xy(void){
 	DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	bool ret = false;
 	st_synchronize();
@@ -1018,12 +1043,17 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void)
 	DBG(_n("point=%d x=%d y=%d z=%d\n"), point, x, y, z);
 	xyzcal_meassure_enter();
 	xyzcal_lineXYZ_to(x, y, z, 200, 0);
-	if (xyzcal_searchZ(true))
-	{
-		int16_t z = _Z;
-		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		xyzcal_scan_and_process();
-		ret = true;
+	
+  	for (int8_t m_constant = 0; m_constant < 9; ++m_constant){ ///< repeat for statistical reasons
+		if (xyzcal_searchZ()){
+			int16_t z = _Z;
+			xyzcal_lineXYZ_to(x, y, z, 200, 0);
+			xyzcal_scan_and_process();
+			ret = true;
+		}
+		float refX = 245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_X;
+		float refY = 210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y;
+		xyzcal_lineXYZ_to(mm_2_pos(refX), mm_2_pos(refY), _Z, 200, 0);
 	}
 	xyzcal_meassure_leave();
 	return ret;
