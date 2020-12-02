@@ -958,8 +958,8 @@ bool xyzcal_scan_and_process(void)
 		const float xf = (float)x + ((cR + cL) * 0.5f - 16) * 64;
 		const float yf = (float)y + ((rR + rL) * 0.5f - 16) * 64;
 		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
-		x += round_to_i16(xf);
-		y += round_to_i16(yf);
+		x = round_to_i16(xf);
+		y = round_to_i16(yf);
 
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		ret = true;
