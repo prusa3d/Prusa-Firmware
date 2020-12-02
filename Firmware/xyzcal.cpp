@@ -1031,29 +1031,35 @@ bool xyzcal_scan_and_process(void)
 #define SHEET_PRINT_ZERO_REF_Y -2.f
 
 bool xyzcal_find_bed_induction_sensor_point_xy(void){
-	DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
+	int16_t orig_x = _X;
+	int16_t orig_y = _Y;
+	int16_t orig_z = _Z;
 	bool ret = false;
-	st_synchronize();
-	int16_t x = _X;
-	int16_t y = _Y;
-	int16_t z = _Z;
-	uint8_t point = xyzcal_xycoords2point(x, y);
-	x = pgm_read_word((uint16_t*)(xyzcal_point_xcoords + point));
-	y = pgm_read_word((uint16_t*)(xyzcal_point_ycoords + point));
-	DBG(_n("point=%d x=%d y=%d z=%d\n"), point, x, y, z);
-	xyzcal_meassure_enter();
-	xyzcal_lineXYZ_to(x, y, z, 200, 0);
+
+	for (int8_t m_constant = 0; m_constant < 9; ++m_constant){ ///< repeat for statistical reasons
+		xyzcal_lineXYZ_to(orig_x, orig_y, orig_z, 200, 0);
+		DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
+		st_synchronize();
+		int16_t x = _X;
+		int16_t y = _Y;
+		int16_t z = _Z;
+
+		uint8_t point = xyzcal_xycoords2point(x, y);
+		x = pgm_read_word((uint16_t*)(xyzcal_point_xcoords + point));
+		y = pgm_read_word((uint16_t*)(xyzcal_point_ycoords + point));
+		DBG(_n("point=%d x=%d y=%d z=%d\n"), point, x, y, z);
+		xyzcal_meassure_enter();
+		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 	
-  	for (int8_t m_constant = 0; m_constant < 9; ++m_constant){ ///< repeat for statistical reasons
 		if (xyzcal_searchZ()){
 			int16_t z = _Z;
 			xyzcal_lineXYZ_to(x, y, z, 200, 0);
 			xyzcal_scan_and_process();
 			ret = true;
 		}
-		float refX = 245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_X;
-		float refY = 210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y;
-		xyzcal_lineXYZ_to(mm_2_pos(refX), mm_2_pos(refY), _Z, 200, 0);
+		// float refX = 245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_X;
+		// float refY = 210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y;
+		// xyzcal_lineXYZ_to(mm_2_pos(refX), mm_2_pos(refY), _Z, 200, 0);
 	}
 	xyzcal_meassure_leave();
 	return ret;
