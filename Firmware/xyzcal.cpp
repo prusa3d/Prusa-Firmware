@@ -51,6 +51,12 @@
     __typeof__ (b) _b = (b); \
     _a <= _b ? _a : _b; })
 
+/// swap values
+#define SWAP(a, b) \
+    ({ __typeof__ (a) c = (a); \
+        a = (b); \
+        b = c; })
+
 /// position types
 typedef int16_t pos_i16_t;
 typedef long pos_i32_t;
@@ -81,6 +87,22 @@ pos_mm_t pos_2_mm(pos_i16_t pos){
 }
 pos_mm_t pos_2_mm(float pos){
 	return pos * 0.01f;
+}
+
+void sort(uint8_t &a, uint8_t &b){
+	if (a > b)
+		SWAP(a, b);
+}
+
+uint8_t median(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e){
+	sort(a, b);
+	sort(c, d);
+	sort(a, c);
+	sort(b, e);
+	sort(b, c);
+	sort(c, d);
+	sort(b, c);
+	return c;
 }
 
 void xyzcal_meassure_enter(void)
@@ -226,7 +248,7 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	DBG(_n("xyzcal_spiral2 cx=%d cy=%d z0=%d dz=%d radius=%d ad=%d\n"), cx, cy, z0, dz, radius, ad);
 	lcd_set_cursor(0, 4);
 	char text[10];
-	snprintf(text, 10, "%d", z0);
+	snprintf(text, 10, "%4d", z0);
 	lcd_print(text);
 
 	for (; ad < 720; ad++)
@@ -1074,8 +1096,120 @@ bool xyzcal_searchZ(void)
 	return false;
 }
 
-bool xyzcal_scan_and_process(void)
-{
+/// find maximal value and its first location
+void find_max(uint8_t *matrix_32x32, uint8_t &max_val, uint8_t &max_x, uint8_t &max_y){
+	max_val = 0;
+	max_x = 0;
+	max_y = 0;
+	for (uint8_t y = 0; y < 32; ++y){
+		const uint16_t idx_y = y * 32;
+		for (uint8_t x = 0; x < 32; ++x){
+			if (max_val < matrix_32x32[idx_y + x]){
+				max_val = matrix_32x32[idx_y + x];
+				max_x = x;
+				max_y = y;
+			}
+		}
+	}
+}
+
+void remove_255(uint8_t *matrix_32x32){
+	for (uint8_t y = 0; y < 32; ++y){
+		const uint16_t idx_y = y * 32;
+		for (uint8_t x = 0; x < 32; ++x){
+			if (matrix_32x32[idx_y + x] == 255){
+				matrix_32x32[idx_y + x] = 254;
+			}
+		}
+	}
+}
+
+/// Finds center of gravity of an object defined by starting position
+/// Every pixel in 4-neighbourhood greater or equal than threshold is assumed as object pixel
+/// \returns number of object pixels
+uint16_t center_of_gravity(uint8_t *matrix_32x32, uint8_t threshold, uint8_t start_x, uint8_t start_y, float &center_x, float &center_y){
+	if (matrix_32x32 == nullptr || matrix_32x32[start_y * 32 + start_x] < threshold){
+		center_x = start_x;
+		center_y = start_y;
+		return 0;
+	}
+
+	/// remove value 255, will be used as a flag (visited)
+	remove_255(matrix_32x32);
+
+	uint32_t sum_x = 0;
+	uint32_t sum_y = 0;
+	uint16_t pixels = 0;
+	matrix_32x32[start_y * 32 + start_x] = 255;
+	bool added = true;
+
+	while(added){
+		added = false;
+		
+		/// go down and right
+		for (uint8_t y = 0; y < 31; ++y){
+			const uint16_t idx_y = y * 32;
+			for (uint8_t x = 0; x < 31; ++x){
+				if (matrix_32x32[idx_y + x] == 255){
+					if (matrix_32x32[idx_y + x + 1] != 255 && matrix_32x32[idx_y + x + 1] >= threshold){
+						matrix_32x32[idx_y + x + 1] = 255;
+						added = true;
+						sum_x += x + 1;
+						sum_y += y;
+						pixels++;
+					}
+					if (matrix_32x32[idx_y + 32 + x] != 255 && matrix_32x32[idx_y + 32 + x] >= threshold){
+						matrix_32x32[idx_y + 32 + x] = 255;
+						added = true;
+						sum_x += x;
+						sum_y += y + 1;
+						pixels++;
+					}
+				}
+			}
+		}
+
+		/// go up and left
+		for (uint8_t y = 31; y > 0; --y){
+			const uint16_t idx_y = y * 32;
+			for (uint8_t x = 31; x > 0; --x){
+				if (matrix_32x32[idx_y + x] == 255){					
+					if (matrix_32x32[idx_y + x - 1] != 255 && matrix_32x32[idx_y + x - 1] >= threshold){
+						matrix_32x32[idx_y + x - 1] = 255;
+						added = true;
+						sum_x += x - 1;
+						sum_y += y;
+						pixels++;
+					}
+					if (matrix_32x32[idx_y - 32 + x] != 255 && matrix_32x32[idx_y - 32 + x] >= threshold){
+						matrix_32x32[idx_y - 32 + x] = 255;
+						added = true;
+						sum_x += x;
+						sum_y += y - 1;
+						pixels++;
+					}
+				}
+			}
+		}
+	}
+
+	center_x = sum_x / (float)pixels;
+	center_y = sum_y / (float)pixels;
+	return pixels;
+}
+
+void print_image(uint8_t *matrix_32x32){
+	for (uint8_t y = 0; y < 32; ++y){
+		const uint16_t idx_y = y * 32;
+		for (uint8_t x = 0; x < 32; ++x){
+			DBG(_n("%02x"), matrix_32x32[idx_y + x]);
+		}
+		DBG(_n("\n"));
+	}
+	DBG(_n("\n"));
+}
+
+bool xyzcal_scan_and_process(void){
 	DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
 //	DBG(_n("sizeof(pixels)=%d\n"), 32*32);
 //	DBG(_n("sizeof(histo)=%d\n"), 2*16);
@@ -1086,57 +1220,85 @@ bool xyzcal_scan_and_process(void)
 	int16_t y = _Y;
 	int16_t z = _Z;
 
-	uint8_t* pixelsR = (uint8_t*)block_buffer;
-	uint16_t* histo = (uint16_t*)(pixelsR + 32*32);
-	uint16_t* pattern = (uint16_t*)(histo + 2*16);
+	uint8_t* matrix32 = (uint8_t*)block_buffer;
+	// uint8_t* pixelsR = (uint8_t*)block_buffer;
+	// uint16_t* histo = (uint16_t*)(pixelsR + 32*32);
+	// uint16_t* pattern = (uint16_t*)(histo + 2*16);
 	// uint8_t pixelsL[32*32];
 
-	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, pixelsR);
-	xyzcal_histo_pixels_32x32(pixelsR, histo);
-	xyzcal_adjust_pixels(pixelsR, histo);
-	// xyzcal_histo_pixels_32x32(pixelsL, histo);
-	// xyzcal_adjust_pixels(pixelsL, histo);
+	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, matrix32);
 
-	for (uint8_t i = 0; i < 12; i++){
-		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
-//		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
+	uint8_t max_val, max_x, max_y;
+	find_max(matrix32, max_val, max_x, max_y);
+	if (max_val == 255){ /// filter by median +cross if values are saturated
+		// median5(pixels);
+		// find_max(pixels, max_val, max_x, max_y);
 	}
-	
-	/// save found coordinates to these variables
-	float cR = 0;
-	float rR = 0;
-	// float cL = 0;
-	// float rL = 0;
-	/// total pixels=144, corner=12 (1/2 = 66)
-	if (xyzcal_find_pattern_12x12_in_32x32(pixelsR, pattern, &cR, &rR, 1) > 66){
-	// if (xyzcal_find_pattern_12x12_in_32x32(pixelsR, pattern, &cR, &rR, 0) > 66 && xyzcal_find_pattern_12x12_in_32x32(pixelsL, pattern, &cL, &rL, 1) > 66){
-		/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
-		cR += 6.f;
-		rR += 6.f;
-		// cL += 6.f; 
-		// rL += 6.f;
+	float center_x, center_y;
+	uint16_t obj_size = center_of_gravity(matrix32, max_val / 2, max_x, max_y, center_x, center_y);
+	if (obj_size < 9) ///< object too small, try lower
+		obj_size = center_of_gravity(matrix32, max_val / 4, max_x, max_y, center_x, center_y);
 
-		// const float xR = (float)x + (cR - 16) * 64;
-		// const float yR = (float)y + (rR - 16) * 64;
-		// const float xL = (float)x + (cL - 16) * 64;
-		// const float yL = (float)y + (rL - 16) * 64;
-		// DBG(_n(" [%f %f] mm right pattern center\n"), pos_2_mm(xR), pos_2_mm(yR));
-		// DBG(_n(" [%f %f] mm  left pattern center\n"), pos_2_mm(xL), pos_2_mm(yL));
+	print_image(matrix32);
 
-		// const float xf = (float)x + ((cR + cL) * 0.5f - 16) * 64;
-		// const float yf = (float)y + ((rR + rL) * 0.5f - 16) * 64;
-		const float xf = (float)x + (cR - 16) * 64;
-		const float yf = (float)y + (rR - 16) * 64;
+	if (8 < obj_size && obj_size < 120){
+		/// get center in printer position system
+		const float xf = (float)x + (center_x - 15.5f) * 64;
+		const float yf = (float)y + (center_y - 15.5f) * 64;
 		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
 		x = round_to_i16(xf);
 		y = round_to_i16(yf);
-
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		ret = true;
 	}
+
+	// xyzcal_histo_pixels_32x32(pixelsR, histo);
+	// xyzcal_adjust_pixels(pixelsR, histo);
+
+	// xyzcal_histo_pixels_32x32(pixelsL, histo);
+	// xyzcal_adjust_pixels(pixelsL, histo);
+
+// 	for (uint8_t i = 0; i < 12; i++){
+// 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
+// //		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
+// 	}
+	
+	/// save found coordinates to these variables
+	// float cR = 0;
+	// float rR = 0;
+	// // float cL = 0;
+	// // float rL = 0;
+	// /// total pixels=144, corner=12 (1/2 = 66)
+	// if (xyzcal_find_pattern_12x12_in_32x32(pixelsR, pattern, &cR, &rR, 1) > 66){
+	// // if (xyzcal_find_pattern_12x12_in_32x32(pixelsR, pattern, &cR, &rR, 0) > 66 && xyzcal_find_pattern_12x12_in_32x32(pixelsL, pattern, &cL, &rL, 1) > 66){
+	// 	/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
+	// 	cR += 6.f;
+	// 	rR += 6.f;
+	// 	// cL += 6.f; 
+	// 	// rL += 6.f;
+
+	// 	// const float xR = (float)x + (cR - 16) * 64;
+	// 	// const float yR = (float)y + (rR - 16) * 64;
+	// 	// const float xL = (float)x + (cL - 16) * 64;
+	// 	// const float yL = (float)y + (rL - 16) * 64;
+	// 	// DBG(_n(" [%f %f] mm right pattern center\n"), pos_2_mm(xR), pos_2_mm(yR));
+	// 	// DBG(_n(" [%f %f] mm  left pattern center\n"), pos_2_mm(xL), pos_2_mm(yL));
+
+	// 	// const float xf = (float)x + ((cR + cL) * 0.5f - 16) * 64;
+	// 	// const float yf = (float)y + ((rR + rL) * 0.5f - 16) * 64;
+	// 	const float xf = (float)x + (cR - 16) * 64;
+	// 	const float yf = (float)y + (rR - 16) * 64;
+	// 	DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+	// 	x = round_to_i16(xf);
+	// 	y = round_to_i16(yf);
+
+	// 	xyzcal_lineXYZ_to(x, y, z, 200, 0);
+	// 	ret = true;
+	// }
+	
 	/// wipe buffer
 	for (uint16_t i = 0; i < sizeof(block_t)*BLOCK_BUFFER_SIZE; i++)
-		pixelsR[i] = 0;
+		matrix32[i] = 0;
 	return ret;
 }
 
