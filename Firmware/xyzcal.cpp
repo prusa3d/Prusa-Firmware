@@ -246,10 +246,10 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	if (pad) ad = *pad % 720;
 	
 	DBG(_n("xyzcal_spiral2 cx=%d cy=%d z0=%d dz=%d radius=%d ad=%d\n"), cx, cy, z0, dz, radius, ad);
-	lcd_set_cursor(0, 4);
-	char text[10];
-	snprintf(text, 10, "%4d", z0);
-	lcd_print(text);
+	// lcd_set_cursor(0, 4);
+	// char text[10];
+	// snprintf(text, 10, "%4d", z0);
+	// lcd_print(text);
 
 	for (; ad < 720; ad++)
 	{
@@ -279,10 +279,10 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 		ad += dad;
 	}
 	if (pad) *pad = ad;
-	if(ret){
-		lcd_set_cursor(0, 4);
-		lcd_print("         ");
-	}
+	// if(ret){
+	// 	lcd_set_cursor(0, 4);
+	// 	lcd_print("         ");
+	// }
 	return ret;
 }
 
