@@ -32,6 +32,18 @@
 
 #define _PI 3.14159265F
 
+/// \returns maximum of the two
+#define MAX(a, b) \
+    ({ __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a >= _b ? _a : _b; })
+
+/// \returns minimum of the two
+#define MIN(a, b) \
+    ({ __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a <= _b ? _a : _b; })
+
 /// position types
 typedef int16_t pos_i16_t;
 typedef long pos_i32_t;
@@ -383,7 +395,7 @@ void xyzcal_scan_pixels_32x32_bidirect(int16_t cx, int16_t cy, int16_t min_z, in
 	int16_t z = (int16_t)count_position[2];
 	uint8_t *pixels;
 	xyzcal_lineXYZ_to(cx, cy, z, 2 * delay_us, 0);
-	for (uint8_t r = 0; r < 32; r++){ ///< X axis
+	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
 		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, 2 * delay_us, 0);
 		for (int8_t d = 0; d < 2; ++d){ ///< direction
 			pixels = d == 0 ? pixelsR : pixelsL;
@@ -392,7 +404,7 @@ void xyzcal_scan_pixels_32x32_bidirect(int16_t cx, int16_t cy, int16_t min_z, in
 			xyzcal_lineXYZ_to(_X, _Y, max_z, delay_us, -1);
 			z = (int16_t)count_position[2];
 			sm4_set_dir(X_AXIS, d);
-			for (uint8_t c = 0; c < 32; c++){ ///< Y axis
+			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 				uint16_t sum = 0;
 				int16_t z_sum = 0;
 				for (uint8_t i = 0; i < 64; i++){ ///< microstepping
@@ -429,10 +441,64 @@ void xyzcal_scan_pixels_32x32_bidirect(int16_t cx, int16_t cy, int16_t min_z, in
 				count_position[0] += (d & 1) ? -64 : 64;
 				count_position[2] = z;
 			}
+				DBG(_n("\n\n"));
 		}
 	}
 }
 
+/// pixelsR are measured from 0 to MAX, pixelsL in the opposite direction
+void xyzcal_scan_pixels_32x32_Zhop_bidirect(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixelsR, uint8_t* pixelsL){
+	if(!pixelsR || !pixelsL)
+		return;
+	int16_t z = (int16_t)count_position[2];
+	uint8_t *pixels;
+	xyzcal_lineXYZ_to(cx, cy, z, 2 * delay_us, 0);
+	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
+		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, 2 * delay_us, 0);
+		for (int8_t d = 0; d < 2; ++d){ ///< direction
+			pixels = d == 0 ? pixelsR : pixelsL;
+			xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, z, 2 * delay_us, 0);
+			xyzcal_lineXYZ_to(_X, _Y, min_z, delay_us, 1);
+			xyzcal_lineXYZ_to(_X, _Y, max_z, delay_us, -1);
+			z = (int16_t)count_position[2];
+			sm4_set_dir(X_AXIS, d);
+			for (uint8_t c = 0; c < 32; c++){ ///< X axis
+				
+				sm4_set_dir(Z_AXIS, 0);
+				while (z < max_z && _PINDA){
+					sm4_do_step(Z_AXIS_MASK);
+					delayMicroseconds(delay_us);
+					z++;
+				}
+
+				/// find equilibrium
+				sm4_set_dir(Z_AXIS, !_PINDA);
+				if (!_PINDA){
+					while (z > min_z && !_PINDA){
+						sm4_do_step(Z_AXIS_MASK);
+						delayMicroseconds(delay_us);
+						z--;
+					}
+				} else {
+					while (z < max_z && _PINDA){
+						sm4_do_step(Z_AXIS_MASK);
+						delayMicroseconds(delay_us);
+						z++;
+					}
+				}
+				count_position[2] = z;
+				/// move to next point
+				xyzcal_lineXYZ_to(((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx, _Y, _Z, 2 * delay_us, 0);
+	
+				if(d==0)
+					DBG(_n("%04x"), z - min_z);
+
+				pixels[(uint16_t)r * 32 + (d ? 31 - c : c)] = MIN(256, z - min_z);
+			}
+		}
+		DBG(_n("\n\n"));
+	}
+}
 void xyzcal_histo_pixels_32x32(uint8_t* pixels, uint16_t* histo)
 {
 	for (uint8_t l = 0; l < 16; l++)
@@ -581,12 +647,19 @@ int16_t xyzcal_match_pattern_12x12_in_32x32_float(uint16_t* pattern, uint8_t* pi
 }
 
 /// Searches for best match of pattern by shifting it
-int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, float* pc, float* pr){
+int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, float* pc, float* pr, uint8_t iteration){
 	if(!pixels || !pattern || !pc || !pr)
 		return -1;
 	float max_c = 0;
 	float max_r = 0;
 	int16_t max_match = 0;
+
+	lcd_set_cursor(0, 4);
+	if(iteration){
+		lcd_print("3 of 6");
+	} else {
+		lcd_print("6 of 6");
+	}
 
 	/// pixel precision
 	for (uint8_t r = 0; r < (32 - 12); ++r){
@@ -600,6 +673,13 @@ int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, f
 		}
 	}
 	DBG(_n("max_c=%f max_r=%f max_match=%d pixel\n"), max_c, max_r, max_match);
+
+	lcd_set_cursor(0, 4);
+	if(iteration){
+		lcd_print("2 of 6");
+	} else {
+		lcd_print("5 of 6");
+	}
 
 	/// subpixel precision - first run
 	/// search +/- pixel around the current one
@@ -621,6 +701,13 @@ int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, f
 	}
 	DBG(_n("max_c=%f max_r=%f max_match=%d subpixel\n"), max_c, max_r, max_match);
 
+	lcd_set_cursor(0, 4);
+	if(iteration){
+		lcd_print("1 of 6");
+	} else {
+		lcd_print("4 of 6");
+	}
+
 	/// subpixel precision - second run
 	div = 1.f/((float)split_factor*split_factor); ///< precompute
 	for (int8_t ssr = split_factor - 1; ssr > -split_factor; --ssr){
@@ -636,6 +723,13 @@ int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, f
 		}
 	}
 	DBG(_n("max_c=%f max_r=%f max_match=%d supersubpixel\n"), max_c, max_r, max_match);
+
+	lcd_set_cursor(0, 4);
+	if(iteration){
+		lcd_print("      ");
+	} else {
+		lcd_print("3 of 6");
+	}
 
 	*pc = max_c;
 	*pr = max_r;
@@ -924,7 +1018,7 @@ bool xyzcal_scan_and_process(void)
 	uint16_t* pattern = (uint16_t*)(histo + 2*16);
 	uint8_t pixelsL[32*32];
 
-	xyzcal_scan_pixels_32x32_bidirect(x, y, z - 72, 2400, 200, pixelsR, pixelsL);
+	xyzcal_scan_pixels_32x32_Zhop_bidirect(x, y, z - 72, 2400, 200, pixelsR, pixelsL);
 	xyzcal_histo_pixels_32x32(pixelsR, histo);
 	xyzcal_adjust_pixels(pixelsR, histo);
 	xyzcal_histo_pixels_32x32(pixelsL, histo);
@@ -941,12 +1035,12 @@ bool xyzcal_scan_and_process(void)
 	float cL = 0;
 	float rL = 0;
 	/// total pixels=144, corner=12 (1/2 = 66)
-	if (xyzcal_find_pattern_12x12_in_32x32(pixelsR, pattern, &cR, &rR) > 66 && xyzcal_find_pattern_12x12_in_32x32(pixelsL, pattern, &cL, &rL) > 66){
-		/// move to center of the pattern
-		cR += 5.5f; 
-		rR += 5.5f;
-		cL += 5.5f; 
-		rL += 5.5f;
+	if (xyzcal_find_pattern_12x12_in_32x32(pixelsR, pattern, &cR, &rR, 0) > 66 && xyzcal_find_pattern_12x12_in_32x32(pixelsL, pattern, &cL, &rL, 1) > 66){
+		/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
+		cR += 6.f;
+		rR += 6.f;
+		cL += 6.f; 
+		rL += 6.f;
 
 		const float xR = (float)x + (cR - 16) * 64;
 		const float yR = (float)y + (rR - 16) * 64;
