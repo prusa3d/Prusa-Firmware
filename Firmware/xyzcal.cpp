@@ -553,7 +553,7 @@ int8_t xyzcal_find_point_center2A(int16_t x0, int16_t y0, int16_t z0, uint16_t d
 	{
 		float ar = (float)ad * _PI / 180;
 		int16_t x = x0 + adjustedMaxDiameterX * cos(ar);
-		int16_t y = y0 + adjustedMaxDiameterX * sin(ar);
+		int16_t y = y0 + adjustedMaxDiameterY * sin(ar);
 		if (!xyzcal_lineXYZ_to(x, y, z0, delay_us/stepperMotorCorrectionFactorDelay, -1))
 		{
 			printf_P(PSTR("ERROR ad=%d\n"), ad);
