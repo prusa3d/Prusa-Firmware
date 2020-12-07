@@ -262,4 +262,6 @@ void lcd_wizard(WizState state);
 extern void lcd_experimental_toggle();
 extern void lcd_experimental_menu();
 
+extern void lcd_pinda_temp_compensation_toggle();
+
 #endif //ULTRALCD_H
