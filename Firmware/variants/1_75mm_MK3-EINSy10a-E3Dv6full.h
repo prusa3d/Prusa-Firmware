@@ -294,7 +294,7 @@
 #if BED_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see BED_MINTEMP_DELAY definition)"
 #endif
-#define DETECT_SUPERPINDA
+#define SUPERPINDA_SUPPORT
 #define PINDA_MINTEMP BED_MINTEMP
 #define AMBIENT_MINTEMP -30
 

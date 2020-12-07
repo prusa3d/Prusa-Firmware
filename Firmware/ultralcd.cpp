@@ -5753,6 +5753,15 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
         MENU_ITEM_SUBMENU_P(PSTR("Experimental"), lcd_experimental_menu);////MSG_MENU_EXPERIMENTAL c=18
     }
 
+#ifdef SUPERPINDA_SUPPORT
+	//! The SuperPINDA is detected when the PINDA temp is below its defined limit.
+	//! This works well on the EINSY board but not on the miniRAMBo board as
+	//! as a disconnected SuperPINDA will show higher temps compared to an EINSY board.
+	//! 
+	//! This menu allows the user to en-/disable the SuperPINDA manualy
+	MENU_ITEM_TOGGLE_P(_N("SuperPINDA"), eeprom_read_byte((unsigned char *)EEPROM_PINDA_TEMP_COMPENSATION) ? _T(MSG_YES) : _T(MSG_NO), lcd_pinda_temp_compensation_toggle);
+#endif //SUPERPINDA_SUPPORT
+
     MENU_END();
 }
 
@@ -9234,4 +9243,14 @@ void lcd_experimental_menu()
 #endif //EXTRUDER_ALTFAN_DETECT
 
     MENU_END();
+}
+
+void lcd_pinda_temp_compensation_toggle()
+{
+	uint8_t pinda_temp_compensation = eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION);
+	if (pinda_temp_compensation == EEPROM_EMPTY_VALUE)
+		pinda_temp_compensation = 1;
+	else
+		pinda_temp_compensation = !pinda_temp_compensation;
+	eeprom_update_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION, pinda_temp_compensation);
 }
