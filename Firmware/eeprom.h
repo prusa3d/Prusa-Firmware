@@ -365,6 +365,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D2A 3370		| uint8		| EEPROM_EXPERIMENTAL_VISIBILITY		| ffh 255		| ffh 255				| Experimental menu visibility unknown state		| LCD menu		| D3 Ax0d2a C1
 | ^					| ^			| ^										| 00h 0			| ^						| Experimental menu visibility hidden				| ^				| ^
 | ^					| ^			| ^										| 01h 1			| ^						| Experimental menu visibility visible				| ^				| ^
+| 0x0D29 3369		| uint8		| EEPROM_PINDA_TEMP_COMPENSATION   		| ffh 255		| ffh 255				| PINDA temp compensation unknown state	            | LCD menu		| D3 Ax0d29 C1
+| ^					| ^			| ^										| 00h 0			| ^						| PINDA has no temp compensation PINDA v1/2    		| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| PINDA has temp compensation aka SuperPINDA       	| ^				| ^
 
   
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
@@ -569,9 +572,9 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
 #define EEPROM_ALTFAN_OVERRIDE (EEPROM_UVLO_LA_K-1) //uint8
 #define EEPROM_EXPERIMENTAL_VISIBILITY (EEPROM_ALTFAN_OVERRIDE-1) //uint8
-
+#define EEPROM_PINDA_TEMP_COMPENSATION (EEPROM_EXPERIMENTAL_VISIBILITY-1) //uint8
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_EXPERIMENTAL_VISIBILITY
+#define EEPROM_LAST_ITEM EEPROM_PINDA_TEMP_COMPENSATION
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
