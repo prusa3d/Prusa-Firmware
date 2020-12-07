@@ -9253,4 +9253,6 @@ void lcd_pinda_temp_compensation_toggle()
 	else
 		pinda_temp_compensation = !pinda_temp_compensation;
 	eeprom_update_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION, pinda_temp_compensation);
+	SERIAL_ECHOLNPGM("LCD U SuperPINDA:");
+	SERIAL_ECHOLN(pinda_temp_compensation);
 }
