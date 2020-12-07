@@ -2325,7 +2325,7 @@ float unscalePID_d(float d)
 //!
 //! @retval true firmware should do temperature compensation and allow calibration
 //! @retval false PINDA thermistor is not detected, disable temperature compensation and calibration
-//! @retval true/false when overwritten in LCD menu Settings->HW Setup->SuperPINDA
+//! @retval true/false when forced via LCD menu Settings->HW Setup->SuperPINDA
 //!
 bool has_temperature_compensation()
 {
@@ -2333,9 +2333,6 @@ bool has_temperature_compensation()
    	uint8_t pinda_temp_compensation = eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION);
     if (pinda_temp_compensation == EEPROM_EMPTY_VALUE) //Unkown PINDA temp compenstation, so check it.
       {
-        //SERIAL_ECHOLNPGM("Current PINDATEMP:");
-        //SERIAL_ECHO(current_temperature_pinda);
-        //SERIAL_ECHOLN(PINDA_MINTEMP);
         return (current_temperature_pinda >= PINDA_MINTEMP) ? true : false;
       }
     else if (pinda_temp_compensation == 0) return true; //Overwritten via LCD menu SuperPINDA [No]
