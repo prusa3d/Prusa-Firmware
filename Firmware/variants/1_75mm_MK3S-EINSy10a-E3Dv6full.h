@@ -297,7 +297,7 @@
 #error "Check maximal allowed value @ ShortTimer (see BED_MINTEMP_DELAY definition)"
 #endif
 #define SUPERPINDA_SUPPORT
-#define PINDA_MINTEMP BED_MINTEMP
+#define PINDA_MINTEMP 10
 #define AMBIENT_MINTEMP -30
 
 // Maxtemps
