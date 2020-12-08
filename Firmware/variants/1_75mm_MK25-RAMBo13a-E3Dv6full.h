@@ -177,7 +177,7 @@
 #error "Check maximal allowed value @ ShortTimer (see BED_MINTEMP_DELAY definition)"
 #endif
 #define SUPERPINDA_SUPPORT
-#define PINDA_MINTEMP BED_MINTEMP //The miniRAMBo thermistor readings below 30°C aren't very accurate
+#define PINDA_MINTEMP 30 //The miniRAMBo thermistor readings below 30°C aren't very accurate
 
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
