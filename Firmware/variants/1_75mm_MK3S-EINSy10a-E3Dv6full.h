@@ -298,8 +298,8 @@
 #endif
 #define SUPERPINDA_SUPPORT
 #define PINDA_MINTEMP 10
-#define AMBIENT_MINTEMP -30
 //#define PINDA_TEMP_COMP //Used to enable SuperPINDA toggle menu/function
+#define AMBIENT_MINTEMP -30
 
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
