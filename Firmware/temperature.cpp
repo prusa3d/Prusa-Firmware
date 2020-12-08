@@ -2330,13 +2330,17 @@ float unscalePID_d(float d)
 bool has_temperature_compensation()
 {
 #ifdef SUPERPINDA_SUPPORT
+#ifdef PINDA_TEMP_COMP
    	uint8_t pinda_temp_compensation = eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION);
     if (pinda_temp_compensation == EEPROM_EMPTY_VALUE) //Unkown PINDA temp compenstation, so check it.
       {
+#endif //PINDA_TEMP_COMP
         return (current_temperature_pinda >= PINDA_MINTEMP) ? true : false;
+#ifdef PINDA_TEMP_COMP
       }
     else if (pinda_temp_compensation == 0) return true; //Overwritten via LCD menu SuperPINDA [No]
     else return false; //Overwritten via LCD menu SuperPINDA [YES]
+#endif //PINDA_TEMP_COMP
 #else
     return true;
 #endif
