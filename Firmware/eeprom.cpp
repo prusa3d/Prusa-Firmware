@@ -93,6 +93,10 @@ void eeprom_init()
         eeprom_switch_to_next_sheet();
     }
     check_babystep();
+
+#ifdef PINDA_TEMP_COMP
+if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_PINDA_TEMP_COMPENSATION, 0);
+#endif //PINDA_TEMP_COMP
 }
 
 //! @brief Get default sheet name for index
