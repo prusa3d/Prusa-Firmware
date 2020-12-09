@@ -391,7 +391,7 @@ void mmu_loop(void)
 			mmu_last_finda_response = _millis();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
-			if ((!mmu_finda || !(PIN_GET(IR_SENSOR_PIN) == 0)) && CHECK_FSENSOR && fsensor_enabled) {
+			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
 				fsensor_checkpoint_print();
 				if (mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't deplete unknown extruder.
                     ad_markDepleted(mmu_extruder);
