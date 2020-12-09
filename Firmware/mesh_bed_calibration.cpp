@@ -962,7 +962,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 
     // move down until you find the bed
     current_position[Z_AXIS] = minimum_z;
-    go_to_current(homing_feedrate[Z_AXIS]/60);
+    go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
     // we have to let the planner know where we are right now as it is not where we said to go.
     update_current_position_z();
     if (! endstop_z_hit_on_purpose())
@@ -982,20 +982,20 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 		
 		current_position[Z_AXIS] += high_deviation_occured ? 0.5 : 0.2;
 		float z_bckp = current_position[Z_AXIS];
-		go_to_current(homing_feedrate[Z_AXIS]/60);
+		go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
 		// Move back down slowly to find bed.
         current_position[Z_AXIS] = minimum_z;
 		//printf_P(PSTR("init Z = %f, min_z = %f, i = %d\n"), z_bckp, minimum_z, i);
-        go_to_current(homing_feedrate[Z_AXIS]/(4*60));
+        go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/(4*60));
         // we have to let the planner know where we are right now as it is not where we said to go.
         update_current_position_z();
 		//printf_P(PSTR("Zs: %f, Z: %f, delta Z: %f"), z_bckp, current_position[Z_AXIS], (z_bckp - current_position[Z_AXIS]));
 		if (abs(current_position[Z_AXIS] - z_bckp) < 0.025) {
 			//printf_P(PSTR("PINDA triggered immediately, move Z higher and repeat measurement\n")); 
 			current_position[Z_AXIS] += 0.5;
-			go_to_current(homing_feedrate[Z_AXIS]/60);
+			go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
 			current_position[Z_AXIS] = minimum_z;
-            go_to_current(homing_feedrate[Z_AXIS]/(4*60));
+            go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/(4*60));
             // we have to let the planner know where we are right now as it is not where we said to go.
 			update_current_position_z();
 		}
@@ -1089,7 +1089,7 @@ inline bool find_bed_induction_sensor_point_xy(int
 	#ifdef SUPPORT_VERBOSITY
 	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
 	#endif // SUPPORT_VERBOSITY
-	float feedrate = homing_feedrate[X_AXIS] / 60.f;
+	float feedrate = pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f;
 	bool found = false;
 
 	{
@@ -1212,7 +1212,7 @@ inline bool find_bed_induction_sensor_point_xy(int
 
 			// Slightly lower the Z axis to get a reliable trigger.
 			current_position[Z_AXIS] -= 0.1f;
-			go_xyz(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], homing_feedrate[Z_AXIS] / (60 * 10));
+			go_xyz(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], pgm_read_float(&homing_feedrate[Z_AXIS]) / (60 * 10));
 
 			SERIAL_ECHOPGM("2 - current_position[Z_AXIS]: ");
 			MYSERIAL.println(current_position[Z_AXIS]);
@@ -1339,7 +1339,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 	#ifdef SUPPORT_VERBOSITY
 	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
 	#endif // SUPPORT_VERBOSITY
-	float feedrate = homing_feedrate[X_AXIS] / 60.f;
+	float feedrate = pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f;
 	bool found = false;
 
 	{
@@ -1414,7 +1414,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			if (iter > 0) {
 				// Slightly lower the Z axis to get a reliable trigger.
 				current_position[Z_AXIS] -= 0.02f;
-				go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS] / 60);
+				go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, pgm_read_float(&homing_feedrate[Z_AXIS]) / 60);
 			}
 
 			// Do nsteps_y zig-zag movements.
@@ -1544,7 +1544,7 @@ inline bool improve_bed_induction_sensor_point()
     bool  endstops_enabled  = enable_endstops(false);
     bool  endstop_z_enabled = enable_z_endstop(false);
     bool  found = false;
-    float feedrate = homing_feedrate[X_AXIS] / 60.f;
+    float feedrate = pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f;
     float center_old_x = current_position[X_AXIS];
     float center_old_y = current_position[Y_AXIS];
     float center_x = 0.f;
@@ -1664,9 +1664,9 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
 
         // Search in the X direction along a cross.
         enable_z_endstop(false);
-        go_xy(x0, current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+        go_xy(x0, current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         enable_z_endstop(true);
-        go_xy(x1, current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+        go_xy(x1, current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         update_current_position_xyz();
         if (! endstop_z_hit_on_purpose()) {
             current_position[X_AXIS] = center_old_x;
@@ -1674,9 +1674,9 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
         }
         a = current_position[X_AXIS];
         enable_z_endstop(false);
-        go_xy(x1, current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+        go_xy(x1, current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         enable_z_endstop(true);
-        go_xy(x0, current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+        go_xy(x0, current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         update_current_position_xyz();
         if (! endstop_z_hit_on_purpose()) {
             current_position[X_AXIS] = center_old_x;
@@ -1711,7 +1711,7 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
         // Go to the center.
         enable_z_endstop(false);
         current_position[X_AXIS] = 0.5f * (a + b);
-        go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+        go_xy(current_position[X_AXIS], current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
     }
 
     {
@@ -1724,13 +1724,13 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
 
         // Search in the Y direction along a cross.
         enable_z_endstop(false);
-        go_xy(current_position[X_AXIS], y0, homing_feedrate[X_AXIS] / 60.f);
+        go_xy(current_position[X_AXIS], y0, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         if (lift_z_on_min_y) {
             // The first row of points are very close to the end stop.
             // Lift the sensor to disengage the trigger. This is necessary because of the sensor hysteresis.
-            go_xyz(current_position[X_AXIS], y0, current_position[Z_AXIS]+1.5f, homing_feedrate[Z_AXIS] / 60.f);
+            go_xyz(current_position[X_AXIS], y0, current_position[Z_AXIS]+1.5f, pgm_read_float(&homing_feedrate[Z_AXIS]) / 60.f);
             // and go back.
-            go_xyz(current_position[X_AXIS], y0, current_position[Z_AXIS], homing_feedrate[Z_AXIS] / 60.f);
+            go_xyz(current_position[X_AXIS], y0, current_position[Z_AXIS], pgm_read_float(&homing_feedrate[Z_AXIS]) / 60.f);
         }
         if (lift_z_on_min_y && (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) {
             // Already triggering before we started the move.
@@ -1739,7 +1739,7 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
             a = current_position[Y_AXIS];
         } else {
             enable_z_endstop(true);
-            go_xy(current_position[X_AXIS], y1, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(current_position[X_AXIS], y1, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             update_current_position_xyz();
             if (! endstop_z_hit_on_purpose()) {
                 current_position[Y_AXIS] = center_old_y;
@@ -1748,9 +1748,9 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
             a = current_position[Y_AXIS];
         }
         enable_z_endstop(false);
-        go_xy(current_position[X_AXIS], y1, homing_feedrate[X_AXIS] / 60.f);
+        go_xy(current_position[X_AXIS], y1, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         enable_z_endstop(true);
-        go_xy(current_position[X_AXIS], y0, homing_feedrate[X_AXIS] / 60.f);
+        go_xy(current_position[X_AXIS], y0, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         update_current_position_xyz();
         if (! endstop_z_hit_on_purpose()) {
             current_position[Y_AXIS] = center_old_y;
@@ -1785,7 +1785,7 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
         // Go to the center.
         enable_z_endstop(false);
         current_position[Y_AXIS] = 0.5f * (a + b);
-        go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+        go_xy(current_position[X_AXIS], current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
     }
 
     // If point is small but not too small, then force the Z axis to be lowered a bit,
@@ -1797,7 +1797,7 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
 canceled:
     // Go back to the center.
     enable_z_endstop(false);
-    go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+    go_xy(current_position[X_AXIS], current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
     return false;
 }
 #endif //NEW_XYZCAL
@@ -1852,9 +1852,9 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
         float xmax2 = 0.f;
         for (y = y0; y < y1; y += IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y) {
             enable_z_endstop(false);
-            go_xy(x0, y, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(x0, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             enable_z_endstop(true);
-            go_xy(x1, y, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(x1, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             update_current_position_xyz();
             if (! endstop_z_hit_on_purpose()) {
                 continue;
@@ -1864,9 +1864,9 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
             }
             a = current_position[X_AXIS];
             enable_z_endstop(false);
-            go_xy(x1, y, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(x1, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             enable_z_endstop(true);
-            go_xy(x0, y, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(x0, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             update_current_position_xyz();
             if (! endstop_z_hit_on_purpose()) {
                 continue;
@@ -1903,9 +1903,9 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
         {
             // Find the positive Y hit. This gives the extreme Y value for the search of the maximum diameter in the -Y direction.
             enable_z_endstop(false);
-            go_xy(xmax1, y0 + IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(xmax1, y0 + IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             enable_z_endstop(true);
-            go_xy(xmax1, max(y0 - IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS, Y_MIN_POS_FOR_BED_CALIBRATION), homing_feedrate[X_AXIS] / 60.f);
+            go_xy(xmax1, max(y0 - IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS, Y_MIN_POS_FOR_BED_CALIBRATION), pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             update_current_position_xyz();
             if (! endstop_z_hit_on_purpose()) {
                 current_position[Y_AXIS] = center_old_y;
@@ -1930,9 +1930,9 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
         //    y1 = y0 + 1.f;
         for (y = y1; y >= y0; y -= IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y) {
             enable_z_endstop(false);
-            go_xy(x0, y, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(x0, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             enable_z_endstop(true);
-            go_xy(x1, y, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(x1, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             update_current_position_xyz();
             if (! endstop_z_hit_on_purpose()) {
                 continue;
@@ -1944,9 +1944,9 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
             }
             a = current_position[X_AXIS];
             enable_z_endstop(false);
-            go_xy(x1, y, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(x1, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             enable_z_endstop(true);
-            go_xy(x0, y, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(x0, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             update_current_position_xyz();
             if (! endstop_z_hit_on_purpose()) {
                 continue;
@@ -1983,9 +1983,9 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
             ymax = 0.5f * (y0 + y1);
             for (; y >= y0; y -= IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y) {
                 enable_z_endstop(false);
-                go_xy(x0, y, homing_feedrate[X_AXIS] / 60.f);
+                go_xy(x0, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
                 enable_z_endstop(true);
-                go_xy(x1, y, homing_feedrate[X_AXIS] / 60.f);
+                go_xy(x1, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
                 update_current_position_xyz();
                 if (! endstop_z_hit_on_purpose()) {
                     continue;
@@ -1997,9 +1997,9 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
                 }
                 a = current_position[X_AXIS];
                 enable_z_endstop(false);
-                go_xy(x1, y, homing_feedrate[X_AXIS] / 60.f);
+                go_xy(x1, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
                 enable_z_endstop(true);
-                go_xy(x0, y, homing_feedrate[X_AXIS] / 60.f);
+                go_xy(x0, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
                 update_current_position_xyz();
                 if (! endstop_z_hit_on_purpose()) {
                     continue;
@@ -2029,9 +2029,9 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
             // Compare the distance in the Y+ direction with the diameter in the X direction.
             // Find the positive Y hit once again, this time along the Y axis going through the X point with the highest diameter.
             enable_z_endstop(false);
-            go_xy(xmax, ymax + IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS, homing_feedrate[X_AXIS] / 60.f);
+            go_xy(xmax, ymax + IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             enable_z_endstop(true);
-            go_xy(xmax, max(ymax - IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS, Y_MIN_POS_FOR_BED_CALIBRATION), homing_feedrate[X_AXIS] / 60.f);
+            go_xy(xmax, max(ymax - IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS, Y_MIN_POS_FOR_BED_CALIBRATION), pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             update_current_position_xyz();
             if (! endstop_z_hit_on_purpose()) {
                 current_position[Y_AXIS] = center_old_y;
@@ -2107,7 +2107,7 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
 
         // Don't clamp current_position[Y_AXIS], because the out-of-reach Y coordinate may actually be true.
         // Only clamp the coordinate to go.
-        go_xy(current_position[X_AXIS], max(Y_MIN_POS, current_position[Y_AXIS]), homing_feedrate[X_AXIS] / 60.f);
+        go_xy(current_position[X_AXIS], max(Y_MIN_POS, current_position[Y_AXIS]), pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         // delay_keep_alive(3000);
     }
 
@@ -2120,7 +2120,7 @@ canceled:
     enable_z_endstop(false);
     if (current_position[Y_AXIS] < Y_MIN_POS)
         current_position[Y_AXIS] = Y_MIN_POS;
-    go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+    go_xy(current_position[X_AXIS], current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
     return false;
 }
 #endif //NEW_XYZCAL
@@ -2150,16 +2150,16 @@ inline void scan_bed_induction_sensor_point()
 
     for (float y = y0; y < y1; y += IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y) {
         enable_z_endstop(false);
-        go_xy(x0, y, homing_feedrate[X_AXIS] / 60.f);
+        go_xy(x0, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         enable_z_endstop(true);
-        go_xy(x1, y, homing_feedrate[X_AXIS] / 60.f);
+        go_xy(x1, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         update_current_position_xyz();
         if (endstop_z_hit_on_purpose())
             debug_output_point(PSTR("left" ), current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS]);
         enable_z_endstop(false);
-        go_xy(x1, y, homing_feedrate[X_AXIS] / 60.f);
+        go_xy(x1, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         enable_z_endstop(true);
-        go_xy(x0, y, homing_feedrate[X_AXIS] / 60.f);
+        go_xy(x0, y, pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
         update_current_position_xyz();
         if (endstop_z_hit_on_purpose())
             debug_output_point(PSTR("right"), current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS]);
@@ -2168,7 +2168,7 @@ inline void scan_bed_induction_sensor_point()
     enable_z_endstop(false);
     current_position[X_AXIS] = center_old_x;
     current_position[Y_AXIS] = center_old_y;
-    go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+    go_xy(current_position[X_AXIS], current_position[Y_AXIS], pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
 }
 #endif //NEW_XYZCAL
 
@@ -2250,16 +2250,16 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		float *pt = pts + k * 2;
 		// Go up to z_initial.
 
-		go_to_current(homing_feedrate[Z_AXIS] / 60.f);
+		go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS]) / 60.f);
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
 			// Go to Y0, wait, then go to Y-4.
 			current_position[Y_AXIS] = 0.f;
-			go_to_current(homing_feedrate[X_AXIS] / 60.f);
+			go_to_current(pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
 			SERIAL_ECHOLNPGM("At Y0");
 			delay_keep_alive(5000);
 			current_position[Y_AXIS] = Y_MIN_POS;
-			go_to_current(homing_feedrate[X_AXIS] / 60.f);
+			go_to_current(pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
 			SERIAL_ECHOLNPGM("At Y-4");
 			delay_keep_alive(5000);
 		}
@@ -2295,7 +2295,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		}
 		#endif // SUPPORT_VERBOSITY
 
-		go_to_current(homing_feedrate[X_AXIS] / 60.f);
+		go_to_current(pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 10)
 			delay_keep_alive(3000);
@@ -2318,7 +2318,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 					current_position[Z_AXIS] -= 0.025f;
 					enable_endstops(false);
 					enable_z_endstop(false);
-					go_to_current(homing_feedrate[Z_AXIS]);
+					go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS]));
 				}
 				if (i == 0)
 					// not found
@@ -2371,7 +2371,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			if (verbosity_level >= 10 && k == 0) {
 				// Show the zero. Test, whether the Y motor skipped steps.
 				current_position[Y_AXIS] = MANUAL_Y_HOME_POS;
-				go_to_current(homing_feedrate[X_AXIS] / 60.f);
+				go_to_current(pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
 				delay_keep_alive(3000);
 			}
 			#endif // SUPPORT_VERBOSITY
@@ -2389,7 +2389,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
 				current_position[X_AXIS] = pts[mesh_point * 2];
 				current_position[Y_AXIS] = pts[mesh_point * 2 + 1];
-				go_to_current(homing_feedrate[X_AXIS] / 60);
+				go_to_current(pgm_read_float(&homing_feedrate[X_AXIS]) / 60);
 				delay_keep_alive(3000);
 			}
 		}
@@ -2456,7 +2456,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 					if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix;
 					current_position[X_AXIS] = BED_X(ix, MESH_MEAS_NUM_X_POINTS);
 					current_position[Y_AXIS] = BED_Y(iy, MESH_MEAS_NUM_Y_POINTS);
-					go_to_current(homing_feedrate[X_AXIS] / 60);
+					go_to_current(pgm_read_float(&homing_feedrate[X_AXIS]) / 60);
 					delay_keep_alive(3000);
 				}
 			}
@@ -2525,16 +2525,16 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         enable_endstops(false);
         enable_z_endstop(false);
-        go_to_current(homing_feedrate[Z_AXIS]/60);
+        go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
 		#ifdef SUPPORT_VERBOSITY
         if (verbosity_level >= 20) {
             // Go to Y0, wait, then go to Y-4.
             current_position[Y_AXIS] = 0.f;
-            go_to_current(homing_feedrate[X_AXIS] / 60.f);
+            go_to_current(pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
             SERIAL_ECHOLNPGM("At Y0");
             delay_keep_alive(5000);
             current_position[Y_AXIS] = Y_MIN_POS;
-            go_to_current(homing_feedrate[X_AXIS] / 60.f);
+            go_to_current(pgm_read_float(&homing_feedrate[X_AXIS]) / 60.f);
 			SERIAL_ECHOLNPGM("At Y_MIN_POS");
             delay_keep_alive(5000);
         }
@@ -2555,7 +2555,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 			}
 			#endif // SUPPORT_VERBOSITY
 		}
-        go_to_current(homing_feedrate[X_AXIS]/60);
+        go_to_current(pgm_read_float(&homing_feedrate[X_AXIS])/60);
         // Find its Z position by running the normal vertical search.
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 10)
@@ -2614,7 +2614,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
                 current_position[Z_AXIS] -= 0.05f;
                 enable_endstops(false);
                 enable_z_endstop(false);
-                go_to_current(homing_feedrate[Z_AXIS]);
+                go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS]));
 				#ifdef SUPPORT_VERBOSITY
                 if (verbosity_level >= 5) {
                     SERIAL_ECHOPGM("Improving bed point ");
@@ -2655,7 +2655,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
             current_position[X_AXIS] = pts[mesh_point*2];
             current_position[Y_AXIS] = pts[mesh_point*2+1];
             if (verbosity_level >= 10) {
-                go_to_current(homing_feedrate[X_AXIS]/60);
+                go_to_current(pgm_read_float(&homing_feedrate[X_AXIS])/60);
                 delay_keep_alive(3000);
             }
             SERIAL_ECHOPGM("Final measured bed point ");
@@ -2727,7 +2727,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
             current_position[X_AXIS] = pgm_read_float(bed_ref_points_4+mesh_point*2);
             current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4+mesh_point*2+1);
             if (verbosity_level >= 10) {
-                go_to_current(homing_feedrate[X_AXIS]/60);
+                go_to_current(pgm_read_float(&homing_feedrate[X_AXIS])/60);
                 delay_keep_alive(3000);
             }
             {
@@ -2759,7 +2759,7 @@ canceled:
     refresh_cmd_timeout();
     // Print head up.
     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-    go_to_current(homing_feedrate[Z_AXIS]/60);
+    go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
     // Store the identity matrix to EEPROM.
     reset_bed_offset_and_skew();
     enable_endstops(endstops_enabled);
@@ -2772,7 +2772,7 @@ bool sample_z() {
 	bool sampled = true;
 	//make space
 	current_position[Z_AXIS] += 150;
-	go_to_current(homing_feedrate[Z_AXIS] / 60);
+	go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS]) / 60);
 	//plan_buffer_line_curposXYZE(feedrate, active_extruder););
 
 	lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
@@ -2791,16 +2791,16 @@ void go_home_with_z_lift()
     // Go home.
     // First move up to a safe height.
     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-    go_to_current(homing_feedrate[Z_AXIS]/60);
+    go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
     // Second move to XY [0, 0].
     current_position[X_AXIS] = X_MIN_POS+0.2;
     current_position[Y_AXIS] = Y_MIN_POS+0.2;
     // Clamp to the physical coordinates.
     world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-	go_to_current(homing_feedrate[X_AXIS]/20);
+	go_to_current(pgm_read_float(&homing_feedrate[X_AXIS])/20);
     // Third move up to a safe height.
     current_position[Z_AXIS] = Z_MIN_POS;
-    go_to_current(homing_feedrate[Z_AXIS]/60);    
+    go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);    
 }
 
 // Sample the 9 points of the bed and store them into the EEPROM as a reference.
@@ -2831,11 +2831,11 @@ bool sample_mesh_and_store_reference()
     {
         // The first point defines the reference.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        go_to_current(homing_feedrate[Z_AXIS]/60);
+        go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
         current_position[X_AXIS] = BED_X0;
         current_position[Y_AXIS] = BED_Y0;
         world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-        go_to_current(homing_feedrate[X_AXIS]/60);
+        go_to_current(pgm_read_float(&homing_feedrate[X_AXIS])/60);
         memcpy(destination, current_position, sizeof(destination));
         enable_endstops(true);
         homeaxis(Z_AXIS);
@@ -2861,14 +2861,14 @@ bool sample_mesh_and_store_reference()
         refresh_cmd_timeout();
         // Print the decrasing ID of the measurement point.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        go_to_current(homing_feedrate[Z_AXIS]/60);
+        go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
 		int8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
 		int8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 		if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix; // Zig zag
 		current_position[X_AXIS] = BED_X(ix, MESH_MEAS_NUM_X_POINTS);
 		current_position[Y_AXIS] = BED_Y(iy, MESH_MEAS_NUM_Y_POINTS);
         world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-        go_to_current(homing_feedrate[X_AXIS]/60);
+        go_to_current(pgm_read_float(&homing_feedrate[X_AXIS])/60);
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         // display "point xx of yy"
 		lcd_set_cursor(0, next_line);
@@ -2980,7 +2980,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         enable_endstops(false);
         enable_z_endstop(false);
-        go_to_current(homing_feedrate[Z_AXIS]/60);
+        go_to_current(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
         // Go to the measurement point.
         // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
 		uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
@@ -2993,7 +2993,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
         // The calibration points are very close to the min Y.
         if (current_position[Y_AXIS] < Y_MIN_POS_FOR_BED_CALIBRATION)
             current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;
-        go_to_current(homing_feedrate[X_AXIS]/60);
+        go_to_current(pgm_read_float(&homing_feedrate[X_AXIS])/60);
         find_bed_induction_sensor_point_z();
 		scan_bed_induction_sensor_point();
     }
@@ -3016,7 +3016,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
 // To replace loading of the babystep correction.
 static void shift_z(float delta)
 {
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - delta, current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - delta, current_position[E_AXIS], pgm_read_float(&homing_feedrate[Z_AXIS])/40, active_extruder);
     st_synchronize();
     plan_set_z_position(current_position[Z_AXIS]);
 }

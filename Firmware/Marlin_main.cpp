@@ -174,7 +174,7 @@ uint8_t mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed
 float default_retraction = DEFAULT_RETRACTION;
 
 
-float homing_feedrate[] = HOMING_FEEDRATE;
+const float homing_feedrate[] PROGMEM = HOMING_FEEDRATE;
 
 //Although this flag and many others like this could be represented with a struct/bitfield for each axis (more readable and efficient code), the implementation
 //would not be standard across all platforms. That being said, the code will continue to use bitmasks for independent axis.
@@ -2013,7 +2013,7 @@ static void set_bed_level_equation_3pts(float z_at_pt_1, float z_at_pt_2, float 
 
 static void run_z_probe() {
     plan_bed_level_matrix.set_to_identity();
-    feedrate = homing_feedrate[Z_AXIS];
+    feedrate = pgm_read_float(&homing_feedrate[Z_AXIS]);
 
     // move down until you find the bed
     float zPosition = -10;
@@ -2030,7 +2030,7 @@ static void run_z_probe() {
     st_synchronize();
 
     // move back down slowly to find bed
-    feedrate = homing_feedrate[Z_AXIS]/4;
+    feedrate = pgm_read_float(&homing_feedrate[Z_AXIS])/4;
     zPosition -= home_retract_mm(Z_AXIS) * 2;
     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60, active_extruder);
     st_synchronize();
@@ -2043,7 +2043,7 @@ static void run_z_probe() {
 static void do_blocking_move_to(float x, float y, float z) {
     float oldFeedRate = feedrate;
 
-    feedrate = homing_feedrate[Z_AXIS];
+    feedrate = pgm_read_float(&homing_feedrate[Z_AXIS]);
 
     current_position[Z_AXIS] = z;
     plan_buffer_line_curposXYZE(feedrate/60, active_extruder);
@@ -2171,7 +2171,7 @@ void raise_z_above(float target, bool plan)
 #ifdef TMC2130
     tmc2130_home_enter(Z_AXIS_MASK);
 #endif //TMC2130
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
+    plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 60);
     st_synchronize();
 #ifdef TMC2130
     if (endstop_z_hit_on_purpose())
@@ -2199,7 +2199,7 @@ bool calibrate_z_auto()
 	plan_set_position_curposXYZE();
 	set_destination_to_current();
 	destination[Z_AXIS] += (1.1 * max_length(Z_AXIS) * axis_up_dir);
-	feedrate = homing_feedrate[Z_AXIS];
+	feedrate = pgm_read_float(&homing_feedrate[Z_AXIS]);
 	plan_buffer_line_destinationXYZE(feedrate / 60);
 	st_synchronize();
 	//	current_position[axis] = 0;
@@ -2210,7 +2210,7 @@ bool calibrate_z_auto()
 	plan_set_position_curposXYZE();
 	set_destination_to_current();
 	destination[Z_AXIS] += 10 * axis_up_dir; //10mm up
-	feedrate = homing_feedrate[Z_AXIS] / 2;
+	feedrate = pgm_read_float(&homing_feedrate[Z_AXIS]) / 2;
 	plan_buffer_line_destinationXYZE(feedrate / 60);
 	st_synchronize();
 	enable_endstops(endstops_enabled);
@@ -2252,7 +2252,7 @@ void homeaxis(int axis, uint8_t cnt)
     if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
 	{
         int axis_home_dir = home_dir(axis);
-        feedrate = homing_feedrate[axis];
+        feedrate = pgm_read_float(&homing_feedrate[axis]);
 
 #ifdef TMC2130
     	tmc2130_home_enter(X_AXIS_MASK << axis);
@@ -2297,9 +2297,9 @@ void homeaxis(int axis, uint8_t cnt)
 			enable_endstops(true);
 			destination[axis] = 11.f * axis_home_dir;
 #ifdef TMC2130
-			feedrate = homing_feedrate[axis];
+			feedrate = pgm_read_float(&homing_feedrate[axis]);
 #else //TMC2130
-			feedrate = homing_feedrate[axis] / 2;
+			feedrate = pgm_read_float(&homing_feedrate[axis]) / 2;
 #endif //TMC2130
 			plan_buffer_line_destinationXYZE(feedrate/60);
 			st_synchronize();
@@ -2352,7 +2352,7 @@ void homeaxis(int axis, uint8_t cnt)
         current_position[axis] = 0;
         plan_set_position_curposXYZE();
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
-        feedrate = homing_feedrate[axis];
+        feedrate = pgm_read_float(&homing_feedrate[axis]);
         plan_buffer_line_destinationXYZE(feedrate/60);
         st_synchronize();
 #ifdef TMC2130
@@ -2364,7 +2364,7 @@ void homeaxis(int axis, uint8_t cnt)
         plan_buffer_line_destinationXYZE(feedrate/60);
         st_synchronize();
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
-        feedrate = homing_feedrate[axis]/2 ;
+        feedrate = pgm_read_float(&homing_feedrate[axis])/2 ;
         plan_buffer_line_destinationXYZE(feedrate/60);
         st_synchronize();
 #ifdef TMC2130
@@ -2714,9 +2714,9 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 
         plan_set_position_curposXYZE();
         destination[X_AXIS] = 1.5 * max_length(X_AXIS) * x_axis_home_dir;destination[Y_AXIS] = 1.5 * max_length(Y_AXIS) * home_dir(Y_AXIS);
-        feedrate = homing_feedrate[X_AXIS];
-        if(homing_feedrate[Y_AXIS]<feedrate)
-          feedrate = homing_feedrate[Y_AXIS];
+        feedrate = pgm_read_float(&homing_feedrate[X_AXIS]);
+        if(pgm_read_float(&homing_feedrate[Y_AXIS])<feedrate)
+          feedrate = pgm_read_float(&homing_feedrate[Y_AXIS]);
         if (max_length(X_AXIS) > max_length(Y_AXIS)) {
           feedrate *= sqrt(pow(max_length(Y_AXIS) / max_length(X_AXIS), 2) + 1);
         } else {
@@ -2787,7 +2787,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
               world2machine_reset();
               if (destination[Y_AXIS] < Y_MIN_POS)
                   destination[Y_AXIS] = Y_MIN_POS;
-              feedrate = homing_feedrate[X_AXIS] / 20;
+              feedrate = pgm_read_float(&homing_feedrate[X_AXIS]) / 20;
               enable_endstops(false);
 #ifdef DEBUG_BUILD
               SERIAL_ECHOLNPGM("plan_set_position()");
@@ -2979,7 +2979,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	enable_endstops(false);
 	current_position[X_AXIS] += 5;
 	current_position[Y_AXIS] += 5;
-	plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+	plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 40);
 	st_synchronize();
 
 	// Let the user move the Z axes up to the end stoppers.
@@ -3029,7 +3029,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			
 		bool endstops_enabled  = enable_endstops(false);
         current_position[Z_AXIS] -= 1; //move 1mm down with disabled endstop
-        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+        plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 40);
         st_synchronize();
 
 		// Move the print head close to the bed.
@@ -3040,7 +3040,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		tmc2130_home_enter(Z_AXIS_MASK);
 #endif //TMC2130
 
-		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+		plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 40);
 
 		st_synchronize();
 #ifdef TMC2130
@@ -3081,7 +3081,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				clean_up_after_endstop_move(l_feedmultiply);
 				// Print head up.
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+				plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 40);
 				st_synchronize();
 //#ifndef NEW_XYZCAL
 				if (result >= 0)
@@ -3101,7 +3101,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					clean_up_after_endstop_move(l_feedmultiply);
 					// Print head up.
 					current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-					plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+					plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 40);
 					st_synchronize();
 					// if (result >= 0) babystep_apply();					
 					#endif //HEATBED_V2
@@ -4476,7 +4476,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             plan_set_position_curposXYZE();
             int l_feedmultiply = setup_for_endstop_move();
 
-            feedrate = homing_feedrate[Z_AXIS];
+            feedrate = pgm_read_float(&homing_feedrate[Z_AXIS]);
 #ifdef AUTO_BED_LEVELING_GRID
             // probe at the points of a lattice grid
 
@@ -4602,7 +4602,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
             int l_feedmultiply = setup_for_endstop_move();
 
-            feedrate = homing_feedrate[Z_AXIS];
+            feedrate = pgm_read_float(&homing_feedrate[Z_AXIS]);
 
             run_z_probe();
             SERIAL_PROTOCOLPGM(_T(MSG_BED));
@@ -4651,7 +4651,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
             int l_feedmultiply = setup_for_endstop_move();
 
-            feedrate = homing_feedrate[Z_AXIS];
+            feedrate = pgm_read_float(&homing_feedrate[Z_AXIS]);
 
             find_bed_induction_sensor_point_z(-10.f, 3);
 
@@ -5061,7 +5061,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		// Cycle through all points and probe them
 		// First move up. During this first movement, the babystepping will be reverted.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
+		plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 60);
 		// The move to the first calibration point.
 		current_position[X_AXIS] = BED_X0;
 		current_position[Y_AXIS] = BED_Y0;
@@ -5076,14 +5076,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 		#endif //SUPPORT_VERBOSITY
 
-		plan_buffer_line_curposXYZE(homing_feedrate[X_AXIS] / 30);
+		plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[X_AXIS]) / 30);
 		// Wait until the move is finished.
 		st_synchronize();
 
 		uint8_t mesh_point = 0; //index number of calibration point
 
-		int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
-		int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
+		int XY_AXIS_FEEDRATE = pgm_read_float(&homing_feedrate[X_AXIS]) / 20;
+		int Z_LIFT_FEEDRATE = pgm_read_float(&homing_feedrate[Z_AXIS]) / 40;
 		bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 1) {
@@ -5232,14 +5232,14 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                     // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
                     bState=enable_z_endstop(false);
                     current_position[Z_AXIS] -= 1;
-                    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+                    plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 40);
                     st_synchronize();
                     enable_z_endstop(true);
 #ifdef TMC2130
                     tmc2130_home_enter(Z_AXIS_MASK);
 #endif // TMC2130
                     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
+                    plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 40);
                     st_synchronize();
 #ifdef TMC2130
                     tmc2130_home_exit();
@@ -6020,7 +6020,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         world2machine_revert_to_uncorrected();
         // Move the print head close to the bed.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], pgm_read_float(&homing_feedrate[Z_AXIS])/40, active_extruder);
         st_synchronize();
         // Home in the XY plane.
         set_destination_to_current();
@@ -6036,7 +6036,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         clean_up_after_endstop_move(l_feedmultiply);
         // Print head up.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], pgm_read_float(&homing_feedrate[Z_AXIS])/40, active_extruder);
         st_synchronize();
         lcd_update_enable(true);
         break;
@@ -6141,7 +6141,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         plan_bed_level_matrix.set_to_identity();
 	plan_buffer_line( X_current, Y_current, Z_start_location,
 			ext_position,
-    			homing_feedrate[Z_AXIS]/60,
+    			pgm_read_float(&homing_feedrate[Z_AXIS])/60,
 			active_extruder);
         st_synchronize();
 
@@ -6155,7 +6155,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 	plan_buffer_line( X_probe_location, Y_probe_location, Z_start_location,
 			ext_position,
-    			homing_feedrate[X_AXIS]/60,
+    			pgm_read_float(&homing_feedrate[X_AXIS])/60,
 			active_extruder);
         st_synchronize();
 
@@ -6177,7 +6177,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 	plan_buffer_line( X_probe_location, Y_probe_location, Z_start_location,
 			ext_position,
-    			homing_feedrate[X_AXIS]/60,
+    			pgm_read_float(&homing_feedrate[X_AXIS])/60,
 			active_extruder);
         st_synchronize();
 	current_position[Z_AXIS] = Z_current = st_get_position_mm(Z_AXIS);
@@ -6277,7 +6277,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			SERIAL_PROTOCOLPGM("\n");
 
 		plan_buffer_line( X_probe_location, Y_probe_location, Z_start_location, 
-				  current_position[E_AXIS], homing_feedrate[Z_AXIS]/60, active_extruder);
+				  current_position[E_AXIS], pgm_read_float(&homing_feedrate[Z_AXIS])/60, active_extruder);
         	st_synchronize();
 
 	}
@@ -10153,8 +10153,8 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 	d_setup();
 #endif //MICROMETER_LOGGING
 
-	int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
-	int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
+	int XY_AXIS_FEEDRATE = pgm_read_float(&homing_feedrate[X_AXIS]) / 20;
+	int Z_LIFT_FEEDRATE = pgm_read_float(&homing_feedrate[Z_AXIS]) / 40;
 
 	unsigned int custom_message_type_old = custom_message_type;
 	unsigned int custom_message_state_old = custom_message_state;
@@ -10364,10 +10364,10 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	card.openFile(filename_wldsd, false);
 
 	current_position[Z_AXIS] = mesh_home_z_search;
-	plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60, active_extruder);
+	plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 60, active_extruder);
 
-	int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
-	int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
+	int XY_AXIS_FEEDRATE = pgm_read_float(&homing_feedrate[X_AXIS]) / 20;
+	int Z_LIFT_FEEDRATE = pgm_read_float(&homing_feedrate[Z_AXIS]) / 40;
 
 	int l_feedmultiply = setup_for_endstop_move(false);
 
@@ -10545,7 +10545,7 @@ static void temp_compensation_apply() {
 			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / cs.axis_steps_per_unit[Z_AXIS];
 		}
 		printf_P(_N("\nZ shift applied:%.3f\n"), z_shift_mm);
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], pgm_read_float(&homing_feedrate[Z_AXIS]) / 40, active_extruder);
 		st_synchronize();
 		plan_set_z_position(current_position[Z_AXIS]);
 	}
@@ -10773,7 +10773,7 @@ void uvlo_()
     current_position[Z_AXIS] += float(1024 - z_microsteps)
                                 / (z_res * cs.axis_steps_per_unit[Z_AXIS])
                                 + UVLO_Z_AXIS_SHIFT;
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
+    plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
     st_synchronize();
     poweroff_z();
 
@@ -10887,7 +10887,7 @@ void uvlo_tiny()
         current_position[Z_AXIS] += float(1024 - z_microsteps)
                                     / (z_res * cs.axis_steps_per_unit[Z_AXIS])
                                     + UVLO_TINY_Z_AXIS_SHIFT;
-        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
+        plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS])/60);
         st_synchronize();
         poweroff_z();
 
@@ -11371,7 +11371,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     if(z_move)
     {
         // Then lift Z axis
-        sprintf_P(buf, PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]);
+        sprintf_P(buf, PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, pgm_read_float(&homing_feedrate[Z_AXIS]));
         enquecommand(buf, false);
     }
 
@@ -11379,7 +11379,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     // in the command queue is not the original command, but a new one, so it should not be removed from the queue.
     repeatcommand_front();
 #else
-		plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS] + z_move, saved_pos[E_AXIS] + e_move, homing_feedrate[Z_AXIS], active_extruder);
+		plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS] + z_move, saved_pos[E_AXIS] + e_move, pgm_read_float(&homing_feedrate[Z_AXIS]), active_extruder);
     st_synchronize(); //wait moving
     memcpy(current_position, saved_pos, sizeof(saved_pos));
     memcpy(destination, current_position, sizeof(destination));
@@ -11427,9 +11427,9 @@ void restore_print_from_ram_and_continue(float e_move)
   #endif
 
 	//first move print head in XY to the saved position:
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, pgm_read_float(&homing_feedrate[Z_AXIS])/13, active_extruder);
 	//then move Z
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, pgm_read_float(&homing_feedrate[Z_AXIS])/13, active_extruder);
 	//and finaly unretract (35mm/s)
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
 	st_synchronize();

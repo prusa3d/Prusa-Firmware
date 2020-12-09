@@ -4894,7 +4894,7 @@ void lcd_language()
 static void wait_preheat()
 {
     current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
+    plan_buffer_line_curposXYZE(pgm_read_float(&homing_feedrate[Z_AXIS]) / 60);
     delay_keep_alive(2000);
     lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 	lcd_set_custom_characters();
