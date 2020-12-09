@@ -7764,8 +7764,15 @@ Sigma_Exit:
 			if(code_seen('E')) extruder = code_value();
 			if(code_seen('F')) filament = code_value();
 			if(code_seen('S'))
-			  relative_speed = relative_unload_speed = code_value();
-			if(code_seen('U')) relative_unload_speed = code_value();
+			  relative_speed = code_value();
+			else if (filament == 1)
+			  relative_speed = 0.5; // default for flex
+			else
+			  relative_speed = 1.0;
+			if(code_seen('U'))
+			  relative_unload_speed = code_value();
+			else
+			  relative_unload_speed = relative_speed;
 			mmu_set_filament_type(extruder,
 					      filament,
 					      relative_speed,
