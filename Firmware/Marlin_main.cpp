@@ -7744,11 +7744,14 @@ Sigma_Exit:
     And storing this information for different load/unload profiles etc. in the future firmware does not have to wait for "ok" from MMU.
     #### Usage
     
-        M403 [ E | F ]
+        M403 [ E | F | P | S | U ]
     
     #### Parameters
     - `E` - Extruder number. 0-indexed.
-    - `F` - Filament type
+    - `F` - Filament type (0, 1 = flex, 2 = PVA)
+    - `P` - Relative extruder pulley speed (defaults to MMU load speed)
+    - `S` - Relative MMU load speed (defaults to 1.0, or 0.5 for flex)
+    - `U` - Relative MMU unload speed (defaults to MMU load speed)
 	*/
     case 403:
 	{
@@ -7759,23 +7762,27 @@ Sigma_Exit:
 		{
 			uint8_t extruder = 255;
 			uint8_t filament = FILAMENT_UNDEFINED;
-			float relative_speed = 1.0;
-			float relative_unload_speed = 1.0;
+			float relative_pulley_speed = MMU_DEFAULT_REL_LOAD_SPEED;
+			float relative_load_speed = MMU_DEFAULT_REL_LOAD_SPEED;
+			float relative_unload_speed = MMU_DEFAULT_REL_LOAD_SPEED;
 			if(code_seen('E')) extruder = code_value();
 			if(code_seen('F')) filament = code_value();
 			if(code_seen('S'))
-			  relative_speed = code_value();
+			  relative_load_speed = code_value();
 			else if (filament == 1)
-			  relative_speed = 0.5; // default for flex
-			else
-			  relative_speed = 1.0;
+			  relative_load_speed = MMU_DEFAULT_REL_LOAD_SPEED_FLEX;
 			if(code_seen('U'))
 			  relative_unload_speed = code_value();
 			else
-			  relative_unload_speed = relative_speed;
+			  relative_unload_speed = relative_load_speed;
+			if(code_seen('P'))
+			  relative_pulley_speed = code_value();
+			else
+			  relative_pulley_speed = relative_load_speed;
 			mmu_set_filament_type(extruder,
 					      filament,
-					      relative_speed,
+					      relative_pulley_speed,
+					      relative_load_speed,
 					      relative_unload_speed);
 		}
 	}

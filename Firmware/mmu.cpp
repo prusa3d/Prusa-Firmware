@@ -508,17 +508,24 @@ void mmu_reset(void)
 #endif
 }
 
+static uint16_t
+to_fixed_point (float x)
+{
+  return x * 256.0f + 0.5f;
+}
+
 int8_t mmu_set_filament_type(uint8_t extruder,
 			     uint8_t filament,
+			     float rel_pulley_speed,
 			     float rel_load_speed,
 			     float rel_unload_speed)
 {
         if (extruder >= MMU_NUM_EXTRUDERS)
 	  return 0;
 	//mmu_filament_type[extruder] = filament;
-	mmu_relative_load_speed[extruder] = rel_load_speed;
-	uint16_t irel_load_speed = rel_load_speed * 256.0f + 0.5f;
-	uint16_t irel_unload_speed = rel_unload_speed * 256.0f + 0.5f;
+	mmu_relative_load_speed[extruder] = rel_pulley_speed;
+	uint16_t irel_load_speed = to_fixed_point (rel_load_speed);
+	uint16_t irel_unload_speed = to_fixed_point (rel_unload_speed);
         printf_P(PSTR("MMU <= 'F%d %d %d %d'\n"),
 		 extruder, filament, irel_load_speed, irel_unload_speed);
 	mmu_printf_P(PSTR("F%d %d %d %d\n"),
