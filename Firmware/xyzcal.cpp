@@ -298,7 +298,7 @@ void xyzcal_scan_pixels_32x32(int32_t cx, int32_t cy, int32_t min_z, int32_t max
 		for (uint8_t c = 0; c < 32; c++)
 		{
 			uint16_t sum = 0;
-			int16_t z_sum = 0;
+			int32_t z_sum = 0;
 			for (uint8_t i = 0; i < 64; i++)
 			{
 				int8_t pinda = _PINDA;
@@ -839,7 +839,7 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void)
 	xyzcal_lineXYZ_to(x, y, z, 200 / stepperMotorCorrectionFactorDelay, 0);
 	if (xyzcal_searchZ())
 	{
-		int16_t z = _Z;
+		int32_t z = _Z;
 		xyzcal_lineXYZ_to(x, y, z, 200 / stepperMotorCorrectionFactorDelay, 0);
 		if (xyzcal_scan_and_process())
 		{
