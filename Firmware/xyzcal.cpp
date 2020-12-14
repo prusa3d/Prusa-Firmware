@@ -1113,6 +1113,25 @@ void find_max(uint8_t *matrix_32x32, uint8_t &max_val, uint8_t &max_x, uint8_t &
 	}
 }
 
+/// find maximal value around current location (9x9 matrix) in 32x32 matrix and its first location
+void find_max_9x9(uint8_t *matrix_32x32, uint8_t &max_val, uint8_t &max_x, uint8_t &max_y){
+	max_val = 0;
+	uint8_t new_x = max_x;
+	uint8_t new_y = max_y;
+	for (uint8_t y = max_y - 4; y <= max_y + 4; ++y){
+		const uint16_t idx_y = y * 32;
+		for (uint8_t x = max_x - 4; x <= max_x + 4; ++x){
+			if (max_val < matrix_32x32[idx_y + x]){
+				max_val = matrix_32x32[idx_y + x];
+				new_x = x;
+				new_y = y;
+			}
+		}
+	}
+	max_x = new_x;
+	max_y = new_y;
+}
+
 void remove_255(uint8_t *matrix_32x32){
 	for (uint8_t y = 0; y < 32; ++y){
 		const uint16_t idx_y = y * 32;
@@ -1267,29 +1286,52 @@ bool xyzcal_scan_and_process(void){
 	/// SEARCH FOR BINARY CIRCLE
 	float c = 0;
 	float r = 0;
-	/// total pixels=144, corner=12 (1/2 = 66)
-	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &c, &r, 1) > 66){
-		/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
-		c += 6.f;
-		r += 6.f;
+	/// total pixels=144, corner=12, 66 = 1/4 of points failed, 40 = 1/3 failed, 0 = 1/2 failed (each point -1 instead of +1)
+	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &c, &r, 1) > 0){
 
-		// const float xR = (float)x + (cR - 16) * 64;
-		// const float yR = (float)y + (rR - 16) * 64;
-		// const float xL = (float)x + (cL - 16) * 64;
-		// const float yL = (float)y + (rL - 16) * 64;
-		// DBG(_n(" [%f %f] mm right pattern center\n"), pos_2_mm(xR), pos_2_mm(yR));
-		// DBG(_n(" [%f %f] mm  left pattern center\n"), pos_2_mm(xL), pos_2_mm(yL));
+		/// FIND CENTER OF GRAVITY
+		uint8_t max_x = c;
+		uint8_t max_y = r;
+		uint8_t max_val;
+		find_max_9x9(matrix32, max_val, max_x, max_y);
+		float center_x, center_y;
+		uint16_t obj_size = center_of_gravity(matrix32, max_val / 2, max_x, max_y, center_x, center_y);
+		
+		print_image(matrix32);
 
-		// const float xf = (float)x + ((cR + cL) * 0.5f - 16) * 64;
-		// const float yf = (float)y + ((rR + rL) * 0.5f - 16) * 64;
-		const float xf = (float)x + (c - 16) * 64;
-		const float yf = (float)y + (r - 16) * 64;
-		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
-		x = round_to_i16(xf);
-		y = round_to_i16(yf);
+		/// circle diameter = 10.5 => area of 33
+		if (15 < obj_size && obj_size < 50){
+			/// get center in printer position system
+			const float xf = (float)x + (center_x - 16 + 6.f) * 64;
+			const float yf = (float)y + (center_y - 16 + 6.f) * 64;
+			DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+			x = round_to_i16(xf);
+			y = round_to_i16(yf);
+			xyzcal_lineXYZ_to(x, y, z, 200, 0);
+			ret = true;
+		}
 
-		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		ret = true;
+		// /// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
+		// c += 6.f;
+		// r += 6.f;
+
+		// // const float xR = (float)x + (cR - 16) * 64;
+		// // const float yR = (float)y + (rR - 16) * 64;
+		// // const float xL = (float)x + (cL - 16) * 64;
+		// // const float yL = (float)y + (rL - 16) * 64;
+		// // DBG(_n(" [%f %f] mm right pattern center\n"), pos_2_mm(xR), pos_2_mm(yR));
+		// // DBG(_n(" [%f %f] mm  left pattern center\n"), pos_2_mm(xL), pos_2_mm(yL));
+
+		// // const float xf = (float)x + ((cR + cL) * 0.5f - 16) * 64;
+		// // const float yf = (float)y + ((rR + rL) * 0.5f - 16) * 64;
+		// const float xf = (float)x + (c - 16) * 64;
+		// const float yf = (float)y + (r - 16) * 64;
+		// DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+		// x = round_to_i16(xf);
+		// y = round_to_i16(yf);
+
+		// xyzcal_lineXYZ_to(x, y, z, 200, 0);
+		// ret = true;
 	}
 	
 	/// wipe buffer
