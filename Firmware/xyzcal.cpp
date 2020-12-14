@@ -68,6 +68,10 @@ uint8_t check_pinda_1();
 void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de);
 uint16_t xyzcal_calc_delay(uint16_t nd, uint16_t dd);
 
+uint8_t round_to_u8(float f){
+	return (uint8_t)(f + .5f);
+}
+
 uint16_t round_to_u16(float f){
 	return (uint16_t)(f + .5f);
 }
@@ -776,25 +780,25 @@ int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, f
 		lcd_print("1 of 6");
 	}
 
-	/// subpixel precision - first run
-	/// search +/- pixel around the current one
-	float x, y;
-	int8_t split_factor = 8; ///< 128 at most
-	float div = 1.f/split_factor; ///< precompute
+	// /// subpixel precision - first run
+	// /// search +/- pixel around the current one
+	// float x, y;
+	// int8_t split_factor = 8; ///< 128 at most
+	// float div = 1.f/split_factor; ///< precompute
 
-	for (int8_t sr = split_factor - 1; sr > -split_factor; --sr){
-		for (int8_t sc = split_factor-1; sc > -split_factor; --sc){
-			x = (float)sc * div + max_c;
-			y = (float)sr * div + max_r;
-			const int16_t match = xyzcal_match_pattern_12x12_in_32x32_float(pattern, pixels, x, y);
-			if (max_match < match){
-				max_c = x;
-				max_r = y;
-				max_match = match;
-			}
-		}
-	}
-	DBG(_n("max_c=%f max_r=%f max_match=%d subpixel\n"), max_c, max_r, max_match);
+	// for (int8_t sr = split_factor - 1; sr > -split_factor; --sr){
+	// 	for (int8_t sc = split_factor-1; sc > -split_factor; --sc){
+	// 		x = (float)sc * div + max_c;
+	// 		y = (float)sr * div + max_r;
+	// 		const int16_t match = xyzcal_match_pattern_12x12_in_32x32_float(pattern, pixels, x, y);
+	// 		if (max_match < match){
+	// 			max_c = x;
+	// 			max_r = y;
+	// 			max_match = match;
+	// 		}
+	// 	}
+	// }
+	// DBG(_n("max_c=%f max_r=%f max_match=%d subpixel\n"), max_c, max_r, max_match);
 
 	lcd_set_cursor(0, 4);
 	if(iteration){
@@ -803,21 +807,21 @@ int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, f
 		lcd_print("2 of 6");
 	}
 
-	/// subpixel precision - second run
-	div = 1.f/((float)split_factor*split_factor); ///< precompute
-	for (int8_t ssr = split_factor - 1; ssr > -split_factor; --ssr){
-		for (int8_t ssc = split_factor-1; ssc > -split_factor; --ssc){
-			x = (float)ssc * div + max_c;
-			y = (float)ssr * div + max_r;
-			const int16_t match = xyzcal_match_pattern_12x12_in_32x32_float(pattern, pixels, x, y);
-			if (max_match < match){
-				max_c = x;
-				max_r = y;
-				max_match = match;
-			}
-		}
-	}
-	DBG(_n("max_c=%f max_r=%f max_match=%d supersubpixel\n"), max_c, max_r, max_match);
+	// /// subpixel precision - second run
+	// div = 1.f/((float)split_factor*split_factor); ///< precompute
+	// for (int8_t ssr = split_factor - 1; ssr > -split_factor; --ssr){
+	// 	for (int8_t ssc = split_factor-1; ssc > -split_factor; --ssc){
+	// 		x = (float)ssc * div + max_c;
+	// 		y = (float)ssr * div + max_r;
+	// 		const int16_t match = xyzcal_match_pattern_12x12_in_32x32_float(pattern, pixels, x, y);
+	// 		if (max_match < match){
+	// 			max_c = x;
+	// 			max_r = y;
+	// 			max_match = match;
+	// 		}
+	// 	}
+	// }
+	// DBG(_n("max_c=%f max_r=%f max_match=%d supersubpixel\n"), max_c, max_r, max_match);
 
 	lcd_set_cursor(0, 4);
 	if(iteration){
@@ -1143,6 +1147,122 @@ void remove_255(uint8_t *matrix_32x32){
 	}
 }
 
+float get_value(uint8_t * matrix_32x32, float c, float r){	
+	if(c<=0 || r<=0 || c>=31 || r>=31)
+		return 0;
+
+	/// calculate weights of nearby points
+	const float wc1 = c - (uint16_t)c;
+	const float wr1 = r - (uint16_t)r;
+	const float wc0 = 1 - wc1;
+	const float wr0 = 1 - wr1;
+
+	const float w00 = wc0 * wr0;
+	const float w01 = wc0 * wr1;
+	const float w10 = wc1 * wr0;
+	const float w11 = wc1 * wr1;
+
+	const uint16_t c0 = c;
+	const uint16_t c1 = c0 + 1;
+	const uint16_t r0 = r;
+	const uint16_t r1 = r0 + 1;
+
+	const uint16_t idx00 = c0 + 32 * r0;
+	const uint16_t idx01 = c0 + 32 * r1;
+	const uint16_t idx10 = c1 + 32 * r0;
+	const uint16_t idx11 = c1 + 32 * r1;
+
+	/// bilinear resampling
+	return w00 * matrix_32x32[idx00] + w01 * matrix_32x32[idx01] + w10 * matrix_32x32[idx10] + w11 * matrix_32x32[idx11];
+}
+
+const constexpr float m_infinity = -1000.f;
+
+/// finds the extreme value and replace it with m_infinity
+void remove_extreme(float *points, const uint8_t num_points){
+	if (num_points <= 0)
+		return;
+
+	float min = points[0];
+	float max = points[0];
+	uint8_t min_i = 0;
+	uint8_t max_i = 0;
+
+	for (uint8_t i = 0; i < num_points; ++i){
+		if (points[i] <= m_infinity)
+			continue;
+		if (min > points[i]){
+			min = points[i];
+			min_i = i;
+		}
+		if (max < points[i]){
+			max = points[i];
+			max_i = i;
+		}
+	}
+	if (-min > max){
+		points[min_i] = m_infinity;
+	} else {
+		points[max_i] = m_infinity;
+	}
+}
+
+/// Searches for circle iteratively
+/// Uses points on the perimeter. If point is high it pushes circle out of center, otherwise to the center.
+/// For evaluation, 1/2 of the points that are most aggressive are not taken into account. The rest changes position and radius.
+/// Algorithm is stopped after fixed number of iterations. Move is limited to 0.5 px per iteration and is decreased linearly to 0.
+void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t iterations){
+	/// circle of 10.5 diameter has 33 in circumference, don't go above
+	const constexpr uint8_t num_points = 17;
+	float points[num_points];
+	float rec_num_points = 1 / num_points;
+	float pi_2_div_num_points = 2 * pi * rec_num_points;
+	uint8_t target_z = 16; ///< target z height of the circle
+	uint8_t n = 0;
+
+	for (int8_t i = iterations; i > 0; --i){
+	
+		DBG(_n(" [%f %f][%f] circle\n"), x, y, r);
+
+		/// read points on the circle
+		for (uint8_t p = 0; p < num_points; ++p){
+			float angle = p * pi_2_div_num_points;
+			points[p] = get_value(matrix_32x32, r * cos(angle) + x, r * sin(angle) + y) - target_z;
+		}
+
+		/// remove extreme values (slow but simple)
+		for (uint8_t j = 0; j < num_points / 2; ++j)
+			remove_extreme(points, num_points);
+
+		/// evaluate new circle center
+		float shift_x = 0, shift_y = 0;
+		n = 0;
+		for (uint8_t p = 0; p < num_points; ++p){
+			if (points[p] <= m_infinity)
+				continue;
+			n++;
+			float angle = p * pi_2_div_num_points;
+			shift_x += cos(angle) * points[p];
+			shift_y += sin(angle) * points[p];
+		}
+		float norm = i / (iterations * target_z * n);
+		x += MIN(0.5f, MAX(-0.5f, shift_x * norm));
+		y += MIN(0.5f, MAX(-0.5f, shift_y * norm));
+
+		/// evaluate new circle radius
+		float r_shift = 0;
+		for (uint8_t p = 0; p < num_points; ++p){
+			if (points[p] <= m_infinity)
+				continue;
+			float angle = p * pi_2_div_num_points;
+			r_shift += points[p];
+		}
+		float norm = i / (iterations * target_z * n);
+		r += MIN(0.5f, MAX(-0.5f, r_shift * norm));
+	}
+	DBG(_n(" [%f %f][%f] final circle\n"), x, y, r);
+}
+
 /// Finds center of gravity of an object defined by starting position
 /// Every pixel in 4-neighbourhood greater or equal than threshold is assumed as object pixel
 /// \returns number of object pixels
@@ -1243,6 +1363,7 @@ bool xyzcal_scan_and_process(void){
 	// uint8_t* pixelsR = (uint8_t*)block_buffer;
 	// uint16_t* histo = (uint16_t*)(pixelsR + 32*32);
 	// uint16_t* pattern = (uint16_t*)(histo + 2*16);
+	uint16_t* pattern = (uint16_t*)block_buffer;
 	// uint8_t pixelsL[32*32];
 
 	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, matrix32);
@@ -1278,10 +1399,10 @@ bool xyzcal_scan_and_process(void){
 	// xyzcal_histo_pixels_32x32(pixelsL, histo);
 	// xyzcal_adjust_pixels(pixelsL, histo);
 
-// 	for (uint8_t i = 0; i < 12; i++){
-// 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
-// //		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
-// 	}
+	for (uint8_t i = 0; i < 12; i++){
+		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
+//		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
+	}
 	
 	/// SEARCH FOR BINARY CIRCLE
 	float c = 0;
@@ -1289,31 +1410,45 @@ bool xyzcal_scan_and_process(void){
 	/// total pixels=144, corner=12, 66 = 1/4 of points failed, 40 = 1/3 failed, 0 = 1/2 failed (each point -1 instead of +1)
 	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &c, &r, 1) > 0){
 
-		/// FIND CENTER OF GRAVITY
-		uint8_t max_x = c;
-		uint8_t max_y = r;
-		uint8_t max_val;
-		find_max_9x9(matrix32, max_val, max_x, max_y);
-		float center_x, center_y;
-		uint16_t obj_size = center_of_gravity(matrix32, max_val / 2, max_x, max_y, center_x, center_y);
+		/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
+		c += 6.f;
+		r += 6.f;
+
+		/// find precise circle
+		float xf = c;
+		float yf = r;
+		r = 5;
+		dynamic_circle(matrix32, xf, yf, r, 10);
+		xf = (float)x + (xf - 16) * 64;
+		yf = (float)y + (yf - 16) * 64;
+		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+		x = round_to_i16(xf);
+		y = round_to_i16(yf);
+		xyzcal_lineXYZ_to(x, y, z, 200, 0);
+		ret = true;
+
+		// /// FIND CENTER OF GRAVITY
+		// uint8_t max_x = round_to_u8(c);
+		// uint8_t max_y = round_to_u8(r);
+		// uint8_t max_val;
+		// find_max_9x9(matrix32, max_val, max_x, max_y);
+		// float center_x, center_y;
+		// uint16_t obj_size = center_of_gravity(matrix32, max_val / 2, max_x, max_y, center_x, center_y);
 		
-		print_image(matrix32);
+		// print_image(matrix32);
 
-		/// circle diameter = 10.5 => area of 33
-		if (15 < obj_size && obj_size < 50){
-			/// get center in printer position system
-			const float xf = (float)x + (center_x - 16 + 6.f) * 64;
-			const float yf = (float)y + (center_y - 16 + 6.f) * 64;
-			DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
-			x = round_to_i16(xf);
-			y = round_to_i16(yf);
-			xyzcal_lineXYZ_to(x, y, z, 200, 0);
-			ret = true;
-		}
+		// /// circle diameter = 10.5 => area of 33
+		// if (15 < obj_size && obj_size < 100){
+		// // 	/// get center in printer position system
+		// 	const float xf = (float)x + (center_x - 16) * 64;
+		// 	const float yf = (float)y + (center_y - 16) * 64;
+		// 	DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+		// 	x = round_to_i16(xf);
+		// 	y = round_to_i16(yf);
+		// 	xyzcal_lineXYZ_to(x, y, z, 200, 0);
+		// 	ret = true;
+		// }
 
-		// /// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
-		// c += 6.f;
-		// r += 6.f;
 
 		// // const float xR = (float)x + (cR - 16) * 64;
 		// // const float yR = (float)y + (rR - 16) * 64;
