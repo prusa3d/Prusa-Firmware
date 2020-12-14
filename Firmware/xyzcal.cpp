@@ -1228,29 +1228,30 @@ bool xyzcal_scan_and_process(void){
 
 	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, matrix32);
 
-	uint8_t max_val, max_x, max_y;
-	find_max(matrix32, max_val, max_x, max_y);
-	if (max_val == 255){ /// filter by median +cross if values are saturated
-		// median5(pixels);
-		// find_max(pixels, max_val, max_x, max_y);
-	}
-	float center_x, center_y;
-	uint16_t obj_size = center_of_gravity(matrix32, max_val / 2, max_x, max_y, center_x, center_y);
-	if (obj_size < 9) ///< object too small, try lower
-		obj_size = center_of_gravity(matrix32, max_val / 4, max_x, max_y, center_x, center_y);
+	/// FIND MAX and FIND CENTER OF GRAVITY
+	// uint8_t max_val, max_x, max_y;
+	// find_max(matrix32, max_val, max_x, max_y);
+	// if (max_val == 255){ /// filter by median +cross if values are saturated
+	// 	// median5(pixels);
+	// 	// find_max(pixels, max_val, max_x, max_y);
+	// }
+	// float center_x, center_y;
+	// uint16_t obj_size = center_of_gravity(matrix32, max_val / 2, max_x, max_y, center_x, center_y);
+	// if (obj_size < 9) ///< object too small, try lower
+	// 	obj_size = center_of_gravity(matrix32, max_val / 4, max_x, max_y, center_x, center_y);
 
-	print_image(matrix32);
+	// print_image(matrix32);
 
-	if (8 < obj_size && obj_size < 120){
-		/// get center in printer position system
-		const float xf = (float)x + (center_x - 15.5f) * 64;
-		const float yf = (float)y + (center_y - 15.5f) * 64;
-		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
-		x = round_to_i16(xf);
-		y = round_to_i16(yf);
-		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		ret = true;
-	}
+	// if (8 < obj_size && obj_size < 120){
+	// 	/// get center in printer position system
+	// 	const float xf = (float)x + (center_x - 15.5f) * 64;
+	// 	const float yf = (float)y + (center_y - 15.5f) * 64;
+	// 	DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+	// 	x = round_to_i16(xf);
+	// 	y = round_to_i16(yf);
+	// 	xyzcal_lineXYZ_to(x, y, z, 200, 0);
+	// 	ret = true;
+	// }
 
 	// xyzcal_histo_pixels_32x32(pixelsR, histo);
 	// xyzcal_adjust_pixels(pixelsR, histo);
@@ -1263,38 +1264,33 @@ bool xyzcal_scan_and_process(void){
 // //		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
 // 	}
 	
-	/// save found coordinates to these variables
-	// float cR = 0;
-	// float rR = 0;
-	// // float cL = 0;
-	// // float rL = 0;
-	// /// total pixels=144, corner=12 (1/2 = 66)
-	// if (xyzcal_find_pattern_12x12_in_32x32(pixelsR, pattern, &cR, &rR, 1) > 66){
-	// // if (xyzcal_find_pattern_12x12_in_32x32(pixelsR, pattern, &cR, &rR, 0) > 66 && xyzcal_find_pattern_12x12_in_32x32(pixelsL, pattern, &cL, &rL, 1) > 66){
-	// 	/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
-	// 	cR += 6.f;
-	// 	rR += 6.f;
-	// 	// cL += 6.f; 
-	// 	// rL += 6.f;
+	/// SEARCH FOR BINARY CIRCLE
+	float c = 0;
+	float r = 0;
+	/// total pixels=144, corner=12 (1/2 = 66)
+	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &c, &r, 1) > 66){
+		/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
+		c += 6.f;
+		r += 6.f;
 
-	// 	// const float xR = (float)x + (cR - 16) * 64;
-	// 	// const float yR = (float)y + (rR - 16) * 64;
-	// 	// const float xL = (float)x + (cL - 16) * 64;
-	// 	// const float yL = (float)y + (rL - 16) * 64;
-	// 	// DBG(_n(" [%f %f] mm right pattern center\n"), pos_2_mm(xR), pos_2_mm(yR));
-	// 	// DBG(_n(" [%f %f] mm  left pattern center\n"), pos_2_mm(xL), pos_2_mm(yL));
+		// const float xR = (float)x + (cR - 16) * 64;
+		// const float yR = (float)y + (rR - 16) * 64;
+		// const float xL = (float)x + (cL - 16) * 64;
+		// const float yL = (float)y + (rL - 16) * 64;
+		// DBG(_n(" [%f %f] mm right pattern center\n"), pos_2_mm(xR), pos_2_mm(yR));
+		// DBG(_n(" [%f %f] mm  left pattern center\n"), pos_2_mm(xL), pos_2_mm(yL));
 
-	// 	// const float xf = (float)x + ((cR + cL) * 0.5f - 16) * 64;
-	// 	// const float yf = (float)y + ((rR + rL) * 0.5f - 16) * 64;
-	// 	const float xf = (float)x + (cR - 16) * 64;
-	// 	const float yf = (float)y + (rR - 16) * 64;
-	// 	DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
-	// 	x = round_to_i16(xf);
-	// 	y = round_to_i16(yf);
+		// const float xf = (float)x + ((cR + cL) * 0.5f - 16) * 64;
+		// const float yf = (float)y + ((rR + rL) * 0.5f - 16) * 64;
+		const float xf = (float)x + (c - 16) * 64;
+		const float yf = (float)y + (r - 16) * 64;
+		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+		x = round_to_i16(xf);
+		y = round_to_i16(yf);
 
-	// 	xyzcal_lineXYZ_to(x, y, z, 200, 0);
-	// 	ret = true;
-	// }
+		xyzcal_lineXYZ_to(x, y, z, 200, 0);
+		ret = true;
+	}
 	
 	/// wipe buffer
 	for (uint16_t i = 0; i < sizeof(block_t)*BLOCK_BUFFER_SIZE; i++)
