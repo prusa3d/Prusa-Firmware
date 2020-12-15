@@ -1,5 +1,7 @@
 //xyzcal.cpp - xyz calibration with image processing
 
+#include <math.h>
+
 #include "Configuration_prusa.h"
 #ifdef NEW_XYZCAL
 
@@ -8,7 +10,6 @@
 #include "stepper.h"
 #include "temperature.h"
 #include "sm4.h"
-
 
 #define XYZCAL_PINDA_HYST_MIN 20  //50um
 #define XYZCAL_PINDA_HYST_MAX 100 //250um
@@ -1147,13 +1148,13 @@ void remove_255(uint8_t *matrix_32x32){
 	}
 }
 
-float get_value(uint8_t * matrix_32x32, float c, float r){	
-	if(c<=0 || r<=0 || c>=31 || r>=31)
+float get_value(uint8_t * matrix_32x32, float c, float r){
+	if (c <= 0 || r <= 0 || c >= 31 || r >= 31)
 		return 0;
 
 	/// calculate weights of nearby points
-	const float wc1 = c - (uint16_t)c;
-	const float wr1 = r - (uint16_t)r;
+	const float wc1 = c - floor(c);
+	const float wr1 = r - floor(r);
 	const float wc0 = 1 - wc1;
 	const float wr0 = 1 - wr1;
 
@@ -1207,60 +1208,151 @@ void remove_extreme(float *points, const uint8_t num_points){
 	}
 }
 
+void remove_highest(float *points, const uint8_t num_points){
+	if (num_points <= 0)
+		return;
+
+	float max = points[0];
+	uint8_t max_i = 0;
+
+	for (uint8_t i = 0; i < num_points; ++i){
+		if (max < points[i]){
+			max = points[i];
+			max_i = i;
+		}
+	}
+	points[max_i] = m_infinity;
+}
+
+float highest(float *points, const uint8_t num_points){
+	if (num_points <= 0)
+		return;
+
+	float max = points[0];
+	uint8_t max_i = 0;
+
+	for (uint8_t i = 0; i < num_points; ++i){
+		if (max < points[i]){
+			max = points[i];
+			max_i = i;
+		}
+	}
+	return max;
+}
+
 /// Searches for circle iteratively
 /// Uses points on the perimeter. If point is high it pushes circle out of center, otherwise to the center.
-/// For evaluation, 1/2 of the points that are most aggressive are not taken into account. The rest changes position and radius.
 /// Algorithm is stopped after fixed number of iterations. Move is limited to 0.5 px per iteration and is decreased linearly to 0.
 void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t iterations){
-	/// circle of 10.5 diameter has 33 in circumference, don't go above
-	const constexpr uint8_t num_points = 17;
+	/// circle of 10.5 diameter has 33 in circumference, don't go much above
+	const constexpr uint8_t num_points = 33;
 	float points[num_points];
-	float rec_num_points = 1 / num_points;
-	float pi_2_div_num_points = 2 * pi * rec_num_points;
-	uint8_t target_z = 16; ///< target z height of the circle
+	float points2[num_points];
+	float pi_2_div_num_points = 2 * M_PI / num_points;
+	uint8_t target_z = 32; ///< target z height of the circle
 	uint8_t n = 0;
+	float norm;
+	// float shift_x = 0, shift_y = 0;
+	float angle;
+	float max_val = 0.5f;
+	const uint8_t blocks = 7;
+	float shifts_x[blocks];
+	float shifts_y[blocks];	
+	float shifts_r[blocks];	
 
 	for (int8_t i = iterations; i > 0; --i){
 	
-		DBG(_n(" [%f %f][%f] circle\n"), x, y, r);
+		DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
 
 		/// read points on the circle
 		for (uint8_t p = 0; p < num_points; ++p){
-			float angle = p * pi_2_div_num_points;
+			angle = p * pi_2_div_num_points;
 			points[p] = get_value(matrix_32x32, r * cos(angle) + x, r * sin(angle) + y) - target_z;
+			// DBG(_n("%f "), points[p]);
 		}
+		// DBG(_n(" points\n"));
+
+		// /// remove extreme values (slow but simple)
+		// for (uint8_t j = 0; j < num_points / 3; ++j)
+		// 	remove_extreme(points, num_points);
+
+		// for (uint8_t p = 0; p < num_points; ++p)
+		// 	DBG(_n("%f "), points[p]);
+		// DBG(_n(" no extremes\n"));
+
+		/// sum blocks
+		for (uint8_t j = 0; j < blocks; ++j){
+			shifts_x[j] = shifts_y[j] = shifts_r[j] = 0;
+			/// first part
+			for (uint8_t p = 0; p < num_points * 3 / 4; ++p){
+				uint8_t idx = (p + j * num_points / blocks) % num_points;
+
+				angle = idx * pi_2_div_num_points;
+				shifts_x[j] += cos(angle) * points[idx];
+				shifts_y[j] += sin(angle) * points[idx];
+				shifts_r[j] += points[idx];
+			}
+
+			// /// opposite part
+			// for (uint8_t p = 0; p < num_points / 4; ++p){
+			// 	uint8_t idx = (p + num_points / 2 + j * num_points / blocks) % num_points;
+
+			// 	angle = idx * pi_2_div_num_points;
+			// 	shifts_x[j] += cos(angle) * points[idx];
+			// 	shifts_y[j] += sin(angle) * points[idx];
+			// 	shifts_r[j] += points[idx];
+			// }
+		}
+
+		// DBG(_n("Blocks:\n"));
+		// for (uint8_t j = 0; j < blocks; ++j)
+		// 	DBG(_n("%f %f %f \n"), shifts_x[j], shifts_y[j], shifts_r[j]);
+		// DBG(_n("\n"));
 
 		/// remove extreme values (slow but simple)
-		for (uint8_t j = 0; j < num_points / 2; ++j)
-			remove_extreme(points, num_points);
-
-		/// evaluate new circle center
-		float shift_x = 0, shift_y = 0;
-		n = 0;
-		for (uint8_t p = 0; p < num_points; ++p){
-			if (points[p] <= m_infinity)
-				continue;
-			n++;
-			float angle = p * pi_2_div_num_points;
-			shift_x += cos(angle) * points[p];
-			shift_y += sin(angle) * points[p];
+		for (uint8_t j = 0; j < blocks / 2; ++j){
+			remove_highest(shifts_x, blocks);
+			remove_highest(shifts_y, blocks);
+			remove_highest(shifts_r, blocks);
 		}
-		float norm = i / (iterations * target_z * n);
-		x += MIN(0.5f, MAX(-0.5f, shift_x * norm));
-		y += MIN(0.5f, MAX(-0.5f, shift_y * norm));
 
-		/// evaluate new circle radius
-		float r_shift = 0;
-		for (uint8_t p = 0; p < num_points; ++p){
-			if (points[p] <= m_infinity)
-				continue;
-			float angle = p * pi_2_div_num_points;
-			r_shift += points[p];
-		}
-		float norm = i / (iterations * target_z * n);
-		r += MIN(0.5f, MAX(-0.5f, r_shift * norm));
+		/// median is the highest now
+		norm = 1.f / (32.f * (num_points * 3 / 4));
+		x += MIN(max_val, MAX(-max_val, highest(shifts_x, blocks) * norm));
+		y += MIN(max_val, MAX(-max_val, highest(shifts_y, blocks) * norm));
+		r += MIN(max_val, MAX(-max_val, highest(shifts_r, blocks) * norm));
+
+		r = MAX(2, r);
+
+		// /// evaluate new circle center
+		// n = 0;
+		// for (uint8_t p = 0; p < num_points; ++p){
+		// 	if (points[p] <= m_infinity)
+		// 		continue;
+		// 	n++;
+		// 	float angle = p * pi_2_div_num_points;
+		// 	shift_x += cos(angle) * points[p];
+		// 	shift_y += sin(angle) * points[p];
+		// }
+		// // DBG(_n("%f %f shifts\n"), shift_x, shift_y);
+		// // norm = (float)i / (iterations * target_z * n);
+		// norm = (float)1.f / n;
+		// x += MIN(0.5f, MAX(-0.5f, shift_x * norm));
+		// y += MIN(0.5f, MAX(-0.5f, shift_y * norm));
+
+		// /// evaluate new circle radius
+		// float r_shift = 0;
+		// for (uint8_t p = 0; p < num_points; ++p){
+		// 	if (points[p] <= m_infinity)
+		// 		continue;
+		// 	r_shift += points[p];
+		// }
+		// // DBG(_n("%f r shift\n"), shift_x, shift_y);
+		// // norm = (float)i / (iterations * target_z * n);
+		// norm = (float)1.f / n;
+		// r += MIN(0.5f, MAX(-0.5f, r_shift * norm));
 	}
-	DBG(_n(" [%f %f][%f] final circle\n"), x, y, r);
+	DBG(_n(" [%f, %f][%f] final circle\n"), x, y, r);
 }
 
 /// Finds center of gravity of an object defined by starting position
@@ -1411,16 +1503,17 @@ bool xyzcal_scan_and_process(void){
 	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &c, &r, 1) > 0){
 
 		/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
-		c += 6.f;
-		r += 6.f;
+		c += 5.5f;
+		r += 5.5f;
 
 		/// find precise circle
 		float xf = c;
 		float yf = r;
 		r = 5;
-		dynamic_circle(matrix32, xf, yf, r, 10);
-		xf = (float)x + (xf - 16) * 64;
-		yf = (float)y + (yf - 16) * 64;
+		const uint8_t iterations = 20;
+		dynamic_circle(matrix32, xf, yf, r, iterations);
+		xf = (float)x + (xf - 15.5f) * 64;
+		yf = (float)y + (yf - 15.5f) * 64;
 		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
 		x = round_to_i16(xf);
 		y = round_to_i16(yf);
