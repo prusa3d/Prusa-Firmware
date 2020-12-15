@@ -1436,6 +1436,26 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 	}
 }
 
+
+//! @brief load more
+//!
+//! Try to feed more filament from MMU if it is not detected by filament sensor.
+//! @retval true Success, filament detected by IR sensor
+//! @retval false Failed, filament not detected by IR sensor after maximum number of attempts
+static bool load_more()
+{
+    for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
+    {
+        if (READ(IR_SENSOR_PIN) == 0) return true;
+        DEBUG_PRINTF_P(PSTR("Additional load attempt nr. %d\n"), i);
+        mmu_command(MmuCmd::C0);
+        manage_response(true, true, MMU_LOAD_MOVE);
+    }
+    return false;
+}
+
+
+
 //! @brief Fits filament tip into heatbreak?
 //!
 //! If PTFE tube is jammed, this causes filament to be unloaded and no longer
@@ -1472,6 +1492,20 @@ static bool can_load()
     if (filament_detected_count > steps - 4)
     {
         DEBUG_PUTS_P(PSTR(" succeeded."));
+// FRIMMEL load-unload
+        current_position[E_AXIS] -= 4; // Move BACK - now IR-sensor SHOULD sign "no filament"
+        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
+        st_synchronize();
+        if(0 == READ(IR_SENSOR_PIN)) 
+          { 
+          DEBUG_PUTS_P(PSTR(" failed re-empty-check."));
+          return false;
+          }
+         else
+          {
+          load_more(); // get filament back into the bondtech gear
+          }
+// FRIMMEL load-unload
         return true;
     }
     else
@@ -1481,22 +1515,7 @@ static bool can_load()
     }
 }
 
-//! @brief load more
-//!
-//! Try to feed more filament from MMU if it is not detected by filament sensor.
-//! @retval true Success, filament detected by IR sensor
-//! @retval false Failed, filament not detected by IR sensor after maximum number of attempts
-static bool load_more()
-{
-    for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
-    {
-        if (READ(IR_SENSOR_PIN) == 0) return true;
-        DEBUG_PRINTF_P(PSTR("Additional load attempt nr. %d\n"), i);
-        mmu_command(MmuCmd::C0);
-        manage_response(true, true, MMU_LOAD_MOVE);
-    }
-    return false;
-}
+// load_more() moved from here // FRIMMEL load-unload
 
 static void increment_load_fail()
 {
@@ -1559,6 +1578,12 @@ void mmu_continue_loading(bool blocking)
             // no break
         case Ls::Retry:
             ++retry; // overflow not handled, as it is not dangerous.
+// FRIMMEL load-unload 
+//   ONLY UNLOAD IF IR-sensor can be emptied, can_load() either moved beyond bond tech 
+//   (and we wont be here now) OR it was IMPOSSIBLE to unload and this we should check
+//   to avoid MMU from extensive grinding
+            if(0 == READ(IR_SENSOR_PIN)) { state = Ls::Unload; break; }
+// FRIMMEL load-unload
             if (retry >= max_retry)
             {
                 state = Ls::Unload;
@@ -1579,10 +1604,11 @@ void mmu_continue_loading(bool blocking)
         case Ls::Unload:
             stop_and_save_print_to_ram(0, 0);
             long_pause();
-
-            mmu_command(MmuCmd::U0);
-            manage_response(false, true, MMU_UNLOAD_MOVE);
-
+            if(!(0 == READ(IR_SENSOR_PIN))) // FRIMMEL - ONLY UNLOAD IF IR-sensor signals "empty" else MMU will grind
+              { // FRIMMEL load-unload 
+              mmu_command(MmuCmd::U0);
+              manage_response(false, true, MMU_UNLOAD_MOVE);
+              } // FRIMMEL load-unload 
             setAllTargetHotends(0);
             lcd_setstatuspgm(_i("MMU load failed     "));////c=20 r=1
 
