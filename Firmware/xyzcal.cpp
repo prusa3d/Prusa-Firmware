@@ -507,6 +507,8 @@ bool xyzcal_searchZ(void)
 	return false;
 }
 
+/// returns value of any location within data
+/// uses bilinear interpolation
 float get_value(uint8_t * matrix_32x32, float c, float r){
 	if (c <= 0 || r <= 0 || c >= 31 || r >= 31)
 		return 0;
@@ -538,6 +540,7 @@ float get_value(uint8_t * matrix_32x32, float c, float r){
 
 const constexpr float m_infinity = -1000.f;
 
+/// replaces the highest number by m_infinity
 void remove_highest(float *points, const uint8_t num_points){
 	if (num_points <= 0)
 		return;
@@ -553,6 +556,7 @@ void remove_highest(float *points, const uint8_t num_points){
 	points[max_i] = m_infinity;
 }
 
+/// return the highest number in the list
 float highest(float *points, const uint8_t num_points){
 	if (num_points <= 0)
 		return 0;
@@ -567,7 +571,8 @@ float highest(float *points, const uint8_t num_points){
 }
 
 /// Searches for circle iteratively
-/// Uses points on the perimeter. If point is high it pushes circle out of center (shift or change of radius), otherwise to the center.
+/// Uses points on the perimeter. If point is high it pushes circle out of the center (shift or change of radius),
+/// otherwise to the center.
 /// Algorithm is stopped after fixed number of iterations. Move is limited to 0.5 px per iteration.
 void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t iterations){
 	/// circle of 10.5 diameter has 33 in circumference, don't go much above
@@ -628,6 +633,7 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 	DBG(_n(" [%f, %f][%f] final circle\n"), x, y, r);
 }
 
+/// Prints matrix in hex to debug output (serial line)
 void print_image(uint8_t *matrix_32x32){
 	for (uint8_t y = 0; y < 32; ++y){
 		const uint16_t idx_y = y * 32;
@@ -639,6 +645,8 @@ void print_image(uint8_t *matrix_32x32){
 	DBG(_n("\n"));
 }
 
+/// scans area around the current head location and
+/// searches for the center of the calibration pin
 bool xyzcal_scan_and_process(void){
 	DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	bool ret = false;
