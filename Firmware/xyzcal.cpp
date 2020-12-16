@@ -667,10 +667,10 @@ bool xyzcal_scan_and_process(void){
 	
 	/// SEARCH FOR BINARY CIRCLE
 	uint8_t uc, ur;
-	/// max match = 132, 1/2 good = 66
-	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &uc, &ur) >= 66){
+	/// max match = 132, 1/2 good = 66, 2/3 good = 88
+	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &uc, &ur) >= 88){
 		/// find precise circle
-		/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
+		/// move to the center of the pattern (+5.5)
 		float xf = uc + 5.5f;
 		float yf = ur + 5.5f;
 		float radius = 5; ///< default radius
@@ -682,6 +682,7 @@ bool xyzcal_scan_and_process(void){
 			yf = ur + 5.5f;
 		}
 
+		/// move to the center of area and convert to position
 		xf = (float)x + (xf - 15.5f) * 64;
 		yf = (float)y + (yf - 15.5f) * 64;
 		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
