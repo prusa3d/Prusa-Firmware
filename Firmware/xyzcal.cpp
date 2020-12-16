@@ -410,42 +410,38 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	}
 }
 
-int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r){
+/// Returns rate of match
+/// max match = 132, min match = 0
+uint8_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r){
 	uint8_t thr = 16;
-	int16_t match = 0;
-	for (uint8_t i = 0; i < 12; i++)
-		for (uint8_t j = 0; j < 12; j++)
-		{
-			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue; //skip corners
+	uint8_t match = 0;
+	for (uint8_t i = 0; i < 12; ++i){
+		for (uint8_t j = 0; j < 12; ++j){
+			/// skip corners (3 pixels in each)
+			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue;
 			if (((j == 0) || (j == 11)) && ((i < 2) || (i >= 10))) continue;
-			uint16_t idx = (c + j) + 32 * (r + i);
-			uint8_t val = pixels[idx];
-			if (pattern[i] & (1 << j))
-			{
-				if (val > thr) match ++;
-				else match --;
-			}
-			else
-			{
-				if (val <= thr) match ++;
-				else match --;
-			}
+			const uint16_t idx = (c + j) + 32 * (r + i);
+			if ((pattern[i] & (1 << j)) == (pixels[idx] > thr))
+				match ++;
 		}
+	}
 	return match;
 }
 
 /// Searches for best match of pattern by shifting it
-int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, uint8_t* pc, uint8_t* pr){
-	if(!pixels || !pattern || !pc || !pr)
+/// Returns rate of match and the best location
+/// max match = 132, min match = 0
+uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, uint8_t* pc, uint8_t* pr){
+	if (!pixels || !pattern || !pc || !pr)
 		return -1;
 	uint8_t max_c = 0;
 	uint8_t max_r = 0;
-	int16_t max_match = 0;
+	uint8_t max_match = 0;
 
 	/// pixel precision
 	for (uint8_t r = 0; r < (32 - 12); ++r){
 		for (uint8_t c = 0; c < (32 - 12); ++c){
-			const int16_t match = xyzcal_match_pattern_12x12_in_32x32(pattern, pixels, c, r);
+			const uint8_t match = xyzcal_match_pattern_12x12_in_32x32(pattern, pixels, c, r);
 			if (max_match < match){
 				max_c = c;
 				max_r = r;
@@ -666,8 +662,8 @@ bool xyzcal_scan_and_process(void){
 	
 	/// SEARCH FOR BINARY CIRCLE
 	uint8_t uc, ur;
-	/// total pixels=144, corner=12, 66 = 1/4 of points failed, 40 = 1/3 failed, 0 = 1/2 failed (each point -1 instead of +1)
-	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &uc, &ur) > 0){
+	/// max match = 132, 1/2 good = 66
+	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &uc, &ur) >= 66){
 		/// find precise circle
 		/// move to center of the pattern (+5.5) and add 0.5 because data is measured as average from 0 to 1 (1 to 2, 2 to 3,...)
 		float xf = uc + 5.5f;
