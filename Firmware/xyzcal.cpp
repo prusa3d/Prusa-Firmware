@@ -425,9 +425,11 @@ uint8_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, 
 			/// skip corners (3 pixels in each)
 			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue;
 			if (((j == 0) || (j == 11)) && ((i < 2) || (i >= 10))) continue;
-			const uint16_t idx = (c + j) + 32 * (r + i);
-			if ((pattern[i] & (1 << j)) == (pixels[idx] > thr))
-				match ++;
+			const uint16_t idx = (c + j) + 32 * ((uint16_t)r + i);
+			const bool high_pix = pixels[idx] > thr;
+			const bool high_pat = pattern[i] & (1 << j);
+			if (high_pix == high_pat)
+				match++;
 		}
 	}
 	return match;
@@ -443,6 +445,7 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 	uint8_t max_r = 0;
 	uint8_t max_match = 0;
 
+	// DBG(_n("Matching:\n"));
 	/// pixel precision
 	for (uint8_t r = 0; r < (32 - 12); ++r){
 		for (uint8_t c = 0; c < (32 - 12); ++c){
@@ -452,7 +455,9 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 				max_r = r;
 				max_match = match;
 			}
+			// DBG(_n("%d "), match);
 		}
+		// DBG(_n("\n"));
 	}
 	DBG(_n("max_c=%f max_r=%f max_match=%d pixel\n"), max_c, max_r, max_match);
 
@@ -667,7 +672,8 @@ bool xyzcal_scan_and_process(void){
 	}
 	
 	/// SEARCH FOR BINARY CIRCLE
-	uint8_t uc, ur;
+	uint8_t uc = 0;
+	uint8_t ur = 0;
 	/// max match = 132, 1/2 good = 66, 2/3 good = 88
 	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &uc, &ur) >= 88){
 		/// find precise circle
@@ -677,7 +683,7 @@ bool xyzcal_scan_and_process(void){
 		float radius = 5; ///< default radius
 		const uint8_t iterations = 20;
 		dynamic_circle(matrix32, xf, yf, radius, iterations);
-		if (ABS(xf - uc + 5.5f) > 1 || ABS(yf - ur + 5.5f) > 1 || ABS(radius - 5) > 3){
+		if (ABS(xf - uc + 5.5f) > 3 || ABS(yf - ur + 5.5f) > 3 || ABS(radius - 5) > 3){
 			/// dynamic algorithm diverged, use original position instead
 			xf = uc + 5.5f;
 			yf = ur + 5.5f;
