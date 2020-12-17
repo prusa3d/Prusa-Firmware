@@ -17,10 +17,6 @@ extern bool xyzcal_spiral8(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16
 
 //extern int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t samples);
 
-extern int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t x, uint8_t y);
-
-extern int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, uint8_t* pc, uint8_t* pr);
-
 extern bool xyzcal_searchZ(void);
 
 extern bool xyzcal_scan_and_process(void);

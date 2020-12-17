@@ -363,52 +363,52 @@ int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t d
 void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixels){
 	if(!pixels)
 		return;
-	int16_t z = (int16_t)count_position[2];
-	int16_t line_buffer[32];
-	xyzcal_lineXYZ_to(cx, cy, z, 2 * delay_us, 0);
+	int16_t z = _Z;
+	uint16_t line_buffer[32];
+	xyzcal_lineXYZ_to(cx, cy, z, delay_us, 0);
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
-		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, 2 * delay_us, 0);
+		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
 		for (int8_t d = 0; d < 2; ++d){ ///< direction
-			xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, z, 2 * delay_us, 0);
-			xyzcal_lineXYZ_to(_X, _Y, min_z, delay_us, 1);
-			xyzcal_lineXYZ_to(_X, _Y, max_z, delay_us, -1);
-			z = (int16_t)count_position[2];
+			
+			// xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, z, 2 * delay_us, 0);
+			// xyzcal_lineXYZ_to(_X, _Y, min_z, delay_us, 1);
+			// xyzcal_lineXYZ_to(_X, _Y, max_z, delay_us, -1);
+
+			xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, min_z, delay_us, 0);
+
+			z = _Z;
 			sm4_set_dir(X_AXIS, d);
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 				
+				/// move up to un-trigger (surpress hysteresis)
 				sm4_set_dir(Z_AXIS, Z_PLUS);
 				while (z < max_z && _PINDA){
 					sm4_do_step(Z_AXIS_MASK);
 					delayMicroseconds(delay_us);
 					z++;
 				}
+				int16_t last_top_z = z;
 
-				/// find equilibrium
-				sm4_set_dir(Z_AXIS, !_PINDA);
-				if (!_PINDA){
-					while (z > min_z && !_PINDA){
-						sm4_do_step(Z_AXIS_MASK);
-						delayMicroseconds(delay_us);
-						z--;
-					}
-				} else {
-					while (z < max_z && _PINDA){
-						sm4_do_step(Z_AXIS_MASK);
-						delayMicroseconds(delay_us);
-						z++;
-					}
+				/// move down to trigger
+				sm4_set_dir(Z_AXIS, Z_MINUS);
+				while (z > min_z && !_PINDA){
+					sm4_do_step(Z_AXIS_MASK);
+					delayMicroseconds(delay_us);
+					z--;
 				}
+				
 				count_position[2] = z;
-				/// move to next point
-				xyzcal_lineXYZ_to(((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx, _Y, _Z, 2 * delay_us, 0);
-	
-				if(d==0){
-					line_buffer[c] = z - min_z;
+				if (d == 0){
+					line_buffer[c] = (uint16_t)(z - min_z);
 				} else {
-					DBG(_n("%04x"), line_buffer[31 - c] + (z - min_z));
+					DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
 					/// save average of both directions
-					pixels[(uint16_t)r * 32 + (31 - c)] = MIN(256, (line_buffer[31 - c] + (z - min_z)) / 2);
+					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z - min_z)) / 2);
 				}
+
+				/// move to the next point
+				xyzcal_lineXYZ_to(((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx, _Y, (last_top_z + z) / 2, delay_us, 0);
+				z = _Z;
 			}
 		}
 		DBG(_n("\n\n"));
@@ -655,10 +655,11 @@ bool xyzcal_scan_and_process(void){
 	int16_t y = _Y;
 	int16_t z = _Z;
 
-	uint8_t* matrix32 = (uint8_t*)block_buffer;
+	uint8_t *matrix32 = (uint8_t *)block_buffer;
 	uint16_t *pattern = (uint16_t *)(matrix32 + 32 * 32);
 
-	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, matrix32);
+	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 300, matrix32);
+	// print_image(matrix32);
 
 	for (uint8_t i = 0; i < 12; i++){
 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
