@@ -3786,43 +3786,41 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 
 //! @brief Show single screen message with yes and no possible choices and wait with possible timeout
 //! @param msg Message to show
-//! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
+//! @param allow_timeouting if true, allows time outing of the screen with a default timeout. If any other
+//!        number != 0, then allows timeout with that number of milliseconds
+//! @param default_yes if true or -2, then yes choice is selected by default, otherwise no choice is preselected.
+//!        If return_immediately is true, then this should be the value of the previous call.
 //! @retval 1 yes choice selected by user
 //! @retval 0 no choice selected by user
-//! @retval -1 screen timed out
-int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
+//! @retval -1 screen timed out and the cursor was on NO
+//! @retval -2 screen timed out and the cursor was on YES
+int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, unsigned long allow_timeouting, int8_t default_yes)
 {
 
 	lcd_display_message_fullscreen_P(msg);
-	
-	if (default_yes) {
-		lcd_set_cursor(0, 2);
-		lcd_puts_P(PSTR(">"));
-		lcd_puts_P(_T(MSG_YES));
-		lcd_set_cursor(1, 3);
-		lcd_puts_P(_T(MSG_NO));
-	}
-	else {
-		lcd_set_cursor(1, 2);
-		lcd_puts_P(_T(MSG_YES));
-		lcd_set_cursor(0, 3);
-		lcd_puts_P(PSTR(">"));
-		lcd_puts_P(_T(MSG_NO));
-	}
-	int8_t retval = default_yes ? true : false;
+
+        bool yes = (default_yes == true) || (default_yes == -2);
+	int8_t retval = yes ? 1 : 0;
+
+        lcd_set_cursor(1, 2);
+        lcd_puts_P(_T(MSG_YES));
+        lcd_set_cursor(1, 3);
+        lcd_puts_P(_T(MSG_NO));
+
+        lcd_set_cursor(0, yes ? 2 : 3);
+        lcd_puts_P(PSTR(">"));
 
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = _millis();
+        unsigned long timeout = allow_timeouting == true ? LCD_TIMEOUT_TO_STATUS : allow_timeouting;
 	int8_t        enc_dif = lcd_encoder_diff;
 	lcd_consume_click();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
-		if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
-		{
-		    retval = -1;
-		    break;
-		}
+
+                if (allow_timeouting && _millis() - previous_millis_cmd > timeout)
+                    return yes ? -2 : -1;
+                
 		manage_heater();
 		manage_inactivity(true);
 		if (abs(enc_dif - lcd_encoder_diff) > 4) {

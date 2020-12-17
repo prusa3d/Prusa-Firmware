@@ -74,8 +74,8 @@ extern void lcd_return_to_status();
 extern void lcd_wait_for_click();
 extern bool lcd_wait_for_click_delay(uint16_t nDelay);
 extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
-// 0: no, 1: yes, -1: timeouted
-extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
+// 0: no, 1: yes, -1: timeouted (cursor on NO), -2: timeouted (cursor on YES)
+extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, unsigned long allow_timeouting = true, int8_t default_yes = false);
 extern int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes,
         const char *first_choice, const char *second_choice);
 extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
