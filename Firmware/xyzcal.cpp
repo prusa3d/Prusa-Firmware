@@ -401,7 +401,8 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				if (d == 0){
 					line_buffer[c] = (uint16_t)(z - min_z);
 				} else {
-					DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
+					/// data reversed in X
+					// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
 					/// save average of both directions
 					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z - min_z)) / 2);
 				}
@@ -411,7 +412,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				z = _Z;
 			}
 		}
-		DBG(_n("\n\n"));
+		// DBG(_n("\n\n"));
 	}
 }
 
@@ -596,7 +597,7 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 
 	for (int8_t i = iterations; i > 0; --i){
 	
-		DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
+		// DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
 
 		/// read points on the circle
 		for (uint8_t p = 0; p < num_points; ++p){
@@ -664,7 +665,7 @@ bool xyzcal_scan_and_process(void){
 	uint16_t *pattern = (uint16_t *)(matrix32 + 32 * 32);
 
 	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 300, matrix32);
-	// print_image(matrix32);
+	print_image(matrix32);
 
 	for (uint8_t i = 0; i < 12; i++){
 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
