@@ -111,10 +111,14 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
 - follow the Microsoft guide https://docs.microsoft.com/en-us/windows/wsl/install-win10
   You can also use the 'prepare_winbuild.ps1' powershell script with Administrator rights
 - Tested versions are at this moment
-  - Ubuntu other may different
+  - Ubuntu and Debian, other may different
   - After the installation and reboot please open your Ubuntu bash and do following steps
-  - run command `apt-get update`
-  - to install zip run `apt-get install zip`
+  - run command `sudo apt-get update`
+  - run command `sudo apt-get upgrade`
+  - to install zip run `sudo apt-get install zip`
+  - if using Debian:
+    - install dos2unix by running `sudo apt-get install dos2unix`
+    - run `dos2unix PF-build.sh` to convert the windows line endings to unix line endings
   - add few lines at the top of `~/.bashrc` by running `sudo nano ~/.bashrc`
 	
 	export OS="Linux"
@@ -122,10 +126,10 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
 	export GPG_TTY=$(tty)
 	
 	use `CRTL-X` to close nano and confirm to write the new entries
-  - restart Ubuntu bash
-Now your Ubuntu subsystem is ready to use the automatic `PF-build.sh` script and compile your firmware correctly
+  - restart Ubuntu/Debian bash
+  - Now your Ubuntu/Debian subsystem is ready to use the automatic `PF-build.sh` script and compile your firmware correctly
 
-#### Some Tips for Ubuntu
+#### Some Tips for Ubuntu and Debian
 - Linux is case sensetive so please don't forget to use capital letters where needed, like changing to a directory
 - To change the path to your Prusa-Firmware location you downloaded and unzipped
   - Example: You files are under `C:\Users\<your-username>\Downloads\Prusa-Firmware-MK3`
@@ -137,7 +141,7 @@ Now your Ubuntu subsystem is ready to use the automatic `PF-build.sh` script and
 - If your Windows isn't in English the Paths may look different
   Example in other languages
   - English `/mnt/c/Users/<your-username>/Downloads/Prusa-Firmware-MK3` will be on a German Windows`/mnt/c/Anwender/<your-username>/Downloads/Prusa-Firmware-MK3`
-#### Compile Prusa-firmware with Ubuntu Linux subsystem installed
+#### Compile Prusa-firmware with Ubuntu/Debian Linux subsystem installed
 - open Ubuntu bash
 - change to your source code folder (case sensitive)
 - run `./PF-build.sh`
