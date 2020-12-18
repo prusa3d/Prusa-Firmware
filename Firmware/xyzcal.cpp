@@ -36,6 +36,11 @@
 #define Z_PLUS  0
 #define Z_MINUS 1
 
+/// 10000 = 1 mm/s
+#define MAX_DELAY 10000
+#define Z_ACCEL 300
+#define XY_ACCEL 1000
+
 #define _PI 3.14159265F
 
 /// \returns positive value always
@@ -360,8 +365,40 @@ int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t d
 }
 #endif //XYZCAL_MEASSURE_PINDA_HYSTEREZIS
 
-uint8_t slow_down_z(uint16_t delay_us){
-	sm4_do_step(Z_AXIS_MASK);
+void accelerate(uint8_t axis, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us){
+	sm4_do_step(axis);
+
+	if (acc > 0 && delay_us == min_delay_us){
+		delayMicroseconds(delay_us);
+		return;
+	}
+
+	// v1 = v0 + a * t
+	// 0.01 = length of a step
+	const float d0 = delay_us * 0.000001f;
+	const float v1 = (0.01f / d0 + acc * d0);
+	uint16_t d1;
+	if (v1 <= 0.1f){
+		d1 = MAX_DELAY; ///< already too slow so it wants to move back
+	} else {
+		d1 = MAX(min_delay_us, round_to_u16(0.01f / v1));
+	}
+
+	/// make sure delay has changed a bit at least
+	if (d1 == delay_us && acc != 0){
+		if (acc > 0)
+			d1--;
+		else
+			d1++;
+	}
+	
+	delayMicroseconds(d1);
+	delay_us = d1;
+}
+
+
+uint8_t slow_down_z(uint8_t axis, uint16_t delay_us){
+	sm4_do_step(axis);
 	delayMicroseconds(delay_us / 3 * 4);
 	sm4_do_step(Z_AXIS_MASK);
 	delayMicroseconds(delay_us * 2);
@@ -370,7 +407,7 @@ uint8_t slow_down_z(uint16_t delay_us){
 	return 3;
 }
 
-uint8_t speed_up_z(int16_t &z, uint8_t direction, uint16_t delay_us){
+uint8_t speed_up_z(uint8_t axis, uint16_t delay_us){
 	sm4_do_step(Z_AXIS_MASK);
 	delayMicroseconds(delay_us * 4);
 	sm4_do_step(Z_AXIS_MASK);
@@ -386,6 +423,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	int16_t z = _Z;
 	int16_t z_trig;
 	uint16_t line_buffer[32];
+	uint16_t current_delay_us = MAX_DELAY;
 	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
 		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
@@ -398,10 +436,9 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				
 				/// move up to un-trigger (surpress hysteresis)
 				sm4_set_dir(Z_AXIS, Z_PLUS);
-				z += speed_up_z(delay_us);
+				current_delay_us = MAX_DELAY;
 				while (z < max_z && _PINDA){
-					sm4_do_step(Z_AXIS_MASK);
-					delayMicroseconds(delay_us);
+					accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, delay_us);
 					z++;
 				}
 				int16_t last_top_z = z;
