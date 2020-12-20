@@ -9253,12 +9253,16 @@ void update_currents() {
 void get_coordinates()
 {
   bool seen[4]={false,false,false,false};
+  const int e_movement_stop_ir_sensor = -10;
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
       bool relative = axis_relative_modes & (1 << i);
       destination[i] = (float)code_value();
       if (i == E_AXIS) {
+        if  (destination[E_AXIS] < e_movement_stop_ir_sensor) { // filament unload has (likely) begun
+            ir_sensor_print_window = false; 
+        } 
         float emult = extruder_multiplier[active_extruder];
         if (emult != 1.) {
           if (! relative) {

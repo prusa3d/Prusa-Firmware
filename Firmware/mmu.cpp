@@ -54,6 +54,8 @@ bool mmu_enabled = false;
 bool mmu_ready = false;
 bool mmu_fil_loaded = false; //if true: blocks execution of duplicit T-codes
 
+bool ir_sensor_print_window = false; // activity window for IR-sensor
+
 static S mmu_state = S::Disabled;
 
 MmuCmd mmu_cmd = MmuCmd::None;
@@ -380,7 +382,7 @@ void mmu_loop(void)
 			mmu_last_finda_response = _millis();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
-			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
+                        if ( CHECK_FSENSOR && fsensor_enabled && (!mmu_finda || (!(READ(IR_SENSOR_PIN) == 0)  && ir_sensor_print_window) )    ) { // out of filament in FINDA or in IR-sensor
 				fsensor_checkpoint_print();
 				if (mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't deplete unknown extruder.
                     ad_markDepleted(mmu_extruder);
@@ -598,6 +600,7 @@ bool mmu_get_response(uint8_t move)
 				if (READ(IR_SENSOR_PIN) == 0) move = MMU_NO_MOVE;
 				break;
 			case MMU_UNLOAD_MOVE:
+                                ir_sensor_print_window = false;
 				if (READ(IR_SENSOR_PIN) == 0) //filament is still detected by idler sensor, printer helps with unlading 
 				{
 				    if (can_extrude())
@@ -616,6 +619,7 @@ bool mmu_get_response(uint8_t move)
 				}
 				break;
 			case MMU_TCODE_MOVE: //first do unload and then continue with infinite loading movements
+                                ir_sensor_print_window = false;
 				if (READ(IR_SENSOR_PIN) == 0) //filament detected by idler sensor, we must unload first 
 				{
                     if (can_extrude())
@@ -821,6 +825,7 @@ void mmu_load_to_nozzle()
 	plan_buffer_line_curposXYZE(feedrate / 60);
     st_synchronize();
 	if (!saved_e_relative_mode) axis_relative_modes &= ~E_AXIS_MASK;
+    ir_sensor_print_window = true;
 }
 
 void mmu_M600_wait_and_beep() {
@@ -1089,6 +1094,7 @@ void extr_unload_view()
 
 void extr_unload()
 { //unload just current filament for multimaterial printers
+        ir_sensor_print_window = false;
 #ifdef SNMM
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
@@ -1538,6 +1544,7 @@ void mmu_continue_loading(bool blocking)
 
     bool success = load_more();
     if (success) success = can_load();
+    if (success) ir_sensor_print_window = true; // IR-sensor active during print
 
     enum class Ls : uint_least8_t
     {
@@ -1574,7 +1581,7 @@ void mmu_continue_loading(bool blocking)
             manage_response(true, true, MMU_TCODE_MOVE);
             success = load_more();
             if (success) success = can_load();
-
+            if (success) ir_sensor_print_window = true; // IR-sensor active during print
             break;
         case Ls::Unload:
             stop_and_save_print_to_ram(0, 0);
