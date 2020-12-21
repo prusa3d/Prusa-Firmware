@@ -539,16 +539,18 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				const int16_t length_x = ABS(end_x - _X);
 				const int16_t half_x = length_x / 2;
 				int16_t x = 0;
-				
+				/// don't go up if PINDA not triggered
+				int8_t axis = _PINDA ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
+
 				sm4_set_dir(Z_AXIS, Z_PLUS);
 				/// speed up
 				for (x = 0; x <= half_x; ++x, ++z){
-					accelerate(X_AXIS_MASK | Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					accelerate(axis, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
 				}
 				/// slow down
 				steps_to_go = length_x - x;
 				for (; x < length_x; ++x, ++z){
-					go_and_stop(X_AXIS_MASK | Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
+					go_and_stop(axis, Z_ACCEL, current_delay_us, steps_to_go);
 				}
 
 				count_position[0] = end_x;
