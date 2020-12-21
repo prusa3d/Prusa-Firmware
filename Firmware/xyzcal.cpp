@@ -455,7 +455,8 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	uint16_t current_delay_us = MAX_DELAY; ///< defines current speed
 	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
 	int16_t start_z;
-	int16_t last_top_z;
+	// int16_t last_top_z;
+	uint16_t steps_to_go;
 
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
 		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
@@ -475,7 +476,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				current_delay_us = MAX_DELAY;
 				for (start_z = z; z < (max_z + start_z) / 2; ++z){
 					if (!_PINDA){
-						last_top_z = z;
+						// last_top_z = z;
 						break;
 					}
 					accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
@@ -487,7 +488,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 						go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
 						++z;
 					}
-					last_top_z = z;
+					// last_top_z = z;
 				}
 				/// slow down to stop
 				while (current_delay_us < MAX_DELAY){
@@ -508,7 +509,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				}
 				/// slow down
 				if(!_PINDA){
-					uint16_t steps_to_go = MAX(0, z - min_z);
+					steps_to_go = MAX(0, z - min_z);
 					while (!_PINDA && z > min_z){
 						go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
 						--z;
@@ -531,9 +532,30 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
 				}
 
-				/// move to the next point
-				xyzcal_lineXYZ_to(((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx, _Y, (last_top_z + z) / 2, delay_us, 0);
-				z = _Z;
+				/// move to the next point and move Z up diagonally
+				current_delay_us = MAX_DELAY;
+				// const int8_t dir = (d & 1) ? -1 : 1;
+				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
+				const int16_t length_x = ABS(end_x - _X);
+				const int16_t half_x = length_x / 2;
+				int16_t x = 0;
+				
+				sm4_set_dir(Z_AXIS, Z_PLUS);
+				/// speed up
+				for (x = 0; x <= half_x; ++x, ++z){
+					accelerate(X_AXIS_MASK | Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+				}
+				/// slow down
+				steps_to_go = length_x - x;
+				for (; x < length_x; ++x, ++z){
+					go_and_stop(X_AXIS_MASK | Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
+				}
+
+				count_position[0] = end_x;
+				count_position[2] = z;
+
+				// xyzcal_lineXYZ_to(((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx, _Y, (last_top_z + z) / 2, delay_us, 0);
+				// z = _Z;
 			}
 		}
 		// DBG(_n("\n\n"));
