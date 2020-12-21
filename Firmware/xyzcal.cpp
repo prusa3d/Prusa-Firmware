@@ -37,7 +37,7 @@
 #define Z_MINUS 1
 
 /// Max. jerk in PrusaSlicer, 10000 = 1 mm/s
-#define MAX_DELAY 10000
+#define MAX_DELAY 1000
 #define MIN_SPEED (0.01f / (MAX_DELAY * 0.000001f))
 /// 200 = 50 mm/s
 #define Z_MIN_DELAY 200
@@ -426,26 +426,6 @@ void go_and_stop(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps)
 	--steps;
 }
 
-// uint8_t slow_down_z(uint8_t axis, uint16_t delay_us){
-// 	sm4_do_step(axis);
-// 	delayMicroseconds(delay_us / 3 * 4);
-// 	sm4_do_step(Z_AXIS_MASK);
-// 	delayMicroseconds(delay_us * 2);
-// 	sm4_do_step(Z_AXIS_MASK);
-// 	delayMicroseconds(delay_us * 4);
-// 	return 3;
-// }
-
-// uint8_t speed_up_z(uint8_t axis, uint16_t delay_us){
-// 	sm4_do_step(Z_AXIS_MASK);
-// 	delayMicroseconds(delay_us * 4);
-// 	sm4_do_step(Z_AXIS_MASK);
-// 	delayMicroseconds(delay_us * 2);
-// 	sm4_do_step(Z_AXIS_MASK);
-// 	delayMicroseconds(delay_us / 3 * 4);
-// 	return 3;
-// }
-
 void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixels){
 	if(!pixels)
 		return;
@@ -528,7 +508,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
 				}
 
-				/// move to the next point and move Z up diagonally
+				/// move to the next point and move Z up diagonally (if needed)
 				current_delay_us = MAX_DELAY;
 				// const int8_t dir = (d & 1) ? -1 : 1;
 				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
@@ -829,7 +809,8 @@ bool xyzcal_scan_and_process(void){
 		float radius = 5; ///< default radius
 		const uint8_t iterations = 20;
 		dynamic_circle(matrix32, xf, yf, radius, iterations);
-		if (ABS(xf - uc + 5.5f) > 3 || ABS(yf - ur + 5.5f) > 3 || ABS(radius - 5) > 3){
+		if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3){
+			DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
 			/// dynamic algorithm diverged, use original position instead
 			xf = uc + 5.5f;
 			yf = ur + 5.5f;
