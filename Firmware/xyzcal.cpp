@@ -455,7 +455,6 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	uint16_t current_delay_us = MAX_DELAY; ///< defines current speed
 	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
 	int16_t start_z;
-	// int16_t last_top_z;
 	uint16_t steps_to_go;
 
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
@@ -468,7 +467,6 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 
 				z_trig = min_z;
-				last_top_z = max_z;
 
 				/// move up to un-trigger (surpress hysteresis)
 				sm4_set_dir(Z_AXIS, Z_PLUS);
@@ -476,7 +474,6 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				current_delay_us = MAX_DELAY;
 				for (start_z = z; z < (max_z + start_z) / 2; ++z){
 					if (!_PINDA){
-						// last_top_z = z;
 						break;
 					}
 					accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
@@ -488,7 +485,6 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 						go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
 						++z;
 					}
-					// last_top_z = z;
 				}
 				/// slow down to stop
 				while (current_delay_us < MAX_DELAY){
@@ -552,12 +548,8 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				for (; x < length_x; ++x, ++z){
 					go_and_stop(axis, Z_ACCEL, current_delay_us, steps_to_go);
 				}
-
 				count_position[0] = end_x;
 				count_position[2] = z;
-
-				// xyzcal_lineXYZ_to(((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx, _Y, (last_top_z + z) / 2, delay_us, 0);
-				// z = _Z;
 			}
 		}
 		// DBG(_n("\n\n"));
