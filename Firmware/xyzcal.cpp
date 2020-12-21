@@ -417,11 +417,11 @@ void go_and_stop(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps)
 	uint16_t s = round_to_u16(100 * 0.5f * SQR(0.01f) / (SQR((float)delay_us) * dec));
 	if (steps > s){
 		/// go steady
-		sm4_do_step(axis)
+		sm4_do_step(axis);
 		delayMicroseconds(delay_us);
 	} else {
 		/// decelerate
-		accelerate(axis, -dec, &delay_us, min_delay_us);
+		accelerate(axis, -dec, delay_us, delay_us);
 	}
 	--steps;
 }
@@ -454,7 +454,6 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	uint16_t line_buffer[32];
 	uint16_t current_delay_us = MAX_DELAY; ///< defines current speed
 	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
-	uint16_t min_decel_z;
 	int16_t start_z;
 	int16_t last_top_z;
 
@@ -466,6 +465,9 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 			z = _Z;
 			sm4_set_dir(X_AXIS, d);
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
+
+				z_trig = min_z;
+				last_top_z = max_z;
 
 				/// move up to un-trigger (surpress hysteresis)
 				sm4_set_dir(Z_AXIS, Z_PLUS);
