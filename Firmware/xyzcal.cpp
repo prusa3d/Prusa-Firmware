@@ -41,7 +41,7 @@
 #define MIN_SPEED (0.01f / (MAX_DELAY * 0.000001f))
 /// 200 = 50 mm/s
 #define Z_MIN_DELAY 200
-#define Z_ACCEL 300
+#define Z_ACCEL 5000
 #define XY_ACCEL 1000
 
 #define _PI 3.14159265F
@@ -536,17 +536,22 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				const int16_t half_x = length_x / 2;
 				int16_t x = 0;
 				/// don't go up if PINDA not triggered
-				int8_t axis = _PINDA ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
+				const bool up = _PINDA;
+				int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
 
 				sm4_set_dir(Z_AXIS, Z_PLUS);
 				/// speed up
-				for (x = 0; x <= half_x; ++x, ++z){
+				for (x = 0; x <= half_x; ++x){
 					accelerate(axis, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					if (up)
+						++z;
 				}
 				/// slow down
 				steps_to_go = length_x - x;
-				for (; x < length_x; ++x, ++z){
+				for (; x < length_x; ++x){
 					go_and_stop(axis, Z_ACCEL, current_delay_us, steps_to_go);
+					if (up)
+						++z;
 				}
 				count_position[0] = end_x;
 				count_position[2] = z;
@@ -600,7 +605,7 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 		}
 		// DBG(_n("\n"));
 	}
-	DBG(_n("max_c=%f max_r=%f max_match=%d pixel\n"), max_c, max_r, max_match);
+	DBG(_n("max_c=%d max_r=%d max_match=%d pixel\n"), max_c, max_r, max_match);
 
 	*pc = max_c;
 	*pr = max_r;
