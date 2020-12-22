@@ -475,12 +475,6 @@ bool more_zeros(uint8_t* pixels, int16_t &min_z){
 	return false;
 }
 
-enum {
-	RESTART_INIT,
-	DO_RESTART,
-	WAS_RESTARTED
-};
-
 void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixels){
 	if (!pixels)
 		return;
@@ -491,13 +485,10 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
 	int16_t start_z;
 	uint16_t steps_to_go;
-	/// restart if needed but just once
-	/// 0 = init, 1 = do restart, 2 = restart was done, don't restart any more
-	uint8_t restart = RESTART_INIT; 
+	/// available restarts (if needed)
+	uint8_t restarts = 2;
 
 	do {
-		if (restart == DO_RESTART)
-			restart = WAS_RESTARTED;
 		for (uint8_t r = 0; r < 32; r++){ ///< Y axis
 			xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
 			for (int8_t d = 0; d < 2; ++d){ ///< direction			
@@ -598,16 +589,16 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 					count_position[2] = z;
 				}
 			}
-			/// do this in the first row only
-			if (r == 0 && restart == RESTART_INIT){
-				if (!more_zeros(pixels, min_z))
-					restart = DO_RESTART;
+			/// do the min_z addjusting in the first row only
+			if (r == 0 && restarts){
+				if (more_zeros(pixels, min_z))
+					restarts = 0;
 			}
-			if (restart == DO_RESTART)
+			if (restarts)
 				break;
 			// DBG(_n("\n\n"));
 		}
-	} while (restart == DO_RESTART);
+	} while (restarts--);
 }
 
 /// Returns rate of match
