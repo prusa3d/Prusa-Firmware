@@ -858,7 +858,7 @@ bool xyzcal_scan_and_process(void){
 	uint8_t *matrix32 = (uint8_t *)block_buffer;
 	uint16_t *pattern = (uint16_t *)(matrix32 + 32 * 32);
 
-	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 600, matrix32);
+	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, matrix32);
 	print_image(matrix32);
 
 	for (uint8_t i = 0; i < 12; i++){
