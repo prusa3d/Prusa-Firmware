@@ -427,7 +427,7 @@ void go_and_stop(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps)
 }
 
 /// Count number of zeros on the 32 byte array
-/// If the number is less than 16, it changes @min_z so it will be next time
+/// If the number is less than 16, it moves @min_z up
 bool more_zeros(uint8_t* pixels, int16_t &min_z){
 	uint8_t hist[256];
 	uint8_t i = 0;
@@ -441,11 +441,22 @@ bool more_zeros(uint8_t* pixels, int16_t &min_z){
 	for (i = 0; i < 32; ++i){
 		++hist[pixels[i]];
 	}
-	
+
+	/// print histogram
+	i = 0;
+	DBG(_n("hist: "));
+	do {
+		DBG(_n("%d "), hist[i]);
+	} while (i++ < 255);
+	DBG(_n("\n"));
+
+
 	/// already more zeros on the line
-	if (hist[0] >= 16)
+	if (hist[0] >= 16){
+		DBG(_n("zeros: %d\n"), hist[0]);
 		return true;
-	
+	}
+
 	/// find threshold
 	uint8_t sum = 0;
 	i = 0;
@@ -455,7 +466,14 @@ bool more_zeros(uint8_t* pixels, int16_t &min_z){
 			break;
 	} while (i++ < 255);
 
+	/// avoid too much zeros
+	if (sum >= 24)
+		--i;
+
+	DBG(_n("sum %d, index %d\n"), sum, i);
+	DBG(_n("min_z %d\n"), min_z);
 	min_z += i;
+	DBG(_n("min_z %d\n"), min_z);
 	return false;
 }
 
