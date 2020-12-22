@@ -29,22 +29,19 @@
 #define _Z ((int16_t)count_position[Z_AXIS])
 #define _E ((int16_t)count_position[E_AXIS])
 
-#define X_PLUS  0
-#define X_MINUS 1
-#define Y_PLUS  0
-#define Y_MINUS 1
-#define Z_PLUS  0
-#define Z_MINUS 1
+const constexpr uint8_t X_PLUS = 0;
+const constexpr uint8_t X_MINUS = 1;
+const constexpr uint8_t Y_PLUS = 0;
+const constexpr uint8_t Y_MINUS = 1;
+const constexpr uint8_t Z_PLUS = 0;
+const constexpr uint8_t Z_MINUS = 1;
 
 /// Max. jerk in PrusaSlicer, 10000 = 1 mm/s
-#define MAX_DELAY 1000
-#define MIN_SPEED (0.01f / (MAX_DELAY * 0.000001f))
+const constexpr uint16_t MAX_DELAY = 1000;
+const constexpr float MIN_SPEED = 0.01f / (MAX_DELAY * 0.000001f);
 /// 200 = 50 mm/s
-#define Z_MIN_DELAY 200
-#define Z_ACCEL 5000
-#define XY_ACCEL 1000
-
-#define _PI 3.14159265F
+const constexpr uint16_t Z_MIN_DELAY = 200;
+const constexpr uint16_t Z_ACCEL = 5000;
 
 /// \returns positive value always
 #define ABS(a) \
@@ -250,7 +247,6 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 {
 	bool ret = false;
 	float r = 0; //radius
-	uint8_t n = 0; //point number
 	uint16_t ad = 0; //angle [deg]
 	float ar; //angle [rad]
 	uint8_t dad = 0; //delta angle [deg]
@@ -278,11 +274,9 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 			dad = dad_max - ((719 - ad) / k);
 			r = (float)(((uint32_t)(719 - ad)) * (-radius)) / 720;
 		}
-		ar = (ad + rotation)* (float)_PI / 180;
-		float _cos = cos(ar);
-		float _sin = sin(ar);
-		int x = (int)(cx + (_cos * r));
-		int y = (int)(cy + (_sin * r));
+		ar = (ad + rotation)* (float)M_PI / 180;
+		int x = (int)(cx + (cos(ar) * r));
+		int y = (int)(cy + (sin(ar) * r));
 		int z = (int)(z0 - ((float)((int32_t)dz * ad) / 720));
 		if (xyzcal_lineXYZ_to(x, y, z, delay_us, check_pinda))
 		{
@@ -290,7 +284,6 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 			ret = true;
 			break;
 		}
-		n++;
 		ad += dad;
 	}
 	if (pad) *pad = ad;
