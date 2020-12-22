@@ -29,6 +29,10 @@
 #define _Z ((int16_t)count_position[Z_AXIS])
 #define _E ((int16_t)count_position[E_AXIS])
 
+#ifndef M_PI
+const constexpr float M_PI = 3.1415926535897932384626433832795f;
+#endif
+
 const constexpr uint8_t X_PLUS = 0;
 const constexpr uint8_t X_MINUS = 1;
 const constexpr uint8_t Y_PLUS = 0;
@@ -447,7 +451,7 @@ bool more_zeros(uint8_t* pixels, int16_t &min_z){
 
 	/// already more zeros on the line
 	if (hist[0] >= 16){
-		DBG(_n("zeros: %d\n"), hist[0]);
+		DBG(_n("zeros %d\n"), hist[0]);
 		return true;
 	}
 
@@ -464,7 +468,7 @@ bool more_zeros(uint8_t* pixels, int16_t &min_z){
 	if (sum >= 24)
 		--i;
 
-	DBG(_n("sum %d, index %d\n"), sum, i);
+	DBG(_n("zeros %d, index %d\n"), sum, i);
 	// DBG(_n("min_z %d\n"), min_z);
 	min_z += i;
 	// DBG(_n("min_z %d\n"), min_z);
