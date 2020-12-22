@@ -442,13 +442,13 @@ bool more_zeros(uint8_t* pixels, int16_t &min_z){
 		++hist[pixels[i]];
 	}
 
-	/// print histogram
-	i = 0;
-	DBG(_n("hist: "));
-	do {
-		DBG(_n("%d "), hist[i]);
-	} while (i++ < 255);
-	DBG(_n("\n"));
+	// /// print histogram
+	// i = 0;
+	// DBG(_n("hist: "));
+	// do {
+	// 	DBG(_n("%d "), hist[i]);
+	// } while (i++ < 255);
+	// DBG(_n("\n"));
 
 
 	/// already more zeros on the line
@@ -471,11 +471,17 @@ bool more_zeros(uint8_t* pixels, int16_t &min_z){
 		--i;
 
 	DBG(_n("sum %d, index %d\n"), sum, i);
-	DBG(_n("min_z %d\n"), min_z);
+	// DBG(_n("min_z %d\n"), min_z);
 	min_z += i;
-	DBG(_n("min_z %d\n"), min_z);
+	// DBG(_n("min_z %d\n"), min_z);
 	return false;
 }
+
+enum {
+	RESTART_INIT,
+	DO_RESTART,
+	WAS_RESTARTED
+};
 
 void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixels){
 	if (!pixels)
@@ -487,22 +493,23 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
 	int16_t start_z;
 	uint16_t steps_to_go;
-	uint8_t restart = 0; ///< restart if needed but just once
-	int16_t corr_min_z = min_z; ///< shifted min_z if it's too low
+	/// restart if needed but just once
+	/// 0 = init, 1 = do restart, 2 = restart was done, don't restart any more
+	uint8_t restart = RESTART_INIT; 
 
 	do {
-		if (restart == 1)
-			restart = 2;
+		if (restart == DO_RESTART)
+			restart = WAS_RESTARTED;
 		for (uint8_t r = 0; r < 32; r++){ ///< Y axis
 			xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
 			for (int8_t d = 0; d < 2; ++d){ ///< direction			
-				xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, corr_min_z, delay_us, 0);
+				xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, min_z, delay_us, 0);
 
 				z = _Z;
 				sm4_set_dir(X_AXIS, d);
 				for (uint8_t c = 0; c < 32; c++){ ///< X axis
 
-					z_trig = corr_min_z;
+					z_trig = min_z;
 
 					/// move up to un-trigger (surpress hysteresis)
 					sm4_set_dir(Z_AXIS, Z_PLUS);
@@ -532,7 +539,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 					sm4_set_dir(Z_AXIS, Z_MINUS);
 					/// speed up
 					current_delay_us = MAX_DELAY;
-					for (start_z = z; z > (corr_min_z + start_z) / 2; --z){
+					for (start_z = z; z > (min_z + start_z) / 2; --z){
 						if (_PINDA){
 							z_trig = z;
 							break;
@@ -541,27 +548,27 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 					}
 					/// slow down
 					if(!_PINDA){
-						steps_to_go = MAX(0, z - corr_min_z);
-						while (!_PINDA && z > corr_min_z){
+						steps_to_go = MAX(0, z - min_z);
+						while (!_PINDA && z > min_z){
 							go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
 							--z;
 						}
 						z_trig = z;
 					}
 					/// slow down to stop
-					while (z > corr_min_z && current_delay_us < MAX_DELAY){
+					while (z > min_z && current_delay_us < MAX_DELAY){
 						accelerate(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
 						--z;
 					}
 
 					count_position[2] = z;
 					if (d == 0){
-						line_buffer[c] = (uint16_t)(z_trig - corr_min_z);
+						line_buffer[c] = (uint16_t)(z_trig - min_z);
 					} else {
 						/// data reversed in X
-						// DBG(_n("%04x"), (line_buffer[31 - c] + (z - corr_min_z)) / 2);
+						// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
 						/// save average of both directions
-						pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - corr_min_z)) / 2);
+						pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
 					}
 
 					/// move to the next point and move Z up diagonally (if needed)
@@ -593,15 +600,16 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 					count_position[2] = z;
 				}
 			}
-			if (r == 0 && restart == 0){
-				if (!more_zeros(pixels, corr_min_z))
-					restart = 1;
+			/// do this in the first row only
+			if (r == 0 && restart == RESTART_INIT){
+				if (!more_zeros(pixels, min_z))
+					restart = DO_RESTART;
 			}
-			if (restart == 1)
+			if (restart == DO_RESTART)
 				break;
 			// DBG(_n("\n\n"));
 		}
-	} while (restart == 1);
+	} while (restart == DO_RESTART);
 }
 
 /// Returns rate of match
