@@ -426,8 +426,9 @@ void go_and_stop(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps)
 	--steps;
 }
 
-/// Count number of zeros on the 32 byte array
+/// Count number of zeros in the 32 byte array
 /// If the number is less than 16, it moves @min_z up
+/// Zeros make measuring faster but there cannot be too much
 bool more_zeros(uint8_t* pixels, int16_t &min_z){
 	uint8_t hist[256];
 	uint8_t i = 0;
