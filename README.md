@@ -73,7 +73,7 @@ _Note: Multi language build is not supported._
 
 **c.** Modify compiler flags in `platform.txt` file
      
-* The platform.txt file can be found in Arduino instalation directory, or after Arduino has been updated at: `"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"` If you can locate the file in both places, file from user profile is probably used.
+* The platform.txt file can be found in Arduino installation directory, or after Arduino has been updated at: `"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"` If you can locate the file in both places, file from user profile is probably used.
        
 * Add `"-Wl,-u,vfprintf -lprintf_flt -lm"` to `"compiler.c.elf.flags="` before existing flag "-Wl,--gc-sections"  
 
@@ -116,9 +116,8 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
   - run command `sudo apt-get update`
   - run command `sudo apt-get upgrade`
   - to install zip run `sudo apt-get install zip`
-  - if using Debian:
-    - install dos2unix by running `sudo apt-get install dos2unix`
-    - run `dos2unix PF-build.sh` to convert the windows line endings to unix line endings
+  - to install dos2unix run `sudo apt-get install dos2unix`
+  - run `dos2unix PF-build.sh` to convert the windows line endings to unix line endings
   - add few lines at the top of `~/.bashrc` by running `sudo nano ~/.bashrc`
 	
 	export OS="Linux"
@@ -130,7 +129,7 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
   - Now your Ubuntu/Debian subsystem is ready to use the automatic `PF-build.sh` script and compile your firmware correctly
 
 #### Some Tips for Ubuntu and Debian
-- Linux is case sensetive so please don't forget to use capital letters where needed, like changing to a directory
+- Linux is case sensitive so please don't forget to use capital letters where needed, like changing to a directory
 - To change the path to your Prusa-Firmware location you downloaded and unzipped
   - Example: You files are under `C:\Users\<your-username>\Downloads\Prusa-Firmware-MK3`
   - use under Ubuntu the following command `cd /mnt/c/Users/<your-username>/Downloads/Prusa-Firmware-MK3`
@@ -210,7 +209,7 @@ or visit https://prusa3d.github.io/Prusa-Firmware-Doc for doxygen generated outp
 # 5. FAQ
 Q:I built firmware using Arduino and I see "?" instead of numbers in printer user interface.
 
-A:Step 1.c was ommited or you updated Arduino and now platform.txt located somewhere in your user profile is used.
+A:Step 1.c was omitted or you updated Arduino and now platform.txt located somewhere in your user profile is used.
 
 Q:I built firmware using Arduino and printer now speaks Klingon (nonsense characters and symbols are displayed @^#$&*°;~ÿ)
 
@@ -222,4 +221,4 @@ A:Our production builds are 99.9% equivalent to https://github.com/prusa3d/Prusa
 
 Q:Why are build instructions for Arduino mess.
 
-Y:We are too lazy to ship proper board definition for Arduino. We plan to swich to cmake + ninja to be inherently multiplatform, easily integrate build tools, suport more IDEs, get 10 times shorter build times and be able to update compiler whenewer we want.
+Y:We are too lazy to ship proper board definition for Arduino. We plan to switch to cmake + ninja to be inherently multiplatform, easily integrate build tools, suport more IDEs, get 10 times shorter build times and be able to update compiler whenever we want.
