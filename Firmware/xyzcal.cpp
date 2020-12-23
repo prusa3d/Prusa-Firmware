@@ -41,11 +41,11 @@ const constexpr uint8_t Z_PLUS = 0;
 const constexpr uint8_t Z_MINUS = 1;
 
 /// Max. jerk in PrusaSlicer, 10000 = 1 mm/s
-const constexpr uint16_t MAX_DELAY = 1000;
+const constexpr uint16_t MAX_DELAY = 10000;
 const constexpr float MIN_SPEED = 0.01f / (MAX_DELAY * 0.000001f);
 /// 200 = 50 mm/s
 const constexpr uint16_t Z_MIN_DELAY = 200;
-const constexpr uint16_t Z_ACCEL = 5000;
+const constexpr uint16_t Z_ACCEL = 1000;
 
 /// \returns positive value always
 #define ABS(a) \
