@@ -423,58 +423,6 @@ void go_and_stop(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps)
 	--steps;
 }
 
-/// Count number of zeros in the 32 byte array
-/// If the number is less than 16, it moves @min_z up
-/// Zeros make measuring faster but there cannot be too much
-bool more_zeros(uint8_t* pixels, int16_t &min_z){
-	uint8_t hist[256];
-	uint8_t i = 0;
-	
-	/// clear
-	do {
-		hist[i] = 0;
-	} while (i++ < 255);
-
-	/// fill
-	for (i = 0; i < 32; ++i){
-		++hist[pixels[i]];
-	}
-
-	// /// print histogram
-	// i = 0;
-	// DBG(_n("hist: "));
-	// do {
-	// 	DBG(_n("%d "), hist[i]);
-	// } while (i++ < 255);
-	// DBG(_n("\n"));
-
-
-	/// already more zeros on the line
-	if (hist[0] >= 16){
-		DBG(_n("zeros %d\n"), hist[0]);
-		return true;
-	}
-
-	/// find threshold
-	uint8_t sum = 0;
-	i = 0;
-	do {
-		sum += hist[i];
-		if (sum >= 16)
-			break;
-	} while (i++ < 255);
-
-	/// avoid too much zeros
-	if (sum >= 24)
-		--i;
-
-	DBG(_n("zeros %d, index %d\n"), sum, i);
-	// DBG(_n("min_z %d\n"), min_z);
-	min_z += i;
-	// DBG(_n("min_z %d\n"), min_z);
-	return false;
-}
-
 void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixels){
 	if (!pixels)
 		return;
@@ -485,120 +433,109 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
 	int16_t start_z;
 	uint16_t steps_to_go;
-	/// available restarts (if needed)
-	uint8_t restarts = 2;
 
-	do {
-		for (uint8_t r = 0; r < 32; r++){ ///< Y axis
-			xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
-			for (int8_t d = 0; d < 2; ++d){ ///< direction			
-				xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, min_z, delay_us, 0);
+	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
+		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
+		for (int8_t d = 0; d < 2; ++d){ ///< direction			
+			xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, min_z, delay_us, 0);
 
-				z = _Z;
-				sm4_set_dir(X_AXIS, d);
-				for (uint8_t c = 0; c < 32; c++){ ///< X axis
+			z = _Z;
+			sm4_set_dir(X_AXIS, d);
+			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 
-					z_trig = min_z;
+				z_trig = min_z;
 
-					/// move up to un-trigger (surpress hysteresis)
-					sm4_set_dir(Z_AXIS, Z_PLUS);
-					/// speed up from stop, go half the way
-					current_delay_us = MAX_DELAY;
-					for (start_z = z; z < (max_z + start_z) / 2; ++z){
-						if (!_PINDA){
-							break;
-						}
-						accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+				/// move up to un-trigger (surpress hysteresis)
+				sm4_set_dir(Z_AXIS, Z_PLUS);
+				/// speed up from stop, go half the way
+				current_delay_us = MAX_DELAY;
+				for (start_z = z; z < (max_z + start_z) / 2; ++z){
+					if (!_PINDA){
+						break;
 					}
+					accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+				}
 
-					if(_PINDA){
-						uint16_t steps_to_go = MAX(0, max_z - z);
-						while (_PINDA && z < max_z){
-							go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
-							++z;
-						}
-					}
-					/// slow down to stop
-					while (current_delay_us < MAX_DELAY){
-						accelerate(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+				if(_PINDA){
+					uint16_t steps_to_go = MAX(0, max_z - z);
+					while (_PINDA && z < max_z){
+						go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
 						++z;
 					}
+				}
+				/// slow down to stop
+				while (current_delay_us < MAX_DELAY){
+					accelerate(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					++z;
+				}
 
-					/// move down to trigger
-					sm4_set_dir(Z_AXIS, Z_MINUS);
-					/// speed up
-					current_delay_us = MAX_DELAY;
-					for (start_z = z; z > (min_z + start_z) / 2; --z){
-						if (_PINDA){
-							z_trig = z;
-							break;
-						}
-						accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
-					}
-					/// slow down
-					if(!_PINDA){
-						steps_to_go = MAX(0, z - min_z);
-						while (!_PINDA && z > min_z){
-							go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
-							--z;
-						}
+				/// move down to trigger
+				sm4_set_dir(Z_AXIS, Z_MINUS);
+				/// speed up
+				current_delay_us = MAX_DELAY;
+				for (start_z = z; z > (min_z + start_z) / 2; --z){
+					if (_PINDA){
 						z_trig = z;
+						break;
 					}
-					/// slow down to stop
-					while (z > min_z && current_delay_us < MAX_DELAY){
-						accelerate(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+				}
+				/// slow down
+				if(!_PINDA){
+					steps_to_go = MAX(0, z - min_z);
+					while (!_PINDA && z > min_z){
+						go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
 						--z;
 					}
-
-					count_position[2] = z;
-					if (d == 0){
-						line_buffer[c] = (uint16_t)(z_trig - min_z);
-					} else {
-						/// data reversed in X
-						// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
-						/// save average of both directions
-						pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
-					}
-
-					/// move to the next point and move Z up diagonally (if needed)
-					current_delay_us = MAX_DELAY;
-					// const int8_t dir = (d & 1) ? -1 : 1;
-					const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
-					const int16_t length_x = ABS(end_x - _X);
-					const int16_t half_x = length_x / 2;
-					int16_t x = 0;
-					/// don't go up if PINDA not triggered
-					const bool up = _PINDA;
-					int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
-
-					sm4_set_dir(Z_AXIS, Z_PLUS);
-					/// speed up
-					for (x = 0; x <= half_x; ++x){
-						accelerate(axis, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
-						if (up)
-							++z;
-					}
-					/// slow down
-					steps_to_go = length_x - x;
-					for (; x < length_x; ++x){
-						go_and_stop(axis, Z_ACCEL, current_delay_us, steps_to_go);
-						if (up)
-							++z;
-					}
-					count_position[0] = end_x;
-					count_position[2] = z;
+					z_trig = z;
 				}
+				/// slow down to stop
+				while (z > min_z && current_delay_us < MAX_DELAY){
+					accelerate(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					--z;
+				}
+
+				count_position[2] = z;
+				if (d == 0){
+					line_buffer[c] = (uint16_t)(z_trig - min_z);
+				} else {
+					/// data reversed in X
+					// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
+					/// save average of both directions
+					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
+				}
+
+				/// move to the next point and move Z up diagonally (if needed)
+				current_delay_us = MAX_DELAY;
+				// const int8_t dir = (d & 1) ? -1 : 1;
+				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
+				const int16_t length_x = ABS(end_x - _X);
+				const int16_t half_x = length_x / 2;
+				int16_t x = 0;
+				/// don't go up if PINDA not triggered
+				const bool up = _PINDA;
+				int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
+
+				sm4_set_dir(Z_AXIS, Z_PLUS);
+				/// speed up
+				for (x = 0; x <= half_x; ++x){
+					accelerate(axis, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					if (up)
+						++z;
+				}
+				/// slow down
+				steps_to_go = length_x - x;
+				for (; x < length_x; ++x){
+					go_and_stop(axis, Z_ACCEL, current_delay_us, steps_to_go);
+					if (up)
+						++z;
+				}
+				count_position[0] = end_x;
+				count_position[2] = z;
 			}
-			/// do the min_z addjusting in the first row only
-			if (r == 0 && restarts){
-				if (more_zeros(pixels, min_z))
-					restarts = 0;
-			}
-			if (restarts)
-				break;
-			// DBG(_n("\n\n"));
 		}
-	} while (restarts--);
+		// DBG(_n("\n\n"));
+	}
 }
 
 /// Returns rate of match
