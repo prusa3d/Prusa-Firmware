@@ -79,13 +79,13 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				createFilename(lfilename, p);
 				// Allocate enough stack space for the full path to a folder, trailing slash, and nul
 				bool prepend_is_empty = (prepend[0] == '\0');
-				int len = (prepend_is_empty ? 1 : strlen(prepend)) + strlen(lfilename) + 1 + 1;
+				int len = (prepend_is_empty ? 1 : strlen(prepend)) + strlen(longFilename) + 1 + 1;
 				char path[len];
 				// Append the FOLDERNAME12/ to the passed string.
 				// It contains the full path to the "parent" argument.
 				// We now have the full path to the item in this folder.
 				strcpy(path, prepend_is_empty ? "/" : prepend); // root slash if prepend is empty
-				strcat(path, lfilename); // FILENAME_LENGTH-1 characters maximum
+				strcat(path, longFilename); // FILENAME_LENGTH-1 characters maximum
 				strcat(path, "/");       // 1 character
 				// Serial.print(path);
 				// Get a new directory object using the full path
@@ -117,7 +117,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 					case LS_SerialPrint:
 						createFilename(filename, p);
 						SERIAL_PROTOCOL(prepend);
-						SERIAL_PROTOCOL(filename);
+						SERIAL_PROTOCOL(longFilename);
 						MYSERIAL.write(' ');
 						SERIAL_PROTOCOLLN(p.fileSize);
 						break;
