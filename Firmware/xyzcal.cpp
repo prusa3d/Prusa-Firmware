@@ -516,6 +516,8 @@ void stop_smoothly(uint8_t axes, uint8_t dir, int16_t dec, uint16_t &delay_us){
 }
 
 void go_start_stop(uint8_t axes, uint8_t dir, int16_t acc, uint16_t min_delay_us, uint16_t steps){
+	if (steps == 0)
+		return;
 	uint16_t current_delay_us = MAX_DELAY;
 	const uint16_t half = steps / 2;
 	accelerate(axes, dir, acc, current_delay_us, min_delay_us, half);
@@ -527,17 +529,18 @@ void go_start_stop(uint8_t axes, uint8_t dir, int16_t acc, uint16_t min_delay_us
 void go_manhattan(int16_t x, int16_t y, int16_t z, int16_t acc, uint16_t min_delay_us){
 	int32_t length;
 
-	DBG(_n("x %d -> %d\n"), x, _X);
+	// DBG(_n("x %d -> %d, "), x, _X);
 	length = x - _X;
 	go_start_stop(X_AXIS_MASK, length < 0 ? X_MINUS_MASK : X_PLUS_MASK, acc, min_delay_us, ABS(length));
 
-	DBG(_n("y %d -> %d\n"), y, _Y);
+	// DBG(_n("y %d -> %d, "), y, _Y);
 	length = y - _Y;
 	go_start_stop(Y_AXIS_MASK, length < 0 ? Y_MINUS_MASK : Y_PLUS_MASK, acc, min_delay_us, ABS(length));
 
-	DBG(_n("z %d -> %d\n"), z, _Z);
+	// DBG(_n("z %d -> %d\n"), z, _Z);
 	length = z - _Z;
 	go_start_stop(Z_AXIS_MASK, length < 0 ? Z_MINUS_MASK : Z_PLUS_MASK, acc, min_delay_us, ABS(length));
+	// DBG(_n("\n"));
 }
 
 void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t *pixels){
@@ -551,10 +554,25 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
 		for (uint8_t d = 0; d < 2; ++d){
-			// go_manhattan((d & 1) ? (cx + 1024) : (cx - 1024), cy - 1024 + r * 64, _Z, Z_ACCEL, Z_MIN_DELAY);
-			xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), cy - 1024 + r * 64, _Z, delay_us, 0);
+			go_manhattan((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, Z_ACCEL, Z_MIN_DELAY);
+			xyzcal_lineXYZ_to((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, delay_us, 0);
 			sm4_set_dir(X_AXIS, d);
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
+				
+				/// move to the next point and move Z up diagonally (if needed)
+				current_delay_us = MAX_DELAY;
+				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
+				const int16_t length_x = ABS(end_x - _X);
+				const int16_t half_x = length_x / 2;
+				/// don't go up if PINDA not triggered (optimization)
+				const bool up = _PINDA;
+				const uint8_t axes = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
+				const uint8_t dir = Z_PLUS_MASK | (d & 1 ? X_MINUS_MASK : X_PLUS_MASK);
+
+				accelerate(axes, dir, Z_ACCEL, current_delay_us, Z_MIN_DELAY, half_x);
+				go_and_stop(axes, dir, Z_ACCEL, current_delay_us, length_x - half_x);
+				
+				
 				z_trig = min_z;
 
 				/// move up to un-trigger (surpress hysteresis)
@@ -611,20 +629,6 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 					/// save average of both directions (filters effect of hysteresis)
 					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
 				}
-
-				/// move to the next point and move Z up diagonally (if needed)
-				current_delay_us = MAX_DELAY;
-				// const int8_t dir = (d & 1) ? -1 : 1;
-				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
-				const int16_t length_x = ABS(end_x - _X);
-				const int16_t half_x = length_x / 2;
-				/// don't go up if PINDA not triggered (optimization)
-				const bool up = _PINDA;
-				const uint8_t axes = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
-				const uint8_t dir = Z_PLUS_MASK | (d & 1 ? X_MINUS_MASK : X_PLUS_MASK);
-
-				accelerate(axes, dir, Z_ACCEL, current_delay_us, Z_MIN_DELAY, half_x);				
-				go_and_stop(axes, dir, Z_ACCEL, current_delay_us, length_x - half_x);
 			}
 		}
 		// DBG(_n("\n\n"));
