@@ -29,6 +29,11 @@
 #define _Z ((int16_t)count_position[Z_AXIS])
 #define _E ((int16_t)count_position[E_AXIS])
 
+#define _X_ (count_position[X_AXIS])
+#define _Y_ (count_position[Y_AXIS])
+#define _Z_ (count_position[Z_AXIS])
+#define _E_ (count_position[E_AXIS])
+
 #ifndef M_PI
 const constexpr float M_PI = 3.1415926535897932384626433832795f;
 #endif
@@ -39,6 +44,13 @@ const constexpr uint8_t Y_PLUS = 0;
 const constexpr uint8_t Y_MINUS = 1;
 const constexpr uint8_t Z_PLUS = 0;
 const constexpr uint8_t Z_MINUS = 1;
+
+const constexpr uint8_t X_PLUS_MASK = 0;
+const constexpr uint8_t X_MINUS_MASK = X_AXIS_MASK;
+const constexpr uint8_t Y_PLUS_MASK = 0;
+const constexpr uint8_t Y_MINUS_MASK = Y_AXIS_MASK;
+const constexpr uint8_t Z_PLUS_MASK = 0;
+const constexpr uint8_t Z_MINUS_MASK = Z_AXIS_MASK;
 
 /// Max. jerk in PrusaSlicer, 10000 = 1 mm/s
 const constexpr uint16_t MAX_DELAY = 10000;
@@ -393,8 +405,28 @@ void print_hysterezis(int16_t min_z, int16_t max_z, int16_t step){
 	}
 }
 
+void update_position_1_step(uint8_t axis, uint8_t dir){
+	int8_t add = dir ? -1 : 1;
+	if (axis & X_AXIS_MASK)
+		_X_ += dir & X_AXIS_MASK ? -1 : 1;
+	if (axis & Y_AXIS_MASK)
+		_Y_ += dir & Y_AXIS_MASK ? -1 : 1;
+	if (axis & Z_AXIS_MASK)
+		_Z_ += dir & Z_AXIS_MASK ? -1 : 1;
+}
+
+void set_axis_dir(uint8_t axis, uint8_t dir){
+	if (axis & X_AXIS_MASK)
+		sm4_set_dir(X_AXIS_MASK, dir & X_AXIS_MASK);
+	if (axis & Y_AXIS_MASK)
+		sm4_set_dir(Y_AXIS_MASK, dir & Y_AXIS_MASK);
+	if (axis & Z_AXIS_MASK)
+		sm4_set_dir(Z_AXIS_MASK, dir & Z_AXIS_MASK);
+}
+
 /// Accelerate up to max.speed (defined by @min_delay_us)
-void accelerate(uint8_t axis, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us){
+/// does not update global positions
+void accelerate_1_step(uint8_t axis, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us){
 	sm4_do_step(axis);
 
 	/// keep max speed (avoid extra computation)
@@ -429,9 +461,24 @@ void accelerate(uint8_t axis, int16_t acc, uint16_t &delay_us, uint16_t min_dela
 	delay_us = t1;
 }
 
-void go_and_stop(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps){
+/// Goes defined number of steps while accelerating
+/// updates global positions
+void accelerate(uint8_t axis, uint8_t dir, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us, uint16_t steps){
+	set_axis_dir(axis, dir);
+	while (steps--){
+		accelerate_1_step(axis, acc, delay_us, min_delay_us);
+		update_position_1_step(axis, dir);
+	}
+}
+
+/// keeps speed and then it decelerates to a complete stop (if possible)
+/// it goes defined number of steps
+/// returns after each step
+/// \returns true if step was done
+/// does not update global positions
+bool go_and_stop_1_step(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps){
 	if (steps <= 0 || dec <= 0)
-		return;
+		return false;
 
 	/// deceleration distance in steps, s = 1/2 v^2 / a
 	uint16_t s = round_to_u16(100 * 0.5f * SQR(0.01f) / (SQR((float)delay_us) * dec));
@@ -441,27 +488,37 @@ void go_and_stop(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps)
 		delayMicroseconds(delay_us);
 	} else {
 		/// decelerate
-		accelerate(axis, -dec, delay_us, delay_us);
+		accelerate_1_step(axis, -dec, delay_us, delay_us);
 	}
 	--steps;
+	return true;
 }
 
-/// \returns steps done
-uint16_t stop_smoothly(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t min_delay_us){
-	if (dec <= 0)
-		return 0;
-	uint16_t steps = 0;
-	while (delay_us < MAX_DELAY){
-		accelerate(axis, -dec, delay_us, min_delay_us);
-		++steps;
+/// \param dir sets direction of movement
+/// updates global positions
+void go_and_stop(uint8_t axis, uint8_t dir, int16_t dec, uint16_t &delay_us, uint16_t steps){
+	set_axis_dir(axis, dir);
+	while (go_and_stop_1_step(axis, dec, delay_us, steps)){
+		update_position_1_step(axis, dir);
 	}
-	return steps;
+}
+
+/// goes all the way to stop
+/// \returns steps done
+/// updates global positions
+void stop_smoothly(uint8_t axis, uint8_t dir, int16_t dec, uint16_t &delay_us){
+	if (dec <= 0)
+		return;
+	set_axis_dir(axis, dir);
+	while (delay_us < MAX_DELAY){
+		accelerate_1_step(axis, -dec, delay_us, delay_us);
+		update_position_1_step(axis, dir);
+	}
 }
 
 void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t *pixels){
 	if (!pixels)
 		return;
-	int16_t z = _Z;
 	int16_t z_trig;
 	uint16_t line_buffer[32];
 	uint16_t current_delay_us = MAX_DELAY; ///< defines current speed
@@ -470,104 +527,103 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	uint16_t steps_to_go;
 
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
-		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
-		int8_t d = r % 2 ? 1 : 0;
-		xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, min_z, delay_us, 0);
+		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, _Z, delay_us, 0);
+		for (uint8_t d = 0; d < 2; ++d){
+			xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, min_z, delay_us, 0);
+			sm4_set_dir(X_AXIS, d);
+			for (uint8_t c = 0; c < 32; c++){ ///< X axis
+				z_trig = min_z;
 
-		z = _Z;
-		sm4_set_dir(X_AXIS, d);
-		for (uint8_t c = 0; c < 32; c++){ ///< X axis
-
-			z_trig = min_z;
-
-			/// move up to un-trigger (surpress hysteresis)
-			sm4_set_dir(Z_AXIS, Z_PLUS);
-			/// speed up from stop, go half the way
-			current_delay_us = MAX_DELAY;
-			for (start_z = z; z < (max_z + start_z) / 2; ++z){
-				if (!_PINDA){
-					break;
+				/// move up to un-trigger (surpress hysteresis)
+				sm4_set_dir(Z_AXIS, Z_PLUS);
+				/// speed up from stop, go half the way
+				current_delay_us = MAX_DELAY;
+				for (start_z = _Z; _Z < (max_z + start_z) / 2; ++_Z_){
+					if (!_PINDA){
+						break;
+					}
+					accelerate_1_step(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
 				}
-				accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
-			}
 
-			if (_PINDA){
-				steps_to_go = MAX(0, max_z - z);
-				while (_PINDA && z < max_z){
-					go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
-					++z;
-				}
-			}
-			z += stop_smoothly(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
-
-			/// move down to trigger
-			sm4_set_dir(Z_AXIS, Z_MINUS);
-			/// speed up
-			current_delay_us = MAX_DELAY;
-			for (start_z = z; z > (min_z + start_z) / 2; --z){
 				if (_PINDA){
-					z_trig = z;
-					break;
+					steps_to_go = MAX(0, max_z - _Z);
+					while (_PINDA && _Z < max_z){
+						go_and_stop_1_step(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
+						++_Z_;
+					}
 				}
-				accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
-			}
-			/// slow down
-			if (!_PINDA){
-				steps_to_go = MAX(0, z - min_z);
-				while (!_PINDA && z > min_z){
-					go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
-					--z;
+				stop_smoothly(Z_AXIS_MASK, Z_PLUS_MASK, Z_ACCEL, current_delay_us);
+
+				/// move down to trigger
+				sm4_set_dir(Z_AXIS, Z_MINUS);
+				/// speed up
+				current_delay_us = MAX_DELAY;
+				for (start_z = _Z; _Z > (min_z + start_z) / 2; --_Z_){
+					if (_PINDA){
+						z_trig = _Z;
+						break;
+					}
+					accelerate_1_step(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
 				}
-				z_trig = z;
-			}
-			/// slow down to stop but not lower than min_z
-			while (z > min_z && current_delay_us < MAX_DELAY){
-				accelerate(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
-				--z;
-			}
+				/// slow down
+				if (!_PINDA){
+					steps_to_go = MAX(0, _Z - min_z);
+					while (!_PINDA && _Z > min_z){
+						go_and_stop_1_step(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
+						--_Z_;
+					}
+					z_trig = _Z;
+				}
+				/// slow down to stop but not lower than min_z
+				while (_Z > min_z && current_delay_us < MAX_DELAY){
+					accelerate_1_step(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					--_Z_;
+				}
 
-			count_position[2] = z;
+				if (d == 0){
+					line_buffer[c] = (uint16_t)(z_trig - min_z);
+				} else {
+					/// data reversed in X
+					// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
+					/// save average of both directions
+					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
+				}
 
-			// if (d == 0){
-			// 	line_buffer[c] = (uint16_t)(z_trig - min_z);
-			// } else {
-			// 	/// data reversed in X
-			// 	// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
-			// 	/// save average of both directions
-			// 	pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
-			// }
+				/// move to the next point and move Z up diagonally (if needed)
+				current_delay_us = MAX_DELAY;
+				// const int8_t dir = (d & 1) ? -1 : 1;
+				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
+				const int16_t length_x = ABS(end_x - _X);
+				const int16_t half_x = length_x / 2;
+				int16_t x = 0;
+				/// don't go up if PINDA not triggered
+				const bool up = _PINDA;
+				int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
+				uint8_t dir = Z_PLUS_MASK | (d & 1 ? X_MINUS_MASK : X_PLUS_MASK);
 
-			pixels[(uint16_t)r * 32 + (r % 2 ? (31 - c) : c)] = (uint8_t)MIN((uint32_t)255, (uint32_t)z_trig - min_z);
+				// sm4_set_dir(Z_AXIS, Z_PLUS);
+				/// speed up
+				accelerate(axis, dir, Z_ACCEL, current_delay_us, Z_MIN_DELAY, half_x);
+				
+				// for (x = 0; x <= half_x; ++x)
+				// {
+				// 	accelerate_1_step(axis, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+				// 	if (up)
+				// 		++_Z_;
+				// }
+				
+				/// slow down
+				go_and_stop(axis, dir, Z_ACCEL, current_delay_us, length_x - half_x);
 
-			/// move to the next point and move Z up diagonally (if needed)
-			current_delay_us = MAX_DELAY;
-			// const int8_t dir = (d & 1) ? -1 : 1;
-			const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
-			const int16_t length_x = ABS(end_x - _X);
-			const int16_t half_x = length_x / 2;
-			int16_t x = 0;
-			/// don't go up if PINDA not triggered
-			const bool up = _PINDA;
-			int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
-
-			sm4_set_dir(Z_AXIS, Z_PLUS);
-			/// speed up
-			for (x = 0; x <= half_x; ++x){
-				accelerate(axis, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
-				if (up)
-					++z;
+				// steps_to_go = length_x - x;
+				// for (; x < length_x; ++x){
+				// 	go_and_stop_1_step(axis, Z_ACCEL, current_delay_us, steps_to_go);
+				// 	if (up)
+				// 		++_Z_;
+				// }
+				// count_position[0] = end_x;
 			}
-			/// slow down
-			steps_to_go = length_x - x;
-			for (; x < length_x; ++x){
-				go_and_stop(axis, Z_ACCEL, current_delay_us, steps_to_go);
-				if (up)
-					++z;
-			}
-			count_position[0] = end_x;
-			count_position[2] = z;
-			}
-		// }
+		}
 		// DBG(_n("\n\n"));
 	}
 }
