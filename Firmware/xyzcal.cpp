@@ -414,28 +414,28 @@ void update_position_1_step(uint8_t axis, uint8_t dir){
 		_Z_ += dir & Z_AXIS_MASK ? -1 : 1;
 }
 
-void set_axis_dir(uint8_t axis, uint8_t dir){
-	if (axis & X_AXIS_MASK)
+void set_axes_dir(uint8_t axes, uint8_t dir){
+	if (axes & X_AXIS_MASK)
 		sm4_set_dir(X_AXIS, dir & X_AXIS_MASK);
-	if (axis & Y_AXIS_MASK)
+	if (axes & Y_AXIS_MASK)
 		sm4_set_dir(Y_AXIS, dir & Y_AXIS_MASK);
-	if (axis & Z_AXIS_MASK)
+	if (axes & Z_AXIS_MASK)
 		sm4_set_dir(Z_AXIS, dir & Z_AXIS_MASK);
 }
 
-void go_step(uint8_t axis){
-	if (axis & X_AXIS_MASK)
+void go_step(uint8_t axes){
+	if (axes & X_AXIS_MASK)
 		sm4_do_step(X_AXIS);
-	if (axis & Y_AXIS_MASK)
+	if (axes & Y_AXIS_MASK)
 		sm4_do_step(Y_AXIS);
-	if (axis & Z_AXIS_MASK)
+	if (axes & Z_AXIS_MASK)
 		sm4_do_step(Z_AXIS);
 }
 
 /// Accelerate up to max.speed (defined by @min_delay_us)
 /// does not update global positions
-void accelerate_1_step(uint8_t axis, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us){
-	go_step(axis);
+void accelerate_1_step(uint8_t axes, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us){
+	go_step(axes);
 
 	/// keep max speed (avoid extra computation)
 	if (acc > 0 && delay_us == min_delay_us){
@@ -471,11 +471,11 @@ void accelerate_1_step(uint8_t axis, int16_t acc, uint16_t &delay_us, uint16_t m
 
 /// Goes defined number of steps while accelerating
 /// updates global positions
-void accelerate(uint8_t axis, uint8_t dir, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us, uint16_t steps){
-	set_axis_dir(axis, dir);
+void accelerate(uint8_t axes, uint8_t dir, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us, uint16_t steps){
+	set_axes_dir(axes, dir);
 	while (steps--){
-		accelerate_1_step(axis, acc, delay_us, min_delay_us);
-		update_position_1_step(axis, dir);
+		accelerate_1_step(axes, acc, delay_us, min_delay_us);
+		update_position_1_step(axes, dir);
 	}
 }
 
@@ -484,7 +484,7 @@ void accelerate(uint8_t axis, uint8_t dir, int16_t acc, uint16_t &delay_us, uint
 /// returns after each step
 /// \returns true if step was done
 /// does not update global positions
-bool go_and_stop_1_step(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps){
+bool go_and_stop_1_step(uint8_t axes, int16_t dec, uint16_t &delay_us, uint16_t &steps){
 	if (steps <= 0 || dec <= 0)
 		return false;
 
@@ -492,11 +492,11 @@ bool go_and_stop_1_step(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t 
 	uint16_t s = round_to_u16(100 * 0.5f * SQR(0.01f) / (SQR((float)delay_us) * dec));
 	if (steps > s){
 		/// go steady
-		go_step(axis);
+		go_step(axes);
 		delayMicroseconds(delay_us);
 	} else {
 		/// decelerate
-		accelerate_1_step(axis, -dec, delay_us, delay_us);
+		accelerate_1_step(axes, -dec, delay_us, delay_us);
 	}
 	--steps;
 	return true;
@@ -504,31 +504,31 @@ bool go_and_stop_1_step(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t 
 
 /// \param dir sets direction of movement
 /// updates global positions
-void go_and_stop(uint8_t axis, uint8_t dir, int16_t dec, uint16_t &delay_us, uint16_t steps){
-	set_axis_dir(axis, dir);
-	while (go_and_stop_1_step(axis, dec, delay_us, steps)){
-		update_position_1_step(axis, dir);
+void go_and_stop(uint8_t axes, uint8_t dir, int16_t dec, uint16_t &delay_us, uint16_t steps){
+	set_axes_dir(axes, dir);
+	while (go_and_stop_1_step(axes, dec, delay_us, steps)){
+		update_position_1_step(axes, dir);
 	}
 }
 
 /// goes all the way to stop
 /// \returns steps done
 /// updates global positions
-void stop_smoothly(uint8_t axis, uint8_t dir, int16_t dec, uint16_t &delay_us){
+void stop_smoothly(uint8_t axes, uint8_t dir, int16_t dec, uint16_t &delay_us){
 	if (dec <= 0)
 		return;
-	set_axis_dir(axis, dir);
+	set_axes_dir(axes, dir);
 	while (delay_us < MAX_DELAY){
-		accelerate_1_step(axis, -dec, delay_us, delay_us);
-		update_position_1_step(axis, dir);
+		accelerate_1_step(axes, -dec, delay_us, delay_us);
+		update_position_1_step(axes, dir);
 	}
 }
 
-void go_start_stop(uint8_t axis, uint8_t dir, int16_t acc, uint16_t min_delay_us, uint16_t steps){
+void go_start_stop(uint8_t axes, uint8_t dir, int16_t acc, uint16_t min_delay_us, uint16_t steps){
 	uint16_t current_delay_us = MAX_DELAY;
 	const uint16_t half = steps / 2;
-	accelerate(axis, dir, acc, current_delay_us, min_delay_us, half);
-	go_and_stop(axis, dir, -acc, current_delay_us, steps - half);
+	accelerate(axes, dir, acc, current_delay_us, min_delay_us, half);
+	go_and_stop(axes, dir, -acc, current_delay_us, steps - half);
 }
 
 /// moves X, Y, Z one after each other
