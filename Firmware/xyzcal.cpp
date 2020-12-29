@@ -406,7 +406,6 @@ void print_hysterezis(int16_t min_z, int16_t max_z, int16_t step){
 }
 
 void update_position_1_step(uint8_t axis, uint8_t dir){
-	int8_t add = dir ? -1 : 1;
 	if (axis & X_AXIS_MASK)
 		_X_ += dir & X_AXIS_MASK ? -1 : 1;
 	if (axis & Y_AXIS_MASK)
@@ -424,10 +423,19 @@ void set_axis_dir(uint8_t axis, uint8_t dir){
 		sm4_set_dir(Z_AXIS, dir & Z_AXIS_MASK);
 }
 
+void go_step(uint8_t axis){
+	if (axis & X_AXIS_MASK)
+		sm4_do_step(X_AXIS);
+	if (axis & Y_AXIS_MASK)
+		sm4_do_step(Y_AXIS);
+	if (axis & Z_AXIS_MASK)
+		sm4_do_step(Z_AXIS);
+}
+
 /// Accelerate up to max.speed (defined by @min_delay_us)
 /// does not update global positions
 void accelerate_1_step(uint8_t axis, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us){
-	sm4_do_step(axis);
+	go_step(axis);
 
 	/// keep max speed (avoid extra computation)
 	if (acc > 0 && delay_us == min_delay_us){
@@ -484,7 +492,7 @@ bool go_and_stop_1_step(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t 
 	uint16_t s = round_to_u16(100 * 0.5f * SQR(0.01f) / (SQR((float)delay_us) * dec));
 	if (steps > s){
 		/// go steady
-		sm4_do_step(axis);
+		go_step(axis);
 		delayMicroseconds(delay_us);
 	} else {
 		/// decelerate
@@ -516,20 +524,44 @@ void stop_smoothly(uint8_t axis, uint8_t dir, int16_t dec, uint16_t &delay_us){
 	}
 }
 
+void go_start_stop(uint8_t axis, uint8_t dir, int16_t acc, uint16_t min_delay_us, uint16_t steps){
+	uint16_t current_delay_us = MAX_DELAY;
+	const uint16_t half = steps / 2;
+	accelerate(axis, dir, acc, current_delay_us, min_delay_us, half);
+	go_and_stop(axis, dir, -acc, current_delay_us, steps - half);
+}
+
+/// moves X, Y, Z one after each other
+/// starts and ends at 0 speed
+void go_manhattan(int16_t x, int16_t y, int16_t z, int16_t acc, uint16_t min_delay_us){
+	int32_t length;
+
+	DBG(_n("x %d -> %d\n"), x, _X);
+	length = x - _X;
+	go_start_stop(X_AXIS_MASK, length < 0 ? X_MINUS_MASK : X_PLUS_MASK, acc, min_delay_us, ABS(length));
+
+	DBG(_n("y %d -> %d\n"), y, _Y);
+	length = y - _Y;
+	go_start_stop(Y_AXIS_MASK, length < 0 ? Y_MINUS_MASK : Y_PLUS_MASK, acc, min_delay_us, ABS(length));
+
+	DBG(_n("z %d -> %d\n"), z, _Z);
+	length = z - _Z;
+	go_start_stop(Z_AXIS_MASK, length < 0 ? Z_MINUS_MASK : Z_PLUS_MASK, acc, min_delay_us, ABS(length));
+}
+
 void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t *pixels){
 	if (!pixels)
 		return;
 	int16_t z_trig;
 	uint16_t line_buffer[32];
 	uint16_t current_delay_us = MAX_DELAY; ///< defines current speed
-	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
 	int16_t start_z;
 	uint16_t steps_to_go;
 
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
-		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, _Z, delay_us, 0);
 		for (uint8_t d = 0; d < 2; ++d){
-			xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, min_z, delay_us, 0);
+			go_manhattan((d & 1) ? (cx + 1024) : (cx - 1024), cy - 1024 + r * 64, _Z, Z_ACCEL, Z_MIN_DELAY);
+			// xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), cy - 1024 + r * 64, _Z, delay_us, 0);
 			sm4_set_dir(X_AXIS, d);
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 				z_trig = min_z;
@@ -585,7 +617,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				} else {
 					/// data reversed in X
 					// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
-					/// save average of both directions
+					/// save average of both directions (filters effect of hysteresis)
 					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
 				}
 
@@ -595,33 +627,13 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
 				const int16_t length_x = ABS(end_x - _X);
 				const int16_t half_x = length_x / 2;
-				int16_t x = 0;
-				/// don't go up if PINDA not triggered
+				/// don't go up if PINDA not triggered (optimization)
 				const bool up = _PINDA;
-				int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
-				uint8_t dir = Z_PLUS_MASK | (d & 1 ? X_MINUS_MASK : X_PLUS_MASK);
+				const int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
+				const uint8_t dir = Z_PLUS_MASK | (d & 1 ? X_MINUS_MASK : X_PLUS_MASK);
 
-				// sm4_set_dir(Z_AXIS, Z_PLUS);
-				/// speed up
-				accelerate(axis, dir, Z_ACCEL, current_delay_us, Z_MIN_DELAY, half_x);
-				
-				// for (x = 0; x <= half_x; ++x)
-				// {
-				// 	accelerate_1_step(axis, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
-				// 	if (up)
-				// 		++_Z_;
-				// }
-				
-				/// slow down
+				accelerate(axis, dir, Z_ACCEL, current_delay_us, Z_MIN_DELAY, half_x);				
 				go_and_stop(axis, dir, Z_ACCEL, current_delay_us, length_x - half_x);
-
-				// steps_to_go = length_x - half_x;
-				// for (; x < length_x; ++x){
-				// 	go_and_stop_1_step(axis, Z_ACCEL, current_delay_us, steps_to_go);
-				// 	if (up)
-				// 		++_Z_;
-				// }
-				// count_position[0] = end_x;
 			}
 		}
 		// DBG(_n("\n\n"));
