@@ -601,7 +601,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
 				uint8_t dir = Z_PLUS_MASK | (d & 1 ? X_MINUS_MASK : X_PLUS_MASK);
 
-				// sm4_set_dir(Z_AXIS, Z_PLUS);
+				sm4_set_dir(Z_AXIS, Z_PLUS);
 				/// speed up
 				accelerate(axis, dir, Z_ACCEL, current_delay_us, Z_MIN_DELAY, half_x);
 				
@@ -615,7 +615,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				/// slow down
 				go_and_stop(axis, dir, Z_ACCEL, current_delay_us, length_x - half_x);
 
-				// steps_to_go = length_x - x;
+				// steps_to_go = length_x - half_x;
 				// for (; x < length_x; ++x){
 				// 	go_and_stop_1_step(axis, Z_ACCEL, current_delay_us, steps_to_go);
 				// 	if (up)
