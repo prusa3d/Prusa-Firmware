@@ -417,11 +417,11 @@ void update_position_1_step(uint8_t axis, uint8_t dir){
 
 void set_axis_dir(uint8_t axis, uint8_t dir){
 	if (axis & X_AXIS_MASK)
-		sm4_set_dir(X_AXIS_MASK, dir & X_AXIS_MASK);
+		sm4_set_dir(X_AXIS, dir & X_AXIS_MASK);
 	if (axis & Y_AXIS_MASK)
-		sm4_set_dir(Y_AXIS_MASK, dir & Y_AXIS_MASK);
+		sm4_set_dir(Y_AXIS, dir & Y_AXIS_MASK);
 	if (axis & Z_AXIS_MASK)
-		sm4_set_dir(Z_AXIS_MASK, dir & Z_AXIS_MASK);
+		sm4_set_dir(Z_AXIS, dir & Z_AXIS_MASK);
 }
 
 /// Accelerate up to max.speed (defined by @min_delay_us)
@@ -601,7 +601,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
 				uint8_t dir = Z_PLUS_MASK | (d & 1 ? X_MINUS_MASK : X_PLUS_MASK);
 
-				sm4_set_dir(Z_AXIS, Z_PLUS);
+				// sm4_set_dir(Z_AXIS, Z_PLUS);
 				/// speed up
 				accelerate(axis, dir, Z_ACCEL, current_delay_us, Z_MIN_DELAY, half_x);
 				
