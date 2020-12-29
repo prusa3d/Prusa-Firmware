@@ -423,19 +423,10 @@ void set_axes_dir(uint8_t axes, uint8_t dir){
 		sm4_set_dir(Z_AXIS, dir & Z_AXIS_MASK);
 }
 
-void go_step(uint8_t axes){
-	if (axes & X_AXIS_MASK)
-		sm4_do_step(X_AXIS);
-	if (axes & Y_AXIS_MASK)
-		sm4_do_step(Y_AXIS);
-	if (axes & Z_AXIS_MASK)
-		sm4_do_step(Z_AXIS);
-}
-
 /// Accelerate up to max.speed (defined by @min_delay_us)
 /// does not update global positions
 void accelerate_1_step(uint8_t axes, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us){
-	go_step(axes);
+	sm4_do_step(axes);
 
 	/// keep max speed (avoid extra computation)
 	if (acc > 0 && delay_us == min_delay_us){
@@ -492,7 +483,7 @@ bool go_and_stop_1_step(uint8_t axes, int16_t dec, uint16_t &delay_us, uint16_t 
 	uint16_t s = round_to_u16(100 * 0.5f * SQR(0.01f) / (SQR((float)delay_us) * dec));
 	if (steps > s){
 		/// go steady
-		go_step(axes);
+		sm4_do_step(axes);
 		delayMicroseconds(delay_us);
 	} else {
 		/// decelerate
