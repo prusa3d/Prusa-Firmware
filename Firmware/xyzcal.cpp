@@ -385,11 +385,11 @@ int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t d
 }
 #endif //XYZCAL_MEASSURE_PINDA_HYSTEREZIS
 
-void print_hysterezis(int16_t min_z, int16_t max_z, int16_t step){
+void print_hysteresis(int16_t min_z, int16_t max_z, int16_t step){
 	int16_t delay_us = 600;
 	int16_t trigger = 0;
 	int16_t untrigger = 0;
-	DBG(_n("Hysterezis\n"));
+	DBG(_n("Hysteresis\n"));
 
 	xyzcal_lineXYZ_to(_X, _Y, min_z, delay_us, 0);
 
