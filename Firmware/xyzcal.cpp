@@ -809,7 +809,13 @@ void sort(float *points, const uint8_t num_points){
 				SWAP(points[j], points[j + 1]);
 		}
 	}
+	
+	// DBG(_n("Sorted: "));
+	// for (uint8_t i = 0; i < num_points; ++i)
+	// 	DBG(_n("%f "), points[i]);
+	// DBG(_n("\n"));
 }
+
 
 /// sort array and returns median value
 /// don't send empty array or nullptr
@@ -828,10 +834,9 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 	float points[num_points];
 	float pi_2_div_num_points = 2 * M_PI / num_points;
 	const constexpr uint8_t target_z = 32; ///< target z height of the circle
-	float norm;
 	float angle;
-	float max_val = 0.5f;
-	const uint8_t blocks = 7;
+	float max_change = 0.5f; ///< avoids too fast changes (could cause oscillation)
+	const uint8_t blocks = num_points;
 	float shifts_x[blocks];
 	float shifts_y[blocks];	
 	float shifts_r[blocks];	
@@ -840,35 +845,38 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 
 	for (int8_t i = iterations; i > 0; --i){
 	
-		// DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
+		DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
 
 		/// read points on the circle
 		for (uint8_t p = 0; p < num_points; ++p){
 			angle = p * pi_2_div_num_points;
 			points[p] = get_value(matrix_32x32, r * cos(angle) + x, r * sin(angle) + y) - target_z;
 			// DBG(_n("%f "), points[p]);
+
+			shifts_x[p] = cos(angle) * points[p];
+			shifts_y[p] = sin(angle) * points[p];
+			shifts_r[p] = points[p];
 		}
 		// DBG(_n(" points\n"));
 
-		/// sum blocks
-		for (uint8_t j = 0; j < blocks; ++j){
-			shifts_x[j] = shifts_y[j] = shifts_r[j] = 0;
-			/// first part
-			for (uint8_t p = 0; p < num_points * 3 / 4; ++p){
-				uint8_t idx = (p + j * num_points / blocks) % num_points;
+		// /// sum blocks
+		// for (uint8_t j = 0; j < blocks; ++j){
+		// 	shifts_x[j] = shifts_y[j] = shifts_r[j] = 0;
+		// 	/// first part
+		// 	for (uint8_t p = 0; p < num_points * 3 / 4; ++p){
+		// 		uint8_t idx = (p + j * num_points / blocks) % num_points;
 
-				angle = idx * pi_2_div_num_points;
-				shifts_x[j] += cos(angle) * points[idx];
-				shifts_y[j] += sin(angle) * points[idx];
-				shifts_r[j] += points[idx];
-			}
-		}
+		// 		angle = idx * pi_2_div_num_points;
+		// 		shifts_x[j] += cos(angle) * points[idx];
+		// 		shifts_y[j] += sin(angle) * points[idx];
+		// 		shifts_r[j] += points[idx];
+		// 	}
+		// }
 
-		/// median is the highest now
-		norm = 1.f / (32.f * (num_points * 3 / 4));
-		x += CLAMP(median(shifts_x, blocks) * norm, -max_val, max_val);
-		y += CLAMP(median(shifts_y, blocks) * norm, -max_val, max_val);
-		r += CLAMP(median(shifts_r, blocks) * norm, -max_val, max_val);
+		const float norm = 1.f / 32.f;
+		x += CLAMP(median(shifts_x, blocks) * norm, -max_change, max_change);
+		y += CLAMP(median(shifts_y, blocks) * norm, -max_change, max_change);
+		r += CLAMP(median(shifts_r, blocks) * norm * .5f, -max_change, max_change);
 
 		r = MAX(2, r);
 
