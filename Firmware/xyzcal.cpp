@@ -552,13 +552,16 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 	int16_t start_z;
 	uint16_t steps_to_go;
 
+	DBG(_n("Scan countdown: "));
+
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
 		for (uint8_t d = 0; d < 2; ++d){
 			go_manhattan((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, Z_ACCEL, Z_MIN_DELAY);
 			xyzcal_lineXYZ_to((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, delay_us, 0);
 			sm4_set_dir(X_AXIS, d);
+			DBG(_n("%d "), 64 - (r * 2 + d)); ///< to keep OctoPrint connection alive
+
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
-				
 				/// move to the next point and move Z up diagonally (if needed)
 				current_delay_us = MAX_DELAY;
 				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
@@ -631,8 +634,8 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				}
 			}
 		}
-		// DBG(_n("\n\n"));
 	}
+	DBG(_n("\n"));
 }
 
 /// Returns rate of match
@@ -705,7 +708,8 @@ const int16_t xyzcal_point_xcoords[4] PROGMEM = {1200, 22000, 22000, 1200};
 const int16_t xyzcal_point_ycoords[4] PROGMEM = {700, 700, 19800, 19800};
 #endif //((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
 
-const uint16_t xyzcal_point_pattern[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
+const uint16_t xyzcal_point_pattern_10[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
+const uint16_t xyzcal_point_pattern_08[12] PROGMEM = {0x000, 0x000, 0x0f0, 0x1f8, 0x3fc, 0x3fc, 0x3fc, 0x3fc, 0x1f8, 0x0f0, 0x000, 0x000};
 
 bool xyzcal_searchZ(void)
 {
@@ -814,6 +818,8 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 	float shifts_y[blocks];	
 	float shifts_r[blocks];	
 
+	DBG(_n(" [%f, %f][%f] start circle\n"), x, y, r);
+
 	for (int8_t i = iterations; i > 0; --i){
 	
 		// DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
@@ -871,6 +877,30 @@ void print_image(uint8_t *matrix_32x32){
 	DBG(_n("\n"));
 }
 
+/// Takes two patterns and searches them in matrix32
+/// \returns best match
+uint8_t find_patterns(uint8_t *matrix32, uint16_t *pattern08, uint16_t *pattern10, uint8_t &col, uint8_t &row){
+	uint8_t c08 = 0;
+	uint8_t r08 = 0;
+	uint8_t match08 = 0;
+	uint8_t c10 = 0;
+	uint8_t r10 = 0;
+	uint8_t match10 = 0;
+
+	match08 = xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern08, &c08, &r08);
+	match10 = xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern10, &c10, &r10);
+
+	if (match08 > match10){
+		col = c08;
+		row = r08;
+		return match08;
+	}
+	
+	col = c10;
+	row = r10;
+	return match10;
+}
+
 /// scans area around the current head location and
 /// searches for the center of the calibration pin
 bool xyzcal_scan_and_process(void){
@@ -881,21 +911,25 @@ bool xyzcal_scan_and_process(void){
 	int16_t z = _Z;
 
 	uint8_t *matrix32 = (uint8_t *)block_buffer;
-	uint16_t *pattern = (uint16_t *)(matrix32 + 32 * 32);
+	uint16_t *pattern08 = (uint16_t *)(matrix32 + 32 * 32);
+	uint16_t *pattern10 = (uint16_t *)(pattern08 + 12);
 
 	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, matrix32);
 	print_image(matrix32);
 
 	for (uint8_t i = 0; i < 12; i++){
-		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
-//		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
+		pattern08[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern_08 + i));
+		pattern10[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern_10 + i));
+		// DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
 	}
 	
 	/// SEARCH FOR BINARY CIRCLE
 	uint8_t uc = 0;
 	uint8_t ur = 0;
+	
+	
 	/// max match = 132, 1/2 good = 66, 2/3 good = 88
-	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &uc, &ur) >= 88){
+	if (find_patterns(matrix32, pattern08, pattern10, uc, ur) >= 88){
 		/// find precise circle
 		/// move to the center of the pattern (+5.5)
 		float xf = uc + 5.5f;
