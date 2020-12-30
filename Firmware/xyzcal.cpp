@@ -800,6 +800,24 @@ float highest(float *points, const uint8_t num_points){
 	return max;
 }
 
+/// slow bubble sort but short
+void sort(float *points, const uint8_t num_points){
+	/// one direction bubble sort
+	for (uint8_t i = 0; i < num_points; ++i){
+		for (uint8_t j = 0; j < num_points - i - 1; ++j){
+			if (points[j] > points[j + 1])
+				SWAP(points[j], points[j + 1]);
+		}
+	}
+}
+
+/// sort array and returns median value
+/// don't send empty array or nullptr
+float median(float *points, const uint8_t num_points){
+	sort(points, num_points);
+	return points[num_points / 2];
+}
+
 /// Searches for circle iteratively
 /// Uses points on the perimeter. If point is high it pushes circle out of the center (shift or change of radius),
 /// otherwise to the center.
@@ -846,18 +864,11 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 			}
 		}
 
-		/// remove extreme values (slow but simple)
-		for (uint8_t j = 0; j < blocks / 2; ++j){
-			remove_highest(shifts_x, blocks);
-			remove_highest(shifts_y, blocks);
-			remove_highest(shifts_r, blocks);
-		}
-
 		/// median is the highest now
 		norm = 1.f / (32.f * (num_points * 3 / 4));
-		x += CLAMP(highest(shifts_x, blocks) * norm, -max_val, max_val);
-		y += CLAMP(highest(shifts_y, blocks) * norm, -max_val, max_val);
-		r += CLAMP(highest(shifts_r, blocks) * norm, -max_val, max_val);
+		x += CLAMP(median(shifts_x, blocks) * norm, -max_val, max_val);
+		y += CLAMP(median(shifts_y, blocks) * norm, -max_val, max_val);
+		r += CLAMP(median(shifts_r, blocks) * norm, -max_val, max_val);
 
 		r = MAX(2, r);
 
