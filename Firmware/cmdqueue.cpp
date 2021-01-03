@@ -1,6 +1,7 @@
 #include "cmdqueue.h"
 #include "cardreader.h"
 #include "ultralcd.h"
+#include "MeatPack.h"
 
 extern bool Stopped;
 
@@ -575,70 +576,81 @@ void get_command()
   sd_count.value = 0;
   // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
   while( !card.eof() && !stop_buffering) {
-    int16_t n=card.get();
-    char serial_char = (char)n;
-    if(serial_char == '\n' ||
-       serial_char == '\r' ||
-       ((serial_char == '#' || serial_char == ':') && comment_mode == false) ||
-       serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
-    {
-      if(card.eof()) break;
+    uint8_t read_byte = 0;
+    bool read_res = card.get_byte(read_byte);
 
-      if(serial_char=='#')
-        stop_buffering=true;
+    // #MeatPack
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    if (read_res) mp_handle_rx_char(read_byte);
+    char c_res[2];
+    const uint8_t char_count = mp_get_result_char(c_res);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    for (uint8_t i = 0; i < char_count; ++i) {
+        //char serial_char = (char)n;
+        const char serial_char = (char)c_res[i];
+        if (serial_char == '\n' ||
+            serial_char == '\r' ||
+            ((serial_char == '#' || serial_char == ':') && comment_mode == false) ||
+            serial_count >= (MAX_CMD_SIZE - 1) || !read_res)
+        {
+            if (card.eof()) break;
 
-      if(!serial_count)
-      {
-        // This is either an empty line, or a line with just a comment.
-        // Continue to the following line, and continue accumulating the number of bytes
-        // read from the sdcard into sd_count, 
-        // so that the lenght of the already read empty lines and comments will be added
-        // to the following non-empty line. 
-        comment_mode = false;
-        continue; //if empty line
-      }
-      // The new command buffer could be updated non-atomically, because it is not yet considered
-      // to be inside the active queue.
-      sd_count.value = (card.get_sdpos()+1) - sdpos_atomic;
-      cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
-      cmdbuffer[bufindw+1] = sd_count.lohi.lo;
-      cmdbuffer[bufindw+2] = sd_count.lohi.hi;
-      cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
-      // Calculate the length before disabling the interrupts.
-      uint8_t len = strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
+            if (serial_char == '#')
+                stop_buffering = true;
 
-//      SERIAL_ECHOPGM("SD cmd(");
-//      MYSERIAL.print(sd_count.value, DEC);
-//      SERIAL_ECHOPGM(") ");
-//      SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);
-//    SERIAL_ECHOPGM("cmdbuffer:");
-//    MYSERIAL.print(cmdbuffer);
-//    SERIAL_ECHOPGM("buflen:");
-//    MYSERIAL.print(buflen+1);
-      sd_count.value = 0;
+            if (!serial_count)
+            {
+                // This is either an empty line, or a line with just a comment.
+                // Continue to the following line, and continue accumulating the number of bytes
+                // read from the sdcard into sd_count, 
+                // so that the length of the already read empty lines and comments will be added
+                // to the following non-empty line. 
+                comment_mode = false;
+                continue; //if empty line
+            }
+            // The new command buffer could be updated non-atomically, because it is not yet considered
+            // to be inside the active queue.
+            sd_count.value = (card.get_sdpos() + 1) - sdpos_atomic;
+            cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
+            cmdbuffer[bufindw + 1] = sd_count.lohi.lo;
+            cmdbuffer[bufindw + 2] = sd_count.lohi.hi;
+            cmdbuffer[bufindw + serial_count + CMDHDRSIZE] = 0; //terminate string
+            // Calculate the length before disabling the interrupts.
+            uint8_t len = strlen(cmdbuffer + bufindw + CMDHDRSIZE) + (1 + CMDHDRSIZE);
 
-      cli();
-      // This block locks the interrupts globally for 3.56 us,
-      // which corresponds to a maximum repeat frequency of 280.70 kHz.
-      // This blocking is safe in the context of a 10kHz stepper driver interrupt
-      // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
-      ++ buflen;
-      bufindw += len;
-      sdpos_atomic = card.get_sdpos()+1;
-      if (bufindw == sizeof(cmdbuffer))
-          bufindw = 0;
-      sei();
+            //      SERIAL_ECHOPGM("SD cmd(");
+            //      MYSERIAL.print(sd_count.value, DEC);
+            //      SERIAL_ECHOPGM(") ");
+            //      SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);
+            //    SERIAL_ECHOPGM("cmdbuffer:");
+            //    MYSERIAL.print(cmdbuffer);
+            //    SERIAL_ECHOPGM("buflen:");
+            //    MYSERIAL.print(buflen+1);
+            sd_count.value = 0;
 
-      comment_mode = false; //for new command
-      serial_count = 0; //clear buffer
-      // The following line will reserve buffer space if available.
-      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
-          return;
-    }
-    else
-    {
-      if(serial_char == ';') comment_mode = true;
-      else if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
+            cli();
+            // This block locks the interrupts globally for 3.56 us,
+            // which corresponds to a maximum repeat frequency of 280.70 kHz.
+            // This blocking is safe in the context of a 10kHz stepper driver interrupt
+            // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
+            ++buflen;
+            bufindw += len;
+            sdpos_atomic = card.get_sdpos() + 1;
+            if (bufindw == sizeof(cmdbuffer))
+                bufindw = 0;
+            sei();
+
+            comment_mode = false; //for new command
+            serial_count = 0; //clear buffer
+            // The following line will reserve buffer space if available.
+            if (!cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1, true))
+                return;
+        }
+        else
+        {
+            if (serial_char == ';') comment_mode = true;
+            else if (!comment_mode) cmdbuffer[bufindw + CMDHDRSIZE + serial_count++] = serial_char;
+        }
     }
   }
   if(card.eof())

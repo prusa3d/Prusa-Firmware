@@ -20,6 +20,7 @@
 #include "menu.h"
 
 #include "backlight.h"
+#include "MeatPack.h"
 
 #include "util.h"
 #include "mesh_bed_leveling.h"
@@ -350,7 +351,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     if (longFilename[0] == '\0')
     {
-        longFilename = filename;
+        longFilename = (char*)filename;
     }
 
     int i = 1;
@@ -8786,22 +8787,79 @@ static bool check_file(const char* filename) {
 	uint32_t filesize;
 	card.openFile((char*)filename, true);
 	filesize = card.getFileSize();
-	if (filesize > END_FILE_SECTION) {
-		card.setIndex(filesize - END_FILE_SECTION);
-		
-	}
-	
-		while (!card.eof() && !result) {
+
+    long start_idx = (filesize > END_FILE_SECTION) ? (filesize - END_FILE_SECTION) : 0;
+	card.setIndex(start_idx);
+
+    // MeatPack Changes
+    // Detect if MeatPack is active in file, and if so, enable it before jumping to END_FILE_SECTION
+    // This is only needed if seeking past beginning of file. Otherwise it will turn on automatically.
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    bool using_mp = false;
+
+    if (start_idx > 0) {
+        card.setIndex(0);
+        uint8_t file_header[3] = { 0,0,0 };
+        for (uint8_t i = 0; i < 3; i++) {
+            if (!card.get_byte(file_header[i]))
+                result = false;
+        }
+
+        // Check header to see if it is packed
+        if (file_header[0] == 0xFF &&
+            file_header[1] == 0xFF &&
+            file_header[2] == (uint8_t)MPC_StreamStart) {
+            // Enable MP
+            mp_trigger_cmd(MPC_StreamStart);
+            using_mp = true;
+            // Find appropriate starting point
+        }
+
+        // Check to see if first bit is full-width or not
+        if (using_mp) {
+            // set to 5 to give us a couple bytes to analyze first character
+            if (start_idx < 5) start_idx = 5;
+            uint8_t c_buf = 0;
+
+            // Seek to 2 bytes before to check double full-char state
+            card.setIndex(start_idx - 2);
+            if (!card.get_byte(c_buf)) result = false;
+
+            // In this case, 2 consecutive bytes are full-width, so we can skip ahead one to get past it.
+            if (c_buf == 0xFF) 
+                start_idx++;
+            else {
+                // Read next byte
+                c_buf = 0;
+                if (!card.get_byte(c_buf)) result = false;
+                // Again, if double full-size, skip ahead *two* this time (since this is the byte right before start idx).
+                if (c_buf == 0xFF)
+                    start_idx += 2;
+                else {
+                    // If only one is full-size, skip ahead only 1
+                    if (((c_buf & MeatPack_FirstNotPacked) == MeatPack_FirstNotPacked) ||
+                        ((c_buf & MeatPack_SecondNotPacked) == MeatPack_SecondNotPacked))
+                        start_idx++;
+                }
+            }            
+        }
+        
+        card.setIndex(start_idx);
+    }
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	while (!card.eof() && !result) {
 		card.sdprinting = true;
 		get_command();
 		result = check_commands();
-		
 	}
+
 	card.printingHasFinished();
+
 	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
 	lcd_finishstatus();
+
 	return result;
-	
 }
 
 static void menu_action_sdfile(const char* filename)
