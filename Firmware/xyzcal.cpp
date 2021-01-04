@@ -559,7 +559,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 			go_manhattan((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, Z_ACCEL, Z_MIN_DELAY);
 			xyzcal_lineXYZ_to((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, delay_us, 0);
 			sm4_set_dir(X_AXIS, d);
-			DBG(_n("%d "), 64 - (r * 2 + d)); ///< to keep OctoPrint connection alive
+			DBG(_n("%d\n"), 64 - (r * 2 + d)); ///< to keep OctoPrint connection alive
 
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 				/// move to the next point and move Z up diagonally (if needed)
