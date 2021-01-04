@@ -627,8 +627,8 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				if (d == 0){
 					line_buffer[c] = (uint16_t)(z_trig - min_z);
 				} else {
-					/// data reversed in X
-					// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
+					/// !!! data reversed in X
+					// DBG(_n("%04x"), ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
 					/// save average of both directions (filters effect of hysteresis)
 					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
 				}
@@ -831,11 +831,10 @@ float median(float *points, const uint8_t num_points){
 void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t iterations){
 	/// circle of 10.5 diameter has 33 in circumference, don't go much above
 	const constexpr uint8_t num_points = 33;
-	float points[num_points];
 	float pi_2_div_num_points = 2 * M_PI / num_points;
 	const constexpr uint8_t target_z = 32; ///< target z height of the circle
 	float angle;
-	float max_change = 0.5f; ///< avoids too fast changes (could cause oscillation)
+	float max_change = 0.5f; ///< avoids too fast changes (avoid oscillation)
 	const uint8_t blocks = num_points;
 	float shifts_x[blocks];
 	float shifts_y[blocks];	
@@ -850,28 +849,14 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 		/// read points on the circle
 		for (uint8_t p = 0; p < num_points; ++p){
 			angle = p * pi_2_div_num_points;
-			points[p] = get_value(matrix_32x32, r * cos(angle) + x, r * sin(angle) + y) - target_z;
-			// DBG(_n("%f "), points[p]);
+			const float height = get_value(matrix_32x32, r * cos(angle) + x, r * sin(angle) + y) - target_z;
+			// DBG(_n("%f "), point);
 
-			shifts_x[p] = cos(angle) * points[p];
-			shifts_y[p] = sin(angle) * points[p];
-			shifts_r[p] = points[p];
+			shifts_x[p] = cos(angle) * height;
+			shifts_y[p] = sin(angle) * height;
+			shifts_r[p] = height;
 		}
 		// DBG(_n(" points\n"));
-
-		// /// sum blocks
-		// for (uint8_t j = 0; j < blocks; ++j){
-		// 	shifts_x[j] = shifts_y[j] = shifts_r[j] = 0;
-		// 	/// first part
-		// 	for (uint8_t p = 0; p < num_points * 3 / 4; ++p){
-		// 		uint8_t idx = (p + j * num_points / blocks) % num_points;
-
-		// 		angle = idx * pi_2_div_num_points;
-		// 		shifts_x[j] += cos(angle) * points[idx];
-		// 		shifts_y[j] += sin(angle) * points[idx];
-		// 		shifts_r[j] += points[idx];
-		// 	}
-		// }
 
 		const float norm = 1.f / 32.f;
 		x += CLAMP(median(shifts_x, blocks) * norm, -max_change, max_change);
@@ -939,7 +924,6 @@ bool xyzcal_scan_and_process(void){
 	for (uint8_t i = 0; i < 12; i++){
 		pattern08[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern_08 + i));
 		pattern10[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern_10 + i));
-		// DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
 	}
 	
 	/// SEARCH FOR BINARY CIRCLE
