@@ -2871,6 +2871,9 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	//set_destination_to_current();
 	int l_feedmultiply = setup_for_endstop_move();
 	lcd_display_message_fullscreen_P(_T(MSG_AUTO_HOME));
+  current_position[Z_AXIS] += 0.8;
+  plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
+  st_synchronize();
 	home_xy();
 
 	enable_endstops(false);
