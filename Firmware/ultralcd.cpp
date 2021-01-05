@@ -8788,15 +8788,18 @@ static bool check_file(const char* filename) {
 	card.openFile((char*)filename, true);
 	filesize = card.getFileSize();
 
+    // Store starting index used for seeking in file, it may be modified below.
     long start_idx = (filesize > END_FILE_SECTION) ? (filesize - END_FILE_SECTION) : 0;
-	card.setIndex(start_idx);
+
+#ifdef ENABLE_MEATPACKING
+    // Floor to 0 to ensure we don't start at bytes 1 to 2, as the first 3 bytes are needed to determine
+    // if file is packed or not. We don't want an intermediate read.
+    if (start_idx < 3) start_idx = 0; 
 
     // MeatPack Changes
     // Detect if MeatPack is active in file, and if so, enable it before jumping to END_FILE_SECTION
     // This is only needed if seeking past beginning of file. Otherwise it will turn on automatically.
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    bool using_mp = false;
-
     if (start_idx > 0) {
         card.setIndex(0);
         uint8_t file_header[3] = { 0,0,0 };
@@ -8808,44 +8811,66 @@ static bool check_file(const char* filename) {
         // Check header to see if it is packed
         if (file_header[0] == 0xFF &&
             file_header[1] == 0xFF &&
-            file_header[2] == (uint8_t)MPC_StreamStart) {
-            // Enable MP
-            mp_trigger_cmd(MPC_StreamStart);
-            using_mp = true;
-            // Find appropriate starting point
+            file_header[2] == (uint8_t)MPC_EnablePacking) {
+            // NOTE - For safety, seeking is disabled.
+            start_idx = 0;
+
+            // Show message if using MeatPack, as it will take a while to seek through file.
+            uint8_t nlines;
+            lcd_display_message_fullscreen_nonBlocking_P(_i("Validating file..."), nlines);
+            
+
+            // Enable MP if so.
+            //mp_trigger_cmd(MPC_EnablePacking);
+
+            /*
+            Now we need to check if the byte at the current index in file is full-width or if it is a double-packed character.
+            There are 2 possible flags a byte could contain which tell the unpacker that the next 1 or 2 bytes are packed.
+            One 4-bit flag states that the next byte is packed (placed either in front of or behind the packed character, in either
+            the upper or lower 4 bits). The other is the 8-bit character 0xFF, which tells the unpacker that the next *2* bytes are
+            full width.
+
+            So first we check idx-2 bytes, to see if it is 0xFF. If this is the case, we need to seek 1-byte farther than the current
+            idx, as it would mean the current idx byte is full width, but the unpacker is expecting 2x4-bit packed byte.
+
+            Next we check idx do this, we seek to idx - 1 byte. If it is 0bXXXX1111 or 0b1111XXXX, we seek 1-byte farther (since current
+            idx is full-width), and if it is 0xFF/0b11111111, we seek 2-bytes further, as the next 2 bytes are full width.
+
+            After checking this, we can be sure that the next byte read will NOT be full-width.
+            */
+
+            // set to 5 to give us a couple bytes to analyze first character in sequence.
+//             if (start_idx < 5) start_idx = 5;
+//             uint8_t c_buf = 0;
+// 
+//             // Seek to 2 bytes before to check double full-char state
+//             card.setIndex(start_idx - 2);
+//             if (!card.get_byte(c_buf)) result = false;
+// 
+//             // In this case, 2 consecutive bytes are full-width, so we can skip ahead one to get past it.
+//             if (c_buf == 0xFF)
+//                 ++start_idx;
+//             else {
+//                 // Read next byte
+//                 c_buf = 0;
+//                 if (!card.get_byte(c_buf)) result = false;
+//                 // Again, if double full-size, skip ahead *two* this time (since this is the byte right before start idx).
+//                 if (c_buf == 0xFF)
+//                     start_idx += 2;
+//                 else {
+//                     // If only one is full-size, skip ahead only 1
+//                     if (((c_buf & MeatPack_FirstNotPacked) == MeatPack_FirstNotPacked) ||
+//                         ((c_buf & MeatPack_SecondNotPacked) == MeatPack_SecondNotPacked))
+//                         start_idx++;
+//                 }
+//             }
         }
 
-        // Check to see if first bit is full-width or not
-        if (using_mp) {
-            // set to 5 to give us a couple bytes to analyze first character
-            if (start_idx < 5) start_idx = 5;
-            uint8_t c_buf = 0;
-
-            // Seek to 2 bytes before to check double full-char state
-            card.setIndex(start_idx - 2);
-            if (!card.get_byte(c_buf)) result = false;
-
-            // In this case, 2 consecutive bytes are full-width, so we can skip ahead one to get past it.
-            if (c_buf == 0xFF) 
-                start_idx++;
-            else {
-                // Read next byte
-                c_buf = 0;
-                if (!card.get_byte(c_buf)) result = false;
-                // Again, if double full-size, skip ahead *two* this time (since this is the byte right before start idx).
-                if (c_buf == 0xFF)
-                    start_idx += 2;
-                else {
-                    // If only one is full-size, skip ahead only 1
-                    if (((c_buf & MeatPack_FirstNotPacked) == MeatPack_FirstNotPacked) ||
-                        ((c_buf & MeatPack_SecondNotPacked) == MeatPack_SecondNotPacked))
-                        start_idx++;
-                }
-            }            
-        }
-        
         card.setIndex(start_idx);
     }
+    else
+#endif
+        card.setIndex(start_idx);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	while (!card.eof() && !result) {
@@ -8894,7 +8919,7 @@ static void menu_action_sdfile(const char* filename)
 		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
 	  }
   }
-  
+
   if (!check_file(filename)) {
 	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=3
 	  lcd_update_enable(true);

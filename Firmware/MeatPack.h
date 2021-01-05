@@ -29,6 +29,10 @@
 #ifndef MEATPACK_H_
 #define MEATPACK_H_
 
+#define ENABLE_MEATPACKING
+
+#ifdef ENABLE_MEATPACKING
+
 #define MeatPack_SecondNotPacked    0b11110000
 #define MeatPack_FirstNotPacked     0b00001111
 
@@ -43,15 +47,30 @@
 // full-width), however 2 in a row will never occur, as the next 2 bytes will always
 // some non-0xFF character.
 enum MeatPack_Command {
-    MPC_None = 0b00000000,
-    MPC_Toggle = 0b11111101,
-    MPC_StreamStart = 0b11111011,
-    MPC_StreamEnd = 0b11111010
+    MPC_None            = 0b00000000,
+    MPC_TogglePacking   = 0b11111101,
+    MPC_EnablePacking   = 0b11111011,
+    MPC_DisablePacking  = 0b11111010,
+    MPC_ResetState      = 0b11111001,
+    MPC_QueryState      = 0b11111000
 };
 
+// Pass in a character rx'd by SD card or serial. Automatically parses command/ctrl sequences,
+// and will control state internally.
 extern void mp_handle_rx_char(const uint8_t c);
-extern uint8_t mp_get_result_char(char* const out);
+
+// After passing in rx'd char using above method, call this to get characters out. Can return
+// from 0 to 2 characters at once.
+// @param out [in] Output pointer for unpacked/processed data.
+// @return Number of characters returned. Range from 0 to 2.
+extern uint8_t mp_get_result_char(char* const __restrict out);
+
+// Reset MeatPack state.
 extern void mp_reset_state();
+
+// Manually trigger command
 extern void mp_trigger_cmd(const MeatPack_Command cmd);
+
+#endif
 
 #endif // MEATPACK_H_

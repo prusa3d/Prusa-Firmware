@@ -125,25 +125,38 @@ static inline void mp_handle_rx_char_inner(const uint8_t c) {
 //==========================================================================
 static void mp_handle_cmd(const MeatPack_Command c) {
     switch (c) {
-    case MPC_StreamStart: {
+    case MPC_EnablePacking: {
         mp_active = 1;
-        SERIAL_ECHOLNPGM("MP Start Rec - MP ON");
+        SERIAL_ECHOLNPGM("[MP] ENABL REC");
+        
     } break;
-    case MPC_StreamEnd: {
-        SERIAL_ECHOLNPGM("MP End Rec - MP OFF");
+    case MPC_DisablePacking: {
         mp_active = 0;
+        SERIAL_ECHOLNPGM("[MP] DISBL REC");
+        
     } break;
-    case MPC_Toggle: {
+    case MPC_TogglePacking: {
         mp_active = mp_active ? 0 : 1;
-        SERIAL_ECHOPGM("MP Tgl Rec - ");
-        if (mp_active)
-            SERIAL_ECHOLNPGM("MP ON");
-        else
-            SERIAL_ECHOLNPGM("MP OFF");
+        SERIAL_ECHOLNPGM("[MP] TGL REC");
+        
     } break;
-    default: {}
-           break;
+    case MPC_ResetState: {
+        mp_reset_state();
+        SERIAL_ECHOLNPGM("[MP] RESET REC");
+        
+    } break;
+    default: {
+        SERIAL_ECHOLN("[MP] UNK CMD REC");
     }
+    case MPC_QueryState:
+        break;
+    }
+
+    // Echo current state
+    if (mp_active)
+        SERIAL_ECHOLNPGM("[MP] ON");
+    else
+        SERIAL_ECHOLNPGM("[MP] OFF");
 }
 
 //==========================================================================
@@ -176,7 +189,7 @@ void mp_handle_rx_char(const uint8_t c) {
 }
 
 //==========================================================================
-uint8_t mp_get_result_char(char* const out) {
+uint8_t mp_get_result_char(char* const __restrict out) {
     if (mp_char_out_count > 0) {
         const uint8_t res = mp_char_out_count;
         for (register uint8_t i = 0; i < mp_char_out_count; ++i)
