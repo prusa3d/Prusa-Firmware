@@ -5,7 +5,6 @@
 #include "stepper.h"
 #include "temperature.h"
 #include "language.h"
-#include "MeatPack.h"
 
 #ifdef SDSUPPORT
 
@@ -989,7 +988,6 @@ void CardReader::flush_presort() {
 void CardReader::printingHasFinished()
 {
     st_synchronize();
-    mp_reset_state(); // reset meatpacking state in case it was active and not turned off in file.
     if(file_subcall_ctr>0) //heading up to a parent file that called current as a procedure.
     {
       file.close();

@@ -20,7 +20,6 @@
 #include "menu.h"
 
 #include "backlight.h"
-#include "MeatPack.h"
 
 #include "util.h"
 #include "mesh_bed_leveling.h"
@@ -8828,7 +8827,6 @@ static bool check_file(const char* filename) {
 
 	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
 	lcd_finishstatus();
-
 	return result;
 }
 
@@ -8864,7 +8862,6 @@ static void menu_action_sdfile(const char* filename)
 		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
 	  }
   }
-
   if (!check_file(filename)) {
 	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=3
 	  lcd_update_enable(true);
