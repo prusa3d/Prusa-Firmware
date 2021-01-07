@@ -6,7 +6,6 @@
 #include <avr/pgmspace.h>
 #include "pat9125.h"
 #include "stepper.h"
-#include "io_atmega2560.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
 #include "mmu.h"
@@ -608,9 +607,8 @@ void fsensor_st_block_chunk(int cnt)
 	if (!fsensor_enabled) return;
 	fsensor_st_cnt += cnt;
 
-    // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-    if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-    else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
+	// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
+	WRITE(FSENSOR_INT_PIN, !READ(FSENSOR_INT_PIN));
 }
 #endif //PAT9125
 
