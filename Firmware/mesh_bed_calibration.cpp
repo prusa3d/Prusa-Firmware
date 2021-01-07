@@ -2271,7 +2271,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		/*}
 		else {
 			// if first iteration failed, count corrected point coordinates as initial
-			// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+			// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
 			
 			current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[0] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[0];
 			current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[1];

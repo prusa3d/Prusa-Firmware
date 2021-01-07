@@ -45,7 +45,6 @@
 #include "mmu.h"
 
 #include "static_assert.h"
-#include "io_atmega2560.h"
 #include "first_lay_cal.h"
 
 #include "fsensor.h"
@@ -1002,6 +1001,36 @@ void lcd_status_screen()                          // NOT static due to using ins
 		}
 	}
 
+#ifdef ULTIPANEL_FEEDMULTIPLY
+	// Dead zone at 100% feedrate
+	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
+		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
+	{
+		lcd_encoder = 0;
+		feedmultiply = 100;
+	}
+	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
+	{
+		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
+		lcd_encoder = 0;
+	}
+	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
+	{
+		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
+		lcd_encoder = 0;
+	}
+	else if (feedmultiply != 100)
+	{
+		feedmultiply += int(lcd_encoder);
+		lcd_encoder = 0;
+	}
+#endif //ULTIPANEL_FEEDMULTIPLY
+
+	if (feedmultiply < 10)
+		feedmultiply = 10;
+	else if (feedmultiply > 999)
+		feedmultiply = 999;
+
 	if (lcd_status_update_delay)
 		lcd_status_update_delay--;
 	else
@@ -1078,36 +1107,6 @@ void lcd_status_screen()                          // NOT static due to using ins
 		menu_submenu(lcd_main_menu);
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	}
-
-#ifdef ULTIPANEL_FEEDMULTIPLY
-	// Dead zone at 100% feedrate
-	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
-		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
-	{
-		lcd_encoder = 0;
-		feedmultiply = 100;
-	}
-	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply != 100)
-	{
-		feedmultiply += int(lcd_encoder);
-		lcd_encoder = 0;
-	}
-#endif //ULTIPANEL_FEEDMULTIPLY
-
-	if (feedmultiply < 10)
-		feedmultiply = 10;
-	else if (feedmultiply > 999)
-		feedmultiply = 999;
 }
 
 void lcd_commands()
@@ -1584,6 +1583,7 @@ void lcd_return_to_status()
 //! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
     stop_and_save_print_to_ram(0.0, -default_retraction);
     lcd_return_to_status();
     isPrintPaused = true;
@@ -1591,7 +1591,6 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
-	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
 }
 
 
@@ -4000,7 +3999,7 @@ static void lcd_show_sensors_state()
 		finda_state = mmu_finda;
 	}
 	if (ir_sensor_detected) {
-		idler_state = !PIN_GET(IR_SENSOR_PIN);
+		idler_state = !READ(IR_SENSOR_PIN);
 	}
 	lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(1, 1, _i("PINDA:"));
@@ -5754,6 +5753,15 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
         MENU_ITEM_SUBMENU_P(PSTR("Experimental"), lcd_experimental_menu);////MSG_MENU_EXPERIMENTAL c=18
     }
 
+#ifdef PINDA_TEMP_COMP
+	//! The SuperPINDA is detected when the PINDA temp is below its defined limit.
+	//! This works well on the EINSY board but not on the miniRAMBo board as
+	//! as a disconnected SuperPINDA will show higher temps compared to an EINSY board.
+	//! 
+	//! This menu allows the user to en-/disable the SuperPINDA manualy
+	MENU_ITEM_TOGGLE_P(_N("SuperPINDA"), eeprom_read_byte((uint8_t *)EEPROM_PINDA_TEMP_COMPENSATION) ? _T(MSG_YES) : _T(MSG_NO), lcd_pinda_temp_compensation_toggle);
+#endif //PINDA_TEMP_COMP
+
     MENU_END();
 }
 
@@ -6742,6 +6750,7 @@ void lcd_resume_print()
     lcd_return_to_status();
     lcd_reset_alert_level(); //for fan speed error
     if (fan_error_selftest()) return; //abort if error persists
+    cmdqueue_serial_disabled = false;
 
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
@@ -7354,6 +7363,7 @@ void lcd_print_stop()
     if (!card.sdprinting) {
         SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
     }
+    cmdqueue_serial_disabled = false; //for when canceling a print with a fancheck
 
     CRITICAL_SECTION_START;
 
@@ -8476,7 +8486,7 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (PIN_GET(IR_SENSOR_PIN) == 0)
+            if (READ(IR_SENSOR_PIN) == 0)
             {
                 lcd_selftest_error(TestError::TriggeringFsensor, "", "");
                 return false;
@@ -8783,102 +8793,37 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 
 static bool check_file(const char* filename) {
 	if (farm_mode) return true;
-	bool result = false;
-	uint32_t filesize;
 	card.openFile((char*)filename, true);
-	filesize = card.getFileSize();
+	bool result = false;
+	const uint32_t filesize = card.getFileSize();
+	uint32_t startPos = 0;
+	const uint16_t bytesToCheck = min(END_FILE_SECTION, filesize);
+	uint8_t blocksPrinted = 0;
+	if (filesize > END_FILE_SECTION) {
+		startPos = filesize - END_FILE_SECTION;
+		card.setIndex(startPos);
+	}
+	cmdqueue_reset();
+	cmdqueue_serial_disabled = true;
 
-    // Store starting index used for seeking in file, it may be modified below.
-    long start_idx = (filesize > END_FILE_SECTION) ? (filesize - END_FILE_SECTION) : 0;
-
-#ifdef ENABLE_MEATPACKING
-    // Floor to 0 to ensure we don't start at bytes 1 to 2, as the first 3 bytes are needed to determine
-    // if file is packed or not. We don't want an intermediate read.
-    if (start_idx < 3) start_idx = 0; 
-
-    // MeatPack Changes
-    // Detect if MeatPack is active in file, and if so, enable it before jumping to END_FILE_SECTION
-    // This is only needed if seeking past beginning of file. Otherwise it will turn on automatically.
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    if (start_idx > 0) {
-        card.setIndex(0);
-        uint8_t file_header[3] = { 0,0,0 };
-        for (uint8_t i = 0; i < 3; i++) {
-            if (!card.get_byte(file_header[i]))
-                result = false;
-        }
-
-        // Check header to see if it is packed
-        if (file_header[0] == 0xFF &&
-            file_header[1] == 0xFF &&
-            file_header[2] == (uint8_t)MPC_EnablePacking) {
-            // NOTE - For safety, seeking is disabled.
-            start_idx = 0;
-
-            // Show message if using MeatPack, as it will take a while to seek through file.
-            uint8_t nlines;
-            lcd_display_message_fullscreen_nonBlocking_P(_i("Validating file..."), nlines);
-            
-
-            // Enable MP if so.
-            //mp_trigger_cmd(MPC_EnablePacking);
-
-            /*
-            Now we need to check if the byte at the current index in file is full-width or if it is a double-packed character.
-            There are 2 possible flags a byte could contain which tell the unpacker that the next 1 or 2 bytes are packed.
-            One 4-bit flag states that the next byte is packed (placed either in front of or behind the packed character, in either
-            the upper or lower 4 bits). The other is the 8-bit character 0xFF, which tells the unpacker that the next *2* bytes are
-            full width.
-
-            So first we check idx-2 bytes, to see if it is 0xFF. If this is the case, we need to seek 1-byte farther than the current
-            idx, as it would mean the current idx byte is full width, but the unpacker is expecting 2x4-bit packed byte.
-
-            Next we check idx do this, we seek to idx - 1 byte. If it is 0bXXXX1111 or 0b1111XXXX, we seek 1-byte farther (since current
-            idx is full-width), and if it is 0xFF/0b11111111, we seek 2-bytes further, as the next 2 bytes are full width.
-
-            After checking this, we can be sure that the next byte read will NOT be full-width.
-            */
-
-            // set to 5 to give us a couple bytes to analyze first character in sequence.
-//             if (start_idx < 5) start_idx = 5;
-//             uint8_t c_buf = 0;
-// 
-//             // Seek to 2 bytes before to check double full-char state
-//             card.setIndex(start_idx - 2);
-//             if (!card.get_byte(c_buf)) result = false;
-// 
-//             // In this case, 2 consecutive bytes are full-width, so we can skip ahead one to get past it.
-//             if (c_buf == 0xFF)
-//                 ++start_idx;
-//             else {
-//                 // Read next byte
-//                 c_buf = 0;
-//                 if (!card.get_byte(c_buf)) result = false;
-//                 // Again, if double full-size, skip ahead *two* this time (since this is the byte right before start idx).
-//                 if (c_buf == 0xFF)
-//                     start_idx += 2;
-//                 else {
-//                     // If only one is full-size, skip ahead only 1
-//                     if (((c_buf & MeatPack_FirstNotPacked) == MeatPack_FirstNotPacked) ||
-//                         ((c_buf & MeatPack_SecondNotPacked) == MeatPack_SecondNotPacked))
-//                         start_idx++;
-//                 }
-//             }
-        }
-
-        card.setIndex(start_idx);
-    }
-    else
-#endif
-        card.setIndex(start_idx);
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+	lcd_clear();
+	lcd_puts_at_P(0, 1, _i("Checking file"));////c=20 r=1
+	lcd_set_cursor(0, 2);
 	while (!card.eof() && !result) {
+		for (; blocksPrinted < (((card.get_sdpos() - startPos) * LCD_WIDTH) / bytesToCheck); blocksPrinted++)
+			lcd_print('\xFF'); //simple progress bar
+
 		card.sdprinting = true;
 		get_command();
 		result = check_commands();
 	}
 
+	for (; blocksPrinted < LCD_WIDTH; blocksPrinted++)
+		lcd_print('\xFF'); //simple progress bar
+	_delay(100); //for the user to see the end of the progress bar.
+
+	
+	cmdqueue_serial_disabled = false;
 	card.printingHasFinished();
 
 	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
@@ -9052,6 +8997,7 @@ void lcd_ignore_click(bool b)
 }
 
 void lcd_finishstatus() {
+  SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
   int len = strlen(lcd_status_message);
   if (len > 0) {
     while (len < LCD_WIDTH) {
@@ -9318,3 +9264,17 @@ void lcd_experimental_menu()
 
     MENU_END();
 }
+
+#ifdef PINDA_TEMP_COMP
+void lcd_pinda_temp_compensation_toggle()
+{
+	uint8_t pinda_temp_compensation = eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION);
+	if (pinda_temp_compensation == EEPROM_EMPTY_VALUE) // On MK2.5/S the EEPROM_EMPTY_VALUE will be set to 0 during eeprom_init.
+		pinda_temp_compensation = 1;                   // But for MK3/S it should be 1 so SuperPINDA is "active"
+	else
+		pinda_temp_compensation = !pinda_temp_compensation;
+	eeprom_update_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION, pinda_temp_compensation);
+	SERIAL_ECHOLNPGM("SuperPINDA:");
+	SERIAL_ECHOLN(pinda_temp_compensation);
+}
+#endif //PINDA_TEMP_COMP
