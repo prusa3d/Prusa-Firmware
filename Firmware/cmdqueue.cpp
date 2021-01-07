@@ -578,39 +578,36 @@ void get_command()
         }
     }
 
-  #ifdef SDSUPPORT
-  if(!card.sdprinting || serial_count!=0){
-    // If there is a half filled buffer from serial line, wait until return before
-    // continuing with the serial line.
-     return;
-  }
+#ifdef SDSUPPORT
+    if (!card.sdprinting || serial_count != 0) {
+        // If there is a half filled buffer from serial line, wait until return before
+        // continuing with the serial line.
+        return;
+    }
 
-  //'#' stops reading from SD to the buffer prematurely, so procedural macro calls are possible
-  // if it occurs, stop_buffering is triggered and the buffer is ran dry.
-  // this character _can_ occur in serial com, due to checksums. however, no checksums are used in SD printing
+    //'#' stops reading from SD to the buffer prematurely, so procedural macro calls are possible
+    // if it occurs, stop_buffering is triggered and the buffer is ran dry.
+    // this character _can_ occur in serial com, due to checksums. however, no checksums are used in SD printing
 
-  static bool stop_buffering=false;
-  if(buflen==0) stop_buffering=false;
-  union {
-    struct {
-        char lo;
-        char hi;
-    } lohi;
-    uint16_t value;
-  } sd_count;
-  sd_count.value = 0;
-  // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
-  while( !card.eof() && !stop_buffering) {
-    int16_t n=card.get();
-    char serial_char = (char)n;
-    if(serial_char == '\n' ||
-       serial_char == '\r' ||
-       ((serial_char == '#' || serial_char == ':') && comment_mode == false) ||
-       serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
-    {
-      if(serial_char=='#')
-        stop_buffering=true;
-
+    static bool stop_buffering = false;
+    if (buflen == 0) stop_buffering = false;
+    union {
+        struct {
+            char lo;
+            char hi;
+        } lohi;
+        uint16_t value;
+    } sd_count;
+    sd_count.value = 0;
+    // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
+    while (!card.eof() && !stop_buffering) {
+        int16_t n = card.get();
+        char serial_char = (char)n;
+        if (serial_char == '\n' ||
+            serial_char == '\r' ||
+            ((serial_char == '#' || serial_char == ':') && comment_mode == false) ||
+            serial_count >= (MAX_CMD_SIZE - 1) || n == -1)
+        {
             if (serial_char == '#')
                 stop_buffering = true;
 
@@ -619,7 +616,7 @@ void get_command()
                 // This is either an empty line, or a line with just a comment.
                 // Continue to the following line, and continue accumulating the number of bytes
                 // read from the sdcard into sd_count, 
-                // so that the length of the already read empty lines and comments will be added
+                // so that the lenght of the already read empty lines and comments will be added
                 // to the following non-empty line. 
                 comment_mode = false;
                 continue; //if empty line
@@ -644,49 +641,66 @@ void get_command()
             //    MYSERIAL.print(buflen+1);
             sd_count.value = 0;
 
-      comment_mode = false; //for new command
-      serial_count = 0; //clear buffer
-    
-      if(card.eof()) break;
-    
-      // The following line will reserve buffer space if available.
-      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
-          return;
+            cli();
+            // This block locks the interrupts globally for 3.56 us,
+            // which corresponds to a maximum repeat frequency of 280.70 kHz.
+            // This blocking is safe in the context of a 10kHz stepper driver interrupt
+            // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
+            ++buflen;
+            bufindw += len;
+            sdpos_atomic = card.get_sdpos() + 1;
+            if (bufindw == sizeof(cmdbuffer))
+                bufindw = 0;
+            sei();
+
+            comment_mode = false; //for new command
+            serial_count = 0; //clear buffer
+
+            if (card.eof()) break;
+
+            // The following line will reserve buffer space if available.
+            if (!cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1, true))
+                return;
+        }
+        else
+        {
+            if (serial_char == ';') comment_mode = true;
+            else if (!comment_mode) cmdbuffer[bufindw + CMDHDRSIZE + serial_count++] = serial_char;
+        }
     }
-  }
-  if(card.eof())
-  {
-      // file was fully buffered, but commands might still need to be planned!
-      // do *not* clear sdprinting until all SD commands are consumed to ensure
-      // SD state can be resumed from a saved printing state. sdprinting is only
-      // cleared by printingHasFinished after peforming all remaining moves.
-      if(!cmdqueue_calc_sd_length())
-      {
-          SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
-          stoptime=_millis();
-          char time[30];
-          unsigned long t=(stoptime-starttime-pause_time)/1000;
-          pause_time = 0;
-          int hours, minutes;
-          minutes=(t/60)%60;
-          hours=t/60/60;
-          save_statistics(total_filament_used, t);
-          sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
-          SERIAL_ECHO_START;
-          SERIAL_ECHOLN(time);
-          lcd_setstatus(time);
-          card.printingHasFinished();
-          card.checkautostart(true);
+    if (card.eof())
+    {
+        // file was fully buffered, but commands might still need to be planned!
+        // do *not* clear sdprinting until all SD commands are consumed to ensure
+        // SD state can be resumed from a saved printing state. sdprinting is only
+        // cleared by printingHasFinished after peforming all remaining moves.
+        if (!cmdqueue_calc_sd_length())
+        {
+            SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
+            stoptime = _millis();
+            char time[30];
+            unsigned long t = (stoptime - starttime - pause_time) / 1000;
+            pause_time = 0;
+            int hours, minutes;
+            minutes = (t / 60) % 60;
+            hours = t / 60 / 60;
+            save_statistics(total_filament_used, t);
+            sprintf_P(time, PSTR("%i hours %i minutes"), hours, minutes);
+            SERIAL_ECHO_START;
+            SERIAL_ECHOLN(time);
+            lcd_setstatus(time);
+            card.printingHasFinished();
+            card.checkautostart(true);
 
-          if (farm_mode)
-          {
-              prusa_statistics(6);
-              lcd_commands_type = LcdCommands::FarmModeConfirm;
-          }
-      }
-  }
+            if (farm_mode)
+            {
+                prusa_statistics(6);
+                lcd_commands_type = LcdCommands::FarmModeConfirm;
+            }
+        }
+    }
 
-  #endif //SDSUPPORT
+#endif //SDSUPPORT
 }
 
 uint16_t cmdqueue_calc_sd_length()
