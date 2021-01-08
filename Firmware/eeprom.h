@@ -318,6 +318,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D29 3369		| uint8		| EEPROM_PINDA_TEMP_COMPENSATION   		| ffh 255		| ffh 255				| PINDA temp compensation unknown state	            | LCD menu		| D3 Ax0d29 C1
 | ^					| ^			| ^										| 00h 0			| ^						| PINDA has no temp compensation PINDA v1/2    		| ^				| ^
 | ^					| ^			| ^										| 01h 1			| ^						| PINDA has temp compensation aka SuperPINDA       	| ^				| ^
+| 0x0D28 3368		| uint8		| EEPROM_HEAT_BED_ON_LOAD_FILAMENT		| ffh 255		| ffh 255				| Heat bed on load filament unknown state			| LCD menu		| D3 Ax0d28 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Do not heat bed on load filament					| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| Heat bed on load filament							| ^				| ^
 
   
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
@@ -523,8 +526,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_ALTFAN_OVERRIDE (EEPROM_UVLO_LA_K-1) //uint8
 #define EEPROM_EXPERIMENTAL_VISIBILITY (EEPROM_ALTFAN_OVERRIDE-1) //uint8
 #define EEPROM_PINDA_TEMP_COMPENSATION (EEPROM_EXPERIMENTAL_VISIBILITY-1) //uint8
+#define EEPROM_HEAT_BED_ON_LOAD_FILAMENT (EEPROM_PINDA_TEMP_COMPENSATION-1) //uint8
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_PINDA_TEMP_COMPENSATION
+#define EEPROM_LAST_ITEM EEPROM_HEAT_BED_ON_LOAD_FILAMENT
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

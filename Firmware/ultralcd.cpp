@@ -2223,6 +2223,10 @@ bool bFilamentAction=false;
 static bool bFilamentWaitingFlag=false;
 
 bool shouldPreheatOnlyNozzle() {
+    uint8_t eeprom_setting = eeprom_read_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT);
+    if (eeprom_setting != 0)
+        return false;
+
     switch(eFilamentAction) {
         case FilamentAction::Load:
         case FilamentAction::AutoLoad:
@@ -5756,6 +5760,9 @@ static void lcd_settings_menu()
     }
 #endif //LCD_BL_PIN
 
+    //! Enables/disables the bed heating while heating the nozzle for loading/unloading filament
+    MENU_ITEM_TOGGLE_P(_N("HeatBedOnLoad"), eeprom_read_byte((uint8_t *)EEPROM_HEAT_BED_ON_LOAD_FILAMENT) ? _T(MSG_YES) : _T(MSG_NO), lcd_heat_bed_on_load_toggle);
+
 	if (farm_mode)
 	{
 		MENU_ITEM_FUNCTION_P(PSTR("Disable farm mode"), lcd_disable_farm_mode);
@@ -8974,3 +8981,13 @@ void lcd_pinda_temp_compensation_toggle()
 	SERIAL_ECHOLN(pinda_temp_compensation);
 }
 #endif //PINDA_TEMP_COMP
+
+void lcd_heat_bed_on_load_toggle()
+{
+    uint8_t value = eeprom_read_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT);
+    if (value > 1)
+        value = 1;
+    else
+        value = !value;
+    eeprom_update_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, value);
+}

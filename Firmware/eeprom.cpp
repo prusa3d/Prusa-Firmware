@@ -97,6 +97,8 @@ void eeprom_init()
 #ifdef PINDA_TEMP_COMP
 if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_PINDA_TEMP_COMPENSATION, 0);
 #endif //PINDA_TEMP_COMP
+
+    if (eeprom_read_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT) == EEPROM_EMPTY_VALUE) eeprom_update_byte((uint8_t *)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, 1);
 }
 
 //! @brief Get default sheet name for index
