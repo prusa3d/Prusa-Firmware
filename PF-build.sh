@@ -15,7 +15,7 @@
 # 3. Install zip with 'apt-get install zip'
 # 4. Install python3 with 'apt-get install python3'
 # 5. Add command 'ln -sf /usr/bin/python3.5 /usr/bin/python' to link python3 to python.
-#    Donnot istall 'python' as python 2.x has end of life see https://pythonclock.org/
+#    Do not install 'python' as python 2.x has end of life see https://pythonclock.org/
 # 6. Add at top of ~/.bashrc following lines by using 'sudo nano ~/.bashrc'
 #
 #    export OS="Linux"
@@ -37,7 +37,7 @@
 # 2. Another great tool to compare your custom mod and stock firmware is WinMerge http://winmerge.org/downloads/?lang=en
 # 
 # Example for MK3: open git bash and change to your Firmware directory 
-# <username>@<machinename> MINGW64 /<drive>/path
+# <username>@<machine name> MINGW64 /<drive>/path
 # bash build.sh 1_75mm_MK3-EINSy10a-E3Dv6full
 #
 # Example for MK25: open git bash and change to your directory 
@@ -63,8 +63,8 @@
 # 17 Jan 2019, 3d-gussner, Build_3, Check for OS Windows or Linux and use the right build environment
 # 10 Feb 2019, ropaha, Pull Request, Select variant from list while using build.sh
 # 10 Feb 2019, ropaha, change FW_DEV_VERSION automatically depending on FW_VERSION RC/BETA/ALPHA
-# 10 Feb 2019, 3d-gussner, 1st tests with english only 
-# 10 Feb 2019, ropaha, added compiling of all variants and english only
+# 10 Feb 2019, 3d-gussner, 1st tests with English only 
+# 10 Feb 2019, ropaha, added compiling of all variants and English only
 # 10 Feb 2019, 3d-gussner, Set OUTPUT_FOLDER for hex files
 # 11 Feb 2019, 3d-gussner/ropaha, Minor changes and fixes
 # 11 Feb 2019, 3d-gussner, Ready for RC
@@ -80,52 +80,52 @@
 #                                              Configuration_prusa.h
 #                                              language build files
 #                                              multi language firmware files exist and clean them up
-# 15 Feb 2019, 3d-gussner, Fixed selction GOLD/UNKNOWN DEV_STATUS for ALL variants builds, so you have to choose only once
+# 15 Feb 2019, 3d-gussner, Fixed selection GOLD/UNKNOWN DEV_STATUS for ALL variants builds, so you have to choose only once
 # 15 Feb 2019, 3d-gussner, Added some colored output
 # 15 Feb 2019, 3d-gussner, troubleshooting and minor fixes
 # 16 Feb 2019, 3d-gussner, Script can be run using arguments
 #                          $1 = variant, example "1_75mm_MK3-EINSy10a-E3Dv6full.h" at this moment it is not possible to use ALL
-#                          $2 = multi language OR english only [ALL/EN_ONLY]
+#                          $2 = multi language OR English only [ALL/EN_ONLY]
 #                          $3 = development status [GOLD/RC/BETA/ALPHA/DEVEL/DEBUG]
 #                          If one argument is wrong a list of valid one will be shown
-# 13 Mar 2019, 3d-gussner, MKbel updated the linux build environment to version 1.0.2 with an Fix maximum firmware flash size.
+# 13 Mar 2019, 3d-gussner, MKbel updated the Linux build environment to version 1.0.2 with an Fix maximum firmware flash size.
 #                          So did I
 # 11 Jul 2019, deliopoulos,Updated to v1.0.6 as Prusa needs a new board definition for Firmware 3.8.x86_64
-#						   - Splitted the Download of Windows Arduino IDE 1.8.5 and Prusa specific part
+#						   - Split the Download of Windows Arduino IDE 1.8.5 and Prusa specific part
 #                            --> less download volume needed and saves some time
 #
-# 13 Jul 2019, deliopoulos,Splitting of Ardunio IDE and Prusa parts also for Linux64
+# 13 Jul 2019, deliopoulos,Splitting of Arduino IDE and Prusa parts also for Linux64
 # 13 Jul 2019, 3d-gussner, Added Linux 32-bit version (untested yet)
 #                          MacOS could be added in future if needs
 # 14 Jul 2019, 3d-gussner, Update preferences and make it really portable
-# 15 Jul 2019, 3d-gussner, New PF-build-env gihub branch
-# 16 Jul 2019, 3d-gussner, New Arduino_boards github fork
+# 15 Jul 2019, 3d-gussner, New PF-build-env GitHub branch
+# 16 Jul 2019, 3d-gussner, New Arduino_boards GitHub fork
 # 17 Jul 2019, 3d-gussner, Final tests under Windows 10 and Linux Subsystem for Windows   
 # 18 Jul 2019, 3d-gussner, Added python check
 # 18 Jul 2019, deliopoulos, No need more for changing 'platform.txt' file as it comes with the Arduino Boards.
 # 18 Jul 2019, deliopoulos, Modified 'PF_BUILD_FILE_URL' to use 'BUILD_ENV' variable
-# 22 Jul 2019, 3d-gussner, Modiffied checks to check folder and/or installation output exists.
+# 22 Jul 2019, 3d-gussner, Modified checks to check folder and/or installation output exists.
 # 22 Jul 2019, 3d-gussner, Added check if Arduino IDE 1.8.5 boards have been updated
 # 22 Jul 2019, 3d-gussner, Changed exit numbers 1-13 for prepare build env 21-28 for prepare compiling 31-36 compiling
-# 22 Jul 2019, 3d-gussner, Changed BOARD_URL to DRracers respository after he pulled my PR https://github.com/DRracer/Arduino_Boards/pull/1
+# 22 Jul 2019, 3d-gussner, Changed BOARD_URL to DRracers repository after he pulled my PR https://github.com/DRracer/Arduino_Boards/pull/1
 # 23 Jul 2019, 3d-gussner, Changed Build-env path to "PF-build-dl" as requested in PR https://github.com/prusa3d/Prusa-Firmware/pull/2028
 #                          Changed Hex-files folder to PF-build-hex as requested in PR
 # 23 Jul 2019, 3d-gussner, Added Finding OS version routine so supporting new OS should get easier
 # 26 Jul 2019, 3d-gussner, Change JSON repository to prusa3d after PR https://github.com/prusa3d/Arduino_Boards/pull/1 was merged
-# 23 Sep 2019, 3d-gussner, Prepare PF-build.sh for comming Prusa3d/Arduino_Boards version 1.0.2 Pull Request
-# 17 Oct 2019, 3d-gussner, Changed folder and check file names to have seperated build enviroments depening on Arduino IDE version and
+# 23 Sep 2019, 3d-gussner, Prepare PF-build.sh for coming Prusa3d/Arduino_Boards version 1.0.2 Pull Request
+# 17 Oct 2019, 3d-gussner, Changed folder and check file names to have separated build environments depending on Arduino IDE version and
 #                          board-versions.
 # 15 Dec 2019, 3d-gussner, Prepare for switch to Prusa3d/PF-build-env repository
-# 15 Dec 2019, 3d-gussner, Fix Audrino user preferences for the chosen board.
+# 15 Dec 2019, 3d-gussner, Fix Arduino user preferences for the chosen board.
 # 17 Dec 2019, 3d-gussner, Fix "timer0_fract = 0" warning by using Arduino_boards v1.0.3
 # 28 Apr 2020, 3d-gussner, Added RC3 detection
 # 03 May 2020, deliopoulos, Accept all RCx as RC versions
 # 05 May 2020, 3d-gussner, Make a copy of `not_tran.txt`and `not_used.txt` as `not_tran_$VARIANT.txt`and `not_used_$VARIANT.txt`
-#                          After compiling All multilanguage vairants it makes it easier to find missing or unused transltions.
+#                          After compiling All multi-language variants it makes it easier to find missing or unused translations.
 # 12 May 2020, DRracer   , Cleanup double MK2/s MK25/s `not_tran` and `not_used` files
 # 13 May 2020, leptun    , If cleanup files do not exist don't try to.
 # 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_ONLY. Thank to @leptun for pointing out.
-#                          Change Build number to scrpit commits 'git rev-list --count HEAD PF-build.sh'
+#                          Change Build number to script commits 'git rev-list --count HEAD PF-build.sh'
 # 02 Oct 2020, 3d-gussner, Add UNKNOWN as argument option
 # 05 Oct 2020, 3d-gussner, Disable pause and warnings using command line with all needed arguments
 #                          Install needed apps under linux if needed.
@@ -265,7 +265,7 @@ echo "Script path :" $SCRIPT_PATH
 echo "OS          :" $OS
 echo "OS type     :" $TARGET_OS
 echo ""
-echo "Ardunio IDE :" $ARDUINO_ENV
+echo "Arduino IDE :" $ARDUINO_ENV
 echo "Build env   :" $BUILD_ENV
 echo "Board       :" $BOARD
 echo "Package name:" $BOARD_PACKAGE_NAME
@@ -446,9 +446,9 @@ fi
 #### Start 
 cd $SCRIPT_PATH
 
-# Check if git is availible
+# Check if git is available
 if type git > /dev/null; then
-	git_availible="1"
+	git_available="1"
 fi
 
 while getopts v:l:d:b:o:?h flag
@@ -478,7 +478,7 @@ echo "* PF-build.sh Version: 1.0.6-Build_33 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
-echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for english only"
+echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
 echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
@@ -547,7 +547,7 @@ else
 	fi
 fi
 
-#'-l' argument defines if it is an english only version. Known values EN_ONLY / ALL
+#'-l' argument defines if it is an English only version. Known values EN_ONLY / ALL
 #Check default language mode
 MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "^#define LANG_MODE *" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
@@ -592,7 +592,7 @@ fi
 
 #Check if Build is selected via argument '-b'
 if [ ! -z "$build_flag" ] ; then
-	if [[ "$build_flag" == "Auto" && "$git_availible" == "1" ]] ; then
+	if [[ "$build_flag" == "Auto" && "$git_available" == "1" ]] ; then
 		echo "Build changed to $build_flag"
 		BUILD=$(git rev-list --count HEAD)
 	elif [[ $build_flag =~ ^[0-9]+$ ]] ; then
@@ -615,7 +615,7 @@ fi
 #echo "Output is:" $OUTPUT
 
 #Check git branch has changed
-if [ ! -z "git_availible" ]; then
+if [ ! -z "git_available" ]; then
 	BRANCH=""
 	CLEAN_PF_FW_BUILD=0
 else
@@ -772,7 +772,7 @@ do
 	# set FW_REPOSITORY
 	sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
-	#Prepare english only or multilanguage version to be build
+	#Prepare English only or multi-language version to be build
 	if [ $LANGUAGES == "EN_ONLY" ]; then
 		echo " "
 		echo "English only language firmware will be built"
