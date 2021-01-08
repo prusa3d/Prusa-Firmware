@@ -372,4 +372,8 @@ private:
 #define encrot3 1
 
 
+#ifdef PINDA_TEMP_COMP
+extern void lcd_pinda_temp_compensation_toggle();
+#endif //PINDA_TEMP_COMP
+
 #endif //ULTRALCD_H

@@ -1565,6 +1565,7 @@ void lcd_return_to_status()
 //! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
     stop_and_save_print_to_ram(0.0, -default_retraction);
     lcd_return_to_status();
     isPrintPaused = true;
@@ -1572,7 +1573,6 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
-	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
 }
 
 
@@ -2120,12 +2120,14 @@ static void lcd_support_menu()
         // Menu was entered or SD card status has changed (plugged in or removed).
         // Initialize its status.
         _md->status = 1;
-        _md->is_flash_air = card.ToshibaFlashAir_isEnabled() && card.ToshibaFlashAir_GetIP(_md->ip);
-        if (_md->is_flash_air)
+        _md->is_flash_air = card.ToshibaFlashAir_isEnabled();
+        if (_md->is_flash_air) {
+            card.ToshibaFlashAir_GetIP(_md->ip); // ip[4] filled with 0 if it failed
+            // Prepare IP string from ip[4]
             sprintf_P(_md->ip_str, PSTR("%d.%d.%d.%d"), 
                 _md->ip[0], _md->ip[1], 
                 _md->ip[2], _md->ip[3]);
-        
+        }
     } else if (_md->is_flash_air && 
         _md->ip[0] == 0 && _md->ip[1] == 0 && 
         _md->ip[2] == 0 && _md->ip[3] == 0 &&
@@ -2191,7 +2193,11 @@ static void lcd_support_menu()
   if (_md->is_flash_air) {
       MENU_ITEM_BACK_P(STR_SEPARATOR);
       MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));  //c=18 r=1
-///!      MENU_ITEM(back_RAM, _md->ip_str, 0);
+      MENU_ITEM_BACK_P(PSTR(" "));
+      if (((menu_item - 1) == menu_line) && lcd_draw_update) {
+          lcd_set_cursor(2, menu_row);
+          lcd_printf_P(PSTR("%s"), _md->ip_str);
+      }
   }
 
   #ifndef MK1BP
@@ -5733,6 +5739,15 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
         MENU_ITEM_SUBMENU_P(PSTR("Experimental"), lcd_experimental_menu);////MSG_MENU_EXPERIMENTAL c=18
     }
 
+#ifdef PINDA_TEMP_COMP
+	//! The SuperPINDA is detected when the PINDA temp is below its defined limit.
+	//! This works well on the EINSY board but not on the miniRAMBo board as
+	//! as a disconnected SuperPINDA will show higher temps compared to an EINSY board.
+	//! 
+	//! This menu allows the user to en-/disable the SuperPINDA manualy
+	MENU_ITEM_TOGGLE_P(_N("SuperPINDA"), eeprom_read_byte((uint8_t *)EEPROM_PINDA_TEMP_COMPENSATION) ? _T(MSG_YES) : _T(MSG_NO), lcd_pinda_temp_compensation_toggle);
+#endif //PINDA_TEMP_COMP
+
     MENU_END();
 }
 
@@ -6721,6 +6736,7 @@ void lcd_resume_print()
     lcd_return_to_status();
     lcd_reset_alert_level(); //for fan speed error
     if (fan_error_selftest()) return; //abort if error persists
+    cmdqueue_serial_disabled = false;
 
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
@@ -7333,6 +7349,7 @@ void lcd_print_stop()
     if (!card.sdprinting) {
         SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
     }
+    cmdqueue_serial_disabled = false; //for when canceling a print with a fancheck
 
     CRITICAL_SECTION_START;
 
@@ -8762,26 +8779,42 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 
 static bool check_file(const char* filename) {
 	if (farm_mode) return true;
-	bool result = false;
-	uint32_t filesize;
 	card.openFile((char*)filename, true);
-	filesize = card.getFileSize();
+	bool result = false;
+	const uint32_t filesize = card.getFileSize();
+	uint32_t startPos = 0;
+	const uint16_t bytesToCheck = min(END_FILE_SECTION, filesize);
+	uint8_t blocksPrinted = 0;
 	if (filesize > END_FILE_SECTION) {
-		card.setIndex(filesize - END_FILE_SECTION);
-		
+		startPos = filesize - END_FILE_SECTION;
+		card.setIndex(startPos);
 	}
-	
-		while (!card.eof() && !result) {
+	cmdqueue_reset();
+	cmdqueue_serial_disabled = true;
+
+	lcd_clear();
+	lcd_puts_at_P(0, 1, _i("Checking file"));////c=20 r=1
+	lcd_set_cursor(0, 2);
+	while (!card.eof() && !result) {
+		for (; blocksPrinted < (((card.get_sdpos() - startPos) * LCD_WIDTH) / bytesToCheck); blocksPrinted++)
+			lcd_print('\xFF'); //simple progress bar
+
 		card.sdprinting = true;
 		get_command();
 		result = check_commands();
-		
 	}
+
+	for (; blocksPrinted < LCD_WIDTH; blocksPrinted++)
+		lcd_print('\xFF'); //simple progress bar
+	_delay(100); //for the user to see the end of the progress bar.
+
+	
+	cmdqueue_serial_disabled = false;
 	card.printingHasFinished();
+
 	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
 	lcd_finishstatus();
 	return result;
-	
 }
 
 static void menu_action_sdfile(const char* filename)
@@ -8945,6 +8978,7 @@ void lcd_ignore_click(bool b)
 }
 
 void lcd_finishstatus() {
+  SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
   int len = strlen(lcd_status_message);
   if (len > 0) {
     while (len < LCD_WIDTH) {
@@ -9388,3 +9422,16 @@ void lcd_consume_click()
 	lcd_button_pressed = 0;
 	lcd_buttons &= 0xff^EN_C;
 }
+#ifdef PINDA_TEMP_COMP
+void lcd_pinda_temp_compensation_toggle()
+{
+	uint8_t pinda_temp_compensation = eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION);
+	if (pinda_temp_compensation == EEPROM_EMPTY_VALUE) // On MK2.5/S the EEPROM_EMPTY_VALUE will be set to 0 during eeprom_init.
+		pinda_temp_compensation = 1;                   // But for MK3/S it should be 1 so SuperPINDA is "active"
+	else
+		pinda_temp_compensation = !pinda_temp_compensation;
+	eeprom_update_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION, pinda_temp_compensation);
+	SERIAL_ECHOLNPGM("SuperPINDA:");
+	SERIAL_ECHOLN(pinda_temp_compensation);
+}
+#endif //PINDA_TEMP_COMP

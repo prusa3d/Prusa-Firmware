@@ -8,6 +8,7 @@
 #include "lcd.h"
 #include "Configuration.h"
 #include "Marlin.h"
+#include "cmdqueue.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "static_assert.h"

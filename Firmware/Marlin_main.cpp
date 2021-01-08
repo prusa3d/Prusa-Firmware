@@ -631,7 +631,7 @@ void crashdet_cancel()
 		lcd_print_stop();
 	}else if(saved_printing_type == PRINTING_TYPE_USB){
 		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
-		SERIAL_PROTOCOLLNRPGM(MSG_OK);
+		cmdqueue_reset();
 	}
 }
 
@@ -2631,7 +2631,6 @@ void gcode_M105(uint8_t extruder)
     }
 #endif
     SERIAL_PROTOCOLLN("");
-    KEEPALIVE_STATE(NOT_BUSY);
 }
 
 #ifdef TMC2130
@@ -3679,14 +3678,12 @@ There are reasons why some G Codes aren't in numerical order.
 void process_commands()
 {
 #ifdef FANCHECK
-    if(fan_check_error){
-        if(fan_check_error == EFCE_DETECTED){
-            fan_check_error = EFCE_REPORTED;
-            // SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
-            lcd_pause_print();
-        } // otherwise it has already been reported, so just ignore further processing
-        return; //ignore usb stream. It is reenabled by selecting resume from the lcd.
-    }
+	if(fan_check_error == EFCE_DETECTED){
+		fan_check_error = EFCE_REPORTED;
+		// SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
+		lcd_pause_print();
+		cmdqueue_serial_disabled = true;
+	}
 #endif
 
 	if (!buflen) return; //empty command
@@ -4684,7 +4681,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   The Original i3 Prusa MK2/s uses PINDAv1 and this calibration improves the temperature drift, but not as good as the PINDAv2.
 
   superPINDA sensor has internal temperature compensation and no thermistor output. There is no point of doing temperature calibration in such case.
-  If PINDA_THERMISTOR and DETECT_SUPERPINDA is defined during compilation, calibration is skipped with serial message "No PINDA thermistor".
+  If PINDA_THERMISTOR and SUPERPINDA_SUPPORT is defined during compilation, calibration is skipped with serial message "No PINDA thermistor".
   This can be caused also if PINDA thermistor connection is broken or PINDA temperature is lower than PINDA_MINTEMP.
 
   #### Example
@@ -5977,28 +5974,30 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     /*!
 	### M46 - Show the assigned IP address <a href="https://reprap.org/wiki/G-code#M46:_Show_the_assigned_IP_address">M46: Show the assigned IP address.</a>
     */
-    /*
-     case 46:
+    case 46:
     {
         // M46: Prusa3D: Show the assigned IP address.
-        uint8_t ip[4];
-        bool hasIP = card.ToshibaFlashAir_GetIP(ip);
-        if (hasIP) {
-            SERIAL_ECHOPGM("Toshiba FlashAir current IP: ");
-            SERIAL_ECHO(int(ip[0]));
-            SERIAL_ECHOPGM(".");
-            SERIAL_ECHO(int(ip[1]));
-            SERIAL_ECHOPGM(".");
-            SERIAL_ECHO(int(ip[2]));
-            SERIAL_ECHOPGM(".");
-            SERIAL_ECHO(int(ip[3]));
-            SERIAL_ECHOLNPGM("");
+        if (card.ToshibaFlashAir_isEnabled()) {
+            uint8_t ip[4];
+            bool hasIP = card.ToshibaFlashAir_GetIP(ip);
+            if (hasIP) {
+                // SERIAL_PROTOCOLPGM("Toshiba FlashAir current IP: ");
+                SERIAL_PROTOCOL(int(ip[0]));
+                SERIAL_PROTOCOLPGM(".");
+                SERIAL_PROTOCOL(int(ip[1]));
+                SERIAL_PROTOCOLPGM(".");
+                SERIAL_PROTOCOL(int(ip[2]));
+                SERIAL_PROTOCOLPGM(".");
+                SERIAL_PROTOCOL(int(ip[3]));
+                SERIAL_PROTOCOLPGM("\n");
+            } else {
+                SERIAL_PROTOCOLPGM("?Toshiba FlashAir GetIP failed\n");          
+            }
         } else {
-            SERIAL_ECHOLNPGM("Toshiba FlashAir GetIP failed");          
+            SERIAL_PROTOCOLPGM("n/a\n");          
         }
         break;
     }
-    */
 
     /*!
 	### M47 - Show end stops dialog on the display <a href="https://reprap.org/wiki/G-code#M47:_Show_end_stops_dialog_on_the_display">M47: Show end stops dialog on the display</a>
@@ -6402,7 +6401,8 @@ Sigma_Exit:
       SERIAL_PROTOCOLPGM("ok ");
       gcode_M105(extruder);
       
-      return;
+      cmdqueue_pop_front(); //prevent an ok after the command since this command uses an ok at the beginning.
+      
       break;
     }
 
@@ -6864,12 +6864,10 @@ Sigma_Exit:
           SERIAL_ECHOPGM(STRINGIFY(EXTRUDERS)); 
           SERIAL_ECHOPGM(" UUID:"); 
           SERIAL_ECHOLNPGM(MACHINE_UUID);
-      }
-      
 #ifdef EXTENDED_CAPABILITIES_REPORT
-      extended_capabilities_report();
+          extended_capabilities_report();
 #endif //EXTENDED_CAPABILITIES_REPORT
-      
+      }
       break;
 
     /*!
@@ -7995,6 +7993,7 @@ Sigma_Exit:
         if (!isPrintPaused)
         {
             st_synchronize();
+            ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
             lcd_pause_print();
         }
@@ -9216,8 +9215,8 @@ void FlushSerialRequestResend()
 // Execution of a command from a SD card will not be confirmed.
 void ClearToSend()
 {
-    previous_millis_cmd = _millis();
-	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)) 
+	previous_millis_cmd = _millis();
+	if (buflen && ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)))
 		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
@@ -10583,9 +10582,9 @@ float temp_comp_interpolation(float inp_temperature) {
 #ifdef PINDA_THERMISTOR
 		constexpr int start_compensating_temp = 35;
 		temp_C[i] = start_compensating_temp + i * 5; //temperature in degrees C
-#ifdef DETECT_SUPERPINDA
-		static_assert(start_compensating_temp >= PINDA_MINTEMP, "Temperature compensation start point is lower than PINDA_MINTEMP.");
-#endif //DETECT_SUPERPINDA
+#ifdef SUPERPINDA_SUPPORT
+    static_assert(start_compensating_temp >= PINDA_MINTEMP, "Temperature compensation start point is lower than PINDA_MINTEMP.");
+#endif //SUPERPINDA_SUPPORT
 #else
 		temp_C[i] = 50 + i * 10; //temperature in C
 #endif
@@ -11468,7 +11467,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		//not sd printing nor usb printing
 	}
 
-	SERIAL_PROTOCOLLNRPGM(MSG_OK); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
     saved_printing_type = PRINTING_TYPE_NONE;
 	saved_printing = false;
