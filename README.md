@@ -10,6 +10,8 @@ Please find firmware builds with MeatPack support enabled in the "Releases" sect
 
 ### NOTE: Currently only version 3.9.3 has MeatPack support enabled!
 
+Latest build is here: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/3.9.3-MeatPack
+
 ---
 
 This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3/MK2.5S/MK2.5 line of printers.
