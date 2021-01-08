@@ -2120,12 +2120,14 @@ static void lcd_support_menu()
         // Menu was entered or SD card status has changed (plugged in or removed).
         // Initialize its status.
         _md->status = 1;
-        _md->is_flash_air = card.ToshibaFlashAir_isEnabled() && card.ToshibaFlashAir_GetIP(_md->ip);
-        if (_md->is_flash_air)
+        _md->is_flash_air = card.ToshibaFlashAir_isEnabled();
+        if (_md->is_flash_air) {
+            card.ToshibaFlashAir_GetIP(_md->ip); // ip[4] filled with 0 if it failed
+            // Prepare IP string from ip[4]
             sprintf_P(_md->ip_str, PSTR("%d.%d.%d.%d"), 
                 _md->ip[0], _md->ip[1], 
                 _md->ip[2], _md->ip[3]);
-        
+        }
     } else if (_md->is_flash_air && 
         _md->ip[0] == 0 && _md->ip[1] == 0 && 
         _md->ip[2] == 0 && _md->ip[3] == 0 &&
@@ -2191,7 +2193,11 @@ static void lcd_support_menu()
   if (_md->is_flash_air) {
       MENU_ITEM_BACK_P(STR_SEPARATOR);
       MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));  //c=18 r=1
-///!      MENU_ITEM(back_RAM, _md->ip_str, 0);
+      MENU_ITEM_BACK_P(PSTR(" "));
+      if (((menu_item - 1) == menu_line) && lcd_draw_update) {
+          lcd_set_cursor(2, menu_row);
+          lcd_printf_P(PSTR("%s"), _md->ip_str);
+      }
   }
 
   #ifndef MK1BP
