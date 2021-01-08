@@ -2,9 +2,11 @@
 
 ### NOTE:
 
-This is a fork of the original Prusa Firmware. I've modified it to add support for "MeatPack", a g-code compression algorithm I have developed to be used with OctoPrint. This firmware is functionally identical, but if the MeatPack OctoPrint plugin is installed and enabled, g-code can be compressed by a ratio of ~0.61 - 0.62 over the serial connection, improving print quality for parts with complex and spatially dense curvature. The compression method is extremely light-weight, and imposes virtually no computational overhead on the microprocessor running the firmware. 
+Please find the primary [MeatPack OctoPrint repository here](https://github.com/scottmudge/OctoPrint-MeatPack).
 
-Please find builds with MeatPack support enabled in the "Releases" section of this repository.
+This is a fork of the original Prusa Firmware. I've modified it to add support for "MeatPack", a g-code compression algorithm I have developed to be used with OctoPrint. This firmware is functionally identical, but if the MeatPack OctoPrint plugin is installed and enabled, g-code can be compressed by a ratio of ~0.61 - 0.62 over the serial connection, improving print quality for parts with complex and spatially dense curvature. The compression method is extremely light-weight, and imposes virtually no computational overhead on the microprocessor running the firmware. Please see the plugin repository above for more information.
+
+Please find firmware builds with MeatPack support enabled in the "Releases" section of this repository.
 
 ---
 
