@@ -8,6 +8,8 @@ This is a fork of the original Prusa Firmware. I've modified it to add support f
 
 Please find firmware builds with MeatPack support enabled in the "Releases" section of this repository.
 
+### NOTE: Currently only version 3.9.3 has MeatPack support enabled!
+
 ---
 
 This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3/MK2.5S/MK2.5 line of printers.
