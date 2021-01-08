@@ -144,7 +144,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"Se fue la luz. ?Reanudar la impresion?"
+"Se fue la luz. Reanudar la impresion?"
 
 #
 "Calibrating home"
@@ -368,7 +368,7 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
-"Archivo incompleto. ?Continuar de todos modos?"
+"Archivo incompleto. Continuar de todos modos?"
 
 #MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
@@ -504,7 +504,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"?Esta colocada la lamina sobre la base"
+"Esta colocada la lamina sobre la base?"
 
 #
 "Last print failures"
@@ -1228,7 +1228,7 @@
 
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
-"?Se cargocon exito el filamento?"
+"Se descargo con exito el filamento?"
 
 #MSG_SELFTEST_WIRINGERROR
 "Wiring error"
@@ -1392,7 +1392,7 @@
 
 #
 "G-code sliced for a different level. Continue?"
-"Codigo G laminado para un nivel diferente. ?Continuar?"
+"Codigo G laminado para un nivel diferente. Continuar?"
 
 #
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
@@ -1400,7 +1400,7 @@
 
 #
 "G-code sliced for a different printer type. Continue?"
-"Codigo G laminado para un tipo de impresora diferente. ?Continuar?"
+"Codigo G laminado para un tipo de impresora diferente. Continuar?"
 
 #
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
@@ -1408,7 +1408,7 @@
 
 #
 "G-code sliced for a newer firmware. Continue?"
-"Codigo G laminado para nuevo firmware. ?Continuar?"
+"Codigo G laminado para nuevo firmware. Continuar?"
 
 #
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
@@ -1428,7 +1428,7 @@
 
 #
 "Printer nozzle diameter differs from the G-code. Continue?"
-"Diametro nozzle impresora difiere de cod.G. ?Continuar?"
+"Diametro nozzle impresora difiere de cod.G. Continuar?"
 
 #
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
