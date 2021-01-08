@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_32
+# Version: 1.0.6-Build_33
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -133,6 +133,8 @@
 # 02 Nov 2020, 3d-gussner, Check for "gawk" on Linux
 #                          Add argument to change build number automatically to current commit or define own number
 #                          Update exit numbers 1-13 for prepare build env 21-29 for prepare compiling 30-36 compiling
+# 08 Jan 2021, 3d-gussner, Comment out 'sudo' auto installation
+#                          Add '-?' '-h' help option
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -208,7 +210,7 @@ if ! type zip > /dev/null; then
 	elif [ $TARGET_OS == "linux" ]; then
 		echo "$(tput setaf 1)Missing 'zip' which is important to run this script"
 		echo "install it with the command $(tput setaf 2)'sudo apt-get install zip'$(tput sgr0)"
-		sudo apt-get update && apt-get install zip
+		#sudo apt-get update && apt-get install zip
 		exit 3
 	fi
 fi
@@ -223,7 +225,7 @@ if ! type python > /dev/null; then
 		echo "install it with the command $(tput setaf 2)'sudo apt-get install python3'."
 		echo "Check which version of Python3 has been installed using 'ls /usr/bin/python3*'"
 		echo "Use 'sudo ln -sf /usr/bin/python3.x /usr/bin/python' (where 'x' is your version number) to make it default.$(tput sgr0)"
-		sudo apt-get update && apt-get install python3 && ln -sf /usr/bin/python3 /usr/bin/python
+		#sudo apt-get update && apt-get install python3 && ln -sf /usr/bin/python3 /usr/bin/python
 		exit 4
 	fi
 fi
@@ -233,7 +235,7 @@ if ! type gawk > /dev/null; then
 	if [ $TARGET_OS == "linux" ]; then
 		echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
 		echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
-		sudo apt-get update && apt-get install gawk
+		#sudo apt-get update && apt-get install gawk
 		exit 4
 	fi
 fi
@@ -449,13 +451,7 @@ if type git > /dev/null; then
 	git_availible="1"
 fi
 
-#arguments
-#'-v' Variant "All" or variant file name
-#'-l' Languages "ALL" for multi language or "EN_ONLY" for english only
-#'-d' Devel build "GOLD", "RC", "BETA", "ALPHA", "DEBUG", "DEVEL" and "UNKNOWN"
-#'-b' Build/commit number "Auto" needs git or a number
-#'-o' Output "1" force or "0" block output and delays 
-while getopts v:l:d:b:o: flag
+while getopts v:l:d:b:o:?h flag
 	do
 	    case "${flag}" in
 	        v) variant_flag=${OPTARG};;
@@ -463,6 +459,8 @@ while getopts v:l:d:b:o: flag
 	        d) devel_flag=${OPTARG};;
 			b) build_flag=${OPTARG};;
 			o) output_flag=${OPTARG};;
+			?) help_flag=1;;
+			h) help_flag=1;;
 	    esac
 	done
 #echo "variant_flag: $variant_flag";
@@ -470,6 +468,37 @@ while getopts v:l:d:b:o: flag
 #echo "devel_flag: $devel_flag";
 #echo "build_flag: $build_flag";
 #echo "output_flag: $output_flag";
+#echo "help_flag: $help_flag"
+
+#
+# '?' 'h' argument usage and help
+if [ "$help_flag" == "1" ] ; then
+echo "***************************************"
+echo "* PF-build.sh Version: 1.0.6-Build_33 *"
+echo "***************************************"
+echo "Arguments:"
+echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
+echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for english only"
+echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
+echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
+echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
+echo "$(tput setaf 2)-?$(tput sgr0) Help"
+echo "$(tput setaf 2)-h$(tput sgr0) Help"
+echo 
+echo "Brief USAGE:"
+echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o]"
+echo
+echo "Example:"
+echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
+echo "  Will build all variants as multi language and final GOLD version"
+echo
+echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1$(tput sgr0)"
+echo "  Will build MK3S multi language final GOLD firmware "
+echo "  with current commit count number and output extra information"
+echo
+exit 
+
+fi
 
 #
 # '-v' argument defines which variant of the Prusa Firmware will be compiled 
