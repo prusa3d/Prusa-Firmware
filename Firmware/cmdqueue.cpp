@@ -401,7 +401,7 @@ void get_command()
 
   // start of serial line processing loop
   while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
-
+	
     // MeatPack Changes
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       const int rec = MYSERIAL.read();
@@ -418,146 +418,146 @@ void get_command()
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
           char serial_char = c_res[i];
 
-      /*    if (selectedSerialPort == 1)
-          {
-              selectedSerialPort = 0;
-              MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
-              selectedSerialPort = 1;
-          } */ //RP - removed
-          TimeSent = _millis();
-          TimeNow = _millis();
-
-          if (serial_char < 0)
-              // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
-              // and Marlin does not support such file names anyway.
-              // Serial characters with a highest bit set to 1 are generated when the USB cable is unplugged, leading
-              // to a hang-up of the print process from an SD card.
-              continue;
-          if (serial_char == '\n' ||
-              serial_char == '\r' ||
-              serial_count >= (MAX_CMD_SIZE - 1))
-          {
-              if (!serial_count) { //if empty line
-                  comment_mode = false; //for new command
-                  return;
-              }
-              cmdbuffer[bufindw + serial_count + CMDHDRSIZE] = 0; //terminate string
-              if (!comment_mode) {
-
-                  gcode_N = 0;
-
-                  // Line numbers must be first in buffer
-
-                  if ((strstr(cmdbuffer + bufindw + CMDHDRSIZE, "PRUSA") == NULL) &&
-                      (cmdbuffer[bufindw + CMDHDRSIZE] == 'N')) {
-
-                      // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
-                      // and Marlin tests, whether the successive lines are stamped with an increasing line number ID
-                      gcode_N = (strtol(cmdbuffer + bufindw + CMDHDRSIZE + 1, NULL, 10));
-                      if (gcode_N != gcode_LastN + 1 && (strstr_P(cmdbuffer + bufindw + CMDHDRSIZE, PSTR("M110")) == NULL)) {
-                          // M110 - set current line number.
-                          // Line numbers not sent in succession.
-                          SERIAL_ERROR_START;
-                          SERIAL_ERRORRPGM(_n("Line Number is not Last Line Number+1, Last Line: "));////MSG_ERR_LINE_NO
-                          SERIAL_ERRORLN(gcode_LastN);
-                          //Serial.println(gcode_N);
-                          FlushSerialRequestResend();
-                          serial_count = 0;
-                          return;
-                      }
-
-                      if ((strchr_pointer = strchr(cmdbuffer + bufindw + CMDHDRSIZE, '*')) != NULL)
-                      {
-                          byte checksum = 0;
-                          char* p = cmdbuffer + bufindw + CMDHDRSIZE;
-                          while (p != strchr_pointer)
-                              checksum = checksum ^ (*p++);
-                          if (int(strtol(strchr_pointer + 1, NULL, 10)) != int(checksum)) {
-                              SERIAL_ERROR_START;
-                              SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH
-                              SERIAL_ERRORLN(gcode_LastN);
-                              FlushSerialRequestResend();
-                              serial_count = 0;
-                              return;
-                          }
-                          // If no errors, remove the checksum and continue parsing.
-                          *strchr_pointer = 0;
-                      }
-                      else
-                      {
-                          SERIAL_ERROR_START;
-                          SERIAL_ERRORRPGM(_n("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM
-                          SERIAL_ERRORLN(gcode_LastN);
-                          FlushSerialRequestResend();
-                          serial_count = 0;
-                          return;
-                      }
-
-                      // Don't parse N again with code_seen('N')
-                      cmdbuffer[bufindw + CMDHDRSIZE] = '$';
-                      //if no errors, continue parsing
-                      gcode_LastN = gcode_N;
-                  }
-                  // if we don't receive 'N' but still see '*'
-                  if ((cmdbuffer[bufindw + CMDHDRSIZE] != 'N') && (cmdbuffer[bufindw + CMDHDRSIZE] != '$') && (strchr(cmdbuffer + bufindw + CMDHDRSIZE, '*') != NULL))
-                  {
-
-                      SERIAL_ERROR_START;
-                      SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM
-                      SERIAL_ERRORLN(gcode_LastN);
-                      FlushSerialRequestResend();
-                      serial_count = 0;
-                      return;
-                  }
-                  if ((strchr_pointer = strchr(cmdbuffer + bufindw + CMDHDRSIZE, 'G')) != NULL) {
-                      if (!IS_SD_PRINTING) {
-                          usb_printing_counter = 10;
-                          is_usb_printing = true;
-                      }
-                      if (Stopped == true) {
-                          int gcode = strtol(strchr_pointer + 1, NULL, 10);
-                          if (gcode >= 0 && gcode <= 3) {
-                              SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
-                              LCD_MESSAGERPGM(_T(MSG_STOPPED));
-                          }
-                      }
-                  } // end of 'G' command
-
-                  //If command was e-stop process now
-                  if (strcmp(cmdbuffer + bufindw + CMDHDRSIZE, "M112") == 0)
-                      kill(MSG_M112_KILL, 2);
-
-                  // Store the current line into buffer, move to the next line.
-                  // Store type of entry
-                  cmdbuffer[bufindw] = gcode_N ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
-#ifdef CMDBUFFER_DEBUG
-                  SERIAL_ECHO_START;
-                  SERIAL_ECHOPGM("Storing a command line to buffer: ");
-                  SERIAL_ECHO(cmdbuffer + bufindw + CMDHDRSIZE);
-                  SERIAL_ECHOLNPGM("");
-#endif /* CMDBUFFER_DEBUG */
-                  bufindw += strlen(cmdbuffer + bufindw + CMDHDRSIZE) + (1 + CMDHDRSIZE);
-                  if (bufindw == sizeof(cmdbuffer))
-                      bufindw = 0;
-                  ++buflen;
-#ifdef CMDBUFFER_DEBUG
-                  SERIAL_ECHOPGM("Number of commands in the buffer: ");
-                  SERIAL_ECHO(buflen);
-                  SERIAL_ECHOLNPGM("");
-#endif /* CMDBUFFER_DEBUG */
-              } // end of 'not comment mode'
-              serial_count = 0; //clear buffer
-              // Don't call cmdqueue_could_enqueue_back if there are no characters waiting
-              // in the queue, as this function will reserve the memory.
-              if (MYSERIAL.available() == 0 || !cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1, true))
-                  return;
-          } // end of "end of line" processing
-          else {
-              // Not an "end of line" symbol. Store the new character into a buffer.
-              if (serial_char == ';') comment_mode = true;
-              if (!comment_mode) cmdbuffer[bufindw + CMDHDRSIZE + serial_count++] = serial_char;
-          }
-      }
+	/*    if (selectedSerialPort == 1)
+	    {
+	        selectedSerialPort = 0; 
+	        MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
+	        selectedSerialPort = 1; 
+	    } */ //RP - removed
+	      TimeSent = _millis();
+	      TimeNow = _millis();
+	
+	    if (serial_char < 0)
+	        // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
+	        // and Marlin does not support such file names anyway.
+	        // Serial characters with a highest bit set to 1 are generated when the USB cable is unplugged, leading
+	        // to a hang-up of the print process from an SD card.
+	        continue;
+	    if(serial_char == '\n' ||
+	       serial_char == '\r' ||
+	       serial_count >= (MAX_CMD_SIZE - 1) )
+	    {
+	      if(!serial_count) { //if empty line
+	        comment_mode = false; //for new command
+	        return;
+	      }
+	      cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
+	      if(!comment_mode){
+			  
+			  gcode_N = 0;
+	
+			  // Line numbers must be first in buffer
+	
+			  if ((strstr(cmdbuffer+bufindw+CMDHDRSIZE, "PRUSA") == NULL) &&
+				  (cmdbuffer[bufindw+CMDHDRSIZE] == 'N')) {
+	
+				  // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
+				  // and Marlin tests, whether the successive lines are stamped with an increasing line number ID
+				  gcode_N = (strtol(cmdbuffer+bufindw+CMDHDRSIZE+1, NULL, 10));
+				  if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("M110")) == NULL) ) {
+					  // M110 - set current line number.
+					  // Line numbers not sent in succession.
+					  SERIAL_ERROR_START;
+					  SERIAL_ERRORRPGM(_n("Line Number is not Last Line Number+1, Last Line: "));////MSG_ERR_LINE_NO
+					  SERIAL_ERRORLN(gcode_LastN);
+					  //Serial.println(gcode_N);
+					  FlushSerialRequestResend();
+					  serial_count = 0;
+					  return;
+				  }
+	
+				  if((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*')) != NULL)
+				  {
+					  byte checksum = 0;
+					  char *p = cmdbuffer+bufindw+CMDHDRSIZE;
+					  while (p != strchr_pointer)
+						  checksum = checksum^(*p++);
+					  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
+						  SERIAL_ERROR_START;
+						  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH
+						  SERIAL_ERRORLN(gcode_LastN);
+						  FlushSerialRequestResend();
+						  serial_count = 0;
+						  return;
+					  }
+					  // If no errors, remove the checksum and continue parsing.
+					  *strchr_pointer = 0;
+				  }
+				  else
+				  {
+					  SERIAL_ERROR_START;
+					  SERIAL_ERRORRPGM(_n("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM
+					  SERIAL_ERRORLN(gcode_LastN);
+					  FlushSerialRequestResend();
+					  serial_count = 0;
+					  return;
+				  }
+	
+				  // Don't parse N again with code_seen('N')
+				  cmdbuffer[bufindw + CMDHDRSIZE] = '$';
+				  //if no errors, continue parsing
+				  gcode_LastN = gcode_N;
+			}
+	        // if we don't receive 'N' but still see '*'
+	        if ((cmdbuffer[bufindw + CMDHDRSIZE] != 'N') && (cmdbuffer[bufindw + CMDHDRSIZE] != '$') && (strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*') != NULL))
+	        {
+	
+	            SERIAL_ERROR_START;
+	            SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM
+	            SERIAL_ERRORLN(gcode_LastN);
+				FlushSerialRequestResend();
+	            serial_count = 0;
+	            return;
+	        }
+	        if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
+	              if (! IS_SD_PRINTING) {
+	                      usb_printing_counter = 10;
+	                      is_usb_printing = true;
+	              }
+	            if (Stopped == true) {
+	                int gcode = strtol(strchr_pointer+1, NULL, 10);
+	                if (gcode >= 0 && gcode <= 3) {
+	                    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
+	                    LCD_MESSAGERPGM(_T(MSG_STOPPED));
+	                }
+	            }
+	        } // end of 'G' command
+	
+	        //If command was e-stop process now
+	        if(strcmp(cmdbuffer+bufindw+CMDHDRSIZE, "M112") == 0)
+	          kill(MSG_M112_KILL, 2);
+	        
+	        // Store the current line into buffer, move to the next line.
+			// Store type of entry
+	        cmdbuffer[bufindw] = gcode_N ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
+	#ifdef CMDBUFFER_DEBUG
+	        SERIAL_ECHO_START;
+	        SERIAL_ECHOPGM("Storing a command line to buffer: ");
+	        SERIAL_ECHO(cmdbuffer+bufindw+CMDHDRSIZE);
+	        SERIAL_ECHOLNPGM("");
+	#endif /* CMDBUFFER_DEBUG */
+	        bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
+	        if (bufindw == sizeof(cmdbuffer))
+	            bufindw = 0;
+	        ++ buflen;
+	#ifdef CMDBUFFER_DEBUG
+	        SERIAL_ECHOPGM("Number of commands in the buffer: ");
+	        SERIAL_ECHO(buflen);
+	        SERIAL_ECHOLNPGM("");
+	#endif /* CMDBUFFER_DEBUG */
+	      } // end of 'not comment mode'
+	      serial_count = 0; //clear buffer
+	      // Don't call cmdqueue_could_enqueue_back if there are no characters waiting
+	      // in the queue, as this function will reserve the memory.
+	      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
+	          return;
+	    } // end of "end of line" processing
+	    else {
+	      // Not an "end of line" symbol. Store the new character into a buffer.
+	      if(serial_char == ';') comment_mode = true;
+	      if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
+	    }
+     }
   } // end of serial line processing loop
 
     if(farm_mode){
