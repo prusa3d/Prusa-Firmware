@@ -6,6 +6,9 @@
 */
 
 #include "MeatPack.h"
+
+#ifdef ENABLE_MEATPACK
+
 #include "language.h"
 #include "Marlin.h"
 
@@ -16,9 +19,16 @@
 #define MeatPack_NextPackedFirst	0b00000001
 #define MeatPack_NextPackedSecond	0b00000010
 
+
+// Note:
+// I've tried both a switch/case method and a lookup table. The disassembly is exactly the same after compilation, byte-to-byte.
+// Thus, performance is identical.
+#define USE_LOOKUP_TABLE
+
+#ifdef USE_LOOKUP_TABLE
 // The 15 most-common characters used in G-code, ~90-95% of all g-code uses these characters
 // NOT storing this with PROGMEM, given how frequently this table will be accessed.
-static const uint8_t MeatPackLookupTbl[16] = {
+uint8_t MeatPackLookupTbl[16] = {
     '0',	// 0000
     '1',	// 0001
     '2',	// 0010
@@ -36,6 +46,58 @@ static const uint8_t MeatPackLookupTbl[16] = {
     'X',	// 1110
     '\0' // never used, 0b1111 is used to indicate next 8-bits is a full character
 };
+#else
+inline uint8_t get_char(register uint8_t in) {
+    switch (in) {
+    case 0b0000:
+        return '0';
+        break;
+    case 0b0001:
+        return '1';
+        break;
+    case 0b0010:
+        return '2';
+        break;
+    case 0b0011:
+        return '3';
+        break;
+    case 0b0100:
+        return '4';
+        break;
+    case 0b0101:
+        return '5';
+        break;
+    case 0b0110:
+        return '6';
+        break;
+    case 0b0111:
+        return '7';
+        break;
+    case 0b1000:
+        return '8';
+        break;
+    case 0b1001:
+        return '9';
+        break;
+    case 0b1010:
+        return '.';
+        break;
+    case 0b1011:
+        return ' ';
+        break;
+    case 0b1100:
+        return '\n';
+        break;
+    case 0b1101:
+        return 'G';
+        break;
+    case 0b1110:
+        return 'X';
+        break;
+    }
+    return 0;
+}
+#endif
 
 
 // State variables
@@ -75,8 +137,10 @@ inline void mp_handle_output_char(const uint8_t c) {
 // high = (packed & 0xF);
 
 //==========================================================================
-static inline uint8_t mp_unpack_chars(const uint8_t pk, uint8_t* const chars_out) {
+inline uint8_t mp_unpack_chars(const uint8_t pk, uint8_t* __restrict const chars_out) {
     register uint8_t out = 0;
+
+#ifdef USE_LOOKUP_TABLE
     // If lower 4 bytes is 0b1111, the higher 4 are unused, and next char is full.
     if ((pk & MeatPack_FirstNotPacked) == MeatPack_FirstNotPacked) out |= MeatPack_NextPackedFirst;
     else chars_out[0] = MeatPackLookupTbl[(pk & 0xF)]; // Assign lower char
@@ -84,13 +148,22 @@ static inline uint8_t mp_unpack_chars(const uint8_t pk, uint8_t* const chars_out
     // Check if upper 4 bytes is 0b1111... if so, we don't need the second char.
     if ((pk & MeatPack_SecondNotPacked) == MeatPack_SecondNotPacked) out |= MeatPack_NextPackedSecond;
     else chars_out[1] = MeatPackLookupTbl[((pk >> 4) & 0xf)]; // Assign upper char
+#else
+    // If lower 4 bytes is 0b1111, the higher 4 are unused, and next char is full.
+    if ((pk & MeatPack_FirstNotPacked) == MeatPack_FirstNotPacked) out |= MeatPack_NextPackedFirst;
+    else chars_out[0] = get_char(pk & 0xF); // Assign lower char
+
+    // Check if upper 4 bytes is 0b1111... if so, we don't need the second char.
+    if ((pk & MeatPack_SecondNotPacked) == MeatPack_SecondNotPacked) out |= MeatPack_NextPackedSecond;
+    else chars_out[1] = get_char((pk >> 4) & 0xf); // Assign upper char
+#endif
 
     return out;
 }
 
 
 //==========================================================================
-static inline void mp_handle_rx_char_inner(const uint8_t c) {
+inline void mp_handle_rx_char_inner(const uint8_t c) {
     // Handle normal data
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     if (mp_active == 0) {
@@ -123,7 +196,7 @@ static inline void mp_handle_rx_char_inner(const uint8_t c) {
 }
 
 //==========================================================================
-static void mp_handle_cmd(const MeatPack_Command c) {
+void mp_handle_cmd(const MeatPack_Command c) {
     switch (c) {
     case MPC_EnablePacking: {
         mp_active = 1;
@@ -221,3 +294,5 @@ void mp_trigger_cmd(const MeatPack_Command cmd)
 {
     mp_handle_cmd(cmd);
 }
+
+#endif

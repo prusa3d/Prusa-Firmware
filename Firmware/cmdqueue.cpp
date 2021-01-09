@@ -401,7 +401,8 @@ void get_command()
 
   // start of serial line processing loop
   while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
-	
+
+#ifdef ENABLE_MEATPACK
     // MeatPack Changes
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       const int rec = MYSERIAL.read();
@@ -411,12 +412,12 @@ void get_command()
       char c_res[2] = {0, 0};
       const uint8_t char_count = mp_get_result_char(c_res);
       
-      // OLD CODE
-      //char serial_char = MYSERIAL.read();
-
       for (uint8_t i = 0; i < char_count; ++i) {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
           char serial_char = c_res[i];
+#else
+      char serial_char = MYSERIAL.read();
+#endif
 
 	/*    if (selectedSerialPort == 1)
 	    {
@@ -557,7 +558,9 @@ void get_command()
 	      if(serial_char == ';') comment_mode = true;
 	      if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
 	    }
+#ifdef ENABLE_MEATPACK
      }
+#endif
   } // end of serial line processing loop
 
     if(farm_mode){
