@@ -270,6 +270,7 @@ float extruder_offset[NUM_EXTRUDER_OFFSETS][EXTRUDERS] = {
 
 uint8_t active_extruder = 0;
 int fanSpeed=0;
+uint8_t newFanSpeed = 0;
 
 #ifdef FWRETRACT
   bool retracted[EXTRUDERS]={false
@@ -3166,6 +3167,11 @@ void gcode_M114()
 	SERIAL_PROTOCOLLN("");
 }
 
+void gcode_M123()
+{
+  printf_P(_N("E0:%d RPM PRN1:%d RPM E0@:%u PRN1@:%d\n"), 60*fan_speed[active_extruder], 60*fan_speed[1], newFanSpeed, fanSpeed);
+}
+
 //! extracted code to compute z_shift for M600 in case of filament change operation 
 //! requested from fsensors.
 //! The function ensures, that the printhead lifts to at least 25mm above the heat bed
@@ -3606,6 +3612,7 @@ extern uint8_t st_backlash_y;
 //!@n M115 - Capabilities string
 //!@n M117 - display message
 //!@n M119 - Output Endstop status to serial port
+//!@n M123 - Tachometer value
 //!@n M126 - Solenoid Air Valve Open (BariCUDA support by jmil)
 //!@n M127 - Solenoid Air Valve Closed (BariCUDA vent to atmospheric pressure by jmil)
 //!@n M128 - EtoP Open (BariCUDA EtoP = electricity to air pressure transducer by jmil)
@@ -6965,7 +6972,14 @@ Sigma_Exit:
       #endif
       break;
       //!@todo update for all axes, use for loop
-    
+
+    /*!
+	### M123 - Tachometer value <a href="https://www.reprap.org/wiki/G-code#M123:_Tachometer_value_.28RepRap.29">M123: Tachometer value</a>
+    */
+    case 123:
+    gcode_M123();
+    break;
+
 
     #ifdef BLINKM
     /*!

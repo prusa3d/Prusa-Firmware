@@ -289,6 +289,7 @@ extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
+extern uint8_t newFanSpeed;
 extern int8_t lcd_change_fil_state;
 extern float default_retraction;
 
@@ -480,6 +481,7 @@ void force_high_power_mode(bool start_high_power_section);
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
+void gcode_M123();
 void gcode_M701();
 
 #define UVLO !(PINE & (1<<4))
