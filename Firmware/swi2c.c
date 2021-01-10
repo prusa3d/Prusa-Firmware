@@ -3,9 +3,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
+#include "stdbool.h"
 #include "Configuration_prusa.h"
 #include "pins.h"
-#include "io_atmega2560.h"
+#include "fastio.h"
 
 
 #define SWI2C_RMSK   0x01 //read mask (bit0 = 1)
@@ -21,75 +22,75 @@ void __delay(void)
 
 void swi2c_init(void)
 {
-	PIN_OUT(SWI2C_SDA);
-	PIN_OUT(SWI2C_SCL);
-	PIN_SET(SWI2C_SDA);
-	PIN_SET(SWI2C_SCL);
+	WRITE(SWI2C_SDA, 1);
+	WRITE(SWI2C_SCL, 1);
+	SET_OUTPUT(SWI2C_SDA);
+	SET_OUTPUT(SWI2C_SCL);
 	uint8_t i; for (i = 0; i < 100; i++)
 		__delay();
 }
 
 void swi2c_start(void)
 {
-	PIN_CLR(SWI2C_SDA);
+	WRITE(SWI2C_SDA, 0);
 	__delay();
-	PIN_CLR(SWI2C_SCL);
+	WRITE(SWI2C_SCL, 0);
 	__delay();
 }
 
 void swi2c_stop(void)
 {
-	PIN_SET(SWI2C_SCL);
+	WRITE(SWI2C_SCL, 1);
 	__delay();
-	PIN_SET(SWI2C_SDA);
+	WRITE(SWI2C_SDA, 1);
 	__delay();
 }
 
 void swi2c_ack(void)
 {
-	PIN_CLR(SWI2C_SDA);
+	WRITE(SWI2C_SDA, 0);
 	__delay();
-	PIN_SET(SWI2C_SCL);
+	WRITE(SWI2C_SCL, 1);
 	__delay();
-	PIN_CLR(SWI2C_SCL);
+	WRITE(SWI2C_SCL, 0);
 	__delay();
 }
 
 uint8_t swi2c_wait_ack()
 {
-	PIN_INP(SWI2C_SDA);
+	SET_INPUT(SWI2C_SDA);
 	__delay();
-//	PIN_SET(SWI2C_SDA);
+//	WRITE(SWI2C_SDA, 1);
 	__delay();
-	PIN_SET(SWI2C_SCL);
+	WRITE(SWI2C_SCL, 1);
 //	__delay();
 	uint8_t ack = 0;
 	uint16_t ackto = SWI2C_TMO;
-	while (!(ack = (PIN_GET(SWI2C_SDA)?0:1)) && ackto--) __delay();
-	PIN_CLR(SWI2C_SCL);
+	while (!(ack = (!READ(SWI2C_SDA))) && ackto--) __delay();
+	WRITE(SWI2C_SCL, 0);
 	__delay();
-	PIN_OUT(SWI2C_SDA);
+	SET_OUTPUT(SWI2C_SDA);
 	__delay();
-	PIN_CLR(SWI2C_SDA);
+	WRITE(SWI2C_SDA, 0);
 	__delay();
 	return ack;
 }
 
 uint8_t swi2c_read(void)
 {
-	PIN_SET(SWI2C_SDA);
+	WRITE(SWI2C_SDA, 1);
 	__delay();
-	PIN_INP(SWI2C_SDA);
+	SET_INPUT(SWI2C_SDA);
 	uint8_t data = 0;
 	int8_t bit; for (bit = 7; bit >= 0; bit--)
 	{
-		PIN_SET(SWI2C_SCL);
+		WRITE(SWI2C_SCL, 1);
 		__delay();
-		data |= (PIN_GET(SWI2C_SDA)?1:0) << bit;
-		PIN_CLR(SWI2C_SCL);
+		data |= (READ(SWI2C_SDA)) << bit;
+		WRITE(SWI2C_SCL, 0);
 		__delay();
 	}
-	PIN_OUT(SWI2C_SDA);
+	SET_OUTPUT(SWI2C_SDA);
 	return data;
 }
 
@@ -97,12 +98,11 @@ void swi2c_write(uint8_t data)
 {
 	int8_t bit; for (bit = 7; bit >= 0; bit--)
 	{
-		if (data & (1 << bit)) PIN_SET(SWI2C_SDA);
-		else PIN_CLR(SWI2C_SDA);
+		WRITE(SWI2C_SDA, data & _BV(bit));
 		__delay();
-		PIN_SET(SWI2C_SCL);
+		WRITE(SWI2C_SCL, 1);
 		__delay();
-		PIN_CLR(SWI2C_SCL);
+		WRITE(SWI2C_SCL, 0);
 		__delay();
 	}
 }

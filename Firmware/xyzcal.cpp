@@ -9,7 +9,6 @@
 #include "temperature.h"
 #include "sm4.h"
 
-
 #define XYZCAL_PINDA_HYST_MIN 20  //50um
 #define XYZCAL_PINDA_HYST_MAX 100 //250um
 #define XYZCAL_PINDA_HYST_DIF 5   //12.5um
@@ -30,13 +29,97 @@
 #define _Z ((int16_t)count_position[Z_AXIS])
 #define _E ((int16_t)count_position[E_AXIS])
 
-#define _PI 3.14159265F
+#ifndef M_PI
+const constexpr float M_PI = 3.1415926535897932384626433832795f;
+#endif
+
+const constexpr uint8_t X_PLUS = 0;
+const constexpr uint8_t X_MINUS = 1;
+const constexpr uint8_t Y_PLUS = 0;
+const constexpr uint8_t Y_MINUS = 1;
+const constexpr uint8_t Z_PLUS = 0;
+const constexpr uint8_t Z_MINUS = 1;
+
+/// Max. jerk in PrusaSlicer, 10000 = 1 mm/s
+const constexpr uint16_t MAX_DELAY = 10000;
+const constexpr float MIN_SPEED = 0.01f / (MAX_DELAY * 0.000001f);
+/// 200 = 50 mm/s
+const constexpr uint16_t Z_MIN_DELAY = 200;
+const constexpr uint16_t Z_ACCEL = 1000;
+
+/// \returns positive value always
+#define ABS(a) \
+    ({ __typeof__ (a) _a = (a); \
+    _a >= 0 ? _a : (-_a); })
+
+/// \returns maximum of the two
+#define MAX(a, b) \
+    ({ __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a >= _b ? _a : _b; })
+
+/// \returns minimum of the two
+#define MIN(a, b) \
+    ({ __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a <= _b ? _a : _b; })
+
+/// swap values
+#define SWAP(a, b) \
+    ({ __typeof__ (a) c = (a); \
+        a = (b); \
+        b = c; })
+
+/// Saturates value
+/// \returns min if value is less than min
+/// \returns max if value is more than min
+/// \returns value otherwise
+#define CLAMP(value, min, max) \
+    ({ __typeof__ (value) a_ = (value); \
+		__typeof__ (min) min_ = (min); \
+		__typeof__ (max) max_ = (max); \
+        ( a_ < min_ ? min_ : (a_ <= max_ ? a_ : max_)); })
+
+/// \returns square of the value
+#define SQR(a) \
+    ({ __typeof__ (a) a_ = (a); \
+        (a_ * a_); })
+
+/// position types
+typedef int16_t pos_i16_t;
+typedef long pos_i32_t;
+typedef float pos_mm_t;
+typedef int16_t usteps_t;
 
 uint8_t check_pinda_0();
 uint8_t check_pinda_1();
 void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de);
 uint16_t xyzcal_calc_delay(uint16_t nd, uint16_t dd);
 
+uint8_t round_to_u8(float f){
+	return (uint8_t)(f + .5f);
+}
+
+uint16_t round_to_u16(float f){
+	return (uint16_t)(f + .5f);
+}
+
+int16_t round_to_i16(float f){
+	return (int16_t)(f + .5f);
+}
+
+/// converts millimeters to integer position
+pos_i16_t mm_2_pos(pos_mm_t mm){
+	return (pos_i16_t)(0.5f + mm * 100);
+}
+
+/// converts integer position to millimeters
+pos_mm_t pos_2_mm(pos_i16_t pos){
+	return pos * 0.01f;
+}
+pos_mm_t pos_2_mm(float pos){
+	return pos * 0.01f;
+}
 
 void xyzcal_meassure_enter(void)
 {
@@ -142,6 +225,7 @@ uint16_t xyzcal_calc_delay(uint16_t, uint16_t)
 }
 #endif //SM4_ACCEL_TEST
 
+/// Moves printer to absolute position [x,y,z] defined in integer position system
 bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda)
 {
 //	DBG(_n("xyzcal_lineXYZ_to x=%d y=%d z=%d  check=%d\n"), x, y, z, check_pinda);
@@ -152,17 +236,21 @@ bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_
 	sm4_set_dir_bits(xyzcal_dm);
 	sm4_stop_cb = check_pinda?((check_pinda<0)?check_pinda_0:check_pinda_1):0;
 	xyzcal_sm4_delay = delay_us;
-//	uint32_t u = _micros();
-	bool ret = sm4_line_xyze_ui(abs(x), abs(y), abs(z), 0)?true:false;
-//	u = _micros() - u;
+	//	uint32_t u = _micros();
+	bool ret = sm4_line_xyze_ui(abs(x), abs(y), abs(z), 0) ? true : false;
+	//	u = _micros() - u;
 	return ret;
+}
+
+/// Moves printer to absolute position [x,y,z] defined in millimeters
+bool xyzcal_lineXYZ_to_float(pos_mm_t x, pos_mm_t y, pos_mm_t z, uint16_t delay_us, int8_t check_pinda){
+	return xyzcal_lineXYZ_to(mm_2_pos(x), mm_2_pos(y), mm_2_pos(z), delay_us, check_pinda);
 }
 
 bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radius, int16_t rotation, uint16_t delay_us, int8_t check_pinda, uint16_t* pad)
 {
 	bool ret = false;
 	float r = 0; //radius
-	uint8_t n = 0; //point number
 	uint16_t ad = 0; //angle [deg]
 	float ar; //angle [rad]
 	uint8_t dad = 0; //delta angle [deg]
@@ -171,7 +259,13 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	uint8_t k = 720 / (dad_max - dad_min); //delta calculation constant
 	ad = 0;
 	if (pad) ad = *pad % 720;
+	
 	DBG(_n("xyzcal_spiral2 cx=%d cy=%d z0=%d dz=%d radius=%d ad=%d\n"), cx, cy, z0, dz, radius, ad);
+	// lcd_set_cursor(0, 4);
+	// char text[10];
+	// snprintf(text, 10, "%4d", z0);
+	// lcd_print(text);
+
 	for (; ad < 720; ad++)
 	{
 		if (radius > 0)
@@ -184,11 +278,9 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 			dad = dad_max - ((719 - ad) / k);
 			r = (float)(((uint32_t)(719 - ad)) * (-radius)) / 720;
 		}
-		ar = (ad + rotation)* (float)_PI / 180;
-		float _cos = cos(ar);
-		float _sin = sin(ar);
-		int x = (int)(cx + (_cos * r));
-		int y = (int)(cy + (_sin * r));
+		ar = (ad + rotation)* (float)M_PI / 180;
+		int x = (int)(cx + (cos(ar) * r));
+		int y = (int)(cy + (sin(ar) * r));
 		int z = (int)(z0 - ((float)((int32_t)dz * ad) / 720));
 		if (xyzcal_lineXYZ_to(x, y, z, delay_us, check_pinda))
 		{
@@ -196,10 +288,13 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 			ret = true;
 			break;
 		}
-		n++;
 		ad += dad;
 	}
 	if (pad) *pad = ad;
+	// if(ret){
+	// 	lcd_set_cursor(0, 4);
+	// 	lcd_print("         ");
+	// }
 	return ret;
 }
 
@@ -275,407 +370,224 @@ int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t d
 }
 #endif //XYZCAL_MEASSURE_PINDA_HYSTEREZIS
 
+/// Accelerate up to max.speed (defined by @min_delay_us)
+void accelerate(uint8_t axis, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us){
+	sm4_do_step(axis);
 
-void xyzcal_scan_pixels_32x32(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixels)
-{
-	DBG(_n("xyzcal_scan_pixels_32x32 cx=%d cy=%d min_z=%d max_z=%d\n"), cx, cy, min_z, max_z);
-//	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, max_z, 2*delay_us, 0);
-//	xyzcal_lineXYZ_to(cx, cy, max_z, delay_us, 0);
-	int16_t z = (int16_t)count_position[2];
-	xyzcal_lineXYZ_to(cx, cy, z, 2*delay_us, 0);
-	for (uint8_t r = 0; r < 32; r++)
-	{
-//		int8_t _pinda = _PINDA;
-		xyzcal_lineXYZ_to((r&1)?(cx+1024):(cx-1024), cy - 1024 + r*64, z, 2*delay_us, 0);
-		xyzcal_lineXYZ_to(_X, _Y, min_z, delay_us, 1);
-		xyzcal_lineXYZ_to(_X, _Y, max_z, delay_us, -1);
-		z = (int16_t)count_position[2];
-		sm4_set_dir(X_AXIS, (r&1)?1:0);
-		for (uint8_t c = 0; c < 32; c++)
-		{
-			uint16_t sum = 0;
-			int16_t z_sum = 0;
-			for (uint8_t i = 0; i < 64; i++)
-			{
-				int8_t pinda = _PINDA;
-				int16_t pix = z - min_z;
-				pix += (pinda)?23:-24;
-				if (pix < 0) pix = 0;
-				if (pix > 255) pix = 255;
-				sum += pix;
-				z_sum += z;
-//				if (_pinda != pinda)
-//				{
-//					if (pinda)
-//						DBG(_n("!1 x=%d z=%d\n"), c*64+i, z+23);
-//					else
-//						DBG(_n("!0 x=%d z=%d\n"), c*64+i, z-24);
-//				}
-				sm4_set_dir(Z_AXIS, !pinda);
-				if (!pinda)
-				{
-					if (z > min_z)
-					{
-						sm4_do_step(Z_AXIS_MASK);
-						z--;
+	/// keep max speed (avoid extra computation)
+	if (acc > 0 && delay_us == min_delay_us){
+		delayMicroseconds(delay_us);
+		return;
+	}
+
+	// v1 = v0 + a * t
+	// 0.01 = length of a step
+	const float t0 = delay_us * 0.000001f;
+	const float v1 = (0.01f / t0 + acc * t0);
+	uint16_t t1;
+	if (v1 <= 0.16f){ ///< slowest speed convertible to uint16_t delay
+		t1 = MAX_DELAY; ///< already too slow so it wants to move back
+	} else {
+		/// don't exceed max.speed
+		t1 = MAX(min_delay_us, round_to_u16(0.01f / v1 * 1000000.f));
+	}
+
+	/// make sure delay has changed a bit at least
+	if (t1 == delay_us && acc != 0){
+		if (acc > 0)
+			t1--;
+		else
+			t1++;
+	}
+	
+	//DBG(_n("%d "), t1);
+
+	delayMicroseconds(t1);
+	delay_us = t1;
+}
+
+void go_and_stop(uint8_t axis, int16_t dec, uint16_t &delay_us, uint16_t &steps){
+	if (steps <= 0 || dec <= 0)
+		return;
+
+	/// deceleration distance in steps, s = 1/2 v^2 / a
+	uint16_t s = round_to_u16(100 * 0.5f * SQR(0.01f) / (SQR((float)delay_us) * dec));
+	if (steps > s){
+		/// go steady
+		sm4_do_step(axis);
+		delayMicroseconds(delay_us);
+	} else {
+		/// decelerate
+		accelerate(axis, -dec, delay_us, delay_us);
+	}
+	--steps;
+}
+
+void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t* pixels){
+	if (!pixels)
+		return;
+	int16_t z = _Z;
+	int16_t z_trig;
+	uint16_t line_buffer[32];
+	uint16_t current_delay_us = MAX_DELAY; ///< defines current speed
+	xyzcal_lineXYZ_to(cx - 1024, cy - 1024, min_z, delay_us, 0);
+	int16_t start_z;
+	uint16_t steps_to_go;
+
+	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
+		xyzcal_lineXYZ_to(_X, cy - 1024 + r * 64, z, delay_us, 0);
+		for (int8_t d = 0; d < 2; ++d){ ///< direction			
+			xyzcal_lineXYZ_to((d & 1) ? (cx + 1024) : (cx - 1024), _Y, min_z, delay_us, 0);
+
+			z = _Z;
+			sm4_set_dir(X_AXIS, d);
+			for (uint8_t c = 0; c < 32; c++){ ///< X axis
+
+				z_trig = min_z;
+
+				/// move up to un-trigger (surpress hysteresis)
+				sm4_set_dir(Z_AXIS, Z_PLUS);
+				/// speed up from stop, go half the way
+				current_delay_us = MAX_DELAY;
+				for (start_z = z; z < (max_z + start_z) / 2; ++z){
+					if (!_PINDA){
+						break;
+					}
+					accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+				}
+
+				if(_PINDA){
+					uint16_t steps_to_go = MAX(0, max_z - z);
+					while (_PINDA && z < max_z){
+						go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
+						++z;
 					}
 				}
-				else
-				{
-					if (z < max_z)
-					{
-						sm4_do_step(Z_AXIS_MASK);
-						z++;
-					}
+				/// slow down to stop
+				while (current_delay_us < MAX_DELAY){
+					accelerate(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					++z;
 				}
-				sm4_do_step(X_AXIS_MASK);
-				delayMicroseconds(600);
-//				_pinda = pinda;
-			}
-			sum >>= 6; //div 64
-			if (z_sum < 0)
-			{
-				z_sum = -z_sum;
-				z_sum >>= 6; //div 64
-				z_sum = -z_sum;
-			}
-			else
-				z_sum >>= 6; //div 64
-			if (pixels) pixels[((uint16_t)r<<5) + ((r&1)?(31-c):c)] = sum;
-//			DBG(_n("c=%d r=%d l=%d z=%d\n"), c, r, sum, z_sum);
-			count_position[0] += (r&1)?-64:64;
-			count_position[2] = z;
-		}
-		if (pixels)
-			for (uint8_t c = 0; c < 32; c++)
-				DBG(_n("%02x"), pixels[((uint16_t)r<<5) + c]);
-		DBG(_n("\n"));
-	}
-//	xyzcal_lineXYZ_to(cx, cy, z, 2*delay_us, 0);
-}
 
-void xyzcal_histo_pixels_32x32(uint8_t* pixels, uint16_t* histo)
-{
-	for (uint8_t l = 0; l < 16; l++)
-		histo[l] = 0;
-	for (uint8_t r = 0; r < 32; r++)
-		for (uint8_t c = 0; c < 32; c++)
-		{
-			uint8_t pix = pixels[((uint16_t)r<<5) + c];
-			histo[pix >> 4]++;
-		}
-	for (uint8_t l = 0; l < 16; l++)
-		DBG(_n(" %2d %d\n"), l, histo[l]);
-}
+				/// move down to trigger
+				sm4_set_dir(Z_AXIS, Z_MINUS);
+				/// speed up
+				current_delay_us = MAX_DELAY;
+				for (start_z = z; z > (min_z + start_z) / 2; --z){
+					if (_PINDA){
+						z_trig = z;
+						break;
+					}
+					accelerate(Z_AXIS_MASK, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+				}
+				/// slow down
+				if(!_PINDA){
+					steps_to_go = MAX(0, z - min_z);
+					while (!_PINDA && z > min_z){
+						go_and_stop(Z_AXIS_MASK, Z_ACCEL, current_delay_us, steps_to_go);
+						--z;
+					}
+					z_trig = z;
+				}
+				/// slow down to stop
+				while (z > min_z && current_delay_us < MAX_DELAY){
+					accelerate(Z_AXIS_MASK, -Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					--z;
+				}
 
-void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
-{
-	uint8_t l;
-	uint16_t max_c = histo[1];
-	uint8_t max_l = 1;
-	for (l = 1; l < 16; l++)
-	{
-		uint16_t c = histo[l];
-		if (c > max_c)
-		{
-			max_c = c;
-			max_l = l;
-		}
-	}
-	DBG(_n("max_c=%2d max_l=%d\n"), max_c, max_l);
-	for (l = 14; l > 8; l--)
-		if (histo[l] >= 10)
-			break;
-	uint8_t pix_min = 0;
-	uint8_t pix_max = l << 4;
-	if (histo[0] < (32*32 - 144))
-	{
-		pix_min = (max_l << 4) / 2;
-	}
-	uint8_t pix_dif = pix_max - pix_min;
-	DBG(_n(" min=%d max=%d dif=%d\n"), pix_min, pix_max, pix_dif);
-	for (int16_t i = 0; i < 32*32; i++)
-	{
-		uint16_t pix = pixels[i];
-		if (pix > pix_min) pix -= pix_min;
-		else pix = 0;
-		pix <<= 8;
-		pix /= pix_dif;
-//		if (pix < 0) pix = 0;
-		if (pix > 255) pix = 255;
-		pixels[i] = (uint8_t)pix;
-	}
-	for (uint8_t r = 0; r < 32; r++)
-	{
-		for (uint8_t c = 0; c < 32; c++)
-			DBG(_n("%02x"), pixels[((uint16_t)r<<5) + c]);
-		DBG(_n("\n"));
-	}
-}
+				count_position[2] = z;
+				if (d == 0){
+					line_buffer[c] = (uint16_t)(z_trig - min_z);
+				} else {
+					/// data reversed in X
+					// DBG(_n("%04x"), (line_buffer[31 - c] + (z - min_z)) / 2);
+					/// save average of both directions
+					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
+				}
 
-/*
-void xyzcal_draw_pattern_12x12_in_32x32(uint8_t* pattern, uint32_t* pixels, int w, int h, uint8_t x, uint8_t y, uint32_t and, uint32_t or)
-{
-	for (int i = 0; i < 8; i++)
-		for (int j = 0; j < 8; j++)
-		{
-			int idx = (x + j) + w * (y + i);
-			if (pattern[i] & (1 << j))
-			{
-				pixels[idx] &= and;
-				pixels[idx] |= or;
+				/// move to the next point and move Z up diagonally (if needed)
+				current_delay_us = MAX_DELAY;
+				// const int8_t dir = (d & 1) ? -1 : 1;
+				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
+				const int16_t length_x = ABS(end_x - _X);
+				const int16_t half_x = length_x / 2;
+				int16_t x = 0;
+				/// don't go up if PINDA not triggered
+				const bool up = _PINDA;
+				int8_t axis = up ? X_AXIS_MASK | Z_AXIS_MASK : X_AXIS_MASK;
+
+				sm4_set_dir(Z_AXIS, Z_PLUS);
+				/// speed up
+				for (x = 0; x <= half_x; ++x){
+					accelerate(axis, Z_ACCEL, current_delay_us, Z_MIN_DELAY);
+					if (up)
+						++z;
+				}
+				/// slow down
+				steps_to_go = length_x - x;
+				for (; x < length_x; ++x){
+					go_and_stop(axis, Z_ACCEL, current_delay_us, steps_to_go);
+					if (up)
+						++z;
+				}
+				count_position[0] = end_x;
+				count_position[2] = z;
 			}
 		}
+		// DBG(_n("\n\n"));
+	}
 }
-*/
 
-int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r)
-{
+/// Returns rate of match
+/// max match = 132, min match = 0
+uint8_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r){
 	uint8_t thr = 16;
-	int16_t match = 0;
-	for (uint8_t i = 0; i < 12; i++)
-		for (uint8_t j = 0; j < 12; j++)
-		{
-			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue; //skip corners
+	uint8_t match = 0;
+	for (uint8_t i = 0; i < 12; ++i){
+		for (uint8_t j = 0; j < 12; ++j){
+			/// skip corners (3 pixels in each)
+			if (((i == 0) || (i == 11)) && ((j < 2) || (j >= 10))) continue;
 			if (((j == 0) || (j == 11)) && ((i < 2) || (i >= 10))) continue;
-			uint16_t idx = (c + j) + 32 * (r + i);
-			uint8_t val = pixels[idx];
-			if (pattern[i] & (1 << j))
-			{
-				if (val > thr) match ++;
-				else match --;
-			}
-			else
-			{
-				if (val <= thr) match ++;
-				else match --;
-			}
+			const uint16_t idx = (c + j) + 32 * ((uint16_t)r + i);
+			const bool high_pix = pixels[idx] > thr;
+			const bool high_pat = pattern[i] & (1 << j);
+			if (high_pix == high_pat)
+				match++;
 		}
+	}
 	return match;
 }
 
-int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, uint8_t* pc, uint8_t* pr)
-{
+/// Searches for best match of pattern by shifting it
+/// Returns rate of match and the best location
+/// max match = 132, min match = 0
+uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, uint8_t* pc, uint8_t* pr){
+	if (!pixels || !pattern || !pc || !pr)
+		return -1;
 	uint8_t max_c = 0;
 	uint8_t max_r = 0;
-	int16_t max_match = 0;
-	for (uint8_t r = 0; r < (32 - 12); r++)
-		for (uint8_t c = 0; c < (32 - 12); c++)
-		{
-			int16_t match = xyzcal_match_pattern_12x12_in_32x32(pattern, pixels, c, r);
-			if (max_match < match)
-			{
+	uint8_t max_match = 0;
+
+	// DBG(_n("Matching:\n"));
+	/// pixel precision
+	for (uint8_t r = 0; r < (32 - 12); ++r){
+		for (uint8_t c = 0; c < (32 - 12); ++c){
+			const uint8_t match = xyzcal_match_pattern_12x12_in_32x32(pattern, pixels, c, r);
+			if (max_match < match){
 				max_c = c;
 				max_r = r;
 				max_match = match;
 			}
+			// DBG(_n("%d "), match);
 		}
-	DBG(_n("max_c=%d max_r=%d max_match=%d\n"), max_c, max_r, max_match);
-	if (pc) *pc = max_c;
-	if (pr) *pr = max_r;
+		// DBG(_n("\n"));
+	}
+	DBG(_n("max_c=%d max_r=%d max_match=%d pixel\n"), max_c, max_r, max_match);
+
+	*pc = max_c;
+	*pr = max_r;
 	return max_match;
 }
-
-#define MAX_DIAMETR 600
-#define XYZCAL_FIND_CENTER_DIAGONAL
-
-int8_t xyzcal_find_point_center2(uint16_t delay_us)
-{
-	printf_P(PSTR("xyzcal_find_point_center2\n"));
-	int16_t x0 = _X;
-	int16_t y0 = _Y;
-	int16_t z0 = _Z;
-	printf_P(PSTR(" x0=%d\n"), x0);
-	printf_P(PSTR(" y0=%d\n"), y0);
-	printf_P(PSTR(" z0=%d\n"), z0);
-
-	xyzcal_lineXYZ_to(_X, _Y, z0 + 400, 500, -1);
-	xyzcal_lineXYZ_to(_X, _Y, z0 - 400, 500, 1);
-	xyzcal_lineXYZ_to(_X, _Y, z0 + 400, 500, -1);
-	xyzcal_lineXYZ_to(_X, _Y, z0 - 400, 500, 1);
-
-	z0 = _Z - 20;
-	xyzcal_lineXYZ_to(_X, _Y, z0, 500, 0);
-
-//	xyzcal_lineXYZ_to(x0, y0, z0 - 100, 500, 1);
-//	z0 = _Z;
-//	printf_P(PSTR("  z0=%d\n"), z0);
-//	xyzcal_lineXYZ_to(x0, y0, z0 + 100, 500, -1);
-//	z0 += _Z;
-//	z0 /= 2;
-	printf_P(PSTR("   z0=%d\n"), z0);
-//	xyzcal_lineXYZ_to(x0, y0, z0 - 100, 500, 1);
-//	z0 = _Z - 10;
-
-	int8_t ret = 1;
-
-#ifdef XYZCAL_FIND_CENTER_DIAGONAL
-	int32_t xc = 0;
-	int32_t yc = 0;
-	int16_t ad = 45;
-	for (; ad < 360; ad += 90)
-	{
-		float ar = (float)ad * _PI / 180;
-		int16_t x = x0 + MAX_DIAMETR * cos(ar);
-		int16_t y = y0 + MAX_DIAMETR * sin(ar);
-		if (!xyzcal_lineXYZ_to(x, y, z0, delay_us, -1))
-		{
-			printf_P(PSTR("ERROR ad=%d\n"), ad);
-			ret = 0;
-			break;
-		}
-		xc += _X;
-		yc += _Y;
-		xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
-	}
-	if (ret)
-	{
-		printf_P(PSTR("OK\n"), ad);
-		x0 = xc / 4;
-		y0 = yc / 4;
-		printf_P(PSTR(" x0=%d\n"), x0);
-		printf_P(PSTR(" y0=%d\n"), y0);
-	}
-
-#else //XYZCAL_FIND_CENTER_DIAGONAL
-	xyzcal_lineXYZ_to(x0 - MAX_DIAMETR, y0, z0, delay_us, -1);
-	int16_t dx1 = x0 - _X;
-	if (dx1 >= MAX_DIAMETR)
-	{
-		printf_P(PSTR("!!! dx1 = %d\n"), dx1);
-		return 0;
-	}
-	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
-	xyzcal_lineXYZ_to(x0 + MAX_DIAMETR, y0, z0, delay_us, -1);
-	int16_t dx2 = _X - x0;
-	if (dx2 >= MAX_DIAMETR)
-	{
-		printf_P(PSTR("!!! dx2 = %d\n"), dx2);
-		return 0;
-	}
-	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
-	xyzcal_lineXYZ_to(x0 , y0 - MAX_DIAMETR, z0, delay_us, -1);
-	int16_t dy1 = y0 - _Y;
-	if (dy1 >= MAX_DIAMETR)
-	{
-		printf_P(PSTR("!!! dy1 = %d\n"), dy1);
-		return 0;
-	}
-	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
-	xyzcal_lineXYZ_to(x0, y0 + MAX_DIAMETR, z0, delay_us, -1);
-	int16_t dy2 = _Y - y0;
-	if (dy2 >= MAX_DIAMETR)
-	{
-		printf_P(PSTR("!!! dy2 = %d\n"), dy2);
-		return 0;
-	}
-	printf_P(PSTR("dx1=%d\n"), dx1);
-	printf_P(PSTR("dx2=%d\n"), dx2);
-	printf_P(PSTR("dy1=%d\n"), dy1);
-	printf_P(PSTR("dy2=%d\n"), dy2);
-
-	x0 += (dx2 - dx1) / 2;
-	y0 += (dy2 - dy1) / 2;
-
-	printf_P(PSTR(" x0=%d\n"), x0);
-	printf_P(PSTR(" y0=%d\n"), y0);
-
-#endif //XYZCAL_FIND_CENTER_DIAGONAL
-
-	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
-
-	return ret;
-}
-
-#ifdef XYZCAL_FIND_POINT_CENTER
-int8_t xyzcal_find_point_center(int16_t x0, int16_t y0, int16_t z0, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t turns)
-{
-	uint8_t n;
-	uint16_t ad;
-	float ar;
-	float _cos;
-	float _sin;
-	int16_t r_min = 0;
-	int16_t r_max = 0;
-	int16_t x_min = 0;
-	int16_t x_max = 0;
-	int16_t y_min = 0;
-	int16_t y_max = 0;
-	int16_t r = 10;
-	int16_t x = x0;
-	int16_t y = y0;
-	int16_t z = z0;
-	int8_t _pinda = _PINDA;
-	for (n = 0; n < turns; n++)
-	{
-		uint32_t r_sum = 0;
-		for (ad = 0; ad < 720; ad++)
-		{
-			ar = ad * _PI / 360;
-			_cos = cos(ar);
-			_sin = sin(ar);
-			x = x0 + (int)(_cos * r);
-			y = y0 + (int)(_sin * r);
-			xyzcal_lineXYZ_to(x, y, z, 1000, 0);
-			int8_t pinda = _PINDA;
-			if (pinda)
-				r += 1;
-			else
-			{
-				r -= 1;
-				ad--;
-				r_sum -= r;
-			}
-			if (ad == 0)
-			{
-				x_min = x0;
-				x_max = x0;
-				y_min = y0;
-				y_max = y0;
-				r_min = r;
-				r_max = r;
-			}
-			else if (pinda)
-			{
-				if (x_min > x) x_min = (2*x + x_min) / 3;
-				if (x_max < x) x_max = (2*x + x_max) / 3;
-				if (y_min > y) y_min = (2*y + y_min) / 3;
-				if (y_max < y) y_max = (2*y + y_max) / 3;
-/*				if (x_min > x) x_min = x;
-				if (x_max < x) x_max = x;
-				if (y_min > y) y_min = y;
-				if (y_max < y) y_max = y;*/
-				if (r_min > r) r_min = r;
-				if (r_max < r) r_max = r;
-			}
-			r_sum += r;
-/*			if (_pinda != pinda)
-			{
-				if (pinda)
-					DBG(_n("!1 x=%d y=%d\n"), x, y);
-				else
-					DBG(_n("!0 x=%d y=%d\n"), x, y);
-			}*/
-			_pinda = pinda;
-//			DBG(_n("x=%d y=%d rx=%d ry=%d\n"), x, y, rx, ry);
-		}
-		DBG(_n("x_min=%d x_max=%d y_min=%d y_max=%d r_min=%d r_max=%d r_avg=%d\n"), x_min, x_max, y_min, y_max, r_min, r_max, r_sum / 720);
-		if ((n > 2) && (n & 1))
-		{
-			x0 += (x_min + x_max);
-			y0 += (y_min + y_max);
-			x0 /= 3;
-			y0 /= 3;
-			int rx = (x_max - x_min) / 2;
-			int ry = (y_max - y_min) / 2;
-			r = (rx + ry) / 3;//(rx < ry)?rx:ry;
-			DBG(_n("x0=%d y0=%d r=%d\n"), x0, y0, r);
-		}
-	}
-	xyzcal_lineXYZ_to(x0, y0, z, 200, 0);
-}
-#endif //XYZCAL_FIND_POINT_CENTER
-
 
 uint8_t xyzcal_xycoords2point(int16_t x, int16_t y)
 {
@@ -724,91 +636,222 @@ bool xyzcal_searchZ(void)
 	return false;
 }
 
-bool xyzcal_scan_and_process(void)
-{
+/// returns value of any location within data
+/// uses bilinear interpolation
+float get_value(uint8_t * matrix_32x32, float c, float r){
+	if (c <= 0 || r <= 0 || c >= 31 || r >= 31)
+		return 0;
+
+	/// calculate weights of nearby points
+	const float wc1 = c - floor(c);
+	const float wr1 = r - floor(r);
+	const float wc0 = 1 - wc1;
+	const float wr0 = 1 - wr1;
+
+	const float w00 = wc0 * wr0;
+	const float w01 = wc0 * wr1;
+	const float w10 = wc1 * wr0;
+	const float w11 = wc1 * wr1;
+
+	const uint16_t c0 = c;
+	const uint16_t c1 = c0 + 1;
+	const uint16_t r0 = r;
+	const uint16_t r1 = r0 + 1;
+
+	const uint16_t idx00 = c0 + 32 * r0;
+	const uint16_t idx01 = c0 + 32 * r1;
+	const uint16_t idx10 = c1 + 32 * r0;
+	const uint16_t idx11 = c1 + 32 * r1;
+
+	/// bilinear resampling
+	return w00 * matrix_32x32[idx00] + w01 * matrix_32x32[idx01] + w10 * matrix_32x32[idx10] + w11 * matrix_32x32[idx11];
+}
+
+const constexpr float m_infinity = -1000.f;
+
+/// replaces the highest number by m_infinity
+void remove_highest(float *points, const uint8_t num_points){
+	if (num_points <= 0)
+		return;
+
+	float max = points[0];
+	uint8_t max_i = 0;
+	for (uint8_t i = 0; i < num_points; ++i){
+		if (max < points[i]){
+			max = points[i];
+			max_i = i;
+		}
+	}
+	points[max_i] = m_infinity;
+}
+
+/// return the highest number in the list
+float highest(float *points, const uint8_t num_points){
+	if (num_points <= 0)
+		return 0;
+
+	float max = points[0];
+	for (uint8_t i = 0; i < num_points; ++i){
+		if (max < points[i]){
+			max = points[i];
+		}
+	}
+	return max;
+}
+
+/// Searches for circle iteratively
+/// Uses points on the perimeter. If point is high it pushes circle out of the center (shift or change of radius),
+/// otherwise to the center.
+/// Algorithm is stopped after fixed number of iterations. Move is limited to 0.5 px per iteration.
+void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t iterations){
+	/// circle of 10.5 diameter has 33 in circumference, don't go much above
+	const constexpr uint8_t num_points = 33;
+	float points[num_points];
+	float pi_2_div_num_points = 2 * M_PI / num_points;
+	const constexpr uint8_t target_z = 32; ///< target z height of the circle
+	float norm;
+	float angle;
+	float max_val = 0.5f;
+	const uint8_t blocks = 7;
+	float shifts_x[blocks];
+	float shifts_y[blocks];	
+	float shifts_r[blocks];	
+
+	for (int8_t i = iterations; i > 0; --i){
+	
+		// DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
+
+		/// read points on the circle
+		for (uint8_t p = 0; p < num_points; ++p){
+			angle = p * pi_2_div_num_points;
+			points[p] = get_value(matrix_32x32, r * cos(angle) + x, r * sin(angle) + y) - target_z;
+			// DBG(_n("%f "), points[p]);
+		}
+		// DBG(_n(" points\n"));
+
+		/// sum blocks
+		for (uint8_t j = 0; j < blocks; ++j){
+			shifts_x[j] = shifts_y[j] = shifts_r[j] = 0;
+			/// first part
+			for (uint8_t p = 0; p < num_points * 3 / 4; ++p){
+				uint8_t idx = (p + j * num_points / blocks) % num_points;
+
+				angle = idx * pi_2_div_num_points;
+				shifts_x[j] += cos(angle) * points[idx];
+				shifts_y[j] += sin(angle) * points[idx];
+				shifts_r[j] += points[idx];
+			}
+		}
+
+		/// remove extreme values (slow but simple)
+		for (uint8_t j = 0; j < blocks / 2; ++j){
+			remove_highest(shifts_x, blocks);
+			remove_highest(shifts_y, blocks);
+			remove_highest(shifts_r, blocks);
+		}
+
+		/// median is the highest now
+		norm = 1.f / (32.f * (num_points * 3 / 4));
+		x += CLAMP(highest(shifts_x, blocks) * norm, -max_val, max_val);
+		y += CLAMP(highest(shifts_y, blocks) * norm, -max_val, max_val);
+		r += CLAMP(highest(shifts_r, blocks) * norm, -max_val, max_val);
+
+		r = MAX(2, r);
+
+	}
+	DBG(_n(" [%f, %f][%f] final circle\n"), x, y, r);
+}
+
+/// Prints matrix in hex to debug output (serial line)
+void print_image(uint8_t *matrix_32x32){
+	for (uint8_t y = 0; y < 32; ++y){
+		const uint16_t idx_y = y * 32;
+		for (uint8_t x = 0; x < 32; ++x){
+			DBG(_n("%02x"), matrix_32x32[idx_y + x]);
+		}
+		DBG(_n("\n"));
+	}
+	DBG(_n("\n"));
+}
+
+/// scans area around the current head location and
+/// searches for the center of the calibration pin
+bool xyzcal_scan_and_process(void){
 	DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
-//	DBG(_n("sizeof(pixels)=%d\n"), 32*32);
-//	DBG(_n("sizeof(histo)=%d\n"), 2*16);
-//	DBG(_n("sizeof(pattern)=%d\n"), 2*12);
-	DBG(_n("sizeof(total)=%d\n"), 32*32+2*16+2*12);
 	bool ret = false;
 	int16_t x = _X;
 	int16_t y = _Y;
 	int16_t z = _Z;
 
-	uint8_t* pixels = (uint8_t*)block_buffer;
-	xyzcal_scan_pixels_32x32(x, y, z - 72, 2400, 200, pixels);
+	uint8_t *matrix32 = (uint8_t *)block_buffer;
+	uint16_t *pattern = (uint16_t *)(matrix32 + 32 * 32);
 
-	uint16_t* histo = (uint16_t*)(pixels + 32*32);
-	xyzcal_histo_pixels_32x32(pixels, histo);
+	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, matrix32);
+	print_image(matrix32);
 
-	xyzcal_adjust_pixels(pixels, histo);
-
-	uint16_t* pattern = (uint16_t*)(histo + 2*16);
-	for (uint8_t i = 0; i < 12; i++)
-	{
+	for (uint8_t i = 0; i < 12; i++){
 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
 //		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
 	}
-	uint8_t c = 0;
-	uint8_t r = 0;
-	if (xyzcal_find_pattern_12x12_in_32x32(pixels, pattern, &c, &r) > 66) //total pixels=144, corner=12 (1/2 = 66)
-	{
-		DBG(_n(" pattern found at %d %d\n"), c, r);
-		c += 6;
-		r += 6;
-		x += ((int16_t)c - 16) << 6;
-		y += ((int16_t)r - 16) << 6;
-		DBG(_n(" x=%d y=%d z=%d\n"), x, y, z);
+	
+	/// SEARCH FOR BINARY CIRCLE
+	uint8_t uc = 0;
+	uint8_t ur = 0;
+	/// max match = 132, 1/2 good = 66, 2/3 good = 88
+	if (xyzcal_find_pattern_12x12_in_32x32(matrix32, pattern, &uc, &ur) >= 88){
+		/// find precise circle
+		/// move to the center of the pattern (+5.5)
+		float xf = uc + 5.5f;
+		float yf = ur + 5.5f;
+		float radius = 5; ///< default radius
+		const uint8_t iterations = 20;
+		dynamic_circle(matrix32, xf, yf, radius, iterations);
+		if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3){
+			DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
+			/// dynamic algorithm diverged, use original position instead
+			xf = uc + 5.5f;
+			yf = ur + 5.5f;
+		}
+
+		/// move to the center of area and convert to position
+		xf = (float)x + (xf - 15.5f) * 64;
+		yf = (float)y + (yf - 15.5f) * 64;
+		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+		x = round_to_i16(xf);
+		y = round_to_i16(yf);
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		ret = true;
 	}
+
+	/// wipe buffer
 	for (uint16_t i = 0; i < sizeof(block_t)*BLOCK_BUFFER_SIZE; i++)
-		pixels[i] = 0;
+		matrix32[i] = 0;
 	return ret;
 }
 
-bool xyzcal_find_bed_induction_sensor_point_xy(void)
-{
-	DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
+bool xyzcal_find_bed_induction_sensor_point_xy(void){
 	bool ret = false;
+
+	DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
-	int16_t x = _X;
-	int16_t y = _Y;
-	int16_t z = _Z;
+	pos_i16_t x = _X;
+	pos_i16_t y = _Y;
+	pos_i16_t z = _Z;
+
 	uint8_t point = xyzcal_xycoords2point(x, y);
-	x = pgm_read_word((uint16_t*)(xyzcal_point_xcoords + point));
-	y = pgm_read_word((uint16_t*)(xyzcal_point_ycoords + point));
+	x = pgm_read_word((uint16_t *)(xyzcal_point_xcoords + point));
+	y = pgm_read_word((uint16_t *)(xyzcal_point_ycoords + point));
 	DBG(_n("point=%d x=%d y=%d z=%d\n"), point, x, y, z);
 	xyzcal_meassure_enter();
 	xyzcal_lineXYZ_to(x, y, z, 200, 0);
-	if (xyzcal_searchZ())
-	{
+
+	if (xyzcal_searchZ()){
 		int16_t z = _Z;
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		if (xyzcal_scan_and_process())
-		{
-			if (xyzcal_find_point_center2(500))
-			{
-				uint32_t x_avg = 0;
-				uint32_t y_avg = 0;
-				uint8_t n; for (n = 0; n < 4; n++)
-				{
-					if (!xyzcal_find_point_center2(1000)) break;
-					x_avg += _X;
-					y_avg += _Y;	
-				}
-				if (n == 4)
-				{
-					xyzcal_lineXYZ_to(x_avg >> 2, y_avg >> 2, _Z, 200, 0);
-					ret = true;
-				}
-			}
-		}
+		ret = xyzcal_scan_and_process();
 	}
 	xyzcal_meassure_leave();
 	return ret;
 }
-
 
 #endif //NEW_XYZCAL

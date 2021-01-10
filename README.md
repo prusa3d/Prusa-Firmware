@@ -26,14 +26,28 @@ The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.
 
 1. Clone this repository and checkout the correct branch for your desired release version.
 
-2. Set your printer model. 
+1. Set your printer model. 
    - For MK3 --> skip to step 3. 
    - If you have a different printer model, follow step [2.b](#2b) from Windows build
+1. Install GNU AWK  `sudo apt-get install gawk`  
+If you use mawk instead of gawk you get strange errors when multi language support is generated like:  
+`awk: line 2: function strtonum never defined
+sed: couldn't write 4 items to stdout: Broken pipe
+./lang-build.sh: 121: ./lang-build.sh: arithmetic expression: expecting EOF: "0x"awk: line 2: function strtonum never defined
+sed: couldn't write 4 items to stdout: Broken pipe
+tr: write error: Broken pipe
+./lang-build.sh: 121: ./lang-build.sh: arithmetic expression: expecting EOF: "0x"awk: line 2: function strtonum never defined
+sed: couldn't write 4 items to stdout: Broken pipe
+tr: write error: Broken pipe
+tr: write error
+cut: write error: Broken pipeNG! - some texts not found in lang_en.txt! updating binary:
+  primary language ids...awk: line 2: function strtonum never defined
+sed: couldn't flush stdout: Broken pipe`
    
-3. Run `./build.sh`
+1. Run `./build.sh`
    - Output hex file is at `"PrusaFirmware/lang/firmware.hex"` . In the same folder you can hex files for other languages as well.
 
-4. Connect your printer and flash with PrusaSlicer ( Configuration --> Flash printer firmware ) or Slic3r PE.
+1. Connect your printer and flash with PrusaSlicer ( Configuration --> Flash printer firmware ) or Slic3r PE.
    - If you wish to flash from Arduino, follow step [2.c](#2c) from Windows build first.
 
 
@@ -59,7 +73,7 @@ _Note: Multi language build is not supported._
 
 **c.** Modify compiler flags in `platform.txt` file
      
-* The platform.txt file can be found in Arduino instalation directory, or after Arduino has been updated at: `"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"` If you can locate the file in both places, file from user profile is probably used.
+* The platform.txt file can be found in Arduino installation directory, or after Arduino has been updated at: `"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"` If you can locate the file in both places, file from user profile is probably used.
        
 * Add `"-Wl,-u,vfprintf -lprintf_flt -lm"` to `"compiler.c.elf.flags="` before existing flag "-Wl,--gc-sections"  
 
@@ -97,10 +111,13 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
 - follow the Microsoft guide https://docs.microsoft.com/en-us/windows/wsl/install-win10
   You can also use the 'prepare_winbuild.ps1' powershell script with Administrator rights
 - Tested versions are at this moment
-  - Ubuntu other may different
+  - Ubuntu and Debian, other may different
   - After the installation and reboot please open your Ubuntu bash and do following steps
-  - run command `apt-get update`
-  - to install zip run `apt-get install zip`
+  - run command `sudo apt-get update`
+  - run command `sudo apt-get upgrade`
+  - to install zip run `sudo apt-get install zip`
+  - to install dos2unix run `sudo apt-get install dos2unix`
+  - run `dos2unix PF-build.sh` to convert the windows line endings to unix line endings
   - add few lines at the top of `~/.bashrc` by running `sudo nano ~/.bashrc`
 	
 	export OS="Linux"
@@ -108,11 +125,11 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
 	export GPG_TTY=$(tty)
 	
 	use `CRTL-X` to close nano and confirm to write the new entries
-  - restart Ubuntu bash
-Now your Ubuntu subsystem is ready to use the automatic `PF-build.sh` script and compile your firmware correctly
+  - restart Ubuntu/Debian bash
+  - Now your Ubuntu/Debian subsystem is ready to use the automatic `PF-build.sh` script and compile your firmware correctly
 
-#### Some Tips for Ubuntu
-- Linux is case sensetive so please don't forget to use capital letters where needed, like changing to a directory
+#### Some Tips for Ubuntu and Debian
+- Linux is case sensitive so please don't forget to use capital letters where needed, like changing to a directory
 - To change the path to your Prusa-Firmware location you downloaded and unzipped
   - Example: You files are under `C:\Users\<your-username>\Downloads\Prusa-Firmware-MK3`
   - use under Ubuntu the following command `cd /mnt/c/Users/<your-username>/Downloads/Prusa-Firmware-MK3`
@@ -123,7 +140,7 @@ Now your Ubuntu subsystem is ready to use the automatic `PF-build.sh` script and
 - If your Windows isn't in English the Paths may look different
   Example in other languages
   - English `/mnt/c/Users/<your-username>/Downloads/Prusa-Firmware-MK3` will be on a German Windows`/mnt/c/Anwender/<your-username>/Downloads/Prusa-Firmware-MK3`
-#### Compile Prusa-firmware with Ubuntu Linux subsystem installed
+#### Compile Prusa-firmware with Ubuntu/Debian Linux subsystem installed
 - open Ubuntu bash
 - change to your source code folder (case sensitive)
 - run `./PF-build.sh`
@@ -182,7 +199,7 @@ Example:
 
 `ninja`
 
-## Runing
+## Running
 `./tests`
 
 # 4. Documentation
@@ -192,7 +209,7 @@ or visit https://prusa3d.github.io/Prusa-Firmware-Doc for doxygen generated outp
 # 5. FAQ
 Q:I built firmware using Arduino and I see "?" instead of numbers in printer user interface.
 
-A:Step 1.c was ommited or you updated Arduino and now platform.txt located somewhere in your user profile is used.
+A:Step 1.c was omitted or you updated Arduino and now platform.txt located somewhere in your user profile is used.
 
 Q:I built firmware using Arduino and printer now speaks Klingon (nonsense characters and symbols are displayed @^#$&*°;~ÿ)
 
@@ -204,4 +221,4 @@ A:Our production builds are 99.9% equivalent to https://github.com/prusa3d/Prusa
 
 Q:Why are build instructions for Arduino mess.
 
-Y:We are too lazy to ship proper board definition for Arduino. We plan to swich to cmake + ninja to be inherently multiplatform, easily integrate build tools, suport more IDEs, get 10 times shorter build times and be able to update compiler whenewer we want.
+Y:We are too lazy to ship proper board definition for Arduino. We plan to switch to cmake + ninja to be inherently multiplatform, easily integrate build tools, suport more IDEs, get 10 times shorter build times and be able to update compiler whenever we want.

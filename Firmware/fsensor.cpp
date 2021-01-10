@@ -6,7 +6,6 @@
 #include <avr/pgmspace.h>
 #include "pat9125.h"
 #include "stepper.h"
-#include "io_atmega2560.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
 #include "mmu.h"
@@ -478,22 +477,8 @@ bool fsensor_oq_result(void)
 }
 #endif //FSENSOR_QUALITY
 
-ISR(FSENSOR_INT_PIN_VECT)
+FORCE_INLINE static void fsensor_isr(int st_cnt)
 {
-	if (mmu_enabled || ir_sensor_detected) return;
-	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
-	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
-
-    // prevent isr re-entry
-	static bool _lock = false;
-	if (_lock) return;
-	_lock = true;
-
-    // fetch fsensor_st_cnt atomically
-	int st_cnt = fsensor_st_cnt;
-	fsensor_st_cnt = 0;
-	sei();
-
 	uint8_t old_err_cnt = fsensor_err_cnt;
 	uint8_t pat9125_res = fsensor_oq_meassure?pat9125_update():pat9125_update_y();
 	if (!pat9125_res)
@@ -578,8 +563,28 @@ ISR(FSENSOR_INT_PIN_VECT)
 #endif //DEBUG_FSENSOR_LOG
 
 	pat9125_y = 0;
-	_lock = false;
-	return;
+}
+
+ISR(FSENSOR_INT_PIN_VECT)
+{
+    if (mmu_enabled || ir_sensor_detected) return;
+    if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
+    fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
+
+    // prevent isr re-entry
+    static bool _lock = false;
+    if (!_lock)
+    {
+        // fetch fsensor_st_cnt atomically
+        int st_cnt = fsensor_st_cnt;
+        fsensor_st_cnt = 0;
+
+        _lock = true;
+        sei();
+        fsensor_isr(st_cnt);
+        cli();
+        _lock = false;
+    }
 }
 
 void fsensor_setup_interrupt(void)
@@ -602,9 +607,8 @@ void fsensor_st_block_chunk(int cnt)
 	if (!fsensor_enabled) return;
 	fsensor_st_cnt += cnt;
 
-    // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-    if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-    else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
+	// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
+	WRITE(FSENSOR_INT_PIN, !READ(FSENSOR_INT_PIN));
 }
 #endif //PAT9125
 

@@ -2,13 +2,25 @@
 "[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
 "[%.7s]Live Adj. Z\x0austaw., kontynuowac\x0aczy zaczac od 0?\x0a%cKontynuuj%cReset"
 
-#MSG_03_OR_OLDER c=18
+#MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 lub starszy"
 
-#MSG_04_OR_NEWER c=18
+# c=18
+"FS v0.3 or older"
+"FS 0.3 lub starszy"
+
+#MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 " 0.4 lub nowszy"
+
+# c=18
+"FS v0.4 or newer"
+"FS 0.4 lub nowszy"
+
+#MSG_IR_UNKNOWN c=18
+"unknown state"
+"Stan nieznany"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -353,10 +365,6 @@
 #MSG_FS_ACTION c=10
 "FS Action"
 "Akcja FS"
-
-# c=18
-"FS v0.4 or newer"
-"FS v0.4 lub nowszy"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -893,6 +901,10 @@
 # c=20 r=4
 "Please unload the filament first, then repeat this action."
 "Najpierw rozladuj filament, nastepnie powtorz czynnosc."
+
+# c=20 r=4
+"Please check the IR sensor connection, unload filament if present."
+"Sprawdz polaczenie czujnika IR, rozladuj filament, jesli zaladowany."
 
 #MSG_RECOVERING_PRINT c=20
 "Recovering print    "
