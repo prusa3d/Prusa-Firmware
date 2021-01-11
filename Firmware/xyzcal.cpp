@@ -682,7 +682,7 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 		}
 		// DBG(_n("\n"));
 	}
-	DBG(_n("max_c=%d max_r=%d max_match=%d pixel\n"), max_c, max_r, max_match);
+	DBG(_n("Pattern center [%f %f], match %f%%\n"), max_c + 5.5f, max_r + 5.5f, max_match / 1.32f);
 
 	*pc = max_c;
 	*pr = max_r;
@@ -839,7 +839,7 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 	float shifts_y[blocks];	
 	float shifts_r[blocks];	
 
-	DBG(_n(" [%f, %f][%f] start circle\n"), x, y, r);
+	// DBG(_n(" [%f, %f][%f] start circle\n"), x, y, r);
 
 	for (int8_t i = iterations; i > 0; --i){
 	
