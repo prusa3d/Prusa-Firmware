@@ -2226,104 +2226,104 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		}
 		#endif // SUPPORT_VERBOSITY
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-    uint8_t next_line;
-    lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1), next_line);
-    if (next_line > 3)
-        next_line = 3;
+        uint8_t next_line;
+        lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1), next_line);
+        if (next_line > 3)
+            next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
-    // Collect the rear 2x3 points.
-	current_position[Z_AXIS] = MESH_HOME_Z_SEARCH + FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP * iteration * 0.3;
-	for (int k = 0; k < 4; ++k) {
-		// Don't let the manage_inactivity() function remove power from the motors.
-		refresh_cmd_timeout();
+        // Collect the rear 2x3 points.
+        current_position[Z_AXIS] = MESH_HOME_Z_SEARCH + FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP * iteration * 0.3;
+        for (int k = 0; k < 4; ++k) {
+            // Don't let the manage_inactivity() function remove power from the motors.
+            refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-		lcd_set_cursor(0, next_line);
-		lcd_print(k + 1);
-		lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
+            lcd_set_cursor(0, next_line);
+            lcd_print(k + 1);
+            lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 
-		if (iteration > 0) {
-			lcd_puts_at_P(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20
-			lcd_print(int(iteration + 1));
-		}
+            if (iteration > 0) {
+                lcd_puts_at_P(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20
+                lcd_print(int(iteration + 1));
+            }
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
-		float *pt = pts + k * 2;
-		// Go up to z_initial.
+            float *pt = pts + k * 2;
+            // Go up to z_initial.
 
-		go_to_current(homing_feedrate[Z_AXIS] / 60.f);
-		#ifdef SUPPORT_VERBOSITY
-		if (verbosity_level >= 20) {
-			// Go to Y0, wait, then go to Y-4.
-			current_position[Y_AXIS] = 0.f;
-			go_to_current(homing_feedrate[X_AXIS] / 60.f);
-			SERIAL_ECHOLNPGM("At Y0");
-			delay_keep_alive(5000);
-			current_position[Y_AXIS] = Y_MIN_POS;
-			go_to_current(homing_feedrate[X_AXIS] / 60.f);
-			SERIAL_ECHOLNPGM("At Y-4");
-			delay_keep_alive(5000);
-		}
-		#endif // SUPPORT_VERBOSITY
-		// Go to the measurement point position.
-		//if (iteration == 0) {
-			current_position[X_AXIS] = pgm_read_float(bed_ref_points_4 + k * 2);
-			current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + k * 2 + 1);
-		/*}
-		else {
-			// if first iteration failed, count corrected point coordinates as initial
-			// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
-			
-			current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[0] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[0];
-			current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[1];
+            go_to_current(homing_feedrate[Z_AXIS] / 60.f);
+            #ifdef SUPPORT_VERBOSITY
+            if (verbosity_level >= 20) {
+                // Go to Y0, wait, then go to Y-4.
+                current_position[Y_AXIS] = 0.f;
+                go_to_current(homing_feedrate[X_AXIS] / 60.f);
+                SERIAL_ECHOLNPGM("At Y0");
+                delay_keep_alive(5000);
+                current_position[Y_AXIS] = Y_MIN_POS;
+                go_to_current(homing_feedrate[X_AXIS] / 60.f);
+                SERIAL_ECHOLNPGM("At Y-4");
+                delay_keep_alive(5000);
+            }
+            #endif // SUPPORT_VERBOSITY
+            // Go to the measurement point position.
+            //if (iteration == 0) {
+                current_position[X_AXIS] = pgm_read_float(bed_ref_points_4 + k * 2);
+                current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + k * 2 + 1);
+            /*}
+            else {
+                // if first iteration failed, count corrected point coordinates as initial
+                // Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
+                
+                current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[0] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[0];
+                current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[1];
 
-			// The calibration points are very close to the min Y.
-			if (current_position[Y_AXIS] < Y_MIN_POS_FOR_BED_CALIBRATION)
-				current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;
+                // The calibration points are very close to the min Y.
+                if (current_position[Y_AXIS] < Y_MIN_POS_FOR_BED_CALIBRATION)
+                    current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;
 
-		}*/
-		#ifdef SUPPORT_VERBOSITY
-		if (verbosity_level >= 20) {
-			SERIAL_ECHOPGM("current_position[X_AXIS]:");
-			MYSERIAL.print(current_position[X_AXIS], 5);
-			SERIAL_ECHOLNPGM("");
-			SERIAL_ECHOPGM("current_position[Y_AXIS]:");
-			MYSERIAL.print(current_position[Y_AXIS], 5);
-			SERIAL_ECHOLNPGM("");
-			SERIAL_ECHOPGM("current_position[Z_AXIS]:");
-			MYSERIAL.print(current_position[Z_AXIS], 5);
-			SERIAL_ECHOLNPGM("");
-		}
-		#endif // SUPPORT_VERBOSITY
+            }*/
+            #ifdef SUPPORT_VERBOSITY
+            if (verbosity_level >= 20) {
+                SERIAL_ECHOPGM("current_position[X_AXIS]:");
+                MYSERIAL.print(current_position[X_AXIS], 5);
+                SERIAL_ECHOLNPGM("");
+                SERIAL_ECHOPGM("current_position[Y_AXIS]:");
+                MYSERIAL.print(current_position[Y_AXIS], 5);
+                SERIAL_ECHOLNPGM("");
+                SERIAL_ECHOPGM("current_position[Z_AXIS]:");
+                MYSERIAL.print(current_position[Z_AXIS], 5);
+                SERIAL_ECHOLNPGM("");
+            }
+            #endif // SUPPORT_VERBOSITY
 
-		go_to_current(homing_feedrate[X_AXIS] / 60.f);
-		#ifdef SUPPORT_VERBOSITY
-		if (verbosity_level >= 10)
-			delay_keep_alive(3000);
-		#endif // SUPPORT_VERBOSITY
-		if (!find_bed_induction_sensor_point_xy(verbosity_level))
-			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+            go_to_current(homing_feedrate[X_AXIS] / 60.f);
+            #ifdef SUPPORT_VERBOSITY
+            if (verbosity_level >= 10)
+                delay_keep_alive(3000);
+            #endif // SUPPORT_VERBOSITY
+            if (!find_bed_induction_sensor_point_xy(verbosity_level))
+                return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND
 #ifndef NEW_XYZCAL
 #ifndef HEATBED_V2
 		
-			if (k == 0 || k == 1) {
-				// Improve the position of the 1st row sensor points by a zig-zag movement.
-				find_bed_induction_sensor_point_z();
-				int8_t i = 4;
-				for (;;) {
-					if (improve_bed_induction_sensor_point3(verbosity_level))
-						break;
-					if (--i == 0)
-						return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-					// Try to move the Z axis down a bit to increase a chance of the sensor to trigger.
-					current_position[Z_AXIS] -= 0.025f;
-					enable_endstops(false);
-					enable_z_endstop(false);
-					go_to_current(homing_feedrate[Z_AXIS]);
-				}
-				if (i == 0)
-					// not found
-					return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-			}
+            if (k == 0 || k == 1) {
+                // Improve the position of the 1st row sensor points by a zig-zag movement.
+                find_bed_induction_sensor_point_z();
+                int8_t i = 4;
+                for (;;) {
+                    if (improve_bed_induction_sensor_point3(verbosity_level))
+                        break;
+                    if (--i == 0)
+                        return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+                    // Try to move the Z axis down a bit to increase a chance of the sensor to trigger.
+                    current_position[Z_AXIS] -= 0.025f;
+                    enable_endstops(false);
+                    enable_z_endstop(false);
+                    go_to_current(homing_feedrate[Z_AXIS]);
+                }
+                if (i == 0)
+                    // not found
+                    return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+            }
 #endif //HEATBED_V2
 #endif
 			#ifdef SUPPORT_VERBOSITY
@@ -2375,8 +2375,9 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				delay_keep_alive(3000);
 			}
 			#endif // SUPPORT_VERBOSITY
-		}
-		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
+        }
+        DBG(_n("All 4 calibration points found.\n"));
+        delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
 		
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
@@ -2386,7 +2387,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				// Don't let the manage_inactivity() function remove power from the motors.
 				refresh_cmd_timeout();
 				// Go to the measurement point.
-				// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+				// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
 				current_position[X_AXIS] = pts[mesh_point * 2];
 				current_position[Y_AXIS] = pts[mesh_point * 2 + 1];
 				go_to_current(homing_feedrate[X_AXIS] / 60);
@@ -2450,7 +2451,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 					// Don't let the manage_inactivity() function remove power from the motors.
 					refresh_cmd_timeout();
 					// Go to the measurement point.
-					// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+					// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
 					uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
 					uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 					if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix;
@@ -2462,9 +2463,12 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			}
 			#endif // SUPPORT_VERBOSITY
 			return result;
-		}		
-		if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED && too_far_mask == 2) return result; //if fitting failed and front center point is out of reach, terminate calibration and inform user
-		iteration++;
+		}
+        if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED && too_far_mask == 2){
+            DBG(_n("Calibration failed.\n"));
+            return result; //if fitting failed and front center point is out of reach, terminate calibration and inform user
+        }
+        iteration++;
 	}
 	return result;    
 }
