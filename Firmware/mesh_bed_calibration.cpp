@@ -2379,8 +2379,9 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				delay_keep_alive(3000);
 			}
 			#endif // SUPPORT_VERBOSITY
-		}
-		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
+        }
+        DBG(_n("All 4 calibration points found.\n"));
+        delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
 		
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
@@ -2390,7 +2391,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				// Don't let the manage_inactivity() function remove power from the motors.
 				refresh_cmd_timeout();
 				// Go to the measurement point.
-				// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+				// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
 				current_position[X_AXIS] = pts[mesh_point * 2];
 				current_position[Y_AXIS] = pts[mesh_point * 2 + 1];
 				go_to_current(homing_feedrate[X_AXIS] / 60);
@@ -2455,7 +2456,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 					// Don't let the manage_inactivity() function remove power from the motors.
 					refresh_cmd_timeout();
 					// Go to the measurement point.
-					// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+					// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
 					uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
 					uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 					if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix;
