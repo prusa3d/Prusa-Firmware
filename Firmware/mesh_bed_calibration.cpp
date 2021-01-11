@@ -371,9 +371,9 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     BedSkewOffsetDetectionResultType result = BED_SKEW_OFFSET_DETECTION_PERFECT;
     {
         angleDiff = fabs(a2 - a1);
-        DBG(_n("Measured XY skew: %f\n"), a2 - a1);
-        DBG(_n("Measured Y-bed skew: %f\n"), a2);
-        eeprom_update_float((float*)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later 
+        DBG(_n("Measured XY skew: %f°\n"), degrees(a2 - a1));
+        DBG(_n("Measured Y-bed skew: %f°\n"), degrees(a2));
+        eeprom_update_float((float *)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later
         if (angleDiff > bed_skew_angle_mild)
             result = (angleDiff > bed_skew_angle_extreme) ?
                 BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME :
@@ -1384,7 +1384,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 
 		//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
 		go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
-		// Continously lower the Z axis.
+		// Continuously lower the Z axis.
 		endstops_hit_on_purpose();
 		enable_z_endstop(true);
 		while (current_position[Z_AXIS] > -10.f) {
