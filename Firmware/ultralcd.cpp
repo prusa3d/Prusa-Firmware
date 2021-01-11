@@ -2418,7 +2418,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         case FilamentAction::None:
         case FilamentAction::Preheat:
         case FilamentAction::Lay1Cal:
-
+            // handled earlier
             break;
         }
         if (bFilamentWaitingFlag) Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
@@ -2426,34 +2426,45 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     }
     else
     {
-        bFilamentWaitingFlag = true;
         lcd_set_cursor(0, 0);
         lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
-        lcd_set_cursor(0, 1);
-        switch (eFilamentAction)
+
+        if (!bFilamentWaitingFlag)
         {
-        case FilamentAction::Load:
-        case FilamentAction::AutoLoad:
-        case FilamentAction::MmuLoad:
-            lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
-            break;
-        case FilamentAction::UnLoad:
-        case FilamentAction::MmuUnLoad:
-            lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
-            break;
-        case FilamentAction::MmuEject:
-            lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
-            break;
-        case FilamentAction::MmuCut:
-            lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20
-            break;
-        case FilamentAction::None:
-        case FilamentAction::Preheat:
-        case FilamentAction::Lay1Cal:
-            break;
+            // First run after the filament preheat selection:
+            // setup the fixed LCD parts and raise Z as we wait
+            bFilamentWaitingFlag = true;
+
+            lcd_set_cursor(0, 1);
+            switch (eFilamentAction)
+            {
+            case FilamentAction::Load:
+            case FilamentAction::AutoLoad:
+            case FilamentAction::MmuLoad:
+                lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
+                raise_z_above(MIN_Z_FOR_LOAD);
+                break;
+            case FilamentAction::UnLoad:
+            case FilamentAction::MmuUnLoad:
+                lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
+                raise_z_above(MIN_Z_FOR_UNLOAD);
+                break;
+            case FilamentAction::MmuEject:
+                lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
+                break;
+            case FilamentAction::MmuCut:
+                lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20
+                break;
+            case FilamentAction::None:
+            case FilamentAction::Preheat:
+            case FilamentAction::Lay1Cal:
+                // handled earlier
+                break;
+            }
+            lcd_set_cursor(0, 3);
+            lcd_puts_P(_i(">Cancel"));                   ////MSG_ c=20 r=1
         }
-        lcd_set_cursor(0, 3);
-        lcd_puts_P(_i(">Cancel"));                   ////MSG_ c=20 r=1
+
         if (lcd_clicked())
         {
             bFilamentWaitingFlag = false;
