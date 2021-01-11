@@ -369,7 +369,9 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     BedSkewOffsetDetectionResultType result = BED_SKEW_OFFSET_DETECTION_PERFECT;
     {
         angleDiff = fabs(a2 - a1);
-		eeprom_update_float((float*)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later 
+        DBG(_n("Measured XY skew: %f\n"), a2 - a1);
+        DBG(_n("Measured Y-bed skew: %f\n"), a2);
+        eeprom_update_float((float*)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later 
         if (angleDiff > bed_skew_angle_mild)
             result = (angleDiff > bed_skew_angle_extreme) ?
                 BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME :
@@ -2407,6 +2409,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
 		
 		if (result >= 0) {
+            DBG(_n("Calibration success.\n"));
 			world2machine_update(vec_x, vec_y, cntr);
 #if 1
 			// Fearlessly store the calibration values into the eeprom.
@@ -2465,7 +2468,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			return result;
 		}
         if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED && too_far_mask == 2){
-            DBG(_n("Calibration failed.\n"));
+            DBG(_n("Fitting failed => calibration failed.\n"));
             return result; //if fitting failed and front center point is out of reach, terminate calibration and inform user
         }
         iteration++;
