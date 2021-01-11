@@ -12,6 +12,8 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+#define DBG(args...) printf_P(args)
+
 uint8_t world2machine_correction_mode;
 float   world2machine_rotation_and_skew[2][2];
 float   world2machine_rotation_and_skew_inv[2][2];
