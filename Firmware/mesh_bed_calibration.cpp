@@ -372,7 +372,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     {
         angleDiff = fabs(a2 - a1);
         /// XY skew and Y-bed skew
-        DBG(_n("Measured skews: %f° %f°\n"), degrees(a2 - a1), degrees(a2));
+        DBG(_n("Measured skews: %f %f\n"), degrees(a2 - a1), degrees(a2));
         eeprom_update_float((float *)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later
         if (angleDiff > bed_skew_angle_mild)
             result = (angleDiff > bed_skew_angle_extreme) ?
