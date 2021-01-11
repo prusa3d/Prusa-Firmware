@@ -316,7 +316,7 @@ void fsensor_autoload_check_start(void)
 		printf_P(ERRMSG_PAT9125_NOT_RESP, 3);
 		return;
 	}
-	puts_P(_N("fsensor_autoload_check_start - autoload ENABLED\n"));
+	puts_P(_N("fsensor_autoload_check_start - autoload ENABLED"));
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_sum = 0;
@@ -334,7 +334,7 @@ void fsensor_autoload_check_stop(void)
 	if (!fsensor_autoload_enabled) return;
 //	puts_P(_N("fsensor_autoload_check_stop 2\n"));
 	if (!fsensor_watch_autoload) return;
-	puts_P(_N("fsensor_autoload_check_stop - autoload DISABLED\n"));
+	puts_P(_N("fsensor_autoload_check_stop - autoload DISABLED"));
 	fsensor_autoload_sum = 0;
 	fsensor_watch_autoload = false;
 	fsensor_watch_runout = true;
