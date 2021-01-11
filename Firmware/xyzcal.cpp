@@ -293,7 +293,7 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 			dad = dad_max - ((719 - ad) / k);
 			r = (float)(((uint32_t)(719 - ad)) * (-radius)) / 720;
 		}
-		ar = (ad + rotation)* (float)M_PI / 180;
+		ar = radians(ad + rotation);
 		int x = (int)(cx + (cos(ar) * r));
 		int y = (int)(cy + (sin(ar) * r));
 		int z = (int)(z0 - ((float)((int32_t)dz * ad) / 720));
@@ -831,9 +831,8 @@ float median(float *points, const uint8_t num_points){
 void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t iterations){
 	/// circle of 10.5 diameter has 33 in circumference, don't go much above
 	const constexpr uint8_t num_points = 33;
-	float pi_2_div_num_points = 2 * M_PI / num_points;
+	const float pi_2_div_num_points = 2 * M_PI / num_points;
 	const constexpr uint8_t target_z = 32; ///< target z height of the circle
-	float angle;
 	float max_change = 0.5f; ///< avoids too fast changes (avoid oscillation)
 	const uint8_t blocks = num_points;
 	float shifts_x[blocks];
@@ -848,7 +847,7 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 
 		/// read points on the circle
 		for (uint8_t p = 0; p < num_points; ++p){
-			angle = p * pi_2_div_num_points;
+			const float angle = p * pi_2_div_num_points;
 			const float height = get_value(matrix_32x32, r * cos(angle) + x, r * sin(angle) + y) - target_z;
 			// DBG(_n("%f "), point);
 
@@ -858,7 +857,8 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 		}
 		// DBG(_n(" points\n"));
 
-		const float norm = 1.f / 32.f;
+		const float reducer = 32.f; ///< reduces speed of convergency to avoid oscillation
+		const float norm = 1.f / reducer;
 		x += CLAMP(median(shifts_x, blocks) * norm, -max_change, max_change);
 		y += CLAMP(median(shifts_y, blocks) * norm, -max_change, max_change);
 		r += CLAMP(median(shifts_r, blocks) * norm * .5f, -max_change, max_change);
@@ -912,49 +912,52 @@ bool xyzcal_scan_and_process(void){
 	bool ret = false;
 	int16_t x = _X;
 	int16_t y = _Y;
-	int16_t z = _Z;
+	const int16_t z = _Z;
 
 	uint8_t *matrix32 = (uint8_t *)block_buffer;
 	uint16_t *pattern08 = (uint16_t *)(matrix32 + 32 * 32);
 	uint16_t *pattern10 = (uint16_t *)(pattern08 + 12);
 
-	xyzcal_scan_pixels_32x32_Zhop(x, y, z - 72, 2400, 200, matrix32);
-	print_image(matrix32);
-
 	for (uint8_t i = 0; i < 12; i++){
 		pattern08[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern_08 + i));
 		pattern10[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern_10 + i));
 	}
-	
-	/// SEARCH FOR BINARY CIRCLE
-	uint8_t uc = 0;
-	uint8_t ur = 0;
-	
-	
-	/// max match = 132, 1/2 good = 66, 2/3 good = 88
-	if (find_patterns(matrix32, pattern08, pattern10, uc, ur) >= 88){
-		/// find precise circle
-		/// move to the center of the pattern (+5.5)
-		float xf = uc + 5.5f;
-		float yf = ur + 5.5f;
-		float radius = 5; ///< default radius
-		const uint8_t iterations = 20;
-		dynamic_circle(matrix32, xf, yf, radius, iterations);
-		if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3){
-			DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
-			/// dynamic algorithm diverged, use original position instead
-			xf = uc + 5.5f;
-			yf = ur + 5.5f;
-		}
 
-		/// move to the center of area and convert to position
-		xf = (float)x + (xf - 15.5f) * 64;
-		yf = (float)y + (yf - 15.5f) * 64;
-		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
-		x = round_to_i16(xf);
-		y = round_to_i16(yf);
-		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		ret = true;
+	/// Lower z if pattern not found
+	for (int8_t lower = 0; lower < 60; lower += 50){
+		xyzcal_scan_pixels_32x32_Zhop(x, y, z - lower, 2400, 200, matrix32);
+		print_image(matrix32);
+		
+		/// SEARCH FOR BINARY CIRCLE
+		uint8_t uc = 0;
+		uint8_t ur = 0;
+		
+		/// max match = 132, 1/2 good = 66, 2/3 good = 88
+		if (find_patterns(matrix32, pattern08, pattern10, uc, ur) >= 88){
+			/// find precise circle
+			/// move to the center of the pattern (+5.5)
+			float xf = uc + 5.5f;
+			float yf = ur + 5.5f;
+			float radius = 4.5f; ///< default radius
+			const uint8_t iterations = 20;
+			dynamic_circle(matrix32, xf, yf, radius, iterations);
+			if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3){
+				DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
+				/// dynamic algorithm diverged, use original position instead
+				xf = uc + 5.5f;
+				yf = ur + 5.5f;
+			}
+
+			/// move to the center of area and convert to position
+			xf = (float)x + (xf - 15.5f) * 64;
+			yf = (float)y + (yf - 15.5f) * 64;
+			DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+			x = round_to_i16(xf);
+			y = round_to_i16(yf);
+			xyzcal_lineXYZ_to(x, y, z, 200, 0);
+			ret = true;
+			break;
+		}
 	}
 
 	/// wipe buffer
