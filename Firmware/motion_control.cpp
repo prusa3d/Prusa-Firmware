@@ -132,7 +132,7 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
         float cos_T;
         float sin_T;
 
-        if (correction_enabled > 1){
+        if (correction_enabled){
             float sq_theta_per_segment = theta_per_segment * theta_per_segment;
             // Small angle approximation
             sin_T = theta_per_segment - sq_theta_per_segment * theta_per_segment / 6,
