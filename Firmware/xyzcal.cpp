@@ -1,5 +1,10 @@
 //xyzcal.cpp - xyz calibration with image processing
 
+/// Some functions use microsteps and some use millimeters as a unit.
+/// To make code shorter 100 microsteps/mm for X, Y and 400 for Z is used.
+/// To accommodate different conversion rates, number of 
+/// microsteps per a step is changed to keep the fixed rate.
+
 #include "Configuration_prusa.h"
 #ifdef NEW_XYZCAL
 
@@ -97,11 +102,10 @@ const constexpr uint16_t Z_ACCEL = 1000;
     ({ __typeof__ (a) a_ = (a); \
         (a_ * a_); })
 
-/// position types
+/// position types in steps
 typedef int16_t pos_i16_t;
 typedef long pos_i32_t;
 typedef float pos_mm_t;
-typedef int16_t usteps_t;
 
 uint8_t check_pinda_0();
 uint8_t check_pinda_1();
@@ -120,17 +124,23 @@ int16_t round_to_i16(float f){
 	return (int16_t)(f + .5f);
 }
 
-/// converts millimeters to integer position
-pos_i16_t mm_2_pos(pos_mm_t mm){
-	return (pos_i16_t)(0.5f + mm * 100);
+int32_t round_to_i32(float f){
+	return (int32_t)(f + .5f);
 }
 
-/// converts integer position to millimeters
-pos_mm_t pos_2_mm(pos_i16_t pos){
-	return pos * 0.01f;
+/// converts millimeters to steps
+pos_i32_t mm_2_pos(pos_mm_t mm, uint8_t axis){
+	return (pos_i32_t)(0.5f + mm * cs.axis_steps_per_unit[axis]);
 }
-pos_mm_t pos_2_mm(float pos){
-	return pos * 0.01f;
+
+/// converts steps to millimeters
+pos_mm_t pos_2_mm(pos_i32_t pos, uint8_t axis){
+	return pos / cs.axis_steps_per_unit[axis];
+}
+
+/// converts steps to millimeters
+pos_mm_t pos_2_mm(float pos, uint8_t axis){
+	return pos / cs.axis_steps_per_unit[axis];
 }
 
 void xyzcal_meassure_enter(void)
@@ -237,29 +247,24 @@ uint16_t xyzcal_calc_delay(uint16_t, uint16_t)
 }
 #endif //SM4_ACCEL_TEST
 
-/// Moves printer to absolute position [x,y,z] defined in integer position system
+/// Moves printer to absolute position [x,y,z] defined in steps
 /// check_pinda == 0: ordinary move
 /// check_pinda == 1: stop when PINDA triggered
 /// check_pinda == -1: stop when PINDA untriggered
-bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda)
+bool xyzcal_lineXYZ_to(pos_i32_t x, pos_i32_t y, pos_i32_t z, uint16_t delay_us, int8_t check_pinda)
 {
 //	DBG(_n("xyzcal_lineXYZ_to x=%d y=%d z=%d  check=%d\n"), x, y, z, check_pinda);
-	x -= (int16_t)count_position[0];
-	y -= (int16_t)count_position[1];
-	z -= (int16_t)count_position[2];
-	xyzcal_dm = ((x<0)?1:0) | ((y<0)?2:0) | ((z<0)?4:0);
+	x -= count_position[0];
+	y -= count_position[1];
+	z -= count_position[2];
+	xyzcal_dm = ((x < 0) ? 1 : 0) | ((y < 0) ? 2 : 0) | ((z < 0) ? 4 : 0);
 	sm4_set_dir_bits(xyzcal_dm);
-	sm4_stop_cb = check_pinda?((check_pinda<0)?check_pinda_0:check_pinda_1):0;
+	sm4_stop_cb = check_pinda ? ((check_pinda < 0) ? check_pinda_0 : check_pinda_1) : 0;
 	xyzcal_sm4_delay = delay_us;
 	//	uint32_t u = _micros();
 	bool ret = sm4_line_xyze_ui(abs(x), abs(y), abs(z), 0) ? true : false;
 	//	u = _micros() - u;
 	return ret;
-}
-
-/// Moves printer to absolute position [x,y,z] defined in millimeters
-bool xyzcal_lineXYZ_to_float(pos_mm_t x, pos_mm_t y, pos_mm_t z, uint16_t delay_us, int8_t check_pinda){
-	return xyzcal_lineXYZ_to(mm_2_pos(x), mm_2_pos(y), mm_2_pos(z), delay_us, check_pinda);
 }
 
 bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radius, int16_t rotation, uint16_t delay_us, int8_t check_pinda, uint16_t* pad)
@@ -910,9 +915,9 @@ uint8_t find_patterns(uint8_t *matrix32, uint16_t *pattern08, uint16_t *pattern1
 bool xyzcal_scan_and_process(void){
 	DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	bool ret = false;
-	int16_t x = _X;
-	int16_t y = _Y;
-	const int16_t z = _Z;
+	pos_i32_t x = _X;
+	pos_i32_t y = _Y;
+	const pos_i32_t z = _Z;
 
 	uint8_t *matrix32 = (uint8_t *)block_buffer;
 	uint16_t *pattern08 = (uint16_t *)(matrix32 + 32 * 32);
@@ -951,8 +956,8 @@ bool xyzcal_scan_and_process(void){
 		xf = (float)x + (xf - 15.5f) * 64;
 		yf = (float)y + (yf - 15.5f) * 64;
 		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
-		x = round_to_i16(xf);
-		y = round_to_i16(yf);
+		x = round_to_i32(xf);
+		y = round_to_i32(yf);
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		ret = true;
 	}
@@ -968,11 +973,12 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void){
 
 	DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
-	pos_i16_t x = _X;
-	pos_i16_t y = _Y;
-	const pos_i16_t z = _Z;
-	///< magic constant, lowers min_z after searchZ to obtain more dense data in scan
-	const pos_i16_t lower_z = 72; 
+	pos_i32_t x = _X;
+	pos_i32_t y = _Y;
+	const pos_i32_t z = _Z;
+	/// lowers min_z after searchZ to obtain more dense data in scan
+	/// 72 is 0.18 mm (thickness of paper)
+	const uint8_t lower_z = 72; 
 
 	uint8_t point = xyzcal_xycoords2point(x, y);
 	x = pgm_read_word((uint16_t *)(xyzcal_point_xcoords + point));
