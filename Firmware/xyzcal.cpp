@@ -923,40 +923,38 @@ bool xyzcal_scan_and_process(void){
 		pattern10[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern_10 + i));
 	}
 
-	/// Lower z if pattern not found
-	for (int8_t lower = 0; lower < 60; lower += 50){
-		xyzcal_scan_pixels_32x32_Zhop(x, y, z - lower, 2400, 200, matrix32);
-		print_image(matrix32);
-		
-		/// SEARCH FOR BINARY CIRCLE
-		uint8_t uc = 0;
-		uint8_t ur = 0;
-		
-		/// max match = 132, 1/2 good = 66, 2/3 good = 88
-		if (find_patterns(matrix32, pattern08, pattern10, uc, ur) >= 88){
-			/// find precise circle
-			/// move to the center of the pattern (+5.5)
-			float xf = uc + 5.5f;
-			float yf = ur + 5.5f;
-			float radius = 4.5f; ///< default radius
-			const uint8_t iterations = 20;
-			dynamic_circle(matrix32, xf, yf, radius, iterations);
-			if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3){
-				DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
-				/// dynamic algorithm diverged, use original position instead
-				xf = uc + 5.5f;
-				yf = ur + 5.5f;
-			}
+	xyzcal_scan_pixels_32x32_Zhop(x, y, z, 2400, 200, matrix32);
+	print_image(matrix32);
 
-			/// move to the center of area and convert to position
-			xf = (float)x + (xf - 15.5f) * 64;
-			yf = (float)y + (yf - 15.5f) * 64;
-			DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
-			x = round_to_i16(xf);
-			y = round_to_i16(yf);
-			xyzcal_lineXYZ_to(x, y, z, 200, 0);
-			ret = true;
-			break;
+	/// SEARCH FOR BINARY CIRCLE
+	uint8_t uc = 0;
+	uint8_t ur = 0;
+
+	/// max match = 132, 1/2 good = 66, 2/3 good = 88
+	if (find_patterns(matrix32, pattern08, pattern10, uc, ur) >= 88){
+		/// find precise circle
+		/// move to the center of the pattern (+5.5)
+		float xf = uc + 5.5f;
+		float yf = ur + 5.5f;
+		float radius = 4.5f; ///< default radius
+		const uint8_t iterations = 20;
+		dynamic_circle(matrix32, xf, yf, radius, iterations);
+		if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3)
+		{
+			DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
+			/// dynamic algorithm diverged, use original position instead
+			xf = uc + 5.5f;
+			yf = ur + 5.5f;
+		}
+
+		/// move to the center of area and convert to position
+		xf = (float)x + (xf - 15.5f) * 64;
+		yf = (float)y + (yf - 15.5f) * 64;
+		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+		x = round_to_i16(xf);
+		y = round_to_i16(yf);
+		xyzcal_lineXYZ_to(x, y, z, 200, 0);
+		ret = true;
 		}
 	}
 
@@ -971,9 +969,11 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void){
 
 	DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
-	pos_i16_t x = _X;
-	pos_i16_t y = _Y;
-	pos_i16_t z = _Z;
+	const pos_i16_t x = _X;
+	const pos_i16_t y = _Y;
+	const pos_i16_t z = _Z;
+	///< magic constant, lowers min_z after searchZ to obtain more dense data in scan
+	const pos_i16_t lower_z = 72; 
 
 	uint8_t point = xyzcal_xycoords2point(x, y);
 	x = pgm_read_word((uint16_t *)(xyzcal_point_xcoords + point));
@@ -983,6 +983,7 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void){
 	xyzcal_lineXYZ_to(x, y, z, 200, 0);
 
 	if (xyzcal_searchZ()){
+		xyzcal_lineXYZ_to(_X, _Y, _Z - lower_z, 200, 0);
 		xyzcal_lineXYZ_to(x, y, _Z, 200, 0);
 		ret = xyzcal_scan_and_process();
 	}
