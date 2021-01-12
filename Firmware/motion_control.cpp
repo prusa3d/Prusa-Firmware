@@ -39,6 +39,9 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     float rt_y = target[Y_AXIS] - center_axis_y;
     // 20200419 - Add a variable that will be used to hold the arc segment length
     float mm_per_arc_segment = cs.mm_per_arc_segment;
+    // 20210109 - Add a variable to hold the n_arc_correction value
+    bool correction_enabled = cs.n_arc_correction > 1;
+    uint8_t n_arc_correction = cs.n_arc_correction;
 
     // CCW angle between position and target from circle center. Only one atan2() trig computation required.
     float angular_travel_total = atan2(r_axis_x * rt_y - r_axis_y * rt_x, r_axis_x * rt_x + r_axis_y * rt_y);
@@ -126,16 +129,38 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     {
         // Initialize the extruder axis
 
-        float cos_T = cos(theta_per_segment);
-        float sin_T = sin(theta_per_segment);
+        float cos_T;
+        float sin_T;
+
+        if (correction_enabled > 1){
+            float sq_theta_per_segment = theta_per_segment * theta_per_segment;
+            // Small angle approximation
+            sin_T = theta_per_segment - sq_theta_per_segment * theta_per_segment / 6,
+            cos_T = 1 - 0.5f * sq_theta_per_segment; 
+        }
+        else {
+            cos_T = cos(theta_per_segment);
+            sin_T = sin(theta_per_segment);
+        }
+
         float r_axisi;
         uint16_t i;
 
         for (i = 1; i < segments; i++) { // Increment (segments-1)
-            r_axisi = r_axis_x * sin_T + r_axis_y * cos_T;
-            r_axis_x = r_axis_x * cos_T - r_axis_y * sin_T;
-            r_axis_y = r_axisi;
-
+            if (correction_enabled && --n_arc_correction == 0) {
+                // Calculate the actual position for r_axis_x and r_axis_y
+                const float cos_Ti = cos(i * theta_per_segment), sin_Ti = sin(i * theta_per_segment);
+                r_axis_x = -offset[X_AXIS] * cos_Ti + offset[Y_AXIS] * sin_Ti;
+                r_axis_y = -offset[X_AXIS] * sin_Ti - offset[Y_AXIS] * cos_Ti;
+                // reset n_arc_correction
+                n_arc_correction = cs.n_arc_correction;
+            }
+            else {
+                r_axisi = r_axis_x * sin_T + r_axis_y * cos_T;
+                r_axis_x = r_axis_x * cos_T - r_axis_y * sin_T;
+                r_axis_y = r_axisi;
+            }
+            
             // Update arc_target location
             position[X_AXIS] = center_axis_x + r_axis_x;
             position[Y_AXIS] = center_axis_y + r_axis_y;

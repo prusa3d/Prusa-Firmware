@@ -7509,11 +7509,12 @@ Sigma_Exit:
 
     #### Usage
 
-        M214 [P] [S] [R] [F]
+        M214 [P] [S] [N] [R] [F]
 
     #### Parameters
     - `P` - A float representing the max and default millimeters per arc segment.  Must be greater than 0.
     - `S` - A float representing the minimum allowable millimeters per arc segment.  Set to 0 to disable
+    - `N` - An int representing the number of arcs to draw before correcting the small angle approximation.  Set to 1 or 0 to disable.
     - `R` - An int representing the minimum number of segments per arcs of any radius,
             except when the results in segment lengths greater than or less than the minimum
             and maximum segment length.  Set to 0 to disable.
@@ -7525,6 +7526,7 @@ Sigma_Exit:
         // Extract N
         float p = cs.mm_per_arc_segment;
         float s = cs.min_mm_per_arc_segment;
+        uint8_t n = cs.n_arc_correction;
         uint16_t r = cs.min_arc_segments;
         uint16_t f = cs.arc_segments_per_sec;
 
@@ -7542,6 +7544,16 @@ Sigma_Exit:
         {
             s = code_value_float();
             if (s < 0 || s >= p)
+            {
+                break;
+            }
+        }
+        // Extract N
+        if (code_seen('N'))
+        {
+
+            n = code_value();
+            if (n < 0)
             {
                 break;
             }
@@ -7567,6 +7579,7 @@ Sigma_Exit:
         }
         cs.mm_per_arc_segment = p;
         cs.min_mm_per_arc_segment = s;
+        cs.n_arc_correction = n;
         cs.min_arc_segments = r;
         cs.arc_segments_per_sec = f;
     }break;
