@@ -556,10 +556,8 @@ void xyzcal_scan_pixels_32x32_Zhop(pos_i32_t cx, pos_i32_t cy, pos_i32_t min_z, 
 	pos_i32_t start_z;
 	pos_i32_t steps_to_go;
 
-	const pos_i16_t c32x = mm_2_pos(32 / 100, X_AXIS);
-	const pos_i16_t c32y = mm_2_pos(32 / 100, Y_AXIS);
-	const pos_i16_t c16x = c32x / 2;
-	const pos_i16_t c16y = c32y / 2;
+	const pos_i16_t c32x = mm_2_pos(32 * 0.01f, X_AXIS);
+	const pos_i16_t c32y = mm_2_pos(32 * 0.01f, Y_AXIS);
 	const pos_i16_t c64x = 2 * c32x;
 	const pos_i16_t c64y = 2 * c32y;
 	const pos_i16_t c992x = 31 * c32x;
@@ -577,7 +575,7 @@ void xyzcal_scan_pixels_32x32_Zhop(pos_i32_t cx, pos_i32_t cy, pos_i32_t min_z, 
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 				/// move to the next point and move Z up diagonally (if needed)
 				current_delay_us = MAX_DELAY;
-				const int16_t end_x = ((d & 1) ? 1 : -1) * (c64x * (c16x - c) - c32x) + cx;
+				const int16_t end_x = ((d & 1) ? 1 : -1) * (c64x * (16 - c) - c32x) + cx;
 				const int16_t length_x = ABS(end_x - _X);
 				const int16_t half_x = length_x / 2;
 				/// don't go up if PINDA not triggered (optimization)
