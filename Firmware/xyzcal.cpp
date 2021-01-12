@@ -247,12 +247,11 @@ uint16_t xyzcal_calc_delay(uint16_t, uint16_t)
 }
 #endif //SM4_ACCEL_TEST
 
-/// Moves printer to absolute position [x,y,z] defined in steps
+/// Moves printer to absolute position [x,y,z] defined in microsteps
 /// check_pinda == 0: ordinary move
 /// check_pinda == 1: stop when PINDA triggered
 /// check_pinda == -1: stop when PINDA untriggered
-bool xyzcal_lineXYZ_to(pos_i32_t x, pos_i32_t y, pos_i32_t z, uint16_t delay_us, int8_t check_pinda)
-{
+bool xyzcal_lineXYZ_to(pos_i32_t x, pos_i32_t y, pos_i32_t z, uint16_t delay_us, int8_t check_pinda){
 //	DBG(_n("xyzcal_lineXYZ_to x=%d y=%d z=%d  check=%d\n"), x, y, z, check_pinda);
 	x -= count_position[0];
 	y -= count_position[1];
@@ -467,7 +466,7 @@ void accelerate_1_step(uint8_t axes, int16_t acc, uint16_t &delay_us, uint16_t m
 
 /// Goes defined number of steps while accelerating
 /// updates global positions
-void accelerate(uint8_t axes, uint8_t dir, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us, uint16_t steps){
+void accelerate(uint8_t axes, uint8_t dir, int16_t acc, uint16_t &delay_us, uint16_t min_delay_us, pos_i32_t steps){
 	set_axes_dir(axes, dir);
 	while (steps--){
 		accelerate_1_step(axes, acc, delay_us, min_delay_us);
@@ -480,7 +479,7 @@ void accelerate(uint8_t axes, uint8_t dir, int16_t acc, uint16_t &delay_us, uint
 /// returns after each step
 /// \returns true if step was done
 /// does not update global positions
-bool go_and_stop_1_step(uint8_t axes, int16_t dec, uint16_t &delay_us, uint16_t &steps){
+bool go_and_stop_1_step(uint8_t axes, int16_t dec, uint16_t &delay_us, pos_i32_t &steps){
 	if (steps <= 0 || dec <= 0)
 		return false;
 
@@ -500,7 +499,7 @@ bool go_and_stop_1_step(uint8_t axes, int16_t dec, uint16_t &delay_us, uint16_t 
 
 /// \param dir sets direction of movement
 /// updates global positions
-void go_and_stop(uint8_t axes, uint8_t dir, int16_t dec, uint16_t &delay_us, uint16_t steps){
+void go_and_stop(uint8_t axes, uint8_t dir, int16_t dec, uint16_t &delay_us, pos_i32_t steps){
 	set_axes_dir(axes, dir);
 	while (go_and_stop_1_step(axes, dec, delay_us, steps)){
 		update_position_1_step(axes, dir);
@@ -520,7 +519,7 @@ void stop_smoothly(uint8_t axes, uint8_t dir, int16_t dec, uint16_t &delay_us){
 	}
 }
 
-void go_start_stop(uint8_t axes, uint8_t dir, int16_t acc, uint16_t min_delay_us, uint16_t steps){
+void go_start_stop(uint8_t axes, uint8_t dir, int16_t acc, uint16_t min_delay_us, pos_i32_t steps){
 	if (steps == 0)
 		return;
 	uint16_t current_delay_us = MAX_DELAY;
@@ -531,7 +530,7 @@ void go_start_stop(uint8_t axes, uint8_t dir, int16_t acc, uint16_t min_delay_us
 
 /// moves X, Y, Z one after each other
 /// starts and ends at 0 speed
-void go_manhattan(int16_t x, int16_t y, int16_t z, int16_t acc, uint16_t min_delay_us){
+void go_manhattan(pos_i32_t x, pos_i32_t y, pos_i32_t z, int16_t acc, uint16_t min_delay_us){
 	int32_t length;
 
 	// DBG(_n("x %d -> %d, "), x, _X);
@@ -548,28 +547,37 @@ void go_manhattan(int16_t x, int16_t y, int16_t z, int16_t acc, uint16_t min_del
 	// DBG(_n("\n"));
 }
 
-void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t *pixels){
+void xyzcal_scan_pixels_32x32_Zhop(pos_i32_t cx, pos_i32_t cy, pos_i32_t min_z, pos_i32_t max_z, uint16_t delay_us, uint8_t *pixels){
 	if (!pixels)
 		return;
-	int16_t z_trig;
+	pos_i32_t z_trig;
 	uint16_t line_buffer[32];
 	uint16_t current_delay_us = MAX_DELAY; ///< defines current speed
-	int16_t start_z;
-	uint16_t steps_to_go;
+	pos_i32_t start_z;
+	pos_i32_t steps_to_go;
+
+	const pos_i16_t c32x = mm_2_pos(32 / 100, X_AXIS);
+	const pos_i16_t c32y = mm_2_pos(32 / 100, Y_AXIS);
+	const pos_i16_t c16x = c32x / 2;
+	const pos_i16_t c16y = c32y / 2;
+	const pos_i16_t c64x = 2 * c32x;
+	const pos_i16_t c64y = 2 * c32y;
+	const pos_i16_t c992x = 31 * c32x;
+	const pos_i16_t c992y = 31 * c32y;
 
 	DBG(_n("Scan countdown: "));
 
 	for (uint8_t r = 0; r < 32; r++){ ///< Y axis
 		for (uint8_t d = 0; d < 2; ++d){
-			go_manhattan((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, Z_ACCEL, Z_MIN_DELAY);
-			xyzcal_lineXYZ_to((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, delay_us, 0);
+			go_manhattan((d & 1) ? (cx + c992x) : (cx - c992x), cy - c992y + r * c64y, _Z, Z_ACCEL, Z_MIN_DELAY);
+			xyzcal_lineXYZ_to((d & 1) ? (cx + c992x) : (cx - c992x), cy - c992y + r * c64y, _Z, delay_us, 0);
 			sm4_set_dir(X_AXIS, d);
-			DBG(_n("%d\n"), 64 - (r * 2 + d)); ///< to keep OctoPrint connection alive
+			DBG(_n("%d\n"), c64y - (r * 2 + d)); ///< to keep OctoPrint connection alive
 
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 				/// move to the next point and move Z up diagonally (if needed)
 				current_delay_us = MAX_DELAY;
-				const int16_t end_x = ((d & 1) ? 1 : -1) * (64 * (16 - c) - 32) + cx;
+				const int16_t end_x = ((d & 1) ? 1 : -1) * (c64x * (c16x - c) - c32x) + cx;
 				const int16_t length_x = ABS(end_x - _X);
 				const int16_t half_x = length_x / 2;
 				/// don't go up if PINDA not triggered (optimization)
@@ -578,8 +586,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 				const uint8_t dir = Z_PLUS_MASK | (d & 1 ? X_MINUS_MASK : X_PLUS_MASK);
 
 				accelerate(axes, dir, Z_ACCEL, current_delay_us, Z_MIN_DELAY, half_x);
-				go_and_stop(axes, dir, Z_ACCEL, current_delay_us, length_x - half_x);
-				
+				go_and_stop(axes, dir, Z_ACCEL, current_delay_us, length_x - half_x);				
 				
 				z_trig = min_z;
 
@@ -633,7 +640,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 					line_buffer[c] = (uint16_t)(z_trig - min_z);
 				} else {
 					/// !!! data reversed in X
-					// DBG(_n("%04x"), ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
+					// DBG(_n("%04x"), ((uint32_t)line_buffer[32 - c] + (z_trig - min_z)) / 2);
 					/// save average of both directions (filters effect of hysteresis)
 					pixels[(uint16_t)r * 32 + (31 - c)] = (uint8_t)MIN((uint32_t)255, ((uint32_t)line_buffer[31 - c] + (z_trig - min_z)) / 2);
 				}
@@ -928,7 +935,8 @@ bool xyzcal_scan_and_process(void){
 		pattern10[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern_10 + i));
 	}
 
-	xyzcal_scan_pixels_32x32_Zhop(x, y, z, 2400, 200, matrix32);
+	const pos_i32_t max_z = mm_2_pos(6, Z_AXIS);
+	xyzcal_scan_pixels_32x32_Zhop(x, y, z, max_z, 200, matrix32);
 	print_image(matrix32);
 
 	/// SEARCH FOR BINARY CIRCLE
@@ -944,8 +952,7 @@ bool xyzcal_scan_and_process(void){
 		float radius = 4.5f; ///< default radius
 		const uint8_t iterations = 20;
 		dynamic_circle(matrix32, xf, yf, radius, iterations);
-		if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3)
-		{
+		if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3){
 			DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
 			/// dynamic algorithm diverged, use original position instead
 			xf = uc + 5.5f;
@@ -955,7 +962,7 @@ bool xyzcal_scan_and_process(void){
 		/// move to the center of area and convert to position
 		xf = (float)x + (xf - 15.5f) * 64;
 		yf = (float)y + (yf - 15.5f) * 64;
-		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf, X_AXIS), pos_2_mm(yf, Y_AXIS));
 		x = round_to_i32(xf);
 		y = round_to_i32(yf);
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);

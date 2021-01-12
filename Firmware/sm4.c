@@ -191,5 +191,45 @@ uint16_t sm4_line_xyze_ui(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
 	return nd;
 }
 
+/// Move to position specified in microsteps
+uint32_t sm4_line_xyze_32(int32_t dx, int32_t dy, int32_t dz){
+	int32_t dd = (int32_t)(sqrt((float)dx*dx + (float)dy*dy + (float)dz*dz) + 0.5);
+	int32_t nd = dd;
+	int32_t cx = dd;
+	int32_t cy = dd;
+	int32_t cz = dd;
+	int32_t x = 0;
+	int32_t y = 0;
+	int32_t z = 0;
+	while (nd){
+		if (sm4_stop_cb && (*sm4_stop_cb)()) break;
+		uint8_t sm = 0; //step mask
+		if (cx <= dx){
+			sm |= 1;
+			cx += dd;
+			x++;
+		}
+		if (cy <= dy){
+			sm |= 2;
+			cy += dd;
+			y++;
+		}
+		if (cz <= dz){
+			sm |= 4;
+			cz += dd;
+			z++;
+		}
+		cx -= dx;
+		cy -= dy;
+		cz -= dz;
+		sm4_do_step(sm);
+		uint16_t delay = SM4_DEFDELAY;
+		if (sm4_calc_delay_cb) delay = (*sm4_calc_delay_cb)(nd, dd);
+		if (delay) delayMicroseconds(delay);
+		nd--;
+	}
+	if (sm4_update_pos_cb) (*sm4_update_pos_cb)(x, y, z, 0);
+	return nd;
+}
 
 #endif //NEW_XYZCAL
