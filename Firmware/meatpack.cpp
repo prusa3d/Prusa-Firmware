@@ -19,7 +19,6 @@
 #define MeatPack_NextPackedFirst	0b00000001
 #define MeatPack_NextPackedSecond	0b00000010
 
-
 // Note:
 // I've tried both a switch/case method and a lookup table. The disassembly is exactly the same after compilation, byte-to-byte.
 // Thus, performance is identical.
@@ -102,20 +101,20 @@ inline uint8_t get_char(register uint8_t in) {
 
 // State variables
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-volatile uint8_t mp_active = 0;             // Defines if MeatPack is active
-volatile uint8_t mp_cmd_active = 0;         // Is a command is pending
-volatile uint8_t mp_char_buf = 0;           // Buffers a character if dealing with out-of-sequence pairs
-volatile uint8_t mp_cmd_count = 0;          // Counts how many command bytes are received (need 2)
-volatile uint8_t mp_full_char_queue = 0;       // Counts how many full-width characters are to be received
-volatile uint8_t mp_char_out_buf[2];
-volatile uint8_t mp_char_out_count = 0;
+uint8_t mp_active = 0;             // Defines if MeatPack is active
+uint8_t mp_cmd_active = 0;         // Is a command is pending
+uint8_t mp_char_buf = 0;           // Buffers a character if dealing with out-of-sequence pairs
+uint8_t mp_cmd_count = 0;          // Counts how many command bytes are received (need 2)
+uint8_t mp_full_char_queue = 0;       // Counts how many full-width characters are to be received
+uint8_t mp_char_out_buf[2];
+uint8_t mp_char_out_count = 0;
 
 // #DEBUGGING
 #ifdef MP_DEBUG
-volatile uint32_t mp_chars_decoded = 0;
+uint32_t mp_chars_decoded = 0;
 #endif
 
-inline void mp_handle_output_char(const uint8_t c) {
+void FORCE_INLINE mp_handle_output_char(const uint8_t c) {
     mp_char_out_buf[mp_char_out_count++] = c;
 
 #ifdef MP_DEBUG
@@ -137,7 +136,7 @@ inline void mp_handle_output_char(const uint8_t c) {
 // high = (packed & 0xF);
 
 //==========================================================================
-inline uint8_t mp_unpack_chars(const uint8_t pk, uint8_t* __restrict const chars_out) {
+uint8_t FORCE_INLINE mp_unpack_chars(const uint8_t pk, uint8_t* __restrict const chars_out) {
     register uint8_t out = 0;
 
 #ifdef USE_LOOKUP_TABLE
@@ -161,9 +160,24 @@ inline uint8_t mp_unpack_chars(const uint8_t pk, uint8_t* __restrict const chars
     return out;
 }
 
+//==============================================================================
+void FORCE_INLINE mp_reset_state() {
+    SERIAL_ECHOLNPGM("MP Reset");
+    mp_char_out_count = 0;
+    mp_cmd_active = MPC_None;
+    mp_active = 0;
+    mp_char_buf = 0;
+    mp_cmd_count = 0;
+    mp_cmd_active = 0;
+    mp_full_char_queue = 0;
+
+#ifdef MP_DEBUG
+    mp_chars_decoded = 0;
+#endif
+}
 
 //==========================================================================
-inline void mp_handle_rx_char_inner(const uint8_t c) {
+void FORCE_INLINE mp_handle_rx_char_inner(const uint8_t c) {
     // Handle normal data
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     if (mp_active == 0) {
@@ -196,7 +210,7 @@ inline void mp_handle_rx_char_inner(const uint8_t c) {
 }
 
 //==========================================================================
-void mp_handle_cmd(const MeatPack_Command c) {
+void FORCE_INLINE mp_handle_cmd(const MeatPack_Command c) {
     switch (c) {
     case MPC_EnablePacking: {
         mp_active = 1;
@@ -271,22 +285,6 @@ uint8_t mp_get_result_char(char* const __restrict out) {
         return res;
     }
     return 0;
-}
-
-//==============================================================================
-void mp_reset_state() {
-    SERIAL_ECHOLNPGM("MP Reset");
-    mp_char_out_count = 0;
-    mp_cmd_active = MPC_None;
-    mp_active = 0;
-    mp_char_buf = 0;
-    mp_cmd_count = 0;
-    mp_cmd_active = 0;
-    mp_full_char_queue = 0;
-
-#ifdef MP_DEBUG
-    mp_chars_decoded = 0;
-#endif
 }
 
 //==============================================================================

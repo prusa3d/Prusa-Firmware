@@ -25,11 +25,10 @@
 * 
 */
 #include <stdint.h>
+#include "Configuration.h"
 
 #ifndef MEATPACK_H_
 #define MEATPACK_H_
-
-#define ENABLE_MEATPACK
 
 #ifdef ENABLE_MEATPACK
 
@@ -64,13 +63,6 @@ extern void mp_handle_rx_char(const uint8_t c);
 // @param out [in] Output pointer for unpacked/processed data.
 // @return Number of characters returned. Range from 0 to 2.
 extern uint8_t mp_get_result_char(char* const __restrict out);
-
-// Reset MeatPack state.
-extern void mp_reset_state();
-
-// Manually trigger command
-extern void mp_trigger_cmd(const MeatPack_Command cmd);
-
 #endif
 
 #endif // MEATPACK_H_
