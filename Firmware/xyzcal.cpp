@@ -284,6 +284,7 @@ bool xyzcal_spiral2(pos_i32_t cx, pos_i32_t cy, pos_i32_t z0, int16_t dz, int16_
 	// snprintf(text, 10, "%4d", z0);
 	// lcd_print(text);
 
+
 	for (; ad < 720; ad++){
 		if (radius > 0){
 			dad = dad_max - (ad / k);
@@ -342,7 +343,7 @@ bool xyzcal_searchZ(void){
 	const int16_t min_z = mm_2_pos(-5.75f, Z_AXIS);
 	const int16_t z_step = mm_2_pos(1, Z_AXIS);
 	/// minimum to avoid hitting end of axis
-	const int16_t radius = MIN(mm_2_pos(2.25f, X_AXIS), mm_2_pos(2.25f, Y_AXIS));
+	const int16_t radius = MIN(mm_2_pos(9, X_AXIS), mm_2_pos(9, Y_AXIS));
 	uint16_t ad = 0;
 
 	for (pos_i32_t z = z0; z > min_z; z -= z_step){
