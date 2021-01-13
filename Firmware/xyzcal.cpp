@@ -266,8 +266,7 @@ bool xyzcal_lineXYZ_to(pos_i32_t x, pos_i32_t y, pos_i32_t z, uint16_t delay_us,
 	return ret;
 }
 
-bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radius, int16_t rotation, uint16_t delay_us, int8_t check_pinda, uint16_t* pad)
-{
+bool xyzcal_spiral2(pos_i32_t cx, pos_i32_t cy, pos_i32_t z0, int16_t dz, int16_t radius, int16_t rotation, uint16_t delay_us, int8_t check_pinda, uint16_t* pad){
 	bool ret = false;
 	float r = 0; //radius
 	uint16_t ad = 0; //angle [deg]
@@ -285,15 +284,11 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	// snprintf(text, 10, "%4d", z0);
 	// lcd_print(text);
 
-	for (; ad < 720; ad++)
-	{
-		if (radius > 0)
-		{
+	for (; ad < 720; ad++){
+		if (radius > 0){
 			dad = dad_max - (ad / k);
 			r = (float)(((uint32_t)ad) * radius) / 720;
-		}
-		else
-		{
+		} else {
 			dad = dad_max - ((719 - ad) / k);
 			r = (float)(((uint32_t)(719 - ad)) * (-radius)) / 720;
 		}
@@ -301,8 +296,7 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 		pos_i32_t x = (pos_i32_t)(cx + (cos(ar) * r));
 		pos_i32_t y = (pos_i32_t)(cy + (sin(ar) * r));
 		pos_i32_t z = (pos_i32_t)(z0 - ((float)((int32_t)dz * ad) / 720));
-		if (xyzcal_lineXYZ_to(x, y, z, delay_us, check_pinda))
-		{
+		if (xyzcal_lineXYZ_to(x, y, z, delay_us, check_pinda)) {
 			ad += dad + 1;
 			ret = true;
 			break;
@@ -317,7 +311,7 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	return ret;
 }
 
-bool xyzcal_spiral8(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radius, uint16_t delay_us, int8_t check_pinda, uint16_t* pad)
+bool xyzcal_spiral8(pos_i32_t cx, pos_i32_t cy, pos_i32_t z0, int16_t dz, int16_t radius, uint16_t delay_us, int8_t check_pinda, uint16_t* pad)
 {
 	bool ret = false;
 	uint16_t ad = 0;
@@ -337,6 +331,28 @@ bool xyzcal_spiral8(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 			ad += 2160;
 	if (pad) *pad = ad;
 	return ret;
+}
+
+bool xyzcal_searchZ(void){
+	DBG(_n("xyzcal_searchZ x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
+	const pos_i32_t x0 = _X;
+	const pos_i32_t y0 = _Y;
+	const pos_i32_t z0 = _Z;
+	const int16_t dz = mm_2_pos(0.25f, Z_AXIS);
+	const int16_t min_z = mm_2_pos(-5.75f, Z_AXIS);
+	const int16_t z_step = mm_2_pos(1, Z_AXIS);
+	/// minimum to avoid hitting end of axis
+	const int16_t radius = MIN(mm_2_pos(2.25f, X_AXIS), mm_2_pos(2.25f, Y_AXIS));
+	uint16_t ad = 0;
+
+	for (pos_i32_t z = z0; z > min_z; z -= z_step){
+		if (xyzcal_spiral8(x0, y0, z, dz, radius, 320, 1, &ad)){
+			DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), _X, _Y, _Z, ad);
+			return true;
+		}
+	}
+	DBG(_n("xyzcal_searchZ no signal\n x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
+	return false;
 }
 
 #ifdef XYZCAL_MEASSURE_PINDA_HYSTEREZIS
@@ -701,28 +717,6 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 
 const uint16_t xyzcal_point_pattern_10[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 const uint16_t xyzcal_point_pattern_08[12] PROGMEM = {0x000, 0x000, 0x0f0, 0x1f8, 0x3fc, 0x3fc, 0x3fc, 0x3fc, 0x1f8, 0x0f0, 0x000, 0x000};
-
-bool xyzcal_searchZ(void){
-	DBG(_n("xyzcal_searchZ x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
-	const pos_i32_t x0 = _X;
-	const pos_i32_t y0 = _Y;
-	const pos_i32_t z0 = _Z;
-	const int16_t dz = mm_2_pos(0.25f, Z_AXIS);
-	const int16_t min_z = mm_2_pos(-5.75f, Z_AXIS);
-	const int16_t z_step = mm_2_pos(1, Z_AXIS);
-	/// minimum to avoid hitting end of axis
-	const int16_t radius = MIN(mm_2_pos(2.25f, X_AXIS), mm_2_pos(2.25f, Y_AXIS));
-	uint16_t ad = 0;
-
-	for (pos_i32_t z = z0; z > min_z; z -= z_step){
-		if (xyzcal_spiral8(x0, y0, z, dz, radius, 320, 1, &ad)){
-			DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), _X, _Y, _Z, ad);
-			return true;
-		}
-	}
-	DBG(_n("xyzcal_searchZ no signal\n x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
-	return false;
-}
 
 /// returns value of any location within data
 /// uses bilinear interpolation
