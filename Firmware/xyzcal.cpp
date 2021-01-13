@@ -298,9 +298,9 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 			r = (float)(((uint32_t)(719 - ad)) * (-radius)) / 720;
 		}
 		ar = radians(ad + rotation);
-		int x = (int)(cx + (cos(ar) * r));
-		int y = (int)(cy + (sin(ar) * r));
-		int z = (int)(z0 - ((float)((int32_t)dz * ad) / 720));
+		pos_i32_t x = (pos_i32_t)(cx + (cos(ar) * r));
+		pos_i32_t y = (pos_i32_t)(cy + (sin(ar) * r));
+		pos_i32_t z = (pos_i32_t)(z0 - ((float)((int32_t)dz * ad) / 720));
 		if (xyzcal_lineXYZ_to(x, y, z, delay_us, check_pinda))
 		{
 			ad += dad + 1;
@@ -702,27 +702,23 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 const uint16_t xyzcal_point_pattern_10[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 const uint16_t xyzcal_point_pattern_08[12] PROGMEM = {0x000, 0x000, 0x0f0, 0x1f8, 0x3fc, 0x3fc, 0x3fc, 0x3fc, 0x1f8, 0x0f0, 0x000, 0x000};
 
-bool xyzcal_searchZ(void)
-{
+bool xyzcal_searchZ(void){
 	DBG(_n("xyzcal_searchZ x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
-	int16_t x0 = _X;
-	int16_t y0 = _Y;
-	int16_t z0 = _Z;
-//	int16_t min_z = -6000;
-//	int16_t dz = 100;
-	int16_t z = z0;
-	while (z > -2300) //-6mm + 0.25mm
-	{
-		uint16_t ad = 0;
-		if (xyzcal_spiral8(x0, y0, z, 100, 900, 320, 1, &ad)) //dz=100 radius=900 delay=400
-		{
-			int16_t x_on = _X;
-			int16_t y_on = _Y;
-			int16_t z_on = _Z;
-			DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), x_on, y_on, z_on, ad);
+	const pos_i32_t x0 = _X;
+	const pos_i32_t y0 = _Y;
+	const pos_i32_t z0 = _Z;
+	const int16_t dz = mm_2_pos(0.25f, Z_AXIS);
+	const int16_t min_z = mm_2_pos(-5.75f, Z_AXIS);
+	const int16_t z_step = mm_2_pos(1, Z_AXIS);
+	/// minimum to avoid hitting end of axis
+	const int16_t radius = MIN(mm_2_pos(2.25f, X_AXIS), mm_2_pos(2.25f, Y_AXIS));
+	uint16_t ad = 0;
+
+	for (pos_i32_t z = z0; z > min_z; z -= z_step){
+		if (xyzcal_spiral8(x0, y0, z, dz, radius, 320, 1, &ad)){
+			DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), _X, _Y, _Z, ad);
 			return true;
 		}
-		z -= 400;
 	}
 	DBG(_n("xyzcal_searchZ no signal\n x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	return false;
