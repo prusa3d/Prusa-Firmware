@@ -4901,6 +4901,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	#### Parameters
 	  - `X` - The position to move to on the X axis
 	  - `Y` - The position to move to on the Y axis
+      - 'Z' - The position to move to on the Z axis
 	  - `I` - The point in X space from the current X position to maintain a constant distance from
 	  - `J` - The point in Y space from the current Y position to maintain a constant distance from
 	  - `E` - The amount to extrude between the starting point and ending point
@@ -7514,7 +7515,7 @@ Sigma_Exit:
     #### Parameters
     - `P` - A float representing the max and default millimeters per arc segment.  Must be greater than 0.
     - `S` - A float representing the minimum allowable millimeters per arc segment.  Set to 0 to disable
-    - `N` - An int representing the number of arcs to draw before correcting the small angle approximation.  Set to 1 or 0 to disable.
+    - `N` - An int representing the number of arcs to draw before correcting the small angle approximation.  Set to 0 to disable.
     - `R` - An int representing the minimum number of segments per arcs of any radius,
             except when the results in segment lengths greater than or less than the minimum
             and maximum segment length.  Set to 0 to disable.
@@ -7523,60 +7524,19 @@ Sigma_Exit:
     */
     case 214: //!@n M214 - Set Arc Parameters (Use M500 to store in eeprom) P<MM_PER_ARC_SEGMENT> S<MIN_MM_PER_ARC_SEGMENT> R<MIN_ARC_SEGMENTS> F<ARC_SEGMENTS_PER_SEC>
     {
-        // Extract N
-        float p = cs.mm_per_arc_segment;
-        float s = cs.min_mm_per_arc_segment;
-        uint8_t n = cs.n_arc_correction;
-        uint16_t r = cs.min_arc_segments;
-        uint16_t f = cs.arc_segments_per_sec;
+        // Extract all possible parameters if they appear
+        float p = code_seen('P') ? code_value_float() : cs.mm_per_arc_segment;
+        float s = code_seen('S') ? code_value_float() : cs.min_mm_per_arc_segment;
+        uint8_t n = code_seen('N') ? code_value() : cs.n_arc_correction;
+        uint16_t r = code_seen('R') ? code_value() : cs.min_arc_segments;
+        uint16_t f = code_seen('F') ? code_value() : cs.arc_segments_per_sec;
 
-        // Extract N
-        if (code_seen('P'))
+        // Ensure mm_per_arc_segment is greater than 0, and that min_mm_per_arc_segment is sero or greater than or equal to mm_per_arc_segment
+        if (p <=0 || s < 0 || p < s)
         {
-            p = code_value_float();
-            if (p <= 0 || (s != 0 && p <= s))
-            {
-                break;
-            }
+            break;
         }
-        // Extract S
-        if (code_seen('S'))
-        {
-            s = code_value_float();
-            if (s < 0 || s >= p)
-            {
-                break;
-            }
-        }
-        // Extract N
-        if (code_seen('N'))
-        {
 
-            n = code_value();
-            if (n < 0)
-            {
-                break;
-            }
-        }
-        // Extract R
-        if (code_seen('R'))
-        {
-
-            r = code_value();
-            if (r < 0)
-            {
-                break;
-            }
-        }
-        // Extract F
-        if (code_seen('F'))
-        {
-            f = code_value();
-            if (f < 0)
-            {
-                break;
-            }
-        }
         cs.mm_per_arc_segment = p;
         cs.min_mm_per_arc_segment = s;
         cs.n_arc_correction = n;

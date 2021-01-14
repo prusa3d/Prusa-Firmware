@@ -171,7 +171,7 @@ void Config_PrintSettings(uint8_t level)
   }
     // Arc Interpolation Settings
     printf_P(PSTR(
-        "%SArc Settings: P=Arc segment length max (mm) S=Arc segment length Min (mm), N=Num Segments Per Correction, R=Min arc segments, F=Arc segments per second.\n%S  M214 P%.2f S%.2f N%d R%d F%d\n"),
+        "%SArc Settings: P:Max length(mm) S:Min length (mm) N:Corrections R:Min segments F:Segments/sec.\n%S  M214 P%.2f S%.2f N%d R%d F%d\n"),
         echomagic, echomagic, cs.mm_per_arc_segment, cs.min_mm_per_arc_segment, cs.n_arc_correction, cs.min_arc_segments, cs.arc_segments_per_sec);
 }
 #endif
