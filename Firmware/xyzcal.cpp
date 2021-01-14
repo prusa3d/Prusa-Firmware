@@ -921,7 +921,7 @@ bool xyzcal_scan_and_process(void){
 		float radius = 5; ///< default radius
 		const uint8_t iterations = 20;
 		dynamic_circle(matrix32, xf, yf, radius, iterations);
-		if (ABS(xf - (uc + 5.5f)) > 3 || ABS(yf - (ur + 5.5f)) > 3 || ABS(radius - 5) > 3){
+		if (fabs(xf - (uc + 5.5f)) > 3 || fabs(yf - (ur + 5.5f)) > 3 || fabs(radius - 5) > 3){
 			DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
 			/// dynamic algorithm diverged, use original position instead
 			xf = uc + 5.5f;
