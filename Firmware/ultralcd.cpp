@@ -334,7 +334,7 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* filename, char* longFilename)
 {
     char c;
     int enc_dif = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
@@ -520,7 +520,7 @@ static uint8_t menu_item_sdfile(const char*
 #ifdef NEW_SD_MENU
         str
 #endif //NEW_SD_MENU
-         ,const char* str_fn, char* str_fnl)
+         , char* str_fn, char* str_fnl)
 {
 #ifdef NEW_SD_MENU
 //	printf_P(PSTR("menu sdfile\n"));
@@ -671,7 +671,7 @@ void lcdui_print_extruder(void)
 // Print farm number (5 chars total)
 void lcdui_print_farm(void)
 {
-	int chars = lcd_printf_P(_N(" F0  "));
+	// int chars = lcd_printf_P(_N(" F0  "));
 //	lcd_space(5 - chars);
 /*
 	// Farm number display
