@@ -530,9 +530,21 @@ bool SdBaseFile::mkdir(SdBaseFile* parent, const uint8_t dname[11]) {
   * \return The value one, true, is returned for success and
   * the value zero, false, is returned for failure.
   */
-  bool SdBaseFile::open(const char* path, uint8_t oflag) {
-    return open(cwd_, path, oflag);
-  }
+bool SdBaseFile::open(const char* path, uint8_t oflag) {
+  return open(cwd_, path, oflag);
+}
+  
+bool SdBaseFile::openFilteredGcode(SdBaseFile* dirFile, const char* path){
+    if( open(dirFile, path, O_READ) ){
+        gf.reset(0,0);
+        // compute the block to start with
+        if( ! computeNextFileBlock(&gf.block, &gf.offset) )
+            return false;
+        return true;
+    } else {
+        return false;
+    }
+}
 //------------------------------------------------------------------------------
 /** Open a file or directory by name.
  *
@@ -1030,6 +1042,112 @@ int16_t SdBaseFile::read() {
   uint8_t b;
   return read(&b, 1) == 1 ? b : -1;
 }
+
+int16_t SdBaseFile::readFilteredGcode() {
+    // avoid calling the default heavy-weight read() for just one byte
+    return gf.read_byte();
+}
+
+void GCodeInputFilter::reset(uint32_t blk, uint16_t ofs){
+    // @@TODO clean up
+    block = blk;
+    offset = ofs;
+    cachePBegin = sd->vol_->cache()->data;
+    // reset cache read ptr to its begin
+    cacheP = cachePBegin;
+}
+
+int16_t GCodeInputFilter::read_byte(){
+    EnsureBlock(); // this is unfortunate :( ... other calls are using the cache and we can loose the data block of our gcode file
+
+    // assume, we have the 512B block cache filled and terminated with a '\n'
+//    SERIAL_PROTOCOLPGM("read_byte enter:");
+//    for(uint8_t i = 0; i < 16; ++i){
+//        SERIAL_PROTOCOL( cacheP[i] );
+//    }
+    
+    const uint8_t *start = cacheP;
+    uint8_t consecutiveCommentLines = 0;
+    while( *cacheP == ';' ){
+        for(;;){
+            while( *(++cacheP) != '\n' ); // skip until a newline is found
+            // found a newline, prepare the next block if block cache end reached
+            if( cacheP - cachePBegin >= 512 ){
+                // at the end of block cache, fill new data in
+                sd->curPosition_ += cacheP - start;
+                if( ! sd->computeNextFileBlock(&block, &offset) )goto fail;
+                EnsureBlock(); // fetch it into RAM
+                cacheP = start = cachePBegin;
+            } else {
+                if(++consecutiveCommentLines == 255){
+                    // SERIAL_PROTOCOLLN(sd->curPosition_);
+                    goto forceExit;
+                }
+                // peek the next byte - we are inside the block at least at 511th index - still safe
+                if( *(cacheP+1) == ';' ){
+                    // consecutive comment
+                    ++cacheP;
+                    ++consecutiveCommentLines;
+                }
+                break; // found the real end of the line even across many blocks
+            }
+        }
+    }
+forceExit:
+    sd->curPosition_ += cacheP - start + 1;
+    {
+    int16_t rv = *cacheP++;
+    
+    // prepare next block if needed
+    if( cacheP - cachePBegin >= 512 ){
+//        SERIAL_PROTOCOLLN(sd->curPosition_);
+        if( ! sd->computeNextFileBlock(&block, &offset) )goto fail;
+        // don't need to force fetch the block here, it will get loaded on the next call
+        cacheP = cachePBegin;
+    }    
+    return rv;
+    }
+fail:
+//    SERIAL_PROTOCOLLNPGM("CacheFAIL");
+    return -1;
+}
+
+bool GCodeInputFilter::EnsureBlock(){
+    if ( sd->vol_->cacheRawBlock(block, SdVolume::CACHE_FOR_READ)){
+        // terminate with a '\n'
+        const uint16_t terminateOfs = (sd->fileSize_ - offset) < 512 ? (sd->fileSize_ - offset) : 512;
+        sd->vol_->cache()->data[ terminateOfs ] = '\n';
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool SdBaseFile::computeNextFileBlock(uint32_t *block, uint16_t *offset) {
+    // error if not open or write only
+    if (!isOpen() || !(flags_ & O_READ)) return false;
+
+    *offset = curPosition_ & 0X1FF;  // offset in block
+    if (type_ == FAT_FILE_TYPE_ROOT_FIXED) {
+        *block = vol_->rootDirStart() + (curPosition_ >> 9);
+    } else {
+        uint8_t blockOfCluster = vol_->blockOfCluster(curPosition_);
+        if (*offset == 0 && blockOfCluster == 0) {
+            // start of new cluster
+            if (curPosition_ == 0) {
+                // use first cluster in file
+                curCluster_ = firstCluster_;
+            } else {
+                // get next cluster from FAT
+                if (!vol_->fatGet(curCluster_, &curCluster_)) return false;
+            }
+        }
+        *block = vol_->clusterStartBlock(curCluster_) + blockOfCluster;
+    }
+    return true;
+}
+
+
 //------------------------------------------------------------------------------
 /** Read data from a file starting at the current position.
  *
@@ -1443,7 +1561,7 @@ bool SdBaseFile::rmRfStar() {
  * \param[in] oflag Values for \a oflag are constructed by a bitwise-inclusive
  * OR of open flags. see SdBaseFile::open(SdBaseFile*, const char*, uint8_t).
  */
-SdBaseFile::SdBaseFile(const char* path, uint8_t oflag) {
+SdBaseFile::SdBaseFile(const char* path, uint8_t oflag):gf(this) {
   type_ = FAT_FILE_TYPE_CLOSED;
   writeError = false;
   open(path, oflag);

@@ -20,6 +20,7 @@ public:
 
   void checkautostart(bool x); 
   void openFile(const char* name,bool read,bool replace_current=true);
+  void openFileFilteredGcode(const char* name, bool replace_current = false);
   void openLogFile(const char* name);
   void removeFile(const char* name);
   void closefile(bool store_location=false);
@@ -59,7 +60,10 @@ public:
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
   FORCE_INLINE bool eof() { return sdpos>=filesize ;};
-  FORCE_INLINE int16_t get() {  sdpos = file.curPosition();return (int16_t)file.read();};
+//  FORCE_INLINE int16_t getX() {  sdpos = file.curPosition();return (int16_t)file.read();};
+  //@@TODO potential performance problem - when the comment reading fails, sdpos points to the last correctly read character.
+  // However, repeated reading (e.g. after power panic) the comment will be read again - it should survive correctly, it will just take a few moments to skip
+  FORCE_INLINE int16_t getFilteredGcodeChar() {  sdpos = file.curPosition();return (int16_t)file.readFilteredGcode();};
   FORCE_INLINE void setIndex(long index) {sdpos = index;file.seekSet(index);};
   FORCE_INLINE uint8_t percentDone(){if(!isFileOpen()) return 0; if(filesize) return sdpos/((filesize+99)/100); else return 0;};
   FORCE_INLINE char* getWorkDirName(){workDir.getFilename(filename);return filename;};

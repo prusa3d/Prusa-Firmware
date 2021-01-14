@@ -3987,7 +3987,9 @@ void process_commands()
 #endif
 		}else if (code_seen_P("fv")) { // PRUSA fv
         // get file version
-        #ifdef SDSUPPORT
+        #if 0 
+            //@@TODO
+            def SDSUPPORT
         card.openFile(strchr_pointer + 3,true);
         while (true) {
             uint16_t readByte = card.get();
@@ -5767,7 +5769,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       starpos = (strchr(strchr_pointer + 4,'*'));
 	  if(starpos!=NULL)
         *(starpos)='\0';
-      card.openFile(strchr_pointer + 4,true);
+      card.openFileFilteredGcode(strchr_pointer + 4);
       break;
 
     /*!

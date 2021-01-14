@@ -573,7 +573,7 @@ void get_command()
   // this character _can_ occur in serial com, due to checksums. however, no checksums are used in SD printing
 
   static bool stop_buffering=false;
-  static uint8_t consecutiveEmptyLines = 0;
+//  static uint8_t consecutiveEmptyLines = 0;
   if(buflen==0) stop_buffering=false;
   union {
     struct {
@@ -585,11 +585,11 @@ void get_command()
   sd_count.value = 0;
   // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
   while( !card.eof() && !stop_buffering) {
-    int16_t n=card.get();
+    int16_t n=card.getFilteredGcodeChar();
     char serial_char = (char)n;
     if( serial_char == '\n'
      || serial_char == '\r'
-     || ((serial_char == '#' || serial_char == ':') && comment_mode == false)
+     || ((serial_char == '#' || serial_char == ':') /*&& comment_mode == false*/)
      || serial_count >= (MAX_CMD_SIZE - 1)
      || n==-1
     ){
@@ -603,12 +603,12 @@ void get_command()
         // read from the sdcard into sd_count, 
         // so that the lenght of the already read empty lines and comments will be added
         // to the following non-empty line. 
-        comment_mode = false;
-        if( ++consecutiveEmptyLines > 250 ){
-            consecutiveEmptyLines = 0;
+//        comment_mode = false;
+//        if( ++consecutiveEmptyLines > 10 ){
+//            consecutiveEmptyLines = 0;
             return; // prevent cycling indefinitely - let manage_heaters do their job
-        }
-        continue; //if empty line
+//        }
+//        continue; //if empty line
       }
       // The new command buffer could be updated non-atomically, because it is not yet considered
       // to be inside the active queue.
@@ -644,7 +644,7 @@ void get_command()
 
       comment_mode = false; //for new command
       serial_count = 0; //clear buffer
-      consecutiveEmptyLines = 0; // reached a non-empty line which shall be enqueued
+//      consecutiveEmptyLines = 0; // reached a non-empty line which shall be enqueued
     
       if(card.eof()) break;
 
@@ -654,8 +654,10 @@ void get_command()
     }
     else
     {
-      if(serial_char == ';') comment_mode = true;
-      else if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
+      /*if(serial_char == ';') comment_mode = true;
+      else if(!comment_mode)*/
+        // there are no comments coming from the filtered file
+        cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
     }
   }
   if(card.eof())

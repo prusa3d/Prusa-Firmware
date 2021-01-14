@@ -375,6 +375,71 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
     }
 }
 
+// @@TODO merge with openFile, too much duplicated code and texts
+void CardReader::openFileFilteredGcode(const char* name, bool replace_current/* = false*/){
+    if(!cardOK)
+        return;
+    
+    if(file.isOpen()){  //replacing current file by new file, or subfile call
+        if(!replace_current){
+            if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1){
+                // SERIAL_ERROR_START;
+                // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
+                // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
+                kill(_n("trying to call sub-gcode files with too many levels."), 1);
+                return;
+            }
+            
+            SERIAL_ECHO_START;
+            SERIAL_ECHOPGM("SUBROUTINE CALL target:\"");
+            SERIAL_ECHO(name);
+            SERIAL_ECHOPGM("\" parent:\"");
+            
+            //store current filename and position
+            getAbsFilename(filenames[file_subcall_ctr]);
+            
+            SERIAL_ECHO(filenames[file_subcall_ctr]);
+            SERIAL_ECHOPGM("\" pos");
+            SERIAL_ECHOLN(sdpos);
+            filespos[file_subcall_ctr]=sdpos;
+            file_subcall_ctr++;
+        } else {
+            SERIAL_ECHO_START;
+            SERIAL_ECHOPGM("Now doing file: ");
+            SERIAL_ECHOLN(name);
+        }
+        file.close();
+    } else { //opening fresh file
+        file_subcall_ctr=0; //resetting procedure depth in case user cancels print while in procedure
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPGM("Now fresh file: ");
+        SERIAL_ECHOLN(name);
+    }
+    sdprinting = false;
+  
+    SdFile myDir;
+    const char *fname=name;
+    diveSubfolder(fname,myDir);
+  
+    if (file.openFilteredGcode(curDir, fname)) {
+        filesize = file.fileSize();
+        SERIAL_PROTOCOLRPGM(_N("File opened: "));////MSG_SD_FILE_OPENED
+        SERIAL_PROTOCOL(fname);
+        SERIAL_PROTOCOLRPGM(_n(" Size: "));////MSG_SD_SIZE
+        SERIAL_PROTOCOLLN(filesize);
+        sdpos = 0;
+        
+        SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED
+        getfilename(0, fname);
+        lcd_setstatus(longFilename[0] ? longFilename : fname);
+        lcd_setstatus("SD-PRINTING         ");
+      } else {
+        SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+        SERIAL_PROTOCOL(fname);
+        SERIAL_PROTOCOLLN('.');
+      }
+}
+
 void CardReader::openFile(const char* name,bool read, bool replace_current/*=true*/)
 {
   if(!cardOK)
