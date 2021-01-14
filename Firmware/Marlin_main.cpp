@@ -1077,8 +1077,9 @@ void setup()
                eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED,true);
 	}
 
-
-    if (eeprom_read_byte((uint8_t*)EEPROM_PRUSA_SN + 19)) //saved EEPROM SN is not valid. Try to retrieve it.
+    //saved EEPROM SN is not valid. Try to retrieve it.
+    //SN is valid only if it is NULL terminated. Any other character means either uninitialized or corrupted
+    if (eeprom_read_byte((uint8_t*)EEPROM_PRUSA_SN + 19))
     {
         char SN[20];
         if (get_PRUSA_SN(SN))
@@ -3403,14 +3404,14 @@ void gcode_M701()
  * Typical format of S/N is:CZPX0917X003XC13518
  *
  * Send command ;S to serial port 0 to retrieve serial number stored in 32U2 processor,
- * reply is transmitted to the selected serial port.
+ * reply is stored in *SN.
  * Operation takes typically 23 ms. If the retransmit is not finished until 100 ms,
- * it is interrupted, so less, or no characters are retransmitted, only newline character is send
- * in any case.
+ * it is interrupted, so less, or no characters are retransmitted, the function returns false
  * The command will fail if the 32U2 processor is unpowered via USB since it is isolated from the rest of the electronics.
  * In that case the value that is stored in the EEPROM should be used instead.
  *
  * @return 1 on success
+ * @return 0 on general failure
  */
 static bool get_PRUSA_SN(char* SN)
 {
