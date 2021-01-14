@@ -46,12 +46,14 @@
 // full-width), however 2 in a row will never occur, as the next 2 bytes will always
 // some non-0xFF character.
 enum MeatPack_Command {
-    MPC_None            = 0b00000000,
-    MPC_TogglePacking   = 0b11111101,
-    MPC_EnablePacking   = 0b11111011,
-    MPC_DisablePacking  = 0b11111010,
-    MPC_ResetState      = 0b11111001,
-    MPC_QueryState      = 0b11111000
+    MPCommand_None            = 0U,
+    MPCommand_TogglePacking   = 253U,
+    MPCommand_EnablePacking   = 251U,
+    MPCommand_DisablePacking  = 250U,
+    MPCommand_ResetAll        = 249U,
+    MPCommand_QueryConfig     = 248U,
+    MPCommand_EnableNoSpaces  = 247U,
+    MPCommand_DisableNoSpaces = 246U
 };
 
 // Pass in a character rx'd by SD card or serial. Automatically parses command/ctrl sequences,
