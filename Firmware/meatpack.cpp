@@ -252,14 +252,18 @@ void FORCE_INLINE mp_handle_rx_char_inner(const uint8_t c) {
 
 //==========================================================================
 void FORCE_INLINE mp_echo_config_state() {
-    SERIAL_ECHOPGM("[MP] ")
+    SERIAL_ECHOPGM("[MP] ");
 
     // Echo current state
     if (mp_config & MPConfig_Active)
         SERIAL_ECHOPGM("ON");
+    else
+        SERIAL_ECHOPGM("OFF");
 
     if (mp_config & MPConfig_NoSpaces)
-        SERIAL_ECHOPGM("NSP");
+        SERIAL_ECHOPGM("NSP"); // [N]o [SP]aces
+    else
+        SERIAL_ECHOPGM("ESP"); // [E]nabled [SP]aces
 
     SERIAL_ECHOLNPGM("");
 
