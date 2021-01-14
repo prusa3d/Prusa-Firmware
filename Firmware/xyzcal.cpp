@@ -944,8 +944,34 @@ bool xyzcal_scan_and_process(void){
 	return ret;
 }
 
+/// If 400 steps motor is detected
+/// change steps per unit (spu) and microsteps per step (mps)
+/// to use original calibration motion planners.
+/// If not nothing is changed.
+uint8_t normalize_steps_per_unit(AxisEnum axis){
+	const float spu = cs.axis_steps_per_unit[axis];
+	const uint8_t mps = cs.axis_ustep_resolution[axis];
+	if (fabs(spu - 200) > 0.001f)
+		return 0;
+	cs.axis_steps_per_unit[axis] = 100;
+	cs.axis_ustep_resolution[axis] = 8;
+	return mps;
+}
+
+/// See normalize_steps_per_unit()
+void revert_steps_per_unit(AxisEnum axis, uint8_t mps){
+	if (mps == 0)
+		return;
+	cs.axis_steps_per_unit[axis] = 200;
+	cs.axis_ustep_resolution[axis] = mps;
+}
+
 bool xyzcal_find_bed_induction_sensor_point_xy(void){
 	bool ret = false;
+
+	/// normalizes steps for 400 step motors
+	const uint8_t x_mps = normalize_steps_per_unit(X_AXIS);
+	const uint8_t y_mps = normalize_steps_per_unit(Y_AXIS);
 
 	DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
@@ -958,6 +984,11 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void){
 		ret = xyzcal_scan_and_process();
 	}
 	xyzcal_meassure_leave();
+
+	/// revert normalization
+	revert_steps_per_unit(X_AXIS, x_mps);
+	revert_steps_per_unit(Y_AXIS, y_mps);
+
 	return ret;
 }
 
