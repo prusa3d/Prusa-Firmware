@@ -22,6 +22,8 @@
 #define MeatPack_SpaceCharIdx       11U
 #define MeatPack_SpaceCharReplace   'E'
 
+#define MeatPack_ProtocolVersion     "PV01"
+
 /*
 
     Character Frequencies from ~30 MB of comment-stripped gcode:
@@ -57,6 +59,23 @@
 // I've tried both a switch/case method and a lookup table. The disassembly is exactly the same after compilation, byte-to-byte.
 // Thus, performance is identical.
 #define USE_LOOKUP_TABLE
+
+// State variables
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+enum MeatPack_ConfigStateFlags {
+    MPConfig_None = 0,
+    MPConfig_Active = (1 << 0),
+    MPConfig_NoSpaces = (1 << 1)
+};
+
+uint8_t mp_config = MPConfig_None; // Configuration state
+uint8_t mp_cmd_active = 0;         // Is a command is pending
+uint8_t mp_char_buf = 0;           // Buffers a character if dealing with out-of-sequence pairs
+uint8_t mp_cmd_count = 0;          // Counts how many command bytes are received (need 2)
+uint8_t mp_full_char_queue = 0;    // Counts how many full-width characters are to be received
+uint8_t mp_char_out_buf[2];        // Output buffer for caching up to 2 characters
+uint8_t mp_char_out_count = 0;     // Stores number of characters to be read out.
+
 
 #ifdef USE_LOOKUP_TABLE
 // The 15 most-common characters used in G-code, ~90-95% of all g-code uses these characters
@@ -116,7 +135,7 @@ inline uint8_t get_char(register uint8_t in) {
         return '.';
         break;
     case 0b1011:
-        return ' ';
+        return (mp_config & MPConfig_NoSpaces) ? MeatPack_SpaceCharReplace : ' ';
         break;
     case 0b1100:
         return '\n';
@@ -131,23 +150,6 @@ inline uint8_t get_char(register uint8_t in) {
     return 0;
 }
 #endif
-
-
-// State variables
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-enum MeatPack_ConfigStateFlags {
-    MPConfig_None = 0,
-    MPConfig_Active = (1 << 0),
-    MPConfig_NoSpaces = (1 << 1)
-};
-
-uint8_t mp_config = MPConfig_None; // Configuration state
-uint8_t mp_cmd_active = 0;         // Is a command is pending
-uint8_t mp_char_buf = 0;           // Buffers a character if dealing with out-of-sequence pairs
-uint8_t mp_cmd_count = 0;          // Counts how many command bytes are received (need 2)
-uint8_t mp_full_char_queue = 0;    // Counts how many full-width characters are to be received
-uint8_t mp_char_out_buf[2];        // Output buffer for caching up to 2 characters
-uint8_t mp_char_out_count = 0;     // Stores number of characters to be read out.
 
 // #DEBUGGING
 #ifdef MP_DEBUG
@@ -202,7 +204,6 @@ uint8_t FORCE_INLINE mp_unpack_chars(const uint8_t pk, uint8_t* __restrict const
 
 //==============================================================================
 void FORCE_INLINE mp_reset_state() {
-    SERIAL_ECHOLNPGM("MP Reset");
     mp_char_out_count = 0;
     mp_cmd_active = MPCommand_None;
     mp_config = MPConfig_None;
@@ -213,6 +214,7 @@ void FORCE_INLINE mp_reset_state() {
 
 #ifdef MP_DEBUG
     mp_chars_decoded = 0;
+    SERIAL_ECHOLNPGM("MP Reset");
 #endif
 }
 
@@ -252,23 +254,30 @@ void FORCE_INLINE mp_handle_rx_char_inner(const uint8_t c) {
 
 //==========================================================================
 void FORCE_INLINE mp_echo_config_state() {
-    SERIAL_ECHOPGM("[MP] ");
+    SERIAL_ECHOPGM(" [MP] "); // Add space at idx 0 just in case first character is dropped due to timing/sync issues.
+
+    // NOTE: if any configuration vars are added below, the outgoing sync text for host plugin
+    // should not contain the "PV' substring, as this is used to indicate protocol version
+    SERIAL_ECHOPGM(MeatPack_ProtocolVersion);
 
     // Echo current state
     if (mp_config & MPConfig_Active)
-        SERIAL_ECHOPGM("ON");
+        SERIAL_ECHOPGM(" ON");
     else
-        SERIAL_ECHOPGM("OFF");
+        SERIAL_ECHOPGM(" OFF");
 
     if (mp_config & MPConfig_NoSpaces)
-        SERIAL_ECHOPGM("NSP"); // [N]o [SP]aces
+        SERIAL_ECHOPGM(" NSP"); // [N]o [SP]aces
     else
-        SERIAL_ECHOPGM("ESP"); // [E]nabled [SP]aces
+        SERIAL_ECHOPGM(" ESP"); // [E]nabled [SP]aces
 
     SERIAL_ECHOLNPGM("");
 
     // Validate config vars
-    MeatPackLookupTbl[MeatPack_SpaceCharIdx] = ((mp_config & MPConfig_NoSpaces) ? MeatPack_SpaceCharReplace : ' ');
+#ifdef USE_LOOKUP_TABLE
+    MeatPackLookupTbl[MeatPack_SpaceCharIdx] = (uint8_t)((mp_config & MPConfig_NoSpaces) ? MeatPack_SpaceCharReplace : ' ');
+#endif
+
 }
 
 //==========================================================================
