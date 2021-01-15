@@ -14,6 +14,8 @@
 #define SWI2C_SDA      20 //SDA on P3
 #define SWI2C_SCL      21 //SCL on P3
 
+#define LCD_TIMER 3
+
 #ifdef MICROMETER_LOGGING
 #define D_DATACLOCK		24	//Y_MAX (green)
 #define D_DATA			30	//X_MAX (blue)

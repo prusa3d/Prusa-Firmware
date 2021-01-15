@@ -11,6 +11,11 @@
   #define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
+#define _REGNAME(registerbase,number,suffix) registerbase##number##suffix
+#define _REGNAME_SHORT(registerbase,suffix) registerbase##suffix
+
+#define DIVIDE_ROUND_UP(x, y) (((x) - 1) / (y) + 1)
+
 // Macros to make a string from a macro
 #define STRINGIFY_(M) #M
 #define STRINGIFY(M) STRINGIFY_(M)
@@ -31,6 +36,44 @@
 
 #define TBI(N,B) (N ^= _BV(B))
 
+// Macros to constrain values
+#ifdef __cplusplus
+
+  // C++11 solution that is standards compliant.
+  template <class V, class N> static inline constexpr void NOLESS(V& v, const N n) {
+    if (n > v) v = n;
+  }
+  template <class V, class N> static inline constexpr void NOMORE(V& v, const N n) {
+    if (n < v) v = n;
+  }
+  template <class V, class N1, class N2> static inline constexpr void LIMIT(V& v, const N1 n1, const N2 n2) {
+    if (n1 > v) v = n1;
+    else if (n2 < v) v = n2;
+  }
+
+#else
+
+  #define NOLESS(v, n) \
+    do{ \
+      __typeof__(n) _n = (n); \
+      if (_n > v) v = _n; \
+    }while(0)
+
+  #define NOMORE(v, n) \
+    do{ \
+      __typeof__(n) _n = (n); \
+      if (_n < v) v = _n; \
+    }while(0)
+
+  #define LIMIT(v, n1, n2) \
+    do{ \
+      __typeof__(n1) _n1 = (n1); \
+      __typeof__(n2) _n2 = (n2); \
+      if (_n1 > v) v = _n1; \
+      else if (_n2 < v) v = _n2; \
+    }while(0)
+
+#endif
 
 // Macros to chain up to 12 conditions
 #define _DO_1(W,C,A)       (_##W##_1(A))
