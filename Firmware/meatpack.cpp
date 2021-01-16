@@ -160,11 +160,10 @@ void FORCE_INLINE mp_handle_output_char(const uint8_t c) {
     mp_char_out_buf[mp_char_out_count++] = c;
 
 #ifdef MP_DEBUG
-    if (mp_chars_decoded < 64) {
+    if (mp_chars_decoded < 1024) {
         ++mp_chars_decoded;
-        SERIAL_ECHOPGM("Rec Byte: ");
-        MYSERIAL.print("0x");
-        MYSERIAL.print((uint8_t)c, HEX);
+        SERIAL_ECHOPGM("RB: ");
+        MYSERIAL.print((char)c);
         SERIAL_ECHOLNPGM("");
     }
 #endif
@@ -243,8 +242,10 @@ void FORCE_INLINE mp_handle_rx_char_inner(const uint8_t c) {
             }
             else {
                 mp_handle_output_char(buf[0]);
-                if (res & MeatPack_NextPackedSecond) ++mp_full_char_queue;
-                else mp_handle_output_char(buf[1]);
+                if (buf[0] != '\n') {
+                    if (res & MeatPack_NextPackedSecond) ++mp_full_char_queue;
+                    else mp_handle_output_char(buf[1]);
+                }
             }
         }
     }
