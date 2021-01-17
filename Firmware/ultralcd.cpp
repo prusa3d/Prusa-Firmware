@@ -2609,6 +2609,10 @@ static void mmu_unload_filament()
 
 
 void lcd_wait_interact() {
+    lcd_wait_interact('\0');
+}
+
+void lcd_wait_interact(const char* lcd_load_message) {
 
   lcd_clear();
 
@@ -2617,6 +2621,8 @@ void lcd_wait_interact() {
   lcd_puts_P(_i("Prepare new filament"));////MSG_PREPARE_FILAMENT c=20 r=1
 #else
   lcd_puts_P(_i("Insert filament"));////MSG_INSERT_FILAMENT c=20
+  lcd_set_cursor(0, 4);
+  lcd_print(lcd_load_message);
 #endif
   if (!fsensor_autoload_enabled) {
 	  lcd_set_cursor(0, 2);

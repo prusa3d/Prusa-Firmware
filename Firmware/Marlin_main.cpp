@@ -3192,7 +3192,7 @@ static T gcode_M600_filament_change_z_shift()
 #endif
 }	
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
+static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/, const char* lcd_load_message)
 {
     st_synchronize();
     float lastpos[4];
@@ -3274,7 +3274,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         mmu_M600_load_filament(automatic, HotendTempBckp);
     }
     else
-        M600_load_filament();
+        M600_load_filament(lcd_load_message);
 
     if (!automatic) M600_check_state(HotendTempBckp);
 
@@ -7901,9 +7901,10 @@ Sigma_Exit:
     - `Z`    - relative lift Z, default 2.
     - `E`    - initial retract, default -2
     - `L`    - later retract distance for removal, default -80
+    - `C`    - custom message to show during loading, should be enclosed between double quotes to allow the use of reserved words
     - `AUTO` - Automatically (only with MMU)
     */
-    case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
+    case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal] C[Custom message to show during loading]
 	{
 		st_synchronize();
 
@@ -7914,6 +7915,13 @@ Sigma_Exit:
 		float e_shift_late = 0;
 		bool automatic = false;
 		
+        // Add a custom message, during the loading.
+        // It should be the last parameter of the command
+        char lcd_load_message[LCD_WIDTH + 1] = "";
+        if (code_seen('C')) {
+            code_value_string(lcd_load_message, LCD_WIDTH);
+        }
+
         //Retract extruder
         if(code_seen('E'))
         {
@@ -7972,7 +7980,7 @@ Sigma_Exit:
 		if (mmu_enabled && code_seen("AUTO"))
 			automatic = true;
 
-		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late, lcd_load_message);
 	
 	}
     break;
@@ -11693,9 +11701,9 @@ void M600_load_filament_movements()
 	st_synchronize();
 }
 
-void M600_load_filament() {
+void M600_load_filament(const char* lcd_load_message) {
 	//load filament for single material and SNMM 
-	lcd_wait_interact();
+	lcd_wait_interact(lcd_load_message);
 
 	//load_filament_time = _millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);

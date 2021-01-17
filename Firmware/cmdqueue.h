@@ -73,9 +73,35 @@ extern bool is_buffer_empty();
 extern void get_command();
 extern uint16_t cmdqueue_calc_sd_length();
 
+static inline bool code_seen_common() {
+	char *p1;
+	int c = 0;
+
+	if (strchr_pointer == NULL) return false;
+
+	p1 = strchr(CMDBUFFER_CURRENT_STRING, '"');
+	while (p1 != NULL && p1 < strchr_pointer) {
+		c++;
+		p1 = strchr(++p1, '"');
+	};
+	if (c % 2 == 0) return true;
+
+	strchr_pointer = NULL;
+	return false;
+}
+
 // Return True if a character was found
-static inline bool    code_seen(char code) { return (strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
-static inline bool    code_seen(const char *code) { return (strchr_pointer = strstr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
+//static inline bool    code_seen(char code) { return (strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
+static inline bool    code_seen(char code) {
+	strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code);
+	return code_seen_common();
+}
+//static inline bool    code_seen(const char *code) { return (strchr_pointer = strstr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
+static inline bool    code_seen(const char *code) {
+	strchr_pointer = strstr(CMDBUFFER_CURRENT_STRING, code);
+	return code_seen_common();
+}
+
 static inline float   code_value()      { return strtod(strchr_pointer+1, NULL);}
 static inline long    code_value_long()    { return strtol(strchr_pointer+1, NULL, 10); }
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
@@ -89,6 +115,31 @@ static inline float code_value_float()
     float ret = strtod(strchr_pointer + 1, NULL);
     *e = 'E';
     return ret;
+}
+
+static inline void code_value_string(char* target, uint8_t max_size) {
+	char *p1;
+	uint8_t size = max_size;
+    if (strchr_pointer != NULL) {
+        strchr_pointer++;
+        while (*strchr_pointer == ' ')
+            ++strchr_pointer;
+        if (*strchr_pointer != '\0') {
+        	if (*strchr_pointer == '"') {
+        		p1 = strchr(++strchr_pointer, '"');
+        		if (p1 != NULL)
+        			size = p1 - strchr_pointer;
+        	}
+            strncpy(target, strchr_pointer, size);
+            int len = strlen(target);
+            if (len > 0) {
+                while (len < max_size) {
+                    target[len++] = ' ';
+                }
+            }
+            target[max_size] = '\0';
+        }
+    }
 }
 
 
