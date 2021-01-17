@@ -160,7 +160,7 @@ void FORCE_INLINE mp_handle_output_char(const uint8_t c) {
     mp_char_out_buf[mp_char_out_count++] = c;
 
 #ifdef MP_DEBUG
-    if (mp_chars_decoded < 1024) {
+    if (mp_chars_decoded < 4096) {
         ++mp_chars_decoded;
         SERIAL_ECHOPGM("RB: ");
         MYSERIAL.print((char)c);
