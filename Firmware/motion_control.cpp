@@ -63,9 +63,9 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     {
         // 20200417 - FormerLurker - Implement MIN_MM_PER_ARC_SEGMENT if it is defined
         // This prevents a very high number of segments from being generated for curves of a short radius
-       mm_per_arc_segment = cs.min_mm_per_arc_segment;
+        mm_per_arc_segment = cs.min_mm_per_arc_segment;
     }
-    else if (mm_per_arc_segment > cs.mm_per_arc_segment){
+    else if (mm_per_arc_segment > cs.mm_per_arc_segment) {
         // 20210113 - This can be implemented in an else if since  we can't be below the min AND above the max at the same time.
         // 20200417 - FormerLurker - Implement MIN_MM_PER_ARC_SEGMENT if it is defined
         mm_per_arc_segment = cs.mm_per_arc_segment;
@@ -86,7 +86,7 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     // calculating here
     const float millimeters_of_travel_arc = hypot(angular_travel_total * radius, fabs(travel_z));
     if (millimeters_of_travel_arc < 0.001) { return; }
-    // Calculate the total travel per segment
+    
     // Calculate the number of arc segments
     uint16_t segments = static_cast<uint16_t>(ceil(millimeters_of_travel_arc / mm_per_arc_segment));
 
@@ -115,17 +115,18 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     // If there is only one segment, no need to do a bunch of work since this is a straight line!
     if (segments > 1)
     {
-        
-        // Calculate theta per segments and linear (z) travel per segment
+        // Calculate theta per segments, and linear (z) travel per segment, e travel per segment
+        // as well as the small angle approximation for sin and cos.
         const float theta_per_segment = angular_travel_total / segments,
-                    linear_per_segment = travel_z / (segments),
-                    segment_extruder_travel = (target[E_AXIS] - position[E_AXIS]) / (segments),
-                    sq_theta_per_segment = theta_per_segment * theta_per_segment,
-                    sin_T = theta_per_segment - sq_theta_per_segment * theta_per_segment / 6,
-                    cos_T = 1 - 0.5f * sq_theta_per_segment;
-        
-        for (uint16_t i = 1; i < segments; i++) { // Increment (segments-1)
-            if (n_arc_correction--<1) {
+            linear_per_segment = travel_z / (segments),
+            segment_extruder_travel = (target[E_AXIS] - position[E_AXIS]) / (segments),
+            sq_theta_per_segment = theta_per_segment * theta_per_segment,
+            sin_T = theta_per_segment - sq_theta_per_segment * theta_per_segment / 6,
+            cos_T = 1 - 0.5f * sq_theta_per_segment;
+        // Loop through all but one of the segments.  The last one can be done simply
+        // by moving to the target.
+        for (uint16_t i = 1; i < segments; i++) {
+            if (n_arc_correction-- == 0) {
                 // Calculate the actual position for r_axis_x and r_axis_y
                 const float cos_Ti = cos(i * theta_per_segment), sin_Ti = sin(i * theta_per_segment);
                 r_axis_x = -offset[X_AXIS] * cos_Ti + offset[Y_AXIS] * sin_Ti;
@@ -134,24 +135,25 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
                 n_arc_correction = cs.n_arc_correction;
             }
             else {
+                // Calculate X and Y using the small angle approximation
                 const float r_axisi = r_axis_x * sin_T + r_axis_y * cos_T;
                 r_axis_x = r_axis_x * cos_T - r_axis_y * sin_T;
                 r_axis_y = r_axisi;
             }
-            
-            // Update arc_target location
+
+            // Update Position
             position[X_AXIS] = center_axis_x + r_axis_x;
             position[Y_AXIS] = center_axis_y + r_axis_y;
             position[Z_AXIS] += linear_per_segment;
             position[E_AXIS] += segment_extruder_travel;
-            // We can't clamp to the target because we are interpolating!  We would need to update a position, clamp to it
-            // after updating from calculated values.
+            // Clamp to the calculated position.
             clamp_to_software_endstops(position);
-            plan_buffer_line(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS], feed_rate, extruder);
+            // Insert the segment into the buffer
+            plan_buffer_line(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS], feed_rate, extruder, position);
         }
     }
-    // Ensure last segment arrives at target location.
-    // Here we could clamp, but why bother.  We would need to update our current position, clamp to it
+    // Clamp to the target position.
     clamp_to_software_endstops(target);
-    plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], feed_rate, extruder);
+    // Ensure last segment arrives at target location.
+    plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], feed_rate, extruder, target);
 }
