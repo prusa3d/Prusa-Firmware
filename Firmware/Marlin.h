@@ -481,7 +481,9 @@ void force_high_power_mode(bool start_high_power_section);
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
+#if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
 void gcode_M123();
+#endif //FANCHECK and TACH_0 and TACH_1
 void gcode_M701();
 
 #define UVLO !(PINE & (1<<4))
