@@ -670,7 +670,7 @@ void lcdui_print_extruder(void)
 // Print farm number (5 chars total)
 void lcdui_print_farm(void)
 {
-	lcd_printf_P(_N(" F0  "));
+	lcd_printf_P(_N(" FRM "));
 }
 
 #ifdef CMD_DIAGNOSTICS
