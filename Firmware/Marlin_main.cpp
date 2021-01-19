@@ -3918,21 +3918,19 @@ void process_commands()
 			mmu_reset();
 		}
 		else if (code_seen("RESET")) { // PRUSA RESET
-            // careful!
-            if (farm_mode) {
 #ifdef WATCHDOG
 #if defined(W25X20CL) && defined(BOOTAPP)
-                boot_app_magic = BOOT_APP_MAGIC;
-                boot_app_flags = BOOT_APP_FLG_RUN;
+            boot_app_magic = BOOT_APP_MAGIC;
+            boot_app_flags = BOOT_APP_FLG_RUN;
 #endif //defined(W25X20CL) && defined(BOOTAPP)
-                softReset();
+            softReset();
 #else //WATCHDOG
+            // careful!
+            if (farm_mode)
                 asm volatile("jmp 0x3E000");
+            else
+                puts_P(PSTR("Not in farm mode."));
 #endif //WATCHDOG
-            }
-            else {
-                MYSERIAL.println("Not in farm mode.");
-            }
 		}else if (code_seen("fv")) { // PRUSA fv
         // get file version
         #ifdef SDSUPPORT
