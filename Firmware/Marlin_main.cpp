@@ -1060,7 +1060,9 @@ void setup()
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
+#ifdef HAS_SECOND_SERIAL_PORT
 		selectedSerialPort = 1;
+#endif //HAS_SECOND_SERIAL_PORT
 		MYSERIAL.begin(BAUDRATE);
 #ifdef TMC2130
 		//increased extruder current (PFW363)
