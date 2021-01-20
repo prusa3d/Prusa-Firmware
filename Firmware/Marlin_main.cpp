@@ -390,22 +390,79 @@ static int saved_fanSpeed = 0; //!< Print fan speed
 
 static int saved_feedmultiply_mm = 100;
 
-#if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_TEMPERATURES) || defined(AUTO_REPORT_FANS) || defined(AUTO_REPORT_POSITION)
-static LongTimer auto_report_timer;      //Also used for AUTO_REPORT_TEMPERATURES
-static uint8_t auto_report_period = 0;   //Also used for AUTO_REPORT_TEMPERATURES
-#endif //AUTO_REPORT_ALL or AUTO_REPORT_TEMPERATURES or AUTO_REPORT_FANS or AUTO_REPORT_POSITION
+class AutoReportFeatures {
+    union {
+          struct {
+            uint8_t temp : 1; //Temperature flag
+            uint8_t fans : 1; //Fans flag
+            uint8_t pos: 1;   //Position flag
+            uint8_t ar4 : 1;  //Unused
+            uint8_t ar5 : 1;  //Unused
+            uint8_t ar6 : 1;  //Unused
+            uint8_t ar7 : 1;  //Unused
+          } __attribute__((packed)) bits;
+          uint8_t byte;
+        } arFunctionsActive;
+    uint8_t auto_report_period;   //Also used for AUTO_REPORT_TEMPERATURES
+public:
+    LongTimer auto_report_timer;  //Also used for AUTO_REPORT_TEMPERATURES
+    AutoReportFeatures():auto_report_period(0){ 
+#if defined(AUTO_REPORT_ALL)
+        arFunctionsActive.byte = 0xff; 
+#else
+        arFunctionsActive.byte = 0;
+# if defined(AUTO_REPORT_TEMPERATURES)
+        arFunctionsActive.bits.temp = 1;
+# endif
+# if defined(AUTO_REPORT_FANS)
+        arFunctionsActive.bits.fans = 1;
+# endif
+# if defined(AUTO_REPORT_POSITION)
+        arFunctionsActive.bits.pos = 1;
+# endif
+#endif
+    }
+    
+    inline bool Temp()const { return arFunctionsActive.bits.temp != 0; }
+    inline void SetTemp(uint8_t v){ arFunctionsActive.bits.temp = v; }
 
-#if defined(AUTO_REPORT_TEMPERATURES) || defined(AUTO_REPORT_ALL)
-static bool auto_report_temp_active = false;
-#endif //AUTO_REPORT_TEMPERATURES
+    inline bool Fans()const { return arFunctionsActive.bits.fans != 0; }
+    inline void SetFans(uint8_t v){ arFunctionsActive.bits.fans = v; }
 
-#if defined(AUTO_REPORT_FANS) || defined(AUTO_REPORT_ALL)
-static bool auto_report_fans_active = false;
-#endif //AUTO_REPORT_FANS
+    inline bool Pos()const { return arFunctionsActive.bits.pos != 0; }
+    inline void SetPos(uint8_t v){ arFunctionsActive.bits.pos = v; }
+    
+    inline void SetMask(uint8_t mask){ arFunctionsActive.byte = mask; }
+    
+    /// sets the autoreporting timer's period
+    /// setting it to zero stops the timer
+    void SetPeriod(uint8_t p){
+        auto_report_period = p;
+        if (auto_report_period != 0){
+          auto_report_timer.start();
+        } else{
+          auto_report_timer.stop();
+        }
+    }
+    
+    inline void TimerStart() { auto_report_timer.start(); }
+    inline bool TimerRunning()const { return auto_report_timer.running(); }
+    inline bool TimerExpired() { return auto_report_timer.expired(auto_report_period * 1000ul); }
+};
 
-#if defined(AUTO_REPORT_POSITION) || defined(AUTO_REPORT_ALL)
-static bool auto_report_position_active = false;
-#endif //AUTO_REPORT_POSITION
+AutoReportFeatures autoReportFeatures;
+
+//#if defined(AUTO_REPORT_TEMPERATURES) || defined(AUTO_REPORT_ALL)
+//static bool auto_report_temp_active = false;
+//#endif //AUTO_REPORT_TEMPERATURES
+
+//#if defined(AUTO_REPORT_FANS) || defined(AUTO_REPORT_ALL)
+//static bool auto_report_fans_active = false;
+//#endif //AUTO_REPORT_FANS
+
+//#if defined(AUTO_REPORT_POSITION) || defined(AUTO_REPORT_ALL)
+//static bool auto_report_position_active = false;
+//#endif //AUTO_REPORT_POSITION
 
 //===========================================================================
 //=============================Routines======================================
@@ -1744,24 +1801,24 @@ void host_keepalive() {
   long ms = _millis();
 
 #if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_TEMPERATURES) || defined(AUTO_REPORT_FANS) || defined(AUTO_REPORT_POSITION)
-  if (auto_report_timer.running())
+  if ( autoReportFeatures.TimerRunning())
   {
-    if (auto_report_timer.expired(auto_report_period * 1000ul))
+    if (autoReportFeatures.TimerExpired())
     {
-      if(auto_report_temp_active){
+      if(autoReportFeatures.Temp()){
         gcode_M105(active_extruder);
       }
 #if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_FANS) && (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))      
-      if(auto_report_fans_active){
+      if(autoReportFeatures.Fans()){
         gcode_M123();
       }
 #endif //AUTO_REPORT_ALL or AUTO_REPORT_FANS and (FANCHECK and TACH_0 or TACH_1)
 #if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_POSITION)      
-      if(auto_report_position_active){
+      if(autoReportFeatures.Pos()){
         gcode_M114();
       }
 #endif //AUTO_REPORT_POSITION or AUTO_REPORT_FANS or AUTO_REPORT_POSITION
-      auto_report_timer.start();
+      autoReportFeatures.TimerStart();
     }
   }
 #endif //AUTO_REPORT_ALL
@@ -6457,7 +6514,7 @@ Sigma_Exit:
 	#### Parameters
 	
 	- `S` - Set autoreporting interval in seconds. 0 to disable. Maximum: 255
-	- `C` - Activate auto-report function. Default is temperature.
+	- `C` - Activate auto-report function (bit mask). Default is temperature.
 
           bit 0 = Auto-report temperatures
           bit 1 = Auto-report fans
@@ -6470,49 +6527,17 @@ Sigma_Exit:
      */
     //!@todo update RepRap Gcode wiki
     //!@todo Should be temperature always? Octoprint doesn't switch to M105 if M155 timer is set
-
-    union {
-      struct
-      {
-        uint8_t ar_temp_active : 1; //Temperature flag
-        uint8_t ar_fans_active : 1; //Fans flag
-        uint8_t ar_pos_active : 1;  //Position flag
-        uint8_t ar_4_active : 1;    //Unused
-        uint8_t ar_5_active : 1;    //Unused
-        uint8_t ar_6_active : 1;    //Unused
-        uint8_t ar_7_active : 1;    //Unused
-      } __attribute__((packed)) bits;
-      uint8_t byte;
-    } arFunctionsActive;
     case 155:
     {
-      if (code_seen('S'))
-      {
-        auto_report_period = code_value_uint8();
-        if (auto_report_period != 0){
-          auto_report_timer.start();
+        if (code_seen('S')){
+            autoReportFeatures.SetPeriod( code_value_uint8() );
         }
-        else{
-          auto_report_timer.stop();
+        if (code_seen('C')){
+            autoReportFeatures.SetMask(code_value());
+            //arFunctionsActive.bits.ar_temp_active = 1; //auto-report temperatures always on
+        } else{
+            autoReportFeatures.SetMask(1);
         }
-      }
-      if (code_seen('C'))
-      {
-        arFunctionsActive.byte = code_value();
-        //arFunctionsActive.bits.ar_temp_active = 1; //auto-report temperatures always on
-      }
-      else{
-        arFunctionsActive.byte = 1;
-      }
-#if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_TEMPERATURES)      
-      auto_report_temp_active = arFunctionsActive.bits.ar_temp_active;
-#endif //AUTO_REPORT_ALL or AUTO_REPORT_TEMPERATURES
-#if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_FANS)      
-      auto_report_fans_active = arFunctionsActive.bits.ar_fans_active;
-#endif //AUTO_REPORT_ALL or AUTO_REPORT_FANS
-#if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_POSITION)      
-      auto_report_position_active = arFunctionsActive.bits.ar_pos_active;
- #endif //AUTO_REPORT_ALL or AUTO_REPORT_POSITION
    }
     break;
 #endif //AUTO_REPORT_ALL or AUTO_REPORT_TEMPERATURES or AUTO_REPORT_FANS or AUTO_REPORT_POSITION
