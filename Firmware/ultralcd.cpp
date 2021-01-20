@@ -349,7 +349,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     if (longFilename[0] == '\0')
     {
-        longFilename = (char*)filename;
+        longFilename = filename;
     }
 
     int i = 1;
@@ -2120,12 +2120,14 @@ static void lcd_support_menu()
         // Menu was entered or SD card status has changed (plugged in or removed).
         // Initialize its status.
         _md->status = 1;
-        _md->is_flash_air = card.ToshibaFlashAir_isEnabled() && card.ToshibaFlashAir_GetIP(_md->ip);
-        if (_md->is_flash_air)
+        _md->is_flash_air = card.ToshibaFlashAir_isEnabled();
+        if (_md->is_flash_air) {
+            card.ToshibaFlashAir_GetIP(_md->ip); // ip[4] filled with 0 if it failed
+            // Prepare IP string from ip[4]
             sprintf_P(_md->ip_str, PSTR("%d.%d.%d.%d"), 
                 _md->ip[0], _md->ip[1], 
                 _md->ip[2], _md->ip[3]);
-        
+        }
     } else if (_md->is_flash_air && 
         _md->ip[0] == 0 && _md->ip[1] == 0 && 
         _md->ip[2] == 0 && _md->ip[3] == 0 &&
@@ -2191,7 +2193,11 @@ static void lcd_support_menu()
   if (_md->is_flash_air) {
       MENU_ITEM_BACK_P(STR_SEPARATOR);
       MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));  //c=18 r=1
-///!      MENU_ITEM(back_RAM, _md->ip_str, 0);
+      MENU_ITEM_BACK_P(PSTR(" "));
+      if (((menu_item - 1) == menu_line) && lcd_draw_update) {
+          lcd_set_cursor(2, menu_row);
+          lcd_printf_P(PSTR("%s"), _md->ip_str);
+      }
   }
 
   #ifndef MK1BP
@@ -2412,7 +2418,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         case FilamentAction::None:
         case FilamentAction::Preheat:
         case FilamentAction::Lay1Cal:
-
+            // handled earlier
             break;
         }
         if (bFilamentWaitingFlag) Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
@@ -2420,34 +2426,45 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     }
     else
     {
-        bFilamentWaitingFlag = true;
         lcd_set_cursor(0, 0);
         lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
-        lcd_set_cursor(0, 1);
-        switch (eFilamentAction)
+
+        if (!bFilamentWaitingFlag)
         {
-        case FilamentAction::Load:
-        case FilamentAction::AutoLoad:
-        case FilamentAction::MmuLoad:
-            lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
-            break;
-        case FilamentAction::UnLoad:
-        case FilamentAction::MmuUnLoad:
-            lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
-            break;
-        case FilamentAction::MmuEject:
-            lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
-            break;
-        case FilamentAction::MmuCut:
-            lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20
-            break;
-        case FilamentAction::None:
-        case FilamentAction::Preheat:
-        case FilamentAction::Lay1Cal:
-            break;
+            // First run after the filament preheat selection:
+            // setup the fixed LCD parts and raise Z as we wait
+            bFilamentWaitingFlag = true;
+
+            lcd_set_cursor(0, 1);
+            switch (eFilamentAction)
+            {
+            case FilamentAction::Load:
+            case FilamentAction::AutoLoad:
+            case FilamentAction::MmuLoad:
+                lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
+                raise_z_above(MIN_Z_FOR_LOAD);
+                break;
+            case FilamentAction::UnLoad:
+            case FilamentAction::MmuUnLoad:
+                lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
+                raise_z_above(MIN_Z_FOR_UNLOAD);
+                break;
+            case FilamentAction::MmuEject:
+                lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
+                break;
+            case FilamentAction::MmuCut:
+                lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20
+                break;
+            case FilamentAction::None:
+            case FilamentAction::Preheat:
+            case FilamentAction::Lay1Cal:
+                // handled earlier
+                break;
+            }
+            lcd_set_cursor(0, 3);
+            lcd_puts_P(_i(">Cancel"));                   ////MSG_ c=20 r=1
         }
-        lcd_set_cursor(0, 3);
-        lcd_puts_P(_i(">Cancel"));                   ////MSG_ c=20 r=1
+
         if (lcd_clicked())
         {
             bFilamentWaitingFlag = false;
@@ -2930,7 +2947,7 @@ static void _lcd_move(const char *name, int axis, int min, int max)
 }
 
 
-static void lcd_move_e()
+void lcd_move_e()
 {
 	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
@@ -8862,6 +8879,7 @@ static void menu_action_sdfile(const char* filename)
 		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
 	  }
   }
+  
   if (!check_file(filename)) {
 	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=3
 	  lcd_update_enable(true);

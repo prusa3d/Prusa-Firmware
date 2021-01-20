@@ -25,13 +25,12 @@
 * 
 */
 #include <stdint.h>
+#include "Configuration.h"
 
 #ifndef MEATPACK_H_
 #define MEATPACK_H_
 
-#define ENABLE_MEATPACKING
-
-#ifdef ENABLE_MEATPACKING
+#ifdef ENABLE_MEATPACK
 
 #define MeatPack_SecondNotPacked    0b11110000
 #define MeatPack_FirstNotPacked     0b00001111
@@ -47,12 +46,14 @@
 // full-width), however 2 in a row will never occur, as the next 2 bytes will always
 // some non-0xFF character.
 enum MeatPack_Command {
-    MPC_None            = 0b00000000,
-    MPC_TogglePacking   = 0b11111101,
-    MPC_EnablePacking   = 0b11111011,
-    MPC_DisablePacking  = 0b11111010,
-    MPC_ResetState      = 0b11111001,
-    MPC_QueryState      = 0b11111000
+    MPCommand_None            = 0U,
+    MPCommand_TogglePacking   = 253U,
+    MPCommand_EnablePacking   = 251U,
+    MPCommand_DisablePacking  = 250U,
+    MPCommand_ResetAll        = 249U,
+    MPCommand_QueryConfig     = 248U,
+    MPCommand_EnableNoSpaces  = 247U,
+    MPCommand_DisableNoSpaces = 246U
 };
 
 // Pass in a character rx'd by SD card or serial. Automatically parses command/ctrl sequences,
@@ -64,13 +65,6 @@ extern void mp_handle_rx_char(const uint8_t c);
 // @param out [in] Output pointer for unpacked/processed data.
 // @return Number of characters returned. Range from 0 to 2.
 extern uint8_t mp_get_result_char(char* const __restrict out);
-
-// Reset MeatPack state.
-extern void mp_reset_state();
-
-// Manually trigger command
-extern void mp_trigger_cmd(const MeatPack_Command cmd);
-
 #endif
 
 #endif // MEATPACK_H_
