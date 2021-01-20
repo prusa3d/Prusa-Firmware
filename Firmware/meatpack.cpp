@@ -80,7 +80,7 @@ uint8_t mp_char_out_count = 0;     // Stores number of characters to be read out
 #ifdef USE_LOOKUP_TABLE
 // The 15 most-common characters used in G-code, ~90-95% of all g-code uses these characters
 // NOT storing this with PROGMEM, given how frequently this table will be accessed.
-uint8_t MeatPackLookupTbl[16] = {
+volatile uint8_t MeatPackLookupTbl[16] = {
     '0',	// 0000
     '1',	// 0001
     '2',	// 0010
@@ -160,11 +160,10 @@ void FORCE_INLINE mp_handle_output_char(const uint8_t c) {
     mp_char_out_buf[mp_char_out_count++] = c;
 
 #ifdef MP_DEBUG
-    if (mp_chars_decoded < 64) {
+    if (mp_chars_decoded < 4096) {
         ++mp_chars_decoded;
-        SERIAL_ECHOPGM("Rec Byte: ");
-        MYSERIAL.print("0x");
-        MYSERIAL.print((uint8_t)c, HEX);
+        SERIAL_ECHOPGM("RB: ");
+        MYSERIAL.print((char)c);
         SERIAL_ECHOLNPGM("");
     }
 #endif
@@ -243,8 +242,10 @@ void FORCE_INLINE mp_handle_rx_char_inner(const uint8_t c) {
             }
             else {
                 mp_handle_output_char(buf[0]);
-                if (res & MeatPack_NextPackedSecond) ++mp_full_char_queue;
-                else mp_handle_output_char(buf[1]);
+                if (buf[0] != '\n') {
+                    if (res & MeatPack_NextPackedSecond) ++mp_full_char_queue;
+                    else mp_handle_output_char(buf[1]);
+                }
             }
         }
     }
@@ -275,7 +276,10 @@ void FORCE_INLINE mp_echo_config_state() {
 
     // Validate config vars
 #ifdef USE_LOOKUP_TABLE
-    MeatPackLookupTbl[MeatPack_SpaceCharIdx] = (uint8_t)((mp_config & MPConfig_NoSpaces) ? MeatPack_SpaceCharReplace : ' ');
+    if (mp_config & MPConfig_NoSpaces)
+        MeatPackLookupTbl[MeatPack_SpaceCharIdx] = (uint8_t)(MeatPack_SpaceCharReplace);
+    else
+        MeatPackLookupTbl[MeatPack_SpaceCharIdx] = ' ';
 #endif
 
 }
