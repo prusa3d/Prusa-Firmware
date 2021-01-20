@@ -5,7 +5,7 @@
 * Date: Dec. 2020
 */
 
-#include "MeatPack.h"
+#include "meatpack.h"
 
 #ifdef ENABLE_MEATPACK
 
@@ -80,7 +80,7 @@ uint8_t mp_char_out_count = 0;     // Stores number of characters to be read out
 #ifdef USE_LOOKUP_TABLE
 // The 15 most-common characters used in G-code, ~90-95% of all g-code uses these characters
 // NOT storing this with PROGMEM, given how frequently this table will be accessed.
-volatile uint8_t MeatPackLookupTbl[16] = {
+uint8_t MeatPackLookupTbl[16] = {
     '0',	// 0000
     '1',	// 0001
     '2',	// 0010

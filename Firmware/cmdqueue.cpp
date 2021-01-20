@@ -1,7 +1,7 @@
 #include "cmdqueue.h"
 #include "cardreader.h"
 #include "ultralcd.h"
-#include "MeatPack.h"
+#include "meatpack.h"
 
 extern bool Stopped;
 
