@@ -1,4 +1,4 @@
-# Prusa Firmware MK3 (with MeatPack Support)
+# Prusa Firmware MK3 (with MeatPack Suppor, v1.1.0)
 
 ### NOTE:
 
@@ -10,7 +10,7 @@ Please find firmware builds with MeatPack support enabled in the "Releases" sect
 
 ### NOTE: Currently only version 3.9.3 has MeatPack support enabled!
 
-Latest build is here: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/3.9.3-MeatPack
+Latest build is here: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
 
 ---
 
