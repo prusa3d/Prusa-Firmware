@@ -1,4 +1,4 @@
-# Prusa Firmware MK3 (with MeatPack Suppor, v1.1.0)
+# Prusa Firmware MK3 (with MeatPack Support, v1.1.0)
 
 ### NOTE:
 
