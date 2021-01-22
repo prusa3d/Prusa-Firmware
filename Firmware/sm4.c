@@ -173,7 +173,7 @@ uint16_t sm4_line_xyze_ui(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
 		}
 		if (ce <= de)
 		{
-			sm |= 4;
+			sm |= 8;
 			ce += dd;
 			e++;
 		}

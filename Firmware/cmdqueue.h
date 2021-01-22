@@ -35,6 +35,7 @@ extern char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];
 extern size_t bufindr;
 extern int buflen;
 extern bool cmdbuffer_front_already_processed;
+extern bool cmdqueue_serial_disabled;
 
 // Type of a command, which is to be executed right now.
 #define CMDBUFFER_CURRENT_TYPE   (cmdbuffer[bufindr])
@@ -65,8 +66,8 @@ extern void cmdqueue_dump_to_serial_single_line(int nr, const char *p);
 extern void cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
 extern bool cmd_buffer_empty();
-extern void enquecommand(const char *cmd, bool from_progmem);
-extern void enquecommand_front(const char *cmd, bool from_progmem);
+extern void enquecommand(const char *cmd, bool from_progmem = false);
+extern void enquecommand_front(const char *cmd, bool from_progmem = false);
 extern void repeatcommand_front();
 extern bool is_buffer_empty();
 extern void get_command();

@@ -6,7 +6,6 @@
 #include <avr/pgmspace.h>
 #include "pat9125.h"
 #include "stepper.h"
-#include "io_atmega2560.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
 #include "mmu.h"
@@ -317,7 +316,7 @@ void fsensor_autoload_check_start(void)
 		printf_P(ERRMSG_PAT9125_NOT_RESP, 3);
 		return;
 	}
-	puts_P(_N("fsensor_autoload_check_start - autoload ENABLED\n"));
+	puts_P(_N("fsensor_autoload_check_start - autoload ENABLED"));
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_sum = 0;
@@ -335,7 +334,7 @@ void fsensor_autoload_check_stop(void)
 	if (!fsensor_autoload_enabled) return;
 //	puts_P(_N("fsensor_autoload_check_stop 2\n"));
 	if (!fsensor_watch_autoload) return;
-	puts_P(_N("fsensor_autoload_check_stop - autoload DISABLED\n"));
+	puts_P(_N("fsensor_autoload_check_stop - autoload DISABLED"));
 	fsensor_autoload_sum = 0;
 	fsensor_watch_autoload = false;
 	fsensor_watch_runout = true;
@@ -608,9 +607,8 @@ void fsensor_st_block_chunk(int cnt)
 	if (!fsensor_enabled) return;
 	fsensor_st_cnt += cnt;
 
-    // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-    if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-    else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
+	// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
+	WRITE(FSENSOR_INT_PIN, !READ(FSENSOR_INT_PIN));
 }
 #endif //PAT9125
 

@@ -4,7 +4,7 @@
 #ifndef MARLIN_H
 #define MARLIN_H
 
-#define  FORCE_INLINE __attribute__((always_inline)) inline
+#include "macros.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -116,7 +116,6 @@ void serial_echopair_P(const char *s_P, unsigned long v);
 void serialprintPGM(const char *str);
 
 bool is_buffer_empty();
-void get_command();
 void process_commands();
 void ramming();
 
@@ -241,22 +240,11 @@ void Stop();
 bool IsStopped();
 void finishAndDisableSteppers();
 
-//put an ASCII command at the end of the current buffer.
-void enquecommand(const char *cmd, bool from_progmem = false);
-
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
 
-//put an ASCII command at the begin of the current buffer
-void enquecommand_front(const char *cmd, bool from_progmem = false);
-
 //put an ASCII command at the begin of the current buffer, read from flash
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
-
-void repeatcommand_front();
-
-// Remove all lines from the command queue.
-void cmdqueue_reset();
 
 void prepare_arc_move(char isclockwise);
 void clamp_to_software_endstops(float target[3]);
@@ -286,11 +274,6 @@ FORCE_INLINE unsigned long millis_nc() {
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val);
 #endif
-
-#ifndef CRITICAL_SECTION_START
-  #define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
-  #define CRITICAL_SECTION_END    SREG = _sreg;
-#endif //CRITICAL_SECTION_START
 
 extern bool fans_check_enabled;
 extern float homing_feedrate[];

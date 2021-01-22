@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "io_atmega2560.h"
 
 // All this is about silencing the heat bed, as it behaves like a loudspeaker.
 // Basically, we want the PWM heating switched at 30Hz (or so) which is a well ballanced

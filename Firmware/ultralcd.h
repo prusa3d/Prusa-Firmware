@@ -207,6 +207,7 @@ void lcd_farm_sdcard_menu_w();
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();
+void lcd_move_e(); // NOT static due to usage in Marlin_main
 void lcd_extr_cal_reset();
 
 void lcd_temp_cal_show_result(bool result);

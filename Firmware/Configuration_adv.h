@@ -62,6 +62,11 @@
 // before setting a PWM value. (Does not work with software PWM for fan on Sanguinololu)
 #define FAN_KICKSTART_TIME 800
 
+/**
+ * Auto-report temperatures with M155 S<seconds>
+ */
+#define AUTO_REPORT_TEMPERATURES
+
 
 
 
@@ -375,6 +380,11 @@ const unsigned int dropsegments=5; //everything with less than this number of st
     #error EXTRUDER_RUNOUT_PREVENT currently incompatible with FILAMENTCHANGE
   #endif
 #endif
+
+/**
+ * Include capabilities in M115 output
+ */
+#define EXTENDED_CAPABILITIES_REPORT
 
 //===========================================================================
 //=============================  Define Defines  ============================

@@ -1,4 +1,5 @@
 #include "Marlin.h"
+#include "cmdqueue.h"
 #include "cardreader.h"
 #include "ultralcd.h"
 #include "stepper.h"
@@ -243,6 +244,8 @@ void CardReader::release()
 {
   sdprinting = false;
   cardOK = false;
+  SERIAL_ECHO_START;
+  SERIAL_ECHOLNRPGM(_n("SD card released"));////MSG_SD_CARD_RELEASED
 }
 
 void CardReader::startFileprint()
@@ -496,7 +499,7 @@ void CardReader::getStatus()
           SERIAL_PROTOCOLLNPGM("Print saved");
       }
       else {
-          SERIAL_PROTOCOLLN(longFilename);
+          SERIAL_PROTOCOLLN(LONGEST_FILENAME);
           SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE
           SERIAL_PROTOCOL(sdpos);
           SERIAL_PROTOCOL('/');

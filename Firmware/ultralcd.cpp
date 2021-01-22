@@ -44,7 +44,6 @@
 #include "mmu.h"
 
 #include "static_assert.h"
-#include "io_atmega2560.h"
 #include "first_lay_cal.h"
 
 #include "fsensor.h"
@@ -1001,6 +1000,36 @@ void lcd_status_screen()                          // NOT static due to using ins
 		}
 	}
 
+#ifdef ULTIPANEL_FEEDMULTIPLY
+	// Dead zone at 100% feedrate
+	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
+		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
+	{
+		lcd_encoder = 0;
+		feedmultiply = 100;
+	}
+	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
+	{
+		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
+		lcd_encoder = 0;
+	}
+	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
+	{
+		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
+		lcd_encoder = 0;
+	}
+	else if (feedmultiply != 100)
+	{
+		feedmultiply += int(lcd_encoder);
+		lcd_encoder = 0;
+	}
+#endif //ULTIPANEL_FEEDMULTIPLY
+
+	if (feedmultiply < 10)
+		feedmultiply = 10;
+	else if (feedmultiply > 999)
+		feedmultiply = 999;
+
 	if (lcd_status_update_delay)
 		lcd_status_update_delay--;
 	else
@@ -1077,36 +1106,6 @@ void lcd_status_screen()                          // NOT static due to using ins
 		menu_submenu(lcd_main_menu);
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	}
-
-#ifdef ULTIPANEL_FEEDMULTIPLY
-	// Dead zone at 100% feedrate
-	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
-		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
-	{
-		lcd_encoder = 0;
-		feedmultiply = 100;
-	}
-	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply != 100)
-	{
-		feedmultiply += int(lcd_encoder);
-		lcd_encoder = 0;
-	}
-#endif //ULTIPANEL_FEEDMULTIPLY
-
-	if (feedmultiply < 10)
-		feedmultiply = 10;
-	else if (feedmultiply > 999)
-		feedmultiply = 999;
 }
 
 void lcd_commands()
@@ -1583,6 +1582,7 @@ void lcd_return_to_status()
 //! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
     stop_and_save_print_to_ram(0.0, -default_retraction);
     lcd_return_to_status();
     isPrintPaused = true;
@@ -1590,7 +1590,6 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
-	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
 }
 
 
@@ -2121,12 +2120,14 @@ static void lcd_support_menu()
         // Menu was entered or SD card status has changed (plugged in or removed).
         // Initialize its status.
         _md->status = 1;
-        _md->is_flash_air = card.ToshibaFlashAir_isEnabled() && card.ToshibaFlashAir_GetIP(_md->ip);
-        if (_md->is_flash_air)
+        _md->is_flash_air = card.ToshibaFlashAir_isEnabled();
+        if (_md->is_flash_air) {
+            card.ToshibaFlashAir_GetIP(_md->ip); // ip[4] filled with 0 if it failed
+            // Prepare IP string from ip[4]
             sprintf_P(_md->ip_str, PSTR("%d.%d.%d.%d"), 
                 _md->ip[0], _md->ip[1], 
                 _md->ip[2], _md->ip[3]);
-        
+        }
     } else if (_md->is_flash_air && 
         _md->ip[0] == 0 && _md->ip[1] == 0 && 
         _md->ip[2] == 0 && _md->ip[3] == 0 &&
@@ -2192,7 +2193,11 @@ static void lcd_support_menu()
   if (_md->is_flash_air) {
       MENU_ITEM_BACK_P(STR_SEPARATOR);
       MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));  //c=18 r=1
-///!      MENU_ITEM(back_RAM, _md->ip_str, 0);
+      MENU_ITEM_BACK_P(PSTR(" "));
+      if (((menu_item - 1) == menu_line) && lcd_draw_update) {
+          lcd_set_cursor(2, menu_row);
+          lcd_printf_P(PSTR("%s"), _md->ip_str);
+      }
   }
 
   #ifndef MK1BP
@@ -2413,7 +2418,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         case FilamentAction::None:
         case FilamentAction::Preheat:
         case FilamentAction::Lay1Cal:
-
+            // handled earlier
             break;
         }
         if (bFilamentWaitingFlag) Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
@@ -2421,34 +2426,45 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     }
     else
     {
-        bFilamentWaitingFlag = true;
         lcd_set_cursor(0, 0);
         lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
-        lcd_set_cursor(0, 1);
-        switch (eFilamentAction)
+
+        if (!bFilamentWaitingFlag)
         {
-        case FilamentAction::Load:
-        case FilamentAction::AutoLoad:
-        case FilamentAction::MmuLoad:
-            lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
-            break;
-        case FilamentAction::UnLoad:
-        case FilamentAction::MmuUnLoad:
-            lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
-            break;
-        case FilamentAction::MmuEject:
-            lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
-            break;
-        case FilamentAction::MmuCut:
-            lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20
-            break;
-        case FilamentAction::None:
-        case FilamentAction::Preheat:
-        case FilamentAction::Lay1Cal:
-            break;
+            // First run after the filament preheat selection:
+            // setup the fixed LCD parts and raise Z as we wait
+            bFilamentWaitingFlag = true;
+
+            lcd_set_cursor(0, 1);
+            switch (eFilamentAction)
+            {
+            case FilamentAction::Load:
+            case FilamentAction::AutoLoad:
+            case FilamentAction::MmuLoad:
+                lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
+                raise_z_above(MIN_Z_FOR_LOAD);
+                break;
+            case FilamentAction::UnLoad:
+            case FilamentAction::MmuUnLoad:
+                lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
+                raise_z_above(MIN_Z_FOR_UNLOAD);
+                break;
+            case FilamentAction::MmuEject:
+                lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
+                break;
+            case FilamentAction::MmuCut:
+                lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20
+                break;
+            case FilamentAction::None:
+            case FilamentAction::Preheat:
+            case FilamentAction::Lay1Cal:
+                // handled earlier
+                break;
+            }
+            lcd_set_cursor(0, 3);
+            lcd_puts_P(_i(">Cancel"));                   ////MSG_ c=20 r=1
         }
-        lcd_set_cursor(0, 3);
-        lcd_puts_P(_i(">Cancel"));                   ////MSG_ c=20 r=1
+
         if (lcd_clicked())
         {
             bFilamentWaitingFlag = false;
@@ -2931,7 +2947,7 @@ static void _lcd_move(const char *name, int axis, int min, int max)
 }
 
 
-static void lcd_move_e()
+void lcd_move_e()
 {
 	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
@@ -3999,7 +4015,7 @@ static void lcd_show_sensors_state()
 		finda_state = mmu_finda;
 	}
 	if (ir_sensor_detected) {
-		idler_state = !PIN_GET(IR_SENSOR_PIN);
+		idler_state = !READ(IR_SENSOR_PIN);
 	}
 	lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(1, 1, _i("PINDA:"));
@@ -6750,6 +6766,7 @@ void lcd_resume_print()
     lcd_return_to_status();
     lcd_reset_alert_level(); //for fan speed error
     if (fan_error_selftest()) return; //abort if error persists
+    cmdqueue_serial_disabled = false;
 
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
@@ -7362,6 +7379,7 @@ void lcd_print_stop()
     if (!card.sdprinting) {
         SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
     }
+    cmdqueue_serial_disabled = false; //for when canceling a print with a fancheck
 
     CRITICAL_SECTION_START;
 
@@ -8484,7 +8502,7 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (PIN_GET(IR_SENSOR_PIN) == 0)
+            if (READ(IR_SENSOR_PIN) == 0)
             {
                 lcd_selftest_error(TestError::TriggeringFsensor, "", "");
                 return false;
@@ -8791,26 +8809,42 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 
 static bool check_file(const char* filename) {
 	if (farm_mode) return true;
-	bool result = false;
-	uint32_t filesize;
 	card.openFile((char*)filename, true);
-	filesize = card.getFileSize();
+	bool result = false;
+	const uint32_t filesize = card.getFileSize();
+	uint32_t startPos = 0;
+	const uint16_t bytesToCheck = min(END_FILE_SECTION, filesize);
+	uint8_t blocksPrinted = 0;
 	if (filesize > END_FILE_SECTION) {
-		card.setIndex(filesize - END_FILE_SECTION);
-		
+		startPos = filesize - END_FILE_SECTION;
+		card.setIndex(startPos);
 	}
-	
-		while (!card.eof() && !result) {
+	cmdqueue_reset();
+	cmdqueue_serial_disabled = true;
+
+	lcd_clear();
+	lcd_puts_at_P(0, 1, _i("Checking file"));////c=20 r=1
+	lcd_set_cursor(0, 2);
+	while (!card.eof() && !result) {
+		for (; blocksPrinted < (((card.get_sdpos() - startPos) * LCD_WIDTH) / bytesToCheck); blocksPrinted++)
+			lcd_print('\xFF'); //simple progress bar
+
 		card.sdprinting = true;
 		get_command();
 		result = check_commands();
-		
 	}
+
+	for (; blocksPrinted < LCD_WIDTH; blocksPrinted++)
+		lcd_print('\xFF'); //simple progress bar
+	_delay(100); //for the user to see the end of the progress bar.
+
+	
+	cmdqueue_serial_disabled = false;
 	card.printingHasFinished();
+
 	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
 	lcd_finishstatus();
 	return result;
-	
 }
 
 static void menu_action_sdfile(const char* filename)
@@ -8978,6 +9012,7 @@ void lcd_ignore_click(bool b)
 }
 
 void lcd_finishstatus() {
+  SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
   int len = strlen(lcd_status_message);
   if (len > 0) {
     while (len < LCD_WIDTH) {
