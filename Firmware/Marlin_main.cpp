@@ -6534,9 +6534,8 @@ Sigma_Exit:
         }
         if (code_seen('C')){
             autoReportFeatures.SetMask(code_value());
-            //arFunctionsActive.bits.ar_temp_active = 1; //auto-report temperatures always on
         } else{
-            autoReportFeatures.SetMask(1);
+            autoReportFeatures.SetMask(1); //Backwards compability to host systems like Octoprint to send only temp if paramerter `C`isn't used
         }
    }
     break;
