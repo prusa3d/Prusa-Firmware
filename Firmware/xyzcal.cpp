@@ -972,9 +972,6 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void){
     //@size=258
     DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
-	pos_i16_t x = _X;
-	pos_i16_t y = _Y;
-	const pos_i16_t z = _Z;
 	///< magic constant, lowers min_z after searchZ to obtain more dense data in scan
 	const pos_i16_t lower_z = 72; 
 
