@@ -74,24 +74,7 @@
  * bit 6 = free
  * bit 7 = free
 */
-#define AUTO_REPORT_ALL
-
-#ifndef AUTO_REPORT_ALL
-/**
- * Auto-report temperatures with M155 S<seconds> [C1]
- */
-#define AUTO_REPORT_TEMPERATURES
-
-/**
- * Auto-report fans with M155 S<seconds> C2
- */
-#define AUTO_REPORT_FANS
-
-/**
- * Auto-report position with M155 S<seconds> C4
- */
-#define AUTO_REPORT_POSITION
-#endif //NOT AUTO_REPORT_ALL
+#define AUTO_REPORT
 
 //===========================================================================
 //=============================Mechanical Settings===========================

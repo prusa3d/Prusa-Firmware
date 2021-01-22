@@ -403,24 +403,15 @@ class AutoReportFeatures {
           } __attribute__((packed)) bits;
           uint8_t byte;
         } arFunctionsActive;
-    uint8_t auto_report_period;   //Also used for AUTO_REPORT_TEMPERATURES
+    uint8_t auto_report_period;
 public:
-    LongTimer auto_report_timer;  //Also used for AUTO_REPORT_TEMPERATURES
+    LongTimer auto_report_timer;
     AutoReportFeatures():auto_report_period(0){ 
-#if defined(AUTO_REPORT_ALL)
+#if defined(AUTO_REPORT)
         arFunctionsActive.byte = 0xff; 
 #else
         arFunctionsActive.byte = 0;
-# if defined(AUTO_REPORT_TEMPERATURES)
-        arFunctionsActive.bits.temp = 1;
-# endif
-# if defined(AUTO_REPORT_FANS)
-        arFunctionsActive.bits.fans = 1;
-# endif
-# if defined(AUTO_REPORT_POSITION)
-        arFunctionsActive.bits.pos = 1;
-# endif
-#endif
+#endif //AUTO_REPORT
     }
     
     inline bool Temp()const { return arFunctionsActive.bits.temp != 0; }
@@ -451,18 +442,6 @@ public:
 };
 
 AutoReportFeatures autoReportFeatures;
-
-//#if defined(AUTO_REPORT_TEMPERATURES) || defined(AUTO_REPORT_ALL)
-//static bool auto_report_temp_active = false;
-//#endif //AUTO_REPORT_TEMPERATURES
-
-//#if defined(AUTO_REPORT_FANS) || defined(AUTO_REPORT_ALL)
-//static bool auto_report_fans_active = false;
-//#endif //AUTO_REPORT_FANS
-
-//#if defined(AUTO_REPORT_POSITION) || defined(AUTO_REPORT_ALL)
-//static bool auto_report_position_active = false;
-//#endif //AUTO_REPORT_POSITION
 
 //===========================================================================
 //=============================Routines======================================
@@ -1800,28 +1779,25 @@ void host_keepalive() {
   if (farm_mode) return;
   long ms = _millis();
 
-#if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_TEMPERATURES) || defined(AUTO_REPORT_FANS) || defined(AUTO_REPORT_POSITION)
-  if ( autoReportFeatures.TimerRunning())
+#if defined(AUTO_REPORT)
   {
     if (autoReportFeatures.TimerExpired())
     {
       if(autoReportFeatures.Temp()){
         gcode_M105(active_extruder);
       }
-#if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_FANS) && (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))      
-      if(autoReportFeatures.Fans()){
-        gcode_M123();
-      }
-#endif //AUTO_REPORT_ALL or AUTO_REPORT_FANS and (FANCHECK and TACH_0 or TACH_1)
-#if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_POSITION)      
       if(autoReportFeatures.Pos()){
         gcode_M114();
       }
-#endif //AUTO_REPORT_POSITION or AUTO_REPORT_FANS or AUTO_REPORT_POSITION
-      autoReportFeatures.TimerStart();
+ #if defined(AUTO_REPORT) && (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))      
+      if(autoReportFeatures.Fans()){
+        gcode_M123();
+      }
+#endif //AUTO_REPORT and (FANCHECK and TACH_0 or TACH_1)
+     autoReportFeatures.TimerStart();
     }
   }
-#endif //AUTO_REPORT_ALL
+#endif //AUTO_REPORT
 
 
   if (host_keepalive_interval && busy_state != NOT_BUSY) {
@@ -3606,14 +3582,14 @@ static void cap_line(const char* name, bool ena = false) {
 static void extended_capabilities_report()
 {
     // AUTOREPORT_TEMP (M155)
-    cap_line(PSTR("AUTOREPORT_TEMP"), (ENABLED(AUTO_REPORT_TEMPERATURES)) || ENABLED(AUTO_REPORT_ALL));
+    cap_line(PSTR("AUTOREPORT_TEMP"), ENABLED(AUTO_REPORT));
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
     // AUTOREPORT_FANS (M123)
-    cap_line(PSTR("AUTOREPORT_FANS"), (ENABLED(AUTO_REPORT_FANS) || ENABLED(AUTO_REPORT_ALL)));
+    cap_line(PSTR("AUTOREPORT_FANS"), ENABLED(AUTO_REPORT));
 #endif //FANCHECK and TACH_0 or TACH_1
     // AUTOREPORT_POSITION (M114)
-    cap_line(PSTR("AUTOREPORT_POSITION"), (ENABLED(AUTO_REPORT_POSITION) || ENABLED(AUTO_REPORT_ALL)));
-    //@todo
+    cap_line(PSTR("AUTOREPORT_POSITION"), ENABLED(AUTO_REPORT));
+    //@todo Update RepRap cap
 }
 #endif //EXTENDED_CAPABILITIES_REPORT
 
@@ -6504,7 +6480,7 @@ Sigma_Exit:
       break;
     }
 
-#if defined(AUTO_REPORT_ALL) || defined(AUTO_REPORT_TEMPERATURES) || defined(AUTO_REPORT_FANS) || defined(AUTO_REPORT_POSITION)
+#if defined(AUTO_REPORT)
     /*!
 	### M155 - Automatically send status <a href="https://reprap.org/wiki/G-code#M155:_Automatically_send_temperatures">M155: Automatically send temperatures</a>
 	#### Usage
@@ -6535,11 +6511,11 @@ Sigma_Exit:
         if (code_seen('C')){
             autoReportFeatures.SetMask(code_value());
         } else{
-            autoReportFeatures.SetMask(1); //Backwards compability to host systems like Octoprint to send only temp if paramerter `C`isn't used
+            autoReportFeatures.SetMask(1); //Backwards compability to host systems like Octoprint to send only temp if paramerter `C`isn't used.
         }
    }
     break;
-#endif //AUTO_REPORT_ALL or AUTO_REPORT_TEMPERATURES or AUTO_REPORT_FANS or AUTO_REPORT_POSITION
+#endif //AUTO_REPORT
 
     /*!
 	### M109 - Wait for extruder temperature <a href="https://reprap.org/wiki/G-code#M109:_Set_Extruder_Temperature_and_Wait">M109: Set Extruder Temperature and Wait</a>
