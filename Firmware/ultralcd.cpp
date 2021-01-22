@@ -2724,12 +2724,7 @@ void lcd_alright() {
           cursor_pos = 1;
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
-        lcd_set_cursor(0, 1);
-        lcd_print(' ');
-        lcd_set_cursor(0, 2);
-        lcd_print(' ');
-        lcd_set_cursor(0, 3);
-        lcd_print(' ');
+        lcd_puts_at_P(0, 1, PSTR(" \n \n "));
         lcd_set_cursor(0, cursor_pos);
         lcd_print('>');
         enc_dif = lcd_encoder_diff;
@@ -5930,14 +5925,7 @@ void bowden_menu() {
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 				}
 
-				lcd_set_cursor(0, 0);
-				lcd_print(' ');
-				lcd_set_cursor(0, 1);
-				lcd_print(' ');
-				lcd_set_cursor(0, 2);
-				lcd_print(' ');
-				lcd_set_cursor(0, 3);
-				lcd_print(' ');
+				lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print('>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
@@ -6030,12 +6018,7 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 				}	
 
-				lcd_set_cursor(0, 1);
-				lcd_print(' ');
-				lcd_set_cursor(0, 2);
-				lcd_print(' ');
-				lcd_set_cursor(0, 3);
-				lcd_print(' ');
+				lcd_puts_at_P(0, 1, PSTR(" \n \n "));
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print('>');
 				enc_dif = lcd_encoder_diff;
@@ -6140,12 +6123,7 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 
         if (last_item&&last_visible) lcd_puts_at_P(1, 3, last_item);
 
-        lcd_set_cursor(0, 1);
-        lcd_print(' ');
-        lcd_set_cursor(0, 2);
-        lcd_print(' ');
-        lcd_set_cursor(0, 3);
-        lcd_print(' ');
+        lcd_puts_at_P(0, 1, PSTR(" \n \n "));
         lcd_set_cursor(0, cursor_pos);
         lcd_print('>');
         _delay(100);
@@ -6219,16 +6197,9 @@ char reset_menu() {
 						lcd_clear();
 					}
 				}
-				lcd_set_cursor(0, 0);
-                lcd_space(1);
-				lcd_set_cursor(0, 1);
-                lcd_space(1);
-				lcd_set_cursor(0, 2);
-                lcd_space(1);
-				lcd_set_cursor(0, 3);
-                lcd_space(1);
+				lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
 				lcd_set_cursor(0, cursor_pos);
-                lcd_putc('>');
+				lcd_putc('>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
