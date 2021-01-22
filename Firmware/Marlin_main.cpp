@@ -5677,7 +5677,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     */
     case 20:
       SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST
-      card.ls();
+      card.ls(code_seen('L'));
       SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST
       break;
 
