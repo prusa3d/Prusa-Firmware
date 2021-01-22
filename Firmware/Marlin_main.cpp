@@ -1019,10 +1019,10 @@ uint8_t lang_xflash_enum_codes(uint16_t* codes)
 		w25x20cl_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t));
 		if (header.magic != LANG_MAGIC)
 		{
-			printf_P(_n("NG!\n"));
+			puts_P(_n("NG!"));
 			break;
 		}
-		printf_P(_n("OK\n"));
+		puts_P(_n("OK"));
 		printf_P(_n(" _lt_magic        = 0x%08lx %S\n"), header.magic, (header.magic==LANG_MAGIC)?_n("OK"):_n("NA"));
 		printf_P(_n(" _lt_size         = 0x%04x (%d)\n"), header.size, header.size);
 		printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), header.count, header.count);
@@ -1132,7 +1132,7 @@ void setup()
 		SERIAL_PROTOCOLLNPGM("start");
 #endif
 	SERIAL_ECHO_START;
-	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
+	puts_P(PSTR(" " FW_VERSION_FULL));
 
 	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
 
@@ -1222,12 +1222,12 @@ void setup()
 		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
 		sum = (sum >> 8) | ((sum & 0xff) << 8); //swap bytes
 		if (sum == header.checksum)
-			printf_P(_n("Checksum OK\n"), sum);
+			puts_P(_n("Checksum OK"), sum);
 		else
-			printf_P(_n("Checksum NG\n"), sum);
+			puts_P(_n("Checksum NG"), sum);
 	}
 	else
-		printf_P(_n("lang_get_header failed!\n"));
+		puts_P(_n("lang_get_header failed!"));
 
 #if 0
 		for (uint16_t i = 0; i < 1024*10; i++)
@@ -1307,7 +1307,7 @@ void setup()
 	else
 	{
 	    w25x20cl_err_msg();
-	    printf_P(_n("W25X20CL not responding.\n"));
+	    puts_P(_n("W25X20CL not responding."));
 	}
 #ifdef EXTRUDER_ALTFAN_DETECT
 	SERIAL_ECHORPGM(_n("Extruder fan type: "));
@@ -5243,12 +5243,12 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 					break;
 				}
 				if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
-					printf_P(PSTR("Bed leveling failed. Sensor disconnected or cable broken.\n"));
+					puts_P(PSTR("Bed leveling failed. Sensor disconnected or cable broken."));
 					break;
 				}
 			}
 			if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) { //if we have data from z calibration, max. allowed difference is 1mm for each point
-				printf_P(PSTR("Bed leveling failed. Sensor triggered too high.\n"));
+				puts_P(PSTR("Bed leveling failed. Sensor triggered too high."));
 				break;
 			}
 			#ifdef SUPPORT_VERBOSITY

@@ -567,11 +567,11 @@ bool can_extrude()
 static void get_response_print_info(uint8_t move) {
 	printf_P(PSTR("mmu_get_response - begin move: "), move);
 	switch (move) {
-		case MMU_LOAD_MOVE: printf_P(PSTR("load\n")); break;
-		case MMU_UNLOAD_MOVE: printf_P(PSTR("unload\n")); break;
-		case MMU_TCODE_MOVE: printf_P(PSTR("T-code\n")); break;
-		case MMU_NO_MOVE: printf_P(PSTR("no move\n")); break;
-		default: printf_P(PSTR("error: unknown move\n")); break;
+		case MMU_LOAD_MOVE: puts_P(PSTR("load")); break;
+		case MMU_UNLOAD_MOVE: puts_P(PSTR("unload")); break;
+		case MMU_TCODE_MOVE: puts_P(PSTR("T-code")); break;
+		case MMU_NO_MOVE: puts_P(PSTR("no move")); break;
+		default: puts_P(PSTR("error: unknown move")); break;
 	}
 }
 
@@ -602,7 +602,7 @@ bool mmu_get_response(uint8_t move)
 				{
 				    if (can_extrude())
 				    {
-                        printf_P(PSTR("Unload 1\n"));
+                        puts_P(PSTR("Unload 1"));
                         current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
                         plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
                         st_synchronize();
@@ -610,7 +610,7 @@ bool mmu_get_response(uint8_t move)
 				}
 				else //filament was unloaded from idler, no additional movements needed 
 				{ 
-					printf_P(PSTR("Unloading finished 1\n"));
+					puts_P(PSTR("Unloading finished 1"));
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
 					move = MMU_NO_MOVE;
 				}
@@ -620,7 +620,7 @@ bool mmu_get_response(uint8_t move)
 				{
                     if (can_extrude())
                     {
-                        printf_P(PSTR("Unload 2\n"));
+                        puts_P(PSTR("Unload 2"));
                         current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
                         plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
                         st_synchronize();
@@ -628,7 +628,7 @@ bool mmu_get_response(uint8_t move)
 				}
 				else //delay to allow mmu unit to pull out filament from bondtech gears and then start with infinite loading 
 				{ 
-					printf_P(PSTR("Unloading finished 2\n"));
+					puts_P(PSTR("Unloading finished 2"));
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
 					delay_keep_alive(MMU_LOAD_TIME_MS);
 					move = MMU_LOAD_MOVE;
@@ -689,7 +689,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  }
 				  st_synchronize();
 				  mmu_print_saved = true;
-				  printf_P(PSTR("MMU not responding\n"));
+				  puts_P(PSTR("MMU not responding"));
 				  KEEPALIVE_STATE(PAUSED_FOR_USER);
 				  hotend_temp_bckp = degTargetHotend(active_extruder);
 				  if (move_axes) {
@@ -746,7 +746,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 			  }
 		  }
 		  else if (mmu_print_saved) {
-			  printf_P(PSTR("MMU starts responding\n"));
+			  puts_P(PSTR("MMU starts responding"));
 			  KEEPALIVE_STATE(IN_HANDLER);
 			  mmu_loading_flag = false;
 			  if (turn_off_nozzle) 

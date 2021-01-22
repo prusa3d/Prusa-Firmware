@@ -8629,9 +8629,9 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 		setExtruderAutoFanState(0); //extruder fan
 		manage_heater();			//count average fan speed from 2s delay and turn off fans
 
-		printf_P(PSTR("Test 1:\n"));
-		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
-		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
+		puts_P(PSTR("Test 1:"));
+		printf_P(PSTR("Print fan speed: %d\n"), fan_speed[1]);
+		printf_P(PSTR("Extr fan speed: %d\n"), fan_speed[0]);
 
 		if (fan_speed[0] < 20) { // < 1200 RPM would mean either a faulty Noctua or Altfan
 			return FanCheck::ExtruderFan;
@@ -8669,9 +8669,9 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 		manage_heater();			//turn off fan
 		manage_inactivity(true);	//to turn off print fan
 #endif //FAN_SOFT_PWM
-		printf_P(PSTR("Test 2:\n"));
-		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
-		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
+		puts_P(PSTR("Test 2:"));
+		printf_P(PSTR("Print fan speed: %d\n"), fan_speed[1]);
+		printf_P(PSTR("Extr fan speed: %d\n"), fan_speed[0]);
 		if (!fan_speed[1]) {
 			return FanCheck::PrintFan;
 		}
