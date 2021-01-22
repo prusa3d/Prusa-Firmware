@@ -8788,7 +8788,7 @@ Sigma_Exit:
   */
   else if(code_seen('T'))
   {
-      static const char duplicate_Tcode_ignored[] PROGMEM = "Duplicate T-code ignored.\n";
+      static const char duplicate_Tcode_ignored[] PROGMEM = "Duplicate T-code ignored.";
       
       int index;
       bool load_to_nozzle = false;
@@ -8805,7 +8805,7 @@ Sigma_Exit:
 			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
 			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
 			{
-				printf_P(duplicate_Tcode_ignored);
+				puts_P(duplicate_Tcode_ignored);
 			}
 			else
 			{
@@ -8850,7 +8850,7 @@ Sigma_Exit:
           {
               if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
               {
-                  printf_P(duplicate_Tcode_ignored);
+                  puts_P(duplicate_Tcode_ignored);
               }
 			  else
 			  {
