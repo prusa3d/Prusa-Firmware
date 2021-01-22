@@ -3314,8 +3314,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         if (lcd_change_fil_state == 0)
         {
 			lcd_clear();
-			lcd_set_cursor(0, 2);
-			lcd_puts_P(_T(MSG_PLEASE_WAIT));
+			lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
 			current_position[X_AXIS] -= 100;
 			plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
 			st_synchronize();
@@ -3331,8 +3330,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
             if (saved_printing) {
 
                 lcd_clear();
-                lcd_set_cursor(0, 2);
-                lcd_puts_P(_T(MSG_PLEASE_WAIT));
+                lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
 
                 mmu_command(MmuCmd::R0);
                 manage_response(false, false);
