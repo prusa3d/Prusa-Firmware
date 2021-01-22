@@ -689,7 +689,7 @@ void lcdui_print_farm(void)
             lcd_puts_P(PSTR("L"));
         
         }else{
-            lcd_puts_P(PSTR(" "));
+            lcd_print(' ');
         }
         
 	}
@@ -700,7 +700,7 @@ void lcdui_print_farm(void)
 
 #else
 		lcd_set_cursor(LCD_WIDTH - 8 - 2, 2);
-		lcd_puts_P(PSTR(" "));
+		lcd_print(' ');
 #endif
 	}
 */
@@ -713,7 +713,7 @@ void lcdui_print_cmd_diag(void)
 	lcd_set_cursor(LCD_WIDTH - 8 -1, 2);
 	lcd_puts_P(PSTR("      C"));
 	lcd_print(buflen);	// number of commands in cmd buffer
-	if (buflen < 9) lcd_puts_P(" ");
+	if (buflen < 9) lcd_print(' ');
 }
 #endif //CMD_DIAGNOSTICS
 
@@ -2640,7 +2640,7 @@ static void lcd_loading_progress_bar(uint16_t loading_time_ms) {
 
 	for (uint_least8_t i = 0; i < 20; i++) {
 		lcd_set_cursor(i, 3);
-		lcd_print(".");
+		lcd_print('.');
 		//loading_time_ms/20 delay
 		for (uint_least8_t j = 0; j < 5; j++) {
 			delay_keep_alive(loading_time_ms / 100);
@@ -2677,7 +2677,7 @@ void lcd_loading_filament() {
   for (int i = 0; i < 20; i++) {
 
     lcd_set_cursor(i, 3);
-    lcd_print(".");
+    lcd_print('.');
     for (int j = 0; j < 10 ; j++) {
       manage_heater();
       manage_inactivity(true);
@@ -2725,7 +2725,7 @@ void lcd_alright() {
 
   lcd_set_cursor(0, 1);
 
-  lcd_print(">");
+  lcd_print('>');
 
 
   enc_dif = lcd_encoder_diff;
@@ -2756,13 +2756,13 @@ void lcd_alright() {
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
         lcd_set_cursor(0, 1);
-        lcd_print(" ");
+        lcd_print(' ');
         lcd_set_cursor(0, 2);
-        lcd_print(" ");
+        lcd_print(' ');
         lcd_set_cursor(0, 3);
-        lcd_print(" ");
+        lcd_print(' ');
         lcd_set_cursor(0, cursor_pos);
-        lcd_print(">");
+        lcd_print('>');
         enc_dif = lcd_encoder_diff;
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
         _delay(100);
@@ -3332,7 +3332,7 @@ void lcd_adjust_z() {
 
   lcd_set_cursor(0, 1);
 
-  lcd_print(">");
+  lcd_print('>');
 
 
   enc_dif = lcd_encoder_diff;
@@ -3361,11 +3361,11 @@ void lcd_adjust_z() {
           cursor_pos = 1;
         }
         lcd_set_cursor(0, 1);
-        lcd_print(" ");
+        lcd_print(' ');
         lcd_set_cursor(0, 2);
-        lcd_print(" ");
+        lcd_print(' ');
         lcd_set_cursor(0, cursor_pos);
-        lcd_print(">");
+        lcd_print('>');
         enc_dif = lcd_encoder_diff;
         _delay(100);
       }
@@ -3411,7 +3411,7 @@ bool lcd_wait_for_pinda(float temp) {
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
 		lcd_print(ftostr3(current_temperature_pinda));
-		lcd_print("/");
+		lcd_print('/');
 		lcd_print(ftostr3(temp));
 		lcd_print(LCD_STR_DEGREE);
 		delay_keep_alive(1000);
@@ -3433,7 +3433,7 @@ void lcd_wait_for_heater() {
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
 		lcd_print(ftostr3(degHotend(active_extruder)));
-		lcd_print("/");
+		lcd_print('/');
 		lcd_print(ftostr3(degTargetHotend(active_extruder)));
 		lcd_print(LCD_STR_DEGREE);
 }
@@ -3752,16 +3752,16 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 				if (msg_next == NULL) {
 					lcd_set_cursor(0, 3);
 					if (enc_dif < lcd_encoder_diff && yes) {
-						lcd_puts_P((PSTR(" ")));
+						lcd_print(' ');
 						lcd_set_cursor(7, 3);
-						lcd_puts_P((PSTR(">")));
+						lcd_print('>');
 						yes = false;
 						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
 					else if (enc_dif > lcd_encoder_diff && !yes) {
-						lcd_puts_P((PSTR(">")));
+						lcd_print('>');
 						lcd_set_cursor(7, 3);
-						lcd_puts_P((PSTR(" ")));
+						lcd_print(' ');
 						yes = true;
 						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
@@ -3790,11 +3790,11 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 		}
 		if (msg_next == NULL) {
 			lcd_set_cursor(0, 3);
-			if (yes) lcd_puts_P(PSTR(">"));
+			if (yes) lcd_print('>');
 			lcd_set_cursor(1, 3);
 			lcd_puts_P(first_choice);
 			lcd_set_cursor(7, 3);
-			if (!yes) lcd_puts_P(PSTR(">"));
+			if (!yes) lcd_print('>');
 			lcd_set_cursor(8, 3);
 			lcd_puts_P(second_choice);
 		}
@@ -3815,7 +3815,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 	
 	if (default_yes) {
 		lcd_set_cursor(0, 2);
-		lcd_puts_P(PSTR(">"));
+		lcd_print('>');
 		lcd_puts_P(_T(MSG_YES));
 		lcd_set_cursor(1, 3);
 		lcd_puts_P(_T(MSG_NO));
@@ -3824,7 +3824,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 		lcd_set_cursor(1, 2);
 		lcd_puts_P(_T(MSG_YES));
 		lcd_set_cursor(0, 3);
-		lcd_puts_P(PSTR(">"));
+		lcd_print('>');
 		lcd_puts_P(_T(MSG_NO));
 	}
 	int8_t retval = default_yes ? true : false;
@@ -3845,17 +3845,17 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 		if (abs(enc_dif - lcd_encoder_diff) > 4) {
 			lcd_set_cursor(0, 2);
 				if (enc_dif < lcd_encoder_diff && retval) {
-					lcd_puts_P((PSTR(" ")));
+					lcd_print(' ');
 					lcd_set_cursor(0, 3);
-					lcd_puts_P((PSTR(">")));
+					lcd_print('>');
 					retval = 0;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 
 				}
 				else if (enc_dif > lcd_encoder_diff && !retval) {
-					lcd_puts_P((PSTR(">")));
+					lcd_print('>');
 					lcd_set_cursor(0, 3);
-					lcd_puts_P((PSTR(" ")));
+					lcd_print(' ');
 					retval = 1;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}
@@ -4281,23 +4281,23 @@ void lcd_pick_babystep(){
     
     lcd_set_cursor(3, 2);
     
-    lcd_print("1");
+    lcd_print('1');
     
     lcd_set_cursor(3, 3);
     
-    lcd_print("2");
+    lcd_print('2');
     
     lcd_set_cursor(12, 2);
     
-    lcd_print("3");
+    lcd_print('3');
     
     lcd_set_cursor(12, 3);
     
-    lcd_print("4");
+    lcd_print('4');
     
     lcd_set_cursor(1, 2);
     
-    lcd_print(">");
+    lcd_print('>');
     
     
     enc_dif = lcd_encoder_diff;
@@ -4328,20 +4328,20 @@ void lcd_pick_babystep(){
 
                 
                 lcd_set_cursor(1, 2);
-                lcd_print(" ");
+                lcd_print(' ');
                 lcd_set_cursor(1, 3);
-                lcd_print(" ");
+                lcd_print(' ');
                 lcd_set_cursor(10, 2);
-                lcd_print(" ");
+                lcd_print(' ');
                 lcd_set_cursor(10, 3);
-                lcd_print(" ");
+                lcd_print(' ');
                 
                 if (cursor_pos < 3) {
                     lcd_set_cursor(1, cursor_pos+1);
-                    lcd_print(">");
+                    lcd_print('>');
                 }else{
                     lcd_set_cursor(10, cursor_pos-1);
-                    lcd_print(">");
+                    lcd_print('>');
                 }
                 
    
@@ -5938,7 +5938,7 @@ void bowden_menu() {
 	int cursor_pos = 0;
 	lcd_clear();
 	lcd_set_cursor(0, 0);
-	lcd_print(">");
+	lcd_print('>');
 	for (uint_least8_t i = 0; i < 4; i++) {
 		lcd_set_cursor(1, i);
 		lcd_print("Extruder ");
@@ -5976,15 +5976,15 @@ void bowden_menu() {
 				}
 
 				lcd_set_cursor(0, 0);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 1);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 2);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 3);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, cursor_pos);
-				lcd_print(">");
+				lcd_print('>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
@@ -6029,7 +6029,7 @@ void bowden_menu() {
 						lcd_clear();
 						enc_dif = lcd_encoder_diff;
 						lcd_set_cursor(0, cursor_pos);
-						lcd_print(">");
+						lcd_print('>');
 						for (uint_least8_t i = 0; i < 4; i++) {
 							lcd_set_cursor(1, i);
 							lcd_print("Extruder ");
@@ -6052,8 +6052,8 @@ void bowden_menu() {
 
 static char snmm_stop_print_menu() { //menu for choosing which filaments will be unloaded in stop print
 	lcd_clear();
-	lcd_puts_at_P(0,0,_T(MSG_UNLOAD_FILAMENT)); lcd_print(":");
-	lcd_set_cursor(0, 1); lcd_print(">");
+	lcd_puts_at_P(0,0,_T(MSG_UNLOAD_FILAMENT)); lcd_print(':');
+	lcd_set_cursor(0, 1); lcd_print('>');
 	lcd_puts_at_P(1,2,_i("Used during print"));////MSG_USED c=19 r=1
 	lcd_puts_at_P(1,3,_i("Current"));////MSG_CURRENT c=19 r=1
 	char cursor_pos = 1;
@@ -6078,13 +6078,13 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 				}	
 
 				lcd_set_cursor(0, 1);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 2);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 3);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, cursor_pos);
-				lcd_print(">");
+				lcd_print('>');
 				enc_dif = lcd_encoder_diff;
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				_delay(100);
@@ -6188,13 +6188,13 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
         if (last_item&&last_visible) lcd_puts_at_P(1, 3, last_item);
 
         lcd_set_cursor(0, 1);
-        lcd_print(" ");
+        lcd_print(' ');
         lcd_set_cursor(0, 2);
-        lcd_print(" ");
+        lcd_print(' ');
         lcd_set_cursor(0, 3);
-        lcd_print(" ");
+        lcd_print(' ');
         lcd_set_cursor(0, cursor_pos);
-        lcd_print(">");
+        lcd_print('>');
         _delay(100);
 
 		if (lcd_clicked())
@@ -6229,7 +6229,7 @@ char reset_menu() {
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
 	lcd_set_cursor(0, 0);
-	lcd_print(">");
+	lcd_print('>');
 	lcd_consume_click();
 	while (1) {		
 
@@ -6270,15 +6270,15 @@ char reset_menu() {
 					}
 				}
 				lcd_set_cursor(0, 0);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 1);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 2);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 3);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, cursor_pos);
-				lcd_print(">");
+				lcd_print('>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
@@ -6513,8 +6513,8 @@ static void lcd_farm_no()
 		}
 
 		lcd_set_cursor(0, 2);
-		if (_farmno < 100) lcd_print("0");
-		if (_farmno < 10) lcd_print("0");
+		if (_farmno < 100) lcd_print('0');
+		if (_farmno < 10) lcd_print('0');
 		lcd_print(_farmno);
 		lcd_print("  ");
 		lcd_set_cursor(0, 3);
@@ -6522,7 +6522,7 @@ static void lcd_farm_no()
 
 
 		lcd_set_cursor(step, 3);
-		lcd_print("^");
+		lcd_print('^');
 		_delay(100);
 
 		if (lcd_clicked())
@@ -6560,7 +6560,7 @@ unsigned char lcd_choose_color() {
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
 	lcd_set_cursor(0, 1);
-	lcd_print(">");
+	lcd_print('>');
 
 	active_rows = items_no < 3 ? items_no : 3;
 	lcd_consume_click();
@@ -6602,13 +6602,13 @@ unsigned char lcd_choose_color() {
 					}
 				}
 				lcd_set_cursor(0, 1);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 2);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, 3);
-				lcd_print(" ");
+				lcd_print(' ');
 				lcd_set_cursor(0, cursor_pos);
-				lcd_print(">");
+				lcd_print('>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
@@ -6665,7 +6665,7 @@ void lcd_confirm_print()
 		lcd_set_cursor(2, 3);
 		lcd_puts_P(_T(MSG_NO));
 		lcd_set_cursor(0, 1 + cursor_pos);
-		lcd_print(">");
+		lcd_print('>');
 		_delay(100);
 
 		_t = _t + 1;
@@ -7445,14 +7445,14 @@ void lcd_sdcard_stop()
 	lcd_puts_P(_T(MSG_NO));
 	lcd_set_cursor(2, 3);
 	lcd_puts_P(_T(MSG_YES));
-	lcd_set_cursor(0, 2); lcd_print(" ");
-	lcd_set_cursor(0, 3); lcd_print(" ");
+	lcd_set_cursor(0, 2); lcd_print(' ');
+	lcd_set_cursor(0, 3); lcd_print(' ');
 
 	if ((int32_t)lcd_encoder > 2) { lcd_encoder = 2; }
 	if ((int32_t)lcd_encoder < 1) { lcd_encoder = 1; }
 	
 	lcd_set_cursor(0, 1 + lcd_encoder);
-	lcd_print(">");
+	lcd_print('>');
 
 	if (lcd_clicked())
 	{
@@ -8560,7 +8560,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	_delay(500);
 
 	lcd_set_cursor(1, 2); lcd_puts_P(_T(MSG_SELFTEST_FAN_YES));
-	lcd_set_cursor(0, 3); lcd_print(">");
+	lcd_set_cursor(0, 3); lcd_print('>');
 	lcd_set_cursor(1, 3); lcd_puts_P(_T(MSG_SELFTEST_FAN_NO));
 
 	int8_t enc_dif = int(_default)*3;
@@ -8573,17 +8573,17 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 		if (abs((enc_dif - lcd_encoder_diff)) > 2) {
 			if (enc_dif > lcd_encoder_diff) {
 				_result = !check_opposite;
-				lcd_set_cursor(0, 2); lcd_print(">");
+				lcd_set_cursor(0, 2); lcd_print('>');
 				lcd_set_cursor(1, 2); lcd_puts_P(_T(MSG_SELFTEST_FAN_YES));
-				lcd_set_cursor(0, 3); lcd_print(" ");
+				lcd_set_cursor(0, 3); lcd_print(' ');
 				lcd_set_cursor(1, 3); lcd_puts_P(_T(MSG_SELFTEST_FAN_NO));
 			}
 
 			if (enc_dif < lcd_encoder_diff) {
 				_result = check_opposite;
-				lcd_set_cursor(0, 2); lcd_print(" ");
+				lcd_set_cursor(0, 2); lcd_print(' ');
 				lcd_set_cursor(1, 2); lcd_puts_P(_T(MSG_SELFTEST_FAN_YES));
-				lcd_set_cursor(0, 3); lcd_print(">");
+				lcd_set_cursor(0, 3); lcd_print('>');
 				lcd_set_cursor(1, 3); lcd_puts_P(_T(MSG_SELFTEST_FAN_NO));
 			}
 			enc_dif = 0;
@@ -8652,10 +8652,10 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 		for (uint8_t i = 0; i < 5; i++) {
 			delay_keep_alive(1000);
 			lcd_set_cursor(18, 3);
-			lcd_print("-");
+			lcd_print('-');
 			delay_keep_alive(1000);
 			lcd_set_cursor(18, 3);
-			lcd_print("|");
+			lcd_print('|');
 		}
 		fanSpeed = 0;
 
@@ -8679,10 +8679,10 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 		for (uint8_t i = 0; i < 5; i++) {
 			delay_keep_alive(1000);
 			lcd_set_cursor(18, 3);
-			lcd_print("-");
+			lcd_print('-');
 			delay_keep_alive(1000);
 			lcd_set_cursor(18, 3);
-			lcd_print("|");
+			lcd_print('|');
 		}
 		fanSpeed = 0;
 
@@ -8786,14 +8786,14 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 	case 1:
 		lcd_print(_name);
 		lcd_set_cursor(_col + strlen(_name), _row);
-		lcd_print(":");
+		lcd_print(':');
 		lcd_set_cursor(_col + strlen(_name) + 1, _row);
 		lcd_print(_indicator);
 		break;
 	case 2:
 		lcd_print(_name);
 		lcd_set_cursor(_col + strlen(_name), _row);
-		lcd_print(":");
+		lcd_print(':');
 		lcd_set_cursor(_col + strlen(_name) + 1, _row);
 		lcd_print("OK");
 		break;
