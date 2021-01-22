@@ -6422,7 +6422,9 @@ Sigma_Exit:
           }
           if (code_seen('S'))
           {
-              setTargetHotendSafe(code_value(), extruder);
+              if (!setTargetHotendSafe(code_value(), extruder)){ // Set the hotend temperature, unless we are stopped, in which case send an error (setTargetHotendSafe() returns true if it let the printer start heating, false otherwise)
+                SERIAL_PROTOCOLLNPGM("Hotend temperature not set because Stop() has been called. Use M999 to reset and try again.");
+              }
           }
           break;
     }
@@ -6445,7 +6447,12 @@ Sigma_Exit:
        - `S` - Target temperature
     */
     case 140: 
-      if (code_seen('S')) setTargetBed(code_value());
+
+      if (code_seen('S')) {
+        if (!setTargetBed(code_value())) {
+          SERIAL_PROTOCOLLNPGM("Bed temperature not set because Stop() has been called. Use M999 to reset and try again.");
+        }
+      }
       break;
 
     /*!
@@ -6539,19 +6546,19 @@ Sigma_Exit:
       if(setTargetedHotend(109, extruder)){
         break;
       }
+      bool set_heater_success = true; // Set to true by default to allow the program to continue if S or R are not sent
+      if (code_seen('S')) {
+        set_heater_success = setTargetHotendSafe(code_value(), extruder);
+      } else if (code_seen('R')) {
+        set_heater_success = setTargetHotendSafe(code_value(), extruder);
+      }
+      if (set_heater_success){
       LCD_MESSAGERPGM(_T(MSG_HEATING));
 	  heating_status = 1;
 	  if (farm_mode) { prusa_statistics(1); };
 
 #ifdef AUTOTEMP
         autotemp_enabled=false;
-      #endif
-      if (code_seen('S')) {
-          setTargetHotendSafe(code_value(), extruder);
-            } else if (code_seen('R')) {
-                setTargetHotendSafe(code_value(), extruder);
-      }
-      #ifdef AUTOTEMP
         if (code_seen('S')) autotemp_min=code_value();
         if (code_seen('B')) autotemp_max=code_value();
         if (code_seen('F'))
@@ -6579,7 +6586,10 @@ Sigma_Exit:
         
         //starttime=_millis();
         previous_millis_cmd = _millis();
+      } else { // Stopped is therefore true, send a message over serial.
+        SERIAL_PROTOCOLLNPGM("Hotend temperature not set because Stop() has been called. Use M999 to reset and try again.");
       }
+    }
       break;
 
     /*!
@@ -6599,18 +6609,22 @@ Sigma_Exit:
     #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
     {
         bool CooldownNoWait = false;
-        LCD_MESSAGERPGM(_T(MSG_BED_HEATING));
-		heating_status = 3;
-		if (farm_mode) { prusa_statistics(1); };
+        bool set_heater_success = true; // Set to true by default to allow the program to continue if S or R are not sent
         if (code_seen('S')) 
 		{
-          setTargetBed(code_value());
+          set_heater_success = setTargetBed(code_value());
           CooldownNoWait = true;
         } 
 		else if (code_seen('R')) 
 		{
-          setTargetBed(code_value());
+          set_heater_success = setTargetBed(code_value());
         }
+        if (set_heater_success){
+        
+        LCD_MESSAGERPGM(_T(MSG_BED_HEATING));
+		    heating_status = 3;
+		    if (farm_mode) { prusa_statistics(1); };
+
         codenum = _millis();
         
         cancel_heatup = false;
@@ -6643,6 +6657,9 @@ Sigma_Exit:
 		heating_status = 4;
 
         previous_millis_cmd = _millis();
+        } else {
+          SERIAL_PROTOCOLLNPGM("Bed temperature not set because Stop() has been called. Use M999 to reset and try again.");
+        }
     }
     #endif
         break;
