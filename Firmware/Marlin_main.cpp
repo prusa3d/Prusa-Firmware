@@ -270,6 +270,7 @@ float extruder_offset[NUM_EXTRUDER_OFFSETS][EXTRUDERS] = {
 
 uint8_t active_extruder = 0;
 int fanSpeed=0;
+uint8_t newFanSpeed = 0;
 
 #ifdef FWRETRACT
   bool retracted[EXTRUDERS]={false
@@ -389,10 +390,58 @@ static int saved_fanSpeed = 0; //!< Print fan speed
 
 static int saved_feedmultiply_mm = 100;
 
-#ifdef AUTO_REPORT_TEMPERATURES
-static LongTimer auto_report_temp_timer;
-static uint8_t auto_report_temp_period = 0;
-#endif //AUTO_REPORT_TEMPERATURES
+class AutoReportFeatures {
+    union {
+          struct {
+            uint8_t temp : 1; //Temperature flag
+            uint8_t fans : 1; //Fans flag
+            uint8_t pos: 1;   //Position flag
+            uint8_t ar4 : 1;  //Unused
+            uint8_t ar5 : 1;  //Unused
+            uint8_t ar6 : 1;  //Unused
+            uint8_t ar7 : 1;  //Unused
+          } __attribute__((packed)) bits;
+          uint8_t byte;
+        } arFunctionsActive;
+    uint8_t auto_report_period;
+public:
+    LongTimer auto_report_timer;
+    AutoReportFeatures():auto_report_period(0){ 
+#if defined(AUTO_REPORT)
+        arFunctionsActive.byte = 0xff; 
+#else
+        arFunctionsActive.byte = 0;
+#endif //AUTO_REPORT
+    }
+    
+    inline bool Temp()const { return arFunctionsActive.bits.temp != 0; }
+    inline void SetTemp(uint8_t v){ arFunctionsActive.bits.temp = v; }
+
+    inline bool Fans()const { return arFunctionsActive.bits.fans != 0; }
+    inline void SetFans(uint8_t v){ arFunctionsActive.bits.fans = v; }
+
+    inline bool Pos()const { return arFunctionsActive.bits.pos != 0; }
+    inline void SetPos(uint8_t v){ arFunctionsActive.bits.pos = v; }
+    
+    inline void SetMask(uint8_t mask){ arFunctionsActive.byte = mask; }
+    
+    /// sets the autoreporting timer's period
+    /// setting it to zero stops the timer
+    void SetPeriod(uint8_t p){
+        auto_report_period = p;
+        if (auto_report_period != 0){
+          auto_report_timer.start();
+        } else{
+          auto_report_timer.stop();
+        }
+    }
+    
+    inline void TimerStart() { auto_report_timer.start(); }
+    inline bool TimerRunning()const { return auto_report_timer.running(); }
+    inline bool TimerExpired() { return auto_report_timer.expired(auto_report_period * 1000ul); }
+};
+
+AutoReportFeatures autoReportFeatures;
 
 //===========================================================================
 //=============================Routines======================================
@@ -1730,16 +1779,26 @@ void host_keepalive() {
   if (farm_mode) return;
   long ms = _millis();
 
-#ifdef AUTO_REPORT_TEMPERATURES
-  if (auto_report_temp_timer.running())
+#if defined(AUTO_REPORT)
   {
-    if (auto_report_temp_timer.expired(auto_report_temp_period * 1000ul))
+    if (autoReportFeatures.TimerExpired())
     {
-      gcode_M105(active_extruder);
-      auto_report_temp_timer.start();
+      if(autoReportFeatures.Temp()){
+        gcode_M105(active_extruder);
+      }
+      if(autoReportFeatures.Pos()){
+        gcode_M114();
+      }
+ #if defined(AUTO_REPORT) && (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))      
+      if(autoReportFeatures.Fans()){
+        gcode_M123();
+      }
+#endif //AUTO_REPORT and (FANCHECK and TACH_0 or TACH_1)
+     autoReportFeatures.TimerStart();
     }
   }
-#endif //AUTO_REPORT_TEMPERATURES
+#endif //AUTO_REPORT
+
 
   if (host_keepalive_interval && busy_state != NOT_BUSY) {
     if ((ms - prev_busy_signal_ms) < (long)(1000L * host_keepalive_interval)) return;
@@ -3166,6 +3225,13 @@ void gcode_M114()
 	SERIAL_PROTOCOLLN("");
 }
 
+#if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
+void gcode_M123()
+{
+  printf_P(_N("E0:%d RPM PRN1:%d RPM E0@:%u PRN1@:%d\n"), 60*fan_speed[active_extruder], 60*fan_speed[1], newFanSpeed, fanSpeed);
+}
+#endif //FANCHECK and TACH_0 or TACH_1
+
 //! extracted code to compute z_shift for M600 in case of filament change operation 
 //! requested from fsensors.
 //! The function ensures, that the printhead lifts to at least 25mm above the heat bed
@@ -3515,8 +3581,15 @@ static void cap_line(const char* name, bool ena = false) {
 
 static void extended_capabilities_report()
 {
-    cap_line(PSTR("AUTOREPORT_TEMP"), ENABLED(AUTO_REPORT_TEMPERATURES));
-    //@todo
+    // AUTOREPORT_TEMP (M155)
+    cap_line(PSTR("AUTOREPORT_TEMP"), ENABLED(AUTO_REPORT));
+#if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
+    // AUTOREPORT_FANS (M123)
+    cap_line(PSTR("AUTOREPORT_FANS"), ENABLED(AUTO_REPORT));
+#endif //FANCHECK and TACH_0 or TACH_1
+    // AUTOREPORT_POSITION (M114)
+    cap_line(PSTR("AUTOREPORT_POSITION"), ENABLED(AUTO_REPORT));
+    //@todo Update RepRap cap
 }
 #endif //EXTENDED_CAPABILITIES_REPORT
 
@@ -3606,13 +3679,14 @@ extern uint8_t st_backlash_y;
 //!@n M115 - Capabilities string
 //!@n M117 - display message
 //!@n M119 - Output Endstop status to serial port
+//!@n M123 - Tachometer value
 //!@n M126 - Solenoid Air Valve Open (BariCUDA support by jmil)
 //!@n M127 - Solenoid Air Valve Closed (BariCUDA vent to atmospheric pressure by jmil)
 //!@n M128 - EtoP Open (BariCUDA EtoP = electricity to air pressure transducer by jmil)
 //!@n M129 - EtoP Closed (BariCUDA EtoP = electricity to air pressure transducer by jmil)
 //!@n M140 - Set bed target temp
 //!@n M150 - Set BlinkM Color Output R: Red<0-255> U(!): Green<0-255> B: Blue<0-255> over i2c, G for green does not work.
-//!@n M155 - Automatically send temperatures
+//!@n M155 - Automatically send temperatures, fan speeds, position
 //!@n M190 - Sxxx Wait for bed current temp to reach target temp. Waits only when heating
 //!          Rxxx Wait for bed current temp to reach target temp. Waits when heating and cooling
 //!@n M200 D<millimeters>- set filament diameter and set E axis units to cubic millimeters (use S0 to set back to millimeters).
@@ -6406,31 +6480,42 @@ Sigma_Exit:
       break;
     }
 
-#ifdef AUTO_REPORT_TEMPERATURES
+#if defined(AUTO_REPORT)
     /*!
-	### M155 - Automatically send temperatures <a href="https://reprap.org/wiki/G-code#M155:_Automatically_send_temperatures">M155: Automatically send temperatures</a>
+	### M155 - Automatically send status <a href="https://reprap.org/wiki/G-code#M155:_Automatically_send_temperatures">M155: Automatically send temperatures</a>
 	#### Usage
 	
-		M155 [ S ]
+		M155 [ S ] [ C ]
 	
 	#### Parameters
 	
-	- `S` - Set temperature autoreporting interval in seconds. 0 to disable. Maximum: 255
-	
-    */
+	- `S` - Set autoreporting interval in seconds. 0 to disable. Maximum: 255
+	- `C` - Activate auto-report function (bit mask). Default is temperature.
+
+          bit 0 = Auto-report temperatures
+          bit 1 = Auto-report fans
+          bit 2 = Auto-report position
+          bit 3 = free
+          bit 4 = free
+          bit 5 = free
+          bit 6 = free
+          bit 7 = free
+     */
+    //!@todo update RepRap Gcode wiki
+    //!@todo Should be temperature always? Octoprint doesn't switch to M105 if M155 timer is set
     case 155:
     {
-        if (code_seen('S'))
-        {
-            auto_report_temp_period = code_value_uint8();
-            if (auto_report_temp_period != 0)
-                auto_report_temp_timer.start();
-            else
-                auto_report_temp_timer.stop();
+        if (code_seen('S')){
+            autoReportFeatures.SetPeriod( code_value_uint8() );
         }
-    }
+        if (code_seen('C')){
+            autoReportFeatures.SetMask(code_value());
+        } else{
+            autoReportFeatures.SetMask(1); //Backwards compability to host systems like Octoprint to send only temp if paramerter `C`isn't used.
+        }
+   }
     break;
-#endif //AUTO_REPORT_TEMPERATURES
+#endif //AUTO_REPORT
 
     /*!
 	### M109 - Wait for extruder temperature <a href="https://reprap.org/wiki/G-code#M109:_Set_Extruder_Temperature_and_Wait">M109: Set Extruder Temperature and Wait</a>
@@ -6965,7 +7050,30 @@ Sigma_Exit:
       #endif
       break;
       //!@todo update for all axes, use for loop
+
+#if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
+    /*!
+	### M123 - Tachometer value <a href="https://www.reprap.org/wiki/G-code#M123:_Tachometer_value_.28RepRap.29">M123: Tachometer value</a>
+  This command is used to report fan speeds and fan pwm values.
+  #### Usage
     
+        M123
+
+    - E0:     - Hotend fan speed in RPM
+    - PRN1:   - Part cooling fans speed in RPM
+    - E0@:    - Hotend fan PWM value
+    - PRN1@:  -Part cooling fan PWM value
+
+  _Example:_
+
+    E0:3240 RPM PRN1:4560 RPM E0@:255 PRN1@:255
+
+    */
+   //!@todo Update RepRap Gcode wiki
+    case 123:
+    gcode_M123();
+    break;
+#endif //FANCHECK and TACH_0 and TACH_1
 
     #ifdef BLINKM
     /*!
