@@ -308,6 +308,7 @@ uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
+const char G28W0[] PROGMEM = "G28 W0";
 
 bool no_response = false;
 uint8_t important_status;
@@ -2185,7 +2186,7 @@ bool check_commands() {
 	
 		while (buflen)
 		{
-		if ((code_seen("M84")) || (code_seen("M 84"))) end_command_found = true;
+		if ((code_seen_P(PSTR("M84"))) || (code_seen_P(PSTR("M 84")))) end_command_found = true;
 		if (!cmdbuffer_front_already_processed)
 			 cmdqueue_pop_front();
 		cmdbuffer_front_already_processed = false;
@@ -2689,7 +2690,7 @@ void gcode_M105(uint8_t extruder)
         }
     }
 #endif
-    SERIAL_PROTOCOLLN("");
+    SERIAL_PROTOCOLLN();
 }
 
 #ifdef TMC2130
@@ -3222,7 +3223,7 @@ void gcode_M114()
 	SERIAL_PROTOCOLPGM(" E:");
 	SERIAL_PROTOCOL(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
 
-	SERIAL_PROTOCOLLN("");
+	SERIAL_PROTOCOLLN();
 }
 
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
@@ -3807,7 +3808,7 @@ void process_commands()
     - TMC_SET_STEP
     - TMC_SET_CHOP
  */
-  if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
+  if (code_seen_P(PSTR("M117"))) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
 		  *(starpos) = '\0';
@@ -3820,7 +3821,7 @@ void process_commands()
 
     // ### CRASH_DETECTED - TMC2130
     // ---------------------------------
-	  if(code_seen("CRASH_DETECTED"))
+	  if(code_seen_P(PSTR("CRASH_DETECTED")))
 	  {
 		  uint8_t mask = 0;
 		  if (code_seen('X')) mask |= X_AXIS_MASK;
@@ -3830,12 +3831,12 @@ void process_commands()
 
     // ### CRASH_RECOVER - TMC2130
     // ----------------------------------
-	  else if(code_seen("CRASH_RECOVER"))
+	  else if(code_seen_P(PSTR("CRASH_RECOVER")))
 		  crashdet_recover();
 
     // ### CRASH_CANCEL - TMC2130
     // ----------------------------------
-	  else if(code_seen("CRASH_CANCEL"))
+	  else if(code_seen_P(PSTR("CRASH_CANCEL")))
 		  crashdet_cancel();
 	}
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("TMC_"), 4) == 0)
@@ -3921,7 +3922,7 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-  else if(code_seen("PRUSA")){ 
+  else if(code_seen_P(PSTR("PRUSA"))){ 
     /*!
     ---------------------------------------------------------------------------------
     ### PRUSA - Internal command set <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode - Notes</a>
@@ -3954,20 +3955,20 @@ void process_commands()
     */
 
 
-		if (code_seen("Ping")) {  // PRUSA Ping
+		if (code_seen_P(PSTR("Ping"))) {  // PRUSA Ping
 			if (farm_mode) {
 				PingTime = _millis();
 				//MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
 			}	  
 		}
-		else if (code_seen("PRN")) { // PRUSA PRN
+		else if (code_seen_P(PSTR("PRN"))) { // PRUSA PRN
 		  printf_P(_N("%d"), status_number);
 
-        } else if( code_seen("FANPINTST") ){
+        } else if( code_seen_P(PSTR("FANPINTST"))){
             gcode_PRUSA_BadRAMBoFanTest();
-        }else if (code_seen("FAN")) { // PRUSA FAN
+        }else if (code_seen_P(PSTR("FAN"))) { // PRUSA FAN
 			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
-		}else if (code_seen("fn")) { // PRUSA fn
+		}else if (code_seen_P(PSTR("fn"))) { // PRUSA fn
 		  if (farm_mode) {
 			printf_P(_N("%d"), farm_no);
 		  }
@@ -3976,20 +3977,20 @@ void process_commands()
 		  }
 		  
 		}
-		else if (code_seen("thx")) // PRUSA thx
+		else if (code_seen_P(PSTR("thx"))) // PRUSA thx
 		{
 			no_response = false;
 		}	
-		else if (code_seen("uvlo")) // PRUSA uvlo
+		else if (code_seen_P(PSTR("uvlo"))) // PRUSA uvlo
 		{
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
-		else if (code_seen("MMURES")) // PRUSA MMURES
+		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
 		{
 			mmu_reset();
 		}
-		else if (code_seen("RESET")) { // PRUSA RESET
+		else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
             // careful!
             if (farm_mode) {
 #if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
@@ -4001,9 +4002,9 @@ void process_commands()
 #endif //WATCHDOG
             }
             else {
-                MYSERIAL.println("Not in farm mode.");
+                MYSERIAL.println("Not in farm mode."); // @@TODO
             }
-		}else if (code_seen("fv")) { // PRUSA fv
+		}else if (code_seen_P(PSTR("fv"))) { // PRUSA fv
         // get file version
         #ifdef SDSUPPORT
         card.openFile(strchr_pointer + 3,true);
@@ -4018,38 +4019,38 @@ void process_commands()
 
         #endif // SDSUPPORT
 
-    } else if (code_seen("M28")) { // PRUSA M28
+    } else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
         trace();
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
 
-	} else if (code_seen("SN")) { // PRUSA SN
+	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         gcode_PRUSA_SN();
 
-	} else if(code_seen("Fir")){ // PRUSA Fir
+	} else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
 
       SERIAL_PROTOCOLLN(FW_VERSION_FULL);
 
-    } else if(code_seen("Rev")){ // PRUSA Rev
+    } else if(code_seen_P(PSTR("Rev"))){ // PRUSA Rev
 
       SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
-    } else if(code_seen("Lang")) { // PRUSA Lang
+    } else if(code_seen_P(PSTR("Lang"))) { // PRUSA Lang
 	  lang_reset();
 
-	} else if(code_seen("Lz")) { // PRUSA Lz
+	} else if(code_seen_P(PSTR("Lz"))) { // PRUSA Lz
       eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
-	} else if(code_seen("Beat")) { // PRUSA Beat
+	} else if(code_seen_P(PSTR("Beat"))) { // PRUSA Beat
         // Kick farm link timer
         kicktime = _millis();
 
-    } else if(code_seen("FR")) { // PRUSA FR
+    } else if(code_seen_P(PSTR("FR"))) { // PRUSA FR
         // Factory full reset
         factory_reset(0);
-    } else if(code_seen("MBL")) { // PRUSA MBL
+    } else if(code_seen_P(PSTR("MBL"))) { // PRUSA MBL
         // Change the MBL status without changing the logical Z position.
-        if(code_seen("V")) {
+        if(code_seen('V')) {
             bool value = code_value_short();
             st_synchronize();
             if(value != mbl.active) {
@@ -4074,14 +4075,14 @@ eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,0xFF);
 eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,0xFF);
 eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
 */
-    } else if (code_seen("nozzle")) { // PRUSA nozzle
+    } else if (code_seen_P(PSTR("nozzle"))) { // PRUSA nozzle
           uint16_t nDiameter;
           if(code_seen('D'))
                {
                nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
                nozzle_diameter_check(nDiameter);
                }
-          else if(code_seen("set") && farm_mode)
+          else if(code_seen_P(PSTR("set")) && farm_mode)
                {
                strchr_pointer++;                  // skip 1st char (~ 's')
                strchr_pointer++;                  // skip 2nd char (~ 'e')
@@ -4791,7 +4792,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             // Push the commands to the front of the message queue in the reverse order!
             // There shall be always enough space reserved for these commands.
             repeatcommand_front(); // repeat G76 with all its parameters
-            enquecommand_front_P((PSTR("G28 W0")));
+            enquecommand_front_P(G28W0);
             break;
         }
         lcd_show_fullscreen_message_and_wait_P(_i("Stable ambient temperature 21-26C is needed a rigid stand is required."));////MSG_TEMP_CAL_WARNING c=20 r=4
@@ -4932,7 +4933,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
 			repeatcommand_front(); // repeat G76 with all its parameters
-			enquecommand_front_P((PSTR("G28 W0")));
+			enquecommand_front_P(G28W0);
 			break;
 		}
 		puts_P(_N("PINDA probe calibration start"));
@@ -5081,7 +5082,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
 			repeatcommand_front(); // repeat G80 with all its parameters
-			enquecommand_front_P((PSTR("G28 W0")));
+			enquecommand_front_P(G28W0);
 			break;
 		} 
 		
@@ -5114,7 +5115,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			temp_compensation_start();
 			run = true;
 			repeatcommand_front(); // repeat G80 with all its parameters
-			enquecommand_front_P((PSTR("G28 W0")));
+			enquecommand_front_P(G28W0);
 			break;
 		}
         run = false;
@@ -6053,22 +6054,21 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         // M46: Prusa3D: Show the assigned IP address.
         if (card.ToshibaFlashAir_isEnabled()) {
             uint8_t ip[4];
-            bool hasIP = card.ToshibaFlashAir_GetIP(ip);
-            if (hasIP) {
+            if (card.ToshibaFlashAir_GetIP(ip)) {
                 // SERIAL_PROTOCOLPGM("Toshiba FlashAir current IP: ");
-                SERIAL_PROTOCOL(int(ip[0]));
-                SERIAL_PROTOCOLPGM(".");
-                SERIAL_PROTOCOL(int(ip[1]));
-                SERIAL_PROTOCOLPGM(".");
-                SERIAL_PROTOCOL(int(ip[2]));
-                SERIAL_PROTOCOLPGM(".");
-                SERIAL_PROTOCOL(int(ip[3]));
-                SERIAL_PROTOCOLPGM("\n");
+                SERIAL_PROTOCOL(uint8_t(ip[0]));
+                SERIAL_PROTOCOL('.');
+                SERIAL_PROTOCOL(uint8_t(ip[1]));
+                SERIAL_PROTOCOL('.');
+                SERIAL_PROTOCOL(uint8_t(ip[2]));
+                SERIAL_PROTOCOL('.');
+                SERIAL_PROTOCOL(uint8_t(ip[3]));
+                SERIAL_PROTOCOLLN();
             } else {
                 SERIAL_PROTOCOLPGM("?Toshiba FlashAir GetIP failed\n");          
             }
         } else {
-            SERIAL_PROTOCOLPGM("n/a\n");          
+            SERIAL_PROTOCOLLNPGM("n/a");          
         }
         break;
     }
@@ -6629,7 +6629,7 @@ Sigma_Exit:
 				  SERIAL_PROTOCOL((int)active_extruder);
 				  SERIAL_PROTOCOLPGM(" B:");
 				  SERIAL_PROTOCOL_F(degBed(), 1);
-				  SERIAL_PROTOCOLLN("");
+				  SERIAL_PROTOCOLLN();
 			  }
 				  codenum = _millis();
 			  
@@ -6899,7 +6899,7 @@ Sigma_Exit:
 		else {
 			SERIAL_ECHO_START;
 			SERIAL_ECHOPAIR("M113 S", (unsigned long)host_keepalive_interval);
-			SERIAL_PROTOCOLLN("");
+			SERIAL_PROTOCOLLN();
 		}
 		break;
 
@@ -6993,7 +6993,7 @@ Sigma_Exit:
     */
     case 119:
     SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT
-    SERIAL_PROTOCOLLN("");
+    SERIAL_PROTOCOLLN();
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
@@ -7001,7 +7001,7 @@ Sigma_Exit:
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
+        SERIAL_PROTOCOLLN();
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX
@@ -7010,7 +7010,7 @@ Sigma_Exit:
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
+        SERIAL_PROTOCOLLN();
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN
@@ -7019,7 +7019,7 @@ Sigma_Exit:
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
+        SERIAL_PROTOCOLLN();
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX
@@ -7028,7 +7028,7 @@ Sigma_Exit:
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
+        SERIAL_PROTOCOLLN();
       #endif
       #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MIN);
@@ -7037,7 +7037,7 @@ Sigma_Exit:
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
+        SERIAL_PROTOCOLLN();
       #endif
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MAX);
@@ -7046,7 +7046,7 @@ Sigma_Exit:
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
-        SERIAL_PROTOCOLLN("");
+        SERIAL_PROTOCOLLN();
       #endif
       break;
       //!@todo update for all axes, use for loop
@@ -7194,7 +7194,7 @@ Sigma_Exit:
     For each axis individually.
     */
     case 203: // M203 max feedrate mm/sec
-		for (int8_t i = 0; i < NUM_AXIS; i++)
+		for (uint8_t i = 0; i < NUM_AXIS; i++)
 		{
 			if (code_seen(axis_codes[i]))
 			{
@@ -7315,7 +7315,7 @@ Sigma_Exit:
     - `Z` - Z axis offset
 	*/
     case 206:
-      for(int8_t i=0; i < 3; i++)
+      for(uint8_t i=0; i < 3; i++)
       {
         if(code_seen(axis_codes[i])) cs.add_homing[i] = code_value();
       }
@@ -7638,7 +7638,7 @@ Sigma_Exit:
           SERIAL_PROTOCOL(servo_index);
           SERIAL_PROTOCOL(": ");
           SERIAL_PROTOCOL(servos[servo_index].read());
-          SERIAL_PROTOCOLLN("");
+          SERIAL_PROTOCOLLN();
         }
       }
       break;
@@ -7714,7 +7714,7 @@ Sigma_Exit:
         //Kc does not have scaling applied above, or in resetting defaults
         SERIAL_PROTOCOL(Kc);
         #endif
-        SERIAL_PROTOCOLLN("");
+        SERIAL_PROTOCOLLN();
       }
       break;
     #endif //PIDTEMP
@@ -7747,7 +7747,7 @@ Sigma_Exit:
         SERIAL_PROTOCOL(unscalePID_i(cs.bedKi));
         SERIAL_PROTOCOL(" d:");
         SERIAL_PROTOCOL(unscalePID_d(cs.bedKd));
-        SERIAL_PROTOCOLLN("");
+        SERIAL_PROTOCOLLN();
       }
       break;
     #endif //PIDTEMP
@@ -7970,7 +7970,7 @@ Sigma_Exit:
           cs.zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
           SERIAL_ECHO_START;
           SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", MSG_OK,PSTR("")));
-          SERIAL_PROTOCOLLN("");
+          SERIAL_PROTOCOLLN();
         }
         else
         {
@@ -7980,7 +7980,7 @@ Sigma_Exit:
           SERIAL_ECHO(Z_PROBE_OFFSET_RANGE_MIN);
           SERIAL_ECHORPGM(MSG_Z_MAX);
           SERIAL_ECHO(Z_PROBE_OFFSET_RANGE_MAX);
-          SERIAL_PROTOCOLLN("");
+          SERIAL_PROTOCOLLN();
         }
       }
       else
@@ -7988,7 +7988,7 @@ Sigma_Exit:
           SERIAL_ECHO_START;
           SERIAL_ECHOLNRPGM(CAT2(MSG_ZPROBE_ZOFFSET, PSTR(" : ")));
           SERIAL_ECHO(-cs.zprobe_zoffset);
-          SERIAL_PROTOCOLLN("");
+          SERIAL_PROTOCOLLN();
       }
       break;
     }
@@ -8077,7 +8077,7 @@ Sigma_Exit:
           #endif
         }
 
-		if (mmu_enabled && code_seen("AUTO"))
+		if (mmu_enabled && code_seen_P(PSTR("AUTO")))
 			automatic = true;
 
 		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
@@ -8151,7 +8151,7 @@ Sigma_Exit:
 
 		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
 		SERIAL_PROTOCOL(set_target_pinda);
-		SERIAL_PROTOCOLLN("");
+		SERIAL_PROTOCOLLN();
 
 		codenum = _millis();
 		cancel_heatup = false;
@@ -8210,7 +8210,7 @@ Sigma_Exit:
 				SERIAL_PROTOCOL(usteps);
 				SERIAL_PROTOCOLPGM(", ");
 				SERIAL_PROTOCOL(mm * 1000);
-				SERIAL_PROTOCOLLN("");
+				SERIAL_PROTOCOLLN();
 			}
 		}
 		else if (code_seen('!')) { // ! - Set factory default values
@@ -8253,7 +8253,7 @@ Sigma_Exit:
 						SERIAL_PROTOCOL(usteps);
 						SERIAL_PROTOCOLPGM(", ");
 						SERIAL_PROTOCOL(mm * 1000);
-						SERIAL_PROTOCOLLN("");
+						SERIAL_PROTOCOLLN();
 					}
 				}
 			}
@@ -8788,6 +8788,8 @@ Sigma_Exit:
   */
   else if(code_seen('T'))
   {
+      static const char duplicate_Tcode_ignored[] PROGMEM = "Duplicate T-code ignored.\n";
+      
       int index;
       bool load_to_nozzle = false;
       for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
@@ -8803,7 +8805,7 @@ Sigma_Exit:
 			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
 			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
 			{
-				printf_P(PSTR("Duplicate T-code ignored.\n"));
+				printf_P(duplicate_Tcode_ignored);
 			}
 			else
 			{
@@ -8848,7 +8850,7 @@ Sigma_Exit:
           {
               if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
               {
-                  printf_P(PSTR("Duplicate T-code ignored.\n"));
+                  printf_P(duplicate_Tcode_ignored);
               }
 			  else
 			  {
@@ -10151,7 +10153,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 				}
 			}
 #else
-				SERIAL_PROTOCOLLN("");
+				SERIAL_PROTOCOLLN();
 #endif
 				codenum = _millis();
 		}
@@ -10458,7 +10460,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 		// There shall be always enough space reserved for these commands.
 		repeatcommand_front(); // repeat G80 with all its parameters
 		
-		enquecommand_front_P((PSTR("G28 W0")));
+		enquecommand_front_P(G28W0);
 		enquecommand_front_P((PSTR("G1 Z5")));
 		return;
 	}
@@ -10774,7 +10776,7 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL((int)active_extruder);
 	SERIAL_PROTOCOLPGM(" B:");
 	SERIAL_PROTOCOL_F(degBed(), 1);
-	SERIAL_PROTOCOLLN("");
+	SERIAL_PROTOCOLLN();
 }
 
 #ifdef UVLO_SUPPORT
