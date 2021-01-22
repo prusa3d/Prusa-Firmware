@@ -6171,17 +6171,9 @@ char reset_menu() {
     int8_t enc_dif = 0;
 	char cursor_pos = 0;
 
-    static const char iLa[] PROGMEM = "Language";
-    static const char iSt[] PROGMEM = "Statistics";
-    static const char iSh[] PROGMEM = "Shipping prep";
-    static const char iAl[] PROGMEM = "All Data";
+    const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("All Data")
 #ifdef SNMM
-    static const char iBl[] PROGMEM = "Bowden length";
-#endif
-    
-    static const char *const item [items_no] PROGMEM = { iLa, iSt, iSh, iAl
-#ifdef SNMM
-        , iBl
+    , PSTR("Bowden length")
 #endif
     };
 	
