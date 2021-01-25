@@ -3909,9 +3909,9 @@ void process_commands()
             boot_app_flags = BOOT_APP_FLG_RUN;
 #endif //defined(W25X20CL) && defined(BOOTAPP)
             softReset();
-#else //WATCHDOG
+#elif defined(BOOTAPP) //this is a safety precaution. This is because the new bootloader turns off the heaters, but the old one doesn't. The watchdog should be used most of the time.
             asm volatile("jmp 0x3E000");
-#endif //WATCHDOG
+#endif
 		}else if (code_seen("fv")) { // PRUSA fv
         // get file version
         #ifdef SDSUPPORT
