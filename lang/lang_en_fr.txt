@@ -506,7 +506,7 @@
 "Is steel sheet on heatbed?"
 "Est la plaque sur le plat. chauffant?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Echecs derniere imp."
 

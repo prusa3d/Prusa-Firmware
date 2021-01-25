@@ -506,9 +506,9 @@
 "Is steel sheet on heatbed?"
 "?Esta colocada la lamina sobre la base"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
-"Ultimas impresiones fallidas"
+"Ultimos imp. fallos"
 
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."

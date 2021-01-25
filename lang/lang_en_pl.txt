@@ -506,7 +506,7 @@
 "Is steel sheet on heatbed?"
 "Czy plyta stal. jest na podgrzew. stole?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Ostatnie bledy druku"
 

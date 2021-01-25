@@ -1656,7 +1656,7 @@ static void lcd_menu_fails_stats_mmu()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Last print failures |	c=20 r=1
+//! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
 //! | MMU fails:      000|	MSG_MMU_FAILS c=14
 //! | MMU load fails: 000|	MSG_MMU_LOAD_FAILS c=14
 //! |                    |
@@ -1670,9 +1670,9 @@ static void lcd_menu_fails_stats_mmu_print()
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
-        _i("Last print failures"), ////c=20 r=1
-        _T(MSG_MMU_FAILS), fails, ////c=14 r=1
-        _T(MSG_MMU_LOAD_FAILS), load_fails); ////c=14 r=1
+        _T(MSG_LAST_PRINT_FAILURES), ////c=20
+        _T(MSG_MMU_FAILS), fails, ////c=14
+        _T(MSG_MMU_LOAD_FAILS), load_fails); ////c=14
     menu_back_if_clicked_fb();
 }
 
@@ -1736,7 +1736,7 @@ static void lcd_menu_fails_stats_total()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Last print failures |	c=20 r=1
+//! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
 //! | Power failures  000|	MSG_POWER_FAILURES c=14
 //! | Filam. runouts  000|	c=14 r=1
 //! | Crash   X:000 Y:000|	c=7 r=1
@@ -1753,8 +1753,8 @@ static void lcd_menu_fails_stats_print()
     lcd_home();
 #ifndef PAT9125
     lcd_printf_P(failStatsFmt,
-        _i("Last print failures"),  ////c=20 r=1
-        _T(MSG_POWER_FAILURES), power,  ////c=14 r=1
+        _T(MSG_LAST_PRINT_FAILURES),  ////c=20
+        _T(MSG_POWER_FAILURES), power,  ////c=14
         _i("Filam. runouts"), filam,  ////c=14 r=1
         _i("Crash"), crashX, crashY);  ////c=7 r=1
 #else
@@ -1763,8 +1763,8 @@ static void lcd_menu_fails_stats_print()
                       " %-16.16S%-3d\n"
                       " %-7.7S H %-3d S %-3d\n"
                       " %-7.7S X %-3d Y %-3d"),
-                 _i("Last print failures"), ////c=20 r=1
-                 _T(MSG_POWER_FAILURES), power, ////c=14 r=1
+                 _T(MSG_LAST_PRINT_FAILURES), ////c=20
+                 _T(MSG_POWER_FAILURES), power, ////c=14
                  _i("Runouts"), filam, fsensor_softfail, //c=7
                  _i("Crash"), crashX, crashY);  ////c=7 r=1
 #endif
@@ -1820,7 +1820,7 @@ static void lcd_menu_fails_stats()
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
 	lcd_home();
 	lcd_printf_P(failStatsFmt, 
-        _i("Last print failures"),   ////c=20 r=1
+        _T(MSG_LAST_PRINT_FAILURES),   ////c=20
         _i("Filam. runouts"), filamentLast,   ////c=14 r=1
         _T(MSG_TOTAL_FAILURES),  ////c=20
         _i("Filam. runouts"), filamentTotal);   ////c=14 r=1

@@ -506,7 +506,7 @@
 "Is steel sheet on heatbed?"
 "Je tiskovy plat na podlozce?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Selhani posl. tisku"
 

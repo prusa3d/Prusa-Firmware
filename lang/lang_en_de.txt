@@ -506,7 +506,7 @@
 "Is steel sheet on heatbed?"
 "Liegt das Stahlblech auf dem Heizbett?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Letzte Druckfehler"
 

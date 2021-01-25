@@ -506,9 +506,9 @@
 "Is steel sheet on heatbed?"
 "Piastra d'acciaio su piano riscaldato?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
-"Fallimenti ultima stampa"
+"Ultimi errori stampa"
 
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."

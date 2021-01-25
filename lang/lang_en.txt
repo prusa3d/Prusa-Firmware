@@ -379,7 +379,7 @@
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 
 #
