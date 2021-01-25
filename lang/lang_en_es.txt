@@ -218,7 +218,7 @@
 "Crash detected. Resume print?"
 "Choque detectado. Continuar impresion?"
 
-#
+#MSG_CRASH c=7
 "Crash"
 "Choque"
 

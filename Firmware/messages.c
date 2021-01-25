@@ -21,6 +21,7 @@ const char MSG_CALIBRATE_Z_AUTO[] PROGMEM_I1 = ISTR("Calibrating Z"); ////c=20 r
 const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////
 const char MSG_CONFIRM_NOZZLE_CLEAN[] PROGMEM_I1 = ISTR("Please clean the nozzle for calibration. Click when done."); ////c=20 r=8
 const char MSG_COOLDOWN[] PROGMEM_I1 = ISTR("Cooldown"); ////
+const char MSG_CRASH[] PROGMEM_I1 = ISTR("Crash"); ////c=7
 const char MSG_CRASH_DETECTED[] PROGMEM_I1 = ISTR("Crash detected."); ////c=20 r=1
 const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////c=13
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////

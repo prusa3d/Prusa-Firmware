@@ -1712,7 +1712,7 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
 //! | Power failures: 000|	MSG_POWER_FAILURES c=14
 //! | Filam. runouts: 000|	c=14 r=1
-//! | Crash   X:000 Y:000|	c=7 r=1
+//! | Crash   X:000 Y:000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1728,7 +1728,7 @@ static void lcd_menu_fails_stats_total()
         _T(MSG_TOTAL_FAILURES),   ////c=20
         _T(MSG_POWER_FAILURES), power,   ////c=14
         _i("Filam. runouts"), filam,   ////c=14 r=1
-        _i("Crash"), crashX, crashY);  ////c=7 r=1
+        _T(MSG_CRASH), crashX, crashY);  ////c=7
     menu_back_if_clicked_fb();
 }
 
@@ -1739,7 +1739,7 @@ static void lcd_menu_fails_stats_total()
 //! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
 //! | Power failures  000|	MSG_POWER_FAILURES c=14
 //! | Filam. runouts  000|	c=14 r=1
-//! | Crash   X:000 Y:000|	c=7 r=1
+//! | Crash   X:000 Y:000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1756,7 +1756,7 @@ static void lcd_menu_fails_stats_print()
         _T(MSG_LAST_PRINT_FAILURES),  ////c=20
         _T(MSG_POWER_FAILURES), power,  ////c=14
         _i("Filam. runouts"), filam,  ////c=14 r=1
-        _i("Crash"), crashX, crashY);  ////c=7 r=1
+        _T(MSG_CRASH), crashX, crashY);  ////c=7
 #else
     // On the MK3 include detailed PAT9125 statistics about soft failures
     lcd_printf_P(PSTR("%S\n"
@@ -1766,7 +1766,7 @@ static void lcd_menu_fails_stats_print()
                  _T(MSG_LAST_PRINT_FAILURES), ////c=20
                  _T(MSG_POWER_FAILURES), power, ////c=14
                  _i("Runouts"), filam, fsensor_softfail, //c=7
-                 _i("Crash"), crashX, crashY);  ////c=7 r=1
+                 _T(MSG_CRASH), crashX, crashY);  ////c=7
 #endif
     menu_back_if_clicked_fb();
 }

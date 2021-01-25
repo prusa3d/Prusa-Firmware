@@ -163,7 +163,7 @@
 #
 "Crash detected. Resume print?"
 
-#
+#MSG_CRASH c=7
 "Crash"
 
 #MSG_CURRENT c=19 r=1

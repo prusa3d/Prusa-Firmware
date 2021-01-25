@@ -22,6 +22,7 @@ extern const char MSG_CALIBRATE_Z_AUTO[];
 extern const char MSG_CARD_MENU[];
 extern const char MSG_CONFIRM_NOZZLE_CLEAN[];
 extern const char MSG_COOLDOWN[];
+extern const char MSG_CRASH[];
 extern const char MSG_CRASH_DETECTED[];
 extern const char MSG_CRASHDETECT[];
 extern const char MSG_ERROR[];

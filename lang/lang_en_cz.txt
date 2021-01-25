@@ -218,7 +218,7 @@
 "Crash detected. Resume print?"
 "Detekovan naraz. Obnovit tisk?"
 
-#
+#MSG_CRASH c=7
 "Crash"
 "Naraz"
 

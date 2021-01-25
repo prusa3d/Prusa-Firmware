@@ -218,9 +218,9 @@
 "Crash detected. Resume print?"
 "Wykryto zderzenie. Wznowic druk?"
 
-#
+#MSG_CRASH c=7
 "Crash"
-"Zderzenie"
+"Zderzen"
 
 #MSG_CURRENT c=19 r=1
 "Current"
