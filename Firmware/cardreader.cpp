@@ -873,8 +873,7 @@ void CardReader::presort() {
 				for (int column = 0; column < 20; column++) {
 					if (column < (percent / 5))
 					{
-						lcd_set_cursor(column, 2);
-						lcd_print('\x01'); //simple progress bar
+						lcd_putc_at(column, 2, '\x01'); //simple progress bar
 					}
 				}
 				counter++;
@@ -952,8 +951,7 @@ void CardReader::presort() {
 #if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
 	for (int column = 0; column <= 19; column++)
 	{
-		lcd_set_cursor(column, 2);
-		lcd_print('\x01'); //simple progress bar
+		lcd_putc_at(column, 2, '\x01'); //simple progress bar
 	}
 	_delay(300);
 	lcd_set_degree();

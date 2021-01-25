@@ -339,11 +339,9 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
     uint8_t n = LCD_WIDTH - 1;
 
     for(uint_least8_t g = 0; g<4;g++){
-      lcd_set_cursor(0, g);
-    lcd_print(' ');
+      lcd_putc_at(0, g, ' ');
     }
-    lcd_set_cursor(0, row);
-    lcd_print('>');
+    lcd_putc_at(0, row, '>');
 
     if (longFilename[0] == '\0')
     {
@@ -394,8 +392,7 @@ static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename
 {
     char c;
     uint8_t n = LCD_WIDTH - 1;
-    lcd_set_cursor(0, row);
-    lcd_print(' ');
+    lcd_putc_at(0, row, ' ');
     if (longFilename[0] != '\0')
     {
         filename = longFilename;
@@ -414,8 +411,7 @@ static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const 
 {
     char c;
     uint8_t n = LCD_WIDTH - 2;
-    lcd_set_cursor(0, row);
-    lcd_print('>');
+    lcd_putc_at(0, row, '>');
     lcd_print(LCD_STR_FOLDER[0]);
     if (longFilename[0] != '\0')
     {
@@ -435,8 +431,7 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* fil
 {
     char c;
     uint8_t n = LCD_WIDTH - 2;
-    lcd_set_cursor(0, row);
-    lcd_print(' ');
+    lcd_putc_at(0, row, ' ');
     lcd_print(LCD_STR_FOLDER[0]);
     if (longFilename[0] != '\0')
     {
@@ -738,8 +733,7 @@ void lcdui_print_status_line(void)
 
 		for (unsigned int dots = 0; dots < heating_status_counter; dots++)
 		{
-			lcd_set_cursor(7 + dots, 3);
-			lcd_print('.');
+			lcd_putc_at(7 + dots, 3, '.');
 		}
 		switch (heating_status)
 		{
@@ -2592,8 +2586,7 @@ void lcd_change_success() {
 static void lcd_loading_progress_bar(uint16_t loading_time_ms) { 
 
 	for (uint_least8_t i = 0; i < 20; i++) {
-		lcd_set_cursor(i, 3);
-		lcd_print('.');
+		lcd_putc_at(i, 3, '.');
 		//loading_time_ms/20 delay
 		for (uint_least8_t j = 0; j < 5; j++) {
 			delay_keep_alive(loading_time_ms / 100);
@@ -2657,9 +2650,7 @@ void lcd_alright() {
   lcd_puts_at_P(1, 1, _T(MSG_YES));
   lcd_puts_at_P(1, 2, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
   lcd_puts_at_P(1, 3, _i("Color not correct"));////MSG_NOT_COLOR
-  lcd_set_cursor(0, 1);
-
-  lcd_print('>');
+  lcd_putc_at(0, 1, '>');
 
 
   enc_dif = lcd_encoder_diff;
@@ -2690,8 +2681,7 @@ void lcd_alright() {
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
         lcd_puts_at_P(0, 1, PSTR(" \n \n "));
-        lcd_set_cursor(0, cursor_pos);
-        lcd_print('>');
+        lcd_putc_at(0, cursor_pos, '>');
         enc_dif = lcd_encoder_diff;
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
         _delay(100);
@@ -3677,15 +3667,13 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 					lcd_set_cursor(0, 3);
 					if (enc_dif < lcd_encoder_diff && yes) {
 						lcd_print(' ');
-						lcd_set_cursor(7, 3);
-						lcd_print('>');
+						lcd_putc_at(7, 3, '>');
 						yes = false;
 						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
 					else if (enc_dif > lcd_encoder_diff && !yes) {
 						lcd_print('>');
-						lcd_set_cursor(7, 3);
-						lcd_print(' ');
+						lcd_putc_at(7, 3, ' ');
 						yes = true;
 						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
@@ -3736,15 +3724,13 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 	lcd_display_message_fullscreen_P(msg);
 	
 	if (default_yes) {
-		lcd_set_cursor(0, 2);
-		lcd_print('>');
+		lcd_putc_at(0, 2, '>');
 		lcd_puts_P(_T(MSG_YES));
 		lcd_puts_at_P(1, 3, _T(MSG_NO));
 	}
 	else {
 		lcd_puts_at_P(1, 2, _T(MSG_YES));
-		lcd_set_cursor(0, 3);
-		lcd_print('>');
+		lcd_putc_at(0, 3, '>');
 		lcd_puts_P(_T(MSG_NO));
 	}
 	int8_t retval = default_yes ? true : false;
@@ -3766,16 +3752,14 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 			lcd_set_cursor(0, 2);
 				if (enc_dif < lcd_encoder_diff && retval) {
 					lcd_print(' ');
-					lcd_set_cursor(0, 3);
-					lcd_print('>');
+					lcd_putc_at(0, 3, '>');
 					retval = 0;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 
 				}
 				else if (enc_dif > lcd_encoder_diff && !retval) {
 					lcd_print('>');
-					lcd_set_cursor(0, 3);
-					lcd_print(' ');
+					lcd_putc_at(0, 3, ' ');
 					retval = 1;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}
@@ -5846,8 +5830,7 @@ void bowden_menu() {
 	int enc_dif = lcd_encoder_diff;
 	int cursor_pos = 0;
 	lcd_clear();
-	lcd_set_cursor(0, 0);
-	lcd_print('>');
+	lcd_putc_at(0, 0, '>');
 	for (uint_least8_t i = 0; i < 4; i++) {
 		lcd_puts_at_P(1, i, PSTR("Extruder "));
 		lcd_print(i);
@@ -5884,8 +5867,7 @@ void bowden_menu() {
 				}
 
 				lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
-				lcd_set_cursor(0, cursor_pos);
-				lcd_print('>');
+				lcd_putc_at(0, cursor_pos, '>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
@@ -5928,8 +5910,7 @@ void bowden_menu() {
 						lcd_update_enable(true);
 						lcd_clear();
 						enc_dif = lcd_encoder_diff;
-						lcd_set_cursor(0, cursor_pos);
-						lcd_print('>');
+						lcd_putc_at(0, cursor_pos, '>');
 						for (uint_least8_t i = 0; i < 4; i++) {
 							lcd_puts_at_P(1, i, PSTR("Extruder "));
 							lcd_print(i);
@@ -6082,8 +6063,7 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
         if (last_item&&last_visible) lcd_puts_at_P(1, 3, last_item);
 
         lcd_puts_at_P(0, 1, PSTR(" \n \n "));
-        lcd_set_cursor(0, cursor_pos);
-        lcd_print('>');
+        lcd_putc_at(0, cursor_pos, '>');
         _delay(100);
 
 		if (lcd_clicked())
@@ -6370,8 +6350,7 @@ unsigned char lcd_choose_color() {
 	unsigned char cursor_pos = 1;
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
-	lcd_set_cursor(0, 1);
-	lcd_print('>');
+	lcd_putc_at(0, 1, '>');
 
 	active_rows = items_no < 3 ? items_no : 3;
 	lcd_consume_click();
@@ -6412,14 +6391,10 @@ unsigned char lcd_choose_color() {
 						lcd_clear();
 					}
 				}
-				lcd_set_cursor(0, 1);
-				lcd_print(' ');
-				lcd_set_cursor(0, 2);
-				lcd_print(' ');
-				lcd_set_cursor(0, 3);
-				lcd_print(' ');
-				lcd_set_cursor(0, cursor_pos);
-				lcd_print('>');
+				lcd_putc_at(0, 1, ' ');
+				lcd_putc_at(0, 2, ' ');
+				lcd_putc_at(0, 3, ' ');
+				lcd_putc_at(0, cursor_pos, '>');
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
@@ -7170,14 +7145,13 @@ void lcd_sdcard_stop()
 	lcd_puts_at_P(0, 0, _T(MSG_STOP_PRINT));
 	lcd_puts_at_P(2, 2, _T(MSG_NO));
 	lcd_puts_at_P(2, 3, _T(MSG_YES));
-	lcd_set_cursor(0, 2); lcd_print(' ');
-	lcd_set_cursor(0, 3); lcd_print(' ');
+	lcd_putc_at(0, 2, ' ');
+	lcd_putc_at(0, 3, ' ');
 
 	if ((int32_t)lcd_encoder > 2) { lcd_encoder = 2; }
 	if ((int32_t)lcd_encoder < 1) { lcd_encoder = 1; }
 	
-	lcd_set_cursor(0, 1 + lcd_encoder);
-	lcd_print('>');
+	lcd_putc_at(0, 1 + lcd_encoder, '>');
 
 	if (lcd_clicked())
 	{
@@ -8254,7 +8228,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	_delay(500);
 
 	lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
-	lcd_set_cursor(0, 3); lcd_print('>');
+	lcd_putc_at(0, 3, '>');
 	lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 
 	int8_t enc_dif = int(_default)*3;
@@ -8267,17 +8241,17 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 		if (abs((enc_dif - lcd_encoder_diff)) > 2) {
 			if (enc_dif > lcd_encoder_diff) {
 				_result = !check_opposite;
-				lcd_set_cursor(0, 2); lcd_print('>');
+				lcd_putc_at(0, 2, '>');
 				lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
-				lcd_set_cursor(0, 3); lcd_print(' ');
+				lcd_putc_at(0, 3, ' ');
 				lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 			}
 
 			if (enc_dif < lcd_encoder_diff) {
 				_result = check_opposite;
-				lcd_set_cursor(0, 2); lcd_print(' ');
+				lcd_putc_at(0, 2, ' ');
 				lcd_puts_at_P(1, 2, _T(MSG_SELFTEST_FAN_YES));
-				lcd_set_cursor(0, 3); lcd_print('>');
+				lcd_putc_at(0, 3, '>');
 				lcd_puts_at_P(1, 3, _T(MSG_SELFTEST_FAN_NO));
 			}
 			enc_dif = 0;
@@ -8345,11 +8319,9 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 #endif //FAN_SOFT_PWM
 		for (uint8_t i = 0; i < 5; i++) {
 			delay_keep_alive(1000);
-			lcd_set_cursor(18, 3);
-			lcd_print('-');
+			lcd_putc_at(18, 3, '-');
 			delay_keep_alive(1000);
-			lcd_set_cursor(18, 3);
-			lcd_print('|');
+			lcd_putc_at(18, 3, '|');
 		}
 		fanSpeed = 0;
 
@@ -8372,11 +8344,9 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 
 		for (uint8_t i = 0; i < 5; i++) {
 			delay_keep_alive(1000);
-			lcd_set_cursor(18, 3);
-			lcd_print('-');
+			lcd_putc_at(18, 3, '-');
 			delay_keep_alive(1000);
-			lcd_set_cursor(18, 3);
-			lcd_print('|');
+			lcd_putc_at(18, 3, '|');
 		}
 		fanSpeed = 0;
 
@@ -8449,19 +8419,19 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 		//SERIAL_ECHOLNPGM("Other tests");
 
 		TestScreen _step_block = TestScreen::AxisX;
-		lcd_selftest_screen_step(2, 2, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "X", _indicator);
+		lcd_selftest_screen_step(2, 2, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), PSTR("X"), _indicator);
 
 		_step_block = TestScreen::AxisY;
-		lcd_selftest_screen_step(2, 8, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "Y", _indicator);
+		lcd_selftest_screen_step(2, 8, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), PSTR("Y"), _indicator);
 
 		_step_block = TestScreen::AxisZ;
-		lcd_selftest_screen_step(2, 14, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "Z", _indicator);
+		lcd_selftest_screen_step(2, 14, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), PSTR("Z"), _indicator);
 
 		_step_block = TestScreen::Bed;
-		lcd_selftest_screen_step(3, 0, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "Bed", _indicator);
+		lcd_selftest_screen_step(3, 0, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), PSTR("Bed"), _indicator);
 
 		_step_block = TestScreen::Hotend;
-		lcd_selftest_screen_step(3, 9, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "Hotend", _indicator);
+		lcd_selftest_screen_step(3, 9, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), PSTR("Hotend"), _indicator);
 	}
 
 	if (_delay > 0) delay_keep_alive(_delay);
@@ -8470,28 +8440,26 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	return (_progress >= _progress_scale * 2) ? 0 : _progress;
 }
 
-static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator)
+static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name_PROGMEM, const char *_indicator)
 {
 	lcd_set_cursor(_col, _row);
+    uint8_t strlenNameP = strlen_P(_name_PROGMEM);
 
 	switch (_state)
 	{
 	case 1:
-		lcd_print(_name);
-		lcd_set_cursor(_col + strlen(_name), _row);
-		lcd_print(':');
-		lcd_set_cursor(_col + strlen(_name) + 1, _row);
+		lcd_puts_P(_name_PROGMEM);
+		lcd_putc_at(_col + strlenNameP, _row, ':');
+		lcd_set_cursor(_col + strlenNameP + 1, _row);
 		lcd_print(_indicator);
 		break;
 	case 2:
-		lcd_print(_name);
-		lcd_set_cursor(_col + strlen(_name), _row);
-		lcd_print(':');
-		lcd_set_cursor(_col + strlen(_name) + 1, _row);
-		lcd_print("OK");
+		lcd_puts_P(_name_PROGMEM);
+		lcd_putc_at(_col + strlenNameP, _row, ':');
+		lcd_puts_at_P(_col + strlenNameP + 1, _row, PSTR("OK"));
 		break;
 	default:
-		lcd_print(_name);
+		lcd_puts_P(_name_PROGMEM);
 	}
 }
 
