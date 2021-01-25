@@ -1638,7 +1638,7 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! | Main               |	c=18 r=1
-//! | Last print         |	c=18 r=1
+//! | Last print         |	MSG_LAST_PRINT c=18
 //! | Total              |	c=18 r=1
 //! |                    |
 //! ----------------------
@@ -1647,7 +1647,7 @@ static void lcd_menu_fails_stats_mmu()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_mmu_print); ////c=18 r=1
+	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_mmu_print);
 	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_mmu_total); ////c=18 r=1
 	MENU_END();
 }
@@ -1780,7 +1780,7 @@ static void lcd_menu_fails_stats_print()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! | Main               |	c=18 r=1
-//! | Last print         |	c=18 r=1
+//! | Last print         |	MSG_LAST_PRINT c=18
 //! | Total              |	c=18 r=1
 //! |                    |
 //! ----------------------
@@ -1790,7 +1790,7 @@ static void lcd_menu_fails_stats()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_print);  ////c=18 r=1
+	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_print);  ////c=18 r=1
 	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_total);  ////c=18 r=1
 	MENU_END();
 }

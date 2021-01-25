@@ -46,6 +46,7 @@ const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20
 const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////
 const char MSG_CHOOSE_EXTRUDER[] PROGMEM_I1 = ISTR("Choose extruder:"); ////c=20 r=1
 const char MSG_CHOOSE_FILAMENT[] PROGMEM_I1 = ISTR("Choose filament:"); ////c=20 r=1
+const char MSG_LAST_PRINT[] PROGMEM_I1 = ISTR("Last print"); ////c=18
 const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); //// Number 1 to 5 is added behind text e.g. "Load filament 1" c=16
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////c=20
 const char MSG_EJECT_FILAMENT[] PROGMEM_I1 = ISTR("Eject filament"); //// Number 1 to 5 is added behind text e.g. "Eject filament 1" c=16

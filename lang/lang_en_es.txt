@@ -514,7 +514,7 @@
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Si tienes planchas de acero adicionales, calibra sus ajustes en Ajustes - Ajustes HW - Planchas acero."
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 "Ultima impresion"
 

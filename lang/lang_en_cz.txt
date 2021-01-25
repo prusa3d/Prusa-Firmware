@@ -514,7 +514,7 @@
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Mate-li vice tiskovych platu, kalibrujte je v menu Nastaveni - HW nastaveni - Tiskove platy"
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 "Posledni tisk"
 

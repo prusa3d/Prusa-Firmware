@@ -385,7 +385,7 @@
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20

@@ -47,6 +47,7 @@ extern const char MSG_HEATING_COMPLETE[];
 extern const char MSG_HOMEYZ[];
 extern const char MSG_CHOOSE_EXTRUDER[];
 extern const char MSG_CHOOSE_FILAMENT[];
+extern const char MSG_LAST_PRINT[];
 extern const char MSG_LOAD_FILAMENT[];
 extern const char MSG_LOADING_FILAMENT[];
 extern const char MSG_M117_V2_CALIBRATION[];
