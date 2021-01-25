@@ -330,7 +330,7 @@
 "Fan test"
 "Test wentylatora"
 
-#MSG_FANS_CHECK
+#MSG_FANS_CHECK c=13
 "Fans check"
 "Sprawd.went."
 

@@ -27,6 +27,7 @@ extern const char MSG_CRASH_DETECTED[];
 extern const char MSG_CRASHDETECT[];
 extern const char MSG_ERROR[];
 extern const char MSG_EXTRUDER[];
+extern const char MSG_FANS_CHECK[];
 extern const char MSG_FIL_RUNOUTS[];
 extern const char MSG_FILAMENT[];
 extern const char MSG_FAN_SPEED[];

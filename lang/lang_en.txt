@@ -247,7 +247,7 @@
 #MSG_SELFTEST_FAN c=20
 "Fan test"
 
-#MSG_FANS_CHECK
+#MSG_FANS_CHECK c=13
 "Fans check"
 
 #MSG_FSENSOR
