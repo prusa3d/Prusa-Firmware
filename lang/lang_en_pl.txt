@@ -498,7 +498,7 @@
 "Insert filament"
 "Wprowadz filament"
 
-#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+#MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Filament jest zaladowany?"
 

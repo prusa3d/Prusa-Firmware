@@ -373,7 +373,7 @@
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
 
-#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+#MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
