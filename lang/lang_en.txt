@@ -886,7 +886,7 @@
 #MSG_UNLOADING_FILAMENT c=20 r=1
 "Unloading filament"
 
-#
+#MSG_TOTAL c=6
 "Total"
 
 #MSG_USED c=19 r=1
@@ -1093,7 +1093,7 @@
 #MSG_SOUND_BLIND
 "Assist"
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 
 #MSG_Z_CORRECTION c=13

@@ -1182,7 +1182,7 @@
 "Unloading filament"
 "Soltando filamento"
 
-#
+#MSG_TOTAL c=6
 "Total"
 "\x00"
 
@@ -1458,7 +1458,7 @@
 "Assist"
 "Asistido"
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 "Lamina de acero"
 

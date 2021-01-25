@@ -55,6 +55,7 @@ const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal.");
 const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////
 const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////
 const char MSG_SHEET[] PROGMEM_I1 = ISTR("Sheet"); ////c=10
+const char MSG_STEEL_SHEETS[] PROGMEM_I1 = ISTR("Steel sheets"); ////c=18
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[] PROGMEM_I1 = ISTR("Measuring reference height of calibration point"); ////c=60
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); ////c=14
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////
@@ -86,6 +87,7 @@ const char MSG_SELFTEST_MOTOR[] PROGMEM_I1 = ISTR("Motor"); ////
 const char MSG_SELFTEST_FILAMENT_SENSOR[] PROGMEM_I1 = ISTR("Filament sensor"); ////c=17
 const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////
+const char MSG_TOTAL[] PROGMEM_I1 = ISTR("Total"); ////c=6
 const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////c=18
 const char MSG_MODE[] PROGMEM_I1 = ISTR("Mode"); ////
 const char MSG_HIGH_POWER[] PROGMEM_I1 = ISTR("High power"); ////

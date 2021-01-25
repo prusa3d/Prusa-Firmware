@@ -1639,7 +1639,7 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 //! |01234567890123456789|
 //! | Main               |	c=18 r=1
 //! | Last print         |	MSG_LAST_PRINT c=18
-//! | Total              |	c=18 r=1
+//! | Total              |	MSG_TOTAL c=6
 //! |                    |
 //! ----------------------
 //! @endcode
@@ -1648,7 +1648,7 @@ static void lcd_menu_fails_stats_mmu()
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_mmu_print);
-	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_mmu_total); ////c=18 r=1
+	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_mmu_total); ////c=18 r=1
 	MENU_END();
 }
 
@@ -1781,7 +1781,7 @@ static void lcd_menu_fails_stats_print()
 //! |01234567890123456789|
 //! | Main               |	c=18 r=1
 //! | Last print         |	MSG_LAST_PRINT c=18
-//! | Total              |	c=18 r=1
+//! | Total              |	MSG_TOTAL c=6
 //! |                    |
 //! ----------------------
 //! @endcode
@@ -1791,7 +1791,7 @@ static void lcd_menu_fails_stats()
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_print);  ////c=18 r=1
-	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_total);  ////c=18 r=1
+	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_total);  ////c=18 r=1
 	MENU_END();
 }
 
@@ -5642,7 +5642,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 
-    MENU_ITEM_SUBMENU_P(_i("Steel sheets"), sheets_menu); ////MSG_STEEL_SHEETS c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_STEEL_SHEETS), sheets_menu);
     SETTINGS_NOZZLE;
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
 
@@ -6561,7 +6561,7 @@ static void activate_calibrate_sheet()
 static void lcd_sheet_menu()
 {
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_i("Steel sheets")); ////MSG_STEEL_SHEETS c=18
+    MENU_ITEM_BACK_P(_T(MSG_STEEL_SHEETS));
 
 	if(eeprom_is_sheet_initialized(selected_sheet)){
 	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18

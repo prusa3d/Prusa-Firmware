@@ -1182,7 +1182,7 @@
 "Unloading filament"
 "Rozladowuje filament"
 
-#
+#MSG_TOTAL c=6
 "Total"
 "Suma"
 
@@ -1458,7 +1458,7 @@
 "Assist"
 "Asyst."
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 "Plyty stalowe"
 
