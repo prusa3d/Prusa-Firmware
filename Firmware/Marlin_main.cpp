@@ -1056,7 +1056,9 @@ void setup()
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
+#ifdef HAS_SECOND_SERIAL_PORT
 		selectedSerialPort = 1;
+#endif //HAS_SECOND_SERIAL_PORT
 		MYSERIAL.begin(BAUDRATE);
 #ifdef TMC2130
 		//increased extruder current (PFW363)
@@ -3901,19 +3903,19 @@ void process_commands()
 			mmu_reset();
 		}
 		else if (code_seen("RESET")) { // PRUSA RESET
-            // careful!
-            if (farm_mode) {
-#if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
-                boot_app_magic = BOOT_APP_MAGIC;
-                boot_app_flags = BOOT_APP_FLG_RUN;
-                softReset();
+#ifdef WATCHDOG
+#if defined(W25X20CL) && defined(BOOTAPP)
+            boot_app_magic = BOOT_APP_MAGIC;
+            boot_app_flags = BOOT_APP_FLG_RUN;
+#endif //defined(W25X20CL) && defined(BOOTAPP)
+            softReset();
 #else //WATCHDOG
+            // careful!
+            if (farm_mode)
                 asm volatile("jmp 0x3E000");
+            else
+                puts_P(PSTR("Not in farm mode."));
 #endif //WATCHDOG
-            }
-            else {
-                MYSERIAL.println("Not in farm mode.");
-            }
 		}else if (code_seen("fv")) { // PRUSA fv
         // get file version
         #ifdef SDSUPPORT
