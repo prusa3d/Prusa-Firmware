@@ -89,7 +89,6 @@ unsigned int custom_message_state = 0;
 
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
-int farm_no = 0;
 int farm_timer = 8;
 uint8_t farm_status = 0;
 bool printer_connected = true;
@@ -137,7 +136,6 @@ static void prusa_stat_farm_number();
 static void prusa_stat_diameter();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
-static void lcd_farm_no();
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
@@ -671,39 +669,7 @@ void lcdui_print_extruder(void)
 // Print farm number (5 chars total)
 void lcdui_print_farm(void)
 {
-	int chars = lcd_printf_P(_N(" F0  "));
-//	lcd_space(5 - chars);
-/*
-	// Farm number display
-	if (farm_mode)
-	{
-		lcd_set_cursor(6, 2);
-		lcd_puts_P(PSTR(" F"));
-		lcd_print(farm_no);
-		lcd_puts_P(PSTR("  "));
-        
-        // Beat display
-        lcd_set_cursor(LCD_WIDTH - 1, 0);
-        if ( (_millis() - kicktime) < 60000 ) {
-        
-            lcd_puts_P(PSTR("L"));
-        
-        }else{
-            lcd_puts_P(PSTR(" "));
-        }
-        
-	}
-	else {
-#ifdef SNMM
-		lcd_puts_P(PSTR(" E"));
-		lcd_print(get_ext_nr() + 1);
-
-#else
-		lcd_set_cursor(LCD_WIDTH - 8 - 2, 2);
-		lcd_puts_P(PSTR(" "));
-#endif
-	}
-*/
+	lcd_printf_P(_N(" FRM "));
 }
 
 #ifdef CMD_DIAGNOSTICS
@@ -1486,7 +1452,6 @@ void lcd_commands()
 
 		if (lcd_commands_step == 1 && !blocks_queued())
 		{
-			lcd_confirm_print();
 			lcd_commands_step = 0;
 			lcd_commands_type = LcdCommands::Idle;
 		}
@@ -4043,7 +4008,7 @@ void lcd_menu_show_sensors_state()                // NOT static due to using ins
 }
 
 void prusa_statistics_err(char c){
-	SERIAL_ECHO("{[ERR:");
+	SERIAL_ECHOPGM("{[ERR:");
 	SERIAL_ECHO(c);
 	SERIAL_ECHO(']');
 	prusa_stat_farm_number();
@@ -4128,7 +4093,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		return;
 		break;
 	case 4:		// print succesfull
-		SERIAL_ECHO("{[RES:1][FIL:");
+		SERIAL_ECHOPGM("{[RES:1][FIL:");
 		MYSERIAL.print(int(_fil_nr));
 		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
@@ -4136,7 +4101,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		farm_timer = 2;
 		break;
 	case 5:		// print not succesfull
-		SERIAL_ECHO("{[RES:0][FIL:");
+		SERIAL_ECHOPGM("{[RES:0][FIL:");
 		MYSERIAL.print(int(_fil_nr));
 		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
@@ -4144,22 +4109,21 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		farm_timer = 2;
 		break;
 	case 6:		// print done
-		SERIAL_ECHO("{[PRN:8]");
+		SERIAL_ECHOPGM("{[PRN:8]");
 		prusa_stat_farm_number();
 		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
-		SERIAL_ECHO("{[PRN:9]");
+		SERIAL_ECHOPGM("{[PRN:9]");
 		prusa_stat_farm_number();
 		status_number = 9;
 		farm_timer = 2;
 		break;
 	case 8:		// printer started
-		SERIAL_ECHO("{[PRN:0][PFN:");
+		SERIAL_ECHOPGM("{[PRN:0]");
+		prusa_stat_farm_number();
 		status_number = 0;
-		SERIAL_ECHO(farm_no);
-		SERIAL_ECHO(']');
 		farm_timer = 2;
 		break;
 	case 20:		// echo farm no
@@ -4175,7 +4139,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		prusa_stat_printerstatus(status_number);
 		break;
     case 22: // waiting for filament change
-        SERIAL_ECHO("{[PRN:5]");
+        SERIAL_ECHOPGM("{[PRN:5]");
 		prusa_stat_farm_number();
 		status_number = 5;
         break;
@@ -4194,12 +4158,9 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		break;
 
     case 99:		// heartbeat
-        SERIAL_ECHO("{[PRN:99]");
+        SERIAL_ECHOPGM("{[PRN:99]");
         prusa_stat_temperatures();
-		SERIAL_ECHO("[PFN:");
-		SERIAL_ECHO(farm_no);
-		SERIAL_ECHO(']');
-            
+		prusa_stat_farm_number();
         break;
 	}
 	SERIAL_ECHOLN('}');	
@@ -4208,47 +4169,45 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 
 static void prusa_stat_printerstatus(int _status)
 {
-	SERIAL_ECHO("[PRN:");
+	SERIAL_ECHOPGM("[PRN:");
 	SERIAL_ECHO(_status);
 	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_farm_number() {
-	SERIAL_ECHO("[PFN:");
-	SERIAL_ECHO(farm_no);
-	SERIAL_ECHO(']');
+	SERIAL_ECHOPGM("[PFN:0]");
 }
 
 static void prusa_stat_diameter() {
-	SERIAL_ECHO("[DIA:");
+	SERIAL_ECHOPGM("[DIA:");
 	SERIAL_ECHO(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM));
 	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_temperatures()
 {
-	SERIAL_ECHO("[ST0:");
+	SERIAL_ECHOPGM("[ST0:");
 	SERIAL_ECHO(target_temperature[0]);
-	SERIAL_ECHO("][STB:");
+	SERIAL_ECHOPGM("][STB:");
 	SERIAL_ECHO(target_temperature_bed);
-	SERIAL_ECHO("][AT0:");
+	SERIAL_ECHOPGM("][AT0:");
 	SERIAL_ECHO(current_temperature[0]);
-	SERIAL_ECHO("][ATB:");
+	SERIAL_ECHOPGM("][ATB:");
 	SERIAL_ECHO(current_temperature_bed);
 	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_printinfo()
 {
-	SERIAL_ECHO("[TFU:");
+	SERIAL_ECHOPGM("[TFU:");
 	SERIAL_ECHO(total_filament_used);
-	SERIAL_ECHO("][PCD:");
+	SERIAL_ECHOPGM("][PCD:");
 	SERIAL_ECHO(itostr3(card.percentDone()));
-	SERIAL_ECHO("][FEM:");
+	SERIAL_ECHOPGM("][FEM:");
 	SERIAL_ECHO(itostr3(feedmultiply));
-	SERIAL_ECHO("][FNM:");
+	SERIAL_ECHOPGM("][FNM:");
 	SERIAL_ECHO(longFilenameOLD);
-	SERIAL_ECHO("][TIM:");
+	SERIAL_ECHOPGM("][TIM:");
 	if (starttime != 0)
 	{
 		SERIAL_ECHO(_millis() / 1000 - starttime / 1000);
@@ -4257,8 +4216,8 @@ static void prusa_stat_printinfo()
 	{
 		SERIAL_ECHO(0);
 	}
-	SERIAL_ECHO("][FWR:");
-	SERIAL_ECHO(FW_VERSION);
+	SERIAL_ECHOPGM("][FWR:");
+	SERIAL_ECHORPGM(FW_VERSION_STR_P());
 	SERIAL_ECHO(']');
      prusa_stat_diameter();
 }
@@ -5844,7 +5803,6 @@ static void lcd_settings_menu()
 
 	if (farm_mode)
 	{
-		MENU_ITEM_SUBMENU_P(PSTR("Farm number"), lcd_farm_no);
 		MENU_ITEM_FUNCTION_P(PSTR("Disable farm mode"), lcd_disable_farm_mode);
 	}
 
@@ -6476,74 +6434,6 @@ void unload_filament()
 
 }
 
-static void lcd_farm_no()
-{
-	char step = 0;
-	int enc_dif = 0;
-	int _farmno = farm_no;
-	int _ret = 0;
-	lcd_clear();
-
-	lcd_set_cursor(0, 0);
-	lcd_print("Farm no");
-
-	do
-	{
-
-		if (abs((enc_dif - lcd_encoder_diff)) > 2) {
-			if (enc_dif > lcd_encoder_diff) {
-				switch (step) {
-				case(0): if (_farmno >= 100) _farmno -= 100; break;
-				case(1): if (_farmno % 100 >= 10) _farmno -= 10; break;
-				case(2): if (_farmno % 10 >= 1) _farmno--; break;
-				default: break;
-				}
-			}
-
-			if (enc_dif < lcd_encoder_diff) {
-				switch (step) {
-				case(0): if (_farmno < 900) _farmno += 100; break;
-				case(1): if (_farmno % 100 < 90) _farmno += 10; break;
-				case(2): if (_farmno % 10 <= 8)_farmno++; break;
-				default: break;
-				}
-			}
-			enc_dif = 0;
-			lcd_encoder_diff = 0;
-		}
-
-		lcd_set_cursor(0, 2);
-		if (_farmno < 100) lcd_print("0");
-		if (_farmno < 10) lcd_print("0");
-		lcd_print(_farmno);
-		lcd_print("  ");
-		lcd_set_cursor(0, 3);
-		lcd_print("   ");
-
-
-		lcd_set_cursor(step, 3);
-		lcd_print("^");
-		_delay(100);
-
-		if (lcd_clicked())
-		{
-			_delay(200);
-			step++;
-			if(step == 3) {
-				_ret = 1;
-				farm_no = _farmno;
-				EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
-				prusa_statistics(20);
-				lcd_return_to_status();
-			}
-		}
-
-		manage_heater();
-	} while (_ret == 0);
-
-}
-
-
 unsigned char lcd_choose_color() {
 	//function returns index of currently chosen item
 	//following part can be modified from 2 to 255 items:
@@ -6625,85 +6515,6 @@ unsigned char lcd_choose_color() {
 		}
 
 	}
-
-}
-
-void lcd_confirm_print()
-{
-	uint8_t filament_type;
-	int enc_dif = 0;
-	int cursor_pos = 1;
-	int _ret = 0;
-	int _t = 0;
-
-	enc_dif = lcd_encoder_diff;
-	lcd_clear();
-
-	lcd_set_cursor(0, 0);
-	lcd_print("Print ok ?");
-
-	do
-	{
-		if (abs(enc_dif - lcd_encoder_diff) > 12) {
-			if (enc_dif > lcd_encoder_diff) {
-				cursor_pos--;
-			}
-
-			if (enc_dif < lcd_encoder_diff) {
-				cursor_pos++;
-			}
-			enc_dif = lcd_encoder_diff;
-		}
-
-		if (cursor_pos > 2) { cursor_pos = 2; }
-		if (cursor_pos < 1) { cursor_pos = 1; }
-
-		lcd_set_cursor(0, 2); lcd_print("          ");
-		lcd_set_cursor(0, 3); lcd_print("          ");
-		lcd_set_cursor(2, 2);
-		lcd_puts_P(_T(MSG_YES));
-		lcd_set_cursor(2, 3);
-		lcd_puts_P(_T(MSG_NO));
-		lcd_set_cursor(0, 1 + cursor_pos);
-		lcd_print(">");
-		_delay(100);
-
-		_t = _t + 1;
-		if (_t>100)
-		{
-			prusa_statistics(99);
-			_t = 0;
-		}
-		if (lcd_clicked())
-		{
-               filament_type = FARM_FILAMENT_COLOR_NONE;
-			if (cursor_pos == 1)
-			{
-				_ret = 1;
-//				filament_type = lcd_choose_color();
-				prusa_statistics(4, filament_type);
-				no_response = true; //we need confirmation by recieving PRUSA thx
-				important_status = 4;
-				saved_filament_type = filament_type;
-				NcTime = _millis();
-			}
-			if (cursor_pos == 2)
-			{
-				_ret = 2;
-//				filament_type = lcd_choose_color();
-				prusa_statistics(5, filament_type);
-				no_response = true; //we need confirmation by recieving PRUSA thx
-				important_status = 5;				
-				saved_filament_type = filament_type;
-				NcTime = _millis();
-			}
-		}
-
-		manage_heater();
-		manage_inactivity();
-		proc_commands();
-
-	} while (_ret == 0);
 
 }
 
@@ -6899,6 +6710,8 @@ static void lcd_main_menu()
  
   if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
+    if (farm_mode)
+        MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 	MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
   }
 
@@ -6987,14 +6800,7 @@ static void lcd_main_menu()
   }
 
 
-  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
-  {
-	  if (farm_mode)
-	  {
-		  MENU_ITEM_SUBMENU_P(PSTR("Farm number"), lcd_farm_no);
-	  }
-  } 
-  else 
+  if ( ! ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal) ) )
   {
 	if (mmu_enabled)
 	{
@@ -7185,7 +6991,8 @@ static void lcd_tune_menu()
 	MENU_ITEM_EDIT_advance_K();//7
 #endif
 #ifdef FILAMENTCHANGEENABLE
-	MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
+    if (!farm_mode)
+        MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 #endif
 
 #ifdef FILAMENT_SENSOR
