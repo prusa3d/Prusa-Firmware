@@ -138,7 +138,7 @@
 "Bed"
 "Bett"
 
-#MSG_MENU_BELT_STATUS c=18
+#MSG_BELT_STATUS c=18
 "Belt status"
 "Gurtstatus"
 

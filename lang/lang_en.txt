@@ -103,7 +103,7 @@
 #MSG_BED
 "Bed"
 
-#MSG_MENU_BELT_STATUS c=18
+#MSG_BELT_STATUS c=18
 "Belt status"
 
 #MSG_RECOVER_PRINT c=20 r=2

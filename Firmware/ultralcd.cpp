@@ -1957,7 +1957,7 @@ static void lcd_menu_voltages()
 static void lcd_menu_belt_status()
 {
 	lcd_home();
-    lcd_printf_P(PSTR("%S\n" " X %d\n" " Y %d"), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
+    lcd_printf_P(PSTR("%S\n" " X %d\n" " Y %d"), _T(MSG_BELT_STATUS), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     menu_back_if_clicked();
 }
 #endif //TMC2130
@@ -2035,7 +2035,7 @@ static void lcd_preheat_menu()
 //! If TMC2130 defined
 //! 
 //! 	@code{.unparsed}
-//! 	| Belt status        |	MSG_MENU_BELT_STATUS
+//! 	| Belt status        |	MSG_BELT_STATUS
 //! @endcode
 //! 
 //! @code{.unparsed}
@@ -2159,7 +2159,7 @@ static void lcd_support_menu()
   MENU_ITEM_SUBMENU_P(_i("Sensor info"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18 r=1
 
 #ifdef TMC2130
-  MENU_ITEM_SUBMENU_P(_i("Belt status"), lcd_menu_belt_status);////MSG_MENU_BELT_STATUS c=18
+  MENU_ITEM_SUBMENU_P(_T(MSG_BELT_STATUS), lcd_menu_belt_status);////MSG_BELT_STATUS c=18
 #endif //TMC2130
     
   MENU_ITEM_SUBMENU_P(_i("Temperatures"), lcd_menu_temperatures);////MSG_MENU_TEMPERATURES c=18 r=1
