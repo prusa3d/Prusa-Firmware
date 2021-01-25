@@ -1711,7 +1711,7 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-
 //! |01234567890123456789|
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
 //! | Power failures: 000|	MSG_POWER_FAILURES c=14
-//! | Filam. runouts: 000|	c=14 r=1
+//! | Fil. runouts  : 000|	MSG_FIL_RUNOUTS c=14
 //! | Crash   X:000 Y:000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
@@ -1727,7 +1727,7 @@ static void lcd_menu_fails_stats_total()
     lcd_printf_P(failStatsFmt, 
         _T(MSG_TOTAL_FAILURES),   ////c=20
         _T(MSG_POWER_FAILURES), power,   ////c=14
-        _i("Filam. runouts"), filam,   ////c=14 r=1
+        _T(MSG_FIL_RUNOUTS), filam,   ////c=14
         _T(MSG_CRASH), crashX, crashY);  ////c=7
     menu_back_if_clicked_fb();
 }
@@ -1738,7 +1738,7 @@ static void lcd_menu_fails_stats_total()
 //! |01234567890123456789|
 //! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
 //! | Power failures  000|	MSG_POWER_FAILURES c=14
-//! | Filam. runouts  000|	c=14 r=1
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=14
 //! | Crash   X:000 Y:000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
@@ -1755,7 +1755,7 @@ static void lcd_menu_fails_stats_print()
     lcd_printf_P(failStatsFmt,
         _T(MSG_LAST_PRINT_FAILURES),  ////c=20
         _T(MSG_POWER_FAILURES), power,  ////c=14
-        _i("Filam. runouts"), filam,  ////c=14 r=1
+        _T(MSG_FIL_RUNOUTS), filam,  ////c=14
         _T(MSG_CRASH), crashX, crashY);  ////c=7
 #else
     // On the MK3 include detailed PAT9125 statistics about soft failures
@@ -1806,10 +1806,10 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-1
 //! Example screen:
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Last print failures |	c=20 r=1
-//! | Filam. runouts  000|	c=14 r=1
+//! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
+//! | Fil.   runouts  000|	MSG_FIL_RUNOUTS c=14
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
-//! | Filam. runouts  000|	c=14 r=1
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=14
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1821,9 +1821,9 @@ static void lcd_menu_fails_stats()
 	lcd_home();
 	lcd_printf_P(failStatsFmt, 
         _T(MSG_LAST_PRINT_FAILURES),   ////c=20
-        _i("Filam. runouts"), filamentLast,   ////c=14 r=1
+        _T(MSG_FIL_RUNOUTS), filamentLast,   ////c=14
         _T(MSG_TOTAL_FAILURES),  ////c=20
-        _i("Filam. runouts"), filamentTotal);   ////c=14 r=1
+        _T(MSG_FIL_RUNOUTS), filamentTotal);   ////c=14
 
 	menu_back_if_clicked();
 }

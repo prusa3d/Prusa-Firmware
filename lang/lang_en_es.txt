@@ -338,9 +338,9 @@
 "Fil. sensor"
 "Sensor Fil."
 
-# c=14
-"Filam. runouts"
-"Filam. acabado"
+#MSG_FIL_RUNOUTS c=14
+"Fil. runouts  "
+"Fil. acabado  "
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
