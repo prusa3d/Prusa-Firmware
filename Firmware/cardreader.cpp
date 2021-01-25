@@ -133,6 +133,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 							printf_P(PSTR("\"%s\" "), LONGEST_FILENAME);
 						
 						SERIAL_PROTOCOLLN(p.fileSize);
+						manage_heater();
 						break;
 				
 					case LS_GetFilename:

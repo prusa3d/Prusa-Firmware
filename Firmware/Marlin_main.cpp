@@ -5681,6 +5681,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     - `L` - Reports ling filenames instead of just short filenames. Requires host software parsing.
     */
     case 20:
+      KEEPALIVE_STATE(NOT_BUSY); // do not send busy messages during listing. Inhibits the output of manage_heater()
       SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST
       card.ls(code_seen('L'));
       SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST
