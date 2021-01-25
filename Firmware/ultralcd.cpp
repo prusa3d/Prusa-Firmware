@@ -3997,7 +3997,7 @@ void lcd_menu_show_sensors_state()                // NOT static due to using ins
 }
 
 void prusa_statistics_err(char c){
-	SERIAL_ECHO("{[ERR:");
+	SERIAL_ECHOPGM("{[ERR:");
 	SERIAL_ECHO(c);
 	SERIAL_ECHO(']');
 	prusa_stat_farm_number();
@@ -4082,7 +4082,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		return;
 		break;
 	case 4:		// print succesfull
-		SERIAL_ECHO("{[RES:1][FIL:");
+		SERIAL_ECHOPGM("{[RES:1][FIL:");
 		MYSERIAL.print(int(_fil_nr));
 		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
@@ -4090,7 +4090,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		farm_timer = 2;
 		break;
 	case 5:		// print not succesfull
-		SERIAL_ECHO("{[RES:0][FIL:");
+		SERIAL_ECHOPGM("{[RES:0][FIL:");
 		MYSERIAL.print(int(_fil_nr));
 		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
@@ -4098,19 +4098,19 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		farm_timer = 2;
 		break;
 	case 6:		// print done
-		SERIAL_ECHO("{[PRN:8]");
+		SERIAL_ECHOPGM("{[PRN:8]");
 		prusa_stat_farm_number();
 		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
-		SERIAL_ECHO("{[PRN:9]");
+		SERIAL_ECHOPGM("{[PRN:9]");
 		prusa_stat_farm_number();
 		status_number = 9;
 		farm_timer = 2;
 		break;
 	case 8:		// printer started
-		SERIAL_ECHO("{[PRN:0][PFN:");
+		SERIAL_ECHOPGM("{[PRN:0][PFN:");
 		status_number = 0;
 		SERIAL_ECHO(farm_no);
 		SERIAL_ECHO(']');
@@ -4129,7 +4129,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		prusa_stat_printerstatus(status_number);
 		break;
     case 22: // waiting for filament change
-        SERIAL_ECHO("{[PRN:5]");
+        SERIAL_ECHOPGM("{[PRN:5]");
 		prusa_stat_farm_number();
 		status_number = 5;
         break;
@@ -4148,9 +4148,9 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		break;
 
     case 99:		// heartbeat
-        SERIAL_ECHO("{[PRN:99]");
+        SERIAL_ECHOPGM("{[PRN:99]");
         prusa_stat_temperatures();
-		SERIAL_ECHO("[PFN:");
+		SERIAL_ECHOPGM("[PFN:");
 		SERIAL_ECHO(farm_no);
 		SERIAL_ECHO(']');
             
@@ -4162,47 +4162,47 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 
 static void prusa_stat_printerstatus(int _status)
 {
-	SERIAL_ECHO("[PRN:");
+	SERIAL_ECHOPGM("[PRN:");
 	SERIAL_ECHO(_status);
 	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_farm_number() {
-	SERIAL_ECHO("[PFN:");
+	SERIAL_ECHOPGM("[PFN:");
 	SERIAL_ECHO(farm_no);
 	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_diameter() {
-	SERIAL_ECHO("[DIA:");
+	SERIAL_ECHOPGM("[DIA:");
 	SERIAL_ECHO(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM));
 	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_temperatures()
 {
-	SERIAL_ECHO("[ST0:");
+	SERIAL_ECHOPGM("[ST0:");
 	SERIAL_ECHO(target_temperature[0]);
-	SERIAL_ECHO("][STB:");
+	SERIAL_ECHOPGM("][STB:");
 	SERIAL_ECHO(target_temperature_bed);
-	SERIAL_ECHO("][AT0:");
+	SERIAL_ECHOPGM("][AT0:");
 	SERIAL_ECHO(current_temperature[0]);
-	SERIAL_ECHO("][ATB:");
+	SERIAL_ECHOPGM("][ATB:");
 	SERIAL_ECHO(current_temperature_bed);
 	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_printinfo()
 {
-	SERIAL_ECHO("[TFU:");
+	SERIAL_ECHOPGM("[TFU:");
 	SERIAL_ECHO(total_filament_used);
-	SERIAL_ECHO("][PCD:");
+	SERIAL_ECHOPGM("][PCD:");
 	SERIAL_ECHO(itostr3(card.percentDone()));
-	SERIAL_ECHO("][FEM:");
+	SERIAL_ECHOPGM("][FEM:");
 	SERIAL_ECHO(itostr3(feedmultiply));
-	SERIAL_ECHO("][FNM:");
+	SERIAL_ECHOPGM("][FNM:");
 	SERIAL_ECHO(longFilenameOLD);
-	SERIAL_ECHO("][TIM:");
+	SERIAL_ECHOPGM("][TIM:");
 	if (starttime != 0)
 	{
 		SERIAL_ECHO(_millis() / 1000 - starttime / 1000);
@@ -4211,7 +4211,7 @@ static void prusa_stat_printinfo()
 	{
 		SERIAL_ECHO(0);
 	}
-	SERIAL_ECHO("][FWR:");
+	SERIAL_ECHOPGM("][FWR:");
 	SERIAL_ECHO(FW_VERSION);
 	SERIAL_ECHO(']');
      prusa_stat_diameter();
