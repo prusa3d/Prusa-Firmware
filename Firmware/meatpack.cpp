@@ -299,12 +299,6 @@ void FORCE_INLINE mp_handle_cmd(const MeatPack_Command c) {
         SERIAL_ECHOLNPGM("[MPDBG] DISBL REC");
 #endif
     } break;
-    case MPCommand_TogglePacking: {
-        mp_config ^= MPConfig_Active;
-#ifdef MP_DEBUG
-        SERIAL_ECHOLNPGM("[MPDBG] TGL REC");
-#endif        
-    } break;
     case MPCommand_ResetAll: {
         mp_reset_state();
 #ifdef MP_DEBUG
