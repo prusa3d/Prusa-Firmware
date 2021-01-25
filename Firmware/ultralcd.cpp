@@ -380,13 +380,11 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
         }
     }
     if(c!='\0'){
-      lcd_set_cursor(i, row);
-        lcd_print(c);
+        lcd_putc_at(i, row, c);
         i++;
     }
     n=n-i+1;
-    while(n--)
-        lcd_print(' ');
+    lcd_space(n);
 }
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename, char* longFilename)
 {
@@ -404,8 +402,7 @@ static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename
         filename++;
         n--;
     }
-    while(n--)
-        lcd_print(' ');
+    lcd_space(n);
 }
 static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const char* filename, char* longFilename)
 {
@@ -424,8 +421,7 @@ static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const 
         filename++;
         n--;
     }
-    while(n--)
-        lcd_print(' ');
+    lcd_space(n);
 }
 static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* filename, char* longFilename)
 {
@@ -444,8 +440,7 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* fil
         filename++;
         n--;
     }
-    while(n--)
-        lcd_print(' ');
+    lcd_space(n);
 }
 
 
