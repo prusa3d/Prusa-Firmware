@@ -4110,10 +4110,9 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		farm_timer = 2;
 		break;
 	case 8:		// printer started
-		SERIAL_ECHOPGM("{[PRN:0][PFN:");
+		SERIAL_ECHOPGM("{[PRN:0]");
+		prusa_stat_farm_number();
 		status_number = 0;
-		SERIAL_ECHO(farm_no);
-		SERIAL_ECHO(']');
 		farm_timer = 2;
 		break;
 	case 20:		// echo farm no
@@ -4150,10 +4149,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
     case 99:		// heartbeat
         SERIAL_ECHOPGM("{[PRN:99]");
         prusa_stat_temperatures();
-		SERIAL_ECHOPGM("[PFN:");
-		SERIAL_ECHO(farm_no);
-		SERIAL_ECHO(']');
-            
+		prusa_stat_farm_number();
         break;
 	}
 	SERIAL_ECHOLN('}');	
@@ -4168,9 +4164,7 @@ static void prusa_stat_printerstatus(int _status)
 }
 
 static void prusa_stat_farm_number() {
-	SERIAL_ECHOPGM("[PFN:");
-	SERIAL_ECHO(farm_no);
-	SERIAL_ECHO(']');
+	SERIAL_ECHOPGM("[PFN:0]");
 }
 
 static void prusa_stat_diameter() {
