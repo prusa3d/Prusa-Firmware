@@ -136,7 +136,6 @@ static void prusa_stat_farm_number();
 static void prusa_stat_diameter();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
-//static void lcd_farm_no();
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
@@ -1453,7 +1452,6 @@ void lcd_commands()
 
 		if (lcd_commands_step == 1 && !blocks_queued())
 		{
-//			lcd_confirm_print();
 			lcd_commands_step = 0;
 			lcd_commands_type = LcdCommands::Idle;
 		}
@@ -5800,7 +5798,6 @@ static void lcd_settings_menu()
 
 	if (farm_mode)
 	{
-//		MENU_ITEM_SUBMENU_P(PSTR("Farm number"), lcd_farm_no);
 		MENU_ITEM_FUNCTION_P(PSTR("Disable farm mode"), lcd_disable_farm_mode);
 	}
 
@@ -6432,74 +6429,6 @@ void unload_filament()
 
 }
 
-/*static void lcd_farm_no()
-{
-	char step = 0;
-	int enc_dif = 0;
-	int _farmno = farm_no;
-	int _ret = 0;
-	lcd_clear();
-
-	lcd_set_cursor(0, 0);
-	lcd_print("Farm no");
-
-	do
-	{
-
-		if (abs((enc_dif - lcd_encoder_diff)) > 2) {
-			if (enc_dif > lcd_encoder_diff) {
-				switch (step) {
-				case(0): if (_farmno >= 100) _farmno -= 100; break;
-				case(1): if (_farmno % 100 >= 10) _farmno -= 10; break;
-				case(2): if (_farmno % 10 >= 1) _farmno--; break;
-				default: break;
-				}
-			}
-
-			if (enc_dif < lcd_encoder_diff) {
-				switch (step) {
-				case(0): if (_farmno < 900) _farmno += 100; break;
-				case(1): if (_farmno % 100 < 90) _farmno += 10; break;
-				case(2): if (_farmno % 10 <= 8)_farmno++; break;
-				default: break;
-				}
-			}
-			enc_dif = 0;
-			lcd_encoder_diff = 0;
-		}
-
-		lcd_set_cursor(0, 2);
-		if (_farmno < 100) lcd_print("0");
-		if (_farmno < 10) lcd_print("0");
-		lcd_print(_farmno);
-		lcd_print("  ");
-		lcd_set_cursor(0, 3);
-		lcd_print("   ");
-
-
-		lcd_set_cursor(step, 3);
-		lcd_print("^");
-		_delay(100);
-
-		if (lcd_clicked())
-		{
-			_delay(200);
-			step++;
-			if(step == 3) {
-				_ret = 1;
-//				farm_no = _farmno;
-//				EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
-				prusa_statistics(20);
-				lcd_return_to_status();
-			}
-		}
-
-		manage_heater();
-	} while (_ret == 0);
-
-}*/
-
-
 unsigned char lcd_choose_color() {
 	//function returns index of currently chosen item
 	//following part can be modified from 2 to 255 items:
@@ -6583,85 +6512,6 @@ unsigned char lcd_choose_color() {
 	}
 
 }
-
-/*void lcd_confirm_print()
-{
-	uint8_t filament_type;
-	int enc_dif = 0;
-	int cursor_pos = 1;
-	int _ret = 0;
-	int _t = 0;
-
-	enc_dif = lcd_encoder_diff;
-	lcd_clear();
-
-	lcd_set_cursor(0, 0);
-	lcd_print("Print ok ?");
-
-	do
-	{
-		if (abs(enc_dif - lcd_encoder_diff) > 12) {
-			if (enc_dif > lcd_encoder_diff) {
-				cursor_pos--;
-			}
-
-			if (enc_dif < lcd_encoder_diff) {
-				cursor_pos++;
-			}
-			enc_dif = lcd_encoder_diff;
-		}
-
-		if (cursor_pos > 2) { cursor_pos = 2; }
-		if (cursor_pos < 1) { cursor_pos = 1; }
-
-		lcd_set_cursor(0, 2); lcd_print("          ");
-		lcd_set_cursor(0, 3); lcd_print("          ");
-		lcd_set_cursor(2, 2);
-		lcd_puts_P(_T(MSG_YES));
-		lcd_set_cursor(2, 3);
-		lcd_puts_P(_T(MSG_NO));
-		lcd_set_cursor(0, 1 + cursor_pos);
-		lcd_print(">");
-		_delay(100);
-
-		_t = _t + 1;
-		if (_t>100)
-		{
-			prusa_statistics(99);
-			_t = 0;
-		}
-		if (lcd_clicked())
-		{
-               filament_type = FARM_FILAMENT_COLOR_NONE;
-			if (cursor_pos == 1)
-			{
-				_ret = 1;
-//				filament_type = lcd_choose_color();
-				prusa_statistics(4, filament_type);
-				no_response = true; //we need confirmation by recieving PRUSA thx
-				important_status = 4;
-				saved_filament_type = filament_type;
-				NcTime = _millis();
-			}
-			if (cursor_pos == 2)
-			{
-				_ret = 2;
-//				filament_type = lcd_choose_color();
-				prusa_statistics(5, filament_type);
-				no_response = true; //we need confirmation by recieving PRUSA thx
-				important_status = 5;				
-				saved_filament_type = filament_type;
-				NcTime = _millis();
-			}
-		}
-
-		manage_heater();
-		manage_inactivity();
-		proc_commands();
-
-	} while (_ret == 0);
-
-}*/
 
 #include "w25x20cl.h"
 
@@ -6943,14 +6793,7 @@ static void lcd_main_menu()
   }
 
 
-  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
-  {
-//	  if (farm_mode)
-//	  {
-//		  MENU_ITEM_SUBMENU_P(PSTR("Farm number"), lcd_farm_no);
-//	  }
-  } 
-  else 
+  if ( ! ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal) ) )
   {
 	if (mmu_enabled)
 	{

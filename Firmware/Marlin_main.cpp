@@ -714,10 +714,8 @@ static void factory_reset(char level)
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
-//            farm_no = 0;
 			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
-//            EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
 
             eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
             eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
@@ -1051,10 +1049,8 @@ void setup()
 	setup_powerhold();
 
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
-//	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	if ((farm_mode == 0xFF /*&& farm_no == 0*/) /*|| ((uint16_t)farm_no == 0xFFFF)*/) 
+	if (farm_mode == 0xFF) 
 		farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
-//	if ((uint16_t)farm_no == 0xFFFF) farm_no = 0;
 	if (farm_mode)
 	{
 		no_response = true; //we need confirmation by recieving PRUSA thx
@@ -1370,9 +1366,7 @@ void setup()
 #endif
 
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
-//	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	if ((farm_mode == 0xFF /*&& farm_no == 0*/) /*|| (farm_no == static_cast<int>(0xFFFF))*/) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
-//	if (farm_no == static_cast<int>(0xFFFF)) farm_no = 0;
+	if (farm_mode == 0xFF) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
 	if (farm_mode)
 	{
 		prusa_statistics(8);
@@ -3883,7 +3877,6 @@ void process_commands()
 		if (code_seen("Ping")) {  // PRUSA Ping
 			if (farm_mode) {
 				PingTime = _millis();
-				//MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
 			}	  
 		}
 		else if (code_seen("PRN")) { // PRUSA PRN
@@ -3893,15 +3886,7 @@ void process_commands()
             gcode_PRUSA_BadRAMBoFanTest();
         }else if (code_seen("FAN")) { // PRUSA FAN
 			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
-		}/*else if (code_seen("fn")) { // PRUSA fn
-		  if (farm_mode) {
-			printf_P(_N("%d"), farm_no);
-		  }
-		  else {
-			  puts_P(_N("Not in farm mode."));
-		  }
-		  
-		}*/
+		}
 		else if (code_seen("thx")) // PRUSA thx
 		{
 			no_response = false;
@@ -5556,10 +5541,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		farm_mode = 1;
 		PingTime = _millis();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
-//		EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
-          SilentModeMenu = SILENT_MODE_OFF;
-          eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
-          fCheckModeInit();                       // alternatively invoke printer reset
+		SilentModeMenu = SILENT_MODE_OFF;
+		eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+		fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 
     /*! ### G99 - Deactivate farm mode <a href="https://reprap.org/wiki/G-code#G99:_Deactivate_farm_mode">G99: Deactivate farm mode</a>
