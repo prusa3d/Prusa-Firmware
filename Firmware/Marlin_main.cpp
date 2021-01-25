@@ -3910,11 +3910,7 @@ void process_commands()
 #endif //defined(W25X20CL) && defined(BOOTAPP)
             softReset();
 #else //WATCHDOG
-            // careful!
-            if (farm_mode)
-                asm volatile("jmp 0x3E000");
-            else
-                puts_P(PSTR("Not in farm mode."));
+            asm volatile("jmp 0x3E000");
 #endif //WATCHDOG
 		}else if (code_seen("fv")) { // PRUSA fv
         // get file version
