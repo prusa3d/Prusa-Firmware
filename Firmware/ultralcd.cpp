@@ -4212,7 +4212,7 @@ static void prusa_stat_printinfo()
 		SERIAL_ECHO(0);
 	}
 	SERIAL_ECHOPGM("][FWR:");
-	SERIAL_ECHO(FW_VERSION);
+	SERIAL_ECHORPGM(FW_VERSION_STR_P());
 	SERIAL_ECHO(']');
      prusa_stat_diameter();
 }

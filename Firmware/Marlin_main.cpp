@@ -8218,7 +8218,7 @@ Sigma_Exit:
                     if(code_seen('P'))
                          fw_version_check(++strchr_pointer);
                     else if(code_seen('Q'))
-                         SERIAL_PROTOCOLLN(FW_VERSION);
+                         SERIAL_PROTOCOLLNRPGM(FW_VERSION_STR_P());
                     break;
                case ClPrintChecking::_Gcode:      // ~ .5
                     if(code_seen('P'))
