@@ -88,6 +88,7 @@ extern const char MSG_SELFTEST_FILAMENT_SENSOR[];
 extern const char MSG_SELFTEST_WIRINGERROR[];
 extern const char MSG_SETTINGS[];
 extern const char MSG_TOTAL[];
+extern const char MSG_TOTAL_FAILURES[];
 extern const char MSG_HW_SETUP[];
 extern const char MSG_MODE[];
 extern const char MSG_HIGH_POWER[];

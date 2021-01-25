@@ -1680,7 +1680,7 @@ static void lcd_menu_fails_stats_mmu_print()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Total failures      |	c=20 r=1
+//! |Total failures      |	MSG_TOTAL_FAILURES c=20
 //! | MMU fails:      000|	MSG_MMU_FAILS c=14
 //! | MMU load fails: 000|	MSG_MMU_LOAD_FAILS c=14
 //! | MMU power fails:000|	c=14 r=1
@@ -1695,9 +1695,9 @@ static void lcd_menu_fails_stats_mmu_total()
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
-        _i("Total failures"), ////c=20 r=1
-        _T(MSG_MMU_FAILS), fails, ////c=14 r=1
-        _T(MSG_MMU_LOAD_FAILS), load_fails, ////c=14 r=1
+        _T(MSG_TOTAL_FAILURES), ////c=20
+        _T(MSG_MMU_FAILS), fails, ////c=14
+        _T(MSG_MMU_LOAD_FAILS), load_fails, ////c=14
         _i("MMU power fails"), mmu_power_failures); ////c=14 r=1
     menu_back_if_clicked_fb();
 }
@@ -1709,7 +1709,7 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Total failures      |	c=20 r=1
+//! |Total failures      |	MSG_TOTAL_FAILURES c=20
 //! | Power failures: 000|	MSG_POWER_FAILURES c=14
 //! | Filam. runouts: 000|	c=14 r=1
 //! | Crash   X:000 Y:000|	c=7 r=1
@@ -1725,8 +1725,8 @@ static void lcd_menu_fails_stats_total()
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
     lcd_home();
     lcd_printf_P(failStatsFmt, 
-        _i("Total failures"),   ////c=20 r=1
-        _T(MSG_POWER_FAILURES), power,   ////c=14 r=1
+        _T(MSG_TOTAL_FAILURES),   ////c=20
+        _T(MSG_POWER_FAILURES), power,   ////c=14
         _i("Filam. runouts"), filam,   ////c=14 r=1
         _i("Crash"), crashX, crashY);  ////c=7 r=1
     menu_back_if_clicked_fb();
@@ -1808,7 +1808,7 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-1
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
 //! | Filam. runouts  000|	c=14 r=1
-//! |Total failures      |	c=20 r=1
+//! |Total failures      |	MSG_TOTAL_FAILURES c=20
 //! | Filam. runouts  000|	c=14 r=1
 //! ----------------------
 //! @endcode
@@ -1822,7 +1822,7 @@ static void lcd_menu_fails_stats()
 	lcd_printf_P(failStatsFmt, 
         _i("Last print failures"),   ////c=20 r=1
         _i("Filam. runouts"), filamentLast,   ////c=14 r=1
-        _i("Total failures"),  ////c=20 r=1
+        _T(MSG_TOTAL_FAILURES),  ////c=20
         _i("Filam. runouts"), filamentTotal);   ////c=14 r=1
 
 	menu_back_if_clicked();

@@ -871,7 +871,7 @@
 #
 "Unload"
 
-#
+#MSG_TOTAL_FAILURES c=20
 "Total failures"
 
 #

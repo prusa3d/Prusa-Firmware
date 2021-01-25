@@ -88,6 +88,7 @@ const char MSG_SELFTEST_FILAMENT_SENSOR[] PROGMEM_I1 = ISTR("Filament sensor"); 
 const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////
 const char MSG_TOTAL[] PROGMEM_I1 = ISTR("Total"); ////c=6
+const char MSG_TOTAL_FAILURES[] PROGMEM_I1 = ISTR("Total failures"); ////c=20
 const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////c=18
 const char MSG_MODE[] PROGMEM_I1 = ISTR("Mode"); ////
 const char MSG_HIGH_POWER[] PROGMEM_I1 = ISTR("High power"); ////
