@@ -1350,7 +1350,7 @@
 "Warn"
 "Avert"
 
-#
+#MSG_HW_SETUP c=18
 "HW Setup"
 "Config HW"
 

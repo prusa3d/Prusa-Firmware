@@ -81,7 +81,7 @@ const char MSG_SELFTEST_MOTOR[] PROGMEM_I1 = ISTR("Motor"); ////
 const char MSG_SELFTEST_FILAMENT_SENSOR[] PROGMEM_I1 = ISTR("Filament sensor"); ////c=17
 const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////
-const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////
+const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////c=18
 const char MSG_MODE[] PROGMEM_I1 = ISTR("Mode"); ////
 const char MSG_HIGH_POWER[] PROGMEM_I1 = ISTR("High power"); ////
 const char MSG_AUTO_POWER[] PROGMEM_I1 = ISTR("Auto power"); ////

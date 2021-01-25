@@ -5605,7 +5605,7 @@ static void select_sheet_menu()
 static void sheets_menu()
 {
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_i("HW Setup"));
+    MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], select_sheet_menu<0>);
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], select_sheet_menu<1>);
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], select_sheet_menu<2>);
@@ -5695,7 +5695,7 @@ static void lcd_settings_menu()
     if(!farm_mode)
     {
         bSettings=true;                              // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
-        MENU_ITEM_SUBMENU_P(_i("HW Setup"), lcd_hw_setup_menu);////MSG_HW_SETUP
+        MENU_ITEM_SUBMENU_P(_T(MSG_HW_SETUP), lcd_hw_setup_menu);
     }
     
 	SETTINGS_MMU_MODE;
