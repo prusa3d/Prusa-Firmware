@@ -1657,8 +1657,8 @@ static void lcd_menu_fails_stats_mmu()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | MMU fails:      000|	c=14 r=1
-//! | MMU load fails: 000|	c=14 r=1
+//! | MMU fails:      000|	MSG_MMU_FAILS c=14
+//! | MMU load fails: 000|	MSG_MMU_LOAD_FAILS c=14
 //! |                    |
 //! ----------------------
 //! @endcode
@@ -1671,8 +1671,8 @@ static void lcd_menu_fails_stats_mmu_print()
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
         _i("Last print failures"), ////c=20 r=1
-        _i("MMU fails"), fails, ////c=14 r=1
-        _i("MMU load fails"), load_fails); ////c=14 r=1
+        _T(MSG_MMU_FAILS), fails, ////c=14 r=1
+        _T(MSG_MMU_LOAD_FAILS), load_fails); ////c=14 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -1681,8 +1681,8 @@ static void lcd_menu_fails_stats_mmu_print()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Total failures      |	c=20 r=1
-//! | MMU fails:      000|	c=14 r=1
-//! | MMU load fails: 000|	c=14 r=1
+//! | MMU fails:      000|	MSG_MMU_FAILS c=14
+//! | MMU load fails: 000|	MSG_MMU_LOAD_FAILS c=14
 //! | MMU power fails:000|	c=14 r=1
 //! ----------------------
 //! @endcode
@@ -1696,8 +1696,8 @@ static void lcd_menu_fails_stats_mmu_total()
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
         _i("Total failures"), ////c=20 r=1
-        _i("MMU fails"), fails, ////c=14 r=1
-        _i("MMU load fails"), load_fails, ////c=14 r=1
+        _T(MSG_MMU_FAILS), fails, ////c=14 r=1
+        _T(MSG_MMU_LOAD_FAILS), load_fails, ////c=14 r=1
         _i("MMU power fails"), mmu_power_failures); ////c=14 r=1
     menu_back_if_clicked_fb();
 }
@@ -1710,7 +1710,7 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Total failures      |	c=20 r=1
-//! | Power failures: 000|	c=14 r=1
+//! | Power failures: 000|	MSG_POWER_FAILURES c=14
 //! | Filam. runouts: 000|	c=14 r=1
 //! | Crash   X:000 Y:000|	c=7 r=1
 //! ----------------------
@@ -1726,7 +1726,7 @@ static void lcd_menu_fails_stats_total()
     lcd_home();
     lcd_printf_P(failStatsFmt, 
         _i("Total failures"),   ////c=20 r=1
-        _i("Power failures"), power,   ////c=14 r=1
+        _T(MSG_POWER_FAILURES), power,   ////c=14 r=1
         _i("Filam. runouts"), filam,   ////c=14 r=1
         _i("Crash"), crashX, crashY);  ////c=7 r=1
     menu_back_if_clicked_fb();
@@ -1737,7 +1737,7 @@ static void lcd_menu_fails_stats_total()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	c=20 r=1
-//! | Power failures  000|	c=14 r=1
+//! | Power failures  000|	MSG_POWER_FAILURES c=14
 //! | Filam. runouts  000|	c=14 r=1
 //! | Crash   X:000 Y:000|	c=7 r=1
 //! ----------------------
@@ -1754,7 +1754,7 @@ static void lcd_menu_fails_stats_print()
 #ifndef PAT9125
     lcd_printf_P(failStatsFmt,
         _i("Last print failures"),  ////c=20 r=1
-        _i("Power failures"), power,  ////c=14 r=1
+        _T(MSG_POWER_FAILURES), power,  ////c=14 r=1
         _i("Filam. runouts"), filam,  ////c=14 r=1
         _i("Crash"), crashX, crashY);  ////c=7 r=1
 #else
@@ -1764,7 +1764,7 @@ static void lcd_menu_fails_stats_print()
                       " %-7.7S H %-3d S %-3d\n"
                       " %-7.7S X %-3d Y %-3d"),
                  _i("Last print failures"), ////c=20 r=1
-                 _i("Power failures"), power, ////c=14 r=1
+                 _T(MSG_POWER_FAILURES), power, ////c=14 r=1
                  _i("Runouts"), filam, fsensor_softfail, //c=7
                  _i("Crash"), crashX, crashY);  ////c=7 r=1
 #endif

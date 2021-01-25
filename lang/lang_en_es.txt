@@ -598,7 +598,7 @@
 "Measured skew"
 "Desviacion med:"
 
-#
+#MSG_MMU_FAILS c=14
 "MMU fails"
 "Fallos MMU"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "Carga MMU fallida"
 
-#
+#MSG_MMU_LOAD_FAILS c=14
 "MMU load fails"
 "Carga MMU falla"
 
@@ -834,7 +834,7 @@
 "Pause"
 "Pausa"
 
-#
+#MSG_POWER_FAILURES c=14
 "Power failures"
 "Cortes de energia"
 

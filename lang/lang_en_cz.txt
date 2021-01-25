@@ -598,7 +598,7 @@
 "Measured skew"
 "Merene zkoseni"
 
-#
+#MSG_MMU_FAILS c=14
 "MMU fails"
 "Selhani MMU"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "Zavedeni MMU selhalo"
 
-#
+#MSG_MMU_LOAD_FAILS c=14
 "MMU load fails"
 "MMU selhani zavadeni"
 
@@ -834,7 +834,7 @@
 "Pause"
 "\x00"
 
-#
+#MSG_POWER_FAILURES c=14
 "Power failures"
 "Vypadky proudu"
 

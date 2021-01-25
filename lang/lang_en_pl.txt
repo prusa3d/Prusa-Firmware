@@ -598,7 +598,7 @@
 "Measured skew"
 "Zmierzony skos"
 
-#
+#MSG_MMU_FAILS c=14
 "MMU fails"
 "Bledy MMU"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "Blad ladowania MMU"
 
-#
+#MSG_MMU_LOAD_FAILS c=14
 "MMU load fails"
 "Bledy ladow. MMU"
 
@@ -834,7 +834,7 @@
 "Pause"
 "Pauza"
 
-#
+#MSG_POWER_FAILURES c=14
 "Power failures"
 "Zaniki zasilania"
 
