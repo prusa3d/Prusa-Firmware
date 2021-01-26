@@ -352,13 +352,13 @@ FORCE_INLINE void stepper_next_block()
 				WRITE_NC(X_DIR_PIN, INVERT_X_DIR);
 			else
 				WRITE_NC(X_DIR_PIN, !INVERT_X_DIR);
-			_delay_us(100);
+			delayMicroseconds(STEPPER_SET_DIR_DELAY);
 			for (uint8_t i = 0; i < st_backlash_x; i++)
 			{
 				STEP_NC_HI(X_AXIS);
-				_delay_us(100);
+				STEPPER_MINIMUM_DELAY;
 				STEP_NC_LO(X_AXIS);
-				_delay_us(900);
+				_delay_us(900); // hard-coded jerk! *bad*
 			}
 		}
 		last_dir_bits &= ~1;
@@ -375,13 +375,13 @@ FORCE_INLINE void stepper_next_block()
 				WRITE_NC(Y_DIR_PIN, INVERT_Y_DIR);
 			else
 				WRITE_NC(Y_DIR_PIN, !INVERT_Y_DIR);
-			_delay_us(100);
+			delayMicroseconds(STEPPER_SET_DIR_DELAY);
 			for (uint8_t i = 0; i < st_backlash_y; i++)
 			{
 				STEP_NC_HI(Y_AXIS);
-				_delay_us(100);
+				STEPPER_MINIMUM_DELAY;
 				STEP_NC_LO(Y_AXIS);
-				_delay_us(900);
+				_delay_us(900); // hard-coded jerk! *bad*
 			}
 		}
 		last_dir_bits &= ~2;
