@@ -2489,6 +2489,12 @@ static void mFilamentItem_FLEX()
     mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP, FLEX_PREHEAT_HPB_TEMP);
 }
 
+static void mFilamentItem_PVB()
+{
+    bFilamentPreheatState = false;
+    mFilamentItem(PVB_PREHEAT_HOTEND_TEMP, PVB_PREHEAT_HPB_TEMP);
+}
+
 void mFilamentBack()
 {
     menu_back();
@@ -2525,6 +2531,7 @@ void lcd_generic_preheat_menu()
         MENU_ITEM_SUBMENU_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)),mFilamentItem_PET);
         MENU_ITEM_SUBMENU_P(PSTR("ASA  -  " STRINGIFY(ASA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ASA_PREHEAT_HPB_TEMP)),mFilamentItem_ASA);
         MENU_ITEM_SUBMENU_P(PSTR("PC   -  " STRINGIFY(PC_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PC_PREHEAT_HPB_TEMP)),mFilamentItem_PC);
+        MENU_ITEM_SUBMENU_P(PSTR("PVB  -  " STRINGIFY(PVB_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PVB_PREHEAT_HPB_TEMP)),mFilamentItem_PVB);
         MENU_ITEM_SUBMENU_P(PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)),mFilamentItem_ABS);
         MENU_ITEM_SUBMENU_P(PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)),mFilamentItem_HIPS);
         MENU_ITEM_SUBMENU_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)),mFilamentItem_PP);
@@ -5388,30 +5395,31 @@ do\
 }\
 while (0)
 
-static void lcd_nozzle_diameter_set(void)
-{
-uint16_t nDiameter;
-
-switch(oNozzleDiameter)
-     {
-     case ClNozzleDiameter::_Diameter_250:
-          oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
-          nDiameter=400;
-          break;
-     case ClNozzleDiameter::_Diameter_400:
-          oNozzleDiameter=ClNozzleDiameter::_Diameter_600;
-          nDiameter=600;
-          break;
-     case ClNozzleDiameter::_Diameter_600:
-          oNozzleDiameter=ClNozzleDiameter::_Diameter_250;
-          nDiameter=250;
-          break;
-     default:
-          oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
-          nDiameter=400;
-     }
-eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
-eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+static void lcd_nozzle_diameter_cycle(void) {
+    uint16_t nDiameter;
+    switch(oNozzleDiameter){
+    case ClNozzleDiameter::_Diameter_250:
+        oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
+        nDiameter=400;
+        break;
+    case ClNozzleDiameter::_Diameter_400:
+        oNozzleDiameter=ClNozzleDiameter::_Diameter_600;
+        nDiameter=600;
+        break;
+    case ClNozzleDiameter::_Diameter_600:
+        oNozzleDiameter=ClNozzleDiameter::_Diameter_800;
+        nDiameter=800;
+        break;
+    case ClNozzleDiameter::_Diameter_800:
+        oNozzleDiameter=ClNozzleDiameter::_Diameter_250;
+        nDiameter=250;
+        break;
+    default:
+        oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
+        nDiameter=400;
+    }
+    eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
+    eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
 }
 
 #define SETTINGS_NOZZLE \
@@ -5423,9 +5431,10 @@ do\
         case ClNozzleDiameter::_Diameter_250: fNozzleDiam = 0.25f; break;\
         case ClNozzleDiameter::_Diameter_400: fNozzleDiam = 0.4f; break;\
         case ClNozzleDiameter::_Diameter_600: fNozzleDiam = 0.6f; break;\
+        case ClNozzleDiameter::_Diameter_800: fNozzleDiam = 0.8f; break;\
         default: fNozzleDiam = 0.4f; break;\
     }\
-    MENU_ITEM_TOGGLE(_T(MSG_NOZZLE_DIAMETER), ftostr12ns(fNozzleDiam), lcd_nozzle_diameter_set);\
+    MENU_ITEM_TOGGLE(_T(MSG_NOZZLE_DIAMETER), ftostr12ns(fNozzleDiam), lcd_nozzle_diameter_cycle);\
 }\
 while (0)
 
