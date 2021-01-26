@@ -1394,7 +1394,7 @@
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "\x00"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 "G-code je pripraven pro jiny typ tiskarny. Pokracovat?"
 

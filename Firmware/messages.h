@@ -130,6 +130,7 @@ extern const char MSG_STRICT[];
 extern const char MSG_MODEL[];
 extern const char MSG_FIRMWARE[];
 extern const char MSG_GCODE[];
+extern const char MSG_GCODE_DIFF_PRINTER_CONTINUE[];
 extern const char MSG_NOZZLE_DIAMETER[];
 extern const char MSG_MMU_MODE[];
 extern const char MSG_SD_CARD[];

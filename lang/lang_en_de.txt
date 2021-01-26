@@ -1394,7 +1394,7 @@
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-Code ist fuer einen anderen Level geslict. Bitte slicen Sie das Modell erneut. Druck abgebrochen."
 
-#
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 "G-Code ist fuer einen anderen Drucker geslict. Fortfahren?"
 
