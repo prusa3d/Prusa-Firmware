@@ -229,7 +229,7 @@
 #MSG_INFO_EXTRUDER c=18
 "Extruder info"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
 
 #

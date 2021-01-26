@@ -306,7 +306,7 @@
 "Extruder info"
 "Infos extrudeur"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
 "Extrudeur"
 

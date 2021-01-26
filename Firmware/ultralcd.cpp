@@ -4262,7 +4262,7 @@ void lcd_move_menu_axis()
 	MENU_ITEM_SUBMENU_P(_i("Move X"), lcd_move_x);////MSG_MOVE_X
 	MENU_ITEM_SUBMENU_P(_i("Move Y"), lcd_move_y);////MSG_MOVE_Y
 	MENU_ITEM_SUBMENU_P(_i("Move Z"), lcd_move_z);////MSG_MOVE_Z
-	MENU_ITEM_SUBMENU_P(_i("Extruder"), lcd_move_e);////MSG_MOVE_E
+	MENU_ITEM_SUBMENU_P(_T(MSG_EXTRUDER), lcd_move_e);////MSG_EXTRUDER
 	MENU_END();
 }
 

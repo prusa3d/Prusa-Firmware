@@ -306,7 +306,7 @@
 "Extruder info"
 "\x00"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
 "\x00"
 
