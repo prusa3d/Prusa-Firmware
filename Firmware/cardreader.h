@@ -6,7 +6,7 @@
 #define MAX_DIR_DEPTH 10
 
 #include "SdFile.h"
-enum LsAction {LS_SerialPrint,LS_Count,LS_GetFilename};
+enum LsAction {LS_SerialPrint,LS_SerialPrint_LFN,LS_Count,LS_GetFilename};
 class CardReader
 {
 public:
@@ -38,7 +38,7 @@ public:
   uint16_t getWorkDirDepth();
   
 
-  void ls();
+  void ls(bool printLFN);
   void chdir(const char * relpath);
   void updir();
   void setroot();

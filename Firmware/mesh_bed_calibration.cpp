@@ -12,6 +12,8 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+#define DBG(args...) printf_P(args)
+
 uint8_t world2machine_correction_mode;
 float   world2machine_rotation_and_skew[2][2];
 float   world2machine_rotation_and_skew_inv[2][2];
@@ -369,7 +371,9 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     BedSkewOffsetDetectionResultType result = BED_SKEW_OFFSET_DETECTION_PERFECT;
     {
         angleDiff = fabs(a2 - a1);
-		eeprom_update_float((float*)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later 
+        /// XY skew and Y-bed skew
+        DBG(_n("Measured skews: %f %f\n"), degrees(a2 - a1), degrees(a2));
+        eeprom_update_float((float *)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later
         if (angleDiff > bed_skew_angle_mild)
             result = (angleDiff > bed_skew_angle_extreme) ?
                 BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME :
@@ -1380,7 +1384,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 
 		//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
 		go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
-		// Continously lower the Z axis.
+		// Continuously lower the Z axis.
 		endstops_hit_on_purpose();
 		enable_z_endstop(true);
 		while (current_position[Z_AXIS] > -10.f) {
@@ -2375,8 +2379,9 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				delay_keep_alive(3000);
 			}
 			#endif // SUPPORT_VERBOSITY
-		}
-		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
+        }
+        DBG(_n("All 4 calibration points found.\n"));
+        delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
 		
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
@@ -2386,7 +2391,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				// Don't let the manage_inactivity() function remove power from the motors.
 				refresh_cmd_timeout();
 				// Go to the measurement point.
-				// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+				// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
 				current_position[X_AXIS] = pts[mesh_point * 2];
 				current_position[Y_AXIS] = pts[mesh_point * 2 + 1];
 				go_to_current(homing_feedrate[X_AXIS] / 60);
@@ -2406,6 +2411,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
 		
 		if (result >= 0) {
+            DBG(_n("Calibration success.\n"));
 			world2machine_update(vec_x, vec_y, cntr);
 #if 1
 			// Fearlessly store the calibration values into the eeprom.
@@ -2450,7 +2456,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 					// Don't let the manage_inactivity() function remove power from the motors.
 					refresh_cmd_timeout();
 					// Go to the measurement point.
-					// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+					// Use the corrected coordinate, which is a result of find_bed_offset_and_skew().
 					uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
 					uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 					if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix;
@@ -2462,9 +2468,12 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			}
 			#endif // SUPPORT_VERBOSITY
 			return result;
-		}		
-		if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED && too_far_mask == 2) return result; //if fitting failed and front center point is out of reach, terminate calibration and inform user
-		iteration++;
+		}
+        if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED && too_far_mask == 2){
+            DBG(_n("Fitting failed => calibration failed.\n"));
+            return result; //if fitting failed and front center point is out of reach, terminate calibration and inform user
+        }
+        iteration++;
 	}
 	return result;    
 }

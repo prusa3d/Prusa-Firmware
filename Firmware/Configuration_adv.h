@@ -63,12 +63,18 @@
 #define FAN_KICKSTART_TIME 800
 
 /**
- * Auto-report temperatures with M155 S<seconds>
- */
-#define AUTO_REPORT_TEMPERATURES
-
-
-
+ * Auto-report all at once with M155 S<seconds> C[bitmask] with single timer
+ * 
+ * bit 0 = Auto-report temperatures
+ * bit 1 = Auto-report fans
+ * bit 2 = Auto-report position
+ * bit 3 = free
+ * bit 4 = free
+ * bit 5 = free
+ * bit 6 = free
+ * bit 7 = free
+*/
+#define AUTO_REPORT
 
 //===========================================================================
 //=============================Mechanical Settings===========================

@@ -996,11 +996,11 @@ bool tmc2130_home_calibrate(uint8_t axis)
 	uint8_t val[16];
 	homeaxis(axis, 16, step);
 	bubblesort_uint8(step, 16, 0);
-	printf_P(PSTR("sorted samples:\n"));
+	puts_P(PSTR("sorted samples:"));
 	for (uint8_t i = 0; i < 16; i++)
 		printf_P(PSTR(" i=%2d step=%2d\n"), i, step[i]);
 	uint8_t cl = clusterize_uint8(step, 16, cnt, val, 1);
-	printf_P(PSTR("clusters:\n"));
+	puts_P(PSTR("clusters:"));
 	for (uint8_t i = 0; i < cl; i++)
 		printf_P(PSTR(" i=%2d cnt=%2d val=%2d\n"), i, cnt[i], val[i]);
 	bubblesort_uint8(cnt, cl, val);
