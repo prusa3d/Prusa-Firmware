@@ -436,7 +436,7 @@
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
 "Measuring reference height of calibration point"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
@@ -1023,9 +1023,6 @@
 
 #MSG_MESH
 "Mesh"
-
-#
-"Mesh bed leveling"
 
 #
 "MK3S firmware detected on MK3 printer"

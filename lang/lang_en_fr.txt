@@ -582,7 +582,7 @@
 "Measuring reference height of calibration point"
 "Je mesure la hauteur de reference du point de calibrage"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 "\x00"
 
@@ -1364,10 +1364,6 @@
 
 #MSG_MESH
 "Mesh"
-"\x00"
-
-#
-"Mesh bed leveling"
 "\x00"
 
 #

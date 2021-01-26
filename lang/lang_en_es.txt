@@ -582,9 +582,9 @@
 "Measuring reference height of calibration point"
 "Midiendo altura del punto de calibracion"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
-"Nivelacion Mesh Level"
+"Nivela. Mesh Level"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -1365,10 +1365,6 @@
 #MSG_MESH
 "Mesh"
 "Malla"
-
-#
-"Mesh bed leveling"
-"Nivelacion Malla Base"
 
 #
 "MK3S firmware detected on MK3 printer"

@@ -582,7 +582,7 @@
 "Measuring reference height of calibration point"
 "Merim referencni vysku kalibracniho bodu"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 "\x00"
 
@@ -1365,10 +1365,6 @@
 #MSG_MESH
 "Mesh"
 "\x00"
-
-#
-"Mesh bed leveling"
-"Mesh Bed Leveling"
 
 #
 "MK3S firmware detected on MK3 printer"

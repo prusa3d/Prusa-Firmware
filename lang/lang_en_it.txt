@@ -582,7 +582,7 @@
 "Measuring reference height of calibration point"
 "Misura altezza di rif. del punto di calib."
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 "Liv. grilia piano"
 
@@ -1365,10 +1365,6 @@
 #MSG_MESH
 "Mesh"
 "Griglia"
-
-#
-"Mesh bed leveling"
-"Liv. griglia piano"
 
 #
 "MK3S firmware detected on MK3 printer"
