@@ -458,11 +458,11 @@
 "Checking sensors "
 "Comprobando sensores"
 
-#MSG_SELFTEST_CHECK_X c=20
+#MSG_CHECKING_X c=20
 "Checking X axis  "
 "Control sensor X"
 
-#MSG_SELFTEST_CHECK_Y c=20
+#MSG_CHECKING_Y c=20
 "Checking Y axis  "
 "Control sensor Y"
 

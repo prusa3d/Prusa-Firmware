@@ -20,6 +20,8 @@ extern const char MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED[];
 extern const char MSG_BELT_STATUS[];
 extern const char MSG_CALIBRATE_Z_AUTO[];
 extern const char MSG_CARD_MENU[];
+extern const char MSG_CHECKING_X[];
+extern const char MSG_CHECKING_Y[];
 extern const char MSG_CONFIRM_NOZZLE_CLEAN[];
 extern const char MSG_COOLDOWN[];
 extern const char MSG_CRASH[];
