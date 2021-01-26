@@ -83,7 +83,8 @@ uint16_t SP_min = 0x21FF;
 #endif
 
 #ifdef TMC2130_DEDGE_STEPPING
-static_assert(TMC2130_MINIMUM_PULSE == 0, "DEDGE requires/implies TMC2130_MINIMUM_PULSE == 0");
+static_assert(TMC2130_MINIMUM_DELAY 1, // this will fail to compile when non-empty
+              "DEDGE implies/requires an empty TMC2130_MINIMUM_DELAY");
 #define STEP_NC_HI(axis) TOGGLE(_STEP_PIN_##axis)
 #define STEP_NC_LO(axis) //NOP
 #else
