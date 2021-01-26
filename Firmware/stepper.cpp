@@ -75,9 +75,11 @@ uint16_t SP_min = 0x21FF;
 #ifdef TMC2130
 #define STEPPER_MINIMUM_PULSE TMC2130_MINIMUM_PULSE
 #define STEPPER_SET_DIR_DELAY TMC2130_SET_DIR_DELAY
+#define STEPPER_MINIMUM_DELAY TMC2130_MINIMUM_DELAY
 #else
 #define STEPPER_MINIMUM_PULSE 2
 #define STEPPER_SET_DIR_DELAY 100
+#define STEPPER_MINIMUM_DELAY delayMicroseconds(STEPPER_MINIMUM_PULSE)
 #endif
 
 #ifdef TMC2130_DEDGE_STEPPING
@@ -1448,7 +1450,7 @@ void babystep(const uint8_t axis,const bool direction)
         STEP_NC_HI(X_DUP_AXIS);
 #endif
 #ifndef TMC2130_DEDGE_STEPPING
-        delayMicroseconds(STEPPER_MINIMUM_PULSE);
+        STEPPER_MINIMUM_DELAY;
         STEP_NC_LO(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
         STEP_NC_LO(X_DUP_AXIS);
@@ -1478,7 +1480,7 @@ void babystep(const uint8_t axis,const bool direction)
         STEP_NC_HI(Y_DUP_AXIS);
 #endif
 #ifndef TMC2130_DEDGE_STEPPING
-        delayMicroseconds(STEPPER_MINIMUM_PULSE);
+        STEPPER_MINIMUM_DELAY;
         STEP_NC_LO(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
         STEP_NC_LO(Y_DUP_AXIS);
@@ -1511,7 +1513,7 @@ void babystep(const uint8_t axis,const bool direction)
         STEP_NC_HI(Z2_AXIS);
 #endif
 #ifndef TMC2130_DEDGE_STEPPING
-        delayMicroseconds(STEPPER_MINIMUM_PULSE);
+        STEPPER_MINIMUM_DELAY;
         STEP_NC_LO(Z_AXIS);
 #ifdef Z_DUAL_STEPPER_DRIVERS
         STEP_NC_LO(Z2_AXIS);
