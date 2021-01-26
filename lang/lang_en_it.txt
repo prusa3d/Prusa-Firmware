@@ -926,7 +926,7 @@
 "Reset"
 "\x00"
 
-#MSG_RESUME_PRINT
+#MSG_RESUME_PRINT c=18
 "Resume print"
 "Riprendi stampa"
 

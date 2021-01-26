@@ -79,9 +79,10 @@ const char MSG_PRINT_ABORTED[] PROGMEM_I1 = ISTR("Print aborted"); ////c=20
 const char MSG_PULL_OUT_FILAMENT[] PROGMEM_I1 = ISTR("Please pull out filament immediately"); ////c=20 r=4
 const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover print?"); ////c=20 r=2
 const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\xF8" "Refresh"); ////
-const char MSG_RESET[] PROGMEM_I1 = ISTR("Reset"); ////c=14
-const char MSG_RESUMING_PRINT[] PROGMEM_I1 = ISTR("Resuming print"); ////
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
+const char MSG_RESET[] PROGMEM_I1 = ISTR("Reset"); ////c=14
+const char MSG_RESUME_PRINT[] PROGMEM_I1 = ISTR("Resume print"); ////c=18
+const char MSG_RESUMING_PRINT[] PROGMEM_I1 = ISTR("Resuming print"); ////
 const char MSG_SELFTEST_COOLING_FAN[] PROGMEM_I1 = ISTR("Front print fan?"); ////c=20
 const char MSG_SELFTEST_EXTRUDER_FAN[] PROGMEM_I1 = ISTR("Left hotend fan?"); ////c=20
 const char MSG_SELFTEST_FAILED[] PROGMEM_I1 = ISTR("Selftest failed  "); ////c=20

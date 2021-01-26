@@ -6620,9 +6620,9 @@ static void lcd_main_menu()
   {
 #ifdef FANCHECK
       if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
-          MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+          MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
 #else
-      MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+      MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
 #endif
   }
 
@@ -6640,9 +6640,9 @@ static void lcd_main_menu()
 			{
 				#ifdef FANCHECK
 					if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
-						MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+						MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
 				#else
-					MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+					MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
 				#endif
 
 			}
