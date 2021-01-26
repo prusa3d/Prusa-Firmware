@@ -250,7 +250,7 @@
 "E-correct:"
 "E-Korrektur:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
 "Filamentauswurf"
 
@@ -459,16 +459,16 @@
 "Pruefe Sensoren "
 
 #MSG_CHECKING_X c=20
-"Checking X axis  "
-"Pruefe X Achse "
+"Checking X axis"
+"Pruefe X Achse"
 
 #MSG_CHECKING_Y c=20
-"Checking Y axis  "
-"Pruefe Y Achse "
+"Checking Y axis"
+"Pruefe Y Achse"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
-"Pruefe Z Achse "
+"Checking Z axis"
+"Pruefe Z Achse"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"

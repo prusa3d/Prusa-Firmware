@@ -250,7 +250,7 @@
 "E-correct:"
 "Correct-E:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
 "Remonter le fil."
 
@@ -459,15 +459,15 @@
 "Verif. des capteurs"
 
 #MSG_CHECKING_X c=20
-"Checking X axis  "
+"Checking X axis"
 "Verification axe X"
 
 #MSG_CHECKING_Y c=20
-"Checking Y axis  "
+"Checking Y axis"
 "Verification axe Y"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 "Verification axe Z"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1

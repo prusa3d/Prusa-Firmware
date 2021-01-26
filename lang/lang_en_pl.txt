@@ -250,7 +250,7 @@
 "E-correct:"
 "Korekcja-E:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
 "Wysun filament"
 
@@ -459,15 +459,15 @@
 "Kontrola czujnikow"
 
 #MSG_CHECKING_X c=20
-"Checking X axis  "
+"Checking X axis"
 "Kontrola osi X"
 
 #MSG_CHECKING_Y c=20
-"Checking Y axis  "
+"Checking Y axis"
 "Kontrola osi Y"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 "Kontrola osi Z"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1

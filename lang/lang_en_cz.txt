@@ -250,9 +250,9 @@
 "E-correct:"
 "Korekce E:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
-"Vysunout filament"
+"Vysunout fil."
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -459,15 +459,15 @@
 "Kontrola senzoru"
 
 #MSG_CHECKING_X c=20
-"Checking X axis  "
+"Checking X axis"
 "Kontrola osy X"
 
 #MSG_CHECKING_Y c=20
-"Checking Y axis  "
+"Checking Y axis"
 "Kontrola osy Y"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 "Kontrola osy Z"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1

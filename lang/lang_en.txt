@@ -187,7 +187,7 @@
 #MSG_EXTRUDER_CORRECTION c=13
 "E-correct:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
@@ -344,13 +344,13 @@
 "Checking sensors "
 
 #MSG_CHECKING_X c=20
-"Checking X axis  "
+"Checking X axis"
 
 #MSG_CHECKING_Y c=20
-"Checking Y axis  "
+"Checking Y axis"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
