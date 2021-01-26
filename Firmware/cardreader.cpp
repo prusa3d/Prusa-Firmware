@@ -62,9 +62,10 @@ char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
 
 /**
 +* Dive into a folder and recurse depth-first to perform a pre-set operation lsAction:
-+*   LS_Count       - Add +1 to nrFiles for every file within the parent
-+*   LS_GetFilename - Get the filename of the file indexed by nrFiles
-+*   LS_SerialPrint - Print the full path and size of each file to serial output
++*   LS_Count           - Add +1 to nrFiles for every file within the parent
++*   LS_GetFilename     - Get the filename of the file indexed by nrFiles
++*   LS_SerialPrint     - Print the full path and size of each file to serial output
++*   LS_SerialPrint_LFN - Print the full path, long filename and size of each file to serial output
 +*/
 
 void CardReader::lsDive(const char *prepend, SdFile parent, const char * const match/*=NULL*/) {
@@ -90,9 +91,13 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				// Serial.print(path);
 				// Get a new directory object using the full path
 				// and dive recursively into it.
+				
+				if (lsAction == LS_SerialPrint_LFN)
+					printf_P(PSTR("DIR_ENTER: %s \"%s\"\n"), path, longFilename[0] ? longFilename : lfilename);
+				
 				SdFile dir;
 				if (!dir.open(parent, lfilename, O_READ)) {
-					if (lsAction == LS_SerialPrint) {
+					if (lsAction == LS_SerialPrint || lsAction == LS_SerialPrint_LFN) {
 						//SERIAL_ECHO_START();
 						//SERIAL_ECHOPGM(_i("Cannot open subdir"));////MSG_SD_CANT_OPEN_SUBDIR
 						//SERIAL_ECHOLN(lfilename);
@@ -100,6 +105,9 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				}
 				lsDive(path, dir);
 				// close() is done automatically by destructor of SdFile
+				
+				if (lsAction == LS_SerialPrint_LFN)
+					puts_P(PSTR("DIR_EXIT"));
 			}
 			else {
 				uint8_t pn0 = p.name[0];
@@ -114,12 +122,18 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 						nrFiles++;
 						break;
 					
+					case LS_SerialPrint_LFN:
 					case LS_SerialPrint:
 						createFilename(filename, p);
 						SERIAL_PROTOCOL(prepend);
 						SERIAL_PROTOCOL(filename);
 						MYSERIAL.write(' ');
+						
+						if (lsAction == LS_SerialPrint_LFN)
+							printf_P(PSTR("\"%s\" "), LONGEST_FILENAME);
+						
 						SERIAL_PROTOCOLLN(p.fileSize);
+						manage_heater();
 						break;
 				
 					case LS_GetFilename:
@@ -160,9 +174,9 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 		} // while readDir
 }
 
-void CardReader::ls() 
+void CardReader::ls(bool printLFN)
 {
-  lsAction=LS_SerialPrint;
+  lsAction = printLFN ? LS_SerialPrint_LFN : LS_SerialPrint;
   //if(lsAction==LS_Count)
   //nrFiles=0;
 

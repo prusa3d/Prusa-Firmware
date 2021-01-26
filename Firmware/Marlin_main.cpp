@@ -5730,10 +5730,16 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
     /*!
 	### M20 - SD Card file list <a href="https://reprap.org/wiki/G-code#M20:_List_SD_card">M20: List SD card</a>
+    #### Usage
+    
+        M20 [ L ]
+    #### Parameters
+    - `L` - Reports ling filenames instead of just short filenames. Requires host software parsing.
     */
     case 20:
+      KEEPALIVE_STATE(NOT_BUSY); // do not send busy messages during listing. Inhibits the output of manage_heater()
       SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST
-      card.ls();
+      card.ls(code_seen('L'));
       SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST
       break;
 
