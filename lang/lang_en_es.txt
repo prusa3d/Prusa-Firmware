@@ -922,7 +922,7 @@
 "Reset XYZ calibr."
 "\x00"
 
-#MSG_BED_CORRECTION_RESET
+#MSG_RESET c=14
 "Reset"
 "\x00"
 
