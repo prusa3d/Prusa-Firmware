@@ -1398,7 +1398,7 @@
 "G-code sliced for a different printer type. Continue?"
 "G-code je pripraven pro jiny typ tiskarny. Pokracovat?"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. Tisk zrusen."
 

@@ -1398,7 +1398,7 @@
 "G-code sliced for a different printer type. Continue?"
 "Le G-code a ete prepare pour une autre version de l'imprimante. Continuer?"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "Le G-code a ete prepare pour une autre version de l'imprimante. Veuillez decouper le modele a nouveau. L'impression a ete annulee."
 

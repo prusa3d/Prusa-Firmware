@@ -434,7 +434,7 @@ lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckModel::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."));
+          lcd_show_fullscreen_message_and_wait_P(_T(MSG_GCODE_DIFF_PRINTER_CANCELLED));
           lcd_print_stop();
           break;
      case ClCheckModel::_None:
@@ -583,7 +583,7 @@ lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckModel::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."));
+          lcd_show_fullscreen_message_and_wait_P(_T(MSG_GCODE_DIFF_PRINTER_CANCELLED));
           lcd_print_stop();
           break;
      case ClCheckModel::_None:

@@ -131,6 +131,7 @@ const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////
 const char MSG_FIRMWARE[] PROGMEM_I1 = ISTR("Firmware"); ////
 const char MSG_GCODE[] PROGMEM_I1 = ISTR("Gcode"); ////
 const char MSG_GCODE_DIFF_PRINTER_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different printer type. Continue?"); ////c=20 r=5
+const char MSG_GCODE_DIFF_PRINTER_CANCELLED[] PROGMEM_I1 =ISTR("G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."); ////c=20 r=6
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////
 const char MSG_MMU_MODE[] PROGMEM_I1 = ISTR("MMU Mode"); ////
 const char MSG_SD_CARD[] PROGMEM_I1 = ISTR("SD card"); ////
