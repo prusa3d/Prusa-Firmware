@@ -567,11 +567,11 @@ bool can_extrude()
 static void get_response_print_info(uint8_t move) {
 	printf_P(PSTR("mmu_get_response - begin move: "), move);
 	switch (move) {
-		case MMU_LOAD_MOVE: printf_P(PSTR("load\n")); break;
-		case MMU_UNLOAD_MOVE: printf_P(PSTR("unload\n")); break;
-		case MMU_TCODE_MOVE: printf_P(PSTR("T-code\n")); break;
-		case MMU_NO_MOVE: printf_P(PSTR("no move\n")); break;
-		default: printf_P(PSTR("error: unknown move\n")); break;
+		case MMU_LOAD_MOVE: puts_P(PSTR("load")); break;
+		case MMU_UNLOAD_MOVE: puts_P(PSTR("unload")); break;
+		case MMU_TCODE_MOVE: puts_P(PSTR("T-code")); break;
+		case MMU_NO_MOVE: puts_P(PSTR("no move")); break;
+		default: puts_P(PSTR("error: unknown move")); break;
 	}
 }
 
@@ -602,7 +602,7 @@ bool mmu_get_response(uint8_t move)
 				{
 				    if (can_extrude())
 				    {
-                        printf_P(PSTR("Unload 1\n"));
+                        puts_P(PSTR("Unload 1"));
                         current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
                         plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
                         st_synchronize();
@@ -610,7 +610,7 @@ bool mmu_get_response(uint8_t move)
 				}
 				else //filament was unloaded from idler, no additional movements needed 
 				{ 
-					printf_P(PSTR("Unloading finished 1\n"));
+					puts_P(PSTR("Unloading finished 1"));
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
 					move = MMU_NO_MOVE;
 				}
@@ -620,7 +620,7 @@ bool mmu_get_response(uint8_t move)
 				{
                     if (can_extrude())
                     {
-                        printf_P(PSTR("Unload 2\n"));
+                        puts_P(PSTR("Unload 2"));
                         current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
                         plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
                         st_synchronize();
@@ -628,7 +628,7 @@ bool mmu_get_response(uint8_t move)
 				}
 				else //delay to allow mmu unit to pull out filament from bondtech gears and then start with infinite loading 
 				{ 
-					printf_P(PSTR("Unloading finished 2\n"));
+					puts_P(PSTR("Unloading finished 2"));
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
 					delay_keep_alive(MMU_LOAD_TIME_MS);
 					move = MMU_LOAD_MOVE;
@@ -689,7 +689,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  }
 				  st_synchronize();
 				  mmu_print_saved = true;
-				  printf_P(PSTR("MMU not responding\n"));
+				  puts_P(PSTR("MMU not responding"));
 				  KEEPALIVE_STATE(PAUSED_FOR_USER);
 				  hotend_temp_bckp = degTargetHotend(active_extruder);
 				  if (move_axes) {
@@ -746,7 +746,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 			  }
 		  }
 		  else if (mmu_print_saved) {
-			  printf_P(PSTR("MMU starts responding\n"));
+			  puts_P(PSTR("MMU starts responding"));
 			  KEEPALIVE_STATE(IN_HANDLER);
 			  mmu_loading_flag = false;
 			  if (turn_off_nozzle) 
@@ -878,8 +878,8 @@ void mmu_M600_load_filament(bool automatic, float nozzle_temp)
     }
     lcd_update_enable(false);
     lcd_clear();
-    lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-    lcd_print(" ");
+    lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
+    lcd_print(' ');
     lcd_print(tmp_extruder + 1);
     snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
@@ -991,10 +991,10 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 	
 	lcd_update_enable(false);
 	lcd_clear();
-	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
+	lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
 	//if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd.setCursor(0, 1);
 	//else lcd.print(" ");
-	lcd_print(" ");
+	lcd_print(' ');
 	lcd_print(extruder + 1);
 
 	// get response
@@ -1034,7 +1034,7 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 	lcd_clear();
 	lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 	if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd_set_cursor(0, 1);
-	else lcd_print(" ");
+	else lcd_print(' ');
 	lcd_print(mmu_extruder + 1);
 	lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
 	st_synchronize();
@@ -1081,9 +1081,9 @@ void mmu_filament_ramming()
 void extr_unload_view()
 {
     lcd_clear();
-    lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-    lcd_print(" ");
-    if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
+    lcd_puts_at_P(0, 1, _T(MSG_UNLOADING_FILAMENT));
+    lcd_print(' ');
+    if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(' ');
     else lcd_print(mmu_extruder + 1);
 }
 
@@ -1115,7 +1115,7 @@ void extr_unload()
 		lcd_display_message_fullscreen_P(PSTR(""));
 		max_feedrate[E_AXIS] = 50;
 		lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-		lcd_print(" ");
+		lcd_print(' ');
 		lcd_print(mmu_extruder + 1);
 		lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
 		if (current_position[Z_AXIS] < 15) {
@@ -1349,9 +1349,8 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         tmp_extruder = filament_nr;
         lcd_update_enable(false);
         lcd_clear();
-        lcd_set_cursor(0, 1);
-        lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-        lcd_print(" ");
+        lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
+        lcd_print(' ');
         lcd_print(tmp_extruder + 1);
         mmu_command(MmuCmd::T0 + tmp_extruder);
         manage_response(true, true, MMU_TCODE_MOVE);
@@ -1384,8 +1383,8 @@ void mmu_cut_filament(uint8_t filament_nr)
     {
         LcdUpdateDisabler disableLcdUpdate;
         lcd_clear();
-        lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18
-        lcd_print(" ");
+        lcd_puts_at_P(0, 1, _i("Cutting filament")); //// c=18
+        lcd_print(' ');
         lcd_print(filament_nr + 1);
         mmu_filament_ramming();
         mmu_command(MmuCmd::K0 + filament_nr);
@@ -1412,7 +1411,7 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 			{
 			    LcdUpdateDisabler disableLcdUpdate;
                 lcd_clear();
-                lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
+                lcd_puts_at_P(0, 1, _i("Ejecting filament"));
                 mmu_filament_ramming();
                 mmu_command(MmuCmd::E0 + filament);
                 manage_response(false, false, MMU_UNLOAD_MOVE);

@@ -138,7 +138,7 @@
 "Bed"
 "Podlozka"
 
-#MSG_MENU_BELT_STATUS c=18
+#MSG_BELT_STATUS c=18
 "Belt status"
 "Stav remenu"
 
@@ -218,7 +218,7 @@
 "Crash detected. Resume print?"
 "Detekovan naraz. Obnovit tisk?"
 
-#
+#MSG_CRASH c=7
 "Crash"
 "Naraz"
 
@@ -250,9 +250,9 @@
 "E-correct:"
 "Korekce E:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
-"Vysunout filament"
+"Vysunout fil."
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -306,7 +306,7 @@
 "Extruder info"
 "\x00"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
 "\x00"
 
@@ -330,7 +330,7 @@
 "Fan test"
 "Test ventilatoru"
 
-#MSG_FANS_CHECK
+#MSG_FANS_CHECK c=13
 "Fans check"
 "Kontr. vent."
 
@@ -338,8 +338,8 @@
 "Fil. sensor"
 "Fil. senzor"
 
-# c=14
-"Filam. runouts"
+#MSG_FIL_RUNOUTS c=14
+"Fil. runouts  "
 "Vypadky filam."
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -458,16 +458,16 @@
 "Checking sensors "
 "Kontrola senzoru"
 
-#MSG_SELFTEST_CHECK_X c=20
-"Checking X axis  "
+#MSG_CHECKING_X c=20
+"Checking X axis"
 "Kontrola osy X"
 
-#MSG_SELFTEST_CHECK_Y c=20
-"Checking Y axis  "
+#MSG_CHECKING_Y c=20
+"Checking Y axis"
 "Kontrola osy Y"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 "Kontrola osy Z"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
@@ -498,7 +498,7 @@
 "Insert filament"
 "Vlozte filament"
 
-#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+#MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Je filament zaveden?"
 
@@ -506,7 +506,7 @@
 "Is steel sheet on heatbed?"
 "Je tiskovy plat na podlozce?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Selhani posl. tisku"
 
@@ -514,7 +514,7 @@
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Mate-li vice tiskovych platu, kalibrujte je v menu Nastaveni - HW nastaveni - Tiskove platy"
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 "Posledni tisk"
 
@@ -582,7 +582,7 @@
 "Measuring reference height of calibration point"
 "Merim referencni vysku kalibracniho bodu"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 "\x00"
 
@@ -598,7 +598,7 @@
 "Measured skew"
 "Merene zkoseni"
 
-#
+#MSG_MMU_FAILS c=14
 "MMU fails"
 "Selhani MMU"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "Zavedeni MMU selhalo"
 
-#
+#MSG_MMU_LOAD_FAILS c=14
 "MMU load fails"
 "MMU selhani zavadeni"
 
@@ -834,7 +834,7 @@
 "Pause"
 "\x00"
 
-#
+#MSG_POWER_FAILURES c=14
 "Power failures"
 "Vypadky proudu"
 
@@ -922,11 +922,11 @@
 "Reset XYZ calibr."
 "Reset XYZ kalibr."
 
-#MSG_BED_CORRECTION_RESET
+#MSG_RESET c=14
 "Reset"
 "\x00"
 
-#MSG_RESUME_PRINT
+#MSG_RESUME_PRINT c=18
 "Resume print"
 "Pokracovat"
 
@@ -1162,7 +1162,7 @@
 "Unload"
 "Vysunout"
 
-#
+#MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Celkem selhani"
 
@@ -1182,7 +1182,7 @@
 "Unloading filament"
 "Vysouvam filament"
 
-#
+#MSG_TOTAL c=6
 "Total"
 "Celkem"
 
@@ -1350,7 +1350,7 @@
 "Warn"
 "Varovat"
 
-#
+#MSG_HW_SETUP c=18
 "HW Setup"
 "HW nastaveni"
 
@@ -1365,10 +1365,6 @@
 #MSG_MESH
 "Mesh"
 "\x00"
-
-#
-"Mesh bed leveling"
-"Mesh Bed Leveling"
 
 #
 "MK3S firmware detected on MK3 printer"
@@ -1398,11 +1394,11 @@
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "\x00"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 "G-code je pripraven pro jiny typ tiskarny. Pokracovat?"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. Tisk zrusen."
 
@@ -1458,7 +1454,7 @@
 "Assist"
 "Asist."
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 "Tiskove platy"
 

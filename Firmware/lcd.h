@@ -40,7 +40,10 @@ extern void lcd_set_cursor(uint8_t col, uint8_t row);
 extern void lcd_createChar_P(uint8_t, const uint8_t*);
 
 
-extern int lcd_putc(int c);
+// char c is non-standard, however it saves 1B on stack
+extern int lcd_putc(char c);
+extern int lcd_putc_at(uint8_t c, uint8_t r, char ch);
+
 extern int lcd_puts_P(const char* str);
 extern int lcd_puts_at_P(uint8_t c, uint8_t r, const char* str);
 extern int lcd_printf_P(const char* format, ...);

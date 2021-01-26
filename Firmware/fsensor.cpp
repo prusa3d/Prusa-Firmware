@@ -129,7 +129,7 @@ unsigned long nIRsensorLastTime;
 
 void fsensor_stop_and_save_print(void)
 {
-    printf_P(PSTR("fsensor_stop_and_save_print\n"));
+    puts_P(PSTR("fsensor_stop_and_save_print"));
     stop_and_save_print_to_ram(0, 0);
     fsensor_watch_runout = false;
 }
@@ -152,7 +152,7 @@ void fsensor_set_axis_steps_per_unit(float u)
 
 void fsensor_restore_print_and_continue(void)
 {
-    printf_P(PSTR("fsensor_restore_print_and_continue\n"));
+    puts_P(PSTR("fsensor_restore_print_and_continue"));
     fsensor_watch_runout = true;
 #ifdef PAT9125
     fsensor_reset_err_cnt();
@@ -164,7 +164,7 @@ void fsensor_restore_print_and_continue(void)
 // allowing new instructions to be inserted in the middle
 void fsensor_checkpoint_print(void)
 {
-    printf_P(PSTR("fsensor_checkpoint_print\n"));
+    puts_P(PSTR("fsensor_checkpoint_print"));
     stop_and_save_print_to_ram(0, 0);
     restore_print_from_ram_and_continue(0);
 }
@@ -414,7 +414,7 @@ void fsensor_oq_meassure_start(uint8_t skip)
 {
 	if (!fsensor_enabled) return;
 	if (!fsensor_oq_meassure_enabled) return;
-	printf_P(PSTR("fsensor_oq_meassure_start\n"));
+	puts_P(PSTR("fsensor_oq_meassure_start"));
 	fsensor_oq_skipchunk = skip;
 	fsensor_oq_samples = 0;
 	fsensor_oq_st_sum = 0;
@@ -447,7 +447,7 @@ bool fsensor_oq_result(void)
 {
 	if (!fsensor_enabled) return true;
 	if (!fsensor_oq_meassure_enabled) return true;
-	printf_P(_N("fsensor_oq_result\n"));
+	puts_P(_N("fsensor_oq_result"));
 	bool res_er_sum = (fsensor_oq_er_sum <= FSENSOR_OQ_MAX_ES);
 	printf_P(_N(" er_sum = %u %S\n"), fsensor_oq_er_sum, (res_er_sum?_OK:_NG));
 	bool res_er_max = (fsensor_oq_er_max <= FSENSOR_OQ_MAX_EM);
@@ -616,7 +616,7 @@ void fsensor_st_block_chunk(int cnt)
 //! Common code for enqueing M600 and supplemental codes into the command queue.
 //! Used both for the IR sensor and the PAT9125
 void fsensor_enque_M600(){
-	printf_P(PSTR("fsensor_update - M600\n"));
+	puts_P(PSTR("fsensor_update - M600"));
 	eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 	eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
 	enquecommand_front_P((PSTR("M600")));
@@ -670,7 +670,7 @@ void fsensor_update(void)
                 fsensor_softfail_ccnt = 0;
             if (!err && fsensor_softfail_ccnt <= FSENSOR_SOFTERR_CMAX)
             {
-                printf_P(PSTR("fsensor_err_cnt = 0\n"));
+                puts_P(PSTR("fsensor_err_cnt = 0"));
                 ++fsensor_softfail;
                 ++fsensor_softfail_ccnt;
                 fsensor_softfail_last = now;
@@ -757,19 +757,19 @@ bool fsensor_IR_check(){
         /// Or the user is so creative so that he can hold a piece of fillament in the hole in such a genius way,
         /// that the IR fsensor reading is within 1.5 and 3V ... this would have been highly unusual
         /// and would have been considered more like a sabotage than normal printer operation
-        printf_P(PSTR("fsensor in forbidden range 1.5-3V - check sensor\n"));
+        puts_P(PSTR("fsensor in forbidden range 1.5-3V - check sensor"));
         return false; 
     }
     if( oFsensorPCB == ClFsensorPCB::_Rev04 ){
         /// newer IR sensor cannot normally produce 4.6-5V, this is considered a failure/bad mount
         if( IRsensor_Hopen_TRESHOLD <= current_voltage_raw_IR && current_voltage_raw_IR <= IRsensor_VMax_TRESHOLD ){
-            printf_P(PSTR("fsensor v0.4 in fault range 4.6-5V - unconnected\n"));
+            puts_P(PSTR("fsensor v0.4 in fault range 4.6-5V - unconnected"));
             return false;
         }
         /// newer IR sensor cannot normally produce 0-0.3V, this is considered a failure 
 #if 0	//Disabled as it has to be decided if we gonna use this or not.
         if( IRsensor_Hopen_TRESHOLD <= current_voltage_raw_IR && current_voltage_raw_IR <= IRsensor_VMax_TRESHOLD ){
-            printf_P(PSTR("fsensor v0.4 in fault range 0.0-0.3V - wrong IR sensor\n"));
+            puts_P(PSTR("fsensor v0.4 in fault range 0.0-0.3V - wrong IR sensor"));
             return false;
         }
 #endif
@@ -777,7 +777,7 @@ bool fsensor_IR_check(){
     /// If IR sensor is "uknown state" and filament is not loaded > 1.5V return false
 #if 0
     if( (oFsensorPCB == ClFsensorPCB::_Undef) && ( current_voltage_raw_IR > IRsensor_Lmax_TRESHOLD ) ){
-        printf_P(PSTR("Unknown IR sensor version and no filament loaded detected.\n"));
+        puts_P(PSTR("Unknown IR sensor version and no filament loaded detected."));
         return false;
     }
 #endif

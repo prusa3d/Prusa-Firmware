@@ -441,7 +441,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
       SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED
       getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
-      lcd_setstatus("SD-PRINTING         ");
+      lcd_setstatuspgm(PSTR("SD-PRINTING"));
     }
     else
     {
@@ -492,7 +492,7 @@ void CardReader::removeFile(const char* name)
     {
       SERIAL_PROTOCOLPGM("Deletion failed, File: ");
       SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLLNPGM(".");
+      SERIAL_PROTOCOLLN('.');
     }
   
 }
@@ -560,7 +560,7 @@ void CardReader::write_command_no_newline(char *buf)
   {
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
-    MYSERIAL.println("An error while writing to the SD Card.");
+    SERIAL_PROTOCOLLNPGM("An error while writing to the SD Card.");
   }
 }
 
@@ -887,8 +887,7 @@ void CardReader::presort() {
 				for (int column = 0; column < 20; column++) {
 					if (column < (percent / 5))
 					{
-						lcd_set_cursor(column, 2);
-						lcd_print('\x01'); //simple progress bar
+						lcd_putc_at(column, 2, '\x01'); //simple progress bar
 					}
 				}
 				counter++;
@@ -966,8 +965,7 @@ void CardReader::presort() {
 #if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
 	for (int column = 0; column <= 19; column++)
 	{
-		lcd_set_cursor(column, 2);
-		lcd_print('\x01'); //simple progress bar
+		lcd_putc_at(column, 2, '\x01'); //simple progress bar
 	}
 	_delay(300);
 	lcd_set_degree();

@@ -18,6 +18,8 @@
 
 #define _PINDA ((READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING)?1:0)
 
+static const char endl[2] PROGMEM = "\n";
+
 #define DBG(args...) printf_P(args)
 //#define DBG(args...)
 #ifndef _n
@@ -275,6 +277,7 @@ bool xyzcal_spiral2(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	ad = 0;
 	if (pad) ad = *pad % 720;
 	
+    //@size=214
 	DBG(_n("xyzcal_spiral2 cx=%d cy=%d z0=%d dz=%d radius=%d ad=%d\n"), cx, cy, z0, dz, radius, ad);
 	// lcd_set_cursor(0, 4);
 	// char text[10];
@@ -318,6 +321,7 @@ bool xyzcal_spiral8(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	bool ret = false;
 	uint16_t ad = 0;
 	if (pad) ad = *pad;
+    //@size=274
 	DBG(_n("xyzcal_spiral8 cx=%d cy=%d z0=%d dz=%d radius=%d ad=%d\n"), cx, cy, z0, dz, radius, ad);
 	if (!ret && (ad < 720))
 		if ((ret = xyzcal_spiral2(cx, cy, z0 - 0*dz, dz, radius, 0, delay_us, check_pinda, &ad)) != 0)
@@ -401,6 +405,7 @@ void print_hysteresis(int16_t min_z, int16_t max_z, int16_t step){
 		trigger = _Z;
 		//xyzcal_lineXYZ_to(_X, _Y, min_z, delay_us, 0);
 
+        //@size=114
 		DBG(_n("min, trigger, untrigger, max: [%d %d %d %d]\n"), _Z, trigger, untrigger, z);
 	}
 }
@@ -559,6 +564,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 			go_manhattan((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, Z_ACCEL, Z_MIN_DELAY);
 			xyzcal_lineXYZ_to((d & 1) ? (cx + 992) : (cx - 992), cy - 992 + r * 64, _Z, delay_us, 0);
 			sm4_set_dir(X_AXIS, d);
+            //@size=242
 			DBG(_n("%d\n"), 64 - (r * 2 + d)); ///< to keep OctoPrint connection alive
 
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
@@ -635,7 +641,7 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 			}
 		}
 	}
-	DBG(_n("\n"));
+	DBG(endl);
 }
 
 /// Returns rate of match
@@ -682,6 +688,7 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 		}
 		// DBG(_n("\n"));
 	}
+    //@size=278
 	DBG(_n("Pattern center [%f %f], match %f%%\n"), max_c + 5.5f, max_r + 5.5f, max_match / 1.32f);
 
 	*pc = max_c;
@@ -694,6 +701,7 @@ const uint16_t xyzcal_point_pattern_08[12] PROGMEM = {0x000, 0x000, 0x0f0, 0x1f8
 
 bool xyzcal_searchZ(void)
 {
+    //@size=118
 	DBG(_n("xyzcal_searchZ x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	int16_t x0 = _X;
 	int16_t y0 = _Y;
@@ -709,11 +717,13 @@ bool xyzcal_searchZ(void)
 			int16_t x_on = _X;
 			int16_t y_on = _Y;
 			int16_t z_on = _Z;
-			DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), x_on, y_on, z_on, ad);
+			//@size=82
+            DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), x_on, y_on, z_on, ad);
 			return true;
 		}
 		z -= 400;
 	}
+    //@size=138
 	DBG(_n("xyzcal_searchZ no signal\n x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	return false;
 }
@@ -805,6 +815,11 @@ float median(float *points, const uint8_t num_points){
 	return points[num_points / 2];
 }
 
+float __attribute__ ((noinline)) CLAMP_median(float *shifts, uint8_t blocks, float norm){
+    const constexpr float max_change = 0.5f; ///< avoids too fast changes (avoid oscillation)
+    return CLAMP( median(shifts, blocks) * norm, -max_change, max_change);
+}
+
 /// Searches for circle iteratively
 /// Uses points on the perimeter. If point is high it pushes circle out of the center (shift or change of radius),
 /// otherwise to the center.
@@ -814,7 +829,6 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 	const constexpr uint8_t num_points = 33;
 	const float pi_2_div_num_points = 2 * M_PI / num_points;
 	const constexpr uint8_t target_z = 32; ///< target z height of the circle
-	float max_change = 0.5f; ///< avoids too fast changes (avoid oscillation)
 	const uint8_t blocks = num_points;
 	float shifts_x[blocks];
 	float shifts_y[blocks];	
@@ -824,6 +838,7 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 
 	for (int8_t i = iterations; i > 0; --i){
 	
+        //@size=128B
 		DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
 
 		/// read points on the circle
@@ -840,26 +855,31 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 
 		const float reducer = 32.f; ///< reduces speed of convergency to avoid oscillation
 		const float norm = 1.f / reducer;
-		x += CLAMP(median(shifts_x, blocks) * norm, -max_change, max_change);
-		y += CLAMP(median(shifts_y, blocks) * norm, -max_change, max_change);
-		r += CLAMP(median(shifts_r, blocks) * norm * .5f, -max_change, max_change);
+//		x += CLAMP(median(shifts_x, blocks) * norm, -max_change, max_change);
+//		y += CLAMP(median(shifts_y, blocks) * norm, -max_change, max_change);
+//		r += CLAMP(median(shifts_r, blocks) * norm * .5f, -max_change, max_change);
+        //104B down
+        x += CLAMP_median(shifts_x, blocks, norm);
+        y += CLAMP_median(shifts_y, blocks, norm);
+        r += CLAMP_median(shifts_r, blocks, norm * .5f);
 
 		r = MAX(2, r);
 
 	}
+    //@size=118
 	DBG(_n(" [%f, %f][%f] final circle\n"), x, y, r);
 }
 
 /// Prints matrix in hex to debug output (serial line)
-void print_image(uint8_t *matrix_32x32){
+void print_image(const uint8_t *matrix_32x32){
 	for (uint8_t y = 0; y < 32; ++y){
 		const uint16_t idx_y = y * 32;
 		for (uint8_t x = 0; x < 32; ++x){
 			DBG(_n("%02x"), matrix_32x32[idx_y + x]);
 		}
-		DBG(_n("\n"));
+		DBG(endl);
 	}
-	DBG(_n("\n"));
+	DBG(endl);
 }
 
 /// Takes two patterns and searches them in matrix32
@@ -889,6 +909,7 @@ uint8_t find_patterns(uint8_t *matrix32, uint16_t *pattern08, uint16_t *pattern1
 /// scans area around the current head location and
 /// searches for the center of the calibration pin
 bool xyzcal_scan_and_process(void){
+    //@size=44
 	DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	bool ret = false;
 	int16_t x = _X;
@@ -918,10 +939,11 @@ bool xyzcal_scan_and_process(void){
 		float xf = uc + 5.5f;
 		float yf = ur + 5.5f;
 		float radius = 4.5f; ///< default radius
-		const uint8_t iterations = 20;
+		constexpr const uint8_t iterations = 20;
 		dynamic_circle(matrix32, xf, yf, radius, iterations);
 		if (fabs(xf - (uc + 5.5f)) > 3 || fabs(yf - (ur + 5.5f)) > 3 || fabs(radius - 5) > 3){
-			DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
+			//@size=88
+            DBG(_n(" [%f %f][%f] mm divergence\n"), xf - (uc + 5.5f), yf - (ur + 5.5f), radius - 5);
 			/// dynamic algorithm diverged, use original position instead
 			xf = uc + 5.5f;
 			yf = ur + 5.5f;
@@ -930,7 +952,8 @@ bool xyzcal_scan_and_process(void){
 		/// move to the center of area and convert to position
 		xf = (float)x + (xf - 15.5f) * 64;
 		yf = (float)y + (yf - 15.5f) * 64;
-		DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
+		//@size=114
+        DBG(_n(" [%f %f] mm pattern center\n"), pos_2_mm(xf), pos_2_mm(yf));
 		x = round_to_i16(xf);
 		y = round_to_i16(yf);
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
@@ -946,11 +969,9 @@ bool xyzcal_scan_and_process(void){
 bool xyzcal_find_bed_induction_sensor_point_xy(void){
 	bool ret = false;
 
-	DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
+    //@size=258
+    DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
-	pos_i16_t x = _X;
-	pos_i16_t y = _Y;
-	const pos_i16_t z = _Z;
 	///< magic constant, lowers min_z after searchZ to obtain more dense data in scan
 	const pos_i16_t lower_z = 72; 
 
