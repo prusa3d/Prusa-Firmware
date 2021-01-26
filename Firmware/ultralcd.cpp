@@ -8381,7 +8381,7 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	if (screen == TestScreen::EndStops) lcd_puts_P(_i("Checking endstops"));////MSG_SELFTEST_CHECK_ENDSTOPS c=20
 	if (screen == TestScreen::AxisX) lcd_puts_P(_T(MSG_CHECKING_X));
 	if (screen == TestScreen::AxisY) lcd_puts_P(_T(MSG_CHECKING_Y));
-	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis  "));////MSG_SELFTEST_CHECK_Z c=20
+	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis"));////MSG_SELFTEST_CHECK_Z c=20
 	if (screen == TestScreen::Bed) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
 	if (screen == TestScreen::Hotend
 	    || screen == TestScreen::HotendOk) lcd_puts_P(_i("Checking hotend  "));////MSG_SELFTEST_CHECK_HOTEND c=20

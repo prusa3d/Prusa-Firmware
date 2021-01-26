@@ -339,8 +339,8 @@
 "Sensore fil."
 
 #MSG_FIL_RUNOUTS c=15
-"Fil. runouts  "
-"Fil. esauriti "
+"Fil. runouts"
+"Fil. esauriti"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"

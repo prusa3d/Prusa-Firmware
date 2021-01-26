@@ -339,7 +339,7 @@
 "Fil. senzor"
 
 #MSG_FIL_RUNOUTS c=15
-"Fil. runouts  "
+"Fil. runouts"
 "Vypadky filam."
 
 #MSG_FILAMENT_CLEAN c=20 r=2
