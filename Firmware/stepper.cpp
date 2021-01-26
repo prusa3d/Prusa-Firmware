@@ -1449,12 +1449,10 @@ void babystep(const uint8_t axis,const bool direction)
 #ifdef DEBUG_XSTEP_DUP_PIN
         STEP_NC_HI(X_DUP_AXIS);
 #endif
-#ifndef TMC2130_DEDGE_STEPPING
         STEPPER_MINIMUM_DELAY;
         STEP_NC_LO(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
         STEP_NC_LO(X_DUP_AXIS);
-#endif
 #endif
 
         //get old pin state back.
@@ -1479,12 +1477,10 @@ void babystep(const uint8_t axis,const bool direction)
 #ifdef DEBUG_YSTEP_DUP_PIN
         STEP_NC_HI(Y_DUP_AXIS);
 #endif
-#ifndef TMC2130_DEDGE_STEPPING
         STEPPER_MINIMUM_DELAY;
         STEP_NC_LO(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
         STEP_NC_LO(Y_DUP_AXIS);
-#endif
 #endif
 
         //get old pin state back.
@@ -1512,12 +1508,10 @@ void babystep(const uint8_t axis,const bool direction)
 #ifdef Z_DUAL_STEPPER_DRIVERS
         STEP_NC_HI(Z2_AXIS);
 #endif
-#ifndef TMC2130_DEDGE_STEPPING
         STEPPER_MINIMUM_DELAY;
         STEP_NC_LO(Z_AXIS);
 #ifdef Z_DUAL_STEPPER_DRIVERS
         STEP_NC_LO(Z2_AXIS);
-#endif
 #endif
 
         //get old pin state back.
