@@ -39,7 +39,7 @@ class SdFile : public SdBaseFile/*, public Print*/ {
   const uint8_t *gfCacheP;
   uint32_t gfBlock; // remember the current file block to be kept in cache - due to reuse of the memory, the block may fall out a must be read back
   uint16_t gfOffset;
-  void gfReset(uint32_t blk, uint16_t ofs);
+  void gfReset();
   bool gfEnsureBlock();
   bool gfComputeNextFileBlock();
   void gfUpdateCurrentPosition(uint16_t inc);

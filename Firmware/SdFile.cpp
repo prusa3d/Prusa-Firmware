@@ -34,10 +34,10 @@ SdFile::SdFile(const char* path, uint8_t oflag) : SdBaseFile(path, oflag) {
 //size=100B
 bool SdFile::openFilteredGcode(SdBaseFile* dirFile, const char* path){
     if( open(dirFile, path, O_READ) ){
-        gfReset(0,0);
         // compute the block to start with
         if( ! gfComputeNextFileBlock() )
             return false;
+        gfReset();
         return true;
     } else {
         return false;
@@ -50,20 +50,15 @@ bool SdFile::seekSetFilteredGcode(uint32_t pos){
 //    SERIAL_PROTOCOLLN(pos);
     if(! seekSet(pos) )return false;
     if(! gfComputeNextFileBlock() )return false;
-    gfCachePBegin = vol_->cache()->data;
-    // reset cache read ptr to its begin
-    gfCacheP = gfCachePBegin + gfOffset;
+    gfReset();
     return true;
 }
 
 //size=50B
-void SdFile::gfReset(uint32_t blk, uint16_t ofs){
-    // @@TODO clean up
-    gfBlock = blk;
-    gfOffset = ofs;
+void SdFile::gfReset(){
     gfCachePBegin = vol_->cache()->data;
     // reset cache read ptr to its begin
-    gfCacheP = gfCachePBegin;
+    gfCacheP = gfCachePBegin + gfOffset;
 }
 
 //FORCE_INLINE const uint8_t * find_endl(const uint8_t *p){
