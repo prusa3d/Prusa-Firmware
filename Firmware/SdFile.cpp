@@ -74,10 +74,12 @@ void __attribute__((noinline)) SdFile::gfUpdateCurrentPosition(uint16_t inc){
 
 #define find_endl(resultP, startP) \
 __asm__ __volatile__ (  \
+"adiw r30, 1     \n" /* workaround the ++gfCacheP into post increment Z+ */ \
 "cycle:          \n" \
 "ld  r22, Z+     \n" \
 "cpi r22, 0x0A   \n" \
 "brne cycle      \n" \
+"sbiw r30, 1     \n" /* workaround the ++gfCacheP into post increment Z+ */ \
 : "=z" (resultP) /* result of the ASM code - in our case the Z register (R30:R31) */ \
 : "z" (startP)   /* input of the ASM code - in our case the Z register as well (R30:R31) */ \
 : "r22"          /* modifying register R22 - so that the compiler knows */ \
