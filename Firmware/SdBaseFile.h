@@ -176,32 +176,15 @@ uint16_t const FAT_DEFAULT_DATE = ((2000 - 1980) << 9) | (1 << 5) | 1;
 uint16_t const FAT_DEFAULT_TIME = (1 << 11);
 
 
-class SdBaseFile;
-class GCodeInputFilter {
-    SdBaseFile *sd; //@@TODO subject to removal - merge with some derived SdFileXX
-    const uint8_t *cachePBegin;
-    const uint8_t *cacheP;
-    bool EnsureBlock();
-public:
-    uint32_t block; // remember the current file block to be kept in cache - due to reuse of the memory, the block may fall out a must be read back
-    uint16_t offset;
-
-public:
-    inline GCodeInputFilter(SdBaseFile *sd):sd(sd){}
-    void reset(uint32_t blk, uint16_t ofs);
-    int16_t read_byte();
-};
-
 //------------------------------------------------------------------------------
 /**
  * \class SdBaseFile
  * \brief Base class for SdFile with Print and C++ streams.
  */
 class SdBaseFile {
-    GCodeInputFilter gf;
  public:
   /** Create an instance. */
-  SdBaseFile() : gf(this), writeError(false), type_(FAT_FILE_TYPE_CLOSED) {}
+  SdBaseFile() : writeError(false), type_(FAT_FILE_TYPE_CLOSED) {}
   SdBaseFile(const char* path, uint8_t oflag);
   ~SdBaseFile() {if(isOpen()) close();}
   /**
@@ -294,18 +277,13 @@ class SdBaseFile {
   bool open(SdBaseFile* dirFile, uint16_t index, uint8_t oflag);
   bool open(SdBaseFile* dirFile, const char* path, uint8_t oflag);
   bool open(const char* path, uint8_t oflag = O_READ);
-  bool openFilteredGcode(SdBaseFile* dirFile, const char* path);
   bool openNext(SdBaseFile* dirFile, uint8_t oflag);
   bool openRoot(SdVolume* vol);
   int peek();
   static void printFatDate(uint16_t fatDate);
   static void printFatTime( uint16_t fatTime);
   bool printName();
-  
-  int16_t readFilteredGcode();
-  bool computeNextFileBlock(uint32_t *block, uint16_t *offset);
-
-private:  
+protected:  
   int16_t read();
   int16_t read(void* buf, uint16_t nbyte);
 public:
@@ -347,8 +325,7 @@ public:
   SdVolume* volume() const {return vol_;}
   int16_t write(const void* buf, uint16_t nbyte);
 //------------------------------------------------------------------------------
- private:
-  friend class GCodeInputFilter;
+ protected:
   // allow SdFat to set cwd_
   friend class SdFat;
   // global pointer to cwd dir

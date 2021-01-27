@@ -119,7 +119,7 @@ class SdVolume {
   bool dbgFat(uint32_t n, uint32_t* v) {return fatGet(n, v);}
 //------------------------------------------------------------------------------
  private:
-  friend class GCodeInputFilter;
+  friend class SdFile;
   // Allow SdBaseFile access to SdVolume private data.
   friend class SdBaseFile;
 

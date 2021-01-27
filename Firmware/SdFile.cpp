@@ -30,6 +30,176 @@
  */
 SdFile::SdFile(const char* path, uint8_t oflag) : SdBaseFile(path, oflag) {
 }
+
+//size=100B
+bool SdFile::openFilteredGcode(SdBaseFile* dirFile, const char* path){
+    if( open(dirFile, path, O_READ) ){
+        gfReset(0,0);
+        // compute the block to start with
+        if( ! gfComputeNextFileBlock() )
+            return false;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//size=90B
+bool SdFile::seekSetFilteredGcode(uint32_t pos){
+    bool rv = seekSet(pos);
+    gfComputeNextFileBlock();
+    return rv;
+}
+
+//size=50B
+void SdFile::gfReset(uint32_t blk, uint16_t ofs){
+    // @@TODO clean up
+    gfBlock = blk;
+    gfOffset = ofs;
+    gfCachePBegin = vol_->cache()->data;
+    // reset cache read ptr to its begin
+    gfCacheP = gfCachePBegin;
+}
+
+//FORCE_INLINE const uint8_t * find_endl(const uint8_t *p){
+//    while( *(++p) != '\n' ); // skip until a newline is found
+//    return p;
+//}
+
+// think twice before allowing this to inline - manipulating 4B longs is costly
+// moreover - this function has its parameters in registers only, so no heavy stack usage besides the call/ret
+void __attribute__((noinline)) SdFile::gfUpdateCurrentPosition(uint16_t inc){
+    curPosition_ += inc;
+}
+
+#define find_endl(resultP, startP) \
+__asm__ __volatile__ (  \
+"cycle:          \n" \
+"ld  r22, Z+     \n" \
+"cpi r22, 0x0A   \n" \
+"brne cycle      \n" \
+: "=z" (resultP) /* result of the ASM code - in our case the Z register (R30:R31) */ \
+: "z" (startP)   /* input of the ASM code - in our case the Z register as well (R30:R31) */ \
+: "r22"          /* modifying register R22 - so that the compiler knows */ \
+)
+
+//size=400B
+// avoid calling the default heavy-weight read() for just one byte
+int16_t SdFile::readFilteredGcode(){
+    gfEnsureBlock(); // this is unfortunate :( ... other calls are using the cache and we can loose the data block of our gcode file
+
+    // assume, we have the 512B block cache filled and terminated with a '\n'
+//    SERIAL_PROTOCOLPGM("read_byte enter:");
+//    for(uint8_t i = 0; i < 16; ++i){
+//        SERIAL_PROTOCOL( cacheP[i] );
+//    }
+    
+    const uint8_t *start = gfCacheP;
+    uint8_t consecutiveCommentLines = 0;
+    while( *gfCacheP == ';' ){
+        for(;;){
+
+            //while( *(++gfCacheP) != '\n' ); // skip until a newline is found - suboptimal code!
+            // Wondering, why this "nice while cycle" is done in such a weird way using a separate find_endl() function?
+            // Have a look at the ASM code GCC produced!
+            
+            // At first - a separate find_endl() makes the compiler understand, 
+            // that I don't need to store gfCacheP every time, I'm only interested in the final address where the '\n' was found
+            // - the cycle can run on CPU registers only without touching memory besides reading the character being compared.
+            // Not only makes the code run considerably faster, but is also 40B shorter!
+            // This was the generated code:
+            //FORCE_INLINE const uint8_t * find_endl(const uint8_t *p){
+            //   while( *(++p) != '\n' ); // skip until a newline is found
+            //   return p; }
+            //   11c5e:	movw	r30, r18
+            //   11c60:	subi	r18, 0xFF	; 255
+            //   11c62:	sbci	r19, 0xFF	; 255
+            //   11c64:	ld	r22, Z
+            //   11c66:	cpi	r22, 0x0A	; 10
+            //   11c68:	brne	.-12     	; 0x11c5e <get_command()+0x524>            
+
+            // Still, even that was suboptimal as the compiler seems not to understand the usage of ld r22, Z+ (the plus is important)
+            // aka automatic increment of the Z register (R30:R31 pair)
+            // There is no other way than pure ASM!
+            find_endl(gfCacheP, gfCacheP);
+
+            // found a newline, prepare the next block if block cache end reached
+            if( gfCacheP - gfCachePBegin >= 512 ){
+                // at the end of block cache, fill new data in
+                gfUpdateCurrentPosition( gfCacheP - start );
+                if( ! gfComputeNextFileBlock() )goto fail;
+                gfEnsureBlock(); // fetch it into RAM
+                gfCacheP = start = gfCachePBegin;
+            } else {
+                if(++consecutiveCommentLines == 255){
+                    // SERIAL_PROTOCOLLN(sd->curPosition_);
+                    goto forceExit;
+                }
+                // peek the next byte - we are inside the block at least at 511th index - still safe
+                if( *(gfCacheP+1) == ';' ){
+                    // consecutive comment
+                    ++gfCacheP;
+                    ++consecutiveCommentLines;
+                }
+                break; // found the real end of the line even across many blocks
+            }
+        }
+    }
+forceExit:
+    {
+        gfUpdateCurrentPosition( gfCacheP - start + 1 );
+        int16_t rv = *gfCacheP++;
+        
+        // prepare next block if needed
+        if( gfCacheP - gfCachePBegin >= 512 ){
+            if( ! gfComputeNextFileBlock() )goto fail;
+            // don't need to force fetch the block here, it will get loaded on the next call
+            gfCacheP = gfCachePBegin;
+        }    
+        return rv;
+    }
+fail:
+//    SERIAL_PROTOCOLLNPGM("CacheFAIL");
+    return -1;
+}
+
+//size=100B
+bool SdFile::gfEnsureBlock(){
+    if ( vol_->cacheRawBlock(gfBlock, SdVolume::CACHE_FOR_READ)){
+        // terminate with a '\n'
+        const uint16_t terminateOfs = (fileSize_ - gfOffset) < 512 ? (fileSize_ - gfOffset) : 512U;
+        vol_->cache()->data[ terminateOfs ] = '\n';
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//size=350B
+bool SdFile::gfComputeNextFileBlock() {
+    // error if not open or write only
+    if (!isOpen() || !(flags_ & O_READ)) return false;
+
+    gfOffset = curPosition_ & 0X1FF;  // offset in block
+    if (type_ == FAT_FILE_TYPE_ROOT_FIXED) {
+        gfBlock = vol_->rootDirStart() + (curPosition_ >> 9);
+    } else {
+        uint8_t blockOfCluster = vol_->blockOfCluster(curPosition_);
+        if (gfOffset == 0 && blockOfCluster == 0) {
+            // start of new cluster
+            if (curPosition_ == 0) {
+                // use first cluster in file
+                curCluster_ = firstCluster_;
+            } else {
+                // get next cluster from FAT
+                if (!vol_->fatGet(curCluster_, &curCluster_)) return false;
+            }
+        }
+        gfBlock = vol_->clusterStartBlock(curCluster_) + blockOfCluster;
+    }
+    return true;
+}
+
 //------------------------------------------------------------------------------
 /** Write data to an open file.
  *

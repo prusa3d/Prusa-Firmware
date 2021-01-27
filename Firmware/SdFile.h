@@ -34,7 +34,16 @@
  * \brief SdBaseFile with Print.
  */
 class SdFile : public SdBaseFile/*, public Print*/ {
- public:
+  // GCode filtering vars and methods - due to optimization reasons not wrapped in a separate class
+  const uint8_t *gfCachePBegin;
+  const uint8_t *gfCacheP;
+  uint32_t gfBlock; // remember the current file block to be kept in cache - due to reuse of the memory, the block may fall out a must be read back
+  uint16_t gfOffset;
+  void gfReset(uint32_t blk, uint16_t ofs);
+  bool gfEnsureBlock();
+  bool gfComputeNextFileBlock();
+  void gfUpdateCurrentPosition(uint16_t inc);
+public:
   SdFile() {}
   SdFile(const char* name, uint8_t oflag);
   #if ARDUINO >= 100
@@ -43,6 +52,9 @@ class SdFile : public SdBaseFile/*, public Print*/ {
    void write(uint8_t b);
   #endif
   
+  bool openFilteredGcode(SdBaseFile* dirFile, const char* path);
+  int16_t readFilteredGcode();
+  bool seekSetFilteredGcode(uint32_t pos);
   int16_t write(const void* buf, uint16_t nbyte);
   void write(const char* str);
   void write_P(PGM_P str);
