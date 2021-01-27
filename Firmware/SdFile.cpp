@@ -46,9 +46,14 @@ bool SdFile::openFilteredGcode(SdBaseFile* dirFile, const char* path){
 
 //size=90B
 bool SdFile::seekSetFilteredGcode(uint32_t pos){
-    bool rv = seekSet(pos);
-    gfComputeNextFileBlock();
-    return rv;
+//    SERIAL_PROTOCOLPGM("Seek:");
+//    SERIAL_PROTOCOLLN(pos);
+    if(! seekSet(pos) )return false;
+    if(! gfComputeNextFileBlock() )return false;
+    gfCachePBegin = vol_->cache()->data;
+    // reset cache read ptr to its begin
+    gfCacheP = gfCachePBegin + gfOffset;
+    return true;
 }
 
 //size=50B
@@ -91,10 +96,13 @@ int16_t SdFile::readFilteredGcode(){
     gfEnsureBlock(); // this is unfortunate :( ... other calls are using the cache and we can loose the data block of our gcode file
 
     // assume, we have the 512B block cache filled and terminated with a '\n'
-//    SERIAL_PROTOCOLPGM("read_byte enter:");
+//    SERIAL_PROTOCOLPGM("Read:");
+//    SERIAL_PROTOCOL(curPosition_);
+//    SERIAL_PROTOCOL(':');
 //    for(uint8_t i = 0; i < 16; ++i){
-//        SERIAL_PROTOCOL( cacheP[i] );
+//        SERIAL_PROTOCOL( gfCacheP[i] );
 //    }
+//    SERIAL_PROTOCOLLN();
     
     const uint8_t *start = gfCacheP;
     uint8_t consecutiveCommentLines = 0;
@@ -154,6 +162,10 @@ forceExit:
         
         // prepare next block if needed
         if( gfCacheP - gfCachePBegin >= 512 ){
+// speed checking - now at roughly 170KB/s which is much closer to raw read speed of SD card blocks at ~250KB/s
+//            SERIAL_PROTOCOL(millis2());
+//            SERIAL_PROTOCOL(':');
+//            SERIAL_PROTOCOLLN(curPosition_);
             if( ! gfComputeNextFileBlock() )goto fail;
             // don't need to force fetch the block here, it will get loaded on the next call
             gfCacheP = gfCachePBegin;
@@ -165,17 +177,34 @@ fail:
     return -1;
 }
 
-//size=100B
+//size=70B
 bool SdFile::gfEnsureBlock(){
+//    SERIAL_PROTOCOLPGM("EB:");
+//    SERIAL_PROTOCOLLN(gfBlock);
     if ( vol_->cacheRawBlock(gfBlock, SdVolume::CACHE_FOR_READ)){
         // terminate with a '\n'
-        const uint16_t terminateOfs = (fileSize_ - gfOffset) < 512 ? (fileSize_ - gfOffset) : 512U;
-        vol_->cache()->data[ terminateOfs ] = '\n';
+        const uint16_t terminateOfs = fileSize_ - gfOffset;
+        vol_->cache()->data[ terminateOfs < 512 ? terminateOfs : 512 ] = '\n';
         return true;
     } else {
         return false;
     }
 }
+
+
+//#define shr9(resultCurPos, curPos) \
+//__asm__ __volatile__ (  \
+//"asr r23      \n" \
+//"asr r22      \n" \
+//"asr r21      \n" \
+//"asr r20      \n" \
+//"ldi r20, r21 \n" \
+//"ldi r21, r22 \n" \
+//"ldi r22, r23 \n" \
+//"ldi r23, 0   \n" \
+//: "=a" (resultCurPos) \
+//: "a" (curPos) \
+//)
 
 //size=350B
 bool SdFile::gfComputeNextFileBlock() {
@@ -184,7 +213,10 @@ bool SdFile::gfComputeNextFileBlock() {
 
     gfOffset = curPosition_ & 0X1FF;  // offset in block
     if (type_ == FAT_FILE_TYPE_ROOT_FIXED) {
-        gfBlock = vol_->rootDirStart() + (curPosition_ >> 9);
+        // SHR by 9 means skip the last byte and shift just 3 bytes by 1
+        // -> should be 8 instructions... and not the horrible loop shifting 4 bytes at once
+        // still need to get some work on this
+        gfBlock = vol_->rootDirStart() + (curPosition_ >> 9); 
     } else {
         uint8_t blockOfCluster = vol_->blockOfCluster(curPosition_);
         if (gfOffset == 0 && blockOfCluster == 0) {
