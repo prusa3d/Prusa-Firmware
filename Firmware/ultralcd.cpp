@@ -622,7 +622,12 @@ void lcdui_print_percent_done(void)
 {
 	const char* src = is_usb_printing?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
 	char per[4];
-	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
+#ifdef TMC2130
+	uint8_t print_percent_done_current = ((tmc2130_mode == TMC2130_MODE_SILENT) ? print_percent_done_silent : print_percent_done_normal);
+#else
+	uint8_t print_percent_done_current = print_percent_done_normal;
+#endif
+	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_current != PRINT_PERCENT_DONE_INIT));
 	if (!num || heating_status) // either not printing or heating
 	{
 		const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
@@ -678,16 +683,19 @@ void lcdui_print_time(void)
 {
 	//if remaining print time estimation is available print it else print elapsed time
 	uint16_t print_t = 0;
-	if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-		print_t = print_time_remaining();
+	uint16_t print_time_remaining_result = 0;
+	
+	print_time_remaining_result = print_time_remaining();
+	if (print_time_remaining_result != PRINT_TIME_REMAINING_INIT)
+		print_t = print_time_remaining_result;
 	else if(starttime != 0)
 		print_t = _millis() / 60000 - starttime / 60000;
 	int chars = 0;
-	if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
+	if ((PRINTER_ACTIVE) && ((print_time_remaining_result != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
 	{
           char suff = ' ';
           char suff_doubt = ' ';
-		if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+		if (print_time_remaining_result != PRINT_TIME_REMAINING_INIT)
           {
                suff = 'R';
                if (feedmultiply != 100)
