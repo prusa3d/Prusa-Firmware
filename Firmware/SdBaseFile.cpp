@@ -533,7 +533,6 @@ bool SdBaseFile::mkdir(SdBaseFile* parent, const uint8_t dname[11]) {
 bool SdBaseFile::open(const char* path, uint8_t oflag) {
   return open(cwd_, path, oflag);
 }
-  
 //------------------------------------------------------------------------------
 /** Open a file or directory by name.
  *
@@ -1031,7 +1030,6 @@ int16_t SdBaseFile::read() {
   uint8_t b;
   return read(&b, 1) == 1 ? b : -1;
 }
-
 //------------------------------------------------------------------------------
 /** Read data from a file starting at the current position.
  *
