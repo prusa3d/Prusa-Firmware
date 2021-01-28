@@ -698,6 +698,11 @@ void plan_buffer_line_destinationXYZE(float feed_rate) {
     plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feed_rate, active_extruder);
 }
 
+void plan_buffer_line_destinationXYZE_feed_div_60_stsync(float feed_rate) {
+    plan_buffer_line_destinationXYZE(feed_rate / 60);
+    st_synchronize();
+}
+
 void plan_set_position_curposXYZE(){
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 }

@@ -156,6 +156,7 @@ vector_3 plan_get_position();
 void plan_buffer_line_curposXYZE(float feed_rate);
 
 void plan_buffer_line_destinationXYZE(float feed_rate);
+void plan_buffer_line_destinationXYZE_feed_div_60_stsync(float feed_rate);
 
 void plan_set_position_curposXYZE();
 

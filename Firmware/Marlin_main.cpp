@@ -2256,8 +2256,7 @@ bool calibrate_z_auto()
 	set_destination_to_current();
 	destination[Z_AXIS] += (1.1 * max_length(Z_AXIS) * axis_up_dir);
 	feedrate = homing_feedrate[Z_AXIS];
-	plan_buffer_line_destinationXYZE(feedrate / 60);
-	st_synchronize();
+	plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 	//	current_position[axis] = 0;
 	//	plan_set_position_curposXYZE();
 	tmc2130_home_exit();
@@ -2267,8 +2266,7 @@ bool calibrate_z_auto()
 	set_destination_to_current();
 	destination[Z_AXIS] += 10 * axis_up_dir; //10mm up
 	feedrate = homing_feedrate[Z_AXIS] / 2;
-	plan_buffer_line_destinationXYZE(feedrate / 60);
-	st_synchronize();
+	plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 	enable_endstops(endstops_enabled);
 	if (PRINTER_TYPE == PRINTER_MK3) {
 		current_position[Z_AXIS] = Z_MAX_POS + 2.0;
@@ -2323,21 +2321,18 @@ void homeaxis(int axis, uint8_t cnt)
 		set_destination_to_current();
 //        destination[axis] = 11.f;
         destination[axis] = -3.f * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
         // Move away from the possible collision with opposite endstop with the collision detection disabled.
         endstops_hit_on_purpose();
         enable_endstops(false);
         current_position[axis] = 0;
         plan_set_position_curposXYZE();
         destination[axis] = 1. * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
         // Now continue to move up to the left end stop with the collision detection enabled.
         enable_endstops(true);
         destination[axis] = 1.1 * axis_home_dir * max_length(axis);
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 		for (uint8_t i = 0; i < cnt; i++)
 		{
 			// Move away from the collision to a known distance from the left end stop with the collision detection disabled.
@@ -2346,8 +2341,7 @@ void homeaxis(int axis, uint8_t cnt)
 			current_position[axis] = 0;
 			plan_set_position_curposXYZE();
 			destination[axis] = -10.f * axis_home_dir;
-			plan_buffer_line_destinationXYZE(feedrate/60);
-			st_synchronize();
+			plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 			endstops_hit_on_purpose();
 			// Now move left up to the collision, this time with a repeatable velocity.
 			enable_endstops(true);
@@ -2357,8 +2351,7 @@ void homeaxis(int axis, uint8_t cnt)
 #else //TMC2130
 			feedrate = homing_feedrate[axis] / 2;
 #endif //TMC2130
-			plan_buffer_line_destinationXYZE(feedrate/60);
-			st_synchronize();
+			plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 #ifdef TMC2130
 			uint16_t mscnt = tmc2130_rd_MSCNT(axis);
 			if (pstep) pstep[i] = mscnt >> 4;
@@ -2394,8 +2387,7 @@ void homeaxis(int axis, uint8_t cnt)
         plan_set_position_curposXYZE();
         current_position[axis] += dist;
         destination[axis] = current_position[axis];
-        plan_buffer_line_destinationXYZE(0.5f*feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(0.5f*feedrate);
 
    		feedrate = 0.0;
     }
@@ -2409,20 +2401,17 @@ void homeaxis(int axis, uint8_t cnt)
         plan_set_position_curposXYZE();
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis];
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 #ifdef TMC2130
         check_Z_crash();
 #endif //TMC2130
         current_position[axis] = 0;
         plan_set_position_curposXYZE();
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis]/2 ;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 #ifdef TMC2130
         check_Z_crash();
 #endif //TMC2130
