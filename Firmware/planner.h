@@ -154,6 +154,8 @@ vector_3 plan_get_position();
 /// saves almost 5KB.
 /// The performance penalty is negligible, since these planned lines are usually maintenance moves with the extruder.
 void plan_buffer_line_curposXYZE(float feed_rate);
+void plan_buffer_line_curposXYZE_stsync(float feed_rate);
+void plan_buffer_line_curposXYZE_feed_div_60_stsync(float feed_rate);
 
 void plan_buffer_line_destinationXYZE(float feed_rate);
 void plan_buffer_line_destinationXYZE_feed_div_60_stsync(float feed_rate);

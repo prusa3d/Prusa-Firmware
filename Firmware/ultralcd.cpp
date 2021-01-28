@@ -6306,14 +6306,11 @@ void unload_filament()
 	//		extr_unload2();
 
 	current_position[E_AXIS] -= 45;
-	plan_buffer_line_curposXYZE(5200 / 60);
-	st_synchronize();
+	plan_buffer_line_curposXYZE_stsync(5200 / 60);
 	current_position[E_AXIS] -= 15;
-	plan_buffer_line_curposXYZE(1000 / 60);
-	st_synchronize();
+	plan_buffer_line_curposXYZE_stsync(1000 / 60);
 	current_position[E_AXIS] -= 20;
-	plan_buffer_line_curposXYZE(1000 / 60);
-	st_synchronize();
+	plan_buffer_line_curposXYZE_stsync(1000 / 60);
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
 
@@ -7487,8 +7484,7 @@ bool lcd_selftest()
 		current_position[Y_AXIS] += 4;
 #endif //TMC2130
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-		st_synchronize();
+		plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
         set_destination_to_current();
 		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 1500);
 #ifdef TMC2130
@@ -7499,16 +7495,14 @@ bool lcd_selftest()
 
 		//raise Z to not damage the bed during and hotend testing
 		current_position[Z_AXIS] += 20;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-		st_synchronize();
+		plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 	}
 
 #ifdef TMC2130
 	if (_result)
 	{
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-		st_synchronize();
+		plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 		_progress = lcd_selftest_screen(TestScreen::Home, 0, 2, true, 0);
 		bool bres = tmc2130_home_calibrate(X_AXIS);
 		_progress = lcd_selftest_screen(TestScreen::Home, 1, 2, true, 0);
@@ -7605,8 +7599,7 @@ bool lcd_selftest()
 
 static void reset_crash_det(unsigned char axis) {
 	current_position[axis] += 10;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-	st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET)) tmc2130_sg_stop_on_crash = true;
 }
 
@@ -7634,23 +7627,17 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 // first axis length measurement begin	
 	
 	current_position[axis] -= (axis_length + margin);
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-
-	
-	st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 
 	tmc2130_sg_meassure_start(axis);
 
 	current_position_init = st_get_position_mm(axis);
 
 	current_position[axis] += 2 * margin;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-	st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 
 	current_position[axis] += axis_length;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-
-	st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 
 	uint16_t sg1 = tmc2130_sg_meassure_stop();
 	printf_P(PSTR("%c AXIS SG1=%d\n"), 'X'+axis, sg1);
@@ -7664,13 +7651,10 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 
 	current_position[axis] -= margin;
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-	st_synchronize();	
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 
 	current_position[axis] -= (axis_length + margin);
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-		
-	st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 
 	current_position_init = st_get_position_mm(axis);
 
@@ -7918,8 +7902,7 @@ static bool lcd_selfcheck_endstops()
 	#endif //!TMC2130
 		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) current_position[2] += 10;
 	}
-	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-	st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(manual_feedrate[0]);
 
 	if (
 	#ifndef TMC2130
