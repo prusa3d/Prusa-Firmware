@@ -130,7 +130,7 @@ void sm4_do_step(uint8_t axes_mask)
 {
 #if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3) || (MOTHERBOARD == BOARD_EINSY_1_0a))
 #ifdef TMC2130_DEDGE_STEPPING
-	PORTC ^= (axes_mask & 0x0f); //set step signals by mask
+	PINC = (axes_mask & 0x0f); // toggle step signals by mask
 #else
     register uint8_t portC = PORTC & 0xf0;
 	PORTC = portC | (axes_mask & 0x0f); //set step signals by mask
