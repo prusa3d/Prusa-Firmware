@@ -74,12 +74,10 @@ void __attribute__((noinline)) SdFile::gfUpdateCurrentPosition(uint16_t inc){
 
 #define find_endl(resultP, startP) \
 __asm__ __volatile__ (  \
-"adiw r30, 1     \n" /* workaround the ++gfCacheP into post increment Z+ */ \
 "cycle:          \n" \
 "ld  r22, Z+     \n" \
 "cpi r22, 0x0A   \n" \
 "brne cycle      \n" \
-"sbiw r30, 1     \n" /* workaround the ++gfCacheP into post increment Z+ */ \
 : "=z" (resultP) /* result of the ASM code - in our case the Z register (R30:R31) */ \
 : "z" (startP)   /* input of the ASM code - in our case the Z register as well (R30:R31) */ \
 : "r22"          /* modifying register R22 - so that the compiler knows */ \
@@ -129,22 +127,25 @@ int16_t SdFile::readFilteredGcode(){
             find_endl(gfCacheP, gfCacheP);
 
             // found a newline, prepare the next block if block cache end reached
-            if( gfCacheP - gfCachePBegin >= 512 ){
+            if( gfCacheP - gfCachePBegin > 512 ){
                 // at the end of block cache, fill new data in
-                gfUpdateCurrentPosition( gfCacheP - start );
+                gfUpdateCurrentPosition( gfCacheP - start - 1 );
                 if( ! gfComputeNextFileBlock() )goto fail;
                 gfEnsureBlock(); // fetch it into RAM
                 gfCacheP = start = gfCachePBegin;
             } else {
                 if(++consecutiveCommentLines == 255){
                     // SERIAL_PROTOCOLLN(sd->curPosition_);
+                    --gfCacheP; // unget the already consumed newline
                     goto forceExit;
                 }
                 // peek the next byte - we are inside the block at least at 511th index - still safe
-                if( *(gfCacheP+1) == ';' ){
+                if( *gfCacheP == ';' ){
                     // consecutive comment
-                    ++gfCacheP;
                     ++consecutiveCommentLines;
+                } else {
+                    --gfCacheP; // unget the already consumed newline
+                    goto forceExit;
                 }
                 break; // found the real end of the line even across many blocks
             }
