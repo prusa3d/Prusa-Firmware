@@ -7,16 +7,7 @@
 
 #ifdef SYSTEM_TIMER_2
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
 #include "pins.h"
-
-#ifndef CRITICAL_SECTION_START
-	#define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
-	#define CRITICAL_SECTION_END    SREG = _sreg;
-#endif //CRITICAL_SECTION_START
-
-
 #include "fastio.h"
 
 void timer4_init(void)
