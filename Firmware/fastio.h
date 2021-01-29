@@ -9,12 +9,6 @@
 #include <avr/io.h>
 #include "macros.h"
 
-#ifndef CRITICAL_SECTION_START
-  #define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
-  #define CRITICAL_SECTION_END    SREG = _sreg;
-  #include <avr/interrupt.h>
-#endif //CRITICAL_SECTION_START
-
 
 /*
   magic I/O routines
