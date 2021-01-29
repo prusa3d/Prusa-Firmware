@@ -386,16 +386,13 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
     n=n-i+1;
     lcd_space(n);
 }
-static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename, const char* longFilename)
 {
     char c;
     uint8_t n = LCD_WIDTH - 1;
     lcd_putc_at(0, row, ' ');
     if (longFilename[0] != '\0')
-    {
         filename = longFilename;
-        longFilename[LCD_WIDTH-1] = '\0';
-    }
     while( ((c = *filename) != '\0') && (n>0) )
     {
         lcd_print(c);
@@ -404,17 +401,14 @@ static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename
     }
     lcd_space(n);
 }
-static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const char* filename, const char* longFilename)
 {
     char c;
     uint8_t n = LCD_WIDTH - 2;
     lcd_putc_at(0, row, '>');
     lcd_print(LCD_STR_FOLDER[0]);
     if (longFilename[0] != '\0')
-    {
         filename = longFilename;
-        longFilename[LCD_WIDTH-2] = '\0';
-    }
     while( ((c = *filename) != '\0') && (n>0) )
     {
         lcd_print(c);
@@ -423,17 +417,14 @@ static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const 
     }
     lcd_space(n);
 }
-static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* filename, const char* longFilename)
 {
     char c;
     uint8_t n = LCD_WIDTH - 2;
     lcd_putc_at(0, row, ' ');
     lcd_print(LCD_STR_FOLDER[0]);
     if (longFilename[0] != '\0')
-    {
         filename = longFilename;
-        longFilename[LCD_WIDTH-2] = '\0';
-    }
     while( ((c = *filename) != '\0') && (n>0) )
     {
         lcd_print(c);
