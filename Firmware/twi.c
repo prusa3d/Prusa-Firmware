@@ -19,17 +19,18 @@
   Modified 2012 by Todd Krein (todd@krein.org) to implement repeated starts
 */
 
-#include <math.h>
-#include "Arduino.h" // for digitalWrite
 
+#include <math.h>
+#include "config.h"
+#include "fastio.h"
 #include "twi.h"
 
 
 void twi_init(void)
 {
   // activate internal pullups for twi.
-  digitalWrite(SDA, 1);
-  digitalWrite(SCL, 1);
+  WRITE(SDA_PIN, 1);
+  WRITE(SCL_PIN, 1);
 
   // initialize twi prescaler and bit rate
   TWSR &= ~(_BV(TWPS0) | _BV(TWPS1));
@@ -44,8 +45,8 @@ void twi_init(void)
 void twi_disable(void)
 {
   // deactivate internal pullups for twi.
-  digitalWrite(SDA, 0);
-  digitalWrite(SCL, 0);
+  WRITE(SDA_PIN, 0);
+  WRITE(SCL_PIN, 0);
 }
 
 
