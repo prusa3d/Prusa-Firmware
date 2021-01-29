@@ -255,7 +255,7 @@ void MarlinSerial::print(double n, int digits)
 
 void MarlinSerial::println(void)
 {
-  print('\r');
+  // print('\r');
   print('\n');  
 }
 
