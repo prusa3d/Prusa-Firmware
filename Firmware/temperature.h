@@ -99,13 +99,10 @@ extern bool bedPWMDisabled;
   float unscalePID_d(float d);
 
 #endif
-  
-  
-#ifdef BABYSTEPPING
-  extern volatile int babystepsTodo[3];
-#endif
 
-void resetPID(uint8_t extruder);
+
+#ifdef BABYSTEPPING
+extern volatile int babystepsTodo[3];
 
 inline void babystepsTodoZadd(int n)
 {
@@ -115,15 +112,9 @@ inline void babystepsTodoZadd(int n)
         CRITICAL_SECTION_END
     }
 }
+#endif
 
-inline void babystepsTodoZsubtract(int n)
-{
-    if (n != 0) {
-        CRITICAL_SECTION_START
-        babystepsTodo[Z_AXIS] -= n;
-        CRITICAL_SECTION_END
-    }
-}
+void resetPID(uint8_t extruder);
 
 //high level conversion routines, for use outside of temperature.cpp
 //inline so that there is no performance decrease.
