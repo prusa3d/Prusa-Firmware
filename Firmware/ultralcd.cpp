@@ -332,59 +332,58 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, const char* longFilename)
 {
-    char c;
     int enc_dif = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
-    uint8_t n = LCD_WIDTH - 1;
 
-    for(uint_least8_t g = 0; g<4;g++){
-      lcd_putc_at(0, g, ' ');
-    }
+    // selection marker
+    for(uint_least8_t g = 0; g<4;g++)
+        lcd_putc_at(0, g, ' ');
     lcd_putc_at(0, row, '>');
 
+    // pick the right filename
     if (longFilename[0] == '\0')
-    {
         longFilename = filename;
-    }
 
-    int i = 1;
-    int j = 0;
-    char* longFilenameTMP = longFilename;
-
+    uint8_t i = 1; // column position
+    uint8_t j = 0; // filename offset
+    const char* longFilenameTMP = longFilename;
+    char c;
     while((c = *longFilenameTMP) != '\0')
     {
-        lcd_set_cursor(i, row);
         lcd_print(c);
         i++;
         longFilenameTMP++;
-        if(i==LCD_WIDTH){
-          i=1;
-          j++;
-          longFilenameTMP = longFilename + j;          
-          n = LCD_WIDTH - 1;
-          for(int g = 0; g<300 ;g++){
-			  manage_heater();
-            if(LCD_CLICKED || ( enc_dif != (lcd_encoder_diff / ENCODER_PULSES_PER_STEP))){
-				longFilenameTMP = longFilename;
-				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
-				i = 1;
-				j = 0;
-				break;
-            }else{
-				if (j == 1) _delay_ms(3);	//wait around 1.2 s to start scrolling text
-				_delay_ms(1);				//then scroll with redrawing every 300 ms 
+
+        if(*longFilenameTMP == '\0')
+        {
+            // string is complete, no need to scroll
+            break;
+        }
+        else if(i==LCD_WIDTH)
+        {
+            for(int g = 0; g<300 ;g++){
+                manage_heater();
+                if(LCD_CLICKED || (enc_dif != (lcd_encoder_diff / ENCODER_PULSES_PER_STEP))) {
+                    // clicked or moved, no need to continue: we already filled the row
+                    return;
+                } else {
+                    if (j == 1) _delay_ms(3);   //wait around 1.2 s to start scrolling text
+                    _delay_ms(1);               //then scroll with redrawing every 300 ms
+                }
             }
 
-          }
+            // restart and scroll by one character
+            i=1;
+            j++;
+
+            longFilenameTMP = longFilename + j;
+            lcd_set_cursor(i, row);
         }
     }
-    if(c!='\0'){
-        lcd_putc_at(i, row, c);
-        i++;
-    }
-    n=n-i+1;
-    lcd_space(n);
+
+    // pad remaining line with spaces
+    lcd_space(LCD_WIDTH - i);
 }
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename, const char* longFilename)
 {
