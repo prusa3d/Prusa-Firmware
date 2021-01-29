@@ -1,5 +1,5 @@
 #include "Dcodes.h"
-//#include "Marlin.h"
+#include "Marlin.h"
 #include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
@@ -204,7 +204,7 @@ extern float axis_steps_per_unit[NUM_AXIS];
     */
 void dcode__1()
 {
-	printf_P(PSTR("D-1 - Endless loop\n"));
+	DBG(_N("D-1 - Endless loop\n"));
 //	cli();
 	while (1);
 }
@@ -226,9 +226,7 @@ void dcode_0()
 	LOG("D0 - Reset\n");
 	if (code_seen('B')) //bootloader
 	{
-		cli();
-		wdt_enable(WDTO_15MS);
-		while(1);
+		softReset();
 	}
 	else //reset
 	{
@@ -252,8 +250,7 @@ void dcode_1()
 	cli();
 	for (int i = 0; i < 8192; i++)
 		eeprom_write_byte((unsigned char*)i, (unsigned char)0xff);
-	wdt_enable(WDTO_15MS);
-	while(1);
+	softReset();
 }
 
     /*!
@@ -383,7 +380,7 @@ void dcode_4()
    */
 void dcode_5()
 {
-	printf_P(PSTR("D5 - Read/Write FLASH\n"));
+	puts_P(PSTR("D5 - Read/Write FLASH"));
 	uint32_t address = 0x0000; //default 0x0000
 	uint16_t count = 0x0400; //default 0x0400 (1kb block)
 	if (code_seen('A')) // Address (0x00000-0x3ffff)
@@ -420,8 +417,7 @@ void dcode_5()
 		boot_dst_addr = (uint32_t)address;
 		boot_src_addr = (uint32_t)(&data);
 		bootapp_print_vars();
-		wdt_enable(WDTO_15MS);
-		while(1);
+		softReset();
 	}
 	while (count)
 	{
@@ -467,8 +463,7 @@ void dcode_7()
 	boot_copy_size = (uint16_t)0xc00;
 	boot_src_addr = (uint32_t)0x0003e400;
 	boot_dst_addr = (uint32_t)0x0003f400;
-	wdt_enable(WDTO_15MS);
-	while(1);
+	softReset();
 */
 }
 
@@ -486,7 +481,7 @@ void dcode_7()
     */
 void dcode_8()
 {
-	printf_P(PSTR("D8 - Read/Write PINDA\n"));
+	puts_P(PSTR("D8 - Read/Write PINDA"));
 	uint8_t cal_status = calibration_status_pinda();
 	float temp_pinda = current_temperature_pinda;
 	float offset_z = temp_compensation_pinda_thermistor_offset(temp_pinda);
@@ -592,7 +587,7 @@ uint16_t dcode_9_ADC_val(uint8_t i)
 
 void dcode_9()
 {
-	printf_P(PSTR("D9 - Read/Write ADC\n"));
+	puts_P(PSTR("D9 - Read/Write ADC"));
 	if ((strchr_pointer[1+1] == '?') || (strchr_pointer[1+1] == 0))
 	{
 		for (uint8_t i = 0; i < ADC_CHAN_CNT; i++)
@@ -789,7 +784,7 @@ extern void st_synchronize();
 	*/
 void dcode_2130()
 {
-	printf_P(PSTR("D2130 - TMC2130\n"));
+	puts_P(PSTR("D2130 - TMC2130"));
 	uint8_t axis = 0xff;
 	switch (strchr_pointer[1+4])
 	{

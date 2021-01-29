@@ -2,13 +2,25 @@
 "[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
 "[%.7s]Live Adj. Z\x0austaw., kontynuowac\x0aczy zaczac od 0?\x0a%cKontynuuj%cReset"
 
-#MSG_03_OR_OLDER c=18
+#MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 lub starszy"
 
-#MSG_04_OR_NEWER c=18
+# c=18
+"FS v0.3 or older"
+"FS 0.3 lub starszy"
+
+#MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 " 0.4 lub nowszy"
+
+# c=18
+"FS v0.4 or newer"
+"FS 0.4 lub nowszy"
+
+#MSG_IR_UNKNOWN c=18
+"unknown state"
+"Stan nieznany"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -126,7 +138,7 @@
 "Bed"
 "Stol"
 
-#MSG_MENU_BELT_STATUS c=18
+#MSG_BELT_STATUS c=18
 "Belt status"
 "Stan paskow"
 
@@ -206,9 +218,9 @@
 "Crash detected. Resume print?"
 "Wykryto zderzenie. Wznowic druk?"
 
-#
+#MSG_CRASH c=7
 "Crash"
-"Zderzenie"
+"Zderzen"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -238,7 +250,7 @@
 "E-correct:"
 "Korekcja-E:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
 "Wysun filament"
 
@@ -294,7 +306,7 @@
 "Extruder info"
 "Ekstruder - info"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
 "Ekstruder"
 
@@ -318,7 +330,7 @@
 "Fan test"
 "Test wentylatora"
 
-#MSG_FANS_CHECK
+#MSG_FANS_CHECK c=13
 "Fans check"
 "Sprawd.went."
 
@@ -326,8 +338,8 @@
 "Fil. sensor"
 "Czuj. filam."
 
-# c=14
-"Filam. runouts"
+#MSG_FIL_RUNOUTS c=14
+"Fil. runouts  "
 "Konc.filamentu"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -353,10 +365,6 @@
 #MSG_FS_ACTION c=10
 "FS Action"
 "Akcja FS"
-
-# c=18
-"FS v0.4 or newer"
-"FS v0.4 lub nowszy"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -450,16 +458,16 @@
 "Checking sensors "
 "Kontrola czujnikow"
 
-#MSG_SELFTEST_CHECK_X c=20
-"Checking X axis  "
+#MSG_CHECKING_X c=20
+"Checking X axis"
 "Kontrola osi X"
 
-#MSG_SELFTEST_CHECK_Y c=20
-"Checking Y axis  "
+#MSG_CHECKING_Y c=20
+"Checking Y axis"
 "Kontrola osi Y"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 "Kontrola osi Z"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
@@ -490,7 +498,7 @@
 "Insert filament"
 "Wprowadz filament"
 
-#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+#MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Filament jest zaladowany?"
 
@@ -498,7 +506,7 @@
 "Is steel sheet on heatbed?"
 "Czy plyta stal. jest na podgrzew. stole?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Ostatnie bledy druku"
 
@@ -506,7 +514,7 @@
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Jesli masz dodatkowe plyty stalowe, to skalibruj ich ustawienia w menu Ustawienia - Ustawienia HW - Plyty stalowe."
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 "Ost. wydruk"
 
@@ -574,9 +582,9 @@
 "Measuring reference height of calibration point"
 "Okreslam wysokosc odniesienia punktu kalibracyjnego"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
-"Poziomowanie stolu wg siatki"
+"Poziomowanie stolu"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -590,7 +598,7 @@
 "Measured skew"
 "Zmierzony skos"
 
-#
+#MSG_MMU_FAILS c=14
 "MMU fails"
 "Bledy MMU"
 
@@ -598,7 +606,7 @@
 "MMU load failed     "
 "Blad ladowania MMU"
 
-#
+#MSG_MMU_LOAD_FAILS c=14
 "MMU load fails"
 "Bledy ladow. MMU"
 
@@ -826,7 +834,7 @@
 "Pause"
 "Pauza"
 
-#
+#MSG_POWER_FAILURES c=14
 "Power failures"
 "Zaniki zasilania"
 
@@ -894,6 +902,10 @@
 "Please unload the filament first, then repeat this action."
 "Najpierw rozladuj filament, nastepnie powtorz czynnosc."
 
+# c=20 r=4
+"Please check the IR sensor connection, unload filament if present."
+"Sprawdz polaczenie czujnika IR, rozladuj filament, jesli zaladowany."
+
 #MSG_RECOVERING_PRINT c=20
 "Recovering print    "
 "Wznawianie wydruku  "
@@ -910,11 +922,11 @@
 "Reset XYZ calibr."
 "Reset kalibr. XYZ"
 
-#MSG_BED_CORRECTION_RESET
+#MSG_RESET c=14
 "Reset"
 "\x00"
 
-#MSG_RESUME_PRINT
+#MSG_RESUME_PRINT c=18
 "Resume print"
 "Wznowic wydruk"
 
@@ -1150,7 +1162,7 @@
 "Unload"
 "Rozladuj"
 
-#
+#MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Suma bledow"
 
@@ -1170,7 +1182,7 @@
 "Unloading filament"
 "Rozladowuje filament"
 
-#
+#MSG_TOTAL c=6
 "Total"
 "Suma"
 
@@ -1338,7 +1350,7 @@
 "Warn"
 "Ostrzez"
 
-#
+#MSG_HW_SETUP c=18
 "HW Setup"
 "Ustawienia HW"
 
@@ -1353,10 +1365,6 @@
 #MSG_MESH
 "Mesh"
 "Siatka"
-
-#
-"Mesh bed leveling"
-"Poziomowanie stolu"
 
 #
 "MK3S firmware detected on MK3 printer"
@@ -1386,11 +1394,11 @@
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-code pociety na innym poziomie. Potnij model ponownie. Druk anulowany."
 
-#
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 "G-code pociety dla innej drukarki. Kontynuowac?"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code pociety dla drukarki innego typu. Potnij model ponownie. Druk anulowany."
 
@@ -1446,7 +1454,7 @@
 "Assist"
 "Asyst."
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 "Plyty stalowe"
 

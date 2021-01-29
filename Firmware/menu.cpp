@@ -8,6 +8,7 @@
 #include "lcd.h"
 #include "Configuration.h"
 #include "Marlin.h"
+#include "cmdqueue.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "static_assert.h"
@@ -48,6 +49,7 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 	{
 		menu_menu = menu;
 		lcd_encoder = encoder;
+		menu_top = 0; //reset menu view. Needed if menu_back() is called from deep inside a menu, such as Support
 		asm("sei");
 		if (reset_menu_state)
 		{
@@ -250,8 +252,7 @@ static void menu_draw_item_puts_P(char type_char, const char* str, char num)
     lcd_set_cursor(0, menu_row);
     lcd_printf_P(PSTR("%c%-.16S "), menu_selection_mark(), str);
     lcd_putc(num);
-    lcd_set_cursor(19, menu_row);
-    lcd_putc(type_char);
+    lcd_putc_at(19, menu_row, type_char);
 }
 
 /*
@@ -310,7 +311,7 @@ uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu)
     return 0;
 }
 
-uint8_t menu_item_function_E(const Sheet &sheet, menu_func_t func)
+uint8_t __attribute__((noinline)) menu_item_function_E(const Sheet &sheet, menu_func_t func)
 {
     if (menu_item == menu_line)
     {
@@ -342,6 +343,10 @@ uint8_t menu_item_back_P(const char* str)
 	}
 	menu_item++;
 	return 0;
+}
+
+bool __attribute__((noinline)) menu_item_leave(){
+    return ((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving;
 }
 
 uint8_t menu_item_function_P(const char* str, menu_func_t func)

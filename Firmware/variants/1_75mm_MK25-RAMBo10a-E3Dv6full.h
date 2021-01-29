@@ -175,6 +175,9 @@
 #if BED_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see BED_MINTEMP_DELAY definition)"
 #endif
+#define SUPERPINDA_SUPPORT
+#define PINDA_MINTEMP 30 //The miniRAMBo thermistor readings below 30°C aren't very accurate
+#define PINDA_TEMP_COMP //Used to enable SuperPINDA toggle menu/function
 
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
@@ -380,6 +383,9 @@
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
 #define PLA_PREHEAT_HPB_TEMP 60
+
+#define PVB_PREHEAT_HOTEND_TEMP 215
+#define PVB_PREHEAT_HPB_TEMP 75
 
 #define ASA_PREHEAT_HOTEND_TEMP 260
 #define ASA_PREHEAT_HPB_TEMP 105

@@ -129,11 +129,15 @@ void sm4_set_dir_bits(uint8_t dir_bits)
 void sm4_do_step(uint8_t axes_mask)
 {
 #if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3) || (MOTHERBOARD == BOARD_EINSY_1_0a))
+#ifdef TMC2130_DEDGE_STEPPING
+	PINC = (axes_mask & 0x0f); // toggle step signals by mask
+#else
     register uint8_t portC = PORTC & 0xf0;
 	PORTC = portC | (axes_mask & 0x0f); //set step signals by mask
 	asm("nop");
 	PORTC = portC; //set step signals to zero
 	asm("nop");
+#endif
 #endif //((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3) || (MOTHERBOARD == BOARD_EINSY_1_0a))
 }
 
@@ -173,7 +177,7 @@ uint16_t sm4_line_xyze_ui(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
 		}
 		if (ce <= de)
 		{
-			sm |= 4;
+			sm |= 8;
 			ce += dd;
 			e++;
 		}
@@ -191,5 +195,45 @@ uint16_t sm4_line_xyze_ui(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
 	return nd;
 }
 
+uint16_t sm4_line_xyz_ui(uint16_t dx, uint16_t dy, uint16_t dz){
+	uint16_t dd = (uint16_t)(sqrt((float)(((uint32_t)dx)*dx + ((uint32_t)dy*dy) + ((uint32_t)dz*dz))) + 0.5);
+	uint16_t nd = dd;
+	uint16_t cx = dd;
+	uint16_t cy = dd;
+	uint16_t cz = dd;
+	uint16_t x = 0;
+	uint16_t y = 0;
+	uint16_t z = 0;
+	while (nd){
+		if (sm4_stop_cb && (*sm4_stop_cb)()) break;
+		uint8_t sm = 0; //step mask
+		if (cx <= dx){
+			sm |= 1;
+			cx += dd;
+			x++;
+		}
+		if (cy <= dy){
+			sm |= 2;
+			cy += dd;
+			y++;
+		}
+		if (cz <= dz){
+			sm |= 4;
+			cz += dd;
+			z++;
+		}
+		cx -= dx;
+		cy -= dy;
+		cz -= dz;
+		sm4_do_step(sm);
+		uint16_t delay = SM4_DEFDELAY;
+		if (sm4_calc_delay_cb) delay = (*sm4_calc_delay_cb)(nd, dd);
+		if (delay) delayMicroseconds(delay);
+		nd--;
+	}
+	if (sm4_update_pos_cb)
+		(*sm4_update_pos_cb)(x, y, z, 0);
+	return nd;
+}
 
 #endif //NEW_XYZCAL
