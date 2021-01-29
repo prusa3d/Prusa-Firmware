@@ -573,7 +573,6 @@ void get_command()
   // this character _can_ occur in serial com, due to checksums. however, no checksums are used in SD printing
 
   static bool stop_buffering=false;
-//  static uint8_t consecutiveEmptyLines = 0;
   if(buflen==0) stop_buffering=false;
   union {
     struct {
@@ -604,10 +603,7 @@ void get_command()
         // so that the lenght of the already read empty lines and comments will be added
         // to the following non-empty line. 
 //        comment_mode = false;
-//        if( ++consecutiveEmptyLines > 10 ){
-//            consecutiveEmptyLines = 0;
-            return; // prevent cycling indefinitely - let manage_heaters do their job
-//        }
+        return; // prevent cycling indefinitely - let manage_heaters do their job
 //        continue; //if empty line
       }
       // The new command buffer could be updated non-atomically, because it is not yet considered

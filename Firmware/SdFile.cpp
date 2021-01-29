@@ -54,11 +54,13 @@ bool SdFile::seekSetFilteredGcode(uint32_t pos){
     return true;
 }
 
-//size=50B
+const uint8_t *SdFile::gfBlockBuffBegin() const {
+    return vol_->cache()->data; // this is constant for the whole time, so it should be fast and sleek
+}
+
 void SdFile::gfReset(){
-    gfCachePBegin = vol_->cache()->data;
     // reset cache read ptr to its begin
-    gfCacheP = gfCachePBegin + gfOffset;
+    gfReadPtr = gfBlockBuffBegin() + gfOffset;
 }
 
 //FORCE_INLINE const uint8_t * find_endl(const uint8_t *p){
@@ -86,28 +88,43 @@ __asm__ __volatile__ (  \
 //size=400B
 // avoid calling the default heavy-weight read() for just one byte
 int16_t SdFile::readFilteredGcode(){
-    gfEnsureBlock(); // this is unfortunate :( ... other calls are using the cache and we can loose the data block of our gcode file
-
+    if( ! gfEnsureBlock() ){
+        goto eof_or_fail; // this is unfortunate :( ... other calls are using the cache and we can loose the data block of our gcode file
+    }
     // assume, we have the 512B block cache filled and terminated with a '\n'
 //    SERIAL_PROTOCOLPGM("Read:");
 //    SERIAL_PROTOCOL(curPosition_);
 //    SERIAL_PROTOCOL(':');
 //    for(uint8_t i = 0; i < 16; ++i){
-//        SERIAL_PROTOCOL( gfCacheP[i] );
+//        SERIAL_PROTOCOL( gfReadPtr[i] );
 //    }
 //    SERIAL_PROTOCOLLN();
+//    SERIAL_PROTOCOLLN(curPosition_);
+    {
+    const uint8_t *start = gfReadPtr;
+
+    // It may seem unreasonable to copy the variable into a local one and copy it back at the end of this method,
+    // but there is an important point of view: the compiler is unsure whether it can optimize the reads/writes
+    // to gfReadPtr within this method, because it is a class member variable. 
+    // The compiler cannot see, if omitting read/write won't have any incorrect side-effects to the rest of the whole FW.
+    // So this trick explicitly states, that rdPtr is a local variable limited to the scope of this method,
+    // therefore the compiler can omit read/write to it (keep it in registers!) as it sees fit.
+    // And it does! Codesize dropped by 68B!
+    const uint8_t *rdPtr = gfReadPtr;
+
+    // the same applies to gfXBegin, codesize dropped another 100B!
+    const uint8_t *blockBuffBegin = gfBlockBuffBegin();
     
-    const uint8_t *start = gfCacheP;
     uint8_t consecutiveCommentLines = 0;
-    while( *gfCacheP == ';' ){
+    while( *rdPtr == ';' ){
         for(;;){
 
-            //while( *(++gfCacheP) != '\n' ); // skip until a newline is found - suboptimal code!
+            //while( *(++gfReadPtr) != '\n' ); // skip until a newline is found - suboptimal code!
             // Wondering, why this "nice while cycle" is done in such a weird way using a separate find_endl() function?
             // Have a look at the ASM code GCC produced!
             
             // At first - a separate find_endl() makes the compiler understand, 
-            // that I don't need to store gfCacheP every time, I'm only interested in the final address where the '\n' was found
+            // that I don't need to store gfReadPtr every time, I'm only interested in the final address where the '\n' was found
             // - the cycle can run on CPU registers only without touching memory besides reading the character being compared.
             // Not only makes the code run considerably faster, but is also 40B shorter!
             // This was the generated code:
@@ -124,52 +141,67 @@ int16_t SdFile::readFilteredGcode(){
             // Still, even that was suboptimal as the compiler seems not to understand the usage of ld r22, Z+ (the plus is important)
             // aka automatic increment of the Z register (R30:R31 pair)
             // There is no other way than pure ASM!
-            find_endl(gfCacheP, gfCacheP);
+            find_endl(rdPtr, rdPtr);
 
             // found a newline, prepare the next block if block cache end reached
-            if( gfCacheP - gfCachePBegin > 512 ){
+            if( rdPtr - blockBuffBegin > 512 ){
                 // at the end of block cache, fill new data in
-                gfUpdateCurrentPosition( gfCacheP - start - 1 );
-                if( ! gfComputeNextFileBlock() )goto fail;
-                gfEnsureBlock(); // fetch it into RAM
-                gfCacheP = start = gfCachePBegin;
+                gfUpdateCurrentPosition( rdPtr - start - 1 );
+                if( ! gfComputeNextFileBlock() )goto eof_or_fail;
+                if( ! gfEnsureBlock() )goto eof_or_fail; // fetch it into RAM
+                rdPtr = start = blockBuffBegin;
             } else {
                 if(++consecutiveCommentLines == 255){
                     // SERIAL_PROTOCOLLN(sd->curPosition_);
-                    --gfCacheP; // unget the already consumed newline
-                    goto forceExit;
+                    --rdPtr; // unget the already consumed newline
+                    goto emit_char;
                 }
                 // peek the next byte - we are inside the block at least at 511th index - still safe
-                if( *gfCacheP == ';' ){
+                if( *rdPtr == ';' ){
                     // consecutive comment
                     ++consecutiveCommentLines;
                 } else {
-                    --gfCacheP; // unget the already consumed newline
-                    goto forceExit;
+                    --rdPtr; // unget the already consumed newline
+                    goto emit_char;
                 }
                 break; // found the real end of the line even across many blocks
             }
         }
     }
-forceExit:
+emit_char:
     {
-        gfUpdateCurrentPosition( gfCacheP - start + 1 );
-        int16_t rv = *gfCacheP++;
+        gfUpdateCurrentPosition( rdPtr - start + 1 );
+        int16_t rv = *rdPtr++;
         
-        // prepare next block if needed
-        if( gfCacheP - gfCachePBegin >= 512 ){
-// speed checking - now at roughly 170KB/s which is much closer to raw read speed of SD card blocks at ~250KB/s
-//            SERIAL_PROTOCOL(millis2());
-//            SERIAL_PROTOCOL(':');
-//            SERIAL_PROTOCOLLN(curPosition_);
-            if( ! gfComputeNextFileBlock() )goto fail;
+        if( curPosition_ >= fileSize_ ){
+            // past the end of file
+            goto eof_or_fail;
+        } else if( rdPtr - blockBuffBegin >= 512 ){
+            // past the end of current bufferred block - prepare the next one...
+            if( ! gfComputeNextFileBlock() )goto eof_or_fail;
             // don't need to force fetch the block here, it will get loaded on the next call
-            gfCacheP = gfCachePBegin;
-        }    
+            rdPtr = blockBuffBegin;
+        }
+
+//        SERIAL_PROTOCOLPGM("c=");
+//        SERIAL_ECHO((char)rv);
+//        SERIAL_ECHO('|');
+//        SERIAL_ECHO((int)rv);
+//        SERIAL_PROTOCOL('|');
+//        SERIAL_PROTOCOLLN(curPosition_);
+
+        // save the current read ptr for the next run
+        gfReadPtr = rdPtr;
         return rv;
     }
-fail:
-//    SERIAL_PROTOCOLLNPGM("CacheFAIL");
+
+}
+
+eof_or_fail:
+//    SERIAL_PROTOCOLPGM("CacheFAIL:");
+
+    // make the rdptr point to a safe location - end of file
+    gfReadPtr = gfBlockBuffBegin() + 512;
     return -1;
 }
 
