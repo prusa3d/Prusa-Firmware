@@ -270,6 +270,7 @@
 #define TMC2130_CURRENTS_R_HOME {8, 10, 20, 18}  // homing running currents for all axes
 
 #define TMC2130_STEALTH_Z
+#define TMC2130_DEDGE_STEPPING
 
 //#define TMC2130_SERVICE_CODES_M910_M918
 
