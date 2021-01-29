@@ -37,10 +37,6 @@ struct pin_map_t {
 || defined(__AVR_ATmega2560__)
 // Mega
 
-// Two Wire (aka I2C) ports
-uint8_t const SDA_PIN = 20;  // D1
-uint8_t const SCL_PIN = 21;  // D0
-
 #undef MOSI_PIN
 #undef MISO_PIN
 // SPI port
