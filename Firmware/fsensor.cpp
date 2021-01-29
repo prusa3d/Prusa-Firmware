@@ -233,6 +233,8 @@ void fsensor_init(void)
 bool fsensor_enable(bool bUpdateEEPROM)
 {
 #ifdef PAT9125
+    (void)bUpdateEEPROM; // silence unused warning in this variant
+
 	if (mmu_enabled == false) { //filament sensor is pat9125, enable only if it is working
 		uint8_t pat9125 = pat9125_init();
 		printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
