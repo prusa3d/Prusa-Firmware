@@ -10026,16 +10026,16 @@ bool setTargetedHotend(int code, uint8_t &extruder)
           SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER
           break;
         case 105:
-          SERIAL_ECHO(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER
+          SERIAL_ECHORPGM(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER
           break;
         case 109:
-          SERIAL_ECHO(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER
+          SERIAL_ECHORPGM(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER
           break;
         case 218:
-          SERIAL_ECHO(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER
+          SERIAL_ECHORPGM(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER
           break;
         case 221:
-          SERIAL_ECHO(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER
+          SERIAL_ECHORPGM(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER
           break;
       }
       SERIAL_PROTOCOLLN((int)extruder);
