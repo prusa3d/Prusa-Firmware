@@ -138,7 +138,7 @@
 "Bed"
 "Lit"
 
-#MSG_MENU_BELT_STATUS c=18
+#MSG_BELT_STATUS c=18
 "Belt status"
 "Statut courroie"
 
@@ -218,7 +218,7 @@
 "Crash detected. Resume print?"
 "Crash detecte. Poursuivre l'impression?"
 
-#
+#MSG_CRASH c=7
 "Crash"
 "\x00"
 
@@ -250,7 +250,7 @@
 "E-correct:"
 "Correct-E:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
 "Remonter le fil."
 
@@ -306,7 +306,7 @@
 "Extruder info"
 "Infos extrudeur"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
 "Extrudeur"
 
@@ -330,7 +330,7 @@
 "Fan test"
 "Test du ventilateur"
 
-#MSG_FANS_CHECK
+#MSG_FANS_CHECK c=13
 "Fans check"
 "Verif vent."
 
@@ -338,9 +338,9 @@
 "Fil. sensor"
 "Capteur Fil."
 
-# c=14
-"Filam. runouts"
-"Fins filament"
+#MSG_FIL_RUNOUTS c=14
+"Fil. runouts  "
+"Fins filament "
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -458,16 +458,16 @@
 "Checking sensors "
 "Verif. des capteurs"
 
-#MSG_SELFTEST_CHECK_X c=20
-"Checking X axis  "
+#MSG_CHECKING_X c=20
+"Checking X axis"
 "Verification axe X"
 
-#MSG_SELFTEST_CHECK_Y c=20
-"Checking Y axis  "
+#MSG_CHECKING_Y c=20
+"Checking Y axis"
 "Verification axe Y"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 "Verification axe Z"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
@@ -498,7 +498,7 @@
 "Insert filament"
 "Inserez le filament"
 
-#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+#MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Fil. est-il charge?"
 
@@ -506,7 +506,7 @@
 "Is steel sheet on heatbed?"
 "Est la plaque sur le plat. chauffant?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Echecs derniere imp."
 
@@ -514,7 +514,7 @@
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Si vous avez d'autres feuilles d'acier,  calibrez leurs pre-reglages dans Reglages - Config HW - Plaque en acier."
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 "Derniere impres."
 
@@ -582,7 +582,7 @@
 "Measuring reference height of calibration point"
 "Je mesure la hauteur de reference du point de calibrage"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 "\x00"
 
@@ -598,7 +598,7 @@
 "Measured skew"
 "Deviat.mesuree"
 
-#
+#MSG_MMU_FAILS c=14
 "MMU fails"
 "Echecs MMU"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "Echec chargement MMU"
 
-#
+#MSG_MMU_LOAD_FAILS c=14
 "MMU load fails"
 "Echecs charg. MMU"
 
@@ -834,7 +834,7 @@
 "Pause"
 "\x00"
 
-#
+#MSG_POWER_FAILURES c=14
 "Power failures"
 "Coup.de courant"
 
@@ -922,11 +922,11 @@
 "Reset XYZ calibr."
 "Reinit. calib. XYZ"
 
-#MSG_BED_CORRECTION_RESET
+#MSG_RESET c=14
 "Reset"
 "Reinitialiser"
 
-#MSG_RESUME_PRINT
+#MSG_RESUME_PRINT c=18
 "Resume print"
 "Reprendre impression"
 
@@ -1162,7 +1162,7 @@
 "Unload"
 "Decharger"
 
-#
+#MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Total des echecs"
 
@@ -1182,7 +1182,7 @@
 "Unloading filament"
 "Dechargement fil."
 
-#
+#MSG_TOTAL c=6
 "Total"
 "Totale"
 
@@ -1350,7 +1350,7 @@
 "Warn"
 "Avert"
 
-#
+#MSG_HW_SETUP c=18
 "HW Setup"
 "Config HW"
 
@@ -1364,10 +1364,6 @@
 
 #MSG_MESH
 "Mesh"
-"\x00"
-
-#
-"Mesh bed leveling"
 "\x00"
 
 #
@@ -1398,11 +1394,11 @@
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "Le G-code a ete prepare pour un niveau different. Veuillez decouper le modele a nouveau. L'impression a ete annulee."
 
-#
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 "Le G-code a ete prepare pour une autre version de l'imprimante. Continuer?"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "Le G-code a ete prepare pour une autre version de l'imprimante. Veuillez decouper le modele a nouveau. L'impression a ete annulee."
 
@@ -1458,7 +1454,7 @@
 "Assist"
 "\x00"
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 "Plaques en acier"
 

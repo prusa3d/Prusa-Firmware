@@ -522,7 +522,7 @@ void setExtruderAutoFanState(uint8_t state)
 	//the fan to either On or Off during certain tests/errors.
 
 	fanState = state;
-	uint8_t newFanSpeed = 0;
+	newFanSpeed = 0;
 	if (fanState & 0x01)
 	{
 #ifdef EXTRUDER_ALTFAN_DETECT

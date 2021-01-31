@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_33
+# Version: 1.0.6-Build_36
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -135,6 +135,7 @@
 #                          Update exit numbers 1-13 for prepare build env 21-29 for prepare compiling 30-36 compiling
 # 08 Jan 2021, 3d-gussner, Comment out 'sudo' auto installation
 #                          Add '-?' '-h' help option
+# 27 Jan 2021, 3d-gussner, Add `-c`, `-p` and `-n` options
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -451,7 +452,7 @@ if type git > /dev/null; then
 	git_available="1"
 fi
 
-while getopts v:l:d:b:o:?h flag
+while getopts v:l:d:b:o:c:p:n:?h flag
 	do
 	    case "${flag}" in
 	        v) variant_flag=${OPTARG};;
@@ -459,6 +460,9 @@ while getopts v:l:d:b:o:?h flag
 	        d) devel_flag=${OPTARG};;
 			b) build_flag=${OPTARG};;
 			o) output_flag=${OPTARG};;
+			c) clean_flag=${OPTARG};;
+			p) prusa_flag=${OPTARG};;
+			n) new_build_flag=${OPTARG};;
 			?) help_flag=1;;
 			h) help_flag=1;;
 	    esac
@@ -469,6 +473,9 @@ while getopts v:l:d:b:o:?h flag
 #echo "build_flag: $build_flag";
 #echo "output_flag: $output_flag";
 #echo "help_flag: $help_flag"
+#echo "clean_flag: $clean_flag"
+#echo "prusa_flag: $prusa_flag"
+#echo "new_build_flag: $new_build_flag"
 
 #
 # '?' 'h' argument usage and help
@@ -482,19 +489,23 @@ echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' f
 echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
+echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build'$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "$(tput setaf 2)-n$(tput sgr0) New fresh build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "$(tput setaf 2)-?$(tput sgr0) Help"
 echo "$(tput setaf 2)-h$(tput sgr0) Help"
 echo 
 echo "Brief USAGE:"
-echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o]"
+echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o] [-c] [-p] [-n]"
 echo
 echo "Example:"
 echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
 echo "  Will build all variants as multi language and final GOLD version"
 echo
-echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1$(tput sgr0)"
+echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1 -c 1 -p 1 -n 1$(tput sgr0)"
 echo "  Will build MK3S multi language final GOLD firmware "
-echo "  with current commit count number and output extra information"
+echo "  with current commit count number and output extra information,"
+echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
 echo
 exit 
 
@@ -807,6 +818,12 @@ do
 	if [ $OUTPUT == "1" ] ; then
 		sleep 2
 	fi
+
+	#New fresh PF-Firmware-build
+	if [ "$new_build_flag" == "1" ]; then
+		rm -r -f $BUILD_PATH/* || exit 36
+	fi
+
 	#$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
 	$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 30
 	echo "$(tput sgr 0)"
@@ -874,17 +891,21 @@ do
 			fi
 		fi
 		# Cleanup after build
-		echo "$(tput setaf 3)"
-		./fw-clean.sh || exit 34
-		./lang-clean.sh || exit 35
-		echo "$(tput sgr 0)"
+		if [[ -z "$clean_flag" || "$clean_flag" == "0" ]]; then
+			echo "$(tput setaf 3)"
+			./fw-clean.sh || exit 34
+			./lang-clean.sh || exit 35
+			echo "$(tput sgr 0)"
+		fi
 	else
 		echo "$(tput setaf 2)Copying English only firmware to PF-build-hex folder$(tput sgr 0)"
 		cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 34
 	fi
 
 	# Cleanup Firmware
-	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 36
+	if [[ -z "$prusa_flag" || "$prusa_flag" == "0" ]]; then
+		rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 36
+	fi
 	if find $SCRIPT_PATH/lang/ -name '*RAMBo10a*.txt' -printf 1 -quit | grep -q 1
 	then
 		rm $SCRIPT_PATH/lang/*RAMBo10a*.txt
@@ -901,6 +922,12 @@ do
 	then
 		rm $SCRIPT_PATH/lang/not_used.txt
 	fi
+
+	#New fresh PF-Firmware-build
+	if [ "$new_build_flag" == "1" ]; then
+		rm -r -f $BUILD_PATH/* || exit 36
+	fi
+
 	# Restore files to previous state
 	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
 	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h

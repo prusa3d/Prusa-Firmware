@@ -19,7 +19,7 @@ uint16_t adc_sim_mask;
 
 void adc_init(void)
 {
-	printf_P(PSTR("adc_init\n"));
+	puts_P(PSTR("adc_init"));
 	adc_sim_mask = 0x00;
 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 	ADMUX |= (1 << REFS0);

@@ -242,9 +242,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| Check mode for nozzle is: __none__				| ^				| ^
 | 0x0DA7 3495		| uint8		| EEPROM_NOZZLE_DIAMETER				| 28h 40		| ffh 255				| Nozzle diameter is: __40 or 0.40mm__				| LCD menu		| D3 Ax0da7 C1
 | ^					| ^			| ^										| 3ch 60		| ^						| Nozzle diameter is: __60 or 0.60mm__				| ^				| ^
+| ^					| ^			| ^										| 3ch 80		| ^						| Nozzle diameter is: __80 or 0.80mm__				| ^				| ^
 | ^					| ^			| ^										| 19h 25		| ^						| Nozzle diameter is: __25 or 0.25mm__				| ^				| ^
 | 0x0DA5 3493		| uint16	| EEPROM_NOZZLE_DIAMETER_uM				| 9001h			| ff ffh 65535			| Nozzle diameter is: __400um__						| LCD menu		| D3 Ax0da5 C2
 | ^					| ^			| ^										| 5802h			| ^						| Nozzle diameter is: __600um__						| ^				| ^
+| ^					| ^			| ^										| 2003h			| ^						| Nozzle diameter is: __800um__						| ^				| ^
 | ^					| ^			| ^										| fa00h			| ^						| Nozzle diameter is: __250um__						| ^				| ^
 | 0x0DA4 3492		| uint8		| EEPROM_CHECK_MODEL					| 01h 1			| ffh 255				| Check mode for printer model is: __warn__			| LCD menu		| D3 Ax0da4 C1
 | ^					| ^			| ^										| 02h 0			| ^						| Check mode for printer model is: __strict__		| ^				| ^
