@@ -10963,6 +10963,10 @@ void uvlo_()
 #endif
 	eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
 
+	eeprom_update_float((float*)(EEPROM_UVLO_ACCELL), cs.acceleration);
+	eeprom_update_float((float*)(EEPROM_UVLO_RETRACT_ACCELL), cs.retract_acceleration);
+	eeprom_update_float((float*)(EEPROM_UVLO_TRAVEL_ACCELL), cs.travel_acceleration);
+
     // Store the saved target
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4), saved_target[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4), saved_target[Y_AXIS]);
@@ -11306,6 +11310,13 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     // Move the Z axis down to the print, in logical coordinates.
     sprintf_P(cmd, PSTR("G1 Z%f"), eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)));
 	enquecommand(cmd);
+
+    // Restore acceleration settings
+    float acceleration = eeprom_read_float((float*)(EEPROM_UVLO_ACCELL));
+    float retract_acceleration = eeprom_read_float((float*)(EEPROM_UVLO_RETRACT_ACCELL));
+    float travel_acceleration = eeprom_read_float((float*)(EEPROM_UVLO_TRAVEL_ACCELL));
+    sprintf_P(cmd, PSTR("M204 P%f R%f T%f"), acceleration, retract_acceleration, travel_acceleration);
+    enquecommand(cmd);
 
   // Unretract.
     sprintf_P(cmd, PSTR("G1 E%0.3f F2700"), default_retraction);
