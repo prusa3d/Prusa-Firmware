@@ -502,31 +502,38 @@ uint32_t CardReader::getFileSize()
 	return filesize;
 }
 
-void CardReader::getStatus()
+void CardReader::getStatus(bool arg_P)
 {
-  if(sdprinting)
-  {
-      if (isPrintPaused) {
-          SERIAL_PROTOCOLLNPGM("SD print paused");
-      }
-      else if (saved_printing) {
-          SERIAL_PROTOCOLLNPGM("Print saved");
-      }
-      else {
-          SERIAL_PROTOCOLLN(LONGEST_FILENAME);
-          SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE
-          SERIAL_PROTOCOL(sdpos);
-          SERIAL_PROTOCOL('/');
-          SERIAL_PROTOCOLLN(filesize);
-          uint16_t time = ( _millis() - starttime ) / 60000U;
-          SERIAL_PROTOCOL(itostr2(time/60));
-          SERIAL_PROTOCOL(':');
-          SERIAL_PROTOCOLLN(itostr2(time%60));
-      }
-  }
-  else {
-    SERIAL_PROTOCOLLNPGM("Not SD printing");
-  }
+    if (isPrintPaused)
+    {
+        if (saved_printing && (saved_printing_type == PRINTING_TYPE_SD))
+            SERIAL_PROTOCOLLNPGM("SD print paused");
+        else
+            SERIAL_PROTOCOLLNPGM("Print saved");
+    }
+    else if (sdprinting)
+    {
+        if (arg_P)
+        {
+            SERIAL_PROTOCOL('/');
+            for (uint8_t i = 0; i < getWorkDirDepth(); i++)
+                printf_P(PSTR("%s/"), dir_names[i]);
+            puts(filename);
+        }
+        else
+            SERIAL_PROTOCOLLN(LONGEST_FILENAME);
+        
+        SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE
+        SERIAL_PROTOCOL(sdpos);
+        SERIAL_PROTOCOL('/');
+        SERIAL_PROTOCOLLN(filesize);
+        uint16_t time = ( _millis() - starttime ) / 60000U;
+        SERIAL_PROTOCOL(itostr2(time/60));
+        SERIAL_PROTOCOL(':');
+        SERIAL_PROTOCOLLN(itostr2(time%60));
+    }
+    else
+        SERIAL_PROTOCOLLNPGM("Not SD printing");
 }
 void CardReader::write_command(char *buf)
 {

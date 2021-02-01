@@ -26,7 +26,7 @@ public:
   void release();
   void startFileprint();
   uint32_t getFileSize();
-  void getStatus();
+  void getStatus(bool arg_P);
   void printingHasFinished();
 
   void getfilename(uint16_t nr, const char* const match=NULL);
