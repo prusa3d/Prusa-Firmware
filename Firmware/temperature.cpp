@@ -522,7 +522,7 @@ void setExtruderAutoFanState(uint8_t state)
 	//the fan to either On or Off during certain tests/errors.
 
 	fanState = state;
-	uint8_t newFanSpeed = 0;
+	newFanSpeed = 0;
 	if (fanState & 0x01)
 	{
 #ifdef EXTRUDER_ALTFAN_DETECT
@@ -2325,11 +2325,22 @@ float unscalePID_d(float d)
 //!
 //! @retval true firmware should do temperature compensation and allow calibration
 //! @retval false PINDA thermistor is not detected, disable temperature compensation and calibration
+//! @retval true/false when forced via LCD menu Settings->HW Setup->SuperPINDA
 //!
 bool has_temperature_compensation()
 {
-#ifdef DETECT_SUPERPINDA
-    return (current_temperature_pinda >= PINDA_MINTEMP) ? true : false;
+#ifdef SUPERPINDA_SUPPORT
+#ifdef PINDA_TEMP_COMP
+   	uint8_t pinda_temp_compensation = eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION);
+    if (pinda_temp_compensation == EEPROM_EMPTY_VALUE) //Unkown PINDA temp compenstation, so check it.
+      {
+#endif //PINDA_TEMP_COMP
+        return (current_temperature_pinda >= PINDA_MINTEMP) ? true : false;
+#ifdef PINDA_TEMP_COMP
+      }
+    else if (pinda_temp_compensation == 0) return true; //Overwritten via LCD menu SuperPINDA [No]
+    else return false; //Overwritten via LCD menu SuperPINDA [YES]
+#endif //PINDA_TEMP_COMP
 #else
     return true;
 #endif
