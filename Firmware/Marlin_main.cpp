@@ -457,6 +457,7 @@ static void gcode_M105(uint8_t extruder);
 static void temp_compensation_start();
 static void temp_compensation_apply();
 
+static bool get_PRUSA_SN(char* SN);
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -1060,6 +1061,8 @@ static void w25x20cl_err_msg()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+	timer2_init(); // enables functional millis
+
 	mmu_init();
 
 	ultralcd_init();
@@ -1123,6 +1126,22 @@ void setup()
           if(!(eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED)))
                eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED,true);
 	}
+
+    //saved EEPROM SN is not valid. Try to retrieve it.
+    //SN is valid only if it is NULL terminated. Any other character means either uninitialized or corrupted
+    if (eeprom_read_byte((uint8_t*)EEPROM_PRUSA_SN + 19))
+    {
+        char SN[20];
+        if (get_PRUSA_SN(SN))
+        {
+            eeprom_update_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
+            puts_P(PSTR("SN updated"));
+        }
+        else
+            puts_P(PSTR("SN update failed"));
+    }
+
+
 #ifndef W25X20CL
 	SERIAL_PROTOCOLLNPGM("start");
 #else
@@ -3447,25 +3466,26 @@ void gcode_M701()
  *
  * Typical format of S/N is:CZPX0917X003XC13518
  *
- * Command operates only in farm mode, if not in farm mode, "Not in farm mode." is written to MYSERIAL.
- *
  * Send command ;S to serial port 0 to retrieve serial number stored in 32U2 processor,
- * reply is transmitted to serial port 1 character by character.
+ * reply is stored in *SN.
  * Operation takes typically 23 ms. If the retransmit is not finished until 100 ms,
- * it is interrupted, so less, or no characters are retransmitted, only newline character is send
- * in any case.
+ * it is interrupted, so less, or no characters are retransmitted, the function returns false
+ * The command will fail if the 32U2 processor is unpowered via USB since it is isolated from the rest of the electronics.
+ * In that case the value that is stored in the EEPROM should be used instead.
+ *
+ * @return 1 on success
+ * @return 0 on general failure
  */
-static void gcode_PRUSA_SN()
+static bool get_PRUSA_SN(char* SN)
 {
     uint8_t selectedSerialPort_bak = selectedSerialPort;
-    char SN[20];
     selectedSerialPort = 0;
     SERIAL_ECHOLNRPGM(PSTR(";S"));
     uint8_t numbersRead = 0;
     ShortTimer timeout;
     timeout.start();
 
-    while (numbersRead < (sizeof(SN) - 1)) {
+    while (numbersRead < 19) {
         if (MSerial.available() > 0) {
             SN[numbersRead] = MSerial.read();
             numbersRead++;
@@ -3474,7 +3494,7 @@ static void gcode_PRUSA_SN()
     }
     SN[numbersRead] = 0;
     selectedSerialPort = selectedSerialPort_bak;
-    SERIAL_ECHOLN(SN);
+    return (numbersRead == 19);
 }
 //! Detection of faulty RAMBo 1.1b boards equipped with bigger capacitors
 //! at the TACH_1 pin, which causes bad detection of print fan speed.
@@ -4006,7 +4026,12 @@ void process_commands()
         card.openFile(strchr_pointer+4,false);
 
 	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
-        gcode_PRUSA_SN();
+        char SN[20];
+        eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
+        if (SN[19])
+            puts_P(PSTR("SN invalid"));
+        else
+            puts(SN);
 
 	} else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
 

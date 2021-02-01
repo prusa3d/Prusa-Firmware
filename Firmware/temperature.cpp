@@ -1124,7 +1124,10 @@ void tp_init()
 
   adc_init();
 
-  timer0_init();
+  timer0_init(); //enables the heatbed timer.
+
+  // timer2 already enabled earlier in the code
+  // now enable the COMPB temperature interrupt
   OCR2B = 128;
   TIMSK2 |= (1<<OCIE2B);
   
