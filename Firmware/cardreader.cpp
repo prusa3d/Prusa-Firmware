@@ -502,7 +502,7 @@ uint32_t CardReader::getFileSize()
 	return filesize;
 }
 
-void CardReader::getStatus(bool arg_L)
+void CardReader::getStatus(bool arg_P)
 {
     if (isPrintPaused)
     {
@@ -513,7 +513,7 @@ void CardReader::getStatus(bool arg_L)
     }
     else if (sdprinting)
     {
-        if (arg_L)
+        if (arg_P)
         {
             SERIAL_PROTOCOL('/');
             for (uint8_t i = 0; i < getWorkDirDepth(); i++)
