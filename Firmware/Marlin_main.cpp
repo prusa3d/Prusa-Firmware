@@ -321,6 +321,8 @@ uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated re
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 
+uint32_t IP_address = 0;
+
 //===========================================================================
 //=============================Private Variables=============================
 //===========================================================================
@@ -8003,6 +8005,23 @@ Sigma_Exit:
       break;
     }
     #endif // CUSTOM_M_CODE_SET_Z_PROBE_OFFSET
+    case 552:
+    {
+        if (code_seen('P'))
+        {
+            uint8_t valCnt = 0;
+            IP_address = 0;
+            do
+            {
+                *strchr_pointer = '*';
+                ((uint8_t*)&IP_address)[valCnt] = code_value_short();
+                valCnt++;
+            } while ((valCnt < 4) && code_seen('.'));
+            
+            if (valCnt != 4)
+                IP_address = 0;
+        }
+    } break;
 
     #ifdef FILAMENTCHANGEENABLE
 
