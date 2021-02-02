@@ -151,7 +151,9 @@ int16_t SdFile::readFilteredGcode(){
                 if( ! gfEnsureBlock() )goto eof_or_fail; // fetch it into RAM
                 rdPtr = start = blockBuffBegin;
             } else {
-                if(++consecutiveCommentLines == 255){
+                if(consecutiveCommentLines >= 250){
+//                    SERIAL_ECHO("ccl=");
+//                    SERIAL_ECHOLN((int)consecutiveCommentLines);
                     // SERIAL_PROTOCOLLN(sd->curPosition_);
                     --rdPtr; // unget the already consumed newline
                     goto emit_char;
