@@ -352,7 +352,7 @@ extern bool mesh_bed_run_from_menu;
 
 extern bool sortAlpha;
 
-extern char dir_names[3][9];
+extern char dir_names[][9];
 
 extern int8_t lcd_change_fil_state;
 // save/restore printing
