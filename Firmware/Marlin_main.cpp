@@ -321,6 +321,8 @@ uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated re
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 
+uint32_t IP_address = 0;
+
 //===========================================================================
 //=============================Private Variables=============================
 //===========================================================================
@@ -3732,6 +3734,7 @@ extern uint8_t st_backlash_y;
 //!@n M503 - print the current settings (from memory not from EEPROM)
 //!@n M509 - force language selection on next restart
 //!@n M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
+//!@n M552 - Set IP address
 //!@n M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 //!@n M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
 //!@n M860 - Wait for PINDA thermistor to reach target temperature.
@@ -8003,6 +8006,36 @@ Sigma_Exit:
       break;
     }
     #endif // CUSTOM_M_CODE_SET_Z_PROBE_OFFSET
+
+	/*!
+	### M552 - Set IP address <a href="https://reprap.org/wiki/G-code#M552:_Set_IP_address.2C_enable.2Fdisable_network_interface">M552: Set IP address, enable/disable network interface"</a>
+    Sets the printer IP address that is shown in the support menu. Designed to be used with the help of host software.
+    If P is not specified nothing happens.
+    If the structure of the IP address is invalid, 0.0.0.0 is assumed and nothing is shown on the screen in the Support menu.
+    #### Usage
+    
+        M552 [ P<IP_address> ]
+    
+    #### Parameters
+    - `P` - The IP address in xxx.xxx.xxx.xxx format. Eg: P192.168.1.14
+	*/
+    case 552:
+    {
+        if (code_seen('P'))
+        {
+            uint8_t valCnt = 0;
+            IP_address = 0;
+            do
+            {
+                *strchr_pointer = '*';
+                ((uint8_t*)&IP_address)[valCnt] = code_value_short();
+                valCnt++;
+            } while ((valCnt < 4) && code_seen('.'));
+            
+            if (valCnt != 4)
+                IP_address = 0;
+        }
+    } break;
 
     #ifdef FILAMENTCHANGEENABLE
 

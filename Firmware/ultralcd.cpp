@@ -2057,8 +2057,8 @@ static void lcd_support_menu()
 	{	// 22bytes total
 		int8_t status;                 // 1byte
 		bool is_flash_air;             // 1byte
-		uint8_t ip[4];                 // 4bytes
-		char ip_str[3*4+3+1];          // 16bytes
+		uint32_t ip;                   // 4bytes
+		char ip_str[IP4_STR_SIZE];     // 16bytes
 	} _menu_data_t;
     static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
@@ -2069,17 +2069,10 @@ static void lcd_support_menu()
         _md->status = 1;
         _md->is_flash_air = card.ToshibaFlashAir_isEnabled();
         if (_md->is_flash_air) {
-            card.ToshibaFlashAir_GetIP(_md->ip); // ip[4] filled with 0 if it failed
-            // Prepare IP string from ip[4]
-            sprintf_P(_md->ip_str, PSTR("%d.%d.%d.%d"), 
-                _md->ip[0], _md->ip[1], 
-                _md->ip[2], _md->ip[3]);
+            card.ToshibaFlashAir_GetIP((uint8_t*)(&_md->ip)); // ip == 0 if it failed
         }
-    } else if (_md->is_flash_air && 
-        _md->ip[0] == 0 && _md->ip[1] == 0 && 
-        _md->ip[2] == 0 && _md->ip[3] == 0 &&
-        ++ _md->status == 16)
-	{
+    } else if (_md->is_flash_air && _md->ip == 0 && ++ _md->status == 16)
+    {
         // Waiting for the FlashAir card to get an IP address from a router. Force an update.
         _md->status = 0;
     }
@@ -2143,6 +2136,20 @@ static void lcd_support_menu()
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
+          ip4_to_str(_md->ip_str, (uint8_t*)(&_md->ip));
+          lcd_printf_P(PSTR("%s"), _md->ip_str);
+      }
+  }
+  
+  // Show the printer IP address, if it is available.
+  if (IP_address) {
+      
+      MENU_ITEM_BACK_P(STR_SEPARATOR);
+      MENU_ITEM_BACK_P(PSTR("Printer IP Addr:"));  //c=18 r=1
+      MENU_ITEM_BACK_P(PSTR(" "));
+      if (((menu_item - 1) == menu_line) && lcd_draw_update) {
+          lcd_set_cursor(2, menu_row);
+          ip4_to_str(_md->ip_str, (uint8_t*)(&IP_address));
           lcd_printf_P(PSTR("%s"), _md->ip_str);
       }
   }

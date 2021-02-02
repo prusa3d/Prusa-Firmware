@@ -501,4 +501,6 @@ void raise_z_above(float target, bool plan=true);
 
 extern "C" void softReset();
 
+extern uint32_t IP_address;
+
 #endif
