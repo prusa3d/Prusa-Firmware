@@ -8,6 +8,7 @@
 #include "pins.h"
 #include "fastio.h"
 
+#ifdef SWI2C_SCL
 
 #define SWI2C_RMSK   0x01 //read mask (bit0 = 1)
 #define SWI2C_WMSK   0x00 //write mask (bit0 = 0)
@@ -187,3 +188,5 @@ uint8_t swi2c_writeByte_A16(uint8_t dev_addr, unsigned short addr, uint8_t* pbyt
 }
 
 #endif //SWI2C_A16
+
+#endif //SWI2C_SCL

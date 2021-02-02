@@ -90,18 +90,13 @@
 #include "la10compat.h"
 #endif
 
-#ifdef SWSPI
-#include "swspi.h"
-#endif //SWSPI
-
 #include "spi.h"
-
-#ifdef SWI2C
-#include "swi2c.h"
-#endif //SWI2C
 
 #ifdef FILAMENT_SENSOR
 #include "fsensor.h"
+#ifdef IR_SENSOR
+#include "pat9125.h" // for pat9125_probe
+#endif
 #endif //FILAMENT_SENSOR
 
 #ifdef TMC2130
@@ -922,9 +917,7 @@ static void check_if_fw_is_on_right_printer(){
 #ifdef FILAMENT_SENSOR
   if((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3S)){
     #ifdef IR_SENSOR
-    swi2c_init();
-    const uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
-      if (pat9125_detected){
+      if (pat9125_probe()){
         lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}////c=20 r=3
     #endif //IR_SENSOR
 
