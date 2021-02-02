@@ -786,7 +786,9 @@ void lcdui_print_status_line(void)
 	{ // Otherwise check for other special events
    		switch (custom_message_type)
 		{
+		case CustomMsg::MsgUpdate: //Short message even while printing from SD
 		case CustomMsg::Status: // Nothing special, print status message normally
+		case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
 			lcd_print(lcd_status_message);
 			break;
 		case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status

@@ -120,6 +120,8 @@ enum class CustomMsg : uint_least8_t
 	PidCal,          //!< PID tuning in progress
 	TempCal,         //!< PINDA temperature calibration
 	TempCompPreheat, //!< Temperature compensation preheat
+  M0Wait,          //!< M0/M1 Wait command working even from SD
+  MsgUpdate,       //!< Short message even while printing from SD
 };
 
 extern CustomMsg custom_message_type;

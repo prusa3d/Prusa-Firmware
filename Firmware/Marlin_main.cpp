@@ -3820,7 +3820,70 @@ void process_commands()
 	  if (starpos != NULL)
 		  *(starpos) = '\0';
 	  lcd_setstatus(strchr_pointer + 5);
+	  custom_message_type = CustomMsg::MsgUpdate;
   }
+
+    /*!
+	### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#M0:_Stop_or_Unconditional_stop">M0: Stop or Unconditional stop</a>
+  #### Usage
+
+      M0 [P<ms<] [S<sec>] [string]
+      M1 [P<ms>] [S<sec>] [string]
+
+  #### Parameters
+  
+    - `P<ms>`  - Expire time, in milliseconds
+    - `S<sec>` - Expire time, in seconds
+    - `string` - An optional message to display on the LCD
+    */
+
+  else if (code_seen_P(PSTR("M0 ")) || code_seen_P(PSTR("M1 "))) { // M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
+
+      char *src = strchr_pointer + 2;
+
+      codenum = 0;
+
+      bool hasP = false, hasS = false;
+      if (code_seen('P')) {
+        codenum = code_value(); // milliseconds to wait
+        hasP = codenum > 0;
+      }
+      if (code_seen('S')) {
+        codenum = code_value() * 1000; // seconds to wait
+        hasS = codenum > 0;
+      }
+      starpos = strchr(src, '*');
+      if (starpos != NULL) *(starpos) = '\0';
+      while (*src == ' ') ++src;
+	  custom_message_type = CustomMsg::M0Wait;
+      if (!hasP && !hasS && *src != '\0') {
+        lcd_setstatus(src);
+      } else {
+        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
+      }
+
+      lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
+      st_synchronize();
+      previous_millis_cmd = _millis();
+      if (codenum > 0){
+        codenum += _millis();  // keep track of when we started waiting
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
+        while(_millis() < codenum && !lcd_clicked()){
+          manage_heater();
+          manage_inactivity(true);
+          lcd_update(0);
+        }
+		KEEPALIVE_STATE(IN_HANDLER);
+        lcd_ignore_click(false);
+      }else{
+        marlin_wait_for_click();
+      }
+      if (IS_SD_PRINTING)
+        LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
+      else
+        LCD_MESSAGERPGM(_T(WELCOME_MSG));
+	  custom_message_type = CustomMsg::MsgUpdate;
+    }
 
 #ifdef TMC2130
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
@@ -5680,59 +5743,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     {
 
     /*!
-	### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#M0:_Stop_or_Unconditional_stop">M0: Stop or Unconditional stop</a>
-    */
-    case 0: // M0 - Unconditional stop - Wait for user button press on LCD
-    case 1: // M1 - Conditional stop - Wait for user button press on LCD
-    {
-      char *src = strchr_pointer + 2;
-
-      codenum = 0;
-
-      bool hasP = false, hasS = false;
-      if (code_seen('P')) {
-        codenum = code_value(); // milliseconds to wait
-        hasP = codenum > 0;
-      }
-      if (code_seen('S')) {
-        codenum = code_value() * 1000; // seconds to wait
-        hasS = codenum > 0;
-      }
-      starpos = strchr(src, '*');
-      if (starpos != NULL) *(starpos) = '\0';
-      while (*src == ' ') ++src;
-      if (!hasP && !hasS && *src != '\0') {
-        lcd_setstatus(src);
-      } else {
-        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
-      }
-
-      lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
-      st_synchronize();
-      previous_millis_cmd = _millis();
-      if (codenum > 0){
-        codenum += _millis();  // keep track of when we started waiting
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-        while(_millis() < codenum && !lcd_clicked()){
-          manage_heater();
-          manage_inactivity(true);
-          lcd_update(0);
-        }
-		KEEPALIVE_STATE(IN_HANDLER);
-        lcd_ignore_click(false);
-      }else{
-        marlin_wait_for_click();
-      }
-      if (IS_SD_PRINTING)
-        LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
-      else
-        LCD_MESSAGERPGM(_T(WELCOME_MSG));
-    }
-    break;
-
-    /*!
 	### M17 - Enable all axes <a href="https://reprap.org/wiki/G-code#M17:_Enable.2FPower_all_stepper_motors">M17: Enable/Power all stepper motors</a>
     */
+
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
         enable_x();
