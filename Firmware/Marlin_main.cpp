@@ -228,7 +228,7 @@ bool fan_state[2];
 int fan_edge_counter[2];
 int fan_speed[2];
 
-char dir_names[3][9];
+char dir_names[MAX_DIR_DEPTH][9];
 
 bool sortAlpha = false;
 
