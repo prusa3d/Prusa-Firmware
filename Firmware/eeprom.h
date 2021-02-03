@@ -319,8 +319,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| PINDA has no temp compensation PINDA v1/2    		| ^				| ^
 | ^					| ^			| ^										| 01h 1			| ^						| PINDA has temp compensation aka SuperPINDA       	| ^				| ^
 | 0x0D15 3349		| char[20]	| EEPROM_PRUSA_SN						| SN[19] == 0	| ffffffffffffffff...	| PRUSA Serial number string						| PRUSA SN		| D3 Ax0d15 C20
+| 0x0D11 3345		| float		| EEPROM_UVLO_ACCELL                	| ???			| ff ff ff ffh			| Power panic saved normal acceleration     		| ???			| D3 Ax0d11 C4
+| 0x0D0D 3341		| float		| EEPROM_UVLO_RETRACT_ACCELL			| ???			| ff ff ff ffh			| Power panic saved retract acceleration     		| ???			| D3 Ax0d0d C4
+| 0x0D09 3337		| float		| EEPROM_UVLO_TRAVEL_ACCELL				| ???			| ff ff ff ffh			| Power panic saved travel acceleration     		| ???			| D3 Ax0d09 C4
 
-  
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
 | 0x0012 18			| uint16	| EEPROM_FIRMWARE_VERSION_END			| ???			| ff ffh 65535			| ???												| ???			| D3 Ax0012 C2
@@ -525,8 +527,13 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_EXPERIMENTAL_VISIBILITY (EEPROM_ALTFAN_OVERRIDE-1) //uint8
 #define EEPROM_PINDA_TEMP_COMPENSATION (EEPROM_EXPERIMENTAL_VISIBILITY-1) //uint8
 #define EEPROM_PRUSA_SN (EEPROM_PINDA_TEMP_COMPENSATION-20) //char[20]
+
+#define EEPROM_UVLO_ACCELL (EEPROM_PRUSA_SN-4) // float
+#define EEPROM_UVLO_RETRACT_ACCELL (EEPROM_UVLO_ACCELL-4) // float
+#define EEPROM_UVLO_TRAVEL_ACCELL (EEPROM_UVLO_RETRACT_ACCELL-4) // float
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_PRUSA_SN
+#define EEPROM_LAST_ITEM EEPROM_UVLO_TRAVEL_ACCELL
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
