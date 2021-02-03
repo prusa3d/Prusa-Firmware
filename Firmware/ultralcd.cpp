@@ -6303,24 +6303,33 @@ static void change_extr_menu(){
 #endif //SNMM
 
 //unload filament for single material printer (used in M702 gcode)
-void unload_filament()
+void unload_filament(bool runout)
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
-    raise_z_above(MIN_Z_FOR_UNLOAD);
+    if (!runout)
+    {
+        raise_z_above(MIN_Z_FOR_UNLOAD);
 
-	//		extr_unload2();
+        // extrude slowly
+        current_position[E_AXIS] += FILAMENTCHANGE_UNLOADFEED;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
+        st_synchronize();
 
-	current_position[E_AXIS] -= 45;
-	plan_buffer_line_curposXYZE(5200 / 60);
-	st_synchronize();
-	current_position[E_AXIS] -= 15;
-	plan_buffer_line_curposXYZE(1000 / 60);
-	st_synchronize();
-	current_position[E_AXIS] -= 20;
-	plan_buffer_line_curposXYZE(1000 / 60);
-	st_synchronize();
+        // relieve leftover pressure
+        current_position[E_AXIS] += 0.1;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME / 2);
+        st_synchronize();
+    }
+
+    // retract & eject
+    current_position[E_AXIS] += FILAMENTCHANGE_FIRSTRETRACT;
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
+    st_synchronize();
+    current_position[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_EJECT);
+    st_synchronize();
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
 
