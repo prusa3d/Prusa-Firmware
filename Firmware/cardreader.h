@@ -3,7 +3,7 @@
 
 #ifdef SDSUPPORT
 
-#define MAX_DIR_DEPTH 10
+#define MAX_DIR_DEPTH 6
 
 #include "SdFile.h"
 enum LsAction {LS_SerialPrint,LS_SerialPrint_LFN,LS_Count,LS_GetFilename};
