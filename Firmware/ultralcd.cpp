@@ -2273,7 +2273,7 @@ if(lcd_clicked())
           {
           case FilamentAction::AutoLoad:
                eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
-               // no break
+               // FALLTHRU
           case FilamentAction::Load:
                loading_flag=true;
                enquecommand_P(PSTR("M701"));      // load filament
@@ -7381,7 +7381,7 @@ bool lcd_selftest()
 			break;
 		case FanCheck::SwappedFan:
 			_swapped_fan = true;
-			// no break
+			// FALLTHRU
 		default:
 			_result = true;
 			break;
@@ -7404,7 +7404,7 @@ bool lcd_selftest()
 			break;
 		case FanCheck::SwappedFan:
 			_swapped_fan = true;
-			// no break
+			// FALLTHRU
 		default:
 			_result = true;
 			break;
