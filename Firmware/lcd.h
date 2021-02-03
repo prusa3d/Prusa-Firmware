@@ -204,7 +204,6 @@ private:
 
 extern void lcd_set_custom_characters(void);
 extern void lcd_set_custom_characters_arrows(void);
-extern void lcd_set_custom_characters_progress(void);
 extern void lcd_set_custom_characters_nextpage(void);
 extern void lcd_set_custom_characters_degree(void);
 
