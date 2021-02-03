@@ -3281,7 +3281,7 @@ static void gcode_M600(bool automatic, bool runout, float x_position, float y_po
 
     //First backup current position and settings
     int feedmultiplyBckp = feedmultiply;
-    float HotendTempBckp = degTargetHotend(active_extruder);
+    float HotendTempBckp;
     int fanSpeedBckp = fanSpeed;
 
     lastpos[X_AXIS] = current_position[X_AXIS];
@@ -3289,10 +3289,23 @@ static void gcode_M600(bool automatic, bool runout, float x_position, float y_po
     lastpos[Z_AXIS] = current_position[Z_AXIS];
     lastpos[E_AXIS] = current_position[E_AXIS];
 
-    //Retract E
-    current_position[E_AXIS] += e_shift;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
-    st_synchronize();
+    if (automatic || !isPrintPaused)
+    {
+        HotendTempBckp = degTargetHotend(active_extruder);
+
+        // Retract E
+        current_position[E_AXIS] += e_shift;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
+        st_synchronize();
+    }
+    else
+    {
+        HotendTempBckp = saved_extruder_temperature;
+
+        // Reheat the extruder
+        setTargetHotend(saved_extruder_temperature, active_extruder);
+        mmu_wait_for_heater_blocking();
+    }
 
     //Lift Z
     current_position[Z_AXIS] += z_shift;
@@ -3358,11 +3371,23 @@ static void gcode_M600(bool automatic, bool runout, float x_position, float y_po
     //Not let's go back to print
     fanSpeed = fanSpeedBckp;
 
-    //Feed a little of filament to stabilize pressure
     if (!automatic)
     {
-        current_position[E_AXIS] += FILAMENTCHANGE_PRIMEFEED;
-        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
+        if (isPrintPaused)
+        {
+            // Return to retracted state during a pause
+            current_position[E_AXIS] -= default_retraction;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
+
+            // Cooldown the extruder again
+            setTargetHotend(0, active_extruder);
+        }
+        else
+        {
+            // Feed a little of filament to stabilize pressure
+            current_position[E_AXIS] += FILAMENTCHANGE_PRIMEFEED;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
+        }
     }
 
     //Move XY back
@@ -3391,7 +3416,10 @@ static void gcode_M600(bool automatic, bool runout, float x_position, float y_po
 	fsensor_check_autoload();
 #endif //IR_SENSOR
 
-    lcd_setstatuspgm(_T(WELCOME_MSG));
+    if (isPrintPaused)
+        lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
+    else
+        lcd_setstatuspgm(_T(WELCOME_MSG));
     custom_message_type = CustomMsg::Status;
 }
 
