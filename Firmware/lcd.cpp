@@ -486,9 +486,15 @@ void lcd_escape_write(uint8_t chr)
 #endif //VT100
 
 
-int lcd_putc(int c)
+int lcd_putc(char c)
 {
 	return fputc(c, lcdout);
+}
+
+int lcd_putc_at(uint8_t c, uint8_t r, char ch)
+{
+	lcd_set_cursor(c, r);
+	return fputc(ch, lcdout);
 }
 
 int lcd_puts_P(const char* str)

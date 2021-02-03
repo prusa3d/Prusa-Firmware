@@ -4,7 +4,7 @@
 #ifndef MARLIN_H
 #define MARLIN_H
 
-#define  FORCE_INLINE __attribute__((always_inline)) inline
+#include "macros.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -116,7 +116,6 @@ void serial_echopair_P(const char *s_P, unsigned long v);
 void serialprintPGM(const char *str);
 
 bool is_buffer_empty();
-void get_command();
 void process_commands();
 void ramming();
 
@@ -241,22 +240,11 @@ void Stop();
 bool IsStopped();
 void finishAndDisableSteppers();
 
-//put an ASCII command at the end of the current buffer.
-void enquecommand(const char *cmd, bool from_progmem = false);
-
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
 
-//put an ASCII command at the begin of the current buffer
-void enquecommand_front(const char *cmd, bool from_progmem = false);
-
 //put an ASCII command at the begin of the current buffer, read from flash
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
-
-void repeatcommand_front();
-
-// Remove all lines from the command queue.
-void cmdqueue_reset();
 
 void prepare_arc_move(char isclockwise);
 void clamp_to_software_endstops(float target[3]);
@@ -287,11 +275,6 @@ FORCE_INLINE unsigned long millis_nc() {
 void setPwmFrequency(uint8_t pin, int val);
 #endif
 
-#ifndef CRITICAL_SECTION_START
-  #define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
-  #define CRITICAL_SECTION_END    SREG = _sreg;
-#endif //CRITICAL_SECTION_START
-
 extern bool fans_check_enabled;
 extern float homing_feedrate[];
 extern uint8_t axis_relative_modes;
@@ -306,6 +289,7 @@ extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
+extern uint8_t newFanSpeed;
 extern int8_t lcd_change_fil_state;
 extern float default_retraction;
 
@@ -497,6 +481,9 @@ void force_high_power_mode(bool start_high_power_section);
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
+#if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
+void gcode_M123();
+#endif //FANCHECK and TACH_0 and TACH_1
 void gcode_M701();
 
 #define UVLO !(PINE & (1<<4))
@@ -513,5 +500,7 @@ void marlin_wait_for_click();
 void raise_z_above(float target, bool plan=true);
 
 extern "C" void softReset();
+
+extern uint32_t IP_address;
 
 #endif

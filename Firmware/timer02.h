@@ -14,6 +14,9 @@ extern "C" {
 ///! Initializes TIMER0 for fast PWM mode-driven bed heating
 extern void timer0_init(void);
 
+///! Initializes TIMER2 for time keeping and temperature interrupt
+extern void timer2_init(void);
+
 ///! Reimplemented original millis() using timer2
 extern unsigned long millis2(void);
 

@@ -18,12 +18,6 @@
 #define W25X20CL                 // external 256kB flash
 #define BOOTAPP                  // bootloader support
 
-
-#define SWI2C_SDA      20 //SDA on P3
-#define SWI2C_SCL      21 //SCL on P3
-
-
-
 #define X_TMC2130_CS           41
 #define X_TMC2130_DIAG         64 // !!! changed from 40 (EINY03)
 #define X_STEP_PIN             37
@@ -120,6 +114,8 @@
 #define TACH_1                 80 
 
 #define IR_SENSOR_PIN 62 //idler sensor @PK0 (digital pin 62/A8)
+
+#define MMU_RST_PIN 76
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.

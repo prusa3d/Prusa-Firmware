@@ -7,17 +7,9 @@
 
 #ifdef SYSTEM_TIMER_2
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
 #include "pins.h"
-
-#ifndef CRITICAL_SECTION_START
-	#define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
-	#define CRITICAL_SECTION_END    SREG = _sreg;
-#endif //CRITICAL_SECTION_START
-
-
 #include "fastio.h"
+#include "macros.h"
 
 void timer4_init(void)
 {
@@ -79,7 +71,7 @@ ISR(TIMER4_OVF_vect)
 	WRITE(BEEPER, 0);
 }
 
-void tone4(__attribute__((unused)) uint8_t _pin, uint16_t frequency)
+void tone4(_UNUSED uint8_t _pin, uint16_t frequency)
 {
 	//this ocr and prescalarbits calculation is taken from the Arduino core and simplified for one type of timer only
 	uint8_t prescalarbits = 0b001;
@@ -105,7 +97,7 @@ void tone4(__attribute__((unused)) uint8_t _pin, uint16_t frequency)
 	CRITICAL_SECTION_END;
 }
 
-void noTone4(__attribute__((unused)) uint8_t _pin)
+void noTone4(_UNUSED uint8_t _pin)
 {
 	CRITICAL_SECTION_START;
 	// Revert prescaler to CLK/1024
