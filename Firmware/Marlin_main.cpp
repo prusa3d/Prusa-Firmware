@@ -3501,11 +3501,13 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				bool result = sample_mesh_and_store_reference();
 				if (result)
 				{
-					if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
-						// Shipped, the nozzle height has been set already. The user can start printing now.
-						calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-						final_result = true;
-					// babystep_apply();
+                    if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
+                    {
+                        // Shipped, the nozzle height has been set already. The user can start printing now.
+                        calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+                    }
+                    final_result = true;
+                    // babystep_apply();
 				}
 			}
 			else
