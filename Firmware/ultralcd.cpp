@@ -7106,16 +7106,14 @@ void lcd_sdcard_menu()
 				if (_md->isDir) lcd_print(LCD_STR_FOLDER[0]);
 				for (; i != 0; i--)
 				{
-					char c = *(_md->scrollPointer + _md->offset +((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
-					if (c == '\0')
-					{
+					const char* c = (_md->scrollPointer + _md->offset + ((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
+                    lcd_print(c[0]);
+                    if (c[1])
+                        _md->lcd_scrollTimer.start();
+                    else
+                    {
 						_md->lcd_scrollTimer.stop();
 						break; //stop at the end of the string
-					}
-					else
-					{
-						lcd_print(c);
-						_md->lcd_scrollTimer.start();
 					}
 				}
 				if (i != 0) //adds spaces if string is incomplete or at the end (instead of null).
