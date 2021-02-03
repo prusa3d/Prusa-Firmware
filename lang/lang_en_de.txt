@@ -726,7 +726,7 @@
 "Nozzle FAN"
 "Duesevent."
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Druck pausieren"
 

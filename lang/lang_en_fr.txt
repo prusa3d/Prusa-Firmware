@@ -726,7 +726,7 @@
 "Nozzle FAN"
 "Vent. buse"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pause de l'impr."
 

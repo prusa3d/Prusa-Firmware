@@ -544,7 +544,7 @@
 #
 "Nozzle FAN"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 
 #MSG_PID_RUNNING c=20 r=1

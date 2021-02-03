@@ -1539,6 +1539,12 @@ void lcd_pause_print()
     }
 }
 
+//! @brief Pause USB/host print, disable nozzle heater, move to park position
+void lcd_pause_usb_print()
+{
+  SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //pause for octoprint
+}
+
 
 float move_menu_scale;
 static void lcd_move_menu_axis();
@@ -6497,6 +6503,12 @@ void lcd_resume_print()
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
 }
 
+//! @brief Resume paused USB/host print
+void lcd_resume_usb_print()
+{
+	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUME); //resume octoprint
+}
+
 static void change_sheet()
 {
 	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
@@ -6631,44 +6643,50 @@ static void lcd_main_menu()
     MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
   }
 
-
-  if(isPrintPaused && saved_printing_type == PRINTING_TYPE_USB)
+  if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused)
   {
-#ifdef FANCHECK
-      if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
-          MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
-#else
-      MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
-#endif
+	if (IS_SD_PRINTING)
+	{
+		MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);////MSG_PAUSE_PRINT c=18
+	}
+	else if (is_usb_printing)
+	{
+		MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);////MSG_PAUSE_PRINT c=18
+	}
   }
-
-#ifdef SDSUPPORT
+  if(isPrintPaused)
+  {
+	#ifdef FANCHECK
+		if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+		{
+			if (is_usb_printing)
+			{
+				MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);////MSG_RESUME_PRINT c=18
+			}
+			else
+			{
+				MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
+			}
+		}
+	#else
+		if (is_usb_printing)
+		{
+			MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);////MSG_RESUME_PRINT c=18
+		}
+		else
+		{
+			MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
+		}
+	#endif //FANCHECK
+  }
+  if(IS_SD_PRINTING || is_usb_printing || isPrintPaused)
+  {
+	MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
+  }
+#ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
   if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal)
   {
-    if (card.isFileOpen())
-    {
-		if (mesh_bed_leveling_flag == false && homing_flag == false) {
-			if (card.sdprinting)
-			{
-				MENU_ITEM_FUNCTION_P(_i("Pause print"), lcd_pause_print);////MSG_PAUSE_PRINT
-			}
-			else if(isPrintPaused)
-			{
-				#ifdef FANCHECK
-					if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
-						MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
-				#else
-					MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
-				#endif
-
-			}
-			MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
-		}
-	}
-	else if (lcd_commands_type == LcdCommands::Layer1Cal && mesh_bed_leveling_flag == false && homing_flag == false) {
-		//MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
-	}
-	else
+	if (!card.isFileOpen())
 	{
 		if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
 		{
@@ -6680,7 +6698,7 @@ static void lcd_main_menu()
 		}
 #if SDCARDDETECT < 1
       MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user////MSG_CNG_SDCARD
-#endif
+#endif //SDCARDDETECT
     }
 	
   } else 
@@ -6689,9 +6707,9 @@ static void lcd_main_menu()
     MENU_ITEM_SUBMENU_P(_i("No SD card"), lcd_sdcard_menu);////MSG_NO_CARD
 #if SDCARDDETECT < 1
     MENU_ITEM_GCODE_P(_i("Init. SD card"), PSTR("M21")); // Manually initialize the SD-card via user interface////MSG_INIT_SDCARD
-#endif
+#endif //SDCARDDETECT
   }
-#endif
+#endif //SDSUPPORT
 
   if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
   {

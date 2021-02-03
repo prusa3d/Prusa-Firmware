@@ -726,7 +726,7 @@
 "Nozzle FAN"
 "Vent. capa"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pausar impresion"
 
