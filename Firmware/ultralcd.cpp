@@ -61,7 +61,9 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
+#ifdef LCD_BL_PIN
 static void lcd_backlight_menu();
+#endif
 
 int8_t ReInitLCD = 0;
 
@@ -130,7 +132,9 @@ static void lcd_tune_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
 static void lcd_control_temperature_menu();
+#ifdef TMC2130
 static void lcd_settings_linearity_correction_menu_save();
+#endif
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
 static void prusa_stat_diameter();
@@ -167,7 +171,6 @@ static void lcd_selftest_v();
 #ifdef TMC2130
 static void reset_crash_det(unsigned char axis);
 static bool lcd_selfcheck_axis_sg(unsigned char axis);
-static bool lcd_selfcheck_axis(int _axis, int _travel);
 #else
 static bool lcd_selfcheck_axis(int _axis, int _travel);
 static bool lcd_selfcheck_pulleys(int axis);
@@ -255,7 +258,9 @@ static void fil_unload_menu();
 #endif // SNMM || SNMM_V2
 static void lcd_disable_farm_mode();
 static void lcd_set_fan_check();
+#ifdef MMU_HAS_CUTTER
 static void lcd_cutter_enabled();
+#endif
 #ifdef SNMM
 static char snmm_stop_print_menu();
 #endif //SNMM
