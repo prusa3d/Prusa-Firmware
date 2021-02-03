@@ -251,7 +251,6 @@
 	
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
 	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
-	  #define SDSORT_GCODE       0  // Allow turning sorting on/off with LCD and M34 g-code.
 	  #define SDSORT_USES_RAM    0  // Pre-allocate a static array for faster pre-sorting.
 	  #define SDSORT_USES_STACK  0  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
 	  #define SDSORT_CACHE_NAMES 0  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
@@ -259,7 +258,7 @@
 	#endif
 	
 	#if defined(SDCARD_SORT_ALPHA)
-	  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
+	  #define HAS_FOLDER_SORTING (FOLDER_SORTING)
 	#endif
 
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.

@@ -15,11 +15,6 @@ CardReader::CardReader()
 
    #ifdef SDCARD_SORT_ALPHA
      sort_count = 0;
-     #if SDSORT_GCODE
-       sort_alpha = true;
-     sort_folders = FOLDER_SORTING;
-     //sort_reverse = false;
-     #endif
    #endif
 
    filesize = 0;
@@ -721,20 +716,10 @@ void CardReader::updir()
 * Get the name of a file in the current directory by sort-index
 */
 void CardReader::getfilename_sorted(const uint16_t nr) {
-	if (nr < sort_count)
-        getfilename_simple(
-        #if SDSORT_GCODE
-            sort_alpha &&
-        #endif
-            sort_positions[sort_order[nr]]
-        );
+    if (nr < sort_count)
+        getfilename_simple(sort_positions[sort_order[nr]]);
     else
-        getfilename(
-        #if SDSORT_GCODE
-            sort_alpha &&
-        #endif
-            nr
-        );
+        getfilename(nr);
 }
 
 /**
@@ -751,9 +736,6 @@ void CardReader::presort() {
 
 	if (sdSort == SD_SORT_NONE) return; //sd sort is turned off
 
-	#if SDSORT_GCODE
-	if (!sort_alpha) return;
-	#endif
 	KEEPALIVE_STATE(IN_HANDLER);
 
 	// Throw away old sort index

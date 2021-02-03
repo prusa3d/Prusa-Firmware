@@ -50,11 +50,6 @@ public:
 		void quicksort(uint8_t left, uint8_t right);
 	 #endif //SDSORT_QUICKSORT
      void getfilename_sorted(const uint16_t nr);
-     #if SDSORT_GCODE
-	 FORCE_INLINE void setSortOn(bool b) { sort_alpha = b; presort(); }
-     FORCE_INLINE void setSortFolders(int i) { sort_folders = i; presort(); }
-     //FORCE_INLINE void setSortReverse(bool b) { sort_reverse = b; }
-	 #endif
   #endif
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
@@ -89,11 +84,6 @@ private:
   // Sort files and folders alphabetically.
 #ifdef SDCARD_SORT_ALPHA
   uint16_t sort_count;        // Count of sorted items in the current directory
-  #if SDSORT_GCODE
-  bool sort_alpha;          // Flag to enable / disable the feature
-  int sort_folders;         // Flag to enable / disable folder sorting
-							//bool sort_reverse;      // Flag to enable / disable reverse sorting
-  #endif
 
   uint8_t sort_order[SDSORT_LIMIT]; // By default the sort index is static.
   uint32_t sort_positions[SDSORT_LIMIT];
