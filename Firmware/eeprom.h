@@ -322,6 +322,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D11 3345		| float		| EEPROM_UVLO_ACCELL                	| ???			| ff ff ff ffh			| Power panic saved normal acceleration     		| ???			| D3 Ax0d11 C4
 | 0x0D0D 3341		| float		| EEPROM_UVLO_RETRACT_ACCELL			| ???			| ff ff ff ffh			| Power panic saved retract acceleration     		| ???			| D3 Ax0d0d C4
 | 0x0D09 3337		| float		| EEPROM_UVLO_TRAVEL_ACCELL				| ???			| ff ff ff ffh			| Power panic saved travel acceleration     		| ???			| D3 Ax0d09 C4
+| 0x0D28 3368		| uint8		| EEPROM_HEAT_BED_ON_LOAD_FILAMENT		| ffh 255		| ffh 255				| Heat bed on load filament unknown state			| LCD menu		| D3 Ax0d28 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Do not heat bed on load filament					| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| Heat bed on load filament							| ^				| ^
 
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
@@ -532,8 +535,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_UVLO_RETRACT_ACCELL (EEPROM_UVLO_ACCELL-4) // float
 #define EEPROM_UVLO_TRAVEL_ACCELL (EEPROM_UVLO_RETRACT_ACCELL-4) // float
 
+#define EEPROM_HEAT_BED_ON_LOAD_FILAMENT (EEPROM_UVLO_TRAVEL_ACCELL-1) //uint8
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_UVLO_TRAVEL_ACCELL
+#define EEPROM_LAST_ITEM EEPROM_HEAT_BED_ON_LOAD_FILAMENT
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
