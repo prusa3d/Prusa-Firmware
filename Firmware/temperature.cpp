@@ -197,7 +197,9 @@ static uint8_t heater_ttbllen_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_TEMP
 
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
+#ifdef AMBIENT_MAXTEMP
 static float analog2tempAmbient(int raw);
+#endif
 static void updateTemperaturesFromRawValues();
 
 enum TempRunawayStates

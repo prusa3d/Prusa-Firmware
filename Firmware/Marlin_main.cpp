@@ -454,8 +454,11 @@ static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
 static void gcode_M105(uint8_t extruder);
+
+#ifndef PINDA_THERMISTOR
 static void temp_compensation_start();
 static void temp_compensation_apply();
+#endif
 
 static bool get_PRUSA_SN(char* SN);
 
