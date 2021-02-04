@@ -883,6 +883,9 @@ void CardReader::presort() {
 			#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
 			#endif
 
+			lcd_set_cursor(0, 1);
+			lcd_printf_P(PSTR("%-20.20S"), _i("Sorting files"));
+
 			for (uint16_t i = fileCnt; --i;) {
 				if (!IS_SD_INSERTED) return;
 				bool didSwap = false;
@@ -936,6 +939,11 @@ void CardReader::presort() {
 				if (!didSwap) break;
 			} //end of bubble sort loop
 #endif
+			lcd_set_cursor(0, 2);
+			for (int column = 0; column <= 19; column++)
+				lcd_print('\xFF'); //simple progress bar
+			_delay(300);
+			lcd_clear();
 		}
 		else {
 			sort_order[0] = 0;
@@ -943,11 +951,6 @@ void CardReader::presort() {
 
 		sort_count = fileCnt;
 	}
-
-	lcd_set_cursor(0, 2);
-	for (int column = 0; column <= 19; column++) lcd_print('\xFF'); //simple progress bar
-	_delay(300);
-	lcd_clear();
 
 	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);
