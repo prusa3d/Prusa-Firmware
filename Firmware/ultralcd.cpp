@@ -3974,7 +3974,7 @@ static void prusa_stat_printinfo()
 	SERIAL_ECHOPGM("][FEM:");
 	SERIAL_ECHO(itostr3(feedmultiply));
 	SERIAL_ECHOPGM("][FNM:");
-	SERIAL_ECHO(card.longFilename);
+	SERIAL_ECHO(card.longFilename[0] ? card.longFilename : card.filename);
 	SERIAL_ECHOPGM("][TIM:");
 	if (starttime != 0)
 	{
