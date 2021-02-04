@@ -39,7 +39,7 @@ public:
   
 
   void ls(bool printLFN);
-  void chdir(const char * relpath);
+  bool chdir(const char * relpath);
   void updir();
   void setroot();
 

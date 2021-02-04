@@ -8490,13 +8490,16 @@ static void menu_action_sdfile(const char* filename)
 
 void menu_action_sddirectory(const char* filename)
 {
-	uint8_t depth = (uint8_t)card.getWorkDirDepth();
+	bool success = card.chdir(filename);
 
-	strcpy(dir_names[depth], filename);
-	MYSERIAL.println(dir_names[depth]);
-  card.chdir(filename);
-  lcd_encoder = 0;
-  menu_data_reset(); //Forces reloading of cached variables.
+	if (success)
+	{
+		strcpy(dir_names[card.getWorkDirDepth()], filename);
+		MYSERIAL.println(filename);
+	}
+
+	lcd_encoder = 0;
+	menu_data_reset(); //Forces reloading of cached variables.
 }
 
 /** LCD API **/

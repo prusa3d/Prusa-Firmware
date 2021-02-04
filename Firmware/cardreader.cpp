@@ -666,7 +666,7 @@ uint16_t CardReader::getnrfilenames()
   return nrFiles;
 }
 
-void CardReader::chdir(const char * relpath)
+bool CardReader::chdir(const char * relpath)
 {
   SdFile newfile;
   SdFile *parent=&root;
@@ -674,11 +674,12 @@ void CardReader::chdir(const char * relpath)
   if(workDir.isOpen())
     parent=&workDir;
   
-  if(!newfile.open(*parent,relpath, O_READ))
+  if(!newfile.open(*parent,relpath, O_READ) || ((workDirDepth + 1) >= MAX_DIR_DEPTH))
   {
    SERIAL_ECHO_START;
    SERIAL_ECHORPGM(_n("Cannot enter subdir: "));////MSG_SD_CANT_ENTER_SUBDIR
    SERIAL_ECHOLN(relpath);
+   return 0;
   }
   else
   {
@@ -691,6 +692,7 @@ void CardReader::chdir(const char * relpath)
 	#ifdef SDCARD_SORT_ALPHA
 		presort();
 	#endif
+	return 1;
   }
 }
 
