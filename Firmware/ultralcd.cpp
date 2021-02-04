@@ -7068,18 +7068,16 @@ void lcd_sdcard_menu()
 			}
 			else MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir); //Show the updir button if in a subdir.
 
-			for (uint16_t i = 0; i < _md->fileCnt; i++) // Every file, from top to bottom.
+			for (uint16_t i = _md->fileCnt; i-- > 0;) // Every file, from top to bottom.
 			{
 				if (menu_item == menu_line) //If the file is on the screen.
 				{
-					const uint16_t nr = _md->fileCnt - 1 - i; //file index inversion.
-					
 					//load filename to memory.
 #ifdef SDCARD_SORT_ALPHA
-					if (_md->sdSort == SD_SORT_NONE) card.getfilename(nr);
-					else card.getfilename_sorted(nr);
+					if (_md->sdSort == SD_SORT_NONE) card.getfilename(i);
+					else card.getfilename_sorted(i);
 #else
-					card.getfilename(nr);
+					card.getfilename(i);
 #endif
 					if (lcd_encoder == menu_item) //If the file is selected.
 					{
