@@ -7014,8 +7014,9 @@ void lcd_sdcard_menu()
 		uint8_t offset;
 		bool isDir;
 		const char* scrollPointer;
+		uint16_t selectedFileID;
 		uint16_t fileCnt;
-		uint8_t row;
+		int8_t row;
 		uint8_t sdSort;
 		ShortTimer lcd_scrollTimer;
 	} _menu_data_sdcard_t;
@@ -7026,14 +7027,16 @@ void lcd_sdcard_menu()
 	{
 		case _uninitialized: //Initialize menu data
 		{
-			if (presort_flag == true) { //used to force resorting if sorting type is changed.
+			if (presort_flag == true) //used to force resorting if sorting type is changed.
+			{
 				presort_flag = false;
 				card.presort();
 			}
 			_md->fileCnt = card.getnrfilenames();
 			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 			_md->menuState = _standard;
-		} //Begin the first menu state instantly.
+			// FALLTHRU
+		}
 		case _standard: //normal menu structure.
 		{
 			if (!_md->lcd_scrollTimer.running()) //if the timer is not running, then the menu state was just switched, so redraw the screen.
@@ -7041,19 +7044,21 @@ void lcd_sdcard_menu()
 				_md->lcd_scrollTimer.start();
 				lcd_draw_update = 1;
 			}
-			if (_md->lcd_scrollTimer.expired(500) && _md->scrollPointer) //switch to the scrolling state on timeout if a file/dir is selected.
+			if (_md->lcd_scrollTimer.expired(500) && (_md->row != -1)) //switch to the scrolling state on timeout if a file/dir is selected.
 			{
 				_md->menuState = _scrolling;
 				_md->offset = 0;
+				_md->scrollPointer = NULL;
 				_md->lcd_scrollTimer.start();
 				lcd_draw_update = 1; //forces last load before switching to scrolling.
 			}
-			if (lcd_draw_update == 0 && !LCD_CLICKED) return; // nothing to do (so don't thrash the SD card)
+			if (lcd_draw_update == 0 && !LCD_CLICKED)
+				return; // nothing to do (so don't thrash the SD card)
+			
+			_md->row = -1; // assume that no SD file/dir is currently selected. Once they are rendered, it will be changed to the correct row for the _scrolling state.
 			
 			//if we reached this point it means that the encoder moved or clicked or the state is being switched. Reset the scrollTimer.
 			_md->lcd_scrollTimer.start();
-			
-			_md->scrollPointer = NULL; //clear scrollPointer. Used for differentiating between a file/dir and another menu item that is selected.
 			
 			MENU_BEGIN();
 			MENU_ITEM_BACK_P(_T(bMain?MSG_MAIN:MSG_BACK));  // i.e. default menu-item / menu-item after card insertion
@@ -7063,10 +7068,12 @@ void lcd_sdcard_menu()
 #if SDCARDDETECT == -1
 				MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh);
 #else
-				if (card.ToshibaFlashAir_isEnabled()) MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh); //show the refresh option if in flashAir mode.
+				if (card.ToshibaFlashAir_isEnabled())
+					MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh); //show the refresh option if in flashAir mode.
 #endif
 			}
-			else MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir); //Show the updir button if in a subdir.
+			else
+				MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir); //Show the updir button if in a subdir.
 
 			for (uint16_t i = _md->fileCnt; i-- > 0;) // Every file, from top to bottom.
 			{
@@ -7074,20 +7081,24 @@ void lcd_sdcard_menu()
 				{
 					//load filename to memory.
 #ifdef SDCARD_SORT_ALPHA
-					if (_md->sdSort == SD_SORT_NONE) card.getfilename(i);
-					else card.getfilename_sorted(i);
+					if (_md->sdSort == SD_SORT_NONE)
+						card.getfilename(i);
+					else
+						card.getfilename_sorted(i);
 #else
 					card.getfilename(i);
 #endif
 					if (lcd_encoder == menu_item) //If the file is selected.
 					{
-						_md->scrollPointer = (card.longFilename[0] == '\0') ? card.filename : card.longFilename;
+						
+						_md->selectedFileID = i;
 						_md->isDir = card.filenameIsDir;
 						_md->row = menu_row;
-						if(_md->menuState == _scrolling) return; //return early if switching states. At this point the selected filename should be loaded into memory.
 					}
-					if (card.filenameIsDir) MENU_ITEM_SDDIR(card.filename, card.longFilename);
-					else MENU_ITEM_SDFILE(card.filename, card.longFilename);
+					if (card.filenameIsDir)
+						MENU_ITEM_SDDIR(card.filename, card.longFilename);
+					else
+						MENU_ITEM_SDFILE(card.filename, card.longFilename);
 				}
 				else MENU_ITEM_DUMMY(); //dummy item that just increments the internal menu counters.
 			}
@@ -7095,22 +7106,39 @@ void lcd_sdcard_menu()
 		} break;
 		case _scrolling: //scrolling filename
 		{
-			const bool rewindFlag = LCD_CLICKED || lcd_draw_update; //flag that says whether the menu should return to state:1.
-			if (rewindFlag == 1) _md->offset = 0; //redraw once again from the beginning.
+			const bool rewindFlag = LCD_CLICKED || lcd_draw_update; //flag that says whether the menu should return to _standard state.
+			
+			if (_md->scrollPointer == NULL)
+			{
+				//load filename to memory.
+#ifdef SDCARD_SORT_ALPHA
+				if (_md->sdSort == SD_SORT_NONE)
+					card.getfilename(_md->selectedFileID);
+				else
+					card.getfilename_sorted(_md->selectedFileID);
+#else
+				card.getfilename(_md->selectedFileID);
+#endif
+				_md->scrollPointer = (card.longFilename[0] == '\0') ? card.filename : card.longFilename;
+			}
+			
+			if (rewindFlag == 1)
+				_md->offset = 0; //redraw once again from the beginning.
 			if (_md->lcd_scrollTimer.expired(300) || rewindFlag)
 			{
 				uint8_t i = LCD_WIDTH - ((_md->isDir)?2:1);
 				lcd_set_cursor(0, _md->row);
 				lcd_print('>');
-				if (_md->isDir) lcd_print(LCD_STR_FOLDER[0]);
+				if (_md->isDir)
+					lcd_print(LCD_STR_FOLDER[0]);
 				for (; i != 0; i--)
 				{
 					const char* c = (_md->scrollPointer + _md->offset + ((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
-                    lcd_print(c[0]);
-                    if (c[1])
-                        _md->lcd_scrollTimer.start();
-                    else
-                    {
+					lcd_print(c[0]);
+					if (c[1])
+						_md->lcd_scrollTimer.start();
+					else
+					{
 						_md->lcd_scrollTimer.stop();
 						break; //stop at the end of the string
 					}
@@ -7123,7 +7151,7 @@ void lcd_sdcard_menu()
 			}
 			if (rewindFlag) //go back to sd_menu.
 			{
-				_md->lcd_scrollTimer.stop(); //forces redraw in state:1
+				_md->lcd_scrollTimer.stop(); //forces redraw in _standard state
 				_md->menuState = _standard;
 			}
 		} break;
