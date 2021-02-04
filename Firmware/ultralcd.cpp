@@ -7007,9 +7007,10 @@ void lcd_sdcard_stop()
 
 void lcd_sdcard_menu()
 {
+	enum menuState_t : uint8_t {_uninitialized, _standard, _scrolling};
 	typedef struct
 	{
-		uint8_t menuState = 0; //start as uninitialized
+		menuState_t menuState = _uninitialized;
 		uint8_t offset;
 		bool isDir;
 		const char* scrollPointer;
@@ -7023,7 +7024,7 @@ void lcd_sdcard_menu()
 	
 	switch(_md->menuState)
 	{
-		case 0: //Initialize menu data
+		case _uninitialized: //Initialize menu data
 		{
 			if (presort_flag == true) { //used to force resorting if sorting type is changed.
 				presort_flag = false;
@@ -7031,9 +7032,9 @@ void lcd_sdcard_menu()
 			}
 			_md->fileCnt = card.getnrfilenames();
 			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
-			_md->menuState = 1;
+			_md->menuState = _standard;
 		} //Begin the first menu state instantly.
-		case 1: //normal menu structure.
+		case _standard: //normal menu structure.
 		{
 			if (!_md->lcd_scrollTimer.running()) //if the timer is not running, then the menu state was just switched, so redraw the screen.
 			{
@@ -7042,10 +7043,10 @@ void lcd_sdcard_menu()
 			}
 			if (_md->lcd_scrollTimer.expired(500) && _md->scrollPointer) //switch to the scrolling state on timeout if a file/dir is selected.
 			{
-				_md->menuState = 2;
+				_md->menuState = _scrolling;
 				_md->offset = 0;
 				_md->lcd_scrollTimer.start();
-				lcd_draw_update = 1; //forces last load before switching to state:2.
+				lcd_draw_update = 1; //forces last load before switching to scrolling.
 			}
 			if (lcd_draw_update == 0 && !LCD_CLICKED) return; // nothing to do (so don't thrash the SD card)
 			
@@ -7085,7 +7086,7 @@ void lcd_sdcard_menu()
 						_md->scrollPointer = (card.longFilename[0] == '\0') ? card.filename : card.longFilename;
 						_md->isDir = card.filenameIsDir;
 						_md->row = menu_row;
-						if(_md->menuState == 2) return; //return early if switching states. At this point the selected filename should be loaded into memory.
+						if(_md->menuState == _scrolling) return; //return early if switching states. At this point the selected filename should be loaded into memory.
 					}
 					if (card.filenameIsDir) MENU_ITEM_SDDIR(card.filename, card.longFilename);
 					else MENU_ITEM_SDFILE(card.filename, card.longFilename);
@@ -7094,7 +7095,7 @@ void lcd_sdcard_menu()
 			}
 			MENU_END();
 		} break;
-		case 2: //scrolling filename
+		case _scrolling: //scrolling filename
 		{
 			const bool rewindFlag = LCD_CLICKED || lcd_draw_update; //flag that says whether the menu should return to state:1.
 			if (rewindFlag == 1) _md->offset = 0; //redraw once again from the beginning.
@@ -7127,10 +7128,10 @@ void lcd_sdcard_menu()
 			if (rewindFlag) //go back to sd_menu.
 			{
 				_md->lcd_scrollTimer.stop(); //forces redraw in state:1
-				_md->menuState = 1;
+				_md->menuState = _standard;
 			}
 		} break;
-		default: _md->menuState = 0; //shouldn't ever happen. Anyways, initialize the menu.
+		default: _md->menuState = _uninitialized; //shouldn't ever happen. Anyways, initialize the menu.
 	}
 }
 #ifdef TMC2130
