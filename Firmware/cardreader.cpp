@@ -908,9 +908,6 @@ void CardReader::presort() {
 					manage_heater();
 					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];
 
-					// The most economical method reads names as-needed
-					// throughout the loop. Slow if there are many.
-					#if !SDSORT_USES_RAM
 					counter++;
 					getfilename_simple(sort_positions[o1]);
 					strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
@@ -921,8 +918,6 @@ void CardReader::presort() {
 					#endif
 					getfilename_simple(sort_positions[o2]);
 					char *name2 = LONGEST_FILENAME; // use the string in-place
-
-					#endif // !SDSORT_USES_RAM
 
 													// Sort the current pair according to settings.
 					if (
@@ -948,12 +943,12 @@ void CardReader::presort() {
 
 		sort_count = fileCnt;
 	}
-#if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
+
 	lcd_set_cursor(0, 2);
 	for (int column = 0; column <= 19; column++) lcd_print('\xFF'); //simple progress bar
 	_delay(300);
 	lcd_clear();
-#endif
+
 	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);
 	lcd_timeoutToStatus.start();
@@ -961,17 +956,6 @@ void CardReader::presort() {
 
 void CardReader::flush_presort() {
 	if (sort_count > 0) {
-		#if SDSORT_DYNAMIC_RAM
-		delete sort_order;
-		#if SDSORT_CACHE_NAMES
-		for (uint8_t i = 0; i < sort_count; ++i) {
-			free(sortshort[i]); // strdup
-			free(sortnames[i]); // strdup
-		}
-		delete sortshort;
-		delete sortnames;
-		#endif
-		#endif
 		sort_count = 0;
 	}
 }
