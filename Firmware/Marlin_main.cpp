@@ -3044,6 +3044,8 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	//set_destination_to_current();
 	int l_feedmultiply = setup_for_endstop_move();
 	lcd_display_message_fullscreen_P(_T(MSG_AUTO_HOME));
+  raise_z_above(MESH_HOME_Z_SEARCH);
+  st_synchronize();
 	home_xy();
 
 	enable_endstops(false);
