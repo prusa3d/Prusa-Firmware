@@ -346,7 +346,6 @@ bool CardReader::diveSubfolder (const char *&fileName)
                 const size_t len = ((static_cast<size_t>(dirname_end-dirname_start))>maxLen) ? maxLen : (dirname_end-dirname_start);
                 strncpy(subdirname, dirname_start, len);
                 subdirname[len] = 0;
-                SERIAL_ECHOLN(subdirname);
                 if (!chdir(subdirname, false))
                     return 0;
 
