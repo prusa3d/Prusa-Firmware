@@ -75,11 +75,6 @@ int8_t FSensorStateMenu = 1;
 bool bMenuFSDetect=false;
 #endif //IR_SENSOR_ANALOG
 
-
-#ifdef SDCARD_SORT_ALPHA
-bool presort_flag = false;
-#endif
-
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 
@@ -7183,8 +7178,8 @@ void lcd_sdcard_menu()
 {
   uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 
-  if (presort_flag == true) {
-	  presort_flag = false;
+  if (card.presort_flag == true) {
+	  card.presort_flag = false;
 	  card.presort();
   }
   if (lcd_draw_update == 0 && LCD_CLICKED == 0)
