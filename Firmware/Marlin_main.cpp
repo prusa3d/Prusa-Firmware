@@ -11677,12 +11677,12 @@ uint16_t print_time_remaining() {
 
 uint16_t print_time_to_change_remaining() {
 	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
-//#ifdef TMC2130 
-//	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_to_change;
-//  else print_t = print_time_to_change - (print_time_remaining_normal - print_time_remaining_silent);
-//#else
+/#ifdef TMC2130 
+	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_to_change;
+  else print_t = print_time_to_change - (print_time_remaining_normal - print_time_remaining_silent);
+#else
   print_t = print_time_to_change;
-//#endif //TMC2130
+#endif //TMC2130
 	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
 	return print_t;
 }
