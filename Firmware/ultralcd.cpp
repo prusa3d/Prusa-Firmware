@@ -671,39 +671,39 @@ void lcdui_print_cmd_diag(void)
 // Print time (8 chars total)
 void lcdui_print_time(void)
 {
-	//if remaining print time estimation is available print it else print elapsed time
-	uint16_t print_t = 0;
-	int chars = 0;
+    //if remaining print time estimation is available print it else print elapsed time
+    uint16_t print_t = 0;
+    int chars = 0;
     char suff = ' ';
     char suff_doubt = ' ';
 
-	if(print_time_to_change != PRINT_TIME_REMAINING_INIT)
-	{
-		print_t = print_time_to_change_remaining();
-		suff = 'C';
-		if (feedmultiply != 100)
-                    suff_doubt = '?';
-	}
-	else if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-	{
-		print_t = print_time_remaining();
-		suff = 'R';
-		if (feedmultiply != 100)
-                    suff_doubt = '?';
-	}
-	else if(starttime != 0)
-		print_t = _millis() / 60000 - starttime / 60000;
+    if(print_time_to_change != PRINT_TIME_REMAINING_INIT)
+    {
+        print_t = print_time_to_change_remaining();
+        suff = 'C';
+        if (feedmultiply != 100)
+            suff_doubt = '?';
+    }
+    else if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+    {
+        print_t = print_time_remaining();
+        suff = 'R';
+        if (feedmultiply != 100)
+            suff_doubt = '?';
+    }
+    else if(starttime != 0)
+        print_t = _millis() / 60000 - starttime / 60000;
 
-	if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (print_time_to_change != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
-	{
- 		if (print_t < 6000) //time<100h
-			chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
-		else //time>=100h
-			chars = lcd_printf_P(_N("%c%3uh %c%c"), LCD_STR_CLOCK[0], print_t / 60, suff, suff_doubt);
-	}
-	else
-		chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
-	lcd_space(8 - chars);
+    if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (print_time_to_change != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
+    {
+        if (print_t < 6000) //time<100h
+            chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
+        else //time>=100h
+            chars = lcd_printf_P(_N("%c%3uh %c%c"), LCD_STR_CLOCK[0], print_t / 60, suff, suff_doubt);
+    }
+    else
+        chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
+    lcd_space(8 - chars);
 }
 
 //Print status line on status screen
