@@ -309,6 +309,18 @@ void CardReader::getAbsFilename(char *t)
   else
     t[0]=0;
 }
+
+void CardReader::printAbsFilenameFast()
+{
+    SERIAL_PROTOCOL('/');
+    for (uint8_t i = 0; i < getWorkDirDepth(); i++)
+    {
+        SERIAL_PROTOCOL(dir_names[i]);
+        SERIAL_PROTOCOL('/');
+    }
+    SERIAL_PROTOCOL(LONGEST_FILENAME);
+}
+
 /**
  * @brief Dive into subfolder
  *
@@ -425,16 +437,16 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
   {
     if (file.open(curDir, fname, O_READ)) 
     {
+      getfilename(0, fname);
       filesize = file.fileSize();
       SERIAL_PROTOCOLRPGM(_N("File opened: "));////MSG_SD_FILE_OPENED
-      SERIAL_PROTOCOL(fname);
+      printAbsFilenameFast();
       SERIAL_PROTOCOLRPGM(_n(" Size: "));////MSG_SD_SIZE
       SERIAL_PROTOCOLLN(filesize);
       sdpos = 0;
       
       SERIAL_PROTOCOLLNRPGM(MSG_FILE_SELECTED);
       lcd_setstatuspgm(MSG_FILE_SELECTED);
-      getfilename(0, fname);
     }
     else
     {
@@ -508,10 +520,8 @@ void CardReader::getStatus(bool arg_P)
     {
         if (arg_P)
         {
-            SERIAL_PROTOCOL('/');
-            for (uint8_t i = 0; i < getWorkDirDepth(); i++)
-                printf_P(PSTR("%s/"), dir_names[i]);
-            puts(filename);
+            printAbsFilenameFast();
+            SERIAL_PROTOCOLLN();
         }
         else
             SERIAL_PROTOCOLLN(LONGEST_FILENAME);
