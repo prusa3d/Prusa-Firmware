@@ -316,6 +316,7 @@ uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint16_t print_time_to_change = PRINT_TIME_REMAINING_INIT; //estimated remaining time to next change in minutes
 
 uint32_t IP_address = 0;
 
@@ -6395,13 +6396,14 @@ Sigma_Exit:
 	### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
 	#### Usage
     
-	    M73 [ P | R | Q | S ]
+	    M73 [ P | R | Q | S | C ]
     
 	#### Parameters
     - `P` - Percent in normal mode
     - `R` - Time remaining in normal mode
     - `Q` - Percent in silent mode
     - `S` - Time in silent mode
+    - `C` - Time to change/pause/user interaction
    */
 	case 73: //M73 show percent done and time remaining
 		if(code_seen('P')) print_percent_done_normal = code_value();
@@ -6414,6 +6416,14 @@ Sigma_Exit:
 			printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal);
 			printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent);
 		}
+
+    print_time_to_change = PRINT_TIME_REMAINING_INIT;
+ 		if(code_seen('C')) 
+    {
+      print_time_to_change = code_value();
+		  printf_P(_N("Time to next change in mins: %d\n"), print_time_to_change);
+	  }
+
 		break;
 
     /*!
@@ -11665,6 +11675,18 @@ uint16_t print_time_remaining() {
 	return print_t;
 }
 
+uint16_t print_time_to_change_remaining() {
+	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
+//#ifdef TMC2130 
+//	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_to_change;
+//  else print_t = print_time_to_change - (print_time_remaining_normal - print_time_remaining_silent);
+//#else
+  print_t = print_time_to_change;
+//#endif //TMC2130
+	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
+	return print_t;
+}
+
 uint8_t calc_percent_done()
 {
 	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
@@ -11689,10 +11711,11 @@ uint8_t calc_percent_done()
 
 static void print_time_remaining_init()
 {
-	print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
-	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
-	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
-	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+    print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
+    print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
+    print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
+    print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+    print_time_to_change = PRINT_TIME_REMAINING_INIT;
 }
 
 void load_filament_final_feed()
