@@ -11677,7 +11677,7 @@ uint16_t print_time_remaining() {
 
 uint16_t print_time_to_change_remaining() {
 	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
-/#ifdef TMC2130 
+#ifdef TMC2130 
 	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_to_change;
   else print_t = print_time_to_change - (print_time_remaining_normal - print_time_remaining_silent);
 #else
