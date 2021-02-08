@@ -859,7 +859,7 @@
 "Stampa da SD"
 
 #
-"Press the knob"
+"Press the knob" c=20 r=2
 "Premere la manopola"
 
 #MSG_PRINT_PAUSED c=20 r=1
@@ -1167,11 +1167,11 @@
 "Totale fallimenti"
 
 #
-"to load filament"
+"to load filament" c=20 r=2
 "per caricare il filamento"
 
 #
-"to unload filament"
+"to unload filament" c=20 r=2
 "per scaricare il filamento"
 
 #MSG_UNLOAD_FILAMENT c=17

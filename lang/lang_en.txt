@@ -644,7 +644,7 @@
 "Print from SD"
 
 #
-"Press the knob"
+"Press the knob" c=20 r=2
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -875,10 +875,10 @@
 "Total failures"
 
 #
-"to load filament"
+"to load filament" c=20 r=2
 
 #
-"to unload filament"
+"to unload filament" c=20 r=2
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
