@@ -858,8 +858,8 @@
 "Print from SD"
 "Druk z karty SD"
 
-#
-"Press the knob" c=20 r=2
+# c=20
+"Press the knob"
 "Wcisnij pokretlo"
 
 #MSG_PRINT_PAUSED c=20 r=1
@@ -1166,12 +1166,12 @@
 "Total failures"
 "Suma bledow"
 
-#
-"to load filament" c=20 r=2
+# c=20
+"to load filament"
 "aby zaladow. fil."
 
-#
-"to unload filament" c=20 r=2
+# c=20
+"to unload filament"
 "aby rozlad. filament"
 
 #MSG_UNLOAD_FILAMENT c=17

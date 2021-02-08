@@ -858,8 +858,8 @@
 "Print from SD"
 "Tisk z SD"
 
-#
-"Press the knob" c=20 r=2
+# c=20
+"Press the knob"
 "Stisknete hl. tlacitko"
 
 #MSG_PRINT_PAUSED c=20 r=1
@@ -1166,12 +1166,12 @@
 "Total failures"
 "Celkem selhani"
 
-#
-"to load filament" c=20 r=2
+# c=20
+"to load filament"
 "k zavedeni filamentu"
 
-#
-"to unload filament" c=20 r=2
+# c=20
+"to unload filament"
 "k vyjmuti filamentu"
 
 #MSG_UNLOAD_FILAMENT c=17

@@ -2242,11 +2242,11 @@ switch(eFilamentAction)
      case FilamentAction::Load:
      case FilamentAction::AutoLoad:
      case FilamentAction::MmuLoad:
-          lcd_puts_P(_i("to load filament"));     ////MSG_ c=20 r=2
+          lcd_puts_P(_i("to load filament"));     ////MSG_ c=20
           break;
      case FilamentAction::UnLoad:
      case FilamentAction::MmuUnLoad:
-          lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=2
+          lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20
           break;
      case FilamentAction::MmuEject:
      case FilamentAction::MmuCut:
