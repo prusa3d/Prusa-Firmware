@@ -438,8 +438,6 @@ extern void cancel_saved_printing();
 
 
 //estimated time to end of the print
-extern uint16_t print_time_remaining();
-extern uint16_t print_time_to_change_remaining();
 extern uint8_t calc_percent_done();
 
 

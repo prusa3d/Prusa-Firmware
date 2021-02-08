@@ -672,30 +672,37 @@ void lcdui_print_cmd_diag(void)
 void lcdui_print_time(void)
 {
     //if remaining print time estimation is available print it else print elapsed time
-    uint16_t print_t = 0;
     int chars = 0;
-    char suff = ' ';
-    char suff_doubt = ' ';
+    if ((PRINTER_ACTIVE) && (starttime != 0))
+    {
+        uint16_t print_t = 0;
+        char suff = ' ';
+        char suff_doubt = ' ';
 
-    if(print_time_to_change != PRINT_TIME_REMAINING_INIT)
-    {
-        print_t = print_time_to_change_remaining();
-        suff = 'C';
+        if (print_time_to_change != PRINT_TIME_REMAINING_INIT)
+        {
+            print_t = print_time_to_change;
+            suff = 'C';
+        }
+        else
+        {
+            suff = 'R';
+        #ifdef TMC2130
+        if (print_time_remaining_silent != PRINT_TIME_REMAINING_INIT && (SilentModeMenu != SILENT_MODE_OFF))
+        {
+            print_t = print_time_remaining_silent;
+        }
+        else
+        #endif //TMC2130
+            print_t = print_time_remaining_normal;
+        }
+		
         if (feedmultiply != 100)
+        {
             suff_doubt = '?';
-    }
-    else if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-    {
-        print_t = print_time_remaining();
-        suff = 'R';
-        if (feedmultiply != 100)
-            suff_doubt = '?';
-    }
-    else if(starttime != 0)
-        print_t = _millis() / 60000 - starttime / 60000;
-
-    if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (print_time_to_change != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
-    {
+            print_t = 100ul * print_t / feedmultiply;
+        }
+		
         if (print_t < 6000) //time<100h
             chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
         else //time>=100h

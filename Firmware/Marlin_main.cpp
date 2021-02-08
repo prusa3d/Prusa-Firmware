@@ -6423,7 +6423,7 @@ Sigma_Exit:
     if(code_seen('C')) 
     {
       print_time_to_change = code_value();
-      printf_P(_N("Time to next change in mins: %d\n"), print_time_to_change);
+      printf_P(_N("Change in mins: %d\n"), print_time_to_change);
     }
     break;
   }
@@ -11662,32 +11662,6 @@ void print_mesh_bed_leveling_table()
       SERIAL_ECHO(' ');
     }
   SERIAL_ECHOLN();
-}
-
-uint16_t print_time_remaining()
-{
-  uint16_t print_t = PRINT_TIME_REMAINING_INIT;
-#ifdef TMC2130 
-  if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_remaining_normal;
-  else print_t = print_time_remaining_silent;
-#else
-  print_t = print_time_remaining_normal;
-#endif //TMC2130
-  if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
-  return print_t;
-}
-
-uint16_t print_time_to_change_remaining()
-{
-  uint16_t print_t = PRINT_TIME_REMAINING_INIT;
-#ifdef TMC2130 
-  if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_to_change;
-  else print_t = print_time_to_change - (print_time_remaining_normal - print_time_remaining_silent);
-#else
-  print_t = print_time_to_change;
-#endif //TMC2130
-  if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
-  return print_t;
 }
 
 uint8_t calc_percent_done()
