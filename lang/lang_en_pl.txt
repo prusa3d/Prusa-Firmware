@@ -827,7 +827,7 @@
 "Prosze zaktualizowac."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Wcisnij pokretlo aby rozgrzac dysze i kontynuowac."
 
 #MSG_FS_PAUSE c=5

@@ -620,7 +620,7 @@
 "Please upgrade."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 
 #MSG_FS_PAUSE c=5
 "Pause"

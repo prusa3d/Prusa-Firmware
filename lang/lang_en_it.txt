@@ -827,7 +827,7 @@
 "Prego aggiornare."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Premete la manopola per preriscaldare l'ugello e continuare."
 
 #MSG_FS_PAUSE c=5

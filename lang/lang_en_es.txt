@@ -827,7 +827,7 @@
 "Actualize por favor"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Pulsa el dial para precalentar la boquilla y continue."
 
 #MSG_FS_PAUSE c=5
