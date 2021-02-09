@@ -665,6 +665,15 @@ void CardReader::getfilename_simple(uint32_t position, const char * const match/
 	lsDive("", *curDir, match);
 }
 
+void CardReader::getfilename_next(uint32_t position, const char * const match/*=NULL*/)
+{
+	curDir = &workDir;
+	lsAction = LS_GetFilename;
+	nrFiles = 1;
+	curDir->seekSet(position);
+	lsDive("", *curDir, match);
+}
+
 uint16_t CardReader::getnrfilenames()
 {
   curDir=&workDir;
@@ -792,7 +801,10 @@ void CardReader::presort() {
 			for (uint16_t i = 0; i < fileCnt; i++) {
 				if (!IS_SD_INSERTED) return;
 				manage_heater();
-				getfilename(i);
+				if (i == 0)
+					getfilename(0);
+				else
+					getfilename_next(position);
 				sort_order[i] = i;
 				sort_positions[i] = position;
 				#if HAS_FOLDER_SORTING
@@ -966,6 +978,7 @@ void CardReader::presort() {
 		}
 		else {
 			sort_order[0] = 0;
+			getfilename(0);
 			sort_positions[0] = position;
 		}
 

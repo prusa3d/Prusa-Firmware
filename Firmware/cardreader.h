@@ -31,6 +31,7 @@ public:
 
   void getfilename(uint16_t nr, const char* const match=NULL);
   void getfilename_simple(uint32_t position, const char * const match = NULL);
+  void getfilename_next(uint32_t position, const char * const match = NULL);
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
