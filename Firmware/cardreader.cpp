@@ -71,14 +71,22 @@ char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
 
 void CardReader::lsDive(const char *prepend, SdFile parent, const char * const match/*=NULL*/) {
 	static uint8_t recursionCnt = 0;
+	// RAII incrementer for the recursionCnt
+	class _incrementer
+	{
+		public:
+		_incrementer() {recursionCnt++;}
+		~_incrementer() {recursionCnt--;}
+	} recursionCntIncrementer;
+	
 	dir_t p;
 	uint8_t cnt = 0;
 		// Read the next entry from a directory
 		while (parent.readDir(p, longFilename) > 0) {
-			if (recursionCnt >= MAX_DIR_DEPTH)
+			if (recursionCnt > MAX_DIR_DEPTH)
 				return;
 			else if (DIR_IS_SUBDIR(&p) && lsAction != LS_Count && lsAction != LS_GetFilename) { // If the entry is a directory and the action is LS_SerialPrint
-				recursionCnt++;
+				
 				// Get the short name for the item, which we know is a folder
 				char lfilename[FILENAME_LENGTH];
 				createFilename(lfilename, p);
@@ -112,7 +120,6 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				
 				if (lsAction == LS_SerialPrint_LFN)
 					puts_P(PSTR("DIR_EXIT"));
-				recursionCnt--;
 			}
 			else {
 				uint8_t pn0 = p.name[0];
