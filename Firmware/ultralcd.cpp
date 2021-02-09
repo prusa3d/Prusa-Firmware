@@ -392,7 +392,8 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 		{
 			lcd_consume_click();
 			menu_action_sdfile(str_fn);
-			return menu_item_ret();
+			/* return */ menu_item_ret();
+			return 1;
 		}
 	}
 	menu_item++;
