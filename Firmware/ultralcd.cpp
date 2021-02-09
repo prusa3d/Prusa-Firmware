@@ -71,11 +71,6 @@ int8_t FSensorStateMenu = 1;
 bool bMenuFSDetect=false;
 #endif //IR_SENSOR_ANALOG
 
-
-#ifdef SDCARD_SORT_ALPHA
-bool presort_flag = false;
-#endif
-
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 
@@ -2059,18 +2054,18 @@ uint8_t nLevel;
 
 lcd_set_cursor(0,0);
 lcdui_print_temp(LCD_STR_THERMOMETER[0],(int)degHotend(0),(int)degTargetHotend(0));
-lcd_puts_at_P(0,2, _i("Press the knob"));                 ////MSG_ c=20 r=1
-lcd_set_cursor(0,3);
+lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_ c=20
+lcd_set_cursor(0,2);
 switch(eFilamentAction)
      {
      case FilamentAction::Load:
      case FilamentAction::AutoLoad:
      case FilamentAction::MmuLoad:
-          lcd_puts_P(_i("to load filament"));     ////MSG_ c=20 r=1
+          lcd_puts_P(_i("to load filament"));     ////MSG_ c=20
           break;
      case FilamentAction::UnLoad:
      case FilamentAction::MmuUnLoad:
-          lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=1
+          lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20
           break;
      case FilamentAction::MmuEject:
      case FilamentAction::MmuCut:
@@ -4141,7 +4136,7 @@ static void lcd_sort_type_set() {
 		default: sdSort = SD_SORT_TIME;
 	}
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
-	presort_flag = true;
+	card.presort_flag = true;
 }
 #endif //SDCARD_SORT_ALPHA
 
@@ -5108,16 +5103,13 @@ do\
     else\
         MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_NORMAL), lcd_toshiba_flash_air_compatibility_toggle);\
 \
-    if (!farm_mode)\
+    uint8_t sdSort;\
+    EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));\
+    switch (sdSort)\
     {\
-        uint8_t sdSort;\
-        EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));\
-        switch (sdSort)\
-        {\
-          case SD_SORT_TIME: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_TIME), lcd_sort_type_set); break;\
-          case SD_SORT_ALPHA: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_ALPHA), lcd_sort_type_set); break;\
-          default: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_NONE), lcd_sort_type_set);\
-        }\
+      case SD_SORT_TIME: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_TIME), lcd_sort_type_set); break;\
+      case SD_SORT_ALPHA: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_ALPHA), lcd_sort_type_set); break;\
+      default: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_NONE), lcd_sort_type_set);\
     }\
 }\
 while (0)
@@ -7026,9 +7018,9 @@ void lcd_sdcard_menu()
 	{
 		case _uninitialized: //Initialize menu data
 		{
-			if (presort_flag == true) //used to force resorting if sorting type is changed.
+			if (card.presort_flag == true) //used to force resorting if sorting type is changed.
 			{
-				presort_flag = false;
+				card.presort_flag = false;
 				card.presort();
 			}
 			_md->fileCnt = card.getnrfilenames();
@@ -8472,7 +8464,7 @@ static void menu_action_sdfile(const char* filename)
 
   for (uint_least8_t i = 0; i < depth; i++) {
 	  for (uint_least8_t j = 0; j < 8; j++) {
-		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
+		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, card.dir_names[i][j]);
 	  }
   }
   
@@ -8490,14 +8482,7 @@ static void menu_action_sdfile(const char* filename)
 
 void menu_action_sddirectory(const char* filename)
 {
-	bool success = card.chdir(filename);
-
-	if (success)
-	{
-		strcpy(dir_names[card.getWorkDirDepth()], filename);
-		MYSERIAL.println(filename);
-	}
-
+	card.chdir(filename, true);
 	lcd_encoder = 0;
 	menu_data_reset(); //Forces reloading of cached variables.
 }

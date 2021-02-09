@@ -827,7 +827,7 @@
 "Prego aggiornare."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Premete la manopola per preriscaldare l'ugello e continuare."
 
 #MSG_FS_PAUSE c=5
@@ -858,7 +858,7 @@
 "Print from SD"
 "Stampa da SD"
 
-#
+# c=20
 "Press the knob"
 "Premere la manopola"
 
@@ -1166,13 +1166,13 @@
 "Total failures"
 "Totale fallimenti"
 
-#
+# c=20
 "to load filament"
-"per caricare il filamento"
+"per caricare il fil."
 
-#
+# c=20
 "to unload filament"
-"per scaricare il filamento"
+"per scaricare fil."
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"

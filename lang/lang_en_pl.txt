@@ -827,7 +827,7 @@
 "Prosze zaktualizowac."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Wcisnij pokretlo aby rozgrzac dysze i kontynuowac."
 
 #MSG_FS_PAUSE c=5
@@ -858,7 +858,7 @@
 "Print from SD"
 "Druk z karty SD"
 
-#
+# c=20
 "Press the knob"
 "Wcisnij pokretlo"
 
@@ -1166,11 +1166,11 @@
 "Total failures"
 "Suma bledow"
 
-#
+# c=20
 "to load filament"
 "aby zaladow. fil."
 
-#
+# c=20
 "to unload filament"
 "aby rozlad. filament"
 
