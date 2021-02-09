@@ -77,7 +77,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 	dir_t p;
 	uint8_t cnt = 0;
 		// Read the next entry from a directory
-		while (parent.readDir(p, longFilename) > 0) {
+		for (position = parent.curPosition(); parent.readDir(p, longFilename) > 0; position = parent.curPosition()) {
 			if (recursionCnt > MAX_DIR_DEPTH)
 				return;
 			else if (DIR_IS_SUBDIR(&p) && lsAction != LS_Count && lsAction != LS_GetFilename) { // If the entry is a directory and the action is LS_SerialPrint
@@ -144,10 +144,10 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 						break;
 				
 					case LS_GetFilename:
-						//SERIAL_ECHOPGM("File: ");				
+						//SERIAL_ECHOPGM("File: ");
 						createFilename(filename, p);
-						cluster = parent.curCluster();
-						position = parent.curPosition();
+						// cluster = parent.curCluster();
+						// position = parent.curPosition();
 						/*MYSERIAL.println(filename);
 						SERIAL_ECHOPGM("Write date: ");
 						writeDate = p.lastWriteDate;
@@ -792,9 +792,9 @@ void CardReader::presort() {
 			for (uint16_t i = 0; i < fileCnt; i++) {
 				if (!IS_SD_INSERTED) return;
 				manage_heater();
+				getfilename(i);
 				sort_order[i] = i;
 				sort_positions[i] = position;
-				getfilename(i);
 				#if HAS_FOLDER_SORTING
 				if (filenameIsDir) dirCnt++;
 				#endif
@@ -966,6 +966,7 @@ void CardReader::presort() {
 		}
 		else {
 			sort_order[0] = 0;
+			sort_positions[0] = position;
 		}
 
 		sort_count = fileCnt;
