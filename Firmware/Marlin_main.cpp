@@ -228,10 +228,6 @@ bool fan_state[2];
 int fan_edge_counter[2];
 int fan_speed[2];
 
-char dir_names[MAX_DIR_DEPTH][9];
-
-bool sortAlpha = false;
-
 
 float extruder_multiplier[EXTRUDERS] = {1.0
   #if EXTRUDERS > 1
@@ -11281,8 +11277,8 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 		}
 		dir_name[8] = '\0';
 		MYSERIAL.println(dir_name);
-		strcpy(dir_names[i], dir_name);
-		card.chdir(dir_name);
+		// strcpy(dir_names[i], dir_name);
+		card.chdir(dir_name, false);
 	}
 
 	for (int i = 0; i < 8; i++) {
