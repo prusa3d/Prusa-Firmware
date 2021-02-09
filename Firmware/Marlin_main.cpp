@@ -6992,14 +6992,14 @@ Sigma_Exit:
 	### M120 - Enable endstops <a href="https://reprap.org/wiki/G-code#M120:_Enable_endstop_detection">M120: Enable endstop detection</a>
     */
     case 120:
-      enable_endstops(false) ;
+      enable_endstops(true) ;
       break;
 
     /*!
 	### M121 - Disable endstops <a href="https://reprap.org/wiki/G-code#M121:_Disable_endstop_detection">M121: Disable endstop detection</a>
     */
     case 121:
-      enable_endstops(true) ;
+      enable_endstops(false) ;
       break;
 
     /*!
