@@ -9,16 +9,11 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "io_atmega2560.h"
-
-#define BEEPER              84
+#include "macros.h"
 
 void timer0_init(void)
 {
-	//save sreg
-	uint8_t _sreg = SREG;
-	//disable interrupts for sure
-	cli();
+	CRITICAL_SECTION_START;
 
 	TCNT0  = 0;
 	// Fast PWM duty (0-255). 
@@ -28,7 +23,14 @@ void timer0_init(void)
 	TCCR0A = (1 << WGM01) | (1 << WGM00) | (1 << COM0B1) | (1 << COM0B0);  
 	TCCR0B = (1 << CS01);    // CLK/8 prescaling
 	TIMSK0 |= (1 << TOIE0);  // enable timer overflow interrupt
-	
+
+	CRITICAL_SECTION_END;
+}
+
+void timer2_init(void)
+{
+	CRITICAL_SECTION_START;
+
 	// Everything, that used to be on timer0 was moved to timer2 (delay, beeping, millis etc.)
 	//setup timer2
 	TCCR2A = 0x00; //COM_A-B=00, WGM_0-1=00
@@ -39,9 +41,8 @@ void timer0_init(void)
 	TIMSK2 &= ~(1<<OCIE2B);
 	//set timer2 OCR registers (OCRB interrupt generated 0.5ms after OVF interrupt)
 	OCR2A = 0;
-	OCR2B = 128;
-	//restore sreg (enable interrupts)
-	SREG = _sreg;
+
+	CRITICAL_SECTION_END;
 }
 
 

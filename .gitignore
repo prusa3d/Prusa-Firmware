@@ -40,8 +40,8 @@ Firmware/Doc
 /lang/*.dat
 /lang/*.tmp
 /lang/*.out
-/lang/not_tran.txt
-/lang/not_used.txt
+/lang/not_tran*.txt
+/lang/not_used*.txt
 /lang/progmem1.chr
 /lang/progmem1.lss
 /lang/progmem1.txt

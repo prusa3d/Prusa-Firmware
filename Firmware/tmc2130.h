@@ -29,6 +29,18 @@ extern uint8_t tmc2130_sg_homing_axes_mask;
 #define TMC2130_WAVE_FAC1000_MAX 200
 #define TMC2130_WAVE_FAC1000_STP   1
 
+#define TMC2130_MINIMUM_PULSE 0   // minimum pulse width in uS
+#define TMC2130_SET_DIR_DELAY 20  // minimum delay after setting direction in uS
+#define TMC2130_SET_PWR_DELAY 0   // minimum delay after changing pwr mode in uS
+
+#ifdef TMC2130_DEDGE_STEPPING
+#define TMC2130_MINIMUM_DELAY //NOP
+#elif TMC2130_MINIMUM_PULSE == 0
+#define TMC2130_MINIMUM_DELAY asm("nop")
+#else
+#define TMC2130_MINIMUM_DELAY delayMicroseconds(TMC2130_MINIMUM_PULSE)
+#endif
+
 extern uint8_t tmc2130_home_enabled;
 extern uint8_t tmc2130_home_origin[2];
 extern uint8_t tmc2130_home_bsteps[2];

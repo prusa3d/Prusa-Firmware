@@ -26,12 +26,15 @@
 #define PAT9125_BANK_SELECTION	0x7f
 
 
-#ifdef PAT9125_SWSPI
+#if defined(PAT9125_SWSPI)
 #include "swspi.h"
-#endif //PAT9125_SWSPI
-#ifdef PAT9125_SWI2C
+#elif defined(PAT9125_SWI2C)
 #include "swi2c.h"
-#endif //PAT9125_SWI2C
+#elif defined(PAT9125_I2C)
+#include "twi.h"
+#else
+#error unknown PAT9125 communication method
+#endif
 
 
 uint8_t pat9125_PID1 = 0;
@@ -103,14 +106,31 @@ extern FILE _uartout;
 #define uartout (&_uartout)
 
 
+uint8_t pat9125_probe()
+{
+#if defined(PAT9125_SWSPI)
+    swspi_init();
+  #error not implemented
+#elif defined(PAT9125_SWI2C)
+    swi2c_init();
+    return swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
+#elif defined(PAT9125_I2C)
+    twi_init();
+  #ifdef IR_SENSOR
+    // NOTE: this is called from the MK3S variant, so it should be kept minimal
+    uint8_t data;
+    return (twi_r8(PAT9125_I2C_ADDR,PAT9125_PID1,&data) == 0);
+  #else
+    return (pat9125_rd_reg(PAT9125_PID1) != 0);
+  #endif
+#endif
+}
+
 uint8_t pat9125_init(void)
 {
-#ifdef PAT9125_SWSPI
-	swspi_init();
-#endif //PAT9125_SWSPI
-#ifdef PAT9125_SWI2C
-	swi2c_init();
-#endif //PAT9125_SWI2C
+    if (!pat9125_probe())
+        return 0;
+
 	// Verify that the sensor responds with its correct product ID.
 	pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
 	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
@@ -234,39 +254,46 @@ uint8_t pat9125_update_bs(void)
 uint8_t pat9125_rd_reg(uint8_t addr)
 {
 	uint8_t data = 0;
-#ifdef PAT9125_SWSPI
+#if defined(PAT9125_SWSPI)
 	swspi_start();
 	swspi_tx(addr & 0x7f);
 	data = swspi_rx();
 	swspi_stop();
-#endif //PAT9125_SWSPI
-#ifdef PAT9125_SWI2C
+#elif defined(PAT9125_SWI2C)
 	if (!swi2c_readByte_A8(PAT9125_I2C_ADDR, addr, &data)) //NO ACK error
-	{
-		pat9125_PID1 = 0xff;
-		pat9125_PID2 = 0xff;
-		return 0;
-	}
-#endif //PAT9125_SWI2C
+        goto error;
+#elif defined(PAT9125_I2C)
+	if (twi_r8(PAT9125_I2C_ADDR,addr,&data))
+        goto error;
+#endif
 	return data;
+
+ error:
+    pat9125_PID1 = 0xff;
+    pat9125_PID2 = 0xff;
+    return 0;
 }
 
 void pat9125_wr_reg(uint8_t addr, uint8_t data)
 {
-#ifdef PAT9125_SWSPI
+#if defined(PAT9125_SWSPI)
 	swspi_start();
 	swspi_tx(addr | 0x80);
 	swspi_tx(data);
 	swspi_stop();
-#endif //PAT9125_SWSPI
-#ifdef PAT9125_SWI2C
+#elif defined(PAT9125_SWI2C)
 	if (!swi2c_writeByte_A8(PAT9125_I2C_ADDR, addr, &data)) //NO ACK error
-	{
-		pat9125_PID1 = 0xff;
-		pat9125_PID2 = 0xff;
-		return;
-	}
-#endif //PAT9125_SWI2C
+        goto error;
+#elif defined(PAT9125_I2C)
+	if (twi_w8(PAT9125_I2C_ADDR,addr,data))
+        goto error;
+#endif
+    return;
+
+ error:
+    pat9125_PID1 = 0xff;
+    pat9125_PID2 = 0xff;
+    return;
 }
 
 uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data)

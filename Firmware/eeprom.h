@@ -81,6 +81,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | :--				| :-- 		| :-- 									| :--:			| :--:					| :--												| :--:			| :--:
 | 0x0FFFh 4095		| uchar    	| EEPROM_SILENT 						| 00h 0			| ffh 255				| TMC Stealth mode: __off__ / miniRambo Power mode	| LCD menu		| D3 Ax0fff C1
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| TMC Stealth mode: __on__ / miniRambo Silent mode	| ^				| ^ 
+| ^ 				| ^ 		| ^										| 02h 2			| ^						| miniRambo Auto mode								| ^				| ^ 
 | 0x0FFEh 4094		| uchar    	| EEPROM_LANG 							| 00h 0			| ffh 255		__L__	| English / LANG_ID_PRI								| LCD menu		| D3 Ax0ffe C1 
 | ^ 				| ^ 		| ^										| 01h 1			| ^						| Other language LANG_ID_SEC						| ^ 			| ^
 | 0x0FFCh 4092		| uint16	| EEPROM_BABYSTEP_X						| ???			| ff ffh 65535			| Babystep for X axis _unsued_						| ??? 			| D3 Ax0ffc C2
@@ -97,19 +98,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0FF1h 4081		| uint32	| EEPROM_FILAMENTUSED					| ???			| 00 00 00 00h 0 __S/P__| Filament used in meters							| ??? 			| D3 Ax0ff1 C4
 | 0x0FEDh 4077		| uint32	| EEPROM_TOTALTIME						| ???			| 00 00 00 00h 0 __S/P__| Total print time									| ??? 			| D3 Ax0fed C4
 | 0x0FE5h 4069		| float		| EEPROM_BED_CALIBRATION_CENTER			| ???			| ff ff ff ffh			| ???											 	| ??? 			| D3 Ax0fe5 C8
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0FDDh 4061		| float		| EEPROM_BED_CALIBRATION_VEC_X			| ???			| ff ff ff ffh			| ???											 	| ??? 			| D3 Ax0fdd C8
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^	
 | 0x0FD5h 4053		| float		| EEPROM_BED_CALIBRATION_VEC_Y			| ???			| ff ff ff ffh			| ???											 	| ??? 			| D3 Ax0fd5 C8
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0FC5h 4037		| int16		| EEPROM_BED_CALIBRATION_Z_JITTER		| ???			| ff ffh 65535			| ???											 	| ??? 			| D3 Ax0fc5 C16
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^	
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0FC4h 4036		| bool		| EEPROM_FARM_MODE						| 00h 0			| ffh 255 		__P__	| Prusa farm mode: __off__							| G99 			| D3 Ax0fc4 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Prusa farm mode: __on__							| G98			| ^
 | 0x0FC3h 4035		| free		| _EEPROM_FREE_NR1_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0fc3 C1
@@ -128,10 +119,6 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| Toshiba Air: __on__								| ^ 			| ^	
 | 0x0FBAh 4026		| uchar		| EEPROM_PRINT_FLAG						| ???			| ???					| _unsued_											| ??? 			| D3 Ax0fba C1
 | 0x0FB0h 4016		| int16		| EEPROM_PROBE_TEMP_SHIFT				| ???			| ???					| ???												| ??? 			| D3 Ax0fb0 C10
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0FAFh 4015		| bool		| EEPROM_TEMP_CAL_ACTIVE				| 00h 0			| 00h 0					| PINDA Temp cal.: __inactive__						| LCD menu		| D3 Ax0faf C1
 | ^					| ^			| ^										| ffh 255		| ^						| PINDA Temp cal.: __active__						| ^ 			| ^
 | 0x0FA7h 4007		| uint32	| EEPROM_BOWDEN_LENGTH					| ???			| ff 00 00 00h			| Bowden length										| ??? 			| D3 Ax0fae C8
@@ -142,16 +129,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| Power Panic flag: __active__						| ^ 			| ^
 | ^					| ^			| ^										| 02h 2			| ^						| Power Panic flag: __???__							| ^ 			| ^
 | 0x0F9Dh 3997		| float		| EEPROM_UVLO_CURRENT_POSITION			| ???			| ffh 255				| Power Panic position 								| ??? 			| D3 Ax0f9d C8
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0F95h 3989		| char		| EEPROM_FILENAME						| ???			| ffh 255				| Power Panic Filename 								| ??? 			| D3 Ax0f95 C8
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| 0x0F91h 39851		| uint32	| EEPROM_FILE_POSITION					| ???			| ff ff ff ffh			| Power Panic File Position							| ??? 			| D3 Ax0f91 C4
+| 0x0F91h 3985		| uint32	| EEPROM_FILE_POSITION					| ???			| ff ff ff ffh			| Power Panic File Position							| ??? 			| D3 Ax0f91 C4
 | 0x0F8Dh 3981		| float		| EEPROM_UVLO_CURRENT_POSITION_Z		| ???			| ff ff ff ffh			| Power Panic Z Position	 						| ^ 			| D3 Ax0f8d C4
 | 0x0F8Ch 3980		| ???		| EEPROM_UVLO_UNUSED_001				| ??? 			| ffh 255				| Power Panic _unused_								| ^ 			| D3 Ax0f8c C1
 | 0x0F8Bh 3979		| uint8		| EEPROM_UVLO_TARGET_BED				| ???			| ffh 255				| Power Panic Bed temperature						| ^ 			| D3 Ax0f8b C1
@@ -160,14 +139,6 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F87h 3975		| uint8		| EEPROM_FAN_CHECK_ENABLED				| 00h 0			| ???					| Fan Check __disabled__							| LCD menu		| D3 Ax0f87 C1
 | ^					| ^			| ^										| 01h 1			| ffh 255				| Fan Check __enabled__ 							| ^ 			| ^
 | 0x0F75h 3957		| uint16	| EEPROM_UVLO_MESH_BED_LEVELING			| ???			| ff ffh 65535			| Power Panic Mesh Bed Leveling						| ???			| D3 Ax0f75 C18 
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
-| ^					| ^			| ^										| ^				| ^						| ^													| ^ 			| ^
 | 0x0F73h 3955		| uint16	| EEPROM_UVLO_Z_MICROSTEPS				| ???			| ff ffh 65535			| Power Panic Z microsteps							| ???			| D3 Ax0f73 C2 
 | 0x0F72h 3954		| uint8		| EEPROM_UVLO_E_ABS						| ???			| ffh 255				| Power Panic ??? position							| ???			| D3 Ax0f72 C1
 | 0x0F6Eh 3950		| foat		| EEPROM_UVLO_CURRENT_POSITION_E		| ???			| ff ff ff ffh			| Power Panic E position							| ???			| D3 Ax0f6e C4
@@ -202,7 +173,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F01h 3841		| uint16	| EEPROM_FERROR_COUNT_TOT				| 0000-fffe		| ff ffh		__S/P__	| Total filament sensor errors 						| ???			| D3 Ax0f01 C2
 | 0x0EFFh 3839		| uint16	| EEPROM_POWER_COUNT_TOT				| 0000-fffe		| ff ffh		__S/P__	| Total power failures		  						| ???			| D3 Ax0eff C2
 | 0x0EFEh 3838		| uint8		| EEPROM_TMC2130_HOME_X_ORIGIN			| ???			| ffh 255				| ???						  						| ???			| D3 Ax0efe C1
-| 0x0EFDh 3837		| uint8		| EEPROM	MC2130_HOME_X_BSTEPS			| ???			| ffh 255			| ???						  						| ???			| D3 Ax0efd C1
+| 0x0EFDh 3837		| uint8		| EEPROM	MC2130_HOME_X_BSTEPS		| ???			| ffh 255		    	| ???						  						| ???			| D3 Ax0efd C1
 | 0x0EFCh 3836		| uint8		| EEPROM_TMC2130_HOME_X_FSTEPS			| ???			| ffh 255				| ???						  						| ???			| D3 Ax0efc C1
 | 0x0EFBh 3835		| uint8		| EEPROM_TMC2130_HOME_Y_ORIGIN			| ???			| ffh 255				| ???						  						| ???			| D3 Ax0efb C1
 | 0x0EFAh 3834		| uint8		| EEPROM_TMC2130_HOME_Y_BSTEPS			| ???			| ffh 255				| ???						  						| ???			| D3 Ax0efa C1
@@ -256,28 +227,6 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| MMU2/s cutter: __enabled__						| ^				| ^
 | ^					| ^			| ^										| 02h 2			| ^						| MMU2/s cutter: __always__							| ^				| ^
 | 0x0DAE 3502		| uint16	| EEPROM_UVLO_MESH_BED_LEVELING_FULL	| ???			| ff ffh 65535			| Power panic Mesh bed leveling points 				| ???			| D3 Ax0dae C288
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
-| ^					| ^			| ^										| ???			| ^						| ^													| ^				| ^
 | 0x0DAD 3501		| uint8		| EEPROM_MBL_TYPE						| ???			| ffh 255				| Mesh bed leveling precision 		_unused atm_	| ???			| D3 Ax0dad C1
 | 0x0DAC 3500		| bool		| EEPROM_MBL_MAGNET_ELIMINATION			| 01h 1			| ffh 255				| Mesh bed leveling does: __ignores__ magnets		| LCD menu		| D3 Ax0dac C1
 | ^					| ^			| ^										| 00h 0			| ^						| Mesh bed leveling does: __NOT ignores__ magnets	| ^				| ^
@@ -293,9 +242,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| Check mode for nozzle is: __none__				| ^				| ^
 | 0x0DA7 3495		| uint8		| EEPROM_NOZZLE_DIAMETER				| 28h 40		| ffh 255				| Nozzle diameter is: __40 or 0.40mm__				| LCD menu		| D3 Ax0da7 C1
 | ^					| ^			| ^										| 3ch 60		| ^						| Nozzle diameter is: __60 or 0.60mm__				| ^				| ^
+| ^					| ^			| ^										| 3ch 80		| ^						| Nozzle diameter is: __80 or 0.80mm__				| ^				| ^
 | ^					| ^			| ^										| 19h 25		| ^						| Nozzle diameter is: __25 or 0.25mm__				| ^				| ^
 | 0x0DA5 3493		| uint16	| EEPROM_NOZZLE_DIAMETER_uM				| 9001h			| ff ffh 65535			| Nozzle diameter is: __400um__						| LCD menu		| D3 Ax0da5 C2
 | ^					| ^			| ^										| 5802h			| ^						| Nozzle diameter is: __600um__						| ^				| ^
+| ^					| ^			| ^										| 2003h			| ^						| Nozzle diameter is: __800um__						| ^				| ^
 | ^					| ^			| ^										| fa00h			| ^						| Nozzle diameter is: __250um__						| ^				| ^
 | 0x0DA4 3492		| uint8		| EEPROM_CHECK_MODEL					| 01h 1			| ffh 255				| Check mode for printer model is: __warn__			| LCD menu		| D3 Ax0da4 C1
 | ^					| ^			| ^										| 02h 0			| ^						| Check mode for printer model is: __strict__		| ^				| ^
@@ -340,8 +291,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D9F 3487		| uint8		| ^										| 00h 0			| ffh 255				| 8th sheet - bed temp 								| ^				| D3 Ax0d9f C1	
 | 0x0DA0 3488		| uint8		| ^										| 00h 0			| ffh 255				| 8th sheet - PINDA temp 							| ^				| D3 Ax0da0 C1	
 | 0x0DA1 3489		| uint8		| ???									| 00h 0			| ffh 255				| ???												| ???			| D3 Ax0da1 C1
-| 0x0D48 3400		| uint8		| EEPROM_FSENSOR_PCB					| ???			| ffh 255				| Filament Sensor type old vs new					| ???			| D3 Ax0d48 C1
-| ^					| ^			| ^										| ???			| ^						| Filament Sensor type ???							| ^				| ^
+| 0x0D48 3400		| uint8		| EEPROM_FSENSOR_PCB					| ffh 255		| ffh 255				| Filament Sensor type IR unknown					| LCD Support	| D3 Ax0d48 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Filament Sensor type IR 0.3 or older				| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor type IR 0.4 or newer				| ^				| ^
 | 0x0D47 3399		| uint8		| EEPROM_FSENSOR_ACTION_NA				| 00h 0			| ffh 255				| Filament Sensor action: __Continue__				| LCD menu		| D3 Ax0d47 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor action: __Pause__					| ^				| ^
 | 0x0D37 3383		| float		| EEPROM_UVLO_SAVED_TARGET				| ???			| ff ff ff ffh			| Power panic saved target all-axis					| ???			| D3 Ax0d37 C16
@@ -357,8 +309,20 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| LCD backlight mode: __Dim__						| ^				| ^
 | 0x0D30 3376		| uint16	| EEPROM_BACKLIGHT_TIMEOUT				| 01 00 - ff ff | 0a 00h 65535			| LCD backlight timeout: __10__ seconds				| LCD menu		| D3 Ax0d30 C2
 | 0x0D2C 3372		| float		| EEPROM_UVLO_LA_K						| ???			| ff ff ff ffh			| Power panic saved Linear Advanced K value			| ???			| D3 Ax0d2c C4
+| 0x0D2B 3371		| uint8		| EEPROM_ALTFAN_OVERRIDE				| ffh 255		| ffh 255				| ALTFAN override unknown state						| LCD menu		| D3 Ax0d2b C1
+| ^					| ^			| ^										| 00h 0			| ^						| ALTFAN override deactivated						| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| ALTFAN override activated 						| ^				| ^
+| 0x0D2A 3370		| uint8		| EEPROM_EXPERIMENTAL_VISIBILITY		| ffh 255		| ffh 255				| Experimental menu visibility unknown state		| LCD menu		| D3 Ax0d2a C1
+| ^					| ^			| ^										| 00h 0			| ^						| Experimental menu visibility hidden				| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| Experimental menu visibility visible				| ^				| ^
+| 0x0D29 3369		| uint8		| EEPROM_PINDA_TEMP_COMPENSATION   		| ffh 255		| ffh 255				| PINDA temp compensation unknown state	            | LCD menu		| D3 Ax0d29 C1
+| ^					| ^			| ^										| 00h 0			| ^						| PINDA has no temp compensation PINDA v1/2    		| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| PINDA has temp compensation aka SuperPINDA       	| ^				| ^
+| 0x0D15 3349		| char[20]	| EEPROM_PRUSA_SN						| SN[19] == 0	| ffffffffffffffff...	| PRUSA Serial number string						| PRUSA SN		| D3 Ax0d15 C20
+| 0x0D11 3345		| float		| EEPROM_UVLO_ACCELL                	| ???			| ff ff ff ffh			| Power panic saved normal acceleration     		| ???			| D3 Ax0d11 C4
+| 0x0D0D 3341		| float		| EEPROM_UVLO_RETRACT_ACCELL			| ???			| ff ff ff ffh			| Power panic saved retract acceleration     		| ???			| D3 Ax0d0d C4
+| 0x0D09 3337		| float		| EEPROM_UVLO_TRAVEL_ACCELL				| ???			| ff ff ff ffh			| Power panic saved travel acceleration     		| ???			| D3 Ax0d09 C4
 
-  
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
 | 0x0012 18			| uint16	| EEPROM_FIRMWARE_VERSION_END			| ???			| ff ffh 65535			| ???												| ???			| D3 Ax0012 C2
@@ -559,8 +523,17 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
 #define EEPROM_UVLO_LA_K (EEPROM_BACKLIGHT_TIMEOUT-4) // float
 
+#define EEPROM_ALTFAN_OVERRIDE (EEPROM_UVLO_LA_K-1) //uint8
+#define EEPROM_EXPERIMENTAL_VISIBILITY (EEPROM_ALTFAN_OVERRIDE-1) //uint8
+#define EEPROM_PINDA_TEMP_COMPENSATION (EEPROM_EXPERIMENTAL_VISIBILITY-1) //uint8
+#define EEPROM_PRUSA_SN (EEPROM_PINDA_TEMP_COMPENSATION-20) //char[20]
+
+#define EEPROM_UVLO_ACCELL (EEPROM_PRUSA_SN-4) // float
+#define EEPROM_UVLO_RETRACT_ACCELL (EEPROM_UVLO_ACCELL-4) // float
+#define EEPROM_UVLO_TRAVEL_ACCELL (EEPROM_UVLO_RETRACT_ACCELL-4) // float
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_UVLO_LA_K
+#define EEPROM_LAST_ITEM EEPROM_UVLO_TRAVEL_ACCELL
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

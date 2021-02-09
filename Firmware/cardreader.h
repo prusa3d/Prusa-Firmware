@@ -3,10 +3,10 @@
 
 #ifdef SDSUPPORT
 
-#define MAX_DIR_DEPTH 10
+#define MAX_DIR_DEPTH 6
 
 #include "SdFile.h"
-enum LsAction {LS_SerialPrint,LS_Count,LS_GetFilename};
+enum LsAction {LS_SerialPrint,LS_SerialPrint_LFN,LS_Count,LS_GetFilename};
 class CardReader
 {
 public:
@@ -26,7 +26,7 @@ public:
   void release();
   void startFileprint();
   uint32_t getFileSize();
-  void getStatus();
+  void getStatus(bool arg_P);
   void printingHasFinished();
 
   void getfilename(uint16_t nr, const char* const match=NULL);
@@ -38,7 +38,7 @@ public:
   uint16_t getWorkDirDepth();
   
 
-  void ls();
+  void ls(bool printLFN);
   void chdir(const char * relpath);
   void updir();
   void setroot();
