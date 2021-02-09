@@ -11786,7 +11786,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 				delay_keep_alive(4);
 
 				if (_millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
-					lcd_display_message_fullscreen_P(_i("Press knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
+					lcd_display_message_fullscreen_P(_i("Press the knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
 					setAllTargetHotends(0);
 					st_synchronize();
