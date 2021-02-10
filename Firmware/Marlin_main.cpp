@@ -6393,43 +6393,37 @@ Sigma_Exit:
 #endif		// Z_PROBE_REPEATABILITY_TEST 
 #endif		// ENABLE_AUTO_BED_LEVELING
 
-  /*!
-  ### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
-  #### Usage
-  
-      M73 [ P | R | Q | S | C ]
-
-  #### Parameters
-    - `P` - Percent in normal mode
-    - `R` - Time remaining in normal mode
-    - `Q` - Percent in silent mode
-    - `S` - Time in silent mode
-    - `C` - Time to change/pause/user interaction
-  */
-  //!@todo update RepRap Gcode wiki
-  case 73: //M73 show percent done and time remaining
-  {	
-    if(code_seen('P')) print_percent_done_normal = code_value();
-    if(code_seen('R')) print_time_remaining_normal = code_value();
-    if(code_seen('Q')) print_percent_done_silent = code_value();
-    if(code_seen('S')) print_time_remaining_silent = code_value();
-
-    {
-      const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %d; print time remaining in mins: %d\n");
-      printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal);
-      printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent);
-    }
-
-    if(code_seen('C')) print_time_to_change_normal = code_value();
-    if(code_seen('D')) print_time_to_change_silent = code_value();
+    /*!
+    ### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
+    #### Usage
     
+        M73 [ P | R | Q | S | C | D ]
+
+    #### Parameters
+        - `P` - Percent in normal mode
+        - `R` - Time remaining in normal mode
+        - `Q` - Percent in silent mode
+        - `S` - Time in silent mode
+        - `C` - Time to change/pause/user interaction in normal mode
+        - `D` - Time to change/pause/user interaction in silent mode
+    */
+    //!@todo update RepRap Gcode wiki
+    case 73: //M73 show percent done, time remaining and time to change/pause
     {
-      const char* _msg_mode_done_remain = _N("%S MODE: Change in mins: %d\n");
-      printf_P(_msg_mode_done_remain, _N("NORMAL"), print_time_to_change_normal);
-      printf_P(_msg_mode_done_remain, _N("SILENT"), print_time_to_change_silent);
+        if(code_seen('P')) print_percent_done_normal = code_value();
+        if(code_seen('R')) print_time_remaining_normal = code_value();
+        if(code_seen('Q')) print_percent_done_silent = code_value();
+        if(code_seen('S')) print_time_remaining_silent = code_value();
+        if(code_seen('C')) print_time_to_change_normal = code_value();
+        if(code_seen('D')) print_time_to_change_silent = code_value();
+
+    {
+        const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %d; print time remaining in mins: %d; Change in mins: %d\n");
+        printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal, print_time_to_change_normal);
+        printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent, print_time_to_change_silent);
     }
-    break;
-  }
+        break;
+    }
     /*!
 	### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
 	#### Usage
