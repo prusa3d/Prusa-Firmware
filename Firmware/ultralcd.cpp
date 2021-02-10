@@ -8473,7 +8473,7 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 
 static bool check_file(const char* filename) {
 	if (farm_mode) return true;
-	card.openFile((char*)filename, true);
+	card.openFileReadFilteredGcode(filename, true);
 	bool result = false;
 	const uint32_t filesize = card.getFileSize();
 	uint32_t startPos = 0;

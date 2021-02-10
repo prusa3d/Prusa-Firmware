@@ -289,7 +289,7 @@ void CardReader::startFileprint()
 void CardReader::openLogFile(const char* name)
 {
   logging = true;
-  openFile(name, false);
+  openFileWrite(name);
 }
 
 void CardReader::getDirName(char* name, uint8_t level)
@@ -388,97 +388,139 @@ bool CardReader::diveSubfolder (const char *&fileName)
     return 1;
 }
 
-void CardReader::openFile(const char* name,bool read, bool replace_current/*=true*/)
-{
-  if(!cardOK)
-    return;
-  if(file.isOpen())  //replacing current file by new file, or subfile call
-  {
-    if(!replace_current)
-    {
-     if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1)
-     {
-       // SERIAL_ERROR_START;
-       // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
-       // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
-       kill(_n("trying to call sub-gcode files with too many levels."), 1);
-       return;
-     }
-     
-     SERIAL_ECHO_START;
-     SERIAL_ECHOPGM("SUBROUTINE CALL target:\"");
-     SERIAL_ECHO(name);
-     SERIAL_ECHOPGM("\" parent:\"");
-     
-     //store current filename and position
-     getAbsFilename(filenames[file_subcall_ctr]);
-     
-     SERIAL_ECHO(filenames[file_subcall_ctr]);
-     SERIAL_ECHOPGM("\" pos");
-     SERIAL_ECHOLN(sdpos);
-     filespos[file_subcall_ctr]=sdpos;
-     file_subcall_ctr++;
-    }
-    else
-    {
-     SERIAL_ECHO_START;
-     SERIAL_ECHOPGM("Now doing file: ");
-     SERIAL_ECHOLN(name);
-    }
-    file.close();
-  }
-  else //opening fresh file
-  {
-    file_subcall_ctr=0; //resetting procedure depth in case user cancels print while in procedure
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPGM("Now fresh file: ");
-    SERIAL_ECHOLN(name);
-  }
-  sdprinting = false;
+static const char ofKill[] PROGMEM = "trying to call sub-gcode files with too many levels.";
+static const char ofSubroutineCallTgt[] PROGMEM = "SUBROUTINE CALL target:\"";
+static const char ofParent[] PROGMEM = "\" parent:\"";
+static const char ofPos[] PROGMEM = "\" pos";
+static const char ofNowDoingFile[] PROGMEM = "Now doing file: ";
+static const char ofNowFreshFile[] PROGMEM = "Now fresh file: ";
+static const char ofFileOpened[] PROGMEM = "File opened: ";
+static const char ofSize[] PROGMEM = " Size: ";
+static const char ofFileSelected[] PROGMEM = "File selected";
+static const char ofSDPrinting[] PROGMEM = "SD-PRINTING         ";
+static const char ofWritingToFile[] PROGMEM = "Writing to file: ";
 
-  const char *fname=name;
-  if (!diveSubfolder(fname))
-    return;
-
-  if(read)
-  {
-    if (file.open(curDir, fname, O_READ)) 
-    {
-      getfilename(0, fname);
-      filesize = file.fileSize();
-      SERIAL_PROTOCOLRPGM(_N("File opened: "));////MSG_SD_FILE_OPENED
-      printAbsFilenameFast();
-      SERIAL_PROTOCOLRPGM(_n(" Size: "));////MSG_SD_SIZE
-      SERIAL_PROTOCOLLN(filesize);
-      sdpos = 0;
-      
-      SERIAL_PROTOCOLLNRPGM(MSG_FILE_SELECTED);
-      lcd_setstatuspgm(MSG_FILE_SELECTED);
+void CardReader::openFileReadFilteredGcode(const char* name, bool replace_current/* = false*/){
+    if(!cardOK)
+        return;
+    
+    if(file.isOpen()){  //replacing current file by new file, or subfile call
+        if(!replace_current){
+            if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1){
+                // SERIAL_ERROR_START;
+                // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
+                // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
+                kill(ofKill, 1);
+                return;
+            }
+            
+            SERIAL_ECHO_START;
+            SERIAL_ECHORPGM(ofSubroutineCallTgt);
+            SERIAL_ECHO(name);
+            SERIAL_ECHORPGM(ofParent);
+            
+            //store current filename and position
+            getAbsFilename(filenames[file_subcall_ctr]);
+            
+            SERIAL_ECHO(filenames[file_subcall_ctr]);
+            SERIAL_ECHORPGM(ofPos);
+            SERIAL_ECHOLN(sdpos);
+            filespos[file_subcall_ctr]=sdpos;
+            file_subcall_ctr++;
+        } else {
+            SERIAL_ECHO_START;
+            SERIAL_ECHORPGM(ofNowDoingFile);
+            SERIAL_ECHOLN(name);
+        }
+        file.close();
+    } else { //opening fresh file
+        file_subcall_ctr=0; //resetting procedure depth in case user cancels print while in procedure
+        SERIAL_ECHO_START;
+        SERIAL_ECHORPGM(ofNowFreshFile);
+        SERIAL_ECHOLN(name);
     }
-    else
-    {
-      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
-      SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLLN('.');
-    }
-  }
-  else 
-  { //write
-    if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC))
-    {
-      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
-      SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLLN('.');
-    }
-    else
-    {
-      saving = true;
-      SERIAL_PROTOCOLRPGM(_N("Writing to file: "));////MSG_SD_WRITE_TO_FILE
-      SERIAL_PROTOCOLLN(name);
-      lcd_setstatus(fname);
-    }
-  }
+    sdprinting = false;
   
+    const char *fname=name;
+    if (!diveSubfolder(fname))
+      return;
+  
+    if (file.openFilteredGcode(curDir, fname)) {
+        filesize = file.fileSize();
+        SERIAL_PROTOCOLRPGM(ofFileOpened);////MSG_SD_FILE_OPENED
+        SERIAL_PROTOCOL(fname);
+        SERIAL_PROTOCOLRPGM(ofSize);////MSG_SD_SIZE
+        SERIAL_PROTOCOLLN(filesize);
+        sdpos = 0;
+        
+        SERIAL_PROTOCOLLNRPGM(ofFileSelected);////MSG_SD_FILE_SELECTED
+        getfilename(0, fname);
+        lcd_setstatus(longFilename[0] ? longFilename : fname);
+        lcd_setstatuspgm(ofSDPrinting);
+      } else {
+        SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+        SERIAL_PROTOCOL(fname);
+        SERIAL_PROTOCOLLN('.');
+      }
+}
+
+void CardReader::openFileWrite(const char* name)
+{
+    if(!cardOK)
+        return;
+    if(file.isOpen()){  //replacing current file by new file, or subfile call
+#if 0
+        // I doubt chained files support is necessary for file saving:
+        // Intentionally disabled because it takes a lot of code size while being not used
+
+        if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1){
+            // SERIAL_ERROR_START;
+            // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
+            // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
+            kill(ofKill, 1);
+            return;
+        }
+        
+        SERIAL_ECHO_START;
+        SERIAL_ECHORPGM(ofSubroutineCallTgt);
+        SERIAL_ECHO(name);
+        SERIAL_ECHORPGM(ofParent);
+        
+        //store current filename and position
+        getAbsFilename(filenames[file_subcall_ctr]);
+        
+        SERIAL_ECHO(filenames[file_subcall_ctr]);
+        SERIAL_ECHORPGM(ofPos);
+        SERIAL_ECHOLN(sdpos);
+        filespos[file_subcall_ctr]=sdpos;
+        file_subcall_ctr++;
+        file.close();
+#else
+        SERIAL_ECHOLNPGM("File already opened");
+#endif
+    } else { //opening fresh file
+        file_subcall_ctr=0; //resetting procedure depth in case user cancels print while in procedure
+        SERIAL_ECHO_START;
+        SERIAL_ECHORPGM(ofNowFreshFile);
+        SERIAL_ECHOLN(name);
+    }
+    sdprinting = false;
+    
+    const char *fname=name;
+    if (!diveSubfolder(fname))
+      return;
+    
+    //write
+    if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC)){
+        SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+        SERIAL_PROTOCOL(fname);
+        SERIAL_PROTOCOLLN('.');
+    } else {
+        saving = true;
+        SERIAL_PROTOCOLRPGM(ofWritingToFile);////MSG_SD_WRITE_TO_FILE
+        SERIAL_PROTOCOLLN(fname);
+        lcd_setstatus(fname);
+    }
 }
 
 void CardReader::removeFile(const char* name)
@@ -1030,7 +1072,7 @@ void CardReader::printingHasFinished()
     {
       file.close();
       file_subcall_ctr--;
-      openFile(filenames[file_subcall_ctr],true,true);
+      openFileReadFilteredGcode(filenames[file_subcall_ctr],true);
       setIndex(filespos[file_subcall_ctr]);
       startFileprint();
     }
