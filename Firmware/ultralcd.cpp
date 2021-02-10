@@ -275,8 +275,8 @@ static void lcd_delta_calibrate_menu();
 
 
 /* Different types of actions that can be used in menu items. */
-static void menu_action_sdfile(const char* filename);
-static void menu_action_sddirectory(const char* filename);
+static void menu_action_sdfile(char* filename);
+static void menu_action_sddirectory(char* filename);
 
 #define ENCODER_FEEDRATE_DEADZONE 10
 
@@ -327,7 +327,7 @@ bool bSettings;                                   // flag (i.e. 'fake parameter'
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* filename, char* longFilename)
 {
     char c;
     int enc_dif = lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
@@ -381,7 +381,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
     n=n-i+1;
     lcd_space(n);
 }
-static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile(uint8_t row, char* filename, char* longFilename)
 {
     char c;
     uint8_t n = LCD_WIDTH - 1;
@@ -449,7 +449,7 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* fil
 //extern uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl);
 
 
-uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
+uint8_t menu_item_sddir(char* str_fn, char* str_fnl)
 {
 #ifdef NEW_SD_MENU
 //	str_fnl[18] = 0;
@@ -503,7 +503,7 @@ static uint8_t menu_item_sdfile(const char*
 #ifdef NEW_SD_MENU
         str
 #endif //NEW_SD_MENU
-         ,const char* str_fn, char* str_fnl)
+         ,char* str_fn, char* str_fnl)
 {
 #ifdef NEW_SD_MENU
 //	printf_P(PSTR("menu sdfile\n"));
@@ -8511,7 +8511,7 @@ static bool check_file(const char* filename) {
 	return result;
 }
 
-static void menu_action_sdfile(const char* filename)
+static void menu_action_sdfile(char* filename)
 {
   loading_flag = false;
   char cmd[30];
@@ -8556,7 +8556,7 @@ static void menu_action_sdfile(const char* filename)
   lcd_return_to_status();
 }
 
-void menu_action_sddirectory(const char* filename)
+void menu_action_sddirectory(char* filename)
 {
 	card.chdir(filename, true);
 	lcd_encoder = 0;
