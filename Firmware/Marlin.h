@@ -366,7 +366,8 @@ extern uint8_t print_percent_done_normal;
 extern uint16_t print_time_remaining_normal;
 extern uint8_t print_percent_done_silent;
 extern uint16_t print_time_remaining_silent;
-extern uint16_t print_time_to_change;
+extern uint16_t print_time_to_change_normal;
+extern uint16_t print_time_to_change_silent;
 
 #define PRINT_TIME_REMAINING_INIT 0xffff
 

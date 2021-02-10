@@ -676,33 +676,55 @@ void lcdui_print_time(void)
     if ((PRINTER_ACTIVE) && (starttime != 0))
     {
         uint16_t print_t = 0;
+        uint16_t print_tr = 0;
+        uint16_t print_tc = 0;
         char suff = ' ';
         char suff_doubt = ' ';
 
-        if (print_time_to_change != PRINT_TIME_REMAINING_INIT)
+        #ifdef TMC2130
+        if (SilentModeMenu != SILENT_MODE_OFF)
         {
-            print_t = print_time_to_change;
+            if (print_time_remaining_silent != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tr = print_time_remaining_silent;
+            }
+            if (print_time_to_change_silent != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tc = print_time_to_change_silent;
+            }
+        }
+        else
+        {
+        #endif //TMC2130
+            if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tr = print_time_remaining_normal;
+            }
+            if (print_time_to_change_normal != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tc = print_time_to_change_normal;
+            }
+        #ifdef TMC2130
+        }
+        #endif //TMC2130
+
+        if (print_tc != 0)
+        {
+            print_t = print_tc;
             suff = 'C';
         }
-        else
+        else if (print_tr != 0)
         {
+            print_t = print_tr;
             suff = 'R';
-        #ifdef TMC2130
-        if (print_time_remaining_silent != PRINT_TIME_REMAINING_INIT && (SilentModeMenu != SILENT_MODE_OFF))
-        {
-            print_t = print_time_remaining_silent;
         }
-        else
-        #endif //TMC2130
-            print_t = print_time_remaining_normal;
-        }
-		
+
         if (feedmultiply != 100)
         {
             suff_doubt = '?';
             print_t = 100ul * print_t / feedmultiply;
         }
-		
+
         if (print_t < 6000) //time<100h
             chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
         else //time>=100h

@@ -316,7 +316,8 @@ uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
-uint16_t print_time_to_change = PRINT_TIME_REMAINING_INIT; //estimated remaining time to next change in minutes
+uint16_t print_time_to_change_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining time to next change in minutes
+uint16_t print_time_to_change_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining time to next change in minutes
 
 uint32_t IP_address = 0;
 
@@ -6419,11 +6420,13 @@ Sigma_Exit:
       printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent);
     }
 
-    print_time_to_change = PRINT_TIME_REMAINING_INIT;
-    if(code_seen('C')) 
+    if(code_seen('C')) print_time_to_change_normal = code_value();
+    if(code_seen('D')) print_time_to_change_silent = code_value();
+    
     {
-      print_time_to_change = code_value();
-      printf_P(_N("Change in mins: %d\n"), print_time_to_change);
+      const char* _msg_mode_done_remain = _N("%S MODE: Change in mins: %d\n");
+      printf_P(_msg_mode_done_remain, _N("NORMAL"), print_time_to_change_normal);
+      printf_P(_msg_mode_done_remain, _N("SILENT"), print_time_to_change_silent);
     }
     break;
   }
@@ -11696,7 +11699,8 @@ static void print_time_remaining_init()
     print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
     print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
     print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
-    print_time_to_change = PRINT_TIME_REMAINING_INIT;
+    print_time_to_change_normal = PRINT_TIME_REMAINING_INIT;
+    print_time_to_change_silent = PRINT_TIME_REMAINING_INIT;
 }
 
 void load_filament_final_feed()
