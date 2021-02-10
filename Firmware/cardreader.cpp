@@ -518,7 +518,7 @@ void CardReader::openFileWrite(const char* name)
     } else {
         saving = true;
         SERIAL_PROTOCOLRPGM(ofWritingToFile);////MSG_SD_WRITE_TO_FILE
-        SERIAL_PROTOCOLLN(name);
+        SERIAL_PROTOCOLLN(fname);
         lcd_setstatus(fname);
     }
 }
