@@ -506,9 +506,9 @@ void CardReader::openFileWrite(const char* name)
     }
     sdprinting = false;
     
-    SdFile myDir;
     const char *fname=name;
-    diveSubfolder(fname,myDir);
+    if (!diveSubfolder(fname))
+      return;
     
     //write
     if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC)){
