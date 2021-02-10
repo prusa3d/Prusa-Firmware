@@ -786,7 +786,7 @@ void CardReader::presort() {
 		// By default re-read the names from SD for every compare
 		// retaining only two filenames at a time. This is very
 		// slow but is safest and uses minimal RAM.
-		char name1[LONG_FILENAME_LENGTH + 1];
+		char name1[LONG_FILENAME_LENGTH];
 		uint16_t crmod_time_bckp;
 		uint16_t crmod_date_bckp;
 
