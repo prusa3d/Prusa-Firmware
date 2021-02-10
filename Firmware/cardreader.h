@@ -95,8 +95,6 @@ private:
   // Sort files and folders alphabetically.
 #ifdef SDCARD_SORT_ALPHA
   uint16_t sort_count;        // Count of sorted items in the current directory
-
-  uint8_t sort_order[SDSORT_LIMIT]; // By default the sort index is static.
   uint32_t sort_positions[SDSORT_LIMIT];
 
 #endif // SDCARD_SORT_ALPHA

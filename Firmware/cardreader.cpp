@@ -791,7 +791,7 @@ void CardReader::updir()
 */
 void CardReader::getfilename_sorted(const uint16_t nr) {
     if (nr < sort_count)
-        getfilename_simple(sort_positions[sort_order[nr]]);
+        getfilename_simple(sort_positions[nr]);
     else
         getfilename(nr);
 }
@@ -840,6 +840,7 @@ void CardReader::presort() {
 
 		if (fileCnt > 1) {
 			// Init sort order.
+			uint8_t sort_order[fileCnt];
 			for (uint16_t i = 0; i < fileCnt; i++) {
 				if (!IS_SD_INSERTED) return;
 				manage_heater();
@@ -1012,6 +1013,30 @@ void CardReader::presort() {
 				if (!didSwap) break;
 			} //end of bubble sort loop
 #endif
+
+			uint8_t sort_order_reverse_index[fileCnt];
+			for (uint8_t i = 0; i < fileCnt; i++)
+				sort_order_reverse_index[sort_order[i]] = i;
+			for (uint8_t i = 0; i < fileCnt; i++)
+			{
+				if (sort_order_reverse_index[i] != i)
+				{
+					uint32_t el = sort_positions[i];
+					uint8_t idx = sort_order_reverse_index[i];
+					while (idx != i)
+					{
+						uint32_t el1 = sort_positions[idx];
+						uint8_t idx1 = sort_order_reverse_index[idx];
+						sort_order_reverse_index[idx] = idx;
+						sort_positions[idx] = el;
+						idx = idx1;
+						el = el1;
+					}
+					sort_order_reverse_index[idx] = idx;
+					sort_positions[idx] = el;
+				}
+			}
+
 			lcd_set_cursor(0, 2);
 			for (int column = 0; column <= 19; column++)
 				lcd_print('\xFF'); //simple progress bar
@@ -1019,7 +1044,6 @@ void CardReader::presort() {
 			lcd_clear();
 		}
 		else {
-			sort_order[0] = 0;
 			getfilename(0);
 			sort_positions[0] = position;
 		}
