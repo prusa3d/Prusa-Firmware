@@ -673,6 +673,7 @@ void lcdui_print_time(void)
 {
     //if remaining print time estimation is available print it else print elapsed time
     int chars = 0;
+    ShortTimer IntervalTimer;
     if ((PRINTER_ACTIVE) && (starttime != 0))
     {
         uint16_t print_t = 0;
@@ -708,17 +709,18 @@ void lcdui_print_time(void)
         }
         #endif //TMC2130
 
-        if (print_tc != 0)
-        {
-            print_t = print_tc;
-            suff = 'C';
-        }
-        else if (print_tr != 0)
+        if (print_tr != 0)
         {
             print_t = print_tr;
             suff = 'R';
         }
-        else
+        else if (print_tc != 0)
+        {
+            print_t = print_tc;
+            suff = 'C';
+        }
+
+        if (print_tr == 0)
         {
             print_t = _millis() / 60000 - starttime / 60000; 
         }
