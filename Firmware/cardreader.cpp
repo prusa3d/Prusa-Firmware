@@ -882,7 +882,7 @@ void CardReader::presort() {
 				#if HAS_FOLDER_SORTING
 				else
 				{
-					sortingBaseArray = sort_order + /* sizeof(sort_order[0]) * */ (fileCnt - dirCnt);
+					sortingBaseArray = sort_order + (fileCnt - dirCnt);
 					sortCountFiles = dirCnt;
 				}
 				#endif
