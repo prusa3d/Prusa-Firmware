@@ -723,7 +723,7 @@ void lcdui_print_time(void)
             print_t = _millis() / 60000 - starttime / 60000; 
         }
 
-        if (feedmultiply != 100 && (print_tc != 0 || print_tr !=0))
+        if (feedmultiply != 100 && (print_t == print_tr || print_t == print_tc))
         {
             suff_doubt = '?';
             print_t = 100ul * print_t / feedmultiply;
