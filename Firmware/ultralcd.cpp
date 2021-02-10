@@ -6658,6 +6658,7 @@ static void lcd_main_menu()
     {
 #ifdef FANCHECK
         if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+#endif //FANCHECK
         {
             if (is_usb_printing)
             {
@@ -6668,16 +6669,6 @@ static void lcd_main_menu()
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
             }
         }
-    #else
-        if (is_usb_printing)
-        {
-            MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);////MSG_RESUME_PRINT c=18
-        }
-        else
-        {
-            MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
-        }
-    #endif //FANCHECK
     }
     if(IS_SD_PRINTING || is_usb_printing || isPrintPaused)
     {
