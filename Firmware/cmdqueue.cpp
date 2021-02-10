@@ -588,7 +588,7 @@ void get_command()
     char serial_char = (char)n;
     if( serial_char == '\n'
      || serial_char == '\r'
-     || ((serial_char == '#' || serial_char == ':') /*&& comment_mode == false*/)
+     || ((serial_char == '#' || serial_char == ':') )
      || serial_count >= (MAX_CMD_SIZE - 1)
      || n==-1
     ){
@@ -602,9 +602,7 @@ void get_command()
         // read from the sdcard into sd_count, 
         // so that the lenght of the already read empty lines and comments will be added
         // to the following non-empty line. 
-//        comment_mode = false;
         return; // prevent cycling indefinitely - let manage_heaters do their job
-//        continue; //if empty line
       }
       // The new command buffer could be updated non-atomically, because it is not yet considered
       // to be inside the active queue.
@@ -620,10 +618,10 @@ void get_command()
 //      MYSERIAL.print(sd_count.value, DEC);
 //      SERIAL_ECHOPGM(") ");
 //      SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);
-//    SERIAL_ECHOPGM("cmdbuffer:");
-//    MYSERIAL.print(cmdbuffer);
-//    SERIAL_ECHOPGM("buflen:");
-//    MYSERIAL.print(buflen+1);
+//      SERIAL_ECHOPGM("cmdbuffer:");
+//      MYSERIAL.print(cmdbuffer);
+//      SERIAL_ECHOPGM("buflen:");
+//      MYSERIAL.print(buflen+1);
       sd_count.value = 0;
 
       cli();
@@ -640,7 +638,6 @@ void get_command()
 
       comment_mode = false; //for new command
       serial_count = 0; //clear buffer
-//      consecutiveEmptyLines = 0; // reached a non-empty line which shall be enqueued
     
       if(card.eof()) break;
 
@@ -650,8 +647,6 @@ void get_command()
     }
     else
     {
-      /*if(serial_char == ';') comment_mode = true;
-      else if(!comment_mode)*/
         // there are no comments coming from the filtered file
         cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
     }

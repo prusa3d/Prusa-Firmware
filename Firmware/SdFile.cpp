@@ -31,7 +31,6 @@
 SdFile::SdFile(const char* path, uint8_t oflag) : SdBaseFile(path, oflag) {
 }
 
-//size=100B
 bool SdFile::openFilteredGcode(SdBaseFile* dirFile, const char* path){
     if( open(dirFile, path, O_READ) ){
         // compute the block to start with
@@ -44,10 +43,7 @@ bool SdFile::openFilteredGcode(SdBaseFile* dirFile, const char* path){
     }
 }
 
-//size=90B
 bool SdFile::seekSetFilteredGcode(uint32_t pos){
-//    SERIAL_PROTOCOLPGM("Seek:");
-//    SERIAL_PROTOCOLLN(pos);
     if(! seekSet(pos) )return false;
     if(! gfComputeNextFileBlock() )return false;
     gfReset();
@@ -62,11 +58,6 @@ void SdFile::gfReset(){
     // reset cache read ptr to its begin
     gfReadPtr = gfBlockBuffBegin() + gfOffset;
 }
-
-//FORCE_INLINE const uint8_t * find_endl(const uint8_t *p){
-//    while( *(++p) != '\n' ); // skip until a newline is found
-//    return p;
-//}
 
 // think twice before allowing this to inline - manipulating 4B longs is costly
 // moreover - this function has its parameters in registers only, so no heavy stack usage besides the call/ret
@@ -85,21 +76,12 @@ __asm__ __volatile__ (  \
 : "r22"          /* modifying register R22 - so that the compiler knows */ \
 )
 
-//size=400B
 // avoid calling the default heavy-weight read() for just one byte
 int16_t SdFile::readFilteredGcode(){
     if( ! gfEnsureBlock() ){
         goto eof_or_fail; // this is unfortunate :( ... other calls are using the cache and we can loose the data block of our gcode file
     }
     // assume, we have the 512B block cache filled and terminated with a '\n'
-//    SERIAL_PROTOCOLPGM("Read:");
-//    SERIAL_PROTOCOL(curPosition_);
-//    SERIAL_PROTOCOL(':');
-//    for(uint8_t i = 0; i < 16; ++i){
-//        SERIAL_PROTOCOL( gfReadPtr[i] );
-//    }
-//    SERIAL_PROTOCOLLN();
-//    SERIAL_PROTOCOLLN(curPosition_);
     {
     const uint8_t *start = gfReadPtr;
 
@@ -152,9 +134,6 @@ int16_t SdFile::readFilteredGcode(){
                 rdPtr = start = blockBuffBegin;
             } else {
                 if(consecutiveCommentLines >= 250){
-//                    SERIAL_ECHO("ccl=");
-//                    SERIAL_ECHOLN((int)consecutiveCommentLines);
-                    // SERIAL_PROTOCOLLN(sd->curPosition_);
                     --rdPtr; // unget the already consumed newline
                     goto emit_char;
                 }
@@ -185,13 +164,6 @@ emit_char:
             rdPtr = blockBuffBegin;
         }
 
-//        SERIAL_PROTOCOLPGM("c=");
-//        SERIAL_ECHO((char)rv);
-//        SERIAL_ECHO('|');
-//        SERIAL_ECHO((int)rv);
-//        SERIAL_PROTOCOL('|');
-//        SERIAL_PROTOCOLLN(curPosition_);
-
         // save the current read ptr for the next run
         gfReadPtr = rdPtr;
         return rv;
@@ -200,17 +172,12 @@ emit_char:
 }
 
 eof_or_fail:
-//    SERIAL_PROTOCOLPGM("CacheFAIL:");
-
     // make the rdptr point to a safe location - end of file
     gfReadPtr = gfBlockBuffBegin() + 512;
     return -1;
 }
 
-//size=70B
 bool SdFile::gfEnsureBlock(){
-//    SERIAL_PROTOCOLPGM("EB:");
-//    SERIAL_PROTOCOLLN(gfBlock);
     if ( vol_->cacheRawBlock(gfBlock, SdVolume::CACHE_FOR_READ)){
         // terminate with a '\n'
         const uint16_t terminateOfs = fileSize_ - gfOffset;
@@ -221,22 +188,6 @@ bool SdFile::gfEnsureBlock(){
     }
 }
 
-
-//#define shr9(resultCurPos, curPos) \
-//__asm__ __volatile__ (  \
-//"asr r23      \n" \
-//"asr r22      \n" \
-//"asr r21      \n" \
-//"asr r20      \n" \
-//"ldi r20, r21 \n" \
-//"ldi r21, r22 \n" \
-//"ldi r22, r23 \n" \
-//"ldi r23, 0   \n" \
-//: "=a" (resultCurPos) \
-//: "a" (curPos) \
-//)
-
-//size=350B
 bool SdFile::gfComputeNextFileBlock() {
     // error if not open or write only
     if (!isOpen() || !(flags_ & O_READ)) return false;

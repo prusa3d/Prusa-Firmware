@@ -38,7 +38,7 @@ class SdFile : public SdBaseFile/*, public Print*/ {
   
   // beware - this read ptr is manipulated inside just 2 methods - readFilteredGcode and gfReset
   // If you even want to call gfReset from readFilteredGcode, you must make sure
-  // to update gfCacheP inside readFilteredGcode from a local copy (see explanation of this trick in readFilteredGcode)
+  // to update gfReadPtr inside readFilteredGcode from a local copy (see explanation of this trick in readFilteredGcode)
   const uint8_t *gfReadPtr;
   
   uint32_t gfBlock; // remember the current file block to be kept in cache - due to reuse of the memory, the block may fall out a must be read back

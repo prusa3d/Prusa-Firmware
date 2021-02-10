@@ -456,8 +456,9 @@ void CardReader::openFileWrite(const char* name)
     if(!cardOK)
         return;
     if(file.isOpen()){  //replacing current file by new file, or subfile call
-
-        // @@TODO I doubt this is necessary for file saving:
+#if 0
+        // I doubt chained files support is necessary for file saving:
+        // Intentionally disabled because it takes a lot of code size while being not used
 
         if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1){
             // SERIAL_ERROR_START;
@@ -481,6 +482,9 @@ void CardReader::openFileWrite(const char* name)
         filespos[file_subcall_ctr]=sdpos;
         file_subcall_ctr++;
         file.close();
+#else
+        SERIAL_ECHOLNPGM("File already opened");
+#endif
     } else { //opening fresh file
         file_subcall_ctr=0; //resetting procedure depth in case user cancels print while in procedure
         SERIAL_ECHO_START;

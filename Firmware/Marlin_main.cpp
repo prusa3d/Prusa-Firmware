@@ -3987,12 +3987,10 @@ void process_commands()
 #endif
 		}else if (code_seen_P("fv")) { // PRUSA fv
         // get file version
-        #if 0 
-            //@@TODO
-            def SDSUPPORT
-        card.openFile(strchr_pointer + 3,true);
+        #ifdef SDSUPPORT
+        card.openFileReadFilteredGcode(strchr_pointer + 3,true);
         while (true) {
-            uint16_t readByte = card.get();
+            uint16_t readByte = card.getFilteredGcodeChar();
             MYSERIAL.write(readByte);
             if (readByte=='\n') {
                 break;
