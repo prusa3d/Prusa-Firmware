@@ -794,7 +794,6 @@ void CardReader::presort() {
 		uint16_t dirCnt = 0;
 		#endif
 
-		position = 0;
 		//might need to also load the file at position 0 for filenameIsDir to work on the first file
 		if (fileCnt > 1) {
 			// Init sort order.
