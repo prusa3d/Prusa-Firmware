@@ -530,9 +530,9 @@ bool SdBaseFile::mkdir(SdBaseFile* parent, const uint8_t dname[11]) {
   * \return The value one, true, is returned for success and
   * the value zero, false, is returned for failure.
   */
-  bool SdBaseFile::open(const char* path, uint8_t oflag) {
-    return open(cwd_, path, oflag);
-  }
+bool SdBaseFile::open(const char* path, uint8_t oflag) {
+  return open(cwd_, path, oflag);
+}
 //------------------------------------------------------------------------------
 /** Open a file or directory by name.
  *

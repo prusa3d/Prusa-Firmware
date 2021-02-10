@@ -4002,9 +4002,9 @@ void process_commands()
 		}else if (code_seen_P("fv")) { // PRUSA fv
         // get file version
         #ifdef SDSUPPORT
-        card.openFile(strchr_pointer + 3,true);
+        card.openFileReadFilteredGcode(strchr_pointer + 3,true);
         while (true) {
-            uint16_t readByte = card.get();
+            uint16_t readByte = card.getFilteredGcodeChar();
             MYSERIAL.write(readByte);
             if (readByte=='\n') {
                 break;
@@ -4017,7 +4017,7 @@ void process_commands()
     } else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
         trace();
         prusa_sd_card_upload = true;
-        card.openFile(strchr_pointer+4,false);
+        card.openFileWrite(strchr_pointer+4);
 
 	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
@@ -5786,7 +5786,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       starpos = (strchr(strchr_pointer + 4,'*'));
 	  if(starpos!=NULL)
         *(starpos)='\0';
-      card.openFile(strchr_pointer + 4,true);
+      card.openFileReadFilteredGcode(strchr_pointer + 4);
       break;
 
     /*!
@@ -5856,7 +5856,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         strchr_pointer = strchr(npos,' ') + 1;
         *(starpos) = '\0';
       }
-      card.openFile(strchr_pointer+4,false);
+      card.openFileWrite(strchr_pointer+4);
       break;
 
     /*! ### M29 - Stop SD write <a href="https://reprap.org/wiki/G-code#M29:_Stop_writing_to_SD_card">M29: Stop writing to SD card</a>
@@ -5917,7 +5917,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
       if( card.cardOK )
       {
-        card.openFile(namestartpos,true,!call_procedure);
+        card.openFileReadFilteredGcode(namestartpos,!call_procedure);
         if(code_seen('S'))
           if(strchr_pointer<namestartpos) //only if "S" is occuring _before_ the filename
             card.setIndex(code_value_long());
