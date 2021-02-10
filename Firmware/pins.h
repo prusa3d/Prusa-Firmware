@@ -25,6 +25,11 @@
 #error Unknown MOTHERBOARD value in configuration.h
 #endif
 
+#if !defined(SDA_PIN) && (defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__))
+#define SDA_PIN 20
+#define SCL_PIN 21
+#endif
+
 //List of pins which to ignore when asked to change by gcode, 0 and 1 are RX and TX, do not mess with those!
 #define _E0_PINS E0_STEP_PIN, E0_DIR_PIN, E0_ENABLE_PIN, HEATER_0_PIN,
 #if EXTRUDERS > 1

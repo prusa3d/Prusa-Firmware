@@ -350,10 +350,6 @@ extern unsigned long t_fan_rising_edge;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
-extern bool sortAlpha;
-
-extern char dir_names[3][9];
-
 extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
@@ -500,5 +496,7 @@ void marlin_wait_for_click();
 void raise_z_above(float target, bool plan=true);
 
 extern "C" void softReset();
+
+extern uint32_t IP_address;
 
 #endif

@@ -620,7 +620,7 @@
 "Please upgrade."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 
 #MSG_FS_PAUSE c=5
 "Pause"
@@ -643,7 +643,7 @@
 #MSG_CARD_MENU
 "Print from SD"
 
-#
+# c=20
 "Press the knob"
 
 #MSG_PRINT_PAUSED c=20 r=1
@@ -874,10 +874,10 @@
 #MSG_TOTAL_FAILURES c=20
 "Total failures"
 
-#
+# c=20
 "to load filament"
 
-#
+# c=20
 "to unload filament"
 
 #MSG_UNLOAD_FILAMENT c=17

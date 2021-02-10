@@ -4,6 +4,7 @@
 #include "sound.h"
 #include "language.h"
 #include "util.h"
+#include <avr/pgmspace.h>
 
 // Allocate the version string in the program memory. Otherwise the string lands either on the stack or in the global RAM.
 const char FW_VERSION_STR[] PROGMEM = FW_VERSION;
@@ -603,4 +604,10 @@ else {
      nPrinterType=pgm_read_word(&_nPrinterType);
      sPrinterName=_sPrinterName;
      }
+}
+
+
+void ip4_to_str(char* dest, uint8_t* IP)
+{
+    sprintf_P(dest, PSTR("%u.%u.%u.%u"), IP[0], IP[1], IP[2], IP[3]);
 }

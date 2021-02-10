@@ -5,7 +5,7 @@
 
 #ifdef SDSUPPORT
 
-#define MAX_DIR_DEPTH 10
+#define MAX_DIR_DEPTH 6
 
 #include "SdFile.h"
 enum LsAction {LS_SerialPrint,LS_SerialPrint_LFN,LS_Count,LS_GetFilename};
@@ -29,7 +29,7 @@ public:
   void release();
   void startFileprint();
   uint32_t getFileSize();
-  void getStatus();
+  void getStatus(bool arg_P);
   void printingHasFinished();
 
   void getfilename(uint16_t nr, const char* const match=NULL);
@@ -37,14 +37,15 @@ public:
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
+  void printAbsFilenameFast();
   void getDirName(char* name, uint8_t level);
   uint16_t getWorkDirDepth();
   
 
   void ls(bool printLFN);
-  void chdir(const char * relpath);
+  bool chdir(const char * relpath, bool doPresort);
   void updir();
-  void setroot();
+  void setroot(bool doPresort);
 
   #ifdef SDCARD_SORT_ALPHA
      void presort();
@@ -87,6 +88,10 @@ public:
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;
   int lastnr; //last number of the autostart;
+#ifdef SDCARD_SORT_ALPHA
+  bool presort_flag;
+  char dir_names[MAX_DIR_DEPTH][9];
+#endif // SDCARD_SORT_ALPHA
 private:
   SdFile root,*curDir,workDir,workDirParents[MAX_DIR_DEPTH];
   uint16_t workDirDepth;
@@ -160,7 +165,7 @@ private:
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
 
-  void diveSubfolder (const char *fileName, SdFile& dir);
+  bool diveSubfolder (const char *&fileName);
   void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);
 #ifdef SDCARD_SORT_ALPHA
   void flush_presort();

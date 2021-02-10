@@ -110,4 +110,7 @@ void gcode_level_check(uint16_t nGcodeLevel);
 
 void fSetMmuMode(bool bMMu);
 
+#define IP4_STR_SIZE 16
+extern void ip4_to_str(char* dest, uint8_t* IP);
+
 #endif /* UTIL_H */
