@@ -718,7 +718,7 @@ void lcdui_print_time(void)
 
         if (print_tc != 0)
         {
-            if (IntervalTimer.expired(5000))
+            if (IntervalTimer.expired(CLOCK_INTERVAL_TIME))
             {
                 print_t = print_tc;
                 suff = 'C';
