@@ -3286,6 +3286,14 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     lastpos[Y_AXIS] = current_position[Y_AXIS];
     lastpos[Z_AXIS] = current_position[Z_AXIS];
     lastpos[E_AXIS] = current_position[E_AXIS];
+	
+	// Push through some filament to eliminate blobs
+	// If the system was sitting cold and is brought up to temp suddenly, without positive
+	// pressure to push some filament through the tip, when it retracts, the filament won't 
+	// have much to stick to in order to stretch thin, and the blob may get stuck on the way out.
+    current_position[E_AXIS] += (float)(FILAMENTCHANGE_RECFEED);
+    plan_buffer_line_curposXYZE((float)FILAMENTCHANGE_EXFEED);
+    st_synchronize();
 
     //Retract E
     current_position[E_AXIS] += e_shift;
