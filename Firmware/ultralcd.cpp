@@ -6304,6 +6304,13 @@ void unload_filament()
 
 	//		extr_unload2();
 
+    // Push through some filament to eliminate blobs
+    // If the system was sitting cold and is brought up to temp suddenly, without positive
+    // pressure to push some filament through the tip, when it retracts, the filament won't 
+    // have much to stick to in order to stretch thin, and the blob may get stuck on the way out.
+    current_position[E_AXIS] += 6;
+    plan_buffer_line_curposXYZE(140 / 60);
+    st_synchronize();
 	current_position[E_AXIS] -= 45;
 	plan_buffer_line_curposXYZE(5200 / 60);
 	st_synchronize();
