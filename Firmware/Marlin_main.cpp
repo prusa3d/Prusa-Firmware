@@ -11663,28 +11663,28 @@ void print_mesh_bed_leveling_table()
 
 uint8_t calc_percent_done()
 {
-  //in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
-  uint8_t percent_done = 0;
+    //in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
+    uint8_t percent_done = 0;
 #ifdef TMC2130
-  if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100)
-  {
-    percent_done = print_percent_done_normal;
-  }
-	else if (print_percent_done_silent <= 100)
-  {
-		percent_done = print_percent_done_silent;
-	}
+    if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100)
+    {
+        percent_done = print_percent_done_normal;
+    }
+    else if (print_percent_done_silent <= 100)
+    {
+        percent_done = print_percent_done_silent;
+    }
 #else
-	if (print_percent_done_normal <= 100)
-  {
-		percent_done = print_percent_done_normal;
-	}
+    if (print_percent_done_normal <= 100)
+    {
+        percent_done = print_percent_done_normal;
+    }
 #endif //TMC2130
-  else
-  {
-    percent_done = card.percentDone();
-  }
-  return percent_done;
+    else
+    {
+        percent_done = card.percentDone();
+    }
+    return percent_done;
 }
 
 static void print_time_remaining_init()
