@@ -450,7 +450,7 @@ void mmu_loop(void)
             mmu_last_cmd = MmuCmd::None;
             mmu_ready = true;
             mmu_state = S::Idle;
-            lcd_resume_print();
+            action_resume_print();
         }
         if (mmu_cmd != MmuCmd::None)
         {

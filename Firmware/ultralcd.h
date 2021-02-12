@@ -43,9 +43,6 @@ void lcd_loading_filament();
 void lcd_change_success();
 void lcd_loading_color();
 void lcd_sdcard_stop();
-void lcd_pause_print();
-void lcd_resume_print();
-void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
 unsigned char lcd_choose_color();
 void lcd_load_filament_color_check();
@@ -264,5 +261,10 @@ extern void lcd_experimental_menu();
 #ifdef PINDA_TEMP_COMP
 extern void lcd_pinda_temp_compensation_toggle();
 #endif //PINDA_TEMP_COMP
+
+// system actions
+extern void action_pause_print(bool sendAction = true);
+extern void action_resume_print(bool sendAction = true);
+extern void action_cancel_print(bool sendAction = true);
 
 #endif //ULTRALCD_H
