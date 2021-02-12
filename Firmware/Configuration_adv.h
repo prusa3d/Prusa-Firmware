@@ -339,10 +339,9 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 //#define HEATERS_PARALLEL
 
 //LCD status clock interval timer to switch between
-// print time
 // remaining print time
 // and time to change/pause/interaction
-#define CLOCK_INTERVAL_TIME 5000
+#define CLOCK_INTERVAL_TIME 5
 
 //===========================================================================
 //=============================Buffers           ============================

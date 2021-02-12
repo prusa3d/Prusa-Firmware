@@ -57,7 +57,7 @@
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
-
+int clock_interval = 0;
 
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
@@ -680,53 +680,58 @@ void lcdui_print_time(void)
         uint16_t print_tc = 0;
         char suff = ' ';
         char suff_doubt = ' ';
-        static ShortTimer IntervalTimer;
 
-
-        #ifdef TMC2130
+#ifdef TMC2130
         if (SilentModeMenu != SILENT_MODE_OFF)
         {
             if (print_time_remaining_silent != PRINT_TIME_REMAINING_INIT)
             {
                 print_tr = print_time_remaining_silent;
             }
+//#ifdef CLOCK_INTERVAL_TIME
             if (print_time_to_change_silent != PRINT_TIME_REMAINING_INIT)
             {
                 print_tc = print_time_to_change_silent;
             }
+//#endif //CLOCK_INTERVAL_TIME
         }
         else
         {
-        #endif //TMC2130
+#endif //TMC2130
             if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
             {
                 print_tr = print_time_remaining_normal;
             }
+//#ifdef CLOCK_INTERVAL_TIME
             if (print_time_to_change_normal != PRINT_TIME_REMAINING_INIT)
             {
                 print_tc = print_time_to_change_normal;
             }
-        #ifdef TMC2130
+//#endif //CLOCK_INTERVAL_TIME
+#ifdef TMC2130
         }
-        #endif //TMC2130
+#endif //TMC2130
 
+//#ifdef CLOCK_INTERVAL_TIME
+        if (clock_interval == CLOCK_INTERVAL_TIME*2)
+        {
+            clock_interval = 0;
+        }
+        clock_interval++;
+
+        if (print_tc != 0 && clock_interval > CLOCK_INTERVAL_TIME)
+        {
+            print_t = print_tc;
+            suff = 'C';
+        }
+        else
+//#endif //CLOCK_INTERVAL_TIME 
         if (print_tr != 0)
         {
             print_t = print_tr;
             suff = 'R';
         }
-
-        if (print_tc != 0)
-        {
-            if (IntervalTimer.expired(CLOCK_INTERVAL_TIME))
-            {
-                print_t = print_tc;
-                suff = 'C';
-                IntervalTimer.start();
-            }
-        }
-
-        if (print_tr == 0)
+        else
         {
             print_t = _millis() / 60000 - starttime / 60000; 
         }
