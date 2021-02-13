@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_36
+# Version: 1.1.0-Build_39
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -138,6 +138,7 @@
 # 27 Jan 2021, 3d-gussner, Add `-c`, `-p` and `-n` options
 # 12 Feb 2021, 3d-gussner, Add MK404-build.sh
 # 13 Feb 2021, 3d-gussner, Indentations
+# 13 Feb 2021, 3d-gussner, MK404 improvements like "flash" MK3, MK3S languages files to MK404 xflash.
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -882,6 +883,11 @@ do
         # If the motherboard is an EINSY just copy one hexfile
         if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
             echo "$(tput setaf 2)Copying multi language firmware for MK3/Einsy board to PF-build-hex folder$(tput sgr 0)"
+            # Make a copy of "lang.bin" for MK404 MK3 and MK3S
+            if [ ! -z "$mk404_flag" ]; then
+                cp -f lang.bin $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin
+            fi
+            # End of "lang.bin" for MK3 and MK3S copy
             cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
         else
             echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
@@ -895,9 +901,11 @@ do
                 zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
                 rm $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
             elif [ $TARGET_OS == "linux" ]; then
+                # Make a copy for MK404 sim of MK2, MK2.5, MK2.5S firmware
                 if [ ! -z "$mk404_flag" ]; then
                     cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
                 fi
+                # End of MK2, MK2.5, MK2.5S firmware copy
             zip -m -j ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
             fi
         fi
@@ -961,31 +969,51 @@ echo " "
 echo "Build done, please use Slic3rPE > 1.41.0 to upload the firmware"
 echo "more information how to flash firmware https://www.prusa3d.com/drivers/ $(tput sgr 0)"
 #### End building
-ls
-#### Run MK404 sim
+
+
+#### MK404 Simulator
+
+# Check/compile MK404 sim
 if [ ! -z "$mk404_flag" ]; then
 ./MK404-build.sh
 
+# Check if MMU2 is selected
 if [ "$mk404_flag" == "2" ]; then
     PRINTER="${PRINTER}MMU2"
 fi
 
+# For Prusa MK2, MK2.5 and MK2.5S
 if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
     PRINTER="${PRINTER}_mR13"
 fi
 
+# Run MK404 with grafics
 if [ ! -z "$grafics_flag" ]; then
-    options="--colour-extrusion --extrusion Quad_HR -g "
+    MK404_options="--colour-extrusion --extrusion Quad_HR -g "
     if [ "$grafics_flag" == "1" ]; then
-        options="${options}lite"
+        options="${MK404_options}lite"
     else
-        options="${options}fancy"
+        options="${MK404_options}fancy"
     fi
 
 fi
-echo "Printer: $PRINTER"
-echo "Options: $options"
-cd ../MK404/build
 
-./MK404 Prusa_$PRINTER -s --terminal $options -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+# Output some useful data
+echo "Printer: $PRINTER"
+echo "Options: $MK404_options"
+
+# Change to MK404 build folder
+cd ../MK404/master/build
+
+# Copy language bin file for MK3 and MK3S to xflash
+if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
+echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${PRINTER}_xflash.bin'"
+    dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${PRINTER}_xflash.bin
+    dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
 fi
+
+# Start MK404
+# default with serial output and terminal to manipulate it via terminal
+./MK404 Prusa_$PRINTER -s --terminal $MK404_options -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+fi
+#### End of MK404 Simulator
