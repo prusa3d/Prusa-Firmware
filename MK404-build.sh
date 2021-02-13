@@ -16,11 +16,12 @@
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
 
 
-while getopts c:u:?h flag
+while getopts c:u:f:?h flag
     do
         case "${flag}" in
             c) check_flag=${OPTARG};;
             u) update_flag=${OPTARG};;
+            f) force_flag=${OPTARG};;
             ?) help_flag=1;;
             h) help_flag=1;;
         esac
@@ -98,7 +99,9 @@ fi
 #### Set build environment 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 MK404_URL="https://github.com/vintagepc/MK404.git"
-MK404_PATH="$SCRIPT_PATH/../MK404"
+MK404_owner="vintagepc"
+MK404_project="MK404"
+MK404_PATH="$SCRIPT_PATH/../MK404/master"
 MK404_BUILD_PATH="$MK404_PATH/build"
 
 
@@ -111,6 +114,9 @@ echo ""
 echo "MK404 path  :" $MK404_PATH
 
 if [ ! -d $MK404_PATH ]; then
+    #release_url=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/$MK404_owner/$MK404_project/releases/latest)
+    #release_tag=$(basename $release_url)
+    #git clone -b $release_tag -- https://github.com/$MK404_owner/$MK404_project.git $MK404_PATH
     git clone $MK404_URL $MK404_PATH
 fi
 
@@ -120,13 +126,20 @@ fi
 
 
 mkdir -p $MK404_BUILD_PATH
-if [ ! -f "$MK404_BUILD_PATH/Makefile" ]; then
-    cmake -B $MK404_BUILD_PATH
+if [[ ! -f "$MK404_BUILD_PATH/Makefile" || "$force_flag" == "1" ]]; then
+    cmake -B$MK404_BUILD_PATH -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
 fi
 
 cd $MK404_BUILD_PATH
-if [ ! -f "$MK404_BUILD_PATH/MK404" ]; then
+if [[ ! -f "$MK404_BUILD_PATH/MK404" || "$force_flag" == "1" ]]; then
     make
+fi
+
+if [[ ! -f "$MK404_BUILD_PATH/Prusa_MK3S_SDcard.bin" || "$force_flag" == "1" ]]; then
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3S_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25_13_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25S_13_SDcard.bin
 fi
 
 if [ "$check_flag" == "1" ]; then
