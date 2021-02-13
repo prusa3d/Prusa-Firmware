@@ -467,7 +467,7 @@ while getopts v:l:d:b:o:c:p:n:m:g:?h flag
             p) prusa_flag=${OPTARG};;
             n) new_build_flag=${OPTARG};;
             m) mk404_flag=${OPTARG};;
-            g) grafics_flag=${OPTARG};;
+            g) graphics_flag=${OPTARG};;
             ?) help_flag=1;;
             h) help_flag=1;;
         esac
@@ -977,23 +977,21 @@ echo "more information how to flash firmware https://www.prusa3d.com/drivers/ $(
 if [ ! -z "$mk404_flag" ]; then
 ./MK404-build.sh
 
-# Check if MMU2 is selected
-if [ "$mk404_flag" == "2" ]; then
+# For Prusa MK2, MK2.5/S
+if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
+    PRINTER="${PRINTER}_mR13"
+elif [ "$mk404_flag" == "2" ]; then # Check if MMU2 is selected only for MK3/S
     PRINTER="${PRINTER}MMU2"
 fi
 
-# For Prusa MK2, MK2.5 and MK2.5S
-if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
-    PRINTER="${PRINTER}_mR13"
-fi
 
 # Run MK404 with grafics
-if [ ! -z "$grafics_flag" ]; then
+if [ ! -z "$graphics_flag" ]; then
     MK404_options="--colour-extrusion --extrusion Quad_HR -g "
-    if [ "$grafics_flag" == "1" ]; then
-        options="${MK404_options}lite"
+    if [ "$graphics_flag" == "1" ]; then
+        MK404_options="${MK404_options}lite"
     else
-        options="${MK404_options}fancy"
+        MK404_options="${MK404_options}fancy"
     fi
 
 fi
