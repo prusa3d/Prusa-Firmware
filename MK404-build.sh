@@ -98,17 +98,17 @@ fi
 #### End Check MK404 dependencies
 
 #### Set build environment 
-SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+MK404_SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 MK404_URL="https://github.com/vintagepc/MK404.git"
 MK404_owner="vintagepc"
 MK404_project="MK404"
-MK404_PATH="$SCRIPT_PATH/../MK404/master"
+MK404_PATH="$MK404_SCRIPT_PATH/../MK404/master"
 MK404_BUILD_PATH="$MK404_PATH/build"
 
 
 # List few useful data
 echo
-echo "Script path :" $SCRIPT_PATH
+echo "Script path :" $MK404_SCRIPT_PATH
 echo "OS          :" $OS
 echo "OS type     :" $TARGET_OS
 echo ""
@@ -145,6 +145,8 @@ if [[ ! -f "$MK404_BUILD_PATH/Prusa_MK3S_SDcard.bin" || "$force_flag" == "1" ]];
     cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3_SDcard.bin
     cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25_13_SDcard.bin
     cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25S_13_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3SMMU2_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3MMU2_SDcard.bin
 fi
 
 # Check for updates ... WIP
