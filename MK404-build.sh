@@ -10,11 +10,12 @@
 # 3. Install latest updates with 'sudo apt-get upgrade'
 # 4.
 #
-# Version: 0.1-Build_1
+# Version: 0.1-Build_3
 # Change log:
 # 11 Feb 2021, 3d-gussner, Inital
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
-
+# 12 Feb 2021, 3d-gussner, Update cmake
+# 13 Feb 2021, 3d-gussner, Auto build SD cards
 
 while getopts c:u:f:?h flag
     do
@@ -113,6 +114,7 @@ echo "OS type     :" $TARGET_OS
 echo ""
 echo "MK404 path  :" $MK404_PATH
 
+# Clone MK404 if needed
 if [ ! -d $MK404_PATH ]; then
     #release_url=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/$MK404_owner/$MK404_project/releases/latest)
     #release_tag=$(basename $release_url)
@@ -120,21 +122,24 @@ if [ ! -d $MK404_PATH ]; then
     git clone $MK404_URL $MK404_PATH
 fi
 
-    cd $MK404_PATH
-    git submodule init
-    git submodule update
+# Init and update submodules
+cd $MK404_PATH
+git submodule init
+git submodule update
 
-
+# Prepare MK404
 mkdir -p $MK404_BUILD_PATH
 if [[ ! -f "$MK404_BUILD_PATH/Makefile" || "$force_flag" == "1" ]]; then
     cmake -B$MK404_BUILD_PATH -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
 fi
 
+# Make MK404
 cd $MK404_BUILD_PATH
 if [[ ! -f "$MK404_BUILD_PATH/MK404" || "$force_flag" == "1" ]]; then
     make
 fi
 
+# Make SDcards
 if [[ ! -f "$MK404_BUILD_PATH/Prusa_MK3S_SDcard.bin" || "$force_flag" == "1" ]]; then
     cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3S_SDcard.bin
     cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3_SDcard.bin
@@ -142,6 +147,7 @@ if [[ ! -f "$MK404_BUILD_PATH/Prusa_MK3S_SDcard.bin" || "$force_flag" == "1" ]];
     cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25S_13_SDcard.bin
 fi
 
+# Check for updates ... WIP
 if [ "$check_flag" == "1" ]; then
     current_version=$( command ./MK404 --version | grep "MK404" | cut -f 4 -d " ")
     echo "Current version: $current_version"
