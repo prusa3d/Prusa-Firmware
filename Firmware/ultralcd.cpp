@@ -1706,8 +1706,8 @@ static void lcd_menu_fails_stats_mmu()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
-//! | MMU fails:      000|	MSG_MMU_FAILS c=14
-//! | MMU load fails: 000|	MSG_MMU_LOAD_FAILS c=14
+//! | MMU fails       000|	MSG_MMU_FAILS c=15
+//! | MMU load fails  000|	MSG_MMU_LOAD_FAILS c=15
 //! |                    |
 //! ----------------------
 //! @endcode
@@ -1720,8 +1720,8 @@ static void lcd_menu_fails_stats_mmu_print()
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
         _T(MSG_LAST_PRINT_FAILURES), ////c=20
-        _T(MSG_MMU_FAILS), fails, ////c=14
-        _T(MSG_MMU_LOAD_FAILS), load_fails); ////c=14
+        _T(MSG_MMU_FAILS), fails, ////c=15
+        _T(MSG_MMU_LOAD_FAILS), load_fails); ////c=15
     menu_back_if_clicked_fb();
 }
 
@@ -1730,9 +1730,9 @@ static void lcd_menu_fails_stats_mmu_print()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
-//! | MMU fails:      000|	MSG_MMU_FAILS c=14
-//! | MMU load fails: 000|	MSG_MMU_LOAD_FAILS c=14
-//! | MMU power fails:000|	c=14 r=1
+//! | MMU fails       000|	MSG_MMU_FAILS c=15
+//! | MMU load fails  000|	MSG_MMU_LOAD_FAILS c=15
+//! | MMU power fails 000|	c=15
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1745,9 +1745,9 @@ static void lcd_menu_fails_stats_mmu_total()
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
         _T(MSG_TOTAL_FAILURES), ////c=20
-        _T(MSG_MMU_FAILS), fails, ////c=14
-        _T(MSG_MMU_LOAD_FAILS), load_fails, ////c=14
-        _i("MMU power fails"), mmu_power_failures); ////c=14 r=1
+        _T(MSG_MMU_FAILS), fails, ////c=15
+        _T(MSG_MMU_LOAD_FAILS), load_fails, ////c=15
+        _i("MMU power fails"), mmu_power_failures); ////c=15 r=1
     menu_back_if_clicked_fb();
 }
 
@@ -1759,8 +1759,8 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
-//! | Power failures: 000|	MSG_POWER_FAILURES c=14
-//! | Fil. runouts  : 000|	MSG_FIL_RUNOUTS c=14
+//! | Power failures  000|	MSG_POWER_FAILURES c=15
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
 //! | Crash   X:000 Y:000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
@@ -1775,8 +1775,8 @@ static void lcd_menu_fails_stats_total()
     lcd_home();
     lcd_printf_P(failStatsFmt, 
         _T(MSG_TOTAL_FAILURES),   ////c=20
-        _T(MSG_POWER_FAILURES), power,   ////c=14
-        _T(MSG_FIL_RUNOUTS), filam,   ////c=14
+        _T(MSG_POWER_FAILURES), power,   ////c=15
+        _T(MSG_FIL_RUNOUTS), filam,   ////c=15
         _T(MSG_CRASH), crashX, crashY);  ////c=7
     menu_back_if_clicked_fb();
 }
@@ -1786,9 +1786,9 @@ static void lcd_menu_fails_stats_total()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
-//! | Power failures  000|	MSG_POWER_FAILURES c=14
-//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=14
-//! | Crash   X:000 Y:000|	MSG_CRASH c=7
+//! | Power failures  000|	MSG_POWER_FAILURES c=15
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
+//! | Crash   X 000 Y 000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1803,8 +1803,8 @@ static void lcd_menu_fails_stats_print()
 #ifndef PAT9125
     lcd_printf_P(failStatsFmt,
         _T(MSG_LAST_PRINT_FAILURES),  ////c=20
-        _T(MSG_POWER_FAILURES), power,  ////c=14
-        _T(MSG_FIL_RUNOUTS), filam,  ////c=14
+        _T(MSG_POWER_FAILURES), power,  ////c=15
+        _T(MSG_FIL_RUNOUTS), filam,  ////c=15
         _T(MSG_CRASH), crashX, crashY);  ////c=7
 #else
     // On the MK3 include detailed PAT9125 statistics about soft failures
@@ -1813,7 +1813,7 @@ static void lcd_menu_fails_stats_print()
                       " %-7.7S H %-3d S %-3d\n"
                       " %-7.7S X %-3d Y %-3d"),
                  _T(MSG_LAST_PRINT_FAILURES), ////c=20
-                 _T(MSG_POWER_FAILURES), power, ////c=14
+                 _T(MSG_POWER_FAILURES), power, ////c=15
                  _i("Runouts"), filam, fsensor_softfail, //c=7
                  _T(MSG_CRASH), crashX, crashY);  ////c=7
 #endif
@@ -1856,9 +1856,9 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-1
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
-//! | Fil.   runouts  000|	MSG_FIL_RUNOUTS c=14
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
-//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=14
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1870,9 +1870,9 @@ static void lcd_menu_fails_stats()
 	lcd_home();
 	lcd_printf_P(failStatsFmt, 
         _T(MSG_LAST_PRINT_FAILURES),   ////c=20
-        _T(MSG_FIL_RUNOUTS), filamentLast,   ////c=14
+        _T(MSG_FIL_RUNOUTS), filamentLast,   ////c=15
         _T(MSG_TOTAL_FAILURES),  ////c=20
-        _T(MSG_FIL_RUNOUTS), filamentTotal);   ////c=14
+        _T(MSG_FIL_RUNOUTS), filamentTotal);   ////c=15
 
 	menu_back_if_clicked();
 }
@@ -8443,7 +8443,7 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	if (screen == TestScreen::EndStops) lcd_puts_P(_i("Checking endstops"));////MSG_SELFTEST_CHECK_ENDSTOPS c=20
 	if (screen == TestScreen::AxisX) lcd_puts_P(_T(MSG_CHECKING_X));
 	if (screen == TestScreen::AxisY) lcd_puts_P(_T(MSG_CHECKING_Y));
-	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis  "));////MSG_SELFTEST_CHECK_Z c=20
+	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis"));////MSG_SELFTEST_CHECK_Z c=20
 	if (screen == TestScreen::Bed) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
 	if (screen == TestScreen::Hotend
 	    || screen == TestScreen::HotendOk) lcd_puts_P(_i("Checking hotend  "));////MSG_SELFTEST_CHECK_HOTEND c=20
