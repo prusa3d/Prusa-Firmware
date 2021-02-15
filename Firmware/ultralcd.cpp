@@ -6605,6 +6605,44 @@ static void lcd_sheet_menu()
     MENU_END();
 }
 
+//! @brief Show Main Menu
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! | Info screen        | allways
+//!
+//! | tst - Save         | ifdef RESUME_DEBUG
+//! | tst - Restore      | ifdef RESUME_DEBUG
+//!
+//! | recover print      | TMC2130_DEBUG
+//! | power panic        | TMC2130_DEBUG
+//! 
+//! | Live adjust Z      | printing + Z low 
+//!
+//! | Change filament    | farm mode
+//!
+//! | Tune               | printing
+//! | Pause print        | printing + not paused
+//! | Resume print       | printing + paused
+//! | Stop print         | printing
+//! | Preheat            | not printing or paused
+//! | Print from SD      | not printing or paused
+//!
+//! | Switch sheet       | farm mode
+//!
+//! | AutoLoad filament  | not printing + not mmu or paused
+//! | Load filament      | not printing + mmu or paused
+//! | Load to nozzle      | not printing + mmu or paused
+//! | Unload filament    | not printing or paused
+//! | Eject filament     | not printing + mmu or paused
+//! | Cut filament       | not printing + mmu or paused + cut atctive
+//! | Settings           | not printing or paused
+//! | Calibration        | not printing 
+//! | Statistics         | not printing
+//! | Fail stats         | allways
+//! | Fail stats MMU     | mmu
+//! | Support            | allways
+//! @endcode
 static void lcd_main_menu()
 {
 
