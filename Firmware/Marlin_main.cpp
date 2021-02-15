@@ -3833,16 +3833,16 @@ void process_commands()
   #### Usage
 
       M0 [P<ms<] [S<sec>] [string]
-      M1 [P<ms>] [S<sec>] [string]
+      M1 [P<ms>] [S<sec>] [string] 
 
   #### Parameters
   
     - `P<ms>`  - Expire time, in milliseconds
     - `S<sec>` - Expire time, in seconds
-    - `string` - An optional message to display on the LCD
+    - `string` - Must for M1 and optional for M0 message to display on the LCD
     */
 
-  else if (code_seen_P(PSTR("M0 ")) || code_seen_P(PSTR("M1 "))) { // M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
+  else if (code_seen_P(PSTR("M0")) || code_seen_P(PSTR("M1 "))) { // M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
 
       char *src = strchr_pointer + 2;
 
