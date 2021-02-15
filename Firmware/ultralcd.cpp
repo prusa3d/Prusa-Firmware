@@ -57,7 +57,7 @@
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
-
+int clock_interval = 0;
 
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
@@ -671,31 +671,85 @@ void lcdui_print_cmd_diag(void)
 // Print time (8 chars total)
 void lcdui_print_time(void)
 {
-	//if remaining print time estimation is available print it else print elapsed time
-	uint16_t print_t = 0;
-	if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-		print_t = print_time_remaining();
-	else if(starttime != 0)
-		print_t = _millis() / 60000 - starttime / 60000;
-	int chars = 0;
-	if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
-	{
-          char suff = ' ';
-          char suff_doubt = ' ';
-		if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-          {
-               suff = 'R';
-               if (feedmultiply != 100)
-                    suff_doubt = '?';
-          }
-		if (print_t < 6000) //time<100h
-			chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
-		else //time>=100h
-			chars = lcd_printf_P(_N("%c%3uh %c%c"), LCD_STR_CLOCK[0], print_t / 60, suff, suff_doubt);
-	}
-	else
-		chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
-	lcd_space(8 - chars);
+    //if remaining print time estimation is available print it else print elapsed time
+    int chars = 0;
+    if ((PRINTER_ACTIVE) && (starttime != 0))
+    {
+        uint16_t print_t = 0;
+        uint16_t print_tr = 0;
+        uint16_t print_tc = 0;
+        char suff = ' ';
+        char suff_doubt = ' ';
+
+#ifdef TMC2130
+        if (SilentModeMenu != SILENT_MODE_OFF)
+        {
+            if (print_time_remaining_silent != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tr = print_time_remaining_silent;
+            }
+//#ifdef CLOCK_INTERVAL_TIME
+            if (print_time_to_change_silent != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tc = print_time_to_change_silent;
+            }
+//#endif //CLOCK_INTERVAL_TIME
+        }
+        else
+        {
+#endif //TMC2130
+            if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tr = print_time_remaining_normal;
+            }
+//#ifdef CLOCK_INTERVAL_TIME
+            if (print_time_to_change_normal != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tc = print_time_to_change_normal;
+            }
+//#endif //CLOCK_INTERVAL_TIME
+#ifdef TMC2130
+        }
+#endif //TMC2130
+
+//#ifdef CLOCK_INTERVAL_TIME
+        if (clock_interval == CLOCK_INTERVAL_TIME*2)
+        {
+            clock_interval = 0;
+        }
+        clock_interval++;
+
+        if (print_tc != 0 && clock_interval > CLOCK_INTERVAL_TIME)
+        {
+            print_t = print_tc;
+            suff = 'C';
+        }
+        else
+//#endif //CLOCK_INTERVAL_TIME 
+        if (print_tr != 0)
+        {
+            print_t = print_tr;
+            suff = 'R';
+        }
+        else
+        {
+            print_t = _millis() / 60000 - starttime / 60000; 
+        }
+
+        if (feedmultiply != 100 && (print_t == print_tr || print_t == print_tc))
+        {
+            suff_doubt = '?';
+            print_t = 100ul * print_t / feedmultiply;
+        }
+
+        if (print_t < 6000) //time<100h
+            chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
+        else //time>=100h
+            chars = lcd_printf_P(_N("%c%3uh %c%c"), LCD_STR_CLOCK[0], print_t / 60, suff, suff_doubt);
+    }
+    else
+        chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
+    lcd_space(8 - chars);
 }
 
 //Print status line on status screen
