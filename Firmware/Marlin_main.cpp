@@ -3882,10 +3882,9 @@ void process_commands()
         marlin_wait_for_click();
       }
       if (IS_SD_PRINTING)
-        LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
+        custom_message_type = CustomMsg::Status;
       else
         LCD_MESSAGERPGM(_T(WELCOME_MSG));
-	  custom_message_type = CustomMsg::MsgUpdate;
     }
 
 #ifdef TMC2130
