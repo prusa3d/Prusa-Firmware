@@ -228,10 +228,6 @@ bool fan_state[2];
 int fan_edge_counter[2];
 int fan_speed[2];
 
-char dir_names[MAX_DIR_DEPTH][9];
-
-bool sortAlpha = false;
-
 
 float extruder_multiplier[EXTRUDERS] = {1.0
   #if EXTRUDERS > 1
@@ -320,6 +316,8 @@ uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint16_t print_time_to_change_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining time to next change in minutes
+uint16_t print_time_to_change_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining time to next change in minutes
 
 uint32_t IP_address = 0;
 
@@ -4069,9 +4067,9 @@ void process_commands()
 		}else if (code_seen_P("fv")) { // PRUSA fv
         // get file version
         #ifdef SDSUPPORT
-        card.openFile(strchr_pointer + 3,true);
+        card.openFileReadFilteredGcode(strchr_pointer + 3,true);
         while (true) {
-            uint16_t readByte = card.get();
+            uint16_t readByte = card.getFilteredGcodeChar();
             MYSERIAL.write(readByte);
             if (readByte=='\n') {
                 break;
@@ -4084,7 +4082,7 @@ void process_commands()
     } else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
         trace();
         prusa_sd_card_upload = true;
-        card.openFile(strchr_pointer+4,false);
+        card.openFileWrite(strchr_pointer+4);
 
 	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
@@ -5803,7 +5801,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       starpos = (strchr(strchr_pointer + 4,'*'));
 	  if(starpos!=NULL)
         *(starpos)='\0';
-      card.openFile(strchr_pointer + 4,true);
+      card.openFileReadFilteredGcode(strchr_pointer + 4);
       break;
 
     /*!
@@ -5873,7 +5871,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         strchr_pointer = strchr(npos,' ') + 1;
         *(starpos) = '\0';
       }
-      card.openFile(strchr_pointer+4,false);
+      card.openFileWrite(strchr_pointer+4);
       break;
 
     /*! ### M29 - Stop SD write <a href="https://reprap.org/wiki/G-code#M29:_Stop_writing_to_SD_card">M29: Stop writing to SD card</a>
@@ -5934,7 +5932,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
       if( card.cardOK )
       {
-        card.openFile(namestartpos,true,!call_procedure);
+        card.openFileReadFilteredGcode(namestartpos,!call_procedure);
         if(code_seen('S'))
           if(strchr_pointer<namestartpos) //only if "S" is occuring _before_ the filename
             card.setIndex(code_value_long());
@@ -6408,31 +6406,37 @@ Sigma_Exit:
 #endif		// Z_PROBE_REPEATABILITY_TEST 
 #endif		// ENABLE_AUTO_BED_LEVELING
 
-	/*!
-	### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
-	#### Usage
+    /*!
+    ### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
+    #### Usage
     
-	    M73 [ P | R | Q | S ]
-    
-	#### Parameters
-    - `P` - Percent in normal mode
-    - `R` - Time remaining in normal mode
-    - `Q` - Percent in silent mode
-    - `S` - Time in silent mode
-   */
-	case 73: //M73 show percent done and time remaining
-		if(code_seen('P')) print_percent_done_normal = code_value();
-		if(code_seen('R')) print_time_remaining_normal = code_value();
-		if(code_seen('Q')) print_percent_done_silent = code_value();
-		if(code_seen('S')) print_time_remaining_silent = code_value();
+        M73 [ P | R | Q | S | C | D ]
 
-		{
-			const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %d; print time remaining in mins: %d\n");
-			printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal);
-			printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent);
-		}
-		break;
+    #### Parameters
+        - `P` - Percent in normal mode
+        - `R` - Time remaining in normal mode
+        - `Q` - Percent in silent mode
+        - `S` - Time in silent mode
+        - `C` - Time to change/pause/user interaction in normal mode
+        - `D` - Time to change/pause/user interaction in silent mode
+    */
+    //!@todo update RepRap Gcode wiki
+    case 73: //M73 show percent done, time remaining and time to change/pause
+    {
+        if(code_seen('P')) print_percent_done_normal = code_value();
+        if(code_seen('R')) print_time_remaining_normal = code_value();
+        if(code_seen('Q')) print_percent_done_silent = code_value();
+        if(code_seen('S')) print_time_remaining_silent = code_value();
+        if(code_seen('C')) print_time_to_change_normal = code_value();
+        if(code_seen('D')) print_time_to_change_silent = code_value();
 
+    {
+        const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %d; print time remaining in mins: %d; Change in mins: %d\n");
+        printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal, print_time_to_change_normal);
+        printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent, print_time_to_change_silent);
+    }
+        break;
+    }
     /*!
 	### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
 	#### Usage
@@ -7005,14 +7009,14 @@ Sigma_Exit:
 	### M120 - Enable endstops <a href="https://reprap.org/wiki/G-code#M120:_Enable_endstop_detection">M120: Enable endstop detection</a>
     */
     case 120:
-      enable_endstops(false) ;
+      enable_endstops(true) ;
       break;
 
     /*!
 	### M121 - Disable endstops <a href="https://reprap.org/wiki/G-code#M121:_Disable_endstop_detection">M121: Disable endstop detection</a>
     */
     case 121:
-      enable_endstops(true) ;
+      enable_endstops(false) ;
       break;
 
     /*!
@@ -11294,8 +11298,8 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 		}
 		dir_name[8] = '\0';
 		MYSERIAL.println(dir_name);
-		strcpy(dir_names[i], dir_name);
-		card.chdir(dir_name);
+		// strcpy(dir_names[i], dir_name);
+		card.chdir(dir_name, false);
 	}
 
 	for (int i = 0; i < 8; i++) {
@@ -11670,46 +11674,40 @@ void print_mesh_bed_leveling_table()
   SERIAL_ECHOLN();
 }
 
-uint16_t print_time_remaining() {
-	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
-#ifdef TMC2130 
-	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_remaining_normal;
-	else print_t = print_time_remaining_silent;
-#else
-	print_t = print_time_remaining_normal;
-#endif //TMC2130
-	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
-	return print_t;
-}
-
 uint8_t calc_percent_done()
 {
-	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
-	uint8_t percent_done = 0;
+    //in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
+    uint8_t percent_done = 0;
 #ifdef TMC2130
-	if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100) {
-		percent_done = print_percent_done_normal;
-	}
-	else if (print_percent_done_silent <= 100) {
-		percent_done = print_percent_done_silent;
-	}
+    if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100)
+    {
+        percent_done = print_percent_done_normal;
+    }
+    else if (print_percent_done_silent <= 100)
+    {
+        percent_done = print_percent_done_silent;
+    }
 #else
-	if (print_percent_done_normal <= 100) {
-		percent_done = print_percent_done_normal;
-	}
+    if (print_percent_done_normal <= 100)
+    {
+        percent_done = print_percent_done_normal;
+    }
 #endif //TMC2130
-	else {
-		percent_done = card.percentDone();
-	}
-	return percent_done;
+    else
+    {
+        percent_done = card.percentDone();
+    }
+    return percent_done;
 }
 
 static void print_time_remaining_init()
 {
-	print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
-	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
-	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
-	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+    print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
+    print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
+    print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
+    print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+    print_time_to_change_normal = PRINT_TIME_REMAINING_INIT;
+    print_time_to_change_silent = PRINT_TIME_REMAINING_INIT;
 }
 
 void load_filament_final_feed()
@@ -11799,7 +11797,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 				delay_keep_alive(4);
 
 				if (_millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
-					lcd_display_message_fullscreen_P(_i("Press knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
+					lcd_display_message_fullscreen_P(_i("Press the knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
 					setAllTargetHotends(0);
 					st_synchronize();
