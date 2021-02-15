@@ -6670,7 +6670,7 @@ static void lcd_main_menu()
             }
         }
     }
-    if(IS_SD_PRINTING || is_usb_printing || isPrintPaused)
+    if((IS_SD_PRINTING || is_usb_printing || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling))
     {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
