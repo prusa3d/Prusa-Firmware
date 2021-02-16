@@ -899,6 +899,9 @@ void lcdui_print_status_line(void)
 				lcd_print(' ');
 			}
 			break;
+        case CustomMsg::Resuming: //Resuming
+            lcd_puts_at_P(0, 3, _T(MSG_RESUMING_PRINT));
+            break;
 		}
 	}
     
@@ -6537,12 +6540,13 @@ void lcd_resume_print()
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
 
-    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT)); ////MSG_RESUMING_PRINT c=20
+    custom_message_type = CustomMsg::Resuming;
     isPrintPaused = false;
     restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
+    custom_message_type = CustomMsg::Status;
 }
 
 static void change_sheet()
