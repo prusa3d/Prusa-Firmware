@@ -6614,18 +6614,18 @@ static void lcd_sheet_menu()
 //! | tst - Save         | ifdef RESUME_DEBUG
 //! | tst - Restore      | ifdef RESUME_DEBUG
 //!
-//! | recover print      | TMC2130_DEBUG
-//! | power panic        | TMC2130_DEBUG
+//! | recover print      | ifdef TMC2130_DEBUG
+//! | power panic        | ifdef TMC2130_DEBUG
 //! 
 //! | Live adjust Z      | printing + Z low 
 //!
 //! | Change filament    | farm mode
 //!
-//! | Tune               | printing
+//! | Tune               | printing + paused
 //! | Pause print        | printing + not paused
 //! | Resume print       | printing + paused
-//! | Stop print         | printing
-//! | Preheat            | not printing or paused
+//! | Stop print         | printing or paused + NOT MBL
+//! | Preheat            | not printing + not paused
 //! | Print from SD      | not printing or paused
 //!
 //! | Switch sheet       | farm mode
@@ -6673,7 +6673,7 @@ static void lcd_main_menu()
     if (farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 
-    if ( moves_planned() || PRINTER_ACTIVE || isPrintPaused)
+    if ( moves_planned() || PRINTER_ACTIVE || isPrintPaused )
     {
         MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE
     } else 
@@ -6784,8 +6784,11 @@ static void lcd_main_menu()
             bFilamentFirstRun=true;
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
-    MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
-    if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
+        if(!isPrintPaused)
+        {
+            MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
+            MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
+        }
     }
 
     if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
