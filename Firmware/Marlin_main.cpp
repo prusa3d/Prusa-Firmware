@@ -8140,9 +8140,9 @@ Sigma_Exit:
     /*!
     ### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
     */
-	case 25:
-	case 601:
-	{
+    case 25:
+    case 601:
+    {
         if (!isPrintPaused)
         {
             st_synchronize();
@@ -8150,11 +8150,11 @@ Sigma_Exit:
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
             lcd_pause_print();
         }
-	}
-	break;
+    }
+    break;
 
     /*!
-	### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
+    ### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
     */
     case 602:
     {
@@ -8171,10 +8171,10 @@ Sigma_Exit:
     /*!
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */
-	case 603: {
-		lcd_print_stop();
-	}
-	break;
+    case 603: {
+        lcd_print_stop();
+    }
+    break;
 
 #ifdef PINDA_THERMISTOR
     /*!
