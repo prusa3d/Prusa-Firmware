@@ -737,7 +737,7 @@ static void factory_reset_stats(){
 static void factory_reset(char level)
 {
 	lcd_clear();
-    Sound_MakeCustom(100,0,false);
+	Sound_MakeCustom(100,0,false);
 	switch (level) {
 
 	case 0: // Level 0: Language reset
