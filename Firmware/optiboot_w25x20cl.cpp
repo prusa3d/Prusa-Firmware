@@ -43,7 +43,7 @@ static void watchdogConfig(uint8_t x) {
   WDTCSR = x;
 }
 
-static void watchdogReset() {
+static FORCE_INLINE void watchdogReset() {
   __asm__ __volatile__ (
     "wdr\n"
   );
