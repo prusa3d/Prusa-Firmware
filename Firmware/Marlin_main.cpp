@@ -8160,9 +8160,11 @@ Sigma_Exit:
     {
         if (isPrintPaused)
         {
+#ifdef FANCHECK
         if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
             lcd_resume_print();
         else
+#endif //FANCHECK
             SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //inform octoprint of pause
         }
     }
