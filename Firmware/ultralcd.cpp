@@ -6136,15 +6136,15 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 char reset_menu() {
     const uint8_t items_no =
 #ifdef SNMM
-        5;
+        6;
 #else
-        4;
+        5;
 #endif
     static int8_t first = 0;
     int8_t enc_dif = 0;
 	char cursor_pos = 0;
 
-    const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("All Data")
+    const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("All Data"), PSTR("Service prep")
 #ifdef SNMM
     , PSTR("Bowden length")
 #endif

@@ -709,124 +709,98 @@ void softReset()
 #endif
 
 
+static void factory_reset_stats(){
+    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+    eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+
+    eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+
+    eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
+    eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
+    eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
+    eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+
+    eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
+    eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+}
+
 // Factory reset function
 // This function is used to erase parts or whole EEPROM memory which is used for storing calibration and and so on.
 // Level input parameter sets depth of reset
-int  er_progress = 0;
 static void factory_reset(char level)
-{	
+{
 	lcd_clear();
-    switch (level) {
-                   
-        // Level 0: Language reset
-        case 0:
-      Sound_MakeCustom(100,0,false);
-			lang_reset();
-            break;
-         
-		//Level 1: Reset statistics
-		case 1:
-      Sound_MakeCustom(100,0,false);
-			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+	Sound_MakeCustom(100,0,false);
+	switch (level) {
 
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+	case 0: // Level 0: Language reset
+		lang_reset();
+		break;
 
-			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+	case 1: //Level 1: Reset statistics
+		factory_reset_stats();
+		lcd_menu_statistics();
+		break;
 
-			eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+	case 2: // Level 2: Prepare for shipping
+		factory_reset_stats();
+		// [[fallthrough]] // there is no break intentionally
 
-
-			lcd_menu_statistics();
-            
-			break;
-
-        // Level 2: Prepare for shipping
-        case 2:
-			//lcd_puts_P(PSTR("Factory RESET"));
-            //lcd_puts_at_P(1,2,PSTR("Shipping prep"));
-            
-            // Force language selection at the next boot up.
-			lang_reset();
-            // Force the "Follow calibration flow" message at the next boot up.
-            calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
-			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
-			farm_mode = false;
-			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
-
-            eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-            eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
-
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
-
-            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
-            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
-            eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
-            eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
-
-			eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+	case 4: // Level 4: Preparation after being serviced
+		// Force language selection at the next boot up.
+		lang_reset();
+		// Force the "Follow calibration flow" message at the next boot up.
+		calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
+		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
+		farm_mode = false;
+		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 
 #ifdef FILAMENT_SENSOR
-			fsensor_enable();
-            fsensor_autoload_set(true);
+		fsensor_enable();
+		fsensor_autoload_set(true);
 #endif //FILAMENT_SENSOR
-      Sound_MakeCustom(100,0,false);   
-			//_delay_ms(2000);
-            break;
+		break;
 
-			// Level 3: erase everything, whole EEPROM will be set to 0xFF
+	case 3:{ // Level 3: erase everything, whole EEPROM will be set to 0xFF
+		lcd_puts_P(PSTR("Factory RESET"));
+		lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
+		uint16_t er_progress = 0;
+		lcd_set_cursor(3, 3);
+		lcd_space(6);
+		lcd_set_cursor(3, 3);
+		lcd_print(er_progress);
 
-		case 3:
-			lcd_puts_P(PSTR("Factory RESET"));
-			lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
+		// Erase EEPROM
+		for (uint16_t i = 0; i < 4096; i++) {
+			eeprom_update_byte((uint8_t*)i, 0xFF);
 
-      Sound_MakeCustom(100,0,false);
-			er_progress = 0;
-			lcd_puts_at_P(3, 3, PSTR("      "));
-			lcd_set_cursor(3, 3);
-			lcd_print(er_progress);
-
-			// Erase EEPROM
-			for (int i = 0; i < 4096; i++) {
-				eeprom_update_byte((uint8_t*)i, 0xFF);
-
-				if (i % 41 == 0) {
-					er_progress++;
-					lcd_puts_at_P(3, 3, PSTR("      "));
-					lcd_set_cursor(3, 3);
-					lcd_print(er_progress);
-					lcd_puts_P(PSTR("%"));
-				}
-
+			if (i % 41 == 0) {
+				er_progress++;
+				lcd_set_cursor(3, 3);
+				lcd_space(6);
+				lcd_set_cursor(3, 3);
+				lcd_print(er_progress);
+				lcd_puts_P(PSTR("%"));
 			}
-			softReset();
+
+		}
+		softReset();
+		}break;
 
 
-			break;
-		case 4:
-			bowden_menu();
-			break;
-        
-        default:
-            break;
-    }
-    
-
+#ifdef SNMM
+	case 5:
+		bowden_menu();
+		break;
+#endif
+	default:
+		break;
+	}
 }
 
 extern "C" {
@@ -857,19 +831,15 @@ void factory_reset()
 		{
 			lcd_clear();
 
-
 			lcd_puts_P(PSTR("Factory RESET"));
 
-
 			SET_OUTPUT(BEEPER);
-  if(eSoundMode!=e_SOUND_MODE_SILENT)
-			WRITE(BEEPER, HIGH);
+			if(eSoundMode!=e_SOUND_MODE_SILENT)
+				WRITE(BEEPER, HIGH);
 
 			while (!READ(BTN_ENC));
 
 			WRITE(BEEPER, LOW);
-
-
 
 			_delay_ms(2000);
 
@@ -877,10 +847,11 @@ void factory_reset()
 			factory_reset(level);
 
 			switch (level) {
-			case 0: _delay_ms(0); break;
-			case 1: _delay_ms(0); break;
-			case 2: _delay_ms(0); break;
-			case 3: _delay_ms(0); break;
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4: _delay_ms(0); break;
 			}
 
 		}
