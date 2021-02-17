@@ -1526,10 +1526,9 @@ void lcd_return_to_status()
     eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
 }
 
-//! @brief Pause print, disable nozzle heater, move to park position
+//! @brief Pause print, disable nozzle heater, move to park position, send host action "paused"
 void lcd_pause_print()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //pause for octoprint
     stop_and_save_print_to_ram(0.0, -default_retraction);
     lcd_return_to_status();
     isPrintPaused = true;
@@ -1537,12 +1536,13 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
 }
 
-//! @brief Pause USB/host print, disable nozzle heater, move to park position
+//! @brief Send host action "pause"
 void lcd_pause_usb_print()
 {
-  SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //pause for octoprint
+  SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
 }
 
 
@@ -6482,7 +6482,7 @@ static bool fan_error_selftest()
     return 0;
 }
 
-//! @brief Resume paused print
+//! @brief Resume paused print, send host action "resumed"
 //! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
 //! as restore_print_from_ram_and_continue() calls lcd_update() internally.
 void lcd_resume_print()
@@ -6490,23 +6490,23 @@ void lcd_resume_print()
     lcd_return_to_status();
     lcd_reset_alert_level(); //for fan speed error
     if (fan_error_selftest()) return; //abort if error persists
-    cmdqueue_serial_disabled = false;
+        cmdqueue_serial_disabled = false;
 
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
 
     lcd_setstatuspgm(_T(MSG_RESUMING_PRINT)); ////MSG_RESUMING_PRINT c=20
-    isPrintPaused = false;
     restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
+    isPrintPaused = false;
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //trigger octoprint to resume print
 }
 
-//! @brief Resume paused USB/host print
+//! @brief Resume paused USB/host print, send host action "resume"
 void lcd_resume_usb_print()
 {
-	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUME); //resume octoprint
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUME); //resume octoprint
 }
 
 static void change_sheet()
@@ -6673,7 +6673,7 @@ static void lcd_main_menu()
     if (farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 
-    if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
+    if ( moves_planned() || PRINTER_ACTIVE || isPrintPaused)
     {
         MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE
     } else 
@@ -6683,13 +6683,13 @@ static void lcd_main_menu()
 
     if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused)
     {
-        if (IS_SD_PRINTING)
-        {
-            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);////MSG_PAUSE_PRINT c=18
-        }
-        else if (is_usb_printing)
+        if (is_usb_printing)
         {
             MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);////MSG_PAUSE_PRINT c=18
+        }
+        else if (IS_SD_PRINTING)
+        {
+            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);////MSG_PAUSE_PRINT c=18
         }
     }
     if(isPrintPaused)

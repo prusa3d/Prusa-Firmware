@@ -1857,7 +1857,7 @@ void loop()
 	}
     
 #ifdef FANCHECK
-    if (fan_check_error && isPrintPaused)
+    if (fan_check_error && isPrintPaused && !IS_SD_PRINTING)
     {
         KEEPALIVE_STATE(PAUSED_FOR_USER);
         host_keepalive(); //prevent timeouts since usb processing is disabled until print is resumed. This is for a crude way of pausing a print on all hosts.
@@ -3763,12 +3763,14 @@ There are reasons why some G Codes aren't in numerical order.
 void process_commands()
 {
 #ifdef FANCHECK
-	if(fan_check_error == EFCE_DETECTED){
-		fan_check_error = EFCE_REPORTED;
-		// SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
-		lcd_pause_print();
-		cmdqueue_serial_disabled = true;
-	}
+    if(fan_check_error == EFCE_DETECTED)
+    {
+        fan_check_error = EFCE_REPORTED;
+        if (is_usb_printing)
+            lcd_pause_usb_print();
+        else
+            lcd_pause_print();
+    }
 #endif
 
 	if (!buflen) return; //empty command
@@ -8154,11 +8156,17 @@ Sigma_Exit:
     /*!
 	### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
     */
-	case 602: {
-	  if (isPrintPaused)
-          lcd_resume_print();
-	}
-	break;
+    case 602:
+    {
+        if (isPrintPaused)
+        {
+        if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+            lcd_resume_print();
+        else
+            SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //inform octoprint of pause
+        }
+    }
+    break;
 
     /*!
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
