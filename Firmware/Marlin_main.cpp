@@ -1857,8 +1857,7 @@ void loop()
 	}
     
 #ifdef FANCHECK
-    if (fan_check_error && isPrintPaused && !IS_SD_PRINTING)
-    {
+    if (fan_check_error && isPrintPaused && !IS_SD_PRINTING) {
         KEEPALIVE_STATE(PAUSED_FOR_USER);
         host_keepalive(); //prevent timeouts since usb processing is disabled until print is resumed. This is for a crude way of pausing a print on all hosts.
     }
@@ -3763,8 +3762,7 @@ There are reasons why some G Codes aren't in numerical order.
 void process_commands()
 {
 #ifdef FANCHECK
-    if(fan_check_error == EFCE_DETECTED)
-    {
+    if(fan_check_error == EFCE_DETECTED) {
         fan_check_error = EFCE_REPORTED;
         if (is_usb_printing)
             lcd_pause_usb_print();

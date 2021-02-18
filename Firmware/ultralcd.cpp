@@ -1532,8 +1532,7 @@ void lcd_pause_print()
     stop_and_save_print_to_ram(0.0, -default_retraction);
     lcd_return_to_status();
     isPrintPaused = true;
-    if (LcdCommands::Idle == lcd_commands_type)
-    {
+    if (LcdCommands::Idle == lcd_commands_type) {
         lcd_commands_type = LcdCommands::LongPause;
     }
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
@@ -1542,7 +1541,7 @@ void lcd_pause_print()
 //! @brief Send host action "pause"
 void lcd_pause_usb_print()
 {
-  SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
 }
 
 
@@ -6665,30 +6664,23 @@ static void lcd_main_menu()
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
 
-    if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
-    {
+    if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag) {
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
     }
 
     if (farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 
-    if ( moves_planned() || PRINTER_ACTIVE || isPrintPaused )
-    {
+    if ( moves_planned() || PRINTER_ACTIVE || isPrintPaused ) {
         MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE
-    } else 
-    {
+    } else {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
     }
 
-    if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused)
-    {
-        if (is_usb_printing)
-        {
+    if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused) {
+        if (is_usb_printing) {
             MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);////MSG_PAUSE_PRINT c=18
-        }
-        else if (IS_SD_PRINTING)
-        {
+        } else if (IS_SD_PRINTING) {
             MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);////MSG_PAUSE_PRINT c=18
         }
     }
@@ -6698,27 +6690,20 @@ static void lcd_main_menu()
         if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
 #endif //FANCHECK
         {
-            if (is_usb_printing)
-            {
+            if (is_usb_printing) {
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);////MSG_RESUME_PRINT c=18
-            }
-            else
-            {
+            } else {
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
             }
         }
     }
-    if((IS_SD_PRINTING || is_usb_printing || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling))
-    {
+    if((IS_SD_PRINTING || is_usb_printing || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling)) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
-    if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal)
-    {
-        if (!card.isFileOpen())
-        {
-            if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
-            {
+    if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal) {
+        if (!card.isFileOpen()) {
+            if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal)) {
             //if (farm_mode) MENU_ITEM_SUBMENU_P(MSG_FARM_CARD_MENU, lcd_farm_sdcard_menu);
             /*else*/{
                         bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
@@ -6729,8 +6714,7 @@ static void lcd_main_menu()
         MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user////MSG_CNG_SDCARD
 #endif //SDCARDDETECT
         }
-    } else 
-    {
+    } else {
         bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
         MENU_ITEM_SUBMENU_P(_i("No SD card"), lcd_sdcard_menu);////MSG_NO_CARD
 #if SDCARDDETECT < 1
@@ -6739,23 +6723,18 @@ static void lcd_main_menu()
     }
 #endif //SDSUPPORT
 
-    if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
-    {
-        if (!farm_mode)
-        {
+    if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal)) {
+        if (!farm_mode) {
             const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
             const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
-            if ((nextSheet >= 0) && (sheet != nextSheet)) // show menu only if we have 2 or more sheets initialized
-            {
+            if ((nextSheet >= 0) && (sheet != nextSheet)) { // show menu only if we have 2 or more sheets initialized
                 MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], eeprom_switch_to_next_sheet);
             }
         }
     }
 
-    if ( ! ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal) ) )
-    {
-        if (mmu_enabled)
-        {
+    if ( ! ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal) ) ) {
+        if (mmu_enabled) {
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);
 //-//          MENU_ITEM_FUNCTION_P(_T(MSG_UNLOAD_FILAMENT), extr_unload);
@@ -6765,9 +6744,7 @@ static void lcd_main_menu()
 #ifdef  MMU_HAS_CUTTER
             MENU_ITEM_SUBMENU_P(_T(MSG_CUT_FILAMENT), mmu_cut_filament_menu);
 #endif //MMU_HAS_CUTTER
-        }
-        else
-        {
+        } else {
 #ifdef SNMM
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
             MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
@@ -6784,15 +6761,13 @@ static void lcd_main_menu()
             bFilamentFirstRun=true;
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
-        if(!isPrintPaused)
-        {
+        if(!isPrintPaused) {
             MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
             MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
         }
     }
 
-    if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
-    {
+    if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal)) {
         MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS
     }
 
