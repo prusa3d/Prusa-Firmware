@@ -3841,55 +3841,41 @@ void process_commands()
     - `string` - Must for M1 and optional for M0 message to display on the LCD
     */
 
-    else if (code_seen_P(PSTR("M0")) || code_seen_P(PSTR("M1 "))) // M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
-    {
-
+    else if (code_seen_P(PSTR("M0")) || code_seen_P(PSTR("M1 "))) {// M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
         char *src = strchr_pointer + 2;
-
         codenum = 0;
-
         bool hasP = false, hasS = false;
-        if (code_seen('P'))
-        {
+        if (code_seen('P')) {
             codenum = code_value(); // milliseconds to wait
             hasP = codenum > 0;
         }
-        if (code_seen('S'))
-        {
+        if (code_seen('S')) {
             codenum = code_value() * 1000; // seconds to wait
             hasS = codenum > 0;
         }
         starpos = strchr(src, '*');
         if (starpos != NULL) *(starpos) = '\0';
         while (*src == ' ') ++src;
-            custom_message_type = CustomMsg::M0Wait;
-        if (!hasP && !hasS && *src != '\0')
-        {
+        custom_message_type = CustomMsg::M0Wait;
+        if (!hasP && !hasS && *src != '\0') {
             lcd_setstatus(src);
-        }
-        else
-        {
+        } else {
             LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
         }
-
         lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
         st_synchronize();
         previous_millis_cmd = _millis();
-        if (codenum > 0)
-        {
+        if (codenum > 0) {
             codenum += _millis();  // keep track of when we started waiting
             KEEPALIVE_STATE(PAUSED_FOR_USER);
-            while(_millis() < codenum && !lcd_clicked())
-            {
+            while(_millis() < codenum && !lcd_clicked()) {
                 manage_heater();
                 manage_inactivity(true);
                 lcd_update(0);
             }
             KEEPALIVE_STATE(IN_HANDLER);
             lcd_ignore_click(false);
-        }
-        else
-        {
+        } else {
             marlin_wait_for_click();
         }
         if (IS_SD_PRINTING)
@@ -8165,8 +8151,7 @@ Sigma_Exit:
     case 25:
     case 601:
     {
-        if (!isPrintPaused)
-        {
+        if (!isPrintPaused) {
             st_synchronize();
             ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
@@ -8176,21 +8161,21 @@ Sigma_Exit:
     break;
 
     /*!
-	### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
+    ### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
     */
-	case 602: {
-	  if (isPrintPaused)
-          lcd_resume_print();
-	}
-	break;
+    case 602: {
+        if (isPrintPaused)
+            lcd_resume_print();
+    }
+    break;
 
     /*!
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */
-	case 603: {
-		lcd_print_stop();
-	}
-	break;
+    case 603: {
+        lcd_print_stop();
+    }
+    break;
 
 #ifdef PINDA_THERMISTOR
     /*!
