@@ -338,9 +338,9 @@
 "Fil. sensor"
 "Sensore fil."
 
-#MSG_FIL_RUNOUTS c=14
-"Fil. runouts  "
-"Fil. esauriti "
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
+"Fil. esauriti"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -598,7 +598,7 @@
 "Measured skew"
 "Deviazione mis"
 
-#MSG_MMU_FAILS c=14
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "Fallimenti MMU"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "Caricamento MMU fallito"
 
-#MSG_MMU_LOAD_FAILS c=14
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "Caricamenti MMU falliti"
 
@@ -827,14 +827,14 @@
 "Prego aggiornare."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Premete la manopola per preriscaldare l'ugello e continuare."
 
 #MSG_FS_PAUSE c=5
 "Pause"
 "Pausa"
 
-#MSG_POWER_FAILURES c=14
+#MSG_POWER_FAILURES c=15
 "Power failures"
 "Mancanza corrente"
 
@@ -858,7 +858,7 @@
 "Print from SD"
 "Stampa da SD"
 
-#
+# c=20
 "Press the knob"
 "Premere la manopola"
 
@@ -1166,13 +1166,13 @@
 "Total failures"
 "Totale fallimenti"
 
-#
+# c=20
 "to load filament"
-"per caricare il filamento"
+"per caricare il fil."
 
-#
+# c=20
 "to unload filament"
-"per scaricare il filamento"
+"per scaricare fil."
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
@@ -1398,7 +1398,7 @@
 "G-code sliced for a different printer type. Continue?"
 "G-code processato per una stampante diversa. Continuare?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code processato per una stampante diversa. Per favore esegui nuovamente lo slice del modello. Stampa annullata."
 

@@ -32,6 +32,7 @@ CardReader::CardReader()
    workDirDepth = 0;
    file_subcall_ctr=0;
    memset(workDirParents, 0, sizeof(workDirParents));
+   presort_flag = false;
 
    autostart_stilltocheck=true; //the SD start is delayed, because otherwise the serial cannot answer fast enough to make contact with the host software.
    lastnr=0;
@@ -69,12 +70,23 @@ char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
 +*/
 
 void CardReader::lsDive(const char *prepend, SdFile parent, const char * const match/*=NULL*/) {
+	static uint8_t recursionCnt = 0;
+	// RAII incrementer for the recursionCnt
+	class _incrementer
+	{
+		public:
+		_incrementer() {recursionCnt++;}
+		~_incrementer() {recursionCnt--;}
+	} recursionCntIncrementer;
+	
 	dir_t p;
 	uint8_t cnt = 0;
 		// Read the next entry from a directory
 		while (parent.readDir(p, longFilename) > 0) {
-			// If the entry is a directory and the action is LS_SerialPrint
-			if (DIR_IS_SUBDIR(&p) && lsAction != LS_Count && lsAction != LS_GetFilename) {
+			if (recursionCnt > MAX_DIR_DEPTH)
+				return;
+			else if (DIR_IS_SUBDIR(&p) && lsAction != LS_Count && lsAction != LS_GetFilename) { // If the entry is a directory and the action is LS_SerialPrint
+				
 				// Get the short name for the item, which we know is a folder
 				char lfilename[FILENAME_LENGTH];
 				createFilename(lfilename, p);
@@ -241,18 +253,18 @@ void CardReader::initsd()
   
 }
 
-void CardReader::setroot()
+void CardReader::setroot(bool doPresort)
 {
-  /*if(!workDir.openRoot(&volume))
-  {
-    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
-  }*/
   workDir=root;
+  workDirDepth = 0;
   
   curDir=&workDir;
-  #ifdef SDCARD_SORT_ALPHA
-	  presort();
-  #endif
+#ifdef SDCARD_SORT_ALPHA
+	if (doPresort)
+		presort();
+	else
+		presort_flag = true;
+#endif
 }
 void CardReader::release()
 {
@@ -277,7 +289,7 @@ void CardReader::startFileprint()
 void CardReader::openLogFile(const char* name)
 {
   logging = true;
-  openFile(name, false);
+  openFileWrite(name);
 }
 
 void CardReader::getDirName(char* name, uint8_t level)
@@ -304,6 +316,18 @@ void CardReader::getAbsFilename(char *t)
   else
     t[0]=0;
 }
+
+void CardReader::printAbsFilenameFast()
+{
+    SERIAL_PROTOCOL('/');
+    for (uint8_t i = 0; i < getWorkDirDepth(); i++)
+    {
+        SERIAL_PROTOCOL(dir_names[i]);
+        SERIAL_PROTOCOL('/');
+    }
+    SERIAL_PROTOCOL(LONGEST_FILENAME);
+}
+
 /**
  * @brief Dive into subfolder
  *
@@ -317,19 +341,17 @@ void CardReader::getAbsFilename(char *t)
  * @param[in,out] fileName
  *  expects file name including path
  *  in case of absolute path, file name without path is returned
- * @param[in,out] dir SdFile object to operate with,
- *  in case of absolute path, curDir is modified to point to dir,
- *  so it is not possible to create on stack inside this function,
- *  as curDir would point to destroyed object.
  */
-void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
+bool CardReader::diveSubfolder (const char *&fileName)
 {
     curDir=&root;
-    if (!fileName) return;
+    if (!fileName)
+        return 1;
 
     const char *dirname_start, *dirname_end;
     if (fileName[0] == '/') // absolute path
     {
+        setroot(false);
         dirname_start = fileName + 1;
         while (*dirname_start)
         {
@@ -340,23 +362,13 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
             {
                 const size_t maxLen = 12;
                 char subdirname[maxLen+1];
-                subdirname[maxLen] = 0;
                 const size_t len = ((static_cast<size_t>(dirname_end-dirname_start))>maxLen) ? maxLen : (dirname_end-dirname_start);
                 strncpy(subdirname, dirname_start, len);
-                SERIAL_ECHOLN(subdirname);
-                if (!dir.open(curDir, subdirname, O_READ))
-                {
-                    SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
-                    SERIAL_PROTOCOL(subdirname);
-                    SERIAL_PROTOCOLLN('.');
-                    return;
-                }
-                else
-                {
-                    //SERIAL_ECHOLN("dive ok");
-                }
+                subdirname[len] = 0;
+                if (!chdir(subdirname, false))
+                    return 0;
 
-                curDir = &dir;
+                curDir = &workDir;
                 dirname_start = dirname_end + 1;
             }
             else // the reminder after all /fsa/fdsa/ is the filename
@@ -373,100 +385,142 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
     {
         curDir = &workDir;
     }
+    return 1;
 }
 
-void CardReader::openFile(const char* name,bool read, bool replace_current/*=true*/)
-{
-  if(!cardOK)
-    return;
-  if(file.isOpen())  //replacing current file by new file, or subfile call
-  {
-    if(!replace_current)
-    {
-     if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1)
-     {
-       // SERIAL_ERROR_START;
-       // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
-       // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
-       kill(_n("trying to call sub-gcode files with too many levels."), 1);
-       return;
-     }
-     
-     SERIAL_ECHO_START;
-     SERIAL_ECHOPGM("SUBROUTINE CALL target:\"");
-     SERIAL_ECHO(name);
-     SERIAL_ECHOPGM("\" parent:\"");
-     
-     //store current filename and position
-     getAbsFilename(filenames[file_subcall_ctr]);
-     
-     SERIAL_ECHO(filenames[file_subcall_ctr]);
-     SERIAL_ECHOPGM("\" pos");
-     SERIAL_ECHOLN(sdpos);
-     filespos[file_subcall_ctr]=sdpos;
-     file_subcall_ctr++;
-    }
-    else
-    {
-     SERIAL_ECHO_START;
-     SERIAL_ECHOPGM("Now doing file: ");
-     SERIAL_ECHOLN(name);
-    }
-    file.close();
-  }
-  else //opening fresh file
-  {
-    file_subcall_ctr=0; //resetting procedure depth in case user cancels print while in procedure
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPGM("Now fresh file: ");
-    SERIAL_ECHOLN(name);
-  }
-  sdprinting = false;
+static const char ofKill[] PROGMEM = "trying to call sub-gcode files with too many levels.";
+static const char ofSubroutineCallTgt[] PROGMEM = "SUBROUTINE CALL target:\"";
+static const char ofParent[] PROGMEM = "\" parent:\"";
+static const char ofPos[] PROGMEM = "\" pos";
+static const char ofNowDoingFile[] PROGMEM = "Now doing file: ";
+static const char ofNowFreshFile[] PROGMEM = "Now fresh file: ";
+static const char ofFileOpened[] PROGMEM = "File opened: ";
+static const char ofSize[] PROGMEM = " Size: ";
+static const char ofFileSelected[] PROGMEM = "File selected";
+static const char ofSDPrinting[] PROGMEM = "SD-PRINTING         ";
+static const char ofWritingToFile[] PROGMEM = "Writing to file: ";
 
-  SdFile myDir;
-  const char *fname=name;
-  diveSubfolder(fname,myDir);
-
-  if(read)
-  {
-    if (file.open(curDir, fname, O_READ)) 
-    {
-      filesize = file.fileSize();
-      SERIAL_PROTOCOLRPGM(_N("File opened: "));////MSG_SD_FILE_OPENED
-      SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLRPGM(_n(" Size: "));////MSG_SD_SIZE
-      SERIAL_PROTOCOLLN(filesize);
-      sdpos = 0;
-      
-      SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED
-      getfilename(0, fname);
-      lcd_setstatus(longFilename[0] ? longFilename : fname);
-      lcd_setstatuspgm(PSTR("SD-PRINTING"));
+void CardReader::openFileReadFilteredGcode(const char* name, bool replace_current/* = false*/){
+    if(!cardOK)
+        return;
+    
+    if(file.isOpen()){  //replacing current file by new file, or subfile call
+        if(!replace_current){
+            if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1){
+                // SERIAL_ERROR_START;
+                // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
+                // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
+                kill(ofKill, 1);
+                return;
+            }
+            
+            SERIAL_ECHO_START;
+            SERIAL_ECHORPGM(ofSubroutineCallTgt);
+            SERIAL_ECHO(name);
+            SERIAL_ECHORPGM(ofParent);
+            
+            //store current filename and position
+            getAbsFilename(filenames[file_subcall_ctr]);
+            
+            SERIAL_ECHO(filenames[file_subcall_ctr]);
+            SERIAL_ECHORPGM(ofPos);
+            SERIAL_ECHOLN(sdpos);
+            filespos[file_subcall_ctr]=sdpos;
+            file_subcall_ctr++;
+        } else {
+            SERIAL_ECHO_START;
+            SERIAL_ECHORPGM(ofNowDoingFile);
+            SERIAL_ECHOLN(name);
+        }
+        file.close();
+    } else { //opening fresh file
+        file_subcall_ctr=0; //resetting procedure depth in case user cancels print while in procedure
+        SERIAL_ECHO_START;
+        SERIAL_ECHORPGM(ofNowFreshFile);
+        SERIAL_ECHOLN(name);
     }
-    else
-    {
-      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
-      SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLLN('.');
-    }
-  }
-  else 
-  { //write
-    if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC))
-    {
-      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
-      SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLLN('.');
-    }
-    else
-    {
-      saving = true;
-      SERIAL_PROTOCOLRPGM(_N("Writing to file: "));////MSG_SD_WRITE_TO_FILE
-      SERIAL_PROTOCOLLN(name);
-      lcd_setstatus(fname);
-    }
-  }
+    sdprinting = false;
   
+    const char *fname=name;
+    if (!diveSubfolder(fname))
+      return;
+  
+    if (file.openFilteredGcode(curDir, fname)) {
+        filesize = file.fileSize();
+        SERIAL_PROTOCOLRPGM(ofFileOpened);////MSG_SD_FILE_OPENED
+        SERIAL_PROTOCOL(fname);
+        SERIAL_PROTOCOLRPGM(ofSize);////MSG_SD_SIZE
+        SERIAL_PROTOCOLLN(filesize);
+        sdpos = 0;
+        
+        SERIAL_PROTOCOLLNRPGM(ofFileSelected);////MSG_SD_FILE_SELECTED
+        getfilename(0, fname);
+        lcd_setstatus(longFilename[0] ? longFilename : fname);
+        lcd_setstatuspgm(ofSDPrinting);
+      } else {
+        SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+        SERIAL_PROTOCOL(fname);
+        SERIAL_PROTOCOLLN('.');
+      }
+}
+
+void CardReader::openFileWrite(const char* name)
+{
+    if(!cardOK)
+        return;
+    if(file.isOpen()){  //replacing current file by new file, or subfile call
+#if 0
+        // I doubt chained files support is necessary for file saving:
+        // Intentionally disabled because it takes a lot of code size while being not used
+
+        if((int)file_subcall_ctr>(int)SD_PROCEDURE_DEPTH-1){
+            // SERIAL_ERROR_START;
+            // SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
+            // SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
+            kill(ofKill, 1);
+            return;
+        }
+        
+        SERIAL_ECHO_START;
+        SERIAL_ECHORPGM(ofSubroutineCallTgt);
+        SERIAL_ECHO(name);
+        SERIAL_ECHORPGM(ofParent);
+        
+        //store current filename and position
+        getAbsFilename(filenames[file_subcall_ctr]);
+        
+        SERIAL_ECHO(filenames[file_subcall_ctr]);
+        SERIAL_ECHORPGM(ofPos);
+        SERIAL_ECHOLN(sdpos);
+        filespos[file_subcall_ctr]=sdpos;
+        file_subcall_ctr++;
+        file.close();
+#else
+        SERIAL_ECHOLNPGM("File already opened");
+#endif
+    } else { //opening fresh file
+        file_subcall_ctr=0; //resetting procedure depth in case user cancels print while in procedure
+        SERIAL_ECHO_START;
+        SERIAL_ECHORPGM(ofNowFreshFile);
+        SERIAL_ECHOLN(name);
+    }
+    sdprinting = false;
+    
+    const char *fname=name;
+    if (!diveSubfolder(fname))
+      return;
+    
+    //write
+    if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC)){
+        SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+        SERIAL_PROTOCOL(fname);
+        SERIAL_PROTOCOLLN('.');
+    } else {
+        saving = true;
+        SERIAL_PROTOCOLRPGM(ofWritingToFile);////MSG_SD_WRITE_TO_FILE
+        SERIAL_PROTOCOLLN(fname);
+        lcd_setstatus(fname);
+    }
 }
 
 void CardReader::removeFile(const char* name)
@@ -475,9 +529,9 @@ void CardReader::removeFile(const char* name)
     file.close();
     sdprinting = false;
 
-    SdFile myDir;
     const char *fname=name;
-    diveSubfolder(fname,myDir);
+    if (!diveSubfolder(fname))
+      return;
 
     if (file.remove(curDir, fname)) 
     {
@@ -515,10 +569,8 @@ void CardReader::getStatus(bool arg_P)
     {
         if (arg_P)
         {
-            SERIAL_PROTOCOL('/');
-            for (uint8_t i = 0; i < getWorkDirDepth(); i++)
-                printf_P(PSTR("%s/"), dir_names[i]);
-            puts(filename);
+            printAbsFilenameFast();
+            SERIAL_PROTOCOLLN();
         }
         else
             SERIAL_PROTOCOLLN(LONGEST_FILENAME);
@@ -670,7 +722,7 @@ uint16_t CardReader::getnrfilenames()
   return nrFiles;
 }
 
-void CardReader::chdir(const char * relpath)
+bool CardReader::chdir(const char * relpath, bool doPresort)
 {
   SdFile newfile;
   SdFile *parent=&root;
@@ -678,23 +730,32 @@ void CardReader::chdir(const char * relpath)
   if(workDir.isOpen())
     parent=&workDir;
   
-  if(!newfile.open(*parent,relpath, O_READ))
+  if(!newfile.open(*parent,relpath, O_READ) || ((workDirDepth + 1) >= MAX_DIR_DEPTH))
   {
    SERIAL_ECHO_START;
    SERIAL_ECHORPGM(_n("Cannot enter subdir: "));////MSG_SD_CANT_ENTER_SUBDIR
    SERIAL_ECHOLN(relpath);
+   return 0;
   }
   else
   {
+    strcpy(dir_names[workDirDepth], relpath);
+    puts(relpath);
+
     if (workDirDepth < MAX_DIR_DEPTH) {
       for (int d = ++workDirDepth; d--;)
         workDirParents[d+1] = workDirParents[d];
       workDirParents[0]=*parent;
     }
     workDir=newfile;
-	#ifdef SDCARD_SORT_ALPHA
+
+#ifdef SDCARD_SORT_ALPHA
+	if (doPresort)
 		presort();
-	#endif
+	else
+		presort_flag = true;
+#endif
+	return 1;
   }
 }
 
@@ -1011,7 +1072,7 @@ void CardReader::printingHasFinished()
     {
       file.close();
       file_subcall_ctr--;
-      openFile(filenames[file_subcall_ctr],true,true);
+      openFileReadFilteredGcode(filenames[file_subcall_ctr],true);
       setIndex(filespos[file_subcall_ctr]);
       startFileprint();
     }

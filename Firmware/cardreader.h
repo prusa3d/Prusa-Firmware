@@ -1,6 +1,8 @@
 #ifndef CARDREADER_H
 #define CARDREADER_H
 
+#define SDSUPPORT
+
 #ifdef SDSUPPORT
 
 #define MAX_DIR_DEPTH 6
@@ -19,7 +21,8 @@ public:
   //this is to delay autostart and hence the initialisaiton of the sd card to some seconds after the normal init, so the device is available quick after a reset
 
   void checkautostart(bool x); 
-  void openFile(const char* name,bool read,bool replace_current=true);
+  void openFileWrite(const char* name);
+  void openFileReadFilteredGcode(const char* name, bool replace_current = false);
   void openLogFile(const char* name);
   void removeFile(const char* name);
   void closefile(bool store_location=false);
@@ -34,14 +37,15 @@ public:
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
+  void printAbsFilenameFast();
   void getDirName(char* name, uint8_t level);
   uint16_t getWorkDirDepth();
   
 
   void ls(bool printLFN);
-  void chdir(const char * relpath);
+  bool chdir(const char * relpath, bool doPresort);
   void updir();
-  void setroot();
+  void setroot(bool doPresort);
 
   #ifdef SDCARD_SORT_ALPHA
      void presort();
@@ -58,9 +62,11 @@ public:
   #endif
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
-  FORCE_INLINE bool eof() { return sdpos>=filesize ;};
-  FORCE_INLINE int16_t get() {  sdpos = file.curPosition();return (int16_t)file.read();};
-  FORCE_INLINE void setIndex(long index) {sdpos = index;file.seekSet(index);};
+  bool eof() { return sdpos>=filesize; }
+  // There may be a potential performance problem - when the comment reading fails, sdpos points to the last correctly read character.
+  // However, repeated reading (e.g. after power panic) the comment will be read again - it should survive correctly, it will just take a few moments to skip
+  FORCE_INLINE int16_t getFilteredGcodeChar() {  sdpos = file.curPosition();return (int16_t)file.readFilteredGcode();};
+  void setIndex(long index) {sdpos = index;file.seekSetFilteredGcode(index);};
   FORCE_INLINE uint8_t percentDone(){if(!isFileOpen()) return 0; if(filesize) return sdpos/((filesize+99)/100); else return 0;};
   FORCE_INLINE char* getWorkDirName(){workDir.getFilename(filename);return filename;};
   FORCE_INLINE uint32_t get_sdpos() { if (!isFileOpen()) return 0; else return(sdpos); };
@@ -82,6 +88,10 @@ public:
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;
   int lastnr; //last number of the autostart;
+#ifdef SDCARD_SORT_ALPHA
+  bool presort_flag;
+  char dir_names[MAX_DIR_DEPTH][9];
+#endif // SDCARD_SORT_ALPHA
 private:
   SdFile root,*curDir,workDir,workDirParents[MAX_DIR_DEPTH];
   uint16_t workDirDepth;
@@ -155,7 +165,7 @@ private:
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
 
-  void diveSubfolder (const char *fileName, SdFile& dir);
+  bool diveSubfolder (const char *&fileName);
   void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);
 #ifdef SDCARD_SORT_ALPHA
   void flush_presort();

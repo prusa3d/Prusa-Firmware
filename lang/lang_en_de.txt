@@ -338,9 +338,9 @@
 "Fil. sensor"
 "Fil. Sensor"
 
-#MSG_FIL_RUNOUTS c=14
-"Fil. runouts  "
-"Fil. Maengel  "
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
+"Fil. Maengel"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -598,7 +598,7 @@
 "Measured skew"
 "Schraeglauf"
 
-#MSG_MMU_FAILS c=14
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "MMU Fehler"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "MMU Ladefehler"
 
-#MSG_MMU_LOAD_FAILS c=14
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "MMU Ladefehler"
 
@@ -827,14 +827,14 @@
 "Bitte aktualisieren."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Bitte druecken Sie den Knopf um die Duese vorzuheizen und fortzufahren."
 
 #MSG_FS_PAUSE c=5
 "Pause"
 "\x00"
 
-#MSG_POWER_FAILURES c=14
+#MSG_POWER_FAILURES c=15
 "Power failures"
 "Netzfehler"
 
@@ -858,7 +858,7 @@
 "Print from SD"
 "Drucken von SD"
 
-#
+# c=20
 "Press the knob"
 "Knopf druecken zum"
 
@@ -1166,11 +1166,11 @@
 "Total failures"
 "Gesamte Fehler"
 
-#
+# c=20
 "to load filament"
 "Filament laden"
 
-#
+# c=20
 "to unload filament"
 "Filament entladen"
 
@@ -1398,7 +1398,7 @@
 "G-code sliced for a different printer type. Continue?"
 "G-Code ist fuer einen anderen Drucker geslict. Fortfahren?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-Code ist fuer einen anderen Drucker geslict. Bitte slicen Sie das Modell erneut. Druck abgebrochen."
 

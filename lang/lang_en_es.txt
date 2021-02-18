@@ -338,9 +338,9 @@
 "Fil. sensor"
 "Sensor Fil."
 
-#MSG_FIL_RUNOUTS c=14
-"Fil. runouts  "
-"Fil. acabado  "
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
+"Fil. acabado"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -598,7 +598,7 @@
 "Measured skew"
 "Desviacion med:"
 
-#MSG_MMU_FAILS c=14
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "Fallos MMU"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "Carga MMU fallida"
 
-#MSG_MMU_LOAD_FAILS c=14
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "Carga MMU falla"
 
@@ -827,16 +827,16 @@
 "Actualize por favor"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Pulsa el dial para precalentar la boquilla y continue."
 
 #MSG_FS_PAUSE c=5
 "Pause"
 "Pausa"
 
-#MSG_POWER_FAILURES c=14
+#MSG_POWER_FAILURES c=15
 "Power failures"
-"Cortes de energia"
+"Fallas energia"
 
 #MSG_PRINT_ABORTED c=20
 "Print aborted"
@@ -858,7 +858,7 @@
 "Print from SD"
 "Menu tarjeta SD"
 
-#
+# c=20
 "Press the knob"
 "Pulsa el dial"
 
@@ -1166,13 +1166,13 @@
 "Total failures"
 "Fallos totales"
 
-#
+# c=20
 "to load filament"
-"para cargar el filamento"
+"para cargar el fil."
 
-#
+# c=20
 "to unload filament"
-"para descargar el filamento"
+"para descargar fil."
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
@@ -1398,7 +1398,7 @@
 "G-code sliced for a different printer type. Continue?"
 "Codigo G laminado para un tipo de impresora diferente. ?Continuar?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "Codigo G laminado para una impresora diferente. Por favor relamina el modelo de nuevo. Impresion cancelada."
 

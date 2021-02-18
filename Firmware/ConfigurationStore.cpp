@@ -96,7 +96,7 @@ void Config_PrintSettings(uint8_t level)
 		"%SMaximum feedrates - stealth (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SMaximum acceleration - normal (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
 		"%SMaximum acceleration - stealth (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
-		"%SAcceleration: S=acceleration, T=retract acceleration\n%S  M204 S%.2f T%.2f\n"
+		"%SAcceleration: P=print, R=retract, T=travel\n%S  M204 P%.2f R%.2f T%.2f\n"
 		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
 		),
@@ -106,7 +106,7 @@ void Config_PrintSettings(uint8_t level)
 		echomagic, echomagic, cs.max_feedrate_silent[X_AXIS], cs.max_feedrate_silent[Y_AXIS], cs.max_feedrate_silent[Z_AXIS], cs.max_feedrate_silent[E_AXIS],
 		echomagic, echomagic, cs.max_acceleration_units_per_sq_second_normal[X_AXIS], cs.max_acceleration_units_per_sq_second_normal[Y_AXIS], cs.max_acceleration_units_per_sq_second_normal[Z_AXIS], cs.max_acceleration_units_per_sq_second_normal[E_AXIS],
 		echomagic, echomagic, cs.max_acceleration_units_per_sq_second_silent[X_AXIS], cs.max_acceleration_units_per_sq_second_silent[Y_AXIS], cs.max_acceleration_units_per_sq_second_silent[Z_AXIS], cs.max_acceleration_units_per_sq_second_silent[E_AXIS],
-		echomagic, echomagic, cs.acceleration, cs.retract_acceleration,
+		echomagic, echomagic, cs.acceleration, cs.retract_acceleration, cs.travel_acceleration,
 		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.minsegmenttime, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
 		echomagic, echomagic, cs.add_homing[X_AXIS], cs.add_homing[Y_AXIS], cs.add_homing[Z_AXIS]
 #else //TMC2130
@@ -114,14 +114,14 @@ void Config_PrintSettings(uint8_t level)
 		"%SSteps per unit:\n%S  M92 X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SMaximum feedrates (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SMaximum acceleration (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
-		"%SAcceleration: S=acceleration, T=retract acceleration\n%S  M204 S%.2f T%.2f\n"
+		"%SAcceleration: P=print, R=retract, T=travel\n%S  M204 P%.2f R%.2f T%.2f\n"
 		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
 		),
 		echomagic, echomagic, cs.axis_steps_per_unit[X_AXIS], cs.axis_steps_per_unit[Y_AXIS], cs.axis_steps_per_unit[Z_AXIS], cs.axis_steps_per_unit[E_AXIS],
 		echomagic, echomagic, max_feedrate[X_AXIS], max_feedrate[Y_AXIS], max_feedrate[Z_AXIS], max_feedrate[E_AXIS],
 		echomagic, echomagic, max_acceleration_units_per_sq_second[X_AXIS], max_acceleration_units_per_sq_second[Y_AXIS], max_acceleration_units_per_sq_second[Z_AXIS], max_acceleration_units_per_sq_second[E_AXIS],
-		echomagic, echomagic, cs.acceleration, cs.retract_acceleration,
+		echomagic, echomagic, cs.acceleration, cs.retract_acceleration, cs.travel_acceleration,
 		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.minsegmenttime, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
 		echomagic, echomagic, cs.add_homing[X_AXIS], cs.add_homing[Y_AXIS], cs.add_homing[Z_AXIS]
 #endif //TMC2130
@@ -184,7 +184,7 @@ static_assert (false, "zprobe_zoffset was not initialized in printers in field t
         "0.0, if this is not acceptable, increment EEPROM_VERSION to force use default_conf");
 #endif
 
-static_assert (sizeof(M500_conf) == 192, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
+static_assert (sizeof(M500_conf) == 196, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
         "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized."
         "If this is caused by change to more then 8bit processor, decide whether make this struct packed to save EEPROM,"
         "leave as it is to keep fast code, or reorder struct members to pack more tightly.");
@@ -232,7 +232,20 @@ static const M500_conf default_conf PROGMEM =
 #else // TMC2130
     {16,16,16,16},
 #endif
+    DEFAULT_TRAVEL_ACCELERATION,
 };
+
+
+static bool is_uninitialized(void* addr, uint8_t len)
+{
+    while(len--)
+    {
+        if(reinterpret_cast<uint8_t*>(addr)[len] != 0xff)
+            return false;
+    }
+    return true;
+}
+
 
 //! @brief Read M500 configuration
 //! @retval true Succeeded. Stored settings retrieved or default settings retrieved in case EEPROM has been erased.
@@ -257,13 +270,9 @@ bool Config_RetrieveSettings()
         for (uint8_t i = 0; i < (sizeof(cs.max_feedrate_silent)/sizeof(cs.max_feedrate_silent[0])); ++i)
         {
             const uint32_t erased = 0xffffffff;
-            bool initialized = false;
-
-            for(uint8_t j = 0; j < sizeof(float); ++j)
-            {
-                if(0xff != reinterpret_cast<uint8_t*>(&(cs.max_feedrate_silent[i]))[j]) initialized = true;
+            if (is_uninitialized(&(cs.max_feedrate_silent[i]), sizeof(float))) {
+                memcpy_P(&cs.max_feedrate_silent[i],&default_conf.max_feedrate_silent[i], sizeof(cs.max_feedrate_silent[i]));
             }
-            if (!initialized) memcpy_P(&cs.max_feedrate_silent[i],&default_conf.max_feedrate_silent[i], sizeof(cs.max_feedrate_silent[i]));
             if (erased == cs.max_acceleration_units_per_sq_second_silent[i]) {
                 memcpy_P(&cs.max_acceleration_units_per_sq_second_silent[i],&default_conf.max_acceleration_units_per_sq_second_silent[i],sizeof(cs.max_acceleration_units_per_sq_second_silent[i]));
             }
@@ -292,6 +301,9 @@ bool Config_RetrieveSettings()
 		tmc2130_set_res(Z_AXIS, cs.axis_ustep_resolution[Z_AXIS]);
 		tmc2130_set_res(E_AXIS, cs.axis_ustep_resolution[E_AXIS]);
 #endif //TMC2130
+
+        if(is_uninitialized(&cs.travel_acceleration, sizeof(cs.travel_acceleration)))
+            cs.travel_acceleration = cs.acceleration;
 
 		reset_acceleration_rates();
 
