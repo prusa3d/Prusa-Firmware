@@ -752,158 +752,138 @@ void lcdui_print_time(void)
     lcd_space(8 - chars);
 }
 
-//Print status line on status screen
+//! @Brief Print status line on status screen
 void lcdui_print_status_line(void)
 {
-	if (IS_SD_PRINTING)
-	{
-		if (strcmp(longFilenameOLD, (card.longFilename[0] ? card.longFilename : card.filename)) != 0)
-		{
-			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
-			sprintf_P(longFilenameOLD, PSTR("%s"), (card.longFilename[0] ? card.longFilename : card.filename));
-			scrollstuff = 0;
-		}
-	}
+    if (IS_SD_PRINTING) {
+        if (strcmp(longFilenameOLD, (card.longFilename[0] ? card.longFilename : card.filename)) != 0) {
+            memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
+            sprintf_P(longFilenameOLD, PSTR("%s"), (card.longFilename[0] ? card.longFilename : card.filename));
+            scrollstuff = 0;
+        }
+    }
 
-	if (heating_status)
-	{ // If heating flag, show progress of heating
-		heating_status_counter++;
-		if (heating_status_counter > 13)
-		{
-			heating_status_counter = 0;
-		}
-		lcd_set_cursor(7, 3);
-		lcd_space(13);
+    if (heating_status) { // If heating flag, show progress of heating
+        heating_status_counter++;
+        if (heating_status_counter > 13) {
+            heating_status_counter = 0;
+        }
+        lcd_set_cursor(7, 3);
+        lcd_space(13);
 
-		for (unsigned int dots = 0; dots < heating_status_counter; dots++)
-		{
-			lcd_putc_at(7 + dots, 3, '.');
-		}
-		switch (heating_status)
-		{
-		case 1:
-			lcd_puts_at_P(0, 3, _T(MSG_HEATING));
-			break;
-		case 2:
-			lcd_puts_at_P(0, 3, _T(MSG_HEATING_COMPLETE));
-			heating_status = 0;
-			heating_status_counter = 0;
-			break;
-		case 3:
-			lcd_puts_at_P(0, 3, _T(MSG_BED_HEATING));
-			break;
-		case 4:
-			lcd_puts_at_P(0, 3, _T(MSG_BED_DONE));
-			heating_status = 0;
-			heating_status_counter = 0;
-			break;
-		default:
-			break;
-		}
-	}
-	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status))
-	{ // If printing from SD, show what we are printing
-		if(strlen(longFilenameOLD) > LCD_WIDTH)
-		{
-			int inters = 0;
-			int gh = scrollstuff;
-			while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
-			{
-				if (longFilenameOLD[gh] == '\0')
-				{
-					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(longFilenameOLD[gh - 1]);
-					scrollstuff = 0;
-					gh = scrollstuff;
-					inters = 1;
-				}
-				else
-				{
-					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(longFilenameOLD[gh - 1]);
-					gh++;
-				}
-			}
-			scrollstuff++;
-		}
-		else
-		{
-			lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
-		}
-	}
-	else
-	{ // Otherwise check for other special events
-   		switch (custom_message_type)
-		{
-		case CustomMsg::Status: // Nothing special, print status message normally
-			lcd_print(lcd_status_message);
-			break;
-		case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
-			if (custom_message_state > 10)
-			{
-				lcd_set_cursor(0, 3);
-				lcd_space(20);
-				lcd_puts_at_P(0, 3, _T(MSG_CALIBRATE_Z_AUTO));
-				lcd_puts_P(PSTR(" : "));
-				lcd_print(custom_message_state-10);
-			}
-			else
-			{
-				if (custom_message_state == 3)
-				{
-					lcd_puts_P(_T(WELCOME_MSG));
-					lcd_setstatuspgm(_T(WELCOME_MSG));
-					custom_message_type = CustomMsg::Status;
-				}
-				if (custom_message_state > 3 && custom_message_state <= 10 )
-				{
-					lcd_set_cursor(0, 3);
-					lcd_space(19);
-					lcd_puts_at_P(0, 3, _i("Calibration done"));////MSG_HOMEYZ_DONE
-					custom_message_state--;
-				}
-			}
-			break;
-		case CustomMsg::FilamentLoading: // If loading filament, print status
-			lcd_print(lcd_status_message);
-			break;
-		case CustomMsg::PidCal: // PID tuning in progress
-			lcd_print(lcd_status_message);
-			if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0)
-			{
-				lcd_set_cursor(10, 3);
-				lcd_print(itostr3(pid_cycle));
-				lcd_print('/');
-				lcd_print(itostr3left(pid_number_of_cycles));
-			}
-			break;
-		case CustomMsg::TempCal: // PINDA temp calibration in progress
-			{
-				char statusLine[LCD_WIDTH + 1];
-				sprintf_P(statusLine, PSTR("%-20S"), _T(MSG_TEMP_CALIBRATION));
-				char progress[4];
-				sprintf_P(progress, PSTR("%d/6"), custom_message_state);
-				memcpy(statusLine + 12, progress, sizeof(progress) - 1);
-				lcd_set_cursor(0, 3);
-				lcd_print(statusLine);
-			}
-			break;
-		case CustomMsg::TempCompPreheat: // temp compensation preheat
-			lcd_puts_at_P(0, 3, _i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
-			if (custom_message_state <= PINDA_HEAT_T)
-			{
-				lcd_puts_P(PSTR(": "));
-				lcd_print(custom_message_state); //seconds
-				lcd_print(' ');
-			}
-			break;
-		}
-	}
-    
+        for (unsigned int dots = 0; dots < heating_status_counter; dots++) {
+            lcd_putc_at(7 + dots, 3, '.');
+        }
+        switch (heating_status) {
+        case 1:
+            lcd_puts_at_P(0, 3, _T(MSG_HEATING));
+            break;
+        case 2:
+            lcd_puts_at_P(0, 3, _T(MSG_HEATING_COMPLETE));
+            heating_status = 0;
+            heating_status_counter = 0;
+            break;
+        case 3:
+            lcd_puts_at_P(0, 3, _T(MSG_BED_HEATING));
+            break;
+        case 4:
+            lcd_puts_at_P(0, 3, _T(MSG_BED_DONE));
+            heating_status = 0;
+            heating_status_counter = 0;
+            break;
+        default:
+            break;
+        }
+    }
+    else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status)) { // If printing from SD, show what we are printing
+        if(strlen(longFilenameOLD) > LCD_WIDTH) {
+            int inters = 0;
+            int gh = scrollstuff;
+            while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0)) {
+                if (longFilenameOLD[gh] == '\0') {
+                    lcd_set_cursor(gh - scrollstuff, 3);
+                    lcd_print(longFilenameOLD[gh - 1]);
+                    scrollstuff = 0;
+                    gh = scrollstuff;
+                    inters = 1;
+                } else {
+                    lcd_set_cursor(gh - scrollstuff, 3);
+                    lcd_print(longFilenameOLD[gh - 1]);
+                    gh++;
+                }
+            }
+            scrollstuff++;
+        } else {
+            lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
+        }
+    } else { // Otherwise check for other special events
+        switch (custom_message_type) {
+        case CustomMsg::MsgUpdate: //Short message even while printing from SD
+        case CustomMsg::Status: // Nothing special, print status message normally
+        case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
+            lcd_print(lcd_status_message);
+        break;
+        case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
+            if (custom_message_state > 10) {
+                lcd_set_cursor(0, 3);
+                lcd_space(20);
+                lcd_puts_at_P(0, 3, _T(MSG_CALIBRATE_Z_AUTO));
+                lcd_puts_P(PSTR(" : "));
+                lcd_print(custom_message_state-10);
+            } else {
+                if (custom_message_state == 3)
+                {
+                    lcd_puts_P(_T(WELCOME_MSG));
+                    lcd_setstatuspgm(_T(WELCOME_MSG));
+                    custom_message_type = CustomMsg::Status;
+                }
+                if (custom_message_state > 3 && custom_message_state <= 10 ) {
+                    lcd_set_cursor(0, 3);
+                    lcd_space(19);
+                    lcd_puts_at_P(0, 3, _i("Calibration done"));////MSG_HOMEYZ_DONE
+                    custom_message_state--;
+                }
+            }
+            break;
+        case CustomMsg::FilamentLoading: // If loading filament, print status
+            lcd_print(lcd_status_message);
+            break;
+        case CustomMsg::PidCal: // PID tuning in progress
+            lcd_print(lcd_status_message);
+            if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0) {
+                lcd_set_cursor(10, 3);
+                lcd_print(itostr3(pid_cycle));
+                lcd_print('/');
+                lcd_print(itostr3left(pid_number_of_cycles));
+            }
+            break;
+        case CustomMsg::TempCal: // PINDA temp calibration in progress
+            char statusLine[LCD_WIDTH + 1];
+            sprintf_P(statusLine, PSTR("%-20S"), _T(MSG_TEMP_CALIBRATION));
+            char progress[4];
+            sprintf_P(progress, PSTR("%d/6"), custom_message_state);
+            memcpy(statusLine + 12, progress, sizeof(progress) - 1);
+            lcd_set_cursor(0, 3);
+            lcd_print(statusLine);
+            break;
+        case CustomMsg::TempCompPreheat: // temp compensation preheat
+            lcd_puts_at_P(0, 3, _i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
+            if (custom_message_state <= PINDA_HEAT_T) {
+                lcd_puts_P(PSTR(": "));
+                lcd_print(custom_message_state); //seconds
+                lcd_print(' ');
+            }
+            break;
+        case CustomMsg::Resuming: //Resuming
+            lcd_puts_at_P(0, 3, _T(MSG_RESUMING_PRINT));
+            break;
+        }
+    }
+
     // Fill the rest of line to have nice and clean output
-	for(int fillspace = 0; fillspace < 20; fillspace++)
-		if ((lcd_status_message[fillspace] <= 31 ))
-			lcd_print(' ');
+    for(int fillspace = 0; fillspace < 20; fillspace++)
+        if ((lcd_status_message[fillspace] <= 31 ))
+            lcd_print(' ');
 }
 
 //! @brief Show Status Screen
@@ -6535,12 +6515,13 @@ void lcd_resume_print()
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
 
-    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT)); ////MSG_RESUMING_PRINT c=20
+    custom_message_type = CustomMsg::Resuming;
     isPrintPaused = false;
     restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
+    custom_message_type = CustomMsg::Status;
 }
 
 static void change_sheet()
