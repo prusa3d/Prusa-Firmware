@@ -6786,8 +6786,8 @@ static void lcd_main_menu()
             bFilamentFirstRun=true;
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
+        MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
         if(!isPrintPaused) {
-            MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
             MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
         }
     }
