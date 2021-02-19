@@ -371,12 +371,6 @@ void repeatcommand_front()
     cmdbuffer_front_already_processed = true;
 } 
 
-bool is_buffer_empty()
-{
-    if (buflen == 0) return true;
-    else return false;
-}
-
 void proc_commands() {
 	if (buflen)
 	{
