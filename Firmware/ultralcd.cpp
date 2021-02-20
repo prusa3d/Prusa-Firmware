@@ -673,8 +673,7 @@ void lcdui_print_time(void)
 {
     //if remaining print time estimation is available print it else print elapsed time
     int chars = 0;
-    if ((PRINTER_ACTIVE) && (starttime != 0))
-    {
+    if (PRINTER_ACTIVE) {
         uint16_t print_t = 0;
         uint16_t print_tr = 0;
         uint16_t print_tc = 0;
@@ -682,31 +681,20 @@ void lcdui_print_time(void)
         char suff_doubt = ' ';
 
 #ifdef TMC2130
-        if (SilentModeMenu != SILENT_MODE_OFF)
-        {
+        if (SilentModeMenu != SILENT_MODE_OFF) {
             if (print_time_remaining_silent != PRINT_TIME_REMAINING_INIT)
-            {
                 print_tr = print_time_remaining_silent;
-            }
 //#ifdef CLOCK_INTERVAL_TIME
             if (print_time_to_change_silent != PRINT_TIME_REMAINING_INIT)
-            {
                 print_tc = print_time_to_change_silent;
-            }
 //#endif //CLOCK_INTERVAL_TIME
-        }
-        else
-        {
+        } else {
 #endif //TMC2130
             if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-            {
                 print_tr = print_time_remaining_normal;
-            }
 //#ifdef CLOCK_INTERVAL_TIME
             if (print_time_to_change_normal != PRINT_TIME_REMAINING_INIT)
-            {
                 print_tc = print_time_to_change_normal;
-            }
 //#endif //CLOCK_INTERVAL_TIME
 #ifdef TMC2130
         }
@@ -714,30 +702,22 @@ void lcdui_print_time(void)
 
 //#ifdef CLOCK_INTERVAL_TIME
         if (clock_interval == CLOCK_INTERVAL_TIME*2)
-        {
             clock_interval = 0;
-        }
+
         clock_interval++;
 
-        if (print_tc != 0 && clock_interval > CLOCK_INTERVAL_TIME)
-        {
+        if (print_tc != 0 && clock_interval > CLOCK_INTERVAL_TIME) {
             print_t = print_tc;
             suff = 'C';
-        }
-        else
+        } else
 //#endif //CLOCK_INTERVAL_TIME 
-        if (print_tr != 0)
-        {
+        if (print_tr != 0) {
             print_t = print_tr;
             suff = 'R';
-        }
-        else
-        {
-            print_t = _millis() / 60000 - starttime / 60000; 
-        }
+        } else 
+            print_t = _millis() / 60000 - starttime / 60000;
 
-        if (feedmultiply != 100 && (print_t == print_tr || print_t == print_tc))
-        {
+        if (feedmultiply != 100 && (print_t == print_tr || print_t == print_tc)) {
             suff_doubt = '?';
             print_t = 100ul * print_t / feedmultiply;
         }
