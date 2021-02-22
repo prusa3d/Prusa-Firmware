@@ -8136,14 +8136,7 @@ Sigma_Exit:
     */
     case 602:
     {
-        if (isPrintPaused) {
-#ifdef FANCHECK
-        if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
-            lcd_resume_print();
-        else
-#endif //FANCHECK
-            SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //inform octoprint of pause
-        }
+        if (isPrintPaused) lcd_resume_print();
     }
     break;
 
