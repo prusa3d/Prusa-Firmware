@@ -6514,8 +6514,11 @@ void lcd_resume_print()
 {
     lcd_return_to_status();
     lcd_reset_alert_level(); //for fan speed error
-    if (fan_error_selftest()) return; //abort if error persists
-        cmdqueue_serial_disabled = false;
+    if (fan_error_selftest()) {
+        if (is_usb_printing) SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
+        return; //abort if error persists
+    }
+    cmdqueue_serial_disabled = false;
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
     custom_message_type = CustomMsg::Resuming;
@@ -6786,12 +6789,11 @@ static void lcd_main_menu()
             bFilamentFirstRun=true;
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
-        MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
-        if(!isPrintPaused) {
-            MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
-        }
     }
-
+    MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
+    if(!isPrintPaused && (!(IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)))) {
+        MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
+    }
     if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal)) {
         MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS
     }
