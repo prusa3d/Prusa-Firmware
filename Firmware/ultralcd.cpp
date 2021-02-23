@@ -6973,10 +6973,8 @@ static void lcd_tune_menu()
 
 	SETTINGS_CUTTER;
 
-     if(farm_mode)
-     {
-       MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
-     }
+	MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+
 
 #ifdef TMC2130
      if(!farm_mode)
