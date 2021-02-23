@@ -3932,9 +3932,6 @@ static void lcd_show_sensors_state()
 	{
 		finda_state = mmu_finda;
 	}
-	if (ir_sensor_detected) {
-		idler_state = !READ(IR_SENSOR_PIN);
-	}
 	//lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(0, 0, _i("PINDA"));
 	lcd_set_cursor(LCD_WIDTH - 14, 0);
@@ -3947,9 +3944,12 @@ static void lcd_show_sensors_state()
 		lcd_print_state(finda_state);
 	}
 	
-	lcd_puts_at_P(0, 1, _i("Fil. sensor"));
-	lcd_set_cursor(LCD_WIDTH - 3, 1);
-	lcd_print_state(idler_state);
+	if (ir_sensor_detected) {
+		idler_state = !READ(IR_SENSOR_PIN);
+		lcd_puts_at_P(0, 1, _i("Fil. sensor"));
+		lcd_set_cursor(LCD_WIDTH - 3, 1);
+		lcd_print_state(idler_state);
+	}
 	
 
 #ifdef PAT9125
