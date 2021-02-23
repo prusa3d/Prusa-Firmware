@@ -9690,7 +9690,7 @@ void manage_inactivity_IR_ANALOG_Check(uint16_t &nFSCheckCount, ClFsensorPCB isV
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-bool bInhibitFlag;
+bool bInhibitFlag = false;
 #ifdef IR_SENSOR_ANALOG
 static uint16_t nFSCheckCount=0;
 #endif // IR_SENSOR_ANALOG
@@ -9698,16 +9698,11 @@ static uint16_t nFSCheckCount=0;
 	if (mmu_enabled == false)
 	{
 //-//		if (mcode_in_progress != 600) //M600 not in progress
-#ifdef PAT9125
-		bInhibitFlag=(menu_menu==lcd_menu_extruder_info); // Support::ExtruderInfo menu active
-#endif // PAT9125
-#ifdef IR_SENSOR
-		bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
+		if (!PRINTER_ACTIVE) bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); //Block Filament sensor actions if PRINTER is not active and Support::SensorInfo menu active
 #ifdef IR_SENSOR_ANALOG
-		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Settings::HWsetup::FSdetect menu active
+		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Block Filament sensor actions if Settings::HWsetup::FSdetect menu active
 #endif // IR_SENSOR_ANALOG
-#endif // IR_SENSOR
-		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
+		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
