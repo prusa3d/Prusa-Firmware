@@ -1613,8 +1613,8 @@ static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize
 //! |01234567890123456789|
 //! |Nozzle FAN: 0000 RPM|	FAN c=10 r=1  SPEED c=3 r=1
 //! |Print FAN:  0000 RPM|	FAN c=10 r=1  SPEED c=3 r=1
-//! |Fil. Xd:000 Yd:000  |	Fil. c=4 r=1
-//! |Int:  000 Shut: 000 |	Int: c=4 r=1  Shut: c=4 r=1
+//! |                    |
+//! |                    |
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1628,37 +1628,7 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
     char nozzle[maxChars], print[maxChars];
     pgmtext_with_colon(_i("Nozzle FAN"), nozzle, maxChars);  ////c=10 r=1
     pgmtext_with_colon(_i("Print FAN"), print, maxChars);  ////c=10 r=1
-    lcd_printf_P(_N("%s %4d RPM\n" "%s %4d RPM\n"), nozzle, 60*fan_speed[0], print, 60*fan_speed[1] ); 
-
-#ifdef PAT9125
-	// Display X and Y difference from Filament sensor    
-    // Display Light intensity from Filament sensor
-    //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
-    //  value ranges from 0(darkest) to 255(brightest).
-    // Display LASER shutter time from Filament sensor
-    //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
-    //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
-    //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-	if (mmu_enabled == false)
-	{
-		if (!fsensor_enabled)
-			lcd_puts_P(_N("Filament sensor\n" "is disabled."));
-		else
-		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
-				pat9125_update();
-			lcd_printf_P(_N(
-				"Fil. Xd:%3d Yd:%3d\n" ////c=4 r=1
-				"Int: %3d  " ////c=4 r=1
-				"Shut: %3d"  ////c=4 r=1
-			),
-				pat9125_x, pat9125_y,
-				pat9125_b, pat9125_s
-			);
-		}
-	}
-#endif //PAT9125
-    
+	lcd_printf_P(_N("%s %4d RPM\n" "%s %4d RPM\n"), nozzle, 60*fan_speed[0], print, 60*fan_speed[1] ); 
     menu_back_if_clicked();
 }
 
@@ -3940,6 +3910,16 @@ static void lcd_print_state(uint8_t state)
 	}
 }
 
+//! @brief Show sensor state
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |PINDA N/A  FINDA N/A|  MSG_PINDA c=6 MSG_FINDA c=6
+//! |Fil. sensor      N/A|  MSG_FSENSOR 
+//! |Xd    000  Yd    000|  MSG_XD
+//! |Int   000  Shut  000|  
+//! ----------------------
+//! @endcode
 static void lcd_show_sensors_state()
 {
 	//0: N/A; 1: OFF; 2: ON
@@ -3952,21 +3932,56 @@ static void lcd_show_sensors_state()
 	{
 		finda_state = mmu_finda;
 	}
-	if (ir_sensor_detected) {
-		idler_state = !READ(IR_SENSOR_PIN);
-	}
-	lcd_puts_at_P(0, 0, _i("Sensor state"));
-	lcd_puts_at_P(1, 1, _i("PINDA:"));
-	lcd_set_cursor(LCD_WIDTH - 4, 1);
+	//lcd_puts_at_P(0, 0, _i("Sensor state"));
+	lcd_puts_at_P(0, 0, _i("PINDA"));
+	lcd_set_cursor(LCD_WIDTH - 14, 0);
 	lcd_print_state(pinda_state);
 	
-	lcd_puts_at_P(1, 2, _i("FINDA:"));
-	lcd_set_cursor(LCD_WIDTH - 4, 2);
-	lcd_print_state(finda_state);
+	if (mmu_enabled == true)
+	{
+		lcd_puts_at_P(10, 0, _i("FINDA"));
+		lcd_set_cursor(LCD_WIDTH - 3, 0);
+		lcd_print_state(finda_state);
+	}
 	
-	lcd_puts_at_P(1, 3, _i("IR:"));
-	lcd_set_cursor(LCD_WIDTH - 4, 3);
-	lcd_print_state(idler_state);
+	if (ir_sensor_detected) {
+		idler_state = !READ(IR_SENSOR_PIN);
+		lcd_puts_at_P(0, 1, _i("Fil. sensor"));
+		lcd_set_cursor(LCD_WIDTH - 3, 1);
+		lcd_print_state(idler_state);
+	}
+	
+
+#ifdef PAT9125
+	// Display X and Y difference from Filament sensor    
+    // Display Light intensity from Filament sensor
+    //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
+    //  value ranges from 0(darkest) to 255(brightest).
+    // Display LASER shutter time from Filament sensor
+    //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
+    //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
+    //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
+	if (mmu_enabled == false)
+	{
+		//if (!fsensor_enabled)
+		//	lcd_puts_P(_N("Filament sensor\n" "is disabled."));
+		//else
+		//{
+		if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
+			pat9125_update();
+			lcd_set_cursor(0, 2);
+			lcd_printf_P(_N(
+				"Xd:  %3d  "
+				"Yd:  %3d\n" ////c=4 r=1
+				"Int: %3d  " ////c=4 r=1
+				"Shut:  %3d"  ////c=4 r=1
+			),
+				pat9125_x, pat9125_y,
+				pat9125_b, pat9125_s
+			);
+		//}
+	}
+#endif //PAT9125
 }
 
 void lcd_menu_show_sensors_state()                // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
