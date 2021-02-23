@@ -514,7 +514,7 @@
 "Last print failures"
 "Letzte Druckfehler"
 
-#
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
 "Hallo, ich bin Ihr Original Prusa i3 Drucker. Ich werde Sie durch einen kurzen Einrichtungsprozess fuehren, bei dem die Z-Achse kalibriert wird. Danach sind Sie bereit fuer den Druck."
 
