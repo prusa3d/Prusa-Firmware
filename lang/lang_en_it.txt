@@ -1170,10 +1170,6 @@
 "Unload"
 "Scarica"
 
-#
-"Sheet %.7s\x0aZ offset: %+1.3f mm\x0a%cContinue\x0a%cStart from zero"
-"\x00"
-
 #MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Totale fallimenti"
