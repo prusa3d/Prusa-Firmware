@@ -2850,6 +2850,13 @@ void lcd_menu_statistics()
 
 static void _lcd_move(const char *name, int axis, int min, int max)
 {
+    if (homing_flag || mesh_bed_leveling_flag)
+    {
+        // printer entered a new state where axis move is forbidden
+        menu_back();
+        return;
+    }
+
 	typedef struct
 	{	// 2bytes total
 		bool initialized;              // 1byte
@@ -3071,6 +3078,13 @@ static void lcd_move_z() {
  */
 static void lcd_babystep_z()
 {
+    if (homing_flag || mesh_bed_leveling_flag)
+    {
+        // printer changed to a new state where live Z is forbidden
+        menu_back();
+        return;
+    }
+
 	typedef struct
 	{
 		int8_t status;
@@ -3106,9 +3120,8 @@ static void lcd_babystep_z()
 		lcd_timeoutToStatus.start();
 	}
 
-	if (lcd_encoder != 0) 
+	if (lcd_encoder != 0)
 	{
-		if (homing_flag || mesh_bed_leveling_flag) lcd_encoder = 0;
 		_md->babystepMemZ += (int)lcd_encoder;
 
         if (_md->babystepMemZ < Z_BABYSTEP_MIN) _md->babystepMemZ = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
