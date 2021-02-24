@@ -5747,10 +5747,12 @@ static void lcd_settings_menu()
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 
 	MENU_ITEM_SUBMENU_P(_i("Temperature"), lcd_control_temperature_menu);////MSG_TEMPERATURE
-	if (!homing_flag)
+
+	if (!PRINTER_ACTIVE || isPrintPaused)
+    {
 	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_1mm);////MSG_MOVE_AXIS
-	if (!isPrintPaused)
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS
+    }
 
 	SETTINGS_FILAMENT_SENSOR;
 
