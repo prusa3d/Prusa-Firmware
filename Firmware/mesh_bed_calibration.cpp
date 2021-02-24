@@ -944,7 +944,7 @@ static inline void update_current_position_z()
 
 // At the current position, find the Z stop.
 
-inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
+bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
 #ifdef SUPPORT_VERBOSITY
     verbosity_level
 #endif //SUPPORT_VERBOSITY
@@ -1065,7 +1065,7 @@ error:
 }
 
 #ifdef NEW_XYZCAL
-extern bool xyzcal_find_bed_induction_sensor_point_xy();
+bool xyzcal_find_bed_induction_sensor_point_xy();
 #endif //NEW_XYZCAL
 // Search around the current_position[X,Y],
 // look for the induction sensor response.
@@ -1081,7 +1081,7 @@ extern bool xyzcal_find_bed_induction_sensor_point_xy();
 #endif //HEATBED_V2
 
 #ifdef HEATBED_V2
-inline bool find_bed_induction_sensor_point_xy(int
+bool find_bed_induction_sensor_point_xy(int
 #if !defined (NEW_XYZCAL) && defined (SUPPORT_VERBOSITY)
         verbosity_level
 #endif
@@ -1335,7 +1335,7 @@ inline bool find_bed_induction_sensor_point_xy(int
 #endif //NEW_XYZCAL
 }
 #else //HEATBED_V2
-inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
+bool find_bed_induction_sensor_point_xy(int verbosity_level)
 {
 #ifdef NEW_XYZCAL
 	return xyzcal_find_bed_induction_sensor_point_xy();

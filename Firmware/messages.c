@@ -16,7 +16,7 @@ const char MSG_BED_DONE[] PROGMEM_I1 = ISTR("Bed done"); ////
 const char MSG_BED_HEATING[] PROGMEM_I1 = ISTR("Bed Heating"); ////
 const char MSG_BED_LEVELING_FAILED_POINT_LOW[] PROGMEM_I1 = ISTR("Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."); ////c=20 r=5
 const char MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED[] PROGMEM_I1 = ISTR("XYZ calibration failed. Please consult the manual."); ////c=20 r=8
-const char MSG_BELT_STATUS[] PROGMEM_I1 = ISTR("Belt Status");////c=18
+const char MSG_BELT_STATUS[] PROGMEM_I1 = ISTR("Belt status");////c=18
 const char MSG_CALIBRATE_Z_AUTO[] PROGMEM_I1 = ISTR("Calibrating Z"); ////c=20 r=2
 const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////
 const char MSG_CHECKING_X[] PROGMEM_I1 = ISTR("Checking X axis"); ////c=20
@@ -29,7 +29,7 @@ const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////c=13
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17
 const char MSG_FANS_CHECK[] PROGMEM_I1 = ISTR("Fans check"); ////c=13
-const char MSG_FIL_RUNOUTS[] PROGMEM_I1 = ISTR("Fil. runouts"); ////c=14
+const char MSG_FIL_RUNOUTS[] PROGMEM_I1 = ISTR("Fil. runouts"); ////c=15
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17 r=1
 const char MSG_FAN_SPEED[] PROGMEM_I1 = ISTR("Fan speed"); ////c=14
 const char MSG_FILAMENT_CLEAN[] PROGMEM_I1 = ISTR("Filament extruding & with correct color?"); ////c=20 r=2
@@ -65,14 +65,14 @@ const char MSG_STEEL_SHEETS[] PROGMEM_I1 = ISTR("Steel sheets"); ////c=18
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[] PROGMEM_I1 = ISTR("Measuring reference height of calibration point"); ////c=60
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); ////c=14
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////
-const char MSG_MMU_FAILS[] PROGMEM_I1 = ISTR("MMU fails"); ////c=14
-const char MSG_MMU_LOAD_FAILS[] PROGMEM_I1 = ISTR("MMU load fails"); ////c=14
+const char MSG_MMU_FAILS[] PROGMEM_I1 = ISTR("MMU fails"); ////c=15
+const char MSG_MMU_LOAD_FAILS[] PROGMEM_I1 = ISTR("MMU load fails"); ////c=15
 const char MSG_NO[] PROGMEM_I1 = ISTR("No"); ////
 const char MSG_NOZZLE[] PROGMEM_I1 = ISTR("Nozzle"); ////
 const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=10
 const char MSG_PLACE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please place steel sheet on heatbed."); ////c=20 r=4
 const char MSG_PLEASE_WAIT[] PROGMEM_I1 = ISTR("Please wait"); ////c=20
-const char MSG_POWER_FAILURES[] PROGMEM_I1 = ISTR("Power failures"); ////c=14
+const char MSG_POWER_FAILURES[] PROGMEM_I1 = ISTR("Power failures"); ////c=15
 const char MSG_PREHEAT_NOZZLE[] PROGMEM_I1 = ISTR("Preheat the nozzle!"); ////c=20
 const char MSG_PRESS_TO_UNLOAD[] PROGMEM_I1 = ISTR("Please press the knob to unload filament"); ////c=20 r=4
 const char MSG_PRINT_ABORTED[] PROGMEM_I1 = ISTR("Print aborted"); ////c=20
@@ -131,7 +131,7 @@ const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////
 const char MSG_FIRMWARE[] PROGMEM_I1 = ISTR("Firmware"); ////
 const char MSG_GCODE[] PROGMEM_I1 = ISTR("Gcode"); ////
 const char MSG_GCODE_DIFF_PRINTER_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different printer type. Continue?"); ////c=20 r=5
-const char MSG_GCODE_DIFF_PRINTER_CANCELLED[] PROGMEM_I1 =ISTR("G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."); ////c=20 r=6
+const char MSG_GCODE_DIFF_PRINTER_CANCELLED[] PROGMEM_I1 =ISTR("G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."); ////c=20 r=7
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////
 const char MSG_MMU_MODE[] PROGMEM_I1 = ISTR("MMU Mode"); ////
 const char MSG_SD_CARD[] PROGMEM_I1 = ISTR("SD card"); ////
@@ -197,3 +197,4 @@ const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
 const char MSG_ADVANCE_K[] PROGMEM_N1 = "Advance K:"; ////c=13
 const char MSG_POWERPANIC_DETECTED[] PROGMEM_N1 = "POWER PANIC DETECTED"; ////c=20
 const char MSG_LCD_STATUS_CHANGED[] PROGMEM_N1 = "LCD status changed";
+const char MSG_FILE_SELECTED[] PROGMEM_N1 = "File selected"; ////c=20

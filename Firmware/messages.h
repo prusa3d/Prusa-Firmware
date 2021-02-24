@@ -197,6 +197,7 @@ extern const char MSG_M112_KILL[];
 extern const char MSG_ADVANCE_K[];
 extern const char MSG_POWERPANIC_DETECTED[];
 extern const char MSG_LCD_STATUS_CHANGED[];
+extern const char MSG_FILE_SELECTED[];
 
 #if defined(__cplusplus)
 }

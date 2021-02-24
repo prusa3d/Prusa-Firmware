@@ -228,10 +228,6 @@ bool fan_state[2];
 int fan_edge_counter[2];
 int fan_speed[2];
 
-char dir_names[MAX_DIR_DEPTH][9];
-
-bool sortAlpha = false;
-
 
 float extruder_multiplier[EXTRUDERS] = {1.0
   #if EXTRUDERS > 1
@@ -320,6 +316,8 @@ uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint16_t print_time_to_change_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining time to next change in minutes
+uint16_t print_time_to_change_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining time to next change in minutes
 
 uint32_t IP_address = 0;
 
@@ -711,124 +709,98 @@ void softReset()
 #endif
 
 
+static void factory_reset_stats(){
+    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+    eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+
+    eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+
+    eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
+    eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
+    eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
+    eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+
+    eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
+    eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
+    eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+}
+
 // Factory reset function
 // This function is used to erase parts or whole EEPROM memory which is used for storing calibration and and so on.
 // Level input parameter sets depth of reset
-int  er_progress = 0;
 static void factory_reset(char level)
-{	
+{
 	lcd_clear();
-    switch (level) {
-                   
-        // Level 0: Language reset
-        case 0:
-      Sound_MakeCustom(100,0,false);
-			lang_reset();
-            break;
-         
-		//Level 1: Reset statistics
-		case 1:
-      Sound_MakeCustom(100,0,false);
-			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+	Sound_MakeCustom(100,0,false);
+	switch (level) {
 
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+	case 0: // Level 0: Language reset
+		lang_reset();
+		break;
 
-			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+	case 1: //Level 1: Reset statistics
+		factory_reset_stats();
+		lcd_menu_statistics();
+		break;
 
-			eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+	case 2: // Level 2: Prepare for shipping
+		factory_reset_stats();
+		// [[fallthrough]] // there is no break intentionally
 
-
-			lcd_menu_statistics();
-            
-			break;
-
-        // Level 2: Prepare for shipping
-        case 2:
-			//lcd_puts_P(PSTR("Factory RESET"));
-            //lcd_puts_at_P(1,2,PSTR("Shipping prep"));
-            
-            // Force language selection at the next boot up.
-			lang_reset();
-            // Force the "Follow calibration flow" message at the next boot up.
-            calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
-			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
-			farm_mode = false;
-			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
-
-            eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-            eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
-
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
-
-            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
-            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
-            eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
-            eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
-
-			eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
-			eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+	case 4: // Level 4: Preparation after being serviced
+		// Force language selection at the next boot up.
+		lang_reset();
+		// Force the "Follow calibration flow" message at the next boot up.
+		calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
+		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
+		farm_mode = false;
+		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 
 #ifdef FILAMENT_SENSOR
-			fsensor_enable();
-            fsensor_autoload_set(true);
+		fsensor_enable();
+		fsensor_autoload_set(true);
 #endif //FILAMENT_SENSOR
-      Sound_MakeCustom(100,0,false);   
-			//_delay_ms(2000);
-            break;
+		break;
 
-			// Level 3: erase everything, whole EEPROM will be set to 0xFF
+	case 3:{ // Level 3: erase everything, whole EEPROM will be set to 0xFF
+		lcd_puts_P(PSTR("Factory RESET"));
+		lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
+		uint16_t er_progress = 0;
+		lcd_set_cursor(3, 3);
+		lcd_space(6);
+		lcd_set_cursor(3, 3);
+		lcd_print(er_progress);
 
-		case 3:
-			lcd_puts_P(PSTR("Factory RESET"));
-			lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
+		// Erase EEPROM
+		for (uint16_t i = 0; i < 4096; i++) {
+			eeprom_update_byte((uint8_t*)i, 0xFF);
 
-      Sound_MakeCustom(100,0,false);
-			er_progress = 0;
-			lcd_puts_at_P(3, 3, PSTR("      "));
-			lcd_set_cursor(3, 3);
-			lcd_print(er_progress);
-
-			// Erase EEPROM
-			for (int i = 0; i < 4096; i++) {
-				eeprom_update_byte((uint8_t*)i, 0xFF);
-
-				if (i % 41 == 0) {
-					er_progress++;
-					lcd_puts_at_P(3, 3, PSTR("      "));
-					lcd_set_cursor(3, 3);
-					lcd_print(er_progress);
-					lcd_puts_P(PSTR("%"));
-				}
-
+			if (i % 41 == 0) {
+				er_progress++;
+				lcd_set_cursor(3, 3);
+				lcd_space(6);
+				lcd_set_cursor(3, 3);
+				lcd_print(er_progress);
+				lcd_puts_P(PSTR("%"));
 			}
-			softReset();
+
+		}
+		softReset();
+		}break;
 
 
-			break;
-		case 4:
-			bowden_menu();
-			break;
-        
-        default:
-            break;
-    }
-    
-
+#ifdef SNMM
+	case 5:
+		bowden_menu();
+		break;
+#endif
+	default:
+		break;
+	}
 }
 
 extern "C" {
@@ -859,19 +831,15 @@ void factory_reset()
 		{
 			lcd_clear();
 
-
 			lcd_puts_P(PSTR("Factory RESET"));
 
-
 			SET_OUTPUT(BEEPER);
-  if(eSoundMode!=e_SOUND_MODE_SILENT)
-			WRITE(BEEPER, HIGH);
+			if(eSoundMode!=e_SOUND_MODE_SILENT)
+				WRITE(BEEPER, HIGH);
 
 			while (!READ(BTN_ENC));
 
 			WRITE(BEEPER, LOW);
-
-
 
 			_delay_ms(2000);
 
@@ -879,10 +847,11 @@ void factory_reset()
 			factory_reset(level);
 
 			switch (level) {
-			case 0: _delay_ms(0); break;
-			case 1: _delay_ms(0); break;
-			case 2: _delay_ms(0); break;
-			case 3: _delay_ms(0); break;
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4: _delay_ms(0); break;
 			}
 
 		}
@@ -3801,31 +3770,90 @@ void process_commands()
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
 #endif
-  /*!
+    /*!
+
+    ---------------------------------------------------------------------------------
+    ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
+    This causes the given message to be shown in the status line on an attached LCD.
+    It is processed early as to allow printing messages that contain G, M, N or T.
+
+    ---------------------------------------------------------------------------------
+    ### Special internal commands
+    These are used by internal functions to process certain actions in the right order. Some of these are also usable by the user.
+    They are processed early as the commands are complex (strings).
+    These are only available on the MK3(S) as these require TMC2130 drivers:
+        - CRASH DETECTED
+        - CRASH RECOVER
+        - CRASH_CANCEL
+        - TMC_SET_WAVE
+        - TMC_SET_STEP
+        - TMC_SET_CHOP
+    */
+    if (code_seen_P(PSTR("M117"))) //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
+    {
+        starpos = (strchr(strchr_pointer + 5, '*'));
+        if (starpos != NULL)
+            *(starpos) = '\0';
+        lcd_setstatus(strchr_pointer + 5);
+        custom_message_type = CustomMsg::MsgUpdate;
+    }
+
+    /*!
+    ### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#M0:_Stop_or_Unconditional_stop">M0: Stop or Unconditional stop</a>
+    #### Usage
+
+      M0 [P<ms<] [S<sec>] [string]
+      M1 [P<ms>] [S<sec>] [string] 
+
+    #### Parameters
   
-  ---------------------------------------------------------------------------------
-  ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
-  This causes the given message to be shown in the status line on an attached LCD.
-  It is processed early as to allow printing messages that contain G, M, N or T.
-  
-  ---------------------------------------------------------------------------------
-  ### Special internal commands
-  These are used by internal functions to process certain actions in the right order. Some of these are also usable by the user.
-  They are processed early as the commands are complex (strings).
-  These are only available on the MK3(S) as these require TMC2130 drivers:
-    - CRASH DETECTED
-    - CRASH RECOVER
-    - CRASH_CANCEL
-    - TMC_SET_WAVE
-    - TMC_SET_STEP
-    - TMC_SET_CHOP
- */
-  if (code_seen_P(PSTR("M117"))) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
-	  starpos = (strchr(strchr_pointer + 5, '*'));
-	  if (starpos != NULL)
-		  *(starpos) = '\0';
-	  lcd_setstatus(strchr_pointer + 5);
-  }
+    - `P<ms>`  - Expire time, in milliseconds
+    - `S<sec>` - Expire time, in seconds
+    - `string` - Must for M1 and optional for M0 message to display on the LCD
+    */
+
+    else if (code_seen_P(PSTR("M0")) || code_seen_P(PSTR("M1 "))) {// M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
+        char *src = strchr_pointer + 2;
+        codenum = 0;
+        bool hasP = false, hasS = false;
+        if (code_seen('P')) {
+            codenum = code_value(); // milliseconds to wait
+            hasP = codenum > 0;
+        }
+        if (code_seen('S')) {
+            codenum = code_value() * 1000; // seconds to wait
+            hasS = codenum > 0;
+        }
+        starpos = strchr(src, '*');
+        if (starpos != NULL) *(starpos) = '\0';
+        while (*src == ' ') ++src;
+        custom_message_type = CustomMsg::M0Wait;
+        if (!hasP && !hasS && *src != '\0') {
+            lcd_setstatus(src);
+        } else {
+            LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
+        }
+        lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
+        st_synchronize();
+        previous_millis_cmd = _millis();
+        if (codenum > 0) {
+            codenum += _millis();  // keep track of when we started waiting
+            KEEPALIVE_STATE(PAUSED_FOR_USER);
+            while(_millis() < codenum && !lcd_clicked()) {
+                manage_heater();
+                manage_inactivity(true);
+                lcd_update(0);
+            }
+            KEEPALIVE_STATE(IN_HANDLER);
+            lcd_ignore_click(false);
+        } else {
+            marlin_wait_for_click();
+        }
+        if (IS_SD_PRINTING)
+            custom_message_type = CustomMsg::Status;
+        else
+            LCD_MESSAGERPGM(_T(WELCOME_MSG));
+    }
 
 #ifdef TMC2130
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
@@ -4006,9 +4034,9 @@ void process_commands()
 		}else if (code_seen_P("fv")) { // PRUSA fv
         // get file version
         #ifdef SDSUPPORT
-        card.openFile(strchr_pointer + 3,true);
+        card.openFileReadFilteredGcode(strchr_pointer + 3,true);
         while (true) {
-            uint16_t readByte = card.get();
+            uint16_t readByte = card.getFilteredGcodeChar();
             MYSERIAL.write(readByte);
             if (readByte=='\n') {
                 break;
@@ -4021,7 +4049,7 @@ void process_commands()
     } else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
         trace();
         prusa_sd_card_upload = true;
-        card.openFile(strchr_pointer+4,false);
+        card.openFileWrite(strchr_pointer+4);
 
 	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
@@ -5685,59 +5713,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     {
 
     /*!
-	### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#M0:_Stop_or_Unconditional_stop">M0: Stop or Unconditional stop</a>
-    */
-    case 0: // M0 - Unconditional stop - Wait for user button press on LCD
-    case 1: // M1 - Conditional stop - Wait for user button press on LCD
-    {
-      char *src = strchr_pointer + 2;
-
-      codenum = 0;
-
-      bool hasP = false, hasS = false;
-      if (code_seen('P')) {
-        codenum = code_value(); // milliseconds to wait
-        hasP = codenum > 0;
-      }
-      if (code_seen('S')) {
-        codenum = code_value() * 1000; // seconds to wait
-        hasS = codenum > 0;
-      }
-      starpos = strchr(src, '*');
-      if (starpos != NULL) *(starpos) = '\0';
-      while (*src == ' ') ++src;
-      if (!hasP && !hasS && *src != '\0') {
-        lcd_setstatus(src);
-      } else {
-        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
-      }
-
-      lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
-      st_synchronize();
-      previous_millis_cmd = _millis();
-      if (codenum > 0){
-        codenum += _millis();  // keep track of when we started waiting
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-        while(_millis() < codenum && !lcd_clicked()){
-          manage_heater();
-          manage_inactivity(true);
-          lcd_update(0);
-        }
-		KEEPALIVE_STATE(IN_HANDLER);
-        lcd_ignore_click(false);
-      }else{
-        marlin_wait_for_click();
-      }
-      if (IS_SD_PRINTING)
-        LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
-      else
-        LCD_MESSAGERPGM(_T(WELCOME_MSG));
-    }
-    break;
-
-    /*!
 	### M17 - Enable all axes <a href="https://reprap.org/wiki/G-code#M17:_Enable.2FPower_all_stepper_motors">M17: Enable/Power all stepper motors</a>
     */
+
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
         enable_x();
@@ -5790,7 +5768,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       starpos = (strchr(strchr_pointer + 4,'*'));
 	  if(starpos!=NULL)
         *(starpos)='\0';
-      card.openFile(strchr_pointer + 4,true);
+      card.openFileReadFilteredGcode(strchr_pointer + 4);
       break;
 
     /*!
@@ -5860,7 +5838,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         strchr_pointer = strchr(npos,' ') + 1;
         *(starpos) = '\0';
       }
-      card.openFile(strchr_pointer+4,false);
+      card.openFileWrite(strchr_pointer+4);
       break;
 
     /*! ### M29 - Stop SD write <a href="https://reprap.org/wiki/G-code#M29:_Stop_writing_to_SD_card">M29: Stop writing to SD card</a>
@@ -5921,7 +5899,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
       if( card.cardOK )
       {
-        card.openFile(namestartpos,true,!call_procedure);
+        card.openFileReadFilteredGcode(namestartpos,!call_procedure);
         if(code_seen('S'))
           if(strchr_pointer<namestartpos) //only if "S" is occuring _before_ the filename
             card.setIndex(code_value_long());
@@ -6395,31 +6373,37 @@ Sigma_Exit:
 #endif		// Z_PROBE_REPEATABILITY_TEST 
 #endif		// ENABLE_AUTO_BED_LEVELING
 
-	/*!
-	### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
-	#### Usage
+    /*!
+    ### M73 - Set/get print progress <a href="https://reprap.org/wiki/G-code#M73:_Set.2FGet_build_percentage">M73: Set/Get build percentage</a>
+    #### Usage
     
-	    M73 [ P | R | Q | S ]
-    
-	#### Parameters
-    - `P` - Percent in normal mode
-    - `R` - Time remaining in normal mode
-    - `Q` - Percent in silent mode
-    - `S` - Time in silent mode
-   */
-	case 73: //M73 show percent done and time remaining
-		if(code_seen('P')) print_percent_done_normal = code_value();
-		if(code_seen('R')) print_time_remaining_normal = code_value();
-		if(code_seen('Q')) print_percent_done_silent = code_value();
-		if(code_seen('S')) print_time_remaining_silent = code_value();
+        M73 [ P | R | Q | S | C | D ]
 
-		{
-			const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %d; print time remaining in mins: %d\n");
-			printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal);
-			printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent);
-		}
-		break;
+    #### Parameters
+        - `P` - Percent in normal mode
+        - `R` - Time remaining in normal mode
+        - `Q` - Percent in silent mode
+        - `S` - Time in silent mode
+        - `C` - Time to change/pause/user interaction in normal mode
+        - `D` - Time to change/pause/user interaction in silent mode
+    */
+    //!@todo update RepRap Gcode wiki
+    case 73: //M73 show percent done, time remaining and time to change/pause
+    {
+        if(code_seen('P')) print_percent_done_normal = code_value();
+        if(code_seen('R')) print_time_remaining_normal = code_value();
+        if(code_seen('Q')) print_percent_done_silent = code_value();
+        if(code_seen('S')) print_time_remaining_silent = code_value();
+        if(code_seen('C')) print_time_to_change_normal = code_value();
+        if(code_seen('D')) print_time_to_change_silent = code_value();
 
+    {
+        const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %d; print time remaining in mins: %d; Change in mins: %d\n");
+        printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal, print_time_to_change_normal);
+        printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent, print_time_to_change_silent);
+    }
+        break;
+    }
     /*!
 	### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
 	#### Usage
@@ -8135,35 +8119,34 @@ Sigma_Exit:
     /*!
     ### M25 - Pause SD print <a href="https://reprap.org/wiki/G-code#M25:_Pause_SD_print">M25: Pause SD print</a>
     */
-	case 25:
-	case 601:
-	{
-        if (!isPrintPaused)
-        {
+    case 25:
+    case 601:
+    {
+        if (!isPrintPaused) {
             st_synchronize();
             ClearToSend(); //send OK even before the command finishes executing because we want to make sure it is not skipped because of cmdqueue_pop_front();
             cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
             lcd_pause_print();
         }
-	}
-	break;
+    }
+    break;
 
     /*!
-	### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
+    ### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
     */
-	case 602: {
-	  if (isPrintPaused)
-          lcd_resume_print();
-	}
-	break;
+    case 602: {
+        if (isPrintPaused)
+            lcd_resume_print();
+    }
+    break;
 
     /*!
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */
-	case 603: {
-		lcd_print_stop();
-	}
-	break;
+    case 603: {
+        lcd_print_stop();
+    }
+    break;
 
 #ifdef PINDA_THERMISTOR
     /*!
@@ -9707,7 +9690,7 @@ void manage_inactivity_IR_ANALOG_Check(uint16_t &nFSCheckCount, ClFsensorPCB isV
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-bool bInhibitFlag;
+bool bInhibitFlag = false;
 #ifdef IR_SENSOR_ANALOG
 static uint16_t nFSCheckCount=0;
 #endif // IR_SENSOR_ANALOG
@@ -9715,16 +9698,11 @@ static uint16_t nFSCheckCount=0;
 	if (mmu_enabled == false)
 	{
 //-//		if (mcode_in_progress != 600) //M600 not in progress
-#ifdef PAT9125
-		bInhibitFlag=(menu_menu==lcd_menu_extruder_info); // Support::ExtruderInfo menu active
-#endif // PAT9125
-#ifdef IR_SENSOR
-		bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
+		if (!PRINTER_ACTIVE) bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); //Block Filament sensor actions if PRINTER is not active and Support::SensorInfo menu active
 #ifdef IR_SENSOR_ANALOG
-		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Settings::HWsetup::FSdetect menu active
+		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Block Filament sensor actions if Settings::HWsetup::FSdetect menu active
 #endif // IR_SENSOR_ANALOG
-#endif // IR_SENSOR
-		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
+		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
@@ -11281,8 +11259,8 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 		}
 		dir_name[8] = '\0';
 		MYSERIAL.println(dir_name);
-		strcpy(dir_names[i], dir_name);
-		card.chdir(dir_name);
+		// strcpy(dir_names[i], dir_name);
+		card.chdir(dir_name, false);
 	}
 
 	for (int i = 0; i < 8; i++) {
@@ -11657,46 +11635,40 @@ void print_mesh_bed_leveling_table()
   SERIAL_ECHOLN();
 }
 
-uint16_t print_time_remaining() {
-	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
-#ifdef TMC2130 
-	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_remaining_normal;
-	else print_t = print_time_remaining_silent;
-#else
-	print_t = print_time_remaining_normal;
-#endif //TMC2130
-	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
-	return print_t;
-}
-
 uint8_t calc_percent_done()
 {
-	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
-	uint8_t percent_done = 0;
+    //in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
+    uint8_t percent_done = 0;
 #ifdef TMC2130
-	if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100) {
-		percent_done = print_percent_done_normal;
-	}
-	else if (print_percent_done_silent <= 100) {
-		percent_done = print_percent_done_silent;
-	}
+    if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100)
+    {
+        percent_done = print_percent_done_normal;
+    }
+    else if (print_percent_done_silent <= 100)
+    {
+        percent_done = print_percent_done_silent;
+    }
 #else
-	if (print_percent_done_normal <= 100) {
-		percent_done = print_percent_done_normal;
-	}
+    if (print_percent_done_normal <= 100)
+    {
+        percent_done = print_percent_done_normal;
+    }
 #endif //TMC2130
-	else {
-		percent_done = card.percentDone();
-	}
-	return percent_done;
+    else
+    {
+        percent_done = card.percentDone();
+    }
+    return percent_done;
 }
 
 static void print_time_remaining_init()
 {
-	print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
-	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
-	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
-	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+    print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
+    print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
+    print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
+    print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+    print_time_to_change_normal = PRINT_TIME_REMAINING_INIT;
+    print_time_to_change_silent = PRINT_TIME_REMAINING_INIT;
 }
 
 void load_filament_final_feed()

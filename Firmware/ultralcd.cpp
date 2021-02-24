@@ -57,7 +57,7 @@
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
-
+int clock_interval = 0;
 
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
@@ -74,11 +74,6 @@ int8_t FSensorStateMenu = 1;
 #ifdef IR_SENSOR_ANALOG
 bool bMenuFSDetect=false;
 #endif //IR_SENSOR_ANALOG
-
-
-#ifdef SDCARD_SORT_ALPHA
-bool presort_flag = false;
-#endif
 
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
@@ -676,185 +671,219 @@ void lcdui_print_cmd_diag(void)
 // Print time (8 chars total)
 void lcdui_print_time(void)
 {
-	//if remaining print time estimation is available print it else print elapsed time
-	uint16_t print_t = 0;
-	if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-		print_t = print_time_remaining();
-	else if(starttime != 0)
-		print_t = _millis() / 60000 - starttime / 60000;
-	int chars = 0;
-	if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
-	{
-          char suff = ' ';
-          char suff_doubt = ' ';
-		if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-          {
-               suff = 'R';
-               if (feedmultiply != 100)
-                    suff_doubt = '?';
-          }
-		if (print_t < 6000) //time<100h
-			chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
-		else //time>=100h
-			chars = lcd_printf_P(_N("%c%3uh %c%c"), LCD_STR_CLOCK[0], print_t / 60, suff, suff_doubt);
-	}
-	else
-		chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
-	lcd_space(8 - chars);
+    //if remaining print time estimation is available print it else print elapsed time
+    int chars = 0;
+    if ((PRINTER_ACTIVE) && (starttime != 0))
+    {
+        uint16_t print_t = 0;
+        uint16_t print_tr = 0;
+        uint16_t print_tc = 0;
+        char suff = ' ';
+        char suff_doubt = ' ';
+
+#ifdef TMC2130
+        if (SilentModeMenu != SILENT_MODE_OFF)
+        {
+            if (print_time_remaining_silent != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tr = print_time_remaining_silent;
+            }
+//#ifdef CLOCK_INTERVAL_TIME
+            if (print_time_to_change_silent != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tc = print_time_to_change_silent;
+            }
+//#endif //CLOCK_INTERVAL_TIME
+        }
+        else
+        {
+#endif //TMC2130
+            if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tr = print_time_remaining_normal;
+            }
+//#ifdef CLOCK_INTERVAL_TIME
+            if (print_time_to_change_normal != PRINT_TIME_REMAINING_INIT)
+            {
+                print_tc = print_time_to_change_normal;
+            }
+//#endif //CLOCK_INTERVAL_TIME
+#ifdef TMC2130
+        }
+#endif //TMC2130
+
+//#ifdef CLOCK_INTERVAL_TIME
+        if (clock_interval == CLOCK_INTERVAL_TIME*2)
+        {
+            clock_interval = 0;
+        }
+        clock_interval++;
+
+        if (print_tc != 0 && clock_interval > CLOCK_INTERVAL_TIME)
+        {
+            print_t = print_tc;
+            suff = 'C';
+        }
+        else
+//#endif //CLOCK_INTERVAL_TIME 
+        if (print_tr != 0)
+        {
+            print_t = print_tr;
+            suff = 'R';
+        }
+        else
+        {
+            print_t = _millis() / 60000 - starttime / 60000; 
+        }
+
+        if (feedmultiply != 100 && (print_t == print_tr || print_t == print_tc))
+        {
+            suff_doubt = '?';
+            print_t = 100ul * print_t / feedmultiply;
+        }
+
+        if (print_t < 6000) //time<100h
+            chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
+        else //time>=100h
+            chars = lcd_printf_P(_N("%c%3uh %c%c"), LCD_STR_CLOCK[0], print_t / 60, suff, suff_doubt);
+    }
+    else
+        chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
+    lcd_space(8 - chars);
 }
 
-//Print status line on status screen
+//! @Brief Print status line on status screen
 void lcdui_print_status_line(void)
 {
-	if (IS_SD_PRINTING)
-	{
-		if (strcmp(longFilenameOLD, (card.longFilename[0] ? card.longFilename : card.filename)) != 0)
-		{
-			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
-			sprintf_P(longFilenameOLD, PSTR("%s"), (card.longFilename[0] ? card.longFilename : card.filename));
-			scrollstuff = 0;
-		}
-	}
+    if (IS_SD_PRINTING) {
+        if (strcmp(longFilenameOLD, (card.longFilename[0] ? card.longFilename : card.filename)) != 0) {
+            memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
+            sprintf_P(longFilenameOLD, PSTR("%s"), (card.longFilename[0] ? card.longFilename : card.filename));
+            scrollstuff = 0;
+        }
+    }
 
-	if (heating_status)
-	{ // If heating flag, show progress of heating
-		heating_status_counter++;
-		if (heating_status_counter > 13)
-		{
-			heating_status_counter = 0;
-		}
-		lcd_set_cursor(7, 3);
-		lcd_space(13);
+    if (heating_status) { // If heating flag, show progress of heating
+        heating_status_counter++;
+        if (heating_status_counter > 13) {
+            heating_status_counter = 0;
+        }
+        lcd_set_cursor(7, 3);
+        lcd_space(13);
 
-		for (unsigned int dots = 0; dots < heating_status_counter; dots++)
-		{
-			lcd_putc_at(7 + dots, 3, '.');
-		}
-		switch (heating_status)
-		{
-		case 1:
-			lcd_puts_at_P(0, 3, _T(MSG_HEATING));
-			break;
-		case 2:
-			lcd_puts_at_P(0, 3, _T(MSG_HEATING_COMPLETE));
-			heating_status = 0;
-			heating_status_counter = 0;
-			break;
-		case 3:
-			lcd_puts_at_P(0, 3, _T(MSG_BED_HEATING));
-			break;
-		case 4:
-			lcd_puts_at_P(0, 3, _T(MSG_BED_DONE));
-			heating_status = 0;
-			heating_status_counter = 0;
-			break;
-		default:
-			break;
-		}
-	}
-	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status))
-	{ // If printing from SD, show what we are printing
-		if(strlen(longFilenameOLD) > LCD_WIDTH)
-		{
-			int inters = 0;
-			int gh = scrollstuff;
-			while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
-			{
-				if (longFilenameOLD[gh] == '\0')
-				{
-					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(longFilenameOLD[gh - 1]);
-					scrollstuff = 0;
-					gh = scrollstuff;
-					inters = 1;
-				}
-				else
-				{
-					lcd_set_cursor(gh - scrollstuff, 3);
-					lcd_print(longFilenameOLD[gh - 1]);
-					gh++;
-				}
-			}
-			scrollstuff++;
-		}
-		else
-		{
-			lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
-		}
-	}
-	else
-	{ // Otherwise check for other special events
-   		switch (custom_message_type)
-		{
-		case CustomMsg::Status: // Nothing special, print status message normally
-			lcd_print(lcd_status_message);
-			break;
-		case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
-			if (custom_message_state > 10)
-			{
-				lcd_set_cursor(0, 3);
-				lcd_space(20);
-				lcd_puts_at_P(0, 3, _T(MSG_CALIBRATE_Z_AUTO));
-				lcd_puts_P(PSTR(" : "));
-				lcd_print(custom_message_state-10);
-			}
-			else
-			{
-				if (custom_message_state == 3)
-				{
-					lcd_puts_P(_T(WELCOME_MSG));
-					lcd_setstatuspgm(_T(WELCOME_MSG));
-					custom_message_type = CustomMsg::Status;
-				}
-				if (custom_message_state > 3 && custom_message_state <= 10 )
-				{
-					lcd_set_cursor(0, 3);
-					lcd_space(19);
-					lcd_puts_at_P(0, 3, _i("Calibration done"));////MSG_HOMEYZ_DONE
-					custom_message_state--;
-				}
-			}
-			break;
-		case CustomMsg::FilamentLoading: // If loading filament, print status
-			lcd_print(lcd_status_message);
-			break;
-		case CustomMsg::PidCal: // PID tuning in progress
-			lcd_print(lcd_status_message);
-			if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0)
-			{
-				lcd_set_cursor(10, 3);
-				lcd_print(itostr3(pid_cycle));
-				lcd_print('/');
-				lcd_print(itostr3left(pid_number_of_cycles));
-			}
-			break;
-		case CustomMsg::TempCal: // PINDA temp calibration in progress
-			{
-				char statusLine[LCD_WIDTH + 1];
-				sprintf_P(statusLine, PSTR("%-20S"), _T(MSG_TEMP_CALIBRATION));
-				char progress[4];
-				sprintf_P(progress, PSTR("%d/6"), custom_message_state);
-				memcpy(statusLine + 12, progress, sizeof(progress) - 1);
-				lcd_set_cursor(0, 3);
-				lcd_print(statusLine);
-			}
-			break;
-		case CustomMsg::TempCompPreheat: // temp compensation preheat
-			lcd_puts_at_P(0, 3, _i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
-			if (custom_message_state <= PINDA_HEAT_T)
-			{
-				lcd_puts_P(PSTR(": "));
-				lcd_print(custom_message_state); //seconds
-				lcd_print(' ');
-			}
-			break;
-		}
-	}
-    
+        for (unsigned int dots = 0; dots < heating_status_counter; dots++) {
+            lcd_putc_at(7 + dots, 3, '.');
+        }
+        switch (heating_status) {
+        case 1:
+            lcd_puts_at_P(0, 3, _T(MSG_HEATING));
+            break;
+        case 2:
+            lcd_puts_at_P(0, 3, _T(MSG_HEATING_COMPLETE));
+            heating_status = 0;
+            heating_status_counter = 0;
+            break;
+        case 3:
+            lcd_puts_at_P(0, 3, _T(MSG_BED_HEATING));
+            break;
+        case 4:
+            lcd_puts_at_P(0, 3, _T(MSG_BED_DONE));
+            heating_status = 0;
+            heating_status_counter = 0;
+            break;
+        default:
+            break;
+        }
+    }
+    else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status)) { // If printing from SD, show what we are printing
+        if(strlen(longFilenameOLD) > LCD_WIDTH) {
+            int inters = 0;
+            int gh = scrollstuff;
+            while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0)) {
+                if (longFilenameOLD[gh] == '\0') {
+                    lcd_set_cursor(gh - scrollstuff, 3);
+                    lcd_print(longFilenameOLD[gh - 1]);
+                    scrollstuff = 0;
+                    gh = scrollstuff;
+                    inters = 1;
+                } else {
+                    lcd_set_cursor(gh - scrollstuff, 3);
+                    lcd_print(longFilenameOLD[gh - 1]);
+                    gh++;
+                }
+            }
+            scrollstuff++;
+        } else {
+            lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
+        }
+    } else { // Otherwise check for other special events
+        switch (custom_message_type) {
+        case CustomMsg::MsgUpdate: //Short message even while printing from SD
+        case CustomMsg::Status: // Nothing special, print status message normally
+        case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
+            lcd_print(lcd_status_message);
+        break;
+        case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
+            if (custom_message_state > 10) {
+                lcd_set_cursor(0, 3);
+                lcd_space(20);
+                lcd_puts_at_P(0, 3, _T(MSG_CALIBRATE_Z_AUTO));
+                lcd_puts_P(PSTR(" : "));
+                lcd_print(custom_message_state-10);
+            } else {
+                if (custom_message_state == 3)
+                {
+                    lcd_puts_P(_T(WELCOME_MSG));
+                    lcd_setstatuspgm(_T(WELCOME_MSG));
+                    custom_message_type = CustomMsg::Status;
+                }
+                if (custom_message_state > 3 && custom_message_state <= 10 ) {
+                    lcd_set_cursor(0, 3);
+                    lcd_space(19);
+                    lcd_puts_at_P(0, 3, _i("Calibration done"));////MSG_HOMEYZ_DONE
+                    custom_message_state--;
+                }
+            }
+            break;
+        case CustomMsg::FilamentLoading: // If loading filament, print status
+            lcd_print(lcd_status_message);
+            break;
+        case CustomMsg::PidCal: // PID tuning in progress
+            lcd_print(lcd_status_message);
+            if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0) {
+                lcd_set_cursor(10, 3);
+                lcd_print(itostr3(pid_cycle));
+                lcd_print('/');
+                lcd_print(itostr3left(pid_number_of_cycles));
+            }
+            break;
+        case CustomMsg::TempCal: // PINDA temp calibration in progress
+            char statusLine[LCD_WIDTH + 1];
+            sprintf_P(statusLine, PSTR("%-20S"), _T(MSG_TEMP_CALIBRATION));
+            char progress[4];
+            sprintf_P(progress, PSTR("%d/6"), custom_message_state);
+            memcpy(statusLine + 12, progress, sizeof(progress) - 1);
+            lcd_set_cursor(0, 3);
+            lcd_print(statusLine);
+            break;
+        case CustomMsg::TempCompPreheat: // temp compensation preheat
+            lcd_puts_at_P(0, 3, _i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
+            if (custom_message_state <= PINDA_HEAT_T) {
+                lcd_puts_P(PSTR(": "));
+                lcd_print(custom_message_state); //seconds
+                lcd_print(' ');
+            }
+            break;
+        case CustomMsg::Resuming: //Resuming
+            lcd_puts_at_P(0, 3, _T(MSG_RESUMING_PRINT));
+            break;
+        }
+    }
+
     // Fill the rest of line to have nice and clean output
-	for(int fillspace = 0; fillspace < 20; fillspace++)
-		if ((lcd_status_message[fillspace] <= 31 ))
-			lcd_print(' ');
+    for(int fillspace = 0; fillspace < 20; fillspace++)
+        if ((lcd_status_message[fillspace] <= 31 ))
+            lcd_print(' ');
 }
 
 //! @brief Show Status Screen
@@ -1584,8 +1613,8 @@ static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize
 //! |01234567890123456789|
 //! |Nozzle FAN: 0000 RPM|	FAN c=10 r=1  SPEED c=3 r=1
 //! |Print FAN:  0000 RPM|	FAN c=10 r=1  SPEED c=3 r=1
-//! |Fil. Xd:000 Yd:000  |	Fil. c=4 r=1
-//! |Int:  000 Shut: 000 |	Int: c=4 r=1  Shut: c=4 r=1
+//! |                    |
+//! |                    |
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1599,37 +1628,7 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
     char nozzle[maxChars], print[maxChars];
     pgmtext_with_colon(_i("Nozzle FAN"), nozzle, maxChars);  ////c=10 r=1
     pgmtext_with_colon(_i("Print FAN"), print, maxChars);  ////c=10 r=1
-    lcd_printf_P(_N("%s %4d RPM\n" "%s %4d RPM\n"), nozzle, 60*fan_speed[0], print, 60*fan_speed[1] ); 
-
-#ifdef PAT9125
-	// Display X and Y difference from Filament sensor    
-    // Display Light intensity from Filament sensor
-    //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
-    //  value ranges from 0(darkest) to 255(brightest).
-    // Display LASER shutter time from Filament sensor
-    //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
-    //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
-    //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-	if (mmu_enabled == false)
-	{
-		if (!fsensor_enabled)
-			lcd_puts_P(_N("Filament sensor\n" "is disabled."));
-		else
-		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
-				pat9125_update();
-			lcd_printf_P(_N(
-				"Fil. Xd:%3d Yd:%3d\n" ////c=4 r=1
-				"Int: %3d  " ////c=4 r=1
-				"Shut: %3d"  ////c=4 r=1
-			),
-				pat9125_x, pat9125_y,
-				pat9125_b, pat9125_s
-			);
-		}
-	}
-#endif //PAT9125
-    
+	lcd_printf_P(_N("%s %4d RPM\n" "%s %4d RPM\n"), nozzle, 60*fan_speed[0], print, 60*fan_speed[1] ); 
     menu_back_if_clicked();
 }
 
@@ -1661,8 +1660,8 @@ static void lcd_menu_fails_stats_mmu()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
-//! | MMU fails:      000|	MSG_MMU_FAILS c=14
-//! | MMU load fails: 000|	MSG_MMU_LOAD_FAILS c=14
+//! | MMU fails       000|	MSG_MMU_FAILS c=15
+//! | MMU load fails  000|	MSG_MMU_LOAD_FAILS c=15
 //! |                    |
 //! ----------------------
 //! @endcode
@@ -1683,9 +1682,9 @@ static void lcd_menu_fails_stats_mmu_print()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
-//! | MMU fails:      000|	MSG_MMU_FAILS c=14
-//! | MMU load fails: 000|	MSG_MMU_LOAD_FAILS c=14
-//! | MMU power fails:000|	c=14 r=1
+//! | MMU fails       000|	MSG_MMU_FAILS c=15
+//! | MMU load fails  000|	MSG_MMU_LOAD_FAILS c=15
+//! | MMU power fails 000|	c=15
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1710,8 +1709,8 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
-//! | Power failures: 000|	MSG_POWER_FAILURES c=14
-//! | Fil. runouts  : 000|	MSG_FIL_RUNOUTS c=14
+//! | Power failures  000|	MSG_POWER_FAILURES c=15
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
 //! | Crash   X:000 Y:000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
@@ -1735,9 +1734,9 @@ static void lcd_menu_fails_stats_total()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
-//! | Power failures  000|	MSG_POWER_FAILURES c=14
-//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=14
-//! | Crash   X:000 Y:000|	MSG_CRASH c=7
+//! | Power failures  000|	MSG_POWER_FAILURES c=15
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
+//! | Crash   X 000 Y 000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
 //! @brief Show Last Print Failures Statistics with PAT9125
@@ -1763,8 +1762,8 @@ static void lcd_menu_fails_stats_print()
 #ifndef PAT9125
     lcd_printf_P(failStatsFmt,
         _T(MSG_LAST_PRINT_FAILURES),  ////c=20
-        _T(MSG_POWER_FAILURES), power,  ////c=14
-        _T(MSG_FIL_RUNOUTS), filam,  ////c=14
+        _T(MSG_POWER_FAILURES), power,  ////c=15
+        _T(MSG_FIL_RUNOUTS), filam,  ////c=15
         _T(MSG_CRASH), crashX, crashY);  ////c=7
 #else
     // On the MK3 include detailed PAT9125 statistics about soft failures
@@ -1773,7 +1772,7 @@ static void lcd_menu_fails_stats_print()
                       " %-7.7S H %-3d S %-3d\n"
                       " %-7.7S X %-3d Y %-3d"),
                  _T(MSG_LAST_PRINT_FAILURES), ////c=20
-                 _T(MSG_POWER_FAILURES), power, ////c=14
+                 _T(MSG_POWER_FAILURES), power, ////c=15
                  _i("Runouts"), filam, fsensor_softfail, //c=7
                  _T(MSG_CRASH), crashX, crashY);  ////c=7
 #endif
@@ -1816,9 +1815,9 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-1
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
-//! | Fil.   runouts  000|	MSG_FIL_RUNOUTS c=14
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
-//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=14
+//! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1830,9 +1829,9 @@ static void lcd_menu_fails_stats()
 	lcd_home();
 	lcd_printf_P(failStatsFmt, 
         _T(MSG_LAST_PRINT_FAILURES),   ////c=20
-        _T(MSG_FIL_RUNOUTS), filamentLast,   ////c=14
+        _T(MSG_FIL_RUNOUTS), filamentLast,   ////c=15
         _T(MSG_TOTAL_FAILURES),  ////c=20
-        _T(MSG_FIL_RUNOUTS), filamentTotal);   ////c=14
+        _T(MSG_FIL_RUNOUTS), filamentTotal);   ////c=15
 
 	menu_back_if_clicked();
 }
@@ -3920,6 +3919,16 @@ static void lcd_print_state(uint8_t state)
 	}
 }
 
+//! @brief Show sensor state
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |PINDA N/A  FINDA N/A|  MSG_PINDA c=6 MSG_FINDA c=6
+//! |Fil. sensor      N/A|  MSG_FSENSOR 
+//! |Xd    000  Yd    000|  MSG_XD
+//! |Int   000  Shut  000|  
+//! ----------------------
+//! @endcode
 static void lcd_show_sensors_state()
 {
 	//0: N/A; 1: OFF; 2: ON
@@ -3932,21 +3941,56 @@ static void lcd_show_sensors_state()
 	{
 		finda_state = mmu_finda;
 	}
-	if (ir_sensor_detected) {
-		idler_state = !READ(IR_SENSOR_PIN);
-	}
-	lcd_puts_at_P(0, 0, _i("Sensor state"));
-	lcd_puts_at_P(1, 1, _i("PINDA:"));
-	lcd_set_cursor(LCD_WIDTH - 4, 1);
+	//lcd_puts_at_P(0, 0, _i("Sensor state"));
+	lcd_puts_at_P(0, 0, _i("PINDA"));
+	lcd_set_cursor(LCD_WIDTH - 14, 0);
 	lcd_print_state(pinda_state);
 	
-	lcd_puts_at_P(1, 2, _i("FINDA:"));
-	lcd_set_cursor(LCD_WIDTH - 4, 2);
-	lcd_print_state(finda_state);
+	if (mmu_enabled == true)
+	{
+		lcd_puts_at_P(10, 0, _i("FINDA"));
+		lcd_set_cursor(LCD_WIDTH - 3, 0);
+		lcd_print_state(finda_state);
+	}
 	
-	lcd_puts_at_P(1, 3, _i("IR:"));
-	lcd_set_cursor(LCD_WIDTH - 4, 3);
-	lcd_print_state(idler_state);
+	if (ir_sensor_detected) {
+		idler_state = !READ(IR_SENSOR_PIN);
+		lcd_puts_at_P(0, 1, _i("Fil. sensor"));
+		lcd_set_cursor(LCD_WIDTH - 3, 1);
+		lcd_print_state(idler_state);
+	}
+	
+
+#ifdef PAT9125
+	// Display X and Y difference from Filament sensor    
+    // Display Light intensity from Filament sensor
+    //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
+    //  value ranges from 0(darkest) to 255(brightest).
+    // Display LASER shutter time from Filament sensor
+    //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
+    //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
+    //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
+	if (mmu_enabled == false)
+	{
+		//if (!fsensor_enabled)
+		//	lcd_puts_P(_N("Filament sensor\n" "is disabled."));
+		//else
+		//{
+		if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
+			pat9125_update();
+			lcd_set_cursor(0, 2);
+			lcd_printf_P(_N(
+				"Xd:  %3d  "
+				"Yd:  %3d\n" ////c=4 r=1
+				"Int: %3d  " ////c=4 r=1
+				"Shut:  %3d"  ////c=4 r=1
+			),
+				pat9125_x, pat9125_y,
+				pat9125_b, pat9125_s
+			);
+		//}
+	}
+#endif //PAT9125
 }
 
 void lcd_menu_show_sensors_state()                // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
@@ -4326,7 +4370,7 @@ static void lcd_sort_type_set() {
 		default: sdSort = SD_SORT_TIME;
 	}
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
-	presort_flag = true;
+	card.presort_flag = true;
 }
 #endif //SDCARD_SORT_ALPHA
 
@@ -6096,15 +6140,15 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 char reset_menu() {
     const uint8_t items_no =
 #ifdef SNMM
-        5;
+        6;
 #else
-        4;
+        5;
 #endif
     static int8_t first = 0;
     int8_t enc_dif = 0;
 	char cursor_pos = 0;
 
-    const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("All Data")
+    const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("All Data"), PSTR("Service prep")
 #ifdef SNMM
     , PSTR("Bowden length")
 #endif
@@ -6495,12 +6539,13 @@ void lcd_resume_print()
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
 
-    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT)); ////MSG_RESUMING_PRINT c=20
+    custom_message_type = CustomMsg::Resuming;
     isPrintPaused = false;
     restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUMED); //resume octoprint
+    custom_message_type = CustomMsg::Status;
 }
 
 static void change_sheet()
@@ -7189,8 +7234,8 @@ void lcd_sdcard_menu()
 {
   uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 
-  if (presort_flag == true) {
-	  presort_flag = false;
+  if (card.presort_flag == true) {
+	  card.presort_flag = false;
 	  card.presort();
   }
   if (lcd_draw_update == 0 && LCD_CLICKED == 0)
@@ -8403,7 +8448,7 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	if (screen == TestScreen::EndStops) lcd_puts_P(_i("Checking endstops"));////MSG_SELFTEST_CHECK_ENDSTOPS c=20
 	if (screen == TestScreen::AxisX) lcd_puts_P(_T(MSG_CHECKING_X));
 	if (screen == TestScreen::AxisY) lcd_puts_P(_T(MSG_CHECKING_Y));
-	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis  "));////MSG_SELFTEST_CHECK_Z c=20
+	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis"));////MSG_SELFTEST_CHECK_Z c=20
 	if (screen == TestScreen::Bed) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
 	if (screen == TestScreen::Hotend
 	    || screen == TestScreen::HotendOk) lcd_puts_P(_i("Checking hotend  "));////MSG_SELFTEST_CHECK_HOTEND c=20
@@ -8487,7 +8532,7 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 
 static bool check_file(const char* filename) {
 	if (farm_mode) return true;
-	card.openFile((char*)filename, true);
+	card.openFileReadFilteredGcode(filename, true);
 	bool result = false;
 	const uint32_t filesize = card.getFileSize();
 	uint32_t startPos = 0;
@@ -8554,7 +8599,7 @@ static void menu_action_sdfile(const char* filename)
 
   for (uint_least8_t i = 0; i < depth; i++) {
 	  for (uint_least8_t j = 0; j < 8; j++) {
-		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
+		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, card.dir_names[i][j]);
 	  }
   }
   
@@ -8572,12 +8617,8 @@ static void menu_action_sdfile(const char* filename)
 
 void menu_action_sddirectory(const char* filename)
 {
-	uint8_t depth = (uint8_t)card.getWorkDirDepth();
-
-	strcpy(dir_names[depth], filename);
-	MYSERIAL.println(dir_names[depth]);
-  card.chdir(filename);
-  lcd_encoder = 0;
+	card.chdir(filename, true);
+	lcd_encoder = 0;
 }
 
 /** LCD API **/

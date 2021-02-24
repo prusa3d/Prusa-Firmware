@@ -338,8 +338,8 @@
 "Fil. sensor"
 "Fil. senzor"
 
-#MSG_FIL_RUNOUTS c=14
-"Fil. runouts  "
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
 "Vypadky filam."
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -598,7 +598,7 @@
 "Measured skew"
 "Merene zkoseni"
 
-#MSG_MMU_FAILS c=14
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "Selhani MMU"
 
@@ -606,7 +606,7 @@
 "MMU load failed     "
 "Zavedeni MMU selhalo"
 
-#MSG_MMU_LOAD_FAILS c=14
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "MMU selhani zavadeni"
 
@@ -834,7 +834,7 @@
 "Pause"
 "\x00"
 
-#MSG_POWER_FAILURES c=14
+#MSG_POWER_FAILURES c=15
 "Power failures"
 "Vypadky proudu"
 
@@ -1398,7 +1398,7 @@
 "G-code sliced for a different printer type. Continue?"
 "G-code je pripraven pro jiny typ tiskarny. Pokracovat?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. Tisk zrusen."
 

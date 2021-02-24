@@ -114,12 +114,15 @@ extern int8_t FSensorStateMenu;
 
 enum class CustomMsg : uint_least8_t
 {
-	Status,          //!< status message from lcd_status_message variable
-	MeshBedLeveling, //!< Mesh bed leveling in progress
-	FilamentLoading, //!< Loading filament in progress
-	PidCal,          //!< PID tuning in progress
-	TempCal,         //!< PINDA temperature calibration
-	TempCompPreheat, //!< Temperature compensation preheat
+    Status,          //!< status message from lcd_status_message variable
+    MeshBedLeveling, //!< Mesh bed leveling in progress
+    FilamentLoading, //!< Loading filament in progress
+    PidCal,          //!< PID tuning in progress
+    TempCal,         //!< PINDA temperature calibration
+    TempCompPreheat, //!< Temperature compensation preheat
+    M0Wait,          //!< M0/M1 Wait command working even from SD
+    MsgUpdate,       //!< Short message even while printing from SD
+    Resuming,       //!< Resuming message
 };
 
 extern CustomMsg custom_message_type;
