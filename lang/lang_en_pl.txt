@@ -726,7 +726,7 @@
 "Nozzle FAN"
 "WentHotend"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Wstrzymanie wydruku"
 

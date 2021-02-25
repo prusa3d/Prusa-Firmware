@@ -726,7 +726,7 @@
 "Nozzle FAN"
 "Ventola estrusore"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Metti in pausa"
 
