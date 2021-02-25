@@ -2,13 +2,25 @@
 "[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
 "[%.7s]Z instell.\x0awaarde ingesteld,\x0averder of bij 0\x0abeginen?\x0a%cVerder%cReset"
 
-#MSG_03_OR_OLDER c=18
+#MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 of ouder"
 
-#MSG_04_OR_NEWER c=18
+# c=18
+"FS v0.3 or older"
+"FS 0.3 of ouder"
+
+#MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 " 0.4 of nieuwer"
+
+# c=18
+"FS v0.4 or newer"
+"FS 0.4 of nieuwer"
+
+#MSG_IR_UNKNOWN c=18
+"unknown state"
+"Status onbekend"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -72,11 +84,11 @@
 
 #MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
-"Autoladen Filament"
+"Autoladen filament"
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Auto. laden van fil. is enkel beschikbaar wanneer fil.sensor is ingeschakeld ..."
+"Auto. laden van fil. is enkel beschikbaar wanneer fil.sensor is ingeschakeld..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -108,7 +120,7 @@
 
 #MSG_BELTTEST c=17
 "Belt test        "
-"Riemtest       "
+"Riemtest         "
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -126,7 +138,7 @@
 "Bed"
 "Bed"
 
-#MSG_MENU_BELT_STATUS c=18
+#MSG_BELT_STATUS c=18
 "Belt status"
 "Riem status"
 
@@ -178,6 +190,10 @@
 "Card removed"
 "SD verwijderd"
 
+#
+"Checking file"
+"\x00"
+
 #MSG_NOT_COLOR
 "Color not correct"
 "Kleur niet juist"
@@ -206,7 +222,7 @@
 "Crash detected. Resume print?"
 "Crash gedetecteerd. Print voorzetten?"
 
-#
+#MSG_CRASH c=7
 "Crash"
 "\x00"
 
@@ -238,7 +254,7 @@
 "E-correct:"
 "E-correctie:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
 "Fil. uitwerpen"
 
@@ -288,15 +304,15 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-"Extruder fan:"
+"\x00"
 
 #MSG_INFO_EXTRUDER c=18
 "Extruder info"
 "\x00"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
-"Extruder"
+"\x00"
 
 #
 "Fail stats MMU"
@@ -318,7 +334,7 @@
 "Fan test"
 "Fan test"
 
-#MSG_FANS_CHECK
+#MSG_FANS_CHECK c=13
 "Fans check"
 "Fans check"
 
@@ -326,8 +342,8 @@
 "Fil. sensor"
 "\x00"
 
-# c=14
-"Filam. runouts"
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
 "Fil. fouten"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -353,10 +369,6 @@
 #MSG_FS_ACTION c=10
 "FS Action"
 "FS actie"
-
-# c=18
-"FS v0.4 or newer"
-"FS v0.4 of nieuwer"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -450,17 +462,17 @@
 "Checking sensors "
 "Controleer sensors"
 
-#MSG_SELFTEST_CHECK_X c=20
-"Checking X axis  "
-"Controleer X as  "
+#MSG_CHECKING_X c=20
+"Checking X axis"
+"Controleer X as"
 
-#MSG_SELFTEST_CHECK_Y c=20
-"Checking Y axis  "
-"Controleer Y as  "
+#MSG_CHECKING_Y c=20
+"Checking Y axis"
+"Controleer Y as"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
-"Controleer Z as  "
+"Checking Z axis"
+"Controleer Z as"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
@@ -490,7 +502,7 @@
 "Insert filament"
 "Voer filament in"
 
-#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+#MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Is filament geladen?"
 
@@ -498,15 +510,19 @@
 "Is steel sheet on heatbed?"
 "Ligt de staalplaat op het bed?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Laatste printfouten"
+
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Hallo, ik ben je originele Prusa i3-printer. Ik zal je door een snel instellingsproces leiden dat de Z-as zal kalibreren. Dan ben je klaar om te printen."
 
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Als u extra staalplaten hebt, kalibreert u hun voorinstellingen in Instellingen - HW Setup - Staalplaten."
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 "Laatste print"
 
@@ -574,7 +590,7 @@
 "Measuring reference height of calibration point"
 "Referentie hoogte van het kalibratiepunt meten"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 "Mesh bed Leveling"
 
@@ -590,7 +606,7 @@
 "Measured skew"
 "Scheefheid"
 
-#
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "MMU fout"
 
@@ -598,7 +614,7 @@
 "MMU load failed     "
 "MMU laden mislukt   "
 
-#
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "MMU laadfout"
 
@@ -718,7 +734,7 @@
 "Nozzle FAN"
 "Tuit fan"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Print pauzeren"
 
@@ -788,7 +804,7 @@
 
 #MSG_UPDATE_MMU2_FW c=20 r=4
 "Please update firmware in your MMU2. Waiting for reset."
-"Gelieve de firmware te vernieuwen in uw MMU2. Wacht op reset."
+"Aub de firmware te vernieuwen in uw MMU2. Wacht op reset."
 
 #MSG_PLEASE_WAIT c=20
 "Please wait"
@@ -819,14 +835,14 @@
 "Voer een upgrade uit."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Druk op de knop om de tuit voor te verwarmen en door te gaan."
 
 #MSG_FS_PAUSE c=5
 "Pause"
 "Pauze"
 
-#
+#MSG_POWER_FAILURES c=15
 "Power failures"
 "Stroomstoringen"
 
@@ -844,13 +860,13 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Print fan:"
+"\x00"
 
 #MSG_CARD_MENU
 "Print from SD"
 "Print van SD"
 
-#
+# c=20
 "Press the knob"
 "Druk op knop"
 
@@ -868,7 +884,7 @@
 
 #
 "Print FAN"
-"Print fan"
+"\x00"
 
 #
 "Please insert filament into the extruder, then press the knob to load it."
@@ -894,6 +910,10 @@
 "Please unload the filament first, then repeat this action."
 "Verwijder eerst het filament en probeer het opnieuw."
 
+# c=20 r=4
+"Please check the IR sensor connection, unload filament if present."
+"AUB IR sensor verbindingen kontrolleren en filament verwijderd is."
+
 #MSG_RECOVERING_PRINT c=20
 "Recovering print    "
 "Print herstellen    "
@@ -910,11 +930,11 @@
 "Reset XYZ calibr."
 "Reset XYZ kalibr."
 
-#MSG_BED_CORRECTION_RESET
+#MSG_RESET c=14
 "Reset"
 "\x00"
 
-#MSG_RESUME_PRINT
+#MSG_RESUME_PRINT c=18
 "Resume print"
 "Print hervatten"
 
@@ -1116,7 +1136,7 @@
 
 #MSG_TEMP_CALIBRATION_DONE c=20 r=12
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Temperatuurkalibratie kan worden uitgeschakeld in het menu Instellingen-> Tempkalibratie."
+"Temperatuurkalibratie kan uitgeschakeld worden in het menu Instellingen-> Tempkalibratie."
 
 # c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1150,15 +1170,15 @@
 "Unload"
 "Verwijderen"
 
-#
+#MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Totaal fouten"
 
-#
+# c=20
 "to load filament"
 "om filament te laden"
 
-#
+# c=20
 "to unload filament"
 "om filament te laden"
 
@@ -1170,7 +1190,7 @@
 "Unloading filament"
 "Uitwerpen filament"
 
-#
+#MSG_TOTAL c=6
 "Total"
 "Totaal"
 
@@ -1292,7 +1312,7 @@
 
 #
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-"\x00"
+"De printer begint een zigzaglijn printen. Draai aan de knop totdat je de optimale hoogte hebt bereikt. Bekijk de afbeeldingen in de handleiding (Calibration chapter)."
 
 # c=20 r=5
 "Verification failed, remove the filament and try again."
@@ -1338,7 +1358,7 @@
 "Warn"
 "\x00"
 
-#
+#MSG_HW_SETUP c=18
 "HW Setup"
 "HW Configuratie"
 
@@ -1353,10 +1373,6 @@
 #MSG_MESH
 "Mesh"
 "\x00"
-
-#
-"Mesh bed leveling"
-"Mesh bed leveling"
 
 #
 "MK3S firmware detected on MK3 printer"
@@ -1386,11 +1402,11 @@
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-Code is voor een ander niveau geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
 
-#
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 "G-Code is voor een ander printertype geslict. Doorgaan?"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-Code is voor een ander printertype geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
 
@@ -1436,7 +1452,7 @@
 
 #
 "Sensor info"
-"Sensor info"
+"\x00"
 
 #MSG_SHEET c=10
 "Sheet"
@@ -1446,7 +1462,7 @@
 "Assist"
 "\x00"
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 "Staalplaten"
 
