@@ -710,7 +710,6 @@ void softReset()
 // Factory reset function
 // This function is used to erase parts or whole EEPROM memory which is used for storing calibration and and so on.
 // Level input parameter sets depth of reset
-int  er_progress = 0;
 static void factory_reset(char level)
 {	
 	lcd_clear();
@@ -790,28 +789,15 @@ static void factory_reset(char level)
 			// Level 3: erase everything, whole EEPROM will be set to 0xFF
 
 		case 3:
-			lcd_puts_P(PSTR("Factory RESET"));
-			lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
-
-      Sound_MakeCustom(100,0,false);
-			er_progress = 0;
-			lcd_puts_at_P(3, 3, PSTR("      "));
-			lcd_set_cursor(3, 3);
-			lcd_print(er_progress);
-
+			menu_progressbar_init(EEPROM_TOP, PSTR("ERASING all data"));
+			Sound_MakeCustom(100,0,false);
+			
 			// Erase EEPROM
-			for (int i = 0; i < 4096; i++) {
+			for (uint16_t i = 0; i < EEPROM_TOP; i++) {
 				eeprom_update_byte((uint8_t*)i, 0xFF);
-
-				if (i % 41 == 0) {
-					er_progress++;
-					lcd_puts_at_P(3, 3, PSTR("      "));
-					lcd_set_cursor(3, 3);
-					lcd_print(er_progress);
-					lcd_puts_P(PSTR("%"));
-				}
-
+				menu_progressbar_update(i);
 			}
+			menu_progressbar_finish();
 			softReset();
 
 
