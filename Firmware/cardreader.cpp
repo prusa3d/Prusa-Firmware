@@ -825,7 +825,6 @@ void CardReader::presort() {
 			lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=6
 			fileCnt = SDSORT_LIMIT;
 		}
-		lcd_clear();
 
 		// By default re-read the names from SD for every compare
 		// retaining only two filenames at a time. This is very
@@ -867,13 +866,9 @@ void CardReader::presort() {
 #endif
 			for (uint8_t runs = 0; runs < 2; runs++)
 			{
-				uint8_t* sortingBaseArray;
 				//run=0: sorts all files and moves folders to the beginning
 				//run=1: assumes all folders are at the beginning of the list and sorts them
-				
-				lcd_set_cursor(0, 1);
-				lcd_printf_P(PSTR("%-20.20S"), (runs == 0)?_i("Sorting files"):_i("Sorting folders"));
-				
+				uint8_t* sortingBaseArray;
 				uint16_t sortCountFiles = 0;
 				if (runs == 0)
 				{
@@ -887,11 +882,11 @@ void CardReader::presort() {
 					sortCountFiles = dirCnt;
 				}
 				#endif
-				if (sortCountFiles < 2) break;
 				
 				uint16_t counter = 0;
 				uint16_t total = 0;
 				for (uint16_t i = sortCountFiles/2; i > 0; i /= 2) total += sortCountFiles - i; //total runs for progress bar
+				menu_progressbar_init(total, (runs == 0)?_i("Sorting files"):_i("Sorting folders"));
 				
 				for (uint16_t gap = sortCountFiles/2; gap > 0; gap /= 2)
 				{
@@ -899,12 +894,7 @@ void CardReader::presort() {
 					{
 						if (!IS_SD_INSERTED) return;
 						
-						int8_t percent = (counter * 100) / total;
-						lcd_set_cursor(0, 2);
-						for (int column = 0; column < 20; column++) {
-							if (column < (percent / 5)) lcd_print('\xFF'); //simple progress bar
-							else lcd_print(' ');
-						}
+						menu_progressbar_update(counter);
 						counter++;
 						
 						manage_heater();
@@ -951,8 +941,8 @@ void CardReader::presort() {
 			#endif
 
 #else //Bubble Sort
-			uint32_t counter = 0;
-			uint16_t total = 0.5*(fileCnt - 1)*(fileCnt);
+			uint16_t counter = 0;
+			menu_progressbar_init(0.5*(fileCnt - 1)*(fileCnt), _i("Sorting files"));
 
 			// Compare names from the array or just the two buffered names
 			#define _SORT_CMP_NODIR() (strcasecmp(name1, name2) < 0) //true if lowercase(name1) < lowercase(name2)
@@ -963,19 +953,11 @@ void CardReader::presort() {
 			#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
 			#endif
 
-			lcd_set_cursor(0, 1);
-			lcd_printf_P(PSTR("%-20.20S"), _i("Sorting files"));
-
 			for (uint16_t i = fileCnt; --i;) {
 				if (!IS_SD_INSERTED) return;
 				bool didSwap = false;
 
-				int8_t percent = (counter * 100) / total;//((counter * 100) / pow((fileCnt-1),2));
-				lcd_set_cursor(0, 2);
-				for (int column = 0; column < 20; column++) {
-					if (column < (percent / 5)) lcd_print('\xFF'); //simple progress bar
-					else lcd_print(' ');
-				}
+				menu_progressbar_update(counter);
 				counter++;
 
 				for (uint16_t j = 0; j < i; ++j) {
@@ -1041,12 +1023,7 @@ void CardReader::presort() {
 					sort_positions[idx] = el;
 				}
 			}
-
-			lcd_set_cursor(0, 2);
-			for (int column = 0; column <= 19; column++)
-				lcd_print('\xFF'); //simple progress bar
-			_delay(300);
-			lcd_clear();
+			menu_progressbar_finish();
 		}
 		else {
 			getfilename(0);

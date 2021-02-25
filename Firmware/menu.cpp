@@ -553,4 +553,31 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
 template uint8_t menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
 
+static uint8_t progressbar_block_count = 0;
+static uint16_t progressbar_total = 0;
+void menu_progressbar_init(uint16_t total, const char* title)
+{
+	lcd_clear();
+	progressbar_block_count = 0;
+	progressbar_total = total;
+	
+	lcd_set_cursor(0, 1);
+	lcd_printf_P(PSTR("%-20.20S\n"), title);
+}
 
+void menu_progressbar_update(uint16_t newVal)
+{
+	uint8_t newCnt = (newVal * LCD_WIDTH) / progressbar_total;
+	while (newCnt > progressbar_block_count)
+	{
+		lcd_print('\xFF');
+		progressbar_block_count++;
+	}
+}
+
+void menu_progressbar_finish(void)
+{
+	progressbar_total = 1;
+	menu_progressbar_update(1);
+	_delay(300);
+}
