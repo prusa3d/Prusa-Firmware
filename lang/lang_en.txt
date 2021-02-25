@@ -1,6 +1,3 @@
-#
-"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
-
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 
