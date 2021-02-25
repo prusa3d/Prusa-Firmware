@@ -4,7 +4,7 @@
 
 - Build firmware
   - using `build.sh`
-  - using `PF-build.sh` with a `break` before `# build languages`
+  - using `PF-build.sh` with a parameter `-c 1` to keep lang build files after compiling
 - change to `lang` folder
 - check if lang scripts being able to run with `config.sh`
   - if you get `Arduino main folder: NG` message change in `config.sh` `export ARDUINO=C:/arduino-1.8.5` to `export ARDUINO=<Path to your Arduino IDE folder>`
@@ -17,7 +17,7 @@
 	  - check if there are things you don't want to translate or must be modifed
 	  - als check that the strings do not start with `spaces` as the scripts doesn't handle these well at this moment.
 	  - run `lang-add.sh lang_add.txt` to add the missing translations to `lang_en.txt` and `lang_en_??.txt`
-  - `not_used.txt` should only contain mesages that aren't used in this variant like MK2.5 vs MK3
+  - `not_used.txt` should only contain messages that aren't used in this variant like MK2.5/S vs MK3/S
 - run `fw-clean.sh` to cleanup firmware related files
 - delete `not_used.txt` and `not_tran.txt`
 - run `lang-clean.sh` to cleanup language related files
