@@ -1362,10 +1362,6 @@
 "HW Setup"
 "Ustawienia HW"
 
-#
-"IR:"
-"\x00"
-
 #MSG_MAGNETS_COMP
 "Magnets comp."
 "Kor. magnesow"
