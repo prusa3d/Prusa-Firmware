@@ -44,10 +44,10 @@ void lcd_change_success();
 void lcd_loading_color();
 void lcd_sdcard_stop();
 void lcd_pause_print();
+void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
-void lcd_confirm_print();
 unsigned char lcd_choose_color();
 void lcd_load_filament_color_check();
 //void lcd_mylang();
@@ -115,19 +115,21 @@ extern int8_t FSensorStateMenu;
 
 enum class CustomMsg : uint_least8_t
 {
-	Status,          //!< status message from lcd_status_message variable
-	MeshBedLeveling, //!< Mesh bed leveling in progress
-	FilamentLoading, //!< Loading filament in progress
-	PidCal,          //!< PID tuning in progress
-	TempCal,         //!< PINDA temperature calibration
-	TempCompPreheat, //!< Temperature compensation preheat
+    Status,          //!< status message from lcd_status_message variable
+    MeshBedLeveling, //!< Mesh bed leveling in progress
+    FilamentLoading, //!< Loading filament in progress
+    PidCal,          //!< PID tuning in progress
+    TempCal,         //!< PINDA temperature calibration
+    TempCompPreheat, //!< Temperature compensation preheat
+    M0Wait,          //!< M0/M1 Wait command working even from SD
+    MsgUpdate,       //!< Short message even while printing from SD
+    Resuming,       //!< Resuming message
 };
 
 extern CustomMsg custom_message_type;
 extern unsigned int custom_message_state;
 
 extern uint8_t farm_mode;
-extern int farm_no;
 extern int farm_timer;
 extern uint8_t farm_status;
 
@@ -207,6 +209,7 @@ void lcd_farm_sdcard_menu_w();
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();
+void lcd_move_e(); // NOT static due to usage in Marlin_main
 void lcd_extr_cal_reset();
 
 void lcd_temp_cal_show_result(bool result);
@@ -261,5 +264,9 @@ void lcd_wizard(WizState state);
 
 extern void lcd_experimental_toggle();
 extern void lcd_experimental_menu();
+
+#ifdef PINDA_TEMP_COMP
+extern void lcd_pinda_temp_compensation_toggle();
+#endif //PINDA_TEMP_COMP
 
 #endif //ULTRALCD_H

@@ -3,8 +3,8 @@
 #include "w25x20cl.h"
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include "io_atmega2560.h"
 #include "spi.h"
+#include "fastio.h"
 
 #define _MFRID             0xEF
 #define _DEVID             0x11
@@ -31,8 +31,8 @@
 #define _CMD_JEDEC_ID      0x9f
 #define _CMD_RD_UID        0x4b
 
-#define _CS_LOW()  PORT(W25X20CL_PIN_CS) &= ~__MSK(W25X20CL_PIN_CS)
-#define _CS_HIGH() PORT(W25X20CL_PIN_CS) |= __MSK(W25X20CL_PIN_CS)
+#define _CS_LOW() WRITE(W25X20CL_PIN_CS, 0)
+#define _CS_HIGH() WRITE(W25X20CL_PIN_CS, 1)
 
 //#define _SPI_TX swspi_tx
 //#define _SPI_RX swspi_rx
@@ -45,8 +45,8 @@ int w25x20cl_mfrid_devid(void);
 
 int8_t w25x20cl_init(void)
 {
-	PIN_OUT(W25X20CL_PIN_CS);
 	_CS_HIGH();
+	SET_OUTPUT(W25X20CL_PIN_CS);
 	W25X20CL_SPI_ENTER();
 	if (!w25x20cl_mfrid_devid()) return 0;
 	return 1;

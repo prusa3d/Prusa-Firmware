@@ -36,7 +36,7 @@
  */
 union cache_t {
            /** Used to access cached file data blocks. */
-  uint8_t  data[512];
+  uint8_t  data[512 + 1]; // abuse the last byte for saving '\n' - ugly optimization of read_filtered's inner skipping loop
            /** Used to access cached FAT16 entries. */
   uint16_t fat16[256];
            /** Used to access cached FAT32 entries. */
@@ -119,6 +119,7 @@ class SdVolume {
   bool dbgFat(uint32_t n, uint32_t* v) {return fatGet(n, v);}
 //------------------------------------------------------------------------------
  private:
+  friend class SdFile;
   // Allow SdBaseFile access to SdVolume private data.
   friend class SdBaseFile;
 

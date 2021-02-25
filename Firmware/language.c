@@ -17,10 +17,10 @@ uint8_t lang_selected = 0;
 
 #if (LANG_MODE == 0) //primary language only
 
-uint8_t lang_select(__attribute__((unused)) uint8_t lang) { return 0; }
+uint8_t lang_select(_UNUSED uint8_t lang) { return 0; }
 uint8_t lang_get_count() { return 1; }
-uint16_t lang_get_code(__attribute__((unused)) uint8_t lang) { return LANG_CODE_EN; }
-const char* lang_get_name_by_code(__attribute__((unused)) uint16_t code) { return _n("English"); }
+uint16_t lang_get_code(_UNUSED uint8_t lang) { return LANG_CODE_EN; }
+const char* lang_get_name_by_code(_UNUSED uint16_t code) { return _n("English"); }
 void lang_reset(void) { }
 uint8_t lang_is_selected(void) { return 1; }
 

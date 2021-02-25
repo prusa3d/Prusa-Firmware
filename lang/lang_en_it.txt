@@ -6,9 +6,21 @@
 " 0.3 or older"
 " 0.3 o inferiore"
 
-#MSG_04_OR_NEWER c=18
+# c=18
+"FS v0.3 or older"
+"FS 0.3 o inferiore"
+
+#MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 " 0.4 o superiore"
+
+# c=18
+"FS v0.4 or newer"
+"FS 0.4 o superiore"
+
+#MSG_IR_UNKNOWN c=18
+"unknown state"
+"stato sconosciuto"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -126,7 +138,7 @@
 "Bed"
 "Piano"
 
-#MSG_MENU_BELT_STATUS c=18
+#MSG_BELT_STATUS c=18
 "Belt status"
 "Stato cinghie"
 
@@ -178,6 +190,10 @@
 "Card removed"
 "SD rimossa"
 
+#
+"Checking file"
+"\x00"
+
 #MSG_NOT_COLOR
 "Color not correct"
 "Colore non puro"
@@ -206,7 +222,7 @@
 "Crash detected. Resume print?"
 "Scontro rilevato. Riprendere la stampa?"
 
-#
+#MSG_CRASH c=7
 "Crash"
 "Impatto"
 
@@ -238,9 +254,9 @@
 "E-correct:"
 "Correzione-E:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
-"Espelli filamento"
+"Espelli fil."
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -294,7 +310,7 @@
 "Extruder info"
 "Info estrusore"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
 "Estrusore"
 
@@ -318,7 +334,7 @@
 "Fan test"
 "Test ventola"
 
-#MSG_FANS_CHECK
+#MSG_FANS_CHECK c=13
 "Fans check"
 "Control.vent"
 
@@ -326,8 +342,8 @@
 "Fil. sensor"
 "Sensore fil."
 
-# c=14
-"Filam. runouts"
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
 "Fil. esauriti"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -353,10 +369,6 @@
 #MSG_FS_ACTION c=10
 "FS Action"
 "Azione FS"
-
-# c=18
-"FS v0.4 or newer"
-"FS 0.4 o superiore"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -450,16 +462,16 @@
 "Checking sensors "
 "Controllo sensori"
 
-#MSG_SELFTEST_CHECK_X c=20
-"Checking X axis  "
+#MSG_CHECKING_X c=20
+"Checking X axis"
 "Verifica asse X"
 
-#MSG_SELFTEST_CHECK_Y c=20
-"Checking Y axis  "
+#MSG_CHECKING_Y c=20
+"Checking Y axis"
 "Verifica asse Y"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 "Verifica asse Z"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
@@ -490,7 +502,7 @@
 "Insert filament"
 "Inserire filamento"
 
-#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+#MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Il filamento e' stato caricato?"
 
@@ -498,15 +510,19 @@
 "Is steel sheet on heatbed?"
 "Piastra d'acciaio su piano riscaldato?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
-"Fallimenti ultima stampa"
+"Errori ultima stampa"
+
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Ciao, sono la tua stampante Original Prusa i3. Ti guidero attraverso un rapido processo in cui verra calibrato l'asse Z. Poi, sarai pronto a stampare."
 
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Se hai piastre d'acciaio aggiuntive, calibra i preset in Impostazioni - Setup HW - Piastre in Acciaio."
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 "Ultima stampa"
 
@@ -574,7 +590,7 @@
 "Measuring reference height of calibration point"
 "Misura altezza di rif. del punto di calib."
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 "Liv. grilia piano"
 
@@ -590,7 +606,7 @@
 "Measured skew"
 "Deviazione mis"
 
-#
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "Fallimenti MMU"
 
@@ -598,7 +614,7 @@
 "MMU load failed     "
 "Caricamento MMU fallito"
 
-#
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "Caricamenti MMU falliti"
 
@@ -718,7 +734,7 @@
 "Nozzle FAN"
 "Ventola estrusore"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Metti in pausa"
 
@@ -819,14 +835,14 @@
 "Prego aggiornare."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Premete la manopola per preriscaldare l'ugello e continuare."
 
 #MSG_FS_PAUSE c=5
 "Pause"
 "Pausa"
 
-#
+#MSG_POWER_FAILURES c=15
 "Power failures"
 "Mancanza corrente"
 
@@ -850,7 +866,7 @@
 "Print from SD"
 "Stampa da SD"
 
-#
+# c=20
 "Press the knob"
 "Premere la manopola"
 
@@ -894,6 +910,10 @@
 "Please unload the filament first, then repeat this action."
 "Scaricare prima il filamento, poi ripetere l'operazione."
 
+# c=20 r=4
+"Please check the IR sensor connection, unload filament if present."
+"Controllare il collegamento al sensore e rimuovere il filamento."
+
 #MSG_RECOVERING_PRINT c=20
 "Recovering print    "
 "Recupero stampa     "
@@ -910,11 +930,11 @@
 "Reset XYZ calibr."
 "Reset calibrazione XYZ."
 
-#MSG_BED_CORRECTION_RESET
+#MSG_RESET c=14
 "Reset"
 "\x00"
 
-#MSG_RESUME_PRINT
+#MSG_RESUME_PRINT c=18
 "Resume print"
 "Riprendi stampa"
 
@@ -1150,17 +1170,17 @@
 "Unload"
 "Scarica"
 
-#
+#MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Totale fallimenti"
 
-#
+# c=20
 "to load filament"
-"per caricare il filamento"
+"per caricare il fil."
 
-#
+# c=20
 "to unload filament"
-"per scaricare il filamento"
+"per scaricare fil."
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
@@ -1170,7 +1190,7 @@
 "Unloading filament"
 "Scaricando filamento"
 
-#
+#MSG_TOTAL c=6
 "Total"
 "Totale"
 
@@ -1338,7 +1358,7 @@
 "Warn"
 "Avviso"
 
-#
+#MSG_HW_SETUP c=18
 "HW Setup"
 "Impostazioni HW"
 
@@ -1353,10 +1373,6 @@
 #MSG_MESH
 "Mesh"
 "Griglia"
-
-#
-"Mesh bed leveling"
-"Liv. griglia piano"
 
 #
 "MK3S firmware detected on MK3 printer"
@@ -1386,11 +1402,11 @@
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-code processato per un livello diverso. Per favore esegui nuovamente lo slice del modello. Stampa annullata."
 
-#
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 "G-code processato per una stampante diversa. Continuare?"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code processato per una stampante diversa. Per favore esegui nuovamente lo slice del modello. Stampa annullata."
 
@@ -1446,7 +1462,7 @@
 "Assist"
 "Assist."
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 "Piani d'acciaio"
 

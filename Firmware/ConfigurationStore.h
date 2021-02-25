@@ -38,6 +38,7 @@ typedef struct
     float max_feedrate_silent[4]; //!< max speeds for silent mode
     unsigned long max_acceleration_units_per_sq_second_silent[4];
     unsigned char axis_ustep_resolution[4];
+    float travel_acceleration; //!< travel acceleration mm/s^2
 } M500_conf;
 
 extern M500_conf cs;

@@ -2,13 +2,25 @@
 "[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
 "[%.7s]Ajust. du Z\x0aValeur enreg, contin\x0aou depart a zero?\x0a%cContinuer%cReset"
 
-#MSG_03_OR_OLDER c=18
+#MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 ou +ancien"
 
-#MSG_04_OR_NEWER c=18
+# c=18
+"FS v0.3 or older"
+"FS v0.3 ou +ancien"
+
+#MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 " 0.4 ou +recent"
+
+# c=18
+"FS v0.4 or newer"
+"FS v0.4 ou +recent"
+
+#MSG_IR_UNKNOWN c=18
+"unknown state"
+"Etat inconnu"
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 " of 4"
@@ -126,7 +138,7 @@
 "Bed"
 "Lit"
 
-#MSG_MENU_BELT_STATUS c=18
+#MSG_BELT_STATUS c=18
 "Belt status"
 "Statut courroie"
 
@@ -178,6 +190,10 @@
 "Card removed"
 "Carte retiree"
 
+#
+"Checking file"
+"\x00"
+
 #MSG_NOT_COLOR
 "Color not correct"
 "Couleur incorrecte"
@@ -206,7 +222,7 @@
 "Crash detected. Resume print?"
 "Crash detecte. Poursuivre l'impression?"
 
-#
+#MSG_CRASH c=7
 "Crash"
 "\x00"
 
@@ -238,7 +254,7 @@
 "E-correct:"
 "Correct-E:"
 
-#MSG_EJECT_FILAMENT c=17 r=1
+#MSG_EJECT_FILAMENT c=16
 "Eject filament"
 "Remonter le fil."
 
@@ -294,7 +310,7 @@
 "Extruder info"
 "Infos extrudeur"
 
-#MSG_MOVE_E
+#MSG_EXTRUDER c=17
 "Extruder"
 "Extrudeur"
 
@@ -318,7 +334,7 @@
 "Fan test"
 "Test du ventilateur"
 
-#MSG_FANS_CHECK
+#MSG_FANS_CHECK c=13
 "Fans check"
 "Verif vent."
 
@@ -326,8 +342,8 @@
 "Fil. sensor"
 "Capteur Fil."
 
-# c=14
-"Filam. runouts"
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
 "Fins filament"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -353,10 +369,6 @@
 #MSG_FS_ACTION c=10
 "FS Action"
 "\x00"
-
-# c=18
-"FS v0.4 or newer"
-"FS v0.4 ou +recent"
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
@@ -450,16 +462,16 @@
 "Checking sensors "
 "Verif. des capteurs"
 
-#MSG_SELFTEST_CHECK_X c=20
-"Checking X axis  "
+#MSG_CHECKING_X c=20
+"Checking X axis"
 "Verification axe X"
 
-#MSG_SELFTEST_CHECK_Y c=20
-"Checking Y axis  "
+#MSG_CHECKING_Y c=20
+"Checking Y axis"
 "Verification axe Y"
 
 #MSG_SELFTEST_CHECK_Z c=20
-"Checking Z axis  "
+"Checking Z axis"
 "Verification axe Z"
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
@@ -490,7 +502,7 @@
 "Insert filament"
 "Inserez le filament"
 
-#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+#MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
 "Fil. est-il charge?"
 
@@ -498,15 +510,19 @@
 "Is steel sheet on heatbed?"
 "Est la plaque sur le plat. chauffant?"
 
-#
+#MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 "Echecs derniere imp."
+
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Bonjour, je suis votre imprimante Original Prusa i3. Je vais vous accompagner au cours d'un bref processus de reglage, qui permettra de calibrer le Z-axis. Apres cela, tout sera pret pour imprimer."
 
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Si vous avez d'autres feuilles d'acier,  calibrez leurs pre-reglages dans Reglages - Config HW - Plaque en acier."
 
-#
+#MSG_LAST_PRINT c=18
 "Last print"
 "Derniere impres."
 
@@ -574,7 +590,7 @@
 "Measuring reference height of calibration point"
 "Je mesure la hauteur de reference du point de calibrage"
 
-#MSG_MESH_BED_LEVELING
+#MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
 "\x00"
 
@@ -590,7 +606,7 @@
 "Measured skew"
 "Deviat.mesuree"
 
-#
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "Echecs MMU"
 
@@ -598,7 +614,7 @@
 "MMU load failed     "
 "Echec chargement MMU"
 
-#
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "Echecs charg. MMU"
 
@@ -718,7 +734,7 @@
 "Nozzle FAN"
 "Vent. buse"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pause de l'impr."
 
@@ -819,14 +835,14 @@
 "Mettez a jour le FW."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Appuyez sur le bouton pour prechauffer la buse et continuer."
 
 #MSG_FS_PAUSE c=5
 "Pause"
 "\x00"
 
-#
+#MSG_POWER_FAILURES c=15
 "Power failures"
 "Coup.de courant"
 
@@ -850,7 +866,7 @@
 "Print from SD"
 "Impr. depuis la SD"
 
-#
+# c=20
 "Press the knob"
 "App. sur sur bouton"
 
@@ -894,6 +910,10 @@
 "Please unload the filament first, then repeat this action."
 "SVP, dechargez le filament et reessayez."
 
+# c=20 r=4
+"Please check the IR sensor connection, unload filament if present."
+"SVP, verifiez la connexion du capteur IR et decharge le filament."
+
 #MSG_RECOVERING_PRINT c=20
 "Recovering print    "
 "Recup. impression   "
@@ -910,11 +930,11 @@
 "Reset XYZ calibr."
 "Reinit. calib. XYZ"
 
-#MSG_BED_CORRECTION_RESET
+#MSG_RESET c=14
 "Reset"
 "Reinitialiser"
 
-#MSG_RESUME_PRINT
+#MSG_RESUME_PRINT c=18
 "Resume print"
 "Reprendre impression"
 
@@ -1150,15 +1170,15 @@
 "Unload"
 "Decharger"
 
-#
+#MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Total des echecs"
 
-#
+# c=20
 "to load filament"
 "pour charger le fil."
 
-#
+# c=20
 "to unload filament"
 "pour decharger fil."
 
@@ -1170,7 +1190,7 @@
 "Unloading filament"
 "Dechargement fil."
 
-#
+#MSG_TOTAL c=6
 "Total"
 "Totale"
 
@@ -1338,7 +1358,7 @@
 "Warn"
 "Avert"
 
-#
+#MSG_HW_SETUP c=18
 "HW Setup"
 "Config HW"
 
@@ -1352,10 +1372,6 @@
 
 #MSG_MESH
 "Mesh"
-"\x00"
-
-#
-"Mesh bed leveling"
 "\x00"
 
 #
@@ -1386,11 +1402,11 @@
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "Le G-code a ete prepare pour un niveau different. Veuillez decouper le modele a nouveau. L'impression a ete annulee."
 
-#
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 "Le G-code a ete prepare pour une autre version de l'imprimante. Continuer?"
 
-#
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "Le G-code a ete prepare pour une autre version de l'imprimante. Veuillez decouper le modele a nouveau. L'impression a ete annulee."
 
@@ -1446,7 +1462,7 @@
 "Assist"
 "\x00"
 
-# c=18
+#MSG_STEEL_SHEET c=18
 "Steel sheets"
 "Plaques en acier"
 
