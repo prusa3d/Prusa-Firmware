@@ -943,6 +943,12 @@ void CardReader::presort() {
 					}
 				}
 			}
+			
+			#ifdef SORTING_DUMP
+			for (uint16_t z = 0; z < fileCnt; z++)
+				printf_P(PSTR("%2u "), sort_order[z]);
+			SERIAL_PROTOCOLLN();
+			#endif
 
 #else //Bubble Sort
 			uint32_t counter = 0;
@@ -972,7 +978,6 @@ void CardReader::presort() {
 				}
 				counter++;
 
-				//MYSERIAL.println(int(i));
 				for (uint16_t j = 0; j < i; ++j) {
 					if (!IS_SD_INSERTED) return;
 					#ifdef SORTING_DUMP
