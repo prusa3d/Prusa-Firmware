@@ -1402,10 +1402,6 @@
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "G-code processato per un firmware piu recente. Per favore aggiorna il firmware. Stampa annullata."
 
-#
-"PINDA"
-"\x00"
-
 # c=20
 "Preheating to cut"
 "Preriscalda. taglio"
