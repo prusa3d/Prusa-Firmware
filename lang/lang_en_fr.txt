@@ -1358,10 +1358,6 @@
 "HW Setup"
 "Config HW"
 
-#
-"IR:"
-"IR:"
-
 #MSG_MAGNETS_COMP
 "Magnets comp."
 "Compens. aim."

@@ -1358,10 +1358,6 @@
 "HW Setup"
 "HW nastaveni"
 
-#
-"IR:"
-"\x00"
-
 #MSG_MAGNETS_COMP
 "Magnets comp."
 "Komp. magnetu"

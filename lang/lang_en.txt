@@ -1018,9 +1018,6 @@
 #MSG_HW_SETUP c=18
 "HW Setup"
 
-#
-"IR:"
-
 #MSG_MAGNETS_COMP
 "Magnets comp."
 

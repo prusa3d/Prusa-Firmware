@@ -1358,10 +1358,6 @@
 "HW Setup"
 "Configuracion HW"
 
-#
-"IR:"
-"\x00"
-
 #MSG_MAGNETS_COMP
 "Magnets comp."
 "Comp. imanes"
