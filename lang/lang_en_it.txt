@@ -1022,10 +1022,6 @@
 "Show end stops"
 "Stato finecorsa"
 
-#
-"Sensor state"
-"Stato sensore"
-
 #MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Alcuni file non saranno ordinati. Il numero massimo di file in una cartella e 100 perche siano ordinati."

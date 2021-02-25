@@ -1022,10 +1022,6 @@
 "Show end stops"
 "Afficher butees"
 
-#
-"Sensor state"
-"Etat capteur"
-
 #MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Certains fichiers ne seront pas tries. Max 100 fichiers tries par dossier."
