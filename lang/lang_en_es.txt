@@ -1210,10 +1210,6 @@
 "Waiting for PINDA probe cooling"
 "Esperando a que se enfrie la sonda PINDA"
 
-#
-"Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
-"Usa unload para retirar el filamento 1 si sobresale por fuera de la parte trasera del tubo MMU. Usa Expulsar si esta escondido dentro del tubo"
-
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
 "Aviso: tanto el tipo de impresora como el tipo de la placa han cambiado."
