@@ -4971,7 +4971,7 @@ void lcd_wizard(WizState state)
 {
     using S = WizState;
 	bool end = false;
-	int wizard_event;
+	int8_t wizard_event;
 	const char *msg = NULL;
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
@@ -4995,14 +4995,18 @@ void lcd_wizard(WizState state)
 			// Btw. the flag may even trigger the viper situation on normal start this way and the user won't be able to find out why.			
 			saved_printing = false;
 			
-			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
-			if (wizard_event) {
+			if( eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)==2){
+				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_WELCOME_SHIPPING);
 				state = S::Restore;
-				eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
-			}
-			else {
-				eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
-				end = true;
+			} else {
+				wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_WELCOME, false, true);
+				if (wizard_event) {
+					state = S::Restore;
+					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+				} else {
+					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
+					end = true;
+				}
 			}
 			break;
 		case S::Restore:

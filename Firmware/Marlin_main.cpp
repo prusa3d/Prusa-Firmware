@@ -756,7 +756,7 @@ static void factory_reset(char level)
 		lang_reset();
 		// Force the "Follow calibration flow" message at the next boot up.
 		calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
-		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
+		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 2); //run wizard
 		farm_mode = false;
 		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 
@@ -1564,7 +1564,7 @@ void setup()
 	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 	  Config_StoreSettings();
   }
-  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) >= 1) {
 	  lcd_wizard(WizState::Run);
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active

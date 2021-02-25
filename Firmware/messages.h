@@ -117,6 +117,8 @@ extern const char MSG_WIZARD_CALIBRATION_FAILED[];
 extern const char MSG_WIZARD_DONE[];
 extern const char MSG_WIZARD_HEATING[];
 extern const char MSG_WIZARD_QUIT[];
+extern const char MSG_WIZARD_WELCOME[];
+extern const char MSG_WIZARD_WELCOME_SHIPPING[];
 extern const char MSG_YES[];
 extern const char MSG_V2_CALIBRATION[];
 extern const char WELCOME_MSG[];
