@@ -1415,8 +1415,8 @@
 "Codigo G laminado para nuevo firmware. Por favor actualiza el firmware. Impresion cancelada."
 
 #
-"PINDA:"
-"PINDA:"
+"PINDA"
+"\x00"
 
 # c=20
 "Preheating to cut"

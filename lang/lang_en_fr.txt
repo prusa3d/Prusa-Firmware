@@ -1415,8 +1415,8 @@
 "Le G-code a ete prepare pour une version plus recente du firmware. Veuillez mettre a jour le firmware. L'impression annulee."
 
 #
-"PINDA:"
-"PINDA:"
+"PINDA"
+"\x00"
 
 # c=20
 "Preheating to cut"

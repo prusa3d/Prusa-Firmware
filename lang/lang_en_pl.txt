@@ -1415,7 +1415,7 @@
 "G-code pociety dla nowszego firmware. Zaktualizuj firmware. Druk anulowany."
 
 #
-"PINDA:"
+"PINDA"
 "\x00"
 
 # c=20

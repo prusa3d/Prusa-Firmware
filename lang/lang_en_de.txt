@@ -1415,7 +1415,7 @@
 "G-Code ist fuer eine neuere Firmware geslict. Bitte die Firmware updaten. Druck abgebrochen."
 
 #
-"PINDA:"
+"PINDA"
 "\x00"
 
 # c=20
