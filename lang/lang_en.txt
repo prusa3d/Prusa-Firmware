@@ -1054,9 +1054,6 @@
 #
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 
-#
-"PINDA"
-
 # c=20
 "Preheating to cut"
 
