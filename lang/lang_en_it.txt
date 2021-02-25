@@ -1419,7 +1419,7 @@
 "G-code processato per un firmware piu recente. Per favore aggiorna il firmware. Stampa annullata."
 
 #
-"PINDA:"
+"PINDA"
 "\x00"
 
 # c=20

@@ -1419,7 +1419,7 @@
 "G-code je pripraven pro novejsi firmware. Prosim aktualizujte firmware. Tisk zrusen."
 
 #
-"PINDA:"
+"PINDA"
 "\x00"
 
 # c=20
