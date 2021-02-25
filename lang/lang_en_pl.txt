@@ -1347,7 +1347,7 @@
 "Falszywy alarm"
 
 #
-"FINDA:"
+"FINDA"
 "\x00"
 
 #MSG_FIRMWARE

@@ -1347,8 +1347,8 @@
 "Falsa activacion"
 
 #
-"FINDA:"
-"FINDA:"
+"FINDA"
+"\x00"
 
 #MSG_FIRMWARE
 "Firmware"
