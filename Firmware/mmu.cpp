@@ -604,8 +604,7 @@ bool mmu_get_response(uint8_t move)
 				    {
                         puts_P(PSTR("Unload 1"));
                         current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
-                        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
-                        st_synchronize();
+                        plan_buffer_line_curposXYZE_stsync(MMU_LOAD_FEEDRATE);
 				    }
 				}
 				else //filament was unloaded from idler, no additional movements needed 
@@ -622,8 +621,7 @@ bool mmu_get_response(uint8_t move)
                     {
                         puts_P(PSTR("Unload 2"));
                         current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
-                        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
-                        st_synchronize();
+                        plan_buffer_line_curposXYZE_stsync(MMU_LOAD_FEEDRATE);
                     }
 				}
 				else //delay to allow mmu unit to pull out filament from bondtech gears and then start with infinite loading 
@@ -700,14 +698,12 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 					  //lift z
 					  current_position[Z_AXIS] += Z_PAUSE_LIFT;
 					  if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-					  plan_buffer_line_curposXYZE(15);
-					  st_synchronize();
+					  plan_buffer_line_curposXYZE_stsync(15);
 					  					  
 					  //Move XY to side
 					  current_position[X_AXIS] = X_PAUSE_POS;
 					  current_position[Y_AXIS] = Y_PAUSE_POS;
-					  plan_buffer_line_curposXYZE(50);
-					  st_synchronize();
+					  plan_buffer_line_curposXYZE_stsync(50);
 				  }
 				  if (turn_off_nozzle) {
 					  //set nozzle target temperature to 0
@@ -764,11 +760,9 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming position..."));
 				  current_position[X_AXIS] = x_position_bckp;
 				  current_position[Y_AXIS] = y_position_bckp;
-				  plan_buffer_line_curposXYZE(50);
-				  st_synchronize();
+				  plan_buffer_line_curposXYZE_stsync(50);
 				  current_position[Z_AXIS] = z_position_bckp;
-				  plan_buffer_line_curposXYZE(15);
-				  st_synchronize();
+				  plan_buffer_line_curposXYZE_stsync(15);
 			  }
 			  else {
 				  lcd_clear();
@@ -806,20 +800,16 @@ void mmu_load_to_nozzle()
 		current_position[E_AXIS] += 7.2f;
 	}
     float feedrate = 562;
-	plan_buffer_line_curposXYZE(feedrate / 60);
-    st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(feedrate);
 	current_position[E_AXIS] += 14.4f;
 	feedrate = 871;
-	plan_buffer_line_curposXYZE(feedrate / 60);
-    st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(feedrate);
 	current_position[E_AXIS] += 36.0f;
 	feedrate = 1393;
-	plan_buffer_line_curposXYZE(feedrate / 60);
-    st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(feedrate);
 	current_position[E_AXIS] += 14.4f;
 	feedrate = 871;
-	plan_buffer_line_curposXYZE(feedrate / 60);
-    st_synchronize();
+	plan_buffer_line_curposXYZE_feed_div_60_stsync(feedrate);
 	if (!saved_e_relative_mode) axis_relative_modes &= ~E_AXIS_MASK;
 }
 
@@ -1071,8 +1061,7 @@ void mmu_filament_ramming()
     for(uint8_t i = 0; i < (sizeof(ramming_sequence)/sizeof(E_step));++i)
     {
         current_position[E_AXIS] += pgm_read_float(&(ramming_sequence[i].extrude));
-        plan_buffer_line_curposXYZE(pgm_read_float(&(ramming_sequence[i].feed_rate)));
-        st_synchronize();
+        plan_buffer_line_curposXYZE_stsync(pgm_read_float(&(ramming_sequence[i].feed_rate)));
     }
 }
 
@@ -1446,8 +1435,7 @@ static bool can_load()
     current_position[E_AXIS] += 60;
     plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
     current_position[E_AXIS] -= 52;
-    plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
-    st_synchronize();
+    plan_buffer_line_curposXYZE_stsync(MMU_LOAD_FEEDRATE);
 
     uint_least8_t filament_detected_count = 0;
     const float e_increment = 0.2;
@@ -1456,8 +1444,7 @@ static bool can_load()
     for(uint_least8_t i = 0; i < steps; ++i)
     {
         current_position[E_AXIS] -= e_increment;
-        plan_buffer_line_curposXYZE(MMU_LOAD_FEEDRATE);
-        st_synchronize();
+        plan_buffer_line_curposXYZE_stsync(MMU_LOAD_FEEDRATE);
         if(0 == READ(IR_SENSOR_PIN))
         {
             ++filament_detected_count;

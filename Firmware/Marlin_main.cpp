@@ -2209,8 +2209,7 @@ void raise_z_above(float target, bool plan)
 #ifdef TMC2130
     tmc2130_home_enter(Z_AXIS_MASK);
 #endif //TMC2130
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
-    st_synchronize();
+    plan_buffer_line_curposXYZE_feed_div_60_stsync(homing_feedrate[Z_AXIS]);
 #ifdef TMC2130
     if (endstop_z_hit_on_purpose())
     {
@@ -2238,8 +2237,7 @@ bool calibrate_z_auto()
 	set_destination_to_current();
 	destination[Z_AXIS] += (1.1 * max_length(Z_AXIS) * axis_up_dir);
 	feedrate = homing_feedrate[Z_AXIS];
-	plan_buffer_line_destinationXYZE(feedrate / 60);
-	st_synchronize();
+	plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 	//	current_position[axis] = 0;
 	//	plan_set_position_curposXYZE();
 	tmc2130_home_exit();
@@ -2249,8 +2247,7 @@ bool calibrate_z_auto()
 	set_destination_to_current();
 	destination[Z_AXIS] += 10 * axis_up_dir; //10mm up
 	feedrate = homing_feedrate[Z_AXIS] / 2;
-	plan_buffer_line_destinationXYZE(feedrate / 60);
-	st_synchronize();
+	plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 	enable_endstops(endstops_enabled);
 	if (PRINTER_TYPE == PRINTER_MK3) {
 		current_position[Z_AXIS] = Z_MAX_POS + 2.0;
@@ -2271,8 +2268,7 @@ static void check_Z_crash(void)
 		current_position[Z_AXIS] = 0;
 		plan_set_position_curposXYZE();
 		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
-		plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
-		st_synchronize();
+		plan_buffer_line_curposXYZE_stsync(max_feedrate[Z_AXIS]);
 		kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 	}
 }
@@ -2305,21 +2301,18 @@ void homeaxis(int axis, uint8_t cnt)
 		set_destination_to_current();
 //        destination[axis] = 11.f;
         destination[axis] = -3.f * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
         // Move away from the possible collision with opposite endstop with the collision detection disabled.
         endstops_hit_on_purpose();
         enable_endstops(false);
         current_position[axis] = 0;
         plan_set_position_curposXYZE();
         destination[axis] = 1. * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
         // Now continue to move up to the left end stop with the collision detection enabled.
         enable_endstops(true);
         destination[axis] = 1.1 * axis_home_dir * max_length(axis);
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 		for (uint8_t i = 0; i < cnt; i++)
 		{
 			// Move away from the collision to a known distance from the left end stop with the collision detection disabled.
@@ -2328,8 +2321,7 @@ void homeaxis(int axis, uint8_t cnt)
 			current_position[axis] = 0;
 			plan_set_position_curposXYZE();
 			destination[axis] = -10.f * axis_home_dir;
-			plan_buffer_line_destinationXYZE(feedrate/60);
-			st_synchronize();
+			plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 			endstops_hit_on_purpose();
 			// Now move left up to the collision, this time with a repeatable velocity.
 			enable_endstops(true);
@@ -2339,8 +2331,7 @@ void homeaxis(int axis, uint8_t cnt)
 #else //TMC2130
 			feedrate = homing_feedrate[axis] / 2;
 #endif //TMC2130
-			plan_buffer_line_destinationXYZE(feedrate/60);
-			st_synchronize();
+			plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 #ifdef TMC2130
 			uint16_t mscnt = tmc2130_rd_MSCNT(axis);
 			if (pstep) pstep[i] = mscnt >> 4;
@@ -2376,8 +2367,7 @@ void homeaxis(int axis, uint8_t cnt)
         plan_set_position_curposXYZE();
         current_position[axis] += dist;
         destination[axis] = current_position[axis];
-        plan_buffer_line_destinationXYZE(0.5f*feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(0.5f*feedrate);
 
    		feedrate = 0.0;
     }
@@ -2391,20 +2381,17 @@ void homeaxis(int axis, uint8_t cnt)
         plan_set_position_curposXYZE();
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis];
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 #ifdef TMC2130
         check_Z_crash();
 #endif //TMC2130
         current_position[axis] = 0;
         plan_set_position_curposXYZE();
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis]/2 ;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+        plan_buffer_line_destinationXYZE_feed_div_60_stsync(feedrate);
 #ifdef TMC2130
         check_Z_crash();
 #endif //TMC2130
@@ -3018,8 +3005,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	enable_endstops(false);
 	current_position[X_AXIS] += 5;
 	current_position[Y_AXIS] += 5;
-	plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-	st_synchronize();
+	plan_buffer_line_curposXYZE_stsync(homing_feedrate[Z_AXIS] / 40);
 
 	// Let the user move the Z axes up to the end stoppers.
 #ifdef TMC2130
@@ -3068,8 +3054,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			
 		bool endstops_enabled  = enable_endstops(false);
         current_position[Z_AXIS] -= 1; //move 1mm down with disabled endstop
-        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-        st_synchronize();
+        plan_buffer_line_curposXYZE_stsync(homing_feedrate[Z_AXIS] / 40);
 
 		// Move the print head close to the bed.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -3079,9 +3064,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		tmc2130_home_enter(Z_AXIS_MASK);
 #endif //TMC2130
 
-		plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-
-		st_synchronize();
+		plan_buffer_line_curposXYZE_stsync(homing_feedrate[Z_AXIS] / 40);
 #ifdef TMC2130
 		tmc2130_home_exit();
 #endif //TMC2130
@@ -3120,8 +3103,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				clean_up_after_endstop_move(l_feedmultiply);
 				// Print head up.
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-				plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-				st_synchronize();
+				plan_buffer_line_curposXYZE_stsync(homing_feedrate[Z_AXIS] / 40);
 //#ifndef NEW_XYZCAL
 				if (result >= 0)
 				{
@@ -3260,19 +3242,16 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     //Retract E
     current_position[E_AXIS] += e_shift;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
-    st_synchronize();
+    plan_buffer_line_curposXYZE_stsync(FILAMENTCHANGE_RFEED);
 
     //Lift Z
     current_position[Z_AXIS] += z_shift;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_ZFEED);
-    st_synchronize();
+    plan_buffer_line_curposXYZE_stsync(FILAMENTCHANGE_ZFEED);
 
     //Move XY to side
     current_position[X_AXIS] = x_position;
     current_position[Y_AXIS] = y_position;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
-    st_synchronize();
+    plan_buffer_line_curposXYZE_stsync(FILAMENTCHANGE_XYFEED);
 
     //Beep, manage nozzle heater and wait for user to start unload filament
     if(!mmu_enabled) M600_wait_for_user(HotendTempBckp);
@@ -3295,8 +3274,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 			lcd_clear();
 			lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
 			current_position[X_AXIS] -= 100;
-			plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
-			st_synchronize();
+			plan_buffer_line_curposXYZE_stsync(FILAMENTCHANGE_XYFEED);
 			lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
         }
     }
@@ -3389,8 +3367,7 @@ void gcode_M701()
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 		current_position[E_AXIS] += 40;
-		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
-		st_synchronize();
+		plan_buffer_line_curposXYZE_stsync(400 / 60); //fast sequence
 
         raise_z_above(MIN_Z_FOR_LOAD, false);
 		current_position[E_AXIS] += 30;
@@ -4837,13 +4814,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             plan_buffer_line_curposXYZE(3000 / 60);
             current_position[Z_AXIS] = 50;
             current_position[Y_AXIS] = 180;
-            plan_buffer_line_curposXYZE(3000 / 60);
-            st_synchronize();
+            plan_buffer_line_curposXYZE_stsync(3000 / 60);
             lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
             current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
             current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
-            plan_buffer_line_curposXYZE(3000 / 60);
-            st_synchronize();
+            plan_buffer_line_curposXYZE_stsync(3000 / 60);
             gcode_G28(false, false, true);
 
         }
@@ -4881,8 +4856,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         current_position[Y_AXIS] = PINDA_PREHEAT_Y;
         plan_buffer_line_curposXYZE(3000 / 60);
         current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-        plan_buffer_line_curposXYZE(3000 / 60);
-        st_synchronize();
+        plan_buffer_line_curposXYZE_stsync(3000 / 60);
 
         while (current_temperature_pinda < start_temp)
         {
@@ -4896,8 +4870,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         plan_buffer_line_curposXYZE(3000 / 60);
         current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
         current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
-        plan_buffer_line_curposXYZE(3000 / 60);
-        st_synchronize();
+        plan_buffer_line_curposXYZE_stsync(3000 / 60);
 
         bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
         if (find_z_result == false) {
@@ -4930,8 +4903,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             current_position[Y_AXIS] = PINDA_PREHEAT_Y;
             plan_buffer_line_curposXYZE(3000 / 60);
             current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-            plan_buffer_line_curposXYZE(3000 / 60);
-            st_synchronize();
+            plan_buffer_line_curposXYZE_stsync(3000 / 60);
             while (current_temperature_pinda < temp)
             {
                 delay_keep_alive(1000);
@@ -4941,8 +4913,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             plan_buffer_line_curposXYZE(3000 / 60);
             current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
             current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
-            plan_buffer_line_curposXYZE(3000 / 60);
-            st_synchronize();
+            plan_buffer_line_curposXYZE_stsync(3000 / 60);
             find_z_result = find_bed_induction_sensor_point_z(-1.f);
             if (find_z_result == false) {
                 lcd_temp_cal_show_result(find_z_result);
@@ -5186,9 +5157,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 		#endif //SUPPORT_VERBOSITY
 
-		plan_buffer_line_curposXYZE(homing_feedrate[X_AXIS] / 30);
-		// Wait until the move is finished.
-		st_synchronize();
+        // And wait until the move is finished.
+		plan_buffer_line_curposXYZE_stsync(homing_feedrate[X_AXIS] / 30);
 
 		uint8_t mesh_point = 0; //index number of calibration point
 
@@ -5237,8 +5207,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if((ix == 0) && (iy == 0)) current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 			else current_position[Z_AXIS] += 2.f / nMeasPoints; //use relative movement from Z coordinate where PINDa triggered on previous point. This makes calibration faster.
 			float init_z_bckp = current_position[Z_AXIS];
-			plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
-			st_synchronize();
+			plan_buffer_line_curposXYZE_stsync(Z_LIFT_FEEDRATE);
 
 			// Move to XY position of the sensor point.
 			current_position[X_AXIS] = BED_X(ix, nMeasPoints);
@@ -5258,8 +5227,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			#endif // SUPPORT_VERBOSITY
 
 			//printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
-			plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
-			st_synchronize();
+			plan_buffer_line_curposXYZE_stsync(XY_AXIS_FEEDRATE);
 
 			// Go down until endstop is hit
 			const float Z_CALIBRATION_THRESHOLD = 1.f;
@@ -5270,8 +5238,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			if (init_z_bckp - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
 				//printf_P(PSTR("Another attempt! Current Z position: %f\n"), current_position[Z_AXIS]);
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-				plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
-				st_synchronize();
+				plan_buffer_line_curposXYZE_stsync(Z_LIFT_FEEDRATE);
 
 				if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
 					printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
@@ -5325,8 +5292,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			MYSERIAL.print(current_position[Z_AXIS], 5);
 		}
 		#endif // SUPPORT_VERBOSITY
-		plan_buffer_line_curposXYZE(Z_LIFT_FEEDRATE);
-		st_synchronize();
+		plan_buffer_line_curposXYZE_stsync(Z_LIFT_FEEDRATE);
 		if (mesh_point != nMeasPoints * nMeasPoints) {
                Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
                bool bState;
@@ -5342,15 +5308,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                     // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
                     bState=enable_z_endstop(false);
                     current_position[Z_AXIS] -= 1;
-                    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-                    st_synchronize();
+                    plan_buffer_line_curposXYZE_stsync(homing_feedrate[Z_AXIS] / 40);
                     enable_z_endstop(true);
 #ifdef TMC2130
                     tmc2130_home_enter(Z_AXIS_MASK);
 #endif // TMC2130
                     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-                    st_synchronize();
+                    plan_buffer_line_curposXYZE_stsync(homing_feedrate[Z_AXIS] / 40);
 #ifdef TMC2130
                     tmc2130_home_exit();
 #endif // TMC2130
@@ -10893,8 +10857,7 @@ void uvlo_()
 
     // Retract
     current_position[E_AXIS] -= default_retraction;
-    plan_buffer_line_curposXYZE(95);
-    st_synchronize();
+    plan_buffer_line_curposXYZE_stsync(95);
     disable_e0();
 
     // Read out the current Z motor microstep counter to move the axis up towards
@@ -10906,8 +10869,7 @@ void uvlo_()
     current_position[Z_AXIS] += float(1024 - z_microsteps)
                                 / (z_res * cs.axis_steps_per_unit[Z_AXIS])
                                 + UVLO_Z_AXIS_SHIFT;
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
-    st_synchronize();
+    plan_buffer_line_curposXYZE_feed_div_60_stsync(homing_feedrate[Z_AXIS]);
     poweroff_z();
 
     // Write the file position.
@@ -11024,8 +10986,7 @@ void uvlo_tiny()
         current_position[Z_AXIS] += float(1024 - z_microsteps)
                                     / (z_res * cs.axis_steps_per_unit[Z_AXIS])
                                     + UVLO_TINY_Z_AXIS_SHIFT;
-        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS]/60);
-        st_synchronize();
+        plan_buffer_line_curposXYZE_feed_div_60_stsync(homing_feedrate[Z_AXIS]);
         poweroff_z();
 
         // Update Z position

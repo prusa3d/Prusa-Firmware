@@ -924,8 +924,7 @@ static inline void go_xy(float x, float y, float fr)
 
 static inline void go_to_current(float fr)
 {
-    plan_buffer_line_curposXYZE(fr);
-    st_synchronize();
+    plan_buffer_line_curposXYZE_stsync(fr);
 }
 
 static inline void update_current_position_xyz()
