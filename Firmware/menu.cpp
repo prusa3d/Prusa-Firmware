@@ -568,6 +568,8 @@ void menu_progressbar_init(uint16_t total, const char* title)
 void menu_progressbar_update(uint16_t newVal)
 {
 	uint8_t newCnt = (newVal * LCD_WIDTH) / progressbar_total;
+	if (newCnt > LCD_WIDTH)
+		newCnt = LCD_WIDTH;
 	while (newCnt > progressbar_block_count)
 	{
 		lcd_print('\xFF');
