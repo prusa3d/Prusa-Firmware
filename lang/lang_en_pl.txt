@@ -190,6 +190,10 @@
 "Card removed"
 "Karta wyjeta"
 
+#
+"Checking file"
+"\x00"
+
 #MSG_NOT_COLOR
 "Color not correct"
 "Kolor zanieczysz."
@@ -338,8 +342,8 @@
 "Fil. sensor"
 "Czuj. filam."
 
-#MSG_FIL_RUNOUTS c=14
-"Fil. runouts  "
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
 "Konc.filamentu"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
@@ -510,6 +514,10 @@
 "Last print failures"
 "Ostatnie bledy druku"
 
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Czesc, jestem Twoja drukarka Original Prusa i3. Przeprowadze Cie przez krotka kalibracje osi Z, po ktorej mozesz rozpoczac drukowanie."
+
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Jesli masz dodatkowe plyty stalowe, to skalibruj ich ustawienia w menu Ustawienia - Ustawienia HW - Plyty stalowe."
@@ -598,7 +606,7 @@
 "Measured skew"
 "Zmierzony skos"
 
-#MSG_MMU_FAILS c=14
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "Bledy MMU"
 
@@ -606,7 +614,7 @@
 "MMU load failed     "
 "Blad ladowania MMU"
 
-#MSG_MMU_LOAD_FAILS c=14
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "Bledy ladow. MMU"
 
@@ -726,7 +734,7 @@
 "Nozzle FAN"
 "WentHotend"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Wstrzymanie wydruku"
 
@@ -834,7 +842,7 @@
 "Pause"
 "Pauza"
 
-#MSG_POWER_FAILURES c=14
+#MSG_POWER_FAILURES c=15
 "Power failures"
 "Zaniki zasilania"
 
@@ -1398,7 +1406,7 @@
 "G-code sliced for a different printer type. Continue?"
 "G-code pociety dla innej drukarki. Kontynuowac?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code pociety dla drukarki innego typu. Potnij model ponownie. Druk anulowany."
 
