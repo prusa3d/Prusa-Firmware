@@ -190,6 +190,10 @@
 "Card removed"
 "Karta vyjmuta"
 
+#
+"Checking file"
+"\x00"
+
 #MSG_NOT_COLOR
 "Color not correct"
 "Barva neni cista"
@@ -510,6 +514,10 @@
 "Last print failures"
 "Selhani posl. tisku"
 
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Ahoj, jsem vase tiskarna Original Prusa i3. Provedu vas kratkym procesem nastaveni, ve kterem zkalibrujeme osu Z. Pak budete moct zacit tisknout."
+
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Mate-li vice tiskovych platu, kalibrujte je v menu Nastaveni - HW nastaveni - Tiskove platy"
@@ -726,7 +734,7 @@
 "Nozzle FAN"
 "Vent. trysky"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pozastavit tisk"
 

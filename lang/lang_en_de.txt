@@ -190,6 +190,10 @@
 "Card removed"
 "SD Karte entfernt"
 
+#
+"Checking file"
+"\x00"
+
 #MSG_NOT_COLOR
 "Color not correct"
 "Falsche Farbe"
@@ -510,6 +514,10 @@
 "Last print failures"
 "Letzte Druckfehler"
 
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Hallo, ich bin Ihr Original Prusa i3 Drucker. Ich werde Sie durch einen kurzen Einrichtungsprozess fuehren, bei dem die Z-Achse kalibriert wird. Danach sind Sie bereit fuer den Druck."
+
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Wenn Sie zusaetzliche Stahlbleche haben, kalibrieren Sie deren Voreinstellungen unter Einstellungen - HW Setup - Stahlbleche."
@@ -726,7 +734,7 @@
 "Nozzle FAN"
 "Duesevent."
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Druck pausieren"
 

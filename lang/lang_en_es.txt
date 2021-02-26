@@ -190,6 +190,10 @@
 "Card removed"
 "Tarjeta retirada"
 
+#
+"Checking file"
+"\x00"
+
 #MSG_NOT_COLOR
 "Color not correct"
 "Color no homogeneo"
@@ -510,6 +514,10 @@
 "Last print failures"
 "Ultimos imp. fallos"
 
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Hola, soy tu impresora Original Prusa i3. Te guiare a traves de un breve proceso de configuracion, en el que se calibrara el eje Z. Despues, estaras listo para imprimir."
+
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Si tienes planchas de acero adicionales, calibra sus ajustes en Ajustes - Ajustes HW - Planchas acero."
@@ -726,7 +734,7 @@
 "Nozzle FAN"
 "Vent. capa"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pausar impresion"
 

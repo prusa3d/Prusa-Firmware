@@ -756,7 +756,7 @@ static void factory_reset(char level)
 		lang_reset();
 		// Force the "Follow calibration flow" message at the next boot up.
 		calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
-		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
+		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 2); //run wizard
 		farm_mode = false;
 		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 
@@ -1564,7 +1564,7 @@ void setup()
 	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
 	  Config_StoreSettings();
   }
-  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) >= 1) {
 	  lcd_wizard(WizState::Run);
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
@@ -1826,8 +1826,7 @@ void loop()
 	}
     
 #ifdef FANCHECK
-    if (fan_check_error && isPrintPaused)
-    {
+    if (fan_check_error && isPrintPaused && !IS_SD_PRINTING) {
         KEEPALIVE_STATE(PAUSED_FOR_USER);
         host_keepalive(); //prevent timeouts since usb processing is disabled until print is resumed. This is for a crude way of pausing a print on all hosts.
     }
@@ -2723,8 +2722,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
 #endif
 
-      // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
-      // consumed during the first movements following this statement.
+      // Reset baby stepping to zero, if the babystepping has already been loaded before.
       if (home_z)
         babystep_undo();
 
@@ -3734,12 +3732,13 @@ There are reasons why some G Codes aren't in numerical order.
 void process_commands()
 {
 #ifdef FANCHECK
-	if(fan_check_error == EFCE_DETECTED){
-		fan_check_error = EFCE_REPORTED;
-		// SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
-		lcd_pause_print();
-		cmdqueue_serial_disabled = true;
-	}
+    if(fan_check_error == EFCE_DETECTED) {
+        fan_check_error = EFCE_REPORTED;
+        if (is_usb_printing)
+            lcd_pause_usb_print();
+        else
+            lcd_pause_print();
+    }
 #endif
 
 	if (!buflen) return; //empty command
@@ -4754,6 +4753,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     */
     case 30: 
         {
+            homing_flag = true;
             st_synchronize();
             // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
             int l_feedmultiply = setup_for_endstop_move();
@@ -4765,6 +4765,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			printf_P(_N("%S X: %.5f Y: %.5f Z: %.5f\n"), _T(MSG_BED), _x, _y, _z);
 
             clean_up_after_endstop_move(l_feedmultiply);
+            homing_flag = false;
         }
         break;
 	
@@ -4855,6 +4856,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                 break;
             }
         }
+
+        homing_flag = true; // keep homing on to avoid babystepping while the LCD is enabled
         lcd_update_enable(true);
         KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
         SERIAL_ECHOLNPGM("PINDA probe calibration start");
@@ -4899,6 +4902,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
         if (find_z_result == false) {
             lcd_temp_cal_show_result(find_z_result);
+            homing_flag = false;
             break;
         }
         zero_z = current_position[Z_AXIS];
@@ -4949,9 +4953,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             printf_P(_N("\nPINDA temperature: %.1f Z shift (mm): %.3f"), current_temperature_pinda, current_position[Z_AXIS] - zero_z);
 
             EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
-
         }
         lcd_temp_cal_show_result(true);
+        homing_flag = false;
 
 #else //PINDA_THERMISTOR
 
@@ -5161,8 +5165,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 		mbl.reset(); //reset mesh bed leveling
 
-					 // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
-					 // consumed during the first movements following this statement.
+		// Reset baby stepping to zero, if the babystepping has already been loaded before.
 		babystep_undo();
 
 		// Cycle through all points and probe them
@@ -8134,9 +8137,9 @@ Sigma_Exit:
     /*!
     ### M602 - Resume print <a href="https://reprap.org/wiki/G-code#M602:_Resume_print">M602: Resume print</a>
     */
-    case 602: {
-        if (isPrintPaused)
-            lcd_resume_print();
+    case 602:
+    {
+        if (isPrintPaused) lcd_resume_print();
     }
     break;
 
@@ -9690,7 +9693,7 @@ void manage_inactivity_IR_ANALOG_Check(uint16_t &nFSCheckCount, ClFsensorPCB isV
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-bool bInhibitFlag;
+bool bInhibitFlag = false;
 #ifdef IR_SENSOR_ANALOG
 static uint16_t nFSCheckCount=0;
 #endif // IR_SENSOR_ANALOG
@@ -9698,16 +9701,11 @@ static uint16_t nFSCheckCount=0;
 	if (mmu_enabled == false)
 	{
 //-//		if (mcode_in_progress != 600) //M600 not in progress
-#ifdef PAT9125
-		bInhibitFlag=(menu_menu==lcd_menu_extruder_info); // Support::ExtruderInfo menu active
-#endif // PAT9125
-#ifdef IR_SENSOR
-		bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
+		if (!PRINTER_ACTIVE) bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); //Block Filament sensor actions if PRINTER is not active and Support::SensorInfo menu active
 #ifdef IR_SENSOR_ANALOG
-		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Settings::HWsetup::FSdetect menu active
+		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Block Filament sensor actions if Settings::HWsetup::FSdetect menu active
 #endif // IR_SENSOR_ANALOG
-#endif // IR_SENSOR
-		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
+		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{

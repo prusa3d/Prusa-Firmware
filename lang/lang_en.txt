@@ -142,6 +142,9 @@
 #MSG_SD_REMOVED
 "Card removed"
 
+#
+"Checking file"
+
 #MSG_NOT_COLOR
 "Color not correct"
 
@@ -382,6 +385,9 @@
 #MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 
@@ -544,7 +550,7 @@
 #
 "Nozzle FAN"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 
 #MSG_PID_RUNNING c=20 r=1
