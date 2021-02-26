@@ -791,7 +791,7 @@ void CardReader::updir()
 */
 void CardReader::getfilename_sorted(const uint16_t nr) {
     if (nr < sort_count)
-        getfilename_simple(sort_positions[nr]);
+        getfilename_simple(sort_positions[sort_count - nr - 1]);
     else
         getfilename(nr);
 }
@@ -854,31 +854,29 @@ void CardReader::presort() {
 				#endif
 			}
 
+#define _SORT_CMP_NODIR() (strcasecmp(name1, name2) < 0) //true if lowercase(name1) < lowercase(name2)
+#define _SORT_CMP_TIME_NODIR() (((crmod_date_bckp == crmodDate) && (crmod_time_bckp > crmodTime)) || (crmod_date_bckp > crmodDate))
+
+#if HAS_FOLDER_SORTING
+#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs < 0 ? dir1 : !dir1))
+#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
+#endif
+
 #ifdef QUICKSORT
 			quicksort(0, fileCnt - 1);
 #elif defined(SHELLSORT)
-
-#define _SORT_CMP_NODIR() (strcasecmp(name2, name1) < 0)
-#define _SORT_CMP_TIME_NODIR() (((crmod_date_bckp == crmodDate) && (crmod_time_bckp < crmodTime)) || (crmod_date_bckp < crmodDate))
-#if HAS_FOLDER_SORTING
-#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs < 0 ? filenameIsDir : !filenameIsDir))
-#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? filenameIsDir : !filenameIsDir))
-#endif
 			for (uint8_t runs = 0; runs < 2; runs++)
 			{
 				//run=0: sorts all files and moves folders to the beginning
 				//run=1: assumes all folders are at the beginning of the list and sorts them
-				uint8_t* sortingBaseArray;
 				uint16_t sortCountFiles = 0;
 				if (runs == 0)
 				{
-					sortingBaseArray = sort_order;
 					sortCountFiles = fileCnt;
 				}
 				#if HAS_FOLDER_SORTING
 				else
 				{
-					sortingBaseArray = sort_order + (fileCnt - dirCnt);
 					sortCountFiles = dirCnt;
 				}
 				#endif
@@ -898,7 +896,7 @@ void CardReader::presort() {
 						counter++;
 						
 						manage_heater();
-						uint8_t orderBckp = sortingBaseArray[i];
+						uint8_t orderBckp = sort_order[i];
 						getfilename_simple(sort_positions[orderBckp]);
 						strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
 						crmod_date_bckp = crmodDate;
@@ -908,7 +906,7 @@ void CardReader::presort() {
 						#endif
 						
 						uint16_t j = i;
-						getfilename_simple(sort_positions[sortingBaseArray[j - gap]]);
+						getfilename_simple(sort_positions[sort_order[j - gap]]);
 						char *name2 = LONGEST_FILENAME; // use the string in-place
 						#if HAS_FOLDER_SORTING
 						while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_DIR(FOLDER_SORTING):_SORT_CMP_DIR(FOLDER_SORTING)))
@@ -916,42 +914,27 @@ void CardReader::presort() {
 						while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_NODIR():_SORT_CMP_NODIR()))
 						#endif
 						{
-							sortingBaseArray[j] = sortingBaseArray[j - gap];
+							sort_order[j] = sort_order[j - gap];
 							j -= gap;
 							#ifdef SORTING_DUMP
 							for (uint16_t z = 0; z < sortCountFiles; z++)
 							{
-								printf_P(PSTR("%2u "), sortingBaseArray[z]);
+								printf_P(PSTR("%2u "), sort_order[z]);
 							}
 							printf_P(PSTR("i%2d j%2d gap%2d orderBckp%2d\n"), i, j, gap, orderBckp);
 							#endif
 							if (j < gap) break;
-							getfilename_simple(sort_positions[sortingBaseArray[j - gap]]);
+							getfilename_simple(sort_positions[sort_order[j - gap]]);
 							name2 = LONGEST_FILENAME; // use the string in-place
 						}
-						sortingBaseArray[j] = orderBckp;
+						sort_order[j] = orderBckp;
 					}
 				}
 			}
-			
-			#ifdef SORTING_DUMP
-			for (uint16_t z = 0; z < fileCnt; z++)
-				printf_P(PSTR("%2u "), sort_order[z]);
-			SERIAL_PROTOCOLLN();
-			#endif
 
 #else //Bubble Sort
 			uint16_t counter = 0;
 			menu_progressbar_init(0.5*(fileCnt - 1)*(fileCnt), _i("Sorting files"));
-
-			// Compare names from the array or just the two buffered names
-			#define _SORT_CMP_NODIR() (strcasecmp(name1, name2) < 0) //true if lowercase(name1) < lowercase(name2)
-			#define _SORT_CMP_TIME_NODIR() (((crmod_date_bckp == crmodDate) && (crmod_time_bckp > crmodTime)) || (crmod_date_bckp > crmodDate))
-
-			#if HAS_FOLDER_SORTING
-			#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs < 0 ? dir1 : !dir1))
-			#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
-			#endif
 
 			for (uint16_t i = fileCnt; --i;) {
 				if (!IS_SD_INSERTED) return;
@@ -986,12 +969,16 @@ void CardReader::presort() {
 													// Sort the current pair according to settings.
 					if (
 					#if HAS_FOLDER_SORTING
-					(sdSort == SD_SORT_TIME && _SORT_CMP_TIME_DIR(FOLDER_SORTING)) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_DIR(FOLDER_SORTING))
+						!((sdSort == SD_SORT_TIME && _SORT_CMP_TIME_DIR(FOLDER_SORTING)) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_DIR(FOLDER_SORTING)))
 					#else
-						(sdSort == SD_SORT_TIME && _SORT_CMP_TIME_NODIR()) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_NODIR())
+						!((sdSort == SD_SORT_TIME && _SORT_CMP_TIME_NODIR()) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_NODIR()))
 					#endif
 						)
 					{
+						#ifdef SORTING_DUMP
+						puts_P(PSTR("swap"));
+						#endif
+						
 						sort_order[j] = o2;
 						sort_order[j + 1] = o1;
 						didSwap = true;
@@ -1000,6 +987,12 @@ void CardReader::presort() {
 				if (!didSwap) break;
 			} //end of bubble sort loop
 #endif
+
+			#ifdef SORTING_DUMP
+			for (uint16_t z = 0; z < fileCnt; z++)
+				printf_P(PSTR("%2u "), sort_order[z]);
+			SERIAL_PROTOCOLLN();
+			#endif
 
 			uint8_t sort_order_reverse_index[fileCnt];
 			for (uint8_t i = 0; i < fileCnt; i++)
