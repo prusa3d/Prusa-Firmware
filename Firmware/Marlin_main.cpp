@@ -768,8 +768,6 @@ static void factory_reset(char level)
 
 	case 3:
 		menu_progressbar_init(EEPROM_TOP, PSTR("ERASING all data"));
-		Sound_MakeCustom(100,0,false);
-		
 		// Erase EEPROM
 		for (uint16_t i = 0; i < EEPROM_TOP; i++) {
 			eeprom_update_byte((uint8_t*)i, 0xFF);
