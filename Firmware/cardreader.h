@@ -54,7 +54,7 @@ public:
 		void swap(uint8_t left, uint8_t right);
 		void quicksort(uint8_t left, uint8_t right);
 	 #endif //SDSORT_QUICKSORT
-     void getfilename_sorted(const uint16_t nr);
+     void getfilename_sorted(const uint16_t nr, uint8_t sdSort);
   #endif
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }

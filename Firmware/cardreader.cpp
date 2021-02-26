@@ -789,9 +789,9 @@ void CardReader::updir()
 /**
 * Get the name of a file in the current directory by sort-index
 */
-void CardReader::getfilename_sorted(const uint16_t nr) {
+void CardReader::getfilename_sorted(const uint16_t nr, uint8_t sdSort) {
     if (nr < sort_count)
-        getfilename_simple(sort_positions[sort_count - nr - 1]);
+        getfilename_simple(sort_positions[(sdSort == SD_SORT_ALPHA) ? (sort_count - nr - 1) : nr]);
     else
         getfilename(nr);
 }
@@ -854,17 +854,18 @@ void CardReader::presort() {
 				#endif
 			}
 
+#ifdef QUICKSORT
+			quicksort(0, fileCnt - 1);
+#elif defined(SHELLSORT)
+
 #define _SORT_CMP_NODIR() (strcasecmp(name1, name2) < 0) //true if lowercase(name1) < lowercase(name2)
-#define _SORT_CMP_TIME_NODIR() (((crmod_date_bckp == crmodDate) && (crmod_time_bckp > crmodTime)) || (crmod_date_bckp > crmodDate))
+#define _SORT_CMP_TIME_NODIR() (((crmod_date_bckp == crmodDate) && (crmod_time_bckp < crmodTime)) || (crmod_date_bckp < crmodDate))
 
 #if HAS_FOLDER_SORTING
 #define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs < 0 ? dir1 : !dir1))
 #define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
 #endif
 
-#ifdef QUICKSORT
-			quicksort(0, fileCnt - 1);
-#elif defined(SHELLSORT)
 			for (uint8_t runs = 0; runs < 2; runs++)
 			{
 				//run=0: sorts all files and moves folders to the beginning
@@ -933,6 +934,15 @@ void CardReader::presort() {
 			}
 
 #else //Bubble Sort
+
+#define _SORT_CMP_NODIR() (strcasecmp(name1, name2) < 0) //true if lowercase(name1) < lowercase(name2)
+#define _SORT_CMP_TIME_NODIR() (((crmod_date_bckp == crmodDate) && (crmod_time_bckp > crmodTime)) || (crmod_date_bckp > crmodDate))
+
+#if HAS_FOLDER_SORTING
+#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs < 0 ? dir1 : !dir1))
+#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
+#endif
+
 			uint16_t counter = 0;
 			menu_progressbar_init(0.5*(fileCnt - 1)*(fileCnt), _i("Sorting files"));
 
@@ -969,9 +979,9 @@ void CardReader::presort() {
 													// Sort the current pair according to settings.
 					if (
 					#if HAS_FOLDER_SORTING
-						!((sdSort == SD_SORT_TIME && _SORT_CMP_TIME_DIR(FOLDER_SORTING)) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_DIR(FOLDER_SORTING)))
+						(sdSort == SD_SORT_TIME && _SORT_CMP_TIME_DIR(FOLDER_SORTING)) || (sdSort == SD_SORT_ALPHA && !_SORT_CMP_DIR(FOLDER_SORTING))
 					#else
-						!((sdSort == SD_SORT_TIME && _SORT_CMP_TIME_NODIR()) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_NODIR()))
+						(sdSort == SD_SORT_TIME && _SORT_CMP_TIME_NODIR()) || (sdSort == SD_SORT_ALPHA && !_SORT_CMP_NODIR())
 					#endif
 						)
 					{
