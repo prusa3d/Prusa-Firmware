@@ -4984,10 +4984,10 @@ void lcd_wizard(WizState state)
 			saved_printing = false;
 			
 			if( eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)==2){
-				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_WELCOME_SHIPPING);
+				lcd_show_fullscreen_message_and_wait_P(_T(MSG_WIZARD_WELCOME_SHIPPING));
 				state = S::Restore;
 			} else {
-				wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_WELCOME, false, true);
+				wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_WELCOME), false, true);
 				if (wizard_event) {
 					state = S::Restore;
 					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
