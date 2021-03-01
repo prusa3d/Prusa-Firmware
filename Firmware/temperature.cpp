@@ -2047,18 +2047,18 @@ FORCE_INLINE static void temperature_isr()
    
     if(curTodo>0)
     {
-		asm("cli");
+      CRITICAL_SECTION_START;
       babystep(axis,/*fwd*/true);
       babystepsTodo[axis]--; //less to do next time
-		asm("sei");
+      CRITICAL_SECTION_END;
     }
     else
     if(curTodo<0)
     {
-		asm("cli");
+      CRITICAL_SECTION_START;
       babystep(axis,/*fwd*/false);
       babystepsTodo[axis]++; //less to do next time
-		asm("sei");
+      CRITICAL_SECTION_END;
     }
   }
 #endif //BABYSTEPPING

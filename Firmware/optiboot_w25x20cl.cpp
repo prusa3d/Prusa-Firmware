@@ -7,6 +7,7 @@
 #include "w25x20cl.h"
 #include "stk500.h"
 #include "bootapp.h"
+#include <avr/wdt.h>
 
 #define OPTIBOOT_MAJVER 6
 #define OPTIBOOT_CUSTOMVER 0
@@ -39,14 +40,10 @@ static unsigned const int __attribute__((section(".version")))
 #endif
 
 static void watchdogConfig(uint8_t x) {
+  CRITICAL_SECTION_START
   WDTCSR = _BV(WDCE) | _BV(WDE);
   WDTCSR = x;
-}
-
-static void watchdogReset() {
-  __asm__ __volatile__ (
-    "wdr\n"
-  );
+  CRITICAL_SECTION_END
 }
 
 #define RECV_READY ((UCSR0A & _BV(RXC0)) != 0)
@@ -63,7 +60,7 @@ static uint8_t getch(void) {
        * the application "soon", if it keeps happening.  (Note that we
        * don't care that an invalid char is returned...)
        */
-    watchdogReset();
+    wdt_reset();
   }
   ch = UDR0;
   return ch;
@@ -117,7 +114,7 @@ uint8_t optiboot_w25x20cl_enter()
   // Handshake sequence: Initialize the serial line, flush serial line, send magic, receive magic.
   // If the magic is not received on time, or it is not received correctly, continue to the application.
   {
-    watchdogReset();
+    wdt_reset();
     unsigned long  boot_timeout = 2000000;
     unsigned long  boot_timer = 0;
     const char    *ptr = entry_magic_send;
@@ -125,7 +122,7 @@ uint8_t optiboot_w25x20cl_enter()
     const uint8_t selectedSerialPort_bak = selectedSerialPort;
     // Flush the serial line.
     while (RECV_READY) {
-      watchdogReset();
+      wdt_reset();
       // Dummy register read (discard)
       (void)(*(char *)UDR0);
     }
@@ -135,14 +132,14 @@ uint8_t optiboot_w25x20cl_enter()
     // Send the initial magic string.
     while (ptr != end)
       putch(pgm_read_byte(ptr ++));
-    watchdogReset();
+    wdt_reset();
     // Wait for two seconds until a magic string (constant entry_magic) is received
     // from the serial line.
     ptr = entry_magic_receive;
     end = strlen_P(entry_magic_receive) + ptr;
     while (ptr != end) {
       while (rx_buffer.head == SerialHead) {
-        watchdogReset();
+        wdt_reset();
         delayMicroseconds(1);
         if (++ boot_timer > boot_timeout)
         {
@@ -159,7 +156,7 @@ uint8_t optiboot_w25x20cl_enter()
           selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
           return 0;
       }
-      watchdogReset();
+      wdt_reset();
     }
     cbi(UCSR0B, RXCIE0); //disable the MarlinSerial0 interrupt
     // Send the cfm magic string.

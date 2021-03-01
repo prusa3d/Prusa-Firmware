@@ -2436,38 +2436,44 @@ void refresh_cmd_timeout(void)
 }
 
 #ifdef FWRETRACT
-  void retract(bool retracting, bool swapretract = false) {
+void retract(bool retracting, bool swapretract = false) {
+    // Perform FW retraction, just if needed, but behave as if the move has never took place in
+    // order to keep E/Z coordinates unchanged. This is done by manipulating the internal planner
+    // position, which requires a sync
     if(retracting && !retracted[active_extruder]) {
-      destination[X_AXIS]=current_position[X_AXIS];
-      destination[Y_AXIS]=current_position[Y_AXIS];
-      destination[Z_AXIS]=current_position[Z_AXIS];
-      destination[E_AXIS]=current_position[E_AXIS];
-      current_position[E_AXIS]+=(swapretract?retract_length_swap:cs.retract_length)*float(extrudemultiply)*0.01f;
-      plan_set_e_position(current_position[E_AXIS]);
-      float oldFeedrate = feedrate;
-      feedrate=cs.retract_feedrate*60;
-      retracted[active_extruder]=true;
-      prepare_move();
-      current_position[Z_AXIS]-=cs.retract_zlift;
-      plan_set_position_curposXYZE();
-      prepare_move();
-      feedrate = oldFeedrate;
+        st_synchronize();
+        set_destination_to_current();
+        current_position[E_AXIS]+=(swapretract?retract_length_swap:cs.retract_length)*float(extrudemultiply)*0.01f;
+        plan_set_e_position(current_position[E_AXIS]);
+        float oldFeedrate = feedrate;
+        feedrate=cs.retract_feedrate*60;
+        retracted[active_extruder]=true;
+        prepare_move();
+        if(cs.retract_zlift) {
+            st_synchronize();
+            current_position[Z_AXIS]-=cs.retract_zlift;
+            plan_set_position_curposXYZE();
+            prepare_move();
+        }
+        feedrate = oldFeedrate;
     } else if(!retracting && retracted[active_extruder]) {
-      destination[X_AXIS]=current_position[X_AXIS];
-      destination[Y_AXIS]=current_position[Y_AXIS];
-      destination[Z_AXIS]=current_position[Z_AXIS];
-      destination[E_AXIS]=current_position[E_AXIS];
-      current_position[Z_AXIS]+=cs.retract_zlift;
-      plan_set_position_curposXYZE();
-      current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(cs.retract_length+cs.retract_recover_length))*float(extrudemultiply)*0.01f;
-      plan_set_e_position(current_position[E_AXIS]);
-      float oldFeedrate = feedrate;
-      feedrate=cs.retract_recover_feedrate*60;
-      retracted[active_extruder]=false;
-      prepare_move();
-      feedrate = oldFeedrate;
+        st_synchronize();
+        set_destination_to_current();
+        float oldFeedrate = feedrate;
+        feedrate=cs.retract_recover_feedrate*60;
+        if(cs.retract_zlift) {
+            current_position[Z_AXIS]+=cs.retract_zlift;
+            plan_set_position_curposXYZE();
+            prepare_move();
+            st_synchronize();
+        }
+        current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(cs.retract_length+cs.retract_recover_length))*float(extrudemultiply)*0.01f;
+        plan_set_e_position(current_position[E_AXIS]);
+        retracted[active_extruder]=false;
+        prepare_move();
+        feedrate = oldFeedrate;
     }
-  } //retract
+} //retract
 #endif //FWRETRACT
 
 void trace() {
@@ -2722,8 +2728,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
 #endif
 
-      // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
-      // consumed during the first movements following this statement.
+      // Reset baby stepping to zero, if the babystepping has already been loaded before.
       if (home_z)
         babystep_undo();
 
@@ -4383,21 +4388,22 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
 			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
 		}
-          #ifdef FWRETRACT
-            if(cs.autoretract_enabled)
+
+#ifdef FWRETRACT
+        if(cs.autoretract_enabled) {
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
-              float echange=destination[E_AXIS]-current_position[E_AXIS];
-
-              if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
-                  current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
-                  plan_set_e_position(current_position[E_AXIS]); //AND from the planner
-                  retract(!retracted[active_extruder]);
-                  return;
-              }
-
-
+                float echange=destination[E_AXIS]-current_position[E_AXIS];
+                if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
+                    st_synchronize();
+                    current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
+                    plan_set_e_position(current_position[E_AXIS]); //AND from the planner
+                    retract(!retracted[active_extruder]);
+                    return;
+                }
             }
-          #endif //FWRETRACT
+        }
+#endif //FWRETRACT
+
         prepare_move();
         //ClearToSend();
       }
@@ -4465,9 +4471,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         lcd_update(0);
       }
       break;
-      #ifdef FWRETRACT
-      
 
+
+#ifdef FWRETRACT
     /*!
 	### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
 	Retracts filament according to settings of `M207`
@@ -4480,7 +4486,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         retract(true);
        #endif
       break;
-      
+
 
     /*!
 	### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
@@ -4493,8 +4499,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         retract(false);
        #endif 
       break;
-      #endif //FWRETRACT
-    
+#endif //FWRETRACT
+
 
     /*!
 	### G21 - Sets Units to Millimters <a href="https://reprap.org/wiki/G-code#G21:_Set_Units_to_Millimeters">G21: Set Units to Millimeters</a>
@@ -4754,6 +4760,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     */
     case 30: 
         {
+            homing_flag = true;
             st_synchronize();
             // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
             int l_feedmultiply = setup_for_endstop_move();
@@ -4765,6 +4772,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			printf_P(_N("%S X: %.5f Y: %.5f Z: %.5f\n"), _T(MSG_BED), _x, _y, _z);
 
             clean_up_after_endstop_move(l_feedmultiply);
+            homing_flag = false;
         }
         break;
 	
@@ -4855,6 +4863,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                 break;
             }
         }
+
+        homing_flag = true; // keep homing on to avoid babystepping while the LCD is enabled
         lcd_update_enable(true);
         KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
         SERIAL_ECHOLNPGM("PINDA probe calibration start");
@@ -4899,6 +4909,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
         if (find_z_result == false) {
             lcd_temp_cal_show_result(find_z_result);
+            homing_flag = false;
             break;
         }
         zero_z = current_position[Z_AXIS];
@@ -4949,9 +4960,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             printf_P(_N("\nPINDA temperature: %.1f Z shift (mm): %.3f"), current_temperature_pinda, current_position[Z_AXIS] - zero_z);
 
             EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
-
         }
         lcd_temp_cal_show_result(true);
+        homing_flag = false;
 
 #else //PINDA_THERMISTOR
 
@@ -5161,8 +5172,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 		mbl.reset(); //reset mesh bed leveling
 
-					 // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
-					 // consumed during the first movements following this statement.
+		// Reset baby stepping to zero, if the babystepping has already been loaded before.
 		babystep_undo();
 
 		// Cycle through all points and probe them
@@ -7314,8 +7324,9 @@ Sigma_Exit:
         if(code_seen(axis_codes[i])) cs.add_homing[i] = code_value();
       }
       break;
-    #ifdef FWRETRACT
 
+
+#ifdef FWRETRACT
     /*!
 	### M207 - Set firmware retraction <a href="https://reprap.org/wiki/G-code#M207:_Set_retract_length">M207: Set retract length</a>
 	#### Usage
@@ -7413,7 +7424,9 @@ Sigma_Exit:
       }
 
     }break;
-    #endif // FWRETRACT
+#endif // FWRETRACT
+
+
     #if EXTRUDERS > 1
 
     /*!
