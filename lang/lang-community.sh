@@ -30,6 +30,14 @@ if [ "$COMMUNITY_LANG_NL" = "NL" ]; then
     ./lang-build.sh nl
 fi
 
+# Use the 5 lines below as a template and replace 'QR' and 'qr'
+#if [ "$COMMUNITY_LANG_QR" = "QR" ]; then
+#    echo "  $COMMUNITY_LANG_QR" >&2
+#    echo
+#    ./lang-build.sh qr
+#fi
+
+
 #exiting function
 finish()
 {
