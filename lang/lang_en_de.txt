@@ -234,6 +234,10 @@
 "Date:"
 "Datum:"
 
+#MSG_COMMUNITY_MADE c=18
+"Community made"
+"\x00"
+
 #MSG_DISABLE_STEPPERS
 "Disable steppers"
 "Motoren aus"
