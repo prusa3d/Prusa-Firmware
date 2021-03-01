@@ -4544,7 +4544,7 @@ static void lcd_community_language_menu()
 {
 	MENU_BEGIN();
 	uint8_t cnt = lang_get_count();
-	if (lang_is_selected()) MENU_ITEM_BACK_P(_i("Select language")); //Back to previous Menu
+	MENU_ITEM_BACK_P(_i("Select language")); //Back to previous Menu
 	for (int i = 8; i < cnt; i++) //all community languages
 		if (menu_item_text_P(lang_get_name_by_code(lang_get_code(i))))
 		{
