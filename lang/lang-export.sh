@@ -52,7 +52,7 @@ else
    *de*) echo "German" ;;
    *es*) echo "Spanish" ;;
    *fr*) echo "French" ;;
-  *it*) echo "Italian" ;;
+   *it*) echo "Italian" ;;
    *pl*) echo "Polish" ;;
 #Community language support
 #Dutch

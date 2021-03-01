@@ -141,7 +141,7 @@ if [ "$1" = "all" ]; then
  generate_binary 'fr'
  generate_binary 'it'
  generate_binary 'pl'
- #DO NOT add Community languages here
+ #DO NOT add Community languages here !!!
 else
  generate_binary $1
 fi
