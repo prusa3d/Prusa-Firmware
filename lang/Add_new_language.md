@@ -4,16 +4,16 @@ We will use Dutch as an example here.
 
 ## Prepare Prusa Firmware
 
-YY = palceholder for language in upper case
+QR = palceholder for language in upper case
 
-yy = placehodler for language in lower case
+qr = placehodler for language in lower case
 
 AB = palceholder for hexadecial
 
 Files needs to be modified
 - `../Firmware/language.h` 
 
-  In section `/** @name Language codes (ISO639-1)*/` add the new `#define LANG_CODE_YY 0xABAB //!<'yy'`following ISO639-1 convention for YY.
+  In section `/** @name Language codes (ISO639-1)*/` add the new `#define LANG_CODE_QR 0xABAB //!<'qr'`following ISO639-1 convention for QR.
 https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
   Example:
@@ -29,33 +29,33 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 - `../lang/lang-add.sh`
 
-  In section `cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do` add `insert_yy "$new_s" 'yy'`where yy 
+  In section `cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do` add `insert_qr "$new_s" 'qr'`where qr 
   
   Example:
-  `insert_yy "$new_s" 'nl'` with yy value `nl`for Dutch
+  `insert_qr "$new_s" 'nl'` with qr value `nl`for Dutch
 
 - `../lang/lang-build.sh`
 
-  In section `#returns hexadecial data for lang code` add a case `*yy*) echo '0xAB\0xAB'`
+  In section `#returns hexadecial data for lang code` add a case `*qr*) echo '0x71\0x72'`
   
   Example:
   `*nl*) echo '\x6c\x6e' ;;` !!! IMPORTANT that the hex values are switched so 'nl' is here in 'ln' !!!
   
-  In generate "all" section add `generate_binary 'yy'
+  In generate "all" section add `generate_binary 'qr'
   
   Example:
   `generate_binary 'nl'`
   
 - `../lang/lang-check.py`
 
-  Add in `help` the new language `yy`
+  Add in `help` the new language `qr`
   
   Example:
   From `help="Check lang file (en|cs|de|es|fr|it|pl)")` to `help="Check lang file (en|cs|de|es|fr|nl|it|pl)")`
   
 - In `../lang/lang-clean.sh`
 
-  In section echo `"lang-clean.sh started" >&2` add `clean_lang_yy`
+  In section echo `"lang-clean.sh started" >&2` add `clean_lang qr`
   
   Example:
   `clean_lang nl`
@@ -63,13 +63,13 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 - `../lang/lang-export.sh`
 
-  In section `# if 'all' is selected, script will generate all po files and also pot file` add `./lang-export.sh yy`
+  In section `# if 'all' is selected, script will generate all po files and also pot file` add `./lang-export.sh qr`
   
   Example:
   
   `./lang-export.sh nl`
   
-  In section ` # language name in english` add `*yy*) echo "Language-in-English" ;;`
+  In section ` # language name in english` add `*qr*) echo "Language-in-English" ;;`
   
   Example:
   `*nl*) echo "Dutch" ;;`
@@ -131,9 +131,9 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
   In section `#update _SEC_LANG in binary file if language is selected` add
   ```
-  if [ -e lang_yy.bin ]; then
+  if [ -e lang_qr.bin ]; then
    echo -n " Language-in-English  : " >&2
-   ./update_lang.sh yy 2>./update_lang_yy.out 1>/dev/null
+   ./update_lang.sh qr 2>./update_lang_qr.out 1>/dev/null
    if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
   fi
   ```
@@ -147,7 +147,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   fi
   ```
   
-  In section `#create binary file with all languages` add `if [ -e lang_yy.bin ]; then cat lang_yy.bin >> lang.bin; fi`
+  In section `#create binary file with all languages` add `if [ -e lang_qr.bin ]; then cat lang_qr.bin >> lang.bin; fi`
   
   Example:
   
@@ -158,10 +158,10 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
   In section `echo "fw-clean.sh started" >&2` add
   
   ```
-  rm_if_exists firmware_yy.hex
+  rm_if_exists firmware_qr.hex
   ...
   ...
-  rm_if_exists update_lang_yy.out
+  rm_if_exists update_lang_qr.out
   ```
   
   Example:
@@ -174,17 +174,17 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 ## Prepare language part
 
-To prepare the acutal language translation files we need create the `lang_en_yy.txt` file.
-1. Copy and `lang_en.txt` as `lang_en_yy.txt`
+To prepare the acutal language translation files we need create the `lang_en_qr.txt` file.
+1. Copy and `lang_en.txt` as `lang_en_qr.txt`
 2. run `../lang/lang-export.sh`
-3. copy `../lang/po/Firmware_yy.po` file to `../lang/po/new/yy.po`
+3. copy `../lang/po/Firmware_qr.po` file to `../lang/po/new/qr.po`
 4. translate all messages using POEdit or other tools.
-5. use `lang/lang-import.sh yy` to generate `lang_en_yy.txt` from translated po files
-6. move `../lang/po/new/lang_en_yy.txt` to `../lang/lang_en_yy.txt`
+5. use `lang/lang-import.sh qr` to generate `lang_en_qr.txt` from translated po files
+6. move `../lang/po/new/lang_en_qr.txt` to `../lang/lang_en_qr.txt`
 7. cleanup `../lang/po/new` folder by deleting
    ```
-   yy_filtered.po
-   yy_new.po
+   qr_filtered.po
+   qr_new.po
    noasci.txt
    ```
 
