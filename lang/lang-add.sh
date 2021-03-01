@@ -64,9 +64,15 @@ cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
 		insert_xx "$new_s" 'de'
 		insert_xx "$new_s" 'es'
 		insert_xx "$new_s" 'fr'
-		insert_xx "$new_s" 'nl'
 		insert_xx "$new_s" 'it'
 		insert_xx "$new_s" 'pl'
+#Community language support
+#Dutch
+		insert_xx "$new_s" 'nl'
+
+#Use the 2 lines below as a template and replace 'qr'
+##New language
+#		insert_xx "$new_s" 'qr'
 	fi
 done
 

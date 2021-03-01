@@ -45,8 +45,14 @@ clean_lang de
 clean_lang es
 clean_lang fr
 clean_lang it
-clean_lang nl
 clean_lang pl
+#Community language support
+#Dutch
+clean_lang nl
+
+#Use the 2 lines below as a template and replace 'qr'
+##New language
+#clean_lang_qr
 
 echo -n "lang-clean.sh finished" >&2
 if [ $result -eq 0 ]; then
