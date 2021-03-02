@@ -68,5 +68,12 @@
 
 #define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes)
 
+//Community language support
+#define COMMUNITY_LANG_NL // Community Dutch language
+//#define COMMUNITY_LANG_QR // Community new language //..use this as a template and replace 'QR'
+
+#if defined(COMMUNITY_LANG_NL) //|| defined(COMMUNITY_LANG_QR) //..use last part as a template and replace 'QR'
+#define COMMUNITY_LANG_SUPPORT
+#endif
 
 #endif //_CONFIG_H

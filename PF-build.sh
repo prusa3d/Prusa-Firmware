@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_36
+# Version: 1.0.6-Build_37
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -136,6 +136,7 @@
 # 08 Jan 2021, 3d-gussner, Comment out 'sudo' auto installation
 #                          Add '-?' '-h' help option
 # 27 Jan 2021, 3d-gussner, Add `-c`, `-p` and `-n` options
+# 27 Feb 2021, 3d-gussner, Add './lang-community.sh' and update exits
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -237,7 +238,7 @@ if ! type gawk > /dev/null; then
 		echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
 		echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
 		#sudo apt-get update && apt-get install gawk
-		exit 4
+		exit 5
 	fi
 fi
 
@@ -278,10 +279,10 @@ echo ""
 
 #Check if build exists and creates it if not
 if [ ! -d "../PF-build-dl" ]; then
-    mkdir ../PF-build-dl || exit 5
+    mkdir ../PF-build-dl || exit 6
 fi
 
-cd ../PF-build-dl || exit 6
+cd ../PF-build-dl || exit 7
 BUILD_ENV_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Check if PF-build-env-<version> exists and downloads + creates it if not
@@ -298,13 +299,13 @@ if [ $TARGET_OS == "windows" ]; then
 	if [ ! -f "arduino-$ARDUINO_ENV-windows.zip" ]; then
 		echo "$(tput setaf 6)Downloading Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
 		sleep 2
-		wget https://downloads.arduino.cc/arduino-$ARDUINO_ENV-windows.zip || exit 7
+		wget https://downloads.arduino.cc/arduino-$ARDUINO_ENV-windows.zip || exit 8
 		echo "$(tput sgr 0)"
 	fi
 	if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
 		echo "$(tput setaf 6)Unzipping Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
 		sleep 2
-		unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || exit 7
+		unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || exit 8
 		mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
 		echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
 		echo "$(tput sgr0)"
@@ -507,7 +508,7 @@ echo "  Will build MK3S multi language final GOLD firmware "
 echo "  with current commit count number and output extra information,"
 echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
 echo
-exit 
+exit 14
 
 fi
 
@@ -824,7 +825,7 @@ do
 		rm -r -f $BUILD_PATH/* || exit 36
 	fi
 
-	#$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
+	#$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 30
 	$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 30
 	echo "$(tput sgr 0)"
 
@@ -864,8 +865,10 @@ do
 		# build languages
 		echo "$(tput setaf 3)"
 		./lang-build.sh || exit 32
+		#Community language support
+		./lang-community.sh || exit 33
 		# Combine compiled firmware with languages 
-		./fw-build.sh || exit 33
+		./fw-build.sh || exit 34
 		cp not_tran.txt not_tran_$VARIANT.txt
 		cp not_used.txt not_used_$VARIANT.txt
 		echo "$(tput sgr 0)"
@@ -883,6 +886,7 @@ do
 			cp -f firmware_fr.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-fr.hex
 			cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-it.hex
 			cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-pl.hex
+			cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-nl.hex
 			if [ $TARGET_OS == "windows" ]; then 
 				zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
 				rm $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
@@ -893,18 +897,18 @@ do
 		# Cleanup after build
 		if [[ -z "$clean_flag" || "$clean_flag" == "0" ]]; then
 			echo "$(tput setaf 3)"
-			./fw-clean.sh || exit 34
-			./lang-clean.sh || exit 35
+			./fw-clean.sh || exit 35
+			./lang-clean.sh || exit 36
 			echo "$(tput sgr 0)"
 		fi
 	else
 		echo "$(tput setaf 2)Copying English only firmware to PF-build-hex folder$(tput sgr 0)"
-		cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 34
+		cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 37
 	fi
 
 	# Cleanup Firmware
 	if [[ -z "$prusa_flag" || "$prusa_flag" == "0" ]]; then
-		rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 36
+		rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 38
 	fi
 	if find $SCRIPT_PATH/lang/ -name '*RAMBo10a*.txt' -printf 1 -quit | grep -q 1
 	then
@@ -925,7 +929,7 @@ do
 
 	#New fresh PF-Firmware-build
 	if [ "$new_build_flag" == "1" ]; then
-		rm -r -f $BUILD_PATH/* || exit 36
+		rm -r -f $BUILD_PATH/* || exit 39
 	fi
 
 	# Restore files to previous state

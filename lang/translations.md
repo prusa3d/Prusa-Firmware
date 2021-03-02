@@ -4,22 +4,22 @@
 
 - Build firmware
   - using `build.sh`
-  - using `PF-build.sh` with a `break` before `# build languages`
+  - using `PF-build.sh` with a parameter `-c 1` to keep lang build files after compiling
 - change to `lang` folder
 - check if lang scripts being able to run with `config.sh`
   - if you get `Arduino main folder: NG` message change in `config.sh` `export ARDUINO=C:/arduino-1.8.5` to `export ARDUINO=<Path to your Arduino IDE folder>`
     -example: `export ARDUINO=D:/Github/Prusa-Firmware/PF-build-env-1.0.6/windows-64`
 - run `lang-build.sh en` to create english `lang_en.tmp`, `lang_en.dat` and `lang_en.bin` files
-- change in `fw-build.sh` `IGNORE_MISSING_TEXT=1` to `IGNORE_MISSING_TEXT=0` so it stops with error and generates `not_used.txt` and `not_tran.txt`
+- change in `fw-build.sh` `IGNORE_MISSING_TEXT=1` to `IGNORE_MISSING_TEXT=0` so it stops with error and generates `not_used<variant>.txt` and `not_tran<variant>.txt`
 - run modified `fw-build.sh`
-  - `not_tran.txt` should be reviewed and added as these are potential missing translations
-    - copy `not_tran.txt` as `lang_add.txt` 
+  - `not_tran<variant>.txt` should be reviewed and added as these are potential missing translations
+    - copy `not_tran<variant>.txt` as `lang_add.txt` 
 	  - check if there are things you don't want to translate or must be modifed
 	  - als check that the strings do not start with `spaces` as the scripts doesn't handle these well at this moment.
 	  - run `lang-add.sh lang_add.txt` to add the missing translations to `lang_en.txt` and `lang_en_??.txt`
-  - `not_used.txt` should only contain mesages that aren't used in this variant like MK2.5 vs MK3
+  - `not_used<variant>.txt` should only contain messages that aren't used in this variant like MK2.5/S vs MK3/S
 - run `fw-clean.sh` to cleanup firmware related files
-- delete `not_used.txt` and `not_tran.txt`
+- delete `not_used<variant>.txt` and `not_tran<variant>.txt`
 - run `lang-clean.sh` to cleanup language related files
 - run `lang-export.sh all` to create PO files for translation these are stored in `/lang/po` folder
   - Send them to translators and reviewers or
@@ -30,13 +30,12 @@
 - run `lang-import.sh <language code (iso639-1)>` for each newly translated language
   - script improvement to import "all" and other things would be great.
 - Double check if something is missing or faulty
-  - run `lang-build.sh` to to create `lang_en.tmp/.dat/.bin` and `lang_en_??.tmp/.dat/.bin` files
-  - run `fw-build.sh` and check if there are still some messages in `not_tran.txt` that need attention
+  - run `PF-build.sh -v all -n 1 -c 1` to compile for all variants files
+  - check if there are still some messages in `not_tran<variant>.txt` that need attention
 - After approval
   - run `fw-clean.sh` to cleanup firmware related files
   - run `lang-clean.sh` to cleanup language related files
   - change in `fw-build.sh` back to `IGNORE_MISSING_TEXT=1`
-  - remove `break` from `PF-build.sh` script if that has been modified
   - build your firmware with `build.sh`, `PF-build.sh` or how you normally do it.
   - Check/Test firmware on printer
 

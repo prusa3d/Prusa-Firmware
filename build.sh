@@ -38,4 +38,5 @@ export ARDUINO=$BUILD_ENV_PATH
 
 cd $SCRIPT_PATH/lang
 ./lang-build.sh || exit 10
-./fw-build.sh || exit 11
+./lang-community.sh || exit 11
+./fw-build.sh || exit 12

@@ -15,6 +15,7 @@ if [ "$LNG" = "all" ]; then
  ./lang-import.sh fr
  ./lang-import.sh it
  ./lang-import.sh pl
+#DO NOT add Community languages here !!!
  exit 0
 fi
 
@@ -40,51 +41,51 @@ sed -i 's/ \\n/ /g;s/\\n/ /g' $LNG'_filtered.po'
 
 #replace in czech translation
 if [ "$LNG" = "cz" ]; then
- #replace '≈æ' with 'z'
+ #replace 'û' with 'z'
  sed -i 's/\xc5\xbe/z/g' $LNG'_filtered.po'
- #replace '√¨' with 'e'
+ #replace 'Ï' with 'e'
  sed -i 's/\xc4\x9b/e/g' $LNG'_filtered.po'
- #replace '√≠' with 'i'
+ #replace 'Ì' with 'i'
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
- #replace '√∏' with 'r'
+ #replace '¯' with 'r'
  sed -i 's/\xc5\x99/r/g' $LNG'_filtered.po'
- #replace '√®' with 'c'
+ #replace 'Ë' with 'c'
  sed -i 's/\xc4\x8d/c/g' $LNG'_filtered.po'
- #replace '√°' with 'a'
+ #replace '·' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '√©' with 'e'
+ #replace 'È' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
 #replace in german translation https://en.wikipedia.org/wiki/German_orthography
 if [ "$LNG" = "de" ]; then
- #replace '√§' with 'ae'
+ #replace '‰' with 'ae'
  sed -i 's/\xc3\xa4/ae/g' $LNG'_filtered.po'
- #replace '√Ñ' with 'Ae'
+ #replace 'ƒ' with 'Ae'
  sed -i 's/\xc3\x84/Ae/g' $LNG'_filtered.po'
- #replace '√º' with 'ue'
+ #replace '¸' with 'ue'
  sed -i 's/\xc3\xbc/ue/g' $LNG'_filtered.po'
- #replace '√ú' with 'Ue'
+ #replace '‹' with 'Ue'
  sed -i 's/\xc3\x9c/Ue/g' $LNG'_filtered.po'
- #replace '√∂' with 'oe'
+ #replace 'ˆ' with 'oe'
  sed -i 's/\xc3\xb6/oe/g' $LNG'_filtered.po'
- #replace '√ñ' with 'Oe'
+ #replace '÷' with 'Oe'
  sed -i 's/\xc3\x96/Oe/g' $LNG'_filtered.po'
- #replace '√ü' with 'ss'
+ #replace 'ﬂ' with 'ss'
  sed -i 's/\xc3\x9f/ss/g' $LNG'_filtered.po'
 fi
 
 #replace in spain translation
 if [ "$LNG" = "es" ]; then
- #replace '√°' with 'a'
+ #replace '·' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '¬ø' with '?'
+ #replace 'ø' with '?'
  sed -i 's/\xc2\xbf/?/g' $LNG'_filtered.po'
- #replace '√≥' with 'o'
+ #replace 'Û' with 'o'
  sed -i 's/\xc3\xb3/o/g' $LNG'_filtered.po'
- #replace '√©' with 'e'
+ #replace 'È' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace '√≠' with 'i'
+ #replace 'Ì' with 'i'
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
  #replace '!' with '!'
  sed -i 's/\xc2\xa1/!/g' $LNG'_filtered.po'
@@ -94,38 +95,80 @@ fi
 
 #replace in french translation https://en.wikipedia.org/wiki/French_orthography
 if [ "$LNG" = "fr" ]; then
- #replace '√°' with 'a' (right)
+ #replace '·' with 'a' (right)
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '√Å' with 'A' (right)
+ #replace '¡' with 'A' (right)
  sed -i 's/\xc3\x81/A/g' $LNG'_filtered.po'
- #replace '√†' with 'a' (left)
+ #replace '‡' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace '√Ä' with 'A' (left)
+ #replace '¿' with 'A' (left)
  sed -i 's/\xc3\x80/A/g' $LNG'_filtered.po'
- #replace '√©' with 'e' (right)
+ #replace 'È' with 'e' (right)
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace '√â' with 'E' (right)
+ #replace '…' with 'E' (right)
  sed -i 's/\xc3\x89/E/g' $LNG'_filtered.po'
- #replace '√®' with 'e' (left)
+ #replace 'Ë' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace '√à' with 'E' (left)
+ #replace '»' with 'E' (left)
  sed -i 's/\xc3\x88/E/g' $LNG'_filtered.po'
 fi
 
 #replace in italian translation
 if [ "$LNG" = "it" ]; then
- #replace '√©' with 'e' (left)
+ #replace 'È' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace '√°' with 'a' (left)
+ #replace '·' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace '√≥' with 'o' (left)
+ #replace 'Û' with 'o' (left)
  sed -i 's/\xc3\xb2/o/g' $LNG'_filtered.po'
- #replace '√∫' with 'u' (left)
+ #replace '˙' with 'u' (left)
  sed -i 's/\xc3\xb9/u/g' $LNG'_filtered.po'
- #replace '√©' with 'e'
+ #replace 'È' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace '√â' with 'E' (left)
+ #replace '…' with 'E' (left)
  sed -i 's/\xc3\x88/E/g' $LNG'_filtered.po'
+fi
+
+#replace in dutch translation according to https://nl.wikipedia.org/wiki/Accenttekens_in_de_Nederlandse_spelling
+if [ "$LNG" = "nl" ]; then
+ #replace 'Î' with 'e'
+ sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
+ #replace 'Ô' with 'i'
+ sed -i 's/\xc3\xaf/i/g' $LNG'_filtered.po'
+ #replace 'È' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+ #replace 'Ë' with 'e' (left)
+ sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
+ #replace 'ˆ' with 'o' (left)
+ sed -i 's/\xc3\xb6/o/g' $LNG'_filtered.po'
+ #replace 'Í' with 'e' (left)
+ sed -i 's/\xc3\xaa/e/g' $LNG'_filtered.po'
+ #replace '¸' with 'u' (left)
+ sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
+ #replace 'Á' with 'c' (left)
+ sed -i 's/\xc3\xa7/c/g' $LNG'_filtered.po'
+ #replace '·' with 'a' (left)
+ sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
+ #replace '‡' with 'a' (left)
+ sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
+ #replace '‰' with 'a' (left)
+ sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+ #replace '˚' with 'u' (left)
+ sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
+ #replace 'Ó' with 'i' (left)
+ sed -i 's/\xc3\xae/i/g' $LNG'_filtered.po'
+ #replace 'Ì' with 'i' (left)
+ sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
+ #replace 'Ù' with 'o' (left)
+ sed -i 's/\xc3\xb4/o/g' $LNG'_filtered.po'
+ #replace '˙' with 'u' (left)
+ sed -i 's/\xc3\xba/u/g' $LNG'_filtered.po'
+ #replace 'Ò' with 'n' (left)
+ sed -i 's/\xc3\xb1/n/g' $LNG'_filtered.po'
+ #replace '‚' with 'a' (left)
+ sed -i 's/\xc3\xa2/a/g' $LNG'_filtered.po'
+ #replace '≈' with 'A' (left)
+ sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
 fi
 
 #replace in polish translation

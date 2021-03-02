@@ -4538,6 +4538,26 @@ void menu_setlang(unsigned char lang)
 	}
 }
 
+#ifdef COMMUNITY_LANG_SUPPORT
+#ifdef W25X20CL
+static void lcd_community_language_menu()
+{
+	MENU_BEGIN();
+	uint8_t cnt = lang_get_count();
+	MENU_ITEM_BACK_P(_i("Select language")); //Back to previous Menu
+	for (int i = 8; i < cnt; i++) //all community languages
+		if (menu_item_text_P(lang_get_name_by_code(lang_get_code(i))))
+		{
+			menu_setlang(i);
+			return;
+		}
+	MENU_END();
+}
+#endif //W25X20CL
+#endif //COMMUNITY_LANG_SUPPORT && W52X20CL
+
+
+
 static void lcd_language_menu()
 {
 	MENU_BEGIN();
@@ -4558,7 +4578,7 @@ static void lcd_language_menu()
 		}
 	}
 	else
-		for (int i = 2; i < cnt; i++) //skip seconday language - solved in lang_select (MK3)
+		for (int i = 2; i < 8; i++) //skip seconday language - solved in lang_select (MK3) 'i < 8'  for 7 official languages
 #else //W25X20CL
 		for (int i = 1; i < cnt; i++) //all seconday languages (MK2/25)
 #endif //W25X20CL
@@ -4567,6 +4587,13 @@ static void lcd_language_menu()
 				menu_setlang(i);
 				return;
 			}
+
+#ifdef COMMUNITY_LANG_SUPPORT
+#ifdef W25X20CL
+		MENU_ITEM_SUBMENU_P(_T(MSG_COMMUNITY_MADE), lcd_community_language_menu); ////MSG_COMMUNITY_MADE c=18
+#endif //W25X20CL
+#endif //COMMUNITY_LANG_SUPPORT && W52X20CL
+
 	MENU_END();
 }
 #endif //(LANG_MODE != 0)
