@@ -7,7 +7,6 @@
 
 
 #define RAMSIZE        0x2000
-#define ram_array ((uint8_t*)(0))
 #define boot_src_addr  (*((uint32_t*)(RAMSIZE - 16)))
 #define boot_dst_addr  (*((uint32_t*)(RAMSIZE - 12)))
 #define boot_copy_size (*((uint16_t*)(RAMSIZE - 8)))
