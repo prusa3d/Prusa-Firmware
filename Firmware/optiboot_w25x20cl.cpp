@@ -80,7 +80,10 @@ extern struct block_t *block_buffer;
 //! @return 0 if "start\n" was sent. Optiboot ran normally. No need to send "start\n" in setup()
 uint8_t optiboot_w25x20cl_enter()
 {
-  if (boot_app_flags & BOOT_APP_FLG_USER0) return 1;
+// Make sure to check boot_app_magic as well. Since these bootapp flags are located right in the middle of the stack,
+// they can be unintentionally changed. As a workaround to the language upload problem, do not only check for one bit if it's set,
+// but rather test 33 bits for the correct value before exiting optiboot early.
+  if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0)) return 1;
   uint8_t ch;
   uint8_t rampz = 0;
   register uint16_t address = 0;
