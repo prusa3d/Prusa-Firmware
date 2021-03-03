@@ -165,6 +165,7 @@ uint8_t optiboot_w25x20cl_enter()
     cbi(UCSR0B, RXCIE0); //disable the MarlinSerial0 interrupt
     // Send the cfm magic string.
     ptr = entry_magic_cfm;
+    end = strlen_P(entry_magic_cfm) + ptr;
     while (ptr != end)
       putch(pgm_read_byte(ptr ++));
   }
