@@ -115,8 +115,6 @@ uint8_t optiboot_w25x20cl_enter()
   // If the magic is not received on time, or it is not received correctly, continue to the application.
   {
     wdt_reset();
-    unsigned long  boot_timeout = 2000000;
-    unsigned long  boot_timer = 0;
     const char    *ptr = entry_magic_send;
     const char    *end = strlen_P(entry_magic_send) + ptr;
     const uint8_t selectedSerialPort_bak = selectedSerialPort;
@@ -128,7 +126,6 @@ uint8_t optiboot_w25x20cl_enter()
     }
     selectedSerialPort = 0; //switch to Serial0
     MYSERIAL.flush(); //clear RX buffer
-    int SerialHead = rx_buffer.head;
     // Send the initial magic string.
     while (ptr != end)
       putch(pgm_read_byte(ptr ++));
@@ -138,11 +135,18 @@ uint8_t optiboot_w25x20cl_enter()
     ptr = entry_magic_receive;
     end = strlen_P(entry_magic_receive) + ptr;
     while (ptr != end) {
-      while (rx_buffer.head == SerialHead) {
+      unsigned long  boot_timer = 2000000;
+      // Beware of this volatile pointer - it is important since the while-cycle below
+      // doesn't contain any obvious references to rx_buffer.head
+      // thus the compiler is allowed to remove the check from the cycle
+      // i.e. rx_buffer.head == SerialHead would not be checked at all!
+      // With the volatile keyword the compiler generates exactly the same code as without it with only one difference:
+      // the last brne instruction jumps onto the (*rx_head == SerialHead) check and NOT onto the wdr instruction bypassing the check.
+      volatile int *rx_head = &rx_buffer.head;
+      int SerialHead = rx_buffer.head;
+      while (*rx_head == SerialHead) {
         wdt_reset();
-        delayMicroseconds(1);
-        if (++ boot_timer > boot_timeout)
-        {
+        if ( --boot_timer == 0) {
           // Timeout expired, continue with the application.
           selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
           return 0;
