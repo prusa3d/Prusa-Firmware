@@ -100,7 +100,7 @@ extern struct block_t *block_buffer;
 //! @return 0 if "start\n" was sent. Optiboot ran normally. No need to send "start\n" in setup()
 uint8_t optiboot_w25x20cl_enter()
 {
-  if (boot_app_flags & BOOT_APP_FLG_USER0) return 1;
+  if (boot_app_flags_copy_after_start & BOOT_APP_FLG_USER0) return 1;
   uint8_t ch;
   uint8_t rampz = 0;
   register uint16_t address = 0;

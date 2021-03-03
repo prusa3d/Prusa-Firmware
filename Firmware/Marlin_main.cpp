@@ -919,10 +919,10 @@ uint8_t check_printer_version()
 
 void update_sec_lang_from_external_flash()
 {
-	if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0))
+	if ((boot_app_magic_copy_after_start == BOOT_APP_MAGIC) && (boot_app_flags_copy_after_start & BOOT_APP_FLG_USER0))
 	{
-		uint8_t lang = boot_reserved >> 4;
-		uint8_t state = boot_reserved & 0xf;
+		uint8_t lang = boot_reserved_copy_after_start >> 4;
+		uint8_t state = boot_reserved_copy_after_start & 0xf;
 		lang_table_header_t header;
 		uint32_t src_addr;
 		if (lang_get_header(lang, &header, &src_addr))
@@ -930,7 +930,7 @@ void update_sec_lang_from_external_flash()
 			lcd_puts_at_P(1,3,PSTR("Language update."));
 			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
 			_delay(100);
-			boot_reserved = (state + 1) | (lang << 4);
+			boot_reserved_copy_after_start = (state + 1) | (lang << 4);
 			if ((state * LANGBOOT_BLOCKSIZE) < header.size)
 			{
 				cli();
@@ -950,7 +950,7 @@ void update_sec_lang_from_external_flash()
 			}
 		}
 	}
-	boot_app_flags &= ~BOOT_APP_FLG_USER0;
+	boot_app_flags_copy_after_start &= ~BOOT_APP_FLG_USER0;
 }
 
 
@@ -1010,6 +1010,11 @@ static void w25x20cl_err_msg()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+    // copy the necessary stuff from a badly placed mem area to a safer place
+    boot_app_flags_copy_after_start = boot_app_flags_in_the_middle_of_stack;
+    boot_app_magic_copy_after_start = boot_app_magic_in_the_middle_of_stack;
+    boot_reserved_copy_after_start = boot_reserved_in_the_middle_of_stack;
+
 	timer2_init(); // enables functional millis
 
 	mmu_init();
@@ -4014,8 +4019,8 @@ void process_commands()
 		else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
 #ifdef WATCHDOG
 #if defined(W25X20CL) && defined(BOOTAPP)
-            boot_app_magic = BOOT_APP_MAGIC;
-            boot_app_flags = BOOT_APP_FLG_RUN;
+            boot_app_magic_in_the_middle_of_stack = BOOT_APP_MAGIC;
+            boot_app_flags_in_the_middle_of_stack = BOOT_APP_FLG_RUN;
 #endif //defined(W25X20CL) && defined(BOOTAPP)
             softReset();
 #elif defined(BOOTAPP) //this is a safety precaution. This is because the new bootloader turns off the heaters, but the old one doesn't. The watchdog should be used most of the time.
@@ -11257,7 +11262,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 		}
 		dir_name[8] = '\0';
 		MYSERIAL.println(dir_name);
-		// strcpy(card.dir_names[i], dir_name);
+		// strcpy(dir_names[i], dir_name);
 		card.chdir(dir_name, false);
 	}
 
