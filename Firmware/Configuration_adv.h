@@ -231,33 +231,23 @@
 * SD sorting uses static allocation (as set by SDSORT_LIMIT), allowing the
 * compiler to calculate the worst-case usage and throw an error if the SRAM
 * limit is exceeded.
-*
-*  - SDSORT_USES_RAM provides faster sorting via a static directory buffer.
-*  - SDSORT_USES_STACK does the same, but uses a local stack-based buffer.
-*  - SDSORT_CACHE_NAMES will retain the sorted file listing in RAM. (Expensive!)
-*  - SDSORT_DYNAMIC_RAM only uses RAM when the SD menu is visible. (Use with caution!)
 */
 	#define SDCARD_SORT_ALPHA //Alphabetical sorting of SD files menu
 	
 	// SD Card Sorting options
-	// In current firmware Prusa Firmware version,
-	// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to 0.
 	#ifdef SDCARD_SORT_ALPHA
 	  #define SD_SORT_TIME 0
 	  #define SD_SORT_ALPHA 1
 	  #define SD_SORT_NONE 2
+	  // #define SHELLSORT
+	  // #define SORTING_DUMP
 	
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
 	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
-	  #define SDSORT_GCODE       0  // Allow turning sorting on/off with LCD and M34 g-code.
-	  #define SDSORT_USES_RAM    0  // Pre-allocate a static array for faster pre-sorting.
-	  #define SDSORT_USES_STACK  0  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
-	  #define SDSORT_CACHE_NAMES 0  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
-	  #define SDSORT_DYNAMIC_RAM 0  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
 	#endif
 	
 	#if defined(SDCARD_SORT_ALPHA)
-	  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
+	  #define HAS_FOLDER_SORTING (FOLDER_SORTING)
 	#endif
 
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.
