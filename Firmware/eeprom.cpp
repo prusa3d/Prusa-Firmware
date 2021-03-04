@@ -107,10 +107,10 @@ if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_u
 //! | 1     | Smooth2   |
 //! | 2     | Textur1   |
 //! | 3     | Textur2   |
-//! | 4     | Custom1   |
-//! | 5     | Custom2   |
-//! | 6     | Custom3   |
-//! | 7     | Custom4   |
+//! | 4     | Satin 1   |
+//! | 5     | Satin 2   |
+//! | 6     | Custom1   |
+//! | 7     | Custom2   |
 //!
 //! @param[in] index
 //! @param[out] sheetName
@@ -125,6 +125,10 @@ void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
     else if (index < 4)
     {
         strcpy_P(sheetName.c, PSTR("Textur"));
+    }
+    else if (index < 4)
+    {
+        strcpy_P(sheetName.c, PSTR("Satin "));
     }
     else
     {
@@ -152,10 +156,10 @@ void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
         sheetName.c[6] = '2';
         break;
     case 6:
-        sheetName.c[6] = '3';
+        sheetName.c[6] = '1';
         break;
     case 7:
-        sheetName.c[6] = '4';
+        sheetName.c[6] = '2';
         break;
     default:
         break;
