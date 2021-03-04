@@ -1808,6 +1808,8 @@ void loop()
     if (isPrintPaused && saved_printing_type == PRINTING_TYPE_USB) //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
 	{
 		is_usb_printing = true;
+		/* echo paused for user in keepalive so octoprint doesn't time out */
+    	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	}
     
 #ifdef FANCHECK
