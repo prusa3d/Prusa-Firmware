@@ -15,19 +15,6 @@
 static unsigned const int __attribute__((section(".version"))) 
   optiboot_version = 256*(OPTIBOOT_MAJVER + OPTIBOOT_CUSTOMVER) + OPTIBOOT_MINVER;
 
-/* Watchdog settings */
-#define WATCHDOG_OFF    (0)
-#define WATCHDOG_16MS   (_BV(WDE))
-#define WATCHDOG_32MS   (_BV(WDP0) | _BV(WDE))
-#define WATCHDOG_64MS   (_BV(WDP1) | _BV(WDE))
-#define WATCHDOG_125MS  (_BV(WDP1) | _BV(WDP0) | _BV(WDE))
-#define WATCHDOG_250MS  (_BV(WDP2) | _BV(WDE))
-#define WATCHDOG_500MS  (_BV(WDP2) | _BV(WDP0) | _BV(WDE))
-#define WATCHDOG_1S     (_BV(WDP2) | _BV(WDP1) | _BV(WDE))
-#define WATCHDOG_2S     (_BV(WDP2) | _BV(WDP1) | _BV(WDP0) | _BV(WDE))
-#define WATCHDOG_4S     (_BV(WDP3) | _BV(WDE))
-#define WATCHDOG_8S     (_BV(WDP3) | _BV(WDP0) | _BV(WDE))
-
 #if 0
 #define W25X20CL_SIGNATURE_0 9
 #define W25X20CL_SIGNATURE_1 8
@@ -38,13 +25,6 @@ static unsigned const int __attribute__((section(".version")))
 #define W25X20CL_SIGNATURE_1 0x98
 #define W25X20CL_SIGNATURE_2 0x01
 #endif
-
-static void watchdogConfig(uint8_t x) {
-  CRITICAL_SECTION_START
-  WDTCSR = _BV(WDCE) | _BV(WDE);
-  WDTCSR = x;
-  CRITICAL_SECTION_END
-}
 
 #define RECV_READY ((UCSR0A & _BV(RXC0)) != 0)
 
@@ -74,7 +54,7 @@ static void putch(char ch) {
 static void verifySpace() {
   if (getch() != CRC_EOP) {
     putch(STK_FAILED);
-    watchdogConfig(WATCHDOG_16MS);    // shorten WD timeout
+    wdt_enable(WDTO_15MS); // shorten WD timeout
     while (1)           // and busy-loop so that WD causes
       ;             //  a reset and app start.
   }
@@ -100,7 +80,10 @@ extern struct block_t *block_buffer;
 //! @return 0 if "start\n" was sent. Optiboot ran normally. No need to send "start\n" in setup()
 uint8_t optiboot_w25x20cl_enter()
 {
-  if (boot_app_flags & BOOT_APP_FLG_USER0) return 1;
+// Make sure to check boot_app_magic as well. Since these bootapp flags are located right in the middle of the stack,
+// they can be unintentionally changed. As a workaround to the language upload problem, do not only check for one bit if it's set,
+// but rather test 33 bits for the correct value before exiting optiboot early.
+  if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0)) return 1;
   uint8_t ch;
   uint8_t rampz = 0;
   register uint16_t address = 0;
@@ -172,7 +155,7 @@ uint8_t optiboot_w25x20cl_enter()
 
   spi_init();
   w25x20cl_init();
-  watchdogConfig(WATCHDOG_OFF);
+  wdt_disable();
 
   /* Forever loop: exits by causing WDT reset */
   for (;;) {
@@ -311,7 +294,7 @@ uint8_t optiboot_w25x20cl_enter()
     }
     else if (ch == STK_LEAVE_PROGMODE) { /* 'Q' */
       // Adaboot no-wait mod
-      watchdogConfig(WATCHDOG_16MS);
+      wdt_enable(WDTO_15MS);
       verifySpace();
     }
     else {
