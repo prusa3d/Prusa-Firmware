@@ -103,10 +103,10 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
-#ifdef W25X20CL
-#include "w25x20cl.h"
-#include "optiboot_w25x20cl.h"
-#endif //W25X20CL
+#ifdef XFLASH
+#include "xflash.h"
+#include "optiboot_xflash.h"
+#endif //XFLASH
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -910,7 +910,7 @@ uint8_t check_printer_version()
 
 #if (LANG_MODE != 0) //secondary language support
 
-#ifdef W25X20CL
+#ifdef XFLASH
 
 
 // language update from external flash
@@ -936,7 +936,7 @@ void update_sec_lang_from_external_flash()
 				cli();
 				uint16_t size = header.size - state * LANGBOOT_BLOCKSIZE;
 				if (size > LANGBOOT_BLOCKSIZE) size = LANGBOOT_BLOCKSIZE;
-				w25x20cl_rd_data(src_addr + state * LANGBOOT_BLOCKSIZE, (uint8_t*)LANGBOOT_RAMBUFFER, size);
+				xflash_rd_data(src_addr + state * LANGBOOT_BLOCKSIZE, (uint8_t*)LANGBOOT_RAMBUFFER, size);
 				if (state == 0)
 				{
 					//TODO - check header integrity
@@ -954,7 +954,7 @@ void update_sec_lang_from_external_flash()
 }
 
 
-#ifdef DEBUG_W25X20CL
+#ifdef DEBUG_XFLASH
 
 uint8_t lang_xflash_enum_codes(uint16_t* codes)
 {
@@ -964,7 +964,7 @@ uint8_t lang_xflash_enum_codes(uint16_t* codes)
 	while (1)
 	{
 		printf_P(_n("LANGTABLE%d:"), count);
-		w25x20cl_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t));
+		xflash_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t));
 		if (header.magic != LANG_MAGIC)
 		{
 			puts_P(_n("NG!"));
@@ -992,17 +992,17 @@ void list_sec_lang_from_external_flash()
 	printf_P(_n("XFlash lang count = %hhd\n"), count);
 }
 
-#endif //DEBUG_W25X20CL
+#endif //DEBUG_XFLASH
 
-#endif //W25X20CL
+#endif //XFLASH
 
 #endif //(LANG_MODE != 0)
 
 
-static void w25x20cl_err_msg()
+static void xflash_err_msg()
 {
 	lcd_clear();
-	lcd_puts_P(_n("External SPI flash\nW25X20CL is not res-\nponding. Language\nswitch unavailable."));
+	lcd_puts_P(_n("External SPI flash\nXFLASH is not res-\nponding. Language\nswitch unavailable."));
 }
 
 // "Setup" function is called by the Arduino framework on startup.
@@ -1028,23 +1028,23 @@ void setup()
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
 	stdout = uartout;
 
-#ifdef W25X20CL
-    bool w25x20cl_success = w25x20cl_init();
+#ifdef XFLASH
+    bool xflash_success = xflash_init();
 	uint8_t optiboot_status = 1;
-	if (w25x20cl_success)
+	if (xflash_success)
 	{
-		optiboot_status = optiboot_w25x20cl_enter();
+		optiboot_status = optiboot_xflash_enter();
 #if (LANG_MODE != 0) //secondary language support
         update_sec_lang_from_external_flash();
 #endif //(LANG_MODE != 0)
 	}
 	else
 	{
-	    w25x20cl_err_msg();
+	    xflash_err_msg();
 	}
 #else
-	const bool w25x20cl_success = true;
-#endif //W25X20CL
+	const bool xflash_success = true;
+#endif //XFLASH
 
 
 	setup_killpin();
@@ -1091,7 +1091,7 @@ void setup()
     }
 
 
-#ifndef W25X20CL
+#ifndef XFLASH
 	SERIAL_PROTOCOLLNPGM("start");
 #else
 	if ((optiboot_status != 0) || (selectedSerialPort != 0))
@@ -1172,7 +1172,7 @@ void setup()
 #undef LT_PRINT_TEST
 
 #if 0
-		w25x20cl_rd_data(0x25ba, (uint8_t*)&block_buffer, 1024);
+		xflash_rd_data(0x25ba, (uint8_t*)&block_buffer, 1024);
 		for (uint16_t i = 0; i < 1024; i++)
 		{
 			if ((i % 16) == 0) printf_P(_n("%04x:"), 0x25ba+i);
@@ -1269,11 +1269,11 @@ void setup()
 
 	tp_init();    // Initialize temperature loop
 
-	if (w25x20cl_success) lcd_splash(); // we need to do this again, because tp_init() kills lcd
+	if (xflash_success) lcd_splash(); // we need to do this again, because tp_init() kills lcd
 	else
 	{
-	    w25x20cl_err_msg();
-	    puts_P(_n("W25X20CL not responding."));
+	    xflash_err_msg();
+	    puts_P(_n("XFLASH not responding."));
 	}
 #ifdef EXTRUDER_ALTFAN_DETECT
 	SERIAL_ECHORPGM(_n("Extruder fan type: "));
@@ -1458,16 +1458,16 @@ void setup()
 
 #if (LANG_MODE != 0) //secondary language support
 
-#ifdef DEBUG_W25X20CL
-	W25X20CL_SPI_ENTER();
+#ifdef DEBUG_XFLASH
+	XFLASH_SPI_ENTER();
 	uint8_t uid[8]; // 64bit unique id
-	w25x20cl_rd_uid(uid);
-	puts_P(_n("W25X20CL UID="));
+	xflash_rd_uid(uid);
+	puts_P(_n("XFLASH UID="));
 	for (uint8_t i = 0; i < 8; i ++)
 		printf_P(PSTR("%02hhx"), uid[i]);
 	putchar('\n');
 	list_sec_lang_from_external_flash();
-#endif //DEBUG_W25X20CL
+#endif //DEBUG_XFLASH
 
 //	lang_reset();
 	if (!lang_select(eeprom_read_byte((uint8_t*)EEPROM_LANG)))
@@ -4013,10 +4013,10 @@ void process_commands()
 		}
 		else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
 #ifdef WATCHDOG
-#if defined(W25X20CL) && defined(BOOTAPP)
+#if defined(XFLASH) && defined(BOOTAPP)
             boot_app_magic = BOOT_APP_MAGIC;
             boot_app_flags = BOOT_APP_FLG_RUN;
-#endif //defined(W25X20CL) && defined(BOOTAPP)
+#endif //defined(XFLASH) && defined(BOOTAPP)
             softReset();
 #elif defined(BOOTAPP) //this is a safety precaution. This is because the new bootloader turns off the heaters, but the old one doesn't. The watchdog should be used most of the time.
             asm volatile("jmp 0x3E000");
