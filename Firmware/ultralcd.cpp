@@ -8673,7 +8673,7 @@ static void lcd_connect_printer() {
 
 void lcd_ping() { //chceck if printer is connected to monitoring when in farm mode
 	if (farm_mode) {
-		bool empty = is_buffer_empty();
+		bool empty = cmd_buffer_empty();
 		if ((_millis() - PingTime) * 0.001 > (empty ? PING_TIME : PING_TIME_LONG)) { //if commands buffer is empty use shorter time period
 																							  //if there are comamnds in buffer, some long gcodes can delay execution of ping command
 																							  //therefore longer period is used
