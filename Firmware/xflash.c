@@ -6,8 +6,11 @@
 #include "spi.h"
 #include "fastio.h"
 
-#define _MFRID             0xEF
-#define _DEVID             0x11
+#define _MFRID_W25X20CL    0xEF
+#define _DEVID_W25X20CL    0x11
+
+#define _MFRID_GD25Q20C    0xEF
+#define _DEVID_GD25Q20C    0x11
 
 #define _CMD_ENABLE_WR     0x06
 #define _CMD_ENABLE_WR_VSR 0x50
@@ -177,7 +180,9 @@ int xflash_mfrid_devid(void)
 	uint8_t xflash_mfrid = _SPI_RX();  // receive mfrid
 	uint8_t xflash_devid = _SPI_RX();  // receive devid
 	_CS_HIGH();
-	return ((xflash_mfrid == _MFRID) && (xflash_devid == _DEVID));
+	return
+		((xflash_mfrid == _MFRID_W25X20CL) && (xflash_devid == _DEVID_W25X20CL)) ||
+		((xflash_mfrid == _MFRID_GD25Q20C) && (xflash_devid == _DEVID_GD25Q20C));
 }
 
 void xflash_wait_busy(void)
