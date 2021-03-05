@@ -7,9 +7,9 @@
 #include "Configuration.h"
 #include "pins.h"
 
-#ifdef W25X20CL
-#include "w25x20cl.h"
-#endif //W25X20CL
+#ifdef XFLASH
+#include "xflash.h"
+#endif //XFLASH
 
 // Currently active language selection.
 uint8_t lang_selected = 0;
@@ -54,7 +54,7 @@ uint8_t lang_select(uint8_t lang)
 		lang_table = 0;
 		lang_selected = lang;
 	}
-#ifdef W25X20CL
+#ifdef XFLASH
 	if (lang_get_code(lang) == lang_get_code(LANG_ID_SEC)) lang = LANG_ID_SEC;
 	if (lang == LANG_ID_SEC) //current secondary language
 	{
@@ -68,7 +68,7 @@ uint8_t lang_select(uint8_t lang)
 				}
 		}
 	}
-#else //W25X20CL
+#else //XFLASH
 	if (lang == LANG_ID_SEC)
 	{
 		uint16_t table = _SEC_LANG_TABLE;
@@ -82,7 +82,7 @@ uint8_t lang_select(uint8_t lang)
 				}
 		}
 	}
-#endif //W25X20CL
+#endif //XFLASH
 	if (lang_selected == lang)
 	{
 		eeprom_update_byte((unsigned char*)EEPROM_LANG, lang_selected);
@@ -107,19 +107,19 @@ uint8_t lang_get_count()
 {
 	if (pgm_read_dword(((uint32_t*)(_PRI_LANG_SIGNATURE))) == 0xffffffff)
 		return 1; //signature not set - only primary language will be available
-#ifdef W25X20CL
-	W25X20CL_SPI_ENTER();
+#ifdef XFLASH
+	XFLASH_SPI_ENTER();
 	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
 	while (1)
 	{
-		w25x20cl_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t)); //read table header from xflash
+		xflash_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t)); //read table header from xflash
 		if (header.magic != LANG_MAGIC) break; //break if magic not valid
 		addr += header.size; //calc address of next table
 		count++; //inc counter
 	}
-#else //W25X20CL
+#else //XFLASH
 	uint16_t table = _SEC_LANG_TABLE;
 	uint8_t count = 1; //count = 1 (primary)
 	while (pgm_read_dword(((uint32_t*)table)) == LANG_MAGIC) //magic valid
@@ -127,14 +127,14 @@ uint8_t lang_get_count()
 		table += pgm_read_word((uint16_t*)(table + 4));
 		count++;
 	}
-#endif //W25X20CL
+#endif //XFLASH
 	return count;
 }
 
 uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* offset)
 {
 	if (lang == LANG_ID_PRI) return 0; //primary lang not supported for this function
-#ifdef W25X20CL
+#ifdef XFLASH
 	if (lang == LANG_ID_SEC)
 	{
 		uint16_t ui = _SEC_LANG_TABLE; //table pointer
@@ -142,18 +142,18 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		if (offset) *offset = ui;
 		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
-	W25X20CL_SPI_ENTER();
+	XFLASH_SPI_ENTER();
 	uint32_t addr = 0x00000; //start of xflash
 	lang--;
 	while (1)
 	{
-		w25x20cl_rd_data(addr, (uint8_t*)(header), sizeof(lang_table_header_t)); //read table header from xflash
+		xflash_rd_data(addr, (uint8_t*)(header), sizeof(lang_table_header_t)); //read table header from xflash
 		if (header->magic != LANG_MAGIC) break; //break if not valid
 		if (offset) *offset = addr;
 		if (--lang == 0) return 1;
 		addr += header->size; //calc address of next table
 	}
-#else //W25X20CL
+#else //XFLASH
 	if (lang == LANG_ID_SEC)
 	{
 		uint16_t ui = _SEC_LANG_TABLE; //table pointer
@@ -161,32 +161,32 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		if (offset) *offset = ui;
 		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
-#endif //W25X20CL
+#endif //XFLASH
 	return 0;
 }
 
 uint16_t lang_get_code(uint8_t lang)
 {
 	if (lang == LANG_ID_PRI) return LANG_CODE_EN; //primary lang = EN
-#ifdef W25X20CL
+#ifdef XFLASH
 	if (lang == LANG_ID_SEC)
 	{
 		uint16_t ui = _SEC_LANG_TABLE; //table pointer
 		if (pgm_read_dword(((uint32_t*)(ui + 0))) != LANG_MAGIC) return LANG_CODE_XX; //magic not valid
 		return pgm_read_word(((uint32_t*)(ui + 10))); //return lang code from progmem
 	}
-	W25X20CL_SPI_ENTER();
+	XFLASH_SPI_ENTER();
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
 	lang--;
 	while (1)
 	{
-		w25x20cl_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t)); //read table header from xflash
+		xflash_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t)); //read table header from xflash
 		if (header.magic != LANG_MAGIC) break; //break if not valid
 		if (--lang == 0) return header.code;
 		addr += header.size; //calc address of next table
 	}
-#else //W25X20CL
+#else //XFLASH
 	uint16_t table = _SEC_LANG_TABLE;
 	uint8_t count = 1; //count = 1 (primary)
 	while (pgm_read_dword((uint32_t*)table) == LANG_MAGIC) //magic valid
@@ -195,7 +195,7 @@ uint16_t lang_get_code(uint8_t lang)
 		table += pgm_read_word((uint16_t*)(table + 4));
 		count++;
 	}
-#endif //W25X20CL
+#endif //XFLASH
 	return LANG_CODE_XX;
 }
 

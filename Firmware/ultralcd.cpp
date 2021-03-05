@@ -4361,7 +4361,7 @@ void menu_setlang(unsigned char lang)
 }
 
 #ifdef COMMUNITY_LANG_SUPPORT
-#ifdef W25X20CL
+#ifdef XFLASH
 static void lcd_community_language_menu()
 {
 	MENU_BEGIN();
@@ -4375,7 +4375,7 @@ static void lcd_community_language_menu()
 		}
 	MENU_END();
 }
-#endif //W25X20CL
+#endif //XFLASH
 #endif //COMMUNITY_LANG_SUPPORT && W52X20CL
 
 
@@ -4390,7 +4390,7 @@ static void lcd_language_menu()
 		return;
 	}
 	uint8_t cnt = lang_get_count();
-#ifdef W25X20CL
+#ifdef XFLASH
 	if (cnt == 2) //display secondary language in case of clear xflash 
 	{
 		if (menu_item_text_P(lang_get_name_by_code(lang_get_code(1))))
@@ -4401,9 +4401,9 @@ static void lcd_language_menu()
 	}
 	else
 		for (int i = 2; i < 8; i++) //skip seconday language - solved in lang_select (MK3) 'i < 8'  for 7 official languages
-#else //W25X20CL
+#else //XFLASH
 		for (int i = 1; i < cnt; i++) //all seconday languages (MK2/25)
-#endif //W25X20CL
+#endif //XFLASH
 			if (menu_item_text_P(lang_get_name_by_code(lang_get_code(i))))
 			{
 				menu_setlang(i);
@@ -4411,9 +4411,9 @@ static void lcd_language_menu()
 			}
 
 #ifdef COMMUNITY_LANG_SUPPORT
-#ifdef W25X20CL
+#ifdef XFLASH
 		MENU_ITEM_SUBMENU_P(_T(MSG_COMMUNITY_MADE), lcd_community_language_menu); ////MSG_COMMUNITY_MADE c=18
-#endif //W25X20CL
+#endif //XFLASH
 #endif //COMMUNITY_LANG_SUPPORT && W52X20CL
 
 	MENU_END();
@@ -6323,15 +6323,15 @@ unsigned char lcd_choose_color() {
 
 }
 
-#include "w25x20cl.h"
+#include "xflash.h"
 
 #ifdef LCD_TEST
 static void lcd_test_menu()
 {
-	W25X20CL_SPI_ENTER();
-	w25x20cl_enable_wr();
-	w25x20cl_chip_erase();
-	w25x20cl_disable_wr();
+	XFLASH_SPI_ENTER();
+	xflash_enable_wr();
+	xflash_chip_erase();
+	xflash_disable_wr();
 }
 #endif //LCD_TEST
 
@@ -6672,7 +6672,7 @@ static void lcd_main_menu()
     }
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT
 #ifdef LCD_TEST
-    MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT
+    MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_SUPPORT
 #endif //LCD_TEST
 
     MENU_END();
