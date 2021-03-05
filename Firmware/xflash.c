@@ -6,6 +6,8 @@
 #include "spi.h"
 #include "fastio.h"
 
+#ifdef XFLASH
+
 #define _MFRID_W25X20CL    0xEF
 #define _DEVID_W25X20CL    0x11
 
@@ -189,3 +191,5 @@ void xflash_wait_busy(void)
 {
 	while (xflash_rd_status_reg() & XFLASH_STATUS_BUSY) ;
 }
+
+#endif //XFLASH
