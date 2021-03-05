@@ -159,8 +159,8 @@ void xflash_rd_uid(uint8_t* uid)
 	_CS_LOW();
 	_SPI_TX(_CMD_RD_UID);                // send command 0x4b
 	uint8_t cnt = 4;                     // 4 dummy bytes
-	while (cnt--)                        // receive dummy bytes
-		_SPI_RX();
+	while (cnt--)                        // transmit dummy bytes
+		_SPI_TX(0x00);
 	cnt = 8;                             // 8 bytes UID
 	while (cnt--)                        // receive UID
 		uid[7 - cnt] = _SPI_RX();
