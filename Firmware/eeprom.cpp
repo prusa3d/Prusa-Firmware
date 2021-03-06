@@ -135,7 +135,9 @@ void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
         strcpy_P(sheetName.c, PSTR("Custom"));
     }
 
-    switch (index)
+    sheetName.c[6] = '0' + ((index % 2)+1);
+
+/*    switch (index)
     {
     case 0:
         sheetName.c[6] = '1';
@@ -163,7 +165,7 @@ void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
         break;
     default:
         break;
-    }
+    }*/
 
     sheetName.c[7] = '\0';
 }
