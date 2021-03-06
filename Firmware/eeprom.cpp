@@ -126,7 +126,7 @@ void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
     {
         strcpy_P(sheetName.c, PSTR("Textur"));
     }
-    else if (index < 4)
+    else if (index < 6)
     {
         strcpy_P(sheetName.c, PSTR("Satin "));
     }
