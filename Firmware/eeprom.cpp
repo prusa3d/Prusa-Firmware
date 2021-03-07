@@ -136,37 +136,6 @@ void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
     }
 
     sheetName.c[6] = '0' + ((index % 2)+1);
-
-/*    switch (index)
-    {
-    case 0:
-        sheetName.c[6] = '1';
-        break;
-    case 1:
-        sheetName.c[6] = '2';
-        break;
-    case 2:
-        sheetName.c[6] = '1';
-        break;
-    case 3:
-        sheetName.c[6] = '2';
-        break;
-    case 4:
-        sheetName.c[6] = '1';
-        break;
-    case 5:
-        sheetName.c[6] = '2';
-        break;
-    case 6:
-        sheetName.c[6] = '1';
-        break;
-    case 7:
-        sheetName.c[6] = '2';
-        break;
-    default:
-        break;
-    }*/
-
     sheetName.c[7] = '\0';
 }
 

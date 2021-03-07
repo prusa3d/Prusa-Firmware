@@ -276,11 +276,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D71 3441		| uint16	| ^										| 00 00h 0		| ff ffh 65535			| 4th sheet - Z offset 								| ^				| D3 Ax0d71 C2	
 | 0x0D73 3443		| uint8		| ^										| 00h 0			| ffh 255				| 4th sheet - bed temp 								| ^				| D3 Ax0d73 C1	
 | 0x0D74 3444		| uint8		| ^										| 00h 0			| ffh 255				| 4th sheet - PINDA temp 							| ^				| D3 Ax0d74 C1	
-| 0x0D75 3445		| char		| _5th Sheet block_						| 437573746f6d31| ffffffffffffff		| 5th sheet - Name: 	_Satin 1_					| ^				| D3 Ax0d75 C7
+| 0x0D75 3445		| char		| _5th Sheet block_						| 536174696e2031| ffffffffffffff		| 5th sheet - Name: 	_Satin 1_					| ^				| D3 Ax0d75 C7
 | 0x0D7C 3452		| uint16	| ^										| 00 00h 0		| ff ffh 65535			| 5th sheet - Z offset 								| ^				| D3 Ax0d7c C2	
 | 0x0D7E 3454		| uint8		| ^										| 00h 0			| ffh 255				| 5th sheet - bed temp 								| ^				| D3 Ax0d7e C1	
 | 0x0D7F 3455		| uint8		| ^										| 00h 0			| ffh 255				| 5th sheet - PINDA temp 							| ^				| D3 Ax0d7f C1	
-| 0x0D80 3456		| char		| _6th Sheet block_						| 437573746f6d32| ffffffffffffff		| 6th sheet - Name: 	_Satin 2_					| ^				| D3 Ax0d80 C7
+| 0x0D80 3456		| char		| _6th Sheet block_						| 536174696e2032| ffffffffffffff		| 6th sheet - Name: 	_Satin 2_					| ^				| D3 Ax0d80 C7
 | 0x0D87 3463		| uint16	| ^										| 00 00h 0		| ff ffh 65535			| 6th sheet - Z offset 								| ^				| D3 Ax0d87 C2	
 | 0x0D89 3465		| uint8		| ^										| 00h 0			| ffh 255				| 6th sheet - bed temp 								| ^				| D3 Ax0d89 C1	
 | 0x0D8A 3466		| uint8		| ^										| 00h 0			| ffh 255				| 6th sheet - PINDA temp 							| ^				| D3 Ax0d8a C1	
