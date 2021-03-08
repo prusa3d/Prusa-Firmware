@@ -230,6 +230,7 @@
 	  #define SD_SORT_ALPHA 1
 	  #define SD_SORT_NONE 2
 	  // #define SHELLSORT
+    #define INSERTSORT
 	  // #define SORTING_DUMP
 	
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).

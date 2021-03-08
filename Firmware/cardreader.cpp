@@ -922,6 +922,73 @@ void CardReader::presort() {
 				}
 			}
 
+#elif defined(INSERTSORT)
+
+#define _SORT_CMP_NODIR() (strcasecmp(name1, name2) < 0) //true if lowercase(name1) < lowercase(name2)
+#define _SORT_CMP_TIME_NODIR() (((crmod_date_bckp == crmodDate) && (crmod_time_bckp > crmodTime)) || (crmod_date_bckp > crmodDate))
+
+#if HAS_FOLDER_SORTING
+#define _SORT_CMP_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_NODIR() : (fs < 0 ? dir1 : !dir1))
+#define _SORT_CMP_TIME_DIR(fs) ((dir1 == filenameIsDir) ? _SORT_CMP_TIME_NODIR() : (fs < 0 ? dir1 : !dir1))
+#endif
+
+      uint16_t counter = 0;
+      menu_progressbar_init(fileCnt * fileCnt / 2, _i("Sorting files"));
+
+      for (uint16_t i = 1; i < fileCnt; ++i){
+        // if (!IS_SD_INSERTED) return;
+        menu_progressbar_update(counter);
+        counter += i;
+
+        /// pop the position
+        const uint16_t o1 = sort_order[i];
+        getfilename_simple(sort_positions[o1]);
+        strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
+        crmod_date_bckp = crmodDate;
+        crmod_time_bckp = crmodTime;
+        #if HAS_FOLDER_SORTING
+        bool dir1 = filenameIsDir;
+        #endif
+
+        /// find proper place
+        uint16_t j = i;
+        for (; j > 0; --j){
+          if (!IS_SD_INSERTED) return;
+          
+          #ifdef SORTING_DUMP
+          for (uint16_t z = 0; z < fileCnt; z++){
+            printf_P(PSTR("%2u "), sort_order[z]);
+          }
+          MYSERIAL.println();
+          #endif
+          
+          manage_heater();
+          const uint16_t o2 = sort_order[j - 1];
+
+          getfilename_simple(sort_positions[o2]);
+          char *name2 = LONGEST_FILENAME; // use the string in-place
+
+          // Sort the current pair according to settings.
+          if (
+          #if HAS_FOLDER_SORTING
+            (sdSort == SD_SORT_TIME && _SORT_CMP_TIME_DIR(FOLDER_SORTING)) || (sdSort == SD_SORT_ALPHA && !_SORT_CMP_DIR(FOLDER_SORTING))
+          #else
+            (sdSort == SD_SORT_TIME && _SORT_CMP_TIME_NODIR()) || (sdSort == SD_SORT_ALPHA && !_SORT_CMP_NODIR())
+          #endif
+            )
+          {
+            break;
+          } else {
+            #ifdef SORTING_DUMP
+            puts_P(PSTR("shift"));
+            #endif            
+            sort_order[j] = o2;
+          }
+        }
+        /// place the position
+        sort_order[j] = o1;
+      }
+
 #else //Bubble Sort
 
 #define _SORT_CMP_NODIR() (strcasecmp(name1, name2) < 0) //true if lowercase(name1) < lowercase(name2)
