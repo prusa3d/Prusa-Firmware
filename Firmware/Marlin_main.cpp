@@ -5361,69 +5361,47 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 #ifndef PINDA_THERMISTOR
 		if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
 #endif
-		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
-//		SERIAL_ECHOLNPGM("babystep applied");
-		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
-		#ifdef SUPPORT_VERBOSITY
-		if (verbosity_level >= 1) {
-			eeprom_bed_correction_valid ? SERIAL_PROTOCOLPGM("Bed correction data valid\n") : SERIAL_PROTOCOLPGM("Bed correction data not valid\n");
-		}
-		#endif // SUPPORT_VERBOSITY
+    babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
+//    SERIAL_ECHOLNPGM("babystep applied");
+    bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
+    #ifdef SUPPORT_VERBOSITY
+    if (verbosity_level >= 1) {
+      eeprom_bed_correction_valid ? SERIAL_PROTOCOLPGM("Bed correction data valid\n") : SERIAL_PROTOCOLPGM("Bed correction data not valid\n");
+    }
+    #endif // SUPPORT_VERBOSITY
 
-		for (uint8_t i = 0; i < 4; ++i) {
-			unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
-			long correction = 0;
-			if (code_seen(codes[i]))
-				correction = code_value_long();
-			else if (eeprom_bed_correction_valid) {
-				unsigned char *addr = (i < 2) ?
-					((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
-					((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
-				correction = eeprom_read_int8(addr);
-			}
-			if (correction == 0)
-				continue;
-			
-			if (labs(correction) > BED_ADJUSTMENT_UM_MAX) {
-				SERIAL_ERROR_START;
-				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
-				SERIAL_ECHO(correction);
-				SERIAL_ECHOLNPGM(" microns");
-			}
-			else {
-				float offset = float(correction) * 0.001f;
-				switch (i) {
-				case 0:
-					for (uint8_t row = 0; row < nMeasPoints; ++row) {						
-						for (uint8_t col = 0; col < nMeasPoints - 1; ++col) {
-							mbl.z_values[row][col] += offset * (nMeasPoints - 1 - col) / (nMeasPoints - 1);
-						}
-					}
-					break;
-				case 1:
-					for (uint8_t row = 0; row < nMeasPoints; ++row) {					
-						for (uint8_t col = 1; col < nMeasPoints; ++col) {
-							mbl.z_values[row][col] += offset * col / (nMeasPoints - 1);
-						}
-					}
-					break;
-				case 2:
-					for (uint8_t col = 0; col < nMeasPoints; ++col) {						
-						for (uint8_t row = 0; row < nMeasPoints; ++row) {
-							mbl.z_values[row][col] += offset * (nMeasPoints - 1 - row) / (nMeasPoints - 1);
-						}
-					}
-					break;
-				case 3:
-					for (uint8_t col = 0; col < nMeasPoints; ++col) {						
-						for (uint8_t row = 1; row < nMeasPoints; ++row) {
-							mbl.z_values[row][col] += offset * row / (nMeasPoints - 1);
-						}
-					}
-					break;
-				}
-			}
-		}
+    const constexpr int8_t sides = 4;
+    long correction[sides] = {0, 0, 0, 0};
+    for (uint8_t i = 0; i < sides; ++i){
+      static const constexpr char codes[sides] = { 'L', 'R', 'F', 'B' };
+      if (code_seen(codes[i]))
+        correction[i] = code_value_long();
+      else if (eeprom_bed_correction_valid) {
+        unsigned char *addr = (i < 2) ?
+          ((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
+          ((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
+        correction[i] = eeprom_read_int8(addr);
+      }
+      if (correction[i] == 0)
+        continue;
+      
+      if (labs(correction) > BED_ADJUSTMENT_UM_MAX) {
+        SERIAL_ERROR_START;
+        SERIAL_ECHOPGM("Excessive bed leveling correction: ");
+        SERIAL_ECHO(correction[i]);
+        SERIAL_ECHOLNPGM(" microns");
+        correction[i] = 0;
+      }
+    }
+    for (uint8_t row = 0; row < nMeasPoints; ++row) {
+      for (uint8_t col = 0; col < nMeasPoints; ++col){
+        mbl.z_values[row][col] += 0.001f * (
+          + correction[0] * (nMeasPoints - 1 - col) 
+          + correction[1] * col 
+          + correction[2] * (nMeasPoints - 1 - row) 
+          + correction[3] * row) / (float)(nMeasPoints - 1);
+      }
+    }  
 //		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		if (nMeasPoints == 3) {
 			mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
