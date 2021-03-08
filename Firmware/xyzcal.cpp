@@ -719,6 +719,8 @@ bool xyzcal_searchZ(void)
 			int16_t z_on = _Z;
 			//@size=82
             DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), x_on, y_on, z_on, ad);
+			/// return to starting position
+			xyzcal_lineXYZ_to(x0, y0, _Z, 200, 0);
 			return true;
 		}
 		z -= 400;
@@ -972,7 +974,7 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void){
     //@size=258
     DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
-	///< magic constant, lowers min_z after searchZ to obtain more dense data in scan
+	/// magic constant, lowers min_z after searchZ to obtain more dense data in scan
 	const pos_i16_t lower_z = 72; 
 
 	xyzcal_meassure_enter();
