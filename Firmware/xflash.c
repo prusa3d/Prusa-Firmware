@@ -11,7 +11,7 @@
 #define _MFRID_W25X20CL    0xEF
 #define _DEVID_W25X20CL    0x11
 
-#define _MFRID_GD25Q20C    0xEF
+#define _MFRID_GD25Q20C    0xC8
 #define _DEVID_GD25Q20C    0x11
 
 #define _CMD_ENABLE_WR     0x06
