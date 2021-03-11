@@ -6967,7 +6967,7 @@ Sigma_Exit:
       lcd_setstatus(strchr_pointer + 5);
       break;*/
 
-#if 0 //Disable these for the time being
+#ifdef M120_M121_ENABLED
     /*!
     ### M120 - Enable endstops <a href="https://reprap.org/wiki/G-code#M120:_Enable_endstop_detection">M120: Enable endstop detection</a>
     */
@@ -6981,7 +6981,7 @@ Sigma_Exit:
     case 121:
       enable_endstops(false) ;
       break;
-#endif //0
+#endif //M120_M121_ENABLED
 
     /*!
 	### M119 - Get endstop states <a href="https://reprap.org/wiki/G-code#M119:_Get_Endstop_Status">M119: Get Endstop Status</a>
