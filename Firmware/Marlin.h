@@ -276,7 +276,7 @@ void setPwmFrequency(uint8_t pin, int val);
 #endif
 
 extern bool fans_check_enabled;
-extern float homing_feedrate[];
+extern const float homing_feedrate[] PROGMEM;
 extern uint8_t axis_relative_modes;
 extern float feedrate;
 extern int feedmultiply;
