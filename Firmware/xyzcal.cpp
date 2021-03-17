@@ -699,31 +699,29 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 const uint16_t xyzcal_point_pattern_10[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 const uint16_t xyzcal_point_pattern_08[12] PROGMEM = {0x000, 0x000, 0x0f0, 0x1f8, 0x3fc, 0x3fc, 0x3fc, 0x3fc, 0x1f8, 0x0f0, 0x000, 0x000};
 
-bool xyzcal_searchZ(void)
-{
-    //@size=118
+bool xyzcal_searchZ(void) {
+	//@size=118
 	DBG(_n("xyzcal_searchZ x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	int16_t x0 = _X;
 	int16_t y0 = _Y;
-	int16_t z0 = _Z;
+	int16_t z = _Z;
 //	int16_t min_z = -6000;
 //	int16_t dz = 100;
-	int16_t z = z0;
-	while (z > -2300) //-6mm + 0.25mm
-	{
+	while (z > -2300) { //-6mm + 0.25mm
 		uint16_t ad = 0;
-		if (xyzcal_spiral8(x0, y0, z, 100, 900, 320, 1, &ad)) //dz=100 radius=900 delay=400
-		{
-			int16_t x_on = _X;
-			int16_t y_on = _Y;
-			int16_t z_on = _Z;
+		if (xyzcal_spiral8(x0, y0, z, 100, 900, 320, 1, &ad)) { //dz=100 radius=900 delay=400
 			//@size=82
-            DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), x_on, y_on, z_on, ad);
+			DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), _X, _Y, _Z, ad);
+
+			/// return to starting XY position
+			/// magic constant, lowers min_z after searchZ to obtain more dense data in scan
+			const pos_i16_t lower_z = 72;
+			xyzcal_lineXYZ_to(x0, y0, _Z - lower_z, 200, 0);
 			return true;
 		}
 		z -= 400;
 	}
-    //@size=138
+	//@size=138
 	DBG(_n("xyzcal_searchZ no signal\n x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	return false;
 }
@@ -972,14 +970,10 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void){
     //@size=258
     DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
-	///< magic constant, lowers min_z after searchZ to obtain more dense data in scan
-	const pos_i16_t lower_z = 72; 
 
 	xyzcal_meassure_enter();
-	if (xyzcal_searchZ()){
-		xyzcal_lineXYZ_to(_X, _Y, _Z - lower_z, 200, 0);
+	if (xyzcal_searchZ())
 		ret = xyzcal_scan_and_process();
-	}
 	xyzcal_meassure_leave();
 	return ret;
 }

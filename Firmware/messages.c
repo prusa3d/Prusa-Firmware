@@ -21,6 +21,7 @@ const char MSG_CALIBRATE_Z_AUTO[] PROGMEM_I1 = ISTR("Calibrating Z"); ////c=20 r
 const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////
 const char MSG_CHECKING_X[] PROGMEM_I1 = ISTR("Checking X axis"); ////c=20
 const char MSG_CHECKING_Y[] PROGMEM_I1 = ISTR("Checking Y axis"); ////c=20
+const char MSG_COMMUNITY_MADE[] PROGMEM_I1 = ISTR("Community made"); ////c=18
 const char MSG_CONFIRM_NOZZLE_CLEAN[] PROGMEM_I1 = ISTR("Please clean the nozzle for calibration. Click when done."); ////c=20 r=8
 const char MSG_COOLDOWN[] PROGMEM_I1 = ISTR("Cooldown"); ////
 const char MSG_CRASH[] PROGMEM_I1 = ISTR("Crash"); ////c=7
@@ -79,7 +80,7 @@ const char MSG_PRESS_TO_UNLOAD[] PROGMEM_I1 = ISTR("Please press the knob to unl
 const char MSG_PRINT_ABORTED[] PROGMEM_I1 = ISTR("Print aborted"); ////c=20
 const char MSG_PULL_OUT_FILAMENT[] PROGMEM_I1 = ISTR("Please pull out filament immediately"); ////c=20 r=4
 const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover print?"); ////c=20 r=2
-const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\xF8" "Refresh"); ////
+const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\x04" "Refresh"); ////
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
 const char MSG_RESET[] PROGMEM_I1 = ISTR("Reset"); ////c=14
 const char MSG_RESUME_PRINT[] PROGMEM_I1 = ISTR("Resume print"); ////c=18
@@ -202,4 +203,3 @@ const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
 const char MSG_ADVANCE_K[] PROGMEM_N1 = "Advance K:"; ////c=13
 const char MSG_POWERPANIC_DETECTED[] PROGMEM_N1 = "POWER PANIC DETECTED"; ////c=20
 const char MSG_LCD_STATUS_CHANGED[] PROGMEM_N1 = "LCD status changed";
-const char MSG_FILE_SELECTED[] PROGMEM_N1 = "File selected"; ////c=20

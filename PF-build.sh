@@ -139,6 +139,7 @@
 # 12 Feb 2021, 3d-gussner, Add MK404-build.sh
 # 13 Feb 2021, 3d-gussner, Indentations
 # 13 Feb 2021, 3d-gussner, MK404 improvements like "flash" MK3, MK3S languages files to MK404 xflash.
+# 27 Feb 2021, 3d-gussner, Add './lang-community.sh' and update exits
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -236,12 +237,12 @@ fi
 
 # Check gawk ... needed during language build
 if ! type gawk > /dev/null; then
-    if [ $TARGET_OS == "linux" ]; then
-        echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
-        echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
-        #sudo apt-get update && apt-get install gawk
-        exit 4
-    fi
+	if [ $TARGET_OS == "linux" ]; then
+		echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
+		echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
+		#sudo apt-get update && apt-get install gawk
+		exit 5
+	fi
 fi
 
 #### End prepare bash / Linux environment
@@ -281,10 +282,10 @@ echo ""
 
 #Check if build exists and creates it if not
 if [ ! -d "../PF-build-dl" ]; then
-    mkdir ../PF-build-dl || exit 5
+    mkdir ../PF-build-dl || exit 6
 fi
 
-cd ../PF-build-dl || exit 6
+cd ../PF-build-dl || exit 7
 BUILD_ENV_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Check if PF-build-env-<version> exists and downloads + creates it if not
@@ -298,20 +299,20 @@ fi
 # Download and extract supported Arduino IDE depending on OS
 # Windows
 if [ $TARGET_OS == "windows" ]; then
-    if [ ! -f "arduino-$ARDUINO_ENV-windows.zip" ]; then
-        echo "$(tput setaf 6)Downloading Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
-        sleep 2
-        wget https://downloads.arduino.cc/arduino-$ARDUINO_ENV-windows.zip || exit 7
-        echo "$(tput sgr 0)"
-    fi
-    if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
-        echo "$(tput setaf 6)Unzipping Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
-        sleep 2
-        unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || exit 7
-        mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
-        echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
-        echo "$(tput sgr0)"
-    fi
+	if [ ! -f "arduino-$ARDUINO_ENV-windows.zip" ]; then
+		echo "$(tput setaf 6)Downloading Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
+		sleep 2
+		wget https://downloads.arduino.cc/arduino-$ARDUINO_ENV-windows.zip || exit 8
+		echo "$(tput sgr 0)"
+	fi
+	if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
+		echo "$(tput setaf 6)Unzipping Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
+		sleep 2
+		unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || exit 8
+		mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
+		echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+		echo "$(tput sgr0)"
+	fi
 fi
 # Linux
 if [ $TARGET_OS == "linux" ]; then
@@ -485,37 +486,36 @@ while getopts v:l:d:b:o:c:p:n:m:g:?h flag
 #
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
-echo "***************************************"
-echo "* PF-build.sh Version: 1.0.6-Build_33 *"
-echo "***************************************"
-echo "Arguments:"
-echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
-echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
-echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
-echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
-echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
-echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build'$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "$(tput setaf 2)-n$(tput sgr0) New fresh build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
-echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
-echo "$(tput setaf 2)-?$(tput sgr0) Help"
-echo "$(tput setaf 2)-h$(tput sgr0) Help"
-echo 
-echo "Brief USAGE:"
-echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o] [-c] [-p] [-n] [-m]"
-echo
-echo "Example:"
-echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
-echo "  Will build all variants as multi language and final GOLD version"
-echo
-echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1 -c 1 -p 1 -n 1$(tput sgr0)"
-echo "  Will build MK3S multi language final GOLD firmware "
-echo "  with current commit count number and output extra information,"
-echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
-echo
-exit 
-
+    echo "***************************************"
+    echo "* PF-build.sh Version: 1.0.6-Build_33 *"
+    echo "***************************************"
+    echo "Arguments:"
+    echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
+    echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
+    echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
+    echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
+    echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
+    echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build'$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+    echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+    echo "$(tput setaf 2)-n$(tput sgr0) New fresh build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+    echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
+    echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
+    echo "$(tput setaf 2)-?$(tput sgr0) Help"
+    echo "$(tput setaf 2)-h$(tput sgr0) Help"
+    echo 
+    echo "Brief USAGE:"
+    echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o] [-c] [-p] [-n] [-m]"
+    echo
+    echo "Example:"
+    echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
+    echo "  Will build all variants as multi language and final GOLD version"
+    echo
+    echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1 -c 1 -p 1 -n 1$(tput sgr0)"
+    echo "  Will build MK3S multi language final GOLD firmware "
+    echo "  with current commit count number and output extra information,"
+    echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
+    echo
+    exit 14
 fi
 
 #
@@ -806,9 +806,9 @@ do
     fi
         
     #Check if compiler flags are set to Prusa specific needs for the rambo board.
-#    if [ $TARGET_OS == "windows" ]; then
-#        RAMBO_PLATFORM_FILE="PrusaResearchRambo/avr/platform.txt"
-#    fi    
+    #if [ $TARGET_OS == "windows" ]; then
+       #RAMBO_PLATFORM_FILE="PrusaResearchRambo/avr/platform.txt"
+    #fi    
     
     #### End of Prepare building
         
@@ -873,6 +873,8 @@ do
         # build languages
         echo "$(tput setaf 3)"
         ./lang-build.sh || exit 32
+        # build community languages
+        ./lang-community.sh || exit 33
         # Combine compiled firmware with languages 
         ./fw-build.sh || exit 33
         cp not_tran.txt not_tran_$VARIANT.txt
@@ -884,9 +886,9 @@ do
         if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
             echo "$(tput setaf 2)Copying multi language firmware for MK3/Einsy board to PF-build-hex folder$(tput sgr 0)"
             # Make a copy of "lang.bin" for MK404 MK3 and MK3S
-            if [ ! -z "$mk404_flag" ]; then
-                cp -f lang.bin $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin
-            fi
+            #if [ ! -z "$mk404_flag" ]; then
+                #cp -f lang.bin $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin
+            #fi
             # End of "lang.bin" for MK3 and MK3S copy
             cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
         else
@@ -975,43 +977,46 @@ echo "more information how to flash firmware https://www.prusa3d.com/drivers/ $(
 
 # Check/compile MK404 sim
 if [ ! -z "$mk404_flag" ]; then
-./MK404-build.sh
+    ./MK404-build.sh
 
 # For Prusa MK2, MK2.5/S
-if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
-    PRINTER="${PRINTER}_mR13"
-elif [ "$mk404_flag" == "2" ]; then # Check if MMU2 is selected only for MK3/S
-    PRINTER="${PRINTER}MMU2"
-fi
+    if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
+        PRINTER="${PRINTER}_mR13"
+    else
+        if [[ "$mk404_flag" == "2" || "$mk404_flag" == "MMU2" || "$mk404_flag" == "MMU2S" ]]; then # Check if MMU2 is selected only for MK3/S
+            PRINTER="${PRINTER}MMU2"
+        fi
+    fi
 
 
 # Run MK404 with grafics
-if [ ! -z "$graphics_flag" ]; then
-    MK404_options="--colour-extrusion --extrusion Quad_HR -g "
-    if [ "$graphics_flag" == "1" ]; then
-        MK404_options="${MK404_options}lite"
-    else
-        MK404_options="${MK404_options}fancy"
+    if [ ! -z "$graphics_flag" ]; then
+        MK404_options="--colour-extrusion --extrusion Quad_HR -g "
+        if [[ "$graphics_flag" == "1" || "$graphics_flag" == "lite" ]]; then
+            MK404_options="${MK404_options}lite"
+        elif [[ "$graphics_flag" == "2" || "$graphics_flag" == "fancy" ]]; then
+            MK404_options="${MK404_options}fancy"
+        else
+        echo "$(tput setaf 1)Unsupported MK404 graphics option $graphics_flag$(tput sgr 0)"
+        fi
     fi
 
-fi
-
 # Output some useful data
-echo "Printer: $PRINTER"
-echo "Options: $MK404_options"
+    echo "Printer: $PRINTER"
+    echo "Options: $MK404_options"
 
 # Change to MK404 build folder
-cd ../MK404/master/build
+    cd ../MK404/master/build
 
 # Copy language bin file for MK3 and MK3S to xflash
-if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
-echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${PRINTER}_xflash.bin'"
-    dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${PRINTER}_xflash.bin
-    dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
-fi
+    #if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
+    #echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${PRINTER}_xflash.bin'"
+        #dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${PRINTER}_xflash.bin
+        #dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
+    #fi
 
 # Start MK404
 # default with serial output and terminal to manipulate it via terminal
-./MK404 Prusa_$PRINTER -s --terminal $MK404_options -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+    ./MK404 Prusa_$PRINTER -s --terminal $MK404_options -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
 fi
 #### End of MK404 Simulator

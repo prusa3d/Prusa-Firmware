@@ -766,31 +766,16 @@ static void factory_reset(char level)
 #endif //FILAMENT_SENSOR
 		break;
 
-	case 3:{ // Level 3: erase everything, whole EEPROM will be set to 0xFF
-		lcd_puts_P(PSTR("Factory RESET"));
-		lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
-		uint16_t er_progress = 0;
-		lcd_set_cursor(3, 3);
-		lcd_space(6);
-		lcd_set_cursor(3, 3);
-		lcd_print(er_progress);
-
+	case 3:
+		menu_progressbar_init(EEPROM_TOP, PSTR("ERASING all data"));
 		// Erase EEPROM
-		for (uint16_t i = 0; i < 4096; i++) {
+		for (uint16_t i = 0; i < EEPROM_TOP; i++) {
 			eeprom_update_byte((uint8_t*)i, 0xFF);
-
-			if (i % 41 == 0) {
-				er_progress++;
-				lcd_set_cursor(3, 3);
-				lcd_space(6);
-				lcd_set_cursor(3, 3);
-				lcd_print(er_progress);
-				lcd_puts_P(PSTR("%"));
-			}
-
+			menu_progressbar_update(i);
 		}
+		menu_progressbar_finish();
 		softReset();
-		}break;
+		break;
 
 
 #ifdef SNMM
@@ -2436,38 +2421,44 @@ void refresh_cmd_timeout(void)
 }
 
 #ifdef FWRETRACT
-  void retract(bool retracting, bool swapretract = false) {
+void retract(bool retracting, bool swapretract = false) {
+    // Perform FW retraction, just if needed, but behave as if the move has never took place in
+    // order to keep E/Z coordinates unchanged. This is done by manipulating the internal planner
+    // position, which requires a sync
     if(retracting && !retracted[active_extruder]) {
-      destination[X_AXIS]=current_position[X_AXIS];
-      destination[Y_AXIS]=current_position[Y_AXIS];
-      destination[Z_AXIS]=current_position[Z_AXIS];
-      destination[E_AXIS]=current_position[E_AXIS];
-      current_position[E_AXIS]+=(swapretract?retract_length_swap:cs.retract_length)*float(extrudemultiply)*0.01f;
-      plan_set_e_position(current_position[E_AXIS]);
-      float oldFeedrate = feedrate;
-      feedrate=cs.retract_feedrate*60;
-      retracted[active_extruder]=true;
-      prepare_move();
-      current_position[Z_AXIS]-=cs.retract_zlift;
-      plan_set_position_curposXYZE();
-      prepare_move();
-      feedrate = oldFeedrate;
+        st_synchronize();
+        set_destination_to_current();
+        current_position[E_AXIS]+=(swapretract?retract_length_swap:cs.retract_length)*float(extrudemultiply)*0.01f;
+        plan_set_e_position(current_position[E_AXIS]);
+        float oldFeedrate = feedrate;
+        feedrate=cs.retract_feedrate*60;
+        retracted[active_extruder]=true;
+        prepare_move();
+        if(cs.retract_zlift) {
+            st_synchronize();
+            current_position[Z_AXIS]-=cs.retract_zlift;
+            plan_set_position_curposXYZE();
+            prepare_move();
+        }
+        feedrate = oldFeedrate;
     } else if(!retracting && retracted[active_extruder]) {
-      destination[X_AXIS]=current_position[X_AXIS];
-      destination[Y_AXIS]=current_position[Y_AXIS];
-      destination[Z_AXIS]=current_position[Z_AXIS];
-      destination[E_AXIS]=current_position[E_AXIS];
-      current_position[Z_AXIS]+=cs.retract_zlift;
-      plan_set_position_curposXYZE();
-      current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(cs.retract_length+cs.retract_recover_length))*float(extrudemultiply)*0.01f;
-      plan_set_e_position(current_position[E_AXIS]);
-      float oldFeedrate = feedrate;
-      feedrate=cs.retract_recover_feedrate*60;
-      retracted[active_extruder]=false;
-      prepare_move();
-      feedrate = oldFeedrate;
+        st_synchronize();
+        set_destination_to_current();
+        float oldFeedrate = feedrate;
+        feedrate=cs.retract_recover_feedrate*60;
+        if(cs.retract_zlift) {
+            current_position[Z_AXIS]+=cs.retract_zlift;
+            plan_set_position_curposXYZE();
+            prepare_move();
+            st_synchronize();
+        }
+        current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(cs.retract_length+cs.retract_recover_length))*float(extrudemultiply)*0.01f;
+        plan_set_e_position(current_position[E_AXIS]);
+        retracted[active_extruder]=false;
+        prepare_move();
+        feedrate = oldFeedrate;
     }
-  } //retract
+} //retract
 #endif //FWRETRACT
 
 void trace() {
@@ -4382,21 +4373,22 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
 			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
 		}
-          #ifdef FWRETRACT
-            if(cs.autoretract_enabled)
+
+#ifdef FWRETRACT
+        if(cs.autoretract_enabled) {
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
-              float echange=destination[E_AXIS]-current_position[E_AXIS];
-
-              if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
-                  current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
-                  plan_set_e_position(current_position[E_AXIS]); //AND from the planner
-                  retract(!retracted[active_extruder]);
-                  return;
-              }
-
-
+                float echange=destination[E_AXIS]-current_position[E_AXIS];
+                if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
+                    st_synchronize();
+                    current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
+                    plan_set_e_position(current_position[E_AXIS]); //AND from the planner
+                    retract(!retracted[active_extruder]);
+                    return;
+                }
             }
-          #endif //FWRETRACT
+        }
+#endif //FWRETRACT
+
         prepare_move();
         //ClearToSend();
       }
@@ -4464,9 +4456,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         lcd_update(0);
       }
       break;
-      #ifdef FWRETRACT
-      
 
+
+#ifdef FWRETRACT
     /*!
 	### G10 - Retract <a href="https://reprap.org/wiki/G-code#G10:_Retract">G10: Retract</a>
 	Retracts filament according to settings of `M207`
@@ -4479,7 +4471,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         retract(true);
        #endif
       break;
-      
+
 
     /*!
 	### G11 - Retract recover <a href="https://reprap.org/wiki/G-code#G11:_Unretract">G11: Unretract</a>
@@ -4492,8 +4484,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         retract(false);
        #endif 
       break;
-      #endif //FWRETRACT
-    
+#endif //FWRETRACT
+
 
     /*!
 	### G21 - Sets Units to Millimters <a href="https://reprap.org/wiki/G-code#G21:_Set_Units_to_Millimeters">G21: Set Units to Millimeters</a>
@@ -7317,8 +7309,9 @@ Sigma_Exit:
         if(code_seen(axis_codes[i])) cs.add_homing[i] = code_value();
       }
       break;
-    #ifdef FWRETRACT
 
+
+#ifdef FWRETRACT
     /*!
 	### M207 - Set firmware retraction <a href="https://reprap.org/wiki/G-code#M207:_Set_retract_length">M207: Set retract length</a>
 	#### Usage
@@ -7416,7 +7409,9 @@ Sigma_Exit:
       }
 
     }break;
-    #endif // FWRETRACT
+#endif // FWRETRACT
+
+
     #if EXTRUDERS > 1
 
     /*!
@@ -11262,7 +11257,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 		}
 		dir_name[8] = '\0';
 		MYSERIAL.println(dir_name);
-		// strcpy(dir_names[i], dir_name);
+		// strcpy(card.dir_names[i], dir_name);
 		card.chdir(dir_name, false);
 	}
 

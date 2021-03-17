@@ -175,6 +175,9 @@
 #MSG_DATE c=17 r=1
 "Date:"
 
+#MSG_COMMUNITY_MADE c=18
+"Community made"
+
 #MSG_DISABLE_STEPPERS
 "Disable steppers"
 

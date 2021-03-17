@@ -155,6 +155,8 @@ extern uint8_t SilentModeMenu_MMU;
 extern bool cancel_heatup;
 extern bool isPrintPaused;
 
+extern uint8_t scrollstuff;
+
 
 void lcd_ignore_click(bool b=true);
 void lcd_commands();
@@ -228,10 +230,7 @@ void lcd_temp_calibration_set();
 
 void display_loading();
 
-#if !SDSORT_USES_RAM
 void lcd_set_degree();
-void lcd_set_progress();
-#endif
 
 #if (LANG_MODE != 0)
 void lcd_language();

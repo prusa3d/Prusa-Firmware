@@ -34,6 +34,7 @@ public:
 
   void getfilename(uint16_t nr, const char* const match=NULL);
   void getfilename_simple(uint32_t position, const char * const match = NULL);
+  void getfilename_next(uint32_t position, const char * const match = NULL);
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
@@ -53,12 +54,7 @@ public:
 		void swap(uint8_t left, uint8_t right);
 		void quicksort(uint8_t left, uint8_t right);
 	 #endif //SDSORT_QUICKSORT
-     void getfilename_sorted(const uint16_t nr);
-     #if SDSORT_GCODE
-	 FORCE_INLINE void setSortOn(bool b) { sort_alpha = b; presort(); }
-     FORCE_INLINE void setSortFolders(int i) { sort_folders = i; presort(); }
-     //FORCE_INLINE void setSortReverse(bool b) { sort_reverse = b; }
-	 #endif
+     void getfilename_sorted(const uint16_t nr, uint8_t sdSort);
   #endif
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
@@ -84,7 +80,7 @@ public:
   // There are scenarios when simple modification time is not enough (on MS Windows)
   // Therefore these timestamps hold the most recent one of creation/modification date/times
   uint16_t crmodTime, crmodDate;
-  uint32_t cluster, position;
+  uint32_t /* cluster, */ position;
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;
   int lastnr; //last number of the autostart;
@@ -99,45 +95,7 @@ private:
   // Sort files and folders alphabetically.
 #ifdef SDCARD_SORT_ALPHA
   uint16_t sort_count;        // Count of sorted items in the current directory
-  #if SDSORT_GCODE
-  bool sort_alpha;          // Flag to enable / disable the feature
-  int sort_folders;         // Flag to enable / disable folder sorting
-							//bool sort_reverse;      // Flag to enable / disable reverse sorting
-  #endif
-
-							// By default the sort index is static
-  #if SDSORT_DYNAMIC_RAM
-  uint8_t *sort_order;
-  #else
-  uint8_t sort_order[SDSORT_LIMIT];
-  #endif
-  // Cache filenames to speed up SD menus.
-  #if SDSORT_USES_RAM
-
-  // If using dynamic ram for names, allocate on the heap.
-  #if SDSORT_CACHE_NAMES
-    #if SDSORT_DYNAMIC_RAM
-      char **sortshort, **sortnames;
-    #else
-      char sortshort[SDSORT_LIMIT][FILENAME_LENGTH];
-      char sortnames[SDSORT_LIMIT][FILENAME_LENGTH];
-    #endif
-  #elif !SDSORT_USES_STACK
-    char sortnames[SDSORT_LIMIT][FILENAME_LENGTH];
-    uint16_t modification_time[SDSORT_LIMIT];
-    uint16_t modification_date[SDSORT_LIMIT];
-  #endif
-
-  // Folder sorting uses an isDir array when caching items.
-  #if HAS_FOLDER_SORTING
-    #if SDSORT_DYNAMIC_RAM
-      uint8_t *isDir;
-    #elif (SDSORT_CACHE_NAMES) || !(SDSORT_USES_STACK)
-      uint8_t isDir[(SDSORT_LIMIT + 7) >> 3];
-    #endif
-  #endif
-
-  #endif // SDSORT_USES_RAM
+  uint32_t sort_positions[SDSORT_LIMIT];
 
 #endif // SDCARD_SORT_ALPHA
 

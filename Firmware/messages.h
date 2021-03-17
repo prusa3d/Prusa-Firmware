@@ -22,6 +22,7 @@ extern const char MSG_CALIBRATE_Z_AUTO[];
 extern const char MSG_CARD_MENU[];
 extern const char MSG_CHECKING_X[];
 extern const char MSG_CHECKING_Y[];
+extern const char MSG_COMMUNITY_MADE[];
 extern const char MSG_CONFIRM_NOZZLE_CLEAN[];
 extern const char MSG_COOLDOWN[];
 extern const char MSG_CRASH[];
@@ -202,7 +203,6 @@ extern const char MSG_M112_KILL[];
 extern const char MSG_ADVANCE_K[];
 extern const char MSG_POWERPANIC_DETECTED[];
 extern const char MSG_LCD_STATUS_CHANGED[];
-extern const char MSG_FILE_SELECTED[];
 
 #if defined(__cplusplus)
 }
