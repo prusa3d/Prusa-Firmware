@@ -510,9 +510,9 @@ void lcdui_print_time(void)
     //if remaining print time estimation is available print it else print elapsed time
     int chars = 0;
     if (PRINTER_ACTIVE) {
-        uint16_t print_t = 0;
-        uint16_t print_tr = 0;
-        uint16_t print_tc = 0;
+        uint16_t print_t = PRINT_TIME_REMAINING_INIT;
+        uint16_t print_tr = PRINT_TIME_REMAINING_INIT;
+        uint16_t print_tc = PRINT_TIME_REMAINING_INIT;
         char suff = ' ';
         char suff_doubt = ' ';
 
