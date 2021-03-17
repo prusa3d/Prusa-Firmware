@@ -542,12 +542,12 @@ void lcdui_print_time(void)
 
         clock_interval++;
 
-        if (print_tc != 0 && clock_interval > CLOCK_INTERVAL_TIME) {
+        if (print_tc != PRINT_TIME_REMAINING_INIT && clock_interval > CLOCK_INTERVAL_TIME) {
             print_t = print_tc;
             suff = 'C';
         } else
 //#endif //CLOCK_INTERVAL_TIME 
-        if (print_tr != 0) {
+        if (print_tr != PRINT_TIME_REMAINING_INIT) {
             print_t = print_tr;
             suff = 'R';
         } else 
