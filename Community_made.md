@@ -4,12 +4,13 @@
 - `PF-build.sh`
   - Maintainers: **@3d-gussner**
   - Co-maintainers:
-  - Contributors: **@ropaha**, **@deliopoulos**, **@DRracer**, **@leptun**
+  - Contributors: **@mkbel**, **@ropaha**, **@deliopoulos**, **@DRracer**, **wavexx**, **@leptun**, **@andrewluebke**, **@kuhnmarek**
   - [X] **Active**      since February 2019
-  - [X] **Maintained**  since February 2019
+  - [X] **Maintained**  since January 2019
 
 ### How-to use PF-build.sh
 Start `./PF-build.sh` and follow the instructions
+
 Help `./PF-build.sh -h`
 
 ## Translations
