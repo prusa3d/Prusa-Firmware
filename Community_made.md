@@ -13,4 +13,4 @@ Start `./PF-build.sh` and follow the instructions
 Help `./PF-build.sh -h`
 
 ## Translations
-- see [/lang/Community_made_translations.md](https://github.com/prusa3d/Prusa-Firmware/blob/MK3_Community_issue_template/lang/Community_made_translations.md)
+- see [/lang/Community_made_translations.md](https://github.com/prusa3d/Prusa-Firmware/blob/MK3/lang/Community_made_translations.md)
