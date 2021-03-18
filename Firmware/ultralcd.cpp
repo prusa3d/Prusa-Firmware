@@ -79,7 +79,7 @@ static uint8_t lcd_commands_step = 0;
 CustomMsg custom_message_type = CustomMsg::Status;
 unsigned int custom_message_state = 0;
 
-
+bool isPrintFinished = false;
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
 int farm_timer = 8;
@@ -6559,6 +6559,11 @@ static void lcd_main_menu()
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
 
+	if ( (!PRINTER_ACTIVE) && isPrintFinished)
+  	{
+		MENU_ITEM_SUBMENU_P(_i("Reprint"), reprint_from_eeprom);
+  	}
+
     if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag) {
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
     }
@@ -8957,6 +8962,43 @@ void lcd_experimental_menu()
 #endif //EXTRUDER_ALTFAN_DETECT
 
     MENU_END();
+}
+
+void reprint_from_eeprom() {
+	char cmd[30];
+	char filename[13];
+	uint8_t depth = 0;
+	char dir_name[9];
+
+	isPrintFinished=false;
+
+	//cmdqueue_reset();
+
+	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
+	
+	MYSERIAL.println(int(depth));
+	for (int i = 0; i < depth; i++) {
+		for (int j = 0; j < 8; j++) {
+			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
+		}
+		dir_name[8] = '\0';
+		MYSERIAL.println(dir_name);
+		// strcpy(dir_names[i], dir_name);
+		card.chdir(dir_name, false);
+	}
+
+	for (int i = 0; i < 8; i++) {
+		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
+	}
+	filename[8] = '\0';
+
+	MYSERIAL.print(filename);
+	strcat_P(filename, PSTR(".gco"));
+	sprintf_P(cmd, PSTR("M23 %s"), filename);
+	enquecommand(cmd);
+  	sprintf_P(cmd, PSTR("M24"));
+	enquecommand(cmd);
+	lcd_return_to_status();
 }
 
 #ifdef PINDA_TEMP_COMP
