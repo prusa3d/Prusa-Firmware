@@ -1210,7 +1210,7 @@
 "unknown"
 "onbekend"
 
-#MSG_USERWAIT
+#MSG_USERWAIT c=20
 "Wait for user..."
 "Wacht op gebruiker ..."
 

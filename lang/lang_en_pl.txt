@@ -1202,7 +1202,7 @@
 "unknown"
 "nieznane"
 
-#MSG_USERWAIT
+#MSG_USERWAIT c=20
 "Wait for user..."
 "Czekam na uzytkownika..."
 

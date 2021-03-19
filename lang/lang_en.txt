@@ -901,7 +901,7 @@
 #
 "unknown"
 
-#MSG_USERWAIT
+#MSG_USERWAIT c=20
 "Wait for user..."
 
 #MSG_WAITING_TEMP c=20 r=3

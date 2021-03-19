@@ -3821,7 +3821,7 @@ void process_commands()
         if (!hasP && !hasS && *src != '\0') {
             lcd_setstatus(src);
         } else {
-            LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
+            LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=20
         }
         lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
         st_synchronize();
