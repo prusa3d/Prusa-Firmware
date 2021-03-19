@@ -526,7 +526,7 @@
 #MSG_SELFTEST_NOTCONNECTED
 "Not connected"
 
-#
+#MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 "New firmware version available:"
 
 #MSG_SELFTEST_FAN_NO c=19

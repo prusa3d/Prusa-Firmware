@@ -702,7 +702,7 @@
 "Not connected"
 "Non connesso"
 
-#
+#MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 "New firmware version available:"
 "Nuova versione firmware disponibile:"
 
