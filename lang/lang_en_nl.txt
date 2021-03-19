@@ -206,7 +206,7 @@
 "Crash det."
 "Crashdet."
 
-#
+# c=20 r=6
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Kies een filament voor de kalibratie van de eerste laag en selecteer deze in het schermmenu."
 
