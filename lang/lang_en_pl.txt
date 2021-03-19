@@ -538,7 +538,7 @@
 "Left side [um]"
 "Lewo [um]"
 
-#
+# c=18
 "Lin. correction"
 "Korekcja liniowa"
 

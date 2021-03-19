@@ -538,7 +538,7 @@
 "Left side [um]"
 "Vlevo [um]"
 
-#
+# c=18
 "Lin. correction"
 "Korekce lin."
 
