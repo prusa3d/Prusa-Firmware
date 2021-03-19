@@ -1051,7 +1051,7 @@
 # c=20 r=5
 "G-code sliced for a newer firmware. Continue?"
 
-# c=20 r=7
+# c=20 r=8
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 
 # c=20

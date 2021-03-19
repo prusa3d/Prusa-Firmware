@@ -1402,7 +1402,7 @@
 "G-code sliced for a newer firmware. Continue?"
 "G-Code is voor een nieuwere firmware geslict. Doorgaan?"
 
-# c=20 r=7
+# c=20 r=8
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "G-Code is voor een nieuwere firmware geslict. Update de firmware alsjeblieft. Druk geannuleerd."
 
