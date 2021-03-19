@@ -778,7 +778,7 @@
 "Please open idler and remove filament manually."
 "Prosim otevrete idler a manualne odstrante filament."
 
-#MSG_PLACE_STEEL_SHEET c=20 r=4
+#MSG_PLACE_STEEL_SHEET c=20 r=5
 "Please place steel sheet on heatbed."
 "Umistete prosim tiskovy plat na podlozku"
 

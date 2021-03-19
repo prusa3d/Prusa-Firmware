@@ -583,7 +583,7 @@
 #MSG_CHECK_IDLER c=20 r=5
 "Please open idler and remove filament manually."
 
-#MSG_PLACE_STEEL_SHEET c=20 r=4
+#MSG_PLACE_STEEL_SHEET c=20 r=5
 "Please place steel sheet on heatbed."
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4

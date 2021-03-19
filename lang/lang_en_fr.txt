@@ -778,7 +778,7 @@
 "Please open idler and remove filament manually."
 "Ouvrez l'idler et retirez le filament manuellement."
 
-#MSG_PLACE_STEEL_SHEET c=20 r=4
+#MSG_PLACE_STEEL_SHEET c=20 r=5
 "Please place steel sheet on heatbed."
 "Placez la plaque en acier sur le plateau chauffant."
 
