@@ -726,7 +726,7 @@
 "Old settings found. Default PID, Esteps etc. will be set."
 "Se han encontrado ajustes anteriores. Se ajustara el PID, los pasos del extrusor, etc"
 
-#
+# c=20 r=4
 "Now remove the test print from steel sheet."
 "Ahora retira la prueba de la lamina de acero."
 
