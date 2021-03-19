@@ -8380,6 +8380,17 @@ Sigma_Exit:
                }
     break;
 
+  /*!
+  ### M880 - Check the Steel Sheet, the M880 code should be set before to start the print in order to ask the user about
+  the viability of use the current configured steel sheet and try to minimize the risk of use a sheet with the configuration 
+  of another sheet
+  ### Usage
+      M880
+  */
+    case 880:
+      steel_sheet_check();
+    break;
+
 #ifdef LIN_ADVANCE
     /*!
 	### M900 - Set Linear advance options <a href="https://reprap.org/wiki/G-code#M900_Set_Linear_Advance_Scaling_Factors">M900 Set Linear Advance Scaling Factors</a>
