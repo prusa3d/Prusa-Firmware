@@ -890,7 +890,7 @@
 "Please insert filament into the extruder, then press the knob to load it."
 "Wsun filament do ekstrudera i nacisnij pokretlo, aby go zaladowac."
 
-#
+# c=20 r=6
 "Please insert filament into the first tube of the MMU, then press the knob to load it."
 "Wsun filament do pierwszego kanalu w MMU2 i nacisnij pokretlo, aby go zaladowac."
 

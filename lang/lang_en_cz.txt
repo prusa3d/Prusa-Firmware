@@ -890,7 +890,7 @@
 "Please insert filament into the extruder, then press the knob to load it."
 "Prosim vlozte filament do extruderu a stisknete tlacitko k jeho zavedeni"
 
-#
+# c=20 r=6
 "Please insert filament into the first tube of the MMU, then press the knob to load it."
 "Prosim vlozte filament do prvni trubicky MMU a stisknete tlacitko k jeho zavedeni"
 

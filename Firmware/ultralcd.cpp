@@ -4728,7 +4728,7 @@ static void lcd_wizard_load()
 {
 	if (mmu_enabled)
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the first tube of the MMU, then press the knob to load it."));////c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the first tube of the MMU, then press the knob to load it."));////c=20 r=6
 		tmp_extruder = 0;
 	} 
 	else
