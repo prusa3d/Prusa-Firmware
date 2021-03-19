@@ -140,7 +140,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"Wykryto zanik napiecia. Kontynowac?"
+"Wykryto zanik napiecia.Kontynowac?"
 
 # c=20
 "Calibrating home"

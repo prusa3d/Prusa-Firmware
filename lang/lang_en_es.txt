@@ -140,7 +140,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"Se fue la luz. ?Reanudar la impresion?"
+"Se fue la luz. Re- anudar la impresion?"
 
 # c=20
 "Calibrating home"
