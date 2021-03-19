@@ -1386,7 +1386,7 @@
 "G-code sliced for a different level. Continue?"
 "Codigo G laminado para un nivel diferente. ?Continuar?"
 
-#
+# c=20 r=6
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "Codigo G laminado para un nivel diferente. Por favor relamina el modelo de nuevo. Impresion cancelada."
 
