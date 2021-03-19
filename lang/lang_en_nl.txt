@@ -314,7 +314,7 @@
 "Extruder"
 "\x00"
 
-#
+# c=18
 "Fail stats MMU"
 "MMU-Fouten"
 

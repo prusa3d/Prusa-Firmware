@@ -144,7 +144,7 @@
 
 # c=20
 "Calibrating home"
-"Calibrando posicion inicial"
+"Calibrar posicion inicial"
 
 #MSG_CALIBRATE_BED
 "Calibrate XYZ"
@@ -314,7 +314,7 @@
 "Extruder"
 "Extruir"
 
-#
+# c=18
 "Fail stats MMU"
 "Estadistica de fallos MMU"
 

@@ -314,7 +314,7 @@
 "Extruder"
 "Extrudeur"
 
-#
+# c=18
 "Fail stats MMU"
 "Stat. d'echec MMU"
 

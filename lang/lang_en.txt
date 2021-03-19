@@ -235,7 +235,7 @@
 #MSG_EXTRUDER c=17
 "Extruder"
 
-#
+# c=18
 "Fail stats MMU"
 
 #MSG_FSENSOR_AUTOLOAD c=13
