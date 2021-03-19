@@ -1294,7 +1294,7 @@
 "XYZ calibration failed. Front calibration points not reachable."
 "Kalibrace XYZ selhala. Predni kalibracni body moc vpredu. Srovnejte tiskarnu."
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=5
 "XYZ calibration failed. Right front calibration point not reachable."
 "Kalibrace XYZ selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu."
 
