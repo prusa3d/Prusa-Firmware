@@ -386,7 +386,7 @@
 "First, I will run the selftest to check most common assembly problems."
 "Zunaechst fuehre ich den Selbsttest durch, um die haeufigsten Probleme beim Zusammenbau zu ueberpruefen."
 
-#
+# c=20 r=4
 "Fix the issue and then press button on MMU unit."
 "Beseitigen Sie das Problem und druecken Sie dann den Knopf am MMU."
 

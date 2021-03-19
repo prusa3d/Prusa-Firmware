@@ -386,7 +386,7 @@
 "First, I will run the selftest to check most common assembly problems."
 "Nejdriv pomoci selftestu zkontoluji nejcastejsi chyby vznikajici pri sestaveni tiskarny."
 
-#
+# c=20 r=4
 "Fix the issue and then press button on MMU unit."
 "Opravte chybu a pote stisknete tlacitko na jednotce MMU."
 
