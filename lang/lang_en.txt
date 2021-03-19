@@ -904,7 +904,7 @@
 #MSG_USERWAIT c=20
 "Wait for user..."
 
-#MSG_WAITING_TEMP c=20 r=3
+#MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
 
 #MSG_WAITING_TEMP_PINDA c=20 r=3

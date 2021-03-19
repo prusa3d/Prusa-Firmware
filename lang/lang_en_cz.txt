@@ -1206,7 +1206,7 @@
 "Wait for user..."
 "Ceka se na uzivatele"
 
-#MSG_WAITING_TEMP c=20 r=3
+#MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
 "Cekani na zchladnuti trysky a podlozky."
 

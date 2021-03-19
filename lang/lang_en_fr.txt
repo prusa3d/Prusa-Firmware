@@ -1206,7 +1206,7 @@
 "Wait for user..."
 "Attente utilisateur."
 
-#MSG_WAITING_TEMP c=20 r=3
+#MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
 "Attente du refroidissement des buse et plateau chauffant"
 
