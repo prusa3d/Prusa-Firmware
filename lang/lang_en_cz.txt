@@ -1398,7 +1398,7 @@
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. Tisk zrusen."
 
-#
+# c=20 r=4
 "G-code sliced for a newer firmware. Continue?"
 "G-code je pripraven pro novejsi firmware. Pokracovat?"
 
