@@ -722,7 +722,7 @@
 "Nozzle"
 "Tryska"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 "Old settings found. Default PID, Esteps etc. will be set."
 "Neplatne hodnoty nastaveni. Bude pouzito vychozi PID, Esteps atd."
 

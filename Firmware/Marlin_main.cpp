@@ -1546,7 +1546,7 @@ void setup()
   }
 
   if (!previous_settings_retrieved) {
-	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
+	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 	  Config_StoreSettings();
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) >= 1) {

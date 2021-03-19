@@ -722,7 +722,7 @@
 "Nozzle"
 "Duese"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 "Old settings found. Default PID, Esteps etc. will be set."
 "Alte Einstellungen gefunden. Standard PID, E-Steps u.s.w. werden gesetzt."
 
