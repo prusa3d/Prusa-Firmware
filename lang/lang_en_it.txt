@@ -926,7 +926,7 @@
 "Prusa i3 MK3S OK."
 "\x00"
 
-#MSG_CALIBRATE_BED_RESET
+#MSG_CALIBRATE_BED_RESET c=18
 "Reset XYZ calibr."
 "Reset calibrazione XYZ."
 
