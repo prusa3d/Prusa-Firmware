@@ -774,7 +774,7 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Prosim nahlednete do prirucky 3D tiskare a opravte problem. Pote obnovte Pruvodce restartovanim tiskarny."
 
-#MSG_CHECK_IDLER c=20 r=4
+#MSG_CHECK_IDLER c=20 r=5
 "Please open idler and remove filament manually."
 "Prosim otevrete idler a manualne odstrante filament."
 

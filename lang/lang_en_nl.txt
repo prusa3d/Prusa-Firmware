@@ -774,7 +774,7 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Controleer aub ons handboek en los het probleem op. Hervat vervolgens de wizard door de printer opnieuw te starten."
 
-#MSG_CHECK_IDLER c=20 r=4
+#MSG_CHECK_IDLER c=20 r=5
 "Please open idler and remove filament manually."
 "Open rondsel en verwijder filament handmatig."
 

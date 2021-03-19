@@ -774,7 +774,7 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Bitte lesen Sie unser Handbuch und beheben Sie das Problem. Fahren Sie dann mit dem Assistenten fort, indem Sie den Drucker neu starten."
 
-#MSG_CHECK_IDLER c=20 r=4
+#MSG_CHECK_IDLER c=20 r=5
 "Please open idler and remove filament manually."
 "Bitte Spannrolle oeffnen und Fila- ment von Hand entfernen"
 
