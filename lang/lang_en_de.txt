@@ -400,7 +400,7 @@
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
-"Vorderer Luefter?"
+"Teile Luefter?"
 
 #MSG_BED_CORRECTION_FRONT c=14 r=1
 "Front side[um]"
@@ -408,7 +408,7 @@
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
-"Vorderer/linke Luefter"
+"Teile/Extr. Luefter"
 
 #MSG_SELFTEST_HEATERTHERMISTOR
 "Heater/Thermistor"
@@ -528,7 +528,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20
 "Left hotend fan?"
-"Linker Luefter?"
+"Extruder Luefter?"
 
 #
 "Left"
