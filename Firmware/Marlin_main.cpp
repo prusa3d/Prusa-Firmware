@@ -6389,7 +6389,6 @@ Sigma_Exit:
         if(code_seen('R')) print_time_remaining_normal = code_value();
         if(code_seen('Q')) print_percent_done_silent = code_value();
         if(code_seen('S')) print_time_remaining_silent = code_value();
-#if 1
         if(code_seen('C')){
             float print_time_to_change_normal_f = code_value_float();
             print_time_to_change_normal = ( print_time_to_change_normal_f <= 0 ) ? PRINT_TIME_REMAINING_INIT : print_time_to_change_normal_f;
@@ -6398,10 +6397,6 @@ Sigma_Exit:
             float print_time_to_change_silent_f = code_value_float();
             print_time_to_change_silent = ( print_time_to_change_silent_f <= 0 ) ? PRINT_TIME_REMAINING_INIT : print_time_to_change_silent_f;
         }
-#else
-        if(code_seen('C')) print_time_to_change_normal = code_value();
-        if(code_seen('D')) print_time_to_change_silent = code_value();
-#endif
         {
             const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %hhd; print time remaining in mins: %d; Change in mins: %d\n");
             printf_P(_msg_mode_done_remain, _N("NORMAL"), int8_t(print_percent_done_normal), print_time_remaining_normal, print_time_to_change_normal);
