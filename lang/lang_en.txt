@@ -89,7 +89,7 @@
 "Belt test        "
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
-"Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
+"Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
 
 #MSG_BRIGHT c=6
 "Bright"
