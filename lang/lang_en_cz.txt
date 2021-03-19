@@ -414,7 +414,7 @@
 "Heater/Thermistor"
 "Topeni/Termistor"
 
-#MSG_BED_HEATING_SAFETY_DISABLED c=20 r=3
+#MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
 "Heating disabled by safety timer."
 "Zahrivani preruseno bezpecnostnim casovacem."
 
