@@ -418,7 +418,7 @@
 "Heater/Thermistor"
 "Verwarmer/Therm."
 
-#MSG_BED_HEATING_SAFETY_DISABLED
+#MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
 "Heating disabled by safety timer."
 "Verwarming uitgeschakeld door veiligheidstimer."
 

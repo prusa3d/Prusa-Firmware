@@ -414,7 +414,7 @@
 "Heater/Thermistor"
 "Riscald./Termist."
 
-#MSG_BED_HEATING_SAFETY_DISABLED
+#MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
 "Heating disabled by safety timer."
 "Riscaldamento fermato dal timer di sicurezza."
 
