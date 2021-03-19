@@ -4762,7 +4762,7 @@ static void wizard_lay1cal_message(bool cold)
     else if (cold)
     {
         lcd_show_fullscreen_message_and_wait_P(
-                _i("Select temperature which matches your material."));
+                _i("Select temperature which matches your material."));////c=20 r=4
     }
     lcd_show_fullscreen_message_and_wait_P(
             _i("The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter).")); ////MSG_WIZARD_V2_CAL_2 c=20 r=12

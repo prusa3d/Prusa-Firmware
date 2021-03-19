@@ -1118,7 +1118,7 @@
 "Temp. cal."
 "Kalib. temp."
 
-#
+# c=20 r=4
 "Select temperature which matches your material."
 "Wybierz temperature, ktora odpowiada Twojemu filamentowi."
 

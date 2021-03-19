@@ -838,7 +838,7 @@
 #MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
 
-#
+# c=20 r=4
 "Select temperature which matches your material."
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1

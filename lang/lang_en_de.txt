@@ -1118,7 +1118,7 @@
 "Temp. cal."
 "Temp Kalib."
 
-#
+# c=20 r=4
 "Select temperature which matches your material."
 "Waehlen Sie die Temperatur, die zu Ihrem Material passt."
 
