@@ -638,7 +638,7 @@
 "Silent"
 "Tichy"
 
-#
+# c=20 r=3
 "MMU needs user attention."
 "MMU potrebuje zasah uzivatele."
 

@@ -478,7 +478,7 @@
 #MSG_SILENT
 "Silent"
 
-#
+# c=20 r=3
 "MMU needs user attention."
 
 #

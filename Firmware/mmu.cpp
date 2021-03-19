@@ -718,7 +718,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 
 			  //first three lines are used for printing multiscreen message; last line contains measured and target nozzle temperature
 			  if (screen == 0) { //screen 0
-				  lcd_display_message_fullscreen_P(_i("MMU needs user attention."));
+				  lcd_display_message_fullscreen_P(_i("MMU needs user attention."));////c=20 r=3
 				  screen++;
 			  }
 			  else {  //screen 1
