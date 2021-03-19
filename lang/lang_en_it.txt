@@ -1398,7 +1398,7 @@
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code processato per una stampante diversa. Per favore esegui nuovamente lo slice del modello. Stampa annullata."
 
-# c=20 r=4
+# c=20 r=5
 "G-code sliced for a newer firmware. Continue?"
 "G-code processato per un firmware piu recente. Continuare?"
 
