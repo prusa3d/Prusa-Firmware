@@ -1204,7 +1204,7 @@
 
 #MSG_USERWAIT c=20
 "Wait for user..."
-"Ceka se na uzivatele..."
+"Ceka se na uzivatele"
 
 #MSG_WAITING_TEMP c=20 r=3
 "Waiting for nozzle and bed cooling"
