@@ -998,7 +998,7 @@
 "Selftest will be run to calibrate accurate sensorless rehoming."
 "Le Selftest sera lance pour calibrer la remise a zero precise sans capteur"
 
-#
+# c=20 r=5
 "Select nozzle preheat temperature which matches your material."
 "Selectionnez la temperature de prechauffage de la buse qui correspond a votre materiau."
 
