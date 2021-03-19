@@ -1290,7 +1290,7 @@
 "XYZ calibration failed. Bed calibration point was not found."
 "XYZ-kalibratie mislukt. Bed ijkpunt niet gevonden."
 
-#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=5
+#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 "XYZ calibration failed. Front calibration points not reachable."
 "XYZ-kalibratie mislukt. Voorste kalibratiepunten niet bereikbaar."
 
