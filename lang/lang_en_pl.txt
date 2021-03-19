@@ -518,7 +518,7 @@
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
 "Czesc, jestem Twoja drukarka Original Prusa i3. Przeprowadze Cie przez krotka kalibracje osi Z, po ktorej mozesz rozpoczac drukowanie."
 
-#
+# c=20 r=8
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Jesli masz dodatkowe plyty stalowe, to skalibruj ich ustawienia w menu Ustawienia - Ustawienia HW - Plyty stalowe."
 
