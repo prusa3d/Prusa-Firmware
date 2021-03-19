@@ -886,7 +886,7 @@
 "Print FAN"
 "Ventola di stampa"
 
-#
+#MSG_WIZARD_LOAD_FILAMENT c=20 r=5
 "Please insert filament into the extruder, then press the knob to load it."
 "Inserisci il filamento nell'estrusore, poi premi la manopola per caricarlo."
 

@@ -664,7 +664,7 @@
 #
 "Print FAN"
 
-#
+#MSG_WIZARD_LOAD_FILAMENT c=20 r=5
 "Please insert filament into the extruder, then press the knob to load it."
 
 #

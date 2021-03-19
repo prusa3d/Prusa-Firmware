@@ -4733,7 +4733,7 @@ static void lcd_wizard_load()
 	} 
 	else
 	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the extruder, then press the knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the extruder, then press the knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=5
 	}	
 	lcd_update_enable(false);
 	lcd_clear();
