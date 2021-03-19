@@ -3624,7 +3624,7 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
             msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED);
         else if (point_too_far_mask == 2 || point_too_far_mask == 7)
             // Only the center point or all the three front points.
-            msg = _i("XYZ calibration failed. Front calibration points not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=8
+            msg = _i("XYZ calibration failed. Front calibration points not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=5
         else if ((point_too_far_mask & 1) == 0)
             // The right and maybe the center point out of reach.
             msg = _i("XYZ calibration failed. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=8

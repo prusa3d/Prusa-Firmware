@@ -967,7 +967,7 @@
 #
 "XYZ calibration failed. Bed calibration point was not found."
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=5
 "XYZ calibration failed. Front calibration points not reachable."
 
 #
