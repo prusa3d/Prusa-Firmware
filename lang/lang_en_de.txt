@@ -1418,7 +1418,7 @@
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Der Durchmesser der Druckerduese weicht vom G-Code ab. Fortfahren?"
 
-# c=20 r=8
+# c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Der Durchmesser der Druckerduese weicht vom G-Code ab. Bitte ueberpruefen Sie den Wert in den Einstellungen. Druck abgebrochen."
 

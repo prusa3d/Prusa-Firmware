@@ -1418,7 +1418,7 @@
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Prumer trysky tiskarny se lisi od G-code. Pokracovat?"
 
-# c=20 r=8
+# c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. Tisk zrusen."
 

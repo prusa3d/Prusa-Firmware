@@ -1418,7 +1418,7 @@
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Diametro ugello diverso da G-Code. Continuare?"
 
-# c=20 r=8
+# c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Diametro ugello diverso dal G-Code. Controlla il valore nelle impostazioni. Stampa annullata."
 

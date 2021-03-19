@@ -1418,7 +1418,7 @@
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Srednica dyszy drukarki rozni sie od tej w G-code. Kontynuowac?"
 
-# c=20 r=8
+# c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Srednica dyszy rozni sie od tej w G-code. Sprawdz ustawienia. Druk anulowany."
 
