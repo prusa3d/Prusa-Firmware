@@ -118,7 +118,7 @@
 "Belt test        "
 "Test cinghie     "
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
 "Livellamento piano fallito. Sensore KO? Residui su ugello? In attesa di reset."
 

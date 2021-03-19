@@ -118,7 +118,7 @@
 "Belt test        "
 "Test remenu      "
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
 "Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
 

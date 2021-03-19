@@ -118,7 +118,7 @@
 "Belt test        "
 "Test de courroie "
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
 "Capt. non declenche pendant que je nivele le plateau. Debris sur buse? En attente d'un reset."
 

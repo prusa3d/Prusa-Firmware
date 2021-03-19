@@ -118,7 +118,7 @@
 "Belt test        "
 "Test paskow"
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
 "Kalibracja nieudana. Sensor nie aktywowal sie. Zanieczysz. dysza? Czekam na reset."
 
