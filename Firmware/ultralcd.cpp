@@ -8112,7 +8112,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_print(_error_1);
 		break;
 	case TestError::SwappedFan:
-		lcd_puts_at_P(0, 2, _i("Front/left fans"));////MSG_SELFTEST_FANS
+		lcd_puts_at_P(0, 2, _i("Front/left fans"));////MSG_SELFTEST_FANS c=20
 		lcd_puts_at_P(0, 3, _i("Swapped"));////MSG_SELFTEST_SWAPPED
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);

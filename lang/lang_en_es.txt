@@ -406,7 +406,7 @@
 "Front side[um]"
 "Frontal [um]"
 
-#MSG_SELFTEST_FANS
+#MSG_SELFTEST_FANS c=20
 "Front/left fans"
 "Ventiladores frontal/izquierdo"
 
