@@ -966,7 +966,7 @@
 "Right"
 "Derecha"
 
-#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60
+#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=2
 "Searching bed calibration point"
 "Buscando punto de calibracion base"
 
