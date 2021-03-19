@@ -655,7 +655,7 @@
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
 
-#
+# c=20 r=4
 "Press the knob to resume nozzle temperature."
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8

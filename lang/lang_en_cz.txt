@@ -874,7 +874,7 @@
 "Print paused"
 "Tisk pozastaven"
 
-#
+# c=20 r=4
 "Press the knob to resume nozzle temperature."
 "Pro pokracovani nahrivani trysky stisknete tlacitko."
 

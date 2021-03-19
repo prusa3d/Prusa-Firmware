@@ -874,7 +874,7 @@
 "Print paused"
 "Print pauzeren"
 
-#
+# c=20 r=4
 "Press the knob to resume nozzle temperature."
 "Druk op de knop om de temperatuur van de tuit te hervatten."
 

@@ -874,7 +874,7 @@
 "Print paused"
 "Impresion en pausa"
 
-#
+# c=20 r=4
 "Press the knob to resume nozzle temperature."
 "Presiona el dial para continuar con la temperatura de la boquilla."
 
