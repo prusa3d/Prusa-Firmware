@@ -4621,7 +4621,7 @@ void lcd_v2_calibration()
 	if (mmu_enabled)
 	{
 	    const uint8_t filament = choose_menu_P(
-            _i("Select filament:"), ////c=20 r=1
+            _i("Select filament:"), ////c=20
             _T(MSG_FILAMENT),_i("Cancel"));  ////c=19 r=1
 	    if (filament < 5)
 	    {

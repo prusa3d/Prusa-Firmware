@@ -1110,7 +1110,7 @@
 "Swapped"
 "Zamieniono"
 
-#
+# c=20
 "Select filament:"
 "Wybierz filament:"
 
