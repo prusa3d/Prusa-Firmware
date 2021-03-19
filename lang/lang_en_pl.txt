@@ -322,7 +322,7 @@
 "F. autoload"
 "Autolad. fil."
 
-#
+# c=18
 "Fail stats"
 "Statystyki bledow"
 

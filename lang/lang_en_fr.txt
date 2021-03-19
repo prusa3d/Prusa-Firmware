@@ -322,7 +322,7 @@
 "F. autoload"
 "F. autocharg."
 
-#
+# c=18
 "Fail stats"
 "Stat. d'echec"
 

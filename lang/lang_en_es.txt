@@ -322,7 +322,7 @@
 "F. autoload"
 "Autocarg.fil."
 
-#
+# c=18
 "Fail stats"
 "Estadistica de fallos"
 

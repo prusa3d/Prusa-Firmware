@@ -6665,7 +6665,7 @@ static void lcd_main_menu()
     }
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
-    MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);
+    MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);////c=18
 #endif
     if (mmu_enabled) {
         MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);////c=18
