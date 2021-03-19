@@ -1063,7 +1063,7 @@
 #
 "Printer nozzle diameter differs from the G-code. Continue?"
 
-#
+# c=20 r=8
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 
 # c=20

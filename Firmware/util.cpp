@@ -399,7 +399,7 @@ lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckMode::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."));
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."));////c=20 r=8
           lcd_print_stop();
           break;
      case ClCheckMode::_None:

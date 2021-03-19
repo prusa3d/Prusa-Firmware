@@ -1418,7 +1418,7 @@
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Diametro nozzle impresora difiere de cod.G. ?Continuar?"
 
-#
+# c=20 r=8
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Diametro nozzle Impresora difiere de cod.G. Comprueba los valores en ajustes. Impresion cancelada."
 
