@@ -1386,7 +1386,7 @@
 "G-code sliced for a different level. Continue?"
 "G-code pociety dla innej wersji. Kontynuowac?"
 
-# c=20 r=6
+# c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-code pociety na innym poziomie. Potnij model ponownie. Druk anulowany."
 

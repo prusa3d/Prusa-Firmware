@@ -1039,7 +1039,7 @@
 # c=20 r=4
 "G-code sliced for a different level. Continue?"
 
-# c=20 r=6
+# c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 
 #MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
