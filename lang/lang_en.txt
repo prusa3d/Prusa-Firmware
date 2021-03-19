@@ -748,7 +748,7 @@
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
 
-# c=20 r=5
+# c=20 r=6
 "Select nozzle preheat temperature which matches your material."
 
 #MSG_SET_TEMPERATURE c=19 r=1

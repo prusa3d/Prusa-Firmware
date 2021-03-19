@@ -998,7 +998,7 @@
 "Selftest will be run to calibrate accurate sensorless rehoming."
 "Selbsttest im Gang, um die genaue Rueck- kehr zum Nullpunkt ohne Sensor zu kalibrieren"
 
-# c=20 r=5
+# c=20 r=6
 "Select nozzle preheat temperature which matches your material."
 "Bitte Vorheiztemperatur auswaehlen, die Ihrem Material entspricht."
 
