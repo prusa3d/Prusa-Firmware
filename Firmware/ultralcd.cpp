@@ -4757,7 +4757,7 @@ static void wizard_lay1cal_message(bool cold)
     if (mmu_enabled)
     {
         lcd_show_fullscreen_message_and_wait_P(
-                _i("Choose a filament for the First Layer Calibration and select it in the on-screen menu."));////c=20 r=6
+                _i("Choose a filament for the First Layer Calibration and select it in the on-screen menu."));////c=20 r=7
     }
     else if (cold)
     {

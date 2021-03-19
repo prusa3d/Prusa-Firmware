@@ -206,7 +206,7 @@
 "Crash det."
 "Rileva.crash"
 
-# c=20 r=6
+# c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Scegli un filamento per la calibrazione del primo strato e selezionalo nel menu sullo schermo."
 
