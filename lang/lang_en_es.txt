@@ -142,7 +142,7 @@
 "Blackout occurred. Recover print?"
 "Se fue la luz. ?Reanudar la impresion?"
 
-#
+# c=20
 "Calibrating home"
 "Calibrando posicion inicial"
 

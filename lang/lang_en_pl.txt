@@ -142,7 +142,7 @@
 "Blackout occurred. Recover print?"
 "Wykryto zanik napiecia. Kontynowac?"
 
-#
+# c=20
 "Calibrating home"
 "Zerowanie osi"
 

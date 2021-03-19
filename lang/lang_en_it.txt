@@ -142,7 +142,7 @@
 "Blackout occurred. Recover print?"
 "Blackout rilevato. Recuperare la stampa?"
 
-#
+# c=20
 "Calibrating home"
 "Calibrazione Home"
 

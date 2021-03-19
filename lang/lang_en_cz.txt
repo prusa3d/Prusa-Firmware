@@ -142,7 +142,7 @@
 "Blackout occurred. Recover print?"
 "Detekovan vypadek proudu.Obnovit tisk?"
 
-#
+# c=20
 "Calibrating home"
 "Kalibruji vychozi poz."
 

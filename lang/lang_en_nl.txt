@@ -146,7 +146,7 @@
 "Blackout occurred. Recover print?"
 "Stroomstoring. Print herstellen?"
 
-#
+# c=20
 "Calibrating home"
 "Kalibreren start"
 
