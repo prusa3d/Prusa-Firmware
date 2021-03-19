@@ -670,7 +670,7 @@
 # c=20 r=6
 "Please insert filament into the first tube of the MMU, then press the knob to load it."
 
-#
+#MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load filament first."
 
 #MSG_PRUSA3D

@@ -894,7 +894,7 @@
 "Please insert filament into the first tube of the MMU, then press the knob to load it."
 "Wsun filament do pierwszego kanalu w MMU2 i nacisnij pokretlo, aby go zaladowac."
 
-#
+#MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load filament first."
 "Najpierw zaladuj filament."
 
