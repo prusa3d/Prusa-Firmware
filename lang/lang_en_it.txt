@@ -1394,7 +1394,7 @@
 "G-code sliced for a different printer type. Continue?"
 "G-code processato per una stampante diversa. Continuare?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-code processato per una stampante diversa. Per favore esegui nuovamente lo slice del modello. Stampa annullata."
 
