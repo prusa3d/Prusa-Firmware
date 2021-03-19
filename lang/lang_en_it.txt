@@ -1294,7 +1294,7 @@
 "XYZ calibration failed. Front calibration points not reachable."
 "Calibrazione XYZ fallita. Punti anteriori non raggiungibili."
 
-#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=5
+#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 "XYZ calibration failed. Right front calibration point not reachable."
 "Calibrazione XYZ fallita. Punto anteriore destro non raggiungibile."
 
