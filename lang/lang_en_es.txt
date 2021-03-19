@@ -1402,7 +1402,7 @@
 "G-code sliced for a newer firmware. Continue?"
 "Codigo G laminado para nuevo firmware. ?Continuar?"
 
-#
+# c=20 r=7
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "Codigo G laminado para nuevo firmware. Por favor actualiza el firmware. Impresion cancelada."
 

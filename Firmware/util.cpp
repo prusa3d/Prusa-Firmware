@@ -485,7 +485,7 @@ lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckVersion::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a newer firmware. Please update the firmware. Print cancelled."));
+          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a newer firmware. Please update the firmware. Print cancelled."));////c=20 r=7
           lcd_print_stop();
           break;
      case ClCheckVersion::_None:
