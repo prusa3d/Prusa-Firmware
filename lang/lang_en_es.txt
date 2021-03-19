@@ -214,7 +214,7 @@
 "Crash detected."
 "Choque detectado."
 
-#
+# c=20 r=2
 "Crash detected. Resume print?"
 "Choque detectado. Continuar impresion?"
 

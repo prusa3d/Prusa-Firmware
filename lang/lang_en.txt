@@ -160,7 +160,7 @@
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
 
-#
+# c=20 r=2
 "Crash detected. Resume print?"
 
 #MSG_CRASH c=7

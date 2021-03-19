@@ -214,7 +214,7 @@
 "Crash detected."
 "Crash gedetecteerd."
 
-#
+# c=20 r=2
 "Crash detected. Resume print?"
 "Crash gedetecteerd. Print voorzetten?"
 

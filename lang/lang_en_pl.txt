@@ -214,7 +214,7 @@
 "Crash detected."
 "Zderzenie wykryte"
 
-#
+# c=20 r=2
 "Crash detected. Resume print?"
 "Wykryto zderzenie. Wznowic druk?"
 
