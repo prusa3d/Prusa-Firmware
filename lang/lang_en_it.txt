@@ -1298,7 +1298,7 @@
 "XYZ calibration failed. Right front calibration point not reachable."
 "Calibrazione XYZ fallita. Punto anteriore destro non raggiungibile."
 
-#
+# c=20
 "Y distance from min"
 "Distanza Y dal min"
 

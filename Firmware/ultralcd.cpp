@@ -2739,7 +2739,7 @@ void lcd_move_e()
 //! This functionality is applied more often for MK2 printers.
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Y distance from min |	c=19 r=1
+//! |Y distance from min |	c=20
 //! | --------------     |	STR_SEPARATOR
 //! |Left:       00.00mm |	c=11 r=1
 //! |Right:      00.00mm |	c=11 r=1
@@ -2757,7 +2757,7 @@ static void lcd_menu_xyz_y_min()
 	  "%S:\n"
 	  "%S:"
 	 ),
-	 _i("Y distance from min"),  ////c=19 r=1
+	 _i("Y distance from min"),  ////c=20
 	 separator,
 	 _i("Left"),  ////c=11 r=1
 	 _i("Right")  ////c=11 r=1

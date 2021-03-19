@@ -1298,7 +1298,7 @@
 "XYZ calibration failed. Right front calibration point not reachable."
 "Kalibrace XYZ selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu."
 
-#
+# c=20
 "Y distance from min"
 "Y vzdalenost od min"
 
