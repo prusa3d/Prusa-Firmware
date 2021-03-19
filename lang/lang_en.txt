@@ -622,7 +622,7 @@
 # c=14
 "PINDA"
 
-#
+#MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4

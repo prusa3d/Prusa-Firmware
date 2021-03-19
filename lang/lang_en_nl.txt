@@ -830,9 +830,9 @@
 "PINDA"
 "\x00"
 
-#
+#MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
-"Voer een upgrade uit."
+"Voer een upgrade uit"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press the knob to preheat nozzle and continue."

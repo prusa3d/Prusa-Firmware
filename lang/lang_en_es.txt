@@ -830,7 +830,7 @@
 "PINDA"
 "\x00"
 
-#
+#MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
 "Actualize por favor"
 
