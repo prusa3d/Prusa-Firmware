@@ -1382,7 +1382,7 @@
 "Nozzle d."
 "Diam. buse"
 
-#
+# c=20 r=4
 "G-code sliced for a different level. Continue?"
 "Le G-code a ete prepare pour un niveau different. Continuer?"
 

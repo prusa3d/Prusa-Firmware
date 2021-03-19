@@ -1382,7 +1382,7 @@
 "Nozzle d."
 "Sr. dyszy"
 
-#
+# c=20 r=4
 "G-code sliced for a different level. Continue?"
 "G-code pociety dla innej wersji. Kontynuowac?"
 

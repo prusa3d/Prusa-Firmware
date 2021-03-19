@@ -1382,7 +1382,7 @@
 "Nozzle d."
 "Tuit d."
 
-#
+# c=20 r=4
 "G-code sliced for a different level. Continue?"
 "G-Code is voor een ander niveau geslict. Doorgaan?"
 

@@ -1382,7 +1382,7 @@
 "Nozzle d."
 "Diam. nozzl"
 
-#
+# c=20 r=4
 "G-code sliced for a different level. Continue?"
 "Codigo G laminado para un nivel diferente. ?Continuar?"
 

@@ -1036,7 +1036,7 @@
 #MSG_NOZZLE_DIAMETER
 "Nozzle d."
 
-#
+# c=20 r=4
 "G-code sliced for a different level. Continue?"
 
 # c=20 r=6
