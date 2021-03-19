@@ -1414,7 +1414,7 @@
 "Preheating to eject"
 "Heizen zum Auswurf"
 
-#
+# c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Der Durchmesser der Druckerduese weicht vom G-Code ab. Fortfahren?"
 

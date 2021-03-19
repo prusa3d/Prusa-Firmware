@@ -1414,7 +1414,7 @@
 "Preheating to eject"
 "Precalent. expulsar"
 
-#
+# c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Diametro nozzle impresora difiere de cod.G. ?Continuar?"
 

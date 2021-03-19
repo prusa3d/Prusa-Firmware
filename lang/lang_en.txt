@@ -1060,7 +1060,7 @@
 # c=20
 "Preheating to eject"
 
-#
+# c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 
 # c=20 r=8

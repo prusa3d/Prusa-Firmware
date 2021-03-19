@@ -393,7 +393,7 @@ switch(oCheckMode)
      {
      case ClCheckMode::_Warn:
 //          lcd_show_fullscreen_message_and_wait_P(_i("Printer nozzle diameter differs from the G-code. Continue?"));
-lcd_display_message_fullscreen_P(_i("Printer nozzle diameter differs from the G-code. Continue?"));
+lcd_display_message_fullscreen_P(_i("Printer nozzle diameter differs from the G-code. Continue?"));////c=20 r=5
 lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 //???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
 lcd_update_enable(true);           // display / status-line recovery

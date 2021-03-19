@@ -1414,7 +1414,7 @@
 "Preheating to eject"
 "Predehrev k vysunuti"
 
-#
+# c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Prumer trysky tiskarny se lisi od G-code. Pokracovat?"
 

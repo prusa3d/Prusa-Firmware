@@ -1414,7 +1414,7 @@
 "Preheating to eject"
 "Preriscalda. espuls."
 
-#
+# c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Diametro ugello diverso da G-Code. Continuare?"
 

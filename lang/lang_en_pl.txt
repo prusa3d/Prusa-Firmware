@@ -1414,7 +1414,7 @@
 "Preheating to eject"
 "Nagrzew. wysuniecia"
 
-#
+# c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Srednica dyszy drukarki rozni sie od tej w G-code. Kontynuowac?"
 

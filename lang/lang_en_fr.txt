@@ -1414,7 +1414,7 @@
 "Preheating to eject"
 "Chauf. pour remonter"
 
-#
+# c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Diametre de la buse dans les reglages ne correspond pas a celui dans le G-Code. Continuer?"
 
