@@ -964,7 +964,7 @@
 #MSG_LOAD_ALL c=17
 "Load all"
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 "XYZ calibration failed. Bed calibration point was not found."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=5

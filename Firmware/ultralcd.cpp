@@ -3618,7 +3618,7 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
 {
     const char *msg = NULL;
     if (result == BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND) {
-        lcd_show_fullscreen_message_and_wait_P(_i("XYZ calibration failed. Bed calibration point was not found."));////MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=8
+        lcd_show_fullscreen_message_and_wait_P(_i("XYZ calibration failed. Bed calibration point was not found."));////MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
     } else if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED) {
         if (point_too_far_mask == 0)
             msg = _T(MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED);

@@ -1286,7 +1286,7 @@
 "Load all"
 "Intr. todos fil."
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 "XYZ calibration failed. Bed calibration point was not found."
 "Calibracion XYZ fallada. Puntos de calibracion en la base no encontrados."
 

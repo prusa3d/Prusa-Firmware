@@ -1286,7 +1286,7 @@
 "Load all"
 "Charger un par un"
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 "XYZ calibration failed. Bed calibration point was not found."
 "Echec calibration XYZ. Le point de calibration du plateau n'a pas ete trouve."
 

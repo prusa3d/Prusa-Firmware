@@ -1286,7 +1286,7 @@
 "Load all"
 "Zavest vse"
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 "XYZ calibration failed. Bed calibration point was not found."
 "Kalibrace XYZ selhala. Kalibracni bod podlozky nenalezen."
 
