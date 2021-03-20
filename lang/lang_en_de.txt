@@ -94,7 +94,7 @@
 "Axis"
 "Achse"
 
-#MSG_SELFTEST_BEDHEATER
+#MSG_SELFTEST_BEDHEATER c=20
 "Bed / Heater"
 "Bett / Heizung"
 

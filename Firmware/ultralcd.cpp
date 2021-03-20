@@ -8064,7 +8064,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_puts_at_P(0, 3, _i("Not connected"));////MSG_SELFTEST_NOTCONNECTED
 		break;
 	case TestError::Bed:
-		lcd_puts_at_P(0, 2, _i("Bed / Heater"));////MSG_SELFTEST_BEDHEATER
+		lcd_puts_at_P(0, 2, _i("Bed / Heater"));////MSG_SELFTEST_BEDHEATER c=20
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_WIRINGERROR));
 		break;
 	case TestError::Endstops:
