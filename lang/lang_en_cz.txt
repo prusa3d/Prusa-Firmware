@@ -762,7 +762,7 @@
 "Please clean the nozzle for calibration. Click when done."
 "Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
 
-#MSG_SELFTEST_PLEASECHECK
+#MSG_SELFTEST_PLEASECHECK c=20
 "Please check :"
 "Zkontrolujte :"
 

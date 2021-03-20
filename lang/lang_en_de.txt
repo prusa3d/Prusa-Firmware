@@ -762,7 +762,7 @@
 "Please clean the nozzle for calibration. Click when done."
 "Bitte entfernen Sie ueberstehendes Filament von der Duese. Klicken wenn sauber."
 
-#MSG_SELFTEST_PLEASECHECK
+#MSG_SELFTEST_PLEASECHECK c=20
 "Please check :"
 "Bitte pruefe:"
 

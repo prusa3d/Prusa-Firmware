@@ -571,7 +571,7 @@
 #MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 "Please clean the nozzle for calibration. Click when done."
 
-#MSG_SELFTEST_PLEASECHECK
+#MSG_SELFTEST_PLEASECHECK c=20
 "Please check :"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8

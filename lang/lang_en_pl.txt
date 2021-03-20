@@ -762,7 +762,7 @@
 "Please clean the nozzle for calibration. Click when done."
 "Dla prawidlowej kalibracji nalezy oczyscic dysze. Potwierdz guzikiem."
 
-#MSG_SELFTEST_PLEASECHECK
+#MSG_SELFTEST_PLEASECHECK c=20
 "Please check :"
 "Sprawdz :"
 

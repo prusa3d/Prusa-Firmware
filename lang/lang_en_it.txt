@@ -762,7 +762,7 @@
 "Please clean the nozzle for calibration. Click when done."
 "Pulire l'ugello per la calibrazione, poi fare click."
 
-#MSG_SELFTEST_PLEASECHECK
+#MSG_SELFTEST_PLEASECHECK c=20
 "Please check :"
 "Verifica:"
 
