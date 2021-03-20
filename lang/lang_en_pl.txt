@@ -262,7 +262,7 @@
 "Endstop not hit"
 "Krancowka nie aktyw."
 
-#MSG_SELFTEST_ENDSTOP
+#MSG_SELFTEST_ENDSTOP c=16
 "Endstop"
 "Krancowka"
 

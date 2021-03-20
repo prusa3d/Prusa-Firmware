@@ -262,7 +262,7 @@
 "Endstop not hit"
 "Finec. fuori portata"
 
-#MSG_SELFTEST_ENDSTOP
+#MSG_SELFTEST_ENDSTOP c=16
 "Endstop"
 "Finecorsa"
 

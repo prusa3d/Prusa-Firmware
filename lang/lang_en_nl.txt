@@ -262,7 +262,7 @@
 "Endstop not hit"
 "Endstop niet geraakt"
 
-#MSG_SELFTEST_ENDSTOP
+#MSG_SELFTEST_ENDSTOP c=16
 "Endstop"
 "Eindstop"
 

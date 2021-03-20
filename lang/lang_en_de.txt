@@ -262,7 +262,7 @@
 "Endstop not hit"
 "Ende nicht getroffen"
 
-#MSG_SELFTEST_ENDSTOP
+#MSG_SELFTEST_ENDSTOP c=16
 "Endstop"
 "Endanschlag"
 

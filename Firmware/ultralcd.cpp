@@ -8077,7 +8077,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_MOTOR));
 		lcd_set_cursor(18, 2);
 		lcd_print(_error_1);
-		lcd_puts_at_P(0, 3, _i("Endstop"));////MSG_SELFTEST_ENDSTOP
+		lcd_puts_at_P(0, 3, _i("Endstop"));////MSG_SELFTEST_ENDSTOP c=16
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_2);
 		break;
