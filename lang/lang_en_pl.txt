@@ -86,7 +86,7 @@
 "Autoloading filament is active, just press the knob and insert filament..."
 "Autoladowanie filamentu wlaczone, nacisnij pokretlo i wsun filament..."
 
-#MSG_SELFTEST_AXIS_LENGTH
+#MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
 "Dlugosc osi"
 

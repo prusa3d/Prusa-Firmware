@@ -86,7 +86,7 @@
 "Autoloading filament is active, just press the knob and insert filament..."
 "La carga automatica esta activada, pulse el dial e inserte el filamento..."
 
-#MSG_SELFTEST_AXIS_LENGTH
+#MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
 "Longitud del eje"
 

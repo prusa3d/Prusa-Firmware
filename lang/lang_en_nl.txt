@@ -86,7 +86,7 @@
 "Autoloading filament is active, just press the knob and insert filament..."
 "Automatisch laden van flament is actief, druk de knop en laad filament..."
 
-#MSG_SELFTEST_AXIS_LENGTH
+#MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
 "Aslengte"
 

@@ -86,7 +86,7 @@
 "Autoloading filament is active, just press the knob and insert filament..."
 "Chargement auto. du fil. active, appuyez sur le bouton et inserez le fil."
 
-#MSG_SELFTEST_AXIS_LENGTH
+#MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
 "Longueur de l'axe"
 
