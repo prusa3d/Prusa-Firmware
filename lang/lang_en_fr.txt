@@ -558,7 +558,7 @@
 "Loading filament"
 "Chargement du fil."
 
-#MSG_LOOSE_PULLEY c=20 r=1
+#MSG_LOOSE_PULLEY c=20
 "Loose pulley"
 "Poulie lache"
 

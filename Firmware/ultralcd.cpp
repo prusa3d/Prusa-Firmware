@@ -8100,7 +8100,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_print(_error_1);
 		break;
 	case TestError::Pulley:
-		lcd_puts_at_P(0, 2, _i("Loose pulley"));////MSG_LOOSE_PULLEY c=20 r=1
+		lcd_puts_at_P(0, 2, _i("Loose pulley"));////MSG_LOOSE_PULLEY c=20
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_MOTOR));
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);

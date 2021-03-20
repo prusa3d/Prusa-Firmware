@@ -558,7 +558,7 @@
 "Loading filament"
 "Zavadeni filamentu"
 
-#MSG_LOOSE_PULLEY c=20 r=1
+#MSG_LOOSE_PULLEY c=20
 "Loose pulley"
 "Uvolnena remenicka"
 
