@@ -694,7 +694,7 @@
 "No"
 "Ne"
 
-#MSG_SELFTEST_NOTCONNECTED
+#MSG_SELFTEST_NOTCONNECTED c=20
 "Not connected"
 "Nezapojeno "
 
