@@ -8054,7 +8054,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 
 	lcd_clear();
 
-	lcd_puts_at_P(0, 0, _i("Selftest error !"));////MSG_SELFTEST_ERROR
+	lcd_puts_at_P(0, 0, _i("Selftest error !"));////MSG_SELFTEST_ERROR c=20
 	lcd_puts_at_P(0, 1, _i("Please check :"));////MSG_SELFTEST_PLEASECHECK
 
 	switch (testError)

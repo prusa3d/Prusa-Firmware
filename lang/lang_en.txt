@@ -736,7 +736,7 @@
 #MSG_SELFTEST
 "Selftest         "
 
-#MSG_SELFTEST_ERROR
+#MSG_SELFTEST_ERROR c=20
 "Selftest error !"
 
 #MSG_SELFTEST_FAILED c=20

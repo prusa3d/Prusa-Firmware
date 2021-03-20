@@ -982,7 +982,7 @@
 "Selftest         "
 "\x00"
 
-#MSG_SELFTEST_ERROR
+#MSG_SELFTEST_ERROR c=20
 "Selftest error !"
 "Error Selftest !"
 

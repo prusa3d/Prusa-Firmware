@@ -982,7 +982,7 @@
 "Selftest         "
 "Auto-test"
 
-#MSG_SELFTEST_ERROR
+#MSG_SELFTEST_ERROR c=20
 "Selftest error !"
 "Erreur auto-test!"
 
