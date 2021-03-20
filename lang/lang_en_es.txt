@@ -266,7 +266,7 @@
 "Endstop"
 "\x00"
 
-#MSG_SELFTEST_ENDSTOPS
+#MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
 "\x00"
 

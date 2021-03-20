@@ -266,7 +266,7 @@
 "Endstop"
 "Finecorsa"
 
-#MSG_SELFTEST_ENDSTOPS
+#MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
 "Finecorsa"
 

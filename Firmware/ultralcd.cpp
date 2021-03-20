@@ -8068,7 +8068,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_WIRINGERROR));
 		break;
 	case TestError::Endstops:
-		lcd_puts_at_P(0, 2, _i("Endstops"));////MSG_SELFTEST_ENDSTOPS
+		lcd_puts_at_P(0, 2, _i("Endstops"));////MSG_SELFTEST_ENDSTOPS c=20
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_WIRINGERROR));
 		lcd_set_cursor(17, 3);
 		lcd_print(_error_1);
