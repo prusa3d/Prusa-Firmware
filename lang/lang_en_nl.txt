@@ -1088,7 +1088,7 @@
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
-"Stabiele omgevingstemperatuur van 21-26C is nodig, een stevige stand is vereist."
+"En stabiele 21-26C omgevingstemperatuur is nodig,een stevige stand is vereist."
 
 #MSG_STATISTICS
 "Statistics  "
