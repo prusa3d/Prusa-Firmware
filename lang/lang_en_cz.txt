@@ -50,7 +50,7 @@
 "All is done. Happy printing!"
 "Vse je hotovo."
 
-#
+#MSG_AMBIENT c=14
 "Ambient"
 "Okoli"
 

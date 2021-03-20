@@ -50,7 +50,7 @@
 "All is done. Happy printing!"
 "Klaar. Happy printing!"
 
-#
+#MSG_AMBIENT c=14
 "Ambient"
 "Kamertemp."
 

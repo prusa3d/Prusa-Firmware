@@ -50,7 +50,7 @@
 "All is done. Happy printing!"
 "Tutto fatto. Buona stampa!"
 
-#
+#MSG_AMBIENT c=14
 "Ambient"
 "Ambiente"
 

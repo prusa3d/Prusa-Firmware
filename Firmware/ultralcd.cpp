@@ -1708,7 +1708,7 @@ static void lcd_menu_temperatures_line(const char *ipgmLabel, int value){
 //! |01234567890123456789|
 //! | Nozzle:        000D|	c=14 r=1
 //! | Bed:           000D|	c=14 r=1
-//! | Ambient:       000D|	c=14 r=1
+//! | Ambient:       000D|	c=14
 //! | PINDA:         000D|	c=14 r=1
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
@@ -1721,7 +1721,7 @@ static void lcd_menu_temperatures()
     lcd_menu_temperatures_line( _T(MSG_NOZZLE), (int)current_temperature[0] ); ////c=14 r=1
     lcd_menu_temperatures_line( _T(MSG_BED), (int)current_temperature_bed );  ////c=14 r=1
 #ifdef AMBIENT_THERMISTOR
-    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////c=14 r=1
+    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT c=14
 #endif //AMBIENT_THERMISTOR
 #ifdef PINDA_THERMISTOR
     lcd_menu_temperatures_line( _i("PINDA"), (int)current_temperature_pinda );  ////c=14

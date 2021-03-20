@@ -37,7 +37,7 @@
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
 
-#
+#MSG_AMBIENT c=14
 "Ambient"
 
 #MSG_AUTO c=6

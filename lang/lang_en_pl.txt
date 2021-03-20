@@ -50,7 +50,7 @@
 "All is done. Happy printing!"
 "Gotowe. Udanego drukowania!"
 
-#
+#MSG_AMBIENT c=14
 "Ambient"
 "Otoczenie"
 
