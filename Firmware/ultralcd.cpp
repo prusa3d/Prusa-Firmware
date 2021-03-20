@@ -8060,7 +8060,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 	switch (testError)
 	{
 	case TestError::Heater:
-		lcd_puts_at_P(0, 2, _i("Heater/Thermistor"));////MSG_SELFTEST_HEATERTHERMISTOR
+		lcd_puts_at_P(0, 2, _i("Heater/Thermistor"));////MSG_SELFTEST_HEATERTHERMISTOR c=20
 		lcd_puts_at_P(0, 3, _i("Not connected"));////MSG_SELFTEST_NOTCONNECTED
 		break;
 	case TestError::Bed:

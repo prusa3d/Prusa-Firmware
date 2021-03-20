@@ -406,7 +406,7 @@
 "Front/left fans"
 "Fans voor/links"
 
-#MSG_SELFTEST_HEATERTHERMISTOR
+#MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
 "Verwarmer/Therm."
 

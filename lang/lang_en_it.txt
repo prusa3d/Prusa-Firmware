@@ -406,7 +406,7 @@
 "Front/left fans"
 "Ventola frontale/sinistra"
 
-#MSG_SELFTEST_HEATERTHERMISTOR
+#MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
 "Riscald./Termist."
 

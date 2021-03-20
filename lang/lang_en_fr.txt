@@ -406,7 +406,7 @@
 "Front/left fans"
 "Ventilos avt/gauche"
 
-#MSG_SELFTEST_HEATERTHERMISTOR
+#MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
 "Chauffage/Thermistor"
 
