@@ -102,7 +102,7 @@
 "Bed done"
 "Base preparada"
 
-#MSG_BED_HEATING
+#MSG_BED_HEATING c=20
 "Bed Heating"
 "Calentando Base"
 

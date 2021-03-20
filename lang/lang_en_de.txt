@@ -102,7 +102,7 @@
 "Bed done"
 "Bett OK"
 
-#MSG_BED_HEATING
+#MSG_BED_HEATING c=20
 "Bed Heating"
 "Bett aufwaermen"
 
