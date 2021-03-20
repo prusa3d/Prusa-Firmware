@@ -26,7 +26,7 @@
 " of 9"
 " van 9"
 
-#MSG_MEASURED_OFFSET
+#MSG_MEASURED_OFFSET c=20
 "[0;0] point offset"
 "[0;0] punt offset"
 

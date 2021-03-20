@@ -2819,7 +2819,7 @@ static void lcd_menu_xyz_skew()
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |[0;0] point offset  |	c=20 r=1
+//! |[0;0] point offset  |	MSG_MEASURED_OFFSET c=20
 //! | --------------     |	STR_SEPARATOR
 //! |X:          000.00mm|	c=10 r=1
 //! |Y:          000.00mm|	c=10 r=1
