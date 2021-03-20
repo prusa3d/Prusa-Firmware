@@ -642,7 +642,7 @@
 "MMU needs user attention."
 "MMU necesita atencion del usuario."
 
-#
+#MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
 "Fallo de energia en MMU"
 

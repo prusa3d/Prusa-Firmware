@@ -1498,7 +1498,7 @@ static void lcd_menu_fails_stats_mmu_print()
 //! |Total failures      |	MSG_TOTAL_FAILURES c=20
 //! | MMU fails       000|	MSG_MMU_FAILS c=15
 //! | MMU load fails  000|	MSG_MMU_LOAD_FAILS c=15
-//! | MMU power fails 000|	c=15
+//! | MMU power fails 000|	MSG_MMU_POWER_FAILS c=15
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1511,7 +1511,7 @@ static void lcd_menu_fails_stats_mmu_total()
         _T(MSG_TOTAL_FAILURES), ////c=20
         _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ), ////c=14
         _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ), ////c=14
-        _i("MMU power fails"), clamp999( mmu_power_failures )); ////c=14 r=1
+        _i("MMU power fails"), clamp999( mmu_power_failures )); ////MSG_MMU_POWER_FAILS c=15
     menu_back_if_clicked_fb();
 }
 

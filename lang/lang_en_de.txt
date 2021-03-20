@@ -642,7 +642,7 @@
 "MMU needs user attention."
 "MMU erfordert Benutzereingriff."
 
-#
+#MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
 "MMU Netzfehler"
 
