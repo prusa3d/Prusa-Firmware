@@ -1102,7 +1102,7 @@
 "Support"
 "Soporte"
 
-#MSG_SELFTEST_SWAPPED
+#MSG_SELFTEST_SWAPPED c=16
 "Swapped"
 "Intercambiado"
 
