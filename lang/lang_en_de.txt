@@ -98,7 +98,7 @@
 "Bed / Heater"
 "Bett / Heizung"
 
-#MSG_BED_DONE
+#MSG_BED_DONE c=20
 "Bed done"
 "Bett OK"
 

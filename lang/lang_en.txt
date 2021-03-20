@@ -73,7 +73,7 @@
 #MSG_SELFTEST_BEDHEATER c=20
 "Bed / Heater"
 
-#MSG_BED_DONE
+#MSG_BED_DONE c=20
 "Bed done"
 
 #MSG_BED_HEATING

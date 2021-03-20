@@ -98,7 +98,7 @@
 "Bed / Heater"
 "Base / Calentador"
 
-#MSG_BED_DONE
+#MSG_BED_DONE c=20
 "Bed done"
 "Base preparada"
 

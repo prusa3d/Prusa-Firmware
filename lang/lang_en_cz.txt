@@ -98,7 +98,7 @@
 "Bed / Heater"
 "Podlozka / Topeni"
 
-#MSG_BED_DONE
+#MSG_BED_DONE c=20
 "Bed done"
 "Bed OK."
 
