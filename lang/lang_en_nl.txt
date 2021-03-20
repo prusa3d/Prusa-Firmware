@@ -90,7 +90,7 @@
 "Axis length"
 "Aslengte"
 
-#MSG_SELFTEST_AXIS
+#MSG_SELFTEST_AXIS c=16
 "Axis"
 "As"
 

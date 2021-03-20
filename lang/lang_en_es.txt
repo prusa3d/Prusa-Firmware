@@ -90,7 +90,7 @@
 "Axis length"
 "Longitud del eje"
 
-#MSG_SELFTEST_AXIS
+#MSG_SELFTEST_AXIS c=16
 "Axis"
 "Eje"
 
