@@ -28,9 +28,6 @@
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 
-#
-">Cancel"
-
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
 
@@ -133,7 +130,7 @@
 #MSG_MENU_CALIBRATION
 "Calibration"
 
-#
+#MSG_CANCEL c=9
 "Cancel"
 
 #MSG_SD_REMOVED

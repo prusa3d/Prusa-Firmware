@@ -38,10 +38,6 @@
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 "ATTENZIONE:\x0aRilev. impatto\x0adisattivato in\x0aModalita silenziosa"
 
-#
-">Cancel"
-">Annulla"
-
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
 "Compensaz. Z:"
@@ -178,7 +174,7 @@
 "Calibration"
 "Calibrazione"
 
-#
+#MSG_CANCEL c=9
 "Cancel"
 "Annulla"
 

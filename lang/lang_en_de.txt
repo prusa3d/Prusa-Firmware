@@ -38,10 +38,6 @@
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 "WARNUNG:\x0aCrash Erkennung\x0adeaktiviert im\x0aStealth Modus"
 
-#
-">Cancel"
-">Abbruch"
-
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
 "Z Anpassen:"
@@ -178,7 +174,7 @@
 "Calibration"
 "Kalibrierung"
 
-#
+#MSG_CANCEL c=9
 "Cancel"
 "Abbruch"
 

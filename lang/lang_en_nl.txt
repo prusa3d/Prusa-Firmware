@@ -38,10 +38,6 @@
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 "WARNING:\x0aCrashdetectie\x0auitgeschakeld in\x0aStealth stand"
 
-#
-">Cancel"
-">Annuleren"
-
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
 "Z is ingesteld:"
@@ -178,7 +174,7 @@
 "Calibration"
 "Kalibratie"
 
-#
+#MSG_CANCEL c=9
 "Cancel"
 "Annuleren"
 

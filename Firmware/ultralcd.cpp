@@ -2236,7 +2236,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 // handled earlier
                 break;
             }
-            lcd_puts_at_P(0, 3, _i(">Cancel"));                   ////MSG_ c=20 r=1
+            lcd_puts_at_P(0, 3, _T(MSG_CANCEL));
         }
 
         if (lcd_clicked())
@@ -2828,7 +2828,7 @@ static void lcd_menu_xyz_skew()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_xyz_offset()
 {
-    lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET
+    lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
     lcd_puts_at_P(0, 1, separator);
     lcd_puts_at_P(0, 2, PSTR("X"));  ////c=10 r=1
     lcd_puts_at_P(0, 3, PSTR("Y"));  ////c=10 r=1
@@ -4622,7 +4622,7 @@ void lcd_v2_calibration()
 	{
 	    const uint8_t filament = choose_menu_P(
             _i("Select filament:"), ////c=20
-            _T(MSG_FILAMENT),_i("Cancel"));  ////c=19 r=1
+            _T(MSG_FILAMENT),_T(MSG_CANCEL));
 	    if (filament < 5)
 	    {
 	        lay1cal_filament = filament;

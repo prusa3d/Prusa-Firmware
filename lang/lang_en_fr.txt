@@ -38,10 +38,6 @@
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 "ATTENTION:\x0aDetection de crash\x0adesactivee en\x0amode furtif"
 
-#
-">Cancel"
-">Annuler"
-
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
 "Ajuster Z:"
@@ -178,7 +174,7 @@
 "Calibration"
 "\x00"
 
-#
+#MSG_CANCEL c=9
 "Cancel"
 "Annuler"
 
