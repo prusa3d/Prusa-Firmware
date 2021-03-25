@@ -203,4 +203,3 @@ const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
 const char MSG_ADVANCE_K[] PROGMEM_N1 = "Advance K:"; ////c=13
 const char MSG_POWERPANIC_DETECTED[] PROGMEM_N1 = "POWER PANIC DETECTED"; ////c=20
 const char MSG_LCD_STATUS_CHANGED[] PROGMEM_N1 = "LCD status changed";
-const char MSG_CHECK_STEEL_SHEET[] PROGMEM_I1 = ISTR("Check the steel sheet installed");
