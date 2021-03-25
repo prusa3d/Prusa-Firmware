@@ -1132,6 +1132,11 @@ float tmc2130_val2cur(uint8_t val)
 	return cur * 1000; //return current in mA
 }
 
-
+uint8_t tmc2130_rd_PWM_SCALE(uint8_t axis)
+{
+    uint32_t val32;
+    tmc2130_rd(axis, TMC2130_REG_PWM_SCALE, &val32);
+    return val32;
+}
 
 #endif //TMC2130

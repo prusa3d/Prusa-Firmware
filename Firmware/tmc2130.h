@@ -101,6 +101,7 @@ extern void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_ampl);
 
 extern uint16_t tmc2130_rd_MSCNT(uint8_t axis);
 extern uint32_t tmc2130_rd_MSCURACT(uint8_t axis);
+extern uint8_t tmc2130_rd_PWM_SCALE(uint8_t axis);
 
 extern uint8_t tmc2130_usteps2mres(uint16_t usteps);
 #define tmc2130_mres2usteps(mres) ((uint16_t)256 >> mres)

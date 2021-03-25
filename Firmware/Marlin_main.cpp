@@ -8631,7 +8631,19 @@ Sigma_Exit:
     break;
 
 #endif //TMC2130_SERVICE_CODES_M910_M918
+    /*!
+	### M919 - Get TMC2130 PWM amplitude scaler (pwm_scale)
+    #### Usage
 
+        M919
+    */
+#ifdef TMC2130
+	case 919:
+    {
+    	printf_P(_N("tmc2130_pwm_scale X=%d, Y=%d, Z=%d, E=%d\n"), tmc2130_rd_PWM_SCALE(X_AXIS), tmc2130_rd_PWM_SCALE(Y_AXIS), tmc2130_rd_PWM_SCALE(Z_AXIS), tmc2130_rd_PWM_SCALE(E_AXIS));
+    }
+    break;
+#endif //TMC2130
     /*!
 	### M350 - Set microstepping mode <a href="https://reprap.org/wiki/G-code#M350:_Set_microstepping_mode">M350: Set microstepping mode</a>
     Printers with TMC2130 drivers have `X`, `Y`, `Z` and `E` as options. The steps-per-unit value is updated accordingly. Not all resolutions are valid!
