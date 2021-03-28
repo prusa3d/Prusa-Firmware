@@ -3543,7 +3543,7 @@ lcd_wait_for_click_delay(0);
 }
 
 //! @brief Show multiple screen message with yes and no possible choices and wait with possible timeout
-//! @param msg Message to show
+//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting if true, allows time outing of the screen
 //! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
 //! @retval 1 yes choice selected by user
@@ -3553,8 +3553,21 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 {
     return lcd_show_multiscreen_message_two_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO));
 }
-//! @brief Show multiple screen message with two possible choices and wait with possible timeout
-//! @param msg Message to show
+//! @brief Show a two-choice prompt on the last line of the LCD
+//! @param first_selected Show first choice as selected if true, the second otherwise
+//! @param first_choice text caption of first possible choice
+//! @param second_choice text caption of second possible choice
+void lcd_show_two_choices_prompt_P(bool first_selected, const char *first_choice, const char *second_choice)
+{
+    lcd_set_cursor(0, 3);
+    lcd_print(first_selected? '>': ' ');
+    lcd_puts_P(first_choice);
+    lcd_set_cursor(7, 3);
+    lcd_print(!first_selected? '>': ' ');
+    lcd_puts_P(second_choice);
+}
+//! @brief Show single or multiple screen message with two possible choices and wait with possible timeout
+//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting if true, allows time outing of the screen
 //! @param default_first if true, fist choice is selected by default, otherwise second choice is preselected
 //! @param first_choice text caption of first possible choice
@@ -3565,15 +3578,18 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_first,
         const char *first_choice, const char *second_choice)
 {
-	const char *msg_next = lcd_display_message_fullscreen_P(msg);
+	const char *msg_next = msg? lcd_display_message_fullscreen_P(msg) : NULL;
 	bool multi_screen = msg_next != NULL;
+
+    // Initial status/prompt on single-screen messages
 	bool yes = default_first ? true : false;
+	if (!msg_next) lcd_show_two_choices_prompt_P(yes, first_choice, second_choice);
 
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = _millis();
-	int8_t        enc_dif = lcd_encoder_diff;
+	int8_t enc_dif = lcd_encoder_diff;
 	lcd_consume_click();
-	//KEEPALIVE_STATE(PAUSED_FOR_USER);
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
 		for (uint8_t i = 0; i < 100; ++i) {
 			delay_keep_alive(50);
@@ -3584,19 +3600,13 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 
 			if (abs(enc_dif - lcd_encoder_diff) > 4) {
 				if (msg_next == NULL) {
-					lcd_set_cursor(0, 3);
-					if (enc_dif < lcd_encoder_diff && yes) {
-						lcd_print(' ');
-						lcd_putc_at(7, 3, '>');
-						yes = false;
-						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-					}
-					else if (enc_dif > lcd_encoder_diff && !yes) {
-						lcd_print('>');
-						lcd_putc_at(7, 3, ' ');
-						yes = true;
-						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-					}
+                    if ((enc_dif < lcd_encoder_diff && yes) ||
+                        ((enc_dif > lcd_encoder_diff && !yes)))
+                    {
+                        yes = !yes;
+                        lcd_show_two_choices_prompt_P(yes, first_choice, second_choice);
+                        Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+                    }
 					enc_dif = lcd_encoder_diff;
 				}
 				else {
@@ -3607,7 +3617,7 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 			if (lcd_clicked()) {
 				Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 				if (msg_next == NULL) {
-					//KEEPALIVE_STATE(IN_HANDLER);
+					KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
 					return yes;
 				}
@@ -3621,17 +3631,12 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 			msg_next = lcd_display_message_fullscreen_P(msg_next);
 		}
 		if (msg_next == NULL) {
-			lcd_set_cursor(0, 3);
-			if (yes) lcd_print('>');
-			lcd_puts_at_P(1, 3, first_choice);
-			lcd_set_cursor(7, 3);
-			if (!yes) lcd_print('>');
-			lcd_puts_at_P(8, 3, second_choice);
+            lcd_show_two_choices_prompt_P(yes, first_choice, second_choice);
 		}
 	}
 }
 
-//! @brief Display and wait for a Yes/No choice using the last two lines of the LCD
+//! @brief Display and wait for a Yes/No choice using the last line of the LCD
 //! @param allow_timeouting if true, allows time outing of the screen
 //! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
 //! @retval 1 yes choice selected by user
@@ -3639,60 +3644,11 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 //! @retval -1 screen timed out
 int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, bool default_yes)
 {
-	if (default_yes) {
-		lcd_putc_at(0, 2, '>');
-		lcd_puts_P(_T(MSG_YES));
-		lcd_puts_at_P(1, 3, _T(MSG_NO));
-	}
-	else {
-		lcd_puts_at_P(1, 2, _T(MSG_YES));
-		lcd_putc_at(0, 3, '>');
-		lcd_puts_P(_T(MSG_NO));
-	}
-	int8_t retval = default_yes ? true : false;
-
-	// Wait for user confirmation or a timeout.
-	unsigned long previous_millis_cmd = _millis();
-	int8_t        enc_dif = lcd_encoder_diff;
-	lcd_consume_click();
-	KEEPALIVE_STATE(PAUSED_FOR_USER);
-	for (;;) {
-		if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
-		{
-		    retval = -1;
-		    break;
-		}
-		manage_heater();
-		manage_inactivity(true);
-		if (abs(enc_dif - lcd_encoder_diff) > 4) {
-			lcd_set_cursor(0, 2);
-				if (enc_dif < lcd_encoder_diff && retval) {
-					lcd_print(' ');
-					lcd_putc_at(0, 3, '>');
-					retval = 0;
-					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-
-				}
-				else if (enc_dif > lcd_encoder_diff && !retval) {
-					lcd_print('>');
-					lcd_putc_at(0, 3, ' ');
-					retval = 1;
-					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-				}
-				enc_dif = lcd_encoder_diff;
-		}
-		if (lcd_clicked()) {
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-			KEEPALIVE_STATE(IN_HANDLER);
-			break;
-		}
-	}
-    lcd_encoder_diff = 0;
-    return retval;
+    return lcd_show_multiscreen_message_yes_no_and_wait_P(NULL, allow_timeouting, default_yes);
 }
 
 //! @brief Show single screen message with yes and no possible choices and wait with possible timeout
-//! @param msg Message to show
+//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting if true, allows time outing of the screen
 //! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
 //! @retval 1 yes choice selected by user
@@ -3701,8 +3657,7 @@ int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, bool default_yes)
 //! @relates lcd_show_yes_no_and_wait
 int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
 {
-    lcd_display_message_fullscreen_P(msg);
-    return lcd_show_yes_no_and_wait(allow_timeouting, default_yes);
+    return lcd_show_multiscreen_message_yes_no_and_wait_P(msg, allow_timeouting, default_yes);
 }
 
 void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask)
