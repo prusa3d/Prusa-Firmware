@@ -178,14 +178,17 @@ eof_or_fail:
 }
 
 bool SdFile::gfEnsureBlock(){
-    if ( vol_->cacheRawBlock(gfBlock, SdVolume::CACHE_FOR_READ)){
+    // this comparison is heavy-weight, especially when there is another one inside cacheRawBlock
+    // but it is necessary to avoid computing of terminateOfs if not needed
+    if( gfBlock != vol_->cacheBlockNumber_ ){
+        if ( ! vol_->cacheRawBlock(gfBlock, SdVolume::CACHE_FOR_READ)){
+            return false;
+        }
         // terminate with a '\n'
-        const uint16_t terminateOfs = fileSize_ - gfOffset;
+        const uint32_t terminateOfs = fileSize_ - gfOffset;
         vol_->cache()->data[ terminateOfs < 512 ? terminateOfs : 512 ] = '\n';
-        return true;
-    } else {
-        return false;
     }
+    return true;
 }
 
 bool SdFile::gfComputeNextFileBlock() {
