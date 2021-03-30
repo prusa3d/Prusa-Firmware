@@ -186,7 +186,7 @@
 "Checking file"
 "\x00"
 
-#MSG_NOT_COLOR
+#MSG_NOT_COLOR c=19
 "Color not correct"
 "Colore non puro"
 

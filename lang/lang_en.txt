@@ -139,7 +139,7 @@
 #MSG_CHECKING_FILE c=17
 "Checking file"
 
-#MSG_NOT_COLOR
+#MSG_NOT_COLOR c=19
 "Color not correct"
 
 #MSG_COOLDOWN

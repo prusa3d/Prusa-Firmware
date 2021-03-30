@@ -2480,7 +2480,7 @@ void lcd_alright() {
   lcd_puts_at_P(0, 0, _i("Changed correctly?"));////MSG_CORRECTLY c=20
   lcd_puts_at_P(1, 1, _T(MSG_YES));
   lcd_puts_at_P(1, 2, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
-  lcd_puts_at_P(1, 3, _i("Color not correct"));////MSG_NOT_COLOR
+  lcd_puts_at_P(1, 3, _i("Color not correct"));////MSG_NOT_COLOR c=19
   lcd_putc_at(0, 1, '>');
 
 
