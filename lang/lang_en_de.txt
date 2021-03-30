@@ -202,7 +202,7 @@
 "Crash det."
 "Crash Erk."
 
-# c=20 r=7
+#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Waehlen Sie ein Filament fuer Erste Schichtkalibrierung aus und waehlen Sie es im On-Screen-Menu aus."
 

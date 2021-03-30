@@ -202,7 +202,7 @@
 "Crash det."
 "Detect.crash"
 
-# c=20 r=7
+#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Choisissez un filament pour la Calibration de la Premiere Couche et selectionnez-le depuis le menu a l'ecran."
 
