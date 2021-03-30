@@ -1294,7 +1294,7 @@
 "XYZ calibration failed. Right front calibration point not reachable."
 "Kalibr. XYZ nieudana. Prawy przedni punkt nieosiagalny. Nalezy poprawic montaz drukarki."
 
-# c=20
+#MSG_Y_DIST_FROM_MIN c=20
 "Y distance from min"
 "Dystans od 0 w osi Y"
 

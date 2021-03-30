@@ -2739,10 +2739,10 @@ void lcd_move_e()
 //! This functionality is applied more often for MK2 printers.
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Y distance from min |	c=20
+//! |Y distance from min |	MSG_Y_DIST_FROM_MIN
 //! | --------------     |	STR_SEPARATOR
-//! |Left:       00.00mm |	c=11 r=1
-//! |Right:      00.00mm |	c=11 r=1
+//! |Left:       00.00mm |	MSG_LEFT c=10, c=8
+//! |Right:      00.00mm |	MSG_RIGHT c=10, c=8
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -2757,7 +2757,7 @@ static void lcd_menu_xyz_y_min()
 	  "%S:\n"
 	  "%S:"
 	 ),
-	 _i("Y distance from min"),  ////c=20
+	 _i("Y distance from min"),  ////MSG_Y_DIST_FROM_MIN c=20
 	 separator,
 	 _i("Left"),  ////MSG_LEFT c=10
 	 _i("Right")  ////MSG_RIGHT c=10

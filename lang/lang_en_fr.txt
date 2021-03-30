@@ -1294,7 +1294,7 @@
 "XYZ calibration failed. Right front calibration point not reachable."
 "Echec calibration XYZ. Le point de calibration avant droit n'est pas atteignable."
 
-# c=20
+#MSG_Y_DIST_FROM_MIN c=20
 "Y distance from min"
 "Distance Y du min"
 

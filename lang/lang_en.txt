@@ -970,7 +970,7 @@
 #MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 "XYZ calibration failed. Right front calibration point not reachable."
 
-# c=20
+#MSG_Y_DIST_FROM_MIN c=20
 "Y distance from min"
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
