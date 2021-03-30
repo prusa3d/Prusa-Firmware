@@ -1338,7 +1338,7 @@
 "Firmware"
 "\x00"
 
-#MSG_STRICT
+#MSG_STRICT c=8
 "Strict"
 "Prisne"
 

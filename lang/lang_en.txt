@@ -1003,7 +1003,7 @@
 #MSG_FIRMWARE
 "Firmware"
 
-#MSG_STRICT
+#MSG_STRICT c=8
 "Strict"
 
 #MSG_WARN c=8
