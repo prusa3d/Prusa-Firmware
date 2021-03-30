@@ -334,7 +334,7 @@
 "Fans check"
 "Luefter Chk."
 
-#MSG_FSENSOR
+#MSG_FSENSOR c=12
 "Fil. sensor"
 "Fil. Sensor"
 

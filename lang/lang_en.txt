@@ -250,7 +250,7 @@
 #MSG_FANS_CHECK c=13
 "Fans check"
 
-#MSG_FSENSOR
+#MSG_FSENSOR c=12
 "Fil. sensor"
 
 #MSG_FIL_RUNOUTS c=15

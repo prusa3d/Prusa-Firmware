@@ -334,7 +334,7 @@
 "Fans check"
 "Kontr. vent."
 
-#MSG_FSENSOR
+#MSG_FSENSOR c=12
 "Fil. sensor"
 "Fil. senzor"
 

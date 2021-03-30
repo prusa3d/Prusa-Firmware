@@ -334,7 +334,7 @@
 "Fans check"
 "Sprawd.went."
 
-#MSG_FSENSOR
+#MSG_FSENSOR c=12
 "Fil. sensor"
 "Czuj. filam."
 
