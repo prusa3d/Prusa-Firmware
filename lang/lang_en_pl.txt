@@ -666,15 +666,15 @@
 "Move axis"
 "Ruch osi"
 
-#MSG_MOVE_X
+#MSG_MOVE_X c=18
 "Move X"
 "Ruch osi X"
 
-#MSG_MOVE_Y
+#MSG_MOVE_Y c=18
 "Move Y"
 "Ruch osi Y"
 
-#MSG_MOVE_Z
+#MSG_MOVE_Z c=18
 "Move Z"
 "Ruch osi Z"
 

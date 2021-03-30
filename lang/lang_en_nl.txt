@@ -666,15 +666,15 @@
 "Move axis"
 "As verplaatsen"
 
-#MSG_MOVE_X
+#MSG_MOVE_X c=18
 "Move X"
 "Verplaats X"
 
-#MSG_MOVE_Y
+#MSG_MOVE_Y c=18
 "Move Y"
 "Verplaats Y"
 
-#MSG_MOVE_Z
+#MSG_MOVE_Z c=18
 "Move Z"
 "Verplaats Z"
 
