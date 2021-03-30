@@ -194,7 +194,7 @@
 "Cooldown"
 "Enfriar"
 
-#
+#MSG_COPY_SEL_LANG c=20 r=3
 "Copy selected language?"
 "Copiar idioma seleccionado?"
 

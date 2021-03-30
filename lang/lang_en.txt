@@ -145,7 +145,7 @@
 #MSG_COOLDOWN c=18
 "Cooldown"
 
-#
+#MSG_COPY_SEL_LANG c=20 r=3
 "Copy selected language?"
 
 #MSG_CRASHDETECT c=13
