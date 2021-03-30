@@ -110,7 +110,7 @@
 "Bed level correct"
 "Korekta stolu"
 
-#MSG_BELTTEST c=17
+#MSG_BELTTEST c=18
 "Belt test        "
 "Test paskow"
 

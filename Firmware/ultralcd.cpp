@@ -5693,7 +5693,7 @@ static void lcd_calibration_menu()
     }
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 #ifdef TMC2130
-	MENU_ITEM_FUNCTION_P(_i("Belt test        "), lcd_belttest_v);////MSG_BELTTEST c=17
+	MENU_ITEM_FUNCTION_P(_i("Belt test        "), lcd_belttest_v);////MSG_BELTTEST c=18
 #endif //TMC2130
 	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST c=18
 #ifdef MK1BP

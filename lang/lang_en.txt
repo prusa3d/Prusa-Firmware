@@ -82,7 +82,7 @@
 #MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
 
-#MSG_BELTTEST c=17
+#MSG_BELTTEST c=18
 "Belt test        "
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
