@@ -534,7 +534,7 @@
 "Left side [um]"
 "Linkerkant[um]"
 
-# c=18
+#MSG_LIN_CORRECTION c=18
 "Lin. correction"
 "Lineaire correctie"
 

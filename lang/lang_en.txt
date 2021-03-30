@@ -400,7 +400,7 @@
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
 
-# c=18
+#MSG_LIN_CORRECTION c=18
 "Lin. correction"
 
 #MSG_BABYSTEP_Z c=18

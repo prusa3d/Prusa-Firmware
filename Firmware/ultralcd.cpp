@@ -5617,7 +5617,7 @@ static void lcd_settings_menu()
 	MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bed_leveling_settings);
 
 #if defined (TMC2130) && defined (LINEARITY_CORRECTION)
-    MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);////c=18
+    MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);////MSG_LIN_CORRECTION c=18
 #endif //LINEARITY_CORRECTION && TMC2130
     if(has_temperature_compensation())
     {
