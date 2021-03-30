@@ -198,7 +198,7 @@
 "Copy selected language?"
 "Skopiowac wybrany jezyk?"
 
-#MSG_CRASHDETECT_ON
+#MSG_CRASHDETECT c=13
 "Crash det."
 "Wykr.zderzen"
 
