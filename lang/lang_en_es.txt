@@ -1094,7 +1094,7 @@
 "Stop print"
 "Detener impresion"
 
-#MSG_STOPPED
+#MSG_STOPPED c=20
 "STOPPED. "
 "PARADA"
 

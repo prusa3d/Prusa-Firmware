@@ -1094,7 +1094,7 @@
 "Stop print"
 "Przerwanie druku"
 
-#MSG_STOPPED
+#MSG_STOPPED c=20
 "STOPPED. "
 "ZATRZYMANO."
 

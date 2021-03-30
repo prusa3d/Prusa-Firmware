@@ -1094,7 +1094,7 @@
 "Stop print"
 "Druck abbrechen"
 
-#MSG_STOPPED
+#MSG_STOPPED c=20
 "STOPPED. "
 "GESTOPPT."
 
