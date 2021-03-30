@@ -385,7 +385,7 @@
 #MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
 
-# c=20 r=9
+#MSG_ADDITIONAL_SHEETS c=20 r=9
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 
 #MSG_LAST_PRINT c=18

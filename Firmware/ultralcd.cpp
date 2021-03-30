@@ -4944,7 +4944,7 @@ void lcd_wizard(WizState state)
 			}
 			else
 			{
-			    lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));////c=20 r=9
+			    lcd_show_fullscreen_message_and_wait_P(_i("If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."));////MSG_ADDITIONAL_SHEETS c=20 r=9
 				state = S::Finish;
 			}
 			break;

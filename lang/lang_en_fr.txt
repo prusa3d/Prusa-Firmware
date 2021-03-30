@@ -514,7 +514,7 @@
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
 "Bonjour, je suis votre imprimante Original Prusa i3. Je vais vous accompagner au cours d'un bref processus de reglage, qui permettra de calibrer le Z-axis. Apres cela, tout sera pret pour imprimer."
 
-# c=20 r=9
+#MSG_ADDITIONAL_SHEETS c=20 r=9
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Si vous avez d'autres feuilles d'acier,  calibrez leurs pre-reglages dans Reglages - Config HW - Plaque en acier."
 
