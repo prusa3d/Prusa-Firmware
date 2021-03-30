@@ -5712,7 +5712,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     */
 
     case 17:
-        LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
+        LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE c=20
         enable_x();
         enable_y();
         enable_z();

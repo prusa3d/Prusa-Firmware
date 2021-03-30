@@ -678,7 +678,7 @@
 "Move Z"
 "Sposta Z"
 
-#MSG_NO_MOVE
+#MSG_NO_MOVE c=20
 "No move."
 "Nessun movimento."
 

@@ -508,7 +508,7 @@
 #MSG_MOVE_Z c=18
 "Move Z"
 
-#MSG_NO_MOVE
+#MSG_NO_MOVE c=20
 "No move."
 
 #MSG_NO_CARD
