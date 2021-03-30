@@ -390,7 +390,7 @@
 "Flow"
 "Durchfluss"
 
-#MSG_PRUSA3D_FORUM
+#MSG_PRUSA3D_FORUM c=18
 "forum.prusa3d.com"
 "\x00"
 
