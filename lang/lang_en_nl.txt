@@ -538,7 +538,7 @@
 "Lin. correction"
 "Lineaire correctie"
 
-#MSG_BABYSTEP_Z
+#MSG_BABYSTEP_Z c=18
 "Live adjust Z"
 "Live Z aanpassen"
 
