@@ -426,7 +426,7 @@
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Hallo, ik ben uw Original Prusa i3 printer. Zullen we beginnen met het installatieproces?"
 
-#MSG_PRUSA3D_HOWTO
+#MSG_PRUSA3D_HOWTO c=18
 "howto.prusa3d.com"
 "\x00"
 
