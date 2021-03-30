@@ -294,7 +294,7 @@
 "Dim"
 "Temny"
 
-#MSG_ERROR
+#MSG_ERROR c=10
 "ERROR:"
 "CHYBA:"
 

@@ -294,7 +294,7 @@
 "Dim"
 "Sciemn"
 
-#MSG_ERROR
+#MSG_ERROR c=10
 "ERROR:"
 "BLAD:"
 

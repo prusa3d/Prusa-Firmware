@@ -294,7 +294,7 @@
 "Dim"
 "\x00"
 
-#MSG_ERROR
+#MSG_ERROR c=10
 "ERROR:"
 "ERREUR:"
 

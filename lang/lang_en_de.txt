@@ -294,7 +294,7 @@
 "Dim"
 "Dimm"
 
-#MSG_ERROR
+#MSG_ERROR c=10
 "ERROR:"
 "FEHLER:"
 
