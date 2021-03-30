@@ -650,7 +650,7 @@
 "Auto power"
 "Auto"
 
-#MSG_HIGH_POWER
+#MSG_HIGH_POWER c=10
 "High power"
 "Forte"
 

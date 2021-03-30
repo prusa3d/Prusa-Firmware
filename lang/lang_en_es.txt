@@ -650,7 +650,7 @@
 "Auto power"
 "Fuerza auto"
 
-#MSG_HIGH_POWER
+#MSG_HIGH_POWER c=10
 "High power"
 "Rend.pleno"
 

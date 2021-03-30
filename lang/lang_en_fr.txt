@@ -650,7 +650,7 @@
 "Auto power"
 "Puiss.auto"
 
-#MSG_HIGH_POWER
+#MSG_HIGH_POWER c=10
 "High power"
 "Haute puiss"
 

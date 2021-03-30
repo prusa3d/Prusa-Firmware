@@ -650,7 +650,7 @@
 "Auto power"
 "\x00"
 
-#MSG_HIGH_POWER
+#MSG_HIGH_POWER c=10
 "High power"
 "Hoog verm."
 
