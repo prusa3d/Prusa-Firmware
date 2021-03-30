@@ -310,7 +310,7 @@
 "Extruder"
 "Extruir"
 
-# c=18
+#MSG_MMU_FAIL_STATS c=18
 "Fail stats MMU"
 "Estadistica de fallos MMU"
 

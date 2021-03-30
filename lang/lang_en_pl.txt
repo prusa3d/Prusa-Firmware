@@ -310,7 +310,7 @@
 "Extruder"
 "Ekstruder"
 
-# c=18
+#MSG_MMU_FAIL_STATS c=18
 "Fail stats MMU"
 "Bledy MMU"
 

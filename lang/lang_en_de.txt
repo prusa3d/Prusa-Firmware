@@ -310,7 +310,7 @@
 "Extruder"
 "\x00"
 
-# c=18
+#MSG_MMU_FAIL_STATS c=18
 "Fail stats MMU"
 "MMU-Fehler"
 
