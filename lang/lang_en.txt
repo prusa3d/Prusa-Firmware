@@ -106,7 +106,7 @@
 # c=20
 "Calibrating home"
 
-#MSG_CALIBRATE_BED
+#MSG_CALIBRATE_BED c=18
 "Calibrate XYZ"
 
 #MSG_HOMEYZ

@@ -142,7 +142,7 @@
 "Calibrating home"
 "Calibrar posicion inicial"
 
-#MSG_CALIBRATE_BED
+#MSG_CALIBRATE_BED c=18
 "Calibrate XYZ"
 "Calibrar XYZ"
 
