@@ -1378,11 +1378,11 @@
 "Nozzle d."
 "Diam. nozzl"
 
-# c=20 r=4
+#MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
 "Codigo G laminado para un nivel diferente. ?Continuar?"
 
-# c=20 r=7
+#MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "Codigo G laminado para un nivel diferente. Por favor relamina el modelo de nuevo. Impresion cancelada."
 

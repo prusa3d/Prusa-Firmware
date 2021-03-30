@@ -1378,11 +1378,11 @@
 "Nozzle d."
 "Tuit d."
 
-# c=20 r=4
+#MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
 "G-Code is voor een ander niveau geslict. Doorgaan?"
 
-# c=20 r=7
+#MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-Code is voor een ander niveau geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
 

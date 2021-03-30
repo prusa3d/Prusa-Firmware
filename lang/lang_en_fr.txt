@@ -1378,11 +1378,11 @@
 "Nozzle d."
 "Diam. buse"
 
-# c=20 r=4
+#MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
 "Le G-code a ete prepare pour un niveau different. Continuer?"
 
-# c=20 r=7
+#MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "Le G-code a ete prepare pour un niveau different. Veuillez decouper le modele a nouveau. L'impression a ete annulee."
 

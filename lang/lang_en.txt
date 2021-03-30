@@ -1033,10 +1033,10 @@
 #MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."
 
-# c=20 r=4
+#MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
 
-# c=20 r=7
+#MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 
 #MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5

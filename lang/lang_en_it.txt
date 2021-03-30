@@ -1378,11 +1378,11 @@
 "Nozzle d."
 "Diam.Ugello"
 
-# c=20 r=4
+#MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
 "G-code processato per un livello diverso. Continuare?"
 
-# c=20 r=7
+#MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-code processato per un livello diverso. Per favore esegui nuovamente lo slice del modello. Stampa annullata."
 

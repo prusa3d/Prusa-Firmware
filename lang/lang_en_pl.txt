@@ -1378,11 +1378,11 @@
 "Nozzle d."
 "Sr. dyszy"
 
-# c=20 r=4
+#MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
 "G-code pociety dla innej wersji. Kontynuowac?"
 
-# c=20 r=7
+#MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-code pociety na innym poziomie. Potnij model ponownie. Druk anulowany."
 
