@@ -662,7 +662,7 @@
 "Motor"
 "\x00"
 
-#MSG_MOVE_AXIS
+#MSG_MOVE_AXIS c=18
 "Move axis"
 "Mover ejes"
 

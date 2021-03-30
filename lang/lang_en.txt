@@ -496,7 +496,7 @@
 #MSG_SELFTEST_MOTOR c=18
 "Motor"
 
-#MSG_MOVE_AXIS
+#MSG_MOVE_AXIS c=18
 "Move axis"
 
 #MSG_MOVE_X
