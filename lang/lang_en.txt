@@ -289,7 +289,7 @@
 #MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
 
-#MSG_FLOW
+#MSG_FLOW c=15
 "Flow"
 
 #MSG_PRUSA3D_FORUM

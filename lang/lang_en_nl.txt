@@ -386,7 +386,7 @@
 "Fix the issue and then press button on MMU unit."
 "Los het probleem op en druk vervolgens op de knop op de MMU-eenheid."
 
-#MSG_FLOW
+#MSG_FLOW c=15
 "Flow"
 "Stromen"
 
