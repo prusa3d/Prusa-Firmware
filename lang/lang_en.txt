@@ -1012,7 +1012,7 @@
 #MSG_HW_SETUP c=18
 "HW Setup"
 
-#MSG_MAGNETS_COMP
+#MSG_MAGNETS_COMP c=13
 "Magnets comp."
 
 #MSG_MESH c=12

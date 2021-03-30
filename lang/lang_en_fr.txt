@@ -1350,7 +1350,7 @@
 "HW Setup"
 "Config HW"
 
-#MSG_MAGNETS_COMP
+#MSG_MAGNETS_COMP c=13
 "Magnets comp."
 "Compens. aim."
 

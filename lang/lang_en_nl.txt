@@ -1350,7 +1350,7 @@
 "HW Setup"
 "HW Configuratie"
 
-#MSG_MAGNETS_COMP
+#MSG_MAGNETS_COMP c=13
 "Magnets comp."
 "Magnet. comp."
 
