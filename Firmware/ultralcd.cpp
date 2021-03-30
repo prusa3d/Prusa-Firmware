@@ -1824,14 +1824,14 @@ static void lcd_preheat_menu()
 //! If MMU is connected
 //! 
 //! 	@code{.unparsed}
-//! 	| MMU2 connected     |	c=18 r=1
+//! 	| MMU2 connected     |	c=18
 //! 	|  FW: 1.0.6-7064523 |
 //! 	@endcode
 //! 
 //! If MMU is not connected
 //! 
 //! 	@code{.unparsed}
-//! 	| MMU2       N/A     |	c=18 r=1
+//! 	| MMU2       N/A     |	c=18
 //! 	@endcode
 //! 
 //! If Flash Air is connected
@@ -1936,7 +1936,7 @@ static void lcd_support_menu()
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
 	if (mmu_enabled)
 	{
-		MENU_ITEM_BACK_P(_i("MMU2 connected"));  ////c=18 r=1
+		MENU_ITEM_BACK_P(_i("MMU2 connected"));  ////MSG_MMU_CONNECTED c=18
 		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17 r=1
 		if (((menu_item - 1) == menu_line) && lcd_draw_update)
 		{

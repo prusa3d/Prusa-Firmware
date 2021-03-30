@@ -634,7 +634,7 @@
 "Silent"
 "Tichy"
 
-# c=20 r=3
+#MSG_MMU_USER_ATTENTION c=20 r=3
 "MMU needs user attention."
 "MMU potrebuje zasah uzivatele."
 
@@ -654,7 +654,7 @@
 "High power"
 "Vys. vykon"
 
-#
+#MSG_MMU_CONNECTED c=18
 "MMU2 connected"
 "MMU2 pripojeno"
 
