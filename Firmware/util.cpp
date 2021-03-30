@@ -479,13 +479,13 @@ switch(oCheckVersion)
      {
      case ClCheckVersion::_Warn:
 //          lcd_show_fullscreen_message_and_wait_P(_i("Printer FW version differs from the G-code. Continue?"));
-lcd_display_message_fullscreen_P(_i("G-code sliced for a newer firmware. Continue?"));////c=20 r=5
+lcd_display_message_fullscreen_P(_i("G-code sliced for a newer firmware. Continue?"));////MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 //???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
 lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckVersion::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a newer firmware. Please update the firmware. Print cancelled."));////c=20 r=8
+          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a newer firmware. Please update the firmware. Print cancelled."));////MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
           lcd_print_stop();
           break;
      case ClCheckVersion::_None:
