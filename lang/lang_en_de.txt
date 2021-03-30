@@ -570,7 +570,7 @@
 "M117 First layer cal."
 "M117 Erste-Schicht Kal."
 
-#MSG_MAIN
+#MSG_MAIN c=18
 "Main"
 "Hauptmenue"
 

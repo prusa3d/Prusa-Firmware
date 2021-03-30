@@ -1454,7 +1454,7 @@ static uint16_t __attribute__((noinline)) clamp999(uint16_t v){
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! | Main               |	c=18 r=1
+//! | Main               |	MSG_MAIN c=18
 //! | Last print         |	MSG_LAST_PRINT c=18
 //! | Total              |	MSG_TOTAL c=6
 //! |                    |

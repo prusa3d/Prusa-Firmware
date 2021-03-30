@@ -427,7 +427,7 @@
 #MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
 
-#MSG_MAIN
+#MSG_MAIN c=18
 "Main"
 
 #MSG_BL_HIGH c=12

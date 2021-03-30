@@ -60,7 +60,7 @@ const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////c=2
 const char MSG_EJECT_FILAMENT[] PROGMEM_I1 = ISTR("Eject filament"); //// Number 1 to 5 is added behind text e.g. "Eject filament 1" c=16
 const char MSG_CUT_FILAMENT[] PROGMEM_I1 = ISTR("Cut filament"); //// Number 1 to 5 is added behind text e.g. "Cut filament 1" c=16
 const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////c=25
-const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////
+const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////c=18
 const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////
 const char MSG_SHEET[] PROGMEM_I1 = ISTR("Sheet"); ////c=10
 const char MSG_STEEL_SHEETS[] PROGMEM_I1 = ISTR("Steel sheets"); ////c=18

@@ -570,7 +570,7 @@
 "M117 First layer cal."
 "M117 Kal. prvni vrstvy"
 
-#MSG_MAIN
+#MSG_MAIN c=18
 "Main"
 "Hlavni nabidka"
 
