@@ -846,11 +846,11 @@
 "Print aborted"
 "Druck abgebrochen"
 
-# c=20
+#MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
 "Heizen zum Laden"
 
-# c=20
+#MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 "Heizen zum Entladen"
 
@@ -1402,11 +1402,11 @@
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "G-Code ist fuer eine neuere Firmware geslict. Bitte die Firmware updaten. Druck abgebrochen."
 
-# c=20
+#MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
 "Heizen zum Schnitt"
 
-# c=20
+#MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
 "Heizen zum Auswurf"
 

@@ -846,11 +846,11 @@
 "Print aborted"
 "Tisk prerusen"
 
-# c=20
+#MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
 "Predehrev k zavedeni"
 
-# c=20
+#MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 "Predehrev k vyjmuti"
 
@@ -1402,11 +1402,11 @@
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "G-code je pripraven pro novejsi firmware. Prosim aktualizujte firmware. Tisk zrusen."
 
-# c=20
+#MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
 "Predehrev ke strihu"
 
-# c=20
+#MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
 "Predehrev k vysunuti"
 

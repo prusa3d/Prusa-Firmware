@@ -846,11 +846,11 @@
 "Print aborted"
 "Print afgebroken"
 
-# c=20
+#MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
 "Opwarmen invoeren"
 
-# c=20
+#MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 "Opwarmen uitwerpen"
 
@@ -1402,11 +1402,11 @@
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "G-Code is voor een nieuwere firmware geslict. Update de firmware alsjeblieft. Druk geannuleerd."
 
-# c=20
+#MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
 "Opwarm. te snijden"
 
-# c=20
+#MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
 "Opwarm.te uitwerpen"
 

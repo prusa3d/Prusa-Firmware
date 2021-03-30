@@ -634,10 +634,10 @@
 #MSG_PRINT_ABORTED c=20
 "Print aborted"
 
-# c=20
+#MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
 
-# c=20
+#MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
@@ -1051,10 +1051,10 @@
 #MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 
-# c=20
+#MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
 
-# c=20
+#MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
 
 # c=20 r=5

@@ -846,11 +846,11 @@
 "Print aborted"
 "Druk przerwany"
 
-# c=20
+#MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
 "Nagrzew.do ladowania"
 
-# c=20
+#MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 "Nagrzew. do rozlad."
 
@@ -1402,11 +1402,11 @@
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "G-code pociety dla nowszego firmware. Zaktualizuj firmware. Druk anulowany."
 
-# c=20
+#MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
 "Nagrzew. obciecia"
 
-# c=20
+#MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
 "Nagrzew. wysuniecia"
 

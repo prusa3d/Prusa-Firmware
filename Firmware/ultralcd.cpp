@@ -2216,19 +2216,19 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             case FilamentAction::Load:
             case FilamentAction::AutoLoad:
             case FilamentAction::MmuLoad:
-                lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
+                lcd_puts_P(_i("Preheating to load")); ////MSG_PREHEATING_TO_LOAD c=20
                 raise_z_above(MIN_Z_FOR_LOAD);
                 break;
             case FilamentAction::UnLoad:
             case FilamentAction::MmuUnLoad:
-                lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
+                lcd_puts_P(_i("Preheating to unload")); ////MSG_PREHEATING_TO_UNLOAD c=20
                 raise_z_above(MIN_Z_FOR_UNLOAD);
                 break;
             case FilamentAction::MmuEject:
-                lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
+                lcd_puts_P(_i("Preheating to eject")); ////MSG_PREHEATING_TO_EJECT c=20
                 break;
             case FilamentAction::MmuCut:
-                lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20
+                lcd_puts_P(_i("Preheating to cut")); ////MSG_PREHEATING_TO_CUT c=20
                 break;
             case FilamentAction::None:
             case FilamentAction::Preheat:

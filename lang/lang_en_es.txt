@@ -846,11 +846,11 @@
 "Print aborted"
 "Impresion cancelada"
 
-# c=20
+#MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
 "Precalent. cargar"
 
-# c=20
+#MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 "Precalent. descargar"
 
@@ -1402,11 +1402,11 @@
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "Codigo G laminado para nuevo firmware. Por favor actualiza el firmware. Impresion cancelada."
 
-# c=20
+#MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
 "Precalent. laminar"
 
-# c=20
+#MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
 "Precalent. expulsar"
 
