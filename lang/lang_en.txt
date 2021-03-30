@@ -793,7 +793,7 @@
 #
 "Slight skew:"
 
-#MSG_SOUND c=9
+#MSG_SOUND c=7
 "Sound"
 
 # c=7
@@ -802,7 +802,7 @@
 #
 "Some problem encountered, Z-leveling enforced ..."
 
-#MSG_SOUND_ONCE
+#MSG_SOUND_ONCE c=7
 "Once"
 
 #MSG_SPEED
@@ -1078,7 +1078,7 @@
 #MSG_SHEET c=10
 "Sheet"
 
-#MSG_SOUND_BLIND
+#MSG_SOUND_BLIND c=7
 "Assist"
 
 #MSG_STEEL_SHEET c=18

@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Lehke zkoseni:"
 
-#MSG_SOUND c=9
+#MSG_SOUND c=7
 "Sound"
 "Zvuk"
 
@@ -1070,7 +1070,7 @@
 "Some problem encountered, Z-leveling enforced ..."
 "Vyskytl se problem, srovnavam osu Z ..."
 
-#MSG_SOUND_ONCE
+#MSG_SOUND_ONCE c=7
 "Once"
 "Jednou"
 
@@ -1438,7 +1438,7 @@
 "Sheet"
 "Plat"
 
-#MSG_SOUND_BLIND
+#MSG_SOUND_BLIND c=7
 "Assist"
 "Asist."
 

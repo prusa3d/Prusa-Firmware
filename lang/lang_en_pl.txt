@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Lekki skos:"
 
-#MSG_SOUND c=9
+#MSG_SOUND c=7
 "Sound"
 "Dzwiek"
 
@@ -1070,7 +1070,7 @@
 "Some problem encountered, Z-leveling enforced ..."
 "Wykryto problem, wymuszono poziomowanie osi Z."
 
-#MSG_SOUND_ONCE
+#MSG_SOUND_ONCE c=7
 "Once"
 "1-raz"
 
@@ -1438,7 +1438,7 @@
 "Sheet"
 "Plyta"
 
-#MSG_SOUND_BLIND
+#MSG_SOUND_BLIND c=7
 "Assist"
 "Asyst."
 

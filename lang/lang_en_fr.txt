@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Deviat.leg.:"
 
-#MSG_SOUND c=9
+#MSG_SOUND c=7
 "Sound"
 "Son"
 
@@ -1070,7 +1070,7 @@
 "Some problem encountered, Z-leveling enforced ..."
 "Probleme rencontre, cliquez sur le bouton pour niveller l'axe Z..."
 
-#MSG_SOUND_ONCE
+#MSG_SOUND_ONCE c=7
 "Once"
 "Une fois"
 
@@ -1438,7 +1438,7 @@
 "Sheet"
 "Plaque"
 
-#MSG_SOUND_BLIND
+#MSG_SOUND_BLIND c=7
 "Assist"
 "\x00"
 

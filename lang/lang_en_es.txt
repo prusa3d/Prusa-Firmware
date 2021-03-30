@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Liger.incl.:"
 
-#MSG_SOUND c=9
+#MSG_SOUND c=7
 "Sound"
 "Sonido"
 
@@ -1070,7 +1070,7 @@
 "Some problem encountered, Z-leveling enforced ..."
 "Problema encontrado, nivelacion Z forzosa ..."
 
-#MSG_SOUND_ONCE
+#MSG_SOUND_ONCE c=7
 "Once"
 "Una vez"
 
@@ -1438,7 +1438,7 @@
 "Sheet"
 "Lamina"
 
-#MSG_SOUND_BLIND
+#MSG_SOUND_BLIND c=7
 "Assist"
 "Asistido"
 

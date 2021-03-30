@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Iets scheef:"
 
-#MSG_SOUND c=9
+#MSG_SOUND c=7
 "Sound"
 "Geluid"
 
@@ -1070,7 +1070,7 @@
 "Some problem encountered, Z-leveling enforced ..."
 "Er is een probleem opgetreden, Z-kalibratie afgedwongen ..."
 
-#MSG_SOUND_ONCE
+#MSG_SOUND_ONCE c=7
 "Once"
 "Eenmaal"
 
@@ -1438,7 +1438,7 @@
 "Sheet"
 "Staalplaat"
 
-#MSG_SOUND_BLIND
+#MSG_SOUND_BLIND c=7
 "Assist"
 "\x00"
 
