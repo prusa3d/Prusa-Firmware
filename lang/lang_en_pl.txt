@@ -942,7 +942,7 @@
 "Right side[um]"
 "Prawo [um]"
 
-#MSG_RPI_PORT
+#MSG_RPI_PORT c=13
 "RPi port"
 "Port RPi"
 

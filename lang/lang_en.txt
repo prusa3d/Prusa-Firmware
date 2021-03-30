@@ -706,7 +706,7 @@
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
 
-#MSG_RPI_PORT
+#MSG_RPI_PORT c=13
 "RPi port"
 
 #MSG_WIZARD_RERUN c=20 r=7
