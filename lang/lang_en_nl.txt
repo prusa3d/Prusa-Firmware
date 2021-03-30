@@ -858,7 +858,7 @@
 "Print fan:"
 "\x00"
 
-#MSG_CARD_MENU
+#MSG_CARD_MENU c=18
 "Print from SD"
 "Print van SD"
 

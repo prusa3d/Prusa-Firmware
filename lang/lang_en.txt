@@ -643,7 +643,7 @@
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
 
-#MSG_CARD_MENU
+#MSG_CARD_MENU c=18
 "Print from SD"
 
 # c=20

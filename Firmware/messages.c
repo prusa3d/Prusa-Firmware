@@ -19,7 +19,7 @@ const char MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED[] PROGMEM_I1 = ISTR("XYZ
 const char MSG_BELT_STATUS[] PROGMEM_I1 = ISTR("Belt status");////c=18
 const char MSG_CANCEL[] PROGMEM_I1 = ISTR("Cancel");////c=9
 const char MSG_CALIBRATE_Z_AUTO[] PROGMEM_I1 = ISTR("Calibrating Z"); ////c=20 r=2
-const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////
+const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////c=18
 const char MSG_CHECKING_X[] PROGMEM_I1 = ISTR("Checking X axis"); ////c=20
 const char MSG_CHECKING_Y[] PROGMEM_I1 = ISTR("Checking Y axis"); ////c=20
 const char MSG_COMMUNITY_MADE[] PROGMEM_I1 = ISTR("Community made"); ////c=18

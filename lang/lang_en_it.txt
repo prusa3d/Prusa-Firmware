@@ -858,7 +858,7 @@
 "Print fan:"
 "Vent.stam:"
 
-#MSG_CARD_MENU
+#MSG_CARD_MENU c=18
 "Print from SD"
 "Stampa da SD"
 
