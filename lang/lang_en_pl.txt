@@ -994,7 +994,7 @@
 "Selftest will be run to calibrate accurate sensorless rehoming."
 "Zostanie uruchomiony Selftest aby dokladnie skalibrowac punkt bazowy bez krancowek"
 
-# c=20 r=6
+#MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
 "Wybierz temperature grzania dyszy odpowiednia dla materialu."
 

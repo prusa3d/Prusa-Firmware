@@ -994,7 +994,7 @@
 "Selftest will be run to calibrate accurate sensorless rehoming."
 "Pro kalibraci presneho rehomovani bude nyni spusten selftest."
 
-# c=20 r=6
+#MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
 "Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
 

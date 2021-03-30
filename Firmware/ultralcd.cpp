@@ -4913,7 +4913,7 @@ void lcd_wizard(WizState state)
 			break;
 		case S::Preheat:
 		    menu_goto(lcd_preheat_menu,0,false,true);
-		    lcd_show_fullscreen_message_and_wait_P(_i("Select nozzle preheat temperature which matches your material."));////c=20 r=6
+		    lcd_show_fullscreen_message_and_wait_P(_i("Select nozzle preheat temperature which matches your material."));////MSG_SEL_PREHEAT_TEMP c=20 r=6
 		    end = true; // Leave wizard temporarily for lcd_preheat_menu
 		    break;
 		case S::LoadFilHot:
