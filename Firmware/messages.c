@@ -50,7 +50,7 @@ const char MSG_FSENSOR_AUTOLOAD[] PROGMEM_I1 = ISTR("F. autoload"); ////c=13
 const char MSG_FSENSOR[] PROGMEM_I1 = ISTR("Fil. sensor"); ////
 const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20
-const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////
+const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////c=18
 const char MSG_CHOOSE_EXTRUDER[] PROGMEM_I1 = ISTR("Choose extruder:"); ////c=20 r=1
 const char MSG_CHOOSE_FILAMENT[] PROGMEM_I1 = ISTR("Choose filament:"); ////c=20 r=1
 const char MSG_LAST_PRINT[] PROGMEM_I1 = ISTR("Last print"); ////c=18

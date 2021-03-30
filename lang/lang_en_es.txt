@@ -146,7 +146,7 @@
 "Calibrate XYZ"
 "Calibrar XYZ"
 
-#MSG_HOMEYZ
+#MSG_HOMEYZ c=18
 "Calibrate Z"
 "Calibrar Z"
 

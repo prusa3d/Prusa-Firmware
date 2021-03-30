@@ -109,7 +109,7 @@
 #MSG_CALIBRATE_BED c=18
 "Calibrate XYZ"
 
-#MSG_HOMEYZ
+#MSG_HOMEYZ c=18
 "Calibrate Z"
 
 #MSG_CALIBRATE_PINDA c=17 r=1
