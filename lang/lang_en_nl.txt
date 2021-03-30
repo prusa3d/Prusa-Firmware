@@ -106,7 +106,7 @@
 "Bed Heating"
 "Bed opwarmen"
 
-#MSG_BED_CORRECTION_MENU
+#MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
 "Bed niveau correct"
 

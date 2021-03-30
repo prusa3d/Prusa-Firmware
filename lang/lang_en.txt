@@ -79,7 +79,7 @@
 #MSG_BED_HEATING c=20
 "Bed Heating"
 
-#MSG_BED_CORRECTION_MENU
+#MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
 
 #MSG_BELTTEST c=17

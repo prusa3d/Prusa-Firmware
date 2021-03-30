@@ -106,7 +106,7 @@
 "Bed Heating"
 "Calentando Base"
 
-#MSG_BED_CORRECTION_MENU
+#MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
 "Corr. de la cama"
 
