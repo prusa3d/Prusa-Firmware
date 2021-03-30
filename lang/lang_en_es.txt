@@ -138,7 +138,7 @@
 "Blackout occurred. Recover print?"
 "Se fue la luz. Re- anudar la impresion?"
 
-# c=20
+#MSG_CALIBRATING_HOME c=20
 "Calibrating home"
 "Calibrar posicion inicial"
 

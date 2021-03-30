@@ -103,7 +103,7 @@
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
 
-# c=20
+#MSG_CALIBRATING_HOME c=20
 "Calibrating home"
 
 #MSG_CALIBRATE_BED c=18

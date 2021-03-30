@@ -138,7 +138,7 @@
 "Blackout occurred. Recover print?"
 "Stromausfall! Druck wiederherstellen?"
 
-# c=20
+#MSG_CALIBRATING_HOME c=20
 "Calibrating home"
 "Kalibriere Start"
 
