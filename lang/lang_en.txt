@@ -772,7 +772,7 @@
 #MSG_SORT c=7
 "Sort"
 
-#MSG_NONE
+#MSG_NONE c=8
 "None"
 
 #MSG_SORT_TIME c=8

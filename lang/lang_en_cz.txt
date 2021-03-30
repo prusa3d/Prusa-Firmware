@@ -1030,7 +1030,7 @@
 "Sort"
 "Trideni"
 
-#MSG_NONE
+#MSG_NONE c=8
 "None"
 "Zadne"
 

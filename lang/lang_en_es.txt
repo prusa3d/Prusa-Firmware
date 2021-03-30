@@ -1030,7 +1030,7 @@
 "Sort"
 "Ordenar"
 
-#MSG_NONE
+#MSG_NONE c=8
 "None"
 "Ninguno"
 
