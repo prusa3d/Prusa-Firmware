@@ -650,7 +650,7 @@ void crashdet_detected(uint8_t mask)
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}else{
 		setTargetHotend(0, active_extruder);
-		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);////c=20 r=2
+		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);////MSG_CRASH_RESUME c=20 r=3
 		lcd_update_enable(true);
 		if (yesno)
 		{

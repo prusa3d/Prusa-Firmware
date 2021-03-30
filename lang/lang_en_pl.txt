@@ -210,7 +210,7 @@
 "Crash detected."
 "Zderzenie wykryte"
 
-# c=20 r=2
+#MSG_CRASH_RESUME c=20 r=3
 "Crash detected. Resume print?"
 "Wykryto zderzenie. Wznowic druk?"
 
