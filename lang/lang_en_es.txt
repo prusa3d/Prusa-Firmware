@@ -978,7 +978,7 @@
 "Self test start  "
 "Iniciar Selftest"
 
-#MSG_SELFTEST
+#MSG_SELFTEST c=18
 "Selftest         "
 "\x00"
 

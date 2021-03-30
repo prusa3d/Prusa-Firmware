@@ -978,7 +978,7 @@
 "Self test start  "
 "Selftest startuje"
 
-#MSG_SELFTEST
+#MSG_SELFTEST c=18
 "Selftest         "
 "Selftest "
 

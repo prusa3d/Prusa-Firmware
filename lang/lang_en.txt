@@ -733,7 +733,7 @@
 #MSG_SELFTEST_START c=20
 "Self test start  "
 
-#MSG_SELFTEST
+#MSG_SELFTEST c=18
 "Selftest         "
 
 #MSG_SELFTEST_ERROR c=20
