@@ -1027,7 +1027,7 @@
 #
 "Mode change in progress ..."
 
-#MSG_MODEL
+#MSG_MODEL c=8
 "Model"
 
 #MSG_NOZZLE_DIAMETER

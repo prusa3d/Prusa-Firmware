@@ -132,7 +132,7 @@ const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////c=9
 const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////c=8
 const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////c=8
 const char MSG_STRICT[] PROGMEM_I1 = ISTR("Strict"); ////c=8
-const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////
+const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////c=8
 const char MSG_FIRMWARE[] PROGMEM_I1 = ISTR("Firmware"); ////
 const char MSG_GCODE[] PROGMEM_I1 = ISTR("Gcode"); ////
 const char MSG_GCODE_DIFF_PRINTER_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different printer type. Continue?"); ////c=20 r=5
