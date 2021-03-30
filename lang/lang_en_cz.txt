@@ -126,7 +126,7 @@
 "Brightness"
 "Podsviceni"
 
-#MSG_BED
+#MSG_BED c=13
 "Bed"
 "Podlozka"
 

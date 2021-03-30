@@ -126,7 +126,7 @@
 "Brightness"
 "Helderheid"
 
-#MSG_BED
+#MSG_BED c=13
 "Bed"
 "Bed"
 

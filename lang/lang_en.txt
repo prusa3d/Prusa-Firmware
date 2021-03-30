@@ -94,7 +94,7 @@
 #MSG_BRIGHTNESS c=18
 "Brightness"
 
-#MSG_BED
+#MSG_BED c=13
 "Bed"
 
 #MSG_BELT_STATUS c=18

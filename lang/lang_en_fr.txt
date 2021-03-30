@@ -126,7 +126,7 @@
 "Brightness"
 "Luminosite"
 
-#MSG_BED
+#MSG_BED c=13
 "Bed"
 "Lit"
 
