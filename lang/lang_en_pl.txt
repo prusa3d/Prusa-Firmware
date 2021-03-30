@@ -1242,7 +1242,7 @@
 "XYZ calibration failed. Please consult the manual."
 "Kalibracja XYZ nieudana. Sprawdz przyczyny i rozwiazania w instrukcji."
 
-#MSG_YES
+#MSG_YES c=3
 "Yes"
 "Tak"
 
