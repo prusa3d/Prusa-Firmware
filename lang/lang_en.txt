@@ -127,7 +127,7 @@
 #MSG_HOMEYZ_DONE c=20
 "Calibration done"
 
-#MSG_MENU_CALIBRATION
+#MSG_MENU_CALIBRATION c=18
 "Calibration"
 
 #MSG_CANCEL c=9

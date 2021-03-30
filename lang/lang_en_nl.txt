@@ -170,7 +170,7 @@
 "Calibration done"
 "Kalibratie klaar"
 
-#MSG_MENU_CALIBRATION
+#MSG_MENU_CALIBRATION c=18
 "Calibration"
 "Kalibratie"
 
