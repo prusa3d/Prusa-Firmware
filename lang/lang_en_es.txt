@@ -966,7 +966,7 @@
 "Searching bed calibration point"
 "Buscando punto de calibracion base"
 
-#MSG_LANGUAGE_SELECT
+#MSG_LANGUAGE_SELECT c=18
 "Select language"
 "Cambiar el idioma"
 

@@ -966,7 +966,7 @@
 "Searching bed calibration point"
 "Hledam kalibracni bod podlozky"
 
-#MSG_LANGUAGE_SELECT
+#MSG_LANGUAGE_SELECT c=18
 "Select language"
 "Vyber jazyka"
 

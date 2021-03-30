@@ -966,7 +966,7 @@
 "Searching bed calibration point"
 "Recherche du point de calibration du plateau chauffant"
 
-#MSG_LANGUAGE_SELECT
+#MSG_LANGUAGE_SELECT c=18
 "Select language"
 "Choisir langue"
 
