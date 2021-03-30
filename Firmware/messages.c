@@ -69,7 +69,7 @@ const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); 
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////c=18
 const char MSG_MMU_FAILS[] PROGMEM_I1 = ISTR("MMU fails"); ////c=15
 const char MSG_MMU_LOAD_FAILS[] PROGMEM_I1 = ISTR("MMU load fails"); ////c=15
-const char MSG_NO[] PROGMEM_I1 = ISTR("No"); ////
+const char MSG_NO[] PROGMEM_I1 = ISTR("No"); ////c=3
 const char MSG_NOZZLE[] PROGMEM_I1 = ISTR("Nozzle"); ////c=12
 const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=10
 const char MSG_PAUSE_PRINT[] PROGMEM_I1 = ISTR("Pause print");////c=18

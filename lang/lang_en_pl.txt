@@ -690,7 +690,7 @@
 "N/A"
 "N/D"
 
-#MSG_NO
+#MSG_NO c=3
 "No"
 "Nie"
 
