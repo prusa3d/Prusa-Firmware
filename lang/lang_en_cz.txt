@@ -1362,7 +1362,7 @@
 "MK3S firmware detected on MK3 printer"
 "MK3S firmware detekovan na tiskarne MK3"
 
-#MSG_MMU_MODE
+#MSG_MMU_MODE c=8
 "MMU Mode"
 "MMU mod"
 
