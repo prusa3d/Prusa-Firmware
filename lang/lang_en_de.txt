@@ -1130,7 +1130,7 @@
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 "Temp.kalibrierung ist fertig + aktiv. Temp.kalibrierung kann ausgeschaltet werden im Menu Einstellungen -> Temp.kal."
 
-# c=20 r=3
+#MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
 "Sensor ueberprueft, entladen Sie jetzt das Filament."
 

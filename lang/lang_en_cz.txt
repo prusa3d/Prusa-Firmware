@@ -1130,7 +1130,7 @@
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 "Teplotni kalibrace dokoncena a je nyni aktivni. Teplotni kalibraci je mozno deaktivovat v menu Nastaveni->Tepl. kal."
 
-# c=20 r=3
+#MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
 "Senzor overen, vyjmete filament."
 

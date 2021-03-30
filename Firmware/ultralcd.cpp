@@ -7344,7 +7344,7 @@ static void lcd_detect_IRsensor(){
         bAction = lcd_selftest_IRsensor(true);
     }
     if(bAction){
-        lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////c=20 r=3
+        lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////MSG_FS_VERIFIED c=20 r=3
         // the fsensor board has been successfully identified, any previous "not responding" may be cleared now
         fsensor_not_responding = false;
     } else {
