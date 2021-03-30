@@ -124,7 +124,7 @@
 #MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 
-#MSG_HOMEYZ_DONE
+#MSG_HOMEYZ_DONE c=20
 "Calibration done"
 
 #MSG_MENU_CALIBRATION

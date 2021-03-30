@@ -166,7 +166,7 @@
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "Z Kalibrieren: Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Anschliessend den Knopf druecken."
 
-#MSG_HOMEYZ_DONE
+#MSG_HOMEYZ_DONE c=20
 "Calibration done"
 "Kalibrierung OK"
 

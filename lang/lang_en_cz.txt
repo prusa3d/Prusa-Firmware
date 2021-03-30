@@ -166,7 +166,7 @@
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "Kalibrace Z. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
 
-#MSG_HOMEYZ_DONE
+#MSG_HOMEYZ_DONE c=20
 "Calibration done"
 "Kalibrace OK"
 

@@ -166,7 +166,7 @@
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "Calibration de Z. Tournez le bouton pour faire monter l'extrudeur dans l'axe Z jusqu'aux butees. Cliquez une fois fait."
 
-#MSG_HOMEYZ_DONE
+#MSG_HOMEYZ_DONE c=20
 "Calibration done"
 "Calibration terminee"
 

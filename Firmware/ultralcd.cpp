@@ -649,7 +649,7 @@ void lcdui_print_status_line(void)
                 if (custom_message_state > 3 && custom_message_state <= 10 ) {
                     lcd_set_cursor(0, 3);
                     lcd_space(19);
-                    lcd_puts_at_P(0, 3, _i("Calibration done"));////MSG_HOMEYZ_DONE
+                    lcd_puts_at_P(0, 3, _i("Calibration done"));////MSG_HOMEYZ_DONE c=20
                     custom_message_state--;
                 }
             }
