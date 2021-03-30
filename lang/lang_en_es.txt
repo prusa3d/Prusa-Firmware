@@ -1226,7 +1226,7 @@
 "Was filament unload successful?"
 "?Se cargocon exito el filamento?"
 
-#MSG_SELFTEST_WIRINGERROR
+#MSG_SELFTEST_WIRINGERROR c=17
 "Wiring error"
 "Error de conexion"
 

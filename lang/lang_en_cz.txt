@@ -1226,7 +1226,7 @@
 "Was filament unload successful?"
 "Bylo vysunuti filamentu uspesne?"
 
-#MSG_SELFTEST_WIRINGERROR
+#MSG_SELFTEST_WIRINGERROR c=17
 "Wiring error"
 "Chyba zapojeni"
 
