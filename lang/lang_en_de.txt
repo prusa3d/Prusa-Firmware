@@ -282,7 +282,7 @@
 "Cutter"
 "Messer"
 
-# c=18
+#MSG_MMU_CUTTING_FIL c=18
 "Cutting filament"
 "Schneide filament"
 

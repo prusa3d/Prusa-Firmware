@@ -211,7 +211,7 @@
 #MSG_CUTTER c=9
 "Cutter"
 
-# c=18
+#MSG_MMU_CUTTING_FIL c=18
 "Cutting filament"
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
