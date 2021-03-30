@@ -182,7 +182,7 @@
 "Card removed"
 "SD rimossa"
 
-#
+#MSG_CHECKING_FILE c=17
 "Checking file"
 "\x00"
 

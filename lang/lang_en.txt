@@ -136,7 +136,7 @@
 #MSG_SD_REMOVED c=20
 "Card removed"
 
-#
+#MSG_CHECKING_FILE c=17
 "Checking file"
 
 #MSG_NOT_COLOR

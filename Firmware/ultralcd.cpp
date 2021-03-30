@@ -8513,7 +8513,7 @@ static bool check_file(const char* filename) {
 	cmdqueue_reset();
 	cmdqueue_serial_disabled = true;
 
-	menu_progressbar_init(bytesToCheck, _i("Checking file"));
+	menu_progressbar_init(bytesToCheck, _i("Checking file"));////MSG_CHECKING_FILE c=17
 	while (!card.eof() && !result) {
 		menu_progressbar_update(card.get_sdpos() - startPos);
 		card.sdprinting = true;

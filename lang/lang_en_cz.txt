@@ -182,7 +182,7 @@
 "Card removed"
 "Karta vyjmuta"
 
-#
+#MSG_CHECKING_FILE c=17
 "Checking file"
 "\x00"
 
