@@ -318,7 +318,7 @@
 "F. autoload"
 "Autolad. fil."
 
-# c=18
+#MSG_FAIL_STATS c=18
 "Fail stats"
 "Statystyki bledow"
 

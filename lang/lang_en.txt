@@ -238,7 +238,7 @@
 #MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
 
-# c=18
+#MSG_FAIL_STATS c=18
 "Fail stats"
 
 #MSG_FAN_SPEED c=14

@@ -318,7 +318,7 @@
 "F. autoload"
 "F. autozav."
 
-# c=18
+#MSG_FAIL_STATS c=18
 "Fail stats"
 "Selhani"
 
