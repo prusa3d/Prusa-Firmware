@@ -178,7 +178,7 @@
 "Cancel"
 "Zrusit"
 
-#MSG_SD_REMOVED
+#MSG_SD_REMOVED c=20
 "Card removed"
 "Karta vyjmuta"
 

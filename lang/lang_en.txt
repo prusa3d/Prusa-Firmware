@@ -133,7 +133,7 @@
 #MSG_CANCEL c=9
 "Cancel"
 
-#MSG_SD_REMOVED
+#MSG_SD_REMOVED c=20
 "Card removed"
 
 #

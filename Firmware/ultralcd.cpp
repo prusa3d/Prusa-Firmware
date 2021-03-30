@@ -8862,7 +8862,7 @@ void menu_lcd_lcdupdate_func(void)
                if(menu_menu==lcd_sdcard_menu)
                     menu_back();
 			card.release();
-			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED
+			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=20
 		}
 	}
 #endif//CARDINSERTED
