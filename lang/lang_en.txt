@@ -1015,7 +1015,7 @@
 #MSG_MAGNETS_COMP
 "Magnets comp."
 
-#MSG_MESH
+#MSG_MESH c=12
 "Mesh"
 
 #

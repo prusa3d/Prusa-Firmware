@@ -1354,7 +1354,7 @@
 "Magnets comp."
 "Komp. magnetu"
 
-#MSG_MESH
+#MSG_MESH c=12
 "Mesh"
 "\x00"
 

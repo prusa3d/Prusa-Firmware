@@ -1354,7 +1354,7 @@
 "Magnets comp."
 "Kor. magnesow"
 
-#MSG_MESH
+#MSG_MESH c=12
 "Mesh"
 "Siatka"
 

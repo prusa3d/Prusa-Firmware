@@ -1354,7 +1354,7 @@
 "Magnets comp."
 "Compens. aim."
 
-#MSG_MESH
+#MSG_MESH c=12
 "Mesh"
 "\x00"
 

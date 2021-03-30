@@ -149,7 +149,7 @@ const char MSG_SOUND[] PROGMEM_I1 = ISTR("Sound"); ////c=9
 const char MSG_SOUND_LOUD[] PROGMEM_I1 = ISTR("Loud"); ////c=7
 const char MSG_SOUND_ONCE[] PROGMEM_I1 = ISTR("Once"); ////c=7
 const char MSG_SOUND_BLIND[] PROGMEM_I1 = ISTR("Assist"); ////c=7
-const char MSG_MESH[] PROGMEM_I1 = ISTR("Mesh"); ////
+const char MSG_MESH[] PROGMEM_I1 = ISTR("Mesh"); ////c=12
 const char MSG_MESH_BED_LEVELING[] PROGMEM_I1 = ISTR("Mesh Bed Leveling"); ////c=18
 const char MSG_Z_PROBE_NR[] PROGMEM_I1 = ISTR("Z-probe nr."); ////
 const char MSG_MAGNETS_COMP[] PROGMEM_I1 = ISTR("Magnets comp."); ////

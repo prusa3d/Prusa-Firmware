@@ -1354,7 +1354,7 @@
 "Magnets comp."
 "Comp. Magneti"
 
-#MSG_MESH
+#MSG_MESH c=12
 "Mesh"
 "Griglia"
 

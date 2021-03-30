@@ -1354,7 +1354,7 @@
 "Magnets comp."
 "Comp. imanes"
 
-#MSG_MESH
+#MSG_MESH c=12
 "Mesh"
 "Malla"
 
