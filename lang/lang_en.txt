@@ -712,7 +712,7 @@
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 
-#MSG_SD_CARD
+#MSG_SD_CARD c=8
 "SD card"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY

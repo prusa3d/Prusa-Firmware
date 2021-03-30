@@ -950,7 +950,7 @@
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 "Spusteni Pruvodce vymaze ulozene vysledky vsech kalibraci a spusti kalibracni proces od zacatku. Pokracovat?"
 
-#MSG_SD_CARD
+#MSG_SD_CARD c=8
 "SD card"
 "\x00"
 

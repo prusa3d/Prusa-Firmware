@@ -950,7 +950,7 @@
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 "Se avvi il Wizard perderai la calibrazione preesistente e dovrai ricominciare dall'inizio. Continuare?"
 
-#MSG_SD_CARD
+#MSG_SD_CARD c=8
 "SD card"
 "Mem. SD"
 

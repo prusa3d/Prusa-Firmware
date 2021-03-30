@@ -950,7 +950,7 @@
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 "Der Assistent wird die aktuellen Kalibrierungsdaten loeschen und von vorne beginnen. Weiterfahren?"
 
-#MSG_SD_CARD
+#MSG_SD_CARD c=8
 "SD card"
 "SD Karte"
 
