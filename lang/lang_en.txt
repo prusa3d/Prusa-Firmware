@@ -817,7 +817,7 @@
 #MSG_STATISTICS
 "Statistics  "
 
-#MSG_STOP_PRINT
+#MSG_STOP_PRINT c=18
 "Stop print"
 
 #MSG_STOPPED

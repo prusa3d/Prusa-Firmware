@@ -1090,7 +1090,7 @@
 "Statistics  "
 "Statistiche"
 
-#MSG_STOP_PRINT
+#MSG_STOP_PRINT c=18
 "Stop print"
 "Arresta stampa"
 
