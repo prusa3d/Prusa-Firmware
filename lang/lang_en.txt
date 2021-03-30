@@ -313,7 +313,7 @@
 #MSG_HEATING_COMPLETE c=20
 "Heating done."
 
-#MSG_HEATING
+#MSG_HEATING c=20
 "Heating"
 
 #MSG_WIZARD_WELCOME c=20 r=7

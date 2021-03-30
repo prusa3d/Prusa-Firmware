@@ -418,7 +418,7 @@
 "Heating done."
 "Riscald. completo"
 
-#MSG_HEATING
+#MSG_HEATING c=20
 "Heating"
 "Riscaldamento..."
 
