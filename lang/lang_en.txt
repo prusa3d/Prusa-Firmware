@@ -454,7 +454,7 @@
 #MSG_MMU_FAILS c=15
 "MMU fails"
 
-#
+#MSG_MMU_LOAD_FAILED c=20
 "MMU load failed     "
 
 #MSG_MMU_LOAD_FAILS c=15

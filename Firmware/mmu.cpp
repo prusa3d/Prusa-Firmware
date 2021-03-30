@@ -1583,7 +1583,7 @@ void mmu_continue_loading(bool blocking)
             manage_response(false, true, MMU_UNLOAD_MOVE);
 
             setAllTargetHotends(0);
-            lcd_setstatuspgm(_i("MMU load failed     "));////c=20 r=1
+            lcd_setstatuspgm(_i("MMU load failed     "));////MSG_MMU_LOAD_FAILED c=20
 
             if (blocking)
             {

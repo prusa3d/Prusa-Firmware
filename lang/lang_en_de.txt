@@ -606,7 +606,7 @@
 "MMU fails"
 "MMU Fehler"
 
-#
+#MSG_MMU_LOAD_FAILED c=20
 "MMU load failed     "
 "MMU Ladefehler"
 

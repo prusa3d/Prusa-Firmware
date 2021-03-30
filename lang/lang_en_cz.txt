@@ -606,7 +606,7 @@
 "MMU fails"
 "Selhani MMU"
 
-#
+#MSG_MMU_LOAD_FAILED c=20
 "MMU load failed     "
 "Zavedeni MMU selhalo"
 
