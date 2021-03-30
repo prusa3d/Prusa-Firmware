@@ -550,7 +550,7 @@
 "Load filament"
 "Filament laden"
 
-#MSG_LOADING_COLOR
+#MSG_LOADING_COLOR c=20
 "Loading color"
 "Lade Farbe"
 

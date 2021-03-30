@@ -2431,7 +2431,7 @@ void lcd_loading_color() {
 
   lcd_clear();
 
-  lcd_puts_at_P(0, 0, _i("Loading color"));////MSG_LOADING_COLOR
+  lcd_puts_at_P(0, 0, _i("Loading color"));////MSG_LOADING_COLOR c=20
   lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
   lcd_loading_progress_bar((FILAMENTCHANGE_FINALFEED * 1000ul) / FILAMENTCHANGE_EFEED_FINAL); //show progress bar during filament loading slow sequence
 }
