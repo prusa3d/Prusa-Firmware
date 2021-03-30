@@ -1302,7 +1302,7 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "De printer begint een zigzaglijn printen. Draai aan de knop totdat je de optimale hoogte hebt bereikt. Bekijk de afbeeldingen in de handleiding (Calibration chapter)."
 
-# c=20 r=5
+#MSG_FIL_FAILD c=20 r=5
 "Verification failed, remove the filament and try again."
 "Verificatie mislukt, verwijder het filament en probeer het opnieuw."
 

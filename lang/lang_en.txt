@@ -976,7 +976,7 @@
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 
-# c=20 r=5
+#MSG_FIL_FAILD c=20 r=5
 "Verification failed, remove the filament and try again."
 
 #MSG_Y_CORRECTION c=13

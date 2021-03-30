@@ -1302,7 +1302,7 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "La stampante iniziera a stampare una linea a zig-zag. Gira la manopola fino a che non hai raggiungo l'altezza ottimale. Verifica con le immagini nel manuale (capitolo sulla calibrazione):"
 
-# c=20 r=5
+#MSG_FIL_FAILD c=20 r=5
 "Verification failed, remove the filament and try again."
 "Verifica fallita, rimuovere il filamento e riprovare."
 

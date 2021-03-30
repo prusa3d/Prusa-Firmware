@@ -7348,7 +7348,7 @@ static void lcd_detect_IRsensor(){
         // the fsensor board has been successfully identified, any previous "not responding" may be cleared now
         fsensor_not_responding = false;
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////c=20 r=5
+        lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILD c=20 r=5
         // here it is unclear what to to with the fsensor_not_responding flag
     }
     bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"

@@ -1302,7 +1302,7 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "Der Drucker beginnt mit dem Drucken einer Zickzacklinie. Drehen Sie den Knopf, bis Sie die optimale Hoehe erreicht haben. Ueberpruefen Sie die Bilder im Handbuch (Kapitel Kalibrierung)."
 
-# c=20 r=5
+#MSG_FIL_FAILD c=20 r=5
 "Verification failed, remove the filament and try again."
 "Ueberpruefung fehl- geschlagen, entladen Sie das Filament und versuchen Sie es erneut."
 
