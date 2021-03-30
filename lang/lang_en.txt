@@ -541,7 +541,7 @@
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 "Old settings found. Default PID, Esteps etc. will be set."
 
-# c=20 r=4
+#MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 
 #

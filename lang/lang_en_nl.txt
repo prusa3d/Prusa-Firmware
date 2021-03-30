@@ -722,7 +722,7 @@
 "Old settings found. Default PID, Esteps etc. will be set."
 "Oude instellingen gevonden. Standaard PID, E-steps etc. instellingen worden geladen."
 
-# c=20 r=4
+#MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Verwijder nu de testprint van staalplaat."
 

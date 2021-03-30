@@ -722,7 +722,7 @@
 "Old settings found. Default PID, Esteps etc. will be set."
 "Anciens reglages trouves. Le PID, les Esteps etc. par defaut seront regles"
 
-# c=20 r=4
+#MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Retirez maintenant l'impression de test de la plaque en acier."
 
