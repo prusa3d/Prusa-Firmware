@@ -2409,7 +2409,7 @@ void lcd_change_success() {
 
   lcd_clear();
 
-  lcd_puts_at_P(0, 2, _i("Change success!"));////MSG_CHANGE_SUCCESS
+  lcd_puts_at_P(0, 2, _i("Change success!"));////MSG_CHANGE_SUCCESS c=20
 
 
 }

@@ -434,7 +434,7 @@
 "Change filament"
 "Changer filament"
 
-#MSG_CHANGE_SUCCESS
+#MSG_CHANGE_SUCCESS c=20
 "Change success!"
 "Changement reussi!"
 

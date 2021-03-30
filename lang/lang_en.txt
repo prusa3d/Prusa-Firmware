@@ -325,7 +325,7 @@
 #MSG_FILAMENTCHANGE c=18
 "Change filament"
 
-#MSG_CHANGE_SUCCESS
+#MSG_CHANGE_SUCCESS c=20
 "Change success!"
 
 #MSG_CORRECTLY c=20
