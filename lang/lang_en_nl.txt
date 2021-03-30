@@ -714,7 +714,7 @@
 "Now I will preheat nozzle for PLA."
 "Opwarmen van de tuit voor PLA voor."
 
-#MSG_NOZZLE
+#MSG_NOZZLE c=12
 "Nozzle"
 "Tuit"
 

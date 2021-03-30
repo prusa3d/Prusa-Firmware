@@ -714,7 +714,7 @@
 "Now I will preheat nozzle for PLA."
 "Nagrzewam dysze dla PLA."
 
-#MSG_NOZZLE
+#MSG_NOZZLE c=12
 "Nozzle"
 "Dysza"
 
