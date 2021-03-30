@@ -760,7 +760,7 @@
 # c=20
 "Prusa i3 MK3 OK."
 
-#MSG_SETTINGS
+#MSG_SETTINGS c=18
 "Settings"
 
 #MSG_SHOW_END_STOPS c=18

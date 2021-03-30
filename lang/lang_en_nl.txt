@@ -1014,7 +1014,7 @@
 "Prusa i3 MK3 OK."
 "\x00"
 
-#MSG_SETTINGS
+#MSG_SETTINGS c=18
 "Settings"
 "Instellingen"
 
