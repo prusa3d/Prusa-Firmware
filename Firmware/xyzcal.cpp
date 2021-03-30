@@ -837,7 +837,7 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 	for (int8_t i = iterations; i > 0; --i){
 	
         //@size=128B
-		DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
+		// DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
 
 		/// read points on the circle
 		for (uint8_t p = 0; p < num_points; ++p){
@@ -904,12 +904,42 @@ uint8_t find_patterns(uint8_t *matrix32, uint16_t *pattern08, uint16_t *pattern1
 	return match10;
 }
 
+/// Scan should include normal data.
+/// If it's too extreme (00, FF) it could be caused by biased sensor.
+/// \return true if data looks normal
+bool check_scan(uint8_t *matrix32){
+	/// magic constants that define normality
+	const int16_t threshold_total = 900;
+	const int threshold_extreme = 50;
+
+	int16_t mins = 0;
+	int16_t maxs = 0;
+
+	for (int16_t i = 0; i < 32*32;++i){
+		if (matrix32[i] == 0) {
+			++mins;
+		} else {
+			++maxs;
+		}
+	}
+	const int16_t rest = 1024 - mins - maxs;
+
+	if (mins + maxs > threshold_total
+		&& mins > threshold_extreme
+		&& maxs > threshold_extreme
+		&& mins > rest
+		&& maxs > rest)
+		return false;
+
+	return true;
+}
+
 /// scans area around the current head location and
 /// searches for the center of the calibration pin
-bool xyzcal_scan_and_process(void){
+BedSkewOffsetDetectionResultType xyzcal_scan_and_process(){
     //@size=44
-	DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
-	bool ret = false;
+	// DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
+	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 	int16_t x = _X;
 	int16_t y = _Y;
 	const int16_t z = _Z;
@@ -925,6 +955,8 @@ bool xyzcal_scan_and_process(void){
 
 	xyzcal_scan_pixels_32x32_Zhop(x, y, z, 2400, 200, matrix32);
 	print_image(matrix32);
+	if (!check_scan(matrix32))
+		return BED_SKEW_OFFSET_DETECTION_POINT_SCAN_FAILED;
 
 	/// SEARCH FOR BINARY CIRCLE
 	uint8_t uc = 0;
@@ -955,7 +987,7 @@ bool xyzcal_scan_and_process(void){
 		x = round_to_i16(xf);
 		y = round_to_i16(yf);
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		ret = true;
+		ret = BED_SKEW_OFFSET_DETECTION_POINT_FOUND;
 	}
 
 	/// wipe buffer
@@ -964,11 +996,11 @@ bool xyzcal_scan_and_process(void){
 	return ret;
 }
 
-bool xyzcal_find_bed_induction_sensor_point_xy(void){
-	bool ret = false;
+BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy(void){
+	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 
     //@size=258
-    DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
+    // DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
 
 	xyzcal_meassure_enter();
