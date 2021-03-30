@@ -616,7 +616,7 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 
-# c=14
+#MSG_PINDA c=6
 "PINDA"
 
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20

@@ -1724,7 +1724,7 @@ static void lcd_menu_temperatures()
     lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT c=14
 #endif //AMBIENT_THERMISTOR
 #ifdef PINDA_THERMISTOR
-    lcd_menu_temperatures_line( _i("PINDA"), (int)current_temperature_pinda );  ////c=14
+    lcd_menu_temperatures_line( _T(MSG_PINDA), (int)current_temperature_pinda );  ////MSG_PINDA
 #endif //PINDA_THERMISTOR
     menu_back_if_clicked();
 }
@@ -3764,7 +3764,7 @@ static void lcd_show_sensors_state()
 		finda_state = mmu_finda;
 	}
 	//lcd_puts_at_P(0, 0, _i("Sensor state"));
-	lcd_puts_at_P(0, 0, _i("PINDA"));
+	lcd_puts_at_P(0, 0, _T(MSG_PINDA));
 	lcd_set_cursor(LCD_WIDTH - 14, 0);
 	lcd_print_state(pinda_state);
 	

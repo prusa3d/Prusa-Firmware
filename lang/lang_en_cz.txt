@@ -822,7 +822,7 @@
 "Preheating nozzle. Please wait."
 "Predehrev trysky. Prosim cekejte."
 
-# c=14
+#MSG_PINDA c=6
 "PINDA"
 "\x00"
 

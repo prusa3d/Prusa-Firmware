@@ -822,7 +822,7 @@
 "Preheating nozzle. Please wait."
 "Precalentando nozzle. Espera por favor."
 
-# c=14
+#MSG_PINDA c=6
 "PINDA"
 "\x00"
 
