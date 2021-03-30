@@ -7612,7 +7612,7 @@ bool lcd_selftest()
 	
 	if (_result)
 	{
-		LCD_ALERTMESSAGERPGM(_i("Self test OK"));////MSG_SELFTEST_OK
+		LCD_ALERTMESSAGERPGM(_i("Self test OK"));////MSG_SELFTEST_OK c=20
 	}
 	else
 	{

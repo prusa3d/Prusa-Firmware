@@ -970,7 +970,7 @@
 "Select language"
 "Vyber jazyka"
 
-#MSG_SELFTEST_OK
+#MSG_SELFTEST_OK c=20
 "Self test OK"
 "\x00"
 
