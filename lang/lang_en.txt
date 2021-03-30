@@ -367,7 +367,7 @@
 #MSG_WIZARD_Z_CAL c=20 r=8
 "I will run z calibration now."
 
-#MSG_WATCH
+#MSG_WATCH c=18
 "Info screen"
 
 #MSG_INSERT_FILAMENT c=20

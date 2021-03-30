@@ -490,7 +490,7 @@
 "I will run z calibration now."
 "Begin nu met z-kalibratie."
 
-#MSG_WATCH
+#MSG_WATCH c=18
 "Info screen"
 "Info scherm"
 
