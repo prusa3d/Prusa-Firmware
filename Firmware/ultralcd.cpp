@@ -5593,7 +5593,7 @@ static void lcd_settings_menu()
 	if (!PRINTER_ACTIVE || isPrintPaused)
     {
 	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_1mm);////MSG_MOVE_AXIS
-	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS
+	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=18
     }
 
 	SETTINGS_FILAMENT_SENSOR;

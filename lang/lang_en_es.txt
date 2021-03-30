@@ -230,7 +230,7 @@
 "Community made"
 "\x00"
 
-#MSG_DISABLE_STEPPERS
+#MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
 "Apagar motores"
 
