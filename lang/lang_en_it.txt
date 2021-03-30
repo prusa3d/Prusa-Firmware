@@ -862,7 +862,7 @@
 "Print from SD"
 "Stampa da SD"
 
-# c=20
+#MSG_PRESS_KNOB c=20
 "Press the knob"
 "Premere la manopola"
 
@@ -1166,11 +1166,11 @@
 "Total failures"
 "Totale fallimenti"
 
-# c=20
+#MSG_TO_LOAD_FIL c=20
 "to load filament"
 "per caricare il fil."
 
-# c=20
+#MSG_TO_UNLOAD_FIL c=20
 "to unload filament"
 "per scaricare fil."
 
