@@ -775,13 +775,13 @@
 #MSG_NONE
 "None"
 
-#MSG_SORT_TIME
+#MSG_SORT_TIME c=8
 "Time"
 
 #
 "Severe skew:"
 
-#MSG_SORT_ALPHA
+#MSG_SORT_ALPHA c=8
 "Alphabet"
 
 #MSG_SORTING c=20 r=1
