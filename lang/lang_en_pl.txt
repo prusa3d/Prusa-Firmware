@@ -542,7 +542,7 @@
 "Live adjust Z"
 "Ustaw. Live Z"
 
-# c=20 r=6
+#MSG_INSERT_FIL c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
 "Wsun filament (nie uzywaj funkcji ladowania) do ekstrudera i nacisnij pokretlo."
 

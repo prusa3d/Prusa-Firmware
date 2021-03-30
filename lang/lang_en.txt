@@ -406,7 +406,7 @@
 #MSG_BABYSTEP_Z c=18
 "Live adjust Z"
 
-# c=20 r=6
+#MSG_INSERT_FIL c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
 
 #MSG_LOAD_FILAMENT c=17

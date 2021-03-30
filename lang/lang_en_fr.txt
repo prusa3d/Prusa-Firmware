@@ -542,7 +542,7 @@
 "Live adjust Z"
 "Ajuster Z en dir."
 
-# c=20 r=6
+#MSG_INSERT_FIL c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
 "Veuillez inserer le filament ( ne le chargez pas) dans l'extrudeur, puis appuyez sur le bouton."
 

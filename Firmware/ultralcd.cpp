@@ -7313,7 +7313,7 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
         return(false);
     }
-    lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));////c=20 r=6
+    lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));////MSG_INSERT_FIL c=20 r=6
     volt_IR_int = current_voltage_raw_IR;
     printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"), Raw2Voltage(volt_IR_int));
     if(volt_IR_int > (IRsensor_Lmax_TRESHOLD)){

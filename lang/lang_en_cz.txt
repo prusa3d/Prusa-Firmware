@@ -542,7 +542,7 @@
 "Live adjust Z"
 "Doladeni osy Z"
 
-# c=20 r=6
+#MSG_INSERT_FIL c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
 "Vlozte filament (nezavadejte) do extruderu a stisknete tlacitko"
 

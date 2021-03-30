@@ -542,7 +542,7 @@
 "Live adjust Z"
 "Micropaso Eje Z"
 
-# c=20 r=6
+#MSG_INSERT_FIL c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
 "Inserte el filamento (no lo cargue) en el extrusor y luego presione el dial."
 
