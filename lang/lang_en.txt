@@ -1087,6 +1087,6 @@
 #MSG_Z_CORRECTION c=13
 "Z-correct:"
 
-#MSG_Z_PROBE_NR
+#MSG_Z_PROBE_NR c=14
 "Z-probe nr."
 

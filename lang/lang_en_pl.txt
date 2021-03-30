@@ -1450,7 +1450,7 @@
 "Z-correct:"
 "Korekcja-Z:"
 
-#MSG_Z_PROBE_NR
+#MSG_Z_PROBE_NR c=14
 "Z-probe nr."
 "Ilosc Pomiarow"
 
