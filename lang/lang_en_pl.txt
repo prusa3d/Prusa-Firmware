@@ -1334,7 +1334,7 @@
 "FINDA"
 "\x00"
 
-#MSG_FIRMWARE
+#MSG_FIRMWARE c=8
 "Firmware"
 "\x00"
 

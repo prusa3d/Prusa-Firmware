@@ -1000,7 +1000,7 @@
 #
 "FINDA"
 
-#MSG_FIRMWARE
+#MSG_FIRMWARE c=8
 "Firmware"
 
 #MSG_STRICT c=8
