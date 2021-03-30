@@ -894,7 +894,7 @@
 "Please load filament first."
 "Per favore prima carica il filamento."
 
-#MSG_PRUSA3D
+#MSG_PRUSA3D c=18
 "prusa3d.com"
 "\x00"
 

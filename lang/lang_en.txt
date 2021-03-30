@@ -670,7 +670,7 @@
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load filament first."
 
-#MSG_PRUSA3D
+#MSG_PRUSA3D c=18
 "prusa3d.com"
 
 #MSG_BED_CORRECTION_REAR c=14 r=1
