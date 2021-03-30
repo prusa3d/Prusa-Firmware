@@ -562,7 +562,7 @@
 "Loose pulley"
 "Losse riemschijf"
 
-#
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
 "Tot tuit laden"
 

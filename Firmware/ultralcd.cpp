@@ -6631,7 +6631,7 @@ static void lcd_main_menu()
     if ( ! ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal) ) ) {
         if (mmu_enabled) {
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
-            MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);
+            MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
 //-//          MENU_ITEM_FUNCTION_P(_T(MSG_UNLOAD_FILAMENT), extr_unload);
 //bFilamentFirstRun=true;
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);

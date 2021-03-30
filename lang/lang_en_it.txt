@@ -562,7 +562,7 @@
 "Loose pulley"
 "Puleggia lenta"
 
-#
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
 "Carica ugello"
 

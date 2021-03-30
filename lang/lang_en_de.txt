@@ -562,7 +562,7 @@
 "Loose pulley"
 "Lose Riemenscheibe"
 
-#
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
 "In Druckduese laden"
 

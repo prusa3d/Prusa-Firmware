@@ -562,7 +562,7 @@
 "Loose pulley"
 "Luzne kolo pasowe"
 
-#
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
 "Zaladuj do dyszy"
 

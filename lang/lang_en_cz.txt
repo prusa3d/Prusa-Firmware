@@ -562,7 +562,7 @@
 "Loose pulley"
 "Uvolnena remenicka"
 
-#
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
 "Zavest do trysky"
 

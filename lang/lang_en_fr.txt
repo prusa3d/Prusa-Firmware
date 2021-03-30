@@ -562,7 +562,7 @@
 "Loose pulley"
 "Poulie lache"
 
-#
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
 "Charger la buse"
 

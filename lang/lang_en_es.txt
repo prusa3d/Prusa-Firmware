@@ -562,7 +562,7 @@
 "Loose pulley"
 "Polea suelta"
 
-#
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
 "Cargar a la boquilla"
 
