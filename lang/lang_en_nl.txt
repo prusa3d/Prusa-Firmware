@@ -1026,7 +1026,7 @@
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Sommige bestanden worden niet gesorteerd omdat het maximum aantal bestanden per map 100 is."
 
-#MSG_SORT
+#MSG_SORT c=7
 "Sort"
 "Sort."
 

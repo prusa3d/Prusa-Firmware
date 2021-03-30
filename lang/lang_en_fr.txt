@@ -1026,7 +1026,7 @@
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Certains fichiers ne seront pas tries. Max 100 fichiers tries par dossier."
 
-#MSG_SORT
+#MSG_SORT c=7
 "Sort"
 "Tri"
 
