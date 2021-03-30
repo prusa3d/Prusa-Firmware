@@ -618,7 +618,7 @@
 "MMU OK. Resuming..."
 "MMU OK. Resumiendo..."
 
-#MSG_MODE c=9
+#MSG_MODE c=6
 "Mode"
 "Modo"
 

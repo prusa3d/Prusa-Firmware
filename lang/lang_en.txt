@@ -463,7 +463,7 @@
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 
-#MSG_MODE c=9
+#MSG_MODE c=6
 "Mode"
 
 # c=20 r=3
