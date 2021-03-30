@@ -448,7 +448,7 @@
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
 
-#
+#MSG_MEASURED_SKEW c=13
 "Measured skew"
 
 #MSG_MMU_FAILS c=15

@@ -598,7 +598,7 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Temperatuur hervatten..."
 
-#
+#MSG_MEASURED_SKEW c=13
 "Measured skew"
 "Scheefheid"
 
