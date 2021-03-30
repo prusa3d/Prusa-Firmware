@@ -190,7 +190,7 @@
 "Color not correct"
 "Color no homogeneo"
 
-#MSG_COOLDOWN
+#MSG_COOLDOWN c=18
 "Cooldown"
 "Enfriar"
 
