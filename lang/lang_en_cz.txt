@@ -958,7 +958,7 @@
 "FlashAir"
 "\x00"
 
-#
+#MSG_RIGHT c=10
 "Right"
 "Vpravo"
 

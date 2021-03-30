@@ -958,7 +958,7 @@
 "FlashAir"
 "FlshAir"
 
-#
+#MSG_RIGHT c=10
 "Right"
 "Droite"
 
