@@ -484,7 +484,7 @@
 #MSG_STEALTH
 "Stealth"
 
-#MSG_AUTO_POWER
+#MSG_AUTO_POWER c=10
 "Auto power"
 
 #MSG_HIGH_POWER c=10
