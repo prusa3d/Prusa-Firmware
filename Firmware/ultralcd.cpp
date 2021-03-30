@@ -2759,7 +2759,7 @@ static void lcd_menu_xyz_y_min()
 	 ),
 	 _i("Y distance from min"),  ////c=20
 	 separator,
-	 _i("Left"),  ////c=11 r=1
+	 _i("Left"),  ////MSG_LEFT c=10
 	 _i("Right")  ////c=11 r=1
 	);
 	for (uint8_t i = 0; i < 2; i++)

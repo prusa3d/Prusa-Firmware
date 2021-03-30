@@ -526,7 +526,7 @@
 "Left hotend fan?"
 "Extruder Luefter?"
 
-#
+#MSG_LEFT c=10
 "Left"
 "Links"
 

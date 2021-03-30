@@ -526,7 +526,7 @@
 "Left hotend fan?"
 "Levy vent na trysce?"
 
-#
+#MSG_LEFT c=10
 "Left"
 "Vlevo"
 

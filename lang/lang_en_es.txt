@@ -526,7 +526,7 @@
 "Left hotend fan?"
 "Vent. izquierdo?"
 
-#
+#MSG_LEFT c=10
 "Left"
 "Izquierda"
 

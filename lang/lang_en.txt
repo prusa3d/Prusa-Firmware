@@ -394,7 +394,7 @@
 #MSG_SELFTEST_EXTRUDER_FAN c=20
 "Left hotend fan?"
 
-#
+#MSG_LEFT c=10
 "Left"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1

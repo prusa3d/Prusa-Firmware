@@ -526,7 +526,7 @@
 "Left hotend fan?"
 "Vent SX hotend?"
 
-#
+#MSG_LEFT c=10
 "Left"
 "Sinistra"
 
