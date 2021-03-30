@@ -101,7 +101,7 @@ const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////c=18
 const char MSG_TOTAL[] PROGMEM_I1 = ISTR("Total"); ////c=6
 const char MSG_TOTAL_FAILURES[] PROGMEM_I1 = ISTR("Total failures"); ////c=20
 const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////c=18
-const char MSG_MODE[] PROGMEM_I1 = ISTR("Mode"); ////
+const char MSG_MODE[] PROGMEM_I1 = ISTR("Mode"); ////c=9
 const char MSG_HIGH_POWER[] PROGMEM_I1 = ISTR("High power"); ////
 const char MSG_AUTO_POWER[] PROGMEM_I1 = ISTR("Auto power"); ////
 const char MSG_SILENT[] PROGMEM_I1 = ISTR("Silent"); ////

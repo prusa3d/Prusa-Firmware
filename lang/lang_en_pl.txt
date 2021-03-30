@@ -618,7 +618,7 @@
 "MMU OK. Resuming..."
 "MMU OK. Wznawianie..."
 
-#MSG_MODE
+#MSG_MODE c=9
 "Mode"
 "Tryb"
 
