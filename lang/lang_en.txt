@@ -1006,7 +1006,7 @@
 #MSG_STRICT
 "Strict"
 
-#MSG_WARN
+#MSG_WARN c=8
 "Warn"
 
 #MSG_HW_SETUP c=18

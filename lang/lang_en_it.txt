@@ -1342,7 +1342,7 @@
 "Strict"
 "Esatto"
 
-#MSG_WARN
+#MSG_WARN c=8
 "Warn"
 "Avviso"
 

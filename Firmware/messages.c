@@ -130,7 +130,7 @@ const char MSG_NA[] PROGMEM_I1 = ISTR("N/A"); ////
 const char MSG_AUTO_DEPLETE[] PROGMEM_I1 = ISTR("SpoolJoin"); ////
 const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////c=9
 const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////c=8
-const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////
+const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////c=8
 const char MSG_STRICT[] PROGMEM_I1 = ISTR("Strict"); ////
 const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////
 const char MSG_FIRMWARE[] PROGMEM_I1 = ISTR("Firmware"); ////
