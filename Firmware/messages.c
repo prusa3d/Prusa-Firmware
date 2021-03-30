@@ -104,9 +104,9 @@ const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////c=18
 const char MSG_MODE[] PROGMEM_I1 = ISTR("Mode"); ////c=6
 const char MSG_HIGH_POWER[] PROGMEM_I1 = ISTR("High power"); ////c=10
 const char MSG_AUTO_POWER[] PROGMEM_I1 = ISTR("Auto power"); ////c=10
-const char MSG_SILENT[] PROGMEM_I1 = ISTR("Silent"); ////
-const char MSG_NORMAL[] PROGMEM_I1 = ISTR("Normal"); ////
-const char MSG_STEALTH[] PROGMEM_I1 = ISTR("Stealth"); ////
+const char MSG_SILENT[] PROGMEM_I1 = ISTR("Silent"); ////c=7
+const char MSG_NORMAL[] PROGMEM_I1 = ISTR("Normal"); ////c=7
+const char MSG_STEALTH[] PROGMEM_I1 = ISTR("Stealth"); ////c=7
 const char MSG_STEEL_SHEET_CHECK[] PROGMEM_I1 = ISTR("Is steel sheet on heatbed?"); ////c=20 r=2
 const char MSG_STOP_PRINT[] PROGMEM_I1 = ISTR("Stop print"); ////
 const char MSG_STOPPED[] PROGMEM_I1 = ISTR("STOPPED. "); ////

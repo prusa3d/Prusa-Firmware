@@ -469,10 +469,10 @@
 # c=20 r=3
 "MK3 firmware detected on MK3S printer"
 
-#MSG_NORMAL
+#MSG_NORMAL c=7
 "Normal"
 
-#MSG_SILENT
+#MSG_SILENT c=7
 "Silent"
 
 # c=20 r=3
@@ -481,7 +481,7 @@
 #MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
 
-#MSG_STEALTH
+#MSG_STEALTH c=7
 "Stealth"
 
 #MSG_AUTO_POWER c=10

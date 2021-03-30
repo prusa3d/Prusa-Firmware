@@ -626,11 +626,11 @@
 "MK3 firmware detected on MK3S printer"
 "Firmware MK3 rilevato su stampante MK3S"
 
-#MSG_NORMAL
+#MSG_NORMAL c=7
 "Normal"
 "Normale"
 
-#MSG_SILENT
+#MSG_SILENT c=7
 "Silent"
 "Silenzioso"
 
@@ -642,7 +642,7 @@
 "MMU power fails"
 "Manc. corr. MMU"
 
-#MSG_STEALTH
+#MSG_STEALTH c=7
 "Stealth"
 "Silenziosa"
 
