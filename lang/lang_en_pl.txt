@@ -382,7 +382,7 @@
 "First, I will run the selftest to check most common assembly problems."
 "Najpierw wlacze selftest w celu sprawdzenia najczestszych problemow podczas montazu."
 
-# c=20 r=4
+#MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
 "Rozwiaz problem i wcisnij przycisk na MMU."
 
