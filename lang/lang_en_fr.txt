@@ -1374,7 +1374,7 @@
 "Model"
 "Modele"
 
-#MSG_NOZZLE_DIAMETER
+#MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."
 "Diam. buse"
 

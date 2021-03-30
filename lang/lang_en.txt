@@ -1030,7 +1030,7 @@
 #MSG_MODEL c=8
 "Model"
 
-#MSG_NOZZLE_DIAMETER
+#MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."
 
 # c=20 r=4
