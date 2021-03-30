@@ -514,7 +514,7 @@
 #MSG_NO_CARD
 "No SD card"
 
-#MSG_NA
+#MSG_NA c=3
 "N/A"
 
 #MSG_NO
@@ -982,10 +982,10 @@
 #MSG_Y_CORRECTION c=13
 "Y-correct:"
 
-#MSG_OFF
+#MSG_OFF c=3
 "Off"
 
-#MSG_ON
+#MSG_ON c=3
 "On"
 
 #

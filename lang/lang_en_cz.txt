@@ -686,7 +686,7 @@
 "No SD card"
 "Zadna SD karta"
 
-#MSG_NA
+#MSG_NA c=3
 "N/A"
 "\x00"
 
@@ -1310,11 +1310,11 @@
 "Y-correct:"
 "Korekce Y:"
 
-#MSG_OFF
+#MSG_OFF c=3
 "Off"
 "Vyp"
 
-#MSG_ON
+#MSG_ON c=3
 "On"
 "Zap"
 

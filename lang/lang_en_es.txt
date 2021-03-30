@@ -686,7 +686,7 @@
 "No SD card"
 "No hay tarjeta SD"
 
-#MSG_NA
+#MSG_NA c=3
 "N/A"
 "N/A"
 
@@ -1310,11 +1310,11 @@
 "Y-correct:"
 "Corregir-Y:"
 
-#MSG_OFF
+#MSG_OFF c=3
 "Off"
 "Ina"
 
-#MSG_ON
+#MSG_ON c=3
 "On"
 "Act"
 
