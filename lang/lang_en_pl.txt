@@ -582,7 +582,7 @@
 "Level Dimmed"
 "Poziom ciem."
 
-#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
+#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 "Measuring reference height of calibration point"
 "Okreslam wysokosc odniesienia punktu kalibracyjnego"
 

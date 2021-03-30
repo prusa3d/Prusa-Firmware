@@ -64,7 +64,7 @@ const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////c=18
 const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////c=18
 const char MSG_SHEET[] PROGMEM_I1 = ISTR("Sheet"); ////c=10
 const char MSG_STEEL_SHEETS[] PROGMEM_I1 = ISTR("Steel sheets"); ////c=18
-const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[] PROGMEM_I1 = ISTR("Measuring reference height of calibration point"); ////c=60
+const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[] PROGMEM_I1 = ISTR("Measuring reference height of calibration point"); ////c=20 r=3
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); ////c=14
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////c=18
 const char MSG_MMU_FAILS[] PROGMEM_I1 = ISTR("MMU fails"); ////c=15
