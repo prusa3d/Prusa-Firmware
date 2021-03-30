@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Lekki skos:"
 
-#MSG_SOUND
+#MSG_SOUND c=9
 "Sound"
 "Dzwiek"
 

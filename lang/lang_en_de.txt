@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Leicht.Schr:"
 
-#MSG_SOUND
+#MSG_SOUND c=9
 "Sound"
 "Ton"
 

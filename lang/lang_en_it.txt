@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Devia.lieve:"
 
-#MSG_SOUND
+#MSG_SOUND c=9
 "Sound"
 "Suono"
 

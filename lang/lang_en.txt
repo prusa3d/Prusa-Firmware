@@ -793,7 +793,7 @@
 #
 "Slight skew:"
 
-#MSG_SOUND
+#MSG_SOUND c=9
 "Sound"
 
 # c=7

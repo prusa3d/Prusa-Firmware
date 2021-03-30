@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Iets scheef:"
 
-#MSG_SOUND
+#MSG_SOUND c=9
 "Sound"
 "Geluid"
 

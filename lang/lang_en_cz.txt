@@ -1058,7 +1058,7 @@
 "Slight skew:"
 "Lehke zkoseni:"
 
-#MSG_SOUND
+#MSG_SOUND c=9
 "Sound"
 "Zvuk"
 
