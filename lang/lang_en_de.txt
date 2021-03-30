@@ -430,7 +430,7 @@
 "howto.prusa3d.com"
 "\x00"
 
-#MSG_FILAMENTCHANGE
+#MSG_FILAMENTCHANGE c=18
 "Change filament"
 "Filament-Wechsel"
 
