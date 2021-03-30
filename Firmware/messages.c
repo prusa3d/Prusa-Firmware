@@ -140,7 +140,7 @@ const char MSG_GCODE_DIFF_PRINTER_CANCELLED[] PROGMEM_I1 =ISTR("G-code sliced fo
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////c=10
 const char MSG_MMU_MODE[] PROGMEM_I1 = ISTR("MMU Mode"); ////c=8
 const char MSG_SD_CARD[] PROGMEM_I1 = ISTR("SD card"); ////c=8
-const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_I1 = ISTR("FlashAir"); ////
+const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_I1 = ISTR("FlashAir"); ////c=8
 const char MSG_SORT[] PROGMEM_I1 = ISTR("Sort"); ////c=7
 const char MSG_SORT_TIME[] PROGMEM_I1 = ISTR("Time"); ////c=8
 const char MSG_SORT_ALPHA[] PROGMEM_I1 = ISTR("Alphabet"); ////c=8
