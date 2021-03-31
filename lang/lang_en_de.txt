@@ -1314,7 +1314,7 @@
 "On"
 "An"
 
-#
+#MSG_BACK c=18
 "Back"
 "Zurueck"
 

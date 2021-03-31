@@ -1314,7 +1314,7 @@
 "On"
 "Zap"
 
-#
+#MSG_BACK c=18
 "Back"
 "Zpet"
 

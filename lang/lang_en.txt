@@ -985,7 +985,7 @@
 #MSG_ON c=3
 "On"
 
-#
+#MSG_BACK c=18
 "Back"
 
 #

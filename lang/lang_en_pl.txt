@@ -1314,7 +1314,7 @@
 "On"
 "Wl"
 
-#
+#MSG_BACK c=18
 "Back"
 "Wstecz"
 
