@@ -682,7 +682,7 @@
 "No move."
 "Geen beweging."
 
-#MSG_NO_CARD
+#MSG_NO_CARD c=18
 "No SD card"
 "Geen SD kaart"
 

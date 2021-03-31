@@ -511,7 +511,7 @@
 #MSG_NO_MOVE c=20
 "No move."
 
-#MSG_NO_CARD
+#MSG_NO_CARD c=18
 "No SD card"
 
 #MSG_NA c=3
