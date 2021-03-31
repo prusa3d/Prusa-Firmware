@@ -814,7 +814,7 @@
 "Preheat the nozzle!"
 "Tuit voorverwarmen!"
 
-#MSG_PREHEAT
+#MSG_PREHEAT c=18
 "Preheat"
 "Voorverwarmen"
 

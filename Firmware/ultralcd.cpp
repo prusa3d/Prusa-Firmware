@@ -6569,7 +6569,7 @@ static void lcd_main_menu()
     if ( moves_planned() || PRINTER_ACTIVE ) {
         MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE
     } else {
-        MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
+        MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
     }
 
     if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused) {

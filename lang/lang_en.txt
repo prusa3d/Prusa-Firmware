@@ -610,7 +610,7 @@
 #MSG_PREHEAT_NOZZLE c=20
 "Preheat the nozzle!"
 
-#MSG_PREHEAT
+#MSG_PREHEAT c=18
 "Preheat"
 
 #MSG_WIZARD_HEATING c=20 r=3
