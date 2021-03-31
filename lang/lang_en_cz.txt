@@ -150,7 +150,7 @@
 "Calibrate Z"
 "Kalibrovat Z"
 
-#MSG_CALIBRATE_PINDA c=17 r=1
+#MSG_CALIBRATE_PINDA c=17
 "Calibrate"
 "Zkalibrovat"
 
@@ -206,7 +206,7 @@
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Zvolte filament pro kalibraci prvni vrstvy z nasledujiciho menu"
 
-#MSG_CRASH_DETECTED c=20 r=1
+#MSG_CRASH_DETECTED c=20
 "Crash detected."
 "Detekovan naraz."
 
@@ -218,11 +218,11 @@
 "Crash"
 "Naraz"
 
-#MSG_CURRENT c=19 r=1
+#MSG_CURRENT c=19
 "Current"
 "Pouze aktualni"
 
-#MSG_DATE c=17 r=1
+#MSG_DATE c=17
 "Date:"
 "Datum:"
 
@@ -254,7 +254,7 @@
 "Eject filament"
 "Vysunout fil."
 
-#MSG_EJECTING_FILAMENT c=20 r=1
+#MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
 "Vysouvam filament"
 
@@ -358,7 +358,7 @@
 "Filament used"
 "Spotrebovano filam."
 
-#MSG_PRINT_TIME c=19 r=1
+#MSG_PRINT_TIME c=19
 "Print time"
 "Cas tisku"
 
@@ -398,7 +398,7 @@
 "Front print fan?"
 "Predni tiskovy vent?"
 
-#MSG_BED_CORRECTION_FRONT c=14 r=1
+#MSG_BED_CORRECTION_FRONT c=14
 "Front side[um]"
 "Vpredu [um]"
 
@@ -470,15 +470,15 @@
 "Checking Z axis"
 "Kontrola osy Z"
 
-#MSG_CHOOSE_EXTRUDER c=20 r=1
+#MSG_CHOOSE_EXTRUDER c=20
 "Choose extruder:"
 "Vyberte extruder:"
 
-#MSG_CHOOSE_FILAMENT c=20 r=1
+#MSG_CHOOSE_FILAMENT c=20
 "Choose filament:"
 "Vyber filament:"
 
-#MSG_FILAMENT c=17 r=1
+#MSG_FILAMENT c=17
 "Filament"
 "\x00"
 
@@ -530,7 +530,7 @@
 "Left"
 "Vlevo"
 
-#MSG_BED_CORRECTION_LEFT c=14 r=1
+#MSG_BED_CORRECTION_LEFT c=14
 "Left side [um]"
 "Vlevo [um]"
 
@@ -734,19 +734,19 @@
 "Pause print"
 "Pozastavit tisk"
 
-#MSG_PID_RUNNING c=20 r=1
+#MSG_PID_RUNNING c=20
 "PID cal.           "
 "PID kal. "
 
-#MSG_PID_FINISHED c=20 r=1
+#MSG_PID_FINISHED c=20
 "PID cal. finished"
 "PID kal. ukoncena"
 
-#MSG_PID_EXTRUDER c=17 r=1
+#MSG_PID_EXTRUDER c=17
 "PID calibration"
 "PID kalibrace"
 
-#MSG_PINDA_PREHEAT c=20 r=1
+#MSG_PINDA_PREHEAT c=20
 "PINDA Heating"
 "Nahrivani PINDA"
 
@@ -866,7 +866,7 @@
 "Press the knob"
 "Stisknete hl. tlacitko"
 
-#MSG_PRINT_PAUSED c=20 r=1
+#MSG_PRINT_PAUSED c=20
 "Print paused"
 "Tisk pozastaven"
 
@@ -898,7 +898,7 @@
 "prusa3d.com"
 "\x00"
 
-#MSG_BED_CORRECTION_REAR c=14 r=1
+#MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 "Vzadu [um]"
 
@@ -938,7 +938,7 @@
 "Resuming print"
 "Obnoveni tisku"
 
-#MSG_BED_CORRECTION_RIGHT c=14 r=1
+#MSG_BED_CORRECTION_RIGHT c=14
 "Right side[um]"
 "Vpravo [um]"
 
@@ -998,7 +998,7 @@
 "Select nozzle preheat temperature which matches your material."
 "Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
 
-#MSG_SET_TEMPERATURE c=19 r=1
+#MSG_SET_TEMPERATURE c=19
 "Set temperature:"
 "Nastavte teplotu:"
 
@@ -1046,7 +1046,7 @@
 "Alphabet"
 "Abeceda"
 
-#MSG_SORTING c=20 r=1
+#MSG_SORTING c=20
 "Sorting files"
 "Trideni souboru"
 
@@ -1118,7 +1118,7 @@
 "Select temperature which matches your material."
 "Zvolte teplotu, ktera odpovida vasemu materialu."
 
-#MSG_CALIBRATION_PINDA_MENU c=17 r=1
+#MSG_CALIBRATION_PINDA_MENU c=17
 "Temp. calibration"
 "Teplot. kalibrace"
 
@@ -1138,7 +1138,7 @@
 "Temperature"
 "Teplota"
 
-#MSG_MENU_TEMPERATURES c=15 r=1
+#MSG_MENU_TEMPERATURES c=15
 "Temperatures"
 "Teploty"
 
@@ -1174,7 +1174,7 @@
 "Unload filament"
 "Vyjmout filament"
 
-#MSG_UNLOADING_FILAMENT c=20 r=1
+#MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
 "Vysouvam filament"
 
@@ -1182,11 +1182,11 @@
 "Total"
 "Celkem"
 
-#MSG_USED c=19 r=1
+#MSG_USED c=19
 "Used during print"
 "Pouzite behem tisku"
 
-#MSG_MENU_VOLTAGES c=15 r=1
+#MSG_MENU_VOLTAGES c=15
 "Voltages"
 "Napeti"
 
@@ -1226,7 +1226,7 @@
 "Wiring error"
 "Chyba zapojeni"
 
-#MSG_WIZARD c=17 r=1
+#MSG_WIZARD c=17
 "Wizard"
 "Pruvodce"
 
@@ -1449,4 +1449,3 @@
 #MSG_Z_PROBE_NR c=14
 "Z-probe nr."
 "Pocet mereni Z"
-

@@ -150,7 +150,7 @@
 "Calibrate Z"
 "Calibrer Z"
 
-#MSG_CALIBRATE_PINDA c=17 r=1
+#MSG_CALIBRATE_PINDA c=17
 "Calibrate"
 "Calibrer"
 
@@ -206,7 +206,7 @@
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Choisissez un filament pour la Calibration de la Premiere Couche et selectionnez-le depuis le menu a l'ecran."
 
-#MSG_CRASH_DETECTED c=20 r=1
+#MSG_CRASH_DETECTED c=20
 "Crash detected."
 "Crash detecte."
 
@@ -218,11 +218,11 @@
 "Crash"
 "\x00"
 
-#MSG_CURRENT c=19 r=1
+#MSG_CURRENT c=19
 "Current"
 "Actuel"
 
-#MSG_DATE c=17 r=1
+#MSG_DATE c=17
 "Date:"
 "Date:"
 
@@ -254,7 +254,7 @@
 "Eject filament"
 "Remonter le fil."
 
-#MSG_EJECTING_FILAMENT c=20 r=1
+#MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
 "Le fil. remonte"
 
@@ -358,7 +358,7 @@
 "Filament used"
 "Filament utilise"
 
-#MSG_PRINT_TIME c=19 r=1
+#MSG_PRINT_TIME c=19
 "Print time"
 "Temps d'impression"
 
@@ -398,7 +398,7 @@
 "Front print fan?"
 "Ventilo impr avant?"
 
-#MSG_BED_CORRECTION_FRONT c=14 r=1
+#MSG_BED_CORRECTION_FRONT c=14
 "Front side[um]"
 "Avant [um]"
 
@@ -470,15 +470,15 @@
 "Checking Z axis"
 "Verification axe Z"
 
-#MSG_CHOOSE_EXTRUDER c=20 r=1
+#MSG_CHOOSE_EXTRUDER c=20
 "Choose extruder:"
 "Choisir extrudeur:"
 
-#MSG_CHOOSE_FILAMENT c=20 r=1
+#MSG_CHOOSE_FILAMENT c=20
 "Choose filament:"
 "Choix du filament:"
 
-#MSG_FILAMENT c=17 r=1
+#MSG_FILAMENT c=17
 "Filament"
 "\x00"
 
@@ -530,7 +530,7 @@
 "Left"
 "Gauche"
 
-#MSG_BED_CORRECTION_LEFT c=14 r=1
+#MSG_BED_CORRECTION_LEFT c=14
 "Left side [um]"
 "Gauche [um]"
 
@@ -734,19 +734,19 @@
 "Pause print"
 "Pause de l'impr."
 
-#MSG_PID_RUNNING c=20 r=1
+#MSG_PID_RUNNING c=20
 "PID cal.           "
 "Calib. PID"
 
-#MSG_PID_FINISHED c=20 r=1
+#MSG_PID_FINISHED c=20
 "PID cal. finished"
 "Calib. PID terminee"
 
-#MSG_PID_EXTRUDER c=17 r=1
+#MSG_PID_EXTRUDER c=17
 "PID calibration"
 "Calibration PID"
 
-#MSG_PINDA_PREHEAT c=20 r=1
+#MSG_PINDA_PREHEAT c=20
 "PINDA Heating"
 "Chauffe de la PINDA"
 
@@ -866,7 +866,7 @@
 "Press the knob"
 "App. sur sur bouton"
 
-#MSG_PRINT_PAUSED c=20 r=1
+#MSG_PRINT_PAUSED c=20
 "Print paused"
 "Impression en pause"
 
@@ -898,7 +898,7 @@
 "prusa3d.com"
 "\x00"
 
-#MSG_BED_CORRECTION_REAR c=14 r=1
+#MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 "Arriere [um]"
 
@@ -938,7 +938,7 @@
 "Resuming print"
 "Reprise de l'impr."
 
-#MSG_BED_CORRECTION_RIGHT c=14 r=1
+#MSG_BED_CORRECTION_RIGHT c=14
 "Right side[um]"
 "Droite [um]"
 
@@ -998,7 +998,7 @@
 "Select nozzle preheat temperature which matches your material."
 "Selectionnez la temperature de prechauffage de la buse qui correspond a votre materiau."
 
-#MSG_SET_TEMPERATURE c=19 r=1
+#MSG_SET_TEMPERATURE c=19
 "Set temperature:"
 "Regler temp.:"
 
@@ -1046,7 +1046,7 @@
 "Alphabet"
 "\x00"
 
-#MSG_SORTING c=20 r=1
+#MSG_SORTING c=20
 "Sorting files"
 "Tri des fichiers"
 
@@ -1118,7 +1118,7 @@
 "Select temperature which matches your material."
 "Selectionnez la temperature qui correspond a votre materiau."
 
-#MSG_CALIBRATION_PINDA_MENU c=17 r=1
+#MSG_CALIBRATION_PINDA_MENU c=17
 "Temp. calibration"
 "Calibration temp."
 
@@ -1138,7 +1138,7 @@
 "Temperature"
 "\x00"
 
-#MSG_MENU_TEMPERATURES c=15 r=1
+#MSG_MENU_TEMPERATURES c=15
 "Temperatures"
 "\x00"
 
@@ -1174,7 +1174,7 @@
 "Unload filament"
 "Decharger fil."
 
-#MSG_UNLOADING_FILAMENT c=20 r=1
+#MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
 "Dechargement fil."
 
@@ -1182,11 +1182,11 @@
 "Total"
 "Totale"
 
-#MSG_USED c=19 r=1
+#MSG_USED c=19
 "Used during print"
 "Utilise pdt impr."
 
-#MSG_MENU_VOLTAGES c=15 r=1
+#MSG_MENU_VOLTAGES c=15
 "Voltages"
 "Tensions"
 
@@ -1226,7 +1226,7 @@
 "Wiring error"
 "Erreur de cablage"
 
-#MSG_WIZARD c=17 r=1
+#MSG_WIZARD c=17
 "Wizard"
 "Assistant"
 
@@ -1449,4 +1449,3 @@
 #MSG_Z_PROBE_NR c=14
 "Z-probe nr."
 "Mesurer x-fois"
-

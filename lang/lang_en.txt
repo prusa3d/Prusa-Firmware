@@ -112,7 +112,7 @@
 #MSG_HOMEYZ c=18
 "Calibrate Z"
 
-#MSG_CALIBRATE_PINDA c=17 r=1
+#MSG_CALIBRATE_PINDA c=17
 "Calibrate"
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
@@ -154,7 +154,7 @@
 #MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 
-#MSG_CRASH_DETECTED c=20 r=1
+#MSG_CRASH_DETECTED c=20
 "Crash detected."
 
 #MSG_CRASH_RESUME c=20 r=3
@@ -163,10 +163,10 @@
 #MSG_CRASH c=7
 "Crash"
 
-#MSG_CURRENT c=19 r=1
+#MSG_CURRENT c=19
 "Current"
 
-#MSG_DATE c=17 r=1
+#MSG_DATE c=17
 "Date:"
 
 #MSG_COMMUNITY_MADE c=18
@@ -190,7 +190,7 @@
 #MSG_EJECT_FILAMENT c=16
 "Eject filament"
 
-#MSG_EJECTING_FILAMENT c=20 r=1
+#MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20
@@ -268,7 +268,7 @@
 #MSG_FILAMENT_USED c=19
 "Filament used"
 
-#MSG_PRINT_TIME c=19 r=1
+#MSG_PRINT_TIME c=19
 "Print time"
 
 #MSG_FS_ACTION c=10
@@ -298,7 +298,7 @@
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
 
-#MSG_BED_CORRECTION_FRONT c=14 r=1
+#MSG_BED_CORRECTION_FRONT c=14
 "Front side[um]"
 
 #MSG_SELFTEST_FANS c=20
@@ -352,13 +352,13 @@
 #MSG_SELFTEST_CHECK_Z c=20
 "Checking Z axis"
 
-#MSG_CHOOSE_EXTRUDER c=20 r=1
+#MSG_CHOOSE_EXTRUDER c=20
 "Choose extruder:"
 
-#MSG_CHOOSE_FILAMENT c=20 r=1
+#MSG_CHOOSE_FILAMENT c=20
 "Choose filament:"
 
-#MSG_FILAMENT c=17 r=1
+#MSG_FILAMENT c=17
 "Filament"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
@@ -397,7 +397,7 @@
 #MSG_LEFT c=10
 "Left"
 
-#MSG_BED_CORRECTION_LEFT c=14 r=1
+#MSG_BED_CORRECTION_LEFT c=14
 "Left side [um]"
 
 #MSG_LIN_CORRECTION c=18
@@ -550,16 +550,16 @@
 #MSG_PAUSE_PRINT c=18
 "Pause print"
 
-#MSG_PID_RUNNING c=20 r=1
+#MSG_PID_RUNNING c=20
 "PID cal.           "
 
-#MSG_PID_FINISHED c=20 r=1
+#MSG_PID_FINISHED c=20
 "PID cal. finished"
 
-#MSG_PID_EXTRUDER c=17 r=1
+#MSG_PID_EXTRUDER c=17
 "PID calibration"
 
-#MSG_PINDA_PREHEAT c=20 r=1
+#MSG_PINDA_PREHEAT c=20
 "PINDA Heating"
 
 #MSG_PAPER c=20 r=10
@@ -649,7 +649,7 @@
 #MSG_PRESS_KNOB c=20
 "Press the knob"
 
-#MSG_PRINT_PAUSED c=20 r=1
+#MSG_PRINT_PAUSED c=20
 "Print paused"
 
 #MSG_RESUME_NOZZLE_TEMP c=20 r=4
@@ -673,7 +673,7 @@
 #MSG_PRUSA3D c=18
 "prusa3d.com"
 
-#MSG_BED_CORRECTION_REAR c=14 r=1
+#MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
@@ -703,7 +703,7 @@
 #MSG_RESUMING_PRINT c=20
 "Resuming print"
 
-#MSG_BED_CORRECTION_RIGHT c=14 r=1
+#MSG_BED_CORRECTION_RIGHT c=14
 "Right side[um]"
 
 #MSG_RPI_PORT c=13
@@ -748,7 +748,7 @@
 #MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
 
-#MSG_SET_TEMPERATURE c=19 r=1
+#MSG_SET_TEMPERATURE c=19
 "Set temperature:"
 
 # c=20
@@ -784,7 +784,7 @@
 #MSG_SORT_ALPHA c=8
 "Alphabet"
 
-#MSG_SORTING c=20 r=1
+#MSG_SORTING c=20
 "Sorting files"
 
 #MSG_SOUND_LOUD c=7
@@ -838,7 +838,7 @@
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 
-#MSG_CALIBRATION_PINDA_MENU c=17 r=1
+#MSG_CALIBRATION_PINDA_MENU c=17
 "Temp. calibration"
 
 #MSG_TEMP_CAL_FAILED c=20 r=8
@@ -853,7 +853,7 @@
 #MSG_TEMPERATURE c=18
 "Temperature"
 
-#MSG_MENU_TEMPERATURES c=15 r=1
+#MSG_MENU_TEMPERATURES c=15
 "Temperatures"
 
 #MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
@@ -880,16 +880,16 @@
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
 
-#MSG_UNLOADING_FILAMENT c=20 r=1
+#MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
 
 #MSG_TOTAL c=6
 "Total"
 
-#MSG_USED c=19 r=1
+#MSG_USED c=19
 "Used during print"
 
-#MSG_MENU_VOLTAGES c=15 r=1
+#MSG_MENU_VOLTAGES c=15
 "Voltages"
 
 #MSG_UNKNOWN c=13
@@ -919,7 +919,7 @@
 #MSG_SELFTEST_WIRINGERROR c=17
 "Wiring error"
 
-#MSG_WIZARD c=17 r=1
+#MSG_WIZARD c=17
 "Wizard"
 
 #MSG_XYZ_DETAILS c=18
@@ -1086,4 +1086,3 @@
 
 #MSG_Z_PROBE_NR c=14
 "Z-probe nr."
-

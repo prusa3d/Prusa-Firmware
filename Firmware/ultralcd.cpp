@@ -676,7 +676,7 @@ void lcdui_print_status_line(void)
             lcd_print(statusLine);
             break;
         case CustomMsg::TempCompPreheat: // temp compensation preheat
-            lcd_puts_at_P(0, 3, _i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
+            lcd_puts_at_P(0, 3, _i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20
             if (custom_message_state <= PINDA_HEAT_T) {
                 lcd_puts_P(PSTR(": "));
                 lcd_print(custom_message_state); //seconds
@@ -900,7 +900,7 @@ void lcd_commands()
 	{
 		if (!blocks_queued() && !homing_flag)
 		{
-			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
+			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20
             lcd_commands_type = LcdCommands::Idle;
             lcd_commands_step = 0;
             long_pause();
@@ -1320,13 +1320,13 @@ void lcd_commands()
 			strcat(cmd1, ftostr3(pid_temp));
 			// setting the correct target temperature (for visualization) is done in PID_autotune
 			enquecommand(cmd1);
-			lcd_setstatuspgm(_i("PID cal.           "));////MSG_PID_RUNNING c=20 r=1
+			lcd_setstatuspgm(_i("PID cal.           "));////MSG_PID_RUNNING c=20
 			lcd_commands_step = 2;
 		}
 		if (lcd_commands_step == 2 && pid_tuning_finished) { //saving to eeprom
 			pid_tuning_finished = false;
 			custom_message_state = 0;
-			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20 r=1
+			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
 			setAllTargetHotends(0);  // reset all hotends temperature including the number displayed on the main screen
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
 			strcpy(cmd1, "M301 P");
@@ -1465,7 +1465,7 @@ static void lcd_menu_fails_stats_mmu()
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_mmu_print);
-	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_mmu_total); ////c=18 r=1
+	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_mmu_total); ////c=18
 	MENU_END();
 }
 
@@ -1601,7 +1601,7 @@ static void lcd_menu_fails_stats_print()
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! | Main               |	c=18 r=1
+//! | Main               |	MSG_MAIN c=18
 //! | Last print         |	MSG_LAST_PRINT c=18
 //! | Total              |	MSG_TOTAL c=6
 //! |                    |
@@ -1612,8 +1612,8 @@ static void lcd_menu_fails_stats()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_print);  ////c=18 r=1
-	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_total);  ////c=18 r=1
+	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_print);  ////c=18
+	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_total);  ////c=18
 	MENU_END();
 }
 
@@ -1671,10 +1671,10 @@ extern char* __malloc_heap_end;
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |RAM statistics      |	c=20 r=1
-//! | SP_min:        0000|	c=14 r=1
-//! | heap_start:    0000|	c=14 r=1
-//! | heap_end:      0000|	c=14 r=1
+//! |RAM statistics      |	c=20
+//! | SP_min:        0000|	c=14
+//! | heap_start:    0000|	c=14
+//! | heap_end:      0000|	c=14
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1682,10 +1682,10 @@ static void lcd_menu_debug()
 {
 #ifdef DEBUG_STACK_MONITOR
 	lcd_home();
-	lcd_printf_P(PSTR("RAM statistics\n"  ////c=20 r=1
-        " SP_min: 0x%04x\n"   ////c=14 r=1
-        " heap_start: 0x%04x\n"   ////c=14 r=1
-        " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);  ////c=14 r=1
+	lcd_printf_P(PSTR("RAM statistics\n"  ////c=20
+        " SP_min: 0x%04x\n"   ////c=14
+        " heap_start: 0x%04x\n"   ////c=14
+        " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);  ////c=14
 #endif //DEBUG_STACK_MONITOR
 
 	menu_back_if_clicked_fb();
@@ -1706,10 +1706,10 @@ static void lcd_menu_temperatures_line(const char *ipgmLabel, int value){
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! | Nozzle:        000D|	c=14 r=1
-//! | Bed:           000D|	c=14 r=1
-//! | Ambient:       000D|	c=14
-//! | PINDA:         000D|	c=14 r=1
+//! | Nozzle:        000D|	MSG_NOZZLE c=14
+//! | Bed:           000D|	MSG_BEDc=14
+//! | Ambient:       000D|	MSG_AMBIENTc=14
+//! | PINDA:         000D|	MSG_PINDA c=14
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
 //! @endcode
@@ -1718,10 +1718,10 @@ static void lcd_menu_temperatures()
 {
     lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
-    lcd_menu_temperatures_line( _T(MSG_NOZZLE), (int)current_temperature[0] ); ////c=14 r=1
-    lcd_menu_temperatures_line( _T(MSG_BED), (int)current_temperature_bed );  ////c=14 r=1
+    lcd_menu_temperatures_line( _T(MSG_NOZZLE), (int)current_temperature[0] ); ////MSG_NOZZLE
+    lcd_menu_temperatures_line( _T(MSG_BED), (int)current_temperature_bed );  ////MSG_BED
 #ifdef AMBIENT_THERMISTOR
-    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT c=14
+    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT
 #endif //AMBIENT_THERMISTOR
 #ifdef PINDA_THERMISTOR
     lcd_menu_temperatures_line( _T(MSG_PINDA), (int)current_temperature_pinda );  ////MSG_PINDA
@@ -1739,9 +1739,9 @@ static void lcd_menu_temperatures()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |                    |
-//! | PWR:         00.0V |	c=12 r=1
-//! | Bed:         00.0V |	c=12 r=1
-//! | IR :         00.0V |  c=12 r=1 optional
+//! | PWR:         00.0V |	c=12
+//! | Bed:         00.0V |	c=12
+//! | IR :         00.0V |  c=12 optional
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -1805,9 +1805,9 @@ static void lcd_preheat_menu()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! | Main               |
-//! | Firmware:          |	c=18 r=1
-//! |  3.7.2.-2363       |	c=16 r=1
+//! | Main               |	MSG_MAIN c=18
+//! | Firmware:          |	c=18
+//! |  3.7.2.-2363       |	c=16
 //! | prusa3d.com        |	MSG_PRUSA3D
 //! | forum.prusa3d.com  |	MSG_PRUSA3D_FORUM
 //! | howto.prusa3d.com  |	MSG_PRUSA3D_HOWTO
@@ -1816,7 +1816,7 @@ static void lcd_preheat_menu()
 //! | howto.prusa3d.com  |	ELECTRONICS
 //! | howto.prusa3d.com  |	NOZZLE_TYPE
 //! | --------------     |	STR_SEPARATOR
-//! | Date:              |	c=17 r=1
+//! | Date:              |	c=17
 //! | MMM DD YYYY        |	__DATE__
 //! | --------------     |	STR_SEPARATOR
 //! @endcode
@@ -1838,7 +1838,7 @@ static void lcd_preheat_menu()
 //! 
 //! 	@code{.unparsed}
 //! 	| --------------     |	STR_SEPARATOR
-//! 	| FlashAir IP Addr:  |	c=18 r=1
+//! 	| FlashAir IP Addr:  |	c=18
 //! 	|  192.168.1.100     |
 //! 	@endcode
 //! 
@@ -1869,7 +1869,7 @@ static void lcd_preheat_menu()
 //! If DEBUG_BUILD is defined
 //! 
 //! 	@code{.unparsed}
-//! 	| Debug              |	c=18 r=1
+//! 	| Debug              |	c=18
 //! 	@endcode
 //! ----------------------
 //! @endcode
@@ -1924,7 +1924,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
   MENU_ITEM_BACK_P(PSTR(NOZZLE_TYPE));
   MENU_ITEM_BACK_P(STR_SEPARATOR);
-  MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17 r=1
+  MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17
   MENU_ITEM_BACK_P(PSTR(__DATE__));
 
 #ifdef IR_SENSOR_ANALOG
@@ -1937,7 +1937,7 @@ static void lcd_support_menu()
 	if (mmu_enabled)
 	{
 		MENU_ITEM_BACK_P(_i("MMU2 connected"));  ////MSG_MMU_CONNECTED c=18
-		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17 r=1
+		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17
 		if (((menu_item - 1) == menu_line) && lcd_draw_update)
 		{
 		    lcd_set_cursor(6, menu_row);
@@ -1954,7 +1954,7 @@ static void lcd_support_menu()
   // Show the FlashAir IP address, if the card is available.
   if (_md->is_flash_air) {
       MENU_ITEM_BACK_P(STR_SEPARATOR);
-      MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));  //c=18 r=1
+      MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));  ////MSG_FLASHAIR c=18
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
@@ -1967,7 +1967,7 @@ static void lcd_support_menu()
   if (IP_address) {
       
       MENU_ITEM_BACK_P(STR_SEPARATOR);
-      MENU_ITEM_BACK_P(PSTR("Printer IP Addr:"));  //c=18 r=1
+      MENU_ITEM_BACK_P(PSTR("Printer IP Addr:"));  ////c=18
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
@@ -1986,15 +1986,15 @@ static void lcd_support_menu()
   MENU_ITEM_SUBMENU_P(_T(MSG_BELT_STATUS), lcd_menu_belt_status);////MSG_BELT_STATUS c=18
 #endif //TMC2130
     
-  MENU_ITEM_SUBMENU_P(_i("Temperatures"), lcd_menu_temperatures);////MSG_MENU_TEMPERATURES c=18 r=1
+  MENU_ITEM_SUBMENU_P(_i("Temperatures"), lcd_menu_temperatures);////MSG_MENU_TEMPERATURES c=18
 
 #if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
-  MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18 r=1
+  MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 
 #ifdef DEBUG_BUILD
-  MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////c=18 r=1
+  MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
 #endif /* DEBUG_BUILD */
 
   #endif //MK1BP
@@ -2395,7 +2395,7 @@ void lcd_wait_interact() {
 
   lcd_set_cursor(0, 1);
 #ifdef SNMM 
-  lcd_puts_P(_i("Prepare new filament"));////MSG_PREPARE_FILAMENT c=20 r=1
+  lcd_puts_P(_i("Prepare new filament"));////MSG_PREPARE_FILAMENT c=20
 #else
   lcd_puts_P(_i("Insert filament"));////MSG_INSERT_FILAMENT c=20
 #endif
@@ -2765,7 +2765,7 @@ static void lcd_menu_xyz_y_min()
 	for (uint8_t i = 0; i < 2; i++)
 	{
 		lcd_set_cursor(11,2+i);
-		if (distanceMin[i] >= 200) lcd_puts_P(_T(MSG_NA)); ////c=3 r=1
+		if (distanceMin[i] >= 200) lcd_puts_P(_T(MSG_NA));
 		else lcd_printf_P(_N("%6.2fmm"), distanceMin[i]);
 	}
     if (lcd_clicked())
@@ -2821,8 +2821,8 @@ static void lcd_menu_xyz_skew()
 //! |01234567890123456789|
 //! |[0;0] point offset  |	MSG_MEASURED_OFFSET c=20
 //! | --------------     |	STR_SEPARATOR
-//! |X:          000.00mm|	c=10 r=1
-//! |Y:          000.00mm|	c=10 r=1
+//! |X:          000.00mm|	c=10
+//! |Y:          000.00mm|	c=10
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -2830,8 +2830,8 @@ static void lcd_menu_xyz_offset()
 {
     lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
     lcd_puts_at_P(0, 1, separator);
-    lcd_puts_at_P(0, 2, PSTR("X"));  ////c=10 r=1
-    lcd_puts_at_P(0, 3, PSTR("Y"));  ////c=10 r=1
+    lcd_puts_at_P(0, 2, PSTR("X"));  ////c=10
+    lcd_puts_at_P(0, 3, PSTR("Y"));  ////c=10
 
     float vec_x[2];
     float vec_y[2];
@@ -3029,10 +3029,10 @@ void lcd_adjust_bed(void)
         eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
     );
     MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-	MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Front side[um]"), &_md->front, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Rear side [um]"),  &_md->rear,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14 r=1
+	MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14
+    MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14
+    MENU_ITEM_EDIT_int3_P(_i("Front side[um]"), &_md->front, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14
+    MENU_ITEM_EDIT_int3_P(_i("Rear side [um]"),  &_md->rear,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14
     MENU_ITEM_FUNCTION_P(_T(MSG_RESET), lcd_adjust_bed_reset);////MSG_RESET c=14
     MENU_END();
 }
@@ -3050,7 +3050,7 @@ void lcd_adjust_bed(void)
 void pid_extruder()
 {
 	lcd_clear();
-	lcd_puts_at_P(1, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=19 r=1
+	lcd_puts_at_P(1, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=19
 	pid_temp += int(lcd_encoder);
 	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
 	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
@@ -3803,9 +3803,9 @@ static void lcd_show_sensors_state()
 			lcd_set_cursor(0, 2);
 			lcd_printf_P(_N(
 				"Xd:  %3d  "
-				"Yd:  %3d\n" ////c=4 r=1
-				"Int: %3d  " ////c=4 r=1
-				"Shut:  %3d"  ////c=4 r=1
+				"Yd:  %3d\n" ////c=4
+				"Int: %3d  " ////c=4
+				"Shut:  %3d"  ////c=4
 			),
 				pat9125_x, pat9125_y,
 				pat9125_b, pat9125_s
@@ -4444,7 +4444,7 @@ void lcd_pinda_calibration_menu()
 {
 	MENU_BEGIN();
 		MENU_ITEM_BACK_P(_T(MSG_MENU_CALIBRATION));
-		MENU_ITEM_SUBMENU_P(_i("Calibrate"), lcd_calibrate_pinda);////MSG_CALIBRATE_PINDA c=17 r=1
+		MENU_ITEM_SUBMENU_P(_i("Calibrate"), lcd_calibrate_pinda);////MSG_CALIBRATE_PINDA c=17
 	MENU_END();
 }
 
@@ -5039,13 +5039,13 @@ do\
         if (mmu_enabled == false)\
         {\
             if (fsensor_autoload_enabled)\
-                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_ON), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_ON c=17 r=1*/\
+                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_ON), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_ON c=17*/\
             else\
-                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_OFF), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_OFF c=17 r=1*/\
+                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_OFF), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_OFF c=17*/\
             /*if (fsensor_oq_meassure_enabled)*/\
-                /*MENU_ITEM_FUNCTION_P(_i("F. OQ meass. [on]"), lcd_set_filament_oq_meass);*//*////MSG_FSENS_OQMEASS_ON c=17 r=1*/\
+                /*MENU_ITEM_FUNCTION_P(_i("F. OQ meass. [on]"), lcd_set_filament_oq_meass);*//*////MSG_FSENS_OQMEASS_ON c=17*/\
             /*else*/\
-                /*MENU_ITEM_FUNCTION_P(_i("F. OQ meass.[off]"), lcd_set_filament_oq_meass);*//*////MSG_FSENS_OQMEASS_OFF c=17 r=1*/\
+                /*MENU_ITEM_FUNCTION_P(_i("F. OQ meass.[off]"), lcd_set_filament_oq_meass);*//*////MSG_FSENS_OQMEASS_OFF c=17*/\
         }\
     }\
 }\
@@ -5686,7 +5686,7 @@ static void lcd_calibration_menu()
   MENU_ITEM_BACK_P(_T(MSG_MAIN));
   if (!isPrintPaused)
   {
-	MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17 r=1
+	MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17
     if (lcd_commands_type == LcdCommands::Idle)
     {
          MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_first_layer_calibration_reset);////MSG_V2_CALIBRATION c=18
@@ -5706,7 +5706,7 @@ static void lcd_calibration_menu()
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM_SUBMENU_P(_T(MSG_HOMEYZ), lcd_mesh_calibration_z);
 #ifndef SNMM
-	//MENU_ITEM_FUNCTION_P(_i("Calibrate E"), lcd_calibrate_extruder);////MSG_CALIBRATE_E c=20 r=1
+	//MENU_ITEM_FUNCTION_P(_i("Calibrate E"), lcd_calibrate_extruder);////MSG_CALIBRATE_E c=20
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bedleveling);
@@ -5714,7 +5714,7 @@ static void lcd_calibration_menu()
 #endif //MK1BP
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=18
-	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17 r=1
+	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17
 #ifndef TMC2130
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=18
 #endif
@@ -5727,7 +5727,7 @@ static void lcd_calibration_menu()
 #ifndef MK1BP
     if(has_temperature_compensation())
     {
-	    MENU_ITEM_SUBMENU_P(_i("Temp. calibration"), lcd_pinda_calibration_menu);////MSG_CALIBRATION_PINDA_MENU c=17 r=1
+	    MENU_ITEM_SUBMENU_P(_i("Temp. calibration"), lcd_pinda_calibration_menu);////MSG_CALIBRATION_PINDA_MENU c=17
     }
 #endif //MK1BP
   }
@@ -5843,8 +5843,8 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	lcd_clear();
 	lcd_puts_at_P(0,0,_T(MSG_UNLOAD_FILAMENT)); lcd_print(':');
 	lcd_set_cursor(0, 1); lcd_print('>');
-	lcd_puts_at_P(1,2,_i("Used during print"));////MSG_USED c=19 r=1
-	lcd_puts_at_P(1,3,_i("Current"));////MSG_CURRENT c=19 r=1
+	lcd_puts_at_P(1,2,_i("Used during print"));////MSG_USED c=19
+	lcd_puts_at_P(1,3,_i("Current"));////MSG_CURRENT c=19
 	char cursor_pos = 1;
 	int enc_dif = 0;
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
@@ -6191,10 +6191,10 @@ static void fil_unload_menu()
 static void change_extr_menu(){
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_FUNCTION_P(_i("Extruder 1"), extr_change_0);////MSG_EXTRUDER_1 c=17 r=1
-	MENU_ITEM_FUNCTION_P(_i("Extruder 2"), extr_change_1);////MSG_EXTRUDER_2 c=17 r=1
-	MENU_ITEM_FUNCTION_P(_i("Extruder 3"), extr_change_2);////MSG_EXTRUDER_3 c=17 r=1
-	MENU_ITEM_FUNCTION_P(_i("Extruder 4"), extr_change_3);////MSG_EXTRUDER_4 c=17 r=1
+	MENU_ITEM_FUNCTION_P(_i("Extruder 1"), extr_change_0);////MSG_EXTRUDER_1 c=17
+	MENU_ITEM_FUNCTION_P(_i("Extruder 2"), extr_change_1);////MSG_EXTRUDER_2 c=17
+	MENU_ITEM_FUNCTION_P(_i("Extruder 3"), extr_change_2);////MSG_EXTRUDER_3 c=17
+	MENU_ITEM_FUNCTION_P(_i("Extruder 4"), extr_change_3);////MSG_EXTRUDER_4 c=17
 
 	MENU_END();
 }
@@ -6642,7 +6642,7 @@ static void lcd_main_menu()
         } else {
 #ifdef SNMM
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
-            MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
+            MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20
 #endif
 #ifdef FILAMENT_SENSOR
             if ((fsensor_autoload_enabled == true) && (fsensor_enabled == true) && (mmu_enabled == false))

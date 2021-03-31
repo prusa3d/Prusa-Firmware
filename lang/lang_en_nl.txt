@@ -150,7 +150,7 @@
 "Calibrate Z"
 "Kalibratie Z"
 
-#MSG_CALIBRATE_PINDA c=17 r=1
+#MSG_CALIBRATE_PINDA c=17
 "Calibrate"
 "Kalibreren"
 
@@ -206,7 +206,7 @@
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Kies een filament voor de kalibratie van de eerste laag en selecteer deze in het schermmenu."
 
-#MSG_CRASH_DETECTED c=20 r=1
+#MSG_CRASH_DETECTED c=20
 "Crash detected."
 "Crash gedetecteerd."
 
@@ -218,11 +218,11 @@
 "Crash"
 "\x00"
 
-#MSG_CURRENT c=19 r=1
+#MSG_CURRENT c=19
 "Current"
 "Actueel"
 
-#MSG_DATE c=17 r=1
+#MSG_DATE c=17
 "Date:"
 "Datum:"
 
@@ -254,7 +254,7 @@
 "Eject filament"
 "Fil. uitwerpen"
 
-#MSG_EJECTING_FILAMENT c=20 r=1
+#MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
 "Fil. word ontladen"
 
@@ -358,7 +358,7 @@
 "Filament used"
 "Gebruikte filament"
 
-#MSG_PRINT_TIME c=19 r=1
+#MSG_PRINT_TIME c=19
 "Print time"
 "Print tijd"
 
@@ -398,7 +398,7 @@
 "Front print fan?"
 "Voorzijde fan?"
 
-#MSG_BED_CORRECTION_FRONT c=14 r=1
+#MSG_BED_CORRECTION_FRONT c=14
 "Front side[um]"
 "Voorkant  [um]"
 
@@ -470,15 +470,15 @@
 "Checking Z axis"
 "Controleer Z as"
 
-#MSG_CHOOSE_EXTRUDER c=20 r=1
+#MSG_CHOOSE_EXTRUDER c=20
 "Choose extruder:"
 "Kies extruder:"
 
-#MSG_CHOOSE_FILAMENT c=20 r=1
+#MSG_CHOOSE_FILAMENT c=20
 "Choose filament:"
 "Kies filament:"
 
-#MSG_FILAMENT c=17 r=1
+#MSG_FILAMENT c=17
 "Filament"
 "\x00"
 
@@ -530,7 +530,7 @@
 "Left"
 "Links"
 
-#MSG_BED_CORRECTION_LEFT c=14 r=1
+#MSG_BED_CORRECTION_LEFT c=14
 "Left side [um]"
 "Linkerkant[um]"
 
@@ -734,19 +734,19 @@
 "Pause print"
 "Print pauzeren"
 
-#MSG_PID_RUNNING c=20 r=1
+#MSG_PID_RUNNING c=20
 "PID cal.           "
 "PID kal.           "
 
-#MSG_PID_FINISHED c=20 r=1
+#MSG_PID_FINISHED c=20
 "PID cal. finished"
 "PID kalibratie klaar"
 
-#MSG_PID_EXTRUDER c=17 r=1
+#MSG_PID_EXTRUDER c=17
 "PID calibration"
 "PID kalibratie"
 
-#MSG_PINDA_PREHEAT c=20 r=1
+#MSG_PINDA_PREHEAT c=20
 "PINDA Heating"
 "PINDA opwarmen"
 
@@ -866,7 +866,7 @@
 "Press the knob"
 "Druk op knop"
 
-#MSG_PRINT_PAUSED c=20 r=1
+#MSG_PRINT_PAUSED c=20
 "Print paused"
 "Print pauzeren"
 
@@ -898,7 +898,7 @@
 "prusa3d.com"
 "\x00"
 
-#MSG_BED_CORRECTION_REAR c=14 r=1
+#MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 "Achterkant[um]"
 
@@ -938,7 +938,7 @@
 "Resuming print"
 "Hervatten print"
 
-#MSG_BED_CORRECTION_RIGHT c=14 r=1
+#MSG_BED_CORRECTION_RIGHT c=14
 "Right side[um]"
 "Recht.kant[um]"
 
@@ -998,7 +998,7 @@
 "Select nozzle preheat temperature which matches your material."
 "Selecteer de voorverwarmingstemperatuur van de tuit die overeenkomt met uw materiaal."
 
-#MSG_SET_TEMPERATURE c=19 r=1
+#MSG_SET_TEMPERATURE c=19
 "Set temperature:"
 "Temp. instellen:"
 
@@ -1046,7 +1046,7 @@
 "Alphabet"
 "Alfabet"
 
-#MSG_SORTING c=20 r=1
+#MSG_SORTING c=20
 "Sorting files"
 "Bestanden sorteren"
 
@@ -1118,7 +1118,7 @@
 "Select temperature which matches your material."
 "Selecteer de temperatuur die overeenkomt met uw materiaal."
 
-#MSG_CALIBRATION_PINDA_MENU c=17 r=1
+#MSG_CALIBRATION_PINDA_MENU c=17
 "Temp. calibration"
 "Tempkalibratie"
 
@@ -1138,7 +1138,7 @@
 "Temperature"
 "Temperatuur"
 
-#MSG_MENU_TEMPERATURES c=15 r=1
+#MSG_MENU_TEMPERATURES c=15
 "Temperatures"
 "Temperaturen"
 
@@ -1174,7 +1174,7 @@
 "Unload filament"
 "Filament uitwerpen"
 
-#MSG_UNLOADING_FILAMENT c=20 r=1
+#MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
 "Uitwerpen filament"
 
@@ -1182,11 +1182,11 @@
 "Total"
 "Totaal"
 
-#MSG_USED c=19 r=1
+#MSG_USED c=19
 "Used during print"
 "Gebruikt bij print"
 
-#MSG_MENU_VOLTAGES c=15 r=1
+#MSG_MENU_VOLTAGES c=15
 "Voltages"
 "Spanning"
 
@@ -1226,7 +1226,7 @@
 "Wiring error"
 "Aansluitingsfout"
 
-#MSG_WIZARD c=17 r=1
+#MSG_WIZARD c=17
 "Wizard"
 "Wizard"
 
@@ -1449,4 +1449,3 @@
 #MSG_Z_PROBE_NR c=14
 "Z-probe nr."
 "\x00"
-
