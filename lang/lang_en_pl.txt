@@ -1322,7 +1322,7 @@
 "Checks"
 "Testy"
 
-#
+#MSG_FALSE_TRIGGERING c=20
 "False triggering"
 "Falszywy alarm"
 

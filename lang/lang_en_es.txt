@@ -1322,7 +1322,7 @@
 "Checks"
 "Comprobaciones"
 
-#
+#MSG_FALSE_TRIGGERING c=20
 "False triggering"
 "Falsa activacion"
 

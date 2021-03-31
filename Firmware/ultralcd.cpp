@@ -8123,7 +8123,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		break;
 	case TestError::TriggeringFsensor:
           lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
-          lcd_puts_at_P(0, 3, _i("False triggering"));////c=20
+          lcd_puts_at_P(0, 3, _i("False triggering"));////MSG_FALSE_TRIGGERING c=20
           break;
 	case TestError::FsensorLevel:
           lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));

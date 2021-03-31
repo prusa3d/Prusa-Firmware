@@ -1322,7 +1322,7 @@
 "Checks"
 "Controlli"
 
-#
+#MSG_FALSE_TRIGGERING c=20
 "False triggering"
 "Falso innesco"
 
