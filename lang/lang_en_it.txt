@@ -1154,7 +1154,7 @@
 "Total print time"
 "Tempo stampa totale"
 
-#MSG_TUNE
+#MSG_TUNE c=18
 "Tune"
 "Regola"
 

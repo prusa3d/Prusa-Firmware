@@ -865,7 +865,7 @@
 #
 "Total print time"
 
-#MSG_TUNE
+#MSG_TUNE c=18
 "Tune"
 
 #
