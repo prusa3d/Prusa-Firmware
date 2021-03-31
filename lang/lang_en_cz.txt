@@ -726,7 +726,7 @@
 "Now remove the test print from steel sheet."
 "Nyni odstrante testovaci vytisk z tiskoveho platu."
 
-#
+#MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
 "Vent. trysky"
 
@@ -878,7 +878,7 @@
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
 
-#
+#MSG_PRINT_FAN c=10
 "Print FAN"
 "Tiskovy vent."
 

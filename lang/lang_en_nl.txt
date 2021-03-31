@@ -726,7 +726,7 @@
 "Now remove the test print from steel sheet."
 "Verwijder nu de testprint van staalplaat."
 
-#
+#MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
 "Tuit fan"
 
@@ -878,7 +878,7 @@
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Printer is nog niet gekalibreerd. Volg de handleiding, hoofdstuk First steps, sectie Calibration flow."
 
-#
+#MSG_PRINT_FAN c=10
 "Print FAN"
 "\x00"
 

@@ -726,7 +726,7 @@
 "Now remove the test print from steel sheet."
 "Teraz zdejmij wydruk testowy ze stolu."
 
-#
+#MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
 "WentHotend"
 
@@ -878,7 +878,7 @@
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Drukarka nie byla jeszcze kalibrowana. Kieruj sie Samouczkiem: rozdzial Pierwsze Kroki, sekcja Konfiguracja przed drukowaniem."
 
-#
+#MSG_PRINT_FAN c=10
 "Print FAN"
 "WentWydruk"
 

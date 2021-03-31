@@ -1425,8 +1425,8 @@ static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Nozzle FAN: 0000 RPM|	FAN c=10 r=1  SPEED c=3 r=1
-//! |Print FAN:  0000 RPM|	FAN c=10 r=1  SPEED c=3 r=1
+//! |Nozzle FAN: 0000 RPM|	MSG_NOZZLE_FAN c=10  SPEED c=3
+//! |Print FAN:  0000 RPM|	MSG_PRINT_FAN c=10  SPEED c=3
 //! |                    |
 //! |                    |
 //! ----------------------
@@ -1440,8 +1440,8 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
     lcd_home();
     static const size_t maxChars = 12;
     char nozzle[maxChars], print[maxChars];
-    pgmtext_with_colon(_i("Nozzle FAN"), nozzle, maxChars);  ////c=10 r=1
-    pgmtext_with_colon(_i("Print FAN"), print, maxChars);  ////c=10 r=1
+    pgmtext_with_colon(_i("Nozzle FAN"), nozzle, maxChars);  ////MSG_NOZZLE_FAN c=10
+    pgmtext_with_colon(_i("Print FAN"), print, maxChars);  ////MSG_PRINT_FAN c=10
 	lcd_printf_P(_N("%s %4d RPM\n" "%s %4d RPM\n"), nozzle, 60*fan_speed[0], print, 60*fan_speed[1] ); 
     menu_back_if_clicked();
 }

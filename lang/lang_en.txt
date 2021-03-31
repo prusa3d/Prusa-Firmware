@@ -544,7 +544,7 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 
-#
+#MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
 
 #MSG_PAUSE_PRINT c=18
@@ -658,7 +658,7 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 
-#
+#MSG_PRINT_FAN c=10
 "Print FAN"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6

@@ -726,7 +726,7 @@
 "Now remove the test print from steel sheet."
 "Retirez maintenant l'impression de test de la plaque en acier."
 
-#
+#MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
 "Vent. buse"
 
@@ -878,7 +878,7 @@
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "L'imprimante n'a pas encore ete calibree. Suivez le manuel, chapitre Premiers pas, section Processus de calibration."
 
-#
+#MSG_PRINT_FAN c=10
 "Print FAN"
 "Vent. impr"
 
