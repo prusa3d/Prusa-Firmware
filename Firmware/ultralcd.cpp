@@ -7340,7 +7340,7 @@ static void lcd_detect_IRsensor(){
         lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));////MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
         return;
     } else {
-        lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connection, unload filament if present."));
+        lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connection, unload filament if present."));////MSG_CHECK_IR_CONNECTION c=20 r=4
         bAction = lcd_selftest_IRsensor(true);
     }
     if(bAction){

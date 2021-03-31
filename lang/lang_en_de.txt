@@ -906,7 +906,7 @@
 "Please unload the filament first, then repeat this action."
 "Bitte entladen Sie erst das Filament und versuchen Sie es nochmal."
 
-# c=20 r=4
+#MSG_CHECK_IR_CONNECTION c=20 r=4
 "Please check the IR sensor connection, unload filament if present."
 "Bitte IR Sensor Verbindungen ueber- pruefen und Filament entladen ist."
 

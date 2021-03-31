@@ -679,7 +679,7 @@
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
 
-# c=20 r=4
+#MSG_CHECK_IR_CONNECTION c=20 r=4
 "Please check the IR sensor connection, unload filament if present."
 
 #MSG_RECOVERING_PRINT c=20

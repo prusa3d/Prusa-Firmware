@@ -906,7 +906,7 @@
 "Please unload the filament first, then repeat this action."
 "Verwijder eerst het filament en probeer het opnieuw."
 
-# c=20 r=4
+#MSG_CHECK_IR_CONNECTION c=20 r=4
 "Please check the IR sensor connection, unload filament if present."
 "AUB IR sensor ver- binding kontrolleren , verwijder filament indien aanwezig."
 
