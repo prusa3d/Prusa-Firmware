@@ -1406,11 +1406,11 @@
 "Preheating to eject"
 "Chauf. pour remonter"
 
-# c=20 r=5
+#MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Diametre de la buse dans les reglages ne correspond pas a celui dans le G-Code. Continuer?"
 
-# c=20 r=9
+#MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Diametre de la buse dans les reglages ne correspond pas a celui dans le G-Code. Merci de verifier le parametre dans les reglages. Impression annulee."
 

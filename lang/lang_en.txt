@@ -1054,10 +1054,10 @@
 #MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
 
-# c=20 r=5
+#MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 
-# c=20 r=9
+#MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 
 # c=20

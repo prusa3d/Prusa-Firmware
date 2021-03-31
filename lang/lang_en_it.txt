@@ -1406,11 +1406,11 @@
 "Preheating to eject"
 "Preriscalda. espuls."
 
-# c=20 r=5
+#MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "Diametro ugello diverso da G-Code. Continuare?"
 
-# c=20 r=9
+#MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Diametro ugello diverso dal G-Code. Controlla il valore nelle impostazioni. Stampa annullata."
 

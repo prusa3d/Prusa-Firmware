@@ -1406,11 +1406,11 @@
 "Preheating to eject"
 "Opwarm.te uitwerpen"
 
-# c=20 r=5
+#MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "De diameter van de tuit van de printer verschilt van de G-code. Doorgaan?"
 
-# c=20 r=9
+#MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "De diameter van de tuit van de printer verschilt van de G-code. Controleer de waarde in de instellingen. Afdrukken geannuleerd."
 
