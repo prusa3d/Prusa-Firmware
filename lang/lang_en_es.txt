@@ -1134,7 +1134,7 @@
 "Sensor verified, remove the filament now."
 "Sensor verificado, retire el filamento ahora."
 
-#MSG_TEMPERATURE
+#MSG_TEMPERATURE c=18
 "Temperature"
 "Temperatura"
 

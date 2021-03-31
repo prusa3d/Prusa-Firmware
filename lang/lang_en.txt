@@ -850,7 +850,7 @@
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
 
-#MSG_TEMPERATURE
+#MSG_TEMPERATURE c=18
 "Temperature"
 
 #MSG_MENU_TEMPERATURES c=15 r=1
