@@ -1106,7 +1106,7 @@
 "Swapped"
 "Ausgetauscht"
 
-# c=20
+#MSG_SELECT_FILAMENT c=20
 "Select filament:"
 "Filament auswaehlen:"
 

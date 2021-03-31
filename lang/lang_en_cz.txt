@@ -1106,7 +1106,7 @@
 "Swapped"
 "Prohozene"
 
-# c=20
+#MSG_SELECT_FILAMENT c=20
 "Select filament:"
 "Zvolte filament:"
 

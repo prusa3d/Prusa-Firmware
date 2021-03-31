@@ -829,7 +829,7 @@
 #MSG_SELFTEST_SWAPPED c=16
 "Swapped"
 
-# c=20
+#MSG_SELECT_FILAMENT c=20
 "Select filament:"
 
 #MSG_TEMP_CALIBRATION c=14
