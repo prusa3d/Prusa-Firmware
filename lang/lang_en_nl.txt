@@ -1326,7 +1326,7 @@
 "False triggering"
 "Valse triggering"
 
-#
+#MSG_FINDA c=5
 "FINDA:"
 "\x00"
 
