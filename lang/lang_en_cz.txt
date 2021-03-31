@@ -1098,7 +1098,7 @@
 "STOPPED. "
 "ZASTAVENO."
 
-#MSG_SUPPORT
+#MSG_SUPPORT c=18
 "Support"
 "Podpora"
 

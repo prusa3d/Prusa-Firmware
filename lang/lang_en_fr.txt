@@ -1098,7 +1098,7 @@
 "STOPPED. "
 "ARRETE."
 
-#MSG_SUPPORT
+#MSG_SUPPORT c=18
 "Support"
 "\x00"
 
