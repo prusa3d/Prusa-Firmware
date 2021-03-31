@@ -1038,7 +1038,7 @@
 "Time"
 "Fecha"
 
-#
+#MSG_SEVERE_SKEW c=13
 "Severe skew:"
 "Incl.severa:"
 
@@ -1054,7 +1054,7 @@
 "Loud"
 "Alto"
 
-#
+#MSG_SLIGHT_SKEW c=13
 "Slight skew:"
 "Liger.incl.:"
 

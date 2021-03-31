@@ -1038,7 +1038,7 @@
 "Time"
 "Tijd"
 
-#
+#MSG_SEVERE_SKEW c=13
 "Severe skew:"
 "Erg scheef:"
 
@@ -1054,7 +1054,7 @@
 "Loud"
 "Hard"
 
-#
+#MSG_SLIGHT_SKEW c=13
 "Slight skew:"
 "Iets scheef:"
 

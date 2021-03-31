@@ -1038,7 +1038,7 @@
 "Time"
 "Heure"
 
-#
+#MSG_SEVERE_SKEW c=13
 "Severe skew:"
 "Deviat.sev.:"
 
@@ -1054,7 +1054,7 @@
 "Loud"
 "Fort"
 
-#
+#MSG_SLIGHT_SKEW c=13
 "Slight skew:"
 "Deviat.leg.:"
 

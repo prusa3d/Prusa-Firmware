@@ -778,7 +778,7 @@
 #MSG_SORT_TIME c=8
 "Time"
 
-#
+#MSG_SEVERE_SKEW c=13
 "Severe skew:"
 
 #MSG_SORT_ALPHA c=8
@@ -790,7 +790,7 @@
 #MSG_SOUND_LOUD
 "Loud"
 
-#
+#MSG_SLIGHT_SKEW c=13
 "Slight skew:"
 
 #MSG_SOUND c=7

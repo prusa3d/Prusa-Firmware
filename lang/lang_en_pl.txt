@@ -1038,7 +1038,7 @@
 "Time"
 "Czas"
 
-#
+#MSG_SEVERE_SKEW c=13
 "Severe skew:"
 "Znaczny skos:"
 
@@ -1054,7 +1054,7 @@
 "Loud"
 "Glosny"
 
-#
+#MSG_SLIGHT_SKEW c=13
 "Slight skew:"
 "Lekki skos:"
 

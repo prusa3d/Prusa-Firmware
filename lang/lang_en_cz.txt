@@ -1038,7 +1038,7 @@
 "Time"
 "Cas"
 
-#
+#MSG_SEVERE_SKEW c=13
 "Severe skew:"
 "Tezke zkoseni:"
 
@@ -1054,7 +1054,7 @@
 "Loud"
 "Hlasity"
 
-#
+#MSG_SLIGHT_SKEW c=13
 "Slight skew:"
 "Lehke zkoseni:"
 
