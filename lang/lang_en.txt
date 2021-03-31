@@ -1066,7 +1066,7 @@
 #MSG_RENAME c=18
 "Rename"
 
-#
+#MSG_SELECT c=18
 "Select"
 
 #

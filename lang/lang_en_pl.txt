@@ -1422,7 +1422,7 @@
 "Rename"
 "Zmien nazwe"
 
-#
+#MSG_SELECT c=18
 "Select"
 "Wybierz"
 

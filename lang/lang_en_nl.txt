@@ -1422,7 +1422,7 @@
 "Rename"
 "Hernoem"
 
-#
+#MSG_SELECT c=18
 "Select"
 "Selecteer"
 

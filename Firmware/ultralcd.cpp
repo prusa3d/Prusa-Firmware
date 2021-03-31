@@ -6486,7 +6486,7 @@ static void lcd_sheet_menu()
     MENU_ITEM_BACK_P(_T(MSG_STEEL_SHEETS));
 
 	if(eeprom_is_sheet_initialized(selected_sheet)){
-	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18
+	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); ////MSG_SELECT c=18
 	}
 
     if (lcd_commands_type == LcdCommands::Idle)

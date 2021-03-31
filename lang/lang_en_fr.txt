@@ -1422,7 +1422,7 @@
 "Rename"
 "Renommer"
 
-#
+#MSG_SELECT c=18
 "Select"
 "Selectionner"
 
