@@ -1074,7 +1074,7 @@
 "Once"
 "Eenmaal"
 
-#MSG_SPEED
+#MSG_SPEED c=15
 "Speed"
 "Snelheid"
 

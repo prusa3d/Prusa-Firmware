@@ -1074,7 +1074,7 @@
 "Once"
 "1-raz"
 
-#MSG_SPEED
+#MSG_SPEED c=15
 "Speed"
 "Predkosc"
 
