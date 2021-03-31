@@ -722,7 +722,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  screen++;
 			  }
 			  else {  //screen 1
-				  if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));////c=20 r=4
+				  if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));////MSG_RESUME_NOZZLE_TEMP c=20 r=4
 				  else lcd_display_message_fullscreen_P(_i("Fix the issue and then press button on MMU unit."));////MSG_MMU_FIX_ISSUE c=20 r=4
 				  screen=0;
 			  }

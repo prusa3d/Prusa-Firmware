@@ -870,7 +870,7 @@
 "Print paused"
 "Impression en pause"
 
-# c=20 r=4
+#MSG_RESUME_NOZZLE_TEMP c=20 r=4
 "Press the knob to resume nozzle temperature."
 "Appuyez sur le bouton pour rechauffer la buse."
 
