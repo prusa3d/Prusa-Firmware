@@ -1146,11 +1146,11 @@
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "Je potreba kalibrovat osu Z. Prosim postupujte dle prirucky, kapitola Zaciname, sekce Postup kalibrace."
 
-#
+#MSG_TOTAL_FILAMENT c=19
 "Total filament"
 "Filament celkem"
 
-#
+#MSG_TOTAL_PRINT_TIME c=19
 "Total print time"
 "Celkovy cas tisku"
 

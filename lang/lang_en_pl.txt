@@ -1146,11 +1146,11 @@
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "Musimy przeprowadzic kalibracje Z. Kieruj sie Samouczkiem: rozdzial Pierwsze Kroki, sekcja Kalibracja."
 
-#
+#MSG_TOTAL_FILAMENT c=19
 "Total filament"
 "Zuzycie filamentu"
 
-#
+#MSG_TOTAL_PRINT_TIME c=19
 "Total print time"
 "Laczny czas druku"
 

@@ -859,10 +859,10 @@
 #MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 
-#
+#MSG_TOTAL_FILAMENT c=19
 "Total filament"
 
-#
+#MSG_TOTAL_PRINT_TIME c=19
 "Total print time"
 
 #MSG_TUNE c=18
