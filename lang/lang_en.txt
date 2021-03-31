@@ -868,9 +868,6 @@
 #MSG_TUNE c=18
 "Tune"
 
-#
-"Unload"
-
 #MSG_TOTAL_FAILURES c=20
 "Total failures"
 

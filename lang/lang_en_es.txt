@@ -1158,10 +1158,6 @@
 "Tune"
 "Ajustar"
 
-#
-"Unload"
-"Descargar"
-
 #MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Fallos totales"
