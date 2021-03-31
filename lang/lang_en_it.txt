@@ -886,7 +886,7 @@
 "Please insert filament into the extruder, then press the knob to load it."
 "Inserisci il filamento nell'estrusore, poi premi la manopola per caricarlo."
 
-# c=20 r=6
+#MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 "Please insert filament into the first tube of the MMU, then press the knob to load it."
 "Per favore inserisci il filamento nel primo tubo del MMU, poi premi la manopola per caricarlo."
 

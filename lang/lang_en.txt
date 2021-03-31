@@ -664,7 +664,7 @@
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
 
-# c=20 r=6
+#MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 "Please insert filament into the first tube of the MMU, then press the knob to load it."
 
 #MSG_PLEASE_LOAD_PLA c=20 r=4
