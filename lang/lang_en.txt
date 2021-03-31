@@ -466,7 +466,7 @@
 #MSG_MODE c=6
 "Mode"
 
-# c=20 r=3
+#MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 "MK3 firmware detected on MK3S printer"
 
 #MSG_NORMAL c=7
@@ -1015,7 +1015,7 @@
 #MSG_MESH c=12
 "Mesh"
 
-#
+#MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
 "MK3S firmware detected on MK3 printer"
 
 #MSG_MMU_MODE c=8

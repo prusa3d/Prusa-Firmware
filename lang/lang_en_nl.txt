@@ -622,7 +622,7 @@
 "Mode"
 "Stand"
 
-# c=20 r=3
+#MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 "MK3 firmware detected on MK3S printer"
 "MK3-firmware bij MK3S-printer gedetecteerd"
 
@@ -1354,7 +1354,7 @@
 "Mesh"
 "\x00"
 
-#
+#MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
 "MK3S firmware detected on MK3 printer"
 "MK3S-firmware op MK3-printer ontdekt"
 
