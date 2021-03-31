@@ -1062,7 +1062,7 @@
 "Sound"
 "Ton"
 
-# c=7
+#MSG_RUNOUTS c=7
 "Runouts"
 "\x00"
 

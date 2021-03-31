@@ -1557,10 +1557,10 @@ static void lcd_menu_fails_stats_total()
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Last print failures |	c=20 r=1
-//! | Power failures  000|	c=14 r=1
-//! | Runouts H 000 S 000|	c=14 r=1
-//! | Crash   X:000 Y:000|	c=7 r=1
+//! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
+//! | Power failures  000|	MSG_POWER_FAILURES c=14
+//! | Runouts H 000 S 000|	MSG_RUNOUTS c=7
+//! | Crash   X:000 Y:000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
 
@@ -1587,7 +1587,7 @@ static void lcd_menu_fails_stats_print()
                       " %-7.7S X %-3d Y %-3d"),
                  _T(MSG_LAST_PRINT_FAILURES), ////c=20
                  _T(MSG_POWER_FAILURES), power, ////c=15
-                 _i("Runouts"), filam, fsensor_softfail, //c=7
+                 _i("Runouts"), filam, fsensor_softfail, //MSG_RUNOUTS c=7
                  _T(MSG_CRASH), crashX, crashY);  ////c=7
 #endif
     menu_back_if_clicked_fb();

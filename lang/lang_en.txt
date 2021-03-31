@@ -796,7 +796,7 @@
 #MSG_SOUND c=7
 "Sound"
 
-# c=7
+#MSG_RUNOUTS c=7
 "Runouts"
 
 #
