@@ -4281,7 +4281,7 @@ static void lcd_silent_mode_set() {
 	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
-  lcd_display_message_fullscreen_P(_i("Mode change in progress ..."));
+  lcd_display_message_fullscreen_P(_i("Mode change in progress ..."));////MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
   // Wait until the planner queue is drained and the stepper routine achieves
   // an idle state.
   st_synchronize();

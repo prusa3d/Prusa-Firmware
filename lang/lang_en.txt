@@ -1021,7 +1021,7 @@
 #MSG_MMU_MODE c=8
 "MMU Mode"
 
-#
+#MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 "Mode change in progress ..."
 
 #MSG_MODEL c=8

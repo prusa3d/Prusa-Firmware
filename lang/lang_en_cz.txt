@@ -1362,7 +1362,7 @@
 "MMU Mode"
 "MMU mod"
 
-#
+#MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 "Mode change in progress ..."
 "Probiha zmena modu..."
 
