@@ -7337,7 +7337,7 @@ static void lcd_detect_IRsensor(){
     /// @todo Add autodetection with MMU2s
     loaded = ! READ(IR_SENSOR_PIN);
     if(loaded ){
-        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));
+        lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));////MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
         return;
     } else {
         lcd_show_fullscreen_message_and_wait_P(_i("Please check the IR sensor connection, unload filament if present."));
