@@ -1066,7 +1066,7 @@
 "Runouts"
 "Konce f"
 
-#
+#MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
 "Wykryto problem, wymuszono poziomowanie osi Z."
 

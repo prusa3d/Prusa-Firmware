@@ -799,7 +799,7 @@
 #MSG_RUNOUTS c=7
 "Runouts"
 
-#
+#MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
 
 #MSG_SOUND_ONCE c=7

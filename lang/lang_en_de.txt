@@ -1066,7 +1066,7 @@
 "Runouts"
 "\x00"
 
-#
+#MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
 "Fehler aufgetreten, Z-Kalibrierung erforderlich..."
 
