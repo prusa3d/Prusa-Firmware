@@ -1980,7 +1980,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=18
   MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=18
-  MENU_ITEM_SUBMENU_P(_i("Sensor info"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18 r=1
+  MENU_ITEM_SUBMENU_P(_i("Sensor info"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18
 
 #ifdef TMC2130
   MENU_ITEM_SUBMENU_P(_T(MSG_BELT_STATUS), lcd_menu_belt_status);////MSG_BELT_STATUS c=18

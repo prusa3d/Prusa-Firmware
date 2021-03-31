@@ -1069,7 +1069,7 @@
 #MSG_SELECT c=18
 "Select"
 
-#
+#MSG_INFO_SENSORS c=18
 "Sensor info"
 
 #MSG_SHEET c=10

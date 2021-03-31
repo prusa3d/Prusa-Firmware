@@ -1426,7 +1426,7 @@
 "Select"
 "Selectionner"
 
-#
+#MSG_INFO_SENSORS c=18
 "Sensor info"
 "Info capteur"
 
