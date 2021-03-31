@@ -1086,3 +1086,6 @@
 
 #MSG_Z_PROBE_NR c=14
 "Z-probe nr."
+
+#MSG_PRINTER_IP c=18
+"Printer IP Addr:"

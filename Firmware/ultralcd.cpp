@@ -1967,7 +1967,7 @@ static void lcd_support_menu()
   if (IP_address) {
       
       MENU_ITEM_BACK_P(STR_SEPARATOR);
-      MENU_ITEM_BACK_P(PSTR("Printer IP Addr:"));  ////c=18
+      MENU_ITEM_BACK_P(PSTR("Printer IP Addr:"));  ////MSG_PRINTER_IP c=18
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
