@@ -604,7 +604,7 @@
 #MSG_PLEASE_WAIT c=20
 "Please wait"
 
-#
+#MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 "Please remove shipping helpers first."
 
 #MSG_PREHEAT_NOZZLE c=20

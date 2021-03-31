@@ -806,7 +806,7 @@
 "Please wait"
 "Bitte warten"
 
-#
+#MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 "Please remove shipping helpers first."
 "Bitte zuerst Transportsicherungen entfernen."
 
