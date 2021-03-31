@@ -1114,7 +1114,7 @@
 "Temp. cal."
 "Tempkalib."
 
-# c=20 r=4
+#MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Selecteer de temperatuur die overeenkomt met uw materiaal."
 
