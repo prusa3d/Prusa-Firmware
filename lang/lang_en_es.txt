@@ -1086,7 +1086,7 @@
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
 "Se necesita una temperatura ambiente ente 21 y 26C y un soporte rigido."
 
-#MSG_STATISTICS
+#MSG_STATISTICS c=18
 "Statistics  "
 "Estadisticas "
 

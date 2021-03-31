@@ -1086,7 +1086,7 @@
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
 "Je vyzadovana stabilni pokojova teplota 21-26C a pevna podlozka."
 
-#MSG_STATISTICS
+#MSG_STATISTICS c=18
 "Statistics  "
 "Statistika "
 

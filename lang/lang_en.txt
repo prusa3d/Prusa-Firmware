@@ -814,7 +814,7 @@
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
 
-#MSG_STATISTICS
+#MSG_STATISTICS c=18
 "Statistics  "
 
 #MSG_STOP_PRINT c=18

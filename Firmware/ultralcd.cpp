@@ -6661,7 +6661,7 @@ static void lcd_main_menu()
     }
 
     if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal)) {
-        MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS
+        MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS c=18
     }
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
