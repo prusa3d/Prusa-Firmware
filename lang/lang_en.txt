@@ -787,7 +787,7 @@
 #MSG_SORTING c=20 r=1
 "Sorting files"
 
-#MSG_SOUND_LOUD
+#MSG_SOUND_LOUD c=7
 "Loud"
 
 #MSG_SLIGHT_SKEW c=13

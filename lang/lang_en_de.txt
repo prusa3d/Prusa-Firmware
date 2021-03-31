@@ -1050,7 +1050,7 @@
 "Sorting files"
 "Sortiere Dateien"
 
-#MSG_SOUND_LOUD
+#MSG_SOUND_LOUD c=7
 "Loud"
 "Laut"
 
