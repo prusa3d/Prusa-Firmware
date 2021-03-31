@@ -822,7 +822,7 @@
 "Preheating nozzle. Please wait."
 "Prechauffage de la buse. Merci de patienter."
 
-#MSG_PINDA c=6
+#MSG_PINDA c=5
 "PINDA"
 "\x00"
 
@@ -1326,7 +1326,7 @@
 "False triggering"
 "Faux declenchement"
 
-#
+#MSG_FINDA c=5
 "FINDA"
 "\x00"
 

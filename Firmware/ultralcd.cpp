@@ -3745,7 +3745,7 @@ static void lcd_print_state(uint8_t state)
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |PINDA N/A  FINDA N/A|  MSG_PINDA c=6 MSG_FINDA c=6
+//! |PINDA N/A  FINDA N/A|  MSG_PINDA c=5 MSG_FINDA c=5
 //! |Fil. sensor      N/A|  MSG_FSENSOR 
 //! |Xd    000  Yd    000|  MSG_XD
 //! |Int   000  Shut  000|  
@@ -3770,7 +3770,7 @@ static void lcd_show_sensors_state()
 	
 	if (mmu_enabled == true)
 	{
-		lcd_puts_at_P(10, 0, _i("FINDA"));
+		lcd_puts_at_P(10, 0, _i("FINDA"));////MSG_FINDA c=5
 		lcd_set_cursor(LCD_WIDTH - 3, 0);
 		lcd_print_state(finda_state);
 	}

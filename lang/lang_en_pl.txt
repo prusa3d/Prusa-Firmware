@@ -822,7 +822,7 @@
 "Preheating nozzle. Please wait."
 "Nagrzewanie dyszy. Prosze czekac."
 
-#MSG_PINDA c=6
+#MSG_PINDA c=5
 "PINDA"
 "\x00"
 
@@ -1326,7 +1326,7 @@
 "False triggering"
 "Falszywy alarm"
 
-#
+#MSG_FINDA c=5
 "FINDA"
 "\x00"
 

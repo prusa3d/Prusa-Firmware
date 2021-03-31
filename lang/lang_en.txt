@@ -616,7 +616,7 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 
-#MSG_PINDA c=6
+#MSG_PINDA c=5
 "PINDA"
 
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
@@ -994,7 +994,7 @@
 #MSG_FALSE_TRIGGERING c=20
 "False triggering"
 
-#
+#MSG_FINDA c=5
 "FINDA"
 
 #MSG_FIRMWARE c=8

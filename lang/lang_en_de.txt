@@ -822,7 +822,7 @@
 "Preheating nozzle. Please wait."
 "Vorheizen der Duese. Bitte warten."
 
-#MSG_PINDA c=6
+#MSG_PINDA c=5
 "PINDA"
 "\x00"
 
@@ -1326,7 +1326,7 @@
 "False triggering"
 "Falschtriggerung"
 
-#
+#MSG_FINDA c=5
 "FINDA"
 "\x00"
 
