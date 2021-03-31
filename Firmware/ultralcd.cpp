@@ -2752,7 +2752,7 @@ static void lcd_menu_xyz_y_min()
     count_xyz_details(distanceMin);
 	lcd_home();
 	lcd_printf_P(_N(
-	  "%S:\n"
+	  "%S\n"
 	  "%S\n"
 	  "%S:\n"
 	  "%S:"
