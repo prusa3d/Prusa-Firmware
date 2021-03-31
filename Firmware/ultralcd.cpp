@@ -1944,7 +1944,7 @@ static void lcd_support_menu()
 			if ((mmu_version > 0) && (mmu_buildnr > 0))
 				lcd_printf_P(PSTR("%d.%d.%d-%d"), mmu_version/100, mmu_version%100/10, mmu_version%10, mmu_buildnr);
 			else
-				lcd_puts_P(_i("unknown")); 
+				lcd_puts_P(_i("unknown"));  ////MSG_UNKNOWN c=13
 		}
 	}
 	else

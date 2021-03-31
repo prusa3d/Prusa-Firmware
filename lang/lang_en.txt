@@ -892,7 +892,7 @@
 #MSG_MENU_VOLTAGES c=15 r=1
 "Voltages"
 
-#
+#MSG_UNKNOWN c=13
 "unknown"
 
 #MSG_USERWAIT c=20

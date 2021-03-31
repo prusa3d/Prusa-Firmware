@@ -1190,7 +1190,7 @@
 "Voltages"
 "Napeti"
 
-#
+#MSG_UNKNOWN c=13
 "unknown"
 "neznamy"
 

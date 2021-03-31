@@ -1190,7 +1190,7 @@
 "Voltages"
 "Spanning"
 
-#
+#MSG_UNKNOWN c=13
 "unknown"
 "onbekend"
 

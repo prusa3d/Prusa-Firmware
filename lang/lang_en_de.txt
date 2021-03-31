@@ -1190,7 +1190,7 @@
 "Voltages"
 "Spannungen"
 
-#
+#MSG_UNKNOWN c=13
 "unknown"
 "unbekannt"
 

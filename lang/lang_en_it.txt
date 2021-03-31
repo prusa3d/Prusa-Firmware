@@ -1190,7 +1190,7 @@
 "Voltages"
 "Voltaggi"
 
-#
+#MSG_UNKNOWN c=13
 "unknown"
 "sconosciuto"
 

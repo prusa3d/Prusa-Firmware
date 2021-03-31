@@ -1190,7 +1190,7 @@
 "Voltages"
 "Napiecia"
 
-#
+#MSG_UNKNOWN c=13
 "unknown"
 "nieznane"
 
