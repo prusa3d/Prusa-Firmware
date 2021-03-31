@@ -1465,7 +1465,7 @@ static void lcd_menu_fails_stats_mmu()
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_mmu_print);
-	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_mmu_total); ////c=18
+	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_mmu_total);
 	MENU_END();
 }
 
@@ -1485,9 +1485,9 @@ static void lcd_menu_fails_stats_mmu_print()
 	lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
-        _T(MSG_LAST_PRINT_FAILURES), ////c=20
-        _T(MSG_MMU_FAILS), clamp999( eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) ), ////c=14
-        _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) )); ////c=14
+        _T(MSG_LAST_PRINT_FAILURES),
+        _T(MSG_MMU_FAILS), clamp999( eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) ),
+        _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) ));
     menu_back_if_clicked_fb();
 }
 
@@ -1508,9 +1508,9 @@ static void lcd_menu_fails_stats_mmu_total()
 	lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
-        _T(MSG_TOTAL_FAILURES), ////c=20
-        _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ), ////c=14
-        _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ), ////c=14
+        _T(MSG_TOTAL_FAILURES),
+        _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ),
+        _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
         _i("MMU power fails"), clamp999( mmu_power_failures )); ////MSG_MMU_POWER_FAILS c=15
     menu_back_if_clicked_fb();
 }
@@ -1534,10 +1534,10 @@ static void lcd_menu_fails_stats_total()
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	lcd_home();
     lcd_printf_P(failStatsFmt, 
-        _T(MSG_TOTAL_FAILURES),   ////c=20
-        _T(MSG_POWER_FAILURES), clamp999( eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) ),   ////c=14
-        _T(MSG_FIL_RUNOUTS), clamp999( eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) ),   ////c=14
-        _T(MSG_CRASH),   ////c=7
+        _T(MSG_TOTAL_FAILURES),
+        _T(MSG_POWER_FAILURES), clamp999( eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) ),
+        _T(MSG_FIL_RUNOUTS), clamp999( eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) ),
+        _T(MSG_CRASH),
             clamp999( eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) ), 
             clamp999( eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) ));
     menu_back_if_clicked_fb();
@@ -1575,20 +1575,20 @@ static void lcd_menu_fails_stats_print()
     lcd_home();
 #ifndef PAT9125
     lcd_printf_P(failStatsFmt,
-        _T(MSG_LAST_PRINT_FAILURES),  ////c=20
-        _T(MSG_POWER_FAILURES), power,  ////c=15
-        _T(MSG_FIL_RUNOUTS), filam,  ////c=15
-        _T(MSG_CRASH), crashX, crashY);  ////c=7
+        _T(MSG_LAST_PRINT_FAILURES),
+        _T(MSG_POWER_FAILURES), power,
+        _T(MSG_FIL_RUNOUTS), filam,
+        _T(MSG_CRASH), crashX, crashY);
 #else
     // On the MK3 include detailed PAT9125 statistics about soft failures
     lcd_printf_P(PSTR("%S\n"
                       " %-16.16S%-3d\n"
                       " %-7.7S H %-3d S %-3d\n"
                       " %-7.7S X %-3d Y %-3d"),
-                 _T(MSG_LAST_PRINT_FAILURES), ////c=20
-                 _T(MSG_POWER_FAILURES), power, ////c=15
+                 _T(MSG_LAST_PRINT_FAILURES),
+                 _T(MSG_POWER_FAILURES), power,
                  _i("Runouts"), filam, fsensor_softfail, //MSG_RUNOUTS c=7
-                 _T(MSG_CRASH), crashX, crashY);  ////c=7
+                 _T(MSG_CRASH), crashX, crashY);
 #endif
     menu_back_if_clicked_fb();
 }
@@ -1612,8 +1612,8 @@ static void lcd_menu_fails_stats()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_print);  ////c=18
-	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_total);  ////c=18
+	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_print);
+	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_total);
 	MENU_END();
 }
 
@@ -1642,10 +1642,10 @@ static void lcd_menu_fails_stats()
     uint16_t filamentTotal = clamp999( eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) );
 	lcd_home();
 	lcd_printf_P(failStatsFmt, 
-        _T(MSG_LAST_PRINT_FAILURES),   ////c=20
-        _T(MSG_FIL_RUNOUTS), filamentLast,   ////c=15
-        _T(MSG_TOTAL_FAILURES),  ////c=20
-        _T(MSG_FIL_RUNOUTS), filamentTotal);   ////c=15
+        _T(MSG_LAST_PRINT_FAILURES),
+        _T(MSG_FIL_RUNOUTS), filamentLast,
+        _T(MSG_TOTAL_FAILURES),
+        _T(MSG_FIL_RUNOUTS), filamentTotal);
 
 	menu_back_if_clicked();
 }
@@ -2830,8 +2830,8 @@ static void lcd_menu_xyz_offset()
 {
     lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
     lcd_puts_at_P(0, 1, separator);
-    lcd_puts_at_P(0, 2, PSTR("X"));  ////c=10
-    lcd_puts_at_P(0, 3, PSTR("Y"));  ////c=10
+    lcd_puts_at_P(0, 2, PSTR("X"));
+    lcd_puts_at_P(0, 3, PSTR("Y"));
 
     float vec_x[2];
     float vec_y[2];
