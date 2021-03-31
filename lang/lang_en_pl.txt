@@ -1418,7 +1418,7 @@
 "%s level expected"
 "Oczekiwano wersji %s"
 
-#
+#MSG_RENAME c=18
 "Rename"
 "Zmien nazwe"
 

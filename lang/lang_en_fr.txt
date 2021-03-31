@@ -1418,7 +1418,7 @@
 "%s level expected"
 "\x00"
 
-#
+#MSG_RENAME c=18
 "Rename"
 "Renommer"
 
