@@ -1318,7 +1318,7 @@
 "Back"
 "Zurueck"
 
-#
+#MSG_CHECKS c=18
 "Checks"
 "Kontrolle"
 

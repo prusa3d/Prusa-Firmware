@@ -1318,7 +1318,7 @@
 "Back"
 "Wstecz"
 
-#
+#MSG_CHECKS c=18
 "Checks"
 "Testy"
 

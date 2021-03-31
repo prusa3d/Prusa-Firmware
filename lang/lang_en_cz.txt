@@ -1318,7 +1318,7 @@
 "Back"
 "Zpet"
 
-#
+#MSG_CHECKS c=18
 "Checks"
 "Kontrola"
 

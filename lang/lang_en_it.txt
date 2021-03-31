@@ -1318,7 +1318,7 @@
 "Back"
 "Indietro"
 
-#
+#MSG_CHECKS c=18
 "Checks"
 "Controlli"
 

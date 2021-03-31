@@ -1318,7 +1318,7 @@
 "Back"
 "terug"
 
-#
+#MSG_CHECKS c=18
 "Checks"
 "\x00"
 

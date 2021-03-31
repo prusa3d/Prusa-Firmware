@@ -5556,7 +5556,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
     MENU_ITEM_SUBMENU_P(_T(MSG_STEEL_SHEETS), sheets_menu);
     SETTINGS_NOZZLE;
-    MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
+    MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);  ////MSG_CHECKS c=18
 
 #ifdef IR_SENSOR_ANALOG
     FSENSOR_ACTION_NA;

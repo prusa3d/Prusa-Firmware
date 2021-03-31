@@ -1318,7 +1318,7 @@
 "Back"
 "Retour"
 
-#
+#MSG_CHECKS c=18
 "Checks"
 "Verifications"
 

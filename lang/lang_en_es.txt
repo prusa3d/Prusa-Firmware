@@ -1318,7 +1318,7 @@
 "Back"
 "atras"
 
-#
+#MSG_CHECKS c=18
 "Checks"
 "Comprobaciones"
 
