@@ -6382,7 +6382,6 @@ Sigma_Exit:
         - `C` - Time to change/pause/user interaction in normal mode
         - `D` - Time to change/pause/user interaction in silent mode
     */
-    //!@todo update RepRap Gcode wiki
     case 73: //M73 show percent done, time remaining and time to change/pause
     {
         if(code_seen('P')) print_percent_done_normal = code_value();
@@ -6500,8 +6499,6 @@ Sigma_Exit:
           bit 6 = free
           bit 7 = free
      */
-    //!@todo update RepRap Gcode wiki
-    //!@todo Should be temperature always? Octoprint doesn't switch to M105 if M155 timer is set
     case 155:
     {
         if (code_seen('S')){
@@ -7068,7 +7065,6 @@ Sigma_Exit:
     E0:3240 RPM PRN1:4560 RPM E0@:255 PRN1@:255
 
     */
-   //!@todo Update RepRap Gcode wiki
     case 123:
     gcode_M123();
     break;
