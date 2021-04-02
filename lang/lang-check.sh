@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1
+# Version 1.0.1 Build 7
 #
 # lang_check.sh - multi-language support script
 #  check lang_xx.bin (language binary file)
@@ -11,8 +11,11 @@
 #  
 #############################################################################
 # Change log:
-# 9 June 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+# 19 June 2018, Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-check.sh`
+#                           to get Build Nr
 #############################################################################
 #
 

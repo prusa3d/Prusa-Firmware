@@ -1,8 +1,17 @@
 #!/bin/sh
 #
+# Version 1.0.2 Build 3
+#
 # lang-community.sh - Community language support script
 # Check community languages are defined in `config.h`
 #
+#############################################################################
+# Change log:
+#  1 Mar. 2021, 3d-gussner, Initial
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-community.sh`
+#                           to get Build Nr
+#############################################################################
+#############################################################################
 
 # Root path
 if [ -z "$ROOT_PATH" ]; then

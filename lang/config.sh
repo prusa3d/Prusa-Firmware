@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Version 1.0.1
+# Version 1.0.1 Build 6
 #
 # config.sh - multi-language support configuration script
 #  Definition of absolute paths etc.
@@ -8,8 +8,11 @@
 #
 #############################################################################
 # Change log:
-# 9 June 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+# 31 May 2018,  Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD config.sh`
+#                           to get Build Nr
 #############################################################################
 #
 # Arduino main folder:

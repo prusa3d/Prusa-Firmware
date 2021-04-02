@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Version 1.0.2
+# Version 1.0.2 Build 19
 #
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
@@ -22,9 +22,13 @@
 #
 #############################################################################
 # Change log:
-# 14 May 2020, 3d-gussner, Add message and size count comparison
-# 14 May 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+# 18 June 2018, Xpilla,     Initial
+# 14 May  2020, 3d-gussner, Add message and size count comparison
+# 14 May  2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  1 Mar. 2021, 3d-gussner, Add Community language support
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-build.sh`
+#                           to get Build Nr
 #############################################################################
 #############################################################################
 #

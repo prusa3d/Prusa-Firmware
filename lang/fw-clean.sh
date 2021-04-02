@@ -1,14 +1,17 @@
 #!/bin/bash
 #
-# Version 1.0.1
+# Version 1.0.1 Build 9
 #
 # fw-clean.sh - multi-language support script
 #  Remove all firmware output files from lang folder.
 #
 #############################################################################
 # Change log:
-# 9 June 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+# 21 June 2018, Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD fw-clean.sh`
+#                           to get Build Nr
 #############################################################################
 
 result=0

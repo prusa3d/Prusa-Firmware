@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1
+# Version 1.0.1 Build 15
 #
 # lang-add.sh - multi-language support script
 #  add new texts from list (lang_add.txt) to all dictionary files
@@ -12,8 +12,12 @@
 #
 #############################################################################
 # Change log:
-# 9 June 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+#  1 Nov 2018,  Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  1 Mar. 2021, 3d-gussner, Add Community language support
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-add.sh`
+#                           to get Build Nr
 #############################################################################
 
 

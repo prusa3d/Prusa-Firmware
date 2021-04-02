@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.2
+# Version 1.0.2 Build 11
 #
 # postbuild.sh - multi-language support script
 #  Generate binary with secondary language.
@@ -21,9 +21,13 @@
 #
 #############################################################################
 # Change log:
-# 14 May 2020, 3d-gussner, Add check for not translated messages using a parameter
-# 14 May 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+# 31 May 2018,  Xpilla,     Initial
+# 14 May 2020,  3d-gussner, Add check for not translated messages using a parameter
+# 14 May 2020,  3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  1 Mar. 2021, 3d-gussner, Add Community language support
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD fw-build.sh`
+#                           to get Build Nr
 #############################################################################
 #############################################################################
 #
@@ -144,6 +148,7 @@ if [ ! -z "$LNG" ]; then
  echo "$(tput setaf 2)OK$(tput sgr 0)" >&2
  finish 0
 else
+ echo
  echo "Updating languages:" >&2
  if [ -e lang_cz.bin ]; then
   echo -n " Czech  : " >&2
@@ -180,7 +185,7 @@ else
  if [ -e lang_nl.bin ]; then
   echo -n " Dutch  : " >&2
   ./update_lang.sh nl 2>./update_lang_nl.out 1>/dev/null
-  if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
+  if [ $? -eq 0 ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; finish 1; fi
  fi
 
 #Use the 6 lines below as a template and replace 'qr' and 'New language'
@@ -188,7 +193,7 @@ else
 # if [ -e lang_qr.bin ]; then
 #  echo -n " New language  : " >&2
 #  ./update_lang.sh qr 2>./update_lang_qr.out 1>/dev/null
-#  if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
+#  if [ $? -eq 0 ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; finish 1; fi
 # fi
 
 # echo "skipped" >&2

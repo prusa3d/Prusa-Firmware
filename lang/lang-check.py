@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 #
-# Version 1.0.1
+# Version 1.0.1 Build 8
 #
 #############################################################################
 # Change log:
-# 9 June 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, Wrap text to 20 char and rows
-# 9 June 2020, 3d-gussner, colored output
+#  7 May  2019, Ondrej Tuma, Initial
+#  9 June 2020, 3d-gussner,  Added version and Change log
+#  9 June 2020, 3d-gussner,  Wrap text to 20 char and rows
+#  9 June 2020, 3d-gussner,  colored output
+#  2 Apr. 2021, 3d-gussner,  Fix and improve text warp, add some Debug lines
+#                            Use `git rev-list --count HEAD lang-check.py`
+#                            to get Build Nr
 #############################################################################
 #
 """Check lang files."""
@@ -32,18 +36,23 @@ def parse_txt(lang, no_warning):
     with open(file_path) as src:
         while True:
             comment = src.readline().split(' ')
-            source = src.readline()
+            #print (comment) #Debug
+            source = src.readline()[:-1]
+            #print (source) #Debug
             translation = src.readline()[:-1]
+            #print (translation) #Debug
 #Wrap text to 20 chars and rows
             wrapper = textwrap.TextWrapper(width=20)
             #wrap original/source
             rows_count_source = 0
             for line in wrapper.wrap(source.strip('"')):
                 rows_count_source += 1
+                #print (line) #Debug
             #wrap translation
             rows_count_translation = 0
             for line in wrapper.wrap(translation.strip('"')):
                 rows_count_translation += 1
+                #print (line) #Debug
 #End wrap text
 
 #Check if columns and rows are defined
@@ -53,8 +62,10 @@ def parse_txt(lang, no_warning):
                 key, val = item.split('=')
                 if key == 'c':
                     cols = int(val)
+                    #print ("c=",cols) #Debug
                 elif key == 'r':
                     rows = int(val)
+                    #print ("r=",rows) #Debug
                 else:
                     raise RuntimeError(
                         "Unknown display definition %s on line %d" %

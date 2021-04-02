@@ -1,14 +1,17 @@
 #!/bin/sh
 #
-# Version 1.0.1
+# Version 1.0.1 Build 11
 #
 # update_lang.sh - multi-language support script
 #  Update secondary language in binary file.
 #
 #############################################################################
 # Change log:
-# 9 June 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+# 17 June 2018, Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD update_lang.sh`
+#                           to get Build Nr
 #############################################################################
 #
 # Config:

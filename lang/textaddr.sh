@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Version 1.0.1
+# Version 1.0.1 Build 8
 #
 # textaddr.sh - multi-language support script
 #  Compile progmem1.var and lang_en.txt files to textaddr.txt file (mapping of progmem addreses to text idenifiers)
@@ -23,8 +23,11 @@
 #
 #############################################################################
 # Change log:
-# 9 June 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+# 30 May  2018, Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD textaddr.sh`
+#                           to get Build Nr
 #############################################################################
 
 echo "$(tput setaf 2)textaddr.sh started$(tput sgr0)" >&2

@@ -1,16 +1,20 @@
 #!/bin/sh
 #
-# Version 1.0.2
+# Version 1.0.2 Build 10
 #
 # clean.sh - multi-language support script
 #  Remove all language output files from lang folder.
 #
 #############################################################################
 # Change log:
-# 14 May 2020, 3d-gussner, Also remove temporally files which have been generated
-#                          for message and size count comparison
-# 14 May 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, colored output
+# 21 June 2018, Xpilla,     Initial
+# 14 May  2020, 3d-gussner, Also remove temporally files which have been generated
+#                           for message and size count comparison
+# 14 May  2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  1 Mar. 2021, 3d-gussner, Add Community language support
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-clean.sh`
+#                           to get Build Nr
 #############################################################################
 #############################################################################
 
