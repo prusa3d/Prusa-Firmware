@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Version 1.0.2 Build 19
+# Version 1.0.2 Build 20
 #
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
@@ -106,7 +106,7 @@ generate_binary()
  rm -f lang_$1.dat
  LNG=$1
  #check lang dictionary
- /usr/bin/env python lang-check.py $1 #--no-warning
+ ./lang-check.py $1 #--no-warning
  #create lang_xx.tmp - different processing for 'en' language
  if [ "$1" = "en" ]; then
   #remove comments and empty lines
