@@ -102,11 +102,7 @@ generate_binary()
  rm -f lang_$1.dat
  LNG=$1
  #check lang dictionary
-<<<<<<< HEAD
- ./lang-check.py $1 --no-warning
-=======
  /usr/bin/env python lang-check.py $1 #--no-warning
->>>>>>> 2e5b383f... Added textwrap to `lang-check.py`
  #create lang_xx.tmp - different processing for 'en' language
  if [ "$1" = "en" ]; then
   #remove comments and empty lines
