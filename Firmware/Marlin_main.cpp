@@ -588,19 +588,6 @@ void crashdet_restore_print_and_continue()
 //	babystep_apply();
 }
 
-
-void crashdet_stop_and_save_print2()
-{
-	cli();
-	planner_abort_hard(); //abort printing
-	cmdqueue_reset(); //empty cmdqueue
-	card.sdprinting = false;
-	card.closefile();
-  // Reset and re-enable the stepper timer just before the global interrupts are enabled.
-  st_reset_timer();
-	sei();
-}
-
 void crashdet_detected(uint8_t mask)
 {
 	st_synchronize();
