@@ -3185,18 +3185,18 @@ lcd_wait_for_click_delay(0);
 //! @retval -1 screen timed out
 int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes) //currently just max. n*4 + 3 lines supported (set in language header files)
 {
-    return lcd_show_multiscreen_message_two_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO));
+    return lcd_show_multiscreen_message_two_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO), 10);
 }
 //! @brief Show a two-choice prompt on the last line of the LCD
 //! @param first_selected Show first choice as selected if true, the second otherwise
 //! @param first_choice text caption of first possible choice
 //! @param second_choice text caption of second possible choice
-void lcd_show_two_choices_prompt_P(bool first_selected, const char *first_choice, const char *second_choice)
+void lcd_show_two_choices_prompt_P(bool first_selected, const char *first_choice, const char *second_choice, uint8_t second_col)
 {
     lcd_set_cursor(0, 3);
     lcd_print(first_selected? '>': ' ');
     lcd_puts_P(first_choice);
-    lcd_set_cursor(7, 3);
+    lcd_set_cursor(second_col, 3);
     lcd_print(!first_selected? '>': ' ');
     lcd_puts_P(second_choice);
 }
@@ -3210,14 +3210,14 @@ void lcd_show_two_choices_prompt_P(bool first_selected, const char *first_choice
 //! @retval 0 second choice selected by user
 //! @retval -1 screen timed out
 int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_first,
-        const char *first_choice, const char *second_choice)
+        const char *first_choice, const char *second_choice, uint8_t second_col)
 {
 	const char *msg_next = msg? lcd_display_message_fullscreen_P(msg) : NULL;
 	bool multi_screen = msg_next != NULL;
 
     // Initial status/prompt on single-screen messages
 	bool yes = default_first ? true : false;
-	if (!msg_next) lcd_show_two_choices_prompt_P(yes, first_choice, second_choice);
+	if (!msg_next) lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);
 
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = _millis();
@@ -3238,7 +3238,7 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
                         ((enc_dif > lcd_encoder_diff && !yes)))
                     {
                         yes = !yes;
-                        lcd_show_two_choices_prompt_P(yes, first_choice, second_choice);
+                        lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);
                         Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
                     }
 					enc_dif = lcd_encoder_diff;
@@ -3265,7 +3265,7 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 			msg_next = lcd_display_message_fullscreen_P(msg_next);
 		}
 		if (msg_next == NULL) {
-            lcd_show_two_choices_prompt_P(yes, first_choice, second_choice);
+            lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);
 		}
 	}
 }
