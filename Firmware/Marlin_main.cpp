@@ -3032,13 +3032,12 @@ static void gcode_G80()
     world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 #endif //SUPPORT_VERBOSITY
 
-    plan_buffer_line_curposXYZE(homing_feedrate[X_AXIS] / 30);
+    int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
+    plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
     // Wait until the move is finished.
     st_synchronize();
 
     uint8_t mesh_point = 0; //index number of calibration point
-
-    int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
     int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
     bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
 #ifdef SUPPORT_VERBOSITY
