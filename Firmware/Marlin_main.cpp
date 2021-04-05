@@ -219,7 +219,7 @@ unsigned int heating_status;
 unsigned int heating_status_counter;
 bool loading_flag = false;
 
-
+#define XY_NO_RESTORE_FLAG (mesh_bed_leveling_flag || homing_flag)
 
 char snmm_filaments_used = 0;
 
@@ -305,7 +305,12 @@ bool no_response = false;
 uint8_t important_status;
 uint8_t saved_filament_type;
 
-#define SAVED_TARGET_UNSET (X_MIN_POS-1)
+// Define some coordinates outside the clamp limits (making them invalid past the parsing stage) so
+// that they can be used later for various logical checks
+#define X_COORD_INVALID (X_MIN_POS-1)
+#define Y_COORD_INVALID (Y_MIN_POS-1)
+
+#define SAVED_TARGET_UNSET X_COORD_INVALID
 float saved_target[NUM_AXIS] = {SAVED_TARGET_UNSET, 0, 0, 0};
 
 // save/restore printing in case that mmu was not responding 
@@ -375,7 +380,7 @@ boolean chdkActive = false;
 bool saved_printing = false; //!< Print is paused and saved in RAM
 static uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
 uint8_t saved_printing_type = PRINTING_TYPE_SD;
-static float saved_pos[4] = { 0, 0, 0, 0 };
+static float saved_pos[4] = { X_COORD_INVALID, 0, 0, 0 };
 static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
@@ -11460,7 +11465,8 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 #endif
 
   // save the global state at planning time
-  if (current_block)
+  bool pos_invalid = XY_NO_RESTORE_FLAG;
+  if (current_block && !pos_invalid)
   {
       memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
       saved_feedrate2 = current_block->gcode_feedrate;
@@ -11472,7 +11478,10 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 
 	planner_abort_hard(); //abort printing
+
 	memcpy(saved_pos, current_position, sizeof(saved_pos));
+    if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
+
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
@@ -11565,6 +11574,13 @@ void restore_print_from_ram_and_continue(float e_move)
   #ifdef FANCHECK
     fans_check_enabled = false;
   #endif
+
+    // do not restore XY for commands that do not require that
+    if (saved_pos[X_AXIS] == X_COORD_INVALID)
+    {
+        saved_pos[X_AXIS] = current_position[X_AXIS];
+        saved_pos[Y_AXIS] = current_position[Y_AXIS];
+    }
 
 	//first move print head in XY to the saved position:
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
