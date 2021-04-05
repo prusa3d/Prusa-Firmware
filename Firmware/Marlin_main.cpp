@@ -3036,6 +3036,8 @@ static void gcode_G80()
     plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
     // Wait until the move is finished.
     st_synchronize();
+    if (waiting_inside_plan_buffer_line_print_aborted)
+        return;
 
     uint8_t mesh_point = 0; //index number of calibration point
     int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
@@ -3105,6 +3107,8 @@ static void gcode_G80()
         //printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
         plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
         st_synchronize();
+        if (waiting_inside_plan_buffer_line_print_aborted)
+            return;
 
         // Go down until endstop is hit
         const float Z_CALIBRATION_THRESHOLD = 1.f;
