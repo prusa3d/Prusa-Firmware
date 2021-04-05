@@ -11169,11 +11169,6 @@ bool recover_machine_state_after_power_panic()
   // Recover last E axis position
   current_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
 
-  memcpy(destination, current_position, sizeof(destination));
-
-  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
-  print_world_coordinates();
-
   // 3) Initialize the logical to physical coordinate system transformation.
   world2machine_initialize();
 //  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
@@ -11185,7 +11180,11 @@ bool recover_machine_state_after_power_panic()
 
   // 5) Set the physical positions from the logical positions using the world2machine transformation
   // This is only done to inizialize Z/E axes with physical locations, since X/Y are unknown.
+  clamp_to_software_endstops(current_position);
+  memcpy(destination, current_position, sizeof(destination));
   plan_set_position_curposXYZE();
+  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
+  print_world_coordinates();
 
   // 6) Power up the Z motors, mark their positions as known.
   axis_known_position[Z_AXIS] = true;
