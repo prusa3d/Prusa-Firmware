@@ -3037,7 +3037,11 @@ static void gcode_G80()
     // Wait until the move is finished.
     st_synchronize();
     if (waiting_inside_plan_buffer_line_print_aborted)
+    {
+        custom_message_type = custom_message_type_old;
+        custom_message_state = custom_message_state_old;
         return;
+    }
 
     uint8_t mesh_point = 0; //index number of calibration point
     int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
@@ -3108,7 +3112,11 @@ static void gcode_G80()
         plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
         st_synchronize();
         if (waiting_inside_plan_buffer_line_print_aborted)
+        {
+            custom_message_type = custom_message_type_old;
+            custom_message_state = custom_message_state_old;
             return;
+        }
 
         // Go down until endstop is hit
         const float Z_CALIBRATION_THRESHOLD = 1.f;
@@ -3206,7 +3214,9 @@ static void gcode_G80()
             enable_z_endstop(bState);
         } while (st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
         //               plan_set_z_position(MESH_HOME_Z_SEARCH); // is not necessary ('do-while' loop always ends at the expected Z-position)
-        custom_message_type=CustomMsg::Status; // display / status-line recovery
+
+        custom_message_type = custom_message_type_old;
+        custom_message_state = custom_message_state_old;
         lcd_update_enable(true);           // display / status-line recovery
         gcode_G28(true, true, true);       // X & Y & Z-homing (must be after individual Z-homing (problem with spool-holder)!)
         repeatcommand_front();             // re-run (i.e. of "G80")
