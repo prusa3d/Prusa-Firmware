@@ -10851,8 +10851,9 @@ void uvlo_()
     }
 
     // save the global state at planning time
+    bool pos_invalid = XY_NO_RESTORE_FLAG;
     uint16_t feedrate_bckp;
-    if (current_block)
+    if (current_block && !pos_invalid)
     {
         memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
         feedrate_bckp = current_block->gcode_feedrate;
@@ -10930,8 +10931,13 @@ void uvlo_()
     eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), z_microsteps);
 
     // Store the current position.
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
+    if (pos_invalid)
+        eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), X_COORD_INVALID);
+    else
+    {
+        eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
+        eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
+    }
 
     // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
 	eeprom_update_word((uint16_t*)EEPROM_UVLO_FEEDRATE, feedrate_bckp);
@@ -11282,10 +11288,13 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 
     // Move to the XY print position in logical coordinates, where the print has been killed, but
     // without shifting Z along the way. This requires performing the move without mbl.
-	sprintf_P(cmd, PSTR("G1 X%f Y%f F3000"),
-              eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0)),
-              eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4)));
-	enquecommand(cmd);
+    float pos_x = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
+    float pos_y = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
+    if (pos_x != X_COORD_INVALID)
+    {
+        sprintf_P(cmd, PSTR("G1 X%f Y%f F3000"), pos_x, pos_y);
+        enquecommand(cmd);
+    }
 
     // Enable MBL and switch to logical positioning
     if (mbl_was_active)
