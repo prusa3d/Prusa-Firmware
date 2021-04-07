@@ -249,7 +249,7 @@ uint8_t optiboot_xflash_enter()
       // Read command terminator, start reply
       verifySpace();
       if (desttype == 'E') {
-        eeprom_update_block(buff, (uint8_t*)address, length);
+        eeprom_update_block(buff, (uint8_t*)address, savelength);
       } else if (desttype == 'F') {
         uint32_t addr = (((uint32_t)rampz) << 16) | address;
         // During a single bootloader run, only erase a 64kB block once.
