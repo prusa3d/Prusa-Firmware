@@ -8,6 +8,7 @@
 #include "stk500.h"
 #include "bootapp.h"
 #include <avr/wdt.h>
+#include <avr/eeprom.h>
 
 #define OPTIBOOT_MAJVER 6
 #define OPTIBOOT_CUSTOMVER 0
@@ -248,8 +249,8 @@ uint8_t optiboot_xflash_enter()
       // Read command terminator, start reply
       verifySpace();
       if (desttype == 'E') {
-        while (1) ; // Error: wait for WDT
-      } else {
+        eeprom_update_block(buff, (uint8_t*)address, length);
+      } else if (desttype == 'F') {
         uint32_t addr = (((uint32_t)rampz) << 16) | address;
         // During a single bootloader run, only erase a 64kB block once.
         // An 8bit bitmask 'pages_erased' covers 512kB of FLASH memory.
@@ -264,11 +265,13 @@ uint8_t optiboot_xflash_enter()
         xflash_page_program(addr, buff, savelength);
         xflash_wait_busy();
         xflash_disable_wr();
+      } else {
+        while (1); // Error: wait for WDT
       }
     }
     /* Read memory block mode, length is big endian.  */
     else if(ch == STK_READ_PAGE) {
-      uint32_t addr = (((uint32_t)rampz) << 16) | address;
+      uint8_t desttype;
       register pagelen_t i;
       // Read the page length, with the length transferred each nibble separately to work around
       // the Prusa's USB to serial infamous semicolon issue.
@@ -276,11 +279,19 @@ uint8_t optiboot_xflash_enter()
       length |= ((pagelen_t)getch()) << 8;
       length |= getch();
       length |= getch();
-      // Read the destination type. It should always be 'F' as flash. It is not checked.
-      (void)getch();
+      // Read the destination type.
+      desttype = getch();
       verifySpace();
-      xflash_wait_busy();
-      xflash_rd_data(addr, buff, length);
+      if (desttype == 'E')
+        eeprom_read_block(buff, (uint8_t*)address, length);
+      else if (desttype == 'F')
+      {
+        xflash_wait_busy();
+        xflash_rd_data((((uint32_t)rampz) << 16) | address, buff, length);
+      }
+      else
+        while (1); // Error: wait for WDT
+      
       for (i = 0; i < length; ++ i)
         putch(buff[i]);
     }
