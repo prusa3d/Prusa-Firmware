@@ -11247,7 +11247,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 	int feedrate_rec;
 	int feedmultiply_rec;
 	uint8_t fan_speed_rec;
-	char cmd[30];
+	char cmd[48];
 	char filename[13];
 	uint8_t depth = 0;
 	char dir_name[9];
