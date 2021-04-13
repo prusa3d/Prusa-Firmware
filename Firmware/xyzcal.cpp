@@ -918,7 +918,7 @@ bool check_scan(uint8_t *matrix32){
 	for (int16_t i = 0; i < 32*32;++i){
 		if (matrix32[i] == 0) {
 			++mins;
-		} else {
+		} else if (matrix32[i] == 0xFF){
 			++maxs;
 		}
 	}
