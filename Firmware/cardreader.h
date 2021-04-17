@@ -59,9 +59,12 @@ public:
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
   bool eof() { return sdpos>=filesize; }
-  // There may be a potential performance problem - when the comment reading fails, sdpos points to the last correctly read character.
-  // However, repeated reading (e.g. after power panic) the comment will be read again - it should survive correctly, it will just take a few moments to skip
-  FORCE_INLINE int16_t getFilteredGcodeChar() {  sdpos = file.curPosition();return (int16_t)file.readFilteredGcode();};
+  FORCE_INLINE int16_t getFilteredGcodeChar()
+  {
+      int16_t c = (int16_t)file.readFilteredGcode();
+      sdpos = file.curPosition();
+      return c;
+  };
   void setIndex(long index) {sdpos = index;file.seekSetFilteredGcode(index);};
   FORCE_INLINE uint8_t percentDone(){if(!isFileOpen()) return 0; if(filesize) return sdpos/((filesize+99)/100); else return 0;};
   FORCE_INLINE char* getWorkDirName(){workDir.getFilename(filename);return filename;};
