@@ -2660,15 +2660,14 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool without_mbl)
 #endif //TMC2130
 {
+	// Flag for the display update routine and to disable the print cancelation during homing.
 	st_synchronize();
+	homing_flag = true;
 
 #if 0
 	SERIAL_ECHOPGM("G28, initial ");  print_world_coordinates();
 	SERIAL_ECHOPGM("G28, initial ");  print_physical_coordinates();
 #endif
-
-	// Flag for the display update routine and to disable the print cancelation during homing.
-	homing_flag = true;
 
 	// Which axes should be homed?
 	bool home_x = home_x_axis;
@@ -2912,24 +2911,21 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 
 #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))
 	if (home_x_axis || home_y_axis || without_mbl || home_z_axis)
-		{
+    {
       if (! home_z && mbl_was_active) {
         // Re-enable the mesh bed leveling if only the X and Y axes were re-homed.
         mbl.active = true;
         // and re-adjust the current logical Z axis with the bed leveling offset applicable at the current XY position.
         current_position[Z_AXIS] -= mbl.get_z(st_get_position_mm(X_AXIS), st_get_position_mm(Y_AXIS));
       }
-		}
-	else
-		{
-			st_synchronize();
-			homing_flag = false;
-	  }
+    }
 #endif
 
 	  if (farm_mode) { prusa_statistics(20); };
 
+      st_synchronize();
 	  homing_flag = false;
+
 #if 0
       SERIAL_ECHOPGM("G28, final ");  print_world_coordinates();
       SERIAL_ECHOPGM("G28, final ");  print_physical_coordinates();
@@ -2950,6 +2946,10 @@ static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
 // G80 - Automatic mesh bed leveling
 static void gcode_G80()
 {
+    st_synchronize();
+    if (waiting_inside_plan_buffer_line_print_aborted)
+        return;
+
     mesh_bed_leveling_flag = true;
 #ifndef PINDA_THERMISTOR
     static bool run = false; // thermistor-less PINDA temperature compensation is running
@@ -3350,9 +3350,11 @@ static void gcode_G80()
     lcd_setstatuspgm(_T(WELCOME_MSG));
     custom_message_type = custom_message_type_old;
     custom_message_state = custom_message_state_old;
-    mesh_bed_leveling_flag = false;
     mesh_bed_run_from_menu = false;
     lcd_update(2);
+
+    st_synchronize();
+    mesh_bed_leveling_flag = false;
 }
 
 
@@ -5145,8 +5147,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     */
     case 30: 
         {
-            homing_flag = true;
             st_synchronize();
+            homing_flag = true;
+
             // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
             int l_feedmultiply = setup_for_endstop_move();
 
@@ -5249,7 +5252,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             }
         }
 
+        st_synchronize();
         homing_flag = true; // keep homing on to avoid babystepping while the LCD is enabled
+
         lcd_update_enable(true);
         KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
         SERIAL_ECHOLNPGM("PINDA probe calibration start");
