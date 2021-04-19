@@ -80,8 +80,12 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 		for (position = parent.curPosition(); parent.readDir(p, longFilename) > 0; position = parent.curPosition()) {
 			if (recursionCnt > MAX_DIR_DEPTH)
 				return;
+			uint8_t pn0 = p.name[0];
+			if (pn0 == DIR_NAME_FREE) break;
+			if (pn0 == DIR_NAME_DELETED || pn0 == '.') continue;
+			if (longFilename[0] == '.') continue;
+			if (!DIR_IS_FILE_OR_SUBDIR(&p) || (p.attributes & DIR_ATT_HIDDEN)) continue;
 			else if (DIR_IS_SUBDIR(&p) && lsAction != LS_Count && lsAction != LS_GetFilename) { // If the entry is a directory and the action is LS_SerialPrint
-				
 				// Get the short name for the item, which we know is a folder
 				char lfilename[FILENAME_LENGTH];
 				createFilename(lfilename, p);
@@ -117,11 +121,6 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 					puts_P(PSTR("DIR_EXIT"));
 			}
 			else {
-				uint8_t pn0 = p.name[0];
-				if (pn0 == DIR_NAME_FREE) break;
-				if (pn0 == DIR_NAME_DELETED || pn0 == '.') continue;
-				if (longFilename[0] == '.') continue;
-				if (!DIR_IS_FILE_OR_SUBDIR(&p) || (p.attributes & DIR_ATT_HIDDEN)) continue;
 				filenameIsDir = DIR_IS_SUBDIR(&p);
 				if (!filenameIsDir && (p.name[8] != 'G' || p.name[9] == '~')) continue;
 				switch (lsAction) {
