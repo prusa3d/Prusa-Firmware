@@ -6559,10 +6559,13 @@ static void lcd_main_menu()
     MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
 
-	if ( (!PRINTER_ACTIVE) && isPrintFinished)
+	if ( (!PRINTER_ACTIVE) && isPrintFinished && card.cardOK)
   	{
 		MENU_ITEM_SUBMENU_P(_i("Reprint"), reprint_from_eeprom);
-  	}
+  	}else if (!card.cardOK)
+	  {	  //If the user remove the SD card the reprint will be disabled because you can't be sure that the gcode file will remain in the SD
+		  isPrintFinished = false; 
+	  }
 
     if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag) {
         MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
