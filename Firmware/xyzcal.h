@@ -1,9 +1,9 @@
 //xyzcal.h - xyz calibration with image processing
-#ifndef _XYZCAL_H
-#define _XYZCAL_H
+#pragma once
 
 #include <inttypes.h>
 
+#include "mesh_bed_calibration.h"
 
 extern void xyzcal_meassure_enter(void);
 
@@ -17,11 +17,4 @@ extern bool xyzcal_spiral8(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16
 
 //extern int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t samples);
 
-extern bool xyzcal_searchZ(void);
-
-extern bool xyzcal_scan_and_process(void);
-
-extern bool xyzcal_find_bed_induction_sensor_point_xy(void);
-
-
-#endif //_XYZCAL_H
+extern BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy();

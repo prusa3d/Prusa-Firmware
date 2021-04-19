@@ -324,6 +324,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D11 3345		| float		| EEPROM_UVLO_ACCELL                	| ???			| ff ff ff ffh			| Power panic saved normal acceleration     		| ???			| D3 Ax0d11 C4
 | 0x0D0D 3341		| float		| EEPROM_UVLO_RETRACT_ACCELL			| ???			| ff ff ff ffh			| Power panic saved retract acceleration     		| ???			| D3 Ax0d0d C4
 | 0x0D09 3337		| float		| EEPROM_UVLO_TRAVEL_ACCELL				| ???			| ff ff ff ffh			| Power panic saved travel acceleration     		| ???			| D3 Ax0d09 C4
+| 0x0D05 3333		| uint32_t	| EEPROM_JOB_ID							| ???			| 00 00 00 00h			| Job ID used by host software						| D3 only		| D3 Ax0d05 C4
 
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
@@ -337,6 +338,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 
 #define EEPROM_EMPTY_VALUE 0xFF
 #define EEPROM_EMPTY_VALUE16 0xFFFF
+#define EEPROM_EMPTY_VALUE32 0xFFFFFFFFl
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
@@ -534,8 +536,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_UVLO_RETRACT_ACCELL (EEPROM_UVLO_ACCELL-4) // float
 #define EEPROM_UVLO_TRAVEL_ACCELL (EEPROM_UVLO_RETRACT_ACCELL-4) // float
 
+#define EEPROM_JOB_ID (EEPROM_UVLO_TRAVEL_ACCELL-4) //uint32_t
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_UVLO_TRAVEL_ACCELL
+#define EEPROM_LAST_ITEM EEPROM_JOB_ID
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
