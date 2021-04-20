@@ -3964,6 +3964,7 @@ static void extended_capabilities_report()
     // AUTOREPORT_POSITION (M114)
     cap_line(PSTR("AUTOREPORT_POSITION"), ENABLED(AUTO_REPORT));
     //@todo Update RepRap cap
+    cap_line(PSTR("EXTENDED_M20"), 1);
 }
 #endif //EXTENDED_CAPABILITIES_REPORT
 
