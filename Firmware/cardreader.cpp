@@ -63,7 +63,7 @@ char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
 +*   LS_SerialPrint     - Print the full path and size of each file to serial output
 +*/
 
-void CardReader::lsDive(const char *prepend, SdFile parent, const char * const match/*=NULL*/, LsAction lsAction, struct ls_param *lsParams) {
+void CardReader::lsDive(const char *prepend, SdFile parent, const char * const match/*=NULL*/, LsAction lsAction, ls_param lsParams) {
 	static uint8_t recursionCnt = 0;
 	// RAII incrementer for the recursionCnt
 	class _incrementer
@@ -102,7 +102,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				// Get a new directory object using the full path
 				// and dive recursively into it.
 				
-				if (lsParams->LFN)
+				if (lsParams.LFN)
 					printf_P(PSTR("DIR_ENTER: %s \"%s\"\n"), path, longFilename[0] ? longFilename : lfilename);
 				
 				SdFile dir;
@@ -114,7 +114,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				lsDive(path, dir, NULL, lsAction, lsParams);
 				// close() is done automatically by destructor of SdFile
 				
-				if (lsParams->LFN)
+				if (lsParams.LFN)
 					puts_P(PSTR("DIR_EXIT"));
 			}
 			else {
@@ -133,7 +133,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 						MYSERIAL.write(' ');
 						SERIAL_PROTOCOL(p.fileSize);
 						
-						if (lsParams->timestamp)
+						if (lsParams.timestamp)
 						{
 							crmodDate = p.lastWriteDate;
 							crmodTime = p.lastWriteTime;
@@ -144,7 +144,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 							printf_P(PSTR(" %#lx"), ((uint32_t)crmodDate << 16) | crmodTime);
 						}
 						
-						if (lsParams->LFN)
+						if (lsParams.LFN)
 							printf_P(PSTR(" \"%s\""), LONGEST_FILENAME);
 						
 						SERIAL_PROTOCOLLN();
@@ -189,10 +189,10 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 		} // while readDir
 }
 
-void CardReader::ls(struct ls_param params)
+void CardReader::ls(ls_param params)
 {
   root.rewind();
-  lsDive("",root, NULL, LS_SerialPrint, &params);
+  lsDive("",root, NULL, LS_SerialPrint, params);
 }
 
 

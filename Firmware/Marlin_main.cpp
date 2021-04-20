@@ -5744,13 +5744,11 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     - `L` - Reports ling filenames instead of just short filenames. Requires host software parsing.
     */
     case 20:
-    {
       KEEPALIVE_STATE(NOT_BUSY); // do not send busy messages during listing. Inhibits the output of manage_heater()
       SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST
-      struct CardReader::ls_param params = {.LFN = code_seen('L'), .timestamp = code_seen('T')};
-      card.ls(params);
+      card.ls(CardReader::ls_param(code_seen('L'), code_seen('T')));
       SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST
-    } break;
+    break;
 
     /*!
 	### M21 - Init SD card <a href="https://reprap.org/wiki/G-code#M21:_Initialize_SD_card">M21: Initialize SD card</a>

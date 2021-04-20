@@ -23,6 +23,8 @@ public:
   {
     bool LFN : 1;
     bool timestamp : 1;
+    inline ls_param():LFN(0), timestamp(0) { }
+    inline ls_param(bool LFN, bool timestamp):LFN(LFN), timestamp(timestamp) { }
   } __attribute__((packed));
   
   void initsd();
@@ -54,7 +56,7 @@ public:
   uint16_t getWorkDirDepth();
   
 
-  void ls(struct ls_param params);
+  void ls(ls_param params);
   bool chdir(const char * relpath, bool doPresort);
   void updir();
   void setroot(bool doPresort);
@@ -137,7 +139,7 @@ private:
   char* diveDirName;
 
   bool diveSubfolder (const char *&fileName);
-  void lsDive(const char *prepend, SdFile parent, const char * const match=NULL, LsAction lsAction = LS_GetFilename, struct ls_param *lsParams = NULL);
+  void lsDive(const char *prepend, SdFile parent, const char * const match=NULL, LsAction lsAction = LS_GetFilename, ls_param lsParams = ls_param());
 #ifdef SDCARD_SORT_ALPHA
   void flush_presort();
 #endif
