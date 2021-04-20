@@ -8,11 +8,24 @@
 #define MAX_DIR_DEPTH 6
 
 #include "SdFile.h"
-enum LsAction {LS_SerialPrint,LS_SerialPrint_LFN,LS_Count,LS_GetFilename};
 class CardReader
 {
 public:
   CardReader();
+  
+  enum LsAction : uint8_t
+  {
+    LS_SerialPrint,
+    LS_Count,
+    LS_GetFilename,
+  };
+  struct ls_param
+  {
+    bool LFN : 1;
+    bool timestamp : 1;
+    inline ls_param():LFN(0), timestamp(0) { }
+    inline ls_param(bool LFN, bool timestamp):LFN(LFN), timestamp(timestamp) { }
+  } __attribute__((packed));
   
   void initsd();
   void write_command(char *buf);
@@ -43,7 +56,7 @@ public:
   uint16_t getWorkDirDepth();
   
 
-  void ls(bool printLFN);
+  void ls(ls_param params);
   bool chdir(const char * relpath, bool doPresort);
   void updir();
   void setroot(bool doPresort);
@@ -122,12 +135,11 @@ private:
 
   bool autostart_stilltocheck; //the sd start is delayed, because otherwise the serial cannot answer fast enought to make contact with the hostsoftware.
   
-  LsAction lsAction; //stored for recursion.
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
 
   bool diveSubfolder (const char *&fileName);
-  void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);
+  void lsDive(const char *prepend, SdFile parent, const char * const match=NULL, LsAction lsAction = LS_GetFilename, ls_param lsParams = ls_param());
 #ifdef SDCARD_SORT_ALPHA
   void flush_presort();
 #endif
