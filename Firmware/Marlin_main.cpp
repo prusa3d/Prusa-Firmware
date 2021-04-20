@@ -3963,8 +3963,9 @@ static void extended_capabilities_report()
 #endif //FANCHECK and TACH_0 or TACH_1
     // AUTOREPORT_POSITION (M114)
     cap_line(PSTR("AUTOREPORT_POSITION"), ENABLED(AUTO_REPORT));
-    //@todo Update RepRap cap
+    // EXTENDED_M20 (support for L and T parameters)
     cap_line(PSTR("EXTENDED_M20"), 1);
+    //@todo Update RepRap cap
 }
 #endif //EXTENDED_CAPABILITIES_REPORT
 
