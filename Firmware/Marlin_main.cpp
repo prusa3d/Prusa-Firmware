@@ -1337,13 +1337,14 @@ void setup()
 #endif //TMC2130_VARIABLE_RESOLUTION
 
 #endif //TMC2130
-
+    // @@TODO subject to discussion
+	// enableECool = eeprom_read_byte((uint8_t *)EEPROM_ECOOL);
 	st_init();    // Initialize stepper, this enables interrupts!
   
 #ifdef TMC2130
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	update_mode_profile();
-	tmc2130_init();
+	tmc2130_init(TMCInitParams(false, farm_mode || enableECool));
 #endif //TMC2130
 #ifdef PSU_Delta
      init_force_z();                              // ! important for correct Z-axis initialization
@@ -2556,7 +2557,7 @@ void force_high_power_mode(bool start_high_power_section) {
 		cli();
 		tmc2130_mode = (start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
 		update_mode_profile();
-		tmc2130_init();
+		tmc2130_init(TMCInitParams(farm_mode || enableECool));
     // We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
     // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
     st_reset_timer();
@@ -11961,7 +11962,7 @@ void disable_force_z()
 #ifdef TMC2130
     tmc2130_mode=TMC2130_MODE_SILENT;
     update_mode_profile();
-    tmc2130_init(true);
+    tmc2130_init(TMCInitParams(true, farm_mode || enableECool));
 #endif // TMC2130
 }
 
@@ -11975,7 +11976,7 @@ bEnableForce_z=true;
 #ifdef TMC2130
 tmc2130_mode=eeprom_read_byte((uint8_t*)EEPROM_SILENT)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 update_mode_profile();
-tmc2130_init(true);
+tmc2130_init(TMCInitParams(true, farm_mode || enableECool));
 #endif // TMC2130
 
 WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);                  // slightly redundant ;-p

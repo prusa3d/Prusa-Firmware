@@ -2,7 +2,7 @@
 #define CONFIGURATION_PRUSA_H
 
 #include <limits.h>
-//-//
+
 #include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
@@ -229,17 +229,22 @@
 #define TMC2130_PWM_AUTO_Z  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Z  2         // PWMCONF
 
-#define TMC2130_PWM_GRAD_E  84        // PWMCONF 730mA @ 375mm/min  970mA phase peak at feedrate 900mm/min
-#define TMC2130_PWM_AMPL_E  43        // PWMCONF 500mA phase peak at feedrate 10 mm/min
-#define TMC2130_PWM_AUTO_E  0         // PWMCONF
+#define TMC2130_PWM_GRAD_E  4         // PWMCONF
+#define TMC2130_PWM_AMPL_E  240       // PWMCONF
+#define TMC2130_PWM_AUTO_E  1         // PWMCONF
 #define TMC2130_PWM_FREQ_E  2         // PWMCONF
+
+// experimental setting for E-motor cooler operation
+#define TMC2130_PWM_GRAD_Ecool  84        // PWMCONF 730mA @ 375mm/min  970mA phase peak at feedrate 900mm/min
+#define TMC2130_PWM_AMPL_Ecool  43        // PWMCONF 500mA phase peak at feedrate 10 mm/min
+#define TMC2130_PWM_AUTO_Ecool  0         // PWMCONF
 
 #define TMC2130_TOFF_XYZ    3         // CHOPCONF // fchop = 27.778kHz
 #define TMC2130_TOFF_E      3         // CHOPCONF // fchop = 27.778kHz
 //#define TMC2130_TOFF_E      4         // CHOPCONF // fchop = 21.429kHz
 //#define TMC2130_TOFF_E      5         // CHOPCONF // fchop = 17.442kHz
 
-#define TMC2130_STEALTH_E // Extruder stealthChop mode
+//#define TMC2130_STEALTH_E // Extruder stealthChop mode
 //#define TMC2130_CNSTOFF_E // Extruder constant-off-time mode (similar to MK2)
 
 //#define TMC2130_PWM_DIV   683         // PWM frequency divider (1024, 683, 512, 410)
@@ -265,8 +270,8 @@
 #define TMC2130_SG_THRS_HOME {3, 3, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E}
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_H {16, 20, 35, 36}  // default holding currents for all axes E 805 mA peak
-#define TMC2130_CURRENTS_R {16, 20, 35, 36}  // default running currents for all axes E 805 mA peak
+#define TMC2130_CURRENTS_H {16, 20, 35, 30, 36}  // default holding currents for all axes, the last parameter is E 805 mA peak for ECool mode
+#define TMC2130_CURRENTS_R {16, 20, 35, 30, 36}  // default running currents for all axes, the last parameter is E 805 mA peak for ECool mode
 #define TMC2130_CURRENTS_R_HOME {8, 10, 20, 18}  // homing running currents for all axes
 
 #define TMC2130_STEALTH_Z

@@ -1,12 +1,14 @@
 #ifndef TMC2130_H
 #define TMC2130_H
 
+#include <stdint.h>
 
 //mode
 extern uint8_t tmc2130_mode;
+// Beware - the 4th index (counted from zero) is abused for the E-motor cool mode only used on the farm
 //holding and running currents
-extern uint8_t tmc2130_current_h[4];
-extern uint8_t tmc2130_current_r[4];
+extern uint8_t tmc2130_current_h[5];
+extern uint8_t tmc2130_current_r[5];
 //microstep resolution (0 means 256usteps, 8 means 1ustep
 extern uint8_t tmc2130_mres[4];
 
@@ -63,11 +65,23 @@ typedef struct
 extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
 
 //initialize tmc2130
-#ifdef PSU_Delta
-extern void tmc2130_init(bool bSupressFlag=false);
+
+struct TMCInitParams {
+    uint8_t bSuppressFlag : 1; // only relevant on MK3S with PSU_Delta
+    uint8_t enableECool : 1;  // experimental support for E-motor cooler operation
+    inline TMCInitParams():bSuppressFlag(0), enableECool(0) { }
+    inline explicit TMCInitParams(bool bSuppressFlag, bool enableECool):bSuppressFlag(bSuppressFlag), enableECool(enableECool) { }
+    inline explicit TMCInitParams(bool enableECool)
+        : bSuppressFlag(
+#ifdef PSU_delta
+        1
 #else
-extern void tmc2130_init();
+        0
 #endif
+        )
+        , enableECool(enableECool) { }
+};
+extern void tmc2130_init(TMCInitParams params);
 //check diag pins (called from stepper isr)
 extern void tmc2130_st_isr();
 //update stall guard (called from st_synchronize inside the loop)
