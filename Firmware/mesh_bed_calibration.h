@@ -1,5 +1,6 @@
-#ifndef MESH_BED_CALIBRATION_H
-#define MESH_BED_CALIBRATION_H
+#pragma once
+
+#include "Marlin.h"
 
 #define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
 #define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 4.f) // -0.6 + 5 + 4 = 8.4
@@ -145,11 +146,6 @@ inline bool world2machine_clamp(float &x, float &y)
         machine2world(tmpx, tmpy, x, y);
     return clamped;
 }
-
-extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n_iter = 3, int verbosity_level = 0);
-extern bool find_bed_induction_sensor_point_xy(int verbosity_level = 0);
-extern void go_home_with_z_lift();
-
 /**
  * @brief Bed skew and offest detection result
  *
@@ -159,14 +155,20 @@ extern void go_home_with_z_lift();
 
 enum BedSkewOffsetDetectionResultType {
 	// Detection failed, some point was not found.
+	BED_SKEW_OFFSET_DETECTION_POINT_FOUND       =  0, //!< Point found
 	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1, //!< Point not found.
 	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2, //!< Fitting failed
+	BED_SKEW_OFFSET_DETECTION_POINT_SCAN_FAILED = -3, //!< Point scan failed, try again
 	
 	// Detection finished with success.
 	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,  //!< Perfect.
 	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,  //!< Mildly skewed.
 	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2   //!< Extremely skewed.
 };
+
+bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n_iter = 3, int verbosity_level = 0);
+BedSkewOffsetDetectionResultType find_bed_induction_sensor_point_xy(int verbosity_level = 0);
+void go_home_with_z_lift();
 
 extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask);
 #ifndef NEW_XYZCAL
@@ -213,4 +215,3 @@ extern void mbl_settings_init();
 
 extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag);
 extern void mbl_interpolation(uint8_t meas_points);
-#endif /* MESH_BED_CALIBRATION_H */

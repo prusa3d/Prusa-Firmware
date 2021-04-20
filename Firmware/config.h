@@ -54,19 +54,18 @@
 #define TMC2130_SPCR           SPI_SPCR(TMC2130_SPI_RATE, 1, 1, 1, 0)
 #define TMC2130_SPSR           SPI_SPSR(TMC2130_SPI_RATE)
 
-//W25X20CL configuration
-//pinout:
-#define W25X20CL_PIN_CS        32
-//spi:
-#define W25X20CL_SPI_RATE      0 // fosc/4 = 4MHz
-#define W25X20CL_SPCR          SPI_SPCR(W25X20CL_SPI_RATE, 1, 1, 1, 0)
-#define W25X20CL_SPSR          SPI_SPSR(W25X20CL_SPI_RATE)
-
 //LANG - Multi-language support
 //#define LANG_MODE              0 // primary language only
 #define LANG_MODE              1 // sec. language support
 
 #define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes)
 
+//Community language support
+#define COMMUNITY_LANG_NL // Community Dutch language
+//#define COMMUNITY_LANG_QR // Community new language //..use this as a template and replace 'QR'
+
+#if defined(COMMUNITY_LANG_NL) //|| defined(COMMUNITY_LANG_QR) //..use last part as a template and replace 'QR'
+#define COMMUNITY_LANG_SUPPORT
+#endif
 
 #endif //_CONFIG_H

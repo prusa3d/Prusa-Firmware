@@ -371,12 +371,6 @@ void repeatcommand_front()
     cmdbuffer_front_already_processed = true;
 } 
 
-bool is_buffer_empty()
-{
-    if (buflen == 0) return true;
-    else return false;
-}
-
 void proc_commands() {
 	if (buflen)
 	{
@@ -584,13 +578,14 @@ void get_command()
   sd_count.value = 0;
   // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
   while( !card.eof() && !stop_buffering) {
-    int16_t n=card.get();
+    int16_t n=card.getFilteredGcodeChar();
     char serial_char = (char)n;
-    if(serial_char == '\n' ||
-       serial_char == '\r' ||
-       ((serial_char == '#' || serial_char == ':') && comment_mode == false) ||
-       serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
-    {
+    if( serial_char == '\n'
+     || serial_char == '\r'
+     || ((serial_char == '#' || serial_char == ':') )
+     || serial_count >= (MAX_CMD_SIZE - 1)
+     || n==-1
+    ){
       if(serial_char=='#')
         stop_buffering=true;
 
@@ -601,12 +596,11 @@ void get_command()
         // read from the sdcard into sd_count, 
         // so that the lenght of the already read empty lines and comments will be added
         // to the following non-empty line. 
-        comment_mode = false;
-        continue; //if empty line
+        return; // prevent cycling indefinitely - let manage_heaters do their job
       }
       // The new command buffer could be updated non-atomically, because it is not yet considered
       // to be inside the active queue.
-      sd_count.value = (card.get_sdpos()+1) - sdpos_atomic;
+      sd_count.value = card.get_sdpos() - sdpos_atomic;
       cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
       cmdbuffer[bufindw+1] = sd_count.lohi.lo;
       cmdbuffer[bufindw+2] = sd_count.lohi.hi;
@@ -618,10 +612,10 @@ void get_command()
 //      MYSERIAL.print(sd_count.value, DEC);
 //      SERIAL_ECHOPGM(") ");
 //      SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);
-//    SERIAL_ECHOPGM("cmdbuffer:");
-//    MYSERIAL.print(cmdbuffer);
-//    SERIAL_ECHOPGM("buflen:");
-//    MYSERIAL.print(buflen+1);
+//      SERIAL_ECHOPGM("cmdbuffer:");
+//      MYSERIAL.print(cmdbuffer);
+//      SERIAL_ECHOPGM("buflen:");
+//      MYSERIAL.print(buflen+1);
       sd_count.value = 0;
 
       cli();
@@ -631,7 +625,7 @@ void get_command()
       // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
       ++ buflen;
       bufindw += len;
-      sdpos_atomic = card.get_sdpos()+1;
+      sdpos_atomic = card.get_sdpos();
       if (bufindw == sizeof(cmdbuffer))
           bufindw = 0;
       sei();
@@ -640,15 +634,15 @@ void get_command()
       serial_count = 0; //clear buffer
     
       if(card.eof()) break;
-    
+
       // The following line will reserve buffer space if available.
       if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
           return;
     }
     else
     {
-      if(serial_char == ';') comment_mode = true;
-      else if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
+        // there are no comments coming from the filtered file
+        cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
     }
   }
   if(card.eof())

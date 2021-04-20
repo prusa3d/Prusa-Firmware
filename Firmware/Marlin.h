@@ -350,10 +350,6 @@ extern unsigned long t_fan_rising_edge;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
-extern bool sortAlpha;
-
-extern char dir_names[][9];
-
 extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
@@ -367,9 +363,11 @@ extern bool mmu_print_saved;
 
 //estimated time to end of the print
 extern uint8_t print_percent_done_normal;
-extern uint16_t print_time_remaining_normal;
 extern uint8_t print_percent_done_silent;
+extern uint16_t print_time_remaining_normal;
 extern uint16_t print_time_remaining_silent;
+extern uint16_t print_time_to_change_normal;
+extern uint16_t print_time_to_change_silent;
 
 #define PRINT_TIME_REMAINING_INIT 0xffff
 
@@ -378,8 +376,8 @@ extern uint16_t gcode_in_progress;
 
 extern LongTimer safetyTimer;
 
-#define PRINT_PERCENT_DONE_INIT   0xff
-#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || mmu_print_saved)
+#define PRINT_PERCENT_DONE_INIT 0xff
+#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || mmu_print_saved || homing_flag || mesh_bed_leveling_flag)
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
@@ -441,7 +439,6 @@ extern void cancel_saved_printing();
 
 
 //estimated time to end of the print
-extern uint16_t print_time_remaining();
 extern uint8_t calc_percent_done();
 
 

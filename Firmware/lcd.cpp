@@ -963,21 +963,6 @@ void lcd_set_custom_characters_arrows(void)
 	lcd_createChar_P(1, lcd_chardata_arrdown);
 }
 
-const uint8_t lcd_chardata_progress[8] PROGMEM = {
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111};
-
-void lcd_set_custom_characters_progress(void)
-{
-	lcd_createChar_P(1, lcd_chardata_progress);
-}
-
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
 	B00000,
 	B00000,

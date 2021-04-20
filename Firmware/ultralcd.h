@@ -44,6 +44,7 @@ void lcd_change_success();
 void lcd_loading_color();
 void lcd_sdcard_stop();
 void lcd_pause_print();
+void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
@@ -114,12 +115,15 @@ extern int8_t FSensorStateMenu;
 
 enum class CustomMsg : uint_least8_t
 {
-	Status,          //!< status message from lcd_status_message variable
-	MeshBedLeveling, //!< Mesh bed leveling in progress
-	FilamentLoading, //!< Loading filament in progress
-	PidCal,          //!< PID tuning in progress
-	TempCal,         //!< PINDA temperature calibration
-	TempCompPreheat, //!< Temperature compensation preheat
+    Status,          //!< status message from lcd_status_message variable
+    MeshBedLeveling, //!< Mesh bed leveling in progress
+    FilamentLoading, //!< Loading filament in progress
+    PidCal,          //!< PID tuning in progress
+    TempCal,         //!< PINDA temperature calibration
+    TempCompPreheat, //!< Temperature compensation preheat
+    M0Wait,          //!< M0/M1 Wait command working even from SD
+    MsgUpdate,       //!< Short message even while printing from SD
+    Resuming,       //!< Resuming message
 };
 
 extern CustomMsg custom_message_type;
@@ -150,6 +154,8 @@ extern uint8_t SilentModeMenu_MMU;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
+
+extern uint8_t scrollstuff;
 
 
 void lcd_ignore_click(bool b=true);
@@ -224,10 +230,7 @@ void lcd_temp_calibration_set();
 
 void display_loading();
 
-#if !SDSORT_USES_RAM
 void lcd_set_degree();
-void lcd_set_progress();
-#endif
 
 #if (LANG_MODE != 0)
 void lcd_language();

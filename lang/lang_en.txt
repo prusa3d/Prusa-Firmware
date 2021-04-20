@@ -142,6 +142,9 @@
 #MSG_SD_REMOVED
 "Card removed"
 
+#
+"Checking file"
+
 #MSG_NOT_COLOR
 "Color not correct"
 
@@ -171,6 +174,9 @@
 
 #MSG_DATE c=17 r=1
 "Date:"
+
+#MSG_COMMUNITY_MADE c=18
+"Community made"
 
 #MSG_DISABLE_STEPPERS
 "Disable steppers"
@@ -253,8 +259,8 @@
 #MSG_FSENSOR
 "Fil. sensor"
 
-#MSG_FIL_RUNOUTS c=14
-"Fil. runouts  "
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -382,6 +388,9 @@
 #MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
 
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 
@@ -448,13 +457,13 @@
 #
 "Measured skew"
 
-#MSG_MMU_FAILS c=14
+#MSG_MMU_FAILS c=15
 "MMU fails"
 
 #
 "MMU load failed     "
 
-#MSG_MMU_LOAD_FAILS c=14
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
@@ -544,7 +553,7 @@
 #
 "Nozzle FAN"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 
 #MSG_PID_RUNNING c=20 r=1
@@ -620,12 +629,12 @@
 "Please upgrade."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 
 #MSG_FS_PAUSE c=5
 "Pause"
 
-#MSG_POWER_FAILURES c=14
+#MSG_POWER_FAILURES c=15
 "Power failures"
 
 #MSG_PRINT_ABORTED c=20
@@ -643,7 +652,7 @@
 #MSG_CARD_MENU
 "Print from SD"
 
-#
+# c=20
 "Press the knob"
 
 #MSG_PRINT_PAUSED c=20 r=1
@@ -874,10 +883,10 @@
 #MSG_TOTAL_FAILURES c=20
 "Total failures"
 
-#
+# c=20
 "to load filament"
 
-#
+# c=20
 "to unload filament"
 
 #MSG_UNLOAD_FILAMENT c=17
@@ -1048,7 +1057,7 @@
 #MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 
 #

@@ -190,6 +190,10 @@
 "Card removed"
 "Tarjeta retirada"
 
+#
+"Checking file"
+"\x00"
+
 #MSG_NOT_COLOR
 "Color not correct"
 "Color no homogeneo"
@@ -229,6 +233,10 @@
 #MSG_DATE c=17 r=1
 "Date:"
 "Fecha:"
+
+#MSG_COMMUNITY_MADE c=18
+"Community made"
+"\x00"
 
 #MSG_DISABLE_STEPPERS
 "Disable steppers"
@@ -338,9 +346,9 @@
 "Fil. sensor"
 "Sensor Fil."
 
-#MSG_FIL_RUNOUTS c=14
-"Fil. runouts  "
-"Fil. acabado  "
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
+"Fil. acabado"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -510,6 +518,10 @@
 "Last print failures"
 "Ultimos imp. fallos"
 
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Hola, soy tu impresora Original Prusa i3. Te guiare a traves de un breve proceso de configuracion, en el que se calibrara el eje Z. Despues, estaras listo para imprimir."
+
 #
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Si tienes planchas de acero adicionales, calibra sus ajustes en Ajustes - Ajustes HW - Planchas acero."
@@ -598,7 +610,7 @@
 "Measured skew"
 "Desviacion med:"
 
-#MSG_MMU_FAILS c=14
+#MSG_MMU_FAILS c=15
 "MMU fails"
 "Fallos MMU"
 
@@ -606,7 +618,7 @@
 "MMU load failed     "
 "Carga MMU fallida"
 
-#MSG_MMU_LOAD_FAILS c=14
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
 "Carga MMU falla"
 
@@ -726,7 +738,7 @@
 "Nozzle FAN"
 "Vent. capa"
 
-#MSG_PAUSE_PRINT
+#MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pausar impresion"
 
@@ -827,16 +839,16 @@
 "Actualize por favor"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
-"Press knob to preheat nozzle and continue."
+"Press the knob to preheat nozzle and continue."
 "Pulsa el dial para precalentar la boquilla y continue."
 
 #MSG_FS_PAUSE c=5
 "Pause"
 "Pausa"
 
-#MSG_POWER_FAILURES c=14
+#MSG_POWER_FAILURES c=15
 "Power failures"
-"Cortes de energia"
+"Fallas energia"
 
 #MSG_PRINT_ABORTED c=20
 "Print aborted"
@@ -858,7 +870,7 @@
 "Print from SD"
 "Menu tarjeta SD"
 
-#
+# c=20
 "Press the knob"
 "Pulsa el dial"
 
@@ -1166,13 +1178,13 @@
 "Total failures"
 "Fallos totales"
 
-#
+# c=20
 "to load filament"
-"para cargar el filamento"
+"para cargar el fil."
 
-#
+# c=20
 "to unload filament"
-"para descargar el filamento"
+"para descargar fil."
 
 #MSG_UNLOAD_FILAMENT c=17
 "Unload filament"
@@ -1398,7 +1410,7 @@
 "G-code sliced for a different printer type. Continue?"
 "Codigo G laminado para un tipo de impresora diferente. ?Continuar?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=6
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "Codigo G laminado para una impresora diferente. Por favor relamina el modelo de nuevo. Impresion cancelada."
 

@@ -45,9 +45,17 @@ rm_if_exists update_lang_de.out
 rm_if_exists update_lang_es.out
 rm_if_exists update_lang_fr.out
 rm_if_exists update_lang_it.out
+rm_if_exists update_lang_nl.out
 rm_if_exists update_lang_pl.out
 rm_if_exists lang.bin
 rm_if_exists lang.hex
+#Community language support
+#Dutch
+rm_if_exists firmware_nl.hex
+
+#Use the 2 lines below as a template and replace 'qr'
+##New language
+#rm_if_exists firmware_qr.hex
 
 echo -n "fw-clean.sh finished" >&2
 if [ $result -eq 0 ]; then

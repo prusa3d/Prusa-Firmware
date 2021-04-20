@@ -53,6 +53,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
    - __L__		Language
    - __S__ 		Statistics
    - __P__ 		Shipping prep
+   - __M__ 		Service/Maintenance prep
    - __S/P__	Statistics and Shipping prep
    
   will overwrite existing values to 0 or default.
@@ -157,6 +158,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F60h 3936		| float		| EEPROM_XYZ_CAL_SKEW					| ???			| ff ff ff ffh			| XYZ skew value									| ???			| D3 Ax0f60 C4
 | 0x0F5Fh 3935		| uint8		| EEPROM_WIZARD_ACTIVE					| 01h 1			| 01h 1			__P__	| Wizard __active__									| ???			| D3 Ax0f5f C1
 | ^					| ^			| ^										| 00h 0			| ^						| Wizard __inactive__								| ^ 			| ^
+| ^					| ^			| ^										| 02h 2			| 02h 2			__M__	| Wizard active - Z cal after shipping/service prep | ^ 			| ^
 | 0x0F5Dh 3933		| uint16	| EEPROM_BELTSTATUS_X					| ???			| ff ffh				| X Beltstatus 										| ???			| D3 Ax0f5d C2
 | 0x0F5Bh 3931		| uint16	| EEPROM_BELTSTATUS_Y					| ???			| ff ffh				| Y Beltstatus 										| ???			| D3 Ax0f5b C2
 | 0x0F5Ah 3930		| uint8		| EEPROM_DIR_DEPTH						| 00h-ffh 0-255	| ffh 255				| Directory depth									| ???			| D3 Ax0f5a C1
@@ -319,8 +321,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| PINDA has no temp compensation PINDA v1/2    		| ^				| ^
 | ^					| ^			| ^										| 01h 1			| ^						| PINDA has temp compensation aka SuperPINDA       	| ^				| ^
 | 0x0D15 3349		| char[20]	| EEPROM_PRUSA_SN						| SN[19] == 0	| ffffffffffffffff...	| PRUSA Serial number string						| PRUSA SN		| D3 Ax0d15 C20
+| 0x0D11 3345		| float		| EEPROM_UVLO_ACCELL                	| ???			| ff ff ff ffh			| Power panic saved normal acceleration     		| ???			| D3 Ax0d11 C4
+| 0x0D0D 3341		| float		| EEPROM_UVLO_RETRACT_ACCELL			| ???			| ff ff ff ffh			| Power panic saved retract acceleration     		| ???			| D3 Ax0d0d C4
+| 0x0D09 3337		| float		| EEPROM_UVLO_TRAVEL_ACCELL				| ???			| ff ff ff ffh			| Power panic saved travel acceleration     		| ???			| D3 Ax0d09 C4
+| 0x0D05 3333		| uint32_t	| EEPROM_JOB_ID							| ???			| 00 00 00 00h			| Job ID used by host software						| D3 only		| D3 Ax0d05 C4
 
-  
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
 | 0x0012 18			| uint16	| EEPROM_FIRMWARE_VERSION_END			| ???			| ff ffh 65535			| ???												| ???			| D3 Ax0012 C2
@@ -333,6 +338,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 
 #define EEPROM_EMPTY_VALUE 0xFF
 #define EEPROM_EMPTY_VALUE16 0xFFFF
+#define EEPROM_EMPTY_VALUE32 0xFFFFFFFFl
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
@@ -406,7 +412,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_POWER_COUNT       (EEPROM_FERROR_COUNT - 1)                      // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-17)
 
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4)                            // float for skew backup
-#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)                          // 0: wizard not active, 1: wizard active, 2: wizard active without yes/no = forced calibrate Z after shipping/service prep.
 #define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2)                          // uint16
 #define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2)                           // uint16
 
@@ -525,8 +531,15 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_EXPERIMENTAL_VISIBILITY (EEPROM_ALTFAN_OVERRIDE-1) //uint8
 #define EEPROM_PINDA_TEMP_COMPENSATION (EEPROM_EXPERIMENTAL_VISIBILITY-1) //uint8
 #define EEPROM_PRUSA_SN (EEPROM_PINDA_TEMP_COMPENSATION-20) //char[20]
+
+#define EEPROM_UVLO_ACCELL (EEPROM_PRUSA_SN-4) // float
+#define EEPROM_UVLO_RETRACT_ACCELL (EEPROM_UVLO_ACCELL-4) // float
+#define EEPROM_UVLO_TRAVEL_ACCELL (EEPROM_UVLO_RETRACT_ACCELL-4) // float
+
+#define EEPROM_JOB_ID (EEPROM_UVLO_TRAVEL_ACCELL-4) //uint32_t
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_PRUSA_SN
+#define EEPROM_LAST_ITEM EEPROM_JOB_ID
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

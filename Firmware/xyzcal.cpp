@@ -699,31 +699,29 @@ uint8_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 const uint16_t xyzcal_point_pattern_10[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 const uint16_t xyzcal_point_pattern_08[12] PROGMEM = {0x000, 0x000, 0x0f0, 0x1f8, 0x3fc, 0x3fc, 0x3fc, 0x3fc, 0x1f8, 0x0f0, 0x000, 0x000};
 
-bool xyzcal_searchZ(void)
-{
-    //@size=118
+bool xyzcal_searchZ(void) {
+	//@size=118
 	DBG(_n("xyzcal_searchZ x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	int16_t x0 = _X;
 	int16_t y0 = _Y;
-	int16_t z0 = _Z;
+	int16_t z = _Z;
 //	int16_t min_z = -6000;
 //	int16_t dz = 100;
-	int16_t z = z0;
-	while (z > -2300) //-6mm + 0.25mm
-	{
+	while (z > -2300) { //-6mm + 0.25mm
 		uint16_t ad = 0;
-		if (xyzcal_spiral8(x0, y0, z, 100, 900, 320, 1, &ad)) //dz=100 radius=900 delay=400
-		{
-			int16_t x_on = _X;
-			int16_t y_on = _Y;
-			int16_t z_on = _Z;
+		if (xyzcal_spiral8(x0, y0, z, 100, 900, 320, 1, &ad)) { //dz=100 radius=900 delay=400
 			//@size=82
-            DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), x_on, y_on, z_on, ad);
+			DBG(_n(" ON-SIGNAL at x=%d y=%d z=%d ad=%d\n"), _X, _Y, _Z, ad);
+
+			/// return to starting XY position
+			/// magic constant, lowers min_z after searchZ to obtain more dense data in scan
+			const pos_i16_t lower_z = 72;
+			xyzcal_lineXYZ_to(x0, y0, _Z - lower_z, 200, 0);
 			return true;
 		}
 		z -= 400;
 	}
-    //@size=138
+	//@size=138
 	DBG(_n("xyzcal_searchZ no signal\n x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	return false;
 }
@@ -839,7 +837,7 @@ void dynamic_circle(uint8_t *matrix_32x32, float &x, float &y, float &r, uint8_t
 	for (int8_t i = iterations; i > 0; --i){
 	
         //@size=128B
-		DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
+		// DBG(_n(" [%f, %f][%f] circle\n"), x, y, r);
 
 		/// read points on the circle
 		for (uint8_t p = 0; p < num_points; ++p){
@@ -906,12 +904,42 @@ uint8_t find_patterns(uint8_t *matrix32, uint16_t *pattern08, uint16_t *pattern1
 	return match10;
 }
 
+/// Scan should include normal data.
+/// If it's too extreme (00, FF) it could be caused by biased sensor.
+/// \return true if data looks normal
+bool check_scan(uint8_t *matrix32){
+	/// magic constants that define normality
+	const int16_t threshold_total = 900;
+	const int threshold_extreme = 50;
+
+	int16_t mins = 0;
+	int16_t maxs = 0;
+
+	for (int16_t i = 0; i < 32*32;++i){
+		if (matrix32[i] == 0) {
+			++mins;
+		} else if (matrix32[i] == 0xFF){
+			++maxs;
+		}
+	}
+	const int16_t rest = 1024 - mins - maxs;
+
+	if (mins + maxs > threshold_total
+		&& mins > threshold_extreme
+		&& maxs > threshold_extreme
+		&& mins > rest
+		&& maxs > rest)
+		return false;
+
+	return true;
+}
+
 /// scans area around the current head location and
 /// searches for the center of the calibration pin
-bool xyzcal_scan_and_process(void){
+BedSkewOffsetDetectionResultType xyzcal_scan_and_process(){
     //@size=44
-	DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
-	bool ret = false;
+	// DBG(_n("sizeof(block_buffer)=%d\n"), sizeof(block_t)*BLOCK_BUFFER_SIZE);
+	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 	int16_t x = _X;
 	int16_t y = _Y;
 	const int16_t z = _Z;
@@ -927,6 +955,8 @@ bool xyzcal_scan_and_process(void){
 
 	xyzcal_scan_pixels_32x32_Zhop(x, y, z, 2400, 200, matrix32);
 	print_image(matrix32);
+	if (!check_scan(matrix32))
+		return BED_SKEW_OFFSET_DETECTION_POINT_SCAN_FAILED;
 
 	/// SEARCH FOR BINARY CIRCLE
 	uint8_t uc = 0;
@@ -957,7 +987,7 @@ bool xyzcal_scan_and_process(void){
 		x = round_to_i16(xf);
 		y = round_to_i16(yf);
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
-		ret = true;
+		ret = BED_SKEW_OFFSET_DETECTION_POINT_FOUND;
 	}
 
 	/// wipe buffer
@@ -966,20 +996,16 @@ bool xyzcal_scan_and_process(void){
 	return ret;
 }
 
-bool xyzcal_find_bed_induction_sensor_point_xy(void){
-	bool ret = false;
+BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy(void){
+	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 
     //@size=258
-    DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
+    // DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	st_synchronize();
-	///< magic constant, lowers min_z after searchZ to obtain more dense data in scan
-	const pos_i16_t lower_z = 72; 
 
 	xyzcal_meassure_enter();
-	if (xyzcal_searchZ()){
-		xyzcal_lineXYZ_to(_X, _Y, _Z - lower_z, 200, 0);
+	if (xyzcal_searchZ())
 		ret = xyzcal_scan_and_process();
-	}
 	xyzcal_meassure_leave();
 	return ret;
 }
