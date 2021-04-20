@@ -155,7 +155,7 @@ extern uint8_t SilentModeMenu_MMU;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
-extern bool isPrintFinished;
+extern bool enableReprint;
 
 extern uint8_t scrollstuff;
 
