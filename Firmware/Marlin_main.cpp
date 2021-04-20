@@ -5740,9 +5740,10 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	### M20 - SD Card file list <a href="https://reprap.org/wiki/G-code#M20:_List_SD_card">M20: List SD card</a>
     #### Usage
     
-        M20 [ L ]
+        M20 [ L | T ]
     #### Parameters
-    - `L` - Reports ling filenames instead of just short filenames. Requires host software parsing.
+    - `T` - Report timestamps as well. The value is one uint32_t encoded as hex. Requires host software parsing (Cap:EXTENDED_M20).
+    - `L` - Reports long filenames instead of just short filenames. Requires host software parsing (Cap:EXTENDED_M20).
     */
     case 20:
       KEEPALIVE_STATE(NOT_BUSY); // do not send busy messages during listing. Inhibits the output of manage_heater()
