@@ -744,7 +744,7 @@ static void factory_reset(char level)
 
 	case 2: // Level 2: Prepare for shipping
 		factory_reset_stats();
-		// [[fallthrough]] // there is no break intentionally
+		// FALLTHRU
 
 	case 3: // Level 3: Preparation after being serviced
 		// Force language selection at the next boot up.

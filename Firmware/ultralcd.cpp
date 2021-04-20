@@ -7146,8 +7146,8 @@ void lcd_sdcard_menu()
 			_md->fileCnt = card.getnrfilenames();
 			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 			_md->menuState = _standard;
-			// FALLTHRU
 		}
+		// FALLTHRU
 		case _standard: //normal menu structure.
 		{
 			if (!_md->lcd_scrollTimer.running()) //if the timer is not running, then the menu state was just switched, so redraw the screen.
