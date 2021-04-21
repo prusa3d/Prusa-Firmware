@@ -202,6 +202,7 @@ void tmc2130_init(TMCInitParams params)
             tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SILENT);
             tmc2130_wr_PWMCONF(axis, TMC2130_PWM_AMPL_Ecool, TMC2130_PWM_GRAD_Ecool, tmc2130_pwm_freq[axis], TMC2130_PWM_AUTO_Ecool, 0, 0);
             tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS_E);
+            SERIAL_ECHOLNPGM("E-motor current scaling enabled");
         }
 #else //TMC2130_STEALTH_E
 		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
