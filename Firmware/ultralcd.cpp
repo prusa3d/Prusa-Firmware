@@ -8956,8 +8956,8 @@ void lcd_experimental_toggle()
 
 void ECool_toggle(){
     enableECool = ! enableECool;
-    // @@TODO this is a subject to discussion if we allow storing the ECool mode into EEPROM (if there is some other nonzero variable the E-motor can burn!)
-    // eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, enableECool);
+    // this is only called when the experimental menu is visible, thus the first condition for enabling of the ECool mode is met in this place
+    eeprom_update_byte((uint8_t *)EEPROM_ECOOL_ENABLE, enableECool ? EEPROM_ECOOL_MAGIC_NUMBER : EEPROM_EMPTY_VALUE);
 }
 bool ECool_get(){
     return enableECool;
