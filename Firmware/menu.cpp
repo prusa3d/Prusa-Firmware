@@ -462,11 +462,10 @@ void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 }
 
 template<>
-void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
+void menu_draw_P<int8_t*>(char chr, const char* str, int16_t val)
 {
-    menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
     float factor = 1.0f + static_cast<float>(val) / 1000.0f;
-    if (val <= _md->minEditValue)
+    if (val == 0)
     {
         menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
     }
@@ -551,7 +550,7 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 }
 
 template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
-template uint8_t menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
+template uint8_t menu_item_edit_P<int8_t*>(const char* str, int8_t *pval, int16_t min_val, int16_t max_val);
 
 static uint8_t progressbar_block_count = 0;
 static uint16_t progressbar_total = 0;
