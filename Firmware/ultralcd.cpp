@@ -2201,14 +2201,15 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     }
     else
     {
-        lcd_set_cursor(0, 0);
-        lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
-
         if (!bFilamentWaitingFlag)
         {
             // First run after the filament preheat selection:
             // setup the fixed LCD parts and raise Z as we wait
             bFilamentWaitingFlag = true;
+
+            lcd_clear();
+            lcd_draw_update = 1;
+            lcd_puts_at_P(0, 3, _i(">Cancel")); ////MSG_ c=20 r=1
 
             lcd_set_cursor(0, 1);
             switch (eFilamentAction)
@@ -2236,8 +2237,10 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 // handled earlier
                 break;
             }
-            lcd_puts_at_P(0, 3, _i(">Cancel"));                   ////MSG_ c=20 r=1
         }
+
+        lcd_set_cursor(0, 0);
+        lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
 
         if (lcd_clicked())
         {
