@@ -8971,7 +8971,7 @@ void lcd_experimental_menu()
     MENU_ITEM_TOGGLE_P(_N("ALTFAN det."), altfanOverride_get()?_T(MSG_OFF):_T(MSG_ON), altfanOverride_toggle);////MSG_MENU_ALTFAN c=18
 #endif //EXTRUDER_ALTFAN_DETECT
     
-    MENU_ITEM_TOGGLE_P(_N("E-cool mode"), ECool_get()?_T(MSG_OFF):_T(MSG_ON), ECool_toggle);////MSG_MENU_ECOOL c=18
+    MENU_ITEM_TOGGLE_P(_N("E-cool mode"), ECool_get()?_T(MSG_ON):_T(MSG_OFF), ECool_toggle);////MSG_MENU_ECOOL c=18
 
     MENU_END();
 }

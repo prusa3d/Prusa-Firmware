@@ -1339,7 +1339,7 @@ void setup()
 #endif //TMC2130
     // We enable E-cool mode for non-farm prints IFF the experimental menu is visible AND the EEPROM_ECOOL variable has
     // a value of the universal answer to all problems of the universe
-	enableECool = ( eeprom_read_byte((uint8_t *)EEPROM_ECOOL_ENABLE) == EEPROM_ECOOL_MAGIC_NUMBER ) && EEPROM_EXPERIMENTAL_VISIBILITY;
+	enableECool = ( eeprom_read_byte((uint8_t *)EEPROM_ECOOL_ENABLE) == EEPROM_ECOOL_MAGIC_NUMBER ) && ( eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY) == 1 );
 	st_init();    // Initialize stepper, this enables interrupts!
   
 #ifdef TMC2130
