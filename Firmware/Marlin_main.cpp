@@ -3622,12 +3622,12 @@ static T gcode_M600_filament_change_z_shift()
 #ifdef FILAMENTCHANGE_ZADD
 	static_assert(Z_MAX_POS < (255 - FILAMENTCHANGE_ZADD), "Z-range too high, change the T type from uint8_t to uint16_t");
 	// avoid floating point arithmetics when not necessary - results in shorter code
+	T z_shift = T(FILAMENTCHANGE_ZADD); // always move above printout
 	T ztmp = T( current_position[Z_AXIS] );
-	T z_shift = 0;
-	if(ztmp < T(25)){
-		z_shift = T(25) - ztmp; // make sure to be at least 25mm above the heat bed
-	} 
-	return z_shift + T(FILAMENTCHANGE_ZADD); // always move above printout
+	if((ztmp + z_shift) < T(MIN_Z_FOR_SWAP)){
+		z_shift = T(MIN_Z_FOR_SWAP) - ztmp; // make sure to be at least 25mm above the heat bed
+	}
+	return z_shift;
 #else
 	return T(0);
 #endif
@@ -3676,7 +3676,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     // Unload filament
     if (mmu_enabled) extr_unload();	//unload just current filament for multimaterial printers (used also in M702)
-    else unload_filament(); //unload filament for single material (used also in M702)
+    else unload_filament(true); //unload filament for single material (used also in M702)
     //finish moves
     st_synchronize();
 
