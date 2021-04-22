@@ -2237,10 +2237,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 // handled earlier
                 break;
             }
-<<<<<<< HEAD
             lcd_puts_at_P(0, 3, _T(MSG_CANCEL));
-=======
->>>>>>> upstream/MK3_3.10.0
         }
 
         lcd_set_cursor(0, 0);
@@ -6680,11 +6677,7 @@ static void lcd_main_menu()
     }
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=18
 #ifdef LCD_TEST
-<<<<<<< HEAD
-    MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);
-=======
     MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_SUPPORT
->>>>>>> upstream/MK3_3.10.0
 #endif //LCD_TEST
 
     MENU_END();
