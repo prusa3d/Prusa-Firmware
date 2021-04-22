@@ -18,11 +18,9 @@
 
 //mode
 uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;
-// Beware - the 4th index (counted from zero) is abused for the E-motor cool mode only used on the farm
-//holding currents
-uint8_t tmc2130_current_h[5] = TMC2130_CURRENTS_H;
+uint8_t tmc2130_current_h[4] = TMC2130_CURRENTS_H;
 //running currents
-uint8_t tmc2130_current_r[5] = TMC2130_CURRENTS_R;
+uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 
 //running currents for homing
 uint8_t tmc2130_current_r_home[4] = TMC2130_CURRENTS_R_HOME;
@@ -188,14 +186,11 @@ void tmc2130_init(TMCInitParams params)
 	}
 	for (uint_least8_t axis = 3; axis < 4; axis++) // E axis
 	{
-		tmc2130_setup_chopper(axis,
-            tmc2130_mres[axis], // this is not changed with ECool
-            tmc2130_current_h[axis] + params.enableECool,
-            tmc2130_current_r[axis] + params.enableECool);
+		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
 #ifndef TMC2130_STEALTH_E
         if( ! params.enableECool ){
-		tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
+            tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
         } else {
             tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
             tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, 0);

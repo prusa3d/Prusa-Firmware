@@ -1054,11 +1054,6 @@ void setup()
 		selectedSerialPort = 1;
 #endif //HAS_SECOND_SERIAL_PORT
 		MYSERIAL.begin(BAUDRATE);
-#ifdef TMC2130
-		//increased extruder current (PFW363)
-		tmc2130_current_h[E_AXIS] = 36;
-		tmc2130_current_r[E_AXIS] = 36;
-#endif //TMC2130
 #ifdef FILAMENT_SENSOR
 		//disabled filament autoload (PFW360)
 		fsensor_autoload_set(false);
@@ -1067,6 +1062,14 @@ void setup()
           if(!(eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED)))
                eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED,true);
 	}
+
+#ifdef TMC2130
+    if( FarmOrUserECool() ){
+		//increased extruder current (PFW363)
+		tmc2130_current_h[E_AXIS] = TMC2130_CURRENTS_FARM;
+		tmc2130_current_r[E_AXIS] = TMC2130_CURRENTS_FARM;
+    }
+#endif //TMC2130
 
     //saved EEPROM SN is not valid. Try to retrieve it.
     //SN is valid only if it is NULL terminated. Any other character means either uninitialized or corrupted
@@ -1339,13 +1342,12 @@ void setup()
 #endif //TMC2130
     // We enable E-cool mode for non-farm prints IFF the experimental menu is visible AND the EEPROM_ECOOL variable has
     // a value of the universal answer to all problems of the universe
-	enableECool = ( eeprom_read_byte((uint8_t *)EEPROM_ECOOL_ENABLE) == EEPROM_ECOOL_MAGIC_NUMBER ) && ( eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY) == 1 );
 	st_init();    // Initialize stepper, this enables interrupts!
   
 #ifdef TMC2130
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	update_mode_profile();
-	tmc2130_init(TMCInitParams(false, farm_mode || enableECool));
+	tmc2130_init(TMCInitParams(false, FarmOrUserECool() ));
 #endif //TMC2130
 #ifdef PSU_Delta
      init_force_z();                              // ! important for correct Z-axis initialization
@@ -2558,7 +2560,7 @@ void force_high_power_mode(bool start_high_power_section) {
 		cli();
 		tmc2130_mode = (start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
 		update_mode_profile();
-		tmc2130_init(TMCInitParams(farm_mode || enableECool));
+		tmc2130_init(TMCInitParams(FarmOrUserECool()));
     // We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
     // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
     st_reset_timer();
@@ -8427,6 +8429,7 @@ Sigma_Exit:
     /*!
 	### M907 - Set digital trimpot motor current in mA using axis codes <a href="https://reprap.org/wiki/G-code#M907:_Set_digital_trimpot_motor">M907: Set digital trimpot motor</a>
 	Set digital trimpot motor current using axis codes (X, Y, Z, E, B, S).
+    M907 has no effect when the experimental Extruder motor current scaling mode is active (that applies to farm printing as well)
 	#### Usage
     
         M907 [ X | Y | Z | E | B | S ]
@@ -8442,17 +8445,19 @@ Sigma_Exit:
     case 907:
     {
 #ifdef TMC2130
-        // See tmc2130_cur2val() for translation to 0 .. 63 range
-        for (int i = 0; i < NUM_AXIS; i++)
-			if(code_seen(axis_codes[i]))
-			{
-				long cur_mA = code_value_long();
-				uint8_t val = tmc2130_cur2val(cur_mA);
-				tmc2130_set_current_h(i, val);
-				tmc2130_set_current_r(i, val);
-				//if (i == E_AXIS) printf_P(PSTR("E-axis current=%ldmA\n"), cur_mA);
-			}
-
+        if( ! FarmOrUserECool() ){
+            // See tmc2130_cur2val() for translation to 0 .. 63 range
+            for (int i = 0; i < NUM_AXIS; i++){
+                if(code_seen(axis_codes[i]))
+                {
+                    long cur_mA = code_value_long();
+                    uint8_t val = tmc2130_cur2val(cur_mA);
+                    tmc2130_set_current_h(i, val);
+                    tmc2130_set_current_r(i, val);
+                    //if (i == E_AXIS) printf_P(PSTR("E-axis current=%ldmA\n"), cur_mA);
+                }
+            }
+        }
 #else //TMC2130
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
         for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) st_current_set(i,code_value());
@@ -11963,7 +11968,7 @@ void disable_force_z()
 #ifdef TMC2130
     tmc2130_mode=TMC2130_MODE_SILENT;
     update_mode_profile();
-    tmc2130_init(TMCInitParams(true, farm_mode || enableECool));
+    tmc2130_init(TMCInitParams(true, FarmOrUserECool()));
 #endif // TMC2130
 }
 
@@ -11977,7 +11982,7 @@ bEnableForce_z=true;
 #ifdef TMC2130
 tmc2130_mode=eeprom_read_byte((uint8_t*)EEPROM_SILENT)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 update_mode_profile();
-tmc2130_init(TMCInitParams(true, farm_mode || enableECool));
+tmc2130_init(TMCInitParams(true, FarmOrUserECool()));
 #endif // TMC2130
 
 WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);                  // slightly redundant ;-p

@@ -5,10 +5,8 @@
 
 //mode
 extern uint8_t tmc2130_mode;
-// Beware - the 4th index (counted from zero) is abused for the E-motor cool mode only used on the farm
-//holding and running currents
-extern uint8_t tmc2130_current_h[5];
-extern uint8_t tmc2130_current_r[5];
+extern uint8_t tmc2130_current_h[4];
+extern uint8_t tmc2130_current_r[4];
 //microstep resolution (0 means 256usteps, 8 means 1ustep
 extern uint8_t tmc2130_mres[4];
 
