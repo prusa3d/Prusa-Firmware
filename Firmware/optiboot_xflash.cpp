@@ -4,7 +4,7 @@
 // Licence GLP 2 or later.
 
 #include "Marlin.h"
-#include "w25x20cl.h"
+#include "xflash.h"
 #include "stk500.h"
 #include "bootapp.h"
 #include <avr/wdt.h>
@@ -16,14 +16,14 @@ static unsigned const int __attribute__((section(".version")))
   optiboot_version = 256*(OPTIBOOT_MAJVER + OPTIBOOT_CUSTOMVER) + OPTIBOOT_MINVER;
 
 #if 0
-#define W25X20CL_SIGNATURE_0 9
-#define W25X20CL_SIGNATURE_1 8
-#define W25X20CL_SIGNATURE_2 7
+#define XFLASH_SIGNATURE_0 9
+#define XFLASH_SIGNATURE_1 8
+#define XFLASH_SIGNATURE_2 7
 #else
 //FIXME this is a signature of ATmega2560!
-#define W25X20CL_SIGNATURE_0 0x1E
-#define W25X20CL_SIGNATURE_1 0x98
-#define W25X20CL_SIGNATURE_2 0x01
+#define XFLASH_SIGNATURE_0 0x1E
+#define XFLASH_SIGNATURE_1 0x98
+#define XFLASH_SIGNATURE_2 0x01
 #endif
 
 #define RECV_READY ((UCSR0A & _BV(RXC0)) != 0)
@@ -78,7 +78,7 @@ extern struct block_t *block_buffer;
 //! @brief Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
 //! @return 1 if "start\n" was not sent. Optiboot was skipped
 //! @return 0 if "start\n" was sent. Optiboot ran normally. No need to send "start\n" in setup()
-uint8_t optiboot_w25x20cl_enter()
+uint8_t optiboot_xflash_enter()
 {
 // Make sure to check boot_app_magic as well. Since these bootapp flags are located right in the middle of the stack,
 // they can be unintentionally changed. As a workaround to the language upload problem, do not only check for one bit if it's set,
@@ -154,7 +154,7 @@ uint8_t optiboot_w25x20cl_enter()
   }
 
   spi_init();
-  w25x20cl_init();
+  xflash_init();
   wdt_disable();
 
   /* Forever loop: exits by causing WDT reset */
@@ -254,16 +254,16 @@ uint8_t optiboot_w25x20cl_enter()
         // During a single bootloader run, only erase a 64kB block once.
         // An 8bit bitmask 'pages_erased' covers 512kB of FLASH memory.
         if ((address == 0) && (pages_erased & (1 << (addr >> 16))) == 0) {
-          w25x20cl_wait_busy();
-          w25x20cl_enable_wr();
-          w25x20cl_block64_erase(addr);
+          xflash_wait_busy();
+          xflash_enable_wr();
+          xflash_block64_erase(addr);
           pages_erased |= (1 << (addr >> 16));
         }
-        w25x20cl_wait_busy();
-        w25x20cl_enable_wr();
-        w25x20cl_page_program(addr, buff, savelength);
-        w25x20cl_wait_busy();
-        w25x20cl_disable_wr();
+        xflash_wait_busy();
+        xflash_enable_wr();
+        xflash_page_program(addr, buff, savelength);
+        xflash_wait_busy();
+        xflash_disable_wr();
       }
     }
     /* Read memory block mode, length is big endian.  */
@@ -279,8 +279,8 @@ uint8_t optiboot_w25x20cl_enter()
       // Read the destination type. It should always be 'F' as flash. It is not checked.
       (void)getch();
       verifySpace();
-      w25x20cl_wait_busy();
-      w25x20cl_rd_data(addr, buff, length);
+      xflash_wait_busy();
+      xflash_rd_data(addr, buff, length);
       for (i = 0; i < length; ++ i)
         putch(buff[i]);
     }
@@ -288,9 +288,9 @@ uint8_t optiboot_w25x20cl_enter()
     else if(ch == STK_READ_SIGN) {
       // READ SIGN - return what Avrdude wants to hear
       verifySpace();
-      putch(W25X20CL_SIGNATURE_0);
-      putch(W25X20CL_SIGNATURE_1);
-      putch(W25X20CL_SIGNATURE_2);
+      putch(XFLASH_SIGNATURE_0);
+      putch(XFLASH_SIGNATURE_1);
+      putch(XFLASH_SIGNATURE_2);
     }
     else if (ch == STK_LEAVE_PROGMODE) { /* 'Q' */
       // Adaboot no-wait mod

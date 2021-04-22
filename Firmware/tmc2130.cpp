@@ -68,8 +68,9 @@ uint8_t tmc2130_sg_diag_mask = 0x00;
 uint8_t tmc2130_sg_crash = 0;
 uint16_t tmc2130_sg_err[4] = {0, 0, 0, 0};
 uint16_t tmc2130_sg_cnt[4] = {0, 0, 0, 0};
+#ifdef DEBUG_CRASHDET_COUNTERS
 bool tmc2130_sg_change = false;
-
+#endif
 
 bool skip_debug_msg = false;
 
@@ -255,7 +256,9 @@ void tmc2130_st_isr()
 		if (tmc2130_sg_cnt[axis] < tmc2130_sg_err[axis])
 		{
 			tmc2130_sg_cnt[axis] = tmc2130_sg_err[axis];
+#ifdef DEBUG_CRASHDET_COUNTERS
 			tmc2130_sg_change = true;
+#endif
 			uint8_t sg_thr = 64;
 //			if (axis == Y_AXIS) sg_thr = 64;
 			if (tmc2130_sg_err[axis] >= sg_thr)
@@ -409,7 +412,9 @@ void tmc2130_check_overtemp()
 
 		}
 		checktime = _millis();
+#ifdef DEBUG_CRASHDET_COUNTERS
 		tmc2130_sg_change = true;
+#endif
 	}
 #ifdef DEBUG_CRASHDET_COUNTERS
 	if (tmc2130_sg_change)

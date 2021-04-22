@@ -8,11 +8,24 @@
 #define MAX_DIR_DEPTH 6
 
 #include "SdFile.h"
-enum LsAction {LS_SerialPrint,LS_SerialPrint_LFN,LS_Count,LS_GetFilename};
 class CardReader
 {
 public:
   CardReader();
+  
+  enum LsAction : uint8_t
+  {
+    LS_SerialPrint,
+    LS_Count,
+    LS_GetFilename,
+  };
+  struct ls_param
+  {
+    bool LFN : 1;
+    bool timestamp : 1;
+    inline ls_param():LFN(0), timestamp(0) { }
+    inline ls_param(bool LFN, bool timestamp):LFN(LFN), timestamp(timestamp) { }
+  } __attribute__((packed));
   
   void initsd();
   void write_command(char *buf);
@@ -43,7 +56,7 @@ public:
   uint16_t getWorkDirDepth();
   
 
-  void ls(bool printLFN);
+  void ls(ls_param params);
   bool chdir(const char * relpath, bool doPresort);
   void updir();
   void setroot(bool doPresort);
@@ -59,9 +72,12 @@ public:
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
   bool eof() { return sdpos>=filesize; }
-  // There may be a potential performance problem - when the comment reading fails, sdpos points to the last correctly read character.
-  // However, repeated reading (e.g. after power panic) the comment will be read again - it should survive correctly, it will just take a few moments to skip
-  FORCE_INLINE int16_t getFilteredGcodeChar() {  sdpos = file.curPosition();return (int16_t)file.readFilteredGcode();};
+  FORCE_INLINE int16_t getFilteredGcodeChar()
+  {
+      int16_t c = (int16_t)file.readFilteredGcode();
+      sdpos = file.curPosition();
+      return c;
+  };
   void setIndex(long index) {sdpos = index;file.seekSetFilteredGcode(index);};
   FORCE_INLINE uint8_t percentDone(){if(!isFileOpen()) return 0; if(filesize) return sdpos/((filesize+99)/100); else return 0;};
   FORCE_INLINE char* getWorkDirName(){workDir.getFilename(filename);return filename;};
@@ -119,12 +135,11 @@ private:
 
   bool autostart_stilltocheck; //the sd start is delayed, because otherwise the serial cannot answer fast enought to make contact with the hostsoftware.
   
-  LsAction lsAction; //stored for recursion.
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
 
   bool diveSubfolder (const char *&fileName);
-  void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);
+  void lsDive(const char *prepend, SdFile parent, const char * const match=NULL, LsAction lsAction = LS_GetFilename, ls_param lsParams = ls_param());
 #ifdef SDCARD_SORT_ALPHA
   void flush_presort();
 #endif
