@@ -551,9 +551,10 @@ enum CalibrationStatus
 
 // Try to maintain a minimum distance from the bed even when Z is
 // unknown when doing the following operations
-#define MIN_Z_FOR_LOAD    50
-#define MIN_Z_FOR_UNLOAD  50
-#define MIN_Z_FOR_PREHEAT 10
+#define MIN_Z_FOR_LOAD    50 // lcd filament loading or autoload
+#define MIN_Z_FOR_UNLOAD  50 // lcd filament unloading
+#define MIN_Z_FOR_SWAP    27 // filament change (including M600)
+#define MIN_Z_FOR_PREHEAT 10 // lcd preheat
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"
