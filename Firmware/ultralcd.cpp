@@ -8947,6 +8947,7 @@ void lcd_experimental_toggle()
     eeprom_update_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY, oldVal);
 }
 
+#ifdef TMC2130
 void UserECool_toggle(){
     // this is only called when the experimental menu is visible, thus the first condition for enabling of the ECool mode is met in this place
     // The condition is intentionally inverted as we are toggling the state (i.e. if it was enabled, we are disabling the feature and vice versa)
@@ -8958,6 +8959,7 @@ void UserECool_toggle(){
     // and I don't want to add more code for this experimental feature ... ideally do not reinit the TMC here at all and let the user reset the printer.
     tmc2130_init(TMCInitParams(enable));
 }
+#endif
 
 /// Enable experimental support for cooler operation of the extruder motor
 /// Beware - REQUIRES original Prusa MK3/S/+ extruder motor with adequate maximal current
@@ -8983,8 +8985,9 @@ void lcd_experimental_menu()
     MENU_ITEM_TOGGLE_P(_N("ALTFAN det."), altfanOverride_get()?_T(MSG_OFF):_T(MSG_ON), altfanOverride_toggle);////MSG_MENU_ALTFAN c=18
 #endif //EXTRUDER_ALTFAN_DETECT
     
+#ifdef TMC2130
     MENU_ITEM_TOGGLE_P(_N("E-cool mode"), UserECoolEnabled()?_T(MSG_ON):_T(MSG_OFF), UserECool_toggle);////MSG_MENU_ECOOL c=18
-
+#endif
     MENU_END();
 }
 
