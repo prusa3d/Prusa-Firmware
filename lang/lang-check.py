@@ -47,6 +47,19 @@ def print_truncated(text, cols):
         suffix = color_maybe(31, text[cols:])
     print('   |' + prefix + '|' + suffix)
 
+def print_source_translation(source, translation, wrapped_source, wrapped_translation, rows, cols):
+    if rows == 1:
+        print(' source text:')
+        print_truncated(source, cols)
+        print(' translated text:')
+        print_truncated(translation, cols)
+    else:
+        print(' source text:')
+        print_wrapped(wrapped_source, rows, cols)
+        print(' translated text:')
+        print_wrapped(wrapped_translation, rows, cols)
+    print()
+
 
 def unescape(text):
     if '\\' not in text:
@@ -133,17 +146,9 @@ def parse_txt(lang, no_warning):
             if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
                 print(red('[E]: Text is longer then definition on line %d: rows diff=%d cols=%d rows=%d'
                           % (lines, rows_count_translation-rows, cols, rows)))
-                if rows == 1:
-                    print(yellow(' source text:'))
-                    print_truncated(source, cols)
-                    print(yellow(' translated text:'))
-                    print_truncated(translation, cols)
-                else:
-                    print(yellow(' source text:'))
-                    print_wrapped(wrapped_source, rows, cols)
-                    print(yellow(' translated text:'))
-                    print_wrapped(wrapped_translation, rows, cols)
-                print()
+                print_source_translation(source, translation,
+                                         wrapped_source, wrapped_translation,
+                                         rows, cols)
 
             # Different first/last character
             if not no_warning and len(source) > 0 and len(translation) > 0:
@@ -156,33 +161,17 @@ def parse_txt(lang, no_warning):
                         print(yellow('[W]: Differing first character (%s => %s) on line %d:' % (source[0], translation[0], lines)))
                     if end_diff:
                         print(yellow('[W]: Differing last character (%s => %s) on line %d:' % (source[-1], translation[-1], lines)))
-                    if rows == 1:
-                        print(yellow(' source text:'))
-                        print_truncated(source, cols)
-                        print(yellow(' translated text:'))
-                        print_truncated(translation, cols)
-                    else:
-                        print(yellow(' source text:'))
-                        print_wrapped(wrapped_source, rows, cols)
-                        print(yellow(' translated text:'))
-                        print_wrapped(wrapped_translation, rows, cols)
-                    print()
+                    print_source_translation(source, translation,
+                                             wrapped_source, wrapped_translation,
+                                             rows, cols)
 
             # Short translation
             if not no_warning and len(source) > 0 and len(translation) > 0:
                 if len(translation.strip()) < len(source.strip()) / 2:
                     print(yellow('[W]: Short translation on line %d:' % (lines)))
-                    if rows == 1:
-                        print(yellow(' source text:'))
-                        print_truncated(source, cols)
-                        print(yellow(' translated text:'))
-                        print_truncated(translation, cols)
-                    else:
-                        print(yellow(' source text:'))
-                        print_wrapped(wrapped_source, rows, cols)
-                        print(yellow(' translated text:'))
-                        print_wrapped(wrapped_translation, rows, cols)
-                    print()
+                    print_source_translation(source, translation,
+                                             wrapped_source, wrapped_translation,
+                                             rows, cols)
 
             if len(src.readline()) != 1:  # empty line
                 break
