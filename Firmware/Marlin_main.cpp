@@ -3965,7 +3965,6 @@ static void extended_capabilities_report()
     cap_line(PSTR("AUTOREPORT_POSITION"), ENABLED(AUTO_REPORT));
     // EXTENDED_M20 (support for L and T parameters)
     cap_line(PSTR("EXTENDED_M20"), 1);
-    //@todo Update RepRap cap
 }
 #endif //EXTENDED_CAPABILITIES_REPORT
 
