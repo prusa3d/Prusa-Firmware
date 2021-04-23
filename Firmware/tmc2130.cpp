@@ -9,8 +9,6 @@
 #include "language.h"
 #include "spi.h"
 
-
-
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
 #define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
 #define TMC2130_GCONF_SILENT 0x00000004 // stealthChop
@@ -18,7 +16,6 @@
 
 //mode
 uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;
-//holding currents
 uint8_t tmc2130_current_h[4] = TMC2130_CURRENTS_H;
 //running currents
 uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
@@ -44,6 +41,8 @@ uint8_t tmc2130_sg_thr_home[4] = TMC2130_SG_THRS_HOME;
 
 
 uint8_t tmc2130_sg_homing_axes_mask = 0x00;
+
+const char eMotorCurrentScalingEnabled[] PROGMEM = "E-motor current scaling enabled";
 
 uint8_t tmc2130_sg_meassure = 0xff;
 uint32_t tmc2130_sg_meassure_cnt = 0;
@@ -145,11 +144,7 @@ uint16_t __tcoolthrs(uint8_t axis)
 	}
 	return 0;
 }
-#ifdef PSU_Delta
-void tmc2130_init(bool bSupressFlag)
-#else
-void tmc2130_init()
-#endif
+void tmc2130_init(TMCInitParams params)
 {
 //	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
 	WRITE(X_TMC2130_CS, HIGH);
@@ -194,7 +189,16 @@ void tmc2130_init()
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
 #ifndef TMC2130_STEALTH_E
-		tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
+        if( ! params.enableECool ){
+            tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
+        } else {
+            tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
+            tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, 0);
+            tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SILENT);
+            tmc2130_wr_PWMCONF(axis, TMC2130_PWM_AMPL_Ecool, TMC2130_PWM_GRAD_Ecool, tmc2130_pwm_freq[axis], TMC2130_PWM_AUTO_Ecool, 0, 0);
+            tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS_E);
+            SERIAL_ECHOLNRPGM(eMotorCurrentScalingEnabled);
+        }
 #else //TMC2130_STEALTH_E
 		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
 		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, 0);
@@ -223,7 +227,7 @@ void tmc2130_init()
 #endif //TMC2130_LINEARITY_CORRECTION
 
 #ifdef PSU_Delta
-     if(!bSupressFlag)
+     if(!params.bSuppressFlag)
           check_force_z();
 #endif // PSU_Delta
 

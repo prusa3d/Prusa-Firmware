@@ -1100,7 +1100,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 void st_init()
 {
 #ifdef TMC2130
-	tmc2130_init();
+	tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
 #endif //TMC2130
 
   st_current_init(); //Initialize Digipot Motor Current

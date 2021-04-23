@@ -4295,7 +4295,7 @@ static void lcd_silent_mode_set() {
 	cli();
 	tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	update_mode_profile();
-	tmc2130_init();
+	tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
   // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
   // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
   st_reset_timer();
@@ -5679,7 +5679,7 @@ static void lcd_settings_linearity_correction_menu_save()
     changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC) != tmc2130_wave_fac[Z_AXIS]);
     changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
     lcd_ustep_linearity_menu_save();
-    if (changed) tmc2130_init();
+    if (changed) tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
 }
 #endif //TMC2130
 
@@ -8951,6 +8951,37 @@ void lcd_experimental_toggle()
     eeprom_update_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY, oldVal);
 }
 
+#ifdef TMC2130
+void UserECool_toggle(){
+    // this is only called when the experimental menu is visible, thus the first condition for enabling of the ECool mode is met in this place
+    // The condition is intentionally inverted as we are toggling the state (i.e. if it was enabled, we are disabling the feature and vice versa)
+    bool enable = ! UserECoolEnabled();
+
+    eeprom_update_byte((uint8_t *)EEPROM_ECOOL_ENABLE, enable ? EEPROM_ECOOL_MAGIC_NUMBER : EEPROM_EMPTY_VALUE);
+
+    // @@TODO I don't like this - disabling the experimental menu shall disable ECool mode, but it will not reinit the TMC
+    // and I don't want to add more code for this experimental feature ... ideally do not reinit the TMC here at all and let the user reset the printer.
+    tmc2130_init(TMCInitParams(enable));
+}
+#endif
+
+/// Enable experimental support for cooler operation of the extruder motor
+/// Beware - REQUIRES original Prusa MK3/S/+ extruder motor with adequate maximal current
+/// Therefore we don't want to allow general usage of this feature in public as the community likes to
+/// change motors for various reasons and unless the motor is rotating, we cannot verify its properties
+/// (which would be obviously too late for an improperly sized motor)
+/// For farm printing, the cooler E-motor is enabled by default.
+bool UserECoolEnabled(){
+    // We enable E-cool mode for non-farm prints IFF the experimental menu is visible AND the EEPROM_ECOOL variable has
+    // a value of the universal answer to all problems of the universe
+    return ( eeprom_read_byte((uint8_t *)EEPROM_ECOOL_ENABLE) == EEPROM_ECOOL_MAGIC_NUMBER ) 
+        && ( eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY) == 1 );
+}
+
+bool FarmOrUserECool(){
+    return farm_mode || UserECoolEnabled();
+}
+
 void lcd_experimental_menu()
 {
     MENU_BEGIN();
@@ -8959,7 +8990,10 @@ void lcd_experimental_menu()
 #ifdef EXTRUDER_ALTFAN_DETECT
     MENU_ITEM_TOGGLE_P(_N("ALTFAN det."), altfanOverride_get()?_T(MSG_OFF):_T(MSG_ON), altfanOverride_toggle);////MSG_MENU_ALTFAN c=18
 #endif //EXTRUDER_ALTFAN_DETECT
-
+    
+#ifdef TMC2130
+    MENU_ITEM_TOGGLE_P(_N("E-cool mode"), UserECoolEnabled()?_T(MSG_ON):_T(MSG_OFF), UserECool_toggle);////MSG_MENU_ECOOL c=18
+#endif
     MENU_END();
 }
 
