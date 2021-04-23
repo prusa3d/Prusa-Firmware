@@ -42,26 +42,6 @@ def parse_txt(lang, no_warning):
         while True:
             comment = src.readline().split(' ')
             #print (comment) #Debug
-            source = src.readline()[:-1].strip('"')
-            #print (source) #Debug
-            translation = src.readline()[:-1].strip('"')
-            if translation == '\\x00':
-                # crude hack to handle intentionally-empty translations
-                translation = ''
-            #print (translation) #Debug
-#Wrap text to 20 chars and rows
-            wrapper = textwrap.TextWrapper(width=20)
-            #wrap original/source
-            rows_count_source = 0
-            for line in wrapper.wrap(source):
-                rows_count_source += 1
-                #print (line) #Debug
-            #wrap translation
-            rows_count_translation = 0
-            for line in wrapper.wrap(translation):
-                rows_count_translation += 1
-                #print (line) #Debug
-#End wrap text
 
 #Check if columns and rows are defined
             cols = None
@@ -87,6 +67,19 @@ def parse_txt(lang, no_warning):
             elif rows > 1 and cols != 20:
                 print(yellow("[W]: Multiple rows with odd number of columns on line %d" % lines))
 
+#Wrap text to 20 chars and rows
+            source = src.readline()[:-1].strip('"')
+            #print (source) #Debug
+            translation = src.readline()[:-1].strip('"')
+            if translation == '\\x00':
+                # crude hack to handle intentionally-empty translations
+                translation = ''
+            #print (translation) #Debug
+            wrapped_source = list(textwrap.TextWrapper(width=cols).wrap(source))
+            rows_count_source = len(wrapped_source)
+            wrapped_translation = list(textwrap.TextWrapper(width=cols).wrap(translation))
+            rows_count_translation = len(wrapped_translation)
+#End wrap text
             if (rows_count_translation > rows_count_source and rows_count_translation > rows) or \
                     (rows == 1 and len(translation) > cols):
                 print(red('[E]: Text "%s" is longer then definition on line %d (rows diff=%d)\n'
