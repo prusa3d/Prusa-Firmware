@@ -48,6 +48,12 @@ def print_truncated(text, cols):
     print('   |' + prefix + '|' + suffix)
 
 
+def unescape(text):
+    if '\\' not in text:
+        return text
+    return text.encode('ascii').decode('unicode_escape')
+
+
 def parse_txt(lang, no_warning):
     """Parse txt file and check strings to display definition."""
     if lang == "en":
@@ -94,6 +100,11 @@ def parse_txt(lang, no_warning):
             if translation == '\\x00':
                 # crude hack to handle intentionally-empty translations
                 translation = ''
+
+            # handle backslash sequences
+            source = unescape(source)
+            translation = unescape(translation)
+
             #print (translation) #Debug
             wrapped_source = list(textwrap.TextWrapper(width=cols).wrap(source))
             rows_count_source = len(wrapped_source)
