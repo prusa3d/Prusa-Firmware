@@ -4,11 +4,12 @@
 #
 #############################################################################
 # Change log:
-# 7 May  2019, Ondrej Tuma, Initial
-# 9 June 2020, 3d-gussner, Added version and Change log
-# 9 June 2020, 3d-gussner, Wrap text to 20 char and rows
-# 9 June 2020, 3d-gussner, colored output
-# 2 Apr. 2021, 3d-gussner, Fix and improve text warp
+#  7 May  2019, Ondrej Tuma, Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, Wrap text to 20 char and rows
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Fix and improve text warp
+# 22 Apr. 2021, DRracer, add English source to output
 #############################################################################
 #
 """Check lang files."""
@@ -76,7 +77,8 @@ def parse_txt(lang, no_warning):
                 rows = 1
 
             if rows_count_translation > rows_count_source and rows_count_translation > rows:
-                print(red("[E]: Text %s is longer then definiton on line %d rows diff=%d, EN=%s\n" % (translation, lines, rows_count_translation-rows, source)))
+                print(red("[E]: Text %s is longer then definition on line %d rows diff=%d\n[EN]:Text %s cols=%d rows=%d\n" % (translation, lines, rows_count_translation-rows, source, cols, rows)))
+                
 
             if len(src.readline()) != 1:  # empty line
                 break
