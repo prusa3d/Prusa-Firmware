@@ -44,7 +44,7 @@ def print_truncated(text, cols):
         suffix = ''
     else:
         prefix = text[0:cols]
-        suffix = text[cols:]
+        suffix = color_maybe(31, text[cols:])
     print('   |' + prefix + '|' + suffix)
 
 
