@@ -36,20 +36,20 @@ def parse_txt(lang, no_warning):
         while True:
             comment = src.readline().split(' ')
             #print (comment) #Debug
-            source = src.readline()[:-1]
+            source = src.readline()[:-1].strip('"')
             #print (source) #Debug
-            translation = src.readline()[:-1]
+            translation = src.readline()[:-1].strip('"')
             #print (translation) #Debug
 #Wrap text to 20 chars and rows
             wrapper = textwrap.TextWrapper(width=20)
             #wrap original/source
             rows_count_source = 0
-            for line in wrapper.wrap(source.strip('"')):
+            for line in wrapper.wrap(source):
                 rows_count_source += 1
                 #print (line) #Debug
             #wrap translation
             rows_count_translation = 0
-            for line in wrapper.wrap(translation.strip('"')):
+            for line in wrapper.wrap(translation):
                 rows_count_translation += 1
                 #print (line) #Debug
 #End wrap text
@@ -76,9 +76,11 @@ def parse_txt(lang, no_warning):
             if rows is None:
                 rows = 1
 
-            if rows_count_translation > rows_count_source and rows_count_translation > rows:
-                print(red("[E]: Text %s is longer then definition on line %d rows diff=%d\n[EN]:Text %s cols=%d rows=%d\n" % (translation, lines, rows_count_translation-rows, source, cols, rows)))
-                
+            if (rows_count_translation > rows_count_source and rows_count_translation > rows) or \
+                    (rows == 1 and len(translation) > cols):
+                print(red('[E]: Text "%s" is longer then definition on line %d (rows diff=%d)\n'
+                          '[EN]:Text "%s" cols=%d rows=%d\n' % (translation, lines, rows_count_translation-rows, source, cols, rows)))
+
 
             if len(src.readline()) != 1:  # empty line
                 break
