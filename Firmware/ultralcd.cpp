@@ -8970,6 +8970,7 @@ void lcd_experimental_menu()
 void reprint_from_eeprom() {
 	char cmd[30];
 	char filename[13];
+	char altfilename[13];
 	uint8_t depth = 0;
 	char dir_name[9];
 
@@ -8994,10 +8995,21 @@ void reprint_from_eeprom() {
 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
 	}
 	filename[8] = '\0';
-
-	MYSERIAL.print(filename);
-	strcat_P(filename, PSTR(".gco"));
-	sprintf_P(cmd, PSTR("M23 %s"), filename);
+	
+	strcpy(altfilename,filename);
+	if (!card.FileExists(altfilename))
+	{
+		strcat_P(filename, PSTR(".gco"));
+		if (card.FileExists(filename))
+		{
+			strcpy(altfilename,filename);
+		}else
+		{
+			strcat_P(altfilename, PSTR(".g"));
+		}
+	}
+	MYSERIAL.print(altfilename);
+	sprintf_P(cmd, PSTR("M23 %s"), altfilename);
 	enquecommand(cmd);
   	sprintf_P(cmd, PSTR("M24"));
 	enquecommand(cmd);
