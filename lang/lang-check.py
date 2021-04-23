@@ -84,6 +84,8 @@ def parse_txt(lang, no_warning):
                 cols = len(translation)     # propably fullscreen
             if rows is None:
                 rows = 1
+            elif rows > 1 and cols != 20:
+                print(yellow("[W]: Multiple rows with odd number of columns on line %d" % lines))
 
             if (rows_count_translation > rows_count_source and rows_count_translation > rows) or \
                     (rows == 1 and len(translation) > cols):
