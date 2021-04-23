@@ -17,6 +17,7 @@ from argparse import ArgumentParser
 from traceback import print_exc
 from sys import stdout, stderr
 import textwrap
+import re
 
 def color_maybe(color_attr, text):
     if stdout.isatty():
@@ -60,6 +61,21 @@ def print_source_translation(source, translation, wrapped_source, wrapped_transl
         print_wrapped(wrapped_translation, rows, cols)
     print()
 
+def highlight_trailing_white(text):
+    if type(text) == str:
+        return re.sub(r' $', '·', text)
+    else:
+        ret = text[:]
+        ret[-1] = highlight_trailing_white(ret[-1])
+        return ret
+
+def wrap_text(text, cols):
+    # wrap text
+    ret = list(textwrap.TextWrapper(width=cols).wrap(text))
+    if len(ret):
+        # add back trailing whitespace
+        ret[-1] += ' ' * (len(text) - len(text.rstrip()))
+    return ret
 
 def unescape(text):
     if '\\' not in text:
@@ -125,9 +141,9 @@ def parse_txt(lang, no_warning):
             translation = unescape(translation)
 
             #print (translation) #Debug
-            wrapped_source = list(textwrap.TextWrapper(width=cols).wrap(source))
+            wrapped_source = wrap_text(source, cols)
             rows_count_source = len(wrapped_source)
-            wrapped_translation = list(textwrap.TextWrapper(width=cols).wrap(translation))
+            wrapped_translation = wrap_text(translation, cols)
             rows_count_translation = len(wrapped_translation)
 #End wrap text
 
@@ -159,8 +175,8 @@ def parse_txt(lang, no_warning):
 
             # Different first/last character
             if not no_warning and len(source) > 0 and len(translation) > 0:
-                source_end = source.strip()[-1]
-                translation_end = translation.strip()[-1]
+                source_end = source.rstrip()[-1]
+                translation_end = translation.rstrip()[-1]
                 start_diff = not (ign_char_first(source[0]) and ign_char_first(translation[0])) and source[0] != translation[0]
                 end_diff = not (ign_char_last(source_end) and ign_char_last(translation_end)) and source_end != translation_end
                 if start_diff or end_diff:
@@ -174,11 +190,24 @@ def parse_txt(lang, no_warning):
 
             # Short translation
             if not no_warning and len(source) > 0 and len(translation) > 0:
-                if len(translation.strip()) < len(source.strip()) / 2:
+                if len(translation.rstrip()) < len(source.rstrip()) / 2:
                     print(yellow('[W]: Short translation on line %d:' % (lines)))
                     print_source_translation(source, translation,
                                              wrapped_source, wrapped_translation,
                                              rows, cols)
+
+            # Incorrect trailing whitespace in translation
+            if not no_warning and len(translation) > 0 and \
+               (source.rstrip() == source or (rows == 1 and len(source) == cols)) and \
+               translation.rstrip() != translation and \
+               (rows > 1 or len(translation) != len(source)):
+                print(yellow('[W]: Incorrect trailing whitespace for translation on line %d:' % (lines)))
+                source = highlight_trailing_white(source)
+                translation = highlight_trailing_white(translation)
+                wrapped_translation = highlight_trailing_white(wrapped_translation)
+                print_source_translation(source, translation,
+                                         wrapped_source, wrapped_translation,
+                                         rows, cols)
 
             if len(src.readline()) != 1:  # empty line
                 break
