@@ -168,6 +168,22 @@ def parse_txt(lang, no_warning):
                         print_wrapped(wrapped_translation, rows, cols)
                     print()
 
+            # Short translation
+            if not no_warning and len(source) > 0 and len(translation) > 0:
+                if len(translation.strip()) < len(source.strip()) / 2:
+                    print(yellow('[W]: Short translation on line %d:' % (lines)))
+                    if rows == 1:
+                        print(yellow(' source text:'))
+                        print_truncated(source, cols)
+                        print(yellow(' translated text:'))
+                        print_truncated(translation, cols)
+                    else:
+                        print(yellow(' source text:'))
+                        print_wrapped(wrapped_source, rows, cols)
+                        print(yellow(' translated text:'))
+                        print_wrapped(wrapped_translation, rows, cols)
+                    print()
+
             if len(src.readline()) != 1:  # empty line
                 break
             lines += 4
