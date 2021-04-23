@@ -150,6 +150,13 @@ def parse_txt(lang, no_warning):
                                          wrapped_source, wrapped_translation,
                                          rows, cols)
 
+            # Different count of % sequences
+            if source.count('%') != translation.count('%') and len(translation) > 0:
+                print(red('[E]: Unequal count of %% escapes line %d:' % (lines)))
+                print_source_translation(source, translation,
+                                         wrapped_source, wrapped_translation,
+                                         rows, cols)
+
             # Different first/last character
             if not no_warning and len(source) > 0 and len(translation) > 0:
                 source_end = source.strip()[-1]
