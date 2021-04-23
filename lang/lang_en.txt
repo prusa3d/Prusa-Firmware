@@ -517,7 +517,7 @@
 #MSG_NA c=3
 "N/A"
 
-#MSG_NO c=3
+#MSG_NO c=4
 "No"
 
 #MSG_SELFTEST_NOTCONNECTED c=20

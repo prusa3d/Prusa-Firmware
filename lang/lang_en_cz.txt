@@ -690,7 +690,7 @@
 "N/A"
 "\x00"
 
-#MSG_NO c=3
+#MSG_NO c=4
 "No"
 "Ne"
 
