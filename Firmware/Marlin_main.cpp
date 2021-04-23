@@ -6490,6 +6490,7 @@ Sigma_Exit:
       gcode_M105(extruder);
       
       cmdqueue_pop_front(); //prevent an ok after the command since this command uses an ok at the beginning.
+      cmdbuffer_front_already_processed = true;
       
       break;
     }
