@@ -15,12 +15,18 @@
 """Check lang files."""
 from argparse import ArgumentParser
 from traceback import print_exc
-from sys import stderr
+from sys import stdout, stderr
 import textwrap
 
-red = lambda text: '\033[0;31m' + text + '\033[0m'
-green = lambda text: '\033[0;32m' + text + '\033[0m'
-yellow = lambda text: '\033[0;33m' + text + '\033[0m'
+def color_maybe(color_attr, text):
+    if stdout.isatty():
+        return '\033[0;' + str(color_attr) + 'm' + text + '\033[0m'
+    else:
+        return text
+
+red = lambda text: color_maybe(31, text)
+green = lambda text: color_maybe(32, text)
+yellow = lambda text: color_maybe(33, text)
 
 def parse_txt(lang, no_warning):
     """Parse txt file and check strings to display definition."""
