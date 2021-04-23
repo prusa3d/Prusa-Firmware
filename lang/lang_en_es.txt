@@ -154,6 +154,10 @@
 "Calibrate"
 "Calibrar"
 
+#MSG_CANCEL2 c=10
+">Cancel"
+">Cancelar"
+
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "Calibrando XYZ. Gira el dial para subir el extrusor hasta tocar los topes superiores. Despues haz clic."

@@ -154,6 +154,10 @@
 "Calibrate"
 "Kalibreren"
 
+#MSG_CANCEL2 c=10
+">Cancel"
+">Annuleren"
+
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "Kalibreren van XYZ. Draai de knop om de Z-wagen omhoog te gaan tot het einde stoppers. Druk knop als klaar."

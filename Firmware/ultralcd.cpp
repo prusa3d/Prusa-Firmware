@@ -2209,7 +2209,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
             lcd_clear();
             lcd_draw_update = 1;
-            lcd_puts_at_P(0, 3, _i(">Cancel")); ////MSG_ c=20 r=1
+            lcd_puts_at_P(0, 3, _i(">Cancel")); ////MSG_CANCEL2 c=10
 
             lcd_set_cursor(0, 1);
             switch (eFilamentAction)

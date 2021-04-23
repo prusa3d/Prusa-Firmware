@@ -154,6 +154,10 @@
 "Calibrate"
 "Kalibrieren"
 
+#MSG_CANCEL2 c=10
+">Cancel"
+">Abbruch"
+
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "XYZ Kalibrieren: Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Anschliessend den Knopf druecken."

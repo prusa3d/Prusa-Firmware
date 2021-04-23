@@ -154,6 +154,10 @@
 "Calibrate"
 "Calibra"
 
+#MSG_CANCEL2 c=10
+">Cancel"
+">Annulla"
+
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "Calibrazione XYZ. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare."
