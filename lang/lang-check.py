@@ -113,14 +113,15 @@ def parse_txt(lang, no_warning):
 #End wrap text
 
             # Check for potential errors in the definition
-            if rows == 1 and (len(source) > cols or rows_count_source > rows):
-                print(yellow('[W]: Source text longer than %d cols as defined on line %d:' % (cols, lines)))
-                print_truncated(source, cols)
-                print()
-            elif rows_count_source > rows:
-                print(yellow('[W]: Wrapped source text longer than %d rows as defined on line %d:' % (rows, lines)))
-                print_wrapped(wrapped_source, rows, cols)
-                print()
+            if not no_warning:
+                if rows == 1 and (len(source) > cols or rows_count_source > rows):
+                    print(yellow('[W]: Source text longer than %d cols as defined on line %d:' % (cols, lines)))
+                    print_truncated(source, cols)
+                    print()
+                elif rows_count_source > rows:
+                    print(yellow('[W]: Wrapped source text longer than %d rows as defined on line %d:' % (rows, lines)))
+                    print_wrapped(wrapped_source, rows, cols)
+                    print()
 
             # Check for translation lenght
             if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
