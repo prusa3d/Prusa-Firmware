@@ -53,6 +53,12 @@ def unescape(text):
         return text
     return text.encode('ascii').decode('unicode_escape')
 
+def ign_char_first(c):
+    return c.isalnum() or c in {'%', '?'}
+
+def ign_char_last(c):
+    return c.isalnum() or c in {'.', "'"}
+
 
 def parse_txt(lang, no_warning):
     """Parse txt file and check strings to display definition."""
@@ -138,6 +144,29 @@ def parse_txt(lang, no_warning):
                     print(yellow(' translated text:'))
                     print_wrapped(wrapped_translation, rows, cols)
                 print()
+
+            # Different first/last character
+            if not no_warning and len(source) > 0 and len(translation) > 0:
+                source_end = source.strip()[-1]
+                translation_end = translation.strip()[-1]
+                start_diff = not (ign_char_first(source[0]) and ign_char_first(translation[0])) and source[0] != translation[0]
+                end_diff = not (ign_char_last(source_end) and ign_char_last(translation_end)) and source_end != translation_end
+                if start_diff or end_diff:
+                    if start_diff:
+                        print(yellow('[W]: Differing first character (%s => %s) on line %d:' % (source[0], translation[0], lines)))
+                    if end_diff:
+                        print(yellow('[W]: Differing last character (%s => %s) on line %d:' % (source[-1], translation[-1], lines)))
+                    if rows == 1:
+                        print(yellow(' source text:'))
+                        print_truncated(source, cols)
+                        print(yellow(' translated text:'))
+                        print_truncated(translation, cols)
+                    else:
+                        print(yellow(' source text:'))
+                        print_wrapped(wrapped_source, rows, cols)
+                        print(yellow(' translated text:'))
+                        print_wrapped(wrapped_translation, rows, cols)
+                    print()
 
             if len(src.readline()) != 1:  # empty line
                 break
