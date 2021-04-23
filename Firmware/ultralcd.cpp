@@ -8968,6 +8968,8 @@ void UserECool_toggle(){
 /// (which would be obviously too late for an improperly sized motor)
 /// For farm printing, the cooler E-motor is enabled by default.
 bool UserECoolEnabled(){
+    // We enable E-cool mode for non-farm prints IFF the experimental menu is visible AND the EEPROM_ECOOL variable has
+    // a value of the universal answer to all problems of the universe
     return ( eeprom_read_byte((uint8_t *)EEPROM_ECOOL_ENABLE) == EEPROM_ECOOL_MAGIC_NUMBER ) 
         && ( eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY) == 1 );
 }

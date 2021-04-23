@@ -1340,8 +1340,6 @@ void setup()
 #endif //TMC2130_VARIABLE_RESOLUTION
 
 #endif //TMC2130
-    // We enable E-cool mode for non-farm prints IFF the experimental menu is visible AND the EEPROM_ECOOL variable has
-    // a value of the universal answer to all problems of the universe
 	st_init();    // Initialize stepper, this enables interrupts!
   
 #ifdef TMC2130
