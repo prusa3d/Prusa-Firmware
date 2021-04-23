@@ -1327,7 +1327,7 @@
 "Valse triggering"
 
 #MSG_FINDA c=5
-"FINDA:"
+"FINDA"
 "\x00"
 
 #MSG_FIRMWARE c=8
