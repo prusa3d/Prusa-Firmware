@@ -140,7 +140,7 @@
 
 #MSG_CALIBRATING_HOME c=20
 "Calibrating home"
-"Kalibruji vychozi poz."
+"Kalibruji vychozi p."
 
 #MSG_CALIBRATE_BED c=18
 "Calibrate XYZ"
@@ -600,7 +600,7 @@
 
 #MSG_MEASURED_SKEW c=13
 "Measured skew"
-"Merene zkoseni"
+"Merene zkos."
 
 #MSG_MMU_FAILS c=15
 "MMU fails"
@@ -612,7 +612,7 @@
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
-"MMU selhani zavadeni"
+"MMU selhani zav"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -640,7 +640,7 @@
 
 #MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
-"MMU vypadky proudu"
+"MMU vyp. proudu"
 
 #MSG_STEALTH c=7
 "Stealth"
@@ -648,7 +648,7 @@
 
 #MSG_AUTO_POWER c=10
 "Auto power"
-"Automaticky"
+"Automat."
 
 #MSG_HIGH_POWER c=10
 "High power"
@@ -728,7 +728,7 @@
 
 #MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
-"Vent. trysky"
+"V. trysky"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -864,7 +864,7 @@
 
 #MSG_PRESS_KNOB c=20
 "Press the knob"
-"Stisknete hl. tlacitko"
+"Stisknete tlacitko"
 
 #MSG_PRINT_PAUSED c=20
 "Print paused"
@@ -880,7 +880,7 @@
 
 #MSG_PRINT_FAN c=10
 "Print FAN"
-"Tiskovy vent."
+"Tiskovy v."
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -1040,7 +1040,7 @@
 
 #MSG_SEVERE_SKEW c=13
 "Severe skew:"
-"Tezke zkoseni:"
+"Tezke zkos.:"
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1056,7 +1056,7 @@
 
 #MSG_SLIGHT_SKEW c=13
 "Slight skew:"
-"Lehke zkoseni:"
+"Lehke zkos.:"
 
 #MSG_SOUND c=7
 "Sound"

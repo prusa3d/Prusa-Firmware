@@ -15,12 +15,18 @@
 """Check lang files."""
 from argparse import ArgumentParser
 from traceback import print_exc
-from sys import stderr
+from sys import stdout, stderr
 import textwrap
 
-red = lambda text: '\033[0;31m' + text + '\033[0m'
-green = lambda text: '\033[0;32m' + text + '\033[0m'
-yellow = lambda text: '\033[0;33m' + text + '\033[0m'
+def color_maybe(color_attr, text):
+    if stdout.isatty():
+        return '\033[0;' + str(color_attr) + 'm' + text + '\033[0m'
+    else:
+        return text
+
+red = lambda text: color_maybe(31, text)
+green = lambda text: color_maybe(32, text)
+yellow = lambda text: color_maybe(33, text)
 
 def parse_txt(lang, no_warning):
     """Parse txt file and check strings to display definition."""
@@ -36,20 +42,23 @@ def parse_txt(lang, no_warning):
         while True:
             comment = src.readline().split(' ')
             #print (comment) #Debug
-            source = src.readline()[:-1]
+            source = src.readline()[:-1].strip('"')
             #print (source) #Debug
-            translation = src.readline()[:-1]
+            translation = src.readline()[:-1].strip('"')
+            if translation == '\\x00':
+                # crude hack to handle intentionally-empty translations
+                translation = ''
             #print (translation) #Debug
 #Wrap text to 20 chars and rows
             wrapper = textwrap.TextWrapper(width=20)
             #wrap original/source
             rows_count_source = 0
-            for line in wrapper.wrap(source.strip('"')):
+            for line in wrapper.wrap(source):
                 rows_count_source += 1
                 #print (line) #Debug
             #wrap translation
             rows_count_translation = 0
-            for line in wrapper.wrap(translation.strip('"')):
+            for line in wrapper.wrap(translation):
                 rows_count_translation += 1
                 #print (line) #Debug
 #End wrap text
@@ -76,9 +85,11 @@ def parse_txt(lang, no_warning):
             if rows is None:
                 rows = 1
 
-            if rows_count_translation > rows_count_source and rows_count_translation > rows:
-                print(red("[E]: Text %s is longer then definition on line %d rows diff=%d\n[EN]:Text %s cols=%d rows=%d\n" % (translation, lines, rows_count_translation-rows, source, cols, rows)))
-                
+            if (rows_count_translation > rows_count_source and rows_count_translation > rows) or \
+                    (rows == 1 and len(translation) > cols):
+                print(red('[E]: Text "%s" is longer then definition on line %d (rows diff=%d)\n'
+                          '[EN]:Text "%s" cols=%d rows=%d\n' % (translation, lines, rows_count_translation-rows, source, cols, rows)))
+
 
             if len(src.readline()) != 1:  # empty line
                 break
