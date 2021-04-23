@@ -1172,7 +1172,7 @@
 
 #MSG_UNLOAD_FILAMENT c=16
 "Unload filament"
-"Filament uitwerpen"
+"Fil. uitwerpen"
 
 #MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
