@@ -8443,17 +8443,19 @@ Sigma_Exit:
     case 907:
     {
 #ifdef TMC2130
-        if( ! FarmOrUserECool() ){
-            // See tmc2130_cur2val() for translation to 0 .. 63 range
-            for (int i = 0; i < NUM_AXIS; i++){
-                if(code_seen(axis_codes[i]))
-                {
-                    long cur_mA = code_value_long();
-                    uint8_t val = tmc2130_cur2val(cur_mA);
-                    tmc2130_set_current_h(i, val);
-                    tmc2130_set_current_r(i, val);
-                    //if (i == E_AXIS) printf_P(PSTR("E-axis current=%ldmA\n"), cur_mA);
+        // See tmc2130_cur2val() for translation to 0 .. 63 range
+        for (uint_least8_t i = 0; i < NUM_AXIS; i++){
+            if(code_seen(axis_codes[i])){
+                if( i == E_AXIS && FarmOrUserECool() ){
+                    SERIAL_ECHORPGM(eMotorCurrentScalingEnabled);
+                    SERIAL_ECHOLNPGM(", M907 E ignored");
+                    continue;
                 }
+                long cur_mA = code_value_long();
+                uint8_t val = tmc2130_cur2val(cur_mA);
+                tmc2130_set_current_h(i, val);
+                tmc2130_set_current_r(i, val);
+                //if (i == E_AXIS) printf_P(PSTR("E-axis current=%ldmA\n"), cur_mA);
             }
         }
 #else //TMC2130
@@ -8680,7 +8682,7 @@ Sigma_Exit:
     case 350: 
     {
 	#ifdef TMC2130
-		for (int i=0; i<NUM_AXIS; i++) 
+		for (uint_least8_t i=0; i<NUM_AXIS; i++) 
 		{
 			if(code_seen(axis_codes[i]))
 			{

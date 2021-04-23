@@ -22,6 +22,8 @@ extern uint32_t tmc2130_sg_meassure_val;
 
 extern uint8_t tmc2130_sg_homing_axes_mask;
 
+extern const char eMotorCurrentScalingEnabled[];
+
 #define TMC2130_MODE_NORMAL 0
 #define TMC2130_MODE_SILENT 1
 
