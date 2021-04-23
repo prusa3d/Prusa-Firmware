@@ -178,10 +178,6 @@
 "Calibration"
 "Calibracion"
 
-#MSG_CANCEL c=9
-"Cancel"
-"Cancelar"
-
 #MSG_SD_REMOVED c=20
 "Card removed"
 "Tarjeta retirada"

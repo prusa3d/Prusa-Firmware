@@ -178,10 +178,6 @@
 "Calibration"
 "\x00"
 
-#MSG_CANCEL c=9
-"Cancel"
-"Annuler"
-
 #MSG_SD_REMOVED c=20
 "Card removed"
 "Carte retiree"

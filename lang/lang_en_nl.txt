@@ -178,10 +178,6 @@
 "Calibration"
 "Kalibratie"
 
-#MSG_CANCEL c=9
-"Cancel"
-"Annuleren"
-
 #MSG_SD_REMOVED c=20
 "Card removed"
 "SD verwijderd"

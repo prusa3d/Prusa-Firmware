@@ -2209,7 +2209,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
             lcd_clear();
             lcd_draw_update = 1;
-            lcd_puts_at_P(0, 3, _i(">Cancel")); ////MSG_CANCEL2 c=10
+            lcd_puts_at_P(0, 3, _T(MSG_CANCEL)); ////MSG_CANCEL
 
             lcd_set_cursor(0, 1);
             switch (eFilamentAction)
@@ -2237,7 +2237,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 // handled earlier
                 break;
             }
-            lcd_puts_at_P(0, 3, _T(MSG_CANCEL));
+            lcd_puts_at_P(0, 3, _T(MSG_CANCEL)); ////MSG_CANCEL
         }
 
         lcd_set_cursor(0, 0);
@@ -4626,7 +4626,7 @@ void lcd_v2_calibration()
 	{
 	    const uint8_t filament = choose_menu_P(
             _i("Select filament:"), ////MSG_SELECT_FILAMENT c=20
-            _T(MSG_FILAMENT),_T(MSG_CANCEL));
+            _T(MSG_FILAMENT),(_T(MSG_CANCEL)+1)); //Hack to reuse MSG but strip 1st char off
 	    if (filament < 5)
 	    {
 	        lay1cal_filament = filament;
