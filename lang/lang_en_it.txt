@@ -648,7 +648,7 @@
 
 #MSG_AUTO_POWER c=10
 "Auto power"
-"Auto"
+"Automatico"
 
 #MSG_HIGH_POWER c=10
 "High power"
@@ -1296,7 +1296,7 @@
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-"La stampante iniziera a stampare una linea a zig-zag. Gira la manopola fino a che non hai raggiungo l'altezza ottimale. Verifica con le immagini nel manuale (capitolo sulla calibrazione):"
+"La stampante iniziera a stampare una linea a zig-zag. Gira la manopola fino a che non hai raggiungo l'altezza ottimale. Verifica con le immagini nel manuale (capitolo sulla calibrazione)."
 
 #MSG_FIL_FAILED c=20 r=5
 "Verification failed, remove the filament and try again."
