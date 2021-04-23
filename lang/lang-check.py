@@ -144,15 +144,15 @@ def parse_txt(lang, no_warning):
 
             # Check for translation lenght
             if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
-                print(red('[E]: Text is longer then definition on line %d: rows diff=%d cols=%d rows=%d'
-                          % (lines, rows_count_translation-rows, cols, rows)))
+                print(red('[E]: Text is longer than definition on line %d: cols=%d rows=%d (rows diff=%d)'
+                          % (lines, cols, rows, rows_count_translation-rows)))
                 print_source_translation(source, translation,
                                          wrapped_source, wrapped_translation,
                                          rows, cols)
 
             # Different count of % sequences
             if source.count('%') != translation.count('%') and len(translation) > 0:
-                print(red('[E]: Unequal count of %% escapes line %d:' % (lines)))
+                print(red('[E]: Unequal count of %% escapes on line %d:' % (lines)))
                 print_source_translation(source, translation,
                                          wrapped_source, wrapped_translation,
                                          rows, cols)
@@ -165,9 +165,9 @@ def parse_txt(lang, no_warning):
                 end_diff = not (ign_char_last(source_end) and ign_char_last(translation_end)) and source_end != translation_end
                 if start_diff or end_diff:
                     if start_diff:
-                        print(yellow('[W]: Differing first character (%s => %s) on line %d:' % (source[0], translation[0], lines)))
+                        print(yellow('[W]: Differing first punctuation character (%s => %s) on line %d:' % (source[0], translation[0], lines)))
                     if end_diff:
-                        print(yellow('[W]: Differing last character (%s => %s) on line %d:' % (source[-1], translation[-1], lines)))
+                        print(yellow('[W]: Differing last punctuation character (%s => %s) on line %d:' % (source[-1], translation[-1], lines)))
                     print_source_translation(source, translation,
                                              wrapped_source, wrapped_translation,
                                              rows, cols)
