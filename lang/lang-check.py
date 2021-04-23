@@ -45,6 +45,9 @@ def parse_txt(lang, no_warning):
             source = src.readline()[:-1].strip('"')
             #print (source) #Debug
             translation = src.readline()[:-1].strip('"')
+            if translation == '\\x00':
+                # crude hack to handle intentionally-empty translations
+                translation = ''
             #print (translation) #Debug
 #Wrap text to 20 chars and rows
             wrapper = textwrap.TextWrapper(width=20)
