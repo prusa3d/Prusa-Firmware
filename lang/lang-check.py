@@ -28,6 +28,26 @@ red = lambda text: color_maybe(31, text)
 green = lambda text: color_maybe(32, text)
 yellow = lambda text: color_maybe(33, text)
 
+
+def print_wrapped(wrapped_text, rows, cols):
+    if type(wrapped_text) == str:
+        wrapped_text = [wrapped_text]
+    for r, line in enumerate(wrapped_text):
+        r_ = str(r + 1).rjust(3)
+        if r >= rows:
+            r_ = color_maybe(31, r_)
+        print((' {} |{:' + str(cols) + 's}|').format(r_, line))
+
+def print_truncated(text, cols):
+    if len(text) <= cols:
+        prefix = text.ljust(cols)
+        suffix = ''
+    else:
+        prefix = text[0:cols]
+        suffix = text[cols:]
+    print('   |' + prefix + '|' + suffix)
+
+
 def parse_txt(lang, no_warning):
     """Parse txt file and check strings to display definition."""
     if lang == "en":
@@ -80,11 +100,32 @@ def parse_txt(lang, no_warning):
             wrapped_translation = list(textwrap.TextWrapper(width=cols).wrap(translation))
             rows_count_translation = len(wrapped_translation)
 #End wrap text
-            if (rows_count_translation > rows_count_source and rows_count_translation > rows) or \
-                    (rows == 1 and len(translation) > cols):
-                print(red('[E]: Text "%s" is longer then definition on line %d (rows diff=%d)\n'
-                          '[EN]:Text "%s" cols=%d rows=%d\n' % (translation, lines, rows_count_translation-rows, source, cols, rows)))
 
+            # Check for potential errors in the definition
+            if rows == 1 and (len(source) > cols or rows_count_source > rows):
+                print(yellow('[W]: Source text longer than %d cols as defined on line %d:' % (cols, lines)))
+                print_truncated(source, cols)
+                print()
+            elif rows_count_source > rows:
+                print(yellow('[W]: Wrapped source text longer than %d rows as defined on line %d:' % (rows, lines)))
+                print_wrapped(wrapped_source, rows, cols)
+                print()
+
+            # Check for translation lenght
+            if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
+                print(red('[E]: Text is longer then definition on line %d: rows diff=%d cols=%d rows=%d'
+                          % (lines, rows_count_translation-rows, cols, rows)))
+                if rows == 1:
+                    print(yellow(' source text:'))
+                    print_truncated(source, cols)
+                    print(yellow(' translated text:'))
+                    print_truncated(translation, cols)
+                else:
+                    print(yellow(' source text:'))
+                    print_wrapped(wrapped_source, rows, cols)
+                    print(yellow(' translated text:'))
+                    print_wrapped(wrapped_translation, rows, cols)
+                print()
 
             if len(src.readline()) != 1:  # empty line
                 break
