@@ -510,9 +510,9 @@ void lcdui_print_time(void)
     //if remaining print time estimation is available print it else print elapsed time
     int chars = 0;
     if (PRINTER_ACTIVE) {
-        uint16_t print_t = 0;
-        uint16_t print_tr = 0;
-        uint16_t print_tc = 0;
+        uint16_t print_t = PRINT_TIME_REMAINING_INIT;
+        uint16_t print_tr = PRINT_TIME_REMAINING_INIT;
+        uint16_t print_tc = PRINT_TIME_REMAINING_INIT;
         char suff = ' ';
         char suff_doubt = ' ';
 
@@ -542,12 +542,12 @@ void lcdui_print_time(void)
 
         clock_interval++;
 
-        if (print_tc != 0 && clock_interval > CLOCK_INTERVAL_TIME) {
+        if (print_tc != PRINT_TIME_REMAINING_INIT && clock_interval > CLOCK_INTERVAL_TIME) {
             print_t = print_tc;
             suff = 'C';
         } else
 //#endif //CLOCK_INTERVAL_TIME 
-        if (print_tr != 0) {
+        if (print_tr != PRINT_TIME_REMAINING_INIT) {
             print_t = print_tr;
             suff = 'R';
         } else 
@@ -2201,14 +2201,15 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     }
     else
     {
-        lcd_set_cursor(0, 0);
-        lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
-
         if (!bFilamentWaitingFlag)
         {
             // First run after the filament preheat selection:
             // setup the fixed LCD parts and raise Z as we wait
             bFilamentWaitingFlag = true;
+
+            lcd_clear();
+            lcd_draw_update = 1;
+            lcd_puts_at_P(0, 3, _i(">Cancel")); ////MSG_ c=20 r=1
 
             lcd_set_cursor(0, 1);
             switch (eFilamentAction)
@@ -2236,8 +2237,10 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 // handled earlier
                 break;
             }
-            lcd_puts_at_P(0, 3, _i(">Cancel"));                   ////MSG_ c=20 r=1
         }
+
+        lcd_set_cursor(0, 0);
+        lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
 
         if (lcd_clicked())
         {
@@ -4292,7 +4295,7 @@ static void lcd_silent_mode_set() {
 	cli();
 	tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	update_mode_profile();
-	tmc2130_init();
+	tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
   // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
   // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
   st_reset_timer();
@@ -4361,7 +4364,7 @@ void menu_setlang(unsigned char lang)
 }
 
 #ifdef COMMUNITY_LANG_SUPPORT
-#ifdef W25X20CL
+#ifdef XFLASH
 static void lcd_community_language_menu()
 {
 	MENU_BEGIN();
@@ -4375,7 +4378,7 @@ static void lcd_community_language_menu()
 		}
 	MENU_END();
 }
-#endif //W25X20CL
+#endif //XFLASH
 #endif //COMMUNITY_LANG_SUPPORT && W52X20CL
 
 
@@ -4390,7 +4393,7 @@ static void lcd_language_menu()
 		return;
 	}
 	uint8_t cnt = lang_get_count();
-#ifdef W25X20CL
+#ifdef XFLASH
 	if (cnt == 2) //display secondary language in case of clear xflash 
 	{
 		if (menu_item_text_P(lang_get_name_by_code(lang_get_code(1))))
@@ -4401,9 +4404,9 @@ static void lcd_language_menu()
 	}
 	else
 		for (int i = 2; i < 8; i++) //skip seconday language - solved in lang_select (MK3) 'i < 8'  for 7 official languages
-#else //W25X20CL
+#else //XFLASH
 		for (int i = 1; i < cnt; i++) //all seconday languages (MK2/25)
-#endif //W25X20CL
+#endif //XFLASH
 			if (menu_item_text_P(lang_get_name_by_code(lang_get_code(i))))
 			{
 				menu_setlang(i);
@@ -4411,9 +4414,9 @@ static void lcd_language_menu()
 			}
 
 #ifdef COMMUNITY_LANG_SUPPORT
-#ifdef W25X20CL
+#ifdef XFLASH
 		MENU_ITEM_SUBMENU_P(_T(MSG_COMMUNITY_MADE), lcd_community_language_menu); ////MSG_COMMUNITY_MADE c=18
-#endif //W25X20CL
+#endif //XFLASH
 #endif //COMMUNITY_LANG_SUPPORT && W52X20CL
 
 	MENU_END();
@@ -4885,7 +4888,7 @@ void lcd_wizard(WizState state)
 				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));
 				wait_preheat();
 				//unload current filament
-				unload_filament();
+				unload_filament(true);
 				//load filament
 				lcd_wizard_load();
 				setTargetHotend(0, 0); //we are finished, cooldown nozzle
@@ -5676,7 +5679,7 @@ static void lcd_settings_linearity_correction_menu_save()
     changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC) != tmc2130_wave_fac[Z_AXIS]);
     changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
     lcd_ustep_linearity_menu_save();
-    if (changed) tmc2130_init();
+    if (changed) tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
 }
 #endif //TMC2130
 
@@ -6200,13 +6203,14 @@ static void change_extr_menu(){
 }
 #endif //SNMM
 
-//unload filament for single material printer (used in M702 gcode)
-void unload_filament()
+// unload filament for single material printer (used in M702 gcode)
+// @param automatic: If true, unload_filament is part of a unload+load sequence (M600)
+void unload_filament(bool automatic)
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
-    raise_z_above(MIN_Z_FOR_UNLOAD);
+    raise_z_above(automatic? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
 
 	//		extr_unload2();
 
@@ -6323,15 +6327,15 @@ unsigned char lcd_choose_color() {
 
 }
 
-#include "w25x20cl.h"
+#include "xflash.h"
 
 #ifdef LCD_TEST
 static void lcd_test_menu()
 {
-	W25X20CL_SPI_ENTER();
-	w25x20cl_enable_wr();
-	w25x20cl_chip_erase();
-	w25x20cl_disable_wr();
+	XFLASH_SPI_ENTER();
+	xflash_enable_wr();
+	xflash_chip_erase();
+	xflash_disable_wr();
 }
 #endif //LCD_TEST
 
@@ -6672,7 +6676,7 @@ static void lcd_main_menu()
     }
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT
 #ifdef LCD_TEST
-    MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT
+    MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_SUPPORT
 #endif //LCD_TEST
 
     MENU_END();
@@ -8947,6 +8951,37 @@ void lcd_experimental_toggle()
     eeprom_update_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY, oldVal);
 }
 
+#ifdef TMC2130
+void UserECool_toggle(){
+    // this is only called when the experimental menu is visible, thus the first condition for enabling of the ECool mode is met in this place
+    // The condition is intentionally inverted as we are toggling the state (i.e. if it was enabled, we are disabling the feature and vice versa)
+    bool enable = ! UserECoolEnabled();
+
+    eeprom_update_byte((uint8_t *)EEPROM_ECOOL_ENABLE, enable ? EEPROM_ECOOL_MAGIC_NUMBER : EEPROM_EMPTY_VALUE);
+
+    // @@TODO I don't like this - disabling the experimental menu shall disable ECool mode, but it will not reinit the TMC
+    // and I don't want to add more code for this experimental feature ... ideally do not reinit the TMC here at all and let the user reset the printer.
+    tmc2130_init(TMCInitParams(enable));
+}
+#endif
+
+/// Enable experimental support for cooler operation of the extruder motor
+/// Beware - REQUIRES original Prusa MK3/S/+ extruder motor with adequate maximal current
+/// Therefore we don't want to allow general usage of this feature in public as the community likes to
+/// change motors for various reasons and unless the motor is rotating, we cannot verify its properties
+/// (which would be obviously too late for an improperly sized motor)
+/// For farm printing, the cooler E-motor is enabled by default.
+bool UserECoolEnabled(){
+    // We enable E-cool mode for non-farm prints IFF the experimental menu is visible AND the EEPROM_ECOOL variable has
+    // a value of the universal answer to all problems of the universe
+    return ( eeprom_read_byte((uint8_t *)EEPROM_ECOOL_ENABLE) == EEPROM_ECOOL_MAGIC_NUMBER ) 
+        && ( eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY) == 1 );
+}
+
+bool FarmOrUserECool(){
+    return farm_mode || UserECoolEnabled();
+}
+
 void lcd_experimental_menu()
 {
     MENU_BEGIN();
@@ -8955,7 +8990,10 @@ void lcd_experimental_menu()
 #ifdef EXTRUDER_ALTFAN_DETECT
     MENU_ITEM_TOGGLE_P(_N("ALTFAN det."), altfanOverride_get()?_T(MSG_OFF):_T(MSG_ON), altfanOverride_toggle);////MSG_MENU_ALTFAN c=18
 #endif //EXTRUDER_ALTFAN_DETECT
-
+    
+#ifdef TMC2130
+    MENU_ITEM_TOGGLE_P(_N("E-cool mode"), UserECoolEnabled()?_T(MSG_ON):_T(MSG_OFF), UserECool_toggle);////MSG_MENU_ECOOL c=18
+#endif
     MENU_END();
 }
 
