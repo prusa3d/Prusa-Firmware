@@ -384,7 +384,7 @@
 
 #MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
-"Risolvere il problema e premere il bottone sull'unita MMU. "
+"Risolvere il problema e premere il bottone sull'unita MMU."
 
 #MSG_FLOW c=15
 "Flow"
@@ -592,11 +592,11 @@
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
-"MMU OK. riprendendo la posizione... "
+"MMU OK. riprendendo la posizione..."
 
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
-"MMU OK. Ripristino temperatura... "
+"MMU OK. Ripristino temperatura..."
 
 #MSG_MEASURED_SKEW c=13
 "Measured skew"
@@ -616,7 +616,7 @@
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
-"MMU OK. Riprendendo... "
+"MMU OK. Riprendendo..."
 
 #MSG_MODE c=6
 "Mode"
@@ -780,7 +780,7 @@
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
-"Premete la manopola per scaricare il filamento "
+"Premete la manopola per scaricare il filamento"
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -788,7 +788,7 @@
 
 #MSG_EJECT_REMOVE c=20 r=4
 "Please remove filament and then press the knob."
-"Rimuovi il filamento e quindi premi la manopola. "
+"Rimuovi il filamento e quindi premi la manopola."
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
@@ -796,11 +796,11 @@
 
 #MSG_RUN_XYZ c=20 r=4
 "Please run XYZ calibration first."
-"Esegui la calibrazione XYZ prima. "
+"Esegui la calibrazione XYZ prima."
 
 #MSG_UPDATE_MMU2_FW c=20 r=4
 "Please update firmware in your MMU2. Waiting for reset."
-"Aggiorna il firmware sul tuo MMU2. In attesa di reset. "
+"Aggiorna il firmware sul tuo MMU2. In attesa di reset."
 
 #MSG_PLEASE_WAIT c=20
 "Please wait"
@@ -1084,7 +1084,7 @@
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
-"Sono necessari una temperatura ambiente di 21-26C e una superficie rigida "
+"Sono necessari una temperatura ambiente di 21-26C e una superficie rigida."
 
 #MSG_STATISTICS c=18
 "Statistics  "
@@ -1144,7 +1144,7 @@
 
 #MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
-"E ancora necessario effettuare la calibrazione Z. Segui il manuale, capitolo Primi Passi, sezione Sequenza di Calibrazione. "
+"E ancora necessario effettuare la calibrazione Z. Segui il manuale, capitolo Primi Passi, sezione Sequenza di Calibrazione."
 
 #MSG_TOTAL_FILAMENT c=19
 "Total filament"
