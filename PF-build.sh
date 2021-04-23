@@ -886,9 +886,9 @@ do
         if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
             echo "$(tput setaf 2)Copying multi language firmware for MK3/Einsy board to PF-build-hex folder$(tput sgr 0)"
             # Make a copy of "lang.bin" for MK404 MK3 and MK3S
-            #if [ ! -z "$mk404_flag" ]; then
-                #cp -f lang.bin $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin
-            #fi
+            if [ ! -z "$mk404_flag" ]; then
+                cp -f lang.bin $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin
+            fi
             # End of "lang.bin" for MK3 and MK3S copy
             cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
         else
@@ -977,7 +977,7 @@ echo "more information how to flash firmware https://www.prusa3d.com/drivers/ $(
 
 # Check/compile MK404 sim
 if [ ! -z "$mk404_flag" ]; then
-    ./MK404-build.sh
+    ./MK404-build.sh -c1
 
 # For Prusa MK2, MK2.5/S
     if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
@@ -1009,11 +1009,11 @@ if [ ! -z "$mk404_flag" ]; then
     cd ../MK404/master/build
 
 # Copy language bin file for MK3 and MK3S to xflash
-    #if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
-    #echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${PRINTER}_xflash.bin'"
-        #dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${PRINTER}_xflash.bin
-        #dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
-    #fi
+    if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
+    echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${PRINTER}_xflash.bin'"
+        dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${PRINTER}_xflash.bin
+        dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
+    fi
 
 # Start MK404
 # default with serial output and terminal to manipulate it via terminal
