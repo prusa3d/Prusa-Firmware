@@ -1222,7 +1222,7 @@
 "Was filament unload successful?"
 "Is filament succes- vol verwijderd?"
 
-#MSG_SELFTEST_WIRINGERROR c=17
+#MSG_SELFTEST_WIRINGERROR c=18
 "Wiring error"
 "Aansluitingsfout"
 

@@ -97,7 +97,7 @@ const char MSG_SELFTEST_CHECK_BED[] PROGMEM_I1 = ISTR("Checking bed     "); ////
 const char MSG_SELFTEST_CHECK_FSENSOR[] PROGMEM_I1 = ISTR("Checking sensors "); ////c=20
 const char MSG_SELFTEST_MOTOR[] PROGMEM_I1 = ISTR("Motor"); ////c=18
 const char MSG_SELFTEST_FILAMENT_SENSOR[] PROGMEM_I1 = ISTR("Filament sensor"); ////c=17
-const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////c=17
+const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////c=18
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////c=18
 const char MSG_TOTAL[] PROGMEM_I1 = ISTR("Total"); ////c=6
 const char MSG_TOTAL_FAILURES[] PROGMEM_I1 = ISTR("Total failures"); ////c=20

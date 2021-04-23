@@ -1222,7 +1222,7 @@
 "Was filament unload successful?"
 "Filamento scaricato con successo?"
 
-#MSG_SELFTEST_WIRINGERROR c=17
+#MSG_SELFTEST_WIRINGERROR c=18
 "Wiring error"
 "Errore cablaggio"
 

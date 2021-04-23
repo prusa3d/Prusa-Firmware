@@ -916,7 +916,7 @@
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
 
-#MSG_SELFTEST_WIRINGERROR c=17
+#MSG_SELFTEST_WIRINGERROR c=18
 "Wiring error"
 
 #MSG_WIZARD c=17
