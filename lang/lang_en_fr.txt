@@ -608,7 +608,7 @@
 
 #MSG_MMU_LOAD_FAILED c=20
 "MMU load failed     "
-"Echec chargement MMU"
+"Def. charg. MMU"
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
