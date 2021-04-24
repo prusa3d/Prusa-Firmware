@@ -1252,7 +1252,7 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-"XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schraeg."
+"XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schraeg. Gut gemacht!"
 
 #MSG_TIMEOUT c=12
 "Timeout"
