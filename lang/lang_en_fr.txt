@@ -1072,7 +1072,7 @@
 
 #MSG_SOUND_ONCE c=7
 "Once"
-"Une fois"
+"1 fois"
 
 #MSG_SPEED c=15
 "Speed"
