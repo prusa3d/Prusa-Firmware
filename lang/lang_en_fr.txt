@@ -640,7 +640,7 @@
 
 #MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
-"Echecs alim. MMU"
+"Def. alim. MMU"
 
 #MSG_STEALTH c=7
 "Stealth"
