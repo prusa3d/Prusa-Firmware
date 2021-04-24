@@ -612,7 +612,7 @@
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
-"Echecs charg. MMU"
+"Def. charg. MMU"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
