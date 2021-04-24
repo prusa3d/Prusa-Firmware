@@ -1108,7 +1108,7 @@
 
 #MSG_SELECT_FILAMENT c=20
 "Select filament:"
-"Choisi. le filament:"
+"Choix du filament:"
 
 #MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
