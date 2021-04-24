@@ -998,7 +998,7 @@
 "Select nozzle preheat temperature which matches your material."
 "Selecciona la temperatura para precalentar la boquilla que se ajuste a tu material. "
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Establecer temp.:"
 

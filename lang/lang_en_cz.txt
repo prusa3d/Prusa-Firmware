@@ -998,7 +998,7 @@
 "Select nozzle preheat temperature which matches your material."
 "Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Nastavte teplotu:"
 

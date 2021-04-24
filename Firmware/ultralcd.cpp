@@ -3045,7 +3045,7 @@ void lcd_adjust_bed(void)
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! | Set temperature:   |	MSG_SET_TEMPERATURE
+//! |Set temperature:    |	MSG_SET_TEMPERATURE c=20
 //! |                    |
 //! | 210                |
 //! |                    |
@@ -3054,7 +3054,7 @@ void lcd_adjust_bed(void)
 void pid_extruder()
 {
 	lcd_clear();
-	lcd_puts_at_P(1, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=19
+	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE
 	pid_temp += int(lcd_encoder);
 	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
 	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;

@@ -998,7 +998,7 @@
 "Select nozzle preheat temperature which matches your material."
 "Selectionnez la temperature de prechauffage de la buse qui correspond a votre materiau."
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Regler temp.:"
 

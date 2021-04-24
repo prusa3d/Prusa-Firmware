@@ -998,9 +998,9 @@
 "Select nozzle preheat temperature which matches your material."
 "Selezionate la temperatura per il preriscaldamento dell'ugello adatta al vostro materiale."
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
-"Imposta temperatura"
+"Imposta temperatura:"
 
 # c=20
 "Prusa i3 MK2.5 OK."

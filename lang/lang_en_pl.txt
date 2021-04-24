@@ -998,7 +998,7 @@
 "Select nozzle preheat temperature which matches your material."
 "Wybierz temperature grzania dyszy odpowiednia dla materialu."
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Ustaw temperature:"
 
