@@ -652,7 +652,7 @@
 
 #MSG_HIGH_POWER c=10
 "High power"
-"Haute puiss"
+"Haut.puiss"
 
 #MSG_MMU_CONNECTED c=18
 "MMU2 connected"
