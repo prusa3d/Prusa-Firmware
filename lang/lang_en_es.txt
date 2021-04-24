@@ -872,7 +872,7 @@
 
 #MSG_RESUME_NOZZLE_TEMP c=20 r=4
 "Press the knob to resume nozzle temperature."
-"Presiona el dial para continuar con la temperatura de la boquilla."
+"Presione el dial para continuar con la temperatura de la boquilla."
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
