@@ -108,7 +108,7 @@
 
 #MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
-"Corr. niveau plateau"
+"Chg niveau plateau"
 
 #MSG_BELTTEST c=18
 "Belt test        "
