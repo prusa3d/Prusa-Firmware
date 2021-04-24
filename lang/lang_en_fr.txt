@@ -600,7 +600,7 @@
 
 #MSG_MEASURED_SKEW c=13
 "Measured skew"
-"Deviat.mesuree"
+"Var. mesuree"
 
 #MSG_MMU_FAILS c=15
 "MMU fails"
