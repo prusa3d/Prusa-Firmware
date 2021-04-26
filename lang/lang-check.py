@@ -61,10 +61,10 @@ def print_source_translation(source, translation, wrapped_source, wrapped_transl
         print_truncated(translation, cols)
     else:
         print(' source text:')
-        print('   |01234567890123456789|')
+        print('     |01234567890123456789|')
         print_wrapped(wrapped_source, rows, cols)
         print(' translated text:')
-        print('   |01234567890123456789|')
+        print('     |01234567890123456789|')
         print_wrapped(wrapped_translation, rows, cols)
     print()
 
