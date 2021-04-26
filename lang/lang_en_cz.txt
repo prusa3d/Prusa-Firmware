@@ -1414,7 +1414,7 @@
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. Tisk zrusen."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
 "\x00"
 

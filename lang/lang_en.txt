@@ -7,7 +7,7 @@
 #MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 
-# c=18
+#MSG_FS_V_04_OR_NEWER c=18
 "FS v0.4 or newer"
 
 #MSG_IR_UNKNOWN c=18
@@ -1060,7 +1060,7 @@
 #MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
 
 #MSG_RENAME c=18

@@ -8133,7 +8133,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 	case TestError::FsensorLevel:
           lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
           lcd_set_cursor(0, 3);
-          lcd_printf_P(_i("%s level expected"),_error_1);////c=20
+          lcd_printf_P(_i("%s level expected"),_error_1);////MSG_SELFTEST_FS_LEVEL c=20
           break;
 	}
 

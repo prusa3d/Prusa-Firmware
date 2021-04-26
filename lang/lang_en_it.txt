@@ -1414,7 +1414,7 @@
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Diametro ugello diverso dal G-Code. Controlla il valore nelle impostazioni. Stampa annullata."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
 "atteso livello %s"
 

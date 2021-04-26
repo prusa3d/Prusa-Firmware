@@ -1414,7 +1414,7 @@
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Der Durchmesser der Druckerduese weicht vom G-Code ab. Bitte ueberpruefen Sie den Wert in den Einstellungen. Druck abgebrochen."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
 "\x00"
 
