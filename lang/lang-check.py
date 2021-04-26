@@ -9,7 +9,10 @@
 #  9 June 2020, 3d-gussner, Wrap text to 20 char and rows
 #  9 June 2020, 3d-gussner, colored output
 #  2 Apr. 2021, 3d-gussner, Fix and improve text warp
-# 22 Apr. 2021, DRracer, add English source to output
+# 22 Apr. 2021, DRracer   , add English source to output
+# 23 Apr. 2021, wavexx    , improve 
+# 24 Apr. 2021, wavexx    , improve
+# 26 Apr. 2021, 3d-gussner, add character ruler  
 #############################################################################
 #
 """Check lang files."""
@@ -51,13 +54,17 @@ def print_truncated(text, cols):
 def print_source_translation(source, translation, wrapped_source, wrapped_translation, rows, cols):
     if rows == 1:
         print(' source text:')
+        print('   |01234567890123456789|')
         print_truncated(source, cols)
         print(' translated text:')
+        print('   |01234567890123456789|')
         print_truncated(translation, cols)
     else:
         print(' source text:')
+        print('   |01234567890123456789|')
         print_wrapped(wrapped_source, rows, cols)
         print(' translated text:')
+        print('   |01234567890123456789|')
         print_wrapped(wrapped_translation, rows, cols)
     print()
 
