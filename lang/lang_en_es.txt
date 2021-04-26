@@ -288,7 +288,7 @@
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"ERROR: El sensor de filamento no responde, por favor comprueba la conexion."
+"ERROR: El sensor de filamento no responde, verifique la conexion."
 
 #MSG_DIM c=6
 "Dim"
@@ -360,7 +360,7 @@
 
 #MSG_PRINT_TIME c=19
 "Print time"
-"Tiempo de imp.:"
+"Tiempo de imp."
 
 #MSG_FS_ACTION c=10
 "FS Action"
@@ -504,7 +504,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"?Esta colocada la lamina sobre la base"
+"Esta colocada la lamina sobre la base?"
 
 #MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
@@ -632,7 +632,7 @@
 
 #MSG_SILENT c=7
 "Silent"
-"Silencio"
+"Silenc."
 
 #MSG_MMU_USER_ATTENTION c=20 r=3
 "MMU needs user attention."
@@ -644,7 +644,7 @@
 
 #MSG_STEALTH c=7
 "Stealth"
-"Silencio"
+"Silenc."
 
 #MSG_AUTO_POWER c=10
 "Auto power"
@@ -696,7 +696,7 @@
 
 #MSG_SELFTEST_NOTCONNECTED c=20
 "Not connected"
-"No hay conexion "
+"No hay conexion"
 
 #MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 "New firmware version available:"
@@ -892,7 +892,7 @@
 
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load filament first."
-"Por favor, cargar primero el filamento. "
+"Por favor, cargar primero el filamento."
 
 #MSG_PRUSA3D c=18
 "prusa3d.com"
@@ -996,7 +996,7 @@
 
 #MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
-"Selecciona la temperatura para precalentar la boquilla que se ajuste a tu material. "
+"Selecciona la temperatura para precalentar la boquilla que se ajuste a tu material."
 
 #MSG_SET_TEMPERATURE c=20
 "Set temperature:"
@@ -1024,7 +1024,7 @@
 
 #MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
-"Algunos archivos no se ordenaran. Maximo 100 archivos por carpeta para ordenar. "
+"Algunos archivos no se ordenaran. Maximo 100 archivos por carpeta para ordenar."
 
 #MSG_SORT c=7
 "Sort"
@@ -1108,7 +1108,7 @@
 
 #MSG_SELECT_FILAMENT c=20
 "Select filament:"
-"Selecciona filamento"
+"Selecciona filam.:"
 
 #MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
@@ -1220,7 +1220,7 @@
 
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
-"?Se cargocon exito el filamento?"
+"Se cargocon exito el filamento?"
 
 #MSG_SELFTEST_WIRINGERROR c=18
 "Wiring error"
@@ -1372,7 +1372,7 @@
 
 #MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."
-"Diam. nozzl"
+"Diam.nozzl"
 
 #MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
@@ -1436,7 +1436,7 @@
 
 #MSG_SOUND_BLIND c=7
 "Assist"
-"Asistido"
+"Asist."
 
 #MSG_STEEL_SHEET c=18
 "Steel sheets"
