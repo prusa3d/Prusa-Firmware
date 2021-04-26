@@ -2,7 +2,7 @@
 " 0.3 or older"
 " 0.3 oder aelter"
 
-# c=18
+#MSG_FS_V_03_OR_OLDER c=18
 "FS v0.3 or older"
 "FS 0.3 oder aelter"
 
@@ -10,7 +10,7 @@
 " 0.4 or newer"
 " 0.4 oder neuer"
 
-# c=18
+#MSG_FS_V_04_OR_NEWER c=18
 "FS v0.4 or newer"
 "FS 0.4 oder neuer"
 

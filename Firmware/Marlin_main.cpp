@@ -9750,7 +9750,7 @@ static uint16_t nFSCheckCount=0;
 				if( minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD 
 				 && maxVolt >= IRsensor_Hmin_TRESHOLD && maxVolt <= IRsensor_Hopen_TRESHOLD
 				){
-					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Old, ClFsensorPCB::_Rev04, _i("FS v0.4 or newer") ); ////c=18
+					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Old, ClFsensorPCB::_Rev04, _i("FS v0.4 or newer") ); ////MSG_FS_V_04_OR_NEWER c=18
 				} 
 				//! If and only if minVolt is in range <0.0, 0.3> and maxVolt is in range  <4.6, 5.0V>, I'm considering a situation with the old fsensor
 				//! Note, we are not relying on one voltage here - getting just +5V can mean an old fsensor or a broken new sensor - that's why
@@ -9758,7 +9758,7 @@ static uint16_t nFSCheckCount=0;
 				else if( minVolt < IRsensor_Ldiode_TRESHOLD 
 				 && maxVolt > IRsensor_Hopen_TRESHOLD && maxVolt <= IRsensor_VMax_TRESHOLD
 				){
-					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Rev04, oFsensorPCB=ClFsensorPCB::_Old, _i("FS v0.3 or older")); ////c=18
+					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Rev04, oFsensorPCB=ClFsensorPCB::_Old, _i("FS v0.3 or older")); ////MSG_FS_V_03_OR_OLDER c=18
 				}
 #endif // IR_SENSOR_ANALOG
 				if (fsensor_check_autoload())

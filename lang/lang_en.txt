@@ -1,7 +1,7 @@
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 
-# c=18
+#MSG_FS_V_03_OR_OLDER c=18
 "FS v0.3 or older"
 
 #MSG_IR_04_OR_NEWER c=18
