@@ -272,7 +272,7 @@
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
-"Chyba - Doslo k prepisu staticke pameti!"
+"Chyba - Doslo k prepisu staticke pameti"
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
@@ -696,7 +696,7 @@
 
 #MSG_SELFTEST_NOTCONNECTED c=20
 "Not connected"
-"Nezapojeno "
+"Nezapojeno"
 
 #MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 "New firmware version available:"
