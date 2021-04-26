@@ -598,7 +598,7 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Pokracuji v nahrivani..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
 "Merene zkos."
 
@@ -1038,9 +1038,9 @@
 "Time"
 "Cas"
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
-"Tezke zkos.:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Tezke zkos."
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1054,7 +1054,7 @@
 "Loud"
 "Hlasity"
 
-#MSG_SLIGHT_SKEW c=13
+#MSG_SLIGHT_SKEW c=14
 "Slight skew:"
 "Lehke zkos.:"
 

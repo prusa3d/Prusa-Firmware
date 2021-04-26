@@ -598,7 +598,7 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Temperatur wiederherstellen..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
 "Schraeglauf"
 
@@ -1038,9 +1038,9 @@
 "Time"
 "Zeit"
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
-"Schwer.Schr:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Sehr Schraeg"
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1054,9 +1054,9 @@
 "Loud"
 "Laut"
 
-#MSG_SLIGHT_SKEW c=13
-"Slight skew:"
-"Leicht.Schr:"
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
+"Leicht Schraeg"
 
 #MSG_SOUND c=7
 "Sound"

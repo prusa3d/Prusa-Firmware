@@ -598,7 +598,7 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Ripristino temperatura..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
 "Dev. misurata"
 
@@ -1038,9 +1038,9 @@
 "Time"
 "Cron."
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
-"Devia.grave:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Devia.grave"
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1054,9 +1054,9 @@
 "Loud"
 "Forte"
 
-#MSG_SLIGHT_SKEW c=13
-"Slight skew:"
-"Devia.lieve:"
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
+"Devia.lieve"
 
 #MSG_SOUND c=7
 "Sound"

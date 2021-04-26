@@ -2745,8 +2745,8 @@ void lcd_move_e()
 //! |01234567890123456789|
 //! |Y distance from min |	MSG_Y_DIST_FROM_MIN
 //! | --------------     |	STR_SEPARATOR
-//! |Left:       00.00mm |	MSG_LEFT c=10, c=8
-//! |Right:      00.00mm |	MSG_RIGHT c=10, c=8
+//! |Left:        00.00mm|	MSG_LEFT c=10, c=8
+//! |Right:       00.00mm|	MSG_RIGHT c=10, c=8
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -2786,10 +2786,10 @@ float _deg(float rad)
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Measured skew: 0.00D|	MSG_MEASURED_SKEW, c=4
+//! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14, c=4
 //! | --------------     |	STR_SEPARATOR
-//! |Slight skew:   0.12D|	MSG_SLIGHT_SKEW, c=4
-//! |Severe skew:   0.25D|	MSG_SEVERE_SKEW, c=4
+//! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14, c=4
+//! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14, c=4
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
 //! @endcode
@@ -2799,15 +2799,15 @@ static void lcd_menu_xyz_skew()
     float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
 	lcd_home();
 	lcd_printf_P(_N(
-	  "%S:\n"
+	  "%-14.14S:\n"
 	  "%S\n"
-	  "%-15.15S%3.2f\x01\n"
-	  "%-15.15S%3.2f\x01"
+	  "%-14.14S:%3.2f\x01\n"
+	  "%-14.14S:%3.2f\x01"
 	 ),
-	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=13
+	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
 	 separator,
-	 _i("Slight skew:"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=13, c=4
-	 _i("Severe skew:"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=13, c=4
+	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14, c=4
+	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14, c=4
 	);
 	if (angleDiff < 100){
 		lcd_set_cursor(15,0);
@@ -2825,8 +2825,8 @@ static void lcd_menu_xyz_skew()
 //! |01234567890123456789|
 //! |[0;0] point offset  |	MSG_MEASURED_OFFSET c=20
 //! | --------------     |	STR_SEPARATOR
-//! |X:          000.00mm|	c=10
-//! |Y:          000.00mm|	c=10
+//! |X            00.00mm|	c=10
+//! |Y            00.00mm|	c=10
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -2844,9 +2844,9 @@ static void lcd_menu_xyz_offset()
 
     for (uint_least8_t i = 0; i < 2; i++)
     {
-        lcd_set_cursor((cntr[i] < 0) ? 10 : 11, i+2);
+        lcd_set_cursor((cntr[i] < 0) ? 13 : 14, i+2);
         lcd_print(cntr[i]);
-        lcd_puts_at_P(16, i + 2, PSTR("mm"));
+        lcd_puts_at_P(18, i + 2, PSTR("mm"));
     }
     menu_back_if_clicked();
 }

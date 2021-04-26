@@ -598,9 +598,9 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Restaurando temperatura..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
-"Desviacion med:"
+"Desviacion med"
 
 #MSG_MMU_FAILS c=15
 "MMU fails"
@@ -1038,9 +1038,9 @@
 "Time"
 "Fecha"
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
-"Incl.severa:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Severo sesgar"
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1054,9 +1054,9 @@
 "Loud"
 "Alto"
 
-#MSG_SLIGHT_SKEW c=13
-"Slight skew:"
-"Liger.incl.:"
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
+"Ligera sesgar"
 
 #MSG_SOUND c=7
 "Sound"

@@ -598,7 +598,7 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Wznawiam nagrzewanie..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
 "Zmierzony skos"
 
@@ -1038,9 +1038,9 @@
 "Time"
 "Czas"
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
-"Znaczny skos:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Znaczny skos"
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1054,9 +1054,9 @@
 "Loud"
 "Glosny"
 
-#MSG_SLIGHT_SKEW c=13
-"Slight skew:"
-"Lekki skos:"
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
+"Lekki skos"
 
 #MSG_SOUND c=7
 "Sound"
