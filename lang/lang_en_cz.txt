@@ -272,7 +272,7 @@
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
-"Chyba - Doslo k prepisu staticke pameti!"
+"Chyba - Doslo k prepisu staticke pameti"
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
