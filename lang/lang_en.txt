@@ -32,7 +32,7 @@
 "Adjusting Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
+"All correct"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -71,7 +71,7 @@
 "Axis"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
+"Bed/Heater"
 
 #MSG_BED_DONE c=20
 "Bed done"
@@ -83,7 +83,7 @@
 "Bed level correct"
 
 #MSG_BELTTEST c=18
-"Belt test        "
+"Belt test"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
@@ -332,16 +332,16 @@
 "Changed correctly?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
+"Checking bed"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
 "Checking endstops"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
+"Checking hotend"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 
 #MSG_CHECKING_X c=20
 "Checking X axis"
@@ -455,7 +455,7 @@
 "MMU fails"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
+"MMU load failed"
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
@@ -551,7 +551,7 @@
 "Pause print"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
+"PID cal."
 
 #MSG_PID_FINISHED c=20
 "PID cal. finished"
@@ -572,7 +572,7 @@
 "Please clean the nozzle for calibration. Click when done."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
+"Please check:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
@@ -683,7 +683,7 @@
 "Please check the IR sensor connection, unload filament if present."
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
+"Recovering print"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
@@ -731,16 +731,16 @@
 "Self test OK"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
+"Self test start"
 
 #MSG_SELFTEST c=18
-"Selftest         "
+"Selftest"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
+"Selftest error!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
+"Selftest failed"
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -815,13 +815,13 @@
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
 
 #MSG_STATISTICS c=18
-"Statistics  "
+"Statistics"
 
 #MSG_STOP_PRINT c=18
 "Stop print"
 
 #MSG_STOPPED c=20
-"STOPPED. "
+"STOPPED."
 
 #MSG_SUPPORT c=18
 "Support"
@@ -1022,7 +1022,7 @@
 "MMU Mode"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
+"Mode change in progress..."
 
 #MSG_MODEL c=8
 "Model"

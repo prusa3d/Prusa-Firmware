@@ -43,8 +43,8 @@
 "Ustawianie Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
-"Wszystko OK "
+"All correct"
+"Wszystko OK"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -95,8 +95,8 @@
 "Os"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
-"Stol / Grzanie"
+"Bed/Heater"
+"Stol/Grzanie"
 
 #MSG_BED_DONE c=20
 "Bed done"
@@ -111,7 +111,7 @@
 "Korekta stolu"
 
 #MSG_BELTTEST c=18
-"Belt test        "
+"Belt test"
 "Test paskow"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
@@ -443,7 +443,7 @@
 "Wymiana ok?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
+"Checking bed"
 "Kontrola stolu"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
@@ -451,11 +451,11 @@
 "Kontrola krancowek"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
+"Checking hotend"
 "Kontrola hotendu"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 "Kontrola czujnikow"
 
 #MSG_CHECKING_X c=20
@@ -607,7 +607,7 @@
 "Bledy MMU"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
+"MMU load failed"
 "Blad ladowania MMU"
 
 #MSG_MMU_LOAD_FAILS c=15
@@ -735,7 +735,7 @@
 "Wstrzymanie wydruku"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
+"PID cal."
 "Kalibracja PID"
 
 #MSG_PID_FINISHED c=20
@@ -763,8 +763,8 @@
 "Dla prawidlowej kalibracji nalezy oczyscic dysze. Potwierdz guzikiem."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
-"Sprawdz :"
+"Please check:"
+"Sprawdz:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
@@ -911,8 +911,8 @@
 "Sprawdz polaczenie czujnika IR, rozladuj filament, jesli zaladowany."
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
-"Wznawianie wydruku  "
+"Recovering print"
+"Wznawianie wydruku"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
@@ -975,19 +975,19 @@
 "Selftest OK"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
+"Self test start"
 "Selftest startuje"
 
 #MSG_SELFTEST c=18
-"Selftest         "
-"Selftest "
+"Selftest"
+"\x00"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
+"Selftest error!"
 "Blad selftest!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
+"Selftest failed"
 "Selftest nieudany"
 
 #MSG_FORCE_SELFTEST c=20 r=8
@@ -1087,7 +1087,7 @@
 "Potrzebna jest stabilna temperatura otoczenia 21-26C i stabilne podloze."
 
 #MSG_STATISTICS c=18
-"Statistics  "
+"Statistics"
 "Statystyki"
 
 #MSG_STOP_PRINT c=18
@@ -1095,7 +1095,7 @@
 "Przerwanie druku"
 
 #MSG_STOPPED c=20
-"STOPPED. "
+"STOPPED."
 "ZATRZYMANO."
 
 #MSG_SUPPORT c=18
@@ -1363,7 +1363,7 @@
 "Tryb MMU"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
+"Mode change in progress..."
 "Trwa zmiana trybu..."
 
 #MSG_MODEL c=8

@@ -43,7 +43,7 @@
 "Compensaz. Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
+"All correct"
 "Nessun errore"
 
 #MSG_WIZARD_DONE c=20 r=8
@@ -95,7 +95,7 @@
 "Assi"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
+"Bed/Heater"
 "Piano/Riscald."
 
 #MSG_BED_DONE c=20
@@ -111,8 +111,8 @@
 "Correz. liv.piano"
 
 #MSG_BELTTEST c=18
-"Belt test        "
-"Test cinghie     "
+"Belt test"
+"Test cinghie"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
@@ -443,7 +443,7 @@
 "Cambio corretto?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
+"Checking bed"
 "Verifica piano"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
@@ -451,11 +451,11 @@
 "Verifica finecorsa"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
+"Checking hotend"
 "Verifica ugello"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 "Controllo sensori"
 
 #MSG_CHECKING_X c=20
@@ -607,7 +607,7 @@
 "Fallimenti MMU"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
+"MMU load failed"
 "Caricam. MMU fallito"
 
 #MSG_MMU_LOAD_FAILS c=15
@@ -735,7 +735,7 @@
 "Metti in pausa"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
+"PID cal."
 "Calibrazione PID"
 
 #MSG_PID_FINISHED c=20
@@ -763,7 +763,7 @@
 "Pulire l'ugello per la calibrazione, poi fare click."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
+"Please check:"
 "Verifica:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
@@ -911,8 +911,8 @@
 "Controllare il collegamento al sensore e rimuovere il filamento."
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
-"Recupero stampa     "
+"Recovering print"
+"Recupero stampa"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
@@ -975,19 +975,19 @@
 "Autotest OK"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
+"Self test start"
 "Avvia autotest"
 
 #MSG_SELFTEST c=18
-"Selftest         "
-"Autotest         "
+"Selftest"
+"Autotest"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
-"Errore Autotest !"
+"Selftest error!"
+"Errore Autotest!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
+"Selftest failed"
 "Autotest fallito"
 
 #MSG_FORCE_SELFTEST c=20 r=8
@@ -1087,7 +1087,7 @@
 "Sono necessari una temperatura ambiente di 21-26C e una superficie rigida."
 
 #MSG_STATISTICS c=18
-"Statistics  "
+"Statistics"
 "Statistiche"
 
 #MSG_STOP_PRINT c=18
@@ -1095,7 +1095,7 @@
 "Arresta stampa"
 
 #MSG_STOPPED c=20
-"STOPPED. "
+"STOPPED."
 "ARRESTATO."
 
 #MSG_SUPPORT c=18
@@ -1363,8 +1363,8 @@
 "Mod. MMU"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
-"Cambio modalita in corso ..."
+"Mode change in progress..."
+"Cambio modalita in corso..."
 
 #MSG_MODEL c=8
 "Model"

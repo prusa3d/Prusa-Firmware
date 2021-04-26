@@ -43,8 +43,8 @@
 "Z is ingesteld:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
-"Allemaal goed    "
+"All correct"
+"Allemaal goed"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -95,8 +95,8 @@
 "As"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
-"Bed / Verwarming"
+"Bed/Heater"
+"Bed/Verwarming"
 
 #MSG_BED_DONE c=20
 "Bed done"
@@ -111,8 +111,8 @@
 "Bed niveau correct"
 
 #MSG_BELTTEST c=18
-"Belt test        "
-"Riemtest         "
+"Belt test"
+"Riemtest"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
@@ -443,19 +443,19 @@
 "Wissel ok?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
-"Controleer bed   "
+"Checking bed"
+"Controleer bed"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
 "Checking endstops"
 "Controleer endstops"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
+"Checking hotend"
 "Controleer hotend"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 "Controleer sensors"
 
 #MSG_CHECKING_X c=20
@@ -607,8 +607,8 @@
 "MMU fout"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
-"MMU laden mislukt   "
+"MMU load failed"
+"MMU laden mislukt"
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
@@ -735,8 +735,8 @@
 "Print pauzeren"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
-"PID kal.           "
+"PID cal."
+"PID kal."
 
 #MSG_PID_FINISHED c=20
 "PID cal. finished"
@@ -763,7 +763,7 @@
 "Reinig de tuit voor de kalibratie. Druk op de knop wanneer gereed."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
+"Please check:"
 "Controleer aub:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
@@ -911,8 +911,8 @@
 "AUB IR sensor ver- binding kontrolleren , verwijder filament indien aanwezig."
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
-"Print herstellen    "
+"Recovering print"
+"Print herstellen"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
@@ -975,20 +975,20 @@
 "Zelftest  OK"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
-"Zelftest start   "
+"Self test start"
+"Zelftest start"
 
 #MSG_SELFTEST c=18
-"Selftest         "
-"Zelftest         "
+"Selftest"
+"Zelftest"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
-"Zelftest fout  !"
+"Selftest error!"
+"Zelftest fout!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
-"Zelftest mislukt "
+"Selftest failed"
+"Zelftest mislukt"
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -1087,7 +1087,7 @@
 "En stabiele 21-26C omgevingstemperatuur is nodig,een stevige stand is vereist."
 
 #MSG_STATISTICS c=18
-"Statistics  "
+"Statistics"
 "Statistieken"
 
 #MSG_STOP_PRINT c=18
@@ -1095,8 +1095,8 @@
 "Print stoppen"
 
 #MSG_STOPPED c=20
-"STOPPED. "
-"GESTOPT. "
+"STOPPED."
+"GESTOPT."
 
 #MSG_SUPPORT c=18
 "Support"
@@ -1363,7 +1363,7 @@
 "MMU Mod"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
+"Mode change in progress..."
 "Moduswijziging bezig..."
 
 #MSG_MODEL c=8

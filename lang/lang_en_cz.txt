@@ -43,8 +43,8 @@
 "Doladeni Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
-"Vse OK "
+"All correct"
+"Vse OK"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -95,8 +95,8 @@
 "Osa"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
-"Podlozka / Topeni"
+"Bed/Heater"
+"Podlozka/Topeni"
 
 #MSG_BED_DONE c=20
 "Bed done"
@@ -111,8 +111,8 @@
 "Korekce podlozky"
 
 #MSG_BELTTEST c=18
-"Belt test        "
-"Test remenu      "
+"Belt test"
+"Test remenu"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
@@ -443,7 +443,7 @@
 "Vymena ok?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
+"Checking bed"
 "Kontrola podlozky"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
@@ -451,11 +451,11 @@
 "Kontrola endstopu"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
-"Kontrola hotend "
+"Checking hotend"
+"Kontrola hotend"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 "Kontrola senzoru"
 
 #MSG_CHECKING_X c=20
@@ -607,7 +607,7 @@
 "Selhani MMU"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
+"MMU load failed"
 "Zavedeni MMU selhalo"
 
 #MSG_MMU_LOAD_FAILS c=15
@@ -735,8 +735,8 @@
 "Pozastavit tisk"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
-"PID kal. "
+"PID cal."
+"PID kal."
 
 #MSG_PID_FINISHED c=20
 "PID cal. finished"
@@ -763,8 +763,8 @@
 "Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
-"Zkontrolujte :"
+"Please check:"
+"Zkontrolujte:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
@@ -911,8 +911,8 @@
 "Prosim zkontrolujte zapojeni IR senzoru a vyjmuty filament"
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
-"Obnovovani tisku    "
+"Recovering print"
+"Obnovovani tisku"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
@@ -975,20 +975,20 @@
 "\x00"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
-"Self test start "
+"Self test start"
+"Self test start"
 
 #MSG_SELFTEST c=18
-"Selftest         "
-"Selftest "
+"Selftest"
+"Selftest"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
+"Selftest error!"
 "Chyba Selftestu!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
-"Selftest selhal "
+"Selftest failed"
+"Selftest selhal"
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -1087,15 +1087,15 @@
 "Je vyzadovana stabilni pokojova teplota 21-26C a pevna podlozka."
 
 #MSG_STATISTICS c=18
-"Statistics  "
-"Statistika "
+"Statistics"
+"Statistika"
 
 #MSG_STOP_PRINT c=18
 "Stop print"
 "Zastavit tisk"
 
 #MSG_STOPPED c=20
-"STOPPED. "
+"STOPPED."
 "ZASTAVENO."
 
 #MSG_SUPPORT c=18
@@ -1363,7 +1363,7 @@
 "MMU mod"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
+"Mode change in progress..."
 "Probiha zmena modu..."
 
 #MSG_MODEL c=8
