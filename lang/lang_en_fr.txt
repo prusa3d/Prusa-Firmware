@@ -932,7 +932,7 @@
 
 #MSG_RESUME_PRINT c=18
 "Resume print"
-"Reprendre impression"
+"Reprise impression"
 
 #MSG_RESUMING_PRINT c=20
 "Resuming print"
