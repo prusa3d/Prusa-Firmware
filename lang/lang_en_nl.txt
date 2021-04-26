@@ -1148,7 +1148,7 @@
 
 #MSG_TOTAL_FILAMENT c=19
 "Total filament"
-"Totaal fil.   "
+"Totaal fil."
 
 #MSG_TOTAL_PRINT_TIME c=19
 "Total print time"
