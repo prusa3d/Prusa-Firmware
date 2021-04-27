@@ -396,7 +396,7 @@
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
-"Przedni/lewy wentylator"
+"Przedni/lewy wentyl."
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
@@ -592,7 +592,7 @@
 
 #MSG_MEASURED_SKEW c=14
 "Measured skew"
-"Zmierzony skos"
+"Zmierz. skos"
 
 #MSG_MMU_FAILS c=15
 "MMU fails"
@@ -604,7 +604,7 @@
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
-"Bledy ladow. MMU"
+"Bledy lad. MMU"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -620,7 +620,7 @@
 
 #MSG_NORMAL c=7
 "Normal"
-"Normalni"
+"Normal"
 
 #MSG_SILENT c=7
 "Silent"
@@ -632,7 +632,7 @@
 
 #MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
-"Zaniki zasil. MMU"
+"Zaniki zas. MMU"
 
 #MSG_STEALTH c=7
 "Stealth"
@@ -644,7 +644,7 @@
 
 #MSG_HIGH_POWER c=10
 "High power"
-"Wysoka wyd."
+"Wysoka wyd"
 
 #MSG_MMU_CONNECTED c=18
 "MMU2 connected"
@@ -724,7 +724,7 @@
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
-"Wstrzymanie wydruku"
+"Wstrzym. wydruku"
 
 #MSG_PID_RUNNING c=20
 "PID cal."
@@ -824,7 +824,7 @@
 
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
-"Prosze zaktualizowac."
+"Prosze zaktualizowac"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press the knob to preheat nozzle and continue."
@@ -836,7 +836,7 @@
 
 #MSG_POWER_FAILURES c=15
 "Power failures"
-"Zaniki zasilania"
+"Zaniki zasil."
 
 #MSG_PRINT_ABORTED c=20
 "Print aborted"
@@ -960,7 +960,7 @@
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
 "Searching bed calibration point"
-"Szukam punktu kalibracyjnego na stole"
+"Szukam punktu kalib. na stole"
 
 #MSG_LANGUAGE_SELECT c=18
 "Select language"
@@ -1024,7 +1024,7 @@
 
 #MSG_SORT c=7
 "Sort"
-"Sortowanie"
+"Sort."
 
 #MSG_NONE c=8
 "None"
@@ -1168,7 +1168,7 @@
 
 #MSG_UNLOAD_FILAMENT c=16
 "Unload filament"
-"Rozladowanie fil."
+"Rozladowanie fil"
 
 #MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
@@ -1192,7 +1192,7 @@
 
 #MSG_USERWAIT c=20
 "Wait for user..."
-"Czekam na uzytkownika..."
+"Czekam na uzytk. ..."
 
 #MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
