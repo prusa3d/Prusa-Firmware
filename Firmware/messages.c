@@ -50,6 +50,7 @@ const char MSG_FSENSOR[] PROGMEM_I1 = ISTR("Fil. sensor"); ////c=12
 const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////c=20
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20
 const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////c=18
+const char MSG_ITERATION[] PROGMEM_I1 = ISTR("Iteration"); ////c=12
 const char MSG_CHOOSE_EXTRUDER[] PROGMEM_I1 = ISTR("Choose extruder:"); ////c=20
 const char MSG_CHOOSE_FILAMENT[] PROGMEM_I1 = ISTR("Choose filament:"); ////c=20
 const char MSG_LAST_PRINT[] PROGMEM_I1 = ISTR("Last print"); ////c=18
@@ -123,7 +124,6 @@ const char MSG_WIZARD_WELCOME_SHIPPING[] PROGMEM_I1 = ISTR("Hi, I am your Origin
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////c=3
 const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=18
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
-const char MSG_OF[] PROGMEM_I1 = ISTR("of"); ////c=3
 const char MSG_OFF[] PROGMEM_I1 = ISTR("Off"); ////c=3
 const char MSG_ON[] PROGMEM_I1 = ISTR("On"); ////c=3
 const char MSG_NA[] PROGMEM_I1 = ISTR("N/A"); ////c=3

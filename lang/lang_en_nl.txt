@@ -550,6 +550,10 @@
 "Loading filament"
 "Laden filament"
 
+#MSG_ITERATION c=12
+"Iteration"
+"Iteratie"
+
 #MSG_LOOSE_PULLEY c=20
 "Loose pulley"
 "Losse riemschijf"
@@ -781,10 +785,6 @@
 #MSG_EJECT_REMOVE c=20 r=4
 "Please remove filament and then press the knob."
 "Trek onmiddellijk filament eruit en druk vervolgens op de knop."
-
-#MSG_OF c=3
-"of"
-"van"
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."

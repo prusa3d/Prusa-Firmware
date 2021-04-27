@@ -3428,13 +3428,11 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_CONFIRM_NOZZLE_CLEAN));
 		if(onlyZ){
 			lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1));
-			lcd_set_cursor(0, 3);
-			lcd_printf_P(PSTR("1 %S 9"),_T(MSG_OF));
+			lcd_puts_at_P(0,3,_n("1/9"));
 		}else{
 			//lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
-			lcd_set_cursor(0, 3);
-			lcd_printf_P(PSTR("1 %S 4"),_T(MSG_OF));
+			lcd_puts_at_P(0,3,_n("1/4"));
 		}
 
 		refresh_cmd_timeout();
@@ -3454,8 +3452,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
-			lcd_set_cursor(0, 3);
-			lcd_printf_P(PSTR("1 %S 4"),_T(MSG_OF));
+			lcd_puts_at_P(0,3,_n("1/4"));
 		}
 			
 		bool endstops_enabled  = enable_endstops(false);
