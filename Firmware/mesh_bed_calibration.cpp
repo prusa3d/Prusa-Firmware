@@ -2250,12 +2250,10 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
             refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
 		lcd_set_cursor(0, next_line);
-		lcd_print(k + 1);
-		lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
+		lcd_printf_P(PSTR("%d %S 4"),(k+1),_T(MSG_OF));
 
 		if (iteration > 0) {
-			lcd_puts_at_P(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20
-			lcd_print(int(iteration + 1));
+			lcd_printf_P(PSTR(" Iter %d"),int(iteration + 1));
 		}
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		float *pt = pts + k * 2;
@@ -2547,8 +2545,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         lcd_set_cursor(0, next_line);
-		lcd_print(mesh_point+1);
-        lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
+        lcd_printf_P(PSTR("%d %S 4"),mesh_point+1,_T(MSG_OF));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.
@@ -2852,8 +2849,7 @@ bool sample_mesh_and_store_reference()
         next_line = 3;
     // display "point xx of yy"
 	lcd_set_cursor(0, next_line);
-    lcd_print(1);
-    lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
+    lcd_printf_P(PSTR("1 %S 9"),_T(MSG_OF));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Sample Z heights for the mesh bed leveling.
@@ -2902,8 +2898,7 @@ bool sample_mesh_and_store_reference()
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         // display "point xx of yy"
 		lcd_set_cursor(0, next_line);
-        lcd_print(mesh_point+1);
-        lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
+        lcd_printf_P(PSTR("%d %S 9"),mesh_point+1,_T(MSG_OF));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{

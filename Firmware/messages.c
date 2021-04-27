@@ -42,7 +42,6 @@ const char MSG_FILAMENT_LOADING_T2[] PROGMEM_I1 = ISTR("Insert filament into ext
 const char MSG_FILAMENT_LOADING_T3[] PROGMEM_I1 = ISTR("Insert filament into extruder 4. Click when done."); ////c=20 r=4
 const char MSG_FILAMENTCHANGE[] PROGMEM_I1 = ISTR("Change filament"); ////c=18
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[] PROGMEM_I1 = ISTR("Searching bed calibration point"); ////c=20 r=2
-const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2[] PROGMEM_I1 = ISTR(" of 4"); ////c=14
 const char MSG_FINISHING_MOVEMENTS[] PROGMEM_I1 = ISTR("Finishing movements"); ////c=20
 const char MSG_FOLLOW_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
 const char MSG_FOLLOW_Z_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=9
@@ -65,7 +64,6 @@ const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////c=18
 const char MSG_SHEET[] PROGMEM_I1 = ISTR("Sheet"); ////c=10
 const char MSG_STEEL_SHEETS[] PROGMEM_I1 = ISTR("Steel sheets"); ////c=18
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[] PROGMEM_I1 = ISTR("Measuring reference height of calibration point"); ////c=20 r=3
-const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); ////c=14
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////c=18
 const char MSG_MMU_FAILS[] PROGMEM_I1 = ISTR("MMU fails"); ////c=15
 const char MSG_MMU_LOAD_FAILS[] PROGMEM_I1 = ISTR("MMU load fails"); ////c=15
@@ -125,6 +123,7 @@ const char MSG_WIZARD_WELCOME_SHIPPING[] PROGMEM_I1 = ISTR("Hi, I am your Origin
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////c=3
 const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=18
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
+const char MSG_OF[] PROGMEM_I1 = ISTR("of"); ////c=3
 const char MSG_OFF[] PROGMEM_I1 = ISTR("Off"); ////c=3
 const char MSG_ON[] PROGMEM_I1 = ISTR("On"); ////c=3
 const char MSG_NA[] PROGMEM_I1 = ISTR("N/A"); ////c=3

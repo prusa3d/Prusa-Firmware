@@ -13,12 +13,6 @@
 #MSG_IR_UNKNOWN c=18
 "unknown state"
 
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
-" of 4"
-
-#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
-" of 9"
-
 #MSG_MEASURED_OFFSET c=20
 "[0;0] point offset"
 
@@ -591,6 +585,9 @@
 
 #MSG_EJECT_REMOVE c=20 r=4
 "Please remove filament and then press the knob."
+
+#MSG_OF c=3
+"of"
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
