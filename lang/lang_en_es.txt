@@ -382,10 +382,6 @@
 "Flow"
 "Flujo"
 
-#MSG_PRUSA3D_FORUM c=18
-"forum.prusa3d.com"
-"\x00"
-
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
 "Vent. frontal?"
@@ -417,10 +413,6 @@
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Hola, soy tu impresora Original Prusa i3. Quieres que te guie a traves de la configuracion?"
-
-#MSG_PRUSA3D_HOWTO c=18
-"howto.prusa3d.com"
-"\x00"
 
 #MSG_FILAMENTCHANGE c=18
 "Change filament"
@@ -890,10 +882,6 @@
 "Please load filament first."
 "Por favor, cargar primero el filamento."
 
-#MSG_PRUSA3D c=18
-"prusa3d.com"
-"prusa3d.es"
-
 #MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 "Trasera [um]"
@@ -913,10 +901,6 @@
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
 "Retire el filamento viejo y presione el dial para comenzar a cargar el nuevo filamento."
-
-# c=20
-"Prusa i3 MK3S OK."
-"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=18
 "Reset XYZ calibr."
@@ -997,18 +981,6 @@
 #MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Establecer temp.:"
-
-# c=20
-"Prusa i3 MK2.5 OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK2.5S OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK3 OK."
-"\x00"
 
 #MSG_SETTINGS c=18
 "Settings"
