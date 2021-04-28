@@ -810,10 +810,6 @@
 "Preheating nozzle. Please wait."
 "Opwarmen van de tuit. Wacht aub."
 
-#MSG_PINDA c=5
-"PINDA"
-"\x00"
-
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
 "Voer een upgrade uit"

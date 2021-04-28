@@ -72,7 +72,6 @@ const char MSG_NO[] PROGMEM_I1 = ISTR("No"); ////c=4
 const char MSG_NOZZLE[] PROGMEM_I1 = ISTR("Nozzle"); ////c=12
 const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=10
 const char MSG_PAUSE_PRINT[] PROGMEM_I1 = ISTR("Pause print");////c=18
-const char MSG_PINDA[] PROGMEM_I1 = ISTR("PINDA");////c=5
 const char MSG_PLACE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please place steel sheet on heatbed."); ////c=20 r=5
 const char MSG_PLEASE_WAIT[] PROGMEM_I1 = ISTR("Please wait"); ////c=20
 const char MSG_POWER_FAILURES[] PROGMEM_I1 = ISTR("Power failures"); ////c=15
@@ -170,6 +169,7 @@ const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////c=18
 #endif
 
 //not internationalized messages
+const char MSG_PINDA[] PROGMEM_N1 = ISTR("PINDA");////c=5
 const char WELCOME_MSG[] PROGMEM_N1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////

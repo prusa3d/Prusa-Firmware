@@ -810,10 +810,6 @@
 "Preheating nozzle. Please wait."
 "Preriscaldando l'ugello. Attendere prego."
 
-#MSG_PINDA c=5
-"PINDA"
-"\x00"
-
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
 "Prego aggiornare."

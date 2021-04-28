@@ -810,10 +810,6 @@
 "Preheating nozzle. Please wait."
 "Prechauffage de la buse. Merci de patienter."
 
-#MSG_PINDA c=5
-"PINDA"
-"\x00"
-
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
 "Mettez a jour le FW."
