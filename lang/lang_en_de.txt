@@ -1024,7 +1024,7 @@
 
 #MSG_RUNOUTS c=7
 "Runouts"
-"\x00"
+"Maengel"
 
 #MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
@@ -1388,7 +1388,7 @@
 
 #MSG_SOUND_BLIND c=7
 "Assist"
-"\x00"
+"Assist."
 
 #MSG_STEEL_SHEET c=18
 "Steel sheets"
