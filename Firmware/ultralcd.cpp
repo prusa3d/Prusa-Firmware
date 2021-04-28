@@ -2201,14 +2201,21 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     }
     else
     {
-        if (!bFilamentWaitingFlag)
+        if (!bFilamentWaitingFlag || lcd_draw_update)
         {
-            // First run after the filament preheat selection:
-            // setup the fixed LCD parts and raise Z as we wait
+            // First entry from another menu OR first run after the filament preheat selection. Use
+            // bFilamentWaitingFlag to distinguish: this flag is reset exactly once when entering
+            // the menu and is used to raise the carriage *once*. In other cases, the LCD has been
+            // modified elsewhere and needs to be redrawn in full.
+
+            // reset bFilamentWaitingFlag immediately to avoid re-entry from raise_z_above()!
+            bool once = !bFilamentWaitingFlag;
             bFilamentWaitingFlag = true;
 
-            lcd_clear();
+            // also force-enable lcd_draw_update (might be 0 when called from outside a menu)
             lcd_draw_update = 1;
+
+            lcd_clear();
             lcd_puts_at_P(0, 3, _i(">Cancel")); ////MSG_ c=20 r=1
 
             lcd_set_cursor(0, 1);
@@ -2218,12 +2225,12 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             case FilamentAction::AutoLoad:
             case FilamentAction::MmuLoad:
                 lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20
-                raise_z_above(MIN_Z_FOR_LOAD);
+                if (once) raise_z_above(MIN_Z_FOR_LOAD);
                 break;
             case FilamentAction::UnLoad:
             case FilamentAction::MmuUnLoad:
                 lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20
-                raise_z_above(MIN_Z_FOR_UNLOAD);
+                if (once) raise_z_above(MIN_Z_FOR_UNLOAD);
                 break;
             case FilamentAction::MmuEject:
                 lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20
