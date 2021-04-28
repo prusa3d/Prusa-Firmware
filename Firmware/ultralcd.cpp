@@ -2237,7 +2237,6 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 // handled earlier
                 break;
             }
-            lcd_puts_at_P(0, 3, _T(MSG_CANCEL)); ////MSG_CANCEL
         }
 
         lcd_set_cursor(0, 0);
