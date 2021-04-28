@@ -176,7 +176,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"Control. bestand"
+"Bestand controle"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
