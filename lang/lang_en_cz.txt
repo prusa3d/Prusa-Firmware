@@ -930,10 +930,6 @@
 "SD card"
 "\x00"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
-"FlashAir"
-"\x00"
-
 #MSG_RIGHT c=10
 "Right"
 "Vpravo"

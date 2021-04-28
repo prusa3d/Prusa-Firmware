@@ -697,9 +697,6 @@
 #MSG_SD_CARD c=8
 "SD card"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
-"FlashAir"
-
 #MSG_RIGHT c=10
 "Right"
 
