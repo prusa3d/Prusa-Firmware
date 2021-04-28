@@ -632,7 +632,7 @@
 
 #MSG_STEALTH c=7
 "Stealth"
-"\x00"
+"Leise"
 
 #MSG_AUTO_POWER c=10
 "Auto power"
@@ -1312,7 +1312,7 @@
 
 #MSG_MMU_MODE c=8
 "MMU Mode"
-"\x00"
+"MMU Mod."
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 "Mode change in progress..."
@@ -1368,7 +1368,7 @@
 
 #MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"\x00"
+"%s Level erwartet"
 
 #MSG_RENAME c=18
 "Rename"
@@ -1400,7 +1400,7 @@
 
 #MSG_Z_PROBE_NR c=14
 "Z-probe nr."
-"\x00"
+"Z-Test Nr."
 
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"

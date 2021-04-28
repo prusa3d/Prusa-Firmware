@@ -60,7 +60,7 @@
 
 #MSG_AUTO_DEPLETE c=13
 "SpoolJoin"
-""
+"\x00"
 
 #MSG_AUTO_HOME c=18
 "Auto home"
