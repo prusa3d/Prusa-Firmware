@@ -176,7 +176,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Control. bestand"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -220,7 +220,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Van de community"
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
@@ -632,7 +632,7 @@
 
 #MSG_STEALTH c=7
 "Stealth"
-"\x00"
+"Stil"
 
 #MSG_AUTO_POWER c=10
 "Auto power"
@@ -1024,7 +1024,7 @@
 
 #MSG_RUNOUTS c=7
 "Runouts"
-"\x00"
+"Fouten"
 
 #MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
@@ -1292,7 +1292,7 @@
 
 #MSG_WARN c=8
 "Warn"
-"\x00"
+"Waarsch."
 
 #MSG_HW_SETUP c=18
 "HW Setup"
@@ -1368,7 +1368,7 @@
 
 #MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"\x00"
+"%s niveau verwacht"
 
 #MSG_RENAME c=18
 "Rename"
@@ -1388,7 +1388,7 @@
 
 #MSG_SOUND_BLIND c=7
 "Assist"
-"\x00"
+"Assist."
 
 #MSG_STEEL_SHEET c=18
 "Steel sheets"
@@ -1400,8 +1400,8 @@
 
 #MSG_Z_PROBE_NR c=14
 "Z-probe nr."
-"\x00"
+"Z-test nr."
 
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"
-"\x00"
+"Printer IP-adres:"
