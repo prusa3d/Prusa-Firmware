@@ -176,7 +176,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Ueberpruefe Datei"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -220,7 +220,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Von der Community"
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
