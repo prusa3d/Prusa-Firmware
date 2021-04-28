@@ -967,9 +967,6 @@
 #MSG_FALSE_TRIGGERING c=20
 "False triggering"
 
-#MSG_FINDA c=5
-"FINDA"
-
 #MSG_FIRMWARE c=8
 "Firmware"
 

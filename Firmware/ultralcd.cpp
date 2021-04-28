@@ -3773,7 +3773,7 @@ static void lcd_show_sensors_state()
 	
 	if (mmu_enabled == true)
 	{
-		lcd_puts_at_P(10, 0, _i("FINDA"));////MSG_FINDA c=5
+		lcd_puts_at_P(10, 0, _n("FINDA"));////MSG_FINDA c=5
 		lcd_set_cursor(LCD_WIDTH - 3, 0);
 		lcd_print_state(finda_state);
 	}
