@@ -132,7 +132,7 @@
 
 #MSG_CALIBRATING_HOME c=20
 "Calibrating home"
-"Calibrar posicion inicial"
+"Calibrar pos.inicial"
 
 #MSG_CALIBRATE_BED c=18
 "Calibrate XYZ"
@@ -280,7 +280,7 @@
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"ERROR: El sensor de filamento no responde, verifique la conexion."
+"ERROR:Sensor de fi- lamento no responde Por favor, comprue- ba la conexion."
 
 #MSG_DIM c=6
 "Dim"
@@ -304,7 +304,7 @@
 
 #MSG_MMU_FAIL_STATS c=18
 "Fail stats MMU"
-"Estadistica de fallos MMU"
+"Total Fallos MMU"
 
 #MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
@@ -312,7 +312,7 @@
 
 #MSG_FAIL_STATS c=18
 "Fail stats"
-"Estadistica de fallos"
+"Estadistica Fallos"
 
 #MSG_FAN_SPEED c=14
 "Fan speed"
@@ -392,7 +392,7 @@
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
-"Ventiladores frontal/izquierdo"
+"Vents. front/izqui"
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
@@ -420,7 +420,7 @@
 
 #MSG_CHANGE_SUCCESS c=20
 "Change success!"
-"Cambio correcto"
+"Cambio correcto!"
 
 #MSG_CORRECTLY c=20
 "Changed correctly?"
@@ -488,7 +488,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"Esta colocada la lamina sobre la base?"
+"Esta coloc.la lamina sobre la base?"
 
 #MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
@@ -520,7 +520,7 @@
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
-"Correccion de Linealidad"
+"Correc. Linealidad"
 
 #MSG_BABYSTEP_Z c=18
 "Live adjust Z"
@@ -552,7 +552,7 @@
 
 #MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
-"Cargar a la boquilla"
+"Cargar a boquilla"
 
 #MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
@@ -588,7 +588,7 @@
 
 #MSG_MEASURED_SKEW c=14
 "Measured skew"
-"Desviacion med"
+"No a escuadra"
 
 #MSG_MMU_FAILS c=15
 "MMU fails"
@@ -620,7 +620,7 @@
 
 #MSG_SILENT c=7
 "Silent"
-"Silenc."
+"Acallar"
 
 #MSG_MMU_USER_ATTENTION c=20 r=3
 "MMU needs user attention."
@@ -628,15 +628,15 @@
 
 #MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
-"Fallo de energia en MMU"
+"Fallo red MMU"
 
 #MSG_STEALTH c=7
 "Stealth"
-"Silenc."
+"Sigilo"
 
 #MSG_AUTO_POWER c=10
 "Auto power"
-"Fuerza auto"
+"Encendido"
 
 #MSG_HIGH_POWER c=10
 "High power"
@@ -1260,7 +1260,7 @@
 
 #MSG_Y_DIST_FROM_MIN c=20
 "Y distance from min"
-"Distancia en Y desde el min"
+"Dist. en Y desde min"
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
@@ -1340,7 +1340,7 @@
 
 #MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."
-"Diam.nozzl"
+"D-boquilla"
 
 #MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
