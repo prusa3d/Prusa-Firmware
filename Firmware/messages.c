@@ -131,7 +131,6 @@ const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////c=8
 const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////c=8
 const char MSG_STRICT[] PROGMEM_I1 = ISTR("Strict"); ////c=8
 const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////c=8
-const char MSG_FIRMWARE[] PROGMEM_I1 = ISTR("Firmware"); ////c=8
 const char MSG_GCODE[] PROGMEM_I1 = ISTR("Gcode"); ////c=8
 const char MSG_GCODE_DIFF_PRINTER_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different printer type. Continue?"); ////c=20 r=5
 const char MSG_GCODE_DIFF_PRINTER_CANCELLED[] PROGMEM_I1 =ISTR("G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."); ////c=20 r=8
@@ -168,6 +167,7 @@ const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////c=18
 #endif
 
 //not internationalized messages
+const char MSG_FIRMWARE[] PROGMEM_N1 = ISTR("Firmware"); ////c=8
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = ISTR("FlashAir"); ////c=8
 const char MSG_PINDA[] PROGMEM_N1 = ISTR("PINDA");////c=5
 const char WELCOME_MSG[] PROGMEM_N1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20

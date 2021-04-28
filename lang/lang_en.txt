@@ -964,9 +964,6 @@
 #MSG_FALSE_TRIGGERING c=20
 "False triggering"
 
-#MSG_FIRMWARE c=8
-"Firmware"
-
 #MSG_STRICT c=8
 "Strict"
 

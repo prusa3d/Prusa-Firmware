@@ -1286,10 +1286,6 @@
 "False triggering"
 "Falszywy alarm"
 
-#MSG_FIRMWARE c=8
-"Firmware"
-"\x00"
-
 #MSG_STRICT c=8
 "Strict"
 "Restr."
