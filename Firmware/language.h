@@ -21,8 +21,6 @@
    #define MACHINE_UUID "00000000-0000-0000-0000-000000000000"
 #endif
 
-#define MSG_FW_VERSION                   "Firmware"
-
 #if (LANG_MODE == 0) //primary language only
 #define PROGMEM_I2 __attribute__((section(".progmem0")))
 #define PROGMEM_I1 __attribute__((section(".progmem1")))

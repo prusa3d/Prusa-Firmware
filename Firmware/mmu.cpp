@@ -718,12 +718,12 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 
 			  //first three lines are used for printing multiscreen message; last line contains measured and target nozzle temperature
 			  if (screen == 0) { //screen 0
-				  lcd_display_message_fullscreen_P(_i("MMU needs user attention."));
+				  lcd_display_message_fullscreen_P(_i("MMU needs user attention."));////MSG_MMU_USER_ATTENTION c=20 r=3
 				  screen++;
 			  }
 			  else {  //screen 1
-				  if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));
-				  else lcd_display_message_fullscreen_P(_i("Fix the issue and then press button on MMU unit."));
+				  if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));////MSG_RESUME_NOZZLE_TEMP c=20 r=4
+				  else lcd_display_message_fullscreen_P(_i("Fix the issue and then press button on MMU unit."));////MSG_MMU_FIX_ISSUE c=20 r=4
 				  screen=0;
 			  }
 
@@ -1383,7 +1383,7 @@ void mmu_cut_filament(uint8_t filament_nr)
     {
         LcdUpdateDisabler disableLcdUpdate;
         lcd_clear();
-        lcd_puts_at_P(0, 1, _i("Cutting filament")); //// c=18
+        lcd_puts_at_P(0, 1, _i("Cutting filament")); ////MSG_MMU_CUTTING_FIL c=18
         lcd_print(' ');
         lcd_print(filament_nr + 1);
         mmu_filament_ramming();
@@ -1583,7 +1583,7 @@ void mmu_continue_loading(bool blocking)
             manage_response(false, true, MMU_UNLOAD_MOVE);
 
             setAllTargetHotends(0);
-            lcd_setstatuspgm(_i("MMU load failed     "));////c=20 r=1
+            lcd_setstatuspgm(_i("MMU load failed"));////MSG_MMU_LOAD_FAILED c=20
 
             if (blocking)
             {
