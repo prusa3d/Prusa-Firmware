@@ -125,7 +125,6 @@ const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=18
 const char MSG_OFF[] PROGMEM_I1 = ISTR("Off"); ////c=3
 const char MSG_ON[] PROGMEM_I1 = ISTR("On"); ////c=3
 const char MSG_NA[] PROGMEM_I1 = ISTR("N/A"); ////c=3
-const char MSG_AUTO_DEPLETE[] PROGMEM_I1 = ISTR("SpoolJoin"); ////c=13
 const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////c=9
 const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////c=8
 const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////c=8
@@ -167,6 +166,7 @@ const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////c=18
 #endif
 
 //not internationalized messages
+const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = ISTR("SpoolJoin"); ////c=13
 const char MSG_FIRMWARE[] PROGMEM_N1 = ISTR("Firmware"); ////c=8
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = ISTR("FlashAir"); ////c=8
 const char MSG_PINDA[] PROGMEM_N1 = ISTR("PINDA");////c=5
