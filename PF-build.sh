@@ -237,12 +237,12 @@ fi
 
 # Check gawk ... needed during language build
 if ! type gawk > /dev/null; then
-	if [ $TARGET_OS == "linux" ]; then
-		echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
-		echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
-		#sudo apt-get update && apt-get install gawk
-		exit 5
-	fi
+    if [ $TARGET_OS == "linux" ]; then
+        echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
+        echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
+        #sudo apt-get update && apt-get install gawk
+        exit 5
+    fi
 fi
 
 #### End prepare bash / Linux environment
@@ -299,20 +299,20 @@ fi
 # Download and extract supported Arduino IDE depending on OS
 # Windows
 if [ $TARGET_OS == "windows" ]; then
-	if [ ! -f "arduino-$ARDUINO_ENV-windows.zip" ]; then
-		echo "$(tput setaf 6)Downloading Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
-		sleep 2
-		wget https://downloads.arduino.cc/arduino-$ARDUINO_ENV-windows.zip || exit 8
-		echo "$(tput sgr 0)"
-	fi
-	if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
-		echo "$(tput setaf 6)Unzipping Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
-		sleep 2
-		unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || exit 8
-		mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
-		echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
-		echo "$(tput sgr0)"
-	fi
+    if [ ! -f "arduino-$ARDUINO_ENV-windows.zip" ]; then
+        echo "$(tput setaf 6)Downloading Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
+        sleep 2
+        wget https://downloads.arduino.cc/arduino-$ARDUINO_ENV-windows.zip || exit 8
+        echo "$(tput sgr 0)"
+    fi
+    if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
+        echo "$(tput setaf 6)Unzipping Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
+        sleep 2
+        unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || exit 8
+        mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
+        echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+        echo "$(tput sgr0)"
+    fi
 fi
 # Linux
 if [ $TARGET_OS == "linux" ]; then
