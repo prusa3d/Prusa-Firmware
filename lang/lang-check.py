@@ -115,7 +115,7 @@ def parse_txt(lang, no_warning):
             comment = src.readline().split(' ')
             #print (comment) #Debug
 
-#Check if columns and rows are defined
+            #Check if columns and rows are defined
             cols = None
             rows = None
             for item in comment[1:]:
@@ -139,7 +139,7 @@ def parse_txt(lang, no_warning):
             elif rows > 1 and cols != 20:
                 print(yellow("[W]: Multiple rows with odd number of columns on line %d" % lines))
 
-#Wrap text to 20 chars and rows
+            #Wrap text to 20 chars and rows
             source = src.readline()[:-1].strip('"')
             #print (source) #Debug
             translation = src.readline()[:-1].strip('"')
@@ -156,7 +156,6 @@ def parse_txt(lang, no_warning):
             rows_count_source = len(wrapped_source)
             wrapped_translation = wrap_text(translation, cols)
             rows_count_translation = len(wrapped_translation)
-#End wrap text
 
             # Check for potential errors in the definition
             if not no_warning:
