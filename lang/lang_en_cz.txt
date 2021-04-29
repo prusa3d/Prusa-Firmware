@@ -608,7 +608,7 @@
 
 #MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 "MK3 firmware detected on MK3S printer"
-"\x00"
+"MK3 firmware detekovan na MK3S tiskarne"
 
 #MSG_NORMAL c=7
 "Normal"
