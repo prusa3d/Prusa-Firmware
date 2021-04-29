@@ -100,7 +100,7 @@ def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
 
 
-def parse_txt(lang, no_warning):
+def parse_txt(lang, no_warning, warn_empty):
     """Parse txt file and check strings to display definition."""
     if lang == "en":
         file_path = "lang_en.txt"
@@ -171,6 +171,17 @@ def parse_txt(lang, no_warning):
                     print_wrapped(wrapped_source, rows, cols)
                     print()
 
+                # Missing translation
+                if len(translation) == 0 and (warn_empty or rows > 1):
+                    if rows == 1:
+                        print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, lines)))
+                    else:
+                        print(yellow("[W]: Empty translation on line %d" % lines))
+                        print_ruler(6, cols);
+                        print_wrapped(wrapped_source, rows, cols)
+                        print()
+
+
             # Check for translation lenght
             if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
                 print(red('[E]: Text is longer than definition on line %d: cols=%d rows=%d (rows diff=%d)'
@@ -239,10 +250,13 @@ def main():
     parser.add_argument(
         "--no-warning", action="store_true",
         help="Disable warnings")
+    parser.add_argument(
+        "--warn-empty", action="store_true",
+        help="Warn about empty translations")
 
     args = parser.parse_args()
     try:
-        parse_txt(args.lang, args.no_warning)
+        parse_txt(args.lang, args.no_warning, args.warn_empty)
         return 0
     except Exception as exc:
         print_exc()
