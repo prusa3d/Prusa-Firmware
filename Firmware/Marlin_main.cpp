@@ -5780,7 +5780,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       starpos = (strchr(strchr_pointer + 4,'*'));
 	  if(starpos!=NULL)
         *(starpos)='\0';
-      card.openFileReadFilteredGcode(strchr_pointer + 4);
+      card.openFileReadFilteredGcode(strchr_pointer + 4, true);
       break;
 
     /*!
