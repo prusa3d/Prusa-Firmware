@@ -43,9 +43,6 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 
-#MSG_AUTO_DEPLETE c=13
-"SpoolJoin"
-
 #MSG_AUTO_HOME c=18
 "Auto home"
 
