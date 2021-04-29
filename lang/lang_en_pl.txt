@@ -216,7 +216,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Od spolecznosci"
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
