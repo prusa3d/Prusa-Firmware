@@ -1020,7 +1020,7 @@
 
 #MSG_RUNOUTS c=7
 "Runouts"
-"\x00"
+"Falla"
 
 #MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
@@ -1364,7 +1364,7 @@
 
 #MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"\x00"
+"%s nivel esperado"
 
 #MSG_RENAME c=18
 "Rename"
