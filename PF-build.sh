@@ -504,7 +504,7 @@ if [ "$help_flag" == "1" ] ; then
     echo "$(tput setaf 2)-h$(tput sgr0) Help"
     echo 
     echo "Brief USAGE:"
-    echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o] [-c] [-p] [-n] [-m]"
+    echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o] [-c] [-p] [-n] [-m] [-g]"
     echo
     echo "Example:"
     echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
