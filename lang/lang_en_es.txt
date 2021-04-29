@@ -172,7 +172,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Verif. archivo"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
