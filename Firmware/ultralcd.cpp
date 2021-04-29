@@ -8568,7 +8568,9 @@ static void menu_action_sdfile(const char* filename)
 	  }
   }
   
-  if (!check_file(filename)) {
+  //filename is just a pointer to card.filename, which changes everytime you try to open a file by filename. So you can't use filename directly
+  //to open a file. Instead, the cached filename in cmd is used instead as that one is static for the whole lifetime of this function.
+  if (!check_file(cmd + 4)) {
 	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=3
 	  lcd_update_enable(true);
   }
