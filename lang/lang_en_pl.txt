@@ -2,7 +2,7 @@
 " 0.3 or older"
 " 0.3 lub starszy"
 
-# c=18
+#MSG_FS_V_03_OR_OLDER c=18
 "FS v0.3 or older"
 "FS 0.3 lub starszy"
 
@@ -10,21 +10,13 @@
 " 0.4 or newer"
 " 0.4 lub nowszy"
 
-# c=18
+#MSG_FS_V_04_OR_NEWER c=18
 "FS v0.4 or newer"
 "FS 0.4 lub nowszy"
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
 "Stan nieznany"
-
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
-" of 4"
-" z 4"
-
-#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
-" of 9"
-" z 9"
 
 #MSG_MEASURED_OFFSET c=20
 "[0;0] point offset"
@@ -43,8 +35,8 @@
 "Ustawianie Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
-"Wszystko OK "
+"All correct"
+"Wszystko OK"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -65,10 +57,6 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 "Obydwa konce osi sa na szczycie?"
-
-#MSG_AUTO_DEPLETE c=13
-"SpoolJoin"
-"\x00"
 
 #MSG_AUTO_HOME c=18
 "Auto home"
@@ -95,8 +83,8 @@
 "Os"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
-"Stol / Grzanie"
+"Bed/Heater"
+"Stol/Grzanie"
 
 #MSG_BED_DONE c=20
 "Bed done"
@@ -111,7 +99,7 @@
 "Korekta stolu"
 
 #MSG_BELTTEST c=18
-"Belt test        "
+"Belt test"
 "Test paskow"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
@@ -184,7 +172,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Sprawdzanie pliku"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -228,7 +216,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Od spolecznosci"
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
@@ -390,10 +378,6 @@
 "Flow"
 "Przeplyw"
 
-#MSG_PRUSA3D_FORUM c=18
-"forum.prusa3d.com"
-"\x00"
-
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
 "Przedni went. druku?"
@@ -404,7 +388,7 @@
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
-"Przedni/lewy wentylator"
+"Przedni/lewy wentyl."
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
@@ -426,10 +410,6 @@
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Czesc, jestem Twoja drukarka Original Prusa i3. Czy potrzebujesz pomocy z ustawieniem?"
 
-#MSG_PRUSA3D_HOWTO c=18
-"howto.prusa3d.com"
-"\x00"
-
 #MSG_FILAMENTCHANGE c=18
 "Change filament"
 "Wymiana filamentu"
@@ -443,7 +423,7 @@
 "Wymiana ok?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
+"Checking bed"
 "Kontrola stolu"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
@@ -451,11 +431,11 @@
 "Kontrola krancowek"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
+"Checking hotend"
 "Kontrola hotendu"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 "Kontrola czujnikow"
 
 #MSG_CHECKING_X c=20
@@ -558,6 +538,10 @@
 "Loading filament"
 "Laduje filament"
 
+#MSG_ITERATION c=12
+"Iteration"
+"Iteracja"
+
 #MSG_LOOSE_PULLEY c=20
 "Loose pulley"
 "Luzne kolo pasowe"
@@ -598,21 +582,21 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Wznawiam nagrzewanie..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
-"Zmierzony skos"
+"Zmierz. skos"
 
 #MSG_MMU_FAILS c=15
 "MMU fails"
 "Bledy MMU"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
+"MMU load failed"
 "Blad ladowania MMU"
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
-"Bledy ladow. MMU"
+"Bledy lad. MMU"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -628,7 +612,7 @@
 
 #MSG_NORMAL c=7
 "Normal"
-"Normalni"
+"Normal"
 
 #MSG_SILENT c=7
 "Silent"
@@ -640,7 +624,7 @@
 
 #MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
-"Zaniki zasil. MMU"
+"Zaniki zas. MMU"
 
 #MSG_STEALTH c=7
 "Stealth"
@@ -652,7 +636,7 @@
 
 #MSG_HIGH_POWER c=10
 "High power"
-"Wysoka wyd."
+"Wysoka wyd"
 
 #MSG_MMU_CONNECTED c=18
 "MMU2 connected"
@@ -696,7 +680,7 @@
 
 #MSG_SELFTEST_NOTCONNECTED c=20
 "Not connected"
-"Nie podlaczono "
+"Nie podlaczono"
 
 #MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 "New firmware version available:"
@@ -732,10 +716,10 @@
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
-"Wstrzymanie wydruku"
+"Wstrzym. wydruku"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
+"PID cal."
 "Kalibracja PID"
 
 #MSG_PID_FINISHED c=20
@@ -763,8 +747,8 @@
 "Dla prawidlowej kalibracji nalezy oczyscic dysze. Potwierdz guzikiem."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
-"Sprawdz :"
+"Please check:"
+"Sprawdz:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
@@ -822,13 +806,9 @@
 "Preheating nozzle. Please wait."
 "Nagrzewanie dyszy. Prosze czekac."
 
-#MSG_PINDA c=5
-"PINDA"
-"\x00"
-
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
-"Prosze zaktualizowac."
+"Prosze zaktualizowac"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press the knob to preheat nozzle and continue."
@@ -840,7 +820,7 @@
 
 #MSG_POWER_FAILURES c=15
 "Power failures"
-"Zaniki zasilania"
+"Zaniki zasil."
 
 #MSG_PRINT_ABORTED c=20
 "Print aborted"
@@ -894,10 +874,6 @@
 "Please load filament first."
 "Najpierw zaladuj filament."
 
-#MSG_PRUSA3D c=18
-"prusa3d.com"
-"\x00"
-
 #MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 "Tyl [um]"
@@ -911,16 +887,12 @@
 "Sprawdz polaczenie czujnika IR, rozladuj filament, jesli zaladowany."
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
-"Wznawianie wydruku  "
+"Recovering print"
+"Wznawianie wydruku"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
 "Wyciagnij poprzedni filament i nacisnij pokretlo aby zaladowac nowy."
-
-# c=20
-"Prusa i3 MK3S OK."
-"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=18
 "Reset XYZ calibr."
@@ -954,17 +926,13 @@
 "SD card"
 "Karta SD"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
-"FlashAir"
-"\x00"
-
 #MSG_RIGHT c=10
 "Right"
 "Prawa"
 
-#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=2
+#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
 "Searching bed calibration point"
-"Szukam punktu kalibracyjnego na stole"
+"Szukam punktu kalib. na stole"
 
 #MSG_LANGUAGE_SELECT c=18
 "Select language"
@@ -975,19 +943,19 @@
 "Selftest OK"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
+"Self test start"
 "Selftest startuje"
 
 #MSG_SELFTEST c=18
-"Selftest         "
-"Selftest "
+"Selftest"
+"\x00"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
+"Selftest error!"
 "Blad selftest!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
+"Selftest failed"
 "Selftest nieudany"
 
 #MSG_FORCE_SELFTEST c=20 r=8
@@ -998,21 +966,9 @@
 "Select nozzle preheat temperature which matches your material."
 "Wybierz temperature grzania dyszy odpowiednia dla materialu."
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Ustaw temperature:"
-
-# c=20
-"Prusa i3 MK2.5 OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK2.5S OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK3 OK."
-"\x00"
 
 #MSG_SETTINGS c=18
 "Settings"
@@ -1028,7 +984,7 @@
 
 #MSG_SORT c=7
 "Sort"
-"Sortowanie"
+"Sort."
 
 #MSG_NONE c=8
 "None"
@@ -1038,9 +994,9 @@
 "Time"
 "Czas"
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
-"Znaczny skos:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Znaczny skos"
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1054,9 +1010,9 @@
 "Loud"
 "Glosny"
 
-#MSG_SLIGHT_SKEW c=13
-"Slight skew:"
-"Lekki skos:"
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
+"Lekki skos"
 
 #MSG_SOUND c=7
 "Sound"
@@ -1087,7 +1043,7 @@
 "Potrzebna jest stabilna temperatura otoczenia 21-26C i stabilne podloze."
 
 #MSG_STATISTICS c=18
-"Statistics  "
+"Statistics"
 "Statystyki"
 
 #MSG_STOP_PRINT c=18
@@ -1095,7 +1051,7 @@
 "Przerwanie druku"
 
 #MSG_STOPPED c=20
-"STOPPED. "
+"STOPPED."
 "ZATRZYMANO."
 
 #MSG_SUPPORT c=18
@@ -1172,7 +1128,7 @@
 
 #MSG_UNLOAD_FILAMENT c=16
 "Unload filament"
-"Rozladowanie fil."
+"Rozladowanie fil"
 
 #MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
@@ -1196,7 +1152,7 @@
 
 #MSG_USERWAIT c=20
 "Wait for user..."
-"Czekam na uzytkownika..."
+"Czekam na uzytk. ..."
 
 #MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
@@ -1326,14 +1282,6 @@
 "False triggering"
 "Falszywy alarm"
 
-#MSG_FINDA c=5
-"FINDA"
-"\x00"
-
-#MSG_FIRMWARE c=8
-"Firmware"
-"\x00"
-
 #MSG_STRICT c=8
 "Strict"
 "Restr."
@@ -1363,7 +1311,7 @@
 "Tryb MMU"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
+"Mode change in progress..."
 "Trwa zmiana trybu..."
 
 #MSG_MODEL c=8
@@ -1414,7 +1362,7 @@
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Srednica dyszy rozni sie od tej w G-code. Sprawdz ustawienia. Druk anulowany."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
 "Oczekiwano wersji %s"
 
@@ -1452,4 +1400,4 @@
 
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"
-"\x00"
+"Adr. IP drukarki:"

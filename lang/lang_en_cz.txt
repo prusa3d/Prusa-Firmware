@@ -2,7 +2,7 @@
 " 0.3 or older"
 " 0.3 nebo starsi"
 
-# c=18
+#MSG_FS_V_03_OR_OLDER c=18
 "FS v0.3 or older"
 "FS 0.3 nebo starsi"
 
@@ -10,21 +10,13 @@
 " 0.4 or newer"
 " 0.4 nebo novejsi"
 
-# c=18
+#MSG_FS_V_04_OR_NEWER c=18
 "FS v0.4 or newer"
 "FS 0.4 a novejsi"
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
 "neznamy stav"
-
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
-" of 4"
-" z 4"
-
-#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
-" of 9"
-" z 9"
 
 #MSG_MEASURED_OFFSET c=20
 "[0;0] point offset"
@@ -43,8 +35,8 @@
 "Doladeni Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
-"Vse OK "
+"All correct"
+"Vse OK"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -65,10 +57,6 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 "Dojely oba Z voziky k~hornimu dorazu?"
-
-#MSG_AUTO_DEPLETE c=13
-"SpoolJoin"
-"\x00"
 
 #MSG_AUTO_HOME c=18
 "Auto home"
@@ -95,8 +83,8 @@
 "Osa"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
-"Podlozka / Topeni"
+"Bed/Heater"
+"Podlozka/Topeni"
 
 #MSG_BED_DONE c=20
 "Bed done"
@@ -111,8 +99,8 @@
 "Korekce podlozky"
 
 #MSG_BELTTEST c=18
-"Belt test        "
-"Test remenu      "
+"Belt test"
+"Test remenu"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
@@ -184,7 +172,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Kontroluji soubor"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -228,7 +216,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Komunitni prekl."
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
@@ -272,7 +260,7 @@
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
-"Chyba - Doslo k prepisu staticke pameti!"
+"Chyba - Doslo k prepisu staticke pameti"
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
@@ -390,10 +378,6 @@
 "Flow"
 "Prutok"
 
-#MSG_PRUSA3D_FORUM c=18
-"forum.prusa3d.com"
-"\x00"
-
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
 "Predni tiskovy vent?"
@@ -426,10 +410,6 @@
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Dobry den, jsem vase tiskarna Original Prusa i3. Chcete abych Vas provedla kalibracnim procesem?"
 
-#MSG_PRUSA3D_HOWTO c=18
-"howto.prusa3d.com"
-"\x00"
-
 #MSG_FILAMENTCHANGE c=18
 "Change filament"
 "Vymenit filament"
@@ -443,7 +423,7 @@
 "Vymena ok?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
+"Checking bed"
 "Kontrola podlozky"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
@@ -451,11 +431,11 @@
 "Kontrola endstopu"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
-"Kontrola hotend "
+"Checking hotend"
+"Kontrola hotend"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 "Kontrola senzoru"
 
 #MSG_CHECKING_X c=20
@@ -558,6 +538,10 @@
 "Loading filament"
 "Zavadeni filamentu"
 
+#MSG_ITERATION c=12
+"Iteration"
+"Opakovani"
+
 #MSG_LOOSE_PULLEY c=20
 "Loose pulley"
 "Uvolnena remenicka"
@@ -576,11 +560,11 @@
 
 #MSG_BL_HIGH c=12
 "Level Bright"
-"\x00"
+"Normalni"
 
 #MSG_BL_LOW c=12
 "Level Dimmed"
-"\x00"
+"Ztlumeny"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 "Measuring reference height of calibration point"
@@ -598,7 +582,7 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Pokracuji v nahrivani..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
 "Merene zkos."
 
@@ -607,7 +591,7 @@
 "Selhani MMU"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
+"MMU load failed"
 "Zavedeni MMU selhalo"
 
 #MSG_MMU_LOAD_FAILS c=15
@@ -624,7 +608,7 @@
 
 #MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 "MK3 firmware detected on MK3S printer"
-"\x00"
+"MK3 firmware detekovan na MK3S tiskarne"
 
 #MSG_NORMAL c=7
 "Normal"
@@ -696,7 +680,7 @@
 
 #MSG_SELFTEST_NOTCONNECTED c=20
 "Not connected"
-"Nezapojeno "
+"Nezapojeno"
 
 #MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 "New firmware version available:"
@@ -735,8 +719,8 @@
 "Pozastavit tisk"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
-"PID kal. "
+"PID cal."
+"PID kal."
 
 #MSG_PID_FINISHED c=20
 "PID cal. finished"
@@ -763,8 +747,8 @@
 "Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
-"Zkontrolujte :"
+"Please check:"
+"Zkontrolujte:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
@@ -822,10 +806,6 @@
 "Preheating nozzle. Please wait."
 "Predehrev trysky. Prosim cekejte."
 
-#MSG_PINDA c=5
-"PINDA"
-"\x00"
-
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
 "Prosim aktualizujte."
@@ -836,7 +816,7 @@
 
 #MSG_FS_PAUSE c=5
 "Pause"
-"\x00"
+"Pauza"
 
 #MSG_POWER_FAILURES c=15
 "Power failures"
@@ -894,10 +874,6 @@
 "Please load filament first."
 "Prosim nejdriv zavedte filament"
 
-#MSG_PRUSA3D c=18
-"prusa3d.com"
-"\x00"
-
 #MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 "Vzadu [um]"
@@ -911,16 +887,12 @@
 "Prosim zkontrolujte zapojeni IR senzoru a vyjmuty filament"
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
-"Obnovovani tisku    "
+"Recovering print"
+"Obnovovani tisku"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
 "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
-
-# c=20
-"Prusa i3 MK3S OK."
-"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=18
 "Reset XYZ calibr."
@@ -952,17 +924,13 @@
 
 #MSG_SD_CARD c=8
 "SD card"
-"\x00"
-
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
-"FlashAir"
-"\x00"
+"SD karta"
 
 #MSG_RIGHT c=10
 "Right"
 "Vpravo"
 
-#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=2
+#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
 "Searching bed calibration point"
 "Hledam kalibracni bod podlozky"
 
@@ -975,20 +943,20 @@
 "\x00"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
-"Self test start "
+"Self test start"
+"Self test start"
 
 #MSG_SELFTEST c=18
-"Selftest         "
-"Selftest "
+"Selftest"
+"Selftest"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
+"Selftest error!"
 "Chyba Selftestu!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
-"Selftest selhal "
+"Selftest failed"
+"Selftest selhal"
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -998,21 +966,9 @@
 "Select nozzle preheat temperature which matches your material."
 "Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Nastavte teplotu:"
-
-# c=20
-"Prusa i3 MK2.5 OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK2.5S OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK3 OK."
-"\x00"
 
 #MSG_SETTINGS c=18
 "Settings"
@@ -1038,9 +994,9 @@
 "Time"
 "Cas"
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
-"Tezke zkos.:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Tezke zkos."
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1054,7 +1010,7 @@
 "Loud"
 "Hlasity"
 
-#MSG_SLIGHT_SKEW c=13
+#MSG_SLIGHT_SKEW c=14
 "Slight skew:"
 "Lehke zkos.:"
 
@@ -1087,15 +1043,15 @@
 "Je vyzadovana stabilni pokojova teplota 21-26C a pevna podlozka."
 
 #MSG_STATISTICS c=18
-"Statistics  "
-"Statistika "
+"Statistics"
+"Statistika"
 
 #MSG_STOP_PRINT c=18
 "Stop print"
 "Zastavit tisk"
 
 #MSG_STOPPED c=20
-"STOPPED. "
+"STOPPED."
 "ZASTAVENO."
 
 #MSG_SUPPORT c=18
@@ -1326,14 +1282,6 @@
 "False triggering"
 "Falesne spusteni"
 
-#MSG_FINDA c=5
-"FINDA"
-"\x00"
-
-#MSG_FIRMWARE c=8
-"Firmware"
-"\x00"
-
 #MSG_STRICT c=8
 "Strict"
 "Prisne"
@@ -1363,7 +1311,7 @@
 "MMU mod"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
+"Mode change in progress..."
 "Probiha zmena modu..."
 
 #MSG_MODEL c=8
@@ -1414,7 +1362,7 @@
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. Tisk zrusen."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
 "\x00"
 
@@ -1452,4 +1400,4 @@
 
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"
-"\x00"
+"IP adr. tiskarny:"

@@ -2,7 +2,7 @@
 " 0.3 or older"
 " 0.3 of ouder"
 
-# c=18
+#MSG_FS_V_03_OR_OLDER c=18
 "FS v0.3 or older"
 "FS 0.3 of ouder"
 
@@ -10,21 +10,13 @@
 " 0.4 or newer"
 " 0.4 of nieuwer"
 
-# c=18
+#MSG_FS_V_04_OR_NEWER c=18
 "FS v0.4 or newer"
 "FS 0.4 of nieuwer"
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
 "Status onbekend"
-
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
-" of 4"
-" van 4"
-
-#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
-" of 9"
-" van 9"
 
 #MSG_MEASURED_OFFSET c=20
 "[0;0] point offset"
@@ -43,8 +35,8 @@
 "Z is ingesteld:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
-"Allemaal goed    "
+"All correct"
+"Allemaal goed"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -65,10 +57,6 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 "Zijn beide Z wagen heelemaal boven?"
-
-#MSG_AUTO_DEPLETE c=13
-"SpoolJoin"
-"\x00"
 
 #MSG_AUTO_HOME c=18
 "Auto home"
@@ -95,8 +83,8 @@
 "As"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
-"Bed / Verwarming"
+"Bed/Heater"
+"Bed/Verwarming"
 
 #MSG_BED_DONE c=20
 "Bed done"
@@ -111,8 +99,8 @@
 "Bed niveau correct"
 
 #MSG_BELTTEST c=18
-"Belt test        "
-"Riemtest         "
+"Belt test"
+"Riemtest"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
@@ -184,7 +172,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Bestand controle"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -228,7 +216,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Van de community"
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
@@ -240,7 +228,7 @@
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-"\x00"
+"Door."
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
@@ -390,10 +378,6 @@
 "Flow"
 "Stromen"
 
-#MSG_PRUSA3D_FORUM c=18
-"forum.prusa3d.com"
-"\x00"
-
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
 "Voorzijde fan?"
@@ -426,10 +410,6 @@
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Hallo, ik ben uw Original Prusa i3 printer. Zullen we beginnen met het installatieproces?"
 
-#MSG_PRUSA3D_HOWTO c=18
-"howto.prusa3d.com"
-"\x00"
-
 #MSG_FILAMENTCHANGE c=18
 "Change filament"
 "Wissel filament"
@@ -443,19 +423,19 @@
 "Wissel ok?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
-"Controleer bed   "
+"Checking bed"
+"Controleer bed"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
 "Checking endstops"
 "Controleer endstops"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
+"Checking hotend"
 "Controleer hotend"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 "Controleer sensors"
 
 #MSG_CHECKING_X c=20
@@ -558,6 +538,10 @@
 "Loading filament"
 "Laden filament"
 
+#MSG_ITERATION c=12
+"Iteration"
+"Iteratie"
+
 #MSG_LOOSE_PULLEY c=20
 "Loose pulley"
 "Losse riemschijf"
@@ -598,7 +582,7 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Temperatuur hervatten..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
 "Scheefheid"
 
@@ -607,8 +591,8 @@
 "MMU fout"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
-"MMU laden mislukt   "
+"MMU load failed"
+"MMU laden mislukt"
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
@@ -644,7 +628,7 @@
 
 #MSG_STEALTH c=7
 "Stealth"
-"\x00"
+"Stil"
 
 #MSG_AUTO_POWER c=10
 "Auto power"
@@ -735,8 +719,8 @@
 "Print pauzeren"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
-"PID kal.           "
+"PID cal."
+"PID kal."
 
 #MSG_PID_FINISHED c=20
 "PID cal. finished"
@@ -763,7 +747,7 @@
 "Reinig de tuit voor de kalibratie. Druk op de knop wanneer gereed."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
+"Please check:"
 "Controleer aub:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
@@ -821,10 +805,6 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 "Opwarmen van de tuit. Wacht aub."
-
-#MSG_PINDA c=5
-"PINDA"
-"\x00"
 
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
@@ -894,10 +874,6 @@
 "Please load filament first."
 "Laad a.u.b. eerst filament."
 
-#MSG_PRUSA3D c=18
-"prusa3d.com"
-"\x00"
-
 #MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 "Achterkant[um]"
@@ -911,16 +887,12 @@
 "AUB IR sensor ver- binding kontrolleren , verwijder filament indien aanwezig."
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
-"Print herstellen    "
+"Recovering print"
+"Print herstellen"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
 "Verwijder de oude filament en druk op de knop om nieuwe filament te laden."
-
-# c=20
-"Prusa i3 MK3S OK."
-"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=18
 "Reset XYZ calibr."
@@ -954,15 +926,11 @@
 "SD card"
 "SD kaart"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
-"FlashAir"
-"\x00"
-
 #MSG_RIGHT c=10
 "Right"
 "Rechts"
 
-#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=2
+#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
 "Searching bed calibration point"
 "Zoeken bed kalibratiepunt"
 
@@ -975,20 +943,20 @@
 "Zelftest  OK"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
-"Zelftest start   "
+"Self test start"
+"Zelftest start"
 
 #MSG_SELFTEST c=18
-"Selftest         "
-"Zelftest         "
+"Selftest"
+"Zelftest"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
-"Zelftest fout  !"
+"Selftest error!"
+"Zelftest fout!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
-"Zelftest mislukt "
+"Selftest failed"
+"Zelftest mislukt"
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -998,21 +966,9 @@
 "Select nozzle preheat temperature which matches your material."
 "Selecteer de voorverwarmingstemperatuur van de tuit die overeenkomt met uw materiaal."
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Temp. instellen:"
-
-# c=20
-"Prusa i3 MK2.5 OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK2.5S OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK3 OK."
-"\x00"
 
 #MSG_SETTINGS c=18
 "Settings"
@@ -1038,9 +994,9 @@
 "Time"
 "Tijd"
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
-"Erg scheef:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Erg scheef"
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -1054,9 +1010,9 @@
 "Loud"
 "Hard"
 
-#MSG_SLIGHT_SKEW c=13
-"Slight skew:"
-"Iets scheef:"
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
+"Beetje scheef"
 
 #MSG_SOUND c=7
 "Sound"
@@ -1064,7 +1020,7 @@
 
 #MSG_RUNOUTS c=7
 "Runouts"
-"\x00"
+"Fouten"
 
 #MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
@@ -1087,7 +1043,7 @@
 "En stabiele 21-26C omgevingstemperatuur is nodig,een stevige stand is vereist."
 
 #MSG_STATISTICS c=18
-"Statistics  "
+"Statistics"
 "Statistieken"
 
 #MSG_STOP_PRINT c=18
@@ -1095,8 +1051,8 @@
 "Print stoppen"
 
 #MSG_STOPPED c=20
-"STOPPED. "
-"GESTOPT. "
+"STOPPED."
+"GESTOPT."
 
 #MSG_SUPPORT c=18
 "Support"
@@ -1148,7 +1104,7 @@
 
 #MSG_TOTAL_FILAMENT c=19
 "Total filament"
-"Totaal fil.   "
+"Totaal fil."
 
 #MSG_TOTAL_PRINT_TIME c=19
 "Total print time"
@@ -1326,21 +1282,13 @@
 "False triggering"
 "Valse triggering"
 
-#MSG_FINDA c=5
-"FINDA"
-"\x00"
-
-#MSG_FIRMWARE c=8
-"Firmware"
-"\x00"
-
 #MSG_STRICT c=8
 "Strict"
 "Strikt"
 
 #MSG_WARN c=8
 "Warn"
-"\x00"
+"Waarsch."
 
 #MSG_HW_SETUP c=18
 "HW Setup"
@@ -1363,7 +1311,7 @@
 "MMU Mod"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
+"Mode change in progress..."
 "Moduswijziging bezig..."
 
 #MSG_MODEL c=8
@@ -1414,9 +1362,9 @@
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "De diameter van de tuit van de printer verschilt van de G-code. Controleer de waarde in de instellingen. Afdrukken geannuleerd."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"\x00"
+"%s niveau verwacht"
 
 #MSG_RENAME c=18
 "Rename"
@@ -1436,7 +1384,7 @@
 
 #MSG_SOUND_BLIND c=7
 "Assist"
-"\x00"
+"Assist."
 
 #MSG_STEEL_SHEET c=18
 "Steel sheets"
@@ -1448,8 +1396,8 @@
 
 #MSG_Z_PROBE_NR c=14
 "Z-probe nr."
-"\x00"
+"Z-test nr."
 
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"
-"\x00"
+"Printer IP-adres:"

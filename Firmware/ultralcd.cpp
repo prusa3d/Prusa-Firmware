@@ -1320,7 +1320,7 @@ void lcd_commands()
 			strcat(cmd1, ftostr3(pid_temp));
 			// setting the correct target temperature (for visualization) is done in PID_autotune
 			enquecommand(cmd1);
-			lcd_setstatuspgm(_i("PID cal.           "));////MSG_PID_RUNNING c=20
+			lcd_setstatuspgm(_i("PID cal."));////MSG_PID_RUNNING c=20
 			lcd_commands_step = 2;
 		}
 		if (lcd_commands_step == 2 && pid_tuning_finished) { //saving to eeprom
@@ -1916,9 +1916,9 @@ static void lcd_support_menu()
       MENU_ITEM_BACK_P(PSTR("FW - " FW_version));
   }*/
       
-  MENU_ITEM_BACK_P(_i("prusa3d.com"));////MSG_PRUSA3D c=18
-  MENU_ITEM_BACK_P(_i("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=18
-  MENU_ITEM_BACK_P(_i("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO c=18
+  MENU_ITEM_BACK_P(_n("prusa3d.com"));////MSG_PRUSA3D c=18
+  MENU_ITEM_BACK_P(_n("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=18
+  MENU_ITEM_BACK_P(_n("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO c=18
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR(FILAMENT_SIZE));
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
@@ -2237,7 +2237,6 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                 // handled earlier
                 break;
             }
-            lcd_puts_at_P(0, 3, _T(MSG_CANCEL)); ////MSG_CANCEL
         }
 
         lcd_set_cursor(0, 0);
@@ -2745,8 +2744,8 @@ void lcd_move_e()
 //! |01234567890123456789|
 //! |Y distance from min |	MSG_Y_DIST_FROM_MIN
 //! | --------------     |	STR_SEPARATOR
-//! |Left:       00.00mm |	MSG_LEFT c=10, c=8
-//! |Right:      00.00mm |	MSG_RIGHT c=10, c=8
+//! |Left:        00.00mm|	MSG_LEFT c=10, c=8
+//! |Right:       00.00mm|	MSG_RIGHT c=10, c=8
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -2786,10 +2785,10 @@ float _deg(float rad)
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Measured skew: 0.00D|	MSG_MEASURED_SKEW, c=4
+//! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14, c=4
 //! | --------------     |	STR_SEPARATOR
-//! |Slight skew:   0.12D|	MSG_SLIGHT_SKEW, c=4
-//! |Severe skew:   0.25D|	MSG_SEVERE_SKEW, c=4
+//! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14, c=4
+//! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14, c=4
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
 //! @endcode
@@ -2799,15 +2798,15 @@ static void lcd_menu_xyz_skew()
     float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
 	lcd_home();
 	lcd_printf_P(_N(
-	  "%S:\n"
+	  "%-14.14S:\n"
 	  "%S\n"
-	  "%-15.15S%3.2f\x01\n"
-	  "%-15.15S%3.2f\x01"
+	  "%-14.14S:%3.2f\x01\n"
+	  "%-14.14S:%3.2f\x01"
 	 ),
-	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=13
+	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
 	 separator,
-	 _i("Slight skew:"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=13, c=4
-	 _i("Severe skew:"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=13, c=4
+	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14, c=4
+	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14, c=4
 	);
 	if (angleDiff < 100){
 		lcd_set_cursor(15,0);
@@ -2825,8 +2824,8 @@ static void lcd_menu_xyz_skew()
 //! |01234567890123456789|
 //! |[0;0] point offset  |	MSG_MEASURED_OFFSET c=20
 //! | --------------     |	STR_SEPARATOR
-//! |X:          000.00mm|	c=10
-//! |Y:          000.00mm|	c=10
+//! |X            00.00mm|	c=10
+//! |Y            00.00mm|	c=10
 //! ----------------------
 //! @endcode
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
@@ -2844,9 +2843,9 @@ static void lcd_menu_xyz_offset()
 
     for (uint_least8_t i = 0; i < 2; i++)
     {
-        lcd_set_cursor((cntr[i] < 0) ? 10 : 11, i+2);
+        lcd_set_cursor((cntr[i] < 0) ? 13 : 14, i+2);
         lcd_print(cntr[i]);
-        lcd_puts_at_P(16, i + 2, PSTR("mm"));
+        lcd_puts_at_P(18, i + 2, PSTR("mm"));
     }
     menu_back_if_clicked();
 }
@@ -3045,7 +3044,7 @@ void lcd_adjust_bed(void)
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! | Set temperature:   |	MSG_SET_TEMPERATURE
+//! |Set temperature:    |	MSG_SET_TEMPERATURE c=20
 //! |                    |
 //! | 210                |
 //! |                    |
@@ -3054,7 +3053,7 @@ void lcd_adjust_bed(void)
 void pid_extruder()
 {
 	lcd_clear();
-	lcd_puts_at_P(1, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=19
+	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE
 	pid_temp += int(lcd_encoder);
 	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
 	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
@@ -3774,7 +3773,7 @@ static void lcd_show_sensors_state()
 	
 	if (mmu_enabled == true)
 	{
-		lcd_puts_at_P(10, 0, _i("FINDA"));////MSG_FINDA c=5
+		lcd_puts_at_P(10, 0, _n("FINDA"));////MSG_FINDA c=5
 		lcd_set_cursor(LCD_WIDTH - 3, 0);
 		lcd_print_state(finda_state);
 	}
@@ -4285,7 +4284,7 @@ static void lcd_silent_mode_set() {
 	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
-  lcd_display_message_fullscreen_P(_i("Mode change in progress ..."));////MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
+  lcd_display_message_fullscreen_P(_i("Mode change in progress..."));////MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
   // Wait until the planner queue is drained and the stepper routine achieves
   // an idle state.
   st_synchronize();
@@ -5697,9 +5696,9 @@ static void lcd_calibration_menu()
     }
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 #ifdef TMC2130
-	MENU_ITEM_FUNCTION_P(_i("Belt test        "), lcd_belttest_v);////MSG_BELTTEST c=18
+	MENU_ITEM_FUNCTION_P(_i("Belt test"), lcd_belttest_v);////MSG_BELTTEST c=18
 #endif //TMC2130
-	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST c=18
+	MENU_ITEM_FUNCTION_P(_i("Selftest"), lcd_selftest_v);////MSG_SELFTEST c=18
 #ifdef MK1BP
     // MK1
     // "Calibrate Z"
@@ -6000,7 +5999,7 @@ char reset_menu() {
     int8_t enc_dif = 0;
 	char cursor_pos = 0;
 
-    const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("All Data"), PSTR("Service prep")
+    const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("Service prep"), PSTR("All Data")
 #ifdef SNMM
     , PSTR("Bowden length")
 #endif
@@ -6666,7 +6665,7 @@ static void lcd_main_menu()
     }
 
     if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal)) {
-        MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS c=18
+        MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
     }
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
@@ -7385,7 +7384,7 @@ bool lcd_selftest()
 #endif //IR_SENSOR_ANALOG
 	lcd_wait_for_cool_down();
 	lcd_clear();
-	lcd_puts_at_P(0, 0, _i("Self test start  "));////MSG_SELFTEST_START c=20
+	lcd_puts_at_P(0, 0, _i("Self test start"));////MSG_SELFTEST_START c=20
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
@@ -8059,8 +8058,8 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 
 	lcd_clear();
 
-	lcd_puts_at_P(0, 0, _i("Selftest error !"));////MSG_SELFTEST_ERROR c=20
-	lcd_puts_at_P(0, 1, _i("Please check :"));////MSG_SELFTEST_PLEASECHECK c=20
+	lcd_puts_at_P(0, 0, _i("Selftest error!"));////MSG_SELFTEST_ERROR c=20
+	lcd_puts_at_P(0, 1, _i("Please check:"));////MSG_SELFTEST_PLEASECHECK c=20
 
 	switch (testError)
 	{
@@ -8069,7 +8068,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_puts_at_P(0, 3, _i("Not connected"));////MSG_SELFTEST_NOTCONNECTED c=20
 		break;
 	case TestError::Bed:
-		lcd_puts_at_P(0, 2, _i("Bed / Heater"));////MSG_SELFTEST_BEDHEATER c=20
+		lcd_puts_at_P(0, 2, _i("Bed/Heater"));////MSG_SELFTEST_BEDHEATER c=20
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_WIRINGERROR));
 		break;
 	case TestError::Endstops:
@@ -8133,7 +8132,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 	case TestError::FsensorLevel:
           lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
           lcd_set_cursor(0, 3);
-          lcd_printf_P(_i("%s level expected"),_error_1);////c=20
+          lcd_printf_P(_i("%s level expected"),_error_1);////MSG_SELFTEST_FS_LEVEL c=20
           break;
 	}
 
@@ -8425,10 +8424,10 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis"));////MSG_SELFTEST_CHECK_Z c=20
 	if (screen == TestScreen::Bed) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
 	if (screen == TestScreen::Hotend
-	    || screen == TestScreen::HotendOk) lcd_puts_P(_i("Checking hotend  "));////MSG_SELFTEST_CHECK_HOTEND c=20
+	    || screen == TestScreen::HotendOk) lcd_puts_P(_i("Checking hotend"));////MSG_SELFTEST_CHECK_HOTEND c=20
 	if (screen == TestScreen::Fsensor) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
 	if (screen == TestScreen::FsensorOk) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
-	if (screen == TestScreen::AllCorrect) lcd_puts_P(_i("All correct      "));////MSG_SELFTEST_CHECK_ALLCORRECT c=20
+	if (screen == TestScreen::AllCorrect) lcd_puts_P(_i("All correct"));////MSG_SELFTEST_CHECK_ALLCORRECT c=20
 	if (screen == TestScreen::Failed) lcd_puts_P(_T(MSG_SELFTEST_FAILED));
 	if (screen == TestScreen::Home) lcd_puts_P(_i("Calibrating home"));////MSG_CALIBRATING_HOME c=20
 
@@ -8569,7 +8568,9 @@ static void menu_action_sdfile(const char* filename)
 	  }
   }
   
-  if (!check_file(filename)) {
+  //filename is just a pointer to card.filename, which changes everytime you try to open a file by filename. So you can't use filename directly
+  //to open a file. Instead, the cached filename in cmd is used as that one is static for the whole lifetime of this function.
+  if (!check_file(cmd + 4)) {
 	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=3
 	  lcd_update_enable(true);
   }

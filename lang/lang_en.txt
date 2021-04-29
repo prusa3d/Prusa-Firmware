@@ -1,23 +1,17 @@
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 
-# c=18
+#MSG_FS_V_03_OR_OLDER c=18
 "FS v0.3 or older"
 
 #MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
 
-# c=18
+#MSG_FS_V_04_OR_NEWER c=18
 "FS v0.4 or newer"
 
 #MSG_IR_UNKNOWN c=18
 "unknown state"
-
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
-" of 4"
-
-#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
-" of 9"
 
 #MSG_MEASURED_OFFSET c=20
 "[0;0] point offset"
@@ -32,7 +26,7 @@
 "Adjusting Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
+"All correct"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -48,9 +42,6 @@
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
-
-#MSG_AUTO_DEPLETE c=13
-"SpoolJoin"
 
 #MSG_AUTO_HOME c=18
 "Auto home"
@@ -71,7 +62,7 @@
 "Axis"
 
 #MSG_SELFTEST_BEDHEATER c=20
-"Bed / Heater"
+"Bed/Heater"
 
 #MSG_BED_DONE c=20
 "Bed done"
@@ -83,7 +74,7 @@
 "Bed level correct"
 
 #MSG_BELTTEST c=18
-"Belt test        "
+"Belt test"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
@@ -292,9 +283,6 @@
 #MSG_FLOW c=15
 "Flow"
 
-#MSG_PRUSA3D_FORUM c=18
-"forum.prusa3d.com"
-
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
 
@@ -319,9 +307,6 @@
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 
-#MSG_PRUSA3D_HOWTO c=18
-"howto.prusa3d.com"
-
 #MSG_FILAMENTCHANGE c=18
 "Change filament"
 
@@ -332,16 +317,16 @@
 "Changed correctly?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
+"Checking bed"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
 "Checking endstops"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
+"Checking hotend"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 
 #MSG_CHECKING_X c=20
 "Checking X axis"
@@ -418,6 +403,9 @@
 #MSG_LOADING_FILAMENT c=20
 "Loading filament"
 
+#MSG_ITERATION c=12
+"Iteration"
+
 #MSG_LOOSE_PULLEY c=20
 "Loose pulley"
 
@@ -448,14 +436,14 @@
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
 
-#MSG_MEASURED_SKEW c=13
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
 
 #MSG_MMU_FAILS c=15
 "MMU fails"
 
 #MSG_MMU_LOAD_FAILED c=20
-"MMU load failed     "
+"MMU load failed"
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
@@ -551,7 +539,7 @@
 "Pause print"
 
 #MSG_PID_RUNNING c=20
-"PID cal.           "
+"PID cal."
 
 #MSG_PID_FINISHED c=20
 "PID cal. finished"
@@ -572,7 +560,7 @@
 "Please clean the nozzle for calibration. Click when done."
 
 #MSG_SELFTEST_PLEASECHECK c=20
-"Please check :"
+"Please check:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
@@ -615,9 +603,6 @@
 
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
-
-#MSG_PINDA c=5
-"PINDA"
 
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
@@ -670,9 +655,6 @@
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load filament first."
 
-#MSG_PRUSA3D c=18
-"prusa3d.com"
-
 #MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 
@@ -683,13 +665,10 @@
 "Please check the IR sensor connection, unload filament if present."
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
+"Recovering print"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
-
-# c=20
-"Prusa i3 MK3S OK."
 
 #MSG_CALIBRATE_BED_RESET c=18
 "Reset XYZ calibr."
@@ -715,13 +694,10 @@
 #MSG_SD_CARD c=8
 "SD card"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
-"FlashAir"
-
 #MSG_RIGHT c=10
 "Right"
 
-#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=2
+#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
 "Searching bed calibration point"
 
 #MSG_LANGUAGE_SELECT c=18
@@ -731,16 +707,16 @@
 "Self test OK"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
+"Self test start"
 
 #MSG_SELFTEST c=18
-"Selftest         "
+"Selftest"
 
 #MSG_SELFTEST_ERROR c=20
-"Selftest error !"
+"Selftest error!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
+"Selftest failed"
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -750,15 +726,6 @@
 
 #MSG_SET_TEMPERATURE c=19
 "Set temperature:"
-
-# c=20
-"Prusa i3 MK2.5 OK."
-
-# c=20
-"Prusa i3 MK2.5S OK."
-
-# c=20
-"Prusa i3 MK3 OK."
 
 #MSG_SETTINGS c=18
 "Settings"
@@ -778,8 +745,8 @@
 #MSG_SORT_TIME c=8
 "Time"
 
-#MSG_SEVERE_SKEW c=13
-"Severe skew:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
 
 #MSG_SORT_ALPHA c=8
 "Alphabet"
@@ -790,8 +757,8 @@
 #MSG_SOUND_LOUD c=7
 "Loud"
 
-#MSG_SLIGHT_SKEW c=13
-"Slight skew:"
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
 
 #MSG_SOUND c=7
 "Sound"
@@ -815,13 +782,13 @@
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
 
 #MSG_STATISTICS c=18
-"Statistics  "
+"Statistics"
 
 #MSG_STOP_PRINT c=18
 "Stop print"
 
 #MSG_STOPPED c=20
-"STOPPED. "
+"STOPPED."
 
 #MSG_SUPPORT c=18
 "Support"
@@ -994,12 +961,6 @@
 #MSG_FALSE_TRIGGERING c=20
 "False triggering"
 
-#MSG_FINDA c=5
-"FINDA"
-
-#MSG_FIRMWARE c=8
-"Firmware"
-
 #MSG_STRICT c=8
 "Strict"
 
@@ -1022,7 +983,7 @@
 "MMU Mode"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-"Mode change in progress ..."
+"Mode change in progress..."
 
 #MSG_MODEL c=8
 "Model"
@@ -1060,7 +1021,7 @@
 #MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
 
 #MSG_RENAME c=18

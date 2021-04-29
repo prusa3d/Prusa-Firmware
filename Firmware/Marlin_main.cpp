@@ -743,7 +743,7 @@ static void factory_reset(char level)
 		factory_reset_stats();
 		// [[fallthrough]] // there is no break intentionally
 
-	case 4: // Level 4: Preparation after being serviced
+	case 3: // Level 3: Preparation after being serviced
 		// Force language selection at the next boot up.
 		lang_reset();
 		// Force the "Follow calibration flow" message at the next boot up.
@@ -758,7 +758,7 @@ static void factory_reset(char level)
 #endif //FILAMENT_SENSOR
 		break;
 
-	case 3:
+	case 4:
 		menu_progressbar_init(EEPROM_TOP, PSTR("ERASING all data"));
 		// Erase EEPROM
 		for (uint16_t i = 0; i < EEPROM_TOP; i++) {
@@ -3430,15 +3430,11 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_CONFIRM_NOZZLE_CLEAN));
 		if(onlyZ){
 			lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1));
-			lcd_set_cursor(0, 3);
-			lcd_print(1);
-			lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
+			lcd_puts_at_P(0,3,_n("1/9"));
 		}else{
 			//lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
-			lcd_set_cursor(0, 2);
-			lcd_print(1);
-			lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
+			lcd_puts_at_P(0,3,_n("1/4"));
 		}
 
 		refresh_cmd_timeout();
@@ -3458,9 +3454,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
-			lcd_set_cursor(0, 2);
-			lcd_print(1);
-			lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
+			lcd_puts_at_P(0,3,_n("1/4"));
 		}
 			
 		bool endstops_enabled  = enable_endstops(false);
@@ -5779,7 +5773,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       starpos = (strchr(strchr_pointer + 4,'*'));
 	  if(starpos!=NULL)
         *(starpos)='\0';
-      card.openFileReadFilteredGcode(strchr_pointer + 4);
+      card.openFileReadFilteredGcode(strchr_pointer + 4, true);
       break;
 
     /*!
@@ -6490,6 +6484,7 @@ Sigma_Exit:
       gcode_M105(extruder);
       
       cmdqueue_pop_front(); //prevent an ok after the command since this command uses an ok at the beginning.
+      cmdbuffer_front_already_processed = true;
       
       break;
     }
@@ -9757,7 +9752,7 @@ static uint16_t nFSCheckCount=0;
 				if( minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD 
 				 && maxVolt >= IRsensor_Hmin_TRESHOLD && maxVolt <= IRsensor_Hopen_TRESHOLD
 				){
-					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Old, ClFsensorPCB::_Rev04, _i("FS v0.4 or newer") ); ////c=18
+					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Old, ClFsensorPCB::_Rev04, _i("FS v0.4 or newer") ); ////MSG_FS_V_04_OR_NEWER c=18
 				} 
 				//! If and only if minVolt is in range <0.0, 0.3> and maxVolt is in range  <4.6, 5.0V>, I'm considering a situation with the old fsensor
 				//! Note, we are not relying on one voltage here - getting just +5V can mean an old fsensor or a broken new sensor - that's why
@@ -9765,7 +9760,7 @@ static uint16_t nFSCheckCount=0;
 				else if( minVolt < IRsensor_Ldiode_TRESHOLD 
 				 && maxVolt > IRsensor_Hopen_TRESHOLD && maxVolt <= IRsensor_VMax_TRESHOLD
 				){
-					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Rev04, oFsensorPCB=ClFsensorPCB::_Old, _i("FS v0.3 or older")); ////c=18
+					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Rev04, oFsensorPCB=ClFsensorPCB::_Old, _i("FS v0.3 or older")); ////MSG_FS_V_03_OR_OLDER c=18
 				}
 #endif // IR_SENSOR_ANALOG
 				if (fsensor_check_autoload())
@@ -11143,7 +11138,7 @@ void recover_print(uint8_t automatic) {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
-  lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20
+  lcd_setstatuspgm(_i("Recovering print"));////MSG_RECOVERING_PRINT c=20
 
   // Recover position, temperatures and extrude_multipliers
   bool mbl_was_active = recover_machine_state_after_power_panic();
