@@ -743,7 +743,7 @@ static void factory_reset(char level)
 		factory_reset_stats();
 		// [[fallthrough]] // there is no break intentionally
 
-	case 4: // Level 4: Preparation after being serviced
+	case 3: // Level 3: Preparation after being serviced
 		// Force language selection at the next boot up.
 		lang_reset();
 		// Force the "Follow calibration flow" message at the next boot up.
@@ -758,7 +758,7 @@ static void factory_reset(char level)
 #endif //FILAMENT_SENSOR
 		break;
 
-	case 3:
+	case 4:
 		menu_progressbar_init(EEPROM_TOP, PSTR("ERASING all data"));
 		// Erase EEPROM
 		for (uint16_t i = 0; i < EEPROM_TOP; i++) {
