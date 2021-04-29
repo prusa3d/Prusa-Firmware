@@ -172,7 +172,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Sprawdzanie pliku"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -1400,4 +1400,4 @@
 
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"
-"\x00"
+"Adr. IP drukarki:"

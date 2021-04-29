@@ -1092,7 +1092,7 @@
 
 #MSG_TEMPERATURE c=18
 "Temperature"
-"\x00"
+"Temperatura"
 
 #MSG_MENU_TEMPERATURES c=15
 "Temperatures"
