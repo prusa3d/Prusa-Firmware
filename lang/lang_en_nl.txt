@@ -232,7 +232,7 @@
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-"\x00"
+"Door."
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
