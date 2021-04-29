@@ -216,7 +216,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Desde la comunidad"
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
@@ -1400,4 +1400,4 @@
 
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"
-"\x00"
+"Dir. IP impresora:"
