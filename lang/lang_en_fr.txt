@@ -172,7 +172,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Verific. fichier"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -216,7 +216,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Fait de community"
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
@@ -280,7 +280,7 @@
 
 #MSG_DIM c=6
 "Dim"
-"\x00"
+"Sombre"
 
 #MSG_ERROR c=10
 "ERROR:"
@@ -564,7 +564,7 @@
 
 #MSG_BL_LOW c=12
 "Level Dimmed"
-"\x00"
+"Niv. sombre"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 "Measuring reference height of calibration point"
@@ -672,7 +672,7 @@
 
 #MSG_NA c=3
 "N/A"
-"\x00"
+"I/D"
 
 #MSG_NO c=4
 "No"
@@ -1400,4 +1400,4 @@
 
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"
-"\x00"
+"Adr.IP imprimante:"
