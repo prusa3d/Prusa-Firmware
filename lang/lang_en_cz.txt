@@ -176,7 +176,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Kontroluji soubor"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -220,7 +220,7 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Komunitni prekl."
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
@@ -564,11 +564,11 @@
 
 #MSG_BL_HIGH c=12
 "Level Bright"
-"\x00"
+"Normalni"
 
 #MSG_BL_LOW c=12
 "Level Dimmed"
-"\x00"
+"Ztlumeny"
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 "Measuring reference height of calibration point"
@@ -820,7 +820,7 @@
 
 #MSG_FS_PAUSE c=5
 "Pause"
-"\x00"
+"Pauza"
 
 #MSG_POWER_FAILURES c=15
 "Power failures"
@@ -928,7 +928,7 @@
 
 #MSG_SD_CARD c=8
 "SD card"
-"\x00"
+"SD karta"
 
 #MSG_RIGHT c=10
 "Right"
