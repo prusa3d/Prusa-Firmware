@@ -31,6 +31,7 @@ def color_maybe(color_attr, text):
 red = lambda text: color_maybe(31, text)
 green = lambda text: color_maybe(32, text)
 yellow = lambda text: color_maybe(33, text)
+cyan = lambda text: color_maybe(36, text)
 
 
 def print_wrapped(wrapped_text, rows, cols):
@@ -39,7 +40,7 @@ def print_wrapped(wrapped_text, rows, cols):
     for r, line in enumerate(wrapped_text):
         r_ = str(r + 1).rjust(3)
         if r >= rows:
-            r_ = color_maybe(31, r_)
+            r_ = red(r_)
         print((' {} |{:' + str(cols) + 's}|').format(r_, line))
 
 def print_truncated(text, cols):
@@ -48,11 +49,11 @@ def print_truncated(text, cols):
         suffix = ''
     else:
         prefix = text[0:cols]
-        suffix = color_maybe(31, text[cols:])
+        suffix = red(text[cols:])
     print('   |' + prefix + '|' + suffix)
 
 def print_ruler(spc, cols):
-    print(' ' * spc + color_maybe(36, ('₀₁₂₃₄₅₆₇₈₉'*4)[:cols]))
+    print(' ' * spc + cyan(('₀₁₂₃₄₅₆₇₈₉'*4)[:cols]))
 
 def print_source_translation(source, translation, wrapped_source, wrapped_translation, rows, cols):
     if rows == 1:
