@@ -1015,8 +1015,15 @@ if [ ! -z "$mk404_flag" ]; then
         dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
     fi
 
+#Decide which hex file to use EN_ONLY or Multi language
+if [ "$LANGUAGES" == "ALL" ]; then
+    MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+else
+    MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex
+fi
+
 # Start MK404
 # default with serial output and terminal to manipulate it via terminal
-    ./MK404 Prusa_$PRINTER -s --terminal $MK404_options -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+    ./MK404 Prusa_$PRINTER -s --terminal $MK404_options -f $MK404_firmware_file
 fi
 #### End of MK404 Simulator
