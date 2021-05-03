@@ -1009,11 +1009,11 @@ if [ ! -z "$mk404_flag" ]; then
     cd ../MK404/master/build
 
 # Copy language bin file for MK3 and MK3S to xflash
-    if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
-    echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${PRINTER}_xflash.bin'"
-        dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${PRINTER}_xflash.bin
-        dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
-    fi
+#    if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
+#    echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${PRINTER}_xflash.bin'"
+#        dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${PRINTER}_xflash.bin
+#        dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
+#    fi
 
 #Decide which hex file to use EN_ONLY or Multi language
 if [ "$LANGUAGES" == "ALL" ]; then
