@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.2.0-Build_47
+# Version: 1.2.0-Build_49
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -147,6 +147,7 @@
 #                          51-54 cleanup 
 #                          61-62 MK404
 # 03 May 2021, 3d-gussner, Update documentation and change version to v1.2.0
+# 03 May 2021, 3d-gussner, Add SIM atmega404
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -254,17 +255,128 @@ fi
 
 #### End prepare bash / Linux environment
 
+# Check for options/flags
+while getopts b:c:d:f:g:h:i:l:m:n:o:p:v:x:?h flag
+    do
+        case "${flag}" in
+            b) build_flag=${OPTARG};;
+            c) clean_flag=${OPTARG};;
+            d) devel_flag=${OPTARG};;
+            f) board_flash_flag=${OPTARG};;
+            g) graphics_flag=${OPTARG};;
+            h) help_flag=1;;
+            i) IDE_flag=${OPTARG};;
+            l) language_flag=${OPTARG};;
+            m) mk404_flag=${OPTARG};;
+            n) new_build_flag=${OPTARG};;
+            o) output_flag=${OPTARG};;
+            p) prusa_flag=${OPTARG};;
+            v) variant_flag=${OPTARG};;
+            x) board_mem_flag=${OPTARG};;
+            ?) help_flag=1;;
+        esac
+    done
+
+#
+# '?' 'h' argument usage and help
+if [ "$help_flag" == "1" ] ; then
+echo "***************************************"
+echo "* PF-build.sh Version: 1.2.0-Build_49 *"
+echo "***************************************"
+echo "Arguments:"
+echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
+echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build'$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
+echo "$(tput setaf 2)-f$(tput sgr0) Board flash size '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
+echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
+echo "$(tput setaf 2)-h$(tput sgr0) Help"
+echo "$(tput setaf 2)-i$(tput sgr0) Arduino IDE version '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
+echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
+echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
+echo "$(tput setaf 2)-n$(tput sgr0) New fresh build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
+echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
+echo "$(tput setaf 2)-x$(tput sgr0) Board memory size '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
+echo "$(tput setaf 2)-?$(tput sgr0) Help"
+echo 
+echo "Brief USAGE:"
+echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o] [-c] [-p] [-n]"
+echo
+echo "Example:"
+echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
+echo "  Will build all variants as multi language and final GOLD version"
+echo
+echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1 -c 1 -p 1 -n 1$(tput sgr0)"
+echo "  Will build MK3S multi language final GOLD firmware "
+echo "  with current commit count number and output extra information,"
+echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
+echo
+exit 6
+fi
+
+#Check if Build is selected with argument '-f'
+if [ ! -z "$board_flash_flag" ] ; then
+    if [ "$board_flash_flag" == "256" ] ; then
+        BOARD_FLASH="0x3FFFF"
+        BOARD_maximum_size="253952"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+    elif [ "$board_flash_flag" == "384" ] ; then
+        BOARD_FLASH="0x5FFFF"
+        BOARD_maximum_size="385024"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+    elif [ "$board_flash_flag" == "512" ] ; then
+        BOARD_FLASH="0x7FFFF"
+        BOARD_maximum_size="516096"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+    elif [ "$board_flash_flag" == "1024" ] ; then
+        BOARD_FLASH="0xFFFFF"
+        BOARD_maximum_size="1040384"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+    elif [[ "$board_flash_flag" == "32M" || "$board_flash_flag" == "32768" ]] ; then
+        BOARD_FLASH="0x1FFFFFF"
+        BOARD_maximum_size="33546240"
+        echo "Board flash size :    32 Mb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+    else
+        echo "Unsupported board flash size chosen. Only '256', '384', '512', '1024' and '32M' are allowed."
+        exit 7
+    fi
+fi
+
+#Check if Build is selected with argument '-x'
+if [ ! -z "$board_mem_flag" ] ; then
+    if [ "$board_mem_flag" == "8" ] ; then
+        BOARD_MEM="0x21FF"
+        echo "Board mem size   :     $board_mem_flag Kb, $BOARD_MEM (hex)"
+    elif [ "$board_mem_flag" == "64" ] ; then
+        BOARD_MEM="0xFFFF"
+        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
+    else
+        echo "Unsupported board mem size chosen. Only '8', '64' are allowed."
+        exit 8
+    fi
+fi
+
+#Check if Arduino IDE version is correct
+if [ ! -z "$IDE_flag" ]; then
+    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" ]]; then
+        ARDUINO_ENV="${IDE_flag}"
+    else
+        ARDUINO_ENV="1.8.5"
+    fi
+else
+    ARDUINO_ENV="1.8.5"
+fi
 
 #### Set build environment 
-ARDUINO_ENV="1.8.5"
 BUILD_ENV="1.0.6"
 BOARD="prusa_einsy_rambo"
 BOARD_PACKAGE_NAME="PrusaResearch"
 BOARD_VERSION="1.0.3"
-#BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/Prusa_Merge_v1.0.3/IDE_Board_Manager/package_prusa3d_index.json"
+#BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_FILENAME="prusa3dboards"
-#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/Prusa_Merge_v1.0.3/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
+#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
 BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
 #PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
 PF_BUILD_FILE_URL="https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
@@ -280,6 +392,12 @@ echo ""
 echo "Arduino IDE :" $ARDUINO_ENV
 echo "Build env   :" $BUILD_ENV
 echo "Board       :" $BOARD
+if [ ! -z "$BOARD_FLASH" ] ; then
+    echo "Board flash :" $BOARD_FLASH
+fi
+if [ ! -z "$BOARD_MEM" ] ; then
+    echo "Board mem   :" $BOARD_MEM
+fi
 echo "Package name:" $BOARD_PACKAGE_NAME
 echo "Board v.    :" $BOARD_VERSION
 echo "Specific Lib:" $LIB
@@ -289,10 +407,10 @@ echo ""
 
 #Check if build exists and creates it if not
 if [ ! -d "../PF-build-dl" ]; then
-    mkdir ../PF-build-dl || exit 6
+    mkdir ../PF-build-dl || exit 9
 fi
 
-cd ../PF-build-dl || exit 7
+cd ../PF-build-dl || exit 10
 BUILD_ENV_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Check if PF-build-env-<version> exists and downloads + creates it if not
@@ -461,68 +579,6 @@ cd $SCRIPT_PATH
 # Check if git is available
 if type git > /dev/null; then
     git_available="1"
-fi
-
-while getopts b:c:d:g:l:m:n:o:p:v:?h flag
-    do
-        case "${flag}" in
-            b) build_flag=${OPTARG};;
-            c) clean_flag=${OPTARG};;
-            d) devel_flag=${OPTARG};;
-            g) graphics_flag=${OPTARG};;
-            h) help_flag=1;;
-            l) language_flag=${OPTARG};;
-            m) mk404_flag=${OPTARG};;
-            n) new_build_flag=${OPTARG};;
-            o) output_flag=${OPTARG};;
-            p) prusa_flag=${OPTARG};;
-            v) variant_flag=${OPTARG};;
-            ?) help_flag=1;;
-        esac
-    done
-#echo "variant_flag: $variant_flag";
-#echo "language_flag: $language_flag";
-#echo "devel_flag: $devel_flag";
-#echo "build_flag: $build_flag";
-#echo "output_flag: $output_flag";
-#echo "help_flag: $help_flag"
-#echo "clean_flag: $clean_flag"
-#echo "prusa_flag: $prusa_flag"
-#echo "new_build_flag: $new_build_flag"
-
-#
-# '?' 'h' argument usage and help
-if [ "$help_flag" == "1" ] ; then
-    echo "***************************************"
-    echo "* PF-build.sh Version: 1.2.0-Build_47 *"
-    echo "***************************************"
-    echo "Arguments:"
-    echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
-    echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-    echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
-    echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
-    echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
-    echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
-    echo "$(tput setaf 2)-n$(tput sgr0) New fresh build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-    echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
-    echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-    echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
-    echo "$(tput setaf 2)-?$(tput sgr0) Help"
-    echo "$(tput setaf 2)-h$(tput sgr0) Help"
-    echo 
-    echo "Brief USAGE:"
-    echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-b] [-c] [-d] [-g] [-h] [-l] [-m] [-n] [-o] [-p] [-v] [-?]"
-    echo
-    echo "Example:"
-    echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
-    echo "  Will build all variants as multi language and final GOLD version"
-    echo
-    echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1 -c 1 -p 1 -n 1$(tput sgr0)"
-    echo "  Will build MK3S multi language final GOLD firmware "
-    echo "  with current commit count number and output extra information,"
-    echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
-    echo
-    exit 21
 fi
 
 #
@@ -726,7 +782,7 @@ do
                         DEV_STATUS_SELECTED="GOLD"
                         break
                         ;;
-                    No) 
+                    No)
                         DEV_STATUS="UNKNOWN"
                         DEV_STATUS_SELECTED="UNKNOWN"
                         break
@@ -742,9 +798,15 @@ do
     fi
     #Prepare hex files folders
     if [ ! -d "$SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD" ]; then
-        mkdir -p $SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD || exit 30
+        mkdir -p $SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD || exit 28
     fi
     OUTPUT_FOLDER="PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD"
+    if [ "$BOARD" != "prusa_einsy_rambo" ]; then
+        if [ ! -d "$SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$BOARD" ]; then
+            mkdir -p $SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$BOARD || exit 28
+        fi
+        OUTPUT_FOLDER="PF-build-hex/FW$FW-Build$BUILD/$BOARD"
+    fi
     
     #Check if exactly the same hexfile already exists
     if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex"  &&  "$LANGUAGES" == "ALL" ]]; then
@@ -773,13 +835,15 @@ do
     
     #List some useful data
     echo "$(tput setaf 2)$(tput setab 7) "
-    echo "Printer    :" $PRINTER
+    echo "Printer    :" $MK404_PRINTER
     echo "Variant    :" $VARIANT
     echo "Firmware   :" $FW
     echo "Build #    :" $BUILD
     echo "Dev Check  :" $DEV_CHECK
     echo "DEV Status :" $DEV_STATUS
     echo "Motherboard:" $MOTHERBOARD
+    echo "Board flash:" $BOARD_FLASH
+    echo "Board mem  :" $BOARD_MEM
     echo "Languages  :" $LANGUAGES
     echo "Hex-file Folder:" $OUTPUT_FOLDER
     echo "$(tput sgr0)"
@@ -824,10 +888,81 @@ do
         rm -r -f $BUILD_PATH/* || exit 54
     fi
 
+    # Prepare Board mem and flash modifications
+    ## Check board mem size
+    CURRENT_BOARD_MEM=$(grep "#define RAMEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f3|tr -d $'\n')
+    if [ $CURRENT_BOARD_MEM != "0x21FF" ] ; then
+        echo "Board mem has been already modified or not reset"
+        echo "Current:" $CURRENT_BOARD_MEM
+        PS3="Select Yes if you want to reset it."
+        select yn in "Yes" "No"; do
+            case $yn in
+                Yes)
+                    echo "Resetting board mem size"
+                    sed -i -- "s/^#define RAMEND .*$/#define RAMEND          0x21FF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+                    break
+                    ;;
+                *)
+                    echo "Continuing with modified mem size"
+                    break
+                    ;;
+            esac
+        done
+    fi
+    ## Modify board mem size
+    if [[ ! -z $BOARD_MEM && "$BOARD_MEM" != "0x21FF" ]] ; then
+        echo "$(tput setaf 3)Modifying board memory size (hex):$(tput sgr 0)"
+        echo "Old:" $CURRENT_BOARD_MEM
+        echo "New:" $BOARD_MEM
+        read -t 5 -p "To cancel press $(tput setaf 1)CRTL+C$(tput sgr 0)"
+        echo ""
+        sed -i -- "s/^#define RAMEND          0x21FF/#define RAMEND          ${BOARD_MEM}/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+    fi
+
+    ## Check board flash size
+    CURRENT_BOARD_FLASH=$(grep "#define FLASHEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f3|tr -d $'\n')
+    CURRENT_BOARD_maximum_size=$(grep "prusa_einsy_rambo.upload.maximum_size" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt |cut -d '=' -f2|tr -d $'\n')
+    if [[ $CURRENT_BOARD_FLASH != "0x3FFFF" || $CURRENT_BOARD_maximum_size != "253952" ]] ; then
+        echo "Board flash has been already modified or not reset"
+        echo "Current flash size:" $CURRENT_BOARD_FLASH
+        echo "Current max.  size:" $CURRENT_BOARD_maximum_size
+        PS3="Select $(tput setaf 3)Yes$(tput sgr 0) if you want to reset it."
+        select yn in "Yes" "No"; do
+            case $yn in
+                Yes)
+                    echo "$(tput setaf 1)Resetting board flash size$(tput sgr 0)"
+                    sed -i -- "s/^#define FLASHEND .*$/#define FLASHEND        0x3FFFF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+                    sed -i -- "s/^prusa_einsy_rambo.upload.maximum_size.*/prusa_einsy_rambo.upload.maximum_size=253952/g" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt
+                    break
+                    ;;
+                *)
+                    echo "$(tput setaf 3)Continuing with modified flash size$(tput sgr 0)"
+                    break
+                    ;;
+            esac
+        done
+    fi
+    ## Modify boad flash size
+    if [[ ! -z $BOARD_FLASH && "$BOARD_FLASH" != "0x3FFFF" ]] ; then
+        echo "Modifying board flash size (hex):"
+        echo "Old flash size:" $CURRENT_BOARD_FLASH
+        echo "New flash size:" $BOARD_FLASH
+        echo "Old max.  size:" $CURRENT_BOARD_maximum_size
+        echo "New max.  size:" $BOARD_maximum_size
+        read -t 5 -p "To cancel press $(tput setaf 1)CRTL+C$(tput sgr 0)"
+        sed -i -- "s/^#define FLASHEND .*/#define FLASHEND        ${BOARD_FLASH}/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+        sed -i -- "s/^prusa_einsy_rambo.upload.maximum_size.*/prusa_einsy_rambo.upload.maximum_size=${BOARD_maximum_size}/g" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt
+    fi
+
+    #Check if compiler flags are set to Prusa specific needs for the rambo board.
+#    if [ $TARGET_OS == "windows" ]; then
+#        RAMBO_PLATFORM_FILE="PrusaResearchRambo/avr/platform.txt"
+#    fi    
+    
     #### End of Prepare building
-
+        
     #### Start building
-
+        
     export ARDUINO=$BUILD_ENV_PATH
     #echo $BUILD_ENV_PATH
     #export BUILDER=$ARDUINO/arduino-builder
@@ -908,6 +1043,7 @@ do
             cp -f firmware_fr.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-fr.hex
             cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-it.hex
             cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-pl.hex
+            cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-nl.hex
             if [ $TARGET_OS == "windows" ]; then 
                 zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
                 rm $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
@@ -975,6 +1111,12 @@ do
     if [ $OUTPUT == "1" ] ; then
         sleep 5
     fi
+
+    # Restore build env files to previous state
+    sed -i -- "s/^#define FLASHEND .*$/#define FLASHEND        0x3FFFF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+    sed -i -- "s/^prusa_einsy_rambo.upload.maximum_size.*/prusa_einsy_rambo.upload.maximum_size=253952/g" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt
+    sed -i -- "s/^#define RAMEND.*/#define RAMEND          0x21FF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+
 done
 
 # Switch to hex path and list build files
@@ -1001,27 +1143,28 @@ if [ ! -z "$mk404_flag" ]; then
         fi
     fi
 
+# Run MK404 with 'debugcore' and/or 'bootloader_file'
+echo "MK404_DEBUG --$MK404_DEBUG--"
+    if [ "$MK404_DEBUG" == "atmega404" ]; then
+        MK404_options="--debugcore"
+    elif [ "$MK404_DEBUG" == "atmega404_no_bootloader" ]; then
+        MK404_options="--debugcore --bootloader-file no"
+    fi
 
 # Run MK404 with grafics
     if [ ! -z "$graphics_flag" ]; then
-        MK404_options="--colour-extrusion --extrusion Quad_HR -g "
+    echo "MK404_options --$MK404_options--"
+        if [ ! -z "$MK404_options" ]; then
+            MK404_options="${MK404_options} --colour-extrusion --extrusion Quad_HR -g "
+        else
+            MK404_options="--colour-extrusion --extrusion Quad_HR -g "
+        fi
         if [[ "$graphics_flag" == "1" || "$graphics_flag" == "lite" ]]; then
             MK404_options="${MK404_options}lite"
         elif [[ "$graphics_flag" == "2" || "$graphics_flag" == "fancy" ]]; then
             MK404_options="${MK404_options}fancy"
         else
         echo "$(tput setaf 1)Unsupported MK404 graphics option $graphics_flag$(tput sgr 0)"
-        fi
-    fi
-
-# Run MK404 with 'debugcore' and/or 'bootloader_file'
-    if [ ! -z "$MK404_DEBUG" ]; then
-        if [ "$MK404_DEBUG" == "atmega404" ]; then
-            MK404_options="${MK404_options} --debugcore"
-        elif [ "$MK404_DEBUG" == "atmega404_no_bootloader" ]; then
-            MK404_options="${MK404_options} --debugcore --bootloader_file no"
-        else
-        echo "$(tput setaf 1)Unsupported MK404 debug option $MK404_options$(tput sgr 0)"
         fi
     fi
 
