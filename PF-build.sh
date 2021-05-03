@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.1.0-Build_39
+# Version: 1.2.0-Build_47
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -140,6 +140,13 @@
 # 13 Feb 2021, 3d-gussner, Indentations
 # 13 Feb 2021, 3d-gussner, MK404 improvements like "flash" MK3, MK3S languages files to MK404 xflash.
 # 27 Feb 2021, 3d-gussner, Add './lang-community.sh' and update exits
+# 03 May 2021, 3d-gussner, Update exit numbers
+#                          01-14 prepare build env
+#                          21-32 prepare compiling
+#                          41-47 compiling
+#                          51-54 cleanup 
+#                          61-62 MK404
+# 03 May 2021, 3d-gussner, Update documentation and change version to v1.2.0
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -308,7 +315,7 @@ if [ $TARGET_OS == "windows" ]; then
     if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
         echo "$(tput setaf 6)Unzipping Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
         sleep 2
-        unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || exit 8
+        unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || exit 9
         mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
         echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
         echo "$(tput sgr0)"
@@ -326,7 +333,7 @@ if [ $TARGET_OS == "linux" ]; then
     if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
         echo "$(tput setaf 6)Unzipping Linux $Processor Arduino IDE portable...$(tput setaf 2)"
         sleep 2
-        tar -xvf arduino-$ARDUINO_ENV-linux$Processor.tar.xz -C ../PF-build-env-$BUILD_ENV/ || exit 8
+        tar -xvf arduino-$ARDUINO_ENV-linux$Processor.tar.xz -C ../PF-build-env-$BUILD_ENV/ || exit 9
         mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
         echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
         echo "$(tput sgr0)"
@@ -380,12 +387,12 @@ fi
 if [ ! -f "$BOARD_FILENAME-$BOARD_VERSION.tar.bz2" ]; then
     echo "$(tput setaf 6)Downloading Prusa Research AVR MK3 RAMBo EINSy build environment...$(tput setaf 2)"
     sleep 2
-    wget $BOARD_FILE_URL || exit 9
+    wget $BOARD_FILE_URL || exit 10
 fi
 if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION" || ! -e "../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
     echo "$(tput setaf 6)Unzipping $BOARD_PACKAGE_NAME Arduino IDE portable...$(tput setaf 2)"
     sleep 2
-    tar -xvf $BOARD_FILENAME-$BOARD_VERSION.tar.bz2 -C ../PF-build-env-$BUILD_ENV/ || exit 10
+    tar -xvf $BOARD_FILENAME-$BOARD_VERSION.tar.bz2 -C ../PF-build-env-$BUILD_ENV/ || exit 11
     if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME ]; then
         mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME
     fi
@@ -409,13 +416,13 @@ fi
 if [ ! -f "PF-build-env-WinLin-$BUILD_ENV.zip" ]; then
     echo "$(tput setaf 6)Downloading Prusa Firmware build environment...$(tput setaf 2)"
     sleep 2
-    wget $PF_BUILD_FILE_URL || exit 11
+    wget $PF_BUILD_FILE_URL || exit 12
     echo "$(tput sgr 0)"
 fi
 if [ ! -e "../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]; then
     echo "$(tput setaf 6)Unzipping Prusa Firmware build environment...$(tput setaf 2)"
     sleep 2
-    unzip -o PF-build-env-WinLin-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 12
+    unzip -o PF-build-env-WinLin-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 13
     echo "# PF-build-env-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor-$BUILD_ENV" >> ../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
     echo "$(tput sgr0)"
 fi
@@ -441,7 +448,7 @@ if [ -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Proc
     echo "Script will not continue until this have been fixed $(tput setaf 2)"
     sleep 2
     echo "$(tput sgr0)"
-    exit 13
+    exit 14
 fi
 
 
@@ -456,21 +463,21 @@ if type git > /dev/null; then
     git_available="1"
 fi
 
-while getopts v:l:d:b:o:c:p:n:m:g:?h flag
+while getopts b:c:d:g:l:m:n:o:p:v:?h flag
     do
         case "${flag}" in
-            v) variant_flag=${OPTARG};;
-            l) language_flag=${OPTARG};;
-            d) devel_flag=${OPTARG};;
             b) build_flag=${OPTARG};;
-            o) output_flag=${OPTARG};;
             c) clean_flag=${OPTARG};;
-            p) prusa_flag=${OPTARG};;
-            n) new_build_flag=${OPTARG};;
-            m) mk404_flag=${OPTARG};;
+            d) devel_flag=${OPTARG};;
             g) graphics_flag=${OPTARG};;
-            ?) help_flag=1;;
             h) help_flag=1;;
+            l) language_flag=${OPTARG};;
+            m) mk404_flag=${OPTARG};;
+            n) new_build_flag=${OPTARG};;
+            o) output_flag=${OPTARG};;
+            p) prusa_flag=${OPTARG};;
+            v) variant_flag=${OPTARG};;
+            ?) help_flag=1;;
         esac
     done
 #echo "variant_flag: $variant_flag";
@@ -490,21 +497,21 @@ if [ "$help_flag" == "1" ] ; then
     echo "* PF-build.sh Version: 1.0.6-Build_33 *"
     echo "***************************************"
     echo "Arguments:"
-    echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
-    echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
-    echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
     echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
-    echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
-    echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build'$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-    echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-    echo "$(tput setaf 2)-n$(tput sgr0) New fresh build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-    echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
+    echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+    echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
     echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
+    echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
+    echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
+    echo "$(tput setaf 2)-n$(tput sgr0) New fresh build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+    echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
+    echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
+    echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
     echo "$(tput setaf 2)-?$(tput sgr0) Help"
     echo "$(tput setaf 2)-h$(tput sgr0) Help"
     echo 
     echo "Brief USAGE:"
-    echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o] [-c] [-p] [-n] [-m] [-g]"
+    echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-b] [-c] [-d] [-g] [-h] [-l] [-m] [-n] [-o] [-p] [-v] [-?]"
     echo
     echo "Example:"
     echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
@@ -515,7 +522,7 @@ if [ "$help_flag" == "1" ] ; then
     echo "  with current commit count number and output extra information,"
     echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
     echo
-    exit 14
+    exit 21
 fi
 
 #
@@ -540,7 +547,7 @@ if [ -z "$variant_flag" ] ; then
                 ;;
             "Quit")
                 echo "You chose to stop"
-                    exit 20
+                    exit 22
                     ;;
             *)
                 echo "$(tput setaf 1)This is not a valid variant$(tput sgr0)"
@@ -561,7 +568,7 @@ else
         echo "Only $(tput setaf 2)'All'$(tput sgr0) and file names below are allowed as variant '-v' argument.$(tput setaf 2)"
         ls -1 $SCRIPT_PATH/Firmware/variants/*.h | xargs -n1 basename
         echo "$(tput sgr0)"
-        exit 21
+        exit 23
     fi
 fi
 
@@ -594,7 +601,7 @@ else
     else
         echo "$(tput setaf 1)Language argument is wrong!$(tput sgr0)"
         echo "Only $(tput setaf 2)'ALL'$(tput sgr0) or $(tput setaf 2)'EN_ONLY'$(tput sgr0) are allowed as language '-l' argument!"
-        exit 22
+        exit 24
     fi
 fi
 #Check if DEV_STATUS is selected via argument '-d'
@@ -604,7 +611,7 @@ if [ ! -z "$devel_flag" ] ; then
     else
         echo "$(tput setaf 1)Development argument is wrong!$(tput sgr0)"
         echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL', 'DEBUG' or 'UNKNOWN' $(tput sgr0) are allowed as devel '-d' argument!$(tput sgr0)"
-        exit 23
+        exit 25
     fi
 fi
 
@@ -618,7 +625,7 @@ if [ ! -z "$build_flag" ] ; then
     else
         echo "$(tput setaf 1)Build number argument is wrong!$(tput sgr0)"
         echo "Only $(tput setaf 2)'Auto' (git needed) or numbers $(tput sgr0) are allowed as build '-b' argument!$(tput sgr0)"
-        exit 24
+        exit 26
 
     fi
     echo "New Build number is: $BUILD"
@@ -653,18 +660,18 @@ else
 fi
 
 #Set BUILD_ENV_PATH
-cd ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 25
+cd ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 27
 BUILD_ENV_PATH="$( pwd -P )"
 
 cd ../..
 
 #Checkif BUILD_PATH exists and if not creates it
 if [ ! -d "Prusa-Firmware-build" ]; then
-    mkdir Prusa-Firmware-build  || exit 26
+    mkdir Prusa-Firmware-build  || exit 28
 fi
 
 #Set the BUILD_PATH for Arduino IDE
-cd Prusa-Firmware-build || exit 27
+cd Prusa-Firmware-build || exit 29
 BUILD_PATH="$( pwd -P )"
 
 #Check git branch has changed
@@ -733,7 +740,7 @@ do
     fi
     #Prepare hex files folders
     if [ ! -d "$SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD" ]; then
-        mkdir -p $SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD || exit 28
+        mkdir -p $SCRIPT_PATH/../PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD || exit 30
     fi
     OUTPUT_FOLDER="PF-build-hex/FW$FW-Build$BUILD/$MOTHERBOARD"
     
@@ -777,13 +784,13 @@ do
 
     #Prepare Firmware to be compiled by copying variant as Configuration_prusa.h
     if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
-        cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 29
+        cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 31
     else
         echo "$(tput setaf 6)Configuration_prusa.h already exist it will be overwritten in 10 seconds by the chosen variant.$(tput sgr 0)"
         if [ $OUTPUT == "1" ] ; then
             read -t 10 -p "Press Enter to continue..."
         fi
-        cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 29
+        cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 31
     fi
 
     #Prepare Configuration.h to use the correct FW_DEV_VERSION to prevent LCD messages when connecting with OctoPrint
@@ -809,11 +816,16 @@ do
     #if [ $TARGET_OS == "windows" ]; then
        #RAMBO_PLATFORM_FILE="PrusaResearchRambo/avr/platform.txt"
     #fi    
-    
+
+    #New fresh PF-Firmware-build
+    if [ "$new_build_flag" == "1" ]; then
+        rm -r -f $BUILD_PATH/* || exit 54
+    fi
+
     #### End of Prepare building
-        
+
     #### Start building
-        
+
     export ARDUINO=$BUILD_ENV_PATH
     #echo $BUILD_ENV_PATH
     #export BUILDER=$ARDUINO/arduino-builder
@@ -828,13 +840,8 @@ do
         sleep 2
     fi
 
-    #New fresh PF-Firmware-build
-    if [ "$new_build_flag" == "1" ]; then
-        rm -r -f $BUILD_PATH/* || exit 36
-    fi
-
-    #$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
-    $BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 30
+    #$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 41
+    $BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 42
     echo "$(tput sgr 0)"
 
     if [ $LANGUAGES ==  "ALL" ]; then
@@ -847,7 +854,7 @@ do
         fi
         cd $SCRIPT_PATH/lang
         echo "$(tput setaf 3)"
-        ./config.sh || exit 31
+        ./config.sh || exit 43
         echo "$(tput sgr 0)"
         # Check if previous languages and firmware build exist and if so clean them up
         if [ -f "lang_en.tmp" ]; then
@@ -872,11 +879,11 @@ do
         fi
         # build languages
         echo "$(tput setaf 3)"
-        ./lang-build.sh || exit 32
+        ./lang-build.sh || exit 44
         # build community languages
-        ./lang-community.sh || exit 33
+        ./lang-community.sh || exit 45
         # Combine compiled firmware with languages 
-        ./fw-build.sh || exit 33
+        ./fw-build.sh || exit 46
         cp not_tran.txt not_tran_$VARIANT.txt
         cp not_used.txt not_used_$VARIANT.txt
         echo "$(tput sgr 0)"
@@ -911,26 +918,30 @@ do
             zip -m -j ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
             fi
         fi
-        # Cleanup after build
-        if [[ -z "$clean_flag" || "$clean_flag" == "0" ]]; then
-            echo "$(tput setaf 3)"
-            ./fw-clean.sh || exit 34
-            ./lang-clean.sh || exit 35
-            echo "$(tput sgr 0)"
-        fi
+
+    # Cleanup after build
+    if [[ -z "$clean_flag" || "$clean_flag" == "0" ]]; then
+        echo "$(tput setaf 3)"
+        ./fw-clean.sh || exit 51
+        ./lang-clean.sh || exit 52
+        echo "$(tput sgr 0)"
+    fi
+
     else
         echo "$(tput setaf 2)Copying English only firmware to PF-build-hex folder$(tput sgr 0)"
-        cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 34
+        cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 47
     fi
 
     # Cleanup Firmware
     if [[ -z "$prusa_flag" || "$prusa_flag" == "0" ]]; then
-        rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 36
+        rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 53
     fi
+    # Delete dupblicates
     if find $SCRIPT_PATH/lang/ -name '*RAMBo10a*.txt' -printf 1 -quit | grep -q 1
     then
         rm $SCRIPT_PATH/lang/*RAMBo10a*.txt
     fi
+    # MK2 not supported in this branch
     if find $SCRIPT_PATH/lang/ -name '*MK2-RAMBo13a*' -printf 1 -quit | grep -q 1
     then
         rm $SCRIPT_PATH/lang/*MK2-RAMBo13a*.txt
@@ -946,7 +957,7 @@ do
 
     #New fresh PF-Firmware-build
     if [ "$new_build_flag" == "1" ]; then
-        rm -r -f $BUILD_PATH/* || exit 36
+        rm -r -f $BUILD_PATH/* || exit 54
     fi
 
     # Restore files to previous state
@@ -977,7 +988,7 @@ echo "more information how to flash firmware https://www.prusa3d.com/drivers/ $(
 
 # Check/compile MK404 sim
 if [ ! -z "$mk404_flag" ]; then
-    ./MK404-build.sh -c1
+    ./MK404-build.sh -c1 || exit 61
 
 # For Prusa MK2, MK2.5/S
     if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
@@ -1024,6 +1035,6 @@ fi
 
 # Start MK404
 # default with serial output and terminal to manipulate it via terminal
-    ./MK404 Prusa_$PRINTER -s --terminal $MK404_options -f $MK404_firmware_file
+    ./MK404 Prusa_$PRINTER -s --terminal $MK404_options -f $MK404_firmware_file || exit 62
 fi
 #### End of MK404 Simulator
