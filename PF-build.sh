@@ -494,7 +494,7 @@ while getopts b:c:d:g:l:m:n:o:p:v:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
     echo "***************************************"
-    echo "* PF-build.sh Version: 1.0.6-Build_33 *"
+    echo "* PF-build.sh Version: 1.2.0-Build_47 *"
     echo "***************************************"
     echo "Arguments:"
     echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
@@ -608,6 +608,8 @@ fi
 if [ ! -z "$devel_flag" ] ; then
     if [[ "$devel_flag" == "GOLD" || "$devel_flag" == "RC" || "$devel_flag" == "BETA" || "$devel_flag" == "ALPHA" || "$devel_flag" == "DEVEL" || "$devel_flag" == "DEBUG" || "$devel_flag" == "UNKNOWN" ]] ; then
         DEV_STATUS_SELECTED=$devel_flag
+    elif [[ "$devel_flag" == "atmega404" || "$devel_flag" == "atmega404_no_bootloader" ]] ; then
+        MK404_DEBUG=$devel_flag
     else
         echo "$(tput setaf 1)Development argument is wrong!$(tput sgr0)"
         echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL', 'DEBUG' or 'UNKNOWN' $(tput sgr0) are allowed as devel '-d' argument!$(tput sgr0)"
@@ -685,7 +687,7 @@ fi
 for v in ${VARIANTS[*]}
 do
     VARIANT=$(basename "$v" ".h")
-    PRINTER=$(grep --max-count=1 "\bPRINTER_TYPE\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3 | cut -d '_' -f2)
+    MK404_PRINTER=$(grep --max-count=1 "\bPRINTER_TYPE\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3 | cut -d '_' -f2)
     # Find firmware version in Configuration.h file and use it to generate the hex filename
     FW=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g')
     if [ -z "$BUILD" ] ; then    
@@ -992,10 +994,10 @@ if [ ! -z "$mk404_flag" ]; then
 
 # For Prusa MK2, MK2.5/S
     if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
-        PRINTER="${PRINTER}_mR13"
+        MK404_PRINTER="${MK404_PRINTER}_mR13"
     else
         if [[ "$mk404_flag" == "2" || "$mk404_flag" == "MMU2" || "$mk404_flag" == "MMU2S" ]]; then # Check if MMU2 is selected only for MK3/S
-            PRINTER="${PRINTER}MMU2"
+            MK404_PRINTER="${MK404_PRINTER}MMU2"
         fi
     fi
 
@@ -1012,8 +1014,19 @@ if [ ! -z "$mk404_flag" ]; then
         fi
     fi
 
+# Run MK404 with 'debugcore' and/or 'bootloader_file'
+    if [ ! -z "$MK404_DEBUG" ]; then
+        if [ "$MK404_DEBUG" == "atmega404" ]; then
+            MK404_options="${MK404_options} --debugcore"
+        elif [ "$MK404_DEBUG" == "atmega404_no_bootloader" ]; then
+            MK404_options="${MK404_options} --debugcore --bootloader_file no"
+        else
+        echo "$(tput setaf 1)Unsupported MK404 debug option $MK404_options$(tput sgr 0)"
+        fi
+    fi
+
 # Output some useful data
-    echo "Printer: $PRINTER"
+    echo "Printer: $MK404_PRINTER"
     echo "Options: $MK404_options"
 
 # Change to MK404 build folder
@@ -1021,9 +1034,9 @@ if [ ! -z "$mk404_flag" ]; then
 
 # Copy language bin file for MK3 and MK3S to xflash
 #    if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
-#    echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${PRINTER}_xflash.bin'"
-#        dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${PRINTER}_xflash.bin
-#        dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${PRINTER}_xflash.bin conv=notrunc
+#    echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${MK404_PRINTER}_xflash.bin'"
+#        dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${MK404_PRINTER}_xflash.bin
+#        dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${MK404_PRINTER}_xflash.bin conv=notrunc
 #    fi
 
 #Decide which hex file to use EN_ONLY or Multi language
@@ -1035,6 +1048,6 @@ fi
 
 # Start MK404
 # default with serial output and terminal to manipulate it via terminal
-    ./MK404 Prusa_$PRINTER -s --terminal $MK404_options -f $MK404_firmware_file || exit 62
+    ./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file || exit 62
 fi
 #### End of MK404 Simulator
