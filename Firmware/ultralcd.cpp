@@ -8858,7 +8858,10 @@ void menu_lcd_lcdupdate_func(void)
 		if (lcd_oldcardstatus)
 		{
 			if (!card.cardOK)
-				card.initsd();
+			{
+				card.initsd(false); //delay the sorting to the sd menu. Otherwise, removing the SD card while sorting will not menu_back()
+				card.presort_flag = true; //force sorting of the SD menu
+			}
 			LCD_MESSAGERPGM(_T(WELCOME_MSG));
 			bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 			menu_submenu(lcd_sdcard_menu);
