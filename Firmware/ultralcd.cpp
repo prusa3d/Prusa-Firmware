@@ -8857,7 +8857,8 @@ void menu_lcd_lcdupdate_func(void)
 		backlight_wake();
 		if (lcd_oldcardstatus)
 		{
-			card.initsd();
+			if (!card.cardOK)
+				card.initsd();
 			LCD_MESSAGERPGM(_T(WELCOME_MSG));
 			bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 			menu_submenu(lcd_sdcard_menu);
