@@ -716,6 +716,8 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
 			  }
 
+			  Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
+
 			  //first three lines are used for printing multiscreen message; last line contains measured and target nozzle temperature
 			  if (screen == 0) { //screen 0
 				  lcd_display_message_fullscreen_P(_i("MMU needs user attention."));
@@ -1584,6 +1586,7 @@ void mmu_continue_loading(bool blocking)
 
             setAllTargetHotends(0);
             lcd_setstatuspgm(_i("MMU load failed     "));////c=20 r=1
+            Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
 
             if (blocking)
             {
