@@ -894,7 +894,7 @@ do
     if [ $CURRENT_BOARD_MEM != "0x21FF" ] ; then
         echo "Board mem has been already modified or not reset"
         echo "Current:" $CURRENT_BOARD_MEM
-        PS3="Select Yes if you want to reset it."
+        PS3="Select $(tput setaf 2)Yes$(tput sgr 0) if you want to reset it."
         select yn in "Yes" "No"; do
             case $yn in
                 Yes)
@@ -926,7 +926,7 @@ do
         echo "Board flash has been already modified or not reset"
         echo "Current flash size:" $CURRENT_BOARD_FLASH
         echo "Current max.  size:" $CURRENT_BOARD_maximum_size
-        PS3="Select $(tput setaf 3)Yes$(tput sgr 0) if you want to reset it."
+        PS3="Select $(tput setaf 2)Yes$(tput sgr 0) if you want to reset it."
         select yn in "Yes" "No"; do
             case $yn in
                 Yes)
@@ -1143,12 +1143,12 @@ if [ ! -z "$mk404_flag" ]; then
         fi
     fi
 
-# Run MK404 with 'debugcore' and/or 'bootloader_file'
+# Run MK404 with 'debugcore' and/or 'bootloader-file'
 echo "MK404_DEBUG --$MK404_DEBUG--"
     if [ "$MK404_DEBUG" == "atmega404" ]; then
         MK404_options="--debugcore"
     elif [ "$MK404_DEBUG" == "atmega404_no_bootloader" ]; then
-        MK404_options="--debugcore --bootloader-file no"
+        MK404_options='--debugcore --bootloader-file ""'
     fi
 
 # Run MK404 with grafics
