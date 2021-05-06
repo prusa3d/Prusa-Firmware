@@ -6484,6 +6484,12 @@ static void activate_calibrate_sheet()
     lcd_first_layer_calibration_reset();
 }
 
+static void activate_adjust_sheet()
+{
+	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
+	lcd_babystep_z();
+}
+
 static void lcd_sheet_menu()
 {
     MENU_BEGIN();
@@ -6497,6 +6503,7 @@ static void lcd_sheet_menu()
     {
         MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);////MSG_V2_CALIBRATION c=18
     }
+	MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), activate_adjust_sheet);
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
 	MENU_ITEM_FUNCTION_P(_T(MSG_RESET), lcd_reset_sheet); ////MSG_RESET c=14
 
