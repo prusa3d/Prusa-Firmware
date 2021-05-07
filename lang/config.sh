@@ -17,7 +17,9 @@ export OBJCOPY=$ARDUINO/hardware/tools/avr/bin/avr-objcopy
 export OBJDUMP=$ARDUINO/hardware/tools/avr/bin/avr-objdump
 #
 # Output folder:
-export OUTDIR="../../Prusa-Firmware-build"
+if [ -z "$OUTDIR" ]; then
+    export OUTDIR="../../Prusa-Firmware-build"
+fi
 #
 # Objects folder:
 export OBJDIR="$OUTDIR/sketch"

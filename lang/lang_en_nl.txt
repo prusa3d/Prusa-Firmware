@@ -1,12 +1,8 @@
-#
-"[%.7s]Live adj. Z\x0avalue set, continue\x0aor start from zero?\x0a%cContinue%cReset"
-"[%.7s]Z instell.\x0awaarde ingesteld,\x0averder of bij 0\x0abeginen?\x0a%cVerder%cReset"
-
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 of ouder"
 
-# c=18
+#MSG_FS_V_03_OR_OLDER c=18
 "FS v0.3 or older"
 "FS 0.3 of ouder"
 
@@ -14,7 +10,7 @@
 " 0.4 or newer"
 " 0.4 of nieuwer"
 
-# c=18
+#MSG_FS_V_04_OR_NEWER c=18
 "FS v0.4 or newer"
 "FS 0.4 of nieuwer"
 
@@ -22,15 +18,7 @@
 "unknown state"
 "Status onbekend"
 
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
-" of 4"
-" van 4"
-
-#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
-" of 9"
-" van 9"
-
-#MSG_MEASURED_OFFSET
+#MSG_MEASURED_OFFSET c=20
 "[0;0] point offset"
 "[0;0] punt offset"
 
@@ -42,23 +30,19 @@
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 "WARNING:\x0aCrashdetectie\x0auitgeschakeld in\x0aStealth stand"
 
-#
-">Cancel"
-">Annuleren"
-
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
 "Z is ingesteld:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
-"All correct      "
-"Allemaal goed    "
+"All correct"
+"Allemaal goed"
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
 "Klaar. Happy printing!"
 
-#
+#MSG_AMBIENT c=14
 "Ambient"
 "Kamertemp."
 
@@ -74,11 +58,7 @@
 "Are left and right Z~carriages all up?"
 "Zijn beide Z wagen heelemaal boven?"
 
-#MSG_AUTO_DEPLETE c=17 r=1
-"SpoolJoin"
-"\x00"
-
-#MSG_AUTO_HOME
+#MSG_AUTO_HOME c=18
 "Auto home"
 "Startpositie"
 
@@ -94,36 +74,36 @@
 "Autoloading filament is active, just press the knob and insert filament..."
 "Automatisch laden van flament is actief, druk de knop en laad filament..."
 
-#MSG_SELFTEST_AXIS_LENGTH
+#MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
 "Aslengte"
 
-#MSG_SELFTEST_AXIS
+#MSG_SELFTEST_AXIS c=16
 "Axis"
 "As"
 
-#MSG_SELFTEST_BEDHEATER
-"Bed / Heater"
-"Bed / Verwarming"
+#MSG_SELFTEST_BEDHEATER c=20
+"Bed/Heater"
+"Bed/Verwarming"
 
-#MSG_BED_DONE
+#MSG_BED_DONE c=20
 "Bed done"
 "Bed klaar"
 
-#MSG_BED_HEATING
+#MSG_BED_HEATING c=20
 "Bed Heating"
 "Bed opwarmen"
 
-#MSG_BED_CORRECTION_MENU
+#MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
 "Bed niveau correct"
 
-#MSG_BELTTEST c=17
-"Belt test        "
-"Riemtest         "
+#MSG_BELTTEST c=18
+"Belt test"
+"Riemtest"
 
-#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=5
-"Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
+"Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
 "Bed leveling mislukt. Sensor heeft niet geactiveerd. Puin op tuit? Wacht op reset."
 
 #MSG_BRIGHT c=6
@@ -134,7 +114,7 @@
 "Brightness"
 "Helderheid"
 
-#MSG_BED
+#MSG_BED c=13
 "Bed"
 "Bed"
 
@@ -146,21 +126,25 @@
 "Blackout occurred. Recover print?"
 "Stroomstoring. Print herstellen?"
 
-#
+#MSG_CALIBRATING_HOME c=20
 "Calibrating home"
 "Kalibreren start"
 
-#MSG_CALIBRATE_BED
+#MSG_CALIBRATE_BED c=18
 "Calibrate XYZ"
 "Kalibratie XYZ"
 
-#MSG_HOMEYZ
+#MSG_HOMEYZ c=18
 "Calibrate Z"
 "Kalibratie Z"
 
-#MSG_CALIBRATE_PINDA c=17 r=1
+#MSG_CALIBRATE_PINDA c=17
 "Calibrate"
 "Kalibreren"
+
+#MSG_CANCEL2 c=10
+">Cancel"
+">Annuleren"
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
@@ -174,35 +158,31 @@
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "Kalibreren van Z. Draai de knop om de Z-wagen omhoog te gaan tot het einde stoppers. Druk knop als klaar."
 
-#MSG_HOMEYZ_DONE
+#MSG_HOMEYZ_DONE c=20
 "Calibration done"
 "Kalibratie klaar"
 
-#MSG_MENU_CALIBRATION
+#MSG_MENU_CALIBRATION c=18
 "Calibration"
 "Kalibratie"
 
-#
-"Cancel"
-"Annuleren"
-
-#MSG_SD_REMOVED
+#MSG_SD_REMOVED c=20
 "Card removed"
 "SD verwijderd"
 
-#
+#MSG_CHECKING_FILE c=17
 "Checking file"
-"\x00"
+"Bestand controle"
 
-#MSG_NOT_COLOR
+#MSG_NOT_COLOR c=19
 "Color not correct"
 "Kleur niet juist"
 
-#MSG_COOLDOWN
+#MSG_COOLDOWN c=18
 "Cooldown"
 "Afkoelen"
 
-#
+#MSG_COPY_SEL_LANG c=20 r=3
 "Copy selected language?"
 "Geselecteerde taal kopieren?"
 
@@ -210,15 +190,15 @@
 "Crash det."
 "Crashdet."
 
-#
+#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
 "Kies een filament voor de kalibratie van de eerste laag en selecteer deze in het schermmenu."
 
-#MSG_CRASH_DETECTED c=20 r=1
+#MSG_CRASH_DETECTED c=20
 "Crash detected."
 "Crash gedetecteerd."
 
-#
+#MSG_CRASH_RESUME c=20 r=3
 "Crash detected. Resume print?"
 "Crash gedetecteerd. Print voorzetten?"
 
@@ -226,19 +206,19 @@
 "Crash"
 "\x00"
 
-#MSG_CURRENT c=19 r=1
+#MSG_CURRENT c=19
 "Current"
 "Actueel"
 
-#MSG_DATE c=17 r=1
+#MSG_DATE c=17
 "Date:"
 "Datum:"
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"\x00"
+"Van de community"
 
-#MSG_DISABLE_STEPPERS
+#MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
 "Motoren uit"
 
@@ -248,7 +228,7 @@
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-"\x00"
+"Door."
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
@@ -262,7 +242,7 @@
 "Eject filament"
 "Fil. uitwerpen"
 
-#MSG_EJECTING_FILAMENT c=20 r=1
+#MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
 "Fil. word ontladen"
 
@@ -270,11 +250,11 @@
 "Endstop not hit"
 "Endstop niet geraakt"
 
-#MSG_SELFTEST_ENDSTOP
+#MSG_SELFTEST_ENDSTOP c=16
 "Endstop"
 "Eindstop"
 
-#MSG_SELFTEST_ENDSTOPS
+#MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
 "Eindstops"
 
@@ -290,7 +270,7 @@
 "Cutter"
 "Mes"
 
-# c=18
+#MSG_MMU_CUTTING_FIL c=18
 "Cutting filament"
 "Knippe filament"
 
@@ -302,7 +282,7 @@
 "Dim"
 "\x00"
 
-#MSG_ERROR
+#MSG_ERROR c=10
 "ERROR:"
 "FOUT:"
 
@@ -318,7 +298,7 @@
 "Extruder"
 "\x00"
 
-#
+#MSG_MMU_FAIL_STATS c=18
 "Fail stats MMU"
 "MMU-Fouten"
 
@@ -326,7 +306,7 @@
 "F. autoload"
 "F. autoladen"
 
-#
+#MSG_FAIL_STATS c=18
 "Fail stats"
 "Foutstatistieken"
 
@@ -342,7 +322,7 @@
 "Fans check"
 "Fans check"
 
-#MSG_FSENSOR
+#MSG_FSENSOR c=12
 "Fil. sensor"
 "\x00"
 
@@ -366,7 +346,7 @@
 "Filament used"
 "Gebruikte filament"
 
-#MSG_PRINT_TIME c=19 r=1
+#MSG_PRINT_TIME c=19
 "Print time"
 "Print tijd"
 
@@ -390,35 +370,31 @@
 "First, I will run the selftest to check most common assembly problems."
 "Ten eerste zullen we de zelftest uitvoeren om de meest voorkomende montageproblemen te controleren."
 
-#
+#MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
 "Los het probleem op en druk vervolgens op de knop op de MMU-eenheid."
 
-#MSG_FLOW
+#MSG_FLOW c=15
 "Flow"
 "Stromen"
-
-#MSG_PRUSA3D_FORUM
-"forum.prusa3d.com"
-"\x00"
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
 "Voorzijde fan?"
 
-#MSG_BED_CORRECTION_FRONT c=14 r=1
+#MSG_BED_CORRECTION_FRONT c=14
 "Front side[um]"
 "Voorkant  [um]"
 
-#MSG_SELFTEST_FANS
+#MSG_SELFTEST_FANS c=20
 "Front/left fans"
 "Fans voor/links"
 
-#MSG_SELFTEST_HEATERTHERMISTOR
+#MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
 "Verwarmer/Therm."
 
-#MSG_BED_HEATING_SAFETY_DISABLED
+#MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
 "Heating disabled by safety timer."
 "Verwarming uitgeschakeld door veiligheidstimer."
 
@@ -426,7 +402,7 @@
 "Heating done."
 "Opwarmen klaar."
 
-#MSG_HEATING
+#MSG_HEATING c=20
 "Heating"
 "Opwarmen"
 
@@ -434,15 +410,11 @@
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Hallo, ik ben uw Original Prusa i3 printer. Zullen we beginnen met het installatieproces?"
 
-#MSG_PRUSA3D_HOWTO
-"howto.prusa3d.com"
-"\x00"
-
-#MSG_FILAMENTCHANGE
+#MSG_FILAMENTCHANGE c=18
 "Change filament"
 "Wissel filament"
 
-#MSG_CHANGE_SUCCESS
+#MSG_CHANGE_SUCCESS c=20
 "Change success!"
 "Wissel geslaagd!"
 
@@ -451,19 +423,19 @@
 "Wissel ok?"
 
 #MSG_SELFTEST_CHECK_BED c=20
-"Checking bed     "
-"Controleer bed   "
+"Checking bed"
+"Controleer bed"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
 "Checking endstops"
 "Controleer endstops"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
-"Checking hotend  "
+"Checking hotend"
 "Controleer hotend"
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
-"Checking sensors "
+"Checking sensors"
 "Controleer sensors"
 
 #MSG_CHECKING_X c=20
@@ -478,15 +450,15 @@
 "Checking Z axis"
 "Controleer Z as"
 
-#MSG_CHOOSE_EXTRUDER c=20 r=1
+#MSG_CHOOSE_EXTRUDER c=20
 "Choose extruder:"
 "Kies extruder:"
 
-#MSG_CHOOSE_FILAMENT c=20 r=1
+#MSG_CHOOSE_FILAMENT c=20
 "Choose filament:"
 "Kies filament:"
 
-#MSG_FILAMENT c=17 r=1
+#MSG_FILAMENT c=17
 "Filament"
 "\x00"
 
@@ -498,7 +470,7 @@
 "I will run z calibration now."
 "Begin nu met z-kalibratie."
 
-#MSG_WATCH
+#MSG_WATCH c=18
 "Info screen"
 "Info scherm"
 
@@ -522,7 +494,7 @@
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
 "Hallo, ik ben je originele Prusa i3-printer. Ik zal je door een snel instellingsproces leiden dat de Z-as zal kalibreren. Dan ben je klaar om te printen."
 
-#
+#MSG_ADDITIONAL_SHEETS c=20 r=9
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
 "Als u extra staalplaten hebt, kalibreert u hun voorinstellingen in Instellingen - HW Setup - Staalplaten."
 
@@ -534,23 +506,23 @@
 "Left hotend fan?"
 "Linker hotend fan?"
 
-#
+#MSG_LEFT c=10
 "Left"
 "Links"
 
-#MSG_BED_CORRECTION_LEFT c=14 r=1
+#MSG_BED_CORRECTION_LEFT c=14
 "Left side [um]"
 "Linkerkant[um]"
 
-#
+#MSG_LIN_CORRECTION c=18
 "Lin. correction"
 "Lineaire correctie"
 
-#MSG_BABYSTEP_Z
+#MSG_BABYSTEP_Z c=18
 "Live adjust Z"
 "Live Z aanpassen"
 
-# c=20 r=6
+#MSG_INSERT_FIL c=20 r=6
 "Insert the filament (do not load it) into the extruder and then press the knob."
 "Steek a.u.b. filament (maar niet laden) in de extruder en druk op knop."
 
@@ -558,7 +530,7 @@
 "Load filament"
 "Filament laden"
 
-#MSG_LOADING_COLOR
+#MSG_LOADING_COLOR c=20
 "Loading color"
 "Laden kleur"
 
@@ -566,11 +538,15 @@
 "Loading filament"
 "Laden filament"
 
-#MSG_LOOSE_PULLEY c=20 r=1
+#MSG_ITERATION c=12
+"Iteration"
+"Iteratie"
+
+#MSG_LOOSE_PULLEY c=20
 "Loose pulley"
 "Losse riemschijf"
 
-#
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
 "Tot tuit laden"
 
@@ -578,7 +554,7 @@
 "M117 First layer cal."
 "M117 Eerste laag kal."
 
-#MSG_MAIN
+#MSG_MAIN c=18
 "Main"
 "Hoofdmenu"
 
@@ -590,7 +566,7 @@
 "Level Dimmed"
 "Dim waarde"
 
-#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
+#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 "Measuring reference height of calibration point"
 "Referentie hoogte van het kalibratiepunt meten"
 
@@ -606,7 +582,7 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Temperatuur hervatten..."
 
-#
+#MSG_MEASURED_SKEW c=14
 "Measured skew"
 "Scheefheid"
 
@@ -614,9 +590,9 @@
 "MMU fails"
 "MMU fout"
 
-#
-"MMU load failed     "
-"MMU laden mislukt   "
+#MSG_MMU_LOAD_FAILED c=20
+"MMU load failed"
+"MMU laden mislukt"
 
 #MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
@@ -626,87 +602,87 @@
 "MMU OK. Resuming..."
 "MMU OK. Hervatten..."
 
-#MSG_MODE
+#MSG_MODE c=6
 "Mode"
 "Stand"
 
-# c=20 r=3
+#MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 "MK3 firmware detected on MK3S printer"
 "MK3-firmware bij MK3S-printer gedetecteerd"
 
-#MSG_NORMAL
+#MSG_NORMAL c=7
 "Normal"
 "Normaal"
 
-#MSG_SILENT
+#MSG_SILENT c=7
 "Silent"
 "Stil"
 
-#
+#MSG_MMU_USER_ATTENTION c=20 r=3
 "MMU needs user attention."
 "MMU heeft gebruikersaandacht nodig."
 
-#
+#MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
 "MMU stroomstor."
 
-#MSG_STEALTH
+#MSG_STEALTH c=7
 "Stealth"
-"\x00"
+"Stil"
 
-#MSG_AUTO_POWER
+#MSG_AUTO_POWER c=10
 "Auto power"
 "\x00"
 
-#MSG_HIGH_POWER
+#MSG_HIGH_POWER c=10
 "High power"
 "Hoog verm."
 
-#
+#MSG_MMU_CONNECTED c=18
 "MMU2 connected"
 "MMU2 verbonden"
 
-#MSG_SELFTEST_MOTOR
+#MSG_SELFTEST_MOTOR c=18
 "Motor"
 "\x00"
 
-#MSG_MOVE_AXIS
+#MSG_MOVE_AXIS c=18
 "Move axis"
 "As verplaatsen"
 
-#MSG_MOVE_X
+#MSG_MOVE_X c=18
 "Move X"
 "Verplaats X"
 
-#MSG_MOVE_Y
+#MSG_MOVE_Y c=18
 "Move Y"
 "Verplaats Y"
 
-#MSG_MOVE_Z
+#MSG_MOVE_Z c=18
 "Move Z"
 "Verplaats Z"
 
-#MSG_NO_MOVE
+#MSG_NO_MOVE c=20
 "No move."
 "Geen beweging."
 
-#MSG_NO_CARD
+#MSG_NO_CARD c=18
 "No SD card"
 "Geen SD kaart"
 
-#MSG_NA
+#MSG_NA c=3
 "N/A"
 "N/V"
 
-#MSG_NO
+#MSG_NO c=4
 "No"
 "Nee"
 
-#MSG_SELFTEST_NOTCONNECTED
+#MSG_SELFTEST_NOTCONNECTED c=20
 "Not connected"
 "Niet verbonden"
 
-#
+#MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 "New firmware version available:"
 "Nieuwe firmware versie beschikbaar:"
 
@@ -722,19 +698,19 @@
 "Now I will preheat nozzle for PLA."
 "Opwarmen van de tuit voor PLA voor."
 
-#MSG_NOZZLE
+#MSG_NOZZLE c=12
 "Nozzle"
 "Tuit"
 
-#MSG_DEFAULT_SETTINGS_LOADED c=20 r=5
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 "Old settings found. Default PID, Esteps etc. will be set."
 "Oude instellingen gevonden. Standaard PID, E-steps etc. instellingen worden geladen."
 
-#
+#MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Verwijder nu de testprint van staalplaat."
 
-#
+#MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
 "Tuit fan"
 
@@ -742,19 +718,19 @@
 "Pause print"
 "Print pauzeren"
 
-#MSG_PID_RUNNING c=20 r=1
-"PID cal.           "
-"PID kal.           "
+#MSG_PID_RUNNING c=20
+"PID cal."
+"PID kal."
 
-#MSG_PID_FINISHED c=20 r=1
+#MSG_PID_FINISHED c=20
 "PID cal. finished"
 "PID kalibratie klaar"
 
-#MSG_PID_EXTRUDER c=17 r=1
+#MSG_PID_EXTRUDER c=17
 "PID calibration"
 "PID kalibratie"
 
-#MSG_PINDA_PREHEAT c=20 r=1
+#MSG_PINDA_PREHEAT c=20
 "PINDA Heating"
 "PINDA opwarmen"
 
@@ -770,19 +746,19 @@
 "Please clean the nozzle for calibration. Click when done."
 "Reinig de tuit voor de kalibratie. Druk op de knop wanneer gereed."
 
-#MSG_SELFTEST_PLEASECHECK
-"Please check :"
+#MSG_SELFTEST_PLEASECHECK c=20
+"Please check:"
 "Controleer aub:"
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Controleer aub ons handboek en los het probleem op. Hervat vervolgens de wizard door de printer opnieuw te starten."
 
-#MSG_CHECK_IDLER c=20 r=4
+#MSG_CHECK_IDLER c=20 r=5
 "Please open idler and remove filament manually."
 "Open rondsel en verwijder filament handmatig."
 
-#MSG_PLACE_STEEL_SHEET c=20 r=4
+#MSG_PLACE_STEEL_SHEET c=20 r=5
 "Please place steel sheet on heatbed."
 "Leg staalplaat op bed."
 
@@ -814,7 +790,7 @@
 "Please wait"
 "Even geduld aub"
 
-#
+#MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 "Please remove shipping helpers first."
 "Verwijder eerst de transport beschermers."
 
@@ -822,7 +798,7 @@
 "Preheat the nozzle!"
 "Tuit voorverwarmen!"
 
-#MSG_PREHEAT
+#MSG_PREHEAT c=18
 "Preheat"
 "Voorverwarmen"
 
@@ -830,13 +806,9 @@
 "Preheating nozzle. Please wait."
 "Opwarmen van de tuit. Wacht aub."
 
-# c=14
-"PINDA"
-"\x00"
-
-#
+#MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
-"Voer een upgrade uit."
+"Voer een upgrade uit"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press the knob to preheat nozzle and continue."
@@ -854,11 +826,11 @@
 "Print aborted"
 "Print afgebroken"
 
-# c=20
+#MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
 "Opwarmen invoeren"
 
-# c=20
+#MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 "Opwarmen uitwerpen"
 
@@ -866,19 +838,19 @@
 "Print fan:"
 "\x00"
 
-#MSG_CARD_MENU
+#MSG_CARD_MENU c=18
 "Print from SD"
 "Print van SD"
 
-# c=20
+#MSG_PRESS_KNOB c=20
 "Press the knob"
 "Druk op knop"
 
-#MSG_PRINT_PAUSED c=20 r=1
+#MSG_PRINT_PAUSED c=20
 "Print paused"
 "Print pauzeren"
 
-#
+#MSG_RESUME_NOZZLE_TEMP c=20 r=4
 "Press the knob to resume nozzle temperature."
 "Druk op de knop om de temperatuur van de tuit te hervatten."
 
@@ -886,51 +858,43 @@
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Printer is nog niet gekalibreerd. Volg de handleiding, hoofdstuk First steps, sectie Calibration flow."
 
-#
+#MSG_PRINT_FAN c=10
 "Print FAN"
 "\x00"
 
-#
+#MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
 "Steek a.u.b. filament in de extruder en druk op de knop om het te laden."
 
-#
+#MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 "Please insert filament into the first tube of the MMU, then press the knob to load it."
 "Steek a.u.b. filament in de eerste buis van de MMU en druk op de knop om het te laden."
 
-#
+#MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load filament first."
 "Laad a.u.b. eerst filament."
 
-#MSG_PRUSA3D
-"prusa3d.com"
-"\x00"
-
-#MSG_BED_CORRECTION_REAR c=14 r=1
+#MSG_BED_CORRECTION_REAR c=14
 "Rear side [um]"
 "Achterkant[um]"
 
-# c=20 r=4
+#MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
 "Verwijder eerst het filament en probeer het opnieuw."
 
-# c=20 r=4
+#MSG_CHECK_IR_CONNECTION c=20 r=4
 "Please check the IR sensor connection, unload filament if present."
-"AUB IR sensor verbindingen kontrolleren en filament verwijderd is."
+"AUB IR sensor ver- binding kontrolleren , verwijder filament indien aanwezig."
 
 #MSG_RECOVERING_PRINT c=20
-"Recovering print    "
-"Print herstellen    "
+"Recovering print"
+"Print herstellen"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
 "Verwijder de oude filament en druk op de knop om nieuwe filament te laden."
 
-# c=20
-"Prusa i3 MK3S OK."
-"\x00"
-
-#MSG_CALIBRATE_BED_RESET
+#MSG_CALIBRATE_BED_RESET c=18
 "Reset XYZ calibr."
 "Reset XYZ kalibr."
 
@@ -946,11 +910,11 @@
 "Resuming print"
 "Hervatten print"
 
-#MSG_BED_CORRECTION_RIGHT c=14 r=1
+#MSG_BED_CORRECTION_RIGHT c=14
 "Right side[um]"
 "Recht.kant[um]"
 
-#MSG_RPI_PORT
+#MSG_RPI_PORT c=13
 "RPi port"
 "\x00"
 
@@ -958,71 +922,55 @@
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 "Starten van de Wizard verwijdert de huidige kalibreringsresultaten en begint vanaf het begin. Doorgaan?"
 
-#MSG_SD_CARD
+#MSG_SD_CARD c=8
 "SD card"
 "SD kaart"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY
-"FlashAir"
-"\x00"
-
-#
+#MSG_RIGHT c=10
 "Right"
 "Rechts"
 
-#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60
+#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
 "Searching bed calibration point"
 "Zoeken bed kalibratiepunt"
 
-#MSG_LANGUAGE_SELECT
+#MSG_LANGUAGE_SELECT c=18
 "Select language"
 "Kies taal"
 
-#MSG_SELFTEST_OK
+#MSG_SELFTEST_OK c=20
 "Self test OK"
 "Zelftest  OK"
 
 #MSG_SELFTEST_START c=20
-"Self test start  "
-"Zelftest start   "
+"Self test start"
+"Zelftest start"
 
-#MSG_SELFTEST
-"Selftest         "
-"Zelftest         "
+#MSG_SELFTEST c=18
+"Selftest"
+"Zelftest"
 
-#MSG_SELFTEST_ERROR
-"Selftest error !"
-"Zelftest fout  !"
+#MSG_SELFTEST_ERROR c=20
+"Selftest error!"
+"Zelftest fout!"
 
 #MSG_SELFTEST_FAILED c=20
-"Selftest failed  "
-"Zelftest mislukt "
+"Selftest failed"
+"Zelftest mislukt"
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
 "Zelftest zal worden uitgevoerd om nauwkeurige sensorloze auto positie te kalibreren."
 
-#
+#MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
 "Selecteer de voorverwarmingstemperatuur van de tuit die overeenkomt met uw materiaal."
 
-#MSG_SET_TEMPERATURE c=19 r=1
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 "Temp. instellen:"
 
-# c=20
-"Prusa i3 MK2.5 OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK2.5S OK."
-"\x00"
-
-# c=20
-"Prusa i3 MK3 OK."
-"\x00"
-
-#MSG_SETTINGS
+#MSG_SETTINGS c=18
 "Settings"
 "Instellingen"
 
@@ -1030,63 +978,59 @@
 "Show end stops"
 "Toon endstops"
 
-#
-"Sensor state"
-"Sensorstatus"
-
 #MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Sommige bestanden worden niet gesorteerd omdat het maximum aantal bestanden per map 100 is."
 
-#MSG_SORT
+#MSG_SORT c=7
 "Sort"
 "Sort."
 
-#MSG_NONE
+#MSG_NONE c=8
 "None"
 "Geen"
 
-#MSG_SORT_TIME
+#MSG_SORT_TIME c=8
 "Time"
 "Tijd"
 
-#
-"Severe skew:"
-"Erg scheef:"
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Erg scheef"
 
-#MSG_SORT_ALPHA
+#MSG_SORT_ALPHA c=8
 "Alphabet"
 "Alfabet"
 
-#MSG_SORTING c=20 r=1
+#MSG_SORTING c=20
 "Sorting files"
 "Bestanden sorteren"
 
-#MSG_SOUND_LOUD
+#MSG_SOUND_LOUD c=7
 "Loud"
 "Hard"
 
-#
-"Slight skew:"
-"Iets scheef:"
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
+"Beetje scheef"
 
-#MSG_SOUND
+#MSG_SOUND c=7
 "Sound"
 "Geluid"
 
-# c=7
+#MSG_RUNOUTS c=7
 "Runouts"
-"\x00"
+"Fouten"
 
-#
+#MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
 "Er is een probleem opgetreden, Z-kalibratie afgedwongen ..."
 
-#MSG_SOUND_ONCE
+#MSG_SOUND_ONCE c=7
 "Once"
 "Eenmaal"
 
-#MSG_SPEED
+#MSG_SPEED c=15
 "Speed"
 "Snelheid"
 
@@ -1096,29 +1040,29 @@
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
-"Stabiele omgevingstemperatuur van 21-26C is nodig, een stevige stand is vereist."
+"En stabiele 21-26C omgevingstemperatuur is nodig,een stevige stand is vereist."
 
-#MSG_STATISTICS
-"Statistics  "
+#MSG_STATISTICS c=18
+"Statistics"
 "Statistieken"
 
-#MSG_STOP_PRINT
+#MSG_STOP_PRINT c=18
 "Stop print"
 "Print stoppen"
 
-#MSG_STOPPED
-"STOPPED. "
-"GESTOPT. "
+#MSG_STOPPED c=20
+"STOPPED."
+"GESTOPT."
 
-#MSG_SUPPORT
+#MSG_SUPPORT c=18
 "Support"
 "\x00"
 
-#MSG_SELFTEST_SWAPPED
+#MSG_SELFTEST_SWAPPED c=16
 "Swapped"
 "Gewisseld"
 
-#
+#MSG_SELECT_FILAMENT c=20
 "Select filament:"
 "Kies filament:"
 
@@ -1126,11 +1070,11 @@
 "Temp. cal."
 "Tempkalib."
 
-#
+#MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Selecteer de temperatuur die overeenkomt met uw materiaal."
 
-#MSG_CALIBRATION_PINDA_MENU c=17 r=1
+#MSG_CALIBRATION_PINDA_MENU c=17
 "Temp. calibration"
 "Tempkalibratie"
 
@@ -1142,15 +1086,15 @@
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 "Temperatuurkalibratie kan uitgeschakeld worden in het menu Instellingen-> Tempkalibratie."
 
-# c=20 r=3
+#MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
 "Sensor geverifieerd, verwijder nu het filament."
 
-#MSG_TEMPERATURE
+#MSG_TEMPERATURE c=18
 "Temperature"
 "Temperatuur"
 
-#MSG_MENU_TEMPERATURES c=15 r=1
+#MSG_MENU_TEMPERATURES c=15
 "Temperatures"
 "Temperaturen"
 
@@ -1158,39 +1102,35 @@
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "Er is nog steeds een noodzaak om de Z-kalibratie uit te voeren. Volg de handleiding, hoofdstuk First steps, section Calibration flow."
 
-#
+#MSG_TOTAL_FILAMENT c=19
 "Total filament"
-"Totaal fil.   "
+"Totaal fil."
 
-#
+#MSG_TOTAL_PRINT_TIME c=19
 "Total print time"
 "Totaal printtijd"
 
-#MSG_TUNE
+#MSG_TUNE c=18
 "Tune"
 "Fijnafstemming"
-
-#
-"Unload"
-"Verwijderen"
 
 #MSG_TOTAL_FAILURES c=20
 "Total failures"
 "Totaal fouten"
 
-# c=20
+#MSG_TO_LOAD_FIL c=20
 "to load filament"
 "om filament te laden"
 
-# c=20
+#MSG_TO_UNLOAD_FIL c=20
 "to unload filament"
-"om filament te laden"
+"om fil. uitwerpen"
 
-#MSG_UNLOAD_FILAMENT c=17
+#MSG_UNLOAD_FILAMENT c=16
 "Unload filament"
-"Filament uitwerpen"
+"Fil. uitwerpen"
 
-#MSG_UNLOADING_FILAMENT c=20 r=1
+#MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
 "Uitwerpen filament"
 
@@ -1198,33 +1138,29 @@
 "Total"
 "Totaal"
 
-#MSG_USED c=19 r=1
+#MSG_USED c=19
 "Used during print"
 "Gebruikt bij print"
 
-#MSG_MENU_VOLTAGES c=15 r=1
+#MSG_MENU_VOLTAGES c=15
 "Voltages"
 "Spanning"
 
-#
+#MSG_UNKNOWN c=13
 "unknown"
 "onbekend"
 
-#MSG_USERWAIT
+#MSG_USERWAIT c=20
 "Wait for user..."
-"Wacht op gebruiker ..."
+"Wacht op gebruiker.."
 
-#MSG_WAITING_TEMP c=20 r=3
+#MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
 "Wachten op afkoelen van tuit en bed"
 
 #MSG_WAITING_TEMP_PINDA c=20 r=3
 "Waiting for PINDA probe cooling"
 "Wachten op afkoelen van PINDA"
-
-#
-"Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
-"Gebruik ontladen om filament 1 te verwijderen als het uitsteekt buiten de achterste MMU-buis. Gebruik uitwerpen als deze in de tube is verborgen."
 
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
@@ -1240,13 +1176,13 @@
 
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
-"Is filament succesvol verwijderd?"
+"Is filament succes- vol verwijderd?"
 
-#MSG_SELFTEST_WIRINGERROR
+#MSG_SELFTEST_WIRINGERROR c=18
 "Wiring error"
 "Aansluitingsfout"
 
-#MSG_WIZARD c=17 r=1
+#MSG_WIZARD c=17
 "Wizard"
 "Wizard"
 
@@ -1258,7 +1194,7 @@
 "XYZ calibration failed. Please consult the manual."
 "XYZ-kalibratie mislukt. Raadpleeg de handleiding aub."
 
-#MSG_YES
+#MSG_YES c=3
 "Yes"
 "Ja"
 
@@ -1298,27 +1234,27 @@
 "Load all"
 "Laad alle"
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 "XYZ calibration failed. Bed calibration point was not found."
 "XYZ-kalibratie mislukt. Bed ijkpunt niet gevonden."
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 "XYZ calibration failed. Front calibration points not reachable."
 "XYZ-kalibratie mislukt. Voorste kalibratiepunten niet bereikbaar."
 
-#
+#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 "XYZ calibration failed. Right front calibration point not reachable."
 "XYZ-kalibratie mislukt. Rechter voor kalibratiepunt niet bereikbaar."
 
-#
+#MSG_Y_DIST_FROM_MIN c=20
 "Y distance from min"
 "Y afstand van min"
 
-#
+#MSG_WIZARD_V2_CAL_2 c=20 r=12
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "De printer begint een zigzaglijn printen. Draai aan de knop totdat je de optimale hoogte hebt bereikt. Bekijk de afbeeldingen in de handleiding (Calibration chapter)."
 
-# c=20 r=5
+#MSG_FIL_FAILED c=20 r=5
 "Verification failed, remove the filament and try again."
 "Verificatie mislukt, verwijder het filament en probeer het opnieuw."
 
@@ -1326,83 +1262,71 @@
 "Y-correct:"
 "Y-correctie:"
 
-#MSG_OFF
+#MSG_OFF c=3
 "Off"
 "Uit"
 
-#MSG_ON
+#MSG_ON c=3
 "On"
 "Aan"
 
-#
+#MSG_BACK c=18
 "Back"
 "terug"
 
-#
+#MSG_CHECKS c=18
 "Checks"
 "\x00"
 
-#
+#MSG_FALSE_TRIGGERING c=20
 "False triggering"
 "Valse triggering"
 
-#
-"FINDA:"
-"\x00"
-
-#MSG_FIRMWARE
-"Firmware"
-"\x00"
-
-#MSG_STRICT
+#MSG_STRICT c=8
 "Strict"
 "Strikt"
 
-#MSG_WARN
+#MSG_WARN c=8
 "Warn"
-"\x00"
+"Waarsch."
 
 #MSG_HW_SETUP c=18
 "HW Setup"
 "HW Configuratie"
 
-#
-"IR:"
-"\x00"
-
-#MSG_MAGNETS_COMP
+#MSG_MAGNETS_COMP c=13
 "Magnets comp."
 "Magnet. comp."
 
-#MSG_MESH
+#MSG_MESH c=12
 "Mesh"
 "\x00"
 
-#
+#MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
 "MK3S firmware detected on MK3 printer"
 "MK3S-firmware op MK3-printer ontdekt"
 
-#MSG_MMU_MODE
+#MSG_MMU_MODE c=8
 "MMU Mode"
 "MMU Mod"
 
-#
-"Mode change in progress ..."
+#MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
+"Mode change in progress..."
 "Moduswijziging bezig..."
 
-#MSG_MODEL
+#MSG_MODEL c=8
 "Model"
 "\x00"
 
-#MSG_NOZZLE_DIAMETER
+#MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."
 "Tuit d."
 
-#
+#MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
 "G-Code is voor een ander niveau geslict. Doorgaan?"
 
-#
+#MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
 "G-Code is voor een ander niveau geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
 
@@ -1410,51 +1334,47 @@
 "G-code sliced for a different printer type. Continue?"
 "G-Code is voor een ander printertype geslict. Doorgaan?"
 
-#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=7
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
 "G-Code is voor een ander printertype geslict. Slice het model opniew alsjeblieft. Druk geannuleerd."
 
-#
+#MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 "G-code sliced for a newer firmware. Continue?"
 "G-Code is voor een nieuwere firmware geslict. Doorgaan?"
 
-#
+#MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "G-Code is voor een nieuwere firmware geslict. Update de firmware alsjeblieft. Druk geannuleerd."
 
-#
-"PINDA:"
-"\x00"
-
-# c=20
+#MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
 "Opwarm. te snijden"
 
-# c=20
+#MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
 "Opwarm.te uitwerpen"
 
-#
+#MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
 "De diameter van de tuit van de printer verschilt van de G-code. Doorgaan?"
 
-#
+#MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
 "De diameter van de tuit van de printer verschilt van de G-code. Controleer de waarde in de instellingen. Afdrukken geannuleerd."
 
-# c=20
+#MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"\x00"
+"%s niveau verwacht"
 
-#
+#MSG_RENAME c=18
 "Rename"
 "Hernoem"
 
-#
+#MSG_SELECT c=18
 "Select"
 "Selecteer"
 
-#
+#MSG_INFO_SENSORS c=18
 "Sensor info"
 "\x00"
 
@@ -1462,9 +1382,9 @@
 "Sheet"
 "Staalplaat"
 
-#MSG_SOUND_BLIND
+#MSG_SOUND_BLIND c=7
 "Assist"
-"\x00"
+"Assist."
 
 #MSG_STEEL_SHEET c=18
 "Steel sheets"
@@ -1474,7 +1394,10 @@
 "Z-correct:"
 "Z-correctie:"
 
-#MSG_Z_PROBE_NR
+#MSG_Z_PROBE_NR c=14
 "Z-probe nr."
-"\x00"
+"Z-test nr."
 
+#MSG_PRINTER_IP c=18
+"Printer IP Addr:"
+"Printer IP-adres:"
