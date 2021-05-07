@@ -133,6 +133,9 @@ extern uint8_t farm_mode;
 extern int farm_timer;
 extern uint8_t farm_status;
 
+extern bool UserECoolEnabled();
+extern bool FarmOrUserECool();
+
 #ifdef TMC2130
 #define SILENT_MODE_NORMAL 0
 #define SILENT_MODE_STEALTH 1
