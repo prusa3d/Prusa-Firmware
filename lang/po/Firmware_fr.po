@@ -107,7 +107,7 @@ msgstr "Chargement auto du filament uniquement si le capteur de filament est act
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2569
-msgid "Autoloading filament is active, just press the knob and insert filament..."
+msgid "Autoloading filament is active, just insert filament, press the knob to exit..."
 msgstr "Chargement auto. du fil. active, appuyez sur le bouton et inserez le fil."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20

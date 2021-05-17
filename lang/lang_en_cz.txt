@@ -71,7 +71,7 @@
 "Automaticke zavadeni filamentu je mozne pouze pri zapnutem filament senzoru..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
-"Autoloading filament is active, just press the knob and insert filament..."
+"Autoloading filament is active, just insert filament, press the knob to exit..."
 "Automaticke zavadeni filamentu aktivni, stisknete tlacitko a vlozte filament..."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
