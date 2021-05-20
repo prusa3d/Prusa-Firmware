@@ -9755,7 +9755,6 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 
 	if (mmu_enabled == false)
 	{
-//-//		if (mcode_in_progress != 600) //M600 not in progress
 		if (!PRINTER_ACTIVE) bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); //Block Filament sensor actions if PRINTER is not active and Support::SensorInfo menu active
 #ifdef IR_SENSOR_ANALOG
 		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Block Filament sensor actions if Settings::HWsetup::FSdetect menu active
@@ -9764,6 +9763,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
+                // idling: housekeeping and autoload checks
 #ifdef IR_SENSOR_ANALOG
                 // Attempt to detect a change in the IR PCB version
                 manage_inactivity_IR_ANALOG_CheckPCB();
@@ -9786,6 +9786,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			}
 			else
 			{
+                // printing: runout detection
 #ifdef PAT9125
 				fsensor_autoload_check_stop();
 #endif //PAT9125
