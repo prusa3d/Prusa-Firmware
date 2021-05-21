@@ -7301,7 +7301,7 @@ void lcd_belttest()
 #ifdef IR_SENSOR_ANALOG
 // called also from marlin_main.cpp
 void printf_IRSensorAnalogBoardChange(){
-    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), FsensorIRVersionText());
+    printf_P(PSTR("Filament sensor board change detected: revision %S\n"), FsensorIRVersionText());
 }
 
 static bool lcd_selftest_IRsensor(bool bStandalone)
