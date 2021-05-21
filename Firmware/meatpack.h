@@ -47,7 +47,7 @@
 // some non-0xFF character.
 enum MeatPack_Command {
     MPCommand_None            = 0U,
-    MPCommand_TogglePacking   = 253U,
+    // MPCommand_TogglePacking   = 253U, -- Unused, byte 253 can be re-used later.
     MPCommand_EnablePacking   = 251U,
     MPCommand_DisablePacking  = 250U,
     MPCommand_ResetAll        = 249U,
