@@ -7327,6 +7327,7 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
     }
     if((bPCBrev04 ? 1 : 0) != (uint8_t)oFsensorPCB){        // safer then "(uint8_t)bPCBrev04"
         oFsensorPCB=bPCBrev04 ? ClFsensorPCB::_Rev04 : ClFsensorPCB::_Old;
+        oFSCheckCount = 0;
         printf_IRSensorAnalogBoardChange();
         eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
     }

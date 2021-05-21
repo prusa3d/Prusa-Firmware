@@ -123,6 +123,7 @@ uint16_t fsensor_oq_sh_sum;
 #ifdef IR_SENSOR_ANALOG
 ClFsensorPCB oFsensorPCB;
 ClFsensorActionNA oFsensorActionNA;
+uint16_t oFSCheckCount = FS_CHECK_COUNT * 3;
 bool bIRsensorStateFlag=false;
 unsigned long nIRsensorLastTime;
 #endif //IR_SENSOR_ANALOG
@@ -207,6 +208,10 @@ void fsensor_init(void)
 	bIRsensorStateFlag=false;
 	oFsensorPCB = (ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
 	oFsensorActionNA = (ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
+
+    // disable checking for PCB updates if already at the newest version
+    if(oFsensorPCB == ClFsensorPCB::_Newest)
+        oFSCheckCount = 0;
 
 	// If the fsensor is not responding even at the start of the printer,
 	// set this flag accordingly to show N/A in Settings->Filament sensor.

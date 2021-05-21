@@ -9679,34 +9679,15 @@ static void handleSafetyTimer()
 #endif //SAFETYTIMER
 
 #ifdef IR_SENSOR_ANALOG
-#define FS_CHECK_COUNT 16
-/// Switching mechanism of the fsensor type.
-/// Called from 2 spots which have a very similar behavior
-/// 1: ClFsensorPCB::_Old -> ClFsensorPCB::_Rev04 and print _i("FS v0.4 or newer")
-/// 2: ClFsensorPCB::_Rev04 -> oFsensorPCB=ClFsensorPCB::_Old and print _i("FS v0.3 or older")
-void manage_inactivity_IR_ANALOG_Check(uint16_t &nFSCheckCount, ClFsensorPCB isVersion, ClFsensorPCB switchTo, const char *statusLineTxt_P) {
-    bool bTemp = (!CHECK_ALL_HEATERS);
-    bTemp = bTemp && (menu_menu == lcd_status_screen);
-    bTemp = bTemp && ((oFsensorPCB == isVersion) || (oFsensorPCB == ClFsensorPCB::_Undef));
-    bTemp = bTemp && fsensor_enabled;
-    if (bTemp) {
-        nFSCheckCount++;
-        if (nFSCheckCount > FS_CHECK_COUNT) {
-            nFSCheckCount = 0; // not necessary
-            oFsensorPCB = switchTo;
-            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)oFsensorPCB);
-            printf_IRSensorAnalogBoardChange();
-            lcd_setstatuspgm(statusLineTxt_P);
-        }
-    } else {
-        nFSCheckCount = 0;
-    }
-}
-
 void manage_inactivity_IR_ANALOG_CheckPCB()
 {
-    static uint16_t nFSCheckCount=0;
     static uint16_t minVolt = Voltage2Raw(6.F), maxVolt = 0;
+    static ClFsensorPCB nFsensorPCB = oFsensorPCB;
+    static uint16_t nFSCheckCount = FS_CHECK_COUNT;
+
+    // only attempt detection when cold and idling in the status screen
+    if (!fsensor_enabled || CHECK_ALL_HEATERS || menu_menu != lcd_status_screen)
+        return;
 
     // detect min-max, some long term sliding window for filtration may be added
     // avoiding floating point operations, thus computing in raw
@@ -9722,10 +9703,13 @@ void manage_inactivity_IR_ANALOG_CheckPCB()
         }
     }
 #endif // End: IR Sensor debug info
+
     //! The trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
     //! to be detected as the new fsensor
     //! We can either fake it by extending the detection window to a looooong time
     //! or do some other countermeasures
+    ClFsensorPCB tempFsensorPCB;
+    const char *statusLineTxt_P;
 
     //! what we want to detect:
     //! if minvolt gets below ~0.3V, it means there is an old fsensor
@@ -9735,7 +9719,8 @@ void manage_inactivity_IR_ANALOG_CheckPCB()
     if( minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD
         && maxVolt >= IRsensor_Hmin_TRESHOLD && maxVolt <= IRsensor_Hopen_TRESHOLD
         ){
-        manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Old, ClFsensorPCB::_Rev04, _i("FS v0.4 or newer") ); ////MSG_FS_V_04_OR_NEWER c=18
+        tempFsensorPCB = ClFsensorPCB::_Rev04;
+        statusLineTxt_P = _i("FS v0.4 or newer"); ////MSG_FS_V_04_OR_NEWER c=18
     }
     //! If and only if minVolt is in range <0.0, 0.3> and maxVolt is in range  <4.6, 5.0V>, I'm considering a situation with the old fsensor
     //! Note, we are not relying on one voltage here - getting just +5V can mean an old fsensor or a broken new sensor - that's why
@@ -9743,7 +9728,34 @@ void manage_inactivity_IR_ANALOG_CheckPCB()
     else if( minVolt < IRsensor_Ldiode_TRESHOLD
              && maxVolt > IRsensor_Hopen_TRESHOLD && maxVolt <= IRsensor_VMax_TRESHOLD
              ){
-        manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Rev04, oFsensorPCB=ClFsensorPCB::_Old, _i("FS v0.3 or older")); ////MSG_FS_V_03_OR_OLDER c=18
+        tempFsensorPCB = ClFsensorPCB::_Old;
+        statusLineTxt_P = _i("FS v0.3 or older"); ////MSG_FS_V_03_OR_OLDER c=18
+    }
+    //! Ambiguous range
+    else
+    {
+        tempFsensorPCB = ClFsensorPCB::_Undef;
+    }
+
+    if (tempFsensorPCB != ClFsensorPCB::_Undef)
+    {
+        --oFSCheckCount;
+
+        if (tempFsensorPCB != nFsensorPCB)
+        {
+            // latest detection changed, reset internal counters
+            nFsensorPCB = tempFsensorPCB;
+            nFSCheckCount = FS_CHECK_COUNT;
+        }
+        else if(!--nFSCheckCount)
+        {
+            // consistent PCB match, set detected sensor type and stop attempts
+            oFSCheckCount = 0;
+            oFsensorPCB = tempFsensorPCB;
+            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)oFsensorPCB);
+            printf_IRSensorAnalogBoardChange();
+            lcd_setstatuspgm(statusLineTxt_P);
+        }
     }
 }
 #endif
@@ -9765,8 +9777,11 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			{
                 // idling: housekeeping and autoload checks
 #ifdef IR_SENSOR_ANALOG
-                // Attempt to detect a change in the IR PCB version
-                manage_inactivity_IR_ANALOG_CheckPCB();
+                if (oFSCheckCount)
+                {
+                    // Attempt to detect an upgrade of the filament sensor PCB
+                    manage_inactivity_IR_ANALOG_CheckPCB();
+                }
 #endif // IR_SENSOR_ANALOG
 				if (fsensor_check_autoload())
 				{

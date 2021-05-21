@@ -83,15 +83,20 @@ extern uint8_t fsensor_log;
 //! @}
 #endif //PAT9125
 
+#ifdef IR_SENSOR_ANALOG
 #define VOLT_DIV_REF 5
 
-#ifdef IR_SENSOR_ANALOG
 #define IR_SENSOR_STEADY 10                       // [ms]
+
+// number of required consistent consecutive filament sensor check attempts
+#define FS_CHECK_COUNT 16
+// number of remaining filament sensor checks to be done
+extern uint16_t oFSCheckCount;
 
 enum class ClFsensorPCB:uint_least8_t
 {
     _Old=0,
-    _Rev04=1,
+    _Rev04=1, _Newest=1,
     _Undef=EEPROM_EMPTY_VALUE
 };
 
