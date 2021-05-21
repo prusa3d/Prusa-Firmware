@@ -79,7 +79,7 @@ ISR(USART2_RX_vect)
 	if (rbuf_put(uart2_ibuf, UDR2) < 0) // put received byte to buffer
 	{ //rx buffer full
 		//uart2_rx_clr(); //for sure, clear input buffer
-		printf_P(PSTR("USART2 rx Full!!!\n"));
+		puts_P(PSTR("USART2 rx Full!!!"));
 	}
 }
 

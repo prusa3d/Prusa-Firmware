@@ -163,6 +163,22 @@ else
   ./update_lang.sh pl 2>./update_lang_pl.out 1>/dev/null
   if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; finish 1; fi
  fi
+#Community language support
+#Dutch
+ if [ -e lang_nl.bin ]; then
+  echo -n " Dutch  : " >&2
+  ./update_lang.sh nl 2>./update_lang_nl.out 1>/dev/null
+  if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
+ fi
+
+#Use the 6 lines below as a template and replace 'qr' and 'New language'
+#New language
+# if [ -e lang_qr.bin ]; then
+#  echo -n " New language  : " >&2
+#  ./update_lang.sh qr 2>./update_lang_qr.out 1>/dev/null
+#  if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
+# fi
+
 # echo "skipped" >&2
 fi
 
@@ -174,6 +190,13 @@ if [ -e lang_es.bin ]; then cat lang_es.bin >> lang.bin; fi
 if [ -e lang_fr.bin ]; then cat lang_fr.bin >> lang.bin; fi
 if [ -e lang_it.bin ]; then cat lang_it.bin >> lang.bin; fi
 if [ -e lang_pl.bin ]; then cat lang_pl.bin >> lang.bin; fi
+#Community language support
+# Dutch
+if [ -e lang_nl.bin ]; then cat lang_nl.bin >> lang.bin; fi
+
+#Use the 2 lines below as a template and replace 'qr'
+## New language
+#if [ -e lang_qr.bin ]; then cat lang_qr.bin >> lang.bin; fi
 
 #convert lang.bin to lang.hex
 echo -n " converting to hex..." >&2

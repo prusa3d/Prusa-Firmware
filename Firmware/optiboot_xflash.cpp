@@ -4,9 +4,10 @@
 // Licence GLP 2 or later.
 
 #include "Marlin.h"
-#include "w25x20cl.h"
+#include "xflash.h"
 #include "stk500.h"
 #include "bootapp.h"
+#include <avr/wdt.h>
 
 #define OPTIBOOT_MAJVER 6
 #define OPTIBOOT_CUSTOMVER 0
@@ -14,40 +15,16 @@
 static unsigned const int __attribute__((section(".version"))) 
   optiboot_version = 256*(OPTIBOOT_MAJVER + OPTIBOOT_CUSTOMVER) + OPTIBOOT_MINVER;
 
-/* Watchdog settings */
-#define WATCHDOG_OFF    (0)
-#define WATCHDOG_16MS   (_BV(WDE))
-#define WATCHDOG_32MS   (_BV(WDP0) | _BV(WDE))
-#define WATCHDOG_64MS   (_BV(WDP1) | _BV(WDE))
-#define WATCHDOG_125MS  (_BV(WDP1) | _BV(WDP0) | _BV(WDE))
-#define WATCHDOG_250MS  (_BV(WDP2) | _BV(WDE))
-#define WATCHDOG_500MS  (_BV(WDP2) | _BV(WDP0) | _BV(WDE))
-#define WATCHDOG_1S     (_BV(WDP2) | _BV(WDP1) | _BV(WDE))
-#define WATCHDOG_2S     (_BV(WDP2) | _BV(WDP1) | _BV(WDP0) | _BV(WDE))
-#define WATCHDOG_4S     (_BV(WDP3) | _BV(WDE))
-#define WATCHDOG_8S     (_BV(WDP3) | _BV(WDP0) | _BV(WDE))
-
 #if 0
-#define W25X20CL_SIGNATURE_0 9
-#define W25X20CL_SIGNATURE_1 8
-#define W25X20CL_SIGNATURE_2 7
+#define XFLASH_SIGNATURE_0 9
+#define XFLASH_SIGNATURE_1 8
+#define XFLASH_SIGNATURE_2 7
 #else
 //FIXME this is a signature of ATmega2560!
-#define W25X20CL_SIGNATURE_0 0x1E
-#define W25X20CL_SIGNATURE_1 0x98
-#define W25X20CL_SIGNATURE_2 0x01
+#define XFLASH_SIGNATURE_0 0x1E
+#define XFLASH_SIGNATURE_1 0x98
+#define XFLASH_SIGNATURE_2 0x01
 #endif
-
-static void watchdogConfig(uint8_t x) {
-  WDTCSR = _BV(WDCE) | _BV(WDE);
-  WDTCSR = x;
-}
-
-static void watchdogReset() {
-  __asm__ __volatile__ (
-    "wdr\n"
-  );
-}
 
 #define RECV_READY ((UCSR0A & _BV(RXC0)) != 0)
 
@@ -63,7 +40,7 @@ static uint8_t getch(void) {
        * the application "soon", if it keeps happening.  (Note that we
        * don't care that an invalid char is returned...)
        */
-    watchdogReset();
+    wdt_reset();
   }
   ch = UDR0;
   return ch;
@@ -77,7 +54,7 @@ static void putch(char ch) {
 static void verifySpace() {
   if (getch() != CRC_EOP) {
     putch(STK_FAILED);
-    watchdogConfig(WATCHDOG_16MS);    // shorten WD timeout
+    wdt_enable(WDTO_15MS); // shorten WD timeout
     while (1)           // and busy-loop so that WD causes
       ;             //  a reset and app start.
   }
@@ -101,9 +78,12 @@ extern struct block_t *block_buffer;
 //! @brief Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
 //! @return 1 if "start\n" was not sent. Optiboot was skipped
 //! @return 0 if "start\n" was sent. Optiboot ran normally. No need to send "start\n" in setup()
-uint8_t optiboot_w25x20cl_enter()
+uint8_t optiboot_xflash_enter()
 {
-  if (boot_app_flags & BOOT_APP_FLG_USER0) return 1;
+// Make sure to check boot_app_magic as well. Since these bootapp flags are located right in the middle of the stack,
+// they can be unintentionally changed. As a workaround to the language upload problem, do not only check for one bit if it's set,
+// but rather test 33 bits for the correct value before exiting optiboot early.
+  if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0)) return 1;
   uint8_t ch;
   uint8_t rampz = 0;
   register uint16_t address = 0;
@@ -117,15 +97,13 @@ uint8_t optiboot_w25x20cl_enter()
   // Handshake sequence: Initialize the serial line, flush serial line, send magic, receive magic.
   // If the magic is not received on time, or it is not received correctly, continue to the application.
   {
-    watchdogReset();
-    unsigned long  boot_timeout = 2000000;
-    unsigned long  boot_timer = 0;
+    wdt_reset();
     const char    *ptr = entry_magic_send;
     const char    *end = strlen_P(entry_magic_send) + ptr;
     const uint8_t selectedSerialPort_bak = selectedSerialPort;
     // Flush the serial line.
     while (RECV_READY) {
-      watchdogReset();
+      wdt_reset();
       // Dummy register read (discard)
       (void)(*(char *)UDR0);
     }
@@ -135,17 +113,23 @@ uint8_t optiboot_w25x20cl_enter()
     // Send the initial magic string.
     while (ptr != end)
       putch(pgm_read_byte(ptr ++));
-    watchdogReset();
+    wdt_reset();
     // Wait for two seconds until a magic string (constant entry_magic) is received
     // from the serial line.
     ptr = entry_magic_receive;
     end = strlen_P(entry_magic_receive) + ptr;
     while (ptr != end) {
-      while (rx_buffer.head == SerialHead) {
-        watchdogReset();
-        delayMicroseconds(1);
-        if (++ boot_timer > boot_timeout)
-        {
+      unsigned long  boot_timer = 2000000;
+      // Beware of this volatile pointer - it is important since the while-cycle below
+      // doesn't contain any obvious references to rx_buffer.head
+      // thus the compiler is allowed to remove the check from the cycle
+      // i.e. rx_buffer.head == SerialHead would not be checked at all!
+      // With the volatile keyword the compiler generates exactly the same code as without it with only one difference:
+      // the last brne instruction jumps onto the (*rx_head == SerialHead) check and NOT onto the wdr instruction bypassing the check.
+      volatile int *rx_head = &rx_buffer.head;
+      while (*rx_head == SerialHead) {
+        wdt_reset();
+        if ( --boot_timer == 0) {
           // Timeout expired, continue with the application.
           selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
           return 0;
@@ -159,18 +143,19 @@ uint8_t optiboot_w25x20cl_enter()
           selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
           return 0;
       }
-      watchdogReset();
+      wdt_reset();
     }
     cbi(UCSR0B, RXCIE0); //disable the MarlinSerial0 interrupt
     // Send the cfm magic string.
     ptr = entry_magic_cfm;
+    end = strlen_P(entry_magic_cfm) + ptr;
     while (ptr != end)
       putch(pgm_read_byte(ptr ++));
   }
 
   spi_init();
-  w25x20cl_init();
-  watchdogConfig(WATCHDOG_OFF);
+  xflash_init();
+  wdt_disable();
 
   /* Forever loop: exits by causing WDT reset */
   for (;;) {
@@ -269,16 +254,16 @@ uint8_t optiboot_w25x20cl_enter()
         // During a single bootloader run, only erase a 64kB block once.
         // An 8bit bitmask 'pages_erased' covers 512kB of FLASH memory.
         if ((address == 0) && (pages_erased & (1 << (addr >> 16))) == 0) {
-          w25x20cl_wait_busy();
-          w25x20cl_enable_wr();
-          w25x20cl_block64_erase(addr);
+          xflash_wait_busy();
+          xflash_enable_wr();
+          xflash_block64_erase(addr);
           pages_erased |= (1 << (addr >> 16));
         }
-        w25x20cl_wait_busy();
-        w25x20cl_enable_wr();
-        w25x20cl_page_program(addr, buff, savelength);
-        w25x20cl_wait_busy();
-        w25x20cl_disable_wr();
+        xflash_wait_busy();
+        xflash_enable_wr();
+        xflash_page_program(addr, buff, savelength);
+        xflash_wait_busy();
+        xflash_disable_wr();
       }
     }
     /* Read memory block mode, length is big endian.  */
@@ -294,8 +279,8 @@ uint8_t optiboot_w25x20cl_enter()
       // Read the destination type. It should always be 'F' as flash. It is not checked.
       (void)getch();
       verifySpace();
-      w25x20cl_wait_busy();
-      w25x20cl_rd_data(addr, buff, length);
+      xflash_wait_busy();
+      xflash_rd_data(addr, buff, length);
       for (i = 0; i < length; ++ i)
         putch(buff[i]);
     }
@@ -303,13 +288,13 @@ uint8_t optiboot_w25x20cl_enter()
     else if(ch == STK_READ_SIGN) {
       // READ SIGN - return what Avrdude wants to hear
       verifySpace();
-      putch(W25X20CL_SIGNATURE_0);
-      putch(W25X20CL_SIGNATURE_1);
-      putch(W25X20CL_SIGNATURE_2);
+      putch(XFLASH_SIGNATURE_0);
+      putch(XFLASH_SIGNATURE_1);
+      putch(XFLASH_SIGNATURE_2);
     }
     else if (ch == STK_LEAVE_PROGMODE) { /* 'Q' */
       // Adaboot no-wait mod
-      watchdogConfig(WATCHDOG_16MS);
+      wdt_enable(WDTO_15MS);
       verifySpace();
     }
     else {

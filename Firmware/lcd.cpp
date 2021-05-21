@@ -486,9 +486,15 @@ void lcd_escape_write(uint8_t chr)
 #endif //VT100
 
 
-int lcd_putc(int c)
+int lcd_putc(char c)
 {
 	return fputc(c, lcdout);
+}
+
+int lcd_putc_at(uint8_t c, uint8_t r, char ch)
+{
+	lcd_set_cursor(c, r);
+	return fputc(ch, lcdout);
 }
 
 int lcd_puts_P(const char* str)
@@ -955,21 +961,6 @@ void lcd_set_custom_characters(void)
 void lcd_set_custom_characters_arrows(void)
 {
 	lcd_createChar_P(1, lcd_chardata_arrdown);
-}
-
-const uint8_t lcd_chardata_progress[8] PROGMEM = {
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111};
-
-void lcd_set_custom_characters_progress(void)
-{
-	lcd_createChar_P(1, lcd_chardata_progress);
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {

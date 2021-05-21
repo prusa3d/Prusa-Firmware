@@ -34,33 +34,35 @@ uint8_t menu_top = 0;
 
 uint8_t menu_clicked = 0;
 
-uint8_t menu_entering = 0;
 uint8_t menu_leaving = 0;
 
 menu_func_t menu_menu = 0;
 
 static_assert(sizeof(menu_data)>= sizeof(menu_data_edit_t),"menu_data_edit_t doesn't fit into menu_data");
 
+void menu_data_reset(void)
+{
+	// Resets the global shared C union.
+	// This ensures, that the menu entered will find out, that it shall initialize itself.
+	memset(&menu_data, 0, sizeof(menu_data));
+}
 
 void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state)
 {
-	asm("cli");
+	CRITICAL_SECTION_START;
 	if (menu_menu != menu)
 	{
 		menu_menu = menu;
 		lcd_encoder = encoder;
 		menu_top = 0; //reset menu view. Needed if menu_back() is called from deep inside a menu, such as Support
-		asm("sei");
+		CRITICAL_SECTION_END;
 		if (reset_menu_state)
-		{
-			// Resets the global shared C union.
-			// This ensures, that the menu entered will find out, that it shall initialize itself.
-			memset(&menu_data, 0, sizeof(menu_data));
-		}
+			menu_data_reset();
+
 		if (feedback) lcd_quick_feedback();
 	}
 	else
-		asm("sei");
+		CRITICAL_SECTION_END;
 }
 
 void menu_start(void)
@@ -252,8 +254,7 @@ static void menu_draw_item_puts_P(char type_char, const char* str, char num)
     lcd_set_cursor(0, menu_row);
     lcd_printf_P(PSTR("%c%-.16S "), menu_selection_mark(), str);
     lcd_putc(num);
-    lcd_set_cursor(19, menu_row);
-    lcd_putc(type_char);
+    lcd_putc_at(19, menu_row, type_char);
 }
 
 /*
@@ -312,7 +313,7 @@ uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu)
     return 0;
 }
 
-uint8_t menu_item_function_E(const Sheet &sheet, menu_func_t func)
+uint8_t __attribute__((noinline)) menu_item_function_E(const Sheet &sheet, menu_func_t func)
 {
     if (menu_item == menu_line)
     {
@@ -344,6 +345,10 @@ uint8_t menu_item_back_P(const char* str)
 	}
 	menu_item++;
 	return 0;
+}
+
+bool __attribute__((noinline)) menu_item_leave(){
+    return ((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving;
 }
 
 uint8_t menu_item_function_P(const char* str, menu_func_t func)
@@ -548,4 +553,33 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
 template uint8_t menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
 
-#undef _menu_data
+static uint8_t progressbar_block_count = 0;
+static uint16_t progressbar_total = 0;
+void menu_progressbar_init(uint16_t total, const char* title)
+{
+	lcd_clear();
+	progressbar_block_count = 0;
+	progressbar_total = total;
+	
+	lcd_set_cursor(0, 1);
+	lcd_printf_P(PSTR("%-20.20S\n"), title);
+}
+
+void menu_progressbar_update(uint16_t newVal)
+{
+	uint8_t newCnt = (newVal * LCD_WIDTH) / progressbar_total;
+	if (newCnt > LCD_WIDTH)
+		newCnt = LCD_WIDTH;
+	while (newCnt > progressbar_block_count)
+	{
+		lcd_print('\xFF');
+		progressbar_block_count++;
+	}
+}
+
+void menu_progressbar_finish(void)
+{
+	progressbar_total = 1;
+	menu_progressbar_update(1);
+	_delay(300);
+}

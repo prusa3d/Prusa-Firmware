@@ -15,14 +15,10 @@
 #define AMBIENT_THERMISTOR
 #define PINDA_THERMISTOR
 
-#define W25X20CL                 // external 256kB flash
+#define XFLASH                 // external 256kB flash
 #define BOOTAPP                  // bootloader support
 
-
-#define SWI2C_SDA      20 //SDA on P3
-#define SWI2C_SCL      21 //SCL on P3
-
-
+#define XFLASH_PIN_CS          32
 
 #define X_TMC2130_CS           41
 #define X_TMC2130_DIAG         64 // !!! changed from 40 (EINY03)

@@ -522,7 +522,7 @@ void setExtruderAutoFanState(uint8_t state)
 	//the fan to either On or Off during certain tests/errors.
 
 	fanState = state;
-	uint8_t newFanSpeed = 0;
+	newFanSpeed = 0;
 	if (fanState & 0x01)
 	{
 #ifdef EXTRUDER_ALTFAN_DETECT
@@ -1124,7 +1124,10 @@ void tp_init()
 
   adc_init();
 
-  timer0_init();
+  timer0_init(); //enables the heatbed timer.
+
+  // timer2 already enabled earlier in the code
+  // now enable the COMPB temperature interrupt
   OCR2B = 128;
   TIMSK2 |= (1<<OCIE2B);
   
@@ -2044,18 +2047,18 @@ FORCE_INLINE static void temperature_isr()
    
     if(curTodo>0)
     {
-		asm("cli");
+      CRITICAL_SECTION_START;
       babystep(axis,/*fwd*/true);
       babystepsTodo[axis]--; //less to do next time
-		asm("sei");
+      CRITICAL_SECTION_END;
     }
     else
     if(curTodo<0)
     {
-		asm("cli");
+      CRITICAL_SECTION_START;
       babystep(axis,/*fwd*/false);
       babystepsTodo[axis]++; //less to do next time
-		asm("sei");
+      CRITICAL_SECTION_END;
     }
   }
 #endif //BABYSTEPPING

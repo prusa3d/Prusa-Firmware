@@ -53,6 +53,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
    - __L__		Language
    - __S__ 		Statistics
    - __P__ 		Shipping prep
+   - __M__ 		Service/Maintenance prep
    - __S/P__	Statistics and Shipping prep
    
   will overwrite existing values to 0 or default.
@@ -157,6 +158,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F60h 3936		| float		| EEPROM_XYZ_CAL_SKEW					| ???			| ff ff ff ffh			| XYZ skew value									| ???			| D3 Ax0f60 C4
 | 0x0F5Fh 3935		| uint8		| EEPROM_WIZARD_ACTIVE					| 01h 1			| 01h 1			__P__	| Wizard __active__									| ???			| D3 Ax0f5f C1
 | ^					| ^			| ^										| 00h 0			| ^						| Wizard __inactive__								| ^ 			| ^
+| ^					| ^			| ^										| 02h 2			| 02h 2			__M__	| Wizard active - Z cal after shipping/service prep | ^ 			| ^
 | 0x0F5Dh 3933		| uint16	| EEPROM_BELTSTATUS_X					| ???			| ff ffh				| X Beltstatus 										| ???			| D3 Ax0f5d C2
 | 0x0F5Bh 3931		| uint16	| EEPROM_BELTSTATUS_Y					| ???			| ff ffh				| Y Beltstatus 										| ???			| D3 Ax0f5b C2
 | 0x0F5Ah 3930		| uint8		| EEPROM_DIR_DEPTH						| 00h-ffh 0-255	| ffh 255				| Directory depth									| ???			| D3 Ax0f5a C1
@@ -242,9 +244,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 00h 0			| ^						| Check mode for nozzle is: __none__				| ^				| ^
 | 0x0DA7 3495		| uint8		| EEPROM_NOZZLE_DIAMETER				| 28h 40		| ffh 255				| Nozzle diameter is: __40 or 0.40mm__				| LCD menu		| D3 Ax0da7 C1
 | ^					| ^			| ^										| 3ch 60		| ^						| Nozzle diameter is: __60 or 0.60mm__				| ^				| ^
+| ^					| ^			| ^										| 3ch 80		| ^						| Nozzle diameter is: __80 or 0.80mm__				| ^				| ^
 | ^					| ^			| ^										| 19h 25		| ^						| Nozzle diameter is: __25 or 0.25mm__				| ^				| ^
 | 0x0DA5 3493		| uint16	| EEPROM_NOZZLE_DIAMETER_uM				| 9001h			| ff ffh 65535			| Nozzle diameter is: __400um__						| LCD menu		| D3 Ax0da5 C2
 | ^					| ^			| ^										| 5802h			| ^						| Nozzle diameter is: __600um__						| ^				| ^
+| ^					| ^			| ^										| 2003h			| ^						| Nozzle diameter is: __800um__						| ^				| ^
 | ^					| ^			| ^										| fa00h			| ^						| Nozzle diameter is: __250um__						| ^				| ^
 | 0x0DA4 3492		| uint8		| EEPROM_CHECK_MODEL					| 01h 1			| ffh 255				| Check mode for printer model is: __warn__			| LCD menu		| D3 Ax0da4 C1
 | ^					| ^			| ^										| 02h 0			| ^						| Check mode for printer model is: __strict__		| ^				| ^
@@ -272,19 +276,19 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D71 3441		| uint16	| ^										| 00 00h 0		| ff ffh 65535			| 4th sheet - Z offset 								| ^				| D3 Ax0d71 C2	
 | 0x0D73 3443		| uint8		| ^										| 00h 0			| ffh 255				| 4th sheet - bed temp 								| ^				| D3 Ax0d73 C1	
 | 0x0D74 3444		| uint8		| ^										| 00h 0			| ffh 255				| 4th sheet - PINDA temp 							| ^				| D3 Ax0d74 C1	
-| 0x0D75 3445		| char		| _5th Sheet block_						| 437573746f6d31| ffffffffffffff		| 5th sheet - Name: 	_Custom1_					| ^				| D3 Ax0d75 C7
+| 0x0D75 3445		| char		| _5th Sheet block_						| 536174696e2031| ffffffffffffff		| 5th sheet - Name: 	_Satin 1_					| ^				| D3 Ax0d75 C7
 | 0x0D7C 3452		| uint16	| ^										| 00 00h 0		| ff ffh 65535			| 5th sheet - Z offset 								| ^				| D3 Ax0d7c C2	
 | 0x0D7E 3454		| uint8		| ^										| 00h 0			| ffh 255				| 5th sheet - bed temp 								| ^				| D3 Ax0d7e C1	
 | 0x0D7F 3455		| uint8		| ^										| 00h 0			| ffh 255				| 5th sheet - PINDA temp 							| ^				| D3 Ax0d7f C1	
-| 0x0D80 3456		| char		| _6th Sheet block_						| 437573746f6d32| ffffffffffffff		| 6th sheet - Name: 	_Custom2_					| ^				| D3 Ax0d80 C7
+| 0x0D80 3456		| char		| _6th Sheet block_						| 536174696e2032| ffffffffffffff		| 6th sheet - Name: 	_Satin 2_					| ^				| D3 Ax0d80 C7
 | 0x0D87 3463		| uint16	| ^										| 00 00h 0		| ff ffh 65535			| 6th sheet - Z offset 								| ^				| D3 Ax0d87 C2	
 | 0x0D89 3465		| uint8		| ^										| 00h 0			| ffh 255				| 6th sheet - bed temp 								| ^				| D3 Ax0d89 C1	
 | 0x0D8A 3466		| uint8		| ^										| 00h 0			| ffh 255				| 6th sheet - PINDA temp 							| ^				| D3 Ax0d8a C1	
-| 0x0D8B 3467		| char		| _7th Sheet block_						| 437573746f6d33| ffffffffffffff		| 7th sheet - Name: 	_Custom3_					| ^				| D3 Ax0d8b C7
+| 0x0D8B 3467		| char		| _7th Sheet block_						| 437573746f6d31| ffffffffffffff		| 7th sheet - Name: 	_Custom1_					| ^				| D3 Ax0d8b C7
 | 0x0D92 3474		| uint16	| ^										| 00 00h 0		| ff ffh 65535			| 7th sheet - Z offset 								| ^				| D3 Ax0d92 C2	
 | 0x0D94 3476		| uint8		| ^										| 00h 0			| ffh 255				| 7th sheet - bed temp 								| ^				| D3 Ax0d94 C1	
 | 0x0D95 3477		| uint8		| ^										| 00h 0			| ffh 255				| 7th sheet - PINDA temp 							| ^				| D3 Ax0d95 C1	
-| 0x0D96 3478		| char		| _8th Sheet block_						| 437573746f6d34| ffffffffffffff		| 8th sheet - Name: 	_Custom4_					| ^				| D3 Ax0d96 C7
+| 0x0D96 3478		| char		| _8th Sheet block_						| 437573746f6d32| ffffffffffffff		| 8th sheet - Name: 	_Custom2_					| ^				| D3 Ax0d96 C7
 | 0x0D9D 3485		| uint16	| ^										| 00 00h 0		| ff ffh 65535			| 8th sheet - Z offset 								| ^				| D3 Ax0d9d C2	
 | 0x0D9F 3487		| uint8		| ^										| 00h 0			| ffh 255				| 8th sheet - bed temp 								| ^				| D3 Ax0d9f C1	
 | 0x0DA0 3488		| uint8		| ^										| 00h 0			| ffh 255				| 8th sheet - PINDA temp 							| ^				| D3 Ax0da0 C1	
@@ -316,8 +320,14 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D29 3369		| uint8		| EEPROM_PINDA_TEMP_COMPENSATION   		| ffh 255		| ffh 255				| PINDA temp compensation unknown state	            | LCD menu		| D3 Ax0d29 C1
 | ^					| ^			| ^										| 00h 0			| ^						| PINDA has no temp compensation PINDA v1/2    		| ^				| ^
 | ^					| ^			| ^										| 01h 1			| ^						| PINDA has temp compensation aka SuperPINDA       	| ^				| ^
+| 0x0D15 3349		| char[20]	| EEPROM_PRUSA_SN						| SN[19] == 0	| ffffffffffffffff...	| PRUSA Serial number string						| PRUSA SN		| D3 Ax0d15 C20
+| 0x0D11 3345		| float		| EEPROM_UVLO_ACCELL                	| ???			| ff ff ff ffh			| Power panic saved normal acceleration     		| ???			| D3 Ax0d11 C4
+| 0x0D0D 3341		| float		| EEPROM_UVLO_RETRACT_ACCELL			| ???			| ff ff ff ffh			| Power panic saved retract acceleration     		| ???			| D3 Ax0d0d C4
+| 0x0D09 3337		| float		| EEPROM_UVLO_TRAVEL_ACCELL				| ???			| ff ff ff ffh			| Power panic saved travel acceleration     		| ???			| D3 Ax0d09 C4
+| 0x0D05 3333		| uint32_t	| EEPROM_JOB_ID							| ???			| 00 00 00 00h			| Job ID used by host software						| D3 only		| D3 Ax0d05 C4
+| 0x0D01 3329		| uint8_t	| EEPROM_ECOOL_ENABLE					| ffh 255		| ^						| Disable extruder motor scaling for non-farm print	| LCD menu		| D3 Ax0d01 FF
+| ^					| ^			| ^										| 2ah 42		| ^						| Enable extruder motor scaling for non-farm print	| ^				| D3 Ax0d01 42
 
-  
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
 | 0x0012 18			| uint16	| EEPROM_FIRMWARE_VERSION_END			| ???			| ff ffh 65535			| ???												| ???			| D3 Ax0012 C2
@@ -330,6 +340,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 
 #define EEPROM_EMPTY_VALUE 0xFF
 #define EEPROM_EMPTY_VALUE16 0xFFFF
+#define EEPROM_EMPTY_VALUE32 0xFFFFFFFFl
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
@@ -403,7 +414,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_POWER_COUNT       (EEPROM_FERROR_COUNT - 1)                      // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-17)
 
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4)                            // float for skew backup
-#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)                          // 0: wizard not active, 1: wizard active, 2: wizard active without yes/no = forced calibrate Z after shipping/service prep.
 #define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2)                          // uint16
 #define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2)                           // uint16
 
@@ -521,8 +532,18 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_ALTFAN_OVERRIDE (EEPROM_UVLO_LA_K-1) //uint8
 #define EEPROM_EXPERIMENTAL_VISIBILITY (EEPROM_ALTFAN_OVERRIDE-1) //uint8
 #define EEPROM_PINDA_TEMP_COMPENSATION (EEPROM_EXPERIMENTAL_VISIBILITY-1) //uint8
+#define EEPROM_PRUSA_SN (EEPROM_PINDA_TEMP_COMPENSATION-20) //char[20]
+
+#define EEPROM_UVLO_ACCELL (EEPROM_PRUSA_SN-4) // float
+#define EEPROM_UVLO_RETRACT_ACCELL (EEPROM_UVLO_ACCELL-4) // float
+#define EEPROM_UVLO_TRAVEL_ACCELL (EEPROM_UVLO_RETRACT_ACCELL-4) // float
+
+#define EEPROM_JOB_ID (EEPROM_UVLO_TRAVEL_ACCELL-4) //uint32_t
+
+#define EEPROM_ECOOL_ENABLE (EEPROM_JOB_ID-1) // uint8_t
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_PINDA_TEMP_COMPENSATION
+#define EEPROM_LAST_ITEM EEPROM_ECOOL_ENABLE
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
@@ -538,6 +559,7 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_FIRMWARE_VERSION_MAJOR     FW_PRUSA3D_MAGIC_LEN
 // Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
 #define EEPROM_FIRMWARE_PRUSA_MAGIC 0
+#define EEPROM_ECOOL_MAGIC_NUMBER 42
 
 #ifdef __cplusplus
 #include "ConfigurationStore.h"

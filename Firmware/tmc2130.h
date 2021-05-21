@@ -1,10 +1,10 @@
 #ifndef TMC2130_H
 #define TMC2130_H
 
+#include <stdint.h>
 
 //mode
 extern uint8_t tmc2130_mode;
-//holding and running currents
 extern uint8_t tmc2130_current_h[4];
 extern uint8_t tmc2130_current_r[4];
 //microstep resolution (0 means 256usteps, 8 means 1ustep
@@ -22,12 +22,26 @@ extern uint32_t tmc2130_sg_meassure_val;
 
 extern uint8_t tmc2130_sg_homing_axes_mask;
 
+extern const char eMotorCurrentScalingEnabled[];
+
 #define TMC2130_MODE_NORMAL 0
 #define TMC2130_MODE_SILENT 1
 
 #define TMC2130_WAVE_FAC1000_MIN  30
 #define TMC2130_WAVE_FAC1000_MAX 200
 #define TMC2130_WAVE_FAC1000_STP   1
+
+#define TMC2130_MINIMUM_PULSE 0   // minimum pulse width in uS
+#define TMC2130_SET_DIR_DELAY 20  // minimum delay after setting direction in uS
+#define TMC2130_SET_PWR_DELAY 0   // minimum delay after changing pwr mode in uS
+
+#ifdef TMC2130_DEDGE_STEPPING
+#define TMC2130_MINIMUM_DELAY //NOP
+#elif TMC2130_MINIMUM_PULSE == 0
+#define TMC2130_MINIMUM_DELAY asm("nop")
+#else
+#define TMC2130_MINIMUM_DELAY delayMicroseconds(TMC2130_MINIMUM_PULSE)
+#endif
 
 extern uint8_t tmc2130_home_enabled;
 extern uint8_t tmc2130_home_origin[2];
@@ -51,11 +65,23 @@ typedef struct
 extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
 
 //initialize tmc2130
-#ifdef PSU_Delta
-extern void tmc2130_init(bool bSupressFlag=false);
+
+struct TMCInitParams {
+    uint8_t bSuppressFlag : 1; // only relevant on MK3S with PSU_Delta
+    uint8_t enableECool : 1;  // experimental support for E-motor cooler operation
+    inline TMCInitParams():bSuppressFlag(0), enableECool(0) { }
+    inline explicit TMCInitParams(bool bSuppressFlag, bool enableECool):bSuppressFlag(bSuppressFlag), enableECool(enableECool) { }
+    inline explicit TMCInitParams(bool enableECool)
+        : bSuppressFlag(
+#ifdef PSU_delta
+        1
 #else
-extern void tmc2130_init();
+        0
 #endif
+        )
+        , enableECool(enableECool) { }
+};
+extern void tmc2130_init(TMCInitParams params);
 //check diag pins (called from stepper isr)
 extern void tmc2130_st_isr();
 //update stall guard (called from st_synchronize inside the loop)
