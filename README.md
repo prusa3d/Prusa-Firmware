@@ -1,4 +1,4 @@
-# Prusa Firmware MK3 (with MeatPack Support, v1.1.0)
+# Prusa Firmware MK3 (with MeatPack Support)
 
 ### NOTE:
 
@@ -8,13 +8,13 @@ This is a fork of the original Prusa Firmware. I've modified it to add support f
 
 Please find firmware builds with MeatPack support enabled in the "Releases" section of this repository.
 
-### NOTE: Currently only version 3.9.3 has MeatPack support enabled!
+Latest build is here: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.10.0-MeatPack
 
-Latest build is here: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.9.3-MP1.1.0
+Note that versions 
 
 ---
 
-This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3/MK2.5S/MK2.5 line of printers.
+This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3 line of printers.
 
 The latest official builds can be downloaded from [Prusa Drivers](https://www.prusa3d.com/drivers/). Pre-built development releases are also [available here](https://github.com/prusa3d/Prusa-Firmware/releases).
 
