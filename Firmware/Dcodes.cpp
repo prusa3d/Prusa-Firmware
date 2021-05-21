@@ -173,19 +173,6 @@ void dcode_3()
 #include "bootapp.h"
 
 #if 0
-#define FLASHSIZE     0x40000
-
-#define RAMSIZE        0x2000
-#define boot_src_addr  (*((uint32_t*)(RAMSIZE - 16)))
-#define boot_dst_addr  (*((uint32_t*)(RAMSIZE - 12)))
-#define boot_copy_size (*((uint16_t*)(RAMSIZE - 8)))
-#define boot_reserved  (*((uint8_t*)(RAMSIZE - 6)))
-#define boot_app_flags (*((uint8_t*)(RAMSIZE - 5)))
-#define boot_app_magic (*((uint32_t*)(RAMSIZE - 4)))
-#define BOOT_APP_FLG_ERASE 0x01
-#define BOOT_APP_FLG_COPY  0x02
-#define BOOT_APP_FLG_FLASH 0x04
-
 extern float current_temperature_pinda;
 extern float axis_steps_per_unit[NUM_AXIS];
 

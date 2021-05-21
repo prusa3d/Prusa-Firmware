@@ -7,8 +7,6 @@
 
 #ifdef SYSTEM_TIMER_2
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
 #include "pins.h"
 #include "fastio.h"
 #include "macros.h"

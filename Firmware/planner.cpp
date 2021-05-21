@@ -1082,7 +1082,8 @@ Having the real displacement of the head, we can calculate the total movement le
   }
   else
   {
-    block->acceleration_st = ceil(cs.acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
+    float acceleration = (block->steps_e.wide == 0? cs.travel_acceleration: cs.acceleration);
+    block->acceleration_st = ceil(acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
 
     #ifdef LIN_ADVANCE
     /**

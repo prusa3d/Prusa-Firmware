@@ -69,7 +69,6 @@ extern bool cmd_buffer_empty();
 extern void enquecommand(const char *cmd, bool from_progmem = false);
 extern void enquecommand_front(const char *cmd, bool from_progmem = false);
 extern void repeatcommand_front();
-extern bool is_buffer_empty();
 extern void get_command();
 extern uint16_t cmdqueue_calc_sd_length();
 

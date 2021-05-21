@@ -9,6 +9,7 @@
 #include <avr/io.h>
 #include "macros.h"
 
+
 /*
   magic I/O routines
   now you can simply SET_OUTPUT(STEP); WRITE(STEP, 1); WRITE(STEP, 0);
