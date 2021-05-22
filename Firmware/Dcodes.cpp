@@ -239,7 +239,9 @@ void dcode_1()
 		eeprom_write_byte((unsigned char*)i, (unsigned char)0xff);
 	softReset();
 }
+#endif
 
+#if defined DEBUG_DCODE2 || defined DEBUG_DCODES
     /*!
     ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
     This command can be used without any additional parameters. It will read the entire RAM.
@@ -300,7 +302,9 @@ void dcode_2()
 		putchar('\n');
 	}*/
 }
+#endif
 
+#ifdef DEBUG_DCODES
     /*!
     
     ### D4 - Read/Write PIN <a href="https://reprap.org/wiki/G-code#D4:_Read.2FWrite_PIN">D4: Read/Write PIN</a>

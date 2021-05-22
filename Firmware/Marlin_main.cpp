@@ -9053,7 +9053,9 @@ Sigma_Exit:
     */
 	case 1:
 		dcode_1(); break;
+#endif
 
+#if defined DEBUG_DCODE2 || defined DEBUG_DCODES
     /*!
     ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
     This command can be used without any additional parameters. It will read the entire RAM.

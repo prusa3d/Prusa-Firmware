@@ -4,7 +4,10 @@
 extern void dcode__1(); //D-1 - Endless loop (to simulate deadlock)
 extern void dcode_0(); //D0 - Reset
 extern void dcode_1(); //D1 - Clear EEPROM
+
+#if defined DEBUG_DCODE2 || defined DEBUG_DCODES
 extern void dcode_2(); //D2 - Read/Write RAM
+#endif
 
 #if defined DEBUG_DCODE3 || defined DEBUG_DCODES
 extern void dcode_3(); //D3 - Read/Write EEPROM
