@@ -138,8 +138,7 @@ void dcode_3()
 		{
 			for (uint16_t i = 0; i < count; i++)
 				eeprom_write_byte((uint8_t*)(address + i), data[i]);
-			printf_P(_N("%d bytes written to EEPROM at address 0x%04x"), count, address);
-			putchar('\n');
+			DBG(_N("%d bytes written to EEPROM at address 0x%04x\n"), count, address);
 		}
 		else
 			count = 0;
