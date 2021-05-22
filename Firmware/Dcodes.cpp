@@ -246,32 +246,31 @@ void dcode_1()
     ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
     This command can be used without any additional parameters. It will read the entire RAM.
     #### Usage
-    
+
         D2 [ A | C | X ]
-    
+
     #### Parameters
-    - `A` - Address (x0000-x1fff)
-    - `C` - Count (1-8192)
+    - `A` - Address (x0000-x21ff)
+    - `C` - Count (1-8704)
     - `X` - Data
 
 	#### Notes
 	- The hex address needs to be lowercase without the 0 before the x
-	- Count is decimal 
+	- Count is decimal
 	- The hex data needs to be lowercase
-	
+
     */
 void dcode_2()
 {
-	LOG("D2 - Read/Write RAM\n");
-	uint16_t address = 0x0000; //default 0x0000
-	uint16_t count = 0x2000; //default 0x2000 (entire ram)
-	if (code_seen('A')) // Address (0x0000-0x1fff)
+	DBG(_N("D2 - Read/Write RAM\n"));
+	uint16_t address = 0x200; // default to start of sram
+	uint16_t count = 0x2200; // entire addressable space
+	if (code_seen('A')) // Address (0x0000-0x21ff)
 		address = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
-	if (code_seen('C')) // Count (0x0001-0x2000)
+	if (code_seen('C')) // Count (0x0000-0x2200)
 		count = (int)code_value();
-	address &= 0x1fff;
-	if (count > 0x2000) count = 0x2000;
-	if ((address + count) > 0x2000) count = 0x2000 - address;
+	if (address > 0x2200) address = 0x2200;
+	if ((address + count) > 0x2200) count = 0x2200 - address;
 	if (code_seen('X')) // Data
 	{
 		uint8_t data[16];
@@ -280,7 +279,7 @@ void dcode_2()
 		{
 			for (uint16_t i = 0; i < count; i++)
 				*((uint8_t*)(address + i)) =  data[i];
-			LOG("%d bytes written to RAM at address %04x", count, address);
+			DBG(_N("%d bytes written to RAM at address 0x%04x\n"), count, address);
 		}
 		else
 			count = 0;
