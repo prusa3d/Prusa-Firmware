@@ -29,24 +29,6 @@ void print_hex_word(uint16_t val)
 	print_hex_byte(val & 255);
 }
 
-void print_eeprom(uint16_t address, uint16_t count, uint8_t countperline = 16)
-{
-	while (count)
-	{
-		print_hex_word(address);
-		putchar(' ');
-		uint8_t count_line = countperline;
-		while (count && count_line)
-		{
-			putchar(' ');
-			print_hex_byte(eeprom_read_byte((uint8_t*)address++));
-			count_line--;
-			count--;
-		}
-		putchar('\n');
-	}
-}
-
 int parse_hex(char* hex, uint8_t* data, int count)
 {
 	int parsed = 0;
@@ -71,12 +53,12 @@ int parse_hex(char* hex, uint8_t* data, int count)
 }
 
 
-void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperline = 16)
+enum class dcode_mem_t:uint8_t { sram, eeprom, progmem };
+
+void print_mem(uint16_t address, uint16_t count, dcode_mem_t type, uint8_t countperline = 16)
 {
 	while (count)
 	{
-		if (type == 2)
-			print_hex_nibble(address >> 16);
 		print_hex_word(address);
 		putchar(' ');
 		uint8_t count_line = countperline;
@@ -85,10 +67,11 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
 			uint8_t data = 0;
 			switch (type)
 			{
-			case 0: data = *((uint8_t*)address++); break;
-			case 1: data = eeprom_read_byte((uint8_t*)address++); break;
-			case 2: data = pgm_read_byte_far((uint8_t*)address++); break;
+			case dcode_mem_t::sram: data = *((uint8_t*)address); break;
+			case dcode_mem_t::eeprom: data = eeprom_read_byte((uint8_t*)address); break;
+			case dcode_mem_t::progmem: data = pgm_read_byte_far((uint8_t*)address); break;
 			}
+            ++address;
 			putchar(' ');
 			print_hex_byte(data);
 			count_line--;
@@ -96,6 +79,43 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
 		}
 		putchar('\n');
 	}
+}
+
+void write_mem(uint16_t address, uint16_t count, const uint8_t* data, const dcode_mem_t type)
+{
+    for (uint16_t i = 0; i < count; i++)
+    {
+        switch (type)
+        {
+        case dcode_mem_t::sram: *((uint8_t*)address) = data[i]; break;
+        case dcode_mem_t::eeprom: eeprom_write_byte((uint8_t*)address, data[i]); break;
+        case dcode_mem_t::progmem: break;
+        }
+        ++address;
+    }
+}
+
+void dcode_core(uint16_t addr_start, const uint16_t addr_end, const dcode_mem_t type,
+                uint8_t dcode, const char* type_desc)
+{
+    DBG(_N("D%d - Read/Write %S\n"), dcode, type_desc);
+    uint16_t count = -1; // RW the entire space by default
+    if (code_seen('A'))
+        addr_start = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
+    if (code_seen('C'))
+        count = (int)code_value();
+    if (addr_start > addr_end)
+        addr_start = addr_end;
+    if ((addr_start + count) > addr_end || (addr_start + count) < addr_start)
+        count = addr_end - addr_start;
+    if (code_seen('X'))
+    {
+        uint8_t data[16];
+        count = parse_hex(strchr_pointer + 1, data, 16);
+        write_mem(addr_start, count, data, type);
+        DBG(_N("%d bytes written to %S at address 0x%04x\n"), count, type_desc, addr_start);
+    }
+    print_mem(addr_start, count, type);
 }
 
 #if defined DEBUG_DCODE3 || defined DEBUG_DCODES
@@ -120,46 +140,7 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
     */
 void dcode_3()
 {
-	DBG(_N("D3 - Read/Write EEPROM\n"));
-	uint16_t address = 0x0000; //default 0x0000
-	uint16_t count = EEPROM_SIZE; //default 0x1000 (entire eeprom)
-	if (code_seen('A')) // Address (0x0000-0x0fff)
-		address = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
-	if (code_seen('C')) // Count (0x0001-0x1000)
-		count = (int)code_value();
-	address &= 0x1fff;
-	if (count > EEPROM_SIZE) count = EEPROM_SIZE;
-	if ((address + count) > EEPROM_SIZE) count = EEPROM_SIZE - address;
-	if (code_seen('X')) // Data
-	{
-		uint8_t data[16];
-		count = parse_hex(strchr_pointer + 1, data, 16);
-		if (count > 0)
-		{
-			for (uint16_t i = 0; i < count; i++)
-				eeprom_write_byte((uint8_t*)(address + i), data[i]);
-			printf_P(_N("%d bytes written to EEPROM at address 0x%04x"), count, address);
-			putchar('\n');
-		}
-		else
-			count = 0;
-	}
-	print_mem(address, count, 1);
-/*	while (count)
-	{
-		print_hex_word(address);
-		putchar(' ');
-		uint8_t countperline = 16;
-		while (count && countperline)
-		{
-			uint8_t data = eeprom_read_byte((uint8_t*)address++);
-			putchar(' ');
-			print_hex_byte(data);
-			countperline--;
-			count--;
-		}
-		putchar('\n');
-	}*/
+    dcode_core(0, EEPROM_SIZE, dcode_mem_t::eeprom, 3, _N("EEPROM"));
 }
 #endif //DEBUG_DCODE3
 
@@ -262,44 +243,7 @@ void dcode_1()
     */
 void dcode_2()
 {
-	DBG(_N("D2 - Read/Write RAM\n"));
-	uint16_t address = 0x200; // default to start of sram
-	uint16_t count = 0x2200; // entire addressable space
-	if (code_seen('A')) // Address (0x0000-0x21ff)
-		address = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
-	if (code_seen('C')) // Count (0x0000-0x2200)
-		count = (int)code_value();
-	if (address > 0x2200) address = 0x2200;
-	if ((address + count) > 0x2200) count = 0x2200 - address;
-	if (code_seen('X')) // Data
-	{
-		uint8_t data[16];
-		count = parse_hex(strchr_pointer + 1, data, 16);
-		if (count > 0)
-		{
-			for (uint16_t i = 0; i < count; i++)
-				*((uint8_t*)(address + i)) =  data[i];
-			DBG(_N("%d bytes written to RAM at address 0x%04x\n"), count, address);
-		}
-		else
-			count = 0;
-	}
-	print_mem(address, count, 0);
-/*	while (count)
-	{
-		print_hex_word(address);
-		putchar(' ');
-		uint8_t countperline = 16;
-		while (count && countperline)
-		{
-			uint8_t data = *((uint8_t*)address++);
-			putchar(' ');
-			print_hex_byte(data);
-			countperline--;
-			count--;
-		}
-		putchar('\n');
-	}*/
+    dcode_core(0x200, 0x2200, dcode_mem_t::sram, 2, _N("SRAM"));
 }
 #endif
 
