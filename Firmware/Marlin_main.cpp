@@ -4222,12 +4222,19 @@ void process_commands()
         if (!hasP && !hasS && *src != '\0') {
             lcd_setstatus(src);
         } else {
-            LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=20
+            // farmers want to abuse a bug from the previous firmware releases
+            // - they need to see the filename on the status screen instead of "Wait for user..."
+            // So we won't update the message in farm mode...
+            if( ! farm_mode){ 
+                LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=20
+            } else {
+                custom_message_type = CustomMsg::Status; // let the lcd display the name of the printed G-code file in farm mode
+            }
         }
-        lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
+        lcd_ignore_click();				//call lcd_ignore_click also for else ???
         st_synchronize();
         previous_millis_cmd = _millis();
-        if (codenum > 0) {
+        if (codenum > 0 ) {
             codenum += _millis();  // keep track of when we started waiting
             KEEPALIVE_STATE(PAUSED_FOR_USER);
             while(_millis() < codenum && !lcd_clicked()) {
