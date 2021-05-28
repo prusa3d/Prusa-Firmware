@@ -15,6 +15,7 @@ extern void menu_lcd_charsetup_func(void);
 extern void menu_lcd_lcdupdate_func(void);
 
 // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
+void reprint_from_eeprom();
 void ultralcd_init();
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
@@ -157,6 +158,7 @@ extern uint8_t SilentModeMenu_MMU;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
+extern bool enableReprint;
 
 extern uint8_t scrollstuff;
 
