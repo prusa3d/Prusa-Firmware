@@ -220,10 +220,10 @@ enum TempRunawayStates
 //===========================================================================
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-static float temp_runaway_status[4];
-static float temp_runaway_target[4];
-static float temp_runaway_timer[4];
-static int temp_runaway_error_counter[4];
+static float temp_runaway_status[1 + EXTRUDERS];
+static float temp_runaway_target[1 + EXTRUDERS];
+static float temp_runaway_timer[1 + EXTRUDERS];
+static int temp_runaway_error_counter[1 + EXTRUDERS];
 
 static void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
 static void temp_runaway_stop(bool isPreheat, bool isBed);
