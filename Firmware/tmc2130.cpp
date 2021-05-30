@@ -8,6 +8,7 @@
 #include "ultralcd.h"
 #include "language.h"
 #include "spi.h"
+#include "Timer.h"
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
 #define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
@@ -70,6 +71,9 @@ uint16_t tmc2130_sg_cnt[4] = {0, 0, 0, 0};
 #ifdef DEBUG_CRASHDET_COUNTERS
 bool tmc2130_sg_change = false;
 #endif
+
+//used for triggering a periodic check (1s) of the overtemperature pre-warning flag at ~120C (+-20C)
+ShortTimer tmc2130_overtemp_timer;
 
 #define DBG(args...)
 //printf_P(args)
@@ -392,11 +396,9 @@ bool tmc2130_wait_standstill_xy(int timeout)
 	return standstill;
 }
 
-
 void tmc2130_check_overtemp()
 {
-	static uint32_t checktime = 0;
-	if (_millis() - checktime > 1000 )
+	if (tmc2130_overtemp_timer.expired(1000) || !tmc2130_overtemp_timer.running())
 	{
 		for (uint_least8_t i = 0; i < 4; i++)
 		{
@@ -412,7 +414,7 @@ void tmc2130_check_overtemp()
 			}
 
 		}
-		checktime = _millis();
+		tmc2130_overtemp_timer.start();
 #ifdef DEBUG_CRASHDET_COUNTERS
 		tmc2130_sg_change = true;
 #endif
