@@ -134,7 +134,6 @@ static uint16_t OCR1A_nominal;
 static uint8_t  step_loops_nominal;
 
 volatile long endstops_trigsteps[3]={0,0,0};
-volatile long endstops_stepsTotal,endstops_stepsDone;
 static volatile bool endstop_x_hit=false;
 static volatile bool endstop_y_hit=false;
 static volatile bool endstop_z_hit=false;
