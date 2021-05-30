@@ -36,8 +36,6 @@
 #include "temperature.h"
 #include "cardreader.h"
 
-#include "Sd2PinMap.h"
-
 #include <avr/wdt.h>
 #include "adc.h"
 #include "ConfigurationStore.h"

@@ -349,7 +349,7 @@ bool fsensor_check_autoload(void)
 	if (!fsensor_enabled) return false;
 	if (!fsensor_autoload_enabled) return false;
 	if (ir_sensor_detected) {
-		if (digitalRead(IR_SENSOR_PIN) == 1) {
+		if (READ(IR_SENSOR_PIN)) {
 			fsensor_watch_autoload = true;
 		}
 		else if (fsensor_watch_autoload == true) {
@@ -591,9 +591,8 @@ ISR(FSENSOR_INT_PIN_VECT)
 
 void fsensor_setup_interrupt(void)
 {
-
-	pinMode(FSENSOR_INT_PIN, OUTPUT);
-	digitalWrite(FSENSOR_INT_PIN, LOW);
+	WRITE(FSENSOR_INT_PIN, 0);
+	SET_OUTPUT(FSENSOR_INT_PIN);
 	fsensor_int_pin_old = 0;
 
 	//pciSetup(FSENSOR_INT_PIN);
@@ -687,7 +686,7 @@ void fsensor_update(void)
 #else //PAT9125
         if (CHECK_FSENSOR && ir_sensor_detected)
         {
-            if(digitalRead(IR_SENSOR_PIN))
+            if (READ(IR_SENSOR_PIN))
             {                                  // IR_SENSOR_PIN ~ H
 #ifdef IR_SENSOR_ANALOG
                 if(!bIRsensorStateFlag)

@@ -148,8 +148,8 @@ int8_t mmu_rx_start(void)
 void mmu_init(void)
 {
 #ifdef MMU_HWRESET
-	digitalWrite(MMU_RST_PIN, HIGH);
-	pinMode(MMU_RST_PIN, OUTPUT);              //setup reset pin
+	WRITE(MMU_RST_PIN, 1);
+	SET_OUTPUT(MMU_RST_PIN);                   //setup reset pin
 #endif //MMU_HWRESET
 	uart2_init();                              //init uart2
 	_delay_ms(10);                             //wait 10ms for sure
@@ -489,9 +489,9 @@ void mmu_loop(void)
 void mmu_reset(void)
 {
 #ifdef MMU_HWRESET                             //HW - pulse reset pin
-	digitalWrite(MMU_RST_PIN, LOW);
+	WRITE(MMU_RST_PIN, 0);
 	_delay_us(100);
-	digitalWrite(MMU_RST_PIN, HIGH);
+	WRITE(MMU_RST_PIN, 1);
 #else                                          //SW - send X0 command
     mmu_puts_P(PSTR("X0\n"));
 #endif
@@ -926,8 +926,8 @@ void change_extr(int
 
 	mmu_extruder = extr;
 
-	pinMode(E_MUX0_PIN, OUTPUT);
-	pinMode(E_MUX1_PIN, OUTPUT);
+	SET_OUTPUT(E_MUX0_PIN);
+	SET_OUTPUT(E_MUX1_PIN);
 
 	switch (extr) {
 	case 1:
