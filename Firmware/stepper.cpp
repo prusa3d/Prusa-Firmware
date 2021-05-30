@@ -1663,7 +1663,7 @@ void microstep_mode(uint8_t driver, uint8_t stepping_mode)
 
 void microstep_readings()
 {
-      SERIAL_PROTOCOLNPGM("MS1,MS2 Pins");
+      SERIAL_PROTOCOLLNPGM("MS1,MS2 Pins");
       SERIAL_PROTOCOLPGM("X: ");
       SERIAL_PROTOCOL(   READ(X_MS1_PIN));
       SERIAL_PROTOCOLLN( READ(X_MS2_PIN));
