@@ -26,8 +26,7 @@ int serial_count = 0;  //index of character read from serial line
 boolean comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
-unsigned long TimeSent = _millis();
-unsigned long TimeNow = _millis();
+ShortTimer farm_incomplete_command_timeout_timer;
 
 long gcode_N = 0;
 long gcode_LastN = 0;
@@ -396,14 +395,8 @@ void get_command()
   while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
     char serial_char = MYSERIAL.read();
-/*    if (selectedSerialPort == 1)
-    {
-        selectedSerialPort = 0; 
-        MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
-        selectedSerialPort = 1; 
-    } */ //RP - removed
-      TimeSent = _millis();
-      TimeNow = _millis();
+
+    farm_incomplete_command_timeout_timer.start();
 
     if (serial_char < 0)
         // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
@@ -537,9 +530,8 @@ void get_command()
     }
   } // end of serial line processing loop
 
-    if(farm_mode){
-        TimeNow = _millis();
-        if ( ((TimeNow - TimeSent) > 800) && (serial_count > 0) ) {
+    if(farm_mode && (serial_count > 0)){
+        if (farm_incomplete_command_timeout_timer.expired(800)) {
             cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0;
             
             bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
