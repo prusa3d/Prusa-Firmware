@@ -71,8 +71,6 @@ uint16_t tmc2130_sg_cnt[4] = {0, 0, 0, 0};
 bool tmc2130_sg_change = false;
 #endif
 
-bool skip_debug_msg = false;
-
 #define DBG(args...)
 //printf_P(args)
 #ifndef _n
@@ -403,7 +401,6 @@ void tmc2130_check_overtemp()
 		for (uint_least8_t i = 0; i < 4; i++)
 		{
 			uint32_t drv_status = 0;
-			skip_debug_msg = true;
 			tmc2130_rd(i, TMC2130_REG_DRV_STATUS, &drv_status);
 			if (drv_status & ((uint32_t)1 << 26))
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
