@@ -351,7 +351,7 @@ static float next_feedrate;
 // Original feedrate saved during homing moves
 static float saved_feedrate;
 
-const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
+const int8_t sensitive_pins[] PROGMEM = SENSITIVE_PINS; // Sensitive pin list for M42
 
 //static float tt = 0;
 //static float bt = 0;
@@ -6167,13 +6167,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     case 42:
       if (code_seen('S'))
       {
-        int pin_status = code_value();
-        int pin_number = LED_PIN;
-        if (code_seen('P') && pin_status >= 0 && pin_status <= 255)
+        uint8_t pin_status = code_value_uint8();
+        int8_t pin_number = LED_PIN;
+        if (code_seen('P'))
           pin_number = code_value();
-        for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(int)); i++)
+        for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(int8_t)); i++)
         {
-          if (sensitive_pins[i] == pin_number)
+          if ((int8_t)pgm_read_byte(&sensitive_pins[i]) == pin_number)
           {
             pin_number = -1;
             break;
