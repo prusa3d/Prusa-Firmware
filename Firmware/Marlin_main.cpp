@@ -9051,8 +9051,8 @@ Sigma_Exit:
               disable_e1();
               disable_e2();
 
-              pinMode(E_MUX0_PIN, OUTPUT);
-              pinMode(E_MUX1_PIN, OUTPUT);
+              SET_OUTPUT(E_MUX0_PIN);
+              SET_OUTPUT(E_MUX1_PIN);
 
               _delay(100);
               SERIAL_ECHO_START;
