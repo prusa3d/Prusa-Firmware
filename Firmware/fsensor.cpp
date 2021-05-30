@@ -124,7 +124,7 @@ uint16_t fsensor_oq_sh_sum;
 ClFsensorPCB oFsensorPCB;
 ClFsensorActionNA oFsensorActionNA;
 bool bIRsensorStateFlag=false;
-unsigned long nIRsensorLastTime;
+ShortTimer tIRsensorCheckTimer;
 #endif //IR_SENSOR_ANALOG
 
 void fsensor_stop_and_save_print(void)
@@ -693,11 +693,11 @@ void fsensor_update(void)
                 if(!bIRsensorStateFlag)
                 {
                     bIRsensorStateFlag=true;
-                    nIRsensorLastTime=_millis();
+                    tIRsensorCheckTimer.start();
                 }
                 else
                 {
-                    if((_millis()-nIRsensorLastTime)>IR_SENSOR_STEADY)
+                    if(tIRsensorCheckTimer.expired(IR_SENSOR_STEADY))
                     {
                         uint8_t nMUX1,nMUX2;
                         uint16_t nADC;
