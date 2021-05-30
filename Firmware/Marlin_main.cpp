@@ -210,7 +210,9 @@ static LongTimer crashDetTimer;
 bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
 
+#ifdef PRUSA_M28
 bool prusa_sd_card_upload = false;
+#endif
 
 unsigned int status_number = 0;
 
@@ -1654,6 +1656,7 @@ void setup()
 #endif //WATCHDOG
 }
 
+#ifdef PRUSA_M28
 
 void trace();
 
@@ -1726,6 +1729,7 @@ void serial_read_stream() {
         }
     }
 }
+#endif //PRUSA_M28
 
 /**
 * Output a "busy" message at regular intervals
@@ -1811,12 +1815,14 @@ void loop()
     }
 #endif
 
+#ifdef PRUSA_M28
     if (prusa_sd_card_upload)
     {
         //we read byte-by byte
         serial_read_stream();
     } 
-    else 
+    else
+#endif
     {
 
         get_command();
@@ -2455,9 +2461,12 @@ void retract(bool retracting, bool swapretract = false) {
 } //retract
 #endif //FWRETRACT
 
+#ifdef PRUSA_M28
 void trace() {
     Sound_MakeCustom(25,440,true);
 }
+#endif
+
 /*
 void ramming() {
 //	  float tmp[4] = DEFAULT_MAX_FEEDRATE;
@@ -4444,12 +4453,16 @@ void process_commands()
 
         #endif // SDSUPPORT
 
-    } else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
+    }
+#ifdef PRUSA_M28
+	else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
         trace();
         prusa_sd_card_upload = true;
         card.openFileWrite(strchr_pointer+4);
 
-	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
+	}
+#endif //PRUSA_M28
+	else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
         eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
         if (SN[19])
