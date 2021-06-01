@@ -251,7 +251,8 @@ void tmc2130_st_isr()
 	uint8_t crash = 0;
 	uint8_t diag_mask = tmc2130_sample_diag();
 //	for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++)
-	for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++)
+//	for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++)
+    for (uint8_t axis = X_AXIS; axis <= Y_AXIS; axis++)
 	{
 		uint8_t mask = (X_AXIS_MASK << axis);
 		if (diag_mask & mask) tmc2130_sg_err[axis]++;
