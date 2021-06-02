@@ -40,11 +40,10 @@ def get_elf_globals(path):
             # handle only variable types
             if DIE.tag != 'DW_TAG_variable':
                 continue
-            if 'DW_AT_name' not in DIE.attributes:
-                continue
             if 'DW_AT_location' not in DIE.attributes:
                 continue
-            if 'DW_AT_type' not in DIE.attributes:
+            if 'DW_AT_name' not in DIE.attributes and \
+               'DW_AT_abstract_origin' not in DIE.attributes:
                 continue
 
             # handle locations encoded directly as DW_OP_addr (leaf globals)
@@ -57,7 +56,18 @@ def get_elf_globals(path):
                 continue
             loc -= SRAM_OFFSET
 
-            # variable name
+            # variable name/type
+            if 'DW_AT_name' not in DIE.attributes and \
+               'DW_AT_abstract_origin' in DIE.attributes:
+                DIE = DIE.get_DIE_from_attribute('DW_AT_abstract_origin')
+                if 'DW_AT_location' in DIE.attributes:
+                    # duplicate reference (handled directly), skip
+                    continue
+            if 'DW_AT_name' not in DIE.attributes:
+                continue
+            if 'DW_AT_type' not in DIE.attributes:
+                continue
+
             name = DIE.attributes['DW_AT_name'].value.decode('ascii')
 
             # recurse on type to find the final storage definition
