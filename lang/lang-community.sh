@@ -12,7 +12,9 @@ fi
 # Check community language NL = Dutch
 COMMUNITY_LANG_NL=$(grep --max-count=1 "^#define COMMUNITY_LANG_NL" $ROOT_PATH/Firmware/config.h| cut -d '_' -f3 |cut -d ' ' -f1)
 export NL=$COMMUNITY_LANG_NL
-
+# Check community language SK = Slovak
+COMMUNITY_LANG_SK=$(grep --max-count=1 "^#define COMMUNITY_LANG_SK" $ROOT_PATH/Firmware/config.h| cut -d '_' -f3 |cut -d ' ' -f1)
+export NL=$COMMUNITY_LANG_SK
 # Use the lines below as a template and replace 'QR' and 'new language'
 # Check comminity language QR = new language
 #COMMUNITY_LANG_QR=$(grep --max-count=1 "^#define COMMUNITY_LANG_QR" $ROOT_PATH/Firmware/config.h| cut -d '_' -f3 |cut -d ' ' -f1)

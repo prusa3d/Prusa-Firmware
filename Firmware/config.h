@@ -62,6 +62,7 @@
 
 //Community language support
 #define COMMUNITY_LANG_NL // Community Dutch language
+#define COMMUNITY_LANG_SK // Community Slovak language
 //#define COMMUNITY_LANG_QR // Community new language //..use this as a template and replace 'QR'
 
 #if defined(COMMUNITY_LANG_NL) //|| defined(COMMUNITY_LANG_QR) //..use last part as a template and replace 'QR'
