@@ -126,7 +126,8 @@ def annotate_refs(grefs, addr, data, width=45, gaps=True):
             buf_repr += ' I:' + str(int.from_bytes(buf, 'big')).rjust(10)
         if len(buf) in [4, 8]:
             # attempt to decode as floats
-            buf_repr += ' F:' + '{:10.3f}'.format(unpack('f', buf)[0])
+            typ = 'f' if len(buf) == 4 else 'd'
+            buf_repr += ' F:' + '{:10.3f}'.format(unpack(typ, buf)[0])
 
         if gaps and last_end is not None and last_end < pos:
             # decode gaps
