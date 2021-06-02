@@ -2,11 +2,15 @@
 import argparse
 import elftools.elf.elffile
 import elftools.dwarf.descriptions
+from collections import namedtuple
 from struct import unpack
 
 SRAM_OFFSET = 0x800000
 EEPROM_OFFSET = 0x810000
 FILL_BYTE = b'\0'
+
+
+Entry = namedtuple('Entry', ['name', 'loc', 'size'])
 
 
 def get_elf_globals(path):
@@ -60,7 +64,7 @@ def get_elf_globals(path):
                 continue
             size = byte_size.value
 
-            grefs.append([name, loc, size])
+            grefs.append(Entry(name, loc, size))
 
     return grefs
 
@@ -106,14 +110,14 @@ def decode_dump(path):
 
 def annotate_refs(grefs, addr, data, width=45, gaps=True):
     last_end = None
-    for name, loc, size in grefs:
-        if loc < addr:
+    for entry in grefs:
+        if entry.loc < addr:
             continue
-        if loc + size > addr + len(data):
+        if entry.loc + entry.size > addr + len(data):
             continue
 
-        pos = loc-addr
-        end_pos = pos + size
+        pos = entry.loc-addr
+        end_pos = pos + entry.size
         buf = data[pos:end_pos]
 
         buf_repr = ''
@@ -131,15 +135,15 @@ def annotate_refs(grefs, addr, data, width=45, gaps=True):
             print('{:04x} {} {:4} R:{}'.format(addr+last_end, "*UNKNOWN*".ljust(width),
                                                gap_size, gap_buf.hex()))
 
-        print('{:04x} {} {:4}{} R:{}'.format(loc, name.ljust(width), size,
-                                             buf_repr, buf.hex()))
+        print('{:04x} {} {:4}{} R:{}'.format(entry.loc, entry.name.ljust(width),
+                                             entry.size, buf_repr, buf.hex()))
         last_end = end_pos
 
 
 def print_map(grefs):
     print('OFFSET\tSIZE\tNAME')
-    for name, loc, size in grefs:
-        print('{:x}\t{}\t{}'.format(loc, size, name))
+    for entry in grefs:
+        print('{:x}\t{}\t{}'.format(entry.loc, entry.size, entry.name))
 
 
 def main():
@@ -156,7 +160,7 @@ def main():
     args = ap.parse_args()
 
     grefs = get_elf_globals(args.elf)
-    grefs = list(sorted(grefs, key=lambda x: x[1]))
+    grefs = list(sorted(grefs, key=lambda x: x.loc))
     if args.dump is None:
         print_map(grefs)
     else:
