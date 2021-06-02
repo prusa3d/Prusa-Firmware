@@ -105,8 +105,7 @@ def decode_dump(path):
 
 
 def annotate_refs(grefs, addr, data, width=45, gaps=True):
-    last_pos = None
-
+    last_end = None
     for name, loc, size in grefs:
         if loc < addr:
             continue
@@ -125,16 +124,16 @@ def annotate_refs(grefs, addr, data, width=45, gaps=True):
             # attempt to decode as floats
             buf_repr += ' F:' + '{:10.3f}'.format(unpack('f', buf)[0])
 
-        if gaps and last_pos is not None and last_pos < pos:
+        if gaps and last_end is not None and last_end < pos:
             # decode gaps
-            gap_size = pos - last_pos
-            gap_buf = data[last_pos:pos]
-            print('{:04x} {} {:4} R:{}'.format(last_pos, "*UNKNOWN*".ljust(width),
+            gap_size = pos - last_end
+            gap_buf = data[last_end:pos]
+            print('{:04x} {} {:4} R:{}'.format(addr+last_end, "*UNKNOWN*".ljust(width),
                                                gap_size, gap_buf.hex()))
 
         print('{:04x} {} {:4}{} R:{}'.format(loc, name.ljust(width), size,
                                              buf_repr, buf.hex()))
-        last_pos = end_pos
+        last_end = end_pos
 
 
 def print_map(grefs):
