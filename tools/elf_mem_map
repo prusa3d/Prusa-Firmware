@@ -13,6 +13,15 @@ FILL_BYTE = b'\0'
 Entry = namedtuple('Entry', ['name', 'loc', 'size'])
 
 
+def array_inc(loc, dim, idx=0):
+    if idx == len(dim):
+        return True
+    loc[idx] += 1
+    if loc[idx] == dim[idx]:
+        loc[idx] = 0
+        return array_inc(loc, dim, idx+1)
+    return False
+
 def get_elf_globals(path):
     fd = open(path, "rb")
     if fd is None:
@@ -54,7 +63,7 @@ def get_elf_globals(path):
             # recurse on type to find the final storage definition
             type_DIE = DIE
             byte_size = None
-            array_len = None
+            array_dim = []
             while True:
                 if 'DW_AT_byte_size' in type_DIE.attributes:
                     byte_size = type_DIE.attributes.get('DW_AT_byte_size')
@@ -62,25 +71,37 @@ def get_elf_globals(path):
                     break
                 type_DIE = type_DIE.get_DIE_from_attribute('DW_AT_type')
                 if type_DIE.tag == 'DW_TAG_array_type':
-                    # fetch the first dimension (if known)
-                    range_DIE = next(type_DIE.iter_children())
-                    if range_DIE.tag == 'DW_TAG_subrange_type' and \
-                       'DW_AT_upper_bound' in range_DIE.attributes:
-                        array_len = range_DIE.attributes['DW_AT_upper_bound'].value + 1
+                    # fetch array dimensions (if known)
+                    for range_DIE in type_DIE.iter_children():
+                        if range_DIE.tag == 'DW_TAG_subrange_type' and \
+                           'DW_AT_upper_bound' in range_DIE.attributes:
+                            array_dim.append(range_DIE.attributes['DW_AT_upper_bound'].value + 1)
             if byte_size is None:
                 continue
             size = byte_size.value
 
-            if array_len is None or array_len == 1:
+            if len(array_dim) == 0 or (len(array_dim) == 1 and array_dim[0] == 1):
                 # plain entry
                 grefs.append(Entry(name, loc, size))
-            elif size == 1:
-                # string
-                grefs.append(Entry('{}[]'.format(name), loc, array_len))
+            elif len(array_dim) == 1 and size == 1:
+                # likely string, avoid expansion
+                grefs.append(Entry('{}[]'.format(name), loc, array_dim[0]))
             else:
                 # expand array entries
-                for i in range(array_len):
-                    grefs.append(Entry('{}[{}]'.format(name, i), loc+size*i, size))
+                array_pos = loc
+                array_loc = [0] * len(array_dim)
+                while True:
+                    # location index
+                    sfx = ''
+                    for d in range(len(array_dim)):
+                        sfx += '[{}]'.format(array_loc[d])
+
+                    grefs.append(Entry(name + sfx, array_pos, size))
+
+                    # advance
+                    array_pos += size
+                    if array_inc(array_loc, array_dim):
+                        break
 
     return grefs
 
