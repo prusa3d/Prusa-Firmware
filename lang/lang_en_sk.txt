@@ -1,14 +1,14 @@
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
-" 0.3 alebo starsie"
+" 0.3 a starsie"
 
-#MSG_FS_V_03_OR_OLDER c=20
+#MSG_FS_V_03_OR_OLDER c=18
 "FS v0.3 or older"
-"FS 0.3 alebo starsie"
+"FS 0.3 a starsie"
 
 #MSG_IR_04_OR_NEWER c=18
 " 0.4 or newer"
-" 0.4 alebo novsie"
+" 0.4 a novsie"
 
 #MSG_FS_V_04_OR_NEWER c=18
 "FS v0.4 or newer"
@@ -62,17 +62,17 @@
 "Auto home"
 "\x00"
 
-#MSG_AUTOLOAD_FILAMENT c=20
+#MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
 "Auto. zavedenie fil."
 
-#MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=5
+#MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Automaticke zavedenie filamentu je mozne len pri zapnutom filament senzore..."
+"Autom. zavedenie filam. je mozne len pri zapnutom filam. senzore..."
 
-#MSG_AUTOLOADING_ENABLED c=20 r=5
+#MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Automaticke zavedenie filamentu aktivne, stlacte tlacidlo a vlozte filament..."
+"Autom. zavedenie filam. aktivne, stlacte tlacidlo a vlozte filamentu..."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
@@ -270,9 +270,9 @@
 "Cutter"
 "Strihanie"
 
-#MSG_MMU_CUTTING_FIL c=20
+#MSG_MMU_CUTTING_FIL c=18
 "Cutting filament"
-"Strihanie filamentu"
+"Strihanie filam."
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -590,13 +590,13 @@
 "MMU fails"
 "Zlyhanie MMU"
 
-#MSG_MMU_LOAD_FAILED c=20 r=2
+#MSG_MMU_LOAD_FAILED c=20
 "MMU load failed"
-"Zavedenie MMU zlyhalo"
+"MMU zaved. zlyhalo"
 
-#MSG_MMU_LOAD_FAILS c=20 r=2
+#MSG_MMU_LOAD_FAILS c=20
 "MMU load fails"
-"MMU zavedenie zlyhalo"
+"MMU zaved. zlyhalo"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
