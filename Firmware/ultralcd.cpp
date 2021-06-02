@@ -640,7 +640,7 @@ void lcdui_print_status_line(void)
         case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
             if (custom_message_state > 10) {
                 lcd_set_cursor(0, 3);
-                lcd_space(20);
+                lcd_space(LCD_WIDTH);
                 lcd_puts_at_P(0, 3, _T(MSG_CALIBRATE_Z_AUTO));
                 lcd_puts_P(PSTR(" : "));
                 lcd_print(custom_message_state-10);
@@ -695,7 +695,7 @@ void lcdui_print_status_line(void)
     }
 
     // Fill the rest of line to have nice and clean output
-    for(int fillspace = 0; fillspace < 20; fillspace++)
+    for(int fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
         if ((lcd_status_message[fillspace] <= 31 ))
             lcd_print(' ');
 }
@@ -2431,7 +2431,7 @@ void lcd_change_success() {
 
 static void lcd_loading_progress_bar(uint16_t loading_time_ms) { 
 
-	for (uint_least8_t i = 0; i < 20; i++) {
+	for (uint_least8_t i = 0; i < LCD_WIDTH; i++) {
 		lcd_putc_at(i, 3, '.');
 		//loading_time_ms/20 delay
 		for (uint_least8_t j = 0; j < 5; j++) {
@@ -3344,10 +3344,10 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
             // End of the message.
             break;
         lcd_set_cursor(0, row);
-        uint8_t linelen = min(strlen_P(msg), 20);
+        uint8_t linelen = min(strlen_P(msg), LCD_WIDTH);
         const char *msgend2 = msg + linelen;
         msgend = msgend2;
-        if (row == 3 && linelen == 20) {
+        if (row == 3 && linelen == LCD_WIDTH) {
             // Last line of the display, full line shall be displayed.
             // Find out, whether this message will be split into multiple screens.
             while (pgm_is_whitespace(msgend))
