@@ -75,12 +75,12 @@ def get_elf_globals(path):
             byte_size = None
             array_dim = []
             while True:
-                if 'DW_AT_byte_size' in type_DIE.attributes:
+                if byte_size is None and 'DW_AT_byte_size' in type_DIE.attributes:
                     byte_size = type_DIE.attributes.get('DW_AT_byte_size')
                 if 'DW_AT_type' not in type_DIE.attributes:
                     break
                 type_DIE = type_DIE.get_DIE_from_attribute('DW_AT_type')
-                if type_DIE.tag == 'DW_TAG_array_type':
+                if len(array_dim) == 0 and type_DIE.tag == 'DW_TAG_array_type':
                     # fetch array dimensions (if known)
                     for range_DIE in type_DIE.iter_children():
                         if range_DIE.tag == 'DW_TAG_subrange_type' and \
