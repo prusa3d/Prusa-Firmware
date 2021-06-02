@@ -62,7 +62,7 @@
 "Auto home"
 "\x00"
 
-#MSG_AUTOLOAD_FILAMENT c=18
+#MSG_AUTOLOAD_FILAMENT c=20
 "AutoLoad filament"
 "Auto. zavedenie fil."
 
