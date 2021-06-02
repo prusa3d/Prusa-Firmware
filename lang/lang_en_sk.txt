@@ -64,7 +64,7 @@
 
 #MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
-"AutoZavedenie fil."
+"Auto. zavedenie fil."
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
@@ -88,11 +88,11 @@
 
 #MSG_BED_DONE c=20
 "Bed done"
-"Bed OK."
+"Podlozka OK."
 
 #MSG_BED_HEATING c=20
 "Bed Heating"
-"Zahrievanie bedu"
+"Zahrievanie podlozky"
 
 #MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
@@ -148,7 +148,7 @@
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-"Kalibracia XYZ. Otacanim tlacidla posunte Z os az k~hornemu dorazu. Potvrdte tlacidlom."
+"Kalibracia XYZ. Otacanim tlacidla posunte Z os az k hornemu dorazu. Potvrdte tlacidlom."
 
 #MSG_CALIBRATE_Z_AUTO c=20 r=2
 "Calibrating Z"
@@ -172,7 +172,7 @@
 
 #MSG_CHECKING_FILE c=17
 "Checking file"
-"Kontrolujem soubor"
+"Kontrolujem subor"
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
@@ -192,7 +192,7 @@
 
 #MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
-"Zvolte filament pre kalibraciu prvej vrstvy z nasledujiceho menu"
+"Zvolte filament pre kalibraciu prvej vrstvy z nasledujuceho menu"
 
 #MSG_CRASH_DETECTED c=20
 "Crash detected."
@@ -264,7 +264,7 @@
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
-"Ustrihnut"
+"Odstrihnut"
 
 #MSG_CUTTER c=9
 "Cutter"
@@ -316,7 +316,7 @@
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
-"Test ventilatoru"
+"Test ventilatora"
 
 #MSG_FANS_CHECK c=13
 "Fans check"
@@ -368,7 +368,7 @@
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
-"Nejskor pomocou selftestu skontolujem nejcastejsie chyby vznikajuce pri zostaveni tlaciarne."
+"Najskor pomocou selftestu skontolujem nejcastejsie chyby vznikajuce pri zostaveni tlaciarne."
 
 #MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
@@ -404,7 +404,7 @@
 
 #MSG_HEATING c=20
 "Heating"
-"Zahriievanie"
+"Zahrievanie"
 
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
@@ -436,7 +436,7 @@
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20
 "Checking sensors"
-"Kontrola senzoru"
+"Kontrola senzorov"
 
 #MSG_CHECKING_X c=20
 "Checking X axis"
@@ -464,7 +464,7 @@
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
-"Teraz urobim xyz kalibraciu. Zaberie to priblizne 12 min."
+"Teraz urobim XYZ kalibraciu. Zaberie to priblizne 12 min."
 
 #MSG_WIZARD_Z_CAL c=20 r=8
 "I will run z calibration now."
@@ -708,7 +708,7 @@
 
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
-"Teraz odstrante testovaci vytlacok z podlozky."
+"Teraz odstrante testovaci vytlacok z platne."
 
 #MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
@@ -760,7 +760,7 @@
 
 #MSG_PLACE_STEEL_SHEET c=20 r=5
 "Please place steel sheet on heatbed."
-"Umiestnite prosim podlozku na heatbed"
+"Umiestnite prosim platnu na podlozku"
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
@@ -776,7 +776,7 @@
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
-"Odstrante prosim podlozku z heatbed."
+"Odstrante prosim platnu z pozdlozky."
 
 #MSG_RUN_XYZ c=20 r=4
 "Please run XYZ calibration first."
@@ -800,7 +800,7 @@
 
 #MSG_PREHEAT c=18
 "Preheat"
-"Predhrev"
+"Predohrev"
 
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
@@ -884,7 +884,7 @@
 
 #MSG_CHECK_IR_CONNECTION c=20 r=4
 "Please check the IR sensor connection, unload filament if present."
-"Prosim skontrolujte zapojenie IR senzoru a vybrany filament"
+"Prosim skontrolujte zapojenie IR senzoru a vyberte filament"
 
 #MSG_RECOVERING_PRINT c=20
 "Recovering print"
@@ -964,9 +964,9 @@
 
 #MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
-"Vyberte teplotu predhriatia trysky ktora zodpoveda vasmu materialu."
+"Vyberte teplotu predohrevu trysky ktora zodpoveda vasmu materialu."
 
-#MSG_SET_TEMPERATURE c=20
+#MSG_SET_TEMPERATURE c=19
 "Set temperature:"
 "Nastavte teplotu:"
 
@@ -1011,8 +1011,8 @@
 "Hlasny"
 
 #MSG_SLIGHT_SKEW c=14
-"Slight skew:"
-"Lahke skos.:"
+"Slight skew"
+"Lahke skos."
 
 #MSG_SOUND c=7
 "Sound"
@@ -1224,11 +1224,11 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 "XYZ calibration compromised. Front calibration points not reachable."
-"Kalibracia XYZ nepresna. Predne kalibracne body su moc vpredu."
+"Kalibracia XYZ nepresna. Predne kalibracne body su velmi vpredu."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
-"Kalibracia XYZ nepresna. Pravy predny bod je moc vpredu."
+"Kalibracia XYZ nepresna. Pravy predny bod je velmi vpredu."
 
 #MSG_LOAD_ALL c=17
 "Load all"
@@ -1240,11 +1240,11 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 "XYZ calibration failed. Front calibration points not reachable."
-"Kalibracia XYZ zlyhala. Predne kalibracne body moc vpredu. Zrovnajte tlaciaren."
+"Kalibracia XYZ zlyhala. Predne kalibracne body velmi vpredu. Zrovnajte tlaciaren."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 "XYZ calibration failed. Right front calibration point not reachable."
-"Kalibracia XYZ zlyhala. Pravy predny bod moc vpredu. Zrovnajte tlaciaren."
+"Kalibracia XYZ zlyhala. Pravy predny bod velmi vpredu. Zrovnajte tlaciaren."
 
 #MSG_Y_DIST_FROM_MIN c=20
 "Y distance from min"
