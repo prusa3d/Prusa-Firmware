@@ -170,7 +170,7 @@ def annotate_refs(grefs, addr, data, width=45, gaps=True):
         buf_repr = ''
         if len(buf) in [1, 2, 4]:
             # attempt to decode as integers
-            buf_repr += ' I:' + str(int.from_bytes(buf, 'big')).rjust(10)
+            buf_repr += ' I:' + str(int.from_bytes(buf, 'little')).rjust(10)
         if len(buf) in [4, 8]:
             # attempt to decode as floats
             typ = 'f' if len(buf) == 4 else 'd'
