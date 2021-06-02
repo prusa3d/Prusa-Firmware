@@ -175,7 +175,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 ## Prepare language part
 
 To prepare the acutal language translation files we need create the `lang_en_qr.txt` file.
-1. Copy and `lang_en.txt` as `lang_en_qr.txt`
+1. Copy and rename `lang_en.txt` as `lang_en_qr.txt`
 2. run `../lang/lang-export.sh`
 3. copy `../lang/po/Firmware_qr.po` file to `../lang/po/new/qr.po`
 4. translate all messages using POEdit or other tools.

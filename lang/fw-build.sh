@@ -138,6 +138,11 @@ else
   ./update_lang.sh cz 2>./update_lang_cz.out 1>/dev/null
   if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; finish 1; fi
  fi
+ if [ -e lang_sk.bin ]; then
+  echo -n " Slovak  : " >&2
+  ./update_lang.sh sk 2>./update_lang_sk.out 1>/dev/null
+  if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; finish 1; fi
+ fi
  if [ -e lang_de.bin ]; then
   echo -n " German : " >&2
   ./update_lang.sh de 2>./update_lang_de.out 1>/dev/null
@@ -185,6 +190,7 @@ fi
 #create binary file with all languages
 rm -f lang.bin
 if [ -e lang_cz.bin ]; then cat lang_cz.bin >> lang.bin; fi
+if [ -e lang_sk.bin ]; then cat lang_sk.bin >> lang.bin; fi
 if [ -e lang_de.bin ]; then cat lang_de.bin >> lang.bin; fi
 if [ -e lang_es.bin ]; then cat lang_es.bin >> lang.bin; fi
 if [ -e lang_fr.bin ]; then cat lang_fr.bin >> lang.bin; fi

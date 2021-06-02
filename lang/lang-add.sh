@@ -61,6 +61,7 @@ cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
 		echo
 		insert_en "$new_s"
 		insert_xx "$new_s" 'cz'
+		insert_xx "$new_s" 'sk'		
 		insert_xx "$new_s" 'de'
 		insert_xx "$new_s" 'es'
 		insert_xx "$new_s" 'fr'

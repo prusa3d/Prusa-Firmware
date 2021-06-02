@@ -41,6 +41,7 @@ echo "lang-clean.sh started" >&2
 
 clean_lang en
 clean_lang cz
+clean_lang sk
 clean_lang de
 clean_lang es
 clean_lang fr

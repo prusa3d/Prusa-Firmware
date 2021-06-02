@@ -38,6 +38,7 @@ lang_code_hex_data()
  case "$1" in
   *en*) echo '\x6e\x65' ;;
   *cz*) echo '\x73\x63' ;;
+  *sk*) echo '\x6b\x73' ;;  
   *de*) echo '\x65\x64' ;;
   *es*) echo '\x73\x65' ;;
   *fr*) echo '\x72\x66' ;;
@@ -136,6 +137,7 @@ if [ -z "$1" ]; then set 'all'; fi
 if [ "$1" = "all" ]; then
  generate_binary 'en'
  generate_binary 'cz'
+ generate_binary 'sk' 
  generate_binary 'de'
  generate_binary 'es'
  generate_binary 'fr'
