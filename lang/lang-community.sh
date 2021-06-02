@@ -29,7 +29,11 @@ if [ "$COMMUNITY_LANG_NL" = "NL" ]; then
     echo
     ./lang-build.sh nl
 fi
-
+if [ "$COMMUNITY_LANG_SK" = "SK" ]; then
+    echo "  $COMMUNITY_LANG_SK" >&2
+    echo
+    ./lang-build.sh sk
+fi
 # Use the 5 lines below as a template and replace 'QR' and 'qr'
 #if [ "$COMMUNITY_LANG_QR" = "QR" ]; then
 #    echo "  $COMMUNITY_LANG_QR" >&2
