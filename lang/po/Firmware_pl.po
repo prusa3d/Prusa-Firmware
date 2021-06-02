@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Do 29. Apr 15:37:27 CEST 2021\n"
-"PO-Revision-Date: Do 29. Apr 15:37:27 CEST 2021\n"
+"POT-Creation-Date: St  2. jún 2021, 19:24:14 CEST\n"
+"PO-Revision-Date: St  2. jún 2021, 19:24:14 CEST\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -21,7 +21,7 @@ msgid " 0.3 or older"
 msgstr " 0.3 lub starszy"
 
 # MSG_FS_V_03_OR_OLDER c=18
-#: Marlin_main.cpp:9678
+#: Marlin_main.cpp:9693
 msgid "FS v0.3 or older"
 msgstr "FS 0.3 lub starszy"
 
@@ -31,7 +31,7 @@ msgid " 0.4 or newer"
 msgstr " 0.4 lub nowszy"
 
 # MSG_FS_V_04_OR_NEWER c=18
-#: Marlin_main.cpp:9677
+#: Marlin_main.cpp:9692
 msgid "FS v0.4 or newer"
 msgstr "FS 0.4 lub nowszy"
 
@@ -226,7 +226,7 @@ msgid "Calibration"
 msgstr "Kalibracja"
 
 # MSG_SD_REMOVED c=20
-#: ultralcd.cpp:8869
+#: ultralcd.cpp:8871
 msgid "Card removed"
 msgstr "Karta wyjeta"
 
@@ -461,7 +461,7 @@ msgid "FS Action"
 msgstr "Akcja FS"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
-#: ultralcd.cpp:8572
+#: ultralcd.cpp:8574
 msgid "File incomplete. Continue anyway?"
 msgstr "Plik niekompletny. Kontynowac?"
 
@@ -511,7 +511,7 @@ msgid "Heater/Thermistor"
 msgstr "Grzalka/Termistor"
 
 # MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: Marlin_main.cpp:9668
+#: Marlin_main.cpp:9683
 msgid "Heating disabled by safety timer."
 msgstr "Grzanie wylaczone przez wyl. czasowy"
 
@@ -846,7 +846,7 @@ msgid "Move Z"
 msgstr "Ruch osi Z"
 
 # MSG_NO_MOVE c=20
-#: Marlin_main.cpp:5722
+#: Marlin_main.cpp:5731
 msgid "No move."
 msgstr "Brak ruchu."
 
@@ -896,7 +896,7 @@ msgid "Nozzle"
 msgstr "Dysza"
 
 # MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
-#: Marlin_main.cpp:1541
+#: Marlin_main.cpp:1543
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr "Znaleziono stare ustawienia. Zostana przywrocone domyslne ust. PID, Esteps, itp."
 
@@ -961,7 +961,7 @@ msgid "Please check our handbook and fix the problem. Then resume the Wizard by 
 msgstr "Przeczytaj nasz Podrecznik druku 3D aby naprawic problem. Potem wznow Asystenta przez restart drukarki."
 
 # MSG_CHECK_IDLER c=20 r=5
-#: Marlin_main.cpp:3689
+#: Marlin_main.cpp:3691
 msgid "Please open idler and remove filament manually."
 msgstr "Prosze odciagnac dzwignie dociskowa ekstrudera i recznie usunac filament."
 
@@ -991,7 +991,7 @@ msgid "Please remove steel sheet from heatbed."
 msgstr "Prosze zdjac plyte stalowa z podgrzewanego stolu."
 
 # MSG_RUN_XYZ c=20 r=4
-#: Marlin_main.cpp:5208
+#: Marlin_main.cpp:5217
 msgid "Please run XYZ calibration first."
 msgstr "Prosze najpierw uruchomic kalibracje XYZ"
 
@@ -1031,7 +1031,7 @@ msgid "Please upgrade."
 msgstr "Prosze zaktualizowac"
 
 # MSG_PRESS_TO_PREHEAT c=20 r=4
-#: Marlin_main.cpp:11789
+#: Marlin_main.cpp:11804
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Wcisnij pokretlo aby rozgrzac dysze i kontynuowac."
 
@@ -1126,7 +1126,7 @@ msgid "Please check the IR sensor connection, unload filament if present."
 msgstr "Sprawdz polaczenie czujnika IR, rozladuj filament, jesli zaladowany."
 
 # MSG_RECOVERING_PRINT c=20
-#: Marlin_main.cpp:11133
+#: Marlin_main.cpp:11148
 msgid "Recovering print"
 msgstr "Wznawianie wydruku"
 
@@ -1216,7 +1216,7 @@ msgid "Selftest failed"
 msgstr "Selftest nieudany"
 
 # MSG_FORCE_SELFTEST c=20 r=8
-#: Marlin_main.cpp:1573
+#: Marlin_main.cpp:1575
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
 msgstr "Zostanie uruchomiony Selftest aby dokladnie skalibrowac punkt bazowy bez krancowek"
 
@@ -1296,7 +1296,7 @@ msgid "Runouts"
 msgstr "Konce f"
 
 # MSG_Z-LEVELING_ENFORCED c=20 r=4
-#: Marlin_main.cpp:3196
+#: Marlin_main.cpp:3198
 msgid "Some problem encountered, Z-leveling enforced ..."
 msgstr "Wykryto problem, wymuszono poziomowanie osi Z."
 
@@ -1316,7 +1316,7 @@ msgid "Spinning"
 msgstr "Kreci sie"
 
 # MSG_TEMP_CAL_WARNING c=20 r=4
-#: Marlin_main.cpp:5221
+#: Marlin_main.cpp:5230
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
 msgstr "Potrzebna jest stabilna temperatura otoczenia 21-26C i stabilne podloze."
 
@@ -1456,7 +1456,7 @@ msgid "unknown"
 msgstr "nieznane"
 
 # MSG_USERWAIT c=20
-#: Marlin_main.cpp:4223
+#: Marlin_main.cpp:4226
 msgid "Wait for user..."
 msgstr "Czekam na uzytk. ..."
 
@@ -1471,22 +1471,22 @@ msgid "Waiting for PINDA probe cooling"
 msgstr "Czekam az spadnie temp. sondy PINDA"
 
 # MSG_CHANGED_BOTH c=20 r=4
-#: Marlin_main.cpp:1533
+#: Marlin_main.cpp:1535
 msgid "Warning: both printer type and motherboard type changed."
 msgstr "Ostrzezenie: typ drukarki i plyta glowna ulegly zmianie."
 
 # MSG_CHANGED_MOTHERBOARD c=20 r=4
-#: Marlin_main.cpp:1525
+#: Marlin_main.cpp:1527
 msgid "Warning: motherboard type changed."
 msgstr "Ostrzezenie: plyta glowna ulegla zmianie."
 
 # MSG_CHANGED_PRINTER c=20 r=4
-#: Marlin_main.cpp:1529
+#: Marlin_main.cpp:1531
 msgid "Warning: printer type changed."
 msgstr "Ostrzezenie: rodzaj drukarki ulegl zmianie"
 
 # MSG_UNLOAD_SUCCESSFUL c=20 r=2
-#: Marlin_main.cpp:3680
+#: Marlin_main.cpp:3682
 msgid "Was filament unload successful?"
 msgstr "Rozladowanie fil. ok?"
 

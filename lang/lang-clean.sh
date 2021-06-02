@@ -41,7 +41,6 @@ echo "lang-clean.sh started" >&2
 
 clean_lang en
 clean_lang cz
-clean_lang sk
 clean_lang de
 clean_lang es
 clean_lang fr
@@ -50,7 +49,8 @@ clean_lang pl
 #Community language support
 #Dutch
 clean_lang nl
-
+#Slovak
+clean_lang sk
 #Use the 2 lines below as a template and replace 'qr'
 ##New language
 #clean_lang_qr

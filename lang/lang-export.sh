@@ -17,7 +17,6 @@ if [ -z "$LNG" ]; then LNG=all; fi
 if [ "$LNG" = "all" ]; then
  ./lang-export.sh en
  ./lang-export.sh cz
- ./lang-export.sh sk
  ./lang-export.sh de
  ./lang-export.sh es
  ./lang-export.sh fr
@@ -26,6 +25,8 @@ if [ "$LNG" = "all" ]; then
 #Community language support
 #Dutch
  ./lang-export.sh nl
+#Slovak
+ ./lang-export.sh sk
 #Use the 2 lines below as a template and replace 'qr' and 'New language'
 ##New language
 # ./lang-export.sh qr
@@ -50,7 +51,6 @@ else
  LNGNAME=$(\
   case "$LNG" in
    *cz*) echo "Czech" ;;
-   *sk*) echo "Slovak" ;;   
    *de*) echo "German" ;;
    *es*) echo "Spanish" ;;
    *fr*) echo "French" ;;
@@ -59,6 +59,8 @@ else
 #Community language support
 #Dutch
    *nl*) echo "Dutch" ;;
+#Slovak
+   *sk*) echo "Slovak" ;;   
 #Use the 2 lines below as a template and replace 'qr' and 'New language'
 ##New language
 #   *qr*) echo "New language" ;;

@@ -205,7 +205,6 @@ const char* lang_get_name_by_code(uint16_t code)
 	{
 	case LANG_CODE_EN: return _n("English");
 	case LANG_CODE_CZ: return _n("Cestina");
-	case LANG_CODE_SK: return _n("Slovencina");	
 	case LANG_CODE_DE: return _n("Deutsch");
 	case LANG_CODE_ES: return _n("Espanol");
 	case LANG_CODE_FR: return _n("Francais");
@@ -215,7 +214,9 @@ const char* lang_get_name_by_code(uint16_t code)
 #ifdef COMMUNITY_LANG_NL
 	case LANG_CODE_NL: return _n("Nederlands"); //community contribution
 #endif // COMMUNITY_LANG_NL
-
+#ifdef COMMUNITY_LANG_SK
+	case LANG_CODE_SK: return _n("Slovencina"); //community contribution
+#endif // COMMUNITY_LANG_SK
 //Use the 3 lines below as a template and replace 'QR' and 'New language'
 //#ifdef COMMUNITY_LANG_QR 
 //	case LANG_CODE_QR: return _n("New language"); //community contribution
