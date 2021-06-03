@@ -62,9 +62,9 @@
 "Auto home"
 "\x00"
 
-#MSG_AUTOLOAD_FILAMENT c=20
+#MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
-"Auto. zavedenie fil."
+"Autozav. filam."
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
@@ -546,9 +546,9 @@
 "Loose pulley"
 "Uvolnena remenica"
 
-#MSG_LOAD_TO_NOZZLE c=20
+#MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
-"Zavedenie do trysky"
+"Zaved. do trysky"
 
 #MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
@@ -594,9 +594,9 @@
 "MMU load failed"
 "MMU zaved. zlyhalo"
 
-#MSG_MMU_LOAD_FAILS c=20
+#MSG_MMU_LOAD_FAILS c=15
 "MMU load fails"
-"MMU zaved. zlyhalo"
+"MMU zlyhalo"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -610,9 +610,9 @@
 "MK3 firmware detected on MK3S printer"
 "MK3 firmware detekovany na MK3S tlaciarni"
 
-#MSG_NORMAL c=8
+#MSG_NORMAL c=7
 "Normal"
-"Normalny"
+"Normal"
 
 #MSG_SILENT c=7
 "Silent"
@@ -982,9 +982,9 @@
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Niektore subory nebudu zoradene. Maximalny pocet suborov v zlozke pre zoradenie je 100."
 
-#MSG_SORT c=9
+#MSG_SORT c=7
 "Sort"
-"Triedenie"
+"Triedit"
 
 #MSG_NONE c=8
 "None"
@@ -1074,9 +1074,9 @@
 "Select temperature which matches your material."
 "Zvolte teplotu, ktora odpoveda vasmu materialu."
 
-#MSG_CALIBRATION_PINDA_MENU c=18
+#MSG_CALIBRATION_PINDA_MENU c=17
 "Temp. calibration"
-"Teplot. kalibracia"
+"Teplot. kalibr."
 
 #MSG_TEMP_CAL_FAILED c=20 r=8
 "Temperature calibration failed"
