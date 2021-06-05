@@ -14,7 +14,7 @@ Requires ``printcore`` from [Pronterface].
 
 ### ``elf_mem_map``
 
-Generate a symbol table map starting directly from an ELF firmware with DWARF2 debugging information (which is the default using the stock board definition).
+Generate a symbol table map starting directly from an ELF firmware with DWARF debugging information (which is the default using the stock board definition).
 
 When used along with a memory dump obtained from the D2 g-code, show the value of each symbol which is within the address range.
 
