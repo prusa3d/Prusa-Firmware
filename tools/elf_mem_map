@@ -84,9 +84,7 @@ def get_array_dims(DIE):
     return array_dim
 
 
-def get_struct_members(DIE, size, expand_structs, struct_gaps):
-    if not expand_structs or size[0].tag == 'DW_TAG_pointer_type':
-        return []
+def get_struct_members(DIE, entry, expand_structs, struct_gaps):
     struct_DIE = get_type_def(DIE, 'DW_TAG_structure_type')
     if struct_DIE is None:
         return []
@@ -140,8 +138,8 @@ def get_struct_members(DIE, size, expand_structs, struct_gaps):
         members = list(sorted(members, key=lambda x: x.off))
         last = members[-1]
         last_end = last.off + last.size
-        if size[1] > last_end:
-            members.append(Member('*UNKNOWN*', last_end, byte_size - last_end))
+        if entry.size > last_end:
+            members.append(Member('*UNKNOWN*', last_end, entry.size - last_end))
 
     return members
 
@@ -212,7 +210,11 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
             array_dim = get_array_dims(DIE)
 
             # fetch structure members (one level only)
-            members = get_struct_members(DIE, size, expand_structs, struct_gaps)
+            entry = Entry(name, loc, byte_size, declpos)
+            if not expand_structs or size[0].tag == 'DW_TAG_pointer_type':
+                members = []
+            else:
+                members = get_struct_members(DIE, entry, expand_structs, struct_gaps)
 
             def expand_members(entry, members):
                 if len(members) == 0:
@@ -228,10 +230,11 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                 byte_size *= array_dim.pop()
             if len(array_dim) == 0 or (len(array_dim) == 1 and array_dim[0] == 1):
                 # plain entry
-                expand_members(Entry(name, loc, byte_size, declpos), members)
+                expand_members(entry, members)
             elif len(array_dim) == 1 and byte_size == 1:
                 # likely string, avoid expansion
-                grefs.append(Entry(name + '[]', loc, array_dim[0], declpos))
+                grefs.append(Entry(entry.name + '[]', entry.loc,
+                                   array_dim[0], entry.declpos))
             else:
                 # expand array entries
                 array_pos = loc
@@ -241,9 +244,8 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                     sfx = ''
                     for d in range(len(array_dim)):
                         sfx += '[{}]'.format(str(array_loc[d]).rjust(len(str(array_dim[d]-1)), '0'))
-
-                    expand_members(Entry(name + sfx, array_pos, byte_size, declpos), members)
-
+                    expand_members(Entry(entry.name + sfx, array_pos,
+                                         byte_size, entry.declpos), members)
                     # advance
                     if array_inc(array_loc, array_dim):
                         break
