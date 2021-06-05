@@ -63,10 +63,10 @@ def get_FORM_block1(attr):
         v = 0
         s = 0
         for b in attr.value[1:]:
-            v |= b
-            s += 7
-            if not b & 0x100:
+            v |= (b & 0x7f) << s
+            if b & 0x80 == 0:
                 break
+            s += 7
         return v
     return None
 
