@@ -11,6 +11,7 @@ FILL_BYTE = b'\0'
 
 
 Entry = namedtuple('Entry', ['name', 'loc', 'size'])
+Member = namedtuple('Member', ['name', 'off', 'size'])
 
 
 def array_inc(loc, dim, idx=0):
@@ -22,7 +23,54 @@ def array_inc(loc, dim, idx=0):
         return array_inc(loc, dim, idx+1)
     return False
 
-def get_elf_globals(path):
+def get_type_size(type_DIE):
+    while True:
+        if 'DW_AT_byte_size' in type_DIE.attributes:
+            return type_DIE, type_DIE.attributes.get('DW_AT_byte_size').value
+        if 'DW_AT_type' not in type_DIE.attributes:
+            return None
+        type_DIE = type_DIE.get_DIE_from_attribute('DW_AT_type')
+
+def get_type_arrsize(type_DIE):
+    size = get_type_size(type_DIE)
+    if size is None:
+        return None
+    byte_size = size[1]
+    if size[0].tag != 'DW_TAG_pointer_type':
+        array_DIE = get_type_def(type_DIE, 'DW_TAG_array_type')
+        if array_DIE is not None:
+            for range_DIE in array_DIE.iter_children():
+                if range_DIE.tag == 'DW_TAG_subrange_type' and \
+                   'DW_AT_upper_bound' in range_DIE.attributes:
+                    dim = range_DIE.attributes['DW_AT_upper_bound'].value + 1
+                    byte_size *= dim
+    return byte_size
+
+def get_type_def(type_DIE, type_tag):
+    while True:
+        if type_DIE.tag == type_tag:
+            return type_DIE
+        if 'DW_AT_type' not in type_DIE.attributes:
+            return None
+        type_DIE = type_DIE.get_DIE_from_attribute('DW_AT_type')
+
+def get_FORM_block1(attr):
+    if attr.form != 'DW_FORM_block1':
+        return None
+    if attr.value[0] == 3: # OP_addr
+        return int.from_bytes(attr.value[1:], 'little')
+    if attr.value[0] == 35: # OP_plus_uconst (ULEB128)
+        v = 0
+        s = 0
+        for b in attr.value[1:]:
+            v |= b
+            s += 7
+            if not b & 0x100:
+                break
+        return v
+    return None
+
+def get_elf_globals(path, expand_structs, struct_gaps=True):
     fd = open(path, "rb")
     if fd is None:
         return
@@ -47,12 +95,8 @@ def get_elf_globals(path):
                 continue
 
             # handle locations encoded directly as DW_OP_addr (leaf globals)
-            at_loc = DIE.attributes['DW_AT_location']
-            if at_loc.form != 'DW_FORM_block1' or at_loc.value[0] != 3:
-                continue
-            loc = (at_loc.value[1]) + (at_loc.value[2] << 8) \
-                + (at_loc.value[3] << 16) + (at_loc.value[4] << 24)
-            if loc < SRAM_OFFSET or loc >= EEPROM_OFFSET:
+            loc = get_FORM_block1(DIE.attributes['DW_AT_location'])
+            if loc is None or loc < SRAM_OFFSET or loc >= EEPROM_OFFSET:
                 continue
             loc -= SRAM_OFFSET
 
@@ -70,32 +114,65 @@ def get_elf_globals(path):
 
             name = DIE.attributes['DW_AT_name'].value.decode('ascii')
 
-            # recurse on type to find the final storage definition
-            type_DIE = DIE
-            byte_size = None
-            array_dim = []
-            while True:
-                if byte_size is None and 'DW_AT_byte_size' in type_DIE.attributes:
-                    byte_size = type_DIE.attributes.get('DW_AT_byte_size')
-                if 'DW_AT_type' not in type_DIE.attributes:
-                    break
-                type_DIE = type_DIE.get_DIE_from_attribute('DW_AT_type')
-                if len(array_dim) == 0 and type_DIE.tag == 'DW_TAG_array_type':
-                    # fetch array dimensions (if known)
-                    for range_DIE in type_DIE.iter_children():
-                        if range_DIE.tag == 'DW_TAG_subrange_type' and \
-                           'DW_AT_upper_bound' in range_DIE.attributes:
-                            array_dim.append(range_DIE.attributes['DW_AT_upper_bound'].value + 1)
-            if byte_size is None:
+            # get final storage size
+            size = get_type_size(DIE)
+            if size is None:
                 continue
-            size = byte_size.value
+            byte_size = size[1]
+
+            # fetch array dimensions (if known)
+            array_dim = []
+            array_DIE = get_type_def(DIE, 'DW_TAG_array_type')
+            if array_DIE is not None:
+                for range_DIE in array_DIE.iter_children():
+                    if range_DIE.tag == 'DW_TAG_subrange_type' and \
+                       'DW_AT_upper_bound' in range_DIE.attributes:
+                        array_dim.append(range_DIE.attributes['DW_AT_upper_bound'].value + 1)
+
+            # fetch structure members (one level only)
+            members = []
+            if expand_structs and size[0].tag != 'DW_TAG_pointer_type':
+                struct_DIE = get_type_def(DIE, 'DW_TAG_structure_type')
+                if struct_DIE is not None:
+                    for member_DIE in struct_DIE.iter_children():
+                        if member_DIE.tag == 'DW_TAG_member' and 'DW_AT_name' in member_DIE.attributes:
+                            m_name = member_DIE.attributes['DW_AT_name'].value.decode('ascii')
+                            m_off = get_FORM_block1(member_DIE.attributes['DW_AT_data_member_location'])
+                            m_size = get_type_arrsize(member_DIE)
+                            members.append(Member(m_name, m_off, m_size))
+
+                if struct_gaps and len(members):
+                    # fill gaps in the middle
+                    members = list(sorted(members, key=lambda x: x.off))
+                    last_end = 0
+                    for member in members:
+                        if member.off > last_end:
+                            members.append(Member('*UNKNOWN*', last_end, member.off - last_end))
+                        last_end = member.off + member.size
+
+                if struct_gaps and len(members):
+                    # fill gap at the end
+                    members = list(sorted(members, key=lambda x: x.off))
+                    last = members[-1]
+                    last_end = last.off + last.size
+                    if byte_size > last_end:
+                        members.append(Member('*UNKNOWN*', last_end, byte_size - last_end))
+
+
+            def expand_members(entry, members):
+                if len(members) == 0:
+                    grefs.append(entry)
+                else:
+                    for member in members:
+                        grefs.append(Entry(entry.name + '.' + member.name,
+                                           entry.loc + member.off, member.size))
 
             if len(array_dim) == 0 or (len(array_dim) == 1 and array_dim[0] == 1):
                 # plain entry
-                grefs.append(Entry(name, loc, size))
-            elif len(array_dim) == 1 and size == 1:
+                expand_members(Entry(name, loc, byte_size), members)
+            elif len(array_dim) == 1 and byte_size == 1:
                 # likely string, avoid expansion
-                grefs.append(Entry('{}[]'.format(name), loc, array_dim[0]))
+                grefs.append(Entry(name + '[]', loc, array_dim[0]))
             else:
                 # expand array entries
                 array_pos = loc
@@ -106,10 +183,10 @@ def get_elf_globals(path):
                     for d in range(len(array_dim)):
                         sfx += '[{}]'.format(array_loc[d])
 
-                    grefs.append(Entry(name + sfx, array_pos, size))
+                    expand_members(Entry(name + sfx, array_pos, byte_size), members)
 
                     # advance
-                    array_pos += size
+                    array_pos += byte_size
                     if array_inc(array_loc, array_dim):
                         break
 
@@ -204,12 +281,14 @@ def main():
     ap.add_argument('elf', help='ELF file containing DWARF2 debugging information')
     ap.add_argument('--no-gaps', action='store_true',
                     help='do not dump memory inbetween known symbols')
+    ap.add_argument('--no-expand-structs', action='store_true',
+                    help='do not decode structure data')
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument('dump', nargs='?', help='RAM dump obtained from D2 g-code')
     g.add_argument('--map', action='store_true', help='dump global memory map')
     args = ap.parse_args()
 
-    grefs = get_elf_globals(args.elf)
+    grefs = get_elf_globals(args.elf, expand_structs=not args.no_expand_structs)
     grefs = list(sorted(grefs, key=lambda x: x.loc))
     if args.dump is None:
         print_map(grefs)
