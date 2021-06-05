@@ -350,6 +350,8 @@ def print_qdirstat(grefs):
                 base[name] = {}
             base = base[name]
         name = paths[-1]
+        if name in base:
+            name = '{}_{:x}'.format(entry.name, entry.loc)
         base[name] = entry.size
 
     def walker(root, prefix):
