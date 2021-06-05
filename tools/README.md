@@ -14,9 +14,13 @@ Requires ``printcore`` from [Pronterface].
 
 ### ``elf_mem_map``
 
-Generate a symbol table map starting directly from an ELF firmware with DWARF debugging information (which is the default using the stock board definition).
+Generate a symbol table map with decoded information starting directly from an ELF firmware with DWARF debugging information (which is the default using the stock board definition).
 
-When used along with a memory dump obtained from the D2 g-code, show the value of each symbol which is within the address range.
+When used along with a memory dump obtained from the D2 g-code, show the value of each symbol which is within the address range of the dump.
+
+When used with ``--map`` and a single elf file, generate a map consisting of memory location and source location for each statically-addressed variable.
+
+With ``--qdirstat`` and a single elf file, generate a [qdirstat](https://github.com/shundhammer/qdirstat) compatible cache file which can be loaded to inspect memory utilization interactively in a treemap.
 
 This assumes the running firmware generating the dump and the elf file are the same.
 Requires Python3 and the [pyelftools](https://github.com/eliben/pyelftools) module.
