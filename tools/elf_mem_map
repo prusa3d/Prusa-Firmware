@@ -4,6 +4,7 @@ import elftools.elf.elffile
 import elftools.dwarf.descriptions
 from collections import namedtuple
 from struct import unpack
+import re
 
 SRAM_OFFSET = 0x800000
 EEPROM_OFFSET = 0x810000
@@ -336,6 +337,43 @@ def print_map(grefs):
         print('{:x}\t{}\t{}\t{}'.format(entry.loc, entry.size, entry.name, entry.declpos))
 
 
+def print_qdirstat(grefs):
+    print('[qdirstat 1.0 cache file]')
+
+    entries = {}
+    for entry in grefs:
+        paths = list(filter(None, re.split(r'[\[\].]', entry.name)))
+        base = entries
+        for i in range(len(paths) - 1):
+            name = paths[i]
+            if name not in base:
+                base[name] = {}
+            base = base[name]
+        name = paths[-1]
+        base[name] = entry.size
+
+    def walker(root, prefix):
+        files = []
+        dirs = []
+
+        for name, entries in root.items():
+            if type(entries) == int:
+                files.append([name, entries])
+            else:
+                dirs.append([name, entries])
+
+        # print files
+        print('D\t{}\t{}\t0x0'.format(prefix, 0))
+        for name, size in files:
+            print('F\t{}\t{}\t0x0'.format(name, size))
+
+        # recurse directories
+        for name, entries in dirs:
+            walker(entries, prefix + '/' + name)
+
+    walker(entries, '/')
+
+
 def main():
     ap = argparse.ArgumentParser(description="""
         Generate a symbol table map starting directly from an ELF
@@ -355,12 +393,16 @@ def main():
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument('dump', nargs='?', help='RAM dump obtained from D2 g-code')
     g.add_argument('--map', action='store_true', help='dump global memory map')
+    g.add_argument('--qdirstat', action='store_true',
+                   help='dump qdirstat-compatible size usage map')
     args = ap.parse_args()
 
     grefs = get_elf_globals(args.elf, expand_structs=not args.no_expand_structs)
     grefs = list(sorted(grefs, key=lambda x: x.loc))
-    if args.dump is None:
+    if args.map:
         print_map(grefs)
+    elif args.qdirstat:
+        print_qdirstat(grefs)
     else:
         addr, data = decode_dump(args.dump)
         annotate_refs(grefs, addr, data,
