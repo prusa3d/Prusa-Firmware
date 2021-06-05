@@ -6171,7 +6171,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         int8_t pin_number = LED_PIN;
         if (code_seen('P'))
           pin_number = code_value();
-        for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(int8_t)); i++)
+        for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(*sensitive_pins)); i++)
         {
           if ((int8_t)pgm_read_byte(&sensitive_pins[i]) == pin_number)
           {
@@ -7747,9 +7747,9 @@ Sigma_Exit:
 
         if(pin_state >= -1 && pin_state <= 1){
 
-          for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(int)); i++)
+          for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(*sensitive_pins)); i++)
           {
-            if (sensitive_pins[i] == pin_number)
+            if (((int8_t)pgm_read_byte(&sensitive_pins[i]) == pin_number))
             {
               pin_number = -1;
               break;
