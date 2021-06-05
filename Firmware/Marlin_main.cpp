@@ -226,11 +226,9 @@ bool loading_flag = false;
 
 char snmm_filaments_used = 0;
 
-
 bool fan_state[2];
 int fan_edge_counter[2];
 int fan_speed[2];
-
 
 float extruder_multiplier[EXTRUDERS] = {1.0
   #if EXTRUDERS > 1
@@ -263,7 +261,7 @@ float extruder_offset[NUM_EXTRUDER_OFFSETS][EXTRUDERS] = {
 #endif
 
 uint8_t active_extruder = 0;
-int fanSpeed=0;
+int fanSpeed = 0;
 uint8_t newFanSpeed = 0;
 
 #ifdef FWRETRACT
@@ -288,11 +286,11 @@ uint8_t newFanSpeed = 0;
   float retract_recover_length_swap = RETRACT_RECOVER_LENGTH_SWAP;
 #endif
 
-  #ifdef PS_DEFAULT_OFF
+#ifdef PS_DEFAULT_OFF
     bool powersupply = false;
-  #else
-	  bool powersupply = true;
-  #endif
+#else
+    bool powersupply = true;
+#endif
 
 bool cancel_heatup = false ;
 
@@ -517,10 +515,10 @@ void serial_echopair_P(const char *s_P, unsigned long v)
 
 void setup_killpin()
 {
-  #if defined(KILL_PIN) && KILL_PIN > -1
+#if defined(KILL_PIN) && KILL_PIN > -1
     SET_INPUT(KILL_PIN);
     WRITE(KILL_PIN,HIGH);
-  #endif
+#endif
 }
 
 // Set home pin
@@ -646,16 +644,13 @@ void crashdet_detected(uint8_t mask)
 
 	if (automatic_recovery_after_crash) {
 		enquecommand_P(PSTR("CRASH_RECOVER"));
-	}else{
+	} else {
 		setTargetHotend(0, active_extruder);
 		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);////MSG_CRASH_RESUME c=20 r=3
 		lcd_update_enable(true);
-		if (yesno)
-		{
+		if (yesno) {
 			enquecommand_P(PSTR("CRASH_RECOVER"));
-		}
-		else
-		{
+		} else {
 			enquecommand_P(PSTR("CRASH_CANCEL"));
 		}
 	}
@@ -673,7 +668,7 @@ void crashdet_cancel()
 	tmc2130_sg_stop_on_crash = true;
 	if (saved_printing_type == PRINTING_TYPE_SD) {
 		lcd_print_stop();
-	}else if(saved_printing_type == PRINTING_TYPE_USB){
+	} else if(saved_printing_type == PRINTING_TYPE_USB) {
 		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
 		cmdqueue_reset();
 	}
@@ -1411,14 +1406,13 @@ void setup()
 #ifdef PSU_Delta
      init_force_z();                              // ! important for correct Z-axis initialization
 #endif // PSU_Delta
-    
-	setup_photpin();
 
-	servo_init();
+    setup_photpin();
+    servo_init();
 
-	// Reset the machine correction matrix.
-	// It does not make sense to load the correction matrix until the machine is homed.
-	world2machine_reset();
+    // Reset the machine correction matrix.
+    // It does not make sense to load the correction matrix until the machine is homed.
+    world2machine_reset();
 
     // Initialize current_position accounting for software endstops to
     // avoid unexpected initial shifts on the first move
@@ -1426,7 +1420,7 @@ void setup()
     plan_set_position_curposXYZE();
 
 #ifdef FILAMENT_SENSOR
-	fsensor_init();
+    fsensor_init();
 #endif //FILAMENT_SENSOR
 
 
@@ -1903,7 +1897,7 @@ void loop()
 	{
 		is_usb_printing = false;
 	}
-    if (isPrintPaused && saved_printing_type == PRINTING_TYPE_USB) //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
+	if (isPrintPaused && saved_printing_type == PRINTING_TYPE_USB) //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
 	{
 		is_usb_printing = true;
 	}
@@ -1922,7 +1916,6 @@ void loop()
     } 
     else 
     {
-
         get_command();
 
   #ifdef SDSUPPORT
@@ -1985,13 +1978,13 @@ void loop()
           sei();
         }
 	  }
-	  else if((*ptr == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR) && !IS_SD_PRINTING){ 
-		  
+	  else if((*ptr == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR) && !IS_SD_PRINTING)
+	  {
 		  cli();
-          *ptr ++ = CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED;
-          // and one for each command to previous block in the planner queue.
-          planner_add_sd_length(1);
-          sei();
+		  *ptr ++ = CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED;
+		  // and one for each command to previous block in the planner queue.
+		  planner_add_sd_length(1);
+		  sei();
 	  }
       // Now it is safe to release the already processed command block. If interrupted by the power panic now,
       // this block's SD card length will not be counted twice as its command type has been replaced 
@@ -2073,8 +2066,6 @@ static void clean_up_after_endstop_move(int original_feedmultiply) {
     feedmultiply = original_feedmultiply;
     previous_millis_cmd = _millis();
 }
-
-
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 #ifdef AUTO_BED_LEVELING_GRID
@@ -2370,39 +2361,38 @@ void homeaxis(int axis, uint8_t cnt)
 	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homing
 #define HOMEAXIS_DO(LETTER) \
 ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
-    if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
+	if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
 	{
-        int axis_home_dir = home_dir(axis);
-        feedrate = homing_feedrate[axis];
+		int axis_home_dir = home_dir(axis);
+		feedrate = homing_feedrate[axis];
 
 #ifdef TMC2130
-    	tmc2130_home_enter(X_AXIS_MASK << axis);
+		tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif //TMC2130
-
-
-        // Move away a bit, so that the print head does not touch the end position,
-        // and the following movement to endstop has a chance to achieve the required velocity
-        // for the stall guard to work.
-        current_position[axis] = 0;
-        plan_set_position_curposXYZE();
+		// Move away a bit, so that the print head does not touch the end position,
+		// and the following movement to endstop has a chance to achieve the required velocity
+		// for the stall guard to work.
+		current_position[axis] = 0;
+		plan_set_position_curposXYZE();
 		set_destination_to_current();
-//        destination[axis] = 11.f;
-        destination[axis] = -3.f * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
-        // Move away from the possible collision with opposite endstop with the collision detection disabled.
-        endstops_hit_on_purpose();
-        enable_endstops(false);
-        current_position[axis] = 0;
-        plan_set_position_curposXYZE();
-        destination[axis] = 1. * axis_home_dir;
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
-        // Now continue to move up to the left end stop with the collision detection enabled.
-        enable_endstops(true);
-        destination[axis] = 1.1 * axis_home_dir * max_length(axis);
-        plan_buffer_line_destinationXYZE(feedrate/60);
-        st_synchronize();
+		destination[axis] = -3.f * axis_home_dir;
+		plan_buffer_line_destinationXYZE(feedrate/60);
+		st_synchronize();
+
+		// Move away from the possible collision with opposite endstop with the collision detection disabled.
+		endstops_hit_on_purpose();
+		enable_endstops(false);
+		current_position[axis] = 0;
+		plan_set_position_curposXYZE();
+		destination[axis] = 1. * axis_home_dir;
+		plan_buffer_line_destinationXYZE(feedrate/60);
+		st_synchronize();
+			
+		// Now continue to move up to the left end stop with the collision detection enabled.
+		enable_endstops(true);
+		destination[axis] = 1.1 * axis_home_dir * max_length(axis);
+		plan_buffer_line_destinationXYZE(feedrate/60);
+		st_synchronize();
 		for (uint8_t i = 0; i < cnt; i++)
 		{
 			// Move away from the collision to a known distance from the left end stop with the collision detection disabled.
@@ -2439,12 +2429,11 @@ void homeaxis(int axis, uint8_t cnt)
 		if (tmc2130_home_enabled && (orig <= 63))
 		{
 			tmc2130_goto_step(axis, orig, 2, 1000, tmc2130_get_res(axis));
-			if (back > 0)
-				tmc2130_do_steps(axis, back, -axis_home_dir, 1000);
+			if (back > 0) tmc2130_do_steps(axis, back, -axis_home_dir, 1000);
 		}
 		else
 			tmc2130_do_steps(axis, 8, -axis_home_dir, 1000);
-		tmc2130_home_exit();
+			tmc2130_home_exit();
 #endif //TMC2130
 
         axis_is_at_home(axis);
@@ -2461,7 +2450,6 @@ void homeaxis(int axis, uint8_t cnt)
         destination[axis] = current_position[axis];
         plan_buffer_line_destinationXYZE(0.5f*feedrate/60);
         st_synchronize();
-
    		feedrate = 0.0;
     }
     else if ((axis==Z_AXIS)?HOMEAXIS_DO(Z):0)
@@ -2657,15 +2645,15 @@ void force_high_power_mode(bool start_high_power_section) {
 	if (silent == 1) {
 		//we are in silent mode, set to normal mode to enable crash detection
 
-    // Wait for the planner queue to drain and for the stepper timer routine to reach an idle state.
+		// Wait for the planner queue to drain and for the stepper timer routine to reach an idle state.
 		st_synchronize();
 		cli();
 		tmc2130_mode = (start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
 		update_mode_profile();
 		tmc2130_init(TMCInitParams(FarmOrUserECool()));
-    // We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
-    // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
-    st_reset_timer();
+		// We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
+		// Be safe than sorry, reset the stepper timer before re-enabling interrupts.
+		st_reset_timer();
 		sei();
 	}
 }
@@ -2833,12 +2821,12 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       // In the quick mode, if both x and y are to be homed, a diagonal move will be performed initially.
       if(home_x && home_y)  //first diagonal move
       {
-        current_position[X_AXIS] = 0;current_position[Y_AXIS] = 0;
-
-        int x_axis_home_dir = home_dir(X_AXIS);
+        current_position[X_AXIS] = 0;
+        current_position[Y_AXIS] = 0;
 
         plan_set_position_curposXYZE();
-        destination[X_AXIS] = 1.5 * max_length(X_AXIS) * x_axis_home_dir;destination[Y_AXIS] = 1.5 * max_length(Y_AXIS) * home_dir(Y_AXIS);
+        destination[X_AXIS] = 1.5 * max_length(X_AXIS) * home_dir(X_AXIS);
+        destination[Y_AXIS] = 1.5 * max_length(Y_AXIS) * home_dir(Y_AXIS);
         feedrate = homing_feedrate[X_AXIS];
         if(homing_feedrate[Y_AXIS]<feedrate)
           feedrate = homing_feedrate[Y_AXIS];
