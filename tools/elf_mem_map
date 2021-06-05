@@ -233,7 +233,7 @@ def decode_dump(path):
     return (buf_addr, buf_data)
 
 
-def annotate_refs(grefs, addr, data, width=45, gaps=True, overlaps=True):
+def annotate_refs(grefs, addr, data, width=46, gaps=True, overlaps=True):
     last_end = None
     for entry in grefs:
         if entry.loc < addr:
@@ -290,6 +290,8 @@ def main():
                     help='do not decode structure data')
     ap.add_argument('--overlaps', action='store_true',
                     help='annotate overlaps greater than 1 byte')
+    ap.add_argument('--name-width', type=int, default=46,
+                    help='set name column width')
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument('dump', nargs='?', help='RAM dump obtained from D2 g-code')
     g.add_argument('--map', action='store_true', help='dump global memory map')
@@ -302,6 +304,7 @@ def main():
     else:
         addr, data = decode_dump(args.dump)
         annotate_refs(grefs, addr, data,
+                      width=args.name_width,
                       gaps=not args.no_gaps,
                       overlaps=args.overlaps)
 
