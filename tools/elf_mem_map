@@ -149,6 +149,9 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                                        'DW_AT_upper_bound' in range_DIE.attributes:
                                         m_array_dim.append(range_DIE.attributes['DW_AT_upper_bound'].value + 1)
 
+                            # likely string, remove one dimension
+                            if m_byte_size == 1 and len(m_array_dim) > 1:
+                                m_byte_size *= m_array_dim.pop()
                             if len(m_array_dim) == 0 or (len(m_array_dim) == 1 and m_array_dim[0] == 1):
                                 # plain entry
                                 members.append(Member(m_name, m_off, m_byte_size))
@@ -199,6 +202,9 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                         grefs.append(Entry(entry.name + '.' + member.name,
                                            entry.loc + member.off, member.size))
 
+            # likely string, remove one dimension
+            if byte_size == 1 and len(array_dim) > 1:
+                byte_size *= array_dim.pop()
             if len(array_dim) == 0 or (len(array_dim) == 1 and array_dim[0] == 1):
                 # plain entry
                 expand_members(Entry(name, loc, byte_size), members)
