@@ -145,7 +145,8 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                     # fill gaps in the middle
                     members = list(sorted(members, key=lambda x: x.off))
                     last_end = 0
-                    for member in members:
+                    for n in range(len(members)):
+                        member = members[n]
                         if member.off > last_end:
                             members.append(Member('*UNKNOWN*', last_end, member.off - last_end))
                         last_end = member.off + member.size
