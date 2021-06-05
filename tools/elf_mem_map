@@ -149,8 +149,8 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                                        'DW_AT_upper_bound' in range_DIE.attributes:
                                         m_array_dim.append(range_DIE.attributes['DW_AT_upper_bound'].value + 1)
 
-                            # likely string, remove one dimension
                             if m_byte_size == 1 and len(m_array_dim) > 1:
+                                # likely string, remove one dimension
                                 m_byte_size *= m_array_dim.pop()
                             if len(m_array_dim) == 0 or (len(m_array_dim) == 1 and m_array_dim[0] == 1):
                                 # plain entry
@@ -166,7 +166,7 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                                     # location index
                                     sfx = ''
                                     for d in range(len(m_array_dim)):
-                                        sfx += '[{}]'.format(m_array_loc[d])
+                                        sfx += '[{}]'.format(str(m_array_loc[d]).rjust(len(str(m_array_dim[d]-1)), '0'))
 
                                     members.append(Member(m_name + sfx, m_array_pos, m_byte_size))
 
@@ -202,8 +202,8 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                         grefs.append(Entry(entry.name + '.' + member.name,
                                            entry.loc + member.off, member.size))
 
-            # likely string, remove one dimension
             if byte_size == 1 and len(array_dim) > 1:
+                # likely string, remove one dimension
                 byte_size *= array_dim.pop()
             if len(array_dim) == 0 or (len(array_dim) == 1 and array_dim[0] == 1):
                 # plain entry
@@ -219,7 +219,7 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                     # location index
                     sfx = ''
                     for d in range(len(array_dim)):
-                        sfx += '[{}]'.format(array_loc[d])
+                        sfx += '[{}]'.format(str(array_loc[d]).rjust(len(str(array_dim[d]-1)), '0'))
 
                     expand_members(Entry(name + sfx, array_pos, byte_size), members)
 
