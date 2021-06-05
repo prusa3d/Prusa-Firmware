@@ -233,7 +233,7 @@ def decode_dump(path):
     return (buf_addr, buf_data)
 
 
-def annotate_refs(grefs, addr, data, width=45, gaps=True):
+def annotate_refs(grefs, addr, data, width=45, gaps=True, overlaps=True):
     last_end = None
     for entry in grefs:
         if entry.loc < addr:
@@ -254,12 +254,16 @@ def annotate_refs(grefs, addr, data, width=45, gaps=True):
             typ = 'f' if len(buf) == 4 else 'd'
             buf_repr += ' F:' + '{:10.3f}'.format(unpack(typ, buf)[0])
 
-        if gaps and last_end is not None and last_end < pos:
-            # decode gaps
-            gap_size = pos - last_end
-            gap_buf = data[last_end:pos]
-            print('{:04x} {} {:4} R:{}'.format(addr+last_end, "*UNKNOWN*".ljust(width),
-                                               gap_size, gap_buf.hex()))
+        if last_end is not None:
+            if gaps and last_end < pos:
+                # decode gaps
+                gap_size = pos - last_end
+                gap_buf = data[last_end:pos]
+                print('{:04x} {} {:4} R:{}'.format(addr+last_end, "*UNKNOWN*".ljust(width),
+                                                   gap_size, gap_buf.hex()))
+            if overlaps and last_end > pos + 1:
+                gap_size = pos - last_end
+                print('{:04x} {} {:4}'.format(addr+last_end, "*OVERLAP*".ljust(width), gap_size))
 
         print('{:04x} {} {:4}{} R:{}'.format(entry.loc, entry.name.ljust(width),
                                              entry.size, buf_repr, buf.hex()))
@@ -284,6 +288,8 @@ def main():
                     help='do not dump memory inbetween known symbols')
     ap.add_argument('--no-expand-structs', action='store_true',
                     help='do not decode structure data')
+    ap.add_argument('--overlaps', action='store_true',
+                    help='annotate overlaps greater than 1 byte')
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument('dump', nargs='?', help='RAM dump obtained from D2 g-code')
     g.add_argument('--map', action='store_true', help='dump global memory map')
@@ -295,7 +301,9 @@ def main():
         print_map(grefs)
     else:
         addr, data = decode_dump(args.dump)
-        annotate_refs(grefs, addr, data, gaps=not args.no_gaps)
+        annotate_refs(grefs, addr, data,
+                      gaps=not args.no_gaps,
+                      overlaps=args.overlaps)
 
 if __name__ == '__main__':
     exit(main())
