@@ -377,11 +377,11 @@ def print_qdirstat(grefs):
 def main():
     ap = argparse.ArgumentParser(description="""
         Generate a symbol table map starting directly from an ELF
-        firmware with DWARF2 debugging information.
+        firmware with DWARF3 debugging information.
         When used along with a memory dump obtained from the D2 g-code,
         show the value of each symbol which is within the address range.
     """)
-    ap.add_argument('elf', help='ELF file containing DWARF2 debugging information')
+    ap.add_argument('elf', help='ELF file containing DWARF debugging information')
     ap.add_argument('--no-gaps', action='store_true',
                     help='do not dump memory inbetween known symbols')
     ap.add_argument('--no-expand-structs', action='store_true',
