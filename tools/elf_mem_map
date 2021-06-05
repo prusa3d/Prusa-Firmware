@@ -10,7 +10,7 @@ EEPROM_OFFSET = 0x810000
 FILL_BYTE = b'\0'
 
 
-Entry = namedtuple('Entry', ['name', 'loc', 'size'])
+Entry = namedtuple('Entry', ['name', 'loc', 'size', 'declpos'])
 Member = namedtuple('Member', ['name', 'off', 'size'])
 
 
@@ -160,6 +160,8 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
 
     grefs = []
     for CU in dwarfinfo.iter_CUs():
+        file_entries = dwarfinfo.line_program_for_CU(CU).header["file_entry"]
+
         for DIE in CU.iter_DIEs():
             # handle only variable types
             if DIE.tag != 'DW_TAG_variable':
@@ -196,6 +198,16 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                 continue
             byte_size = size[1]
 
+            # location of main definition
+            declpos = ''
+            if 'DW_AT_decl_file' in DIE.attributes and \
+               'DW_AT_decl_line' in DIE.attributes:
+                line = DIE.attributes['DW_AT_decl_line'].value
+                fname = DIE.attributes['DW_AT_decl_file'].value
+                if fname and fname - 1 < len(file_entries):
+                    fname = file_entries[fname-1].name.decode('ascii')
+                    declpos = '{}:{}'.format(fname, line)
+
             # fetch array dimensions (if known)
             array_dim = get_array_dims(DIE)
 
@@ -208,17 +220,18 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                 else:
                     for member in members:
                         grefs.append(Entry(entry.name + '.' + member.name,
-                                           entry.loc + member.off, member.size))
+                                           entry.loc + member.off, member.size,
+                                           entry.declpos))
 
             if byte_size == 1 and len(array_dim) > 1:
                 # likely string, remove one dimension
                 byte_size *= array_dim.pop()
             if len(array_dim) == 0 or (len(array_dim) == 1 and array_dim[0] == 1):
                 # plain entry
-                expand_members(Entry(name, loc, byte_size), members)
+                expand_members(Entry(name, loc, byte_size, declpos), members)
             elif len(array_dim) == 1 and byte_size == 1:
                 # likely string, avoid expansion
-                grefs.append(Entry(name + '[]', loc, array_dim[0]))
+                grefs.append(Entry(name + '[]', loc, array_dim[0], declpos))
             else:
                 # expand array entries
                 array_pos = loc
@@ -229,7 +242,7 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
                     for d in range(len(array_dim)):
                         sfx += '[{}]'.format(str(array_loc[d]).rjust(len(str(array_dim[d]-1)), '0'))
 
-                    expand_members(Entry(name + sfx, array_pos, byte_size), members)
+                    expand_members(Entry(name + sfx, array_pos, byte_size, declpos), members)
 
                     # advance
                     if array_inc(array_loc, array_dim):
@@ -316,9 +329,9 @@ def annotate_refs(grefs, addr, data, width, gaps=True, overlaps=True):
 
 
 def print_map(grefs):
-    print('OFFSET\tSIZE\tNAME')
+    print('OFFSET\tSIZE\tNAME\tDECLPOS')
     for entry in grefs:
-        print('{:x}\t{}\t{}'.format(entry.loc, entry.size, entry.name))
+        print('{:x}\t{}\t{}\t{}'.format(entry.loc, entry.size, entry.name, entry.declpos))
 
 
 def main():
