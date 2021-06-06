@@ -1727,6 +1727,32 @@ void serial_read_stream() {
     }
 }
 
+
+/**
+ * Output autoreport values according to features requested in M155
+ */
+#if defined(AUTO_REPORT)
+static void host_autoreport()
+{
+    if (autoReportFeatures.TimerExpired())
+    {
+        if(autoReportFeatures.Temp()){
+            gcode_M105(active_extruder);
+        }
+        if(autoReportFeatures.Pos()){
+            gcode_M114();
+        }
+#if defined(AUTO_REPORT) && (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
+        if(autoReportFeatures.Fans()){
+            gcode_M123();
+        }
+#endif //AUTO_REPORT and (FANCHECK and TACH_0 or TACH_1)
+        autoReportFeatures.TimerStart();
+    }
+}
+#endif //AUTO_REPORT
+
+
 /**
 * Output a "busy" message at regular intervals
 * while the machine is not accepting commands.
@@ -1737,27 +1763,6 @@ void host_keepalive() {
 #endif //HOST_KEEPALIVE_FEATURE
   if (farm_mode) return;
   long ms = _millis();
-
-#if defined(AUTO_REPORT)
-  {
-    if (autoReportFeatures.TimerExpired())
-    {
-      if(autoReportFeatures.Temp()){
-        gcode_M105(active_extruder);
-      }
-      if(autoReportFeatures.Pos()){
-        gcode_M114();
-      }
- #if defined(AUTO_REPORT) && (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))      
-      if(autoReportFeatures.Fans()){
-        gcode_M123();
-      }
-#endif //AUTO_REPORT and (FANCHECK and TACH_0 or TACH_1)
-     autoReportFeatures.TimerStart();
-    }
-  }
-#endif //AUTO_REPORT
-
 
   if (host_keepalive_interval && busy_state != NOT_BUSY) {
     if ((ms - prev_busy_signal_ms) < (long)(1000L * host_keepalive_interval)) return;
@@ -1918,6 +1923,9 @@ void loop()
 	}
 #endif //TMC2130
 	mmu_loop();
+#if defined(AUTO_REPORT)
+    host_autoreport();
+#endif //AUTO_REPORT
 }
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
