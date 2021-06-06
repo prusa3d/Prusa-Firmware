@@ -9909,6 +9909,7 @@ if(0)
 #if defined(AUTO_REPORT)
   host_autoreport();
 #endif //AUTO_REPORT
+  host_keepalive();
 }
 
 void kill(const char *full_screen_message, unsigned char id)
