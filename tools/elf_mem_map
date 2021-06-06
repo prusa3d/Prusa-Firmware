@@ -6,6 +6,7 @@ from collections import namedtuple
 from struct import unpack
 import re
 
+SRAM_START = 0x200
 SRAM_OFFSET = 0x800000
 EEPROM_OFFSET = 0x810000
 FILL_BYTE = b'\0'
@@ -342,6 +343,10 @@ def print_qdirstat(grefs):
 
     entries = {}
     for entry in grefs:
+        # do not output registers when looking at space usage
+        if entry.loc < SRAM_START:
+            continue
+
         paths = list(filter(None, re.split(r'[\[\].]', entry.name)))
         base = entries
         for i in range(len(paths) - 1):
