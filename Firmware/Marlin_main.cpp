@@ -1923,9 +1923,6 @@ void loop()
 	}
 #endif //TMC2130
 	mmu_loop();
-#if defined(AUTO_REPORT)
-    host_autoreport();
-#endif //AUTO_REPORT
 }
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
@@ -9909,6 +9906,9 @@ if(0)
   #endif
   check_axes_activity();
   mmu_loop();
+#if defined(AUTO_REPORT)
+  host_autoreport();
+#endif //AUTO_REPORT
 }
 
 void kill(const char *full_screen_message, unsigned char id)
