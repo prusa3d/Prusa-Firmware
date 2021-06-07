@@ -20,12 +20,15 @@
 #define XFLASH_SPSR          SPI_SPSR(XFLASH_SPI_RATE)
 
 #define XFLASH_SPI_ENTER() spi_setup(XFLASH_SPCR, XFLASH_SPSR)
+#define XFLASH_SPI_LEAVE() // nothing to do
 
 #if defined(__cplusplus)
 extern "C" {
 #endif //defined(__cplusplus)
 
-
+// These functions assume exclusive control of the SPI bus when called and shouldn't be used when
+// another ISR requires SPI (such as the stepper ISR). XFLASH_SPI_ENTER needs to be used at least
+// once for setup.
 extern int8_t xflash_init(void);
 extern void xflash_enable_wr(void);
 extern void xflash_disable_wr(void);
@@ -43,6 +46,11 @@ extern void xflash_chip_erase(void);
 extern void xflash_page_program(uint32_t addr, uint8_t* data, uint16_t cnt);
 extern void xflash_rd_uid(uint8_t* uid);
 extern void xflash_wait_busy(void);
+
+// xflash_rd_data_atomic: setup SPI and read a chunk of XFLASH data atomically with interrupts
+//   disabled. This is safe to use while the stepper ISR is running, but it's slow and blocking.
+//   xflash needs to be already initialized.
+extern void xflash_rd_data_atomic(uint32_t addr, uint8_t* data, uint16_t cnt);
 
 #if defined(__cplusplus)
 }

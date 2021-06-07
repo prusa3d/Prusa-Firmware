@@ -192,4 +192,15 @@ void xflash_wait_busy(void)
 	while (xflash_rd_status_reg() & XFLASH_STATUS_BUSY) ;
 }
 
+void xflash_rd_data_atomic(uint32_t addr, uint8_t* data, uint16_t cnt)
+{
+    // disable interrupts while we take over the SPI bus
+    uint8_t oldSREG = SREG;
+    cli();
+    XFLASH_SPI_ENTER();
+    xflash_rd_data(addr, data, cnt);
+    XFLASH_SPI_LEAVE();
+    SREG = oldSREG;
+}
+
 #endif //XFLASH
