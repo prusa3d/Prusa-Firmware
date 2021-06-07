@@ -108,13 +108,12 @@ uint8_t lang_get_count()
 	if (pgm_read_dword(((uint32_t*)(_PRI_LANG_SIGNATURE))) == 0xffffffff)
 		return 1; //signature not set - only primary language will be available
 #ifdef XFLASH
-	XFLASH_SPI_ENTER();
 	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
 	while (1)
 	{
-		xflash_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t)); //read table header from xflash
+		xflash_rd_data_atomic(addr, (uint8_t*)&header, sizeof(lang_table_header_t)); //read table header from xflash
 		if (header.magic != LANG_MAGIC) break; //break if magic not valid
 		addr += header.size; //calc address of next table
 		count++; //inc counter
@@ -175,13 +174,12 @@ uint16_t lang_get_code(uint8_t lang)
 		if (pgm_read_dword(((uint32_t*)(ui + 0))) != LANG_MAGIC) return LANG_CODE_XX; //magic not valid
 		return pgm_read_word(((uint32_t*)(ui + 10))); //return lang code from progmem
 	}
-	XFLASH_SPI_ENTER();
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
 	lang--;
 	while (1)
 	{
-		xflash_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t)); //read table header from xflash
+		xflash_rd_data_atomic(addr, (uint8_t*)&header, sizeof(lang_table_header_t)); //read table header from xflash
 		if (header.magic != LANG_MAGIC) break; //break if not valid
 		if (--lang == 0) return header.code;
 		addr += header.size; //calc address of next table
