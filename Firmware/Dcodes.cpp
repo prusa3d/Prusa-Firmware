@@ -98,6 +98,10 @@ void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countpe
 			print_hex_byte(data);
 			count_line--;
 			count--;
+
+            // sporadically call manage heaters to avoid wdt
+            if(!((uint16_t)count % 8192))
+                manage_heater();
 		}
 		putchar('\n');
 	}
@@ -122,6 +126,7 @@ void write_mem(uint16_t address, uint16_t count, const uint8_t* data, const dcod
 void dcode_core(daddr_t addr_start, const daddr_t addr_end, const dcode_mem_t type,
                 uint8_t dcode, const char* type_desc)
 {
+    KEEPALIVE_STATE(NOT_BUSY);
     DBG(_N("D%d - Read/Write %S\n"), dcode, type_desc);
     daddr_t count = -1; // RW the entire space by default
     if (code_seen('A'))
