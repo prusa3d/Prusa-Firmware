@@ -3,6 +3,7 @@
 #include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
+#include "xflash.h"
 #include <stdio.h>
 #include <avr/pgmspace.h>
 
@@ -23,10 +24,22 @@ void print_hex_byte(uint8_t val)
 	print_hex_nibble(val & 15);
 }
 
-void print_hex_word(uint16_t val)
+// debug range address type (fits all SRAM/PROGMEM/XFLASH memory ranges)
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+#define DADDR_SIZE 32
+typedef uint32_t daddr_t; // XFLASH requires 24 bits
+#else
+#define DADDR_SIZE 16
+typedef uint16_t daddr_t;
+#endif
+
+void print_hex_word(daddr_t val)
 {
-	print_hex_byte(val >> 8);
-	print_hex_byte(val & 255);
+#if DADDR_SIZE > 16
+    print_hex_byte((val >> 16) & 0xFF);
+#endif
+    print_hex_byte((val >> 8) & 0xFF);
+    print_hex_byte(val & 0xFF);
 }
 
 int parse_hex(char* hex, uint8_t* data, int count)
@@ -53,10 +66,14 @@ int parse_hex(char* hex, uint8_t* data, int count)
 }
 
 
-enum class dcode_mem_t:uint8_t { sram, eeprom, progmem };
+enum class dcode_mem_t:uint8_t { sram, eeprom, progmem, xflash };
 
-void print_mem(uint16_t address, uint16_t count, dcode_mem_t type, uint8_t countperline = 16)
+void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countperline = 16)
 {
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+    if(type == dcode_mem_t::xflash)
+        XFLASH_SPI_ENTER();
+#endif
 	while (count)
 	{
 		print_hex_word(address);
@@ -70,6 +87,11 @@ void print_mem(uint16_t address, uint16_t count, dcode_mem_t type, uint8_t count
 			case dcode_mem_t::sram: data = *((uint8_t*)address); break;
 			case dcode_mem_t::eeprom: data = eeprom_read_byte((uint8_t*)address); break;
 			case dcode_mem_t::progmem: data = pgm_read_byte_far((uint8_t*)address); break;
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+            case dcode_mem_t::xflash: xflash_rd_data(address, &data, 1); break;
+#else
+            case dcode_mem_t::xflash: break;
+#endif
 			}
             ++address;
 			putchar(' ');
@@ -81,6 +103,7 @@ void print_mem(uint16_t address, uint16_t count, dcode_mem_t type, uint8_t count
 	}
 }
 
+// TODO: this only handles SRAM/EEPROM 16bit addresses
 void write_mem(uint16_t address, uint16_t count, const uint8_t* data, const dcode_mem_t type)
 {
     for (uint16_t i = 0; i < count; i++)
@@ -90,20 +113,21 @@ void write_mem(uint16_t address, uint16_t count, const uint8_t* data, const dcod
         case dcode_mem_t::sram: *((uint8_t*)address) = data[i]; break;
         case dcode_mem_t::eeprom: eeprom_write_byte((uint8_t*)address, data[i]); break;
         case dcode_mem_t::progmem: break;
+        case dcode_mem_t::xflash: break;
         }
         ++address;
     }
 }
 
-void dcode_core(uint16_t addr_start, const uint16_t addr_end, const dcode_mem_t type,
+void dcode_core(daddr_t addr_start, const daddr_t addr_end, const dcode_mem_t type,
                 uint8_t dcode, const char* type_desc)
 {
     DBG(_N("D%d - Read/Write %S\n"), dcode, type_desc);
-    uint16_t count = -1; // RW the entire space by default
+    daddr_t count = -1; // RW the entire space by default
     if (code_seen('A'))
         addr_start = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
     if (code_seen('C'))
-        count = (int)code_value();
+        count = code_value_long();
     if (addr_start > addr_end)
         addr_start = addr_end;
     if ((addr_start + count) > addr_end || (addr_start + count) < addr_start)
@@ -113,7 +137,11 @@ void dcode_core(uint16_t addr_start, const uint16_t addr_end, const dcode_mem_t 
         uint8_t data[16];
         count = parse_hex(strchr_pointer + 1, data, 16);
         write_mem(addr_start, count, data, type);
-        DBG(_N("%d bytes written to %S at address 0x%04x\n"), count, type_desc, addr_start);
+#if DADDR_SIZE > 16
+        DBG(_N("%u bytes written to %S at address 0x%08x\n"), count, type_desc, addr_start);
+#else
+        DBG(_N("%lu bytes written to %S at address 0x%04lx\n"), count, type_desc, addr_start);
+#endif
     }
     print_mem(addr_start, count, type);
 }
@@ -372,17 +400,18 @@ void dcode_5()
 }
 #endif //DEBUG_DCODE5
 
-#ifdef DEBUG_DCODES
-
+#if defined DEBUG_DCODE6 || defined DEBUG_DCODES
     /*!
     ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
     Reserved
     */
 void dcode_6()
 {
-	LOG("D6 - Read/Write external FLASH\n");
+    dcode_core(0x0, 0x40000, dcode_mem_t::xflash, 6, _N("XFLASH"));
 }
+#endif
 
+#ifdef DEBUG_DCODES
     /*!
     ### D7 - Read/Write Bootloader <a href="https://reprap.org/wiki/G-code#D7:_Read.2FWrite_Bootloader">D7: Read/Write Bootloader</a>
     Reserved

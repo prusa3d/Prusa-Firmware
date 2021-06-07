@@ -9142,7 +9142,7 @@ Sigma_Exit:
 	case 5:
 		dcode_5(); break;
 #endif //DEBUG_DCODE5
-#ifdef DEBUG_DCODES
+#if defined DEBUG_DCODE6 || defined DEBUG_DCODES
 
     /*!
     ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
@@ -9150,6 +9150,8 @@ Sigma_Exit:
     */
 	case 6:
 		dcode_6(); break;
+#endif
+#ifdef DEBUG_DCODES
 
     /*!
     ### D7 - Read/Write Bootloader <a href="https://reprap.org/wiki/G-code#D7:_Read.2FWrite_Bootloader">D7: Read/Write Bootloader</a>
