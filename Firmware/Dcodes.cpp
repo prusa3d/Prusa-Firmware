@@ -408,7 +408,21 @@ void dcode_5()
 #if defined(XFLASH) && (defined DEBUG_DCODE6 || defined DEBUG_DCODES)
     /*!
     ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
-    Reserved
+    This command can be used without any additional parameters. It will read the entire XFLASH.
+    #### Usage
+
+        D6 [ A | C | X ]
+
+    #### Parameters
+    - `A` - Address (x0000-x3ffff)
+    - `C` - Count (1-262144)
+    - `X` - Data
+
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal
+	- The hex data needs to be lowercase
+	- Writing is currently not implemented
     */
 void dcode_6()
 {
