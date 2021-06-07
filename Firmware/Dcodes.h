@@ -19,7 +19,10 @@ extern void dcode_4(); //D4 - Read/Write PIN
 extern void dcode_5(); //D5 - Read/Write FLASH
 #endif //DEBUG_DCODE5
 
+#if defined DEBUG_DCODE6 || defined DEBUG_DCODES
 extern void dcode_6(); //D6 - Read/Write external FLASH
+#endif
+
 extern void dcode_7(); //D7 - Read/Write Bootloader
 extern void dcode_8(); //D8 - Read/Write PINDA
 extern void dcode_9(); //D9 - Read/Write ADC (Write=enable simulated, Read=disable simulated)

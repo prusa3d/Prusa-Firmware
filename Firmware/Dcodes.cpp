@@ -405,7 +405,7 @@ void dcode_5()
 }
 #endif //DEBUG_DCODE5
 
-#if defined DEBUG_DCODE6 || defined DEBUG_DCODES
+#if defined(XFLASH) && (defined DEBUG_DCODE6 || defined DEBUG_DCODES)
     /*!
     ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
     Reserved
