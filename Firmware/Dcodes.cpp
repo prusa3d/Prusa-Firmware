@@ -86,7 +86,7 @@ void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countpe
 			{
 			case dcode_mem_t::sram: data = *((uint8_t*)address); break;
 			case dcode_mem_t::eeprom: data = eeprom_read_byte((uint8_t*)address); break;
-			case dcode_mem_t::progmem: data = pgm_read_byte_far((uint8_t*)address); break;
+			case dcode_mem_t::progmem: break;
 #if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
             case dcode_mem_t::xflash: xflash_rd_data(address, &data, 1); break;
 #else
