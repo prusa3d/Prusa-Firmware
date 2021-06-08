@@ -21,7 +21,7 @@ bool xfdump_check_state()
 
 bool xfdump_check_crash()
 {
-    // check_state with SPI_ENTER for us
+    // check_state will call SPI_ENTER for us
     if(!xfdump_check_state())
         return false;
 
