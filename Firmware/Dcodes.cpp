@@ -3,7 +3,6 @@
 #include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
-#include "xflash.h"
 #include <stdio.h>
 #include <avr/pgmspace.h>
 
@@ -26,6 +25,8 @@ void print_hex_byte(uint8_t val)
 
 // debug range address type (fits all SRAM/PROGMEM/XFLASH memory ranges)
 #if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+#include "xflash.h"
+
 #define DADDR_SIZE 32
 typedef uint32_t daddr_t; // XFLASH requires 24 bits
 #else
