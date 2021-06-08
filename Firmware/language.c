@@ -9,6 +9,7 @@
 
 #ifdef XFLASH
 #include "xflash.h"
+#include "xflash_layout.h"
 #endif //XFLASH
 
 // Currently active language selection.
@@ -110,7 +111,7 @@ uint8_t lang_get_count()
 #ifdef XFLASH
 	XFLASH_SPI_ENTER();
 	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
-	uint32_t addr = 0x00000; //start of xflash
+	uint32_t addr = LANG_OFFSET;
 	lang_table_header_t header; //table header structure
 	while (1)
 	{
@@ -143,7 +144,7 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
 	XFLASH_SPI_ENTER();
-	uint32_t addr = 0x00000; //start of xflash
+	uint32_t addr = LANG_OFFSET;
 	lang--;
 	while (1)
 	{
@@ -176,7 +177,7 @@ uint16_t lang_get_code(uint8_t lang)
 		return pgm_read_word(((uint32_t*)(ui + 10))); //return lang code from progmem
 	}
 	XFLASH_SPI_ENTER();
-	uint32_t addr = 0x00000; //start of xflash
+	uint32_t addr = LANG_OFFSET;
 	lang_table_header_t header; //table header structure
 	lang--;
 	while (1)

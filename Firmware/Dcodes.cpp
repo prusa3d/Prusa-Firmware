@@ -26,6 +26,7 @@ void print_hex_byte(uint8_t val)
 // debug range address type (fits all SRAM/PROGMEM/XFLASH memory ranges)
 #if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
 #include "xflash.h"
+#include "xflash_layout.h"
 
 #define DADDR_SIZE 32
 typedef uint32_t daddr_t; // XFLASH requires 24 bits
@@ -427,7 +428,7 @@ void dcode_5()
     */
 void dcode_6()
 {
-    dcode_core(0x0, 0x40000, dcode_mem_t::xflash, 6, _N("XFLASH"));
+    dcode_core(0x0, XFLASH_SIZE, dcode_mem_t::xflash, 6, _N("XFLASH"));
 }
 #endif
 
