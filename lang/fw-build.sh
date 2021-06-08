@@ -201,7 +201,7 @@ if [ -e lang_nl.bin ]; then cat lang_nl.bin >> lang.bin; fi
 # Check that the language data doesn't exceed the reserved XFLASH space
 echo " checking language data size:"
 lang_size=$(wc -c lang.bin | cut -f1 -d' ')
-lang_size_pad=$(($lang_size / 4096 * 4096 + 4096))
+lang_size_pad=$(( ($lang_size+4096-1) / 4096 * 4096 ))
 
 # TODO: hard-coded! get value by preprocessing LANG_SIZE from xflash_layout.h!
 lang_reserved=249856
