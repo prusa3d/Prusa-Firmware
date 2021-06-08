@@ -1,7 +1,7 @@
 // XFLASH memory layout
 #pragma once
 #include <stdint.h>
-#include "bootapp.h"
+#include "bootapp.h" // for RAMSIZE
 #include "config.h"
 
 #define XFLASH_SIZE 0x40000ul // size of XFLASH
