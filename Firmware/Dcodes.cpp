@@ -278,7 +278,7 @@ void dcode_1()
     */
 void dcode_2()
 {
-    dcode_core(0x200, 0x2200, dcode_mem_t::sram, 2, _N("SRAM"));
+    dcode_core(SRAM_START, SRAM_START + SRAM_SIZE, dcode_mem_t::sram, 2, _N("SRAM"));
 }
 #endif
 
