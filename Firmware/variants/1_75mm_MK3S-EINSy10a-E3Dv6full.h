@@ -141,6 +141,11 @@
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
 #define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
+// Offline crash dumper
+//#define XFLASH_DUMP     // enable dump functionality (including D20/D21/D22)
+//#define MENU_DUMP       // enable "Memory dump" in Settings menu
+//#define EMERGENCY_DUMP  // trigger crash on stack corruption
+
 // Filament sensor
 #define FILAMENT_SENSOR
 #define IR_SENSOR
@@ -157,7 +162,9 @@
 #define MINTEMP_MINAMBIENT      10
 #define MINTEMP_MINAMBIENT_RAW  1002
 
+//#define DEBUG_DCODE2
 #define DEBUG_DCODE3
+//#define DEBUG_DCODE6
 
 //#define DEBUG_BUILD
 //#define DEBUG_SEC_LANG   //secondary language debug output at startup
