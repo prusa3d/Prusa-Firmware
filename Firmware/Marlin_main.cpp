@@ -108,6 +108,10 @@
 #include "optiboot_xflash.h"
 #endif //XFLASH
 
+#ifdef EMERGENCY_DUMP
+#include "xflash_dump.h"
+#endif
+
 #ifdef BLINKM
 #include "BlinkM.h"
 #include "Wire.h"
@@ -1605,6 +1609,18 @@ void setup()
 	tmc2130_home_enabled = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED);
 	if (tmc2130_home_enabled == 0xff) tmc2130_home_enabled = 0;
 #endif //TMC2130
+
+#ifdef EMERGENCY_DUMP
+    if(xfdump_check_crash() && eeprom_read_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED) != 1)
+    {
+        // prevent the prompt to reappear once acknowledged
+        eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 1);
+        lcd_show_fullscreen_message_and_wait_P(
+                _i("!!!FIRMWARE CRASH!!!\n"
+                   "Debug data available for analysis. "
+                   "Contact support to submit details."));
+    }
+#endif
 
 #ifdef UVLO_SUPPORT
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO

@@ -6683,12 +6683,22 @@ static void lcd_main_menu()
 
 }
 
+#ifdef EMERGENCY_DUMP
+#include "xflash_dump.h"
+
+void stack_error() {
+    WRITE(BEEPER, HIGH);
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
+    xfdump_full_dump_and_reset(true);
+}
+#else
 void stack_error() {
 	Sound_MakeCustom(1000,0,true);
 	lcd_display_message_fullscreen_P(_i("Error - static memory has been overwritten"));////MSG_STACK_ERROR c=20 r=4
 	//err_triggered = 1;
 	 while (1) delay_keep_alive(1000);
 }
+#endif
 
 #ifdef DEBUG_STEPPER_TIMER_MISSED
 bool stepper_timer_overflow_state = false;
