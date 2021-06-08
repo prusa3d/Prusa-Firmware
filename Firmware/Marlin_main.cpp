@@ -9205,8 +9205,56 @@ Sigma_Exit:
     ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
     Writes the current time in the log file.
     */
-
 #endif //DEBUG_DCODES
+
+#ifdef XFLASH_DUMP
+    /*!
+    ### D20 - Generate an offline crash dump
+    Generate a crash dump for later retrival.
+    #### Usage
+
+     D20 [E]
+
+    ### Parameters
+    - `E` - Perform an emergency crash dump (resets the printer).
+    ### Notes
+    - A crash dump can be later recovered with D21, or cleared with D22.
+    - An emergency crash dump includes register data, but will cause the printer to reset after the dump
+      is completed.
+    */
+    case 20: {
+        dcode_20();
+        break;
+    };
+
+    /*!
+    ### D21 - Print crash dump to serial
+    Output the complete crash dump (if present) to the serial.
+    #### Usage
+
+     D21
+
+    ### Notes
+    - The starting address can vary between builds, but it's always at the beginning of the data section.
+    */
+    case 21: {
+        dcode_21();
+        break;
+    };
+
+    /*!
+    ### D22 - Clear crash dump state
+    Clear an existing internal crash dump.
+    #### Usage
+
+     D22
+    */
+    case 22: {
+        dcode_22();
+        break;
+    };
+#endif
+
 #ifdef HEATBED_ANALYSIS
 
     /*!

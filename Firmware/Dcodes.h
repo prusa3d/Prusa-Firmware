@@ -29,6 +29,12 @@ extern void dcode_9(); //D9 - Read/Write ADC (Write=enable simulated, Read=disab
 extern void dcode_10(); //D10 - XYZ calibration = OK
 extern void dcode_12(); //D12 - Log time. Writes the current time in the log file.
 
+#ifdef XFLASH_DUMP
+extern void dcode_20(); //D20 - Generate an offline crash dump
+extern void dcode_21(); //D21 - Print crash dump to serial
+extern void dcode_22(); //D22 - Clear crash dump state
+#endif
+
 #ifdef HEATBED_ANALYSIS
 extern void dcode_80(); //D80 - Bed check. This command will log data to SD card file "mesh.txt".
 extern void dcode_81(); //D81 - Bed analysis. This command will log data to SD card file "wldsd.txt".

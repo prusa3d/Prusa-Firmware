@@ -924,5 +924,45 @@ void dcode_9125()
 }
 #endif //PAT9125
 
-
 #endif //DEBUG_DCODES
+
+#ifdef XFLASH_DUMP
+#include "xflash_dump.h"
+
+void dcode_20()
+{
+    if(code_seen('E'))
+        xfdump_full_dump_and_reset();
+    else
+    {
+        unsigned long ts = millis();
+        xfdump_dump();
+        ts = millis() - ts;
+        DBG(_N("dump completed in %lums\n"), ts);
+    }
+}
+
+void dcode_21()
+{
+    if(!xfdump_check_state())
+        DBG(_N("no dump available\n"));
+    else
+    {
+        KEEPALIVE_STATE(NOT_BUSY);
+        DBG(_N("D21 - read crash dump\n"));
+        print_mem(DUMP_OFFSET  + offsetof(dump_t, data),
+                  DUMP_SIZE, dcode_mem_t::xflash);
+    }
+}
+
+void dcode_22()
+{
+    if(!xfdump_check_state())
+        DBG(_N("no dump available\n"));
+    else
+    {
+        xfdump_reset();
+        DBG(_N("dump cleared\n"));
+    }
+}
+#endif
