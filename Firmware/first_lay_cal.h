@@ -12,5 +12,6 @@ void lay1cal_intro_line();
 void lay1cal_before_meander();
 void lay1cal_meander(char *cmd_buffer);
 void lay1cal_square(char *cmd_buffer, uint8_t i);
+void lay1cal_set_flow();
 
 #endif /* FIRMWARE_FIRST_LAY_CAL_H_ */

@@ -212,3 +212,39 @@ void lay1cal_square(char *cmd_buffer, uint8_t i)
     sprintf_P(cmd_buffer, fmt2, (35 - (i + 1)*width * 2), extr_short_segment);
     enquecommand(cmd_buffer);
 }
+
+
+//! @brief Set the flow in order to the installed nozzle
+//!
+//! This function must be called before to start to print in order to 
+//! enqueue the correct flow depending the nozzle size stored on the 
+//! eeprom
+//!
+void lay1cal_set_flow()
+{
+    uint16_t nDiameter_um;
+    nDiameter_um=eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM);
+
+    switch (nDiameter_um)
+    {
+    case 250:
+        enquecommand_P(PSTR("M221 S62"));
+        break;
+
+    case 400:
+        enquecommand_P(PSTR("M221 S100"));
+        break;
+    
+    case 600:
+        enquecommand_P(PSTR("M221 S150"));
+        break;
+
+    case 800:
+        enquecommand_P(PSTR("M221 S200"));
+        break; 
+
+    default:
+        enquecommand_P(PSTR("M221 S100"));
+        break;
+    }    
+}
