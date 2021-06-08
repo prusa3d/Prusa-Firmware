@@ -145,9 +145,9 @@ void dcode_core(daddr_t addr_start, const daddr_t addr_end, const dcode_mem_t ty
         count = parse_hex(strchr_pointer + 1, data, 16);
         write_mem(addr_start, count, data, type);
 #if DADDR_SIZE > 16
-        DBG(_N("%u bytes written to %S at address 0x%08x\n"), count, type_desc, addr_start);
-#else
         DBG(_N("%lu bytes written to %S at address 0x%04lx\n"), count, type_desc, addr_start);
+#else
+        DBG(_N("%u bytes written to %S at address 0x%08x\n"), count, type_desc, addr_start);
 #endif
     }
     print_mem(addr_start, count, type);
