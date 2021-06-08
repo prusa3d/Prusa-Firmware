@@ -63,7 +63,7 @@ static void xfdump_dump_core(dump_header_t& hdr, uint32_t addr, uint8_t* buf, ui
     xfdump_erase();
 
     // write header
-    static_assert(sizeof(hdr) < 256, "header is larger than a single page write");
+    static_assert(sizeof(hdr) <= 256, "header is larger than a single page write");
     xflash_enable_wr();
     xflash_page_program(DUMP_OFFSET, (uint8_t*)&hdr, sizeof(hdr));
     xflash_wait_busy();
