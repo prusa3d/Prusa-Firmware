@@ -83,7 +83,7 @@ void xfdump_dump()
 
     // write sram only
     xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data.sram),
-                     (uint8_t*)SRAM_START, SRAM_SIZE);
+                     (uint8_t*)RAMSTART, RAMSIZE);
 }
 
 
@@ -98,8 +98,7 @@ void xfdump_full_dump_and_reset(bool crash)
     cli();
 
     // write all addressable ranges (this will trash bidirectional registers)
-    xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data),
-                     0, SRAM_START + SRAM_SIZE);
+    xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data), 0, RAMEND);
 
     // force a reset soon
     wdt_enable(0);

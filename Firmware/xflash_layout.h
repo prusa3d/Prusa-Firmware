@@ -1,12 +1,10 @@
 // XFLASH memory layout
 #pragma once
 #include <stdint.h>
+#include "bootapp.h"
 #include "config.h"
 
 #define XFLASH_SIZE 0x40000ul // size of XFLASH
-#define SRAM_SIZE   0x2000u   // size of SRAM
-#define SRAM_START  0x200u    // start of SRAM
-
 #define LANG_OFFSET 0x0       // offset for language data
 
 #ifndef XFLASH_DUMP
@@ -28,8 +26,8 @@ struct dump_header_t
 struct dump_data_t
 {
     // contiguous region containing all addressable ranges
-    uint8_t regs[SRAM_START];
-    uint8_t sram[SRAM_SIZE];
+    uint8_t regs[RAMSTART];
+    uint8_t sram[RAMSIZE];
 };
 
 struct dump_t
