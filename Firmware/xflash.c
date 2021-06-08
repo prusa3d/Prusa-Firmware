@@ -116,6 +116,28 @@ void xflash_page_program(uint32_t addr, uint8_t* data, uint16_t cnt)
 	_CS_HIGH();
 }
 
+void xflash_multipage_program(uint32_t addr, uint8_t* data, uint16_t cnt)
+{
+    while(cnt)
+    {
+        xflash_enable_wr();
+        _CS_LOW();
+        xflash_send_cmdaddr(_CMD_PAGE_PROGRAM, addr);
+        while(1)
+        {
+            // send data
+            _SPI_TX(*(data++));
+            if(!--cnt || !(++addr & 0xFF))
+            {
+                // on a page boundary or end of write
+                _CS_HIGH();
+                xflash_wait_busy();
+                break;
+            }
+        }
+    }
+}
+
 void xflash_page_program_P(uint32_t addr, uint8_t* data, uint16_t cnt)
 {
 	_CS_LOW();
