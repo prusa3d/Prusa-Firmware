@@ -68,4 +68,12 @@
 #define COMMUNITY_LANG_SUPPORT
 #endif
 
+// Sanity checks for correct configuration of XFLASH_DUMP options
+#if defined(XFLASH_DUMP) && !defined(XFLASH)
+#error "XFLASH_DUMP requires XFLASH support"
+#endif
+#if (defined(MENU_DUMP) || defined(EMERGENCY_DUMP)) && !defined(XFLASH_DUMP)
+#error "MENU_DUMP and EMERGENCY_DUMP require XFLASH_DUMP"
+#endif
+
 #endif //_CONFIG_H
