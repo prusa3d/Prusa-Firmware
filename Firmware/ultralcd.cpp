@@ -1801,6 +1801,19 @@ static void lcd_preheat_menu()
     lcd_generic_preheat_menu();
 }
 
+
+#ifdef MENU_DUMP
+#include "xflash_dump.h"
+
+static void lcd_dump_memory()
+{
+    lcd_beeper_quick_feedback();
+    xfdump_dump();
+    lcd_return_to_status();
+}
+#endif
+
+
 //! @brief Show Support Menu
 //!
 //! @code{.unparsed}
@@ -1992,7 +2005,9 @@ static void lcd_support_menu()
   MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
-
+#ifdef MENU_DUMP
+    MENU_ITEM_FUNCTION_P(_i("Dump memory"), lcd_dump_memory);
+#endif
 #ifdef DEBUG_BUILD
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
 #endif /* DEBUG_BUILD */
