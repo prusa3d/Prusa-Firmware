@@ -325,8 +325,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D0D 3341		| float		| EEPROM_UVLO_RETRACT_ACCELL			| ???			| ff ff ff ffh			| Power panic saved retract acceleration     		| ???			| D3 Ax0d0d C4
 | 0x0D09 3337		| float		| EEPROM_UVLO_TRAVEL_ACCELL				| ???			| ff ff ff ffh			| Power panic saved travel acceleration     		| ???			| D3 Ax0d09 C4
 | 0x0D05 3333		| uint32_t	| EEPROM_JOB_ID							| ???			| 00 00 00 00h			| Job ID used by host software						| D3 only		| D3 Ax0d05 C4
-| 0x0D01 3329		| uint8_t	| EEPROM_ECOOL_ENABLE					| ffh 255		| ^						| Disable extruder motor scaling for non-farm print	| LCD menu		| D3 Ax0d01 FF
-| ^					| ^			| ^										| 2ah 42		| ^						| Enable extruder motor scaling for non-farm print	| ^				| D3 Ax0d01 42
+| 0x0D04 3332		| uint8_t	| EEPROM_ECOOL_ENABLE					| ffh 255		| ^						| Disable extruder motor scaling for non-farm print	| LCD menu		| D3 Ax0d04 C1
+| ^					| ^			| ^										| 2ah 42		| ^						| Enable extruder motor scaling for non-farm print	| ^				| D3 Ax0d04 C1
 
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
