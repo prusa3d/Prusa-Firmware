@@ -24,7 +24,7 @@ void print_hex_byte(uint8_t val)
 }
 
 // debug range address type (fits all SRAM/PROGMEM/XFLASH memory ranges)
-#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES) || defined(XFLASH_DUMP)
 #include "xflash.h"
 #include "xflash_layout.h"
 
