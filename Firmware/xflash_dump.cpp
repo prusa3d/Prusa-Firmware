@@ -7,7 +7,6 @@
 #ifdef XFLASH_DUMP
 #include "xflash.h"
 
-
 bool xfdump_check_state()
 {
     uint32_t magic;
@@ -70,6 +69,7 @@ static void xfdump_dump_core(dump_header_t& hdr, uint32_t addr, uint8_t* buf, ui
     xflash_wait_busy();
 
     // write data
+    static_assert(sizeof(dump_t::data) < RAMEND, "dump area size insufficient");
     xflash_multipage_program(addr, buf, cnt);
 }
 
