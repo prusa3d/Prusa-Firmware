@@ -4,6 +4,7 @@
 #include <avr/interrupt.h>
 
 #include "xflash_dump.h"
+#ifdef XFLASH_DUMP
 #include "xflash.h"
 
 
@@ -104,3 +105,4 @@ void xfdump_full_dump_and_reset(bool crash)
     wdt_enable(0);
     while(true);
 }
+#endif
