@@ -72,7 +72,7 @@ enum class dcode_mem_t:uint8_t { sram, eeprom, progmem, xflash };
 
 void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countperline = 16)
 {
-#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES) || defined(XFLASH_DUMP)
     if(type == dcode_mem_t::xflash)
         XFLASH_SPI_ENTER();
 #endif
@@ -89,7 +89,7 @@ void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countpe
 			case dcode_mem_t::sram: data = *((uint8_t*)address); break;
 			case dcode_mem_t::eeprom: data = eeprom_read_byte((uint8_t*)address); break;
 			case dcode_mem_t::progmem: break;
-#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES) || defined(XFLASH_DUMP)
             case dcode_mem_t::xflash: xflash_rd_data(address, &data, 1); break;
 #else
             case dcode_mem_t::xflash: break;
