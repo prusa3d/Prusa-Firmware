@@ -1811,6 +1811,12 @@ static void lcd_dump_memory()
     xfdump_dump();
     lcd_return_to_status();
 }
+
+static void lcd_wdr_crash()
+{
+    while (1);
+}
+
 #endif
 
 
@@ -2007,6 +2013,7 @@ static void lcd_support_menu()
 
 #ifdef MENU_DUMP
     MENU_ITEM_FUNCTION_P(_i("Dump memory"), lcd_dump_memory);
+    MENU_ITEM_FUNCTION_P(PSTR("WDR crash"), lcd_wdr_crash);
 #endif
 #ifdef DEBUG_BUILD
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
@@ -6704,7 +6711,7 @@ static void lcd_main_menu()
 void stack_error() {
     WRITE(BEEPER, HIGH);
     eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
-    xfdump_full_dump_and_reset(true);
+    xfdump_full_dump_and_reset(dump_crash_source::stack_error);
 }
 #else
 void stack_error() {

@@ -6,6 +6,14 @@
 #include "xflash_dump.h"
 #ifdef XFLASH_DUMP
 #include "xflash.h"
+#include "Marlin.h"
+
+ISR(WDT_vect)
+{
+    WRITE(BEEPER, 1);
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
+    xfdump_full_dump_and_reset(dump_crash_source::watchdog);
+}
 
 bool xfdump_check_state()
 {
@@ -25,10 +33,10 @@ bool xfdump_check_crash()
     if(!xfdump_check_state())
         return false;
 
-    uint8_t crash;
-    xflash_rd_data(DUMP_OFFSET + offsetof(dump_t, header.crash),
+    dump_crash_source crash;
+    xflash_rd_data(DUMP_OFFSET + offsetof(dump_t, header.crash_type),
                    (uint8_t*)&crash, sizeof(crash));
-    return crash;
+    return (crash != dump_crash_source::manual);
 }
 
 
@@ -79,7 +87,7 @@ void xfdump_dump()
     dump_header_t buf;
     buf.magic = DUMP_MAGIC;
     buf.regs_present = false;
-    buf.crash = false;
+    buf.crash_type = (uint8_t)dump_crash_source::manual;
 
     // write sram only
     xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data.sram),
@@ -87,12 +95,12 @@ void xfdump_dump()
 }
 
 
-void xfdump_full_dump_and_reset(bool crash)
+void xfdump_full_dump_and_reset(dump_crash_source crash)
 {
     dump_header_t buf;
     buf.magic = DUMP_MAGIC;
     buf.regs_present = true;
-    buf.crash = crash;
+    buf.crash_type = (uint8_t)crash;
 
     // disable interrupts for a cleaner register dump
     cli();
@@ -101,7 +109,6 @@ void xfdump_full_dump_and_reset(bool crash)
     xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data), 0, RAMEND);
 
     // force a reset soon
-    wdt_enable(0);
-    while(true);
+    softReset();
 }
 #endif
