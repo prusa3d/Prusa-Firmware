@@ -935,9 +935,9 @@ void dcode_20()
         xfdump_full_dump_and_reset();
     else
     {
-        unsigned long ts = millis();
+        unsigned long ts = _millis();
         xfdump_dump();
-        ts = millis() - ts;
+        ts = _millis() - ts;
         DBG(_N("dump completed in %lums\n"), ts);
     }
 }
