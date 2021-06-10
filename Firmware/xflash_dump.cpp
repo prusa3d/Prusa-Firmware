@@ -26,10 +26,10 @@ bool xfdump_check_crash()
     if(!xfdump_check_state())
         return false;
 
-    dump_crash_source crash;
-    xflash_rd_data(DUMP_OFFSET + offsetof(dump_t, header.crash_type),
-                   (uint8_t*)&crash, sizeof(crash));
-    return (crash != dump_crash_source::manual);
+    dump_crash_reason reason;
+    xflash_rd_data(DUMP_OFFSET + offsetof(dump_t, header.crash_reason),
+                   (uint8_t*)&reason, sizeof(reason));
+    return (reason != dump_crash_reason::manual);
 }
 
 
@@ -80,7 +80,7 @@ void xfdump_dump()
     dump_header_t buf;
     buf.magic = DUMP_MAGIC;
     buf.regs_present = false;
-    buf.crash_type = (uint8_t)dump_crash_source::manual;
+    buf.crash_reason = (uint8_t)dump_crash_reason::manual;
 
     // write sram only
     xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data.sram),
@@ -88,12 +88,12 @@ void xfdump_dump()
 }
 
 
-void xfdump_full_dump_and_reset(dump_crash_source crash)
+void xfdump_full_dump_and_reset(dump_crash_reason reason)
 {
     dump_header_t buf;
     buf.magic = DUMP_MAGIC;
     buf.regs_present = true;
-    buf.crash_type = (uint8_t)crash;
+    buf.crash_reason = (uint8_t)reason;
 
     // disable interrupts for a cleaner register dump
     cli();

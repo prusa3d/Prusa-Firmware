@@ -1678,7 +1678,7 @@ ISR(WDT_vect)
 {
     WRITE(BEEPER, 1);
     eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
-    xfdump_full_dump_and_reset(dump_crash_source::watchdog);
+    xfdump_full_dump_and_reset(dump_crash_reason::watchdog);
 }
 #endif
 

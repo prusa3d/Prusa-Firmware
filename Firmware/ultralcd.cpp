@@ -6714,7 +6714,7 @@ static void lcd_main_menu()
 void stack_error() {
     WRITE(BEEPER, HIGH);
     eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
-    xfdump_full_dump_and_reset(dump_crash_source::stack_error);
+    xfdump_full_dump_and_reset(dump_crash_reason::stack_error);
 }
 #else
 void stack_error() {
