@@ -1667,6 +1667,9 @@ void setup()
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
+#ifdef XFLASH_DUMP
+  WDTCSR |= (1 << WDIE);
+#endif //XFLASH_DUMP
 #endif //WATCHDOG
 }
 

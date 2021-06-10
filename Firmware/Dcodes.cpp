@@ -72,7 +72,7 @@ enum class dcode_mem_t:uint8_t { sram, eeprom, progmem, xflash };
 
 void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countperline = 16)
 {
-#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES) || defined(XFLASH_DUMP)
     if(type == dcode_mem_t::xflash)
         XFLASH_SPI_ENTER();
 #endif
@@ -89,7 +89,7 @@ void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countpe
 			case dcode_mem_t::sram: data = *((uint8_t*)address); break;
 			case dcode_mem_t::eeprom: data = eeprom_read_byte((uint8_t*)address); break;
 			case dcode_mem_t::progmem: break;
-#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES)
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES) || defined(XFLASH_DUMP)
             case dcode_mem_t::xflash: xflash_rd_data(address, &data, 1); break;
 #else
             case dcode_mem_t::xflash: break;
@@ -935,9 +935,9 @@ void dcode_20()
         xfdump_full_dump_and_reset();
     else
     {
-        unsigned long ts = millis();
+        unsigned long ts = _millis();
         xfdump_dump();
-        ts = millis() - ts;
+        ts = _millis() - ts;
         DBG(_N("dump completed in %lums\n"), ts);
     }
 }
@@ -950,8 +950,7 @@ void dcode_21()
     {
         KEEPALIVE_STATE(NOT_BUSY);
         DBG(_N("D21 - read crash dump\n"));
-        print_mem(DUMP_OFFSET  + offsetof(dump_t, data),
-                  DUMP_SIZE, dcode_mem_t::xflash);
+        print_mem(DUMP_OFFSET, sizeof(dump_t), dcode_mem_t::xflash);
     }
 }
 

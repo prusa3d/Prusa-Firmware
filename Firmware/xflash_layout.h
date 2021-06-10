@@ -20,7 +20,7 @@ struct dump_header_t
     uint32_t magic;
 
     uint8_t regs_present; // true when the lower segment containing registers is present
-    uint8_t crash;        // true if triggered by EMERGENCY_DUMP
+    uint8_t crash_type; // uses values from dump_crash_source
 };
 
 struct dump_data_t
