@@ -105,10 +105,14 @@ void xfdump_full_dump_and_reset(dump_crash_source crash)
     // disable interrupts for a cleaner register dump
     cli();
 
+    // ensure there's always enough time (with some margin) to dump
+    // dump time on w25x20cl: ~150ms
+    wdt_enable(WDTO_500MS);
+
     // write all addressable ranges (this will trash bidirectional registers)
     xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data), 0, RAMEND);
 
-    // force a reset soon
+    // force a reset even sooner
     softReset();
 }
 #endif
