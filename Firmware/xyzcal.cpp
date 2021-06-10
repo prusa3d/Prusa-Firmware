@@ -163,9 +163,9 @@ void xyzcal_meassure_leave(void)
 	ENABLE_STEPPER_DRIVER_INTERRUPT();
 #ifdef WATCHDOG
 	wdt_enable(WDTO_4S);
-#ifdef XFLASH_DUMP
+#ifdef EMERGENCY_DUMP
 	WDTCSR |= (1 << WDIE);
-#endif //XFLASH_DUMP
+#endif //EMERGENCY_DUMP
 #endif //WATCHDOG
 	sm4_stop_cb = 0;
 	sm4_update_pos_cb = 0;

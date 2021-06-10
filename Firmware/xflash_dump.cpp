@@ -6,14 +6,7 @@
 #include "xflash_dump.h"
 #ifdef XFLASH_DUMP
 #include "xflash.h"
-#include "Marlin.h"
-
-ISR(WDT_vect)
-{
-    WRITE(BEEPER, 1);
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
-    xfdump_full_dump_and_reset(dump_crash_source::watchdog);
-}
+#include "Marlin.h" // for softReset
 
 bool xfdump_check_state()
 {

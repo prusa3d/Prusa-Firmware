@@ -1667,12 +1667,20 @@ void setup()
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
-#ifdef XFLASH_DUMP
+#ifdef EMERGENCY_DUMP
   WDTCSR |= (1 << WDIE);
-#endif //XFLASH_DUMP
+#endif //EMERGENCY_DUMP
 #endif //WATCHDOG
 }
 
+#if defined(WATCHDOG) && defined(EMERGENCY_DUMP)
+ISR(WDT_vect)
+{
+    WRITE(BEEPER, 1);
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
+    xfdump_full_dump_and_reset(dump_crash_source::watchdog);
+}
+#endif
 
 void trace();
 

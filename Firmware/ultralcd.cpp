@@ -1811,15 +1811,14 @@ static void lcd_dump_memory()
     xfdump_dump();
     lcd_return_to_status();
 }
+#endif //MENU_DUMP
 
-#ifdef DEBUG_BUILD
+#if defined(WATCHDOG) && defined(EMERGENCY_DUMP) && defined(DEBUG_BUILD)
 static void lcd_wdr_crash()
 {
     while (1);
 }
 #endif
-
-#endif //MENU_DUMP
 
 
 //! @brief Show Support Menu
@@ -2015,11 +2014,11 @@ static void lcd_support_menu()
 
 #ifdef MENU_DUMP
     MENU_ITEM_FUNCTION_P(_i("Dump memory"), lcd_dump_memory);
-#ifdef DEBUG_BUILD
-    MENU_ITEM_FUNCTION_P(PSTR("WDR crash"), lcd_wdr_crash);
-#endif //DEBUG_BUILD
 #endif //MENU_DUMP
 #ifdef DEBUG_BUILD
+#if defined(WATCHDOG) && defined(EMERGENCY_DUMP)
+    MENU_ITEM_FUNCTION_P(PSTR("WDR crash"), lcd_wdr_crash);
+#endif
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
 #endif /* DEBUG_BUILD */
 

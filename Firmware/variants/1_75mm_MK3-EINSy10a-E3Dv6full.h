@@ -142,7 +142,7 @@
 // Offline crash dumper
 //#define XFLASH_DUMP     // enable dump functionality (including D20/D21/D22)
 //#define MENU_DUMP       // enable "Memory dump" in Settings menu
-//#define EMERGENCY_DUMP  // trigger crash on stack corruption
+//#define EMERGENCY_DUMP  // trigger crash on stack corruption and WDR
 
 // Filament sensor
 #define FILAMENT_SENSOR
