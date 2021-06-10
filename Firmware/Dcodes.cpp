@@ -950,8 +950,7 @@ void dcode_21()
     {
         KEEPALIVE_STATE(NOT_BUSY);
         DBG(_N("D21 - read crash dump\n"));
-        print_mem(DUMP_OFFSET  + offsetof(dump_t, data),
-                  DUMP_SIZE, dcode_mem_t::xflash);
+        print_mem(DUMP_OFFSET, sizeof(dump_t), dcode_mem_t::xflash);
     }
 }
 
