@@ -108,7 +108,7 @@
 #include "optiboot_xflash.h"
 #endif //XFLASH
 
-#ifdef EMERGENCY_DUMP
+#ifdef XFLASH_DUMP
 #include "xflash_dump.h"
 #endif
 
@@ -1610,15 +1610,27 @@ void setup()
 	if (tmc2130_home_enabled == 0xff) tmc2130_home_enabled = 0;
 #endif //TMC2130
 
-#ifdef EMERGENCY_DUMP
-    if(xfdump_check_crash() && eeprom_read_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED) != 1)
+#ifdef XFLASH_DUMP
     {
-        // prevent the prompt to reappear once acknowledged
-        eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 1);
-        lcd_show_fullscreen_message_and_wait_P(
-                _i("!!!FIRMWARE CRASH!!!\n"
-                   "Debug data available for analysis. "
-                   "Contact support to submit details."));
+        dump_crash_reason crash_reason;
+        if(xfdump_check_state(&crash_reason))
+        {
+            // always signal to the host that a dump is available for retrieval
+            puts_P(_N("// action:dump_available"));
+
+#ifdef EMERGENCY_DUMP
+            if(crash_reason != dump_crash_reason::manual &&
+               eeprom_read_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED) != 1)
+            {
+                // prevent the prompt to reappear once acknowledged
+                eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 1);
+                lcd_show_fullscreen_message_and_wait_P(
+                        _i("!!!FIRMWARE CRASH!!!\n"
+                           "Debug data available for analysis. "
+                           "Contact support to submit details."));
+            }
+#endif
+        }
     }
 #endif
 

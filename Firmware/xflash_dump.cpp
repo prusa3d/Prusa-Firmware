@@ -8,28 +8,22 @@
 #include "xflash.h"
 #include "Marlin.h" // for softReset
 
-bool xfdump_check_state()
+bool xfdump_check_state(dump_crash_reason* reason)
 {
     uint32_t magic;
 
     XFLASH_SPI_ENTER();
     xflash_rd_data(DUMP_OFFSET + offsetof(dump_t, header.magic),
                    (uint8_t*)&magic, sizeof(magic));
-
-    return magic == DUMP_MAGIC;
-}
-
-
-bool xfdump_check_crash()
-{
-    // check_state will call SPI_ENTER for us
-    if(!xfdump_check_state())
+    if (magic != DUMP_MAGIC)
         return false;
 
-    dump_crash_reason reason;
-    xflash_rd_data(DUMP_OFFSET + offsetof(dump_t, header.crash_reason),
-                   (uint8_t*)&reason, sizeof(reason));
-    return (reason != dump_crash_reason::manual);
+    if (reason)
+    {
+        xflash_rd_data(DUMP_OFFSET + offsetof(dump_t, header.crash_reason),
+                       (uint8_t*)reason, sizeof(*reason));
+    }
+    return true;
 }
 
 
