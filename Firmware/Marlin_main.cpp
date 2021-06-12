@@ -995,6 +995,55 @@ void list_sec_lang_from_external_flash()
 #endif //(LANG_MODE != 0)
 
 
+static void fw_crash_init()
+{
+#ifdef XFLASH_DUMP
+    dump_crash_reason crash_reason;
+    if(xfdump_check_state(&crash_reason))
+    {
+        // always signal to the host that a dump is available for retrieval
+        puts_P(_N("// action:dump_available"));
+
+#ifdef EMERGENCY_DUMP
+        if(crash_reason != dump_crash_reason::manual &&
+           eeprom_read_byte((uint8_t*)EEPROM_FW_CRASH_FLAG) != 0xFF)
+        {
+            lcd_show_fullscreen_message_and_wait_P(
+                    _i("!!!FIRMWARE CRASH!!!\n"
+                       "Debug data available for analysis. "
+                       "Contact support to submit details."));
+        }
+#endif
+    }
+#else //XFLASH_DUMP
+    dump_crash_reason crash_reason = (dump_crash_reason)eeprom_read_byte((uint8_t*)EEPROM_FW_CRASH_FLAG);
+    if(crash_reason != dump_crash_reason::manual && (uint8_t)crash_reason != 0xFF)
+    {
+        lcd_beeper_quick_feedback();
+        lcd_clear();
+
+        lcd_puts_P(_i("!!!FIRMWARE CRASH!!!\nCrash reason:\n"));
+        switch(crash_reason)
+        {
+        case dump_crash_reason::stack_error:
+            lcd_puts_P(_i("Static memory has\nbeen overwritten"));
+            break;
+        case dump_crash_reason::watchdog:
+            lcd_puts_P(_i("Watchdog timeout"));
+            break;
+        default:
+            lcd_print((uint8_t)crash_reason);
+            break;
+        }
+        lcd_wait_for_click();
+    }
+#endif //XFLASH_DUMP
+
+    // prevent crash prompts to reappear once acknowledged
+    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, 0xFF);
+}
+
+
 static void xflash_err_msg()
 {
 	lcd_clear();
@@ -1610,29 +1659,8 @@ void setup()
 	if (tmc2130_home_enabled == 0xff) tmc2130_home_enabled = 0;
 #endif //TMC2130
 
-#ifdef XFLASH_DUMP
-    {
-        dump_crash_reason crash_reason;
-        if(xfdump_check_state(&crash_reason))
-        {
-            // always signal to the host that a dump is available for retrieval
-            puts_P(_N("// action:dump_available"));
-
-#ifdef EMERGENCY_DUMP
-            if(crash_reason != dump_crash_reason::manual &&
-               eeprom_read_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED) != 1)
-            {
-                // prevent the prompt to reappear once acknowledged
-                eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 1);
-                lcd_show_fullscreen_message_and_wait_P(
-                        _i("!!!FIRMWARE CRASH!!!\n"
-                           "Debug data available for analysis. "
-                           "Contact support to submit details."));
-            }
-#endif
-        }
-    }
-#endif
+    // report crash failures
+    fw_crash_init();
 
 #ifdef UVLO_SUPPORT
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
@@ -1688,15 +1716,15 @@ void setup()
 #if defined(WATCHDOG) && defined(EMERGENCY_HANDLERS)
 ISR(WDT_vect)
 {
-    WRITE(BEEPER, 1);
+    WRITE(BEEPER, HIGH);
+    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)dump_crash_reason::watchdog);
 #ifdef EMERGENCY_DUMP
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
     xfdump_full_dump_and_reset(dump_crash_reason::watchdog);
-#else //EMERGENCY_SERIAL_DUMP
+#elif defined(EMERGENCY_SERIAL_DUMP)
     if(emergency_serial_dump)
         serial_dump_and_reset(dump_crash_reason::watchdog);
-    softReset();
 #endif
+    softReset();
 }
 #endif
 
