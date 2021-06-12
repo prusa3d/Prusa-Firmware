@@ -976,6 +976,7 @@ void serial_dump_and_reset(dump_crash_reason reason)
     // we're being called from a live state, so shut off interrupts and heaters
     cli();
     wdt_enable(WDTO_15MS);
+    WRITE(FAN_PIN, HIGH);
     disable_heater();
 
     // this function can also be called from within a corrupted state, so not use
