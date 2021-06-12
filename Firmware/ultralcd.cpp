@@ -30,6 +30,7 @@
 #include "cmdqueue.h"
 
 #include "SdFatUtil.h"
+#include "xflash_dump.h"
 
 #ifdef FILAMENT_SENSOR
 #include "pat9125.h"
@@ -1804,8 +1805,6 @@ static void lcd_preheat_menu()
 
 
 #ifdef MENU_DUMP
-#include "xflash_dump.h"
-
 static void lcd_dump_memory()
 {
     lcd_beeper_quick_feedback();
@@ -6722,9 +6721,7 @@ static void lcd_main_menu()
 }
 
 
-#ifdef EMERGENCY_DUMP
-#include "xflash_dump.h"
-#elif defined(EMERGENCY_SERIAL_DUMP)
+#ifdef EMERGENCY_SERIAL_DUMP
 #include "Dcodes.h"
 #endif
 

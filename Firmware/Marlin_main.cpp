@@ -109,9 +109,7 @@
 #include "optiboot_xflash.h"
 #endif //XFLASH
 
-#ifdef XFLASH_DUMP
 #include "xflash_dump.h"
-#endif
 
 #ifdef BLINKM
 #include "BlinkM.h"
