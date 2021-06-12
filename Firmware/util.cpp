@@ -1,6 +1,7 @@
 #include "Configuration.h"
 
 #include "ultralcd.h"
+#include "menu.h"
 #include "sound.h"
 #include "language.h"
 #include "util.h"

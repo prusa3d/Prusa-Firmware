@@ -1,13 +1,7 @@
 #ifndef ULTRALCD_H
 #define ULTRALCD_H
 
-#include "Marlin.h"
-#include "lcd.h"
-#include "conv2str.h"
-#include "menu.h"
 #include "mesh_bed_calibration.h"
-#include "config.h"
-
 #include "config.h"
 
 extern void menu_lcd_longpress_func(void);

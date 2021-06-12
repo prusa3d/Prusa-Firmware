@@ -32,6 +32,8 @@
 #include "Marlin.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
+#include "menu.h"
+#include "conv2str.h"
 #include "sound.h"
 #include "temperature.h"
 #include "cardreader.h"

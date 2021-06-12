@@ -5,6 +5,7 @@
 
 #include "temperature.h"
 #include "ultralcd.h"
+#include "conv2str.h"
 #include "fsensor.h"
 #include "Marlin.h"
 #include "language.h"

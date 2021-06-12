@@ -66,6 +66,7 @@
 
 #include "menu.h"
 #include "ultralcd.h"
+#include "conv2str.h"
 #include "backlight.h"
 
 #include "planner.h"
