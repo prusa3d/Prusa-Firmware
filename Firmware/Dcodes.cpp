@@ -984,8 +984,8 @@ void serial_dump_and_reset(dump_crash_reason reason)
     SERIAL_ECHOPGM("reason: ");
     SERIAL_ECHOLN((unsigned)reason);
 
-    // disable interrupts from now on to avoid wdt while dumping
-    wdt_disable();
+    // set WDT long enough to allow writing the entire stream
+    wdt_enable(WDTO_8S);
     print_mem(0, RAMEND+1, dcode_mem_t::sram);
     SERIAL_ECHOLNRPGM(MSG_OK);
 
