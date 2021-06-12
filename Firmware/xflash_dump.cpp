@@ -63,7 +63,7 @@ static void xfdump_dump_core(dump_header_t& hdr, uint32_t addr, uint8_t* buf, ui
     xflash_wait_busy();
 
     // write data
-    static_assert(sizeof(dump_t::data) <= RAMEND, "dump area size insufficient");
+    static_assert(sizeof(dump_t::data) <= RAMEND+1, "dump area size insufficient");
     xflash_multipage_program(addr, buf, cnt);
 }
 
@@ -96,7 +96,7 @@ void xfdump_full_dump_and_reset(dump_crash_reason reason)
     wdt_enable(WDTO_500MS);
 
     // write all addressable ranges (this will trash bidirectional registers)
-    xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data), 0, RAMEND);
+    xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data), 0, RAMEND+1);
 
     // force a reset even sooner
     softReset();
