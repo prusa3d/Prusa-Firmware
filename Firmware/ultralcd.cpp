@@ -29,7 +29,6 @@
 //#include "Configuration.h"
 #include "cmdqueue.h"
 
-#include "SdFatUtil.h"
 #include "xflash_dump.h"
 
 #ifdef FILAMENT_SENSOR
@@ -6721,23 +6720,6 @@ static void lcd_main_menu()
 }
 
 
-#ifdef EMERGENCY_SERIAL_DUMP
-#include "Dcodes.h"
-#endif
-
-void stack_error() {
-    WRITE(BEEPER, HIGH);
-    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)dump_crash_reason::stack_error);
-#ifdef EMERGENCY_DUMP
-    xfdump_full_dump_and_reset(dump_crash_reason::stack_error);
-#elif defined(EMERGENCY_SERIAL_DUMP)
-    if (emergency_serial_dump)
-        serial_dump_and_reset(dump_crash_reason::stack_error);
-#endif
-    softReset();
-}
-
-
 #ifdef DEBUG_STEPPER_TIMER_MISSED
 bool stepper_timer_overflow_state = false;
 uint16_t stepper_timer_overflow_max = 0;
@@ -8961,7 +8943,6 @@ void menu_lcd_lcdupdate_func(void)
 		if (lcd_draw_update) lcd_draw_update--;
 		lcd_next_update_millis = _millis() + LCD_UPDATE_INTERVAL;
 	}
-	if (!SdFatUtil::test_stack_integrity()) stack_error();
 	lcd_ping(); //check that we have received ping command if we are in farm mode
 	lcd_send_status();
 	if (lcd_commands_type == LcdCommands::Layer1Cal) lcd_commands();

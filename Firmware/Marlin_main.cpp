@@ -1727,6 +1727,20 @@ ISR(WDT_vect)
 }
 #endif
 
+
+void stack_error() {
+    WRITE(BEEPER, HIGH);
+    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)dump_crash_reason::stack_error);
+#ifdef EMERGENCY_DUMP
+    xfdump_full_dump_and_reset(dump_crash_reason::stack_error);
+#elif defined(EMERGENCY_SERIAL_DUMP)
+    if (emergency_serial_dump)
+        serial_dump_and_reset(dump_crash_reason::stack_error);
+#endif
+    softReset();
+}
+
+
 void trace();
 
 #define CHUNK_SIZE 64 // bytes

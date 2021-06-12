@@ -194,7 +194,6 @@ void mFilamentItemForce();
 void lcd_generic_preheat_menu();
 void unload_filament(bool automatic = false);
 
-void stack_error();
 void lcd_printer_connected();
 void lcd_ping();
 
