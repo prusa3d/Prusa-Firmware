@@ -29,8 +29,6 @@
 //#include "Configuration.h"
 #include "cmdqueue.h"
 
-#include "xflash_dump.h"
-
 #ifdef FILAMENT_SENSOR
 #include "pat9125.h"
 #include "fsensor.h"
@@ -1804,6 +1802,8 @@ static void lcd_preheat_menu()
 
 
 #ifdef MENU_DUMP
+#include "xflash_dump.h"
+
 static void lcd_dump_memory()
 {
     lcd_beeper_quick_feedback();
