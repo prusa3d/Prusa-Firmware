@@ -38,7 +38,6 @@ void xfdump_reset()
 
 static void xfdump_erase()
 {
-    XFLASH_SPI_ENTER();
     for(uint32_t addr = DUMP_OFFSET;
         addr < DUMP_OFFSET + DUMP_SIZE;
         addr += 4096)
