@@ -965,3 +965,31 @@ void dcode_22()
     }
 }
 #endif
+
+#ifdef EMERGENCY_SERIAL_DUMP
+#include "xflash_dump.h"
+
+bool emergency_serial_dump = false;
+
+void serial_dump_and_reset(dump_crash_reason reason)
+{
+    // we're being called from a live state, so shut off interrupts and heaters
+    cli();
+    wdt_enable(WDTO_15MS);
+    disable_heater();
+
+    // this function can also be called from within a corrupted state, so not use
+    // printf family of functions that use the heap or grow the stack.
+    SERIAL_ECHOLNPGM("D23 - emergency serial dump");
+    SERIAL_ECHOPGM("reason: ");
+    SERIAL_ECHOLN((unsigned)reason);
+
+    // disable interrupts from now on to avoid wdt while dumping
+    wdt_disable();
+    print_mem(0, RAMEND+1, dcode_mem_t::sram);
+    SERIAL_ECHOLNRPGM(MSG_OK);
+
+    // reset soon
+    softReset();
+}
+#endif

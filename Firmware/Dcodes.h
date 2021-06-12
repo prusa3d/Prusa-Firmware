@@ -35,6 +35,12 @@ extern void dcode_21(); //D21 - Print crash dump to serial
 extern void dcode_22(); //D22 - Clear crash dump state
 #endif
 
+#ifdef EMERGENCY_SERIAL_DUMP
+#include "xflash_dump.h"
+extern bool emergency_serial_dump;
+extern void serial_dump_and_reset(dump_crash_reason);
+#endif
+
 #ifdef HEATBED_ANALYSIS
 extern void dcode_80(); //D80 - Bed check. This command will log data to SD card file "mesh.txt".
 extern void dcode_81(); //D81 - Bed analysis. This command will log data to SD card file "wldsd.txt".

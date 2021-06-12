@@ -1679,18 +1679,24 @@ void setup()
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
-#ifdef EMERGENCY_DUMP
+#ifdef EMERGENCY_HANDLERS
   WDTCSR |= (1 << WDIE);
-#endif //EMERGENCY_DUMP
+#endif //EMERGENCY_HANDLERS
 #endif //WATCHDOG
 }
 
-#if defined(WATCHDOG) && defined(EMERGENCY_DUMP)
+#if defined(WATCHDOG) && defined(EMERGENCY_HANDLERS)
 ISR(WDT_vect)
 {
     WRITE(BEEPER, 1);
+#ifdef EMERGENCY_DUMP
     eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
     xfdump_full_dump_and_reset(dump_crash_reason::watchdog);
+#else //EMERGENCY_SERIAL_DUMP
+    if(emergency_serial_dump)
+        serial_dump_and_reset(dump_crash_reason::watchdog);
+    softReset();
+#endif
 }
 #endif
 
@@ -9291,6 +9297,22 @@ Sigma_Exit:
     case 22: {
         dcode_22();
         break;
+    };
+#endif //XFLASH_DUMP
+
+#ifdef EMERGENCY_SERIAL_DUMP
+    /*!
+    ### D23 - Request emergency dump on serial
+    On boards without offline dump support, request online dumps to the serial port on firmware faults.
+    When online dumps are enabled, the FW will dump memory on the serial before resetting.
+    #### Usage
+
+     D23 [R]
+    #### Parameters
+    - `R` - Disable online dumps.
+    */
+    case 23: {
+        emergency_serial_dump = !code_seen('R');
     };
 #endif
 

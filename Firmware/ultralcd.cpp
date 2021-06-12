@@ -1812,8 +1812,16 @@ static void lcd_dump_memory()
     lcd_return_to_status();
 }
 #endif //MENU_DUMP
+#ifdef MENU_SERIAL_DUMP
+#include "Dcodes.h"
 
-#if defined(WATCHDOG) && defined(EMERGENCY_DUMP) && defined(DEBUG_BUILD)
+static void lcd_serial_dump()
+{
+    serial_dump_and_reset(dump_crash_reason::manual);
+}
+#endif //MENU_SERIAL_DUMP
+
+#if defined(WATCHDOG) && defined(DEBUG_BUILD) && defined(EMERGENCY_HANDLERS)
 static void lcd_wdr_crash()
 {
     while (1);
@@ -2015,8 +2023,12 @@ static void lcd_support_menu()
 #ifdef MENU_DUMP
     MENU_ITEM_FUNCTION_P(_i("Dump memory"), lcd_dump_memory);
 #endif //MENU_DUMP
+#ifdef MENU_SERIAL_DUMP
+    if (emergency_serial_dump)
+        MENU_ITEM_FUNCTION_P(_i("Dump to serial"), lcd_serial_dump);
+#endif
 #ifdef DEBUG_BUILD
-#if defined(WATCHDOG) && defined(EMERGENCY_DUMP)
+#if defined(WATCHDOG) && defined(EMERGENCY_HANDLERS)
     MENU_ITEM_FUNCTION_P(PSTR("WDR crash"), lcd_wdr_crash);
 #endif
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
@@ -6716,14 +6728,22 @@ void stack_error() {
     eeprom_update_byte((uint8_t*)EEPROM_CRASH_ACKNOWLEDGED, 0);
     xfdump_full_dump_and_reset(dump_crash_reason::stack_error);
 }
-#else
+#else //EMERGENCY_DUMP
+#ifdef EMERGENCY_SERIAL_DUMP
+#include "Dcodes.h"
+#endif
+
 void stack_error() {
+#ifdef EMERGENCY_SERIAL_DUMP
+    if (emergency_serial_dump)
+        serial_dump_and_reset(dump_crash_reason::stack_error);
+#endif
 	Sound_MakeCustom(1000,0,true);
 	lcd_display_message_fullscreen_P(_i("Error - static memory has been overwritten"));////MSG_STACK_ERROR c=20 r=4
 	//err_triggered = 1;
 	 while (1) delay_keep_alive(1000);
 }
-#endif
+#endif //EMERGENCY_DUMP
 
 #ifdef DEBUG_STEPPER_TIMER_MISSED
 bool stepper_timer_overflow_state = false;

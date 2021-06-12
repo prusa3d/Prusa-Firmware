@@ -146,6 +146,10 @@
 //#define MENU_DUMP       // enable "Memory dump" in Settings menu
 //#define EMERGENCY_DUMP  // trigger crash on stack corruption and WDR
 
+// Online crash dumper
+//#define EMERGENCY_SERIAL_DUMP   // Request dump via serial on stack corruption and WDR
+//#define MENU_SERIAL_DUMP        // Enable "Memory dump" in Settings menu
+
 // Filament sensor
 #define FILAMENT_SENSOR
 #define IR_SENSOR
