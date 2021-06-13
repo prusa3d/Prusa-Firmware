@@ -15,9 +15,9 @@ The firmware for the Original Prusa i3 printers is proudly based on [Marlin 1.0.
      * [Using Arduino](#using-arduino)
      * [Using Linux subsystem](#using-linux-subsystem-under-windows-10-64-bit)
      * [Using Git-bash](#using-git-bash-under-windows-10-64-bit)
-   * [Automated tests](#3-automated-tests)
-   * [Documentation](#4-documentation)
-   * [FAQ](#5-faq)
+   * [Automated tests](#automated-tests)
+   * [Documentation](#documentation)
+   * [FAQ](#faq)
 <!--te-->
 
 
@@ -166,7 +166,7 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
 - follow the instructions
 
 
-# 3. Automated tests
+# Automated tests
 ## Prerequisites
 * c++11 compiler e.g. g++ 6.3.1
 * cmake
@@ -202,11 +202,11 @@ Example:
 ## Running
 `./tests`
 
-# 4. Documentation
+# Documentation
 run [doxygen](http://www.doxygen.nl/) in Firmware folder
 or visit https://prusa3d.github.io/Prusa-Firmware-Doc for doxygen generated output
 
-# 5. FAQ
+# FAQ
 Q:I built firmware using Arduino and I see "?" instead of numbers in printer user interface.
 
 A:Step 1.c was omitted or you updated Arduino and now platform.txt located somewhere in your user profile is used.
