@@ -120,14 +120,14 @@
 #define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 // Online crash dumper
-//#define EMERGENCY_SERIAL_DUMP   // Request dump via serial on stack corruption and WDR
-//#define MENU_SERIAL_DUMP        // Enable "Memory dump" in Settings menu
+#define EMERGENCY_SERIAL_DUMP   // Request dump via serial on stack corruption and WDR
+#define MENU_SERIAL_DUMP        // Enable "Memory dump" in Settings menu
 
 // Filament sensor
 #define FILAMENT_SENSOR
 #define IR_SENSOR
 
-//#define DEBUG_DCODE2
+#define DEBUG_DCODE2
 #define DEBUG_DCODE3
 
 //#define DEBUG_BUILD
