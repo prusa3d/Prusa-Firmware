@@ -1727,6 +1727,21 @@ ISR(WDT_vect)
 }
 #endif
 
+#if defined(WATCHDOG) && defined(EMERGENCY_HANDLERS)
+ISR(BADISR_vect)
+{
+    WRITE(BEEPER, HIGH);
+    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)dump_crash_reason::bad_isr);
+#ifdef EMERGENCY_DUMP
+    xfdump_full_dump_and_reset(dump_crash_reason::bad_isr);
+#elif defined(EMERGENCY_SERIAL_DUMP)
+    if(emergency_serial_dump)
+        serial_dump_and_reset(dump_crash_reason::bad_isr);
+#endif
+    softReset();
+}
+#endif
+
 
 void stack_error() {
     WRITE(BEEPER, HIGH);

@@ -7,6 +7,7 @@ enum class dump_crash_reason : uint8_t
     manual = 0,
     stack_error,
     watchdog,
+    bad_isr,
 };
 
 #ifdef XFLASH_DUMP
