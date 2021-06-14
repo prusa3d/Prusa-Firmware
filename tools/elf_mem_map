@@ -4,6 +4,7 @@ import elftools.elf.elffile
 import elftools.dwarf.descriptions
 from collections import namedtuple
 from struct import unpack
+import sys
 import re
 
 SRAM_START = 0x200
@@ -264,12 +265,26 @@ def decode_dump(path):
     buf_addr = None # starting address
     buf_data = None # data
 
-    for line in fd:
-        tokens = line.split(maxsplit=1)
-        if len(tokens) == 0 or tokens[0] == 'ok':
-            break
-        elif len(tokens) < 2 or tokens[0] == 'D2':
+    in_dump = False
+    for line in enumerate(fd):
+        line = (line[0], line[1].rstrip())
+        tokens = line[1].split(maxsplit=1)
+        if not in_dump:
+            if len(tokens) > 0 and tokens[0] in ['D2', 'D23']:
+                in_dump = True
             continue
+        else:
+            if len(tokens) < 1:
+                print('malformed line {}: {}'.format(*line), file=sys.stderr)
+                continue
+            elif tokens[0] == 'ok':
+                break
+            elif tokens[0] == 'reason:':
+                # ignored
+                continue
+            elif not re.match(r'[0-9a-fA-F]', tokens[0]):
+                print('malformed line {}: {}'.format(*line), file=sys.stderr)
+                continue
 
         addr = int.from_bytes(bytes.fromhex(tokens[0]), 'big')
         data = bytes.fromhex(tokens[1])
