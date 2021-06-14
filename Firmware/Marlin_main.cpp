@@ -1030,6 +1030,9 @@ static void fw_crash_init()
         case dump_crash_reason::watchdog:
             lcd_puts_P(_i("Watchdog timeout"));
             break;
+        case dump_crash_reason::bad_isr:
+            lcd_puts_P(_i("Bad interrupt"));
+            break;
         default:
             lcd_print((uint8_t)crash_reason);
             break;
@@ -1727,7 +1730,7 @@ ISR(WDT_vect)
 }
 #endif
 
-#if defined(WATCHDOG) && defined(EMERGENCY_HANDLERS)
+#ifdef EMERGENCY_HANDLERS
 ISR(BADISR_vect)
 {
     WRITE(BEEPER, HIGH);
@@ -1741,7 +1744,6 @@ ISR(BADISR_vect)
     softReset();
 }
 #endif
-
 
 void stack_error() {
     WRITE(BEEPER, HIGH);
