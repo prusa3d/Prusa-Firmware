@@ -1715,46 +1715,36 @@ void setup()
 #endif //WATCHDOG
 }
 
-#if defined(WATCHDOG) && defined(EMERGENCY_HANDLERS)
-ISR(WDT_vect)
+
+static inline void crash_and_burn(dump_crash_reason reason)
 {
     WRITE(BEEPER, HIGH);
-    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)dump_crash_reason::watchdog);
+    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)reason);
 #ifdef EMERGENCY_DUMP
-    xfdump_full_dump_and_reset(dump_crash_reason::watchdog);
+    xfdump_full_dump_and_reset(reason);
 #elif defined(EMERGENCY_SERIAL_DUMP)
     if(emergency_serial_dump)
-        serial_dump_and_reset(dump_crash_reason::watchdog);
+        serial_dump_and_reset(reason);
 #endif
     softReset();
 }
-#endif
 
 #ifdef EMERGENCY_HANDLERS
-ISR(BADISR_vect)
+#ifdef WATCHDOG
+ISR(WDT_vect)
 {
-    WRITE(BEEPER, HIGH);
-    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)dump_crash_reason::bad_isr);
-#ifdef EMERGENCY_DUMP
-    xfdump_full_dump_and_reset(dump_crash_reason::bad_isr);
-#elif defined(EMERGENCY_SERIAL_DUMP)
-    if(emergency_serial_dump)
-        serial_dump_and_reset(dump_crash_reason::bad_isr);
-#endif
-    softReset();
+    crash_and_burn(dump_crash_reason::watchdog);
 }
 #endif
 
+ISR(BADISR_vect)
+{
+    crash_and_burn(dump_crash_reason::bad_isr);
+}
+#endif //EMERGENCY_HANDLERS
+
 void stack_error() {
-    WRITE(BEEPER, HIGH);
-    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)dump_crash_reason::stack_error);
-#ifdef EMERGENCY_DUMP
-    xfdump_full_dump_and_reset(dump_crash_reason::stack_error);
-#elif defined(EMERGENCY_SERIAL_DUMP)
-    if (emergency_serial_dump)
-        serial_dump_and_reset(dump_crash_reason::stack_error);
-#endif
-    softReset();
+    crash_and_burn(dump_crash_reason::stack_error);
 }
 
 
