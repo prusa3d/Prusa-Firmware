@@ -1820,10 +1820,37 @@ static void lcd_serial_dump()
 }
 #endif //MENU_SERIAL_DUMP
 
-#if defined(WATCHDOG) && defined(DEBUG_BUILD) && defined(EMERGENCY_HANDLERS)
+#defined(DEBUG_BUILD) && defined(EMERGENCY_HANDLERS)
+#include <avr/wdt.h>
+
+#ifdef WATCHDOG
 static void lcd_wdr_crash()
 {
     while (1);
+}
+#endif
+
+static uint8_t lcd_stack_crash_(uint8_t arg, uint32_t sp = 0)
+{
+    // populate the stack with an increasing value for ease of testing
+    volatile uint16_t tmp __attribute__((unused)) = sp;
+
+    _delay(arg);
+    uint8_t ret = lcd_stack_crash_(arg, SP);
+
+    // required to avoid tail call elimination and to slow down the stack growth
+    _delay(ret);
+
+    return ret;
+}
+
+static void lcd_stack_crash()
+{
+#ifdef WATCHDOG
+    wdt_disable();
+#endif
+    // delay choosen in order to hit the stack-check in the temperature isr reliably
+    lcd_stack_crash_(10);
 }
 #endif
 
@@ -2027,9 +2054,12 @@ static void lcd_support_menu()
         MENU_ITEM_FUNCTION_P(_i("Dump to serial"), lcd_serial_dump);
 #endif
 #ifdef DEBUG_BUILD
-#if defined(WATCHDOG) && defined(EMERGENCY_HANDLERS)
+#ifdef EMERGENCY_HANDLERS
+#ifdef WATCHDOG
     MENU_ITEM_FUNCTION_P(PSTR("WDR crash"), lcd_wdr_crash);
-#endif
+#endif //WATCHDOG
+    MENU_ITEM_FUNCTION_P(PSTR("Stack crash"), lcd_stack_crash);
+#endif //EMERGENCY_HANDLERS
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
 #endif /* DEBUG_BUILD */
 
