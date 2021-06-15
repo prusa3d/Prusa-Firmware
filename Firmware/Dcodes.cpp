@@ -101,8 +101,10 @@ void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countpe
 			count_line--;
 			count--;
 
-            // sporadically call manage heaters to avoid wdt
-            if(!((uint16_t)count % 8192))
+            // sporadically call manage_heater, but only when interrupts are enabled (meaning
+            // print_mem is called by D2). Don't do anything otherwise: we are inside a crash
+            // handler where memory & stack needs to be preserved!
+            if((SREG & (1 << SREG_I)) && !((uint16_t)count % 8192))
                 manage_heater();
 		}
 		putchar('\n');
