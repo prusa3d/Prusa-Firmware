@@ -973,9 +973,12 @@ bool emergency_serial_dump = false;
 
 void serial_dump_and_reset(uint16_t sp, dump_crash_reason reason)
 {
-    // we're being called from a live state, so shut off interrupts and heaters
     cli();
-    wdt_enable(WDTO_15MS);
+
+    // extend WDT long enough to allow writing the entire stream
+    wdt_enable(WDTO_8S);
+
+    // we're being called from a live state, so shut off interrupts and heaters
     WRITE(FAN_PIN, HIGH);
     disable_heater();
 
@@ -987,8 +990,6 @@ void serial_dump_and_reset(uint16_t sp, dump_crash_reason reason)
     SERIAL_ECHO(" ");
     SERIAL_ECHOLN((unsigned)reason);
 
-    // set WDT long enough to allow writing the entire stream
-    wdt_enable(WDTO_8S);
     print_mem(0, RAMEND+1, dcode_mem_t::sram);
     SERIAL_ECHOLNRPGM(MSG_OK);
 
