@@ -1820,7 +1820,7 @@ static void lcd_serial_dump()
 }
 #endif //MENU_SERIAL_DUMP
 
-#defined(DEBUG_BUILD) && defined(EMERGENCY_HANDLERS)
+#if defined(DEBUG_BUILD) && defined(EMERGENCY_HANDLERS)
 #include <avr/wdt.h>
 
 #ifdef WATCHDOG
