@@ -932,11 +932,11 @@ void dcode_9125()
 void dcode_20()
 {
     if(code_seen('E'))
-        xfdump_full_dump_and_reset();
+        xfdump_full_dump_and_reset(SP);
     else
     {
         unsigned long ts = _millis();
-        xfdump_dump();
+        xfdump_dump(SP);
         ts = _millis() - ts;
         DBG(_N("dump completed in %lums\n"), ts);
     }
@@ -971,7 +971,7 @@ void dcode_22()
 
 bool emergency_serial_dump = false;
 
-void serial_dump_and_reset(dump_crash_reason reason)
+void serial_dump_and_reset(uint16_t sp, dump_crash_reason reason)
 {
     // we're being called from a live state, so shut off interrupts and heaters
     cli();
@@ -982,7 +982,9 @@ void serial_dump_and_reset(dump_crash_reason reason)
     // this function can also be called from within a corrupted state, so not use
     // printf family of functions that use the heap or grow the stack.
     SERIAL_ECHOLNPGM("D23 - emergency serial dump");
-    SERIAL_ECHOPGM("reason: ");
+    SERIAL_ECHOPGM("exception: ");
+    SERIAL_ECHO(sp);
+    SERIAL_ECHO(" ");
     SERIAL_ECHOLN((unsigned)reason);
 
     // set WDT long enough to allow writing the entire stream

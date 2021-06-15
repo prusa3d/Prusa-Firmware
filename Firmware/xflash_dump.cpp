@@ -68,12 +68,13 @@ static void xfdump_dump_core(dump_header_t& hdr, uint32_t addr, uint8_t* buf, ui
 }
 
 
-void xfdump_dump()
+void xfdump_dump(uint16_t sp)
 {
     dump_header_t buf;
     buf.magic = DUMP_MAGIC;
     buf.regs_present = false;
     buf.crash_reason = (uint8_t)dump_crash_reason::manual;
+    buf.sp = sp;
 
     // write sram only
     xfdump_dump_core(buf, DUMP_OFFSET + offsetof(dump_t, data.sram),
@@ -81,12 +82,13 @@ void xfdump_dump()
 }
 
 
-void xfdump_full_dump_and_reset(dump_crash_reason reason)
+void xfdump_full_dump_and_reset(uint16_t sp, dump_crash_reason reason)
 {
     dump_header_t buf;
     buf.magic = DUMP_MAGIC;
     buf.regs_present = true;
     buf.crash_reason = (uint8_t)reason;
+    buf.sp = sp;
 
     // disable interrupts for a cleaner register dump
     cli();

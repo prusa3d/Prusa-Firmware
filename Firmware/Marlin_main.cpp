@@ -1716,15 +1716,15 @@ void setup()
 }
 
 
-static inline void crash_and_burn(dump_crash_reason reason)
+static inline void crash_and_burn(uint16_t sp, dump_crash_reason reason)
 {
     WRITE(BEEPER, HIGH);
     eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)reason);
 #ifdef EMERGENCY_DUMP
-    xfdump_full_dump_and_reset(reason);
+    xfdump_full_dump_and_reset(sp, reason);
 #elif defined(EMERGENCY_SERIAL_DUMP)
     if(emergency_serial_dump)
-        serial_dump_and_reset(reason);
+        serial_dump_and_reset(sp, reason);
 #endif
     softReset();
 }
@@ -1733,18 +1733,18 @@ static inline void crash_and_burn(dump_crash_reason reason)
 #ifdef WATCHDOG
 ISR(WDT_vect)
 {
-    crash_and_burn(dump_crash_reason::watchdog);
+    crash_and_burn(SP, dump_crash_reason::watchdog);
 }
 #endif
 
 ISR(BADISR_vect)
 {
-    crash_and_burn(dump_crash_reason::bad_isr);
+    crash_and_burn(SP, dump_crash_reason::bad_isr);
 }
 #endif //EMERGENCY_HANDLERS
 
 void stack_error() {
-    crash_and_burn(dump_crash_reason::stack_error);
+    crash_and_burn(SP, dump_crash_reason::stack_error);
 }
 
 
