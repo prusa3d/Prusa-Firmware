@@ -11,13 +11,12 @@ enum class dump_crash_reason : uint8_t
 };
 
 #ifdef XFLASH_DUMP
-void xfdump_reset();            // reset XFLASH dump state
-void xfdump_dump(uint16_t sp);  // create a new SRAM memory dump
+void xfdump_reset();    // reset XFLASH dump state
+void xfdump_dump();     // create a new SRAM memory dump
 
 // return true if a dump is present, save type in "reason" if provided
 bool xfdump_check_state(dump_crash_reason* reason = NULL);
 
 // create a new dump containing registers and SRAM, then reset
-void xfdump_full_dump_and_reset(
-        uint16_t sp, dump_crash_reason crash = dump_crash_reason::manual);
+void xfdump_full_dump_and_reset(dump_crash_reason crash = dump_crash_reason::manual);
 #endif

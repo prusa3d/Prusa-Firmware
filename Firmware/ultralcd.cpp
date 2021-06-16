@@ -1807,7 +1807,7 @@ static void lcd_preheat_menu()
 static void lcd_dump_memory()
 {
     lcd_beeper_quick_feedback();
-    xfdump_dump(SP);
+    xfdump_dump();
     lcd_return_to_status();
 }
 #endif //MENU_DUMP
@@ -1816,7 +1816,7 @@ static void lcd_dump_memory()
 
 static void lcd_serial_dump()
 {
-    serial_dump_and_reset(SP, dump_crash_reason::manual);
+    serial_dump_and_reset(dump_crash_reason::manual);
 }
 #endif //MENU_SERIAL_DUMP
 

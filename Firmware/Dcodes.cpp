@@ -934,11 +934,11 @@ void dcode_9125()
 void dcode_20()
 {
     if(code_seen('E'))
-        xfdump_full_dump_and_reset(SP);
+        xfdump_full_dump_and_reset();
     else
     {
         unsigned long ts = _millis();
-        xfdump_dump(SP);
+        xfdump_dump();
         ts = _millis() - ts;
         DBG(_N("dump completed in %lums\n"), ts);
     }
@@ -969,28 +969,39 @@ void dcode_22()
 #endif
 
 #ifdef EMERGENCY_SERIAL_DUMP
+#include "asm.h"
 #include "xflash_dump.h"
 
 bool emergency_serial_dump = false;
 
-void serial_dump_and_reset(uint16_t sp, dump_crash_reason reason)
+void __attribute__((noinline)) serial_dump_and_reset(dump_crash_reason reason)
 {
+    uint16_t sp;
+    uint32_t pc;
+
+    // we're being called from a live state, so shut off interrupts ...
     cli();
+
+    // sample SP/PC
+    sp = SP;
+    GETPC(&pc);
 
     // extend WDT long enough to allow writing the entire stream
     wdt_enable(WDTO_8S);
 
-    // we're being called from a live state, so shut off interrupts and heaters
+    // ... and heaters
     WRITE(FAN_PIN, HIGH);
     disable_heater();
 
     // this function can also be called from within a corrupted state, so not use
     // printf family of functions that use the heap or grow the stack.
     SERIAL_ECHOLNPGM("D23 - emergency serial dump");
-    SERIAL_ECHOPGM("exception: ");
-    SERIAL_ECHO(sp);
-    SERIAL_ECHO(" ");
-    SERIAL_ECHOLN((unsigned)reason);
+    SERIAL_ECHOPGM("error: ");
+    MYSERIAL.print((uint8_t)reason, DEC);
+    MYSERIAL.print(" ");
+    MYSERIAL.print(pc, HEX);
+    MYSERIAL.print(" ");
+    MYSERIAL.println(sp, HEX);
 
     print_mem(0, RAMEND+1, dcode_mem_t::sram);
     SERIAL_ECHOLNRPGM(MSG_OK);

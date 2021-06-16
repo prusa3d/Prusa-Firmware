@@ -38,7 +38,7 @@ extern void dcode_22(); //D22 - Clear crash dump state
 #ifdef EMERGENCY_SERIAL_DUMP
 #include "xflash_dump.h"
 extern bool emergency_serial_dump;
-extern void serial_dump_and_reset(uint16_t sp, dump_crash_reason);
+extern void serial_dump_and_reset(dump_crash_reason);
 #endif
 
 #ifdef HEATBED_ANALYSIS

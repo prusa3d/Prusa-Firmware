@@ -21,7 +21,9 @@ struct dump_header_t
 
     uint8_t regs_present; // true when the lower segment containing registers is present
     uint8_t crash_reason; // uses values from dump_crash_source
-    uint16_t sp;          // SP closest to the crash location
+
+    uint32_t pc;          // PC nearby the crash location
+    uint16_t sp;          // SP nearby the crash location
 };
 
 struct dump_data_t
