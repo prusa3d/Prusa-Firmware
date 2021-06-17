@@ -460,7 +460,7 @@ static void temp_compensation_start();
 static void temp_compensation_apply();
 #endif
 
-static bool get_PRUSA_SN(char* SN);
+static uint8_t get_PRUSA_SN(char* SN);
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -1074,18 +1074,21 @@ void setup()
     }
 #endif //TMC2130
 
-    //saved EEPROM SN is not valid. Try to retrieve it.
-    //SN is valid only if it is NULL terminated. Any other character means either uninitialized or corrupted
-    if (eeprom_read_byte((uint8_t*)EEPROM_PRUSA_SN + 19))
+    //Check for valid SN in EEPROM. Try to retrieve it in case it's invalid.
+    //SN is valid only if it is NULL terminated and starts with "CZPX".
     {
         char SN[20];
-        if (get_PRUSA_SN(SN))
+        eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
+        if (SN[19] || strncmp_P(SN, PSTR("CZPX"), 4))
         {
-            eeprom_update_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
-            puts_P(PSTR("SN updated"));
+            if (!get_PRUSA_SN(SN))
+            {
+                eeprom_update_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
+                puts_P(PSTR("SN updated"));
+            }
+            else
+                puts_P(PSTR("SN update failed"));
         }
-        else
-            puts_P(PSTR("SN update failed"));
     }
 
 
@@ -3833,33 +3836,47 @@ void gcode_M701()
  *
  * Send command ;S to serial port 0 to retrieve serial number stored in 32U2 processor,
  * reply is stored in *SN.
- * Operation takes typically 23 ms. If the retransmit is not finished until 100 ms,
- * it is interrupted, so less, or no characters are retransmitted, the function returns false
+ * Operation takes typically 23 ms. If no valid SN can be retrieved within the 250ms window, the function aborts 
+ * and returns a general failure flag.
  * The command will fail if the 32U2 processor is unpowered via USB since it is isolated from the rest of the electronics.
  * In that case the value that is stored in the EEPROM should be used instead.
  *
- * @return 1 on success
- * @return 0 on general failure
+ * @return 0 on success
+ * @return 1 on general failure
  */
-static bool get_PRUSA_SN(char* SN)
+static uint8_t get_PRUSA_SN(char* SN)
 {
     uint8_t selectedSerialPort_bak = selectedSerialPort;
-    selectedSerialPort = 0;
-    SERIAL_ECHOLNRPGM(PSTR(";S"));
-    uint8_t numbersRead = 0;
+    uint8_t rxIndex;
+    bool SN_valid = false;
     ShortTimer timeout;
-    timeout.start();
 
-    while (numbersRead < 19) {
-        if (MSerial.available() > 0) {
-            SN[numbersRead] = MSerial.read();
-            numbersRead++;
+    selectedSerialPort = 0;
+    timeout.start();
+    
+    while (!SN_valid)
+    {
+        rxIndex = 0;
+        _delay(50);
+        MYSERIAL.flush(); //clear RX buffer
+        SERIAL_ECHOLNRPGM(PSTR(";S"));
+        while (rxIndex < 19)
+        {
+            if (timeout.expired(250u))
+                goto exit;
+            if (MYSERIAL.available() > 0)
+            {
+                SN[rxIndex] = MYSERIAL.read();
+                rxIndex++;
+            }
         }
-        if (timeout.expired(100u)) break;
+        SN[rxIndex] = 0;
+        // printf_P(PSTR("SN:%s\n"), SN);
+        SN_valid = (strncmp_P(SN, PSTR("CZPX"), 4) == 0);
     }
-    SN[numbersRead] = 0;
+exit:
     selectedSerialPort = selectedSerialPort_bak;
-    return (numbersRead == 19);
+    return !SN_valid;
 }
 //! Detection of faulty RAMBo 1.1b boards equipped with bigger capacitors
 //! at the TACH_1 pin, which causes bad detection of print fan speed.
