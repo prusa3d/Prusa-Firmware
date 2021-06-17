@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.2.0-Build_49
+# Version: 1.2.0-Build_53
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -148,6 +148,7 @@
 #                          61-62 MK404
 # 03 May 2021, 3d-gussner, Update documentation and change version to v1.2.0
 # 03 May 2021, 3d-gussner, Add SIM atmega404
+# 17 Jun 2021, 3d-gussner, Update PF-build.sh to work after DRracer Remove FW version parsing PR
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -745,7 +746,11 @@ do
     VARIANT=$(basename "$v" ".h")
     MK404_PRINTER=$(grep --max-count=1 "\bPRINTER_TYPE\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3 | cut -d '_' -f2)
     # Find firmware version in Configuration.h file and use it to generate the hex filename
-    FW=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g')
+    FW_MAJOR=$(grep --max-count=1 "\bFW_MAJOR\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d ' ' -f3)
+    FW_MINOR=$(grep --max-count=1 "\bFW_MINOR\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d ' ' -f3)
+    FW_REVISION=$(grep --max-count=1 "\bFW_REVISION\b" $SCRIPT_PATH/Firmware/Configuration.h| sed -e's/  */ /g'|cut -d ' ' -f3)
+    FW="$FW_MAJOR$FW_MINOR$FW_REVISION"
+    #FW=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g')
     if [ -z "$BUILD" ] ; then    
         # Find build version in Configuration.h file and use it to generate the hex filename
         BUILD=$(grep --max-count=1 "\bFW_COMMIT_NR\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d ' ' -f3)
@@ -758,13 +763,25 @@ do
     # Check if the motherboard is an EINSY and if so only one hex file will generated
     MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
     # Check development status
+    FW_FLAV=$(grep --max-count=1 "//#define FW_FLAVOR\b" $SCRIPT_PATH/Firmware/Configuration.h|cut -d ' ' -f1)
+    if [[ "$FW_FLAV" != "//#define" ]] ; then
+        FW_FLAVOR=$(grep --max-count=1 "\bFW_FLAVOR\b" $SCRIPT_PATH/Firmware/Configuration.h| sed -e's/  */ /g'|cut -d ' ' -f3)
+        FW_FLAVERSION=$(grep --max-count=1 "\bFW_FLAVERSION\b" $SCRIPT_PATH/Firmware/Configuration.h| sed -e's/  */ /g'|cut -d ' ' -f3)
+        if [[ "$FW_FLAVOR" != "//#define FW_FLAVOR" ]] ; then
+            FW="$FW-$FW_FLAVOR"
+            DEV_CHECK="$FW_FLAVOR"
+            if [ ! -z "$FW_FLAVERSION" ] ; then
+                FW="$FW$FW_FLAVERSION"
+            fi
+        fi
+    fi
     DEV_CHECK=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g'|cut -d '-' -f2)
     if [ -z "$DEV_STATUS_SELECTED" ] ; then
         if [[ "$DEV_CHECK" == *"RC"* ]] ; then
             DEV_STATUS="RC"
-        elif [[ "$DEV_CHECK" == "ALPHA" ]]; then
+        elif [[ "$DEV_CHECK" == *"ALPHA"* ]]; then
             DEV_STATUS="ALPHA"
-        elif [[ "$DEV_CHECK" == "BETA" ]]; then
+        elif [[ "$DEV_CHECK" == *"BETA"* ]]; then
             DEV_STATUS="BETA"
         elif [[ "$DEV_CHECK" == "DEVEL" ]]; then
             DEV_STATUS="DEVEL"
