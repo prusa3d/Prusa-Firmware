@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.2.0-Build_54
+# Version: 2.0.0-Build_55
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -151,6 +151,7 @@
 # 17 Jun 2021, 3d-gussner, Update PF-build.sh to work after DRracer Remove FW version parsing PR
 # 17 Jun 2021, 3d-gussner, Save ELF files for FW3.10.1 debugging PRs
 # 17 Jun 2021, 3d-gussner, Add verbose_IDE to output more information during build
+# 17 Jun 2021, 3d-gussner, Change version to v2.0.0
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -285,7 +286,7 @@ while getopts b:c:d:f:g:h:i:j:l:m:n:o:p:v:x:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 1.2.0-Build_54 *"
+echo "* PF-build.sh Version: 2.0.0-Build_55 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
