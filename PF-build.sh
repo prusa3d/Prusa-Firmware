@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.2.0-Build_53
+# Version: 1.2.0-Build_54
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -149,6 +149,8 @@
 # 03 May 2021, 3d-gussner, Update documentation and change version to v1.2.0
 # 03 May 2021, 3d-gussner, Add SIM atmega404
 # 17 Jun 2021, 3d-gussner, Update PF-build.sh to work after DRracer Remove FW version parsing PR
+# 17 Jun 2021, 3d-gussner, Save ELF files for FW3.10.1 debugging PRs
+# 17 Jun 2021, 3d-gussner, Add verbose_IDE to output more information during build
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -257,7 +259,7 @@ fi
 #### End prepare bash / Linux environment
 
 # Check for options/flags
-while getopts b:c:d:f:g:h:i:l:m:n:o:p:v:x:?h flag
+while getopts b:c:d:f:g:h:i:j:l:m:n:o:p:v:x:?h flag
     do
         case "${flag}" in
             b) build_flag=${OPTARG};;
@@ -267,6 +269,7 @@ while getopts b:c:d:f:g:h:i:l:m:n:o:p:v:x:?h flag
             g) graphics_flag=${OPTARG};;
             h) help_flag=1;;
             i) IDE_flag=${OPTARG};;
+            j) verbose_IDE_flag=${OPTARG};;
             l) language_flag=${OPTARG};;
             m) mk404_flag=${OPTARG};;
             n) new_build_flag=${OPTARG};;
@@ -282,7 +285,7 @@ while getopts b:c:d:f:g:h:i:l:m:n:o:p:v:x:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 1.2.0-Build_49 *"
+echo "* PF-build.sh Version: 1.2.0-Build_54 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
@@ -292,6 +295,7 @@ echo "$(tput setaf 2)-f$(tput sgr0) Board flash size '$(tput setaf 2)256$(tput s
 echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
 echo "$(tput setaf 2)-h$(tput sgr0) Help"
 echo "$(tput setaf 2)-i$(tput sgr0) Arduino IDE version '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
+echo "$(tput setaf 2)-j$(tput sgr0) Arduino IDE verbose output '$(tput setaf 2)0$(tput sgr0)', '$(tput setaf 2)1$(tput sgr0) active'"
 echo "$(tput setaf 2)-l$(tput sgr0) Languages '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
 echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
 echo "$(tput setaf 2)-n$(tput sgr0) New fresh build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
@@ -315,6 +319,21 @@ echo "  not delete lang build temporary files, keep Configuration_prusa.h and bu
 echo
 exit 6
 fi
+
+#Check if verbose_IDE is selected with argument '-j'
+
+if [ ! -z "$verbose_IDE_flag" ]; then
+    if [ $verbose_IDE_flag == "1" ]; then
+        verbose_IDE="1"
+    elif [ $verbose_IDE_flag == "0" ]; then
+        verbose_IDE="0"
+    else
+        echo "Only '0' and '1' are valid verbose_IDE values."
+        exit
+    fi
+else
+    verbose_IDE="0"
+fi  
 
 #Check if Build is selected with argument '-f'
 if [ ! -z "$board_flash_flag" ] ; then
@@ -994,8 +1013,10 @@ do
         sleep 2
     fi
 
-    #$BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 41
-    $BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 42
+    if [ $verbose_IDE == "1" ]; then
+        $BUILD_ENV_PATH/arduino-builder -dump-prefs -debug-level 10 -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 41
+    fi
+    $BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=$BOARD_PACKAGE_NAME:avr:$BOARD -build-path=$BUILD_PATH -warnings=all -verbose=$verbose_IDE $SCRIPT_PATH/Firmware/Firmware.ino || exit 42
     echo "$(tput sgr 0)"
 
     if [ $LANGUAGES ==  "ALL" ]; then
@@ -1052,6 +1073,7 @@ do
             fi
             # End of "lang.bin" for MK3 and MK3S copy
             cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+            cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.elf
         else
             echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
             cp -f firmware_cz.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-cz.hex
@@ -1061,6 +1083,7 @@ do
             cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-it.hex
             cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-pl.hex
             cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-nl.hex
+            cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.elf
             if [ $TARGET_OS == "windows" ]; then 
                 zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
                 rm $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
@@ -1085,6 +1108,8 @@ do
     else
         echo "$(tput setaf 2)Copying English only firmware to PF-build-hex folder$(tput sgr 0)"
         cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 47
+        echo "$(tput setaf 2)Copying English only elf file to PF-build-hex folder$(tput sgr 0)"
+        cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.elf || exit 47
     fi
 
     # Cleanup Firmware
