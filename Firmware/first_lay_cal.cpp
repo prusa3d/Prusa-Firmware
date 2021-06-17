@@ -221,30 +221,13 @@ void lay1cal_square(char *cmd_buffer, uint8_t i)
 //! eeprom
 //!
 void lay1cal_set_flow()
-{
-    uint16_t nDiameter_um;
-    nDiameter_um=eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM);
+{    
+    uint8_t nDiameter;
+    nDiameter=eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER);
 
-    switch (nDiameter_um)
-    {
-    case 250:
-        enquecommand_P(PSTR("M221 S62"));
-        break;
-
-    case 400:
-        enquecommand_P(PSTR("M221 S100"));
-        break;
-    
-    case 600:
-        enquecommand_P(PSTR("M221 S150"));
-        break;
-
-    case 800:
-        enquecommand_P(PSTR("M221 S200"));
-        break; 
-
-    default:
-        enquecommand_P(PSTR("M221 S100"));
-        break;
-    }    
+    char cmd[12];
+    char buffnr[6];
+    dtostrf((double)(nDiameter/0.4),3,2,buffnr);
+    sprintf_P(cmd, PSTR("M221 S%s"), buffnr);
+    enquecommand(cmd);   
 }
