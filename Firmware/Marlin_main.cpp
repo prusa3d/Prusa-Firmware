@@ -9901,6 +9901,17 @@ if(0)
   #endif
   check_axes_activity();
   mmu_loop();
+
+  // handle longpress
+  if(lcd_longpress_trigger)
+  {
+      // long press is not possible in modal mode, wait until ready
+      if (lcd_longpress_func && lcd_update_enabled)
+      {
+          lcd_longpress_func();
+          lcd_longpress_trigger = 0;
+      }
+  }
 }
 
 void kill(const char *full_screen_message, unsigned char id)
