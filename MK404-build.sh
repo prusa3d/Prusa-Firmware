@@ -10,7 +10,7 @@
 # 3. Install latest updates with 'sudo apt-get upgrade'
 # 
 #
-# Version: 1.0.0-Build_6
+# Version: 1.0.0-Build_7
 # Change log:
 # 11 Feb 2021, 3d-gussner, Inital
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
@@ -18,6 +18,9 @@
 # 13 Feb 2021, 3d-gussner, Auto build SD cards
 # 18 Jun 2021, 3d-gussner, Documentation and version number
 # 18 Jun 2021, 3d-gussner, Added some arguments and checks
+# 18 Jun 2021, 3d-gussner, Default extrusion graphics to line. Thanks @vintagepc point it out
+# 18 Jun 2021, 3d-gussner, Added -g 3 and 4 for more details extrusion lines
+# 18 Jun 2021, 3d-gussner, Check for updates is default. Fix update if internet connection is lost.
 
 while getopts c:f:g:m:n:p:u:v:x:?h flag
     do
@@ -27,8 +30,8 @@ while getopts c:f:g:m:n:p:u:v:x:?h flag
             g) graphics_flag=${OPTARG};;
             h) help_flag=1;;
             m) mk404_flag=${OPTARG};;
-            p) mk404_printer_flag=${OPTARG};;
             n) new_build_flag=${OPTARG};;
+            p) mk404_printer_flag=${OPTARG};;
             u) update_flag=${OPTARG};;
             v) firmware_version_flag=${OPTARG};;
             x) board_mem_flag=${OPTARG};;
@@ -46,24 +49,33 @@ while getopts c:f:g:m:n:p:u:v:x:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* MK404-build.sh Version: 1.0.0-Build_6 *"
+echo "* MK404-build.sh Version: 1.0.0-Build_7 *"
 echo "***************************************"
 echo "Arguments:"
-echo "$(tput setaf 2)-c$(tput sgr0) Check for update '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "$(tput setaf 2)-f$(tput sgr0) Board flash size '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
-echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
+echo "$(tput setaf 2)-c$(tput sgr0) Check for update"
+echo "$(tput setaf 2)-f$(tput sgr0) Board flash size"
+echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 graphics"
 echo "$(tput setaf 2)-h$(tput sgr0) Help"
-echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
-echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
-echo "$(tput setaf 2)-n$(tput sgr0) Force new build '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "$(tput setaf 2)-p$(tput sgr0) MK404 Printer '$(tput setaf 2)MK25$(tput sgr0)', '$(tput setaf 2)MK25S$(tput sgr0)', '$(tput setaf 2)MK3$(tput sgr0)' or '$(tput setaf 2)MK3S$(tput sgr0)'"
-echo "$(tput setaf 2)-u$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
-echo "$(tput setaf 2)-v$(tput sgr0) Prusa-Firmware version '$(tput setaf 2)path+file name$(tput sgr0)'"
-echo "$(tput setaf 2)-x$(tput sgr0) Board memory size '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
+echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim"
+echo "$(tput setaf 2)-n$(tput sgr0) Force new build"
+echo "$(tput setaf 2)-p$(tput sgr0) MK404 Printer"
+echo "$(tput setaf 2)-u$(tput sgr0) Update MK404"
+echo "$(tput setaf 2)-v$(tput sgr0) Prusa-Firmware version"
+echo "$(tput setaf 2)-x$(tput sgr0) Board memory size"
 echo "$(tput setaf 2)-?$(tput sgr0) Help"
 echo 
 echo "Brief USAGE:"
-echo "  $(tput setaf 2)./MK404-build.sh$(tput sgr0)  [-c] [-f] [-g] [-m] [-n] [-p] [-u] [-h] [-?]"
+echo "  $(tput setaf 2)./MK404-build.sh$(tput sgr0)  [-c] [-f] [-g] [-m] [-n] [-p] [-u] [-v] [-x] [-h] [-?]"
+echo
+echo "  -c : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "  -f : '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
+echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' lite, '$(tput setaf 2)2$(tput sgr0)' fancy, '$(tput setaf 2)3$(tput sgr0)' lite with Quad_HR, '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
+echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
+echo "  -n : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "  -p : '$(tput setaf 2)MK25$(tput sgr0)', '$(tput setaf 2)MK25S$(tput sgr0)', '$(tput setaf 2)MK3$(tput sgr0)' or '$(tput setaf 2)MK3S$(tput sgr0)'"
+echo "  -u : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '"
+echo "  -v : '$(tput setaf 2)path+file name$(tput sgr0)'"
+echo "  -x : '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
 echo
 echo "Example:"
 echo "  $(tput setaf 2)./MK404-build.sh -f 1$(tput sgr0)"
@@ -167,6 +179,8 @@ fi
 cd $MK404_PATH
 
 #Check MK404 agruments
+#Set Check for updates as default
+check_flag=1
 #Check mk404_printer_flag
 if [ ! -z $mk404_printer_flag ]; then
     if [[ "$mk404_printer_flag" == "MK3" || "$mk404_printer_flag" == "MK3S" || "$mk404_printer_flag" == "MK25" || "$mk404_printer_flag" == "MK25S" ]]; then
@@ -181,24 +195,19 @@ fi
 if [ ! -z "$board_flash_flag" ] ; then
     if [ "$board_flash_flag" == "256" ] ; then
         BOARD_FLASH="0x3FFFF"
-        BOARD_maximum_size="253952"
-        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_FLASH (hex)"
     elif [ "$board_flash_flag" == "384" ] ; then
         BOARD_FLASH="0x5FFFF"
-        BOARD_maximum_size="385024"
-        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_FLASH (hex)"
     elif [ "$board_flash_flag" == "512" ] ; then
         BOARD_FLASH="0x7FFFF"
-        BOARD_maximum_size="516096"
-        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_FLASH (hex)"
     elif [ "$board_flash_flag" == "1024" ] ; then
-        BOARD_FLASH="0xFFFFF"firmware_version_flag
-        BOARD_maximum_size="1040384"
-        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        BOARD_FLASH="0xFFFFF"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_FLASH (hex)"
     elif [[ "$board_flash_flag" == "32M" || "$board_flash_flag" == "32768" ]] ; then
         BOARD_FLASH="0x1FFFFFF"
-        BOARD_maximum_size="33546240"
-        echo "Board flash size :    32 Mb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        echo "Board flash size :    32 Mb, $BOARD_FLASH (hex)"
     else
         echo "Unsupported board flash size chosen. Only '256', '384', '512', '1024' and '32M' are allowed."
         exit 5
@@ -263,27 +272,31 @@ if [ "$check_flag" == "1" ]; then
     echo "$(tput sgr 0)"
 
 # Check for updates
-    if [[ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" && -z "$update_flag" ]]; then
-        echo "$(tput setaf 2)Update is availible.$(tput sgr 0)"
-        read -t 10 -n 1 -p "$(tput setaf 3)Update now Y/n$(tput sgr 0)" update_answer
-        if [ "$update_answer" == "Y" ]; then
-            update_flag=1
+    if [ ! -z $MK404_remote_GIT_COMMIT_HASH ]; then
+        if [[ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" && -z "$update_flag" ]]; then
+            echo "$(tput setaf 2)Update is availible.$(tput sgr 0)"
+            read -t 10 -n 1 -p "$(tput setaf 3)Update now Y/n$(tput sgr 0)" update_answer
+            if [ "$update_answer" == "Y" ]; then
+                update_flag=1
+            fi
+            echo ""
         fi
-        echo ""
     fi
 fi
 
 # Fetch updates and force new build
 if [ "$update_flag" == "1" ]; then
-    if [ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" ]; then
-        echo ""
-        git fetch --all
-        read -t 10 -p "$(tput setaf 2)Updating MK404 !$(tput sgr 0)"
-        echo ""
-        git reset --hard origin/master
-        read -t 10 -p "$(tput setaf 2)Compiling MK404 !$(tput sgr 0)"
-        echo ""
-        new_build_flag=1
+    if [ ! -z $MK404_remote_GIT_COMMIT_HASH ]; then
+        if [ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" ]; then
+            echo ""
+            git fetch --all
+            read -t 10 -p "$(tput setaf 2)Updating MK404 !$(tput sgr 0)"
+            echo ""
+            git reset --hard origin/master
+            read -t 10 -p "$(tput setaf 2)Compiling MK404 !$(tput sgr 0)"
+            echo ""
+            new_build_flag=1
+        fi
     fi
 fi
 
@@ -315,25 +328,33 @@ fi
 
 # Prepare run MK404
 #Check MK404_Printer
-MK404_PRINTER_TEMP=$(echo $firmware_version_flag | sed 's/\(.*\)\///' | grep 'MK3')
-if [ ! -z $MK404_PRINTER_TEMP ]; then
-    MK404_PRINTER=MK3
+if [ ! -z $firmware_version_flag ]; then
+    MK404_PRINTER_TEMP=$(echo $firmware_version_flag | sed 's/\(.*\)\///' | grep 'MK3')
+    if [ ! -z $MK404_PRINTER_TEMP ]; then
+        MK404_PRINTER=MK3
+    fi
+    MK404_PRINTER_TEMP=$(echo $firmware_version_flag | sed 's/\(.*\)\///' | grep 'MK3S')
+    if [ ! -z $MK404_PRINTER_TEMP ]; then
+        MK404_PRINTER=MK3S
+    fi
+    MK404_PRINTER_TEMP=$(echo $firmware_version_flag | sed 's/\(.*\)\///' | grep 'MK25')
+    if [ ! -z $MK404_PRINTER_TEMP ]; then
+        MK404_PRINTER=MK25
+    fi
+    MK404_PRINTER_TEMP=$(echo $firmware_version_flag | sed 's/\(.*\)\///' | grep 'MK25S')
+    if [ ! -z $MK404_PRINTER_TEMP ]; then
+        MK404_PRINTER=MK25S
+    fi
+else
+    echo "No firmware version file selected!"
+    echo "Add argument -f with path and hex filename to start MK404"
+    exit 7
 fi
-MK404_PRINTER_TEMP=$(echo $firmware_version_flag | sed 's/\(.*\)\///' | grep 'MK3S')
-if [ ! -z $MK404_PRINTER_TEMP ]; then
-    MK404_PRINTER=MK3S
-fi
-MK404_PRINTER_TEMP=$(echo $firmware_version_flag | sed 's/\(.*\)\///' | grep 'MK25')
-if [ ! -z $MK404_PRINTER_TEMP ]; then
-    MK404_PRINTER=MK25
-fi
-MK404_PRINTER_TEMP=$(echo $firmware_version_flag | sed 's/\(.*\)\///' | grep 'MK25S')
-if [ ! -z $MK404_PRINTER_TEMP ]; then
-    MK404_PRINTER=MK25S
-fi
+
 if [ -z "$MK404_PRINTER" ]; then
     echo "Tried to determine MK404 printer from hex file, but failed!"
     echo "Add argument -p with 'MK25', 'MK25S', 'MK3' or 'MK3S' to start MK404"
+    exit 8
 fi
 
 if [ ! -z $mk404_printer_flag ]; then
@@ -361,12 +382,11 @@ if [ ! -z $mk404_printer_flag ]; then
                     ;;
             esac
         done
-
     fi
 fi
 
 if [ -z $MK404_PRINTER ]; then
-    exit 7
+    exit 9
 fi
 
 if [[ "$MK404_PRINTER" == "MK25" || "$MK404_PRINTER" == "MK25S" ]]; then
@@ -388,20 +408,25 @@ fi
 # Run MK404 with grafics
     if [ ! -z "$graphics_flag" ]; then
         if [ ! -z "$MK404_options" ]; then
-            MK404_options="${MK404_options} --colour-extrusion --extrusion Quad_HR -g "
+            MK404_options="${MK404_options} -g "
         else
-            MK404_options="--colour-extrusion --extrusion Quad_HR -g "
+            MK404_options=" -g "
         fi
-        if [[ "$graphics_flag" == "1" || "$graphics_flag" == "lite" ]]; then
+        if [[ "$graphics_flag" == "1" || "$graphics_flag" == "lite" || "$graphics_flag" == "3" ]]; then
             MK404_options="${MK404_options}lite"
-        elif [[ "$graphics_flag" == "2" || "$graphics_flag" == "fancy" ]]; then
+        elif [[ "$graphics_flag" == "2" || "$graphics_flag" == "fancy" || "$graphics_flag" == "4" ]]; then
             MK404_options="${MK404_options}fancy"
         else
         echo "$(tput setaf 1)Unsupported MK404 graphics option $graphics_flag$(tput sgr 0)"
         fi
+        if [[ "$graphics_flag" == "3" || "$graphics_flag" == "4" ]]; then
+            MK404_options="${MK404_options} --colour-extrusion --extrusion Quad_HR"
+        else
+            MK404_options="${MK404_options} --extrusion Line"
+        fi
     fi
 if [ ! -z $firmware_version_flag ]; then
-    MK404_firmware_file=$firmware_version_flag
+    MK404_firmware_file=" -f $firmware_version_flag"
 fi
 
 #Run MK404 SIM
@@ -419,8 +444,8 @@ if [ ! -z $mk404_flag ]; then
     # Start MK404
     # default with serial output and terminal to manipulate it via terminal
     echo ""
-    echo "./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file"
+    echo "./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options $MK404_firmware_file"
     sleep 5
-    ./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file || exit 8
+    ./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options $MK404_firmware_file || exit 10
 fi
 #### End of MK404 Simulator
