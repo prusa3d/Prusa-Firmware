@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_55
+# Version: 2.0.0-Build_56
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -152,6 +152,9 @@
 # 17 Jun 2021, 3d-gussner, Save ELF files for FW3.10.1 debugging PRs
 # 17 Jun 2021, 3d-gussner, Add verbose_IDE to output more information during build
 # 17 Jun 2021, 3d-gussner, Change version to v2.0.0
+# 18 Jun 2021, 3d-gussner, Use atmega404 if extanded RAM or FLASH size are chosen
+# 18 Jun 2021, 3d-gussner, Remove MK404 copy of lang file as it has been fixed in MK404
+
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
@@ -286,7 +289,7 @@ while getopts b:c:d:f:g:h:i:j:l:m:n:o:p:v:x:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_55 *"
+echo "* PF-build.sh Version: 2.0.0-Build_56 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
@@ -1068,10 +1071,6 @@ do
         # If the motherboard is an EINSY just copy one hexfile
         if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
             echo "$(tput setaf 2)Copying multi language firmware for MK3/Einsy board to PF-build-hex folder$(tput sgr 0)"
-            # Make a copy of "lang.bin" for MK404 MK3 and MK3S
-            if [ ! -z "$mk404_flag" ]; then
-                cp -f lang.bin $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin
-            fi
             # End of "lang.bin" for MK3 and MK3S copy
             cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
             cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.elf
@@ -1187,16 +1186,15 @@ if [ ! -z "$mk404_flag" ]; then
     fi
 
 # Run MK404 with 'debugcore' and/or 'bootloader-file'
-echo "MK404_DEBUG --$MK404_DEBUG--"
-    if [ "$MK404_DEBUG" == "atmega404" ]; then
+    if [[ ! -z $MK404_DEBUG && "$MK404_DEBUG" == "atmega404" || ! -z $BOARD_MEM && "$BOARD_MEM" == "0xFFFF" ]]; then
         MK404_options="--debugcore"
-    elif [ "$MK404_DEBUG" == "atmega404_no_bootloader" ]; then
+    fi
+    if [[ ! -z $MK404_DEBUG && "$MK404_DEBUG" == "atmega404_no_bootloader"  || ! -z $BOARD_FLASH && "$BOARD_FLASH" != "0x3FFFF" ]]; then
         MK404_options='--debugcore --bootloader-file ""'
     fi
 
 # Run MK404 with grafics
     if [ ! -z "$graphics_flag" ]; then
-    echo "MK404_options --$MK404_options--"
         if [ ! -z "$MK404_options" ]; then
             MK404_options="${MK404_options} --colour-extrusion --extrusion Quad_HR -g "
         else
@@ -1214,16 +1212,13 @@ echo "MK404_DEBUG --$MK404_DEBUG--"
 # Output some useful data
     echo "Printer: $MK404_PRINTER"
     echo "Options: $MK404_options"
+    echo ""
+    read -t 5 -p "Press $(tput setaf 2)Enter$(tput sgr 0) to start MK404"
+    echo ""
 
 # Change to MK404 build folder
     cd ../MK404/master/build
 
-# Copy language bin file for MK3 and MK3S to xflash
-#    if [ -f $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin ]; then
-#    echo "Copy 'FW$FW-Build$BUILD-$VARIANT-lang.bin' to 'Prusa_${MK404_PRINTER}_xflash.bin'"
-#        dd if=/dev/zero bs=1 count=262145 | tr "\000" "\377" >Prusa_${MK404_PRINTER}_xflash.bin
-#        dd if=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-lang.bin of=Prusa_${MK404_PRINTER}_xflash.bin conv=notrunc
-#    fi
 
 #Decide which hex file to use EN_ONLY or Multi language
 if [ "$LANGUAGES" == "ALL" ]; then
@@ -1234,6 +1229,9 @@ fi
 
 # Start MK404
 # default with serial output and terminal to manipulate it via terminal
+    echo ""
+    echo "./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file"
+    sleep 5
     ./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file || exit 62
 fi
 #### End of MK404 Simulator
