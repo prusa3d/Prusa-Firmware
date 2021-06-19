@@ -67,7 +67,7 @@ bool has_temperature_compensation();
 #endif
 
 #ifdef AMBIENT_THERMISTOR
-//extern int current_temperature_raw_ambient;
+extern int current_temperature_raw_ambient;
 extern float current_temperature_ambient;
 #endif
 
