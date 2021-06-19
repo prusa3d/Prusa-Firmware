@@ -202,16 +202,20 @@ extern uint8_t maxlimit_status;
     extern float autotemp_factor;
 #endif
 
-    
 
+// Check for BLOCK_BUFFER_SIZE requirements
+static_assert(!(BLOCK_BUFFER_SIZE & (BLOCK_BUFFER_SIZE - 1)),
+              "BLOCK_BUFFER_SIZE must be a power of two");
+static_assert(BLOCK_BUFFER_SIZE <= (UINT8_MAX>>1),
+              "BLOCK_BUFFER_SIZE too large for uint8_t");
 
 extern block_t block_buffer[BLOCK_BUFFER_SIZE];            // A ring buffer for motion instfructions
 // Index of the next block to be pushed into the planner queue.
-extern volatile unsigned char block_buffer_head;
+extern volatile uint8_t block_buffer_head;
 // Index of the first block in the planner queue.
 // This is the block, which is being currently processed by the stepper routine, 
 // or which is first to be processed by the stepper routine.
-extern volatile unsigned char block_buffer_tail; 
+extern volatile uint8_t block_buffer_tail;
 // Called when the current block is no longer needed. Discards the block and makes the memory
 // available for new blocks.    
 FORCE_INLINE void plan_discard_current_block()  
@@ -246,7 +250,7 @@ FORCE_INLINE uint8_t moves_planned() {
 }
 
 FORCE_INLINE bool planner_queue_full() {
-    unsigned char next_block_index = block_buffer_head;
+    uint8_t next_block_index = block_buffer_head;
     if (++ next_block_index == BLOCK_BUFFER_SIZE)
         next_block_index = 0; 
     return block_buffer_tail == next_block_index;
@@ -267,7 +271,7 @@ void reset_acceleration_rates();
 
 void update_mode_profile();
 
-unsigned char number_of_blocks();
+uint8_t number_of_blocks();
 
 // #define PLANNER_DIAGNOSTICS
 #ifdef PLANNER_DIAGNOSTICS
