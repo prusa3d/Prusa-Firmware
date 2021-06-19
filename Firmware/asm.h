@@ -19,9 +19,6 @@ static inline void GETPC(uint32_t* v)
   ((uint8_t*)v)[1] = b;
   ((uint8_t*)v)[2] = c;
   ((uint8_t*)v)[3] = 0;
-
-  // go back 1 instruction before rcall
-  *v = (*v - 2) * 2;
 }
 
 #endif
