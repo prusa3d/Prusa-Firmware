@@ -998,9 +998,9 @@ void __attribute__((noinline)) serial_dump_and_reset(dump_crash_reason reason)
     SERIAL_ECHOLNPGM("D23 - emergency serial dump");
     SERIAL_ECHOPGM("error: ");
     MYSERIAL.print((uint8_t)reason, DEC);
-    MYSERIAL.print(" ");
+    SERIAL_ECHOPGM(" 0x");
     MYSERIAL.print(pc, HEX);
-    MYSERIAL.print(" ");
+    SERIAL_ECHOPGM(" 0x");
     MYSERIAL.println(sp, HEX);
 
     print_mem(0, RAMEND+1, dcode_mem_t::sram);
