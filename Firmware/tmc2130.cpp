@@ -243,8 +243,6 @@ uint8_t tmc2130_sample_diag()
 	return mask;
 }
 
-extern bool is_usb_printing;
-
 void tmc2130_st_isr()
 {
 	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false) return;
