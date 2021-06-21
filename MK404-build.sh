@@ -10,7 +10,7 @@
 # 3. Install latest updates with 'sudo apt-get upgrade'
 # 
 #
-# Version: 1.0.0-Build_7
+# Version: 1.0.0-Build_8
 # Change log:
 # 11 Feb 2021, 3d-gussner, Inital
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
@@ -21,61 +21,65 @@
 # 18 Jun 2021, 3d-gussner, Default extrusion graphics to line. Thanks @vintagepc point it out
 # 18 Jun 2021, 3d-gussner, Added -g 3 and 4 for more details extrusion lines
 # 18 Jun 2021, 3d-gussner, Check for updates is default. Fix update if internet connection is lost.
+# 21 Jun 2021, 3d-gussner, Change board_flash argument to 'y' and firmware_version to 'f'
 
-while getopts c:f:g:m:n:p:u:v:x:?h flag
+while getopts c:f:g:m:n:p:u:x:y:?h flag
     do
         case "${flag}" in
             c) check_flag=${OPTARG};;
-            f) board_flash_flag=${OPTARG};;
+            f) firmware_version_flag=${OPTARG};;
             g) graphics_flag=${OPTARG};;
             h) help_flag=1;;
             m) mk404_flag=${OPTARG};;
             n) new_build_flag=${OPTARG};;
             p) mk404_printer_flag=${OPTARG};;
             u) update_flag=${OPTARG};;
-            v) firmware_version_flag=${OPTARG};;
             x) board_mem_flag=${OPTARG};;
+            y) board_flash_flag=${OPTARG};;
             ?) help_flag=1;;
         esac
     done
 #Debug echos
-#echo "$check_flag"
-#echo "$update_flag"
-#echo "$new_build_flag"
-#echo "$mk404_flag"
-#echo "$graphics_flag"
-#echo "$mk404_printer_flag"
+echo "c: $check_flag"
+echo "f: $firmware_version_flag"
+echo "g: $graphics_flag"
+echo "m: $mk404_flag"
+echo "n: $new_build_flag"
+echo "p: $mk404_printer_flag"
+echo "u: $update_flag"
+echo "x: $board_mem_flag"
+echo "y: $board_flash_flag"
 
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* MK404-build.sh Version: 1.0.0-Build_7 *"
+echo "* MK404-build.sh Version: 1.0.0-Build_8 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-c$(tput sgr0) Check for update"
-echo "$(tput setaf 2)-f$(tput sgr0) Board flash size"
+echo "$(tput setaf 2)-f$(tput sgr0) Prusa-Firmware version"
 echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 graphics"
 echo "$(tput setaf 2)-h$(tput sgr0) Help"
 echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim"
 echo "$(tput setaf 2)-n$(tput sgr0) Force new build"
 echo "$(tput setaf 2)-p$(tput sgr0) MK404 Printer"
 echo "$(tput setaf 2)-u$(tput sgr0) Update MK404"
-echo "$(tput setaf 2)-v$(tput sgr0) Prusa-Firmware version"
 echo "$(tput setaf 2)-x$(tput sgr0) Board memory size"
+echo "$(tput setaf 2)-y$(tput sgr0) Board flash size"
 echo "$(tput setaf 2)-?$(tput sgr0) Help"
 echo 
 echo "Brief USAGE:"
 echo "  $(tput setaf 2)./MK404-build.sh$(tput sgr0)  [-c] [-f] [-g] [-m] [-n] [-p] [-u] [-v] [-x] [-h] [-?]"
 echo
 echo "  -c : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "  -f : '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
+echo "  -f : '$(tput setaf 2)path+file name$(tput sgr0)'"
 echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' lite, '$(tput setaf 2)2$(tput sgr0)' fancy, '$(tput setaf 2)3$(tput sgr0)' lite with Quad_HR, '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
 echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
 echo "  -n : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -p : '$(tput setaf 2)MK25$(tput sgr0)', '$(tput setaf 2)MK25S$(tput sgr0)', '$(tput setaf 2)MK3$(tput sgr0)' or '$(tput setaf 2)MK3S$(tput sgr0)'"
 echo "  -u : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '"
-echo "  -v : '$(tput setaf 2)path+file name$(tput sgr0)'"
 echo "  -x : '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
+echo "  -y : '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
 echo
 echo "Example:"
 echo "  $(tput setaf 2)./MK404-build.sh -f 1$(tput sgr0)"

@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_56
+# Version: 2.0.0-Build_57
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -154,6 +154,8 @@
 # 17 Jun 2021, 3d-gussner, Change version to v2.0.0
 # 18 Jun 2021, 3d-gussner, Use atmega404 if extanded RAM or FLASH size are chosen
 # 18 Jun 2021, 3d-gussner, Remove MK404 copy of lang file as it has been fixed in MK404
+# 21 Jun 2021, 3d-gussner, Change atmega404 board flash argument to y
+#                          Use newer version of MK404-build.sh instead start the program 
 
 
 #### Start check if OSTYPE is supported
@@ -263,13 +265,12 @@ fi
 #### End prepare bash / Linux environment
 
 # Check for options/flags
-while getopts b:c:d:f:g:h:i:j:l:m:n:o:p:v:x:?h flag
+while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
     do
         case "${flag}" in
             b) build_flag=${OPTARG};;
             c) clean_flag=${OPTARG};;
             d) devel_flag=${OPTARG};;
-            f) board_flash_flag=${OPTARG};;
             g) graphics_flag=${OPTARG};;
             h) help_flag=1;;
             i) IDE_flag=${OPTARG};;
@@ -281,6 +282,7 @@ while getopts b:c:d:f:g:h:i:j:l:m:n:o:p:v:x:?h flag
             p) prusa_flag=${OPTARG};;
             v) variant_flag=${OPTARG};;
             x) board_mem_flag=${OPTARG};;
+            y) board_flash_flag=${OPTARG};;
             ?) help_flag=1;;
         esac
     done
@@ -289,14 +291,13 @@ while getopts b:c:d:f:g:h:i:j:l:m:n:o:p:v:x:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_56 *"
+echo "* PF-build.sh Version: 2.0.0-Build_57 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build'$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
-echo "$(tput setaf 2)-f$(tput sgr0) Board flash size '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
-echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy"
+echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)2$(tput sgr0)' fancy with Quad_HR"
 echo "$(tput setaf 2)-h$(tput sgr0) Help"
 echo "$(tput setaf 2)-i$(tput sgr0) Arduino IDE version '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
 echo "$(tput setaf 2)-j$(tput sgr0) Arduino IDE verbose output '$(tput setaf 2)0$(tput sgr0)', '$(tput setaf 2)1$(tput sgr0) active'"
@@ -307,10 +308,11 @@ echo "$(tput setaf 2)-o$(tput sgr0) Output '$(tput setaf 2)1$(tput sgr0)' force 
 echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "$(tput setaf 2)-v$(tput sgr0) Variant '$(tput setaf 2)All$(tput sgr0)' or variant file name"
 echo "$(tput setaf 2)-x$(tput sgr0) Board memory size '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
+echo "$(tput setaf 2)-y$(tput sgr0) Board flash size '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
 echo "$(tput setaf 2)-?$(tput sgr0) Help"
 echo 
 echo "Brief USAGE:"
-echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0)  [-v] [-l] [-d] [-b] [-o] [-c] [-p] [-n]"
+echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0) [-b] [-c] [-d] [-g] [-i] [-j] [-l] [-m] [-n] [-o] [-p ] -[v] [-x] [-y] [-h] [-?]"
 echo
 echo "Example:"
 echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
@@ -1174,7 +1176,6 @@ echo "more information how to flash firmware https://www.prusa3d.com/drivers/ $(
 
 # Check/compile MK404 sim
 if [ ! -z "$mk404_flag" ]; then
-    ./MK404-build.sh -c1 || exit 61
 
 # For Prusa MK2, MK2.5/S
     if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
@@ -1186,26 +1187,19 @@ if [ ! -z "$mk404_flag" ]; then
     fi
 
 # Run MK404 with 'debugcore' and/or 'bootloader-file'
-    if [[ ! -z $MK404_DEBUG && "$MK404_DEBUG" == "atmega404" || ! -z $BOARD_MEM && "$BOARD_MEM" == "0xFFFF" ]]; then
-        MK404_options="--debugcore"
+    if [ ! -z "$board_mem_flag" ]; then
+        MK404_options="-x $board_mem_flag"
     fi
-    if [[ ! -z $MK404_DEBUG && "$MK404_DEBUG" == "atmega404_no_bootloader"  || ! -z $BOARD_FLASH && "$BOARD_FLASH" != "0x3FFFF" ]]; then
-        MK404_options='--debugcore --bootloader-file ""'
+    if [ ! -z "$board_flash_flag" ]; then
+        MK404_options="${MK404_options} -y $board_flash_flag"
     fi
 
 # Run MK404 with grafics
     if [ ! -z "$graphics_flag" ]; then
-        if [ ! -z "$MK404_options" ]; then
-            MK404_options="${MK404_options} --colour-extrusion --extrusion Quad_HR -g "
+        if [[ "$graphics_flag" == "1" || "$graphics_flag" == "2" || "$graphics_flag" == "3" || "$graphics_flag" == "4" ]]; then
+            MK404_options="${MK404_options}  -g $graphics_flag"
         else
-            MK404_options="--colour-extrusion --extrusion Quad_HR -g "
-        fi
-        if [[ "$graphics_flag" == "1" || "$graphics_flag" == "lite" ]]; then
-            MK404_options="${MK404_options}lite"
-        elif [[ "$graphics_flag" == "2" || "$graphics_flag" == "fancy" ]]; then
-            MK404_options="${MK404_options}fancy"
-        else
-        echo "$(tput setaf 1)Unsupported MK404 graphics option $graphics_flag$(tput sgr 0)"
+            echo "$(tput setaf 1)Unsupported MK404 graphics option $graphics_flag$(tput sgr 0)"
         fi
     fi
 
@@ -1217,7 +1211,7 @@ if [ ! -z "$mk404_flag" ]; then
     echo ""
 
 # Change to MK404 build folder
-    cd ../MK404/master/build
+    #cd ../MK404/master/build
 
 
 #Decide which hex file to use EN_ONLY or Multi language
@@ -1229,9 +1223,14 @@ fi
 
 # Start MK404
 # default with serial output and terminal to manipulate it via terminal
+    #echo ""
+    #echo "./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file"
+    #sleep 5
+    #./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file || exit 62
     echo ""
-    echo "./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file"
+    echo "./MK404-build.sh -m $mk404_flag -p $MK404_PRINTER $MK404_options -f $MK404_firmware_file"
     sleep 5
-    ./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options -f $MK404_firmware_file || exit 62
+    ./MK404-build.sh -m $mk404_flag -p $MK404_PRINTER $MK404_options -f $MK404_firmware_file|| exit 61
+
 fi
 #### End of MK404 Simulator
