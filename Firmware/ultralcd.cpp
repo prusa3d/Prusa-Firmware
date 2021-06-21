@@ -8866,25 +8866,28 @@ void menu_lcd_lcdupdate_func(void)
 		lcd_draw_update = 2;
 		lcd_oldcardstatus = IS_SD_INSERTED;
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-        backlight_wake();
+		backlight_wake();
 		if (lcd_oldcardstatus)
 		{
-			card.initsd();
-               LCD_MESSAGERPGM(_T(WELCOME_MSG));
-               bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
-               menu_submenu(lcd_sdcard_menu);
-			//get_description();
+			if (!card.cardOK)
+			{
+				card.initsd(false); //delay the sorting to the sd menu. Otherwise, removing the SD card while sorting will not menu_back()
+				card.presort_flag = true; //force sorting of the SD menu
+			}
+			LCD_MESSAGERPGM(_T(WELCOME_MSG));
+			bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+			menu_submenu(lcd_sdcard_menu);
 		}
 		else
 		{
-               if(menu_menu==lcd_sdcard_menu)
-                    menu_back();
+			if(menu_menu==lcd_sdcard_menu)
+				menu_back();
 			card.release();
 			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=20
 		}
 	}
 #endif//CARDINSERTED
-    backlight_update();
+	backlight_update();
 	if (lcd_next_update_millis < _millis())
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)

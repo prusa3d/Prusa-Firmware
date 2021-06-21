@@ -196,7 +196,7 @@ void CardReader::ls(ls_param params)
 }
 
 
-void CardReader::initsd()
+void CardReader::initsd(bool doPresort/* = true*/)
 {
   cardOK = false;
   if(root.isOpen())
@@ -240,7 +240,8 @@ void CardReader::initsd()
   workDirDepth = 0;
 
   #ifdef SDCARD_SORT_ALPHA
-	presort();
+  if (doPresort)
+    presort();
   #endif
 
   /*
