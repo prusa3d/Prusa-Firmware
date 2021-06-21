@@ -129,7 +129,7 @@ switch(eSoundMode)
                Sound_DoSound_Encoder_Move();
           if(eSoundType==e_SOUND_TYPE_BlindAlert)
                Sound_DoSound_Blind_Alert();
-               break;
+          break;
      default:
           break;
      }
