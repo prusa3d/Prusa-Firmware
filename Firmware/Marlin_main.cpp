@@ -1008,7 +1008,7 @@ static void fw_crash_init()
            eeprom_read_byte((uint8_t*)EEPROM_FW_CRASH_FLAG) != 0xFF)
         {
             lcd_show_fullscreen_message_and_wait_P(
-                    _i("!!!FIRMWARE CRASH!!!\n"
+                    _i("FIRMWARE CRASH!\n"
                        "Debug data available for analysis. "
                        "Contact support to submit details."));
         }
@@ -1021,7 +1021,7 @@ static void fw_crash_init()
         lcd_beeper_quick_feedback();
         lcd_clear();
 
-        lcd_puts_P(_i("!!!FIRMWARE CRASH!!!\nCrash reason:\n"));
+        lcd_puts_P(_i("FIRMWARE CRASH!\nCrash reason:\n"));
         switch(crash_reason)
         {
         case dump_crash_reason::stack_error:
