@@ -11,7 +11,7 @@
 #define LANG_SIZE   XFLASH_SIZE
 #else
 
-#define DUMP_MAGIC  0x47555255ul
+#define DUMP_MAGIC  0x55525547ul
 
 struct dump_header_t
 {
