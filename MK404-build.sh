@@ -10,7 +10,7 @@
 # 3. Install latest updates with 'sudo apt-get upgrade'
 # 
 #
-# Version: 1.0.0-Build_8
+# Version: 1.0.0-Build_9
 # Change log:
 # 11 Feb 2021, 3d-gussner, Inital
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
@@ -40,20 +40,20 @@ while getopts c:f:g:m:n:p:u:x:y:?h flag
         esac
     done
 #Debug echos
-echo "c: $check_flag"
-echo "f: $firmware_version_flag"
-echo "g: $graphics_flag"
-echo "m: $mk404_flag"
-echo "n: $new_build_flag"
-echo "p: $mk404_printer_flag"
-echo "u: $update_flag"
-echo "x: $board_mem_flag"
-echo "y: $board_flash_flag"
+#echo "c: $check_flag"
+#echo "f: $firmware_version_flag"
+#echo "g: $graphics_flag"
+#echo "m: $mk404_flag"
+#echo "n: $new_build_flag"
+#echo "p: $mk404_printer_flag"
+#echo "u: $update_flag"
+#echo "x: $board_mem_flag"
+#echo "y: $board_flash_flag"
 
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* MK404-build.sh Version: 1.0.0-Build_8 *"
+echo "* MK404-build.sh Version: 1.0.0-Build_9 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-c$(tput sgr0) Check for update"
