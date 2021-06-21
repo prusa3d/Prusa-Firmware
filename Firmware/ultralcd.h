@@ -205,12 +205,6 @@ void lcd_printer_connected();
 void lcd_ping();
 
 void lcd_calibrate_extruder();
-void lcd_farm_sdcard_menu();
-
-//void getFileDescription(char *name, char *description);
-
-void lcd_farm_sdcard_menu_w();
-//void get_description();
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();

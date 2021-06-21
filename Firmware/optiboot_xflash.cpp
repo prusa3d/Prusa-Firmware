@@ -68,6 +68,8 @@ static void getNch(uint8_t count) {
 
 typedef uint16_t pagelen_t;
 
+//Thou shalt not change these messages, else the avrdude-slicer xflash implementation will no longer work and the language upload will fail.
+//Right now we support 2 xflash chips - the original w25x20cl and a new one GD25Q20C
 static const char entry_magic_send   [] PROGMEM = "start\n";
 static const char entry_magic_receive[] PROGMEM = "w25x20cl_enter\n";
 static const char entry_magic_cfm    [] PROGMEM = "w25x20cl_cfm\n";
