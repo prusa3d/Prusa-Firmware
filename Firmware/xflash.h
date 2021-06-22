@@ -34,15 +34,24 @@ extern uint8_t xflash_rd_status_reg(void);
 extern void w25x20cl_wr_status_reg(uint8_t val);
 #endif
 extern void xflash_rd_data(uint32_t addr, uint8_t* data, uint16_t cnt);
-extern void xflash_page_program(uint32_t addr, uint8_t* data, uint16_t cnt);
-extern void xflash_page_program_P(uint32_t addr, uint8_t* data, uint16_t cnt);
+
 extern void xflash_sector_erase(uint32_t addr);
 extern void xflash_block32_erase(uint32_t addr);
 extern void xflash_block64_erase(uint32_t addr);
 extern void xflash_chip_erase(void);
-extern void xflash_page_program(uint32_t addr, uint8_t* data, uint16_t cnt);
 extern void xflash_rd_uid(uint8_t* uid);
 extern void xflash_wait_busy(void);
+
+// write up to a single page of data (256bytes)
+extern void xflash_page_program(uint32_t addr, uint8_t* data, uint16_t cnt);
+
+// write up to a single page of data from program memory
+extern void xflash_page_program_P(uint32_t addr, uint8_t* data, uint16_t cnt);
+
+// xflash_multipage_program: high-level interface for multi-page writes.
+//   Write any amount of data, chunking writes to page boundaries as needed.
+//   Automatically enables writes and waits for completion.
+extern void xflash_multipage_program(uint32_t addr, uint8_t* data, uint16_t cnt);
 
 #if defined(__cplusplus)
 }

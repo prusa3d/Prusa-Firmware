@@ -5,6 +5,7 @@
 
 #include "temperature.h"
 #include "ultralcd.h"
+#include "conv2str.h"
 #include "fsensor.h"
 #include "Marlin.h"
 #include "language.h"
@@ -27,8 +28,6 @@
 
 //#include "Configuration.h"
 #include "cmdqueue.h"
-
-#include "SdFatUtil.h"
 
 #ifdef FILAMENT_SENSOR
 #include "pat9125.h"
@@ -1806,6 +1805,61 @@ static void lcd_preheat_menu()
     lcd_generic_preheat_menu();
 }
 
+
+#ifdef MENU_DUMP
+#include "xflash_dump.h"
+
+static void lcd_dump_memory()
+{
+    lcd_beeper_quick_feedback();
+    xfdump_dump();
+    lcd_return_to_status();
+}
+#endif //MENU_DUMP
+#ifdef MENU_SERIAL_DUMP
+#include "Dcodes.h"
+
+static void lcd_serial_dump()
+{
+    serial_dump_and_reset(dump_crash_reason::manual);
+}
+#endif //MENU_SERIAL_DUMP
+
+#if defined(DEBUG_BUILD) && defined(EMERGENCY_HANDLERS)
+#include <avr/wdt.h>
+
+#ifdef WATCHDOG
+static void lcd_wdr_crash()
+{
+    while (1);
+}
+#endif
+
+static uint8_t lcd_stack_crash_(uint8_t arg, uint32_t sp = 0)
+{
+    // populate the stack with an increasing value for ease of testing
+    volatile uint16_t tmp __attribute__((unused)) = sp;
+
+    _delay(arg);
+    uint8_t ret = lcd_stack_crash_(arg, SP);
+
+    // required to avoid tail call elimination and to slow down the stack growth
+    _delay(ret);
+
+    return ret;
+}
+
+static void lcd_stack_crash()
+{
+#ifdef WATCHDOG
+    wdt_disable();
+#endif
+    // delay choosen in order to hit the stack-check in the temperature isr reliably
+    lcd_stack_crash_(10);
+}
+#endif
+
+
 //! @brief Show Support Menu
 //!
 //! @code{.unparsed}
@@ -1997,8 +2051,20 @@ static void lcd_support_menu()
   MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
-
+#ifdef MENU_DUMP
+    MENU_ITEM_FUNCTION_P(_i("Dump memory"), lcd_dump_memory);
+#endif //MENU_DUMP
+#ifdef MENU_SERIAL_DUMP
+    if (emergency_serial_dump)
+        MENU_ITEM_FUNCTION_P(_i("Dump to serial"), lcd_serial_dump);
+#endif
 #ifdef DEBUG_BUILD
+#ifdef EMERGENCY_HANDLERS
+#ifdef WATCHDOG
+    MENU_ITEM_FUNCTION_P(PSTR("WDR crash"), lcd_wdr_crash);
+#endif //WATCHDOG
+    MENU_ITEM_FUNCTION_P(PSTR("Stack crash"), lcd_stack_crash);
+#endif //EMERGENCY_HANDLERS
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
 #endif /* DEBUG_BUILD */
 
@@ -6695,12 +6761,6 @@ static void lcd_main_menu()
 
 }
 
-void stack_error() {
-	Sound_MakeCustom(1000,0,true);
-	lcd_display_message_fullscreen_P(_i("Error - static memory has been overwritten"));////MSG_STACK_ERROR c=20 r=4
-	//err_triggered = 1;
-	 while (1) delay_keep_alive(1000);
-}
 
 #ifdef DEBUG_STEPPER_TIMER_MISSED
 bool stepper_timer_overflow_state = false;
@@ -8928,7 +8988,6 @@ void menu_lcd_lcdupdate_func(void)
 		if (lcd_draw_update) lcd_draw_update--;
 		lcd_next_update_millis = _millis() + LCD_UPDATE_INTERVAL;
 	}
-	if (!SdFatUtil::test_stack_integrity()) stack_error();
 	lcd_ping(); //check that we have received ping command if we are in farm mode
 	lcd_send_status();
 	if (lcd_commands_type == LcdCommands::Layer1Cal) lcd_commands();

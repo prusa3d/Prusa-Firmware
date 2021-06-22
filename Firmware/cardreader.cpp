@@ -2,6 +2,8 @@
 #include "cmdqueue.h"
 #include "cardreader.h"
 #include "ultralcd.h"
+#include "conv2str.h"
+#include "menu.h"
 #include "stepper.h"
 #include "temperature.h"
 #include "language.h"

@@ -66,6 +66,7 @@
 
 #include "menu.h"
 #include "ultralcd.h"
+#include "conv2str.h"
 #include "backlight.h"
 
 #include "planner.h"
@@ -107,6 +108,8 @@
 #include "xflash.h"
 #include "optiboot_xflash.h"
 #endif //XFLASH
+
+#include "xflash_dump.h"
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -994,6 +997,58 @@ void list_sec_lang_from_external_flash()
 #endif //(LANG_MODE != 0)
 
 
+static void fw_crash_init()
+{
+#ifdef XFLASH_DUMP
+    dump_crash_reason crash_reason;
+    if(xfdump_check_state(&crash_reason))
+    {
+        // always signal to the host that a dump is available for retrieval
+        puts_P(_N("// action:dump_available"));
+
+#ifdef EMERGENCY_DUMP
+        if(crash_reason != dump_crash_reason::manual &&
+           eeprom_read_byte((uint8_t*)EEPROM_FW_CRASH_FLAG) != 0xFF)
+        {
+            lcd_show_fullscreen_message_and_wait_P(
+                    _i("FIRMWARE CRASH!\n"
+                       "Debug data available for analysis. "
+                       "Contact support to submit details."));
+        }
+#endif
+    }
+#else //XFLASH_DUMP
+    dump_crash_reason crash_reason = (dump_crash_reason)eeprom_read_byte((uint8_t*)EEPROM_FW_CRASH_FLAG);
+    if(crash_reason != dump_crash_reason::manual && (uint8_t)crash_reason != 0xFF)
+    {
+        lcd_beeper_quick_feedback();
+        lcd_clear();
+
+        lcd_puts_P(_i("FIRMWARE CRASH!\nCrash reason:\n"));
+        switch(crash_reason)
+        {
+        case dump_crash_reason::stack_error:
+            lcd_puts_P(_i("Static memory has\nbeen overwritten"));
+            break;
+        case dump_crash_reason::watchdog:
+            lcd_puts_P(_i("Watchdog timeout"));
+            break;
+        case dump_crash_reason::bad_isr:
+            lcd_puts_P(_i("Bad interrupt"));
+            break;
+        default:
+            lcd_print((uint8_t)crash_reason);
+            break;
+        }
+        lcd_wait_for_click();
+    }
+#endif //XFLASH_DUMP
+
+    // prevent crash prompts to reappear once acknowledged
+    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, 0xFF);
+}
+
+
 static void xflash_err_msg()
 {
 	lcd_clear();
@@ -1612,6 +1667,9 @@ void setup()
 	if (tmc2130_home_enabled == 0xff) tmc2130_home_enabled = 0;
 #endif //TMC2130
 
+    // report crash failures
+    fw_crash_init();
+
 #ifdef UVLO_SUPPORT
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
 /*
@@ -1657,7 +1715,42 @@ void setup()
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
+#ifdef EMERGENCY_HANDLERS
+  WDTCSR |= (1 << WDIE);
+#endif //EMERGENCY_HANDLERS
 #endif //WATCHDOG
+}
+
+
+static inline void crash_and_burn(dump_crash_reason reason)
+{
+    WRITE(BEEPER, HIGH);
+    eeprom_update_byte((uint8_t*)EEPROM_FW_CRASH_FLAG, (uint8_t)reason);
+#ifdef EMERGENCY_DUMP
+    xfdump_full_dump_and_reset(reason);
+#elif defined(EMERGENCY_SERIAL_DUMP)
+    if(emergency_serial_dump)
+        serial_dump_and_reset(reason);
+#endif
+    softReset();
+}
+
+#ifdef EMERGENCY_HANDLERS
+#ifdef WATCHDOG
+ISR(WDT_vect)
+{
+    crash_and_burn(dump_crash_reason::watchdog);
+}
+#endif
+
+ISR(BADISR_vect)
+{
+    crash_and_burn(dump_crash_reason::bad_isr);
+}
+#endif //EMERGENCY_HANDLERS
+
+void stack_error() {
+    crash_and_burn(dump_crash_reason::stack_error);
 }
 
 
@@ -9080,7 +9173,9 @@ Sigma_Exit:
     */
 	case 1:
 		dcode_1(); break;
+#endif
 
+#if defined DEBUG_DCODE2 || defined DEBUG_DCODES
     /*!
     ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
     This command can be used without any additional parameters. It will read the entire RAM.
@@ -9167,7 +9262,7 @@ Sigma_Exit:
 	case 5:
 		dcode_5(); break;
 #endif //DEBUG_DCODE5
-#ifdef DEBUG_DCODES
+#if defined DEBUG_DCODE6 || defined DEBUG_DCODES
 
     /*!
     ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
@@ -9175,6 +9270,8 @@ Sigma_Exit:
     */
 	case 6:
 		dcode_6(); break;
+#endif
+#ifdef DEBUG_DCODES
 
     /*!
     ### D7 - Read/Write Bootloader <a href="https://reprap.org/wiki/G-code#D7:_Read.2FWrite_Bootloader">D7: Read/Write Bootloader</a>
@@ -9228,8 +9325,72 @@ Sigma_Exit:
     ### D12 - Time <a href="https://reprap.org/wiki/G-code#D12:_Time">D12: Time</a>
     Writes the current time in the log file.
     */
-
 #endif //DEBUG_DCODES
+
+#ifdef XFLASH_DUMP
+    /*!
+    ### D20 - Generate an offline crash dump
+    Generate a crash dump for later retrival.
+    #### Usage
+
+     D20 [E]
+
+    ### Parameters
+    - `E` - Perform an emergency crash dump (resets the printer).
+    ### Notes
+    - A crash dump can be later recovered with D21, or cleared with D22.
+    - An emergency crash dump includes register data, but will cause the printer to reset after the dump
+      is completed.
+    */
+    case 20: {
+        dcode_20();
+        break;
+    };
+
+    /*!
+    ### D21 - Print crash dump to serial
+    Output the complete crash dump (if present) to the serial.
+    #### Usage
+
+     D21
+
+    ### Notes
+    - The starting address can vary between builds, but it's always at the beginning of the data section.
+    */
+    case 21: {
+        dcode_21();
+        break;
+    };
+
+    /*!
+    ### D22 - Clear crash dump state
+    Clear an existing internal crash dump.
+    #### Usage
+
+     D22
+    */
+    case 22: {
+        dcode_22();
+        break;
+    };
+#endif //XFLASH_DUMP
+
+#ifdef EMERGENCY_SERIAL_DUMP
+    /*!
+    ### D23 - Request emergency dump on serial
+    On boards without offline dump support, request online dumps to the serial port on firmware faults.
+    When online dumps are enabled, the FW will dump memory on the serial before resetting.
+    #### Usage
+
+     D23 [R]
+    #### Parameters
+    - `R` - Disable online dumps.
+    */
+    case 23: {
+        emergency_serial_dump = !code_seen('R');
+    };
+#endif
+
 #ifdef HEATBED_ANALYSIS
 
     /*!

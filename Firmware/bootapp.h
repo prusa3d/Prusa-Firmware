@@ -3,10 +3,11 @@
 #define BOOTAPP_H
 
 #include "config.h"
+#include <avr/io.h>
 #include <inttypes.h>
 
 
-#define RAMSIZE        0x2000
+#define RAMSIZE        (RAMEND+1-RAMSTART)
 #define boot_src_addr  (*((uint32_t*)(RAMSIZE - 16)))
 #define boot_dst_addr  (*((uint32_t*)(RAMSIZE - 12)))
 #define boot_copy_size (*((uint16_t*)(RAMSIZE - 8)))
