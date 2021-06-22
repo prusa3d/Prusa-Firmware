@@ -44,7 +44,7 @@ static void xfdump_erase()
         addr += 4096)
     {
         xflash_enable_wr();
-        xflash_sector_erase(DUMP_OFFSET);
+        xflash_sector_erase(addr);
         xflash_wait_busy();
     }
 }
