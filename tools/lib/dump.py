@@ -5,7 +5,8 @@ import struct
 from . import avr
 
 
-FILL_BYTE = b'\0' # used to fill memory gaps in the dump
+FILL_BYTE  = b'\0'      # used to fill memory gaps in the dump
+DUMP_MAGIC = 0x55525547 # XFLASH dump magic
 
 class CrashReason(enum.IntEnum):
     MANUAL = 0
@@ -151,7 +152,7 @@ def decode_dump(path):
 
         # decode the header structure
         magic, regs_present, crash_reason, pc, sp = struct.unpack('<LBBLH', buf_data[0:12])
-        if magic != 0x55525547:
+        if magic != DUMP_MAGIC:
             print('error: invalid dump header in D21', file=sys.stderr)
             return None
 
