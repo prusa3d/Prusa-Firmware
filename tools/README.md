@@ -25,6 +25,10 @@ With ``--qdirstat`` and a single elf file, generate a [qdirstat](https://github.
 This assumes the running firmware generating the dump and the elf file are the same.
 Requires Python3 and the [pyelftools](https://github.com/eliben/pyelftools) module.
 
+### ``dump2bin``
+
+Parse and decode a memory dump obtained from the D2/D21/D23 g-code into readable metadata and binary. The output binary is padded and extended to fit the original address range.
+
 ### ``update_eeprom``
 
 Given one EEPROM dump, convert the dump to update instructions that can be sent to a printer.
