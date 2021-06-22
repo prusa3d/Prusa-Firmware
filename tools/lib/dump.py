@@ -137,9 +137,10 @@ def decode_dump(path):
         # check if the dump is complete
         if len(ranges) != 1 or ranges[0][0] != 0 or \
            ranges[0][1] != avr.SRAM_START + avr.SRAM_SIZE:
-            print('warning: incomplete D23 dump', file=sys.stderr)
-        else:
-            regs = True
+            print('error: incomplete D23 dump', file=sys.stderr)
+            return None
+
+        regs = True
         if reason is None:
             print('warning: no error line in D23', file=sys.stderr)
 
