@@ -344,7 +344,7 @@ def main():
     ap = argparse.ArgumentParser(description="""
         Generate a symbol table map starting directly from an ELF
         firmware with DWARF3 debugging information.
-        When used along with a memory dump obtained from the D2 g-code,
+        When used along with a memory dump obtained from the D2/D21/D23 g-code,
         show the value of each symbol which is within the address range.
     """)
     ap.add_argument('elf', help='ELF file containing DWARF debugging information')
