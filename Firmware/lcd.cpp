@@ -728,6 +728,10 @@ void lcd_update_enable(uint8_t enabled)
 	}
 }
 
+bool lcd_longpress_trigger = 0;
+
+// WARNING: this function is called from the temperature ISR.
+//          Only update flags, but do not perform any menu/lcd operation!
 void lcd_buttons_update(void)
 {
     static uint8_t lcd_long_press_active = 0;
@@ -749,9 +753,7 @@ void lcd_buttons_update(void)
             else if (longPressTimer.expired(LONG_PRESS_TIME))
             {
                 lcd_long_press_active = 1;
-                //long press is not possible in modal mode
-                if (lcd_longpress_func && lcd_update_enabled)
-                    lcd_longpress_func();
+                lcd_longpress_trigger = 1;
             }
         }
     }
