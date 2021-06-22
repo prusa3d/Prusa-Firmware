@@ -12,6 +12,11 @@ Requires ``printcore`` from [Pronterface].
 Dump the content of the entire SRAM using the D2 command.
 Requires ``printcore`` from [Pronterface].
 
+### ``dump_crash``
+
+Dump the content of the last crash dump on MK3+ printers using D21.
+Requires ``printcore`` from [Pronterface].
+
 ### ``elf_mem_map``
 
 Generate a symbol table map with decoded information starting directly from an ELF firmware with DWARF debugging information (which is the default using the stock board definition).
