@@ -297,7 +297,7 @@ echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build'$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "$(tput setaf 2)-d$(tput sgr0) Devel build '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
-echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 grafics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)2$(tput sgr0)' fancy with Quad_HR"
+echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 graphics '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)2$(tput sgr0)' fancy with Quad_HR"
 echo "$(tput setaf 2)-h$(tput sgr0) Help"
 echo "$(tput setaf 2)-i$(tput sgr0) Arduino IDE version '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
 echo "$(tput setaf 2)-j$(tput sgr0) Arduino IDE verbose output '$(tput setaf 2)0$(tput sgr0)', '$(tput setaf 2)1$(tput sgr0) active'"
@@ -351,18 +351,23 @@ if [ ! -z "$board_flash_flag" ] ; then
         BOARD_FLASH="0x5FFFF"
         BOARD_maximum_size="385024"
         echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
+
     elif [ "$board_flash_flag" == "512" ] ; then
         BOARD_FLASH="0x7FFFF"
         BOARD_maximum_size="516096"
         echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
     elif [ "$board_flash_flag" == "1024" ] ; then
         BOARD_FLASH="0xFFFFF"
         BOARD_maximum_size="1040384"
         echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
     elif [[ "$board_flash_flag" == "32M" || "$board_flash_flag" == "32768" ]] ; then
         BOARD_FLASH="0x1FFFFFF"
         BOARD_maximum_size="33546240"
         echo "Board flash size :    32 Mb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
     else
         echo "Unsupported board flash size chosen. Only '256', '384', '512', '1024' and '32M' are allowed."
         exit 7
@@ -377,6 +382,7 @@ if [ ! -z "$board_mem_flag" ] ; then
     elif [ "$board_mem_flag" == "64" ] ; then
         BOARD_MEM="0xFFFF"
         echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_RAM-$board_mem_flag"
     else
         echo "Unsupported board mem size chosen. Only '8', '64' are allowed."
         exit 8
@@ -398,14 +404,20 @@ fi
 BUILD_ENV="1.0.6"
 BOARD="prusa_einsy_rambo"
 BOARD_PACKAGE_NAME="PrusaResearch"
-BOARD_VERSION="1.0.3"
+if [ "$ARDUINO_ENV" == "1.8.13" ]; then
+    BOARD_VERSION="1.0.4"
+else
+    BOARD_VERSION="1.0.3"
+fi
 #BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_FILENAME="prusa3dboards"
-#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
-BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.3.tar.bz2"
+#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
 #PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
-PF_BUILD_FILE_URL="https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
+if [[ "$BOARD_VERSION" == "1.0.3" || "$BOARD_VERSION" == "1.0.2" || "$BOARD_VERSION" == "1.0.1" ]]; then
+    PF_BUILD_FILE_URL="https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
+fi
 LIB="PrusaLibrary"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
@@ -557,18 +569,20 @@ if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$P
 fi    
 
 # Download and extract Prusa Firmware specific library files
-if [ ! -f "PF-build-env-WinLin-$BUILD_ENV.zip" ]; then
-    echo "$(tput setaf 6)Downloading Prusa Firmware build environment...$(tput setaf 2)"
-    sleep 2
-    wget $PF_BUILD_FILE_URL || exit 12
-    echo "$(tput sgr 0)"
-fi
-if [ ! -e "../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]; then
-    echo "$(tput setaf 6)Unzipping Prusa Firmware build environment...$(tput setaf 2)"
-    sleep 2
-    unzip -o PF-build-env-WinLin-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 13
-    echo "# PF-build-env-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor-$BUILD_ENV" >> ../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
-    echo "$(tput sgr0)"
+if [[ "$BOARD_VERSION" == "1.0.3" || "$BOARD_VERSION" == "1.0.2" || "$BOARD_VERSION" == "1.0.1" ]]; then
+    if [ ! -f "PF-build-env-WinLin-$BUILD_ENV.zip" ]; then
+        echo "$(tput setaf 6)Downloading Prusa Firmware build environment...$(tput setaf 2)"
+        sleep 2
+        wget $PF_BUILD_FILE_URL || exit 12
+        echo "$(tput sgr 0)"
+    fi
+    if [ ! -e "../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]; then
+        echo "$(tput setaf 6)Unzipping Prusa Firmware build environment...$(tput setaf 2)"
+        sleep 2
+        unzip -o PF-build-env-WinLin-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || exit 13
+        echo "# PF-build-env-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor-$BUILD_ENV" >> ../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+        echo "$(tput sgr0)"
+    fi
 fi
 
 # Check if User updated Arduino IDE 1.8.5 boardsmanager and tools
@@ -850,25 +864,32 @@ do
         OUTPUT_FOLDER="PF-build-hex/FW$FW-Build$BUILD/$BOARD"
     fi
     
+    #Define OUTPUT_FILENAME
+    OUTPUT_FILENAME=FW$FW-Build$BUILD-$VARIANT
+    #Check for OUTPUT_FILENAME_SUFFIX and add it
+    if [ ! -z $OUTPUT_FILENAME_SUFFIX ]; then
+        OUTPUT_FILENAME="${OUTPUT_FILENAME}$OUTPUT_FILENAME_SUFFIX"
+    fi
+
     #Check if exactly the same hexfile already exists
-    if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex"  &&  "$LANGUAGES" == "ALL" ]]; then
+    if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex"  &&  "$LANGUAGES" == "ALL" ]]; then
         echo ""
-        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex | xargs -n1 basename
+        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex | xargs -n1 basename
         echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
         if [ $OUTPUT == "1" ] ; then
             read -t 10 -p "Press Enter to continue..."
         fi
-    elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex"  &&  "$LANGUAGES" == "EN_ONLY" ]]; then
+    elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex"  &&  "$LANGUAGES" == "EN_ONLY" ]]; then
         echo ""
-        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex | xargs -n1 basename
+        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex | xargs -n1 basename
         echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
         if [ $OUTPUT == "1" ] ; then
             read -t 10 -p "Press Enter to continue..."
         fi
     fi
-    if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip"  &&  "$LANGUAGES" == "ALL" ]]; then
+    if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip"  &&  "$LANGUAGES" == "ALL" ]]; then
         echo ""
-        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip | xargs -n1 basename
+        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip | xargs -n1 basename
         echo "$(tput setaf 6)This zip file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
         if [ $OUTPUT == "1" ] ; then
             read -t 10 -p "Press Enter to continue..."
@@ -877,17 +898,18 @@ do
     
     #List some useful data
     echo "$(tput setaf 2)$(tput setab 7) "
-    echo "Printer    :" $MK404_PRINTER
-    echo "Variant    :" $VARIANT
-    echo "Firmware   :" $FW
-    echo "Build #    :" $BUILD
-    echo "Dev Check  :" $DEV_CHECK
-    echo "DEV Status :" $DEV_STATUS
-    echo "Motherboard:" $MOTHERBOARD
-    echo "Board flash:" $BOARD_FLASH
-    echo "Board mem  :" $BOARD_MEM
-    echo "Languages  :" $LANGUAGES
+    echo "Printer        :" $MK404_PRINTER
+    echo "Variant        :" $VARIANT
+    echo "Firmware       :" $FW
+    echo "Build #        :" $BUILD
+    echo "Dev Check      :" $DEV_CHECK
+    echo "DEV Status     :" $DEV_STATUS
+    echo "Motherboard    :" $MOTHERBOARD
+    echo "Board flash    :" $BOARD_FLASH
+    echo "Board mem      :" $BOARD_MEM
+    echo "Languages      :" $LANGUAGES
     echo "Hex-file Folder:" $OUTPUT_FOLDER
+    echo "Hex filename   :" $OUTPUT_FILENAME
     echo "$(tput sgr0)"
 
     #Prepare Firmware to be compiled by copying variant as Configuration_prusa.h
@@ -1074,28 +1096,28 @@ do
         if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
             echo "$(tput setaf 2)Copying multi language firmware for MK3/Einsy board to PF-build-hex folder$(tput sgr 0)"
             # End of "lang.bin" for MK3 and MK3S copy
-            cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
-            cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.elf
+            cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
+            cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
         else
             echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
-            cp -f firmware_cz.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-cz.hex
-            cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-de.hex
-            cp -f firmware_es.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-es.hex
-            cp -f firmware_fr.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-fr.hex
-            cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-it.hex
-            cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-pl.hex
-            cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-nl.hex
-            cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.elf
+            cp -f firmware_cz.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-cz.hex
+            cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-de.hex
+            cp -f firmware_es.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-es.hex
+            cp -f firmware_fr.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-fr.hex
+            cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-it.hex
+            cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-pl.hex
+            cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-nl.hex
+            cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
             if [ $TARGET_OS == "windows" ]; then 
-                zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
-                rm $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
+                zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
+                rm $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
             elif [ $TARGET_OS == "linux" ]; then
                 # Make a copy for MK404 sim of MK2, MK2.5, MK2.5S firmware
                 if [ ! -z "$mk404_flag" ]; then
-                    cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+                    cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
                 fi
                 # End of MK2, MK2.5, MK2.5S firmware copy
-            zip -m -j ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-??.hex
+            zip -m -j ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
             fi
         fi
 
@@ -1109,9 +1131,9 @@ do
 
     else
         echo "$(tput setaf 2)Copying English only firmware to PF-build-hex folder$(tput sgr 0)"
-        cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 47
+        cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex || exit 47
         echo "$(tput setaf 2)Copying English only elf file to PF-build-hex folder$(tput sgr 0)"
-        cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.elf || exit 47
+        cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.elf || exit 47
     fi
 
     # Cleanup Firmware
@@ -1194,7 +1216,7 @@ if [ ! -z "$mk404_flag" ]; then
         MK404_options="${MK404_options} -y $board_flash_flag"
     fi
 
-# Run MK404 with grafics
+# Run MK404 with graphics
     if [ ! -z "$graphics_flag" ]; then
         if [[ "$graphics_flag" == "1" || "$graphics_flag" == "2" || "$graphics_flag" == "3" || "$graphics_flag" == "4" ]]; then
             MK404_options="${MK404_options}  -g $graphics_flag"
@@ -1216,9 +1238,9 @@ if [ ! -z "$mk404_flag" ]; then
 
 #Decide which hex file to use EN_ONLY or Multi language
 if [ "$LANGUAGES" == "ALL" ]; then
-    MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+    MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
 else
-    MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex
+    MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex
 fi
 
 # Start MK404

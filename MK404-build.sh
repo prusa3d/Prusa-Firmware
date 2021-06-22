@@ -409,7 +409,7 @@ fi
         MK404_options='--debugcore --bootloader-file ""'
     fi
 
-# Run MK404 with grafics
+# Run MK404 with graphics
     if [ ! -z "$graphics_flag" ]; then
         if [ ! -z "$MK404_options" ]; then
             MK404_options="${MK404_options} -g "
