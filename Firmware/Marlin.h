@@ -497,6 +497,7 @@ void marlin_wait_for_click();
 void raise_z_above(float target, bool plan=true);
 
 extern "C" void softReset();
+void stack_error();
 
 extern uint32_t IP_address;
 

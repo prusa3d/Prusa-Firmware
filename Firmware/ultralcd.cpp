@@ -5,6 +5,7 @@
 
 #include "temperature.h"
 #include "ultralcd.h"
+#include "conv2str.h"
 #include "fsensor.h"
 #include "Marlin.h"
 #include "language.h"
@@ -27,8 +28,6 @@
 
 //#include "Configuration.h"
 #include "cmdqueue.h"
-
-#include "SdFatUtil.h"
 
 #ifdef FILAMENT_SENSOR
 #include "pat9125.h"
@@ -59,7 +58,9 @@ int clock_interval = 0;
 
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
+#ifdef LCD_BL_PIN
 static void lcd_backlight_menu();
+#endif
 
 int8_t ReInitLCD = 0;
 uint8_t scrollstuff = 0;
@@ -123,7 +124,9 @@ static void lcd_tune_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
 static void lcd_control_temperature_menu();
+#ifdef TMC2130
 static void lcd_settings_linearity_correction_menu_save();
+#endif
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
 static void prusa_stat_diameter();
@@ -160,7 +163,6 @@ static void lcd_selftest_v();
 #ifdef TMC2130
 static void reset_crash_det(unsigned char axis);
 static bool lcd_selfcheck_axis_sg(unsigned char axis);
-static bool lcd_selfcheck_axis(int _axis, int _travel);
 #else
 static bool lcd_selfcheck_axis(int _axis, int _travel);
 static bool lcd_selfcheck_pulleys(int axis);
@@ -248,7 +250,9 @@ static void fil_unload_menu();
 #endif // SNMM || SNMM_V2
 static void lcd_disable_farm_mode();
 static void lcd_set_fan_check();
+#ifdef MMU_HAS_CUTTER
 static void lcd_cutter_enabled();
+#endif
 #ifdef SNMM
 static char snmm_stop_print_menu();
 #endif //SNMM
@@ -635,7 +639,7 @@ void lcdui_print_status_line(void)
         case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
             if (custom_message_state > 10) {
                 lcd_set_cursor(0, 3);
-                lcd_space(20);
+                lcd_space(LCD_WIDTH);
                 lcd_puts_at_P(0, 3, _T(MSG_CALIBRATE_Z_AUTO));
                 lcd_puts_P(PSTR(" : "));
                 lcd_print(custom_message_state-10);
@@ -690,7 +694,7 @@ void lcdui_print_status_line(void)
     }
 
     // Fill the rest of line to have nice and clean output
-    for(int fillspace = 0; fillspace < 20; fillspace++)
+    for(int fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
         if ((lcd_status_message[fillspace] <= 31 ))
             lcd_print(' ');
 }
@@ -1801,6 +1805,61 @@ static void lcd_preheat_menu()
     lcd_generic_preheat_menu();
 }
 
+
+#ifdef MENU_DUMP
+#include "xflash_dump.h"
+
+static void lcd_dump_memory()
+{
+    lcd_beeper_quick_feedback();
+    xfdump_dump();
+    lcd_return_to_status();
+}
+#endif //MENU_DUMP
+#ifdef MENU_SERIAL_DUMP
+#include "Dcodes.h"
+
+static void lcd_serial_dump()
+{
+    serial_dump_and_reset(dump_crash_reason::manual);
+}
+#endif //MENU_SERIAL_DUMP
+
+#if defined(DEBUG_BUILD) && defined(EMERGENCY_HANDLERS)
+#include <avr/wdt.h>
+
+#ifdef WATCHDOG
+static void lcd_wdr_crash()
+{
+    while (1);
+}
+#endif
+
+static uint8_t lcd_stack_crash_(uint8_t arg, uint32_t sp = 0)
+{
+    // populate the stack with an increasing value for ease of testing
+    volatile uint16_t tmp __attribute__((unused)) = sp;
+
+    _delay(arg);
+    uint8_t ret = lcd_stack_crash_(arg, SP);
+
+    // required to avoid tail call elimination and to slow down the stack growth
+    _delay(ret);
+
+    return ret;
+}
+
+static void lcd_stack_crash()
+{
+#ifdef WATCHDOG
+    wdt_disable();
+#endif
+    // delay choosen in order to hit the stack-check in the temperature isr reliably
+    lcd_stack_crash_(10);
+}
+#endif
+
+
 //! @brief Show Support Menu
 //!
 //! @code{.unparsed}
@@ -1992,8 +2051,20 @@ static void lcd_support_menu()
   MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
-
+#ifdef MENU_DUMP
+    MENU_ITEM_FUNCTION_P(_i("Dump memory"), lcd_dump_memory);
+#endif //MENU_DUMP
+#ifdef MENU_SERIAL_DUMP
+    if (emergency_serial_dump)
+        MENU_ITEM_FUNCTION_P(_i("Dump to serial"), lcd_serial_dump);
+#endif
 #ifdef DEBUG_BUILD
+#ifdef EMERGENCY_HANDLERS
+#ifdef WATCHDOG
+    MENU_ITEM_FUNCTION_P(PSTR("WDR crash"), lcd_wdr_crash);
+#endif //WATCHDOG
+    MENU_ITEM_FUNCTION_P(PSTR("Stack crash"), lcd_stack_crash);
+#endif //EMERGENCY_HANDLERS
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
 #endif /* DEBUG_BUILD */
 
@@ -2090,7 +2161,7 @@ if(lcd_clicked())
           {
           case FilamentAction::AutoLoad:
                eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
-               // no break
+               // FALLTHRU
           case FilamentAction::Load:
                loading_flag=true;
                enquecommand_P(PSTR("M701"));      // load filament
@@ -2201,14 +2272,21 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     }
     else
     {
-        if (!bFilamentWaitingFlag)
+        if (!bFilamentWaitingFlag || lcd_draw_update)
         {
-            // First run after the filament preheat selection:
-            // setup the fixed LCD parts and raise Z as we wait
+            // First entry from another menu OR first run after the filament preheat selection. Use
+            // bFilamentWaitingFlag to distinguish: this flag is reset exactly once when entering
+            // the menu and is used to raise the carriage *once*. In other cases, the LCD has been
+            // modified elsewhere and needs to be redrawn in full.
+
+            // reset bFilamentWaitingFlag immediately to avoid re-entry from raise_z_above()!
+            bool once = !bFilamentWaitingFlag;
             bFilamentWaitingFlag = true;
 
-            lcd_clear();
+            // also force-enable lcd_draw_update (might be 0 when called from outside a menu)
             lcd_draw_update = 1;
+
+            lcd_clear();
             lcd_puts_at_P(0, 3, _T(MSG_CANCEL)); ////MSG_CANCEL
 
             lcd_set_cursor(0, 1);
@@ -2218,12 +2296,12 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             case FilamentAction::AutoLoad:
             case FilamentAction::MmuLoad:
                 lcd_puts_P(_i("Preheating to load")); ////MSG_PREHEATING_TO_LOAD c=20
-                raise_z_above(MIN_Z_FOR_LOAD);
+                if (once) raise_z_above(MIN_Z_FOR_LOAD);
                 break;
             case FilamentAction::UnLoad:
             case FilamentAction::MmuUnLoad:
                 lcd_puts_P(_i("Preheating to unload")); ////MSG_PREHEATING_TO_UNLOAD c=20
-                raise_z_above(MIN_Z_FOR_UNLOAD);
+                if (once) raise_z_above(MIN_Z_FOR_UNLOAD);
                 break;
             case FilamentAction::MmuEject:
                 lcd_puts_P(_i("Preheating to eject")); ////MSG_PREHEATING_TO_EJECT c=20
@@ -2419,7 +2497,7 @@ void lcd_change_success() {
 
 static void lcd_loading_progress_bar(uint16_t loading_time_ms) { 
 
-	for (uint_least8_t i = 0; i < 20; i++) {
+	for (uint_least8_t i = 0; i < LCD_WIDTH; i++) {
 		lcd_putc_at(i, 3, '.');
 		//loading_time_ms/20 delay
 		for (uint_least8_t j = 0; j < 5; j++) {
@@ -3332,10 +3410,10 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
             // End of the message.
             break;
         lcd_set_cursor(0, row);
-        uint8_t linelen = min(strlen_P(msg), 20);
+        uint8_t linelen = min(strlen_P(msg), LCD_WIDTH);
         const char *msgend2 = msg + linelen;
         msgend = msgend2;
-        if (row == 3 && linelen == 20) {
+        if (row == 3 && linelen == LCD_WIDTH) {
             // Last line of the display, full line shall be displayed.
             // Find out, whether this message will be split into multiple screens.
             while (pgm_is_whitespace(msgend))
@@ -5999,7 +6077,7 @@ char reset_menu() {
     int8_t enc_dif = 0;
 	char cursor_pos = 0;
 
-    const char *const item[items_no] PROGMEM = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("Service prep"), PSTR("All Data")
+    const char *const item[items_no] = {PSTR("Language"), PSTR("Statistics"), PSTR("Shipping prep"), PSTR("Service prep"), PSTR("All Data")
 #ifdef SNMM
     , PSTR("Bowden length")
 #endif
@@ -6683,12 +6761,6 @@ static void lcd_main_menu()
 
 }
 
-void stack_error() {
-	Sound_MakeCustom(1000,0,true);
-	lcd_display_message_fullscreen_P(_i("Error - static memory has been overwritten"));////MSG_STACK_ERROR c=20 r=4
-	//err_triggered = 1;
-	 while (1) delay_keep_alive(1000);
-}
 
 #ifdef DEBUG_STEPPER_TIMER_MISSED
 bool stepper_timer_overflow_state = false;
@@ -7134,8 +7206,8 @@ void lcd_sdcard_menu()
 			_md->fileCnt = card.getnrfilenames();
 			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 			_md->menuState = _standard;
-			// FALLTHRU
 		}
+		// FALLTHRU
 		case _standard: //normal menu structure.
 		{
 			if (!_md->lcd_scrollTimer.running()) //if the timer is not running, then the menu state was just switched, so redraw the screen.
@@ -7400,7 +7472,7 @@ bool lcd_selftest()
 			break;
 		case FanCheck::SwappedFan:
 			_swapped_fan = true;
-			// no break
+			// FALLTHRU
 		default:
 			_result = true;
 			break;
@@ -7423,7 +7495,7 @@ bool lcd_selftest()
 			break;
 		case FanCheck::SwappedFan:
 			_swapped_fan = true;
-			// no break
+			// FALLTHRU
 		default:
 			_result = true;
 			break;
@@ -8854,25 +8926,28 @@ void menu_lcd_lcdupdate_func(void)
 		lcd_draw_update = 2;
 		lcd_oldcardstatus = IS_SD_INSERTED;
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-        backlight_wake();
+		backlight_wake();
 		if (lcd_oldcardstatus)
 		{
-			card.initsd();
-               LCD_MESSAGERPGM(_T(WELCOME_MSG));
-               bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
-               menu_submenu(lcd_sdcard_menu);
-			//get_description();
+			if (!card.cardOK)
+			{
+				card.initsd(false); //delay the sorting to the sd menu. Otherwise, removing the SD card while sorting will not menu_back()
+				card.presort_flag = true; //force sorting of the SD menu
+			}
+			LCD_MESSAGERPGM(_T(WELCOME_MSG));
+			bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+			menu_submenu(lcd_sdcard_menu);
 		}
 		else
 		{
-               if(menu_menu==lcd_sdcard_menu)
-                    menu_back();
+			if(menu_menu==lcd_sdcard_menu)
+				menu_back();
 			card.release();
 			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=20
 		}
 	}
 #endif//CARDINSERTED
-    backlight_update();
+	backlight_update();
 	if (lcd_next_update_millis < _millis())
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
@@ -8913,7 +8988,6 @@ void menu_lcd_lcdupdate_func(void)
 		if (lcd_draw_update) lcd_draw_update--;
 		lcd_next_update_millis = _millis() + LCD_UPDATE_INTERVAL;
 	}
-	if (!SdFatUtil::test_stack_integrity()) stack_error();
 	lcd_ping(); //check that we have received ping command if we are in farm mode
 	lcd_send_status();
 	if (lcd_commands_type == LcdCommands::Layer1Cal) lcd_commands();
