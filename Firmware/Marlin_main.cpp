@@ -1737,8 +1737,6 @@ void setup()
 #endif //WATCHDOG
 }
 
-#ifdef PRUSA_M28
-
 static inline void crash_and_burn(dump_crash_reason reason)
 {
     WRITE(BEEPER, HIGH);
@@ -1770,7 +1768,7 @@ void stack_error() {
     crash_and_burn(dump_crash_reason::stack_error);
 }
 
-
+#ifdef PRUSA_M28
 void trace();
 
 #define CHUNK_SIZE 64 // bytes
