@@ -4,13 +4,10 @@ import elftools.elf.elffile
 import elftools.dwarf.descriptions
 from collections import namedtuple
 from struct import unpack
-import sys
-import re
+import os
 
-SRAM_START = 0x200
-SRAM_OFFSET = 0x800000
-EEPROM_OFFSET = 0x810000
-FILL_BYTE = b'\0'
+from lib.dump import decode_dump
+from lib.avr import *
 
 
 Entry = namedtuple('Entry', ['name', 'loc', 'size', 'declpos'])
@@ -257,59 +254,6 @@ def get_elf_globals(path, expand_structs, struct_gaps=True):
     return grefs
 
 
-def decode_dump(path):
-    fd = open(path, 'r')
-    if fd is None:
-        return None
-
-    buf_addr = None # starting address
-    buf_data = None # data
-
-    in_dump = False
-    for line in enumerate(fd):
-        line = (line[0], line[1].rstrip())
-        tokens = line[1].split(maxsplit=1)
-        if not in_dump:
-            if len(tokens) > 0 and tokens[0] in ['D2', 'D23']:
-                in_dump = True
-            continue
-        else:
-            if len(tokens) < 1:
-                print('malformed line {}: {}'.format(*line), file=sys.stderr)
-                continue
-            elif tokens[0] == 'ok':
-                break
-            elif tokens[0] == 'reason:':
-                # ignored
-                continue
-            elif not re.match(r'[0-9a-fA-F]', tokens[0]):
-                print('malformed line {}: {}'.format(*line), file=sys.stderr)
-                continue
-
-        addr = int.from_bytes(bytes.fromhex(tokens[0]), 'big')
-        data = bytes.fromhex(tokens[1])
-
-        if buf_addr is None:
-            buf_addr = addr
-            buf_data = data
-        else:
-            # grow buffer as needed
-            if addr < buf_addr:
-                buf_data = FILL_BYTE * (buf_addr - addr)
-                buf_addr = addr
-            addr_end = addr + len(data)
-            buf_end = buf_addr + len(buf_data)
-            if addr_end > buf_end:
-                buf_data += FILL_BYTE * (addr_end - buf_end)
-
-            # replace new part
-            rep_start = addr - buf_addr
-            rep_end = rep_start + len(data)
-            buf_data = buf_data[:rep_start] + data + buf_data[rep_end:]
-
-    return (buf_addr, buf_data)
-
-
 def annotate_refs(grefs, addr, data, width, gaps=True, overlaps=True):
     last_end = None
     for entry in grefs:
@@ -426,8 +370,17 @@ def main():
     elif args.qdirstat:
         print_qdirstat(grefs)
     else:
-        addr, data = decode_dump(args.dump)
-        annotate_refs(grefs, addr, data,
+        # fetch the memory data
+        dump = decode_dump(args.dump)
+        if dump is None:
+            return os.EX_DATAERR
+
+        # strip padding, if present
+        addr_start = dump.ranges[0][0]
+        addr_end = dump.ranges[-1][0]+dump.ranges[-1][1]
+        data = dump.data[addr_start:addr_end]
+
+        annotate_refs(grefs, addr_start, data,
                       width=args.name_width,
                       gaps=not args.no_gaps,
                       overlaps=args.overlaps)
