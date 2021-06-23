@@ -10,7 +10,7 @@
 # 3. Install latest updates with 'sudo apt-get upgrade'
 # 
 #
-# Version: 1.0.0-Build_9
+# Version: 1.0.0-Build_11
 # Change log:
 # 11 Feb 2021, 3d-gussner, Inital
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
@@ -28,7 +28,7 @@ while getopts c:f:g:m:n:p:u:x:y:?h flag
         case "${flag}" in
             c) check_flag=${OPTARG};;
             f) firmware_version_flag=${OPTARG};;
-            g) graphics_flag=${OPTARG};;
+            g) mk404_graphics_flag=${OPTARG};;
             h) help_flag=1;;
             m) mk404_flag=${OPTARG};;
             n) new_build_flag=${OPTARG};;
@@ -42,7 +42,7 @@ while getopts c:f:g:m:n:p:u:x:y:?h flag
 #Debug echos
 #echo "c: $check_flag"
 #echo "f: $firmware_version_flag"
-#echo "g: $graphics_flag"
+#echo "g: $mk404_graphics_flag"
 #echo "m: $mk404_flag"
 #echo "n: $new_build_flag"
 #echo "p: $mk404_printer_flag"
@@ -53,7 +53,7 @@ while getopts c:f:g:m:n:p:u:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* MK404-build.sh Version: 1.0.0-Build_9 *"
+echo "* MK404-build.sh Version: 1.0.0-Build_11 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-c$(tput sgr0) Check for update"
@@ -396,7 +396,7 @@ fi
 if [[ "$MK404_PRINTER" == "MK25" || "$MK404_PRINTER" == "MK25S" ]]; then
     MK404_PRINTER="${MK404_PRINTER}_mR13"
 else
-    if [[ "$mk404_flag" == "2" || "$mk404_flag" == "MMU2" || "$mk404_flag" == "MMU2S" ]]; then # Check if MMU2 is selected only for MK3/S
+    if [ "$mk404_flag" == "2" ]; then # Check if MMU2 is selected only for MK3/S
         MK404_PRINTER="${MK404_PRINTER}MMU2"
     fi
 fi
@@ -410,20 +410,20 @@ fi
     fi
 
 # Run MK404 with graphics
-    if [ ! -z "$graphics_flag" ]; then
+    if [ ! -z "$mk404_graphics_flag" ]; then
         if [ ! -z "$MK404_options" ]; then
             MK404_options="${MK404_options} -g "
         else
             MK404_options=" -g "
         fi
-        if [[ "$graphics_flag" == "1" || "$graphics_flag" == "lite" || "$graphics_flag" == "3" ]]; then
+        if [[ "$mk404_graphics_flag" == "1" || "$mk404_graphics_flag" == "lite" || "$mk404_graphics_flag" == "3" ]]; then
             MK404_options="${MK404_options}lite"
-        elif [[ "$graphics_flag" == "2" || "$graphics_flag" == "fancy" || "$graphics_flag" == "4" ]]; then
+        elif [[ "$mk404_graphics_flag" == "2" || "$mk404_graphics_flag" == "fancy" || "$mk404_graphics_flag" == "4" ]]; then
             MK404_options="${MK404_options}fancy"
         else
-        echo "$(tput setaf 1)Unsupported MK404 graphics option $graphics_flag$(tput sgr 0)"
+            echo "$(tput setaf 1)Unsupported MK404 graphics option $mk404_graphics_flag$(tput sgr 0)"
         fi
-        if [[ "$graphics_flag" == "3" || "$graphics_flag" == "4" ]]; then
+        if [[ "$mk404_graphics_flag" == "3" || "$mk404_graphics_flag" == "4" ]]; then
             MK404_options="${MK404_options} --colour-extrusion --extrusion Quad_HR"
         else
             MK404_options="${MK404_options} --extrusion Line"
