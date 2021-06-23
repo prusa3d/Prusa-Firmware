@@ -287,8 +287,10 @@ bool checkAllHotends(void)
     return(result);
 }
 
-  void PID_autotune(float temp, int extruder, int ncycles)
-  {
+// WARNING: the following function has been marked noinline to avoid a GCC 4.9.2 LTO
+//          codegen bug causing a stack overwrite issue in process_commands()
+void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycles)
+{
   pid_number_of_cycles = ncycles;
   pid_tuning_finished = false;
   float input = 0.0;
