@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_59
+# Version: 2.0.0-Build_60
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -163,6 +163,7 @@
 #                          Restore original `Configuration.h` and `config.h` in case of cannceled script or failed compiling during next start of this script.
 #                          use function
 # 23 Jun 2021, 3d-gussner, Improve MK404 usage
+# 24 Jun 2021, 3d-gussner, Fix MK404 user interaction not to show if compiling 'All' variants
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
@@ -382,7 +383,7 @@ while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_59 *"
+echo "* PF-build.sh Version: 2.0.0-Build_60 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
@@ -806,6 +807,7 @@ if [ -z "$variant_flag" ] ; then
             "All")
                 VARIANT="All"
                 VARIANTS=${options[*]}
+                variant_flag="All"
                 break
                 ;;
             "Quit")
@@ -1436,7 +1438,7 @@ MK404_SIM()
 cd $SCRIPT_PATH
 # Check/compile MK404 sim
 if [[ "$output_flag" == "1" || -z "$output_flag" ]]; then
-    if [[ -z "$mk404_flag" && "$VARIANTS" != "All " ]]; then
+    if [[ -z "$mk404_flag" && "$variant_flag" != "All" ]]; then
         echo
         read -t 10 -n 1 -p "Do you want to start MK404? Y/$(tput setaf 2)n$(tput sgr 0)" mk404_start
         if [ "$mk404_start" == "Y" ]; then
@@ -1474,7 +1476,7 @@ fi
         mk404_flag=2
     fi
 
-if [[ ! -z "$mk404_flag" && "$VARIANTS" != "All " ]]; then
+if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
 
 # For Prusa MK2, MK2.5/S
     if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
