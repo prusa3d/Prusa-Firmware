@@ -1559,17 +1559,6 @@ void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl e
 }
 #endif
 
-void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
-{
-    do
-    {
-        *value = eeprom_read_byte((unsigned char*)pos);
-        pos++;
-        value++;
-    }while(--size);
-}
-
-
 void st_current_init() //Initialize Digipot Motor Current
 {
 #ifdef MOTOR_CURRENT_PWM_XY_PIN

@@ -32,11 +32,13 @@
 #include "Marlin.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
+#include "menu.h"
+#include "conv2str.h"
 #include "sound.h"
 #include "temperature.h"
 #include "cardreader.h"
 
-#include "Sd2PinMap.h"
+#include "SdFatUtil.h"
 
 #include <avr/wdt.h>
 #include "adc.h"
@@ -2059,6 +2061,9 @@ FORCE_INLINE static void temperature_isr()
     }
   }
 #endif //BABYSTEPPING
+
+  // Check if a stack overflow happened
+  if (!SdFatUtil::test_stack_integrity()) stack_error();
 
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
   check_fans();

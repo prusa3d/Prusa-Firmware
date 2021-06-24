@@ -1176,7 +1176,7 @@
 
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
-"Se cargocon exito el filamento?"
+"Se descargo con exito el filamento?"
 
 #MSG_SELFTEST_WIRINGERROR c=18
 "Wiring error"
