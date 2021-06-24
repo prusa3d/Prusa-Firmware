@@ -10,6 +10,7 @@
 #include "cmdqueue.h"
 #include "mmu.h"
 #include <avr/pgmspace.h>
+#include "util.h"
 
 //! @brief Wait for preheat
 void lay1cal_wait_preheat()
@@ -222,30 +223,23 @@ void lay1cal_square(char *cmd_buffer, uint8_t i)
 //!
 void lay1cal_set_flow()
 {    
-   uint8_t nDiameter;
-    nDiameter=eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER);
+    ClNozzleDiameter nDiameter=(ClNozzleDiameter)eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER);
 
-    switch (nDiameter)
-    {
-    case 25:
+    switch(nDiameter){
+    case ClNozzleDiameter::_Diameter_250:
         enquecommand_P(PSTR("M221 S62"));
         break;
-
-    case 40:
+    case ClNozzleDiameter::_Diameter_400:
         enquecommand_P(PSTR("M221 S100"));
         break;
-    
-    case 60:
+    case ClNozzleDiameter::_Diameter_600:
         enquecommand_P(PSTR("M221 S150"));
         break;
-
-    case 80:
+    case ClNozzleDiameter::_Diameter_800:
         enquecommand_P(PSTR("M221 S200"));
-        break; 
-
-    default:
+        break;
+    case ClNozzleDiameter::_Diameter_Undef:
         enquecommand_P(PSTR("M221 S100"));
         break;
-    }
-    
+    }    
 }
