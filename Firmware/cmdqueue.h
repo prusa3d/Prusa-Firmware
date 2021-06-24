@@ -49,7 +49,7 @@ extern bool cmdqueue_serial_disabled;
 extern uint32_t sdpos_atomic;
 
 extern int serial_count;
-extern boolean comment_mode;
+extern bool comment_mode;
 extern char *strchr_pointer;
 
 extern unsigned long TimeSent;
