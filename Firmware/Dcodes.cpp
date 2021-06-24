@@ -974,6 +974,18 @@ void dcode_22()
 
 bool emergency_serial_dump = false;
 
+void dcode_23()
+{
+    if(code_seen('E'))
+        serial_dump_and_reset(dump_crash_reason::manual);
+    else
+    {
+        emergency_serial_dump = !code_seen('R');
+        SERIAL_ECHOPGM("serial dump ");
+        SERIAL_ECHOLNRPGM(emergency_serial_dump? _N("enabled"): _N("disabled"));
+    }
+}
+
 void __attribute__((noinline)) serial_dump_and_reset(dump_crash_reason reason)
 {
     uint16_t sp;

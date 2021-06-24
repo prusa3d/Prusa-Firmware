@@ -37,7 +37,8 @@ extern void dcode_22(); //D22 - Clear crash dump state
 
 #ifdef EMERGENCY_SERIAL_DUMP
 #include "xflash_dump.h"
-extern bool emergency_serial_dump;
+extern void dcode_23(); //D23 - Request/generate an online serial crash dump
+extern bool emergency_serial_dump; //emergency dump enabled flag
 extern void serial_dump_and_reset(dump_crash_reason);
 #endif
 
