@@ -4242,37 +4242,16 @@ static void lcd_move_menu_1mm()
   lcd_move_menu_axis();
 }
 
-
-void EEPROM_save(int pos, uint8_t* value, uint8_t size)
-{
-  do
-  {
-    eeprom_write_byte((unsigned char*)pos, *value);
-    pos++;
-    value++;
-  } while (--size);
-}
-
-void EEPROM_read(int pos, uint8_t* value, uint8_t size)
-{
-  do
-  {
-    *value = eeprom_read_byte((unsigned char*)pos);
-    pos++;
-    value++;
-  } while (--size);
-}
-
 #ifdef SDCARD_SORT_ALPHA
 static void lcd_sort_type_set() {
 	uint8_t sdSort;
-		EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	sdSort = eeprom_read_byte((uint8_t*) EEPROM_SD_SORT);
 	switch (sdSort) {
 		case SD_SORT_TIME: sdSort = SD_SORT_ALPHA; break;
 		case SD_SORT_ALPHA: sdSort = SD_SORT_NONE; break;
 		default: sdSort = SD_SORT_TIME;
 	}
-	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
+	eeprom_update_byte((uint8_t*)EEPROM_SD_SORT, sdSort);
 	card.presort_flag = true;
 }
 #endif //SDCARD_SORT_ALPHA
@@ -5272,7 +5251,7 @@ do\
         MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_NORMAL), lcd_toshiba_flash_air_compatibility_toggle);\
 \
     uint8_t sdSort;\
-    EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));\
+    sdSort = eeprom_read_byte((uint8_t*) EEPROM_SD_SORT);\
     switch (sdSort)\
     {\
       case SD_SORT_TIME: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_TIME), lcd_sort_type_set); break;\
@@ -5665,7 +5644,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 static void lcd_settings_menu()
 {
-	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
+	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 
@@ -6872,9 +6851,7 @@ static void lcd_tune_menu()
 		calculate_extruder_multipliers();
 	}
 
-  EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
-
-
+	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
 
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN)); //1
