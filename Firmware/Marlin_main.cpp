@@ -375,7 +375,7 @@ bool target_direction;
 //Insert variables if CHDK is defined
 #ifdef CHDK
 unsigned long chdkHigh = 0;
-boolean chdkActive = false;
+bool chdkActive = false;
 #endif
 
 //! @name RAM save/restore printing
@@ -9091,7 +9091,7 @@ Sigma_Exit:
               }
               else {
 #if EXTRUDERS > 1
-                  boolean make_move = false;
+                  bool make_move = false;
 #endif
                   if (code_seen('F')) {
 #if EXTRUDERS > 1
