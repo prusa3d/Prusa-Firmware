@@ -246,7 +246,7 @@ void finishAndDisableSteppers();
 //put an ASCII command at the begin of the current buffer, read from flash
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
 
-void prepare_arc_move(char isclockwise);
+void prepare_arc_move(bool isclockwise);
 void clamp_to_software_endstops(float target[3]);
 void refresh_cmd_timeout(void);
 
