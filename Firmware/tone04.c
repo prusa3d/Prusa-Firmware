@@ -43,10 +43,10 @@ void timer4_set_fan0(uint8_t duty)
 		// We use digital logic if the duty cycle is 0% or 100%
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 		{
-			TCCR4A &= ~(1 << COM4C1);
+			TCCR4A &= ~_BV(COM4C1);
 			OCR4C = 0;
-			WRITE(EXTRUDER_0_AUTO_FAN_PIN, duty);
 		}
+		WRITE(EXTRUDER_0_AUTO_FAN_PIN, duty);
 	}
 	else
 	{
@@ -56,7 +56,7 @@ void timer4_set_fan0(uint8_t duty)
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 		{
 			// Enable the PWM output on the fan pin.
-			TCCR4A |= (1 << COM4C1);
+			TCCR4A |= _BV(COM4C1);
 			OCR4C = (((uint32_t)duty) * ((uint32_t)((TIMSK4 & (1 << OCIE4A))?OCR4A:255))) / ((uint32_t)255);
 		}
 	}
