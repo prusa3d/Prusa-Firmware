@@ -1301,62 +1301,67 @@ void st_init()
     disable_e2();
   #endif
 
-  // waveform generation = 0100 = CTC
-  TCCR1B &= ~(1<<WGM13);
-  TCCR1B |=  (1<<WGM12);
-  TCCR1A &= ~(1<<WGM11);
-  TCCR1A &= ~(1<<WGM10);
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  {
+    // waveform generation = 0100 = CTC
+    TCCR1B &= ~(1<<WGM13);
+    TCCR1B |=  (1<<WGM12);
+    TCCR1A &= ~(1<<WGM11);
+    TCCR1A &= ~(1<<WGM10);
 
-  // output mode = 00 (disconnected)
-  TCCR1A &= ~(3<<COM1A0);
-  TCCR1A &= ~(3<<COM1B0);
+    // output mode = 00 (disconnected)
+    TCCR1A &= ~(3<<COM1A0);
+    TCCR1A &= ~(3<<COM1B0);
 
-  // Set the timer pre-scaler
-  // Generally we use a divider of 8, resulting in a 2MHz timer
-  // frequency on a 16MHz MCU. If you are going to change this, be
-  // sure to regenerate speed_lookuptable.h with
-  // create_speed_lookuptable.py
-  TCCR1B = (TCCR1B & ~(0x07<<CS10)) | (2<<CS10);
+    // Set the timer pre-scaler
+    // Generally we use a divider of 8, resulting in a 2MHz timer
+    // frequency on a 16MHz MCU. If you are going to change this, be
+    // sure to regenerate speed_lookuptable.h with
+    // create_speed_lookuptable.py
+    TCCR1B = (TCCR1B & ~(0x07<<CS10)) | (2<<CS10);
 
-  // Plan the first interrupt after 8ms from now.
-  OCR1A = 0x4000;
-  TCNT1 = 0;
+    // Plan the first interrupt after 8ms from now.
+    OCR1A = 0x4000;
+    TCNT1 = 0;
 
 #ifdef LIN_ADVANCE
 #ifdef LA_DEBUG_LOGIC
-  LOGIC_ANALYZER_CH0_ENABLE;
-  LOGIC_ANALYZER_CH1_ENABLE;
-  WRITE_NC(LOGIC_ANALYZER_CH0, false);
-  WRITE_NC(LOGIC_ANALYZER_CH1, false);
+    LOGIC_ANALYZER_CH0_ENABLE;
+    LOGIC_ANALYZER_CH1_ENABLE;
+    WRITE_NC(LOGIC_ANALYZER_CH0, false);
+    WRITE_NC(LOGIC_ANALYZER_CH1, false);
 #endif
 
-  // Initialize state for the linear advance scheduler
-  nextMainISR = 0;
-  nextAdvanceISR = ADV_NEVER;
-  main_Rate = ADV_NEVER;
-  current_adv_steps = 0;
+    // Initialize state for the linear advance scheduler
+    nextMainISR = 0;
+    nextAdvanceISR = ADV_NEVER;
+    main_Rate = ADV_NEVER;
+    current_adv_steps = 0;
 #endif
+  }
 
   enable_endstops(true); // Start with endstops active. After homing they can be disabled
 
   ENABLE_STEPPER_DRIVER_INTERRUPT();
-  sei();
 }
 
 
 void st_reset_timer()
 {
-  // Clear a possible pending interrupt on OCR1A overflow.
-  TIFR1 |= 1 << OCF1A;
-  // Reset the counter.
-  TCNT1 = 0;
-  // Wake up after 1ms from now.
-  OCR1A = 2000;
-
+    // Clear a possible pending interrupt on OCR1A overflow.
+    // Using = instead of |= generates a single out instruction. This is great since these flags can only be cleared by writing 1 to the corresponding bit, so only OCF1A is cleared.
+    TIFR1 = _BV(OCF1A);
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        // Reset the counter.
+        TCNT1 = 0;
+        // Wake up after 1ms from now.
+        OCR1A = 2000;
+    }
 #ifdef LIN_ADVANCE
-  nextMainISR = 0;
-  if(nextAdvanceISR && nextAdvanceISR != ADV_NEVER)
-      nextAdvanceISR = 0;
+    nextMainISR = 0;
+    if(nextAdvanceISR && nextAdvanceISR != ADV_NEVER)
+        nextAdvanceISR = 0;
 #endif
 }
 
@@ -1583,8 +1588,10 @@ void st_current_init() //Initialize Digipot Motor Current
     st_current_set(0, motor_current_setting[0]);
     st_current_set(1, motor_current_setting[1]);
     st_current_set(2, motor_current_setting[2]);
+
     //Set timer5 to 31khz so the PWM of the motor power is as constant as possible. (removes a buzzing noise)
-    TCCR5B = (TCCR5B & ~(_BV(CS50) | _BV(CS51) | _BV(CS52))) | _BV(CS50);
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+        TCCR5B = (TCCR5B & ~(_BV(CS50) | _BV(CS51) | _BV(CS52))) | _BV(CS50);
 #endif
 }
 

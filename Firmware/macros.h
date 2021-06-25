@@ -2,6 +2,7 @@
 #define MACROS_H
 
 #include <avr/interrupt.h> //for cli() and sei()
+#include <util/atomic.h> //for better critical sections
 
 #define  FORCE_INLINE __attribute__((always_inline)) inline
 #define _UNUSED __attribute__((unused))

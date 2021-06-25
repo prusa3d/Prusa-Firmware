@@ -1401,8 +1401,9 @@ void setup()
 #endif //TMC2130_VARIABLE_RESOLUTION
 
 #endif //TMC2130
-	st_init();    // Initialize stepper, this enables interrupts!
-  
+
+	st_init(); // Initialize stepper interrupt. Interrupts are already enabled by the arduino core before setup()
+
 #ifdef TMC2130
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	update_mode_profile();
