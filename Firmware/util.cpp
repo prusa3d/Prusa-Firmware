@@ -146,9 +146,14 @@ inline int8_t is_provided_version_newer(const char *version_string)
     uint16_t ver_gcode[4];
     if (! parse_version(version_string, ver_gcode))
         return -1;
-    for (uint8_t i = 0; i < 3; ++ i)
-        if (ver_gcode[i] > FW_VERSION_NR[i])
+    for (uint8_t i = 0; i < 4; ++ i)
+    {
+        uint16_t v = (uint16_t)pgm_read_word(&FW_VERSION_NR[i]);
+        if (ver_gcode[i] > v)
             return 1;
+        else if (ver_gcode[i] < v)
+            return 0;
+    }
     return 0;
 }
 
@@ -182,19 +187,9 @@ bool force_selftest_if_fw_version()
 
 bool show_upgrade_dialog_if_version_newer(const char *version_string)
 {
-    uint16_t ver_gcode[4];
-    if (! parse_version(version_string, ver_gcode)) {
-//        SERIAL_PROTOCOLLNPGM("parse_version failed");
+    int8_t upgrade = is_provided_version_newer(version_string);
+    if (upgrade < 0)
         return false;
-    }
-    bool upgrade = false;
-    for (uint8_t i = 0; i < 4; ++ i) {
-        if (ver_gcode[i] > FW_VERSION_NR[i]) {
-            upgrade = true;
-            break;
-        } else if (ver_gcode[i] < FW_VERSION_NR[i])
-            break;
-    }
 
     if (upgrade) {
         lcd_display_message_fullscreen_P(_i("New firmware version available:"));////MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
@@ -220,11 +215,11 @@ void update_current_firmware_version_to_eeprom()
     for (int8_t i = 0; i < FW_PRUSA3D_MAGIC_LEN; ++ i){
         eeprom_update_byte((uint8_t*)(EEPROM_FIRMWARE_PRUSA_MAGIC+i), pgm_read_byte(FW_PRUSA3D_MAGIC_STR+i));
     }
-    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR,    FW_VERSION_NR[0]);
-    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR,    FW_VERSION_NR[1]);
-    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION, FW_VERSION_NR[2]);
+    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR,    (uint16_t)pgm_read_word(&FW_VERSION_NR[0]));
+    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR,    (uint16_t)pgm_read_word(&FW_VERSION_NR[1]));
+    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION, (uint16_t)pgm_read_word(&FW_VERSION_NR[2]));
     // See FirmwareRevisionFlavorType for the definition of firmware flavors.
-    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR,   FW_VERSION_NR[3]);
+    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR,   (uint16_t)pgm_read_word(&FW_VERSION_NR[3]));
 }
 
 
