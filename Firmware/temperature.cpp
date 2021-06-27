@@ -32,11 +32,13 @@
 #include "Marlin.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
+#include "menu.h"
+#include "conv2str.h"
 #include "sound.h"
 #include "temperature.h"
 #include "cardreader.h"
 
-#include "Sd2PinMap.h"
+#include "SdFatUtil.h"
 
 #include <avr/wdt.h>
 #include "adc.h"
@@ -197,7 +199,9 @@ static uint8_t heater_ttbllen_map[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_TEMP
 
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
+#ifdef AMBIENT_MAXTEMP
 static float analog2tempAmbient(int raw);
+#endif
 static void updateTemperaturesFromRawValues();
 
 enum TempRunawayStates
@@ -283,8 +287,10 @@ bool checkAllHotends(void)
     return(result);
 }
 
-  void PID_autotune(float temp, int extruder, int ncycles)
-  {
+// WARNING: the following function has been marked noinline to avoid a GCC 4.9.2 LTO
+//          codegen bug causing a stack overwrite issue in process_commands()
+void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycles)
+{
   pid_number_of_cycles = ncycles;
   pid_tuning_finished = false;
   float input = 0.0;
@@ -567,10 +573,7 @@ void checkFanSpeed()
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
 	if ((fan_speed[0] < 20) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)){ fan_speed_errors[0]++;}
-	else{
-    fan_speed_errors[0] = 0;
-    host_keepalive();
-  }
+	else fan_speed_errors[0] = 0;
 #endif
 #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 	if ((fan_speed[1] < 5) && ((blocks_queued() ? block_buffer[block_buffer_tail].fan_speed : fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
@@ -902,8 +905,6 @@ void manage_heater()
 		timer02_set_pwm0(soft_pwm_bed << 1);
 	  }
   #endif
-  
-  host_keepalive();
 }
 
 #define PGM_RD_W(x)   (short)pgm_read_word(&x)
@@ -2062,6 +2063,9 @@ FORCE_INLINE static void temperature_isr()
     }
   }
 #endif //BABYSTEPPING
+
+  // Check if a stack overflow happened
+  if (!SdFatUtil::test_stack_integrity()) stack_error();
 
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
   check_fans();

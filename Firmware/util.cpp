@@ -1,13 +1,15 @@
 #include "Configuration.h"
 
 #include "ultralcd.h"
+#include "menu.h"
 #include "sound.h"
 #include "language.h"
 #include "util.h"
 #include <avr/pgmspace.h>
 
 // Allocate the version string in the program memory. Otherwise the string lands either on the stack or in the global RAM.
-const char FW_VERSION_STR[] PROGMEM = FW_VERSION;
+static const char FW_VERSION_STR[] PROGMEM = FW_VERSION;
+static const uint16_t FW_VERSION_NR[4] PROGMEM = { FW_MAJOR, FW_MINOR, FW_REVISION, FW_COMMIT_NR };
 
 const char* FW_VERSION_STR_P()
 {
@@ -138,105 +140,14 @@ inline bool strncmp_PP(const char *p1, const char *p2, uint8_t n)
     return 0;
 }
 
-// Parse a major.minor.revision version number.
-// Return true if valid.
-inline bool parse_version_P(const char *str, uint16_t version[4])
-{    
-#if 0
-    SERIAL_ECHOPGM("Parsing version string ");
-    SERIAL_ECHORPGM(str);
-    SERIAL_ECHOLNPGM("");
-#endif
-
-    const char *major = str;
-    const char *p = str;
-    while (is_digit(char(pgm_read_byte(p)))) ++ p;
-    if (pgm_read_byte(p) != '.')
-        return false;
-    const char *minor = ++ p;
-    while (is_digit(char(pgm_read_byte(p)))) ++ p;
-    if (pgm_read_byte(p) != '.')
-        return false;
-    const char *rev = ++ p;
-    while (is_digit(char(pgm_read_byte(p)))) ++ p;
-    if (! is_whitespace_or_nl_or_eol(char(pgm_read_byte(p))) && pgm_read_byte(p) != '-')
-        return false;
-
-    char buf[5];
-    uint8_t n = minor - major - 1;
-    if (n > 4)
-        return false;
-    memcpy_P(buf, major, n); buf[n] = 0;
-    char *endptr = NULL;
-    version[0] = strtol(buf, &endptr, 10);
-    if (*endptr != 0)
-        return false;
-    n = rev - minor - 1;
-    if (n > 4)
-        return false;
-    memcpy_P(buf, minor, n); buf[n] = 0;
-    version[1] = strtol(buf, &endptr, 10);
-    if (*endptr != 0)
-        return false;
-    n = p - rev;
-    if (n > 4)
-        return false;
-    memcpy_P(buf, rev, n);
-    buf[n] = 0;
-    version[2] = strtol(buf, &endptr, 10);
-    if (*endptr != 0)
-        return false;
-
-    version[3] = FIRMWARE_REVISION_RELEASED;
-    if (pgm_read_byte(p ++) == '-') {
-        const char *q = p;
-        while (! is_whitespace_or_nl_or_eol(char(pgm_read_byte(q))))
-            ++ q;
-        n = q - p;
-        if (n == strlen_P(STR_REVISION_DEV) && strncmp_PP(p, STR_REVISION_DEV, n) == 0)
-            version[3] = FIRMWARE_REVISION_DEV;
-        else if (n == strlen_P(STR_REVISION_ALPHA) && strncmp_PP(p, STR_REVISION_ALPHA, n) == 0)
-            version[3] = FIRMWARE_REVISION_ALPHA;
-        else if (n == strlen_P(STR_REVISION_BETA) && strncmp_PP(p, STR_REVISION_BETA, n) == 0)
-            version[3] = FIRMWARE_REVISION_BETA;
-        else if ((n == 2 || n == 3) && strncmp_PP(p, STR_REVISION_RC, 2) == 0) {
-            if (n == 2)
-                version[3] = FIRMWARE_REVISION_RC;
-            else {
-                p += 2;
-                if (is_digit(pgm_read_byte(p)))
-                    version[3] = FIRMWARE_REVISION_RC + pgm_read_byte(p) - '1';
-                else
-                    return false;
-            }
-        } else
-            return false;
-    }
-
-#if 0
-    SERIAL_ECHOPGM("Version parsed, major: ");
-    SERIAL_ECHO(version[0]);
-    SERIAL_ECHOPGM(", minor: ");
-    SERIAL_ECHO(version[1]);
-    SERIAL_ECHOPGM(", revision: ");
-    SERIAL_ECHO(version[2]);
-    SERIAL_ECHOPGM(", flavor: ");
-    SERIAL_ECHO(version[3]);
-    SERIAL_ECHOLNPGM("");
-#endif
-    return true;
-}
-
 // 1 - yes, 0 - false, -1 - error;
 inline int8_t is_provided_version_newer(const char *version_string)
 {
-    uint16_t ver_gcode[4], ver_current[4];
+    uint16_t ver_gcode[4];
     if (! parse_version(version_string, ver_gcode))
         return -1;
-    if (! parse_version_P(FW_VERSION_STR, ver_current))
-        return 0; // this shall not happen
     for (uint8_t i = 0; i < 3; ++ i)
-        if (ver_gcode[i] > ver_current[i])
+        if (ver_gcode[i] > FW_VERSION_NR[i])
             return 1;
     return 0;
 }
@@ -271,22 +182,17 @@ bool force_selftest_if_fw_version()
 
 bool show_upgrade_dialog_if_version_newer(const char *version_string)
 {
-    uint16_t ver_gcode[4], ver_current[4];
+    uint16_t ver_gcode[4];
     if (! parse_version(version_string, ver_gcode)) {
 //        SERIAL_PROTOCOLLNPGM("parse_version failed");
         return false;
     }
-    if (! parse_version_P(FW_VERSION_STR, ver_current)) {
-//        SERIAL_PROTOCOLLNPGM("parse_version_P failed");
-        return false; // this shall not happen
-    }
-//    SERIAL_PROTOCOLLNPGM("versions parsed");
     bool upgrade = false;
     for (uint8_t i = 0; i < 4; ++ i) {
-        if (ver_gcode[i] > ver_current[i]) {
+        if (ver_gcode[i] > FW_VERSION_NR[i]) {
             upgrade = true;
             break;
-        } else if (ver_gcode[i] < ver_current[i])
+        } else if (ver_gcode[i] < FW_VERSION_NR[i])
             break;
     }
 
@@ -311,16 +217,14 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
 
 void update_current_firmware_version_to_eeprom()
 {
-    for (int8_t i = 0; i < FW_PRUSA3D_MAGIC_LEN; ++ i)
+    for (int8_t i = 0; i < FW_PRUSA3D_MAGIC_LEN; ++ i){
         eeprom_update_byte((uint8_t*)(EEPROM_FIRMWARE_PRUSA_MAGIC+i), pgm_read_byte(FW_PRUSA3D_MAGIC_STR+i));
-    uint16_t ver_current[4];
-    if (parse_version_P(FW_VERSION_STR, ver_current)) {
-        eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR,    ver_current[0]);
-        eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR,    ver_current[1]);
-        eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION, ver_current[2]);
-        // See FirmwareRevisionFlavorType for the definition of firmware flavors.
-        eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR,   ver_current[3]);
     }
+    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR,    FW_VERSION_NR[0]);
+    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR,    FW_VERSION_NR[1]);
+    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION, FW_VERSION_NR[2]);
+    // See FirmwareRevisionFlavorType for the definition of firmware flavors.
+    eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR,   FW_VERSION_NR[3]);
 }
 
 
@@ -393,13 +297,13 @@ switch(oCheckMode)
      {
      case ClCheckMode::_Warn:
 //          lcd_show_fullscreen_message_and_wait_P(_i("Printer nozzle diameter differs from the G-code. Continue?"));
-lcd_display_message_fullscreen_P(_i("Printer nozzle diameter differs from the G-code. Continue?"));
+lcd_display_message_fullscreen_P(_i("Printer nozzle diameter differs from the G-code. Continue?"));////MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 //???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
 lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckMode::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."));
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."));////MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
           lcd_print_stop();
           break;
      case ClCheckMode::_None:
@@ -479,13 +383,13 @@ switch(oCheckVersion)
      {
      case ClCheckVersion::_Warn:
 //          lcd_show_fullscreen_message_and_wait_P(_i("Printer FW version differs from the G-code. Continue?"));
-lcd_display_message_fullscreen_P(_i("G-code sliced for a newer firmware. Continue?"));
+lcd_display_message_fullscreen_P(_i("G-code sliced for a newer firmware. Continue?"));////MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 //???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
 lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckVersion::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a newer firmware. Please update the firmware. Print cancelled."));
+          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a newer firmware. Please update the firmware. Print cancelled."));////MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
           lcd_print_stop();
           break;
      case ClCheckVersion::_None:
@@ -512,13 +416,13 @@ switch(oCheckGcode)
      {
      case ClCheckGcode::_Warn:
 //          lcd_show_fullscreen_message_and_wait_P(_i("Printer G-code level differs from the G-code. Continue?"));
-lcd_display_message_fullscreen_P(_i("G-code sliced for a different level. Continue?"));
+lcd_display_message_fullscreen_P(_i("G-code sliced for a different level. Continue?"));////MSG_GCODE_DIFF_CONTINUE c=20 r=4
 lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
 //???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
 lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckGcode::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a different level. Please re-slice the model again. Print cancelled."));
+          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a different level. Please re-slice the model again. Print cancelled."));////MSG_GCODE_DIFF_CANCELLED c=20 r=7
           lcd_print_stop();
           break;
      case ClCheckGcode::_None:

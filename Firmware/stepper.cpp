@@ -1100,7 +1100,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 void st_init()
 {
 #ifdef TMC2130
-	tmc2130_init();
+	tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
 #endif //TMC2130
 
   st_current_init(); //Initialize Digipot Motor Current
@@ -1558,17 +1558,6 @@ void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl e
     //_delay(10);
 }
 #endif
-
-void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
-{
-    do
-    {
-        *value = eeprom_read_byte((unsigned char*)pos);
-        pos++;
-        value++;
-    }while(--size);
-}
-
 
 void st_current_init() //Initialize Digipot Motor Current
 {

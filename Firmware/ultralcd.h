@@ -1,13 +1,7 @@
 #ifndef ULTRALCD_H
 #define ULTRALCD_H
 
-#include "Marlin.h"
-#include "lcd.h"
-#include "conv2str.h"
-#include "menu.h"
 #include "mesh_bed_calibration.h"
-#include "config.h"
-
 #include "config.h"
 
 extern void menu_lcd_longpress_func(void);
@@ -135,6 +129,9 @@ extern uint8_t farm_mode;
 extern int farm_timer;
 extern uint8_t farm_status;
 
+extern bool UserECoolEnabled();
+extern bool FarmOrUserECool();
+
 #ifdef TMC2130
 #define SILENT_MODE_NORMAL 0
 #define SILENT_MODE_STEALTH 1
@@ -197,19 +194,12 @@ extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentItemForce();
 void lcd_generic_preheat_menu();
-void unload_filament();
+void unload_filament(bool automatic = false);
 
-void stack_error();
 void lcd_printer_connected();
 void lcd_ping();
 
 void lcd_calibrate_extruder();
-void lcd_farm_sdcard_menu();
-
-//void getFileDescription(char *name, char *description);
-
-void lcd_farm_sdcard_menu_w();
-//void get_description();
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();

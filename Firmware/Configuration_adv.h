@@ -387,6 +387,12 @@ const unsigned int dropsegments=5; //everything with less than this number of st
  */
 #define EXTENDED_CAPABILITIES_REPORT
 
+/**
+ * Enable M120/M121 G-code commands
+ * 
+ */
+//#define M120_M121_ENABLED  //Be careful enabling and using these G-code commands.
+
 //===========================================================================
 //=============================  Define Defines  ============================
 //===========================================================================

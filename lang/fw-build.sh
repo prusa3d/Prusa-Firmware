@@ -198,6 +198,21 @@ if [ -e lang_nl.bin ]; then cat lang_nl.bin >> lang.bin; fi
 ## New language
 #if [ -e lang_qr.bin ]; then cat lang_qr.bin >> lang.bin; fi
 
+# Check that the language data doesn't exceed the reserved XFLASH space
+echo " checking language data size:"
+lang_size=$(wc -c lang.bin | cut -f1 -d' ')
+lang_size_pad=$(( ($lang_size+4096-1) / 4096 * 4096 ))
+
+# TODO: hard-coded! get value by preprocessing LANG_SIZE from xflash_layout.h!
+lang_reserved=249856
+
+echo "  total size usage: $lang_size_pad ($lang_size)"
+echo "  reserved size:    $lang_reserved"
+if [ $lang_size_pad -gt $lang_reserved ]; then
+  echo "NG! - language data too large" >&2
+  finish 1
+fi
+
 #convert lang.bin to lang.hex
 echo -n " converting to hex..." >&2
 $OBJCOPY -I binary -O ihex ./lang.bin ./lang.hex

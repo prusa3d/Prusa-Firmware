@@ -54,14 +54,6 @@
 #define TMC2130_SPCR           SPI_SPCR(TMC2130_SPI_RATE, 1, 1, 1, 0)
 #define TMC2130_SPSR           SPI_SPSR(TMC2130_SPI_RATE)
 
-//W25X20CL configuration
-//pinout:
-#define W25X20CL_PIN_CS        32
-//spi:
-#define W25X20CL_SPI_RATE      0 // fosc/4 = 4MHz
-#define W25X20CL_SPCR          SPI_SPCR(W25X20CL_SPI_RATE, 1, 1, 1, 0)
-#define W25X20CL_SPSR          SPI_SPSR(W25X20CL_SPI_RATE)
-
 //LANG - Multi-language support
 //#define LANG_MODE              0 // primary language only
 #define LANG_MODE              1 // sec. language support
@@ -74,6 +66,27 @@
 
 #if defined(COMMUNITY_LANG_NL) //|| defined(COMMUNITY_LANG_QR) //..use last part as a template and replace 'QR'
 #define COMMUNITY_LANG_SUPPORT
+#endif
+
+// Sanity checks for correct configuration of XFLASH_DUMP options
+#if defined(XFLASH_DUMP) && !defined(XFLASH)
+#error "XFLASH_DUMP requires XFLASH support"
+#endif
+#if (defined(MENU_DUMP) || defined(EMERGENCY_DUMP)) && !defined(XFLASH_DUMP)
+#error "MENU_DUMP and EMERGENCY_DUMP require XFLASH_DUMP"
+#endif
+
+// Support for serial dumps is mutually exclusive with XFLASH_DUMP features
+#if defined(EMERGENCY_DUMP) && defined(EMERGENCY_SERIAL_DUMP)
+#error "EMERGENCY_DUMP and EMERGENCY_SERIAL_DUMP are mutually exclusive"
+#endif
+#if defined(MENU_DUMP) && defined(MENU_SERIAL_DUMP)
+#error "MENU_DUMP and MENU_SERIAL_DUMP are mutually exclusive"
+#endif
+
+// Reduce internal duplication
+#if defined(EMERGENCY_DUMP) || defined(EMERGENCY_SERIAL_DUMP)
+#define EMERGENCY_HANDLERS
 #endif
 
 #endif //_CONFIG_H

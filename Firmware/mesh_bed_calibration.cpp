@@ -1,4 +1,3 @@
-#include "Marlin.h"
 #include "Configuration.h"
 #include "ConfigurationStore.h"
 #include "language.h"
@@ -1065,7 +1064,7 @@ error:
 }
 
 #ifdef NEW_XYZCAL
-bool xyzcal_find_bed_induction_sensor_point_xy();
+BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy();
 #endif //NEW_XYZCAL
 // Search around the current_position[X,Y],
 // look for the induction sensor response.
@@ -1081,7 +1080,7 @@ bool xyzcal_find_bed_induction_sensor_point_xy();
 #endif //HEATBED_V2
 
 #ifdef HEATBED_V2
-bool find_bed_induction_sensor_point_xy(int
+BedSkewOffsetDetectionResultType find_bed_induction_sensor_point_xy(int
 #if !defined (NEW_XYZCAL) && defined (SUPPORT_VERBOSITY)
         verbosity_level
 #endif
@@ -1137,7 +1136,7 @@ bool find_bed_induction_sensor_point_xy(int
 
 		//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
 		go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
-		// Continously lower the Z axis.
+		// Continuously lower the Z axis.
 		endstops_hit_on_purpose();
 		enable_z_endstop(true);
 		bool direction = false;
@@ -1335,7 +1334,7 @@ bool find_bed_induction_sensor_point_xy(int
 #endif //NEW_XYZCAL
 }
 #else //HEATBED_V2
-bool find_bed_induction_sensor_point_xy(int verbosity_level)
+BedSkewOffsetDetectionResultType find_bed_induction_sensor_point_xy(int verbosity_level)
 {
 #ifdef NEW_XYZCAL
 	return xyzcal_find_bed_induction_sensor_point_xy();
@@ -1531,7 +1530,9 @@ bool find_bed_induction_sensor_point_xy(int verbosity_level)
 	}
 
 	enable_z_endstop(false);
-	return found;
+    if (found)
+        return BED_SKEW_OFFSET_DETECTION_POINT_FOUND;
+    return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 #endif //NEW_XYZCAL
 }
 
@@ -2230,25 +2231,26 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		}
 		#endif // SUPPORT_VERBOSITY
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-    uint8_t next_line;
-    lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1), next_line);
-    if (next_line > 3)
-        next_line = 3;
+    lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Collect the rear 2x3 points.
 	current_position[Z_AXIS] = MESH_HOME_Z_SEARCH + FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP * iteration * 0.3;
-	for (int k = 0; k < 4; ++k) {
-		// Don't let the manage_inactivity() function remove power from the motors.
-		refresh_cmd_timeout();
+
+    /// Retry point scanning if a point with bad data appears.
+    /// Bad data could be cause by "cold" sensor.
+    /// This behavior vanishes after few point scans so retry will help.
+    for (int retries = 0; retries <= 1; ++retries) {
+        bool retry = false;
+        for (int k = 0; k < 4; ++k) {
+            // Don't let the manage_inactivity() function remove power from the motors.
+            refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-		lcd_set_cursor(0, next_line);
-		lcd_print(k + 1);
-		lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
+		lcd_set_cursor(0, 3);
+		lcd_printf_P(PSTR("%d/4"),(k+1));
 
 		if (iteration > 0) {
-			lcd_puts_at_P(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20
-			lcd_print(int(iteration + 1));
+			lcd_printf_P(PSTR(" %S %d/1"),_T(MSG_ITERATION),int(iteration + 1));
 		}
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		float *pt = pts + k * 2;
@@ -2304,8 +2306,19 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		if (verbosity_level >= 10)
 			delay_keep_alive(3000);
 		#endif // SUPPORT_VERBOSITY
-		if (!find_bed_induction_sensor_point_xy(verbosity_level))
-			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+
+        BedSkewOffsetDetectionResultType result;
+        result = find_bed_induction_sensor_point_xy(verbosity_level);
+        switch(result){
+            case BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND:
+                return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+            case BED_SKEW_OFFSET_DETECTION_POINT_SCAN_FAILED:
+                retry = true;
+                break;
+            default:
+                break;
+        }
+
 #ifndef NEW_XYZCAL
 #ifndef HEATBED_V2
 		
@@ -2380,6 +2393,9 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			}
 			#endif // SUPPORT_VERBOSITY
         }
+        if (!retry)
+            break;
+    }
         DBG(_n("All 4 calibration points found.\n"));
         delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
 		
@@ -2512,10 +2528,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
     bool endstop_z_enabled = enable_z_endstop(false);
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-    uint8_t next_line;
-    lcd_display_message_fullscreen_P(_i("Improving bed calibration point"), next_line);////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60
-    if (next_line > 3)
-        next_line = 3;
+    lcd_display_message_fullscreen_P(_i("Improving bed calibration point"));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Collect a matrix of 9x9 points.
@@ -2525,9 +2538,8 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         refresh_cmd_timeout();
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-        lcd_set_cursor(0, next_line);
-		lcd_print(mesh_point+1);
-        lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
+        lcd_set_cursor(0, 3);
+        lcd_printf_P(PSTR("%d/4"),mesh_point+1);
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.
@@ -2825,14 +2837,9 @@ bool sample_mesh_and_store_reference()
     refresh_cmd_timeout();
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-    uint8_t next_line;
-    lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1), next_line);
-    if (next_line > 3)
-        next_line = 3;
+    lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1));
     // display "point xx of yy"
-	lcd_set_cursor(0, next_line);
-    lcd_print(1);
-    lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
+    lcd_puts_at_P(0,3,_n("1/9"));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Sample Z heights for the mesh bed leveling.
@@ -2880,9 +2887,8 @@ bool sample_mesh_and_store_reference()
         go_to_current(homing_feedrate[X_AXIS]/60);
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         // display "point xx of yy"
-		lcd_set_cursor(0, next_line);
-        lcd_print(mesh_point+1);
-        lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
+		lcd_set_cursor(0, 3);
+        lcd_printf_P(PSTR("%d/9"),mesh_point+1);
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
