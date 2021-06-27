@@ -10,11 +10,17 @@ if [ -z "$ARDUINO" ]; then
 fi
 #
 # Arduino builder:
-export BUILDER=$ARDUINO/arduino-builder
+if [ -z "$BUILDER" ]; then
+    export BUILDER=$ARDUINO/arduino-builder
+fi
 #
 # AVR gcc tools:
-export OBJCOPY=$ARDUINO/hardware/tools/avr/bin/avr-objcopy
-export OBJDUMP=$ARDUINO/hardware/tools/avr/bin/avr-objdump
+if [ -z "$OBJCOPY" ]; then
+    export OBJCOPY=$ARDUINO/hardware/tools/avr/bin/avr-objcopy
+fi
+if [ -z "$OBJDUMP" ]; then
+    export OBJDUMP=$ARDUINO/hardware/tools/avr/bin/avr-objdump
+fi
 #
 # Output folder:
 if [ -z "$OUTDIR" ]; then
@@ -22,14 +28,19 @@ if [ -z "$OUTDIR" ]; then
 fi
 #
 # Objects folder:
-export OBJDIR="$OUTDIR/sketch"
+if [ -z "$OBJDIR" ]; then
+    export OBJDIR="$OUTDIR/sketch"
+fi
 #
 # Generated elf file:
-export INOELF="$OUTDIR/Firmware.ino.elf"
+if [ -z "$INOELF" ]; then
+    export INOELF="$OUTDIR/Firmware.ino.elf"
+fi
 #
 # Generated hex file:
-export INOHEX="$OUTDIR/Firmware.ino.hex"
-
+if [ -z "$INOHEX" ]; then
+    export INOHEX="$OUTDIR/Firmware.ino.hex"
+fi
 
 echo "config.sh started" >&2
 
