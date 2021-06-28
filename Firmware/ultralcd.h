@@ -192,7 +192,17 @@ extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentItemForce();
 void lcd_generic_preheat_menu();
-void unload_filament(bool automatic = false);
+
+
+enum class UnloadType : uint8_t
+{
+    User,      // user-triggered unload
+    Swap,      // part of a M600 sequence
+    Runout,    // triggered by runout
+};
+
+void unload_filament(UnloadType unload=UnloadType::User);
+
 
 void lcd_printer_connected();
 void lcd_ping();
