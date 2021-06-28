@@ -8813,11 +8813,7 @@ void menu_lcd_longpress_func(void)
 {
 	backlight_wake();
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
-    {
-        // disable longpress during re-entry, while homing or calibration
-        lcd_quick_feedback();
         return;
-    }
     if (menu_menu == lcd_hw_setup_menu)
     {
         // only toggle the experimental menu visibility flag
@@ -8838,10 +8834,6 @@ void menu_lcd_longpress_func(void)
         ){
             lcd_clear();
             menu_submenu(lcd_babystep_z);
-        } else {
-            // otherwise consume the long press as normal click
-            if( menu_menu != lcd_status_screen )
-                menu_back();
         }
     } else { // long press as move-z
         if(menu_menu == lcd_status_screen
@@ -8857,10 +8849,6 @@ void menu_lcd_longpress_func(void)
         ){
             move_menu_scale = 1.0;
             menu_submenu(lcd_move_z);
-        } else {
-            // otherwise consume the long press as normal click
-            if( menu_menu != lcd_status_screen )
-                menu_back();
         }
     }
 }
