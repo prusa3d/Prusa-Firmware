@@ -1129,8 +1129,7 @@ void tp_init()
 
   // timer2 already enabled earlier in the code
   // now enable the COMPB temperature interrupt
-  OCR2B = 128;
-  TIMSK2 |= (1<<OCIE2B);
+  ENABLE_TEMPERATURE_INTERRUPT();
   
   timer4_init(); //for tone and Extruder fan PWM
   

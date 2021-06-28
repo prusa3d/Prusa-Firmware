@@ -36,11 +36,10 @@ void timer2_init(void)
 	TCCR2A = 0x00; //COM_A-B=00, WGM_0-1=00
 	TCCR2B = (4 << CS20); //WGM_2=0, CS_0-2=011
 	//mask timer2 interrupts - enable OVF, disable others
-	TIMSK2 |= (1<<TOIE2);
-	TIMSK2 &= ~(1<<OCIE2A);
-	TIMSK2 &= ~(1<<OCIE2B);
+	TIMSK2 = _BV(TOIE2);
 	//set timer2 OCR registers (OCRB interrupt generated 0.5ms after OVF interrupt)
 	OCR2A = 0;
+	OCR2B = 128;
 
 	CRITICAL_SECTION_END;
 }
