@@ -107,7 +107,7 @@ msgstr "Autoladowanie fil. dostepne tylko gdy czujnik filamentu jest wlaczony...
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2569
-msgid "Autoloading filament is active, just press the knob and insert filament..."
+msgid "Autoloading filament is active, just insert filament, press the knob to exit..."
 msgstr "Autoladowanie filamentu wlaczone, nacisnij pokretlo i wsun filament..."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20

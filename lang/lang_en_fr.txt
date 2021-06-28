@@ -71,7 +71,7 @@
 "Chargement auto du filament uniquement si le capteur de filament est active."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
-"Autoloading filament is active, just press the knob and insert filament..."
+"Autoloading filament is active, just insert filament, press the knob to exit..."
 "Chargement auto. du fil. active, appuyez sur le bouton et inserez le fil."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20

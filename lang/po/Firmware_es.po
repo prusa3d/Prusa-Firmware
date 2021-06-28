@@ -107,7 +107,7 @@ msgstr "La carga automatica solo funciona si el sensor de filamento esta activad
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2569
-msgid "Autoloading filament is active, just press the knob and insert filament..."
+msgid "Autoloading filament is active, just insert filament, press the knob to exit..."
 msgstr "La carga automatica esta activada, pulse el dial e inserte el filamento..."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20

@@ -71,7 +71,7 @@
 "La carga automatica solo funciona si el sensor de filamento esta activado..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
-"Autoloading filament is active, just press the knob and insert filament..."
+"Autoloading filament is active, just insert filament, press the knob to exit..."
 "La carga automatica esta activada, pulse el dial e inserte el filamento..."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
