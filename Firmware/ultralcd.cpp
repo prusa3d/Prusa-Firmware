@@ -8855,7 +8855,7 @@ void menu_lcd_longpress_func(void)
     // explicitely listed menus which are allowed to rise the move-z or live-adj-z functions
     // The lists are not the same for both functions, so first decide which function is to be performed
     if ( (moves_planned() || IS_SD_PRINTING || is_usb_printing )){ // long press as live-adj-z
-        if(( current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU ) // only allow live-adj-z up to 2mm of print height
+        if (( current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU ) // only allow live-adj-z up to 2mm of print height
         && ( menu_menu == lcd_status_screen // and in listed menus...
           || menu_menu == lcd_main_menu
           || menu_menu == lcd_tune_menu
@@ -8865,12 +8865,10 @@ void menu_lcd_longpress_func(void)
             lcd_clear();
             menu_submenu(lcd_babystep_z);
         } else {
-            // otherwise consume the long press as normal click
-            if( menu_menu != lcd_status_screen )
-                menu_back();
+            lcd_quick_feedback();
         }
     } else { // long press as move-z
-        if(menu_menu == lcd_status_screen
+        if (menu_menu == lcd_status_screen
         || menu_menu == lcd_main_menu
         || menu_menu == lcd_preheat_menu
         || menu_menu == lcd_sdcard_menu
@@ -8884,9 +8882,7 @@ void menu_lcd_longpress_func(void)
             move_menu_scale = 1.0;
             menu_submenu(lcd_move_z);
         } else {
-            // otherwise consume the long press as normal click
-            if( menu_menu != lcd_status_screen )
-                menu_back();
+            lcd_quick_feedback();
         }
     }
 }
