@@ -100,6 +100,8 @@ if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_u
 
 	if (eeprom_read_dword((uint32_t*)EEPROM_JOB_ID) == EEPROM_EMPTY_VALUE32)
 		eeprom_update_dword((uint32_t*)EEPROM_JOB_ID, 0);
+
+    if (eeprom_read_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT) == EEPROM_EMPTY_VALUE) eeprom_update_byte((uint8_t *)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, 1);
 }
 
 //! @brief Get default sheet name for index
