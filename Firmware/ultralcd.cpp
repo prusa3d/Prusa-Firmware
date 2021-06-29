@@ -2317,8 +2317,10 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             }
         }
 
-        lcd_set_cursor(0, 0);
-        lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
+        if (bFilamentWaitingFlag) {
+            lcd_set_cursor(0, 0);
+            lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
+        }
 
         if (lcd_clicked())
         {
