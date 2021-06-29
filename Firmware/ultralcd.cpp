@@ -5579,7 +5579,7 @@ void unload_filament(UnloadType unload)
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
     raise_z_above(unload == UnloadType::Swap? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
-    if (unload == UnloadType::User)
+    if (unload == UnloadType::Purge)
     {
         // extrude slowly
         current_position[E_AXIS] += FILAMENTCHANGE_UNLOADFEED;

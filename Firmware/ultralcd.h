@@ -190,12 +190,12 @@ void lcd_generic_preheat_menu();
 
 enum class UnloadType : uint8_t
 {
-    User,      // user-triggered unload
-    Swap,      // part of a M600 sequence
-    Runout,    // triggered by runout
+    Purge,     // user-triggered unload, perform an extra purge before unload
+    Swap,      // part of an M600 sequence (no extra purge necessary)
+    Runout,    // triggered by runout (extra purge not possible)
 };
 
-void unload_filament(UnloadType unload=UnloadType::User);
+void unload_filament(UnloadType unload=UnloadType::Purge);
 
 
 void lcd_printer_connected();
