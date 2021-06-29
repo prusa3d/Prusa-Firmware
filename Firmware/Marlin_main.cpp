@@ -3735,7 +3735,7 @@ static T gcode_M600_filament_change_z_shift()
 #endif
 }	
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
+static void gcode_M600(bool automatic, bool runout, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
 {
     st_synchronize();
     float lastpos[4];
@@ -3749,6 +3749,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     int feedmultiplyBckp = feedmultiply;
     float HotendTempBckp = degTargetHotend(active_extruder);
     int fanSpeedBckp = fanSpeed;
+    bool cooldown = false;
 
     lastpos[X_AXIS] = current_position[X_AXIS];
     lastpos[Y_AXIS] = current_position[Y_AXIS];
@@ -3757,7 +3758,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     //Retract E
     current_position[E_AXIS] += e_shift;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
     st_synchronize();
 
     //Lift Z
@@ -3771,14 +3772,28 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
     st_synchronize();
 
-    //Beep, manage nozzle heater and wait for user to start unload filament
-    if(!mmu_enabled) M600_wait_for_user(HotendTempBckp);
+    if(!mmu_enabled)
+    {
+        //Beep, manage nozzle heater and wait for user to start unload filament
+        cooldown = M600_wait_for_user(HotendTempBckp);
+    }
 
     lcd_change_fil_state = 0;
 
     // Unload filament
-    if (mmu_enabled) extr_unload();	//unload just current filament for multimaterial printers (used also in M702)
-    else unload_filament(true); //unload filament for single material (used also in M702)
+    if (mmu_enabled)
+    {
+        // unload just current filament for multimaterial printers (used also in M702)
+        extr_unload();
+    }
+    else
+    {
+        // unload filament for single material (used also in M702)
+        unload_filament(runout? UnloadType::Runout:
+                        cooldown? UnloadType::Purge:
+                        UnloadType::Swap);
+    }
+
     //finish moves
     st_synchronize();
 
@@ -3827,8 +3842,8 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     //Feed a little of filament to stabilize pressure
     if (!automatic)
     {
-        current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
+        current_position[E_AXIS] += FILAMENTCHANGE_PRIMEFEED;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
     }
 
     //Move XY back
@@ -8184,7 +8199,8 @@ Sigma_Exit:
 		float e_shift_init = 0;
 		float e_shift_late = 0;
 		bool automatic = false;
-		
+		bool runout = false;
+
         //Retract extruder
         if(code_seen('E'))
         {
@@ -8242,8 +8258,13 @@ Sigma_Exit:
 
 		if (mmu_enabled && code_seen_P(PSTR("AUTO")))
 			automatic = true;
+        if (code_seen('R'))
+        {
+            // Code 'R' is supported internally to indicate filament change due to a runout condition
+            runout = true;
+        }
 
-		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+		gcode_M600(automatic, runout, x_position, y_position, z_shift, e_shift_init, e_shift_late);
 	
 	}
     break;
@@ -11821,7 +11842,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	//then move Z
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
 	//and finaly unretract (35mm/s)
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_EFEED_RETRACT, active_extruder);
 	st_synchronize();
 
   #ifdef FANCHECK
@@ -11969,7 +11990,8 @@ void M600_check_state(float nozzle_temp)
 //! If times out, active extruder temperature is set to 0.
 //!
 //! @param HotendTempBckp Temperature to be restored for active extruder, after user resolves MMU problem.
-void M600_wait_for_user(float HotendTempBckp) {
+//! @return True if the wait involved a hotend cooldown due to timeout.
+bool M600_wait_for_user(float HotendTempBckp) {
 
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
@@ -11978,6 +12000,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 		uint8_t wait_for_user_state = 0;
 		lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
 		bool bFirst=true;
+		bool bCooldown=false;
 
 		while (!(wait_for_user_state == 0 && lcd_clicked())){
 			manage_heater();
@@ -12010,6 +12033,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 					lcd_display_message_fullscreen_P(_i("Press the knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
 					setAllTargetHotends(0);
+					bCooldown = true;
 					st_synchronize();
 					disable_e0();
 					disable_e1();
@@ -12044,6 +12068,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 
 		}
 		WRITE(BEEPER, LOW);
+		return bCooldown;
 }
 
 void M600_load_filament_movements()

@@ -490,7 +490,7 @@ void proc_commands();
 
 void M600_load_filament();
 void M600_load_filament_movements();
-void M600_wait_for_user(float HotendTempBckp);
+bool M600_wait_for_user(float HotendTempBckp);
 void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
 void marlin_wait_for_click();
