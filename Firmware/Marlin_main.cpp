@@ -5810,7 +5810,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
           fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 	default:
-		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
+		printf_P(PSTR("Unknown G code: %s\n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
 //	printf_P(_N("END G-CODE=%u\n"), gcode_in_progress);
 	gcode_in_progress = 0;
@@ -5833,7 +5833,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	   
 	 /*for (++strchr_pointer; *strchr_pointer == ' ' || *strchr_pointer == '\t'; ++strchr_pointer);*/
 	  if (*(strchr_pointer+index) < '0' || *(strchr_pointer+index) > '9') {
-		  printf_P(PSTR("Invalid M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
+		  printf_P(PSTR("Invalid M code: %s\n"), cmdbuffer + bufindr + CMDHDRSIZE);
 
 	  } else
 	  {
@@ -8936,7 +8936,7 @@ Sigma_Exit:
 	#### End of M-Commands
     */
 	default: 
-		printf_P(PSTR("Unknown M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
+		printf_P(PSTR("Unknown M code: %s\n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
 //	printf_P(_N("END M-CODE=%u\n"), mcode_in_progress);
 	mcode_in_progress = 0;
