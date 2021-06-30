@@ -26,6 +26,7 @@ echo "fw-clean languages:$LANGUAGES" >&2
 
 # insert single text to english dictionary
 # $1 - text to insert
+# $2 - metadata
 insert_en()
 {
 	#replace '[' and ']' in string with '\[' and '\]'
@@ -38,12 +39,13 @@ insert_en()
 	# insert new text
 	sed -i "$ln"'i\\' lang_en.txt
 	sed -i "$ln"'i\'"$1"'\' lang_en.txt
-	sed -i "$ln"'i\#\' lang_en.txt
+	sed -i "${ln}i\\#$2" lang_en.txt
 }
 
 # insert single text to translated dictionary
 # $1 - text to insert
-# $2 - sufix
+# $2 - suffix
+# $3 - metadata
 insert_xx()
 {
 	#replace '[' and ']' in string with '\[' and '\]'
@@ -57,7 +59,15 @@ insert_xx()
 	sed -i "$ln"'i\\' lang_en_$2.txt
 	sed -i "$ln"'i\"\x00"\' lang_en_$2.txt
 	sed -i "$ln"'i\'"$1"'\' lang_en_$2.txt
-	sed -i "$ln"'i\#\' lang_en_$2.txt
+	sed -i "${ln}i\\#$3" lang_en_$2.txt
+}
+
+# find the metadata for the specified string
+# TODO: this is unbeliveably crude
+# $1 - text to search for
+find_metadata()
+{
+    sed -ne "s^.*\(_[iI]\|ISTR\)($1).*////\(.*\)^\2^p" ../Firmware/*.[ch]* | head -1
 }
 
 # check if input file exists
@@ -72,13 +82,14 @@ cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
 		echo "$new_s"
 		echo
 	else
+		meta=$(find_metadata "$new_s")
 		echo "adding text:"
-		echo "$new_s"
+		echo "$new_s ($meta)"
 		echo
 
-		insert_en "$new_s"
+		insert_en "$new_s" "$meta"
         for lang in $LANGUAGES; do
-            insert_xx "$new_s" "$lang"
+            insert_xx "$new_s" "$lang" "$meta"
         done
 	fi
 done
