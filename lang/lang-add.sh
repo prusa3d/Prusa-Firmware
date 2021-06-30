@@ -7,7 +7,12 @@
 #  lang_add.txt
 # Updated files:
 #  lang_en.txt and all lang_en_xx.txt
-#
+
+# List of supported languages
+LANGUAGES="cz de es fr it pl"
+
+# Community languages
+LANGUAGES+=" nl" #Dutch
 
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
@@ -68,14 +73,11 @@ cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
 		echo "adding text:"
 		echo "$new_s"
 		echo
-		#insert_en "$new_s"
-		for lang in $LANGUAGES; do
-			insert_xx "$new_s" "$lang"
-		done
 
-#Use the 2 lines below as a template and replace 'qr'
-##New language
-#		insert_xx "$new_s" 'qr'
+		insert_en "$new_s"
+        for lang in $LANGUAGES; do
+            insert_xx "$new_s" "$lang"
+        done
 	fi
 done
 
