@@ -31,9 +31,10 @@ insert_en()
 	#replace '[' and ']' in string with '\[' and '\]'
 	str=$(echo "$1" | sed "s/\[/\\\[/g;s/\]/\\\]/g")
 	# extract english texts, merge new text, grep line number
-	ln=$((cat lang_en.txt; echo "$1") | sed "/^$/d;/^#/d" | sort | grep -n "$str" | sed "s/:.*//")
+	ln=$((cat lang_en.txt; echo "$1") | sed "/^$/d;/^#/d" | sort | grep -n "$str" | sed "s/:.*//;q")
 	# calculate position for insertion
 	ln=$((3*(ln-2)+1))
+	[ "$ln" -lt 1 ] && ln=1
 	# insert new text
 	sed -i "$ln"'i\\' lang_en.txt
 	sed -i "$ln"'i\'"$1"'\' lang_en.txt
@@ -48,9 +49,10 @@ insert_xx()
 	#replace '[' and ']' in string with '\[' and '\]'
 	str=$(echo "$1" | sed "s/\[/\\\[/g;s/\]/\\\]/g")
 	# extract english texts, merge new text, grep line number
-	ln=$((cat lang_en_$2.txt; echo "$1") | sed "/^$/d;/^#/d" | sed -n 'p;n' | sort | grep -n "$str" | sed "s/:.*//")
+	ln=$((cat lang_en_$2.txt; echo "$1") | sed "/^$/d;/^#/d" | sed -n 'p;n' | sort | grep -n "$str" | sed "s/:.*//;q")
 	# calculate position for insertion
 	ln=$((4*(ln-2)+1))
+	[ "$ln" -lt 1 ] && ln=1
 	# insert new text
 	sed -i "$ln"'i\\' lang_en_$2.txt
 	sed -i "$ln"'i\"\x00"\' lang_en_$2.txt
