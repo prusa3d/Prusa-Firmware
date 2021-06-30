@@ -314,7 +314,7 @@
 "Change success!"
 
 #MSG_CORRECTLY c=20
-"Changed correctly?"
+"Changed correctly"
 
 #MSG_SELFTEST_CHECK_BED c=20
 "Checking bed"

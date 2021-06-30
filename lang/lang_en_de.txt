@@ -419,8 +419,8 @@
 "Wechsel erfolgr.!"
 
 #MSG_CORRECTLY c=20
-"Changed correctly?"
-"Wechsel ok?"
+"Changed correctly"
+"Wechsel ok"
 
 #MSG_SELFTEST_CHECK_BED c=20
 "Checking bed"

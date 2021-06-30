@@ -2551,30 +2551,27 @@ void lcd_loading_filament() {
 
 void lcd_alright() {
   int enc_dif = 0;
-  int cursor_pos = 1;
-
-
-
+  int cursor_pos = 0;
 
   lcd_clear();
 
-  lcd_puts_at_P(0, 0, _i("Changed correctly?"));////MSG_CORRECTLY c=20
-  lcd_puts_at_P(1, 1, _T(MSG_YES));
-  lcd_puts_at_P(1, 2, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
-  lcd_puts_at_P(1, 3, _i("Color not correct"));////MSG_NOT_COLOR c=19
-  lcd_putc_at(0, 1, '>');
+  lcd_puts_at_P(1, 0, _i("Changed correctly"));////MSG_CORRECTLY c=20
+  lcd_puts_at_P(1, 1, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
+  lcd_puts_at_P(1, 2, _i("Color not correct"));////MSG_NOT_COLOR c=19
+  lcd_puts_at_P(1, 3, _i("Unload filament"));////MSG_UNLOAD_FILAMENT c=17
+  lcd_putc_at(0, 0, '>');
 
 
   enc_dif = lcd_encoder_diff;
   lcd_consume_click();
-  while (lcd_change_fil_state == 0) {
+  while (lcd_change_fil_state == -1) {
 
     manage_heater();
     manage_inactivity(true);
 
     if ( abs((enc_dif - lcd_encoder_diff)) > 4 ) {
 
-      if ( (abs(enc_dif - lcd_encoder_diff)) > 1 ) {
+      if ( (abs(enc_dif - lcd_encoder_diff)) > 0 ) {
         if (enc_dif > lcd_encoder_diff ) {
           cursor_pos --;
         }
@@ -2588,11 +2585,11 @@ void lcd_alright() {
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
 
-        if (cursor_pos < 1) {
-          cursor_pos = 1;
+        if (cursor_pos < 0) {
+          cursor_pos = 0;
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
-        lcd_puts_at_P(0, 1, PSTR(" \n \n "));
+        lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
         lcd_putc_at(0, cursor_pos, '>');
         enc_dif = lcd_encoder_diff;
 				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
@@ -2606,13 +2603,9 @@ void lcd_alright() {
 			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
       lcd_change_fil_state = cursor_pos;
       _delay(500);
-
     }
 
-
-
   };
-
 
   lcd_clear();
   lcd_return_to_status();

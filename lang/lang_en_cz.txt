@@ -419,8 +419,8 @@
 "Zmena uspesna!"
 
 #MSG_CORRECTLY c=20
-"Changed correctly?"
-"Vymena ok?"
+"Changed correctly"
+"Vymena ok"
 
 #MSG_SELFTEST_CHECK_BED c=20
 "Checking bed"

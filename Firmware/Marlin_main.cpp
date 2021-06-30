@@ -3771,13 +3771,14 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
     st_synchronize();
 
+    do {
     //Beep, manage nozzle heater and wait for user to start unload filament
     if(!mmu_enabled) M600_wait_for_user(HotendTempBckp);
 
     lcd_change_fil_state = 0;
 
     // Unload filament
-    if (mmu_enabled) extr_unload();	//unload just current filament for multimaterial printers (used also in M702)
+    if (mmu_enabled) extr_unload(); //unload just current filament for multimaterial printers (used also in M702)
     else unload_filament(true); //unload filament for single material (used also in M702)
     //finish moves
     st_synchronize();
@@ -3818,6 +3819,9 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         M600_load_filament();
 
     if (!automatic) M600_check_state(HotendTempBckp);
+
+    }
+    while (lcd_change_fil_state == 3);
 
 		lcd_update_enable(true);
 
@@ -11930,17 +11934,17 @@ void load_filament_final_feed()
 //! @par nozzle_temp nozzle temperature to load filament
 void M600_check_state(float nozzle_temp)
 {
-    lcd_change_fil_state = 0;
-    while (lcd_change_fil_state != 1)
+    lcd_change_fil_state = -1;
+    while (lcd_change_fil_state != 0 && lcd_change_fil_state != 3)
     {
-        lcd_change_fil_state = 0;
+        lcd_change_fil_state = -1;
         KEEPALIVE_STATE(PAUSED_FOR_USER);
         lcd_alright();
         KEEPALIVE_STATE(IN_HANDLER);
         switch(lcd_change_fil_state)
         {
         // Filament failed to load so load it again
-        case 2:
+        case 1:
             if (mmu_enabled)
                 mmu_M600_load_filament(false, nozzle_temp); //nonautomatic load; change to "wrong filament loaded" option?
             else
@@ -11948,12 +11952,16 @@ void M600_check_state(float nozzle_temp)
             break;
 
         // Filament loaded properly but color is not clear
-        case 3:
+        case 2:
             st_synchronize();
             load_filament_final_feed();
             lcd_loading_color();
             st_synchronize();
             break;
+
+        // Unload filament
+        case 3:
+           break;
 
         // Everything good
         default:
