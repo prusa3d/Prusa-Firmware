@@ -5,8 +5,10 @@ import struct
 from . import avr
 
 
-FILL_BYTE  = b'\0'      # used to fill memory gaps in the dump
-DUMP_MAGIC = 0x55525547 # XFLASH dump magic
+FILL_BYTE   = b'\0'      # used to fill memory gaps in the dump
+DUMP_MAGIC  = 0x55525547 # XFLASH dump magic
+DUMP_OFFSET = 0x3d000    # XFLASH dump offset
+DUMP_SIZE   = 0x2300     # XFLASH dump size
 
 class CrashReason(enum.IntEnum):
     MANUAL = 0
