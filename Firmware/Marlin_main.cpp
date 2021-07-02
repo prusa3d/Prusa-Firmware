@@ -5503,7 +5503,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		plan_buffer_line_curposXYZE(3000 / 60);
 		st_synchronize();
 		
-		while (abs(degBed() - PINDA_MIN_T) > 1) {
+		while (fabs(degBed() - PINDA_MIN_T) > 1) {
 			delay_keep_alive(1000);
 			serialecho_temperatures();
 		}
@@ -9694,7 +9694,7 @@ void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const
         int n_segments = 0;
 
         if (mbl.active) {
-            float len = abs(dx) + abs(dy);
+            float len = fabs(dx) + fabs(dy);
             if (len > 0)
                 // Split to 3cm segments or shorter.
                 n_segments = int(ceil(len / 30.f));
@@ -11240,7 +11240,7 @@ void uvlo_tiny()
     planner_abort_hard();
 
     // Allow for small roundoffs to be ignored
-    if(abs(current_position[Z_AXIS] - eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z))) >= 1.f/cs.axis_steps_per_unit[Z_AXIS])
+    if(fabs(current_position[Z_AXIS] - eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z))) >= 1.f/cs.axis_steps_per_unit[Z_AXIS])
     {
         // Clean the input command queue, inhibit serial processing using saved_printing
         cmdqueue_reset();
@@ -12028,7 +12028,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 				break;
 			case 2: //waiting for nozzle to reach target temperature
 
-				if (abs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
+				if (fabs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
 					lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
 					waiting_start_time = _millis();
 					wait_for_user_state = 0;

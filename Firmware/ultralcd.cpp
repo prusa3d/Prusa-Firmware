@@ -4794,7 +4794,7 @@ static void wait_preheat()
     delay_keep_alive(2000);
     lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 	lcd_set_custom_characters();
-	while (abs(degHotend(0) - degTargetHotend(0)) > 3) {
+	while (fabs(degHotend(0) - degTargetHotend(0)) > 3) {
         lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 
         lcd_set_cursor(0, 4);
@@ -7760,7 +7760,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 	eeprom_write_word(((uint16_t*)((axis == X_AXIS)?EEPROM_BELTSTATUS_X:EEPROM_BELTSTATUS_Y)), sg1);
 
 	current_position_final = st_get_position_mm(axis);
-	measured_axis_length[0] = abs(current_position_final - current_position_init);
+	measured_axis_length[0] = fabs(current_position_final - current_position_init);
 
 
 // first measurement end and second measurement begin	
@@ -7777,7 +7777,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 	current_position_init = st_get_position_mm(axis);
 
-	measured_axis_length[1] = abs(current_position_final - current_position_init);
+	measured_axis_length[1] = fabs(current_position_final - current_position_init);
 
 	tmc2130_home_exit();
 
@@ -7785,7 +7785,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 	for(uint_least8_t i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
 		printf_P(_N("Measured axis length:%.3f\n"), measured_axis_length[i]);
-		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
+		if (fabs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			enable_endstops(false);
 
 			const char *_error_1;
@@ -7804,9 +7804,9 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 		}
 	}
 
-		printf_P(_N("Axis length difference:%.3f\n"), abs(measured_axis_length[0] - measured_axis_length[1]));
+		printf_P(_N("Axis length difference:%.3f\n"), fabs(measured_axis_length[0] - measured_axis_length[1]));
 	
-		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) { //check if difference between first and second measurement is low
+		if (fabs(measured_axis_length[0] - measured_axis_length[1]) > 1) { //check if difference between first and second measurement is low
 			//loose pulleys
 			const char *_error_1;
 
