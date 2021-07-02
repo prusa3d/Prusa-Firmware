@@ -2928,20 +2928,6 @@ static void lcd_menu_xyz_offset()
     menu_back_if_clicked();
 }
 
-// Save a single axis babystep value.
-void EEPROM_save_B(int pos, int* value)
-{
-  eeprom_update_byte((unsigned char*)pos, (unsigned char)((*value) & 0xff));
-  eeprom_update_byte((unsigned char*)pos + 1, (unsigned char)((*value) >> 8));
-}
-
-// Read a single axis babystep value.
-void EEPROM_read_B(int pos, int* value)
-{
-  *value = (int)eeprom_read_byte((unsigned char*)pos) | (int)(eeprom_read_byte((unsigned char*)pos + 1) << 8);
-}
-
-
 // Note: the colon behind the text (X, Y, Z) is necessary to greatly shorten
 // the implementation of menu_draw_float31
 static void lcd_move_x() {
@@ -3211,15 +3197,15 @@ void lcd_adjust_z() {
       fsm = cursor_pos;
       if (fsm == 1) {
         int babystepLoadZ = 0;
-        EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepLoadZ);
+        babystepLoadZ = eeprom_read_word((uint16_t*)EEPROM_BABYSTEP_Z);
         CRITICAL_SECTION_START
         babystepsTodo[Z_AXIS] = babystepLoadZ;
         CRITICAL_SECTION_END
       } else {
         int zero = 0;
-        EEPROM_save_B(EEPROM_BABYSTEP_X, &zero);
-        EEPROM_save_B(EEPROM_BABYSTEP_Y, &zero);
-        EEPROM_save_B(EEPROM_BABYSTEP_Z, &zero);
+        eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_X, zero);
+        eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Y, zero);
+        eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, zero);
       }
       _delay(500);
     }
@@ -4213,8 +4199,8 @@ void lcd_pick_babystep(){
         if (lcd_clicked()) {
             fsm = cursor_pos;
             int babyStepZ;
-            EEPROM_read_B(EEPROM_BABYSTEP_Z0+((fsm-1)*2),&babyStepZ);
-            EEPROM_save_B(EEPROM_BABYSTEP_Z,&babyStepZ);
+            babyStepZ = eeprom_read_word((uint16_t*)EEPROM_BABYSTEP_Z0+(fsm-1));
+            eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, babyStepZ);
             calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
             _delay(500);
             
@@ -5804,7 +5790,7 @@ void bowden_menu() {
 		lcd_puts_at_P(1, i, PSTR("Extruder "));
 		lcd_print(i);
 		lcd_print(": ");
-		EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+		bowden_length[i] = eeprom_read_word((uint16_t*)EEPROM_BOWDEN_LENGTH + i);
 		lcd_print(bowden_length[i] - 48);
 
 	}
@@ -5874,7 +5860,7 @@ void bowden_menu() {
 				_delay(100);
 				if (lcd_clicked()) {
 					Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
+					eeprom_update_word((uint16_t*)EEPROM_BOWDEN_LENGTH + cursor_pos, bowden_length[cursor_pos]);
 					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
 						lcd_update_enable(true);
 						lcd_clear();
@@ -5884,7 +5870,7 @@ void bowden_menu() {
 							lcd_puts_at_P(1, i, PSTR("Extruder "));
 							lcd_print(i);
 							lcd_print(": ");
-							EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+							bowden_length[i] = eeprom_read_word((uint16_t*)EEPROM_BOWDEN_LENGTH + i);
 							lcd_print(bowden_length[i] - 48);
 
 						}
