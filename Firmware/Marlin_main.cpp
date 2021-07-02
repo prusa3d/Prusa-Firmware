@@ -5810,7 +5810,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
           fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 	default:
-		printf_P(PSTR("Unknown G code: %s\n"), cmdbuffer + bufindr + CMDHDRSIZE);
+		printf_P(MSG_UNKNOWN_CODE, 'G', cmdbuffer + bufindr + CMDHDRSIZE);
     }
 //	printf_P(_N("END G-CODE=%u\n"), gcode_in_progress);
 	gcode_in_progress = 0;
@@ -8936,7 +8936,7 @@ Sigma_Exit:
 	#### End of M-Commands
     */
 	default: 
-		printf_P(PSTR("Unknown M code: %s\n"), cmdbuffer + bufindr + CMDHDRSIZE);
+		printf_P(MSG_UNKNOWN_CODE, 'M', cmdbuffer + bufindr + CMDHDRSIZE);
     }
 //	printf_P(_N("END M-CODE=%u\n"), mcode_in_progress);
 	mcode_in_progress = 0;
@@ -9523,7 +9523,7 @@ Sigma_Exit:
 #endif //DEBUG_DCODES
 
     default:
-        printf_P(PSTR("Unknown D code: %s\n"), cmdbuffer + bufindr + CMDHDRSIZE);
+        printf_P(MSG_UNKNOWN_CODE, 'D', cmdbuffer + bufindr + CMDHDRSIZE);
 	}
   }
 
