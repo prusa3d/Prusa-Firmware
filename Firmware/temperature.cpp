@@ -472,7 +472,7 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
 			//SERIAL_ECHOPGM("s. Difference between current and ambient T: ");
 			//MYSERIAL.println(input - temp_ambient);
 
-			if (abs(input - temp_ambient) < 5.0) { 
+			if (fabs(input - temp_ambient) < 5.0) { 
 				temp_runaway_stop(false, (extruder<0));
 				pid_tuning_finished = true;
 				return;

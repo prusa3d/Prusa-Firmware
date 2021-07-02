@@ -1095,7 +1095,7 @@ Having the real displacement of the head, we can calculate the total movement le
      */
     block->use_advance_lead = extruder_advance_K > 0
                               && delta_mm[E_AXIS] >= 0
-                              && abs(delta_mm[Z_AXIS]) < 0.5;
+                              && fabs(delta_mm[Z_AXIS]) < 0.5;
     if (block->use_advance_lead) {
 #ifdef LA_FLOWADJ
         // M221/FLOW should change uniformly the extrusion thickness
