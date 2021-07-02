@@ -9,7 +9,7 @@ end
 
 document load_dump
 Load a crash dump, setup PC/SP and show the current backtrace
-Usage: load_dump <file> <pc-addr> <sp-addr>
+Usage: load_dump <file> <PC-addr> <SP-addr>
 end
 
 
@@ -32,7 +32,9 @@ define sp_skip
 end
 
 document sp_skip
-TODO
+Decode the PC address at SP+offset, then show the resulting stack.
+The default (and minimum) offset is 3.
+Usage: sp_skip [off]
 end
 
 
@@ -44,7 +46,8 @@ define sp_restore
 end
 
 document sp_restore
-TODO
+Undo an sp_skip move (restore existing PC/SP positions)
+Usage: sp_restore
 end
 
 
@@ -55,7 +58,9 @@ define sp_test
 end
 
 document sp_test
-TODO
+Attempt to decode the PC address at SP+offset, then show the resulting stack.
+The default (and minimum) offset is 3.
+Usage: sp_test [off]
 end
 
 
@@ -78,5 +83,7 @@ define sp_scan
 end
 
 document sp_scan
-TODO
+Attempt to decode PC at any location starting from the SP+3 and up to SP-end
+(by default the end of the SRAM) and show the resulting stack at all locations.
+Usage: sp_scan [SP-end]
 end
