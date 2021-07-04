@@ -229,6 +229,7 @@ void lay1cal_set_flow()
     case ClNozzleDiameter::_Diameter_250:
         enquecommand_P(PSTR("M221 S62"));
         break;
+    case ClNozzleDiameter::_Diameter_Undef:
     case ClNozzleDiameter::_Diameter_400:
         enquecommand_P(PSTR("M221 S100"));
         break;
@@ -237,9 +238,6 @@ void lay1cal_set_flow()
         break;
     case ClNozzleDiameter::_Diameter_800:
         enquecommand_P(PSTR("M221 S200"));
-        break;
-    case ClNozzleDiameter::_Diameter_Undef:
-        enquecommand_P(PSTR("M221 S100"));
         break;
     }    
 }
