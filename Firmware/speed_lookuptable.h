@@ -8,7 +8,7 @@ extern const uint16_t speed_lookuptable_slow[256][2] PROGMEM;
 
 #ifndef _NO_ASM
 
-// intRes = intIn1 * intIn2 >> 16
+// intRes = intIn1 * intIn2 >> 8
 // uses:
 // r26 to store 0
 // r27 to store the byte 1 of the 24 bit result
@@ -82,7 +82,7 @@ asm volatile ( \
 
 static inline void MultiU16X8toH16(uint16_t& intRes, uint8_t& charIn1, uint16_t& intIn2)
 {
-    intRes = ((uint32_t)charIn1 * (uint32_t)intIn2) >> 16;
+    intRes = ((uint32_t)charIn1 * (uint32_t)intIn2) >> 8;
 }
 
 static inline void MultiU24X24toH16(uint16_t& intRes, uint32_t& longIn1, uint32_t& longIn2)
