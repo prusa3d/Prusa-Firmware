@@ -160,6 +160,8 @@ static void lcd_belttest_v();
 
 static void lcd_selftest_v();
 
+
+
 #ifdef TMC2130
 static void reset_crash_det(unsigned char axis);
 static bool lcd_selfcheck_axis_sg(unsigned char axis);
@@ -6782,6 +6784,15 @@ void stepper_timer_overflow() {
 }
 #endif /* DEBUG_STEPPER_TIMER_MISSED */
 
+static void lcd_rehome_xy() {
+	// Do home directly, G28 X Y resets MBL, which could be bad.
+	homeaxis(X_AXIS);
+	homeaxis(Y_AXIS);
+	lcd_setstatuspgm(_T(MSG_AUTO_HOME));
+	lcd_return_to_status();
+	lcd_draw_update = 3;
+}
+
 
 static void lcd_colorprint_change() {
 	
@@ -6892,7 +6903,9 @@ static void lcd_tune_menu()
     if (!farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 #endif
-
+    if (isPrintPaused) {// Don't allow rehome if actively printing. Maaaaybe it could work to insert on the fly, seems too risky.
+        MENU_ITEM_FUNCTION_P(_T(MSG_AUTO_HOME), lcd_rehome_xy);
+    }
 #ifdef FILAMENT_SENSOR
 	if (FSensorStateMenu == 0) {
           if (fsensor_not_responding && (mmu_enabled == false)) {
