@@ -804,7 +804,7 @@
 
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
-"Predhrev trysky. Prosim cakejte."
+"Predhrev trysky. Prosim cakajte."
 
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
