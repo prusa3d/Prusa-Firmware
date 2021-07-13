@@ -22,6 +22,8 @@ extern int16_t mmu_buildnr;
 
 extern uint16_t mmu_power_failures;
 
+extern bool ir_sensor_print_window;
+
 #define MMU_FILAMENT_UNKNOWN 255
 
 #define MMU_NO_MOVE 0
