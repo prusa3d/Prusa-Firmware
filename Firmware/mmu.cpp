@@ -102,6 +102,17 @@ static const auto FDEBUG_PRINTF_P = printf_P;
 #endif //defined(MMU_FINDA_DEBUG) && defined(MMU_DEBUG)
 
 
+//static uint8_t mmu_filament_type[MMU_NUM_EXTRUDERS];
+static float mmu_relative_load_speed[MMU_NUM_EXTRUDERS] = { 1.0, 1.0, 1.0, 1.0, 1.0 };
+
+float mmu_load_feedrate(void)
+{
+  uint8_t e = mmu_extruder;
+  if (e == MMU_FILAMENT_UNKNOWN)
+    e = 0;
+  return MMU_DEFAULT_LOAD_FEEDRATE * mmu_relative_load_speed[e];
+}
+
 //clear rx buffer
 void mmu_clr_rx_buf(void)
 {
@@ -498,14 +509,36 @@ void mmu_reset(void)
 #endif
 }
 
-int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament)
+static uint16_t
+to_fixed_point (float x)
 {
-	printf_P(PSTR("MMU <= 'F%d %d'\n"), extruder, filament);
-	mmu_printf_P(PSTR("F%d %d\n"), extruder, filament);
+  return x * 256.0f + 0.5f;
+}
+
+int8_t mmu_set_filament_type(uint8_t extruder,
+			     uint8_t filament,
+			     float rel_pulley_speed,
+			     float rel_load_speed,
+			     float rel_unload_speed)
+{
+        if (extruder >= MMU_NUM_EXTRUDERS)
+	  return 0;
+	//mmu_filament_type[extruder] = filament;
+	mmu_relative_load_speed[extruder] = rel_pulley_speed;
+	uint16_t irel_load_speed = to_fixed_point (rel_load_speed);
+	uint16_t irel_unload_speed = to_fixed_point (rel_unload_speed);
+        printf_P(PSTR("MMU <= 'F%d %d %d %d'\n"),
+		 extruder, filament, irel_load_speed, irel_unload_speed);
+	mmu_printf_P(PSTR("F%d %d %d %d\n"),
+		     extruder, filament, irel_load_speed, irel_unload_speed);
 	unsigned char timeout = MMU_TIMEOUT;       //10x100ms
-	while ((mmu_rx_ok() <= 0) && (--timeout))
+	while (mmu_rx_ok() <= 0)
+	  {
+	        if (--timeout == 0) //timeout
+		    return 0;
 		delay_keep_alive(MMU_TODELAY);
-	return timeout?1:0;
+	  }
+	return 1;
 }
 
 //! @brief Enqueue MMUv2 command
@@ -566,7 +599,7 @@ bool can_extrude()
 }
 
 static void get_response_print_info(uint8_t move) {
-	printf_P(PSTR("mmu_get_response - begin move: "), move);
+	printf_P(PSTR("mmu_get_response - begin move: "));
 	switch (move) {
 		case MMU_LOAD_MOVE: puts_P(PSTR("load")); break;
 		case MMU_UNLOAD_MOVE: puts_P(PSTR("unload")); break;
