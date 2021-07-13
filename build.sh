@@ -41,4 +41,3 @@ cd $SCRIPT_PATH/lang
 ./lang-build.sh || exit 10
 ./lang-community.sh || exit 11
 ./fw-build.sh || exit 12
-
