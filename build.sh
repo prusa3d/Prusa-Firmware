@@ -52,10 +52,12 @@ if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
     cp $SCRIPT_PATH/Firmware/variants/1_75mm_MK3-EINSy10a-E3Dv6full.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 11
 fi
 
-$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board $BOARD --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit 12
-
 export ARDUINO=$BUILD_ENV_PATH
 export OUTDIR=$BUILD_PATH
+
+#$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board $BOARD --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit 12
+$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -built-in-libraries $ARDUINO/libraries -fqbn=$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino
+
 
 cd $SCRIPT_PATH/lang
 ./lang-build.sh || exit 13
