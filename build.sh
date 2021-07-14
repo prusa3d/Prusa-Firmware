@@ -22,7 +22,7 @@ fi
 
 if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
     mkdir ../PF-build-env-$BUILD_ENV 
-    tar -xvf arduino-$ARDUINO_ENV-linux64.tar.xz -C ../PF-build-env-$BUILD_ENV|| exit 4
+    tar -xf arduino-$ARDUINO_ENV-linux64.tar.xz -C ../PF-build-env-$BUILD_ENV|| exit 4
     #unzip -q PF-build-env-Linux64-$BUILD_ENV.zip -d ../../PF-build-env-$BUILD_ENV || exit 4
 fi
 
@@ -32,7 +32,7 @@ fi
 
 if [ ! -d "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV/hardware/$BOARD_PACKAGE_NAME" ]; then
     mkdir "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV/hardware/$BOARD_PACKAGE_NAME" || exit 7
-    tar -xvf $BOARD_FILENAME-$BOARD_VERSION.tar.bz2 || exit 8
+    tar -xf $BOARD_FILENAME-$BOARD_VERSION.tar.bz2 || exit 8
     mv $BOARD_FILENAME-$BOARD_VERSION ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV/hardware/$BOARD_PACKAGE_NAME/avr 
 fi
 
