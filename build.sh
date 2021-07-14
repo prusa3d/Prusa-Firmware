@@ -55,6 +55,7 @@ fi
 $BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board $BOARD --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit 12
 
 export ARDUINO=$BUILD_ENV_PATH
+export OUTDIR=$BUILD_PATH
 
 cd $SCRIPT_PATH/lang
 ./lang-build.sh || exit 13
