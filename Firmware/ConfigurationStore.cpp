@@ -179,10 +179,6 @@ static_assert (EXTRUDERS == 1, "ConfigurationStore M500_conf not implemented for
 static_assert (NUM_AXIS == 4, "ConfigurationStore M500_conf not implemented for more axis."
         "Fix axis_steps_per_unit max_feedrate_normal max_acceleration_units_per_sq_second_normal max_jerk max_feedrate_silent"
         " max_acceleration_units_per_sq_second_silent array size.");
-#ifdef ENABLE_AUTO_BED_LEVELING
-static_assert (false, "zprobe_zoffset was not initialized in printers in field to -(Z_PROBE_OFFSET_FROM_EXTRUDER), so it contains"
-        "0.0, if this is not acceptable, increment EEPROM_VERSION to force use default_conf");
-#endif
 
 static_assert (sizeof(M500_conf) == 196, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
         "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized."
