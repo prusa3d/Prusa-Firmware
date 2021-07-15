@@ -56,7 +56,7 @@ export ARDUINO=$BUILD_ENV_PATH
 export OUTDIR=$BUILD_PATH
 
 #$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board $BOARD --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit 12
-$BUILD_ENV_PATH/arduino-builder -compile -hardware $ARDUINO/hardware -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -built-in-libraries $ARDUINO/libraries -fqbn=$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino
+$BUILD_ENV_PATH/arduino-builder -verbose=1 -compile -hardware $ARDUINO/hardware -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -built-in-libraries $ARDUINO/libraries -fqbn=$BOARD -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino
 
 
 cd $SCRIPT_PATH/lang
