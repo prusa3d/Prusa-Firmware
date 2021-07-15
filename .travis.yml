@@ -1,4 +1,4 @@
-dist: trusty
+dist: focal
 before_install:
   - sudo apt-get install -y ninja-build
   # Arduino IDE adds a lot of noise caused by network traffic, trying to firewall it off
