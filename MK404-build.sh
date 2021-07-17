@@ -305,9 +305,16 @@ if [ "$update_flag" == "1" ]; then
 fi
 
 # Prepare MK404
-mkdir -p $MK404_BUILD_PATH
+if [ ! -d $MK404_BUILD_PATH ]; then
+    mkdir -p $MK404_BUILD_PATH
+fi
+
 if [[ ! -f "$MK404_BUILD_PATH/Makefile" || "$new_build_flag" == "1" ]]; then
 # Init and update submodules
+    if [ -d $MK404_BUILD_PATH ]; then
+        rm -rf $MK404_BUILD_PATH
+        mkdir -p $MK404_BUILD_PATH
+    fi
     git submodule init
     git submodule update
     cmake -B$MK404_BUILD_PATH -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"

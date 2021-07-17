@@ -1449,6 +1449,8 @@ if [[ "$output_flag" == "1" || -z "$output_flag" ]]; then
                 mk404_flag=1
             elif [ "$mk404_choose1" == "2" ]; then
                 mk404_flag=2
+            else
+                mk404_flag=1 #default
             fi
             echo
             echo "Choose MK404 graphics"
@@ -1457,7 +1459,7 @@ if [[ "$output_flag" == "1" || -z "$output_flag" ]]; then
             echo "2 = fancy"
             echo "3 = lite with Quad_HR"
             echo "4 = fancy lite with Quad_HR"
-            read -t 10 -n 1 -p "Which one do you want? $(tput setaf 2)1$(tput sgr 0)/2/3/4" mk404_choose2
+            read -t 10 -n 1 -p "Which one do you want? $(tput setaf 2)0$(tput sgr 0)/1/2/3/4" mk404_choose2
             if [ "$mk404_choose2" == "1" ]; then
                 mk404_graphics_flag=1
             elif [ "$mk404_choose2" == "2" ]; then
@@ -1466,6 +1468,10 @@ if [[ "$output_flag" == "1" || -z "$output_flag" ]]; then
                 mk404_graphics_flag=3
             elif [ "$mk404_choose2" == "4" ]; then
                 mk404_graphics_flag=4
+            elif [ "$mk404_choose2" == "0" ]; then
+                mk404_graphics_flag=""
+            else
+                mk404_graphics_flag="" #default
             fi
         fi
         echo
