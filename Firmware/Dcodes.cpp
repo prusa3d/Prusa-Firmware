@@ -1,5 +1,5 @@
-#include "Dcodes.h"
 #include "Marlin.h"
+#include "Dcodes.h"
 #include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
@@ -973,6 +973,18 @@ void dcode_22()
 #include "xflash_dump.h"
 
 bool emergency_serial_dump = false;
+
+void dcode_23()
+{
+    if(code_seen('E'))
+        serial_dump_and_reset(dump_crash_reason::manual);
+    else
+    {
+        emergency_serial_dump = !code_seen('R');
+        SERIAL_ECHOPGM("serial dump ");
+        SERIAL_ECHOLNRPGM(emergency_serial_dump? _N("enabled"): _N("disabled"));
+    }
+}
 
 void __attribute__((noinline)) serial_dump_and_reset(dump_crash_reason reason)
 {

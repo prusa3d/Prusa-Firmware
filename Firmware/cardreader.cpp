@@ -596,20 +596,9 @@ void CardReader::getStatus(bool arg_P)
 }
 void CardReader::write_command(char *buf)
 {
-  char* begin = buf;
-  char* npos = 0;
-  char* end = buf + strlen(buf) - 1;
-
   file.writeError = false;
-  if((npos = strchr(buf, 'N')) != NULL)
-  {
-    begin = strchr(npos, ' ') + 1;
-    end = strchr(npos, '*') - 1;
-  }
-  end[1] = '\r';
-  end[2] = '\n';
-  end[3] = '\0';
-  file.write(begin);
+  file.write(buf); //write command
+  file.write("\r\n"); //write line termination
   if (file.writeError)
   {
     SERIAL_ERROR_START;

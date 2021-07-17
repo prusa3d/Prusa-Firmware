@@ -9382,12 +9382,14 @@ Sigma_Exit:
     When online dumps are enabled, the FW will dump memory on the serial before resetting.
     #### Usage
 
-     D23 [R]
+     D23 [E] [R]
     #### Parameters
+    - `E` - Perform an emergency crash dump (resets the printer).
     - `R` - Disable online dumps.
     */
     case 23: {
-        emergency_serial_dump = !code_seen('R');
+        dcode_23();
+        break;
     };
 #endif
 
