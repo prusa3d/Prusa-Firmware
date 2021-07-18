@@ -7428,8 +7428,6 @@ Sigma_Exit:
 #endif
           cs.max_jerk[E_AXIS] = e;
       }
-      if (cs.max_jerk[X_AXIS] > DEFAULT_XJERK) cs.max_jerk[X_AXIS] = DEFAULT_XJERK;
-      if (cs.max_jerk[Y_AXIS] > DEFAULT_YJERK) cs.max_jerk[Y_AXIS] = DEFAULT_YJERK;
     }
     break;
 
