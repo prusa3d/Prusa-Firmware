@@ -1,0 +1,12 @@
+#!/bin/sh
+prg=$(basename "$0")
+port="$1"
+if [ -z "$port" -o "$port" = "-h" ]
+then
+  echo "usage: $0 <port>" >&2
+  echo "Set TTY flags on <port> to avoid reset-on-connect" >&2
+  exit 1
+fi
+
+set -e
+stty -F "$port" -hup
