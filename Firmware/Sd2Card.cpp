@@ -205,14 +205,14 @@ uint32_t Sd2Card::cardSize() {
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectHigh() {
-  digitalWrite(chipSelectPin_, HIGH);
+  WRITE(SDSS, 1);
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectLow() {
 #ifndef SOFTWARE_SPI
   spiInit(spiRate_);
 #endif  // SOFTWARE_SPI
-  digitalWrite(chipSelectPin_, LOW);
+  WRITE(SDSS, 0);
 }
 //------------------------------------------------------------------------------
 /** Erase a range of blocks.
@@ -283,26 +283,25 @@ bool Sd2Card::eraseSingleBlockEnable() {
  * the value zero, false, is returned for failure.  The reason for failure
  * can be determined by calling errorCode() and errorData().
  */
-bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
+bool Sd2Card::init(uint8_t sckRateID) {
   errorCode_ = type_ = 0;
-  chipSelectPin_ = chipSelectPin;
   // 16-bit init start time allows over a minute
   uint16_t t0 = (uint16_t)_millis();
   uint32_t arg;
 
   // set pin modes
-  pinMode(chipSelectPin_, OUTPUT);
   chipSelectHigh();
-  pinMode(SPI_MISO_PIN, INPUT);
-  pinMode(SPI_MOSI_PIN, OUTPUT);
-  pinMode(SPI_SCK_PIN, OUTPUT);
+  SET_OUTPUT(SDSS);
+  SET_INPUT(MISO);
+  SET_OUTPUT(MOSI);
+  SET_OUTPUT(SCK);
 
 #ifndef SOFTWARE_SPI
   // SS must be in output mode even it is not chip select
-  pinMode(SS_PIN, OUTPUT);
+  SET_OUTPUT(SS);
   // set SS high - may be chip select for another SPI device
 #if SET_SPI_SS_HIGH
-  digitalWrite(SS_PIN, HIGH);
+  WRITE(SS, 1);
 #endif  // SET_SPI_SS_HIGH
   // set SCK rate for initialization commands
   spiRate_ = SPI_SD_INIT_RATE;

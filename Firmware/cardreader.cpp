@@ -204,20 +204,13 @@ void CardReader::initsd(bool doPresort/* = true*/)
   if(root.isOpen())
     root.close();
 #ifdef SDSLOW
-  if (!card.init(SPI_HALF_SPEED,SDSS)
-  #if defined(LCD_SDSS) && (LCD_SDSS != SDSS)
-    && !card.init(SPI_HALF_SPEED,LCD_SDSS)
-  #endif
+  if (!card.init(SPI_HALF_SPEED)
     )
 #else
-  if (!card.init(SPI_FULL_SPEED,SDSS)
-  #if defined(LCD_SDSS) && (LCD_SDSS != SDSS)
-    && !card.init(SPI_FULL_SPEED,LCD_SDSS)
-  #endif
+  if (!card.init(SPI_FULL_SPEED)
     )
 #endif
   {
-    //if (!card.init(SPI_HALF_SPEED,SDSS))
     SERIAL_ECHO_START;
     SERIAL_ECHOLNRPGM(_n("SD init fail"));////MSG_SD_INIT_FAIL
   }
