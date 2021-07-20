@@ -25,6 +25,8 @@ if [ "$LNG" = "all" ]; then
 #Community language support
 #Dutch
  ./lang-export.sh nl
+#Slovak
+ ./lang-export.sh sk
 #Use the 2 lines below as a template and replace 'qr' and 'New language'
 ##New language
 # ./lang-export.sh qr
@@ -57,6 +59,8 @@ else
 #Community language support
 #Dutch
    *nl*) echo "Dutch" ;;
+#Slovak
+   *sk*) echo "Slovak" ;;   
 #Use the 2 lines below as a template and replace 'qr' and 'New language'
 ##New language
 #   *qr*) echo "New language" ;;

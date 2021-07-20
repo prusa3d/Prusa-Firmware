@@ -175,6 +175,10 @@ fi
 #if [ "$LNG" = "pl" ]; then
 #fi
 
+#replace in slovak translation
+#if [ "$LNG" = "sk" ]; then
+#fi
+
 #check for nonasci characters
 if grep --color='auto' -P -n '[^\x00-\x7F]' $LNG'_filtered.po' >nonasci.txt; then
  exit

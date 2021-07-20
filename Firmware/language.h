@@ -97,6 +97,7 @@ typedef struct
 #ifdef COMMUNITY_LANG_SUPPORT //Community language support
 #ifdef COMMUNITY_LANG_NL
 #define LANG_CODE_NL 0x6e6c //!<'nl'
+#define LANG_CODE_SK 0x736b //!<'sk'
 #endif // COMMUNITY_LANG_NL
 //Use the 3 lines below as a template and replace 'QR', '0X7172' and 'qr'
 //#ifdef COMMUNITY_LANG_QR

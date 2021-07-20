@@ -46,6 +46,8 @@ lang_code_hex_data()
 #Community language support
 #Dutch
   *nl*) echo '\x6c\x6e' ;;
+#Slovak  
+  *sk*) echo '\x6b\x73' ;;  
 #Use the 2 lines below as a template and replace 'qr' and `\x71\x72`
 ##New language
 #  *qr*) echo '\x71\x72' ;;

@@ -69,7 +69,8 @@ cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
 #Community language support
 #Dutch
 		insert_xx "$new_s" 'nl'
-
+#Slovak
+		insert_xx "$new_s" 'sk'		
 #Use the 2 lines below as a template and replace 'qr'
 ##New language
 #		insert_xx "$new_s" 'qr'
