@@ -241,9 +241,7 @@ static void lcd_detect_IRsensor();
 #endif //IR_SENSOR_ANALOG
 static void lcd_selftest_error(TestError error, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
-#ifdef SNMM
-static int get_ext_nr();
-#endif //SNMM
+
 #if defined (SNMM) || defined(SNMM_V2)
 static void fil_load_menu();
 static void fil_unload_menu();
