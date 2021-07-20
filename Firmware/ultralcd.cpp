@@ -1203,6 +1203,7 @@ void lcd_commands()
                 lcd_clear();
                 menu_depth = 0;
                 menu_submenu(lcd_babystep_z);
+				lay1cal_set_flow();
                 lay1cal_intro_line();
                 lcd_commands_step = 8;
                 break;

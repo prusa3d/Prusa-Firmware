@@ -10,6 +10,7 @@
 #include "cmdqueue.h"
 #include "mmu.h"
 #include <avr/pgmspace.h>
+#include "util.h"
 
 //! @brief Wait for preheat
 void lay1cal_wait_preheat()
@@ -211,4 +212,32 @@ void lay1cal_square(char *cmd_buffer, uint8_t i)
     enquecommand(cmd_buffer);
     sprintf_P(cmd_buffer, fmt2, (35 - (i + 1)*width * 2), extr_short_segment);
     enquecommand(cmd_buffer);
+}
+
+
+//! @brief Set the flow in order to the installed nozzle
+//!
+//! This function must be called before to start to print in order to 
+//! enqueue the correct flow depending the nozzle size stored on the 
+//! eeprom
+//!
+void lay1cal_set_flow()
+{    
+    ClNozzleDiameter nDiameter=(ClNozzleDiameter)eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER);
+
+    switch(nDiameter){
+    case ClNozzleDiameter::_Diameter_250:
+        enquecommand_P(PSTR("M221 S62"));
+        break;
+    case ClNozzleDiameter::_Diameter_Undef:
+    case ClNozzleDiameter::_Diameter_400:
+        enquecommand_P(PSTR("M221 S100"));
+        break;
+    case ClNozzleDiameter::_Diameter_600:
+        enquecommand_P(PSTR("M221 S150"));
+        break;
+    case ClNozzleDiameter::_Diameter_800:
+        enquecommand_P(PSTR("M221 S200"));
+        break;
+    }    
 }
