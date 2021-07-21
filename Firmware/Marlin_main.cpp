@@ -2901,7 +2901,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
               raise_z_above(Z_RAISE_BEFORE_HOMING);
               st_synchronize();
             #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
-            #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))  // If Mesh bed leveling, move X&Y to safe position for home
+            #ifdef MESH_BED_LEVELING  // If Mesh bed leveling, move X&Y to safe position for home
               raise_z_above(MESH_HOME_Z_SEARCH);
               st_synchronize();
               if (!axis_known_position[X_AXIS]) homeaxis(X_AXIS);
@@ -3015,7 +3015,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
     // and correct the current_position XY axes to match the transformed coordinate system.
     world2machine_update_current();
 
-#if (defined(MESH_BED_LEVELING) && !defined(MK1BP))
+#ifdef MESH_BED_LEVELING
 	if (home_x_axis || home_y_axis || without_mbl || home_z_axis)
     {
       if (! home_z && mbl_was_active) {
@@ -5614,9 +5614,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	*/
 
 	case 80: {
-#ifdef MK1BP
-		break;
-#endif //MK1BP
         gcode_G80();
 	}
 	break;
