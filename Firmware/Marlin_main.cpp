@@ -9628,10 +9628,6 @@ void get_coordinates()
   }
   if(code_seen('F')) {
     next_feedrate = code_value();
-#ifdef MAX_SILENT_FEEDRATE
-	if (tmc2130_mode == TMC2130_MODE_SILENT)
-		if (next_feedrate > MAX_SILENT_FEEDRATE) next_feedrate = MAX_SILENT_FEEDRATE;
-#endif //MAX_SILENT_FEEDRATE
     if(next_feedrate > 0.0) feedrate = next_feedrate;
 	if (!seen[0] && !seen[1] && !seen[2] && seen[3])
 	{
