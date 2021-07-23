@@ -12069,10 +12069,7 @@ void M600_load_filament_movements()
 	plan_buffer_line_curposXYZE(400, active_extruder);
 	current_position[E_AXIS] += 10;
 	plan_buffer_line_curposXYZE(50, active_extruder);
-#else
-	current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-	plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST);
-#endif                
+#endif // SNMM
 	load_filament_final_feed();
 	lcd_loading_filament();
 	st_synchronize();
