@@ -280,72 +280,83 @@ void mmu_loop(void)
 		{
 			if ((mmu_cmd >= MmuCmd::T0) && (mmu_cmd <= MmuCmd::T4))
 			{
+				// T<nr.> Change filament <nr.> to filament <nr.>
 				const uint8_t filament = mmu_cmd - MmuCmd::T0;
 				DEBUG_PRINTF_P(PSTR("MMU <= 'T%d'\n"), filament);
 				mmu_printf_P(PSTR("T%d\n"), filament);
-				mmu_state = S::WaitCmd; // wait for response
+				mmu_state = S::WaitCmd;
 				mmu_fil_loaded = true;
 				mmu_idl_sens = 1;
 			}
 			else if ((mmu_cmd >= MmuCmd::L0) && (mmu_cmd <= MmuCmd::L4))
 			{
-			    const uint8_t filament = mmu_cmd - MmuCmd::L0;
-			    DEBUG_PRINTF_P(PSTR("MMU <= 'L%d'\n"), filament);
-			    mmu_printf_P(PSTR("L%d\n"), filament);
-			    mmu_state = S::WaitCmd; // wait for response
+				// L<.nr> Load filament 
+				const uint8_t filament = mmu_cmd - MmuCmd::L0;
+				DEBUG_PRINTF_P(PSTR("MMU <= 'L%d'\n"), filament);
+				mmu_printf_P(PSTR("L%d\n"), filament);
+				mmu_state = S::WaitCmd;
 			}
 			else if (mmu_cmd == MmuCmd::C0)
 			{
-			    DEBUG_PRINTF_P(PSTR("MMU <= 'C0'\n"));
-				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
+				// C0 Continue loading current filament (used after T-code)
+				DEBUG_PRINTF_P(PSTR("MMU <= 'C0'\n"));
+				mmu_puts_P(PSTR("C0\n"));
 				mmu_state = S::WaitCmd;
 				mmu_idl_sens = 1;
 			}
 			else if (mmu_cmd == MmuCmd::U0)
 			{
-			    DEBUG_PRINTF_P(PSTR("MMU <= 'U0'\n"));
-				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
+				// U0 Unload current filament
+				DEBUG_PRINTF_P(PSTR("MMU <= 'U0'\n"));
+				mmu_puts_P(PSTR("U0\n")); 
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
 			}
 			else if ((mmu_cmd >= MmuCmd::E0) && (mmu_cmd <= MmuCmd::E4))
 			{
-			    const uint8_t filament = mmu_cmd - MmuCmd::E0;
+				// E<nr.> Eject filament <nr.>
+				const uint8_t filament = mmu_cmd - MmuCmd::E0;
 				DEBUG_PRINTF_P(PSTR("MMU <= 'E%d'\n"), filament);
-				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
+				mmu_printf_P(PSTR("E%d\n"), filament);
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
 			}
 			else if ((mmu_cmd >= MmuCmd::K0) && (mmu_cmd <= MmuCmd::K4))
-            {
-                const uint8_t filament = mmu_cmd - MmuCmd::K0;
-                DEBUG_PRINTF_P(PSTR("MMU <= 'K%d'\n"), filament);
-                mmu_printf_P(PSTR("K%d\n"), filament); //send eject filament
-                mmu_fil_loaded = false;
-                mmu_state = S::WaitCmd;
-            }
+			{
+				// K<nr.> Cut filament <nr.>
+				const uint8_t filament = mmu_cmd - MmuCmd::K0;
+				DEBUG_PRINTF_P(PSTR("MMU <= 'K%d'\n"), filament);
+				mmu_printf_P(PSTR("K%d\n"), filament);
+				mmu_fil_loaded = false;
+				mmu_state = S::WaitCmd;
+			}
 			else if (mmu_cmd == MmuCmd::R0)
 			{
-			    DEBUG_PRINTF_P(PSTR("MMU <= 'R0'\n"));
-				mmu_puts_P(PSTR("R0\n")); //send recover after eject
+				// Recover after eject filament
+				DEBUG_PRINTF_P(PSTR("MMU <= 'R0'\n"));
+				mmu_puts_P(PSTR("R0\n"));
 				mmu_state = S::WaitCmd;
 			}
 			else if (mmu_cmd == MmuCmd::S3)
 			{
-			    DEBUG_PRINTF_P(PSTR("MMU <= 'S3'\n"));
-				mmu_puts_P(PSTR("S3\n")); //send power failures request
+				// Power failures request
+				DEBUG_PRINTF_P(PSTR("MMU <= 'S3'\n"));
+				mmu_puts_P(PSTR("S3\n")); 
 				mmu_state = S::GetDrvError;
 			}
 			else if (mmu_cmd == MmuCmd::W0)
 			{
-			    DEBUG_PRINTF_P(PSTR("MMU <= 'W0'\n"));
-			    mmu_puts_P(PSTR("W0\n"));
-			    mmu_state = S::Pause;
+				// Wait for user click
+				DEBUG_PRINTF_P(PSTR("MMU <= 'W0'\n"));
+				mmu_puts_P(PSTR("W0\n"));
+				mmu_state = S::Pause;
 			}
 			mmu_last_cmd = mmu_cmd;
 			mmu_cmd = MmuCmd::None;
 		}
 		else if ((eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) != SilentModeMenu_MMU) && mmu_ready) {
+				// M0 Set MMU to normal mode
+				// M1 Set MMU to stealth mode
 				DEBUG_PRINTF_P(PSTR("MMU <= 'M%d'\n"), SilentModeMenu_MMU);
 				mmu_printf_P(PSTR("M%d\n"), SilentModeMenu_MMU);
 				mmu_state = S::SwitchMode;
@@ -1100,16 +1111,15 @@ void extr_unload()
 	{
 #ifndef SNMM
 		st_synchronize();
-
-        menu_submenu(extr_unload_view);
-
+		menu_submenu(extr_unload_view);
 		mmu_filament_ramming();
 
+		// Unload filament
 		mmu_command(MmuCmd::U0);
+
 		// get response
 		manage_response(false, true, MMU_UNLOAD_MOVE);
-
-        menu_back();
+		menu_back();
 #else //SNMM
 
 		lcd_clear();
@@ -1352,8 +1362,9 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         lcd_clear();
         lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
         lcd_print(' ');
-        lcd_print(tmp_extruder + 1);
-        mmu_command(MmuCmd::T0 + tmp_extruder);
+
+        // Change filament to 'filament_nr'
+        mmu_command(MmuCmd::T0 + filament_nr);
         manage_response(true, true, MMU_TCODE_MOVE);
         mmu_continue_loading(false);
         mmu_extruder = tmp_extruder; //filament change is finished
@@ -1419,6 +1430,8 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
                 if (recover)
                 {
                     lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
+
+                    // R0 Recover after eject filament
                     mmu_command(MmuCmd::R0);
                     manage_response(false, false);
                 }
@@ -1492,6 +1505,8 @@ static bool load_more()
     {
         if (READ(IR_SENSOR_PIN) == 0) return true;
         DEBUG_PRINTF_P(PSTR("Additional load attempt nr. %d\n"), i);
+
+        // C0 Continue loading current filament (used after T-code)
         mmu_command(MmuCmd::C0);
         manage_response(true, true, MMU_LOAD_MOVE);
     }
@@ -1532,6 +1547,7 @@ void mmu_continue_loading(bool blocking)
 {
 	if (!ir_sensor_detected)
 	{
+		// C0 Continue loading current filament (used after T-code)
 	    mmu_command(MmuCmd::C0);
 	    return;
 	}
@@ -1580,6 +1596,7 @@ void mmu_continue_loading(bool blocking)
             stop_and_save_print_to_ram(0, 0);
             long_pause();
 
+            // U0 Unload filament
             mmu_command(MmuCmd::U0);
             manage_response(false, true, MMU_UNLOAD_MOVE);
 
@@ -1597,6 +1614,8 @@ void mmu_continue_loading(bool blocking)
             {
                 mmu_fil_loaded = false; //so we can retry same T-code again
                 isPrintPaused = true;
+
+                // W0 Wait for user click
                 mmu_command(MmuCmd::W0);
                 return;
             }

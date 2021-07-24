@@ -1508,6 +1508,7 @@ static void lcd_menu_fails_stats_mmu_print()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_mmu_total()
 {
+	// S3 Power failures request
 	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
@@ -8192,6 +8193,8 @@ static bool selftest_irsensor()
         mmu_filament_ramming();
     }
     progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
+
+    // U0 Unload filament
     mmu_command(MmuCmd::U0);
     manage_response(false, false);
 

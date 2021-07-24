@@ -35,32 +35,42 @@ extern uint16_t mmu_power_failures;
 enum class MmuCmd : uint_least8_t
 {
     None,
-    T0,
-    T1,
-    T2,
-    T3,
-    T4,
-    L0,
-    L1,
-    L2,
-    L3,
-    L4,
-    C0,
-    U0,
-    E0,
-    E1,
-    E2,
-    E3,
-    E4,
-    K0,
-    K1,
-    K2,
-    K3,
-    K4,
-    R0,
-    S3,
-    W0, //!< Wait and signal load error
+    T0, //!< T0 change to filament 0
+    T1, //!< T1 change to filament 1
+    T2, //!< T2 change to filament 2
+    T3, //!< T3 change to filament 3
+    T4, //!< T4 change to filament 4
+    L0, //!< Load filament 0
+    L1, //!< Load filament 1
+    L2, //!< Load filament 2
+    L3, //!< Load filament 3
+    L4, //!< Load filament 4
+    C0, //!< Continue loading current filament (used after T-code)
+    U0, //!< Unload filament
+    E0, //!< Eject filament 0
+    E1, //!< Eject filament 1
+    E2, //!< Eject filament 2
+    E3, //!< Eject filament 3
+    E4, //!< Eject filament 4
+    K0, //!< Cut filament 0
+    K1, //!< Cut filament 1
+    K2, //!< Cut filament 2
+    K3, //!< Cut filament 3
+    K4, //!< Cut filament 4
+    R0, //!< Recover after eject filament
+    S3, //!< Power failures request
+    W0, //!< Wait for user click
 };
+
+// Other MMU commands not included in the above enum:
+// X0 - MMU reset
+// P0 - Read finda
+// M0 - Set MMU to normal mode
+// M1 - Set MMU to stealth mode
+// S0 - return 'ok'
+// S1 - Read firmware version
+// S2 - Read firmware build number
+// F<nr.> \<type\> filament type. <nr.> filament number, \<type\> 0, 1 or 2. Does nothing.
 
 inline MmuCmd operator+ (MmuCmd cmd, uint8_t filament)
 {

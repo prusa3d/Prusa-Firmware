@@ -3808,6 +3808,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 lcd_clear();
                 lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
 
+                // R0 Recover after eject filament
                 mmu_command(MmuCmd::R0);
                 manage_response(false, false);
             }
