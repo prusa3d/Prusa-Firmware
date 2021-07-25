@@ -1357,17 +1357,17 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
     bFilamentAction = false;                            // NOT in "mmu_load_to_nozzle_menu()"
     if (degHotend0() > EXTRUDE_MINTEMP)
     {
-        tmp_extruder = filament_nr;
         lcd_update_enable(false);
         lcd_clear();
         lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
         lcd_print(' ');
+        lcd_print(filament_nr + 1);
 
         // Change filament to 'filament_nr'
         mmu_command(MmuCmd::T0 + filament_nr);
         manage_response(true, true, MMU_TCODE_MOVE);
         mmu_continue_loading(false);
-        mmu_extruder = tmp_extruder; //filament change is finished
+        mmu_extruder = filament_nr; //filament change is finished
         raise_z_above(MIN_Z_FOR_LOAD, false);
         mmu_load_to_nozzle();
         load_filament_final_feed();
