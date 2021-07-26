@@ -1101,8 +1101,10 @@ void setup()
 	setup_powerhold();
 
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
-	if (farm_mode == 0xFF) 
+	if (farm_mode == 0xFF) {
 		farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
+  	eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
+  }
 	if (farm_mode)
 	{
 		no_response = true; //we need confirmation by recieving PRUSA thx
@@ -1439,13 +1441,6 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
     enable_z();
 #endif
-
-	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
-	if (farm_mode == 0xFF) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
-	if (farm_mode)
-	{
-		prusa_statistics(8);
-	}
 
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
