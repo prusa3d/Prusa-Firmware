@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 13
+# Version 1.0.1 Build 14
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
@@ -53,51 +53,51 @@ sed -i 's/ \\n/ /g;s/\\n/ /g' $LNG'_filtered.po'
 
 #replace in czech translation
 if [ "$LNG" = "cz" ]; then
- #replace '�' with 'z'
+ #replace 'ž' with 'z'
  sed -i 's/\xc5\xbe/z/g' $LNG'_filtered.po'
- #replace '�' with 'e'
+ #replace 'ì' with 'e'
  sed -i 's/\xc4\x9b/e/g' $LNG'_filtered.po'
- #replace '�' with 'i'
+ #replace 'í' with 'i'
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
- #replace '�' with 'r'
+ #replace 'ø' with 'r'
  sed -i 's/\xc5\x99/r/g' $LNG'_filtered.po'
- #replace '�' with 'c'
+ #replace 'è' with 'c'
  sed -i 's/\xc4\x8d/c/g' $LNG'_filtered.po'
- #replace '�' with 'a'
+ #replace 'á' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '�' with 'e'
+ #replace 'é' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
 #replace in german translation https://en.wikipedia.org/wiki/German_orthography
 if [ "$LNG" = "de" ]; then
- #replace '�' with 'ae'
+ #replace 'ä' with 'ae'
  sed -i 's/\xc3\xa4/ae/g' $LNG'_filtered.po'
- #replace '�' with 'Ae'
+ #replace 'Ä' with 'Ae'
  sed -i 's/\xc3\x84/Ae/g' $LNG'_filtered.po'
- #replace '�' with 'ue'
+ #replace 'ü' with 'ue'
  sed -i 's/\xc3\xbc/ue/g' $LNG'_filtered.po'
- #replace '�' with 'Ue'
+ #replace 'Ü' with 'Ue'
  sed -i 's/\xc3\x9c/Ue/g' $LNG'_filtered.po'
- #replace '�' with 'oe'
+ #replace 'ö' with 'oe'
  sed -i 's/\xc3\xb6/oe/g' $LNG'_filtered.po'
- #replace '�' with 'Oe'
+ #replace 'Ö' with 'Oe'
  sed -i 's/\xc3\x96/Oe/g' $LNG'_filtered.po'
- #replace '�' with 'ss'
+ #replace 'ß' with 'ss'
  sed -i 's/\xc3\x9f/ss/g' $LNG'_filtered.po'
 fi
 
 #replace in spain translation
 if [ "$LNG" = "es" ]; then
- #replace '�' with 'a'
+ #replace 'á' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '�' with '?'
+ #replace '¿' with '?'
  sed -i 's/\xc2\xbf/?/g' $LNG'_filtered.po'
- #replace '�' with 'o'
+ #replace 'ó' with 'o'
  sed -i 's/\xc3\xb3/o/g' $LNG'_filtered.po'
- #replace '�' with 'e'
+ #replace 'é' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace '�' with 'i'
+ #replace 'í' with 'i'
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
  #replace '!' with '!'
  sed -i 's/\xc2\xa1/!/g' $LNG'_filtered.po'
@@ -107,79 +107,79 @@ fi
 
 #replace in french translation https://en.wikipedia.org/wiki/French_orthography
 if [ "$LNG" = "fr" ]; then
- #replace '�' with 'a' (right)
+ #replace 'á' with 'a' (right)
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '�' with 'A' (right)
+ #replace 'Á' with 'A' (right)
  sed -i 's/\xc3\x81/A/g' $LNG'_filtered.po'
- #replace '�' with 'a' (left)
+ #replace 'à' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace '�' with 'A' (left)
+ #replace 'À' with 'A' (left)
  sed -i 's/\xc3\x80/A/g' $LNG'_filtered.po'
- #replace '�' with 'e' (right)
+ #replace 'é' with 'e' (right)
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace '�' with 'E' (right)
+ #replace 'É' with 'E' (right)
  sed -i 's/\xc3\x89/E/g' $LNG'_filtered.po'
- #replace '�' with 'e' (left)
+ #replace 'è' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace '�' with 'E' (left)
+ #replace 'È' with 'E' (left)
  sed -i 's/\xc3\x88/E/g' $LNG'_filtered.po'
 fi
 
 #replace in italian translation
 if [ "$LNG" = "it" ]; then
- #replace '�' with 'e' (left)
+ #replace 'é' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace '�' with 'a' (left)
+ #replace 'á' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace '�' with 'o' (left)
+ #replace 'ó' with 'o' (left)
  sed -i 's/\xc3\xb2/o/g' $LNG'_filtered.po'
- #replace '�' with 'u' (left)
+ #replace 'ú' with 'u' (left)
  sed -i 's/\xc3\xb9/u/g' $LNG'_filtered.po'
- #replace '�' with 'e'
+ #replace 'é' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace '�' with 'E' (left)
+ #replace 'É' with 'E' (left)
  sed -i 's/\xc3\x88/E/g' $LNG'_filtered.po'
 fi
 
 #replace in dutch translation according to https://nl.wikipedia.org/wiki/Accenttekens_in_de_Nederlandse_spelling
 if [ "$LNG" = "nl" ]; then
- #replace '�' with 'e'
+ #replace 'ë' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
- #replace '�' with 'i'
+ #replace 'ï' with 'i'
  sed -i 's/\xc3\xaf/i/g' $LNG'_filtered.po'
- #replace '�' with 'e'
+ #replace 'é' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace '�' with 'e' (left)
+ #replace 'è' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace '�' with 'o' (left)
+ #replace 'ö' with 'o' (left)
  sed -i 's/\xc3\xb6/o/g' $LNG'_filtered.po'
- #replace '�' with 'e' (left)
+ #replace 'ê' with 'e' (left)
  sed -i 's/\xc3\xaa/e/g' $LNG'_filtered.po'
- #replace '�' with 'u' (left)
+ #replace 'ü' with 'u' (left)
  sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
- #replace '�' with 'c' (left)
+ #replace 'ç' with 'c' (left)
  sed -i 's/\xc3\xa7/c/g' $LNG'_filtered.po'
- #replace '�' with 'a' (left)
+ #replace 'á' with 'a' (left)
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '�' with 'a' (left)
+ #replace 'à' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace '�' with 'a' (left)
+ #replace 'ä' with 'a' (left)
  sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
- #replace '�' with 'u' (left)
+ #replace 'û' with 'u' (left)
  sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
- #replace '�' with 'i' (left)
+ #replace 'î' with 'i' (left)
  sed -i 's/\xc3\xae/i/g' $LNG'_filtered.po'
- #replace '�' with 'i' (left)
+ #replace 'í' with 'i' (left)
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
- #replace '�' with 'o' (left)
+ #replace 'ô' with 'o' (left)
  sed -i 's/\xc3\xb4/o/g' $LNG'_filtered.po'
- #replace '�' with 'u' (left)
+ #replace 'ú' with 'u' (left)
  sed -i 's/\xc3\xba/u/g' $LNG'_filtered.po'
- #replace '�' with 'n' (left)
+ #replace 'ñ' with 'n' (left)
  sed -i 's/\xc3\xb1/n/g' $LNG'_filtered.po'
- #replace '�' with 'a' (left)
+ #replace 'â' with 'a' (left)
  sed -i 's/\xc3\xa2/a/g' $LNG'_filtered.po'
- #replace '�' with 'A' (left)
+ #replace 'Å' with 'A' (left)
  sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
 fi
 
