@@ -48,6 +48,8 @@ Firmware/Doc
 /lang/progmem1.var
 /lang/text.sym
 /lang/textaddr.txt
+/lang/lang_en*.cnt
+/lang/lang_en*.max
 /build-env/
 /Firmware/Firmware.vcxproj
 /Firmware/Configuration_prusa_bckp.h

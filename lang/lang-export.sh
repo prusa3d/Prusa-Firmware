@@ -1,8 +1,19 @@
 #!/bin/bash
 #
+# Version 1.0.1 Build 7
+#
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
 #
+#############################################################################
+# Change log:
+#  9 Nov  2018, Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  1 Mar. 2021, 3d-gussner, Add Community language support
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-export.sh`
+#                           to get Build Nr
+#############################################################################
 
 # relative path to source folder
 SRCDIR="../Firmware"
@@ -73,7 +84,7 @@ fi
 # remove output file if exists
 if [ -e $OUTFILE ]; then rm -f -v $OUTFILE; fi
 
-echo "lang-export.sh started"
+echo "$(tput setaf 2)lang-export.sh started$(tput sgr 0)"
 
 #total strings
 CNTTXT=$(grep '^#' -c $INFILE)
@@ -141,5 +152,5 @@ done >>$OUTFILE) 2>&1
 sync
 sed -i 's/$/\r/' $OUTFILE
 
-echo "lang-export.sh finished"
+echo "$(tput setaf 2)lang-export.sh finished$(tput sgr 0)"
 exit 0

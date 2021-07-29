@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Version 1.0.1 Build 6
+#
 # lang_check.sh - multi-language support script
 #  check lang_xx.bin (language binary file)
 #
@@ -8,6 +10,14 @@
 #  lang_en.txt or lang_en_$1.txt
 #  
 #
+#############################################################################
+# Change log:
+# 19 June 2018, Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-check.sh`
+#                           to get Build Nr
+#############################################################################
 
 #set 'cz'
 
@@ -19,7 +29,7 @@ fn_b=lang_$1.bin
 
 #check txt dictionary file
 echo -n "dictionary file: $fn_t"
-if [ -e $fn_t ]; then echo " - OK"; else echo " - Not found!"; exit 1; fi
+if [ -e $fn_t ]; then echo "$(tput setaf 2) - OK$(tput sgr 0)"; else echo "$(tput setaf 1) - not found!$(tput sgr 0)"; exit 1; fi
 
 #create lang_xx.tmp - different processing for 'en' language
 if [ "$1" = "en" ]; then
@@ -33,7 +43,7 @@ fi | sed 's/^\"\\x00\"$/\"\"/' > lang_$1.tmp
 count_txt=$(grep -c '^"' lang_$1.tmp)
 
 echo -n "language bin file: $fn_b"
-if [ -e $fn_b ]; then echo " - OK"; else echo " - Not found!"; exit 1; fi
+if [ -e $fn_b ]; then echo "$(tput setaf 2) - OK$(tput sgr 0)"; else echo "$(tput setaf 1) - not found!$(tput sgr 0)"; exit 1; fi
 
 #read header and convert to hex
 header=$(dd if=$fn_b bs=1 count=16 2>/dev/null | xxd | cut -c11-49 | sed 's/\([0-9a-f][0-9a-f]\)[\ ]*/\1 /g')
@@ -66,9 +76,9 @@ cat lang_$1.tmp | sed 's/^\"/printf \"\\x22/;s/"$/\\x22\\x0a\"/' | sh >lang_$1_2
 diff -a lang_$1_1.tmp lang_$1_2.tmp >lang_$1_check.dif
 dif=$(cat lang_$1_check.dif)
 if [ -z "$dif" ]; then
- echo 'binary data OK'
+ echo 'binary data $(tput setaf 2)OK$(tput sgr 0)'
 else
- echo 'binary data NG!'
+ echo 'binary data $(tput setaf 1)NG!$(tput sgr 0)'
 fi
 
 read -t 5

@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# Version 1.0.2 Build 15
+#
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
 #
@@ -9,24 +11,40 @@
 # Output files:
 #  lang_xx.bin
 #
+# Depending on files:
+#  ../Firmware/config.h to read the max allowed size for translations
+#
 # Temporary files:
+#  lang_en.cnt //calculated number of messages in english
+#  lang_en.max //maximum size determined by reading "../Firmware/config.h"
 #  lang_xx.tmp
 #  lang_xx.dat
 #
-
+#############################################################################
+# Change log:
+# 18 June 2018, Xpilla,     Initial
+# 14 May  2020, 3d-gussner, Add message and size count comparison
+# 14 May  2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  1 Mar. 2021, 3d-gussner, Add Community language support
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-build.sh`
+#                           to get Build Nr
+#############################################################################
+#############################################################################
+#
 #awk code to format ui16 variables for dd
 awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
 
 #startup message
-echo "lang-build.sh started" >&2
+echo "$(tput setaf 2)lang-build.sh started$(tput sgr 0)" >&2
 
 #exiting function
 finish()
 {
  if [ $1 -eq 0 ]; then
-  echo "lang-build.sh finished with success" >&2
+  echo "$(tput setaf 2)lang-build.sh finished with success$(tput sgr 0)" >&2
  else
-  echo "lang-build.sh finished with errors!" >&2
+  echo "$(tput setaf 1)lang-build.sh finished with errors!$(tput sgr 0)" >&2
  fi
  exit $1
 }
@@ -93,6 +111,16 @@ generate_binary()
  if [ "$1" = "en" ]; then
   #remove comments and empty lines
   cat lang_en.txt | sed '/^$/d;/^#/d'
+  #calculate number of strings
+  count=$(grep -c '^"' lang_en.txt)
+  echo "count="$count >&2
+  #Calculate the number of strings and save to temporary file
+  echo $count >lang_en.cnt
+  #read the allowed maxsize from "../Firmware/config.h" and save to temporary file
+  maxsize=$(($(grep "#define LANG_SIZE_RESERVED" ../Firmware/config.h|sed -e's/  */ /g' |cut -d ' ' -f3)))
+
+  echo "maxsize="$maxsize >&2
+  echo $maxsize >lang_en.max
  else
   #remove comments and empty lines, print lines with translated text only
   cat lang_en_$1.txt | sed '/^$/d;/^#/d' | sed -n 'n;p'
@@ -103,12 +131,30 @@ generate_binary()
  #calculate number of strings
  count=$(grep -c '^"' lang_$1.tmp)
  echo "count="$count >&2
+ 
+ # read string count of English and compare it with the translation
+ encount=$(cat lang_en.cnt)
+ if [ "$count" -eq "$encount" ]; then
+	echo "$(tput setaf 2)OK:"$1"="$count" is equal to en="$encount"$(tput sgr 0)" >&2
+ else
+	echo "$(tput setaf 1)Error:"$1"="$count" is NOT equal to en="$encount"$(tput sgr 0)" >&2
+	finish 1
+ fi
  #calculate text data offset
  offs=$((16 + 2 * $count))
  echo "offs="$offs >&2
  #calculate text data size
  size=$(($offs + $(wc -c lang_$1.dat | cut -f1 -d' ')))
  echo "size="$size >&2
+ # read maxsize and compare with the translation
+ maxsize=$(cat lang_en.max)
+ if [ "$size" -lt "$maxsize" ]; then
+	free_space=$(($maxsize - $size))
+	echo "$(tput setaf 2)OK:"$1"="$size" is less than "$maxsize". Free space:"$free_space"$(tput sgr 0)" >&2
+ else
+	echo "$(tput setaf 1)Error:"$1"="$size" is higer than "$maxsize"$(tput sgr 0)" >&2
+	finish 1
+ fi
  #write header with empty signature and checksum
  write_header $1 $size $count 0x0000 0x00000000
  #write offset table
