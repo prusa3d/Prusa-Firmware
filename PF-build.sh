@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_61
+# Version: 2.0.0-Build_63
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -190,6 +190,177 @@ case "$1" in
 esac
 }
 #### End: Failures
+
+#### Start: Check for options/flags
+##check_options()
+##{
+while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
+    do
+        case "${flag}" in
+            b) build_flag=${OPTARG};;
+            c) clean_flag=${OPTARG};;
+            d) devel_flag=${OPTARG};;
+            g) mk404_graphics_flag=${OPTARG};;
+            h) help_flag=1;;
+            i) IDE_flag=${OPTARG};;
+            j) verbose_IDE_flag=${OPTARG};;
+            l) language_flag=${OPTARG};;
+            m) mk404_flag=${OPTARG};;
+            n) new_build_flag=${OPTARG};;
+            o) output_flag=${OPTARG};;
+            p) prusa_flag=${OPTARG};;
+            v) variant_flag=${OPTARG};;
+            x) board_mem_flag=${OPTARG};;
+            y) board_flash_flag=${OPTARG};;
+            ?) help_flag=1;;
+        esac
+    done
+
+#
+# '?' 'h' argument usage and help
+if [ "$help_flag" == "1" ] ; then
+echo "***************************************"
+echo "* PF-build.sh Version: 2.0.0-Build_63 *"
+echo "***************************************"
+echo "Arguments:"
+echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
+echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build"
+echo "$(tput setaf 2)-d$(tput sgr0) Devel build"
+echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 graphics"
+echo "$(tput setaf 2)-i$(tput sgr0) Arduino IDE version"
+echo "$(tput setaf 2)-j$(tput sgr0) Arduino IDE verbose output"
+echo "$(tput setaf 2)-l$(tput sgr0) Languages"
+echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim"
+echo "$(tput setaf 2)-n$(tput sgr0) New fresh build"
+echo "$(tput setaf 2)-o$(tput sgr0) Output"
+echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h"
+echo "$(tput setaf 2)-v$(tput sgr0) Variant"
+echo "$(tput setaf 2)-x$(tput sgr0) Board memory size"
+echo "$(tput setaf 2)-y$(tput sgr0) Board flash size"
+echo "$(tput setaf 2)-?$(tput sgr0) Help"
+echo
+echo "Brief USAGE:"
+echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0) [-b] [-c] [-d] [-g] [-i] [-j] [-l] [-m] [-n] [-o] [-p ] -[v] [-x] [-y] [-h] [-?]"
+echo
+echo "  -b : '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
+echo "  -c : '$(tput setaf 2)0$(tput sgr0)' clean up, '$(tput setaf 2)1$(tput sgr0)' keep"
+echo "  -d : '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
+echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
+echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
+echo "  -j : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
+echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
+echo "  -n : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "  -o : '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
+echo "  -p : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
+echo "  -v : '$(tput setaf 2)All$(tput sgr0)' or variant file name"
+echo "  -x : '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
+echo "  -y : '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
+echo
+echo "Example:"
+echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
+echo "  Will build all variants as multi language and final GOLD version"
+echo
+echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1 -c 1 -p 1 -n 1$(tput sgr0)"
+echo "  Will build MK3S multi language final GOLD firmware "
+echo "  with current commit count number and output extra information,"
+echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
+echo
+exit 6
+fi
+
+#Check if verbose_IDE is selected with argument '-j'
+
+if [ ! -z "$verbose_IDE_flag" ]; then
+    if [ $verbose_IDE_flag == "1" ]; then
+        verbose_IDE="1"
+    elif [ $verbose_IDE_flag == "0" ]; then
+        verbose_IDE="0"
+    else
+        echo "Only '0' and '1' are valid verbose_IDE values."
+        failures 5
+    fi
+else
+    verbose_IDE="0"
+fi  
+
+#Check if Build is selected with argument '-f'
+if [ ! -z "$board_flash_flag" ] ; then
+    if [ "$board_flash_flag" == "256" ] ; then
+        BOARD_FLASH="0x3FFFF"
+        BOARD_maximum_size="253952"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+    elif [ "$board_flash_flag" == "384" ] ; then
+        BOARD_FLASH="0x5FFFF"
+        BOARD_maximum_size="385024"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
+
+    elif [ "$board_flash_flag" == "512" ] ; then
+        BOARD_FLASH="0x7FFFF"
+        BOARD_maximum_size="516096"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
+    elif [ "$board_flash_flag" == "1024" ] ; then
+        BOARD_FLASH="0xFFFFF"
+        BOARD_maximum_size="1040384"
+        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
+    elif [[ "$board_flash_flag" == "32M" || "$board_flash_flag" == "32768" ]] ; then
+        BOARD_FLASH="0x1FFFFFF"
+        BOARD_maximum_size="33546240"
+        echo "Board flash size :    32 Mb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
+    else
+        echo "Unsupported board flash size chosen. Only '256', '384', '512', '1024' and '32M' are allowed."
+        failures 5
+    fi
+fi
+
+#Check if Build is selected with argument '-x'
+if [ ! -z "$board_mem_flag" ] ; then
+    if [ "$board_mem_flag" == "8" ] ; then
+        BOARD_MEM="0x21FF"
+        echo "Board mem size   :     $board_mem_flag Kb, $BOARD_MEM (hex)"
+    elif [ "$board_mem_flag" == "16" ] ; then
+        BOARD_MEM="0x3DFF"
+        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_RAM-$board_mem_flag"
+    elif [ "$board_mem_flag" == "32" ] ; then
+        BOARD_MEM="0x7DFF"
+        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_RAM-$board_mem_flag"
+    elif [ "$board_mem_flag" == "64" ] ; then
+        BOARD_MEM="0xFFFF"
+        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
+        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_RAM-$board_mem_flag"
+    else
+        echo "Unsupported board mem size chosen. Only '8', '64' are allowed."
+        failures 5
+    fi
+fi
+
+#Start: Check if Arduino IDE version is correct
+if [ ! -z "$IDE_flag" ]; then
+    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" ]]; then
+        ARDUINO_ENV="${IDE_flag}"
+    else
+        ARDUINO_ENV="1.8.5"
+    fi
+else
+    ARDUINO_ENV="1.8.5"
+fi
+#End: Check if Arduino IDE version is correct
+
+#Start: Check if Output is selecetd via argument '-o' 
+if [[ -z "$output_flag" || "$output_flag" == 1 ]] ; then
+    OUTPUT=1
+else
+    OUTPUT=0
+fi
+#End: Check if Output is selecetd via argument '-o' 
+##}
+#### End: Check for options/flags
 
 #### Start: Make backup of Configuration.h
 make_backup1()
@@ -356,158 +527,6 @@ if ! type gawk > /dev/null; then
 fi
 }
 #End: Check gawk ... needed during language build
-
-#### Start: Check for options/flags
-while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
-    do
-        case "${flag}" in
-            b) build_flag=${OPTARG};;
-            c) clean_flag=${OPTARG};;
-            d) devel_flag=${OPTARG};;
-            g) mk404_graphics_flag=${OPTARG};;
-            h) help_flag=1;;
-            i) IDE_flag=${OPTARG};;
-            j) verbose_IDE_flag=${OPTARG};;
-            l) language_flag=${OPTARG};;
-            m) mk404_flag=${OPTARG};;
-            n) new_build_flag=${OPTARG};;
-            o) output_flag=${OPTARG};;
-            p) prusa_flag=${OPTARG};;
-            v) variant_flag=${OPTARG};;
-            x) board_mem_flag=${OPTARG};;
-            y) board_flash_flag=${OPTARG};;
-            ?) help_flag=1;;
-        esac
-    done
-
-#
-# '?' 'h' argument usage and help
-if [ "$help_flag" == "1" ] ; then
-echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_61 *"
-echo "***************************************"
-echo "Arguments:"
-echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
-echo "$(tput setaf 2)-c$(tput sgr0) Do not clean up lang build"
-echo "$(tput setaf 2)-d$(tput sgr0) Devel build"
-echo "$(tput setaf 2)-g$(tput sgr0) Start MK404 graphics"
-echo "$(tput setaf 2)-i$(tput sgr0) Arduino IDE version"
-echo "$(tput setaf 2)-j$(tput sgr0) Arduino IDE verbose output"
-echo "$(tput setaf 2)-l$(tput sgr0) Languages"
-echo "$(tput setaf 2)-m$(tput sgr0) Start MK404 sim"
-echo "$(tput setaf 2)-n$(tput sgr0) New fresh build"
-echo "$(tput setaf 2)-o$(tput sgr0) Output"
-echo "$(tput setaf 2)-p$(tput sgr0) Keep Configuration_prusa.h"
-echo "$(tput setaf 2)-v$(tput sgr0) Variant"
-echo "$(tput setaf 2)-x$(tput sgr0) Board memory size"
-echo "$(tput setaf 2)-y$(tput sgr0) Board flash size"
-echo "$(tput setaf 2)-?$(tput sgr0) Help"
-echo
-echo "Brief USAGE:"
-echo "  $(tput setaf 2)./PF-build.sh$(tput sgr0) [-b] [-c] [-d] [-g] [-i] [-j] [-l] [-m] [-n] [-o] [-p ] -[v] [-x] [-y] [-h] [-?]"
-echo
-echo "  -b : '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
-echo "  -c : '$(tput setaf 2)0$(tput sgr0)' clean up, '$(tput setaf 2)1$(tput sgr0)' keep"
-echo "  -d : '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
-echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
-echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
-echo "  -j : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
-echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
-echo "  -n : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "  -o : '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
-echo "  -p : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "  -v : '$(tput setaf 2)All$(tput sgr0)' or variant file name"
-echo "  -x : '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
-echo "  -y : '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
-echo
-echo "Example:"
-echo "  $(tput setaf 2)./PF-build.sh -v All -l ALL -d GOLD$(tput sgr0)"
-echo "  Will build all variants as multi language and final GOLD version"
-echo
-echo "  $(tput setaf 2) ./PF-build.sh -v 1_75mm_MK3S-EINSy10a-E3Dv6full.h -b Auto -l ALL -d GOLD -o 1 -c 1 -p 1 -n 1$(tput sgr0)"
-echo "  Will build MK3S multi language final GOLD firmware "
-echo "  with current commit count number and output extra information,"
-echo "  not delete lang build temporary files, keep Configuration_prusa.h and build with new fresh build folder."
-echo
-exit 6
-fi
-
-#Check if verbose_IDE is selected with argument '-j'
-
-if [ ! -z "$verbose_IDE_flag" ]; then
-    if [ $verbose_IDE_flag == "1" ]; then
-        verbose_IDE="1"
-    elif [ $verbose_IDE_flag == "0" ]; then
-        verbose_IDE="0"
-    else
-        echo "Only '0' and '1' are valid verbose_IDE values."
-        failures 5
-    fi
-else
-    verbose_IDE="0"
-fi  
-
-#Check if Build is selected with argument '-f'
-if [ ! -z "$board_flash_flag" ] ; then
-    if [ "$board_flash_flag" == "256" ] ; then
-        BOARD_FLASH="0x3FFFF"
-        BOARD_maximum_size="253952"
-        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
-    elif [ "$board_flash_flag" == "384" ] ; then
-        BOARD_FLASH="0x5FFFF"
-        BOARD_maximum_size="385024"
-        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
-        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
-
-    elif [ "$board_flash_flag" == "512" ] ; then
-        BOARD_FLASH="0x7FFFF"
-        BOARD_maximum_size="516096"
-        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
-        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
-    elif [ "$board_flash_flag" == "1024" ] ; then
-        BOARD_FLASH="0xFFFFF"
-        BOARD_maximum_size="1040384"
-        echo "Board flash size :   $board_flash_flag Kb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
-        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
-    elif [[ "$board_flash_flag" == "32M" || "$board_flash_flag" == "32768" ]] ; then
-        BOARD_FLASH="0x1FFFFFF"
-        BOARD_maximum_size="33546240"
-        echo "Board flash size :    32 Mb, $BOARD_maximum_size bytes, $BOARD_FLASH (hex)"
-        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_FLASH-$board_flash_flag"
-    else
-        echo "Unsupported board flash size chosen. Only '256', '384', '512', '1024' and '32M' are allowed."
-        failures 5
-    fi
-fi
-
-#Check if Build is selected with argument '-x'
-if [ ! -z "$board_mem_flag" ] ; then
-    if [ "$board_mem_flag" == "8" ] ; then
-        BOARD_MEM="0x21FF"
-        echo "Board mem size   :     $board_mem_flag Kb, $BOARD_MEM (hex)"
-    elif [ "$board_mem_flag" == "64" ] ; then
-        BOARD_MEM="0xFFFF"
-        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
-        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_RAM-$board_mem_flag"
-    else
-        echo "Unsupported board mem size chosen. Only '8', '64' are allowed."
-        failures 5
-    fi
-fi
-
-#Start: Check if Arduino IDE version is correct
-if [ ! -z "$IDE_flag" ]; then
-    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" ]]; then
-        ARDUINO_ENV="${IDE_flag}"
-    else
-        ARDUINO_ENV="1.8.5"
-    fi
-else
-    ARDUINO_ENV="1.8.5"
-fi
-#End: Check if Arduino IDE version is correct
-#### End: Check for options/flags
 
 #### Start: Set build environment 
 set_build_env_variables()
@@ -896,13 +915,6 @@ if [ ! -z "$build_flag" ] ; then
         failures 5
     fi
     echo "New Build number is: $BUILD"
-fi
-
-#Check if Output is selecetd via argument '-o' 
-if [[ -z "$output_flag" || "$output_flag" == 1 ]] ; then
-    OUTPUT=1
-else
-    OUTPUT=0
 fi
 
 #Check git branch has changed

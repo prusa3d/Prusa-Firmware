@@ -10,7 +10,7 @@
 # 3. Install latest updates with 'sudo apt-get upgrade'
 # 
 #
-# Version: 1.0.0-Build_11
+# Version: 1.0.0-Build_13
 # Change log:
 # 11 Feb 2021, 3d-gussner, Inital
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
@@ -23,6 +23,27 @@
 # 18 Jun 2021, 3d-gussner, Check for updates is default. Fix update if internet connection is lost.
 # 21 Jun 2021, 3d-gussner, Change board_flash argument to 'y' and firmware_version to 'f'
 
+#### Start: Failures
+failures()
+{
+case "$1" in
+    0) echo "$(tput setaf 2)MK404-build.sh finished with success$(tput sgr0)" ;;
+    2) echo "$(tput setaf 1)Unsupported OS: Linux $(uname -m)" ; echo "Please refer to the notes of MK404-build.sh$(tput sgr0)" ; exit 2 ;;
+    3) echo "$(tput setaf 1)This script doesn't support your Operating system!"; echo "Please use Linux 64-bit"; echo "Read the notes of MK404-build.sh$(tput sgr0)" ; exit 2 ;;
+    4) echo "$(tput setaf 1)Some packages are missing please install these!$(tput sgr0)" ; exit 4 ;;
+    5) echo "$(tput setaf 1)Wrong printer chosen.$(tput sgr0) Following Printers are supported: MK25, MK25S, MK3 and MK3S" ; exit 5 ;;
+    6) echo "$(tput setaf 1)Unsupported board flash size chosen.$(tput sgr0) Only '256', '384', '512', '1024' and '32M' are allowed." ; exit 6 ;;
+    7) echo "$(tput setaf 1)Unsupported board mem size chosen.$(tput sgr0) Only '8', '16', '32' and '64' are allowed." ; exit 7 ;;
+    8) echo "$(tput setaf 1)No firmware version file selected!$(tput sgr0)" ; echo "Add argument -f with path and hex filename to start MK404" ; exit 8 ;;
+    9) echo "$(tput setaf 1)Tried to determine MK404 printer from hex file, but failed!$(tput sgr0)" ; "Add argument -p with 'MK25', 'MK25S', 'MK3' or 'MK3S' to start MK404" ; exit 9 ;;
+    10) echo "$(tput setaf 1)Missing printer$(tput sgr0)" ; exit 10 ;;
+esac
+}
+#### End: Failures
+
+#### Start: Check options
+##check_options()
+##{
 while getopts c:f:g:m:n:p:u:x:y:?h flag
     do
         case "${flag}" in
@@ -53,7 +74,7 @@ while getopts c:f:g:m:n:p:u:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* MK404-build.sh Version: 1.0.0-Build_11 *"
+echo "* MK404-build.sh Version: 1.0.0-Build_13 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-c$(tput sgr0) Check for update"
@@ -78,124 +99,32 @@ echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' y
 echo "  -n : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -p : '$(tput setaf 2)MK25$(tput sgr0)', '$(tput setaf 2)MK25S$(tput sgr0)', '$(tput setaf 2)MK3$(tput sgr0)' or '$(tput setaf 2)MK3S$(tput sgr0)'"
 echo "  -u : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '"
-echo "  -x : '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
+echo "  -x : '$(tput setaf 2)8$(tput sgr0)',$(tput setaf 2)16$(tput sgr0)',$(tput setaf 2)32$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
 echo "  -y : '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
 echo
 echo "Example:"
 echo "  $(tput setaf 2)./MK404-build.sh -f 1$(tput sgr0)"
 echo "  Will force an update and rebuild the MK404 SIM"
 echo
-echo "  $(tput setaf 2)./MK404-build.sh -m 1 -g 1 -v ../../../../Prusa-Firmware/PF-build-hex/FW3100-Build4481/BOAD_EINSY_1_0a/FW3100-Build4481-1_75mm_MK3S-EINSy10a-E3Dv6full.hex$(tput sgr0)"
+echo "  $(tput setaf 2)./MK404-build.sh -m 1 -g 1 -f ../../../../Prusa-Firmware/PF-build-hex/FW3100-Build4481/BOARD_EINSY_1_0a/FW3100-Build4481-1_75mm_MK3S-EINSy10a-E3Dv6full.hex$(tput sgr0)"
 echo "  Will start MK404 with Prusa_MK3S and Prusa-Firmware 3.10.0-Build4481"
 exit 1
 fi
 
-#### Start check if OSTYPE is supported
-OS_FOUND=$( command -v uname)
-case $( "${OS_FOUND}" | tr '[:upper:]' '[:lower:]') in
-  linux*)
-    TARGET_OS="linux"
-   ;;
-  *)
-    TARGET_OS='unknown'
-    ;;
-esac
-# Linux
-if [ $TARGET_OS == "linux" ]; then
-	if [ $(uname -m) == "x86_64" ]; then
-		echo "$(tput setaf 2)Linux 64-bit found$(tput sgr0)"
-		Processor="64"
-	#elif [[ $(uname -m) == "i386" || $(uname -m) == "i686" ]]; then
-	#	echo "$(tput setaf 2)Linux 32-bit found$(tput sgr0)"
-	#	Processor="32"
-	else
-		echo "$(tput setaf 1)Unsupported OS: Linux $(uname -m)"
-		echo "Please refer to the notes of build.sh$(tput sgr0)"
-		exit 2
-	fi
-else
-	echo "$(tput setaf 1)This script doesn't support your Operating system!"
-	echo "Please use Linux 64-bit"
-	echo "Read the notes of build.sh$(tput sgr0)"
-	exit 2
-fi
-sleep 2
-#### End check if OSTYPE is supported
-
-#### Check MK404 dependencies
-packages=(
-"libelf-dev"
-"gcc-7"
-"gcc-avr"
-"libglew-dev"
-"freeglut3-dev"
-"libsdl-sound1.2-dev"
-"libpng-dev"
-"cmake"
-"zip"
-"wget"
-"git"
-"build-essential"
-"lcov"
-"mtools"
-)
-
-for check_package in ${packages[@]}; do
-    if dpkg-query -W -f'${db:Status-Abbrev}\n' $check_package 2>/dev/null \
- | grep -q '^.i $'; then
-        echo "$(tput setaf 2)$check_package: Installed$(tput sgr0)"
-    else
-        echo "$(tput setaf 1)$check_package: Not installed use $(tput setaf 3)'sudo apt install $check_package'$(tput setaf 1) to install missing package$(tput sgr0)"
-        not_installed=1;
-    fi
-done
-
-if [ "$not_installed" = "1" ]; then
-    exit 3
-fi
-#### End Check MK404 dependencies
-
-#### Set build environment 
-MK404_SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
-MK404_URL="https://github.com/vintagepc/MK404.git"
-MK404_owner="vintagepc"
-MK404_project="MK404"
-MK404_PATH="$MK404_SCRIPT_PATH/../MK404/master"
-MK404_BUILD_PATH="$MK404_PATH/build"
-
-
-# List few useful data
-echo
-echo "Script path :" $MK404_SCRIPT_PATH
-echo "OS          :" $TARGET_OS
-echo ""
-echo "MK404 path  :" $MK404_PATH
-
-# Clone MK404 if needed
-if [ ! -d $MK404_PATH ]; then
-    #release_url=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/$MK404_owner/$MK404_project/releases/latest)
-    #release_tag=$(basename $release_url)
-    #git clone -b $release_tag -- https://github.com/$MK404_owner/$MK404_project.git $MK404_PATH
-    git clone $MK404_URL $MK404_PATH
-fi
-
-# 
-cd $MK404_PATH
-
 #Check MK404 agruments
 #Set Check for updates as default
 check_flag=1
-#Check mk404_printer_flag
+#Start: Check mk404_printer_flag
 if [ ! -z $mk404_printer_flag ]; then
     if [[ "$mk404_printer_flag" == "MK3" || "$mk404_printer_flag" == "MK3S" || "$mk404_printer_flag" == "MK25" || "$mk404_printer_flag" == "MK25S" ]]; then
         MK404_PRINTER_TEMP=$mk404_printer_flag
     else
-        echo "Following Printers are supported: MK25, MK25S, MK3 and MK3S"
-        exit 4
+        failures 5
     fi
 fi
+#End: Check mk404_printer_flag
 
-#Check if Build is selected with argument '-f'
+#Start: Check if Build is selected with argument '-f'
 if [ ! -z "$board_flash_flag" ] ; then
     if [ "$board_flash_flag" == "256" ] ; then
         BOARD_FLASH="0x3FFFF"
@@ -213,26 +142,32 @@ if [ ! -z "$board_flash_flag" ] ; then
         BOARD_FLASH="0x1FFFFFF"
         echo "Board flash size :    32 Mb, $BOARD_FLASH (hex)"
     else
-        echo "Unsupported board flash size chosen. Only '256', '384', '512', '1024' and '32M' are allowed."
-        exit 5
+        failures 6
     fi
 fi
+#End: Check if Build is selected with argument '-f'
 
-#Check if Build is selected with argument '-x'
+#Start: Check if Build is selected with argument '-x'
 if [ ! -z "$board_mem_flag" ] ; then
     if [ "$board_mem_flag" == "8" ] ; then
         BOARD_MEM="0x21FF"
         echo "Board mem size   :     $board_mem_flag Kb, $BOARD_MEM (hex)"
+    elif [ "$board_mem_flag" == "16" ] ; then
+        BOARD_MEM="0x3DFF"
+        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
+    elif [ "$board_mem_flag" == "32" ] ; then
+        BOARD_MEM="0x7DFF"
+        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
     elif [ "$board_mem_flag" == "64" ] ; then
         BOARD_MEM="0xFFFF"
         echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
     else
-        echo "Unsupported board mem size chosen. Only '8', '64' are allowed."
-        exit 6
+        failures 7
     fi
 fi
+#End: Check if Build is selected with argument '-x'
 
-
+#Start: Check if new build is selected
 if [ "$new_build_flag" == "1" ]; then
     check_flag=1
     update_flag=1
@@ -240,102 +175,7 @@ fi
 if [ "$update_flag" == "1" ]; then
     check_flag=1
 fi
-
-#End Check MK404 agruments
-
-#Check for updates
-if [ "$check_flag" == "1" ]; then
-    if [ -d $MK404_BUILD_PATH ]; then
-        cd $MK404_BUILD_PATH
-        MK404_current_version=$( command ./MK404 --version | grep "MK404" | cut -f 4 -d " ")
-        cd $MK404_PATH
-    else
-        echo "Cannot check current version as it has not been build."
-    fi
-# Get local Commit_Hash
-    MK404_local_GIT_COMMIT_HASH=$(git log --pretty=format:"%H" -1)
-# Get local Commit_Number
-    MK404_local_GIT_COMMIT_NUMBER=$(git rev-list HEAD --count)
-# Get remote Commit_Hash
-    MK404_remote_GIT_COMMIT_HASH=$(git ls-remote --heads $(git config --get remote.origin.url) | grep "refs/heads/master" | cut -f 1)
-# Get remote Commit_Number
-    MK404_remote_GIT_COMMIT_NUMBER=$(git rev-list origin/master --count)
-# Output
-    echo ""
-    echo "Current version         : $MK404_current_version"
-    echo ""
-    echo "Current local hash      : $MK404_local_GIT_COMMIT_HASH"
-    echo "Current local commit nr : $MK404_local_GIT_COMMIT_NUMBER"
-    if [ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" ]; then
-        echo "$(tput setaf 1)"
-    else
-        echo "$(tput setaf 2)"
-    fi
-    echo "Current remote hash     : $MK404_remote_GIT_COMMIT_HASH"
-    echo "Current remote commit nr: $MK404_remote_GIT_COMMIT_NUMBER"
-    echo "$(tput sgr 0)"
-
-# Check for updates
-    if [ ! -z $MK404_remote_GIT_COMMIT_HASH ]; then
-        if [[ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" && -z "$update_flag" ]]; then
-            echo "$(tput setaf 2)Update is availible.$(tput sgr 0)"
-            read -t 10 -n 1 -p "$(tput setaf 3)Update now Y/n$(tput sgr 0)" update_answer
-            if [ "$update_answer" == "Y" ]; then
-                update_flag=1
-            fi
-            echo ""
-        fi
-    fi
-fi
-
-# Fetch updates and force new build
-if [ "$update_flag" == "1" ]; then
-    if [ ! -z $MK404_remote_GIT_COMMIT_HASH ]; then
-        if [ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" ]; then
-            echo ""
-            git fetch --all
-            read -t 10 -p "$(tput setaf 2)Updating MK404 !$(tput sgr 0)"
-            echo ""
-            git reset --hard origin/master
-            read -t 10 -p "$(tput setaf 2)Compiling MK404 !$(tput sgr 0)"
-            echo ""
-            new_build_flag=1
-        fi
-    fi
-fi
-
-# Prepare MK404
-if [ ! -d $MK404_BUILD_PATH ]; then
-    mkdir -p $MK404_BUILD_PATH
-fi
-
-if [[ ! -f "$MK404_BUILD_PATH/Makefile" || "$new_build_flag" == "1" ]]; then
-# Init and update submodules
-    if [ -d $MK404_BUILD_PATH ]; then
-        rm -rf $MK404_BUILD_PATH
-        mkdir -p $MK404_BUILD_PATH
-    fi
-    git submodule init
-    git submodule update
-    cmake -B$MK404_BUILD_PATH -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
-fi
-
-# Make MK404
-cd $MK404_BUILD_PATH
-if [[ ! -f "$MK404_BUILD_PATH/MK404" || "$new_build_flag" == "1" ]]; then
-    make
-fi
-
-# Make SDcards
-if [[ ! -f "$MK404_BUILD_PATH/Prusa_MK3S_SDcard.bin" || "$new_build_flag" == "1" ]]; then
-    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3S_SDcard.bin
-    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3_SDcard.bin
-    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25_13_SDcard.bin
-    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25S_13_SDcard.bin
-    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3SMMU2_SDcard.bin
-    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3MMU2_SDcard.bin
-fi
-
+#End: Check if new build is selected
 
 # Prepare run MK404
 #Check MK404_Printer
@@ -357,15 +197,11 @@ if [ ! -z $firmware_version_flag ]; then
         MK404_PRINTER=MK25S
     fi
 else
-    echo "No firmware version file selected!"
-    echo "Add argument -f with path and hex filename to start MK404"
-    exit 7
+    failures 8
 fi
 
 if [ -z "$MK404_PRINTER" ]; then
-    echo "Tried to determine MK404 printer from hex file, but failed!"
-    echo "Add argument -p with 'MK25', 'MK25S', 'MK3' or 'MK3S' to start MK404"
-    exit 8
+    failures 9
 fi
 
 if [ ! -z $mk404_printer_flag ]; then
@@ -397,7 +233,7 @@ if [ ! -z $mk404_printer_flag ]; then
 fi
 
 if [ -z $MK404_PRINTER ]; then
-    exit 9
+    failures 10
 fi
 
 if [[ "$MK404_PRINTER" == "MK25" || "$MK404_PRINTER" == "MK25S" ]]; then
@@ -440,7 +276,230 @@ if [ ! -z $firmware_version_flag ]; then
     MK404_firmware_file=" -f $firmware_version_flag"
 fi
 
-#Run MK404 SIM
+#End: Check MK404 agruments
+##}
+#### End: Check for options/flags
+
+#### Start: Check if OSTYPE is supported
+check_OS()
+{
+OS_FOUND=$( command -v uname)
+case $( "${OS_FOUND}" | tr '[:upper:]' '[:lower:]') in
+  linux*)
+    TARGET_OS="linux"
+   ;;
+  *)
+    TARGET_OS='unknown'
+    ;;
+esac
+# Linux
+if [ $TARGET_OS == "linux" ]; then
+    if [ $(uname -m) == "x86_64" ]; then
+        echo "$(tput setaf 2)Linux 64-bit found$(tput sgr0)"
+        Processor="64"
+    #elif [[ $(uname -m) == "i386" || $(uname -m) == "i686" ]]; then
+    #    echo "$(tput setaf 2)Linux 32-bit found$(tput sgr0)"
+    #    Processor="32"
+    else
+        failures 2
+    fi
+else
+    failures 3 
+fi
+sleep 2
+}
+#### End: Check if OSTYPE is supported
+
+#### Start: Check MK404 dependencies
+check_packages()
+{
+packages=(
+"libelf-dev"
+"gcc-7"
+"gcc-avr"
+"libglew-dev"
+"freeglut3-dev"
+"libsdl-sound1.2-dev"
+"libpng-dev"
+"cmake"
+"zip"
+"wget"
+"git"
+"build-essential"
+"lcov"
+"mtools"
+)
+
+for check_package in ${packages[@]}; do
+    if dpkg-query -W -f'${db:Status-Abbrev}\n' $check_package 2>/dev/null \
+ | grep -q '^.i $'; then
+        echo "$(tput setaf 2)$check_package: Installed$(tput sgr0)"
+    else
+        echo "$(tput setaf 1)$check_package: Not installed use $(tput setaf 3)'sudo apt install $check_package'$(tput setaf 1) to install missing package$(tput sgr0)"
+        not_installed=1;
+    fi
+done
+
+if [ "$not_installed" = "1" ]; then
+    failures 4
+fi
+}
+#### End: Check MK404 dependencies
+
+#### Start: Set build environment 
+set_build_env_variables()
+{
+MK404_SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+MK404_URL="https://github.com/vintagepc/MK404.git"
+MK404_owner="vintagepc"
+MK404_project="MK404"
+MK404_PATH="$MK404_SCRIPT_PATH/../MK404/master"
+MK404_BUILD_PATH="$MK404_PATH/build"
+}
+#### End: Set build environment
+
+#### Start: List few useful data
+output_useful_data()
+{
+echo
+echo "Script path :" $MK404_SCRIPT_PATH
+echo "OS          :" $TARGET_OS
+echo ""
+echo "MK404 path  :" $MK404_PATH
+}
+#### End: List few useful data
+
+#### Start: Clone MK404 if needed
+get_MK404()
+{
+if [ ! -d $MK404_PATH ]; then
+    #release_url=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/$MK404_owner/$MK404_project/releases/latest)
+    #release_tag=$(basename $release_url)
+    #git clone -b $release_tag -- https://github.com/$MK404_owner/$MK404_project.git $MK404_PATH
+    git clone $MK404_URL $MK404_PATH
+fi
+}
+#### End: Clone MK404 if needed
+
+#### Start: Check for updates
+check_for_updates()
+{
+if [ "$check_flag" == "1" ]; then
+    if [ -d $MK404_BUILD_PATH ]; then
+        cd $MK404_BUILD_PATH
+        MK404_current_version=$( command ./MK404 --version | grep "MK404" | cut -f 4 -d " ")
+        cd $MK404_PATH
+    else
+        echo "Cannot check current version as it has not been build."
+    fi
+# Get local Commit_Hash
+    MK404_local_GIT_COMMIT_HASH=$(git log --pretty=format:"%H" -1)
+# Get local Commit_Number
+    MK404_local_GIT_COMMIT_NUMBER=$(git rev-list HEAD --count)
+# Get latest release
+    MK404_release_url=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/$MK404_owner/$MK404_project/releases/latest)
+    MK404_release_tag=$(basename $MK404_release_url)
+# Get remote Commit_Hash
+    #MK404_remote_GIT_COMMIT_HASH=$(git ls-remote --heads $(git config --get remote.origin.url) | grep "refs/heads/master" | cut -f 1)
+    MK404_remote_GIT_COMMIT_HASH=$(git ls-remote | grep "refs/tags/$MK404_release_tag"  | cut -f 1)
+# Get remote Commit_Number
+    MK404_remote_GIT_COMMIT_NUMBER=$(git rev-list $MK404_release_tag --count)
+# Output
+    echo ""
+    echo "Current version         : $MK404_current_version"
+    echo ""
+    echo "Current local hash      : $MK404_local_GIT_COMMIT_HASH"
+    echo "Current local commit nr : $MK404_local_GIT_COMMIT_NUMBER"
+    if [ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" ]; then
+        echo "$(tput setaf 1)"
+    else
+        echo "$(tput setaf 2)"
+    fi
+    echo "Latest release tag      : $MK404_release_tag"
+    echo "Latest release hash     : $MK404_remote_GIT_COMMIT_HASH"
+    echo "Latest remote commit nr : $MK404_remote_GIT_COMMIT_NUMBER"
+    echo "$(tput sgr 0)"
+
+# Check for updates
+    if [ ! -z $MK404_remote_GIT_COMMIT_HASH ]; then
+        if [[ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" && -z "$update_flag" ]]; then
+            echo "$(tput setaf 2)Update is availible.$(tput sgr 0)"
+            read -t 10 -n 1 -p "$(tput setaf 3)Update now Y/n$(tput sgr 0)" update_answer
+            if [ "$update_answer" == "Y" ]; then
+                update_flag=1
+            fi
+            echo ""
+        fi
+    fi
+fi
+}
+#### End: Check for updates
+
+#### Start: Fetch updates and force new build
+fetch_updates()
+{
+if [ "$update_flag" == "1" ]; then
+    if [ ! -z $MK404_remote_GIT_COMMIT_HASH ]; then
+        if [ "$MK404_local_GIT_COMMIT_HASH" != "$MK404_remote_GIT_COMMIT_HASH" ]; then
+            echo ""
+            git fetch --all
+            read -t 10 -p "$(tput setaf 2)Updating MK404 !$(tput sgr 0)"
+            echo ""
+            git reset --hard $MK404_release_tag
+            read -t 10 -p "$(tput setaf 2)Compiling MK404 !$(tput sgr 0)"
+            echo ""
+            new_build_flag=1
+        fi
+    fi
+fi
+}
+#### End: Fetch updates and force new build
+
+#### Start: Prepare MK404 build
+prepare_MK404()
+{
+if [ ! -d $MK404_BUILD_PATH ]; then
+    mkdir -p $MK404_BUILD_PATH
+fi
+}
+#### End: Prepare MK404 build
+
+#### Start: Build MK404
+build_MK404()
+{
+if [[ ! -f "$MK404_BUILD_PATH/Makefile" || "$new_build_flag" == "1" ]]; then
+# Init and update submodules
+    if [ -d $MK404_BUILD_PATH ]; then
+        rm -rf $MK404_BUILD_PATH
+        mkdir -p $MK404_BUILD_PATH
+    fi
+    git submodule init
+    git submodule update
+    cmake -B$MK404_BUILD_PATH -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
+fi
+
+# Make MK404
+cd $MK404_BUILD_PATH
+if [[ ! -f "$MK404_BUILD_PATH/MK404" || "$new_build_flag" == "1" ]]; then
+    make
+fi
+
+# Make SDcards
+if [[ ! -f "$MK404_BUILD_PATH/Prusa_MK3S_SDcard.bin" || "$new_build_flag" == "1" ]]; then
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3S_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25_13_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK25S_13_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3SMMU2_SDcard.bin
+    cmake --build $MK404_BUILD_PATH --config Release --target Prusa_MK3MMU2_SDcard.bin
+fi
+}
+#### End: Build MK404
+
+
+#### Start: Run MK404 SIM
+run_MK404_SIM()
+{
 if [ ! -z $mk404_flag ]; then
     # Output some useful data
     echo "Printer     : $MK404_PRINTER"
@@ -459,4 +518,29 @@ if [ ! -z $mk404_flag ]; then
     sleep 5
     ./MK404 Prusa_$MK404_PRINTER -s --terminal $MK404_options $MK404_firmware_file || exit 10
 fi
+}
+#### End: Run MK404 SIM
+
+#### Check OS and needed packages
+echo "Check OS"
+check_OS
+check_packages
+
+#### Check for options/flags
+echo "Check for options"
+
+#### Prepare build environment
+echo "Prepare build env"
+set_build_env_variables
+output_useful_data
+get_MK404
+
+# 
+cd $MK404_PATH
+
+check_for_updates
+fetch_updates
+prepare_MK404
+build_MK404
+run_MK404_SIM
 #### End of MK404 Simulator
