@@ -1,25 +1,35 @@
 #!/bin/bash
 #
+# Version 1.0.1 Build 9
+#
 # fw-clean.sh - multi-language support script
 #  Remove all firmware output files from lang folder.
 #
+#############################################################################
+# Change log:
+# 21 June 2018, Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD fw-clean.sh`
+#                           to get Build Nr
+#############################################################################
 
 result=0
 
 rm_if_exists()
 {
  if [ -e $1 ]; then
-  echo -n " removing '$1'..." >&2
+  echo -n "$(tput sgr0) removing '$1'...$(tput sgr0)" >&2
   if rm $1; then
-   echo "OK" >&2
+   echo "$(tput setaf 2)OK$(tput sgr 0)" >&2
   else
-   echo "NG!" >&2
+   echo "$(tput setaf 2)NG!$(tput sgr 0)" >&2
    result=1
   fi
  fi
 }
 
-echo "fw-clean.sh started" >&2
+echo "$(tput setaf 2)fw-clean.sh started" >&2
 
 rm_if_exists text.sym
 rm_if_exists progmem1.sym
@@ -58,11 +68,11 @@ rm_if_exists update_lang_nl.out
 #rm_if_exists firmware_qr.hex
 #rm_if_exists update_lang_qr.out
 
-echo -n "fw-clean.sh finished" >&2
+echo -n "fw-clean.sh finished with " >&2
 if [ $result -eq 0 ]; then
- echo " with success" >&2
+ echo "$(tput setaf 2)success$(tput sgr 0)" >&2
 else
- echo " with errors!" >&2
+ echo "$(tput setaf 1)errors!$(tput sgr 0)" >&2
 fi
 
 case "$-" in

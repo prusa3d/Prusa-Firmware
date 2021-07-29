@@ -1,7 +1,19 @@
 #!/bin/bash
 #
+# Version 1.0.1 Build 14
+#
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
+#
+#############################################################################
+# Change log:
+#  9 Nov  2018, Xpilla,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  1 Mar. 2021, 3d-gussner, Add Community language support
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-export.sh`
+#                           to get Build Nr
+#############################################################################
 
 LNG=$1
 # if no arguments, 'all' is selected (all po and also pot will be generated)
@@ -29,7 +41,7 @@ cd po/new
 
 # check if input file exists
 if ! [ -e $LNGISO.po ]; then
- echo "Input file $LNGISO.po not found!" >&2
+ echo "$(tput setaf 1)Input file $LNGISO.po not found!$(tput sgr 0)" >&2
  exit -1
 fi
 
@@ -41,7 +53,7 @@ sed -i 's/ \\n/ /g;s/\\n/ /g' $LNG'_filtered.po'
 
 #replace in czech translation
 if [ "$LNG" = "cz" ]; then
- #replace 'ž' with 'z'
+ #replace '¸' with 'z'
  sed -i 's/\xc5\xbe/z/g' $LNG'_filtered.po'
  #replace 'ì' with 'e'
  sed -i 's/\xc4\x9b/e/g' $LNG'_filtered.po'
