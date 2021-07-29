@@ -1,7 +1,6 @@
 # How-to add a new language to Prusa Firmware
 
 We will use Dutch as an example here.
-
 ## Prepare Prusa Firmware
 
 QR = palceholder for language in upper case
