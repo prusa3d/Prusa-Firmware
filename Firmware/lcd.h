@@ -112,8 +112,6 @@ extern uint8_t lcd_status_update_delay;
 extern lcd_longpress_func_t lcd_longpress_func;
 extern bool lcd_longpress_trigger;
 
-extern lcd_charsetup_func_t lcd_charsetup_func;
-
 extern lcd_lcdupdate_func_t lcd_lcdupdate_func;
 
 
@@ -199,14 +197,10 @@ private:
 #define LCD_STR_FOLDER      "\x05"
 #define LCD_STR_FEEDRATE    "\x06"
 #define LCD_STR_CLOCK       "\x07"
-#define LCD_STR_ARROW_UP    "\x0B"
-#define LCD_STR_ARROW_DOWN  "\x01"
 #define LCD_STR_ARROW_RIGHT "\x7E" //from the default character set
 
 extern void lcd_set_custom_characters(void);
-extern void lcd_set_custom_characters_arrows(void);
 extern void lcd_set_custom_characters_nextpage(void);
-extern void lcd_set_custom_characters_degree(void);
 
 //! @brief Consume click event
 inline void lcd_consume_click()

@@ -5,7 +5,6 @@
 #include "config.h"
 
 extern void menu_lcd_longpress_func(void);
-extern void menu_lcd_charsetup_func(void);
 extern void menu_lcd_lcdupdate_func(void);
 
 // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
@@ -218,8 +217,6 @@ void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
 
 void display_loading();
-
-void lcd_set_degree();
 
 #if (LANG_MODE != 0)
 void lcd_language();

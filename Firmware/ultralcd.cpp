@@ -3232,7 +3232,6 @@ void lcd_adjust_z() {
 
 #ifdef PINDA_THERMISTOR
 bool lcd_wait_for_pinda(float temp) {
-	lcd_set_custom_characters_degree();
 	setAllTargetHotends(0);
 	setTargetBed(0);
 	LongTimer pinda_timeout;
@@ -3255,7 +3254,6 @@ bool lcd_wait_for_pinda(float temp) {
 			break;
 		}
 	}
-	lcd_set_custom_characters_arrows();
 	lcd_update_enable(true);
 	return target_temp_reached;
 }
@@ -3263,7 +3261,6 @@ bool lcd_wait_for_pinda(float temp) {
 
 void lcd_wait_for_heater() {
 		lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-		lcd_set_degree();
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
 		lcd_print(ftostr3(degHotend(active_extruder)));
@@ -3273,7 +3270,6 @@ void lcd_wait_for_heater() {
 }
 
 void lcd_wait_for_cool_down() {
-	lcd_set_custom_characters_degree();
 	setAllTargetHotends(0);
 	setTargetBed(0);
 	int fanSpeedBckp = fanSpeed;
@@ -3292,12 +3288,10 @@ void lcd_wait_for_cool_down() {
 		lcd_print(ftostr3(degBed()));
 		lcd_print("/0");		
 		lcd_print(LCD_STR_DEGREE);
-		lcd_set_custom_characters();
 		delay_keep_alive(1000);
 		serialecho_temperatures();
 	}
 	fanSpeed = fanSpeedBckp;
-	lcd_set_custom_characters_arrows();
 	lcd_update_enable(true);
 }
 
@@ -3440,7 +3434,6 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
 
     if (multi_screen) {
         // Display the "next screen" indicator character.
-        // lcd_set_custom_characters_arrows();
         lcd_set_custom_characters_nextpage();
         lcd_set_cursor(19, 3);
         // Display the down arrow.
@@ -4421,10 +4414,6 @@ static void lcd_fsensor_state_set()
 }
 #endif //FILAMENT_SENSOR
 
-void lcd_set_degree() {
-	lcd_set_custom_characters_degree();
-}
-
 #if (LANG_MODE != 0)
 
 void menu_setlang(unsigned char lang)
@@ -4793,7 +4782,6 @@ static void wait_preheat()
     plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
     delay_keep_alive(2000);
     lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-	lcd_set_custom_characters();
 	while (fabs(degHotend(0) - degTargetHotend(0)) > 3) {
         lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 
@@ -8596,10 +8584,8 @@ void ultralcd_init()
 	lcd_init();
 	lcd_refresh();
 	lcd_longpress_func = menu_lcd_longpress_func;
-	lcd_charsetup_func = menu_lcd_charsetup_func;
 	lcd_lcdupdate_func = menu_lcd_lcdupdate_func;
 	menu_menu = lcd_status_screen;
-	menu_lcd_charsetup_func();
 
   SET_INPUT(BTN_EN1);
   SET_INPUT(BTN_EN2);
@@ -8810,14 +8796,6 @@ void menu_lcd_longpress_func(void)
                 menu_back();
         }
     }
-}
-
-void menu_lcd_charsetup_func(void)
-{
-	if (menu_menu == lcd_status_screen)
-		lcd_set_custom_characters_degree();
-	else
-		lcd_set_custom_characters_arrows();
 }
 
 static inline bool z_menu_expired()
