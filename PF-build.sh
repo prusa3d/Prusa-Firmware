@@ -537,7 +537,7 @@ BOARD_PACKAGE_NAME="PrusaResearch"
 if [ "$ARDUINO_ENV" == "1.8.13" ]; then
     BOARD_VERSION="1.0.4"
 else
-    BOARD_VERSION="1.0.3"
+    BOARD_VERSION="1.0.4"
 fi
 #BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
