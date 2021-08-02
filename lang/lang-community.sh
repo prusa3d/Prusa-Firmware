@@ -1,8 +1,17 @@
 #!/bin/sh
 #
+# Version 1.0.2 Build 3
+#
 # lang-community.sh - Community language support script
 # Check community languages are defined in `config.h`
 #
+#############################################################################
+# Change log:
+#  1 Mar. 2021, 3d-gussner, Initial
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD lang-community.sh`
+#                           to get Build Nr
+#############################################################################
+#############################################################################
 
 # Root path
 if [ -z "$ROOT_PATH" ]; then
@@ -19,9 +28,9 @@ export NL=$COMMUNITY_LANG_NL
 #export QR=$COMMUNITY_LANG_QR
 
 #startup message
-echo "lang-community.sh started" >&2
+echo "$(tput setaf 2)lang-community.sh started$(tput sgr 0)" >&2
 echo -n " Source code path: " >&2
-if [ -e $ROOT_PATH ]; then echo 'OK' >&2; else echo 'NG!' >&2; _err=1; fi
+if [ -e $ROOT_PATH ]; then echo "$(tput setaf 2)OK$(tput sgr 0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=1; fi
 
 echo " Found: " >&2
 if [ "$COMMUNITY_LANG_NL" = "NL" ]; then
@@ -42,9 +51,9 @@ fi
 finish()
 {
  if [ $1 -eq 0 ]; then
-  echo "lang-community.sh finished with success" >&2
+  echo "$(tput setaf 2)lang-community.sh finished with success$(tput sgr 0)" >&2
  else
-  echo "lang-community.sh finished with errors!" >&2
+  echo "$(tput setaf 1)lang-community.sh finished with errors!$(tput sgr 0)" >&2
  fi
  echo 
  exit $1

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Version 1.0.1
+# Version 1.0.1 Build 30
 #
 #############################################################################
 # Change log:
@@ -13,6 +13,8 @@
 # 23 Apr. 2021, wavexx    , improve
 # 24 Apr. 2021, wavexx    , improve
 # 26 Apr. 2021, 3d-gussner, add character ruler
+# 16 July 2021, 3d-gussner, Use `git rev-list --count HEAD lang-check.py`
+#                           to get Build Nr
 #############################################################################
 #
 """Check lang files."""
