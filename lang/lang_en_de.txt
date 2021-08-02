@@ -1401,3 +1401,7 @@
 #MSG_PRINTER_IP c=18
 "Printer IP Addr:"
 "Drucker IP Adr.:"
+
+#MSG_PRINTER_IT c=18
+"Printer IT Addr:"
+"Drucker IT Adr.:"
