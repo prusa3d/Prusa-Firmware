@@ -610,7 +610,8 @@ if [ $TARGET_OS == "windows" ]; then
         if [ $OUTPUT == "1" ] ; then
             sleep 2
         fi
-        wget https://downloads.arduino.cc/arduino-$ARDUINO_ENV-windows.zip || failures 8
+        wget https://github.com/3d-gussner/PF-build-env-1/releases/download/Test_$ARDUINO_ENV/arduino-$ARDUINO_ENV-windows.zip || exit 3
+        #wget https://github.com/prusa3d/PF-build-env/releases/download/arduino-$ARDUINO_ENV/arduino-$ARDUINO_ENV-windows || exit 3
         echo "$(tput sgr 0)"
     fi
     if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
@@ -632,7 +633,9 @@ if [ $TARGET_OS == "linux" ]; then
         if [ $OUTPUT == "1" ] ; then
             sleep 2
         fi
-        wget --no-check-certificate https://downloads.arduino.cc/arduino-$ARDUINO_ENV-linux$Processor.tar.xz || failures 8
+        wget https://github.com/3d-gussner/PF-build-env-1/releases/download/Test_$ARDUINO_ENV/arduino-$ARDUINO_ENV-linux64.tar.xz || exit 3
+        #wget https://github.com/prusa3d/PF-build-env/releases/download/arduino-$ARDUINO_ENV/arduino-$ARDUINO_ENV-linux64.tar.xz || exit 3
+        #wget --no-check-certificate https://downloads.arduino.cc/arduino-$ARDUINO_ENV-linux$Processor.tar.xz || failures 8
         echo "$(tput sgr 0)"
     fi
     if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
@@ -1169,10 +1172,12 @@ prepare_variant_for_compiling()
 compile_en_firmware()
 {
     ## Check board mem size
-    CURRENT_BOARD_MEM=$(grep "#define RAMEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f3|tr -d $'\n')
+    #CURRENT_BOARD_MEM=$(grep -m1 "#define RAMEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f3|tr -d $'\n')
+    CURRENT_BOARD_MEM=$(grep -m1 "#define RAMEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | grep -o '[^ ]*$')
+
     if [ $CURRENT_BOARD_MEM != "0x21FF" ] ; then
         echo "Board mem has been already modified or not reset"
-        echo "Current:" $CURRENT_BOARD_MEM
+        echo "Current:$CURRENT_BOARD_MEM"
         PS3="Select $(tput setaf 2)Yes$(tput sgr 0) if you want to reset it."
         select yn in "Yes" "No"; do
             case $yn in
@@ -1199,7 +1204,7 @@ compile_en_firmware()
     fi
 
     ## Check board flash size
-    CURRENT_BOARD_FLASH=$(grep "#define FLASHEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f3|tr -d $'\n')
+    CURRENT_BOARD_FLASH=$(grep "#define FLASHEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | grep -o '[^ ]*$')
     CURRENT_BOARD_maximum_size=$(grep "prusa_einsy_rambo.upload.maximum_size" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt |cut -d '=' -f2|tr -d $'\n')
     if [[ $CURRENT_BOARD_FLASH != "0x3FFFF" || $CURRENT_BOARD_maximum_size != "253952" ]] ; then
         echo "Board flash has been already modified or not reset"
