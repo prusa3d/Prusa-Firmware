@@ -207,7 +207,7 @@ enum class TestError : uint_least8_t
 };
 
 static int  lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
-static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
+static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name, const char *_indicator);
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	bool _default=false);
 
@@ -8547,7 +8547,7 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	return (_progress >= _progress_scale * 2) ? 0 : _progress;
 }
 
-static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name_PROGMEM, const char *_indicator)
+static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name_PROGMEM, const char *_indicator)
 {
 	lcd_set_cursor(_col, _row);
     uint8_t strlenNameP = strlen_P(_name_PROGMEM);
