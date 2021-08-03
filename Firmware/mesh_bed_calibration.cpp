@@ -2240,7 +2240,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
     /// Retry point scanning if a point with bad data appears.
     /// Bad data could be cause by "cold" sensor.
     /// This behavior vanishes after few point scans so retry will help.
-    for (int retries = 0; retries <= 1; ++retries) {
+    for (uint8_t retries = 0; retries <= 1; ++retries) {
         bool retry = false;
         for (int k = 0; k < 4; ++k) {
             // Don't let the manage_inactivity() function remove power from the motors.

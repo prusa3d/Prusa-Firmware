@@ -5293,7 +5293,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   */
 	case 75:
 	{
-		for (int i = 40; i <= 110; i++)
+		for (uint8_t i = 40; i <= 110; i++)
 			printf_P(_N("%d  %.2f"), i, temp_comp_interpolation(i));
 	}
 	break;
@@ -7791,8 +7791,8 @@ Sigma_Exit:
     */
     case 300: // M300
     {
-      int beepS = code_seen('S') ? code_value() : 110;
-      int beepP = code_seen('P') ? code_value() : 1000;
+      uint16_t beepS = code_seen('S') ? code_value() : 110;
+      uint16_t beepP = code_seen('P') ? code_value() : 1000;
       if (beepS > 0)
       {
         #if BEEPER > 0
@@ -11487,8 +11487,8 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 	
 	MYSERIAL.println(int(depth));
-	for (int i = 0; i < depth; i++) {
-		for (int j = 0; j < 8; j++) {
+	for (uint8_t i = 0; i < depth; i++) {
+		for (uint8_t j = 0; j < 8; j++) {
 			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
 		}
 		dir_name[8] = '\0';
@@ -11497,7 +11497,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 		card.chdir(dir_name, false);
 	}
 
-	for (int i = 0; i < 8; i++) {
+	for (uint8_t i = 0; i < 8; i++) {
 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
 	}
 	filename[8] = '\0';
