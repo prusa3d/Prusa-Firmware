@@ -610,15 +610,14 @@ void lcdui_print_status_line(void)
     else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status)) { // If printing from SD, show what we are printing
 		const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
         if(strlen(longFilenameOLD) > LCD_WIDTH) {
-            int inters = 0;
-            int gh = scrollstuff;
-            while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0)) {
+            uint8_t gh = scrollstuff;
+            while (((gh - scrollstuff) < LCD_WIDTH)) {
                 if (longFilenameOLD[gh] == '\0') {
                     lcd_set_cursor(gh - scrollstuff, 3);
                     lcd_print(longFilenameOLD[gh - 1]);
                     scrollstuff = 0;
                     gh = scrollstuff;
-                    inters = 1;
+                    break;
                 } else {
                     lcd_set_cursor(gh - scrollstuff, 3);
                     lcd_print(longFilenameOLD[gh - 1]);
