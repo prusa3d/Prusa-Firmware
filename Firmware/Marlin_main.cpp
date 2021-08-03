@@ -1759,7 +1759,6 @@ void trace();
 #define CHUNK_SIZE 64 // bytes
 #define SAFETY_MARGIN 1
 char chunk[CHUNK_SIZE+SAFETY_MARGIN];
-int chunkHead = 0;
 
 void serial_read_stream() {
 
