@@ -204,7 +204,7 @@ static float analog2tempAmbient(int raw);
 #endif
 static void updateTemperaturesFromRawValues();
 
-enum TempRunawayStates
+enum TempRunawayStates : uint8_t
 {
 	TempRunaway_INACTIVE = 0,
 	TempRunaway_PREHEAT = 1,
@@ -220,7 +220,7 @@ enum TempRunawayStates
 //===========================================================================
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-static float temp_runaway_status[4];
+static uint8_t temp_runaway_status[4];
 static float temp_runaway_target[4];
 static float temp_runaway_timer[4];
 static int temp_runaway_error_counter[4];
