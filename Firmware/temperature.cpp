@@ -220,6 +220,7 @@ enum TempRunawayStates : uint8_t
 //===========================================================================
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
+
 static uint8_t temp_runaway_status[1 + EXTRUDERS];
 static float temp_runaway_target[1 + EXTRUDERS];
 static uint32_t temp_runaway_timer[1 + EXTRUDERS];

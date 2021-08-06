@@ -69,9 +69,11 @@ extern void lcd_wait_for_click();
 extern bool lcd_wait_for_click_delay(uint16_t nDelay);
 extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
 // 0: no, 1: yes, -1: timeouted
+extern int8_t lcd_show_yes_no_and_wait(bool allow_timeouting = true, bool default_yes = false);
+// 0: no, 1: yes, -1: timeouted
 extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 extern int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes,
-        const char *first_choice, const char *second_choice);
+        const char *first_choice, const char *second_choice, uint8_t second_col = 7);
 extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 // Ask the user to move the Z axis up to the end stoppers and let
 // the user confirm that it has been done.
@@ -192,7 +194,17 @@ extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentItemForce();
 void lcd_generic_preheat_menu();
-void unload_filament(bool automatic = false);
+
+
+enum class UnloadType : uint8_t
+{
+    User,      // user-triggered unload
+    Swap,      // part of a M600 sequence
+    Runout,    // triggered by runout
+};
+
+void unload_filament(UnloadType unload=UnloadType::User);
+
 
 void lcd_printer_connected();
 void lcd_ping();

@@ -605,23 +605,18 @@ void crashdet_detected(uint8_t mask)
 {
 	st_synchronize();
 	static uint8_t crashDet_counter = 0;
+	static uint8_t crashDet_axes = 0;
 	bool automatic_recovery_after_crash = true;
+	char msg[LCD_WIDTH+1] = "";
 
-	if (crashDet_counter++ == 0) {
-		crashDetTimer.start();
-	}
-	else if (crashDetTimer.expired(CRASHDET_TIMER * 1000ul)){
-		crashDetTimer.stop();
-		crashDet_counter = 0;
-	}
-	else if(crashDet_counter == CRASHDET_COUNTER_MAX){
-		automatic_recovery_after_crash = false;
-		crashDetTimer.stop();
-		crashDet_counter = 0;
-	}
-	else {
-		crashDetTimer.start();
-	}
+    if (crashDetTimer.expired(CRASHDET_TIMER * 1000ul)) {
+        crashDet_counter = 0;
+    }
+    if(++crashDet_counter >= CRASHDET_COUNTER_MAX) {
+        automatic_recovery_after_crash = false;
+    }
+    crashDetTimer.start();
+    crashDet_axes |= mask;
 
 	lcd_update_enable(true);
 	lcd_clear();
@@ -631,18 +626,23 @@ void crashdet_detected(uint8_t mask)
 	{
 		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_X, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) + 1);
 		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) + 1);
+		strcat(msg, "X");
 	}
 	if (mask & Y_AXIS_MASK)
 	{
 		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) + 1);
 		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
+		strcat(msg, "Y");
 	}
-    
-
 
 	lcd_update_enable(true);
 	lcd_update(2);
-	lcd_setstatuspgm(_T(MSG_CRASH_DETECTED));
+
+    // prepare the status message with the _current_ axes stauts
+    strcat(msg, " ");
+    strcat_P(msg, _T(MSG_CRASH_DETECTED));
+    lcd_setstatus(msg);
+
 	gcode_G28(true, true, false); //home X and Y
 	st_synchronize();
 
@@ -650,7 +650,21 @@ void crashdet_detected(uint8_t mask)
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}else{
 		setTargetHotend(0, active_extruder);
-		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);////MSG_CRASH_RESUME c=20 r=3
+
+        // notify the user of *all* the axes previously affected, not just the last one
+        lcd_update_enable(false);
+        lcd_clear();
+        if (crashDet_axes & X_AXIS_MASK) lcd_putc('X');
+        if (crashDet_axes & Y_AXIS_MASK) lcd_putc('Y');
+        crashDet_axes = 0;
+        lcd_putc(' ');
+        lcd_puts_P(_T(MSG_CRASH_DETECTED));
+
+        // ask whether to resume printing
+        lcd_set_cursor(0, 1);
+        lcd_puts_P(MSG_RESUME_PRINT);
+        lcd_putc('?');
+        bool yesno = lcd_show_yes_no_and_wait(false);
 		lcd_update_enable(true);
 		if (yesno)
 		{
@@ -3741,7 +3755,7 @@ static T gcode_M600_filament_change_z_shift()
 #endif
 }	
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
+static void gcode_M600(bool automatic, bool runout, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
 {
     st_synchronize();
     float lastpos[4];
@@ -3753,7 +3767,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     //First backup current position and settings
     int feedmultiplyBckp = feedmultiply;
-    float HotendTempBckp = degTargetHotend(active_extruder);
+    float HotendTempBckp;
     int fanSpeedBckp = fanSpeed;
 
     lastpos[X_AXIS] = current_position[X_AXIS];
@@ -3761,10 +3775,23 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     lastpos[Z_AXIS] = current_position[Z_AXIS];
     lastpos[E_AXIS] = current_position[E_AXIS];
 
-    //Retract E
-    current_position[E_AXIS] += e_shift;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
-    st_synchronize();
+    if (automatic || !isPrintPaused)
+    {
+        HotendTempBckp = degTargetHotend(active_extruder);
+
+        // Retract E
+        current_position[E_AXIS] += e_shift;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
+        st_synchronize();
+    }
+    else
+    {
+        HotendTempBckp = saved_extruder_temperature;
+
+        // Reheat the extruder
+        setTargetHotend(saved_extruder_temperature, active_extruder);
+        mmu_wait_for_heater_blocking();
+    }
 
     //Lift Z
     current_position[Z_AXIS] += z_shift;
@@ -3783,8 +3810,17 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     lcd_change_fil_state = 0;
 
     // Unload filament
-    if (mmu_enabled) extr_unload();	//unload just current filament for multimaterial printers (used also in M702)
-    else unload_filament(true); //unload filament for single material (used also in M702)
+    if (mmu_enabled)
+    {
+        // unload just current filament for multimaterial printers (used also in M702)
+        extr_unload();
+    }
+    else
+    {
+        // unload filament for single material (used also in M702)
+        unload_filament(runout? UnloadType::Runout: UnloadType::Swap);
+    }
+
     //finish moves
     st_synchronize();
 
@@ -3830,11 +3866,23 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     //Not let's go back to print
     fanSpeed = fanSpeedBckp;
 
-    //Feed a little of filament to stabilize pressure
     if (!automatic)
     {
-        current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
+        if (isPrintPaused)
+        {
+            // Return to retracted state during a pause
+            current_position[E_AXIS] -= default_retraction;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
+
+            // Cooldown the extruder again
+            setTargetHotend(0, active_extruder);
+        }
+        else
+        {
+            // Feed a little of filament to stabilize pressure
+            current_position[E_AXIS] += FILAMENTCHANGE_PRIMEFEED;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
+        }
     }
 
     //Move XY back
@@ -3863,7 +3911,10 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 	fsensor_check_autoload();
 #endif //IR_SENSOR
 
-    lcd_setstatuspgm(_T(WELCOME_MSG));
+    if (isPrintPaused)
+        lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
+    else
+        lcd_setstatuspgm(_T(WELCOME_MSG));
     custom_message_type = CustomMsg::Status;
 }
 
@@ -7438,8 +7489,6 @@ Sigma_Exit:
 #endif
           cs.max_jerk[E_AXIS] = e;
       }
-      if (cs.max_jerk[X_AXIS] > DEFAULT_XJERK) cs.max_jerk[X_AXIS] = DEFAULT_XJERK;
-      if (cs.max_jerk[Y_AXIS] > DEFAULT_YJERK) cs.max_jerk[Y_AXIS] = DEFAULT_YJERK;
     }
     break;
 
@@ -8194,7 +8243,8 @@ Sigma_Exit:
 		float e_shift_init = 0;
 		float e_shift_late = 0;
 		bool automatic = false;
-		
+		bool runout = false;
+
         //Retract extruder
         if(code_seen('E'))
         {
@@ -8252,8 +8302,13 @@ Sigma_Exit:
 
 		if (mmu_enabled && code_seen_P(PSTR("AUTO")))
 			automatic = true;
+        if (code_seen('R'))
+        {
+            // Code 'R' is supported internally to indicate filament change due to a runout condition
+            runout = true;
+        }
 
-		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+		gcode_M600(automatic, runout, x_position, y_position, z_shift, e_shift_init, e_shift_late);
 	
 	}
     break;
@@ -8814,9 +8869,7 @@ Sigma_Exit:
 			if(code_seen(axis_codes[i]))
 			{
 				uint16_t res_new = code_value();
-				bool res_valid = (res_new == 8) || (res_new == 16) || (res_new == 32); // resolutions valid for all axis
-				res_valid |= (i != E_AXIS) && ((res_new == 1) || (res_new == 2) || (res_new == 4)); // resolutions valid for X Y Z only
-				res_valid |= (i == E_AXIS) && ((res_new == 64) || (res_new == 128)); // resolutions valid for E only
+				bool res_valid = res_new > 0 && res_new <= 256 && !(res_new & (res_new - 1)); // must be a power of two
 				if (res_valid)
 				{
 					st_synchronize();
@@ -11831,7 +11884,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	//then move Z
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
 	//and finaly unretract (35mm/s)
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_EFEED_RETRACT, active_extruder);
 	st_synchronize();
 
   #ifdef FANCHECK
