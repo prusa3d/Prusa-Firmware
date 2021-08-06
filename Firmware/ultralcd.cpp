@@ -4718,7 +4718,7 @@ void lcd_v2_calibration()
 	    bool loaded = false;
 	    if (fsensor_enabled && ir_sensor_detected)
 	    {
-	        loaded = (digitalRead(IR_SENSOR_PIN) == 0);
+	        loaded = !READ(IR_SENSOR_PIN);
 	    }
 	    else
 	    {
@@ -8689,7 +8689,7 @@ void ultralcd_init()
 #endif
 
 #if defined (SDSUPPORT) && defined(SDCARDDETECT) && (SDCARDDETECT > 0)
-  pinMode(SDCARDDETECT, INPUT);
+  SET_INPUT(SDCARDDETECT);
   WRITE(SDCARDDETECT, HIGH);
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)

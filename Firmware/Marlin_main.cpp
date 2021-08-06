@@ -213,7 +213,9 @@ static LongTimer crashDetTimer;
 bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
 
+#ifdef PRUSA_M28
 bool prusa_sd_card_upload = false;
+#endif
 
 unsigned int status_number = 0;
 
@@ -349,7 +351,7 @@ static float next_feedrate;
 // Original feedrate saved during homing moves
 static float saved_feedrate;
 
-const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
+const int8_t sensitive_pins[] PROGMEM = SENSITIVE_PINS; // Sensitive pin list for M42
 
 //static float tt = 0;
 //static float bt = 0;
@@ -1721,7 +1723,6 @@ void setup()
 #endif //WATCHDOG
 }
 
-
 static inline void crash_and_burn(dump_crash_reason reason)
 {
     WRITE(BEEPER, HIGH);
@@ -1753,7 +1754,7 @@ void stack_error() {
     crash_and_burn(dump_crash_reason::stack_error);
 }
 
-
+#ifdef PRUSA_M28
 void trace();
 
 #define CHUNK_SIZE 64 // bytes
@@ -1824,6 +1825,7 @@ void serial_read_stream() {
         }
     }
 }
+#endif //PRUSA_M28
 
 
 /**
@@ -1914,12 +1916,14 @@ void loop()
     }
 #endif
 
+#ifdef PRUSA_M28
     if (prusa_sd_card_upload)
     {
         //we read byte-by byte
         serial_read_stream();
     } 
-    else 
+    else
+#endif
     {
 
         get_command();
@@ -2558,9 +2562,12 @@ void retract(bool retracting, bool swapretract = false) {
 } //retract
 #endif //FWRETRACT
 
+#ifdef PRUSA_M28
 void trace() {
     Sound_MakeCustom(25,440,true);
 }
+#endif
+
 /*
 void ramming() {
 //	  float tmp[4] = DEFAULT_MAX_FEEDRATE;
@@ -4563,12 +4570,16 @@ void process_commands()
 
         #endif // SDSUPPORT
 
-    } else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
+    }
+#ifdef PRUSA_M28
+	else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
         trace();
         prusa_sd_card_upload = true;
         card.openFileWrite(strchr_pointer+4);
 
-	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
+	}
+#endif //PRUSA_M28
+	else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
         eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
         if (SN[19])
@@ -6102,13 +6113,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     case 42:
       if (code_seen('S'))
       {
-        int pin_status = code_value();
-        int pin_number = LED_PIN;
-        if (code_seen('P') && pin_status >= 0 && pin_status <= 255)
+        uint8_t pin_status = code_value_uint8();
+        int8_t pin_number = LED_PIN;
+        if (code_seen('P'))
           pin_number = code_value();
-        for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(int)); i++)
+        for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(*sensitive_pins)); i++)
         {
-          if (sensitive_pins[i] == pin_number)
+          if ((int8_t)pgm_read_byte(&sensitive_pins[i]) == pin_number)
           {
             pin_number = -1;
             break;
@@ -7684,9 +7695,9 @@ Sigma_Exit:
 
         if(pin_state >= -1 && pin_state <= 1){
 
-          for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(int)); i++)
+          for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(*sensitive_pins)); i++)
           {
-            if (sensitive_pins[i] == pin_number)
+            if (((int8_t)pgm_read_byte(&sensitive_pins[i]) == pin_number))
             {
               pin_number = -1;
               break;
@@ -9050,8 +9061,8 @@ Sigma_Exit:
               disable_e1();
               disable_e2();
 
-              pinMode(E_MUX0_PIN, OUTPUT);
-              pinMode(E_MUX1_PIN, OUTPUT);
+              SET_OUTPUT(E_MUX0_PIN);
+              SET_OUTPUT(E_MUX1_PIN);
 
               _delay(100);
               SERIAL_ECHO_START;
