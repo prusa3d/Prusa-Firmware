@@ -1248,8 +1248,8 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 	uint16_t __timeout = 0;
 	bool temp_runaway_check_active = false;
 	static float __preheat_start[2] = { 0,0}; //currently just bed and one extruder
-	static int __preheat_counter[2] = { 0,0};
-	static int __preheat_errors[2] = { 0,0};
+	static uint8_t __preheat_counter[2] = { 0,0};
+	static uint8_t __preheat_errors[2] = { 0,0};
 		
 
 	if (_millis() - temp_runaway_timer[_heater_id] > 2000)
