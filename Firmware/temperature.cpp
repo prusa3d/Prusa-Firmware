@@ -225,7 +225,7 @@ static float temp_runaway_target[4];
 static uint32_t temp_runaway_timer[4];
 static uint16_t temp_runaway_error_counter[4];
 
-static void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
+static void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
 static void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
@@ -683,7 +683,7 @@ void manage_heater()
   temp_runaway_check(0, target_temperature_bed, current_temperature_bed, (int)soft_pwm_bed, true);
 #endif
 
-  for(int e = 0; e < EXTRUDERS; e++) 
+  for(uint8_t e = 0; e < EXTRUDERS; e++) 
   {
 
 #ifdef TEMP_RUNAWAY_EXTRUDER_HYSTERESIS
@@ -1240,7 +1240,7 @@ void tp_init()
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
+void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
 {
      float __delta;
 	float __hysteresis = 0;
