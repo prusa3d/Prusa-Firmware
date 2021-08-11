@@ -907,11 +907,11 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	uint8_t x[3] = {255,255,255};  //X segment bounds (MSLUTSEL)
 	uint8_t s = 0;                 //current segment
 	int8_t b;                      //encoded bit value
-    int8_t dA;                     //delta value
-	uint8_t i;                         //microstep index
+	int8_t dA;                     //delta value
+	uint8_t i = 0;                         //microstep index
 	uint32_t reg = 0;              //tmc2130 register
 	tmc2130_wr_MSLUTSTART(axis, 0, amp);
-	for (i = 0; i < 256; i++)
+	do
 	{
 		if ((i & 0x1f) == 0)
 			reg = 0;
@@ -963,7 +963,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 		else
 			reg >>= 1;
 //		printf("%3d\t%3d\t%2d\t%2d\t%2d\t%2d    %08x\n", i, vA, dA, b, w[s], s, reg);
-	}
+	} while (i++ != 255);
 	tmc2130_wr_MSLUTSEL(axis, x[0], x[1], x[2], w[0], w[1], w[2], w[3]);
 }
 
