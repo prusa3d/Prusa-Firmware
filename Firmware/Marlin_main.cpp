@@ -1774,7 +1774,6 @@ void trace();
 #define CHUNK_SIZE 64 // bytes
 #define SAFETY_MARGIN 1
 char chunk[CHUNK_SIZE+SAFETY_MARGIN];
-int chunkHead = 0;
 
 void serial_read_stream() {
 
@@ -2052,9 +2051,9 @@ DEFINE_PGM_READ_ANY(signed char, byte);
 #define XYZ_CONSTS_FROM_CONFIG(type, array, CONFIG) \
 static const PROGMEM type array##_P[3] =        \
     { X_##CONFIG, Y_##CONFIG, Z_##CONFIG };     \
-static inline type array(int axis)              \
+static inline type array(uint8_t axis)              \
     { return pgm_read_any(&array##_P[axis]); }  \
-type array##_ext(int axis)                      \
+type array##_ext(uint8_t axis)                      \
     { return pgm_read_any(&array##_P[axis]); }
 
 XYZ_CONSTS_FROM_CONFIG(float, base_min_pos,    MIN_POS);
@@ -2064,7 +2063,7 @@ XYZ_CONSTS_FROM_CONFIG(float, max_length,      MAX_LENGTH);
 XYZ_CONSTS_FROM_CONFIG(float, home_retract_mm, HOME_RETRACT_MM);
 XYZ_CONSTS_FROM_CONFIG(signed char, home_dir,  HOME_DIR);
 
-static void axis_is_at_home(int axis) {
+static void axis_is_at_home(uint8_t axis) {
   current_position[axis] = base_home_pos(axis) + cs.add_homing[axis];
   min_pos[axis] =          base_min_pos(axis) + cs.add_homing[axis];
   max_pos[axis] =          base_max_pos(axis) + cs.add_homing[axis];
@@ -2380,9 +2379,9 @@ static void check_Z_crash(void)
 #endif //TMC2130
 
 #ifdef TMC2130
-void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
+void homeaxis(uint8_t axis, uint8_t cnt, uint8_t* pstep)
 #else
-void homeaxis(int axis, uint8_t cnt)
+void homeaxis(uint8_t axis, uint8_t cnt)
 #endif //TMC2130
 {
 	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homing
@@ -2856,7 +2855,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       {
         current_position[X_AXIS] = 0;current_position[Y_AXIS] = 0;
 
-        int x_axis_home_dir = home_dir(X_AXIS);
+        uint8_t x_axis_home_dir = home_dir(X_AXIS);
 
         plan_set_position_curposXYZE();
         destination[X_AXIS] = 1.5 * max_length(X_AXIS) * x_axis_home_dir;destination[Y_AXIS] = 1.5 * max_length(Y_AXIS) * home_dir(Y_AXIS);
@@ -5356,7 +5355,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
   */
 	case 75:
 	{
-		for (int i = 40; i <= 110; i++)
+		for (uint8_t i = 40; i <= 110; i++)
 			printf_P(_N("%d  %.2f"), i, temp_comp_interpolation(i));
 	}
 	break;
@@ -7852,8 +7851,8 @@ Sigma_Exit:
     */
     case 300: // M300
     {
-      int beepS = code_seen('S') ? code_value() : 110;
-      int beepP = code_seen('P') ? code_value() : 1000;
+      uint16_t beepS = code_seen('S') ? code_value() : 110;
+      uint16_t beepP = code_seen('P') ? code_value() : 1000;
       if (beepS > 0)
       {
         #if BEEPER > 0
@@ -11552,8 +11551,8 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
 	
 	MYSERIAL.println(int(depth));
-	for (int i = 0; i < depth; i++) {
-		for (int j = 0; j < 8; j++) {
+	for (uint8_t i = 0; i < depth; i++) {
+		for (uint8_t j = 0; j < 8; j++) {
 			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
 		}
 		dir_name[8] = '\0';
@@ -11562,7 +11561,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 		card.chdir(dir_name, false);
 	}
 
-	for (int i = 0; i < 8; i++) {
+	for (uint8_t i = 0; i < 8; i++) {
 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
 	}
 	filename[8] = '\0';
