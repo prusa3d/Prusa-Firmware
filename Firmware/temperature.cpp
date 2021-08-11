@@ -204,7 +204,7 @@ static float analog2tempAmbient(int raw);
 #endif
 static void updateTemperaturesFromRawValues();
 
-enum TempRunawayStates
+enum TempRunawayStates : uint8_t
 {
 	TempRunaway_INACTIVE = 0,
 	TempRunaway_PREHEAT = 1,
@@ -225,7 +225,7 @@ static float temp_runaway_target[1 + EXTRUDERS];
 static float temp_runaway_timer[1 + EXTRUDERS];
 static int temp_runaway_error_counter[1 + EXTRUDERS];
 
-static void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
+static void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
 static void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
@@ -683,7 +683,7 @@ void manage_heater()
   temp_runaway_check(0, target_temperature_bed, current_temperature_bed, (int)soft_pwm_bed, true);
 #endif
 
-  for(int e = 0; e < EXTRUDERS; e++) 
+  for(uint8_t e = 0; e < EXTRUDERS; e++) 
   {
 
 #ifdef TEMP_RUNAWAY_EXTRUDER_HYSTERESIS
@@ -1240,15 +1240,15 @@ void tp_init()
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
+void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
 {
      float __delta;
 	float __hysteresis = 0;
-	int __timeout = 0;
+	uint16_t __timeout = 0;
 	bool temp_runaway_check_active = false;
 	static float __preheat_start[2] = { 0,0}; //currently just bed and one extruder
-	static int __preheat_counter[2] = { 0,0};
-	static int __preheat_errors[2] = { 0,0};
+	static uint8_t __preheat_counter[2] = { 0,0};
+	static uint8_t __preheat_errors[2] = { 0,0};
 		
 
 	if (_millis() - temp_runaway_timer[_heater_id] > 2000)

@@ -161,8 +161,8 @@ static void lcd_belttest_v();
 static void lcd_selftest_v();
 
 #ifdef TMC2130
-static void reset_crash_det(unsigned char axis);
-static bool lcd_selfcheck_axis_sg(unsigned char axis);
+static void reset_crash_det(uint8_t axis);
+static bool lcd_selfcheck_axis_sg(uint8_t axis);
 #else
 static bool lcd_selfcheck_axis(int _axis, int _travel);
 static bool lcd_selfcheck_pulleys(int axis);
@@ -207,7 +207,7 @@ enum class TestError : uint_least8_t
 };
 
 static int  lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
-static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
+static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name, const char *_indicator);
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	bool _default=false);
 
@@ -610,15 +610,14 @@ void lcdui_print_status_line(void)
     else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status)) { // If printing from SD, show what we are printing
 		const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
         if(strlen(longFilenameOLD) > LCD_WIDTH) {
-            int inters = 0;
-            int gh = scrollstuff;
-            while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0)) {
+            uint8_t gh = scrollstuff;
+            while (((gh - scrollstuff) < LCD_WIDTH)) {
                 if (longFilenameOLD[gh] == '\0') {
                     lcd_set_cursor(gh - scrollstuff, 3);
                     lcd_print(longFilenameOLD[gh - 1]);
                     scrollstuff = 0;
                     gh = scrollstuff;
-                    inters = 1;
+                    break;
                 } else {
                     lcd_set_cursor(gh - scrollstuff, 3);
                     lcd_print(longFilenameOLD[gh - 1]);
@@ -694,7 +693,7 @@ void lcdui_print_status_line(void)
     }
 
     // Fill the rest of line to have nice and clean output
-    for(int fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
+    for(uint8_t fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
         if ((lcd_status_message[fillspace] <= 31 ))
             lcd_print(' ');
 }
@@ -2738,7 +2737,7 @@ void lcd_menu_statistics()
 }
 
 
-static void _lcd_move(const char *name, int axis, int min, int max)
+static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 {
     if (homing_flag || mesh_bed_leveling_flag)
     {
@@ -3921,7 +3920,7 @@ static void prusa_statistics_case0(uint8_t statnr){
 	prusa_stat_printinfo();
 }
 
-void prusa_statistics(int _message, uint8_t _fil_nr) {
+void prusa_statistics(uint8_t _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
 	return;
 #endif //DEBUG_DISABLE_PRUSA_STATISTICS
@@ -7706,14 +7705,14 @@ bool lcd_selftest()
 
 #ifdef TMC2130
 
-static void reset_crash_det(unsigned char axis) {
+static void reset_crash_det(uint8_t axis) {
 	current_position[axis] += 10;
 	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	st_synchronize();
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET)) tmc2130_sg_stop_on_crash = true;
 }
 
-static bool lcd_selfcheck_axis_sg(unsigned char axis) {
+static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 // each axis length is measured twice	
 	float axis_length, current_position_init, current_position_final;
 	float measured_axis_length[2];
@@ -8547,7 +8546,7 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	return (_progress >= _progress_scale * 2) ? 0 : _progress;
 }
 
-static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name_PROGMEM, const char *_indicator)
+static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name_PROGMEM, const char *_indicator)
 {
 	lcd_set_cursor(_col, _row);
     uint8_t strlenNameP = strlen_P(_name_PROGMEM);

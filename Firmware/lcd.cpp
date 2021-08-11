@@ -344,7 +344,7 @@ void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
 {
   location &= 0x7; // we only have 8 locations 0-7
   lcd_command(LCD_SETCGRAMADDR | (location << 3));
-  for (int i=0; i<8; i++)
+  for (uint8_t i = 0; i < 8; i++)
     lcd_send(pgm_read_byte(&charmap[i]), HIGH);
 }
 
