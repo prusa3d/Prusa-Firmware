@@ -19,7 +19,6 @@ extern eSOUND_MODE eSoundMode;
 
 extern void Sound_Init(void);
 extern void Sound_Default(void);
-extern void Sound_Save(void);
 extern void Sound_CycleState(void);
 extern void Sound_MakeSound(eSOUND_TYPE eSoundType);
 extern void Sound_MakeCustom(uint16_t ms,uint16_t tone_ ,bool critical);

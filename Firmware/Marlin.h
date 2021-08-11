@@ -246,7 +246,7 @@ void finishAndDisableSteppers();
 //put an ASCII command at the begin of the current buffer, read from flash
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
 
-void prepare_arc_move(char isclockwise);
+void prepare_arc_move(bool isclockwise);
 void clamp_to_software_endstops(float target[3]);
 void refresh_cmd_timeout(void);
 
@@ -350,7 +350,6 @@ extern unsigned long t_fan_rising_edge;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
-extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
 extern uint8_t saved_printing_type;

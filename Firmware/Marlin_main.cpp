@@ -377,7 +377,7 @@ bool target_direction;
 //Insert variables if CHDK is defined
 #ifdef CHDK
 unsigned long chdkHigh = 0;
-boolean chdkActive = false;
+bool chdkActive = false;
 #endif
 
 //! @name RAM save/restore printing
@@ -5564,7 +5564,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		plan_buffer_line_curposXYZE(3000 / 60);
 		st_synchronize();
 		
-		while (abs(degBed() - PINDA_MIN_T) > 1) {
+		while (fabs(degBed() - PINDA_MIN_T) > 1) {
 			delay_keep_alive(1000);
 			serialecho_temperatures();
 		}
@@ -5871,7 +5871,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
           fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 	default:
-		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
+		printf_P(MSG_UNKNOWN_CODE, 'G', cmdbuffer + bufindr + CMDHDRSIZE);
     }
 //	printf_P(_N("END G-CODE=%u\n"), gcode_in_progress);
 	gcode_in_progress = 0;
@@ -5894,7 +5894,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	   
 	 /*for (++strchr_pointer; *strchr_pointer == ' ' || *strchr_pointer == '\t'; ++strchr_pointer);*/
 	  if (*(strchr_pointer+index) < '0' || *(strchr_pointer+index) > '9') {
-		  printf_P(PSTR("Invalid M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
+		  printf_P(PSTR("Invalid M code: %s\n"), cmdbuffer + bufindr + CMDHDRSIZE);
 
 	  } else
 	  {
@@ -8999,7 +8999,7 @@ Sigma_Exit:
 	#### End of M-Commands
     */
 	default: 
-		printf_P(PSTR("Unknown M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
+		printf_P(MSG_UNKNOWN_CODE, 'M', cmdbuffer + bufindr + CMDHDRSIZE);
     }
 //	printf_P(_N("END M-CODE=%u\n"), mcode_in_progress);
 	mcode_in_progress = 0;
@@ -9154,7 +9154,7 @@ Sigma_Exit:
               }
               else {
 #if EXTRUDERS > 1
-                  boolean make_move = false;
+                  bool make_move = false;
 #endif
                   if (code_seen('F')) {
 #if EXTRUDERS > 1
@@ -9584,6 +9584,9 @@ Sigma_Exit:
 #endif //FILAMENT_SENSOR
 
 #endif //DEBUG_DCODES
+
+    default:
+        printf_P(MSG_UNKNOWN_CODE, 'D', cmdbuffer + bufindr + CMDHDRSIZE);
 	}
   }
 
@@ -9757,7 +9760,7 @@ void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const
         int n_segments = 0;
 
         if (mbl.active) {
-            float len = abs(dx) + abs(dy);
+            float len = fabs(dx) + fabs(dy);
             if (len > 0)
                 // Split to 3cm segments or shorter.
                 n_segments = int(ceil(len / 30.f));
@@ -9811,7 +9814,7 @@ void prepare_move()
   set_current_to_destination();
 }
 
-void prepare_arc_move(char isclockwise) {
+void prepare_arc_move(bool isclockwise) {
   float r = hypot(offset[X_AXIS], offset[Y_AXIS]); // Compute arc radius for mc_arc
 
   // Trace the arc
@@ -11303,7 +11306,7 @@ void uvlo_tiny()
     planner_abort_hard();
 
     // Allow for small roundoffs to be ignored
-    if(abs(current_position[Z_AXIS] - eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z))) >= 1.f/cs.axis_steps_per_unit[Z_AXIS])
+    if(fabs(current_position[Z_AXIS] - eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z))) >= 1.f/cs.axis_steps_per_unit[Z_AXIS])
     {
         // Clean the input command queue, inhibit serial processing using saved_printing
         cmdqueue_reset();
@@ -12091,7 +12094,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 				break;
 			case 2: //waiting for nozzle to reach target temperature
 
-				if (abs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
+				if (fabs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
 					lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
 					waiting_start_time = _millis();
 					wait_for_user_state = 0;

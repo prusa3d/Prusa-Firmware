@@ -4758,7 +4758,7 @@ static void wait_preheat()
     delay_keep_alive(2000);
     lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 	lcd_set_custom_characters();
-	while (abs(degHotend(0) - degTargetHotend(0)) > 3) {
+	while (fabs(degHotend(0) - degTargetHotend(0)) > 3) {
         lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 
         lcd_set_cursor(0, 4);
@@ -6297,85 +6297,6 @@ void unload_filament(UnloadType unload)
 
 }
 
-unsigned char lcd_choose_color() {
-	//function returns index of currently chosen item
-	//following part can be modified from 2 to 255 items:
-	//-----------------------------------------------------
-	unsigned char items_no = 2;
-	const char *item[items_no];
-	item[0] = "Orange";
-	item[1] = "Black";
-	//-----------------------------------------------------
-	uint_least8_t active_rows;
-	static int first = 0;
-	int enc_dif = 0;
-	unsigned char cursor_pos = 1;
-	enc_dif = lcd_encoder_diff;
-	lcd_clear();
-	lcd_putc_at(0, 1, '>');
-
-	active_rows = items_no < 3 ? items_no : 3;
-	lcd_consume_click();
-	while (1) {
-		lcd_puts_at_P(0, 0, PSTR("Choose color:"));
-		for (uint_least8_t i = 0; i < active_rows; i++) {
-			lcd_set_cursor(1, i+1);
-			lcd_print(item[first + i]);
-		}
-
-		manage_heater();
-		manage_inactivity(true);
-		proc_commands();
-		if (abs((enc_dif - lcd_encoder_diff)) > 12) {
-					
-				if (enc_dif > lcd_encoder_diff) {
-					cursor_pos--;
-				}
-
-				if (enc_dif < lcd_encoder_diff) {
-					cursor_pos++;
-				}
-				
-				if (cursor_pos > active_rows) {
-					cursor_pos = active_rows;
-					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-					if (first < items_no - active_rows) {
-						first++;
-						lcd_clear();
-					}
-				}
-
-				if (cursor_pos < 1) {
-					cursor_pos = 1;
-					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-					if (first > 0) {
-						first--;
-						lcd_clear();
-					}
-				}
-				lcd_putc_at(0, 1, ' ');
-				lcd_putc_at(0, 2, ' ');
-				lcd_putc_at(0, 3, ' ');
-				lcd_putc_at(0, cursor_pos, '>');
-				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-				enc_dif = lcd_encoder_diff;
-				_delay(100);
-
-		}
-
-		if (lcd_clicked()) {
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-			switch(cursor_pos + first - 1) {
-			case 0: return 1; break;
-			case 1: return 0; break;
-			default: return 99; break;
-			}
-		}
-
-	}
-
-}
-
 #include "xflash.h"
 
 #ifdef LCD_TEST
@@ -7733,7 +7654,7 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 	eeprom_write_word(((uint16_t*)((axis == X_AXIS)?EEPROM_BELTSTATUS_X:EEPROM_BELTSTATUS_Y)), sg1);
 
 	current_position_final = st_get_position_mm(axis);
-	measured_axis_length[0] = abs(current_position_final - current_position_init);
+	measured_axis_length[0] = fabs(current_position_final - current_position_init);
 
 
 // first measurement end and second measurement begin	
@@ -7750,7 +7671,7 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 
 	current_position_init = st_get_position_mm(axis);
 
-	measured_axis_length[1] = abs(current_position_final - current_position_init);
+	measured_axis_length[1] = fabs(current_position_final - current_position_init);
 
 	tmc2130_home_exit();
 
@@ -7758,7 +7679,7 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 
 	for(uint_least8_t i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
 		printf_P(_N("Measured axis length:%.3f\n"), measured_axis_length[i]);
-		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
+		if (fabs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			enable_endstops(false);
 
 			const char *_error_1;
@@ -7777,9 +7698,9 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 		}
 	}
 
-		printf_P(_N("Axis length difference:%.3f\n"), abs(measured_axis_length[0] - measured_axis_length[1]));
+		printf_P(_N("Axis length difference:%.3f\n"), fabs(measured_axis_length[0] - measured_axis_length[1]));
 	
-		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) { //check if difference between first and second measurement is low
+		if (fabs(measured_axis_length[0] - measured_axis_length[1]) > 1) { //check if difference between first and second measurement is low
 			//loose pulleys
 			const char *_error_1;
 
