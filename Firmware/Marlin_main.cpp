@@ -9767,9 +9767,8 @@ void prepare_arc_move(char isclockwise) {
   // As far as the parser is concerned, the position is now == target. In reality the
   // motion control system might still be processing the action and the real tool position
   // in any intermediate location.
-  for(int8_t i=0; i < NUM_AXIS; i++) {
-    current_position[i] = destination[i];
-  }
+  set_current_to_destination();
+
   previous_millis_cmd = _millis();
 }
 
