@@ -2827,7 +2827,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 
       enable_endstops(true);
 
-      memcpy(destination, current_position, sizeof(destination));
+      set_destination_to_current();
       feedrate = 0.0;
 
       #if Z_HOME_DIR > 0                      // If homing away from BED do Z first
@@ -3850,7 +3850,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     plan_set_e_position(lastpos[E_AXIS]);
 
     memcpy(current_position, lastpos, sizeof(lastpos));
-    memcpy(destination, current_position, sizeof(current_position));
+    set_destination_to_current();
 
     //Recover feed rate
     feedmultiply = feedmultiplyBckp;
@@ -9115,7 +9115,7 @@ Sigma_Exit:
 #if EXTRUDERS > 1
                   if (tmp_extruder != active_extruder) {
                       // Save current position to return to after applying extruder offset
-                      memcpy(destination, current_position, sizeof(destination));
+                      set_destination_to_current();
                       // Offset extruder (only by XY)
                       int i;
                       for (i = 0; i < 2; i++) {
@@ -11442,7 +11442,7 @@ bool recover_machine_state_after_power_panic()
   // 5) Set the physical positions from the logical positions using the world2machine transformation
   // This is only done to inizialize Z/E axes with physical locations, since X/Y are unknown.
   clamp_to_software_endstops(current_position);
-  memcpy(destination, current_position, sizeof(destination));
+  set_destination_to_current();
   plan_set_position_curposXYZE();
   SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
   print_world_coordinates();
@@ -11775,7 +11775,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 		plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS] + z_move, saved_pos[E_AXIS] + e_move, homing_feedrate[Z_AXIS], active_extruder);
     st_synchronize(); //wait moving
     memcpy(current_position, saved_pos, sizeof(saved_pos));
-    memcpy(destination, current_position, sizeof(destination));
+    set_destination_to_current();
 #endif
     waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
   }
@@ -11843,7 +11843,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	feedmultiply = saved_feedmultiply2;
 
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
-	memcpy(destination, current_position, sizeof(destination));
+	set_destination_to_current();
 	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
 		card.setIndex(saved_sdpos);
 		sdpos_atomic = saved_sdpos;
