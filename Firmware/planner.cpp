@@ -459,10 +459,7 @@ void plan_init() {
   #ifdef LIN_ADVANCE
   memset(position_float, 0, sizeof(position_float)); // clear position
   #endif
-  previous_speed[0] = 0.0;
-  previous_speed[1] = 0.0;
-  previous_speed[2] = 0.0;
-  previous_speed[3] = 0.0;
+  memset(previous_speed, 0, sizeof(previous_speed));
   previous_nominal_speed = 0.0;
   plan_reset_next_e_queue = false;
   plan_reset_next_e_sched = false;
@@ -678,10 +675,7 @@ void planner_abort_hard()
 #endif
     // Resets planner junction speeds. Assumes start from rest.
     previous_nominal_speed = 0.0;
-    previous_speed[0] = 0.0;
-    previous_speed[1] = 0.0;
-    previous_speed[2] = 0.0;
-    previous_speed[3] = 0.0;
+    memset(previous_speed, 0, sizeof(previous_speed));
 
     plan_reset_next_e_queue = false;
     plan_reset_next_e_sched = false;
@@ -1412,10 +1406,7 @@ void plan_set_position(float x, float y, float z, const float &e)
   #endif
   st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
   previous_nominal_speed = 0.0; // Resets planner junction speeds. Assumes start from rest.
-  previous_speed[0] = 0.0;
-  previous_speed[1] = 0.0;
-  previous_speed[2] = 0.0;
-  previous_speed[3] = 0.0;
+  memset(previous_speed, 0, sizeof(previous_speed));
 }
 
 // Only useful in the bed leveling routine, when the mesh bed leveling is off.
