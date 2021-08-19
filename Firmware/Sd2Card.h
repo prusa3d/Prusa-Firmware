@@ -160,9 +160,9 @@ class Sd2Card {
   /**
    * \return error code for last error. See Sd2Card.h for a list of error codes.
    */
-  int errorCode() const {return errorCode_;}
+  uint8_t errorCode() const {return errorCode_;}
   /** \return error data for last error. */
-  int errorData() const {return status_;}
+  uint8_t errorData() const {return status_;}
   /**
    * Initialize an SD flash memory card with default clock rate and chip
    * select pin.  See sd2Card::init(uint8_t sckRateID).
