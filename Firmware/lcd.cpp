@@ -741,7 +741,6 @@ void lcd_buttons_update(void)
 
     if (READ(BTN_ENC) == 0)
     { //button is pressed
-        lcd_timeoutToStatus.start();
         if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
             buttonBlanking.start();
             safetyTimer.start();
