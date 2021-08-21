@@ -8858,6 +8858,7 @@ void menu_lcd_lcdupdate_func(void)
 			LCD_MESSAGERPGM(_T(WELCOME_MSG));
 			bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 			menu_submenu(lcd_sdcard_menu);
+			lcd_timeoutToStatus.start();
 		}
 		else
 		{
