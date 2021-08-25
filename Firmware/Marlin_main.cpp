@@ -364,7 +364,7 @@ static unsigned long safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*6
 
 unsigned long starttime=0;
 unsigned long stoptime=0;
-unsigned long _usb_timer = 0;
+ShortTimer _usb_timer;
 
 bool Stopped=false;
 
@@ -1908,11 +1908,11 @@ void loop()
 {
 	KEEPALIVE_STATE(NOT_BUSY);
 
-	if ((usb_printing_counter > 0) && ((_millis()-_usb_timer) > 1000))
+	if ((usb_printing_counter > 0) && _usb_timer.expired(1000))
 	{
 		is_usb_printing = true;
 		usb_printing_counter--;
-		_usb_timer = _millis();
+		_usb_timer.start(); // reset timer
 	}
 	if (usb_printing_counter == 0)
 	{
