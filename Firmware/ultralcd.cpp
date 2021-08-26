@@ -87,7 +87,7 @@ int farm_timer = 8;
 uint8_t farm_status = 0;
 bool printer_connected = true;
 
-unsigned long display_time; //just timer for showing pid finished message on lcd;
+static ShortTimer display_time; //just timer for showing pid finished message on lcd;
 float pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
@@ -1344,10 +1344,10 @@ void lcd_commands()
 			else {
 				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
 			}
-			display_time = _millis();
+			display_time.start();
 			lcd_commands_step = 1;
 		}
-		if ((lcd_commands_step == 1) && ((_millis()- display_time)>2000)) { //calibration finished message
+		if ((lcd_commands_step == 1) && display_time.expired(2000)) { //calibration finished message
 			lcd_setstatuspgm(_T(WELCOME_MSG));
 			custom_message_type = CustomMsg::Status;
 			pid_temp = DEFAULT_PID_TEMP;
