@@ -161,7 +161,6 @@ CardReader card;
 #endif
 
 unsigned long PingTime = _millis();
-unsigned long NcTime;
 
 uint8_t mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed leveling calibration
 

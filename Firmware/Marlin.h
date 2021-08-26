@@ -330,7 +330,6 @@ extern unsigned int status_number;
 extern unsigned int heating_status_counter;
 extern char snmm_filaments_used;
 extern unsigned long PingTime;
-extern unsigned long NcTime;
 extern bool no_response;
 extern uint8_t important_status;
 extern uint8_t saved_filament_type;
