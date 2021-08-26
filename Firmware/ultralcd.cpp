@@ -55,7 +55,7 @@
 
 
 int clock_interval = 0;
-
+static ShortTimer NcTime;
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -8705,10 +8705,10 @@ void lcd_printer_connected() {
 }
 
 static void lcd_send_status() {
-	if (farm_mode && no_response && ((_millis() - NcTime) > (NC_TIME * 1000))) {
+	if (farm_mode && no_response && (NcTime.expired(NC_TIME * 1000))) {
 		//send important status messages periodicaly
 		prusa_statistics(important_status, saved_filament_type);
-		NcTime = _millis();
+		NcTime.start();
 #ifdef FARM_CONNECT_MESSAGE
 		lcd_connect_printer();
 #endif //FARM_CONNECT_MESSAGE
