@@ -130,7 +130,7 @@ private:
   char filenames[SD_PROCEDURE_DEPTH][MAXPATHNAMELENGTH];
   uint32_t filesize;
   //int16_t n;
-  unsigned long autostart_atmillis;
+  ShortTimer autostart_atmillis;
   uint32_t sdpos ;
 
   bool autostart_stilltocheck; //the sd start is delayed, because otherwise the serial cannot answer fast enought to make contact with the hostsoftware.
