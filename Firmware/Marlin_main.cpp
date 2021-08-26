@@ -357,7 +357,7 @@ const int8_t sensitive_pins[] PROGMEM = SENSITIVE_PINS; // Sensitive pin list fo
 //static float bt = 0;
 
 //Inactivity shutdown variables
-static unsigned long previous_millis_cmd = 0;
+static LongTimer previous_millis_cmd;
 unsigned long max_inactive_time = 0;
 static unsigned long stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l;
 static unsigned long safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul;
@@ -2074,7 +2074,7 @@ static int setup_for_endstop_move(bool enable_endstops_now = true) {
     saved_feedrate = feedrate;
     int l_feedmultiply = feedmultiply;
     feedmultiply = 100;
-    previous_millis_cmd = _millis();
+    previous_millis_cmd.start();
     
     enable_endstops(enable_endstops_now);
     return l_feedmultiply;
@@ -2088,7 +2088,7 @@ static void clean_up_after_endstop_move(int original_feedmultiply) {
     
     feedrate = saved_feedrate;
     feedmultiply = original_feedmultiply;
-    previous_millis_cmd = _millis();
+    previous_millis_cmd.start();
 }
 
 
@@ -2532,7 +2532,7 @@ void home_xy()
 
 void refresh_cmd_timeout(void)
 {
-  previous_millis_cmd = _millis();
+  previous_millis_cmd.start();
 }
 
 #ifdef FWRETRACT
@@ -2837,7 +2837,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       saved_feedrate = feedrate;
       int l_feedmultiply = feedmultiply;
       feedmultiply = 100;
-      previous_millis_cmd = _millis();
+      previous_millis_cmd.start();
 
       enable_endstops(true);
 
@@ -3020,7 +3020,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 
       feedrate = saved_feedrate;
       feedmultiply = l_feedmultiply;
-      previous_millis_cmd = _millis();
+      previous_millis_cmd.start();
       endstops_hit_on_purpose();
 #ifndef MESH_BED_LEVELING
 //-// Oct 2019 :: this part of code is (from) now probably un-compilable
@@ -4410,7 +4410,7 @@ void process_commands()
         }
         lcd_ignore_click();				//call lcd_ignore_click also for else ???
         st_synchronize();
-        previous_millis_cmd = _millis();
+        previous_millis_cmd.start();
         if (codenum > 0 ) {
             codenum += _millis();  // keep track of when we started waiting
             KEEPALIVE_STATE(PAUSED_FOR_USER);
@@ -5038,7 +5038,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL
       st_synchronize();
       codenum += _millis();  // keep track of when we started waiting
-      previous_millis_cmd = _millis();
+      previous_millis_cmd.start();
       while(_millis() < codenum) {
         manage_heater();
         manage_inactivity();
@@ -6773,7 +6773,7 @@ Sigma_Exit:
 		if (farm_mode) { prusa_statistics(2); };
         
         //starttime=_millis();
-        previous_millis_cmd = _millis();
+        previous_millis_cmd.start();
       }
       break;
 
@@ -6837,7 +6837,7 @@ Sigma_Exit:
 		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = 4;
 
-        previous_millis_cmd = _millis();
+        previous_millis_cmd.start();
     }
     #endif
         break;
@@ -9621,7 +9621,7 @@ void FlushSerialRequestResend()
 // Execution of a command from a SD card will not be confirmed.
 void ClearToSend()
 {
-	previous_millis_cmd = _millis();
+	previous_millis_cmd.start();
 	if (buflen && ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)))
 		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
@@ -9797,7 +9797,7 @@ void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const
 void prepare_move()
 {
   clamp_to_software_endstops(destination);
-  previous_millis_cmd = _millis();
+  previous_millis_cmd.start();
 
   // Do not use feedmultiply for E or Z only moves
   if( (current_position[X_AXIS] == destination [X_AXIS]) && (current_position[Y_AXIS] == destination [Y_AXIS])) {
@@ -9825,7 +9825,7 @@ void prepare_arc_move(bool isclockwise) {
   // in any intermediate location.
   set_current_to_destination();
 
-  previous_millis_cmd = _millis();
+  previous_millis_cmd.start();
 }
 
 #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
@@ -10082,11 +10082,11 @@ if(0)
         get_command();
     }
 
-  if( (_millis() - previous_millis_cmd) >  max_inactive_time )
+  if(previous_millis_cmd.expired(max_inactive_time))
     if(max_inactive_time)
       kill(_n("Inactivity Shutdown"), 4);
   if(stepper_inactive_time)  {
-    if( (_millis() - previous_millis_cmd) >  stepper_inactive_time )
+    if(previous_millis_cmd.expired(stepper_inactive_time))
     {
       if(blocks_queued() == false && ignore_stepper_queue == false) {
         disable_x();
@@ -10133,7 +10133,7 @@ if(0)
     controllerFan(); //Check if fan should be turned on to cool stepper drivers down
   #endif
   #ifdef EXTRUDER_RUNOUT_PREVENT
-    if( (_millis() - previous_millis_cmd) >  EXTRUDER_RUNOUT_SECONDS*1000 )
+    if(previous_millis_cmd.expired(EXTRUDER_RUNOUT_SECONDS*1000))
     if(degHotend(active_extruder)>EXTRUDER_RUNOUT_MINTEMP)
     {
      bool oldstatus=READ(E0_ENABLE_PIN);
@@ -10146,7 +10146,7 @@ if(0)
      current_position[E_AXIS]=oldepos;
      destination[E_AXIS]=oldedes;
      plan_set_e_position(oldepos);
-     previous_millis_cmd=_millis();
+     previous_millis_cmd.start();
      st_synchronize();
      WRITE(E0_ENABLE_PIN,oldstatus);
     }
