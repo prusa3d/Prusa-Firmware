@@ -195,8 +195,6 @@ int bowden_length[4] = {385, 385, 385, 385};
 bool is_usb_printing = false;
 bool homing_flag = false;
 
-unsigned long kicktime = _millis()+100000;
-
 unsigned int  usb_printing_counter;
 
 int8_t lcd_change_fil_state = 0;
@@ -4601,8 +4599,6 @@ void process_commands()
       eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
 	} else if(code_seen_P(PSTR("Beat"))) { // PRUSA Beat
-        // Kick farm link timer
-        kicktime = _millis();
 
     } else if(code_seen_P(PSTR("FR"))) { // PRUSA FR
         // Factory full reset
