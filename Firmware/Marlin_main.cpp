@@ -4490,7 +4490,7 @@ void process_commands()
     
     Set of internal PRUSA commands
     #### Usage
-         PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | Beat | FR ]
+         PRUSA [ Ping | PRN | FAN | fn | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | FR ]
     
     #### Parameters
       - `Ping` 
@@ -4508,7 +4508,6 @@ void process_commands()
       - `Rev`- Prints filament size, elelectronics, nozzle type
       - `Lang` - Reset the language
       - `Lz` 
-      - `Beat` - Kick farm link timer
       - `FR` - Full factory reset
       - `nozzle set <diameter>` - set nozzle diameter (farm mode only), e.g. `PRUSA nozzle set 0.4`
       - `nozzle D<diameter>` - check the nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle D0.4`
@@ -4597,8 +4596,6 @@ void process_commands()
 
 	} else if(code_seen_P(PSTR("Lz"))) { // PRUSA Lz
       eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
-
-	} else if(code_seen_P(PSTR("Beat"))) { // PRUSA Beat
 
     } else if(code_seen_P(PSTR("FR"))) { // PRUSA FR
         // Factory full reset
