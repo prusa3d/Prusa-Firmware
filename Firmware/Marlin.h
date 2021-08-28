@@ -275,6 +275,17 @@ FORCE_INLINE unsigned long millis_nc() {
 void setPwmFrequency(uint8_t pin, int val);
 #endif
 
+enum class HeatingStatus : uint8_t
+{
+    NO_HEATING = 0,
+    EXTRUDER_HEATING = 1,
+    EXTRUDER_HEATING_COMPLETE = 2,
+    BED_HEATING = 3,
+    BED_HEATING_COMPLETE = 4,
+};
+
+extern HeatingStatus heating_status;
+
 extern bool fans_check_enabled;
 extern float homing_feedrate[];
 extern uint8_t axis_relative_modes;
@@ -322,7 +333,6 @@ extern bool loading_flag;
 extern uint8_t usb_printing_counter;
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
-extern uint8_t heating_status;
 extern unsigned int status_number;
 extern uint8_t heating_status_counter;
 extern char snmm_filaments_used;

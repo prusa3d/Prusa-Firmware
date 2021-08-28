@@ -457,7 +457,7 @@ void lcdui_print_percent_done(void)
 	const char* src = is_usb_printing?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
 	char per[4];
 	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
-	if (!num || heating_status) // either not printing or heating
+	if (!num || heating_status != HeatingStatus::NO_HEATING) // either not printing or heating
 	{
 		const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
 		const int8_t nextSheet = eeprom_next_initialized_sheet(sheetNR);
@@ -574,7 +574,7 @@ void lcdui_print_time(void)
 //! @Brief Print status line on status screen
 void lcdui_print_status_line(void)
 {
-    if (heating_status) { // If heating flag, show progress of heating
+    if (heating_status != HeatingStatus::NO_HEATING) { // If heating flag, show progress of heating
         heating_status_counter++;
         if (heating_status_counter > 13) {
             heating_status_counter = 0;
@@ -586,20 +586,20 @@ void lcdui_print_status_line(void)
             lcd_putc_at(7 + dots, 3, '.');
         }
         switch (heating_status) {
-        case 1:
+        case HeatingStatus::EXTRUDER_HEATING:
             lcd_puts_at_P(0, 3, _T(MSG_HEATING));
             break;
-        case 2:
+        case HeatingStatus::EXTRUDER_HEATING_COMPLETE:
             lcd_puts_at_P(0, 3, _T(MSG_HEATING_COMPLETE));
-            heating_status = 0;
+            heating_status = HeatingStatus::NO_HEATING;
             heating_status_counter = 0;
             break;
-        case 3:
+        case HeatingStatus::BED_HEATING:
             lcd_puts_at_P(0, 3, _T(MSG_BED_HEATING));
             break;
-        case 4:
+        case HeatingStatus::BED_HEATING_COMPLETE:
             lcd_puts_at_P(0, 3, _T(MSG_BED_DONE));
-            heating_status = 0;
+            heating_status = HeatingStatus::NO_HEATING;
             heating_status_counter = 0;
             break;
         default:
