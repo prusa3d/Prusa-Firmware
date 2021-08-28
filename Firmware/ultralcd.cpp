@@ -583,7 +583,7 @@ void lcdui_print_status_line(void)
         lcd_set_cursor(7, 3);
         lcd_space(13);
 
-        for (unsigned int dots = 0; dots < heating_status_counter; dots++) {
+        for (uint8_t dots = 0; dots < heating_status_counter; dots++) {
             lcd_putc_at(7 + dots, 3, '.');
         }
         switch (heating_status) {
