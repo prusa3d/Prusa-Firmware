@@ -217,7 +217,7 @@ bool prusa_sd_card_upload = false;
 unsigned int status_number = 0;
 
 unsigned long total_filament_used;
-unsigned int heating_status;
+uint8_t heating_status;
 unsigned int heating_status_counter;
 bool loading_flag = false;
 
