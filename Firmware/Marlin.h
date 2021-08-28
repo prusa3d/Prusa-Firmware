@@ -324,7 +324,7 @@ extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
 extern uint8_t heating_status;
 extern unsigned int status_number;
-extern unsigned int heating_status_counter;
+extern uint8_t heating_status_counter;
 extern char snmm_filaments_used;
 extern unsigned long PingTime;
 extern bool no_response;
