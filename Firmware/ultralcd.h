@@ -125,8 +125,6 @@ extern CustomMsg custom_message_type;
 extern uint8_t custom_message_state;
 
 extern uint8_t farm_mode;
-extern int farm_timer;
-extern uint8_t farm_status;
 
 extern bool UserECoolEnabled();
 extern bool FarmOrUserECool();

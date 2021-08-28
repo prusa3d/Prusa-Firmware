@@ -80,10 +80,9 @@ static uint8_t lcd_commands_step = 0;
 CustomMsg custom_message_type = CustomMsg::Status;
 uint8_t custom_message_state = 0;
 
-
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
-int farm_timer = 8;
+uint8_t farm_timer = 8;
 uint8_t farm_status = 0;
 bool printer_connected = true;
 
