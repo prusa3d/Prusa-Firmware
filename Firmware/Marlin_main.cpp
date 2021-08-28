@@ -217,7 +217,7 @@ bool prusa_sd_card_upload = false;
 unsigned int status_number = 0;
 
 unsigned long total_filament_used;
-uint8_t heating_status;
+HeatingStatus heating_status;
 uint8_t heating_status_counter;
 bool loading_flag = false;
 
@@ -6676,7 +6676,7 @@ Sigma_Exit:
         break;
       }
       LCD_MESSAGERPGM(_T(MSG_HEATING));
-	  heating_status = 1;
+	  heating_status = HeatingStatus::EXTRUDER_HEATING;
 	  if (farm_mode) { prusa_statistics(1); };
 
 #ifdef AUTOTEMP
@@ -6710,7 +6710,7 @@ Sigma_Exit:
 
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
 		KEEPALIVE_STATE(IN_HANDLER);
-		heating_status = 2;
+		heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
 		if (farm_mode) { prusa_statistics(2); };
         
         //starttime=_millis();
@@ -6736,7 +6736,7 @@ Sigma_Exit:
     {
         bool CooldownNoWait = false;
         LCD_MESSAGERPGM(_T(MSG_BED_HEATING));
-		heating_status = 3;
+		heating_status = HeatingStatus::BED_HEATING;
 		if (farm_mode) { prusa_statistics(1); };
         if (code_seen('S')) 
 		{
@@ -6776,7 +6776,7 @@ Sigma_Exit:
         }
         LCD_MESSAGERPGM(_T(MSG_BED_DONE));
 		KEEPALIVE_STATE(IN_HANDLER);
-		heating_status = 4;
+		heating_status = HeatingStatus::BED_HEATING_COMPLETE;
 
         previous_millis_cmd.start();
     }
@@ -11798,9 +11798,9 @@ void restore_print_from_ram_and_continue(float e_move)
 	if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
 	{
 		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
-		heating_status = 1;
+		heating_status = HeatingStatus::EXTRUDER_HEATING;
 		wait_for_heater(_millis(), saved_active_extruder);
-		heating_status = 2;
+		heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
 	}
 	axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
 	float e = saved_pos[E_AXIS] - e_move;
