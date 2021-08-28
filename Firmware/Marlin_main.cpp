@@ -3132,7 +3132,7 @@ static void gcode_G80()
 #endif //PINDA_THERMISTOR
     // Save custom message state, set a new custom message state to display: Calibrating point 9.
     CustomMsg custom_message_type_old = custom_message_type;
-    unsigned int custom_message_state_old = custom_message_state;
+    uint8_t custom_message_state_old = custom_message_state;
     custom_message_type = CustomMsg::MeshBedLeveling;
     custom_message_state = (nMeasPoints * nMeasPoints) + 10;
     lcd_update(1);

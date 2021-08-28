@@ -78,7 +78,7 @@ LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 
 CustomMsg custom_message_type = CustomMsg::Status;
-unsigned int custom_message_state = 0;
+uint8_t custom_message_state = 0;
 
 
 bool isPrintPaused = false;
