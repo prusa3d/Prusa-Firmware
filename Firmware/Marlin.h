@@ -319,7 +319,7 @@ extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
 extern bool loading_flag;
-extern unsigned int usb_printing_counter;
+extern uint8_t usb_printing_counter;
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
 extern unsigned int heating_status;

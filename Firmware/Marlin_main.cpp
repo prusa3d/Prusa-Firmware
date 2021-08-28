@@ -195,7 +195,7 @@ int bowden_length[4] = {385, 385, 385, 385};
 bool is_usb_printing = false;
 bool homing_flag = false;
 
-unsigned int  usb_printing_counter;
+uint8_t usb_printing_counter;
 
 int8_t lcd_change_fil_state = 0;
 
