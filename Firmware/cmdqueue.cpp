@@ -484,8 +484,7 @@ void get_command()
                       is_usb_printing = true;
               }
             if (Stopped == true) {
-                int gcode = strtol(strchr_pointer+1, NULL, 10);
-                if (gcode >= 0 && gcode <= 3) {
+                if (code_value_uint8() <= 3) {
                     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
                     LCD_MESSAGERPGM(_T(MSG_STOPPED));
                 }
