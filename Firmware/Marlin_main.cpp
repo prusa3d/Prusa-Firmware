@@ -2831,12 +2831,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       if (home_z)
         babystep_undo();
 
-      saved_feedrate = feedrate;
-      int l_feedmultiply = feedmultiply;
-      feedmultiply = 100;
-      previous_millis_cmd.start();
-
-      enable_endstops(true);
+      int l_feedmultiply = setup_for_endstop_move();
 
       set_destination_to_current();
       feedrate = 0.0;
@@ -3011,13 +3006,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       // contains the machine coordinates.
       plan_set_position_curposXYZE();
 
-      #ifdef ENDSTOPS_ONLY_FOR_HOMING
-        enable_endstops(false);
-      #endif
-
-      feedrate = saved_feedrate;
-      feedmultiply = l_feedmultiply;
-      previous_millis_cmd.start();
+      clean_up_after_endstop_move(l_feedmultiply);
       endstops_hit_on_purpose();
 #ifndef MESH_BED_LEVELING
 //-// Oct 2019 :: this part of code is (from) now probably un-compilable
