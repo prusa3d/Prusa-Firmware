@@ -441,7 +441,7 @@ void get_command()
 				  char *p = cmdbuffer+bufindw+CMDHDRSIZE;
 				  while (p != strchr_pointer)
 					  checksum = checksum^(*p++);
-				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
+				  if (code_value_short() != (int16_t)checksum) {
 					  SERIAL_ERROR_START;
 					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH
 					  SERIAL_ERRORLN(gcode_LastN);
