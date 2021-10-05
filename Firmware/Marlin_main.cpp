@@ -8625,7 +8625,7 @@ Sigma_Exit:
     */
 	case 910:
     {
-		tmc2130_init();
+		tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
     }
     break;
 
@@ -8692,7 +8692,7 @@ Sigma_Exit:
     {
 		tmc2130_mode = TMC2130_MODE_NORMAL;
 		update_mode_profile();
-		tmc2130_init();
+		tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
     }
     break;
 
@@ -8704,7 +8704,7 @@ Sigma_Exit:
     {
 		tmc2130_mode = TMC2130_MODE_SILENT;
 		update_mode_profile();
-		tmc2130_init();
+		tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
     }
     break;
 
