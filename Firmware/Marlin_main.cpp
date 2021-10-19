@@ -3517,7 +3517,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	home_xy();
 
 	enable_endstops(false);
-	current_position[X_AXIS] += 5;
+	current_position[X_AXIS] += 125;
 	current_position[Y_AXIS] += 5;
 	plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
 	st_synchronize();
