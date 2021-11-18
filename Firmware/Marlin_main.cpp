@@ -6887,7 +6887,7 @@ Sigma_Exit:
 	  - `X` - X axis
 	  - `Y` - Y axis
 	  - `Z` - Z axis
-	  - `E` - Exruder
+	  - `E` - Extruder
 
 	### M18 - Disable steppers <a href="https://reprap.org/wiki/G-code#M18:_Disable_all_stepper_motors">M18: Disable all stepper motors</a>
 	Equal to M84 (compatibility)
