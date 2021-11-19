@@ -2644,7 +2644,7 @@ void lcd_load_filament_color_check()
 static void lcd_menu_AutoLoadFilament()
 {
      uint8_t nlines;
-     lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament is active, just press the knob and insert filament..."),nlines);////MSG_AUTOLOADING_ENABLED c=20 r=4
+     lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament is active, just insert filament, press the knob to exit..."),nlines);////MSG_AUTOLOADING_ENABLED c=20 r=4
      menu_back_if_clicked();
 }
 #endif //FILAMENT_SENSOR

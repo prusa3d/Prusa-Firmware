@@ -53,7 +53,7 @@
 "Autoloading filament available only when filament sensor is turned on..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
-"Autoloading filament is active, just press the knob and insert filament..."
+"Autoloading filament is active, just insert filament, press the knob to exit..."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
