@@ -10349,7 +10349,7 @@ void calculate_extruder_multipliers() {
 #endif
 }
 
-void _delay_keep_alive(unsigned int ms, bool do_update_lcd)
+void delay_keep_alive(unsigned int ms, bool do_update_lcd /* = true */)
 {
     for (;;) {
         manage_heater();
