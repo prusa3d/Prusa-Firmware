@@ -68,7 +68,7 @@ void Sound_Delay(uint16_t ms)
     if (ms < (SOUND_KEEPALIVE_MIN_MS))
         _delay(ms);
     else
-        delay_keep_alive_headless(ms);
+        delay_keep_alive(ms, false);
 }
 
 // Makes a custom sound
