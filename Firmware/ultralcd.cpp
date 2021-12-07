@@ -8813,18 +8813,22 @@ void lcd_updatestatus(const char *message){
 	lcd_draw_update = 1;
 }
 
-void lcd_setalertstatuspgm(const char* message)
+void lcd_setalertstatuspgm(const char* message, uint8_t severity)
 {
-  lcd_setstatuspgm(message);
-  lcd_status_message_level = 1;
-  lcd_return_to_status();
+  if (severity > lcd_status_message_level) {
+      lcd_setstatuspgm(message);
+      lcd_status_message_level = severity;
+      lcd_return_to_status();
+  }
 }
 
-void lcd_setalertstatus(const char* message)
+void lcd_setalertstatus(const char* message, uint8_t severity)
 {
-  lcd_setstatus(message);
-  lcd_status_message_level = 1;
-  lcd_return_to_status();
+  if (severity > lcd_status_message_level) {
+      lcd_setstatus(message);
+      lcd_status_message_level = severity;
+      lcd_return_to_status();
+  }
 }
 
 void lcd_reset_alert_level()
