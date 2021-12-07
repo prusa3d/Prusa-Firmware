@@ -8805,7 +8805,7 @@ void lcd_updatestatus(const char *message){
 void lcd_setalertstatuspgm(const char* message, uint8_t severity)
 {
   if (severity > lcd_status_message_level) {
-      lcd_setstatuspgm(message);
+      lcd_updatestatuspgm(message);
       lcd_status_message_level = severity;
       lcd_return_to_status();
   }
@@ -8814,7 +8814,7 @@ void lcd_setalertstatuspgm(const char* message, uint8_t severity)
 void lcd_setalertstatus(const char* message, uint8_t severity)
 {
   if (severity > lcd_status_message_level) {
-      lcd_setstatus(message);
+      lcd_updatestatus(message);
       lcd_status_message_level = severity;
       lcd_return_to_status();
   }
