@@ -13,6 +13,9 @@ typedef enum
 typedef enum
      {e_SOUND_CLASS_Echo,e_SOUND_CLASS_Prompt,e_SOUND_CLASS_Confirm,e_SOUND_CLASS_Warning,e_SOUND_CLASS_Alert} eSOUND_CLASS;
 
+// The minimum number of milliseconds of sound duration, to use the keep-alive method instead of the default delay
+// This is used to allow the printer to retain control in long-running sound output
+#define SOUND_KEEPALIVE_MIN_MS 1100
 
 extern eSOUND_MODE eSoundMode;
 
