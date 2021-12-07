@@ -1483,13 +1483,12 @@ uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
 
 //! update the current temperature error message
 //! @param type short error abbreviation (PROGMEM)
-//! @param func optional lcd update function (lcd_setalertstatus when first setting the error)
-void temp_update_messagepgm(const char* PROGMEM type, void (*func)(const char*) = lcd_updatestatus)
+void temp_update_messagepgm(const char* PROGMEM type)
 {
     char msg[LCD_WIDTH];
     strcpy_P(msg, PSTR("Err: "));
     strcat_P(msg, type);
-    (*func)(msg);
+    lcd_setalertstatus(msg, LCD_STATUS_CRITICAL);
 }
 
 //! signal a temperature error on both the lcd and serial
@@ -1497,7 +1496,7 @@ void temp_update_messagepgm(const char* PROGMEM type, void (*func)(const char*) 
 //! @param e optional extruder index for hotend errors
 void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDERS)
 {
-    temp_update_messagepgm(type, lcd_setalertstatus);
+    temp_update_messagepgm(type);
 
     SERIAL_ERROR_START;
 
