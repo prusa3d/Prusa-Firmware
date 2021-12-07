@@ -8593,7 +8593,7 @@ static bool check_file(const char* filename) {
 	cmdqueue_serial_disabled = false;
 	card.printingHasFinished();
 
-	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
+	lcd_setstatuspgm(_T(WELCOME_MSG));
 	lcd_finishstatus();
 	return result;
 }
