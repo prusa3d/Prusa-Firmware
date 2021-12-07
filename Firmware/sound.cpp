@@ -13,13 +13,13 @@
 // !?! eSOUND_MODE eSoundMode; v ultraldc.cpp :: cd_settings_menu() se takto jevi jako lokalni promenna
 eSOUND_MODE eSoundMode; //=e_SOUND_MODE_DEFAULT;
 
-
 static void Sound_SaveMode(void);
 static void Sound_DoSound_Echo(void);
 static void Sound_DoSound_Prompt(void);
 static void Sound_DoSound_Alert(bool bOnce);
 static void Sound_DoSound_Encoder_Move(void);
 static void Sound_DoSound_Blind_Alert(void);
+static void Sound_Delay(uint16_t ms);
 
 void Sound_Init(void)
 {
@@ -62,36 +62,38 @@ switch(eSoundMode)
 Sound_SaveMode();
 }
 
-//if critical is true then silend and once mode is ignored
-void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
+// Waits for the duration and uses the most appropriate delay type
+void Sound_Delay(uint16_t ms)
+{
+    if (ms < (SOUND_KEEPALIVE_MIN_MS))
+        _delay(ms);
+    else
+        delay_keep_alive_headless(ms);
+}
+
+// Makes a custom sound
+// If critical is true, will make the sound regardless of whether the printer is muted
+void Sound_MakeCustom(uint16_t ms, uint16_t tone_, bool critical)
+{
     backlight_wake();
-     if (!critical){
-          if (eSoundMode != e_SOUND_MODE_SILENT){
-               if(!tone_){
-                    WRITE(BEEPER, HIGH);
-                    _delay(ms);
-                    WRITE(BEEPER, LOW);
-               }
-               else{
-                    _tone(BEEPER, tone_);
-                    _delay(ms);
-                    _noTone(BEEPER);
-               }
-          }
-     }
-     else{
-          if(!tone_){
-               WRITE(BEEPER, HIGH);
-               _delay(ms);
-               WRITE(BEEPER, LOW);
-               _delay(ms);
-          }
-          else{
-               _tone(BEEPER, tone_);
-               _delay(ms);
-               _noTone(BEEPER);
-          }
-     }
+    
+    // If not outputing anything, return early
+    if (!critical && eSoundMode == e_SOUND_MODE_SILENT)
+        return;
+    
+    // If the tone does not matter, just switch on the 
+    if (!tone_) {
+        WRITE(BEEPER, HIGH);
+        Sound_Delay(ms);
+        WRITE(BEEPER, LOW);
+        if (critical)
+            Sound_Delay(ms);
+    }
+    else {
+        _tone(BEEPER, tone_);
+        Sound_Delay(ms);
+        _noTone(BEEPER);
+    }
 }
 
 void Sound_MakeSound(eSOUND_TYPE eSoundType)
