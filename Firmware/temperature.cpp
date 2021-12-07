@@ -1381,33 +1381,15 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 
 void temp_runaway_stop(bool isPreheat, bool isBed)
 {
-	cancel_heatup = true;
-	quickStop();
-	if (card.sdprinting)
+    disable_heater();
+    Sound_MakeCustom(200,0,true);
+
+    if (isPreheat)
 	{
-		card.sdprinting = false;
-		card.closefile();
-	}
-	// Clean the input command queue 
-	// This is necessary, because in command queue there can be commands which would later set heater or bed temperature.
-	cmdqueue_reset();
-	
-	disable_heater();
-	disable_x();
-	disable_y();
-	disable_e0();
-	disable_e1();
-	disable_e2();
-	manage_heater();
-	lcd_update(0);
-  Sound_MakeCustom(200,0,true);
-	
-  if (isPreheat)
-	{
-		Stop();
-		isBed ? LCD_ALERTMESSAGEPGM("BED PREHEAT ERROR") : LCD_ALERTMESSAGEPGM("PREHEAT ERROR");
+		lcd_setalertstatuspgm(isBed? PSTR("BED PREHEAT ERROR") : PSTR("PREHEAT ERROR"), LCD_STATUS_CRITICAL);
 		SERIAL_ERROR_START;
 		isBed ? SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HEATBED)") : SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HOTEND)");
+
 #ifdef EXTRUDER_ALTFAN_DETECT
 		altfanStatus.altfanOverride = 1; //full speed
 #endif //EXTRUDER_ALTFAN_DETECT
@@ -1418,22 +1400,23 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 #else //FAN_SOFT_PWM
 		analogWrite(FAN_PIN, 255);
 #endif //FAN_SOFT_PWM
-
 		fanSpeed = 255;
-		delayMicroseconds(2000);
 	}
 	else
 	{
-		isBed ? LCD_ALERTMESSAGEPGM("BED THERMAL RUNAWAY") : LCD_ALERTMESSAGEPGM("THERMAL RUNAWAY");
+		lcd_setalertstatuspgm(isBed? PSTR("BED THERMAL RUNAWAY") : PSTR("THERMAL RUNAWAY"), LCD_STATUS_CRITICAL);
 		SERIAL_ERROR_START;
 		isBed ? SERIAL_ERRORLNPGM(" HEATBED THERMAL RUNAWAY") : SERIAL_ERRORLNPGM(" HOTEND THERMAL RUNAWAY");
 	}
+
+    Stop();
 }
 #endif
 
 
 void disable_heater()
 {
+  cancel_heatup = true;
   setAllTargetHotends(0);
   setTargetBed(0);
   #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1

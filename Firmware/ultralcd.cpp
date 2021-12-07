@@ -7089,25 +7089,15 @@ static void lcd_sd_updir()
 
 void lcd_print_stop()
 {
-    if (!card.sdprinting) {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
+    if (!IsStopped()) {
+        // Stop the print if we didn't already due to an error
+        if (!card.sdprinting) {
+            SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
+        }
+        UnconditionalStop();
     }
-    cmdqueue_serial_disabled = false; //for when canceling a print with a fancheck
 
-    CRITICAL_SECTION_START;
-
-    // Clear any saved printing state
-    cancel_saved_printing();
-
-    // Abort the planner/queue/sd
-    planner_abort_hard();
-	cmdqueue_reset();
-	card.sdprinting = false;
-	card.closefile();
-    st_reset_timer();
-
-    CRITICAL_SECTION_END;
-
+    // TODO: all the following should be moved in the main marlin loop!
 #ifdef MESH_BED_LEVELING
     mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
 #endif
@@ -7122,7 +7112,6 @@ void lcd_print_stop()
     lcd_commands_type = LcdCommands::Idle;
 
     lcd_cooldown(); //turns off heaters and fan; goes to status screen.
-    cancel_heatup = true; //unroll temperature wait loop stack.
 
     current_position[Z_AXIS] += 10; //lift Z.
     plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
