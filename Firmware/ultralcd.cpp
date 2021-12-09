@@ -824,6 +824,9 @@ void lcd_commands()
 	if (lcd_commands_type == LcdCommands::Layer1Cal)
 	{
 		char cmd1[30];
+		const uint16_t nozzle_dia = eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM);
+		const float extrusion_width = (nozzle_dia + 20)/1000.0f;
+		const float layer_height = 0.2f;
 
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 
@@ -832,56 +835,60 @@ void lcd_commands()
             switch(lcd_commands_step)
             {
             case 0:
+                lcd_commands_step = 12;
+                break;
+            case 12:
+                lay1cal_wait_preheat();
                 lcd_commands_step = 11;
                 break;
             case 11:
-                lay1cal_wait_preheat();
+                extraPurgeNeeded = lay1cal_load_filament(cmd1, lay1cal_filament);
                 lcd_commands_step = 10;
                 break;
             case 10:
-                extraPurgeNeeded = lay1cal_load_filament(cmd1, lay1cal_filament);
-                lcd_commands_step = 9;
-                break;
-            case 9:
                 lcd_clear();
                 menu_depth = 0;
                 menu_submenu(lcd_babystep_z);
-                lay1cal_intro_line(extraPurgeNeeded);
+                lay1cal_intro_line(extraPurgeNeeded, layer_height, extrusion_width);
+                lcd_commands_step = 9;
+                break;
+            case 9:
+                lay1cal_before_meander();
                 lcd_commands_step = 8;
                 break;
             case 8:
-                lay1cal_before_meander();
+                lay1cal_meander_start(layer_height, extrusion_width);
                 lcd_commands_step = 7;
                 break;
             case 7:
-                lay1cal_meander(cmd1);
+                lay1cal_meander(layer_height, extrusion_width);
                 lcd_commands_step = 6;
                 break;
             case 6:
                 for (uint8_t i = 0; i < 4; i++)
                 {
-                    lay1cal_square(cmd1, i);
+                    lay1cal_square(cmd1, i, layer_height, extrusion_width);
                 }
                 lcd_commands_step = 5;
                 break;
             case 5:
                 for (uint8_t i = 4; i < 8; i++)
                 {
-                    lay1cal_square(cmd1, i);
+                    lay1cal_square(cmd1, i, layer_height, extrusion_width);
                 }
                 lcd_commands_step = 4;
                 break;
             case 4:
                 for (uint8_t i = 8; i < 12; i++)
                 {
-                    lay1cal_square(cmd1, i);
+                    lay1cal_square(cmd1, i, layer_height, extrusion_width);
                 }
                 lcd_commands_step = 3;
                 break;
             case 3:
                 for (uint8_t i = 12; i < 16; i++)
                 {
-                    lay1cal_square(cmd1, i);
+                    lay1cal_square(cmd1, i, layer_height, extrusion_width);
                 }
                 lcd_commands_step = 2;
                 break;
