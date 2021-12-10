@@ -1416,7 +1416,6 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 
 void disable_heater()
 {
-  cancel_heatup = true;
   setAllTargetHotends(0);
   setTargetBed(0);
   #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1

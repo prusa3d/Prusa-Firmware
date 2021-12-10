@@ -294,7 +294,7 @@ uint8_t newFanSpeed = 0;
 	  bool powersupply = true;
   #endif
 
-bool cancel_heatup = false ;
+bool cancel_heatup = false;
 
 int8_t busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
@@ -10160,6 +10160,7 @@ void UnconditionalStop()
 
     // Disable all heaters and unroll the temperature wait loop stack
     disable_heater();
+    cancel_heatup = true;
 
     // Clear any saved printing state
     cancel_saved_printing();
