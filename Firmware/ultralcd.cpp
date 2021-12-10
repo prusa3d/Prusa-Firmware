@@ -7104,6 +7104,7 @@ void lcd_print_stop()
 	pause_time = 0;
 	save_statistics(total_filament_used, t);
 
+    // reset current command
     lcd_commands_step = 0;
     lcd_commands_type = LcdCommands::Idle;
 

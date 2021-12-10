@@ -6751,7 +6751,7 @@ Sigma_Exit:
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
 		KEEPALIVE_STATE(NOT_BUSY);
-        while ( (target_direction)&&(!cancel_heatup) ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false)) )
+        while ( (!cancel_heatup) && (target_direction ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false))) )
         {
           if(( _millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
           {
