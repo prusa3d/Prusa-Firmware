@@ -7088,13 +7088,10 @@ static void lcd_sd_updir()
 
 void lcd_print_stop()
 {
-    if (!IsStopped()) {
-        // Stop the print if we didn't already due to an error
-        if (!card.sdprinting) {
-            SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
-        }
-        UnconditionalStop();
-    }
+	if (!card.sdprinting) {
+		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
+	}
+	UnconditionalStop();
 
     // TODO: all the following should be moved in the main marlin loop!
 #ifdef MESH_BED_LEVELING
