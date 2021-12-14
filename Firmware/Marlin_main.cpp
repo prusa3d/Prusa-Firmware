@@ -294,7 +294,7 @@ uint8_t newFanSpeed = 0;
 	  bool powersupply = true;
   #endif
 
-bool cancel_heatup = false ;
+bool cancel_heatup = false;
 
 int8_t busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
@@ -6751,7 +6751,7 @@ Sigma_Exit:
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
 		KEEPALIVE_STATE(NOT_BUSY);
-        while ( (target_direction)&&(!cancel_heatup) ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false)) )
+        while ( (!cancel_heatup) && (target_direction ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false))) )
         {
           if(( _millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
           {
@@ -10154,6 +10154,32 @@ void kill(const char *full_screen_message, unsigned char id)
   } // Wait for reset
 }
 
+void UnconditionalStop()
+{
+    CRITICAL_SECTION_START;
+
+    // Disable all heaters and unroll the temperature wait loop stack
+    disable_heater();
+    cancel_heatup = true;
+
+    // Clear any saved printing state
+    cancel_saved_printing();
+
+    // Abort the planner
+    planner_abort_hard();
+
+    // Reset the queue
+    cmdqueue_reset();
+    cmdqueue_serial_disabled = false;
+
+    // Reset the sd status
+    card.sdprinting = false;
+    card.closefile();
+
+    st_reset_timer();
+    CRITICAL_SECTION_END;
+}
+
 // Stop: Emergency stop used by overtemp functions which allows recovery
 //
 //   In addition to stopping the print, this prevents subsequent G[0-3] commands to be
@@ -10166,15 +10192,27 @@ void kill(const char *full_screen_message, unsigned char id)
 //   the addition of disabling the headers) could allow true recovery in the future.
 void Stop()
 {
+  // Keep disabling heaters
   disable_heater();
+
+  // Call the regular stop function if that's the first time during a new print
   if(Stopped == false) {
     Stopped = true;
     lcd_print_stop();
     Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
+
+    // Eventually report the stopped status (though this is usually overridden by a
+    // higher-priority alert status message)
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
     LCD_MESSAGERPGM(_T(MSG_STOPPED));
   }
+
+  // Return to the status screen to stop any pending menu action which could have been
+  // started by the user while stuck in the Stopped state. This also ensures the NEW
+  // error is immediately shown.
+  if (menu_menu != lcd_status_screen)
+      lcd_return_to_status();
 }
 
 bool IsStopped() { return Stopped; };

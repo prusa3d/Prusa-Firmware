@@ -1399,7 +1399,6 @@ static void lcd_cooldown()
   setAllTargetHotends(0);
   setTargetBed(0);
   fanSpeed = 0;
-  eFilamentAction = FilamentAction::None;
   lcd_return_to_status();
 }
 
@@ -7090,24 +7089,11 @@ static void lcd_sd_updir()
 void lcd_print_stop()
 {
     if (!card.sdprinting) {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL);   // for Octoprint
+        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
     }
-    cmdqueue_serial_disabled = false; //for when canceling a print with a fancheck
+    UnconditionalStop();
 
-    CRITICAL_SECTION_START;
-
-    // Clear any saved printing state
-    cancel_saved_printing();
-
-    // Abort the planner/queue/sd
-    planner_abort_hard();
-	cmdqueue_reset();
-	card.sdprinting = false;
-	card.closefile();
-    st_reset_timer();
-
-    CRITICAL_SECTION_END;
-
+    // TODO: all the following should be moved in the main marlin loop!
 #ifdef MESH_BED_LEVELING
     mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
 #endif
@@ -7118,11 +7104,11 @@ void lcd_print_stop()
 	pause_time = 0;
 	save_statistics(total_filament_used, t);
 
+    // reset current command
     lcd_commands_step = 0;
     lcd_commands_type = LcdCommands::Idle;
 
     lcd_cooldown(); //turns off heaters and fan; goes to status screen.
-    cancel_heatup = true; //unroll temperature wait loop stack.
 
     current_position[Z_AXIS] += 10; //lift Z.
     plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
@@ -8604,7 +8590,7 @@ static bool check_file(const char* filename) {
 	cmdqueue_serial_disabled = false;
 	card.printingHasFinished();
 
-	strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
+	lcd_setstatuspgm(_T(WELCOME_MSG));
 	lcd_finishstatus();
 	return result;
 }
@@ -8813,18 +8799,22 @@ void lcd_updatestatus(const char *message){
 	lcd_draw_update = 1;
 }
 
-void lcd_setalertstatuspgm(const char* message)
+void lcd_setalertstatuspgm(const char* message, uint8_t severity)
 {
-  lcd_setstatuspgm(message);
-  lcd_status_message_level = 1;
-  lcd_return_to_status();
+  if (severity > lcd_status_message_level) {
+      lcd_updatestatuspgm(message);
+      lcd_status_message_level = severity;
+      lcd_return_to_status();
+  }
 }
 
-void lcd_setalertstatus(const char* message)
+void lcd_setalertstatus(const char* message, uint8_t severity)
 {
-  lcd_setstatus(message);
-  lcd_status_message_level = 1;
-  lcd_return_to_status();
+  if (severity > lcd_status_message_level) {
+      lcd_updatestatus(message);
+      lcd_status_message_level = severity;
+      lcd_return_to_status();
+  }
 }
 
 void lcd_reset_alert_level()
