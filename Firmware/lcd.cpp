@@ -331,7 +331,7 @@ void lcd_no_autoscroll(void)
 
 void lcd_set_cursor(uint8_t col, uint8_t row)
 {
-	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
+	uint8_t row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
 	if (row >= LCD_HEIGHT)
 		row = LCD_HEIGHT - 1;    // we count rows starting w/0
 	lcd_currline = row;  

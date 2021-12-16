@@ -2852,7 +2852,7 @@ bool sample_mesh_and_store_reference()
         current_position[Y_AXIS] = BED_Y0;
         world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
         go_to_current(homing_feedrate[X_AXIS]/60);
-        memcpy(destination, current_position, sizeof(destination));
+        set_destination_to_current();
         enable_endstops(true);
         homeaxis(Z_AXIS);
 
