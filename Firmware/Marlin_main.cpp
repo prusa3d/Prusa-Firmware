@@ -9329,7 +9329,7 @@ Sigma_Exit:
 
 #ifdef XFLASH_DUMP
     /*!
-    ### D20 - Generate an offline crash dump
+    ### D20 - Generate an offline crash dump <a href="https://reprap.org/wiki/G-code#D20:_Generate_an_offline_crash_dump">D20: Generate an offline crash dump</a>
     Generate a crash dump for later retrival.
     #### Usage
 
@@ -9348,7 +9348,7 @@ Sigma_Exit:
     };
 
     /*!
-    ### D21 - Print crash dump to serial
+    ### D21 - Print crash dump to serial <a href="https://reprap.org/wiki/G-code#D21:_Print_crash_dump_to_serial">D21: Print crash dump to serial</a>
     Output the complete crash dump (if present) to the serial.
     #### Usage
 
@@ -9363,7 +9363,7 @@ Sigma_Exit:
     };
 
     /*!
-    ### D22 - Clear crash dump state
+    ### D22 - Clear crash dump state <a href="https://reprap.org/wiki/G-code#D22:_Clear_crash_dump_state">D22: Clear crash dump state</a>
     Clear an existing internal crash dump.
     #### Usage
 
@@ -9377,7 +9377,7 @@ Sigma_Exit:
 
 #ifdef EMERGENCY_SERIAL_DUMP
     /*!
-    ### D23 - Request emergency dump on serial
+    ### D23 - Request emergency dump on serial <a href="https://reprap.org/wiki/G-code#D23:_Request_emergency_dump_on_serial">D23: Request emergency dump on serial</a>
     On boards without offline dump support, request online dumps to the serial port on firmware faults.
     When online dumps are enabled, the FW will dump memory on the serial before resetting.
     #### Usage
