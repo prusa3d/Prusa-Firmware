@@ -1011,7 +1011,8 @@ static void fw_crash_init()
            eeprom_read_byte((uint8_t*)EEPROM_FW_CRASH_FLAG) != 0xFF)
         {
             lcd_show_fullscreen_message_and_wait_P(
-                    _i("FIRMWARE CRASH!\n"
+                    _i("FW crash detected! "
+                       "You can continue printing. "
                        "Debug data available for analysis. "
                        "Contact support to submit details."));
         }
