@@ -25,7 +25,6 @@ CardReader::CardReader()
    cardOK = false;
    saving = false;
    logging = false;
-   autostart_atmillis=0;
    workDirDepth = 0;
    file_subcall_ctr=0;
    memset(workDirParents, 0, sizeof(workDirParents));
@@ -39,7 +38,7 @@ CardReader::CardReader()
     WRITE(SDPOWER,HIGH);
   #endif //SDPOWER
   
-  autostart_atmillis=_millis()+5000;
+  autostart_atmillis.start(); // reset timer
 }
 
 char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
@@ -619,7 +618,7 @@ void CardReader::checkautostart(bool force)
   {
     if(!autostart_stilltocheck)
       return;
-    if(autostart_atmillis<_millis())
+    if(autostart_atmillis.expired(5000))
       return;
   }
   autostart_stilltocheck=false;

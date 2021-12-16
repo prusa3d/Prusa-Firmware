@@ -55,7 +55,7 @@
 
 
 int clock_interval = 0;
-
+static ShortTimer NcTime;
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -78,16 +78,15 @@ LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 
 CustomMsg custom_message_type = CustomMsg::Status;
-unsigned int custom_message_state = 0;
-
+uint8_t custom_message_state = 0;
 
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
-int farm_timer = 8;
+uint8_t farm_timer = 8;
 uint8_t farm_status = 0;
 bool printer_connected = true;
 
-unsigned long display_time; //just timer for showing pid finished message on lcd;
+static ShortTimer display_time; //just timer for showing pid finished message on lcd;
 float pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
@@ -458,7 +457,7 @@ void lcdui_print_percent_done(void)
 	const char* src = is_usb_printing?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
 	char per[4];
 	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
-	if (!num || heating_status) // either not printing or heating
+	if (!num || heating_status != HeatingStatus::NO_HEATING) // either not printing or heating
 	{
 		const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
 		const int8_t nextSheet = eeprom_next_initialized_sheet(sheetNR);
@@ -575,7 +574,7 @@ void lcdui_print_time(void)
 //! @Brief Print status line on status screen
 void lcdui_print_status_line(void)
 {
-    if (heating_status) { // If heating flag, show progress of heating
+    if (heating_status != HeatingStatus::NO_HEATING) { // If heating flag, show progress of heating
         heating_status_counter++;
         if (heating_status_counter > 13) {
             heating_status_counter = 0;
@@ -583,24 +582,24 @@ void lcdui_print_status_line(void)
         lcd_set_cursor(7, 3);
         lcd_space(13);
 
-        for (unsigned int dots = 0; dots < heating_status_counter; dots++) {
+        for (uint8_t dots = 0; dots < heating_status_counter; dots++) {
             lcd_putc_at(7 + dots, 3, '.');
         }
         switch (heating_status) {
-        case 1:
+        case HeatingStatus::EXTRUDER_HEATING:
             lcd_puts_at_P(0, 3, _T(MSG_HEATING));
             break;
-        case 2:
+        case HeatingStatus::EXTRUDER_HEATING_COMPLETE:
             lcd_puts_at_P(0, 3, _T(MSG_HEATING_COMPLETE));
-            heating_status = 0;
+            heating_status = HeatingStatus::NO_HEATING;
             heating_status_counter = 0;
             break;
-        case 3:
+        case HeatingStatus::BED_HEATING:
             lcd_puts_at_P(0, 3, _T(MSG_BED_HEATING));
             break;
-        case 4:
+        case HeatingStatus::BED_HEATING_COMPLETE:
             lcd_puts_at_P(0, 3, _T(MSG_BED_DONE));
-            heating_status = 0;
+            heating_status = HeatingStatus::NO_HEATING;
             heating_status_counter = 0;
             break;
         default:
@@ -1344,10 +1343,10 @@ void lcd_commands()
 			else {
 				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
 			}
-			display_time = _millis();
+			display_time.start();
 			lcd_commands_step = 1;
 		}
-		if ((lcd_commands_step == 1) && ((_millis()- display_time)>2000)) { //calibration finished message
+		if ((lcd_commands_step == 1) && display_time.expired(2000)) { //calibration finished message
 			lcd_setstatuspgm(_T(WELCOME_MSG));
 			custom_message_type = CustomMsg::Status;
 			pid_temp = DEFAULT_PID_TEMP;
@@ -1385,8 +1384,6 @@ void lcd_pause_usb_print()
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
 }
 
-
-float move_menu_scale;
 static void lcd_move_menu_axis();
 
 
@@ -2763,7 +2760,7 @@ static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 		refresh_cmd_timeout();
 		if (! planner_queue_full())
 		{
-			current_position[axis] += float((int)lcd_encoder) * move_menu_scale;
+			current_position[axis] += float((int)lcd_encoder);
 			if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
 			if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
 			lcd_encoder = 0;
@@ -2791,7 +2788,7 @@ void lcd_move_e()
 			refresh_cmd_timeout();
 			if (! planner_queue_full())
 			{
-				current_position[E_AXIS] += float((int)lcd_encoder) * move_menu_scale;
+				current_position[E_AXIS] += float((int)lcd_encoder);
 				lcd_encoder = 0;
 				plan_buffer_line_curposXYZE(manual_feedrate[E_AXIS] / 60);
 				lcd_draw_update = 1;
@@ -3804,7 +3801,7 @@ static void lcd_show_sensors_state()
 	uint8_t idler_state = STATE_NA;
 
 	pinda_state = READ(Z_MIN_PIN);
-	if (mmu_enabled && ((_millis() - mmu_last_finda_response) < 1000ul) )
+	if (mmu_enabled && mmu_last_finda_response.expired(1000))
 	{
 		finda_state = mmu_finda;
 	}
@@ -4199,13 +4196,6 @@ void lcd_move_menu_axis()
 	MENU_ITEM_SUBMENU_P(_T(MSG_EXTRUDER), lcd_move_e);
 	MENU_END();
 }
-
-static void lcd_move_menu_1mm()
-{
-  move_menu_scale = 1.0;
-  lcd_move_menu_axis();
-}
-
 
 void EEPROM_save(int pos, uint8_t* value, uint8_t size)
 {
@@ -5637,7 +5627,7 @@ static void lcd_settings_menu()
 
 	if (!PRINTER_ACTIVE || isPrintPaused)
     {
-	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_1mm);////MSG_MOVE_AXIS c=18
+	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_axis);////MSG_MOVE_AXIS c=18
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=18
     }
 
@@ -8600,10 +8590,10 @@ void lcd_printer_connected() {
 }
 
 static void lcd_send_status() {
-	if (farm_mode && no_response && ((_millis() - NcTime) > (NC_TIME * 1000))) {
+	if (farm_mode && no_response && (NcTime.expired(NC_TIME * 1000))) {
 		//send important status messages periodicaly
 		prusa_statistics(important_status, saved_filament_type);
-		NcTime = _millis();
+		NcTime.start();
 #ifdef FARM_CONNECT_MESSAGE
 		lcd_connect_printer();
 #endif //FARM_CONNECT_MESSAGE
@@ -8767,7 +8757,6 @@ void menu_lcd_longpress_func(void)
 #endif
         || menu_menu == lcd_support_menu
         ){
-            move_menu_scale = 1.0;
             menu_submenu(lcd_move_z);
         }
     }
