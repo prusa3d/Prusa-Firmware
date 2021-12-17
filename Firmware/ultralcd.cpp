@@ -832,70 +832,49 @@ void lcd_commands()
 
         if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
         {
+            if (lcd_commands_step == 0)
+                lcd_commands_step = 12;
+            else
+                lcd_commands_step--;
+
             switch(lcd_commands_step)
             {
-            case 0:
-                lcd_commands_step = 12;
-                break;
             case 12:
                 lay1cal_wait_preheat();
-                lcd_commands_step = 11;
                 break;
             case 11:
                 extraPurgeNeeded = lay1cal_load_filament(cmd1, lay1cal_filament);
-                lcd_commands_step = 10;
                 break;
             case 10:
                 lcd_clear();
                 menu_depth = 0;
                 menu_submenu(lcd_babystep_z);
                 lay1cal_intro_line(extraPurgeNeeded, layer_height, extrusion_width);
-                lcd_commands_step = 9;
                 break;
             case 9:
                 lay1cal_before_meander();
-                lcd_commands_step = 8;
                 break;
             case 8:
                 lay1cal_meander_start(layer_height, extrusion_width);
-                lcd_commands_step = 7;
                 break;
             case 7:
                 lay1cal_meander(layer_height, extrusion_width);
-                lcd_commands_step = 6;
                 break;
             case 6:
-                for (uint8_t i = 0; i < 4; i++)
-                {
-                    lay1cal_square(cmd1, i, layer_height, extrusion_width);
-                }
-                lcd_commands_step = 5;
+                lay1cal_square(0, layer_height, extrusion_width);
                 break;
             case 5:
-                for (uint8_t i = 4; i < 8; i++)
-                {
-                    lay1cal_square(cmd1, i, layer_height, extrusion_width);
-                }
-                lcd_commands_step = 4;
+                lay1cal_square(4, layer_height, extrusion_width);
                 break;
             case 4:
-                for (uint8_t i = 8; i < 12; i++)
-                {
-                    lay1cal_square(cmd1, i, layer_height, extrusion_width);
-                }
-                lcd_commands_step = 3;
+                lay1cal_square(8, layer_height, extrusion_width);
                 break;
             case 3:
-                for (uint8_t i = 12; i < 16; i++)
-                {
-                    lay1cal_square(cmd1, i, layer_height, extrusion_width);
-                }
-                lcd_commands_step = 2;
+                lay1cal_square(12, layer_height, extrusion_width);
                 break;
             case 2:
                 lay1cal_finish(MMU2::mmu2.Enabled());
                 menu_leaving = 1; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
-                lcd_commands_step = 1;
                 break;
             case 1:
                 lcd_setstatuspgm(MSG_WELCOME);

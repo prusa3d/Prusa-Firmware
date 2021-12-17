@@ -221,26 +221,30 @@ void lay1cal_meander(float layer_height, float extrusion_width)
 
 //! @brief Print square
 //!
-//! This function needs to be called 16 times for i from 0 to 15.
+//! This function needs to be called 4 times with step of 0,4,8,12
 //!
 //! @param cmd_buffer character buffer needed to format gcodes
 //! @param i iteration
-void lay1cal_square(char *cmd_buffer, uint8_t i, float layer_height, float extrusion_width)
+void lay1cal_square(uint8_t step, float layer_height, float extrusion_width)
 {
+    char cmd_buffer[30];
     const float long_length = 20;
     const float short_length = spacing(layer_height, extrusion_width);
     const float long_extrusion = count_e(layer_height, extrusion_width, long_length);
     const float short_extrusion = count_e(layer_height, extrusion_width, short_length);
-
     static const char fmt1[] PROGMEM = "G1 X%d Y%-.2f E%-.3f";
-    sprintf_P(cmd_buffer, fmt1, 70, (35 - i*short_length * 2), long_extrusion);
-    enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, fmt1, 70, (35 - (2 * i + 1)*short_length), short_extrusion);
-    enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, fmt1, 50, (35 - (2 * i + 1)*short_length), long_extrusion);
-    enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, fmt1, 50, (35 - (i + 1)*short_length * 2), short_extrusion);
-    enquecommand(cmd_buffer);
+
+    for (uint8_t i = step; i < step+4; ++i)
+    {
+        sprintf_P(cmd_buffer, fmt1, 70, (35 - i*short_length * 2), long_extrusion);
+        enquecommand(cmd_buffer);
+        sprintf_P(cmd_buffer, fmt1, 70, (35 - (2 * i + 1)*short_length), short_extrusion);
+        enquecommand(cmd_buffer);
+        sprintf_P(cmd_buffer, fmt1, 50, (35 - (2 * i + 1)*short_length), long_extrusion);
+        enquecommand(cmd_buffer);
+        sprintf_P(cmd_buffer, fmt1, 50, (35 - (i + 1)*short_length * 2), short_extrusion);
+        enquecommand(cmd_buffer);
+    }
 }
 
 void lay1cal_finish(bool mmu_enabled)
