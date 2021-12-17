@@ -13,5 +13,6 @@ void lay1cal_before_meander();
 void lay1cal_meander_start(float layer_height, float extrusion_width);
 void lay1cal_meander(float layer_height, float extrusion_width);
 void lay1cal_square(char *cmd_buffer, uint8_t i, float layer_height, float extrusion_width);
+void lay1cal_finish(bool mmu_enabled);
 
 #endif /* FIRMWARE_FIRST_LAY_CAL_H_ */
