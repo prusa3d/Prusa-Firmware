@@ -183,18 +183,35 @@ fi
 #join lines with multi-line string constants
 cat $LNG'_filtered.po' | sed ':a;N;$!ba;s/\x22\n\x22//g' > $LNG'_new.po'
 
+#Get counter from po files
+
+CNTTXT=$(grep '^# MSG' -c $LNGISO.po)
+num=1
+echo " selected language=$LNGISO" >&2
 #generate new dictionary
 cat ../../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
  /bin/echo -e "$s"
+ #echo "s = $s ." >&2
  if [ "${s:0:1}" = "\"" ]; then
+ 
 #  /bin/echo -e "$s"
   s=$(/bin/echo -e "$s")
-  s2=$(grep -F -A1 -B0  "$s" "$LNG"_new.po | tail -n1 | sed 's/^msgstr //')
+  s2=$(grep -F -A1 -B0  "msgid $s" "$LNG"_new.po | tail -n1 | sed 's/^msgstr //')
   if [ -z "$s2" ]; then
+   echo "  processing $num of $CNTTXT" >&2
    echo '"\x00"'
+   num=$((num+1))
   else
+   echo "  processing $num of $CNTTXT" >&2
    echo "$s2"
+   num=$((num+1))
   fi
 #  echo
  fi
+
 done > lang_en_$LNG.txt
+echo "Finished with $LNGISO" >&2
+#replace two double quotes to "\x00"
+sed -i 's/""/"\\x00"/g' lang_en_$LNG.txt
+#remove CR
+sed -i "s/\r//g" lang_en_$LNG.txt
