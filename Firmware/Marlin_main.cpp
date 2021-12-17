@@ -294,7 +294,7 @@ uint8_t newFanSpeed = 0;
 	  bool powersupply = true;
   #endif
 
-bool cancel_heatup = false ;
+bool cancel_heatup = false;
 
 int8_t busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
@@ -1011,7 +1011,8 @@ static void fw_crash_init()
            eeprom_read_byte((uint8_t*)EEPROM_FW_CRASH_FLAG) != 0xFF)
         {
             lcd_show_fullscreen_message_and_wait_P(
-                    _i("FIRMWARE CRASH!\n"
+                    _i("FW crash detected! "
+                       "You can continue printing. "
                        "Debug data available for analysis. "
                        "Contact support to submit details."));
         }
@@ -6751,7 +6752,7 @@ Sigma_Exit:
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
 		KEEPALIVE_STATE(NOT_BUSY);
-        while ( (target_direction)&&(!cancel_heatup) ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false)) )
+        while ( (!cancel_heatup) && (target_direction ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false))) )
         {
           if(( _millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
           {
@@ -8625,7 +8626,7 @@ Sigma_Exit:
     */
 	case 910:
     {
-		tmc2130_init();
+		tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
     }
     break;
 
@@ -8692,7 +8693,7 @@ Sigma_Exit:
     {
 		tmc2130_mode = TMC2130_MODE_NORMAL;
 		update_mode_profile();
-		tmc2130_init();
+		tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
     }
     break;
 
@@ -8704,7 +8705,7 @@ Sigma_Exit:
     {
 		tmc2130_mode = TMC2130_MODE_SILENT;
 		update_mode_profile();
-		tmc2130_init();
+		tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
     }
     break;
 
@@ -9329,7 +9330,7 @@ Sigma_Exit:
 
 #ifdef XFLASH_DUMP
     /*!
-    ### D20 - Generate an offline crash dump
+    ### D20 - Generate an offline crash dump <a href="https://reprap.org/wiki/G-code#D20:_Generate_an_offline_crash_dump">D20: Generate an offline crash dump</a>
     Generate a crash dump for later retrival.
     #### Usage
 
@@ -9348,7 +9349,7 @@ Sigma_Exit:
     };
 
     /*!
-    ### D21 - Print crash dump to serial
+    ### D21 - Print crash dump to serial <a href="https://reprap.org/wiki/G-code#D21:_Print_crash_dump_to_serial">D21: Print crash dump to serial</a>
     Output the complete crash dump (if present) to the serial.
     #### Usage
 
@@ -9363,7 +9364,7 @@ Sigma_Exit:
     };
 
     /*!
-    ### D22 - Clear crash dump state
+    ### D22 - Clear crash dump state <a href="https://reprap.org/wiki/G-code#D22:_Clear_crash_dump_state">D22: Clear crash dump state</a>
     Clear an existing internal crash dump.
     #### Usage
 
@@ -9377,7 +9378,7 @@ Sigma_Exit:
 
 #ifdef EMERGENCY_SERIAL_DUMP
     /*!
-    ### D23 - Request emergency dump on serial
+    ### D23 - Request emergency dump on serial <a href="https://reprap.org/wiki/G-code#D23:_Request_emergency_dump_on_serial">D23: Request emergency dump on serial</a>
     On boards without offline dump support, request online dumps to the serial port on firmware faults.
     When online dumps are enabled, the FW will dump memory on the serial before resetting.
     #### Usage
@@ -10157,6 +10158,32 @@ void kill(const char *full_screen_message, unsigned char id)
   } // Wait for reset
 }
 
+void UnconditionalStop()
+{
+    CRITICAL_SECTION_START;
+
+    // Disable all heaters and unroll the temperature wait loop stack
+    disable_heater();
+    cancel_heatup = true;
+
+    // Clear any saved printing state
+    cancel_saved_printing();
+
+    // Abort the planner
+    planner_abort_hard();
+
+    // Reset the queue
+    cmdqueue_reset();
+    cmdqueue_serial_disabled = false;
+
+    // Reset the sd status
+    card.sdprinting = false;
+    card.closefile();
+
+    st_reset_timer();
+    CRITICAL_SECTION_END;
+}
+
 // Stop: Emergency stop used by overtemp functions which allows recovery
 //
 //   In addition to stopping the print, this prevents subsequent G[0-3] commands to be
@@ -10169,15 +10196,27 @@ void kill(const char *full_screen_message, unsigned char id)
 //   the addition of disabling the headers) could allow true recovery in the future.
 void Stop()
 {
+  // Keep disabling heaters
   disable_heater();
+
+  // Call the regular stop function if that's the first time during a new print
   if(Stopped == false) {
     Stopped = true;
     lcd_print_stop();
     Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
+
+    // Eventually report the stopped status (though this is usually overridden by a
+    // higher-priority alert status message)
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
     LCD_MESSAGERPGM(_T(MSG_STOPPED));
   }
+
+  // Return to the status screen to stop any pending menu action which could have been
+  // started by the user while stuck in the Stopped state. This also ensures the NEW
+  // error is immediately shown.
+  if (menu_menu != lcd_status_screen)
+      lcd_return_to_status();
 }
 
 bool IsStopped() { return Stopped; };

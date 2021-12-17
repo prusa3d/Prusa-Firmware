@@ -2,6 +2,7 @@
 .project
 .cproject
 Debug
+__pycache__
 Firmware/Configuration_prusa.h
 Firmware/Doc
 /Firmware/.vs/Firmware/v14
@@ -52,3 +53,5 @@ Firmware/Doc
 /Firmware/Firmware.vcxproj
 /Firmware/Configuration_prusa_bckp.h
 /Firmware/variants/printers.h
+Configuration.tmp
+config.tmp
