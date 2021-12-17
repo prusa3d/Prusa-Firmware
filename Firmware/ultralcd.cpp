@@ -324,10 +324,6 @@ bool wait_for_unclick;
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
 
-
-
-const char STR_SEPARATOR[] PROGMEM = "------------";
-
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
     char c;
@@ -1869,14 +1865,14 @@ static void lcd_stack_crash()
 //! | prusa3d.com        |	MSG_PRUSA3D
 //! | forum.prusa3d.com  |	MSG_PRUSA3D_FORUM
 //! | howto.prusa3d.com  |	MSG_PRUSA3D_HOWTO
-//! | --------------     |	STR_SEPARATOR
+//! | -------------------|	separator
 //! | 1_75mm_MK3         |	FILAMENT_SIZE
 //! | howto.prusa3d.com  |	ELECTRONICS
 //! | howto.prusa3d.com  |	NOZZLE_TYPE
-//! | --------------     |	STR_SEPARATOR
+//! | -------------------|	separator
 //! | Date:              |	c=17
 //! | MMM DD YYYY        |	__DATE__
-//! | --------------     |	STR_SEPARATOR
+//! | -------------------|	separator
 //! @endcode
 //! 
 //! If MMU is connected
@@ -1895,13 +1891,13 @@ static void lcd_stack_crash()
 //! If Flash Air is connected
 //! 
 //! 	@code{.unparsed}
-//! 	| --------------     |	STR_SEPARATOR
+//! 	| -------------------|	separator
 //! 	| FlashAir IP Addr:  |	c=18
 //! 	|  192.168.1.100     |
 //! 	@endcode
 //! 
 //! @code{.unparsed}
-//! | --------------     |	STR_SEPARATOR
+//! | -------------------|	separator
 //! | XYZ cal. details   |	MSG_XYZ_DETAILS c=18
 //! | Extruder info      |	MSG_INFO_EXTRUDER
 //! | XYZ cal. details   |	MSG_INFO_SENSORS
@@ -1977,21 +1973,21 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(_n("prusa3d.com"));////MSG_PRUSA3D c=18
   MENU_ITEM_BACK_P(_n("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=18
   MENU_ITEM_BACK_P(_n("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO c=18
-  MENU_ITEM_BACK_P(STR_SEPARATOR);
+  MENU_ITEM_BACK_P(separator);
   MENU_ITEM_BACK_P(PSTR(FILAMENT_SIZE));
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
   MENU_ITEM_BACK_P(PSTR(NOZZLE_TYPE));
-  MENU_ITEM_BACK_P(STR_SEPARATOR);
+  MENU_ITEM_BACK_P(separator);
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17
   MENU_ITEM_BACK_P(PSTR(__DATE__));
 
 #ifdef IR_SENSOR_ANALOG
-  MENU_ITEM_BACK_P(STR_SEPARATOR);
+  MENU_ITEM_BACK_P(separator);
   MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
   MENU_ITEM_BACK_P(FsensorIRVersionText());
 #endif // IR_SENSOR_ANALOG
 
-	MENU_ITEM_BACK_P(STR_SEPARATOR);
+	MENU_ITEM_BACK_P(separator);
 	if (mmu_enabled)
 	{
 		MENU_ITEM_BACK_P(_i("MMU2 connected"));  ////MSG_MMU_CONNECTED c=18
@@ -2011,7 +2007,7 @@ static void lcd_support_menu()
 
   // Show the FlashAir IP address, if the card is available.
   if (_md->is_flash_air) {
-      MENU_ITEM_BACK_P(STR_SEPARATOR);
+      MENU_ITEM_BACK_P(separator);
       MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));  ////MSG_FLASHAIR c=18
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
@@ -2024,7 +2020,7 @@ static void lcd_support_menu()
   // Show the printer IP address, if it is available.
   if (IP_address) {
       
-      MENU_ITEM_BACK_P(STR_SEPARATOR);
+      MENU_ITEM_BACK_P(separator);
       MENU_ITEM_BACK_P(PSTR("Printer IP Addr:"));  ////MSG_PRINTER_IP c=18
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
@@ -2035,7 +2031,7 @@ static void lcd_support_menu()
   }
 
   #ifndef MK1BP
-  MENU_ITEM_BACK_P(STR_SEPARATOR);
+  MENU_ITEM_BACK_P(separator);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=18
   MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=18
   MENU_ITEM_SUBMENU_P(_i("Sensor info"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18
@@ -2822,7 +2818,7 @@ void lcd_move_e()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Y distance from min |	MSG_Y_DIST_FROM_MIN
-//! | --------------     |	STR_SEPARATOR
+//! | -------------------|	separator
 //! |Left:        00.00mm|	MSG_LEFT c=10, c=8
 //! |Right:       00.00mm|	MSG_RIGHT c=10, c=8
 //! ----------------------
@@ -2865,7 +2861,7 @@ float _deg(float rad)
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14, c=4
-//! | --------------     |	STR_SEPARATOR
+//! | -------------------|	separator
 //! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14, c=4
 //! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14, c=4
 //! ----------------------
@@ -2902,7 +2898,7 @@ static void lcd_menu_xyz_skew()
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |[0;0] point offset  |	MSG_MEASURED_OFFSET c=20
-//! | --------------     |	STR_SEPARATOR
+//! | -------------------|	separator
 //! |X            00.00mm|	c=10
 //! |Y            00.00mm|	c=10
 //! ----------------------
