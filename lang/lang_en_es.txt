@@ -1254,7 +1254,7 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "La impresora comenzara a imprimir una linea en zig-zag. Gira el dial hasta que la linea alcance la altura optima. Mira las fotos del manual (Capitulo de calibracion)."
 
-# c=20 r=5
+#MSG_FIL_FAILED c=20 r=5
 "Verification failed, remove the filament and try again."
 "La verificacion fallo, retire el filamento e intente nuevamente."
 
@@ -1342,7 +1342,7 @@
 "G-code sliced for a newer firmware. Continue?"
 "Codigo G laminado para nuevo firmware. ?Continuar?"
 
-# c=20 r=8
+#MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "Codigo G laminado para nuevo firmware. Por favor actualiza el firmware. Impresion cancelada."
 
