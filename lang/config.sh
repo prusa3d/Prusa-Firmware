@@ -6,7 +6,7 @@
 #
 # Arduino main folder:
 if [ -z "$ARDUINO" ]; then
-    export ARDUINO=C:/arduino-1.8.5
+    export ARDUINO=../../PF-build-env-1.0.6/1.8.5-1.0.4-linux-64 #C:/arduino-1.8.5
 fi
 #
 # Arduino builder:
