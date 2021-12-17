@@ -28,8 +28,10 @@ const char MSG_COOLDOWN[] PROGMEM_I1 = ISTR("Cooldown"); ////c=18
 const char MSG_CRASH[] PROGMEM_I1 = ISTR("Crash"); ////c=7
 const char MSG_CRASH_DETECTED[] PROGMEM_I1 = ISTR("Crash detected."); ////c=20
 const char MSG_CRASHDETECT[] PROGMEM_I1 = ISTR("Crash det."); ////c=13
+const char MSG_ENQUE_FRONT[] PROGMEM_I1 = ISTR("Enqueing to the front: \"");
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////c=10
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17
+const char MSG_FAILED_BUFFER_FULL[] PROGMEM_I1 = ISTR("\" failed: Buffer full!");
 const char MSG_FANS_CHECK[] PROGMEM_I1 = ISTR("Fans check"); ////c=13
 const char MSG_FIL_RUNOUTS[] PROGMEM_I1 = ISTR("Fil. runouts"); ////c=15
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17
