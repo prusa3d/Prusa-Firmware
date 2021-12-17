@@ -33,6 +33,9 @@ static constexpr float spacing(float layer_height, float extrusion_width, float 
     return extrusion_width - layer_height * (overlap_factor - M_PI/4);
 }
 
+static const char extrude_fmt[] PROGMEM = "G1 X%d Y%d E%-.5f";
+static const char zero_extrusion[] PROGMEM = "G92 E0";
+
 //! @brief Wait for preheat
 void lay1cal_wait_preheat()
 {
@@ -43,6 +46,7 @@ void lay1cal_wait_preheat()
         PSTR("M109"),
         PSTR("G28"),
         PSTR("G92 E0.0")
+        zero_extrusion
     };
 
     for (uint8_t i = 0; i < (sizeof(preheat_cmd)/sizeof(preheat_cmd[0])); ++i)
@@ -94,7 +98,6 @@ void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusi
     static const char cmd_intro_mmu_4[] PROGMEM = "G1 X5 E29 F1800";
     static const char cmd_intro_mmu_5[] PROGMEM = "G1 X55 E8 F2000";
     static const char cmd_intro_mmu_6[] PROGMEM = "G1 Z0.3 F1000";
-    static const char cmd_intro_mmu_7[] PROGMEM = "G92 E0";
     static const char cmd_intro_mmu_8[] PROGMEM = "G1 X240 E25  F2200";
     static const char cmd_intro_mmu_9[] PROGMEM = "G1 Y-2 F1000";
     static const char cmd_intro_mmu_10[] PROGMEM = "G1 X55 E25 F1400";
@@ -109,7 +112,7 @@ void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusi
 
         cmd_intro_mmu_5,
         cmd_intro_mmu_6,
-        cmd_intro_mmu_7,
+        zero_extrusion,
         cmd_intro_mmu_8,
         cmd_intro_mmu_9,
         cmd_intro_mmu_10,
@@ -138,7 +141,6 @@ void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusi
 //! @brief Setup for printing meander
 void lay1cal_before_meander()
 {
-    static const char cmd_pre_meander_0[] PROGMEM = "G92 E0";
     static const char cmd_pre_meander_1[] PROGMEM = "G21"; //set units to millimeters TODO unsupported command
     static const char cmd_pre_meander_2[] PROGMEM = "G90"; //use absolute coordinates
     static const char cmd_pre_meander_3[] PROGMEM = "M83"; //use relative distances for extrusion TODO: duplicate
@@ -149,7 +151,7 @@ void lay1cal_before_meander()
 
     static const char * const cmd_pre_meander[] PROGMEM =
     {
-            cmd_pre_meander_0,
+            zero_extrusion,
             cmd_pre_meander_1,
             cmd_pre_meander_2,
             cmd_pre_meander_3,
@@ -177,14 +179,13 @@ void lay1cal_meander_start(float layer_height, float extrusion_width)
 
     enquecommand_P(PSTR("G1 F1080"));
 
-    static const char fmt2[] PROGMEM = "G1 X%d Y%d E%-.5f";
-    sprintf_P(cmd_buffer, fmt2,  75, 155, count_e(layer_height, extrusion_width * 4.f, 25));
+    sprintf_P(cmd_buffer, extrude_fmt,  75, 155, count_e(layer_height, extrusion_width * 4.f, 25));
     enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, fmt2, 100, 155, count_e(layer_height, extrusion_width * 2.f, 25));
+    sprintf_P(cmd_buffer, extrude_fmt, 100, 155, count_e(layer_height, extrusion_width * 2.f, 25));
     enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, fmt2, 200, 155, count_e(layer_height, extrusion_width, 100));
+    sprintf_P(cmd_buffer, extrude_fmt, 200, 155, count_e(layer_height, extrusion_width, 100));
     enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, fmt2, 200, 135, count_e(layer_height, extrusion_width, 20));
+    sprintf_P(cmd_buffer, extrude_fmt, 200, 135, count_e(layer_height, extrusion_width, 20));
     enquecommand(cmd_buffer);
 }
 
@@ -193,7 +194,7 @@ void lay1cal_meander_start(float layer_height, float extrusion_width)
 void lay1cal_meander(float layer_height, float extrusion_width)
 {
     char cmd_buffer[30];
-    static const char fmt1[] PROGMEM = "G1 X%d Y%d E%-.5f";
+
     const float short_length = 20;
     float long_length = 150;
     const float long_extrusion = count_e(layer_height, extrusion_width, long_length);
@@ -203,12 +204,12 @@ void lay1cal_meander(float layer_height, float extrusion_width)
     uint8_t x_pos = 50;
     for(uint8_t i = 0; i <= 4; ++i)
     {
-        sprintf_P(cmd_buffer, fmt1, x_pos, y_pos, long_extrusion);
+        sprintf_P(cmd_buffer, extrude_fmt, x_pos, y_pos, long_extrusion);
         enquecommand(cmd_buffer);
 
         y_pos -= short_length;
 
-        sprintf_P(cmd_buffer, fmt1, x_pos, y_pos, short_extrusion);
+        sprintf_P(cmd_buffer, extrude_fmt, x_pos, y_pos, short_extrusion);
         enquecommand(cmd_buffer);
 
         x_pos += long_length;
