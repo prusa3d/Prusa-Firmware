@@ -113,26 +113,37 @@ s1=''
 s2=''
 num=1
 (cat $INFILE | sed "s/\\\\/\\\\\\\\/g" | while read -r s; do
- if [ "$s" = "" ]; then
-  echo "  processing $num of $CNTTXT" >&2
-  # write po/pot item
-  (
-  if [ -z "$s2" ]; then s2=$s1; s1=$s0; s0='""'; fi
-   search=$(/bin/echo -e "$s1")
-   found=$(grep -m1 -n -F "$search" $SRCFILES | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
-   echo "$s2" | sed 's/ c=0//;s/ r=0//;s/^#/# /'
-   echo "#: $found"
-   /bin/echo -e "msgid $s1"
-   if [ "$s0" = "\"\\\\x00\"" ]; then
-    echo 'msgstr ""'
-   else
-    /bin/echo -e "msgstr $s0"
-   fi
-   echo
+ #start debug
+ #if [ "${s:0:1}" = "\"" ]; then
+ # echo  >&2
+ # echo "s = $s ." >&2
+ # echo "s0 = $s0 ." >&2
+ # echo "s1 = $s1 ." >&2
+ #fi
+ #end debug
+ if [ "${s:0:1}" = "\"" ]; then
+  if [[ "${s0:0:1}" = "\"" || "$LNG" = "en" ]]; then
+   echo "  processing $num of $CNTTXT" >&2
+   # write po/pot item
+   (
+   if [ "$LNG" = "en" ]; then s1=$s0; s0=$s; fi
+    search=$(/bin/echo -e "$s0")
+    found=$(grep -m1 -n -F "$search" $SRCFILES | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
+    echo "$s1" | sed 's/ c=0//;s/ r=0//;s/^#/# /'
+    #echo "$s1" | sed 's/ c=0//;s/ r=0//;s/^#/# /' >&2
+    echo "#: $found"
+    #echo "#: $found" >&2
+    /bin/echo -e "msgid $s0"
+    if [[ "$s" = "\"\\\\x00\"" || "$LNG" = "en" ]]; then
+     echo 'msgstr ""'
+    else
+     /bin/echo -e "msgstr $s"
+    fi
+    echo
   )
   num=$((num+1))
+  fi
  fi
- s2=$s1
  s1=$s0
  s0=$s
 done >>$OUTFILE) 2>&1
