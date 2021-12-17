@@ -60,8 +60,8 @@ bool lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
     if (MMU2::mmu2.Enabled())
     {
         enquecommand_P(PSTR("M83"));
-        enquecommand_P(PSTR("G1 Y-3.0 F1000.0"));
-        enquecommand_P(PSTR("G1 Z0.4 F1000.0"));
+        enquecommand_P(PSTR("G1 Y-3 F1000"));
+        enquecommand_P(PSTR("G1 Z0.4 F1000"));
 
         uint8_t currentTool = MMU2::mmu2.get_current_tool();
         if(currentTool == filament ){
@@ -90,16 +90,16 @@ bool lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
 //! @param extrusion_width the width of the extrusion layer 
 void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusion_width)
 {
-    static const char cmd_intro_mmu_3[] PROGMEM = "G1 X55.0 E29.0 F1073.0";
-    static const char cmd_intro_mmu_4[] PROGMEM = "G1 X5.0 E29.0 F1800.0";
-    static const char cmd_intro_mmu_5[] PROGMEM = "G1 X55.0 E8.0 F2000.0";
-    static const char cmd_intro_mmu_6[] PROGMEM = "G1 Z0.3 F1000.0";
-    static const char cmd_intro_mmu_7[] PROGMEM = "G92 E0.0";
-    static const char cmd_intro_mmu_8[] PROGMEM = "G1 X240.0 E25.0  F2200.0";
-    static const char cmd_intro_mmu_9[] PROGMEM = "G1 Y-2.0 F1000.0";
-    static const char cmd_intro_mmu_10[] PROGMEM = "G1 X55.0 E25 F1400.0";
-    static const char cmd_intro_mmu_11[] PROGMEM = "G1 Z0.20 F1000.0";
-    static const char cmd_intro_mmu_12[] PROGMEM = "G1 X5.0 E4.0 F1000.0";
+    static const char cmd_intro_mmu_3[] PROGMEM = "G1 X55 E29 F1073";
+    static const char cmd_intro_mmu_4[] PROGMEM = "G1 X5 E29 F1800";
+    static const char cmd_intro_mmu_5[] PROGMEM = "G1 X55 E8 F2000";
+    static const char cmd_intro_mmu_6[] PROGMEM = "G1 Z0.3 F1000";
+    static const char cmd_intro_mmu_7[] PROGMEM = "G92 E0";
+    static const char cmd_intro_mmu_8[] PROGMEM = "G1 X240 E25  F2200";
+    static const char cmd_intro_mmu_9[] PROGMEM = "G1 Y-2 F1000";
+    static const char cmd_intro_mmu_10[] PROGMEM = "G1 X55 E25 F1400";
+    static const char cmd_intro_mmu_11[] PROGMEM = "G1 Z0.2 F1000";
+    static const char cmd_intro_mmu_12[] PROGMEM = "G1 X5 E4 F1000";
 
     static const char * const intro_mmu_cmd[] PROGMEM =
     {
@@ -127,7 +127,7 @@ void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusi
     else
     {
         char cmd_buffer[30];
-        static const char fmt1[] PROGMEM = "G1 X%d E%-.3f F1000.0";
+        static const char fmt1[] PROGMEM = "G1 X%d E%-.3f F1000";
         sprintf_P(cmd_buffer, fmt1, 60, count_e(layer_height, extrusion_width * 4.f, 60));
         enquecommand(cmd_buffer);
         sprintf_P(cmd_buffer, fmt1, 100, count_e(layer_height, extrusion_width * 8.f, 40));
@@ -138,12 +138,12 @@ void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusi
 //! @brief Setup for printing meander
 void lay1cal_before_meander()
 {
-    static const char cmd_pre_meander_0[] PROGMEM = "G92 E0.0";
+    static const char cmd_pre_meander_0[] PROGMEM = "G92 E0";
     static const char cmd_pre_meander_1[] PROGMEM = "G21"; //set units to millimeters TODO unsupported command
     static const char cmd_pre_meander_2[] PROGMEM = "G90"; //use absolute coordinates
     static const char cmd_pre_meander_3[] PROGMEM = "M83"; //use relative distances for extrusion TODO: duplicate
-    static const char cmd_pre_meander_4[] PROGMEM = "G1 E-1.50000 F2100.00000";
-    static const char cmd_pre_meander_5[] PROGMEM = "G1 Z5 F7200.000";
+    static const char cmd_pre_meander_4[] PROGMEM = "G1 E-1.5 F2100";
+    static const char cmd_pre_meander_5[] PROGMEM = "G1 Z5 F7200";
     static const char cmd_pre_meander_6[] PROGMEM = "M204 S1000"; //set acceleration
     static const char cmd_pre_meander_7[] PROGMEM = "G1 F4000";
 
@@ -171,7 +171,7 @@ void lay1cal_meander_start(float layer_height, float extrusion_width)
     char cmd_buffer[30];
     enquecommand_P(PSTR("G1 X50 Y155"));
 
-    static const char fmt1[] PROGMEM = "G1 Z%-.3f F7200.000";
+    static const char fmt1[] PROGMEM = "G1 Z%-.3f F7200";
     sprintf_P(cmd_buffer, fmt1, layer_height);
     enquecommand(cmd_buffer);
 
