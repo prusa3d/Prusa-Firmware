@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # config.sh - multi-language support configuration script
 #  Definition of absolute paths etc.
@@ -49,7 +49,7 @@ elif [ "$COMMUNITY_LANG_GROUP" = "2" ]; then
 elif [ "$COMMUNITY_LANG_GROUP" = "3" ]; then
     COMMUNITY_LANGUAGES=$(grep --max-count=$MAX_COMMINITY_LANG "^#define COMMUNITY_LANG_GROUP3_" ../Firmware/config.h| cut -d '_' -f4 |cut -d ' ' -f1 |tr '[:upper:]' '[:lower:]'| tr '\n' ' ')
 fi
-echo "Community language $COMMUNITY_LANGUAGES"
+
 if [ -z "$COMMUNITY_LANGUAGES" ]; then
     export COMMUNITY_LANGUAGES="$COMMUNITY_LANGUAGES"
 fi
