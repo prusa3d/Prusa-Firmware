@@ -4442,7 +4442,7 @@ void menu_setlang(unsigned char lang)
 	}
 }
 
-#ifdef COMMUNITY_LANG_SUPPORT
+#ifdef COMMUNITY_LANGUAGE_SUPPORT
 #ifdef XFLASH
 static void lcd_community_language_menu()
 {
@@ -4458,7 +4458,7 @@ static void lcd_community_language_menu()
 	MENU_END();
 }
 #endif //XFLASH
-#endif //COMMUNITY_LANG_SUPPORT && W52X20CL
+#endif //COMMUNITY_LANGUAGE_SUPPORT && W52X20CL
 
 
 
@@ -4492,11 +4492,11 @@ static void lcd_language_menu()
 				return;
 			}
 
-#ifdef COMMUNITY_LANG_SUPPORT
+#ifdef COMMUNITY_LANGUAGE_SUPPORT
 #ifdef XFLASH
 		MENU_ITEM_SUBMENU_P(_T(MSG_COMMUNITY_MADE), lcd_community_language_menu); ////MSG_COMMUNITY_MADE c=18
 #endif //XFLASH
-#endif //COMMUNITY_LANG_SUPPORT && W52X20CL
+#endif //COMMUNITY_LANGUAGE_SUPPORT && W52X20CL
 
 	MENU_END();
 }
