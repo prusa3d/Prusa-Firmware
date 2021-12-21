@@ -70,6 +70,7 @@
 #define COMMUNITY_LANG_GROUP1_SL // Community Slovanian language
 #define COMMUNITY_LANG_GROUP1_HU // Community Hungarian language
 #define COMMUNITY_LANG_GROUP1_LB // Community Luxembourgish language
+#define COMMUNITY_LANG_GROUP1_HR // Community Croatian language
 //#define COMMUNITY_LANG_GROUP1_QR // Community new language //..use this as a template and replace 'QR'
 #endif
 
