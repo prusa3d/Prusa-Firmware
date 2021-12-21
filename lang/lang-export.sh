@@ -69,6 +69,8 @@ else
 #Community language support
 #Dutch
    *nl*) echo "Dutch" ;;
+#Swedish
+   *sv*) echo "Swedish" ;;
 #Use the 2 lines below as a template and replace 'qr' and 'New language'
 ##New language
 #   *qr*) echo "New language" ;;
