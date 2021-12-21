@@ -220,6 +220,15 @@ if [ "$LGN" = "hu" ]; then
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
+if [ "$LGN" = "lb" ]; then
+ #replace 'ë' with 'e'
+ sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
+ #replace 'ä' with 'a'
+ sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+fi
+
 #replace in polish translation
 #if [ "$LNG" = "pl" ]; then
 #fi

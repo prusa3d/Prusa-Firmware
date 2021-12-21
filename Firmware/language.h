@@ -110,6 +110,9 @@ typedef struct
 #ifdef COMMUNITY_LANG_GROUP1_HU
 #define LANG_CODE_HU 0x6875 //!<'hu'
 #endif // COMMUNITY_LANG_GROUP1_HU
+#ifdef COMMUNITY_LANG_GROUP1_LB
+#define LANG_CODE_LB 0x6C62 //!<'lb'
+#endif // COMMUNITY_LANG_GROUP1_LB
 //Use the 3 lines below as a template and replace 'QR', '0X7172' and 'qr'
 //#ifdef COMMUNITY_LANG_GROUP1_QR
 //#define LANG_CODE_QR 0x7172 //!<'qr'
