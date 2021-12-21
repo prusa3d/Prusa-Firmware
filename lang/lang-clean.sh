@@ -1,8 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 #
 # clean.sh - multi-language support script
 #  Remove all language output files from lang folder.
 #
+
+# Config:
+echo "CONFIG: $CONFIG_OK"
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
 
 result=0
 
@@ -37,18 +46,15 @@ clean_lang()
  rm_if_exists lang_$1_2.tmp
 }
 
-echo "lang-clean.sh started" >&2
+#Clean English
+ clean_lang en
 
-clean_lang en
-clean_lang cz
-clean_lang de
-clean_lang es
-clean_lang fr
-clean_lang it
-clean_lang pl
-#Community language support
-#Dutch
-clean_lang nl
+#Clean languages
+echo "lang-clean.sh started" >&2
+echo "lang-clean languages:$LANGUAGES" >&2
+ for lang in $LANGUAGES; do
+  clean_lang $lang
+ done
 
 #Use the 2 lines below as a template and replace 'qr'
 ##New language
