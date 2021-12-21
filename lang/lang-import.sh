@@ -195,6 +195,13 @@ sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
 sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
 fi
 
+if [ "$LGN" = "da" ]; then
+#repace 'Å' with 'Aa'
+sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
+#repace 'å' with 'aa'
+sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
+fi
+
 #replace in polish translation
 #if [ "$LNG" = "pl" ]; then
 #fi

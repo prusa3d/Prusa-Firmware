@@ -66,6 +66,7 @@
 #if (COMMUNITY_LANG_GROUP == 1)
 #define COMMUNITY_LANG_GROUP1_NL // Community Dutch language
 #define COMMUNITY_LANG_GROUP1_SV // Community Swedish language
+#define COMMUNITY_LANG_GROUP1_DA // Community Danish language
 //#define COMMUNITY_LANG_GROUP1_QR // Community new language //..use this as a template and replace 'QR'
 #endif
 
