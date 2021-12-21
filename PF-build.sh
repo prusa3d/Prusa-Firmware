@@ -1303,7 +1303,7 @@ create_multi_firmware()
         echo "$(tput setaf 3)"
         ./lang-build.sh || failures 25
         # build community languages
-        ./lang-community.sh || failures 25
+        #./lang-community.sh || failures 25
         # Combine compiled firmware with languages 
         ./fw-build.sh || failures 25
         cp not_tran.txt not_tran_$VARIANT.txt
