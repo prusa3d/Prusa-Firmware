@@ -3,6 +3,14 @@
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
 #
+# Config:
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
+echo "lang-export languages:$LANGUAGES" >&2
 
 # relative path to source folder
 SRCDIR="../Firmware"
@@ -16,18 +24,22 @@ if [ -z "$LNG" ]; then LNG=all; fi
 # if 'all' is selected, script will generate all po files and also pot file
 if [ "$LNG" = "all" ]; then
  ./lang-export.sh en
- ./lang-export.sh cz
- ./lang-export.sh de
- ./lang-export.sh es
- ./lang-export.sh fr
- ./lang-export.sh it
- ./lang-export.sh pl
+  for lang in $LANGUAGES; do
+   ./lang-export.sh $lang
+  done
+ #./lang-export.sh cz
+ #./lang-export.sh de
+ #./lang-export.sh es
+ #./lang-export.sh fr
+ #./lang-export.sh it
+ #./lang-export.sh pl
 #Community language support
-#Dutch
- ./lang-export.sh nl
-#Use the 2 lines below as a template and replace 'qr' and 'New language'
-##New language
-# ./lang-export.sh qr
+ #if [ -n "$COMMUNITY_LANGUAGES" ]; then
+ # for l in $COMMUNITY_LANGUAGES; do
+ #  echo " Exporting : $l" >&2
+ #  ./lang-export.sh $l
+ # done
+ #fi
  exit 0
 fi
 

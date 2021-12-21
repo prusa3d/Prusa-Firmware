@@ -2,6 +2,14 @@
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
+# Config:
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
+echo "lang-import languages:$LANGUAGES" >&2
 
 LNG=$1
 # if no arguments, 'all' is selected (all po and also pot will be generated)
@@ -9,13 +17,22 @@ if [ -z "$LNG" ]; then LNG=all; fi
 
 # if 'all' is selected, script will generate all po files and also pot file
 if [ "$LNG" = "all" ]; then
- ./lang-import.sh cz
- ./lang-import.sh de
- ./lang-import.sh es
- ./lang-import.sh fr
- ./lang-import.sh it
- ./lang-import.sh pl
+  for lang in $LANGUAGES; do
+   ./lang-import.sh $lang
+  done
+ #./lang-import.sh cz
+ #./lang-import.sh de
+ #./lang-import.sh es
+ #./lang-import.sh fr
+ #./lang-import.sh it
+ #./lang-import.sh pl
 #DO NOT add Community languages here !!!
+ #if [ -n "$COMMUNITY_LANGUAGES" ]; then
+ # for l in $COMMUNITY_LANGUAGES; do
+ #  echo " Exporting : $l" >&2
+ #  ./lang-export.sh $l
+ # done
+ #fi
  exit 0
 fi
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
@@ -13,12 +13,21 @@
 #  lang_xx.tmp
 #  lang_xx.dat
 #
+# Config:
+#startup message
+echo "lang-build.sh started" >&2
+
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
+echo "lang-build languages:$LANGUAGES" >&2
 
 #awk code to format ui16 variables for dd
 awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
 
-#startup message
-echo "lang-build.sh started" >&2
 
 #exiting function
 finish()
@@ -135,13 +144,10 @@ if [ -z "$1" ]; then set 'all'; fi
 
 if [ "$1" = "all" ]; then
  generate_binary 'en'
- generate_binary 'cz'
- generate_binary 'de'
- generate_binary 'es'
- generate_binary 'fr'
- generate_binary 'it'
- generate_binary 'pl'
- #DO NOT add Community languages here !!!
+ for lang in $LANGUAGES; do
+  echo " Running : $lang" >&2
+  generate_binary $lang
+ done
 else
  generate_binary $1
 fi
