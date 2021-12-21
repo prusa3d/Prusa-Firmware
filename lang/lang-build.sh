@@ -63,6 +63,8 @@ lang_code_hex_data()
   *sl*) echo '\x6C\x73' ;;
 #Hungarian
   *hu*) echo '\x75\x68' ;;
+#Luxembourgish
+  *lb*) echo '\x62\x6C' ;;
 #Use the 2 lines below as a template and replace 'qr' and `\x71\x72`
 ##New language
 #  *qr*) echo '\x71\x72' ;;

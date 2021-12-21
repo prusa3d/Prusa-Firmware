@@ -227,6 +227,9 @@ const char* lang_get_name_by_code(uint16_t code)
 #ifdef COMMUNITY_LANG_GROUP1_HU
 	case LANG_CODE_HU: return _n("Magyar"); //community Hungarian contribution
 #endif // COMMUNITY_LANG_GROUP1_HU
+#ifdef COMMUNITY_LANG_GROUP1_LB
+	case LANG_CODE_LB: return _n("Letzebuergesch"); //community Luxembourgish contribution
+#endif // COMMUNITY_LANG_GROUP1_LB
 //Use the 3 lines below as a template and replace 'QR' and 'New language'
 //#ifdef COMMUNITY_LANG_GROUP1_QR 
 //	case LANG_CODE_QR: return _n("New language"); //community contribution
