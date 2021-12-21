@@ -202,6 +202,15 @@ sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
 sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
 fi
 
+if [ "$LGN" = "sl" ]; then
+ #replace 'ë' with 'e'
+ sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
+ #replace 'ä' with 'a' (left)
+ sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+fi
+
 #replace in polish translation
 #if [ "$LNG" = "pl" ]; then
 #fi
