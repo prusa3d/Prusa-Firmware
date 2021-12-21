@@ -246,7 +246,7 @@ def main():
         usage="%(prog)s lang")
     parser.add_argument(
         "lang", nargs='?', default="en", type=str,
-        help="Check lang file (en|cs|de|es|fr|nl|it|pl)")
+        help="Check lang file (en|cs|de|es|fr|nl|it|pl|sv)")
     parser.add_argument(
         "--no-warning", action="store_true",
         help="Disable warnings")
