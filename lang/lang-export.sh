@@ -68,6 +68,8 @@ else
    *lb*) echo "Luxembourgish" ;;
 #Croatian
    *hr*) echo "Croatian" ;;
+#Lithuanian
+   *lt*) echo "Lithuanian" ;;
 #Use the 2 lines below as a template and replace 'qr' and 'New language'
 ##New language
 #   *qr*) echo "New language" ;;
