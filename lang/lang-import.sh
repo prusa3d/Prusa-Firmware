@@ -20,19 +20,6 @@ if [ "$LNG" = "all" ]; then
   for lang in $LANGUAGES; do
    ./lang-import.sh $lang
   done
- #./lang-import.sh cz
- #./lang-import.sh de
- #./lang-import.sh es
- #./lang-import.sh fr
- #./lang-import.sh it
- #./lang-import.sh pl
-#DO NOT add Community languages here !!!
- #if [ -n "$COMMUNITY_LANGUAGES" ]; then
- # for l in $COMMUNITY_LANGUAGES; do
- #  echo " Exporting : $l" >&2
- #  ./lang-export.sh $l
- # done
- #fi
  exit 0
 fi
 

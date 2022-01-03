@@ -147,9 +147,6 @@ generate_binary()
  chsum=$(cat lang_$1.bin | xxd | cut -c11-49 | tr ' ' "\n" | sed '/^$/d' | awk 'BEGIN { sum = 0; } { sum += strtonum("0x"$1); if (sum > 0xffff) sum -= 0x10000; } END { printf("%x\n", sum); }')
  /bin/echo -n -e $(echo -n $((0x$chsum)) | awk "$awk_ui16") |\
   dd of=lang_$1.bin bs=1 count=2 seek=8 conv=notrunc 2>/dev/null
- #remove temporary files
-# rm -f lang_$1.tmp
-# rm -f lang_$1.dat
 }
 
 if [ -z "$1" ]; then set 'all'; fi

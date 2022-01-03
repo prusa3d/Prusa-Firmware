@@ -27,19 +27,6 @@ if [ "$LNG" = "all" ]; then
   for lang in $LANGUAGES; do
    ./lang-export.sh $lang
   done
- #./lang-export.sh cz
- #./lang-export.sh de
- #./lang-export.sh es
- #./lang-export.sh fr
- #./lang-export.sh it
- #./lang-export.sh pl
-#Community language support
- #if [ -n "$COMMUNITY_LANGUAGES" ]; then
- # for l in $COMMUNITY_LANGUAGES; do
- #  echo " Exporting : $l" >&2
- #  ./lang-export.sh $l
- # done
- #fi
  exit 0
 fi
 
