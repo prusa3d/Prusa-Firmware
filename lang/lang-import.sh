@@ -2,6 +2,14 @@
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
+# Config:
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
+echo "lang-import languages:$LANGUAGES" >&2
 
 LNG=$1
 # if no arguments, 'all' is selected (all po and also pot will be generated)
@@ -9,13 +17,9 @@ if [ -z "$LNG" ]; then LNG=all; fi
 
 # if 'all' is selected, script will generate all po files and also pot file
 if [ "$LNG" = "all" ]; then
- ./lang-import.sh cz
- ./lang-import.sh de
- ./lang-import.sh es
- ./lang-import.sh fr
- ./lang-import.sh it
- ./lang-import.sh pl
-#DO NOT add Community languages here !!!
+  for lang in $LANGUAGES; do
+   ./lang-import.sh $lang
+  done
  exit 0
 fi
 
@@ -171,6 +175,55 @@ if [ "$LNG" = "nl" ]; then
  sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
 fi
 
+if [ "$LGN" = "sv" ]; then
+#repace 'Å' with 'Aa'
+sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
+#repace 'å' with 'aa'
+sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
+fi
+
+if [ "$LGN" = "da" ]; then
+#repace 'Å' with 'Aa'
+sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
+#repace 'å' with 'aa'
+sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
+fi
+
+if [ "$LGN" = "sl" ]; then
+ #replace 'ë' with 'e'
+ sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
+ #replace 'ä' with 'a' (left)
+ sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+fi
+
+if [ "$LGN" = "hu" ]; then
+ #replace 'ë' with 'e'
+ sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
+ #replace 'ä' with 'a'
+ sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+fi
+
+if [ "$LGN" = "lb" ]; then
+ #replace 'ë' with 'e'
+ sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
+ #replace 'ä' with 'a'
+ sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+fi
+
+if [ "$LGN" = "hr" ]; then
+ #replace 'ë' with 'e'
+ sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
+ #replace 'ä' with 'a'
+ sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+fi
 #replace in polish translation
 #if [ "$LNG" = "pl" ]; then
 #fi
@@ -183,18 +236,35 @@ fi
 #join lines with multi-line string constants
 cat $LNG'_filtered.po' | sed ':a;N;$!ba;s/\x22\n\x22//g' > $LNG'_new.po'
 
+#Get counter from po files
+
+CNTTXT=$(grep '^# MSG' -c $LNGISO.po)
+num=1
+echo " selected language=$LNGISO" >&2
 #generate new dictionary
 cat ../../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
  /bin/echo -e "$s"
+ #echo "s = $s ." >&2
  if [ "${s:0:1}" = "\"" ]; then
+ 
 #  /bin/echo -e "$s"
   s=$(/bin/echo -e "$s")
-  s2=$(grep -F -A1 -B0  "$s" "$LNG"_new.po | tail -n1 | sed 's/^msgstr //')
+  s2=$(grep -F -A1 -B0  "msgid $s" "$LNG"_new.po | tail -n1 | sed 's/^msgstr //')
   if [ -z "$s2" ]; then
+   echo "  processing $num of $CNTTXT" >&2
    echo '"\x00"'
+   num=$((num+1))
   else
+   echo "  processing $num of $CNTTXT" >&2
    echo "$s2"
+   num=$((num+1))
   fi
 #  echo
  fi
+
 done > lang_en_$LNG.txt
+echo "Finished with $LNGISO" >&2
+#replace two double quotes to "\x00"
+sed -i 's/""/"\\x00"/g' lang_en_$LNG.txt
+#remove CR
+sed -i "s/\r//g" lang_en_$LNG.txt

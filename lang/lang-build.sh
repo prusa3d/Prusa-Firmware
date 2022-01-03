@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
@@ -13,12 +13,21 @@
 #  lang_xx.tmp
 #  lang_xx.dat
 #
+# Config:
+#startup message
+echo "lang-build.sh started" >&2
+
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
+echo "lang-build languages:$LANGUAGES" >&2
 
 #awk code to format ui16 variables for dd
 awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
 
-#startup message
-echo "lang-build.sh started" >&2
 
 #exiting function
 finish()
@@ -46,6 +55,18 @@ lang_code_hex_data()
 #Community language support
 #Dutch
   *nl*) echo '\x6c\x6e' ;;
+#Swedish
+  *sv*) echo '\x76\x73' ;;
+#Danish
+  *da*) echo '\x61\x64' ;;
+#Slovanian
+  *sl*) echo '\x6C\x73' ;;
+#Hungarian
+  *hu*) echo '\x75\x68' ;;
+#Luxembourgish
+  *lb*) echo '\x62\x6C' ;;
+#Croatian
+  *hr*) echo '\x72\x68' ;;
 #Use the 2 lines below as a template and replace 'qr' and `\x71\x72`
 ##New language
 #  *qr*) echo '\x71\x72' ;;
@@ -126,22 +147,16 @@ generate_binary()
  chsum=$(cat lang_$1.bin | xxd | cut -c11-49 | tr ' ' "\n" | sed '/^$/d' | awk 'BEGIN { sum = 0; } { sum += strtonum("0x"$1); if (sum > 0xffff) sum -= 0x10000; } END { printf("%x\n", sum); }')
  /bin/echo -n -e $(echo -n $((0x$chsum)) | awk "$awk_ui16") |\
   dd of=lang_$1.bin bs=1 count=2 seek=8 conv=notrunc 2>/dev/null
- #remove temporary files
-# rm -f lang_$1.tmp
-# rm -f lang_$1.dat
 }
 
 if [ -z "$1" ]; then set 'all'; fi
 
 if [ "$1" = "all" ]; then
  generate_binary 'en'
- generate_binary 'cz'
- generate_binary 'de'
- generate_binary 'es'
- generate_binary 'fr'
- generate_binary 'it'
- generate_binary 'pl'
- #DO NOT add Community languages here !!!
+ for lang in $LANGUAGES; do
+  echo " Running : $lang" >&2
+  generate_binary $lang
+ done
 else
  generate_binary $1
 fi

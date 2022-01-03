@@ -211,16 +211,34 @@ const char* lang_get_name_by_code(uint16_t code)
 	case LANG_CODE_FR: return _n("Francais");
 	case LANG_CODE_IT: return _n("Italiano");
 	case LANG_CODE_PL: return _n("Polski");
-#ifdef COMMUNITY_LANG_SUPPORT //Community language support
-#ifdef COMMUNITY_LANG_NL
-	case LANG_CODE_NL: return _n("Nederlands"); //community contribution
-#endif // COMMUNITY_LANG_NL
+#ifdef COMMUNITY_LANGUAGE_SUPPORT //Community language support
+#ifdef COMMUNITY_LANG_GROUP1_NL
+	case LANG_CODE_NL: return _n("Nederlands"); //community Dutch contribution
+#endif // COMMUNITY_LANG_GROUP1_NL
+#ifdef COMMUNITY_LANG_GROUP1_SV
+	case LANG_CODE_SV: return _n("Svenska"); //community Swedish contribution
+#endif // COMMUNITY_LANG_GROUP1_SV
+#ifdef COMMUNITY_LANG_GROUP1_DA
+	case LANG_CODE_DA: return _n("Dansk"); //community Danish contribution
+#endif // COMMUNITY_LANG_GROUP1_DA
+#ifdef COMMUNITY_LANG_GROUP1_SL
+	case LANG_CODE_SL: return _n("Slovenscina"); //community Slovanian contribution
+#endif // COMMUNITY_LANG_GROUP1_SL
+#ifdef COMMUNITY_LANG_GROUP1_HU
+	case LANG_CODE_HU: return _n("Magyar"); //community Hungarian contribution
+#endif // COMMUNITY_LANG_GROUP1_HU
+#ifdef COMMUNITY_LANG_GROUP1_LB
+	case LANG_CODE_LB: return _n("Letzebuergesch"); //community Luxembourgish contribution
+#endif // COMMUNITY_LANG_GROUP1_LB
+#ifdef COMMUNITY_LANG_GROUP1_HR
+	case LANG_CODE_HR: return _n("Hrvatski"); //community Croatian contribution
+#endif // COMMUNITY_LANG_GROUP1_HR
 
 //Use the 3 lines below as a template and replace 'QR' and 'New language'
-//#ifdef COMMUNITY_LANG_QR 
+//#ifdef COMMUNITY_LANG_GROUP1_QR 
 //	case LANG_CODE_QR: return _n("New language"); //community contribution
-//#endif // COMMUNITY_LANG_QR
-#endif // COMMUNITY_LANG_SUPPORT
+//#endif // COMMUNITY_LANG_GROUP1_QR
+#endif // COMMUNITY_LANGUAGE_SUPPORT
 	}
 	return _n("??");
 }

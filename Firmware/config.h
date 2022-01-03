@@ -61,13 +61,22 @@
 #define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes)
 
 //Community language support
-#define COMMUNITY_LANG_NL // Community Dutch language
-//#define COMMUNITY_LANG_QR // Community new language //..use this as a template and replace 'QR'
+#define COMMUNITY_LANG_GROUP 1
 
-#if defined(COMMUNITY_LANG_NL) //|| defined(COMMUNITY_LANG_QR) //..use last part as a template and replace 'QR'
-#define COMMUNITY_LANG_SUPPORT
+#if (COMMUNITY_LANG_GROUP == 1)
+#define COMMUNITY_LANG_GROUP1_NL // Community Dutch language
+#define COMMUNITY_LANG_GROUP1_SV // Community Swedish language
+#define COMMUNITY_LANG_GROUP1_DA // Community Danish language
+#define COMMUNITY_LANG_GROUP1_SL // Community Slovanian language
+#define COMMUNITY_LANG_GROUP1_HU // Community Hungarian language
+#define COMMUNITY_LANG_GROUP1_LB // Community Luxembourgish language
+#define COMMUNITY_LANG_GROUP1_HR // Community Croatian language
+//#define COMMUNITY_LANG_GROUP1_QR // Community new language //..use this as a template and replace 'QR'
 #endif
 
+#if (COMMUNITY_LANG_GROUP >=1 )
+#define COMMUNITY_LANGUAGE_SUPPORT
+#endif
 // Sanity checks for correct configuration of XFLASH_DUMP options
 #if defined(XFLASH_DUMP) && !defined(XFLASH)
 #error "XFLASH_DUMP requires XFLASH support"

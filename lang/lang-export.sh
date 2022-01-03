@@ -3,6 +3,14 @@
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
 #
+# Config:
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
+echo "lang-export languages:$LANGUAGES" >&2
 
 # relative path to source folder
 SRCDIR="../Firmware"
@@ -16,18 +24,9 @@ if [ -z "$LNG" ]; then LNG=all; fi
 # if 'all' is selected, script will generate all po files and also pot file
 if [ "$LNG" = "all" ]; then
  ./lang-export.sh en
- ./lang-export.sh cz
- ./lang-export.sh de
- ./lang-export.sh es
- ./lang-export.sh fr
- ./lang-export.sh it
- ./lang-export.sh pl
-#Community language support
-#Dutch
- ./lang-export.sh nl
-#Use the 2 lines below as a template and replace 'qr' and 'New language'
-##New language
-# ./lang-export.sh qr
+  for lang in $LANGUAGES; do
+   ./lang-export.sh $lang
+  done
  exit 0
 fi
 
@@ -57,6 +56,18 @@ else
 #Community language support
 #Dutch
    *nl*) echo "Dutch" ;;
+#Swedish
+   *sv*) echo "Swedish" ;;
+#Danish
+   *da*) echo "Danish" ;;
+#Slovanian
+   *sl*) echo "Slovanian" ;;
+#Hugarian
+   *hu*) echo "Hugarian" ;;
+#Luxembourgish
+   *lb*) echo "Luxembourgish" ;;
+#Croatian
+   *hr*) echo "Croatian" ;;
 #Use the 2 lines below as a template and replace 'qr' and 'New language'
 ##New language
 #   *qr*) echo "New language" ;;
@@ -113,26 +124,37 @@ s1=''
 s2=''
 num=1
 (cat $INFILE | sed "s/\\\\/\\\\\\\\/g" | while read -r s; do
- if [ "$s" = "" ]; then
-  echo "  processing $num of $CNTTXT" >&2
-  # write po/pot item
-  (
-  if [ -z "$s2" ]; then s2=$s1; s1=$s0; s0='""'; fi
-   search=$(/bin/echo -e "$s1")
-   found=$(grep -m1 -n -F "$search" $SRCFILES | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
-   echo "$s2" | sed 's/ c=0//;s/ r=0//;s/^#/# /'
-   echo "#: $found"
-   /bin/echo -e "msgid $s1"
-   if [ "$s0" = "\"\\\\x00\"" ]; then
-    echo 'msgstr ""'
-   else
-    /bin/echo -e "msgstr $s0"
-   fi
-   echo
+ #start debug
+ #if [ "${s:0:1}" = "\"" ]; then
+ # echo  >&2
+ # echo "s = $s ." >&2
+ # echo "s0 = $s0 ." >&2
+ # echo "s1 = $s1 ." >&2
+ #fi
+ #end debug
+ if [ "${s:0:1}" = "\"" ]; then
+  if [[ "${s0:0:1}" = "\"" || "$LNG" = "en" ]]; then
+   echo "  processing $num of $CNTTXT" >&2
+   # write po/pot item
+   (
+   if [ "$LNG" = "en" ]; then s1=$s0; s0=$s; fi
+    search=$(/bin/echo -e "$s0")
+    found=$(grep -m1 -n -F "$search" $SRCFILES | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
+    echo "$s1" | sed 's/ c=0//;s/ r=0//;s/^#/# /'
+    #echo "$s1" | sed 's/ c=0//;s/ r=0//;s/^#/# /' >&2
+    echo "#: $found"
+    #echo "#: $found" >&2
+    /bin/echo -e "msgid $s0"
+    if [[ "$s" = "\"\\\\x00\"" || "$LNG" = "en" ]]; then
+     echo 'msgstr ""'
+    else
+     /bin/echo -e "msgstr $s"
+    fi
+    echo
   )
   num=$((num+1))
+  fi
  fi
- s2=$s1
  s1=$s0
  s0=$s
 done >>$OUTFILE) 2>&1

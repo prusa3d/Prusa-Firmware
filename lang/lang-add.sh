@@ -9,6 +9,15 @@
 #  lang_en.txt and all lang_en_xx.txt
 #
 
+# Config:
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
+echo "fw-clean languages:$LANGUAGES" >&2
+
 
 # insert single text to english dictionary
 # $1 - text to insert
@@ -59,16 +68,10 @@ cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
 		echo "adding text:"
 		echo "$new_s"
 		echo
-		insert_en "$new_s"
-		insert_xx "$new_s" 'cz'
-		insert_xx "$new_s" 'de'
-		insert_xx "$new_s" 'es'
-		insert_xx "$new_s" 'fr'
-		insert_xx "$new_s" 'it'
-		insert_xx "$new_s" 'pl'
-#Community language support
-#Dutch
-		insert_xx "$new_s" 'nl'
+		#insert_en "$new_s"
+		for lang in $LANGUAGES; do
+			insert_xx "$new_s" "$lang"
+		done
 
 #Use the 2 lines below as a template and replace 'qr'
 ##New language

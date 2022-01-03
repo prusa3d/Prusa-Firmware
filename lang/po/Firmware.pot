@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Thu 16 Dec 2021 11:50:53 AM CET\n"
-"PO-Revision-Date: Thu 16 Dec 2021 11:50:53 AM CET\n"
+"POT-Creation-Date: Sun 19 Dec 2021 07:17:20 PM CET\n"
+"PO-Revision-Date: Sun 19 Dec 2021 07:17:20 PM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -1763,5 +1763,10 @@ msgstr ""
 # MSG_Z_PROBE_NR c=14
 #: messages.c:149
 msgid "Z-probe nr."
+msgstr ""
+
+# MSG_PRINTER_IP c=18
+#: ultralcd.cpp:2028
+msgid "Printer IP Addr:"
 msgstr ""
 

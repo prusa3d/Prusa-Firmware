@@ -4,6 +4,15 @@
 #  Remove all firmware output files from lang folder.
 #
 
+# Config:
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+
+if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+fi
+echo "fw-clean languages:$LANGUAGES" >&2
+
 result=0
 
 rm_if_exists()
@@ -31,32 +40,17 @@ rm_if_exists progmem1.txt
 rm_if_exists textaddr.txt
 rm_if_exists firmware.bin
 rm_if_exists firmware.hex
-rm_if_exists firmware_cz.hex
-rm_if_exists firmware_de.hex
-rm_if_exists firmware_es.hex
-rm_if_exists firmware_fr.hex
-rm_if_exists firmware_it.hex
-rm_if_exists firmware_pl.hex
 rm_if_exists progmem.out
 rm_if_exists textaddr.out
 rm_if_exists update_lang.out
-rm_if_exists update_lang_cz.out
-rm_if_exists update_lang_de.out
-rm_if_exists update_lang_es.out
-rm_if_exists update_lang_fr.out
-rm_if_exists update_lang_it.out
-rm_if_exists update_lang_pl.out
 rm_if_exists lang.bin
 rm_if_exists lang.hex
-#Community language support
-#Dutch
-rm_if_exists firmware_nl.hex
-rm_if_exists update_lang_nl.out
 
-#Use the 2 lines below as a template and replace 'qr'
-##New language
-#rm_if_exists firmware_qr.hex
-#rm_if_exists update_lang_qr.out
+
+for lang in $LANGUAGES; do
+ rm_if_exists firmware_$lang.hex
+ rm_if_exists update_lang_$lang.out
+done
 
 echo -n "fw-clean.sh finished" >&2
 if [ $result -eq 0 ]; then
