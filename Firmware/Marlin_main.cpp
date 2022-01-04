@@ -7793,7 +7793,7 @@ Sigma_Exit:
     */
     case 300: // M300
     {
-      int beepS = code_seen('S') ? code_value() : 110;
+      int beepS = code_seen('S') ? code_value() : 100;
       int beepP = code_seen('P') ? code_value() : 1000;
       if (beepS > 0)
       {
