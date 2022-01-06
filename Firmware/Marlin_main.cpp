@@ -3958,17 +3958,17 @@ static uint8_t get_PRUSA_SN(char* SN)
         {
             if (timeout.expired(250u))
                 goto exit;
-            if (MYSERIAL.available() > 0)
-            {
-                SN[rxIndex] = MYSERIAL.read();
-                rxIndex++;
-            }
+            int c = MYSERIAL.read();
+            if (c >= 0)
+                SN[rxIndex++] = (char)c;
         }
         SN[rxIndex] = 0;
         // printf_P(PSTR("SN:%s\n"), SN);
         SN_valid = (strncmp_P(SN, PSTR("CZPX"), 4) == 0);
     }
 exit:
+    _delay(100); // flush any remaining characters from the 32u2. Prevents enqueuing garbage data
+    MYSERIAL.flush(); //clear RX buffer
     selectedSerialPort = selectedSerialPort_bak;
     return !SN_valid;
 }
