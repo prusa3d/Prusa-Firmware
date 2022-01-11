@@ -18,7 +18,7 @@
 """Check lang files."""
 from argparse import ArgumentParser
 from traceback import print_exc
-from sys import stdout, stderry
+from sys import stdout, stderr
 import textwrap
 import re
 
