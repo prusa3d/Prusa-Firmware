@@ -18,7 +18,7 @@
 """Check lang files."""
 from argparse import ArgumentParser
 from traceback import print_exc
-from sys import stdout, stderry
+from sys import stdout, stderr
 import textwrap
 import re
 
@@ -103,7 +103,7 @@ def ign_char_last(c):
 def parse_txt(lang, no_warning, warn_empty):
     """Parse txt file and check strings to display definition."""
     if lang == "en":
-        file_path = "lang_en.txt"
+        file_path = "lang_hu.txt"
     else:
         file_path = "lang_en_%s.txt" % lang
 
