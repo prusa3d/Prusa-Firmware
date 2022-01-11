@@ -238,7 +238,7 @@ const char* lang_get_name_by_code(uint16_t code)
 #endif // COMMUNITY_LANG_GROUP1_LT
 #ifdef COMMUNITY_LANG_RO 
 	case LANG_CODE_RO: return _n("Romana"); //community Romanian contribution
-#endif // COMMUNITY_LANG_RO
+#endif // COMMUNITY_LANG_GROUP1_RO
 //Use the 3 lines below as a template and replace 'QR' and 'New language'
 //#ifdef COMMUNITY_LANG_GROUP1_QR 
 //	case LANG_CODE_QR: return _n("New language"); //community contribution
