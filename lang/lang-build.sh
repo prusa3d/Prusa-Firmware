@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Version 1.0.2 Build 24
+#
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
 #
@@ -9,21 +11,39 @@
 # Output files:
 #  lang_xx.bin
 #
+# Depending on files:
+#  ../Firmware/config.h to read the max allowed size for translations
+#
 # Temporary files:
+#  lang_en.cnt //calculated number of messages in english
+#  lang_en.max //maximum size determined by reading "../Firmware/config.h"
 #  lang_xx.tmp
 #  lang_xx.dat
 #
+#############################################################################
+# Change log:
+# 18 June 2018, XPila,      Initial
+# 17 Dec. 2021, 3d-gussner, Use one config file for all languages
+# 11 Jan. 2022, 3d-gussner, Add message and size count comparison
+#                           Added version and Change log
+#                           colored output
+#                           Add Community language support
+#                           Use `git rev-list --count HEAD lang-build.sh`
+#                           to get Build Nr
+#############################################################################
+#
 # Config:
-#startup message
-echo "lang-build.sh started" >&2
 
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr 0)" >&2; exit 1; fi
 
 if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
   LANGUAGES+=" $COMMUNITY_LANGUAGES"
 fi
-echo "lang-build languages:$LANGUAGES" >&2
+
+#startup message
+echo "$(tput setaf 2)lang-build.sh started$(tput sgr 0)" >&2
+echo "lang-build languages:$(tput setaf 2)$LANGUAGES$(tput sgr 0)" >&2
 
 #awk code to format ui16 variables for dd
 awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
@@ -33,9 +53,9 @@ awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
 finish()
 {
  if [ $1 -eq 0 ]; then
-  echo "lang-build.sh finished with success" >&2
+  echo "$(tput setaf 2)lang-build.sh finished with success$(tput sgr 0)" >&2
  else
-  echo "lang-build.sh finished with errors!" >&2
+  echo "$(tput setaf 1)lang-build.sh finished with errors!$(tput sgr 0)" >&2
  fi
  exit $1
 }
@@ -104,7 +124,7 @@ write_header()
 generate_binary()
 # $1 - language code ('en', 'cz'...)
 {
- echo "lang="$1 >&2
+ echo "lang=$(tput setaf 2)$1$(tput sgr 0)" >&2
  #remove output and temporary files
  rm -f lang_$1.bin
  rm -f lang_$1.tmp
@@ -116,6 +136,16 @@ generate_binary()
  if [ "$1" = "en" ]; then
   #remove comments and empty lines
   cat lang_en.txt | sed '/^$/d;/^#/d'
+  #calculate number of strings
+  count=$(grep -c '^"' lang_en.txt)
+  echo "count="$count >&2
+  #Calculate the number of strings and save to temporary file
+  echo $count >lang_en.cnt
+  #read the allowed maxsize from "../Firmware/config.h" and save to temporary file
+  maxsize=$(($(grep "#define LANG_SIZE_RESERVED" ../Firmware/config.h|sed -e's/  */ /g' |cut -d ' ' -f3)))
+
+  echo "maxsize="$maxsize >&2
+  echo $maxsize >lang_en.max
  else
   #remove comments and empty lines, print lines with translated text only
   cat lang_en_$1.txt | sed '/^$/d;/^#/d' | sed -n 'n;p'
@@ -126,12 +156,29 @@ generate_binary()
  #calculate number of strings
  count=$(grep -c '^"' lang_$1.tmp)
  echo "count="$count >&2
+ # read string count of English and compare it with the translation
+ encount=$(cat lang_en.cnt)
+ if [ "$count" -eq "$encount" ]; then
+	echo "$(tput setaf 2)OK:"$1"="$count"$(tput sgr 0) is equal to $(tput setaf 2)en="$encount"$(tput sgr 0)" >&2
+ else
+	echo "$(tput setaf 1)Error:"$1"="$count"$(tput sgr 0) is NOT equal to $(tput setaf 1)en="$encount"$(tput sgr 0)" >&2
+	finish 1
+ fi
  #calculate text data offset
  offs=$((16 + 2 * $count))
  echo "offs="$offs >&2
  #calculate text data size
  size=$(($offs + $(wc -c lang_$1.dat | cut -f1 -d' ')))
  echo "size="$size >&2
+ # read maxsize and compare with the translation
+ maxsize=$(cat lang_en.max)
+ if [ "$size" -lt "$maxsize" ]; then
+	free_space=$(($maxsize - $size))
+	echo "$(tput setaf 2)OK:"$1"="$size"$(tput sgr 0) is less than $(tput setaf 2)"$maxsize"$(tput sgr 0). Free space:$(tput setaf 2)"$free_space"$(tput sgr 0)" >&2
+ else
+	echo "$(tput setaf 1)Error:"$1"="$size"$(tput sgr 0) is higer than $(tput setaf 3)"$maxsize"$(tput sgr 0)" >&2
+	finish 1
+ fi
  #write header with empty signature and checksum
  write_header $1 $size $count 0x0000 0x00000000
  #write offset table

@@ -1,13 +1,25 @@
 #!/bin/bash
 #
+# Version 1.0.1 Build 9
+#
 # clean.sh - multi-language support script
 #  Remove all language output files from lang folder.
 #
-
+#############################################################################
+# Change log:
+#  1 Nov. 2018, XPila,      Initial
+# 17 Dec. 2021, 3d-gussner, Use one config file for all languages
+# 11 Jan. 2022, 3d-gussner, Also remove temporally files which have been
+#                           generated for message and size count comparison
+#                           Added version and Change log
+#                           colored output
+#                           Add Community language support
+#                           Use `git rev-list --count HEAD lang-clean.sh`
+#                           to get Build Nr
+#############################################################################
 # Config:
-echo "CONFIG: $CONFIG_OK"
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr0)" >&2; exit 1; fi
 
 if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
   LANGUAGES+=" $COMMUNITY_LANGUAGES"
@@ -18,11 +30,11 @@ result=0
 rm_if_exists()
 {
  if [ -e $1 ]; then
-  echo -n " removing '$1'..." >&2
+  echo -n "$(tput sgr0) removing $(tput setaf 3)'$1'$(tput sgr0)..." >&2
   if rm $1; then
-   echo "OK" >&2
+   echo "$(tput setaf 2)OK$(tput sgr0)" >&2
   else
-   echo "NG!" >&2
+   echo "$(tput setaf 1)NG!$(tput sgr0)" >&2
    result=1
   fi
  fi
@@ -32,6 +44,8 @@ clean_lang()
 {
  if [ "$1" = "en" ]; then
   rm_if_exists lang_$1.tmp
+  rm_if_exists lang_$1.cnt
+  rm_if_exists lang_$1.max
  else
   rm_if_exists lang_$1.tmp
   rm_if_exists lang_en_$1.tmp
@@ -46,21 +60,20 @@ clean_lang()
  rm_if_exists lang_$1_2.tmp
 }
 
+echo "$(tput setaf 2)lang-clean.sh started$(tput sgr0)" >&2
 #Clean English
  clean_lang en
 
 #Clean languages
-echo "lang-clean.sh started" >&2
-echo "lang-clean languages:$LANGUAGES" >&2
+echo "lang-clean languages:$(tput setaf 2)$LANGUAGES$(tput sgr0)" >&2
  for lang in $LANGUAGES; do
   clean_lang $lang
  done
 
-echo -n "lang-clean.sh finished" >&2
 if [ $result -eq 0 ]; then
- echo " with success" >&2
+ echo "$(tput setaf 2) lang-clean.sh with success$(tput sgr0)" >&2
 else
- echo " with errors!" >&2
+ echo "$(tput setaf 1) lang-clean.sh with errors!$(tput sgr0)" >&2
 fi
 
 case "$-" in

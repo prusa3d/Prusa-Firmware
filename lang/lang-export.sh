@@ -1,16 +1,37 @@
 #!/bin/bash
 #
+# Version 1.0.1 Build 17
+#
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
 #
+#############################################################################
+# Change log:
+#  9 Nov  2018, XPila,      Initial
+# 14 Sep. 2019, 3d-gussner, Prepare adding new language
+#  1 Mar. 2019, 3d-gussner, Move `Dutch` language parts
+#                           Add templates for future community languages
+# 17 Dec. 2021, 3d-gussner, Use one config file for all languages
+#                           Fix missing last translation
+# 21 Dec. 2021, 3d-gussner, Add Swedish, Danish, Slovanian, Hungarian,
+#                           Luxembourgish, Croatian
+#  3 Jan. 2022, 3d-gussner, Add Lithuanian
+# 11 Jan. 2022, 3d-gussner, Added version and Change log
+#                           colored output
+#                           Add Community language support
+#                           Use `git rev-list --count HEAD lang-export.sh`
+#                           to get Build Nr
+#############################################################################
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr 0)" >&2; exit 1; fi
+
+echo "$(tput setaf 2)lang-export.sh started$(tput sgr 0)" >&2
 
 if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
   LANGUAGES+=" $COMMUNITY_LANGUAGES"
 fi
-echo "lang-export languages:$LANGUAGES" >&2
+echo "$(tput setaf 2)lang-export languages:$LANGUAGES$(tput sgr 0)" >&2
 
 # relative path to source folder
 SRCDIR="../Firmware"
@@ -76,7 +97,7 @@ else
   esac)
  # unknown language - error
  if [ -z "LNGNAME" ]; then
-  echo "Invalid argument '$LNG'."
+  echo "Invalid argument $(tput setaf 1)'$LNG'$(tput sgr 0).">&2
   exit 1
  fi
  INFILE=lang_en_$LNG.txt
@@ -86,18 +107,16 @@ fi
 # remove output file if exists
 if [ -e $OUTFILE ]; then rm -f -v $OUTFILE; fi
 
-echo "lang-export.sh started"
-
 #total strings
 CNTTXT=$(grep '^#' -c $INFILE)
 #not translated strings
 CNTNT=$(grep '^\"\\x00\"' -c $INFILE)
-echo " $CNTTXT texts, $CNTNT not translated"
+echo " $(tput setaf 2)$CNTTXT$(tput sgr 0) texts, $(tput setaf 3)$CNTNT$(tput sgr 0) not translated" >&2
 
 # list .cpp, .c and .h files from source folder
 SRCFILES=$(ls "$SRCDIR"/*.cpp "$SRCDIR"/*.c "$SRCDIR"/*.h)
 
-echo " selected language=$LNGNAME"
+echo " selected language=$(tput setaf 2)$LNGNAME$(tput sgr 0)" >&2
 
 # write po/pot header
 (
@@ -136,7 +155,7 @@ num=1
  #end debug
  if [ "${s:0:1}" = "\"" ]; then
   if [[ "${s0:0:1}" = "\"" || "$LNG" = "en" ]]; then
-   echo "  processing $num of $CNTTXT" >&2
+   echo -ne "  processing $num of $CNTTXT\033[0K\r" >&2
    # write po/pot item
    (
    if [ "$LNG" = "en" ]; then s1=$s0; s0=$s; fi
@@ -164,6 +183,6 @@ done >>$OUTFILE) 2>&1
 #replace LF with CRLF
 sync
 sed -i 's/$/\r/' $OUTFILE
-
-echo "lang-export.sh finished"
+echo >&2
+echo "$(tput setaf 2)lang-export.sh finished$(tput sgr 0)">&2
 exit 0
