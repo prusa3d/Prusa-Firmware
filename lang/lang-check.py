@@ -18,7 +18,7 @@
 """Check lang files."""
 from argparse import ArgumentParser
 from traceback import print_exc
-from sys import stdout, stderr
+from sys import stdout, stderry
 import textwrap
 import re
 
@@ -246,7 +246,7 @@ def main():
         usage="%(prog)s lang")
     parser.add_argument(
         "lang", nargs='?', default="en", type=str,
-        help="Check lang file (en|cs|da|de|es|fr|hr|hu|lb|lt|nl|it|pl|sl|sv|ro)")
+        help="Check lang file (en|cs|da|de|es|fr|hr|hu|lb|lt|ro|nl|it|pl|sl|sv)")
     parser.add_argument(
         "--no-warning", action="store_true",
         help="Disable warnings")
