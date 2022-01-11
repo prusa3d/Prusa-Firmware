@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 21 Dec 2021 03:27:31 PM CET\n"
-"PO-Revision-Date: 2022-01-04 13:56+0100\n"
+"PO-Revision-Date: 2022-01-11 20:37+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: hu\n"
@@ -23,7 +23,7 @@ msgstr " 0.3 vagy regebbi"
 # MSG_FS_V_03_OR_OLDER c=18
 #: Marlin_main.cpp:9884
 msgid "FS v0.3 or older"
-msgstr "FS v0.3 vagy regebbi"
+msgstr "FS v0.3 v. regebbi"
 
 # MSG_IR_04_OR_NEWER c=18
 #: messages.c:163
@@ -56,7 +56,7 @@ msgstr "FIGYELEM:\\x0aUtkozes erzekeles\\x0akikapcsolva\\x0aHalk modban"
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3034
 msgid "Adjusting Z:"
-msgstr "Z magassag allitasa:"
+msgstr "Z allitasa:"
 
 # MSG_SELFTEST_CHECK_ALLCORRECT c=20
 #: ultralcd.cpp:8490
@@ -76,7 +76,7 @@ msgstr "Kornyezet"
 # MSG_AUTO c=6
 #: messages.c:160
 msgid "Auto"
-msgstr "Automata"
+msgstr "Autom."
 
 # MSG_PRESS c=20 r=2
 #: ultralcd.cpp:2485
@@ -86,7 +86,7 @@ msgstr "es nyomd meg a gombot"
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3355
 msgid "Are left and right Z~carriages all up?"
-msgstr "A Z tengely mindket oldala a felso vegponton van?"
+msgstr "A Z tengely ketoldalt a felso vegponton van?"
 
 # MSG_AUTO_HOME c=18
 #: messages.c:11
@@ -101,12 +101,12 @@ msgstr "Fil. auto.betolt."
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4317
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Filament automata betolteste csak bekapcsolt filament szenzorral erheto el..."
+msgstr "Filament autom. betolteste csak bekapcs. fil. szenzorral erheto el..."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2648
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Automata betoltes bekapcsolva, csak nyomd meg a gombot es helyzed be a filamentet..."
+msgstr "Autom. betoltes bekapcsolva, nyomd meg a gombot es helyzed be a filamentet..."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8173
@@ -171,7 +171,7 @@ msgstr "Szij allapot"
 # MSG_RECOVER_PRINT c=20 r=2
 #: messages.c:82
 msgid "Blackout occurred. Recover print?"
-msgstr "Aramkieses volt, nyomtatas folytatasa?"
+msgstr "Aramkieses volt, nyomt. folytatasa?"
 
 # MSG_CALIBRATING_HOME c=20
 #: ultralcd.cpp:8492
@@ -326,7 +326,7 @@ msgstr "Filament kiadasa"
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ultralcd.cpp:8149
 msgid "Endstop not hit"
-msgstr "Vegallask. nem kapcs."
+msgstr "Vegallask. nem kapcs"
 
 # MSG_SELFTEST_ENDSTOP c=16
 #: ultralcd.cpp:8144
@@ -360,7 +360,7 @@ msgstr "Filament vagasa"
 # MSG_FSENS_NOT_RESPONDING c=20 r=4
 #: ultralcd.cpp:4330
 msgid "ERROR: Filament sensor is not responding, please check connection."
-msgstr "HIBA: A filament szenzor nem valaszol, kerlek ellenorizd a csatlakozast."
+msgstr "HIBA: A fil. szenzor nem valaszol, ellenorizd a csatlakozast."
 
 # MSG_DIM c=6
 #: messages.c:159
@@ -430,7 +430,7 @@ msgstr "Fil. kifutasok"
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:37
 msgid "Filament extruding & with correct color?"
-msgstr "Extrudalodik a filament? Helyes szinnel?"
+msgstr "Filament es a szine rendben?"
 
 # MSG_NOT_LOADED c=19
 #: ultralcd.cpp:2564
@@ -495,7 +495,7 @@ msgstr "Elso targyhuto vent?"
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
 msgid "Front side[um]"
-msgstr "Elulso old.[um]"
+msgstr "Elulso old[um]"
 
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8179
@@ -560,7 +560,7 @@ msgstr "Hotend ellenorzese"
 # MSG_SELFTEST_CHECK_FSENSOR c=20
 #: messages.c:95
 msgid "Checking sensors"
-msgstr "Szenzorok ellenorzese"
+msgstr "Szenz. ellenorzese"
 
 # MSG_CHECKING_X c=20
 #: messages.c:23
@@ -610,7 +610,7 @@ msgstr "Info kepernyo"
 # MSG_INSERT_FILAMENT c=20
 #: ultralcd.cpp:2482
 msgid "Insert filament"
-msgstr "Helyezd be a filamentet"
+msgstr "Helyezd be a filam."
 
 # MSG_FILAMENT_LOADED c=20 r=2
 #: messages.c:38
@@ -745,7 +745,7 @@ msgstr "MMU OK. Homerseklet visszaallitasa..."
 # MSG_MEASURED_SKEW c=14
 #: ultralcd.cpp:2885
 msgid "Measured skew"
-msgstr "Mert merol. hiba"
+msgstr "Meroleg. hiba"
 
 # MSG_MMU_FAILS c=15
 #: messages.c:69
@@ -880,7 +880,7 @@ msgstr "Nem forog"
 # MSG_WIZARD_V2_CAL c=20 r=8
 #: ultralcd.cpp:4838
 msgid "Now I will calibrate distance between tip of the nozzle and heatbed surface."
-msgstr "Most beallítjuk a fuvoka hegye es a targyasztal felulete kozotti tavolsagot."
+msgstr "Most beallitjuk a fuvoka hegye es a targyasztal felulete kozotti tavolsagot."
 
 # MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ultralcd.cpp:4967
@@ -1005,7 +1005,7 @@ msgstr "Kerlek varj"
 # MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 #: ultralcd.cpp:4957
 msgid "Please remove shipping helpers first."
-msgstr "Kerlek, eloszor tavolitsd el a szallitashoz szukseges segedanyagokat."
+msgstr "Tavolitsd el a szallitasi segedanyagokat."
 
 # MSG_PREHEAT_NOZZLE c=20
 #: messages.c:78
@@ -1120,12 +1120,12 @@ msgstr "Kerlek eloszor vedd ki a filamentet, majd probalkozz ujra."
 # MSG_CHECK_IR_CONNECTION c=20 r=4
 #: ultralcd.cpp:7407
 msgid "Please check the IR sensor connection, unload filament if present."
-msgstr "Kerlek nezd meg az IR erzekelo csatlakozasat, vedd ki a filamentet, ha bent van."
+msgstr "Nezd meg az IR szenzor csatlakozasat, vedd ki a filam., ha bent van."
 
 # MSG_RECOVERING_PRINT c=20
 #: Marlin_main.cpp:11393
 msgid "Recovering print"
-msgstr "Nyomtatas visszaallitasa."
+msgstr "Nyomt. visszaallit"
 
 # MSG_REMOVE_OLD_FILAMENT c=20 r=5
 #: mmu.cpp:833
@@ -1355,7 +1355,7 @@ msgstr "Homers. kal."
 # MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 #: ultralcd.cpp:4847
 msgid "Select temperature which matches your material."
-msgstr "Valassz homersekletet, ami megfelel a filamenthez ajanlott homersekletnek."
+msgstr "Valassz homersekletet, ami megfelel a filamenthez."
 
 # MSG_CALIBRATION_PINDA_MENU c=17
 #: ultralcd.cpp:5812
@@ -1375,7 +1375,7 @@ msgstr "Homerseklet kalibracio sikeres es aktiv. Kikapcsolhato a Beallitasok ->H
 # MSG_FS_VERIFIED c=20 r=3
 #: ultralcd.cpp:7411
 msgid "Sensor verified, remove the filament now."
-msgstr "Szenzor leellenorizve, vedd ki a filamentet most."
+msgstr "Szenzor OK, vedd ki a filamentet most."
 
 # MSG_TEMPERATURE c=18
 #: ultralcd.cpp:5673
@@ -1415,7 +1415,7 @@ msgstr "Ossz. hiba"
 # MSG_TO_LOAD_FIL c=20
 #: ultralcd.cpp:2137
 msgid "to load filament"
-msgstr "filament betoltesehez"
+msgstr "filam. betoltesehez"
 
 # MSG_TO_UNLOAD_FIL c=20
 #: ultralcd.cpp:2141
@@ -1520,7 +1520,7 @@ msgstr "A Varazsolt barmikor elered a Kalibracio -> Varazslo menubol."
 # MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 #: ultralcd.cpp:3743
 msgid "XYZ calibration all right. Skew will be corrected automatically."
-msgstr "XYZ kalibracio sikerult. Az esetleges X/Y tengely merolegessegi hiba automatikusan korrigalva lesz."
+msgstr "XYZ kalibracio OK. Az esetleges X/Y merolegessegi hiba automatikusan korrigalva lesz."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 #: ultralcd.cpp:3740
@@ -1540,7 +1540,7 @@ msgstr "X-korrekcio:"
 # MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ultralcd.cpp:3737
 msgid "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-msgstr "XYZ kalibracio sikerult. Az X/Y tengelyek merolegesek."
+msgstr "XYZ kalibracio OK. Az X/Y tengelyek merolegesek. Gratulalok!"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ultralcd.cpp:3721
