@@ -101,12 +101,12 @@ msgstr "Fil. auto.betolt."
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4317
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Filament automata betolteste csak bekapcsolt filament szenzorral erheto el…"
+msgstr "Filament automata betolteste csak bekapcsolt filament szenzorral erheto el..."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2648
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Automata betoltes bekapcsolva, csak nyomd meg a gombot es helyzed be a filamentet…"
+msgstr "Automata betoltes bekapcsolva, csak nyomd meg a gombot es helyzed be a filamentet..."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8173
@@ -880,7 +880,7 @@ msgstr "Nem forog"
 # MSG_WIZARD_V2_CAL c=20 r=8
 #: ultralcd.cpp:4838
 msgid "Now I will calibrate distance between tip of the nozzle and heatbed surface."
-msgstr "Most beállítjuk a fuvoka hegye es a targyasztal felulete kozotti tavolsagot."
+msgstr "Most beallítjuk a fuvoka hegye es a targyasztal felulete kozotti tavolsagot."
 
 # MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ultralcd.cpp:4967
