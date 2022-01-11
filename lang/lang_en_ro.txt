@@ -1,0 +1,1403 @@
+#MSG_IR_03_OR_OLDER c=18
+" 0.3 or older"
+" 0.3 sau mai vechi"
+
+#MSG_FS_V_03_OR_OLDER c=18
+"FS v0.3 or older"
+"FS 0.3 sau mai vechi"
+
+#MSG_IR_04_OR_NEWER c=18
+" 0.4 or newer"
+" 0.4 sau mai nou"
+
+#MSG_FS_V_04_OR_NEWER c=18
+"FS v0.4 or newer"
+"FS 0.4 sau mai nou"
+
+#MSG_IR_UNKNOWN c=18
+"unknown state"
+"Status necunoscut"
+
+#MSG_MEASURED_OFFSET c=20
+"[0;0] point offset"
+"[0;0] Punct offset"
+
+#MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"Detectarea Coleziunii\x0apoate fi activata\x0anumai in Normal mode"
+
+#MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"AVERTIZARE:\x0aDetectarea Coleziunii\x0adezactivat in\x0aStealth mode"
+
+#MSG_BABYSTEPPING_Z c=15
+"Adjusting Z:"
+"Ajustare Z:"
+
+#MSG_SELFTEST_CHECK_ALLCORRECT c=20
+"All correct"
+"Totul este corect"
+
+#MSG_WIZARD_DONE c=20 r=8
+"All is done. Happy printing!"
+"Totul este gata. Happy printing!"
+
+#MSG_AMBIENT c=14
+"Ambient"
+"Ambient."
+
+#MSG_AUTO c=6
+"Auto"
+""
+
+#MSG_PRESS c=20 r=2
+"and press the knob"
+"si apasati butonul"
+
+#MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
+"Are left and right Z~carriages all up?"
+"Axa Z in stanga si dreapta este sus?"
+
+#MSG_AUTO_HOME c=18
+"Auto home"
+"\x00"
+
+#MSG_AUTOLOAD_FILAMENT c=18
+"AutoLoad filament"
+"Incarcarea automata a filamentului"
+
+#MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
+"Autoloading filament available only when filament sensor is turned on..."
+"Incarcarea automata a filamentului este disponibil cand senzorul de filament este pornit..."
+
+#MSG_AUTOLOADING_ENABLED c=20 r=4
+"Autoloading filament is active, just press the knob and insert filament..."
+"Incarcarea automata a filamentului este activ, apasati butonul si introduceti filamentul..."
+
+#MSG_SELFTEST_AXIS_LENGTH c=20
+"Axis length"
+"Lingimea axei"
+
+#MSG_SELFTEST_AXIS c=16
+"Axis"
+"Axa"
+
+#MSG_SELFTEST_BEDHEATER c=20
+"Bed/Heater"
+"Pat/Incalzire"
+
+#MSG_BED_DONE c=20
+"Bed done"
+"Pat OK"
+
+#MSG_BED_HEATING c=20
+"Bed Heating"
+"Incalzire pat"
+
+#MSG_BED_CORRECTION_MENU c=18
+"Bed level correct"
+"Nivel pat corect"
+
+#MSG_BELTTEST c=18
+"Belt test"
+"Test Curea"
+
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
+"Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
+"Nivelarea patului a esuat. Senzorul nu s-a declansat. Resturi pe duza? Se asteapta resetarea."
+
+#MSG_BRIGHT c=6
+"Bright"
+"Luminos"
+
+#MSG_BRIGHTNESS c=18
+"Brightness"
+"Luminozitate"
+
+#MSG_BED c=13
+"Bed"
+"Pat"
+
+#MSG_BELT_STATUS c=18
+"Belt status"
+"Status curea"
+
+#MSG_RECOVER_PRINT c=20 r=2
+"Blackout occurred. Recover print?"
+"S-a produs o intrerupere. Recuperati printarea?"
+
+#MSG_CALIBRATING_HOME c=20
+"Calibrating home"
+"Calibrarea home"
+
+#MSG_CALIBRATE_BED c=18
+"Calibrate XYZ"
+"Calibrare XYZ"
+
+#MSG_HOMEYZ c=18
+"Calibrate Z"
+"Calibrare Z"
+
+#MSG_CALIBRATE_PINDA c=17
+"Calibrate"
+"Calibrare"
+
+#MSG_CANCEL2 c=10
+">Cancel"
+">Anulare"
+
+#MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
+"Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
+"Calibrare XYZ. Rotiti butonul pentru a misca axa Z pana sus.Faceti clic cand ati terminat."
+
+#MSG_CALIBRATE_Z_AUTO c=20 r=2
+"Calibrating Z"
+"Calibrare Z"
+
+#MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
+"Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
+"Calibrare Z. Rotiti butonul pentru a misca axa Z pana sus.Faceti clic cand ati terminat."
+
+#MSG_HOMEYZ_DONE c=20
+"Calibration done"
+"Calibrare finalizata"
+
+#MSG_MENU_CALIBRATION c=18
+"Calibration"
+"Calibrare"
+
+#MSG_SD_REMOVED c=20
+"Card removed"
+"SD Card Indepartat"
+
+#MSG_CHECKING_FILE c=17
+"Checking file"
+"Verificare fisiere"
+
+#MSG_NOT_COLOR c=19
+"Color not correct"
+"Culoarea nu este corecta"
+
+#MSG_COOLDOWN c=18
+"Cooldown"
+"Racire"
+
+#MSG_COPY_SEL_LANG c=20 r=3
+"Copy selected language?"
+"Copiati limba selectata?"
+
+#MSG_CRASHDETECT c=13
+"Crash det."
+"Coleziune det."
+
+#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
+"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Selectati un filament pentru Calibrarea Primului Strat si selectati-l din meniul de pe ecran."
+
+#MSG_CRASH_DETECTED c=20
+"Crash detected."
+"Coleziune detectata."
+
+#MSG_CRASH_RESUME c=20 r=3
+"Crash detected. Resume print?"
+"Coleziune detectata. Continuati printarea?"
+
+#MSG_CRASH c=7
+"Crash"
+"Coleziune"
+
+#MSG_CURRENT c=19
+"Current"
+"Actual"
+
+#MSG_DATE c=17
+"Date:"
+"Data:"
+
+#MSG_COMMUNITY_MADE c=18
+"Community made"
+"Facut in Comunitatea"
+
+#MSG_DISABLE_STEPPERS c=18
+"Disable steppers"
+"Dezactivati motoarele"
+
+#MSG_BABYSTEP_Z_NOT_SET c=20 r=12
+"Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
+"Distanta dintre varful duzei si suprafata patului nu a fost setata. Va rugam urmati manualul, capitolul First steps, sectiunea First layer calibration."
+
+#MSG_FS_CONTINUE c=5
+"Cont."
+""
+
+#MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
+"Do you want to repeat last step to readjust distance between nozzle and heatbed?"
+"Doriti sa repetati primul pas pentru a regla distanta dintre duza si pat?"
+
+#MSG_EXTRUDER_CORRECTION c=13
+"E-correct:"
+"E-corect:"
+
+#MSG_EJECT_FILAMENT c=16
+"Eject filament"
+"Scoateti filamentul"
+
+#MSG_EJECTING_FILAMENT c=20
+"Ejecting filament"
+"Scoaterea filamentului"
+
+#MSG_SELFTEST_ENDSTOP_NOTHIT c=20
+"Endstop not hit"
+"Endstop/Limitatorul nu este atins"
+
+#MSG_SELFTEST_ENDSTOP c=16
+"Endstop"
+"Endstop/Limitator"
+
+#MSG_SELFTEST_ENDSTOPS c=20
+"Endstops"
+"Endstop/Limitator"
+
+#MSG_STACK_ERROR c=20 r=4
+"Error - static memory has been overwritten"
+"Eroare - memoria statica a fost suprascrisa"
+
+#MSG_CUT_FILAMENT c=16
+"Cut filament"
+"Taiati filamentul"
+
+#MSG_CUTTER c=9
+"Cutter"
+"Messer"
+
+#MSG_MMU_CUTTING_FIL c=18
+"Cutting filament"
+"Se taie filamentul"
+
+#MSG_FSENS_NOT_RESPONDING c=20 r=4
+"ERROR: Filament sensor is not responding, please check connection."
+"EROARE: Senzorul de filament nu raspunde, va rugam sa verificati conexiunea."
+
+#MSG_DIM c=6
+"Dim"
+""
+
+#MSG_ERROR c=10
+"ERROR:"
+"EROARE:"
+
+#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+"Extruder fan:"
+"Ventilator Extruder:"
+
+#MSG_INFO_EXTRUDER c=18
+"Extruder info"
+"Info Extruder"
+
+#MSG_EXTRUDER c=17
+"Extruder"
+""
+
+#MSG_MMU_FAIL_STATS c=18
+"Fail stats MMU"
+"Statistici de esec MMU"
+
+#MSG_FSENSOR_AUTOLOAD c=13
+"F. autoload"
+"F. incarcare automata"
+
+#MSG_FAIL_STATS c=18
+"Fail stats"
+"Statistici esecuri"
+
+#MSG_FAN_SPEED c=14
+"Fan speed"
+"Viteza ventilator"
+
+#MSG_SELFTEST_FAN c=20
+"Fan test"
+"Test ventilator"
+
+#MSG_FANS_CHECK c=13
+"Fans check"
+"Verificare Ventilator"
+
+#MSG_FSENSOR c=12
+"Fil. sensor"
+"Fil. Sensor"
+
+#MSG_FIL_RUNOUTS c=15
+"Fil. runouts"
+"Lipsa Filament"
+
+#MSG_FILAMENT_CLEAN c=20 r=2
+"Filament extruding & with correct color?"
+"Extrudarea filamentului si cu culoarea corecta?"
+
+#MSG_NOT_LOADED c=19
+"Filament not loaded"
+"Filamentul nu a fost incarcat"
+
+#MSG_FILAMENT_SENSOR c=20
+"Filament sensor"
+"Senzor Filament"
+
+#MSG_FILAMENT_USED c=19
+"Filament used"
+"Filament utilizat"
+
+#MSG_PRINT_TIME c=19
+"Print time"
+"Timp de printare"
+
+#MSG_FS_ACTION c=10
+"FS Action"
+"Actiune FS"
+
+#MSG_FILE_INCOMPLETE c=20 r=3
+"File incomplete. Continue anyway?"
+"Fisier incomplet. Continuati oricum?"
+
+#MSG_FINISHING_MOVEMENTS c=20
+"Finishing movements"
+"Miscari de terminare"
+
+#MSG_V2_CALIBRATION c=18
+"First layer cal."
+"Cal. Primul Layer"
+
+#MSG_WIZARD_SELFTEST c=20 r=8
+"First, I will run the selftest to check most common assembly problems."
+"In primul rand, voi rula selftest pentru a verifica problemele frecvente de asamblare."
+
+#MSG_MMU_FIX_ISSUE c=20 r=4
+"Fix the issue and then press button on MMU unit."
+"Remediati problema si apoi apasati butonul pe unitatea MMU."
+
+#MSG_FLOW c=15
+"Flow"
+""
+
+#MSG_SELFTEST_COOLING_FAN c=20
+"Front print fan?"
+"Ventilator de printare frontal?"
+
+#MSG_BED_CORRECTION_FRONT c=14
+"Front side[um]"
+"Partea frontala [um]"
+
+#MSG_SELFTEST_FANS c=20
+"Front/left fans"
+"Frontal/vantilator stanga"
+
+#MSG_SELFTEST_HEATERTHERMISTOR c=20
+"Heater/Thermistor"
+"Incalzitor/Termistor"
+
+#MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
+"Heating disabled by safety timer."
+"Incalzirea este dezactivata de temporizatorul de siguranta."
+
+#MSG_HEATING_COMPLETE c=20
+"Heating done."
+"Incalzire terminata."
+
+#MSG_HEATING c=20
+"Heating"
+"Incalzire"
+
+#MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+"Buna, sunt imprimanta dvs. originala Prusa i3. Doriti sa va ghidez in procesul de configurare?"
+
+#MSG_FILAMENTCHANGE c=18
+"Change filament"
+"Schimbati filamentul"
+
+#MSG_CHANGE_SUCCESS c=20
+"Change success!"
+"Schimbare cu succes!"
+
+#MSG_CORRECTLY c=20
+"Changed correctly?"
+"Schimbat corect?"
+
+#MSG_SELFTEST_CHECK_BED c=20
+"Checking bed"
+"Verificarea patului"
+
+#MSG_SELFTEST_CHECK_ENDSTOPS c=20
+"Checking endstops"
+"Verificare Endstop/Limitator"
+
+#MSG_SELFTEST_CHECK_HOTEND c=20
+"Checking hotend"
+"Verificare hotend"
+
+#MSG_SELFTEST_CHECK_FSENSOR c=20
+"Checking sensors"
+"Verificare senzori"
+
+#MSG_CHECKING_X c=20
+"Checking X axis"
+"Verificare axa X"
+
+#MSG_CHECKING_Y c=20
+"Checking Y axis"
+"Verificare axa Y"
+
+#MSG_SELFTEST_CHECK_Z c=20
+"Checking Z axis"
+"Verificare axa Z"
+
+#MSG_CHOOSE_EXTRUDER c=20
+"Choose extruder:"
+"Selectati extruder:"
+
+#MSG_CHOOSE_FILAMENT c=20
+"Choose filament:"
+"Selectati Filamentul:"
+
+#MSG_FILAMENT c=17
+"Filament"
+""
+
+#MSG_WIZARD_XYZ_CAL c=20 r=8
+"I will run xyz calibration now. It will take approx. 12 mins."
+"Voi rula calivrarea xyz acum. Va dura aprox 12 min."
+
+#MSG_WIZARD_Z_CAL c=20 r=8
+"I will run z calibration now."
+"Voi executa calibarea z acum."
+
+#MSG_WATCH c=18
+"Info screen"
+"Ecranul de informatii"
+
+#MSG_INSERT_FILAMENT c=20
+"Insert filament"
+"Introduceti filament"
+
+#MSG_FILAMENT_LOADED c=20 r=2
+"Is filament loaded?"
+"Este alimentat cu filament?"
+
+#MSG_STEEL_SHEET_CHECK c=20 r=2
+"Is steel sheet on heatbed?"
+"Suprafata de printare este pe pat?"
+
+#MSG_LAST_PRINT_FAILURES c=20
+"Last print failures"
+"Esecuri de la ultima printare"
+
+#MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+"Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+"Buna, sunt imprimanta dvs. originala Prusa i3. Va voi ghida printr-un proces scurt de configurare, in care axa Z va fi calibrat. Dupacare, veti fi gata pentru printare."
+
+#MSG_ADDITIONAL_SHEETS c=20 r=9
+"If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+"Daca aveti suprafete de printare aditionale, calibrati presetarile acestora in Setari - Configurare HW - Supreafete de printare."
+
+#MSG_LAST_PRINT c=18
+"Last print"
+"Ultima printare"
+
+#MSG_SELFTEST_EXTRUDER_FAN c=20
+"Left hotend fan?"
+"Ventilator extruder?"
+
+#MSG_LEFT c=10
+"Left"
+"Stanga"
+
+#MSG_BED_CORRECTION_LEFT c=14
+"Left side [um]"
+"Stanga  [um]"
+
+#MSG_LIN_CORRECTION c=18
+"Lin. correction"
+"Corectie liniara"
+
+#MSG_BABYSTEP_Z c=18
+"Live adjust Z"
+"Reglare Z live"
+
+#MSG_INSERT_FIL c=20 r=6
+"Insert the filament (do not load it) into the extruder and then press the knob."
+"Introduceti filamentul (nu-l incarcati) in extrudervsi apasati butonul."
+
+#MSG_LOAD_FILAMENT c=17
+"Load filament"
+"Incarcati filamentul"
+
+#MSG_LOADING_COLOR c=20
+"Loading color"
+"Se incarca culoarea"
+
+#MSG_LOADING_FILAMENT c=20
+"Loading filament"
+"Se incarca filamentul"
+
+#MSG_ITERATION c=12
+"Iteration"
+"Repetare"
+
+#MSG_LOOSE_PULLEY c=20
+"Loose pulley"
+"Slabiti pulley"
+
+#MSG_LOAD_TO_NOZZLE c=18
+"Load to nozzle"
+"Incarcare in duza"
+
+#MSG_M117_V2_CALIBRATION c=25
+"M117 First layer cal."
+"M117 Cal. primul Layer"
+
+#MSG_MAIN c=18
+"Main"
+"Meniu principal"
+
+#MSG_BL_HIGH c=12
+"Level Bright"
+"Nivel luminos"
+
+#MSG_BL_LOW c=12
+"Level Dimmed"
+"Nivel Dimmed"
+
+#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
+"Measuring reference height of calibration point"
+"Masurarea inaltimii de referinta a punctului de calibrare"
+
+#MSG_MESH_BED_LEVELING c=18
+"Mesh Bed Leveling"
+""
+
+#MSG_MMU_OK_RESUMING_POSITION c=20 r=4
+"MMU OK. Resuming position..."
+"MMU OK. Se reia pozitia..."
+
+#MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
+"MMU OK. Resuming temperature..."
+"MMU OK. Restabilirea temperaturii..."
+
+#MSG_MEASURED_SKEW c=14
+"Measured skew"
+"Distorsiune masurata"
+
+#MSG_MMU_FAILS c=15
+"MMU fails"
+"Eroare MMU"
+
+#MSG_MMU_LOAD_FAILED c=20
+"MMU load failed"
+"Eroare de incarcare"
+
+#MSG_MMU_LOAD_FAILS c=15
+"MMU load fails"
+"Eroare de incarcare"
+
+#MSG_MMU_OK_RESUMING c=20 r=4
+"MMU OK. Resuming..."
+"MMU OK.  Restabilire..."
+
+#MSG_MODE c=6
+"Mode"
+"Mod"
+
+#MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
+"MK3 firmware detected on MK3S printer"
+"Firmware MK3 detectat pe imprimanta MK3S"
+
+#MSG_NORMAL c=7
+"Normal"
+""
+
+#MSG_SILENT c=7
+"Silent"
+"Silentios"
+
+#MSG_MMU_USER_ATTENTION c=20 r=3
+"MMU needs user attention."
+"MMU are nevoie de atentia utilizatorului."
+
+#MSG_MMU_POWER_FAILS c=15
+"MMU power fails"
+"Eroare alimetare MMU"
+
+#MSG_STEALTH c=7
+"Stealth"
+""
+
+#MSG_AUTO_POWER c=10
+"Auto power"
+""
+
+#MSG_HIGH_POWER c=10
+"High power"
+""
+
+#MSG_MMU_CONNECTED c=18
+"MMU2 connected"
+"MMU2 conectat"
+
+#MSG_SELFTEST_MOTOR c=18
+"Motor"
+""
+
+#MSG_MOVE_AXIS c=18
+"Move axis"
+"Miscare axe"
+
+#MSG_MOVE_X c=18
+"Move X"
+"Miscare X"
+
+#MSG_MOVE_Y c=18
+"Move Y"
+"Miscare Y"
+
+#MSG_MOVE_Z c=18
+"Move Z"
+"Miscare Z"
+
+#MSG_NO_MOVE c=20
+"No move."
+"Fara miscare."
+
+#MSG_NO_CARD c=18
+"No SD card"
+"Nu exista card SD"
+
+#MSG_NA c=3
+"N/A"
+"\x00"
+
+#MSG_NO c=4
+"No"
+"Nu"
+
+#MSG_SELFTEST_NOTCONNECTED c=20
+"Not connected"
+"Nu este conectat"
+
+#MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
+"New firmware version available:"
+"Versiune noua de firmware este disponibila:"
+
+#MSG_SELFTEST_FAN_NO c=19
+"Not spinning"
+"Nu se invarte"
+
+#MSG_WIZARD_V2_CAL c=20 r=8
+"Now I will calibrate distance between tip of the nozzle and heatbed surface."
+"Acum voi calibra distanta dintre varful duzei si suprafata patului. "
+
+#MSG_WIZARD_WILL_PREHEAT c=20 r=4
+"Now I will preheat nozzle for PLA."
+"Acum voi preincalzi duza petru PLA."
+
+#MSG_NOZZLE c=12
+"Nozzle"
+"Duza"
+
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
+"Old settings found. Default PID, Esteps etc. will be set."
+"S-au gasit setari vechi. Vor fi setate setari implicite PID,Esteps etc."
+
+#MSG_REMOVE_TEST_PRINT c=20 r=4
+"Now remove the test print from steel sheet."
+"Acum indepartati test printul de pe suprafata de printare."
+
+#MSG_NOZZLE_FAN c=10
+"Nozzle FAN"
+"Ventilator Duza."
+
+#MSG_PAUSE_PRINT c=18
+"Pause print"
+"Pauza printare"
+
+#MSG_PID_RUNNING c=20
+"PID cal."
+""
+
+#MSG_PID_FINISHED c=20
+"PID cal. finished"
+"PID cal. terminat"
+
+#MSG_PID_EXTRUDER c=17
+"PID calibration"
+"Calibrare PID"
+
+#MSG_PINDA_PREHEAT c=20
+"PINDA Heating"
+"Incalzire PINDA"
+
+#MSG_PAPER c=20 r=10
+"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
+"Asezati o foaie de hartie sub duza in timpul calibrarii primelor 4 puncte. Daca duza prinde hartia, opriti imediat imprimanta."
+
+#MSG_WIZARD_CLEAN_HEATBED c=20 r=8
+"Please clean heatbed and then press the knob."
+"Va rugam curatati patul si apoi apasati butorul."
+
+#MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
+"Please clean the nozzle for calibration. Click when done."
+"Va rugam curatati duza pentru calibrare.Faceti clic cand ati terminat."
+
+#MSG_SELFTEST_PLEASECHECK c=20
+"Please check:"
+"Va rog verificati:"
+
+#MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
+"Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
+"Va rog consultati manual nostru de utilizare si remediati problema. Apoi reluati Wizard prin repornirea imprimantei. "
+
+#MSG_CHECK_IDLER c=20 r=5
+"Please open idler and remove filament manually."
+"Va rugam sa deschideti "idler" usa rola de tensionare si indepartati filamentul manual. "
+
+#MSG_PLACE_STEEL_SHEET c=20 r=5
+"Please place steel sheet on heatbed."
+"Va rugam sa asezati suprafata de printare pe pat."
+
+#MSG_PRESS_TO_UNLOAD c=20 r=4
+"Please press the knob to unload filament"
+"Va rugam apasati butonul pentru a indeparta filamentul ."
+
+#MSG_PULL_OUT_FILAMENT c=20 r=4
+"Please pull out filament immediately"
+"Va rugam extrageti filamentul  "
+
+#MSG_EJECT_REMOVE c=20 r=4
+"Please remove filament and then press the knob."
+"Va rugam scoateti filamentul si apasati butonul."
+
+#MSG_REMOVE_STEEL_SHEET c=20 r=4
+"Please remove steel sheet from heatbed."
+"Va rugam indepartati suprafata de printare de pe pat."
+
+#MSG_RUN_XYZ c=20 r=4
+"Please run XYZ calibration first."
+"Va rugam rulati primadata calibarea XYZ."
+
+#MSG_UPDATE_MMU2_FW c=20 r=4
+"Please update firmware in your MMU2. Waiting for reset."
+"Va rog actualizati firmware-ul in MMU2.Se asteapta resetarea."
+
+#MSG_PLEASE_WAIT c=20
+"Please wait"
+"Va rog asteptati"
+
+#MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
+"Please remove shipping helpers first."
+"Va rog indepartati mai intai suporti de livrare."
+
+#MSG_PREHEAT_NOZZLE c=20
+"Preheat the nozzle!"
+"Preincalzire duza!"
+
+#MSG_PREHEAT c=18
+"Preheat"
+"Preincalzire"
+
+#MSG_WIZARD_HEATING c=20 r=3
+"Preheating nozzle. Please wait."
+"Preincalzire duza.Va rog asteptati."
+
+#MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
+"Please upgrade."
+"Va rog actualizati."
+
+#MSG_PRESS_TO_PREHEAT c=20 r=4
+"Press the knob to preheat nozzle and continue."
+"Va rog apasati butonul pentru preincalzire si continuare."
+
+#MSG_FS_PAUSE c=5
+"Pause"
+"Pauza"
+
+#MSG_POWER_FAILURES c=15
+"Power failures"
+"Eroare de alimentare"
+
+#MSG_PRINT_ABORTED c=20
+"Print aborted"
+"Printare anulata"
+
+#MSG_PREHEATING_TO_LOAD c=20
+"Preheating to load"
+"Preincalzire pentru incarcare"
+
+#MSG_PREHEATING_TO_UNLOAD c=20
+"Preheating to unload"
+"Preincalzire pentru descarcare"
+
+#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+"Print fan:"
+"Ventilator de printare:"
+
+#MSG_CARD_MENU c=18
+"Print from SD"
+"Printati din SD"
+
+#MSG_PRESS_KNOB c=20
+"Press the knob"
+"Apasati butonul"
+
+#MSG_PRINT_PAUSED c=20
+"Print paused"
+"Pauza printare"
+
+#MSG_RESUME_NOZZLE_TEMP c=20 r=4
+"Press the knob to resume nozzle temperature."
+"Apasati butonul pentru restabilire temperatura duza"
+
+#MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
+"Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
+"Imprimanta nu a fost calibrat. Va rog urmati pasii din manual, capitolul First steps, sectiunea Calibration flow."
+
+#MSG_PRINT_FAN c=10
+"Print FAN"
+"Ventilator printare."
+
+#MSG_WIZARD_LOAD_FILAMENT c=20 r=6
+"Please insert filament into the extruder, then press the knob to load it."
+"va rog introduceti filament in extruder, dupa aceea apasati butonul pentru incarcare."
+
+#MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
+"Please insert filament into the first tube of the MMU, then press the knob to load it."
+"Va rog introduceti filament in primul tub al unitati MMU, dupa aceea apasati butonul pentru incarcare."
+
+#MSG_PLEASE_LOAD_PLA c=20 r=4
+"Please load filament first."
+"Va rog incatcati mai intai filamentul."
+
+#MSG_BED_CORRECTION_REAR c=14
+"Rear side [um]"
+"Partea din spate [um]"
+
+#MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
+"Please unload the filament first, then repeat this action."
+"Va rog extrageti primadata filamentul,dupa acee repetati actiunea."
+
+#MSG_CHECK_IR_CONNECTION c=20 r=4
+"Please check the IR sensor connection, unload filament if present."
+"Va rog verificati caneziunea senzorul IR, Indepartati filamentul daca este prezent."
+
+#MSG_RECOVERING_PRINT c=20
+"Recovering print"
+"Recuperare printare"
+
+#MSG_REMOVE_OLD_FILAMENT c=20 r=5
+"Remove old filament and press the knob to start loading new filament."
+"Indepartati filamentul vechi si apasati butonul pentru alimentare cu filament nou."
+
+#MSG_CALIBRATE_BED_RESET c=18
+"Reset XYZ calibr."
+"Resetati calibrarea XYZ."
+
+#MSG_RESET c=14
+"Reset"
+""
+
+#MSG_RESUME_PRINT c=18
+"Resume print"
+"Continua printarea"
+
+#MSG_RESUMING_PRINT c=20
+"Resuming print"
+"Reluare printare"
+
+#MSG_BED_CORRECTION_RIGHT c=14
+"Right side[um]"
+"Partea drapta [um]"
+
+#MSG_RPI_PORT c=13
+"RPi port"
+""
+
+#MSG_WIZARD_RERUN c=20 r=7
+"Running Wizard will delete current calibration results and start from the beginning. Continue?"
+"Rularea Wizard-ului va sterge rezultatele curente ale calibrarii si va incepe de la inceput. Continuati?"
+
+#MSG_SD_CARD c=8
+"SD card"
+""
+
+#MSG_RIGHT c=10
+"Right"
+"Dreapta"
+
+#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
+"Searching bed calibration point"
+"Cautarea punctului de calivrare a patului"
+
+#MSG_LANGUAGE_SELECT c=18
+"Select language"
+"Selectati limba"
+
+#MSG_SELFTEST_OK c=20
+"Self test OK"
+"Autotestare OK"
+
+#MSG_SELFTEST_START c=20
+"Self test start"
+"Start Autotestare"
+
+#MSG_SELFTEST c=18
+"Selftest"
+"Autotestare"
+
+#MSG_SELFTEST_ERROR c=20
+"Selftest error!"
+"Eroare Autotestare!"
+
+#MSG_SELFTEST_FAILED c=20
+"Selftest failed"
+"Autotestare esuata"
+
+#MSG_FORCE_SELFTEST c=20 r=8
+"Selftest will be run to calibrate accurate sensorless rehoming."
+"Autotestare va fi rulata pentru a calibra o reincadrare precisa. "
+
+#MSG_SEL_PREHEAT_TEMP c=20 r=6
+"Select nozzle preheat temperature which matches your material."
+"Selectati temperatura de preincalzire a duzei pentru materialul dorit.."
+
+#MSG_SET_TEMPERATURE c=19
+"Set temperature:"
+"Stati temperatura:"
+
+#MSG_SETTINGS c=18
+"Settings"
+"Setari"
+
+#MSG_SHOW_END_STOPS c=18
+"Show end stops"
+"Stare Endstop/Limitator"
+
+#MSG_FILE_CNT c=20 r=6
+"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
+"Unele fisiere nu vor fi sortate.Nr. Max. de fisiere dintr-un folder este de 100."
+
+#MSG_SORT c=7
+"Sort"
+"Sort."
+
+#MSG_NONE c=8
+"None"
+"Nici unul"
+
+#MSG_SORT_TIME c=8
+"Time"
+"Timp"
+
+#MSG_SEVERE_SKEW c=14
+"Severe skew"
+"Distorsiune severa"
+
+#MSG_SORT_ALPHA c=8
+"Alphabet"
+"Alfabet"
+
+#MSG_SORTING c=20
+"Sorting files"
+"Sortare fisiere"
+
+#MSG_SOUND_LOUD c=7
+"Loud"
+"Tare"
+
+#MSG_SLIGHT_SKEW c=14
+"Slight skew"
+"Distorsiune minora"
+
+#MSG_SOUND c=7
+"Sound"
+"Ton"
+
+#MSG_RUNOUTS c=7
+"Runouts"
+""
+
+#MSG_Z-LEVELING_ENFORCED c=20 r=4
+"Some problem encountered, Z-leveling enforced ..."
+"A aparut o eroare, este necezar calibrarea axei Z..."
+
+#MSG_SOUND_ONCE c=7
+"Once"
+"O singura data"
+
+#MSG_SPEED c=15
+"Speed"
+"Viteza"
+
+#MSG_SELFTEST_FAN_YES c=19
+"Spinning"
+"Invarte"
+
+#MSG_TEMP_CAL_WARNING c=20 r=4
+"Stable ambient temperature 21-26C is needed a rigid stand is required."
+"Stabile Umgebungs- temperatur 21-26C und feste Stand- flaeche erforderlich"
+
+#MSG_STATISTICS c=18
+"Statistics"
+"Statistici"
+
+#MSG_STOP_PRINT c=18
+"Stop print"
+"Opriti printarea"
+
+#MSG_STOPPED c=20
+"STOPPED."
+"OPRIT."
+
+#MSG_SUPPORT c=18
+"Support"
+"Suport"
+
+#MSG_SELFTEST_SWAPPED c=16
+"Swapped"
+"Schimbat"
+
+#MSG_SELECT_FILAMENT c=20
+"Select filament:"
+"Selectati filamentul:"
+
+#MSG_TEMP_CALIBRATION c=14
+"Temp. cal."
+"Cal. Temp."
+
+#MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
+"Select temperature which matches your material."
+"Selectati temperatura care se potriveste cu materialul dvs."
+
+#MSG_CALIBRATION_PINDA_MENU c=17
+"Temp. calibration"
+"Calibrare temperatura"
+
+#MSG_TEMP_CAL_FAILED c=20 r=8
+"Temperature calibration failed"
+"Eroare cal. temperatura"
+
+#MSG_TEMP_CALIBRATION_DONE c=20 r=12
+"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+"Calibrarea temp. este terminata si activa. Cal. temp. se poate dezactivata din meniu Setari -> Cal.Temp."
+
+#MSG_FS_VERIFIED c=20 r=3
+"Sensor verified, remove the filament now."
+"Senzor verificat, scoateti filamentul acum."
+
+#MSG_TEMPERATURE c=18
+"Temperature"
+"Temperatura"
+
+#MSG_MENU_TEMPERATURES c=15
+"Temperatures"
+"Temperaturi"
+
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
+"There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
+"Inca este nevoie de calibarea Z. Va rugam urmati manualul, capitolul First steps, sectiunea Calibration flow."
+
+#MSG_TOTAL_FILAMENT c=19
+"Total filament"
+"Filament total"
+
+#MSG_TOTAL_PRINT_TIME c=19
+"Total print time"
+"Timp total de printare"
+
+#MSG_TUNE c=18
+"Tune"
+"Reglaj fin"
+
+#MSG_TOTAL_FAILURES c=20
+"Total failures"
+"Total Erori"
+
+#MSG_TO_LOAD_FIL c=20
+"to load filament"
+"a incarca filament"
+
+#MSG_TO_UNLOAD_FIL c=20
+"to unload filament"
+"a descarca filament"
+
+#MSG_UNLOAD_FILAMENT c=16
+"Unload filament"
+"Descarcati filamentul"
+
+#MSG_UNLOADING_FILAMENT c=20
+"Unloading filament"
+"Descarcare Filament "
+
+#MSG_TOTAL c=6
+"Total"
+""
+
+#MSG_USED c=19
+"Used during print"
+"Folosit la printare"
+
+#MSG_MENU_VOLTAGES c=15
+"Voltages"
+"Voltaj"
+
+#MSG_UNKNOWN c=13
+"unknown"
+"necunoscut"
+
+#MSG_USERWAIT c=20
+"Wait for user..."
+"Se asteapta utilizatorul.."
+
+#MSG_WAITING_TEMP c=20 r=4
+"Waiting for nozzle and bed cooling"
+"Se asteapta racirea duzei si patului"
+
+#MSG_WAITING_TEMP_PINDA c=20 r=3
+"Waiting for PINDA probe cooling"
+"Se asteapta racirea sondei PINDA"
+
+#MSG_CHANGED_BOTH c=20 r=4
+"Warning: both printer type and motherboard type changed."
+"Atentie: tipul imprimantei si placi de baza au fost schimbate."
+
+#MSG_CHANGED_MOTHERBOARD c=20 r=4
+"Warning: motherboard type changed."
+"Atentie: tipul placi de baza a fost schimbat."
+
+#MSG_CHANGED_PRINTER c=20 r=4
+"Warning: printer type changed."
+"Atentie: tipul imprimantei a fost schimbata."
+
+#MSG_UNLOAD_SUCCESSFUL c=20 r=2
+"Was filament unload successful?"
+"Filamentul a fost descarcat corect?"
+
+#MSG_SELFTEST_WIRINGERROR c=18
+"Wiring error"
+"Eroare de scriere"
+
+#MSG_WIZARD c=17
+"Wizard"
+""
+
+#MSG_XYZ_DETAILS c=18
+"XYZ cal. details"
+"Detalii cal. XYZ"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
+"XYZ calibration failed. Please consult the manual."
+"Calibarea XYZ esuat.Va rog consultati manualul ."
+
+#MSG_YES c=3
+"Yes"
+"Da"
+
+#MSG_WIZARD_QUIT c=20 r=8
+"You can always resume the Wizard from Calibration -> Wizard."
+"Puteti reporni oricand Wizard din meniu -> Calibrare -> Wizard"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+"Calibrarea XYZ este OK. Distorsiunea va fi corectata automat."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"Calibrarea XYZ este OK. Axele X/Y sunt putin inclinate.Buna treaba!"
+
+#MSG_TIMEOUT c=12
+"Timeout"
+""
+
+#MSG_X_CORRECTION c=13
+"X-correct:"
+"X-corect:"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"Calibrarea XYZ este OK. Axele X/Y sunt perpendiculare. Felicitari!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+"Calibrarea XYZ compromisa. Punctele de calibrare frontale nu sunt accesibile."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+"Calibrarea XYZ compromisa. Punctul de calibrare Dreapta fata nu este accesibila."
+
+#MSG_LOAD_ALL c=17
+"Load all"
+"Incarcati toate"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
+"XYZ calibration failed. Bed calibration point was not found."
+"Eroare calibrare XYZ. Nu s-au gasit punctele de calibrare de pe pat."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
+"XYZ calibration failed. Front calibration points not reachable."
+"Eroare calibrare XYZ. Punctul de calibrare frontal nu este acesibila."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
+"XYZ calibration failed. Right front calibration point not reachable."
+"Eroare calibrare XYZ. Punctul de calibrare Dreapta fata nu este accesibila."
+
+#MSG_Y_DIST_FROM_MIN c=20
+"Y distance from min"
+"Y distanta de la min"
+
+#MSG_WIZARD_V2_CAL_2 c=20 r=12
+"The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+"Imprimanta va incepe printarea unei linii in zig-zag. Rotiti butonul pana cand atingeti inaltimea optima. Verificati imaginile din manual (Capitolul Calibrare)."
+
+#MSG_FIL_FAILED c=20 r=5
+"Verification failed, remove the filament and try again."
+"Verificarea a esuat, scoateti filamentul si incercati din nou."
+
+#MSG_Y_CORRECTION c=13
+"Y-correct:"
+"Y-corect:"
+
+#MSG_OFF c=3
+"Off"
+"Aus"
+
+#MSG_ON c=3
+"On"
+"Pornit"
+
+#MSG_BACK c=18
+"Back"
+"Inapoi"
+
+#MSG_CHECKS c=18
+"Checks"
+"Verificari"
+
+#MSG_FALSE_TRIGGERING c=20
+"False triggering"
+"Declansare falsa"
+
+#MSG_STRICT c=8
+"Strict"
+""
+
+#MSG_WARN c=8
+"Warn"
+"Avertizare"
+
+#MSG_HW_SETUP c=18
+"HW Setup"
+"Configurare HW"
+
+#MSG_MAGNETS_COMP c=13
+"Magnets comp."
+"Compensare magneti"
+
+#MSG_MESH c=12
+"Mesh"
+""
+
+#MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
+"MK3S firmware detected on MK3 printer"
+"Firmware MK3S detectat pe imprimanta MK3"
+
+#MSG_MMU_MODE c=8
+"MMU Mode"
+"MMU Mod"
+
+#MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
+"Mode change in progress..."
+"Scimbarea modului in curs..."
+
+#MSG_MODEL c=8
+"Model"
+""
+
+#MSG_NOZZLE_DIAMETER c=10
+"Nozzle d."
+"D. duza"
+
+#MSG_GCODE_DIFF_CONTINUE c=20 r=4
+"G-code sliced for a different level. Continue?"
+"G-Code preparat pentru un nivel diferit. Continuati?"
+
+#MSG_GCODE_DIFF_CANCELLED c=20 r=7
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+"G-Code preparat pentru un nivel diferit. Va rugam re preparati din nou modelul. Printare anulata."
+
+#MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+"G-code sliced for a different printer type. Continue?"
+"G-Code preparat pentru imprimanta diferita. Continuati?"
+
+#MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+"G-Code preparat pentru imprimanta diferita. Va rugam re preparati din nou modelul. Printare anulata."
+
+#MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+"G-code sliced for a newer firmware. Continue?"
+"G-Code preparat pentru firmware mai nou. Continuati?"
+
+#MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+"G-Code preparat pentru firmware mai nou. Va rog actualizati firmwar-ul. Printare anulata."
+
+#MSG_PREHEATING_TO_CUT c=20
+"Preheating to cut"
+"Preincalzire pentru taiere"
+
+#MSG_PREHEATING_TO_EJECT c=20
+"Preheating to eject"
+"Preincalzire pentru scoatere"
+
+#MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+"Printer nozzle diameter differs from the G-code. Continue?"
+"Diametrul duzei difera fata de G-code. Continuati?"
+
+#MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+"Diametrul duzei difera fata de G-code. Va rog verificati valorile in setari. Printare anulata."
+
+#MSG_SELFTEST_FS_LEVEL c=20
+"%s level expected"
+"%s Nivelul asteptat"
+
+#MSG_RENAME c=18
+"Rename"
+"Redenumire"
+
+#MSG_SELECT c=18
+"Select"
+"Selectati"
+
+#MSG_INFO_SENSORS c=18
+"Sensor info"
+"Info Senzor"
+
+#MSG_SHEET c=10
+"Sheet"
+"Suprafata de prin."
+
+#MSG_SOUND_BLIND c=7
+"Assist"
+"Asist."
+
+#MSG_STEEL_SHEET c=18
+"Steel sheets"
+"Suprafata otel"
+
+#MSG_Z_CORRECTION c=13
+"Z-correct:"
+"Z-corect:"
+
+#MSG_Z_PROBE_NR c=14
+"Z-probe nr."
+"Sonda-Z nr."
+
+#MSG_PRINTER_IP c=18
+"Printer IP Addr:"
+"\x00"

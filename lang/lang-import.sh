@@ -233,6 +233,21 @@ if [ "$LGN" = "lt" ]; then
  #replace 'é' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
+
+if [ "$LNG" = "ro" ]; then
+ #replace 'î' with 'i' (left)
+ sed -i 's/\xc3\xa8/i/g' $LNG'_filtered.po'
+ #replace 'â' with 'a' (left)
+ sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
+ #replace 't' with 't' (left)
+ sed -i 's/\xc3\xb2/t/g' $LNG'_filtered.po'
+ #replace 't' with 't' (left)
+ sed -i 's/\xc3\xb9/t/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+ #replace 'T' with 'T' (left)
+ sed -i 's/\xc3\x88/T/g' $LNG'_filtered.po'
+fi
 #replace in polish translation
 #if [ "$LNG" = "pl" ]; then
 #fi
