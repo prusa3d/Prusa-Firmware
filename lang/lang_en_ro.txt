@@ -76,7 +76,7 @@
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
-"Lingimea axei"
+"Lungimea axei"
 
 #MSG_SELFTEST_AXIS c=16
 "Axis"
@@ -96,7 +96,7 @@
 
 #MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
-"Nivel pat corect"
+"Nivelare pat corect"
 
 #MSG_BELTTEST c=18
 "Belt test"
