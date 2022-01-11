@@ -1,15 +1,39 @@
 #!/bin/bash
 #
+# Version 1.0.1 Build 23
+#
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
+#
+#############################################################################
+# Change log:
+#  9 Nov  2018, XPila,      Initial
+# 14 Sep. 2019, 3d-gussner, Prepare adding new language
+#  1 Mar. 2019, 3d-gussner, Move `Dutch` language parts
+#                           Add templates for future community languages
+# 17 Dec. 2021, 3d-gussner, Use one config file for all languages
+#                           Fix missing last translation
+#                           Add counter
+#                           replace two double quotes with `\x00`
+# 21 Dec. 2021, 3d-gussner, Add Swedish, Danish, Slovanian, Hungarian,
+#                           Luxembourgish, Croatian
+#  3 Jan. 2022, 3d-gussner, Add Lithuanian
+# 11 Jan. 2022, 3d-gussner, Added version and Change log
+#                           colored output
+#                           Add Community language support
+#                           Use `git rev-list --count HEAD lang-export.sh`
+#                           to get Build Nr
+#############################################################################
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr 0)" >&2; exit 1; fi
+
+echo "$(tput setaf 2)lang-import.sh started$(tput sgr 0)" >&2
 
 if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
   LANGUAGES+=" $COMMUNITY_LANGUAGES"
 fi
-echo "lang-import languages:$LANGUAGES" >&2
+echo "$(tput setaf 2)lang-import languages:$LANGUAGES$(tput sgr 0)" >&2
 
 LNG=$1
 # if no arguments, 'all' is selected (all po and also pot will be generated)
@@ -33,7 +57,7 @@ cd po/new
 
 # check if input file exists
 if ! [ -e $LNGISO.po ]; then
- echo "Input file $LNGISO.po not found!" >&2
+ echo "$(tput setaf 1)Input file $LNGISO.po not found!$(tput sgr 0)" >&2
  exit -1
 fi
 
@@ -249,7 +273,7 @@ cat $LNG'_filtered.po' | sed ':a;N;$!ba;s/\x22\n\x22//g' > $LNG'_new.po'
 
 CNTTXT=$(grep '^# MSG' -c $LNGISO.po)
 num=1
-echo " selected language=$LNGISO" >&2
+echo " selected language=$(tput setaf 2)$LNGISO$(tput sgr 0)" >&2
 #generate new dictionary
 cat ../../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
  /bin/echo -e "$s"
@@ -260,11 +284,11 @@ cat ../../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
   s=$(/bin/echo -e "$s")
   s2=$(grep -F -A1 -B0  "msgid $s" "$LNG"_new.po | tail -n1 | sed 's/^msgstr //')
   if [ -z "$s2" ]; then
-   echo "  processing $num of $CNTTXT" >&2
+   echo -ne "  processing $num of $CNTTXT\033[0K\r" >&2
    echo '"\x00"'
    num=$((num+1))
   else
-   echo "  processing $num of $CNTTXT" >&2
+   echo -ne "  processing $num of $CNTTXT\033[0K\r" >&2
    echo "$s2"
    num=$((num+1))
   fi
@@ -272,8 +296,11 @@ cat ../../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
  fi
 
 done > lang_en_$LNG.txt
-echo "Finished with $LNGISO" >&2
+echo >&2
+echo "$(tput setaf 2)Finished with $LNGISO$(tput sgr 0)" >&2
 #replace two double quotes to "\x00"
 sed -i 's/""/"\\x00"/g' lang_en_$LNG.txt
 #remove CR
 sed -i "s/\r//g" lang_en_$LNG.txt
+echo >&2
+echo "$(tput setaf 2)lang-import.sh finished$(tput sgr 0)">&2
