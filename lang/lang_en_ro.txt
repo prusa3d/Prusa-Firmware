@@ -64,15 +64,15 @@
 
 #MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
-"Incarcarea auto. a filam."
+"Inc. auto. a filam"
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Incarcarea auto. a filam. este disponibil cand senzorul de filam. este pornit..."
+"Incar. auto. a filam. este disponibil cand senz. este pornit..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Incarcarea auto. a filam. este activ, apasati but. si introduceti filam...."
+"Incar. auto. a filam. este activ, apasati but. si introduceti filam."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
@@ -96,7 +96,7 @@
 
 #MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
-"Nivelare pat corect"
+"Nivel pat corect"
 
 #MSG_BELTTEST c=18
 "Belt test"
@@ -240,7 +240,7 @@
 
 #MSG_EJECT_FILAMENT c=16
 "Eject filament"
-"Scoateti filamentul"
+"Scoateti filam."
 
 #MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
@@ -304,7 +304,7 @@
 
 #MSG_FSENSOR_AUTOLOAD c=13
 "F. autoload"
-"F. inc. autom."
+""
 
 #MSG_FAIL_STATS c=18
 "Fail stats"
@@ -312,7 +312,7 @@
 
 #MSG_FAN_SPEED c=14
 "Fan speed"
-"Vit. ventilator"
+"Viteza vent."
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
@@ -380,7 +380,7 @@
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
-"Vent. print. frontal?"
+"Vent. print.frontal?"
 
 #MSG_BED_CORRECTION_FRONT c=14
 "Front side[um]"
@@ -488,7 +488,7 @@
 
 #MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
-"Erori ultima printare"
+"Erori ultima print."
 
 #MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
@@ -584,7 +584,7 @@
 
 #MSG_MEASURED_SKEW c=14
 "Measured skew"
-"Distorsiune "
+"Distorsiune"
 
 #MSG_MMU_FAILS c=15
 "MMU fails"
@@ -624,7 +624,7 @@
 
 #MSG_MMU_POWER_FAILS c=15
 "MMU power fails"
-"Eroare alim. MMU"
+"Eroare alim.MMU"
 
 #MSG_STEALTH c=7
 "Stealth"
@@ -684,7 +684,7 @@
 
 #MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 "New firmware version available:"
-"Ver. noua de firmware este disponibil :"
+"Ver. noua de firmware disponibil:"
 
 #MSG_SELFTEST_FAN_NO c=19
 "Not spinning"
@@ -820,7 +820,7 @@
 
 #MSG_POWER_FAILURES c=15
 "Power failures"
-"Eroare de alime.
+"Eroare de alim."
 
 #MSG_PRINT_ABORTED c=20
 "Print aborted"
@@ -860,7 +860,7 @@
 
 #MSG_PRINT_FAN c=10
 "Print FAN"
-"Vent. printare."
+"Vent print"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -1064,7 +1064,7 @@
 
 #MSG_SELECT_FILAMENT c=20
 "Select filament:"
-"Selectati filamentul"
+"Sel. filamentul:"
 
 #MSG_TEMP_CALIBRATION c=14
 "Temp. cal."
@@ -1128,7 +1128,7 @@
 
 #MSG_UNLOAD_FILAMENT c=16
 "Unload filament"
-"Descarcati filam."
+"Descarcati filam"
 
 #MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
