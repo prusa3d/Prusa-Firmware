@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 21 Dec 2021 03:27:31 PM CET\n"
-"PO-Revision-Date: 2022-01-12 11:22+0100\n"
+"PO-Revision-Date: 2022-01-12 11:41+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: hu\n"
@@ -710,7 +710,7 @@ msgstr "M117. Elso reteg kalibr."
 # MSG_MAIN c=18
 #: messages.c:63
 msgid "Main"
-msgstr "Fo"
+msgstr "Fomenu"
 
 # MSG_BL_HIGH c=12
 #: messages.c:155
