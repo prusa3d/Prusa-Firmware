@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 21 Dec 2021 03:27:31 PM CET\n"
-"PO-Revision-Date: 2022-01-11 20:37+0100\n"
+"PO-Revision-Date: 2022-01-12 11:22+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: hu\n"
@@ -86,7 +86,7 @@ msgstr "es nyomd meg a gombot"
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3355
 msgid "Are left and right Z~carriages all up?"
-msgstr "A Z tengely ketoldalt a felso vegponton van?"
+msgstr "A Z tengely a felso vegponton van?"
 
 # MSG_AUTO_HOME c=18
 #: messages.c:11
@@ -101,12 +101,12 @@ msgstr "Fil. auto.betolt."
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4317
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Filament autom. betolteste csak bekapcs. fil. szenzorral erheto el..."
+msgstr "Filament autom. betolteste csak bekapcs. fil. szenzorral mukodik."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2648
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Autom. betoltes bekapcsolva, nyomd meg a gombot es helyzed be a filamentet..."
+msgstr "Autom. betoltes be, nyomd meg a gombot es helyzed be a filamentet."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8173
@@ -1120,7 +1120,7 @@ msgstr "Kerlek eloszor vedd ki a filamentet, majd probalkozz ujra."
 # MSG_CHECK_IR_CONNECTION c=20 r=4
 #: ultralcd.cpp:7407
 msgid "Please check the IR sensor connection, unload filament if present."
-msgstr "Nezd meg az IR szenzor csatlakozasat, vedd ki a filam., ha bent van."
+msgstr "Nezd meg az IR szenzor csatlakoz., vedd ki a filam., ha bent van."
 
 # MSG_RECOVERING_PRINT c=20
 #: Marlin_main.cpp:11393
