@@ -300,5 +300,5 @@ void lang_boot_update_start(uint8_t lang)
 {
 	uint8_t cnt = lang_get_count();
 	if ((lang < 2) || (lang > cnt)) return; //only languages from xflash can be selected
-	bootapp_reboot_user0(lang << 4);
+	bootapp_reboot_user0(lang << 3);
 }

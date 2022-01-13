@@ -919,8 +919,8 @@ void update_sec_lang_from_external_flash()
 {
 	if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0))
 	{
-		uint8_t lang = boot_reserved >> 4;
-		uint8_t state = boot_reserved & 0xf;
+		uint8_t lang = boot_reserved >> 3;
+		uint8_t state = boot_reserved & 0x07;
 		lang_table_header_t header;
 		uint32_t src_addr;
 		if (lang_get_header(lang, &header, &src_addr))
@@ -928,7 +928,7 @@ void update_sec_lang_from_external_flash()
 			lcd_puts_at_P(1,3,PSTR("Language update."));
 			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
 			_delay(100);
-			boot_reserved = (state + 1) | (lang << 4);
+			boot_reserved = (boot_reserved & 0xF8) | ((state + 1) & 0x07);
 			if ((state * LANGBOOT_BLOCKSIZE) < header.size)
 			{
 				cli();
