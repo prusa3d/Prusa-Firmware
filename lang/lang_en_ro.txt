@@ -232,7 +232,7 @@
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
-"Vreti sa repetati ultimul pas pentru a reajusta distanta dintre varf si pat?"
+"Vreti sa repetati ultimul pas pentru a reajusta distanta dintre varf si suprafata de print?"
 
 #MSG_EXTRUDER_CORRECTION c=13
 "E-correct:"
@@ -688,7 +688,7 @@
 
 #MSG_SELFTEST_FAN_NO c=19
 "Not spinning"
-"Nu se invarte"
+"Nu se roteste"
 
 #MSG_WIZARD_V2_CAL c=20 r=8
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
@@ -932,7 +932,7 @@
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
 "Searching bed calibration point"
-"Cautarea puncte de calibrare a patului"
+"Se cauta punctele de calibrare"
 
 #MSG_LANGUAGE_SELECT c=18
 "Select language"
