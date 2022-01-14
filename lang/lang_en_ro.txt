@@ -368,7 +368,7 @@
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
-"Mai intai, voi rula testele automate pentru a verifica cele mai intalnite probleme de ansamblare."
+"Mai intai, voi rula testele automate pentru a verifica cele mai intalnite probleme de asamblare."
 
 #MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
@@ -1376,7 +1376,7 @@
 
 #MSG_INFO_SENSORS c=18
 "Sensor info"
-"Info senzori"
+"Info. senzori"
 
 #MSG_SHEET c=10
 "Sheet"
