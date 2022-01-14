@@ -28,7 +28,7 @@
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-"ATENTIE:\x0aDetect. coliziunilor\x0aoprita in\x0amodul silentios"
+"ATENTIE:\x0aDetect. coliziunilor\x0aeste oprita in\x0amodul silentios"
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
@@ -68,7 +68,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Incarcarea automata de filament valabila doar cand senzorul este pornit..."
+"Incarcarea automata de fil. e valabila doar cand senzorul este pornit..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -368,7 +368,7 @@
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
-"Mai intai, voi rula diagnosticarea automata pentru a verifica cele mai intalnite probleme de ansamblare."
+"Mai intai, voi rula testele automate pentru a verifica cele mai intalnite probleme de ansamblare."
 
 #MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
@@ -408,7 +408,7 @@
 
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
-"Salut, sunt imprimanta ta Original Prusa i3. Vrei sa te ghidez prin procesul de setup?"
+"Salut, sunt imprimanta ta Original Prusa i3. Vrei sa initiez testele automate si calibrarile?"
 
 #MSG_FILAMENTCHANGE c=18
 "Change filament"
@@ -856,11 +856,11 @@
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
-"Imprimanta nu a fost calibrata inca. Va rugam folositi manualul, capitolul First steps, sectiunea Calibration flow."
+"Imprimanta nu a fost calibrata inca. Va rugam sa folositi manualul, capitolul First steps, sectiunea Calibration flow."
 
 #MSG_PRINT_FAN c=10
 "Print FAN"
-"VENT print"
+"Vent.print"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -880,7 +880,7 @@
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
-"Va rugam scoateti filamentul mai intai apoi incercati din nou."
+"Va rugam mai intai sa scoateti filamentul, apoi incercati din nou."
 
 #MSG_CHECK_IR_CONNECTION c=20 r=4
 "Please check the IR sensor connection, unload filament if present."
@@ -920,7 +920,7 @@
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-"Rularea Wizard-ului va sterge rezultatele curente ale calibrarii si va incepe de la inceput. Continuati?"
+"Rularea Wizard-ului va sterge rezultatele curente ale calibrarii si va porni de la inceput. Continuati?"
 
 #MSG_SD_CARD c=8
 "SD card"
@@ -944,7 +944,7 @@
 
 #MSG_SELFTEST_START c=20
 "Self test start"
-"Start test. automata"
+"Start testare"
 
 #MSG_SELFTEST c=18
 "Selftest"
@@ -992,7 +992,7 @@
 
 #MSG_SORT_TIME c=8
 "Time"
-"Durata"
+"Data"
 
 #MSG_SEVERE_SKEW c=14
 "Severe skew"
@@ -1088,7 +1088,7 @@
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
-"Senzor verificat, scoateti filamentul."
+"Senzorul a fost verificat, scoate filamentul."
 
 #MSG_TEMPERATURE c=18
 "Temperature"
@@ -1320,7 +1320,7 @@
 
 #MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."
-"D. varf"
+"Diam. varf"
 
 #MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
