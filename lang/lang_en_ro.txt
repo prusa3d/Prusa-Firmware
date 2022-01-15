@@ -240,7 +240,7 @@
 
 #MSG_EJECT_FILAMENT c=16
 "Eject filament"
-"Scoate filamentul"
+"Scoate filament"
 
 #MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
@@ -308,7 +308,7 @@
 
 #MSG_FAIL_STATS c=18
 "Fail stats"
-"Stat. erori"
+"Statistici erori"
 
 #MSG_FAN_SPEED c=14
 "Fan speed"
@@ -528,7 +528,7 @@
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
-"Incarca filamentul"
+"Incarca filament"
 
 #MSG_LOADING_COLOR c=20
 "Loading color"
@@ -548,7 +548,7 @@
 
 #MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
-"Incarc. extruder"
+"Incarca extruder"
 
 #MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
