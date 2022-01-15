@@ -240,7 +240,7 @@
 
 #MSG_EJECT_FILAMENT c=16
 "Eject filament"
-"Scoate filament"
+"Scoate filamentul"
 
 #MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
@@ -340,7 +340,7 @@
 
 #MSG_FILAMENT_SENSOR c=20
 "Filament sensor"
-"Senzorul de filament"
+"Senz. de filament"
 
 #MSG_FILAMENT_USED c=19
 "Filament used"
@@ -476,7 +476,7 @@
 
 #MSG_INSERT_FILAMENT c=20
 "Insert filament"
-"Incarca filamentul"
+"Incarca filament"
 
 #MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
@@ -528,7 +528,7 @@
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
-"Incarca fil."
+"Incarca filamentul"
 
 #MSG_LOADING_COLOR c=20
 "Loading color"
@@ -568,7 +568,7 @@
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 "Measuring reference height of calibration point"
-"Masurare distanta de referinta pentru punctul"
+"Masurare distanta de referinta pentru punctul de calib."
 
 #MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
@@ -944,7 +944,7 @@
 
 #MSG_SELFTEST_START c=20
 "Self test start"
-"Start testare"
+"Start Autotestare"
 
 #MSG_SELFTEST c=18
 "Selftest"
@@ -956,7 +956,7 @@
 
 #MSG_SELFTEST_FAILED c=20
 "Selftest failed"
-"Test. auto. esuata"
+"Autotestare esuata"
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -1128,7 +1128,7 @@
 
 #MSG_UNLOAD_FILAMENT c=16
 "Unload filament"
-"Scoate filament"
+"Descarca filament"
 
 #MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
@@ -1232,7 +1232,7 @@
 
 #MSG_LOAD_ALL c=17
 "Load all"
-"Incarcati tot"
+"Incarcati toate"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 "XYZ calibration failed. Bed calibration point was not found."
