@@ -1126,7 +1126,7 @@
 "to unload filament"
 "pour decharger fil."
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 "Decharger fil."
 

@@ -844,7 +844,7 @@
 #MSG_TO_UNLOAD_FIL c=20
 "to unload filament"
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 
 #MSG_UNLOADING_FILAMENT c=20
