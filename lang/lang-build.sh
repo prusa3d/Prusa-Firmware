@@ -69,6 +69,8 @@ lang_code_hex_data()
   *hr*) echo '\x72\x68' ;;
 #Lithuanian
   *lt*) echo '\x74\x6c' ;;
+#Romanian
+  *ro*) echo '\x6f\x72' ;;
 #Use the 2 lines below as a template and replace 'qr' and `\x71\x72`
 ##New language
 #  *qr*) echo '\x71\x72' ;;
