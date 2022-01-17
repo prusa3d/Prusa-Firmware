@@ -111,7 +111,7 @@ const char MSG_STOP_PRINT[] PROGMEM_I1 = ISTR("Stop print"); ////c=18
 const char MSG_STOPPED[] PROGMEM_I1 = ISTR("STOPPED."); ////c=20
 const char MSG_TEMP_CALIBRATION[] PROGMEM_I1 = ISTR("Temp. cal."); ////c=14
 const char MSG_TEMP_CALIBRATION_DONE[] PROGMEM_I1 = ISTR("Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."); ////c=20 r=12
-const char MSG_UNLOAD_FILAMENT[] PROGMEM_I1 = ISTR("Unload filament"); ////Number 1 to 5 is added behind text e.g. "Unload filament" c=16
+const char MSG_UNLOAD_FILAMENT[] PROGMEM_I1 = ISTR("Unload filament"); ////c=18
 const char MSG_UNLOADING_FILAMENT[] PROGMEM_I1 = ISTR("Unloading filament"); ////c=20
 const char MSG_WATCH[] PROGMEM_I1 = ISTR("Info screen"); ////c=18
 const char MSG_WIZARD_CALIBRATION_FAILED[] PROGMEM_I1 = ISTR("Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."); ////c=20 r=8

@@ -253,7 +253,7 @@
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
 
-#MSG_FILAMENT_SENSOR c=20
+#MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
 
 #MSG_FILAMENT_USED c=19
@@ -844,7 +844,7 @@
 #MSG_TO_UNLOAD_FIL c=20
 "to unload filament"
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 
 #MSG_UNLOADING_FILAMENT c=20

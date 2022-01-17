@@ -338,7 +338,7 @@
 "Filament not loaded"
 "Fil. niet geladen"
 
-#MSG_FILAMENT_SENSOR c=20
+#MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
 "Filamentsensor"
 
@@ -1126,7 +1126,7 @@
 "to unload filament"
 "om fil. uitwerpen"
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 "Fil. uitwerpen"
 

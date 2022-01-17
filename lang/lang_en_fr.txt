@@ -338,9 +338,9 @@
 "Filament not loaded"
 "Filament non charge"
 
-#MSG_FILAMENT_SENSOR c=20
+#MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
-"Capteur de filament"
+"Capteur de fil."
 
 #MSG_FILAMENT_USED c=19
 "Filament used"
@@ -1126,7 +1126,7 @@
 "to unload filament"
 "pour decharger fil."
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 "Decharger fil."
 
