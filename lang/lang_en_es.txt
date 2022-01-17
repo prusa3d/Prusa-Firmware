@@ -340,7 +340,7 @@
 
 #MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
-"Sensor de filamento"
+"Sensor de fil."
 
 #MSG_FILAMENT_USED c=19
 "Filament used"
