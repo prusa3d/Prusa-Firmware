@@ -1,3 +1,50 @@
+
+/**
+ * @file
+ * @author leptun
+ */
+ /** \ingroup xflash_layout */
+ 
+ //! This is the layout of the XFLASH (external SPI flash) in Prusa firmware (dynamically generated from doxygen).
+
+
+/** @defgroup xflash_layout XFLASH Layout
+ *  
+ 
+  ---------------------------------------------------------------------------------
+  The XFLASH has the following alignment requirements:
+   - Block erase of 64KB. This is what the second bootloader uses. If anything even starts writing to a block, the entire block is erased by the bootloader. It will cause loss of crash dump on firmware upload. Nothing more than that.
+   - Block erase of 32KB. Not used.
+   - Sector erase of 4KB. Used by the xflash_dump. This is the minimum size for erasing and as such the dump is 4KB aligned as to not erase other stuff unintentionally.
+   - Page write of 256B. Lower access can be used, but care must be used since the address wraps at the page boundary when writing.
+   - Read has no alignment requirements.
+  
+  The following items are found in the xflash:
+  
+  ### 1. Languages (R)
+    This is a variable size region that is built by the lang build scripts. More info can be found in those scripts.
+    
+    It is aligned at the beginning of xflash, offset 0.
+
+  ### 2. MMU Firmware update files (64KB, R)
+    This space is reserved for the two MMU firmware files:
+     - The MMU firmware v2.0.0+.
+     - The Bootloader self update file.
+   
+   It is aligned at the end of xflash, before xflash_dump
+
+  ### 3. xflash_dump (12KB, RW)
+    The crash dump structure is defined as dump_t.
+    It composes of:
+     - A header with some information such as crash reason and what info was dumped.
+     - The dump itself. This is composed of the entire memory space from address 0 to the end of SRAM. So it includes also the registers (useless), the IO and extended IO (useful) and all RAM.
+    
+    Even though the dump needs around 9KB of storage, 12KB is used because of the sector erase size.
+    
+    It is aligned at the end of xflash.
+*/
+
+
 // XFLASH memory layout
 #pragma once
 #include <stdint.h>
