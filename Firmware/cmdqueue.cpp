@@ -24,8 +24,7 @@ int serial_count = 0;  //index of character read from serial line
 bool comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
-unsigned long TimeSent = _millis();
-unsigned long TimeNow = _millis();
+ShortTimer serialTimeoutTimer;
 
 long gcode_N = 0;
 long gcode_LastN = 0;
@@ -400,8 +399,7 @@ void get_command()
         MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
         selectedSerialPort = 1; 
     } */ //RP - removed
-      TimeSent = _millis();
-      TimeNow = _millis();
+      serialTimeoutTimer.start();
 
     if (serial_char < 0)
         // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
@@ -535,22 +533,11 @@ void get_command()
     }
   } // end of serial line processing loop
 
-    if(farm_mode){
-        TimeNow = _millis();
-        if ( ((TimeNow - TimeSent) > 800) && (serial_count > 0) ) {
-            cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0;
-            
-            bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
-            if (bufindw == sizeof(cmdbuffer))
-                bufindw = 0;
-            ++ buflen;
-            
-            serial_count = 0;
-            
-            SERIAL_ECHOPGM("TIMEOUT:");
-            //memset(cmdbuffer, 0 , sizeof(cmdbuffer));
-            return;
-        }
+    if (serial_count > 0 && serialTimeoutTimer.expired(farm_mode ? 800 : 2000)) {
+        comment_mode = false;
+        serial_count = 0;
+        SERIAL_ECHOLNPGM("RX timeout");
+        return;
     }
 
   #ifdef SDSUPPORT
