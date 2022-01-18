@@ -56,7 +56,7 @@
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
-"Ar bada Z-slaedarna i topp-laege ?"
+"Ar bada Z-slaedarna i topp-laege?"
 
 #MSG_AUTO_HOME c=18
 "Auto home"
@@ -184,7 +184,7 @@
 
 #MSG_COPY_SEL_LANG c=20 r=3
 "Copy selected language?"
-"Kopiera det valda spraket ?"
+"Kopiera det valda spraket?"
 
 #MSG_CRASHDETECT c=13
 "Crash det."
@@ -200,7 +200,7 @@
 
 #MSG_CRASH_RESUME c=20 r=3
 "Crash detected. Resume print?"
-"Krock upptaeckt. Ateruppta utskrift ?"
+"Krock upptaeckt. Ateruppta utskrift?"
 
 #MSG_CRASH c=7
 "Crash"
@@ -332,7 +332,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Extruderas filament med raett faerg ?"
+"Extruderas filament med raett faerg?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -380,7 +380,7 @@
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
-"Frontflaekt ?"
+"Frontflaekt?"
 
 #MSG_BED_CORRECTION_FRONT c=14
 "Front side[um]"
@@ -420,7 +420,7 @@
 
 #MSG_CORRECTLY c=20
 "Changed correctly?"
-"Aendring korrekt ?"
+"Aendring korrekt?"
 
 #MSG_SELFTEST_CHECK_BED c=20
 "Checking bed"
@@ -480,11 +480,11 @@
 
 #MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
-"Aer filament isatt ?"
+"Aer filament isatt?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"Ligger metallskiva pa vaermebaedden ?"
+"Ligger metallskiva pa vaermebaedden?"
 
 #MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
