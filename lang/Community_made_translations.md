@@ -14,3 +14,17 @@
   - [X] **Active**      since January 2022
   - [X] **Maintained**  since January 2022
 
+- **Hungarian / Magyar**
+  - Maintainers: **@AttilaSVK**
+  - Co-maintainers:
+  - Contributors:
+  - [X] **Active**      since January 2022
+  - [X] **Maintained**  since January 2022
+
+- **Swedish / Svenska**
+  - Maintainers: **@Painkiller56**
+  - Co-maintainers:
+  - Contributors:
+  - [X] **Active**      since January 2022
+  - [X] **Maintained**  since January 2022
+
