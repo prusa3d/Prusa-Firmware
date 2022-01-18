@@ -25,7 +25,7 @@ At this moment the `MK404-build.sh` script is only supported on Linux
   - Co-maintainers:
   - Contributors:
   - [X] **Active**      since August 2021
-  - [X] **Maintained**  since August 2022
+  - [X] **Maintained**  since August 2021
 
 ### How-to use MK404-build.sh
 After compiling with `PF-build.sh` you get the option to start the `MK404` simulator with the fresh compiled firmware. (Linux only at this moment)
