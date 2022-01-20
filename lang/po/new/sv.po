@@ -86,7 +86,7 @@ msgstr "och tryck pa knappen"
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3355
 msgid "Are left and right Z~carriages all up?"
-msgstr "Ar bada Z-slaedarna i topp-laege?"
+msgstr "Aer bada Z-slaedarna i topp-laege?"
 
 # MSG_AUTO_HOME c=18
 #: messages.c:11
@@ -146,7 +146,7 @@ msgstr "Baelt test"
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-msgstr "Baeddnivelleringen felade. Sensorn utlostes inte. Skraep pa munstycket? Vaentar pa aterstaellning."
+msgstr "Baeddnivelleringen felade. Sensorn utloestes inte. Skraep pa munstycket? Vaentar pa aterstaellning."
 
 # MSG_BRIGHT c=6
 #: messages.c:158
@@ -171,7 +171,7 @@ msgstr "Baelt status"
 # MSG_RECOVER_PRINT c=20 r=2
 #: messages.c:82
 msgid "Blackout occurred. Recover print?"
-msgstr "Blackout skedde. Aterstalla utskrift?"
+msgstr "Blackout intraeffat. Aterstaella utskr?"
 
 # MSG_CALIBRATING_HOME c=20
 #: ultralcd.cpp:8492
@@ -211,7 +211,7 @@ msgstr "Kalibrerar Z"
 # MSG_HOMEYZ_DONE c=20
 #: ultralcd.cpp:656
 msgid "Calibration done"
-msgstr "Kalibraring utford"
+msgstr "Kalibraring utfoerd"
 
 # MSG_MENU_CALIBRATION c=18
 #: messages.c:68
@@ -296,7 +296,7 @@ msgstr "Avstandet mellan munstyckets spets och baeddytan har inte staellts in ae
 # MSG_FS_CONTINUE c=5
 #: messages.c:152
 msgid "Cont."
-msgstr "Fort."
+msgstr "Frts."
 
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5021
@@ -470,7 +470,7 @@ msgstr "Forstalager kalib."
 # MSG_WIZARD_SELFTEST c=20 r=8
 #: ultralcd.cpp:4942
 msgid "First, I will run the selftest to check most common assembly problems."
-msgstr "Foerst kommer jag att utfora sjaelvtestet foer att kontrollera de vanligaste monteringsproblemen."
+msgstr "Foerst kommer jag att utfoera sjaelvtestet foer att kontrollera de vanligaste monteringsproblemen."
 
 # MSG_MMU_FIX_ISSUE c=20 r=4
 #: mmu.cpp:727
@@ -630,7 +630,7 @@ msgstr "Hej, jag aer din Prusa i3-skrivare. Jag guidar dig genom en kort install
 # MSG_ADDITIONAL_SHEETS c=20 r=9
 #: ultralcd.cpp:5029
 msgid "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
-msgstr "Om du har ytterligare metallskivor, kalibrera deras foerinstaellningar i Instaellningar - HW Setup - Metallskiva."
+msgstr "Om du har ytterligare metallskivor, kalibrera deras foerinstaellningar i Instaellningar - HW instaellning - Metallskiva."
 
 # MSG_LAST_PRINT c=18
 #: messages.c:56
@@ -1090,7 +1090,7 @@ msgstr "Utskrflakt"
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
 msgid "Please insert filament into the extruder, then press the knob to load it."
-msgstr "Vaenligen saett in filamentet i extrudern, tryck sedan pa knappen foer inladdning.."
+msgstr "Vaenligen saett i filamentet i extrudern, tryck sedan pa knappen foer inladdning.."
 
 # MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ultralcd.cpp:4813
@@ -1520,7 +1520,7 @@ msgstr "XYZ-kalibrering aer ok. Skevhet kommer att korrigeras automatiskt."
 # MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 #: ultralcd.cpp:3740
 msgid "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-msgstr "XYZ-kalibrering ok. X/Y-axlarna aer lite skeva. Bra jobbat!"
+msgstr "XYZ-kalibrering ok. X/Y-axlarna aer mycket lite skeva. Bra jobbat!"
 
 # MSG_TIMEOUT c=12
 #: messages.c:157
@@ -1540,7 +1540,7 @@ msgstr "XYZ-kalibrering ok. X/Y-axlarna ar vinkelraeta. Grattis!"
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ultralcd.cpp:3721
 msgid "XYZ calibration compromised. Front calibration points not reachable."
-msgstr "XYZ-kalibrering komprometterade. Fraemre kalibreringspunkter kan inte nas."
+msgstr "XYZ-kalibrering komprometterad. Fraemre kalibreringspunkter kan inte nas."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ultralcd.cpp:3724
@@ -1625,7 +1625,7 @@ msgstr "Varna"
 # MSG_HW_SETUP c=18
 #: messages.c:102
 msgid "HW Setup"
-msgstr "HW-instaellning"
+msgstr "HW instaellning"
 
 # MSG_MAGNETS_COMP c=13
 #: messages.c:150
@@ -1695,7 +1695,7 @@ msgstr "G-kod genererad foer en nyare firmware. Vaenligen uppdatera firmware. Ut
 # MSG_PREHEATING_TO_CUT c=20
 #: ultralcd.cpp:2309
 msgid "Preheating to cut"
-msgstr "Forvarmer for skara"
+msgstr "Forvarmer for skaera"
 
 # MSG_PREHEATING_TO_EJECT c=20
 #: ultralcd.cpp:2306
