@@ -86,7 +86,7 @@ msgstr "och tryck pa knappen"
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3355
 msgid "Are left and right Z~carriages all up?"
-msgstr "Ar bada Z-slaedarna i topp-laege ?"
+msgstr "Ar bada Z-slaedarna i topp-laege?"
 
 # MSG_AUTO_HOME c=18
 #: messages.c:11
@@ -241,7 +241,7 @@ msgstr "Kyla ner"
 # MSG_COPY_SEL_LANG c=20 r=3
 #: ultralcd.cpp:4435
 msgid "Copy selected language?"
-msgstr "Kopiera det valda spraket ?"
+msgstr "Kopiera det valda spraket?"
 
 # MSG_CRASHDETECT c=13
 #: messages.c:30
@@ -261,7 +261,7 @@ msgstr "Krock upptaeckt."
 # MSG_CRASH_RESUME c=20 r=3
 #: Marlin_main.cpp:651
 msgid "Crash detected. Resume print?"
-msgstr "Krock upptaeckt. Ateruppta utskrift ?"
+msgstr "Krock upptaeckt. Ateruppta utskrift?"
 
 # MSG_CRASH c=7
 #: messages.c:28
@@ -425,7 +425,7 @@ msgstr "Fil. avbrott"
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:37
 msgid "Filament extruding & with correct color?"
-msgstr "Extruderas filament med raett faerg ?"
+msgstr "Extruderas filament med raett faerg?"
 
 # MSG_NOT_LOADED c=19
 #: ultralcd.cpp:2564
@@ -485,7 +485,7 @@ msgstr "Floede"
 # MSG_SELFTEST_COOLING_FAN c=20
 #: messages.c:88
 msgid "Front print fan?"
-msgstr "Frontflaekt ?"
+msgstr "Frontflaekt?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
@@ -535,7 +535,7 @@ msgstr "Aendring utford!"
 # MSG_CORRECTLY c=20
 #: ultralcd.cpp:2562
 msgid "Changed correctly?"
-msgstr "Aendring korrekt ?"
+msgstr "Aendring korrekt?"
 
 # MSG_SELFTEST_CHECK_BED c=20
 #: messages.c:94
@@ -610,12 +610,12 @@ msgstr "Saett i filament"
 # MSG_FILAMENT_LOADED c=20 r=2
 #: messages.c:38
 msgid "Is filament loaded?"
-msgstr "Aer filament isatt ?"
+msgstr "Aer filament isatt?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:109
 msgid "Is steel sheet on heatbed?"
-msgstr "Ligger metallskiva pa vaermebaedden ?"
+msgstr "Ligger metallskiva pa vaermebaedden?"
 
 # MSG_LAST_PRINT_FAILURES c=20
 #: messages.c:57
