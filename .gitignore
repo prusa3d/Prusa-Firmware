@@ -1,6 +1,7 @@
 .settings
 .project
 .cproject
+.vscode
 Debug
 __pycache__
 Firmware/Configuration_prusa.h
