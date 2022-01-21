@@ -16,7 +16,7 @@ Help `./PF-build.sh -h`
 # MK404 Simulator
 
 ## MK404-build.sh 
-**MK404 is a comminuty 3d printer simulator created by @vintagepc**
+**MK404 is a community 3d printer simulator created by @vintagepc**
 Please checkout and support his github repository [MK404](https://github.com/vintagepc/MK404) and the [MK404 Wiki](https://github.com/vintagepc/MK404/wiki)
 
 At this moment the `MK404-build.sh` script is only supported on Linux
