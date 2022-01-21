@@ -166,6 +166,7 @@
 # 24 Jun 2021, 3d-gussner, Fix MK404 user interaction not to show if compiling 'All' variants
 # 24 Jun 2021, 3d-gussner, MK404 is only supported on Linux at this moment.
 
+
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 #### Start: Failures
