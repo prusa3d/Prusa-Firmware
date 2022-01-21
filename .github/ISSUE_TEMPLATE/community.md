@@ -1,7 +1,7 @@
 ---
 name: Community
 about: Related to "Community made" features
-title: "[Community made]<Enter comprehensive title>"
+title: "[Community made] <Enter comprehensive title>"
 labels: community_made
 assignees: ''
 
