@@ -189,6 +189,12 @@ extern bool scan_bed_induction_points(int8_t verbosity_level);
 // after power panic, when it is expected, that the baby step has been already applied.
 extern void babystep_load();
 
+// Intended to revert the Z-offset changes when the Z-offset
+// is changed in "Live Z Adjustment" but the user cancels the
+// operation by long pressing out of the menu, then the printer 
+// should move the Z-axis to reflect the Z-offset stored in EEPROM.
+void babystep_revert();
+
 // Apply Z babystep value from the EEPROM through the planner.
 extern void babystep_apply();
 

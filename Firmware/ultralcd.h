@@ -168,6 +168,8 @@ extern uint8_t SilentModeMenu_MMU;
 extern bool cancel_heatup;
 extern bool isPrintPaused;
 
+extern float unsaved_live_z_adjust;
+
 extern uint8_t scrollstuff;
 
 

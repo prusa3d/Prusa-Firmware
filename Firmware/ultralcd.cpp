@@ -73,7 +73,7 @@ CustomMsg custom_message_type = CustomMsg::Status;
 uint8_t custom_message_state = 0;
 
 bool isPrintPaused = false;
-
+float unsaved_live_z_adjust = 0;
 static ShortTimer display_time; //just timer for showing pid finished message on lcd;
 static uint16_t pid_temp = DEFAULT_PID_TEMP;
 
@@ -2637,6 +2637,7 @@ static void lcd_babystep_z()
         else babystepsTodoZadd(lcd_encoder);
 
 		_md->babystepMemMMZ = _md->babystepMemZ/cs.axis_steps_per_unit[Z_AXIS];
+        unsaved_live_z_adjust = _md->babystepMemMMZ; // Store value in case user wants to cancel changes
 		_delay(50);
 		lcd_encoder = 0;
 		lcd_draw_update = 1;
@@ -7442,10 +7443,12 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
+    lcd_longpress_trigger = 0;
     // Wake up the LCD backlight and,
     // start LCD inactivity timer
     lcd_timeoutToStatus.start();
-    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE || Stopped)
+    backlight_wake();
+    if ((homing_flag || mesh_bed_leveling_flag) && (menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE  || Stopped))
     {
         // disable longpress during re-entry, while homing, calibration or if a serious error
         lcd_quick_feedback();
@@ -7456,6 +7459,13 @@ void menu_lcd_longpress_func(void)
         // only toggle the experimental menu visibility flag
         lcd_quick_feedback();
         eeprom_toggle((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY);
+        return;
+    }
+
+    if (menu_menu == lcd_babystep_z) {
+        // User wants to cancel the adjustment to Z-offset.
+        babystep_revert();
+        menu_back();
         return;
     }
 

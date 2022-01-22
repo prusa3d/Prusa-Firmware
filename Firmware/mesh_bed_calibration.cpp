@@ -3034,6 +3034,23 @@ static void shift_z(float delta)
     plan_set_z_position(current_position[Z_AXIS]);
 }
 
+/**
+ * @brief Similar to shift_z() but this function is
+ * intended to revert changes in the Z-offset from
+ * "Live Z Adjustment" menu.
+ * @param delta the difference between Z offset stored in EEPROM
+ * and Z offset that was adjusted in the "Live Z Adjustment" menu but
+ * was not saved.
+ */
+static void shift_baby_z(float delta) {
+    if (current_position[Z_AXIS] == Z_MIN_POS) {
+        // Printer is not homed and is not printing anything
+        plan_set_z_position(delta);
+    } else {
+        // During printing we need to use current_position.
+        plan_set_z_position(current_position[Z_AXIS] - delta);
+    }
+}
 // Number of baby steps applied
 static int babystepLoadZ = 0;
 
@@ -3059,6 +3076,11 @@ void babystep_load()
         SERIAL_ECHOLN("");
     #endif
     }
+}
+
+void babystep_revert(){
+    babystep_load(); // Read z offset from EEPROM
+    shift_baby_z(unsaved_live_z_adjust - float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
 }
 
 void babystep_apply()
