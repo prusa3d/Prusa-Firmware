@@ -400,7 +400,7 @@ msgstr "Felstatistik"
 # MSG_FAN_SPEED c=14
 #: messages.c:36
 msgid "Fan speed"
-msgstr "Flaektfart"
+msgstr "Flaekthast."
 
 # MSG_SELFTEST_FAN c=20
 #: messages.c:91
@@ -980,7 +980,7 @@ msgstr "Ta bort filamentet och tryck sedan pa knappen."
 # MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: messages.c:84
 msgid "Please remove steel sheet from heatbed."
-msgstr "Ta bort metallskivan fran varmebadden."
+msgstr "Ta bort metallskivan fran vaermebaedden."
 
 # MSG_RUN_XYZ c=20 r=4
 #: Marlin_main.cpp:5338
@@ -1210,7 +1210,7 @@ msgstr "Sjaelvtestet felade"
 # MSG_FORCE_SELFTEST c=20 r=8
 #: Marlin_main.cpp:1637
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
-msgstr "Sjalevtest kommer att utfoeras foer att kalibrera exakt sensorloes hemposition."
+msgstr "Sjaelvtest kommer att utfoeras foer att kalibrera exakt sensorloes hemposition."
 
 # MSG_SEL_PREHEAT_TEMP c=20 r=6
 #: ultralcd.cpp:4998
@@ -1450,7 +1450,7 @@ msgstr "okaend"
 # MSG_USERWAIT c=20
 #: Marlin_main.cpp:4347
 msgid "Wait for user..."
-msgstr "Invantar anvandare.."
+msgstr "Invaentar anvandare."
 
 # MSG_WAITING_TEMP c=20 r=4
 #: ultralcd.cpp:3283
