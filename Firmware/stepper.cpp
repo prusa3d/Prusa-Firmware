@@ -299,6 +299,10 @@ ISR(TIMER1_COMPA_vect) {
 	if (sp < SP_min) SP_min = sp;
 #endif //DEBUG_STACK_MONITOR
 
+    // check for faulty pull-ups enabled on thermistor inputs
+    if (PORTF & 0x5F)
+        pullup_error(false);
+
 #ifdef LIN_ADVANCE
     advance_isr_scheduler();
 #else
