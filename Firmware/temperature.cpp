@@ -1683,6 +1683,11 @@ void adc_ready(void) //callback from adc when sampling finished
 
 FORCE_INLINE static void temperature_isr()
 {
+    // check for faulty pull-ups enabled on thermistor inputs
+    if (PORTF & 0x5F)
+        pullup_error(true);
+
+
 	if (!temp_meas_ready) adc_cycle();
 	lcd_buttons_update();
 
