@@ -208,7 +208,6 @@ static ShortTimer crashDetTimer;
 //unsigned long load_filament_time;
 
 bool mesh_bed_leveling_flag = false;
-bool mesh_bed_run_from_menu = false;
 
 #ifdef PRUSA_M28
 bool prusa_sd_card_upload = false;
@@ -3448,7 +3447,6 @@ static void gcode_G80()
     lcd_setstatuspgm(_T(WELCOME_MSG));
     custom_message_type = custom_message_type_old;
     custom_message_state = custom_message_state_old;
-    mesh_bed_run_from_menu = false;
     lcd_update(2);
 
     st_synchronize();
