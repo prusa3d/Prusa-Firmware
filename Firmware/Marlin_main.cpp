@@ -208,7 +208,6 @@ static ShortTimer crashDetTimer;
 //unsigned long load_filament_time;
 
 bool mesh_bed_leveling_flag = false;
-bool mesh_bed_run_from_menu = false;
 
 #ifdef PRUSA_M28
 bool prusa_sd_card_upload = false;
@@ -3462,7 +3461,6 @@ static void gcode_G80()
     lcd_setstatuspgm(_T(WELCOME_MSG));
     custom_message_type = custom_message_type_old;
     custom_message_state = custom_message_state_old;
-    mesh_bed_run_from_menu = false;
     lcd_update(2);
 
     st_synchronize();
@@ -5676,7 +5674,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                 SERIAL_PROTOCOLPGM("\nZ search height: ");
                 SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
                 SERIAL_PROTOCOLLNPGM("\nMeasured points:");
-                for (uint8_t y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
+                for (uint8_t y = MESH_NUM_Y_POINTS; y-- > 0;) {
                     for (uint8_t x = 0; x < MESH_NUM_X_POINTS; x++) {
                         SERIAL_PROTOCOLPGM("  ");
                         SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
@@ -11188,7 +11186,7 @@ void uvlo_()
     eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
 
     // Store the mesh bed leveling offsets. This is 2*7*7=98 bytes, which takes 98*3.4us=333us in worst case.
-    for (int8_t mesh_point = 0; mesh_point < MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS; ++ mesh_point) {
+    for (uint8_t mesh_point = 0; mesh_point < MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS; ++ mesh_point) {
       uint8_t ix = mesh_point % MESH_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
       uint8_t iy = mesh_point / MESH_NUM_X_POINTS;
       // Scale the z value to 1u resolution.

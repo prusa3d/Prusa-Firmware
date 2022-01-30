@@ -354,7 +354,6 @@ extern unsigned long start_pause_print;
 extern unsigned long t_fan_rising_edge;
 
 extern bool mesh_bed_leveling_flag;
-extern bool mesh_bed_run_from_menu;
 
 // save/restore printing
 extern bool saved_printing;
