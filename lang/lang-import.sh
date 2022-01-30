@@ -29,7 +29,7 @@
 #                           Add Community language support
 #                           Use `git rev-list --count HEAD lang-import.sh`
 #                           to get Build Nr
-# 14 Jan. 2022, 3d-gussner, Replace German UTF-8 'äöüß' to HD44780 A00 ROM 'äöüß'
+# 14 Jan. 2022, 3d-gussner, Replace German UTF-8 'Ã¤Ã¶Ã¿Ã¿' to HD44780 A00 ROM 'Ã¤Ã¶Ã¿Ã¿'
 # 28 Jan. 2022, 3d-gussner, Run lang-check and output `xx-output.txt` file to review
 #                           translations
 #                           new argruments `--information` `--import-check`
@@ -81,52 +81,52 @@ sed -i 's/ \\n/ /g;s/\\n/ /g' $LNG'_filtered.po'
 
 #replace in czech translation
 if [ "$LNG" = "cz" ]; then
- #replace 'ž' with 'z'
+ #replace 'Âž' with 'z'
  sed -i 's/\xc5\xbe/z/g' $LNG'_filtered.po'
- #replace 'ì' with 'e'
+ #replace 'Ã¬' with 'e'
  sed -i 's/\xc4\x9b/e/g' $LNG'_filtered.po'
- #replace 'í' with 'i'
+ #replace 'Ã­' with 'i'
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
- #replace 'ø' with 'r'
+ #replace 'Ã¸' with 'r'
  sed -i 's/\xc5\x99/r/g' $LNG'_filtered.po'
- #replace 'è' with 'c'
+ #replace 'Ã¨' with 'c'
  sed -i 's/\xc4\x8d/c/g' $LNG'_filtered.po'
- #replace 'á' with 'a'
+ #replace 'Ã¡' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
 #replace in german translation https://en.wikipedia.org/wiki/German_orthography
 if [ "$LNG" = "de" ]; then
-#replace UTF-8 'äöüß' to HD44780 A00 'äöüß'
- #replace 'ä' with 'A00 ROM ä'
+#replace UTF-8 'Ã¤Ã¶Ã¼ÃŸ' to HD44780 A00 'Ã¤Ã¶Ã¼ÃŸ'
+ #replace 'Ã¤' with 'A00 ROM Ã¤'
  sed -i 's/\xc3\xa4/\\xe1/g' $LNG'_filtered.po'
- #replace 'Ä' with 'A00 ROM ä'
+ #replace 'Ã„' with 'A00 ROM Ã¤'
  sed -i 's/\xc3\x84/\\xe1/g' $LNG'_filtered.po'
- #replace 'ü' with 'A00 ROM ü'
+ #replace 'Ã¼' with 'A00 ROM Ã¼'
  sed -i 's/\xc3\xbc/\\xf5/g' $LNG'_filtered.po'
- #replace 'Ü' with 'A00 ROM ü'
+ #replace 'Ãœ' with 'A00 ROM Ã¼'
  sed -i 's/\xc3\x9c/\\xf5/g' $LNG'_filtered.po'
- #replace 'ö' with 'A00 ROM ö'
+ #replace 'Ã¶' with 'A00 ROM Ã¶'
  sed -i 's/\xc3\xb6/\\xef/g' $LNG'_filtered.po'
- #replace 'Ö' with 'A00 ROM ö'
+ #replace 'Ã–' with 'A00 ROM Ã¶'
  sed -i 's/\xc3\x96/\\xef/g' $LNG'_filtered.po'
- #replace 'ß' with 'A00 ROM ß'
+ #replace 'ÃŸ' with 'A00 ROM ÃŸ'
  sed -i 's/\xc3\x9f/\\xe2/g' $LNG'_filtered.po'
 fi
 
 #replace in spain translation
 if [ "$LNG" = "es" ]; then
- #replace 'á' with 'a'
+ #replace 'Ã¡' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '¿' with '?'
+ #replace 'Â¿' with '?'
  sed -i 's/\xc2\xbf/?/g' $LNG'_filtered.po'
- #replace 'ó' with 'o'
+ #replace 'Ã³' with 'o'
  sed -i 's/\xc3\xb3/o/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'í' with 'i'
+ #replace 'Ã­' with 'i'
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
  #replace '!' with '!'
  sed -i 's/\xc2\xa1/!/g' $LNG'_filtered.po'
@@ -136,145 +136,175 @@ fi
 
 #replace in french translation https://en.wikipedia.org/wiki/French_orthography
 if [ "$LNG" = "fr" ]; then
- #replace 'á' with 'a' (right)
+ #replace 'Ã¡' with 'a' (right)
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace 'Á' with 'A' (right)
+ #replace 'Ã' with 'A' (right)
  sed -i 's/\xc3\x81/A/g' $LNG'_filtered.po'
- #replace 'à' with 'a' (left)
+ #replace 'Ã ' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace 'À' with 'A' (left)
+ #replace 'Ã€' with 'A' (left)
  sed -i 's/\xc3\x80/A/g' $LNG'_filtered.po'
- #replace 'é' with 'e' (right)
+ #replace 'Ã©' with 'e' (right)
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'É' with 'E' (right)
+ #replace 'Ã‰' with 'E' (right)
  sed -i 's/\xc3\x89/E/g' $LNG'_filtered.po'
- #replace 'è' with 'e' (left)
+ #replace 'Ã¨' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace 'È' with 'E' (left)
+ #replace 'Ãˆ' with 'E' (left)
  sed -i 's/\xc3\x88/E/g' $LNG'_filtered.po'
 fi
 
 #replace in italian translation
 if [ "$LNG" = "it" ]; then
- #replace 'é' with 'e' (left)
+ #replace 'Ã©' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace 'á' with 'a' (left)
+ #replace 'Ã¡' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace 'ó' with 'o' (left)
+ #replace 'Ã³' with 'o' (left)
  sed -i 's/\xc3\xb2/o/g' $LNG'_filtered.po'
- #replace 'ú' with 'u' (left)
+ #replace 'Ãº' with 'u' (left)
  sed -i 's/\xc3\xb9/u/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'É' with 'E' (left)
+ #replace 'Ã‰' with 'E' (left)
  sed -i 's/\xc3\x88/E/g' $LNG'_filtered.po'
 fi
 
 #replace in dutch translation according to https://nl.wikipedia.org/wiki/Accenttekens_in_de_Nederlandse_spelling
 if [ "$LNG" = "nl" ]; then
- #replace 'ë' with 'e'
+ #replace 'Ã«' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
- #replace 'ï' with 'i'
+ #replace 'Ã¯' with 'i'
  sed -i 's/\xc3\xaf/i/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'è' with 'e' (left)
+ #replace 'Ã¨' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace 'ö' with 'o' (left)
+ #replace 'Ã¶' with 'o' (left)
  sed -i 's/\xc3\xb6/o/g' $LNG'_filtered.po'
- #replace 'ê' with 'e' (left)
+ #replace 'Ãª' with 'e' (left)
  sed -i 's/\xc3\xaa/e/g' $LNG'_filtered.po'
- #replace 'ü' with 'u' (left)
+ #replace 'Ã¼' with 'u' (left)
  sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
- #replace 'ç' with 'c' (left)
+ #replace 'Ã§' with 'c' (left)
  sed -i 's/\xc3\xa7/c/g' $LNG'_filtered.po'
- #replace 'á' with 'a' (left)
+ #replace 'Ã¡' with 'a' (left)
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace 'à' with 'a' (left)
+ #replace 'Ã ' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace 'ä' with 'a' (left)
+ #replace 'Ã¤' with 'a' (left)
  sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
- #replace 'û' with 'u' (left)
+ #replace 'Ã»' with 'u' (left)
  sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
- #replace 'î' with 'i' (left)
+ #replace 'Ã®' with 'i' (left)
  sed -i 's/\xc3\xae/i/g' $LNG'_filtered.po'
- #replace 'í' with 'i' (left)
+ #replace 'Ã­' with 'i' (left)
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
- #replace 'ô' with 'o' (left)
+ #replace 'Ã´' with 'o' (left)
  sed -i 's/\xc3\xb4/o/g' $LNG'_filtered.po'
- #replace 'ú' with 'u' (left)
+ #replace 'Ãº' with 'u' (left)
  sed -i 's/\xc3\xba/u/g' $LNG'_filtered.po'
- #replace 'ñ' with 'n' (left)
+ #replace 'Ã±' with 'n' (left)
  sed -i 's/\xc3\xb1/n/g' $LNG'_filtered.po'
- #replace 'â' with 'a' (left)
+ #replace 'Ã¢' with 'a' (left)
  sed -i 's/\xc3\xa2/a/g' $LNG'_filtered.po'
- #replace 'Å' with 'A' (left)
+ #replace 'Ã…' with 'A' (left)
  sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
 fi
 
 if [ "$LNG" = "sv" ]; then
-#repace 'Å' with 'Aa'
+#repace 'Ã…' with 'Aa'
 sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
-#repace 'å' with 'aa'
+#repace 'Ã¥' with 'aa'
 sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
 fi
 
 if [ "$LNG" = "da" ]; then
-#repace 'Å' with 'Aa'
+#repace 'Ã…' with 'Aa'
 sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
-#repace 'å' with 'aa'
+#repace 'Ã¥' with 'aa'
 sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
 fi
 
 if [ "$LNG" = "sl" ]; then
- #replace 'ë' with 'e'
+ #replace 'Ã«' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
- #replace 'ä' with 'a' (left)
+ #replace 'Ã¤' with 'a' (left)
  sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
-if [ "$LNG" = "hu" ]; then
- #replace 'ë' with 'e'
- sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
- #replace 'ä' with 'a'
- sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+if [ "$LNG" = "hu" ]; then # See https://www.fileformat.info/info/charset/UTF-8/list.htm
+ #replace 'Ã' with 'A'(acute)
+ sed -i 's/\xc3\x81/A/g' $LNG'_filtered.po'
+ #replace 'Ã¡' with 'a'
+ sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
+ #replace 'Ã‰' with 'E' (acute)
+ sed -i 's/\xc3\x89/E/g' $LNG'_filtered.po'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+ #replace 'Ã' with 'I' (acute)
+ sed -i 's/\xc3\x8d/I/g' $LNG'_filtered.po'
+ #replace 'iÌ‡Ì' with 'i'
+ sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
+ #replace 'Ã“' with 'O' (acute)
+ sed -i 's/\xc3\x93/O/g' $LNG'_filtered.po'
+ #replace 'Ã³' with 'o'
+ sed -i 's/\xc3\xb3/o/g' $LNG'_filtered.po'
+ #replace 'Ã–' with 'O' (diaresis)
+ sed -i 's/\xc3\x96/O/g' $LNG'_filtered.po'
+ #replace 'Ã¶' with 'o'
+ sed -i 's/\xc3\xb6/o/g' $LNG'_filtered.po'
+ #replace 'Å' with 'O' (double acute)
+ sed -i 's/\xc5\x90/O/g' $LNG'_filtered.po'
+ #replace 'Å‘' with 'o'
+ sed -i 's/\xc5\x91/o/g' $LNG'_filtered.po'
+ #replace 'Ãš' with 'U' (acute) 
+ sed -i 's/\xc3\x9a/U/g' $LNG'_filtered.po'
+ #replace 'Ãº' with 'u'
+ sed -i 's/\xc3\xba/u/g' $LNG'_filtered.po'
+ #replace 'Ãœ' with 'U' (diaersis)
+ sed -i 's/\xc3\x9c/U/g' $LNG'_filtered.po'
+ #replace 'Ã¼' with 'u'
+ sed -i 's/\xc3\xbc/u/g' $LNG'_filtered.po'
+ #replace 'Å°' with 'U' (double acute)
+ sed -i 's/\xc5\xb0/U/g' $LNG'_filtered.po'
+ #replace 'Å±' with 'u'
+ sed -i 's/\xc5\xb1/u/g' $LNG'_filtered.po'
 fi
 
 if [ "$LNG" = "lb" ]; then
- #replace 'ë' with 'e'
+ #replace 'Ã«' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
- #replace 'ä' with 'a'
+ #replace 'Ã¤' with 'a'
  sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
 if [ "$LNG" = "hr" ]; then
- #replace 'ë' with 'e'
+ #replace 'Ã«' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
- #replace 'ä' with 'a'
+ #replace 'Ã¤' with 'a'
  sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
 if [ "$LNG" = "lt" ]; then
- #replace 'ë' with 'e'
+ #replace 'Ã«' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
- #replace 'ä' with 'a'
+ #replace 'Ã¤' with 'a'
  sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 #replace in polish translation
 #if [ "$LNG" = "pl" ]; then
 #fi
 
-#check for nonasci characters excpet HD44780 ROM A00 'äöüß'
+#check for nonasci characters excpet HD44780 ROM A00 'Ã¤Ã¶Ã¼ÃŸ'
 if grep --color='auto' -P -n '[^\x00-\x7F]' $LNG'_filtered.po' >nonascii.txt; then
  exit
 fi
