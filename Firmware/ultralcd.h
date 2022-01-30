@@ -12,13 +12,20 @@ extern void menu_lcd_lcdupdate_func(void);
 void ultralcd_init();
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
+
+//! LCD status severities
+#define LCD_STATUS_CRITICAL 2 //< Heater failure
+#define LCD_STATUS_ALERT    1 //< Other hardware issue
+#define LCD_STATUS_NONE     0 //< No alert message set
+
 //! return to the main status screen and display the alert message
 //! Beware - it has sideeffects:
 //! - always returns the display to the main status screen
 //! - always makes lcd_reset (which is slow and causes flicker)
-//! - does not update the message if there is already one (i.e. lcd_status_message_level > 0)
-void lcd_setalertstatus(const char* message);
-void lcd_setalertstatuspgm(const char* message);
+//! - does not update the message if there is one with the same (or higher) severity present
+void lcd_setalertstatus(const char* message, uint8_t severity = LCD_STATUS_ALERT);
+void lcd_setalertstatuspgm(const char* message, uint8_t severity = LCD_STATUS_ALERT);
+
 //! only update the alert message on the main status screen
 //! has no sideeffects, may be called multiple times
 void lcd_updatestatus(const char *message);
@@ -41,8 +48,7 @@ void lcd_pause_print();
 void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
-void prusa_statistics(uint8_t _message, uint8_t _col_nr = 0);
-unsigned char lcd_choose_color();
+void prusa_statistics(int _message, uint8_t _col_nr = 0);
 void lcd_load_filament_color_check();
 //void lcd_mylang();
 

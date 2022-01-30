@@ -2,8 +2,6 @@
 #include "cardreader.h"
 #include "ultralcd.h"
 
-extern bool Stopped;
-
 // Reserve BUFSIZE lines of length MAX_CMD_SIZE plus CMDBUFFER_RESERVE_FRONT.
 char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];
 // Head of the circular buffer, where to read.
@@ -23,7 +21,7 @@ bool cmdbuffer_front_already_processed = false;
 bool cmdqueue_serial_disabled = false;
 
 int serial_count = 0;  //index of character read from serial line
-boolean comment_mode = false;
+bool comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
 ShortTimer farm_incomplete_command_timeout_timer;
