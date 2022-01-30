@@ -1,14 +1,16 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 17
+# Version 1.0.1 Build 18
 #
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
 #
 #############################################################################
 # Change log:
-#  9 Nov  2018, XPila,      Initial
+#  9 Nov. 2018, XPila,      Initial
+# 10 Dec. 2018, jhoblitt,   make all shell scripts executable
 # 14 Sep. 2019, 3d-gussner, Prepare adding new language
+#  6 Sep. 2019, DRracer,    change to bash
 #  1 Mar. 2019, 3d-gussner, Move `Dutch` language parts
 #                           Add templates for future community languages
 # 17 Dec. 2021, 3d-gussner, Use one config file for all languages
@@ -16,11 +18,13 @@
 # 21 Dec. 2021, 3d-gussner, Add Swedish, Danish, Slovanian, Hungarian,
 #                           Luxembourgish, Croatian
 #  3 Jan. 2022, 3d-gussner, Add Lithuanian
+#                           Cleanup outaded code
 # 11 Jan. 2022, 3d-gussner, Added version and Change log
 #                           colored output
 #                           Add Community language support
 #                           Use `git rev-list --count HEAD lang-export.sh`
 #                           to get Build Nr
+# 25 Jan. 2022, 3d-gussner, Replace German HD44780 A00 ROM 'äöüß' to UTF-8 'äöüß'
 #############################################################################
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
@@ -183,6 +187,19 @@ done >>$OUTFILE) 2>&1
 #replace LF with CRLF
 sync
 sed -i 's/$/\r/' $OUTFILE
+
+#replace HD44780 A00 'äöüß' to UTF-8 'äöüß'
+if [ "$LNG" = "de" ]; then
+ #replace 'A00 ROM ä' with 'ä' 
+  sed -i 's/\\xe1/\xc3\xa4/g' $OUTFILE
+  #replace 'A00 ROM ü' with 'ü'
+  sed -i 's/\\xf5/\xc3\xbc/g' $OUTFILE
+  #replace 'A00 ROM ö' with 'ö'
+  sed -i 's/\\xef/\xc3\xb6/g' $OUTFILE
+  #replace 'A00 ROM ß' with 'ß'
+  sed -i 's/\\xe2/\xc3\x9f/g' $OUTFILE
+fi
+
 echo >&2
 echo "$(tput setaf 2)lang-export.sh finished$(tput sgr 0)">&2
 exit 0

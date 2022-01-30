@@ -1,19 +1,31 @@
 #!/usr/bin/env python3
 #
-# Version 1.0.2 - Build 37
+# Version 1.0.2 - Build 38
 #############################################################################
 # Change log:
-#  7 May  2019, Ondrej Tuma, Initial
-#  9 June 2020, 3d-gussner, Added version and Change log
-#  9 June 2020, 3d-gussner, Wrap text to 20 char and rows
-#  9 June 2020, 3d-gussner, colored output
+#  7 May  2019, ondratu   , Initial
+# 13 June 2019, 3d-gussner, Fix length false positives
+# 14 Sep. 2019, 3d-gussner, Prepare adding new language
+# 18 Sep. 2020, 3d-gussner, Fix execution of lang-check.py
 #  2 Apr. 2021, 3d-gussner, Fix and improve text warp
 # 22 Apr. 2021, DRracer   , add English source to output
 # 23 Apr. 2021, wavexx    , improve
 # 24 Apr. 2021, wavexx    , improve
-# 26 Apr. 2021, 3d-gussner, add character ruler
-# 07 Jan. 2022, 3d-gussner, Check for Syntax errors and exit with error
+# 26 Apr. 2021, wavexx    , add character ruler
+# 21 Dec. 2021, 3d-gussner, Prepare more community languages
+#                             Swedish
+#                             Danish
+#                             Slovanian
+#                             Hungarian
+#                             Luxembourgian
+#                             Croatian
+#  3 Jan. 2022, 3d-gussner, Prepare Lithuanian
+#  7 Jan. 2022, 3d-gussner, Check for Syntax errors and exit with error
 #                         , add Build number 'git rev-list --count HEAD lang-check.py'
+# 30 Jan. 2022, 3d-gussner, Add arguments. Requested by @AttilaSVK
+#                             --information == output all source and translated messages
+#                             --import-check == used by `lang-import.sh`to verify
+#                                               newly import `lang_en_??.txt` files
 #############################################################################
 #
 # Expected syntax of the files, which other scripts depend on
@@ -112,12 +124,15 @@ def ign_char_first(c):
 def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
 
-def parse_txt(lang, no_warning, warn_empty):
+def parse_txt(lang, no_warning, warn_empty, information, import_check):
     """Parse txt file and check strings to display definition."""
     if lang == "en":
         file_path = "lang_en.txt"
     else:
-        file_path = "lang_en_%s.txt" % lang
+        if import_check:
+            file_path = "po/new/lang_en_%s.txt" % lang
+        else:
+            file_path = "lang_en_%s.txt" % lang
 
     print(green("Start %s lang-check" % lang))
 
@@ -208,7 +223,7 @@ def parse_txt(lang, no_warning, warn_empty):
             source = unescape(source)
             if lang != "en":
                 translation = unescape(translation)
-
+            
             #print (translation) #Debug
             wrapped_source = wrap_text(source, cols)
             rows_count_source = len(wrapped_source)
@@ -271,6 +286,12 @@ def parse_txt(lang, no_warning, warn_empty):
                             print_source_translation(source, translation,
                                                     wrapped_source, wrapped_translation,
                                                     rows, cols)
+                    #elif information:
+                    #    print(green('[I]: %s' % (message)))
+                    #    print_source_translation(source, translation,
+                    #                            wrapped_source, wrapped_translation,
+                    #                            rows, cols)
+
 
                     # Short translation
                     if not no_warning and len(source) > 0 and len(translation) > 0:
@@ -279,6 +300,11 @@ def parse_txt(lang, no_warning, warn_empty):
                             print_source_translation(source, translation,
                                                     wrapped_source, wrapped_translation,
                                                     rows, cols)
+                    #elif information:
+                    #    print(green('[I]: %s' % (message)))
+                    #    print_source_translation(source, translation,
+                    #                            wrapped_source, wrapped_translation,
+                    #                            rows, cols)
 
                     # Incorrect trailing whitespace in translation
                     if not no_warning and len(translation) > 0 and \
@@ -292,6 +318,13 @@ def parse_txt(lang, no_warning, warn_empty):
                         print_source_translation(source, translation,
                                                 wrapped_source, wrapped_translation,
                                                 rows, cols)
+                    elif information:
+                        print(green('[I]: %s' % (message)))
+                        print_source_translation(source, translation,
+                                                wrapped_source, wrapped_translation,
+                                                rows, cols)
+
+
             delimiter = src.readline()
             lines += 1
             if ("" == delimiter):
@@ -316,10 +349,16 @@ def main():
     parser.add_argument(
         "--warn-empty", action="store_true",
         help="Warn about empty translations")
+    parser.add_argument(
+        "--information", action="store_true",
+        help="Output all translations")
+    parser.add_argument(
+        "--import-check", action="store_true",
+        help="Check import file and save informational to file")
 
     args = parser.parse_args()
     try:
-        parse_txt(args.lang, args.no_warning, args.warn_empty)
+        parse_txt(args.lang, args.no_warning, args.warn_empty, args.information, args.import_check)
         return 0
     except Exception as exc:
         print_exc()
