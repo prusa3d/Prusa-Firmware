@@ -1,13 +1,18 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 23
+# Version 1.0.1 Build 24
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
 #
 #############################################################################
 # Change log:
-#  9 Nov  2018, XPila,      Initial
+#  9 Nov. 2018, XPila,      Initial
+# 21 Nov. 2018, XPila,      fix - replace '\n' with space in all languages
+# 10 Dec. 2018, jhoblitt,   make all shell scripts executable
+# 21 Aug. 2019, 3d-gussner, Added "All" argument and it is default in nothing is chosen
+#                           Added few German/French diacritical characters
+#  6 Sep. 2019, DRracer,    change to bash
 # 14 Sep. 2019, 3d-gussner, Prepare adding new language
 #  1 Mar. 2019, 3d-gussner, Move `Dutch` language parts
 #                           Add templates for future community languages
@@ -18,11 +23,16 @@
 # 21 Dec. 2021, 3d-gussner, Add Swedish, Danish, Slovanian, Hungarian,
 #                           Luxembourgish, Croatian
 #  3 Jan. 2022, 3d-gussner, Add Lithuanian
+#                           Cleanup outaded code
 # 11 Jan. 2022, 3d-gussner, Added version and Change log
 #                           colored output
 #                           Add Community language support
-#                           Use `git rev-list --count HEAD lang-export.sh`
+#                           Use `git rev-list --count HEAD lang-import.sh`
 #                           to get Build Nr
+# 14 Jan. 2022, 3d-gussner, Replace German UTF-8 'הצüß' to HD44780 A00 ROM 'הצüß'
+# 28 Jan. 2022, 3d-gussner, Run lang-check and output `xx-output.txt` file to review
+#                           translations
+#                           new argruments `--information` `--import-check`
 #############################################################################
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
@@ -30,14 +40,16 @@ if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config 
 
 echo "$(tput setaf 2)lang-import.sh started$(tput sgr 0)" >&2
 
-if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
-  LANGUAGES+=" $COMMUNITY_LANGUAGES"
-fi
-echo "$(tput setaf 2)lang-import languages:$LANGUAGES$(tput sgr 0)" >&2
-
 LNG=$1
 # if no arguments, 'all' is selected (all po and also pot will be generated)
 if [ -z "$LNG" ]; then LNG=all; fi
+
+if [[ ! -z "$COMMUNITY_LANGUAGES" && "$LNG" = "all" ]]; then
+  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+else
+  LANGUAGES="$LNG"
+fi
+echo "$(tput setaf 2)lang-import languages:$LANGUAGES$(tput sgr 0)" >&2
 
 # if 'all' is selected, script will generate all po files and also pot file
 if [ "$LNG" = "all" ]; then
@@ -87,20 +99,21 @@ fi
 
 #replace in german translation https://en.wikipedia.org/wiki/German_orthography
 if [ "$LNG" = "de" ]; then
- #replace 'ה' with 'ae'
- sed -i 's/\xc3\xa4/ae/g' $LNG'_filtered.po'
- #replace 'ִ' with 'Ae'
- sed -i 's/\xc3\x84/Ae/g' $LNG'_filtered.po'
- #replace 'ü' with 'ue'
- sed -i 's/\xc3\xbc/ue/g' $LNG'_filtered.po'
- #replace 'Ü' with 'Ue'
- sed -i 's/\xc3\x9c/Ue/g' $LNG'_filtered.po'
- #replace 'צ' with 'oe'
- sed -i 's/\xc3\xb6/oe/g' $LNG'_filtered.po'
- #replace 'ײ' with 'Oe'
- sed -i 's/\xc3\x96/Oe/g' $LNG'_filtered.po'
- #replace 'ß' with 'ss'
- sed -i 's/\xc3\x9f/ss/g' $LNG'_filtered.po'
+#replace UTF-8 'הצüß' to HD44780 A00 'הצüß'
+ #replace 'ה' with 'A00 ROM ה'
+ sed -i 's/\xc3\xa4/\\xe1/g' $LNG'_filtered.po'
+ #replace 'ִ' with 'A00 ROM ה'
+ sed -i 's/\xc3\x84/\\xe1/g' $LNG'_filtered.po'
+ #replace 'ü' with 'A00 ROM ü'
+ sed -i 's/\xc3\xbc/\\xf5/g' $LNG'_filtered.po'
+ #replace 'Ü' with 'A00 ROM ü'
+ sed -i 's/\xc3\x9c/\\xf5/g' $LNG'_filtered.po'
+ #replace 'צ' with 'A00 ROM צ'
+ sed -i 's/\xc3\xb6/\\xef/g' $LNG'_filtered.po'
+ #replace 'ײ' with 'A00 ROM צ'
+ sed -i 's/\xc3\x96/\\xef/g' $LNG'_filtered.po'
+ #replace 'ß' with 'A00 ROM ß'
+ sed -i 's/\xc3\x9f/\\xe2/g' $LNG'_filtered.po'
 fi
 
 #replace in spain translation
@@ -199,21 +212,21 @@ if [ "$LNG" = "nl" ]; then
  sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
 fi
 
-if [ "$LGN" = "sv" ]; then
+if [ "$LNG" = "sv" ]; then
 #repace 'ֵ' with 'Aa'
 sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
 #repace 'ו' with 'aa'
 sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
 fi
 
-if [ "$LGN" = "da" ]; then
+if [ "$LNG" = "da" ]; then
 #repace 'ֵ' with 'Aa'
 sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
 #repace 'ו' with 'aa'
 sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
 fi
 
-if [ "$LGN" = "sl" ]; then
+if [ "$LNG" = "sl" ]; then
  #replace 'כ' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
  #replace 'ה' with 'a' (left)
@@ -222,7 +235,7 @@ if [ "$LGN" = "sl" ]; then
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
-if [ "$LGN" = "hu" ]; then
+if [ "$LNG" = "hu" ]; then
  #replace 'כ' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
  #replace 'ה' with 'a'
@@ -231,7 +244,7 @@ if [ "$LGN" = "hu" ]; then
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
-if [ "$LGN" = "lb" ]; then
+if [ "$LNG" = "lb" ]; then
  #replace 'כ' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
  #replace 'ה' with 'a'
@@ -240,7 +253,7 @@ if [ "$LGN" = "lb" ]; then
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
-if [ "$LGN" = "hr" ]; then
+if [ "$LNG" = "hr" ]; then
  #replace 'כ' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
  #replace 'ה' with 'a'
@@ -249,7 +262,7 @@ if [ "$LGN" = "hr" ]; then
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
-if [ "$LGN" = "lt" ]; then
+if [ "$LNG" = "lt" ]; then
  #replace 'כ' with 'e'
  sed -i 's/\xc3\xab/e/g' $LNG'_filtered.po'
  #replace 'ה' with 'a'
@@ -261,8 +274,8 @@ fi
 #if [ "$LNG" = "pl" ]; then
 #fi
 
-#check for nonasci characters
-if grep --color='auto' -P -n '[^\x00-\x7F]' $LNG'_filtered.po' >nonasci.txt; then
+#check for nonasci characters excpet HD44780 ROM A00 'הצüß'
+if grep --color='auto' -P -n '[^\x00-\x7F]' $LNG'_filtered.po' >nonascii.txt; then
  exit
 fi
 
@@ -302,5 +315,9 @@ echo "$(tput setaf 2)Finished with $LNGISO$(tput sgr 0)" >&2
 sed -i 's/""/"\\x00"/g' lang_en_$LNG.txt
 #remove CR
 sed -i "s/\r//g" lang_en_$LNG.txt
+#check new lang
+./../../lang-check.py $LNG --warn-empty
+./../../lang-check.py $LNG --information >$LNG-output.txt
 echo >&2
 echo "$(tput setaf 2)lang-import.sh finished$(tput sgr 0)">&2
+

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.2 Build 24
+# Version 1.0.2 Build 25
 #
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
@@ -23,13 +23,39 @@
 #############################################################################
 # Change log:
 # 18 June 2018, XPila,      Initial
+# 19 June 2018, XPila,      New ML support
+# 18 Oct. 2018, XPila,      New lang French
+# 26 Nov. 2018, mkbel,      Automate secondary language support build.
+#  7 May  2019, ondratu     Check translation dictionary files to display definition
+# 19 June 2019, mkbel       Disable language check warnings of type "[W]: No display definition on line".
+#                           Those warnings were masking all other much more useful build process output.
+# 14 Sep. 2019, 3d-gussner, Prepare adding new language
+# 18 Sep. 2020, 3d-gussner, Update new messages and their translations, fix translations
+#                           Update CZ, FR, IT, ES translations
+#                             CZ thanks to @DRracer
+#                             FR thanks to Carlin Dcustom
+#                             ES
+#                             IT thanks to @wavexx
+#                           Co-authored-by: @DRracer, @wavexx
+#  1 Mar. 2021, 3d-gussner, Add Dutch translation
 # 17 Dec. 2021, 3d-gussner, Use one config file for all languages
+# 21 Dec. 2021, 3d-gussner, Prepare more community languages
+#                             Swedish
+#                             Danish
+#                             Slovanian
+#                             Hungarian
+#                             Luxembourgian
+#                             Croatian
+#  3 Jan. 2022, 3d-gussner, Prepare Lithuanian
+#                           Cleanup outdated code
 # 11 Jan. 2022, 3d-gussner, Add message and size count comparison
 #                           Added version and Change log
 #                           colored output
 #                           Add Community language support
 #                           Use `git rev-list --count HEAD lang-build.sh`
 #                           to get Build Nr
+# 25 Jan. 2022, 3d-gussner, Fix check
+#                           Update documentation
 #############################################################################
 #
 # Config:
@@ -135,7 +161,7 @@ generate_binary()
  #check lang dictionary
  ./lang-check.py $1 #--no-warning
  #create lang_xx.tmp - different processing for 'en' language
- if [ "$1" = "en" ]; then
+ if [[ "$1" = "en" || ! -f "lang_en.max" ]]; then
   #remove comments and empty lines
   cat lang_en.txt | sed '/^$/d;/^#/d'
   #calculate number of strings

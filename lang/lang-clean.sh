@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 9
+# Version 1.0.1 Build 10
 #
 # clean.sh - multi-language support script
 #  Remove all language output files from lang folder.
@@ -8,7 +8,15 @@
 #############################################################################
 # Change log:
 #  1 Nov. 2018, XPila,      Initial
-# 17 Dec. 2021, 3d-gussner, Use one config file for all languages
+# 18 Oct. 2018, XPila,      New lang, arduino 1.8.5 - fw-clean.sh and lang-clean.sh fix
+# 25 Oct. 2018, XPila,      New lang - fixed french langcode and comparsion in lang-clean script
+# 10 Dec. 2018, jhoblitt,   make all shell scripts executable
+# 26 Jul. 2019, leptun,     Fix shifted languages. Use \n and \x0a
+# 14 Sep. 2019, 3d-gussner, Prepare adding new language
+# 01 Mar. 2021, 3d-gussner, Move `Dutch` language parts
+# 22 Mar. 2021, 3d-gussner, Move Dutch removing part to correct loaction
+# 21 Dec. 2021, 3d-gussner, Use one config file for all languages
+# 03 Jan. 2022, 3d-gussner, Cleanup outdated code
 # 11 Jan. 2022, 3d-gussner, Also remove temporally files which have been
 #                           generated for message and size count comparison
 #                           Added version and Change log
@@ -16,6 +24,7 @@
 #                           Add Community language support
 #                           Use `git rev-list --count HEAD lang-clean.sh`
 #                           to get Build Nr
+# 25 Jan. 2022, 3d-gussner, clean up lang-import.sh temproray files
 #############################################################################
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
@@ -52,12 +61,19 @@ clean_lang()
   rm_if_exists lang_en_$1.dif
   rm_if_exists lang_$1.ofs
   rm_if_exists lang_$1.txt
+  rm_if_exists po/new/$1_new.po
+  rm_if_exists po/new/$1.mo
+  rm_if_exists po/new/$1_filtered.po
+  rm_if_exists po/new/lang_en_$1.txt
+  rm_if_exists po/new/$1-output.txt
  fi
  rm_if_exists lang_$1_check.dif
  rm_if_exists lang_$1.bin
  rm_if_exists lang_$1.dat
  rm_if_exists lang_$1_1.tmp
  rm_if_exists lang_$1_2.tmp
+ rm_if_exists po/new/nonascii.txt
+
 }
 
 echo "$(tput setaf 2)lang-clean.sh started$(tput sgr0)" >&2
