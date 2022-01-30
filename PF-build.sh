@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_66
+# Version: 2.0.0-Build_67
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -166,6 +166,9 @@
 # 24 Jun 2021, 3d-gussner, Fix MK404 user interaction not to show if compiling 'All' variants
 # 24 Jun 2021, 3d-gussner, MK404 is only supported on Linux at this moment.
 # 03 Jan 2022, 3d-gussner, Remove calling lang-community.sh as not needed anymore
+# 21 Jan 2022, 3d-gussner, Sort variants
+#                          Add Arduino 1.8.19 as an option
+# 25 Jan 2022, 3d-gussner, Allow upper and lower case for MK404
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
@@ -221,7 +224,7 @@ while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_66 *"
+echo "* PF-build.sh Version: 2.0.0-Build_67 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
@@ -247,7 +250,7 @@ echo "  -b : '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "  -c : '$(tput setaf 2)0$(tput sgr0)' clean up, '$(tput setaf 2)1$(tput sgr0)' keep"
 echo "  -d : '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
 echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
-echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
+echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)', '$(tput setaf 2)1.8.19$(tput sgr0)'"
 echo "  -j : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
 echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
@@ -343,7 +346,7 @@ fi
 
 #Start: Check if Arduino IDE version is correct
 if [ ! -z "$IDE_flag" ]; then
-    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" ]]; then
+    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" || "$IDE_flag" == "1.8.19" ]]; then
         ARDUINO_ENV="${IDE_flag}"
     else
         ARDUINO_ENV="1.8.5"
@@ -818,7 +821,8 @@ if [ -z "$variant_flag" ] ; then
     while IFS= read -r -d $'\0' f; do
         options[i++]="$f"
     done < <(find Firmware/variants/ -maxdepth 1 -type f -name "*.h" -print0 )
-    select opt in "${options[@]}" "All" "Quit"; do
+    IFS=$'\n' sorted=($(sort -n <<<"${options[*]}")); unset IFS
+    select opt in "${sorted[@]}" "All" "Quit"; do
         case $opt in
             *.h)
                 VARIANT=$(basename "$opt" ".h")
@@ -1453,7 +1457,7 @@ if [[ "$output_flag" == "1" || -z "$output_flag" ]]; then
     if [[ -z "$mk404_flag" && "$variant_flag" != "All" ]]; then
         echo
         read -t 10 -n 1 -p "Do you want to start MK404? Y/$(tput setaf 2)n$(tput sgr 0)" mk404_start
-        if [ "$mk404_start" == "Y" ]; then
+        if [[ "$mk404_start" == "Y" || "$mk404_start" == "y" ]]; then
             echo
             read -t 10 -n 1 -p "Do you want to start MK404 with or without MMU2S? $(tput setaf 2)1$(tput sgr 0)/2" mk404_choose1
             if [ "$mk404_choose1" == "1" ]; then
