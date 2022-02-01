@@ -8,30 +8,36 @@ extern const uint16_t speed_lookuptable_slow[256][2] PROGMEM;
 
 #ifndef _NO_ASM
 
-// intRes = intIn1 * intIn2 >> 8
-// uses:
-// r26 to store 0
-// r27 to store the byte 1 of the 24 bit result
-#define MultiU16X8toH16(intRes, charIn1, intIn2) \
-asm volatile ( \
-"clr r26 \n\t" \
-"mul %A1, %B2 \n\t" \
-"movw %A0, r0 \n\t" \
-"mul %A1, %A2 \n\t" \
-"add %A0, r1 \n\t" \
-"adc %B0, r26 \n\t" \
-"lsr r0 \n\t" \
-"adc %A0, r26 \n\t" \
-"adc %B0, r26 \n\t" \
-"clr r1 \n\t" \
-: \
-"=&r" (intRes) \
-: \
-"d" (charIn1), \
-"d" (intIn2) \
-: \
-"r26" \
-)
+// return ((x * y) >> 8) with rounding when shifting right
+FORCE_INLINE uint16_t MUL8x16R8(uint8_t x, uint16_t y) {
+    uint16_t out;
+    __asm__ (
+    // %0 out
+    // %1 x
+    // %2 y
+    // uint8_t: %An or %n
+    // uint16_t: %Bn %An
+    // __uint24: %Cn %Bn %An
+    // uint32_t: %Dn %Cn %Bn %An
+    //
+    //
+    //    B2 A2 *
+    //       A1
+    //---------
+    // B0 A0 RR
+    "mul %B2, %A1" "\n\t"
+    "movw %0, r0" "\n\t"
+    "mul %A2, %A1" "\n\t"
+    "lsl r0" "\n\t"         //push MSB to carry for rounding
+    "adc %A0, r1" "\n\t"    //add with carry (for rounding)
+    "clr r1" "\n\t"         //make r1 __zero_reg__ again
+    "adc %B0, r1" "\n\t"    //propagate carry of addition (add 0 with carry)
+    : "=&r" (out)
+    : "r" (x), "r" (y)
+    : "r0", "r1"            //clobbers: Technically these are either scratch registers or always 0 registers, but I'm making sure the compiler knows just in case.
+    );
+    return out;
+}
 
 // intRes = longIn1 * longIn2 >> 24
 // uses:
@@ -115,8 +121,7 @@ FORCE_INLINE unsigned short calc_timer(uint16_t step_rate, uint8_t& step_loops) 
     unsigned short table_address = (unsigned short)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
     unsigned char tmp_step_rate = (step_rate & 0x00ff);
     uint16_t gain = (uint16_t)pgm_read_word_near(table_address+2);
-    MultiU16X8toH16(timer, tmp_step_rate, gain);
-    timer = (unsigned short)pgm_read_word_near(table_address) - timer;
+    timer = (unsigned short)pgm_read_word_near(table_address) - MUL8x16R8(tmp_step_rate, gain);
   }
   else { // lower step rates
     unsigned short table_address = (unsigned short)&speed_lookuptable_slow[0][0];
