@@ -48,7 +48,7 @@
 
 #MSG_AUTO c=6
 "Auto"
-"Auto"
+"\x00"
 
 #MSG_PRESS c=20 r=2
 "and press the knob"
@@ -460,7 +460,7 @@
 
 #MSG_FILAMENT c=17
 "Filament"
-"Filament"
+"\x00"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
@@ -612,7 +612,7 @@
 
 #MSG_NORMAL c=7
 "Normal"
-"Normal"
+"\x00"
 
 #MSG_SILENT c=7
 "Silent"
@@ -644,7 +644,7 @@
 
 #MSG_SELFTEST_MOTOR c=18
 "Motor"
-"Motor"
+"\x00"
 
 #MSG_MOVE_AXIS c=18
 "Move axis"
@@ -672,7 +672,7 @@
 
 #MSG_NA c=3
 "N/A"
-"N/A"
+"\x00"
 
 #MSG_NO c=4
 "No"
@@ -860,7 +860,7 @@
 
 #MSG_PRINT_FAN c=10
 "Print FAN"
-"Print FAN"
+"\x00"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -948,11 +948,11 @@
 
 #MSG_SELFTEST c=18
 "Selftest"
-"Selftest"
+"\x00"
 
 #MSG_SELFTEST_ERROR c=20
 "Selftest error!"
-"Selftest error!"
+"\x00"
 
 #MSG_SELFTEST_FAILED c=20
 "Selftest failed"
@@ -1248,7 +1248,7 @@
 
 #MSG_Y_DIST_FROM_MIN c=20
 "Y distance from min"
-"Y distance from min"
+"\x00"
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
@@ -1264,11 +1264,11 @@
 
 #MSG_OFF c=3
 "Off"
-"Off"
+"\x00"
 
 #MSG_ON c=3
 "On"
-"On"
+"\x00"
 
 #MSG_BACK c=18
 "Back"
@@ -1316,7 +1316,7 @@
 
 #MSG_MODEL c=8
 "Model"
-"Model"
+"\x00"
 
 #MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."

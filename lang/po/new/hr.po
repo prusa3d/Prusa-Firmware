@@ -1,20 +1,19 @@
-# Translation of Prusa-Firmware into English.
+# Translation of Prusa-Firmware into Croatian.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Thu 16 Dec 2021 11:50:53 AM CET\n"
-"PO-Revision-Date: 2022-01-30 12:31-0800\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: hr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-"X-Generator: Poedit 2.3\n"
+"Language: hr\n"
+"Project-Id-Version: Prusa-Firmware\n"
+"POT-Creation-Date: Tue 01 Feb 2022 10:32:13 AM CET\n"
+"PO-Revision-Date: Tue 01 Feb 2022 10:32:13 AM CET\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:164
@@ -22,7 +21,7 @@ msgid " 0.3 or older"
 msgstr " 0,3 ili stariji"
 
 # MSG_FS_V_03_OR_OLDER c=18
-#: Marlin_main.cpp:9884
+#: Marlin_main.cpp:9887
 msgid "FS v0.3 or older"
 msgstr "FS v0.3 il stariji"
 
@@ -32,7 +31,7 @@ msgid " 0.4 or newer"
 msgstr " 0,4 ili noviji"
 
 # MSG_FS_V_04_OR_NEWER c=18
-#: Marlin_main.cpp:9883
+#: Marlin_main.cpp:9886
 msgid "FS v0.4 or newer"
 msgstr "FS v0.4 ili noviji"
 
@@ -47,13 +46,14 @@ msgid "[0;0] point offset"
 msgstr "[0;0] razmak tocke"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-msgid "Crash detection can\\x0abe turned on only in\\x0aNormal mode"
-msgstr ""
-"Detekcija udarca moze\\x0abiti ukljuceno samo u\\x0aNormalnom nacinu rada"
+#: 
+msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
+msgstr "Detekcija udarca moze\x0abiti ukljuceno samo u\x0aNormalnom nacinu rada"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-msgid "WARNING:\\x0aCrash detection\\x0adisabled in\\x0aStealth mode"
-msgstr "UPOZORENJE:\\x0adetekcija udarca je iskljucena\\x0au tihom modu"
+#: 
+msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+msgstr "UPOZORENJE:\x0adetekcija udarca je iskljucena\x0au tihom modu"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3034
@@ -61,7 +61,7 @@ msgid "Adjusting Z:"
 msgstr "Podesavanje Z:"
 
 # MSG_SELFTEST_CHECK_ALLCORRECT c=20
-#: ultralcd.cpp:8490
+#: ultralcd.cpp:8411
 msgid "All correct"
 msgstr "Sve je u redu"
 
@@ -78,7 +78,7 @@ msgstr "Ambijent"
 # MSG_AUTO c=6
 #: messages.c:160
 msgid "Auto"
-msgstr "Auto"
+msgstr ""
 
 # MSG_PRESS c=20 r=2
 #: ultralcd.cpp:2485
@@ -96,36 +96,32 @@ msgid "Auto home"
 msgstr "Pocetna tocka"
 
 # MSG_AUTOLOAD_FILAMENT c=18
-#: ultralcd.cpp:6732
+#: ultralcd.cpp:6653
 msgid "AutoLoad filament"
 msgstr "Autopunj filamenta"
 
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4317
-msgid ""
-"Autoloading filament available only when filament sensor is turned on..."
-msgstr ""
-"Automatsko punjenje filamenta moguce je samo kada je sensor filamenta "
-"ukljucen.."
+msgid "Autoloading filament available only when filament sensor is turned on..."
+msgstr "Automatsko punjenje filamenta moguce je samo kada je sensor filamenta ukljucen.."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2648
-msgid ""
-"Autoloading filament is active, just press the knob and insert filament..."
+msgid "Autoloading filament is active, just press the knob and insert filament..."
 msgstr "Auto punjenje fil.  je aktivno, pritisnite gumb i umetnite fil.."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
-#: ultralcd.cpp:8173
+#: ultralcd.cpp:8094
 msgid "Axis length"
 msgstr "Duljina osi"
 
 # MSG_SELFTEST_AXIS c=16
-#: ultralcd.cpp:8174
+#: ultralcd.cpp:8095
 msgid "Axis"
 msgstr "Os"
 
 # MSG_SELFTEST_BEDHEATER c=20
-#: ultralcd.cpp:8131
+#: ultralcd.cpp:8052
 msgid "Bed/Heater"
 msgstr "Grijac/Podloga"
 
@@ -151,12 +147,8 @@ msgstr "Testiranje remena"
 
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: messages.c:17
-msgid ""
-"Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for "
-"reset."
-msgstr ""
-"Niveliranje podloge nije uspijelo. Senzor  aktiviran. Prljavstina na "
-"mlaznici? Ceka se resetiranje."
+msgid "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
+msgstr "Niveliranje podloge nije uspijelo. Senzor  aktiviran. Prljavstina na mlaznici? Ceka se resetiranje."
 
 # MSG_BRIGHT c=6
 #: messages.c:158
@@ -184,7 +176,7 @@ msgid "Blackout occurred. Recover print?"
 msgstr "Doslo je do gasenja. Oporaviti print?"
 
 # MSG_CALIBRATING_HOME c=20
-#: ultralcd.cpp:8492
+#: ultralcd.cpp:8413
 msgid "Calibrating home"
 msgstr "Kalibracija nultocke"
 
@@ -210,12 +202,8 @@ msgstr ">Otkazati"
 
 # MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 #: ultralcd.cpp:3318
-msgid ""
-"Calibrating XYZ. Rotate the knob to move the Z carriage up to the end "
-"stoppers. Click when done."
-msgstr ""
-"Kalibracija XYZ. Okrenite gumb da pomaknete Z nosac do krajnjih granicnika. "
-"Kliknite kada je zavrseno."
+msgid "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
+msgstr "Kalibracija XYZ. Okrenite gumb da pomaknete Z nosac do krajnjih granicnika. Kliknite kada je zavrseno."
 
 # MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: messages.c:21
@@ -224,12 +212,8 @@ msgstr "Kalibriranje Z"
 
 # MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 #: ultralcd.cpp:3318
-msgid ""
-"Calibrating Z. Rotate the knob to move the Z carriage up to the end "
-"stoppers. Click when done."
-msgstr ""
-"Kalibracija Z. Okrenite gumb da pomaknete Z nosac do krajnjih granicnika. "
-"Kliknite kada je zavrseno."
+msgid "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
+msgstr "Kalibracija Z. Okrenite gumb da pomaknete Z nosac do krajnjih granicnika. Kliknite kada je zavrseno."
 
 # MSG_HOMEYZ_DONE c=20
 #: ultralcd.cpp:656
@@ -242,12 +226,12 @@ msgid "Calibration"
 msgstr "Kalibriranje"
 
 # MSG_SD_REMOVED c=20
-#: ultralcd.cpp:8939
+#: ultralcd.cpp:8860
 msgid "Card removed"
 msgstr "Kartica je uklonjena"
 
 # MSG_CHECKING_FILE c=17
-#: ultralcd.cpp:8580
+#: ultralcd.cpp:8501
 msgid "Checking file"
 msgstr "Provjera datoteke"
 
@@ -273,12 +257,8 @@ msgstr "Udar detekti."
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4842
-msgid ""
-"Choose a filament for the First Layer Calibration and select it in the on-"
-"screen menu."
-msgstr ""
-"Odaberite filament za Kalibraciju Prvog Sloja i odaberite ga u izborniku na "
-"zaslonu."
+msgid "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+msgstr "Odaberite filament za Kalibraciju Prvog Sloja i odaberite ga u izborniku na zaslonu."
 
 # MSG_CRASH_DETECTED c=20
 #: messages.c:29
@@ -317,14 +297,8 @@ msgstr "Onemoguci stepere"
 
 # MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: messages.c:13
-msgid ""
-"Distance between tip of the nozzle and the bed surface has not been set yet. "
-"Please follow the manual, chapter First steps, section First layer "
-"calibration."
-msgstr ""
-"Udaljenost izmedu vrha mlaznice i povrsine lezista jos nije postavljena. "
-"Molimo slijedite prirucnik, poglavlje Prvi koraci, odjeljak Kalibracija "
-"prvog sloja."
+msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
+msgstr "Udaljenost izmedu vrha mlaznice i povrsine lezista jos nije postavljena. Molimo slijedite prirucnik, poglavlje Prvi koraci, odjeljak Kalibracija prvog sloja."
 
 # MSG_FS_CONTINUE c=5
 #: messages.c:152
@@ -333,12 +307,8 @@ msgstr "Nast."
 
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5021
-msgid ""
-"Do you want to repeat last step to readjust distance between nozzle and "
-"heatbed?"
-msgstr ""
-"Zelite li ponoviti zadnji korak za ponovno podesavanje udaljenosti izmedu "
-"mlaznice i grijace podloge?"
+msgid "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
+msgstr "Zelite li ponoviti zadnji korak za ponovno podesavanje udaljenosti izmedu mlaznice i grijace podloge?"
 
 # MSG_EXTRUDER_CORRECTION c=13
 #: ultralcd.cpp:5090
@@ -356,21 +326,22 @@ msgid "Ejecting filament"
 msgstr "Izbacivanje fil"
 
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
-#: ultralcd.cpp:8149
+#: ultralcd.cpp:8070
 msgid "Endstop not hit"
 msgstr "Granicnik nije aktiv"
 
 # MSG_SELFTEST_ENDSTOP c=16
-#: ultralcd.cpp:8144
+#: ultralcd.cpp:8065
 msgid "Endstop"
 msgstr "Granicnik"
 
 # MSG_SELFTEST_ENDSTOPS c=20
-#: ultralcd.cpp:8135
+#: ultralcd.cpp:8056
 msgid "Endstops"
 msgstr "Granicnici"
 
 # MSG_STACK_ERROR c=20 r=4
+#: 
 msgid "Error - static memory has been overwritten"
 msgstr "Pogreska - staticka memorija je prepisna preko postojece"
 
@@ -405,7 +376,7 @@ msgid "ERROR:"
 msgstr "POGRESKA:"
 
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
-#: ultralcd.cpp:8498
+#: ultralcd.cpp:8419
 msgid "Extruder fan:"
 msgstr "Ekstruder fan:"
 
@@ -420,7 +391,7 @@ msgid "Extruder"
 msgstr "Ekstruder"
 
 # MSG_MMU_FAIL_STATS c=18
-#: ultralcd.cpp:6754
+#: ultralcd.cpp:6675
 msgid "Fail stats MMU"
 msgstr "Neuspjes. MMU stat"
 
@@ -430,7 +401,7 @@ msgid "F. autoload"
 msgstr "F. auto.punj"
 
 # MSG_FAIL_STATS c=18
-#: ultralcd.cpp:6751
+#: ultralcd.cpp:6672
 msgid "Fail stats"
 msgstr "Neuspjesna stat"
 
@@ -469,7 +440,7 @@ msgstr "Ekstrudiranje fil.s sa ispravnom bojom?"
 msgid "Filament not loaded"
 msgstr "Fil. nije napunjen"
 
-# MSG_FILAMENT_SENSOR c=20
+# MSG_SELFTEST_FILAMENT_SENSOR c=17
 #: messages.c:97
 msgid "Filament sensor"
 msgstr "Senzor filamenta"
@@ -490,7 +461,7 @@ msgid "FS Action"
 msgstr "FS Akcija"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
-#: ultralcd.cpp:8634
+#: ultralcd.cpp:8555
 msgid "File incomplete. Continue anyway?"
 msgstr "Datoteka je nepotpuna. Svejedno nastaviti?"
 
@@ -507,9 +478,7 @@ msgstr "Prvi sloj kalib."
 # MSG_WIZARD_SELFTEST c=20 r=8
 #: ultralcd.cpp:4942
 msgid "First, I will run the selftest to check most common assembly problems."
-msgstr ""
-"Prvo cu pokrenuti samotestiranje kako bih provjerio najcesce probleme sa "
-"montazom."
+msgstr "Prvo cu pokrenuti samotestiranje kako bih provjerio najcesce probleme sa montazom."
 
 # MSG_MMU_FIX_ISSUE c=20 r=4
 #: mmu.cpp:727
@@ -517,7 +486,7 @@ msgid "Fix the issue and then press button on MMU unit."
 msgstr "Rijesite problem, a zatim pritisnite gumb na MMU jedinici."
 
 # MSG_FLOW c=15
-#: ultralcd.cpp:6888
+#: ultralcd.cpp:6809
 msgid "Flow"
 msgstr "Protok"
 
@@ -532,17 +501,17 @@ msgid "Front side[um]"
 msgstr "Prednj str[um]"
 
 # MSG_SELFTEST_FANS c=20
-#: ultralcd.cpp:8179
+#: ultralcd.cpp:8100
 msgid "Front/left fans"
 msgstr "Prednji/lijevi fan"
 
 # MSG_SELFTEST_HEATERTHERMISTOR c=20
-#: ultralcd.cpp:8127
+#: ultralcd.cpp:8048
 msgid "Heater/Thermistor"
 msgstr "Grijac/Termostat"
 
 # MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: Marlin_main.cpp:9874
+#: Marlin_main.cpp:9877
 msgid "Heating disabled by safety timer."
 msgstr "Grijanje je onemoguceno sigurnosnim mjeracem vremena."
 
@@ -558,12 +527,8 @@ msgstr "Grijanje"
 
 # MSG_WIZARD_WELCOME c=20 r=7
 #: messages.c:121
-msgid ""
-"Hi, I am your Original Prusa i3 printer. Would you like me to guide you "
-"through the setup process?"
-msgstr ""
-"Bok, ja sam vas Original Prusa i3 printer. Zelite li da vas vodim kroz "
-"postupak postavljanja?"
+msgid "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+msgstr "Bok, ja sam vas Original Prusa i3 printer. Zelite li da vas vodim kroz postupak postavljanja?"
 
 # MSG_FILAMENTCHANGE c=18
 #: messages.c:43
@@ -586,12 +551,12 @@ msgid "Checking bed"
 msgstr "Provjera podloge"
 
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
-#: ultralcd.cpp:8481
+#: ultralcd.cpp:8402
 msgid "Checking endstops"
 msgstr "Provjera granicnika"
 
 # MSG_SELFTEST_CHECK_HOTEND c=20
-#: ultralcd.cpp:8487
+#: ultralcd.cpp:8408
 msgid "Checking hotend"
 msgstr "Provjera hotenda"
 
@@ -611,7 +576,7 @@ msgid "Checking Y axis"
 msgstr "Provjera Y osi"
 
 # MSG_SELFTEST_CHECK_Z c=20
-#: ultralcd.cpp:8484
+#: ultralcd.cpp:8405
 msgid "Checking Z axis"
 msgstr "Provjera Z osi"
 
@@ -628,7 +593,7 @@ msgstr "Odaberite filament:"
 # MSG_FILAMENT c=17
 #: messages.c:35
 msgid "Filament"
-msgstr "Filament"
+msgstr ""
 
 # MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ultralcd.cpp:4951
@@ -667,23 +632,13 @@ msgstr "Zadnji neusp. print"
 
 # MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
 #: messages.c:122
-msgid ""
-"Hi, I am your Original Prusa i3 printer. I will guide you through a short "
-"setup process, in which the Z-axis will be calibrated. Then, you will be "
-"ready to print."
-msgstr ""
-"Bok, ja sam vas Original Prusa i3 printer. Vodit cu vas kroz kratak proces "
-"postavljanja, u kojem ce se kalibrirati Z~os. Tada cete biti spremni za "
-"printanje."
+msgid "Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
+msgstr "Bok, ja sam vas Original Prusa i3 printer. Vodit cu vas kroz kratak proces postavljanja, u kojem ce se kalibrirati Z~os. Tada cete biti spremni za printanje."
 
 # MSG_ADDITIONAL_SHEETS c=20 r=9
 #: ultralcd.cpp:5029
-msgid ""
-"If you have additional steel sheets, calibrate their presets in Settings - "
-"HW Setup - Steel sheets."
-msgstr ""
-"Ako imate dodatne celicne ploce, kalibrirajte njihove unaprijed postavljene "
-"postavke u Postavke - HW Podesavanje - Celicne ploce."
+msgid "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
+msgstr "Ako imate dodatne celicne ploce, kalibrirajte njihove unaprijed postavljene postavke u Postavke - HW Podesavanje - Celicne ploce."
 
 # MSG_LAST_PRINT c=18
 #: messages.c:56
@@ -716,12 +671,9 @@ msgid "Live adjust Z"
 msgstr "Live podesavanje Z"
 
 # MSG_INSERT_FIL c=20 r=6
-#: ultralcd.cpp:7380
-msgid ""
-"Insert the filament (do not load it) into the extruder and then press the "
-"knob."
-msgstr ""
-"Umetnite filament (nemojte ga puniti) u ekstruder i zatim pritisnite gumb."
+#: ultralcd.cpp:7301
+msgid "Insert the filament (do not load it) into the extruder and then press the knob."
+msgstr "Umetnite filament (nemojte ga puniti) u ekstruder i zatim pritisnite gumb."
 
 # MSG_LOAD_FILAMENT c=17
 #: messages.c:58
@@ -744,12 +696,12 @@ msgid "Iteration"
 msgstr "Ponavljanje"
 
 # MSG_LOOSE_PULLEY c=20
-#: ultralcd.cpp:8167
+#: ultralcd.cpp:8088
 msgid "Loose pulley"
 msgstr "Labava remenica"
 
 # MSG_LOAD_TO_NOZZLE c=18
-#: ultralcd.cpp:6717
+#: ultralcd.cpp:6638
 msgid "Load to nozzle"
 msgstr "Punjenje u mlazn"
 
@@ -831,7 +783,7 @@ msgstr "MK3 firmware otkriven na MK3S printeru"
 # MSG_NORMAL c=7
 #: messages.c:107
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 # MSG_SILENT c=7
 #: messages.c:106
@@ -871,7 +823,7 @@ msgstr "MMU2 spojen"
 # MSG_SELFTEST_MOTOR c=18
 #: messages.c:96
 msgid "Motor"
-msgstr "Motor"
+msgstr ""
 
 # MSG_MOVE_AXIS c=18
 #: ultralcd.cpp:5677
@@ -899,14 +851,14 @@ msgid "No move."
 msgstr "Bez pomaka."
 
 # MSG_NO_CARD c=18
-#: ultralcd.cpp:6697
+#: ultralcd.cpp:6618
 msgid "No SD card"
 msgstr "Nema SD kartice"
 
 # MSG_NA c=3
 #: messages.c:127
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 # MSG_NO c=4
 #: messages.c:71
@@ -914,7 +866,7 @@ msgid "No"
 msgstr "Ne"
 
 # MSG_SELFTEST_NOTCONNECTED c=20
-#: ultralcd.cpp:8128
+#: ultralcd.cpp:8049
 msgid "Not connected"
 msgstr "Nije povezano"
 
@@ -930,11 +882,8 @@ msgstr "Ne okrece se"
 
 # MSG_WIZARD_V2_CAL c=20 r=8
 #: ultralcd.cpp:4838
-msgid ""
-"Now I will calibrate distance between tip of the nozzle and heatbed surface."
-msgstr ""
-"Sada cu kalibrirati udaljenost izmedu vrha mlaznice i povrsine grijane "
-"podloge."
+msgid "Now I will calibrate distance between tip of the nozzle and heatbed surface."
+msgstr "Sada cu kalibrirati udaljenost izmedu vrha mlaznice i povrsine grijane podloge."
 
 # MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ultralcd.cpp:4967
@@ -988,12 +937,8 @@ msgstr "PINDA se Zagrijava"
 
 # MSG_PAPER c=20 r=10
 #: messages.c:73
-msgid ""
-"Place a sheet of paper under the nozzle during the calibration of first 4 "
-"points. If the nozzle catches the paper, power off the printer immediately."
-msgstr ""
-"Stavite list papira ispod mlaznice tijekom kalibracije prve 4 tocke. Ako "
-"mlaznica uhvati papir, odmah iskljucite printer."
+msgid "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
+msgstr "Stavite list papira ispod mlaznice tijekom kalibracije prve 4 tocke. Ako mlaznica uhvati papir, odmah iskljucite printer."
 
 # MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ultralcd.cpp:5024
@@ -1006,18 +951,14 @@ msgid "Please clean the nozzle for calibration. Click when done."
 msgstr "Molimo ocistite mlaznicu radi kalibracije. Kliknite kada ste gotovi."
 
 # MSG_SELFTEST_PLEASECHECK c=20
-#: ultralcd.cpp:8122
+#: ultralcd.cpp:8043
 msgid "Please check:"
 msgstr "Molimo provjerite:"
 
 # MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: messages.c:117
-msgid ""
-"Please check our handbook and fix the problem. Then resume the Wizard by "
-"rebooting the printer."
-msgstr ""
-"Provjerite nas prirucnik i rijesite problem. Zatim nastavite s Carobnjakom "
-"ponovnim pokretanjem printera."
+msgid "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
+msgstr "Provjerite nas prirucnik i rijesite problem. Zatim nastavite s Carobnjakom ponovnim pokretanjem printera."
 
 # MSG_CHECK_IDLER c=20 r=5
 #: Marlin_main.cpp:3798
@@ -1075,7 +1016,7 @@ msgid "Preheat the nozzle!"
 msgstr "Predgrij. mlaznicu!"
 
 # MSG_PREHEAT c=18
-#: ultralcd.cpp:6655
+#: ultralcd.cpp:6576
 msgid "Preheat"
 msgstr "Predgrijavanje"
 
@@ -1090,7 +1031,7 @@ msgid "Please upgrade."
 msgstr "Molimo nadogradite."
 
 # MSG_PRESS_TO_PREHEAT c=20 r=4
-#: Marlin_main.cpp:12049
+#: Marlin_main.cpp:12052
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Pritisnite gumb za predgrijavanje mlaznice i nastavite."
 
@@ -1120,7 +1061,7 @@ msgid "Preheating to unload"
 msgstr "Predgrij. za praznj"
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
-#: ultralcd.cpp:8501
+#: ultralcd.cpp:8422
 msgid "Print fan:"
 msgstr "Ventilator printa:"
 
@@ -1146,31 +1087,23 @@ msgstr "Pritisnite gumb za nastavak temperature mlaznice."
 
 # MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 #: messages.c:46
-msgid ""
-"Printer has not been calibrated yet. Please follow the manual, chapter First "
-"steps, section Calibration flow."
-msgstr ""
-"Printer jos nije kalibriran. Molimo slijedite prirucnik, poglavlje Prvi "
-"koraci, odjeljak Tijek kalibracije."
+msgid "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
+msgstr "Printer jos nije kalibriran. Molimo slijedite prirucnik, poglavlje Prvi koraci, odjeljak Tijek kalibracije."
 
 # MSG_PRINT_FAN c=10
 #: ultralcd.cpp:1447
 msgid "Print FAN"
-msgstr "Print FAN"
+msgstr ""
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
-msgid ""
-"Please insert filament into the extruder, then press the knob to load it."
+msgid "Please insert filament into the extruder, then press the knob to load it."
 msgstr "Umetnite filament u ekstruder, a zatim pritisnite gumb za punjenje."
 
 # MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ultralcd.cpp:4813
-msgid ""
-"Please insert filament into the first tube of the MMU, then press the knob "
-"to load it."
-msgstr ""
-"Umetnite filament u prvu cijev MMU-a, a zatim pritisnite gumb za punjenje."
+msgid "Please insert filament into the first tube of the MMU, then press the knob to load it."
+msgstr "Umetnite filament u prvu cijev MMU-a, a zatim pritisnite gumb za punjenje."
 
 # MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ultralcd.cpp:4735
@@ -1183,26 +1116,24 @@ msgid "Rear side [um]"
 msgstr "Zad. str.[um]"
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
-#: ultralcd.cpp:7404
+#: ultralcd.cpp:7325
 msgid "Please unload the filament first, then repeat this action."
 msgstr "Prvo izvadite filament, a zatim ponovite ovu radnju."
 
 # MSG_CHECK_IR_CONNECTION c=20 r=4
-#: ultralcd.cpp:7407
+#: ultralcd.cpp:7328
 msgid "Please check the IR sensor connection, unload filament if present."
 msgstr "Provjerite IR prikljucak senzora, izvadite filament ako postoji."
 
 # MSG_RECOVERING_PRINT c=20
-#: Marlin_main.cpp:11393
+#: Marlin_main.cpp:11396
 msgid "Recovering print"
 msgstr "Oporavak printa"
 
 # MSG_REMOVE_OLD_FILAMENT c=20 r=5
 #: mmu.cpp:833
 msgid "Remove old filament and press the knob to start loading new filament."
-msgstr ""
-"Uklonite stari filament i pritisnite gumb za pocetak stavljanja novog "
-"filamenta."
+msgstr "Uklonite stari filament i pritisnite gumb za pocetak stavljanja novog filamenta."
 
 # MSG_CALIBRATE_BED_RESET c=18
 #: ultralcd.cpp:5804
@@ -1236,12 +1167,8 @@ msgstr "RPi utor"
 
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4756
-msgid ""
-"Running Wizard will delete current calibration results and start from the "
-"beginning. Continue?"
-msgstr ""
-"Pokrenuti carobnjak ce izbrisati trenutne rezultate kalibracije i poceti "
-"ispocetka. Nastavite?"
+msgid "Running Wizard will delete current calibration results and start from the beginning. Continue?"
+msgstr "Pokrenuti carobnjak ce izbrisati trenutne rezultate kalibracije i poceti ispocetka. Nastavite?"
 
 # MSG_SD_CARD c=8
 #: messages.c:138
@@ -1264,24 +1191,24 @@ msgid "Select language"
 msgstr "Izaberi jezik"
 
 # MSG_SELFTEST_OK c=20
-#: ultralcd.cpp:7679
+#: ultralcd.cpp:7600
 msgid "Self test OK"
 msgstr "Samotestiranje OK"
 
 # MSG_SELFTEST_START c=20
-#: ultralcd.cpp:7447
+#: ultralcd.cpp:7368
 msgid "Self test start"
 msgstr "Pocetak selftesta"
 
 # MSG_SELFTEST c=18
 #: ultralcd.cpp:5780
 msgid "Selftest"
-msgstr "Selftest"
+msgstr ""
 
 # MSG_SELFTEST_ERROR c=20
-#: ultralcd.cpp:8121
+#: ultralcd.cpp:8042
 msgid "Selftest error!"
-msgstr "Selftest error!"
+msgstr ""
 
 # MSG_SELFTEST_FAILED c=20
 #: messages.c:90
@@ -1291,17 +1218,14 @@ msgstr "Selftest nije uspio"
 # MSG_FORCE_SELFTEST c=20 r=8
 #: Marlin_main.cpp:1637
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
-msgstr ""
-"Provest ce se selftest radi kalibracije preciznog ponovnog postavljanja bez "
-"senzora."
+msgstr "Provest ce se selftest radi kalibracije preciznog ponovnog postavljanja bez senzora."
 
 # MSG_SEL_PREHEAT_TEMP c=20 r=6
 #: ultralcd.cpp:4998
 msgid "Select nozzle preheat temperature which matches your material."
-msgstr ""
-"Odaberite temperaturu predgrijavanja mlaznice koja odgovara vasem materijalu."
+msgstr "Odaberite temperaturu predgrijavanja mlaznice koja odgovara vasem materijalu."
 
-# MSG_SET_TEMPERATURE c=19
+# MSG_SET_TEMPERATURE c=20
 #: ultralcd.cpp:3135
 msgid "Set temperature:"
 msgstr "Postavi temperaturu:"
@@ -1318,12 +1242,8 @@ msgstr "Pokazi granicnike"
 
 # MSG_FILE_CNT c=20 r=6
 #: cardreader.cpp:817
-msgid ""
-"Some files will not be sorted. Max. No. of files in 1 folder for sorting is "
-"100."
-msgstr ""
-"Neke datoteke nece biti razvrstane. Max. Br. datoteka u 1 mapi za sortiranje "
-"je 100."
+msgid "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
+msgstr "Neke datoteke nece biti razvrstane. Max. Br. datoteka u 1 mapi za sortiranje je 100."
 
 # MSG_SORT c=7
 #: messages.c:139
@@ -1386,7 +1306,7 @@ msgid "Once"
 msgstr "Jednom"
 
 # MSG_SPEED c=15
-#: ultralcd.cpp:6882
+#: ultralcd.cpp:6803
 msgid "Speed"
 msgstr "Brzina"
 
@@ -1398,8 +1318,7 @@ msgstr "Predenje"
 # MSG_TEMP_CAL_WARNING c=20 r=4
 #: Marlin_main.cpp:5351
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
-msgstr ""
-"Potrebna je stabilna temperatura okoline 21-26C, potrebno je cvrsto postolje."
+msgstr "Potrebna je stabilna temperatura okoline 21-26C, potrebno je cvrsto postolje."
 
 # MSG_STATISTICS c=18
 #: ultralcd.cpp:6081
@@ -1417,12 +1336,12 @@ msgid "STOPPED."
 msgstr "ZAUSTAVLJENO."
 
 # MSG_SUPPORT c=18
-#: ultralcd.cpp:6756
+#: ultralcd.cpp:6677
 msgid "Support"
 msgstr "Podrska"
 
 # MSG_SELFTEST_SWAPPED c=16
-#: ultralcd.cpp:8180
+#: ultralcd.cpp:8101
 msgid "Swapped"
 msgstr "Zamjenjeno"
 
@@ -1453,15 +1372,11 @@ msgstr "Kalibracija temperature nije uspjela"
 
 # MSG_TEMP_CALIBRATION_DONE c=20 r=12
 #: messages.c:113
-msgid ""
-"Temperature calibration is finished and active. Temp. calibration can be "
-"disabled in menu Settings->Temp. cal."
-msgstr ""
-"Kalibracija temperature je zavrsena i aktivna. Temp. kalibracija se moze "
-"onemoguciti u izborniku Postavke->Temp. kal."
+msgid "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+msgstr "Kalibracija temperature je zavrsena i aktivna. Temp. kalibracija se moze onemoguciti u izborniku Postavke->Temp. kal."
 
 # MSG_FS_VERIFIED c=20 r=3
-#: ultralcd.cpp:7411
+#: ultralcd.cpp:7332
 msgid "Sensor verified, remove the filament now."
 msgstr "Senzor je provjeren, odmah uklonite filament."
 
@@ -1477,12 +1392,8 @@ msgstr "Temperature"
 
 # MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 #: messages.c:47
-msgid ""
-"There is still a need to make Z calibration. Please follow the manual, "
-"chapter First steps, section Calibration flow."
-msgstr ""
-"Jos uvijek je potrebno napraviti Z kalibraciju. Molimo slijedite prirucnik, "
-"poglavlje Prvi koraci, odjeljak Tijek kalibracije."
+msgid "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
+msgstr "Jos uvijek je potrebno napraviti Z kalibraciju. Molimo slijedite prirucnik, poglavlje Prvi koraci, odjeljak Tijek kalibracije."
 
 # MSG_TOTAL_FILAMENT c=19
 #: ultralcd.cpp:2735
@@ -1495,7 +1406,7 @@ msgid "Total print time"
 msgstr "Vrijeme printanja"
 
 # MSG_TUNE c=18
-#: ultralcd.cpp:6653
+#: ultralcd.cpp:6574
 msgid "Tune"
 msgstr "Ugodi"
 
@@ -1514,7 +1425,7 @@ msgstr "da napuni filament"
 msgid "to unload filament"
 msgstr "da isprazni filament"
 
-# MSG_UNLOAD_FILAMENT c=16
+# MSG_UNLOAD_FILAMENT c=18
 #: messages.c:114
 msgid "Unload filament"
 msgstr "Ispraznite fil"
@@ -1637,15 +1548,12 @@ msgstr "XYZ kalibracija u redu. Osi X/Y su okomite. Cestitamo!"
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ultralcd.cpp:3721
 msgid "XYZ calibration compromised. Front calibration points not reachable."
-msgstr ""
-"XYZ kalibracija je ugrozena. Prednje kalibracijske tocke nisu dostupne."
+msgstr "XYZ kalibracija je ugrozena. Prednje kalibracijske tocke nisu dostupne."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ultralcd.cpp:3724
-msgid ""
-"XYZ calibration compromised. Right front calibration point not reachable."
-msgstr ""
-"XYZ kalibracija je ugrozena. Desna prednja tocka kalibracije nije dostupna."
+msgid "XYZ calibration compromised. Right front calibration point not reachable."
+msgstr "XYZ kalibracija je ugrozena. Desna prednja tocka kalibracije nije dostupna."
 
 # MSG_LOAD_ALL c=17
 #: ultralcd.cpp:6167
@@ -1655,38 +1563,30 @@ msgstr "Napuni sve"
 # MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 #: ultralcd.cpp:3703
 msgid "XYZ calibration failed. Bed calibration point was not found."
-msgstr ""
-"XYZ kalibracija nije uspjela. Tocka kalibracije podloga nije pronadena."
+msgstr "XYZ kalibracija nije uspjela. Tocka kalibracije podloga nije pronadena."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 #: ultralcd.cpp:3709
 msgid "XYZ calibration failed. Front calibration points not reachable."
-msgstr ""
-"XYZ kalibracija nije uspjela. Prednje kalibracijske tocke nisu dostupne."
+msgstr "XYZ kalibracija nije uspjela. Prednje kalibracijske tocke nisu dostupne."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ultralcd.cpp:3712
 msgid "XYZ calibration failed. Right front calibration point not reachable."
-msgstr ""
-"XYZ kalibracija nije uspjela. Desna prednja tocka kalibracije nije dostupna."
+msgstr "XYZ kalibracija nije uspjela. Desna prednja tocka kalibracije nije dostupna."
 
 # MSG_Y_DIST_FROM_MIN c=20
 #: ultralcd.cpp:2842
 msgid "Y distance from min"
-msgstr "Y distance from min"
+msgstr ""
 
 # MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ultralcd.cpp:4850
-msgid ""
-"The printer will start printing a zig-zag line. Rotate the knob until you "
-"reach the optimal height. Check the pictures in the handbook (Calibration "
-"chapter)."
-msgstr ""
-"Printe ce poceti printati cik-cak liniju. Okrecite gumb dok ne postignete "
-"optimalnu visinu. Provjerite slike u prirucniku (poglavlje Kalibracija)."
+msgid "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
+msgstr "Printe ce poceti printati cik-cak liniju. Okrecite gumb dok ne postignete optimalnu visinu. Provjerite slike u prirucniku (poglavlje Kalibracija)."
 
 # MSG_FIL_FAILED c=20 r=5
-#: ultralcd.cpp:7415
+#: ultralcd.cpp:7336
 msgid "Verification failed, remove the filament and try again."
 msgstr "Provjera nije uspjela, uklonite filament i pokusajte ponovno."
 
@@ -1698,12 +1598,12 @@ msgstr "Y-ispravan:"
 # MSG_OFF c=3
 #: messages.c:125
 msgid "Off"
-msgstr "Off"
+msgstr ""
 
 # MSG_ON c=3
 #: messages.c:126
 msgid "On"
-msgstr "On"
+msgstr ""
 
 # MSG_BACK c=18
 #: messages.c:64
@@ -1716,7 +1616,7 @@ msgid "Checks"
 msgstr "Provjere"
 
 # MSG_FALSE_TRIGGERING c=20
-#: ultralcd.cpp:8190
+#: ultralcd.cpp:8111
 msgid "False triggering"
 msgstr "Lazno aktiviranje"
 
@@ -1763,7 +1663,7 @@ msgstr "Promjena moda u tijeku..."
 # MSG_MODEL c=8
 #: messages.c:132
 msgid "Model"
-msgstr "Model"
+msgstr ""
 
 # MSG_NOZZLE_DIAMETER c=10
 #: messages.c:136
@@ -1777,12 +1677,8 @@ msgstr "G-kod izrezan za drugu razinu. Nastavite?"
 
 # MSG_GCODE_DIFF_CANCELLED c=20 r=7
 #: util.cpp:420
-msgid ""
-"G-code sliced for a different level. Please re-slice the model again. Print "
-"cancelled."
-msgstr ""
-"G-kod izrezan za drugu razinu. Molimo ponovo izrezite model. Print je "
-"otkazan."
+msgid "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+msgstr "G-kod izrezan za drugu razinu. Molimo ponovo izrezite model. Print je otkazan."
 
 # MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 #: messages.c:134
@@ -1791,12 +1687,8 @@ msgstr "G-kod izrezan za drugu vrstu printera. Nastavite?"
 
 # MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: messages.c:135
-msgid ""
-"G-code sliced for a different printer type. Please re-slice the model again. "
-"Print cancelled."
-msgstr ""
-"G-kod izrezan za drugu vrstu printera. Molimo ponovo izrezite model. Print "
-"je otkazan."
+msgid "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+msgstr "G-kod izrezan za drugu vrstu printera. Molimo ponovo izrezite model. Print je otkazan."
 
 # MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 #: util.cpp:381
@@ -1805,12 +1697,8 @@ msgstr "G-kod izrezan za noviji firmware. Nastavite?"
 
 # MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: util.cpp:387
-msgid ""
-"G-code sliced for a newer firmware. Please update the firmware. Print "
-"cancelled."
-msgstr ""
-"G-kod izrezan za noviji firmware. Molimo azurirajte firmware. Prime je "
-"otkazan."
+msgid "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+msgstr "G-kod izrezan za noviji firmware. Molimo azurirajte firmware. Prime je otkazan."
 
 # MSG_PREHEATING_TO_CUT c=20
 #: ultralcd.cpp:2309
@@ -1829,25 +1717,21 @@ msgstr "Promjer mlaznice printera razlikuje se od G-koda. Nastavite?"
 
 # MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: util.cpp:301
-msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
-"settings. Print cancelled."
-msgstr ""
-"Promjer mlaznice printera razlikuje se od G-koda. Molimo provjerite "
-"vrijednost u postavkama. Print je otkazan."
+msgid "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+msgstr "Promjer mlaznice printera razlikuje se od G-koda. Molimo provjerite vrijednost u postavkama. Print je otkazan."
 
 # MSG_SELFTEST_FS_LEVEL c=20
-#: ultralcd.cpp:8195
+#: ultralcd.cpp:8116
 msgid "%s level expected"
 msgstr "%s level ocekivan"
 
 # MSG_RENAME c=18
-#: ultralcd.cpp:6579
+#: ultralcd.cpp:6500
 msgid "Rename"
 msgstr "Preimenuj"
 
 # MSG_SELECT c=18
-#: ultralcd.cpp:6572
+#: ultralcd.cpp:6493
 msgid "Select"
 msgstr "Odaberi"
 
@@ -1880,3 +1764,9 @@ msgstr "Z-ispravan:"
 #: messages.c:149
 msgid "Z-probe nr."
 msgstr "Z-sonda br."
+
+# MSG_PRINTER_IP c=18
+#: ultralcd.cpp:2028
+msgid "Printer IP Addr:"
+msgstr ""
+
