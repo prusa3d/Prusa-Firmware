@@ -205,7 +205,7 @@ enum class TestError : uint_least8_t
     FsensorLevel
 };
 
-static int  lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
+static uint8_t  lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t _progress_scale, bool _clear, uint16_t _delay);
 static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name, const char *_indicator);
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	bool _default=false);
@@ -7335,7 +7335,7 @@ static void lcd_selftest_v()
 
 bool lcd_selftest()
 {
-	int _progress = 0;
+	uint8_t _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
 #ifdef IR_SENSOR_ANALOG
@@ -7733,7 +7733,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 //	printf_P(PSTR("lcd_selfcheck_axis %d, %d\n"), _axis, _travel);
 	bool _stepdone = false;
 	bool _stepresult = false;
-	int _progress = 0;
+	uint8_t _progress = 0;
 	int _travel_done = 0;
 	int _err_endstop = 0;
 	int _lcd_refresh = 0;
@@ -7944,14 +7944,14 @@ static bool lcd_selfcheck_endstops()
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {
-	int _counter = 0;
-	int _progress = 0;
+	uint8_t _counter = 0;
+	uint8_t _progress = 0;
 	bool _stepresult = false;
 	bool _docycle = true;
 
 	int _checked_snapshot = (_isbed) ? degBed() : degHotend(0);
 	int _opposite_snapshot = (_isbed) ? degHotend(0) : degBed();
-	int _cycles = (_isbed) ? 180 : 60; //~ 90s / 30s
+	uint8_t _cycles = (_isbed) ? 180 : 60; //~ 90s / 30s
 
 	target_temperature[0] = (_isbed) ? 0 : 200;
 	target_temperature_bed = (_isbed) ? 100 : 0;
@@ -8372,7 +8372,7 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 
 #endif //FANCHECK
 
-static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay)
+static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t _progress_scale, bool _clear, uint16_t _delay)
 {
 
 	lcd_update_enable(false);
