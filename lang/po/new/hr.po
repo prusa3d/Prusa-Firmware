@@ -193,7 +193,7 @@ msgstr "Kalibrirajte Z"
 # MSG_CALIBRATE_PINDA c=17
 #: ultralcd.cpp:4529
 msgid "Calibrate"
-msgstr "Kalibrirati"
+msgstr "Kalibrirajte"
 
 # MSG_CANCEL2 c=10
 #: messages.c:20
@@ -208,7 +208,7 @@ msgstr "Kalibracija XYZ. Okrenite gumb da pomaknete Z nosac do krajnjih granicni
 # MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: messages.c:21
 msgid "Calibrating Z"
-msgstr "Kalibriranje Z"
+msgstr "Kalibriracija Z"
 
 # MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 #: ultralcd.cpp:3318
@@ -323,7 +323,7 @@ msgstr "Izbaci filament"
 # MSG_EJECTING_FILAMENT c=20
 #: mmu.cpp:1415
 msgid "Ejecting filament"
-msgstr "Izbacivanje fil"
+msgstr "Izbacivanje fil."
 
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ultralcd.cpp:8070
@@ -348,7 +348,7 @@ msgstr "Pogreska - staticka memorija je prepisna preko postojece"
 # MSG_CUT_FILAMENT c=16
 #: messages.c:61
 msgid "Cut filament"
-msgstr "Odrezite fil"
+msgstr "Odrezite fil."
 
 # MSG_CUTTER c=9
 #: messages.c:128
@@ -448,7 +448,7 @@ msgstr "Senzor filamenta"
 # MSG_FILAMENT_USED c=19
 #: ultralcd.cpp:2713
 msgid "Filament used"
-msgstr "Iskoristeni fil"
+msgstr "Iskoristeni fil."
 
 # MSG_PRINT_TIME c=19
 #: ultralcd.cpp:2714
@@ -1013,7 +1013,7 @@ msgstr "Najprije uklonite prijevozne osloce."
 # MSG_PREHEAT_NOZZLE c=20
 #: messages.c:78
 msgid "Preheat the nozzle!"
-msgstr "Predgrij. mlaznicu!"
+msgstr "Predgr. mlaznicu!"
 
 # MSG_PREHEAT c=18
 #: ultralcd.cpp:6576
@@ -1053,12 +1053,12 @@ msgstr "Print je prekinut"
 # MSG_PREHEATING_TO_LOAD c=20
 #: ultralcd.cpp:2297
 msgid "Preheating to load"
-msgstr "Predgrij za punjenje"
+msgstr "Predgr. za punjenje"
 
 # MSG_PREHEATING_TO_UNLOAD c=20
 #: ultralcd.cpp:2302
 msgid "Preheating to unload"
-msgstr "Predgrij. za praznj"
+msgstr "Predgr. za praznj."
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8422
@@ -1428,7 +1428,7 @@ msgstr "da isprazni filament"
 # MSG_UNLOAD_FILAMENT c=18
 #: messages.c:114
 msgid "Unload filament"
-msgstr "Ispraznite fil"
+msgstr "Ispraznite fil."
 
 # MSG_UNLOADING_FILAMENT c=20
 #: messages.c:115
@@ -1703,12 +1703,12 @@ msgstr "G-kod izrezan za noviji firmware. Molimo azurirajte firmware. Prime je o
 # MSG_PREHEATING_TO_CUT c=20
 #: ultralcd.cpp:2309
 msgid "Preheating to cut"
-msgstr "Predgrij. za rezanje"
+msgstr "Predgr. za rezanje"
 
 # MSG_PREHEATING_TO_EJECT c=20
 #: ultralcd.cpp:2306
 msgid "Preheating to eject"
-msgstr "Predgrij. za izbaciv"
+msgstr "Predgr. za izbaciv."
 
 # MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 #: util.cpp:294

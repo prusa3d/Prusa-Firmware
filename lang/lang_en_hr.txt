@@ -140,7 +140,7 @@
 
 #MSG_CALIBRATE_PINDA c=17
 "Calibrate"
-"Kalibrirati"
+"Kalibrirajte"
 
 #MSG_CANCEL2 c=10
 ">Cancel"
@@ -152,7 +152,7 @@
 
 #MSG_CALIBRATE_Z_AUTO c=20 r=2
 "Calibrating Z"
-"Kalibriranje Z"
+"Kalibriracija Z"
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
@@ -244,7 +244,7 @@
 
 #MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
-"Izbacivanje fil"
+"Izbacivanje fil."
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
@@ -264,7 +264,7 @@
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
-"Odrezite fil"
+"Odrezite fil."
 
 #MSG_CUTTER c=9
 "Cutter"
@@ -344,7 +344,7 @@
 
 #MSG_FILAMENT_USED c=19
 "Filament used"
-"Iskoristeni fil"
+"Iskoristeni fil."
 
 #MSG_PRINT_TIME c=19
 "Print time"
@@ -796,7 +796,7 @@
 
 #MSG_PREHEAT_NOZZLE c=20
 "Preheat the nozzle!"
-"Predgrij. mlaznicu!"
+"Predgr. mlaznicu!"
 
 #MSG_PREHEAT c=18
 "Preheat"
@@ -828,11 +828,11 @@
 
 #MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
-"Predgrij za punjenje"
+"Predgr. za punjenje"
 
 #MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
-"Predgrij. za praznj"
+"Predgr. za praznj."
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
@@ -1128,7 +1128,7 @@
 
 #MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
-"Ispraznite fil"
+"Ispraznite fil."
 
 #MSG_UNLOADING_FILAMENT c=20
 "Unloading filament"
@@ -1348,11 +1348,11 @@
 
 #MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
-"Predgrij. za rezanje"
+"Predgr. za rezanje"
 
 #MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
-"Predgrij. za izbaciv"
+"Predgr. za izbaci."
 
 #MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
