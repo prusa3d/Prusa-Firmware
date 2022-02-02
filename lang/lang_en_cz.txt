@@ -40,7 +40,7 @@
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
-"Vse je hotovo."
+"Vse je hotovo. Tisku zdar!"
 
 #MSG_AMBIENT c=14
 "Ambient"
@@ -188,7 +188,7 @@
 
 #MSG_CRASHDETECT c=13
 "Crash det."
-"\x00"
+"Det. narazu."
 
 #MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
@@ -338,7 +338,7 @@
 "Filament not loaded"
 "Filament nezaveden"
 
-#MSG_SELFTEST_FILAMENT_SENSOR c=17
+#MSG_FILAMENT_SENSOR c=20
 "Filament sensor"
 "Senzor filamentu"
 
@@ -944,11 +944,11 @@
 
 #MSG_SELFTEST_START c=20
 "Self test start"
-"Self test start"
+"\x00"
 
 #MSG_SELFTEST c=18
 "Selftest"
-"Selftest"
+"\x00"
 
 #MSG_SELFTEST_ERROR c=20
 "Selftest error!"
@@ -1011,8 +1011,8 @@
 "Hlasity"
 
 #MSG_SLIGHT_SKEW c=14
-"Slight skew:"
-"Lehke zkos.:"
+"Slight skew"
+"\x00"
 
 #MSG_SOUND c=7
 "Sound"
@@ -1126,7 +1126,7 @@
 "to unload filament"
 "k vyjmuti filamentu"
 
-#MSG_UNLOAD_FILAMENT c=18
+#MSG_UNLOAD_FILAMENT c=16
 "Unload filament"
 "Vyjmout filament"
 
@@ -1324,11 +1324,11 @@
 
 #MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
-"\x00"
+"G-code je pripraven pro jinou plochu. Pokracovat?"
 
 #MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
-"\x00"
+"G-code je pripraven pro jinou plochu. Prosim preslicujte model znovu. Tisk zrusen."
 
 #MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
@@ -1364,7 +1364,7 @@
 
 #MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"\x00"
+"%s ocekavana uroven"
 
 #MSG_RENAME c=18
 "Rename"
