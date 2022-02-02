@@ -288,7 +288,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-"Ekstruder fan:"
+"Ekstruder vent:"
 
 #MSG_INFO_EXTRUDER c=18
 "Extruder info"
@@ -312,7 +312,7 @@
 
 #MSG_FAN_SPEED c=14
 "Fan speed"
-"Brzina fena"
+"Brzina vent"
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
@@ -320,7 +320,7 @@
 
 #MSG_FANS_CHECK c=13
 "Fans check"
-"Provjera fana"
+"Provjera vent"
 
 #MSG_FSENSOR c=12
 "Fil. sensor"
@@ -380,7 +380,7 @@
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
-"Prednji print venti?"
+"Prednji print vent?"
 
 #MSG_BED_CORRECTION_FRONT c=14
 "Front side[um]"
@@ -388,7 +388,7 @@
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
-"Prednji/lijevi fan"
+"Prednji/lijevi vent"
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
@@ -1036,7 +1036,7 @@
 
 #MSG_SELFTEST_FAN_YES c=19
 "Spinning"
-"Predenje"
+"Vrti se"
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."

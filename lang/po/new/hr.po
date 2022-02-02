@@ -378,7 +378,7 @@ msgstr "POGRESKA:"
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 #: ultralcd.cpp:8419
 msgid "Extruder fan:"
-msgstr "Ekstruder ventila:"
+msgstr "Ekstruder vent:"
 
 # MSG_INFO_EXTRUDER c=18
 #: ultralcd.cpp:2040
