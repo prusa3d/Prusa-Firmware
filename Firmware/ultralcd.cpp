@@ -126,7 +126,7 @@ static void lcd_control_temperature_menu();
 #ifdef TMC2130
 static void lcd_settings_linearity_correction_menu_save();
 #endif
-static void prusa_stat_printerstatus(int _status);
+static void prusa_stat_printerstatus(uint8_t _status);
 static void prusa_stat_farm_number();
 static void prusa_stat_diameter();
 static void prusa_stat_temperatures();
@@ -4064,7 +4064,7 @@ void prusa_statistics(uint8_t _message, uint8_t _fil_nr) {
 
 }
 
-static void prusa_stat_printerstatus(int _status)
+static void prusa_stat_printerstatus(uint8_t _status)
 {
 	SERIAL_ECHOPGM("[PRN:");
 	SERIAL_ECHO(_status);

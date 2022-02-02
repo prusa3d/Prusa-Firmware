@@ -213,7 +213,7 @@ bool mesh_bed_leveling_flag = false;
 bool prusa_sd_card_upload = false;
 #endif
 
-unsigned int status_number = 0;
+uint8_t status_number = 0;
 
 unsigned long total_filament_used;
 HeatingStatus heating_status;
@@ -4509,7 +4509,7 @@ void process_commands()
 			}	  
 		}
 		else if (code_seen_P(PSTR("PRN"))) { // PRUSA PRN
-		  printf_P(_N("%d"), status_number);
+		  printf_P(_N("%u"), status_number);
 
         } else if( code_seen_P(PSTR("FANPINTST"))){
             gcode_PRUSA_BadRAMBoFanTest();

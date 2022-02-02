@@ -335,7 +335,7 @@ extern bool loading_flag;
 extern uint8_t usb_printing_counter;
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
-extern unsigned int status_number;
+extern uint8_t status_number;
 extern uint8_t heating_status_counter;
 extern char snmm_filaments_used;
 extern unsigned long PingTime;
