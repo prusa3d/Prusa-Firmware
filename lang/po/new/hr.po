@@ -493,7 +493,7 @@ msgstr "Protok"
 # MSG_SELFTEST_COOLING_FAN c=20
 #: messages.c:88
 msgid "Front print fan?"
-msgstr "Prednji print venti?"
+msgstr "Prednji print vent?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
