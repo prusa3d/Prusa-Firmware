@@ -83,7 +83,6 @@ uint8_t custom_message_state = 0;
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
 uint8_t farm_timer = 8;
-uint8_t farm_status = 0;
 bool printer_connected = true;
 
 static ShortTimer display_time; //just timer for showing pid finished message on lcd;
@@ -3949,7 +3948,6 @@ void prusa_statistics(uint8_t _message, uint8_t _fil_nr) {
 		break;
 
 	case 1:		// 1 heating
-		farm_status = 2;
 		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(2);
 		prusa_stat_farm_number();
@@ -3958,7 +3956,6 @@ void prusa_statistics(uint8_t _message, uint8_t _fil_nr) {
 		break;
 
 	case 2:		// heating done
-		farm_status = 3;
 		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(3);
 		prusa_stat_farm_number();
@@ -3968,7 +3965,6 @@ void prusa_statistics(uint8_t _message, uint8_t _fil_nr) {
 
 		if (IS_SD_PRINTING || loading_flag)
 		{
-			farm_status = 4;
 			SERIAL_ECHO('{');
 			prusa_stat_printerstatus(4);
 			prusa_stat_farm_number();
