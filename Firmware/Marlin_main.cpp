@@ -4319,11 +4319,11 @@ void process_commands()
         codenum = 0;
         bool hasP = false, hasS = false;
         if (code_seen('P')) {
-            codenum = code_value(); // milliseconds to wait
+            codenum = code_value_long(); // milliseconds to wait
             hasP = codenum > 0;
         }
         if (code_seen('S')) {
-            codenum = code_value() * 1000; // seconds to wait
+            codenum = code_value_long() * 1000; // seconds to wait
             hasS = codenum > 0;
         }
         starpos = strchr(src, '*');
@@ -4679,7 +4679,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
   // }
   else if(code_seen('G'))
   {
-	gcode_in_progress = (int)code_value();
+	gcode_in_progress = code_value_short();
 //	printf_P(_N("BEGIN G-CODE=%u\n"), gcode_in_progress);
     switch (gcode_in_progress)
     {
@@ -5827,7 +5827,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 	  } else
 	  {
-	  mcode_in_progress = (int)code_value();
+	  mcode_in_progress = code_value_short();
 //	printf_P(_N("BEGIN M-CODE=%u\n"), mcode_in_progress);
 
     switch(mcode_in_progress)
@@ -6096,7 +6096,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         uint8_t pin_status = code_value_uint8();
         int8_t pin_number = LED_PIN;
         if (code_seen('P'))
-          pin_number = code_value();
+          pin_number = code_value_uint8();
         for(int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins)/sizeof(*sensitive_pins)); i++)
         {
           if ((int8_t)pgm_read_byte(&sensitive_pins[i]) == pin_number)
@@ -6511,9 +6511,9 @@ Sigma_Exit:
     */
     case 73: //M73 show percent done, time remaining and time to change/pause
     {
-        if(code_seen('P')) print_percent_done_normal = code_value();
+        if(code_seen('P')) print_percent_done_normal = code_value_uint8();
         if(code_seen('R')) print_time_remaining_normal = code_value();
-        if(code_seen('Q')) print_percent_done_silent = code_value();
+        if(code_seen('Q')) print_percent_done_silent = code_value_uint8();
         if(code_seen('S')) print_time_remaining_silent = code_value();
         if(code_seen('C')){
             float print_time_to_change_normal_f = code_value_float();
@@ -6633,7 +6633,7 @@ Sigma_Exit:
             autoReportFeatures.SetPeriod( code_value_uint8() );
         }
         if (code_seen('C')){
-            autoReportFeatures.SetMask(code_value());
+            autoReportFeatures.SetMask(code_value_uint8());
         } else{
             autoReportFeatures.SetMask(1); //Backwards compability to host systems like Octoprint to send only temp if paramerter `C`isn't used.
         }
@@ -6784,10 +6784,10 @@ Sigma_Exit:
       */
       case 106: // M106 Sxxx Fan On S<speed> 0 .. 255
         if (code_seen('S')){
-           fanSpeed=constrain(code_value(),0,255);
+           fanSpeed = code_value_uint8();
         }
         else {
-          fanSpeed=255;
+          fanSpeed = 255;
         }
         break;
 
@@ -7017,7 +7017,7 @@ Sigma_Exit:
     */
 	case 113:
 		if (code_seen('S')) {
-			host_keepalive_interval = (uint8_t)code_value_short();
+			host_keepalive_interval = code_value_uint8();
 //			NOMORE(host_keepalive_interval, 60);
 		}
 		else {
@@ -7243,7 +7243,7 @@ Sigma_Exit:
 
         uint8_t extruder = active_extruder;
         if(code_seen('T')) {
-          extruder = code_value();
+          extruder = code_value_uint8();
 		  if(extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
             SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER
@@ -7251,14 +7251,14 @@ Sigma_Exit:
           }
         }
         if(code_seen('D')) {
-		  float diameter = (float)code_value();
+		  float diameter = code_value();
 		  if (diameter == 0.0) {
 			// setting any extruder filament size disables volumetric on the assumption that
 			// slicers either generate in extruder values as cubic mm or as as filament feeds
 			// for all extruders
 		    cs.volumetric_enabled = false;
 		  } else {
-            cs.filament_size[extruder] = (float)code_value();
+            cs.filament_size[extruder] = code_value();
 			// make sure all extruders have some sane value for the filament size
 			cs.filament_size[0] = (cs.filament_size[0] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[0]);
             #if EXTRUDERS > 1
@@ -7506,8 +7506,7 @@ Sigma_Exit:
     {
       if(code_seen('S'))
       {
-        int t= code_value() ;
-        switch(t)
+        switch(code_value_uint8())
         {
           case 0: 
           {
@@ -7604,7 +7603,7 @@ Sigma_Exit:
         }
         if (code_seen('S'))
         {
-            feedmultiply = code_value();
+            feedmultiply = code_value_short();
             codesWereSeen = true;
         }
         if (code_seen('R')) //restore previous feedmultiply
@@ -7633,7 +7632,7 @@ Sigma_Exit:
     {
         if (code_seen('S'))
         {
-            int tmp_code = code_value();
+            int tmp_code = code_value_short();
             if (code_seen('T'))
             {
                 uint8_t extruder;
@@ -7668,10 +7667,10 @@ Sigma_Exit:
 	case 226: // M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
 	{
       if(code_seen('P')){
-        int pin_number = code_value(); // pin number
+        int pin_number = code_value_short(); // pin number
         int pin_state = -1; // required pin state - default is inverted
 
-        if(code_seen('S')) pin_state = code_value(); // required pin state
+        if(code_seen('S')) pin_state = code_value_short(); // required pin state
 
         if(pin_state >= -1 && pin_state <= 1){
 
@@ -7949,13 +7948,13 @@ Sigma_Exit:
     case 303:
     {
       float temp = 150.0;
-      int e=0;
-      int c=5;
-      if (code_seen('E')) e=code_value();
-        if (e<0)
-          temp=70;
-      if (code_seen('S')) temp=code_value();
-      if (code_seen('C')) c=code_value();
+      int e = 0;
+      int c = 5;
+      if (code_seen('E')) e = code_value_short();
+        if (e < 0)
+          temp = 70;
+      if (code_seen('S')) temp = code_value();
+      if (code_seen('C')) c = code_value_short();
       PID_autotune(temp, e, c);
     }
     break;
@@ -7992,8 +7991,8 @@ Sigma_Exit:
 		{
 			uint8_t extruder = 255;
 			uint8_t filament = FILAMENT_UNDEFINED;
-			if(code_seen('E')) extruder = code_value();
-			if(code_seen('F')) filament = code_value();
+			if(code_seen('E')) extruder = code_value_uint8();
+			if(code_seen('F')) filament = code_value_uint8();
 			mmu_set_filament_type(extruder, filament);
 		}
 	}
@@ -8293,7 +8292,7 @@ Sigma_Exit:
 		int set_target_pinda = 0;
 
 		if (code_seen('S')) {
-			set_target_pinda = code_value();
+			set_target_pinda = code_value_short();
 		}
 		else {
 			break;
@@ -8386,9 +8385,9 @@ Sigma_Exit:
 			SERIAL_PROTOCOLLN("zerorized");
 		}
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
-			int16_t usteps = code_value();
+			int16_t usteps = code_value_short();
 			if (code_seen('I')) {
-			    uint8_t index = code_value();
+			    uint8_t index = code_value_uint8();
 				if (index < 5) {
 					EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + index * 2, &usteps);
 					SERIAL_PROTOCOLLN("OK");
@@ -8874,7 +8873,7 @@ Sigma_Exit:
 	case 701:
 	{
 		if (mmu_enabled && code_seen('E'))
-			tmp_extruder = code_value();
+			tmp_extruder = code_value_uint8();
 		gcode_M701();
 	}
 	break;
@@ -9131,7 +9130,7 @@ Sigma_Exit:
   */
   else if (code_seen('D')) // D codes (debug)
   {
-    switch((int)code_value())
+    switch(code_value_short())
     {
 
     /*!
@@ -9599,7 +9598,7 @@ void get_coordinates()
     if(code_seen(axis_codes[i]))
     {
       bool relative = axis_relative_modes & (1 << i);
-      destination[i] = (float)code_value();
+      destination[i] = code_value();
       if (i == E_AXIS) {
         float emult = extruder_multiplier[active_extruder];
         if (emult != 1.) {
@@ -10310,7 +10309,7 @@ bool setTargetedHotend(int code, uint8_t &extruder)
 {
   extruder = active_extruder;
   if(code_seen('T')) {
-      extruder = code_value();
+      extruder = code_value_uint8();
     if(extruder >= EXTRUDERS) {
       SERIAL_ECHO_START;
       switch(code){
