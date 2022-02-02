@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Sun 19 Dec 2021 07:17:23 PM CET\n"
-"PO-Revision-Date: 2022-02-01 05:54+0100\n"
+"PO-Revision-Date: 2022-02-02 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs\n"
@@ -66,7 +66,7 @@ msgstr "Vse OK"
 # MSG_WIZARD_DONE c=20 r=8
 #: messages.c:118
 msgid "All is done. Happy printing!"
-msgstr "Vse je hotovo."
+msgstr "Vse je hotovo. Tisku zdar!"
 
 # MSG_AMBIENT c=14
 #: ultralcd.cpp:1727
@@ -76,7 +76,7 @@ msgstr "Okoli"
 # MSG_AUTO c=6
 #: messages.c:160
 msgid "Auto"
-msgstr "Auto"
+msgstr ""
 
 # MSG_PRESS c=20 r=2
 #: ultralcd.cpp:2485
@@ -91,7 +91,7 @@ msgstr "Dojely oba Z voziky k~hornimu dorazu?"
 # MSG_AUTO_HOME c=18
 #: messages.c:11
 msgid "Auto home"
-msgstr "Auto home"
+msgstr ""
 
 # MSG_AUTOLOAD_FILAMENT c=18
 #: ultralcd.cpp:6732
@@ -380,12 +380,12 @@ msgstr "Levy vent.:"
 # MSG_INFO_EXTRUDER c=18
 #: ultralcd.cpp:2040
 msgid "Extruder info"
-msgstr "Extruder info"
+msgstr ""
 
 # MSG_EXTRUDER c=17
 #: messages.c:32
 msgid "Extruder"
-msgstr "Extruder"
+msgstr ""
 
 # MSG_MMU_FAIL_STATS c=18
 #: ultralcd.cpp:6754
@@ -590,7 +590,7 @@ msgstr "Vyber filament:"
 # MSG_FILAMENT c=17
 #: messages.c:35
 msgid "Filament"
-msgstr "Filament"
+msgstr ""
 
 # MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ultralcd.cpp:4951
@@ -730,7 +730,7 @@ msgstr "Merim referencni vysku kalibracniho bodu"
 # MSG_MESH_BED_LEVELING c=18
 #: messages.c:148
 msgid "Mesh Bed Leveling"
-msgstr "Mesh Bed Leveling"
+msgstr ""
 
 # MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 #: mmu.cpp:765
@@ -780,7 +780,7 @@ msgstr "MK3 firmware detekovan na MK3S tiskarne"
 # MSG_NORMAL c=7
 #: messages.c:107
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 # MSG_SILENT c=7
 #: messages.c:106
@@ -820,7 +820,7 @@ msgstr "MMU2 pripojeno"
 # MSG_SELFTEST_MOTOR c=18
 #: messages.c:96
 msgid "Motor"
-msgstr "Motor"
+msgstr ""
 
 # MSG_MOVE_AXIS c=18
 #: ultralcd.cpp:5677
@@ -855,7 +855,7 @@ msgstr "Zadna SD karta"
 # MSG_NA c=3
 #: messages.c:127
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 # MSG_NO c=4
 #: messages.c:71
@@ -1140,7 +1140,7 @@ msgstr "Reset XYZ kalibr."
 # MSG_RESET c=14
 #: messages.c:85
 msgid "Reset"
-msgstr "Reset"
+msgstr ""
 
 # MSG_RESUME_PRINT c=18
 #: messages.c:86
@@ -1160,7 +1160,7 @@ msgstr "Vpravo [um]"
 # MSG_RPI_PORT c=13
 #: messages.c:142
 msgid "RPi port"
-msgstr "RPi port"
+msgstr ""
 
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4756
@@ -1190,17 +1190,17 @@ msgstr "Vyber jazyka"
 # MSG_SELFTEST_OK c=20
 #: ultralcd.cpp:7679
 msgid "Self test OK"
-msgstr "Self test OK"
+msgstr ""
 
 # MSG_SELFTEST_START c=20
 #: ultralcd.cpp:7447
 msgid "Self test start"
-msgstr "Self test start"
+msgstr ""
 
 # MSG_SELFTEST c=18
 #: ultralcd.cpp:5780
 msgid "Selftest"
-msgstr "Selftest"
+msgstr ""
 
 # MSG_SELFTEST_ERROR c=20
 #: ultralcd.cpp:8121
@@ -1289,7 +1289,7 @@ msgstr "Zvuk"
 # MSG_RUNOUTS c=7
 #: ultralcd.cpp:1593
 msgid "Runouts"
-msgstr "Runouts"
+msgstr ""
 
 # MSG_Z-LEVELING_ENFORCED c=20 r=4
 #: Marlin_main.cpp:3303
@@ -1529,7 +1529,7 @@ msgstr "Kalibrace XYZ v poradku. X/Y osy mirne zkosene. Dobra prace!"
 # MSG_TIMEOUT c=12
 #: messages.c:157
 msgid "Timeout"
-msgstr "Timeout"
+msgstr ""
 
 # MSG_X_CORRECTION c=13
 #: ultralcd.cpp:5086
@@ -1639,7 +1639,7 @@ msgstr "Komp. magnetu"
 # MSG_MESH c=12
 #: messages.c:147
 msgid "Mesh"
-msgstr "Mesh"
+msgstr ""
 
 # MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
 #: Marlin_main.cpp:875
@@ -1659,7 +1659,7 @@ msgstr "Probiha zmena modu..."
 # MSG_MODEL c=8
 #: messages.c:132
 msgid "Model"
-msgstr "Model"
+msgstr ""
 
 # MSG_NOZZLE_DIAMETER c=10
 #: messages.c:136
