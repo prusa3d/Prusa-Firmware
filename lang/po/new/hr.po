@@ -378,7 +378,7 @@ msgstr "POGRESKA:"
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 #: ultralcd.cpp:8419
 msgid "Extruder fan:"
-msgstr "Ekstruder fan:"
+msgstr "Ekstruder ventila:"
 
 # MSG_INFO_EXTRUDER c=18
 #: ultralcd.cpp:2040
@@ -408,7 +408,7 @@ msgstr "Neuspjesna stat"
 # MSG_FAN_SPEED c=14
 #: messages.c:36
 msgid "Fan speed"
-msgstr "Brzina fena"
+msgstr "Brzina vent."
 
 # MSG_SELFTEST_FAN c=20
 #: messages.c:91
@@ -503,7 +503,7 @@ msgstr "Prednj str[um]"
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
 msgid "Front/left fans"
-msgstr "Prednji/lijevi fan"
+msgstr "Prednji/lijevi vent."
 
 # MSG_SELFTEST_HEATERTHERMISTOR c=20
 #: ultralcd.cpp:8048
@@ -908,7 +908,7 @@ msgstr "Sada uklonite probni print sa celicne ploce."
 # MSG_NOZZLE_FAN c=10
 #: ultralcd.cpp:1446
 msgid "Nozzle FAN"
-msgstr "Fan mlazn"
+msgstr "vent mlazn"
 
 # MSG_PAUSE_PRINT c=18
 #: messages.c:74
@@ -1093,7 +1093,7 @@ msgstr "Printer jos nije kalibriran. Molimo slijedite prirucnik, poglavlje Prvi 
 # MSG_PRINT_FAN c=10
 #: ultralcd.cpp:1447
 msgid "Print FAN"
-msgstr ""
+msgstr "Print vent"
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
