@@ -471,8 +471,8 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
         intpol = 0;
     }
 #endif
-//	DBG(_n("tmc2130_setup_chopper(axis=%hhd, mres=%hhd, curh=%hhd, curr=%hhd\n"), axis, mres, current_h, current_r);
-//	DBG(_n(" toff=%hhd, hstr=%hhd, hend=%hhd, tbl=%hhd\n"), toff, hstrt, hend, tbl);
+//	DBG(_n("tmc2130_setup_chopper(axis=%d, mres=%d, curh=%d, curr=%d\n"), axis, mres, current_h, current_r);
+//	DBG(_n(" toff=%d, hstr=%d, hend=%d, tbl=%d\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
 	{
 		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, dedge, 0);
@@ -511,7 +511,7 @@ void tmc2130_print_currents()
 
 void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 {
-//	DBG(_n("tmc2130_set_pwm_ampl(axis=%hhd, pwm_ampl=%hhd\n"), axis, pwm_ampl);
+//	DBG(_n("tmc2130_set_pwm_ampl(axis=%d, pwm_ampl=%d\n"), axis, pwm_ampl);
 	tmc2130_pwm_ampl[axis] = pwm_ampl;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -519,7 +519,7 @@ void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 
 void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_grad)
 {
-//	DBG(_n("tmc2130_set_pwm_grad(axis=%hhd, pwm_grad=%hhd\n"), axis, pwm_grad);
+//	DBG(_n("tmc2130_set_pwm_grad(axis=%d, pwm_grad=%d\n"), axis, pwm_grad);
 	tmc2130_pwm_grad[axis] = pwm_grad;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -893,7 +893,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 {
 // TMC2130 wave compression algorithm
 // optimized for minimal memory requirements
-//	printf_P(PSTR("tmc2130_set_wave %hhd %hhd\n"), axis, fac1000);
+//	printf_P(PSTR("tmc2130_set_wave %d %d\n"), axis, fac1000);
 	if (fac1000 < TMC2130_WAVE_FAC1000_MIN) fac1000 = 0;
 	if (fac1000 > TMC2130_WAVE_FAC1000_MAX) fac1000 = TMC2130_WAVE_FAC1000_MAX;
 	float fac = 0;

@@ -1518,7 +1518,7 @@ void setup()
 	xflash_rd_uid(uid);
 	puts_P(_n("XFLASH UID="));
 	for (uint8_t i = 0; i < 8; i ++)
-		printf_P(PSTR("%02hhx"), uid[i]);
+		printf_P(PSTR("%02x"), uid[i]);
 	putchar('\n');
 	list_sec_lang_from_external_flash();
 #endif //DEBUG_XFLASH
@@ -4450,7 +4450,7 @@ void process_commands()
 				tmc2130_chopper_config[axis].hend = chop2 & 15;
 				tmc2130_chopper_config[axis].tbl = chop3 & 3;
 				tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
-				//printf_P(_N("TMC_SET_CHOP_%c %hhd %hhd %hhd %hhd\n"), "xyze"[axis], chop0, chop1, chop2, chop3);
+				//printf_P(_N("TMC_SET_CHOP_%c %d %d %d %d\n"), "xyze"[axis], chop0, chop1, chop2, chop3);
 			}
 		}
 	}
@@ -4459,7 +4459,7 @@ void process_commands()
 	{
 		uint8_t bl = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 10, NULL, 10);
 		st_backlash_x = bl;
-		printf_P(_N("st_backlash_x = %hhd\n"), st_backlash_x);
+		printf_P(_N("st_backlash_x = %d\n"), st_backlash_x);
 	}
 #endif //BACKLASH_X
 #ifdef BACKLASH_Y
@@ -4467,7 +4467,7 @@ void process_commands()
 	{
 		uint8_t bl = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 10, NULL, 10);
 		st_backlash_y = bl;
-		printf_P(_N("st_backlash_y = %hhd\n"), st_backlash_y);
+		printf_P(_N("st_backlash_y = %d\n"), st_backlash_y);
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
