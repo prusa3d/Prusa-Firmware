@@ -1313,7 +1313,7 @@ msgstr "Brzina"
 # MSG_SELFTEST_FAN_YES c=19
 #: messages.c:93
 msgid "Spinning"
-msgstr "Predenje"
+msgstr "Vrti se"
 
 # MSG_TEMP_CAL_WARNING c=20 r=4
 #: Marlin_main.cpp:5351
