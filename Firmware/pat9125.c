@@ -188,8 +188,8 @@ uint8_t pat9125_init(void)
 
 	pat9125_wr_reg(PAT9125_RES_X, PAT9125_XRES);
 	pat9125_wr_reg(PAT9125_RES_Y, PAT9125_YRES);
-	fprintf_P(uartout, PSTR("PAT9125_RES_X=%hhu\n"), pat9125_rd_reg(PAT9125_RES_X));
-	fprintf_P(uartout, PSTR("PAT9125_RES_Y=%hhu\n"), pat9125_rd_reg(PAT9125_RES_Y));
+	fprintf_P(uartout, PSTR("PAT9125_RES_X=%u\n"), pat9125_rd_reg(PAT9125_RES_X));
+	fprintf_P(uartout, PSTR("PAT9125_RES_Y=%u\n"), pat9125_rd_reg(PAT9125_RES_Y));
 	return 1;
 }
 

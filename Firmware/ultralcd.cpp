@@ -469,7 +469,7 @@ void lcdui_print_percent_done(void)
 			return; //do not also print the percentage
 		}
 	}
-	sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
+	sprintf_P(per, num?_N("%3d"):_N("---"), calc_percent_done());
 	lcd_printf_P(_N("%3S%3s%%"), src, per);
 }
 
@@ -2703,7 +2703,7 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%18.2fm \n"
 			"%S:\n"
-			"%10ldh %02hhdm %02hhds"
+			"%10ldh %02dm %02ds"
 		    ),
             _i("Filament used"), _met,  ////MSG_FILAMENT_USED c=19
             _i("Print time"), _h, _m, _s);  ////MSG_PRINT_TIME c=19
@@ -2725,7 +2725,7 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%18.2fm \n"
 			"%S:\n"
-			"%10ldd %02hhdh %02hhdm"
+			"%10ldd %02dh %02dm"
             ),
             _i("Total filament"), _filament_m,  ////MSG_TOTAL_FILAMENT c=19
             _i("Total print time"), _days, _hours, _minutes);  ////MSG_TOTAL_PRINT_TIME c=19

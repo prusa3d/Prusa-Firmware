@@ -264,7 +264,7 @@ void mmu_loop(void)
 	case S::GetFindaInit:
 		if (mmu_rx_ok() > 0)
 		{
-			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer. MUST BE %hhu!!!
 			mmu_last_finda_response.start();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			puts_P(PSTR("MMU - ENABLED"));
@@ -377,7 +377,7 @@ void mmu_loop(void)
         }
 		if (mmu_rx_ok() > 0)
 		{
-			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer. MUST BE %hhu!!!
 			mmu_last_finda_response.start();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
