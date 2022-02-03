@@ -350,7 +350,7 @@ fi
 #if [ "$LNG" = "pl" ]; then
 #fi
 
-#check for nonasci characters excpet HD44780 ROM A00 'äöüß'
+#check for nonasci characters except HD44780 ROM A00 'äöüß'
 if grep --color='auto' -P -n '[^\x00-\x7F]' $LNG'_filtered.po' >nonascii.txt; then
  exit
 fi
