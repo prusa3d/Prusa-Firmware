@@ -188,7 +188,7 @@
 
 #MSG_CRASHDETECT c=13
 "Crash det."
-"Det. narazu."
+"Det. narazu"
 
 #MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
@@ -1012,7 +1012,7 @@
 
 #MSG_SLIGHT_SKEW c=14
 "Slight skew"
-"\x00"
+"Lehke zkos."
 
 #MSG_SOUND c=7
 "Sound"
@@ -1324,11 +1324,11 @@
 
 #MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
-"G-code je pripraven pro jinou plochu. Pokracovat?"
+"G-code je pripraven pro jinou verzi. Pokracovat?"
 
 #MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
-"G-code je pripraven pro jinou plochu. Prosim preslicujte model znovu. Tisk zrusen."
+"G-code je pripraven pro jinou verzi. Prosim preslicujte model znovu. Tisk zrusen."
 
 #MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
@@ -1364,7 +1364,7 @@
 
 #MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"%s ocekavana uroven"
+"%s ocekavana verze"
 
 #MSG_RENAME c=18
 "Rename"
