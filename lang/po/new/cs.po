@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Sun 19 Dec 2021 07:17:23 PM CET\n"
-"PO-Revision-Date: 2022-02-02 12:28+0100\n"
+"PO-Revision-Date: 2022-02-03 12:53+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 # MSG_IR_03_OR_OLDER c=18
@@ -251,7 +251,7 @@ msgstr "Kopirovat vybrany jazyk?"
 # MSG_CRASHDETECT c=13
 #: messages.c:30
 msgid "Crash det."
-msgstr "Det. narazu."
+msgstr "Det. narazu"
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4842
@@ -1669,12 +1669,12 @@ msgstr "Tryska"
 # MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: util.cpp:414
 msgid "G-code sliced for a different level. Continue?"
-msgstr "G-code je pripraven pro jinou plochu. Pokracovat?"
+msgstr "G-code je pripraven pro jinou verzi. Pokracovat?"
 
 # MSG_GCODE_DIFF_CANCELLED c=20 r=7
 #: util.cpp:420
 msgid "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
-msgstr "G-code je pripraven pro jinou plochu. Prosim preslicujte model znovu. Tisk zrusen."
+msgstr "G-code je pripraven pro jinou verzi. Prosim preslicujte model znovu. Tisk zrusen."
 
 # MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 #: messages.c:134
@@ -1719,7 +1719,7 @@ msgstr "Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni.
 # MSG_SELFTEST_FS_LEVEL c=20
 #: ultralcd.cpp:8195
 msgid "%s level expected"
-msgstr "%s ocekavana uroven"
+msgstr "%s ocekavana verze"
 
 # MSG_RENAME c=18
 #: ultralcd.cpp:6579
