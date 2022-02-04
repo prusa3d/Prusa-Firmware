@@ -98,7 +98,6 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 
 uint8_t lcd_status_message_level;
 char lcd_status_message[LCD_WIDTH + 1] = ""; //////WELCOME!
-unsigned char firstrun = 1;
 
 static uint8_t lay1cal_filament = 0;
 
@@ -772,21 +771,6 @@ void lcdui_print_status_screen(void)
 // Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent
 void lcd_status_screen()                          // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
-	if (firstrun == 1) 
-	{
-		firstrun = 0;
-		if(lcd_status_message_level == 0)
-		{
-			strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
-			lcd_finishstatus();
-		}
-		if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
-		{
-			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
-		}
-	}
-
 #ifdef ULTIPANEL_FEEDMULTIPLY
 	// Dead zone at 100% feedrate
 	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
@@ -8588,6 +8572,7 @@ void ultralcd_init()
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
   lcd_encoder_diff = 0;
+  lcd_setstatuspgm(_T(WELCOME_MSG));
 }
 
 
