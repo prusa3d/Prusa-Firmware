@@ -46,7 +46,7 @@ public:
   void printingHasFinished();
 
   void getfilename(uint16_t nr, const char* const match=NULL);
-  void getfilename_simple(uint32_t position, const char * const match = NULL);
+  void getfilename_simple(uint16_t entry, const char * const match = NULL);
   void getfilename_next(uint32_t position, const char * const match = NULL);
   uint16_t getnrfilenames();
   
@@ -111,7 +111,7 @@ private:
   // Sort files and folders alphabetically.
 #ifdef SDCARD_SORT_ALPHA
   uint16_t sort_count;        // Count of sorted items in the current directory
-  uint32_t sort_positions[SDSORT_LIMIT];
+  uint16_t sort_entries[SDSORT_LIMIT];
 
 #endif // SDCARD_SORT_ALPHA
 
