@@ -713,7 +713,7 @@ msgstr "M117 Prvi sloj kal."
 # MSG_MAIN c=18
 #: messages.c:63
 msgid "Main"
-msgstr "Glavni"
+msgstr "Nazad"
 
 # MSG_BL_HIGH c=12
 #: messages.c:155
@@ -1313,7 +1313,7 @@ msgstr "Brzina"
 # MSG_SELFTEST_FAN_YES c=19
 #: messages.c:93
 msgid "Spinning"
-msgstr "Vrti se"
+msgstr "Okrece se"
 
 # MSG_TEMP_CAL_WARNING c=20 r=4
 #: Marlin_main.cpp:5351

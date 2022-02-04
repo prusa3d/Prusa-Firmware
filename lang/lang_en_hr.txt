@@ -556,7 +556,7 @@
 
 #MSG_MAIN c=18
 "Main"
-"Glavni"
+"Nazad"
 
 #MSG_BL_HIGH c=12
 "Level Bright"
@@ -1036,7 +1036,7 @@
 
 #MSG_SELFTEST_FAN_YES c=19
 "Spinning"
-"Vrti se"
+"Okrece se"
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
