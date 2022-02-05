@@ -97,7 +97,7 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 /* !Configuration settings */
 
 uint8_t lcd_status_message_level;
-char lcd_status_message[LCD_WIDTH + 1] = ""; //////WELCOME!
+char lcd_status_message[LCD_WIDTH + 1] = WELCOME_MSG;
 
 static uint8_t lay1cal_filament = 0;
 
@@ -642,8 +642,7 @@ void lcdui_print_status_line(void)
             } else {
                 if (custom_message_state == 3)
                 {
-                    lcd_puts_P(_T(WELCOME_MSG));
-                    lcd_setstatuspgm(_T(WELCOME_MSG));
+                    lcd_setstatuspgm(MSG_WELCOME);
                     custom_message_type = CustomMsg::Status;
                 }
                 if (custom_message_state > 3 && custom_message_state <= 10 ) {
@@ -1147,7 +1146,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_setstatuspgm(_T(WELCOME_MSG));
+			lcd_setstatuspgm(MSG_WELCOME);
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
@@ -1236,7 +1235,7 @@ void lcd_commands()
                 lcd_commands_step = 1;
                 break;
             case 1:
-                lcd_setstatuspgm(_T(WELCOME_MSG));
+                lcd_setstatuspgm(MSG_WELCOME);
                 lcd_commands_step = 0;
                 lcd_commands_type = LcdCommands::Idle;
                 if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1)
@@ -1330,7 +1329,7 @@ void lcd_commands()
 			lcd_commands_step = 1;
 		}
 		if ((lcd_commands_step == 1) && display_time.expired(2000)) { //calibration finished message
-			lcd_setstatuspgm(_T(WELCOME_MSG));
+			lcd_setstatuspgm(MSG_WELCOME);
 			custom_message_type = CustomMsg::Status;
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
@@ -5023,7 +5022,7 @@ void lcd_wizard(WizState state)
 
 		msg = _T(MSG_WIZARD_DONE);
 		lcd_reset_alert_level();
-		lcd_setstatuspgm(_T(WELCOME_MSG));
+		lcd_setstatuspgm(MSG_WELCOME);
 		lcd_return_to_status(); 
 		break;
 
@@ -6290,7 +6289,7 @@ void unload_filament(bool automatic)
 
 	lcd_update_enable(true);
 
-	lcd_setstatuspgm(_T(WELCOME_MSG));
+	lcd_setstatuspgm(MSG_WELCOME);
 	custom_message_type = CustomMsg::Status;
 
 }
@@ -7014,7 +7013,7 @@ void lcd_print_stop()
 
     finishAndDisableSteppers(); //M84
 
-    lcd_setstatuspgm(_T(WELCOME_MSG));
+    lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 
     planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
@@ -8479,7 +8478,7 @@ static bool check_file(const char* filename) {
 	cmdqueue_serial_disabled = false;
 	card.printingHasFinished();
 
-	lcd_setstatuspgm(_T(WELCOME_MSG));
+	lcd_setstatuspgm(MSG_WELCOME);
 	lcd_finishstatus();
 	return result;
 }
@@ -8572,7 +8571,6 @@ void ultralcd_init()
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
   lcd_encoder_diff = 0;
-  lcd_setstatuspgm(_T(WELCOME_MSG));
 }
 
 
@@ -8815,7 +8813,7 @@ void menu_lcd_lcdupdate_func(void)
 				card.initsd(false); //delay the sorting to the sd menu. Otherwise, removing the SD card while sorting will not menu_back()
 				card.presort_flag = true; //force sorting of the SD menu
 			}
-			LCD_MESSAGERPGM(_T(WELCOME_MSG));
+			LCD_MESSAGERPGM(MSG_WELCOME);
 			bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 			menu_submenu(lcd_sdcard_menu);
 			lcd_timeoutToStatus.start();

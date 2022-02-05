@@ -1677,7 +1677,7 @@ void setup()
 		  eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 		  lcd_update_enable(true);
 		  lcd_update(2);
-		  lcd_setstatuspgm(_T(WELCOME_MSG));
+		  lcd_setstatuspgm(MSG_WELCOME);
 	  }
 */
       manage_heater(); // Update temperatures 
@@ -1699,7 +1699,7 @@ void setup()
               eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
               lcd_update_enable(true); 
               lcd_update(2); 
-              lcd_setstatuspgm(_T(WELCOME_MSG)); 
+              lcd_setstatuspgm(MSG_WELCOME); 
           } 
       }
   }
@@ -3445,7 +3445,7 @@ static void gcode_G80()
     }
     KEEPALIVE_STATE(NOT_BUSY);
     // Restore custom message state
-    lcd_setstatuspgm(_T(WELCOME_MSG));
+    lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = custom_message_type_old;
     custom_message_state = custom_message_state_old;
     lcd_update(2);
@@ -3848,7 +3848,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 	fsensor_check_autoload();
 #endif //IR_SENSOR
 
-    lcd_setstatuspgm(_T(WELCOME_MSG));
+    lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 }
 
@@ -3894,7 +3894,7 @@ void gcode_M701()
 		}
 		lcd_update_enable(true);
 		lcd_update(2);
-		lcd_setstatuspgm(_T(WELCOME_MSG));
+		lcd_setstatuspgm(MSG_WELCOME);
 		disable_z();
 		loading_flag = false;
 		custom_message_type = CustomMsg::Status;
@@ -4361,7 +4361,7 @@ void process_commands()
         if (IS_SD_PRINTING)
             custom_message_type = CustomMsg::Status;
         else
-            LCD_MESSAGERPGM(_T(WELCOME_MSG));
+            LCD_MESSAGERPGM(MSG_WELCOME);
     }
 
 #ifdef TMC2130
@@ -6818,7 +6818,7 @@ Sigma_Exit:
         #endif
 
           powersupply = true;
-          LCD_MESSAGERPGM(_T(WELCOME_MSG));
+          LCD_MESSAGERPGM(MSG_WELCOME);
           lcd_update(0);
         break;
 
@@ -11877,7 +11877,7 @@ void restore_print_from_ram_and_continue(float e_move)
 		//not sd printing nor usb printing
 	}
 
-	lcd_setstatuspgm(_T(WELCOME_MSG));
+	lcd_setstatuspgm(MSG_WELCOME);
     saved_printing_type = PRINTING_TYPE_NONE;
 	saved_printing = false;
     waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack

@@ -1366,7 +1366,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         lcd_return_to_status();
         lcd_update_enable(true);
         lcd_load_filament_color_check();
-        lcd_setstatuspgm(_T(WELCOME_MSG));
+        lcd_setstatuspgm(MSG_WELCOME);
         custom_message_type = CustomMsg::Status;
     }
     else
