@@ -409,7 +409,7 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 // Print temperature (nozzle/bed) (9 chars total)
 void lcdui_print_temp(char type, int val_current, int val_target)
 {
-	int chars = lcd_printf_P(_N("%c%3d/%d%c"), type, val_current, val_target, LCD_STR_DEGREE[0]);
+	int chars = lcd_printf_P(_N("%c%3d/%d" LCD_STR_DEGREE), type, val_current, val_target);
 	lcd_space(9 - chars);
 }
 
@@ -448,7 +448,7 @@ void lcdui_print_planner_diag(void)
 // Print feedrate (8 chars total)
 void lcdui_print_feedrate(void)
 {
-	int chars = lcd_printf_P(_N("%c%3d%%"), LCD_STR_FEEDRATE[0], feedmultiply);
+	int chars = lcd_printf_P(_N(LCD_STR_FEEDRATE "%3d%%"), feedmultiply);
 	lcd_space(8 - chars);
 }
 
@@ -563,12 +563,12 @@ void lcdui_print_time(void)
         }
 
         if (print_t < 6000) //time<100h
-            chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
+            chars = lcd_printf_P(_N(LCD_STR_CLOCK "%02u:%02u%c%c"), print_t / 60, print_t % 60, suff, suff_doubt);
         else //time>=100h
-            chars = lcd_printf_P(_N("%c%3uh %c%c"), LCD_STR_CLOCK[0], print_t / 60, suff, suff_doubt);
+            chars = lcd_printf_P(_N(LCD_STR_CLOCK "%3uh %c%c"), print_t / 60, suff, suff_doubt);
     }
     else
-        chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
+        chars = lcd_puts_P(_N(LCD_STR_CLOCK "--:--  "));
     lcd_space(8 - chars);
 }
 
@@ -1703,7 +1703,7 @@ static void lcd_menu_temperatures_line(const char *ipgmLabel, int value){
     static const size_t maxChars = 15;    
     char tmp[maxChars];
     pgmtext_with_colon(ipgmLabel, tmp, maxChars);
-    lcd_printf_P(PSTR(" %s%3d\x01\n"), tmp, value); // no need to add -14.14 to string alignment
+    lcd_printf_P(PSTR(" %s%3d" LCD_STR_DEGREE "\n"), tmp, value); // no need to add -14.14 to string alignment
 }
 
 //! @brief Show Temperatures
@@ -2878,8 +2878,8 @@ static void lcd_menu_xyz_skew()
 	lcd_printf_P(_N(
 	  "%-14.14S:\n"
 	  "%S\n"
-	  "%-14.14S:%3.2f\x01\n"
-	  "%-14.14S:%3.2f\x01"
+	  "%-14.14S:%3.2f" LCD_STR_DEGREE "\n"
+	  "%-14.14S:%3.2f" LCD_STR_DEGREE
 	 ),
 	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
 	 separator,
@@ -2888,7 +2888,7 @@ static void lcd_menu_xyz_skew()
 	);
 	if (angleDiff < 100){
 		lcd_set_cursor(15,0);
-		lcd_printf_P(_N("%3.2f\x01"), _deg(angleDiff));
+		lcd_printf_P(_N("%3.2f" LCD_STR_DEGREE), _deg(angleDiff));
 	}
 	else{
 		lcd_puts_at_P(15,0, _T(MSG_NA));
