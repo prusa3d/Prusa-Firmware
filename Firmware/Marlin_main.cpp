@@ -1103,10 +1103,8 @@ void setup()
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
 	if (farm_mode == 0xFF) {
 		farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
-  	eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
-  }
-	if (farm_mode)
-	{
+		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
+	} else if (farm_mode) {
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
@@ -1118,9 +1116,9 @@ void setup()
 		//disabled filament autoload (PFW360)
 		fsensor_autoload_set(false);
 #endif //FILAMENT_SENSOR
-          // ~ FanCheck -> on
-          if(!(eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED)))
-               eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED,true);
+		// ~ FanCheck -> on
+		if(!(eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED)))
+			eeprom_update_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED,true);
 	}
 
 #ifdef TMC2130
