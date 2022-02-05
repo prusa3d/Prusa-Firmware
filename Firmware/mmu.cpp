@@ -738,7 +738,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 
 				  //Print the hotend temperature (9 chars total) and fill rest of the line with space
 				  lcd_set_cursor(0, 4); //line 4
-				  int chars = lcd_printf_P(_N(LCD_STR_THERMOMETER "%3d/%d" LCD_STR_DEGREE),(int)(degHotend(active_extruder) + 0.5), (int)(degTargetHotend(active_extruder) + 0.5));
+				  int chars = lcd_printf_P(_N("%c%3d/%d%c"), LCD_STR_THERMOMETER[0],(int)(degHotend(active_extruder) + 0.5), (int)(degTargetHotend(active_extruder) + 0.5), LCD_STR_DEGREE[0]);
 				  lcd_space(9 - chars);
 				  delay_keep_alive(1000);
 			  }
