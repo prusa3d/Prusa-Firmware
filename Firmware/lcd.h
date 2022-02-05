@@ -200,6 +200,7 @@ private:
 #define LCD_STR_FEEDRATE     "\x06"
 #define LCD_STR_CLOCK        "\x07"
 #define LCD_STR_ARROW_RIGHT  "\x7E" //from the default character set
+#define LCD_STR_SOLID_BLOCK "\xFF"  //from the default character set
 
 extern void lcd_set_custom_characters(void);
 extern void lcd_set_custom_characters_nextpage(void);

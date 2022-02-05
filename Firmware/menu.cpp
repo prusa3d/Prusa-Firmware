@@ -570,7 +570,7 @@ void menu_progressbar_update(uint16_t newVal)
 		newCnt = LCD_WIDTH;
 	while (newCnt > progressbar_block_count)
 	{
-		lcd_print('\xFF');
+		lcd_print(LCD_STR_SOLID_BLOCK[0]);
 		progressbar_block_count++;
 	}
 }

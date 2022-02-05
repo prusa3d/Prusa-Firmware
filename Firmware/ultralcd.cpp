@@ -8646,7 +8646,7 @@ static void lcd_connect_printer() {
 			i = 0; 
 			lcd_puts_at_P(0, 3, PSTR("                    "));
 		}
-		if (i!=0) lcd_puts_at_P((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3, "\xFF");
+		if (i!=0) lcd_puts_at_P((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3, LCD_STR_SOLID_BLOCK[0]);
 		if (i == NC_BUTTON_LONG_PRESS * 10) {
 			no_response = false;
 		}
