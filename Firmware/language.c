@@ -264,7 +264,7 @@ uint16_t lang_print_sec_lang(FILE* out)
 	printf_P(_n(" _lt_resv0        = 0x%04x\n"), _lt_resv0);
 	printf_P(_n(" _lt_resv1        = 0x%08lx\n"), _lt_resv1);
 	if (_lt_magic != LANG_MAGIC) return 0;
-	puts_P(_n(" strings:\n"));
+	puts_P(_n(" strings:"));
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	for (ui = 0; ui < _lt_count; ui++)
 		fprintf_P(out, _n("  %3d %S\n"), ui, lang_get_sec_lang_str_by_id(ui));
