@@ -1030,7 +1030,6 @@ void CardReader::presort() {
 
 	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);
-	lcd_timeoutToStatus.start();
 }
 
 void CardReader::flush_presort() {
