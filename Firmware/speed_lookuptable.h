@@ -39,61 +39,70 @@ FORCE_INLINE uint16_t MUL8x16R8(uint8_t x, uint16_t y) {
     return out;
 }
 
-// intRes = longIn1 * longIn2 >> 24
-// uses:
-// r26 to store 0
-// r27 to store the byte 1 of the 48bit result
-#define MultiU24X24toH16(intRes, longIn1, longIn2) \
-asm volatile ( \
-"clr r26 \n\t" \
-"mul %A1, %B2 \n\t" \
-"mov r27, r1 \n\t" \
-"mul %B1, %C2 \n\t" \
-"movw %A0, r0 \n\t" \
-"mul %C1, %C2 \n\t" \
-"add %B0, r0 \n\t" \
-"mul %C1, %B2 \n\t" \
-"add %A0, r0 \n\t" \
-"adc %B0, r1 \n\t" \
-"mul %A1, %C2 \n\t" \
-"add r27, r0 \n\t" \
-"adc %A0, r1 \n\t" \
-"adc %B0, r26 \n\t" \
-"mul %B1, %B2 \n\t" \
-"add r27, r0 \n\t" \
-"adc %A0, r1 \n\t" \
-"adc %B0, r26 \n\t" \
-"mul %C1, %A2 \n\t" \
-"add r27, r0 \n\t" \
-"adc %A0, r1 \n\t" \
-"adc %B0, r26 \n\t" \
-"mul %B1, %A2 \n\t" \
-"add r27, r1 \n\t" \
-"adc %A0, r26 \n\t" \
-"adc %B0, r26 \n\t" \
-"lsr r27 \n\t" \
-"adc %A0, r26 \n\t" \
-"adc %B0, r26 \n\t" \
-"clr r1 \n\t" \
-: \
-"=&r" (intRes) \
-: \
-"d" (longIn1), \
-"d" (longIn2) \
-: \
-"r26" , "r27" \
-)
+// return ((x * y) >> 24) with rounding when shifting right
+FORCE_INLINE uint16_t MUL24x24R24(__uint24 x, __uint24 y) {
+    uint16_t out;
+    __asm__ (
+    // %0 out
+    // %1 x
+    // %2 y
+    // uint8_t: %An or %n
+    // uint16_t: %Bn %An
+    // __uint24: %Cn %Bn %An
+    // uint32_t: %Dn %Cn %Bn %An
+    //
+    //
+    //    B2 A2 *
+    //       A1
+    //---------
+    // B0 A0 RR
+    "clr r26 \n\t"
+    "mul %A1, %B2 \n\t"
+    "mov r27, r1 \n\t"
+    "mul %B1, %C2 \n\t"
+    "movw %A0, r0 \n\t"
+    "mul %C1, %C2 \n\t"
+    "add %B0, r0 \n\t"
+    "mul %C1, %B2 \n\t"
+    "add %A0, r0 \n\t"
+    "adc %B0, r1 \n\t"
+    "mul %A1, %C2 \n\t"
+    "add r27, r0 \n\t"
+    "adc %A0, r1 \n\t"
+    "adc %B0, r26 \n\t"
+    "mul %B1, %B2 \n\t"
+    "add r27, r0 \n\t"
+    "adc %A0, r1 \n\t"
+    "adc %B0, r26 \n\t"
+    "mul %C1, %A2 \n\t"
+    "add r27, r0 \n\t"
+    "adc %A0, r1 \n\t"
+    "adc %B0, r26 \n\t"
+    "mul %B1, %A2 \n\t"
+    "add r27, r1 \n\t"
+    "adc %A0, r26 \n\t"
+    "adc %B0, r26 \n\t"
+    "lsl r27 \n\t"
+    "adc %A0, r26 \n\t"
+    "adc %B0, r26 \n\t"
+    "clr r1 \n\t"
+    : "=&r" (out)
+    : "r" (x), "r" (y)
+    : "r0", "r1", "r26" , "r27" //clobbers: Technically these are either scratch registers or always 0 registers, but I'm making sure the compiler knows just in case. R26 is __zero_reg__, R27 is a temporary register.
+    );
+    return out;
+}
 
 #else //_NO_ASM
 
-static inline void MultiU16X8toH16(uint16_t& intRes, uint8_t& charIn1, uint16_t& intIn2)
+FORCE_INLINE uint16_t MUL8x16R8(uint8_t charIn1, uint16_t intIn2)
 {
-    intRes = ((uint32_t)charIn1 * (uint32_t)intIn2) >> 8;
+    return ((uint32_t)charIn1 * (uint32_t)intIn2) >> 8;
 }
 
-static inline void MultiU24X24toH16(uint16_t& intRes, uint32_t& longIn1, uint32_t& longIn2)
+FORCE_INLINE uint16_t MUL24x24R24(uint32_t longIn1, uint32_t longIn2)
 {
-    intRes = ((uint64_t)longIn1 * (uint64_t)longIn2) >> 24;
+    return ((uint64_t)longIn1 * (uint64_t)longIn2) >> 24;
 }
 
 #endif //_NO_ASM

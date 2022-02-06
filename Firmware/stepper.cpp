@@ -818,7 +818,7 @@ FORCE_INLINE void isr() {
       //WRITE_NC(LOGIC_ANALYZER_CH1, true);
       if (step_events_completed.wide <= current_block->accelerate_until) {
         // v = t * a   ->   acc_step_rate = acceleration_time * current_block->acceleration_rate
-        MultiU24X24toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
+        acc_step_rate = MUL24x24R24(acceleration_time, current_block->acceleration_rate);
         acc_step_rate += uint16_t(current_block->initial_rate);
         // upper limit
         if(acc_step_rate > uint16_t(current_block->nominal_rate))
@@ -838,8 +838,7 @@ FORCE_INLINE void isr() {
 #endif
       }
       else if (step_events_completed.wide > current_block->decelerate_after) {
-        uint16_t step_rate;
-        MultiU24X24toH16(step_rate, deceleration_time, current_block->acceleration_rate);
+        uint16_t step_rate = MUL24x24R24(deceleration_time, current_block->acceleration_rate);
 
         if (step_rate > acc_step_rate) { // Check step_rate stays positive
             step_rate = uint16_t(current_block->final_rate);
