@@ -509,7 +509,7 @@ static void _menu_edit_P(void)
 	if (lcd_draw_update)
 	{
 		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
-		if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
+		else if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
 		menu_draw_P<T>(' ', _md->editLabel, (int)lcd_encoder);
 	}
