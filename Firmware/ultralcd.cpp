@@ -1858,6 +1858,9 @@ static void lcd_stack_crash()
 }
 #endif
 
+void TestPullupCrash() {
+	PORTF |= 0x01;
+}
 
 //! @brief Show Support Menu
 //!
@@ -2069,6 +2072,9 @@ static void lcd_support_menu()
 
   #endif //MK1BP
 
+#ifdef DEBUG_PULLUP_CRASH
+  MENU_ITEM_FUNCTION_P(_n("Test Pullup Crash"), TestTestPullupCrash);
+#endif // DEBUG_PULLUP_CRASH
   MENU_END();
 }
 
