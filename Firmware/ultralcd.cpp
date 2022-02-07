@@ -2075,7 +2075,7 @@ static void lcd_support_menu()
   #endif //MK1BP
 
 #ifdef DEBUG_PULLUP_CRASH
-  MENU_ITEM_FUNCTION_P(_n("Test Pullup Crash"), TestTestPullupCrash);
+  MENU_ITEM_FUNCTION_P(_n("Test Pullup Crash"), TestPullupCrash);
 #endif // DEBUG_PULLUP_CRASH
   MENU_END();
 }
