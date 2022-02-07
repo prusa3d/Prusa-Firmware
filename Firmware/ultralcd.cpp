@@ -8834,6 +8834,22 @@ void menu_lcd_lcdupdate_func(void)
 #if (SDCARDDETECT > 0)
 	if ((IS_SD_INSERTED != lcd_oldcardstatus))
 	{
+		if(menu_menu == lcd_sdcard_menu) {
+			// If the user is either inside the submenus
+			// 1. 'Print from SD' --> and SD card is removed
+			// 2. 'No SD card' --> and SD card is inserted
+			//
+			// 1. 'Print from SD': We want to back out of this submenu
+			//    and instead show the submenu title 'No SD card'.
+			//
+			// 2. 'No SD card': When the user inserts the SD card we want
+			//    to back out of this submenu. Not only to show 
+			//    'Print from SD' submenu title but also because the user
+			//    will be prompted with another menu with the sorted list of files.
+			//    Without backing out of the menu, the list will appear empty and
+			//    The user will need to back out of two nested submenus.
+			menu_back();
+		}
 		lcd_draw_update = 2;
 		lcd_oldcardstatus = IS_SD_INSERTED;
 		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
@@ -8852,8 +8868,6 @@ void menu_lcd_lcdupdate_func(void)
 		}
 		else
 		{
-			if(menu_menu==lcd_sdcard_menu)
-				menu_back();
 			card.release();
 			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=20
 		}
