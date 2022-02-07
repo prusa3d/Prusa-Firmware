@@ -1862,7 +1862,7 @@ static void lcd_stack_crash()
 void TestPullupCrash() {
 	PORTF |= 0x01;
 }
-#ifdef DEBUG_PULLUP_CRASH
+#endif // DEBUG_PULLUP_CRASH
 
 //! @brief Show Support Menu
 //!
