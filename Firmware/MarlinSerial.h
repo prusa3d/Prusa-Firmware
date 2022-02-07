@@ -28,9 +28,12 @@
 #endif
 
 // The presence of the UBRRH register is used to detect a UART.
-#define UART_PRESENT(port) ((port == 0 && (defined(UBRRH) || defined(UBRR0H))) || \
-						(port == 1 && defined(UBRR1H)) || (port == 2 && defined(UBRR2H)) || \
-						(port == 3 && defined(UBRR3H)))				
+#if ((SERIAL_PORT == 0 && (defined(UBRRH) || defined(UBRR0H))) || \
+	(SERIAL_PORT == 1 && defined(UBRR1H)) || \
+	(SERIAL_PORT == 2 && defined(UBRR2H)) || \
+	(SERIAL_PORT == 3 && defined(UBRR3H)))
+#define HAS_UART
+#endif
 						
 // These are macros to build serial port register names for the selected SERIAL_PORT (C preprocessor
 // requires two levels of indirection to expand macro values properly)
@@ -82,7 +85,7 @@ struct ring_buffer
   int tail;
 };
 
-#if UART_PRESENT(SERIAL_PORT)
+#ifdef HAS_UART
   extern ring_buffer rx_buffer;
 #endif
 
