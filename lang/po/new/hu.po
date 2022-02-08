@@ -2,18 +2,18 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Tue 21 Dec 2021 03:27:31 PM CET\n"
-"PO-Revision-Date: 2022-01-12 11:41+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Poedit 3.0.1\n"
+"Language: hu\n"
+"Project-Id-Version: Prusa-Firmware\n"
+"POT-Creation-Date: Tue 08 Feb 2022 02:44:44 PM CET\n"
+"PO-Revision-Date: Tue 08 Feb 2022 02:44:44 PM CET\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:164
@@ -21,7 +21,7 @@ msgid " 0.3 or older"
 msgstr " 0.3 vagy regebbi"
 
 # MSG_FS_V_03_OR_OLDER c=18
-#: Marlin_main.cpp:9884
+#: Marlin_main.cpp:9887
 msgid "FS v0.3 or older"
 msgstr "FS v0.3 v. regebbi"
 
@@ -31,7 +31,7 @@ msgid " 0.4 or newer"
 msgstr " 0.4 v. ujabb"
 
 # MSG_FS_V_04_OR_NEWER c=18
-#: Marlin_main.cpp:9883
+#: Marlin_main.cpp:9886
 msgid "FS v0.4 or newer"
 msgstr "FS v0.4 vagy ujabb"
 
@@ -46,12 +46,14 @@ msgid "[0;0] point offset"
 msgstr "[0;0] pont offszet"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-msgid "Crash detection can\\x0abe turned on only in\\x0aNormal mode"
-msgstr "Utkozes erzekeles csak\\x0anormal modban\\x0akapcsolhato be"
+#: 
+msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
+msgstr "Utkozes erzekeles csak\x0anormal modban\x0akapcsolhato be"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-msgid "WARNING:\\x0aCrash detection\\x0adisabled in\\x0aStealth mode"
-msgstr "FIGYELEM:\\x0aUtkozes erzekeles\\x0akikapcsolva\\x0aHalk modban"
+#: 
+msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+msgstr "FIGYELEM:\x0aUtkozes erzekeles\x0akikapcsolva\x0aHalk modban"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3034
@@ -59,11 +61,11 @@ msgid "Adjusting Z:"
 msgstr "Z allitasa:"
 
 # MSG_SELFTEST_CHECK_ALLCORRECT c=20
-#: ultralcd.cpp:8490
+#: ultralcd.cpp:8411
 msgid "All correct"
 msgstr "Minden rendben"
 
-# MSG_WIZARD_DONE c=20 r=8
+# MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
 msgstr "Keszen vagyunk. Jo nyomtatast!"
@@ -94,7 +96,7 @@ msgid "Auto home"
 msgstr "Auto home"
 
 # MSG_AUTOLOAD_FILAMENT c=18
-#: ultralcd.cpp:6732
+#: ultralcd.cpp:6653
 msgid "AutoLoad filament"
 msgstr "Fil. auto.betolt."
 
@@ -109,17 +111,17 @@ msgid "Autoloading filament is active, just press the knob and insert filament..
 msgstr "Autom. betoltes be, nyomd meg a gombot es helyzed be a filamentet."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
-#: ultralcd.cpp:8173
+#: ultralcd.cpp:8094
 msgid "Axis length"
 msgstr "Tengely hossz"
 
 # MSG_SELFTEST_AXIS c=16
-#: ultralcd.cpp:8174
+#: ultralcd.cpp:8095
 msgid "Axis"
 msgstr "Tengely"
 
 # MSG_SELFTEST_BEDHEATER c=20
-#: ultralcd.cpp:8131
+#: ultralcd.cpp:8052
 msgid "Bed/Heater"
 msgstr "Asztal/Fej futes"
 
@@ -174,7 +176,7 @@ msgid "Blackout occurred. Recover print?"
 msgstr "Aramkieses volt, nyomt. folytatasa?"
 
 # MSG_CALIBRATING_HOME c=20
-#: ultralcd.cpp:8492
+#: ultralcd.cpp:8413
 msgid "Calibrating home"
 msgstr "Home poz. kalibralas"
 
@@ -224,12 +226,12 @@ msgid "Calibration"
 msgstr "Kalibracio"
 
 # MSG_SD_REMOVED c=20
-#: ultralcd.cpp:8939
+#: ultralcd.cpp:8860
 msgid "Card removed"
 msgstr "Kartya eltavolitva"
 
 # MSG_CHECKING_FILE c=17
-#: ultralcd.cpp:8580
+#: ultralcd.cpp:8501
 msgid "Checking file"
 msgstr "Fajl ellenorzese"
 
@@ -324,21 +326,22 @@ msgid "Ejecting filament"
 msgstr "Filament kiadasa"
 
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
-#: ultralcd.cpp:8149
+#: ultralcd.cpp:8070
 msgid "Endstop not hit"
 msgstr "Vegallask. nem kapcs"
 
 # MSG_SELFTEST_ENDSTOP c=16
-#: ultralcd.cpp:8144
+#: ultralcd.cpp:8065
 msgid "Endstop"
 msgstr "Vegallaskapcsolo"
 
 # MSG_SELFTEST_ENDSTOPS c=20
-#: ultralcd.cpp:8135
+#: ultralcd.cpp:8056
 msgid "Endstops"
 msgstr "Vegallaskapcsolok"
 
 # MSG_STACK_ERROR c=20 r=4
+#: 
 msgid "Error - static memory has been overwritten"
 msgstr "Hiba - a sztatikus memoria felulirodott"
 
@@ -373,7 +376,7 @@ msgid "ERROR:"
 msgstr "HIBA:"
 
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
-#: ultralcd.cpp:8498
+#: ultralcd.cpp:8419
 msgid "Extruder fan:"
 msgstr "Extruder vent.:"
 
@@ -388,7 +391,7 @@ msgid "Extruder"
 msgstr "Extruder"
 
 # MSG_MMU_FAIL_STATS c=18
-#: ultralcd.cpp:6754
+#: ultralcd.cpp:6675
 msgid "Fail stats MMU"
 msgstr "MMU hiba stat."
 
@@ -398,7 +401,7 @@ msgid "F. autoload"
 msgstr "F. autobetolt"
 
 # MSG_FAIL_STATS c=18
-#: ultralcd.cpp:6751
+#: ultralcd.cpp:6672
 msgid "Fail stats"
 msgstr "Hiba statisztika"
 
@@ -437,7 +440,7 @@ msgstr "Filament es a szine rendben?"
 msgid "Filament not loaded"
 msgstr "Fil. nincs betoltve"
 
-# MSG_FILAMENT_SENSOR c=20
+# MSG_SELFTEST_FILAMENT_SENSOR c=17
 #: messages.c:97
 msgid "Filament sensor"
 msgstr "Filament szenzor"
@@ -458,7 +461,7 @@ msgid "FS Action"
 msgstr "FSz akcio"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
-#: ultralcd.cpp:8634
+#: ultralcd.cpp:8555
 msgid "File incomplete. Continue anyway?"
 msgstr "A fajl vege hianyzik. Folytatod igy is?"
 
@@ -483,7 +486,7 @@ msgid "Fix the issue and then press button on MMU unit."
 msgstr "Hozd helyre a hibat, majd nyomd meg a gombot az MMU egysegen."
 
 # MSG_FLOW c=15
-#: ultralcd.cpp:6888
+#: ultralcd.cpp:6809
 msgid "Flow"
 msgstr "Flow"
 
@@ -494,21 +497,21 @@ msgstr "Elso targyhuto vent?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
-msgid "Front side[um]"
-msgstr "Elulso old[um]"
+msgid "Front side[μm]"
+msgstr "Elulso old[μm]"
 
 # MSG_SELFTEST_FANS c=20
-#: ultralcd.cpp:8179
+#: ultralcd.cpp:8100
 msgid "Front/left fans"
 msgstr "Elso/bal ventillator"
 
 # MSG_SELFTEST_HEATERTHERMISTOR c=20
-#: ultralcd.cpp:8127
+#: ultralcd.cpp:8048
 msgid "Heater/Thermistor"
 msgstr "Futotest/Termisztor"
 
 # MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: Marlin_main.cpp:9874
+#: Marlin_main.cpp:9877
 msgid "Heating disabled by safety timer."
 msgstr "A bizonsagi idozito leallitotta a futest"
 
@@ -548,12 +551,12 @@ msgid "Checking bed"
 msgstr "Asztal ellenorzese"
 
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
-#: ultralcd.cpp:8481
+#: ultralcd.cpp:8402
 msgid "Checking endstops"
 msgstr "Vegallaskapcs. ellen"
 
 # MSG_SELFTEST_CHECK_HOTEND c=20
-#: ultralcd.cpp:8487
+#: ultralcd.cpp:8408
 msgid "Checking hotend"
 msgstr "Hotend ellenorzese"
 
@@ -573,7 +576,7 @@ msgid "Checking Y axis"
 msgstr "Y tengely ellenorzes"
 
 # MSG_SELFTEST_CHECK_Z c=20
-#: ultralcd.cpp:8484
+#: ultralcd.cpp:8405
 msgid "Checking Z axis"
 msgstr "Z tengely ellenorzes"
 
@@ -654,8 +657,8 @@ msgstr "Bal"
 
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
-msgid "Left side [um]"
-msgstr "Bal [um]"
+msgid "Left side [μm]"
+msgstr "Bal [μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -668,7 +671,7 @@ msgid "Live adjust Z"
 msgstr "Z magassag beall."
 
 # MSG_INSERT_FIL c=20 r=6
-#: ultralcd.cpp:7380
+#: ultralcd.cpp:7301
 msgid "Insert the filament (do not load it) into the extruder and then press the knob."
 msgstr "Helyezd be a filamentet az extruderbe (ne toltsd be), majd nyomtd meg a gombot."
 
@@ -693,12 +696,12 @@ msgid "Iteration"
 msgstr "Iteracio"
 
 # MSG_LOOSE_PULLEY c=20
-#: ultralcd.cpp:8167
+#: ultralcd.cpp:8088
 msgid "Loose pulley"
 msgstr "Laza szijtarcsa"
 
 # MSG_LOAD_TO_NOZZLE c=18
-#: ultralcd.cpp:6717
+#: ultralcd.cpp:6638
 msgid "Load to nozzle"
 msgstr "Betolt. fuvokahoz"
 
@@ -848,7 +851,7 @@ msgid "No move."
 msgstr "Nincs mozgas."
 
 # MSG_NO_CARD c=18
-#: ultralcd.cpp:6697
+#: ultralcd.cpp:6618
 msgid "No SD card"
 msgstr "Nincs SD kartya"
 
@@ -863,7 +866,7 @@ msgid "No"
 msgstr "Nem"
 
 # MSG_SELFTEST_NOTCONNECTED c=20
-#: ultralcd.cpp:8128
+#: ultralcd.cpp:8049
 msgid "Not connected"
 msgstr "Nincs csatlakoztatva"
 
@@ -948,7 +951,7 @@ msgid "Please clean the nozzle for calibration. Click when done."
 msgstr "Kerlek, tisztisd meg a fuvokat kalibracio elott. Nyomd meg a gombot, ha keszen vagy."
 
 # MSG_SELFTEST_PLEASECHECK c=20
-#: ultralcd.cpp:8122
+#: ultralcd.cpp:8043
 msgid "Please check:"
 msgstr "Kerlek ellenorizd:"
 
@@ -1013,7 +1016,7 @@ msgid "Preheat the nozzle!"
 msgstr "Futsd fel a fuvokat!"
 
 # MSG_PREHEAT c=18
-#: ultralcd.cpp:6655
+#: ultralcd.cpp:6576
 msgid "Preheat"
 msgstr "Elofutes"
 
@@ -1028,7 +1031,7 @@ msgid "Please upgrade."
 msgstr "Kerlek frissits."
 
 # MSG_PRESS_TO_PREHEAT c=20 r=4
-#: Marlin_main.cpp:12049
+#: Marlin_main.cpp:12052
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Nyomd meg a gombot a folytatashoz es a fuvoka felfutesehez."
 
@@ -1058,7 +1061,7 @@ msgid "Preheating to unload"
 msgstr "Felfutes kiadashoz"
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
-#: ultralcd.cpp:8501
+#: ultralcd.cpp:8422
 msgid "Print fan:"
 msgstr "Targyhuto:"
 
@@ -1109,21 +1112,21 @@ msgstr "Kerlek eloszor toltsd be a filamentet."
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
-msgid "Rear side [um]"
-msgstr "Hatso old.[um]"
+msgid "Rear side [μm]"
+msgstr "Hatso old.[μm]"
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
-#: ultralcd.cpp:7404
+#: ultralcd.cpp:7325
 msgid "Please unload the filament first, then repeat this action."
 msgstr "Kerlek eloszor vedd ki a filamentet, majd probalkozz ujra."
 
 # MSG_CHECK_IR_CONNECTION c=20 r=4
-#: ultralcd.cpp:7407
+#: ultralcd.cpp:7328
 msgid "Please check the IR sensor connection, unload filament if present."
 msgstr "Nezd meg az IR szenzor csatlakoz., vedd ki a filam., ha bent van."
 
 # MSG_RECOVERING_PRINT c=20
-#: Marlin_main.cpp:11393
+#: Marlin_main.cpp:11396
 msgid "Recovering print"
 msgstr "Nyomt. visszaallit"
 
@@ -1154,8 +1157,8 @@ msgstr "Nyomtatas folytatasa"
 
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
-msgid "Right side[um]"
-msgstr "Jobb old.[um]"
+msgid "Right side[μm]"
+msgstr "Jobb old.[μm]"
 
 # MSG_RPI_PORT c=13
 #: messages.c:142
@@ -1188,12 +1191,12 @@ msgid "Select language"
 msgstr "Valassz nyelvet"
 
 # MSG_SELFTEST_OK c=20
-#: ultralcd.cpp:7679
+#: ultralcd.cpp:7600
 msgid "Self test OK"
 msgstr "Ondiagnosztika OK"
 
 # MSG_SELFTEST_START c=20
-#: ultralcd.cpp:7447
+#: ultralcd.cpp:7368
 msgid "Self test start"
 msgstr "Ondiagnosztika indul"
 
@@ -1203,7 +1206,7 @@ msgid "Selftest"
 msgstr "Ondiagnosztika"
 
 # MSG_SELFTEST_ERROR c=20
-#: ultralcd.cpp:8121
+#: ultralcd.cpp:8042
 msgid "Selftest error!"
 msgstr "Ondiagnosztika hiba!"
 
@@ -1303,7 +1306,7 @@ msgid "Once"
 msgstr "Egyszer"
 
 # MSG_SPEED c=15
-#: ultralcd.cpp:6882
+#: ultralcd.cpp:6803
 msgid "Speed"
 msgstr "Sebesseg"
 
@@ -1333,12 +1336,12 @@ msgid "STOPPED."
 msgstr "MEGALLITVA."
 
 # MSG_SUPPORT c=18
-#: ultralcd.cpp:6756
+#: ultralcd.cpp:6677
 msgid "Support"
 msgstr "Tamogatas"
 
 # MSG_SELFTEST_SWAPPED c=16
-#: ultralcd.cpp:8180
+#: ultralcd.cpp:8101
 msgid "Swapped"
 msgstr "Felcserelve"
 
@@ -1373,7 +1376,7 @@ msgid "Temperature calibration is finished and active. Temp. calibration can be 
 msgstr "Homerseklet kalibracio sikeres es aktiv. Kikapcsolhato a Beallitasok ->Homers. kal menuben."
 
 # MSG_FS_VERIFIED c=20 r=3
-#: ultralcd.cpp:7411
+#: ultralcd.cpp:7332
 msgid "Sensor verified, remove the filament now."
 msgstr "Szenzor OK, vedd ki a filamentet most."
 
@@ -1403,7 +1406,7 @@ msgid "Total print time"
 msgstr "Ossz. nyomt. ido"
 
 # MSG_TUNE c=18
-#: ultralcd.cpp:6653
+#: ultralcd.cpp:6574
 msgid "Tune"
 msgstr "Finomhangolas"
 
@@ -1422,7 +1425,7 @@ msgstr "filam. betoltesehez"
 msgid "to unload filament"
 msgstr "filament kiadasahoz"
 
-# MSG_UNLOAD_FILAMENT c=16
+# MSG_UNLOAD_FILAMENT c=18
 #: messages.c:114
 msgid "Unload filament"
 msgstr "Filament kiadasa"
@@ -1507,7 +1510,7 @@ msgstr "XYZ kal. reszlet"
 msgid "XYZ calibration failed. Please consult the manual."
 msgstr "XYZ kalibracio sikertelen. Kerlek, nezz bele a kezikonyvbe."
 
-# MSG_YES c=3
+# MSG_YES c=4
 #: messages.c:123
 msgid "Yes"
 msgstr "Igen"
@@ -1583,7 +1586,7 @@ msgid "The printer will start printing a zig-zag line. Rotate the knob until you
 msgstr "A nyomtato egy cikk-cakkos vonalat fog nyomtatni. Tekerd a gombot addig, amig el nem ered az optimalis magassagot. Nezd meg a kepeket a kezikonyv Kalibracio fejezeteben."
 
 # MSG_FIL_FAILED c=20 r=5
-#: ultralcd.cpp:7415
+#: ultralcd.cpp:7336
 msgid "Verification failed, remove the filament and try again."
 msgstr "Ellenorzes sikertelen, vedd ki a filamentet es probald ujra."
 
@@ -1613,7 +1616,7 @@ msgid "Checks"
 msgstr "Ellenorzesek"
 
 # MSG_FALSE_TRIGGERING c=20
-#: ultralcd.cpp:8190
+#: ultralcd.cpp:8111
 msgid "False triggering"
 msgstr "Hamis kivalto ok"
 
@@ -1718,17 +1721,17 @@ msgid "Printer nozzle diameter differs from the G-code. Please check the value i
 msgstr "A nyomtato fuvoka atmeroje elter a G-kodtol. Ellenorizd az erteket a beallitasokban. Nyomtatas megallitva."
 
 # MSG_SELFTEST_FS_LEVEL c=20
-#: ultralcd.cpp:8195
+#: ultralcd.cpp:8116
 msgid "%s level expected"
 msgstr "Vart szint: %s"
 
 # MSG_RENAME c=18
-#: ultralcd.cpp:6579
+#: ultralcd.cpp:6500
 msgid "Rename"
 msgstr "Atnevezes"
 
 # MSG_SELECT c=18
-#: ultralcd.cpp:6572
+#: ultralcd.cpp:6493
 msgid "Select"
 msgstr "Kivalasztas"
 
@@ -1766,3 +1769,4 @@ msgstr "Z meres szama"
 #: ultralcd.cpp:2028
 msgid "Printer IP Addr:"
 msgstr "Nyomtato IP cime:"
+

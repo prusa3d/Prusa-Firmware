@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed 26 Jan 2022 05:40:56 PM CET\n"
-"PO-Revision-Date: Wed 26 Jan 2022 05:40:56 PM CET\n"
+"POT-Creation-Date: Tue 08 Feb 2022 02:44:18 PM CET\n"
+"PO-Revision-Date: Tue 08 Feb 2022 02:44:18 PM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -65,7 +65,7 @@ msgstr "Z Anpassen:"
 msgid "All correct"
 msgstr "Alles richtig"
 
-# MSG_WIZARD_DONE c=20 r=8
+# MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
 msgstr "Alles abgeschlossen. Viel Spaß beim Drucken!"
@@ -138,7 +138,7 @@ msgstr "Bett aufwärmen"
 # MSG_BED_CORRECTION_MENU c=18
 #: ultralcd.cpp:5798
 msgid "Bed level correct"
-msgstr "Ausgleich Bett ok"
+msgstr "Bett Level Korr."
 
 # MSG_BELTTEST c=18
 #: ultralcd.cpp:5778
@@ -440,7 +440,7 @@ msgstr "Filament extrudiert mit richtiger Farbe?"
 msgid "Filament not loaded"
 msgstr "Fil. nicht geladen"
 
-# MSG_FILAMENT_SENSOR c=20
+# MSG_SELFTEST_FILAMENT_SENSOR c=17
 #: messages.c:97
 msgid "Filament sensor"
 msgstr "Filamentsensor"
@@ -497,8 +497,8 @@ msgstr "Drucklüfter?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
-msgid "Front side[um]"
-msgstr "Vorne [um]"
+msgid "Front side[μm]"
+msgstr "Vorne [μm]"
 
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
@@ -657,8 +657,8 @@ msgstr "Links"
 
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
-msgid "Left side [um]"
-msgstr "Links [um]"
+msgid "Left side [μm]"
+msgstr "Links [μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -1112,8 +1112,8 @@ msgstr "Bitte laden Sie zuerst das Filament."
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
-msgid "Rear side [um]"
-msgstr "Hinten [um]"
+msgid "Rear side [μm]"
+msgstr "Hinten [μm]"
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ultralcd.cpp:7325
@@ -1157,8 +1157,8 @@ msgstr "Druck fortgesetzt"
 
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
-msgid "Right side[um]"
-msgstr "Rechts [um]"
+msgid "Right side[μm]"
+msgstr "Rechts [μm]"
 
 # MSG_RPI_PORT c=13
 #: messages.c:142
@@ -1425,7 +1425,7 @@ msgstr "Filament laden"
 msgid "to unload filament"
 msgstr "um Filament entladen"
 
-# MSG_UNLOAD_FILAMENT c=16
+# MSG_UNLOAD_FILAMENT c=18
 #: messages.c:114
 msgid "Unload filament"
 msgstr "Fil. entladen"
@@ -1510,7 +1510,7 @@ msgstr "XYZ Kal. Details"
 msgid "XYZ calibration failed. Please consult the manual."
 msgstr "XYZ-Kalibrierung fehlgeschlagen. Bitte schauen Sie in das Handbuch."
 
-# MSG_YES c=3
+# MSG_YES c=4
 #: messages.c:123
 msgid "Yes"
 msgstr "Ja"
@@ -1668,7 +1668,7 @@ msgstr "Modell"
 # MSG_NOZZLE_DIAMETER c=10
 #: messages.c:136
 msgid "Nozzle d."
-msgstr "Düsendiam."
+msgstr "Düsen Dia."
 
 # MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: util.cpp:414

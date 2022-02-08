@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: hu\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Ut 18. január 2022, 13:48:40 CET\n"
-"PO-Revision-Date: Ut 18. január 2022, 13:48:40 CET\n"
+"POT-Creation-Date: Tue 08 Feb 2022 02:44:44 PM CET\n"
+"PO-Revision-Date: Tue 08 Feb 2022 02:44:44 PM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -65,7 +65,7 @@ msgstr "Z allitasa:"
 msgid "All correct"
 msgstr "Minden rendben"
 
-# MSG_WIZARD_DONE c=20 r=8
+# MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
 msgstr "Keszen vagyunk. Jo nyomtatast!"
@@ -497,8 +497,8 @@ msgstr "Elso targyhuto vent?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
-msgid "Front side[um]"
-msgstr "Elulso old[um]"
+msgid "Front side[μm]"
+msgstr "Elulso old[μm]"
 
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
@@ -657,8 +657,8 @@ msgstr "Bal"
 
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
-msgid "Left side [um]"
-msgstr "Bal [um]"
+msgid "Left side [μm]"
+msgstr "Bal [μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -1112,8 +1112,8 @@ msgstr "Kerlek eloszor toltsd be a filamentet."
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
-msgid "Rear side [um]"
-msgstr "Hatso old.[um]"
+msgid "Rear side [μm]"
+msgstr "Hatso old.[μm]"
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ultralcd.cpp:7325
@@ -1157,8 +1157,8 @@ msgstr "Nyomtatas folytatasa"
 
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
-msgid "Right side[um]"
-msgstr "Jobb old.[um]"
+msgid "Right side[μm]"
+msgstr "Jobb old.[μm]"
 
 # MSG_RPI_PORT c=13
 #: messages.c:142
@@ -1510,7 +1510,7 @@ msgstr "XYZ kal. reszlet"
 msgid "XYZ calibration failed. Please consult the manual."
 msgstr "XYZ kalibracio sikertelen. Kerlek, nezz bele a kezikonyvbe."
 
-# MSG_YES c=3
+# MSG_YES c=4
 #: messages.c:123
 msgid "Yes"
 msgstr "Igen"

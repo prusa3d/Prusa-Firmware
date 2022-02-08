@@ -38,7 +38,7 @@
 "All correct"
 "\x00"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 "\x00"
 
@@ -383,7 +383,7 @@
 "\x00"
 
 #MSG_BED_CORRECTION_FRONT c=14
-"Front side[um]"
+"Front side[\xe4m]"
 "\x00"
 
 #MSG_SELFTEST_FANS c=20
@@ -511,7 +511,7 @@
 "\x00"
 
 #MSG_BED_CORRECTION_LEFT c=14
-"Left side [um]"
+"Left side [\xe4m]"
 "\x00"
 
 #MSG_LIN_CORRECTION c=18
@@ -875,7 +875,7 @@
 "\x00"
 
 #MSG_BED_CORRECTION_REAR c=14
-"Rear side [um]"
+"Rear side [\xe4m]"
 "\x00"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
@@ -911,7 +911,7 @@
 "\x00"
 
 #MSG_BED_CORRECTION_RIGHT c=14
-"Right side[um]"
+"Right side[\xe4m]"
 "\x00"
 
 #MSG_RPI_PORT c=13
@@ -1194,7 +1194,7 @@
 "XYZ calibration failed. Please consult the manual."
 "\x00"
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 "\x00"
 

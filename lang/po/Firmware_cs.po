@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: cs\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed 02 Feb 2022 02:58:49 PM CET\n"
-"PO-Revision-Date: Wed 02 Feb 2022 02:58:49 PM CET\n"
+"POT-Creation-Date: Tue 08 Feb 2022 02:44:14 PM CET\n"
+"PO-Revision-Date: Tue 08 Feb 2022 02:44:14 PM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -65,7 +65,7 @@ msgstr "Doladeni Z:"
 msgid "All correct"
 msgstr "Vse OK"
 
-# MSG_WIZARD_DONE c=20 r=8
+# MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
 msgstr "Vse je hotovo. Tisku zdar!"
@@ -253,7 +253,7 @@ msgstr "Kopirovat vybrany jazyk?"
 # MSG_CRASHDETECT c=13
 #: messages.c:30
 msgid "Crash det."
-msgstr "Det. narazu."
+msgstr "Det. narazu"
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4842
@@ -440,7 +440,7 @@ msgstr "Filament vytlacen a spravne barvy?"
 msgid "Filament not loaded"
 msgstr "Filament nezaveden"
 
-# MSG_FILAMENT_SENSOR c=20
+# MSG_SELFTEST_FILAMENT_SENSOR c=17
 #: messages.c:97
 msgid "Filament sensor"
 msgstr "Senzor filamentu"
@@ -497,8 +497,8 @@ msgstr "Predni tiskovy vent?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
-msgid "Front side[um]"
-msgstr "Vpredu [um]"
+msgid "Front side[μm]"
+msgstr "Vpredu [μm]"
 
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
@@ -657,8 +657,8 @@ msgstr "Vlevo"
 
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
-msgid "Left side [um]"
-msgstr "Vlevo [um]"
+msgid "Left side [μm]"
+msgstr "Vlevo [μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -1112,8 +1112,8 @@ msgstr "Prosim nejdriv zavedte filament"
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
-msgid "Rear side [um]"
-msgstr "Vzadu [um]"
+msgid "Rear side [μm]"
+msgstr "Vzadu [μm]"
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ultralcd.cpp:7325
@@ -1157,8 +1157,8 @@ msgstr "Obnoveni tisku"
 
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
-msgid "Right side[um]"
-msgstr "Vpravo [um]"
+msgid "Right side[μm]"
+msgstr "Vpravo [μm]"
 
 # MSG_RPI_PORT c=13
 #: messages.c:142
@@ -1283,7 +1283,7 @@ msgstr "Hlasity"
 # MSG_SLIGHT_SKEW c=14
 #: ultralcd.cpp:2887
 msgid "Slight skew"
-msgstr ""
+msgstr "Lehke zkos."
 
 # MSG_SOUND c=7
 #: messages.c:143
@@ -1425,7 +1425,7 @@ msgstr "k zavedeni filamentu"
 msgid "to unload filament"
 msgstr "k vyjmuti filamentu"
 
-# MSG_UNLOAD_FILAMENT c=16
+# MSG_UNLOAD_FILAMENT c=18
 #: messages.c:114
 msgid "Unload filament"
 msgstr "Vyjmout filament"
@@ -1510,7 +1510,7 @@ msgstr "Detaily XYZ kal."
 msgid "XYZ calibration failed. Please consult the manual."
 msgstr "Kalibrace XYZ selhala. Nahlednete do manualu."
 
-# MSG_YES c=3
+# MSG_YES c=4
 #: messages.c:123
 msgid "Yes"
 msgstr "Ano"
@@ -1673,12 +1673,12 @@ msgstr "Tryska"
 # MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: util.cpp:414
 msgid "G-code sliced for a different level. Continue?"
-msgstr "G-code je pripraven pro jinou plochu. Pokracovat?"
+msgstr "G-code je pripraven pro jinou verzi. Pokracovat?"
 
 # MSG_GCODE_DIFF_CANCELLED c=20 r=7
 #: util.cpp:420
 msgid "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
-msgstr "G-code je pripraven pro jinou plochu. Prosim preslicujte model znovu. Tisk zrusen."
+msgstr "G-code je pripraven pro jinou verzi. Prosim preslicujte model znovu. Tisk zrusen."
 
 # MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 #: messages.c:134
@@ -1723,7 +1723,7 @@ msgstr "Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni.
 # MSG_SELFTEST_FS_LEVEL c=20
 #: ultralcd.cpp:8116
 msgid "%s level expected"
-msgstr "%s ocekavana uroven"
+msgstr "%s ocekavana verze"
 
 # MSG_RENAME c=18
 #: ultralcd.cpp:6500

@@ -202,6 +202,11 @@ if [ "$LNG" = "de" ]; then
   sed -i 's/\\xe2/\xc3\x9f/g' $OUTFILE
 fi
 
+#replace HD44780 A00 'μ' to UTF-8 'μ'
+#replace 'A00 ROMμ' with ' μ'
+sed -i 's/\\xe4/\xce\xbc/g' $OUTFILE
+
+
 echo >&2
 echo "$(tput setaf 2)lang-export.sh finished$(tput sgr 0)">&2
 exit 0

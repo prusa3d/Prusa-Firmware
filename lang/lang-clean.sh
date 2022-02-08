@@ -82,9 +82,13 @@ echo "$(tput setaf 2)lang-clean.sh started$(tput sgr0)" >&2
 
 #Clean languages
 echo "lang-clean languages:$(tput setaf 2)$LANGUAGES$(tput sgr0)" >&2
+if [ -e $1 ]; then
  for lang in $LANGUAGES; do
   clean_lang $lang
  done
+else
+  clean_lang $1
+fi
 
 if [ $result -eq 0 ]; then
  echo "$(tput setaf 2) lang-clean.sh with success$(tput sgr0)" >&2

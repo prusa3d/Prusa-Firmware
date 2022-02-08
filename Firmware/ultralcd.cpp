@@ -3075,10 +3075,10 @@ void lcd_adjust_bed_reset(void)
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Settings:           |	MSG_SETTINGS
-//! |Left side [um]:     |	MSG_BED_CORRECTION_LEFT
-//! |Right side[um]:     |	MSG_BED_CORRECTION_RIGHT
-//! |Front side[um]:     |	MSG_BED_CORRECTION_FRONT
-//! |Rear side [um]:     |	MSG_BED_CORRECTION_REAR
+//! |Left side [μm]:     |	MSG_BED_CORRECTION_LEFT
+//! |Right side[μm]:     |	MSG_BED_CORRECTION_RIGHT
+//! |Front side[μm]:     |	MSG_BED_CORRECTION_FRONT
+//! |Rear side [μm]:     |	MSG_BED_CORRECTION_REAR
 //! |Reset               |	MSG_BED_CORRECTION_RESET
 //! ----------------------
 //! @endcode
@@ -3110,11 +3110,11 @@ void lcd_adjust_bed(void)
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  _md->rear);
         eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
     );
-    MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-	MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14
-    MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14
-    MENU_ITEM_EDIT_int3_P(_i("Front side[um]"), &_md->front, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14
-    MENU_ITEM_EDIT_int3_P(_i("Rear side [um]"),  &_md->rear,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14
+    MENU_ITEM_BACK_P(_T(MSG_BACK));
+	MENU_ITEM_EDIT_int3_P(_i("Left side [\xe4m]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14
+    MENU_ITEM_EDIT_int3_P(_i("Right side[\xe4m]"), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14
+    MENU_ITEM_EDIT_int3_P(_i("Front side[\xe4m]"), &_md->front, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14
+    MENU_ITEM_EDIT_int3_P(_i("Rear side [\xe4m]"),  &_md->rear,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14
     MENU_ITEM_FUNCTION_P(_T(MSG_RESET), lcd_adjust_bed_reset);////MSG_RESET c=14
     MENU_END();
 }
