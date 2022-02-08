@@ -327,7 +327,13 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D05 3333		| uint32_t	| EEPROM_JOB_ID							| ???			| 00 00 00 00h			| Job ID used by host software						| D3 only		| D3 Ax0d05 C4
 | 0x0D04 3332		| uint8_t	| EEPROM_ECOOL_ENABLE					| ffh 255		| ^						| Disable extruder motor scaling for non-farm print	| LCD menu		| D3 Ax0d04 C1
 | ^					| ^			| ^										| 2ah 42		| ^						| Enable extruder motor scaling for non-farm print	| ^				| D3 Ax0d04 C1
-| 0x0D03 3321		| uint8_t	| EEPROM_FW_CRASH_FLAG					| 01h 1			| ff/00					| Last FW crash reason (dump_crash_reason)			| D21/D22		| D3 Ax0d03 C1
+| 0x0D03 3321		| uint8_t	| EEPROM_FW_CRASH_FLAG					| ffh 255   	| ffh 255				| Last FW crash reason (dump_crash_reason)			| D21/D22		| D3 Ax0d03 C1
+| ^					| ^			| ^										| 00h 0			| ^						| manual											| ^				| ^
+| ^					| ^			| ^										| 01h 1			| ^						| stack_error										| ^				| ^
+| ^					| ^			| ^										| 02h 2			| ^						| watchdog											| ^				| ^
+| ^					| ^			| ^										| 03h 3			| ^						| bad_isr											| ^				| ^
+| ^					| ^			| ^										| 04h 4			| ^						| bad_pullup_temp_isr								| ^				| ^
+| ^					| ^			| ^										| 05h 5			| ^						| bad_pullup_step_isr								| ^				| ^
 
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
