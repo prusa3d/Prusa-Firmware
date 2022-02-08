@@ -102,9 +102,6 @@ uint8_t pat9125_rd_reg(uint8_t addr);
 void pat9125_wr_reg(uint8_t addr, uint8_t data);
 uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data);
 
-extern FILE _uartout;
-#define uartout (&_uartout)
-
 
 uint8_t pat9125_probe()
 {
@@ -188,8 +185,8 @@ uint8_t pat9125_init(void)
 
 	pat9125_wr_reg(PAT9125_RES_X, PAT9125_XRES);
 	pat9125_wr_reg(PAT9125_RES_Y, PAT9125_YRES);
-	fprintf_P(uartout, PSTR("PAT9125_RES_X=%u\n"), pat9125_rd_reg(PAT9125_RES_X));
-	fprintf_P(uartout, PSTR("PAT9125_RES_Y=%u\n"), pat9125_rd_reg(PAT9125_RES_Y));
+	printf_P(PSTR("PAT9125_RES_X=%u\n"), pat9125_rd_reg(PAT9125_RES_X));
+	printf_P(PSTR("PAT9125_RES_Y=%u\n"), pat9125_rd_reg(PAT9125_RES_Y));
 	return 1;
 }
 
