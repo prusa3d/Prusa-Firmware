@@ -1529,7 +1529,7 @@ void setup()
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	printf_P(_n("lang_selected=%d\nlang_table=0x%04x\nSEC_LANG_CODE=0x%04x (%c%c)\n"), lang_selected, ui, sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
 
-	lang_print_sec_lang(uartout);
+	lang_print_sec_lang();
 #endif //DEBUG_SEC_LANG
 
 #endif //(LANG_MODE != 0)
