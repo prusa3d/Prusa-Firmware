@@ -895,7 +895,7 @@
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 "XYZ calibration failed. Please consult the manual."
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 
 #MSG_WIZARD_QUIT c=20 r=8

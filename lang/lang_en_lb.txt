@@ -1194,7 +1194,7 @@
 "XYZ calibration failed. Please consult the manual."
 "\x00"
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 "\x00"
 
