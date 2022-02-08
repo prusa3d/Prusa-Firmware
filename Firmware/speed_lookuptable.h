@@ -52,10 +52,10 @@ FORCE_INLINE uint16_t MUL24x24R24(__uint24 x, __uint24 y) {
     // uint32_t: %Dn %Cn %Bn %An
     //
     //
-    //    B2 A2 *
-    //       A1
-    //---------
-    // B0 A0 RR
+    //          C2 B2 A2 *
+    //          C1 B1 A1
+    //------------------
+    // -- B0 A0 RR RR RR
     "clr r26 \n\t"
     "mul %A1, %B2 \n\t"
     "mov r27, r1 \n\t"
