@@ -383,8 +383,8 @@
 "Druckl\xf5fter?"
 
 #MSG_BED_CORRECTION_FRONT c=14
-"Front side[um]"
-"Vorne [um]"
+"Front side[\xe4m]"
+"Vorne [\xe4m]"
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
@@ -511,8 +511,8 @@
 "Links"
 
 #MSG_BED_CORRECTION_LEFT c=14
-"Left side [um]"
-"Links [um]"
+"Left side [\xe4m]"
+"Links [\xe4m]"
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
@@ -875,8 +875,8 @@
 "Bitte laden Sie zuerst das Filament."
 
 #MSG_BED_CORRECTION_REAR c=14
-"Rear side [um]"
-"Hinten [um]"
+"Rear side [\xe4m]"
+"Hinten [\xe4m]"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
@@ -911,8 +911,8 @@
 "Druck fortgesetzt"
 
 #MSG_BED_CORRECTION_RIGHT c=14
-"Right side[um]"
-"Rechts [um]"
+"Right side[\xe4m]"
+"Rechts [\xe4m]"
 
 #MSG_RPI_PORT c=13
 "RPi port"

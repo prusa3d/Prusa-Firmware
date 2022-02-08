@@ -350,6 +350,10 @@ fi
 #if [ "$LNG" = "pl" ]; then
 #fi
 
+#replace UTF-8 'μ' to HD44780 A00 'μ'
+ #replace 'μ' with 'A00 ROM μ'
+ sed -i 's/\xce\xbc/\\xe4/g' $LNG'_filtered.po'
+
 #check for nonasci characters except HD44780 ROM A00 'äöüß'
 if grep --color='auto' -P -n '[^\x00-\x7F]' $LNG'_filtered.po' >nonascii.txt; then
  exit
