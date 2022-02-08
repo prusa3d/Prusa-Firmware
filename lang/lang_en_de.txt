@@ -96,7 +96,7 @@
 
 #MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
-"Ausgleich Bett ok"
+"Bett Level Korr."
 
 #MSG_BELTTEST c=18
 "Belt test"
