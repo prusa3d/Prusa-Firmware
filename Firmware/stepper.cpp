@@ -301,8 +301,11 @@ ISR(TIMER1_COMPA_vect) {
 
 #ifdef DEBUG_PULLUP_CRASH
     // check for faulty pull-ups enabled on thermistor inputs
-    if (PORTF & 0x5F)
+    if ((PORTF & (uint8_t)(ADC_DIDR_MSK & 0xff)) || (PORTK & (uint8_t)((ADC_DIDR_MSK >> 8) & 0xff)))
         pullup_error(false);
+#else
+    PORTF &= ~(uint8_t)(ADC_DIDR_MSK & 0xff);
+    PORTK &= ~(uint8_t)((ADC_DIDR_MSK >> 8) & 0xff);
 #endif // DEBUG_PULLUP_CRASH
 
 #ifdef LIN_ADVANCE
