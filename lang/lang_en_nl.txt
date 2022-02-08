@@ -38,7 +38,7 @@
 "All correct"
 "Allemaal goed"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 "Klaar. Happy printing!"
 

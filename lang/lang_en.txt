@@ -28,7 +28,7 @@
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 
 #MSG_AMBIENT c=14
