@@ -922,7 +922,8 @@ void update_sec_lang_from_external_flash()
 		if (lang_get_header(lang, &header, &src_addr))
 		{
 			lcd_puts_at_P(1,3,PSTR("Language update."));
-			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
+			for (uint8_t i = 0; i < state; i++)
+				lcd_print('.');
 			_delay(100);
 			boot_reserved = (state + 1) | (lang << 4);
 			if ((state * LANGBOOT_BLOCKSIZE) < header.size)

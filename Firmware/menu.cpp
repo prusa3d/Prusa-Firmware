@@ -197,7 +197,7 @@ static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const u
     sprintf_P(lineStr, PSTR("%c%-18.18S"), (settings & 0x01)?'>':' ', str);
     sprintf_P(lineStr + LCD_WIDTH - ((settings & 0x02)?strlen_P(toggle):strlen(toggle)) - 3, (settings & 0x02)?PSTR("[%S]%c"):PSTR("[%s]%c"), toggle, eol);
     if (!(settings & 0x04)) lcd_set_cursor(0, menu_row);
-    fputs(lineStr, lcdout);
+    lcd_print(lineStr);
 }
 
 //! @brief Format sheet name
