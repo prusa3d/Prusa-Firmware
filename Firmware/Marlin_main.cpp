@@ -1117,8 +1117,7 @@ void setup()
 		fsensor_autoload_set(false);
 #endif //FILAMENT_SENSOR
 		// ~ FanCheck -> on
-		if(!(eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED)))
-			eeprom_update_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED,true);
+		eeprom_update_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED, true);
 	}
 
 #ifdef TMC2130
