@@ -8530,7 +8530,13 @@ Sigma_Exit:
 			if(code_seen(axis_codes[i]))
 			{
 				uint16_t res_new = code_value();
+#ifdef ALLOW_ALL_MRES
 				bool res_valid = res_new > 0 && res_new <= 256 && !(res_new & (res_new - 1)); // must be a power of two
+#else
+				bool res_valid = (res_new == 8) || (res_new == 16) || (res_new == 32); // resolutions valid for all axis
+				res_valid |= (i != E_AXIS) && ((res_new == 1) || (res_new == 2) || (res_new == 4)); // resolutions valid for X Y Z only
+				res_valid |= (i == E_AXIS) && ((res_new == 64) || (res_new == 128)); // resolutions valid for E only
+#endif
 				if (res_valid)
 				{
 					st_synchronize();
