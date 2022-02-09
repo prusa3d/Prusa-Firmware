@@ -1439,6 +1439,12 @@ void setup()
     enable_z();
 #endif
 
+    if (farm_mode) {
+        // The farm monitoring SW may accidentally expect 
+        // 2 messages of "printer started" to consider a printer working.
+        prusa_statistics(8);
+    }
+
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
 
