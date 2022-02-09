@@ -1321,25 +1321,24 @@ create_multi_firmware()
             cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
             cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
         else
-            echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
-            cp -f firmware_cz.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-cz.hex
-            cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-de.hex
-            cp -f firmware_es.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-es.hex
-            cp -f firmware_fr.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-fr.hex
-            cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-it.hex
-            cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-pl.hex
-            cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-nl.hex
+            #Search for created firmware languages
+            langs=$(find firmware_*.hex | cut -d "_" -f2 | cut -d "." -f1)
+            #Copy found firmware_*.hex files 
+                for la in $langs; do
+                    cp -f firmware_$la.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-$la.hex
+                done
             cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
+            echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
             if [ $TARGET_OS == "windows" ]; then 
                 zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
-                rm $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
+                #rm $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
             elif [ $TARGET_OS == "linux" ]; then
                 # Make a copy for MK404 sim of MK2, MK2.5, MK2.5S firmware
                 if [ ! -z "$mk404_flag" ]; then
                     cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
                 fi
                 # End of MK2, MK2.5, MK2.5S firmware copy
-            zip -m -j ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
+            zip -j ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
             fi
         fi
 
@@ -1500,11 +1499,6 @@ fi
 
 if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
 
-# For Prusa MK2, MK2.5/S
-    if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
-        MK404_PRINTER="${MK404_PRINTER}_mR13"
-    fi
-
 # Run MK404 with 'debugcore' and/or 'bootloader-file'
     if [ ! -z "$board_mem_flag" ]; then
         MK404_options="-x $board_mem_flag"
@@ -1535,7 +1529,16 @@ if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
 
 #Decide which hex file to use EN_ONLY or Multi language
     if [ "$LANGUAGES" == "ALL" ]; then
-        MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
+        if [[ "$MK404_PRINTER" == "MK3" || "$MK404_PRINTER" == "MK3S" ]]; then
+            MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
+        else
+            PS3="Select a language:"
+            select lan in ${langs[@]}
+            do
+                MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-$lan.hex
+                break
+            done
+        fi
     else
         MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex
     fi
