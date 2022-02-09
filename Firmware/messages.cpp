@@ -1,10 +1,8 @@
 //messages.c
 #include "language.h"
+#include "lcd.h" // Needed for LCD_STR_REFRESH
 
 //this is because we need include Configuration_prusa.h (CUSTOM_MENDEL_NAME)
-#define bool char
-#define true 1
-#define false 0
 #include "Configuration_prusa.h"
 
 //internationalized messages
@@ -80,7 +78,7 @@ const char MSG_PRESS_TO_UNLOAD[] PROGMEM_I1 = ISTR("Please press the knob to unl
 const char MSG_PRINT_ABORTED[] PROGMEM_I1 = ISTR("Print aborted"); ////c=20
 const char MSG_PULL_OUT_FILAMENT[] PROGMEM_I1 = ISTR("Please pull out filament immediately"); ////c=20 r=4
 const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover print?"); ////c=20 r=2
-const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\x04Refresh"); ////c=18
+const char MSG_REFRESH[] PROGMEM_I1 = ISTR(LCD_STR_REFRESH "Refresh"); ////c=18
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
 const char MSG_RESET[] PROGMEM_I1 = ISTR("Reset"); ////c=14
 const char MSG_RESUME_PRINT[] PROGMEM_I1 = ISTR("Resume print"); ////c=18
