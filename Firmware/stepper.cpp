@@ -482,11 +482,11 @@ FORCE_INLINE void stepper_next_block()
 // Check limit switches.
 FORCE_INLINE void stepper_check_endstops()
 {
-  uint8_t _endstop_hit = endstop_hit;
-  uint8_t _endstop = endstop;
-  uint8_t _old_endstop = old_endstop;
   if(check_endstops) 
   {
+    uint8_t _endstop_hit = endstop_hit;
+    uint8_t _endstop = endstop;
+    uint8_t _old_endstop = old_endstop;
     #ifndef COREXY
     if ((out_bits & (1<<X_AXIS)) != 0) // stepping along -X axis
     #else
@@ -603,11 +603,17 @@ FORCE_INLINE void stepper_check_endstops()
         }
       #endif
     }
+    endstop = _endstop;
+    old_endstop = _endstop; //apply current endstop state to the old endstop
+    endstop_hit = _endstop_hit;
   }
 
   // Supporting stopping on a trigger of the Z-stop induction sensor, not only for the Z-minus movements.
   #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
   if (check_z_endstop) {
+      uint8_t _endstop_hit = endstop_hit;
+      uint8_t _endstop = endstop;
+      uint8_t _old_endstop = old_endstop;
       // Check the Z min end-stop no matter what.
       // Good for searching for the center of an induction target.
       #ifdef TMC2130_SG_HOMING
@@ -626,11 +632,11 @@ FORCE_INLINE void stepper_check_endstops()
         _endstop_hit |= _BV(Z_AXIS);
         step_events_completed.wide = current_block->step_event_count.wide;
       }
+      endstop = _endstop;
+      old_endstop = _endstop; //apply current endstop state to the old endstop
+      endstop_hit = _endstop_hit;
   }
   #endif
-  endstop = _endstop;
-  old_endstop = _endstop; //apply current endstop state to the old endstop
-  endstop_hit = _endstop_hit;
 }
 
 
