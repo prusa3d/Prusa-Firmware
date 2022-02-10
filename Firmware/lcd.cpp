@@ -331,7 +331,7 @@ void lcd_no_autoscroll(void)
 
 void lcd_set_cursor(uint8_t col, uint8_t row)
 {
-	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
+	uint8_t row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
 	if (row >= LCD_HEIGHT)
 		row = LCD_HEIGHT - 1;    // we count rows starting w/0
 	lcd_currline = row;  
@@ -344,7 +344,7 @@ void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
 {
   location &= 0x7; // we only have 8 locations 0-7
   lcd_command(LCD_SETCGRAMADDR | (location << 3));
-  for (int i=0; i<8; i++)
+  for (uint8_t i = 0; i < 8; i++)
     lcd_send(pgm_read_byte(&charmap[i]), HIGH);
 }
 

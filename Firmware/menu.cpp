@@ -150,9 +150,7 @@ void menu_submenu_no_reset(menu_func_t submenu)
 
 uint8_t menu_item_ret(void)
 {
-	lcd_beeper_quick_feedback();
-	lcd_draw_update = 2;
-	lcd_button_pressed = false;
+	lcd_quick_feedback();
 	return 1;
 }
 
@@ -511,7 +509,7 @@ static void _menu_edit_P(void)
 	if (lcd_draw_update)
 	{
 		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
-		if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
+		else if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
 		menu_draw_P<T>(' ', _md->editLabel, (int)lcd_encoder);
 	}

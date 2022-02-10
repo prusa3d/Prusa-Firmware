@@ -25,7 +25,6 @@ CardReader::CardReader()
    cardOK = false;
    saving = false;
    logging = false;
-   autostart_atmillis=0;
    workDirDepth = 0;
    file_subcall_ctr=0;
    memset(workDirParents, 0, sizeof(workDirParents));
@@ -39,7 +38,7 @@ CardReader::CardReader()
     WRITE(SDPOWER,HIGH);
   #endif //SDPOWER
   
-  autostart_atmillis=_millis()+5000;
+  autostart_atmillis.start(); // reset timer
 }
 
 char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
@@ -204,20 +203,13 @@ void CardReader::initsd(bool doPresort/* = true*/)
   if(root.isOpen())
     root.close();
 #ifdef SDSLOW
-  if (!card.init(SPI_HALF_SPEED,SDSS)
-  #if defined(LCD_SDSS) && (LCD_SDSS != SDSS)
-    && !card.init(SPI_HALF_SPEED,LCD_SDSS)
-  #endif
+  if (!card.init(SPI_HALF_SPEED)
     )
 #else
-  if (!card.init(SPI_FULL_SPEED,SDSS)
-  #if defined(LCD_SDSS) && (LCD_SDSS != SDSS)
-    && !card.init(SPI_FULL_SPEED,LCD_SDSS)
-  #endif
+  if (!card.init(SPI_FULL_SPEED)
     )
 #endif
   {
-    //if (!card.init(SPI_HALF_SPEED,SDSS))
     SERIAL_ECHO_START;
     SERIAL_ECHOLNRPGM(_n("SD init fail"));////MSG_SD_INIT_FAIL
   }
@@ -626,7 +618,7 @@ void CardReader::checkautostart(bool force)
   {
     if(!autostart_stilltocheck)
       return;
-    if(autostart_atmillis<_millis())
+    if(autostart_atmillis.expired(5000))
       return;
   }
   autostart_stilltocheck=false;
@@ -697,11 +689,11 @@ void CardReader::getfilename(uint16_t nr, const char * const match/*=NULL*/)
   
 }
 
-void CardReader::getfilename_simple(uint32_t position, const char * const match/*=NULL*/)
+void CardReader::getfilename_simple(uint16_t entry, const char * const match/*=NULL*/)
 {
 	curDir = &workDir;
 	nrFiles = 0;
-	curDir->seekSet(position);
+	curDir->seekSet((uint32_t)entry << 5);
 	lsDive("", *curDir, match, LS_GetFilename);
 }
 
@@ -783,7 +775,7 @@ void CardReader::updir()
 */
 void CardReader::getfilename_sorted(const uint16_t nr, uint8_t sdSort) {
     if (nr < sort_count)
-        getfilename_simple(sort_positions[(sdSort == SD_SORT_ALPHA) ? (sort_count - nr - 1) : nr]);
+        getfilename_simple(sort_entries[(sdSort == SD_SORT_ALPHA) ? (sort_count - nr - 1) : nr]);
     else
         getfilename(nr);
 }
@@ -840,7 +832,7 @@ void CardReader::presort() {
 				else
 					getfilename_next(position);
 				sort_order[i] = i;
-				sort_positions[i] = position;
+				sort_entries[i] = position >> 5;
 				#if HAS_FOLDER_SORTING
 				if (filenameIsDir) dirCnt++;
 				#endif
@@ -890,7 +882,7 @@ void CardReader::presort() {
 						
 						manage_heater();
 						uint8_t orderBckp = sort_order[i];
-						getfilename_simple(sort_positions[orderBckp]);
+						getfilename_simple(sort_entries[orderBckp]);
 						strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
 						crmod_date_bckp = crmodDate;
 						crmod_time_bckp = crmodTime;
@@ -899,7 +891,7 @@ void CardReader::presort() {
 						#endif
 						
 						uint16_t j = i;
-						getfilename_simple(sort_positions[sort_order[j - gap]]);
+						getfilename_simple(sort_entries[sort_order[j - gap]]);
 						char *name2 = LONGEST_FILENAME; // use the string in-place
 						#if HAS_FOLDER_SORTING
 						while (j >= gap && ((sdSort == SD_SORT_TIME)?_SORT_CMP_TIME_DIR(FOLDER_SORTING):_SORT_CMP_DIR(FOLDER_SORTING)))
@@ -917,7 +909,7 @@ void CardReader::presort() {
 							printf_P(PSTR("i%2d j%2d gap%2d orderBckp%2d\n"), i, j, gap, orderBckp);
 							#endif
 							if (j < gap) break;
-							getfilename_simple(sort_positions[sort_order[j - gap]]);
+							getfilename_simple(sort_entries[sort_order[j - gap]]);
 							name2 = LONGEST_FILENAME; // use the string in-place
 						}
 						sort_order[j] = orderBckp;
@@ -958,14 +950,14 @@ void CardReader::presort() {
 					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];
 
 					counter++;
-					getfilename_simple(sort_positions[o1]);
+					getfilename_simple(sort_entries[o1]);
 					strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
 					crmod_date_bckp = crmodDate;
 					crmod_time_bckp = crmodTime;
 					#if HAS_FOLDER_SORTING
 					bool dir1 = filenameIsDir;
 					#endif
-					getfilename_simple(sort_positions[o2]);
+					getfilename_simple(sort_entries[o2]);
 					char *name2 = LONGEST_FILENAME; // use the string in-place
 
 													// Sort the current pair according to settings.
@@ -1003,26 +995,26 @@ void CardReader::presort() {
 			{
 				if (sort_order_reverse_index[i] != i)
 				{
-					uint32_t el = sort_positions[i];
+					uint32_t el = sort_entries[i];
 					uint8_t idx = sort_order_reverse_index[i];
 					while (idx != i)
 					{
-						uint32_t el1 = sort_positions[idx];
+						uint32_t el1 = sort_entries[idx];
 						uint8_t idx1 = sort_order_reverse_index[idx];
 						sort_order_reverse_index[idx] = idx;
-						sort_positions[idx] = el;
+						sort_entries[idx] = el;
 						idx = idx1;
 						el = el1;
 					}
 					sort_order_reverse_index[idx] = idx;
-					sort_positions[idx] = el;
+					sort_entries[idx] = el;
 				}
 			}
 			menu_progressbar_finish();
 		}
 		else {
 			getfilename(0);
-			sort_positions[0] = position;
+			sort_entries[0] = position >> 5;
 		}
 
 		sort_count = fileCnt;

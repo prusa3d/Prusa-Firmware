@@ -47,7 +47,7 @@ void lcd_pause_print();
 void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
-void prusa_statistics(int _message, uint8_t _col_nr = 0);
+void prusa_statistics(uint8_t _message, uint8_t _col_nr = 0);
 void lcd_load_filament_color_check();
 //void lcd_mylang();
 
@@ -126,11 +126,9 @@ enum class CustomMsg : uint_least8_t
 };
 
 extern CustomMsg custom_message_type;
-extern unsigned int custom_message_state;
+extern uint8_t custom_message_state;
 
 extern uint8_t farm_mode;
-extern int farm_timer;
-extern uint8_t farm_status;
 
 extern bool UserECoolEnabled();
 extern bool FarmOrUserECool();

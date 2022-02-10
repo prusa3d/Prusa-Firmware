@@ -129,16 +129,15 @@ inline bool world2machine_clamp(float &x, float &y)
     if (tmpx < X_MIN_POS) {
         tmpx = X_MIN_POS;
         clamped = true;
-    }
-    if (tmpy < Y_MIN_POS) {
-        tmpy = Y_MIN_POS;
-        clamped = true;
-    }
-    if (tmpx > X_MAX_POS) {
+    } else if (tmpx > X_MAX_POS) {
         tmpx = X_MAX_POS;
         clamped = true;
     }
-    if (tmpy > Y_MAX_POS) {
+    
+    if (tmpy < Y_MIN_POS) {
+        tmpy = Y_MIN_POS;
+        clamped = true;
+    } else if (tmpy > Y_MAX_POS) {
         tmpy = Y_MAX_POS;
         clamped = true;
     }

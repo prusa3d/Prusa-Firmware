@@ -204,7 +204,7 @@ static float analog2tempAmbient(int raw);
 #endif
 static void updateTemperaturesFromRawValues();
 
-enum TempRunawayStates
+enum TempRunawayStates : uint8_t
 {
 	TempRunaway_INACTIVE = 0,
 	TempRunaway_PREHEAT = 1,
@@ -220,12 +220,12 @@ enum TempRunawayStates
 //===========================================================================
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-static float temp_runaway_status[4];
-static float temp_runaway_target[4];
-static float temp_runaway_timer[4];
-static int temp_runaway_error_counter[4];
+static uint8_t temp_runaway_status[1 + EXTRUDERS];
+static float temp_runaway_target[1 + EXTRUDERS];
+static uint32_t temp_runaway_timer[1 + EXTRUDERS];
+static uint16_t temp_runaway_error_counter[1 + EXTRUDERS];
 
-static void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
+static void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
 static void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
@@ -615,7 +615,7 @@ void fanSpeedError(unsigned char _fan) {
 	if (get_message_level() != 0 && isPrintPaused) return;
 	//to ensure that target temp. is not set to zero in case that we are resuming print
 	if (card.sdprinting || is_usb_printing) {
-		if (heating_status != 0) {
+		if (heating_status != HeatingStatus::NO_HEATING) {
 			lcd_print_stop();
 		}
 		else {
@@ -625,7 +625,7 @@ void fanSpeedError(unsigned char _fan) {
 	else {
 		// SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //Why pause octoprint? is_usb_printing would be true in that case, so there is no need for this.
 		setTargetHotend0(0);
-        heating_status = 0;
+        heating_status = HeatingStatus::NO_HEATING;
         fan_check_error = EFCE_REPORTED;
 	}
 	switch (_fan) {
@@ -683,7 +683,7 @@ void manage_heater()
   temp_runaway_check(0, target_temperature_bed, current_temperature_bed, (int)soft_pwm_bed, true);
 #endif
 
-  for(int e = 0; e < EXTRUDERS; e++) 
+  for(uint8_t e = 0; e < EXTRUDERS; e++) 
   {
 
 #ifdef TEMP_RUNAWAY_EXTRUDER_HYSTERESIS
@@ -1240,15 +1240,15 @@ void tp_init()
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
+void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
 {
      float __delta;
 	float __hysteresis = 0;
-	int __timeout = 0;
+	uint16_t __timeout = 0;
 	bool temp_runaway_check_active = false;
 	static float __preheat_start[2] = { 0,0}; //currently just bed and one extruder
-	static int __preheat_counter[2] = { 0,0};
-	static int __preheat_errors[2] = { 0,0};
+	static uint8_t __preheat_counter[2] = { 0,0};
+	static uint8_t __preheat_errors[2] = { 0,0};
 		
 
 	if (_millis() - temp_runaway_timer[_heater_id] > 2000)

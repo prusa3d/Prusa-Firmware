@@ -168,7 +168,7 @@ const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = ISTR("SpoolJoin"); ////c=13
 const char MSG_FIRMWARE[] PROGMEM_N1 = ISTR("Firmware"); ////c=8
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = ISTR("FlashAir"); ////c=8
 const char MSG_PINDA[] PROGMEM_N1 = ISTR("PINDA");////c=5
-const char WELCOME_MSG[] PROGMEM_N1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
+const char MSG_WELCOME[] PROGMEM_N1 = WELCOME_MSG; ////c=20
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////
 const char MSG_EXTERNAL_RESET[] PROGMEM_N1 = " External Reset"; ////

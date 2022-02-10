@@ -8,6 +8,7 @@
 #include "ultralcd.h"
 #include "language.h"
 #include "spi.h"
+#include "Timer.h"
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
 #define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
@@ -71,7 +72,8 @@ uint16_t tmc2130_sg_cnt[4] = {0, 0, 0, 0};
 bool tmc2130_sg_change = false;
 #endif
 
-bool skip_debug_msg = false;
+//used for triggering a periodic check (1s) of the overtemperature pre-warning flag at ~120C (+-20C)
+ShortTimer tmc2130_overtemp_timer;
 
 #define DBG(args...)
 //printf_P(args)
@@ -392,16 +394,13 @@ bool tmc2130_wait_standstill_xy(int timeout)
 	return standstill;
 }
 
-
 void tmc2130_check_overtemp()
 {
-	static uint32_t checktime = 0;
-	if (_millis() - checktime > 1000 )
+	if (tmc2130_overtemp_timer.expired(1000) || !tmc2130_overtemp_timer.running())
 	{
 		for (uint_least8_t i = 0; i < 4; i++)
 		{
 			uint32_t drv_status = 0;
-			skip_debug_msg = true;
 			tmc2130_rd(i, TMC2130_REG_DRV_STATUS, &drv_status);
 			if (drv_status & ((uint32_t)1 << 26))
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
@@ -413,7 +412,7 @@ void tmc2130_check_overtemp()
 			}
 
 		}
-		checktime = _millis();
+		tmc2130_overtemp_timer.start();
 #ifdef DEBUG_CRASHDET_COUNTERS
 		tmc2130_sg_change = true;
 #endif
@@ -472,8 +471,8 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
         intpol = 0;
     }
 #endif
-//	DBG(_n("tmc2130_setup_chopper(axis=%hhd, mres=%hhd, curh=%hhd, curr=%hhd\n"), axis, mres, current_h, current_r);
-//	DBG(_n(" toff=%hhd, hstr=%hhd, hend=%hhd, tbl=%hhd\n"), toff, hstrt, hend, tbl);
+//	DBG(_n("tmc2130_setup_chopper(axis=%d, mres=%d, curh=%d, curr=%d\n"), axis, mres, current_h, current_r);
+//	DBG(_n(" toff=%d, hstr=%d, hend=%d, tbl=%d\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
 	{
 		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, dedge, 0);
@@ -512,7 +511,7 @@ void tmc2130_print_currents()
 
 void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 {
-//	DBG(_n("tmc2130_set_pwm_ampl(axis=%hhd, pwm_ampl=%hhd\n"), axis, pwm_ampl);
+//	DBG(_n("tmc2130_set_pwm_ampl(axis=%d, pwm_ampl=%d\n"), axis, pwm_ampl);
 	tmc2130_pwm_ampl[axis] = pwm_ampl;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -520,7 +519,7 @@ void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 
 void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_grad)
 {
-//	DBG(_n("tmc2130_set_pwm_grad(axis=%hhd, pwm_grad=%hhd\n"), axis, pwm_grad);
+//	DBG(_n("tmc2130_set_pwm_grad(axis=%d, pwm_grad=%d\n"), axis, pwm_grad);
 	tmc2130_pwm_grad[axis] = pwm_grad;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -894,7 +893,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 {
 // TMC2130 wave compression algorithm
 // optimized for minimal memory requirements
-//	printf_P(PSTR("tmc2130_set_wave %hhd %hhd\n"), axis, fac1000);
+//	printf_P(PSTR("tmc2130_set_wave %d %d\n"), axis, fac1000);
 	if (fac1000 < TMC2130_WAVE_FAC1000_MIN) fac1000 = 0;
 	if (fac1000 > TMC2130_WAVE_FAC1000_MAX) fac1000 = TMC2130_WAVE_FAC1000_MAX;
 	float fac = 0;
@@ -908,11 +907,11 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	uint8_t x[3] = {255,255,255};  //X segment bounds (MSLUTSEL)
 	uint8_t s = 0;                 //current segment
 	int8_t b;                      //encoded bit value
-    int8_t dA;                     //delta value
-	int i;                         //microstep index
+	int8_t dA;                     //delta value
+	uint8_t i = 0;                         //microstep index
 	uint32_t reg = 0;              //tmc2130 register
 	tmc2130_wr_MSLUTSTART(axis, 0, amp);
-	for (i = 0; i < 256; i++)
+	do
 	{
 		if ((i & 0x1f) == 0)
 			reg = 0;
@@ -964,7 +963,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 		else
 			reg >>= 1;
 //		printf("%3d\t%3d\t%2d\t%2d\t%2d\t%2d    %08x\n", i, vA, dA, b, w[s], s, reg);
-	}
+	} while (i++ != 255);
 	tmc2130_wr_MSLUTSEL(axis, x[0], x[1], x[2], w[0], w[1], w[2], w[3]);
 }
 

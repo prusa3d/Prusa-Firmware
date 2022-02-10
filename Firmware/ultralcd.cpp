@@ -55,7 +55,7 @@
 
 
 int clock_interval = 0;
-
+static ShortTimer NcTime;
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -78,16 +78,14 @@ LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 
 CustomMsg custom_message_type = CustomMsg::Status;
-unsigned int custom_message_state = 0;
-
+uint8_t custom_message_state = 0;
 
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
-int farm_timer = 8;
-uint8_t farm_status = 0;
+uint8_t farm_timer = 8;
 bool printer_connected = true;
 
-unsigned long display_time; //just timer for showing pid finished message on lcd;
+static ShortTimer display_time; //just timer for showing pid finished message on lcd;
 float pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
@@ -99,8 +97,7 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 /* !Configuration settings */
 
 uint8_t lcd_status_message_level;
-char lcd_status_message[LCD_WIDTH + 1] = ""; //////WELCOME!
-unsigned char firstrun = 1;
+char lcd_status_message[LCD_WIDTH + 1] = WELCOME_MSG;
 
 static uint8_t lay1cal_filament = 0;
 
@@ -127,7 +124,7 @@ static void lcd_control_temperature_menu();
 #ifdef TMC2130
 static void lcd_settings_linearity_correction_menu_save();
 #endif
-static void prusa_stat_printerstatus(int _status);
+static void prusa_stat_printerstatus(uint8_t _status);
 static void prusa_stat_farm_number();
 static void prusa_stat_diameter();
 static void prusa_stat_temperatures();
@@ -161,8 +158,8 @@ static void lcd_belttest_v();
 static void lcd_selftest_v();
 
 #ifdef TMC2130
-static void reset_crash_det(unsigned char axis);
-static bool lcd_selfcheck_axis_sg(unsigned char axis);
+static void reset_crash_det(uint8_t axis);
+static bool lcd_selfcheck_axis_sg(uint8_t axis);
 #else
 static bool lcd_selfcheck_axis(int _axis, int _travel);
 static bool lcd_selfcheck_pulleys(int axis);
@@ -206,8 +203,8 @@ enum class TestError : uint_least8_t
     FsensorLevel
 };
 
-static int  lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
-static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
+static uint8_t  lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t _progress_scale, bool _clear, uint16_t _delay);
+static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name, const char *_indicator);
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	bool _default=false);
 
@@ -456,7 +453,7 @@ void lcdui_print_percent_done(void)
 	const char* src = is_usb_printing?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
 	char per[4];
 	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
-	if (!num || heating_status) // either not printing or heating
+	if (!num || heating_status != HeatingStatus::NO_HEATING) // either not printing or heating
 	{
 		const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
 		const int8_t nextSheet = eeprom_next_initialized_sheet(sheetNR);
@@ -469,7 +466,7 @@ void lcdui_print_percent_done(void)
 			return; //do not also print the percentage
 		}
 	}
-	sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
+	sprintf_P(per, num?_N("%3d"):_N("---"), calc_percent_done());
 	lcd_printf_P(_N("%3S%3s%%"), src, per);
 }
 
@@ -573,7 +570,7 @@ void lcdui_print_time(void)
 //! @Brief Print status line on status screen
 void lcdui_print_status_line(void)
 {
-    if (heating_status) { // If heating flag, show progress of heating
+    if (heating_status != HeatingStatus::NO_HEATING) { // If heating flag, show progress of heating
         heating_status_counter++;
         if (heating_status_counter > 13) {
             heating_status_counter = 0;
@@ -581,24 +578,24 @@ void lcdui_print_status_line(void)
         lcd_set_cursor(7, 3);
         lcd_space(13);
 
-        for (unsigned int dots = 0; dots < heating_status_counter; dots++) {
+        for (uint8_t dots = 0; dots < heating_status_counter; dots++) {
             lcd_putc_at(7 + dots, 3, '.');
         }
         switch (heating_status) {
-        case 1:
+        case HeatingStatus::EXTRUDER_HEATING:
             lcd_puts_at_P(0, 3, _T(MSG_HEATING));
             break;
-        case 2:
+        case HeatingStatus::EXTRUDER_HEATING_COMPLETE:
             lcd_puts_at_P(0, 3, _T(MSG_HEATING_COMPLETE));
-            heating_status = 0;
+            heating_status = HeatingStatus::NO_HEATING;
             heating_status_counter = 0;
             break;
-        case 3:
+        case HeatingStatus::BED_HEATING:
             lcd_puts_at_P(0, 3, _T(MSG_BED_HEATING));
             break;
-        case 4:
+        case HeatingStatus::BED_HEATING_COMPLETE:
             lcd_puts_at_P(0, 3, _T(MSG_BED_DONE));
-            heating_status = 0;
+            heating_status = HeatingStatus::NO_HEATING;
             heating_status_counter = 0;
             break;
         default:
@@ -608,15 +605,14 @@ void lcdui_print_status_line(void)
     else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status)) { // If printing from SD, show what we are printing
 		const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
         if(strlen(longFilenameOLD) > LCD_WIDTH) {
-            int inters = 0;
-            int gh = scrollstuff;
-            while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0)) {
+            uint8_t gh = scrollstuff;
+            while (((gh - scrollstuff) < LCD_WIDTH)) {
                 if (longFilenameOLD[gh] == '\0') {
                     lcd_set_cursor(gh - scrollstuff, 3);
                     lcd_print(longFilenameOLD[gh - 1]);
                     scrollstuff = 0;
                     gh = scrollstuff;
-                    inters = 1;
+                    break;
                 } else {
                     lcd_set_cursor(gh - scrollstuff, 3);
                     lcd_print(longFilenameOLD[gh - 1]);
@@ -644,8 +640,7 @@ void lcdui_print_status_line(void)
             } else {
                 if (custom_message_state == 3)
                 {
-                    lcd_puts_P(_T(WELCOME_MSG));
-                    lcd_setstatuspgm(_T(WELCOME_MSG));
+                    lcd_setstatuspgm(MSG_WELCOME);
                     custom_message_type = CustomMsg::Status;
                 }
                 if (custom_message_state > 3 && custom_message_state <= 10 ) {
@@ -692,7 +687,7 @@ void lcdui_print_status_line(void)
     }
 
     // Fill the rest of line to have nice and clean output
-    for(int fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
+    for(uint8_t fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
         if ((lcd_status_message[fillspace] <= 31 ))
             lcd_print(' ');
 }
@@ -773,21 +768,6 @@ void lcdui_print_status_screen(void)
 // Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent
 void lcd_status_screen()                          // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
-	if (firstrun == 1) 
-	{
-		firstrun = 0;
-		if(lcd_status_message_level == 0)
-		{
-			strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
-			lcd_finishstatus();
-		}
-		if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
-		{
-			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
-		}
-	}
-
 #ifdef ULTIPANEL_FEEDMULTIPLY
 	// Dead zone at 100% feedrate
 	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
@@ -1164,7 +1144,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_setstatuspgm(_T(WELCOME_MSG));
+			lcd_setstatuspgm(MSG_WELCOME);
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
@@ -1253,7 +1233,7 @@ void lcd_commands()
                 lcd_commands_step = 1;
                 break;
             case 1:
-                lcd_setstatuspgm(_T(WELCOME_MSG));
+                lcd_setstatuspgm(MSG_WELCOME);
                 lcd_commands_step = 0;
                 lcd_commands_type = LcdCommands::Idle;
                 if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1)
@@ -1343,11 +1323,11 @@ void lcd_commands()
 			else {
 				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
 			}
-			display_time = _millis();
+			display_time.start();
 			lcd_commands_step = 1;
 		}
-		if ((lcd_commands_step == 1) && ((_millis()- display_time)>2000)) { //calibration finished message
-			lcd_setstatuspgm(_T(WELCOME_MSG));
+		if ((lcd_commands_step == 1) && display_time.expired(2000)) { //calibration finished message
+			lcd_setstatuspgm(MSG_WELCOME);
 			custom_message_type = CustomMsg::Status;
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
@@ -1384,8 +1364,6 @@ void lcd_pause_usb_print()
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
 }
 
-
-float move_menu_scale;
 static void lcd_move_menu_axis();
 
 
@@ -2706,7 +2684,7 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%18.2fm \n"
 			"%S:\n"
-			"%10ldh %02hhdm %02hhds"
+			"%10ldh %02dm %02ds"
 		    ),
             _i("Filament used"), _met,  ////MSG_FILAMENT_USED c=19
             _i("Print time"), _h, _m, _s);  ////MSG_PRINT_TIME c=19
@@ -2728,7 +2706,7 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%18.2fm \n"
 			"%S:\n"
-			"%10ldd %02hhdh %02hhdm"
+			"%10ldd %02dh %02dm"
             ),
             _i("Total filament"), _filament_m,  ////MSG_TOTAL_FILAMENT c=19
             _i("Total print time"), _days, _hours, _minutes);  ////MSG_TOTAL_PRINT_TIME c=19
@@ -2737,7 +2715,7 @@ void lcd_menu_statistics()
 }
 
 
-static void _lcd_move(const char *name, int axis, int min, int max)
+static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 {
     if (homing_flag || mesh_bed_leveling_flag)
     {
@@ -2763,7 +2741,7 @@ static void _lcd_move(const char *name, int axis, int min, int max)
 		refresh_cmd_timeout();
 		if (! planner_queue_full())
 		{
-			current_position[axis] += float((int)lcd_encoder) * move_menu_scale;
+			current_position[axis] += float((int)lcd_encoder);
 			if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
 			if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
 			lcd_encoder = 0;
@@ -2791,7 +2769,7 @@ void lcd_move_e()
 			refresh_cmd_timeout();
 			if (! planner_queue_full())
 			{
-				current_position[E_AXIS] += float((int)lcd_encoder) * move_menu_scale;
+				current_position[E_AXIS] += float((int)lcd_encoder);
 				lcd_encoder = 0;
 				plan_buffer_line_curposXYZE(manual_feedrate[E_AXIS] / 60);
 				lcd_draw_update = 1;
@@ -3832,7 +3810,7 @@ static void lcd_show_sensors_state()
 	uint8_t idler_state = STATE_NA;
 
 	pinda_state = READ(Z_MIN_PIN);
-	if (mmu_enabled && ((_millis() - mmu_last_finda_response) < 1000ul) )
+	if (mmu_enabled && mmu_last_finda_response.expired(1000))
 	{
 		finda_state = mmu_finda;
 	}
@@ -3913,7 +3891,7 @@ static void prusa_statistics_case0(uint8_t statnr){
 	prusa_stat_printinfo();
 }
 
-void prusa_statistics(int _message, uint8_t _fil_nr) {
+void prusa_statistics(uint8_t _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
 	return;
 #endif //DEBUG_DISABLE_PRUSA_STATISTICS
@@ -3944,7 +3922,6 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		break;
 
 	case 1:		// 1 heating
-		farm_status = 2;
 		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(2);
 		prusa_stat_farm_number();
@@ -3953,7 +3930,6 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		break;
 
 	case 2:		// heating done
-		farm_status = 3;
 		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(3);
 		prusa_stat_farm_number();
@@ -3963,7 +3939,6 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 
 		if (IS_SD_PRINTING || loading_flag)
 		{
-			farm_status = 4;
 			SERIAL_ECHO('{');
 			prusa_stat_printerstatus(4);
 			prusa_stat_farm_number();
@@ -4059,7 +4034,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 
 }
 
-static void prusa_stat_printerstatus(int _status)
+static void prusa_stat_printerstatus(uint8_t _status)
 {
 	SERIAL_ECHOPGM("[PRN:");
 	SERIAL_ECHO(_status);
@@ -4227,13 +4202,6 @@ void lcd_move_menu_axis()
 	MENU_ITEM_SUBMENU_P(_T(MSG_EXTRUDER), lcd_move_e);
 	MENU_END();
 }
-
-static void lcd_move_menu_1mm()
-{
-  move_menu_scale = 1.0;
-  lcd_move_menu_axis();
-}
-
 
 void EEPROM_save(int pos, uint8_t* value, uint8_t size)
 {
@@ -4492,7 +4460,6 @@ static void lcd_language_menu()
 
 void lcd_mesh_bedleveling()
 {
-	mesh_bed_run_from_menu = true;
 	enquecommand_P(PSTR("G80"));
 	lcd_return_to_status();
 }
@@ -4707,7 +4674,7 @@ void lcd_v2_calibration()
 	    bool loaded = false;
 	    if (fsensor_enabled && ir_sensor_detected)
 	    {
-	        loaded = (digitalRead(IR_SENSOR_PIN) == 0);
+	        loaded = !READ(IR_SENSOR_PIN);
 	    }
 	    else
 	    {
@@ -5041,7 +5008,7 @@ void lcd_wizard(WizState state)
 
 		msg = _T(MSG_WIZARD_DONE);
 		lcd_reset_alert_level();
-		lcd_setstatuspgm(_T(WELCOME_MSG));
+		lcd_setstatuspgm(MSG_WELCOME);
 		lcd_return_to_status(); 
 		break;
 
@@ -5660,7 +5627,7 @@ static void lcd_settings_menu()
 
 	if (!PRINTER_ACTIVE || isPrintPaused)
     {
-	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_1mm);////MSG_MOVE_AXIS c=18
+	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_axis);////MSG_MOVE_AXIS c=18
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=18
     }
 
@@ -6308,7 +6275,7 @@ void unload_filament(bool automatic)
 
 	lcd_update_enable(true);
 
-	lcd_setstatuspgm(_T(WELCOME_MSG));
+	lcd_setstatuspgm(MSG_WELCOME);
 	custom_message_type = CustomMsg::Status;
 
 }
@@ -7032,7 +6999,7 @@ void lcd_print_stop()
 
     finishAndDisableSteppers(); //M84
 
-    lcd_setstatuspgm(_T(WELCOME_MSG));
+    lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 
     planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
@@ -7333,7 +7300,7 @@ static void lcd_selftest_v()
 
 bool lcd_selftest()
 {
-	int _progress = 0;
+	uint8_t _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
 #ifdef IR_SENSOR_ANALOG
@@ -7601,14 +7568,14 @@ bool lcd_selftest()
 
 #ifdef TMC2130
 
-static void reset_crash_det(unsigned char axis) {
+static void reset_crash_det(uint8_t axis) {
 	current_position[axis] += 10;
 	plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
 	st_synchronize();
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET)) tmc2130_sg_stop_on_crash = true;
 }
 
-static bool lcd_selfcheck_axis_sg(unsigned char axis) {
+static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 // each axis length is measured twice	
 	float axis_length, current_position_init, current_position_final;
 	float measured_axis_length[2];
@@ -7731,7 +7698,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 //	printf_P(PSTR("lcd_selfcheck_axis %d, %d\n"), _axis, _travel);
 	bool _stepdone = false;
 	bool _stepresult = false;
-	int _progress = 0;
+	uint8_t _progress = 0;
 	int _travel_done = 0;
 	int _err_endstop = 0;
 	int _lcd_refresh = 0;
@@ -7942,14 +7909,14 @@ static bool lcd_selfcheck_endstops()
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {
-	int _counter = 0;
-	int _progress = 0;
+	uint8_t _counter = 0;
+	uint8_t _progress = 0;
 	bool _stepresult = false;
 	bool _docycle = true;
 
 	int _checked_snapshot = (_isbed) ? degBed() : degHotend(0);
 	int _opposite_snapshot = (_isbed) ? degHotend(0) : degBed();
-	int _cycles = (_isbed) ? 180 : 60; //~ 90s / 30s
+	uint8_t _cycles = (_isbed) ? 180 : 60; //~ 90s / 30s
 
 	target_temperature[0] = (_isbed) ? 0 : 200;
 	target_temperature_bed = (_isbed) ? 100 : 0;
@@ -8370,7 +8337,7 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 
 #endif //FANCHECK
 
-static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay)
+static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t _progress_scale, bool _clear, uint16_t _delay)
 {
 
 	lcd_update_enable(false);
@@ -8442,7 +8409,7 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	return (_progress >= _progress_scale * 2) ? 0 : _progress;
 }
 
-static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name_PROGMEM, const char *_indicator)
+static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name_PROGMEM, const char *_indicator)
 {
 	lcd_set_cursor(_col, _row);
     uint8_t strlenNameP = strlen_P(_name_PROGMEM);
@@ -8497,7 +8464,7 @@ static bool check_file(const char* filename) {
 	cmdqueue_serial_disabled = false;
 	card.printingHasFinished();
 
-	lcd_setstatuspgm(_T(WELCOME_MSG));
+	lcd_setstatuspgm(MSG_WELCOME);
 	lcd_finishstatus();
 	return result;
 }
@@ -8583,7 +8550,7 @@ void ultralcd_init()
 #endif
 
 #if defined (SDSUPPORT) && defined(SDCARDDETECT) && (SDCARDDETECT > 0)
-  pinMode(SDCARDDETECT, INPUT);
+  SET_INPUT(SDCARDDETECT);
   WRITE(SDCARDDETECT, HIGH);
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
@@ -8599,10 +8566,10 @@ void lcd_printer_connected() {
 }
 
 static void lcd_send_status() {
-	if (farm_mode && no_response && ((_millis() - NcTime) > (NC_TIME * 1000))) {
+	if (farm_mode && no_response && (NcTime.expired(NC_TIME * 1000))) {
 		//send important status messages periodicaly
 		prusa_statistics(important_status, saved_filament_type);
-		NcTime = _millis();
+		NcTime.start();
 #ifdef FARM_CONNECT_MESSAGE
 		lcd_connect_printer();
 #endif //FARM_CONNECT_MESSAGE
@@ -8778,7 +8745,6 @@ void menu_lcd_longpress_func(void)
 #endif
         || menu_menu == lcd_support_menu
         ){
-            move_menu_scale = 1.0;
             menu_submenu(lcd_move_z);
         } else {
             // otherwise consume the long press as normal click
@@ -8839,7 +8805,7 @@ void menu_lcd_lcdupdate_func(void)
 				card.initsd(false); //delay the sorting to the sd menu. Otherwise, removing the SD card while sorting will not menu_back()
 				card.presort_flag = true; //force sorting of the SD menu
 			}
-			LCD_MESSAGERPGM(_T(WELCOME_MSG));
+			LCD_MESSAGERPGM(MSG_WELCOME);
 			bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 			menu_submenu(lcd_sdcard_menu);
 			lcd_timeoutToStatus.start();

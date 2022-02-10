@@ -990,7 +990,7 @@ void __attribute__((noinline)) serial_dump_and_reset(dump_crash_reason reason)
 
     // sample SP/PC
     sp = SP;
-    GETPC(&pc);
+    pc = GETPC();
 
     // extend WDT long enough to allow writing the entire stream
     wdt_enable(WDTO_8S);

@@ -23,9 +23,8 @@
 
 #include "Marlin.h"
 #include "planner.h"
-#ifdef PID_ADD_EXTRUSION_RATE
-  #include "stepper.h"
-#endif
+
+#include "stepper.h"
 
 #include "config.h"
 
@@ -91,7 +90,10 @@ extern bool bedPWMDisabled;
 
 #ifdef PIDTEMP
   extern int pid_cycle, pid_number_of_cycles;
-  extern float Kc,_Kp,_Ki,_Kd;
+  extern float _Kp,_Ki,_Kd;
+#ifdef PID_ADD_EXTRUSION_RATE
+  extern float Kc;
+#endif
   extern bool pid_tuning_finished;
   float scalePID_i(float i);
   float scalePID_d(float d);
@@ -166,7 +168,7 @@ static inline void setTargetHotendSafe(const float &celsius, uint8_t extruder)
 // Doesn't save FLASH when not inlined.
 static inline void setAllTargetHotends(const float &celsius)
 {
-    for(int i=0;i<EXTRUDERS;i++) setTargetHotend(celsius,i);
+    for(uint8_t i = 0; i < EXTRUDERS; i++) setTargetHotend(celsius, i);
 }
 
 FORCE_INLINE void setTargetBed(const float &celsius) {  

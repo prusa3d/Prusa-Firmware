@@ -24,8 +24,7 @@ int serial_count = 0;  //index of character read from serial line
 bool comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
-unsigned long TimeSent = _millis();
-unsigned long TimeNow = _millis();
+ShortTimer farm_incomplete_command_timeout_timer;
 
 long gcode_N = 0;
 long gcode_LastN = 0;
@@ -95,7 +94,7 @@ void cmdqueue_reset()
 {
 	while (buflen)
 	{
-		// printf_P(PSTR("dumping: \"%s\" of type %hu\n"), cmdbuffer+bufindr+CMDHDRSIZE, CMDBUFFER_CURRENT_TYPE);
+		// printf_P(PSTR("dumping: \"%s\" of type %u\n"), cmdbuffer+bufindr+CMDHDRSIZE, CMDBUFFER_CURRENT_TYPE);
 		ClearToSend();
 		cmdqueue_pop_front();
 	}
@@ -394,14 +393,8 @@ void get_command()
   while (((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) && !cmdqueue_serial_disabled) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
     char serial_char = MYSERIAL.read();
-/*    if (selectedSerialPort == 1)
-    {
-        selectedSerialPort = 0; 
-        MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
-        selectedSerialPort = 1; 
-    } */ //RP - removed
-      TimeSent = _millis();
-      TimeNow = _millis();
+
+    farm_incomplete_command_timeout_timer.start();
 
     if (serial_char < 0)
         // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
@@ -448,7 +441,7 @@ void get_command()
 				  char *p = cmdbuffer+bufindw+CMDHDRSIZE;
 				  while (p != strchr_pointer)
 					  checksum = checksum^(*p++);
-				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
+				  if (code_value_short() != (int16_t)checksum) {
 					  SERIAL_ERROR_START;
 					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH
 					  SERIAL_ERRORLN(gcode_LastN);
@@ -491,8 +484,7 @@ void get_command()
                       is_usb_printing = true;
               }
             if (Stopped == true) {
-                int gcode = strtol(strchr_pointer+1, NULL, 10);
-                if (gcode >= 0 && gcode <= 3) {
+                if (code_value_uint8() <= 3) {
                     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
                     LCD_MESSAGERPGM(_T(MSG_STOPPED));
                 }
@@ -535,9 +527,8 @@ void get_command()
     }
   } // end of serial line processing loop
 
-    if(farm_mode){
-        TimeNow = _millis();
-        if ( ((TimeNow - TimeSent) > 800) && (serial_count > 0) ) {
+    if(farm_mode && (serial_count > 0)){
+        if (farm_incomplete_command_timeout_timer.expired(800)) {
             cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0;
             
             bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);

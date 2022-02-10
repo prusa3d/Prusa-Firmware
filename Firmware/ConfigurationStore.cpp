@@ -32,7 +32,7 @@ static bool EEPROM_writeData(uint8_t* pos, uint8_t* value, uint8_t size, const c
 #endif //DEBUG_EEPROM_WRITE
 {
 #ifdef DEBUG_EEPROM_WRITE
-	printf_P(PSTR("EEPROM_WRITE_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
+	printf_P(PSTR("EEPROM_WRITE_VAR addr=0x%04x size=0x%02x name=%s\n"), pos, size, name);
 #endif //DEBUG_EEPROM_WRITE
 	while (size--)
 	{
@@ -56,7 +56,7 @@ static void EEPROM_readData(uint8_t* pos, uint8_t* value, uint8_t size, const ch
 #endif //DEBUG_EEPROM_READ
 {
 #ifdef DEBUG_EEPROM_READ
-	printf_P(PSTR("EEPROM_READ_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
+	printf_P(PSTR("EEPROM_READ_VAR addr=0x%04x size=0x%02x name=%s\n"), pos, size, name);
 #endif //DEBUG_EEPROM_READ
     while(size--)
     {

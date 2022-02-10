@@ -459,10 +459,7 @@ void plan_init() {
   #ifdef LIN_ADVANCE
   memset(position_float, 0, sizeof(position_float)); // clear position
   #endif
-  previous_speed[0] = 0.0;
-  previous_speed[1] = 0.0;
-  previous_speed[2] = 0.0;
-  previous_speed[3] = 0.0;
+  memset(previous_speed, 0, sizeof(previous_speed));
   previous_nominal_speed = 0.0;
   plan_reset_next_e_queue = false;
   plan_reset_next_e_sched = false;
@@ -678,10 +675,7 @@ void planner_abort_hard()
 #endif
     // Resets planner junction speeds. Assumes start from rest.
     previous_nominal_speed = 0.0;
-    previous_speed[0] = 0.0;
-    previous_speed[1] = 0.0;
-    previous_speed[2] = 0.0;
-    previous_speed[3] = 0.0;
+    memset(previous_speed, 0, sizeof(previous_speed));
 
     plan_reset_next_e_queue = false;
     plan_reset_next_e_sched = false;
@@ -1023,7 +1017,7 @@ Having the real displacement of the head, we can calculate the total movement le
     // Calculate speed in mm/second for each axis. No divide by zero due to previous checks.
   float inverse_second = feed_rate * inverse_millimeters;
 
-  int moves_queued = moves_planned();
+  uint8_t moves_queued = moves_planned();
 
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
 #ifdef SLOWDOWN
@@ -1044,14 +1038,12 @@ Having the real displacement of the head, we can calculate the total movement le
   // Calculate and limit speed in mm/sec for each axis
   float current_speed[4];
   float speed_factor = 1.0; //factor <=1 do decrease speed
-//  maxlimit_status &= ~0xf;
   for(int i=0; i < 4; i++)
   {
     current_speed[i] = delta_mm[i] * inverse_second;
 	if(fabs(current_speed[i]) > max_feedrate[i])
 	{
       speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
-	  maxlimit_status |= (1 << i);
 	}
   }
 
@@ -1133,13 +1125,13 @@ Having the real displacement of the head, we can calculate the total movement le
     // Limit acceleration per axis
     //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
     if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS]; maxlimit_status |= (X_AXIS_MASK << 4); }
+	{  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS]; }
     if(((float)block->acceleration_st * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS]; maxlimit_status |= (Y_AXIS_MASK << 4); }
+	{  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS]; }
     if(((float)block->acceleration_st * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[E_AXIS]; maxlimit_status |= (Z_AXIS_MASK << 4); }
+	{  block->acceleration_st = axis_steps_per_sqr_second[E_AXIS]; }
     if(((float)block->acceleration_st * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS]; maxlimit_status |= (E_AXIS_MASK << 4); }
+	{  block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS]; }
   }
   // Acceleration of the segment, in mm/sec^2
   block->acceleration = block->acceleration_st / steps_per_mm;
@@ -1414,10 +1406,7 @@ void plan_set_position(float x, float y, float z, const float &e)
   #endif
   st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
   previous_nominal_speed = 0.0; // Resets planner junction speeds. Assumes start from rest.
-  previous_speed[0] = 0.0;
-  previous_speed[1] = 0.0;
-  previous_speed[2] = 0.0;
-  previous_speed[3] = 0.0;
+  memset(previous_speed, 0, sizeof(previous_speed));
 }
 
 // Only useful in the bed leveling routine, when the mesh bed leveling is off.
