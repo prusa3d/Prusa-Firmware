@@ -350,6 +350,10 @@ fi
 #if [ "$LNG" = "pl" ]; then
 #fi
 
+#replace in slovak translation
+#if [ "$LNG" = "sk" ]; then
+#fi
+
 #replace UTF-8 'μ' to HD44780 A00 'μ'
  #replace 'μ' with 'A00 ROM μ'
  sed -i 's/\xce\xbc/\\xe4/g' $LNG'_filtered.po'

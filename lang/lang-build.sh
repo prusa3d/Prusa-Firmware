@@ -106,6 +106,8 @@ lang_code_hex_data()
   *sv*) echo '\x76\x73' ;;
 #Danish
   *da*) echo '\x61\x64' ;;
+#Slovak
+  *sk*) echo '\x6b\x73' ;;  
 #Slovanian
   *sl*) echo '\x6c\x73' ;;
 #Hungarian
