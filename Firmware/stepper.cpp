@@ -128,7 +128,10 @@ static uint8_t  step_loops;
 static uint16_t OCR1A_nominal;
 static uint8_t  step_loops_nominal;
 
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
 volatile long endstops_trigsteps[3]={0,0,0};
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
+
 static volatile uint8_t endstop_hit = 0;
 #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 bool abort_on_endstop_hit = false;
@@ -189,7 +192,8 @@ extern uint16_t stepper_timer_overflow_last;
 
 void checkHitEndstops()
 {
- if( endstop_hit) {
+ if(endstop_hit) {
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
    SERIAL_ECHO_START;
    SERIAL_ECHORPGM(MSG_ENDSTOPS_HIT);
    if(endstop_hit & _BV(X_AXIS)) {
@@ -205,6 +209,7 @@ void checkHitEndstops()
 //     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT),PSTR("Z")));
    }
    SERIAL_ECHOLN("");
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
    endstop_hit = 0;
 #if defined(ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED) && defined(SDSUPPORT)
    if (abort_on_endstop_hit)
@@ -502,7 +507,9 @@ FORCE_INLINE void stepper_check_endstops()
         SET_BIT_TO(_endstop, X_AXIS, (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING));
       #endif
         if((_endstop & _old_endstop & _BV(X_AXIS)) && (current_block->steps_x.wide > 0)) {
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
           _endstop_hit |= _BV(X_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
@@ -517,7 +524,9 @@ FORCE_INLINE void stepper_check_endstops()
           SET_BIT_TO(_endstop, X_AXIS + 4, (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING));
         #endif
         if((_endstop & _old_endstop & _BV(X_AXIS + 4)) && (current_block->steps_x.wide > 0)){
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
           _endstop_hit |= _BV(X_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
@@ -539,7 +548,9 @@ FORCE_INLINE void stepper_check_endstops()
         SET_BIT_TO(_endstop, Y_AXIS, (READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING));
       #endif
         if((_endstop & _old_endstop & _BV(Y_AXIS)) && (current_block->steps_y.wide > 0)) {
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
           _endstop_hit |= _BV(Y_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
@@ -554,7 +565,9 @@ FORCE_INLINE void stepper_check_endstops()
           SET_BIT_TO(_endstop, Y_AXIS + 4, (READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING));
         #endif
         if((_endstop & _old_endstop & _BV(Y_AXIS + 4)) && (current_block->steps_y.wide > 0)){
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
           _endstop_hit |= _BV(Y_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
@@ -577,7 +590,9 @@ FORCE_INLINE void stepper_check_endstops()
           SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
         #endif //TMC2130_SG_HOMING
         if((_endstop & _old_endstop & _BV(Z_AXIS)) && (current_block->steps_z.wide > 0)) {
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
           _endstop_hit |= _BV(Z_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
@@ -597,7 +612,9 @@ FORCE_INLINE void stepper_check_endstops()
         SET_BIT_TO(_endstop, Z_AXIS + 4, (READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING));
         #endif //TMC2130_SG_HOMING
         if((_endstop & _old_endstop & _BV(Z_AXIS + 4)) && (current_block->steps_z.wide > 0)) {
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
           _endstop_hit |= _BV(Z_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
@@ -628,7 +645,9 @@ FORCE_INLINE void stepper_check_endstops()
       SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
       #endif //TMC2130_SG_HOMING
       if(_endstop & _old_endstop & _BV(Z_AXIS)) {
+#ifdef VERBOSE_CHECK_HIT_ENDSTOPS
         endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
+#endif //VERBOSE_CHECK_HIT_ENDSTOPS
         _endstop_hit |= _BV(Z_AXIS);
         step_events_completed.wide = current_block->step_event_count.wide;
       }

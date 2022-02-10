@@ -250,6 +250,9 @@
 	  #define HAS_FOLDER_SORTING (FOLDER_SORTING)
 	#endif
 
+// Enabe this option to get a pretty message whenever the endstop gets hit (as in the position at which the endstop got triggered)
+//#define VERBOSE_CHECK_HIT_ENDSTOPS
+
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.
 //#define ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 
