@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 9
+# Version 1.0.1 Build 10
 #
 # config.sh - multi-language support configuration script
 #  Definition of absolute paths etc.
@@ -19,8 +19,16 @@
 #                           and use these. More flexible for different build
 #                           scripts
 #                           Check correctly if files or dirs exist
+# 10 Feb. 2022, 3d-gussner, Add SRCDIR for compatibility with build server
 #############################################################################
 #
+if [ -z "$SRCDIR" ]; then
+    export SRCDIR=".."
+fi
+
+LNGDIR="$( cd "$(dirname "$0")" ; pwd -P )"
+export LNGDIR=$LNGDIR
+
 # Arduino main folder:
 if [ -z "$ARDUINO" ]; then
     export ARDUINO=../../PF-build-env-1.0.6/1.8.5-1.0.4-linux-64 #C:/arduino-1.8.5
@@ -68,15 +76,15 @@ fi
 MAX_COMMINITY_LANG=10 # Total 16 - 6 default
 COMMUNITY_LANGUAGES=""
 #Search Firmware/config.h for active community group
-COMMUNITY_LANG_GROUP=$(grep --max-count=1 "^#define COMMUNITY_LANG_GROUP" ../Firmware/config.h| cut -d ' ' -f3)
+COMMUNITY_LANG_GROUP=$(grep --max-count=1 "^#define COMMUNITY_LANG_GROUP" $SRCDIR/Firmware/config.h| cut -d ' ' -f3)
 
 # Search Firmware/config.h for active community languanges
 if [ "$COMMUNITY_LANG_GROUP" = "1" ]; then
-    COMMUNITY_LANGUAGES=$(grep --max-count=$MAX_COMMINITY_LANG "^#define COMMUNITY_LANG_GROUP1_" ../Firmware/config.h| cut -d '_' -f4 |cut -d ' ' -f1 |tr '[:upper:]' '[:lower:]'| tr '\n' ' ')
+    COMMUNITY_LANGUAGES=$(grep --max-count=$MAX_COMMINITY_LANG "^#define COMMUNITY_LANG_GROUP1_" $SRCDIR/Firmware/config.h| cut -d '_' -f4 |cut -d ' ' -f1 |tr '[:upper:]' '[:lower:]'| tr '\n' ' ')
 elif [ "$COMMUNITY_LANG_GROUP" = "2" ]; then
-    COMMUNITY_LANGUAGES=$(grep --max-count=$MAX_COMMINITY_LANG "^#define COMMUNITY_LANG_GROUP2_" ../Firmware/config.h| cut -d '_' -f4 |cut -d ' ' -f1 |tr '[:upper:]' '[:lower:]'| tr '\n' ' ')
+    COMMUNITY_LANGUAGES=$(grep --max-count=$MAX_COMMINITY_LANG "^#define COMMUNITY_LANG_GROUP2_" $SRCDIR/Firmware/config.h| cut -d '_' -f4 |cut -d ' ' -f1 |tr '[:upper:]' '[:lower:]'| tr '\n' ' ')
 elif [ "$COMMUNITY_LANG_GROUP" = "3" ]; then
-    COMMUNITY_LANGUAGES=$(grep --max-count=$MAX_COMMINITY_LANG "^#define COMMUNITY_LANG_GROUP3_" ../Firmware/config.h| cut -d '_' -f4 |cut -d ' ' -f1 |tr '[:upper:]' '[:lower:]'| tr '\n' ' ')
+    COMMUNITY_LANGUAGES=$(grep --max-count=$MAX_COMMINITY_LANG "^#define COMMUNITY_LANG_GROUP3_" $SRCDIR/Firmware/config.h| cut -d '_' -f4 |cut -d ' ' -f1 |tr '[:upper:]' '[:lower:]'| tr '\n' ' ')
 fi
 
 if [ -z "$COMMUNITY_LANGUAGES" ]; then

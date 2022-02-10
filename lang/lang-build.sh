@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.2 Build 25
+# Version 1.0.2 Build 27
 #
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
@@ -56,6 +56,7 @@
 #                           to get Build Nr
 # 25 Jan. 2022, 3d-gussner, Fix check
 #                           Update documentation
+# 10 Feb. 2022, 3d-gussner, Use SRCDIR for compatibility with build server
 #############################################################################
 #
 # Config:
@@ -170,7 +171,7 @@ generate_binary()
   #Calculate the number of strings and save to temporary file
   echo $count >lang_en.cnt
   #read the allowed maxsize from "../Firmware/config.h" and save to temporary file
-  maxsize=$(($(grep "#define LANG_SIZE_RESERVED" ../Firmware/config.h|sed -e's/  */ /g' |cut -d ' ' -f3)))
+  maxsize=$(($(grep "#define LANG_SIZE_RESERVED" $SRCDIR/Firmware/config.h|sed -e's/  */ /g' |cut -d ' ' -f3)))
 
   echo "maxsize="$maxsize >&2
   echo $maxsize >lang_en.max
