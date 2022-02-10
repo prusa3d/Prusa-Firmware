@@ -230,7 +230,9 @@ bool endstops_hit_on_purpose()
 bool endstop_z_hit_on_purpose()
 {
   bool hit = endstop_hit & _BV(Z_AXIS);
+CRITICAL_SECTION_START;
   endstop_hit &= ~_BV(Z_AXIS);
+CRITICAL_SECTION_END;
   return hit;
 }
 
@@ -245,7 +247,9 @@ bool enable_z_endstop(bool check)
 {
 	bool old = check_z_endstop;
 	check_z_endstop = check;
+CRITICAL_SECTION_START;
 	endstop_hit &= ~_BV(Z_AXIS);
+CRITICAL_SECTION_END;
 	return old;
 }
 
@@ -478,6 +482,9 @@ FORCE_INLINE void stepper_next_block()
 // Check limit switches.
 FORCE_INLINE void stepper_check_endstops()
 {
+  uint8_t _endstop_hit = endstop_hit;
+  uint8_t _endstop = endstop;
+  uint8_t _old_endstop = old_endstop;
   if(check_endstops) 
   {
     #ifndef COREXY
@@ -489,14 +496,14 @@ FORCE_INLINE void stepper_check_endstops()
       #if ( (defined(X_MIN_PIN) && (X_MIN_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_XMINLIMIT)
       #ifdef TMC2130_SG_HOMING
         // Stall guard homing turned on
-        SET_BIT_TO(endstop, X_AXIS, (READ(X_TMC2130_DIAG) != 0));
+        SET_BIT_TO(_endstop, X_AXIS, (READ(X_TMC2130_DIAG) != 0));
       #else
         // Normal homing
-        SET_BIT_TO(endstop, X_AXIS, (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING));
+        SET_BIT_TO(_endstop, X_AXIS, (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING));
       #endif
-        if((endstop & old_endstop & _BV(X_AXIS)) && (current_block->steps_x.wide > 0)) {
+        if((_endstop & _old_endstop & _BV(X_AXIS)) && (current_block->steps_x.wide > 0)) {
           endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
-          endstop_hit |= _BV(X_AXIS);
+          _endstop_hit |= _BV(X_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
       #endif
@@ -504,14 +511,14 @@ FORCE_INLINE void stepper_check_endstops()
       #if ( (defined(X_MAX_PIN) && (X_MAX_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_XMAXLIMIT)          
         #ifdef TMC2130_SG_HOMING
         // Stall guard homing turned on
-          SET_BIT_TO(endstop, X_AXIS + 4, (READ(X_TMC2130_DIAG) != 0));
+          SET_BIT_TO(_endstop, X_AXIS + 4, (READ(X_TMC2130_DIAG) != 0));
         #else
         // Normal homing
-          SET_BIT_TO(endstop, X_AXIS + 4, (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING));
+          SET_BIT_TO(_endstop, X_AXIS + 4, (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING));
         #endif
-        if((endstop & old_endstop & _BV(X_AXIS + 4)) && (current_block->steps_x.wide > 0)){
+        if((_endstop & _old_endstop & _BV(X_AXIS + 4)) && (current_block->steps_x.wide > 0)){
           endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
-          endstop_hit |= _BV(X_AXIS);
+          _endstop_hit |= _BV(X_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
       #endif
@@ -526,14 +533,14 @@ FORCE_INLINE void stepper_check_endstops()
       #if ( (defined(Y_MIN_PIN) && (Y_MIN_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_YMINLIMIT)          
       #ifdef TMC2130_SG_HOMING
       // Stall guard homing turned on
-        SET_BIT_TO(endstop, Y_AXIS, (READ(Y_TMC2130_DIAG) != 0));
+        SET_BIT_TO(_endstop, Y_AXIS, (READ(Y_TMC2130_DIAG) != 0));
       #else
       // Normal homing
-        SET_BIT_TO(endstop, Y_AXIS, (READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING));
+        SET_BIT_TO(_endstop, Y_AXIS, (READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING));
       #endif
-        if((endstop & old_endstop & _BV(Y_AXIS)) && (current_block->steps_y.wide > 0)) {
+        if((_endstop & _old_endstop & _BV(Y_AXIS)) && (current_block->steps_y.wide > 0)) {
           endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
-          endstop_hit |= _BV(Y_AXIS);
+          _endstop_hit |= _BV(Y_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
       #endif
@@ -541,14 +548,14 @@ FORCE_INLINE void stepper_check_endstops()
       #if ( (defined(Y_MAX_PIN) && (Y_MAX_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_YMAXLIMIT)                
         #ifdef TMC2130_SG_HOMING
         // Stall guard homing turned on
-          SET_BIT_TO(endstop, Y_AXIS + 4, (READ(Y_TMC2130_DIAG) != 0));
+          SET_BIT_TO(_endstop, Y_AXIS + 4, (READ(Y_TMC2130_DIAG) != 0));
         #else
         // Normal homing
-          SET_BIT_TO(endstop, Y_AXIS + 4, (READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING));
+          SET_BIT_TO(_endstop, Y_AXIS + 4, (READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING));
         #endif
-        if((endstop & old_endstop & _BV(Y_AXIS + 4)) && (current_block->steps_y.wide > 0)){
+        if((_endstop & _old_endstop & _BV(Y_AXIS + 4)) && (current_block->steps_y.wide > 0)){
           endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
-          endstop_hit |= _BV(Y_AXIS);
+          _endstop_hit |= _BV(Y_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
       #endif
@@ -562,16 +569,16 @@ FORCE_INLINE void stepper_check_endstops()
           // Stall guard homing turned on
 #ifdef TMC2130_STEALTH_Z
           if ((tmc2130_mode == TMC2130_MODE_SILENT) && !(tmc2130_sg_homing_axes_mask & 0x04))
-            SET_BIT_TO(endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
+            SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
           else
 #endif //TMC2130_STEALTH_Z
-            SET_BIT_TO(endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (READ(Z_TMC2130_DIAG) != 0));
+            SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (READ(Z_TMC2130_DIAG) != 0));
         #else
-          SET_BIT_TO(endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
+          SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
         #endif //TMC2130_SG_HOMING
-        if((endstop & old_endstop & _BV(Z_AXIS)) && (current_block->steps_z.wide > 0)) {
+        if((_endstop & _old_endstop & _BV(Z_AXIS)) && (current_block->steps_z.wide > 0)) {
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
-          endstop_hit |= _BV(Z_AXIS);
+          _endstop_hit |= _BV(Z_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
       }
@@ -582,16 +589,16 @@ FORCE_INLINE void stepper_check_endstops()
         // Stall guard homing turned on
 #ifdef TMC2130_STEALTH_Z
         if ((tmc2130_mode == TMC2130_MODE_SILENT) && !(tmc2130_sg_homing_axes_mask & 0x04))
-          SET_BIT_TO(endstop, Z_AXIS + 4, 0);
+          SET_BIT_TO(_endstop, Z_AXIS + 4, 0);
         else
 #endif //TMC2130_STEALTH_Z
-          SET_BIT_TO(endstop, Z_AXIS + 4, (READ(Z_TMC2130_DIAG) != 0));
+          SET_BIT_TO(_endstop, Z_AXIS + 4, (READ(Z_TMC2130_DIAG) != 0));
         #else
-        SET_BIT_TO(endstop, Z_AXIS + 4, (READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING));
+        SET_BIT_TO(_endstop, Z_AXIS + 4, (READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING));
         #endif //TMC2130_SG_HOMING
-        if((endstop & old_endstop & _BV(Z_AXIS + 4)) && (current_block->steps_z.wide > 0)) {
+        if((_endstop & _old_endstop & _BV(Z_AXIS + 4)) && (current_block->steps_z.wide > 0)) {
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
-          endstop_hit |= _BV(Z_AXIS);
+          _endstop_hit |= _BV(Z_AXIS);
           step_events_completed.wide = current_block->step_event_count.wide;
         }
       #endif
@@ -607,21 +614,23 @@ FORCE_INLINE void stepper_check_endstops()
       // Stall guard homing turned on
 #ifdef TMC2130_STEALTH_Z
       if ((tmc2130_mode == TMC2130_MODE_SILENT) && !(tmc2130_sg_homing_axes_mask & 0x04))
-        SET_BIT_TO(endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
+        SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
       else
 #endif //TMC2130_STEALTH_Z
-        SET_BIT_TO(endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (READ(Z_TMC2130_DIAG) != 0));
+        SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (READ(Z_TMC2130_DIAG) != 0));
       #else
-      SET_BIT_TO(endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
+      SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
       #endif //TMC2130_SG_HOMING
-      if(endstop & old_endstop & _BV(Z_AXIS)) {
+      if(_endstop & _old_endstop & _BV(Z_AXIS)) {
         endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
-        endstop_hit |= _BV(Z_AXIS);
+        _endstop_hit |= _BV(Z_AXIS);
         step_events_completed.wide = current_block->step_event_count.wide;
       }
   }
   #endif
-  old_endstop = endstop;
+  endstop = _endstop;
+  old_endstop = _endstop; //apply current endstop state to the old endstop
+  endstop_hit = _endstop_hit;
 }
 
 
