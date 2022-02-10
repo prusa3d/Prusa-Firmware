@@ -1707,7 +1707,7 @@ static void lcd_support_menu()
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
           ip4_to_str(_md->ip_str, (uint8_t*)(&_md->ip));
-          lcd_printf_P(PSTR("%s"), _md->ip_str);
+          lcd_print(_md->ip_str);
       }
   }
   
@@ -1720,7 +1720,7 @@ static void lcd_support_menu()
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
           ip4_to_str(_md->ip_str, (uint8_t*)(&IP_address));
-          lcd_printf_P(PSTR("%s"), _md->ip_str);
+          lcd_print(_md->ip_str);
       }
   }
 
