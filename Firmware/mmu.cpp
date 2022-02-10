@@ -728,9 +728,6 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  screen=0;
 			  }
 
-			  lcd_set_degree();
-
-
 			  //5 seconds delay
 			  for (uint8_t i = 0; i < 5; i++) {
 				  if (lcd_clicked()) {

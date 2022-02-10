@@ -5,7 +5,6 @@
 #include "config.h"
 
 extern void menu_lcd_longpress_func(void);
-extern void menu_lcd_charsetup_func(void);
 extern void menu_lcd_lcdupdate_func(void);
 
 // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
@@ -166,15 +165,6 @@ void lcd_commands();
 extern bool bSettings;                            // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
 void lcd_hw_setup_menu(void);                     // NOT static due to using inside "util" module ("nozzle_diameter_check()")
 
-
-void change_extr(int extr);
-
-#ifdef SNMM
-void extr_unload_all(); 
-void extr_unload_used();
-#endif //SNMM
-void extr_unload();
-
 enum class FilamentAction : uint_least8_t
 {
     None, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
@@ -221,10 +211,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
-
-void display_loading();
-
-void lcd_set_degree();
 
 #if (LANG_MODE != 0)
 void lcd_language();

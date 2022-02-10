@@ -16,7 +16,14 @@
 
 - **Hungarian / Magyar**
   - Maintainers: **@AttilaSVK**
-  - Co-maintainers:
+  - Co-maintainers: **@Hauzman**
+  - Contributors:
+  - [X] **Active**      since January 2022
+  - [X] **Maintained**  since January 2022
+
+- **Croatian / Hrvatski**
+  - Maintainers: **@Prime1910**
+  - Co-maintainers: **@PRPA041**
   - Contributors:
   - [X] **Active**      since January 2022
   - [X] **Maintained**  since January 2022
@@ -25,6 +32,6 @@
   - Maintainers: **@Painkiller56**
   - Co-maintainers:
   - Contributors:
-  - [X] **Active**      since January 2022
+  - [ ] **Active**      since January 2022
   - [X] **Maintained**  since January 2022
 

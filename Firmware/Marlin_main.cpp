@@ -1100,10 +1100,10 @@ void setup()
 	setup_powerhold();
 
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
-	if (farm_mode == 0xFF) 
+	if (farm_mode == 0xFF) {
 		farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
-	if (farm_mode)
-	{
+		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
+	} else if (farm_mode) {
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
@@ -1115,9 +1115,8 @@ void setup()
 		//disabled filament autoload (PFW360)
 		fsensor_autoload_set(false);
 #endif //FILAMENT_SENSOR
-          // ~ FanCheck -> on
-          if(!(eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED)))
-               eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED,true);
+		// ~ FanCheck -> on
+		eeprom_update_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED, true);
 	}
 
 #ifdef TMC2130
@@ -1439,12 +1438,11 @@ void setup()
     enable_z();
 #endif
 
-	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
-	if (farm_mode == 0xFF) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
-	if (farm_mode)
-	{
-		prusa_statistics(8);
-	}
+    if (farm_mode) {
+        // The farm monitoring SW may accidentally expect 
+        // 2 messages of "printer started" to consider a printer working.
+        prusa_statistics(8);
+    }
 
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
@@ -3095,7 +3093,7 @@ static void gcode_G80()
     bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 
 #ifndef PINDA_THERMISTOR
-    if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50)
+    if (run == false && eeprom_read_byte((uint8_t *)EEPROM_TEMP_CAL_ACTIVE) && calibration_status_pinda() == true && target_temperature_bed >= 50)
     {
         temp_compensation_start();
         run = true;
@@ -3329,7 +3327,7 @@ static void gcode_G80()
     //		SERIAL_ECHOLNPGM("clean up finished ");
 
 #ifndef PINDA_THERMISTOR
-    if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
+    if(eeprom_read_byte((uint8_t *)EEPROM_TEMP_CAL_ACTIVE) && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
 #endif
     babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
     //		SERIAL_ECHOLNPGM("babystep applied");
@@ -7418,8 +7416,6 @@ Sigma_Exit:
 #endif
           cs.max_jerk[E_AXIS] = e;
       }
-      if (cs.max_jerk[X_AXIS] > DEFAULT_XJERK) cs.max_jerk[X_AXIS] = DEFAULT_XJERK;
-      if (cs.max_jerk[Y_AXIS] > DEFAULT_YJERK) cs.max_jerk[Y_AXIS] = DEFAULT_YJERK;
     }
     break;
 
@@ -8793,9 +8789,13 @@ Sigma_Exit:
 			if(code_seen(axis_codes[i]))
 			{
 				uint16_t res_new = code_value();
+#ifdef ALLOW_ALL_MRES
+				bool res_valid = res_new > 0 && res_new <= 256 && !(res_new & (res_new - 1)); // must be a power of two
+#else
 				bool res_valid = (res_new == 8) || (res_new == 16) || (res_new == 32); // resolutions valid for all axis
 				res_valid |= (i != E_AXIS) && ((res_new == 1) || (res_new == 2) || (res_new == 4)); // resolutions valid for X Y Z only
 				res_valid |= (i == E_AXIS) && ((res_new == 64) || (res_new == 128)); // resolutions valid for E only
+#endif
 				if (res_valid)
 				{
 					st_synchronize();
@@ -9801,39 +9801,6 @@ void controllerFan()
 }
 #endif
 
-#ifdef TEMP_STAT_LEDS
-static bool blue_led = false;
-static bool red_led = false;
-static uint32_t stat_update = 0;
-
-void handle_status_leds(void) {
-  float max_temp = 0.0;
-  if(_millis() > stat_update) {
-    stat_update += 500; // Update every 0.5s
-    for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
-       max_temp = max(max_temp, degHotend(cur_extruder));
-       max_temp = max(max_temp, degTargetHotend(cur_extruder));
-    }
-    #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
-      max_temp = max(max_temp, degTargetBed());
-      max_temp = max(max_temp, degBed());
-    #endif
-    if((max_temp > 55.0) && (red_led == false)) {
-      digitalWrite(STAT_LED_RED, 1);
-      digitalWrite(STAT_LED_BLUE, 0);
-      red_led = true;
-      blue_led = false;
-    }
-    if((max_temp < 54.0) && (blue_led == false)) {
-      digitalWrite(STAT_LED_RED, 0);
-      digitalWrite(STAT_LED_BLUE, 1);
-      red_led = false;
-      blue_led = true;
-    }
-  }
-}
-#endif
-
 #ifdef SAFETYTIMER
 /**
  * @brief Turn off heating after safetytimer_inactive_time milliseconds of inactivity
@@ -10076,9 +10043,6 @@ if(0)
      st_synchronize();
      WRITE(E0_ENABLE_PIN,oldstatus);
     }
-  #endif
-  #ifdef TEMP_STAT_LEDS
-      handle_status_leds();
   #endif
   check_axes_activity();
   mmu_loop();

@@ -644,8 +644,6 @@ uint8_t lcd_status_update_delay = 0;
 
 lcd_longpress_func_t lcd_longpress_func = 0;
 
-lcd_charsetup_func_t lcd_charsetup_func = 0;
-
 lcd_lcdupdate_func_t lcd_lcdupdate_func = 0;
 
 static ShortTimer buttonBlanking;
@@ -718,8 +716,6 @@ void lcd_update_enable(uint8_t enabled)
 			lcd_next_update_millis = _millis() - 1;
 			// Full update.
 			lcd_clear();
-			if (lcd_charsetup_func)
-				lcd_charsetup_func();
 			lcd_update(2);
 		} else
 		{
@@ -741,7 +737,6 @@ void lcd_buttons_update(void)
 
     if (READ(BTN_ENC) == 0)
     { //button is pressed
-        lcd_timeoutToStatus.start();
         if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
             buttonBlanking.start();
             safetyTimer.start();
@@ -924,28 +919,6 @@ const uint8_t lcd_chardata_clock[8] PROGMEM = {
 	B00000,
 	B00000}; //thanks Sonny Mounicou
 
-const uint8_t lcd_chardata_arrup[8] PROGMEM = {
-	B00100,
-	B01110,
-	B11111,
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B00000};
-
-const uint8_t lcd_chardata_arrdown[8] PROGMEM = {
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B10001,
-	B01010,
-	B00100};
-
-
-
 void lcd_set_custom_characters(void)
 {
 	lcd_createChar_P(LCD_STR_BEDTEMP[0], lcd_chardata_bedTemp);
@@ -956,13 +929,6 @@ void lcd_set_custom_characters(void)
 	lcd_createChar_P(LCD_STR_FOLDER[0], lcd_chardata_folder);
 	lcd_createChar_P(LCD_STR_FEEDRATE[0], lcd_chardata_feedrate);
 	lcd_createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
-	//lcd_createChar_P(LCD_STR_ARROW_UP[0], lcd_chardata_arrup);
-	//lcd_createChar_P(LCD_STR_ARROW_DOWN[0], lcd_chardata_arrdown);
-}
-
-void lcd_set_custom_characters_arrows(void)
-{
-	lcd_createChar_P(1, lcd_chardata_arrdown);
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
@@ -986,12 +952,7 @@ const uint8_t lcd_chardata_confirm[8] PROGMEM = {
 
 void lcd_set_custom_characters_nextpage(void)
 {
-	lcd_createChar_P(1, lcd_chardata_arr2down);
-	lcd_createChar_P(2, lcd_chardata_confirm);
-}
-
-void lcd_set_custom_characters_degree(void)
-{
-	lcd_createChar_P(1, lcd_chardata_degree);
+	lcd_createChar_P(LCD_STR_ARROW_2_DOWN[0], lcd_chardata_arr2down);
+	lcd_createChar_P(LCD_STR_CONFIRM[0], lcd_chardata_confirm);
 }
 
