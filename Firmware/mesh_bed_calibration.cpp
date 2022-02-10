@@ -2872,6 +2872,7 @@ bool sample_mesh_and_store_reference()
 		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
     }
+    static_assert(MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS <= 255, "overflow.....");
     for (uint8_t mesh_point = 1; mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS; ++ mesh_point) {
         // Don't let the manage_inactivity() function remove power from the motors.
         refresh_cmd_timeout();
