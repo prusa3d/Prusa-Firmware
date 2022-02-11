@@ -1222,7 +1222,6 @@ BedSkewOffsetDetectionResultType find_bed_induction_sensor_point_xy(int
 			// Do nsteps_y zig-zag movements.
 			float a, b;
 			float avg[2] = { 0,0 };
-			invert_z_endstop(true);
 			for (int iteration = 0; iteration < 8; iteration++) {
 
 				found = false;				
@@ -1302,7 +1301,6 @@ BedSkewOffsetDetectionResultType find_bed_induction_sensor_point_xy(int
 				found = true;
 
 			}
-			invert_z_endstop(false);
 			avg[X_AXIS] *= (1.f / 7.f);
 			avg[Y_AXIS] *= (1.f / 7.f);
 
@@ -1329,7 +1327,6 @@ BedSkewOffsetDetectionResultType find_bed_induction_sensor_point_xy(int
 	}
 	
 	enable_z_endstop(false);
-	invert_z_endstop(false);
 	return found;
 #endif //NEW_XYZCAL
 }

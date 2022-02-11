@@ -148,7 +148,6 @@ static uint8_t old_endstop = 0;
 static bool check_endstops = true;
 
 static bool check_z_endstop = false;
-static bool z_endstop_invert = false;
 
 volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
@@ -256,11 +255,6 @@ CRITICAL_SECTION_START;
 	endstop_hit &= ~_BV(Z_AXIS);
 CRITICAL_SECTION_END;
 	return old;
-}
-
-void invert_z_endstop(bool endstop_invert)
-{
-  z_endstop_invert = endstop_invert;
 }
 
 //         __________________________
