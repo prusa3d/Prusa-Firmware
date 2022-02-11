@@ -236,9 +236,11 @@ void update_currents();
 void get_coordinates();
 void prepare_move();
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
-void Stop();
-bool IsStopped();
 void finishAndDisableSteppers();
+
+void UnconditionalStop(); // Stop heaters, motion and clear current print status
+void Stop();              // Emergency stop used by overtemp functions which allows recovery
+bool IsStopped();         // Returns true if the print has been stopped
 
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
@@ -246,7 +248,7 @@ void finishAndDisableSteppers();
 //put an ASCII command at the begin of the current buffer, read from flash
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
 
-void prepare_arc_move(char isclockwise);
+void prepare_arc_move(bool isclockwise);
 void clamp_to_software_endstops(float target[3]);
 void refresh_cmd_timeout(void);
 
@@ -275,6 +277,17 @@ FORCE_INLINE unsigned long millis_nc() {
 void setPwmFrequency(uint8_t pin, int val);
 #endif
 
+enum class HeatingStatus : uint8_t
+{
+    NO_HEATING = 0,
+    EXTRUDER_HEATING = 1,
+    EXTRUDER_HEATING_COMPLETE = 2,
+    BED_HEATING = 3,
+    BED_HEATING_COMPLETE = 4,
+};
+
+extern HeatingStatus heating_status;
+
 extern bool fans_check_enabled;
 extern float homing_feedrate[];
 extern uint8_t axis_relative_modes;
@@ -294,9 +307,9 @@ extern int8_t lcd_change_fil_state;
 extern float default_retraction;
 
 #ifdef TMC2130
-void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+void homeaxis(uint8_t axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 #else
-void homeaxis(int axis, uint8_t cnt = 1);
+void homeaxis(uint8_t axis, uint8_t cnt = 1);
 #endif //TMC2130
 
 
@@ -319,18 +332,13 @@ extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
 extern bool loading_flag;
-extern unsigned int usb_printing_counter;
-
-extern unsigned long kicktime;
-
+extern uint8_t usb_printing_counter;
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
-extern unsigned int heating_status;
-extern unsigned int status_number;
-extern unsigned int heating_status_counter;
+extern uint8_t status_number;
+extern uint8_t heating_status_counter;
 extern char snmm_filaments_used;
 extern unsigned long PingTime;
-extern unsigned long NcTime;
 extern bool no_response;
 extern uint8_t important_status;
 extern uint8_t saved_filament_type;
@@ -348,9 +356,7 @@ extern unsigned long start_pause_print;
 extern unsigned long t_fan_rising_edge;
 
 extern bool mesh_bed_leveling_flag;
-extern bool mesh_bed_run_from_menu;
 
-extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
 extern uint8_t saved_printing_type;

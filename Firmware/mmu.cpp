@@ -70,14 +70,14 @@ uint8_t mmu_extruder = MMU_FILAMENT_UNKNOWN;
 uint8_t tmp_extruder = MMU_FILAMENT_UNKNOWN;
 
 int8_t mmu_finda = -1;
-uint32_t mmu_last_finda_response = 0;
 
 int16_t mmu_version = -1;
 
 int16_t mmu_buildnr = -1;
 
-uint32_t mmu_last_request = 0;
-uint32_t mmu_last_response = 0;
+ShortTimer mmu_last_request;
+ShortTimer mmu_last_response;
+ShortTimer mmu_last_finda_response;
 
 MmuCmd mmu_last_cmd = MmuCmd::None;
 uint16_t mmu_power_failures = 0;
@@ -113,7 +113,7 @@ int mmu_puts_P(const char* str)
 {
 	mmu_clr_rx_buf();                          //clear rx buffer
     int r = fputs_P(str, uart2io);             //send command
-	mmu_last_request = _millis();
+	mmu_last_request.start();
 	return r;
 }
 
@@ -125,7 +125,7 @@ int mmu_printf_P(const char* format, ...)
 	mmu_clr_rx_buf();                          //clear rx buffer
 	int r = vfprintf_P(uart2io, format, args); //send command
 	va_end(args);
-	mmu_last_request = _millis();
+	mmu_last_request.start();
 	return r;
 }
 
@@ -133,7 +133,7 @@ int mmu_printf_P(const char* format, ...)
 int8_t mmu_rx_ok(void)
 {
 	int8_t res = uart2_rx_str_P(PSTR("ok\n"));
-	if (res == 1) mmu_last_response = _millis();
+	if (res == 1) mmu_last_response.start();
 	return res;
 }
 
@@ -141,7 +141,7 @@ int8_t mmu_rx_ok(void)
 int8_t mmu_rx_start(void)
 {
 	int8_t res = uart2_rx_str_P(PSTR("start\n"));
-	if (res == 1) mmu_last_response = _millis();
+	if (res == 1) mmu_last_response.start();
 	return res;
 }
 
@@ -149,8 +149,8 @@ int8_t mmu_rx_start(void)
 void mmu_init(void)
 {
 #ifdef MMU_HWRESET
-	digitalWrite(MMU_RST_PIN, HIGH);
-	pinMode(MMU_RST_PIN, OUTPUT);              //setup reset pin
+	WRITE(MMU_RST_PIN, 1);
+	SET_OUTPUT(MMU_RST_PIN);                   //setup reset pin
 #endif //MMU_HWRESET
 	uart2_init();                              //init uart2
 	_delay_ms(10);                             //wait 10ms for sure
@@ -264,8 +264,8 @@ void mmu_loop(void)
 	case S::GetFindaInit:
 		if (mmu_rx_ok() > 0)
 		{
-			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
-			mmu_last_finda_response = _millis();
+			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer. MUST BE %hhu!!!
+			mmu_last_finda_response.start();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
@@ -350,7 +350,7 @@ void mmu_loop(void)
 				mmu_printf_P(PSTR("M%d\n"), SilentModeMenu_MMU);
 				mmu_state = S::SwitchMode;
 		}
-		else if ((mmu_last_response + 300) < _millis()) //request every 300ms
+		else if (mmu_last_response.expired(300)) //request every 300ms
 		{
 #ifndef IR_SENSOR
 			if(check_for_ir_sensor()) ir_sensor_detected = true;
@@ -377,8 +377,8 @@ void mmu_loop(void)
         }
 		if (mmu_rx_ok() > 0)
 		{
-			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
-			mmu_last_finda_response = _millis();
+			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer. MUST BE %hhu!!!
+			mmu_last_finda_response.start();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
@@ -398,7 +398,7 @@ void mmu_loop(void)
 			if (mmu_cmd == MmuCmd::None)
 				mmu_ready = true;
 		}
-		else if ((mmu_last_request + MMU_P0_TIMEOUT) < _millis())
+		else if (mmu_last_request.expired(MMU_P0_TIMEOUT))
 		{ //resend request after timeout (30s)
 			mmu_state = S::Idle;
 		}
@@ -424,7 +424,7 @@ void mmu_loop(void)
 			mmu_ready = true;
 			mmu_state = S::Idle;
 		}
-		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
+		else if (mmu_last_request.expired(MMU_CMD_TIMEOUT))
 		{ //resend request after timeout (5 min)
 			if (mmu_last_cmd != MmuCmd::None)
 			{
@@ -467,7 +467,7 @@ void mmu_loop(void)
 			mmu_ready = true;
 			mmu_state = S::Idle;
 		}
-		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
+		else if (mmu_last_request.expired(MMU_CMD_TIMEOUT))
 		{ //timeout 45 s
 			mmu_state = S::Idle;
 		}
@@ -479,7 +479,7 @@ void mmu_loop(void)
 			eeprom_update_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
 			mmu_state = S::Idle;
 		}
-		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
+		else if (mmu_last_request.expired(MMU_CMD_TIMEOUT))
 		{ //timeout 45 s
 			mmu_state = S::Idle;
 		}
@@ -490,9 +490,9 @@ void mmu_loop(void)
 void mmu_reset(void)
 {
 #ifdef MMU_HWRESET                             //HW - pulse reset pin
-	digitalWrite(MMU_RST_PIN, LOW);
+	WRITE(MMU_RST_PIN, 0);
 	_delay_us(100);
-	digitalWrite(MMU_RST_PIN, HIGH);
+	WRITE(MMU_RST_PIN, 1);
 #else                                          //SW - send X0 command
     mmu_puts_P(PSTR("X0\n"));
 #endif
@@ -728,9 +728,6 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  screen=0;
 			  }
 
-			  lcd_set_degree();
-
-
 			  //5 seconds delay
 			  for (uint8_t i = 0; i < 5; i++) {
 				  if (lcd_clicked()) {
@@ -927,8 +924,8 @@ void change_extr(int
 
 	mmu_extruder = extr;
 
-	pinMode(E_MUX0_PIN, OUTPUT);
-	pinMode(E_MUX1_PIN, OUTPUT);
+	SET_OUTPUT(E_MUX0_PIN);
+	SET_OUTPUT(E_MUX1_PIN);
 
 	switch (extr) {
 	case 1:
@@ -1366,7 +1363,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         lcd_return_to_status();
         lcd_update_enable(true);
         lcd_load_filament_color_check();
-        lcd_setstatuspgm(_T(WELCOME_MSG));
+        lcd_setstatuspgm(MSG_WELCOME);
         custom_message_type = CustomMsg::Status;
     }
     else

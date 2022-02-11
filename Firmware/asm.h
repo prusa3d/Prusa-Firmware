@@ -1,24 +1,21 @@
 #pragma once
 #include <stdint.h>
+#include "macros.h"
 
 #ifdef __AVR_ATmega2560__
 
 // return the current PC (on AVRs with 22bit PC)
-static inline void GETPC(uint32_t* v)
+FORCE_INLINE __uint24 GETPC(void)
 {
-  uint8_t a, b, c;
-  asm
-  (
+  __uint24 ret;
+  asm (
       "rcall .\n"
-      "pop %2\n"
-      "pop %1\n"
-      "pop %0\n"
-      : "=r" (a), "=r" (b), "=r" (c)
+      "pop %A0\n"
+      "pop %B0\n"
+      "pop %C0\n"
+      : "=&r" (ret)
   );
-  ((uint8_t*)v)[0] = a;
-  ((uint8_t*)v)[1] = b;
-  ((uint8_t*)v)[2] = c;
-  ((uint8_t*)v)[3] = 0;
+  return ret;
 }
 
 #endif

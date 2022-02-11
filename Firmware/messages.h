@@ -7,6 +7,8 @@
 extern "C" {
 #endif //defined(__cplusplus)
 
+#define WELCOME_MSG (CUSTOM_MENDEL_NAME " OK.")
+
 // LCD Menu Messages
 //internationalized messages
 extern const char MSG_AUTO_HOME[];
@@ -123,7 +125,7 @@ extern const char MSG_WIZARD_WELCOME[];
 extern const char MSG_WIZARD_WELCOME_SHIPPING[];
 extern const char MSG_YES[];
 extern const char MSG_V2_CALIBRATION[];
-extern const char WELCOME_MSG[];
+extern const char MSG_WELCOME[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
 extern const char MSG_NA[];
@@ -204,6 +206,7 @@ extern const char MSG_M112_KILL[];
 extern const char MSG_ADVANCE_K[];
 extern const char MSG_POWERPANIC_DETECTED[];
 extern const char MSG_LCD_STATUS_CHANGED[];
+extern const char MSG_UNKNOWN_CODE[];
 
 #if defined(__cplusplus)
 }

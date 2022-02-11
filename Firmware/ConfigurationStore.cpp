@@ -32,7 +32,7 @@ static bool EEPROM_writeData(uint8_t* pos, uint8_t* value, uint8_t size, const c
 #endif //DEBUG_EEPROM_WRITE
 {
 #ifdef DEBUG_EEPROM_WRITE
-	printf_P(PSTR("EEPROM_WRITE_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
+	printf_P(PSTR("EEPROM_WRITE_VAR addr=0x%04x size=0x%02x name=%s\n"), pos, size, name);
 #endif //DEBUG_EEPROM_WRITE
 	while (size--)
 	{
@@ -56,7 +56,7 @@ static void EEPROM_readData(uint8_t* pos, uint8_t* value, uint8_t size, const ch
 #endif //DEBUG_EEPROM_READ
 {
 #ifdef DEBUG_EEPROM_READ
-	printf_P(PSTR("EEPROM_READ_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
+	printf_P(PSTR("EEPROM_READ_VAR addr=0x%04x size=0x%02x name=%s\n"), pos, size, name);
 #endif //DEBUG_EEPROM_READ
     while(size--)
     {
@@ -260,10 +260,6 @@ bool Config_RetrieveSettings()
     {
 
         EEPROM_readData(reinterpret_cast<uint8_t*>(EEPROM_M500_base), reinterpret_cast<uint8_t*>(&cs), sizeof(cs), "cs");
-
-        
-		if (cs.max_jerk[X_AXIS] > DEFAULT_XJERK) cs.max_jerk[X_AXIS] = DEFAULT_XJERK;
-		if (cs.max_jerk[Y_AXIS] > DEFAULT_YJERK) cs.max_jerk[Y_AXIS] = DEFAULT_YJERK;
         calculate_extruder_multipliers();
 
 		//if max_feedrate_silent and max_acceleration_units_per_sq_second_silent were never stored to eeprom, use default values:

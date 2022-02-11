@@ -4,6 +4,7 @@
 #define MMU_H
 
 #include <inttypes.h>
+#include "Timer.h"
 
 
 extern bool mmu_enabled;
@@ -14,7 +15,7 @@ extern uint8_t mmu_extruder;
 extern uint8_t tmp_extruder;
 
 extern int8_t mmu_finda;
-extern uint32_t mmu_last_finda_response;
+extern ShortTimer mmu_last_finda_response;
 extern bool ir_sensor_detected;
 
 extern int16_t mmu_version;

@@ -100,6 +100,11 @@ if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_u
 
 	if (eeprom_read_dword((uint32_t*)EEPROM_JOB_ID) == EEPROM_EMPTY_VALUE32)
 		eeprom_update_dword((uint32_t*)EEPROM_JOB_ID, 0);
+
+    if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255) {
+        eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+        eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+    }
 }
 
 //! @brief Get default sheet name for index

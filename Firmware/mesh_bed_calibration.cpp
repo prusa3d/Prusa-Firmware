@@ -993,7 +993,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
         // we have to let the planner know where we are right now as it is not where we said to go.
         update_current_position_z();
 		//printf_P(PSTR("Zs: %f, Z: %f, delta Z: %f"), z_bckp, current_position[Z_AXIS], (z_bckp - current_position[Z_AXIS]));
-		if (abs(current_position[Z_AXIS] - z_bckp) < 0.025) {
+		if (fabs(current_position[Z_AXIS] - z_bckp) < 0.025) {
 			//printf_P(PSTR("PINDA triggered immediately, move Z higher and repeat measurement\n")); 
 			current_position[Z_AXIS] += 0.5;
 			go_to_current(homing_feedrate[Z_AXIS]/60);
@@ -1019,7 +1019,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
 //        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
 //        MYSERIAL.print(current_position[Z_AXIS], 5);
 //        SERIAL_ECHOLNPGM("");
-		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
+		float dz = i?fabs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
 		//printf_P(PSTR("Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
 		//printf_P(PSTR("Z- measurement deviation from avg value %f um\n"), dz);
@@ -2240,7 +2240,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
     /// Retry point scanning if a point with bad data appears.
     /// Bad data could be cause by "cold" sensor.
     /// This behavior vanishes after few point scans so retry will help.
-    for (int retries = 0; retries <= 1; ++retries) {
+    for (uint8_t retries = 0; retries <= 1; ++retries) {
         bool retry = false;
         for (int k = 0; k < 4; ++k) {
             // Don't let the manage_inactivity() function remove power from the motors.
@@ -2852,7 +2852,7 @@ bool sample_mesh_and_store_reference()
         current_position[Y_AXIS] = BED_Y0;
         world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
         go_to_current(homing_feedrate[X_AXIS]/60);
-        memcpy(destination, current_position, sizeof(destination));
+        set_destination_to_current();
         enable_endstops(true);
         homeaxis(Z_AXIS);
 
@@ -2872,14 +2872,15 @@ bool sample_mesh_and_store_reference()
 		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
     }
-    for (int8_t mesh_point = 1; mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS; ++ mesh_point) {
+    static_assert(MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS <= 255, "overflow.....");
+    for (uint8_t mesh_point = 1; mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS; ++ mesh_point) {
         // Don't let the manage_inactivity() function remove power from the motors.
         refresh_cmd_timeout();
         // Print the decrasing ID of the measurement point.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         go_to_current(homing_feedrate[Z_AXIS]/60);
-		int8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
-		int8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
+		uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
+		uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 		if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix; // Zig zag
 		current_position[X_AXIS] = BED_X(ix, MESH_MEAS_NUM_X_POINTS);
 		current_position[Y_AXIS] = BED_Y(iy, MESH_MEAS_NUM_Y_POINTS);

@@ -30,7 +30,7 @@ uint8_t selectedSerialPort = 0;
 // this is so I can support Attiny series and any other chip without a UART
 #if defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H) || defined(UBRR2H) || defined(UBRR3H)
 
-#if UART_PRESENT(SERIAL_PORT)
+#ifdef HAS_UART
   ring_buffer rx_buffer  =  { { 0 }, 0, 0 };
 #endif
 

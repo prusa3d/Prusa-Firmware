@@ -1,10 +1,8 @@
 //messages.c
 #include "language.h"
+#include "lcd.h" // Needed for LCD_STR_REFRESH
 
 //this is because we need include Configuration_prusa.h (CUSTOM_MENDEL_NAME)
-#define bool char
-#define true 1
-#define false 0
 #include "Configuration_prusa.h"
 
 //internationalized messages
@@ -80,7 +78,7 @@ const char MSG_PRESS_TO_UNLOAD[] PROGMEM_I1 = ISTR("Please press the knob to unl
 const char MSG_PRINT_ABORTED[] PROGMEM_I1 = ISTR("Print aborted"); ////c=20
 const char MSG_PULL_OUT_FILAMENT[] PROGMEM_I1 = ISTR("Please pull out filament immediately"); ////c=20 r=4
 const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover print?"); ////c=20 r=2
-const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\x04Refresh"); ////c=18
+const char MSG_REFRESH[] PROGMEM_I1 = ISTR(LCD_STR_REFRESH "Refresh"); ////c=18
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
 const char MSG_RESET[] PROGMEM_I1 = ISTR("Reset"); ////c=14
 const char MSG_RESUME_PRINT[] PROGMEM_I1 = ISTR("Resume print"); ////c=18
@@ -170,7 +168,7 @@ const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = ISTR("SpoolJoin"); ////c=13
 const char MSG_FIRMWARE[] PROGMEM_N1 = ISTR("Firmware"); ////c=8
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = ISTR("FlashAir"); ////c=8
 const char MSG_PINDA[] PROGMEM_N1 = ISTR("PINDA");////c=5
-const char WELCOME_MSG[] PROGMEM_N1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
+const char MSG_WELCOME[] PROGMEM_N1 = WELCOME_MSG; ////c=20
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////
 const char MSG_EXTERNAL_RESET[] PROGMEM_N1 = " External Reset"; ////
@@ -204,3 +202,4 @@ const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
 const char MSG_ADVANCE_K[] PROGMEM_N1 = "Advance K:"; ////c=13
 const char MSG_POWERPANIC_DETECTED[] PROGMEM_N1 = "POWER PANIC DETECTED"; ////c=20
 const char MSG_LCD_STATUS_CHANGED[] PROGMEM_N1 = "LCD status changed";
+const char MSG_UNKNOWN_CODE[] PROGMEM_N1 = "Unknown %c code: %s\n";

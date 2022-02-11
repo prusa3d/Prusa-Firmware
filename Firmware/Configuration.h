@@ -18,10 +18,16 @@ extern PGM_P sPrinterName;
 // Firmware version
 #define FW_MAJOR 3
 #define FW_MINOR 10
-#define FW_REVISION 0
-#define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION)
+#define FW_REVISION 1
+//#define FW_FLAVOR RC      //uncomment if DEBUG, DEVEL, APLHA, BETA or RC
+//#define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed.
+#ifndef FW_FLAVOR
+    #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION)
+#else
+    #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION) "-" STR(FW_FLAVOR) "" STR(FW_FLAVERSION)
+#endif
 
-#define FW_COMMIT_NR 4481
+#define FW_COMMIT_NR 4697
 
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
@@ -482,11 +488,6 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 // Increase the FAN pwm frequency. Removes the PWM noise but increases heating in the FET/Arduino
 //#define FAST_PWM_FAN
-
-// Temperature status LEDs that display the hotend and bet temperature.
-// If all hotends and bed temperature and temperature setpoint are < 54C then the BLUE led is on.
-// Otherwise the RED led is on. There is 1C hysteresis.
-//#define TEMP_STAT_LEDS
 
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not ass annoying as with the hardware PWM. On the other hand, if this frequency
