@@ -64,15 +64,15 @@
 
 #MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
-"Autozav. filam."
+"Autozav. filamentu"
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Autom. zavedenie filam. je mozne len pri zapnutom filam. senzore..."
+"Autom. zavedenie filamentu je mozne len pri zapnutom filam. senzore..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Autom. zavedenie filam. aktivne, stlacte tlacidlo a vlozte filament..."
+"Autom. zavedenie filamentu aktivne, stlacte tlacidlo a vlozte filament..."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
@@ -944,11 +944,11 @@
 
 #MSG_SELFTEST_START c=20
 "Self test start"
-"Self test start"
+"\x00"
 
 #MSG_SELFTEST c=18
 "Selftest"
-"Selftest"
+"\x00"
 
 #MSG_SELFTEST_ERROR c=20
 "Selftest error!"
