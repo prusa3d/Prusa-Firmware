@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.2 Build 27
+# Version 1.0.2 Build 28
 #
 # lang-build.sh - multi-language support script
 #  generate lang_xx.bin (language binary file)
@@ -57,6 +57,7 @@
 # 25 Jan. 2022, 3d-gussner, Fix check
 #                           Update documentation
 # 10 Feb. 2022, 3d-gussner, Use SRCDIR for compatibility with build server
+# 11 Feb. 2022, 3d-gussner, Change to python3
 #############################################################################
 #
 # Config:
@@ -162,7 +163,7 @@ generate_binary()
  rm -f lang_$1.dat
  LNG=$1
  #check lang dictionary
- ./lang-check.py $1 #--no-warning
+ python3 lang-check.py $1 #--no-warning
  #create lang_xx.tmp - different processing for 'en' language
  if [[ "$1" = "en" || ! -f "lang_en.max" ]]; then
   #remove comments and empty lines

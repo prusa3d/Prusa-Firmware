@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 24
+# Version 1.0.1 Build 25
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
@@ -34,6 +34,7 @@
 #                           translations
 #                           new argruments `--information` `--import-check`
 # 11 Jan. 2022, ingbrzy,    Add Slovak letters
+# 11 Feb. 2022, 3d-gussner, Change to python3
 #############################################################################
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
@@ -467,8 +468,8 @@ sed -i 's/""/"\\x00"/g' lang_en_$LNG.txt
 #remove CR
 sed -i "s/\r//g" lang_en_$LNG.txt
 #check new lang
-./../../lang-check.py $LNG --warn-empty
-./../../lang-check.py $LNG --information >$LNG-output.txt
+python3 ../../lang-check.py $LNG --warn-empty
+python3 ../../lang-check.py $LNG --information >$LNG-output.txt
 echo >&2
 echo "$(tput setaf 2)lang-import.sh finished$(tput sgr 0)">&2
 
