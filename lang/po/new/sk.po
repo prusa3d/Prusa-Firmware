@@ -2,18 +2,18 @@
 #
 msgid ""
 msgstr ""
-"MIME-Version: 1.0 "
-"Content-Type: text/plain; charset=UTF-8 "
-"Content-Transfer-Encoding: 8bit "
-"Language: sk "
-"Project-Id-Version: Prusa-Firmware "
-"POT-Creation-Date: St 10. februar 2022, 21:16:34 CET "
-"PO-Revision-Date: St 10. februar 2022, 21:16:34 CET "
-"Language-Team: "
-"X-Generator: Poedit 2.0.7 "
-"X-Poedit-SourceCharset: UTF-8 "
-"Last-Translator: "
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2; "
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sk\n"
+"Project-Id-Version: Prusa-Firmware\n"
+"POT-Creation-Date: So 12. februar 2022, 05:31:02 CET\n"
+"PO-Revision-Date: So 12. februar 2022, 05:31:02 CET\n"
+"Language-Team:\n"
+"X-Generator: Poedit 2.0.7\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:164
@@ -98,17 +98,17 @@ msgstr ""
 # MSG_AUTOLOAD_FILAMENT c=18
 #: ultralcd.cpp:6653
 msgid "AutoLoad filament"
-msgstr "Autozav. filam."
+msgstr "Autozav. filamentu"
 
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4317
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Autom. zavedenie filam. je mozne len pri zapnutom filam. senzore..."
+msgstr "Autom. zavedenie filamentu je mozne len pri zapnutom filam. senzore..."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2648
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Autom. zavedenie filam. aktivne, stlacte tlacidlo a vlozte filament..."
+msgstr "Autom. zavedenie filamentu aktivne, stlacte tlacidlo a vlozte filament..."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8094
@@ -1198,12 +1198,12 @@ msgstr ""
 # MSG_SELFTEST_START c=20
 #: ultralcd.cpp:7368
 msgid "Self test start"
-msgstr "Self test start"
+msgstr ""
 
 # MSG_SELFTEST c=18
 #: ultralcd.cpp:5780
 msgid "Selftest"
-msgstr "Selftest"
+msgstr ""
 
 # MSG_SELFTEST_ERROR c=20
 #: ultralcd.cpp:8042
@@ -1764,4 +1764,9 @@ msgstr "Korekcia Z:"
 #: messages.c:149
 msgid "Z-probe nr."
 msgstr "Pocet merani Z"
+
+# MSG_PRINTER_IP c=18
+#: ultralcd.cpp:2028
+msgid "Printer IP Addr:"
+msgstr "IP adr. tlaciarne:"
 
