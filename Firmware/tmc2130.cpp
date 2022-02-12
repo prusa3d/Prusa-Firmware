@@ -66,11 +66,6 @@ tmc2130_chopper_config_t tmc2130_chopper_config[4] = {
 bool tmc2130_sg_stop_on_crash = true;
 uint8_t tmc2130_sg_diag_mask = 0x00;
 uint8_t tmc2130_sg_crash = 0;
-uint16_t tmc2130_sg_err[4] = {0, 0, 0, 0};
-uint16_t tmc2130_sg_cnt[4] = {0, 0, 0, 0};
-#ifdef DEBUG_CRASHDET_COUNTERS
-bool tmc2130_sg_change = false;
-#endif
 
 //used for triggering a periodic check (1s) of the overtemperature pre-warning flag at ~120C (+-20C)
 ShortTimer tmc2130_overtemp_timer;
@@ -165,7 +160,7 @@ void tmc2130_init(TMCInitParams params)
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
-		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
+		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
 		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -179,7 +174,7 @@ void tmc2130_init(TMCInitParams params)
 #ifndef TMC2130_STEALTH_Z
 		tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
 #else //TMC2130_STEALTH_Z
-		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
+		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
 		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -210,15 +205,6 @@ void tmc2130_init(TMCInitParams params)
 #endif //TMC2130_STEALTH_E
 	}
 
-	tmc2130_sg_err[0] = 0;
-	tmc2130_sg_err[1] = 0;
-	tmc2130_sg_err[2] = 0;
-	tmc2130_sg_err[3] = 0;
-	tmc2130_sg_cnt[0] = 0;
-	tmc2130_sg_cnt[1] = 0;
-	tmc2130_sg_cnt[2] = 0;
-	tmc2130_sg_cnt[3] = 0;
-
 #ifdef TMC2130_LINEARITY_CORRECTION
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
 	tmc2130_set_wave(X_AXIS, 247, tmc2130_wave_fac[X_AXIS]);
@@ -247,39 +233,13 @@ uint8_t tmc2130_sample_diag()
 
 void tmc2130_st_isr()
 {
-	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false) return;
-	uint8_t crash = 0;
-	uint8_t diag_mask = tmc2130_sample_diag();
-//	for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++)
-	for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++)
-	{
-		uint8_t mask = (X_AXIS_MASK << axis);
-		if (diag_mask & mask) tmc2130_sg_err[axis]++;
-		else
-			if (tmc2130_sg_err[axis] > 0) tmc2130_sg_err[axis]--;
-		if (tmc2130_sg_cnt[axis] < tmc2130_sg_err[axis])
-		{
-			tmc2130_sg_cnt[axis] = tmc2130_sg_err[axis];
-#ifdef DEBUG_CRASHDET_COUNTERS
-			tmc2130_sg_change = true;
-#endif
-			uint8_t sg_thr = 64;
-//			if (axis == Y_AXIS) sg_thr = 64;
-			if (tmc2130_sg_err[axis] >= sg_thr)
-			{
-				tmc2130_sg_err[axis] = 0;
-				crash |= mask;
-			}
-		}
-	}
-	if (tmc2130_sg_homing_axes_mask == 0)
-	{
-		if (tmc2130_sg_stop_on_crash && crash)
-		{
-			tmc2130_sg_crash = crash;
-			tmc2130_sg_stop_on_crash = false;
-			crashdet_stop_and_save_print();
-		}
+	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false || tmc2130_sg_homing_axes_mask != 0)
+		return;
+	uint8_t mask = tmc2130_sample_diag();
+	if (tmc2130_sg_stop_on_crash && mask) {
+		tmc2130_sg_crash = mask;
+		tmc2130_sg_stop_on_crash = false;
+		crashdet_stop_and_save_print();
 	}
 }
 
@@ -312,7 +272,6 @@ void tmc2130_home_enter(uint8_t axes_mask)
 			//Configuration to spreadCycle
 			tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
 			tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr_home[axis]) << 16));
-//			tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 			tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
 			tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r_home[axis]);
 			if (mask & (X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK))
@@ -349,8 +308,7 @@ void tmc2130_home_exit()
 				{
 //					tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
 					tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
-//					tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
-					tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
+					tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 					tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
 					tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
 				}
@@ -413,22 +371,7 @@ void tmc2130_check_overtemp()
 
 		}
 		tmc2130_overtemp_timer.start();
-#ifdef DEBUG_CRASHDET_COUNTERS
-		tmc2130_sg_change = true;
-#endif
 	}
-#ifdef DEBUG_CRASHDET_COUNTERS
-	if (tmc2130_sg_change)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			tmc2130_sg_change = false;
-			lcd_set_cursor(0 + i*4, 3);
-			lcd_print(itostr3(tmc2130_sg_cnt[i]));
-			lcd_print(' ');
-		}
-	}
-#endif //DEBUG_CRASHDET_COUNTERS
 }
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
