@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sk\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Št 10. február 2022, 21:16:34 CET\n"
-"PO-Revision-Date: Št 10. február 2022, 21:16:34 CET\n"
+"POT-Creation-Date: So 12. február 2022, 05:31:02 CET\n"
+"PO-Revision-Date: So 12. február 2022, 05:31:02 CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -98,17 +98,17 @@ msgstr ""
 # MSG_AUTOLOAD_FILAMENT c=18
 #: ultralcd.cpp:6653
 msgid "AutoLoad filament"
-msgstr "Autozav. filam."
+msgstr "Autozav. filamentu"
 
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4317
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Autom. zavedenie filam. je mozne len pri zapnutom filam. senzore..."
+msgstr "Autom. zavedenie filamentu je mozne len pri zapnutom filam. senzore..."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2648
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Autom. zavedenie filam. aktivne, stlacte tlacidlo a vlozte filament..."
+msgstr "Autom. zavedenie filamentu aktivne, stlacte tlacidlo a vlozte filament..."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8094
@@ -497,8 +497,8 @@ msgstr "Predny tlacovy vent?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
-msgid "Front side[\xe4m]"
-msgstr "Vpredu [\xe4m]"
+msgid "Front side[μm]"
+msgstr "Vpredu [μm]"
 
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
@@ -657,8 +657,8 @@ msgstr "Vlavo"
 
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
-msgid "Left side [\xe4m]"
-msgstr "Vlavo [\xe4m]"
+msgid "Left side [μm]"
+msgstr "Vlavo [μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -1112,8 +1112,8 @@ msgstr "Prosim najskor zavedte filament"
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
-msgid "Rear side [\xe4m]"
-msgstr "Vzadu [\xe4m]"
+msgid "Rear side [μm]"
+msgstr "Vzadu [μm]"
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ultralcd.cpp:7325
@@ -1157,8 +1157,8 @@ msgstr "Obnovenie tlace"
 
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
-msgid "Right side[\xe4m]"
-msgstr "Vpravo [\xe4m]"
+msgid "Right side[μm]"
+msgstr "Vpravo [μm]"
 
 # MSG_RPI_PORT c=13
 #: messages.c:142
@@ -1198,12 +1198,12 @@ msgstr ""
 # MSG_SELFTEST_START c=20
 #: ultralcd.cpp:7368
 msgid "Self test start"
-msgstr "Self test start"
+msgstr ""
 
 # MSG_SELFTEST c=18
 #: ultralcd.cpp:5780
 msgid "Selftest"
-msgstr "Selftest"
+msgstr ""
 
 # MSG_SELFTEST_ERROR c=20
 #: ultralcd.cpp:8042
@@ -1764,4 +1764,9 @@ msgstr "Korekcia Z:"
 #: messages.c:149
 msgid "Z-probe nr."
 msgstr "Pocet merani Z"
+
+# MSG_PRINTER_IP c=18
+#: ultralcd.cpp:2028
+msgid "Printer IP Addr:"
+msgstr "IP adr. tlaciarne:"
 
