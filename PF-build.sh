@@ -165,6 +165,7 @@
 # 23 Jun 2021, 3d-gussner, Improve MK404 usage
 # 24 Jun 2021, 3d-gussner, Fix MK404 user interaction not to show if compiling 'All' variants
 # 24 Jun 2021, 3d-gussner, MK404 is only supported on Linux at this moment.
+# 12 Feb 2022, leptun    , Switch to Arduino 1.8.19
 
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -247,7 +248,7 @@ echo "  -b : '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "  -c : '$(tput setaf 2)0$(tput sgr0)' clean up, '$(tput setaf 2)1$(tput sgr0)' keep"
 echo "  -d : '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
 echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
-echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
+echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.19$(tput sgr0)'"
 echo "  -j : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
 echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
@@ -343,13 +344,13 @@ fi
 
 #Start: Check if Arduino IDE version is correct
 if [ ! -z "$IDE_flag" ]; then
-    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" ]]; then
+    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.19" ]]; then
         ARDUINO_ENV="${IDE_flag}"
     else
-        ARDUINO_ENV="1.8.5"
+        ARDUINO_ENV="1.8.19"
     fi
 else
-    ARDUINO_ENV="1.8.5"
+    ARDUINO_ENV="1.8.19"
 fi
 #End: Check if Arduino IDE version is correct
 
@@ -535,7 +536,7 @@ set_build_env_variables()
 BUILD_ENV="1.0.6"
 BOARD="prusa_einsy_rambo"
 BOARD_PACKAGE_NAME="PrusaResearch"
-if [ "$ARDUINO_ENV" == "1.8.13" ]; then
+if [ "$IDE_flag" == "1.8.19" ]; then
     BOARD_VERSION="1.0.4"
 else
     BOARD_VERSION="1.0.4"
@@ -762,7 +763,7 @@ fi
 }
 # End: Download and extract Prusa Firmware related parts
 
-# Start: Check if User updated Arduino IDE 1.8.5 boardsmanager and tools
+# Start: Check if User updated Arduino IDE 1.8.19 boardsmanager and tools
 check_ArduinoIDE_User_interaction()
 {
 if [ -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools" ]; then
@@ -796,7 +797,7 @@ if [ -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Proc
     failures 4
 fi
 }
-# End: Check if User updated Arduino IDE 1.8.5 boardsmanager and tools
+# End: Check if User updated Arduino IDE 1.8.19 boardsmanager and tools
 #
 #### End: prepare bash / Linux environment
 #### End prepare building
