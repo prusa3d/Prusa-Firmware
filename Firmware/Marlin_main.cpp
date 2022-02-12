@@ -1572,9 +1572,7 @@ void setup()
 #ifdef PAT9125
 	fsensor_setup_interrupt();
 #endif //PAT9125
-	for (uint8_t i = 0; i < 4; i++) {
-		bowden_length[i] = eeprom_read_word((uint16_t*) EEPROM_BOWDEN_LENGTH + i);
-	} 
+	eeprom_update_block(bowden_length, (uint16_t*)EEPROM_BOWDEN_LENGTH, sizeof(bowden_length));
 
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
