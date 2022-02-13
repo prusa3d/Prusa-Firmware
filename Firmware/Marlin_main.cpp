@@ -297,7 +297,6 @@ const char G28W0[] PROGMEM = "G28 W0";
 
 bool no_response = false;
 uint8_t important_status;
-uint8_t saved_filament_type;
 
 // Define some coordinates outside the clamp limits (making them invalid past the parsing stage) so
 // that they can be used later for various logical checks

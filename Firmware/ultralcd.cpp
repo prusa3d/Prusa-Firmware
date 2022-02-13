@@ -7895,7 +7895,7 @@ void lcd_printer_connected() {
 static void lcd_send_status() {
 	if (farm_mode && no_response && (NcTime.expired(NC_TIME * 1000))) {
 		//send important status messages periodicaly
-		prusa_statistics(important_status, saved_filament_type);
+		prusa_statistics(important_status);
 		NcTime.start();
 #ifdef FARM_CONNECT_MESSAGE
 		lcd_connect_printer();
@@ -7919,7 +7919,7 @@ static void lcd_connect_printer() {
 		delay_keep_alive(100);
 		proc_commands();
 		if (t == 10) {
-			prusa_statistics(important_status, saved_filament_type);
+			prusa_statistics(important_status);
 			t = 0;
 		}
 		if (READ(BTN_ENC)) { //if button is not pressed

@@ -340,7 +340,6 @@ extern uint8_t status_number;
 extern unsigned long PingTime;
 extern bool no_response;
 extern uint8_t important_status;
-extern uint8_t saved_filament_type;
 
 extern bool fan_state[2];
 extern int fan_edge_counter[2];
