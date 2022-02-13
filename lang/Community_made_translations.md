@@ -28,6 +28,13 @@
   - [X] **Active**      since January 2022
   - [X] **Maintained**  since January 2022
 
+- **Slovak / Slovencina**
+  - Maintainers: **@ingbrzy**
+  - Co-maintainers: **@shatter136**
+  - Contributors:
+  - [ ] **Active**      since February 2022
+  - [X] **Maintained**  since June 2021
+
 - **Swedish / Svenska**
   - Maintainers: **@Painkiller56**
   - Co-maintainers:
