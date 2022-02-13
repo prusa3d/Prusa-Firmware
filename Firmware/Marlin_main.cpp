@@ -6911,8 +6911,6 @@ Sigma_Exit:
           #endif
         }
       }
-	  //in the end of print set estimated time to end of print and extruders used during print to default values for next print
-	  print_time_remaining_init();
 	  snmm_filaments_used = 0;
       break;
 
@@ -10188,6 +10186,9 @@ void finishAndDisableSteppers()
   // state for the next print.
   la10c_reset();
 #endif
+
+  //in the end of print set estimated time to end of print and extruders used during print to default values for next print
+  print_time_remaining_init();
 }
 
 #ifdef FAST_PWM_FAN
