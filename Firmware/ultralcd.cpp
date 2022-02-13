@@ -90,7 +90,7 @@ static uint16_t pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
 static bool lcd_autoDeplete;
-
+static uint8_t heating_status_counter;
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
 

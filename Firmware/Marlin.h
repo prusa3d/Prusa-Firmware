@@ -337,7 +337,6 @@ extern bool loading_flag;
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
 extern uint8_t status_number;
-extern uint8_t heating_status_counter;
 extern unsigned long PingTime;
 extern bool no_response;
 extern uint8_t important_status;
