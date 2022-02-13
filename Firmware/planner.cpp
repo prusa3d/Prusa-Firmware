@@ -95,8 +95,6 @@ static float previous_speed[NUM_AXIS]; // Speed of previous path line segment
 static float previous_nominal_speed; // Nominal speed of previous path line segment
 static float previous_safe_speed; // Exit speed limited by a jerk to full halt of a previous last segment.
 
-uint8_t maxlimit_status;
-
 #ifdef AUTOTEMP
 float autotemp_max=250;
 float autotemp_min=210;
