@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sk\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: So 12. február 2022, 05:31:02 CET\n"
-"PO-Revision-Date: So 12. február 2022, 05:31:02 CET\n"
+"POT-Creation-Date: Ne 13. február 2022, 07:42:43 CET\n"
+"PO-Revision-Date: Ne 13. február 2022, 07:42:43 CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -88,7 +88,7 @@ msgstr "a stlacte tlacidlo"
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3355
 msgid "Are left and right Z~carriages all up?"
-msgstr "Dosli oba Z voziky k~hornemu dorazu?"
+msgstr "Dosli oba Z voziky k hornemu dorazu?"
 
 # MSG_AUTO_HOME c=18
 #: messages.c:11
@@ -173,7 +173,7 @@ msgstr "Stav remena"
 # MSG_RECOVER_PRINT c=20 r=2
 #: messages.c:82
 msgid "Blackout occurred. Recover print?"
-msgstr "Detekovany vypadok prudu.Obnovit tlac?"
+msgstr "Nastal vypadok prudu. Obnovit tlac?"
 
 # MSG_CALIBRATING_HOME c=20
 #: ultralcd.cpp:8413
@@ -213,7 +213,7 @@ msgstr "Kalibrujem Z"
 # MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 #: ultralcd.cpp:3318
 msgid "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-msgstr "Kalibracia Z. Otacanim tlacidla posunte Z os az k~hornemu dorazu. Potvrdte tlacidlom."
+msgstr "Kalibracia Z. Otacanim tlacidla posunte Z os az k hornemu dorazu. Potvrdte tlacidlom."
 
 # MSG_HOMEYZ_DONE c=20
 #: ultralcd.cpp:656
@@ -238,7 +238,7 @@ msgstr "Kontrolujem subor"
 # MSG_NOT_COLOR c=19
 #: ultralcd.cpp:2565
 msgid "Color not correct"
-msgstr "Farba nie je cista"
+msgstr "Nespravna farba"
 
 # MSG_COOLDOWN c=18
 #: messages.c:27
@@ -253,7 +253,7 @@ msgstr "Kopirovat vybrany jazyk?"
 # MSG_CRASHDETECT c=13
 #: messages.c:30
 msgid "Crash det."
-msgstr ""
+msgstr "Det. narazu"
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4842
@@ -263,12 +263,12 @@ msgstr "Zvolte filament pre kalibraciu prvej vrstvy z nasledujuceho menu"
 # MSG_CRASH_DETECTED c=20
 #: messages.c:29
 msgid "Crash detected."
-msgstr "Detekovany naraz."
+msgstr "Zisteny naraz."
 
 # MSG_CRASH_RESUME c=20 r=3
 #: Marlin_main.cpp:651
 msgid "Crash detected. Resume print?"
-msgstr "Detekovany naraz. Obnovit tlac?"
+msgstr "Zisteny naraz. Obnovit tlac?"
 
 # MSG_CRASH c=7
 #: messages.c:28
@@ -778,7 +778,7 @@ msgstr "Mod"
 # MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 #: Marlin_main.cpp:882
 msgid "MK3 firmware detected on MK3S printer"
-msgstr "MK3 firmware detekovany na MK3S tlaciarni"
+msgstr "MK3 firmware na MK3S tlaciarni"
 
 # MSG_NORMAL c=7
 #: messages.c:107
@@ -1648,7 +1648,7 @@ msgstr ""
 # MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
 #: Marlin_main.cpp:875
 msgid "MK3S firmware detected on MK3 printer"
-msgstr "MK3S firmware detekovany na tlaciarni MK3"
+msgstr "MK3S firmware na MK3 tlaciarni"
 
 # MSG_MMU_MODE c=8
 #: messages.c:137
@@ -1678,7 +1678,7 @@ msgstr "G-code pripraveny pre inu uroven. Pokracovat?"
 # MSG_GCODE_DIFF_CANCELLED c=20 r=7
 #: util.cpp:420
 msgid "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
-msgstr "G-code pripraveny pre inu uroven. Vygenerujte G-code znova. Tlac zrusena."
+msgstr "G-code pripraveny pre inu verziu. Vygenerujte G-code znova. Tlac zrusena."
 
 # MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 #: messages.c:134
@@ -1723,7 +1723,7 @@ msgstr "Priemer trysky tlaciarne sa lisi od G-code. Prosim skontrolujte nastaven
 # MSG_SELFTEST_FS_LEVEL c=20
 #: ultralcd.cpp:8116
 msgid "%s level expected"
-msgstr "Ocakavany level %s"
+msgstr "Ocakavana verzia %s"
 
 # MSG_RENAME c=18
 #: ultralcd.cpp:6500

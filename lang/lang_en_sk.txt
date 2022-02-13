@@ -56,7 +56,7 @@
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
-"Dosli oba Z voziky k~hornemu dorazu?"
+"Dosli oba Z voziky k hornemu dorazu?"
 
 #MSG_AUTO_HOME c=18
 "Auto home"
@@ -124,7 +124,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"Detekovany vypadok prudu.Obnovit tlac?"
+"Nastal vypadok prudu. Obnovit tlac?"
 
 #MSG_CALIBRATING_HOME c=20
 "Calibrating home"
@@ -156,7 +156,7 @@
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-"Kalibracia Z. Otacanim tlacidla posunte Z os az k~hornemu dorazu. Potvrdte tlacidlom."
+"Kalibracia Z. Otacanim tlacidla posunte Z os az k hornemu dorazu. Potvrdte tlacidlom."
 
 #MSG_HOMEYZ_DONE c=20
 "Calibration done"
@@ -176,7 +176,7 @@
 
 #MSG_NOT_COLOR c=19
 "Color not correct"
-"Farba nie je cista"
+"Nespravna farba"
 
 #MSG_COOLDOWN c=18
 "Cooldown"
@@ -188,7 +188,7 @@
 
 #MSG_CRASHDETECT c=13
 "Crash det."
-"\x00"
+"Det. narazu"
 
 #MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
@@ -196,11 +196,11 @@
 
 #MSG_CRASH_DETECTED c=20
 "Crash detected."
-"Detekovany naraz."
+"Zisteny naraz."
 
 #MSG_CRASH_RESUME c=20 r=3
 "Crash detected. Resume print?"
-"Detekovany naraz. Obnovit tlac?"
+"Zisteny naraz. Obnovit tlac?"
 
 #MSG_CRASH c=7
 "Crash"
@@ -608,7 +608,7 @@
 
 #MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 "MK3 firmware detected on MK3S printer"
-"MK3 firmware detekovany na MK3S tlaciarni"
+"MK3 firmware na MK3S tlaciarni"
 
 #MSG_NORMAL c=7
 "Normal"
@@ -1304,7 +1304,7 @@
 
 #MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
 "MK3S firmware detected on MK3 printer"
-"MK3S firmware detekovany na tlaciarni MK3"
+"MK3S firmware na MK3 tlaciarni"
 
 #MSG_MMU_MODE c=8
 "MMU Mode"
@@ -1328,7 +1328,7 @@
 
 #MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
-"G-code pripraveny pre inu uroven. Vygenerujte G-code znova. Tlac zrusena."
+"G-code pripraveny pre inu verziu. Vygenerujte G-code znova. Tlac zrusena."
 
 #MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
@@ -1364,7 +1364,7 @@
 
 #MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"Ocakavany level %s"
+"Ocakavana verzia %s"
 
 #MSG_RENAME c=18
 "Rename"
