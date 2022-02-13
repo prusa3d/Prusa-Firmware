@@ -8594,12 +8594,12 @@ Sigma_Exit:
     - `Z` - Z stepper driver holding current value
     - `E` - Extruder stepper driver holding current value
     */
-	case 911: 
+    case 911:
     {
-		if (code_seen('X')) tmc2130_set_current_h(0, code_value());
-		if (code_seen('Y')) tmc2130_set_current_h(1, code_value());
-        if (code_seen('Z')) tmc2130_set_current_h(2, code_value());
-        if (code_seen('E')) tmc2130_set_current_h(3, code_value());
+        if (code_seen('X')) tmc2130_set_current_h(X_AXIS, code_value_uint8());
+        if (code_seen('Y')) tmc2130_set_current_h(Y_AXIS, code_value_uint8());
+        if (code_seen('Z')) tmc2130_set_current_h(Z_AXIS, code_value_uint8());
+        if (code_seen('E')) tmc2130_set_current_h(E_AXIS, code_value_uint8());
     }
     break;
 
@@ -8616,12 +8616,12 @@ Sigma_Exit:
     - `Z` - Z stepper driver running current value
     - `E` - Extruder stepper driver running current value
     */
-	case 912: 
+    case 912:
     {
-		if (code_seen('X')) tmc2130_set_current_r(0, code_value());
-		if (code_seen('Y')) tmc2130_set_current_r(1, code_value());
-        if (code_seen('Z')) tmc2130_set_current_r(2, code_value());
-        if (code_seen('E')) tmc2130_set_current_r(3, code_value());
+        if (code_seen('X')) tmc2130_set_current_r(X_AXIS, code_value_uint8());
+        if (code_seen('Y')) tmc2130_set_current_r(Y_AXIS, code_value_uint8());
+        if (code_seen('Z')) tmc2130_set_current_r(Z_AXIS, code_value_uint8());
+        if (code_seen('E')) tmc2130_set_current_r(E_AXIS, code_value_uint8());
     }
     break;
 
@@ -8673,14 +8673,14 @@ Sigma_Exit:
     - `Z` - Z stepper driver stallguard sensitivity threshold value
     - `E` - Extruder stepper driver stallguard sensitivity threshold value
     */
-	case 916:
+    case 916:
     {
-		if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value();
-		if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value();
-		if (code_seen('Z')) tmc2130_sg_thr[Z_AXIS] = code_value();
-		if (code_seen('E')) tmc2130_sg_thr[E_AXIS] = code_value();
-		for (uint8_t a = X_AXIS; a <= E_AXIS; a++)
-			printf_P(_N("tmc2130_sg_thr[%c]=%d\n"), "XYZE"[a], tmc2130_sg_thr[a]);
+        if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value_uint8();
+        if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value_uint8();
+        if (code_seen('Z')) tmc2130_sg_thr[Z_AXIS] = code_value_uint8();
+        if (code_seen('E')) tmc2130_sg_thr[E_AXIS] = code_value_uint8();
+        for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++)
+            printf_P(_N("tmc2130_sg_thr[%c]=%d\n"), "XYZE"[axis], tmc2130_sg_thr[axis]);
     }
     break;
 
@@ -8697,12 +8697,12 @@ Sigma_Exit:
     - `Z` - Z stepper driver PWM amplitude offset value
     - `E` - Extruder stepper driver PWM amplitude offset value
     */
-	case 917:
+    case 917:
     {
-		if (code_seen('X')) tmc2130_set_pwm_ampl(0, code_value());
-		if (code_seen('Y')) tmc2130_set_pwm_ampl(1, code_value());
-        if (code_seen('Z')) tmc2130_set_pwm_ampl(2, code_value());
-        if (code_seen('E')) tmc2130_set_pwm_ampl(3, code_value());
+        if (code_seen('X')) tmc2130_set_pwm_ampl(X_AXIS, code_value_uint8());
+        if (code_seen('Y')) tmc2130_set_pwm_ampl(Y_AXIS, code_value_uint8());
+        if (code_seen('Z')) tmc2130_set_pwm_ampl(Z_AXIS, code_value_uint8());
+        if (code_seen('E')) tmc2130_set_pwm_ampl(E_AXIS, code_value_uint8());
     }
     break;
 
@@ -8719,12 +8719,12 @@ Sigma_Exit:
     - `Z` - Z stepper driver PWM amplitude gradient value
     - `E` - Extruder stepper driver PWM amplitude gradient value
     */
-	case 918:
+    case 918:
     {
-		if (code_seen('X')) tmc2130_set_pwm_grad(0, code_value());
-		if (code_seen('Y')) tmc2130_set_pwm_grad(1, code_value());
-        if (code_seen('Z')) tmc2130_set_pwm_grad(2, code_value());
-        if (code_seen('E')) tmc2130_set_pwm_grad(3, code_value());
+        if (code_seen('X')) tmc2130_set_pwm_grad(X_AXIS, code_value_uint8());
+        if (code_seen('Y')) tmc2130_set_pwm_grad(Y_AXIS, code_value_uint8());
+        if (code_seen('Z')) tmc2130_set_pwm_grad(Z_AXIS, code_value_uint8());
+        if (code_seen('E')) tmc2130_set_pwm_grad(E_AXIS, code_value_uint8());
     }
     break;
 
