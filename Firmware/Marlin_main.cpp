@@ -213,7 +213,6 @@ uint8_t status_number = 0;
 
 unsigned long total_filament_used;
 HeatingStatus heating_status;
-uint8_t heating_status_counter;
 bool loading_flag = false;
 
 #define XY_NO_RESTORE_FLAG (mesh_bed_leveling_flag || homing_flag)
