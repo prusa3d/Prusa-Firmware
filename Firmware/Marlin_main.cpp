@@ -8951,7 +8951,7 @@ Sigma_Exit:
               }
           }
           else {
-              tmp_extruder = code_value();
+              tmp_extruder = code_value_uint8();
               if (mmu_enabled && lcd_autoDepleteEnabled())
               {
                   tmp_extruder = ad_getAlternative(tmp_extruder);
