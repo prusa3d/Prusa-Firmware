@@ -192,10 +192,7 @@ int extruder_multiply[EXTRUDERS] = {100
 
 int bowden_length[4] = {385, 385, 385, 385};
 
-bool is_usb_printing = false;
 bool homing_flag = false;
-
-uint8_t usb_printing_counter;
 
 int8_t lcd_change_fil_state = 0;
 
@@ -360,7 +357,7 @@ static unsigned long safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*6
 
 unsigned long starttime=0;
 unsigned long stoptime=0;
-ShortTimer _usb_timer;
+ShortTimer usb_timer;
 
 bool Stopped=false;
 
@@ -1889,19 +1886,11 @@ void loop()
 {
 	KEEPALIVE_STATE(NOT_BUSY);
 
-	if ((usb_printing_counter > 0) && _usb_timer.expired(1000))
-	{
-		is_usb_printing = true;
-		usb_printing_counter--;
-		_usb_timer.start(); // reset timer
+	if (isPrintPaused && saved_printing_type == PRINTING_TYPE_USB) { //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
+		usb_timer.start();
 	}
-	if (usb_printing_counter == 0)
-	{
-		is_usb_printing = false;
-	}
-    if (isPrintPaused && saved_printing_type == PRINTING_TYPE_USB) //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
-	{
-		is_usb_printing = true;
+	else if (usb_timer.expired(10000)) { //just need to check if it expired. Nothing else is needed to be done.
+		;
 	}
     
 #ifdef FANCHECK
@@ -4235,7 +4224,7 @@ void process_commands()
 #ifdef FANCHECK
     if(fan_check_error == EFCE_DETECTED) {
         fan_check_error = EFCE_REPORTED;
-        if (is_usb_printing)
+        if (usb_timer.running())
             lcd_pause_usb_print();
         else
             lcd_pause_print();
@@ -8975,7 +8964,7 @@ Sigma_Exit:
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
-			mmu_continue_loading(is_usb_printing  || (lcd_commands_type == LcdCommands::Layer1Cal));
+			mmu_continue_loading(usb_timer.running()  || (lcd_commands_type == LcdCommands::Layer1Cal));
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
 		}
@@ -9019,7 +9008,7 @@ Sigma_Exit:
 #endif //defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
 				  manage_response(true, true, MMU_TCODE_MOVE);
-		          mmu_continue_loading(is_usb_printing  || (lcd_commands_type == LcdCommands::Layer1Cal));
+		          mmu_continue_loading(usb_timer.running()  || (lcd_commands_type == LcdCommands::Layer1Cal));
 
 				  mmu_extruder = tmp_extruder; //filament change is finished
 
@@ -9876,7 +9865,7 @@ static uint16_t nFSCheckCount=0;
 #endif // IR_SENSOR_ANALOG
 		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active
 		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+			if (!moves_planned() && !IS_SD_PRINTING && !usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 			{
 #ifdef IR_SENSOR_ANALOG
 				static uint16_t minVolt = Voltage2Raw(6.F), maxVolt = 0;
@@ -11590,7 +11579,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 		saved_printing_type = PRINTING_TYPE_SD;
 
 	}
-	else if (is_usb_printing) { //reuse saved_sdpos for storing line number
+	else if (usb_timer.running()) { //reuse saved_sdpos for storing line number
 		 saved_sdpos = gcode_LastN; //start with line number of command added recently to cmd queue
 		 //reuse planner_calc_sd_length function for getting number of lines of commands in planner:
 		 nlines = planner_calc_sd_length(); //number of lines of commands in planner 

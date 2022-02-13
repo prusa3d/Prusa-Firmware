@@ -328,11 +328,10 @@ extern uint8_t host_keepalive_interval;
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
+extern ShortTimer usb_timer;
 extern int bowden_length[4];
-extern bool is_usb_printing;
 extern bool homing_flag;
 extern bool loading_flag;
-extern uint8_t usb_printing_counter;
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
 extern uint8_t status_number;
@@ -383,7 +382,7 @@ extern uint16_t gcode_in_progress;
 extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT 0xff
-#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || mmu_print_saved || homing_flag || mesh_bed_leveling_flag)
+#define PRINTER_ACTIVE (IS_SD_PRINTING || usb_timer.running() || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || mmu_print_saved || homing_flag || mesh_bed_leveling_flag)
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
@@ -392,7 +391,7 @@ extern LongTimer safetyTimer;
 //! Instead, the fsensor uses another state variable :( , which is set to true, when the M600 command is enqued
 //! and is reset to false when the fsensor returns into its filament runout finished handler
 //! I'd normally change this macro, but who knows what would happen in the MMU :)
-#define CHECK_FSENSOR ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
+#define CHECK_FSENSOR ((IS_SD_PRINTING || usb_timer.running()) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
 extern void calculate_extruder_multipliers();
 
