@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_69
+# Version: 2.0.0-Build_70
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -172,6 +172,7 @@
 # 09 Feb 2022, 3d-gussner, Add community language firmware files for MK2.5/S
 #                          Add selection of language in MK404 for MK2.5/S
 # 10 Feb 2022, 3d-gussner, Add SRCDIR for compatibility with build server
+# 13 Feb 2022, leptun    , Fix -o for "Restoring" messages after failure
 
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -192,8 +193,8 @@ case "$1" in
     12) echo "$(tput setaf 5)Failed to copy file $(tput sgr0)" ; exit 12 ;;
     13) echo "$(tput setaf 5)Failed to delete $(tput sgr0)" ; exit 13 ;;
     20) echo "$(tput setaf 2)Conditional stop initiated by user $(tput sgr0)" ; exit 20 ;;
-    21) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'Configuration.h'$(tput sgr0)" ; sleep 5 ;;
-    22) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'config.h'$(tput sgr0)" ; sleep 5 ;;
+    21) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'Configuration.h'$(tput sgr0)" ; if [ $OUTPUT == "1" ] ; then sleep 5 ; fi ;;
+    22) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'config.h'$(tput sgr0)" ; if [ $OUTPUT == "1" ] ; then sleep 5 ; fi ;;
     24) echo "$(tput setaf 1)PF-build.sh stopped due to compiling errors! Try to restore modified files.$(tput sgr0)"; check_script_failed_nr1 ; check_script_failed_nr2 ; cleanup_firmware ; exit 24 ;;
     25) echo "$(tput setaf 1)Failed to execute $(tput sgr0)" ; exit 25 ;;
 esac
@@ -229,7 +230,7 @@ while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_69 *"
+echo "* PF-build.sh Version: 2.0.0-Build_70 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
