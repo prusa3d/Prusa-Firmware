@@ -11,7 +11,7 @@
 #include "Timer.h"
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
-#define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
+#define TMC2130_GCONF_SGSENS 0x00000180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [open collector])
 #define TMC2130_GCONF_SILENT 0x00000004 // stealthChop
 
 
@@ -152,10 +152,16 @@ void tmc2130_init(TMCInitParams params)
 	SET_OUTPUT(Y_TMC2130_CS);
 	SET_OUTPUT(Z_TMC2130_CS);
 	SET_OUTPUT(E0_TMC2130_CS);
+	
 	SET_INPUT(X_TMC2130_DIAG);
 	SET_INPUT(Y_TMC2130_DIAG);
 	SET_INPUT(Z_TMC2130_DIAG);
 	SET_INPUT(E0_TMC2130_DIAG);
+	WRITE(X_TMC2130_DIAG,HIGH);
+	WRITE(Y_TMC2130_DIAG,HIGH);
+	WRITE(Z_TMC2130_DIAG,HIGH);
+	WRITE(E0_TMC2130_DIAG,HIGH);
+	
 	for (uint_least8_t axis = 0; axis < 2; axis++) // X Y axes
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
@@ -224,10 +230,10 @@ void tmc2130_init(TMCInitParams params)
 uint8_t tmc2130_sample_diag()
 {
 	uint8_t mask = 0;
-	if (READ(X_TMC2130_DIAG)) mask |= X_AXIS_MASK;
-	if (READ(Y_TMC2130_DIAG)) mask |= Y_AXIS_MASK;
-//	if (READ(Z_TMC2130_DIAG)) mask |= Z_AXIS_MASK;
-//	if (READ(E0_TMC2130_DIAG)) mask |= E_AXIS_MASK;
+	if (!READ(X_TMC2130_DIAG)) mask |= X_AXIS_MASK;
+	if (!READ(Y_TMC2130_DIAG)) mask |= Y_AXIS_MASK;
+//	if (!READ(Z_TMC2130_DIAG)) mask |= Z_AXIS_MASK;
+//	if (!READ(E0_TMC2130_DIAG)) mask |= E_AXIS_MASK;
 	return mask;
 }
 

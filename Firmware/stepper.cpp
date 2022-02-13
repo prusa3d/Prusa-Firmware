@@ -495,7 +495,7 @@ FORCE_INLINE void stepper_check_endstops()
       #if ( (defined(X_MIN_PIN) && (X_MIN_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_XMINLIMIT)
       #ifdef TMC2130_SG_HOMING
         // Stall guard homing turned on
-        SET_BIT_TO(_endstop, X_AXIS, (READ(X_TMC2130_DIAG) != 0));
+        SET_BIT_TO(_endstop, X_AXIS, (!READ(X_TMC2130_DIAG)));
       #else
         // Normal homing
         SET_BIT_TO(_endstop, X_AXIS, (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING));
@@ -512,7 +512,7 @@ FORCE_INLINE void stepper_check_endstops()
       #if ( (defined(X_MAX_PIN) && (X_MAX_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_XMAXLIMIT)          
         #ifdef TMC2130_SG_HOMING
         // Stall guard homing turned on
-          SET_BIT_TO(_endstop, X_AXIS + 4, (READ(X_TMC2130_DIAG) != 0));
+          SET_BIT_TO(_endstop, X_AXIS + 4, (!READ(X_TMC2130_DIAG)));
         #else
         // Normal homing
           SET_BIT_TO(_endstop, X_AXIS + 4, (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING));
@@ -536,7 +536,7 @@ FORCE_INLINE void stepper_check_endstops()
       #if ( (defined(Y_MIN_PIN) && (Y_MIN_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_YMINLIMIT)          
       #ifdef TMC2130_SG_HOMING
       // Stall guard homing turned on
-        SET_BIT_TO(_endstop, Y_AXIS, (READ(Y_TMC2130_DIAG) != 0));
+        SET_BIT_TO(_endstop, Y_AXIS, (!READ(Y_TMC2130_DIAG)));
       #else
       // Normal homing
         SET_BIT_TO(_endstop, Y_AXIS, (READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING));
@@ -553,7 +553,7 @@ FORCE_INLINE void stepper_check_endstops()
       #if ( (defined(Y_MAX_PIN) && (Y_MAX_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_YMAXLIMIT)                
         #ifdef TMC2130_SG_HOMING
         // Stall guard homing turned on
-          SET_BIT_TO(_endstop, Y_AXIS + 4, (READ(Y_TMC2130_DIAG) != 0));
+          SET_BIT_TO(_endstop, Y_AXIS + 4, (!READ(Y_TMC2130_DIAG)));
         #else
         // Normal homing
           SET_BIT_TO(_endstop, Y_AXIS + 4, (READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING));
@@ -579,7 +579,7 @@ FORCE_INLINE void stepper_check_endstops()
             SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
           else
 #endif //TMC2130_STEALTH_Z
-            SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (READ(Z_TMC2130_DIAG) != 0));
+            SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (!READ(Z_TMC2130_DIAG)));
         #else
           SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
         #endif //TMC2130_SG_HOMING
@@ -601,7 +601,7 @@ FORCE_INLINE void stepper_check_endstops()
           SET_BIT_TO(_endstop, Z_AXIS + 4, 0);
         else
 #endif //TMC2130_STEALTH_Z
-          SET_BIT_TO(_endstop, Z_AXIS + 4, (READ(Z_TMC2130_DIAG) != 0));
+          SET_BIT_TO(_endstop, Z_AXIS + 4, (!READ(Z_TMC2130_DIAG)));
         #else
         SET_BIT_TO(_endstop, Z_AXIS + 4, (READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING));
         #endif //TMC2130_SG_HOMING
@@ -634,7 +634,7 @@ FORCE_INLINE void stepper_check_endstops()
         SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
       else
 #endif //TMC2130_STEALTH_Z
-        SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (READ(Z_TMC2130_DIAG) != 0));
+        SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (!READ(Z_TMC2130_DIAG)));
       #else
       SET_BIT_TO(_endstop, Z_AXIS, (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING));
       #endif //TMC2130_SG_HOMING
@@ -1179,22 +1179,6 @@ void st_init()
   #endif
 
   //endstops and pullups
-
-  #ifdef TMC2130_SG_HOMING
-    SET_INPUT(X_TMC2130_DIAG);
-    WRITE(X_TMC2130_DIAG,HIGH);
-    
-    SET_INPUT(Y_TMC2130_DIAG);
-    WRITE(Y_TMC2130_DIAG,HIGH);
-    
-    SET_INPUT(Z_TMC2130_DIAG);
-    WRITE(Z_TMC2130_DIAG,HIGH);
-
-	SET_INPUT(E0_TMC2130_DIAG);
-    WRITE(E0_TMC2130_DIAG,HIGH);
-    
-  #endif
-    
   #if defined(X_MIN_PIN) && X_MIN_PIN > -1
     SET_INPUT(X_MIN_PIN);
     #ifdef ENDSTOPPULLUP_XMIN
