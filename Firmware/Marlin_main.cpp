@@ -2300,7 +2300,7 @@ bool calibrate_z_auto()
 #ifdef TMC2130
 static void check_Z_crash(void)
 {
-	if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
+	if (!READ(Z_TMC2130_DIAG)) { //Z crash
 		FORCE_HIGH_POWER_END;
 		current_position[Z_AXIS] = 0;
 		plan_set_position_curposXYZE();

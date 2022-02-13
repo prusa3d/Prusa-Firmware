@@ -974,7 +974,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
 		goto error;
 	}
 #ifdef TMC2130
-	if (READ(Z_TMC2130_DIAG) != 0)
+	if (!READ(Z_TMC2130_DIAG))
 	{
 		//printf_P(PSTR("crash detected 1, current_pos[Z]: %f \n"), current_position[Z_AXIS]);
 		goto error; //crash Z detected
@@ -1011,7 +1011,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
 			goto error;
 		}
 #ifdef TMC2130
-		if (READ(Z_TMC2130_DIAG) != 0) {
+		if (!READ(Z_TMC2130_DIAG)) {
 			//printf_P(PSTR("crash detected 2, current_pos[Z]: %f \n"), current_position[Z_AXIS]);
 			goto error; //crash Z detected
 		}
@@ -2857,7 +2857,7 @@ bool sample_mesh_and_store_reference()
         homeaxis(Z_AXIS);
 
 #ifdef TMC2130
-		if (!axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0)) //Z crash
+		if (!axis_known_position[Z_AXIS] && (!READ(Z_TMC2130_DIAG))) //Z crash
 		{
 			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return false;
