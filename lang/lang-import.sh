@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 25
+# Version 1.0.1 Build 36
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
@@ -35,16 +35,20 @@
 #                           new argruments `--information` `--import-check`
 # 11 Jan. 2022, ingbrzy,    Add Slovak letters
 # 11 Feb. 2022, 3d-gussner, Change to python3
+# 14 Feb. 2022, 3d-gussner, Replace non-block space with space
+#                           Fix single language run without config.sh OK
 #############################################################################
-# Config:
-if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr 0)" >&2; exit 1; fi
 
 echo "$(tput setaf 2)lang-import.sh started$(tput sgr 0)" >&2
 
 LNG=$1
 # if no arguments, 'all' is selected (all po and also pot will be generated)
-if [ -z "$LNG" ]; then LNG=all; fi
+if [ -z "$LNG" ]; then
+  LNG=all;
+# Config:
+  if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+  if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr 0)" >&2; exit 1; fi
+fi
 
 if [[ ! -z "$COMMUNITY_LANGUAGES" && "$LNG" = "all" ]]; then
   LANGUAGES+=" $COMMUNITY_LANGUAGES"
@@ -421,6 +425,8 @@ fi
 #replace UTF-8 'μ' to HD44780 A00 'μ'
  #replace 'μ' with 'A00 ROM μ'
  sed -i 's/\xce\xbc/\\xe4/g' $LNG'_filtered.po'
+#replace non-break space with space
+ sed -i 's/\xc2\xa0/ /g' $LNG'_filtered.po'
 
 #check for nonasci characters except HD44780 ROM A00 'äöüß'
 if grep --color='auto' -P -n '[^\x00-\x7F]' $LNG'_filtered.po' >nonascii.txt; then
@@ -463,6 +469,7 @@ echo "$(tput setaf 2)Finished with $LNGISO$(tput sgr 0)" >&2
 sed -i 's/""/"\\x00"/g' lang_en_$LNG.txt
 #remove CR
 sed -i "s/\r//g" lang_en_$LNG.txt
+
 #check new lang
 python3 ../../lang-check.py $LNG --warn-empty
 python3 ../../lang-check.py $LNG --information >$LNG-output.txt

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 10
+# Version 1.0.1 Build 12
 #
 # clean.sh - multi-language support script
 #  Remove all language output files from lang folder.
@@ -25,15 +25,8 @@
 #                           Use `git rev-list --count HEAD lang-clean.sh`
 #                           to get Build Nr
 # 25 Jan. 2022, 3d-gussner, clean up lang-import.sh temproray files
+# 14 Feb. 2022, 3d-gussner, Fix single language run without config.sh OK
 #############################################################################
-# Config:
-if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr0)" >&2; exit 1; fi
-
-if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
-  LANGUAGES+=" $COMMUNITY_LANGUAGES"
-fi
-
 result=0
 
 rm_if_exists()
@@ -83,6 +76,14 @@ echo "$(tput setaf 2)lang-clean.sh started$(tput sgr0)" >&2
 #Clean languages
 echo "lang-clean languages:$(tput setaf 2)$LANGUAGES$(tput sgr0)" >&2
 if [ -e $1 ]; then
+# Config:
+  if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+  if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr0)" >&2; exit 1; fi
+
+  if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+    LANGUAGES+=" $COMMUNITY_LANGUAGES"
+  fi
+
  for lang in $LANGUAGES; do
   clean_lang $lang
  done
