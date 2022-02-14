@@ -421,6 +421,8 @@ fi
 #replace UTF-8 'μ' to HD44780 A00 'μ'
  #replace 'μ' with 'A00 ROM μ'
  sed -i 's/\xce\xbc/\\xe4/g' $LNG'_filtered.po'
+#replace non-break space with space
+ sed -i 's/\xc2\xa0/ /g' $LNG'_filtered.po'
 
 #check for nonasci characters except HD44780 ROM A00 'äöüß'
 if grep --color='auto' -P -n '[^\x00-\x7F]' $LNG'_filtered.po' >nonascii.txt; then
@@ -463,6 +465,7 @@ echo "$(tput setaf 2)Finished with $LNGISO$(tput sgr 0)" >&2
 sed -i 's/""/"\\x00"/g' lang_en_$LNG.txt
 #remove CR
 sed -i "s/\r//g" lang_en_$LNG.txt
+
 #check new lang
 python3 ../../lang-check.py $LNG --warn-empty
 python3 ../../lang-check.py $LNG --information >$LNG-output.txt
