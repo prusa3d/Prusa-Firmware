@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 18
+# Version 1.0.1 Build 23
 #
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
@@ -25,17 +25,10 @@
 #                           Use `git rev-list --count HEAD lang-export.sh`
 #                           to get Build Nr
 # 25 Jan. 2022, 3d-gussner, Replace German HD44780 A00 ROM 'äöüß' to UTF-8 'äöüß'
+# 14 Feb. 2022, 3d-gussner, Fix single language run without config.sh OK
 #############################################################################
-# Config:
-if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr 0)" >&2; exit 1; fi
 
 echo "$(tput setaf 2)lang-export.sh started$(tput sgr 0)" >&2
-
-if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
-  LANGUAGES+=" $COMMUNITY_LANGUAGES"
-fi
-echo "$(tput setaf 2)lang-export languages:$LANGUAGES$(tput sgr 0)" >&2
 
 # relative path to source folder
 SRCDIR="../Firmware"
@@ -44,7 +37,16 @@ SRCDIR="../Firmware"
 LNG=$1
 
 # if no arguments, 'all' is selected (all po and also pot will be generated)
-if [ -z "$LNG" ]; then LNG=all; fi
+if [ -z "$LNG" ]; then
+  LNG=all;
+# Config:
+  if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+  if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr 0)" >&2; exit 1; fi
+  if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
+    LANGUAGES+=" $COMMUNITY_LANGUAGES"
+  fi
+  echo "$(tput setaf 2)lang-export languages:$LANGUAGES$(tput sgr 0)" >&2
+fi
 
 # if 'all' is selected, script will generate all po files and also pot file
 if [ "$LNG" = "all" ]; then
