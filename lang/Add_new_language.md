@@ -4,11 +4,11 @@ We will use Dutch as an example here.
 
 ## Prepare Prusa Firmware
 
-QR = palceholder for language in upper case
+QR = placeholder for language in upper case
 
 qr = placehodler for language in lower case
 
-AB = palceholder for hexadecial
+AB = placeholder for hexadecial
 
 Files needs to be modified
 - `../Firmware/language.h` 
@@ -174,7 +174,7 @@ https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 ## Prepare language part
 
-To prepare the acutal language translation files we need create the `lang_en_qr.txt` file.
+To prepare the actual language translation files we need create the `lang_en_qr.txt` file.
 1. Copy and `lang_en.txt` as `lang_en_qr.txt`
 2. run `../lang/lang-export.sh`
 3. copy `../lang/po/Firmware_qr.po` file to `../lang/po/new/qr.po`

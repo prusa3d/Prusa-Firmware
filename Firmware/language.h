@@ -119,6 +119,9 @@ typedef struct
 #ifdef COMMUNITY_LANG_GROUP1_LT
 #define LANG_CODE_LT 0x6C74 //!<'lt'
 #endif // COMMUNITY_LANG_GROUP1_LT
+#ifdef COMMUNITY_LANG_GROUP1_SK
+#define LANG_CODE_SK 0x736b //!<'sk'
+#endif // COMMUNITY_LANG_GROUP1_SK
 #ifdef COMMUNITY_LANG_GROUP1_RO
 #define LANG_CODE_RO 0x726F //!<'ro'
 #endif // COMMUNITY_LANG_GROUP1_RO

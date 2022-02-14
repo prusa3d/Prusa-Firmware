@@ -33,6 +33,7 @@
 # 28 Jan. 2022, 3d-gussner, Run lang-check and output `xx-output.txt` file to review
 #                           translations
 #                           new argruments `--information` `--import-check`
+# 11 Jan. 2022, ingbrzy,    Add Slovak letters
 # 11 Feb. 2022, 3d-gussner, Change to python3
 #############################################################################
 # Config:
@@ -350,6 +351,72 @@ fi
 #replace in polish translation
 #if [ "$LNG" = "pl" ]; then
 #fi
+
+#replace in slovak translation
+if [ "$LNG" = "sk" ]; then
+ #replace 'Á' with 'A'
+ sed -i 's/\xc3\x81/A/g' $LNG'_filtered.po'
+ #replace 'á' with 'a'
+ sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
+ #replace 'ä' with 'a'
+ sed -i 's/\xc3\xa4/a/g' $LNG'_filtered.po'
+ #replace 'Č' with 'C'
+ sed -i 's/\xc4\x8c/C/g' $LNG'_filtered.po'
+ #replace 'č' with 'c'
+ sed -i 's/\xc4\x8d/c/g' $LNG'_filtered.po'
+ #replace 'Ď' with 'D'
+ sed -i 's/\xc4\x8e/D/g' $LNG'_filtered.po'
+ #replace 'ď' with 'd'
+ sed -i 's/\xc4\x8f/d/g' $LNG'_filtered.po'
+ #replace 'É' with 'E'
+ sed -i 's/\xc3\x89/E/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+ #replace 'Í' with 'I'
+ sed -i 's/\xc3\x8d/I/g' $LNG'_filtered.po'
+ #replace 'í' with 'i'
+ sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
+ #replace 'ľ' with 'l'
+ sed -i 's/\xc4\xbe/l/g' $LNG'_filtered.po'
+ #replace 'Ľ' with 'L'
+ sed -i 's/\xc4\xbd/L/g' $LNG'_filtered.po'
+ #replace 'Ň' with 'N'
+ sed -i 's/\xc5\x87/N/g' $LNG'_filtered.po'
+ #replace 'ň' with 'n'
+ sed -i 's/\xc5\x88/n/g' $LNG'_filtered.po'
+ #replace 'Ó' with 'O'
+ sed -i 's/\xc3\x93/O/g' $LNG'_filtered.po'
+ #replace 'ó' with 'o'
+ sed -i 's/\xc3\xb3/o/g' $LNG'_filtered.po'
+ #replace 'ô' with 'o'
+ sed -i 's/\xc3\xb4/o/g' $LNG'_filtered.po'
+ #replace 'Ô' with 'O'
+ sed -i 's/\xc3\x94/O/g' $LNG'_filtered.po'
+ #replace 'ŕ' with 'r'
+ sed -i 's/\xc5\x95/r/g' $LNG'_filtered.po'
+ #replace 'Ŕ' with 'R'
+ sed -i 's/\xc5\x94/R/g' $LNG'_filtered.po'
+ #replace 'Š' with 'S'
+ sed -i 's/\xc5\xa0/S/g' $LNG'_filtered.po'
+ #replace 'š' with 's'
+ sed -i 's/\xc5\xa1/s/g' $LNG'_filtered.po'
+ #replace 'Ť' with 'T'
+ sed -i 's/\xc5\xa4/T/g' $LNG'_filtered.po'
+ #replace 'ť' with 't'
+ sed -i 's/\xc5\xa5/t/g' $LNG'_filtered.po'
+ #replace 'Ú' with 'U'
+ sed -i 's/\xc3\x9a/U/g' $LNG'_filtered.po'
+ #replace 'ú' with 'u'
+ sed -i 's/\xc3\xba/u/g' $LNG'_filtered.po'
+ #replace 'Ý' with 'Y'
+ sed -i 's/\xc3\x9d/Y/g' $LNG'_filtered.po'
+ #replace 'ý' with 'y'
+ sed -i 's/\xc3\xbd/y/g' $LNG'_filtered.po'
+ #replace 'Ž' with 'Z'
+ sed -i 's/\xc5\xbd/Z/g' $LNG'_filtered.po'
+ #replace 'ž' with 'z'
+ sed -i 's/\xc5\xbe/z/g' $LNG'_filtered.po'
+fi
 
 #replace UTF-8 'μ' to HD44780 A00 'μ'
  #replace 'μ' with 'A00 ROM μ'
