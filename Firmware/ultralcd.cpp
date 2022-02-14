@@ -3798,8 +3798,8 @@ static void lcd_print_state(uint8_t state)
 //! |01234567890123456789|
 //! |PINDA N/A  FINDA N/A|  MSG_PINDA c=5 MSG_FINDA c=5
 //! |Fil. sensor      N/A|  MSG_FSENSOR
-//! | Xd   000    Yd  000|
-//! |Int   000  Shut  000|
+//! | Int: 000  Xd:+00000|
+//! |Shut: 000  Yd:+00000|
 //! ----------------------
 //! @endcode
 static void lcd_show_sensors_state()
@@ -3850,10 +3850,10 @@ static void lcd_show_sensors_state()
             pat9125_update();
 
         lcd_set_cursor(0, 2);
-        lcd_printf_P(_N(" Xd: %4d    Yd: %3d\n"
-                        "Int: %4d  Shut: %3d"),
-                     pat9125_x, pat9125_y,
-                     pat9125_b, pat9125_s);
+        lcd_printf_P(_N(" Int: %3d  Xd:%6d\n"
+                        "Shut: %3d  Yd:%6d"),
+                     pat9125_b, pat9125_x,
+                     pat9125_s, pat9125_y);
     }
 #endif //PAT9125
 }
