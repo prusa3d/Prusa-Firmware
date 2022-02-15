@@ -637,7 +637,6 @@ void crashdet_detected(uint8_t mask)
     lcd_setstatus(msg);
 
 	gcode_G28(true, true, false); //home X and Y
-	st_synchronize();
 
 	if (automatic_recovery_after_crash) {
 		enquecommand_P(PSTR("CRASH_RECOVER"));
