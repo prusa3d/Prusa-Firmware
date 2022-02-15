@@ -2384,7 +2384,6 @@ static void mFilamentItem_PVB()
 
 void mFilamentBack()
 {
-    menu_back();
     if (eFilamentAction == FilamentAction::AutoLoad ||
             eFilamentAction == FilamentAction::Preheat ||
             eFilamentAction == FilamentAction::Lay1Cal)
@@ -2398,14 +2397,10 @@ void lcd_generic_preheat_menu()
     MENU_BEGIN();
     if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
     {
-        if (eFilamentAction == FilamentAction::Lay1Cal)
-        {
-            MENU_ITEM_FUNCTION_P(_T(MSG_BACK), mFilamentBack);
-        }
-        else
-        {
-            MENU_ITEM_FUNCTION_P(_T(MSG_MAIN), mFilamentBack);
-        }
+        ON_MENU_LEAVE(
+            mFilamentBack();
+        );
+        MENU_ITEM_BACK_P(_T(eFilamentAction == FilamentAction::Lay1Cal ? MSG_BACK : MSG_MAIN));
     }
     if (farm_mode)
     {
