@@ -2010,7 +2010,6 @@ static void lcd_support_menu()
       }
   }
 
-  #ifndef MK1BP
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=18
   MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=18
@@ -2042,8 +2041,6 @@ static void lcd_support_menu()
 #endif //EMERGENCY_HANDLERS
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
 #endif /* DEBUG_BUILD */
-
-  #endif //MK1BP
 
   MENU_END();
 }
@@ -5692,11 +5689,6 @@ static void lcd_calibration_menu()
 	MENU_ITEM_FUNCTION_P(_i("Belt test"), lcd_belttest_v);////MSG_BELTTEST c=18
 #endif //TMC2130
 	MENU_ITEM_FUNCTION_P(_i("Selftest"), lcd_selftest_v);////MSG_SELFTEST c=18
-#ifdef MK1BP
-    // MK1
-    // "Calibrate Z"
-    MENU_ITEM_GCODE_P(_T(MSG_HOMEYZ), PSTR("G28 Z"));
-#else //MK1BP
     // MK2
     MENU_ITEM_FUNCTION_P(_i("Calibrate XYZ"), lcd_mesh_calibration);////MSG_CALIBRATE_BED c=18
     // "Calibrate Z" with storing the reference values to EEPROM.
@@ -5706,26 +5698,20 @@ static void lcd_calibration_menu()
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bedleveling);
-	
-#endif //MK1BP
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=18
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17
 #ifndef TMC2130
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=18
 #endif
-#ifndef MK1BP
     MENU_ITEM_GCODE_P(_i("Reset XYZ calibr."), PSTR("M44"));////MSG_CALIBRATE_BED_RESET c=18
-#endif //MK1BP
 #ifndef SNMM
 	//MENU_ITEM_FUNCTION_P(MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
 #endif
-#ifndef MK1BP
     if(has_temperature_compensation())
     {
 	    MENU_ITEM_SUBMENU_P(_i("Temp. calibration"), lcd_pinda_calibration_menu);////MSG_CALIBRATION_PINDA_MENU c=17
     }
-#endif //MK1BP
   }
   
   MENU_END();
