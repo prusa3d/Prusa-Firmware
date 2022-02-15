@@ -5409,12 +5409,11 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 }
 
 char reset_menu() {
-	const uint8_t items_no = 5;
 	static int8_t first = 0;
 	int8_t enc_dif = 0;
 	char cursor_pos = 0;
 
-	const char *const item[items_no] = {
+	const char *const item[] = {
 		PSTR("Language"),
 		PSTR("Statistics"),
 		PSTR("Shipping prep"),
@@ -5450,7 +5449,7 @@ char reset_menu() {
 				if (cursor_pos > 3) {
 					cursor_pos = 3;
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-					if (first < items_no - 4) {
+					if (first < (uint8_t)(sizeof(item) / sizeof(item[0])) - 4) {
 						first++;
 						lcd_clear();
 					}
