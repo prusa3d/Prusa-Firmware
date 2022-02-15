@@ -1230,7 +1230,7 @@
 "XYZ calibration compromised. Right front calibration point not reachable."
 "Kalibrace XYZ nepresna. Pravy predni bod moc vpredu."
 
-#MSG_LOAD_ALL c=17
+#MSG_LOAD_ALL c=18
 "Load all"
 "Zavest vse"
 

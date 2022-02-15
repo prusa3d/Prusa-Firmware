@@ -1555,7 +1555,7 @@ msgstr ""
 msgid "XYZ calibration compromised. Right front calibration point not reachable."
 msgstr ""
 
-# MSG_LOAD_ALL c=17
+# MSG_LOAD_ALL c=18
 #: ultralcd.cpp:6167
 msgid "Load all"
 msgstr ""

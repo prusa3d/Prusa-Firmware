@@ -1555,7 +1555,7 @@ msgstr "Calibrazion XYZ comprometida. Puntos frontales no alcanzables."
 msgid "XYZ calibration compromised. Right front calibration point not reachable."
 msgstr "Calibrazion XYZ comprometida. Punto frontal derecho no alcanzable."
 
-# MSG_LOAD_ALL c=17
+# MSG_LOAD_ALL c=18
 #: ultralcd.cpp:6167
 msgid "Load all"
 msgstr "Intr. todos fil."
