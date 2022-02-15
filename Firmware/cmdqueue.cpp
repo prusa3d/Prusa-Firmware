@@ -479,10 +479,9 @@ void get_command()
             return;
         }
         if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
-              if (! IS_SD_PRINTING) {
-                      usb_printing_counter = 10;
-                      is_usb_printing = true;
-              }
+            if (!IS_SD_PRINTING) {
+                usb_timer.start();
+            }
             if (Stopped == true) {
                 if (code_value_uint8() <= 3) {
                     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
