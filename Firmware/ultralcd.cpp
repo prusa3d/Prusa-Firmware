@@ -3775,9 +3775,9 @@ static void lcd_print_state(uint8_t state)
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |PINDA N/A  FINDA N/A|  MSG_PINDA c=5 MSG_FINDA c=5
-//! |Fil. sensor      N/A|  MSG_FSENSOR 
-//! |Xd    000  Yd    000|  MSG_XD
-//! |Int   000  Shut  000|  
+//! |Fil. sensor      N/A|  MSG_FSENSOR
+//! | Int: 000  Xd:+00000|
+//! |Shut: 000  Yd:+00000|
 //! ----------------------
 //! @endcode
 static void lcd_show_sensors_state()
@@ -3821,26 +3821,18 @@ static void lcd_show_sensors_state()
     //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
     //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
     //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-	if (mmu_enabled == false)
-	{
-		//if (!fsensor_enabled)
-		//	lcd_puts_P(_N("Filament sensor\n" "is disabled."));
-		//else
-		//{
-		if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
-			pat9125_update();
-			lcd_set_cursor(0, 2);
-			lcd_printf_P(_N(
-				"Xd:  %3d  "
-				"Yd:  %3d\n" ////c=4
-				"Int: %3d  " ////c=4
-				"Shut:  %3d"  ////c=4
-			),
-				pat9125_x, pat9125_y,
-				pat9125_b, pat9125_s
-			);
-		//}
-	}
+    if (mmu_enabled == false)
+    {
+        // pat9125_update is already called while printing: only update manually when idling
+        if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
+            pat9125_update();
+
+        lcd_set_cursor(0, 2);
+        lcd_printf_P(_N(" Int: %3d  Xd:%6d\n"
+                        "Shut: %3d  Yd:%6d"),
+                     pat9125_b, pat9125_x,
+                     pat9125_s, pat9125_y);
+    }
 #endif //PAT9125
 }
 
