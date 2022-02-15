@@ -1499,7 +1499,9 @@ void setup()
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
 	  int _z = BOWDEN_LENGTH;
-	  for(int i = 0; i<4; i++) EEPROM_save_B(EEPROM_BOWDEN_LENGTH + i * 2, &_z);
+	  for(uint8_t i = 0; i < 4; i++) {
+	  	eeprom_update_word((uint16_t*)EEPROM_BOWDEN_LENGTH + i, _z);
+	  }
 	}
 #endif
 
@@ -1544,7 +1546,9 @@ void setup()
 		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 		int16_t z_shift = 0;
-		for (uint8_t i = 0; i < 5; i++) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+		for (uint8_t i = 0; i < 5; i++) {
+			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
+		}
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 	}
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
@@ -1568,8 +1572,8 @@ void setup()
 #ifdef PAT9125
 	fsensor_setup_interrupt();
 #endif //PAT9125
-	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
-	
+	eeprom_update_block(bowden_length, (uint16_t*)EEPROM_BOWDEN_LENGTH, sizeof(bowden_length));
+
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
@@ -5422,7 +5426,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         {
             float temp = (40 + i * 5);
             printf_P(_N("\nStep: %d/6 (skipped)\nPINDA temperature: %d Z shift (mm):0\n"), i + 2, (40 + i*5));
-            if (i >= 0) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+            if (i >= 0) {
+                eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
+            }
             if (start_temp <= temp) break;
         }
 
@@ -5461,7 +5467,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
             printf_P(_N("\nPINDA temperature: %.1f Z shift (mm): %.3f"), current_temperature_pinda, current_position[Z_AXIS] - zero_z);
 
-            EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+            eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
         }
         lcd_temp_cal_show_result(true);
         homing_flag = false;
@@ -5546,7 +5552,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 			printf_P(_N("\nTemperature: %d  Z shift (mm): %.3f\n"), t_c, current_position[Z_AXIS] - zero_z);
 
-			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i*2, &z_shift);
+			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
 			
 		
 		}
@@ -5668,7 +5674,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                 }else{
                     // Save it to the eeprom
                     babystepLoadZ = babystepz;
-                    EEPROM_save_B(EEPROM_BABYSTEP_Z0+(BabyPosition*2),&babystepLoadZ);
+                    eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z0 + BabyPosition, babystepLoadZ);
                     // adjust the Z
                     babystepsTodoZadd(babystepLoadZ);
                 }
@@ -8348,7 +8354,9 @@ Sigma_Exit:
 			SERIAL_PROTOCOLLN("index, temp, ustep, um");
 			for (uint8_t i = 0; i < 6; i++)
 			{
-				if(i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &usteps);
+				if(i > 0) {
+					usteps = eeprom_read_word((uint16_t*) EEPROM_PROBE_TEMP_SHIFT + (i - 1));
+				}
 				float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
 				i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 				SERIAL_PROTOCOLPGM(", ");
@@ -8363,21 +8371,23 @@ Sigma_Exit:
 		else if (code_seen('!')) { // ! - Set factory default values
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 			int16_t z_shift = 8;    //40C -  20um -   8usteps
-			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT, &z_shift);
+			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT, z_shift);
 			z_shift = 24;   //45C -  60um -  24usteps
-			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 2, &z_shift);
+			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 1, z_shift);
 			z_shift = 48;   //50C - 120um -  48usteps
-			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 4, &z_shift);
+			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 2, z_shift);
 			z_shift = 80;   //55C - 200um -  80usteps
-			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 6, &z_shift);
+			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 3, z_shift);
 			z_shift = 120;  //60C - 300um - 120usteps
-			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 8, &z_shift);
+			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 4, z_shift);
 			SERIAL_PROTOCOLLN("factory restored");
 		}
 		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 			int16_t z_shift = 0;
-			for (uint8_t i = 0; i < 5; i++) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+			for (uint8_t i = 0; i < 5; i++) {
+				eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
+			}
 			SERIAL_PROTOCOLLN("zerorized");
 		}
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
@@ -8385,13 +8395,15 @@ Sigma_Exit:
 			if (code_seen('I')) {
 			    uint8_t index = code_value_uint8();
 				if (index < 5) {
-					EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + index * 2, &usteps);
+					eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + index, usteps);
 					SERIAL_PROTOCOLLN("OK");
 					SERIAL_PROTOCOLLN("index, temp, ustep, um");
 					for (uint8_t i = 0; i < 6; i++)
 					{
 						usteps = 0;
-						if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i - 1) * 2, &usteps);
+						if (i > 0) {
+							usteps = eeprom_read_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + (i - 1));
+						}
 						float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
 						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 						SERIAL_PROTOCOLPGM(", ");
@@ -10891,7 +10903,7 @@ static void temp_compensation_apply() {
 	if (calibration_status() == CALIBRATION_STATUS_CALIBRATED) {
 		if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 60 && target_temperature_bed <= 100) {
 			i_add = (target_temperature_bed - 60) / 10;
-			EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i_add * 2, &z_shift);
+			z_shift = eeprom_read_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i_add);
 			z_shift_mm = z_shift / cs.axis_steps_per_unit[Z_AXIS];
 		}else {
 			//interpolation
@@ -10921,7 +10933,10 @@ float temp_comp_interpolation(float inp_temperature) {
 
 	shift[0] = 0;
 	for (i = 0; i < n; i++) {
-		if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &shift[i]); //read shift in steps from EEPROM
+		if (i > 0) {
+			//read shift in steps from EEPROM
+			shift[i] = eeprom_read_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + (i - 1));
+		}
 		temp_C[i] = 50 + i * 10; //temperature in C
 #ifdef PINDA_THERMISTOR
 		constexpr int start_compensating_temp = 35;
