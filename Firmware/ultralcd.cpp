@@ -2010,7 +2010,6 @@ static void lcd_support_menu()
       }
   }
 
-  #ifndef MK1BP
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=18
   MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=18
@@ -2042,8 +2041,6 @@ static void lcd_support_menu()
 #endif //EMERGENCY_HANDLERS
   MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////MSG_DEBUG c=18
 #endif /* DEBUG_BUILD */
-
-  #endif //MK1BP
 
   MENU_END();
 }
@@ -2384,7 +2381,6 @@ static void mFilamentItem_PVB()
 
 void mFilamentBack()
 {
-    menu_back();
     if (eFilamentAction == FilamentAction::AutoLoad ||
             eFilamentAction == FilamentAction::Preheat ||
             eFilamentAction == FilamentAction::Lay1Cal)
@@ -2398,14 +2394,10 @@ void lcd_generic_preheat_menu()
     MENU_BEGIN();
     if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
     {
-        if (eFilamentAction == FilamentAction::Lay1Cal)
-        {
-            MENU_ITEM_FUNCTION_P(_T(MSG_BACK), mFilamentBack);
-        }
-        else
-        {
-            MENU_ITEM_FUNCTION_P(_T(MSG_MAIN), mFilamentBack);
-        }
+        ON_MENU_LEAVE(
+            mFilamentBack();
+        );
+        MENU_ITEM_BACK_P(_T(eFilamentAction == FilamentAction::Lay1Cal ? MSG_BACK : MSG_MAIN));
     }
     if (farm_mode)
     {
@@ -2905,20 +2897,6 @@ static void lcd_menu_xyz_offset()
     menu_back_if_clicked();
 }
 
-// Save a single axis babystep value.
-void EEPROM_save_B(int pos, int* value)
-{
-  eeprom_update_byte((unsigned char*)pos, (unsigned char)((*value) & 0xff));
-  eeprom_update_byte((unsigned char*)pos + 1, (unsigned char)((*value) >> 8));
-}
-
-// Read a single axis babystep value.
-void EEPROM_read_B(int pos, int* value)
-{
-  *value = (int)eeprom_read_byte((unsigned char*)pos) | (int)(eeprom_read_byte((unsigned char*)pos + 1) << 8);
-}
-
-
 // Note: the colon behind the text (X, Y, Z) is necessary to greatly shorten
 // the implementation of menu_draw_float31
 static void lcd_move_x() {
@@ -3188,15 +3166,15 @@ void lcd_adjust_z() {
       fsm = cursor_pos;
       if (fsm == 1) {
         int babystepLoadZ = 0;
-        EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepLoadZ);
+        babystepLoadZ = eeprom_read_word((uint16_t*)EEPROM_BABYSTEP_Z);
         CRITICAL_SECTION_START
         babystepsTodo[Z_AXIS] = babystepLoadZ;
         CRITICAL_SECTION_END
       } else {
         int zero = 0;
-        EEPROM_save_B(EEPROM_BABYSTEP_X, &zero);
-        EEPROM_save_B(EEPROM_BABYSTEP_Y, &zero);
-        EEPROM_save_B(EEPROM_BABYSTEP_Z, &zero);
+        eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_X, zero);
+        eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Y, zero);
+        eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, zero);
       }
       _delay(500);
     }
@@ -3797,9 +3775,9 @@ static void lcd_print_state(uint8_t state)
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |PINDA N/A  FINDA N/A|  MSG_PINDA c=5 MSG_FINDA c=5
-//! |Fil. sensor      N/A|  MSG_FSENSOR 
-//! |Xd    000  Yd    000|  MSG_XD
-//! |Int   000  Shut  000|  
+//! |Fil. sensor      N/A|  MSG_FSENSOR
+//! | Int: 000  Xd:+00000|
+//! |Shut: 000  Yd:+00000|
 //! ----------------------
 //! @endcode
 static void lcd_show_sensors_state()
@@ -3843,26 +3821,18 @@ static void lcd_show_sensors_state()
     //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
     //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
     //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-	if (mmu_enabled == false)
-	{
-		//if (!fsensor_enabled)
-		//	lcd_puts_P(_N("Filament sensor\n" "is disabled."));
-		//else
-		//{
-		if (!moves_planned() && !IS_SD_PRINTING && !usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal))
-			pat9125_update();
-			lcd_set_cursor(0, 2);
-			lcd_printf_P(_N(
-				"Xd:  %3d  "
-				"Yd:  %3d\n" ////c=4
-				"Int: %3d  " ////c=4
-				"Shut:  %3d"  ////c=4
-			),
-				pat9125_x, pat9125_y,
-				pat9125_b, pat9125_s
-			);
-		//}
-	}
+    if (mmu_enabled == false)
+    {
+        // pat9125_update is already called while printing: only update manually when idling
+        if (!moves_planned() && !IS_SD_PRINTING && !usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal))
+            pat9125_update();
+
+        lcd_set_cursor(0, 2);
+        lcd_printf_P(_N(" Int: %3d  Xd:%6d\n"
+                        "Shut: %3d  Yd:%6d"),
+                     pat9125_b, pat9125_x,
+                     pat9125_s, pat9125_y);
+    }
 #endif //PAT9125
 }
 
@@ -4180,8 +4150,8 @@ void lcd_pick_babystep(){
         if (lcd_clicked()) {
             fsm = cursor_pos;
             int babyStepZ;
-            EEPROM_read_B(EEPROM_BABYSTEP_Z0+((fsm-1)*2),&babyStepZ);
-            EEPROM_save_B(EEPROM_BABYSTEP_Z,&babyStepZ);
+            babyStepZ = eeprom_read_word((uint16_t*)EEPROM_BABYSTEP_Z0+(fsm-1));
+            eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, babyStepZ);
             calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
             _delay(500);
             
@@ -4203,36 +4173,16 @@ void lcd_move_menu_axis()
 	MENU_END();
 }
 
-void EEPROM_save(int pos, uint8_t* value, uint8_t size)
-{
-  do
-  {
-    eeprom_write_byte((unsigned char*)pos, *value);
-    pos++;
-    value++;
-  } while (--size);
-}
-
-void EEPROM_read(int pos, uint8_t* value, uint8_t size)
-{
-  do
-  {
-    *value = eeprom_read_byte((unsigned char*)pos);
-    pos++;
-    value++;
-  } while (--size);
-}
-
 #ifdef SDCARD_SORT_ALPHA
 static void lcd_sort_type_set() {
 	uint8_t sdSort;
-		EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	sdSort = eeprom_read_byte((uint8_t*) EEPROM_SD_SORT);
 	switch (sdSort) {
 		case SD_SORT_TIME: sdSort = SD_SORT_ALPHA; break;
 		case SD_SORT_ALPHA: sdSort = SD_SORT_NONE; break;
 		default: sdSort = SD_SORT_TIME;
 	}
-	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
+	eeprom_update_byte((uint8_t*)EEPROM_SD_SORT, sdSort);
 	card.presort_flag = true;
 }
 #endif //SDCARD_SORT_ALPHA
@@ -5226,7 +5176,7 @@ do\
         MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_NORMAL), lcd_toshiba_flash_air_compatibility_toggle);\
 \
     uint8_t sdSort;\
-    EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));\
+    sdSort = eeprom_read_byte((uint8_t*) EEPROM_SD_SORT);\
     switch (sdSort)\
     {\
       case SD_SORT_TIME: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_TIME), lcd_sort_type_set); break;\
@@ -5619,7 +5569,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
 static void lcd_settings_menu()
 {
-	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
+	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 
@@ -5731,11 +5681,6 @@ static void lcd_calibration_menu()
 	MENU_ITEM_FUNCTION_P(_i("Belt test"), lcd_belttest_v);////MSG_BELTTEST c=18
 #endif //TMC2130
 	MENU_ITEM_FUNCTION_P(_i("Selftest"), lcd_selftest_v);////MSG_SELFTEST c=18
-#ifdef MK1BP
-    // MK1
-    // "Calibrate Z"
-    MENU_ITEM_GCODE_P(_T(MSG_HOMEYZ), PSTR("G28 Z"));
-#else //MK1BP
     // MK2
     MENU_ITEM_FUNCTION_P(_i("Calibrate XYZ"), lcd_mesh_calibration);////MSG_CALIBRATE_BED c=18
     // "Calibrate Z" with storing the reference values to EEPROM.
@@ -5745,26 +5690,20 @@ static void lcd_calibration_menu()
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bedleveling);
-	
-#endif //MK1BP
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=18
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17
 #ifndef TMC2130
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=18
 #endif
-#ifndef MK1BP
     MENU_ITEM_GCODE_P(_i("Reset XYZ calibr."), PSTR("M44"));////MSG_CALIBRATE_BED_RESET c=18
-#endif //MK1BP
 #ifndef SNMM
 	//MENU_ITEM_FUNCTION_P(MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
 #endif
-#ifndef MK1BP
     if(has_temperature_compensation())
     {
 	    MENU_ITEM_SUBMENU_P(_i("Temp. calibration"), lcd_pinda_calibration_menu);////MSG_CALIBRATION_PINDA_MENU c=17
     }
-#endif //MK1BP
   }
   
   MENU_END();
@@ -5779,7 +5718,7 @@ void bowden_menu() {
 		lcd_puts_at_P(1, i, PSTR("Extruder "));
 		lcd_print(i);
 		lcd_print(": ");
-		EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+		bowden_length[i] = eeprom_read_word((uint16_t*)EEPROM_BOWDEN_LENGTH + i);
 		lcd_print(bowden_length[i] - 48);
 
 	}
@@ -5849,7 +5788,7 @@ void bowden_menu() {
 				_delay(100);
 				if (lcd_clicked()) {
 					Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
+					eeprom_update_word((uint16_t*)EEPROM_BOWDEN_LENGTH + cursor_pos, bowden_length[cursor_pos]);
 					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
 						lcd_update_enable(true);
 						lcd_clear();
@@ -5859,7 +5798,7 @@ void bowden_menu() {
 							lcd_puts_at_P(1, i, PSTR("Extruder "));
 							lcd_print(i);
 							lcd_print(": ");
-							EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+							bowden_length[i] = eeprom_read_word((uint16_t*)EEPROM_BOWDEN_LENGTH + i);
 							lcd_print(bowden_length[i] - 48);
 
 						}
@@ -6747,9 +6686,7 @@ static void lcd_tune_menu()
 		calculate_extruder_multipliers();
 	}
 
-  EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
-
-
+	SilentModeMenu = eeprom_read_byte((uint8_t*) EEPROM_SILENT);
 
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN)); //1
