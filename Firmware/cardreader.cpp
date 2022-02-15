@@ -305,7 +305,7 @@ void CardReader::getAbsFilename(char *t)
     while(*t!=0 && cnt< MAXPATHNAMELENGTH) 
     {t++;cnt++;}  //crawl counter forward.
   }
-  if(cnt<MAXPATHNAMELENGTH-13)
+  if(cnt < MAXPATHNAMELENGTH - FILENAME_LENGTH)
     file.getFilename(t);
   else
     t[0]=0;
