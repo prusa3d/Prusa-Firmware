@@ -667,7 +667,7 @@ void planner_abort_hard()
 
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
-    memcpy(destination, current_position, sizeof(destination));
+    set_destination_to_current();
 #ifdef LIN_ADVANCE
     memcpy(position_float, current_position, sizeof(position_float));
 #endif
