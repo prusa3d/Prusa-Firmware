@@ -45,6 +45,9 @@ void twi_init(void)
 
 void twi_disable(void)
 {
+  // disable TWI hardware.
+  TWCR = 0;
+  
   // deactivate internal pullups for twi.
   WRITE(SDA_PIN, 0);
   WRITE(SCL_PIN, 0);
