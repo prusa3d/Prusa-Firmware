@@ -1230,7 +1230,7 @@
 "XYZ calibration compromised. Right front calibration point not reachable."
 "Calibration XYZ compromise. Le point de calibration avant droit n'est pas atteignable."
 
-#MSG_LOAD_ALL c=17
+#MSG_LOAD_ALL c=18
 "Load all"
 "Charger un par un"
 

@@ -446,20 +446,12 @@ FORCE_INLINE void stepper_next_block()
     }
     if ((out_bits & (1 << E_AXIS)) != 0) { // -direction
 #ifndef LIN_ADVANCE
-      WRITE(E0_DIR_PIN, 
-  #ifdef SNMM
-        (mmu_extruder == 0 || mmu_extruder == 2) ? !INVERT_E0_DIR :
-  #endif // SNMM
-        INVERT_E0_DIR);
+      WRITE(E0_DIR_PIN, INVERT_E0_DIR);
 #endif /* LIN_ADVANCE */
       count_direction[E_AXIS] = -1;
     } else { // +direction
 #ifndef LIN_ADVANCE
-      WRITE(E0_DIR_PIN,
-  #ifdef SNMM
-        (mmu_extruder == 0 || mmu_extruder == 2) ? INVERT_E0_DIR :
-  #endif // SNMM
-        !INVERT_E0_DIR);
+      WRITE(E0_DIR_PIN, !INVERT_E0_DIR);
 #endif /* LIN_ADVANCE */
       count_direction[E_AXIS] = 1;
     }

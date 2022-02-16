@@ -190,7 +190,6 @@ int extruder_multiply[EXTRUDERS] = {100
   #endif
 };
 
-int bowden_length[4] = {385, 385, 385, 385};
 
 bool homing_flag = false;
 
@@ -218,8 +217,6 @@ uint8_t heating_status_counter;
 bool loading_flag = false;
 
 #define XY_NO_RESTORE_FLAG (mesh_bed_leveling_flag || homing_flag)
-
-char snmm_filaments_used = 0;
 
 
 bool fan_state[2];
@@ -769,13 +766,6 @@ static void factory_reset(char level)
 		menu_progressbar_finish();
 		softReset();
 		break;
-
-
-#ifdef SNMM
-	case 5:
-		bowden_menu();
-		break;
-#endif
 	default:
 		break;
 	}
@@ -1493,15 +1483,6 @@ void setup()
 #endif //DEBUG_SD_SPEED_TEST
 
     eeprom_init();
-#ifdef SNMM
-	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
-	  int _z = BOWDEN_LENGTH;
-	  for(uint8_t i = 0; i < 4; i++) {
-	  	eeprom_update_word((uint16_t*)EEPROM_BOWDEN_LENGTH + i, _z);
-	  }
-	}
-#endif
-
   // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
   // is being written into the EEPROM, so the update procedure will be triggered only once.
@@ -1569,7 +1550,6 @@ void setup()
 #ifdef PAT9125
 	fsensor_setup_interrupt();
 #endif //PAT9125
-	eeprom_update_block(bowden_length, (uint16_t*)EEPROM_BOWDEN_LENGTH, sizeof(bowden_length));
 
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
@@ -4257,12 +4237,6 @@ void process_commands()
 
   // PRUSA GCODES
   KEEPALIVE_STATE(IN_HANDLER);
-
-#ifdef SNMM
-  float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
-  float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-  int8_t SilentMode;
-#endif
     /*!
 
     ---------------------------------------------------------------------------------
@@ -6903,7 +6877,6 @@ Sigma_Exit:
           #endif
         }
       }
-	  snmm_filaments_used = 0;
       break;
 
     /*!
@@ -8881,20 +8854,11 @@ Sigma_Exit:
         M702 [ U | C ]
     
     #### Parameters
-    - `U` - Unload all filaments used in current print
     - `C` - Unload just current filament
     - without any parameters unload all filaments
     */
 	case 702:
 	{
-#ifdef SNMM
-		if (code_seen('U'))
-			extr_unload_used(); //! if "U" unload all filaments which were used in current print
-		else if (code_seen('C'))
-			extr_unload(); //! if "C" unload just current filament
-		else
-			extr_unload_all(); //! otherwise unload all filaments
-#else
 		if (code_seen('C')) {
 			if(mmu_enabled) extr_unload(); //! if "C" unload current filament; if mmu is not present no action is performed
 		}
@@ -8902,8 +8866,6 @@ Sigma_Exit:
 			if(mmu_enabled) extr_unload(); //! unload current filament
 			else unload_filament();
 		}
-
-#endif //SNMM
 	}
 	break;
 
@@ -8996,7 +8958,6 @@ Sigma_Exit:
               }
           }
           st_synchronize();
-          snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
           if (mmu_enabled)
           {
@@ -9027,47 +8988,6 @@ Sigma_Exit:
           }
           else
           {
-#ifdef SNMM
-              mmu_extruder = tmp_extruder;
-
-              _delay(100);
-
-              disable_e0();
-              disable_e1();
-              disable_e2();
-
-              SET_OUTPUT(E_MUX0_PIN);
-              SET_OUTPUT(E_MUX1_PIN);
-
-              _delay(100);
-              SERIAL_ECHO_START;
-              SERIAL_ECHO("T:");
-              SERIAL_ECHOLN((int)tmp_extruder);
-              switch (tmp_extruder) {
-              case 1:
-                  WRITE(E_MUX0_PIN, HIGH);
-                  WRITE(E_MUX1_PIN, LOW);
-
-                  break;
-              case 2:
-                  WRITE(E_MUX0_PIN, LOW);
-                  WRITE(E_MUX1_PIN, HIGH);
-
-                  break;
-              case 3:
-                  WRITE(E_MUX0_PIN, HIGH);
-                  WRITE(E_MUX1_PIN, HIGH);
-
-                  break;
-              default:
-                  WRITE(E_MUX0_PIN, LOW);
-                  WRITE(E_MUX1_PIN, LOW);
-
-                  break;
-              }
-              _delay(100);
-
-#else //SNMM
               if (tmp_extruder >= EXTRUDERS) {
                   SERIAL_ECHO_START;
                   SERIAL_ECHO('T');
@@ -9111,8 +9031,6 @@ Sigma_Exit:
                   SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER
                   SERIAL_PROTOCOLLN((int)active_extruder);
               }
-
-#endif //SNMM
           }
       }
   } // end if(code_seen('T')) (end of T codes)
@@ -12039,35 +11957,15 @@ void M600_wait_for_user(float HotendTempBckp) {
 
 void M600_load_filament_movements()
 {
-#ifdef SNMM
-	display_loading();
-	do
-	{
-		current_position[E_AXIS] += 0.002;
-		plan_buffer_line_curposXYZE(500, active_extruder);
-		delay_keep_alive(2);
-	}
-	while (!lcd_clicked());
-	st_synchronize();
-	current_position[E_AXIS] += bowden_length[mmu_extruder];
-	plan_buffer_line_curposXYZE(3000, active_extruder);
-	current_position[E_AXIS] += FIL_LOAD_LENGTH - 60;
-	plan_buffer_line_curposXYZE(1400, active_extruder);
-	current_position[E_AXIS] += 40;
-	plan_buffer_line_curposXYZE(400, active_extruder);
-	current_position[E_AXIS] += 10;
-	plan_buffer_line_curposXYZE(50, active_extruder);
-#else
-	current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
+	current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED;
 	plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST);
-#endif                
 	load_filament_final_feed();
 	lcd_loading_filament();
 	st_synchronize();
 }
 
 void M600_load_filament() {
-	//load filament for single material and SNMM 
+	//load filament for single material and MMU
 	lcd_wait_interact();
 
 	//load_filament_time = _millis();

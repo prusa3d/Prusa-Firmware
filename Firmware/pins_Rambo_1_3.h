@@ -67,11 +67,6 @@
 #define E0_MS1_PIN             65
 #define E0_MS2_PIN             66
 
-#ifdef SNMM 
-  #define E_MUX0_PIN 17
-  #define E_MUX1_PIN 16
-#endif
-
 
 #define MOTOR_CURRENT_PWM_XY_PIN 46
 #define MOTOR_CURRENT_PWM_Z_PIN  45

@@ -922,7 +922,7 @@
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
 
-#MSG_LOAD_ALL c=17
+#MSG_LOAD_ALL c=18
 "Load all"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6

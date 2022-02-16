@@ -1555,7 +1555,7 @@ msgstr "Kalibrace XYZ nepresna. Predni kalibracni body moc vpredu."
 msgid "XYZ calibration compromised. Right front calibration point not reachable."
 msgstr "Kalibrace XYZ nepresna. Pravy predni bod moc vpredu."
 
-# MSG_LOAD_ALL c=17
+# MSG_LOAD_ALL c=18
 #: ultralcd.cpp:6167
 msgid "Load all"
 msgstr "Zavest vse"

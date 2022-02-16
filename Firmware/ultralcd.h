@@ -189,12 +189,9 @@ void unload_filament(bool automatic = false);
 void lcd_printer_connected();
 void lcd_ping();
 
-void lcd_calibrate_extruder();
-
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();
 void lcd_move_e(); // NOT static due to usage in Marlin_main
-void lcd_extr_cal_reset();
 
 void lcd_temp_cal_show_result(bool result);
 #ifdef PINDA_THERMISTOR
@@ -202,7 +199,6 @@ bool lcd_wait_for_pinda(float temp);
 #endif //PINDA_THERMISTOR
 
 
-void bowden_menu();
 char reset_menu();
 uint8_t choose_menu_P(const char *header, const char *item, const char *last_item = nullptr);
 
