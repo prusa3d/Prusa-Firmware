@@ -631,7 +631,7 @@ void crashdet_detected(uint8_t mask)
 	lcd_update_enable(true);
 	lcd_update(2);
 
-    // prepare the status message with the _current_ axes stauts
+    // prepare the status message with the _current_ axes status
     strcat(msg, " ");
     strcat_P(msg, _T(MSG_CRASH_DETECTED));
     lcd_setstatus(msg);
