@@ -594,6 +594,14 @@ void crashdet_restore_print_and_continue()
 //	babystep_apply();
 }
 
+void crashdet_fmt_error(char* buf, uint8_t mask)
+{
+    if(mask & X_AXIS_MASK) *buf++ = axis_codes[X_AXIS];
+    if(mask & Y_AXIS_MASK) *buf++ = axis_codes[Y_AXIS];
+    *buf++ = ' ';
+    strcpy_P(buf, _T(MSG_CRASH_DETECTED));
+}
+
 void crashdet_detected(uint8_t mask)
 {
 	st_synchronize();
@@ -619,21 +627,18 @@ void crashdet_detected(uint8_t mask)
 	{
 		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_X, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) + 1);
 		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) + 1);
-		strcat(msg, "X");
 	}
 	if (mask & Y_AXIS_MASK)
 	{
 		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) + 1);
 		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
-		strcat(msg, "Y");
 	}
 
 	lcd_update_enable(true);
 	lcd_update(2);
 
     // prepare the status message with the _current_ axes status
-    strcat(msg, " ");
-    strcat_P(msg, _T(MSG_CRASH_DETECTED));
+    crashdet_fmt_error(msg, mask);
     lcd_setstatus(msg);
 
 	gcode_G28(true, true, false); //home X and Y
@@ -647,11 +652,9 @@ void crashdet_detected(uint8_t mask)
         // notify the user of *all* the axes previously affected, not just the last one
         lcd_update_enable(false);
         lcd_clear();
-        if (crashDet_axes & X_AXIS_MASK) lcd_putc('X');
-        if (crashDet_axes & Y_AXIS_MASK) lcd_putc('Y');
+        crashdet_fmt_error(msg, crashDet_axes);
         crashDet_axes = 0;
-        lcd_putc(' ');
-        lcd_puts_P(_T(MSG_CRASH_DETECTED));
+        lcd_print(msg);
 
         // ask whether to resume printing
         lcd_set_cursor(0, 1);
