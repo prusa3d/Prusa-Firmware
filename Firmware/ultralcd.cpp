@@ -1858,6 +1858,11 @@ static void lcd_stack_crash()
 }
 #endif
 
+#ifdef DEBUG_PULLUP_CRASH
+void TestPullupCrash() {
+	PORTF |= 0x01;
+}
+#endif // DEBUG_PULLUP_CRASH
 
 //! @brief Show Support Menu
 //!
@@ -2068,7 +2073,6 @@ static void lcd_support_menu()
 #endif /* DEBUG_BUILD */
 
   #endif //MK1BP
-
   MENU_END();
 }
 
@@ -9063,6 +9067,10 @@ void lcd_experimental_menu()
 #ifdef TMC2130
     MENU_ITEM_TOGGLE_P(_N("E-cool mode"), UserECoolEnabled()?_T(MSG_ON):_T(MSG_OFF), UserECool_toggle);////MSG_MENU_ECOOL c=18
 #endif
+    
+#ifdef DEBUG_PULLUP_CRASH
+    MENU_ITEM_FUNCTION_P(_N("Test Pullup Crash"), TestPullupCrash);
+#endif // DEBUG_PULLUP_CRASH
     MENU_END();
 }
 
