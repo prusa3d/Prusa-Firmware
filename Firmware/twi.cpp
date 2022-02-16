@@ -24,6 +24,7 @@
 #include "config.h"
 #include "fastio.h"
 #include "twi.h"
+#include "Timer.h"
 
 
 void twi_init(void)
@@ -58,7 +59,13 @@ static void twi_stop()
 
 static uint8_t twi_wait(uint8_t status)
 {
-  while(!(TWCR & _BV(TWINT)));
+  static ShortTimer timmy;
+  timmy.start();
+  while(!(TWCR & _BV(TWINT))) {
+    if (timmy.expired(TWI_TIMEOUT_MS)) {
+      return 2;
+    }
+  }
   if(TW_STATUS != status)
   {
       twi_stop();
