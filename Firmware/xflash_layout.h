@@ -53,15 +53,6 @@
 
 #define XFLASH_SIZE 0x40000ul // size of XFLASH
 
-#ifndef XFLASH_DUMP
-#define MMU_BOOTLOADER_UPDATE_OFFSET (XFLASH_SIZE - 32768) // 32KB of MMU bootloader self update.
-#define MMU_FW_UPDATE_OFFSET (MMU_BOOTLOADER_UPDATE_OFFSET - 32768) // 32KB of MMU fw.
-#define LANG_OFFSET 0x0 // offset for language data
-
-#define LANG_SIZE (MMU_FW_UPDATE_OFFSET - LANG_OFFSET) // available language space
-
-#else
-
 #define DUMP_MAGIC  0x55525547ul
 
 struct dump_header_t
@@ -100,5 +91,3 @@ struct dump_t
 
 #define LANG_SIZE (MMU_FW_UPDATE_OFFSET - LANG_OFFSET) // available language space
 #define DUMP_SIZE (XFLASH_SIZE - DUMP_OFFSET) // effective dump size area
-
-#endif
