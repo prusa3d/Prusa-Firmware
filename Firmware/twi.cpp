@@ -62,7 +62,7 @@ static void twi_stop()
 
 static uint8_t twi_wait(uint8_t status)
 {
-  static ShortTimer timmy;
+  ShortTimer timmy;
   timmy.start();
   while(!(TWCR & _BV(TWINT))) {
     if (timmy.expired(TWI_TIMEOUT_MS)) {
