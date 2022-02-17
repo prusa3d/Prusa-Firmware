@@ -655,7 +655,7 @@ void crashdet_detected(uint8_t mask)
 
         // ask whether to resume printing
         lcd_set_cursor(0, 1);
-        lcd_puts_P(MSG_RESUME_PRINT);
+        lcd_puts_P(_T(MSG_RESUME_PRINT));
         lcd_putc('?');
         bool yesno = lcd_show_yes_no_and_wait(false);
 		lcd_update_enable(true);
