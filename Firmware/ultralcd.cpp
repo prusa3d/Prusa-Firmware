@@ -3278,18 +3278,14 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 	}
 }
 
-//! @brief Show single screen message with yes and no possible choices and wait with possible timeout
-//! @param msg Message to show
+//! @brief Display and wait for a Yes/No choice using the last two lines of the LCD
 //! @param allow_timeouting if true, allows time outing of the screen
 //! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
 //! @retval 1 yes choice selected by user
 //! @retval 0 no choice selected by user
 //! @retval -1 screen timed out
-int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
+int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, bool default_yes)
 {
-
-	lcd_display_message_fullscreen_P(msg);
-	
 	if (default_yes) {
 		lcd_putc_at(0, 2, '>');
 		lcd_puts_P(_T(MSG_YES));
@@ -3340,6 +3336,20 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 	}
     lcd_encoder_diff = 0;
     return retval;
+}
+
+//! @brief Show single screen message with yes and no possible choices and wait with possible timeout
+//! @param msg Message to show
+//! @param allow_timeouting if true, allows time outing of the screen
+//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
+//! @retval 1 yes choice selected by user
+//! @retval 0 no choice selected by user
+//! @retval -1 screen timed out
+//! @relates lcd_show_yes_no_and_wait
+int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
+{
+    lcd_display_message_fullscreen_P(msg);
+    return lcd_show_yes_no_and_wait(allow_timeouting, default_yes);
 }
 
 void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask)

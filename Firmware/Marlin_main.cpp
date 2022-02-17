@@ -591,27 +591,30 @@ void crashdet_restore_print_and_continue()
 //	babystep_apply();
 }
 
+void crashdet_fmt_error(char* buf, uint8_t mask)
+{
+    if(mask & X_AXIS_MASK) *buf++ = axis_codes[X_AXIS];
+    if(mask & Y_AXIS_MASK) *buf++ = axis_codes[Y_AXIS];
+    *buf++ = ' ';
+    strcpy_P(buf, _T(MSG_CRASH_DETECTED));
+}
+
 void crashdet_detected(uint8_t mask)
 {
 	st_synchronize();
 	static uint8_t crashDet_counter = 0;
+	static uint8_t crashDet_axes = 0;
 	bool automatic_recovery_after_crash = true;
+	char msg[LCD_WIDTH+1] = "";
 
-	if (crashDet_counter++ == 0) {
-		crashDetTimer.start();
-	}
-	else if (crashDetTimer.expired(CRASHDET_TIMER * 1000ul)){
-		crashDetTimer.stop();
-		crashDet_counter = 0;
-	}
-	else if(crashDet_counter == CRASHDET_COUNTER_MAX){
-		automatic_recovery_after_crash = false;
-		crashDetTimer.stop();
-		crashDet_counter = 0;
-	}
-	else {
-		crashDetTimer.start();
-	}
+    if (crashDetTimer.expired(CRASHDET_TIMER * 1000ul)) {
+        crashDet_counter = 0;
+    }
+    if(++crashDet_counter >= CRASHDET_COUNTER_MAX) {
+        automatic_recovery_after_crash = false;
+    }
+    crashDetTimer.start();
+    crashDet_axes |= mask;
 
 	lcd_update_enable(true);
 	lcd_clear();
@@ -627,12 +630,14 @@ void crashdet_detected(uint8_t mask)
 		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) + 1);
 		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
 	}
-    
-
 
 	lcd_update_enable(true);
 	lcd_update(2);
-	lcd_setstatuspgm(_T(MSG_CRASH_DETECTED));
+
+    // prepare the status message with the _current_ axes status
+    crashdet_fmt_error(msg, mask);
+    lcd_setstatus(msg);
+
 	gcode_G28(true, true, false); //home X and Y
 	st_synchronize();
 
@@ -640,7 +645,19 @@ void crashdet_detected(uint8_t mask)
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}else{
 		setTargetHotend(0, active_extruder);
-		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);////MSG_CRASH_RESUME c=20 r=3
+
+        // notify the user of *all* the axes previously affected, not just the last one
+        lcd_update_enable(false);
+        lcd_clear();
+        crashdet_fmt_error(msg, crashDet_axes);
+        crashDet_axes = 0;
+        lcd_print(msg);
+
+        // ask whether to resume printing
+        lcd_set_cursor(0, 1);
+        lcd_puts_P(MSG_RESUME_PRINT);
+        lcd_putc('?');
+        bool yesno = lcd_show_yes_no_and_wait(false);
 		lcd_update_enable(true);
 		if (yesno)
 		{
