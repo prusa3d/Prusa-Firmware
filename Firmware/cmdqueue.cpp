@@ -24,7 +24,7 @@ int serial_count = 0;  //index of character read from serial line
 bool comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
-ShortTimer farm_incomplete_command_timeout_timer;
+LongTimer farm_incomplete_command_timeout_timer;
 
 long gcode_N = 0;
 long gcode_LastN = 0;

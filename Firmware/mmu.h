@@ -15,7 +15,7 @@ extern uint8_t mmu_extruder;
 extern uint8_t tmp_extruder;
 
 extern int8_t mmu_finda;
-extern ShortTimer mmu_last_finda_response;
+extern LongTimer mmu_last_finda_response;
 extern bool ir_sensor_detected;
 
 extern int16_t mmu_version;
