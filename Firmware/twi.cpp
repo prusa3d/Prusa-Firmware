@@ -24,6 +24,7 @@
 #include "config.h"
 #include "fastio.h"
 #include "twi.h"
+#include "Timer.h"
 
 
 void twi_init(void)
@@ -44,6 +45,9 @@ void twi_init(void)
 
 void twi_disable(void)
 {
+  // disable TWI hardware.
+  TWCR = 0;
+  
   // deactivate internal pullups for twi.
   WRITE(SDA_PIN, 0);
   WRITE(SCL_PIN, 0);
@@ -58,7 +62,13 @@ static void twi_stop()
 
 static uint8_t twi_wait(uint8_t status)
 {
-  while(!(TWCR & _BV(TWINT)));
+  ShortTimer timmy;
+  timmy.start();
+  while(!(TWCR & _BV(TWINT))) {
+    if (timmy.expired(TWI_TIMEOUT_MS)) {
+      return 2;
+    }
+  }
   if(TW_STATUS != status)
   {
       twi_stop();
