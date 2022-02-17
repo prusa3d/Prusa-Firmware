@@ -75,9 +75,9 @@ int16_t mmu_version = -1;
 
 int16_t mmu_buildnr = -1;
 
-ShortTimer mmu_last_request;
-ShortTimer mmu_last_response;
-ShortTimer mmu_last_finda_response;
+LongTimer mmu_last_request;
+LongTimer mmu_last_response;
+LongTimer mmu_last_finda_response;
 
 MmuCmd mmu_last_cmd = MmuCmd::None;
 uint16_t mmu_power_failures = 0;
