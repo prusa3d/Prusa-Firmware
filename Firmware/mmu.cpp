@@ -756,9 +756,9 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 					delay_keep_alive(3000);
 				}
 				mmu_wait_for_heater_blocking();
-			  }			  
+			  }
+				lcd_clear();
 			  if (move_axes) {
-				  lcd_clear();
 				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming position..."));
 				  current_position[X_AXIS] = x_position_bckp;
 				  current_position[Y_AXIS] = y_position_bckp;
@@ -767,9 +767,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  current_position[Z_AXIS] = z_position_bckp;
 				  plan_buffer_line_curposXYZE(15);
 				  st_synchronize();
-			  }
-			  else {
-				  lcd_clear();
+			  } else {
 				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming..."));
 				  delay_keep_alive(1000); //delay just for showing MMU OK message for a while in case that there are no xyz movements
 			  }
