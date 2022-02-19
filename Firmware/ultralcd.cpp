@@ -2647,8 +2647,6 @@ static void lcd_babystep_z()
 		lcd_draw_update = 1;
 		//SERIAL_ECHO("Z baby step: ");
 		//SERIAL_ECHO(_md->babystepMem[2]);
-		// Wait 90 seconds before closing the live adjust dialog.
-		lcd_timeoutToStatus.start();
 	}
 
 	if (lcd_encoder != 0)
