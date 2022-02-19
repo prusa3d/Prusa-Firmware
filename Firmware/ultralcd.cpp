@@ -2270,15 +2270,8 @@ void lcd_alright() {
       _delay(500);
 
     }
-
-
-
   };
-
-
-  lcd_clear();
   lcd_return_to_status();
-
 }
 
 void show_preheat_nozzle_warning()
@@ -2873,7 +2866,6 @@ void lcd_adjust_z() {
     }
   };
 
-  lcd_clear();
   lcd_return_to_status();
 
 }*/
@@ -3448,7 +3440,6 @@ void lcd_diag_show_end_stops()
             break;
         }
     }
-    lcd_clear();
     lcd_return_to_status();
 }
 
@@ -3854,8 +3845,7 @@ void lcd_pick_babystep(){
             
         }
     };
-    
-    lcd_clear();
+
     lcd_return_to_status();
 }
 */
@@ -8177,7 +8167,6 @@ void menu_lcd_lcdupdate_func(void)
 				(*menu_menu)();
 				menu_leaving = 0;
 			}
-			lcd_clear();
 			lcd_return_to_status();
 			lcd_draw_update = 2;
 		}
