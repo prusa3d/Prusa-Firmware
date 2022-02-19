@@ -3565,11 +3565,7 @@ void lcd_menu_show_sensors_state()                // NOT static due to using ins
 {
 	lcd_timeoutToStatus.stop();
 	lcd_show_sensors_state();
-	if(LCD_CLICKED)
-	{
-		lcd_timeoutToStatus.start();
-		menu_back();
-	}
+	menu_back_if_clicked();
 }
 
 void prusa_statistics_err(char c){
