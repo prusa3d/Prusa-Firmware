@@ -38,7 +38,7 @@
 "All correct"
 "Todo bien"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 "Terminado! Feliz impresion!"
 
@@ -383,8 +383,8 @@
 "Vent. frontal?"
 
 #MSG_BED_CORRECTION_FRONT c=14
-"Front side[um]"
-"Frontal [um]"
+"Front side[\xe4m]"
+"Frontal [\xe4m]"
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
@@ -511,8 +511,8 @@
 "Izquierda"
 
 #MSG_BED_CORRECTION_LEFT c=14
-"Left side [um]"
-"Izquierda [um]"
+"Left side [\xe4m]"
+"Izquierda [\xe4m]"
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
@@ -875,8 +875,8 @@
 "Por favor, cargar primero el filamento."
 
 #MSG_BED_CORRECTION_REAR c=14
-"Rear side [um]"
-"Trasera [um]"
+"Rear side [\xe4m]"
+"Trasera [\xe4m]"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
@@ -911,8 +911,8 @@
 "Continuan. impresion"
 
 #MSG_BED_CORRECTION_RIGHT c=14
-"Right side[um]"
-"Derecha [um]"
+"Right side[\xe4m]"
+"Derecha [\xe4m]"
 
 #MSG_RPI_PORT c=13
 "RPi port"
@@ -1194,7 +1194,7 @@
 "XYZ calibration failed. Please consult the manual."
 "Calibracion XYZ fallada. Consulta el manual por favor."
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 "Si"
 

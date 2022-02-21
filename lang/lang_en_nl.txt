@@ -38,7 +38,7 @@
 "All correct"
 "Allemaal goed"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 "Klaar. Happy printing!"
 
@@ -383,8 +383,8 @@
 "Voorzijde fan?"
 
 #MSG_BED_CORRECTION_FRONT c=14
-"Front side[um]"
-"Voorkant  [um]"
+"Front side[\xe4m]"
+"Voorkant  [\xe4m]"
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
@@ -511,8 +511,8 @@
 "Links"
 
 #MSG_BED_CORRECTION_LEFT c=14
-"Left side [um]"
-"Linkerkant[um]"
+"Left side [\xe4m]"
+"Linkerkant[\xe4m]"
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
@@ -875,8 +875,8 @@
 "Laad a.u.b. eerst filament."
 
 #MSG_BED_CORRECTION_REAR c=14
-"Rear side [um]"
-"Achterkant[um]"
+"Rear side [\xe4m]"
+"Achterkant[\xe4m]"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
@@ -911,8 +911,8 @@
 "Hervatten print"
 
 #MSG_BED_CORRECTION_RIGHT c=14
-"Right side[um]"
-"Recht.kant[um]"
+"Right side[\xe4m]"
+"Recht.kant[\xe4m]"
 
 #MSG_RPI_PORT c=13
 "RPi port"
@@ -1194,7 +1194,7 @@
 "XYZ calibration failed. Please consult the manual."
 "XYZ-kalibratie mislukt. Raadpleeg de handleiding aub."
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 "Ja"
 

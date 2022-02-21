@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: lt\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Mon 03 Jan 2022 02:53:20 PM CET\n"
-"PO-Revision-Date: Mon 03 Jan 2022 02:53:20 PM CET\n"
+"POT-Creation-Date: Tue 08 Feb 2022 02:45:10 PM CET\n"
+"PO-Revision-Date: Tue 08 Feb 2022 02:45:10 PM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -65,7 +65,7 @@ msgstr ""
 msgid "All correct"
 msgstr ""
 
-# MSG_WIZARD_DONE c=20 r=8
+# MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
 msgstr ""
@@ -440,7 +440,7 @@ msgstr ""
 msgid "Filament not loaded"
 msgstr ""
 
-# MSG_FILAMENT_SENSOR c=20
+# MSG_SELFTEST_FILAMENT_SENSOR c=17
 #: messages.c:97
 msgid "Filament sensor"
 msgstr ""
@@ -497,7 +497,7 @@ msgstr ""
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
-msgid "Front side[um]"
+msgid "Front side[μm]"
 msgstr ""
 
 # MSG_SELFTEST_FANS c=20
@@ -657,7 +657,7 @@ msgstr ""
 
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
-msgid "Left side [um]"
+msgid "Left side [μm]"
 msgstr ""
 
 # MSG_LIN_CORRECTION c=18
@@ -1112,7 +1112,7 @@ msgstr ""
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
-msgid "Rear side [um]"
+msgid "Rear side [μm]"
 msgstr ""
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
@@ -1157,7 +1157,7 @@ msgstr ""
 
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
-msgid "Right side[um]"
+msgid "Right side[μm]"
 msgstr ""
 
 # MSG_RPI_PORT c=13
@@ -1425,7 +1425,7 @@ msgstr ""
 msgid "to unload filament"
 msgstr ""
 
-# MSG_UNLOAD_FILAMENT c=16
+# MSG_UNLOAD_FILAMENT c=18
 #: messages.c:114
 msgid "Unload filament"
 msgstr ""
@@ -1510,7 +1510,7 @@ msgstr ""
 msgid "XYZ calibration failed. Please consult the manual."
 msgstr ""
 
-# MSG_YES c=3
+# MSG_YES c=4
 #: messages.c:123
 msgid "Yes"
 msgstr ""

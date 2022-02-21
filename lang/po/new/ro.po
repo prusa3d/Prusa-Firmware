@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ro\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Mon Jan 17 12:19:31 CET 2022\n"
-"PO-Revision-Date: Mon Jan 17 12:19:31 CET 2022\n"
+"POT-Creation-Date: Tue 08 Feb 2022 02:44:41 PM CET\n"
+"PO-Revision-Date: Tue 08 Feb 2022 02:44:41 PM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -65,7 +65,7 @@ msgstr "Ajustare Z:"
 msgid "All correct"
 msgstr "Totul OK"
 
-# MSG_WIZARD_DONE c=20 r=8
+# MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
 msgstr "Totul este OK. Distractie placuta!"
@@ -440,7 +440,7 @@ msgstr "Fil. curge si are culoarea corecta?"
 msgid "Filament not loaded"
 msgstr "Fil. nu e incarcat"
 
-# MSG_FILAMENT_SENSOR c=20
+# MSG_SELFTEST_FILAMENT_SENSOR c=17
 #: messages.c:97
 msgid "Filament sensor"
 msgstr "Senz. de filament"
@@ -497,8 +497,8 @@ msgstr "Vent. print?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
-msgid "Front side[um]"
-msgstr "Fata [um]"
+msgid "Front side[μm]"
+msgstr "Fata [μm]"
 
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
@@ -657,8 +657,8 @@ msgstr "Stanga"
 
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
-msgid "Left side [um]"
-msgstr "Stanga [um]"
+msgid "Left side [μm]"
+msgstr "Stanga [μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -1112,8 +1112,8 @@ msgstr "Va rugam incarcati filamentul mai intai."
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
-msgid "Rear side [um]"
-msgstr "Spate [um]"
+msgid "Rear side [μm]"
+msgstr "Spate [μm]"
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ultralcd.cpp:7325
@@ -1157,8 +1157,8 @@ msgstr "Reluare print..."
 
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
-msgid "Right side[um]"
-msgstr "Dreapta [um]"
+msgid "Right side[μm]"
+msgstr "Dreapta [μm]"
 
 # MSG_RPI_PORT c=13
 #: messages.c:142
@@ -1425,7 +1425,7 @@ msgstr "a incarca filament"
 msgid "to unload filament"
 msgstr "a scoate filament"
 
-# MSG_UNLOAD_FILAMENT c=16
+# MSG_UNLOAD_FILAMENT c=18
 #: messages.c:114
 msgid "Unload filament"
 msgstr "Descarca filament"
@@ -1510,7 +1510,7 @@ msgstr "Detalii cal. XYZ"
 msgid "XYZ calibration failed. Please consult the manual."
 msgstr "Calibrarea XYZ a esuat. Va rugam consultati manualul."
 
-# MSG_YES c=3
+# MSG_YES c=4
 #: messages.c:123
 msgid "Yes"
 msgstr "Da"
