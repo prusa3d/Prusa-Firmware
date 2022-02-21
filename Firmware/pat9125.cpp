@@ -201,7 +201,7 @@ uint8_t pat9125_update(void)
 			if (iDX & 0x800) iDX -= 4096;
 			if (iDY & 0x800) iDY -= 4096;
 			pat9125_x += iDX;
-			pat9125_y -= iDY; //negative number, because direction switching does not work
+			pat9125_y += iDY;
 		}
 		return 1;
 	}
@@ -221,7 +221,7 @@ uint8_t pat9125_update_y(void)
 			if (pat9125_PID1 == 0xff) return 0;
 			int16_t iDY = ucYL | ((ucXYH << 8) & 0xf00);
 			if (iDY & 0x800) iDY -= 4096;
-			pat9125_y -= iDY; //negative number, because direction switching does not work
+			pat9125_y += iDY;
 		}
 		return 1;
 	}
