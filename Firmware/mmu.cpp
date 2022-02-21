@@ -524,10 +524,10 @@ void mmu_command(MmuCmd cmd)
 		//printf_P(PSTR("E-axis disabled\n"));
 		ad_markLoaded(cmd - MmuCmd::T0);
 	}
-    if ((cmd >= MmuCmd::L0) && (cmd <= MmuCmd::L4))
-    {
-        ad_markLoaded(cmd - MmuCmd::L0);
-    }
+	else if ((cmd >= MmuCmd::L0) && (cmd <= MmuCmd::L4))
+	{
+		ad_markLoaded(cmd - MmuCmd::L0);
+	}
 
 	mmu_cmd = cmd;
 	mmu_ready = false;
