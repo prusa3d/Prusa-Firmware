@@ -3497,7 +3497,7 @@ static void lcd_show_sensors_state()
 	uint8_t idler_state = STATE_NA;
 
 	pinda_state = READ(Z_MIN_PIN);
-	if (mmu_enabled && mmu_last_finda_response.expired(1000))
+	if (mmu_enabled && !mmu_last_finda_response.expired(1000))
 	{
 		finda_state = mmu_finda;
 	}
