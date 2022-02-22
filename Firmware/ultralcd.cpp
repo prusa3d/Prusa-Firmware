@@ -2051,11 +2051,11 @@ static void lcd_support_menu()
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef MENU_DUMP
-    MENU_ITEM_FUNCTION_P(_i("Dump memory"), lcd_dump_memory);
+    MENU_ITEM_FUNCTION_P(_n("Dump memory"), lcd_dump_memory);
 #endif //MENU_DUMP
 #ifdef MENU_SERIAL_DUMP
     if (emergency_serial_dump)
-        MENU_ITEM_FUNCTION_P(_i("Dump to serial"), lcd_serial_dump);
+        MENU_ITEM_FUNCTION_P(_n("Dump to serial"), lcd_serial_dump);
 #endif
 #ifdef DEBUG_BUILD
 #ifdef EMERGENCY_HANDLERS
