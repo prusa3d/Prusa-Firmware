@@ -151,12 +151,9 @@ public:
     bool update() {
         bool event = IR_sensor::update();
         if (voltReady) {
-            uint16_t newVoltRaw;
-            ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-                newVoltRaw = voltRaw;
-                voltReady = false;
-            }
-            printf_P(PSTR("newVoltRaw:%u\n"), newVoltRaw / OVERSAMPLENR);
+            voltReady = false;
+            printf_P(PSTR("newVoltRaw:%u\n"), getVoltRaw() / OVERSAMPLENR);
+            ;//
         }
         
         ;//
@@ -167,6 +164,14 @@ public:
     void voltUpdate(uint16_t raw) { //to be called from the ADC ISR when a cycle is finished
         voltRaw = raw;
         voltReady = true;
+    }
+    
+    uint16_t getVoltRaw() {
+        uint16_t newVoltRaw;
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+            newVoltRaw = voltRaw;
+        }
+        return newVoltRaw;
     }
     
     void settings_init() {
@@ -181,8 +186,8 @@ public:
     };
 private:
     SensorRevision sensorRevision;
-    bool voltReady; //this gets set by the adc ISR
-    uint16_t voltRaw;
+    volatile bool voltReady; //this gets set by the adc ISR
+    volatile uint16_t voltRaw;
 };
 
 extern IR_sensor_analog fsensor;

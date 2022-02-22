@@ -1443,7 +1443,7 @@ static void lcd_menu_voltages()
     lcd_home();
     lcd_printf_P(PSTR(" PWR:      %4.1fV\n" " BED:      %4.1fV"), volt_pwr, volt_bed);
 #ifdef IR_SENSOR_ANALOG
-    lcd_printf_P(PSTR("\n IR :       %3.1fV"), Raw2Voltage(current_voltage_raw_IR));
+    lcd_printf_P(PSTR("\n IR :       %3.1fV"), Raw2Voltage(fsensor.getVoltRaw()));
 #endif //IR_SENSOR_ANALOG
     menu_back_if_clicked();
 }
@@ -6257,7 +6257,7 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
     bool bPCBrev04;
     uint16_t volt_IR_int;
 
-    volt_IR_int = current_voltage_raw_IR;
+    volt_IR_int = fsensor.getVoltRaw();
     bPCBrev04=(volt_IR_int < IRsensor_Hopen_TRESHOLD);
     printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"), Raw2Voltage(volt_IR_int) );
     if(volt_IR_int < IRsensor_Hmin_TRESHOLD){
@@ -6266,7 +6266,7 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
         return(false);
     }
     lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));////MSG_INSERT_FIL c=20 r=6
-    volt_IR_int = current_voltage_raw_IR;
+    volt_IR_int = fsensor.getVoltRaw();
     printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"), Raw2Voltage(volt_IR_int));
     if(volt_IR_int > (IRsensor_Lmax_TRESHOLD)){
         if(!bStandalone)
