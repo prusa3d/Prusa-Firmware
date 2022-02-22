@@ -5232,6 +5232,7 @@ static void mmu_cut_filament_menu()
     else
     {
         eFilamentAction=FilamentAction::MmuCut;
+        bFilamentFirstRun=false;
         if(target_temperature[0] >= extrude_min_temp)
         {
             bFilamentPreheatState=true;
