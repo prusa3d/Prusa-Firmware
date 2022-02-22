@@ -1360,7 +1360,6 @@ void setup()
 
 #ifdef FILAMENT_SENSOR
     fsensor.init();
-	fsensor_init();
 #endif //FILAMENT_SENSOR
 
 
