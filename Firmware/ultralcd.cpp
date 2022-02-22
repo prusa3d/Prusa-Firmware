@@ -7400,7 +7400,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 #ifdef PAT9125
 static bool lcd_selftest_fsensor(void)
 {
-	fsensor_init();
+	// fsensor.init();
 	if (fsensor_not_responding)
 	{
 		lcd_selftest_error(TestError::WiringFsensor, "", "");

@@ -148,49 +148,6 @@ const char* FsensorIRVersionText()
 }
 #endif //IR_SENSOR_ANALOG
 
-void fsensor_init(void)
-{
-#ifdef PAT9125
-	uint8_t pat9125 = pat9125_init();
-	printf_P(PSTR("PAT9125_init:%u\n"), pat9125);
-#endif //PAT9125
-	uint8_t fsensor_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
-	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
-	fsensor_not_responding = false;
-#ifdef PAT9125
-	fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[E_AXIS]);
-	
-	if (!pat9125){
-		fsensor_enabled = 0; //disable sensor
-		fsensor_not_responding = true;
-	}
-#endif //PAT9125
-#ifdef IR_SENSOR_ANALOG
-	oFsensorPCB = (ClFsensorPCB)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_PCB);
-	oFsensorActionNA = (ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
-
-	// If the fsensor is not responding even at the start of the printer,
-	// set this flag accordingly to show N/A in Settings->Filament sensor.
-	// This is even valid for both fsensor board revisions (0.3 or older and 0.4).
-	// Must be done after reading what type of fsensor board we have
-	fsensor_not_responding = ! fsensor_IR_check();
-#endif //IR_SENSOR_ANALOG
-	if (fsensor_enabled){
-		fsensor_enable(false);                  // (in this case) EEPROM update is not necessary
-	} else {
-		fsensor_disable(false);                 // (in this case) EEPROM update is not necessary
-	}
-	printf_P(PSTR("FSensor %S"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED")));
-#ifdef IR_SENSOR_ANALOG
-	printf_P(PSTR(" (sensor board revision:%S)\n"), FsensorIRVersionText());
-#else //IR_SENSOR_ANALOG
-	MYSERIAL.println();
-#endif //IR_SENSOR_ANALOG
-	if (check_for_ir_sensor()){
-		ir_sensor_detected = true;
-	}
-}
-
 bool fsensor_enable(bool bUpdateEEPROM)
 {
 #ifdef PAT9125
