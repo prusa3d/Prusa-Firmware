@@ -32,6 +32,7 @@
 #ifdef FILAMENT_SENSOR
 #include "pat9125.h"
 #include "fsensor.h"
+#include "Filament_sensor.h"
 #endif //FILAMENT_SENSOR
 
 #ifdef TMC2130
@@ -1794,14 +1795,6 @@ void lcd_set_filament_autoload() {
      fsensor_autoload_set(!fsensor_autoload_enabled);
 }
 
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-void lcd_set_filament_oq_meass()
-{
-     fsensor_oq_meassure_set(!fsensor_oq_meassure_enabled);
-}
-#endif
-
-
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
@@ -1833,7 +1826,7 @@ switch(eFilamentAction)
      case FilamentAction::Lay1Cal:
           break;
      }
-if(lcd_clicked())
+    if(lcd_clicked() || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent()))
      {
      nLevel=2;
      if(!bFilamentPreheatState)
@@ -4628,10 +4621,6 @@ do\
                 MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_ON), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_ON c=17*/\
             else\
                 MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_OFF), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_OFF c=17*/\
-            /*if (fsensor_oq_meassure_enabled)*/\
-                /*MENU_ITEM_FUNCTION_P(_i("F. OQ meass. [on]"), lcd_set_filament_oq_meass);*//*////MSG_FSENS_OQMEASS_ON c=17*/\
-            /*else*/\
-                /*MENU_ITEM_FUNCTION_P(_i("F. OQ meass.[off]"), lcd_set_filament_oq_meass);*//*////MSG_FSENS_OQMEASS_OFF c=17*/\
         }\
     }\
 }\
@@ -5612,6 +5601,7 @@ void unload_filament(bool automatic)
 	lcd_setstatuspgm(MSG_WELCOME);
 	custom_message_type = CustomMsg::Status;
 
+	eFilamentAction = FilamentAction::None;
 }
 
 #include "xflash.h"
@@ -8140,7 +8130,7 @@ void menu_lcd_lcdupdate_func(void)
 	}
 #endif//CARDINSERTED
 	backlight_update();
-	if (lcd_next_update_millis < _millis())
+	if (lcd_next_update_millis < _millis() || lcd_draw_update)
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
 		{

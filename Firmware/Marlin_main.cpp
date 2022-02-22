@@ -3824,11 +3824,6 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
     enquecommand(cmd);
 
-#ifdef IR_SENSOR
-	//this will set fsensor_watch_autoload to correct value and prevent possible M701 gcode enqueuing when M600 is finished
-	fsensor_check_autoload();
-#endif //IR_SENSOR
-
 #ifdef FILAMENT_SENSOR
     fsensor.settings_init();
 #endif
@@ -3861,23 +3856,19 @@ void gcode_M701()
 		enable_z();
 		custom_message_type = CustomMsg::FilamentLoading;
 
-#ifdef FSENSOR_QUALITY
-		fsensor_oq_meassure_start(40);
-#endif //FSENSOR_QUALITY
-
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 		current_position[E_AXIS] += 40;
 		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
 		st_synchronize();
 
-        raise_z_above(MIN_Z_FOR_LOAD, false);
+		raise_z_above(MIN_Z_FOR_LOAD, false);
 		current_position[E_AXIS] += 30;
 		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
 		
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
 
-    Sound_MakeCustom(50,500,false);
+		Sound_MakeCustom(50,500,false);
 
 		if (!farm_mode && loading_flag) {
 			lcd_load_filament_color_check();
@@ -3888,21 +3879,10 @@ void gcode_M701()
 		disable_z();
 		loading_flag = false;
 		custom_message_type = CustomMsg::Status;
-
-#ifdef FSENSOR_QUALITY
-        fsensor_oq_meassure_stop();
-
-        if (!fsensor_oq_result())
-        {
-            bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
-            lcd_update_enable(true);
-            lcd_update(2);
-            if (disable)
-                fsensor_disable();
-        }
-#endif //FSENSOR_QUALITY
 	}
-    
+	
+	eFilamentAction = FilamentAction::None;
+	
 #ifdef FILAMENT_SENSOR
 	fsensor.settings_init(); //restore filament runout state.
 #endif
@@ -9785,7 +9765,9 @@ void manage_inactivity_IR_ANALOG_Check(uint16_t &nFSCheckCount, ClFsensorPCB isV
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-    fsensor.update();
+    if (fsensor.update()) {
+        lcd_draw_update = 1; //cause lcd update so that fsensor event polling can be done from the lcd draw routine.
+    }
 #endif
 
 #ifdef SAFETYTIMER
@@ -11894,9 +11876,8 @@ void M600_load_filament() {
 		manage_heater();
 		manage_inactivity(true);
 #ifdef FILAMENT_SENSOR
-		if (fsensor_check_autoload())
-		{
-      Sound_MakeCustom(50,1000,false);
+		if (fsensor.getFilamentLoadEvent()) {
+			Sound_MakeCustom(50,1000,false);
 			break;
 		}
 #endif //FILAMENT_SENSOR
@@ -11906,26 +11887,10 @@ void M600_load_filament() {
 #endif //PAT9125
 	KEEPALIVE_STATE(IN_HANDLER);
 
-#ifdef FSENSOR_QUALITY
-	fsensor_oq_meassure_start(70);
-#endif //FSENSOR_QUALITY
-
 	M600_load_filament_movements();
 
-      Sound_MakeCustom(50,1000,false);
+	Sound_MakeCustom(50,1000,false);
 
-#ifdef FSENSOR_QUALITY
-	fsensor_oq_meassure_stop();
-
-	if (!fsensor_oq_result())
-	{
-		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
-		lcd_update_enable(true);
-		lcd_update(2);
-		if (disable)
-			fsensor_disable();
-	}
-#endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
 }
 
