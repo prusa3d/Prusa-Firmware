@@ -4703,7 +4703,7 @@ void lcd_v2_calibration()
 	if (mmu_enabled)
 	{
 	    const uint8_t filament = choose_menu_P(
-            _i("Select filament:"), ////MSG_SELECT_FILAMENT c=20
+            _T(MSG_SELECT_FILAMENT),
             _T(MSG_FILAMENT),(_T(MSG_CANCEL)+1)); //Hack to reuse MSG but strip 1st char off
 	    if (filament < 5)
 	    {
@@ -4839,7 +4839,7 @@ static void wizard_lay1cal_message(bool cold)
     if (mmu_enabled)
     {
         lcd_show_fullscreen_message_and_wait_P(
-                _i("Choose a filament for the First Layer Calibration and select it in the on-screen menu."));////MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
+                _i("Select a filament for the First Layer Calibration and select it in the on-screen menu."));////MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
     }
     else if (cold)
     {

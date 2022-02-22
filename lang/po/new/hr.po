@@ -257,7 +257,7 @@ msgstr "Udar detekti."
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4842
-msgid "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Odaberite filament za Kalibraciju Prvog Sloja i odaberite ga u izborniku na zaslonu."
 
 # MSG_CRASH_DETECTED c=20
@@ -584,11 +584,6 @@ msgstr "Provjera Z osi"
 #: messages.c:54
 msgid "Choose extruder:"
 msgstr "Odaberite ekstruder:"
-
-# MSG_CHOOSE_FILAMENT c=20
-#: messages.c:55
-msgid "Choose filament:"
-msgstr "Odaberite filament:"
 
 # MSG_FILAMENT c=17
 #: messages.c:35

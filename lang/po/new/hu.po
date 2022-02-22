@@ -257,7 +257,7 @@ msgstr "Utkozes erz."
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4842
-msgid "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Valassz egy filamentet az elso reteg kalibraciojahoz a menubol."
 
 # MSG_CRASH_DETECTED c=20
@@ -584,11 +584,6 @@ msgstr "Z tengely ellenorzes"
 #: messages.c:54
 msgid "Choose extruder:"
 msgstr "Extruder valasztas:"
-
-# MSG_CHOOSE_FILAMENT c=20
-#: messages.c:55
-msgid "Choose filament:"
-msgstr "Filament valasztas:"
 
 # MSG_FILAMENT c=17
 #: messages.c:35
