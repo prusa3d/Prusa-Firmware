@@ -271,6 +271,36 @@ sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
 sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
 fi
 
+#https://en.wikipedia.org/wiki/Norwegian_orthography éèêóòôù ÅåÆæØø
+if [ "$LNG" = "no" ]; then
+ #repace 'Å' with 'A'
+ sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
+ #repace 'å' with 'a'
+ sed -i 's/\xc3\xA5/a/g' $LNG'_filtered.po'
+ #repace 'Æ' with 'Ae'
+ sed -i 's/\xc3\x86/A/g' $LNG'_filtered.po'
+ #repace 'æ' with 'ae'
+ sed -i 's/\xc3\xa6/a/g' $LNG'_filtered.po'
+ #repace 'Ø' with 'O'
+ sed -i 's/\xc3\x98/O/g' $LNG'_filtered.po'
+ #repace 'ø' with 'o'
+ sed -i 's/\xc3\xb8/o/g' $LNG'_filtered.po'
+ #replace 'é' with 'e'
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+ #replace 'è' with 'e'
+ sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
+ #replace 'ê' with 'e'
+ sed -i 's/\xc3\xaa/e/g' $LNG'_filtered.po'
+ #replace 'ó' with 'o'
+ sed -i 's/\xc3\xb3/o/g' $LNG'_filtered.po'
+ #replace 'ò' with 'o'
+ sed -i 's/\xc3\xb2/o/g' $LNG'_filtered.po'
+ #replace 'ô' with 'o'
+ sed -i 's/\xc3\xb4/o/g' $LNG'_filtered.po'
+ #replace 'ù' with 'u'
+ sed -i 's/\xc3\xb9/u/g' $LNG'_filtered.po'
+fi
+
 if [ "$LNG" = "da" ]; then
 #repace 'Å' with 'Aa'
 sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
