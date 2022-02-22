@@ -251,7 +251,11 @@ msgid "Crash det."
 msgstr "Wykr.zderzen"
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
+<<<<<<< HEAD
 #: ultralcd.cpp:4824
+=======
+#: ultralcd.cpp:4842
+>>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Wybierz filament do Kalibracji Pierwszej Warstwy i potwierdz w menu ekranowym."
 

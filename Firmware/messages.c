@@ -53,7 +53,11 @@ const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////c=20
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20
 const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////c=18
 const char MSG_ITERATION[] PROGMEM_I1 = ISTR("Iteration"); ////c=12
+<<<<<<< HEAD
 const char MSG_SELECT_EXTRUDER[] PROGMEM_I1 = ISTR("Select extruder:"); ////c=20
+=======
+const char MSG_CHOOSE_EXTRUDER[] PROGMEM_I1 = ISTR("Choose extruder:"); ////c=20
+>>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 const char MSG_SELECT_FILAMENT[] PROGMEM_I1 = ISTR("Select filament:"); ////c=20
 const char MSG_LAST_PRINT[] PROGMEM_I1 = ISTR("Last print"); ////c=18
 const char MSG_LAST_PRINT_FAILURES[] PROGMEM_I1 = ISTR("Last print failures"); ////c=20

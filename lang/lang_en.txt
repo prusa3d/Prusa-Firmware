@@ -334,8 +334,13 @@
 #MSG_SELFTEST_CHECK_Z c=20
 "Checking Z axis"
 
+<<<<<<< HEAD
 #MSG_SELECT_EXTRUDER c=20
 "Select extruder:"
+=======
+#MSG_CHOOSE_EXTRUDER c=20
+"Choose extruder:"
+>>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 
 #MSG_FILAMENT c=17
 "Filament"

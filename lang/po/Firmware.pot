@@ -251,7 +251,11 @@ msgid "Crash det."
 msgstr ""
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
+<<<<<<< HEAD
 #: ultralcd.cpp:4824
+=======
+#: ultralcd.cpp:4842
+>>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr ""
 
@@ -575,9 +579,15 @@ msgstr ""
 msgid "Checking Z axis"
 msgstr ""
 
+<<<<<<< HEAD
 # MSG_SELECT_EXTRUDER c=20
 #: messages.c:56
 msgid "Select extruder:"
+=======
+# MSG_CHOOSE_EXTRUDER c=20
+#: messages.c:54
+msgid "Choose extruder:"
+>>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 msgstr ""
 
 # MSG_FILAMENT c=17
