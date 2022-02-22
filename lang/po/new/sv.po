@@ -2,18 +2,18 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Tue 18 Jan 2022 09:19:13 AM CET\n"
-"PO-Revision-Date: 2022-02-16 11:56+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Poedit 3.0.1\n"
+"Language: sv\n"
+"Project-Id-Version: Prusa-Firmware\n"
+"POT-Creation-Date: Mon 21 Feb 2022 05:53:48 PM CET\n"
+"PO-Revision-Date: Mon 21 Feb 2022 05:53:48 PM CET\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:164
@@ -46,12 +46,14 @@ msgid "[0;0] point offset"
 msgstr "[0;0] punktforskjutn"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-msgid "Crash detection can\\x0abe turned on only in\\x0aNormal mode"
-msgstr "Krockdetekt kan\\x0ändast aktiveras i\\x0anormalt läge"
+#: 
+msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
+msgstr "Krockdetekt kan\x0aendast aktiveras i\x0anormalt läge"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-msgid "WARNING:\\x0aCrash detection\\x0adisabled in\\x0aStealth mode"
-msgstr "VARNING:\\x0aKrockdetekt\\x0ainaktiverad i\\x0a Smyg-läge"
+#: 
+msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+msgstr "VARNING:\x0aKrockdetekt\x0ainaktiverad i\x0aSmyg-läge"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3034
@@ -63,7 +65,7 @@ msgstr "Justera Z:"
 msgid "All correct"
 msgstr "Allt korrekt"
 
-# MSG_WIZARD_DONE c=20 r=8
+# MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
 msgstr "Allt är klart. God utskrift!"
@@ -339,6 +341,7 @@ msgid "Endstops"
 msgstr "Aendlagen"
 
 # MSG_STACK_ERROR c=20 r=4
+#: 
 msgid "Error - static memory has been overwritten"
 msgstr "Fel - statiskt minne har skrivits över"
 
@@ -494,8 +497,8 @@ msgstr "Frontfläkt?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
-msgid "Front side[um]"
-msgstr "Front[um]"
+msgid "Front side[μm]"
+msgstr ""
 
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
@@ -654,8 +657,8 @@ msgstr "Vänster"
 
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
-msgid "Left side [um]"
-msgstr "Vanstsida [um]"
+msgid "Left side [μm]"
+msgstr "Vanstsida [μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -1109,8 +1112,8 @@ msgstr "Vänligen ladda filament forest."
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
-msgid "Rear side [um]"
-msgstr "Baksida [um]"
+msgid "Rear side [μm]"
+msgstr "Baksida [μm]"
 
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ultralcd.cpp:7325
@@ -1154,8 +1157,8 @@ msgstr "Aterupptar utskrift"
 
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
-msgid "Right side[um]"
-msgstr "Hoger sida[um]"
+msgid "Right side[μm]"
+msgstr "Hoger sida[μm]"
 
 # MSG_RPI_PORT c=13
 #: messages.c:142
@@ -1507,7 +1510,7 @@ msgstr "XYZ kal. detaljer"
 msgid "XYZ calibration failed. Please consult the manual."
 msgstr "XYZ-kalibrering misslyckades. Se bruksanvisningen."
 
-# MSG_YES c=3
+# MSG_YES c=4
 #: messages.c:123
 msgid "Yes"
 msgstr "Ja"
@@ -1766,3 +1769,4 @@ msgstr "Z-sond nr."
 #: ultralcd.cpp:2028
 msgid "Printer IP Addr:"
 msgstr ""
+
