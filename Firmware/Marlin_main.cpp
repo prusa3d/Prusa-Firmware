@@ -8974,7 +8974,7 @@ Sigma_Exit:
 	  else if (*(strchr_pointer + index) == 'x'){ //load to bondtech gears; if mmu is not present do nothing
 		if (mmu_enabled)
 		{
-			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+			tmp_extruder = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
 			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
 			{
 				puts_P(duplicate_Tcode_ignored);
@@ -9001,7 +9001,7 @@ Sigma_Exit:
           {
               if(mmu_enabled)
               {
-                  tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+                  tmp_extruder = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
                   load_to_nozzle = true;
               } else
               {

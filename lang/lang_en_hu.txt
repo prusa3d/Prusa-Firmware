@@ -191,7 +191,7 @@
 "Utkozes erz."
 
 #MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Valassz egy filamentet az elso reteg kalibraciojahoz a menubol."
 
 #MSG_CRASH_DETECTED c=20
@@ -453,10 +453,6 @@
 #MSG_CHOOSE_EXTRUDER c=20
 "Choose extruder:"
 "Extruder valasztas:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"Filament valasztas:"
 
 #MSG_FILAMENT c=17
 "Filament"

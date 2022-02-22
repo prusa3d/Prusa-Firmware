@@ -257,7 +257,7 @@ msgstr "Detect.crash"
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4842
-msgid "Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Choisissez un filament pour la Calibration de la Premiere Couche et selectionnez-le depuis le menu a l'ecran."
 
 # MSG_CRASH_DETECTED c=20
@@ -584,11 +584,6 @@ msgstr "Verification axe Z"
 #: messages.c:54
 msgid "Choose extruder:"
 msgstr "Choisir extrudeur:"
-
-# MSG_CHOOSE_FILAMENT c=20
-#: messages.c:55
-msgid "Choose filament:"
-msgstr "Choix du filament:"
 
 # MSG_FILAMENT c=17
 #: messages.c:35
