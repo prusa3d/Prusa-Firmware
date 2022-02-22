@@ -54,8 +54,6 @@ bool fsensor_not_responding = false;
 uint8_t fsensor_int_pin_old = 0;
 //! optical checking "chunk lenght" (already in steps)
 int16_t fsensor_chunk_len = 0;
-//! enable/disable quality meassurement
-bool fsensor_oq_meassure_enabled = false;
 //! number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
 //! variable for accumulating step count (updated callbacks from stepper and ISR)
