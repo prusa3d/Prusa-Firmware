@@ -95,7 +95,7 @@ extern ClFsensorPCB oFsensorPCB;
 extern ClFsensorActionNA oFsensorActionNA;
 extern const char* FsensorIRVersionText();
 
-extern bool fsensor_IR_check();
+extern bool fsensor_IR_check(uint16_t raw);
 constexpr uint16_t Voltage2Raw(float V){
 	return ( V * 1023 * OVERSAMPLENR / VOLT_DIV_REF ) + 0.5F;
 }
