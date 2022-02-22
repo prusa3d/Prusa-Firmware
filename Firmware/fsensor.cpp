@@ -258,8 +258,8 @@ void fsensor_autoload_set(bool State)
 #ifdef IR_SENSOR_ANALOG
 /// This is called only upon start of the printer or when switching the fsensor ON in the menu
 /// We cannot do temporal window checks here (aka the voltage has been in some range for a period of time)
-bool fsensor_IR_check(){
-    if( IRsensor_Lmax_TRESHOLD <= current_voltage_raw_IR && current_voltage_raw_IR <= IRsensor_Hmin_TRESHOLD ){
+bool fsensor_IR_check(uint16_t raw){
+    if( IRsensor_Lmax_TRESHOLD <= raw && raw <= IRsensor_Hmin_TRESHOLD ){
         /// If the voltage is in forbidden range, the fsensor is ok, but the lever is mounted improperly.
         /// Or the user is so creative so that he can hold a piece of fillament in the hole in such a genius way,
         /// that the IR fsensor reading is within 1.5 and 3V ... this would have been highly unusual
@@ -269,13 +269,13 @@ bool fsensor_IR_check(){
     }
     if( oFsensorPCB == ClFsensorPCB::_Rev04 ){
         /// newer IR sensor cannot normally produce 4.6-5V, this is considered a failure/bad mount
-        if( IRsensor_Hopen_TRESHOLD <= current_voltage_raw_IR && current_voltage_raw_IR <= IRsensor_VMax_TRESHOLD ){
+        if( IRsensor_Hopen_TRESHOLD <= raw && raw <= IRsensor_VMax_TRESHOLD ){
             puts_P(PSTR("fsensor v0.4 in fault range 4.6-5V - unconnected"));
             return false;
         }
         /// newer IR sensor cannot normally produce 0-0.3V, this is considered a failure 
 #if 0	//Disabled as it has to be decided if we gonna use this or not.
-        if( IRsensor_Hopen_TRESHOLD <= current_voltage_raw_IR && current_voltage_raw_IR <= IRsensor_VMax_TRESHOLD ){
+        if( IRsensor_Hopen_TRESHOLD <= raw && raw <= IRsensor_VMax_TRESHOLD ){
             puts_P(PSTR("fsensor v0.4 in fault range 0.0-0.3V - wrong IR sensor"));
             return false;
         }
@@ -283,7 +283,7 @@ bool fsensor_IR_check(){
     }
     /// If IR sensor is "uknown state" and filament is not loaded > 1.5V return false
 #if 0
-    if( (oFsensorPCB == ClFsensorPCB::_Undef) && ( current_voltage_raw_IR > IRsensor_Lmax_TRESHOLD ) ){
+    if( (oFsensorPCB == ClFsensorPCB::_Undef) && ( raw > IRsensor_Lmax_TRESHOLD ) ){
         puts_P(PSTR("Unknown IR sensor version and no filament loaded detected."));
         return false;
     }

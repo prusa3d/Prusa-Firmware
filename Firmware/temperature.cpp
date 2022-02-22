@@ -78,10 +78,6 @@ int current_voltage_raw_pwr = 0;
 int current_voltage_raw_bed = 0;
 #endif
 
-#ifdef IR_SENSOR_ANALOG
-uint16_t current_voltage_raw_IR = 0;
-#endif //IR_SENSOR_ANALOG
-
 int current_temperature_bed_raw = 0;
 float current_temperature_bed = 0.0;
   
@@ -1676,7 +1672,6 @@ void adc_ready(void) //callback from adc when sampling finished
 	current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
 #endif
 #ifdef IR_SENSOR_ANALOG
-     current_voltage_raw_IR = adc_values[ADC_PIN_IDX(VOLT_IR_PIN)];
     fsensor.voltUpdate(adc_values[ADC_PIN_IDX(VOLT_IR_PIN)]);
 #endif //IR_SENSOR_ANALOG
 	temp_meas_ready = true;
