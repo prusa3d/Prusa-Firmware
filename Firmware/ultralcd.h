@@ -143,7 +143,6 @@ extern bool FarmOrUserECool();
 #endif
 
 #ifdef IR_SENSOR_ANALOG
-extern bool bMenuFSDetect;
 void printf_IRSensorAnalogBoardChange();
 #endif //IR_SENSOR_ANALOG
 

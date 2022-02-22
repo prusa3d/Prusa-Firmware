@@ -71,10 +71,6 @@ uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
-#ifdef IR_SENSOR_ANALOG
-bool bMenuFSDetect=false;
-#endif //IR_SENSOR_ANALOG
-
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 
@@ -6238,7 +6234,6 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
 static void lcd_detect_IRsensor(){
     bool bAction;
     bool loaded;
-    bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
     /// Check if filament is loaded. If it is loaded stop detection.
     /// @todo Add autodetection with MMU2s
     loaded = ! READ(IR_SENSOR_PIN);
@@ -6257,7 +6252,6 @@ static void lcd_detect_IRsensor(){
         lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=5
         // here it is unclear what to to with the fsensor_not_responding flag
     }
-    bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
 }
 #endif //IR_SENSOR_ANALOG
 
