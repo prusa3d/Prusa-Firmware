@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <avr/pgmspace.h>
+#include <util/atomic.h>
 
 #include "Marlin.h"
 #include "ultralcd.h"
@@ -136,6 +137,14 @@ public:
     
     void update() {
         IR_sensor::update();
+        if (voltReady) {
+            uint16_t newVoltRaw;
+            ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+                newVoltRaw = voltRaw;
+                voltReady = false;
+            }
+            printf_P(PSTR("newVoltRaw:%u\n"), newVoltRaw / OVERSAMPLENR);
+        }
         ;//
     }
     
