@@ -1803,7 +1803,6 @@ void lcd_set_filament_oq_meass()
 
 
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
-bool bFilamentFirstRun;
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
 static bool bFilamentWaitingFlag=false;
@@ -2306,7 +2305,6 @@ static void lcd_menu_AutoLoadFilament()
 
 static void preheat_or_continue()
 {
-    bFilamentFirstRun = false;
     if (target_temperature[0] >= EXTRUDE_MINTEMP)
     {
         bFilamentPreheatState = true;
@@ -5544,7 +5542,6 @@ static void mmu_cut_filament_menu()
     else
     {
         eFilamentAction=FilamentAction::MmuCut;
-        bFilamentFirstRun=false;
         if(target_temperature[0]>=EXTRUDE_MINTEMP)
         {
             bFilamentPreheatState=true;
@@ -5922,10 +5919,8 @@ static void lcd_main_menu()
             else
 #endif //FILAMENT_SENSOR
             {
-                bFilamentFirstRun=true;
                 MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
             }
-            bFilamentFirstRun=true;
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
     MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);

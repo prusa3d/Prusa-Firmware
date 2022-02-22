@@ -180,7 +180,6 @@ enum class FilamentAction : uint_least8_t
 };
 
 extern FilamentAction eFilamentAction;
-extern bool bFilamentFirstRun;
 extern bool bFilamentPreheatState;
 extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
