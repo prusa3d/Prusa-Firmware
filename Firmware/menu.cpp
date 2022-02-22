@@ -130,6 +130,8 @@ void menu_back_if_clicked_fb(void)
 
 void menu_submenu(menu_func_t submenu)
 {
+	if (menu_menu == submenu)
+		return; //do not enter into the current menu.
 	if (menu_depth < MENU_DEPTH_MAX)
 	{
 		menu_stack[menu_depth].menu = menu_menu;

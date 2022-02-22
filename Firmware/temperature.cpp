@@ -49,6 +49,8 @@
 
 #include "config.h"
 
+#include "Filament_sensor.h"
+
 //===========================================================================
 //=============================public variables============================
 //===========================================================================
@@ -1675,6 +1677,7 @@ void adc_ready(void) //callback from adc when sampling finished
 #endif
 #ifdef IR_SENSOR_ANALOG
      current_voltage_raw_IR = adc_values[ADC_PIN_IDX(VOLT_IR_PIN)];
+    fsensor.voltUpdate(adc_values[ADC_PIN_IDX(VOLT_IR_PIN)]);
 #endif //IR_SENSOR_ANALOG
 	temp_meas_ready = true;
 }
