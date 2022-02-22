@@ -143,7 +143,7 @@
 "Crash det."
 
 #MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 
 #MSG_CRASH_DETECTED c=20
 "Crash detected."
@@ -339,9 +339,6 @@
 
 #MSG_CHOOSE_EXTRUDER c=20
 "Choose extruder:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
 
 #MSG_FILAMENT c=17
 "Filament"
