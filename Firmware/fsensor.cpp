@@ -15,6 +15,8 @@
 #include "temperature.h"
 #include "config.h"
 
+#include "Filament_sensor.h" //temporary
+
 //! @name Basic parameters
 //! @{
 #define FSENSOR_CHUNK_LEN      1.25 //!< filament sensor chunk length (mm)
@@ -26,15 +28,6 @@
 
 const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 
-// PJ7 can not be used (does not have PinChangeInterrupt possibility)
-#define FSENSOR_INT_PIN          75 //!< filament sensor interrupt pin PJ4
-#define FSENSOR_INT_PIN_MASK   0x10 //!< filament sensor interrupt pin mask (bit4)
-#define FSENSOR_INT_PIN_PIN_REG PINJ              // PIN register @ PJ4
-#define FSENSOR_INT_PIN_VECT PCINT1_vect          // PinChange ISR @ PJ4
-#define FSENSOR_INT_PIN_PCMSK_REG PCMSK1          // PinChangeMaskRegister @ PJ4
-#define FSENSOR_INT_PIN_PCMSK_BIT PCINT13         // PinChange Interrupt / PinChange Enable Mask @ PJ4
-#define FSENSOR_INT_PIN_PCICR_BIT PCIE1           // PinChange Interrupt Enable / Flag @ PJ4
-
 //! enabled = initialized and sampled every chunk event
 bool fsensor_enabled = true;
 //! runout watching is done in fsensor_update (called from main loop)
@@ -43,7 +36,6 @@ bool fsensor_watch_runout = true;
 bool fsensor_not_responding = false;
 
 #ifdef PAT9125
-uint8_t fsensor_int_pin_old = 0;
 //! optical checking "chunk lenght" (already in steps)
 int16_t fsensor_chunk_len = 0;
 //! number of errors, updated in ISR
@@ -91,13 +83,6 @@ ClFsensorActionNA oFsensorActionNA;
 ShortTimer tIRsensorCheckTimer;
 #endif //IR_SENSOR_ANALOG
 
-void fsensor_stop_and_save_print(void)
-{
-    puts_P(PSTR("fsensor_stop_and_save_print"));
-    stop_and_save_print_to_ram(0, 0);
-    fsensor_watch_runout = false;
-}
-
 #ifdef PAT9125
 // Reset all internal counters to zero, including stepper callbacks
 void fsensor_reset_err_cnt()
@@ -113,16 +98,6 @@ void fsensor_set_axis_steps_per_unit(float u)
 }
 #endif
 
-
-void fsensor_restore_print_and_continue(void)
-{
-    puts_P(PSTR("fsensor_restore_print_and_continue"));
-    fsensor_watch_runout = true;
-#ifdef PAT9125
-    fsensor_reset_err_cnt();
-#endif
-    restore_print_from_ram_and_continue(0);
-}
 
 // fsensor_checkpoint_print cuts the current print job at the current position,
 // allowing new instructions to be inserted in the middle
@@ -174,7 +149,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
 	}
 #else // PAT9125
 #ifdef IR_SENSOR_ANALOG
-     if(!fsensor_IR_check())
+     if(!fsensor_IR_check(fsensor.getVoltRaw()))
           {
           bUpdateEEPROM=true;
           fsensor_enabled=false;
