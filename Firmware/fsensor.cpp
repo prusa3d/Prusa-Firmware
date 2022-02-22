@@ -111,7 +111,6 @@ uint16_t fsensor_oq_sh_sum;
 //! @}
 
 #ifdef IR_SENSOR_ANALOG
-ClFsensorPCB oFsensorPCB;
 ClFsensorActionNA oFsensorActionNA;
 bool bIRsensorStateFlag=false;
 ShortTimer tIRsensorCheckTimer;
@@ -230,7 +229,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
 	}
 #else // PAT9125
 #ifdef IR_SENSOR_ANALOG
-     if(!fsensor_IR_check(fsensor.getVoltRaw()))
+     if(!fsensor.checkVoltage(fsensor.getVoltRaw()))
           {
           bUpdateEEPROM=true;
           fsensor_enabled=false;

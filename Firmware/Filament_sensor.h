@@ -14,6 +14,7 @@
 #include "eeprom.h"
 #include "pins.h"
 #include "fastio.h"
+#include "adc.h"
 
 class Filament_sensor {
 public:
@@ -152,7 +153,38 @@ public:
         bool event = IR_sensor::update();
         if (voltReady) {
             voltReady = false;
-            printf_P(PSTR("newVoltRaw:%u\n"), getVoltRaw() / OVERSAMPLENR);
+            uint16_t volt = getVoltRaw();
+            printf_P(PSTR("newVoltRaw:%u\n"), volt / OVERSAMPLENR);
+            
+            // detect min-max, some long term sliding window for filtration may be added
+            // avoiding floating point operations, thus computing in raw
+            if(volt > maxVolt) {
+                maxVolt = volt;
+            }
+            else if(volt < minVolt) {
+                minVolt = volt;
+            }
+            //! The trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
+            //! to be detected as the new fsensor
+            //! We can either fake it by extending the detection window to a looooong time
+            //! or do some other countermeasures
+            
+            //! what we want to detect:
+            //! if minvolt gets below ~0.3V, it means there is an old fsensor
+            //! if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
+            //! So I'm waiting for a situation, when minVolt gets to range <0, 1.5> and maxVolt gets into range <3.0, 5>
+            //! If and only if minVolt is in range <0.3, 1.5> and maxVolt is in range <3.0, 4.6>, I'm considering a situation with the new fsensor
+            if(minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD && maxVolt >= IRsensor_Hmin_TRESHOLD && maxVolt <= IRsensor_Hopen_TRESHOLD) {
+                IR_ANALOG_Check(SensorRevision::_Old, SensorRevision::_Rev04, _i("FS v0.4 or newer") ); ////MSG_FS_V_04_OR_NEWER c=18
+            }
+            //! If and only if minVolt is in range <0.0, 0.3> and maxVolt is in range  <4.6, 5.0V>, I'm considering a situation with the old fsensor
+            //! Note, we are not relying on one voltage here - getting just +5V can mean an old fsensor or a broken new sensor - that's why
+            //! we need to have both voltages detected correctly to allow switching back to the old fsensor.
+            else if( minVolt < IRsensor_Ldiode_TRESHOLD && maxVolt > IRsensor_Hopen_TRESHOLD && maxVolt <= IRsensor_VMax_TRESHOLD) {
+                IR_ANALOG_Check(SensorRevision::_Rev04, sensorRevision=SensorRevision::_Old, _i("FS v0.3 or older")); ////MSG_FS_V_03_OR_OLDER c=18
+            }
+            
+            
             ;//
         }
         
@@ -184,10 +216,110 @@ public:
         _Rev04 = 1,
         _Undef = EEPROM_EMPTY_VALUE
     };
+    
+    SensorRevision getSensorRevision() {
+        return sensorRevision;
+    }
+    
+    const char* getIRVersionText() {
+        switch(sensorRevision) {
+            case SensorRevision::_Old:
+                return _T(MSG_IR_03_OR_OLDER);
+            case SensorRevision::_Rev04:
+                return _T(MSG_IR_04_OR_NEWER);
+            default:
+                return _T(MSG_IR_UNKNOWN);
+        }
+    }
+    
+    void setSensorRevision(SensorRevision rev, bool updateEEPROM = false) {
+        sensorRevision = rev;
+        if (updateEEPROM) {
+            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)rev);
+        }
+    }
+    
+    uint16_t Voltage2Raw(float V) {
+        return (V * 1023 * OVERSAMPLENR / VOLT_DIV_REF ) + 0.5F;
+    }
+    float Raw2Voltage(uint16_t raw) {
+        return VOLT_DIV_REF * (raw / (1023.F * OVERSAMPLENR));
+    }
+    
+    /// This is called only upon start of the printer or when switching the fsensor ON in the menu
+    /// We cannot do temporal window checks here (aka the voltage has been in some range for a period of time)
+    bool checkVoltage(uint16_t raw){
+        if(IRsensor_Lmax_TRESHOLD <= raw && raw <= IRsensor_Hmin_TRESHOLD) {
+            /// If the voltage is in forbidden range, the fsensor is ok, but the lever is mounted improperly.
+            /// Or the user is so creative so that he can hold a piece of fillament in the hole in such a genius way,
+            /// that the IR fsensor reading is within 1.5 and 3V ... this would have been highly unusual
+            /// and would have been considered more like a sabotage than normal printer operation
+            puts_P(PSTR("fsensor in forbidden range 1.5-3V - check sensor"));
+            return false; 
+        }
+        if(sensorRevision == SensorRevision::_Rev04) {
+            /// newer IR sensor cannot normally produce 4.6-5V, this is considered a failure/bad mount
+            if(IRsensor_Hopen_TRESHOLD <= raw && raw <= IRsensor_VMax_TRESHOLD) {
+                puts_P(PSTR("fsensor v0.4 in fault range 4.6-5V - unconnected"));
+                return false;
+            }
+            /// newer IR sensor cannot normally produce 0-0.3V, this is considered a failure 
+    #if 0	//Disabled as it has to be decided if we gonna use this or not.
+            if(IRsensor_Hopen_TRESHOLD <= raw && raw <= IRsensor_VMax_TRESHOLD) {
+                puts_P(PSTR("fsensor v0.4 in fault range 0.0-0.3V - wrong IR sensor"));
+                return false;
+            }
+    #endif
+        }
+        /// If IR sensor is "uknown state" and filament is not loaded > 1.5V return false
+    #if 0
+        if((sensorRevision == SensorRevision::_Undef) && (raw > IRsensor_Lmax_TRESHOLD)) {
+            puts_P(PSTR("Unknown IR sensor version and no filament loaded detected."));
+            return false;
+        }
+    #endif
+        // otherwise the IR fsensor is considered working correctly
+        return true;
+    }
+    
+    // Voltage2Raw is not constexpr :/
+    const uint16_t IRsensor_Ldiode_TRESHOLD = Voltage2Raw(0.3f); // ~0.3V, raw value=982
+    const uint16_t IRsensor_Lmax_TRESHOLD = Voltage2Raw(1.5f); // ~1.5V (0.3*Vcc), raw value=4910
+    const uint16_t IRsensor_Hmin_TRESHOLD = Voltage2Raw(3.0f); // ~3.0V (0.6*Vcc), raw value=9821
+    const uint16_t IRsensor_Hopen_TRESHOLD = Voltage2Raw(4.6f); // ~4.6V (N.C. @ Ru~20-50k, Rd'=56k, Ru'=10k), raw value=15059
+    const uint16_t IRsensor_VMax_TRESHOLD = Voltage2Raw(5.f); // ~5V, raw value=16368
+    
 private:
     SensorRevision sensorRevision;
     volatile bool voltReady; //this gets set by the adc ISR
     volatile uint16_t voltRaw;
+    uint16_t minVolt = Voltage2Raw(6.f);
+    uint16_t maxVolt = 0;
+    uint16_t nFSCheckCount;
+
+    static constexpr uint16_t FS_CHECK_COUNT = 4;
+    /// Switching mechanism of the fsensor type.
+    /// Called from 2 spots which have a very similar behavior
+    /// 1: SensorRevision::_Old -> SensorRevision::_Rev04 and print _i("FS v0.4 or newer")
+    /// 2: SensorRevision::_Rev04 -> sensorRevision=SensorRevision::_Old and print _i("FS v0.3 or older")
+    void IR_ANALOG_Check(SensorRevision isVersion, SensorRevision switchTo, const char *statusLineTxt_P) {
+        bool bTemp = (!CHECK_ALL_HEATERS);
+        bTemp = bTemp && (menu_menu == lcd_status_screen);
+        bTemp = bTemp && ((sensorRevision == isVersion) || (sensorRevision == SensorRevision::_Undef));
+        bTemp = bTemp && ready;
+        if (bTemp) {
+            nFSCheckCount++;
+            if (nFSCheckCount > FS_CHECK_COUNT) {
+                nFSCheckCount = 0; // not necessary
+                setSensorRevision(switchTo, true);
+                printf_IRSensorAnalogBoardChange();
+                lcd_setstatuspgm(statusLineTxt_P);
+            }
+        }
+        else {
+            nFSCheckCount = 0;
+        }
+    }
 };
 
 extern IR_sensor_analog fsensor;

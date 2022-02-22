@@ -1439,7 +1439,7 @@ static void lcd_menu_voltages()
     lcd_home();
     lcd_printf_P(PSTR(" PWR:      %4.1fV\n" " BED:      %4.1fV"), volt_pwr, volt_bed);
 #ifdef IR_SENSOR_ANALOG
-    lcd_printf_P(PSTR("\n IR :       %3.1fV"), Raw2Voltage(fsensor.getVoltRaw()));
+    lcd_printf_P(PSTR("\n IR :       %3.1fV"), fsensor.Raw2Voltage(fsensor.getVoltRaw()));
 #endif //IR_SENSOR_ANALOG
     menu_back_if_clicked();
 }
@@ -1676,7 +1676,7 @@ static void lcd_support_menu()
 #ifdef IR_SENSOR_ANALOG
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
-  MENU_ITEM_BACK_P(FsensorIRVersionText());
+  MENU_ITEM_BACK_P(fsensor.getIRVersionText());
 #endif // IR_SENSOR_ANALOG
 
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
@@ -3490,7 +3490,7 @@ static void lcd_show_sensors_state()
 	}
 	
 	if (ir_sensor_detected) {
-		idler_state = !READ(IR_SENSOR_PIN);
+		idler_state = fsensor.getFilamentPresent();
 		lcd_puts_at_P(0, 1, _i("Fil. sensor"));
 		lcd_set_cursor(LCD_WIDTH - 3, 1);
 		lcd_print_state(idler_state);
@@ -3891,7 +3891,7 @@ void lcd_v2_calibration()
 	    bool loaded = false;
 	    if (fsensor_enabled && ir_sensor_detected)
 	    {
-	        loaded = !READ(IR_SENSOR_PIN);
+	        loaded = fsensor.getFilamentPresent();
 	    }
 	    else
 	    {
@@ -6245,36 +6245,41 @@ void lcd_belttest()
 #ifdef IR_SENSOR_ANALOG
 // called also from marlin_main.cpp
 void printf_IRSensorAnalogBoardChange(){
-    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), FsensorIRVersionText());
+    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), fsensor.getIRVersionText());
 }
 
 static bool lcd_selftest_IRsensor(bool bStandalone)
 {
-    bool bPCBrev04;
-    uint16_t volt_IR_int;
-
-    volt_IR_int = fsensor.getVoltRaw();
-    bPCBrev04=(volt_IR_int < IRsensor_Hopen_TRESHOLD);
-    printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"), Raw2Voltage(volt_IR_int) );
-    if(volt_IR_int < IRsensor_Hmin_TRESHOLD){
+    bool ret = false;
+    fsensor.setAutoLoadEnabled(false);
+    fsensor.setRunoutEnabled(false);
+    IR_sensor_analog::SensorRevision oldSensorRevision = fsensor.getSensorRevision();
+    IR_sensor_analog::SensorRevision newSensorRevision;
+    uint16_t volt_IR_int = fsensor.getVoltRaw();
+    
+    newSensorRevision = (volt_IR_int < fsensor.IRsensor_Hopen_TRESHOLD) ? IR_sensor_analog::SensorRevision::_Rev04 : IR_sensor_analog::SensorRevision::_Old;
+    printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"), fsensor.Raw2Voltage(volt_IR_int) );
+    if(volt_IR_int < fsensor.IRsensor_Hmin_TRESHOLD){
         if(!bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
-        return(false);
+        goto exit;
     }
     lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));////MSG_INSERT_FIL c=20 r=6
     volt_IR_int = fsensor.getVoltRaw();
-    printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"), Raw2Voltage(volt_IR_int));
-    if(volt_IR_int > (IRsensor_Lmax_TRESHOLD)){
+    printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"), fsensor.Raw2Voltage(volt_IR_int));
+    if(volt_IR_int > (fsensor.IRsensor_Lmax_TRESHOLD)){
         if(!bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"LOW","");
-        return(false);
+        goto exit;
     }
-    if((bPCBrev04 ? 1 : 0) != (uint8_t)oFsensorPCB){        // safer then "(uint8_t)bPCBrev04"
-        oFsensorPCB=bPCBrev04 ? ClFsensorPCB::_Rev04 : ClFsensorPCB::_Old;
+    if(newSensorRevision != oldSensorRevision) {
+        fsensor.setSensorRevision(newSensorRevision, true);
         printf_IRSensorAnalogBoardChange();
-        eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
     }
-    return(true);
+    ret = true;
+exit:
+    fsensor.settings_init();
+    return ret;
 }
 
 static void lcd_detect_IRsensor(){
@@ -6282,8 +6287,8 @@ static void lcd_detect_IRsensor(){
     bool loaded;
     /// Check if filament is loaded. If it is loaded stop detection.
     /// @todo Add autodetection with MMU2s
-    loaded = ! READ(IR_SENSOR_PIN);
-    if(loaded ){
+    loaded = fsensor.getFilamentPresent();
+    if(loaded){
         lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));////MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
         return;
     } else {
@@ -6315,12 +6320,12 @@ bool lcd_selftest()
 	//!   Check if IR sensor is in unknown state, if so run Fsensor Detection
 	//!   As the Fsensor Detection isn't yet ready for the mmu2s we set temporarily the IR sensor 0.3 or older for mmu2s
 	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
-	if( oFsensorPCB == ClFsensorPCB::_Undef) {
+	if(fsensor.getSensorRevision() == IR_sensor_analog::SensorRevision::_Undef) {
 		if (!mmu_enabled) {
 			lcd_detect_IRsensor();
 		}
 		else {
-			eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,0);
+			fsensor.setSensorRevision(IR_sensor_analog::SensorRevision::_Old, true);
 		}
 	}
 #endif //IR_SENSOR_ANALOG
@@ -7112,7 +7117,7 @@ static bool lcd_selftest_fsensor(void)
 //!  * Pre-heat to PLA extrude temperature.
 //!  * Unload filament possibly present.
 //!  * Move extruder idler same way as during filament load
-//!    and sample IR_SENSOR_PIN.
+//!    and sample the filament sensor.
 //!  * Check that pin doesn't go low.
 //!
 //! @retval true passed
@@ -7149,7 +7154,7 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (READ(IR_SENSOR_PIN) == 0)
+            if (fsensor.getFilamentPresent())
             {
                 lcd_selftest_error(TestError::TriggeringFsensor, "", "");
                 return false;

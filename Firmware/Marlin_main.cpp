@@ -869,7 +869,7 @@ static void check_if_fw_is_on_right_printer(){
 
     #ifdef PAT9125
       //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
-      const uint8_t ir_detected = !READ(IR_SENSOR_PIN);
+      const uint8_t ir_detected = fsensor.getFilamentPresent();
       if (ir_detected){
         lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}////MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
     #endif //PAT9125
@@ -9398,32 +9398,6 @@ static void handleSafetyTimer()
     }
 }
 #endif //SAFETYTIMER
-
-#ifdef IR_SENSOR_ANALOG
-#define FS_CHECK_COUNT 16
-/// Switching mechanism of the fsensor type.
-/// Called from 2 spots which have a very similar behavior
-/// 1: ClFsensorPCB::_Old -> ClFsensorPCB::_Rev04 and print _i("FS v0.4 or newer")
-/// 2: ClFsensorPCB::_Rev04 -> oFsensorPCB=ClFsensorPCB::_Old and print _i("FS v0.3 or older")
-void manage_inactivity_IR_ANALOG_Check(uint16_t &nFSCheckCount, ClFsensorPCB isVersion, ClFsensorPCB switchTo, const char *statusLineTxt_P) {
-    bool bTemp = (!CHECK_ALL_HEATERS);
-    bTemp = bTemp && (menu_menu == lcd_status_screen);
-    bTemp = bTemp && ((oFsensorPCB == isVersion) || (oFsensorPCB == ClFsensorPCB::_Undef));
-    bTemp = bTemp && fsensor_enabled;
-    if (bTemp) {
-        nFSCheckCount++;
-        if (nFSCheckCount > FS_CHECK_COUNT) {
-            nFSCheckCount = 0; // not necessary
-            oFsensorPCB = switchTo;
-            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)oFsensorPCB);
-            printf_IRSensorAnalogBoardChange();
-            lcd_setstatuspgm(statusLineTxt_P);
-        }
-    } else {
-        nFSCheckCount = 0;
-    }
-}
-#endif
 
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
