@@ -1,4 +1,4 @@
-# Translation of Prusa-Firmware into Norgewian.
+# Translation of Prusa-Firmware into Norwegian.
 #
 msgid ""
 msgstr ""
