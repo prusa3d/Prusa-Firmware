@@ -69,7 +69,7 @@ protected:
     };
     
     void triggerFilamentInserted() {
-        if (autoLoadEnabled/*  && (eFilamentAction == FilamentAction::None) */ && !(moves_planned() || IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) || eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))) {
+        if (autoLoadEnabled && (eFilamentAction == FilamentAction::None) && !(moves_planned() || IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) || eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))) {
             eFilamentAction = FilamentAction::AutoLoad;
             if(target_temperature[0] >= EXTRUDE_MINTEMP){
                 bFilamentPreheatState = true;
@@ -82,7 +82,7 @@ protected:
     }
     
     void triggerFilamentRemoved() {
-        if (runoutEnabled/*  && (eFilamentAction == FilamentAction::None) */ && !saved_printing && (moves_planned() || IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) || eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))) {
+        if (runoutEnabled && (eFilamentAction == FilamentAction::None) && !saved_printing && (moves_planned() || IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) || eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))) {
             runoutEnabled = false;
             autoLoadEnabled = false;
             stop_and_save_print_to_ram(0, 0);
