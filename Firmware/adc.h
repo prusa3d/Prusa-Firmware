@@ -22,6 +22,8 @@ http://resnet.uoregon.edu/~gurney_j/jmpc/bitwise.html
 # error "ADC_CHAN_MSK oes not match ADC_CHAN_CNT"
 #endif
 
+#define VOLT_DIV_REF 5 //[V]
+
 extern uint8_t adc_state;
 extern uint8_t adc_count;
 extern uint16_t adc_values[ADC_CHAN_CNT];

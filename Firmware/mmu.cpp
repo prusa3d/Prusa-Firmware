@@ -156,8 +156,6 @@ void mmu_init(void)
 	_delay_ms(10);                             //wait 10ms for sure
 	mmu_reset();                               //reset mmu (HW or SW), do not wait for response
 	mmu_state = S::Init;
-	SET_INPUT(IR_SENSOR_PIN); //input mode
-	WRITE(IR_SENSOR_PIN, 1); //pullup
 }
 
 //if IR_SENSOR defined, always returns true
