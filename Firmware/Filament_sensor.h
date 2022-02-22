@@ -18,7 +18,7 @@
 class Filament_sensor {
 public:
     virtual void init() = 0;
-    virtual void update() = 0;
+    virtual bool update() = 0;
     virtual bool getFilamentPresent() = 0;
     
     enum class SensorActionOnError : uint8_t {
@@ -41,6 +41,10 @@ public:
         }
     }
     
+    bool getFilamentLoadEvent() {
+        return postponedLoadEvent;
+    }
+    
 protected:
     void settings_init() {
         autoLoadEnabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
@@ -51,9 +55,9 @@ protected:
         }
     }
     
-    void checkFilamentEvents() {
+    bool checkFilamentEvents() {
         if (!ready)
-            return;
+            return false;
         
         bool newFilamentPresent = getFilamentPresent();
         if (oldFilamentPresent != newFilamentPresent) {
@@ -61,12 +65,15 @@ protected:
             if (newFilamentPresent) { //filament insertion
                 puts_P(PSTR("filament inserted"));
                 triggerFilamentInserted();
+                postponedLoadEvent = true;
             }
             else { //filament removal
                 puts_P(PSTR("filament removed"));
                 triggerFilamentRemoved();
             }
+            return true;
         }
+        return false;
     };
     
     void triggerFilamentInserted() {
@@ -98,6 +105,7 @@ protected:
     bool runoutEnabled;
     bool oldFilamentPresent; //for creating filament presence switching events.
     bool ready;
+    bool postponedLoadEvent; //this event lasts exactly one update cycle. It is long enough to be able to do polling for load event.
     SensorActionOnError sensorActionOnError;
 };
 
@@ -109,13 +117,18 @@ public:
         settings_init();
     }
     
-    void update() {
+    bool update() {
         if (!ready) {
             ready = true; //the IR sensor gets ready instantly as it's just a gpio read operation.
             oldFilamentPresent = getFilamentPresent(); //initialize the current filament state so that we don't create a switching event right after the sensor is ready.
         }
-        checkFilamentEvents();
+        
+        postponedLoadEvent = false;
+        bool event = checkFilamentEvents();
+        
         ;//
+        
+        return event;
     }
     
     bool getFilamentPresent() {
@@ -135,8 +148,8 @@ public:
         ;//
     }
     
-    void update() {
-        IR_sensor::update();
+    bool update() {
+        bool event = IR_sensor::update();
         if (voltReady) {
             uint16_t newVoltRaw;
             ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -145,7 +158,10 @@ public:
             }
             printf_P(PSTR("newVoltRaw:%u\n"), newVoltRaw / OVERSAMPLENR);
         }
+        
         ;//
+        
+        return event;
     }
     
     void voltUpdate(uint16_t raw) { //to be called from the ADC ISR when a cycle is finished
