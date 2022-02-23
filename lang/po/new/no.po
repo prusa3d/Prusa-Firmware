@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-02-23 15:46+0100\n"
+"PO-Revision-Date: 2022-02-23 16:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -46,7 +46,6 @@ msgid "[0;0] point offset"
 msgstr "[0;0] punktforskyv."
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-#, fuzzy
 msgid "Crash detection can\\x0abe turned on only in\\x0aNormal mode"
 msgstr "Krasjdeteksjon kan bare skrus på i normal modus"
 
@@ -67,7 +66,7 @@ msgstr "Alt korrekt"
 # MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
-msgstr "Alt klart! :D"
+msgstr "Alt klart!"
 
 # MSG_AMBIENT c=14
 #: ultralcd.cpp:1727
@@ -147,7 +146,7 @@ msgstr "Belte test"
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-msgstr "Plate planering feilet. Sensoren utløstes ikke. Rester på dysen? Venter på restart"
+msgstr "Plate planering feilet. Sensoren utløstes ikke. Rester på dysen? Venter på restart."
 
 # MSG_BRIGHT c=6
 #: messages.c:158
@@ -262,7 +261,7 @@ msgstr "Velg filamenttype for Førstelagskalibrering."
 # MSG_CRASH_DETECTED c=20
 #: messages.c:29
 msgid "Crash detected."
-msgstr "Krasj merket"
+msgstr "Krasj fant sted."
 
 # MSG_CRASH_RESUME c=20 r=3
 #: Marlin_main.cpp:651
@@ -306,7 +305,6 @@ msgstr "Forts."
 
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5021
-#, fuzzy
 msgid "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 msgstr "Vil du repetere det siste trinnet for å omjustere avstanden mellom dysen og platen?"
 
@@ -362,11 +360,10 @@ msgstr "Kutter filament"
 # MSG_FSENS_NOT_RESPONDING c=20 r=4
 #: ultralcd.cpp:4330
 msgid "ERROR: Filament sensor is not responding, please check connection."
-msgstr "ERROR: Filamentsensor svarer ikke. Vennligst sjekk koblingen"
+msgstr "ERROR: Filamentsensor svarer ikke. Vennligst sjekk koblingen."
 
 # MSG_DIM c=6
 #: messages.c:159
-#, fuzzy
 msgid "Dim"
 msgstr "Svak"
 
@@ -378,7 +375,7 @@ msgstr "ERROR:"
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 #: ultralcd.cpp:8419
 msgid "Extruder fan:"
-msgstr "Ekstrudervifte"
+msgstr "Ekstrudervifte:"
 
 # MSG_INFO_EXTRUDER c=18
 #: ultralcd.cpp:2040
@@ -403,7 +400,7 @@ msgstr "F. autolast"
 # MSG_FAIL_STATS c=18
 #: ultralcd.cpp:6672
 msgid "Fail stats"
-msgstr "Feil stats."
+msgstr "Feilstatistikk"
 
 # MSG_FAN_SPEED c=14
 #: messages.c:36
@@ -423,13 +420,12 @@ msgstr "Viftesjekk"
 # MSG_FSENSOR c=12
 #: messages.c:49
 msgid "Fil. sensor"
-msgstr "fil. sensor"
+msgstr "Fil. sensor"
 
 # MSG_FIL_RUNOUTS c=15
 #: messages.c:34
-#, fuzzy
 msgid "Fil. runouts"
-msgstr "fil."
+msgstr ""
 
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:37
@@ -503,14 +499,13 @@ msgstr "Fremsiden [μm]"
 
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
-#, fuzzy
 msgid "Front/left fans"
 msgstr "Fremre/venstre vifter"
 
 # MSG_SELFTEST_HEATERTHERMISTOR c=20
 #: ultralcd.cpp:8048
 msgid "Heater/Thermistor"
-msgstr "Varmeelement/Termis."
+msgstr "Varmer/Termistor"
 
 # MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
 #: Marlin_main.cpp:9877
@@ -529,9 +524,8 @@ msgstr "Varmer opp"
 
 # MSG_WIZARD_WELCOME c=20 r=7
 #: messages.c:121
-#, fuzzy
 msgid "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
-msgstr "Hei, jeg er din Originale Prusa i3 printer. Vil du at jeg skal veilede deg gjennom oppsetts prosessen?"
+msgstr "Hei, jeg er din Originale Prusa i3 printer. Vil du at jeg skal veilede deg gjennom oppsettprosessen?"
 
 # MSG_FILAMENTCHANGE c=18
 #: messages.c:43
@@ -560,9 +554,8 @@ msgstr "Sjekker endesensorer"
 
 # MSG_SELFTEST_CHECK_HOTEND c=20
 #: ultralcd.cpp:8408
-#, fuzzy
 msgid "Checking hotend"
-msgstr "Sjekker"
+msgstr "Sjekker hotend"
 
 # MSG_SELFTEST_CHECK_FSENSOR c=20
 #: messages.c:95
@@ -586,9 +579,8 @@ msgstr "Sjekker Z aksen"
 
 # MSG_CHOOSE_EXTRUDER c=20
 #: messages.c:54
-#, fuzzy
 msgid "Choose extruder:"
-msgstr "Velg ekstuder"
+msgstr "Velg ekstruder:"
 
 # MSG_CHOOSE_FILAMENT c=20
 #: messages.c:55
@@ -608,12 +600,12 @@ msgstr "Nå skal jeg kjøre kalibreringen. Det tar ca. 12 min."
 # MSG_WIZARD_Z_CAL c=20 r=8
 #: ultralcd.cpp:4959
 msgid "I will run z calibration now."
-msgstr ""
+msgstr "Nå kjører jeg Z-kalibreringen."
 
 # MSG_WATCH c=18
 #: messages.c:116
 msgid "Info screen"
-msgstr "Infoskjermen"
+msgstr "Infoskjerm"
 
 # MSG_INSERT_FILAMENT c=20
 #: ultralcd.cpp:2482
@@ -627,7 +619,6 @@ msgstr "Er filamentet lastet?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:109
-#, fuzzy
 msgid "Is steel sheet on heatbed?"
 msgstr "Er stålplaten på varmeplaten?"
 
@@ -643,9 +634,8 @@ msgstr "Hei, jeg er din Originale Prusa i3 printer. Jeg leder deg igjennom et ko
 
 # MSG_ADDITIONAL_SHEETS c=20 r=9
 #: ultralcd.cpp:5029
-#, fuzzy
 msgid "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
-msgstr "Hvis du har andre stålplater, kalibrer de i Innstillinger - HW Setup - Stålplater."
+msgstr "Hvis du har andre stålplater, kalibrer de i Innstillinger -> HW Setup -> Stålplater."
 
 # MSG_LAST_PRINT c=18
 #: messages.c:56
@@ -729,7 +719,6 @@ msgstr "Nivå lys"
 
 # MSG_BL_LOW c=12
 #: messages.c:156
-#, fuzzy
 msgid "Level Dimmed"
 msgstr "Nivå svak"
 
@@ -835,7 +824,6 @@ msgstr "Motor"
 
 # MSG_MOVE_AXIS c=18
 #: ultralcd.cpp:5677
-#, fuzzy
 msgid "Move axis"
 msgstr "Beveg akse"
 
@@ -866,9 +854,8 @@ msgstr "SD-kort mangler"
 
 # MSG_NA c=3
 #: messages.c:127
-#, fuzzy
 msgid "N/A"
-msgstr "I/T (Ikke tilgjenglig)"
+msgstr ""
 
 # MSG_NO c=4
 #: messages.c:71
@@ -892,9 +879,8 @@ msgstr "Spinner ikke"
 
 # MSG_WIZARD_V2_CAL c=20 r=8
 #: ultralcd.cpp:4838
-#, fuzzy
 msgid "Now I will calibrate distance between tip of the nozzle and heatbed surface."
-msgstr "Jeg vil nå kalibrere avstanden mellom tuppen av dysen og printplaten."
+msgstr "Jeg vil nå kalibrere avstanden mellom tuppen av dysen og varmeplaten."
 
 # MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ultralcd.cpp:4967
@@ -949,7 +935,7 @@ msgstr "PINDA varmes"
 # MSG_PAPER c=20 r=10
 #: messages.c:73
 msgid "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
-msgstr "Plasser et ark under dysen under kalibreringen av de første 4 punktene. Hvis dysen tar papiret, skru av printeren umiddelbart!"
+msgstr "Plasser et ark under dysen mens jeg kalibrerer de 4 første punktene. Hvis dysen tar papiret, skru av printeren umiddelbart!"
 
 # MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ultralcd.cpp:5024
@@ -1014,7 +1000,7 @@ msgstr "Oppdater din MMU2 systemvare. Venter på restart..."
 # MSG_PLEASE_WAIT c=20
 #: messages.c:76
 msgid "Please wait"
-msgstr "Vennligst vent.."
+msgstr "Vennligst vent"
 
 # MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 #: ultralcd.cpp:4957
@@ -1069,7 +1055,7 @@ msgstr "Forvarmer for lasting"
 # MSG_PREHEATING_TO_UNLOAD c=20
 #: ultralcd.cpp:2302
 msgid "Preheating to unload"
-msgstr "Forvarmer for å laste ut..."
+msgstr "Forvarmer for å laste ut"
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8422
@@ -1109,7 +1095,7 @@ msgstr "Printvifte"
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
 msgid "Please insert filament into the extruder, then press the knob to load it."
-msgstr "Sett inn filament og trykk valghjulet for å laste."
+msgstr "Sett inn filament I ekstruderen og trykk valghjulet for å laste."
 
 # MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ultralcd.cpp:4813
@@ -1524,7 +1510,7 @@ msgstr "XYZ kal. mislyktes. Vennligst rådfør med håndboken."
 # MSG_YES c=4
 #: messages.c:123
 msgid "Yes"
-msgstr "JA"
+msgstr "Ja"
 
 # MSG_WIZARD_QUIT c=20 r=8
 #: messages.c:120
@@ -1543,9 +1529,8 @@ msgstr "XYZ kalibreringen er god. Godt jobba!"
 
 # MSG_TIMEOUT c=12
 #: messages.c:157
-#, fuzzy
 msgid "Timeout"
-msgstr "Timeout"
+msgstr ""
 
 # MSG_X_CORRECTION c=13
 #: ultralcd.cpp:5086
@@ -1570,7 +1555,7 @@ msgstr "XYZ kalibreringen feilet. Høyre front kalibreringspunkt ikke nådd."
 # MSG_LOAD_ALL c=17
 #: ultralcd.cpp:6167
 msgid "Load all"
-msgstr ""
+msgstr "Last alle"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 #: ultralcd.cpp:3703
@@ -1595,7 +1580,7 @@ msgstr "Y distanse fra min"
 # MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ultralcd.cpp:4850
 msgid "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-msgstr "Printeren vil nå printe en sikksakk linje. Roter valghjulet til du får den optimale høyden. Se bildene i håndboka, under kalibrering, for hvordan det skal se ut. "
+msgstr "Printeren vil nå printe en sikksakk linje. Roter valghjulet til du får den optimale høyden. Se bildene i håndboka, under kalibrering, for hvordan det skal se ut."
 
 # MSG_FIL_FAILED c=20 r=5
 #: ultralcd.cpp:7336
@@ -1654,7 +1639,6 @@ msgstr "Magnet komp."
 
 # MSG_MESH c=12
 #: messages.c:147
-#, fuzzy
 msgid "Mesh"
 msgstr "Plan-nett"
 
@@ -1685,7 +1669,6 @@ msgstr "Dyse dia."
 
 # MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: util.cpp:414
-#, fuzzy
 msgid "G-code sliced for a different level. Continue?"
 msgstr "G-code sliced for en annen høyde. Fortsette?"
 
@@ -1766,7 +1749,6 @@ msgstr "Assister"
 
 # MSG_STEEL_SHEET c=18
 #: messages.c:66
-#, fuzzy
 msgid "Steel sheets"
 msgstr "Stål plate"
 
