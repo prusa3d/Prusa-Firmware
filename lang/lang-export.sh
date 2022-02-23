@@ -85,6 +85,8 @@ else
    *nl*) echo "Dutch" ;;
 #Swedish
    *sv*) echo "Swedish" ;;
+#Norwegian
+   *no*) echo "Norwegian" ;;
 #Danish
    *da*) echo "Danish" ;;
 #Slovak
