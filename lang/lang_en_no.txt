@@ -138,10 +138,6 @@
 "Calibrate Z"
 "\x00"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"\x00"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 "\x00"
@@ -191,7 +187,7 @@
 "\x00"
 
 #MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "\x00"
 
 #MSG_CRASH_DETECTED c=20
@@ -286,7 +282,7 @@
 "ERROR:"
 "\x00"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "\x00"
 
@@ -450,12 +446,8 @@
 "Checking Z axis"
 "\x00"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
-"\x00"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "\x00"
 
 #MSG_FILAMENT c=17
@@ -710,10 +702,6 @@
 "Now remove the test print from steel sheet."
 "\x00"
 
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"\x00"
-
 #MSG_PAUSE_PRINT c=18
 "Pause print"
 "\x00"
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "\x00"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "\x00"
 
@@ -856,10 +844,6 @@
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
-"\x00"
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
 "\x00"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
@@ -1066,24 +1050,20 @@
 "Select filament:"
 "\x00"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
 "\x00"
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "\x00"
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
 "\x00"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"\x00"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
 "\x00"
 
 #MSG_FS_VERIFIED c=20 r=3
