@@ -576,15 +576,9 @@ msgid "Checking Z axis"
 msgstr "Prüfe Z Achse"
 
 # MSG_SELECT_EXTRUDER c=20
-<<<<<<< HEAD
 #: messages.c:56
 msgid "Select extruder:"
 msgstr "Wähle extruder:"
-=======
-#: messages.c:54
-msgid "Select extruder:"
-msgstr "Extruder wählen:"
->>>>>>> Change `Choose extruder` to `Select extruder` for consistant wording
 
 # MSG_FILAMENT c=17
 #: messages.c:35
