@@ -111,8 +111,8 @@ const char MSG_STEALTH[] PROGMEM_I1 = ISTR("Stealth"); ////c=7
 const char MSG_STEEL_SHEET_CHECK[] PROGMEM_I1 = ISTR("Is steel sheet on heatbed?"); ////c=20 r=2
 const char MSG_STOP_PRINT[] PROGMEM_I1 = ISTR("Stop print"); ////c=18
 const char MSG_STOPPED[] PROGMEM_I1 = ISTR("STOPPED."); ////c=20
-const char MSG_TEMP_CALIBRATION[] PROGMEM_I1 = ISTR("Temp. cal."); ////c=14
-const char MSG_TEMP_CALIBRATION_DONE[] PROGMEM_I1 = ISTR("Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."); ////c=20 r=12
+const char MSG_PINDA_CALIBRATION[] PROGMEM_I1 = ISTR("PINDA cal."); ////c=13
+const char MSG_PINDA_CALIBRATION_DONE[] PROGMEM_I1 = ISTR("PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."); ////c=20 r=8
 const char MSG_UNLOAD_FILAMENT[] PROGMEM_I1 = ISTR("Unload filament"); ////c=18
 const char MSG_UNLOADING_FILAMENT[] PROGMEM_I1 = ISTR("Unloading filament"); ////c=20
 const char MSG_WATCH[] PROGMEM_I1 = ISTR("Info screen"); ////c=18

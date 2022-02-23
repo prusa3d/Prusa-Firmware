@@ -1335,9 +1335,9 @@ msgstr "inversate"
 msgid "Select filament:"
 msgstr "Select. filamentul:"
 
-# MSG_TEMP_CALIBRATION c=14
+# MSG_PINDA_CALIBRATION c=13
 #: messages.c:112
-msgid "Temp. cal."
+msgid "PINDA cal."
 msgstr "Cal. temp."
 
 # MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
@@ -1355,9 +1355,9 @@ msgstr "Calibrare temp."
 msgid "Temperature calibration failed"
 msgstr "Calibrarea temperaturii a esuat"
 
-# MSG_TEMP_CALIBRATION_DONE c=20 r=12
+# MSG_PINDA_CALIBRATION_DONE c=20 r=8
 #: messages.c:113
-msgid "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+msgid "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
 msgstr "Calibrarea temperaturii s-a terminat si este activa. Calibrarea temp. poate fi dezactivata din meniul Setari->Cal. temp."
 
 # MSG_FS_VERIFIED c=20 r=3
