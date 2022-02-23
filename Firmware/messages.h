@@ -163,6 +163,8 @@ extern const char MSG_TIMEOUT[];
 extern const char MSG_BRIGHT[];
 extern const char MSG_DIM[];
 extern const char MSG_AUTO[];
+extern const char MSG_FS_V_03_OR_OLDER[];
+extern const char MSG_FS_V_04_OR_NEWER[];
 #ifdef IR_SENSOR_ANALOG
 extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];

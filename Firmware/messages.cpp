@@ -153,6 +153,8 @@ const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////MSG_TIMEOUT c=12
 const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////MSG_BRIGHT c=6
 const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////MSG_DIM c=6
 const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////MSG_AUTO c=6
+const char MSG_FS_V_03_OR_OLDER[] PROGMEM_I1 = ISTR("FS v0.3 or older"); ////c=18
+const char MSG_FS_V_04_OR_NEWER[] PROGMEM_I1 = ISTR("FS v0.4 or newer"); ////c=18
 #ifdef IR_SENSOR_ANALOG
 // Beware - the space at the beginning is necessary since it is reused in LCD menu items which are to be with a space
 const char MSG_IR_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////MSG_IR_04_OR_NEWER c=18
