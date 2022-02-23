@@ -5400,7 +5400,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
         custom_message_type = CustomMsg::TempCal;
         custom_message_state = 1;
-        lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
+        lcd_setstatuspgm(_T(MSG_PINDA_CALIBRATION));
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         plan_buffer_line_curposXYZE(3000 / 60);
         current_position[X_AXIS] = PINDA_PREHEAT_X;
@@ -5501,7 +5501,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		puts_P(_N("PINDA probe calibration start"));
 		custom_message_type = CustomMsg::TempCal;
 		custom_message_state = 1;
-		lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
+		lcd_setstatuspgm(_T(MSG_PINDA_CALIBRATION));
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
 		current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 		current_position[Z_AXIS] = PINDA_PREHEAT_Z;
@@ -5578,7 +5578,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			disable_e1();
 			disable_e2();
 			setTargetBed(0); //set bed target temperature back to 0
-		lcd_show_fullscreen_message_and_wait_P(_T(MSG_TEMP_CALIBRATION_DONE));
+		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CALIBRATION_DONE));
 		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
 		lcd_update_enable(true);
 		lcd_update(2);		

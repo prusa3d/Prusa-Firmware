@@ -1335,9 +1335,9 @@ msgstr "Prehodene"
 msgid "Select filament:"
 msgstr "Zvolte filament:"
 
-# MSG_TEMP_CALIBRATION c=14
+# MSG_PINDA_CALIBRATION c=13
 #: messages.c:112
-msgid "Temp. cal."
+msgid "PINDA cal."
 msgstr "Tepl. kal."
 
 # MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
@@ -1355,9 +1355,9 @@ msgstr "Teplot. kalibr."
 msgid "Temperature calibration failed"
 msgstr "Teplotna kalibracia zlyhala"
 
-# MSG_TEMP_CALIBRATION_DONE c=20 r=12
+# MSG_PINDA_CALIBRATION_DONE c=20 r=8
 #: messages.c:113
-msgid "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+msgid "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
 msgstr "Teplotna kalibracia dokoncena a je teraz aktivna. Teplotnu kalibraciu je mozno deaktivovat v menu Nastavenie->Tepl. kal."
 
 # MSG_FS_VERIFIED c=20 r=3
