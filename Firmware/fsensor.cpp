@@ -61,25 +61,10 @@ uint8_t fsensor_log = 1;
 
 //! autoload feature enabled
 bool fsensor_autoload_enabled = true;
-//! autoload watching enable/disable flag
-bool fsensor_watch_autoload = false;
-
-#ifdef PAT9125
-//
-uint16_t fsensor_autoload_y;
-//
-uint8_t fsensor_autoload_c;
-//
-uint32_t fsensor_autoload_last_millis;
-//
-uint8_t fsensor_autoload_sum;
-//! @}
-#endif
 
 
 #ifdef IR_SENSOR_ANALOG
 ClFsensorActionNA oFsensorActionNA;
-ShortTimer tIRsensorCheckTimer;
 #endif //IR_SENSOR_ANALOG
 
 #ifdef PAT9125

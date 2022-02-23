@@ -1672,7 +1672,7 @@ void adc_ready(void) //callback from adc when sampling finished
 	current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
 #endif
 #ifdef IR_SENSOR_ANALOG
-    fsensor.voltUpdate(adc_values[ADC_PIN_IDX(VOLT_IR_PIN)]);
+	fsensor.voltUpdate(adc_values[ADC_PIN_IDX(VOLT_IR_PIN)]);
 #endif //IR_SENSOR_ANALOG
 	temp_meas_ready = true;
 }
