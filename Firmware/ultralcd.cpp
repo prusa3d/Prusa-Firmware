@@ -1788,10 +1788,6 @@ void lcd_cutter_enabled()
 }
 #endif //MMU_HAS_CUTTER
 
-void lcd_set_filament_autoload() {
-     fsensor_autoload_set(!fsensor_autoload_enabled);
-}
-
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
@@ -2147,7 +2143,7 @@ void lcd_wait_interact() {
   lcd_clear();
 
   lcd_puts_at_P(0, 1, _i("Insert filament"));////MSG_INSERT_FILAMENT c=20
-  if (!fsensor_autoload_enabled) {
+  if (!fsensor.getAutoLoadEnabled()) {
 	  lcd_puts_at_P(0, 2, _i("and press the knob"));////MSG_PRESS c=20 r=2
   }
 }
@@ -3535,34 +3531,6 @@ static void lcd_crash_mode_info2()
 }
 #endif //TMC2130
 
-#ifdef FILAMENT_SENSOR
-static void lcd_filament_autoload_info()
-{
-uint8_t nlines;
-	lcd_update_enable(true);
-	static uint32_t tim = 0;
-	if ((tim + 1000) < _millis())
-	{
-          lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament available only when filament sensor is turned on..."), nlines); ////MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
-		tim = _millis();
-	}
-    menu_back_if_clicked();
-}
-
-static void lcd_fsensor_fail()
-{
-uint8_t nlines;
-	lcd_update_enable(true);
-	static uint32_t tim = 0;
-	if ((tim + 1000) < _millis())
-	{
-          lcd_display_message_fullscreen_nonBlocking_P(_i("ERROR: Filament sensor is not responding, please check connection."), nlines);////MSG_FSENS_NOT_RESPONDING c=20 r=4
-		tim = _millis();
-	}
-    menu_back_if_clicked();
-}
-#endif //FILAMENT_SENSOR
-
 //-//
 static void lcd_sound_state_set(void)
 {
@@ -3635,19 +3603,12 @@ static void crash_mode_switch()
  
 
 #ifdef FILAMENT_SENSOR
-static void lcd_fsensor_state_set()
-{
-	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
-	if (!FSensorStateMenu) {
-		fsensor_disable();
-		if (fsensor_autoload_enabled && !mmu_enabled)
-			menu_submenu(lcd_filament_autoload_info);
-	}
-	else {
-		fsensor_enable();
-		if (fsensor_not_responding && !mmu_enabled)
-			menu_submenu(lcd_fsensor_fail);
-	}
+static void lcd_fsensor_runout_set() {
+    fsensor.setRunoutEnabled(!fsensor.getRunoutEnabled(), true);
+}
+
+static void lcd_fsensor_autoload_set() {
+    fsensor.setAutoLoadEnabled(!fsensor.getAutoLoadEnabled(), true);
 }
 #endif //FILAMENT_SENSOR
 
@@ -3843,7 +3804,7 @@ void lcd_v2_calibration()
 	else if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 	{
 	    bool loaded = false;
-	    if (fsensor_enabled && ir_sensor_detected)
+	    if (fsensor.isReady())
 	    {
 	        loaded = fsensor.getFilamentPresent();
 	    }
@@ -3950,7 +3911,7 @@ static void lcd_wizard_load()
 
 bool lcd_autoDepleteEnabled()
 {
-    return (lcd_autoDeplete && fsensor_enabled);
+    return (lcd_autoDeplete && fsensor.isReady());
 }
 
 static void wizard_lay1cal_message(bool cold)
@@ -4214,44 +4175,22 @@ void lcd_settings_linearity_correction_menu(void)
 #endif // TMC2130
 
 #ifdef FILAMENT_SENSOR
-#define SETTINGS_FILAMENT_SENSOR \
-do\
-{\
-    if (FSensorStateMenu == 0)\
-    {\
-        if (fsensor_not_responding && (mmu_enabled == false))\
-        {\
-            /* Filament sensor not working*/\
-            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_NA), lcd_fsensor_state_set);\
-            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), NULL, lcd_fsensor_fail);\
-        }\
-        else\
-        {\
-            /* Filament sensor turned off, working, no problems*/\
-            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);\
-            if (mmu_enabled == false)\
-            {\
-                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), NULL, lcd_filament_autoload_info);\
-            }\
-        }\
-    }\
-    else\
-    {\
-        /* Filament sensor turned on, working, no problems*/\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);\
-        if (mmu_enabled == false)\
-        {\
-            if (fsensor_autoload_enabled)\
-                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_ON), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_ON c=17*/\
-            else\
-                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_OFF), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_OFF c=17*/\
-        }\
-    }\
-}\
-while(0)
 
-#else //FILAMENT_SENSOR
-#define SETTINGS_FILAMENT_SENSOR do{}while(0)
+void fsensor_reinit() {
+    fsensor.init();
+}
+
+#define SETTINGS_FILAMENT_SENSOR \
+do {\
+    if (fsensor.isError()) {\
+        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), NULL, fsensor_reinit);\
+        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), NULL, fsensor_reinit);\
+    }\
+    else {\
+        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), fsensor.getRunoutEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_runout_set);\
+        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), fsensor.getAutoLoadEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_autoload_set);\
+    }\
+} while(0)
 #endif //FILAMENT_SENSOR
 
 static void auto_deplete_switch()
@@ -4264,17 +4203,11 @@ static void settingsAutoDeplete()
 {
     if (mmu_enabled)
     {
-        if (!fsensor_enabled)
-        {
-            MENU_ITEM_TOGGLE_P(MSG_AUTO_DEPLETE, _T(MSG_NA), NULL);
+        if (fsensor.isError()) {
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), NULL, fsensor_reinit);
         }
-        else if (lcd_autoDeplete)
-        {
-            MENU_ITEM_TOGGLE_P(MSG_AUTO_DEPLETE, _T(MSG_ON), auto_deplete_switch);
-        }
-        else
-        {
-            MENU_ITEM_TOGGLE_P(MSG_AUTO_DEPLETE, _T(MSG_OFF), auto_deplete_switch);
+        else {
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), lcd_autoDeplete ? _T(MSG_ON) : _T(MSG_OFF), auto_deplete_switch);
         }
     }
 }
@@ -4671,40 +4604,35 @@ SETTINGS_VERSION;
 MENU_END();
 }
 
-#ifdef IR_SENSOR_ANALOG
 static void lcd_fsensor_actionNA_set(void)
 {
-switch(oFsensorActionNA)
-     {
-     case ClFsensorActionNA::_Continue:
-          oFsensorActionNA=ClFsensorActionNA::_Pause;
-          break;
-     case ClFsensorActionNA::_Pause:
-          oFsensorActionNA=ClFsensorActionNA::_Continue;
-          break;
-     default:
-          oFsensorActionNA=ClFsensorActionNA::_Continue;
-     }
-eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA,(uint8_t)oFsensorActionNA);
+    Filament_sensor::SensorActionOnError act = fsensor.getActionOnError();
+    switch(act) {
+    case Filament_sensor::SensorActionOnError::_Continue:
+        act = Filament_sensor::SensorActionOnError::_Pause;
+        break;
+    case Filament_sensor::SensorActionOnError::_Pause:
+        act = Filament_sensor::SensorActionOnError::_Continue;
+        break;
+    default:
+        act = Filament_sensor::SensorActionOnError::_Continue;
+    }
+    fsensor.setActionOnError(act, true);
 }
 
 #define FSENSOR_ACTION_NA \
-do\
-{\
-    switch(oFsensorActionNA)\
-         {\
-         case ClFsensorActionNA::_Continue:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_CONTINUE_SHORT), lcd_fsensor_actionNA_set);\
+do {\
+    switch(fsensor.getActionOnError()) {\
+    case Filament_sensor::SensorActionOnError::_Continue:\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_CONTINUE), lcd_fsensor_actionNA_set);\
               break;\
-         case ClFsensorActionNA::_Pause:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_PAUSE), lcd_fsensor_actionNA_set);\
+    case Filament_sensor::SensorActionOnError::_Pause:\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_PAUSE), lcd_fsensor_actionNA_set);\
               break;\
          default:\
-              oFsensorActionNA=ClFsensorActionNA::_Continue;\
+        lcd_fsensor_actionNA_set();\
          }\
-}\
-while (0)
-#endif //IR_SENSOR_ANALOG
+} while (0)
 
 template <uint8_t number>
 static void select_sheet_menu()
@@ -4758,7 +4686,6 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);  ////MSG_CHECKS c=18
 
 #ifdef IR_SENSOR_ANALOG
-    FSENSOR_ACTION_NA;
     //! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
     //! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
     if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
@@ -4795,7 +4722,12 @@ static void lcd_settings_menu()
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=18
     }
 
-	SETTINGS_FILAMENT_SENSOR;
+#ifdef FILAMENT_SENSOR
+    SETTINGS_FILAMENT_SENSOR;
+#ifdef IR_SENSOR_ANALOG
+    FSENSOR_ACTION_NA;
+#endif //IR_SENSOR_ANALOG
+#endif //FILAMENT_SENSOR
 
 	SETTINGS_AUTO_DEPLETE;
 
@@ -5563,8 +5495,9 @@ static void lcd_main_menu()
 #endif //MMU_HAS_CUTTER
         } else {
 #ifdef FILAMENT_SENSOR
-            if ((fsensor_autoload_enabled == true) && (fsensor_enabled == true) && (mmu_enabled == false))
+            if (fsensor.getAutoLoadEnabled() && (mmu_enabled == false)) {
                 MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=18
+            }
             else
 #endif //FILAMENT_SENSOR
             {
@@ -5726,21 +5659,9 @@ static void lcd_tune_menu()
 #endif
 
 #ifdef FILAMENT_SENSOR
-	if (FSensorStateMenu == 0) {
-          if (fsensor_not_responding && (mmu_enabled == false)) {
-               /* Filament sensor not working*/
-               MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_NA), lcd_fsensor_state_set);
-          }
-          else {
-               /* Filament sensor turned off, working, no problems*/
-               MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
-          }
-	}
-	else {
-		MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);
-	}
+    SETTINGS_FILAMENT_SENSOR;
 #ifdef IR_SENSOR_ANALOG
-     FSENSOR_ACTION_NA;
+    FSENSOR_ACTION_NA;
 #endif //IR_SENSOR_ANALOG
 #endif //FILAMENT_SENSOR
 
@@ -6251,11 +6172,9 @@ static void lcd_detect_IRsensor(){
     }
     if(bAction){
         lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////MSG_FS_VERIFIED c=20 r=3
-        // the fsensor board has been successfully identified, any previous "not responding" may be cleared now
-        fsensor_not_responding = false;
+        fsensor.init();
     } else {
         lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=5
-        // here it is unclear what to to with the fsensor_not_responding flag
     }
 }
 #endif //IR_SENSOR_ANALOG
@@ -7053,12 +6972,12 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 #ifdef PAT9125
 static bool lcd_selftest_fsensor(void)
 {
-	// fsensor.init();
-	if (fsensor_not_responding)
+	fsensor.init();
+	if (fsensor.isError())
 	{
 		lcd_selftest_error(TestError::WiringFsensor, "", "");
 	}
-	return (!fsensor_not_responding);
+	return (!fsensor.isError());
 }
 #endif //PAT9125
 
