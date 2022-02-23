@@ -450,9 +450,9 @@
 "Checking Z axis"
 "Pr\xf5fe Z Achse"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
-"Extruder w\xe1hlen:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
+"W\xe1hle extruder:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -1052,7 +1052,7 @@
 
 #MSG_SELECT_FILAMENT c=20
 "Select filament:"
-"Filament ausw\xe1hlen:"
+"W\xe1hle filament:"
 
 #MSG_TEMP_CALIBRATION c=14
 "Temp. cal."

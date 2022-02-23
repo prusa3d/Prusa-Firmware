@@ -580,9 +580,9 @@ msgstr "Controleer Y as"
 msgid "Checking Z axis"
 msgstr "Controleer Z as"
 
-# MSG_CHOOSE_EXTRUDER c=20
+# MSG_SELECT_EXTRUDER c=20
 #: messages.c:54
-msgid "Choose extruder:"
+msgid "Select extruder:"
 msgstr "Kies extruder:"
 
 # MSG_FILAMENT c=17
