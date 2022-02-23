@@ -286,9 +286,9 @@
 "ERROR:"
 "ERREUR:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
-"Ventilo extrudeur:"
+"Vent. extrudeur:"
 
 #MSG_INFO_EXTRUDER c=18
 "Extruder info"
@@ -706,10 +706,6 @@
 "Now remove the test print from steel sheet."
 "Retirez maintenant l'impression de test de la plaque en acier."
 
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Vent. buse"
-
 #MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pause de l'impr."
@@ -830,7 +826,7 @@
 "Preheating to unload"
 "Chauf.pour decharger"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "Vent. impr:"
 
@@ -853,10 +849,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "L'imprimante n'a pas encore ete calibree. Suivez le manuel, chapitre Premiers pas, section Processus de calibration."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Vent. impr"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."

@@ -375,7 +375,7 @@ msgstr "Tamno"
 msgid "ERROR:"
 msgstr "POGRESKA:"
 
-# MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+# MSG_EXTRUDER_FAN_SPEED c=16
 #: ultralcd.cpp:8419
 msgid "Extruder fan:"
 msgstr "Ekstruder vent:"
@@ -900,11 +900,6 @@ msgstr "Pronadene stare postavke. Postavit ce se zadani PID, Esteps itd."
 msgid "Now remove the test print from steel sheet."
 msgstr "Sada uklonite probni print sa celicne ploce."
 
-# MSG_NOZZLE_FAN c=10
-#: ultralcd.cpp:1446
-msgid "Nozzle FAN"
-msgstr "Fan mlazn"
-
 # MSG_PAUSE_PRINT c=18
 #: messages.c:74
 msgid "Pause print"
@@ -1055,7 +1050,7 @@ msgstr "Predgr. za punjenje"
 msgid "Preheating to unload"
 msgstr "Predgr. za praznj."
 
-# MSG_SELFTEST_PRINT_FAN_SPEED c=18
+# MSG_PRINT_FAN_SPEED c=16
 #: ultralcd.cpp:8422
 msgid "Print fan:"
 msgstr "Ventilator printa:"
@@ -1084,11 +1079,6 @@ msgstr "Pritisnite gumb za nastavak temperature mlaznice."
 #: messages.c:46
 msgid "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 msgstr "Printer jos nije kalibriran. Molimo slijedite prirucnik, poglavlje Prvi koraci, odjeljak Tijek kalibracije."
-
-# MSG_PRINT_FAN c=10
-#: ultralcd.cpp:1447
-msgid "Print FAN"
-msgstr ""
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818

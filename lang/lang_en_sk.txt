@@ -286,7 +286,7 @@
 "ERROR:"
 "CHYBA:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Lavy vent.:"
 
@@ -706,10 +706,6 @@
 "Now remove the test print from steel sheet."
 "Teraz odstrante testovaci vytlacok z platne."
 
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"V. trysky"
-
 #MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pozastavit tlac"
@@ -830,7 +826,7 @@
 "Preheating to unload"
 "Predhrev k vybratiu"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "Tlacovy vent.:"
 
@@ -853,10 +849,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Tlaciaren nebola este skalibrovana. Postupujte prosim podla manualu, kapitola Zaciname, odstavec Postup kalibracie."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Tlacovy v."
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."

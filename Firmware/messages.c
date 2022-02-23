@@ -34,6 +34,8 @@ const char MSG_FANS_CHECK[] PROGMEM_I1 = ISTR("Fans check"); ////c=13
 const char MSG_FIL_RUNOUTS[] PROGMEM_I1 = ISTR("Fil. runouts"); ////c=15
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17
 const char MSG_FAN_SPEED[] PROGMEM_I1 = ISTR("Fan speed"); ////c=14
+const char MSG_EXTRUDER_FAN_SPEED[] PROGMEM_I1 = ISTR("Extruder fan:");////c=16
+const char MSG_PRINT_FAN_SPEED[] PROGMEM_I1 = ISTR("Print fan:"); ////c=16
 const char MSG_FILAMENT_CLEAN[] PROGMEM_I1 = ISTR("Filament extruding & with correct color?"); ////c=20 r=2
 const char MSG_FILAMENT_LOADED[] PROGMEM_I1 = ISTR("Is filament loaded?"); ////c=20 r=2
 const char MSG_FILAMENT_LOADING_T0[] PROGMEM_I1 = ISTR("Insert filament into extruder 1. Click when done."); ////c=20 r=4

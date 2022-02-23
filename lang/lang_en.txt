@@ -214,7 +214,7 @@
 #MSG_ERROR c=10
 "ERROR:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 
 #MSG_INFO_EXTRUDER c=18
@@ -529,9 +529,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-
 #MSG_PAUSE_PRINT c=18
 "Pause print"
 
@@ -622,7 +619,7 @@
 #MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 
 #MSG_CARD_MENU c=18
@@ -639,9 +636,6 @@
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
