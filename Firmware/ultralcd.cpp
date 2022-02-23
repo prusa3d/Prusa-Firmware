@@ -1428,8 +1428,8 @@ static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Nozzle FAN: 0000 RPM|	MSG_NOZZLE_FAN c=10  SPEED c=3
-//! |Print FAN:  0000 RPM|	MSG_PRINT_FAN c=10  SPEED c=3
+//! |Extruder fan:   0000|	MSG_EXTRUDER_FAN_SPEED c=16
+//! |Print fan:      0000|	MSG_PRINT_FAN_SPEED c=16
 //! |                    |
 //! |                    |
 //! ----------------------
@@ -1438,14 +1438,9 @@ static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize
 void lcd_menu_extruder_info()                     // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
 
-    // Display Nozzle fan RPM
     lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
-    static const size_t maxChars = 12;
-    char nozzle[maxChars], print[maxChars];
-    pgmtext_with_colon(_i("Nozzle FAN"), nozzle, maxChars);  ////MSG_NOZZLE_FAN c=10
-    pgmtext_with_colon(_i("Print FAN"), print, maxChars);  ////MSG_PRINT_FAN c=10
-	lcd_printf_P(_N("%s %4d RPM\n" "%s %4d RPM\n"), nozzle, 60*fan_speed[0], print, 60*fan_speed[1] ); 
+	lcd_printf_P(PSTR("%-16.16S%-4d\n" "%-16.16S%-4d\n"), _T(MSG_EXTRUDER_FAN_SPEED), 60*fan_speed[0], _T(MSG_PRINT_FAN_SPEED), 60*fan_speed[1] ); 
     menu_back_if_clicked();
 }
 
@@ -8416,10 +8411,10 @@ static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_s
 	if ((screen >= TestScreen::ExtruderFan) && (screen <= TestScreen::FansOk))
 	{
 		//SERIAL_ECHOLNPGM("Fan test");
-		lcd_puts_at_P(0, 2, _i("Extruder fan:"));////MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+		lcd_puts_at_P(0, 2, _T(MSG_EXTRUDER_FAN_SPEED));
 		lcd_set_cursor(18, 2);
 		(screen < TestScreen::PrintFan) ? lcd_print(_indicator) : lcd_print("OK");
-		lcd_puts_at_P(0, 3, _i("Print fan:"));////MSG_SELFTEST_PRINT_FAN_SPEED c=18
+		lcd_puts_at_P(0, 3, _T(MSG_PRINT_FAN_SPEED));
 		lcd_set_cursor(18, 3);
 		(screen < TestScreen::FansOk) ? lcd_print(_indicator) : lcd_print("OK");
 	}

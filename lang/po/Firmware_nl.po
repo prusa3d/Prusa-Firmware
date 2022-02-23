@@ -375,7 +375,7 @@ msgstr ""
 msgid "ERROR:"
 msgstr "FOUT:"
 
-# MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+# MSG_EXTRUDER_FAN_SPEED c=16
 #: ultralcd.cpp:8419
 msgid "Extruder fan:"
 msgstr ""
@@ -900,11 +900,6 @@ msgstr "Oude instellingen gevonden. Standaard PID, E-steps etc. instellingen wor
 msgid "Now remove the test print from steel sheet."
 msgstr "Verwijder nu de testprint van staalplaat."
 
-# MSG_NOZZLE_FAN c=10
-#: ultralcd.cpp:1446
-msgid "Nozzle FAN"
-msgstr "Tuit fan"
-
 # MSG_PAUSE_PRINT c=18
 #: messages.c:74
 msgid "Pause print"
@@ -1055,7 +1050,7 @@ msgstr "Opwarmen invoeren"
 msgid "Preheating to unload"
 msgstr "Opwarmen uitwerpen"
 
-# MSG_SELFTEST_PRINT_FAN_SPEED c=18
+# MSG_PRINT_FAN_SPEED c=16
 #: ultralcd.cpp:8422
 msgid "Print fan:"
 msgstr ""
@@ -1084,11 +1079,6 @@ msgstr "Druk op de knop om de temperatuur van de tuit te hervatten."
 #: messages.c:46
 msgid "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 msgstr "Printer is nog niet gekalibreerd. Volg de handleiding, hoofdstuk First steps, sectie Calibration flow."
-
-# MSG_PRINT_FAN c=10
-#: ultralcd.cpp:1447
-msgid "Print FAN"
-msgstr ""
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818

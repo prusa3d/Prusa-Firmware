@@ -286,7 +286,7 @@
 "ERROR:"
 "HIBA:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Extruder vent.:"
 
@@ -706,10 +706,6 @@
 "Now remove the test print from steel sheet."
 "Vedd le a tesztnyomatot az acellaprol."
 
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Targyhuto"
-
 #MSG_PAUSE_PRINT c=18
 "Pause print"
 "Nyomtatas szunet"
@@ -830,7 +826,7 @@
 "Preheating to unload"
 "Felfutes kiadashoz"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "Targyhuto:"
 
@@ -853,10 +849,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "A nyomtato meg nem volt bekalibralva. Kerlek, kovesd az utmutato Elso lepesek fejezetenek Kalibracio menete bekezdeset."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Targyhuto"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
