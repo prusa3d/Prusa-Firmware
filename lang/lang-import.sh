@@ -266,9 +266,9 @@ if [ "$LNG" = "nl" ]; then
 fi
 
 if [ "$LNG" = "sv" ]; then
-#repace 'Å' with 'Aa'
+#repace 'Å' with 'A'
 sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
-#repace 'å' with 'aa'
+#repace 'å' with 'a'
 sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
 fi
 
