@@ -1335,9 +1335,9 @@ msgstr "Zamjenjeno"
 msgid "Select filament:"
 msgstr "Odaberi filament:"
 
-# MSG_TEMP_CALIBRATION c=14
+# MSG_PINDA_CALIBRATION c=13
 #: messages.c:112
-msgid "Temp. cal."
+msgid "PINDA cal."
 msgstr "Temp kal."
 
 # MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
@@ -1355,9 +1355,9 @@ msgstr "Temp kalibracija"
 msgid "Temperature calibration failed"
 msgstr "Kalibracija temperature nije uspjela"
 
-# MSG_TEMP_CALIBRATION_DONE c=20 r=12
+# MSG_PINDA_CALIBRATION_DONE c=20 r=8
 #: messages.c:113
-msgid "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+msgid "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
 msgstr "Kalibracija temperature je zavrsena i aktivna. Temp. kalibracija se moze onemoguciti u izborniku Postavke->Temp. kal."
 
 # MSG_FS_VERIFIED c=20 r=3

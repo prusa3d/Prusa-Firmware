@@ -138,10 +138,6 @@
 "Calibrate Z"
 "Kalibrierung Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Kalibrieren"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Abbruch"
@@ -1054,25 +1050,21 @@
 "Select filament:"
 "W\xe1hle filament:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Temp Kalib."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"PINDA Kal."
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "W\xe1hlen Sie die Temperatur, die zu Ihrem Material passt."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Temp. kalibrieren"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
+"PINDA-Kalibrierung fehlgeschlagen"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"Temperaturkalibrierung fehlgeschlagen"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Temp.kalibrierung ist fertig + aktiv. Temp.kalibrierung kann ausgeschaltet werden im Menu Einstellungen -> Temp.kal."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"PINDA Kalibrierung ist fertig + aktiv. Es kann ausgeschaltet werden im Menu Einstellungen -> Temp.kal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."

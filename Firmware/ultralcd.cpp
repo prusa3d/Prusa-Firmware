@@ -671,13 +671,8 @@ void lcdui_print_status_line(void)
             }
             break;
         case CustomMsg::TempCal: // PINDA temp calibration in progress
-            char statusLine[LCD_WIDTH + 1];
-            sprintf_P(statusLine, PSTR("%-20S"), _T(MSG_TEMP_CALIBRATION));
-            char progress[4];
-            sprintf_P(progress, PSTR("%d/6"), custom_message_state);
-            memcpy(statusLine + 12, progress, sizeof(progress) - 1);
             lcd_set_cursor(0, 3);
-            lcd_print(statusLine);
+            lcd_printf_P(PSTR("%-12.12S%-d/6"), _T(MSG_PINDA_CALIBRATION), custom_message_state);
             break;
         case CustomMsg::TempCompPreheat: // temp compensation preheat
             lcd_puts_at_P(0, 3, _i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20
@@ -3756,14 +3751,14 @@ void lcd_temp_cal_show_result(bool result) {
 
 	if (result == true) {
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-		SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
-		lcd_show_fullscreen_message_and_wait_P(_T(MSG_TEMP_CALIBRATION_DONE));
+		SERIAL_ECHOLNPGM("PINDA calibration done. Continue with pressing the knob.");
+		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CALIBRATION_DONE));
 		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
 	}
 	else {
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
-		SERIAL_ECHOLNPGM("Temperature calibration failed. Continue with pressing the knob.");
-		lcd_show_fullscreen_message_and_wait_P(_i("Temperature calibration failed"));////MSG_TEMP_CAL_FAILED c=20 r=8
+		SERIAL_ECHOLNPGM("PINDA calibration failed. Continue with pressing the knob.");
+		lcd_show_fullscreen_message_and_wait_P(_i("PINDA calibration failed"));////MSG_PINDA_CAL_FAILED c=20 r=4
 		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 0);
 	}
 	lcd_update_enable(true);
@@ -4515,14 +4510,6 @@ void lcd_mesh_calibration_z()
 {
   enquecommand_P(PSTR("M45 Z"));
   lcd_return_to_status();
-}
-
-void lcd_pinda_calibration_menu()
-{
-	MENU_BEGIN();
-		MENU_ITEM_BACK_P(_T(MSG_MENU_CALIBRATION));
-		MENU_ITEM_SUBMENU_P(_i("Calibrate"), lcd_calibrate_pinda);////MSG_CALIBRATE_PINDA c=17
-	MENU_END();
 }
 
 void lcd_temp_calibration_set() {
@@ -5698,7 +5685,7 @@ static void lcd_settings_menu()
 #endif //LINEARITY_CORRECTION && TMC2130
     if(has_temperature_compensation())
     {
-	    MENU_ITEM_TOGGLE_P(_T(MSG_TEMP_CALIBRATION), eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE) ? _T(MSG_ON) : _T(MSG_OFF), lcd_temp_calibration_set);
+        MENU_ITEM_TOGGLE_P(_T(MSG_PINDA_CALIBRATION), eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE) ? _T(MSG_ON) : _T(MSG_OFF), lcd_temp_calibration_set);
     }
 
 #ifdef HAS_SECOND_SERIAL_PORT
@@ -5804,7 +5791,7 @@ static void lcd_calibration_menu()
 #ifndef MK1BP
     if(has_temperature_compensation())
     {
-	    MENU_ITEM_SUBMENU_P(_i("Temp. calibration"), lcd_pinda_calibration_menu);////MSG_CALIBRATION_PINDA_MENU c=17
+	    MENU_ITEM_FUNCTION_P(_T(MSG_PINDA_CALIBRATION), lcd_calibrate_pinda);
     }
 #endif //MK1BP
   }
