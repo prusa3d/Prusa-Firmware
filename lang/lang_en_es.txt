@@ -450,8 +450,8 @@
 "Checking Z axis"
 "Control sensor Z"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Elegir extrusor:"
 
 #MSG_FILAMENT c=17

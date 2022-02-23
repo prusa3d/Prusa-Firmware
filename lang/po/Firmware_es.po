@@ -580,9 +580,9 @@ msgstr "Control sensor Y"
 msgid "Checking Z axis"
 msgstr "Control sensor Z"
 
-# MSG_CHOOSE_EXTRUDER c=20
+# MSG_SELECT_EXTRUDER c=20
 #: messages.c:56
-msgid "Choose extruder:"
+msgid "Select extruder:"
 msgstr "Elegir extrusor:"
 
 # MSG_FILAMENT c=17

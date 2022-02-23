@@ -580,9 +580,9 @@ msgstr "Verificare axa Y"
 msgid "Checking Z axis"
 msgstr "Verificare axa Z"
 
-# MSG_CHOOSE_EXTRUDER c=20
+# MSG_SELECT_EXTRUDER c=20
 #: messages.c:54
-msgid "Choose extruder:"
+msgid "Select extruder:"
 msgstr "Alege extruderul:"
 
 # MSG_FILAMENT c=17
