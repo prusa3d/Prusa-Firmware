@@ -286,7 +286,7 @@
 "ERROR:"
 "EROARE:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Vent. extruder:"
 
@@ -706,10 +706,6 @@
 "Now remove the test print from steel sheet."
 "Acum inlaturati printul de test de pe suprafata de print."
 
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Vent. varf"
-
 #MSG_PAUSE_PRINT c=18
 "Pause print"
 "Pauza print"
@@ -830,9 +826,9 @@
 "Preheating to unload"
 "Preincalzire unload"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
-"Ventilator print:"
+"Vent. print:"
 
 #MSG_CARD_MENU c=18
 "Print from SD"
@@ -853,10 +849,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Imprimanta nu a fost calibrata inca. Va rugam sa folositi manualul, capitolul First steps, sectiunea Calibration flow."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Vent.print"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."

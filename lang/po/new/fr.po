@@ -375,7 +375,7 @@ msgstr "Sombre"
 msgid "ERROR:"
 msgstr "ERREUR:"
 
-# MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+# MSG_EXTRUDER_FAN_SPEED c=16
 #: ultralcd.cpp:8419
 msgid "Extruder fan:"
 msgstr "Ventilo extrudeur:"
@@ -900,11 +900,6 @@ msgstr "Anciens reglages trouves. Le PID, les Esteps etc. par defaut seront regl
 msgid "Now remove the test print from steel sheet."
 msgstr "Retirez maintenant l'impression de test de la plaque en acier."
 
-# MSG_NOZZLE_FAN c=10
-#: ultralcd.cpp:1446
-msgid "Nozzle FAN"
-msgstr "Vent. buse"
-
 # MSG_PAUSE_PRINT c=18
 #: messages.c:74
 msgid "Pause print"
@@ -1055,7 +1050,7 @@ msgstr "Chauffe pour charger"
 msgid "Preheating to unload"
 msgstr "Chauf.pour decharger"
 
-# MSG_SELFTEST_PRINT_FAN_SPEED c=18
+# MSG_PRINT_FAN_SPEED c=16
 #: ultralcd.cpp:8422
 msgid "Print fan:"
 msgstr "Vent. impr:"
@@ -1084,11 +1079,6 @@ msgstr "Appuyez sur le bouton pour rechauffer la buse."
 #: messages.c:46
 msgid "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 msgstr "L'imprimante n'a pas encore ete calibree. Suivez le manuel, chapitre Premiers pas, section Processus de calibration."
-
-# MSG_PRINT_FAN c=10
-#: ultralcd.cpp:1447
-msgid "Print FAN"
-msgstr "Vent. impr"
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
