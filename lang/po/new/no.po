@@ -2,58 +2,56 @@
 #
 msgid ""
 msgstr ""
+"Project-Id-Version: Prusa-Firmware\n"
+"POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
+"PO-Revision-Date: 2022-02-23 11:43+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: no\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: no\n"
-"Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"Language-Team: \n"
-"X-Generator: Poedit 2.0.7\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"Last-Translator: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:164
 msgid " 0.3 or older"
-msgstr ""
+msgstr " 0.3 eller eldre"
 
 # MSG_FS_V_03_OR_OLDER c=18
 #: Marlin_main.cpp:9887
 msgid "FS v0.3 or older"
-msgstr ""
+msgstr "FS 0.3 eller eldre"
 
 # MSG_IR_04_OR_NEWER c=18
 #: messages.c:163
 msgid " 0.4 or newer"
-msgstr ""
+msgstr " 0.4 eller nyere"
 
 # MSG_FS_V_04_OR_NEWER c=18
 #: Marlin_main.cpp:9886
 msgid "FS v0.4 or newer"
-msgstr ""
+msgstr "FS 0.4 eller nyere"
 
 # MSG_IR_UNKNOWN c=18
 #: messages.c:165
 msgid "unknown state"
-msgstr ""
+msgstr "ukjent tilstand"
 
 # MSG_MEASURED_OFFSET c=20
 #: ultralcd.cpp:2913
 msgid "[0;0] point offset"
-msgstr ""
+msgstr "[0;0] punktforskyv."
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-#: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr ""
+msgid "Crash detection can\\x0abe turned on only in\\x0aNormal mode"
+msgstr "Krasjdeteksjon kan bare skrus på i normal modus"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-#: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr ""
+msgid "WARNING:\\x0aCrash detection\\x0adisabled in\\x0aStealth mode"
+msgstr "ADVARSEL:\\x0aKrasjdeteksjon\\x0adeaktivert i\\x0aStillemodus"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3034
@@ -341,7 +339,6 @@ msgid "Endstops"
 msgstr ""
 
 # MSG_STACK_ERROR c=20 r=4
-#: 
 msgid "Error - static memory has been overwritten"
 msgstr ""
 
@@ -1769,4 +1766,3 @@ msgstr ""
 #: ultralcd.cpp:2028
 msgid "Printer IP Addr:"
 msgstr ""
-
