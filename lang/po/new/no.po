@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-02-23 11:43+0100\n"
+"PO-Revision-Date: 2022-02-23 11:59+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -56,7 +56,7 @@ msgstr "ADVARSEL:\\x0aKrasjdeteksjon\\x0adeaktivert i\\x0aStillemodus"
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3034
 msgid "Adjusting Z:"
-msgstr ""
+msgstr "Justerer Z:"
 
 # MSG_SELFTEST_CHECK_ALLCORRECT c=20
 #: ultralcd.cpp:8411
