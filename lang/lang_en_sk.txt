@@ -450,8 +450,8 @@
 "Checking Z axis"
 "Kontrola osi Z"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Vyberte extruder:"
 
 #MSG_FILAMENT c=17

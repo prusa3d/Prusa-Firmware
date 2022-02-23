@@ -450,8 +450,8 @@
 "Checking Z axis"
 "Z tengely ellenorzes"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Extruder valasztas:"
 
 #MSG_FILAMENT c=17

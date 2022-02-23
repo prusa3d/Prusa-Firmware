@@ -450,8 +450,8 @@
 "Checking Z axis"
 "Provjera Z osi"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Odaberite ekstruder:"
 
 #MSG_FILAMENT c=17

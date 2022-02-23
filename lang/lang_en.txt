@@ -337,8 +337,8 @@
 #MSG_SELFTEST_CHECK_Z c=20
 "Checking Z axis"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 
 #MSG_FILAMENT c=17
 "Filament"
