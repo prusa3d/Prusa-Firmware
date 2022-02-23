@@ -18,6 +18,7 @@
 #include "AutoDeplete.h"
 #include "fastio.h"
 #include "pins.h"
+#include "Filament_sensor.h"
 //-//
 #include "util.h"
 
@@ -168,12 +169,7 @@ bool check_for_ir_sensor()
 
 	bool detected = false;
 	//if IR_SENSOR_PIN input is low and pat9125sensor is not present we detected idler sensor
-	if ((READ(IR_SENSOR_PIN) == 0) 
-#ifdef PAT9125
-		&& fsensor_not_responding
-#endif //PAT9125
-	) 
-	{		
+	if ((READ(IR_SENSOR_PIN) == 0)) {
 		detected = true;
 		//printf_P(PSTR("Idler IR sensor detected\n"));
 	}
@@ -379,8 +375,9 @@ void mmu_loop(void)
 			mmu_last_finda_response.start();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
-			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
-				fsensor_checkpoint_print();
+			if (!mmu_finda && CHECK_FSENSOR && fsensor.isReady()) {
+				stop_and_save_print_to_ram(0, 0);
+				restore_print_from_ram_and_continue(0);
 				if (mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't deplete unknown extruder.
                     ad_markDepleted(mmu_extruder);
 				if (lcd_autoDepleteEnabled() && !ad_allDepleted() && mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't auto if F=?

@@ -763,8 +763,8 @@ static void factory_reset(char level)
 		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 
 #ifdef FILAMENT_SENSOR
-		fsensor_enable();
-		fsensor_autoload_set(true);
+		fsensor.setAutoLoadEnabled(true, true);
+		fsensor.setRunoutEnabled(true, true);
 #endif //FILAMENT_SENSOR
 		break;
 
@@ -1111,8 +1111,7 @@ void setup()
 #endif //HAS_SECOND_SERIAL_PORT
 		MYSERIAL.begin(BAUDRATE);
 #ifdef FILAMENT_SENSOR
-		//disabled filament autoload (PFW360)
-		fsensor_autoload_set(false);
+		fsensor.setAutoLoadEnabled(false, false);
 #endif //FILAMENT_SENSOR
 		// ~ FanCheck -> on
 		eeprom_update_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED, true);
@@ -1558,10 +1557,6 @@ void setup()
 #if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
-
-#ifdef PAT9125
-	fsensor_setup_interrupt();
-#endif //PAT9125
 
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
@@ -11842,9 +11837,6 @@ void M600_load_filament() {
 	//load_filament_time = _millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-#ifdef PAT9125
-	fsensor_autoload_check_start();
-#endif //PAT9125
 	while(!lcd_clicked())
 	{
 		manage_heater();
@@ -11856,9 +11848,6 @@ void M600_load_filament() {
 		}
 #endif //FILAMENT_SENSOR
 	}
-#ifdef PAT9125
-	fsensor_autoload_check_stop();
-#endif //PAT9125
 	KEEPALIVE_STATE(IN_HANDLER);
 
 	M600_load_filament_movements();

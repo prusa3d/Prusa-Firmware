@@ -22,6 +22,13 @@ public:
     virtual bool update() = 0;
     virtual bool getFilamentPresent() = 0;
     
+    enum class State : uint8_t {
+        disabled = 0,
+        ready,
+        initializing,
+        error,
+    };
+    
     enum class SensorActionOnError : uint8_t {
         _Continue = 0,
         _Pause = 1,
@@ -35,6 +42,10 @@ public:
         }
     }
     
+    bool getAutoLoadEnabled() {
+        return autoLoadEnabled;
+    }
+    
     void setRunoutEnabled(bool state, bool updateEEPROM = false) {
         runoutEnabled = state;
         if (updateEEPROM) {
@@ -42,8 +53,31 @@ public:
         }
     }
     
+    bool getRunoutEnabled() {
+        return runoutEnabled;
+    }
+    
+    void setActionOnError(SensorActionOnError state, bool updateEEPROM = false) {
+        sensorActionOnError = state;
+        if (updateEEPROM) {
+            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_ACTION_NA, (uint8_t)state);
+        }
+    }
+    
+    SensorActionOnError getActionOnError() {
+        return sensorActionOnError;
+    }
+    
     bool getFilamentLoadEvent() {
         return postponedLoadEvent;
+    }
+    
+    bool isError() {
+        return state == State::error;
+    }
+    
+    bool isReady() {
+        return state == State::ready;
     }
     
 protected:
@@ -52,12 +86,12 @@ protected:
         runoutEnabled = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
         sensorActionOnError = (SensorActionOnError)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
         if (sensorActionOnError == SensorActionOnError::_Undef) {
-            sensorActionOnError = SensorActionOnError::_Pause;
+            sensorActionOnError = SensorActionOnError::_Continue;
         }
     }
     
     bool checkFilamentEvents() {
-        if (!ready)
+        if (state != State::ready)
             return false;
         
         bool newFilamentPresent = getFilamentPresent();
@@ -102,10 +136,10 @@ protected:
         }
     }
     
+    State state;
     bool autoLoadEnabled;
     bool runoutEnabled;
     bool oldFilamentPresent; //for creating filament presence switching events.
-    bool ready;
     bool postponedLoadEvent; //this event lasts exactly one update cycle. It is long enough to be able to do polling for load event.
     SensorActionOnError sensorActionOnError;
 };
@@ -116,18 +150,17 @@ public:
         SET_INPUT(IR_SENSOR_PIN); //input mode
         WRITE(IR_SENSOR_PIN, 1); //pullup
         settings_init();
+        state = State::initializing;
     }
     
     bool update() {
-        if (!ready) {
-            ready = true; //the IR sensor gets ready instantly as it's just a gpio read operation.
+        if (state == State::initializing) {
+            state = State::ready; //the IR sensor gets ready instantly as it's just a gpio read operation.
             oldFilamentPresent = getFilamentPresent(); //initialize the current filament state so that we don't create a switching event right after the sensor is ready.
         }
         
         postponedLoadEvent = false;
         bool event = checkFilamentEvents();
-        
-        ;//
         
         return event;
     }
@@ -146,7 +179,7 @@ class IR_sensor_analog: public IR_sensor {
 public:
     void init() {
         IR_sensor::init();
-        ;//
+        settings_init();
     }
     
     bool update() {
@@ -175,13 +208,13 @@ public:
             //! So I'm waiting for a situation, when minVolt gets to range <0, 1.5> and maxVolt gets into range <3.0, 5>
             //! If and only if minVolt is in range <0.3, 1.5> and maxVolt is in range <3.0, 4.6>, I'm considering a situation with the new fsensor
             if(minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD && maxVolt >= IRsensor_Hmin_TRESHOLD && maxVolt <= IRsensor_Hopen_TRESHOLD) {
-                IR_ANALOG_Check(SensorRevision::_Old, SensorRevision::_Rev04, _i("FS v0.4 or newer") ); ////MSG_FS_V_04_OR_NEWER c=18
+                IR_ANALOG_Check(SensorRevision::_Old, SensorRevision::_Rev04);
             }
             //! If and only if minVolt is in range <0.0, 0.3> and maxVolt is in range  <4.6, 5.0V>, I'm considering a situation with the old fsensor
             //! Note, we are not relying on one voltage here - getting just +5V can mean an old fsensor or a broken new sensor - that's why
             //! we need to have both voltages detected correctly to allow switching back to the old fsensor.
             else if( minVolt < IRsensor_Ldiode_TRESHOLD && maxVolt > IRsensor_Hopen_TRESHOLD && maxVolt <= IRsensor_VMax_TRESHOLD) {
-                IR_ANALOG_Check(SensorRevision::_Rev04, sensorRevision=SensorRevision::_Old, _i("FS v0.3 or older")); ////MSG_FS_V_03_OR_OLDER c=18
+                IR_ANALOG_Check(SensorRevision::_Rev04, SensorRevision::_Old);
             }
             
             
@@ -302,18 +335,27 @@ private:
     /// Called from 2 spots which have a very similar behavior
     /// 1: SensorRevision::_Old -> SensorRevision::_Rev04 and print _i("FS v0.4 or newer")
     /// 2: SensorRevision::_Rev04 -> sensorRevision=SensorRevision::_Old and print _i("FS v0.3 or older")
-    void IR_ANALOG_Check(SensorRevision isVersion, SensorRevision switchTo, const char *statusLineTxt_P) {
+    void IR_ANALOG_Check(SensorRevision isVersion, SensorRevision switchTo) {
         bool bTemp = (!CHECK_ALL_HEATERS);
         bTemp = bTemp && (menu_menu == lcd_status_screen);
         bTemp = bTemp && ((sensorRevision == isVersion) || (sensorRevision == SensorRevision::_Undef));
-        bTemp = bTemp && ready;
+        bTemp = bTemp && (state == State::ready);
         if (bTemp) {
             nFSCheckCount++;
             if (nFSCheckCount > FS_CHECK_COUNT) {
                 nFSCheckCount = 0; // not necessary
                 setSensorRevision(switchTo, true);
                 printf_IRSensorAnalogBoardChange();
-                lcd_setstatuspgm(statusLineTxt_P);
+                switch (switchTo) {
+                case SensorRevision::_Old:
+                    lcd_setstatuspgm(_T(MSG_FS_V_03_OR_OLDER)); ////MSG_FS_V_03_OR_OLDER c=18
+                    break;
+                case SensorRevision::_Rev04:
+                    lcd_setstatuspgm(_T(MSG_FS_V_04_OR_NEWER)); ////MSG_FS_V_04_OR_NEWER c=18
+                    break;
+                default:
+                    break;
+                }
             }
         }
         else {
