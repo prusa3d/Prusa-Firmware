@@ -251,11 +251,7 @@ msgid "Crash det."
 msgstr "Rileva.crash"
 
 # MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-<<<<<<< HEAD
 #: ultralcd.cpp:4824
-=======
-#: ultralcd.cpp:4842
->>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Scegli un filamento per la calibrazione del primo strato e selezionalo nel menu sullo schermo."
 

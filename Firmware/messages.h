@@ -54,11 +54,7 @@ extern const char MSG_HEATING[];
 extern const char MSG_HEATING_COMPLETE[];
 extern const char MSG_HOMEYZ[];
 extern const char MSG_ITERATION[];
-<<<<<<< HEAD
 extern const char MSG_SELECT_EXTRUDER[];
-=======
-extern const char MSG_CHOOSE_EXTRUDER[];
->>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 extern const char MSG_SELECT_FILAMENT[];
 extern const char MSG_LAST_PRINT[];
 extern const char MSG_LAST_PRINT_FAILURES[];

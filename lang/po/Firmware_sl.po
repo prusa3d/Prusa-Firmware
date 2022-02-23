@@ -582,11 +582,7 @@ msgstr ""
 
 # MSG_SELECT_EXTRUDER c=20
 #: messages.c:54
-<<<<<<< HEAD
 msgid "Select extruder:"
-=======
-msgid "Choose extruder:"
->>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 msgstr ""
 
 # MSG_FILAMENT c=17

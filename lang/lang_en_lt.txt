@@ -446,13 +446,8 @@
 "Checking Z axis"
 "\x00"
 
-<<<<<<< HEAD
 #MSG_SELECT_EXTRUDER c=20
 "Select extruder:"
-=======
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
->>>>>>> Remove `Choose filament` as it is a duplicate of `Select filament`
 "\x00"
 
 #MSG_FILAMENT c=17
