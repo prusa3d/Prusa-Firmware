@@ -46,6 +46,7 @@ extern const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[];
 extern const char MSG_FINISHING_MOVEMENTS[];
 extern const char MSG_FOLLOW_CALIBRATION_FLOW[];
 extern const char MSG_FOLLOW_Z_CALIBRATION_FLOW[];
+extern const char MSG_FSENSOR_RUNOUT[];
 extern const char MSG_FSENSOR_AUTOLOAD[];
 extern const char MSG_FSENSOR[];
 extern const char MSG_HEATING[];

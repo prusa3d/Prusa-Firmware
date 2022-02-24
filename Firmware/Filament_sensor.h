@@ -24,8 +24,8 @@ public:
     
     enum class State : uint8_t {
         disabled = 0,
-        ready,
         initializing,
+        ready,
         error,
     };
     
@@ -34,6 +34,11 @@ public:
         _Pause = 1,
         _Undef = EEPROM_EMPTY_VALUE
     };
+    
+    void setEnabled(bool enabled) {
+        state = enabled ? State::initializing : State::disabled;
+        eeprom_update_byte((uint8_t *)EEPROM_FSENSOR, enabled);
+    }
     
     void setAutoLoadEnabled(bool state, bool updateEEPROM = false) {
         autoLoadEnabled = state;
@@ -49,7 +54,7 @@ public:
     void setRunoutEnabled(bool state, bool updateEEPROM = false) {
         runoutEnabled = state;
         if (updateEEPROM) {
-            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR, state);
+            eeprom_update_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED, state);
         }
     }
     
@@ -80,10 +85,19 @@ public:
         return state == State::ready;
     }
     
+    bool isEnabled() {
+        return state != State::disabled;
+    }
+    
 protected:
     void settings_init() {
+        bool enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+        if ((state != State::disabled) != enabled) {
+            state = enabled ? State::initializing : State::disabled;
+        }
+        
         autoLoadEnabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
-        runoutEnabled = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+        runoutEnabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_RUNOUT_ENABLED);
         sensorActionOnError = (SensorActionOnError)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA);
         if (sensorActionOnError == SensorActionOnError::_Undef) {
             sensorActionOnError = SensorActionOnError::_Continue;

@@ -3646,17 +3646,6 @@ static void crash_mode_switch()
 	else menu_goto(lcd_settings_menu, 9, true, true);
 }
 #endif //TMC2130
- 
-
-#ifdef FILAMENT_SENSOR
-static void lcd_fsensor_runout_set() {
-    fsensor.setRunoutEnabled(!fsensor.getRunoutEnabled(), true);
-}
-
-static void lcd_fsensor_autoload_set() {
-    fsensor.setAutoLoadEnabled(!fsensor.getAutoLoadEnabled(), true);
-}
-#endif //FILAMENT_SENSOR
 
 #if (LANG_MODE != 0)
 
@@ -4222,21 +4211,69 @@ void lcd_settings_linearity_correction_menu(void)
 
 #ifdef FILAMENT_SENSOR
 
-void fsensor_reinit() {
+static void fsensor_reinit() {
     fsensor.init();
 }
 
-#define SETTINGS_FILAMENT_SENSOR \
-do {\
-    if (fsensor.isError()) {\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_NA), fsensor_reinit);\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_NA), fsensor_reinit);\
-    }\
-    else {\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), fsensor.getRunoutEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_runout_set);\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), fsensor.getAutoLoadEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_autoload_set);\
-    }\
-} while(0)
+static void lcd_fsensor_enabled_set(void) {
+    fsensor.setEnabled(!fsensor.isEnabled());
+}
+
+static void lcd_fsensor_runout_set() {
+    fsensor.setRunoutEnabled(!fsensor.getRunoutEnabled(), true);
+}
+
+static void lcd_fsensor_autoload_set() {
+    fsensor.setAutoLoadEnabled(!fsensor.getAutoLoadEnabled(), true);
+}
+
+static void lcd_fsensor_actionNA_set(void)
+{
+    Filament_sensor::SensorActionOnError act = fsensor.getActionOnError();
+    switch(act) {
+        case Filament_sensor::SensorActionOnError::_Continue:
+            act = Filament_sensor::SensorActionOnError::_Pause;
+            break;
+        case Filament_sensor::SensorActionOnError::_Pause:
+            act = Filament_sensor::SensorActionOnError::_Continue;
+            break;
+        default:
+            act = Filament_sensor::SensorActionOnError::_Continue;
+    }
+    fsensor.setActionOnError(act, true);
+}
+
+static void lcd_fsensor_settings_menu() {
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_BACK));
+    
+    MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), fsensor.isEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_enabled_set);
+    
+    if (fsensor.isEnabled()) {
+        if (fsensor.isError()) {
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_RUNOUT), _T(MSG_NA), fsensor_reinit);
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_NA), fsensor_reinit);
+        }
+        else {
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_RUNOUT), fsensor.getRunoutEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_runout_set);
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), fsensor.getAutoLoadEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_autoload_set);
+        }
+        
+        switch(fsensor.getActionOnError()) {
+            case Filament_sensor::SensorActionOnError::_Continue:
+                MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_CONTINUE), lcd_fsensor_actionNA_set);
+                break;
+            case Filament_sensor::SensorActionOnError::_Pause:
+                MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_PAUSE), lcd_fsensor_actionNA_set);
+                break;
+            default:
+                lcd_fsensor_actionNA_set();
+        }
+    }
+    
+    MENU_END();
+}
+
 #endif //FILAMENT_SENSOR
 
 static void auto_deplete_switch()
@@ -4650,36 +4687,6 @@ SETTINGS_VERSION;
 MENU_END();
 }
 
-static void lcd_fsensor_actionNA_set(void)
-{
-    Filament_sensor::SensorActionOnError act = fsensor.getActionOnError();
-    switch(act) {
-    case Filament_sensor::SensorActionOnError::_Continue:
-        act = Filament_sensor::SensorActionOnError::_Pause;
-        break;
-    case Filament_sensor::SensorActionOnError::_Pause:
-        act = Filament_sensor::SensorActionOnError::_Continue;
-        break;
-    default:
-        act = Filament_sensor::SensorActionOnError::_Continue;
-    }
-    fsensor.setActionOnError(act, true);
-}
-
-#define FSENSOR_ACTION_NA \
-do {\
-    switch(fsensor.getActionOnError()) {\
-    case Filament_sensor::SensorActionOnError::_Continue:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_CONTINUE), lcd_fsensor_actionNA_set);\
-              break;\
-    case Filament_sensor::SensorActionOnError::_Pause:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_PAUSE), lcd_fsensor_actionNA_set);\
-              break;\
-         default:\
-        lcd_fsensor_actionNA_set();\
-         }\
-} while (0)
-
 template <uint8_t number>
 static void select_sheet_menu()
 {
@@ -4769,10 +4776,7 @@ static void lcd_settings_menu()
     }
 
 #ifdef FILAMENT_SENSOR
-    SETTINGS_FILAMENT_SENSOR;
-#ifdef IR_SENSOR_ANALOG
-    FSENSOR_ACTION_NA;
-#endif //IR_SENSOR_ANALOG
+    MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
 #endif //FILAMENT_SENSOR
 
 	SETTINGS_AUTO_DEPLETE;
@@ -5705,10 +5709,7 @@ static void lcd_tune_menu()
 #endif
 
 #ifdef FILAMENT_SENSOR
-    SETTINGS_FILAMENT_SENSOR;
-#ifdef IR_SENSOR_ANALOG
-    FSENSOR_ACTION_NA;
-#endif //IR_SENSOR_ANALOG
+    MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
 #endif //FILAMENT_SENSOR
 
 	SETTINGS_AUTO_DEPLETE;
