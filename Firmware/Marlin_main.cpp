@@ -763,6 +763,7 @@ static void factory_reset(char level)
 		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 
 #ifdef FILAMENT_SENSOR
+		fsensor.setEnabled(true);
 		fsensor.setAutoLoadEnabled(true, true);
 		fsensor.setRunoutEnabled(true, true);
 #endif //FILAMENT_SENSOR
