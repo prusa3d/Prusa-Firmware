@@ -4555,8 +4555,8 @@ void fsensor_reinit() {
 #define SETTINGS_FILAMENT_SENSOR \
 do {\
     if (fsensor.isError()) {\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), NULL, fsensor_reinit);\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), NULL, fsensor_reinit);\
+        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_NA), fsensor_reinit);\
+        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_NA), fsensor_reinit);\
     }\
     else {\
         MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), fsensor.getRunoutEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_runout_set);\
@@ -4576,7 +4576,7 @@ static void settingsAutoDeplete()
     if (mmu_enabled)
     {
         if (fsensor.isError()) {
-            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), NULL, fsensor_reinit);
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_NA), fsensor_reinit);
         }
         else {
             MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), lcd_autoDeplete ? _T(MSG_ON) : _T(MSG_OFF), auto_deplete_switch);
