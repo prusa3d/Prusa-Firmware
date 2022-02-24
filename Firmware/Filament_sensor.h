@@ -16,6 +16,11 @@
 #include "fastio.h"
 #include "adc.h"
 
+#define FSENSOR_IR 1
+#define FSENSOR_IR_ANALOG 2
+#define FSENSOR_PAT9125 3
+
+#ifdef FILAMENT_SENSOR
 class Filament_sensor {
 public:
     virtual void init() = 0;
@@ -167,6 +172,7 @@ protected:
     SensorActionOnError sensorActionOnError;
 };
 
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 class IR_sensor: public Filament_sensor {
 public:
     void init() {
@@ -207,6 +213,7 @@ public:
 protected:
 };
 
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 class IR_sensor_analog: public IR_sensor {
 public:
     void init() {
@@ -403,5 +410,13 @@ private:
         }
     }
 };
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 
+#if FILAMENT_SENSOR_TYPE == FSENSOR_IR
+extern IR_sensor fsensor;
+#elif FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG
 extern IR_sensor_analog fsensor;
+#endif
+
+#endif //FILAMENT_SENSOR
