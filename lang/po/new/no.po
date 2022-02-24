@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-02-23 16:47+0100\n"
+"PO-Revision-Date: 2022-02-24 14:22+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -101,12 +101,12 @@ msgstr "Autolast filament"
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4317
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Autolasting av fil. er kun tilgjengelig når filamentsensoren er skrudd på.."
+msgstr "Autolast av fil. er kun tilgjengelig når filament- sensoren er skrudd på.."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2648
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Autolasting av fil. er aktivert. Trykk på knappen og sett inn filament.."
+msgstr "Autolast av fil. er aktivert. Trykk på knappen og sett inn filament.."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8094
@@ -176,7 +176,7 @@ msgstr "Strømbrudd! Gjenoppta print?"
 # MSG_CALIBRATING_HOME c=20
 #: ultralcd.cpp:8413
 msgid "Calibrating home"
-msgstr "Kalibrerer startposisjon"
+msgstr "Kalibrerer startpos."
 
 # MSG_CALIBRATE_BED c=18
 #: ultralcd.cpp:5787
@@ -301,7 +301,7 @@ msgstr "Avstand mellom tuppen av dysen og platen er ikke kalibrert. Vennligst se
 # MSG_FS_CONTINUE c=5
 #: messages.c:152
 msgid "Cont."
-msgstr "Forts."
+msgstr "Fort."
 
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5021
@@ -360,7 +360,7 @@ msgstr "Kutter filament"
 # MSG_FSENS_NOT_RESPONDING c=20 r=4
 #: ultralcd.cpp:4330
 msgid "ERROR: Filament sensor is not responding, please check connection."
-msgstr "ERROR: Filamentsensor svarer ikke. Vennligst sjekk koblingen."
+msgstr "ERROR: Filament- sensor svarer ikke. Vennligst sjekk koblingen."
 
 # MSG_DIM c=6
 #: messages.c:159
@@ -435,7 +435,7 @@ msgstr "Filamentet kommer ut og med riktig farge?"
 # MSG_NOT_LOADED c=19
 #: ultralcd.cpp:2564
 msgid "Filament not loaded"
-msgstr "Filament ikke lastet"
+msgstr "Fil. ikke lastet"
 
 # MSG_SELFTEST_FILAMENT_SENSOR c=17
 #: messages.c:97
@@ -455,7 +455,7 @@ msgstr "Printetid"
 # MSG_FS_ACTION c=10
 #: messages.c:151
 msgid "FS Action"
-msgstr "FS handling"
+msgstr "FS aksjon"
 
 # MSG_FILE_INCOMPLETE c=20 r=3
 #: ultralcd.cpp:8555
@@ -500,7 +500,7 @@ msgstr "Fremsiden [μm]"
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
 msgid "Front/left fans"
-msgstr "Fremre/venstre vifter"
+msgstr "Fremre/venstre vifte"
 
 # MSG_SELFTEST_HEATERTHERMISTOR c=20
 #: ultralcd.cpp:8048
@@ -645,7 +645,7 @@ msgstr "Siste print"
 # MSG_SELFTEST_EXTRUDER_FAN c=20
 #: messages.c:89
 msgid "Left hotend fan?"
-msgstr "Venstre hotend vifte?"
+msgstr "Venst. hotend vifte?"
 
 # MSG_LEFT c=10
 #: ultralcd.cpp:2844
@@ -655,7 +655,7 @@ msgstr "Venstre"
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
 msgid "Left side [μm]"
-msgstr "Venstre side [μm]"
+msgstr "Vens. side[μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -750,12 +750,12 @@ msgstr "Målt skjevhet"
 # MSG_MMU_FAILS c=15
 #: messages.c:69
 msgid "MMU fails"
-msgstr "MMU mislykkelser"
+msgstr "MMU feil"
 
 # MSG_MMU_LOAD_FAILED c=20
 #: mmu.cpp:1587
 msgid "MMU load failed"
-msgstr "MMU lasting feilet"
+msgstr "MMU last feilet"
 
 # MSG_MMU_LOAD_FAILS c=15
 #: messages.c:70
@@ -895,7 +895,7 @@ msgstr "Dyse"
 # MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 #: Marlin_main.cpp:1605
 msgid "Old settings found. Default PID, Esteps etc. will be set."
-msgstr "Gamle innstillinger funnet. Standarinstillinger for PID, motor etc. blir satt."
+msgstr "Gamle verdier funnet Standarinnstillinger for PID, motor etc. blir satt."
 
 # MSG_REMOVE_TEST_PRINT c=20 r=4
 #: ultralcd.cpp:4958
@@ -935,7 +935,7 @@ msgstr "PINDA varmes"
 # MSG_PAPER c=20 r=10
 #: messages.c:73
 msgid "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
-msgstr "Plasser et ark under dysen mens jeg kalibrerer de 4 første punktene. Hvis dysen tar papiret, skru av printeren umiddelbart!"
+msgstr "Plasser et ark under dysen mens jeg kalibrerer de 4 første punktene. Hvis dysen tar papiret, skru av printeren umiddelbart"
 
 # MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ultralcd.cpp:5024
@@ -1055,7 +1055,7 @@ msgstr "Forvarmer for lasting"
 # MSG_PREHEATING_TO_UNLOAD c=20
 #: ultralcd.cpp:2302
 msgid "Preheating to unload"
-msgstr "Forvarmer for å laste ut"
+msgstr "Forvarmer for fil."
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8422
@@ -1260,7 +1260,7 @@ msgstr "Tid"
 # MSG_SEVERE_SKEW c=14
 #: ultralcd.cpp:2888
 msgid "Severe skew"
-msgstr "Alvorlig skjevhet"
+msgstr "Stor skjevhet"
 
 # MSG_SORT_ALPHA c=8
 #: messages.c:141
@@ -1315,7 +1315,7 @@ msgstr "Spinner"
 # MSG_TEMP_CAL_WARNING c=20 r=4
 #: Marlin_main.cpp:5351
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
-msgstr "En stabil romtemperatur på 21-26C trengs. Stabilt underlag er nødvendig."
+msgstr "Solid bord og en stabil romtemperatur på 21-26C er nødvendig."
 
 # MSG_STATISTICS c=18
 #: ultralcd.cpp:6081
@@ -1415,12 +1415,12 @@ msgstr "Feil totalt"
 # MSG_TO_LOAD_FIL c=20
 #: ultralcd.cpp:2137
 msgid "to load filament"
-msgstr "for å laste filament"
+msgstr "for filamentlast"
 
 # MSG_TO_UNLOAD_FIL c=20
 #: ultralcd.cpp:2141
 msgid "to unload filament"
-msgstr "for å ta ut filament"
+msgstr "for filament ut"
 
 # MSG_UNLOAD_FILAMENT c=18
 #: messages.c:114
@@ -1705,7 +1705,7 @@ msgstr "Forvarmer for kutt"
 # MSG_PREHEATING_TO_EJECT c=20
 #: ultralcd.cpp:2306
 msgid "Preheating to eject"
-msgstr "Forvarmer for å laste ut"
+msgstr "Forvarmer for ut"
 
 # MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 #: util.cpp:294
@@ -1745,7 +1745,7 @@ msgstr "Plate"
 # MSG_SOUND_BLIND c=7
 #: messages.c:146
 msgid "Assist"
-msgstr "Assister"
+msgstr "Hjelp"
 
 # MSG_STEEL_SHEET c=18
 #: messages.c:66
