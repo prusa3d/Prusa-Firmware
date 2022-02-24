@@ -219,8 +219,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 03h 1			| ^						| Sound mode: __assist__							| ^				| ^
 | 0x0ED6 3798		| bool		| EEPROM_AUTO_DEPLETE					| 01h 1			| ffh 255				| MMU2/s autodeplete: __on__						| ???			| D3 Ax0ed6 C1
 | ^					| ^			| ^										| 00h 0			| ^						| MMU2/s autodeplete: __off__						| ^				| ^
-| 0x0ED5 3797		| bool		| EEPROM_FSENS_OQ_MEASS_ENABLED			| ???			| ffh 255				| PAT1925 ???										| ???			| D3 Ax0ed5 C1
-| ^					| ^			| ^										| ???			| ^						| PAT1925 ???										| ^				| ^
+| 0x0ED5 3797		| bool		| EEPROM_FSENS_RUNOUT_ENABLED			| 01h 1			| ffh 255		__P__	| Filament runout: __enabled__						| LCD menu		| D3 Ax0ed5 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Filament runout: __disabled__						| LCD menu		| ^
 | 0x0ED3 3795		| uint16	| EEPROM_MMU_FAIL_TOT					| ???			| ff ffh 65535	__S/P__	| MMU2/s total failures								| ???			| D3 Ax0ed3 C2
 | 0x0ED2 3794		| uint8		| EEPROM_MMU_FAIL						| ???			| ffh 255		__S/P__	| MMU2/s fails during print							| ???			| D3 Ax0ed2 C1
 | 0x0ED0 3792		| uint16	| EEPROM_MMU_LOAD_FAIL_TOT				| ???			| ff ffh 65535	__S/P__	| MMU2/s total load failures						| ???			| D3 Ax0ed0 C2
@@ -490,9 +490,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_SOUND_MODE (EEPROM_UVLO_TARGET_HOTEND-1) // uint8
 #define EEPROM_AUTO_DEPLETE (EEPROM_SOUND_MODE-1) //bool
 
-#define EEPROM_FSENS_OQ_MEASS_ENABLED (EEPROM_AUTO_DEPLETE - 1) //bool
+#define EEPROM_FSENS_RUNOUT_ENABLED (EEPROM_AUTO_DEPLETE - 1) //bool
 
-#define EEPROM_MMU_FAIL_TOT (EEPROM_FSENS_OQ_MEASS_ENABLED - 2) //uint16_t
+#define EEPROM_MMU_FAIL_TOT (EEPROM_FSENS_RUNOUT_ENABLED - 2) //uint16_t
 #define EEPROM_MMU_FAIL (EEPROM_MMU_FAIL_TOT - 1) //uint8_t
 
 #define EEPROM_MMU_LOAD_FAIL_TOT (EEPROM_MMU_FAIL - 2) //uint16_t
