@@ -1818,8 +1818,11 @@ switch(eFilamentAction)
      case FilamentAction::Lay1Cal:
           break;
      }
-    if(lcd_clicked() || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent()))
-     {
+    if(lcd_clicked()
+#ifdef FILAMENT_SENSOR
+        || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
+#endif //FILAMENT_SENSOR
+    ) {
      nLevel=2;
      if(!bFilamentPreheatState)
           {
@@ -2142,8 +2145,11 @@ void lcd_wait_interact() {
   lcd_clear();
 
   lcd_puts_at_P(0, 1, _i("Insert filament"));////MSG_INSERT_FILAMENT c=20
-  if (!fsensor.getAutoLoadEnabled()) {
-	  lcd_puts_at_P(0, 2, _i("and press the knob"));////MSG_PRESS c=20 r=2
+#ifdef FILAMENT_SENSOR
+  if (!fsensor.getAutoLoadEnabled())
+#endif //FILAMENT_SENSOR
+  {
+    lcd_puts_at_P(0, 2, _i("and press the knob"));////MSG_PRESS c=20 r=2
   }
 }
 
@@ -3483,14 +3489,14 @@ static void lcd_show_sensors_state()
 		lcd_set_cursor(LCD_WIDTH - 3, 0);
 		lcd_print_state(finda_state);
 	}
-	
+#ifdef FILAMENT_SENSOR
 	if (ir_sensor_detected) {
 		idler_state = fsensor.getFilamentPresent();
-		lcd_puts_at_P(0, 1, _i("Fil. sensor"));
+		lcd_puts_at_P(0, 1, _T(MSG_FSENSOR));
 		lcd_set_cursor(LCD_WIDTH - 3, 1);
 		lcd_print_state(idler_state);
 	}
-	
+#endif //FILAMENT_SENSOR
 
 #ifdef PAT9125
 	// Display X and Y difference from Filament sensor    
@@ -4162,6 +4168,7 @@ void lcd_v2_calibration()
 	        return;
 	    }
 	}
+#ifdef FILAMENT_SENSOR
 	else if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 	{
 	    bool loaded = false;
@@ -4192,6 +4199,7 @@ void lcd_v2_calibration()
 			return;
 		}
 	}
+#endif //FILAMENT_SENSOR
 
 	eFilamentAction = FilamentAction::Lay1Cal;
 	menu_goto(lcd_generic_preheat_menu, 0, true, true);
@@ -4272,7 +4280,11 @@ static void lcd_wizard_load()
 
 bool lcd_autoDepleteEnabled()
 {
-    return (lcd_autoDeplete && fsensor.isReady());
+    return (lcd_autoDeplete
+#ifdef FILAMENT_SENSOR ///should be removed during mmu2 refactoring
+    && fsensor.isReady()
+#endif
+    );
 }
 
 static void wizard_lay1cal_message(bool cold)
@@ -4612,10 +4624,13 @@ static void settingsAutoDeplete()
 {
     if (mmu_enabled)
     {
+#ifdef FILAMENT_SENSOR
         if (fsensor.isError()) {
             MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_NA), fsensor_reinit);
         }
-        else {
+        else
+#endif //FILAMENT_SENSOR
+        {
             MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), lcd_autoDeplete ? _T(MSG_ON) : _T(MSG_OFF), auto_deplete_switch);
         }
     }

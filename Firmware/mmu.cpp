@@ -375,7 +375,11 @@ void mmu_loop(void)
 			mmu_last_finda_response.start();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
-			if (!mmu_finda && CHECK_FSENSOR && fsensor.isReady()) {
+			if (!mmu_finda
+#ifdef FILAMENT_SENSOR ///temporary until refactoring
+            && CHECK_FSENSOR && fsensor.isReady()
+#endif //FILAMENT_SENSOR
+            ) {
 				stop_and_save_print_to_ram(0, 0);
 				restore_print_from_ram_and_continue(0);
 				if (mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't deplete unknown extruder.
