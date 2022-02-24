@@ -152,7 +152,7 @@
 
 // Filament sensor
 #define FILAMENT_SENSOR
-#define IR_SENSOR
+#define FILAMENT_SENSOR_TYPE FSENSOR_IR_ANALOG
 
 // Backlash - 
 //#define BACKLASH_X

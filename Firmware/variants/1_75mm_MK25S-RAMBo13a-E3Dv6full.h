@@ -126,7 +126,7 @@
 
 // Filament sensor
 #define FILAMENT_SENSOR
-#define IR_SENSOR
+#define FILAMENT_SENSOR_TYPE FSENSOR_IR
 
 #define DEBUG_DCODE2
 #define DEBUG_DCODE3
