@@ -758,6 +758,7 @@ static void factory_reset(char level)
 		farm_disable();
 
 #ifdef FILAMENT_SENSOR
+		fsensor.setEnabled(true);
 		fsensor.setAutoLoadEnabled(true, true);
 		fsensor.setRunoutEnabled(true, true);
 #endif //FILAMENT_SENSOR
