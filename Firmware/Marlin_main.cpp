@@ -11462,8 +11462,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     enquecommand(cmd);
   // Recover final E axis position and mode
     float pos_e = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
-    sprintf_P(cmd, PSTR("G92 E"));
-    dtostrf(pos_e, 6, 3, cmd + strlen(cmd));
+    sprintf_P(cmd, PSTR("G92 E%6.3f"), pos_e);
     enquecommand(cmd);
     if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
         enquecommand_P(PSTR("M82")); //E axis abslute mode
