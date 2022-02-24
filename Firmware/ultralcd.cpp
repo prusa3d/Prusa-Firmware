@@ -222,7 +222,7 @@ static FanCheck lcd_selftest_fan_auto(uint8_t _fan);
 static bool lcd_selftest_fsensor();
 #endif //PAT9125
 static bool selftest_irsensor();
-#ifdef IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 static bool lcd_selftest_IRsensor(bool bStandalone=false);
 static void lcd_detect_IRsensor();
 #endif //IR_SENSOR_ANALOG
@@ -1415,7 +1415,7 @@ static void lcd_menu_temperatures()
     menu_back_if_clicked();
 }
 
-#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || defined(IR_SENSOR_ANALOG)
+#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || (defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG))
 #define VOLT_DIV_R1 10000
 #define VOLT_DIV_R2 2370
 #define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
@@ -1673,7 +1673,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17
   MENU_ITEM_BACK_P(PSTR(__DATE__));
 
-#ifdef IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
   MENU_ITEM_BACK_P(fsensor.getIRVersionText());
@@ -4738,7 +4738,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     SETTINGS_NOZZLE;
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);  ////MSG_CHECKS c=18
 
-#ifdef IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
     //! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
     //! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
     if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
@@ -6164,7 +6164,7 @@ void lcd_belttest()
 }
 #endif //TMC2130
 
-#ifdef IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 // called also from marlin_main.cpp
 void printf_IRSensorAnalogBoardChange(){
     printf_P(PSTR("Filament sensor board change detected: revision%S\n"), fsensor.getIRVersionText());
@@ -6236,7 +6236,7 @@ bool lcd_selftest()
 	uint8_t _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
-#ifdef IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 	//!   Check if IR sensor is in unknown state, if so run Fsensor Detection
 	//!   As the Fsensor Detection isn't yet ready for the mmu2s we set temporarily the IR sensor 0.3 or older for mmu2s
 	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
@@ -6248,7 +6248,7 @@ bool lcd_selftest()
 			fsensor.setSensorRevision(IR_sensor_analog::SensorRevision::_Old, true);
 		}
 	}
-#endif //IR_SENSOR_ANALOG
+#endif
 	lcd_wait_for_cool_down();
 	lcd_clear();
 	lcd_puts_at_P(0, 0, _i("Self test start"));////MSG_SELFTEST_START c=20
@@ -6458,7 +6458,7 @@ bool lcd_selftest()
 #if 0
 	// Intentionally disabled - that's why we moved the detection to runtime by just checking the two voltages.
 	// The idea is not to force the user to remove and insert the filament on an assembled printer.
-//def IR_SENSOR_ANALOG
+//defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
 			_result = lcd_selftest_IRsensor();
 			if (_result)
