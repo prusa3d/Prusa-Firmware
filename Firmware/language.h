@@ -117,7 +117,7 @@ extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
 /** @def _SEC_LANG_TABLE
  *  @brief Align table to start of 256 byte page */
-#define _SEC_LANG_TABLE ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00)
+#define _SEC_LANG_TABLE ((uint16_t)&_SEC_LANG)
 #endif //(LANG_MODE != 0)
 
 /** @brief selects language, eeprom is updated in case of success */

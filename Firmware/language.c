@@ -1,6 +1,7 @@
 //language.c
 #include "language.h"
 #include <avr/pgmspace.h>
+#include <avr/io.h>
 #include <avr/eeprom.h>
 #include "bootapp.h"
 
@@ -28,7 +29,7 @@ uint8_t lang_is_selected(void) { return 1; }
 #else //(LANG_MODE == 0) //secondary languages in progmem or xflash
 
 //reserved xx kbytes for secondary language table
-const char _SEC_LANG[LANG_SIZE_RESERVED] PROGMEM_I2 = "_SEC_LANG";
+const char _SEC_LANG[LANG_SIZE_RESERVED] __attribute__((aligned(SPM_PAGESIZE))) PROGMEM_I2 = "_SEC_LANG";
 
 //primary language signature
 const uint32_t _PRI_LANG_SIGNATURE[1] __attribute__((section(".progmem0"))) = {0xffffffff};
@@ -264,7 +265,7 @@ uint16_t lang_print_sec_lang(FILE* out)
 	printf_P(_n(" _lt_resv0        = 0x%04x\n"), _lt_resv0);
 	printf_P(_n(" _lt_resv1        = 0x%08lx\n"), _lt_resv1);
 	if (_lt_magic != LANG_MAGIC) return 0;
-	puts_P(_n(" strings:\n"));
+	puts_P(_n(" strings:"));
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	for (ui = 0; ui < _lt_count; ui++)
 		fprintf_P(out, _n("  %3d %S\n"), ui, lang_get_sec_lang_str_by_id(ui));
