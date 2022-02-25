@@ -187,6 +187,9 @@ protected:
 class IR_sensor: public Filament_sensor {
 public:
     void init() {
+        if (state == State::error) {
+            deinit(); //deinit first if there was an error.
+        }
         puts_P(PSTR("fsensor::init()"));
         SET_INPUT(IR_SENSOR_PIN); //input mode
         WRITE(IR_SENSOR_PIN, 1); //pullup
