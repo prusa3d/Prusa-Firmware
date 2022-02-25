@@ -112,16 +112,10 @@ uint8_t pat9125_probe()
   #error not implemented
 #elif defined(PAT9125_SWI2C)
     swi2c_init();
-    return swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
+    return swi2c_check(PAT9125_I2C_ADDR) == 0;
 #elif defined(PAT9125_I2C)
     twi_init();
-  #ifdef IR_SENSOR
-    // NOTE: this is called from the MK3S variant, so it should be kept minimal
-    uint8_t data;
-    return (twi_r8(PAT9125_I2C_ADDR,PAT9125_PID1,&data) == 0);
-  #else
-    return (pat9125_rd_reg(PAT9125_PID1) != 0);
-  #endif
+    return twi_check(PAT9125_I2C_ADDR) == 0;
 #endif
 }
 
