@@ -15,23 +15,41 @@
 #define SWI2C_ASHF   0x01 //address shift (<< 1)
 #define SWI2C_DMSK   0x7f //device address mask
 
+static void __delay(void);
+static void swi2c_start(void);
+static void swi2c_stop(void);
+// static void swi2c_ack(void);
+static void swi2c_nack(void);
+static uint8_t swi2c_wait_ack();
+static uint8_t swi2c_read(void);
+static void swi2c_write(uint8_t data);
 
-void __delay(void)
+
+void swi2c_init(void)
+{
+	SET_INPUT(SWI2C_SDA);
+	WRITE(SWI2C_SDA, 1); //SDA must be input with pullups while we are not sure if the slave is outputing or not
+
+	WRITE(SWI2C_SCL, 1);
+	SET_OUTPUT(SWI2C_SCL); //SCL can be an output at all times. The bus is not in a multi-master configuration.
+
+	for (uint8_t i = 0; i < 100; i++) //wait. Not sure what for, but wait anyway.
+		__delay();
+
+	for (uint8_t i = 0; i < 10; i++) { //send nack 10 times. This makes sure that the slave gets a nack regardless of it's state when we init the bus.
+		swi2c_nack();
+	}
+	swi2c_stop(); //"release" the bus by sending a stop condition.
+
+	SET_OUTPUT(SWI2C_SDA); //finally make the SDA line an output since the bus is idle for sure.
+}
+
+static void __delay(void)
 {
 	_delay_us(1.5);
 }
 
-void swi2c_init(void)
-{
-	WRITE(SWI2C_SDA, 1);
-	WRITE(SWI2C_SCL, 1);
-	SET_OUTPUT(SWI2C_SDA);
-	SET_OUTPUT(SWI2C_SCL);
-	uint8_t i; for (i = 0; i < 100; i++)
-		__delay();
-}
-
-void swi2c_start(void)
+static void swi2c_start(void)
 {
 	WRITE(SWI2C_SDA, 0);
 	__delay();
@@ -39,7 +57,7 @@ void swi2c_start(void)
 	__delay();
 }
 
-void swi2c_stop(void)
+static void swi2c_stop(void)
 {
 	WRITE(SWI2C_SCL, 1);
 	__delay();
@@ -47,7 +65,8 @@ void swi2c_stop(void)
 	__delay();
 }
 
-void swi2c_ack(void)
+/*
+static void swi2c_ack(void)
 {
 	WRITE(SWI2C_SDA, 0);
 	__delay();
@@ -56,8 +75,19 @@ void swi2c_ack(void)
 	WRITE(SWI2C_SCL, 0);
 	__delay();
 }
+*/
 
-uint8_t swi2c_wait_ack()
+static void swi2c_nack(void)
+{
+	WRITE(SWI2C_SDA, 1);
+	__delay();
+	WRITE(SWI2C_SCL, 1);
+	__delay();
+	WRITE(SWI2C_SCL, 0);
+	__delay();
+}
+
+static uint8_t swi2c_wait_ack()
 {
 	SET_INPUT(SWI2C_SDA);
 	__delay();
@@ -77,13 +107,13 @@ uint8_t swi2c_wait_ack()
 	return ack;
 }
 
-uint8_t swi2c_read(void)
+static uint8_t swi2c_read(void)
 {
 	WRITE(SWI2C_SDA, 1);
 	__delay();
 	SET_INPUT(SWI2C_SDA);
 	uint8_t data = 0;
-	int8_t bit; for (bit = 7; bit >= 0; bit--)
+	for (uint8_t bit = 8; bit-- > 0;)
 	{
 		WRITE(SWI2C_SCL, 1);
 		__delay();
@@ -95,9 +125,9 @@ uint8_t swi2c_read(void)
 	return data;
 }
 
-void swi2c_write(uint8_t data)
+static void swi2c_write(uint8_t data)
 {
-	int8_t bit; for (bit = 7; bit >= 0; bit--)
+	for (uint8_t bit = 8; bit-- > 0;)
 	{
 		WRITE(SWI2C_SDA, data & _BV(bit));
 		__delay();
