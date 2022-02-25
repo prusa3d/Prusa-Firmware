@@ -45,6 +45,14 @@ void twi_init(void);
 void twi_disable(void);
 
 /*
+ * Function twi_check
+ * Desc     checks if a device exists on the bus
+ * Input    address: 7bit i2c device address
+ * Output   0 on device found at address
+ */
+uint8_t twi_check(uint8_t address);
+
+/*
  * Function twi_r8
  * Desc     read a single byte from a device
  * Input    address: 7bit i2c device address

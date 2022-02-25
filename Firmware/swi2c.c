@@ -142,9 +142,9 @@ uint8_t swi2c_check(uint8_t dev_addr)
 {
 	swi2c_start();
 	swi2c_write((dev_addr & SWI2C_DMSK) << SWI2C_ASHF);
-	if (!swi2c_wait_ack()) { swi2c_stop(); return 0; }
+	if (!swi2c_wait_ack()) { swi2c_stop(); return 1; }
 	swi2c_stop();
-	return 1;
+	return 0;
 }
 
 #ifdef SWI2C_A8 //8bit address
