@@ -24,6 +24,7 @@
 class Filament_sensor {
 public:
     virtual void init() = 0;
+    virtual void deinit() = 0;
     virtual bool update() = 0;
     virtual bool getFilamentPresent() = 0;
     
@@ -41,8 +42,14 @@ public:
     };
     
     void setEnabled(bool enabled) {
-        state = enabled ? State::initializing : State::disabled;
         eeprom_update_byte((uint8_t *)EEPROM_FSENSOR, enabled);
+        if (enabled) {
+            init();
+        }
+        else {
+            deinit();
+        }
+        state = enabled ? State::initializing : State::disabled;
     }
     
     void setAutoLoadEnabled(bool state, bool updateEEPROM = false) {
@@ -156,9 +163,8 @@ protected:
     }
     
     void triggerError() {
+        // deinit(); //not sure if I should call this here.
         state = State::error;
-        autoLoadEnabled = false;
-        runoutEnabled = false;
         
         /// some message, idk
         ;//
@@ -176,10 +182,17 @@ protected:
 class IR_sensor: public Filament_sensor {
 public:
     void init() {
+        puts_P(PSTR("fsensor::init()"));
         SET_INPUT(IR_SENSOR_PIN); //input mode
         WRITE(IR_SENSOR_PIN, 1); //pullup
-        settings_init();
-        state = State::initializing;
+        settings_init(); //also sets the state to State::initializing
+    }
+    
+    void deinit() {
+        puts_P(PSTR("fsensor::deinit()"));
+        SET_INPUT(IR_SENSOR_PIN); //input mode
+        WRITE(IR_SENSOR_PIN, 0); //no pullup
+        state = State::disabled;
     }
     
     bool update() {
@@ -219,6 +232,10 @@ public:
     void init() {
         IR_sensor::init();
         settings_init();
+    }
+    
+    void deinit() {
+        IR_sensor::deinit();
     }
     
     bool update() {
