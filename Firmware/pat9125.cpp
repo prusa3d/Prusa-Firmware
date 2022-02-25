@@ -4,7 +4,9 @@
 #include <avr/pgmspace.h>
 #include "config.h"
 #include <stdio.h>
+#include "Configuration_prusa.h"
 
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
 //PAT9125 registers
 #define PAT9125_PID1			0x00
@@ -305,3 +307,5 @@ static uint8_t pat9125_wr_seq(const uint8_t* seq)
 	}
 	return 1;
 }
+
+#endif
