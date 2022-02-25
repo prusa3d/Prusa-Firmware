@@ -101,6 +101,25 @@ static uint8_t twi_start(uint8_t address, uint8_t reg)
 }
 
 
+uint8_t twi_check(uint8_t address)
+{
+    // send start condition
+    TWCR = _BV(TWEN) | _BV(TWINT) | _BV(TWSTA);
+    if(twi_wait(TW_START))
+        return 1;
+    
+      // send address
+    TWDR = TW_WRITE | (address << 1);
+    TWCR = _BV(TWEN) | _BV(TWINT);
+    if(twi_wait(TW_MT_SLA_ACK))
+        return 2;
+    
+    // send stop
+    twi_stop();
+    return 0;
+}
+
+
 uint8_t twi_r8(uint8_t address, uint8_t reg, uint8_t* data)
 {
   if(twi_start(address, reg))
