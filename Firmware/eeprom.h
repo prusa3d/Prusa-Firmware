@@ -291,7 +291,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D9D 3485 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 8th sheet - Z offset                              | ^            | D3 Ax0d9d C2
 | 0x0D9F 3487 | uint8   | ^                                     | 00h 0        | ffh 255               | 8th sheet - bed temp                              | ^            | D3 Ax0d9f C1
 | 0x0DA0 3488 | uint8   | ^                                     | 00h 0        | ffh 255               | 8th sheet - PINDA temp                            | ^            | D3 Ax0da0 C1
-| 0x0DA1 3489 | uint8   | ???                                   | 00h 0        | ffh 255               | ???                                               | ???          | D3 Ax0da1 C1
+| 0x0DA1 3489 | uint8   | active_sheet                          | 00h 0        | ffh 255               | Active sheet index                                | ^            | D3 Ax0da1 C1
 | 0x0D48 3400 | uint8   | EEPROM_FSENSOR_PCB                    | ffh 255      | ffh 255               | Filament Sensor type IR unknown                   | LCD Support  | D3 Ax0d48 C1
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Filament Sensor type IR 0.3 or older              | ^            | ^
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Filament Sensor type IR 0.4 or newer              | ^            | ^
