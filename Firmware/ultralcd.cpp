@@ -1018,7 +1018,7 @@ void lcd_commands()
 			lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
-			strcpy(cmd1, "M303 E0 S");
+			strcpy_P(cmd1, PSTR("M303 E0 S"));
 			strcat(cmd1, ftostr3(pid_temp));
 			// setting the correct target temperature (for visualization) is done in PID_autotune
 			enquecommand(cmd1);
@@ -1031,11 +1031,11 @@ void lcd_commands()
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
 			setAllTargetHotends(0);  // reset all hotends temperature including the number displayed on the main screen
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
-			strcpy(cmd1, "M301 P");
+			strcpy_P(cmd1, PSTR("M301 P"));
 			strcat(cmd1, ftostr32(_Kp));
-			strcat(cmd1, " I");
+			strcat_P(cmd1, PSTR(" I"));
 			strcat(cmd1, ftostr32(_Ki));
-			strcat(cmd1, " D");
+			strcat_P(cmd1, PSTR(" D"));
 			strcat(cmd1, ftostr32(_Kd));
 			enquecommand(cmd1);
 			enquecommand_P(PSTR("M500"));
