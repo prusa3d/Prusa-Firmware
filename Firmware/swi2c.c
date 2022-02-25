@@ -30,7 +30,7 @@ void swi2c_init(void)
 	SET_INPUT(SWI2C_SDA);
 	WRITE(SWI2C_SDA, 1); //SDA must be input with pullups while we are not sure if the slave is outputing or not
 
-	WRITE(SWI2C_SCL, 1);
+	WRITE(SWI2C_SCL, 0);
 	SET_OUTPUT(SWI2C_SCL); //SCL can be an output at all times. The bus is not in a multi-master configuration.
 
 	for (uint8_t i = 0; i < 100; i++) //wait. Not sure what for, but wait anyway.
