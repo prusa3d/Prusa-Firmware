@@ -44,6 +44,14 @@ void swi2c_init(void)
 	SET_OUTPUT(SWI2C_SDA); //finally make the SDA line an output since the bus is idle for sure.
 }
 
+void swi2c_disable(void)
+{
+	SET_INPUT(SWI2C_SDA);
+	WRITE(SWI2C_SDA, 0);
+	SET_INPUT(SWI2C_SCL);
+	WRITE(SWI2C_SCL, 0);
+}
+
 static void __delay(void)
 {
 	_delay_us(1.5);
