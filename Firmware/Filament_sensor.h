@@ -15,6 +15,7 @@
 #include "pins.h"
 #include "fastio.h"
 #include "adc.h"
+#include "Timer.h"
 
 #define FSENSOR_IR 1
 #define FSENSOR_IR_ANALOG 2
@@ -49,7 +50,6 @@ public:
         else {
             deinit();
         }
-        state = enabled ? State::initializing : State::disabled;
     }
     
     void setAutoLoadEnabled(bool state, bool updateEEPROM = false) {
@@ -119,10 +119,14 @@ protected:
     bool checkFilamentEvents() {
         if (state != State::ready)
             return false;
+        if (eventBlankingTimer.running() && !eventBlankingTimer.expired(100)) {// event blanking for 100ms
+            return false;
+        }
         
         bool newFilamentPresent = getFilamentPresent();
         if (oldFilamentPresent != newFilamentPresent) {
             oldFilamentPresent = newFilamentPresent;
+            eventBlankingTimer.start();
             if (newFilamentPresent) { //filament insertion
                 puts_P(PSTR("filament inserted"));
                 triggerFilamentInserted();
@@ -175,6 +179,7 @@ protected:
     bool runoutEnabled;
     bool oldFilamentPresent; //for creating filament presence switching events.
     bool postponedLoadEvent; //this event lasts exactly one update cycle. It is long enough to be able to do polling for load event.
+    ShortTimer eventBlankingTimer;
     SensorActionOnError sensorActionOnError;
 };
 
