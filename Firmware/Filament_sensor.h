@@ -16,6 +16,7 @@
 #include "fastio.h"
 #include "adc.h"
 #include "Timer.h"
+#include "pat9125.h"
 
 #define FSENSOR_IR 1
 #define FSENSOR_IR_ANALOG 2
@@ -438,10 +439,62 @@ private:
 #endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 #endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+class PAT9125_sensor: public Filament_sensor {
+public:
+    void init() {
+        if (state == State::error) {
+            deinit(); //deinit first if there was an error.
+        }
+        puts_P(PSTR("fsensor::init()"));
+        ;//
+        settings_init(); //also sets the state to State::initializing
+    }
+    
+    void deinit() {
+        puts_P(PSTR("fsensor::deinit()"));
+        ;//
+        state = State::disabled;
+    }
+    
+    bool update() {
+        switch (state) {
+            case State::initializing:
+                // state = State::ready; //the IR sensor gets ready instantly as it's just a gpio read operation.
+                oldFilamentPresent = getFilamentPresent(); //initialize the current filament state so that we don't create a switching event right after the sensor is ready.
+                // fallthru
+            case State::ready: {
+                postponedLoadEvent = false;
+                bool event = checkFilamentEvents();
+                
+                ;//
+                
+                return event;
+            } break;
+            case State::disabled:
+            case State::error:
+            default:
+                return false;
+        }
+    }
+    
+    bool getFilamentPresent() {
+        return false;///
+    }
+    
+    void settings_init() {
+        Filament_sensor::settings_init();
+    }
+protected:
+};
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+
 #if FILAMENT_SENSOR_TYPE == FSENSOR_IR
 extern IR_sensor fsensor;
 #elif FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG
 extern IR_sensor_analog fsensor;
+#elif FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
+extern PAT9125_sensor fsensor;
 #endif
 
 #endif //FILAMENT_SENSOR
