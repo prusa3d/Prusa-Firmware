@@ -26,7 +26,7 @@
 #define TWI_FREQ 400000L
 #endif
 
-#define TWI_TIMEOUT_MS 100
+#define TWI_TIMEOUT_MS 10
 
 /*
  * Function twi_init
