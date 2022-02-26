@@ -1031,14 +1031,9 @@ void lcd_commands()
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
 			setAllTargetHotends(0);  // reset all hotends temperature including the number displayed on the main screen
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
-			strcpy_P(cmd1, PSTR("M301 P"));
-			strcat(cmd1, ftostr32(_Kp));
-			strcat_P(cmd1, PSTR(" I"));
-			strcat(cmd1, ftostr32(_Ki));
-			strcat_P(cmd1, PSTR(" D"));
-			strcat(cmd1, ftostr32(_Kd));
-			enquecommand(cmd1);
-			enquecommand_P(PSTR("M500"));
+				sprintf_P(cmd1, PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
+				enquecommand(cmd1);
+				enquecommand_P(PSTR("M500"));
 			}
 			else {
 				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
