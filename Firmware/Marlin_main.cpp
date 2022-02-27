@@ -8315,12 +8315,13 @@ Sigma_Exit:
     - `S` - Microsteps
     - `I` - Table index
     */
-	case 861:
+	case 861: {
+		const char * const _header = PSTR("index, temp, ustep, um");
 		if (code_seen('?')) { // ? - Print out current EEPROM offset values
-			uint8_t cal_status = calibration_status_pinda();
 			int16_t usteps = 0;
-			cal_status ? SERIAL_PROTOCOLLN("PINDA cal status: 1") : SERIAL_PROTOCOLLN("PINDA cal status: 0");
-			SERIAL_PROTOCOLLN("index, temp, ustep, um");
+			SERIAL_PROTOCOLPGM("PINDA cal status: ");
+			SERIAL_PROTOCOLLN(calibration_status_pinda());
+			SERIAL_PROTOCOLLNRPGM(_header);
 			for (uint8_t i = 0; i < 6; i++)
 			{
 				if(i > 0) {
@@ -8349,7 +8350,7 @@ Sigma_Exit:
 			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 3, z_shift);
 			z_shift = 120;  //60C - 300um - 120usteps
 			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 4, z_shift);
-			SERIAL_PROTOCOLLN("factory restored");
+			SERIAL_PROTOCOLLNPGM("factory restored");
 		}
 		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
@@ -8357,7 +8358,7 @@ Sigma_Exit:
 			for (uint8_t i = 0; i < 5; i++) {
 				eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
 			}
-			SERIAL_PROTOCOLLN("zerorized");
+			SERIAL_PROTOCOLLNPGM("zerorized");
 		}
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
 			int16_t usteps = code_value_short();
@@ -8365,8 +8366,8 @@ Sigma_Exit:
 			    uint8_t index = code_value_uint8();
 				if (index < 5) {
 					eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + index, usteps);
-					SERIAL_PROTOCOLLN("OK");
-					SERIAL_PROTOCOLLN("index, temp, ustep, um");
+					SERIAL_PROTOCOLLNRPGM(MSG_OK);
+					SERIAL_PROTOCOLLNRPGM(_header);
 					for (uint8_t i = 0; i < 6; i++)
 					{
 						usteps = 0;
@@ -8387,9 +8388,9 @@ Sigma_Exit:
 			}
 		}
 		else {
-			SERIAL_PROTOCOLPGM("no valid command");
+			SERIAL_PROTOCOLLNPGM("no valid command");
 		}
-		break;
+    } break;
 
 #endif //PINDA_THERMISTOR
    
