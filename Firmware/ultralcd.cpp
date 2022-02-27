@@ -2879,9 +2879,7 @@ bool lcd_wait_for_pinda(float temp) {
 
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
-		lcd_print(ftostr3(current_temperature_pinda));
-		lcd_print('/');
-		lcd_print(ftostr3(temp));
+		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)current_temperature_pinda, (int16_t) temp);
 		lcd_print(LCD_STR_DEGREE[0]);
 		delay_keep_alive(1000);
 		serialecho_temperatures();
@@ -2899,9 +2897,7 @@ void lcd_wait_for_heater() {
 		lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
-		lcd_print(ftostr3(degHotend(active_extruder)));
-		lcd_print('/');
-		lcd_print(ftostr3(degTargetHotend(active_extruder)));
+		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)degHotend(active_extruder), (int16_t) degTargetHotend(active_extruder));
 		lcd_print(LCD_STR_DEGREE[0]);
 }
 
@@ -2915,14 +2911,12 @@ void lcd_wait_for_cool_down() {
 
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
-		lcd_print(ftostr3(degHotend(0)));
-		lcd_print("/0");		
+		lcd_printf_P(PSTR("%3d/0"), (int16_t)degHotend(0));
 		lcd_print(LCD_STR_DEGREE[0]);
 
 		lcd_set_cursor(9, 4);
 		lcd_print(LCD_STR_BEDTEMP[0]);
-		lcd_print(ftostr3(degBed()));
-		lcd_print("/0");		
+		lcd_printf_P(PSTR("%3d/0"), (int16_t)degBed());
 		lcd_print(LCD_STR_DEGREE[0]);
 		delay_keep_alive(1000);
 		serialecho_temperatures();
