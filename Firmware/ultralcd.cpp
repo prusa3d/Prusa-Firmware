@@ -86,7 +86,7 @@ uint8_t farm_timer = 8;
 bool printer_connected = true;
 
 static ShortTimer display_time; //just timer for showing pid finished message on lcd;
-float pid_temp = DEFAULT_PID_TEMP;
+static uint16_t pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
 static bool lcd_autoDeplete;
@@ -1018,8 +1018,7 @@ void lcd_commands()
 			lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
-			strcpy_P(cmd1, PSTR("M303 E0 S"));
-			strcat(cmd1, ftostr3(pid_temp));
+			sprintf_P(cmd1, PSTR("M303 E0 S%3u"), pid_temp);
 			// setting the correct target temperature (for visualization) is done in PID_autotune
 			enquecommand(cmd1);
 			lcd_setstatuspgm(_i("PID cal."));////MSG_PID_RUNNING c=20
@@ -2775,7 +2774,7 @@ void pid_extruder()
 	else if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
 	lcd_encoder = 0;
 	lcd_set_cursor(1, 2);
-	lcd_print(ftostr3(pid_temp));
+	lcd_printf_P(PSTR("%3u"), pid_temp);
 	if (lcd_clicked()) {
 		lcd_commands_type = LcdCommands::PidExtruder;
 		lcd_return_to_status();
