@@ -3674,9 +3674,7 @@ void gcode_M114()
 	SERIAL_PROTOCOLPGM(" Z:");
 	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / cs.axis_steps_per_unit[Z_AXIS]);
 	SERIAL_PROTOCOLPGM(" E:");
-	SERIAL_PROTOCOL(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
-
-	SERIAL_PROTOCOLLN();
+	SERIAL_PROTOCOLLN(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
 }
 
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
@@ -6157,8 +6155,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                 SERIAL_PROTOCOL('.');
                 SERIAL_PROTOCOL(uint8_t(ip[2]));
                 SERIAL_PROTOCOL('.');
-                SERIAL_PROTOCOL(uint8_t(ip[3]));
-                SERIAL_PROTOCOLLN();
+                SERIAL_PROTOCOLLN(uint8_t(ip[3]));
             } else {
                 SERIAL_PROTOCOLPGM("?Toshiba FlashAir GetIP failed\n");          
             }
@@ -7734,8 +7731,7 @@ Sigma_Exit:
           SERIAL_PROTOCOL(" Servo ");
           SERIAL_PROTOCOL(servo_index);
           SERIAL_PROTOCOL(": ");
-          SERIAL_PROTOCOL(servos[servo_index].read());
-          SERIAL_PROTOCOLLN();
+          SERIAL_PROTOCOLLN(servos[servo_index].read());
         }
       }
       break;
@@ -7843,8 +7839,7 @@ Sigma_Exit:
         SERIAL_PROTOCOL(" i:");
         SERIAL_PROTOCOL(unscalePID_i(cs.bedKi));
         SERIAL_PROTOCOL(" d:");
-        SERIAL_PROTOCOL(unscalePID_d(cs.bedKd));
-        SERIAL_PROTOCOLLN();
+        SERIAL_PROTOCOLLN(unscalePID_d(cs.bedKd));
       }
       break;
     #endif //PIDTEMP
@@ -8276,8 +8271,7 @@ Sigma_Exit:
 		LCD_MESSAGERPGM(_T(MSG_PLEASE_WAIT));
 
 		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
-		SERIAL_PROTOCOL(set_target_pinda);
-		SERIAL_PROTOCOLLN();
+		SERIAL_PROTOCOLLN(set_target_pinda);
 
 		codenum = _millis();
 		cancel_heatup = false;
@@ -8338,8 +8332,7 @@ Sigma_Exit:
 				SERIAL_PROTOCOLPGM(", ");
 				SERIAL_PROTOCOL(usteps);
 				SERIAL_PROTOCOLPGM(", ");
-				SERIAL_PROTOCOL(mm * 1000);
-				SERIAL_PROTOCOLLN();
+				SERIAL_PROTOCOLLN(mm * 1000);
 			}
 		}
 		else if (code_seen('!')) { // ! - Set factory default values
@@ -8385,8 +8378,7 @@ Sigma_Exit:
 						SERIAL_PROTOCOLPGM(", ");
 						SERIAL_PROTOCOL(usteps);
 						SERIAL_PROTOCOLPGM(", ");
-						SERIAL_PROTOCOL(mm * 1000);
-						SERIAL_PROTOCOLLN();
+						SERIAL_PROTOCOLLN(mm * 1000);
 					}
 				}
 			}
