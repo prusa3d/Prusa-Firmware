@@ -11956,7 +11956,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 				else {
 					counterBeep = 20; //beeper will be inactive during waiting for nozzle preheat
 					lcd_set_cursor(1, 4);
-					lcd_print(ftostr3(degHotend(active_extruder)));
+					lcd_printf_P(PSTR("%3d"), (int16_t)degHotend(active_extruder));
 				}
 				break;
 
