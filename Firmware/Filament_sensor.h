@@ -168,7 +168,6 @@ protected:
     }
     
     void triggerError() {
-        // deinit(); //not sure if I should call this here.
         state = State::error;
         
         /// some message, idk
@@ -223,6 +222,7 @@ public:
             default:
                 return false;
         }
+        return false;
     }
     
     bool getFilamentPresent() {
@@ -447,23 +447,39 @@ public:
             deinit(); //deinit first if there was an error.
         }
         puts_P(PSTR("fsensor::init()"));
-        ;//
+        
         settings_init(); //also sets the state to State::initializing
+        
+        if (!pat9125_init()) {
+            deinit();
+            triggerError();
+            ;//
+        }
+#ifdef IR_SENSOR_PIN
+        else if (!READ(IR_SENSOR_PIN)) {
+            ;// MK3 fw on MK3S printer
+        }
+#endif //IR_SENSOR_PIN
     }
     
     void deinit() {
         puts_P(PSTR("fsensor::deinit()"));
         ;//
         state = State::disabled;
+        filter = 0;
     }
     
     bool update() {
         switch (state) {
             case State::initializing:
-                // state = State::ready; //the IR sensor gets ready instantly as it's just a gpio read operation.
+                if (!updatePAT9125()) {
+                    break; // still not stable. Stay in the initialization state.
+                }
                 oldFilamentPresent = getFilamentPresent(); //initialize the current filament state so that we don't create a switching event right after the sensor is ready.
-                // fallthru
+                state = State::ready;
+                break;
             case State::ready: {
+                updatePAT9125();
                 postponedLoadEvent = false;
                 bool event = checkFilamentEvents();
                 
@@ -476,16 +492,47 @@ public:
             default:
                 return false;
         }
+        return false;
     }
     
     bool getFilamentPresent() {
-        return false;///
+        return filterFilPresent;
     }
     
     void settings_init() {
         Filament_sensor::settings_init();
+        jamDetection = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_JAM_DETECTION);
     }
-protected:
+private:
+    static constexpr uint16_t pollingPeriod = 10; //[ms]
+    static constexpr uint8_t filterCnt = 5; //how many checks need to be done in order to determine the filament presence precisely.
+    ShortTimer pollingTimer;
+    uint8_t filter;
+    uint8_t filterFilPresent;
+    bool jamDetection;
+    
+    bool updatePAT9125() {
+        
+        if (!pollingTimer.running() || pollingTimer.expired(pollingPeriod)) {
+            pollingTimer.start();
+            if (!pat9125_update()) {
+                init(); //try to reinit.
+            }
+            
+            bool present = (pat9125_s < 17) || (pat9125_s >= 17 && pat9125_b >= 50);
+            if (present != filterFilPresent) {
+                filter++;
+            }
+            else if (filter) {
+                filter--;
+            }
+            if (filter >= filterCnt) {
+                filter = 0;
+                filterFilPresent = present;
+            }
+        }
+        return (filter == 0); //return stability
+    }
 };
 #endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
