@@ -48,6 +48,7 @@ extern const char MSG_FOLLOW_CALIBRATION_FLOW[];
 extern const char MSG_FOLLOW_Z_CALIBRATION_FLOW[];
 extern const char MSG_FSENSOR_RUNOUT[];
 extern const char MSG_FSENSOR_AUTOLOAD[];
+extern const char MSG_FSENSOR_JAM_DETECTION[];
 extern const char MSG_FSENSOR[];
 extern const char MSG_HEATING[];
 extern const char MSG_HEATING_COMPLETE[];

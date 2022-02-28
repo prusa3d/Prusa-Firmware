@@ -144,27 +144,36 @@ protected:
     
     void triggerFilamentInserted() {
         if (autoLoadEnabled && (eFilamentAction == FilamentAction::None) && !(moves_planned() || IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) || eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))) {
-            eFilamentAction = FilamentAction::AutoLoad;
-            if(target_temperature[0] >= EXTRUDE_MINTEMP){
-                bFilamentPreheatState = true;
-                menu_submenu(mFilamentItemForce);
-            } else {
-                menu_submenu(lcd_generic_preheat_menu);
-                lcd_timeoutToStatus.start();
-            }
+            filAutoLoad();
         }
     }
     
     void triggerFilamentRemoved() {
         if (runoutEnabled && (eFilamentAction == FilamentAction::None) && !saved_printing && (moves_planned() || IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) || eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))) {
-            runoutEnabled = false;
-            autoLoadEnabled = false;
-            stop_and_save_print_to_ram(0, 0);
-            restore_print_from_ram_and_continue(0);
-            eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
-            eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-            enquecommand_front_P((PSTR("M600")));
+            filRunout();
         }
+    }
+    
+    void filAutoLoad() {
+        eFilamentAction = FilamentAction::AutoLoad;
+        if(target_temperature[0] >= EXTRUDE_MINTEMP){
+            bFilamentPreheatState = true;
+            menu_submenu(mFilamentItemForce);
+        }
+        else {
+            menu_submenu(lcd_generic_preheat_menu);
+            lcd_timeoutToStatus.start();
+        }
+    }
+    
+    void filRunout() {
+        runoutEnabled = false;
+        autoLoadEnabled = false;
+        stop_and_save_print_to_ram(0, 0);
+        restore_print_from_ram_and_continue(0);
+        eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+        eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+        enquecommand_front_P((PSTR("M600")));
     }
     
     void triggerError() {
@@ -450,6 +459,8 @@ public:
         
         settings_init(); //also sets the state to State::initializing
         
+        calcChunkSteps(cs.axis_steps_per_unit[E_AXIS]); //for jam detection
+        
         if (!pat9125_init()) {
             deinit();
             triggerError();
@@ -476,6 +487,7 @@ public:
                     break; // still not stable. Stay in the initialization state.
                 }
                 oldFilamentPresent = getFilamentPresent(); //initialize the current filament state so that we don't create a switching event right after the sensor is ready.
+                oldPos = pat9125_y;
                 state = State::ready;
                 break;
             case State::ready: {
@@ -499,9 +511,28 @@ public:
         return filterFilPresent;
     }
     
+    void setJamDetectionEnabled(bool state, bool updateEEPROM = false) {
+        jamDetection = state;
+        oldPos = pat9125_y;
+        resetStepCount();
+        jamErrCnt = 0;
+        if (updateEEPROM) {
+            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_JAM_DETECTION, state);
+        }
+    }
+    
+    bool getJamDetectionEnabled() {
+        return jamDetection;
+    }
+    
+    void stStep(bool rev) { //from stepper isr
+        stepCount += rev ? -1 : 1;
+    }
+    
     void settings_init() {
+        puts_P(PSTR("settings_init"));
         Filament_sensor::settings_init();
-        jamDetection = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_JAM_DETECTION);
+        setJamDetectionEnabled(eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_JAM_DETECTION));
     }
 private:
     static constexpr uint16_t pollingPeriod = 10; //[ms]
@@ -509,9 +540,65 @@ private:
     ShortTimer pollingTimer;
     uint8_t filter;
     uint8_t filterFilPresent;
+    
     bool jamDetection;
+    int16_t oldPos;
+    volatile int16_t stepCount;
+    int16_t chunkSteps;
+    uint8_t jamErrCnt;
+    
+    void calcChunkSteps(float u) {
+        chunkSteps = (int16_t)(1.25 * u); //[mm]
+    }
+    
+    int16_t getStepCount() {
+        int16_t st_cnt;
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+            st_cnt = stepCount;
+        }
+        return st_cnt;
+    }
+    
+    void resetStepCount() {
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+            stepCount = 0;
+        }
+    }
+    
+    void filJam() {
+        runoutEnabled = false;
+        autoLoadEnabled = false;
+        jamDetection = false;
+        stop_and_save_print_to_ram(0, 0);
+        restore_print_from_ram_and_continue(0);
+        eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+        eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+        enquecommand_front_P((PSTR("M600")));
+    }
     
     bool updatePAT9125() {
+        if (jamDetection) {
+            int16_t _stepCount = getStepCount();
+            if (abs(_stepCount) >= chunkSteps) { //end of chunk. Check distance
+                resetStepCount();
+                if (!pat9125_update()) { //get up to date data. reinit on error.
+                    init(); //try to reinit.
+                }
+                bool fsDir = (pat9125_y - oldPos) > 0;
+                bool stDir = _stepCount > 0;
+                if (fsDir != stDir) {
+                    jamErrCnt++;
+                }
+                else if (jamErrCnt) {
+                    jamErrCnt--;
+                }
+                oldPos = pat9125_y;
+            }
+            if (jamErrCnt > 10) {
+                jamErrCnt = 0;
+                filJam();
+            }
+        }
         
         if (!pollingTimer.running() || pollingTimer.expired(pollingPeriod)) {
             pollingTimer.start();
