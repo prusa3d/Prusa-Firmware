@@ -7790,14 +7790,14 @@ Sigma_Exit:
 
         updatePID();
         SERIAL_PROTOCOLRPGM(MSG_OK);
-        SERIAL_PROTOCOL(" p:");
+        SERIAL_PROTOCOLPGM(" p:");
         SERIAL_PROTOCOL(cs.Kp);
-        SERIAL_PROTOCOL(" i:");
+        SERIAL_PROTOCOLPGM(" i:");
         SERIAL_PROTOCOL(unscalePID_i(cs.Ki));
-        SERIAL_PROTOCOL(" d:");
+        SERIAL_PROTOCOLPGM(" d:");
         SERIAL_PROTOCOL(unscalePID_d(cs.Kd));
         #ifdef PID_ADD_EXTRUSION_RATE
-        SERIAL_PROTOCOL(" c:");
+        SERIAL_PROTOCOLPGM(" c:");
         //Kc does not have scaling applied above, or in resetting defaults
         SERIAL_PROTOCOL(Kc);
         #endif
@@ -7828,11 +7828,11 @@ Sigma_Exit:
 
         updatePID();
        	SERIAL_PROTOCOLRPGM(MSG_OK);
-        SERIAL_PROTOCOL(" p:");
+        SERIAL_PROTOCOLPGM(" p:");
         SERIAL_PROTOCOL(cs.bedKp);
-        SERIAL_PROTOCOL(" i:");
+        SERIAL_PROTOCOLPGM(" i:");
         SERIAL_PROTOCOL(unscalePID_i(cs.bedKi));
-        SERIAL_PROTOCOL(" d:");
+        SERIAL_PROTOCOLPGM(" d:");
         SERIAL_PROTOCOLLN(unscalePID_d(cs.bedKd));
       }
       break;
