@@ -86,7 +86,7 @@ uint8_t farm_timer = 8;
 bool printer_connected = true;
 
 static ShortTimer display_time; //just timer for showing pid finished message on lcd;
-float pid_temp = DEFAULT_PID_TEMP;
+static uint16_t pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
 static bool lcd_autoDeplete;
@@ -1018,8 +1018,7 @@ void lcd_commands()
 			lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
-			strcpy(cmd1, "M303 E0 S");
-			strcat(cmd1, ftostr3(pid_temp));
+			sprintf_P(cmd1, PSTR("M303 E0 S%3u"), pid_temp);
 			// setting the correct target temperature (for visualization) is done in PID_autotune
 			enquecommand(cmd1);
 			lcd_setstatuspgm(_i("PID cal."));////MSG_PID_RUNNING c=20
@@ -1031,14 +1030,9 @@ void lcd_commands()
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
 			setAllTargetHotends(0);  // reset all hotends temperature including the number displayed on the main screen
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
-			strcpy(cmd1, "M301 P");
-			strcat(cmd1, ftostr32(_Kp));
-			strcat(cmd1, " I");
-			strcat(cmd1, ftostr32(_Ki));
-			strcat(cmd1, " D");
-			strcat(cmd1, ftostr32(_Kd));
-			enquecommand(cmd1);
-			enquecommand_P(PSTR("M500"));
+				sprintf_P(cmd1, PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
+				enquecommand(cmd1);
+				enquecommand_P(PSTR("M500"));
 			}
 			else {
 				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
@@ -2791,7 +2785,7 @@ void pid_extruder()
 	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
 	lcd_encoder = 0;
 	lcd_set_cursor(1, 2);
-	lcd_print(ftostr3(pid_temp));
+	lcd_printf_P(PSTR("%3u"), pid_temp);
 	if (lcd_clicked()) {
 		lcd_commands_type = LcdCommands::PidExtruder;
 		lcd_return_to_status();
@@ -2897,9 +2891,7 @@ bool lcd_wait_for_pinda(float temp) {
 
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
-		lcd_print(ftostr3(current_temperature_pinda));
-		lcd_print('/');
-		lcd_print(ftostr3(temp));
+		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)current_temperature_pinda, (int16_t) temp);
 		lcd_print(LCD_STR_DEGREE[0]);
 		delay_keep_alive(1000);
 		serialecho_temperatures();
@@ -2917,9 +2909,7 @@ void lcd_wait_for_heater() {
 		lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
-		lcd_print(ftostr3(degHotend(active_extruder)));
-		lcd_print('/');
-		lcd_print(ftostr3(degTargetHotend(active_extruder)));
+		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)degHotend(active_extruder), (int16_t) degTargetHotend(active_extruder));
 		lcd_print(LCD_STR_DEGREE[0]);
 }
 
@@ -2933,14 +2923,12 @@ void lcd_wait_for_cool_down() {
 
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
-		lcd_print(ftostr3(degHotend(0)));
-		lcd_print("/0");		
+		lcd_printf_P(PSTR("%3d/0"), (int16_t)degHotend(0));
 		lcd_print(LCD_STR_DEGREE[0]);
 
 		lcd_set_cursor(9, 4);
 		lcd_print(LCD_STR_BEDTEMP[0]);
-		lcd_print(ftostr3(degBed()));
-		lcd_print("/0");		
+		lcd_printf_P(PSTR("%3d/0"), (int16_t)degBed());
 		lcd_print(LCD_STR_DEGREE[0]);
 		delay_keep_alive(1000);
 		serialecho_temperatures();

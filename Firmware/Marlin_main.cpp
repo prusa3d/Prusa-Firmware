@@ -467,22 +467,16 @@ void serial_echopair_P(const char *s_P, double v)
 void serial_echopair_P(const char *s_P, unsigned long v)
     { serialprintPGM(s_P); SERIAL_ECHO(v); }
 
-/*FORCE_INLINE*/ void serialprintPGM(const char *str)
-{
-#if 0
-  char ch=pgm_read_byte(str);
-  while(ch)
-  {
-    MYSERIAL.write(ch);
-    ch=pgm_read_byte(++str);
-  }
-#else
-	// hmm, same size as the above version, the compiler did a good job optimizing the above
-	while( uint8_t ch = pgm_read_byte(str) ){
-	  MYSERIAL.write((char)ch);
-	  ++str;
-	}
-#endif
+void serialprintPGM(const char *str) {
+    while(uint8_t ch = pgm_read_byte(str)) {
+        MYSERIAL.write((char)ch);
+        ++str;
+    }
+}
+
+void serialprintlnPGM(const char *str) {
+    serialprintPGM(str);
+    MYSERIAL.println();
 }
 
 #ifdef SDSUPPORT
@@ -3676,9 +3670,7 @@ void gcode_M114()
 	SERIAL_PROTOCOLPGM(" Z:");
 	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / cs.axis_steps_per_unit[Z_AXIS]);
 	SERIAL_PROTOCOLPGM(" E:");
-	SERIAL_PROTOCOL(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
-
-	SERIAL_PROTOCOLLN();
+	SERIAL_PROTOCOLLN(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
 }
 
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
@@ -6158,8 +6150,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                 SERIAL_PROTOCOL('.');
                 SERIAL_PROTOCOL(uint8_t(ip[2]));
                 SERIAL_PROTOCOL('.');
-                SERIAL_PROTOCOL(uint8_t(ip[3]));
-                SERIAL_PROTOCOLLN();
+                SERIAL_PROTOCOLLN(uint8_t(ip[3]));
             } else {
                 SERIAL_PROTOCOLPGM("?Toshiba FlashAir GetIP failed\n");          
             }
@@ -7730,8 +7721,7 @@ Sigma_Exit:
           SERIAL_PROTOCOL(" Servo ");
           SERIAL_PROTOCOL(servo_index);
           SERIAL_PROTOCOL(": ");
-          SERIAL_PROTOCOL(servos[servo_index].read());
-          SERIAL_PROTOCOLLN();
+          SERIAL_PROTOCOLLN(servos[servo_index].read());
         }
       }
       break;
@@ -7796,14 +7786,14 @@ Sigma_Exit:
 
         updatePID();
         SERIAL_PROTOCOLRPGM(MSG_OK);
-        SERIAL_PROTOCOL(" p:");
+        SERIAL_PROTOCOLPGM(" p:");
         SERIAL_PROTOCOL(cs.Kp);
-        SERIAL_PROTOCOL(" i:");
+        SERIAL_PROTOCOLPGM(" i:");
         SERIAL_PROTOCOL(unscalePID_i(cs.Ki));
-        SERIAL_PROTOCOL(" d:");
+        SERIAL_PROTOCOLPGM(" d:");
         SERIAL_PROTOCOL(unscalePID_d(cs.Kd));
         #ifdef PID_ADD_EXTRUSION_RATE
-        SERIAL_PROTOCOL(" c:");
+        SERIAL_PROTOCOLPGM(" c:");
         //Kc does not have scaling applied above, or in resetting defaults
         SERIAL_PROTOCOL(Kc);
         #endif
@@ -7834,13 +7824,12 @@ Sigma_Exit:
 
         updatePID();
        	SERIAL_PROTOCOLRPGM(MSG_OK);
-        SERIAL_PROTOCOL(" p:");
+        SERIAL_PROTOCOLPGM(" p:");
         SERIAL_PROTOCOL(cs.bedKp);
-        SERIAL_PROTOCOL(" i:");
+        SERIAL_PROTOCOLPGM(" i:");
         SERIAL_PROTOCOL(unscalePID_i(cs.bedKi));
-        SERIAL_PROTOCOL(" d:");
-        SERIAL_PROTOCOL(unscalePID_d(cs.bedKd));
-        SERIAL_PROTOCOLLN();
+        SERIAL_PROTOCOLPGM(" d:");
+        SERIAL_PROTOCOLLN(unscalePID_d(cs.bedKd));
       }
       break;
     #endif //PIDTEMP
@@ -8272,8 +8261,7 @@ Sigma_Exit:
 		LCD_MESSAGERPGM(_T(MSG_PLEASE_WAIT));
 
 		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
-		SERIAL_PROTOCOL(set_target_pinda);
-		SERIAL_PROTOCOLLN();
+		SERIAL_PROTOCOLLN(set_target_pinda);
 
 		codenum = _millis();
 		cancel_heatup = false;
@@ -8315,12 +8303,13 @@ Sigma_Exit:
     - `S` - Microsteps
     - `I` - Table index
     */
-	case 861:
+	case 861: {
+		const char * const _header = PSTR("index, temp, ustep, um");
 		if (code_seen('?')) { // ? - Print out current EEPROM offset values
-			uint8_t cal_status = calibration_status_pinda();
 			int16_t usteps = 0;
-			cal_status ? SERIAL_PROTOCOLLN("PINDA cal status: 1") : SERIAL_PROTOCOLLN("PINDA cal status: 0");
-			SERIAL_PROTOCOLLN("index, temp, ustep, um");
+			SERIAL_PROTOCOLPGM("PINDA cal status: ");
+			SERIAL_PROTOCOLLN(calibration_status_pinda());
+			SERIAL_PROTOCOLLNRPGM(_header);
 			for (uint8_t i = 0; i < 6; i++)
 			{
 				if(i > 0) {
@@ -8333,8 +8322,7 @@ Sigma_Exit:
 				SERIAL_PROTOCOLPGM(", ");
 				SERIAL_PROTOCOL(usteps);
 				SERIAL_PROTOCOLPGM(", ");
-				SERIAL_PROTOCOL(mm * 1000);
-				SERIAL_PROTOCOLLN();
+				SERIAL_PROTOCOLLN(mm * 1000);
 			}
 		}
 		else if (code_seen('!')) { // ! - Set factory default values
@@ -8349,7 +8337,7 @@ Sigma_Exit:
 			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 3, z_shift);
 			z_shift = 120;  //60C - 300um - 120usteps
 			eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + 4, z_shift);
-			SERIAL_PROTOCOLLN("factory restored");
+			SERIAL_PROTOCOLLNPGM("factory restored");
 		}
 		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
@@ -8357,7 +8345,7 @@ Sigma_Exit:
 			for (uint8_t i = 0; i < 5; i++) {
 				eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i, z_shift);
 			}
-			SERIAL_PROTOCOLLN("zerorized");
+			SERIAL_PROTOCOLLNPGM("zerorized");
 		}
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
 			int16_t usteps = code_value_short();
@@ -8365,8 +8353,8 @@ Sigma_Exit:
 			    uint8_t index = code_value_uint8();
 				if (index < 5) {
 					eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + index, usteps);
-					SERIAL_PROTOCOLLN("OK");
-					SERIAL_PROTOCOLLN("index, temp, ustep, um");
+					SERIAL_PROTOCOLLNRPGM(MSG_OK);
+					SERIAL_PROTOCOLLNRPGM(_header);
 					for (uint8_t i = 0; i < 6; i++)
 					{
 						usteps = 0;
@@ -8380,16 +8368,15 @@ Sigma_Exit:
 						SERIAL_PROTOCOLPGM(", ");
 						SERIAL_PROTOCOL(usteps);
 						SERIAL_PROTOCOLPGM(", ");
-						SERIAL_PROTOCOL(mm * 1000);
-						SERIAL_PROTOCOLLN();
+						SERIAL_PROTOCOLLN(mm * 1000);
 					}
 				}
 			}
 		}
 		else {
-			SERIAL_PROTOCOLPGM("no valid command");
+			SERIAL_PROTOCOLLNPGM("no valid command");
 		}
-		break;
+    } break;
 
 #endif //PINDA_THERMISTOR
    
@@ -11462,8 +11449,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     enquecommand(cmd);
   // Recover final E axis position and mode
     float pos_e = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
-    sprintf_P(cmd, PSTR("G92 E"));
-    dtostrf(pos_e, 6, 3, cmd + strlen(cmd));
+    sprintf_P(cmd, PSTR("G92 E%6.3f"), pos_e);
     enquecommand(cmd);
     if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
         enquecommand_P(PSTR("M82")); //E axis abslute mode
@@ -11957,7 +11943,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 				else {
 					counterBeep = 20; //beeper will be inactive during waiting for nozzle preheat
 					lcd_set_cursor(1, 4);
-					lcd_print(ftostr3(degHotend(active_extruder)));
+					lcd_printf_P(PSTR("%3d"), (int16_t)degHotend(active_extruder));
 				}
 				break;
 
