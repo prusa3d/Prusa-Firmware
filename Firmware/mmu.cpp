@@ -7,7 +7,6 @@
 #include "uart2.h"
 #include "temperature.h"
 #include "Configuration_prusa.h"
-#include "fsensor.h"
 #include "cardreader.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"

@@ -6,7 +6,6 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #include "conv2str.h"
-#include "fsensor.h"
 #include "Marlin.h"
 #include "language.h"
 #include "cardreader.h"
@@ -29,11 +28,7 @@
 //#include "Configuration.h"
 #include "cmdqueue.h"
 
-#ifdef FILAMENT_SENSOR
-#include "pat9125.h"
-#include "fsensor.h"
 #include "Filament_sensor.h"
-#endif //FILAMENT_SENSOR
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -46,7 +41,6 @@
 #include "static_assert.h"
 #include "first_lay_cal.h"
 
-#include "fsensor.h"
 #include "adc.h"
 #include "config.h"
 
@@ -1273,11 +1267,11 @@ static void lcd_menu_fails_stats_print()
     // On the MK3 include detailed PAT9125 statistics about soft failures
     lcd_printf_P(PSTR("%S\n"
                       " %-16.16S%-3d\n"
-                      " %-7.7S H %-3d S %-3d\n"
+                      " %-7.7S: %-3d\n"
                       " %-7.7S X %-3d Y %-3d"),
                  _T(MSG_LAST_PRINT_FAILURES),
                  _T(MSG_POWER_FAILURES), power,
-                 _i("Runouts"), filam, fsensor_softfail, //MSG_RUNOUTS c=7
+                 _i("Runouts"), filam, //MSG_RUNOUTS c=7
                  _T(MSG_CRASH), crashX, crashY);
 #endif
     menu_back_if_clicked_fb();
@@ -4558,6 +4552,12 @@ static void lcd_fsensor_autoload_set() {
     fsensor.setAutoLoadEnabled(!fsensor.getAutoLoadEnabled(), true);
 }
 
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
+static void lcd_fsensor_jam_detection_set() {
+    fsensor.setJamDetectionEnabled(!fsensor.getJamDetectionEnabled(), true);
+}
+#endif //FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
+
 static void lcd_fsensor_actionNA_set(void)
 {
     Filament_sensor::SensorActionOnError act = fsensor.getActionOnError();
@@ -4584,10 +4584,16 @@ static void lcd_fsensor_settings_menu() {
         if (fsensor.isError()) {
             MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_RUNOUT), _T(MSG_NA), fsensor_reinit);
             MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_NA), fsensor_reinit);
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM_DETECTION), _T(MSG_NA), fsensor_reinit);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
         }
         else {
             MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_RUNOUT), fsensor.getRunoutEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_runout_set);
             MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), fsensor.getAutoLoadEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_autoload_set);
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM_DETECTION), fsensor.getJamDetectionEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_jam_detection_set);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
         }
         
         switch(fsensor.getActionOnError()) {
@@ -5505,6 +5511,14 @@ void unload_filament(bool automatic)
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
+#ifdef FILAMENT_SENSOR
+	fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
+	fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+	fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+#endif
+
     raise_z_above(automatic? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
 
 	//		extr_unload2();
@@ -5542,6 +5556,10 @@ void unload_filament(bool automatic)
 	custom_message_type = CustomMsg::Status;
 
 	eFilamentAction = FilamentAction::None;
+
+#ifdef FILAMENT_SENSOR
+	fsensor.settings_init(); //restore filament runout state.
+#endif
 }
 
 #include "xflash.h"
