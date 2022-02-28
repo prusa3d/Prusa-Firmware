@@ -3499,26 +3499,22 @@ static void lcd_show_sensors_state()
 #endif //FILAMENT_SENSOR
 
 #ifdef PAT9125
-	// Display X and Y difference from Filament sensor    
+    // Display X and Y difference from Filament sensor
     // Display Light intensity from Filament sensor
     //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
     //  value ranges from 0(darkest) to 255(brightest).
     // Display LASER shutter time from Filament sensor
     //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
-    //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
-    //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-    if (mmu_enabled == false)
-    {
-        // pat9125_update is already called while printing: only update manually when idling
-        if (!moves_planned() && !IS_SD_PRINTING && !usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal))
-            pat9125_update();
-
-        lcd_set_cursor(0, 2);
-        lcd_printf_P(_N(" Int: %3d  Xd:%6d\n"
-                        "Shut: %3d  Yd:%6d"),
-                     pat9125_b, pat9125_x,
-                     pat9125_s, pat9125_y);
-    }
+    //  auto-exposure algorithm. When the chip is tracking on a reflective surface, the Shutter is small.
+    //  When the chip is tracking on a surface that absorbs IR (or doesn't reflect it), the Shutter is large.
+    //  The maximum value of the shutter is 17. The value of 16 seems to be reported as 17 even though the
+    //  Brightness value changes correctly as if the shutter changed to 16 (probably some bug with the sensor).
+    //  The shutter algorithm tries to keep the B value in the 70-110 range.
+    lcd_set_cursor(0, 2);
+    lcd_printf_P(_N("B: %3d     Xd:%6d\n"
+                    "S: %3d     Yd:%6d"),
+                 pat9125_b, pat9125_x,
+                 pat9125_s, pat9125_y);
 #endif //PAT9125
 }
 
