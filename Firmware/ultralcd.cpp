@@ -3479,7 +3479,6 @@ static void lcd_show_sensors_state()
 	{
 		finda_state = mmu_finda;
 	}
-	//lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(0, 0, _T(MSG_PINDA));
 	lcd_set_cursor(LCD_WIDTH - 14, 0);
 	lcd_print_state(pinda_state);
@@ -3491,15 +3490,13 @@ static void lcd_show_sensors_state()
 		lcd_print_state(finda_state);
 	}
 #ifdef FILAMENT_SENSOR
-	if (ir_sensor_detected) {
-		idler_state = fsensor.getFilamentPresent();
-		lcd_puts_at_P(0, 1, _T(MSG_FSENSOR));
-		lcd_set_cursor(LCD_WIDTH - 3, 1);
-		lcd_print_state(idler_state);
-	}
+	idler_state = fsensor.getFilamentPresent();
+	lcd_puts_at_P(0, 1, _T(MSG_FSENSOR));
+	lcd_set_cursor(LCD_WIDTH - 3, 1);
+	lcd_print_state(idler_state);
 #endif //FILAMENT_SENSOR
 
-#ifdef PAT9125
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
     // Display X and Y difference from Filament sensor
     // Display Light intensity from Filament sensor
     //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
@@ -3516,7 +3513,7 @@ static void lcd_show_sensors_state()
                     "S: %3d     Yd:%6d"),
                  pat9125_b, pat9125_x,
                  pat9125_s, pat9125_y);
-#endif //PAT9125
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 }
 
 void lcd_menu_show_sensors_state()                // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
