@@ -167,10 +167,18 @@ uint8_t pat9125_init(void)
 	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
 
 #else //PAT9125_NEW_INIT
+	// Disable write protect.
+	pat9125_wr_reg(PAT9125_WP, 0x5a); //allows writing to all registers
+	
 	pat9125_wr_reg(PAT9125_RES_X, PAT9125_XRES);
 	pat9125_wr_reg(PAT9125_RES_Y, PAT9125_YRES);
 	printf_P(PSTR("PAT9125_RES_X=%u\n"), pat9125_rd_reg(PAT9125_RES_X));
 	printf_P(PSTR("PAT9125_RES_Y=%u\n"), pat9125_rd_reg(PAT9125_RES_Y));
+	
+	pat9125_wr_reg(PAT9125_ORIENTATION, ((PAT9125_12B_RES?0x04:0) | (PAT9125_INVERT_X?0x08:0) | (PAT9125_INVERT_Y?0x10:0) | (PAT9125_SWAP_XY?0x20:0)));
+	
+	// Enable write protect.
+	pat9125_wr_reg(PAT9125_WP, 0x00); //prevents writing to registers over 0x09
 #endif //PAT9125_NEW_INIT
 
 	return 1;
