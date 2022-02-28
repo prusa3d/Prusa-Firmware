@@ -95,13 +95,7 @@
 
 #include "spi.h"
 
-#ifdef FILAMENT_SENSOR
 #include "Filament_sensor.h"
-#include "fsensor.h"
-#ifdef IR_SENSOR
-#include "pat9125.h" // for pat9125_probe
-#endif
-#endif //FILAMENT_SENSOR
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -768,6 +762,9 @@ static void factory_reset(char level)
 		fsensor.setEnabled(true);
 		fsensor.setAutoLoadEnabled(true, true);
 		fsensor.setRunoutEnabled(true, true);
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+		fsensor.setJamDetectionEnabled(true, true);
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 #endif //FILAMENT_SENSOR
 		break;
 
@@ -3490,7 +3487,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     st_synchronize();
     float lastpos[4];
 
-    prusa_statistics(22);
+        prusa_statistics(22);
 
     //First backup current position and settings
     int feedmultiplyBckp = feedmultiply;
@@ -3529,6 +3526,14 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     else unload_filament(true); //unload filament for single material (used also in M702)
     //finish moves
     st_synchronize();
+
+#ifdef FILAMENT_SENSOR
+    fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
+    fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+    fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+#endif
 
     if (!mmu_enabled)
     {
@@ -3616,6 +3621,9 @@ void gcode_M701()
 #ifdef FILAMENT_SENSOR
 	fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
 	fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+	fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 #endif
 
 	prusa_statistics(22);
@@ -6512,7 +6520,7 @@ Sigma_Exit:
             }
             cs.axis_steps_per_unit[i] = value;
 #if defined(FILAMENT_SENSOR) && defined(PAT9125)
-            fsensor_set_axis_steps_per_unit(value);
+            fsensor.init();
 #endif
           }
           else {
@@ -8448,8 +8456,8 @@ Sigma_Exit:
 						position[i] /= fac;
 					}
 #if defined(FILAMENT_SENSOR) && defined(PAT9125)
-                    if (i == E_AXIS)
-                        fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[i]);
+					if (i == E_AXIS)
+						fsensor.init();
 #endif
 				}
 			}
