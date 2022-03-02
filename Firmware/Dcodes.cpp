@@ -863,7 +863,7 @@ void dcode_2130()
 }
 #endif //TMC2130
 
-#ifdef PAT9125
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
     /*!
     ### D9125 - PAT9125 filament sensor <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9125: PAT9125 filament sensor</a>
     #### Usage
@@ -876,7 +876,6 @@ void dcode_2130()
     - `R` - Resolution. Not active in code
     - `X` - X values
     - `Y` - Y values
-    - `L` - Activate filament sensor log
     */
 void dcode_9125()
 {
@@ -911,7 +910,7 @@ void dcode_9125()
 		LOG("pat9125_y=%d\n", pat9125_y);
 	}
 }
-#endif //PAT9125
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
 #endif //DEBUG_DCODES
 

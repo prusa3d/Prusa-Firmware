@@ -687,9 +687,6 @@ void failstats_reset_print()
 	eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-    fsensor_softfail = 0;
-#endif
 }
 
 void softReset()
@@ -861,24 +858,14 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
+#if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
 //! @brief try to check if firmware is on right type of printer
-static void check_if_fw_is_on_right_printer(){
-#ifdef FILAMENT_SENSOR
-  if((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3S)){
-    #ifdef IR_SENSOR
-      if (pat9125_probe()){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}////MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
-    #endif //IR_SENSOR
-
-    #ifdef PAT9125
-      //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
-      const uint8_t ir_detected = fsensor.getFilamentPresent();
-      if (ir_detected){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}////MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
-    #endif //PAT9125
-  }
-#endif //FILAMENT_SENSOR
+static void check_if_fw_is_on_right_printer() {
+    if (fsensor.probeOtherType()) {
+        lcd_show_fullscreen_message_and_wait_P(_i((PRINTER_NAME " firmware detected on " PRINTER_NAME_ALTERNATE " printer")));////c=20 r=4
+    }
 }
+#endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
 
 uint8_t check_printer_version()
 {
@@ -1560,7 +1547,9 @@ void setup()
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
   if (!farm_mode) {
+#if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
     check_if_fw_is_on_right_printer();
+#endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
     show_fw_version_warnings();    
   }
 
@@ -6768,9 +6757,9 @@ Sigma_Exit:
               axis_steps_per_sqr_second[i] *= factor;
             }
             cs.axis_steps_per_unit[i] = value;
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
             fsensor.init();
-#endif
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
           }
           else {
             cs.axis_steps_per_unit[i] = code_value();
@@ -8607,10 +8596,10 @@ Sigma_Exit:
 						cs.axis_steps_per_unit[i] /= fac;
 						position[i] /= fac;
 					}
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 					if (i == E_AXIS)
 						fsensor.init();
-#endif
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 				}
 			}
 		}
@@ -9227,7 +9216,7 @@ Sigma_Exit:
 		dcode_2130(); break;
 #endif //TMC2130
 
-#if (defined (FILAMENT_SENSOR) && defined(PAT9125))
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
     /*!
     ### D9125 - PAT9125 filament sensor <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9125: PAT9125 filament sensor</a>
@@ -9245,7 +9234,7 @@ Sigma_Exit:
     */
 	case 9125:
 		dcode_9125(); break;
-#endif //FILAMENT_SENSOR
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
 #endif //DEBUG_DCODES
 

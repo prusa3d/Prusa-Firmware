@@ -219,14 +219,18 @@ enum class FanCheck : uint_least8_t {
 static FanCheck lcd_selftest_fan_auto(int _fan);
 #endif //FANCHECK
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 static bool lcd_selftest_fsensor();
-#endif //PAT9125
+#elif FILAMENT_SENSOR_TYPE == FSENSOR_IR
 static bool selftest_irsensor();
-#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
+#elif FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG
+static bool selftest_irsensor();
 static bool lcd_selftest_IRsensor(bool bStandalone=false);
 static void lcd_detect_IRsensor();
-#endif //IR_SENSOR_ANALOG
+#endif
+#endif //FILAMENT_SENSOR
+
 static void lcd_selftest_error(TestError error, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
 
@@ -1257,13 +1261,7 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
     lcd_home();
-#ifndef PAT9125
-    lcd_printf_P(failStatsFmt,
-        _T(MSG_LAST_PRINT_FAILURES),
-        _T(MSG_POWER_FAILURES), power,
-        _T(MSG_FIL_RUNOUTS), filam,
-        _T(MSG_CRASH), crashX, crashY);
-#else
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
     // On the MK3 include detailed PAT9125 statistics about soft failures
     lcd_printf_P(PSTR("%S\n"
                       " %-16.16S%-3d\n"
@@ -1273,6 +1271,14 @@ static void lcd_menu_fails_stats_print()
                  _T(MSG_POWER_FAILURES), power,
                  _i("Runouts"), filam, //MSG_RUNOUTS c=7
                  _T(MSG_CRASH), crashX, crashY);
+#elif (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
+    lcd_printf_P(failStatsFmt,
+        _T(MSG_LAST_PRINT_FAILURES),
+        _T(MSG_POWER_FAILURES), power,
+        _T(MSG_FIL_RUNOUTS), filam,
+        _T(MSG_CRASH), crashX, crashY);
+#else
+#error This menu should have a filament sensor defined
 #endif
     menu_back_if_clicked_fb();
 }
@@ -6762,7 +6768,7 @@ bool lcd_selftest()
 #ifdef FILAMENT_SENSOR
     if (_result)
     {
-
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
         if (mmu_enabled)
         {        
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
@@ -6772,15 +6778,16 @@ bool lcd_selftest()
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
         } else
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
         {
-#ifdef PAT9125
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
                _result = lcd_selftest_fsensor();
 			if (_result)
 			{
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
-#endif //PAT9125
+#endif //FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 #if 0
 	// Intentionally disabled - that's why we moved the detection to runtime by just checking the two voltages.
 	// The idea is not to force the user to remove and insert the filament on an assembled printer.
@@ -7342,7 +7349,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 }
 
 #ifdef FILAMENT_SENSOR
-#ifdef PAT9125
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 static bool lcd_selftest_fsensor(void)
 {
 	fsensor.init();
@@ -7352,8 +7359,9 @@ static bool lcd_selftest_fsensor(void)
 	}
 	return (!fsensor.isError());
 }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 //! @brief Self-test of infrared barrier filament sensor mounted on MK3S with MMUv2 printer
 //!
 //! Test whether sensor is not triggering filament presence when extruder idler is moving without filament.
@@ -7421,6 +7429,7 @@ static bool selftest_irsensor()
     }
     return true;
 }
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 #endif //FILAMENT_SENSOR
 
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
