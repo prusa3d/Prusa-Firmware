@@ -864,7 +864,7 @@ void show_fw_version_warnings() {
 //! @brief try to check if firmware is on right type of printer
 static void check_if_fw_is_on_right_printer() {
     if (fsensor.probeOtherType()) {
-        lcd_show_fullscreen_message_and_wait_P(_i((PRINTER_NAME " firmware detected on " PRINTER_NAME_ALTERNATE " printer")));////c=20 r=4
+        lcd_show_fullscreen_message_and_wait_P(_i(PRINTER_NAME " firmware detected on " PRINTER_NAME_ALTERNATE " printer"));////c=20 r=4
     }
 }
 #endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
