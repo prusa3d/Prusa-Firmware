@@ -29,6 +29,9 @@ public:
     virtual void deinit() = 0;
     virtual bool update() = 0;
     virtual bool getFilamentPresent() = 0;
+#ifdef FSENSOR_PROBING
+    virtual bool probeOtherType() = 0; //checks if the wrong fsensor type is detected.
+#endif
     
     enum class State : uint8_t {
         disabled = 0,
@@ -237,6 +240,12 @@ public:
     bool getFilamentPresent() {
         return !READ(IR_SENSOR_PIN);
     }
+    
+#ifdef FSENSOR_PROBING
+    bool probeOtherType() {
+        return pat9125_probe();
+    }
+#endif
     
     void settings_init() {
         Filament_sensor::settings_init();
@@ -510,6 +519,17 @@ public:
     bool getFilamentPresent() {
         return filterFilPresent;
     }
+    
+#ifdef FSENSOR_PROBING
+    bool probeOtherType() {
+        SET_INPUT(IR_SENSOR_PIN); //input mode
+        WRITE(IR_SENSOR_PIN, 1); //pullup
+        _delay_us(100); //wait for the pullup to pull the line high (might be needed, not really sure. The internal pullups are quite weak and there might be a long wire attached).
+        bool fsensorDetected = !READ(IR_SENSOR_PIN);
+        WRITE(IR_SENSOR_PIN, 0); //no pullup
+        return fsensorDetected;
+    }
+#endif
     
     void setJamDetectionEnabled(bool state, bool updateEEPROM = false) {
         jamDetection = state;
