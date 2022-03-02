@@ -11,6 +11,7 @@
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK3
 #define PRINTER_NAME PRINTER_MK3_NAME
+#define PRINTER_NAME_ALTERNATE PRINTER_MK3S_NAME //the other similar printer to this.
 #define PRINTER_MMU_TYPE PRINTER_MK3_MMU2
 #define PRINTER_MMU_NAME PRINTER_MK3_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK3"
@@ -151,6 +152,7 @@
 // Filament sensor
 #define FILAMENT_SENSOR
 #define FILAMENT_SENSOR_TYPE FSENSOR_PAT9125
+#define FSENSOR_PROBING
 
 // Backlash - 
 //#define BACKLASH_X
