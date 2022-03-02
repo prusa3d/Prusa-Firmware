@@ -4489,7 +4489,7 @@ void process_commands()
         } else if( code_seen_P(PSTR("FANPINTST"))){
             gcode_PRUSA_BadRAMBoFanTest();
         }else if (code_seen_P(PSTR("FAN"))) { // PRUSA FAN
-			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
+            gcode_M123();
 		}
 		else if (code_seen_P(PSTR("thx"))) // PRUSA thx
 		{
