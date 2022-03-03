@@ -86,6 +86,19 @@ uint8_t optiboot_xflash_enter()
 // they can be unintentionally changed. As a workaround to the language upload problem, do not only check for one bit if it's set,
 // but rather test 33 bits for the correct value before exiting optiboot early.
   if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0)) return 1;
+  uint8_t targetSerial;
+  switch (GPIOR0) {
+      case 0xFF: // no uart activity happened in the bootloader. Skip second bootloader
+          return 1;
+      case 0x02: // rpi port used in the bootloader
+          targetSerial = 1;
+          break;
+      case 0x01: // primary port used in the bootloader
+      case 0x00: // in case of old bootloader (0x00)
+      default:
+          targetSerial = 0;
+          break;
+  }
   uint8_t ch;
   uint8_t rampz = 0;
   register uint16_t address = 0;
@@ -109,7 +122,7 @@ uint8_t optiboot_xflash_enter()
       // Dummy register read (discard)
       (void)(*(char *)UDR0);
     }
-    selectedSerialPort = 0; //switch to Serial0
+    selectedSerialPort = targetSerial; //switch to the target serial
     MYSERIAL.flush(); //clear RX buffer
     int SerialHead = rx_buffer.head;
     // Send the initial magic string.
