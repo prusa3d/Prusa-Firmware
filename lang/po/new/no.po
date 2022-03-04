@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-02-24 14:22+0100\n"
+"PO-Revision-Date: 2022-03-04 12:15+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -66,12 +66,12 @@ msgstr "Alt korrekt"
 # MSG_WIZARD_DONE c=20 r=3
 #: messages.c:118
 msgid "All is done. Happy printing!"
-msgstr "Alt klart!"
+msgstr "Alt klart. Happy printing!"
 
 # MSG_AMBIENT c=14
 #: ultralcd.cpp:1727
 msgid "Ambient"
-msgstr "Rom"
+msgstr "Ambient"
 
 # MSG_AUTO c=6
 #: messages.c:160
@@ -286,7 +286,7 @@ msgstr "Dato:"
 # MSG_COMMUNITY_MADE c=18
 #: messages.c:25
 msgid "Community made"
-msgstr ""
+msgstr "Community prod."
 
 # MSG_DISABLE_STEPPERS c=18
 #: ultralcd.cpp:5678
@@ -326,7 +326,7 @@ msgstr "Utløser filament"
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ultralcd.cpp:8070
 msgid "Endstop not hit"
-msgstr "Endesensor ikke truffet"
+msgstr "Endes. ikke truffet"
 
 # MSG_SELFTEST_ENDSTOP c=16
 #: ultralcd.cpp:8065
@@ -425,7 +425,7 @@ msgstr "Fil. sensor"
 # MSG_FIL_RUNOUTS c=15
 #: messages.c:34
 msgid "Fil. runouts"
-msgstr ""
+msgstr "Tomt filament"
 
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:37
@@ -855,7 +855,7 @@ msgstr "SD-kort mangler"
 # MSG_NA c=3
 #: messages.c:127
 msgid "N/A"
-msgstr ""
+msgstr "-"
 
 # MSG_NO c=4
 #: messages.c:71
@@ -1050,7 +1050,7 @@ msgstr "Print avbrutt"
 # MSG_PREHEATING_TO_LOAD c=20
 #: ultralcd.cpp:2297
 msgid "Preheating to load"
-msgstr "Forvarmer for lasting"
+msgstr "Forvarmer for last"
 
 # MSG_PREHEATING_TO_UNLOAD c=20
 #: ultralcd.cpp:2302
@@ -1290,7 +1290,7 @@ msgstr "Lyd"
 # MSG_RUNOUTS c=7
 #: ultralcd.cpp:1593
 msgid "Runouts"
-msgstr ""
+msgstr "Tom fil."
 
 # MSG_Z-LEVELING_ENFORCED c=20 r=4
 #: Marlin_main.cpp:3303
@@ -1615,7 +1615,7 @@ msgstr "Sjekker"
 # MSG_FALSE_TRIGGERING c=20
 #: ultralcd.cpp:8111
 msgid "False triggering"
-msgstr ""
+msgstr "Falskt trigget"
 
 # MSG_STRICT c=8
 #: messages.c:131
@@ -1650,7 +1650,7 @@ msgstr "MK3S systemvare funnet på MK3 printer"
 # MSG_MMU_MODE c=8
 #: messages.c:137
 msgid "MMU Mode"
-msgstr "MMU Modus"
+msgstr "MMU Mod."
 
 # MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 #: ultralcd.cpp:4366
