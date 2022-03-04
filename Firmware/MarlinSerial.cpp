@@ -22,6 +22,7 @@
 
 #include "Marlin.h"
 #include "MarlinSerial.h"
+#include <util/atomic.h>
 
 uint8_t selectedSerialPort = 0;
 
@@ -191,6 +192,12 @@ void MarlinSerial::flush()
   // may be written to rx_buffer_tail, making it appear as if the buffer
   // were full, not empty.
   rx_buffer.head = rx_buffer.tail;
+}
+
+void MarlinSerial::rewind(int n) {
+  CRITICAL_SECTION_START;
+  rx_buffer.tail = (unsigned int)(rx_buffer.tail - n) % RX_BUFFER_SIZE;
+  CRITICAL_SECTION_END;
 }
 
 

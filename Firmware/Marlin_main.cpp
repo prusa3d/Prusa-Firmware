@@ -1134,7 +1134,7 @@ void setup()
 #ifndef XFLASH
 	SERIAL_PROTOCOLLNPGM("start");
 #else
-	if ((optiboot_status != 0) || (selectedSerialPort != 0))
+	if (optiboot_status != 0)
 		SERIAL_PROTOCOLLNPGM("start");
 #endif
 	SERIAL_ECHO_START;

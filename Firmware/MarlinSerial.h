@@ -98,6 +98,7 @@ class MarlinSerial //: public Stream
     static int peek(void);
     static int read(void);
     static void flush(void);
+    static void rewind(int n); //go back n characters in the RX buffer. Hopefully nothing was overwritten.
     
     static /*FORCE_INLINE*/ int available(void)
     {

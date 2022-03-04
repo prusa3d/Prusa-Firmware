@@ -71,19 +71,6 @@ uint8_t optiboot_xflash_enter()
 // they can be unintentionally changed. As a workaround to the language upload problem, do not only check for one bit if it's set,
 // but rather test 33 bits for the correct value before exiting optiboot early.
   if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0)) return 1;
-  uint8_t targetSerial;
-  switch (GPIOR0) {
-      case 0xFF: // no uart activity happened in the bootloader. Skip second bootloader
-          return 1;
-      case 0x02: // rpi port used in the bootloader
-          targetSerial = 1;
-          break;
-      case 0x01: // primary port used in the bootloader
-      case 0x00: // in case of old bootloader (0x00)
-      default:
-          targetSerial = 0;
-          break;
-  }
   uint8_t ch;
   uint8_t rampz = 0;
   register uint16_t address = 0;
@@ -99,7 +86,14 @@ uint8_t optiboot_xflash_enter()
   {
     wdt_reset();
     const uint8_t selectedSerialPort_bak = selectedSerialPort;
-    selectedSerialPort = targetSerial; //switch to the target serial
+    if (GPIOR0 == 0x01) {
+        selectedSerialPort = 1;
+        MYSERIAL.begin(BAUDRATE);
+        _delay_ms(500); //artifical delay. Postpone "start" message because avrdude-slicer is not ready quick enough when the board is not reset between bootloaders
+    }
+    else {
+        selectedSerialPort = 0;
+    }
     MYSERIAL.flush(); //clear RX buffer
     
     // Send the initial magic string.
@@ -108,21 +102,36 @@ uint8_t optiboot_xflash_enter()
     // Wait for two seconds until a magic string (constant entry_magic) is received
     // from the serial line.
     const char *ptr = entry_magic_receive;
+    uint8_t charsConsumed = 0;
     while ((ch = pgm_read_byte(ptr++))) {
       unsigned long  boot_timer = 2000000;
       while (!MYSERIAL.available()) {
         wdt_reset();
         if ( --boot_timer == 0) {
           // Timeout expired, continue with the application.
-          selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
-          return 0;
+          if (selectedSerialPort != selectedSerialPort_bak) {
+            selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
+            return 1; //start was sent on the wrong port. Send it again later on the correct one.
+          }
+          else {
+            MYSERIAL.rewind(charsConsumed);
+            return 0; //start was sent on the correct port. Do not send a second start later.
+          }
         }
       }
-      if (ch != MYSERIAL.read())
+      uint8_t newChar = MYSERIAL.read();
+      charsConsumed++;
+      if (ch != newChar)
       {
           // Magic was not received correctly, continue with the application
-          selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
-          return 0;
+          if (selectedSerialPort != selectedSerialPort_bak) {
+            selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
+            return 1; //start was sent on the wrong port. Send it again later on the correct one.
+          }
+          else {
+            MYSERIAL.rewind(charsConsumed);
+            return 0; //start was sent on the correct port. Do not send a second start later.
+          }
       }
       wdt_reset();
     }
