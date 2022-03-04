@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-03-04 12:15+0100\n"
+"PO-Revision-Date: 2022-03-04 13:20+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -715,12 +715,12 @@ msgstr "Hoved"
 # MSG_BL_HIGH c=12
 #: messages.c:155
 msgid "Level Bright"
-msgstr "Nivå lys"
+msgstr "Nivå Lyst"
 
 # MSG_BL_LOW c=12
 #: messages.c:156
 msgid "Level Dimmed"
-msgstr "Nivå svak"
+msgstr "Nivå Dimmet"
 
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 #: messages.c:67
@@ -760,7 +760,7 @@ msgstr "MMU last feilet"
 # MSG_MMU_LOAD_FAILS c=15
 #: messages.c:70
 msgid "MMU load fails"
-msgstr "MMU lasting feiler"
+msgstr "MMU lastefeil"
 
 # MSG_MMU_OK_RESUMING c=20 r=4
 #: mmu.cpp:776
@@ -855,7 +855,7 @@ msgstr "SD-kort mangler"
 # MSG_NA c=3
 #: messages.c:127
 msgid "N/A"
-msgstr "-"
+msgstr " -"
 
 # MSG_NO c=4
 #: messages.c:71
@@ -1290,7 +1290,7 @@ msgstr "Lyd"
 # MSG_RUNOUTS c=7
 #: ultralcd.cpp:1593
 msgid "Runouts"
-msgstr "Tom fil."
+msgstr "f. tomt"
 
 # MSG_Z-LEVELING_ENFORCED c=20 r=4
 #: Marlin_main.cpp:3303
