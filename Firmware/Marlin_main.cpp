@@ -1130,6 +1130,7 @@ void setup()
     }
 #endif //TMC2130
 
+#ifdef PRUSA_SN_SUPPORT
     //Check for valid SN in EEPROM. Try to retrieve it in case it's invalid.
     //SN is valid only if it is NULL terminated and starts with "CZPX".
     {
@@ -1146,6 +1147,7 @@ void setup()
                 puts_P(PSTR("SN update failed"));
         }
     }
+#endif //PRUSA_SN_SUPPORT
 
 
 #ifndef XFLASH
@@ -4570,13 +4572,15 @@ void process_commands()
         prusa_sd_card_upload = true;
         card.openFileWrite(strchr_pointer+4);
 
-	} else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
+#ifdef PRUSA_SN_SUPPORT
+    } else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
         eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
         if (SN[19])
             puts_P(PSTR("SN invalid"));
         else
             puts(SN);
+#endif //PRUSA_SN_SUPPORT
 
 	} else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
 
