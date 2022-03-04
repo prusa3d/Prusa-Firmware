@@ -81,8 +81,8 @@ extern uint8_t selectedSerialPort;
 struct ring_buffer
 {
   unsigned char buffer[RX_BUFFER_SIZE];
-  int head;
-  int tail;
+  volatile int head;
+  volatile int tail;
 };
 
 #ifdef HAS_UART
