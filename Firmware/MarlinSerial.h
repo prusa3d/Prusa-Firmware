@@ -218,6 +218,8 @@ class MarlinSerial //: public Stream
     static void print(long, int = DEC);
     static void print(unsigned long, int = DEC);
     static void print(double, int = 2);
+    static void printPGM(const char *str);
+    static void printlnPGM(const char *str);
 
 //    static void println(const String &s);
     static void println(const char[]);

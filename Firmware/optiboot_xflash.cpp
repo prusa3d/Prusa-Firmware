@@ -26,29 +26,14 @@ static unsigned const int __attribute__((section(".version")))
 #define XFLASH_SIGNATURE_2 0x01
 #endif
 
-#define RECV_READY ((UCSR0A & _BV(RXC0)) != 0)
-
 static uint8_t getch(void) {
-  uint8_t ch;
-  while(! RECV_READY) ;
-  if (!(UCSR0A & _BV(FE0))) {
-      /*
-       * A Framing Error indicates (probably) that something is talking
-       * to us at the wrong bit rate.  Assume that this is because it
-       * expects to be talking to the application, and DON'T reset the
-       * watchdog.  This should cause the bootloader to abort and run
-       * the application "soon", if it keeps happening.  (Note that we
-       * don't care that an invalid char is returned...)
-       */
-    wdt_reset();
-  }
-  ch = UDR0;
-  return ch;
+  while (!MYSERIAL.available()) {};
+  wdt_reset();
+  return MYSERIAL.read();
 }
 
-static void putch(char ch) {
-  while (!(UCSR0A & _BV(UDRE0)));
-  UDR0 = ch;
+static void putch(uint8_t ch) {
+  MYSERIAL.write(ch);
 }
 
 static void verifySpace() {
@@ -70,9 +55,9 @@ typedef uint16_t pagelen_t;
 
 //Thou shalt not change these messages, else the avrdude-slicer xflash implementation will no longer work and the language upload will fail.
 //Right now we support 2 xflash chips - the original w25x20cl and a new one GD25Q20C
-static const char entry_magic_send   [] PROGMEM = "start\n";
+static const char entry_magic_send   [] PROGMEM = "start";
 static const char entry_magic_receive[] PROGMEM = "w25x20cl_enter\n";
-static const char entry_magic_cfm    [] PROGMEM = "w25x20cl_cfm\n";
+static const char entry_magic_cfm    [] PROGMEM = "w25x20cl_cfm";
 
 struct block_t;
 extern struct block_t *block_buffer;
@@ -113,36 +98,19 @@ uint8_t optiboot_xflash_enter()
   // If the magic is not received on time, or it is not received correctly, continue to the application.
   {
     wdt_reset();
-    const char    *ptr = entry_magic_send;
-    const char    *end = strlen_P(entry_magic_send) + ptr;
     const uint8_t selectedSerialPort_bak = selectedSerialPort;
-    // Flush the serial line.
-    while (RECV_READY) {
-      wdt_reset();
-      // Dummy register read (discard)
-      (void)(*(char *)UDR0);
-    }
     selectedSerialPort = targetSerial; //switch to the target serial
     MYSERIAL.flush(); //clear RX buffer
-    int SerialHead = rx_buffer.head;
+    
     // Send the initial magic string.
-    while (ptr != end)
-      putch(pgm_read_byte(ptr ++));
-    wdt_reset();
+    MYSERIAL.printlnPGM(entry_magic_send);
+    
     // Wait for two seconds until a magic string (constant entry_magic) is received
     // from the serial line.
-    ptr = entry_magic_receive;
-    end = strlen_P(entry_magic_receive) + ptr;
-    while (ptr != end) {
+    const char *ptr = entry_magic_receive;
+    while ((ch = pgm_read_byte(ptr++))) {
       unsigned long  boot_timer = 2000000;
-      // Beware of this volatile pointer - it is important since the while-cycle below
-      // doesn't contain any obvious references to rx_buffer.head
-      // thus the compiler is allowed to remove the check from the cycle
-      // i.e. rx_buffer.head == SerialHead would not be checked at all!
-      // With the volatile keyword the compiler generates exactly the same code as without it with only one difference:
-      // the last brne instruction jumps onto the (*rx_head == SerialHead) check and NOT onto the wdr instruction bypassing the check.
-      volatile int *rx_head = &rx_buffer.head;
-      while (*rx_head == SerialHead) {
+      while (!MYSERIAL.available()) {
         wdt_reset();
         if ( --boot_timer == 0) {
           // Timeout expired, continue with the application.
@@ -150,9 +118,7 @@ uint8_t optiboot_xflash_enter()
           return 0;
         }
       }
-      ch = rx_buffer.buffer[SerialHead];
-      SerialHead = (unsigned int)(SerialHead + 1) % RX_BUFFER_SIZE;
-      if (pgm_read_byte(ptr ++) != ch)
+      if (ch != MYSERIAL.read())
       {
           // Magic was not received correctly, continue with the application
           selectedSerialPort = selectedSerialPort_bak; //revert Serial setting
@@ -160,12 +126,9 @@ uint8_t optiboot_xflash_enter()
       }
       wdt_reset();
     }
-    cbi(UCSR0B, RXCIE0); //disable the MarlinSerial0 interrupt
+    
     // Send the cfm magic string.
-    ptr = entry_magic_cfm;
-    end = strlen_P(entry_magic_cfm) + ptr;
-    while (ptr != end)
-      putch(pgm_read_byte(ptr ++));
+    MYSERIAL.printlnPGM(entry_magic_cfm);
   }
 
   spi_init();

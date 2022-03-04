@@ -461,23 +461,11 @@ uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
 
 void serial_echopair_P(const char *s_P, float v)
-    { serialprintPGM(s_P); SERIAL_ECHO(v); }
+    { MYSERIAL.printPGM(s_P); SERIAL_ECHO(v); }
 void serial_echopair_P(const char *s_P, double v)
-    { serialprintPGM(s_P); SERIAL_ECHO(v); }
+    { MYSERIAL.printPGM(s_P); SERIAL_ECHO(v); }
 void serial_echopair_P(const char *s_P, unsigned long v)
-    { serialprintPGM(s_P); SERIAL_ECHO(v); }
-
-void serialprintPGM(const char *str) {
-    while(uint8_t ch = pgm_read_byte(str)) {
-        MYSERIAL.write((char)ch);
-        ++str;
-    }
-}
-
-void serialprintlnPGM(const char *str) {
-    serialprintPGM(str);
-    MYSERIAL.println();
-}
+    { MYSERIAL.printPGM(s_P); SERIAL_ECHO(v); }
 
 #ifdef SDSUPPORT
   #include "SdFatUtil.h"

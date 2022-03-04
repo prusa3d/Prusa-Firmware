@@ -307,6 +307,18 @@ void MarlinSerial::println(double n, int digits)
   println();
 }
 
+void MarlinSerial::printPGM(const char *str) {
+    while(uint8_t ch = pgm_read_byte(str)) {
+        MYSERIAL.write((char)ch);
+        ++str;
+    }
+}
+
+void MarlinSerial::printlnPGM(const char *str) {
+    printPGM(str);
+    MYSERIAL.println();
+}
+
 // Private Methods /////////////////////////////////////////////////////////////
 
 void MarlinSerial::printNumber(unsigned long n, uint8_t base)

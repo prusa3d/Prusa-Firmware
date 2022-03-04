@@ -77,17 +77,17 @@ extern FILE _uartout;
 
 #define SERIAL_PROTOCOL(x) (MYSERIAL.print(x))
 #define SERIAL_PROTOCOL_F(x,y) (MYSERIAL.print(x,y))
-#define SERIAL_PROTOCOLPGM(x) (serialprintPGM(PSTR(x)))
-#define SERIAL_PROTOCOLRPGM(x) (serialprintPGM((x)))
+#define SERIAL_PROTOCOLPGM(x) (MYSERIAL.printPGM(PSTR(x)))
+#define SERIAL_PROTOCOLRPGM(x) (MYSERIAL.printPGM((x)))
 #define SERIAL_PROTOCOLLN(x) (MYSERIAL.println(x))
-#define SERIAL_PROTOCOLLNPGM(x) (serialprintlnPGM(PSTR(x)))
-#define SERIAL_PROTOCOLLNRPGM(x) (serialprintlnPGM((x)))
+#define SERIAL_PROTOCOLLNPGM(x) (MYSERIAL.printlnPGM(PSTR(x)))
+#define SERIAL_PROTOCOLLNRPGM(x) (MYSERIAL.printlnPGM((x)))
 
 
 extern const char errormagic[] PROGMEM;
 extern const char echomagic[] PROGMEM;
 
-#define SERIAL_ERROR_START (serialprintPGM(errormagic))
+#define SERIAL_ERROR_START (MYSERIAL.printPGM(errormagic))
 #define SERIAL_ERROR(x) SERIAL_PROTOCOL(x)
 #define SERIAL_ERRORPGM(x) SERIAL_PROTOCOLPGM(x)
 #define SERIAL_ERRORRPGM(x) SERIAL_PROTOCOLRPGM(x)
@@ -95,7 +95,7 @@ extern const char echomagic[] PROGMEM;
 #define SERIAL_ERRORLNPGM(x) SERIAL_PROTOCOLLNPGM(x)
 #define SERIAL_ERRORLNRPGM(x) SERIAL_PROTOCOLLNRPGM(x)
 
-#define SERIAL_ECHO_START (serialprintPGM(echomagic))
+#define SERIAL_ECHO_START (MYSERIAL.printPGM(echomagic))
 #define SERIAL_ECHO(x) SERIAL_PROTOCOL(x)
 #define SERIAL_ECHOPGM(x) SERIAL_PROTOCOLPGM(x)
 #define SERIAL_ECHORPGM(x) SERIAL_PROTOCOLRPGM(x)
@@ -108,15 +108,6 @@ extern const char echomagic[] PROGMEM;
 void serial_echopair_P(const char *s_P, float v);
 void serial_echopair_P(const char *s_P, double v);
 void serial_echopair_P(const char *s_P, unsigned long v);
-
-
-//Things to write to serial from Program memory. Saves 400 to 2k of RAM.
-// Making this FORCE_INLINE is not a good idea when running out of FLASH
-// I'd rather skip a few CPU ticks than 5.5KB (!!) of FLASH
-void serialprintPGM(const char *str);
-
-//The "ln" variant of the function above.
-void serialprintlnPGM(const char *str);
 
 bool is_buffer_empty();
 void process_commands();
