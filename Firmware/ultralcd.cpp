@@ -3472,7 +3472,7 @@ static void lcd_show_sensors_state()
 	uint8_t idler_state = STATE_NA;
 
 	pinda_state = READ(Z_MIN_PIN);
-	if (mmu_enabled && mmu_last_finda_response.expired(1000))
+	if (mmu_enabled && !mmu_last_finda_response.expired(1000))
 	{
 		finda_state = mmu_finda;
 	}
@@ -7232,7 +7232,6 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	target_temperature_bed = (_isbed) ? 100 : 0;
 	manage_heater();
 	manage_inactivity(true);
-	KEEPALIVE_STATE(NOT_BUSY); //we are sending temperatures on serial line, so no need to send host keepalive messages
 
 	do {
 		_counter++;
@@ -7285,7 +7284,6 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 	manage_heater();
 	manage_inactivity(true);
-	KEEPALIVE_STATE(IN_HANDLER);
 	return _stepresult;
 
 }

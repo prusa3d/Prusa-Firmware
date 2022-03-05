@@ -1238,9 +1238,9 @@ void setup()
 		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
 		sum = (sum >> 8) | ((sum & 0xff) << 8); //swap bytes
 		if (sum == header.checksum)
-			puts_P(_n("Checksum OK"), sum);
+			puts_P(_n("Checksum OK"));
 		else
-			puts_P(_n("Checksum NG"), sum);
+			puts_P(_n("Checksum NG"));
 	}
 	else
 		puts_P(_n("lang_get_header failed!"));
@@ -5334,7 +5334,6 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         homing_flag = true; // keep homing on to avoid babystepping while the LCD is enabled
 
         lcd_update_enable(true);
-        KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
         SERIAL_ECHOLNPGM("PINDA probe calibration start");
 
         float zero_z;
@@ -6651,15 +6650,12 @@ Sigma_Exit:
 
       /* See if we are heating up or cooling down */
       target_direction = isHeatingHotend(extruder); // true if heating, false if cooling
-	  
-	  KEEPALIVE_STATE(NOT_BUSY);
 
       cancel_heatup = false;
 
 	  wait_for_heater(codenum, extruder); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
-		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
 		if (farm_mode) { prusa_statistics(2); };
         
@@ -6702,7 +6698,6 @@ Sigma_Exit:
         cancel_heatup = false;
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
-		KEEPALIVE_STATE(NOT_BUSY);
         while ( (!cancel_heatup) && (target_direction ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false))) )
         {
           if(( _millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
@@ -6725,7 +6720,6 @@ Sigma_Exit:
           lcd_update(0);
         }
         LCD_MESSAGERPGM(_T(MSG_BED_DONE));
-		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = HeatingStatus::BED_HEATING_COMPLETE;
 
         previous_millis_cmd.start();
