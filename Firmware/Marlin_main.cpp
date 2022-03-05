@@ -3719,10 +3719,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     float HotendTempBckp = degTargetHotend(active_extruder);
     int fanSpeedBckp = fanSpeed;
 
-    lastpos[X_AXIS] = current_position[X_AXIS];
-    lastpos[Y_AXIS] = current_position[Y_AXIS];
-    lastpos[Z_AXIS] = current_position[Z_AXIS];
-    lastpos[E_AXIS] = current_position[E_AXIS];
+    memcpy(lastpos, current_position, sizeof(lastpos));
 
     //Retract E
     current_position[E_AXIS] += e_shift;
@@ -4686,14 +4683,8 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
                         int feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];
-                        target[X_AXIS]=current_position[X_AXIS];
-                        target[Y_AXIS]=current_position[Y_AXIS];
-                        target[Z_AXIS]=current_position[Z_AXIS];
-                        target[E_AXIS]=current_position[E_AXIS];
-                        lastpos[X_AXIS]=current_position[X_AXIS];
-                        lastpos[Y_AXIS]=current_position[Y_AXIS];
-                        lastpos[Z_AXIS]=current_position[Z_AXIS];
-                        lastpos[E_AXIS]=current_position[E_AXIS];
+                        memcpy(target, current_position, sizeof(target));
+                        memcpy(lastpos, current_position, sizeof(lastpos));
                         //retract by E
                         
                         target[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT ;
