@@ -558,19 +558,18 @@ void countFanSpeed()
 
 void checkFanSpeed()
 {
-	uint8_t max_print_fan_errors = 0;
-	uint8_t max_extruder_fan_errors = 0;
+	uint8_t max_fan_errors[2];
 #ifdef FAN_SOFT_PWM
-	max_print_fan_errors = 3; //15 seconds
-	max_extruder_fan_errors = 2; //10seconds
+	max_fan_errors[1] = 3;  // 15 seconds (Print fan)
+	max_fan_errors[0] = 2;  // 10 seconds (Extruder fan)
 #else //FAN_SOFT_PWM
-	max_print_fan_errors = 15; //15 seconds
-	max_extruder_fan_errors = 5; //5 seconds
+	max_fan_errors[1] = 15; // 15 seconds (Print fan)
+	max_fan_errors[0] = 5;  // 5  seconds (Extruder fan)
 #endif //FAN_SOFT_PWM
-  
-  if(fans_check_enabled != false)
-	  fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
-	static unsigned char fan_speed_errors[2] = { 0,0 };
+
+	if(fans_check_enabled)
+		fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
+	static uint8_t fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
 	if ((fan_speed[0] < 20) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)){ fan_speed_errors[0]++;}
 	else fan_speed_errors[0] = 0;
@@ -589,13 +588,16 @@ void checkFanSpeed()
 		fan_check_error = EFCE_OK; //if the issue is fixed while the printer is doing nothing, reenable processing immediately.
 		lcd_reset_alert_level(); //for another fan speed error
 	}
-	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled && (fan_check_error == EFCE_OK)) {
-		fan_speed_errors[0] = 0;
-		fanSpeedError(0); //extruder fan
-	}
-	if ((fan_speed_errors[1] > max_print_fan_errors) && fans_check_enabled && (fan_check_error == EFCE_OK)) {
-		fan_speed_errors[1] = 0;
-		fanSpeedError(1); //print fan
+	if (fans_check_enabled && (fan_check_error == EFCE_OK))
+	{
+		for (uint8_t fan = 0; fan < 2; fan++)
+		{
+			if (fan_speed_errors[fan] > max_fan_errors[fan])
+			{
+				fan_speed_errors[fan] = 0;
+				fanSpeedError(fan);
+			}
+		}
 	}
 }
 
