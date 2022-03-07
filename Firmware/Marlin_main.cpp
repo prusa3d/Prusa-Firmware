@@ -463,7 +463,9 @@ static void temp_compensation_start();
 static void temp_compensation_apply();
 #endif
 
+#ifdef PRUSA_SN_SUPPORT
 static uint8_t get_PRUSA_SN(char* SN);
+#endif //PRUSA_SN_SUPPORT
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -3940,6 +3942,7 @@ void gcode_M701()
  * @return 0 on success
  * @return 1 on general failure
  */
+#ifdef PRUSA_SN_SUPPORT
 static uint8_t get_PRUSA_SN(char* SN)
 {
     uint8_t selectedSerialPort_bak = selectedSerialPort;
@@ -3974,6 +3977,8 @@ exit:
     selectedSerialPort = selectedSerialPort_bak;
     return !SN_valid;
 }
+#endif //PRUSA_SN_SUPPORT
+
 //! Detection of faulty RAMBo 1.1b boards equipped with bigger capacitors
 //! at the TACH_1 pin, which causes bad detection of print fan speed.
 //! Warning: This function is not to be used by ordinary users, it is here only for automated testing purposes,
