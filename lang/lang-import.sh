@@ -267,9 +267,9 @@ fi
 
 if [ "$LNG" = "sv" ]; then
 #repace 'Å' with 'A'
-sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
+sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
 #repace 'å' with 'a'
-sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
+sed -i 's/\xc3\xA5/a/g' $LNG'_filtered.po'
 fi
 
 if [ "$LNG" = "da" ]; then
