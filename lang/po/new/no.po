@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-03-04 13:20+0100\n"
+"PO-Revision-Date: 2022-03-10 14:42+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -71,12 +71,12 @@ msgstr "Alt klart. Happy printing!"
 # MSG_AMBIENT c=14
 #: ultralcd.cpp:1727
 msgid "Ambient"
-msgstr "Ambient"
+msgstr ""
 
 # MSG_AUTO c=6
 #: messages.c:160
 msgid "Auto"
-msgstr "Auto"
+msgstr ""
 
 # MSG_PRESS c=20 r=2
 #: ultralcd.cpp:2485
@@ -370,7 +370,7 @@ msgstr "Svak"
 # MSG_ERROR c=10
 #: messages.c:31
 msgid "ERROR:"
-msgstr "ERROR:"
+msgstr ""
 
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 #: ultralcd.cpp:8419
@@ -420,7 +420,7 @@ msgstr "Viftesjekk"
 # MSG_FSENSOR c=12
 #: messages.c:49
 msgid "Fil. sensor"
-msgstr "Fil. sensor"
+msgstr ""
 
 # MSG_FIL_RUNOUTS c=15
 #: messages.c:34
@@ -590,7 +590,7 @@ msgstr "Velg filament:"
 # MSG_FILAMENT c=17
 #: messages.c:35
 msgid "Filament"
-msgstr "Filament"
+msgstr ""
 
 # MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ultralcd.cpp:4951
@@ -780,7 +780,7 @@ msgstr "MK3 system funnet på MK3S printer"
 # MSG_NORMAL c=7
 #: messages.c:107
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 # MSG_SILENT c=7
 #: messages.c:106
@@ -820,7 +820,7 @@ msgstr "MMU2 tilkoblet"
 # MSG_SELFTEST_MOTOR c=18
 #: messages.c:96
 msgid "Motor"
-msgstr "Motor"
+msgstr ""
 
 # MSG_MOVE_AXIS c=18
 #: ultralcd.cpp:5677
@@ -1035,7 +1035,7 @@ msgstr "Trykk valghjulet for å forvarme dysen og fortsette."
 # MSG_FS_PAUSE c=5
 #: fsensor.cpp:730
 msgid "Pause"
-msgstr "Pause"
+msgstr ""
 
 # MSG_POWER_FAILURES c=15
 #: messages.c:77
@@ -1290,7 +1290,7 @@ msgstr "Lyd"
 # MSG_RUNOUTS c=7
 #: ultralcd.cpp:1593
 msgid "Runouts"
-msgstr "f. tomt"
+msgstr "F. tomt"
 
 # MSG_Z-LEVELING_ENFORCED c=20 r=4
 #: Marlin_main.cpp:3303
@@ -1445,7 +1445,7 @@ msgstr "Brukt i print"
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2050
 msgid "Voltages"
-msgstr "Voltages"
+msgstr ""
 
 # MSG_UNKNOWN c=13
 #: ultralcd.cpp:2005
@@ -1630,7 +1630,7 @@ msgstr "Advar"
 # MSG_HW_SETUP c=18
 #: messages.c:102
 msgid "HW Setup"
-msgstr "HW Setup"
+msgstr ""
 
 # MSG_MAGNETS_COMP c=13
 #: messages.c:150
@@ -1660,7 +1660,7 @@ msgstr "Modus skifter..."
 # MSG_MODEL c=8
 #: messages.c:132
 msgid "Model"
-msgstr "Model"
+msgstr ""
 
 # MSG_NOZZLE_DIAMETER c=10
 #: messages.c:136
