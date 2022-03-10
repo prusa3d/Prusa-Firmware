@@ -8972,6 +8972,15 @@ bool FarmOrUserECool(){
     return farm_mode || UserECoolEnabled();
 }
 
+#ifdef PRUSA_SN_SUPPORT
+void WorkaroundPrusaSN() {
+    const char *SN = PSTR("CZPXInvalidSerialNr");
+    for (uint8_t i = 0; i < 20; i++) {
+        eeprom_update_byte((uint8_t*)EEPROM_PRUSA_SN + i, pgm_read_byte(SN++));
+    }
+}
+#endif //PRUSA_SN_SUPPORT
+
 void lcd_experimental_menu()
 {
     MENU_BEGIN();
@@ -8984,6 +8993,10 @@ void lcd_experimental_menu()
 #ifdef TMC2130
     MENU_ITEM_TOGGLE_P(_N("E-cool mode"), UserECoolEnabled()?_T(MSG_ON):_T(MSG_OFF), UserECool_toggle);////MSG_MENU_ECOOL c=18
 #endif
+
+#ifdef PRUSA_SN_SUPPORT
+    MENU_ITEM_FUNCTION_P(_N("Fake serial number"), WorkaroundPrusaSN);////MSG_WORKAROUND_PRUSA_SN c=18
+#endif //PRUSA_SN_SUPPORT
     MENU_END();
 }
 

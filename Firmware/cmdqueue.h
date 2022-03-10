@@ -52,9 +52,6 @@ extern int serial_count;
 extern bool comment_mode;
 extern char *strchr_pointer;
 
-extern unsigned long TimeSent;
-extern unsigned long TimeNow;
-
 extern long gcode_N;
 extern long gcode_LastN;
 extern long Stopped_gcode_LastN;
