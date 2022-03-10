@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sv\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Mon 21 Feb 2022 05:53:48 PM CET\n"
-"PO-Revision-Date: Mon 21 Feb 2022 05:53:48 PM CET\n"
+"POT-Creation-Date: Thu 10 Mar 2022 02:48:16 PM CET\n"
+"PO-Revision-Date: Thu 10 Mar 2022 02:48:16 PM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -43,7 +43,7 @@ msgstr "okänt tillstand"
 # MSG_MEASURED_OFFSET c=20
 #: ultralcd.cpp:2913
 msgid "[0;0] point offset"
-msgstr "[0;0] punktforskjutn"
+msgstr "[0;0] punktförskjutn"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
@@ -53,12 +53,12 @@ msgstr "Krockdetekt kan\x0aendast aktiveras i\x0anormalt läge"
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
 msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "VARNING:\x0aKrockdetekt\x0ainaktiverad i\x0aSmyg-läge"
+msgstr "VARNING:\x0aKrockdetekt\x0ainaktiverad i\x0atyst-läge"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3034
 msgid "Adjusting Z:"
-msgstr "Justera Z:"
+msgstr "Justerar Z:"
 
 # MSG_SELFTEST_CHECK_ALLCORRECT c=20
 #: ultralcd.cpp:8411
@@ -88,7 +88,7 @@ msgstr "och tryck pa knappen"
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3355
 msgid "Are left and right Z~carriages all up?"
-msgstr "Ar bada Z-slädarna i topp-läge?"
+msgstr "är bada Z-vagnarna helt uppe?"
 
 # MSG_AUTO_HOME c=18
 #: messages.c:11
@@ -133,7 +133,7 @@ msgstr "Bädd klar"
 # MSG_BED_HEATING c=20
 #: messages.c:16
 msgid "Bed Heating"
-msgstr "Bädduppvärmning"
+msgstr "Bädden värms upp"
 
 # MSG_BED_CORRECTION_MENU c=18
 #: ultralcd.cpp:5798
@@ -148,7 +148,7 @@ msgstr "Bält test"
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-msgstr "Bäddnivelleringen felade. Sensorn utlostes inte. Skräp pa munstycket? Väntar pa aterställning."
+msgstr "Bäddnivelleringen felade. Sensorn utlöstes inte. Skräp pa munstycket? Väntar pa aterställning."
 
 # MSG_BRIGHT c=6
 #: messages.c:158
@@ -173,7 +173,7 @@ msgstr "Bält status"
 # MSG_RECOVER_PRINT c=20 r=2
 #: messages.c:82
 msgid "Blackout occurred. Recover print?"
-msgstr "Blackout skedde. Aterstalla utskrift?"
+msgstr "Blackout inträffat. Aterställa utskr?"
 
 # MSG_CALIBRATING_HOME c=20
 #: ultralcd.cpp:8413
@@ -203,7 +203,7 @@ msgstr ">Avbryt"
 # MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 #: ultralcd.cpp:3318
 msgid "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-msgstr "Kalibrerar XYZ. Vrid vredet för att flytta Z-slädarna upp till ändstoppen. Klicka när du är klar."
+msgstr "Kalibrerar XYZ. Vrid vredet för att flytta Z-vagnarna upp till ändstoppen. Klicka när du är klar."
 
 # MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: messages.c:21
@@ -218,7 +218,7 @@ msgstr "Kalibrerar Z. Vrid vredet för att flytta Z-slädarna upp till ändstopp
 # MSG_HOMEYZ_DONE c=20
 #: ultralcd.cpp:656
 msgid "Calibration done"
-msgstr "Kalibraring utford"
+msgstr "Kalibraring utförd"
 
 # MSG_MENU_CALIBRATION c=18
 #: messages.c:68
@@ -303,7 +303,7 @@ msgstr "Avstandet mellan munstyckets spets och bäddytan har inte ställts in ä
 # MSG_FS_CONTINUE c=5
 #: messages.c:152
 msgid "Cont."
-msgstr "Fort."
+msgstr "Frts."
 
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5021
@@ -328,17 +328,17 @@ msgstr "Matar ut filament"
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ultralcd.cpp:8070
 msgid "Endstop not hit"
-msgstr "Aendlage inte natt"
+msgstr "ändlage inte natt"
 
 # MSG_SELFTEST_ENDSTOP c=16
 #: ultralcd.cpp:8065
 msgid "Endstop"
-msgstr "Aendlage"
+msgstr "ändläge"
 
 # MSG_SELFTEST_ENDSTOPS c=20
 #: ultralcd.cpp:8056
 msgid "Endstops"
-msgstr "Aendlagen"
+msgstr "ändlägen"
 
 # MSG_STACK_ERROR c=20 r=4
 #: 
@@ -378,7 +378,7 @@ msgstr "FEL:"
 # MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 #: ultralcd.cpp:8419
 msgid "Extruder fan:"
-msgstr "Extruder fläkt:"
+msgstr "Extruderfläkt:"
 
 # MSG_INFO_EXTRUDER c=18
 #: ultralcd.cpp:2040
@@ -463,7 +463,7 @@ msgstr "FS aktion"
 # MSG_FILE_INCOMPLETE c=20 r=3
 #: ultralcd.cpp:8555
 msgid "File incomplete. Continue anyway?"
-msgstr "Filen ar ofullständig. Fortsätta ända?"
+msgstr "Filen är ofullständig. Fortsätta ända?"
 
 # MSG_FINISHING_MOVEMENTS c=20
 #: messages.c:45
@@ -473,12 +473,12 @@ msgstr "Avslutar flyttning"
 # MSG_V2_CALIBRATION c=18
 #: messages.c:124
 msgid "First layer cal."
-msgstr "Forstalager kalib."
+msgstr "Förstalager kalib."
 
 # MSG_WIZARD_SELFTEST c=20 r=8
 #: ultralcd.cpp:4942
 msgid "First, I will run the selftest to check most common assembly problems."
-msgstr "Först kommer jag att utfora självtestet för att kontrollera de vanligaste monteringsproblemen."
+msgstr "Först kommer jag att utföra självtestet för att kontrollera de vanligaste monteringsproblemen."
 
 # MSG_MMU_FIX_ISSUE c=20 r=4
 #: mmu.cpp:727
@@ -503,7 +503,7 @@ msgstr ""
 # MSG_SELFTEST_FANS c=20
 #: ultralcd.cpp:8100
 msgid "Front/left fans"
-msgstr "Front/vanster fläkt"
+msgstr "Front/vänster fläkt"
 
 # MSG_SELFTEST_HEATERTHERMISTOR c=20
 #: ultralcd.cpp:8048
@@ -533,17 +533,17 @@ msgstr "Hej, jag är din Prusa i3-skrivare. Vill du att jag ska guida dig genom 
 # MSG_FILAMENTCHANGE c=18
 #: messages.c:43
 msgid "Change filament"
-msgstr "Aendra filament"
+msgstr "ändra filament"
 
 # MSG_CHANGE_SUCCESS c=20
 #: ultralcd.cpp:2494
 msgid "Change success!"
-msgstr "Aendring utford!"
+msgstr "ändring utförd!"
 
 # MSG_CORRECTLY c=20
 #: ultralcd.cpp:2562
 msgid "Changed correctly?"
-msgstr "Aendring korrekt?"
+msgstr "ändring korrekt?"
 
 # MSG_SELFTEST_CHECK_BED c=20
 #: messages.c:94
@@ -553,7 +553,7 @@ msgstr "Kontroll bädd"
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ultralcd.cpp:8402
 msgid "Checking endstops"
-msgstr "Kontroll anedlagen"
+msgstr "Kontroll ändlägen"
 
 # MSG_SELFTEST_CHECK_HOTEND c=20
 #: ultralcd.cpp:8408
@@ -618,7 +618,7 @@ msgstr "Sätt i filament"
 # MSG_FILAMENT_LOADED c=20 r=2
 #: messages.c:38
 msgid "Is filament loaded?"
-msgstr "Aer filament isatt?"
+msgstr "är filament isatt?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:109
@@ -638,7 +638,7 @@ msgstr "Hej, jag är din Prusa i3-skrivare. Jag guidar dig genom en kort install
 # MSG_ADDITIONAL_SHEETS c=20 r=9
 #: ultralcd.cpp:5029
 msgid "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
-msgstr "Om du har ytterligare metallskivor, kalibrera deras förinställningar i Inställningar - HW Setup - Metallskiva."
+msgstr "Om du har ytterligare metallskivor, kalibrera deras förinställningar i Inställningar - HW inställning - Metallskiva."
 
 # MSG_LAST_PRINT c=18
 #: messages.c:56
@@ -648,7 +648,7 @@ msgstr "Senaste utskrift"
 # MSG_SELFTEST_EXTRUDER_FAN c=20
 #: messages.c:89
 msgid "Left hotend fan?"
-msgstr "Vanst hotend fläkt?"
+msgstr "Vänst hotend fläkt?"
 
 # MSG_LEFT c=10
 #: ultralcd.cpp:2844
@@ -658,7 +658,7 @@ msgstr "Vänster"
 # MSG_BED_CORRECTION_LEFT c=14
 #: ultralcd.cpp:3114
 msgid "Left side [μm]"
-msgstr "Vanstsida [μm]"
+msgstr "Vänstsida [μm]"
 
 # MSG_LIN_CORRECTION c=18
 #: ultralcd.cpp:5702
@@ -733,7 +733,7 @@ msgstr "Mätning av referenshöjd för kalibreringspunkt"
 # MSG_MESH_BED_LEVELING c=18
 #: messages.c:148
 msgid "Mesh Bed Leveling"
-msgstr "Badd nivautjamning"
+msgstr "Bädd nivautjämning"
 
 # MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 #: mmu.cpp:765
@@ -803,7 +803,7 @@ msgstr "MMU strömavbr."
 # MSG_STEALTH c=7
 #: messages.c:108
 msgid "Stealth"
-msgstr "Smyg"
+msgstr "Tyst"
 
 # MSG_AUTO_POWER c=10
 #: messages.c:105
@@ -888,7 +888,7 @@ msgstr "Nu ska jag kalibrera avstandet mellan munstyckets spets och värmebädds
 # MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ultralcd.cpp:4967
 msgid "Now I will preheat nozzle for PLA."
-msgstr "Nu ska jag forvärma munstycket för PLA."
+msgstr "Nu ska jag förvärma munstycket för PLA."
 
 # MSG_NOZZLE c=12
 #: messages.c:72
@@ -908,7 +908,7 @@ msgstr "Ta nu bort testutskriften fran metallskivan."
 # MSG_NOZZLE_FAN c=10
 #: ultralcd.cpp:1446
 msgid "Nozzle FAN"
-msgstr "Muns flakt"
+msgstr "Muns fläkt"
 
 # MSG_PAUSE_PRINT c=18
 #: messages.c:74
@@ -963,7 +963,7 @@ msgstr "Se var handbok och atgärda problemet. Ateruppta sedan guiden genom att 
 # MSG_CHECK_IDLER c=20 r=5
 #: Marlin_main.cpp:3798
 msgid "Please open idler and remove filament manually."
-msgstr "Oeppna idler och ta bort filamentet manuellt."
+msgstr "öppna idler och ta bort filamentet manuellt."
 
 # MSG_PLACE_STEEL_SHEET c=20 r=5
 #: messages.c:75
@@ -988,7 +988,7 @@ msgstr "Ta bort filamentet och tryck sedan pa knappen."
 # MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: messages.c:84
 msgid "Please remove steel sheet from heatbed."
-msgstr "Ta bort metallskivan fran varmebadden."
+msgstr "Ta bort metallskivan fran värmebädden."
 
 # MSG_RUN_XYZ c=20 r=4
 #: Marlin_main.cpp:5338
@@ -1013,7 +1013,7 @@ msgstr "Vänligen ta bort fraktinsatserna först."
 # MSG_PREHEAT_NOZZLE c=20
 #: messages.c:78
 msgid "Preheat the nozzle!"
-msgstr "Förvarm munstycket!"
+msgstr "Förvärm munstycket!"
 
 # MSG_PREHEAT c=18
 #: ultralcd.cpp:6576
@@ -1028,7 +1028,7 @@ msgstr "Förvärmer munstycke. Vänta."
 # MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 #: util.cpp:199
 msgid "Please upgrade."
-msgstr "Väligen uppgradera."
+msgstr "Vänligen uppgradera."
 
 # MSG_PRESS_TO_PREHEAT c=20 r=4
 #: Marlin_main.cpp:12052
@@ -1053,12 +1053,12 @@ msgstr "Utskriften avbröts"
 # MSG_PREHEATING_TO_LOAD c=20
 #: ultralcd.cpp:2297
 msgid "Preheating to load"
-msgstr "Forvärmer for ladda"
+msgstr "Förvärmer för laddn"
 
 # MSG_PREHEATING_TO_UNLOAD c=20
 #: ultralcd.cpp:2302
 msgid "Preheating to unload"
-msgstr "Forvarmer for utmatn"
+msgstr "Förvärmer for utmatn"
 
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8422
@@ -1093,12 +1093,12 @@ msgstr "Skrivaren har inte kalibrerats ännu. Vänligen följ manualen, kapitel 
 # MSG_PRINT_FAN c=10
 #: ultralcd.cpp:1447
 msgid "Print FAN"
-msgstr "Utskrflakt"
+msgstr "Utskrfläkt"
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
 msgid "Please insert filament into the extruder, then press the knob to load it."
-msgstr "Vänligen sätt in filamentet i extrudern, tryck sedan pa knappen för inladdning.."
+msgstr "Vänligen sätt i filamentet i extrudern, tryck sedan pa knappen för inladdning.."
 
 # MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ultralcd.cpp:4813
@@ -1108,7 +1108,7 @@ msgstr "Vänligen sätt i filamentet i den första kanalen pa MMU:n och tryck se
 # MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ultralcd.cpp:4735
 msgid "Please load filament first."
-msgstr "Vänligen ladda filament forest."
+msgstr "Vänligen ladda filament först."
 
 # MSG_BED_CORRECTION_REAR c=14
 #: ultralcd.cpp:3117
@@ -1118,7 +1118,7 @@ msgstr "Baksida [μm]"
 # MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ultralcd.cpp:7325
 msgid "Please unload the filament first, then repeat this action."
-msgstr "Vänligen mata ut filamentet först och upprepa sedan denna atgard."
+msgstr "Vänligen mata ut filamentet först och upprepa sedan denna atgärd."
 
 # MSG_CHECK_IR_CONNECTION c=20 r=4
 #: ultralcd.cpp:7328
@@ -1128,7 +1128,7 @@ msgstr "Kontrollera IR-sensorns anslutning, mata ut eventuellt filament."
 # MSG_RECOVERING_PRINT c=20
 #: Marlin_main.cpp:11396
 msgid "Recovering print"
-msgstr "Aterstaller utskrift"
+msgstr "Aterställer utskrift"
 
 # MSG_REMOVE_OLD_FILAMENT c=20 r=5
 #: mmu.cpp:833
@@ -1138,7 +1138,7 @@ msgstr "Ta bort det gamla filamentet och tryck pa knappen för att börja ladda 
 # MSG_CALIBRATE_BED_RESET c=18
 #: ultralcd.cpp:5804
 msgid "Reset XYZ calibr."
-msgstr "Aterstall XYZ-kal."
+msgstr "Aterställ XYZ-kal."
 
 # MSG_RESET c=14
 #: messages.c:85
@@ -1158,7 +1158,7 @@ msgstr "Aterupptar utskrift"
 # MSG_BED_CORRECTION_RIGHT c=14
 #: ultralcd.cpp:3115
 msgid "Right side[μm]"
-msgstr "Hoger sida[μm]"
+msgstr "Höger sida[μm]"
 
 # MSG_RPI_PORT c=13
 #: messages.c:142
@@ -1168,7 +1168,7 @@ msgstr "RPi port"
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4756
 msgid "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-msgstr "Att utföra guiden kommer att radera aktuella kalibrerings inställningar och börja om fran början. Förtsatta?"
+msgstr "Att utföra guiden kommer att radera aktuella kalibreringsinställningar och börja om fran början. Fortsätta?"
 
 # MSG_SD_CARD c=8
 #: messages.c:138
@@ -1218,12 +1218,12 @@ msgstr "Självtestet felade"
 # MSG_FORCE_SELFTEST c=20 r=8
 #: Marlin_main.cpp:1637
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
-msgstr "Sjalevtest kommer att utföras för att kalibrera exakt sensorlös hemposition."
+msgstr "Självtest kommer att utföras för att kalibrera exakt sensorlös hemposition."
 
 # MSG_SEL_PREHEAT_TEMP c=20 r=6
 #: ultralcd.cpp:4998
 msgid "Select nozzle preheat temperature which matches your material."
-msgstr "Välj munstyckesförvärmningstemperatur som passar ditt material."
+msgstr "Välj munstycksförvärmningstemperatur som passar ditt material."
 
 # MSG_SET_TEMPERATURE c=20
 #: ultralcd.cpp:3135
@@ -1238,7 +1238,7 @@ msgstr "Inställningar"
 # MSG_SHOW_END_STOPS c=18
 #: ultralcd.cpp:5801
 msgid "Show end stops"
-msgstr "Visa ändlagen"
+msgstr "Visa ändlägen"
 
 # MSG_FILE_CNT c=20 r=6
 #: cardreader.cpp:817
@@ -1443,7 +1443,7 @@ msgstr "Total"
 # MSG_USED c=19
 #: ultralcd.cpp:5928
 msgid "Used during print"
-msgstr "Anvands under utskr"
+msgstr "Används under utskr"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2050
@@ -1458,7 +1458,7 @@ msgstr "okänd"
 # MSG_USERWAIT c=20
 #: Marlin_main.cpp:4347
 msgid "Wait for user..."
-msgstr "Invantar anvandare.."
+msgstr "Inväntar användare."
 
 # MSG_WAITING_TEMP c=20 r=4
 #: ultralcd.cpp:3283
@@ -1528,7 +1528,7 @@ msgstr "XYZ-kalibrering är ok. Skevhet kommer att korrigeras automatiskt."
 # MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 #: ultralcd.cpp:3740
 msgid "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-msgstr "XYZ-kalibrering ok. X/Y-axlarna är lite skeva. Bra jobbat!"
+msgstr "XYZ-kalibrering ok. X/Y-axlarna är mycket lite skeva. Bra jobbat!"
 
 # MSG_TIMEOUT c=12
 #: messages.c:157
@@ -1548,7 +1548,7 @@ msgstr "XYZ-kalibrering ok. X/Y-axlarna ar vinkelräta. Grattis!"
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ultralcd.cpp:3721
 msgid "XYZ calibration compromised. Front calibration points not reachable."
-msgstr "XYZ-kalibrering komprometterade. Främre kalibreringspunkter kan inte nas."
+msgstr "XYZ-kalibrering komprometterad. Främre kalibreringspunkter kan inte nas."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ultralcd.cpp:3724
@@ -1633,7 +1633,7 @@ msgstr "Varna"
 # MSG_HW_SETUP c=18
 #: messages.c:102
 msgid "HW Setup"
-msgstr "HW-inställning"
+msgstr "HW inställning"
 
 # MSG_MAGNETS_COMP c=13
 #: messages.c:150
@@ -1653,7 +1653,7 @@ msgstr "MK3S-firmware upptäckt pa MK3-skrivare"
 # MSG_MMU_MODE c=8
 #: messages.c:137
 msgid "MMU Mode"
-msgstr "MMU-lage"
+msgstr "MMU-läge"
 
 # MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 #: ultralcd.cpp:4366
@@ -1703,12 +1703,12 @@ msgstr "G-kod genererad för en nyare firmware. Vänligen uppdatera firmware. Ut
 # MSG_PREHEATING_TO_CUT c=20
 #: ultralcd.cpp:2309
 msgid "Preheating to cut"
-msgstr "Forvarmer for skara"
+msgstr "Förvärmer för skära"
 
 # MSG_PREHEATING_TO_EJECT c=20
 #: ultralcd.cpp:2306
 msgid "Preheating to eject"
-msgstr "Forvarmer for utmatn"
+msgstr "Förvämer för utmatn"
 
 # MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 #: util.cpp:294
@@ -1723,7 +1723,7 @@ msgstr "Skrivarmunstyckets diameter skiljer sig fran G-koden. Kontrollera värde
 # MSG_SELFTEST_FS_LEVEL c=20
 #: ultralcd.cpp:8116
 msgid "%s level expected"
-msgstr "%s niva förvantad"
+msgstr "%s niva förväntad"
 
 # MSG_RENAME c=18
 #: ultralcd.cpp:6500

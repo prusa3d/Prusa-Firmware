@@ -20,7 +20,7 @@
 
 #MSG_MEASURED_OFFSET c=20
 "[0;0] point offset"
-"[0;0] punktforskjutn"
+"[0;0] punktf\xefrskjutn"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "Crash detection can\x0abe turned on only in\x0aNormal mode"
@@ -28,11 +28,11 @@
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-"VARNING:\x0aKrockdetekt\x0ainaktiverad i\x0aSmyg-l\xe1ge"
+"VARNING:\x0aKrockdetekt\x0ainaktiverad i\x0atyst-l\xe1ge"
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Justera Z:"
+"Justerar Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct"
@@ -56,7 +56,7 @@
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
-"Ar bada Z-sl\xe1darna i topp-l\xe1ge?"
+"\xe1r bada Z-vagnarna helt uppe?"
 
 #MSG_AUTO_HOME c=18
 "Auto home"
@@ -92,7 +92,7 @@
 
 #MSG_BED_HEATING c=20
 "Bed Heating"
-"B\xe1dduppv\xe1rmning"
+"B\xe1dden v\xe1rms upp"
 
 #MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
@@ -104,7 +104,7 @@
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-"B\xe1ddnivelleringen felade. Sensorn utlostes inte. Skr\xe1p pa munstycket? V\xe1ntar pa aterst\xe1llning."
+"B\xe1ddnivelleringen felade. Sensorn utl\xefstes inte. Skr\xe1p pa munstycket? V\xe1ntar pa aterst\xe1llning."
 
 #MSG_BRIGHT c=6
 "Bright"
@@ -124,7 +124,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"Blackout skedde. Aterstalla utskrift?"
+"Blackout intr\xe1ffat. Aterst\xe1lla utskr?"
 
 #MSG_CALIBRATING_HOME c=20
 "Calibrating home"
@@ -148,7 +148,7 @@
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-"Kalibrerar XYZ. Vrid vredet f\xefr att flytta Z-sl\xe1darna upp till \xe1ndstoppen. Klicka n\xe1r du \xe1r klar."
+"Kalibrerar XYZ. Vrid vredet f\xefr att flytta Z-vagnarna upp till \xe1ndstoppen. Klicka n\xe1r du \xe1r klar."
 
 #MSG_CALIBRATE_Z_AUTO c=20 r=2
 "Calibrating Z"
@@ -160,7 +160,7 @@
 
 #MSG_HOMEYZ_DONE c=20
 "Calibration done"
-"Kalibraring utford"
+"Kalibraring utf\xefrd"
 
 #MSG_MENU_CALIBRATION c=18
 "Calibration"
@@ -228,7 +228,7 @@
 
 #MSG_FS_CONTINUE c=5
 "Cont."
-"Fort."
+"Frts."
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
@@ -248,15 +248,15 @@
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
-"Aendlage inte natt"
+"\xe1ndlage inte natt"
 
 #MSG_SELFTEST_ENDSTOP c=16
 "Endstop"
-"Aendlage"
+"\xe1ndl\xe1ge"
 
 #MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
-"Aendlagen"
+"\xe1ndl\xe1gen"
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
@@ -288,7 +288,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-"Extruder fl\xe1kt:"
+"Extruderfl\xe1kt:"
 
 #MSG_INFO_EXTRUDER c=18
 "Extruder info"
@@ -356,7 +356,7 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
-"Filen ar ofullst\xe1ndig. Forts\xe1tta \xe1nda?"
+"Filen \xe1r ofullst\xe1ndig. Forts\xe1tta \xe1nda?"
 
 #MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
@@ -364,11 +364,11 @@
 
 #MSG_V2_CALIBRATION c=18
 "First layer cal."
-"Forstalager kalib."
+"F\xefrstalager kalib."
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
-"F\xefrst kommer jag att utfora sj\xe1lvtestet f\xefr att kontrollera de vanligaste monteringsproblemen."
+"F\xefrst kommer jag att utf\xefra sj\xe1lvtestet f\xefr att kontrollera de vanligaste monteringsproblemen."
 
 #MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
@@ -388,7 +388,7 @@
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
-"Front/vanster fl\xe1kt"
+"Front/v\xe1nster fl\xe1kt"
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=20
 "Heater/Thermistor"
@@ -412,15 +412,15 @@
 
 #MSG_FILAMENTCHANGE c=18
 "Change filament"
-"Aendra filament"
+"\xe1ndra filament"
 
 #MSG_CHANGE_SUCCESS c=20
 "Change success!"
-"Aendring utford!"
+"\xe1ndring utf\xefrd!"
 
 #MSG_CORRECTLY c=20
 "Changed correctly?"
-"Aendring korrekt?"
+"\xe1ndring korrekt?"
 
 #MSG_SELFTEST_CHECK_BED c=20
 "Checking bed"
@@ -428,7 +428,7 @@
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
 "Checking endstops"
-"Kontroll anedlagen"
+"Kontroll \xe1ndl\xe1gen"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20
 "Checking hotend"
@@ -480,7 +480,7 @@
 
 #MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
-"Aer filament isatt?"
+"\xe1r filament isatt?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
@@ -496,7 +496,7 @@
 
 #MSG_ADDITIONAL_SHEETS c=20 r=9
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
-"Om du har ytterligare metallskivor, kalibrera deras f\xefrinst\xe1llningar i Inst\xe1llningar - HW Setup - Metallskiva."
+"Om du har ytterligare metallskivor, kalibrera deras f\xefrinst\xe1llningar i Inst\xe1llningar - HW inst\xe1llning - Metallskiva."
 
 #MSG_LAST_PRINT c=18
 "Last print"
@@ -504,7 +504,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20
 "Left hotend fan?"
-"Vanst hotend fl\xe1kt?"
+"V\xe1nst hotend fl\xe1kt?"
 
 #MSG_LEFT c=10
 "Left"
@@ -512,7 +512,7 @@
 
 #MSG_BED_CORRECTION_LEFT c=14
 "Left side [\xe4m]"
-"Vanstsida [\xe4m]"
+"V\xe1nstsida [\xe4m]"
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
@@ -572,7 +572,7 @@
 
 #MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
-"Badd nivautjamning"
+"B\xe1dd nivautj\xe1mning"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -628,7 +628,7 @@
 
 #MSG_STEALTH c=7
 "Stealth"
-"Smyg"
+"Tyst"
 
 #MSG_AUTO_POWER c=10
 "Auto power"
@@ -696,7 +696,7 @@
 
 #MSG_WIZARD_WILL_PREHEAT c=20 r=4
 "Now I will preheat nozzle for PLA."
-"Nu ska jag forv\xe1rma munstycket f\xefr PLA."
+"Nu ska jag f\xefrv\xe1rma munstycket f\xefr PLA."
 
 #MSG_NOZZLE c=12
 "Nozzle"
@@ -712,7 +712,7 @@
 
 #MSG_NOZZLE_FAN c=10
 "Nozzle FAN"
-"Muns flakt"
+"Muns fl\xe1kt"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -756,7 +756,7 @@
 
 #MSG_CHECK_IDLER c=20 r=5
 "Please open idler and remove filament manually."
-"Oeppna idler och ta bort filamentet manuellt."
+"\xefppna idler och ta bort filamentet manuellt."
 
 #MSG_PLACE_STEEL_SHEET c=20 r=5
 "Please place steel sheet on heatbed."
@@ -776,7 +776,7 @@
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
-"Ta bort metallskivan fran varmebadden."
+"Ta bort metallskivan fran v\xe1rmeb\xe1dden."
 
 #MSG_RUN_XYZ c=20 r=4
 "Please run XYZ calibration first."
@@ -796,7 +796,7 @@
 
 #MSG_PREHEAT_NOZZLE c=20
 "Preheat the nozzle!"
-"F\xefrvarm munstycket!"
+"F\xefrv\xe1rm munstycket!"
 
 #MSG_PREHEAT c=18
 "Preheat"
@@ -808,7 +808,7 @@
 
 #MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 "Please upgrade."
-"V\xe1ligen uppgradera."
+"V\xe1nligen uppgradera."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press the knob to preheat nozzle and continue."
@@ -828,11 +828,11 @@
 
 #MSG_PREHEATING_TO_LOAD c=20
 "Preheating to load"
-"Forv\xe1rmer for ladda"
+"F\xefrv\xe1rmer f\xefr laddn"
 
 #MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
-"Forvarmer for utmatn"
+"F\xefrv\xe1rmer for utmatn"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
@@ -860,11 +860,11 @@
 
 #MSG_PRINT_FAN c=10
 "Print FAN"
-"Utskrflakt"
+"Utskrfl\xe1kt"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
-"V\xe1nligen s\xe1tt in filamentet i extrudern, tryck sedan pa knappen f\xefr inladdning.."
+"V\xe1nligen s\xe1tt i filamentet i extrudern, tryck sedan pa knappen f\xefr inladdning.."
 
 #MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 "Please insert filament into the first tube of the MMU, then press the knob to load it."
@@ -872,7 +872,7 @@
 
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load filament first."
-"V\xe1nligen ladda filament forest."
+"V\xe1nligen ladda filament f\xefrst."
 
 #MSG_BED_CORRECTION_REAR c=14
 "Rear side [\xe4m]"
@@ -880,7 +880,7 @@
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
-"V\xe1nligen mata ut filamentet f\xefrst och upprepa sedan denna atgard."
+"V\xe1nligen mata ut filamentet f\xefrst och upprepa sedan denna atg\xe1rd."
 
 #MSG_CHECK_IR_CONNECTION c=20 r=4
 "Please check the IR sensor connection, unload filament if present."
@@ -888,7 +888,7 @@
 
 #MSG_RECOVERING_PRINT c=20
 "Recovering print"
-"Aterstaller utskrift"
+"Aterst\xe1ller utskrift"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=5
 "Remove old filament and press the knob to start loading new filament."
@@ -896,7 +896,7 @@
 
 #MSG_CALIBRATE_BED_RESET c=18
 "Reset XYZ calibr."
-"Aterstall XYZ-kal."
+"Aterst\xe1ll XYZ-kal."
 
 #MSG_RESET c=14
 "Reset"
@@ -912,7 +912,7 @@
 
 #MSG_BED_CORRECTION_RIGHT c=14
 "Right side[\xe4m]"
-"Hoger sida[\xe4m]"
+"H\xefger sida[\xe4m]"
 
 #MSG_RPI_PORT c=13
 "RPi port"
@@ -920,7 +920,7 @@
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-"Att utf\xefra guiden kommer att radera aktuella kalibrerings inst\xe1llningar och b\xefrja om fran b\xefrjan. F\xefrtsatta?"
+"Att utf\xefra guiden kommer att radera aktuella kalibreringsinst\xe1llningar och b\xefrja om fran b\xefrjan. Forts\xe1tta?"
 
 #MSG_SD_CARD c=8
 "SD card"
@@ -960,11 +960,11 @@
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
-"Sjalevtest kommer att utf\xefras f\xefr att kalibrera exakt sensorl\xefs hemposition."
+"Sj\xe1lvtest kommer att utf\xefras f\xefr att kalibrera exakt sensorl\xefs hemposition."
 
 #MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
-"V\xe1lj munstyckesf\xefrv\xe1rmningstemperatur som passar ditt material."
+"V\xe1lj munstycksf\xefrv\xe1rmningstemperatur som passar ditt material."
 
 #MSG_SET_TEMPERATURE c=20
 "Set temperature:"
@@ -976,7 +976,7 @@
 
 #MSG_SHOW_END_STOPS c=18
 "Show end stops"
-"Visa \xe1ndlagen"
+"Visa \xe1ndl\xe1gen"
 
 #MSG_FILE_CNT c=20 r=6
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
@@ -1140,7 +1140,7 @@
 
 #MSG_USED c=19
 "Used during print"
-"Anvands under utskr"
+"Anv\xe1nds under utskr"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"
@@ -1152,7 +1152,7 @@
 
 #MSG_USERWAIT c=20
 "Wait for user..."
-"Invantar anvandare.."
+"Inv\xe1ntar anv\xe1ndare."
 
 #MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
@@ -1208,7 +1208,7 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-"XYZ-kalibrering ok. X/Y-axlarna \xe1r lite skeva. Bra jobbat!"
+"XYZ-kalibrering ok. X/Y-axlarna \xe1r mycket lite skeva. Bra jobbat!"
 
 #MSG_TIMEOUT c=12
 "Timeout"
@@ -1224,7 +1224,7 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 "XYZ calibration compromised. Front calibration points not reachable."
-"XYZ-kalibrering komprometterade. Fr\xe1mre kalibreringspunkter kan inte nas."
+"XYZ-kalibrering komprometterad. Fr\xe1mre kalibreringspunkter kan inte nas."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
@@ -1292,7 +1292,7 @@
 
 #MSG_HW_SETUP c=18
 "HW Setup"
-"HW-inst\xe1llning"
+"HW inst\xe1llning"
 
 #MSG_MAGNETS_COMP c=13
 "Magnets comp."
@@ -1308,7 +1308,7 @@
 
 #MSG_MMU_MODE c=8
 "MMU Mode"
-"MMU-lage"
+"MMU-l\xe1ge"
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 "Mode change in progress..."
@@ -1348,11 +1348,11 @@
 
 #MSG_PREHEATING_TO_CUT c=20
 "Preheating to cut"
-"Forvarmer for skara"
+"F\xefrv\xe1rmer f\xefr sk\xe1ra"
 
 #MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
-"Forvarmer for utmatn"
+"F\xefrv\xe1mer f\xefr utmatn"
 
 #MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
@@ -1364,7 +1364,7 @@
 
 #MSG_SELFTEST_FS_LEVEL c=20
 "%s level expected"
-"%s niva f\xefrvantad"
+"%s niva f\xefrv\xe1ntad"
 
 #MSG_RENAME c=18
 "Rename"
