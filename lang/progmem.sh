@@ -115,6 +115,9 @@ cat $PROGMEM.chr | \
  sed 's/\\x01/\\\\\\x01/g;' | \
  sed 's/\\xf8/\\\\\\xf8/g;' | \
  sed 's/\\x0a/\\\\\\x0a/g;' | \
+ sed 's/\\x04/\\\\\\x04/g;' | \
+ sed 's/\\xe4/\\\\\\xe4/g;' | \
+ sed 's/\\n/\\\\\\0a/g;' | \
  sed 's/\\x00$/\n/;s/^/\"/;s/$/\"\\/'; \
 ) | sh > $PROGMEM.var
 

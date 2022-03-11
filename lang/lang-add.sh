@@ -21,8 +21,8 @@ if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 
 if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
   LANGUAGES+=" $COMMUNITY_LANGUAGES"
 fi
-echo "fw-clean languages:$LANGUAGES" >&2
-
+LANGUAGES=$(ls lang_en_*.txt|cut -d '_' -f3|cut -d '.' -f1)
+echo "lang-add languages:$LANGUAGES" >&2
 
 # insert single text to english dictionary
 # $1 - text to insert
@@ -30,7 +30,7 @@ echo "fw-clean languages:$LANGUAGES" >&2
 insert_en()
 {
 	#replace '[' and ']' in string with '\[' and '\]'
-	str=$(echo "$1" | sed "s/\[/\\\[/g;s/\]/\\\]/g")
+	str=$(echo "$1" | sed 's/\[/\\\[/g;s/\]/\\\]/g')
 	# extract english texts, merge new text, grep line number
 	ln=$((cat lang_en.txt; echo "$1") | sed "/^$/d;/^#/d" | sort | grep -n "$str" | sed "s/:.*//;q")
 	# calculate position for insertion
@@ -49,7 +49,7 @@ insert_en()
 insert_xx()
 {
 	#replace '[' and ']' in string with '\[' and '\]'
-	str=$(echo "$1" | sed "s/\[/\\\[/g;s/\]/\\\]/g")
+	str=$(echo "$1" | sed 's/\[/\\\[/g;s/\]/\\\]/g')
 	# extract english texts, merge new text, grep line number
 	ln=$((cat lang_en_$2.txt; echo "$1") | sed "/^$/d;/^#/d" | sed -n 'p;n' | sort | grep -n "$str" | sed "s/:.*//;q")
 	# calculate position for insertion
@@ -67,7 +67,8 @@ insert_xx()
 # $1 - text to search for
 find_metadata()
 {
-    sed -ne "s^.*\(_[iI]\|ISTR\)($1).*////\(.*\)^\2^p" ../Firmware/*.[ch]* | head -1
+    FIND_STR=$(echo $1|sed 's/\\/\\\\/g;s/\\\\x0a/\\\\n/g')
+    sed -ne "s^.*\(_[iI]\|ISTR\)($FIND_STR).*////\(.*\)^\2^p" ../Firmware/*.[ch]* | head -1
 }
 
 # check if input file exists
@@ -76,7 +77,7 @@ if ! [ -e lang_add.txt ]; then
 	exit 1
 fi
 
-cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
+cat lang_add.txt | sed 's/^/"/;s/$/"/;s/\\/\\\\/g' | while read new_s; do
 	if grep "$new_s" lang_en.txt >/dev/null; then
 		echo "text already exist:"
 		echo "$new_s"
