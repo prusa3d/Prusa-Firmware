@@ -7,13 +7,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: lt\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat 12 Mar 2022 06:57:25 AM CET\n"
-"PO-Revision-Date: Sat 12 Mar 2022 06:57:25 AM CET\n"
+"POT-Creation-Date: Sat 12 Mar 2022 10:23:39 AM CET\n"
+"PO-Revision-Date: Sat 12 Mar 2022 10:23:39 AM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "Last-Translator: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+# MSG_REFRESH c=18
+#: messages.c:85
+msgid "\x04Refresh"
+msgstr "\x00"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166

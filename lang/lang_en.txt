@@ -1,3 +1,6 @@
+#MSG_REFRESH c=18
+"\x04Refresh"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 

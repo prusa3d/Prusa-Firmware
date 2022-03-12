@@ -15,6 +15,11 @@ msgstr ""
 "Last-Translator: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
+# MSG_REFRESH c=18
+#: messages.c:85
+msgid "\x04Refresh"
+msgstr "\x00"
+
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166
 msgid " 0.3 or older"
