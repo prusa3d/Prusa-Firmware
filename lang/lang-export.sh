@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 26
+# Version 1.0.1 Build 27
 #
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
@@ -26,6 +26,7 @@
 #                           to get Build Nr
 # 25 Jan. 2022, 3d-gussner, Replace German HD44780 A00 ROM 'äöüß' to UTF-8 'äöüß'
 # 14 Feb. 2022, 3d-gussner, Fix single language run without config.sh OK
+# 12 Mar. 2022, 3d-gussner, Update Norwegian replace umlaut and diacritics
 #############################################################################
 
 echo "$(tput setaf 2)lang-export.sh started$(tput sgr 0)" >&2

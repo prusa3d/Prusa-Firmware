@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 36
+# Version 1.0.1 Build 38
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
@@ -37,6 +37,7 @@
 # 11 Feb. 2022, 3d-gussner, Change to python3
 # 14 Feb. 2022, 3d-gussner, Replace non-block space with space
 #                           Fix single language run without config.sh OK
+# 12 Mar. 2022, 3d-gussner, Update Norwegian replace umlaut and diacritics
 #############################################################################
 
 echo "$(tput setaf 2)lang-import.sh started$(tput sgr 0)" >&2
@@ -273,11 +274,7 @@ fi
 
 #https://en.wikipedia.org/wiki/Norwegian_orthography éèêóòôù ÅåÆæØø
 if [ "$LNG" = "no" ]; then
-#replace UTF-8 'äö' to HD44780 A00 'äö'
- #repace 'Å' with 'A'
- sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
- #repace 'å' with 'a'
- sed -i 's/\xc3\xa5/a/g' $LNG'_filtered.po'
+ #replace UTF-8 'æÆøØ' to HD44780 A00 'äö'
  #repace 'Æ' with 'Ae'
  sed -i 's/\xc3\x86/\\xe1/g' $LNG'_filtered.po'
  #repace 'æ' with 'ae'
@@ -286,6 +283,11 @@ if [ "$LNG" = "no" ]; then
  sed -i 's/\xc3\x98/\\xef/g' $LNG'_filtered.po'
  #repace 'ø' with 'o'
  sed -i 's/\xc3\xb8/\\xef/g' $LNG'_filtered.po'
+ #replace diacritics
+ #repace 'Å' with 'A'
+ sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
+ #repace 'å' with 'a'
+ sed -i 's/\xc3\xa5/a/g' $LNG'_filtered.po'
  #replace 'é' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
  #replace 'è' with 'e'
