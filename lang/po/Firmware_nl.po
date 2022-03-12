@@ -15,6 +15,11 @@ msgstr ""
 "Last-Translator: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
+# MSG_SHEET_OFFSET c=20 r=4
+#: 
+msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+msgstr "Staalplaat %.7s\x0aZ offset: %+1.3fmm\x0a%cVerder\x0a%cReset"
+
 # MSG_REFRESH c=18
 #: messages.c:85
 msgid "\x04Refresh"

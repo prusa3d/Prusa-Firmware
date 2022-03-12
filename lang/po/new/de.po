@@ -7,13 +7,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat 12 Mar 2022 11:48:04 AM CET\n"
-"PO-Revision-Date: Sat 12 Mar 2022 11:48:04 AM CET\n"
+"POT-Creation-Date: Sat 12 Mar 2022 12:26:52 PM CET\n"
+"PO-Revision-Date: Sat 12 Mar 2022 12:26:52 PM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "Last-Translator: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+# MSG_SHEET_OFFSET c=20 r=4
+#: 
+msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+msgstr "Stahlblech %.7s\x0aZ Versatz: %+1.3fmm\x0a%cWeiter\x0a%cReset"
 
 # MSG_REFRESH c=18
 #: messages.c:85

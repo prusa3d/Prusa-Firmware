@@ -1,3 +1,7 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"\x00"
+
 #MSG_REFRESH c=18
 "\x04Refresh"
 "\x04Ricaricare"
