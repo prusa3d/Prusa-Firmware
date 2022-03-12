@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 23
+# Version 1.0.1 Build 26
 #
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
@@ -206,6 +206,23 @@ if [ "$LNG" = "de" ]; then
   sed -i 's/\\xef/\xc3\xb6/g' $OUTFILE
   #replace 'A00 ROM ß' with 'ß'
   sed -i 's/\\xe2/\xc3\x9f/g' $OUTFILE
+fi
+
+if [ "$LNG" = "no" ]; then
+  #replace often used words
+  #replace ' pa ' with ' på ' 
+  sed -i 's/\ pa / p\xc3\xa5 /g' $OUTFILE
+  #replace ' na ' with ' nå ' 
+  sed -i 's/\ na / n\xc3\xa5 /g' $OUTFILE
+  #replace '"Na ' with '"Nå ' 
+  sed -i 's/\"Na /"N\xc3\xa5 /g' $OUTFILE
+  #replace ' stal' with ' stål' 
+  sed -i 's/\ stal/ st\xc3\xa5l/g' $OUTFILE
+  #replace HD44780 A00 'äö' to UTF-8 'æø'
+  #replace 'A00 ROM ä' with 'æ' 
+  sed -i 's/\\xe1/\xc3\xa6/g' $OUTFILE
+  #replace 'A00 ROM ö' with 'ø'
+  sed -i 's/\\xef/\xc3\xb8/g' $OUTFILE
 fi
 
 #replace HD44780 A00 'μ' to UTF-8 'μ'

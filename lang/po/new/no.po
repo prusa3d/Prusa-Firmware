@@ -2,21 +2,18 @@
 #
 msgid ""
 msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: no\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed 23 Feb 2022 02:52:27 PM CET\n"
-"PO-Revision-Date: Wed 23 Feb 2022 02:52:27 PM CET\n"
+"POT-Creation-Date: Sat 12 Mar 2022 07:04:04 AM CET\n"
+"PO-Revision-Date: Sat 12 Mar 2022 07:04:04 AM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "Last-Translator: \n"
-"Language-Team: \n"
-"Language: no\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Poedit 3.0.1\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166
@@ -24,7 +21,7 @@ msgid " 0.3 or older"
 msgstr " 0.3 eller eldre"
 
 # MSG_FS_V_03_OR_OLDER c=18
-#: Marlin_main.cpp:9887
+#: Marlin_main.cpp:9896
 msgid "FS v0.3 or older"
 msgstr "FS 0.3 eller eldre"
 
@@ -34,7 +31,7 @@ msgid " 0.4 or newer"
 msgstr " 0.4 eller nyere"
 
 # MSG_FS_V_04_OR_NEWER c=18
-#: Marlin_main.cpp:9886
+#: Marlin_main.cpp:9895
 msgid "FS v0.4 or newer"
 msgstr "FS 0.4 eller nyere"
 
@@ -49,12 +46,14 @@ msgid "[0;0] point offset"
 msgstr "[0;0] punktforskyv."
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-msgid "Crash detection can\\x0abe turned on only in\\x0aNormal mode"
+#: 
+msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
 msgstr "Krasjdeteksjon kan bare skrus på i normal modus"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-msgid "WARNING:\\x0aCrash detection\\x0adisabled in\\x0aStealth mode"
-msgstr "ADVARSEL:\\x0aKrasjdeteksjon\\x0adeaktivert i\\x0aStillemodus"
+#: 
+msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+msgstr "ADVARSEL:\x0aKrasjdeteksjon\x0adeaktivert i\x0aStillemodus"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024
@@ -262,7 +261,7 @@ msgid "Crash detected."
 msgstr "Krasj fant sted."
 
 # MSG_CRASH_RESUME c=20 r=3
-#: Marlin_main.cpp:651
+#: Marlin_main.cpp:653
 msgid "Crash detected. Resume print?"
 msgstr "Krasj merket. Fortsette print?"
 
@@ -337,6 +336,7 @@ msgid "Endstops"
 msgstr "Endesensorene"
 
 # MSG_STACK_ERROR c=20 r=4
+#: 
 msgid "Error - static memory has been overwritten"
 msgstr "Error - Statisk munne har blitt overskrevet"
 
@@ -506,7 +506,7 @@ msgid "Heater/Thermistor"
 msgstr "Varmer/Termistor"
 
 # MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: Marlin_main.cpp:9877
+#: Marlin_main.cpp:9886
 msgid "Heating disabled by safety timer."
 msgstr "Varme skrudd av pga. sikkerhet."
 
@@ -766,7 +766,7 @@ msgid "Mode"
 msgstr "Modus"
 
 # MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
-#: Marlin_main.cpp:882
+#: Marlin_main.cpp:884
 msgid "MK3 firmware detected on MK3S printer"
 msgstr "MK3 system funnet på MK3S printer"
 
@@ -836,7 +836,7 @@ msgid "Move Z"
 msgstr "Beveg Z"
 
 # MSG_NO_MOVE c=20
-#: Marlin_main.cpp:5852
+#: Marlin_main.cpp:5861
 msgid "No move."
 msgstr "Ingen bevegelse."
 
@@ -886,7 +886,7 @@ msgid "Nozzle"
 msgstr "Dyse"
 
 # MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
-#: Marlin_main.cpp:1605
+#: Marlin_main.cpp:1609
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr "Gamle verdier funnet Standarinnstillinger for PID, motor etc. blir satt."
 
@@ -946,7 +946,7 @@ msgid "Please check our handbook and fix the problem. Then resume the Wizard by 
 msgstr "Vennligst sjekk håndboken og fiks problemet. Fortsett Wizard ved å restarte printeren."
 
 # MSG_CHECK_IDLER c=20 r=5
-#: Marlin_main.cpp:3798
+#: Marlin_main.cpp:3802
 msgid "Please open idler and remove filament manually."
 msgstr "Åpne taljedøren og fjern filamentet for hånd."
 
@@ -976,7 +976,7 @@ msgid "Please remove steel sheet from heatbed."
 msgstr "Vennligst ta stålplaten av varmeplaten."
 
 # MSG_RUN_XYZ c=20 r=4
-#: Marlin_main.cpp:5338
+#: Marlin_main.cpp:5347
 msgid "Please run XYZ calibration first."
 msgstr "Vennligst fullfør XYZ kalibreringen først."
 
@@ -1016,7 +1016,7 @@ msgid "Please upgrade."
 msgstr "Vennligst oppdater."
 
 # MSG_PRESS_TO_PREHEAT c=20 r=4
-#: Marlin_main.cpp:12052
+#: Marlin_main.cpp:12061
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Trykk valghjulet for å forvarme dysen og fortsette."
 
@@ -1106,7 +1106,7 @@ msgid "Please check the IR sensor connection, unload filament if present."
 msgstr "Vennligst sjekk koblingen til IR sensorer. Last ut filament om lastet."
 
 # MSG_RECOVERING_PRINT c=20
-#: Marlin_main.cpp:11396
+#: Marlin_main.cpp:11405
 msgid "Recovering print"
 msgstr "Gjenopptar print"
 
@@ -1196,7 +1196,7 @@ msgid "Selftest failed"
 msgstr "Selvtest feilet"
 
 # MSG_FORCE_SELFTEST c=20 r=8
-#: Marlin_main.cpp:1637
+#: Marlin_main.cpp:1641
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
 msgstr "Selvtest vil bli kjørt for å kalibrere nøyaktig sensorløs startposisjon."
 
@@ -1276,7 +1276,7 @@ msgid "Runouts"
 msgstr "F. tomt"
 
 # MSG_Z-LEVELING_ENFORCED c=20 r=4
-#: Marlin_main.cpp:3303
+#: Marlin_main.cpp:3307
 msgid "Some problem encountered, Z-leveling enforced ..."
 msgstr "Problem møtt. Z aksjeplanering tvunget ..."
 
@@ -1296,7 +1296,7 @@ msgid "Spinning"
 msgstr "Spinner"
 
 # MSG_TEMP_CAL_WARNING c=20 r=4
-#: Marlin_main.cpp:5351
+#: Marlin_main.cpp:5360
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
 msgstr "Solid bord og en stabil romtemperatur på 21-26C er nødvendig."
 
@@ -1431,7 +1431,7 @@ msgid "unknown"
 msgstr "ukjent"
 
 # MSG_USERWAIT c=20
-#: Marlin_main.cpp:4347
+#: Marlin_main.cpp:4354
 msgid "Wait for user..."
 msgstr "Venter på bruker..."
 
@@ -1446,22 +1446,22 @@ msgid "Waiting for PINDA probe cooling"
 msgstr "Venter på PINDA nedkjøling"
 
 # MSG_CHANGED_BOTH c=20 r=4
-#: Marlin_main.cpp:1597
+#: Marlin_main.cpp:1601
 msgid "Warning: both printer type and motherboard type changed."
 msgstr "Advarsel: Både printertype og hovedkortype er forandret."
 
 # MSG_CHANGED_MOTHERBOARD c=20 r=4
-#: Marlin_main.cpp:1589
+#: Marlin_main.cpp:1593
 msgid "Warning: motherboard type changed."
 msgstr "Advarsel: Hovedkortype forandret."
 
 # MSG_CHANGED_PRINTER c=20 r=4
-#: Marlin_main.cpp:1593
+#: Marlin_main.cpp:1597
 msgid "Warning: printer type changed."
 msgstr "Advarsel: Printertype forandret."
 
 # MSG_UNLOAD_SUCCESSFUL c=20 r=2
-#: Marlin_main.cpp:3789
+#: Marlin_main.cpp:3793
 msgid "Was filament unload successful?"
 msgstr "Ble filamentet helt lastet ut?"
 
@@ -1621,7 +1621,7 @@ msgid "Mesh"
 msgstr "Plan-nett"
 
 # MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
-#: Marlin_main.cpp:875
+#: Marlin_main.cpp:877
 msgid "MK3S firmware detected on MK3 printer"
 msgstr "MK3S systemvare funnet på MK3 printer"
 
@@ -1744,3 +1744,4 @@ msgstr "Z-sensor nr."
 #: ultralcd.cpp:2018
 msgid "Printer IP Addr:"
 msgstr "Printer IP adr.:"
+
