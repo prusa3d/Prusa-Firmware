@@ -198,7 +198,7 @@ sync
 sed -i 's/$/\r/' $OUTFILE
 
 #replace HD44780 A00 'äöüß' to UTF-8 'äöüß'
-if [ "$LNG" = "de" ]; then
+if [[ "$LNG" = "de" || "$LNG" = "sv" ]]; then
  #replace 'A00 ROM ä' with 'ä' 
   sed -i 's/\\xe1/\xc3\xa4/g' $OUTFILE
   #replace 'A00 ROM ü' with 'ü'

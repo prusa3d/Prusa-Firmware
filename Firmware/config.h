@@ -69,7 +69,7 @@
 #define COMMUNITY_LANG_GROUP1_HU // Community Hungarian language
 #define COMMUNITY_LANG_GROUP1_HR // Community Croatian language
 #define COMMUNITY_LANG_GROUP1_SK // Community Slovak language
-//#define COMMUNITY_LANG_GROUP1_SV // Community Swedish language
+#define COMMUNITY_LANG_GROUP1_SV // Community Swedish language
 #define COMMUNITY_LANG_GROUP1_NO // Community Norwegian language
 //#define COMMUNITY_LANG_GROUP1_DA // Community Danish language
 //#define COMMUNITY_LANG_GROUP1_SL // Community Slovanian language
