@@ -270,11 +270,6 @@ msgstr "Otkriven je udar. Nastaviti print?"
 msgid "Crash"
 msgstr "Udar"
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Trenutno"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr "Granicnik"
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr "Granicnici"
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Pogreska - staticka memorija je prepisna preko postojece"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Praznjenje filamenta"
 #: messages.c:102
 msgid "Total"
 msgstr "Ukupno"
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Korist. pri printu"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040

@@ -270,11 +270,6 @@ msgstr "Krock upptäckt. Ateruppta utskrift?"
 msgid "Crash"
 msgstr "Krock"
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Aktuell"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr "Ändläge"
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr "Ändlägen"
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Fel - statiskt minne har skrivits över"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Tar bort filament"
 #: messages.c:102
 msgid "Total"
 msgstr "Total"
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Används under utskr"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040

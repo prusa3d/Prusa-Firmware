@@ -202,10 +202,6 @@
 "Crash"
 "\x00"
 
-#MSG_CURRENT c=19
-"Current"
-"\x00"
-
 #MSG_DATE c=17
 "Date:"
 "\x00"
@@ -252,10 +248,6 @@
 
 #MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
-"\x00"
-
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
 "\x00"
 
 #MSG_CUT_FILAMENT c=16
@@ -1116,10 +1108,6 @@
 
 #MSG_TOTAL c=6
 "Total"
-"\x00"
-
-#MSG_USED c=19
-"Used during print"
 "\x00"
 
 #MSG_MENU_VOLTAGES c=15

@@ -270,11 +270,6 @@ msgstr "Utkozes erzekelve. Folytassam a nyomtatast?"
 msgid "Crash"
 msgstr "Utkozes"
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Jelenlegi"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr "Vegallaskapcsolo"
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr "Vegallaskapcsolok"
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Hiba - a sztatikus memoria felulirodott"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Filament kiadasa"
 #: messages.c:102
 msgid "Total"
 msgstr "Ossz."
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Felhasznalva"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040

@@ -270,11 +270,6 @@ msgstr "Krasj merket. Fortsette print?"
 msgid "Crash"
 msgstr "Krasj"
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Naværende"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr "Endesensor"
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr "Endesensorene"
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Error - Statisk munne har blitt overskrevet"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Laster ut filament"
 #: messages.c:102
 msgid "Total"
 msgstr "Totalt"
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Brukt i print"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040

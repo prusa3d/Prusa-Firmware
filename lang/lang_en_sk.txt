@@ -202,10 +202,6 @@
 "Crash"
 "Naraz"
 
-#MSG_CURRENT c=19
-"Current"
-"Len aktualny"
-
 #MSG_DATE c=17
 "Date:"
 "Datum:"
@@ -253,10 +249,6 @@
 #MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
 "Konc. spinace"
-
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Chyba - Doslo k prepisu statickej pamati"
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
@@ -1117,10 +1109,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Celkom"
-
-#MSG_USED c=19
-"Used during print"
-"Pouzite behom tlace"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"

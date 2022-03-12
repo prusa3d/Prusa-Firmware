@@ -202,10 +202,6 @@
 "Crash"
 "Impatto"
 
-#MSG_CURRENT c=19
-"Current"
-"Attuale"
-
 #MSG_DATE c=17
 "Date:"
 "Data:"
@@ -253,10 +249,6 @@
 #MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
 "Finecorsa"
-
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Errore - la memoria statica e' stata sovrascritta"
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
@@ -1117,10 +1109,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Totale"
-
-#MSG_USED c=19
-"Used during print"
-"Usati nella stampa"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"

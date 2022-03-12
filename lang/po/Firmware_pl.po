@@ -270,11 +270,6 @@ msgstr "Wykryto zderzenie. Wznowic druk?"
 msgid "Crash"
 msgstr "Zderzen"
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Aktualne"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr "Krancowka"
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr "Krancowki"
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Blad - pamiec statyczna zostala nadpisana"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Rozladowuje filament"
 #: messages.c:102
 msgid "Total"
 msgstr "Suma"
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Uzyte podczas druku"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040

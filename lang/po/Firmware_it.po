@@ -270,11 +270,6 @@ msgstr "Scontro rilevato. Riprendere la stampa?"
 msgid "Crash"
 msgstr "Impatto"
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Attuale"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr "Finecorsa"
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr "Finecorsa"
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Errore - la memoria statica e' stata sovrascritta"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Scaricando filamento"
 #: messages.c:102
 msgid "Total"
 msgstr "Totale"
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Usati nella stampa"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040

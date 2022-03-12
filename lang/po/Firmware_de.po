@@ -270,11 +270,6 @@ msgstr "Crash erkannt. Druck fortführen?"
 msgid "Crash"
 msgstr ""
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Aktuelles"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr "Endanschlag"
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr "Endschalter"
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Fehler - statischer Speicher wurde überschrieben"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Filament auswerfen"
 #: messages.c:102
 msgid "Total"
 msgstr "Gesamt"
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Beim Druck benutzt"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040

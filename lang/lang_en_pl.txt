@@ -202,10 +202,6 @@
 "Crash"
 "Zderzen"
 
-#MSG_CURRENT c=19
-"Current"
-"Aktualne"
-
 #MSG_DATE c=17
 "Date:"
 "Data:"
@@ -253,10 +249,6 @@
 #MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
 "Krancowki"
-
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Blad - pamiec statyczna zostala nadpisana"
 
 #MSG_CUT_FILAMENT c=16
 "Cut filament"
@@ -1117,10 +1109,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Suma"
-
-#MSG_USED c=19
-"Used during print"
-"Uzyte podczas druku"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"

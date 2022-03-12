@@ -270,11 +270,6 @@ msgstr "Choque detectado. Continuar impresion?"
 msgid "Crash"
 msgstr "Choque"
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Actual"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr ""
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr ""
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Error - se ha sobre-escrito la memoria estatica"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Soltando filamento"
 #: messages.c:102
 msgid "Total"
 msgstr ""
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Usado en impresion"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040

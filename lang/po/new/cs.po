@@ -270,11 +270,6 @@ msgstr "Detekovan naraz. Obnovit tisk?"
 msgid "Crash"
 msgstr "Naraz"
 
-# MSG_CURRENT c=19
-#: ultralcd.cpp:5911
-msgid "Current"
-msgstr "Pouze aktualni"
-
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
@@ -334,11 +329,6 @@ msgstr "Koncovy spinac"
 #: ultralcd.cpp:8038
 msgid "Endstops"
 msgstr "Konc. spinace"
-
-# MSG_STACK_ERROR c=20 r=4
-#: 
-msgid "Error - static memory has been overwritten"
-msgstr "Chyba - Doslo k prepisu staticke pameti"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:63
@@ -1414,11 +1404,6 @@ msgstr "Vysouvam filament"
 #: messages.c:102
 msgid "Total"
 msgstr "Celkem"
-
-# MSG_USED c=19
-#: ultralcd.cpp:5910
-msgid "Used during print"
-msgstr "Pouzite behem tisku"
 
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040
