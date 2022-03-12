@@ -138,10 +138,6 @@
 "Calibrate Z"
 "Kalibrera Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Kalibrerar"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Avbryt"
@@ -453,10 +449,6 @@
 #MSG_SELECT_EXTRUDER c=20
 "Select extruder:"
 "V\xe1lj extruder:"
-
-#MSG_SELECT_FILAMENT c=20
-"Select filament:"
-"V\xe1lj filament:"
 
 #MSG_FILAMENT c=17
 "Filament"

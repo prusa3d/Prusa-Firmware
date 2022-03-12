@@ -186,7 +186,7 @@
 "Crash det."
 "Det. narazu"
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Zvolte filament pro kalibraci prvni vrstvy z nasledujiciho menu"
 

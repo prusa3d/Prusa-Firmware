@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat 12 Mar 2022 06:45:21 AM CET\n"
-"PO-Revision-Date: Sat 12 Mar 2022 06:45:21 AM CET\n"
+"POT-Creation-Date: Sat 12 Mar 2022 10:44:36 AM CET\n"
+"PO-Revision-Date: Sat 12 Mar 2022 10:44:36 AM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -228,7 +228,7 @@ msgstr "SD Karte entfernt"
 # MSG_CHECKING_FILE c=17
 #: ultralcd.cpp:8483
 msgid "Checking file"
-msgstr "überprüfe Datei"
+msgstr "Überprüfe Datei"
 
 # MSG_NOT_COLOR c=19
 #: ultralcd.cpp:2555
@@ -250,7 +250,7 @@ msgstr "Gewählte Sprache kopieren?"
 msgid "Crash det."
 msgstr "Crash Erk."
 
-# MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
+# MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4824
 msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Wählen Sie ein Filament für Erste- Schichtkalibrierung aus und wählen Sie es im On-Screen-Menu aus."
@@ -1558,12 +1558,12 @@ msgstr "Y Entfernung vom Min"
 # MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ultralcd.cpp:4832
 msgid "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-msgstr "Der Drucker beginnt mit dem Drucken einer Zickzacklinie. Drehen Sie den Knopf, bis Sie die optimale Höhe erreicht haben. überprüfen Sie die Bilder im Handbuch (Kapitel Kalibrierung)."
+msgstr "Der Drucker beginnt mit dem Drucken einer Zickzacklinie. Drehen Sie den Knopf, bis Sie die optimale Höhe erreicht haben. Überprüfen Sie die Bilder im Handbuch (Kapitel Kalibrierung)."
 
 # MSG_FIL_FAILED c=20 r=5
 #: ultralcd.cpp:7318
 msgid "Verification failed, remove the filament and try again."
-msgstr "überprüfung fehl- geschlagen, entladen Sie das Filament und versuchen Sie es erneut."
+msgstr "Überprüfung fehl- geschlagen, entladen Sie das Filament und versuchen Sie es erneut."
 
 # MSG_Y_CORRECTION c=13
 #: ultralcd.cpp:5069

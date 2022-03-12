@@ -250,7 +250,7 @@ msgstr "Kopirati odabrani jezik?"
 msgid "Crash det."
 msgstr "Udar detekti."
 
-# MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
+# MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4824
 msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Odaberite filament za Kalibraciju Prvog Sloja i odaberite ga u izborniku na zaslonu."

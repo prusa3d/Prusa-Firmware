@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat 12 Mar 2022 08:41:36 AM CET\n"
-"PO-Revision-Date: Sat 12 Mar 2022 08:41:36 AM CET\n"
+"POT-Creation-Date: Sat 12 Mar 2022 10:04:09 AM CET\n"
+"PO-Revision-Date: Sat 12 Mar 2022 10:04:09 AM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -250,7 +250,7 @@ msgstr "Skopiowac wybrany jezyk?"
 msgid "Crash det."
 msgstr "Wykr.zderzen"
 
-# MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
+# MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4824
 msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Wybierz filament do Kalibracji Pierwszej Warstwy i potwierdz w menu ekranowym."

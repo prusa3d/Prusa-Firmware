@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sv\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Thu 10 Mar 2022 02:48:16 PM CET\n"
-"PO-Revision-Date: Thu 10 Mar 2022 02:48:16 PM CET\n"
+"POT-Creation-Date: Sat 12 Mar 2022 10:44:58 AM CET\n"
+"PO-Revision-Date: Sat 12 Mar 2022 10:44:58 AM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -88,7 +88,7 @@ msgstr "och tryck pa knappen"
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3345
 msgid "Are left and right Z~carriages all up?"
-msgstr "är bada Z-vagnarna helt uppe?"
+msgstr "Är bada Z-vagnarna helt uppe?"
 
 # MSG_AUTO_HOME c=18
 #: messages.c:11
@@ -103,7 +103,7 @@ msgstr "Autoladda filament"
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4307
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Autoladdning av fil. är endast möjligt när fil. sensorn är aktiv..."
+msgstr "Autoladdning av fil. Är endast möjligt när fil. sensorn är aktiv..."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2638
@@ -190,11 +190,6 @@ msgstr "Kalibrerar XYZ"
 msgid "Calibrate Z"
 msgstr "Kalibrera Z"
 
-# MSG_CALIBRATE_PINDA c=17
-#: ultralcd.cpp:4529
-msgid "Calibrate"
-msgstr "Kalibrerar"
-
 # MSG_CANCEL2 c=10
 #: messages.c:20
 msgid ">Cancel"
@@ -256,7 +251,7 @@ msgid "Crash det."
 msgstr "Krockdetekt."
 
 # MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
-#: ultralcd.cpp:4842
+#: ultralcd.cpp:4824
 msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
 msgstr "Välj ett filament för första lagrets kalibrering och välj det i skärmmenyn."
 
@@ -328,17 +323,17 @@ msgstr "Matar ut filament"
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ultralcd.cpp:8052
 msgid "Endstop not hit"
-msgstr "ändlage inte natt"
+msgstr "Ändlage inte natt"
 
 # MSG_SELFTEST_ENDSTOP c=16
 #: ultralcd.cpp:8047
 msgid "Endstop"
-msgstr "ändläge"
+msgstr "Ändläge"
 
 # MSG_SELFTEST_ENDSTOPS c=20
 #: ultralcd.cpp:8038
 msgid "Endstops"
-msgstr "ändlägen"
+msgstr "Ändlägen"
 
 # MSG_STACK_ERROR c=20 r=4
 #: 
@@ -533,17 +528,17 @@ msgstr "Hej, jag är din Prusa i3-skrivare. Vill du att jag ska guida dig genom 
 # MSG_FILAMENTCHANGE c=18
 #: messages.c:45
 msgid "Change filament"
-msgstr "ändra filament"
+msgstr "Ändra filament"
 
 # MSG_CHANGE_SUCCESS c=20
 #: ultralcd.cpp:2484
 msgid "Change success!"
-msgstr "ändring utförd!"
+msgstr "Ändring utförd!"
 
 # MSG_CORRECTLY c=20
 #: ultralcd.cpp:2552
 msgid "Changed correctly?"
-msgstr "ändring korrekt?"
+msgstr "Ändring korrekt?"
 
 # MSG_SELFTEST_CHECK_BED c=20
 #: messages.c:96
@@ -581,14 +576,9 @@ msgid "Checking Z axis"
 msgstr "Kontroll Z-axel"
 
 # MSG_SELECT_EXTRUDER c=20
-#: messages.c:54
+#: messages.c:56
 msgid "Select extruder:"
 msgstr "Välj extruder:"
-
-# MSG_SELECT_FILAMENT c=20
-#: messages.c:55
-msgid "Select filament:"
-msgstr "Välj filament:"
 
 # MSG_FILAMENT c=17
 #: messages.c:35
@@ -618,7 +608,7 @@ msgstr "Sätt i filament"
 # MSG_FILAMENT_LOADED c=20 r=2
 #: messages.c:40
 msgid "Is filament loaded?"
-msgstr "är filament isatt?"
+msgstr "Är filament isatt?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:111
@@ -958,7 +948,7 @@ msgstr "Se var handbok och atgärda problemet. Ateruppta sedan guiden genom att 
 # MSG_CHECK_IDLER c=20 r=5
 #: Marlin_main.cpp:3802
 msgid "Please open idler and remove filament manually."
-msgstr "öppna idler och ta bort filamentet manuellt."
+msgstr "Öppna idler och ta bort filamentet manuellt."
 
 # MSG_PLACE_STEEL_SHEET c=20 r=5
 #: messages.c:77

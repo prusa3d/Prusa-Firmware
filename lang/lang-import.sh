@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 38
+# Version 1.0.1 Build 44
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
@@ -38,6 +38,7 @@
 # 14 Feb. 2022, 3d-gussner, Replace non-block space with space
 #                           Fix single language run without config.sh OK
 # 12 Mar. 2022, 3d-gussner, Update Norwegian replace umlaut and diacritics
+#                           Update Swedish umlaut and diacritics
 #############################################################################
 
 echo "$(tput setaf 2)lang-import.sh started$(tput sgr 0)" >&2
