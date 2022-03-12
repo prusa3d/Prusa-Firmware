@@ -149,8 +149,9 @@ if [ "$LNG" = "cz" ]; then
  sed -i 's/\xc5\xbe/z/g' $LNG'_filtered.po'
 fi
 
-#replace in german translation https://en.wikipedia.org/wiki/German_orthography
-if [ "$LNG" = "de" ]; then
+#replace in German translation https://en.wikipedia.org/wiki/German_orthography
+#replace in Swedish as well
+if [[ "$LNG" = "de" || "$LNG" = "sv" ]]; then
 #replace UTF-8 'äöüß' to HD44780 A00 'äöüß'
  #replace 'ä' with 'A00 ROM ä'
  sed -i 's/\xc3\xa4/\\xe1/g' $LNG'_filtered.po'
@@ -265,10 +266,10 @@ if [ "$LNG" = "nl" ]; then
 fi
 
 if [ "$LNG" = "sv" ]; then
-#repace 'Å' with 'Aa'
-sed -i 's/\xc3\x85/Aa/g' $LNG'_filtered.po'
-#repace 'å' with 'aa'
-sed -i 's/\xc3\xA5/aa/g' $LNG'_filtered.po'
+#repace 'Å' with 'A'
+sed -i 's/\xc3\x85/A/g' $LNG'_filtered.po'
+#repace 'å' with 'a'
+sed -i 's/\xc3\xA5/a/g' $LNG'_filtered.po'
 fi
 
 #https://en.wikipedia.org/wiki/Norwegian_orthography éèêóòôù ÅåÆæØø
