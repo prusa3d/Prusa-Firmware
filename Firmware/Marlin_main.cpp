@@ -7242,8 +7242,17 @@ Sigma_Exit:
       break;
 
     /*!
-	### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#M201:_Set_max_printing_acceleration">M201: Set max printing acceleration</a>
+	### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#M201:_Set_max_acceleration">M201: Set max printing acceleration</a>
     For each axis individually.
+    ##### Usage
+
+    M201 [ X | Y | Z | E ]
+
+    ##### Parameters
+    - `X` - Acceleration for X axis in units/s^2
+    - `Y` - Acceleration for Y axis in units/s^2
+    - `Z` - Acceleration for Z axis in units/s^2
+    - `E` - Acceleration for the active or specified extruder in units/s^2
     */
     case 201:
 		for (int8_t i = 0; i < NUM_AXIS; i++)
