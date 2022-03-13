@@ -8834,10 +8834,15 @@ Sigma_Exit:
     }
     break;
 
-  /*!
-  ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
-  
-  */
+    /*!
+    ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
+    #### Usage
+
+        M701 [ E ]
+
+    #### Parameters
+    - `E` - ID of filament to load, ranges from 0 to 4
+    */
 	case 701:
 	{
 		if (mmu_enabled && code_seen('E'))
@@ -8850,7 +8855,7 @@ Sigma_Exit:
     ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">G32: Undock Z Probe sled</a>
     #### Usage
     
-        M702 [ U | C ]
+        M702 [ C ]
     
     #### Parameters
     - `C` - Unload just current filament
