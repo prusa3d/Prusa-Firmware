@@ -7279,8 +7279,17 @@ Sigma_Exit:
     #endif
 
     /*!
-	### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#M203:_Set_maximum_feedrate">M203: Set maximum feedrate</a>
+    ### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#M203:_Set_maximum_feedrate">M203: Set maximum feedrate</a>
     For each axis individually.
+    ##### Usage
+
+    M203 [ X | Y | Z | E ]
+
+    ##### Parameters
+    - `X` - Maximum feedrate for X axis
+    - `Y` - Maximum feedrate for Y axis
+    - `Z` - Maximum feedrate for Z axis
+    - `E` - Maximum feedrate for extruder drives
     */
     case 203: // M203 max feedrate mm/sec
 		for (uint8_t i = 0; i < NUM_AXIS; i++)
