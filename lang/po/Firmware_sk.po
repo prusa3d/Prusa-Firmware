@@ -773,7 +773,7 @@ msgstr "MK3 firmware na MK3S tlaciarni"
 # MSG_NORMAL c=7
 #: messages.c:109
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 # MSG_SILENT c=7
 #: messages.c:108

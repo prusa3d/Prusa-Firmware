@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 44
+# Version 1.0.1 Build 45
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
@@ -281,9 +281,9 @@ if [ "$LNG" = "no" ]; then
  sed -i 's/\xc3\x86/\\xe1/g' $LNG'_filtered.po'
  #repace 'æ' with 'ae'
  sed -i 's/\xc3\xa6/\\xe1/g' $LNG'_filtered.po'
- #repace 'Ø' with 'O'
+ #repace 'Ø' with 'Ö'
  sed -i 's/\xc3\x98/\\xef/g' $LNG'_filtered.po'
- #repace 'ø' with 'o'
+ #repace 'ø' with 'ö'
  sed -i 's/\xc3\xb8/\\xef/g' $LNG'_filtered.po'
  #replace diacritics
  #repace 'Å' with 'A'

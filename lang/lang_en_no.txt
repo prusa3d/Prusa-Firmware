@@ -196,7 +196,7 @@
 
 #MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 "Select a filament for the First Layer Calibration and select it in the on-screen menu."
-"\x00"
+"Velg filamenttype for F\xefrstelags- kalibrering."
 
 #MSG_CRASH_DETECTED c=20
 "Crash detected."
@@ -900,7 +900,7 @@
 
 #MSG_RPI_PORT c=13
 "RPi port"
-"RPi port"
+"\x00"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -1060,11 +1060,11 @@
 
 #MSG_PINDA_CAL_FAILED c=20 r=4
 "PINDA calibration failed"
-"\x00"
+"PINDA kalibrering mislyktes"
 
 #MSG_PINDA_CALIBRATION_DONE c=20 r=8
 "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
-"\x00"
+"PINDA kalibrering er fullf\xefrt og aktiv. Der kan bli skudd av i menyen under Innstillinger -> PINDA kal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."

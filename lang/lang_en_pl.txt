@@ -604,7 +604,7 @@
 
 #MSG_NORMAL c=7
 "Normal"
-"Normal"
+"\x00"
 
 #MSG_SILENT c=7
 "Silent"

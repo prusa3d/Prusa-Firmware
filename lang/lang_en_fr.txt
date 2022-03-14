@@ -212,7 +212,7 @@
 
 #MSG_DATE c=17
 "Date:"
-"Date:"
+"\x00"
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"

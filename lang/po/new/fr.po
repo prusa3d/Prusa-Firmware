@@ -283,7 +283,7 @@ msgstr ""
 # MSG_DATE c=17
 #: ultralcd.cpp:1975
 msgid "Date:"
-msgstr "Date:"
+msgstr ""
 
 # MSG_COMMUNITY_MADE c=18
 #: messages.c:25

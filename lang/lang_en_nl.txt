@@ -124,7 +124,7 @@
 
 #MSG_BED c=13
 "Bed"
-"Bed"
+"\x00"
 
 #MSG_BELT_STATUS c=18
 "Belt status"
@@ -312,11 +312,11 @@
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
-"Fan test"
+"\x00"
 
 #MSG_FANS_CHECK c=13
 "Fans check"
-"Fans check"
+"\x00"
 
 #MSG_FSENSOR c=12
 "Fil. sensor"
@@ -1160,7 +1160,7 @@
 
 #MSG_WIZARD c=17
 "Wizard"
-"Wizard"
+"\x00"
 
 #MSG_XYZ_DETAILS c=18
 "XYZ cal. details"

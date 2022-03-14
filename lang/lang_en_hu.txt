@@ -68,7 +68,7 @@
 
 #MSG_AUTO_HOME c=18
 "Auto home"
-"Auto home"
+"\x00"
 
 #MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
@@ -288,11 +288,11 @@
 
 #MSG_INFO_EXTRUDER c=18
 "Extruder info"
-"Extruder info"
+"\x00"
 
 #MSG_EXTRUDER c=17
 "Extruder"
-"Extruder"
+"\x00"
 
 #MSG_MMU_FAIL_STATS c=18
 "Fail stats MMU"
@@ -372,7 +372,7 @@
 
 #MSG_FLOW c=15
 "Flow"
-"Flow"
+"\x00"
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
@@ -452,7 +452,7 @@
 
 #MSG_FILAMENT c=17
 "Filament"
-"Filament"
+"\x00"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
@@ -604,7 +604,7 @@
 
 #MSG_NORMAL c=7
 "Normal"
-"Normal"
+"\x00"
 
 #MSG_SILENT c=7
 "Silent"
@@ -636,7 +636,7 @@
 
 #MSG_SELFTEST_MOTOR c=18
 "Motor"
-"Motor"
+"\x00"
 
 #MSG_MOVE_AXIS c=18
 "Move axis"
@@ -664,7 +664,7 @@
 
 #MSG_NA c=3
 "N/A"
-"N/A"
+"\x00"
 
 #MSG_NO c=4
 "No"
@@ -900,7 +900,7 @@
 
 #MSG_RPI_PORT c=13
 "RPi port"
-"RPi port"
+"\x00"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"

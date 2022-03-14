@@ -103,7 +103,7 @@ msgstr "A Z tengely a felso vegponton van?"
 # MSG_AUTO_HOME c=18
 #: messages.c:11
 msgid "Auto home"
-msgstr "Auto home"
+msgstr ""
 
 # MSG_AUTOLOAD_FILAMENT c=18
 #: ultralcd.cpp:6635
@@ -378,12 +378,12 @@ msgstr "Extruder vent.:"
 # MSG_INFO_EXTRUDER c=18
 #: ultralcd.cpp:2030
 msgid "Extruder info"
-msgstr "Extruder info"
+msgstr """
 
 # MSG_EXTRUDER c=17
 #: messages.c:32
 msgid "Extruder"
-msgstr "Extruder"
+msgstr ""
 
 # MSG_MMU_FAIL_STATS c=18
 #: ultralcd.cpp:6657
@@ -483,7 +483,7 @@ msgstr "Hozd helyre a hibat, majd nyomd meg a gombot az MMU egysegen."
 # MSG_FLOW c=15
 #: ultralcd.cpp:6791
 msgid "Flow"
-msgstr "Flow"
+msgstr ""
 
 # MSG_SELFTEST_COOLING_FAN c=20
 #: messages.c:90
@@ -583,7 +583,7 @@ msgstr "Extruder valasztas:"
 # MSG_FILAMENT c=17
 #: messages.c:35
 msgid "Filament"
-msgstr "Filament"
+msgstr ""
 
 # MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ultralcd.cpp:4933
@@ -773,7 +773,7 @@ msgstr "MK3 firmver telepitve MK3S nyomtatora"
 # MSG_NORMAL c=7
 #: messages.c:109
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 # MSG_SILENT c=7
 #: messages.c:108
@@ -813,7 +813,7 @@ msgstr "MMU2 csatlakozott"
 # MSG_SELFTEST_MOTOR c=18
 #: messages.c:98
 msgid "Motor"
-msgstr "Motor"
+msgstr ""
 
 # MSG_MOVE_AXIS c=18
 #: ultralcd.cpp:5659
@@ -848,7 +848,7 @@ msgstr "Nincs SD kartya"
 # MSG_NA c=3
 #: messages.c:129
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 # MSG_NO c=4
 #: messages.c:73
@@ -1143,7 +1143,7 @@ msgstr "Jobb old.[μm]"
 # MSG_RPI_PORT c=13
 #: messages.c:144
 msgid "RPi port"
-msgstr "RPi port"
+msgstr ""
 
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4738

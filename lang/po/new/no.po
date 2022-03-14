@@ -263,7 +263,7 @@ msgstr "Krasjdet."
 # MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4824
 msgid "Select a filament for the First Layer Calibration and select it in the on-screen menu."
-msgstr ""
+msgstr "Velg filamenttype for Førstelags- kalibrering.
 
 # MSG_CRASH_DETECTED c=20
 #: messages.c:29
@@ -1143,7 +1143,7 @@ msgstr "Høyre side[μm]"
 # MSG_RPI_PORT c=13
 #: messages.c:144
 msgid "RPi port"
-msgstr "RPi port"
+msgstr ""
 
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4738
@@ -1343,12 +1343,12 @@ msgstr "Velg temperaturen som passer ditt materiale."
 # MSG_PINDA_CAL_FAILED c=20 r=4
 #: ultralcd.cpp:3761
 msgid "PINDA calibration failed"
-msgstr ""
+msgstr "PINDA kalibrering mislyktes"
 
 # MSG_PINDA_CALIBRATION_DONE c=20 r=8
 #: messages.c:115
 msgid "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
-msgstr ""
+msgstr "PINDA kalibrering er fullført og aktiv. Der kan bli skudd av i menyen under Innstillinger -> PINDA kal."
 
 # MSG_FS_VERIFIED c=20 r=3
 #: ultralcd.cpp:7314

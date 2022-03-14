@@ -173,7 +173,7 @@ msgstr "Helderheid"
 # MSG_BED c=13
 #: messages.c:14
 msgid "Bed"
-msgstr "Bed"
+msgstr ""
 
 # MSG_BELT_STATUS c=18
 #: messages.c:19
@@ -408,12 +408,12 @@ msgstr "Fan snelh."
 # MSG_SELFTEST_FAN c=20
 #: messages.c:93
 msgid "Fan test"
-msgstr "Fan test"
+msgstr ""
 
 # MSG_FANS_CHECK c=13
 #: messages.c:33
 msgid "Fans check"
-msgstr "Fans check"
+msgstr ""
 
 # MSG_FSENSOR c=12
 #: messages.c:51
@@ -1468,7 +1468,7 @@ msgstr "Aansluitingsfout"
 # MSG_WIZARD c=17
 #: ultralcd.cpp:5753
 msgid "Wizard"
-msgstr "Wizard"
+msgstr ""
 
 # MSG_XYZ_DETAILS c=18
 #: ultralcd.cpp:2029

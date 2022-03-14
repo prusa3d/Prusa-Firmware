@@ -773,7 +773,7 @@ msgstr "Wykryto firmware MK3 w drukarce MK3S"
 # MSG_NORMAL c=7
 #: messages.c:109
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 # MSG_SILENT c=7
 #: messages.c:108
