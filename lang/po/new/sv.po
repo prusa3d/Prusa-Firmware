@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: 2021-12-27 19:54+0100\n"
-"PO-Revision-Date: 2022-03-06 20:39+0100\n"
+"PO-Revision-Date: 2022-03-10 17:38+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: sv\n"
@@ -135,7 +135,7 @@ msgstr "Bädden värms upp"
 # MSG_BED_CORRECTION_MENU c=18
 #: ultralcd.cpp:5798
 msgid "Bed level correct"
-msgstr "Bäddnivakorrigering"
+msgstr "Bäddytskorrigering"
 
 # MSG_BELTTEST c=18
 #: ultralcd.cpp:5778
@@ -280,7 +280,7 @@ msgstr "Datum:"
 # MSG_COMMUNITY_MADE c=18
 #: messages.c:25
 msgid "Community made"
-msgstr "Allmänhetsgjord"
+msgstr "Community skapad"
 
 # MSG_DISABLE_STEPPERS c=18
 #: ultralcd.cpp:5678
@@ -539,22 +539,22 @@ msgstr "ändring korrekt?"
 # MSG_SELFTEST_CHECK_BED c=20
 #: messages.c:94
 msgid "Checking bed"
-msgstr "Kontroll bädd"
+msgstr "Kontrollerar bädd"
 
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ultralcd.cpp:8481
 msgid "Checking endstops"
-msgstr "Kontroll ändlägen"
+msgstr "Kontrollerar ändlägen"
 
 # MSG_SELFTEST_CHECK_HOTEND c=20
 #: ultralcd.cpp:8487
 msgid "Checking hotend"
-msgstr "Kontroll hotend"
+msgstr "Kontrollerar hotend"
 
 # MSG_SELFTEST_CHECK_FSENSOR c=20
 #: messages.c:95
 msgid "Checking sensors"
-msgstr "Kontroll sensorer"
+msgstr "Kontrollerar sensorer"
 
 # MSG_CHECKING_X c=20
 #: messages.c:23
@@ -689,7 +689,7 @@ msgstr "Iteration"
 # MSG_LOOSE_PULLEY c=20
 #: ultralcd.cpp:8167
 msgid "Loose pulley"
-msgstr "Lossa pulley"
+msgstr "Lös pulley"
 
 # MSG_LOAD_TO_NOZZLE c=18
 #: ultralcd.cpp:6717
@@ -704,7 +704,7 @@ msgstr "M117 Först lager kalibr."
 # MSG_MAIN c=18
 #: messages.c:63
 msgid "Main"
-msgstr "Huvudsaklig"
+msgstr "Huvud"
 
 # MSG_BL_HIGH c=12
 #: messages.c:155
@@ -1334,7 +1334,7 @@ msgstr "Support"
 # MSG_SELFTEST_SWAPPED c=16
 #: ultralcd.cpp:8180
 msgid "Swapped"
-msgstr "Bytt"
+msgstr "Utbytt"
 
 # MSG_SELECT_FILAMENT c=20
 #: ultralcd.cpp:4706
@@ -1429,7 +1429,7 @@ msgstr "Tar bort filament"
 # MSG_TOTAL c=6
 #: messages.c:100
 msgid "Total"
-msgstr "Total"
+msgstr ""
 
 # MSG_USED c=19
 #: ultralcd.cpp:5928
@@ -1449,7 +1449,7 @@ msgstr "okänd"
 # MSG_USERWAIT c=20
 #: Marlin_main.cpp:4347
 msgid "Wait for user..."
-msgstr "Inväntar användare."
+msgstr "Väntar på användare."
 
 # MSG_WAITING_TEMP c=20 r=4
 #: ultralcd.cpp:3283
@@ -1604,7 +1604,7 @@ msgstr "Tillbaka"
 # MSG_CHECKS c=18
 #: ultralcd.cpp:5641
 msgid "Checks"
-msgstr "Kontrollerar"
+msgstr "Kontroller"
 
 # MSG_FALSE_TRIGGERING c=20
 #: ultralcd.cpp:8190
@@ -1739,7 +1739,7 @@ msgstr "Skiva"
 # MSG_SOUND_BLIND c=7
 #: messages.c:146
 msgid "Assist"
-msgstr "Assist"
+msgstr ""
 
 # MSG_STEEL_SHEET c=18
 #: messages.c:66
