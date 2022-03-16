@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 45
+# Version 1.0.1 Build 46
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
@@ -277,9 +277,9 @@ fi
 #https://en.wikipedia.org/wiki/Norwegian_orthography éèêóòôù ÅåÆæØø
 if [ "$LNG" = "no" ]; then
  #replace UTF-8 'æÆøØ' to HD44780 A00 'äö'
- #repace 'Æ' with 'Ae'
+ #repace 'Æ' with 'Ä'
  sed -i 's/\xc3\x86/\\xe1/g' $LNG'_filtered.po'
- #repace 'æ' with 'ae'
+ #repace 'æ' with 'ä'
  sed -i 's/\xc3\xa6/\\xe1/g' $LNG'_filtered.po'
  #repace 'Ø' with 'Ö'
  sed -i 's/\xc3\x98/\\xef/g' $LNG'_filtered.po'
@@ -507,7 +507,9 @@ sed -i "s/\r//g" lang_en_$LNG.txt
 
 #check new lang
 python3 ../../lang-check.py $LNG --warn-empty
-python3 ../../lang-check.py $LNG --information >$LNG-output.txt
+#gerenate some output
+python3 ../../lang-check.py $LNG --information >output-layout-$LNG.txt
+grep "msgstr" $LNGISO.po | cut -d '"' -f2 | sort >output-sorted-$LNG.txt
 echo >&2
 echo "$(tput setaf 2)lang-import.sh finished$(tput sgr 0)">&2
 
