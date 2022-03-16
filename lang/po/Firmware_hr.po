@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: hr\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat 12 Mar 2022 11:48:34 AM CET\n"
-"PO-Revision-Date: Sat 12 Mar 2022 11:48:34 AM CET\n"
+"POT-Creation-Date: Wed 16 Mar 2022 09:25:10 AM CET\n"
+"PO-Revision-Date: Wed 16 Mar 2022 09:25:10 AM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -18,7 +18,7 @@ msgstr ""
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
 msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr ""
+msgstr "Ploca %.7s\x0aZ offset: %+1.3fmm\x0a%cNastaviti\x0a%cResetiraj"
 
 # MSG_REFRESH c=18
 #: messages.c:85

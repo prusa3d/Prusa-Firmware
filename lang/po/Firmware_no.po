@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: no\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Sat 12 Mar 2022 11:48:45 AM CET\n"
-"PO-Revision-Date: Sat 12 Mar 2022 11:48:45 AM CET\n"
+"POT-Creation-Date: Wed 16 Mar 2022 09:25:21 AM CET\n"
+"PO-Revision-Date: Wed 16 Mar 2022 09:25:21 AM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -18,7 +18,7 @@ msgstr ""
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
 msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr ""
+msgstr "Plate %.7s\x0aZ offset: %+1.3fmm\x0a%cFortsette\x0a%cNullstill"
 
 # MSG_REFRESH c=18
 #: messages.c:85
@@ -1148,7 +1148,7 @@ msgstr ""
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4738
 msgid "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-msgstr "Ved a kjøre Veilederen slettes all naværende kalibreringsdata og du ma begynne på nytt. Fortsett?"
+msgstr "Ved a kjøre Veilederen slettes all naværende kalibreringsdata og du ma begynne på nytt. Fortsette?"
 
 # MSG_SD_CARD c=8
 #: messages.c:140
