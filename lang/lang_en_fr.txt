@@ -2,7 +2,6 @@
 "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
 "Plaque %.7s\x0aZ offset: %+1.3fmm\x0a%cContinuer\x0a%cReinitialiser"
 
-
 #MSG_REFRESH c=18
 "\x04Refresh"
 "\x04Rafraichir"
