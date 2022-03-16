@@ -166,7 +166,7 @@
 "Calibration done"
 "\x00"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "\x00"
 
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "\x00"
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "\x00"
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "\x00"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "\x00"
 
@@ -258,7 +258,7 @@
 "Endstops"
 "\x00"
 
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "\x00"
 
@@ -374,7 +374,7 @@
 "Flow"
 "\x00"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "\x00"
 
@@ -462,7 +462,7 @@
 "I will run z calibration now."
 "\x00"
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "\x00"
 
@@ -690,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "\x00"
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "\x00"
 
@@ -802,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "\x00"
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "\x00"
 

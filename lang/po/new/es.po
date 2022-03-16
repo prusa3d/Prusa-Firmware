@@ -225,7 +225,7 @@ msgstr "Calibrando Z. Gira el dial para subir el extrusor hasta tocar los topes 
 msgid "Calibration done"
 msgstr "Calibracion OK"
 
-# MSG_MENU_CALIBRATION c=18
+# MSG_CALIBRATION c=18
 #: messages.c:70
 msgid "Calibration"
 msgstr "Calibracion"
@@ -300,7 +300,7 @@ msgstr "Apagar motores"
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 msgstr "Distancia entre la punta del boquilla y la superficie de la base aun no fijada. Por favor siga el manual, capitulo Primeros Pasos, Calibracion primera capa."
 
-# MSG_FS_CONTINUE c=5
+# MSG_CONTINUE_SHORT c=5
 #: messages.c:154
 msgid "Cont."
 msgstr ""
@@ -315,7 +315,7 @@ msgstr "Quieres repetir el ultimo paso para reajustar la distancia boquilla-base
 msgid "E-correct:"
 msgstr "Corregir-E:"
 
-# MSG_EJECT_FILAMENT c=16
+# MSG_EJECT_FILAMENT c=17
 #: messages.c:62
 msgid "Eject filament"
 msgstr "Expulsar fil."
@@ -340,7 +340,7 @@ msgstr ""
 msgid "Endstops"
 msgstr ""
 
-# MSG_CUT_FILAMENT c=16
+# MSG_CUT_FILAMENT c=17
 #: messages.c:63
 msgid "Cut filament"
 msgstr "Cortar filament"
@@ -485,7 +485,7 @@ msgstr "Corrige el problema y pulsa el boton en la unidad MMU."
 msgid "Flow"
 msgstr "Flujo"
 
-# MSG_SELFTEST_COOLING_FAN c=20
+# MSG_SELFTEST_PART_FAN c=20
 #: messages.c:90
 msgid "Front print fan?"
 msgstr "Vent. frontal?"
@@ -595,7 +595,7 @@ msgstr "Hare la calibracion XYZ. Tardara 12 min. aproximadamente."
 msgid "I will run z calibration now."
 msgstr "Voy a hacer Calibracion Z ahora."
 
-# MSG_WATCH c=18
+# MSG_INFO_SCREEN c=18
 #: messages.c:118
 msgid "Info screen"
 msgstr "Monitorizar"
@@ -880,7 +880,7 @@ msgstr "Voy a calibrar la distancia entre la punta de la boquilla y la superfici
 msgid "Now I will preheat nozzle for PLA."
 msgstr "Ahora precalentare la boquilla para PLA."
 
-# MSG_NOZZLE c=12
+# MSG_NOZZLE c=10
 #: messages.c:74
 msgid "Nozzle"
 msgstr "Boquilla"
@@ -1020,7 +1020,7 @@ msgstr "Actualize por favor"
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Pulsa el dial para precalentar la boquilla y continue."
 
-# MSG_FS_PAUSE c=5
+# MSG_PAUSE c=5
 #: fsensor.cpp:730
 msgid "Pause"
 msgstr "Pausa"
@@ -1643,7 +1643,7 @@ msgstr "D-boquilla"
 # MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: util.cpp:414
 msgid "G-code sliced for a different level. Continue?"
-msgstr "Codigo G laminado para un nivel diferente. ?Continuar?"
+msgstr "Codigo G laminado para un nivel diferente. Continuar?"
 
 # MSG_GCODE_DIFF_CANCELLED c=20 r=7
 #: util.cpp:420
@@ -1653,7 +1653,7 @@ msgstr "Codigo G laminado para un nivel diferente. Por favor relamina el modelo 
 # MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 #: messages.c:136
 msgid "G-code sliced for a different printer type. Continue?"
-msgstr "Codigo G laminado para un tipo de impresora diferente. ?Continuar?"
+msgstr "Codigo G laminado para un tipo de impresora diferente. Continuar?"
 
 # MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: messages.c:137
@@ -1663,7 +1663,7 @@ msgstr "Codigo G laminado para una impresora diferente. Por favor relamina el mo
 # MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 #: util.cpp:381
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "Codigo G laminado para nuevo firmware. ?Continuar?"
+msgstr "Codigo G laminado para nuevo firmware. Continuar?"
 
 # MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: util.cpp:387
@@ -1683,7 +1683,7 @@ msgstr "Precalent. expulsar"
 # MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 #: util.cpp:294
 msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr "Diametro nozzle impresora difiere de cod.G. ?Continuar?"
+msgstr "Diametro nozzle impresora difiere de cod.G. Continuar?"
 
 # MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: util.cpp:301

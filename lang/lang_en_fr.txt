@@ -1,6 +1,7 @@
 #MSG_SHEET_OFFSET c=20 r=4
 "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-"\x00"
+"Plaque %.7s\x0aZ offset: %+1.3fmm\x0a%cContinuer\x0a%cReinitialiser"
+
 
 #MSG_REFRESH c=18
 "\x04Refresh"
@@ -166,7 +167,7 @@
 "Calibration done"
 "Calibration terminee"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "\x00"
 
@@ -226,7 +227,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "La distance entre la pointe de la buse et la surface du plateau n'a pas encore ete reglee. Suivez le manuel, chapitre Premiers pas, section Calibration de la premiere couche."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "\x00"
 
@@ -238,7 +239,7 @@
 "E-correct:"
 "Correct-E:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Remonter le fil."
 
@@ -258,7 +259,7 @@
 "Endstops"
 "Butees"
 
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Coupe filament"
 
@@ -374,7 +375,7 @@
 "Flow"
 "Flux"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Ventilo impr avant?"
 
@@ -462,7 +463,7 @@
 "I will run z calibration now."
 "Je vais maintenant lancer la calibration Z."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Ecran d'info"
 
@@ -488,7 +489,7 @@
 
 #MSG_ADDITIONAL_SHEETS c=20 r=9
 "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
-"Si vous avez d'autres feuilles d'acier,  calibrez leurs pre-reglages dans Reglages - Config HW - Plaque en acier."
+"Si vous avez d'autres feuilles d'acier, calibrez leurs pre-reglages dans Reglages - Config HW - Plaque en acier."
 
 #MSG_LAST_PRINT c=18
 "Last print"
@@ -690,7 +691,7 @@
 "Now I will preheat nozzle for PLA."
 "Maintenant je vais prechauffer la buse pour du PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Buse"
 
@@ -802,7 +803,7 @@
 "Press the knob to preheat nozzle and continue."
 "Appuyez sur le bouton pour prechauffer la buse et continuer."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "\x00"
 
@@ -1228,7 +1229,7 @@
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-"L'imprimante commencera a  imprimer une ligne en zig-zag. Tournez le bouton jusqu'a atteindre la hauteur optimale. Consultez les photos dans le manuel (chapitre Calibration)."
+"L'imprimante commencera a imprimer une ligne en zig-zag. Tournez le bouton jusqu'a atteindre la hauteur optimale. Consultez les photos dans le manuel (chapitre Calibration)."
 
 #MSG_FIL_FAILED c=20 r=5
 "Verification failed, remove the filament and try again."

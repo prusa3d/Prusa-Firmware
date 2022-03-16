@@ -220,7 +220,7 @@ msgstr ""
 msgid "Calibration done"
 msgstr ""
 
-# MSG_MENU_CALIBRATION c=18
+# MSG_CALIBRATION c=18
 #: messages.c:70
 msgid "Calibration"
 msgstr ""
@@ -295,7 +295,7 @@ msgstr ""
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 msgstr ""
 
-# MSG_FS_CONTINUE c=5
+# MSG_CONTINUE_SHORT c=5
 #: messages.c:154
 msgid "Cont."
 msgstr ""
@@ -310,7 +310,7 @@ msgstr ""
 msgid "E-correct:"
 msgstr ""
 
-# MSG_EJECT_FILAMENT c=16
+# MSG_EJECT_FILAMENT c=17
 #: messages.c:62
 msgid "Eject filament"
 msgstr ""
@@ -335,7 +335,7 @@ msgstr ""
 msgid "Endstops"
 msgstr ""
 
-# MSG_CUT_FILAMENT c=16
+# MSG_CUT_FILAMENT c=17
 #: messages.c:63
 msgid "Cut filament"
 msgstr ""
@@ -480,7 +480,7 @@ msgstr ""
 msgid "Flow"
 msgstr ""
 
-# MSG_SELFTEST_COOLING_FAN c=20
+# MSG_SELFTEST_PART_FAN c=20
 #: messages.c:90
 msgid "Front print fan?"
 msgstr ""
@@ -590,7 +590,7 @@ msgstr ""
 msgid "I will run z calibration now."
 msgstr ""
 
-# MSG_WATCH c=18
+# MSG_INFO_SCREEN c=18
 #: messages.c:118
 msgid "Info screen"
 msgstr ""
@@ -875,7 +875,7 @@ msgstr ""
 msgid "Now I will preheat nozzle for PLA."
 msgstr ""
 
-# MSG_NOZZLE c=12
+# MSG_NOZZLE c=10
 #: messages.c:74
 msgid "Nozzle"
 msgstr ""
@@ -1015,7 +1015,7 @@ msgstr ""
 msgid "Press the knob to preheat nozzle and continue."
 msgstr ""
 
-# MSG_FS_PAUSE c=5
+# MSG_PAUSE c=5
 #: fsensor.cpp:730
 msgid "Pause"
 msgstr ""

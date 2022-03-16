@@ -118,7 +118,7 @@ msgstr "Automatsko punjenje filamenta moguce je samo kada je sensor filamenta uk
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2638
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Auto punjenje fil.  je aktivno, pritisnite gumb i umetnite fil.."
+msgstr "Auto punjenje fil. je aktivno, pritisnite gumb i umetnite fil.."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8076
@@ -158,7 +158,7 @@ msgstr "Testiranje remena"
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-msgstr "Niveliranje podloge nije uspijelo. Senzor  aktiviran. Prljavstina na mlaznici? Ceka se resetiranje."
+msgstr "Niveliranje podloge nije uspijelo. Senzor aktiviran. Prljavstina na mlaznici? Ceka se resetiranje."
 
 # MSG_BRIGHT c=6
 #: messages.c:160
@@ -225,7 +225,7 @@ msgstr "Kalibracija Z. Okrenite gumb da pomaknete Z nosac do krajnjih granicnika
 msgid "Calibration done"
 msgstr "Kalibracija gotova"
 
-# MSG_MENU_CALIBRATION c=18
+# MSG_CALIBRATION c=18
 #: messages.c:70
 msgid "Calibration"
 msgstr "Kalibriranje"
@@ -300,7 +300,7 @@ msgstr "Onemoguci stepere"
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 msgstr "Udaljenost izmedu vrha mlaznice i povrsine lezista jos nije postavljena. Molimo slijedite prirucnik, poglavlje Prvi koraci, odjeljak Kalibracija prvog sloja."
 
-# MSG_FS_CONTINUE c=5
+# MSG_CONTINUE_SHORT c=5
 #: messages.c:154
 msgid "Cont."
 msgstr "Nast."
@@ -315,7 +315,7 @@ msgstr "Zelite li ponoviti zadnji korak za ponovno podesavanje udaljenosti izmed
 msgid "E-correct:"
 msgstr "E-ispravan:"
 
-# MSG_EJECT_FILAMENT c=16
+# MSG_EJECT_FILAMENT c=17
 #: messages.c:62
 msgid "Eject filament"
 msgstr "Izbaci filament"
@@ -340,7 +340,7 @@ msgstr "Granicnik"
 msgid "Endstops"
 msgstr "Granicnici"
 
-# MSG_CUT_FILAMENT c=16
+# MSG_CUT_FILAMENT c=17
 #: messages.c:63
 msgid "Cut filament"
 msgstr "Odrezite fil."
@@ -485,7 +485,7 @@ msgstr "Rijesite problem, a zatim pritisnite gumb na MMU jedinici."
 msgid "Flow"
 msgstr "Protok"
 
-# MSG_SELFTEST_COOLING_FAN c=20
+# MSG_SELFTEST_PART_FAN c=20
 #: messages.c:90
 msgid "Front print fan?"
 msgstr "Prednji print vent?"
@@ -595,7 +595,7 @@ msgstr "Sada cu pokrenuti xyz kalibraciju. Trebat ce cca. 12 min."
 msgid "I will run z calibration now."
 msgstr "Sada cu pokrenuti z kalibraciju."
 
-# MSG_WATCH c=18
+# MSG_INFO_SCREEN c=18
 #: messages.c:118
 msgid "Info screen"
 msgstr "Info zaslon"
@@ -880,7 +880,7 @@ msgstr "Sada cu kalibrirati udaljenost izmedu vrha mlaznice i povrsine grijane p
 msgid "Now I will preheat nozzle for PLA."
 msgstr "Sada cu zagrijati mlaznicu za PLA."
 
-# MSG_NOZZLE c=12
+# MSG_NOZZLE c=10
 #: messages.c:74
 msgid "Nozzle"
 msgstr "Mlaznica"
@@ -1020,7 +1020,7 @@ msgstr "Molimo nadogradite."
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Pritisnite gumb za predgrijavanje mlaznice i nastavite."
 
-# MSG_FS_PAUSE c=5
+# MSG_PAUSE c=5
 #: fsensor.cpp:730
 msgid "Pause"
 msgstr "Pauza"

@@ -1,6 +1,6 @@
 #MSG_SHEET_OFFSET c=20 r=4
 "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-"\x00"
+"Acellap %.7s\x0aZ offset: %+1.3fmm\x0a%cFolytassam\x0a%cUjrainditas"
 
 #MSG_REFRESH c=18
 "\x04Refresh"
@@ -166,7 +166,7 @@
 "Calibration done"
 "Kalibracio kesz"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibracio"
 
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "A fuvoka vege es a targyasztal felulete kozotti tavolsag nincs beallitva. Kerlek, kovesd az utmutato Elso lepesek fejezeteben az Elso reteg kalibracio bekezdest."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Folyt"
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "E-korrekcio:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Filament kiadasa"
 
@@ -258,7 +258,7 @@
 "Endstops"
 "Vegallaskapcsolok"
 
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Filament vagasa"
 
@@ -374,7 +374,7 @@
 "Flow"
 "\x00"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Elso targyhuto vent?"
 
@@ -462,7 +462,7 @@
 "I will run z calibration now."
 "Lefuttatom a Z kalibraciot."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Info kepernyo"
 
@@ -690,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Felfutom a fuvokat PLA-hoz."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Fuvoka"
 
@@ -802,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Nyomd meg a gombot a folytatashoz es a fuvoka felfutesehez."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Szun."
 

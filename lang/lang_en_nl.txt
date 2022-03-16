@@ -1,6 +1,6 @@
 #MSG_SHEET_OFFSET c=20 r=4
 "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-"\x00"
+"Staalplaat %.7s\x0aZ offset: %+1.3fmm\x0a%cDoorgaan\x0a%cReset"
 
 #MSG_REFRESH c=18
 "\x04Refresh"
@@ -166,7 +166,7 @@
 "Calibration done"
 "Kalibratie klaar"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibratie"
 
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Afstand tussen tip van de tuit en het print oppervlak is nog niet vastgesteld. Volg de handleiding, First steps, sectie First layer calibration."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Door."
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "E-correctie:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Fil. uitwerpen"
 
@@ -258,7 +258,7 @@
 "Endstops"
 "Eindstops"
 
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Fil. knippen"
 
@@ -374,13 +374,13 @@
 "Flow"
 "Stromen"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Voorzijde fan?"
 
 #MSG_BED_CORRECTION_FRONT c=14
 "Front side[\xe4m]"
-"Voorkant  [\xe4m]"
+"Voorkant [\xe4m]"
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
@@ -462,7 +462,7 @@
 "I will run z calibration now."
 "Begin nu met z-kalibratie."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Info scherm"
 
@@ -680,7 +680,7 @@
 
 #MSG_SELFTEST_FAN_NO c=19
 "Not spinning"
-"Beweegt niet"
+"Draait niet"
 
 #MSG_WIZARD_V2_CAL c=20 r=8
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
@@ -690,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Opwarmen van de tuit voor PLA voor."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Tuit"
 
@@ -802,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Druk op de knop om de tuit voor te verwarmen en door te gaan."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pauze"
 
@@ -924,7 +924,7 @@
 
 #MSG_SELFTEST_OK c=20
 "Self test OK"
-"Zelftest  OK"
+"Zelftest OK"
 
 #MSG_SELFTEST_START c=20
 "Self test start"

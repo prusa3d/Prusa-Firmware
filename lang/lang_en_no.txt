@@ -1,6 +1,6 @@
 #MSG_SHEET_OFFSET c=20 r=4
 "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-"\x00"
+"Plate %.7s\x0aZ offset: %+1.3fmm\x0a%cFortsette\x0a%cNullstill"
 
 #MSG_REFRESH c=18
 "\x04Refresh"
@@ -166,7 +166,7 @@
 "Calibration done"
 "Kalibrering ferdig"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibrering"
 
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Avstand mellom tuppen av dysen og platen er ikke kalibrert. Vennligst se manualen/KB for hvordan det skal se ut."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Fort."
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "E-korreksjon:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Utl\xefs filament"
 
@@ -258,7 +258,7 @@
 "Endstops"
 "Endesensorene"
 
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Kutt filament"
 
@@ -374,7 +374,7 @@
 "Flow"
 "Flyt"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Fremre printvifte?"
 
@@ -462,7 +462,7 @@
 "I will run z calibration now."
 "Na kj\xefrer jeg Z-kalibreringen."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Infoskjerm"
 
@@ -690,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Jeg vil na forvarme dysen for PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Dyse"
 
@@ -802,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Trykk valghjulet for a forvarme dysen og fortsette."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "\x00"
 
@@ -904,7 +904,7 @@
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-"Ved a kj\xefre Veilederen slettes all nav\xe1rende kalibreringsdata og du ma begynne pa nytt. Fortsett?"
+"Ved a kj\xefre Veilederen slettes all nav\xe1rende kalibreringsdata og du ma begynne pa nytt. Fortsette?"
 
 #MSG_SD_CARD c=8
 "SD card"

@@ -225,7 +225,7 @@ msgstr "Z kalibralas. Tekerd a gombot addig, amig a Z tengely a felso vegpontra 
 msgid "Calibration done"
 msgstr "Kalibracio kesz"
 
-# MSG_MENU_CALIBRATION c=18
+# MSG_CALIBRATION c=18
 #: messages.c:70
 msgid "Calibration"
 msgstr "Kalibracio"
@@ -300,7 +300,7 @@ msgstr "Motorok kikapcsol."
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 msgstr "A fuvoka vege es a targyasztal felulete kozotti tavolsag nincs beallitva. Kerlek, kovesd az utmutato Elso lepesek fejezeteben az Elso reteg kalibracio bekezdest."
 
-# MSG_FS_CONTINUE c=5
+# MSG_CONTINUE_SHORT c=5
 #: messages.c:154
 msgid "Cont."
 msgstr "Folyt"
@@ -315,7 +315,7 @@ msgstr "Meg szeretned ismetelni az utolso lepest, hogy finomhangold a fuvoka es 
 msgid "E-correct:"
 msgstr "E-korrekcio:"
 
-# MSG_EJECT_FILAMENT c=16
+# MSG_EJECT_FILAMENT c=17
 #: messages.c:62
 msgid "Eject filament"
 msgstr "Filament kiadasa"
@@ -340,7 +340,7 @@ msgstr "Vegallaskapcsolo"
 msgid "Endstops"
 msgstr "Vegallaskapcsolok"
 
-# MSG_CUT_FILAMENT c=16
+# MSG_CUT_FILAMENT c=17
 #: messages.c:63
 msgid "Cut filament"
 msgstr "Filament vagasa"
@@ -485,7 +485,7 @@ msgstr "Hozd helyre a hibat, majd nyomd meg a gombot az MMU egysegen."
 msgid "Flow"
 msgstr ""
 
-# MSG_SELFTEST_COOLING_FAN c=20
+# MSG_SELFTEST_PART_FAN c=20
 #: messages.c:90
 msgid "Front print fan?"
 msgstr "Elso targyhuto vent?"
@@ -595,7 +595,7 @@ msgstr "Lefuttatom az XYZ kalibraciot. Ez kb. 12 percet vesz igenybe."
 msgid "I will run z calibration now."
 msgstr "Lefuttatom a Z kalibraciot."
 
-# MSG_WATCH c=18
+# MSG_INFO_SCREEN c=18
 #: messages.c:118
 msgid "Info screen"
 msgstr "Info kepernyo"
@@ -880,7 +880,7 @@ msgstr "Most beallitjuk a fuvoka hegye es a targyasztal felulete kozotti tavolsa
 msgid "Now I will preheat nozzle for PLA."
 msgstr "Felfutom a fuvokat PLA-hoz."
 
-# MSG_NOZZLE c=12
+# MSG_NOZZLE c=10
 #: messages.c:74
 msgid "Nozzle"
 msgstr "Fuvoka"
@@ -1020,7 +1020,7 @@ msgstr "Kerlek frissits."
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Nyomd meg a gombot a folytatashoz es a fuvoka felfutesehez."
 
-# MSG_FS_PAUSE c=5
+# MSG_PAUSE c=5
 #: fsensor.cpp:730
 msgid "Pause"
 msgstr "Szun."

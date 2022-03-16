@@ -1,6 +1,6 @@
 #MSG_SHEET_OFFSET c=20 r=4
 "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-"\x00"
+"Plyta %.7s\x0aZ offset: %+1.3fmm\x0a%cKontynuowac\x0a%cReset"
 
 #MSG_REFRESH c=18
 "\x04Refresh"
@@ -166,7 +166,7 @@
 "Calibration done"
 "Kalibracja OK"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibracja"
 
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Odleglosc dyszy od powierzchni druku nie jest skalibrowana. Postepuj zgodnie z instrukcja: rozdzial Wprowadzenie - Kalibracja pierwszej warstwy."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Kont."
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "Korekcja-E:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Wysun filament"
 
@@ -258,7 +258,7 @@
 "Endstops"
 "Krancowki"
 
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Ciecie filamentu"
 
@@ -374,7 +374,7 @@
 "Flow"
 "Przeplyw"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Przedni went. druku?"
 
@@ -462,7 +462,7 @@
 "I will run z calibration now."
 "Przeprowadze kalibracje Z."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Ekran informacyjny"
 
@@ -690,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Nagrzewam dysze dla PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Dysza"
 
@@ -802,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Wcisnij pokretlo aby rozgrzac dysze i kontynuowac."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pauza"
 

@@ -213,7 +213,7 @@ msgstr "XYZ Kalibrieren: Drehen Sie den Knopf bis der obere Anschlag erreicht wi
 # MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: messages.c:21
 msgid "Calibrating Z"
-msgstr "Kalibrierung Z"
+msgstr "Kalibriere Z"
 
 # MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 #: ultralcd.cpp:3308
@@ -225,7 +225,7 @@ msgstr "Z Kalibrieren: Drehen Sie den Knopf bis der obere Anschlag erreicht wird
 msgid "Calibration done"
 msgstr "Kalibrierung OK"
 
-# MSG_MENU_CALIBRATION c=18
+# MSG_CALIBRATION c=18
 #: messages.c:70
 msgid "Calibration"
 msgstr "Kalibrierung"
@@ -300,7 +300,7 @@ msgstr "Motoren aus"
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 msgstr "Der Abstand zwischen der Spitze der Düse und dem Bett ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, Kapitel Erste Schritte, Abschnitt Erste Schicht Kalibrierung."
 
-# MSG_FS_CONTINUE c=5
+# MSG_CONTINUE_SHORT c=5
 #: messages.c:154
 msgid "Cont."
 msgstr ""
@@ -315,7 +315,7 @@ msgstr "Möchten Sie den letzten Schritt wiederholen, um den Abstand zwischen D�
 msgid "E-correct:"
 msgstr "E-Korrektur:"
 
-# MSG_EJECT_FILAMENT c=16
+# MSG_EJECT_FILAMENT c=17
 #: messages.c:62
 msgid "Eject filament"
 msgstr "Filamentauswurf"
@@ -340,7 +340,7 @@ msgstr "Endanschlag"
 msgid "Endstops"
 msgstr "Endschalter"
 
-# MSG_CUT_FILAMENT c=16
+# MSG_CUT_FILAMENT c=17
 #: messages.c:63
 msgid "Cut filament"
 msgstr "Fil. schneiden"
@@ -485,7 +485,7 @@ msgstr "Beseitigen Sie das Problem und drücken Sie dann den Knopf am MMU."
 msgid "Flow"
 msgstr "Durchfluss"
 
-# MSG_SELFTEST_COOLING_FAN c=20
+# MSG_SELFTEST_PART_FAN c=20
 #: messages.c:90
 msgid "Front print fan?"
 msgstr "Drucklüfter?"
@@ -595,7 +595,7 @@ msgstr "Ich werde jetzt die XYZ-Kalibrierung durchführen. Es wird ca. 12 Minute
 msgid "I will run z calibration now."
 msgstr "Ich werde jetzt die Z Kalibrierung durchführen."
 
-# MSG_WATCH c=18
+# MSG_INFO_SCREEN c=18
 #: messages.c:118
 msgid "Info screen"
 msgstr "Infoanzeige"
@@ -693,7 +693,7 @@ msgstr "Lose Riemenscheibe"
 # MSG_LOAD_TO_NOZZLE c=18
 #: ultralcd.cpp:6620
 msgid "Load to nozzle"
-msgstr "In Nozzle laden"
+msgstr "In Düse laden"
 
 # MSG_M117_V2_CALIBRATION c=25
 #: messages.c:64
@@ -758,7 +758,7 @@ msgstr "MMU Ladefehler"
 # MSG_MMU_OK_RESUMING c=20 r=4
 #: mmu.cpp:776
 msgid "MMU OK. Resuming..."
-msgstr "MMU OK.  Weiterdrucken..."
+msgstr "MMU OK. Weiterdrucken..."
 
 # MSG_MODE c=6
 #: messages.c:105
@@ -880,7 +880,7 @@ msgstr "Jetzt werde ich den Abstand zwischen Düsenspitze und Druckbett kalibrie
 msgid "Now I will preheat nozzle for PLA."
 msgstr "Jetzt werde ich die Düse für PLA vorheizen."
 
-# MSG_NOZZLE c=12
+# MSG_NOZZLE c=10
 #: messages.c:74
 msgid "Nozzle"
 msgstr "Düse"
@@ -1020,7 +1020,7 @@ msgstr "Bitte aktualisieren."
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Bitte drücken Sie den Knopf um die Düse vorzuheizen und fortzufahren."
 
-# MSG_FS_PAUSE c=5
+# MSG_PAUSE c=5
 #: fsensor.cpp:730
 msgid "Pause"
 msgstr ""
@@ -1148,7 +1148,7 @@ msgstr ""
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4738
 msgid "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-msgstr "Der Assistent wird die aktuellen Kalibrierungsdaten löschen und von vorne beginnen. Weiterfahren?"
+msgstr "Der Assistent wird die aktuellen Kalibrierungsdaten löschen und von vorne beginnen. Fortfahren?"
 
 # MSG_SD_CARD c=8
 #: messages.c:140
@@ -1348,7 +1348,7 @@ msgstr "PINDA-Kalibrierung fehlgeschlagen"
 # MSG_PINDA_CALIBRATION_DONE c=20 r=8
 #: messages.c:115
 msgid "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
-msgstr "PINDA Kalibrierung ist fertig + aktiv. Es kann ausgeschaltet werden im Menu Einstellungen -> Temp.kal."
+msgstr "PINDA Kalibrierung ist fertig + aktiv. Es kann ausgeschaltet werden im Menu Einstellungen -> PINDA kal."
 
 # MSG_FS_VERIFIED c=20 r=3
 #: ultralcd.cpp:7314
@@ -1393,7 +1393,7 @@ msgstr "Gesamte Fehler"
 # MSG_TO_LOAD_FIL c=20
 #: ultralcd.cpp:2127
 msgid "to load filament"
-msgstr "Filament laden"
+msgstr "um Filament laden"
 
 # MSG_TO_UNLOAD_FIL c=20
 #: ultralcd.cpp:2131

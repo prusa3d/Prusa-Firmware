@@ -1,6 +1,6 @@
 #MSG_SHEET_OFFSET c=20 r=4
 "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-"\x00"
+"Lamina %.7s\x0aZ offset: %+1.3fmm\x0a%cContinuar\x0a%cReset"
 
 #MSG_REFRESH c=18
 "\x04Refresh"
@@ -166,7 +166,7 @@
 "Calibration done"
 "Calibracion OK"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Calibracion"
 
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Distancia entre la punta del boquilla y la superficie de la base aun no fijada. Por favor siga el manual, capitulo Primeros Pasos, Calibracion primera capa."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "\x00"
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "Corregir-E:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Expulsar fil."
 
@@ -258,7 +258,7 @@
 "Endstops"
 "\x00"
 
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Cortar filament"
 
@@ -352,7 +352,7 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
-"Archivo incompleto. ?Continuar de todos modos?"
+"Archivo incompleto. Continuar de todos modos?"
 
 #MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
@@ -374,7 +374,7 @@
 "Flow"
 "Flujo"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Vent. frontal?"
 
@@ -462,7 +462,7 @@
 "I will run z calibration now."
 "Voy a hacer Calibracion Z ahora."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Monitorizar"
 
@@ -690,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Ahora precalentare la boquilla para PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Boquilla"
 
@@ -802,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Pulsa el dial para precalentar la boquilla y continue."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pausa"
 
@@ -1300,7 +1300,7 @@
 
 #MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
-"Codigo G laminado para un nivel diferente. ?Continuar?"
+"Codigo G laminado para un nivel diferente. Continuar?"
 
 #MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
@@ -1308,7 +1308,7 @@
 
 #MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
-"Codigo G laminado para un tipo de impresora diferente. ?Continuar?"
+"Codigo G laminado para un tipo de impresora diferente. Continuar?"
 
 #MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
@@ -1316,7 +1316,7 @@
 
 #MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 "G-code sliced for a newer firmware. Continue?"
-"Codigo G laminado para nuevo firmware. ?Continuar?"
+"Codigo G laminado para nuevo firmware. Continuar?"
 
 #MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
@@ -1332,7 +1332,7 @@
 
 #MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
-"Diametro nozzle impresora difiere de cod.G. ?Continuar?"
+"Diametro nozzle impresora difiere de cod.G. Continuar?"
 
 #MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
