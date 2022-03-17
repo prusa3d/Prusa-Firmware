@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Version 1.0.2 - Build 38
+# Version 1.0.2 - Build 43
 #############################################################################
 # Change log:
 #  7 May  2019, ondratu   , Initial
@@ -26,6 +26,7 @@
 #                             --information == output all source and translated messages
 #                             --import-check == used by `lang-import.sh`to verify
 #                                               newly import `lang_en_??.txt` files
+# 14 Mar. 2022, 3d-gussner, Check if translation isn't equal to origin
 #############################################################################
 #
 # Expected syntax of the files, which other scripts depend on
@@ -286,6 +287,11 @@ def parse_txt(lang, no_warning, warn_empty, information, import_check):
                             print_source_translation(source, translation,
                                                     wrapped_source, wrapped_translation,
                                                     rows, cols)
+                    if not no_warning and source == translation:
+                        print(yellow('[W]: Translation same as origin on line %d:' %lines))
+                        print_source_translation(source, translation,
+                                                wrapped_source, wrapped_translation,
+                                                rows, cols)
                     #elif information:
                     #    print(green('[I]: %s' % (message)))
                     #    print_source_translation(source, translation,

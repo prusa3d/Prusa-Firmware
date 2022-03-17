@@ -60,7 +60,7 @@ config.tmp
 /lang/po/new/*_filered.po
 /lang/po/new/nonascii.txt
 /lang/po/new/lang_en*.txt
-/lang/po/new/*-output.txt
+/lang/po/new/output-*.txt
 /lang/po/new/*.mo
 .DS_Store
 **/.DS_Store

@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Suprafata %.7s\x0aZ offset: %+1.3fmm\x0a%cContinua\x0a%cReset."
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x04Reimprospata"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 / mai vechi"
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Calibrare Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Calibrare"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Anuleaza"
@@ -162,7 +166,7 @@
 "Calibration done"
 "Calibrare gata"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Calibrare"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Det.coliziune"
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Alegeti un filament pentru First Layer Calibration si selectati-l de pe ecran."
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "Coliz."
-
-#MSG_CURRENT c=19
-"Current"
-"Actual"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Distanta dintre varf si pat nu a fost setata. Urmariti instructiunile din manual, capitolul First steps, sectiunea First layer calibration."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "\x00"
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "\x00"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Scoate filament"
 
@@ -258,11 +258,7 @@
 "Endstops"
 "Endstop-uri"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Eroare - memoria statica a fost suprascrisa"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Taie filamentul"
 
@@ -286,7 +282,7 @@
 "ERROR:"
 "EROARE:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Vent. extruder:"
 
@@ -378,7 +374,7 @@
 "Flow"
 "\x00"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Vent. print?"
 
@@ -450,13 +446,9 @@
 "Checking Z axis"
 "Verificare axa Z"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Alege extruderul:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"Alege filamentul:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Voi rula calibrarea Z acum."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Ecran informatii"
 
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Acum voi preincalzi extruder-ul pentru PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Varf"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Acum inlaturati printul de test de pe suprafata de print."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Vent. varf"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Apasati butonul pentru a preincalzi extruder-ul si continuati."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pauza"
 
@@ -834,9 +822,9 @@
 "Preheating to unload"
 "Preincalzire unload"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
-"Ventilator print:"
+"Vent. print:"
 
 #MSG_CARD_MENU c=18
 "Print from SD"
@@ -857,10 +845,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Imprimanta nu a fost calibrata inca. Va rugam sa folositi manualul, capitolul First steps, sectiunea Calibration flow."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Vent.print"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -1066,25 +1050,21 @@
 "Select filament:"
 "Select. filamentul:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Cal. temp."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"Cal. PINDA"
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Selectati temp. potrivita pentru materialul curent."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Calibrare temp."
-
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
 "Calibrarea temperaturii a esuat"
 
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Calibrarea temperaturii s-a terminat si este activa. Calibrarea temp. poate fi dezactivata din meniul Setari->Cal. temp."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"Calibrarea PINDA s-a terminat si este activa. Poate fi dezactivata din meniul Setari->Cal. PINDA"
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1137,10 +1117,6 @@
 #MSG_TOTAL c=6
 "Total"
 "\x00"
-
-#MSG_USED c=19
-"Used during print"
-"Folosit in print"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"

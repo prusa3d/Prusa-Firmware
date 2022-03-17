@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Skiva %.7s\x0aZ offset: %+1.3fmm\x0a%cForts\xe1tta\x0a%cAterst\xe1ll"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x04Uppdatera"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 el \xe1ldre"
@@ -48,7 +56,7 @@
 
 #MSG_AUTO c=6
 "Auto"
-"Auto"
+"\x00"
 
 #MSG_PRESS c=20 r=2
 "and press the knob"
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Kalibrera Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Kalibrerar"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Avbryt"
@@ -162,7 +166,7 @@
 "Calibration done"
 "Kalibraring utf\xefrd"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibrering"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Krockdetekt."
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "V\xe1lj ett filament f\xefr f\xefrsta lagrets kalibrering och v\xe1lj det i sk\xe1rmmenyn."
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "Krock"
-
-#MSG_CURRENT c=19
-"Current"
-"Aktuell"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Avstandet mellan munstyckets spets och b\xe1ddytan har inte st\xe1llts in \xe1nnu. V\xe1nligen f\xeflj manualen F\xefrsta lagrets kalibrering."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Frts."
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "E-korrektion:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Mata ut filament"
 
@@ -258,11 +258,7 @@
 "Endstops"
 "\xe1ndl\xe1gen"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Fel - statiskt minne har skrivits \xefver"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Sk\xe1r filament"
 
@@ -280,23 +276,23 @@
 
 #MSG_DIM c=6
 "Dim"
-"Dim"
+"\x00"
 
 #MSG_ERROR c=10
 "ERROR:"
 "FEL:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Extruderfl\xe1kt:"
 
 #MSG_INFO_EXTRUDER c=18
 "Extruder info"
-"Extruder info"
+"\x00"
 
 #MSG_EXTRUDER c=17
 "Extruder"
-"Extruder"
+"\x00"
 
 #MSG_MMU_FAIL_STATS c=18
 "Fail stats MMU"
@@ -324,7 +320,7 @@
 
 #MSG_FSENSOR c=12
 "Fil. sensor"
-"Fil. sensor"
+"\x00"
 
 #MSG_FIL_RUNOUTS c=15
 "Fil. runouts"
@@ -340,7 +336,7 @@
 
 #MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
-"Filament sensor"
+"\x00"
 
 #MSG_FILAMENT_USED c=19
 "Filament used"
@@ -378,7 +374,7 @@
 "Flow"
 "Fl\xefde"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Frontfl\xe1kt?"
 
@@ -450,13 +446,9 @@
 "Checking Z axis"
 "Kontroll Z-axel"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "V\xe1lj extruder:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"V\xe1lj filament:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Jag kommer att utf\xefra z-kalibrering nu."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Infosk\xe1rm"
 
@@ -540,7 +532,7 @@
 
 #MSG_ITERATION c=12
 "Iteration"
-"Iteration"
+"\x00"
 
 #MSG_LOOSE_PULLEY c=20
 "Loose pulley"
@@ -612,7 +604,7 @@
 
 #MSG_NORMAL c=7
 "Normal"
-"Normal"
+"\x00"
 
 #MSG_SILENT c=7
 "Silent"
@@ -644,7 +636,7 @@
 
 #MSG_SELFTEST_MOTOR c=18
 "Motor"
-"Motor"
+"\x00"
 
 #MSG_MOVE_AXIS c=18
 "Move axis"
@@ -672,7 +664,7 @@
 
 #MSG_NA c=3
 "N/A"
-"N/A"
+"\x00"
 
 #MSG_NO c=4
 "No"
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Nu ska jag f\xefrv\xe1rma munstycket f\xefr PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Munstycke"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Ta nu bort testutskriften fran metallskivan."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Muns fl\xe1kt"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Tryck pa knappen f\xefr att f\xefrv\xe1rma munstycket och forts\xe1tta."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Paus"
 
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "F\xefrv\xe1rmer for utmatn"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "Utskriftsfl\xe1kt:"
 
@@ -857,10 +845,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Skrivaren har inte kalibrerats \xe1nnu. V\xe1nligen f\xeflj manualen, kapitel F\xefrsta stegen, avsnitt Kalibreringsfl\xefde."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Utskrfl\xe1kt"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -916,7 +900,7 @@
 
 #MSG_RPI_PORT c=13
 "RPi port"
-"RPi port"
+"\x00"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -1056,7 +1040,7 @@
 
 #MSG_SUPPORT c=18
 "Support"
-"Support"
+"\x00"
 
 #MSG_SELFTEST_SWAPPED c=16
 "Swapped"
@@ -1066,25 +1050,21 @@
 "Select filament:"
 "V\xe1lj filament:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Temp. kal."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"PINDA kal."
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "V\xe1lj temperatur som passar ditt material."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Temp. kalibrering"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
+"PINDA-kalibrering misslyckades"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"Temperaturkalibrering misslyckades"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Temperaturkalibreringen \xe1r klar och aktiv. Temp. kalibrering kan inaktiveras i menyn Inst\xe1llningar->Temp. kal."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"PINDA-kalibreringen \xe1r klar och aktiv. PINDA kalibrering kan inaktiveras i menyn Inst\xe1llningar->PINDA kal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1136,11 +1116,7 @@
 
 #MSG_TOTAL c=6
 "Total"
-"Total"
-
-#MSG_USED c=19
-"Used during print"
-"Anv\xe1nds under utskr"
+"\x00"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"
@@ -1212,7 +1188,7 @@
 
 #MSG_TIMEOUT c=12
 "Timeout"
-"Timeout"
+"\x00"
 
 #MSG_X_CORRECTION c=13
 "X-correct:"
@@ -1384,7 +1360,7 @@
 
 #MSG_SOUND_BLIND c=7
 "Assist"
-"Assist"
+"\x00"
 
 #MSG_STEEL_SHEET c=18
 "Steel sheets"

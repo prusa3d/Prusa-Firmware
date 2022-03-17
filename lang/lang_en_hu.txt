@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Acellap %.7s\x0aZ offset: %+1.3fmm\x0a%cFolytassam\x0a%cUjrainditas"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x04Frissites"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 vagy regebbi"
@@ -60,7 +68,7 @@
 
 #MSG_AUTO_HOME c=18
 "Auto home"
-"Auto home"
+"\x00"
 
 #MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Z kalibracio"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Kalibralas"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Megsem"
@@ -162,7 +166,7 @@
 "Calibration done"
 "Kalibracio kesz"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibracio"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Utkozes erz."
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Valassz egy filamentet az elso reteg kalibraciojahoz a menubol."
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "Utkozes"
-
-#MSG_CURRENT c=19
-"Current"
-"Jelenlegi"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "A fuvoka vege es a targyasztal felulete kozotti tavolsag nincs beallitva. Kerlek, kovesd az utmutato Elso lepesek fejezeteben az Elso reteg kalibracio bekezdest."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Folyt"
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "E-korrekcio:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Filament kiadasa"
 
@@ -258,11 +258,7 @@
 "Endstops"
 "Vegallaskapcsolok"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Hiba - a sztatikus memoria felulirodott"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Filament vagasa"
 
@@ -286,17 +282,17 @@
 "ERROR:"
 "HIBA:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Extruder vent.:"
 
 #MSG_INFO_EXTRUDER c=18
 "Extruder info"
-"Extruder info"
+"\x00"
 
 #MSG_EXTRUDER c=17
 "Extruder"
-"Extruder"
+"\x00"
 
 #MSG_MMU_FAIL_STATS c=18
 "Fail stats MMU"
@@ -376,9 +372,9 @@
 
 #MSG_FLOW c=15
 "Flow"
-"Flow"
+"\x00"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Elso targyhuto vent?"
 
@@ -450,17 +446,13 @@
 "Checking Z axis"
 "Z tengely ellenorzes"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Extruder valasztas:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"Filament valasztas:"
 
 #MSG_FILAMENT c=17
 "Filament"
-"Filament"
+"\x00"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Lefuttatom a Z kalibraciot."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Info kepernyo"
 
@@ -612,7 +604,7 @@
 
 #MSG_NORMAL c=7
 "Normal"
-"Normal"
+"\x00"
 
 #MSG_SILENT c=7
 "Silent"
@@ -644,7 +636,7 @@
 
 #MSG_SELFTEST_MOTOR c=18
 "Motor"
-"Motor"
+"\x00"
 
 #MSG_MOVE_AXIS c=18
 "Move axis"
@@ -672,7 +664,7 @@
 
 #MSG_NA c=3
 "N/A"
-"N/A"
+"\x00"
 
 #MSG_NO c=4
 "No"
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Felfutom a fuvokat PLA-hoz."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Fuvoka"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Vedd le a tesztnyomatot az acellaprol."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Targyhuto"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Nyomd meg a gombot a folytatashoz es a fuvoka felfutesehez."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Szun."
 
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "Felfutes kiadashoz"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "Targyhuto:"
 
@@ -857,10 +845,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "A nyomtato meg nem volt bekalibralva. Kerlek, kovesd az utmutato Elso lepesek fejezetenek Kalibracio menete bekezdeset."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Targyhuto"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -916,7 +900,7 @@
 
 #MSG_RPI_PORT c=13
 "RPi port"
-"RPi port"
+"\x00"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -1066,25 +1050,21 @@
 "Select filament:"
 "Valassz filamentet:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Homers. kal."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"PINDA kal."
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Valassz homersekletet, ami megfelel a filamenthez."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Homers. kalibr."
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
+"PINDA kalibracio sikertelen."
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"Homerseklet kalibracio sikertelen."
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Homerseklet kalibracio sikeres es aktiv. Kikapcsolhato a Beallitasok ->Homers. kal menuben."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"PINDA kalibracio sikeres es aktiv. A Beallitasok ->PINDA kal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1137,10 +1117,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Ossz."
-
-#MSG_USED c=19
-"Used during print"
-"Felhasznalva"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"

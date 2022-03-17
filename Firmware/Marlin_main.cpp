@@ -463,7 +463,9 @@ static void temp_compensation_start();
 static void temp_compensation_apply();
 #endif
 
+#ifdef PRUSA_SN_SUPPORT
 static uint8_t get_PRUSA_SN(char* SN);
+#endif //PRUSA_SN_SUPPORT
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -1011,7 +1013,7 @@ static void fw_crash_init()
            eeprom_read_byte((uint8_t*)EEPROM_FW_CRASH_FLAG) != 0xFF)
         {
             lcd_show_fullscreen_message_and_wait_P(
-                    _i("FW crash detected! "
+                    _n("FW crash detected! "
                        "You can continue printing. "
                        "Debug data available for analysis. "
                        "Contact support to submit details."));
@@ -1025,17 +1027,17 @@ static void fw_crash_init()
         lcd_beeper_quick_feedback();
         lcd_clear();
 
-        lcd_puts_P(_i("FIRMWARE CRASH!\nCrash reason:\n"));
+        lcd_puts_P(_n("FIRMWARE CRASH!\nCrash reason:\n"));
         switch(crash_reason)
         {
         case dump_crash_reason::stack_error:
-            lcd_puts_P(_i("Static memory has\nbeen overwritten"));
+            lcd_puts_P(_n("Static memory has\nbeen overwritten"));
             break;
         case dump_crash_reason::watchdog:
-            lcd_puts_P(_i("Watchdog timeout"));
+            lcd_puts_P(_n("Watchdog timeout"));
             break;
         case dump_crash_reason::bad_isr:
-            lcd_puts_P(_i("Bad interrupt"));
+            lcd_puts_P(_n("Bad interrupt"));
             break;
         default:
             lcd_print((uint8_t)crash_reason);
@@ -3940,6 +3942,7 @@ void gcode_M701()
  * @return 0 on success
  * @return 1 on general failure
  */
+#ifdef PRUSA_SN_SUPPORT
 static uint8_t get_PRUSA_SN(char* SN)
 {
     uint8_t selectedSerialPort_bak = selectedSerialPort;
@@ -3974,6 +3977,8 @@ exit:
     selectedSerialPort = selectedSerialPort_bak;
     return !SN_valid;
 }
+#endif //PRUSA_SN_SUPPORT
+
 //! Detection of faulty RAMBo 1.1b boards equipped with bigger capacitors
 //! at the TACH_1 pin, which causes bad detection of print fan speed.
 //! Warning: This function is not to be used by ordinary users, it is here only for automated testing purposes,
@@ -5400,7 +5405,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
         custom_message_type = CustomMsg::TempCal;
         custom_message_state = 1;
-        lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
+        lcd_setstatuspgm(_T(MSG_PINDA_CALIBRATION));
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         plan_buffer_line_curposXYZE(3000 / 60);
         current_position[X_AXIS] = PINDA_PREHEAT_X;
@@ -5501,7 +5506,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 		puts_P(_N("PINDA probe calibration start"));
 		custom_message_type = CustomMsg::TempCal;
 		custom_message_state = 1;
-		lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
+		lcd_setstatuspgm(_T(MSG_PINDA_CALIBRATION));
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
 		current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 		current_position[Z_AXIS] = PINDA_PREHEAT_Z;
@@ -5578,7 +5583,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			disable_e1();
 			disable_e2();
 			setTargetBed(0); //set bed target temperature back to 0
-		lcd_show_fullscreen_message_and_wait_P(_T(MSG_TEMP_CALIBRATION_DONE));
+		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CALIBRATION_DONE));
 		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
 		lcd_update_enable(true);
 		lcd_update(2);		
@@ -8974,7 +8979,7 @@ Sigma_Exit:
 	  else if (*(strchr_pointer + index) == 'x'){ //load to bondtech gears; if mmu is not present do nothing
 		if (mmu_enabled)
 		{
-			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+			tmp_extruder = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
 			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
 			{
 				puts_P(duplicate_Tcode_ignored);
@@ -9001,11 +9006,11 @@ Sigma_Exit:
           {
               if(mmu_enabled)
               {
-                  tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+                  tmp_extruder = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
                   load_to_nozzle = true;
               } else
               {
-                  tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER));
+                  tmp_extruder = choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER));
               }
           }
           else {

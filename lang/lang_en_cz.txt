@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Plat %.7s\x0aZ offset: %+1.3fmm\x0a%cPokracovat\x0a%cReset"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x04Obnovit"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 nebo starsi"
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Kalibrovat Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Zkalibrovat"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Zrusit"
@@ -162,7 +166,7 @@
 "Calibration done"
 "Kalibrace OK"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibrace"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Det. narazu"
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Zvolte filament pro kalibraci prvni vrstvy z nasledujiciho menu"
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "Naraz"
-
-#MSG_CURRENT c=19
-"Current"
-"Pouze aktualni"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Pokr."
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "Korekce E:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Vysunout fil."
 
@@ -258,11 +258,7 @@
 "Endstops"
 "Konc. spinace"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Chyba - Doslo k prepisu staticke pameti"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Ustrihnout"
 
@@ -286,7 +282,7 @@
 "ERROR:"
 "CHYBA:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Levy vent.:"
 
@@ -378,7 +374,7 @@
 "Flow"
 "Prutok"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Predni tiskovy vent?"
 
@@ -450,13 +446,9 @@
 "Checking Z axis"
 "Kontrola osy Z"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Vyberte extruder:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"Vyber filament:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Nyni provedu z kalibraci."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Informace"
 
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Nyni predehreji trysku pro PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Tryska"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Nyni odstrante testovaci vytisk z tiskoveho platu."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"V. trysky"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Pro nahrati trysky a pokracovani stisknete tlacitko."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pauza"
 
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "Predehrev k vyjmuti"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "Tiskovy vent.:"
 
@@ -857,10 +845,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Tiskovy v."
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -1066,25 +1050,21 @@
 "Select filament:"
 "Zvolte filament:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Tepl. kal."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"PINDA kal."
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Zvolte teplotu, ktera odpovida vasemu materialu."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Teplot. kalibrace"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
+"PINDA kalibrace selhala"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"Teplotni kalibrace selhala"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Teplotni kalibrace dokoncena a je nyni aktivni. Teplotni kalibraci je mozno deaktivovat v menu Nastaveni->Tepl. kal."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"PINDA kalibrace dokoncena a je nyni aktivni. Zabere je mozno deaktivovat v menu Nastaveni->Tepl. kal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1137,10 +1117,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Celkem"
-
-#MSG_USED c=19
-"Used during print"
-"Pouzite behem tisku"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"

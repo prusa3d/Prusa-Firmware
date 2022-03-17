@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Stahlblech %.7s\x0aZ Versatz: %+1.3fmm\x0a%cFortsetzen\x0a%cReset"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x04Aktualisiere"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 oder \xe1lter"
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Kalibrierung Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Kalibrieren"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Abbruch"
@@ -152,7 +156,7 @@
 
 #MSG_CALIBRATE_Z_AUTO c=20 r=2
 "Calibrating Z"
-"Kalibrierung Z"
+"Kalibriere Z"
 
 #MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
@@ -162,7 +166,7 @@
 "Calibration done"
 "Kalibrierung OK"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibrierung"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Crash Erk."
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "W\xe1hlen Sie ein Filament f\xf5r Erste- Schichtkalibrierung aus und w\xe1hlen Sie es im On-Screen-Menu aus."
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "\x00"
-
-#MSG_CURRENT c=19
-"Current"
-"Aktuelles"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Der Abstand zwischen der Spitze der D\xf5se und dem Bett ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, Kapitel Erste Schritte, Abschnitt Erste Schicht Kalibrierung."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "\x00"
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "E-Korrektur:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Filamentauswurf"
 
@@ -258,11 +258,7 @@
 "Endstops"
 "Endschalter"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Fehler - statischer Speicher wurde \xf5berschrieben"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Fil. schneiden"
 
@@ -286,7 +282,7 @@
 "ERROR:"
 "FEHLER:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Extruderl\xf5fter:"
 
@@ -378,7 +374,7 @@
 "Flow"
 "Durchfluss"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Druckl\xf5fter?"
 
@@ -450,13 +446,9 @@
 "Checking Z axis"
 "Pr\xf5fe Z Achse"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
-"Extruder w\xe1hlen:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"W\xe1hle Filament:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
+"W\xe1hle extruder:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Ich werde jetzt die Z Kalibrierung durchf\xf5hren."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Infoanzeige"
 
@@ -548,7 +540,7 @@
 
 #MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
-"In Nozzle laden"
+"In D\xf5se laden"
 
 #MSG_M117_V2_CALIBRATION c=25
 "M117 First layer cal."
@@ -600,7 +592,7 @@
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
-"MMU OK.  Weiterdrucken..."
+"MMU OK. Weiterdrucken..."
 
 #MSG_MODE c=6
 "Mode"
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Jetzt werde ich die D\xf5se f\xf5r PLA vorheizen."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "D\xf5se"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Testdruck jetzt von Stahlblech entfernen."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Druckl\xf5ft."
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Bitte dr\xf5cken Sie den Knopf um die D\xf5se vorzuheizen und fortzufahren."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "\x00"
 
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "Heizen zum Entladen"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "Druckl\xf5fter:"
 
@@ -857,10 +845,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Drucker wurde noch nicht kalibriert. Bitte folgen Sie dem Handbuch, Kapitel Erste Schritte, Abschnitt Kalibrie- rungsablauf."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Druckl\xf5ft."
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -900,7 +884,7 @@
 
 #MSG_RESET c=14
 "Reset"
-"R\xf5cksetzen"
+"\x00"
 
 #MSG_RESUME_PRINT c=18
 "Resume print"
@@ -920,7 +904,7 @@
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-"Der Assistent wird die aktuellen Kalibrierungsdaten l\xefschen und von vorne beginnen. Weiterfahren?"
+"Der Assistent wird die aktuellen Kalibrierungsdaten l\xefschen und von vorne beginnen. Fortfahren?"
 
 #MSG_SD_CARD c=8
 "SD card"
@@ -1064,27 +1048,23 @@
 
 #MSG_SELECT_FILAMENT c=20
 "Select filament:"
-"Filament ausw\xe1hlen:"
+"W\xe1hle filament:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Temp Kalib."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"PINDA Kal."
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "W\xe1hlen Sie die Temperatur, die zu Ihrem Material passt."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Temp. kalibrieren"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
+"PINDA-Kalibrierung fehlgeschlagen"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"Temperaturkalibrierung fehlgeschlagen"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Temp.kalibrierung ist fertig + aktiv. Temp.kalibrierung kann ausgeschaltet werden im Menu Einstellungen -> Temp.kal."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"PINDA Kalibrierung ist fertig + aktiv. Es kann ausgeschaltet werden im Menu Einstellungen -> PINDA kal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1120,7 +1100,7 @@
 
 #MSG_TO_LOAD_FIL c=20
 "to load filament"
-"Filament laden"
+"um Filament laden"
 
 #MSG_TO_UNLOAD_FIL c=20
 "to unload filament"
@@ -1137,10 +1117,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Gesamt"
-
-#MSG_USED c=19
-"Used during print"
-"Beim Druck benutzt"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"

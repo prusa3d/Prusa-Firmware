@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 12
+# Version 1.0.1 Build 13
 #
 # clean.sh - multi-language support script
 #  Remove all language output files from lang folder.
@@ -26,6 +26,7 @@
 #                           to get Build Nr
 # 25 Jan. 2022, 3d-gussner, clean up lang-import.sh temproray files
 # 14 Feb. 2022, 3d-gussner, Fix single language run without config.sh OK
+# 16 Mar. 2022, 3d-gussner, Cleanup `output-layout/sorted-??.txt` 
 #############################################################################
 result=0
 
@@ -58,7 +59,8 @@ clean_lang()
   rm_if_exists po/new/$1.mo
   rm_if_exists po/new/$1_filtered.po
   rm_if_exists po/new/lang_en_$1.txt
-  rm_if_exists po/new/$1-output.txt
+  rm_if_exists po/new/output-layout-$1.txt
+  rm_if_exists po/new/output-sorted-$1.txt
  fi
  rm_if_exists lang_$1_check.dif
  rm_if_exists lang_$1.bin

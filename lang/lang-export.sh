@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 23
+# Version 1.0.1 Build 31
 #
 # lang-export.sh - multi-language support script
-#  for generating lang_xx.po
+#  for generating /lang/po/Firmware_xx.po
 #
 #############################################################################
 # Change log:
@@ -26,24 +26,32 @@
 #                           to get Build Nr
 # 25 Jan. 2022, 3d-gussner, Replace German HD44780 A00 ROM 'äöüß' to UTF-8 'äöüß'
 # 14 Feb. 2022, 3d-gussner, Fix single language run without config.sh OK
+# 12 Mar. 2022, 3d-gussner, Update Norwegian replace umlaut and diacritics
+#                           Fix find community languages
+#                           Update Swedish replace umlaut and diacritics
+#                           Replace '.!? äöü' with '.!? ÄÖÜ' in German and Swedish
+#                           Replace '"äöü' with '"ÄÖÜ' in German and Swedish
 #############################################################################
 
 echo "$(tput setaf 2)lang-export.sh started$(tput sgr 0)" >&2
 
 # relative path to source folder
-SRCDIR="../Firmware"
+if [ -z "$SRCDIR" ]; then
+   SRCDIR=".."
+fi
 
 # selected language is 1st argument (cz, de, ...)
 LNG=$1
 
 # if no arguments, 'all' is selected (all po and also pot will be generated)
 if [ -z "$LNG" ]; then
-  LNG=all;
+  LNG="all";
 # Config:
   if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
   if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr 0)" >&2; exit 1; fi
   if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
     LANGUAGES+=" $COMMUNITY_LANGUAGES"
+    echo $LANGUAGES>&2
   fi
   echo "$(tput setaf 2)lang-export languages:$LANGUAGES$(tput sgr 0)" >&2
 fi
@@ -126,7 +134,7 @@ CNTNT=$(grep '^\"\\x00\"' -c $INFILE)
 echo " $(tput setaf 2)$CNTTXT$(tput sgr 0) texts, $(tput setaf 3)$CNTNT$(tput sgr 0) not translated" >&2
 
 # list .cpp, .c and .h files from source folder
-SRCFILES=$(ls "$SRCDIR"/*.cpp "$SRCDIR"/*.c "$SRCDIR"/*.h)
+SRCFILES=$(ls "$SRCDIR/Firmware"/*.cpp "$SRCDIR/Firmware"/*.c "$SRCDIR/Firmware"/*.h)
 
 echo " selected language=$(tput setaf 2)$LNGNAME$(tput sgr 0)" >&2
 
@@ -198,14 +206,55 @@ sed -i 's/$/\r/' $OUTFILE
 
 #replace HD44780 A00 'äöüß' to UTF-8 'äöüß'
 if [[ "$LNG" = "de" || "$LNG" = "sv" ]]; then
- #replace 'A00 ROM ä' with 'ä' 
+  #replace 'A00 ROM '"ä' with '"Ä' 
+  sed -i 's/"\\xe1/"\xc3\x84/g' $OUTFILE
+  #replace 'A00 ROM '"ü' with '"Ü'
+  sed -i 's/"\\xf5/"\xc3\x9c/g' $OUTFILE
+  #replace 'A00 ROM '"ö' with '"Ö'
+  sed -i 's/"\\xef/"\xc3\x96/g' $OUTFILE
+  #replace 'A00 ROM '. ä' with '. Ä' 
+  sed -i 's/\. \\xe1/. \xc3\x84/g' $OUTFILE
+  #replace 'A00 ROM '. ü' with '. Ü'
+  sed -i 's/\. \\xf5/. \xc3\x9c/g' $OUTFILE
+  #replace 'A00 ROM '. ö' with '. Ö'
+  sed -i 's/\. \\xef/. \xc3\x96/g' $OUTFILE
+  #replace 'A00 ROM '! ä' with '! Ä' 
+  sed -i 's/! \\xe1/! \xc3\x84/g' $OUTFILE
+  #replace 'A00 ROM '! ü' with '! Ü'
+  sed -i 's/! \\xf5/! \xc3\x9c/g' $OUTFILE
+  #replace 'A00 ROM '! ö' with '! Ö'
+  sed -i 's/! \\xef/! \xc3\x96/g' $OUTFILE
+  #replace 'A00 ROM '? ä' with '? Ä' 
+  sed -i 's/? \\xe1/? \xc3\x84/g' $OUTFILE
+  #replace 'A00 ROM '? ü' with '? Ü'
+  sed -i 's/? \\xf5/? \xc3\x9c/g' $OUTFILE
+  #replace 'A00 ROM '? ö' with '? Ö'
+  sed -i 's/? \\xef/? \xc3\x96/g' $OUTFILE
+  #replace 'A00 ROM 'ä' with 'ä' 
   sed -i 's/\\xe1/\xc3\xa4/g' $OUTFILE
-  #replace 'A00 ROM ü' with 'ü'
+  #replace 'A00 ROM 'ü' with 'ü'
   sed -i 's/\\xf5/\xc3\xbc/g' $OUTFILE
-  #replace 'A00 ROM ö' with 'ö'
+  #replace 'A00 ROM 'ö' with 'ö'
   sed -i 's/\\xef/\xc3\xb6/g' $OUTFILE
-  #replace 'A00 ROM ß' with 'ß'
+  #replace 'A00 ROM 'ß'' with 'ß'
   sed -i 's/\\xe2/\xc3\x9f/g' $OUTFILE
+fi
+
+if [ "$LNG" = "no" ]; then
+  #replace often used words
+  #replace ' pa ' with ' på ' 
+  sed -i 's/\ pa / p\xc3\xa5 /g' $OUTFILE
+  #replace ' na ' with ' nå ' 
+  sed -i 's/\ na / n\xc3\xa5 /g' $OUTFILE
+  #replace '"Na ' with '"Nå ' 
+  sed -i 's/\"Na /"N\xc3\xa5 /g' $OUTFILE
+  #replace ' stal' with ' stål' 
+  sed -i 's/\ stal/ st\xc3\xa5l/g' $OUTFILE
+  #replace HD44780 A00 'äö' to UTF-8 'æø'
+  #replace 'A00 ROM ä' with 'æ' 
+  sed -i 's/\\xe1/\xc3\xa6/g' $OUTFILE
+  #replace 'A00 ROM ö' with 'ø'
+  sed -i 's/\\xef/\xc3\xb8/g' $OUTFILE
 fi
 
 #replace HD44780 A00 'μ' to UTF-8 'μ'

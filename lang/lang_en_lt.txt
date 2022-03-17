@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"\x00"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x00"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 "\x00"
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "\x00"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"\x00"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 "\x00"
@@ -162,7 +166,7 @@
 "Calibration done"
 "\x00"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "\x00"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "\x00"
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "\x00"
 
 #MSG_CRASH_DETECTED c=20
@@ -204,10 +208,6 @@
 
 #MSG_CRASH c=7
 "Crash"
-"\x00"
-
-#MSG_CURRENT c=19
-"Current"
 "\x00"
 
 #MSG_DATE c=17
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "\x00"
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "\x00"
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "\x00"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "\x00"
 
@@ -258,11 +258,7 @@
 "Endstops"
 "\x00"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"\x00"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "\x00"
 
@@ -286,7 +282,7 @@
 "ERROR:"
 "\x00"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "\x00"
 
@@ -378,7 +374,7 @@
 "Flow"
 "\x00"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "\x00"
 
@@ -450,12 +446,8 @@
 "Checking Z axis"
 "\x00"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
-"\x00"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "\x00"
 
 #MSG_FILAMENT c=17
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "\x00"
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "\x00"
 
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "\x00"
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "\x00"
 
@@ -708,10 +700,6 @@
 
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
-"\x00"
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
 "\x00"
 
 #MSG_PAUSE_PRINT c=18
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "\x00"
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "\x00"
 
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "\x00"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "\x00"
 
@@ -856,10 +844,6 @@
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
-"\x00"
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
 "\x00"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
@@ -1066,24 +1050,20 @@
 "Select filament:"
 "\x00"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
 "\x00"
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "\x00"
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
 "\x00"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"\x00"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
 "\x00"
 
 #MSG_FS_VERIFIED c=20 r=3
@@ -1136,10 +1116,6 @@
 
 #MSG_TOTAL c=6
 "Total"
-"\x00"
-
-#MSG_USED c=19
-"Used during print"
 "\x00"
 
 #MSG_MENU_VOLTAGES c=15

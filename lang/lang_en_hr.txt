@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Ploca %.7s\x0aZ offset: %+1.3fmm\x0a%cNastaviti\x0a%cResetiraj"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x04Osvjeziti"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 ili stariji"
@@ -72,7 +80,7 @@
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Auto punjenje fil.  je aktivno, pritisnite gumb i umetnite fil.."
+"Auto punjenje fil. je aktivno, pritisnite gumb i umetnite fil.."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
@@ -104,7 +112,7 @@
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-"Niveliranje podloge nije uspijelo. Senzor  aktiviran. Prljavstina na mlaznici? Ceka se resetiranje."
+"Niveliranje podloge nije uspijelo. Senzor aktiviran. Prljavstina na mlaznici? Ceka se resetiranje."
 
 #MSG_BRIGHT c=6
 "Bright"
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Kalibrirajte Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Kalibrirajte"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Otkazati"
@@ -162,7 +166,7 @@
 "Calibration done"
 "Kalibracija gotova"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibriranje"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Udar detekti."
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Odaberite filament za Kalibraciju Prvog Sloja i odaberite ga u izborniku na zaslonu."
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "Udar"
-
-#MSG_CURRENT c=19
-"Current"
-"Trenutno"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Udaljenost izmedu vrha mlaznice i povrsine lezista jos nije postavljena. Molimo slijedite prirucnik, poglavlje Prvi koraci, odjeljak Kalibracija prvog sloja."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Nast."
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "E-ispravan:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Izbaci filament"
 
@@ -258,11 +258,7 @@
 "Endstops"
 "Granicnici"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Pogreska - staticka memorija je prepisna preko postojece"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Odrezite fil."
 
@@ -286,7 +282,7 @@
 "ERROR:"
 "POGRESKA:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Ekstruder vent:"
 
@@ -378,7 +374,7 @@
 "Flow"
 "Protok"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Prednji print vent?"
 
@@ -450,13 +446,9 @@
 "Checking Z axis"
 "Provjera Z osi"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Odaberite ekstruder:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"Odaberite filament:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Sada cu pokrenuti z kalibraciju."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Info zaslon"
 
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Sada cu zagrijati mlaznicu za PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Mlaznica"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Sada uklonite probni print sa celicne ploce."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Fan mlazn"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Pritisnite gumb za predgrijavanje mlaznice i nastavite."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pauza"
 
@@ -834,9 +822,9 @@
 "Preheating to unload"
 "Predgr. za praznj."
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
-"Ventilator printa:"
+"Vent printa:"
 
 #MSG_CARD_MENU c=18
 "Print from SD"
@@ -857,10 +845,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Printer jos nije kalibriran. Molimo slijedite prirucnik, poglavlje Prvi koraci, odjeljak Tijek kalibracije."
-
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"\x00"
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
@@ -1066,25 +1050,21 @@
 "Select filament:"
 "Odaberi filament:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Temp kal."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"PINDA kal."
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Odaberite temperaturu koja odgovara vasem materijalu."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Temp kalibracija"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
+"Kalibracija PINDA nije uspjela"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"Kalibracija temperature nije uspjela"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Kalibracija temperature je zavrsena i aktivna. Temp. kalibracija se moze onemoguciti u izborniku Postavke->Temp. kal."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"Kalibracija PINDA je zavrsena i aktivna. Moze se onemoguciti u izborniku Postavke->PINDA. kal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1137,10 +1117,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Ukupno"
-
-#MSG_USED c=19
-"Used during print"
-"Korist. pri printu"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"
