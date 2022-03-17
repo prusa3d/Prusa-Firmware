@@ -688,7 +688,7 @@ msgstr ""
 # MSG_LOOSE_PULLEY c=20
 #: ultralcd.cpp:8070
 msgid "Loose pulley"
-msgstr "Lossa pulley"
+msgstr "Lös pulley"
 
 # MSG_LOAD_TO_NOZZLE c=18
 #: ultralcd.cpp:6620
@@ -1323,7 +1323,7 @@ msgstr ""
 # MSG_SELFTEST_SWAPPED c=16
 #: ultralcd.cpp:8083
 msgid "Swapped"
-msgstr "Bytt"
+msgstr "Utbytt"
 
 # MSG_SELECT_FILAMENT c=20
 #: messages.c:57
@@ -1428,7 +1428,7 @@ msgstr "okänd"
 # MSG_USERWAIT c=20
 #: Marlin_main.cpp:4354
 msgid "Wait for user..."
-msgstr "Inväntar användare."
+msgstr "Väntar på användare."
 
 # MSG_WAITING_TEMP c=20 r=4
 #: ultralcd.cpp:3273

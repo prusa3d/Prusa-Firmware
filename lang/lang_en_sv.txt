@@ -536,7 +536,7 @@
 
 #MSG_LOOSE_PULLEY c=20
 "Loose pulley"
-"Lossa pulley"
+"L\xefs pulley"
 
 #MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
@@ -1044,7 +1044,7 @@
 
 #MSG_SELFTEST_SWAPPED c=16
 "Swapped"
-"Bytt"
+"Utbytt"
 
 #MSG_SELECT_FILAMENT c=20
 "Select filament:"
@@ -1128,7 +1128,7 @@
 
 #MSG_USERWAIT c=20
 "Wait for user..."
-"Inv\xe1ntar anv\xe1ndare."
+"V\xe1ntar pa anv\xe1ndare."
 
 #MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
@@ -1252,7 +1252,7 @@
 
 #MSG_CHECKS c=18
 "Checks"
-"Kontrollerar"
+"Kontroller"
 
 #MSG_FALSE_TRIGGERING c=20
 "False triggering"
