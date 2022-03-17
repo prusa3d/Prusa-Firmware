@@ -1583,7 +1583,7 @@ msgstr "Tillbaka"
 # MSG_CHECKS c=18
 #: ultralcd.cpp:5623
 msgid "Checks"
-msgstr "Kontrollerar"
+msgstr "Kontroller"
 
 # MSG_FALSE_TRIGGERING c=20
 #: ultralcd.cpp:8093
