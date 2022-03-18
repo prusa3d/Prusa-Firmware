@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sv\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed 16 Mar 2022 09:25:17 AM CET\n"
-"PO-Revision-Date: Wed 16 Mar 2022 09:25:17 AM CET\n"
+"POT-Creation-Date: Fri 18 Mar 2022 07:18:08 AM CET\n"
+"PO-Revision-Date: Fri 18 Mar 2022 07:18:08 AM CET\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -93,7 +93,7 @@ msgstr ""
 # MSG_PRESS c=20 r=2
 #: ultralcd.cpp:2475
 msgid "and press the knob"
-msgstr "och tryck pa knappen"
+msgstr "och tryck på knappen"
 
 # MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ultralcd.cpp:3345
@@ -118,7 +118,7 @@ msgstr "Autoladdning av fil. Är endast möjligt när fil. sensorn är aktiv..."
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2638
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Autoladdning filament är aktiv, tryck pa knappen och sätt i filament..."
+msgstr "Autoladdning filament är aktiv, tryck på knappen och sätt i filament..."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8076
@@ -158,7 +158,7 @@ msgstr "Bält test"
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-msgstr "Bäddnivelleringen felade. Sensorn utlöstes inte. Skräp pa munstycket? Väntar pa aterställning."
+msgstr "Bäddnivelleringen felade. Sensorn utlöstes inte. Skräp på munstycket? Väntar på aterställning."
 
 # MSG_BRIGHT c=6
 #: messages.c:160
@@ -478,7 +478,7 @@ msgstr "Först kommer jag att utföra självtestet för att kontrollera de vanli
 # MSG_MMU_FIX_ISSUE c=20 r=4
 #: mmu.cpp:727
 msgid "Fix the issue and then press button on MMU unit."
-msgstr "Atgärda problemet och tryck sedan pa knappen pa MMU-enheten."
+msgstr "Atgärda problemet och tryck sedan på knappen på MMU-enheten."
 
 # MSG_FLOW c=15
 #: ultralcd.cpp:6791
@@ -613,7 +613,7 @@ msgstr "Är filament isatt?"
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:111
 msgid "Is steel sheet on heatbed?"
-msgstr "Ligger metallskiva pa värmebädden?"
+msgstr "Ligger metallskiva på värmebädden?"
 
 # MSG_LAST_PRINT_FAILURES c=20
 #: messages.c:59
@@ -663,7 +663,7 @@ msgstr "Live justera Z"
 # MSG_INSERT_FIL c=20 r=6
 #: ultralcd.cpp:7283
 msgid "Insert the filament (do not load it) into the extruder and then press the knob."
-msgstr "Infoga filamentet (ladda inte in det) i extrudern och tryck sedan pa knappen."
+msgstr "Infoga filamentet (ladda inte in det) i extrudern och tryck sedan på knappen."
 
 # MSG_LOAD_FILAMENT c=17
 #: messages.c:60
@@ -768,7 +768,7 @@ msgstr ""
 # MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 #: Marlin_main.cpp:884
 msgid "MK3 firmware detected on MK3S printer"
-msgstr "MK3-firmware upptäckt pa MK3S-skrivare"
+msgstr "MK3-firmware upptäckt på MK3S-skrivare"
 
 # MSG_NORMAL c=7
 #: messages.c:109
@@ -928,7 +928,7 @@ msgstr "Placera ett pappersark under munstycket under kalibreringen av de först
 # MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ultralcd.cpp:5006
 msgid "Please clean heatbed and then press the knob."
-msgstr "Rengör bädden och tryck sedan pa knappen."
+msgstr "Rengör bädden och tryck sedan på knappen."
 
 # MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 #: messages.c:26
@@ -953,12 +953,12 @@ msgstr "Öppna idler och ta bort filamentet manuellt."
 # MSG_PLACE_STEEL_SHEET c=20 r=5
 #: messages.c:77
 msgid "Please place steel sheet on heatbed."
-msgstr "Placera metallskiva pa värmebädden."
+msgstr "Placera metallskiva på värmebädden."
 
 # MSG_PRESS_TO_UNLOAD c=20 r=4
 #: messages.c:81
 msgid "Please press the knob to unload filament"
-msgstr "Vänligen tryck pa knappen för att mata ut filament"
+msgstr "Vänligen tryck på knappen för att mata ut filament"
 
 # MSG_PULL_OUT_FILAMENT c=20 r=4
 #: messages.c:83
@@ -968,7 +968,7 @@ msgstr "Vänligen ta ut filamentet omedelbart"
 # MSG_EJECT_REMOVE c=20 r=4
 #: mmu.cpp:1421
 msgid "Please remove filament and then press the knob."
-msgstr "Ta bort filamentet och tryck sedan pa knappen."
+msgstr "Ta bort filamentet och tryck sedan på knappen."
 
 # MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: messages.c:86
@@ -983,7 +983,7 @@ msgstr "Utför XYZ-kalibrering först."
 # MSG_UPDATE_MMU2_FW c=20 r=4
 #: mmu.cpp:1341
 msgid "Please update firmware in your MMU2. Waiting for reset."
-msgstr "Uppdatera firmware i din MMU2. Väntar pa aterställning."
+msgstr "Uppdatera firmware i din MMU2. Väntar på aterställning."
 
 # MSG_PLEASE_WAIT c=20
 #: messages.c:78
@@ -1018,7 +1018,7 @@ msgstr "Vänligen uppgradera."
 # MSG_PRESS_TO_PREHEAT c=20 r=4
 #: Marlin_main.cpp:12061
 msgid "Press the knob to preheat nozzle and continue."
-msgstr "Tryck pa knappen för att förvärma munstycket och fortsätta."
+msgstr "Tryck på knappen för att förvärma munstycket och fortsätta."
 
 # MSG_PAUSE c=5
 #: fsensor.cpp:730
@@ -1058,7 +1058,7 @@ msgstr "Skriv ut fran SD"
 # MSG_PRESS_KNOB c=20
 #: ultralcd.cpp:2120
 msgid "Press the knob"
-msgstr "Tryck pa knappen"
+msgstr "Tryck på knappen"
 
 # MSG_PRINT_PAUSED c=20
 #: ultralcd.cpp:902
@@ -1068,7 +1068,7 @@ msgstr "Utskriften pausad"
 # MSG_RESUME_NOZZLE_TEMP c=20 r=4
 #: mmu.cpp:726
 msgid "Press the knob to resume nozzle temperature."
-msgstr "Tryck pa knappen för att aterställa munstyckstemperaturen."
+msgstr "Tryck på knappen för att aterställa munstyckstemperaturen."
 
 # MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 #: messages.c:48
@@ -1078,12 +1078,12 @@ msgstr "Skrivaren har inte kalibrerats ännu. Vänligen följ manualen, kapitel 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4800
 msgid "Please insert filament into the extruder, then press the knob to load it."
-msgstr "Vänligen sätt i filamentet i extrudern, tryck sedan pa knappen för inladdning.."
+msgstr "Vänligen sätt i filamentet i extrudern, tryck sedan på knappen för inladdning.."
 
 # MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ultralcd.cpp:4795
 msgid "Please insert filament into the first tube of the MMU, then press the knob to load it."
-msgstr "Vänligen sätt i filamentet i den första kanalen pa MMU:n och tryck sedan pa knappen för inladdning."
+msgstr "Vänligen sätt i filamentet i den första kanalen på MMU:n och tryck sedan på knappen för inladdning."
 
 # MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ultralcd.cpp:4717
@@ -1113,7 +1113,7 @@ msgstr "Aterställer utskrift"
 # MSG_REMOVE_OLD_FILAMENT c=20 r=5
 #: mmu.cpp:833
 msgid "Remove old filament and press the knob to start loading new filament."
-msgstr "Ta bort det gamla filamentet och tryck pa knappen för att börja ladda nytt filament."
+msgstr "Ta bort det gamla filamentet och tryck på knappen för att börja ladda nytt filament."
 
 # MSG_CALIBRATE_BED_RESET c=18
 #: ultralcd.cpp:5786
@@ -1433,12 +1433,12 @@ msgstr "Väntar på användare."
 # MSG_WAITING_TEMP c=20 r=4
 #: ultralcd.cpp:3273
 msgid "Waiting for nozzle and bed cooling"
-msgstr "Väntar pa munstycks- och bäddkylning"
+msgstr "Väntar på munstycks- och bäddkylning"
 
 # MSG_WAITING_TEMP_PINDA c=20 r=3
 #: ultralcd.cpp:3234
 msgid "Waiting for PINDA probe cooling"
-msgstr "Väntar pa PINDA-sondens kylning"
+msgstr "Väntar på PINDA-sondens kylning"
 
 # MSG_CHANGED_BOTH c=20 r=4
 #: Marlin_main.cpp:1601
@@ -1618,7 +1618,7 @@ msgstr "Nätverk"
 # MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
 #: Marlin_main.cpp:877
 msgid "MK3S firmware detected on MK3 printer"
-msgstr "MK3S-firmware upptäckt pa MK3-skrivare"
+msgstr "MK3S-firmware upptäckt på MK3-skrivare"
 
 # MSG_MMU_MODE c=8
 #: messages.c:139
