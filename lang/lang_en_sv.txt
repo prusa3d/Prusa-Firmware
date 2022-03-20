@@ -564,7 +564,7 @@
 
 #MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
-"B\xe1dd nivautj\xe1mning"
+"B\xe1ddytsjustering"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -1008,7 +1008,7 @@
 
 #MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
-"Ett problem har uppstatt, Z-nivellering patvingad..."
+"Ett problem har uppstatt, Z-nivellering utf\xefrs..."
 
 #MSG_SOUND_ONCE c=7
 "Once"
