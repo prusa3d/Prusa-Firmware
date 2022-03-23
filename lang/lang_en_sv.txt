@@ -536,7 +536,7 @@
 
 #MSG_LOOSE_PULLEY c=20
 "Loose pulley"
-"Lossa pulley"
+"L\xefs pulley"
 
 #MSG_LOAD_TO_NOZZLE c=18
 "Load to nozzle"
@@ -564,7 +564,7 @@
 
 #MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
-"B\xe1dd nivautj\xe1mning"
+"B\xe1ddytsjustering"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -1008,7 +1008,7 @@
 
 #MSG_Z-LEVELING_ENFORCED c=20 r=4
 "Some problem encountered, Z-leveling enforced ..."
-"Ett problem har uppstatt, Z-nivellering patvingad..."
+"Ett problem har uppstatt, Z-nivellering utf\xefrs..."
 
 #MSG_SOUND_ONCE c=7
 "Once"
@@ -1044,7 +1044,7 @@
 
 #MSG_SELFTEST_SWAPPED c=16
 "Swapped"
-"Bytt"
+"Utbytt"
 
 #MSG_SELECT_FILAMENT c=20
 "Select filament:"
@@ -1128,7 +1128,7 @@
 
 #MSG_USERWAIT c=20
 "Wait for user..."
-"Inv\xe1ntar anv\xe1ndare."
+"V\xe1ntar pa anv\xe1ndare."
 
 #MSG_WAITING_TEMP c=20 r=4
 "Waiting for nozzle and bed cooling"
@@ -1252,7 +1252,7 @@
 
 #MSG_CHECKS c=18
 "Checks"
-"Kontrollerar"
+"Kontroller"
 
 #MSG_FALSE_TRIGGERING c=20
 "False triggering"

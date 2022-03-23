@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Version 1.0.1 Build 31
+# Version 1.0.1 Build 32
 #
 # lang-export.sh - multi-language support script
 #  for generating /lang/po/Firmware_xx.po
@@ -31,6 +31,7 @@
 #                           Update Swedish replace umlaut and diacritics
 #                           Replace '.!? äöü' with '.!? ÄÖÜ' in German and Swedish
 #                           Replace '"äöü' with '"ÄÖÜ' in German and Swedish
+# 18 Mar. 2022, 3d-gussner, Add Swedish ` pa ` to ` på ` conversion
 #############################################################################
 
 echo "$(tput setaf 2)lang-export.sh started$(tput sgr 0)" >&2
@@ -256,6 +257,13 @@ if [ "$LNG" = "no" ]; then
   #replace 'A00 ROM ö' with 'ø'
   sed -i 's/\\xef/\xc3\xb8/g' $OUTFILE
 fi
+
+if [ "$LNG" = "sv" ]; then
+  #replace often used words
+  #replace ' pa ' with ' på ' 
+  sed -i 's/\ pa / p\xc3\xa5 /g' $OUTFILE
+fi
+
 
 #replace HD44780 A00 'μ' to UTF-8 'μ'
 #replace 'A00 ROMμ' with ' μ'
