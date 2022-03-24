@@ -37,8 +37,14 @@
 
 - **Swedish / Svenska**
   - Maintainers: **@Painkiller56**
-  - Co-maintainers:
+  - Co-maintainers:**@pkg2000**
   - Contributors:
-  - [ ] **Active**      since January 2022
+  - [X] **Active**      since March 2022
   - [X] **Maintained**  since January 2022
 
+- **Norwegian / Norsk**
+  - Maintainers: **@pkg2000**
+  - Co-maintainers:
+  - Contributors:
+  - [ ] **Active**      since March 2022
+  - [X] **Maintained**  since February 2022
