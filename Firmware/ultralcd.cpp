@@ -6308,7 +6308,7 @@ void lcd_print_stop()
     lcd_cooldown(); //turns off heaters and fan; goes to status screen.
 
     if (axis_known_position[Z_AXIS]) {
-        current_position[Z_AXIS] += 50; //lift Z.
+        current_position[Z_AXIS] += Z_CANCEL_LIFT;
         plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
     }
 
