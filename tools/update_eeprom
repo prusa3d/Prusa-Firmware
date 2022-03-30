@@ -29,7 +29,7 @@ trap "rm -f \"$instr\"" EXIT
 
 convert()
 {
-    sed -ne 's/^\([0-9a-f]\{4\}\) \([0-9a-f ]*\)$/D3 Ax\1 C16 X\2/p' "$@"
+    sed -ne 's/^\([0-9a-f]\{4,6\}\) \([0-9a-f ]*\)$/D3 Ax\1 C16 X\2/p' "$@"
 }
 
 if [ -z "$new" ]; then
