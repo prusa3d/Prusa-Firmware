@@ -3855,13 +3855,16 @@ void gcode_M701()
 		fsensor_oq_meassure_start(40);
 #endif //FSENSOR_QUALITY
 
+        const int feed_mm_before_raising = 30;
+        static_assert(feed_mm_before_raising <= FILAMENTCHANGE_FIRSTFEED);
+
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
-		current_position[E_AXIS] += FILAMENTCHANGE_FIRSTFEED - 30;
+		current_position[E_AXIS] += FILAMENTCHANGE_FIRSTFEED - feed_mm_before_raising;
 		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
 		st_synchronize();
 
         raise_z_above(MIN_Z_FOR_LOAD, false);
-		current_position[E_AXIS] += 30;
+		current_position[E_AXIS] += feed_mm_before_raising;
 		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
 		
 		load_filament_final_feed(); //slow sequence
