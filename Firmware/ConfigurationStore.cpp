@@ -336,9 +336,6 @@ void Config_ResetDefault()
     
 #ifdef PIDTEMP
     updatePID();
-#ifdef PID_ADD_EXTRUSION_RATE
-    Kc = DEFAULT_Kc; //this is not stored by Config_StoreSettings
-#endif//PID_ADD_EXTRUSION_RATE
 #endif//PIDTEMP
 
 	calculate_extruder_multipliers();
