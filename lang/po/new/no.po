@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-03-10 14:42+0100\n"
+"PO-Revision-Date: 2022-03-31 17:12+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -47,11 +47,11 @@ msgstr "[0;0] punktforskyv."
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 msgid "Crash detection can\\x0abe turned on only in\\x0aNormal mode"
-msgstr "Krasjdeteksjon kan bare skrus på i normal modus"
+msgstr "Krasjdeteksjon kan\\x0abare skrus på i\\x0anormal modus"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 msgid "WARNING:\\x0aCrash detection\\x0adisabled in\\x0aStealth mode"
-msgstr "ADVARSEL:\\x0aKrasjdeteksjon\\x0adeaktivert i\\x0aStillemodus"
+msgstr "ADVARSEL:\\x0aKrasjdeteksjon er\\x0adeaktivert i\\x0aStillemodus"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3034
@@ -121,22 +121,22 @@ msgstr "Akse"
 # MSG_SELFTEST_BEDHEATER c=20
 #: ultralcd.cpp:8052
 msgid "Bed/Heater"
-msgstr "Plate/Varmer"
+msgstr "Seng/Varmer"
 
 # MSG_BED_DONE c=20
 #: messages.c:15
 msgid "Bed done"
-msgstr "Plate ferdig"
+msgstr "Seng ferdig"
 
 # MSG_BED_HEATING c=20
 #: messages.c:16
 msgid "Bed Heating"
-msgstr "Platen varmes"
+msgstr "Sengen varmes"
 
 # MSG_BED_CORRECTION_MENU c=18
 #: ultralcd.cpp:5798
 msgid "Bed level correct"
-msgstr "Plateplan korrekt"
+msgstr "Sengeplan korrekt"
 
 # MSG_BELTTEST c=18
 #: ultralcd.cpp:5778
@@ -146,7 +146,7 @@ msgstr "Belte test"
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-msgstr "Plate planering feilet. Sensoren utløstes ikke. Rester på dysen? Venter på restart."
+msgstr "Sengeplanering feilet. Sensoren utløstes ikke. Rester på dysen? Venter på restart."
 
 # MSG_BRIGHT c=6
 #: messages.c:158
@@ -291,7 +291,7 @@ msgstr "Community prod."
 # MSG_DISABLE_STEPPERS c=18
 #: ultralcd.cpp:5678
 msgid "Disable steppers"
-msgstr "Skru av motorer"
+msgstr "Frigjør motorer"
 
 # MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: messages.c:13
@@ -710,7 +710,7 @@ msgstr "M117 Førstelagskal."
 # MSG_MAIN c=18
 #: messages.c:63
 msgid "Main"
-msgstr "Hoved"
+msgstr "Hovedmeny"
 
 # MSG_BL_HIGH c=12
 #: messages.c:155
@@ -1060,7 +1060,7 @@ msgstr "Forvarmer for fil."
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8422
 msgid "Print fan:"
-msgstr "Printvifte:"
+msgstr "Ekstrudervifte:"
 
 # MSG_CARD_MENU c=18
 #: messages.c:22
@@ -1255,7 +1255,7 @@ msgstr "Ingen"
 # MSG_SORT_TIME c=8
 #: messages.c:140
 msgid "Time"
-msgstr "Tid"
+msgstr "Dato"
 
 # MSG_SEVERE_SKEW c=14
 #: ultralcd.cpp:2888
@@ -1335,7 +1335,7 @@ msgstr "STOPPET."
 # MSG_SUPPORT c=18
 #: ultralcd.cpp:6677
 msgid "Support"
-msgstr "Hjelp"
+msgstr "System info"
 
 # MSG_SELFTEST_SWAPPED c=16
 #: ultralcd.cpp:8101
@@ -1445,7 +1445,7 @@ msgstr "Brukt i print"
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2050
 msgid "Voltages"
-msgstr ""
+msgstr "Spenninger"
 
 # MSG_UNKNOWN c=13
 #: ultralcd.cpp:2005
@@ -1530,7 +1530,7 @@ msgstr "XYZ kalibreringen er god. Godt jobba!"
 # MSG_TIMEOUT c=12
 #: messages.c:157
 msgid "Timeout"
-msgstr ""
+msgstr "Tidsavbrudd"
 
 # MSG_X_CORRECTION c=13
 #: ultralcd.cpp:5086
@@ -1610,7 +1610,7 @@ msgstr "Tilbake"
 # MSG_CHECKS c=18
 #: ultralcd.cpp:5641
 msgid "Checks"
-msgstr "Sjekker"
+msgstr "G-code sjekk"
 
 # MSG_FALSE_TRIGGERING c=20
 #: ultralcd.cpp:8111
@@ -1665,7 +1665,7 @@ msgstr ""
 # MSG_NOZZLE_DIAMETER c=10
 #: messages.c:136
 msgid "Nozzle d."
-msgstr "Dyse dia."
+msgstr "Dyse diam."
 
 # MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: util.cpp:414
