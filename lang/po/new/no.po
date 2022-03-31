@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-03-31 17:12+0200\n"
+"PO-Revision-Date: 2022-03-31 17:22+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -156,12 +156,12 @@ msgstr "Lys"
 # MSG_BRIGHTNESS c=18
 #: messages.c:154
 msgid "Brightness"
-msgstr "Lyshet"
+msgstr "Lysstyrke"
 
 # MSG_BED c=13
 #: messages.c:14
 msgid "Bed"
-msgstr "Plate"
+msgstr "Seng"
 
 # MSG_BELT_STATUS c=18
 #: messages.c:19
@@ -296,7 +296,7 @@ msgstr "Frigjør motorer"
 # MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: messages.c:13
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-msgstr "Avstand mellom tuppen av dysen og platen er ikke kalibrert. Vennligst se manualen/KB for hvordan det skal se ut."
+msgstr "Avstand mellom tuppen av dysen og senga er ikke kalibrert. Vennligst se manualen/KB for hvordan First Layer Calibration skal gjøres."
 
 # MSG_FS_CONTINUE c=5
 #: messages.c:152
@@ -545,7 +545,7 @@ msgstr "Byttet riktig?"
 # MSG_SELFTEST_CHECK_BED c=20
 #: messages.c:94
 msgid "Checking bed"
-msgstr "Sjekker plate"
+msgstr "Sjekker seng"
 
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ultralcd.cpp:8402
@@ -620,7 +620,7 @@ msgstr "Er filamentet lastet?"
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:109
 msgid "Is steel sheet on heatbed?"
-msgstr "Er stålplaten på varmeplaten?"
+msgstr "Er stålplaten på varmesenga?"
 
 # MSG_LAST_PRINT_FAILURES c=20
 #: messages.c:57
@@ -730,7 +730,7 @@ msgstr "Måler referansehøyde for kalibreringspunkt"
 # MSG_MESH_BED_LEVELING c=18
 #: messages.c:148
 msgid "Mesh Bed Leveling"
-msgstr "Plateplanering"
+msgstr "Sengeplanering"
 
 # MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 #: mmu.cpp:765
@@ -935,7 +935,7 @@ msgstr "PINDA varmes"
 # MSG_PAPER c=20 r=10
 #: messages.c:73
 msgid "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
-msgstr "Plasser et ark under dysen mens jeg kalibrerer de 4 første punktene. Hvis dysen tar papiret, skru av printeren umiddelbart"
+msgstr "Plasser et ark under dysen mens jeg kalibrerer de 4 første punktene. Hvis dysen tar papiret, skru umiddelbart av printeren."
 
 # MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ultralcd.cpp:5024
@@ -965,7 +965,7 @@ msgstr "Åpne taljedøren og fjern filamentet for hånd."
 # MSG_PLACE_STEEL_SHEET c=20 r=5
 #: messages.c:75
 msgid "Please place steel sheet on heatbed."
-msgstr "Plasser stålplaten på varmeplaten."
+msgstr "Plasser stålplaten på varmesenga."
 
 # MSG_PRESS_TO_UNLOAD c=20 r=4
 #: messages.c:79
@@ -985,7 +985,7 @@ msgstr "Fjern filamentet og trykk valghjulet."
 # MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: messages.c:84
 msgid "Please remove steel sheet from heatbed."
-msgstr "Vennligst ta stålplaten av varmeplaten."
+msgstr "Vennligst ta stålplaten av varmesenga."
 
 # MSG_RUN_XYZ c=20 r=4
 #: Marlin_main.cpp:5338
