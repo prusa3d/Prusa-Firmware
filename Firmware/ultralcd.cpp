@@ -7586,7 +7586,7 @@ static void lcd_selftest_setfan(uint8_t speed) {
 
 // Wait for the specified number of seconds while displaying some single-character indicator on the
 // screen coordinate col/row, then perform fan measurement
-static void lcd_selftest_measure_fans(uint8_t delay, uint8_t col, uint8_t row, int n) {
+static void lcd_selftest_measure_fans(uint8_t delay, uint8_t col, uint8_t row) {
     // spin-up delay
     static char symbols[] = {'-', '|'};
     static_assert(1000 / sizeof(symbols) * sizeof(symbols) == 1000);
@@ -7605,9 +7605,7 @@ static void lcd_selftest_measure_fans(uint8_t delay, uint8_t col, uint8_t row, i
         delay_keep_alive(100);
     }
 
-    printf_P(PSTR("Test %d:\n"), n);
-    printf_P(PSTR("Print fan speed: %d\n"), fan_speed[1]);
-    printf_P(PSTR("Extr fan speed: %d\n"), fan_speed[0]);
+    gcode_M123();
 }
 
 static FanCheck lcd_selftest_fan_auto(int _fan)
@@ -7622,7 +7620,7 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 	case 0:
         setExtruderAutoFanState(3); // extruder fan
         lcd_selftest_setfan(0); // print fan off
-        lcd_selftest_measure_fans(2, 18, 2, 1);
+        lcd_selftest_measure_fans(2, 18, 2);
         setExtruderAutoFanState(0); // extruder fan off
 		if (fan_speed[0] < failThr) {
 			return FanCheck::ExtruderFan;
@@ -7634,7 +7632,7 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 
 	case 1:
         lcd_selftest_setfan(255);
-        lcd_selftest_measure_fans(5, 18, 3, 2);
+        lcd_selftest_measure_fans(5, 18, 3);
         lcd_selftest_setfan(0);
         if (fan_speed[1] < failThr) {
             return FanCheck::PrintFan;
