@@ -364,7 +364,7 @@
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
-"Najskor pomocou selftestu skontolujem nejcastejsie chyby vznikajuce pri zostaveni tlaciarne."
+"Najskor pomocou selftestu skontrolujem nejcastejsie chyby vznikajuce pri zostaveni tlaciarne."
 
 #MSG_MMU_FIX_ISSUE c=20 r=4
 "Fix the issue and then press button on MMU unit."
