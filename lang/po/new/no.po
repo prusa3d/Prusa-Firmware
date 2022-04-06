@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-03-31 17:22+0200\n"
+"PO-Revision-Date: 2022-04-06 16:45+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -14,6 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 3.0.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Bookmarks: -1,-1,-1,-1,-1,-1,-1,83,-1,-1\n"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:164
@@ -47,7 +48,7 @@ msgstr "[0;0] punktforskyv."
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 msgid "Crash detection can\\x0abe turned on only in\\x0aNormal mode"
-msgstr "Krasjdeteksjon kan\\x0abare skrus på i\\x0anormal modus"
+msgstr "Krasjdeteksjon kan\\x0abare skrus på i\\x0aNormal modus"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 msgid "WARNING:\\x0aCrash detection\\x0adisabled in\\x0aStealth mode"
@@ -91,7 +92,7 @@ msgstr "Er venstre og høyre Z-vogn helt oppe?"
 # MSG_AUTO_HOME c=18
 #: messages.c:11
 msgid "Auto home"
-msgstr "Auto startposisjon"
+msgstr "Auto hjem"
 
 # MSG_AUTOLOAD_FILAMENT c=18
 #: ultralcd.cpp:6653
@@ -136,7 +137,7 @@ msgstr "Sengen varmes"
 # MSG_BED_CORRECTION_MENU c=18
 #: ultralcd.cpp:5798
 msgid "Bed level correct"
-msgstr "Sengeplan korrekt"
+msgstr "Plankorreksjon"
 
 # MSG_BELTTEST c=18
 #: ultralcd.cpp:5778
@@ -176,7 +177,7 @@ msgstr "Strømbrudd! Gjenoppta print?"
 # MSG_CALIBRATING_HOME c=20
 #: ultralcd.cpp:8413
 msgid "Calibrating home"
-msgstr "Kalibrerer startpos."
+msgstr "Kalibrerer hjem"
 
 # MSG_CALIBRATE_BED c=18
 #: ultralcd.cpp:5787
@@ -296,7 +297,7 @@ msgstr "Frigjør motorer"
 # MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: messages.c:13
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-msgstr "Avstand mellom tuppen av dysen og senga er ikke kalibrert. Vennligst se manualen/KB for hvordan First Layer Calibration skal gjøres."
+msgstr "Avstand mellom tuppen av dysen og senga er ikke kalibrert. Vennligst se manualen, under First Steps, for hvordan det første laget skal kalibreres."
 
 # MSG_FS_CONTINUE c=5
 #: messages.c:152
@@ -340,7 +341,7 @@ msgstr "Endesensorene"
 
 # MSG_STACK_ERROR c=20 r=4
 msgid "Error - static memory has been overwritten"
-msgstr "Error - Statisk munne har blitt overskrevet"
+msgstr "Error - Statisk minne har blitt overskrevet"
 
 # MSG_CUT_FILAMENT c=16
 #: messages.c:61
@@ -430,7 +431,7 @@ msgstr "Tomt filament"
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:37
 msgid "Filament extruding & with correct color?"
-msgstr "Filamentet kommer ut og med riktig farge?"
+msgstr "Filament kommer ut og har riktig farge?"
 
 # MSG_NOT_LOADED c=19
 #: ultralcd.cpp:2564
@@ -490,7 +491,7 @@ msgstr "Flyt"
 # MSG_SELFTEST_COOLING_FAN c=20
 #: messages.c:88
 msgid "Front print fan?"
-msgstr "Fremre printvifte?"
+msgstr "Fremre dysevifte?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
@@ -615,7 +616,7 @@ msgstr "Sett inn filament"
 # MSG_FILAMENT_LOADED c=20 r=2
 #: messages.c:38
 msgid "Is filament loaded?"
-msgstr "Er filamentet lastet?"
+msgstr "Er filament lastet?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:109
@@ -905,7 +906,7 @@ msgstr "Fjern nå testprintet fra stålplaten."
 # MSG_NOZZLE_FAN c=10
 #: ultralcd.cpp:1446
 msgid "Nozzle FAN"
-msgstr "Printvifte"
+msgstr "Dysevifte"
 
 # MSG_PAUSE_PRINT c=18
 #: messages.c:74
@@ -955,7 +956,7 @@ msgstr "Venligst sjekk:"
 # MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: messages.c:117
 msgid "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
-msgstr "Vennligst sjekk håndboken og fiks problemet. Fortsett Wizard ved å restarte printeren."
+msgstr "Vennligst sjekk håndboken og fiks problemet. Fortsett så Veilederen ved å restarte printeren."
 
 # MSG_CHECK_IDLER c=20 r=5
 #: Marlin_main.cpp:3798
@@ -1060,7 +1061,7 @@ msgstr "Forvarmer for fil."
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8422
 msgid "Print fan:"
-msgstr "Ekstrudervifte:"
+msgstr "Dysevifte:"
 
 # MSG_CARD_MENU c=18
 #: messages.c:22
@@ -1090,7 +1091,7 @@ msgstr "Printeren er ikke kalibrert. Vennligst se manualen, under First Steps."
 # MSG_PRINT_FAN c=10
 #: ultralcd.cpp:1447
 msgid "Print FAN"
-msgstr "Printvifte"
+msgstr "Dysevifte"
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
@@ -1215,7 +1216,7 @@ msgstr "Selvtest feilet"
 # MSG_FORCE_SELFTEST c=20 r=8
 #: Marlin_main.cpp:1637
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
-msgstr "Selvtest vil bli kjørt for å kalibrere nøyaktig sensorløs startposisjon."
+msgstr "Selvtest vil bli kjørt for å kalibrere nøyaktig sensorløs hjemposisjon."
 
 # MSG_SEL_PREHEAT_TEMP c=20 r=6
 #: ultralcd.cpp:4998
@@ -1370,7 +1371,7 @@ msgstr "Temperaturkalibrering mislyktes"
 # MSG_TEMP_CALIBRATION_DONE c=20 r=12
 #: messages.c:113
 msgid "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-msgstr "Temperaturkalibrering er fullført og aktiv. Temp. kalibrering kan bli skudd av i menyen under Innstillinger -> Temp. kal."
+msgstr "Temperaturkalibrering er fullført og aktiv. Temp. kalibrering kan bli skrudd av i menyen under Innstillinger -> Temp. kal."
 
 # MSG_FS_VERIFIED c=20 r=3
 #: ultralcd.cpp:7332
@@ -1400,7 +1401,7 @@ msgstr "Filament totalt"
 # MSG_TOTAL_PRINT_TIME c=19
 #: ultralcd.cpp:2736
 msgid "Total print time"
-msgstr "Printingtid total"
+msgstr "Printetid totalt"
 
 # MSG_TUNE c=18
 #: ultralcd.cpp:6574
@@ -1445,7 +1446,7 @@ msgstr "Brukt i print"
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2050
 msgid "Voltages"
-msgstr "Spenninger"
+msgstr "Strøm/Volt"
 
 # MSG_UNKNOWN c=13
 #: ultralcd.cpp:2005
@@ -1540,7 +1541,7 @@ msgstr "X-korreksjon:"
 # MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ultralcd.cpp:3737
 msgid "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-msgstr "XYZ kalibreringen OK. X/Y akse er perpendikulære. Gratulerer!"
+msgstr "XYZ kalibrering OK.\\x0aX og Y aksen er perpendikulær. Gratulerer!"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ultralcd.cpp:3721
@@ -1575,12 +1576,12 @@ msgstr "XYZ kalibreringen feilet. Høyre front kalibreringspunkt ikke nådd."
 # MSG_Y_DIST_FROM_MIN c=20
 #: ultralcd.cpp:2842
 msgid "Y distance from min"
-msgstr "Y distanse fra min"
+msgstr "Y distanse fra min."
 
 # MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ultralcd.cpp:4850
 msgid "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-msgstr "Printeren vil nå printe en sikksakk linje. Roter valghjulet til du får den optimale høyden. Se bildene i håndboka, under kalibrering, for hvordan det skal se ut."
+msgstr "Printeren vil nå printe en sikksakk linje. Roter valghjulet til du får den optimale høyden. Se bildene i håndboka, under Kalibrering, for hvordan det skal se ut."
 
 # MSG_FIL_FAILED c=20 r=5
 #: ultralcd.cpp:7336
