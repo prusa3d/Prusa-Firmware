@@ -473,7 +473,7 @@ msgstr "Kal. prvej vrstvy"
 # MSG_WIZARD_SELFTEST c=20 r=8
 #: ultralcd.cpp:4924
 msgid "First, I will run the selftest to check most common assembly problems."
-msgstr "Najskor pomocou selftestu skontolujem nejcastejsie chyby vznikajuce pri zostaveni tlaciarne."
+msgstr "Najskor pomocou selftestu skontrolujem nejcastejsie chyby vznikajuce pri zostaveni tlaciarne."
 
 # MSG_MMU_FIX_ISSUE c=20 r=4
 #: mmu.cpp:727
