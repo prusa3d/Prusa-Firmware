@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Version 1.0.1 Build 12
+#
 # progmem.sh - multi-language support script
 #  Examine content of progmem sections (default is progmem1).
 #
@@ -16,14 +18,22 @@
 #  $PROGMEM.var - variables - strings
 #  $PROGMEM.txt - text data only (not used)
 #
+#############################################################################
+# Change log:
+# 31 May  2018, XPila,     Initial
+#  9 June 2020, 3d-gussner, Added version and Change log
+#  9 June 2020, 3d-gussner, colored output
+#  2 Apr. 2021, 3d-gussner, Use `git rev-list --count HEAD progmem.sh`
+#                           to get Build Nr
+#############################################################################
 #
 # Config:
 if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$OUTDIR" ]; then echo 'variable OUTDIR not set!' >&2; exit 1; fi
-if [ -z "$OBJDIR" ]; then echo 'variable OBJDIR not set!' >&2; exit 1; fi
-if [ -z "$INOELF" ]; then echo 'variable INOELF not set!' >&2; exit 1; fi
-if [ -z "$OBJDUMP" ]; then echo 'variable OBJDUMP not set!' >&2; exit 1; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
+if [ -z "$OUTDIR" ]; then echo "$(tput setaf 1)variable OUTDIR not set!$(tput sgr0)" >&2; exit 1; fi
+if [ -z "$OBJDIR" ]; then echo "$(tput setaf 1)variable OBJDIR not set!$(tput sgr0)" >&2; exit 1; fi
+if [ -z "$INOELF" ]; then echo "$(tput setaf 1)variable INOELF not set!$(tput sgr0)" >&2; exit 1; fi
+if [ -z "$OBJDUMP" ]; then echo "$(tput setaf 1)variable OBJDUMP not set!$(tput sgr0)" >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr0)" >&2; exit 1; fi
 #
 # Program memory used
 PROGMEM=progmem$1
@@ -39,11 +49,11 @@ if [ -z "$1" ]; then PROGMEM=progmem1; fi
 #  6. perform character check and conversion (output to $PROGMEM.var and $PROGMEM.txt)
 #
 
-echo "progmem.sh started" >&2
+echo "$(tput setaf 2)progmem.sh started$(tput sgr0)" >&2
 
 # (0)
 echo " progmem.sh (0) - checking input files" >&2
-if [ ! -e $OUTDIR ]; then echo "progmem.sh - file '$INOELF' not found!" >&2; exit 1; fi
+if [ ! -e $OUTDIR ]; then echo "progmem.sh - file $(tput setaf 2)"$INOELF"$(tput sgr 0) not found!" >&2; exit 1; fi
 
 # (1)
 echo " progmem.sh (1) - removing output files" >&2
@@ -105,12 +115,15 @@ cat $PROGMEM.chr | \
  sed 's/\\x01/\\\\\\x01/g;' | \
  sed 's/\\xf8/\\\\\\xf8/g;' | \
  sed 's/\\x0a/\\\\\\x0a/g;' | \
+ sed 's/\\x04/\\\\\\x04/g;' | \
+ sed 's/\\xe4/\\\\\\xe4/g;' | \
+ sed 's/\\n/\\\\\\0a/g;' | \
  sed 's/\\x00$/\n/;s/^/\"/;s/$/\"\\/'; \
 ) | sh > $PROGMEM.var
 
 #this step can be omitted because .txt file is not used
 cat $PROGMEM.var | sed 's/\r/\n/g' | sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
 
-echo "progmem.sh finished" >&2
+echo "$(tput setaf 2)progmem.sh finished$(tput sgr0)" >&2
 
 exit 0

@@ -10,8 +10,8 @@ if [ -z "$ROOT_PATH" ]; then
 fi
 
 # Check community language NL = Dutch
-COMMUNITY_LANG_NL=$(grep --max-count=1 "^#define COMMUNITY_LANG_NL" $ROOT_PATH/Firmware/config.h| cut -d '_' -f3 |cut -d ' ' -f1)
-export NL=$COMMUNITY_LANG_NL
+COMMUNITY_LANG_GROUP1_NL=$(grep --max-count=1 "^#define COMMUNITY_LANG_GROUP1_NL" $ROOT_PATH/Firmware/config.h| cut -d '_' -f3 |cut -d ' ' -f1)
+export NL=$COMMUNITY_LANG_GROUP1_NL
 
 # Use the lines below as a template and replace 'QR' and 'new language'
 # Check comminity language QR = new language
@@ -24,8 +24,8 @@ echo -n " Source code path: " >&2
 if [ -e $ROOT_PATH ]; then echo 'OK' >&2; else echo 'NG!' >&2; _err=1; fi
 
 echo " Found: " >&2
-if [ "$COMMUNITY_LANG_NL" = "NL" ]; then
-    echo "  $COMMUNITY_LANG_NL" >&2
+if [ "$COMMUNITY_LANG_GROUP1_NL" = "NL" ]; then
+    echo "  $COMMUNITY_LANG_GROUP1_NL" >&2
     echo
     ./lang-build.sh nl
 fi

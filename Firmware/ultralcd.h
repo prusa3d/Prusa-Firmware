@@ -49,7 +49,6 @@ void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
-unsigned char lcd_choose_color();
 void lcd_load_filament_color_check();
 //void lcd_mylang();
 
@@ -221,7 +220,6 @@ void bowden_menu();
 char reset_menu();
 uint8_t choose_menu_P(const char *header, const char *item, const char *last_item = nullptr);
 
-void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
 

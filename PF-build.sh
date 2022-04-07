@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_63
+# Version: 2.0.0-Build_70
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -165,8 +165,18 @@
 # 23 Jun 2021, 3d-gussner, Improve MK404 usage
 # 24 Jun 2021, 3d-gussner, Fix MK404 user interaction not to show if compiling 'All' variants
 # 24 Jun 2021, 3d-gussner, MK404 is only supported on Linux at this moment.
+# 03 Jan 2022, 3d-gussner, Remove calling lang-community.sh as not needed anymore
+# 21 Jan 2022, 3d-gussner, Sort variants
+#                          Add Arduino 1.8.19 as an option
+# 25 Jan 2022, 3d-gussner, Allow upper and lower case for MK404
+# 09 Feb 2022, 3d-gussner, Add community language firmware files for MK2.5/S
+#                          Add selection of language in MK404 for MK2.5/S
+# 10 Feb 2022, 3d-gussner, Add SRCDIR for compatibility with build server
+# 13 Feb 2022, leptun    , Fix -o for "Restoring" messages after failure
+
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+export SRCDIR=$SCRIPT_PATH
 
 #### Start: Failures
 failures()
@@ -183,8 +193,8 @@ case "$1" in
     12) echo "$(tput setaf 5)Failed to copy file $(tput sgr0)" ; exit 12 ;;
     13) echo "$(tput setaf 5)Failed to delete $(tput sgr0)" ; exit 13 ;;
     20) echo "$(tput setaf 2)Conditional stop initiated by user $(tput sgr0)" ; exit 20 ;;
-    21) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'Configuration.h'$(tput sgr0)" ; sleep 5 ;;
-    22) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'config.h'$(tput sgr0)" ; sleep 5 ;;
+    21) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'Configuration.h'$(tput sgr0)" ; if [ $OUTPUT == "1" ] ; then sleep 5 ; fi ;;
+    22) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'config.h'$(tput sgr0)" ; if [ $OUTPUT == "1" ] ; then sleep 5 ; fi ;;
     24) echo "$(tput setaf 1)PF-build.sh stopped due to compiling errors! Try to restore modified files.$(tput sgr0)"; check_script_failed_nr1 ; check_script_failed_nr2 ; cleanup_firmware ; exit 24 ;;
     25) echo "$(tput setaf 1)Failed to execute $(tput sgr0)" ; exit 25 ;;
 esac
@@ -220,7 +230,7 @@ while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_63 *"
+echo "* PF-build.sh Version: 2.0.0-Build_70 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
@@ -246,7 +256,7 @@ echo "  -b : '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "  -c : '$(tput setaf 2)0$(tput sgr0)' clean up, '$(tput setaf 2)1$(tput sgr0)' keep"
 echo "  -d : '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
 echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
-echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)'"
+echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)', '$(tput setaf 2)1.8.19$(tput sgr0)'"
 echo "  -j : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
 echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
@@ -342,7 +352,7 @@ fi
 
 #Start: Check if Arduino IDE version is correct
 if [ ! -z "$IDE_flag" ]; then
-    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" ]]; then
+    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" || "$IDE_flag" == "1.8.19" ]]; then
         ARDUINO_ENV="${IDE_flag}"
     else
         ARDUINO_ENV="1.8.5"
@@ -817,7 +827,8 @@ if [ -z "$variant_flag" ] ; then
     while IFS= read -r -d $'\0' f; do
         options[i++]="$f"
     done < <(find Firmware/variants/ -maxdepth 1 -type f -name "*.h" -print0 )
-    select opt in "${options[@]}" "All" "Quit"; do
+    IFS=$'\n' sorted=($(sort -n <<<"${options[*]}")); unset IFS
+    select opt in "${sorted[@]}" "All" "Quit"; do
         case $opt in
             *.h)
                 VARIANT=$(basename "$opt" ".h")
@@ -1302,8 +1313,6 @@ create_multi_firmware()
         # build languages
         echo "$(tput setaf 3)"
         ./lang-build.sh || failures 25
-        # build community languages
-        ./lang-community.sh || failures 25
         # Combine compiled firmware with languages 
         ./fw-build.sh || failures 25
         cp not_tran.txt not_tran_$VARIANT.txt
@@ -1318,25 +1327,24 @@ create_multi_firmware()
             cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
             cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
         else
-            echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
-            cp -f firmware_cz.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-cz.hex
-            cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-de.hex
-            cp -f firmware_es.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-es.hex
-            cp -f firmware_fr.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-fr.hex
-            cp -f firmware_it.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-it.hex
-            cp -f firmware_pl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-pl.hex
-            cp -f firmware_nl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-nl.hex
+            #Search for created firmware languages
+            langs=$(find firmware_*.hex | cut -d "_" -f2 | cut -d "." -f1)
+            #Copy found firmware_*.hex files 
+                for la in $langs; do
+                    cp -f firmware_$la.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-$la.hex
+                done
             cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
+            echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
             if [ $TARGET_OS == "windows" ]; then 
                 zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
-                rm $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
+                #rm $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
             elif [ $TARGET_OS == "linux" ]; then
                 # Make a copy for MK404 sim of MK2, MK2.5, MK2.5S firmware
                 if [ ! -z "$mk404_flag" ]; then
                     cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
                 fi
                 # End of MK2, MK2.5, MK2.5S firmware copy
-            zip -m -j ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
+            zip -j ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
             fi
         fi
 
@@ -1454,7 +1462,7 @@ if [[ "$output_flag" == "1" || -z "$output_flag" ]]; then
     if [[ -z "$mk404_flag" && "$variant_flag" != "All" ]]; then
         echo
         read -t 10 -n 1 -p "Do you want to start MK404? Y/$(tput setaf 2)n$(tput sgr 0)" mk404_start
-        if [ "$mk404_start" == "Y" ]; then
+        if [[ "$mk404_start" == "Y" || "$mk404_start" == "y" ]]; then
             echo
             read -t 10 -n 1 -p "Do you want to start MK404 with or without MMU2S? $(tput setaf 2)1$(tput sgr 0)/2" mk404_choose1
             if [ "$mk404_choose1" == "1" ]; then
@@ -1497,11 +1505,6 @@ fi
 
 if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
 
-# For Prusa MK2, MK2.5/S
-    if [ "$MOTHERBOARD" == "BOARD_RAMBO_MINI_1_3" ]; then
-        MK404_PRINTER="${MK404_PRINTER}_mR13"
-    fi
-
 # Run MK404 with 'debugcore' and/or 'bootloader-file'
     if [ ! -z "$board_mem_flag" ]; then
         MK404_options="-x $board_mem_flag"
@@ -1532,7 +1535,16 @@ if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
 
 #Decide which hex file to use EN_ONLY or Multi language
     if [ "$LANGUAGES" == "ALL" ]; then
-        MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
+        if [[ "$MK404_PRINTER" == "MK3" || "$MK404_PRINTER" == "MK3S" ]]; then
+            MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
+        else
+            PS3="Select a language:"
+            select lan in ${langs[@]}
+            do
+                MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-$lan.hex
+                break
+            done
+        fi
     else
         MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex
     fi

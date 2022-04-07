@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Lamina %.7s\x0aZ offset: %+1.3fmm\x0a%cContinuar\x0a%cReset"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x04Actualizar"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 o mayor"
@@ -38,7 +46,7 @@
 "All correct"
 "Todo bien"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 "Terminado! Feliz impresion!"
 
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Calibrar Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Calibrar"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Cancelar"
@@ -162,7 +166,7 @@
 "Calibration done"
 "Calibracion OK"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Calibracion"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Det. choque"
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Escoge un filamento para la Calibracion de la Primera Capa y seleccionalo en el menu en pantalla."
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "Choque"
-
-#MSG_CURRENT c=19
-"Current"
-"Actual"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Distancia entre la punta del boquilla y la superficie de la base aun no fijada. Por favor siga el manual, capitulo Primeros Pasos, Calibracion primera capa."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "\x00"
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "Corregir-E:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Expulsar fil."
 
@@ -258,11 +258,7 @@
 "Endstops"
 "\x00"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Error - se ha sobre-escrito la memoria estatica"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Cortar filament"
 
@@ -286,7 +282,7 @@
 "ERROR:"
 "\x00"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "Vent.extrusor:"
 
@@ -338,9 +334,9 @@
 "Filament not loaded"
 "Fil. no introducido"
 
-#MSG_FILAMENT_SENSOR c=20
+#MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
-"Sensor de filamento"
+"Sensor de fil."
 
 #MSG_FILAMENT_USED c=19
 "Filament used"
@@ -356,7 +352,7 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=3
 "File incomplete. Continue anyway?"
-"Archivo incompleto. ?Continuar de todos modos?"
+"Archivo incompleto. Continuar de todos modos?"
 
 #MSG_FINISHING_MOVEMENTS c=20
 "Finishing movements"
@@ -378,13 +374,13 @@
 "Flow"
 "Flujo"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Vent. frontal?"
 
 #MSG_BED_CORRECTION_FRONT c=14
-"Front side[um]"
-"Frontal [um]"
+"Front side[\xe4m]"
+"Frontal [\xe4m]"
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
@@ -450,13 +446,9 @@
 "Checking Z axis"
 "Control sensor Z"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Elegir extrusor:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"Elije filamento:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Voy a hacer Calibracion Z ahora."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Monitorizar"
 
@@ -511,8 +503,8 @@
 "Izquierda"
 
 #MSG_BED_CORRECTION_LEFT c=14
-"Left side [um]"
-"Izquierda [um]"
+"Left side [\xe4m]"
+"Izquierda [\xe4m]"
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Ahora precalentare la boquilla para PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Boquilla"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Ahora retira la prueba de la lamina de acero."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Vent. capa"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Pulsa el dial para precalentar la boquilla y continue."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pausa"
 
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "Precalent. descargar"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "Vent.fusor:"
 
@@ -858,10 +846,6 @@
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Impresora no esta calibrada todavia. Por favor usa el manual capitulo Primeros pasos Calibracion flujo."
 
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"Vent. extr"
-
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
 "Por favor, coloca el filamento en el extrusor, luego presiona el dial para cargarlo."
@@ -875,8 +859,8 @@
 "Por favor, cargar primero el filamento."
 
 #MSG_BED_CORRECTION_REAR c=14
-"Rear side [um]"
-"Trasera [um]"
+"Rear side [\xe4m]"
+"Trasera [\xe4m]"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
@@ -911,8 +895,8 @@
 "Continuan. impresion"
 
 #MSG_BED_CORRECTION_RIGHT c=14
-"Right side[um]"
-"Derecha [um]"
+"Right side[\xe4m]"
+"Derecha [\xe4m]"
 
 #MSG_RPI_PORT c=13
 "RPi port"
@@ -1066,25 +1050,21 @@
 "Select filament:"
 "Selecciona filam.:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Cal. temp."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"Cal. PINDA"
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Selecciona la temperatura adecuada a tu material."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Calibracion temp."
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
+"Fallo de la calibracion de PINDA"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"Fallo de la calibracion de temperatura"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Calibracion temperatura terminada. Haz clic para continuar."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"La calibracion PINDA esta finalizada y activa. Se puede desactivar en el menu Configuracion->Cal. PINDA"
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1126,7 +1106,7 @@
 "to unload filament"
 "para descargar fil."
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 "Soltar filamento"
 
@@ -1137,10 +1117,6 @@
 #MSG_TOTAL c=6
 "Total"
 "\x00"
-
-#MSG_USED c=19
-"Used during print"
-"Usado en impresion"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"
@@ -1194,7 +1170,7 @@
 "XYZ calibration failed. Please consult the manual."
 "Calibracion XYZ fallada. Consulta el manual por favor."
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 "Si"
 
@@ -1254,7 +1230,7 @@
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
 "La impresora comenzara a imprimir una linea en zig-zag. Gira el dial hasta que la linea alcance la altura optima. Mira las fotos del manual (Capitulo de calibracion)."
 
-# c=20 r=5
+#MSG_FIL_FAILED c=20 r=5
 "Verification failed, remove the filament and try again."
 "La verificacion fallo, retire el filamento e intente nuevamente."
 
@@ -1324,7 +1300,7 @@
 
 #MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
-"Codigo G laminado para un nivel diferente. ?Continuar?"
+"Codigo G laminado para un nivel diferente. Continuar?"
 
 #MSG_GCODE_DIFF_CANCELLED c=20 r=7
 "G-code sliced for a different level. Please re-slice the model again. Print cancelled."
@@ -1332,7 +1308,7 @@
 
 #MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 "G-code sliced for a different printer type. Continue?"
-"Codigo G laminado para un tipo de impresora diferente. ?Continuar?"
+"Codigo G laminado para un tipo de impresora diferente. Continuar?"
 
 #MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 "G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
@@ -1340,9 +1316,9 @@
 
 #MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 "G-code sliced for a newer firmware. Continue?"
-"Codigo G laminado para nuevo firmware. ?Continuar?"
+"Codigo G laminado para nuevo firmware. Continuar?"
 
-# c=20 r=8
+#MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 "G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
 "Codigo G laminado para nuevo firmware. Por favor actualiza el firmware. Impresion cancelada."
 
@@ -1356,7 +1332,7 @@
 
 #MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
-"Diametro nozzle impresora difiere de cod.G. ?Continuar?"
+"Diametro nozzle impresora difiere de cod.G. Continuar?"
 
 #MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 "Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."

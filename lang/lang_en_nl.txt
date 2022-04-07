@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Staalplaat %.7s\x0aZ offset: %+1.3fmm\x0a%cDoorgaan\x0a%cReset"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x00"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 of ouder"
@@ -38,7 +46,7 @@
 "All correct"
 "Allemaal goed"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 "Klaar. Happy printing!"
 
@@ -116,7 +124,7 @@
 
 #MSG_BED c=13
 "Bed"
-"Bed"
+"\x00"
 
 #MSG_BELT_STATUS c=18
 "Belt status"
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Kalibratie Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Kalibreren"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Annuleren"
@@ -162,7 +166,7 @@
 "Calibration done"
 "Kalibratie klaar"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibratie"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Crashdet."
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Kies een filament voor de kalibratie van de eerste laag en selecteer deze in het schermmenu."
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "\x00"
-
-#MSG_CURRENT c=19
-"Current"
-"Actueel"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Afstand tussen tip van de tuit en het print oppervlak is nog niet vastgesteld. Volg de handleiding, First steps, sectie First layer calibration."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Door."
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "E-correctie:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Fil. uitwerpen"
 
@@ -258,11 +258,7 @@
 "Endstops"
 "Eindstops"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Fout - het statische geheugen is overschreven"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Fil. knippen"
 
@@ -286,7 +282,7 @@
 "ERROR:"
 "FOUT:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "\x00"
 
@@ -316,11 +312,11 @@
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
-"Fan test"
+"\x00"
 
 #MSG_FANS_CHECK c=13
 "Fans check"
-"Fans check"
+"\x00"
 
 #MSG_FSENSOR c=12
 "Fil. sensor"
@@ -338,7 +334,7 @@
 "Filament not loaded"
 "Fil. niet geladen"
 
-#MSG_FILAMENT_SENSOR c=20
+#MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
 "Filamentsensor"
 
@@ -378,13 +374,13 @@
 "Flow"
 "Stromen"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Voorzijde fan?"
 
 #MSG_BED_CORRECTION_FRONT c=14
-"Front side[um]"
-"Voorkant  [um]"
+"Front side[\xe4m]"
+"Voorkant [\xe4m]"
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
@@ -450,13 +446,9 @@
 "Checking Z axis"
 "Controleer Z as"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Kies extruder:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"Kies filament:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Begin nu met z-kalibratie."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Info scherm"
 
@@ -511,8 +503,8 @@
 "Links"
 
 #MSG_BED_CORRECTION_LEFT c=14
-"Left side [um]"
-"Linkerkant[um]"
+"Left side [\xe4m]"
+"Linkerkant[\xe4m]"
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
@@ -688,7 +680,7 @@
 
 #MSG_SELFTEST_FAN_NO c=19
 "Not spinning"
-"Beweegt niet"
+"Draait niet"
 
 #MSG_WIZARD_V2_CAL c=20 r=8
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Opwarmen van de tuit voor PLA voor."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Tuit"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Verwijder nu de testprint van staalplaat."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"Tuit fan"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Druk op de knop om de tuit voor te verwarmen en door te gaan."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pauze"
 
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "Opwarmen uitwerpen"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "\x00"
 
@@ -858,10 +846,6 @@
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Printer is nog niet gekalibreerd. Volg de handleiding, hoofdstuk First steps, sectie Calibration flow."
 
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"\x00"
-
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
 "Steek a.u.b. filament in de extruder en druk op de knop om het te laden."
@@ -875,8 +859,8 @@
 "Laad a.u.b. eerst filament."
 
 #MSG_BED_CORRECTION_REAR c=14
-"Rear side [um]"
-"Achterkant[um]"
+"Rear side [\xe4m]"
+"Achterkant[\xe4m]"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
@@ -911,8 +895,8 @@
 "Hervatten print"
 
 #MSG_BED_CORRECTION_RIGHT c=14
-"Right side[um]"
-"Recht.kant[um]"
+"Right side[\xe4m]"
+"Recht.kant[\xe4m]"
 
 #MSG_RPI_PORT c=13
 "RPi port"
@@ -940,7 +924,7 @@
 
 #MSG_SELFTEST_OK c=20
 "Self test OK"
-"Zelftest  OK"
+"Zelftest OK"
 
 #MSG_SELFTEST_START c=20
 "Self test start"
@@ -1066,25 +1050,21 @@
 "Select filament:"
 "Kies filament:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Tempkalib."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"PINDA kalib."
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Selecteer de temperatuur die overeenkomt met uw materiaal."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Tempkalibratie"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
+"PINDA-kalibratie mislukt"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-"Temperatuurkalibratie mislukt"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Temperatuurkalibratie kan uitgeschakeld worden in het menu Instellingen-> Tempkalibratie."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"PINDA-kalibratie is voltooid en actief. Het kan worden uitgeschakeld in het menu Instellingen-> PINDA kalib."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1126,7 +1106,7 @@
 "to unload filament"
 "om fil. uitwerpen"
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 "Fil. uitwerpen"
 
@@ -1137,10 +1117,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Totaal"
-
-#MSG_USED c=19
-"Used during print"
-"Gebruikt bij print"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"
@@ -1184,7 +1160,7 @@
 
 #MSG_WIZARD c=17
 "Wizard"
-"Wizard"
+"\x00"
 
 #MSG_XYZ_DETAILS c=18
 "XYZ cal. details"
@@ -1194,7 +1170,7 @@
 "XYZ calibration failed. Please consult the manual."
 "XYZ-kalibratie mislukt. Raadpleeg de handleiding aub."
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 "Ja"
 

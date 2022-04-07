@@ -14,7 +14,7 @@
 - run modified `fw-build.sh`
   - `not_tran<variant>.txt` should be reviewed and added as these are potential missing translations
     - copy `not_tran<variant>.txt` as `lang_add.txt` 
-	  - check if there are things you don't want to translate or must be modifed
+	  - check if there are things you don't want to translate or must be modified
 	  - als check that the strings do not start with `spaces` as the scripts doesn't handle these well at this moment.
 	  - run `lang-add.sh lang_add.txt` to add the missing translations to `lang_en.txt` and `lang_en_??.txt`
   - `not_used<variant>.txt` should only contain messages that aren't used in this variant like MK2.5/S vs MK3/S
@@ -25,7 +25,7 @@
   - Send them to translators and reviewers or
   - copy these to `/lang/po/new` and 
   - translate these with POEdit the newly added messages
-    - easiest way is to choose `Validate`in POEdit as it shows you `errors` and the `missing transalations` / most likely the newly added at the top.
+    - easiest way is to choose `Validate`in POEdit as it shows you `errors` and the `missing translations` / most likely the newly added at the top.
 - The new translated files are expected in `/lang/po/new` folder so store the received files these
 - run `lang-import.sh <language code (iso639-1)>` for each newly translated language
   - script improvement to import "all" and other things would be great.
@@ -45,11 +45,11 @@ The reset of this explanation is devoted to `LANG_MODE==1`:
 
 `language.h`:
 ```C++
-// section .loc_sec (originaly .progmem0) will be used for localized translated strings
+// section .loc_sec (originally .progmem0) will be used for localized translated strings
 #define PROGMEM_I2 __attribute__((section(".loc_sec")))
-// section .loc_pri (originaly .progmem1) will be used for localized strings in english
+// section .loc_pri (originally .progmem1) will be used for localized strings in english
 #define PROGMEM_I1 __attribute__((section(".loc_pri")))
-// section .noloc (originaly progmem2) will be used for not localized strings in english
+// section .noloc (originally progmem2) will be used for not localized strings in english
 #define PROGMEM_N1 __attribute__((section(".noloc")))
 #define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];}))
 #define ISTR(s) "\xff\xff" s
@@ -57,7 +57,7 @@ The reset of this explanation is devoted to `LANG_MODE==1`:
 #define _T(s) lang_get_translation(s)
 ```
 That explains the macros:
-- `_i` expands into `lang_get_translation((__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];})))` . Note the two 0xff's in the beginning of the string. `_i` allows for declaring a string directly inplace of C++ code, no string table is used. The downside of this approach is obvious - the compiler is not able/willing to merge duplicit strings into one.
+- `_i` expands into `lang_get_translation((__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];})))` . Note the two 0xff's in the beginning of the string. `_i` allows for declaring a string directly in-place of C++ code, no string table is used. The downside of this approach is obvious - the compiler is not able/willing to merge duplicate strings into one.
 - `_T` expands into `lang_get_translation(s)` without the two 0xff's at the beginning. Must be used in conjunction with MSG tables in `messages.h`. Allows to declare a string only once and use many times.
 - `_N` means not-translated. These strings reside in a different segment of memory.
 
@@ -98,7 +98,7 @@ A simple list of strings that are not translated yet.
 
 ### `not_used.txt`
 A list os strings not currently used in this variant of the firmware or are obsolete.
-Example: There are MK2.5 specific messages that aren't used when you compile a MK3 variant and vice versa. So be carefull and double check the code if this message is obsolete or just not used due to the chosen variant.
+Example: There are MK2.5 specific messages that aren't used when you compile a MK3 variant and vice versa. So be careful and double check the code if this message is obsolete or just not used due to the chosen variant.
 
 ## Scripts
 
@@ -185,7 +185,7 @@ Output files:
 
 Output foler: ´/lang/po/new´
 
-Needed improments to scrpit:
+Needed improvements to scripts:
  - add `all` argument
  - update `replace in <language> translations` to all known special characters the LCD display with Japanese ROM cannot display
  - move `lang_en_<language code>.txt` to folder `/lang`
@@ -200,8 +200,8 @@ Input:
 - $OUTDIR/sketch/*.o (all object files)
 
 Outputs:
-- text.sym     - formated symbol listing of section '.text'
-- $PROGMEM.sym - formated symbol listing of section '.progmemX'
+- text.sym     - formatted symbol listing of section '.text'
+- $PROGMEM.sym - formatted symbol listing of section '.progmemX'
 - $PROGMEM.lss - disassembly listing file
 - $PROGMEM.hex - variables - hex
 - $PROGMEM.chr - variables - char escape
@@ -229,13 +229,13 @@ Description of process:
 
 ### `textaddr.sh`
 
-Compiles `progmem1.var` and `lang_en.txt` files to `textaddr.txt` file (mapping of progmem addreses to text idenifiers).
+Compiles `progmem1.var` and `lang_en.txt` files to `textaddr.txt` file (mapping of progmem addresses to text identifiers).
 
 Description of process:
 - check if input files exists
 - create sorted list of strings from progmem1.var and lang_en.txt
-- lines from progmem1.var will contain addres (8 chars) and english text
-- lines from lang_en.txt will contain linenumber and english text
+- lines from progmem1.var will contain address (8 chars) and english text
+- lines from lang_en.txt will contain line number and english text
 - after sort this will generate pairs of lines (line from progmem1 first)
 - result of sort is compiled with simple script and stored into file textaddr.txt
 
