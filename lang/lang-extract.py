@@ -182,6 +182,8 @@ def main():
                     help='Do not warn about missing MSG entries')
     ap.add_argument('--warn-same-line', action='store_true',
                     help='Warn about multiple translations on the same line')
+    ap.add_argument('-s', '--sort', action='store_true',
+                    help='Sort output catalog')
     ap.add_argument('file', nargs='+', help='Input files')
     args = ap.parse_args()
 
@@ -204,9 +206,16 @@ def main():
         'MIME-Version': '1.0',
         'Content-Type': 'text/plain; charset=utf-8',
         'Content-Transfer-Encoding': '8bit'}
-    for msgid, data in catalog.items():
+
+    messages = catalog.keys()
+    if args.sort:
+        messages = sorted(messages)
+    for msgid in messages:
+        data = catalog[msgid]
         comment = ', '.join(list(data['data']))
-        occurrences = list(sorted(data['occurrences']))
+        occurrences = data['occurrences']
+        if args.sort:
+            occurrences = list(sorted(occurrences))
         po.append(
             polib.POEntry(
                 msgid=msgid,
