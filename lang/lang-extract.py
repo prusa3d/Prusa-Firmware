@@ -1,0 +1,220 @@
+#!/usr/bin/env python3
+import argparse
+import bisect
+import codecs
+import polib
+import regex
+import sys
+
+CUSTOM_CHARS = {'\x04': '🔃', '\xe4': 'µ'}
+
+
+def line_warning(path, line, msg):
+    print(f'{path}:{line}: {msg}', file=sys.stderr)
+
+def entry_warning_locs(entries):
+    for msgid, data in entries:
+        print('   text: ' + repr(msgid), file=sys.stderr)
+        positions = ', '.join(map(lambda x: x[0] + ':' + str(x[1]), data['occurrences']))
+        print('     in: ' + positions, file=sys.stderr)
+
+def entries_warning(entries, msg):
+    print('warning: ' + msg, file=sys.stderr)
+    entry_warning_locs(entries)
+
+def entry_warning(entry, msg):
+    entries_warning([entry], msg)
+
+
+def newline_positions(source):
+    lines = [-1]
+    while True:
+        idx = source.find('\n', lines[-1] + 1)
+        if idx < 0:
+            break
+        lines.append(idx)
+    if lines[-1] != len(source) - 1:
+        lines.append(len(source) - 1)
+    return lines[1:]
+
+def index_to_line(index, lines):
+    return bisect.bisect_left(lines, index) + 1
+
+
+def extract_file(path, catalog):
+    source = open(path).read()
+    newlines = newline_positions(source)
+
+    RE_START = r'\b (?:_[iI]|ISTR) \s* \('
+    RE_EOL = r'(?://// \s* ([^/\n]*) .*)$'
+
+    # match internationalized quoted strings
+    RE_I = fr'''
+        ^(?!\s* /[/*]) .*             # not on a commented line
+        {RE_START}                    # _i( or ISTR(
+        (?:
+          \s*
+          ("(?:[^"\\]|\\.)*")         # $1 quoted string (chunk)
+          (?:\s* {RE_EOL} )?          # $2 inline metadata
+        )+
+        \s* \)                        # )
+        (?:
+          .* (?!{RE_START})           # anything except another entry
+          {RE_EOL}                    # $3 final metadata
+        )?
+    '''
+
+    for m in regex.finditer(RE_I, source, regex.M|regex.X):
+        # parse the text
+        line = index_to_line(m.start(0), newlines)
+
+        text = ""
+        for block in m.captures(1):
+            # remove quotes and unescape
+            block = block[1:-1]
+            block = codecs.decode(block, 'unicode-escape', 'strict')
+
+            # handle custom characters
+            for src, dst in CUSTOM_CHARS.items():
+                block = block.replace(src, dst)
+
+            text += block
+
+        # check if text is non-empty
+        if len(text) == 0:
+            line_warning(path, line, 'empty source text, ignored')
+            continue
+
+        data = set()
+        for n in [2, 3]:
+            meta = m.group(n)
+            if meta is not None:
+                data.add(meta)
+
+        # extra message catalog name (if any)
+        cat_name = set()
+        for meta in data:
+            m = regex.search(r'\b(MSG_\w+)', meta)
+            if m is not None:
+                cat_name.add(m.group(1))
+
+        # append the translation to the catalog
+        pos = [(path, line)]
+        entry = catalog.get(text)
+        if entry is None:
+            catalog[text] = {'occurrences': set(pos), 'data': data, 'cat_name': cat_name}
+        else:
+            entry['occurrences'] = entry['occurrences'].union(pos)
+            entry['data'] = entry['data'].union(data)
+            entry['cat_name'] = entry['cat_name'].union(cat_name)
+
+
+def extract_refs(path, catalog):
+    source = open(path).read()
+    newlines = newline_positions(source)
+
+    # match message catalog references to add backrefs
+    RE_CAT = fr'''\b (?:_T) \s* \( \s* (\w+) \s* \)'''
+    for m in regex.finditer(RE_CAT, source, regex.M|regex.X):
+        line = index_to_line(m.start(0), newlines)
+        pos = [(path, line)]
+        cat_name = m.group(1)
+        for entry in catalog.values():
+            if cat_name in entry['cat_name']:
+                entry['occurrences'] = entry['occurrences'].union(pos)
+
+
+def check_entries(catalog, warn_missing, warn_same_line):
+    cat_entries = {}
+
+    for entry in catalog.items():
+        msgid, data = entry
+
+        # ensure we have at least one name
+        if len(data['cat_name']) == 0 and warn_missing:
+            entry_warning(entry, 'missing MSG identifier')
+
+        tokens = []
+        for meta in data['data']:
+            tokens.extend(regex.split(r'\s+', meta))
+        for token in tokens:
+            if len(token) == 0:
+                continue
+
+            # check metadata syntax
+            if regex.match(r'[cr]=\d+$', token) is None and \
+               regex.match(r'MSG_[A-Z_0-9]+$', token) is None:
+                entry_warning(entry, 'bogus annotation: ' + repr(token))
+
+            # build the inverse catalog map
+            if token.startswith('MSG_'):
+                if token not in cat_entries:
+                    cat_entries[token] = [entry]
+                else:
+                    cat_entries[token].append(entry)
+
+    # ensure the same id is not used in multiple entries
+    for cat_name, entries in cat_entries.items():
+        if len(entries) > 1:
+            entries_warning(entries, f'{cat_name} used in multiple translations')
+
+    if warn_same_line:
+        # build the inverse location map
+        entry_locs = {}
+        for entry in catalog.items():
+            msgid, data = entry
+            for loc in data['occurrences']:
+                if loc not in entry_locs:
+                    entry_locs[loc] = [loc]
+                else:
+                    entry_locs[loc].append(loc)
+
+        # check for multiple translations on the same location
+        for loc, entries in entry_locs.items():
+            if len(entries) > 1:
+                line_warning(loc[0], loc[1], f'line contains multiple translations')
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('-o', dest='pot', required=True, help='PO template output file')
+    ap.add_argument('--no-missing', action='store_true',
+                    help='Do not warn about missing MSG entries')
+    ap.add_argument('--warn-same-line', action='store_true',
+                    help='Warn about multiple translations on the same line')
+    ap.add_argument('file', nargs='+', help='Input files')
+    args = ap.parse_args()
+
+    # extract strings
+    catalog = {}
+    for path in args.file:
+        extract_file(path, catalog)
+
+    # process backreferences in a 2nd pass
+    for path in args.file:
+        extract_refs(path, catalog)
+
+    # check the catalog entries
+    check_entries(catalog, warn_missing=not args.no_missing, warn_same_line=args.warn_same_line)
+
+    # write the output PO template
+    po = polib.POFile()
+    po.metadata = {
+        'Language': 'en',
+        'MIME-Version': '1.0',
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Transfer-Encoding': '8bit'}
+    for msgid, data in catalog.items():
+        comment = ', '.join(list(data['data']))
+        occurrences = list(sorted(data['occurrences']))
+        po.append(
+            polib.POEntry(
+                msgid=msgid,
+                tcomment=comment,
+                occurrences=occurrences))
+
+    po.save(args.pot)
+    return 0
+
+if __name__ == '__main__':
+    exit(main())
