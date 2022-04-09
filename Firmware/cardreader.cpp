@@ -30,7 +30,6 @@ CardReader::CardReader()
    memset(workDirParents, 0, sizeof(workDirParents));
    presort_flag = false;
 
-   autostart_stilltocheck=true; //the SD start is delayed, because otherwise the serial cannot answer fast enough to make contact with the host software.
    lastnr=0;
   //power to SD reader
   #if SDPOWER > -1
@@ -614,6 +613,9 @@ void CardReader::write_command_no_newline(char *buf)
 
 void CardReader::checkautostart(bool force)
 {
+  // The SD start is delayed because otherwise the serial cannot answer
+  // fast enough to make contact with the host software.
+  static bool autostart_stilltocheck = true; 
   if(!force)
   {
     if(!autostart_stilltocheck)
@@ -621,7 +623,7 @@ void CardReader::checkautostart(bool force)
     if(autostart_atmillis.expired(5000))
       return;
   }
-  autostart_stilltocheck=false;
+  autostart_stilltocheck = false;
   if(!cardOK)
   {
     initsd();
