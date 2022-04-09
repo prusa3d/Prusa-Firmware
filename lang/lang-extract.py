@@ -12,6 +12,9 @@ CUSTOM_CHARS = {'\x04': '🔃', '\xe4': 'µ'}
 def line_warning(path, line, msg):
     print(f'{path}:{line}: {msg}', file=sys.stderr)
 
+def line_error(path, line, msg):
+    print(f'{path}:{line}: {msg}', file=sys.stderr)
+
 def entry_warning_locs(entries):
     for msgid, data in entries:
         print('   text: ' + repr(msgid), file=sys.stderr)
@@ -45,31 +48,37 @@ def extract_file(path, catalog):
     source = open(path).read()
     newlines = newline_positions(source)
 
-    RE_START = r'\b (?:_[iI]|ISTR) \s* \('
+    # match internationalized quoted strings
+    RE_START = r'\b (_[iI]|ISTR) \s* \('
     RE_EOL = r'(?://// \s* ([^/\n]*) .*)$'
 
-    # match internationalized quoted strings
     RE_I = fr'''
-        ^(?!\s* /[/*]) .*             # not on a commented line
-        {RE_START}                    # _i( or ISTR(
+        ^(?!\s* /[/*]|\#) .*          # not on a commented line or conditional
+        {RE_START}                    # $1 ref type _i( or ISTR(
         (?:
           \s*
-          ("(?:[^"\\]|\\.)*")         # $1 quoted string (chunk)
-          (?:\s* {RE_EOL} )?          # $2 inline metadata
+          ("(?:[^"\\]|\\.)*")         # $2 quoted string (chunk)
+          (?:\s* {RE_EOL} )?          # $3 inline metadata
         )+
         \s* \)                        # )
         (?:
           .* (?!{RE_START})           # anything except another entry
-          {RE_EOL}                    # $3 final metadata
+          {RE_EOL}                    # $5 final metadata
         )?
     '''
+
+    r_ref_type = 1
+    r_quoted_chunk = 2
+    r_inline_data = 3
+    r_eol_data = 5
+
 
     for m in regex.finditer(RE_I, source, regex.M|regex.X):
         # parse the text
         line = index_to_line(m.start(0), newlines)
 
         text = ""
-        for block in m.captures(1):
+        for block in m.captures(r_quoted_chunk):
             # remove quotes and unescape
             block = block[1:-1]
             block = codecs.decode(block, 'unicode-escape', 'strict')
@@ -86,27 +95,35 @@ def extract_file(path, catalog):
             continue
 
         data = set()
-        for n in [2, 3]:
+        for n in [r_inline_data, r_eol_data]:
             meta = m.group(n)
             if meta is not None:
                 data.add(meta)
 
+        # reference type annotation
+        ref_type = set()
+        ref_type.add('def' if m.group(r_ref_type) == 'ISTR' else 'ref')
+
         # extra message catalog name (if any)
         cat_name = set()
         for meta in data:
-            m = regex.search(r'\b(MSG_\w+)', meta)
-            if m is not None:
-                cat_name.add(m.group(1))
+            sm = regex.search(r'\b(MSG_\w+)', meta)
+            if sm is not None:
+                cat_name.add(sm.group(1))
 
         # append the translation to the catalog
         pos = [(path, line)]
         entry = catalog.get(text)
         if entry is None:
-            catalog[text] = {'occurrences': set(pos), 'data': data, 'cat_name': cat_name}
+            catalog[text] = {'occurrences': set(pos),
+                             'data': data,
+                             'cat_name': cat_name,
+                             'ref_type': ref_type}
         else:
             entry['occurrences'] = entry['occurrences'].union(pos)
             entry['data'] = entry['data'].union(data)
             entry['cat_name'] = entry['cat_name'].union(cat_name)
+            entry['ref_type'] = entry['ref_type'].union(ref_type)
 
 
 def extract_refs(path, catalog):
@@ -114,14 +131,27 @@ def extract_refs(path, catalog):
     newlines = newline_positions(source)
 
     # match message catalog references to add backrefs
-    RE_CAT = fr'''\b (?:_T) \s* \( \s* (\w+) \s* \)'''
+    RE_CAT = r'''
+        ^(?!\s* /[/*]|\#) .*              # not on a commented line or preprocessor
+        \b (?:_T) \s* \( \s* (\w+) \s* \) # $1 catalog name
+    '''
+
     for m in regex.finditer(RE_CAT, source, regex.M|regex.X):
         line = index_to_line(m.start(0), newlines)
         pos = [(path, line)]
         cat_name = m.group(1)
+        found = False
+        defined = False
         for entry in catalog.values():
             if cat_name in entry['cat_name']:
                 entry['occurrences'] = entry['occurrences'].union(pos)
+                found = True
+                if 'def' in entry['ref_type']:
+                    defined = True
+        if not found:
+            line_error(path, line, f'{cat_name} not found')
+        elif not defined:
+            line_error(path, line, f'{cat_name} referenced but never defined')
 
 
 def check_entries(catalog, warn_missing, warn_same_line):
