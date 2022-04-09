@@ -2874,8 +2874,8 @@ static void lcd_menu_xyz_skew()
 	 ),
 	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
 	 separator,
-	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14, c=4
-	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14, c=4
+	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14 c=4
+	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14 c=4
 	);
 	if (angleDiff < 100){
 		lcd_set_cursor(15,0);
@@ -3021,7 +3021,7 @@ static void lcd_babystep_z()
 	    lcd_set_cursor(0, 0);
 	    lcd_print(buffer.c);
 	    lcd_set_cursor(0, 1);
-		menu_draw_float13(_i("Adjusting Z:"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
+		menu_draw_float13(_i("Adjusting Z:"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=15 // Beware: must include the ':' as its last character
 	}
 	if (LCD_CLICKED || menu_leaving)
 	{
@@ -6658,7 +6658,7 @@ static void lcd_main_menu()
     }
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=18
 #ifdef LCD_TEST
-    MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_SUPPORT
+    MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_XFLASH
 #endif //LCD_TEST
 
     MENU_END();
