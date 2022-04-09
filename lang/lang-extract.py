@@ -170,6 +170,9 @@ def extract_refs(path, catalog):
 def check_entries(catalog, warn_missing, warn_same_line):
     cat_entries = {}
 
+    valid_chars = set(CUSTOM_CHARS.values())
+    valid_chars.add('\n')
+
     for entry in catalog.items():
         msgid, data = entry
 
@@ -185,6 +188,12 @@ def check_entries(catalog, warn_missing, warn_same_line):
             else:
                 id_name = next(iter(data['cat_name']))
                 entry_warning(entry, f'{id_name} defined, but never used')
+
+        # check custom characters
+        for c in msgid:
+            if (not c.isascii() or not c.isprintable()) and c not in valid_chars:
+                entry_warning(entry, 'source contains unhandled custom characters')
+                break
 
         tokens = []
         for meta in data['data']:
