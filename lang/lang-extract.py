@@ -100,16 +100,22 @@ def extract_file(path, catalog):
             if meta is not None:
                 data.add(meta)
 
-        # reference type annotation
-        ref_type = set()
-        ref_type.add('def' if m.group(r_ref_type) == 'ISTR' else 'ref')
-
         # extra message catalog name (if any)
         cat_name = set()
         for meta in data:
             sm = regex.search(r'\b(MSG_\w+)', meta)
             if sm is not None:
                 cat_name.add(sm.group(1))
+
+        # reference type annotation
+        ref_type = 'def' if m.group(r_ref_type) == 'ISTR' else 'ref'
+        if ref_type == 'def':
+            # ISTR definition: lookup nearby assignment
+            sm = regex.search(r'\b PROGMEM_(\S+) \s*=\s* ISTR \b', m.group(0), regex.M|regex.X)
+            if sm is None:
+                line_warning(path, line, 'ISTR not used in an assignment')
+            elif sm.group(1) != 'I1':
+                line_warning(path, line, 'ISTR not used with PROGMEM_I1')
 
         # append the translation to the catalog
         pos = [(path, line)]
@@ -118,12 +124,12 @@ def extract_file(path, catalog):
             catalog[text] = {'occurrences': set(pos),
                              'data': data,
                              'cat_name': cat_name,
-                             'ref_type': ref_type}
+                             'ref_type': set([ref_type])}
         else:
             entry['occurrences'] = entry['occurrences'].union(pos)
             entry['data'] = entry['data'].union(data)
             entry['cat_name'] = entry['cat_name'].union(cat_name)
-            entry['ref_type'] = entry['ref_type'].union(ref_type)
+            entry['ref_type'].add(ref_type)
 
 
 def extract_refs(path, catalog):
