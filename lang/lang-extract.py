@@ -50,20 +50,20 @@ def extract_file(path, catalog):
 
     # match internationalized quoted strings
     RE_START = r'\b (_[iI]|ISTR) \s* \('
-    RE_EOL = r'(?://// \s* ([^/\n]*) .*)$'
+    RE_META = r'//// \s* ([^/\n]*) [^\n]*$'
 
     RE_I = fr'''
-        ^(?!\s* /[/*]|\#) .*          # not on a commented line or conditional
+        (?<!(?:/[/*]|^\s*\#) [^\n]*)  # not on a comment or preprocessor
         {RE_START}                    # $1 ref type _i( or ISTR(
         (?:
           \s*
           ("(?:[^"\\]|\\.)*")         # $2 quoted string (chunk)
-          (?:\s* {RE_EOL} )?          # $3 inline metadata
+          (?:\s* {RE_META} )?         # $3 inline metadata
         )+
         \s* \)                        # )
         (?:
-          .* (?!{RE_START})           # anything except another entry
-          {RE_EOL}                    # $5 final metadata
+          (?:[^\n] (?!{RE_START}))*   # anything except another entry
+          {RE_META}                   # $5 final metadata
         )?
     '''
 
@@ -71,7 +71,6 @@ def extract_file(path, catalog):
     r_quoted_chunk = 2
     r_inline_data = 3
     r_eol_data = 5
-
 
     for m in regex.finditer(RE_I, source, regex.M|regex.X):
         # parse the text
@@ -111,7 +110,8 @@ def extract_file(path, catalog):
         ref_type = 'def' if m.group(r_ref_type) == 'ISTR' else 'ref'
         if ref_type == 'def':
             # ISTR definition: lookup nearby assignment
-            sm = regex.search(r'\b PROGMEM_(\S+) \s*=\s* ISTR \b', m.group(0), regex.M|regex.X)
+            lineup_def = source[newlines[line-2]+1:m.end(r_ref_type)]
+            sm = regex.search(r'\b PROGMEM_(\S+) \s*=\s* ISTR $', lineup_def, regex.M|regex.X)
             if sm is None:
                 line_warning(path, line, 'ISTR not used in an assignment')
             elif sm.group(1) != 'I1':
@@ -138,7 +138,7 @@ def extract_refs(path, catalog):
 
     # match message catalog references to add backrefs
     RE_CAT = r'''
-        ^(?!\s* /[/*]|\#) .*              # not on a commented line or preprocessor
+        (?<!(?:/[/*]|^\s*\#) [^\n]*)      # not on a comment or preprocessor
         \b (?:_T) \s* \( \s* (\w+) \s* \) # $1 catalog name
     '''
 
