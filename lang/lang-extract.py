@@ -151,6 +151,7 @@ def extract_refs(path, catalog):
         for entry in catalog.values():
             if cat_name in entry['cat_name']:
                 entry['occurrences'] = entry['occurrences'].union(pos)
+                entry['ref_type'].add('ref')
                 found = True
                 if 'def' in entry['ref_type']:
                     defined = True
@@ -169,6 +170,15 @@ def check_entries(catalog, warn_missing, warn_same_line):
         # ensure we have at least one name
         if len(data['cat_name']) == 0 and warn_missing:
             entry_warning(entry, 'missing MSG identifier')
+
+        # ensure references are being defined
+        if data['ref_type'] == set(['def']):
+            if len(data['cat_name']) == 0:
+                if warn_missing:
+                    entry_warning(entry, 'entry defined, but never used')
+            else:
+                id_name = next(iter(data['cat_name']))
+                entry_warning(entry, f'{id_name} defined, but never used')
 
         tokens = []
         for meta in data['data']:
