@@ -50,7 +50,7 @@ def extract_file(path, catalog):
 
     # match internationalized quoted strings
     RE_START = r'\b (_[iI]|ISTR) \s* \('
-    RE_META = r'//// \s* ([^/\n]*) [^\n]*$'
+    RE_META = r'//// \s* ([^\n]*)$'
 
     RE_I = fr'''
         (?<!(?:/[/*]|^\s*\#) [^\n]*)  # not on a comment or preprocessor
@@ -94,10 +94,14 @@ def extract_file(path, catalog):
             continue
 
         data = set()
+        comments = set()
         for n in [r_inline_data, r_eol_data]:
             meta = m.group(n)
             if meta is not None:
-                data.add(meta)
+                meta_parts = meta.split('//', 1)
+                data.add(meta_parts[0].strip())
+                if len(meta_parts) > 1:
+                    comments.add(meta_parts[1].strip())
 
         # extra message catalog name (if any)
         cat_name = set()
@@ -124,11 +128,13 @@ def extract_file(path, catalog):
             catalog[text] = {'occurrences': set(pos),
                              'data': data,
                              'cat_name': cat_name,
+                             'comments': comments,
                              'ref_type': set([ref_type])}
         else:
             entry['occurrences'] = entry['occurrences'].union(pos)
             entry['data'] = entry['data'].union(data)
             entry['cat_name'] = entry['cat_name'].union(cat_name)
+            entry['comments'] = entry['comments'].union(comments)
             entry['ref_type'].add(ref_type)
 
 
@@ -258,7 +264,9 @@ def main():
         messages = sorted(messages)
     for msgid in messages:
         data = catalog[msgid]
-        comment = ', '.join(list(data['data']))
+        comment = ', '.join(data['data'])
+        if len(data['comments']):
+            comment += '\n' + '\n'.join(data['comments'])
         occurrences = data['occurrences']
         if args.sort:
             occurrences = list(sorted(occurrences))
