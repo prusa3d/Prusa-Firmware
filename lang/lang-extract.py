@@ -6,7 +6,11 @@ import polib
 import regex
 import sys
 
-CUSTOM_CHARS = {'\x04': '🔃', '\xe4': 'µ'}
+CUSTOM_CHARS = {
+    '\x04': '🔃',
+    '\xe4': 'µ',
+    '\xdf': '°',
+}
 
 
 def line_warning(path, line, msg):

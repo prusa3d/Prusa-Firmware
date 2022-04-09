@@ -6959,9 +6959,9 @@ static void lcd_control_temperature_menu()
 #if defined AUTOTEMP && (TEMP_SENSOR_0 != 0)
 //MENU_ITEM_EDIT removed, following code must be redesigned if AUTOTEMP enabled
   MENU_ITEM_EDIT(bool, MSG_AUTOTEMP, &autotemp_enabled);
-  MENU_ITEM_EDIT(float3, _i(" \002 Min"), &autotemp_min, 0, HEATER_0_MAXTEMP - 10);////MSG_MIN
-  MENU_ITEM_EDIT(float3, _i(" \002 Max"), &autotemp_max, 0, HEATER_0_MAXTEMP - 10);////MSG_MAX
-  MENU_ITEM_EDIT(float32, _i(" \002 Fact"), &autotemp_factor, 0.0, 1.0);////MSG_FACTOR
+  MENU_ITEM_EDIT(float3, _i(" \xdf Min"), &autotemp_min, 0, HEATER_0_MAXTEMP - 10);////MSG_MIN
+  MENU_ITEM_EDIT(float3, _i(" \xdf Max"), &autotemp_max, 0, HEATER_0_MAXTEMP - 10);////MSG_MAX
+  MENU_ITEM_EDIT(float32, _i(" \xdf Fact"), &autotemp_factor, 0.0, 1.0);////MSG_FACTOR
 #endif
 
   MENU_END();
