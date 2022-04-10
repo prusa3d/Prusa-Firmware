@@ -168,6 +168,9 @@ def check_translation(entry, is_pot, no_warning, warn_empty, information):
         print(red(' translation: ' + translation))
         return
 
+    # Pre-process the translation to translated characters for a correct preview and length check
+    translation = cs.trans_replace(translation)
+
     wrapped_source = wrap_text(source, cols)
     rows_count_source = len(wrapped_source)
     wrapped_translation = wrap_text(translation, cols)

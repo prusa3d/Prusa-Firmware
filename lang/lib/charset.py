@@ -21,6 +21,7 @@ TRANS_CHARS = {
     'å': 'a',
     'æ': 'ä',
     'ø': 'ö',
+    'ß': 'ss',
 }
 
 
@@ -46,9 +47,13 @@ def source_to_unicode(buf):
         buf = buf.replace(src, dst)
     return buf
 
-def unicode_to_source(buf):
+def trans_replace(buf):
     for src, dst in TRANS_CHARS.items():
         buf = buf.replace(src, dst)
+    return buf
+
+def unicode_to_source(buf):
+    buf = trans_replace(buf)
     for dst, src in CUSTOM_CHARS.items():
         buf = buf.replace(src, dst)
     return buf
