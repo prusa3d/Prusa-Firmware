@@ -3,6 +3,7 @@
 
 # Temporary language files
 /lang/tmp/
+/lang/Firmware-intl.hex
 
 # Temporary files and directories
 *[~#]

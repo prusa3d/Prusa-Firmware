@@ -1310,13 +1310,9 @@ create_multi_firmware()
             ./fw-clean.sh
             echo "$(tput sgr 0)"
         fi
-        # build languages
+        # Combine compiled firmware with languages
         echo "$(tput setaf 3)"
-        ./lang-build.sh || failures 25
-        # Combine compiled firmware with languages 
         ./fw-build.sh || failures 25
-        cp not_tran.txt not_tran_$VARIANT.txt
-        cp not_used.txt not_used_$VARIANT.txt
         echo "$(tput sgr 0)"
         # Check if the motherboard is an EINSY and if so only one hex file will generated
         MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
@@ -1324,7 +1320,7 @@ create_multi_firmware()
         if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
             echo "$(tput setaf 2)Copying multi language firmware for MK3/Einsy board to PF-build-hex folder$(tput sgr 0)"
             # End of "lang.bin" for MK3 and MK3S copy
-            cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
+            cp -f Firmware-intl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
             cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
         else
             #Search for created firmware languages
@@ -1352,7 +1348,6 @@ create_multi_firmware()
     if [[ -z "$clean_flag" || "$clean_flag" == "0" ]]; then
         echo "$(tput setaf 3)"
         ./fw-clean.sh || failures 25
-        ./lang-clean.sh || failures 25
         echo "$(tput sgr 0)"
     fi
 }

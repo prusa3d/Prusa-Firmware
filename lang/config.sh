@@ -34,17 +34,9 @@ if [ -z "$ARDUINO" ]; then
     export ARDUINO=../../PF-build-env-1.0.6/1.8.5-1.0.4-linux-64 #C:/arduino-1.8.5
 fi
 #
-# Arduino builder:
-if [ -z "$BUILDER" ]; then
-    export BUILDER=$ARDUINO/arduino-builder
-fi
-#
 # AVR gcc tools:
 if [ -z "$OBJCOPY" ]; then
     export OBJCOPY=$ARDUINO/hardware/tools/avr/bin/avr-objcopy
-fi
-if [ -z "$OBJDUMP" ]; then
-    export OBJDUMP=$ARDUINO/hardware/tools/avr/bin/avr-objdump
 fi
 #
 # Output folder:
@@ -52,24 +44,24 @@ if [ -z "$OUTDIR" ]; then
     export OUTDIR="../../Prusa-Firmware-build"
 fi
 #
-# Objects folder:
-if [ -z "$OBJDIR" ]; then
-    export OBJDIR="$OUTDIR/sketch"
-fi
-#
-# Generated elf file:
+# Output elf file:
 if [ -z "$INOELF" ]; then
     export INOELF="$OUTDIR/Firmware.ino.elf"
 fi
 #
-# Generated hex file:
+# Output hex file:
 if [ -z "$INOHEX" ]; then
     export INOHEX="$OUTDIR/Firmware.ino.hex"
 fi
 #
+# Generated multi-language hex file:
+if [ -z "$OUTHEX" ]; then
+    export OUTHEX="$LNGDIR/Firmware-intl.hex"
+fi
+#
 # Set default languages
 if [ -z "$LANGUAGES" ]; then
-    export LANGUAGES="cz de es fr it pl"
+    export LANGUAGES="cs de es fr it pl"
 fi
 #
 # Check for community languages
@@ -98,26 +90,21 @@ _err=0
 echo -n " Arduino main folder: " >&2
 if [ -d $ARDUINO ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=1; fi
 
-echo -n " Arduino builder: " >&2
-if [ -e $BUILDER ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=2; fi
-
 echo " AVR gcc tools:" >&2
 echo -n "   objcopy " >&2
 if [ -e $OBJCOPY ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=3; fi
-echo -n "   objdump " >&2
-if [ -e $OBJDUMP ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=4; fi
 
 echo -n " Output folder: " >&2
 if [ -d $OUTDIR ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=5; fi
 
-echo -n " Objects folder: " >&2
-if [ -d $OBJDIR ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=6; fi
-
-echo -n " Generated elf file: " >&2
+echo -n " Output elf file: " >&2
 if [ -e $INOELF ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=7; fi
 
-echo -n " Generated hex file: " >&2
+echo -n " Output hex file: " >&2
 if [ -e $INOHEX ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=8; fi
+
+echo -n " Generated hex file: " >&2
+if [ -n $OUTHEX ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=8; fi
 
 echo -n " Languages: " >&2
 echo "$(tput setaf 2)$LANGUAGES$(tput sgr0)" >&2
