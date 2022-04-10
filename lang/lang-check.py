@@ -119,7 +119,7 @@ def check_translation(entry, is_pot, no_warning, warn_empty, information):
     """Check strings to display definition."""
 
     # fetch/decode entry for easy access
-    meta = entry.tcomment.split('\n', 1)[0]
+    meta = entry.comment.split('\n', 1)[0]
     source = entry.msgid
     translation = entry.msgstr
     line = entry.linenum

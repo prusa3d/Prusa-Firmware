@@ -272,7 +272,7 @@ def main():
         po.append(
             polib.POEntry(
                 msgid=msgid,
-                tcomment=comment,
+                comment=comment,
                 occurrences=occurrences))
 
     po.save(args.pot)

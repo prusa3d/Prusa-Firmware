@@ -37,7 +37,7 @@ def load_map(path):
 
 
 def translation_ref(translation):
-    cmt = translation.tcomment
+    cmt = translation.comment
     if cmt and cmt.startswith('MSG_'):
         return cmt.split(' ', 1)[0]
     else:
