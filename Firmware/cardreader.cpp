@@ -877,7 +877,10 @@ void CardReader::presort() {
 				uint16_t counter = 0;
 				uint16_t total = 0;
 				for (uint16_t i = sortCountFiles/2; i > 0; i /= 2) total += sortCountFiles - i; //total runs for progress bar
-				menu_progressbar_init(total, (runs == 0)?_i("Sorting files"):_i("Sorting folders"));
+				menu_progressbar_init(
+                        total, (runs == 0)
+                        ? _i("Sorting files") ////MSG_SORTING_FILES c=20
+                        : _i("Sorting folders")); ////MSG_SORTING_FOLDERS c=20
 				
 				for (uint16_t gap = sortCountFiles/2; gap > 0; gap /= 2)
 				{

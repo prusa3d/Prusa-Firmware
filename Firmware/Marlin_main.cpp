@@ -3257,7 +3257,7 @@ static void gcode_G80()
         Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
         bool bState;
         do   {                             // repeat until Z-leveling o.k.
-            lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-leveling enforced ..."));
+            lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-leveling enforced ...")); ////MSG_ZLEVELING_ENFORCED c=20 r=4
 #ifdef TMC2130
             lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
             calibrate_z_auto();           // Z-leveling (X-assembly stay up!!!)
@@ -3743,8 +3743,9 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     if (!mmu_enabled)
     {
         KEEPALIVE_STATE(PAUSED_FOR_USER);
-        lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"),
-                false, true); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
+        lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(
+                _i("Was filament unload successful?"), ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
+                false, true);
         if (lcd_change_fil_state == 0)
         {
 			lcd_clear();
@@ -5297,7 +5298,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         if (calibration_status() >= CALIBRATION_STATUS_XYZ_CALIBRATION) {
             //we need to know accurate position of first calibration point
             //if xyz calibration was not performed yet, interrupt temperature calibration and inform user that xyz cal. is needed
-            lcd_show_fullscreen_message_and_wait_P(_i("Please run XYZ calibration first."));
+            lcd_show_fullscreen_message_and_wait_P(_i("Please run XYZ calibration first.")); ////MSG_RUN_XYZ c=20 r=4
             break;
         }
 

@@ -1580,7 +1580,7 @@ static void lcd_menu_fails_stats_print()
                       " %-7.7S X %-3d Y %-3d"),
                  _T(MSG_LAST_PRINT_FAILURES),
                  _T(MSG_POWER_FAILURES), power,
-                 _i("Runouts"), filam, fsensor_softfail, //MSG_RUNOUTS c=7
+                 _i("Runouts"), filam, fsensor_softfail, ////MSG_RUNOUTS c=7
                  _T(MSG_CRASH), crashX, crashY);
 #endif
     menu_back_if_clicked_fb();
@@ -1714,7 +1714,7 @@ static void lcd_menu_temperatures()
     lcd_menu_temperatures_line( _T(MSG_NOZZLE), (int)current_temperature[0] );
     lcd_menu_temperatures_line( _T(MSG_BED), (int)current_temperature_bed );
 #ifdef AMBIENT_THERMISTOR
-    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT
+    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT c=14
 #endif //AMBIENT_THERMISTOR
 #ifdef PINDA_THERMISTOR
     lcd_menu_temperatures_line( _T(MSG_PINDA), (int)current_temperature_pinda );  ////MSG_PINDA
@@ -2015,7 +2015,7 @@ static void lcd_support_menu()
   if (IP_address) {
       
       MENU_ITEM_BACK_P(STR_SEPARATOR);
-      MENU_ITEM_BACK_P(PSTR("Printer IP Addr:"));  ////MSG_PRINTER_IP c=18
+      MENU_ITEM_BACK_P(_i("Printer IP Addr:")); ////MSG_PRINTER_IP c=18
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
@@ -3113,7 +3113,7 @@ void lcd_adjust_bed(void)
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Set temperature:    |	MSG_SET_TEMPERATURE c=20
+//! |Set temperature:    |
 //! |                    |
 //! | 210                |
 //! |                    |
@@ -3122,7 +3122,7 @@ void lcd_adjust_bed(void)
 void pid_extruder()
 {
 	lcd_clear();
-	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE
+	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=20
 	pid_temp += int(lcd_encoder);
 	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
 	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
@@ -4946,7 +4946,7 @@ void lcd_wizard(WizState state)
 				//current filament needs to be unloaded and then new filament should be loaded
 				//start to preheat nozzle for unloading remaining PLA filament
 				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
-				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));
+				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA.")); ////MSG_WIZARD_WILL_PREHEAT c=20 r=4
 				wait_preheat();
 				//unload current filament
 				unload_filament(true);
