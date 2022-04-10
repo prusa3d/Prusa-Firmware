@@ -5,13 +5,7 @@ import codecs
 import polib
 import regex
 import sys
-
-CUSTOM_CHARS = {
-    '\x04': '🔃',
-    '\xe4': 'µ',
-    '\xdf': '°',
-}
-
+import lib.charset as cs
 
 def line_warning(path, line, msg):
     print(f'{path}:{line}: {msg}', file=sys.stderr)
@@ -85,11 +79,7 @@ def extract_file(path, catalog):
             # remove quotes and unescape
             block = block[1:-1]
             block = codecs.decode(block, 'unicode-escape', 'strict')
-
-            # handle custom characters
-            for src, dst in CUSTOM_CHARS.items():
-                block = block.replace(src, dst)
-
+            block = cs.source_to_unicode(block)
             text += block
 
         # check if text is non-empty
@@ -174,9 +164,6 @@ def extract_refs(path, catalog):
 def check_entries(catalog, warn_missing, warn_same_line):
     cat_entries = {}
 
-    valid_chars = set(CUSTOM_CHARS.values())
-    valid_chars.add('\n')
-
     for entry in catalog.items():
         msgid, data = entry
 
@@ -194,10 +181,8 @@ def check_entries(catalog, warn_missing, warn_same_line):
                 entry_warning(entry, f'{id_name} defined, but never used')
 
         # check custom characters
-        for c in msgid:
-            if (not c.isascii() or not c.isprintable()) and c not in valid_chars:
-                entry_warning(entry, 'source contains unhandled custom characters')
-                break
+        if not cs.source_check(msgid):
+            entry_warning(entry, 'source contains unhandled custom characters')
 
         tokens = []
         for meta in data['data']:
