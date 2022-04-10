@@ -9,6 +9,20 @@ CUSTOM_CHARS = {
     '\xf5': 'ü',
 }
 
+# Charaters to be remapped prior to source-encoding transformation
+# This transformation is applied to the translation prior to being converted to the final encoding,
+# and maps UTF8 to UTF8. It replaces unavailable symbols in the translation to a close
+# representation in the source encoding.
+TRANS_CHARS = {
+    'Ä': 'ä',
+    'Å': 'A',
+    'Ö': 'ö',
+    'Ü': 'ü',
+    'å': 'a',
+    'æ': 'ä',
+    'ø': 'ö',
+}
+
 
 def _character_check(buf, valid_chars):
     for c in buf:
@@ -33,6 +47,8 @@ def source_to_unicode(buf):
     return buf
 
 def unicode_to_source(buf):
+    for src, dst in TRANS_CHARS.items():
+        buf = buf.replace(src, dst)
     for dst, src in CUSTOM_CHARS.items():
         buf = buf.replace(src, dst)
     return buf
