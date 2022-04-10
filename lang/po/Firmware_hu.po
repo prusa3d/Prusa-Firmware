@@ -17,13 +17,13 @@ msgstr ""
 
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
-msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr "Acellap %.7s\x0aZ offset: %+1.3fmm\x0a%cFolytassam\x0a%cUjrainditas"
+msgid "Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"
+msgstr "Acellap %.7s\nZ offset: %+1.3fmm\n%cFolytassam\n%cUjrainditas"
 
 # MSG_REFRESH c=18
 #: messages.c:85
-msgid "\x04Refresh"
-msgstr "\x04Frissites"
+msgid "🔃Refresh"
+msgstr "🔃Frissites"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166
@@ -57,13 +57,13 @@ msgstr "[0;0] pont offszet"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Utkozes erzekeles csak\x0anormal modban\x0akapcsolhato be"
+msgid "Crash detection can\nbe turned on only in\nNormal mode"
+msgstr "Utkozes erzekeles csak\nnormal modban\nkapcsolhato be"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "FIGYELEM:\x0aUtkozes erzekeles\x0akikapcsolva\x0aHalk modban"
+msgid "WARNING:\nCrash detection\ndisabled in\nStealth mode"
+msgstr "FIGYELEM:\nUtkozes erzekeles\nkikapcsolva\nHalk modban"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024

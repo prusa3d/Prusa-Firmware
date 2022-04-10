@@ -17,13 +17,13 @@ msgstr ""
 
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
-msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr "Plat %.7s\x0aZ offset: %+1.3fmm\x0a%cPokracovat\x0a%cReset"
+msgid "Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"
+msgstr "Plat %.7s\nZ offset: %+1.3fmm\n%cPokracovat\n%cReset"
 
 # MSG_REFRESH c=18
 #: messages.c:85
-msgid "\x04Refresh"
-msgstr "\x04Obnovit"
+msgid "🔃Refresh"
+msgstr "🔃Obnovit"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166
@@ -57,13 +57,13 @@ msgstr "[0;0] odsazeni bodu"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Crash detekce muze\x0abyt zapnuta pouze v\x0aNormal modu"
+msgid "Crash detection can\nbe turned on only in\nNormal mode"
+msgstr "Crash detekce muze\nbyt zapnuta pouze v\nNormal modu"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "POZOR:\x0aCrash detekce\x0adeaktivovana ve\x0aStealth modu"
+msgid "WARNING:\nCrash detection\ndisabled in\nStealth mode"
+msgstr "POZOR:\nCrash detekce\ndeaktivovana ve\nStealth modu"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024

@@ -17,13 +17,13 @@ msgstr ""
 
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
-msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr "Plyta %.7s\x0aZ offset: %+1.3fmm\x0a%cKontynuowac\x0a%cReset"
+msgid "Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"
+msgstr "Plyta %.7s\nZ offset: %+1.3fmm\n%cKontynuowac\n%cReset"
 
 # MSG_REFRESH c=18
 #: messages.c:85
-msgid "\x04Refresh"
-msgstr "\x04Odswiezac"
+msgid "🔃Refresh"
+msgstr "🔃Odswiezac"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166
@@ -57,13 +57,13 @@ msgstr "[0;0] przesun.punktu"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Wykrywanie zderzen\x0amoze byc wlaczone\x0atylko w\x0atrybie Normalnym"
+msgid "Crash detection can\nbe turned on only in\nNormal mode"
+msgstr "Wykrywanie zderzen\nmoze byc wlaczone\ntylko w\ntrybie Normalnym"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "UWAGA:\x0aWykrywanie zderzen\x0awylaczone w\x0atrybie Stealth"
+msgid "WARNING:\nCrash detection\ndisabled in\nStealth mode"
+msgstr "UWAGA:\nWykrywanie zderzen\nwylaczone w\ntrybie Stealth"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024

@@ -17,13 +17,13 @@ msgstr ""
 
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
-msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr "Plaque %.7s\x0aZ offset: %+1.3fmm\x0a%cContinuer\x0a%cReinitialiser"
+msgid "Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"
+msgstr "Plaque %.7s\nZ offset: %+1.3fmm\n%cContinuer\n%cReinitialiser"
 
 # MSG_REFRESH c=18
 #: messages.c:85
-msgid "\x04Refresh"
-msgstr "\x04Rafraichir"
+msgid "🔃Refresh"
+msgstr "🔃Rafraichir"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166
@@ -57,13 +57,13 @@ msgstr "Offset point [0;0]"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "La detection de\x0acrash peut etre\x0aactive seulement en\x0amode Normal"
+msgid "Crash detection can\nbe turned on only in\nNormal mode"
+msgstr "La detection de\ncrash peut etre\nactive seulement en\nmode Normal"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "ATTENTION:\x0aDetection de crash\x0adesactivee en\x0amode furtif"
+msgid "WARNING:\nCrash detection\ndisabled in\nStealth mode"
+msgstr "ATTENTION:\nDetection de crash\ndesactivee en\nmode furtif"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024

@@ -17,13 +17,13 @@ msgstr ""
 
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
-msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr "Piano %.7s\x0aZ offset: %+1.3fmm\x0a%cContinuare\x0a%cReset"
+msgid "Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"
+msgstr "Piano %.7s\nZ offset: %+1.3fmm\n%cContinuare\n%cReset"
 
 # MSG_REFRESH c=18
 #: messages.c:85
-msgid "\x04Refresh"
-msgstr "\x04Ricaricare"
+msgid "🔃Refresh"
+msgstr "🔃Ricaricare"
 
 # MSG_03_OR_OLDER c=18
 #: messages.c:166
@@ -57,13 +57,13 @@ msgstr "[0;0] punto offset"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Rilev. impatto\x0aattivabile solo\x0ain Modalita normale"
+msgid "Crash detection can\nbe turned on only in\nNormal mode"
+msgstr "Rilev. impatto\nattivabile solo\nin Modalita normale"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "ATTENZIONE:\x0aRilev. impatto\x0adisattivato in\x0aModalita silenziosa"
+msgid "WARNING:\nCrash detection\ndisabled in\nStealth mode"
+msgstr "ATTENZIONE:\nRilev. impatto\ndisattivato in\nModalita silenziosa"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024

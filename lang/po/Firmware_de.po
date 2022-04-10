@@ -17,13 +17,13 @@ msgstr ""
 
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
-msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr "Stahlblech %.7s\x0aZ Versatz: %+1.3fmm\x0a%cFortsetzen\x0a%cReset"
+msgid "Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"
+msgstr "Stahlblech %.7s\nZ Versatz: %+1.3fmm\n%cFortsetzen\n%cReset"
 
 # MSG_REFRESH c=18
 #: messages.c:85
-msgid "\x04Refresh"
-msgstr "\x04Aktualisiere"
+msgid "🔃Refresh"
+msgstr "🔃Aktualisiere"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166
@@ -57,13 +57,13 @@ msgstr "[0;0] Punktversatz"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Crash Erkennung kann\x0anur im Modus Normal\x0agenutzt werden"
+msgid "Crash detection can\nbe turned on only in\nNormal mode"
+msgstr "Crash Erkennung kann\nnur im Modus Normal\ngenutzt werden"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "WARNUNG:\x0aCrash Erkennung\x0adeaktiviert im\x0aStealth Modus"
+msgid "WARNING:\nCrash detection\ndisabled in\nStealth mode"
+msgstr "WARNUNG:\nCrash Erkennung\ndeaktiviert im\nStealth Modus"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024

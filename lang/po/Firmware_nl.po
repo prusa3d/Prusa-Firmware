@@ -17,12 +17,12 @@ msgstr ""
 
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
-msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr "Staalplaat %.7s\x0aZ offset: %+1.3fmm\x0a%cDoorgaan\x0a%cReset"
+msgid "Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"
+msgstr "Staalplaat %.7s\nZ offset: %+1.3fmm\n%cDoorgaan\n%cReset"
 
 # MSG_REFRESH c=18
 #: messages.c:85
-msgid "\x04Refresh"
+msgid "🔃Refresh"
 msgstr ""
 
 # MSG_IR_03_OR_OLDER c=18
@@ -57,13 +57,13 @@ msgstr "[0;0] punt offset"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Crashdetectie kan\x0aalleen in normaal\x0agebruikt worden"
+msgid "Crash detection can\nbe turned on only in\nNormal mode"
+msgstr "Crashdetectie kan\nalleen in normaal\ngebruikt worden"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "WARNING:\x0aCrashdetectie\x0auitgeschakeld in\x0aStealth stand"
+msgid "WARNING:\nCrash detection\ndisabled in\nStealth mode"
+msgstr "WARNING:\nCrashdetectie\nuitgeschakeld in\nStealth stand"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024

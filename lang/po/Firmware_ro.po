@@ -17,13 +17,13 @@ msgstr ""
 
 # MSG_SHEET_OFFSET c=20 r=4
 #: 
-msgid "Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
-msgstr "Suprafata %.7s\x0aZ offset: %+1.3fmm\x0a%cContinua\x0a%cReset."
+msgid "Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"
+msgstr "Suprafata %.7s\nZ offset: %+1.3fmm\n%cContinua\n%cReset."
 
 # MSG_REFRESH c=18
 #: messages.c:85
-msgid "\x04Refresh"
-msgstr "\x04Reimprospata"
+msgid "🔃Refresh"
+msgstr "🔃Reimprospata"
 
 # MSG_IR_03_OR_OLDER c=18
 #: messages.c:166
@@ -57,13 +57,13 @@ msgstr "compensare origine"
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: 
-msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Detect. coliziunilor\x0apoate fi pornita\x0adoar in modul normal"
+msgid "Crash detection can\nbe turned on only in\nNormal mode"
+msgstr "Detect. coliziunilor\npoate fi pornita\ndoar in modul normal"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: 
-msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "ATENTIE:\x0aDetect. coliziunilor\x0aeste oprita in\x0amodul silentios"
+msgid "WARNING:\nCrash detection\ndisabled in\nStealth mode"
+msgstr "ATENTIE:\nDetect. coliziunilor\neste oprita in\nmodul silentios"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024
