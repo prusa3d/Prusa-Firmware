@@ -181,8 +181,9 @@ def check_entries(catalog, warn_missing, warn_same_line):
                 entry_warning(entry, f'{id_name} defined, but never used')
 
         # check custom characters
-        if not cs.source_check(msgid):
-            entry_warning(entry, 'source contains unhandled custom characters')
+        invalid_char = cs.source_check(msgid)
+        if invalid_char is not None:
+            entry_warning(entry, 'source contains unhandled custom character ' + repr(invalid_char))
 
         tokens = []
         for meta in data['data']:

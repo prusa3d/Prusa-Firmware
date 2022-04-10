@@ -38,6 +38,8 @@ import textwrap
 import re
 import os
 
+from lib import charset as cs
+
 def color_maybe(color_attr, text):
     if stdout.isatty():
         return '\033[0;' + str(color_attr) + 'm' + text + '\033[0m'
@@ -159,11 +161,12 @@ def check_translation(entry, is_pot, no_warning, warn_empty, information):
     elif rows > 1 and cols != 20:
         print(yellow("[W]: Multiple rows with odd number of columns on line %d" % line))
 
-    # TODO: Check if translation contains unsupported characters
-    #if translation.isascii() == False:
-    #    print(red('[E]: Critical syntax: Non ascii chars found on line %d' % line))
-    #    print(red(translation))
-    #    return
+    # Check if translation contains unsupported characters
+    invalid_char = cs.translation_check(cs.unicode_to_source(translation))
+    if invalid_char is not None:
+        print(red('[E]: Critical syntax: Unhandled char %s found on line %d' % (repr(invalid_char), line)))
+        print(red(' translation: ' + translation))
+        return
 
     wrapped_source = wrap_text(source, cols)
     rows_count_source = len(wrapped_source)
