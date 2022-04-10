@@ -41,7 +41,7 @@ const char* lang_get_translation(const char* s)
 	if (lang_selected == 0) return s + 2; //primary language selected, return orig. str.
 	if (lang_table == 0) return s + 2; //sec. lang table not found, return orig. str.
 	uint16_t ui = pgm_read_word(((uint16_t*)s)); //read string id
-	if (ui == 0xffff) return s + 2; //translation not found, return orig. str.
+	if (ui == 0xffff) return s + 2; //id not assigned, return orig. str.
 	ui = pgm_read_word(((uint16_t*)(((char*)lang_table + 16 + ui*2)))); //read relative offset
 	if (pgm_read_byte(((uint8_t*)((char*)lang_table + ui))) == 0) //read first character
 		return s + 2;//zero length string == not translated, return orig. str.
