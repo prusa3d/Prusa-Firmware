@@ -1168,23 +1168,6 @@ void setup()
 	uint32_t src_addr = 0x00000;
 	if (lang_get_header(1, &header, &src_addr))
 	{
-//this is comparsion of some printing-methods regarding to flash space usage and code size/readability
-#define LT_PRINT_TEST 2
-//  flash usage
-//  total   p.test
-//0 252718  t+c  text code
-//1 253142  424  170  254
-//2 253040  322  164  158
-//3 253248  530  135  395
-#if (LT_PRINT_TEST==1) //not optimized printf
-		printf_P(_n(" _src_addr = 0x%08lx\n"), src_addr);
-		printf_P(_n(" _lt_magic = 0x%08lx %S\n"), header.magic, (header.magic==LANG_MAGIC)?_n("OK"):_n("NA"));
-		printf_P(_n(" _lt_size  = 0x%04x (%d)\n"), header.size, header.size);
-		printf_P(_n(" _lt_count = 0x%04x (%d)\n"), header.count, header.count);
-		printf_P(_n(" _lt_chsum = 0x%04x\n"), header.checksum);
-		printf_P(_n(" _lt_code  = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
-		printf_P(_n(" _lt_sign = 0x%08lx\n"), header.signature);
-#elif (LT_PRINT_TEST==2) //optimized printf
 		printf_P(
 		 _n(
 		  " _src_addr = 0x%08lx\n"
@@ -1203,34 +1186,6 @@ void setup()
 		 header.code, header.code >> 8, header.code & 0xff,
 		 header.signature
 		);
-#elif (LT_PRINT_TEST==3) //arduino print/println (leading zeros not solved)
-		MYSERIAL.print(" _src_addr = 0x");
-		MYSERIAL.println(src_addr, 16);
-		MYSERIAL.print(" _lt_magic = 0x");
-		MYSERIAL.print(header.magic, 16);
-		MYSERIAL.println((header.magic==LANG_MAGIC)?" OK":" NA");
-		MYSERIAL.print(" _lt_size  = 0x");
-		MYSERIAL.print(header.size, 16);
-		MYSERIAL.print(" (");
-		MYSERIAL.print(header.size, 10);
-		MYSERIAL.println(")");
-		MYSERIAL.print(" _lt_count = 0x");
-		MYSERIAL.print(header.count, 16);
-		MYSERIAL.print(" (");
-		MYSERIAL.print(header.count, 10);
-		MYSERIAL.println(")");
-		MYSERIAL.print(" _lt_chsum = 0x");
-		MYSERIAL.println(header.checksum, 16);
-		MYSERIAL.print(" _lt_code  = 0x");
-		MYSERIAL.print(header.code, 16);
-		MYSERIAL.print(" (");
-		MYSERIAL.print((char)(header.code >> 8), 0);
-		MYSERIAL.print((char)(header.code & 0xff), 0);
-		MYSERIAL.println(")");
-		MYSERIAL.print(" _lt_resv1 = 0x");
-		MYSERIAL.println(header.signature, 16);
-#endif //(LT_PRINT_TEST==)
-#undef LT_PRINT_TEST
 
 #if 0
 		xflash_rd_data(0x25ba, (uint8_t*)&block_buffer, 1024);
@@ -1249,9 +1204,9 @@ void setup()
 		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
 		sum = (sum >> 8) | ((sum & 0xff) << 8); //swap bytes
 		if (sum == header.checksum)
-			puts_P(_n("Checksum OK"), sum);
+			puts_P(_n("Checksum OK"));
 		else
-			puts_P(_n("Checksum NG"), sum);
+			puts_P(_n("Checksum NG"));
 	}
 	else
 		puts_P(_n("lang_get_header failed!"));
@@ -1534,11 +1489,9 @@ void setup()
 		lcd_language();
 
 #ifdef DEBUG_SEC_LANG
-
 	uint16_t sec_lang_code = lang_get_code(1);
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	printf_P(_n("lang_selected=%d\nlang_table=0x%04x\nSEC_LANG_CODE=0x%04x (%c%c)\n"), lang_selected, ui, sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
-
 	lang_print_sec_lang(uartout);
 #endif //DEBUG_SEC_LANG
 
