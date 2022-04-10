@@ -42,7 +42,7 @@ def index_to_line(index, lines):
     return bisect.bisect_left(lines, index) + 1
 
 
-def extract_file(path, catalog):
+def extract_file(path, catalog, warn_skipped=False):
     source = open(path).read()
     newlines = newline_positions(source)
 
@@ -96,6 +96,17 @@ def extract_file(path, catalog):
                 data.add(meta_parts[0].strip())
                 if len(meta_parts) > 1:
                     comments.add(meta_parts[1].strip())
+
+        # check if this message should be ignored
+        ignored = False
+        for meta in data:
+            if regex.search(r'\bIGNORE\b', meta) is not None:
+                ignored = True
+                break
+        if ignored:
+            if warn_skipped:
+                line_warning(path, line, 'skipping explicitly ignored translation')
+            continue
 
         # extra message catalog name (if any)
         cat_name = set()
@@ -233,6 +244,8 @@ def main():
                     help='Do not warn about missing MSG entries')
     ap.add_argument('--warn-same-line', action='store_true',
                     help='Warn about multiple translations on the same line')
+    ap.add_argument('--warn-skipped', action='store_true',
+                    help='Warn about explicitly ignored translations')
     ap.add_argument('-s', '--sort', action='store_true',
                     help='Sort output catalog')
     ap.add_argument('file', nargs='+', help='Input files')
@@ -241,7 +254,7 @@ def main():
     # extract strings
     catalog = {}
     for path in args.file:
-        extract_file(path, catalog)
+        extract_file(path, catalog, warn_skipped=args.warn_skipped)
 
     # process backreferences in a 2nd pass
     for path in args.file:
