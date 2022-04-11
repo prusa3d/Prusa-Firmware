@@ -225,7 +225,7 @@ enum class FanCheck : uint_least8_t {
  *
  * @returns a TestError noerror, extruderFan, printFan or swappedFan.
  */
-static FanCheck lcd_selftest_fan_auto(int _fan);
+static FanCheck lcd_selftest_fan_auto(uint8_t _fan);
 #endif //FANCHECK
 
 #ifdef PAT9125
@@ -7608,7 +7608,7 @@ static void lcd_selftest_measure_fans(uint8_t delay, uint8_t col, uint8_t row) {
     gcode_M123();
 }
 
-static FanCheck lcd_selftest_fan_auto(int _fan)
+static FanCheck lcd_selftest_fan_auto(uint8_t _fan)
 {
     // speed threshold to differentiate between extruder and print fan
     static const int printFanThr = 70; // >=4200 RPM
