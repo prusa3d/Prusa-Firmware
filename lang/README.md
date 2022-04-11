@@ -46,7 +46,7 @@ This step is already performed for you when using ``build.sh`` or ``PF-build.sh`
 
 ### Updating an existing translation
 
-### Typo or incorrect translation in existing text
+#### Typo or incorrect translation in existing text
 
 If you see a typo or an incorrect translation, simply edit ``po/Firmware_XY.po`` and make a pull request with the changes.
 
@@ -60,7 +60,7 @@ to check for screen formatting issues in isolation, or use the ``--information``
 
 to preview all translations as formatted on the screen.
 
-### Missing translation without entry in po file
+#### Missing translation without entry in po file
 
 If some text is missing, but there is no reference text in the po file, you need to refresh the translation file by picking up new strings and annotations from the template.
 
@@ -72,9 +72,9 @@ Update the translations, then proceed as for [typo or incorrect translation](#ty
 
 The screen annotations as well as the original english text is extracted from the firmware sources. **Do not change the main pot file**. The ``pot`` and ``po`` file contains the location of the annotation to help you fix the sources themselves.
 
-Run ``./update-pot.sh`` to regenerate ``po/Firmware.pot`` and verify that the annotation has been picked up correctly. You can stop here if you only care about english.
+Run ``./update-pot.sh`` to regenerate ``po/Firmware.pot`` and verify that the annotation has been picked up correctly. You can stop here if you only care about the annotation.
 
-Run ``./update-po.sh po/Firmware_XY.po`` to propagate the annotation to your language, then proceed as for [typo or incorrect translation](#typo-or-incorrect-translation-in-existing-text).
+Run ``./update-po.sh po/Firmware_XY.po`` otherwise to propagate the annotation to your language, then proceed as for [typo or incorrect translation](#typo-or-incorrect-translation-in-existing-text).
 
 ### Adding a new language
 
