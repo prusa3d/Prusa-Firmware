@@ -49,7 +49,10 @@ done
 # Build the final hex file
 echo "$(tput setaf 4)assembling final firmware image$(tput sgr 0)" >&2
 "$OBJCOPY" -I binary -O ihex "$BIN" "$OUTHEX"
-cat "$TMPDIR"/lang_*.bin > "$TMPDIR/lang.bin"
+truncate -s0 "$TMPDIR/lang.bin"
+for lang in $LANGUAGES; do
+    cat "$TMPDIR/lang_$lang.bin" >> "$TMPDIR/lang.bin"
+done
 "$OBJCOPY" -I binary -O ihex "$TMPDIR/lang.bin" "$TMPDIR/lang.hex"
 cat "$TMPDIR/lang.hex" >> "$OUTHEX"
 
