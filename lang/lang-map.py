@@ -87,7 +87,7 @@ def check_duplicate_data(syms):
     for data, sym_list in data_syms.items():
         if len(sym_list) > 1:
             sym_names = [x['name'] for x in sym_list]
-            warn(f'symbols {sym_names} reference the same data: {data}')
+            warn(f'symbols {sym_names} contain the same data: {data}')
 
 
 def output_map(syms):
@@ -108,7 +108,7 @@ def main():
     syms = get_lang_symbols(elf, symtab)
     pri_sym = get_sig_sym(symtab, syms)
 
-    # do one additional pass to check for symbols referencing the same data
+    # do one additional pass to check for symbols containing the same data
     check_duplicate_data(syms)
 
     # output the symbol table map
