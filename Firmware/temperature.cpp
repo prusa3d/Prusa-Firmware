@@ -1683,6 +1683,16 @@ void adc_ready(void) //callback from adc when sampling finished
 
 FORCE_INLINE static void temperature_isr()
 {
+#ifdef DEBUG_PULLUP_CRASH
+    // check for faulty pull-ups enabled on thermistor inputs
+    if ((PORTF & (uint8_t)(ADC_DIDR_MSK & 0xff)) || (PORTK & (uint8_t)((ADC_DIDR_MSK >> 8) & 0xff)))
+        pullup_error(true);
+#else
+    PORTF &= ~(uint8_t)(ADC_DIDR_MSK & 0xff);
+    PORTK &= ~(uint8_t)((ADC_DIDR_MSK >> 8) & 0xff);
+#endif // DEBUG_PULLUP_CRASH
+
+
 	if (!temp_meas_ready) adc_cycle();
 	lcd_buttons_update();
 
