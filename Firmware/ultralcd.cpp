@@ -1863,11 +1863,11 @@ void TestPullupCrash() {
 //! |  3.7.2.-2363       |	c=16
 //! | prusa3d.com        |	MSG_PRUSA3D
 //! | forum.prusa3d.com  |	MSG_PRUSA3D_FORUM
-//! | howto.prusa3d.com  |	MSG_PRUSA3D_HOWTO
+//! | help.prusa3d.com  |	MSG_PRUSA3D_HELP
 //! | --------------     |	STR_SEPARATOR
 //! | 1_75mm_MK3         |	FILAMENT_SIZE
-//! | howto.prusa3d.com  |	ELECTRONICS
-//! | howto.prusa3d.com  |	NOZZLE_TYPE
+//! | help.prusa3d.com  |	ELECTRONICS
+//! | help.prusa3d.com  |	NOZZLE_TYPE
 //! | --------------     |	STR_SEPARATOR
 //! | Date:              |	c=17
 //! | MMM DD YYYY        |	__DATE__
@@ -1971,7 +1971,7 @@ static void lcd_support_menu()
       
   MENU_ITEM_BACK_P(_n("prusa3d.com"));////MSG_PRUSA3D c=18
   MENU_ITEM_BACK_P(_n("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=18
-  MENU_ITEM_BACK_P(_n("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO c=18
+  MENU_ITEM_BACK_P(_n("help.prusa3d.com"));////MSG_PRUSA3D_HELP c=18
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR(FILAMENT_SIZE));
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
