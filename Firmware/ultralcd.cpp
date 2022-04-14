@@ -4979,7 +4979,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 
 		if (lcd_clicked())
 		{
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 		    KEEPALIVE_STATE(IN_HANDLER);
 			lcd_encoder_diff = 0;
 			return(cursor_pos + first - 1);
@@ -5053,7 +5052,6 @@ char reset_menu() {
 		}
 
 		if (lcd_clicked()) {
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			return(cursor_pos + first);
 		}
 
@@ -5998,7 +5996,6 @@ void lcd_sdcard_stop()
 
 	if (lcd_clicked())
 	{
-		Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 		if ((int32_t)lcd_encoder == 1)
 		{
 			lcd_return_to_status();
@@ -7706,6 +7703,7 @@ void menu_lcd_lcdupdate_func(void)
 
 		if (LCD_CLICKED)
 		{
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			lcd_timeoutToStatus.start();
 			backlight_wake();
 		}
