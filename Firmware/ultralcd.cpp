@@ -4928,7 +4928,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
                 cursor_pos++;
             }
             enc_dif = lcd_encoder_diff;
-			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 		}
 
 		if (cursor_pos > 3)
@@ -5044,7 +5043,6 @@ char reset_menu() {
 				lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
 				lcd_set_cursor(0, cursor_pos);
 				lcd_putc('>');
-				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
 			}
