@@ -164,7 +164,6 @@ uint8_t nI;
 
 static void Sound_DoSound_Echo(void)
 {
-    backlight_wake();
 uint8_t nI;
 
 for(nI=0;nI<10;nI++)
