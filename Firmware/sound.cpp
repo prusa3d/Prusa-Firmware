@@ -151,7 +151,6 @@ static void Sound_DoSound_Blind_Alert(void)
 
  static void Sound_DoSound_Encoder_Move(void)
 {
-    backlight_wake();
 uint8_t nI;
 
  for(nI=0;nI<5;nI++)
