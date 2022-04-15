@@ -83,8 +83,6 @@ extern void menu_back_if_clicked(void);
 extern void menu_submenu(menu_func_t submenu);
 extern void menu_submenu_no_reset(menu_func_t submenu);
 
-extern uint8_t menu_item_ret(void);
-
 //extern int menu_draw_item_printf_P(char type_char, const char* format, ...);
 
 

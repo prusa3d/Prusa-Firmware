@@ -56,6 +56,7 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, bool reset_menu_state)
 		CRITICAL_SECTION_END;
 		if (reset_menu_state)
 			menu_data_reset();
+		lcd_draw_update = 2; // Needed to render new menu
 	}
 	else
 		CRITICAL_SECTION_END;
@@ -135,12 +136,6 @@ void menu_submenu_no_reset(menu_func_t submenu)
 		menu_stack[menu_depth++].position = lcd_encoder;
 		menu_goto(submenu, 0, false);
 	}
-}
-
-uint8_t menu_item_ret(void)
-{
-	lcd_quick_feedback();
-	return 1;
 }
 
 /*
@@ -262,7 +257,7 @@ uint8_t menu_item_text_P(const char* str)
 	{
 		if (lcd_draw_update) menu_draw_item_puts_P(' ', str);
 		if (menu_clicked && (lcd_encoder == menu_item))
-			return menu_item_ret();
+			return 1;
 	}
 	menu_item++;
 	return 0;
@@ -276,7 +271,7 @@ uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu)
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_submenu(submenu);
-			return menu_item_ret();
+			return 1;
 		}
 	}
 	menu_item++;
@@ -291,7 +286,7 @@ uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu)
         if (menu_clicked && (lcd_encoder == menu_item))
         {
             menu_submenu(submenu);
-            return menu_item_ret();
+            return 1;
         }
     }
     menu_item++;
@@ -310,7 +305,8 @@ uint8_t __attribute__((noinline)) menu_item_function_E(const Sheet &sheet, menu_
             lcd_update_enabled = 0;
             if (func) func();
             lcd_update_enabled = 1;
-            return menu_item_ret();
+            lcd_draw_update = 2;
+            return 1;
         }
     }
     menu_item++;
@@ -325,7 +321,7 @@ uint8_t menu_item_back_P(const char* str)
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_back();
-			return menu_item_ret();
+			return 1;
 		}
 	}
 	menu_item++;
@@ -348,7 +344,8 @@ uint8_t menu_item_function_P(const char* str, menu_func_t func)
 			lcd_update_enabled = 0;
 			if (func) func();
 			lcd_update_enabled = 1;
-			return menu_item_ret();
+			lcd_draw_update = 2;
+			return 1;
 		}
 	}
 	menu_item++;
@@ -376,7 +373,8 @@ uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t)
             lcd_update_enabled = 0;
             if (func) func(fn_par);
             lcd_update_enabled = 1;
-            return menu_item_ret();
+            lcd_draw_update = 2;
+            return 1;
         }
     }
     menu_item++;
@@ -393,7 +391,6 @@ uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func
 			if (toggle == NULL) // print N/A warning message
 			{
 				menu_submenu(func);
-				return menu_item_ret();
 			}
 			else // do the actual toggling
 			{
@@ -402,8 +399,8 @@ uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func
 				lcd_update_enabled = 0;
 				if (func) func();
 				lcd_update_enabled = 1;
-				return menu_item_ret();
 			}
+			return 1;
 		}
 	}
 	menu_item++;
@@ -418,7 +415,8 @@ uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			if (str_gcode) enquecommand_P(str_gcode);
-			return menu_item_ret();
+			lcd_draw_update = 2;
+			return 1;
 		}
 	}
 	menu_item++;
@@ -528,7 +526,7 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 			_md->minEditValue = min_val;
 			_md->maxEditValue = max_val;
 			lcd_encoder = *pval;
-			return menu_item_ret();
+			return 1;
 		}
 	}
 	menu_item++;

@@ -345,8 +345,9 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 			lcd_consume_click();
 			lcd_update_enabled = false;
 			menu_action_sddirectory(str_fn);
-			lcd_update_enabled = true;
-			return menu_item_ret();
+			lcd_update_enabled = 1;
+			lcd_draw_update = 2;
+			return 1;
 		}
 	}
 	menu_item++;
@@ -367,8 +368,8 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 			lcd_consume_click();
 			lcd_update_enabled = false;
 			menu_action_sdfile(str_fn);
-			lcd_update_enabled = true;
-			return menu_item_ret();
+			lcd_draw_update = 2;
+			return 1;
 		}
 	}
 	menu_item++;
@@ -5671,7 +5672,7 @@ static uint8_t lcd_advance_K()
         {
             menu_submenu_no_reset(lcd_advance_edit_K);
             lcd_encoder = 100. * extruder_advance_K;
-            return menu_item_ret();
+            return 1;
         }
     }
     menu_item++;
