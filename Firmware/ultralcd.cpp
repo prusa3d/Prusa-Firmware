@@ -1058,7 +1058,7 @@ void lcd_commands()
 void lcd_return_to_status()
 {
 	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-	menu_goto(lcd_status_screen, 0, false, true);
+	menu_goto(lcd_status_screen, 0, true);
 	menu_depth = 0;
     eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
 }
@@ -2493,7 +2493,7 @@ static void lcd_menu_xyz_y_min()
 		else lcd_printf_P(_N("%6.2fmm"), distanceMin[i]);
 	}
     if (lcd_clicked())
-        menu_goto(lcd_menu_xyz_skew, 0, true, true);
+        menu_goto(lcd_menu_xyz_skew, 0, true);
 }
 
 //@brief Show measured axis skewness
@@ -2537,7 +2537,7 @@ static void lcd_menu_xyz_skew()
 		lcd_puts_at_P(15,0, _T(MSG_NA));
 	}
     if (lcd_clicked())
-        menu_goto(lcd_menu_xyz_offset, 0, true, true);
+        menu_goto(lcd_menu_xyz_offset, 0, true);
 }
 //! @brief Show measured bed offset from expected position
 //! 
@@ -3612,8 +3612,8 @@ static void crash_mode_switch()
     {
         lcd_crash_detect_enable();
     }
-	if (IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal)) menu_goto(lcd_tune_menu, 9, true, true);
-	else menu_goto(lcd_settings_menu, 9, true, true);
+	if (IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal)) menu_goto(lcd_tune_menu, 9, true);
+	else menu_goto(lcd_settings_menu, 9, true);
 }
 #endif //TMC2130
 
@@ -3627,7 +3627,7 @@ void menu_setlang(unsigned char lang)
 			lang_boot_update_start(lang);
 		lcd_update_enable(true);
 		lcd_clear();
-		menu_goto(lcd_language_menu, 0, true, true);
+		menu_goto(lcd_language_menu, 0, true);
 		lcd_timeoutToStatus.stop(); //infinite timeout
 		lcd_draw_update = 2;
 	}
@@ -3766,7 +3766,7 @@ void lcd_first_layer_calibration_reset()
         {
             eeprom_update_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset), 0xffff);
         }
-        menu_goto(lcd_v2_calibration,0,true,true);
+        menu_goto(lcd_v2_calibration,0,true);
     }
 
     if (lcd_encoder > 0)
@@ -3840,7 +3840,7 @@ void lcd_v2_calibration()
 #endif //FILAMENT_SENSOR
 
 	eFilamentAction = FilamentAction::Lay1Cal;
-	menu_goto(lcd_generic_preheat_menu, 0, true, true);
+	menu_goto(lcd_generic_preheat_menu, 0, true);
 }
 
 void lcd_wizard() {
@@ -3864,7 +3864,7 @@ void lcd_language()
 {
 	lcd_update_enable(true);
 	lcd_clear();
-	menu_goto(lcd_language_menu, 0, true, true);
+	menu_goto(lcd_language_menu, 0, true);
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	lcd_draw_update = 2;
 	while ((menu_menu != lcd_status_screen) && (!lang_is_selected()))
@@ -4072,7 +4072,7 @@ void lcd_wizard(WizState state)
 			}
 			break;
 		case S::Preheat:
-		    menu_goto(lcd_preheat_menu,0,false,true);
+		    menu_goto(lcd_preheat_menu,0,true);
 		    lcd_show_fullscreen_message_and_wait_P(_i("Select nozzle preheat temperature which matches your material."));////MSG_SEL_PREHEAT_TEMP c=20 r=6
 		    end = true; // Leave wizard temporarily for lcd_preheat_menu
 		    break;
@@ -4087,7 +4087,7 @@ void lcd_wizard(WizState state)
             break;
 		case S::Lay1CalCold:
             wizard_lay1cal_message(true);
-			menu_goto(lcd_v2_calibration,0,false,true);
+			menu_goto(lcd_v2_calibration,0,true);
 			end = true; // Leave wizard temporarily for lcd_v2_calibration
 			break;
         case S::Lay1CalHot:
