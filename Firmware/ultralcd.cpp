@@ -3747,7 +3747,7 @@ void lcd_first_layer_calibration_reset()
     static_assert(sizeof(menu_data)>= sizeof(MenuData),"_menu_data_t doesn't fit into menu_data");
     MenuData* menuData = (MenuData*)&(menu_data[0]);
 
-    if(LCD_CLICKED || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
+    if(lcd_clicked() || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
             (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST) ||
             (0 == static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>
             (&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))))
