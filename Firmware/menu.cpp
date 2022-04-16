@@ -493,7 +493,7 @@ static void _menu_edit_P(void)
 		lcd_set_cursor(0, 1);
 		menu_draw_P<T>(' ', _md->editLabel, (int)lcd_encoder);
 	}
-	if (LCD_CLICKED)
+	if (lcd_clicked())
 	{
 		*((T)(_md->editValue)) = lcd_encoder;
 		menu_back_no_reset();
