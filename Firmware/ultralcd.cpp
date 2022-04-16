@@ -813,7 +813,7 @@ void lcd_status_screen()                          // NOT static due to using ins
 			lcd_commands();
 	}
 
-	bool current_click = LCD_CLICKED;
+	bool current_click = lcd_clicked();
 
 	if (ignore_click)
 	{
