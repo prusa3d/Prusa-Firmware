@@ -399,6 +399,7 @@ uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func
 				lcd_update_enabled = 0;
 				if (func) func();
 				lcd_update_enabled = 1;
+				lcd_draw_update = 2;
 			}
 			return 1;
 		}
