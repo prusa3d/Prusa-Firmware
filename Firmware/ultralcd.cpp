@@ -2003,7 +2003,6 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             {
                 setTargetHotend0(0.0);
                 setTargetBed(0.0);
-                menu_back();
             }
             else
             {
