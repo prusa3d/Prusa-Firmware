@@ -2412,7 +2412,7 @@ static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 		menu_draw_float31(name, current_position[axis]);
 	}
 	if (menu_leaving || LCD_CLICKED) (void)enable_endstops(_md->endstopsEnabledPrevious);
-	if (LCD_CLICKED) menu_back();
+	menu_back_if_clicked();
 }
 
 
@@ -2438,7 +2438,7 @@ void lcd_move_e()
 			// the implementation of menu_draw_float31
 			menu_draw_float31(PSTR("Extruder:"), current_position[E_AXIS]);
 		}
-		if (LCD_CLICKED) menu_back();
+		menu_back_if_clicked();
 	}
 	else
 	{
@@ -2662,7 +2662,7 @@ static void lcd_babystep_z()
 #endif //PINDA_THERMISTOR
 		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 	}
-	if (LCD_CLICKED) menu_back();
+	menu_back_if_clicked();
 }
 
 
@@ -3380,7 +3380,7 @@ static void lcd_show_end_stops() {
 #ifndef TMC2130
 static void menu_show_end_stops() {
     lcd_show_end_stops();
-    if (LCD_CLICKED) menu_back();
+    menu_back_if_clicked();
 }
 #endif // not defined TMC2130
 
