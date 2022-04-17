@@ -4272,7 +4272,7 @@ void process_commands()
         if (starpos != NULL)
             *(starpos) = '\0';
         lcd_setstatus(strchr_pointer + 5);
-        custom_message_type = CustomMsg::MsgUpdate;
+        custom_message_type = CustomMsg::M117;
     }
 
     /*!

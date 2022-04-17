@@ -676,6 +676,9 @@ void lcdui_print_status_line(void)
         case CustomMsg::Resuming: //Resuming
             lcd_puts_at_P(0, 3, _T(MSG_RESUMING_PRINT));
             break;
+        case CustomMsg::M117:
+            lcd_print(lcd_status_message);
+            break;
         }
     }
 
@@ -875,10 +878,13 @@ void lcd_commands()
 	{
 		if (!blocks_queued() && !homing_flag)
 		{
-			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20
-            lcd_commands_type = LcdCommands::Idle;
-            lcd_commands_step = 0;
-            long_pause();
+			if (custom_message_type != CustomMsg::M117)
+			{
+				lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20
+			}
+			lcd_commands_type = LcdCommands::Idle;
+			lcd_commands_step = 0;
+			long_pause();
 		}
 	}
 
