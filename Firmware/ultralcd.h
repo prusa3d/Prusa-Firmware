@@ -121,9 +121,8 @@ enum class CustomMsg : uint_least8_t
     TempCal,         //!< PINDA temperature calibration
     TempCompPreheat, //!< Temperature compensation preheat
     M0Wait,          //!< M0/M1 Wait command working even from SD
-    MsgUpdate,       //!< Short message even while printing from SD
+    M117,            //!< M117 Set the status line message on the LCD
     Resuming,        //!< Resuming message
-    M117,            //!< M117 Custom Message to be displayed
 };
 
 extern CustomMsg custom_message_type;
