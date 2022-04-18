@@ -4939,7 +4939,13 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL
+      if(codenum != 0)
+      {
+        if(custom_message_type != CustomMsg::M117)
+        {
+          LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL
+        }
+      }
       st_synchronize();
       codenum += _millis();  // keep track of when we started waiting
       previous_millis_cmd.start();
