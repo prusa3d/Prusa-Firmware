@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-04-20 14:01+0200\n"
+"PO-Revision-Date: 2022-04-20 16:38+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -1091,7 +1091,7 @@ msgstr "Printeren er ikke kalibrert. Vennligst se manualen, under First Steps."
 # MSG_PRINT_FAN c=10
 #: ultralcd.cpp:1447
 msgid "Print FAN"
-msgstr "Printvifte"
+msgstr "Ekst.vifte"
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
