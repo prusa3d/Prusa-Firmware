@@ -36,7 +36,7 @@
 
 #include "sound.h"
 
-#include "mmu.h"
+#include "mmu2.h"
 
 #include "static_assert.h"
 #include "first_lay_cal.h"
@@ -450,19 +450,20 @@ void lcdui_print_percent_done(void)
 }
 
 // Print extruder status (5 chars total)
-void lcdui_print_extruder(void)
-{
-	int chars = 0;
-	if (mmu_extruder == tmp_extruder) {
-		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) chars = lcd_printf_P(_N(" F?"));
-		else chars = lcd_printf_P(_N(" F%u"), mmu_extruder + 1);
-	}
-	else
-	{
-		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) chars = lcd_printf_P(_N(" ?>%u"), tmp_extruder + 1);
-		else chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder + 1, tmp_extruder + 1);
-	}
-	lcd_space(5 - chars);
+void lcdui_print_extruder(void) {
+    uint8_t chars = 0;
+// @@TODO   if (MMU2::mmu2.get_current_tool() == tmp_extruder) {
+//        if (MMU2::mmu2.get_current_tool() == MMU2::FILAMENT_UNKNOWN)
+//            chars = lcd_printf_P(_N(" F?"));
+//        else
+//            chars = lcd_printf_P(_N(" F%u"), MMU2::mmu2.get_current_tool() + 1);
+//    } else {
+//        if (MMU2::mmu2.get_current_tool() == MMU2::FILAMENT_UNKNOWN)
+//            chars = lcd_printf_P(_N(" ?>%u"), tmp_extruder + 1);
+//        else
+//            chars = lcd_printf_P(_N(" %u>%u"), MMU2::mmu2.get_current_tool() + 1, tmp_extruder + 1);
+//    }
+    lcd_space(5 - chars);
 }
 
 // Print farm number (5 chars total)
@@ -719,7 +720,7 @@ void lcdui_print_status_screen(void)
 	//Print SD status (7 chars)
 	lcdui_print_percent_done();
 
-	if (mmu_enabled)
+	if (MMU2::mmu2.Enabled())
 		//Print extruder status (5 chars)
 		lcdui_print_extruder();
 	else if (farm_mode)
@@ -945,7 +946,7 @@ void lcd_commands()
                 enquecommand_P(PSTR("M140 S0")); // turn off heatbed
                 enquecommand_P(PSTR("G1 Z10 F1300.000")); //lift Z
                 enquecommand_P(PSTR("G1 X10 Y180 F4000")); //Go to parking position
-                if (mmu_enabled) enquecommand_P(PSTR("M702 C")); //unload from nozzle
+                if (MMU2::mmu2.Enabled()) enquecommand_P(PSTR("M702 C")); //unload from nozzle
                 enquecommand_P(PSTR("M84"));// disable motors
                 forceMenuExpire = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
                 lcd_commands_step = 1;
@@ -1188,14 +1189,14 @@ static void lcd_menu_fails_stats_mmu_print()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_mmu_total()
 {
-	mmu_command(MmuCmd::S3);
+// @@TODO	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
-    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
-        _T(MSG_TOTAL_FAILURES),
-        _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ),
-        _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
-        _i("MMU power fails"), clamp999( mmu_power_failures )); ////MSG_MMU_POWER_FAILS c=15
+//    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
+//        _T(MSG_TOTAL_FAILURES),
+//        _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ),
+//        _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
+//        _i("MMU power fails"), clamp999( mmu_power_failures )); ////MSG_MMU_POWER_FAILS c=15
     menu_back_if_clicked_fb();
 }
 
@@ -1680,13 +1681,15 @@ static void lcd_support_menu()
 #endif // IR_SENSOR_ANALOG
 
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
-	if (mmu_enabled)
+	if (MMU2::mmu2.Enabled())
 	{
 		MENU_ITEM_BACK_P(_i("MMU2 connected"));  ////MSG_MMU_CONNECTED c=18
 		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17
 		if (((menu_item - 1) == menu_line) && lcd_draw_update)
 		{
 		    lcd_set_cursor(6, menu_row);
+            uint8_t mmu_version = 200; // @@TODO
+            uint8_t mmu_buildnr = 0;
 			if ((mmu_version > 0) && (mmu_buildnr > 0))
 				lcd_printf_P(PSTR("%d.%d.%d-%d"), mmu_version/100, mmu_version%100/10, mmu_version%10, mmu_buildnr);
 			else
@@ -1919,7 +1922,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             nLevel = bFilamentPreheatState ? 1 : 2;
             bFilamentAction = true;
             menu_back(nLevel);
-            extr_unload();
+            MMU2::mmu2.unload();
             break;
         case FilamentAction::MmuEject:
             nLevel = bFilamentPreheatState ? 1 : 2;
@@ -3475,15 +3478,15 @@ static void lcd_show_sensors_state()
 	uint8_t idler_state = STATE_NA;
 
 	pinda_state = READ(Z_MIN_PIN);
-	if (mmu_enabled && !mmu_last_finda_response.expired(1000))
+	if (MMU2::mmu2.Enabled())
 	{
-		finda_state = mmu_finda;
+		finda_state = MMU2::mmu2.FindaDetectsFilament();
 	}
 	lcd_puts_at_P(0, 0, _T(MSG_PINDA));
 	lcd_set_cursor(LCD_WIDTH - 14, 0);
 	lcd_print_state(pinda_state);
 	
-	if (mmu_enabled == true)
+	if (MMU2::mmu2.Enabled())
 	{
 		lcd_puts_at_P(10, 0, _n("FINDA"));////MSG_FINDA c=5
 		lcd_set_cursor(LCD_WIDTH - 3, 0);
@@ -3820,7 +3823,7 @@ void lcd_first_layer_calibration_reset()
 
 void lcd_v2_calibration()
 {
-	if (mmu_enabled)
+	if (MMU2::mmu2.Enabled())
 	{
 	    const uint8_t filament = choose_menu_P(
             _T(MSG_SELECT_FILAMENT),
@@ -3927,22 +3930,19 @@ static void wait_preheat()
 	
 }
 
-static void lcd_wizard_load()
-{
-	if (mmu_enabled)
-	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the first tube of the MMU, then press the knob to load it."));////MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
-		tmp_extruder = 0;
-	} 
-	else
-	{
-		lcd_show_fullscreen_message_and_wait_P(_i("Please insert filament into the extruder, then press the knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=6
-	}	
-	lcd_update_enable(false);
-	lcd_clear();
-	lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
-	loading_flag = true;
-	gcode_M701();
+static void lcd_wizard_load() {
+    if (MMU2::mmu2.Enabled()) {
+        lcd_show_fullscreen_message_and_wait_P(
+            _i("Please insert filament into the first tube of the MMU, then press the knob to load it.")); ////MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
+    } else {
+        lcd_show_fullscreen_message_and_wait_P(
+            _i("Please insert filament into the extruder, then press the knob to load it.")); ////MSG_WIZARD_LOAD_FILAMENT c=20 r=6
+    }
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
+    loading_flag = true;
+    gcode_M701(0);
 }
 
 bool lcd_autoDepleteEnabled()
@@ -3958,7 +3958,7 @@ static void wizard_lay1cal_message(bool cold)
 {
     lcd_show_fullscreen_message_and_wait_P(
             _i("Now I will calibrate distance between tip of the nozzle and heatbed surface.")); ////MSG_WIZARD_V2_CAL c=20 r=8
-    if (mmu_enabled)
+    if (MMU2::mmu2.Enabled())
     {
         lcd_show_fullscreen_message_and_wait_P(
                 _i("Select a filament for the First Layer Calibration and select it in the on-screen menu."));////MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
@@ -4101,7 +4101,7 @@ void lcd_wizard(WizState state)
 		    //start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
-			if (mmu_enabled)
+			if (MMU2::mmu2.Enabled())
 			{
 			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), true);
 			} else
@@ -4111,7 +4111,7 @@ void lcd_wizard(WizState state)
 			if (wizard_event) state = S::Lay1CalCold;
 			else
 			{
-			    if(mmu_enabled) state = S::LoadFilCold;
+			    if(MMU2::mmu2.Enabled()) state = S::LoadFilCold;
 			    else state = S::Preheat;
 			}
 			break;
@@ -4301,7 +4301,7 @@ static void auto_deplete_switch()
 
 static void settingsAutoDeplete()
 {
-    if (mmu_enabled)
+    if (MMU2::mmu2.Enabled())
     {
 #ifdef FILAMENT_SENSOR
         if (fsensor.isError()) {
@@ -4325,7 +4325,7 @@ while(0)\
 #ifdef MMU_HAS_CUTTER
 static void settingsCutter()
 {
-    if (mmu_enabled)
+    if (MMU2::mmu2.Enabled())
     {
         if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
         {
@@ -4405,7 +4405,7 @@ while (0)
 #define SETTINGS_MMU_MODE \
 do\
 {\
-	if (mmu_enabled)\
+	if (MMU2::mmu2.Enabled())\
 	{\
 		if (SilentModeMenu_MMU == 0) MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), _T(MSG_NORMAL), lcd_silent_mode_mmu_set);\
 		else MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), _T(MSG_STEALTH), lcd_silent_mode_mmu_set);\
@@ -4761,7 +4761,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
     //! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
     //! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
-    if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
+    if(!MMU2::mmu2.Enabled()) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
 #endif //IR_SENSOR_ANALOG
 
     if (_md->experimental_menu_visibility)
@@ -4923,7 +4923,7 @@ static void lcd_calibration_menu()
 //!
 //! Create list of items with header. Header can not be selected.
 //! Each item has text description passed by function parameter and
-//! number. There are 5 numbered items, if mmu_enabled, 4 otherwise.
+//! number. There are 5 numbered items, if MMU2::mmu2.Enabled(), 4 otherwise.
 //! Items are numbered from 1 to 4 or 5. But index returned starts at 0.
 //! There can be last item with different text and no number.
 //!
@@ -4934,7 +4934,7 @@ static void lcd_calibration_menu()
 uint8_t choose_menu_P(const char *header, const char *item, const char *last_item)
 {
     //following code should handle 3 to 127 number of items well
-    const int8_t items_no = last_item?(mmu_enabled?6:5):(mmu_enabled?5:4);
+    const int8_t items_no = last_item?(MMU2::mmu2.Enabled()?6:5):(MMU2::mmu2.Enabled()?5:4);
     const uint8_t item_len = item?strlen_P(item):0;
 	int8_t first = 0;
 	int8_t enc_dif = lcd_encoder_diff;
@@ -5106,68 +5106,71 @@ static void lcd_disable_farm_mode()
 	
 }
 
+static inline void load_all_wrapper(){
+    for(uint8_t i = 0; i < 5; ++i){
+        MMU2::mmu2.load_filament(i);
+    }
+}
 
+static inline void load_filament_wrapper(uint8_t i){
+    MMU2::mmu2.load_filament(i);
+}
 
-static void mmu_load_filament_menu()
-{
+static void mmu_load_filament_menu() {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    MENU_ITEM_FUNCTION_P(_i("Load all"), load_all); ////MSG_LOAD_ALL c=18
+    MENU_ITEM_FUNCTION_P(_i("Load all"), load_all_wrapper); ////MSG_LOAD_ALL c=18
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', extr_adj, i); ////MSG_LOAD_FILAMENT c=16
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_filament_wrapper, i); ////MSG_LOAD_FILAMENT c=16
     MENU_END();
 }
 
-static void mmu_load_to_nozzle_menu()
-{
-    if (bFilamentAction)
-    {
+static inline void lcd_mmu_load_to_nozzle_wrapper(uint8_t index){
+    MMU2::mmu2.load_filament_to_nozzle(index);
+}
+
+static void mmu_load_to_nozzle_menu() {
+    if (bFilamentAction) {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', lcd_mmu_load_to_nozzle, i); ////MSG_LOAD_FILAMENT c=16
+            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', lcd_mmu_load_to_nozzle_wrapper, i); ////MSG_LOAD_FILAMENT c=16
         MENU_END();
-    }
-    else
-    {
+    } else {
         eFilamentAction = FilamentAction::MmuLoad;
         preheat_or_continue();
     }
 }
 
-static void mmu_eject_filament(uint8_t filament)
-{
+static void mmu_eject_filament(uint8_t filament) {
     menu_back();
-    mmu_eject_filament(filament, true);
+    MMU2::mmu2.eject_filament(filament, true);
 }
 
-static void mmu_fil_eject_menu()
-{
-    if (bFilamentAction)
-    {
+static void mmu_fil_eject_menu() {
+    if (bFilamentAction) {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
             MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), i + '1', mmu_eject_filament, i); ////MSG_EJECT_FILAMENT c=16
         MENU_END();
-    }
-    else
-    {
+    } else {
         eFilamentAction = FilamentAction::MmuEject;
         preheat_or_continue();
     }
 }
 
 #ifdef MMU_HAS_CUTTER
+static inline void mmu_cut_filament_wrapper(uint8_t index){
+    MMU2::mmu2.cut_filament(index);
+}
 
-static void mmu_cut_filament_menu()
-{
-    if(bFilamentAction)
-    {
+static void mmu_cut_filament_menu() {
+    if (bFilamentAction) {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), i + '1', mmu_cut_filament, i); ////MSG_CUT_FILAMENT c=16
+            MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), i + '1', mmu_cut_filament_wrapper, i); ////MSG_CUT_FILAMENT c=16
         MENU_END();
     }
     else
@@ -5567,7 +5570,7 @@ static void lcd_main_menu()
     }
 
     if ( ! ( IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) ) ) {
-        if (mmu_enabled) {
+        if (MMU2::mmu2.Enabled()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), mmu_load_filament_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
@@ -5577,7 +5580,7 @@ static void lcd_main_menu()
 #endif //MMU_HAS_CUTTER
         } else {
 #ifdef FILAMENT_SENSOR
-            if (fsensor.getAutoLoadEnabled() && (mmu_enabled == false)) {
+            if (fsensor.getAutoLoadEnabled() && (MMU2::mmu2.Enabled() == false)) {
                 MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=18
             }
             else
@@ -5598,7 +5601,7 @@ static void lcd_main_menu()
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
     MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);////MSG_FAIL_STATS c=18
 #endif
-    if (mmu_enabled) {
+    if (MMU2::mmu2.Enabled()) {
         MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);////MSG_MMU_FAIL_STATS c=18
     }
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=18
@@ -5947,7 +5950,7 @@ void print_stop()
         fanSpeed = 0;
     }
 
-    if (mmu_enabled) extr_unload(); //M702 C
+    if (MMU2::mmu2.Enabled()) MMU2::mmu2.unload(); //M702 C
     finishAndDisableSteppers(); //M84
     axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
 }
@@ -6273,7 +6276,7 @@ bool lcd_selftest()
 	//!   As the Fsensor Detection isn't yet ready for the mmu2s we set temporarily the IR sensor 0.3 or older for mmu2s
 	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
 	if(fsensor.getSensorRevision() == IR_sensor_analog::SensorRevision::_Undef) {
-		if (!mmu_enabled) {
+		if (!MMU2::mmu2.Enabled()) {
 			lcd_detect_IRsensor();
 		}
 		else {
@@ -6469,7 +6472,7 @@ bool lcd_selftest()
     if (_result)
     {
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
-        if (mmu_enabled)
+        if (MMU2::mmu2.Enabled())
         {        
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
             _result = selftest_irsensor();
@@ -7093,19 +7096,18 @@ static bool selftest_irsensor()
     {
         TempBackup tempBackup;
         setTargetHotend(ABS_PREHEAT_HOTEND_TEMP,active_extruder);
-        mmu_wait_for_heater_blocking();
+//@@TODO        mmu_wait_for_heater_blocking();
         progress = lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
-        mmu_filament_ramming();
+//@@TODO        mmu_filament_ramming();
     }
     progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
-    mmu_command(MmuCmd::U0);
-    manage_response(false, false);
+    MMU2::mmu2.unload(); // mmu_command(MmuCmd::U0); manage_response(false, false);
 
     for(uint_least8_t i = 0; i < 200; ++i)
     {
         if (0 == (i % 32)) progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
 
-        mmu_load_step(false);
+//@@TODO        mmu_load_step(false);
         while (blocks_queued())
         {
             if (fsensor.getFilamentPresent())
