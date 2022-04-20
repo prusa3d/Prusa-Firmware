@@ -487,7 +487,7 @@ void gcode_M114();
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
 void gcode_M123();
 #endif //FANCHECK and TACH_0 and TACH_1
-void gcode_M701();
+void gcode_M701(uint8_t mmuSlotIndex);
 
 #define UVLO !(PINE & (1<<4))
 

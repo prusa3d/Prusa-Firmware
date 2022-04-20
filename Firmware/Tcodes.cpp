@@ -1,0 +1,124 @@
+#include "Tcodes.h"
+#include "Marlin.h"
+#include "mmu2.h"
+#include "stepper.h"
+#include <avr/pgmspace.h>
+#include <ctype.h>
+#include <stdint.h>
+#include "language.h"
+#include "messages.h"
+#include "ultralcd.h"
+#include <stdio.h>
+
+static const char duplicate_Tcode_ignored[] PROGMEM = "Duplicate T-code ignored.";
+
+inline bool IsInvalidTCode(char *const s, uint8_t i) { 
+    return ((s[i] < '0' || s[i] > '4') && s[i] != '?' && s[i] != 'x' && s[i] != 'c'); 
+}
+
+inline void TCodeInvalid() { 
+    SERIAL_ECHOLNPGM("Invalid T code."); 
+}
+
+// load to bondtech gears; if mmu is not present do nothing
+void TCodeX() {
+    if (MMU2::mmu2.Enabled()) {
+        uint8_t selectedSlot = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+        if ((selectedSlot == MMU2::mmu2.get_current_tool()) /*&& mmu_fil_loaded @@TODO */){ 
+            // dont execute the same T-code twice in a row
+            puts_P(duplicate_Tcode_ignored);
+        } else {
+            st_synchronize();
+            MMU2::mmu2.tool_change(selectedSlot);
+        }
+    }
+}
+
+// load to from bondtech gears to nozzle (nozzle should be preheated)
+void TCodeC() {
+    if (MMU2::mmu2.Enabled()) {
+        st_synchronize();
+// @@TODO       mmu_continue_loading(usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal));
+//        mmu_extruder = selectedSlot; // filament change is finished
+//        MMU2::mmu2.load_filament_to_nozzle();
+    }
+}
+
+struct SChooseFromMenu {
+    uint8_t slot:7;
+    uint8_t loadToNozzle:1;
+    inline constexpr SChooseFromMenu(uint8_t slot, bool loadToNozzle):slot(slot), loadToNozzle(loadToNozzle){}
+    inline constexpr SChooseFromMenu():slot(0), loadToNozzle(false) { }
+};
+
+SChooseFromMenu TCodeChooseFromMenu() {
+    if (MMU2::mmu2.Enabled()) {
+        return SChooseFromMenu( choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT)), true );
+    } else {
+        return SChooseFromMenu( choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER)), false );
+    }
+}
+
+void TCodes(char *const strchr_pointer, uint8_t codeValue) {
+    uint8_t index;
+    for (index = 1; strchr_pointer[index] == ' ' || strchr_pointer[index] == '\t'; index++)
+        ;
+
+    strchr_pointer[index] = tolower(strchr_pointer[index]);
+
+    if (IsInvalidTCode(strchr_pointer, index))
+        TCodeInvalid();
+    else if (strchr_pointer[index] == 'x')
+        TCodeX();
+    else if (strchr_pointer[index] == 'c')
+        TCodeC();
+    else {
+        SChooseFromMenu selectedSlot;
+        if (strchr_pointer[index] == '?')
+            selectedSlot = TCodeChooseFromMenu();
+        else {
+            selectedSlot.slot = codeValue;
+            if (MMU2::mmu2.Enabled() && lcd_autoDepleteEnabled()) {
+// @@TODO                selectedSlot.slot = ad_getAlternative(selectedSlot);
+            }
+        }
+        st_synchronize();
+
+        if (MMU2::mmu2.Enabled()) {
+            if ((selectedSlot.slot == MMU2::mmu2.get_current_tool()) /*&& mmu_fil_loaded @@TODO*/){ 
+                // don't execute the same T-code twice in a row
+                puts_P(duplicate_Tcode_ignored);
+            } else {
+#if defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
+                if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED)) {
+                    mmu_command(MmuCmd::K0 + selectedSlot);
+                    manage_response(true, true, MMU_UNLOAD_MOVE);
+                }
+#endif // defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
+                MMU2::mmu2.tool_change(selectedSlot.slot);
+// @@TODO                mmu_continue_loading(usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal));
+
+                if (selectedSlot.loadToNozzle){ // for single material usage with mmu
+                    MMU2::mmu2.load_filament_to_nozzle(selectedSlot.slot);
+                }
+            }
+        } else {
+            if (selectedSlot.slot >= EXTRUDERS) {
+                SERIAL_ECHO_START;
+                SERIAL_ECHO('T');
+                SERIAL_ECHOLN(selectedSlot.slot + '0');
+                SERIAL_ECHOLNRPGM(_n("Invalid extruder")); ////MSG_INVALID_EXTRUDER
+            } else {
+// @@TODO               if (code_seen('F')) {
+//                    next_feedrate = code_value();
+//                    if (next_feedrate > 0.0) {
+//                        feedrate = next_feedrate;
+//                    }
+//                }
+                SERIAL_ECHO_START;
+                SERIAL_ECHORPGM(_n("Active Extruder: ")); ////MSG_ACTIVE_EXTRUDER
+                SERIAL_ECHOLN(active_extruder + '0'); // this is not changed in our FW at all, can be optimized away
+            }
+        }
+    }
+}
