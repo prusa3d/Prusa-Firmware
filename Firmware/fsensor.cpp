@@ -44,19 +44,23 @@ const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 #define FSENSOR_INT_PIN_PCICR_BIT PCIE1           // PinChange Interrupt Enable / Flag @ PJ4
 
 //! enabled = initialized and sampled every chunk event
-bool fsensor_enabled = true;
+static bool enabled = true;
+bool fsensor_enabled() { return enabled; }
+
 //! runout watching is done in fsensor_update (called from main loop)
-bool fsensor_watch_runout = true;
+static bool fsensor_watch_runout = true;
 //! not responding - is set if any communication error occurred during initialization or readout
-bool fsensor_not_responding = false;
+static bool not_responding = false;
+bool fsensor_not_responding(){ return not_responding; }
+void fsensor_set_responding_ok() { not_responding = false; }
 
 /// This flag was originally located in mmu.cpp. Not sure what it was supposed to do, but it looks like
 /// it was holding "true" all the time on MK3S.
 #ifndef IR_SENSOR
-bool ir_sensor_detected = false;
+static bool ir_sensor_detected = false;
 bool check_for_ir_sensor(); ///< detects IR sensor and updates ir_sensor_detected
 
-bool IRSensorDetected() { 
+bool fsensor_IR_detected() { 
     return ir_sensor_detected;
 }
 #endif
@@ -89,9 +93,11 @@ uint8_t fsensor_log = 1;
 //! @{
 
 //! autoload feature enabled
-bool fsensor_autoload_enabled = true;
+static bool autoload_enabled = true;
+bool fsensor_autoload_enabled() { return autoload_enabled; }
+
 //! autoload watching enable/disable flag
-bool fsensor_watch_autoload = false;
+static bool watch_autoload = false;
 
 #ifdef PAT9125
 //
@@ -202,8 +208,8 @@ void fsensor_init(void)
 	printf_P(PSTR("PAT9125_init:%u\n"), pat9125);
 #endif //PAT9125
 	uint8_t fsensor_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
-	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
-	fsensor_not_responding = false;
+	autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
+	not_responding = false;
 #ifdef PAT9125
 	uint8_t oq_meassure_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_OQ_MEASS_ENABLED);
 	fsensor_oq_meassure_enabled = (oq_meassure_enabled == 1)?true:false;
@@ -223,7 +229,7 @@ void fsensor_init(void)
 	// set this flag accordingly to show N/A in Settings->Filament sensor.
 	// This is even valid for both fsensor board revisions (0.3 or older and 0.4).
 	// Must be done after reading what type of fsensor board we have
-	fsensor_not_responding = ! fsensor_IR_check();
+	not_responding = ! fsensor_IR_check();
 #endif //IR_SENSOR_ANALOG
 	if (fsensor_enabled){
 		fsensor_enable(false);                  // (in this case) EEPROM update is not necessary
@@ -272,14 +278,14 @@ bool fsensor_enable(bool bUpdateEEPROM)
      if(!fsensor_IR_check())
           {
           bUpdateEEPROM=true;
-          fsensor_enabled=false;
-          fsensor_not_responding=true;
+          enabled=false;
+          not_responding=true;
           FSensorStateMenu=0;
           }
      else {
 #endif //IR_SENSOR_ANALOG
-     fsensor_enabled=true;
-     fsensor_not_responding=false;
+     enabled=true;
+     not_responding=false;
      FSensorStateMenu=1;
 #ifdef IR_SENSOR_ANALOG
           }
@@ -287,12 +293,12 @@ bool fsensor_enable(bool bUpdateEEPROM)
      if(bUpdateEEPROM)
           eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, FSensorStateMenu);
 #endif //PAT9125
-	return fsensor_enabled;
+	return enabled;
 }
 
 void fsensor_disable(bool bUpdateEEPROM)
 { 
-	fsensor_enabled = false;
+	enabled = false;
 	FSensorStateMenu = 0;
      if(bUpdateEEPROM)
           eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
@@ -303,8 +309,8 @@ void fsensor_autoload_set(bool State)
 #ifdef PAT9125
 	if (!State) fsensor_autoload_check_stop();
 #endif //PAT9125
-	fsensor_autoload_enabled = State;
-	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, fsensor_autoload_enabled);
+	autoload_enabled = State;
+	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, autoload_enabled);
 }
 
 void pciSetup(byte pin)
@@ -358,14 +364,14 @@ void fsensor_autoload_check_stop(void)
 
 bool fsensor_check_autoload(void)
 {
-	if (!fsensor_enabled) return false;
-	if (!fsensor_autoload_enabled) return false;
-	if (IRSensorDetected()) {
+	if (!enabled) return false;
+	if (!autoload_enabled) return false;
+	if (fsensor_IR_detected()) {
 		if (READ(IR_SENSOR_PIN)) {
-			fsensor_watch_autoload = true;
+			watch_autoload = true;
 		}
-		else if (fsensor_watch_autoload == true) {
-			fsensor_watch_autoload = false;
+		else if (watch_autoload == true) {
+			watch_autoload = false;
 			return true;
 		}
 	}
@@ -581,7 +587,7 @@ FORCE_INLINE static void fsensor_isr(int st_cnt)
 
 ISR(FSENSOR_INT_PIN_VECT)
 {
-    if (mmu_enabled || IRSensorDetected()) return;
+    if (mmu_enabled || fsensor_IR_detected()) return;
     if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
     fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
 
@@ -696,7 +702,7 @@ void fsensor_update(void)
             }
         }
 #else //PAT9125
-        if (CHECK_FSENSOR && IRSensorDetected())
+        if (CHECK_FSENSOR && fsensor_IR_detected())
         {
             if (READ(IR_SENSOR_PIN))
             {                                  // IR_SENSOR_PIN ~ H
@@ -734,7 +740,7 @@ void fsensor_update(void)
                         if( (oFsensorPCB == ClFsensorPCB::_Rev04) && ( (nADC*OVERSAMPLENR) > IRsensor_Hopen_TRESHOLD ) )
                         {
                             fsensor_disable();
-                            fsensor_not_responding = true;
+                            not_responding = true;
                             printf_P(PSTR("IR sensor not responding (%d)!\n"),1);
                             if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
 
