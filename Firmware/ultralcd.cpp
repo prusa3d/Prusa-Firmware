@@ -1790,6 +1790,18 @@ void lcd_cutter_enabled()
 }
 #endif //MMU_HAS_CUTTER
 
+void lcd_set_filament_autoload() {
+     fsensor_autoload_set(!fsensor_autoload_enabled());
+}
+
+#if defined(FILAMENT_SENSOR) && defined(PAT9125)
+void lcd_set_filament_oq_meass()
+{
+     fsensor_oq_meassure_set(!fsensor_oq_meassure_enabled);
+}
+#endif
+
+
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
