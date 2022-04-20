@@ -6,8 +6,9 @@ struct E_Step;
 
 namespace MMU2 {
 
+/// @@TODO hmmm, 12 bytes... may be we can reduce that
 struct xyz_pos_t {
-    uint16_t xyz[3]; // @@TODO
+    float xyz[3];
     xyz_pos_t()=default;
 };
 
@@ -101,7 +102,7 @@ public:
     bool cut_filament(uint8_t index);
     
     /// @returns the active filament slot index (0-4) or 0xff in case of no active tool
-    uint8_t get_current_tool();
+    uint8_t get_current_tool() const;
     
     bool set_filament_type(uint8_t index, uint8_t type);
 
@@ -139,7 +140,7 @@ private:
     StepStatus LogicStep();
     
     void filament_ramming();
-    void execute_extruder_sequence(const E_Step *sequence, int steps);
+    void execute_extruder_sequence(const E_Step *sequence, uint8_t steps);
     void SetActiveExtruder(uint8_t ex);
 
     /// Reports an error into attached ExtUIs
