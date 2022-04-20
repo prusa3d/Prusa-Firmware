@@ -6,10 +6,17 @@
 #include "config.h"
 
 
-// enable/disable flag
-extern bool fsensor_enabled;
-// not responding flag
-extern bool fsensor_not_responding;
+//! @name filament sensor enable/disable flag
+//! @{
+bool fsensor_enabled();
+//! @}
+
+//! @name filament sensor not responding flag
+//! @{
+bool fsensor_not_responding();
+void fsensor_set_responding_ok();
+//! @}
+
 #ifdef PAT9125
 // optical checking "chunk lenght" (already in steps)
 extern int16_t fsensor_chunk_len;
@@ -32,9 +39,9 @@ extern void fsensor_init(void);
 /// IR sensor detection originally for MMU?
 /// Note: the signature of this function intentionally differs upon IR_SENSOR macro to allow for best optimization.
 #ifdef IR_SENSOR
-constexpr bool IRSensorDetected() { return true; }
+constexpr bool fsensor_IR_detected() { return true; }
 #else
-bool IRSensorDetected();
+bool fsensor_IR_detected();
 #endif
 
 
@@ -50,8 +57,8 @@ extern void fsensor_disable(bool bUpdateEEPROM=true);
 //! @}
 
 //autoload feature enabled
-extern bool fsensor_autoload_enabled;
 extern void fsensor_autoload_set(bool State);
+bool fsensor_autoload_enabled();
 
 extern void fsensor_update(void);
 #ifdef PAT9125
