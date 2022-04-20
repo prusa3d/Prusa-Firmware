@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Tue 22 Feb 2022 10:44:28 AM CET\n"
-"PO-Revision-Date: 2022-04-20 13:56+0200\n"
+"PO-Revision-Date: 2022-04-20 14:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -491,7 +491,7 @@ msgstr "Flyt"
 # MSG_SELFTEST_COOLING_FAN c=20
 #: messages.c:88
 msgid "Front print fan?"
-msgstr "Fremre dysevifte?"
+msgstr "Fremre printvifte?"
 
 # MSG_BED_CORRECTION_FRONT c=14
 #: ultralcd.cpp:3116
@@ -646,7 +646,7 @@ msgstr "Siste print"
 # MSG_SELFTEST_EXTRUDER_FAN c=20
 #: messages.c:89
 msgid "Left hotend fan?"
-msgstr "Venst. hotend vifte?"
+msgstr "Venst. ekstr. vifte?"
 
 # MSG_LEFT c=10
 #: ultralcd.cpp:2844
@@ -906,7 +906,7 @@ msgstr "Fjern nå testprintet fra stålplaten."
 # MSG_NOZZLE_FAN c=10
 #: ultralcd.cpp:1446
 msgid "Nozzle FAN"
-msgstr "Dysevifte"
+msgstr "Printvifte"
 
 # MSG_PAUSE_PRINT c=18
 #: messages.c:74
@@ -1061,7 +1061,7 @@ msgstr "Forvarmer for fil."
 # MSG_SELFTEST_PRINT_FAN_SPEED c=18
 #: ultralcd.cpp:8422
 msgid "Print fan:"
-msgstr "Dysevifte:"
+msgstr "Printvifte:"
 
 # MSG_CARD_MENU c=18
 #: messages.c:22
@@ -1091,7 +1091,7 @@ msgstr "Printeren er ikke kalibrert. Vennligst se manualen, under First Steps."
 # MSG_PRINT_FAN c=10
 #: ultralcd.cpp:1447
 msgid "Print FAN"
-msgstr "Dysevifte"
+msgstr "Printvifte"
 
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4818
