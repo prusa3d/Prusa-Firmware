@@ -1,13 +1,18 @@
 #include "mmu2.h"
+#include "mmu2_error_converter.h"
 #include "mmu2_fsensor.h"
 #include "mmu2_log.h"
 #include "mmu2_power.h"
+#include "mmu2_progress_converter.h"
 #include "mmu2_reporting.h"
 
 #include "Marlin.h"
+#include "language.h"
+#include "messages.h"
+#include "sound.h"
 #include "stepper.h"
-#include "mmu2_error_converter.h"
-#include "mmu2_progress_converter.h"
+#include "strlen_cx.h"
+#include "temperature.h"
 
 // @@TODO remove this and enable it in the configuration files
 // Settings for filament load / unload from the LCD menu.
@@ -20,10 +25,8 @@
         { 14.4, 871 },               \
     { 50.0, 198 }
 
-// @@TODO
-#define FILAMENT_MMU2_RAMMING_SEQUENCE { 7.2, 562 } 
-
-//@@TODO extract into configuration if it makes sense
+#define NOZZLE_PARK_XY_FEEDRATE 50
+#define NOZZLE_PARK_Z_FEEDRATE 15
 
 // Nominal distance from the extruder gear to the nozzle tip is 87mm
 // However, some slipping may occur and we need separate distances for
@@ -42,14 +45,25 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F;
 static constexpr uint8_t MMU2_NO_TOOL = 99;
 static constexpr uint32_t MMU_BAUD = 115200;
 
-typedef uint16_t feedRate_t;
-
 struct E_Step {
     float extrude;       ///< extrude distance in mm
-    feedRate_t feedRate; ///< feed rate in mm/s
+    float feedRate; ///< feed rate in mm/s
 };
 
-static constexpr E_Step ramming_sequence[] PROGMEM = FILAMENT_MMU2_RAMMING_SEQUENCE;
+static constexpr E_Step ramming_sequence[] PROGMEM = {
+    { 1.0F,  1000.0F / 60.F},
+    { 1.0F,  1500.0F / 60.F},
+    { 2.0F,  2000.0F / 60.F},
+    { 1.5F,  3000.0F / 60.F},
+    { 2.5F,  4000.0F / 60.F},
+    {-15.0F, 5000.0F / 60.F},
+    {-14.0F, 1200.0F / 60.F},
+    {-6.0F,   600.0F / 60.F},
+    { 10.0F,  700.0F / 60.F},
+    {-10.0F,  400.0F / 60.F},
+    {-50.0F, 2000.0F / 60.F},
+};
+
 static constexpr E_Step load_to_nozzle_sequence[] PROGMEM = { MMU2_LOAD_TO_NOZZLE_SEQUENCE };
 
 namespace MMU2 {
@@ -114,8 +128,9 @@ void MMU2::TriggerResetPin(){
 
 void MMU2::PowerCycle(){
     // cut the power to the MMU and after a while restore it
+    // Sadly, MK3/S/+ cannot do this 
     PowerOff();
-    _delay(1000); //@@TODO
+    delay_keep_alive(1000);
     PowerOn();
 }
 
@@ -177,8 +192,7 @@ bool MMU2::tool_change(uint8_t index) {
         manage_response(false, false); // true, true);
         
         // reset current position to whatever the planner thinks it is
-        // @@TODO is there some "standard" way of doing this?
-//@@TODO        current_position[E_AXIS] = Planner::get_machine_position_mm()[3];
+        plan_set_e_position(current_position[E_AXIS]);
 
         extruder = index; //filament change is finished
         SetActiveExtruder(0);
@@ -233,7 +247,7 @@ bool MMU2::tool_change(const char *special) {
     return true;
 }
 
-uint8_t MMU2::get_current_tool() {
+uint8_t MMU2::get_current_tool() const {
     return extruder == MMU2_NO_TOOL ? -1 : extruder;
 }
 
@@ -256,7 +270,7 @@ bool MMU2::unload() {
 
     // @@TODO
 //    if (thermalManager.tooColdToExtrude(active_extruder)) {
-//        BUZZ(200, 404);
+//        Sound_MakeSound(e_SOUND_TYPE_Prompt);
 //        LCD_ALERTMESSAGEPGM(MSG_HOTEND_TOO_COLD);
 //        return false;
 //    }
@@ -267,8 +281,7 @@ bool MMU2::unload() {
 
         logic.UnloadFilament();
         manage_response(false, false); // false, true);
-
-//        BUZZ(200, 404);
+        Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 
         // no active tool
         extruder = MMU2_NO_TOOL;
@@ -294,7 +307,7 @@ bool MMU2::load_filament(uint8_t index) {
     ReportingRAII rep(CommandInProgress::LoadFilament);
     logic.LoadFilament(index);
     manage_response(false, false);
-//    BUZZ(200, 404);
+    Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
     
     return true;
 }
@@ -315,11 +328,9 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
 
     LoadingToNozzleRAII ln(*this);
     
-    // if (0){ // @@TODO DEBUG 
-    
     // @@TODO how is this supposed to be done in 8bit FW?
 /*    if (thermalManager.tooColdToExtrude(active_extruder)) {
-        BUZZ(200, 404);
+        Sound_MakeSound(e_SOUND_TYPE_Prompt);
         LCD_ALERTMESSAGEPGM(MSG_HOTEND_TOO_COLD);
         return false;
     } else*/ {
@@ -335,13 +346,12 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         manage_response(false, false); // true, true);
 
         // reset current position to whatever the planner thinks it is
-        // @@TODO is there some "standard" way of doing this?
-//@@TODO        current_position[E_AXIS] = Planner::get_machine_position_mm()[3];
-
+        plan_set_e_position(current_position[E_AXIS]);
+        
         extruder = index;
         SetActiveExtruder(0);
 
-//        BUZZ(200, 404);
+        Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
         return true;
     }
 }
@@ -352,22 +362,21 @@ bool MMU2::eject_filament(uint8_t index, bool recover) {
 
     //@@TODO
 //    if (thermalManager.tooColdToExtrude(active_extruder)) {
-//        BUZZ(200, 404);
+//        Sound_MakeSound(e_SOUND_TYPE_Prompt);
 //        LCD_ALERTMESSAGEPGM(MSG_HOTEND_TOO_COLD);
 //        return false;
 //    }
 
     ReportingRAII rep(CommandInProgress::EjectFilament);
     current_position[E_AXIS] -= MMU2_FILAMENTCHANGE_EJECT_FEED;
-//@@TODO    line_to_current_position(2500 / 60);
+    plan_buffer_line_curposXYZE(2500.F / 60.F);
     st_synchronize();
     logic.EjectFilament(index);
     manage_response(false, false);
 
     if (recover) {
         //        LCD_MESSAGEPGM(MSG_MMU2_EJECT_RECOVER);
-//        BUZZ(200, 404);
-        
+        Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
 //@@TODO        wait_for_user = true;
         
         //#if ENABLED(HOST_PROMPT_SUPPORT)
@@ -379,20 +388,14 @@ bool MMU2::eject_filament(uint8_t index, bool recover) {
         
 //@@TODO        while (wait_for_user) idle(true);
         
-//        BUZZ(200, 404);
-//        BUZZ(200, 404);
-
+        Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
         // logic.Command(); //@@TODO command(MMU_CMD_R0);
         manage_response(false, false);
     }
 
-    //@@TODO ui.reset_status();
-
     // no active tool
     extruder = MMU2_NO_TOOL;
-
-//    BUZZ(200, 404);
-
+    Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 //    disable_E0();
 
     return true;
@@ -407,26 +410,42 @@ void MMU2::Home(uint8_t mode){
 }
 
 void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
-//@@TODO    static constexpr xyz_pos_t park_point = NOZZLE_PARK_POINT_M600;
-//    if (!mmu_print_saved) { // First occurrence. Save current position, park print head, disable nozzle heater.
-//        LogEchoEvent("Saving and parking");
-//        st_synchronize();
+    if (!mmu_print_saved) { // First occurrence. Save current position, park print head, disable nozzle heater.
+        LogEchoEvent("Saving and parking");
+        st_synchronize();
 
-//        mmu_print_saved = true;
+        mmu_print_saved = true;
 
-//        resume_hotend_temp = thermalManager.degTargetHotend(active_extruder);
-//        resume_position = current_position;
+        resume_hotend_temp = degTargetHotend(active_extruder);
 
-//        if (move_axes && all_axes_homed())
-//            nozzle.park(2, park_point);
+        if (move_axes){
+            // save current pos
+            for(uint8_t i = 0; i < 3; ++i){
+                resume_position.xyz[i] = current_position[i];
+            }
 
-//        if (turn_off_nozzle){
-//            LogEchoEvent("Heater off");
-//            thermalManager.setTargetHotend(0, active_extruder);
-//        }
-//    }
-//    // keep the motors powered forever (until some other strategy is chosen)
-//    gcode.reset_stepper_timeout();
+            // lift Z
+            current_position[Z_AXIS] += Z_PAUSE_LIFT;
+            if (current_position[Z_AXIS] > Z_MAX_POS) 
+                current_position[Z_AXIS] = Z_MAX_POS;
+            plan_buffer_line_curposXYZE(NOZZLE_PARK_Z_FEEDRATE);
+            st_synchronize();
+
+            // move XY aside
+            current_position[X_AXIS] = X_PAUSE_POS;
+            current_position[Y_AXIS] = Y_PAUSE_POS;
+            plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
+            st_synchronize();
+        }
+
+        if (turn_off_nozzle){
+            LogEchoEvent("Heater off");
+            setAllTargetHotends(0);
+        }
+    }
+    // keep the motors powered forever (until some other strategy is chosen)
+    // @@TODO do we need that in 8bit?
+    // gcode.reset_stepper_timeout();
 }
 
 void MMU2::ResumeAndUnPark(bool move_axes, bool turn_off_nozzle) {
@@ -436,25 +455,29 @@ void MMU2::ResumeAndUnPark(bool move_axes, bool turn_off_nozzle) {
         if (turn_off_nozzle && resume_hotend_temp) {
             MMU2_ECHO_MSG("Restoring hotend temperature ");
             SERIAL_ECHOLN(resume_hotend_temp);
-//@@TODO            thermalManager.setTargetHotend(resume_hotend_temp, active_extruder);
+            setTargetHotend(resume_hotend_temp, active_extruder);
 
-//            while (!thermalManager.wait_for_hotend(active_extruder, false)){
-//                safe_delay(1000);
-//            }
+            if (((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5)) {
+                // @@TODO lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature...")); // better report the event and let the GUI do its work somewhere else
+                delay_keep_alive(3000);
+            }
             LogEchoEvent("Hotend temperature reached");
         }
 
-//@@TODO        if (move_axes && all_axes_homed()) {
-//            LogEchoEvent("Resuming XYZ");
+        if (move_axes) {
+            LogEchoEvent("Resuming XYZ");
 
-//            // Move XY to starting position, then Z
-//            do_blocking_move_to_xy(resume_position, feedRate_t(NOZZLE_PARK_XY_FEEDRATE));
-
-//            // Move Z_AXIS to saved position
-//            do_blocking_move_to_z(resume_position.z, feedRate_t(NOZZLE_PARK_Z_FEEDRATE));
-//        } else {
-//            LogEchoEvent("NOT resuming XYZ");
-//        }
+            current_position[X_AXIS] = resume_position.xyz[X_AXIS];
+            current_position[Y_AXIS] = resume_position.xyz[Y_AXIS];
+            plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
+            st_synchronize();
+            
+            current_position[Z_AXIS] = resume_position.xyz[Z_AXIS];
+            plan_buffer_line_curposXYZE(NOZZLE_PARK_Z_FEEDRATE);
+            st_synchronize();
+        } else {
+            LogEchoEvent("NOT resuming XYZ");
+        }
     }
 }
 
@@ -560,35 +583,19 @@ void MMU2::filament_ramming() {
     execute_extruder_sequence((const E_Step *)ramming_sequence, sizeof(ramming_sequence) / sizeof(E_Step));
 }
 
-void MMU2::execute_extruder_sequence(const E_Step *sequence, int steps) {
-
+void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     st_synchronize();
-
     const E_Step *step = sequence;
-
     for (uint8_t i = 0; i < steps; i++) {
-        const float es = pgm_read_float(&(step->extrude));
-        const feedRate_t fr_mm_m = pgm_read_float(&(step->feedRate));
-
-        //    DEBUG_ECHO_START();
-        //    DEBUG_ECHOLNPAIR("E step ", es, "/", fr_mm_m);
-
-        current_position[E_AXIS] += es;
-//        line_to_current_position(MMM_TO_MMS(fr_mm_m));
+        current_position[E_AXIS] += pgm_read_float(&(step->extrude));
+        plan_buffer_line_curposXYZE(pgm_read_float(&(step->feedRate)));
         st_synchronize();
-
         step++;
     }
-
-//    disable_E0();
 }
 
 void MMU2::SetActiveExtruder(uint8_t ex){ 
     active_extruder = ex; 
-}
-
-constexpr int strlen_constexpr(const char* str){
-    return *str ? 1 + strlen_constexpr(str + 1) : 0;
 }
 
 void MMU2::ReportError(ErrorCode ec) {
@@ -654,8 +661,6 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
         case ProgressCode::FeedingToBondtech:
             // prepare for the movement of the E-motor
             st_synchronize();
-//@@TODO            sync_plan_position();
-//            enable_E0();
             loadFilamentStarted = true;
             break;
         default:
@@ -669,25 +674,8 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
             if( WhereIsFilament() == FilamentState::AT_FSENSOR && loadFilamentStarted){// fsensor triggered, move the extruder to help loading
                 // rotate the extruder motor - no planner sync, just add more moves - as long as they are roughly at the same speed as the MMU is pushing,
                 // it really doesn't matter
-                // char tmp[64]; // @@TODO this shouldn't be needed anymore, but kept here in case of something strange
-                //               // happens in Marlin again
-                // snprintf(tmp,sizeof (tmp), "E moveTo=%4.1f f=%4.0f s=%hu\n", current_position.e, feedrate_mm_s, feedrate_percentage);
-                // MMU2_ECHO_MSG(tmp);
-
-                // Ideally we'd use:
-                // line_to_current_position(MMU2_LOAD_TO_NOZZLE_FEED_RATE); 
-                // However, as it ignores MBL completely (which I don't care about in case of E-movement), 
-                // we need to take the raw Z coordinates and only add some movement to E
-                // otherwise we risk planning a very short Z move with an extremely long E-move, 
-                // which obviously ends up in a disaster (over/underflow of E/Z steps).
-                // The problem becomes obvious in Planner::_populate_block when computing da, db, dc like this:
-                //   const int32_t da = target.a - position.a, db = target.b - position.b, dc = target.c - position.c;
-                // And since current_position[3] != position_float[3], we get a tiny move in Z, which is something I really want to avoid here
-                // @@TODO is there a "standard" way of doing this?
-//@@TODO                xyze_pos_t tgt = Planner::get_machine_position_mm();
-                const float e = loadingToNozzle ? MMU2_LOAD_TO_NOZZLE_LENGTH : MMU2_TOOL_CHANGE_LOAD_LENGTH;
-//@@TODO                tgt[3] += e / planner.e_factor[active_extruder];
-//                plan_buffer_line(tgt, MMU2_LOAD_TO_NOZZLE_FEED_RATE, active_extruder); // @@TODO magic constant - must match the feedrate of the MMU
+                current_position[E_AXIS] += (loadingToNozzle ? MMU2_LOAD_TO_NOZZLE_LENGTH : MMU2_TOOL_CHANGE_LOAD_LENGTH) / extruder_multiplier[0];
+                plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                 loadFilamentStarted = false;
             }
             break;
