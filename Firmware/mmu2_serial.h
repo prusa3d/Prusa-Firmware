@@ -8,7 +8,6 @@ namespace MMU2 {
 class MMU2Serial {
 public:
     MMU2Serial() = default;
-//    bool available()const;
     void begin(uint32_t baud);
     void close();
     int read();
