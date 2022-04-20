@@ -47,7 +47,6 @@ void ProtocolLogicPartBase::SendButton(uint8_t btn){
 StepStatus ProtocolLogic::ProcessUARTByte(uint8_t c) {
     switch (protocol.DecodeResponse(c)) {
     case DecodeStatus::MessageCompleted:
-        // @@TODO reset direction of communication
         return MessageReady;
     case DecodeStatus::NeedMoreData:
         return Processing;
@@ -69,7 +68,6 @@ StepStatus ProtocolLogic::ExpectingMessage(uint32_t timeout) {
         case DecodeStatus::MessageCompleted:
             rsp = protocol.GetResponseMsg();
             LogResponse();
-            // @@TODO reset direction of communication
             RecordUARTActivity(); // something has happened on the UART, update the timeout record
             return MessageReady;
         case DecodeStatus::NeedMoreData:
