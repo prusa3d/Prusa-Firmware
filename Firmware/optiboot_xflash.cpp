@@ -8,6 +8,7 @@
 #include "stk500.h"
 #include "bootapp.h"
 #include <avr/wdt.h>
+#include "lcd.h"
 
 #define OPTIBOOT_MAJVER 6
 #define OPTIBOOT_CUSTOMVER 0
@@ -158,6 +159,9 @@ uint8_t optiboot_xflash_enter()
   spi_init();
   xflash_init();
   wdt_disable();
+
+  lcd_clear();
+  lcd_puts_at_P(0, 1, PSTR(" Upgrading xflash\n Do not disconnect!"));
 
   /* Forever loop: exits by causing WDT reset */
   for (;;) {
