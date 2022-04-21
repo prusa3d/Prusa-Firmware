@@ -13,8 +13,8 @@
 #include "stepper.h"
 #include "strlen_cx.h"
 #include "temperature.h"
+#include "ultralcd.h"
 
-// @@TODO remove this and enable it in the configuration files
 // Settings for filament load / unload from the LCD menu.
 // This is for Prusa MK3-style extruders. Customize for your hardware.
 #define MMU2_FILAMENTCHANGE_EJECT_FEED 80.0
@@ -69,6 +69,18 @@ static constexpr E_Step load_to_nozzle_sequence[] PROGMEM = { MMU2_LOAD_TO_NOZZL
 namespace MMU2 {
 
 void execute_extruder_sequence(const E_Step *sequence, int steps);
+
+template<typename F>
+void waitForHotendTargetTemp(uint16_t delay, F f){
+    while (((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5)) {
+        f();
+        delay_keep_alive(delay);
+    }
+}
+
+void WaitForHotendTargetTempBeep(){
+    waitForHotendTargetTemp(3000, []{ Sound_MakeSound(e_SOUND_TYPE_StandardPrompt); } );
+}
 
 MMU2 mmu2;
 
@@ -209,41 +221,32 @@ bool MMU2::tool_change(uint8_t index) {
 ///- T? Gcode to extrude shouldn't have to follow, load to extruder wheels is done automatically
 ///- Tx Same as T?, except nozzle doesn't have to be preheated. Tc must be placed after extruder nozzle is preheated to finish filament load.
 ///- Tc Load to nozzle after filament was prepared by Tx and extruder nozzle is already heated.
-bool MMU2::tool_change(const char *special) {
+bool MMU2::tool_change(char code, uint8_t slot) {
     if( ! WaitForMMUReady())
         return false;
 
-#if 0 //@@TODO
     BlockRunoutRAII blockRunout;
 
-    switch (*special) {
+    switch (code) {
     case '?': {
-        uint8_t index = 0; // mmu2_choose_filament(); //@@TODO GUI - user selects
-        while (!thermalManager.wait_for_hotend(active_extruder, false))
-            safe_delay(100);
-        load_filament_to_nozzle(index);
+        waitForHotendTargetTemp(100, []{});
+        load_filament_to_nozzle(slot);
     } break;
 
     case 'x': {
-        planner.synchronize();
-        uint8_t index = 0; //mmu2_choose_filament(); //@@TODO GUI - user selects
-        disable_E0();
-        logic.ToolChange(index);
-        manage_response(false, false); // true, true);
-
-        enable_E0();
-        extruder = index;
+        st_synchronize();
+        logic.ToolChange(slot);
+        manage_response(false, false);
+        extruder = slot;
         SetActiveExtruder(0);
     } break;
 
     case 'c': {
-        while (!thermalManager.wait_for_hotend(active_extruder, false))
-            safe_delay(100);
-        execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, COUNT(load_to_nozzle_sequence));
+        waitForHotendTargetTemp(100, []{});
+        execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
     } break;
     }
 
-#endif
     return true;
 }
 
@@ -268,12 +271,7 @@ bool MMU2::unload() {
     if( ! WaitForMMUReady())
         return false;
 
-    // @@TODO
-//    if (thermalManager.tooColdToExtrude(active_extruder)) {
-//        Sound_MakeSound(e_SOUND_TYPE_Prompt);
-//        LCD_ALERTMESSAGEPGM(MSG_HOTEND_TOO_COLD);
-//        return false;
-//    }
+    WaitForHotendTargetTempBeep();
 
     {
         ReportingRAII rep(CommandInProgress::UnloadFilament);
@@ -328,12 +326,9 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
 
     LoadingToNozzleRAII ln(*this);
     
-    // @@TODO how is this supposed to be done in 8bit FW?
-/*    if (thermalManager.tooColdToExtrude(active_extruder)) {
-        Sound_MakeSound(e_SOUND_TYPE_Prompt);
-        LCD_ALERTMESSAGEPGM(MSG_HOTEND_TOO_COLD);
-        return false;
-    } else*/ {
+    WaitForHotendTargetTempBeep();
+    
+    {
         // used for MMU-menu operation "Load to Nozzle"
         ReportingRAII rep(CommandInProgress::ToolChange);
         BlockRunoutRAII blockRunout;
@@ -360,12 +355,7 @@ bool MMU2::eject_filament(uint8_t index, bool recover) {
     if( ! WaitForMMUReady())
         return false;
 
-    //@@TODO
-//    if (thermalManager.tooColdToExtrude(active_extruder)) {
-//        Sound_MakeSound(e_SOUND_TYPE_Prompt);
-//        LCD_ALERTMESSAGEPGM(MSG_HOTEND_TOO_COLD);
-//        return false;
-//    }
+    WaitForHotendTargetTempBeep();
 
     ReportingRAII rep(CommandInProgress::EjectFilament);
     current_position[E_AXIS] -= MMU2_FILAMENTCHANGE_EJECT_FEED;
@@ -456,11 +446,9 @@ void MMU2::ResumeAndUnPark(bool move_axes, bool turn_off_nozzle) {
             MMU2_ECHO_MSG("Restoring hotend temperature ");
             SERIAL_ECHOLN(resume_hotend_temp);
             setTargetHotend(resume_hotend_temp, active_extruder);
-
-            if (((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5)) {
-                // @@TODO lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature...")); // better report the event and let the GUI do its work somewhere else
-                delay_keep_alive(3000);
-            }
+            waitForHotendTargetTemp(3000, []{
+                lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature...")); // better report the event and let the GUI do its work somewhere else
+            });
             LogEchoEvent("Hotend temperature reached");
         }
 
