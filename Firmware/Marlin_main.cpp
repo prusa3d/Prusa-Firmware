@@ -6952,6 +6952,7 @@ Sigma_Exit:
           }
         }
       }
+      reset_acceleration_rates();
       break;
 
     /*!
@@ -8789,6 +8790,7 @@ Sigma_Exit:
 				}
 			}
 		}
+		reset_acceleration_rates();
 	#else //TMC2130
       #if defined(X_MS1_PIN) && X_MS1_PIN > -1
         if(code_seen('S')) for(int i=0;i<=4;i++) microstep_mode(i,code_value());
