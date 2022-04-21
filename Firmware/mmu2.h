@@ -77,7 +77,7 @@ public:
     bool tool_change(uint8_t index);
     
     /// Handling of special Tx, Tc, T? commands
-    bool tool_change(const char *special);
+    bool tool_change(char code, uint8_t slot);
 
     /// Unload of filament in collaboration with the MMU.
     /// That includes rotating the printer's extruder in order to release filament.
@@ -196,6 +196,8 @@ private:
     /// true in case we are doing the LoadToNozzle operation - that means the filament shall be loaded all the way down to the nozzle
     /// unlike the mid-print ToolChange commands, which only load the first ~30mm and then the G-code takes over.
     bool loadingToNozzle;
+    
+    
 };
 
 /// following Marlin's way of doing stuff - one and only instance of MMU implementation in the code base
