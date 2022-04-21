@@ -1791,7 +1791,7 @@ void lcd_cutter_enabled()
 #endif //MMU_HAS_CUTTER
 
 void lcd_set_filament_autoload() {
-     fsensor_autoload_set(!fsensor_autoload_enabled());
+     fsensor.setAutoLoadEnabled(!fsensor.getAutoLoadEnabled());
 }
 
 #if defined(FILAMENT_SENSOR) && defined(PAT9125)
