@@ -1,10 +1,10 @@
 #include "mmu2_fsensor.h"
+#include "Filament_sensor.h"
 
 namespace MMU2 {
 
 FilamentState WhereIsFilament(){
-    // @@TODO
-    return FilamentState::IN_NOZZLE;
+    return fsensor.getFilamentPresent() ? FilamentState::IN_NOZZLE : FilamentState::NOT_PRESENT;
 }
 
 // on AVR this does nothing
