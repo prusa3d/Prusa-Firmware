@@ -3760,9 +3760,10 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     if (MMU2::mmu2.Enabled()) {
         if (!automatic) {
-            if (saved_printing)
-                MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(),
-                                          false); // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
+            if (saved_printing){
+                // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
+                MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
+            }
 //@@TODO            mmu_M600_wait_and_beep();
             if (saved_printing) {
 
