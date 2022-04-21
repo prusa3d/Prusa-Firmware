@@ -9578,12 +9578,12 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
   // handle longpress
   if(lcd_longpress_trigger)
   {
-      // Consume the long-press click and give feedback
-      lcd_consume_click();
-      Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
       // long press is not possible in modal mode, wait until ready
       if (lcd_longpress_func && lcd_update_enabled)
       {
+      // Consume the long-press click and give feedback
+      lcd_consume_click();
+      Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
           lcd_longpress_func();
           lcd_longpress_trigger = 0;
       }
