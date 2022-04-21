@@ -10,6 +10,7 @@
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK3S
 #define PRINTER_NAME PRINTER_MK3S_NAME
+#define PRINTER_NAME_ALTERNATE PRINTER_MK3_NAME //the other similar printer to this.
 #define PRINTER_MMU_TYPE PRINTER_MK3S_MMU2
 #define PRINTER_MMU_NAME PRINTER_MK3S_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK3"
@@ -152,7 +153,8 @@
 
 // Filament sensor
 #define FILAMENT_SENSOR
-#define IR_SENSOR
+#define FILAMENT_SENSOR_TYPE FSENSOR_IR_ANALOG
+#define FSENSOR_PROBING
 
 // Backlash - 
 //#define BACKLASH_X
@@ -177,7 +179,6 @@
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes
 #define DEBUG_STACK_MONITOR        //Stack monitor in stepper ISR
-//#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
 //#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD
 //#define DEBUG_RESUME_PRINT       //Resume/save print debug enable 
 //#define DEBUG_UVLO_AUTOMATIC_RECOVER // Power panic automatic recovery debug output 
@@ -203,8 +204,6 @@
 #define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 #define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
-
-//#define FSENSOR_QUALITY
 
 
 #define LINEARITY_CORRECTION
@@ -404,13 +403,6 @@
 /*------------------------------------
  ADDITIONAL FEATURES SETTINGS
  *------------------------------------*/
-
-// Define Prusa filament runout sensor
-//#define FILAMENT_RUNOUT_SUPPORT
-
-#ifdef FILAMENT_RUNOUT_SUPPORT
-#define FILAMENT_RUNOUT_SENSOR 1
-#endif
 
 // temperature runaway
 #define TEMP_RUNAWAY_BED_HYSTERESIS 5

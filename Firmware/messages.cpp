@@ -39,7 +39,9 @@ const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[] PROGMEM_I1 = ISTR("Searching bed
 const char MSG_FINISHING_MOVEMENTS[] PROGMEM_I1 = ISTR("Finishing movements"); ////c=20
 const char MSG_FOLLOW_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
 const char MSG_FOLLOW_Z_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=9
+const char MSG_FSENSOR_RUNOUT[] PROGMEM_I1 = ISTR("F. runout"); ////c=13
 const char MSG_FSENSOR_AUTOLOAD[] PROGMEM_I1 = ISTR("F. autoload"); ////c=13
+const char MSG_FSENSOR_JAM_DETECTION[] PROGMEM_I1 = ISTR("F. jam detect"); ////c=13
 const char MSG_FSENSOR[] PROGMEM_I1 = ISTR("Fil. sensor"); ////c=12
 const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////c=20
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20
@@ -152,12 +154,12 @@ const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////c=12
 const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////c=6
 const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////c=6
 const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////c=6
-#ifdef IR_SENSOR_ANALOG
+const char MSG_FS_V_03_OR_OLDER[] PROGMEM_I1 = ISTR("FS v0.3 or older"); ////c=18
+const char MSG_FS_V_04_OR_NEWER[] PROGMEM_I1 = ISTR("FS v0.4 or newer"); ////c=18
 // Beware - the space at the beginning is necessary since it is reused in LCD menu items which are to be with a space
 const char MSG_IR_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////c=18
 const char MSG_IR_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////c=18
 const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////c=18
-#endif
 
 //not internationalized messages
 const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = ISTR("SpoolJoin"); ////c=13

@@ -7,7 +7,6 @@
 #include "uart2.h"
 #include "temperature.h"
 #include "Configuration_prusa.h"
-#include "fsensor.h"
 #include "cardreader.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
@@ -18,6 +17,7 @@
 #include "AutoDeplete.h"
 #include "fastio.h"
 #include "pins.h"
+#include "Filament_sensor.h"
 //-//
 #include "util.h"
 
@@ -156,8 +156,6 @@ void mmu_init(void)
 	_delay_ms(10);                             //wait 10ms for sure
 	mmu_reset();                               //reset mmu (HW or SW), do not wait for response
 	mmu_state = S::Init;
-	SET_INPUT(IR_SENSOR_PIN); //input mode
-	WRITE(IR_SENSOR_PIN, 1); //pullup
 }
 
 //if IR_SENSOR defined, always returns true
@@ -170,12 +168,7 @@ bool check_for_ir_sensor()
 
 	bool detected = false;
 	//if IR_SENSOR_PIN input is low and pat9125sensor is not present we detected idler sensor
-	if ((READ(IR_SENSOR_PIN) == 0) 
-#ifdef PAT9125
-		&& fsensor_not_responding
-#endif //PAT9125
-	) 
-	{		
+	if ((READ(IR_SENSOR_PIN) == 0)) {
 		detected = true;
 		//printf_P(PSTR("Idler IR sensor detected\n"));
 	}
@@ -381,8 +374,13 @@ void mmu_loop(void)
 			mmu_last_finda_response.start();
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
-			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
-				fsensor_checkpoint_print();
+			if (!mmu_finda
+#ifdef FILAMENT_SENSOR ///temporary until refactoring
+            && CHECK_FSENSOR && fsensor.isReady()
+#endif //FILAMENT_SENSOR
+            ) {
+				stop_and_save_print_to_ram(0, 0);
+				restore_print_from_ram_and_continue(0);
 				if (mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't deplete unknown extruder.
                     ad_markDepleted(mmu_extruder);
 				if (lcd_autoDepleteEnabled() && !ad_allDepleted() && mmu_extruder != MMU_FILAMENT_UNKNOWN) // Can't auto if F=?

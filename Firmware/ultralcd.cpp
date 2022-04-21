@@ -6,7 +6,6 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #include "conv2str.h"
-#include "fsensor.h"
 #include "Marlin.h"
 #include "language.h"
 #include "cardreader.h"
@@ -29,10 +28,7 @@
 //#include "Configuration.h"
 #include "cmdqueue.h"
 
-#ifdef FILAMENT_SENSOR
-#include "pat9125.h"
-#include "fsensor.h"
-#endif //FILAMENT_SENSOR
+#include "Filament_sensor.h"
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -45,7 +41,6 @@
 #include "static_assert.h"
 #include "first_lay_cal.h"
 
-#include "fsensor.h"
 #include "adc.h"
 #include "config.h"
 
@@ -69,10 +64,6 @@ int8_t SilentModeMenu = SILENT_MODE_OFF;
 uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
-
-#ifdef IR_SENSOR_ANALOG
-bool bMenuFSDetect=false;
-#endif //IR_SENSOR_ANALOG
 
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
@@ -228,14 +219,18 @@ enum class FanCheck : uint_least8_t {
 static FanCheck lcd_selftest_fan_auto(int _fan);
 #endif //FANCHECK
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 static bool lcd_selftest_fsensor();
-#endif //PAT9125
+#elif FILAMENT_SENSOR_TYPE == FSENSOR_IR
 static bool selftest_irsensor();
-#ifdef IR_SENSOR_ANALOG
+#elif FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG
+static bool selftest_irsensor();
 static bool lcd_selftest_IRsensor(bool bStandalone=false);
 static void lcd_detect_IRsensor();
-#endif //IR_SENSOR_ANALOG
+#endif
+#endif //FILAMENT_SENSOR
+
 static void lcd_selftest_error(TestError error, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
 
@@ -1266,22 +1261,24 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
     lcd_home();
-#ifndef PAT9125
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
+    // On the MK3 include detailed PAT9125 statistics about soft failures
+    lcd_printf_P(PSTR("%S\n"
+                      " %-16.16S%-3d\n"
+                      " %-7.7S: %-3d\n"
+                      " %-7.7S X %-3d Y %-3d"),
+                 _T(MSG_LAST_PRINT_FAILURES),
+                 _T(MSG_POWER_FAILURES), power,
+                 _i("Runouts"), filam, //MSG_RUNOUTS c=7
+                 _T(MSG_CRASH), crashX, crashY);
+#elif (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
     lcd_printf_P(failStatsFmt,
         _T(MSG_LAST_PRINT_FAILURES),
         _T(MSG_POWER_FAILURES), power,
         _T(MSG_FIL_RUNOUTS), filam,
         _T(MSG_CRASH), crashX, crashY);
 #else
-    // On the MK3 include detailed PAT9125 statistics about soft failures
-    lcd_printf_P(PSTR("%S\n"
-                      " %-16.16S%-3d\n"
-                      " %-7.7S H %-3d S %-3d\n"
-                      " %-7.7S X %-3d Y %-3d"),
-                 _T(MSG_LAST_PRINT_FAILURES),
-                 _T(MSG_POWER_FAILURES), power,
-                 _i("Runouts"), filam, fsensor_softfail, //MSG_RUNOUTS c=7
-                 _T(MSG_CRASH), crashX, crashY);
+#error This menu should have a filament sensor defined
 #endif
     menu_back_if_clicked_fb();
 }
@@ -1422,7 +1419,7 @@ static void lcd_menu_temperatures()
     menu_back_if_clicked();
 }
 
-#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || defined(IR_SENSOR_ANALOG)
+#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || (defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG))
 #define VOLT_DIV_R1 10000
 #define VOLT_DIV_R2 2370
 #define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
@@ -1446,7 +1443,7 @@ static void lcd_menu_voltages()
     lcd_home();
     lcd_printf_P(PSTR(" PWR:      %4.1fV\n" " BED:      %4.1fV"), volt_pwr, volt_bed);
 #ifdef IR_SENSOR_ANALOG
-    lcd_printf_P(PSTR("\n IR :       %3.1fV"), Raw2Voltage(current_voltage_raw_IR));
+    lcd_printf_P(PSTR("\n IR :       %3.1fV"), fsensor.Raw2Voltage(fsensor.getVoltRaw()));
 #endif //IR_SENSOR_ANALOG
     menu_back_if_clicked();
 }
@@ -1675,10 +1672,10 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17
   MENU_ITEM_BACK_P(PSTR(__DATE__));
 
-#ifdef IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
-  MENU_ITEM_BACK_P(FsensorIRVersionText());
+  MENU_ITEM_BACK_P(fsensor.getIRVersionText());
 #endif // IR_SENSOR_ANALOG
 
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
@@ -1790,20 +1787,7 @@ void lcd_cutter_enabled()
 }
 #endif //MMU_HAS_CUTTER
 
-void lcd_set_filament_autoload() {
-     fsensor_autoload_set(!fsensor_autoload_enabled);
-}
-
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-void lcd_set_filament_oq_meass()
-{
-     fsensor_oq_meassure_set(!fsensor_oq_meassure_enabled);
-}
-#endif
-
-
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
-bool bFilamentFirstRun;
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
 static bool bFilamentWaitingFlag=false;
@@ -1834,8 +1818,11 @@ switch(eFilamentAction)
      case FilamentAction::Lay1Cal:
           break;
      }
-if(lcd_clicked())
-     {
+    if(lcd_clicked()
+#ifdef FILAMENT_SENSOR
+        || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
+#endif //FILAMENT_SENSOR
+    ) {
      nLevel=2;
      if(!bFilamentPreheatState)
           {
@@ -2158,8 +2145,11 @@ void lcd_wait_interact() {
   lcd_clear();
 
   lcd_puts_at_P(0, 1, _i("Insert filament"));////MSG_INSERT_FILAMENT c=20
-  if (!fsensor_autoload_enabled) {
-	  lcd_puts_at_P(0, 2, _i("and press the knob"));////MSG_PRESS c=20 r=2
+#ifdef FILAMENT_SENSOR
+  if (!fsensor.getAutoLoadEnabled())
+#endif //FILAMENT_SENSOR
+  {
+    lcd_puts_at_P(0, 2, _i("and press the knob"));////MSG_PRESS c=20 r=2
   }
 }
 
@@ -2313,7 +2303,6 @@ static void lcd_menu_AutoLoadFilament()
 
 static void preheat_or_continue()
 {
-    bFilamentFirstRun = false;
     if (target_temperature[0] >= EXTRUDE_MINTEMP)
     {
         bFilamentPreheatState = true;
@@ -3489,7 +3478,6 @@ static void lcd_show_sensors_state()
 	{
 		finda_state = mmu_finda;
 	}
-	//lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(0, 0, _T(MSG_PINDA));
 	lcd_set_cursor(LCD_WIDTH - 14, 0);
 	lcd_print_state(pinda_state);
@@ -3500,37 +3488,31 @@ static void lcd_show_sensors_state()
 		lcd_set_cursor(LCD_WIDTH - 3, 0);
 		lcd_print_state(finda_state);
 	}
-	
-	if (ir_sensor_detected) {
-		idler_state = !READ(IR_SENSOR_PIN);
-		lcd_puts_at_P(0, 1, _i("Fil. sensor"));
-		lcd_set_cursor(LCD_WIDTH - 3, 1);
-		lcd_print_state(idler_state);
-	}
-	
+#ifdef FILAMENT_SENSOR
+	idler_state = fsensor.getFilamentPresent();
+	lcd_puts_at_P(0, 1, _T(MSG_FSENSOR));
+	lcd_set_cursor(LCD_WIDTH - 3, 1);
+	lcd_print_state(idler_state);
+#endif //FILAMENT_SENSOR
 
-#ifdef PAT9125
-	// Display X and Y difference from Filament sensor    
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+    // Display X and Y difference from Filament sensor
     // Display Light intensity from Filament sensor
     //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
     //  value ranges from 0(darkest) to 255(brightest).
     // Display LASER shutter time from Filament sensor
     //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
-    //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
-    //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-    if (mmu_enabled == false)
-    {
-        // pat9125_update is already called while printing: only update manually when idling
-        if (!moves_planned() && !IS_SD_PRINTING && !usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal))
-            pat9125_update();
-
-        lcd_set_cursor(0, 2);
-        lcd_printf_P(_N(" Int: %3d  Xd:%6d\n"
-                        "Shut: %3d  Yd:%6d"),
-                     pat9125_b, pat9125_x,
-                     pat9125_s, pat9125_y);
-    }
-#endif //PAT9125
+    //  auto-exposure algorithm. When the chip is tracking on a reflective surface, the Shutter is small.
+    //  When the chip is tracking on a surface that absorbs IR (or doesn't reflect it), the Shutter is large.
+    //  The maximum value of the shutter is 17. The value of 16 seems to be reported as 17 even though the
+    //  Brightness value changes correctly as if the shutter changed to 16 (probably some bug with the sensor).
+    //  The shutter algorithm tries to keep the B value in the 70-110 range.
+    lcd_set_cursor(0, 2);
+    lcd_printf_P(_N("B: %3d     Xd:%6d\n"
+                    "S: %3d     Yd:%6d"),
+                 pat9125_b, pat9125_x,
+                 pat9125_s, pat9125_y);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 }
 
 void lcd_menu_show_sensors_state()                // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
@@ -3912,34 +3894,6 @@ static void lcd_crash_mode_info2()
 }
 #endif //TMC2130
 
-#ifdef FILAMENT_SENSOR
-static void lcd_filament_autoload_info()
-{
-uint8_t nlines;
-	lcd_update_enable(true);
-	static uint32_t tim = 0;
-	if ((tim + 1000) < _millis())
-	{
-          lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament available only when filament sensor is turned on..."), nlines); ////MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
-		tim = _millis();
-	}
-    menu_back_if_clicked();
-}
-
-static void lcd_fsensor_fail()
-{
-uint8_t nlines;
-	lcd_update_enable(true);
-	static uint32_t tim = 0;
-	if ((tim + 1000) < _millis())
-	{
-          lcd_display_message_fullscreen_nonBlocking_P(_i("ERROR: Filament sensor is not responding, please check connection."), nlines);////MSG_FSENS_NOT_RESPONDING c=20 r=4
-		tim = _millis();
-	}
-    menu_back_if_clicked();
-}
-#endif //FILAMENT_SENSOR
-
 //-//
 static void lcd_sound_state_set(void)
 {
@@ -4009,24 +3963,6 @@ static void crash_mode_switch()
 	else menu_goto(lcd_settings_menu, 9, true, true);
 }
 #endif //TMC2130
- 
-
-#ifdef FILAMENT_SENSOR
-static void lcd_fsensor_state_set()
-{
-	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
-	if (!FSensorStateMenu) {
-		fsensor_disable();
-		if (fsensor_autoload_enabled && !mmu_enabled)
-			menu_submenu(lcd_filament_autoload_info);
-	}
-	else {
-		fsensor_enable();
-		if (fsensor_not_responding && !mmu_enabled)
-			menu_submenu(lcd_fsensor_fail);
-	}
-}
-#endif //FILAMENT_SENSOR
 
 #if (LANG_MODE != 0)
 
@@ -4225,12 +4161,13 @@ void lcd_v2_calibration()
 	        return;
 	    }
 	}
+#ifdef FILAMENT_SENSOR
 	else if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
 	{
 	    bool loaded = false;
-	    if (fsensor_enabled && ir_sensor_detected)
+	    if (fsensor.isReady())
 	    {
-	        loaded = !READ(IR_SENSOR_PIN);
+	        loaded = fsensor.getFilamentPresent();
 	    }
 	    else
 	    {
@@ -4255,6 +4192,7 @@ void lcd_v2_calibration()
 			return;
 		}
 	}
+#endif //FILAMENT_SENSOR
 
 	eFilamentAction = FilamentAction::Lay1Cal;
 	menu_goto(lcd_generic_preheat_menu, 0, true, true);
@@ -4335,7 +4273,11 @@ static void lcd_wizard_load()
 
 bool lcd_autoDepleteEnabled()
 {
-    return (lcd_autoDeplete && fsensor_enabled);
+    return (lcd_autoDeplete
+#ifdef FILAMENT_SENSOR ///should be removed during mmu2 refactoring
+    && fsensor.isReady()
+#endif
+    );
 }
 
 static void wizard_lay1cal_message(bool cold)
@@ -4599,48 +4541,82 @@ void lcd_settings_linearity_correction_menu(void)
 #endif // TMC2130
 
 #ifdef FILAMENT_SENSOR
-#define SETTINGS_FILAMENT_SENSOR \
-do\
-{\
-    if (FSensorStateMenu == 0)\
-    {\
-        if (fsensor_not_responding && (mmu_enabled == false))\
-        {\
-            /* Filament sensor not working*/\
-            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_NA), lcd_fsensor_state_set);/*////MSG_FSENSOR_NA*/\
-            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), NULL, lcd_fsensor_fail);\
-        }\
-        else\
-        {\
-            /* Filament sensor turned off, working, no problems*/\
-            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);\
-            if (mmu_enabled == false)\
-            {\
-                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), NULL, lcd_filament_autoload_info);\
-            }\
-        }\
-    }\
-    else\
-    {\
-        /* Filament sensor turned on, working, no problems*/\
-        MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);\
-        if (mmu_enabled == false)\
-        {\
-            if (fsensor_autoload_enabled)\
-                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_ON), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_ON c=17*/\
-            else\
-                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_OFF), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_OFF c=17*/\
-            /*if (fsensor_oq_meassure_enabled)*/\
-                /*MENU_ITEM_FUNCTION_P(_i("F. OQ meass. [on]"), lcd_set_filament_oq_meass);*//*////MSG_FSENS_OQMEASS_ON c=17*/\
-            /*else*/\
-                /*MENU_ITEM_FUNCTION_P(_i("F. OQ meass.[off]"), lcd_set_filament_oq_meass);*//*////MSG_FSENS_OQMEASS_OFF c=17*/\
-        }\
-    }\
-}\
-while(0)
 
-#else //FILAMENT_SENSOR
-#define SETTINGS_FILAMENT_SENSOR do{}while(0)
+static void fsensor_reinit() {
+    fsensor.init();
+}
+
+static void lcd_fsensor_enabled_set(void) {
+    fsensor.setEnabled(!fsensor.isEnabled());
+}
+
+static void lcd_fsensor_runout_set() {
+    fsensor.setRunoutEnabled(!fsensor.getRunoutEnabled(), true);
+}
+
+static void lcd_fsensor_autoload_set() {
+    fsensor.setAutoLoadEnabled(!fsensor.getAutoLoadEnabled(), true);
+}
+
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
+static void lcd_fsensor_jam_detection_set() {
+    fsensor.setJamDetectionEnabled(!fsensor.getJamDetectionEnabled(), true);
+}
+#endif //FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
+
+static void lcd_fsensor_actionNA_set(void)
+{
+    Filament_sensor::SensorActionOnError act = fsensor.getActionOnError();
+    switch(act) {
+        case Filament_sensor::SensorActionOnError::_Continue:
+            act = Filament_sensor::SensorActionOnError::_Pause;
+            break;
+        case Filament_sensor::SensorActionOnError::_Pause:
+            act = Filament_sensor::SensorActionOnError::_Continue;
+            break;
+        default:
+            act = Filament_sensor::SensorActionOnError::_Continue;
+    }
+    fsensor.setActionOnError(act, true);
+}
+
+static void lcd_fsensor_settings_menu() {
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_BACK));
+    
+    MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), fsensor.isEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_enabled_set);
+    
+    if (fsensor.isEnabled()) {
+        if (fsensor.isError()) {
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_RUNOUT), _T(MSG_NA), fsensor_reinit);
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), _T(MSG_NA), fsensor_reinit);
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM_DETECTION), _T(MSG_NA), fsensor_reinit);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+        }
+        else {
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_RUNOUT), fsensor.getRunoutEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_runout_set);
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), fsensor.getAutoLoadEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_autoload_set);
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM_DETECTION), fsensor.getJamDetectionEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_jam_detection_set);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+        }
+        
+        switch(fsensor.getActionOnError()) {
+            case Filament_sensor::SensorActionOnError::_Continue:
+                MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_CONTINUE), lcd_fsensor_actionNA_set);
+                break;
+            case Filament_sensor::SensorActionOnError::_Pause:
+                MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_PAUSE), lcd_fsensor_actionNA_set);
+                break;
+            default:
+                lcd_fsensor_actionNA_set();
+        }
+    }
+    
+    MENU_END();
+}
+
 #endif //FILAMENT_SENSOR
 
 static void auto_deplete_switch()
@@ -4653,17 +4629,14 @@ static void settingsAutoDeplete()
 {
     if (mmu_enabled)
     {
-        if (!fsensor_enabled)
-        {
-            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_NA), NULL);
-        }
-        else if (lcd_autoDeplete)
-        {
-            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_ON), auto_deplete_switch);
+#ifdef FILAMENT_SENSOR
+        if (fsensor.isError()) {
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_NA), fsensor_reinit);
         }
         else
+#endif //FILAMENT_SENSOR
         {
-            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_OFF), auto_deplete_switch);
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), lcd_autoDeplete ? _T(MSG_ON) : _T(MSG_OFF), auto_deplete_switch);
         }
     }
 }
@@ -5060,41 +5033,6 @@ SETTINGS_VERSION;
 MENU_END();
 }
 
-#ifdef IR_SENSOR_ANALOG
-static void lcd_fsensor_actionNA_set(void)
-{
-switch(oFsensorActionNA)
-     {
-     case ClFsensorActionNA::_Continue:
-          oFsensorActionNA=ClFsensorActionNA::_Pause;
-          break;
-     case ClFsensorActionNA::_Pause:
-          oFsensorActionNA=ClFsensorActionNA::_Continue;
-          break;
-     default:
-          oFsensorActionNA=ClFsensorActionNA::_Continue;
-     }
-eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA,(uint8_t)oFsensorActionNA);
-}
-
-#define FSENSOR_ACTION_NA \
-do\
-{\
-    switch(oFsensorActionNA)\
-         {\
-         case ClFsensorActionNA::_Continue:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_CONTINUE), lcd_fsensor_actionNA_set);\
-              break;\
-         case ClFsensorActionNA::_Pause:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_PAUSE), lcd_fsensor_actionNA_set);\
-              break;\
-         default:\
-              oFsensorActionNA=ClFsensorActionNA::_Continue;\
-         }\
-}\
-while (0)
-#endif //IR_SENSOR_ANALOG
-
 template <uint8_t number>
 static void select_sheet_menu()
 {
@@ -5146,8 +5084,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     SETTINGS_NOZZLE;
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);  ////MSG_CHECKS c=18
 
-#ifdef IR_SENSOR_ANALOG
-    FSENSOR_ACTION_NA;
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
     //! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
     //! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
     if(!mmu_enabled) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
@@ -5184,7 +5121,9 @@ static void lcd_settings_menu()
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=18
     }
 
-	SETTINGS_FILAMENT_SENSOR;
+#ifdef FILAMENT_SENSOR
+    MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
+#endif //FILAMENT_SENSOR
 
 	SETTINGS_AUTO_DEPLETE;
 
@@ -5560,7 +5499,6 @@ static void mmu_cut_filament_menu()
     else
     {
         eFilamentAction=FilamentAction::MmuCut;
-        bFilamentFirstRun=false;
         if(target_temperature[0]>=EXTRUDE_MINTEMP)
         {
             bFilamentPreheatState=true;
@@ -5578,6 +5516,14 @@ void unload_filament(bool automatic)
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
+
+#ifdef FILAMENT_SENSOR
+	fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
+	fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+	fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+#endif
 
     raise_z_above(automatic? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
 
@@ -5615,6 +5561,11 @@ void unload_filament(bool automatic)
 	lcd_setstatuspgm(MSG_WELCOME);
 	custom_message_type = CustomMsg::Status;
 
+	eFilamentAction = FilamentAction::None;
+
+#ifdef FILAMENT_SENSOR
+	fsensor.settings_init(); //restore filament runout state.
+#endif
 }
 
 #include "xflash.h"
@@ -5933,15 +5884,14 @@ static void lcd_main_menu()
 #endif //MMU_HAS_CUTTER
         } else {
 #ifdef FILAMENT_SENSOR
-            if ((fsensor_autoload_enabled == true) && (fsensor_enabled == true) && (mmu_enabled == false))
+            if (fsensor.getAutoLoadEnabled() && (mmu_enabled == false)) {
                 MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=18
+            }
             else
 #endif //FILAMENT_SENSOR
             {
-                bFilamentFirstRun=true;
                 MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
             }
-            bFilamentFirstRun=true;
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
     MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
@@ -6098,22 +6048,7 @@ static void lcd_tune_menu()
 #endif
 
 #ifdef FILAMENT_SENSOR
-	if (FSensorStateMenu == 0) {
-          if (fsensor_not_responding && (mmu_enabled == false)) {
-               /* Filament sensor not working*/
-               MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_NA), lcd_fsensor_state_set);
-          }
-          else {
-               /* Filament sensor turned off, working, no problems*/
-               MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_OFF), lcd_fsensor_state_set);
-          }
-	}
-	else {
-		MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR), _T(MSG_ON), lcd_fsensor_state_set);
-	}
-#ifdef IR_SENSOR_ANALOG
-     FSENSOR_ACTION_NA;
-#endif //IR_SENSOR_ANALOG
+    MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
 #endif //FILAMENT_SENSOR
 
 	SETTINGS_AUTO_DEPLETE;
@@ -6561,49 +6496,53 @@ void lcd_belttest()
 }
 #endif //TMC2130
 
-#ifdef IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 // called also from marlin_main.cpp
 void printf_IRSensorAnalogBoardChange(){
-    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), FsensorIRVersionText());
+    printf_P(PSTR("Filament sensor board change detected: revision%S\n"), fsensor.getIRVersionText());
 }
 
 static bool lcd_selftest_IRsensor(bool bStandalone)
 {
-    bool bPCBrev04;
-    uint16_t volt_IR_int;
-
-    volt_IR_int = current_voltage_raw_IR;
-    bPCBrev04=(volt_IR_int < IRsensor_Hopen_TRESHOLD);
-    printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"), Raw2Voltage(volt_IR_int) );
-    if(volt_IR_int < IRsensor_Hmin_TRESHOLD){
+    bool ret = false;
+    fsensor.setAutoLoadEnabled(false);
+    fsensor.setRunoutEnabled(false);
+    IR_sensor_analog::SensorRevision oldSensorRevision = fsensor.getSensorRevision();
+    IR_sensor_analog::SensorRevision newSensorRevision;
+    uint16_t volt_IR_int = fsensor.getVoltRaw();
+    
+    newSensorRevision = (volt_IR_int < fsensor.IRsensor_Hopen_TRESHOLD) ? IR_sensor_analog::SensorRevision::_Rev04 : IR_sensor_analog::SensorRevision::_Old;
+    printf_P(PSTR("Measured filament sensor high level: %4.2fV\n"), fsensor.Raw2Voltage(volt_IR_int) );
+    if(volt_IR_int < fsensor.IRsensor_Hmin_TRESHOLD){
         if(!bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
-        return(false);
+        goto exit;
     }
     lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));////MSG_INSERT_FIL c=20 r=6
-    volt_IR_int = current_voltage_raw_IR;
-    printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"), Raw2Voltage(volt_IR_int));
-    if(volt_IR_int > (IRsensor_Lmax_TRESHOLD)){
+    volt_IR_int = fsensor.getVoltRaw();
+    printf_P(PSTR("Measured filament sensor low level: %4.2fV\n"), fsensor.Raw2Voltage(volt_IR_int));
+    if(volt_IR_int > (fsensor.IRsensor_Lmax_TRESHOLD)){
         if(!bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"LOW","");
-        return(false);
+        goto exit;
     }
-    if((bPCBrev04 ? 1 : 0) != (uint8_t)oFsensorPCB){        // safer then "(uint8_t)bPCBrev04"
-        oFsensorPCB=bPCBrev04 ? ClFsensorPCB::_Rev04 : ClFsensorPCB::_Old;
+    if(newSensorRevision != oldSensorRevision) {
+        fsensor.setSensorRevision(newSensorRevision, true);
         printf_IRSensorAnalogBoardChange();
-        eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,(uint8_t)oFsensorPCB);
     }
-    return(true);
+    ret = true;
+exit:
+    fsensor.settings_init();
+    return ret;
 }
 
 static void lcd_detect_IRsensor(){
     bool bAction;
     bool loaded;
-    bMenuFSDetect = true;                               // inhibits some code inside "manage_inactivity()"
     /// Check if filament is loaded. If it is loaded stop detection.
     /// @todo Add autodetection with MMU2s
-    loaded = ! READ(IR_SENSOR_PIN);
-    if(loaded ){
+    loaded = fsensor.getFilamentPresent();
+    if(loaded){
         lcd_show_fullscreen_message_and_wait_P(_i("Please unload the filament first, then repeat this action."));////MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
         return;
     } else {
@@ -6612,13 +6551,10 @@ static void lcd_detect_IRsensor(){
     }
     if(bAction){
         lcd_show_fullscreen_message_and_wait_P(_i("Sensor verified, remove the filament now."));////MSG_FS_VERIFIED c=20 r=3
-        // the fsensor board has been successfully identified, any previous "not responding" may be cleared now
-        fsensor_not_responding = false;
+        fsensor.init();
     } else {
         lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=5
-        // here it is unclear what to to with the fsensor_not_responding flag
     }
-    bMenuFSDetect=false;                              // de-inhibits some code inside "manage_inactivity()"
 }
 #endif //IR_SENSOR_ANALOG
 
@@ -6632,19 +6568,19 @@ bool lcd_selftest()
 	uint8_t _progress = 0;
 	bool _result = true;
 	bool _swapped_fan = false;
-#ifdef IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 	//!   Check if IR sensor is in unknown state, if so run Fsensor Detection
 	//!   As the Fsensor Detection isn't yet ready for the mmu2s we set temporarily the IR sensor 0.3 or older for mmu2s
 	//! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
-	if( oFsensorPCB == ClFsensorPCB::_Undef) {
+	if(fsensor.getSensorRevision() == IR_sensor_analog::SensorRevision::_Undef) {
 		if (!mmu_enabled) {
 			lcd_detect_IRsensor();
 		}
 		else {
-			eeprom_update_byte((uint8_t*)EEPROM_FSENSOR_PCB,0);
+			fsensor.setSensorRevision(IR_sensor_analog::SensorRevision::_Old, true);
 		}
 	}
-#endif //IR_SENSOR_ANALOG
+#endif
 	lcd_wait_for_cool_down();
 	lcd_clear();
 	lcd_puts_at_P(0, 0, _i("Self test start"));////MSG_SELFTEST_START c=20
@@ -6832,7 +6768,7 @@ bool lcd_selftest()
 #ifdef FILAMENT_SENSOR
     if (_result)
     {
-
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
         if (mmu_enabled)
         {        
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
@@ -6842,19 +6778,20 @@ bool lcd_selftest()
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
         } else
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
         {
-#ifdef PAT9125
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
                _result = lcd_selftest_fsensor();
 			if (_result)
 			{
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
-#endif //PAT9125
+#endif //FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 #if 0
 	// Intentionally disabled - that's why we moved the detection to runtime by just checking the two voltages.
 	// The idea is not to force the user to remove and insert the filament on an assembled printer.
-//def IR_SENSOR_ANALOG
+//defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
 			_result = lcd_selftest_IRsensor();
 			if (_result)
@@ -7412,18 +7349,19 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 }
 
 #ifdef FILAMENT_SENSOR
-#ifdef PAT9125
+#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 static bool lcd_selftest_fsensor(void)
 {
-	fsensor_init();
-	if (fsensor_not_responding)
+	fsensor.init();
+	if (fsensor.isError())
 	{
 		lcd_selftest_error(TestError::WiringFsensor, "", "");
 	}
-	return (!fsensor_not_responding);
+	return (!fsensor.isError());
 }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 //! @brief Self-test of infrared barrier filament sensor mounted on MK3S with MMUv2 printer
 //!
 //! Test whether sensor is not triggering filament presence when extruder idler is moving without filament.
@@ -7433,7 +7371,7 @@ static bool lcd_selftest_fsensor(void)
 //!  * Pre-heat to PLA extrude temperature.
 //!  * Unload filament possibly present.
 //!  * Move extruder idler same way as during filament load
-//!    and sample IR_SENSOR_PIN.
+//!    and sample the filament sensor.
 //!  * Check that pin doesn't go low.
 //!
 //! @retval true passed
@@ -7470,7 +7408,7 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (READ(IR_SENSOR_PIN) == 0)
+            if (fsensor.getFilamentPresent())
             {
                 lcd_selftest_error(TestError::TriggeringFsensor, "", "");
                 return false;
@@ -7491,6 +7429,7 @@ static bool selftest_irsensor()
     }
     return true;
 }
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 #endif //FILAMENT_SENSOR
 
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
@@ -8145,7 +8084,7 @@ void menu_lcd_lcdupdate_func(void)
 	}
 #endif//CARDINSERTED
 	backlight_update();
-	if (lcd_next_update_millis < _millis())
+	if (lcd_next_update_millis < _millis() || lcd_draw_update)
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
 		{

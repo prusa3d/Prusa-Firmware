@@ -144,8 +144,7 @@ extern bool FarmOrUserECool();
 #define SILENT_MODE_OFF SILENT_MODE_POWER
 #endif
 
-#ifdef IR_SENSOR_ANALOG
-extern bool bMenuFSDetect;
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 void printf_IRSensorAnalogBoardChange();
 #endif //IR_SENSOR_ANALOG
 
@@ -180,7 +179,6 @@ enum class FilamentAction : uint_least8_t
 };
 
 extern FilamentAction eFilamentAction;
-extern bool bFilamentFirstRun;
 extern bool bFilamentPreheatState;
 extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);

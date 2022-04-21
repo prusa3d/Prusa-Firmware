@@ -93,12 +93,7 @@
 
 #include "spi.h"
 
-#ifdef FILAMENT_SENSOR
-#include "fsensor.h"
-#ifdef IR_SENSOR
-#include "pat9125.h" // for pat9125_probe
-#endif
-#endif //FILAMENT_SENSOR
+#include "Filament_sensor.h"
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -692,9 +687,6 @@ void failstats_reset_print()
 	eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-    fsensor_softfail = 0;
-#endif
 }
 
 void softReset()
@@ -762,8 +754,12 @@ static void factory_reset(char level)
 		eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 
 #ifdef FILAMENT_SENSOR
-		fsensor_enable();
-		fsensor_autoload_set(true);
+		fsensor.setEnabled(true);
+		fsensor.setAutoLoadEnabled(true, true);
+		fsensor.setRunoutEnabled(true, true);
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+		fsensor.setJamDetectionEnabled(true, true);
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 #endif //FILAMENT_SENSOR
 		break;
 
@@ -862,24 +858,14 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
+#if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
 //! @brief try to check if firmware is on right type of printer
-static void check_if_fw_is_on_right_printer(){
-#ifdef FILAMENT_SENSOR
-  if((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3S)){
-    #ifdef IR_SENSOR
-      if (pat9125_probe()){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}////MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
-    #endif //IR_SENSOR
-
-    #ifdef PAT9125
-      //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
-      const uint8_t ir_detected = !READ(IR_SENSOR_PIN);
-      if (ir_detected){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}////MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
-    #endif //PAT9125
-  }
-#endif //FILAMENT_SENSOR
+static void check_if_fw_is_on_right_printer() {
+    if (fsensor.probeOtherType()) {
+        lcd_show_fullscreen_message_and_wait_P(_i(PRINTER_NAME " firmware detected on " PRINTER_NAME_ALTERNATE " printer"));////c=20 r=4
+    }
 }
+#endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
 
 uint8_t check_printer_version()
 {
@@ -1110,8 +1096,7 @@ void setup()
 #endif //HAS_SECOND_SERIAL_PORT
 		MYSERIAL.begin(BAUDRATE);
 #ifdef FILAMENT_SENSOR
-		//disabled filament autoload (PFW360)
-		fsensor_autoload_set(false);
+		fsensor.setAutoLoadEnabled(false, true);
 #endif //FILAMENT_SENSOR
 		// ~ FanCheck -> on
 		eeprom_update_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED, true);
@@ -1422,7 +1407,7 @@ void setup()
     plan_set_position_curposXYZE();
 
 #ifdef FILAMENT_SENSOR
-	fsensor_init();
+    fsensor.init();
 #endif //FILAMENT_SENSOR
 
 
@@ -1558,15 +1543,13 @@ void setup()
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
 
-#ifdef PAT9125
-	fsensor_setup_interrupt();
-#endif //PAT9125
-
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
   if (!farm_mode) {
+#if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
     check_if_fw_is_on_right_printer();
+#endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
     show_fw_version_warnings();    
   }
 
@@ -3715,7 +3698,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     {
         prusa_statistics(22);
     }
-
+    
     //First backup current position and settings
     int feedmultiplyBckp = feedmultiply;
     float HotendTempBckp = degTargetHotend(active_extruder);
@@ -3752,6 +3735,14 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     else unload_filament(true); //unload filament for single material (used also in M702)
     //finish moves
     st_synchronize();
+
+#ifdef FILAMENT_SENSOR
+    fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
+    fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+    fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+#endif
 
     if (!mmu_enabled)
     {
@@ -3823,10 +3814,9 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
     enquecommand(cmd);
 
-#ifdef IR_SENSOR
-	//this will set fsensor_watch_autoload to correct value and prevent possible M701 gcode enqueuing when M600 is finished
-	fsensor_check_autoload();
-#endif //IR_SENSOR
+#ifdef FILAMENT_SENSOR
+    fsensor.settings_init();
+#endif
 
     lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
@@ -3835,6 +3825,14 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
+
+#ifdef FILAMENT_SENSOR
+	fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
+	fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+	fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+#endif
 
 	if (farm_mode)
 	{
@@ -3851,23 +3849,19 @@ void gcode_M701()
 		enable_z();
 		custom_message_type = CustomMsg::FilamentLoading;
 
-#ifdef FSENSOR_QUALITY
-		fsensor_oq_meassure_start(40);
-#endif //FSENSOR_QUALITY
-
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 		current_position[E_AXIS] += 40;
 		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
 		st_synchronize();
 
-        raise_z_above(MIN_Z_FOR_LOAD, false);
+		raise_z_above(MIN_Z_FOR_LOAD, false);
 		current_position[E_AXIS] += 30;
 		plan_buffer_line_curposXYZE(400 / 60); //fast sequence
 		
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
 
-    Sound_MakeCustom(50,500,false);
+		Sound_MakeCustom(50,500,false);
 
 		if (!farm_mode && loading_flag) {
 			lcd_load_filament_color_check();
@@ -3878,20 +3872,13 @@ void gcode_M701()
 		disable_z();
 		loading_flag = false;
 		custom_message_type = CustomMsg::Status;
-
-#ifdef FSENSOR_QUALITY
-        fsensor_oq_meassure_stop();
-
-        if (!fsensor_oq_result())
-        {
-            bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
-            lcd_update_enable(true);
-            lcd_update(2);
-            if (disable)
-                fsensor_disable();
-        }
-#endif //FSENSOR_QUALITY
 	}
+	
+	eFilamentAction = FilamentAction::None;
+	
+#ifdef FILAMENT_SENSOR
+	fsensor.settings_init(); //restore filament runout state.
+#endif
 }
 /**
  * @brief Get serial number from 32U2 processor
@@ -4226,9 +4213,6 @@ void process_commands()
 #endif
 
 	if (!buflen) return; //empty command
-  #ifdef FILAMENT_RUNOUT_SUPPORT
-    SET_INPUT(FR_SENS);
-  #endif
 
 #ifdef CMDBUFFER_DEBUG
   SERIAL_ECHOPGM("Processing a GCODE command: ");
@@ -4680,176 +4664,6 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     case 0: // G0 -> G1
     case 1: // G1
       if(Stopped == false) {
-
-        #ifdef FILAMENT_RUNOUT_SUPPORT
-            
-            if(READ(FR_SENS)){
-
-                        int feedmultiplyBckp=feedmultiply;
-                        float target[4];
-                        float lastpos[4];
-                        target[X_AXIS]=current_position[X_AXIS];
-                        target[Y_AXIS]=current_position[Y_AXIS];
-                        target[Z_AXIS]=current_position[Z_AXIS];
-                        target[E_AXIS]=current_position[E_AXIS];
-                        lastpos[X_AXIS]=current_position[X_AXIS];
-                        lastpos[Y_AXIS]=current_position[Y_AXIS];
-                        lastpos[Z_AXIS]=current_position[Z_AXIS];
-                        lastpos[E_AXIS]=current_position[E_AXIS];
-                        //retract by E
-                        
-                        target[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT ;
-                        
-                        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
-
-
-                        target[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
-
-                        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 300, active_extruder);
-
-                        target[X_AXIS]= FILAMENTCHANGE_XPOS ;
-                        
-                        target[Y_AXIS]= FILAMENTCHANGE_YPOS ;
-                         
-                 
-                        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 70, active_extruder);
-
-                        target[E_AXIS]+= FILAMENTCHANGE_FINALRETRACT ;
-                          
-
-                        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 20, active_extruder);
-
-                        //finish moves
-                        st_synchronize();
-                        //disable extruder steppers so filament can be removed
-                        disable_e0();
-                        disable_e1();
-                        disable_e2();
-                        _delay(100);
-                        
-                        //LCD_ALERTMESSAGEPGM(_T(MSG_FILAMENTCHANGE));
-                        uint8_t cnt=0;
-                        int counterBeep = 0;
-                        lcd_wait_interact();
-                        while(!lcd_clicked()){
-                          cnt++;
-                          manage_heater();
-                          manage_inactivity(true);
-                          //lcd_update(0);
-                          if(cnt==0)
-                          {
-                          #if BEEPER > 0
-                          
-                            if (counterBeep== 500){
-                              counterBeep = 0;
-                              
-                            }
-                          
-                            
-                            SET_OUTPUT(BEEPER);
-                            if (counterBeep== 0){
-if(eSoundMode!=e_SOUND_MODE_SILENT)
-                              WRITE(BEEPER,HIGH);
-                            }
-                            
-                            if (counterBeep== 20){
-                              WRITE(BEEPER,LOW);
-                            }
-                            
-                            
-                            
-                          
-                            counterBeep++;
-                          #else
-                          #endif
-                          }
-                        }
-                        
-                        WRITE(BEEPER,LOW);
-                        
-                        target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-                        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 20, active_extruder); 
-                        
-                        
-                        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-                        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder); 
-                        
-                 
-                        
-                        
-                        
-                        lcd_change_fil_state = 0;
-                        lcd_loading_filament();
-                        while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
-                        
-                          lcd_change_fil_state = 0;
-                          lcd_alright();
-                          switch(lcd_change_fil_state){
-                          
-                             case 2:
-                                     target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-                                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 20, active_extruder); 
-                        
-                        
-                                     target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-                                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder); 
-                                      
-                                     
-                                     lcd_loading_filament();
-                                     break;
-                             case 3:
-                                     target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-                                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder); 
-                                     lcd_loading_color();
-                                     break;
-                                          
-                             default:
-                                     lcd_change_success();
-                                     break;
-                          }
-                          
-                        }
-                        
-
-                        
-                      target[E_AXIS]+= 5;
-                      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder);
-                        
-                      target[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT;
-                      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
-                        
-
-                        //current_position[E_AXIS]=target[E_AXIS]; //the long retract of L is compensated by manual filament feeding
-                        //plan_set_e_position(current_position[E_AXIS]);
-                        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 70, active_extruder); //should do nothing
-                        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], target[Z_AXIS], target[E_AXIS], 70, active_extruder); //move xy back
-                        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], 200, active_extruder); //move z back
-                        
-                        
-                        target[E_AXIS]= target[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
-                        
-                      
-                             
-                        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], 5, active_extruder); //final untretract
-                        
-                        
-                        plan_set_e_position(lastpos[E_AXIS]);
-                        
-                        feedmultiply=feedmultiplyBckp;
-                        
-                     
-                        
-                        char cmd[9];
-
-                        sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
-                        enquecommand(cmd);
-
-            }
-
-
-
-        #endif
-
             get_coordinates(); // For X Y Z E F
 
             // When recovering from a previous print move, restore the originally
@@ -6943,9 +6757,9 @@ Sigma_Exit:
               axis_steps_per_sqr_second[i] *= factor;
             }
             cs.axis_steps_per_unit[i] = value;
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-            fsensor_set_axis_steps_per_unit(value);
-#endif
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+            fsensor.init();
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
           }
           else {
             cs.axis_steps_per_unit[i] = code_value();
@@ -8782,10 +8596,10 @@ Sigma_Exit:
 						cs.axis_steps_per_unit[i] /= fac;
 						position[i] /= fac;
 					}
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-                    if (i == E_AXIS)
-                        fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[i]);
-#endif
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+					if (i == E_AXIS)
+						fsensor.init();
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 				}
 			}
 		}
@@ -9402,7 +9216,7 @@ Sigma_Exit:
 		dcode_2130(); break;
 #endif //TMC2130
 
-#if (defined (FILAMENT_SENSOR) && defined(PAT9125))
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
     /*!
     ### D9125 - PAT9125 filament sensor <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9125: PAT9125 filament sensor</a>
@@ -9420,7 +9234,7 @@ Sigma_Exit:
     */
 	case 9125:
 		dcode_9125(); break;
-#endif //FILAMENT_SENSOR
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
 #endif //DEBUG_DCODES
 
@@ -9742,134 +9556,13 @@ static void handleSafetyTimer()
 }
 #endif //SAFETYTIMER
 
-#ifdef IR_SENSOR_ANALOG
-#define FS_CHECK_COUNT 16
-/// Switching mechanism of the fsensor type.
-/// Called from 2 spots which have a very similar behavior
-/// 1: ClFsensorPCB::_Old -> ClFsensorPCB::_Rev04 and print _i("FS v0.4 or newer")
-/// 2: ClFsensorPCB::_Rev04 -> oFsensorPCB=ClFsensorPCB::_Old and print _i("FS v0.3 or older")
-void manage_inactivity_IR_ANALOG_Check(uint16_t &nFSCheckCount, ClFsensorPCB isVersion, ClFsensorPCB switchTo, const char *statusLineTxt_P) {
-    bool bTemp = (!CHECK_ALL_HEATERS);
-    bTemp = bTemp && (menu_menu == lcd_status_screen);
-    bTemp = bTemp && ((oFsensorPCB == isVersion) || (oFsensorPCB == ClFsensorPCB::_Undef));
-    bTemp = bTemp && fsensor_enabled;
-    if (bTemp) {
-        nFSCheckCount++;
-        if (nFSCheckCount > FS_CHECK_COUNT) {
-            nFSCheckCount = 0; // not necessary
-            oFsensorPCB = switchTo;
-            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)oFsensorPCB);
-            printf_IRSensorAnalogBoardChange();
-            lcd_setstatuspgm(statusLineTxt_P);
-        }
-    } else {
-        nFSCheckCount = 0;
-    }
-}
-#endif
-
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-bool bInhibitFlag = false;
-#ifdef IR_SENSOR_ANALOG
-static uint16_t nFSCheckCount=0;
-#endif // IR_SENSOR_ANALOG
-
-	if (mmu_enabled == false)
-	{
-//-//		if (mcode_in_progress != 600) //M600 not in progress
-		if (!PRINTER_ACTIVE) bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); //Block Filament sensor actions if PRINTER is not active and Support::SensorInfo menu active
-#ifdef IR_SENSOR_ANALOG
-		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Block Filament sensor actions if Settings::HWsetup::FSdetect menu active
-#endif // IR_SENSOR_ANALOG
-		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active
-		{
-			if (!moves_planned() && !IS_SD_PRINTING && !usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
-			{
-#ifdef IR_SENSOR_ANALOG
-				static uint16_t minVolt = Voltage2Raw(6.F), maxVolt = 0;
-				// detect min-max, some long term sliding window for filtration may be added
-				// avoiding floating point operations, thus computing in raw
-				if( current_voltage_raw_IR > maxVolt )maxVolt = current_voltage_raw_IR;
-				if( current_voltage_raw_IR < minVolt )minVolt = current_voltage_raw_IR;
-				
-#if 0 // Start: IR Sensor debug info
-				{ // debug print
-					static uint16_t lastVolt = ~0U;
-					if( current_voltage_raw_IR != lastVolt ){
-						printf_P(PSTR("fs volt=%4.2fV (min=%4.2f max=%4.2f)\n"), Raw2Voltage(current_voltage_raw_IR), Raw2Voltage(minVolt), Raw2Voltage(maxVolt) );
-						lastVolt = current_voltage_raw_IR;
-					}
-				}
-#endif // End: IR Sensor debug info
-				//! The trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
-				//! to be detected as the new fsensor
-				//! We can either fake it by extending the detection window to a looooong time
-				//! or do some other countermeasures
-				
-				//! what we want to detect:
-				//! if minvolt gets below ~0.3V, it means there is an old fsensor
-				//! if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
-				//! So I'm waiting for a situation, when minVolt gets to range <0, 1.5> and maxVolt gets into range <3.0, 5>
-				//! If and only if minVolt is in range <0.3, 1.5> and maxVolt is in range <3.0, 4.6>, I'm considering a situation with the new fsensor
-				if( minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD 
-				 && maxVolt >= IRsensor_Hmin_TRESHOLD && maxVolt <= IRsensor_Hopen_TRESHOLD
-				){
-					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Old, ClFsensorPCB::_Rev04, _i("FS v0.4 or newer") ); ////MSG_FS_V_04_OR_NEWER c=18
-				} 
-				//! If and only if minVolt is in range <0.0, 0.3> and maxVolt is in range  <4.6, 5.0V>, I'm considering a situation with the old fsensor
-				//! Note, we are not relying on one voltage here - getting just +5V can mean an old fsensor or a broken new sensor - that's why
-				//! we need to have both voltages detected correctly to allow switching back to the old fsensor.
-				else if( minVolt < IRsensor_Ldiode_TRESHOLD 
-				 && maxVolt > IRsensor_Hopen_TRESHOLD && maxVolt <= IRsensor_VMax_TRESHOLD
-				){
-					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Rev04, oFsensorPCB=ClFsensorPCB::_Old, _i("FS v0.3 or older")); ////MSG_FS_V_03_OR_OLDER c=18
-				}
-#endif // IR_SENSOR_ANALOG
-				if (fsensor_check_autoload())
-				{
-#ifdef PAT9125
-					fsensor_autoload_check_stop();
-#endif //PAT9125
-//-//					if (degHotend0() > EXTRUDE_MINTEMP)
-if(0)
-					{
-						Sound_MakeCustom(50,1000,false);
-						loading_flag = true;
-						enquecommand_front_P((PSTR("M701")));
-					}
-					else
-					{
-/*
-						lcd_update_enable(false);
-						show_preheat_nozzle_warning();
-						lcd_update_enable(true);
-*/
-						eFilamentAction=FilamentAction::AutoLoad;
-						bFilamentFirstRun=false;
-						if(target_temperature[0]>=EXTRUDE_MINTEMP){
-							bFilamentPreheatState=true;
-//							mFilamentItem(target_temperature[0],target_temperature_bed);
-							menu_submenu(mFilamentItemForce);
-						} else {
-							menu_submenu(lcd_generic_preheat_menu);
-							lcd_timeoutToStatus.start();
-						}
-					}
-				}
-			}
-			else
-			{
-#ifdef PAT9125
-				fsensor_autoload_check_stop();
-#endif //PAT9125
-                if (fsensor_enabled && !saved_printing)
-                    fsensor_update();
-			}
-		}
-	}
-#endif //FILAMENT_SENSOR
+    if (fsensor.update()) {
+        lcd_draw_update = 1; //cause lcd update so that fsensor event polling can be done from the lcd draw routine.
+    }
+#endif
 
 #ifdef SAFETYTIMER
 	handleSafetyTimer();
@@ -11969,46 +11662,23 @@ void M600_load_filament() {
 	//load_filament_time = _millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-#ifdef PAT9125
-	fsensor_autoload_check_start();
-#endif //PAT9125
 	while(!lcd_clicked())
 	{
 		manage_heater();
 		manage_inactivity(true);
 #ifdef FILAMENT_SENSOR
-		if (fsensor_check_autoload())
-		{
-      Sound_MakeCustom(50,1000,false);
+		if (fsensor.getFilamentLoadEvent()) {
+			Sound_MakeCustom(50,1000,false);
 			break;
 		}
 #endif //FILAMENT_SENSOR
 	}
-#ifdef PAT9125
-	fsensor_autoload_check_stop();
-#endif //PAT9125
 	KEEPALIVE_STATE(IN_HANDLER);
-
-#ifdef FSENSOR_QUALITY
-	fsensor_oq_meassure_start(70);
-#endif //FSENSOR_QUALITY
 
 	M600_load_filament_movements();
 
-      Sound_MakeCustom(50,1000,false);
+	Sound_MakeCustom(50,1000,false);
 
-#ifdef FSENSOR_QUALITY
-	fsensor_oq_meassure_stop();
-
-	if (!fsensor_oq_result())
-	{
-		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
-		lcd_update_enable(true);
-		lcd_update(2);
-		if (disable)
-			fsensor_disable();
-	}
-#endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
 }
 

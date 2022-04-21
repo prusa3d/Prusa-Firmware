@@ -87,9 +87,4 @@ void microstep_readings();
   void babystep(const uint8_t axis,const bool direction); // perform a short step with a single stepper motor, outside of any convention
 #endif
 
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-// reset the internal filament sensor state
-void st_reset_fsensor();
-#endif
-
 #endif

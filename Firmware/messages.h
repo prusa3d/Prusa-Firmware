@@ -48,7 +48,9 @@ extern const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[];
 extern const char MSG_FINISHING_MOVEMENTS[];
 extern const char MSG_FOLLOW_CALIBRATION_FLOW[];
 extern const char MSG_FOLLOW_Z_CALIBRATION_FLOW[];
+extern const char MSG_FSENSOR_RUNOUT[];
 extern const char MSG_FSENSOR_AUTOLOAD[];
+extern const char MSG_FSENSOR_JAM_DETECTION[];
 extern const char MSG_FSENSOR[];
 extern const char MSG_HEATING[];
 extern const char MSG_HEATING_COMPLETE[];
@@ -165,11 +167,11 @@ extern const char MSG_TIMEOUT[];
 extern const char MSG_BRIGHT[];
 extern const char MSG_DIM[];
 extern const char MSG_AUTO[];
-#ifdef IR_SENSOR_ANALOG
+extern const char MSG_FS_V_03_OR_OLDER[];
+extern const char MSG_FS_V_04_OR_NEWER[];
 extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];
 extern const char MSG_IR_UNKNOWN[];
-#endif
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
