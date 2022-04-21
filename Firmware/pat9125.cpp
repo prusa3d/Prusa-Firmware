@@ -46,27 +46,26 @@ uint8_t pat9125_s = 0;
 
 
 // Init sequence, address & value.
-const PROGMEM uint8_t pat9125_init_seq1[] = {
+const PROGMEM uint8_t pat9125_init_bank0[] = {
 	// Disable write protect.
 	PAT9125_WP, 0x5a,
 	// Set the X resolution to zero to let the sensor know that it could safely ignore movement in the X axis.
-    PAT9125_RES_X, PAT9125_XRES,
-    // Set the Y resolution to a maximum (or nearly a maximum).
-    PAT9125_RES_Y, PAT9125_YRES,
-    // Set 12-bit X/Y data format.
-    PAT9125_ORIENTATION, 0x04,
-//	PAT9125_ORIENTATION, 0x04 | (xinv?0x08:0) | (yinv?0x10:0), //!? direction switching does not work
-    // Now continues the magic sequence from the PAT912EL Application Note: Firmware Guides for Tracking Optimization.
-    0x5e, 0x08,
-    0x20, 0x64,
-    0x2b, 0x6d,
-    0x32, 0x2f,
-    // stopper
-    0x0ff
+	PAT9125_RES_X, PAT9125_XRES,
+	// Set the Y resolution to a maximum (or nearly a maximum).
+	PAT9125_RES_Y, PAT9125_YRES,
+	// Set data format and sensor orientation.
+	PAT9125_ORIENTATION, ((PAT9125_12B_RES?0x04:0) | (PAT9125_INVERT_X?0x08:0) | (PAT9125_INVERT_Y?0x10:0) | (PAT9125_SWAP_XY?0x20:0)),
+	
+	// Now continues the magic sequence from the PAT912EL Application Note: Firmware Guides for Tracking Optimization.
+	0x5e, 0x08,
+	0x20, 0x64,
+	0x2b, 0x6d,
+	0x32, 0x2f,
+	0xff //end of sequence
 };
 
 // Init sequence, address & value.
-const PROGMEM uint8_t pat9125_init_seq2[] = {
+const PROGMEM uint8_t pat9125_init_bank1[] = {
 	// Magic sequence to enforce full frame rate of the sensor.
 	0x06, 0x028,
 	0x33, 0x0d0,
@@ -93,14 +92,14 @@ const PROGMEM uint8_t pat9125_init_seq2[] = {
 	0x6e, 0x022,
 	0x71, 0x007,
 	0x72, 0x008,
-	// stopper
-    0x0ff
+	0xff //end of sequence
 };
 
 
-uint8_t pat9125_rd_reg(uint8_t addr);
-void pat9125_wr_reg(uint8_t addr, uint8_t data);
-uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data);
+static uint8_t pat9125_rd_reg(uint8_t addr);
+static void pat9125_wr_reg(uint8_t addr, uint8_t data);
+static uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data);
+static uint8_t pat9125_wr_seq(const uint8_t* seq);
 
 extern FILE _uartout;
 #define uartout (&_uartout)
@@ -113,26 +112,23 @@ uint8_t pat9125_probe()
   #error not implemented
 #elif defined(PAT9125_SWI2C)
     swi2c_init();
-    return swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
+    return swi2c_check(PAT9125_I2C_ADDR) == 0;
 #elif defined(PAT9125_I2C)
     twi_init();
-  #ifdef IR_SENSOR
-    // NOTE: this is called from the MK3S variant, so it should be kept minimal
-    uint8_t data;
-    return (twi_r8(PAT9125_I2C_ADDR,PAT9125_PID1,&data) == 0);
-  #else
-    return (pat9125_rd_reg(PAT9125_PID1) != 0);
-  #endif
+    return twi_check(PAT9125_I2C_ADDR) == 0;
 #endif
 }
 
 uint8_t pat9125_init(void)
 {
-    if (!pat9125_probe())
-        return 0;
+	if (!pat9125_probe())
+		return 0;
 
-    // Verify that the sensor responds with its correct product ID.
-    pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
+// Switch to bank0, not allowed to perform pat9125_wr_reg_verify on this register.
+	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0);
+
+	// Verify that the sensor responds with its correct product ID.
+	pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
 	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
 	if ((pat9125_PID1 != 0x31) || (pat9125_PID2 != 0x91))
 	{
@@ -142,54 +138,49 @@ uint8_t pat9125_init(void)
 			return 0;
 	}
 
-#ifdef PAT9125_NEW_INIT
-	// Switch to bank0, not allowed to perform OTS_RegWriteRead.
-	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0);
+#if PAT9125_NEW_INIT
 	// Software reset (i.e. set bit7 to 1). It will reset to 0 automatically.
-	// After the reset, OTS_RegWriteRead is not allowed.
+	// pat9125_wr_reg_verify is not allowed because the register contents will change as soon as they are written. No point in verifying those.
 	pat9125_wr_reg(PAT9125_CONFIG, 0x97);
 	// Wait until the sensor reboots.
-	// Delay 1ms.
-	_delay_us(1000);
-	{
-		const uint8_t *ptr = pat9125_init_seq1;
-		for (;;) {
-			const uint8_t addr = pgm_read_byte_near(ptr ++);
-			if (addr == 0x0ff)
-				break;
-			if (! pat9125_wr_reg_verify(addr, pgm_read_byte_near(ptr ++)))
-				// Verification of the register write failed.
-				return 0;
-		}
-	}
-	// Delay 10ms.
-	_delay_ms(10);
-	// Switch to bank1, not allowed to perform OTS_RegWrite.
+	_delay_ms(1);
+	
+	//Write init sequence in bank0. MUST ALREADY BE IN bank0.
+	if (!pat9125_wr_seq(pat9125_init_bank0))
+		return 0;
+	
+	_delay_ms(10); // not sure why this is here. But I'll allow it.
+	
+	// Switch to bank1, not allowed to perform pat9125_wr_reg_verify on this register.
 	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0x01);
-	{
-		const uint8_t *ptr = pat9125_init_seq2;
-		for (;;) {
-			const uint8_t addr = pgm_read_byte_near(ptr ++);
-			if (addr == 0x0ff)
-				break;
-			if (! pat9125_wr_reg_verify(addr, pgm_read_byte_near(ptr ++)))
-				// Verification of the register write failed.
-				return 0;
-		}
-	}
-	// Switch to bank0, not allowed to perform OTS_RegWriteRead.
+	//Write init sequence in bank1. MUST ALREADY BE IN bank1.
+	if (!pat9125_wr_seq(pat9125_init_bank1))
+		return 0;
+	
+	// Switch to bank0, not allowed to perform pat9125_wr_reg_verify on this register.
 	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0x00);
+	
 	// Enable write protect.
-	pat9125_wr_reg(PAT9125_WP, 0x00);
+	pat9125_wr_reg(PAT9125_WP, 0x00); //prevents writing to registers over 0x09
 
 	pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
 	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
-#endif //PAT9125_NEW_INIT
 
+#else //PAT9125_NEW_INIT
+	// Disable write protect.
+	pat9125_wr_reg(PAT9125_WP, 0x5a); //allows writing to all registers
+	
 	pat9125_wr_reg(PAT9125_RES_X, PAT9125_XRES);
 	pat9125_wr_reg(PAT9125_RES_Y, PAT9125_YRES);
-	fprintf_P(uartout, PSTR("PAT9125_RES_X=%u\n"), pat9125_rd_reg(PAT9125_RES_X));
-	fprintf_P(uartout, PSTR("PAT9125_RES_Y=%u\n"), pat9125_rd_reg(PAT9125_RES_Y));
+	printf_P(PSTR("PAT9125_RES_X=%u\n"), pat9125_rd_reg(PAT9125_RES_X));
+	printf_P(PSTR("PAT9125_RES_Y=%u\n"), pat9125_rd_reg(PAT9125_RES_Y));
+	
+	pat9125_wr_reg(PAT9125_ORIENTATION, ((PAT9125_12B_RES?0x04:0) | (PAT9125_INVERT_X?0x08:0) | (PAT9125_INVERT_Y?0x10:0) | (PAT9125_SWAP_XY?0x20:0)));
+	
+	// Enable write protect.
+	pat9125_wr_reg(PAT9125_WP, 0x00); //prevents writing to registers over 0x09
+#endif //PAT9125_NEW_INIT
+
 	return 1;
 }
 
@@ -212,7 +203,7 @@ uint8_t pat9125_update(void)
 			if (iDX & 0x800) iDX -= 4096;
 			if (iDY & 0x800) iDY -= 4096;
 			pat9125_x += iDX;
-			pat9125_y -= iDY; //negative number, because direction switching does not work
+			pat9125_y += iDY;
 		}
 		return 1;
 	}
@@ -232,7 +223,7 @@ uint8_t pat9125_update_y(void)
 			if (pat9125_PID1 == 0xff) return 0;
 			int16_t iDY = ucYL | ((ucXYH << 8) & 0xf00);
 			if (iDY & 0x800) iDY -= 4096;
-			pat9125_y -= iDY; //negative number, because direction switching does not work
+			pat9125_y += iDY;
 		}
 		return 1;
 	}
@@ -251,7 +242,7 @@ uint8_t pat9125_update_bs(void)
 	return 0;
 }
 
-uint8_t pat9125_rd_reg(uint8_t addr)
+static uint8_t pat9125_rd_reg(uint8_t addr)
 {
 	uint8_t data = 0;
 #if defined(PAT9125_SWSPI)
@@ -274,7 +265,7 @@ uint8_t pat9125_rd_reg(uint8_t addr)
     return 0;
 }
 
-void pat9125_wr_reg(uint8_t addr, uint8_t data)
+static void pat9125_wr_reg(uint8_t addr, uint8_t data)
 {
 #if defined(PAT9125_SWSPI)
 	swspi_start();
@@ -296,8 +287,21 @@ void pat9125_wr_reg(uint8_t addr, uint8_t data)
     return;
 }
 
-uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data)
+static uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data)
 {
 	pat9125_wr_reg(addr, data);
 	return pat9125_rd_reg(addr) == data;
+}
+
+static uint8_t pat9125_wr_seq(const uint8_t* seq)
+{
+	for (;;) {
+		const uint8_t addr = pgm_read_byte(seq++);
+		if (addr == 0xff)
+			break;
+		if (!pat9125_wr_reg_verify(addr, pgm_read_byte(seq++)))
+			// Verification of the register write failed.
+			return 0;
+	}
+	return 1;
 }
