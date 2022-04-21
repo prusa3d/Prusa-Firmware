@@ -7573,8 +7573,7 @@ void menu_lcd_longpress_func(void)
 	backlight_wake();
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE)
     {
-        // disable longpress during re-entry, while homing, calibration or if a serious error
-        lcd_quick_feedback();
+        // disable longpress during re-entry, while homing or calibration
         return;
     }
     if (menu_menu == lcd_hw_setup_menu)
