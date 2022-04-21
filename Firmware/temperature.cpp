@@ -88,9 +88,6 @@ float current_temperature_bed = 0.0;
   float _Kp, _Ki, _Kd;
   int pid_cycle, pid_number_of_cycles;
   bool pid_tuning_finished = false;
-  #ifdef PID_ADD_EXTRUSION_RATE
-    float Kc=DEFAULT_Kc;
-  #endif
 #endif //PIDTEMP
   
 #ifdef FAN_SOFT_PWM

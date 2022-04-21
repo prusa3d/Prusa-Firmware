@@ -91,15 +91,11 @@ extern bool bedPWMDisabled;
 #ifdef PIDTEMP
   extern int pid_cycle, pid_number_of_cycles;
   extern float _Kp,_Ki,_Kd;
-#ifdef PID_ADD_EXTRUSION_RATE
-  extern float Kc;
-#endif
   extern bool pid_tuning_finished;
   float scalePID_i(float i);
   float scalePID_d(float d);
   float unscalePID_i(float i);
   float unscalePID_d(float d);
-
 #endif
 
 
