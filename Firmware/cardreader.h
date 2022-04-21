@@ -133,8 +133,6 @@ private:
   ShortTimer autostart_atmillis;
   uint32_t sdpos ;
 
-  bool autostart_stilltocheck; //the sd start is delayed, because otherwise the serial cannot answer fast enought to make contact with the hostsoftware.
-  
   uint16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
 
   bool diveSubfolder (const char *&fileName);
