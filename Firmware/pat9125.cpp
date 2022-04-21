@@ -186,6 +186,17 @@ uint8_t pat9125_init(void)
 	return 1;
 }
 
+void pat9125_deinit(void)
+{
+#if defined(PAT9125_SWSPI)
+	#error not implemented
+#elif defined(PAT9125_SWI2C)
+	swi2c_disable();
+#elif defined(PAT9125_I2C)
+	twi_disable();
+#endif
+}
+
 uint8_t pat9125_update(void)
 {
 	if ((pat9125_PID1 == 0x31) && (pat9125_PID2 == 0x91))

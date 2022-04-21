@@ -243,7 +243,9 @@ public:
     
 #ifdef FSENSOR_PROBING
     bool probeOtherType() {
-        return pat9125_probe();
+        bool fsensorDetected = pat9125_probe();
+        pat9125_deinit();
+        return fsensorDetected;
     }
 #endif
     
@@ -484,7 +486,7 @@ public:
     
     void deinit() {
         puts_P(PSTR("fsensor::deinit()"));
-        ;//
+        pat9125_deinit();
         state = State::disabled;
         filter = 0;
     }
