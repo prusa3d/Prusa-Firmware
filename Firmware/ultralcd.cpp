@@ -7579,8 +7579,8 @@ void menu_lcd_longpress_func(void)
     if (menu_menu == lcd_hw_setup_menu)
     {
         // only toggle the experimental menu visibility flag
-        lcd_quick_feedback();
         lcd_experimental_toggle();
+        lcd_draw_update = 2;
         return;
     }
 
