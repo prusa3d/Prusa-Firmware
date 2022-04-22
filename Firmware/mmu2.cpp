@@ -312,7 +312,7 @@ bool MMU2::load_filament(uint8_t index) {
 
 struct LoadingToNozzleRAII {
     MMU2 &mmu2;
-    inline LoadingToNozzleRAII(MMU2 &mmu2):mmu2(mmu2){
+    explicit inline LoadingToNozzleRAII(MMU2 &mmu2):mmu2(mmu2){
         mmu2.loadingToNozzle = true;
     }
     inline ~LoadingToNozzleRAII(){
