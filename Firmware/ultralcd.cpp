@@ -1687,11 +1687,10 @@ static void lcd_support_menu()
 		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17
 		if (((menu_item - 1) == menu_line) && lcd_draw_update)
 		{
-		    lcd_set_cursor(6, menu_row);
-            uint8_t mmu_version = 200; // @@TODO
-            uint8_t mmu_buildnr = 0;
-			if ((mmu_version > 0) && (mmu_buildnr > 0))
-				lcd_printf_P(PSTR("%d.%d.%d-%d"), mmu_version/100, mmu_version%100/10, mmu_version%10, mmu_buildnr);
+			lcd_set_cursor(6, menu_row);
+			MMU2::Version mmu_version = MMU2::mmu2.GetMMUFWVersion();
+			if ((mmu_version.major > 0) && (mmu_version.build > 0))
+				lcd_printf_P(PSTR("%d.%d.%d"), mmu_version.major, mmu_version.minor, mmu_version.build);
 			else
 				lcd_puts_P(_i("unknown"));  ////MSG_UNKNOWN c=13
 		}
@@ -7108,12 +7107,10 @@ static bool selftest_irsensor()
     {
         TempBackup tempBackup;
         setTargetHotend(ABS_PREHEAT_HOTEND_TEMP,active_extruder);
-//@@TODO        mmu_wait_for_heater_blocking();
         progress = lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
-//@@TODO        mmu_filament_ramming();
     }
     progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
-    MMU2::mmu2.unload(); // mmu_command(MmuCmd::U0); manage_response(false, false);
+    MMU2::mmu2.unload();
 
     for(uint_least8_t i = 0; i < 200; ++i)
     {
