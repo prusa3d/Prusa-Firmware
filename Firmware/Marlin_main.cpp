@@ -3465,6 +3465,64 @@ static T gcode_M600_filament_change_z_shift()
 #endif
 }
 
+static void mmu_M600_wait_and_beep() {
+    // Beep and wait for user to remove old filament and prepare new filament for load
+    KEEPALIVE_STATE(PAUSED_FOR_USER);
+
+    int counterBeep = 0;
+    lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
+    bool bFirst = true;
+
+    while (!lcd_clicked()) {
+        manage_heater();
+        manage_inactivity(true);
+
+#if BEEPER > 0
+        if (counterBeep == 500) {
+            counterBeep = 0;
+        }
+        SET_OUTPUT(BEEPER);
+        if (counterBeep == 0) {
+            if ((eSoundMode == e_SOUND_MODE_BLIND) || (eSoundMode == e_SOUND_MODE_LOUD) || ((eSoundMode == e_SOUND_MODE_ONCE) && bFirst)) {
+                bFirst = false;
+                WRITE(BEEPER, HIGH);
+            }
+        }
+        if (counterBeep == 20) {
+            WRITE(BEEPER, LOW);
+        }
+
+        counterBeep++;
+#endif // BEEPER > 0
+
+        delay_keep_alive(4);
+    }
+    WRITE(BEEPER, LOW);
+}
+
+/// @brief load filament for mmu v2
+/// @par nozzle_temp nozzle temperature to load filament
+void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
+    uint8_t tmp_extruder = MMU2::mmu2.get_current_tool();
+    if (automatic) {
+        tmp_extruder = ad_getAlternative(tmp_extruder);
+    }
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
+    lcd_print(' ');
+    lcd_print(tmp_extruder + 1);
+
+    // printf_P(PSTR("T code: %d \n"), tmp_extruder);
+    // mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
+    setTargetHotend(nozzle_temp, active_extruder);
+
+    MMU2::mmu2.load_filament_to_nozzle(tmp_extruder);
+
+    load_filament_final_feed(); // @@TODO verify
+    st_synchronize();
+}
+
 static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/) {
     st_synchronize();
     float lastpos[4];
@@ -3539,17 +3597,15 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
                 MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
             }
-//@@TODO            mmu_M600_wait_and_beep();
+            mmu_M600_wait_and_beep();
             if (saved_printing) {
-
                 lcd_clear();
                 lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
-
 //@@TODO                mmu_command(MmuCmd::R0);
 //                manage_response(false, false);
             }
         }
-//@@TODO        mmu_M600_load_filament(automatic, HotendTempBckp);
+        mmu_M600_load_filament(automatic, HotendTempBckp);
     } else
         M600_load_filament();
 
