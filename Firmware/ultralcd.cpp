@@ -1072,12 +1072,6 @@ void lcd_pause_print()
     SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
 }
 
-//! @brief Send host action "pause"
-void lcd_pause_usb_print()
-{
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
-}
-
 static void lcd_move_menu_axis();
 
 
@@ -5691,12 +5685,6 @@ void lcd_resume_print()
     custom_message_type = CustomMsg::Status;
 }
 
-//! @brief Resume paused USB/host print, send host action "resume"
-void lcd_resume_usb_print()
-{
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUME); //resume octoprint
-}
-
 static void change_sheet()
 {
 	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
@@ -5867,11 +5855,7 @@ static void lcd_main_menu()
     }
 
     if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused) {
-        if (usb_timer.running()) {
-            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);////MSG_PAUSE_PRINT c=18
-        } else if (IS_SD_PRINTING) {
-            MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);////MSG_PAUSE_PRINT c=18
-        }
+        MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);////MSG_PAUSE_PRINT c=18
     }
     if(isPrintPaused)
     {
@@ -5879,11 +5863,7 @@ static void lcd_main_menu()
         if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
 #endif //FANCHECK
         {
-            if (usb_timer.running()) {
-                MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);////MSG_RESUME_PRINT c=18
-            } else {
-                MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
-            }
+            MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);////MSG_RESUME_PRINT c=18
         }
     }
     if((IS_SD_PRINTING || usb_timer.running() || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling)) {

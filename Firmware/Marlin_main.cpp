@@ -4218,10 +4218,7 @@ void process_commands()
 #ifdef FANCHECK
     if(fan_check_error == EFCE_DETECTED) {
         fan_check_error = EFCE_REPORTED;
-        if (usb_timer.running())
-            lcd_pause_usb_print();
-        else
-            lcd_pause_print();
+        lcd_pause_print();
     }
 #endif
 
