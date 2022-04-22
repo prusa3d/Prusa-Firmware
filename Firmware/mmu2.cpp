@@ -98,6 +98,11 @@ MMU2::MMU2()
 }
 
 void MMU2::Start() {
+#ifdef MMU_HWRESET
+    WRITE(MMU_RST_PIN, 1);
+    SET_OUTPUT(MMU_RST_PIN); // setup reset pin
+#endif //MMU_HWRESET
+
     mmu2Serial.begin(MMU_BAUD);
 
     PowerOn();
