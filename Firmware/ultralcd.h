@@ -122,7 +122,8 @@ enum class CustomMsg : uint_least8_t
     TempCompPreheat, //!< Temperature compensation preheat
     M0Wait,          //!< M0/M1 Wait command working even from SD
     M117,            //!< M117 Set the status line message on the LCD
-    Resuming,        //!< Resuming message
+    Resuming,       //!< Resuming message
+    MMUProgress,     ///< MMU progress message
 };
 
 extern CustomMsg custom_message_type;

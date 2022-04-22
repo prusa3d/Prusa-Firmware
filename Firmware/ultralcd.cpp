@@ -548,8 +548,7 @@ void lcdui_print_time(void)
 }
 
 //! @Brief Print status line on status screen
-void lcdui_print_status_line(void)
-{
+void lcdui_print_status_line(void) {
     if (heating_status != HeatingStatus::NO_HEATING) { // If heating flag, show progress of heating
         heating_status_counter++;
         if (heating_status_counter > 13) {
@@ -614,24 +613,23 @@ void lcdui_print_status_line(void)
         case CustomMsg::Status: // Nothing special, print status message normally
         case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
             lcd_print(lcd_status_message);
-        break;
+            break;
         case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
             if (custom_message_state > 10) {
                 lcd_set_cursor(0, 3);
                 lcd_space(LCD_WIDTH);
                 lcd_puts_at_P(0, 3, _T(MSG_CALIBRATE_Z_AUTO));
                 lcd_puts_P(PSTR(" : "));
-                lcd_print(custom_message_state-10);
+                lcd_print(custom_message_state - 10);
             } else {
-                if (custom_message_state == 3)
-                {
+                if (custom_message_state == 3) {
                     lcd_setstatuspgm(MSG_WELCOME);
                     custom_message_type = CustomMsg::Status;
                 }
-                if (custom_message_state > 3 && custom_message_state <= 10 ) {
+                if (custom_message_state > 3 && custom_message_state <= 10) {
                     lcd_set_cursor(0, 3);
                     lcd_space(19);
-                    lcd_puts_at_P(0, 3, _i("Calibration done"));////MSG_HOMEYZ_DONE c=20
+                    lcd_puts_at_P(0, 3, _i("Calibration done")); ////MSG_HOMEYZ_DONE c=20
                     custom_message_state--;
                 }
             }
@@ -652,23 +650,26 @@ void lcdui_print_status_line(void)
             lcd_set_cursor(0, 3);
             lcd_printf_P(PSTR("%-12.12S%-d/6"), _T(MSG_PINDA_CALIBRATION), custom_message_state);
             break;
-        case CustomMsg::TempCompPreheat: // temp compensation preheat
-            lcd_puts_at_P(0, 3, _i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20
+        case CustomMsg::TempCompPreheat:              // temp compensation preheat
+            lcd_puts_at_P(0, 3, _i("PINDA Heating")); ////MSG_PINDA_PREHEAT c=20
             if (custom_message_state <= PINDA_HEAT_T) {
                 lcd_puts_P(PSTR(": "));
-                lcd_print(custom_message_state); //seconds
+                lcd_print(custom_message_state); // seconds
                 lcd_print(' ');
             }
             break;
-        case CustomMsg::Resuming: //Resuming
+        case CustomMsg::Resuming: // Resuming
             lcd_puts_at_P(0, 3, _T(MSG_RESUMING_PRINT));
+            break;
+        case CustomMsg::MMUProgress:
+            // set up at mmu2_reporting.cpp, just do nothing here
             break;
         }
     }
 
     // Fill the rest of line to have nice and clean output
-    for(uint8_t fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
-        if ((lcd_status_message[fillspace] <= 31 ))
+    for (uint8_t fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
+        if ((lcd_status_message[fillspace] <= 31))
             lcd_print(' ');
 }
 
