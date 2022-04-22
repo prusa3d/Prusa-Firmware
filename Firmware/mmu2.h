@@ -17,6 +17,10 @@ enum : uint8_t {
     FILAMENT_UNKNOWN = 0xffU
 };
 
+struct Version {
+    uint8_t major, minor, build;
+};
+
 /// Top-level interface between Logic and Marlin.
 /// Intentionally named MMU2 to be (almost) a drop-in replacement for the previous implementation.
 /// Most of the public methods share the original naming convention as well.
@@ -115,6 +119,16 @@ public:
 
     /// @returns current state of FINDA (true=filament present, false=filament not present)
     inline bool FindaDetectsFilament()const { return logic.FindaPressed(); }
+    
+    /// @returns the version of the connected MMU FW.
+    /// In the future we'll return the trully detected FW version
+    Version GetMMUFWVersion()const {
+        if( State() == xState::Active ){
+            return { 2, 0, 0 };
+        } else {
+            return { 0, 0, 0}; 
+        }
+    }
     
 private:
     /// Perform software self-reset of the MMU (sends an X0 command)
