@@ -636,10 +636,10 @@ void MMU2::ReportProgress(ProgressCode pc) {
     
     // Log progress - example: MMU2:P=123 EngageIdler
     char msg[64];
-    snprintf(msg, sizeof(msg), "MMU2:P=%hu", (uint16_t)pc);
+    int len = snprintf(msg, sizeof(msg), "MMU2:P=%hu", (uint16_t)pc);
     // Append a human readable form of the progress code
-    TranslateProgress((uint16_t)pc, msg, sizeof(msg));
-    
+    TranslateProgress((uint16_t)pc, &msg[len], 64 - len);
+
     SERIAL_ECHO_START;
     SERIAL_ECHOLN(msg);
 }
