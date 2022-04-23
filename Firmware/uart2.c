@@ -12,7 +12,7 @@
 #define uart2_txcomplete (UCSR2A & (1 << TXC2))
 #define uart2_txready    (UCSR2A & (1 << UDRE2))
 
-uint8_t uart2_ibuf[14] = {0, 0};
+uint8_t uart2_ibuf[20] = {0, 0};
 
 FILE _uart2io = {0};
 
