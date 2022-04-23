@@ -62,7 +62,8 @@ static const char * const progressTexts[] PROGMEM = {
 };
 
 const char * const ProgressCodeToText(uint16_t pc){
-    return ( pc <= 26 ) ? progressTexts[pc] : progressTexts[0]; // @@TODO ?? a better fallback option?
+    // @@TODO ?? a better fallback option?
+    return ( pc <= 26 ) ? static_cast<const char * const>(pgm_read_ptr(&progressTexts[pc])) : static_cast<const char * const>(pgm_read_ptr(&progressTexts[0]));
 }
 
 void TranslateProgress(uint16_t pc, char *dst, size_t dstSize) { 
