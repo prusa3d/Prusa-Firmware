@@ -129,7 +129,10 @@ public:
             return { 0, 0, 0}; 
         }
     }
-    
+
+    /// Method to read-only mmu_print_saved
+    bool MMU_PRINT_SAVED() const { return mmu_print_saved; }
+
 private:
     /// Perform software self-reset of the MMU (sends an X0 command)
     void ResetX0();

@@ -344,7 +344,7 @@ void ProtocolLogic::PlanGenericRequest(RequestMsg rq) {
     } // otherwise wait for an empty window to activate the request
 }
 
-bool MMU2::ProtocolLogic::ActivatePlannedRequest(){
+bool ProtocolLogic::ActivatePlannedRequest(){
     if( plannedRq.code == RequestMsgCodes::Button ){
         // only issue the button to the MMU and do not restart the state machines
         command.SendButton(plannedRq.value);
@@ -466,7 +466,7 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size){
     memcpy(lastMsg, tmp, rqs);
 }
 
-void MMU2::ProtocolLogic::LogError(const char *reason){
+void ProtocolLogic::LogError(const char *reason){
     char lrb[lastReceivedBytes.size() * 3];
     FormatLastReceivedBytes(lrb);
     
@@ -482,7 +482,7 @@ void ProtocolLogic::LogResponse(){
     SERIAL_ECHOLN();
 }
 
-StepStatus MMU2::ProtocolLogic::HandleCommError(const char *msg, StepStatus ss){
+StepStatus ProtocolLogic::HandleCommError(const char *msg, StepStatus ss){
     protocol.ResetResponseDecoder();
     HandleCommunicationTimeout();
     if( dataTO.Record(ss) ){

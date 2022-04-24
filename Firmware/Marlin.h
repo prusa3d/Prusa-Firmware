@@ -21,6 +21,7 @@
 #include "Configuration.h"
 #include "pins.h"
 #include "Timer.h"
+#include "mmu2.h"
 extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
