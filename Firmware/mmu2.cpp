@@ -608,13 +608,13 @@ void MMU2::ReportError(ErrorCode ec) {
     if( ec != lastErrorCode ){ // deduplicate: only report changes in error codes into the log
         lastErrorCode = ec;
 
-        // Log error format: MMU2:E=32766 TextDescription
+        // Log error format: MMU2:E=32766 ErrorTitle TextDescription
 
         // The longest error description in errors_list.h is 144 bytes.
         // and the longest error title is 20 bytes. msg buffer needs
         // to have enough space to fit both.
         char msg[192];
-        int len = snprintf(msg, sizeof(msg), "MMU2:E=%hu", (uint16_t)ec);
+        int len = snprintf(msg, sizeof(msg), "MMU2:E=%hu ", (uint16_t)ec);
         // Append a human readable form of the error code(s)
         TranslateErr((uint16_t)ec, &msg[len], 192 - len);
 
