@@ -21,6 +21,7 @@
 #include "Configuration.h"
 #include "pins.h"
 #include "Timer.h"
+#include "mmu2.h"
 extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
@@ -364,9 +365,6 @@ extern uint8_t saved_printing_type;
 #define PRINTING_TYPE_USB 1
 #define PRINTING_TYPE_NONE 2
 
-//save/restore printing in case that mmu is not responding
-extern bool mmu_print_saved;
-
 //estimated time to end of the print
 extern uint8_t print_percent_done_normal;
 extern uint8_t print_percent_done_silent;
@@ -383,7 +381,7 @@ extern uint16_t gcode_in_progress;
 extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT 0xff
-#define PRINTER_ACTIVE (IS_SD_PRINTING || usb_timer.running() || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || mmu_print_saved || homing_flag || mesh_bed_leveling_flag)
+#define PRINTER_ACTIVE (IS_SD_PRINTING || usb_timer.running() || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || MMU2::mmu2.MMU_PRINT_SAVED() || homing_flag || mesh_bed_leveling_flag)
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
