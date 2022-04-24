@@ -295,9 +295,6 @@ float saved_start_position[NUM_AXIS] = {SAVED_START_POSITION_UNSET, 0, 0, 0};
 
 uint16_t saved_segment_idx = 0;
 
-// save/restore printing in case that mmu was not responding 
-bool mmu_print_saved = false;
-
 // storing estimated time to end of print counted by slicer
 uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
