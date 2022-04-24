@@ -609,10 +609,14 @@ void MMU2::ReportError(ErrorCode ec) {
         lastErrorCode = ec;
 
         // Log error format: MMU2:E=32766 TextDescription
-        char msg[64];
-        snprintf(msg, sizeof(msg), "MMU2:E=%hu", (uint16_t)ec);
+
+        // The longest error description in errors_list.h is 144 bytes.
+        // and the longest error title is 20 bytes. msg buffer needs
+        // to have enough space to fit both.
+        char msg[192];
+        int len = snprintf(msg, sizeof(msg), "MMU2:E=%hu", (uint16_t)ec);
         // Append a human readable form of the error code(s)
-        TranslateErr((uint16_t)ec, msg, sizeof(msg));
+        TranslateErr((uint16_t)ec, &msg[len], 192 - len);
 
         // beware - the prefix in the message ("MMU2") will get stripped by the logging subsystem
         // and a correct MMU2 component will be assigned accordingly - see appmain.cpp
@@ -620,7 +624,7 @@ void MMU2::ReportError(ErrorCode ec) {
         SERIAL_ECHO_START;
         SERIAL_ECHOLN(msg);
     }
-    
+
     static_assert(mmu2Magic[0] == 'M' 
         && mmu2Magic[1] == 'M' 
         && mmu2Magic[2] == 'U' 
