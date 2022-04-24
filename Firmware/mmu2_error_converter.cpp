@@ -92,9 +92,8 @@ void TranslateErr(uint16_t ec, char *dst, size_t dstSize) {
     uint16_t ei = MMUErrorCodeIndex(ec);
     // just to prevent the compiler from stripping the data structures from the final binary for now
     *dst = errorButtons[ei];
-    strncpy_P(dst + 1, errorTitles[ei], dstSize);
-    strncat_P(dst, errorDescs[ei], dstSize);
-    
+    strncpy_P(dst + 1, static_cast<const char * const>(pgm_read_ptr(&errorTitles[ei])), dstSize);
+    strncat_P(dst, static_cast<const char * const>(pgm_read_ptr(&errorDescs[ei])), dstSize);
 }
 
 } // namespace MMU2
