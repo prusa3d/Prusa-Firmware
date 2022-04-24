@@ -5854,7 +5854,7 @@ static void lcd_main_menu()
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
     }
 
-    if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused) {
+    if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused && (usb_timer.running() || IS_SD_PRINTING)) {
         MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_print);////MSG_PAUSE_PRINT c=18
     }
     if(isPrintPaused)
