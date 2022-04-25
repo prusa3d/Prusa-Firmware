@@ -283,11 +283,11 @@ bool Config_RetrieveSettings()
             }
         }
         // Initialize arc interpolation settings if they are not already (Not sure about this bit, please review)
-        if (is_uninitialized(cs.mm_per_arc_segment, sizeof(float))) cs.mm_per_arc_segment = DEFAULT_MM_PER_ARC_SEGMENT;
-        if (is_uninitialized(cs.min_mm_per_arc_segment, sizeof(float))) cs.min_mm_per_arc_segment = DEFAULT_MIN_MM_PER_ARC_SEGMENT;
-        if (is_uninitialized(cs.n_arc_correction), sizeof(uint8_t)) cs.n_arc_correction = DEFAULT_N_ARC_CORRECTION;
-        if (is_uninitialized(cs.min_arc_segments, sizeof(uint16_t))) cs.min_arc_segments = DEFAULT_MIN_ARC_SEGMENTS;
-        if (is_uninitialized(cs.arc_segments_per_sec, sizeof(uint16_t))) cs.arc_segments_per_sec = DEFAULT_ARC_SEGMENTS_PER_SEC;
+        if (is_uninitialized(&cs.mm_per_arc_segment, sizeof(cs.mm_per_arc_segment))) cs.mm_per_arc_segment = default_conf.mm_per_arc_segment;
+        if (is_uninitialized(&cs.min_mm_per_arc_segment, sizeof(cs.min_mm_per_arc_segment))) cs.min_mm_per_arc_segment = default_conf.min_mm_per_arc_segment;
+        if (is_uninitialized(&cs.n_arc_correction, sizeof(cs.n_arc_correction))) cs.n_arc_correction = default_conf.n_arc_correction;
+        if (is_uninitialized(&cs.min_arc_segments, sizeof(cs.min_arc_segments))) cs.min_arc_segments = default_conf.min_arc_segments;
+        if (is_uninitialized(&cs.arc_segments_per_sec, sizeof(cs.arc_segments_per_sec))) cs.arc_segments_per_sec = default_conf.arc_segments_per_sec;
 
 
 #ifdef TMC2130

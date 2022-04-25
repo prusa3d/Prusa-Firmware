@@ -42,9 +42,9 @@ typedef struct
     // Arc Interpolation Settings, configurable via M214
     float mm_per_arc_segment;
     float min_mm_per_arc_segment;
-    uint8_t n_arc_correction; // If equal to zero, this is disabled
-    uint16_t min_arc_segments; // If equal to zero, this is disabled
-    uint16_t arc_segments_per_sec; // If equal to zero, this is disabled
+    unsigned char n_arc_correction; // If equal to zero, this is disabled
+    unsigned short min_arc_segments; // If equal to zero, this is disabled
+    unsigned short arc_segments_per_sec; // If equal to zero, this is disabled
 } M500_conf;
 
 extern M500_conf cs;

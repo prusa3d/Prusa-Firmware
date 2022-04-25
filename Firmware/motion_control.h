@@ -27,6 +27,6 @@
 // the direction of helical travel, radius == circle radius, isclockwise boolean. Used
 // for vector transformation direction.
 void mc_arc(float *position, float *target, float *offset, float feed_rate, float radius,
-  unsigned char isclockwise, uint8_t extruder);
+  bool isclockwise, uint8_t extruder);
   
 #endif

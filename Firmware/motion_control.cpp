@@ -26,7 +26,7 @@
 
 // The arc is approximated by generating a huge number of tiny, linear segments. The length of each 
 // segment is configured in settings.mm_per_arc_segment.  
-void mc_arc(float* position, float* target, float* offset, float feed_rate, float radius, uint8_t isclockwise, uint8_t extruder)
+void mc_arc(float* position, float* target, float* offset, float feed_rate, float radius, bool isclockwise, uint8_t extruder)
 {
     float r_axis_x = -offset[X_AXIS];  // Radius vector from center to current location
     float r_axis_y = -offset[Y_AXIS];
@@ -38,7 +38,7 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     // 20200419 - Add a variable that will be used to hold the arc segment length
     float mm_per_arc_segment = cs.mm_per_arc_segment;
     // 20210109 - Add a variable to hold the n_arc_correction value
-    uint8_t n_arc_correction = cs.n_arc_correction;
+    unsigned char n_arc_correction = cs.n_arc_correction;
 
     // CCW angle between position and target from circle center. Only one atan2() trig computation required.
     float angular_travel_total = atan2(r_axis_x * rt_y - r_axis_y * rt_x, r_axis_x * rt_x + r_axis_y * rt_y);
@@ -88,7 +88,7 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     if (millimeters_of_travel_arc < 0.001) { return; }
     
     // Calculate the number of arc segments
-    uint16_t segments = static_cast<uint16_t>(ceil(millimeters_of_travel_arc / mm_per_arc_segment));
+    unsigned short segments = static_cast<unsigned short>(ceil(millimeters_of_travel_arc / mm_per_arc_segment));
 
     /* Vector rotation by transformation matrix: r is the original vector, r_T is the rotated vector,
        and phi is the angle of rotation. Based on the solution approach by Jens Geisler.

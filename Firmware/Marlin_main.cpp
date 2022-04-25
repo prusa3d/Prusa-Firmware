@@ -7527,13 +7527,14 @@ Sigma_Exit:
         // Extract all possible parameters if they appear
         float p = code_seen('P') ? code_value_float() : cs.mm_per_arc_segment;
         float s = code_seen('S') ? code_value_float() : cs.min_mm_per_arc_segment;
-        uint8_t n = code_seen('N') ? code_value() : cs.n_arc_correction;
-        uint16_t r = code_seen('R') ? code_value() : cs.min_arc_segments;
-        uint16_t f = code_seen('F') ? code_value() : cs.arc_segments_per_sec;
+        unsigned char n = code_seen('N') ? code_value() : cs.n_arc_correction;
+        unsigned short r = code_seen('R') ? code_value() : cs.min_arc_segments;
+        unsigned short f = code_seen('F') ? code_value() : cs.arc_segments_per_sec;
 
         // Ensure mm_per_arc_segment is greater than 0, and that min_mm_per_arc_segment is sero or greater than or equal to mm_per_arc_segment
         if (p <=0 || s < 0 || p < s)
         {
+            // Should we display some error here?
             break;
         }
 
@@ -9679,7 +9680,7 @@ void prepare_move()
   set_current_to_destination();
 }
 
-void prepare_arc_move(char isclockwise) {
+void prepare_arc_move(bool isclockwise) {
     float r = hypot(offset[X_AXIS], offset[Y_AXIS]); // Compute arc radius for mc_arc
     // Trace the arc
     mc_arc(current_position, destination, offset, feedrate * feedmultiply / 60 / 100.0, r, isclockwise, active_extruder);
