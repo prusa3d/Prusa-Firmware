@@ -1220,7 +1220,7 @@ void tp_init()
 
 #ifdef AMBIENT_MINTEMP
   while(analog2tempAmbient(ambient_minttemp_raw) < AMBIENT_MINTEMP) {
-#if HEATER_AMBIENT_RAW_LO_TEMP < HEATER_AMBIENT_RAW_HI_TEMP
+#if AMBIENT_RAW_LO_TEMP < AMBIENT_RAW_HI_TEMP
     ambient_minttemp_raw += OVERSAMPLENR;
 #else
     ambient_minttemp_raw -= OVERSAMPLENR;
@@ -1229,7 +1229,7 @@ void tp_init()
 #endif //AMBIENT_MINTEMP
 #ifdef AMBIENT_MAXTEMP
   while(analog2tempAmbient(ambient_maxttemp_raw) > AMBIENT_MAXTEMP) {
-#if HEATER_AMBIENT_RAW_LO_TEMP < HEATER_AMBIENT_RAW_HI_TEMP
+#if AMBIENT_RAW_LO_TEMP < AMBIENT_RAW_HI_TEMP
     ambient_maxttemp_raw -= OVERSAMPLENR;
 #else
     ambient_maxttemp_raw += OVERSAMPLENR;
