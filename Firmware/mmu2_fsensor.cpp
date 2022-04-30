@@ -4,7 +4,7 @@
 namespace MMU2 {
 
 FilamentState WhereIsFilament(){
-    return fsensor.getFilamentPresent() ? FilamentState::IN_NOZZLE : FilamentState::NOT_PRESENT;
+    return fsensor.getFilamentPresent() ? FilamentState::AT_FSENSOR : FilamentState::NOT_PRESENT;
 }
 
 
