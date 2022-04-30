@@ -1940,7 +1940,7 @@ void loop()
 }
   //check heater every n milliseconds
   manage_heater();
-  isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
+  manage_inactivity(isPrintPaused);
   checkHitEndstops();
   lcd_update(0);
 #ifdef TMC2130
