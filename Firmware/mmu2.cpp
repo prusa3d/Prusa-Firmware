@@ -660,6 +660,9 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
             st_synchronize();
             loadFilamentStarted = true;
             break;
+        case ProgressCode::FeedingToNozzle:
+            // Nothing yet
+            break;
         default:
             // do nothing yet
             break;
@@ -668,13 +671,29 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
         // Act accordingly - every status change (even the same state)
         switch(pc){
         case ProgressCode::FeedingToBondtech:
-            if( WhereIsFilament() == FilamentState::AT_FSENSOR && loadFilamentStarted){// fsensor triggered, move the extruder to help loading
-                // rotate the extruder motor - no planner sync, just add more moves - as long as they are roughly at the same speed as the MMU is pushing,
-                // it really doesn't matter
-                current_position[E_AXIS] += (loadingToNozzle ? MMU2_LOAD_TO_NOZZLE_LENGTH : MMU2_TOOL_CHANGE_LOAD_LENGTH) / extruder_multiplier[0];
-                plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
-                loadFilamentStarted = false;
+            if ( loadFilamentStarted )
+            {
+                switch ( WhereIsFilament() )
+                {
+                case FilamentState::AT_FSENSOR:
+                    // fsensor triggered, stop moving the extruder
+                    loadFilamentStarted = false;
+                    // TODO: continue to ProgressCode::FeedingToNozzle?
+                    break;
+                case FilamentState::NOT_PRESENT:
+                    // fsensor not triggered, continue moving extruder
+                    // TODO: Verify what's the best speed here?
+                    current_position[E_AXIS] += MMU2_LOAD_TO_NOZZLE_FEED_RATE;
+                    plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+                    st_synchronize(); // Wait for the steps to be done, otherwise the moves will just add up
+                default:
+                    // Abort here?
+                    break;
+                }
             }
+            break;
+        case ProgressCode::FeedingToNozzle:
+            // Nothing yet
             break;
         default:
             // do nothing yet
