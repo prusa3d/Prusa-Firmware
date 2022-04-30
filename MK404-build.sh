@@ -315,7 +315,7 @@ check_packages()
 {
 packages=(
 "libelf-dev"
-"gcc-7"
+"gcc"
 "gcc-avr"
 "libglew-dev"
 "freeglut3-dev"
