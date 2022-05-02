@@ -282,7 +282,7 @@ bool Config_RetrieveSettings()
                 memcpy_P(&cs.max_acceleration_units_per_sq_second_silent[i],&default_conf.max_acceleration_units_per_sq_second_silent[i],sizeof(cs.max_acceleration_units_per_sq_second_silent[i]));
             }
         }
-        // Initialize arc interpolation settings if they are not already (Not sure about this bit, please review)
+        // Initialize arc interpolation settings if they are not already
         if (is_uninitialized(&cs.mm_per_arc_segment, sizeof(cs.mm_per_arc_segment))) cs.mm_per_arc_segment = default_conf.mm_per_arc_segment;
         if (is_uninitialized(&cs.min_mm_per_arc_segment, sizeof(cs.min_mm_per_arc_segment))) cs.min_mm_per_arc_segment = default_conf.min_mm_per_arc_segment;
         if (is_uninitialized(&cs.n_arc_correction, sizeof(cs.n_arc_correction))) cs.n_arc_correction = default_conf.n_arc_correction;
