@@ -39,6 +39,12 @@ typedef struct
     unsigned long max_acceleration_units_per_sq_second_silent[4];
     unsigned char axis_ustep_resolution[4];
     float travel_acceleration; //!< travel acceleration mm/s^2
+    // Arc Interpolation Settings, configurable via M214
+    float mm_per_arc_segment;
+    float min_mm_per_arc_segment;
+    unsigned char n_arc_correction; // If equal to zero, this is disabled
+    unsigned short min_arc_segments; // If equal to zero, this is disabled
+    unsigned short arc_segments_per_sec; // If equal to zero, this is disabled
 } M500_conf;
 
 extern M500_conf cs;
@@ -62,5 +68,4 @@ FORCE_INLINE void Config_RetrieveSettings() { Config_ResetDefault(); Config_Prin
 inline uint8_t calibration_status() { return eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS); }
 inline void calibration_status_store(uint8_t status) { eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS, status); }
 inline bool calibration_status_pinda() { return eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA); }
-
 #endif//CONFIG_STORE_H
