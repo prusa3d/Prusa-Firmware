@@ -129,30 +129,6 @@ extern void lcd_update_enable(uint8_t enabled);
 
 extern void lcd_buttons_update(void);
 
-//! @brief Helper class to temporarily disable LCD updates
-//!
-//! When constructed (on stack), original state state of lcd_update_enabled is stored
-//! and LCD updates are disabled.
-//! When destroyed (gone out of scope), original state of LCD update is restored.
-//! It has zero overhead compared to storing bool saved = lcd_update_enabled
-//! and calling lcd_update_enable(false) and lcd_update_enable(saved).
-class LcdUpdateDisabler
-{
-public:
-    LcdUpdateDisabler(): m_updateEnabled(lcd_update_enabled)
-    {
-        lcd_update_enable(false);
-    }
-    ~LcdUpdateDisabler()
-    {
-        lcd_update_enable(m_updateEnabled);
-    }
-
-private:
-    bool m_updateEnabled;
-};
-
-
 ////////////////////////////////////
 // Setup button and encode mappings for each panel (into 'lcd_buttons' variable
 //
