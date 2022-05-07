@@ -1,5 +1,7 @@
 #include "mmu2.h"
 #include "mmu2_error_converter.h"
+#include "mmu2/error_codes.h"
+#include "mmu2/errors_list.h"
 #include "mmu2_fsensor.h"
 #include "mmu2_log.h"
 #include "mmu2_power.h"
@@ -613,16 +615,56 @@ void MMU2::ReportError(ErrorCode ec) {
         // The longest error description in errors_list.h is 144 bytes.
         // and the longest error title is 20 bytes. msg buffer needs
         // to have enough space to fit both.
-        char msg[192];
-        int len = snprintf(msg, sizeof(msg), "MMU2:E=%hu ", (uint16_t)ec);
+        //char msg[192];
+        //int len = snprintf(msg, sizeof(msg), "MMU2:E=%hu ", (uint16_t)ec);
         // Append a human readable form of the error code(s)
-        TranslateErr((uint16_t)ec, &msg[len], 192 - len);
+        //TranslateErr((uint16_t)ec, &msg[len], 192 - len);
+
+        const uint16_t ei = MMUErrorCodeIndex((uint16_t)ec);
+          // Testing
+        uint8_t choice_selected = 0;
+        back_to_choices:
+        // 504 = ERR_SYSTEM_VERSION_MISMATCH
+        lcd_clear();
+        lcd_update_enable(false);
+        lcd_printf_P(PSTR("%S\nprusa3d.com/ERR04%hu"),
+            static_cast<const char * const>(pgm_read_ptr(&errorTitles[ei])),
+            reinterpret_cast<uint16_t>(const_cast<void*>(pgm_read_ptr(&errorCodes[ei])))
+        );
+        choice_selected = lcd_show_multiscreen_message_two_choices_and_wait_P(
+            NULL, // NULL, since title screen is not in PROGMEM
+            false,
+            false,
+            btnRetry,
+            btnContinue,
+            btnMore,
+            7,
+            13
+        );
+
+        if (choice_selected == 2) {
+            // 'More' show error description
+            lcd_show_fullscreen_message_and_wait_P(
+                static_cast<const char * const>(pgm_read_ptr(&errorDescs[ei]))
+            );
+
+            // Return back to the choice menu
+            goto back_to_choices;
+        } else if(choice_selected == 1) {
+            // 'Done' return to status screen
+            lcd_update_enable(true);
+            lcd_return_to_status();
+        } else {
+            // 'Retry' TODO: not yet implemented
+            lcd_update_enable(true);
+            lcd_return_to_status();
+        }
 
         // beware - the prefix in the message ("MMU2") will get stripped by the logging subsystem
         // and a correct MMU2 component will be assigned accordingly - see appmain.cpp
         // Therefore I'm not calling MMU2_ERROR_MSG or MMU2_ECHO_MSG here
-        SERIAL_ECHO_START;
-        SERIAL_ECHOLN(msg);
+        //SERIAL_ECHO_START;
+        //SERIAL_ECHOLN(msg);
     }
 
     static_assert(mmu2Magic[0] == 'M' 
