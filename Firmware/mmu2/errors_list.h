@@ -269,7 +269,7 @@ static const char btnRestartMMU[] PROGMEM_I1 = ISTR("RstMMU");
 static const char btnUnload[] PROGMEM_I1 = ISTR("Unload");
 static const char btnStop[] PROGMEM_I1 = ISTR("Stop");
 static const char btnDisableMMU[] PROGMEM_I1 = ISTR("Disable");
-static const char btnMore[] PROGMEM_I1 = ISTR("More"); // @@TODO add that downwards facing >> character
+static const char btnMore[] PROGMEM_I1 = ISTR("More\x01");
 
 // We have 8 different operations/buttons at this time, so we need at least 4 bits to encode each.
 // Since one of the buttons is always "More", we can skip that one.
