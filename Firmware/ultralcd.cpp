@@ -671,6 +671,7 @@ void lcdui_print_status_line(void) {
             break;
         case CustomMsg::MMUProgress:
             // set up at mmu2_reporting.cpp, just do nothing here
+            lcd_print(lcd_status_message);
             break;
         }
     }
