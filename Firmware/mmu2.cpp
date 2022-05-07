@@ -512,8 +512,8 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
         // - failed -> then do the safety moves on the printer like before
         // - finished ok -> proceed with reading other commands
         manage_heater();
-        // @@TODO this needs verification - we need something which matches Marlin2's idle()
         manage_inactivity(true); // calls LogicStep() and remembers its return status
+        lcd_update(0);
 
         switch (logicStepLastStatus) {
         case Finished: 
