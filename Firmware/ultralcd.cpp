@@ -3189,7 +3189,7 @@ lcd_wait_for_click_delay(0);
 //! @retval -1 screen timed out
 int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes) //currently just max. n*4 + 3 lines supported (set in language header files)
 {
-    return lcd_show_multiscreen_message_two_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
+    return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
 }
 //! @brief Show a two-choice prompt on the last line of the LCD
 //! @param first_selected Show first choice as selected if true, the second otherwise
@@ -3198,10 +3198,10 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 void lcd_show_two_choices_prompt_P(uint8_t first_selected, const char *first_choice, const char *second_choice, uint8_t second_col)
 {
     lcd_set_cursor(0, 3);
-    lcd_print(first_selected? '>': ' ');
+    lcd_print(first_selected == 0 ? '>': ' ');
     lcd_puts_P(first_choice);
     lcd_set_cursor(second_col, 3);
-    lcd_print(!first_selected? '>': ' ');
+    lcd_print(first_selected == 1 ? '>': ' ');
     lcd_puts_P(second_choice);
 }
 
@@ -3220,14 +3220,18 @@ void lcd_show_three_choices_prompt_P(uint8_t selected, const char *first_choice,
 
 //! @brief Show single or multiple screen message with two possible choices and wait with possible timeout
 //! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
-//! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_first if true, fist choice is selected by default, otherwise second choice is preselected
-//! @param first_choice text caption of first possible choice
-//! @param second_choice text caption of second possible choice
+//! @param allow_timeouting bool, if true, allows time outing of the screen
+//! @param default_first uint8_t, Control which choice is selected first. 0: left most, 1: middle, 2: right most choice. The first choice is selected by default
+//! @param first_choice text caption of first possible choice. Must be in PROGMEM
+//! @param second_choice text caption of second possible choice. Must be in PROGMEM
+//! @param third_choice text caption of second possible choice. Must be in PROGMEM. When not set to nullptr first_choice and second_choice may not be more than 5 characters long.
+//! @param second_col column on LCD where second_choice starts
+//! @param third_col column on LCD where second_choice starts
+//! @retval 0 first choice selected by user
 //! @retval 1 first choice selected by user
-//! @retval 0 second choice selected by user
-//! @retval -1 screen timed out
-int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_first,
+//! @retval 2 third choice selected by user
+//! @retval -1 screen timed out (only possible if allow_timeouting is true)
+int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_first,
         const char *first_choice, const char *second_choice, const char *third_choice, uint8_t second_col, uint8_t third_col)
 {
 	const char *msg_next = msg ? lcd_display_message_fullscreen_P(msg) : NULL;
@@ -3238,7 +3242,7 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 	uint8_t yes = default_first ? 1 : 0;
 	if (!msg_next) {
 		if (third_choice)
-		{ // third_choice is not nullptr, safe to derefence
+		{ // third_choice is not nullptr, safe to dereference
 			lcd_show_three_choices_prompt_P(yes, first_choice, second_choice, third_choice, second_col, third_col);
 		} else {
 			lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);
@@ -3261,21 +3265,24 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 
 			if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
 				if (msg_next == NULL) {
-					if (enc_dif > lcd_encoder_diff) {
-						// Rotating knob counter clockwise
-						if (yes != 0) yes = yes - 1;
-					}
-
-					else if (enc_dif < lcd_encoder_diff) {
-						// Rotating knob clockwise
-						if (yes != 2) yes = yes + 1;
-					}
-
-					// Render the options:
 					if (third_choice)
-					{ // third_choice is not nullptr, safe to derefence
+					{ // third_choice is not nullptr, safe to dereference
+						if (enc_dif > lcd_encoder_diff && yes != 0) {
+							// Rotating knob counter clockwise
+							yes = yes - 1;
+						} else if (enc_dif < lcd_encoder_diff && yes != 2) {
+							// Rotating knob clockwise
+							yes = yes + 1;
+						}
 						lcd_show_three_choices_prompt_P(yes, first_choice, second_choice, third_choice, second_col, third_col);
 					} else {
+						if (enc_dif > lcd_encoder_diff && yes != 0) {
+							// Rotating knob counter clockwise
+							yes = 0;
+						} else if (enc_dif < lcd_encoder_diff && yes != 1) {
+							// Rotating knob clockwise
+							yes = 1;
+						}
 						lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);
 					}
 					enc_dif = lcd_encoder_diff;
@@ -3305,7 +3312,7 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 		}
 		if (msg_next == NULL) {
 			if (third_choice)
-			{ // third_choice is not nullptr, safe to derefence
+			{ // third_choice is not nullptr, safe to dereference
 				lcd_show_three_choices_prompt_P(yes, first_choice, second_choice, third_choice, second_col, third_col);
 			} else {
 				lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);

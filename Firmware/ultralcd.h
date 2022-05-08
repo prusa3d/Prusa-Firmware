@@ -75,7 +75,7 @@ extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
 extern int8_t lcd_show_yes_no_and_wait(bool allow_timeouting = true, bool default_yes = false);
 // 0: no, 1: yes, -1: timeouted
 extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
-extern int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes,
+extern int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes,
         const char *first_choice, const char *second_choice, const char *third_choice = nullptr, uint8_t second_col = 7, uint8_t third_col = 13);
 extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 // Ask the user to move the Z axis up to the end stoppers and let
