@@ -1,7 +1,5 @@
 #include "mmu2.h"
 #include "mmu2_error_converter.h"
-#include "mmu2/error_codes.h"
-#include "mmu2/errors_list.h"
 #include "mmu2_fsensor.h"
 #include "mmu2_log.h"
 #include "mmu2_power.h"
