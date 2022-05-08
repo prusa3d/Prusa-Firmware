@@ -243,17 +243,20 @@ static const char * const errorDescs[] PROGMEM = {
     descRUNTIME_ERROR,
 };
 
+#define BUTTON_OP_HIGH_NIBBLE_MSK 0xF0
+#define BUTTON_OP_LOW_NIBBLE_MSK  0x0F
+
 /// Will be mapped onto dialog button responses in the FW
 /// Those responses have their unique+translated texts as well
 enum class ButtonOperations : uint8_t {
-    NoOperation,
-    Retry,
-    SlowLoad,
-    Continue,
-    RestartMMU,
-    Unload,
-    StopPrint,
-    DisableMMU,
+    NoOperation = 0,
+    Retry       = 1,
+    SlowLoad    = 2,
+    Continue    = 3,
+    RestartMMU  = 4,
+    Unload      = 5,
+    StopPrint   = 6,
+    DisableMMU  = 7,
 };
 
 // we have max 3 buttons/operations to select from
@@ -270,6 +273,17 @@ static const char btnUnload[] PROGMEM_I1 = ISTR("Unload");
 static const char btnStop[] PROGMEM_I1 = ISTR("Stop");
 static const char btnDisableMMU[] PROGMEM_I1 = ISTR("Disable");
 static const char btnMore[] PROGMEM_I1 = ISTR("More\x01");
+
+// Used to parse the buttons from Btns().
+static const char * const btnOperation[] PROGMEM = {
+    btnRetry,
+    btnSlowLoad,
+    btnContinue,
+    btnRestartMMU,
+    btnUnload,
+    btnStop,
+    btnDisableMMU
+};
 
 // We have 8 different operations/buttons at this time, so we need at least 4 bits to encode each.
 // Since one of the buttons is always "More", we can skip that one.
