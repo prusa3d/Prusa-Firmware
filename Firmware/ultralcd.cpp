@@ -2685,6 +2685,8 @@ static void lcd_babystep_z()
 		// Only update the EEPROM when leaving the menu.
           uint8_t active_sheet=eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
 		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[active_sheet].z_offset)),_md->babystepMemZ);
+
+        // NOTE: bed_temp and pinda_temp are not currently read/used anywhere.
 		eeprom_update_byte(&(EEPROM_Sheets_base->s[active_sheet].bed_temp),target_temperature_bed);
 #ifdef PINDA_THERMISTOR        
 		eeprom_update_byte(&(EEPROM_Sheets_base->s[active_sheet].pinda_temp),current_temperature_pinda);
