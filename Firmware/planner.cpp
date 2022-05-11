@@ -122,7 +122,7 @@ static uint8_t g_cntr_planner_queue_min = 0;
 //=============================private variables ============================
 //===========================================================================
 #ifdef PREVENT_DANGEROUS_EXTRUDE
-float extrude_min_temp=EXTRUDE_MINTEMP;
+int extrude_min_temp = EXTRUDE_MINTEMP;
 #endif
 
 #ifdef LIN_ADVANCE
@@ -1434,9 +1434,9 @@ void plan_reset_next_e()
 }
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
-void set_extrude_min_temp(float temp)
+void set_extrude_min_temp(int temp)
 {
-  extrude_min_temp=temp;
+  extrude_min_temp = temp;
 }
 #endif
 
