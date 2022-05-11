@@ -32,9 +32,9 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
 
     // Read and determine what operations should be shown on the menu
     // Note: uint16_t is used here to avoid compiler warning. uint8_t is only half the size of void*
-    uint8_t button_operation = reinterpret_cast<uint16_t>(const_cast<void*>(pgm_read_ptr(&errorButtons[ei])));
-    uint8_t button_high_nibble = (button_operation & BUTTON_OP_HIGH_NIBBLE_MSK) >> 4;
-    uint8_t button_low_nibble = button_operation & BUTTON_OP_LOW_NIBBLE_MSK;
+    const uint8_t button_operation   = reinterpret_cast<uint16_t>(const_cast<void*>(pgm_read_ptr(&errorButtons[ei])));
+    const uint8_t button_high_nibble = BUTTON_OP_HI_NIBBLE(button_operation);
+    const uint8_t button_low_nibble  = BUTTON_OP_LO_NIBBLE(button_operation);
 
     // Check if the menu should have three or two choices
     if (button_low_nibble == (uint8_t)ButtonOperations::NoOperation)
