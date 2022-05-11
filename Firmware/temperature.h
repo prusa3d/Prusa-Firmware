@@ -41,6 +41,15 @@
 
 #endif //SYSTEM_TIMER_2
 
+// voltage conversion functions
+#define VOLT_DIV_REF 5
+
+constexpr uint16_t Voltage2Raw(float V){
+	return ( V * 1023 * OVERSAMPLENR / VOLT_DIV_REF ) + 0.5F;
+}
+constexpr float Raw2Voltage(uint16_t raw){
+	return VOLT_DIV_REF*(raw / (1023.F * OVERSAMPLENR) );
+}
 
 // public functions
 void tp_init();  //initialize the heating

@@ -83,15 +83,18 @@ extern uint8_t fsensor_log;
 //! @}
 #endif //PAT9125
 
-#define VOLT_DIV_REF 5
-
 #ifdef IR_SENSOR_ANALOG
 #define IR_SENSOR_STEADY 10                       // [ms]
+
+// number of required consistent consecutive filament sensor check attempts
+#define FS_CHECK_COUNT 16
+// number of remaining filament sensor checks to be done
+extern uint16_t oFSCheckCount;
 
 enum class ClFsensorPCB:uint_least8_t
 {
     _Old=0,
-    _Rev04=1,
+    _Rev04=1, _Newest=1,
     _Undef=EEPROM_EMPTY_VALUE
 };
 
@@ -107,12 +110,8 @@ extern ClFsensorActionNA oFsensorActionNA;
 extern const char* FsensorIRVersionText();
 
 extern bool fsensor_IR_check();
-constexpr uint16_t Voltage2Raw(float V){
-	return ( V * 1023 * OVERSAMPLENR / VOLT_DIV_REF ) + 0.5F;
-}
-constexpr float Raw2Voltage(uint16_t raw){
-	return VOLT_DIV_REF*(raw / (1023.F * OVERSAMPLENR) );
-}
+
+#include "temperature.h"
 constexpr uint16_t IRsensor_Ldiode_TRESHOLD = Voltage2Raw(0.3F); // ~0.3V, raw value=982
 constexpr uint16_t IRsensor_Lmax_TRESHOLD = Voltage2Raw(1.5F); // ~1.5V (0.3*Vcc), raw value=4910
 constexpr uint16_t IRsensor_Hmin_TRESHOLD = Voltage2Raw(3.0F); // ~3.0V (0.6*Vcc), raw value=9821
