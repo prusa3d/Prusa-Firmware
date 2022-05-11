@@ -243,8 +243,6 @@ static const char * const errorDescs[] PROGMEM = {
     descRUNTIME_ERROR,
 };
 
-#define BUTTON_OP_HIGH_NIBBLE_MSK 0xF0
-#define BUTTON_OP_LOW_NIBBLE_MSK  0x0F
 
 /// Will be mapped onto dialog button responses in the FW
 /// Those responses have their unique+translated texts as well
@@ -284,6 +282,10 @@ static const char * const btnOperation[] PROGMEM = {
     btnStop,
     btnDisableMMU
 };
+
+// Helper macros to parse the operations from Btns()
+#define BUTTON_OP_HI_NIBBLE(X) ( ( X & 0xF0 ) >> 4 )
+#define BUTTON_OP_LO_NIBBLE(X) ( X & 0x0F )
 
 // We have 8 different operations/buttons at this time, so we need at least 4 bits to encode each.
 // Since one of the buttons is always "More", we can skip that one.
