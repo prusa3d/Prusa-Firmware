@@ -24,6 +24,7 @@ typedef struct
     int16_t currentValue;
     int16_t minEditValue;
     int16_t maxEditValue;
+    int16_t minJumpValue;
 } menu_data_edit_t;
 
 extern uint8_t menu_data[MENU_DATA_SIZE];
@@ -144,10 +145,10 @@ struct SheetFormatBuffer
 extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer);
 
 
-#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { menu_item_edit_P(str, pval, minval, maxval); } while (0)
-//#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) MENU_ITEM_EDIT(int3, str, pval, minval, maxval)
+#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { menu_item_edit_P(str, pval, minval, maxval, 0); } while (0)
+#define MENU_ITEM_EDIT_int3_jmp_P(str, pval, minval, maxval, jmpval) do { menu_item_edit_P(str, pval, minval, maxval, jmpval); } while (0)
 template <typename T>
-extern void menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val);
+extern void menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val, int16_t jmp_val);
 
 extern void menu_progressbar_init(uint16_t total, const char* title);
 extern void menu_progressbar_update(uint16_t newVal);
