@@ -2447,7 +2447,7 @@ static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 
 void lcd_move_e()
 {
-	if (degHotend0() > extrude_min_temp)
+	if ((int)degHotend0() > extrude_min_temp)
 	{
 		if (lcd_encoder != 0)
 		{
