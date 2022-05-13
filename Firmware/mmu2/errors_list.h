@@ -14,41 +14,42 @@ typedef enum : uint16_t {
 
     ERR_MECHANICAL = 100,
     ERR_MECHANICAL_FINDA_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FINDA_DIDNT_SWITCH_OFF,
+    ERR_MECHANICAL_FINDA_DIDNT_GO_OFF,
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FSENSOR_DIDNT_SWITCH_OFF,
+    ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
 
-    ERR_MECHANICAL_PULLEY_STALLED = 105,
+    ERR_MECHANICAL_PULLEY_CANNOT_MOVE = 105,
     ERR_MECHANICAL_SELECTOR_CANNOT_HOME = 115,
+    ERR_MECHANICAL_SELECTOR_CANNOT_MOVE = 116,
     ERR_MECHANICAL_IDLER_CANNOT_HOME = 125,
-
+    ERR_MECHANICAL_IDLER_CANNOT_MOVE = 126,
 
     ERR_TEMPERATURE = 200,
-    ERR_TEMPERATURE_TMC_PULLEY_OVER_TEMPERATURE_WARN = 201,
-    ERR_TEMPERATURE_TMC_SELECTOR_OVER_TEMPERATURE_WARN = 211,
-    ERR_TEMPERATURE_TMC_IDLER_OVER_TEMPERATURE_WARN = 221,
+    ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT = 201,
+    ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT = 211,
+    ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT = 221,
 
-    ERR_TEMPERATURE_TMC_PULLEY_OVER_TEMPERATURE_ERROR = 202,
-    ERR_TEMPERATURE_TMC_SELECTOR_OVER_TEMPERATURE_ERROR = 212,
-    ERR_TEMPERATURE_TMC_IDLER_OVER_TEMPERATURE_ERROR = 222,
+    ERR_TEMPERATURE_PULLEY_TMC_OVERHEAT_ERROR = 202,
+    ERR_TEMPERATURE_SELECTOR_TMC_OVERHEAT_ERROR = 212,
+    ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR = 222,
 
 
     ERR_ELECTRICAL = 300,
-    ERR_ELECTRICAL_TMC_PULLEY_DRIVER_ERROR = 301,
-    ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_ERROR = 311,
-    ERR_ELECTRICAL_TMC_IDLER_DRIVER_ERROR = 321,
+    ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR = 301,
+    ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_ERROR = 311,
+    ERR_ELECTRICAL_IDLER_TMC_DRIVER_ERROR = 321,
 
-    ERR_ELECTRICAL_TMC_PULLEY_DRIVER_RESET = 302,
-    ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_RESET = 312,
-    ERR_ELECTRICAL_TMC_IDLER_DRIVER_RESET = 322,
+    ERR_ELECTRICAL_PULLEY_TMC_DRIVER_RESET = 302,
+    ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_RESET = 312,
+    ERR_ELECTRICAL_IDLER_TMC_DRIVER_RESET = 322,
 
-    ERR_ELECTRICAL_TMC_PULLEY_UNDERVOLTAGE_ERROR = 303,
-    ERR_ELECTRICAL_TMC_SELECTOR_UNDERVOLTAGE_ERROR = 313,
-    ERR_ELECTRICAL_TMC_IDLER_UNDERVOLTAGE_ERROR = 323,
+    ERR_ELECTRICAL_PULLEY_TMC_UNDERVOLTAGE_ERROR = 303,
+    ERR_ELECTRICAL_SELECTOR_TMC_UNDERVOLTAGE_ERROR = 313,
+    ERR_ELECTRICAL_IDLER_TMC_UNDERVOLTAGE_ERROR = 323,
 
-    ERR_ELECTRICAL_TMC_PULLEY_DRIVER_SHORTED = 304,
-    ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_SHORTED = 314,
-    ERR_ELECTRICAL_TMC_IDLER_DRIVER_SHORTED = 324,
+    ERR_ELECTRICAL_PULLEY_TMC_DRIVER_SHORTED = 304,
+    ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_SHORTED = 314,
+    ERR_ELECTRICAL_IDLER_TMC_DRIVER_SHORTED = 324,
 
 
     ERR_CONNECT = 400,
@@ -60,8 +61,9 @@ typedef enum : uint16_t {
     ERR_SYSTEM_FILAMENT_ALREADY_LOADED = 501,
     ERR_SYSTEM_INVALID_TOOL = 502,
     ERR_SYSTEM_QUEUE_FULL = 503,
-    ERR_SYSTEM_VERSION_MISMATCH = 504,
-    ERR_SYSTEM_RUNTIME_ERROR = 505,
+    ERR_SYSTEM_FW_UPDATE_NEEDED = 504,
+    ERR_SYSTEM_FW_RUNTIME_ERROR = 505,
+    ERR_SYSTEM_UNLOAD_MANUALLY = 506,
 
     ERR_OTHER = 900
 } err_num_t;
@@ -72,175 +74,190 @@ typedef enum : uint16_t {
 // it really makes no difference if there are "nice" data structures or plain arrays.
 static const uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_FINDA_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FINDA_DIDNT_SWITCH_OFF,
+    ERR_MECHANICAL_FINDA_DIDNT_GO_OFF,
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FSENSOR_DIDNT_SWITCH_OFF,
-    ERR_MECHANICAL_PULLEY_STALLED,
+    ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
+    ERR_MECHANICAL_PULLEY_CANNOT_MOVE,
     ERR_MECHANICAL_SELECTOR_CANNOT_HOME,
+    ERR_MECHANICAL_SELECTOR_CANNOT_MOVE,
     ERR_MECHANICAL_IDLER_CANNOT_HOME,
-    ERR_TEMPERATURE_TMC_PULLEY_OVER_TEMPERATURE_WARN,
-    ERR_TEMPERATURE_TMC_SELECTOR_OVER_TEMPERATURE_WARN,
-    ERR_TEMPERATURE_TMC_IDLER_OVER_TEMPERATURE_WARN,
-    ERR_TEMPERATURE_TMC_PULLEY_OVER_TEMPERATURE_ERROR,
-    ERR_TEMPERATURE_TMC_SELECTOR_OVER_TEMPERATURE_ERROR,
-    ERR_TEMPERATURE_TMC_IDLER_OVER_TEMPERATURE_ERROR,
-    ERR_ELECTRICAL_TMC_PULLEY_DRIVER_ERROR,
-    ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_ERROR,
-    ERR_ELECTRICAL_TMC_IDLER_DRIVER_ERROR,
-    ERR_ELECTRICAL_TMC_PULLEY_DRIVER_RESET,
-    ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_RESET,
-    ERR_ELECTRICAL_TMC_IDLER_DRIVER_RESET,
-    ERR_ELECTRICAL_TMC_PULLEY_UNDERVOLTAGE_ERROR,
-    ERR_ELECTRICAL_TMC_SELECTOR_UNDERVOLTAGE_ERROR,
-    ERR_ELECTRICAL_TMC_IDLER_UNDERVOLTAGE_ERROR,
-    ERR_ELECTRICAL_TMC_PULLEY_DRIVER_SHORTED,
-    ERR_ELECTRICAL_TMC_SELECTOR_DRIVER_SHORTED,
-    ERR_ELECTRICAL_TMC_IDLER_DRIVER_SHORTED,
+    ERR_MECHANICAL_IDLER_CANNOT_MOVE,
+    ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT,
+    ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT,
+    ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT,
+    ERR_TEMPERATURE_PULLEY_TMC_OVERHEAT_ERROR,
+    ERR_TEMPERATURE_SELECTOR_TMC_OVERHEAT_ERROR,
+    ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR,
+    ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR,
+    ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_ERROR,
+    ERR_ELECTRICAL_IDLER_TMC_DRIVER_ERROR,
+    ERR_ELECTRICAL_PULLEY_TMC_DRIVER_RESET,
+    ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_RESET,
+    ERR_ELECTRICAL_IDLER_TMC_DRIVER_RESET,
+    ERR_ELECTRICAL_PULLEY_TMC_UNDERVOLTAGE_ERROR,
+    ERR_ELECTRICAL_SELECTOR_TMC_UNDERVOLTAGE_ERROR,
+    ERR_ELECTRICAL_IDLER_TMC_UNDERVOLTAGE_ERROR,
+    ERR_ELECTRICAL_PULLEY_TMC_DRIVER_SHORTED,
+    ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_SHORTED,
+    ERR_ELECTRICAL_IDLER_TMC_DRIVER_SHORTED,
     ERR_CONNECT_MMU_NOT_RESPONDING,
     ERR_CONNECT_COMMUNICATION_ERROR,
     ERR_SYSTEM_FILAMENT_ALREADY_LOADED, 
     ERR_SYSTEM_INVALID_TOOL, 
     ERR_SYSTEM_QUEUE_FULL, 
-    ERR_SYSTEM_VERSION_MISMATCH, 
-    ERR_SYSTEM_RUNTIME_ERROR,
+    ERR_SYSTEM_FW_UPDATE_NEEDED, 
+    ERR_SYSTEM_FW_UPDATE_NEEDED,
+    ERR_SYSTEM_UNLOAD_MANUALLY
 };
 
 // @@TODO some of the strings are duplicates, can be merged into one
-static const char titleFINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA NOT ON");
-static const char titleFINDA_DIDNT_SWITCH_OFF[] PROGMEM_I1 = ISTR("FINDA NOT OFF");
-static const char titleFSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FSENSOR NOT ON");
-static const char titleFSENSOR_DIDNT_SWITCH_OFF[] PROGMEM_I1 = ISTR("FSENSOR NOT OFF");
-static const char titlePULLEY_STALLED[] PROGMEM_I1 = ISTR("PULLEY STALLED");
-static const char titleSELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("SELECTOR CAN'T HOME");
+static const char titleFINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA DIDNT TRIGGER");
+static const char titleFINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA DIDNT GO OFF");
+static const char titleFSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FSENSOR DIDNT TRIGGER");
+static const char titleFSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FSENSOR DIDNT GO OFF");
+static const char titlePULLEY_CANNOT_MOVE[] PROGMEM_I1 = ISTR("PULLEY CANNOT MOVE");
+static const char titleSELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("SELECTOR CANNOT MOVE");
+static const char titleSELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("SELECTOR CANNOT HOME");
+static const char titleIDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("IDLER CANNOT MOVE");
 static const char titleIDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("IDLER CANNOT HOME");
-static const char titleTMC_PULLEY_OVER_TEMPERATURE_WARN[] PROGMEM_I1 = ISTR("TMC TOO HOT");
-static const char titleTMC_SELECTOR_OVER_TEMPERATURE_WARN[] PROGMEM_I1 = ISTR("TMC TOO HOT");
-static const char titleTMC_IDLER_OVER_TEMPERATURE_WARN[] PROGMEM_I1 = ISTR("TMC TOO HOT");
-static const char titleTMC_PULLEY_OVER_TEMPERATURE_ERROR[] PROGMEM_I1 = ISTR("TMC OVERHEAT ERROR");
-static const char titleTMC_SELECTOR_OVER_TEMPERATURE_ERROR[] PROGMEM_I1 = ISTR("TMC OVERHEAT ERROR");
-static const char titleTMC_IDLER_OVER_TEMPERATURE_ERROR[] PROGMEM_I1 = ISTR("TMC OVERHEAT ERROR");
-static const char titleTMC_PULLEY_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC DRIVER ERROR");
-static const char titleTMC_SELECTOR_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC DRIVER ERROR");
-static const char titleTMC_IDLER_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC DRIVER ERROR");
-static const char titleTMC_PULLEY_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
-static const char titleTMC_SELECTOR_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
-static const char titleTMC_IDLER_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
-static const char titleTMC_PULLEY_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("TMC UNDERVOLT ERROR");
-static const char titleTMC_SELECTOR_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("TMC UNDERVOLT ERROR");
-static const char titleTMC_IDLER_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("TMC UNDERVOLT ERROR");
-static const char titleTMC_PULLEY_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
-static const char titleTMC_SELECTOR_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
-static const char titleTMC_IDLER_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
+static const char titlePULLEY_TMC_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT");
+static const char titleSELECTOR_TMC_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT");
+static const char titleIDLER_TMC_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("WARNING TMC TOO HOT");
+static const char titlePULLEY_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC OVERHEAT ERROR");
+static const char titleSELECTOR_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC OVERHEAT ERROR");
+static const char titleIDLER_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC OVERHEAT ERROR");
+static const char titlePULLEY_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC DRIVER ERROR");
+static const char titleSELECTOR_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC DRIVER ERROR");
+static const char titleIDLER_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC DRIVER ERROR");
+static const char titlePULLEY_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
+static const char titleSELECTOR_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
+static const char titleIDLER_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC DRIVER RESET");
+static const char titlePULLEY_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("TMC UNDERVOLTAGE ERR");
+static const char titleSELECTOR_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("TMC UNDERVOLTAGE ERR");
+static const char titleIDLER_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("TMC UNDERVOLTAGE ERR");
+static const char titlePULLEY_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
+static const char titleSELECTOR_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
+static const char titleIDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
 static const char titleMMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU NOT RESPONDING");
 static const char titleCOMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("COMMUNICATION ERROR");
-static const char titleFILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("ALREADY LOADED"); 
+static const char titleFILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("FILAMENT ALREADY LOA"); 
 static const char titleINVALID_TOOL[] PROGMEM_I1 = ISTR("INVALID TOOL"); 
 static const char titleQUEUE_FULL[] PROGMEM_I1 = ISTR("QUEUE FULL"); 
-static const char titleVERSION_MISMATCH[] PROGMEM_I1 = ISTR("FW VERSION MISMATCH"); 
-static const char titleRUNTIME_ERROR[] PROGMEM_I1 = ISTR("FW RUNTIME ERROR");
+static const char titleFW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("FW UPDATE NEEDED"); 
+static const char titleFW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("FW RUNTIME ERROR");
+static const char titleUNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("UNLOAD MANUALLY");
 
 static const char * const errorTitles [] PROGMEM = {
     titleFINDA_DIDNT_TRIGGER,
-    titleFINDA_DIDNT_SWITCH_OFF,
+    titleFINDA_DIDNT_GO_OFF,
     titleFSENSOR_DIDNT_TRIGGER,
-    titleFSENSOR_DIDNT_SWITCH_OFF,
-    titlePULLEY_STALLED,
+    titleFSENSOR_DIDNT_GO_OFF,
+    titlePULLEY_CANNOT_MOVE,
     titleSELECTOR_CANNOT_HOME,
+    titleSELECTOR_CANNOT_MOVE,
     titleIDLER_CANNOT_HOME,
-    titleTMC_PULLEY_OVER_TEMPERATURE_WARN,
-    titleTMC_SELECTOR_OVER_TEMPERATURE_WARN,
-    titleTMC_IDLER_OVER_TEMPERATURE_WARN,
-    titleTMC_PULLEY_OVER_TEMPERATURE_ERROR,
-    titleTMC_SELECTOR_OVER_TEMPERATURE_ERROR,
-    titleTMC_IDLER_OVER_TEMPERATURE_ERROR,
-    titleTMC_PULLEY_DRIVER_ERROR,
-    titleTMC_SELECTOR_DRIVER_ERROR,
-    titleTMC_IDLER_DRIVER_ERROR,
-    titleTMC_PULLEY_DRIVER_RESET,
-    titleTMC_SELECTOR_DRIVER_RESET,
-    titleTMC_IDLER_DRIVER_RESET,
-    titleTMC_PULLEY_UNDERVOLTAGE_ERROR,
-    titleTMC_SELECTOR_UNDERVOLTAGE_ERROR,
-    titleTMC_IDLER_UNDERVOLTAGE_ERROR,
-    titleTMC_PULLEY_DRIVER_SHORTED,
-    titleTMC_SELECTOR_DRIVER_SHORTED,
-    titleTMC_IDLER_DRIVER_SHORTED,
+    titleIDLER_CANNOT_MOVE,
+    titlePULLEY_TMC_WARNING_TMC_TOO_HOT,
+    titleSELECTOR_TMC_WARNING_TMC_TOO_HOT,
+    titleIDLER_TMC_WARNING_TMC_TOO_HOT,
+    titlePULLEY_TMC_OVERHEAT_ERROR,
+    titleSELECTOR_TMC_OVERHEAT_ERROR,
+    titleIDLER_TMC_OVERHEAT_ERROR,
+    titlePULLEY_TMC_DRIVER_ERROR,
+    titleSELECTOR_TMC_DRIVER_ERROR,
+    titleIDLER_TMC_DRIVER_ERROR,
+    titlePULLEY_TMC_DRIVER_RESET,
+    titleSELECTOR_TMC_DRIVER_RESET,
+    titleIDLER_TMC_DRIVER_RESET,
+    titlePULLEY_TMC_UNDERVOLTAGE_ERROR,
+    titleSELECTOR_TMC_UNDERVOLTAGE_ERROR,
+    titleIDLER_TMC_UNDERVOLTAGE_ERROR,
+    titlePULLEY_TMC_DRIVER_SHORTED,
+    titleSELECTOR_TMC_DRIVER_SHORTED,
+    titleIDLER_TMC_DRIVER_SHORTED,
     titleMMU_NOT_RESPONDING,
     titleCOMMUNICATION_ERROR,
     titleFILAMENT_ALREADY_LOADED,
     titleINVALID_TOOL,
     titleQUEUE_FULL,
-    titleVERSION_MISMATCH,
-    titleRUNTIME_ERROR,
+    titleFW_UPDATE_NEEDED,
+    titleFW_RUNTIME_ERROR,
+    titleUNLOAD_MANUALLY
 };
 
 // @@TODO looking at the texts, they can be composed of several parts and/or parametrized (could save a lot of space ;) )
-static const char descFINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA didn't trigger while loading filament. Ensure that the steel FINDA ball can move freely and check the wiring.");
-static const char descFINDA_DIDNT_SWITCH_OFF[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading the filament manually and ensure steel FINDA ball can move freely.");
-static const char descFSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading the filament. Check that the filament reached the fsensor and check the wiring.");
-static const char descFSENSOR_DIDNT_SWITCH_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading the filament. The filament is probably stuck near the sensor or the sensor is malfunctioning.");
-static const char descPULLEY_STALLED[] PROGMEM_I1 = ISTR("The Pulley stalled - check for anything blocking the filament from being pushed/pulled to/from the extruder.");
+static const char descFINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA didn't trigger while loading filament. Ensure filament can move and FINDA works.");
+static const char descFINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading manually. Ensure filament can move and FINDA works.");
+static const char descFSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading filament. Ensure filament reached the fsensor and the sensor works.");
+static const char descFSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works.");
+static const char descPULLEY_STALLED[] PROGMEM_I1 = ISTR("The Pulley motor stalled - Ensure the pulley can move and check the wiring.");
 static const char descSELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly - check for anything blocking its movement.");
-static const char descIDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Idler cannot home properly - check for anything blocking its movement.");
-static const char descTMC_PULLEY_OVER_TEMPERATURE_WARN[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is almost overheated. Make sure there is sufficient airflow near the MMU board.");
-static const char descTMC_SELECTOR_OVER_TEMPERATURE_WARN[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is almost overheated. Make sure there is sufficient airflow near the MMU board.");
-static const char descTMC_IDLER_OVER_TEMPERATURE_WARN[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is almost overheated. Make sure there is sufficient airflow near the MMU board.");
-static const char descTMC_PULLEY_OVER_TEMPERATURE_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is overheated. Cool down the MMU board and restart MMU.");
-static const char descTMC_SELECTOR_OVER_TEMPERATURE_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is overheated. Cool down the MMU board and restart MMU.");
-static const char descTMC_IDLER_OVER_TEMPERATURE_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is overheated. Cool down the MMU board and restart MMU.");
-static const char descTMC_PULLEY_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is not responding. Try restarting the MMU. If the issue persist contact the support.");
-static const char descTMC_SELECTOR_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is not responding. Try restarting the MMU. If the issue persist contact the support.");
-static const char descTMC_IDLER_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is not responding. Try restarting the MMU. If the issue persist contact the support.");
-static const char descTMC_PULLEY_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
-static const char descTMC_SELECTOR_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
-static const char descTMC_IDLER_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
-static const char descTMC_PULLEY_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Pulley TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
-static const char descTMC_SELECTOR_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Selector TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
-static const char descTMC_IDLER_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Idler TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
-static const char descTMC_PULLEY_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Pulley TMC driver. Check the wiring and connectors. If the issue persist contact the support.");
-static const char descTMC_SELECTOR_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors. If the issue persist contact the support.");
-static const char descTMC_IDLER_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors. If the issue persist contact the support.");
-static const char descMMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU unit not responding. Check the wiring and connectors. If the issue persist contact the support.");
-static const char descCOMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persist contact the support.");
+static const char descSELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Selector cannot move - check for anything blocking its movement. Check the wiring is correct.");
+static const char descIDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Idler cannot home properly - check for anything blocking its movement.");
+static const char descIDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Idler cannot move properly - check for anything blocking its movement. Check the wiring is correct.");
+static const char descPULLEY_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
+static const char descSELECTOR_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
+static const char descIDLER_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
+static const char descPULLEY_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is overheated. Cool down the MMU board and reset MMU.");
+static const char descSELECTOR_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is overheated. Cool down the MMU board and reset MMU.");
+static const char descIDLER_TMC_OVERHEAT_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is overheated. Cool down the MMU board and reset MMU.");
+static const char descPULLEY_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is not responding. Try resetting the MMU. If the issue persists contact support.");
+static const char descSELECTOR_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is not responding. Try resetting the MMU. If the issue persists contact support.");
+static const char descIDLER_TMC_DRIVER_ERROR[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is not responding. Try resetting the MMU. If the issue persists contact support.");
+static const char descPULLEY_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
+static const char descSELECTOR_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
+static const char descIDLER_TMC_DRIVER_RESET[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor was restarted. There is probably an issue with the electronics. Check the wiring and connectors.");
+static const char descPULLEY_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Pulley TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
+static const char descSELECTOR_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Selector TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
+static const char descIDLER_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1 = ISTR("Not enough current for the Idler TMC driver. There is probably an issue with the electronics. Check the wiring and connectors.");
+static const char descPULLEY_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Pulley TMC driver. Check the wiring and connectors. If the issue persists contact support.");
+static const char descSELECTOR_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors. If the issue persists contact support.");
+static const char descIDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors. If the issue persists contact support.");
+static const char descMMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU unit not responding. Check the wiring and connectors. If the issue persists contact support.");
+static const char descCOMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persists contact support.");
 static const char descFILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); 
-static const char descINVALID_TOOL[] PROGMEM_I1 = ISTR("Requested filament tool is not available on this hardware. Check the G-code file for possible issue."); 
-static const char descQUEUE_FULL[] PROGMEM_I1 = ISTR("Internal runtime error of the firmware, please restart the MMU."); 
-static const char descVERSION_MISMATCH[] PROGMEM_I1 = ISTR("The MMU unit reports its FW version incompatible with the printer's firmware. Make sure the MMU firmware is up to date."); 
-static const char descRUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try restarting the MMU unit or updating the firmware. If the issue persist contact the support.");
+static const char descINVALID_TOOL[] PROGMEM_I1 = ISTR("Requested filament tool is not available on this hardware. Check the G-code for tool index out of range (T0-T4)."); 
+static const char descQUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal error, please reset the MMU."); 
+static const char descFW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit reports its FW version incompatible with the printer's firmware. Make sure the MMU firmware is up to date."); 
+static const char descFW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU unit or updating the firmware. If the issue persists contact support.");
+static const char descUNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Unexpected FINDA reading. Ensure no filament is under FINDA and the selector is free. Check FINDA connection.");
 
 static const char * const errorDescs[] PROGMEM = {
     descFINDA_DIDNT_TRIGGER,
-    descFINDA_DIDNT_SWITCH_OFF,
+    descFINDA_DIDNT_GO_OFF,
     descFSENSOR_DIDNT_TRIGGER,
-    descFSENSOR_DIDNT_SWITCH_OFF,
+    descFSENSOR_DIDNT_GO_OFF,
     descPULLEY_STALLED,
     descSELECTOR_CANNOT_HOME,
+    descSELECTOR_CANNOT_MOVE,
     descIDLER_CANNOT_HOME,
-    descTMC_PULLEY_OVER_TEMPERATURE_WARN,
-    descTMC_SELECTOR_OVER_TEMPERATURE_WARN,
-    descTMC_IDLER_OVER_TEMPERATURE_WARN,
-    descTMC_PULLEY_OVER_TEMPERATURE_ERROR,
-    descTMC_SELECTOR_OVER_TEMPERATURE_ERROR,
-    descTMC_IDLER_OVER_TEMPERATURE_ERROR,
-    descTMC_PULLEY_DRIVER_ERROR,
-    descTMC_SELECTOR_DRIVER_ERROR,
-    descTMC_IDLER_DRIVER_ERROR,
-    descTMC_PULLEY_DRIVER_RESET,
-    descTMC_SELECTOR_DRIVER_RESET,
-    descTMC_IDLER_DRIVER_RESET,
-    descTMC_PULLEY_UNDERVOLTAGE_ERROR,
-    descTMC_SELECTOR_UNDERVOLTAGE_ERROR,
-    descTMC_IDLER_UNDERVOLTAGE_ERROR,
-    descTMC_PULLEY_DRIVER_SHORTED,
-    descTMC_SELECTOR_DRIVER_SHORTED,
-    descTMC_IDLER_DRIVER_SHORTED,
+    descIDLER_CANNOT_MOVE,
+    descPULLEY_WARNING_TMC_TOO_HOT,
+    descSELECTOR_WARNING_TMC_TOO_HOT,
+    descIDLER_WARNING_TMC_TOO_HOT,
+    descPULLEY_TMC_OVERHEAT_ERROR,
+    descSELECTOR_TMC_OVERHEAT_ERROR,
+    descIDLER_TMC_OVERHEAT_ERROR,
+    descPULLEY_TMC_DRIVER_ERROR,
+    descSELECTOR_TMC_DRIVER_ERROR,
+    descIDLER_TMC_DRIVER_ERROR,
+    descPULLEY_TMC_DRIVER_RESET,
+    descSELECTOR_TMC_DRIVER_RESET,
+    descIDLER_TMC_DRIVER_RESET,
+    descPULLEY_TMC_UNDERVOLTAGE_ERROR,
+    descSELECTOR_TMC_UNDERVOLTAGE_ERROR,
+    descIDLER_TMC_UNDERVOLTAGE_ERROR,
+    descPULLEY_TMC_DRIVER_SHORTED,
+    descSELECTOR_TMC_DRIVER_SHORTED,
+    descIDLER_TMC_DRIVER_SHORTED,
     descMMU_NOT_RESPONDING,
     descCOMMUNICATION_ERROR,
     descFILAMENT_ALREADY_LOADED,
     descINVALID_TOOL,
     descQUEUE_FULL,
-    descVERSION_MISMATCH,
-    descRUNTIME_ERROR,
+    descFW_UPDATE_NEEDED,
+    descFW_RUNTIME_ERROR,
+    descUNLOAD_MANUALLY
 };
 
 
@@ -264,7 +281,6 @@ enum class ButtonOperations : uint8_t {
 // Therefore at least some of the buttons, which can occur on the screen together, need to be 5-chars long max @@TODO.
 // @@TODO beware - this doesn't correspond to the HW MMU buttons - needs to be discussed
 static const char btnRetry[] PROGMEM_I1 = ISTR("Retry");
-static const char btnSlowLoad[] PROGMEM_I1 = ISTR("Slow");
 static const char btnContinue[] PROGMEM_I1 = ISTR("Done");
 static const char btnRestartMMU[] PROGMEM_I1 = ISTR("RstMMU");
 static const char btnUnload[] PROGMEM_I1 = ISTR("Unload");
@@ -295,42 +311,45 @@ uint8_t constexpr Btns(ButtonOperations b0, ButtonOperations b1){
 }
 
 static const uint8_t errorButtons[] PROGMEM = {
-    Btns(ButtonOperations::Retry, ButtonOperations::Continue),
-    Btns(ButtonOperations::Retry, ButtonOperations::Continue),
-    Btns(ButtonOperations::Retry, ButtonOperations::Continue),
-    Btns(ButtonOperations::Retry, ButtonOperations::Continue),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     
-    Btns(ButtonOperations::NoOperation, ButtonOperations::Continue),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::Continue),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::Continue),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
 
     Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),
     Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),
     Btns(ButtonOperations::Continue, ButtonOperations::RestartMMU),
     
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
 
     Btns(ButtonOperations::Unload, ButtonOperations::Continue),
     Btns(ButtonOperations::StopPrint, ButtonOperations::RestartMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
     Btns(ButtonOperations::NoOperation, ButtonOperations::DisableMMU),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::RestartMMU),
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
 };
 
 } // namespace MMU2
