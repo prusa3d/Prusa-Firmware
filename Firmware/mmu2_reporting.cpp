@@ -37,7 +37,7 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
     const uint8_t button_low_nibble  = BUTTON_OP_LO_NIBBLE(button_operation);
 
     // Check if the menu should have three or two choices
-    if (button_low_nibble == (uint8_t)ButtonOperations::NoOperation)
+    if (button_high_nibble == (uint8_t)ButtonOperations::NoOperation)
     {
         // Two operations not specified, the error menu should only show two choices
         two_choices = true;
@@ -58,9 +58,7 @@ back_to_choices:
         NULL, // NULL, since title screen is not in PROGMEM
         false,
         false,
-        two_choices ?
-            static_cast<const char * const>(pgm_read_ptr(&btnOperation[button_high_nibble - 1]))
-            : static_cast<const char * const>(pgm_read_ptr(&btnOperation[button_low_nibble - 1])),
+        static_cast<const char * const>(pgm_read_ptr(&btnOperation[button_low_nibble - 1])),
         two_choices ?
             btnMore
             : static_cast<const char * const>(pgm_read_ptr(&btnOperation[button_high_nibble - 1])),
@@ -86,7 +84,6 @@ back_to_choices:
         switch (button_high_nibble)
         {
         case (uint8_t)ButtonOperations::Retry:
-        case (uint8_t)ButtonOperations::SlowLoad:
         case (uint8_t)ButtonOperations::Continue:
         case (uint8_t)ButtonOperations::RestartMMU:
         case (uint8_t)ButtonOperations::Unload:
@@ -100,13 +97,9 @@ back_to_choices:
     } else {
         // TODO: User selected the left most choice, not sure what to do.
         //       At the moment just return to the status screen
-        switch ( two_choices ?
-            button_high_nibble
-            : button_low_nibble
-        )
+        switch (button_low_nibble)
         {
         case (uint8_t)ButtonOperations::Retry:
-        case (uint8_t)ButtonOperations::SlowLoad:
         case (uint8_t)ButtonOperations::Continue:
         case (uint8_t)ButtonOperations::RestartMMU:
         case (uint8_t)ButtonOperations::Unload:
