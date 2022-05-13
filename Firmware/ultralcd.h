@@ -66,7 +66,7 @@ void lcd_crash_detect_disable();
 
 enum ButtonChoice
 {
-	LEFT_BUTTON_CHOICE = 0,
+    LEFT_BUTTON_CHOICE = 0,
     MIDDLE_BUTTON_CHOICE = 1,
     RIGHT_BUTTON_CHOICE = 2,
 };
