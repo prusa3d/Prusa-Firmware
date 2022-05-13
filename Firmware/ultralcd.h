@@ -64,6 +64,13 @@ void lcd_crash_detect_enable();
 void lcd_crash_detect_disable();
 #endif
 
+enum ButtonChoice
+{
+	LEFT_BUTTON_CHOICE = 0,
+    MIDDLE_BUTTON_CHOICE = 1,
+    RIGHT_BUTTON_CHOICE = 2,
+};
+
 extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
 
@@ -76,7 +83,7 @@ extern int8_t lcd_show_yes_no_and_wait(bool allow_timeouting = true, bool defaul
 // 0: no, 1: yes, -1: timeouted
 extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 extern int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes,
-        const char *first_choice, const char *second_choice, const char *third_choice = nullptr, uint8_t second_col = 7, uint8_t third_col = 13);
+        const char *first_choice, const char *second_choice, const char *third_choice = nullptr, uint8_t second_col = 7);
 extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 // Ask the user to move the Z axis up to the end stoppers and let
 // the user confirm that it has been done.

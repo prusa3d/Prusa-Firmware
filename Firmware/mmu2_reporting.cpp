@@ -67,12 +67,11 @@ back_to_choices:
         two_choices ? nullptr : btnMore,
         two_choices ? 
             10 // If two choices, allow the first choice to have more characters
-            : 7,
-        13
+            : 7
     );
 
-    if ((two_choices && choice_selected == 1)      // Two choices and middle button selected
-        || (!two_choices && choice_selected == 2)) // Three choices and right most button selected
+    if ((two_choices && choice_selected == MIDDLE_BUTTON_CHOICE)      // Two choices and middle button selected
+        || (!two_choices && choice_selected == RIGHT_BUTTON_CHOICE)) // Three choices and right most button selected
     {
         // 'More' show error description
         lcd_show_fullscreen_message_and_wait_P(
@@ -81,7 +80,7 @@ back_to_choices:
 
         // Return back to the choice menu
         goto back_to_choices;
-    } else if(choice_selected == 1) {
+    } else if(choice_selected == MIDDLE_BUTTON_CHOICE) {
         // TODO: User selected middle choice, not sure what to do.
         //       At the moment just return to the status screen
         switch (button_high_nibble)

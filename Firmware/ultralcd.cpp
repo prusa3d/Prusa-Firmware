@@ -3192,30 +3192,29 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
     return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
 }
 //! @brief Show a two-choice prompt on the last line of the LCD
-//! @param first_selected Show first choice as selected if true, the second otherwise
+//! @param selected Show first choice as selected if true, the second otherwise
 //! @param first_choice text caption of first possible choice
 //! @param second_choice text caption of second possible choice
-void lcd_show_two_choices_prompt_P(uint8_t first_selected, const char *first_choice, const char *second_choice, uint8_t second_col)
+//! @param second_col column on LCD where second choice is rendered. If third choice is set, this value is hardcoded to 7
+//! @param third_choice text caption of third, optional, choice.
+void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice = nullptr)
 {
     lcd_set_cursor(0, 3);
-    lcd_print(first_selected == 0 ? '>': ' ');
+    lcd_print(selected == LEFT_BUTTON_CHOICE ? '>': ' ');
     lcd_puts_P(first_choice);
-    lcd_set_cursor(second_col, 3);
-    lcd_print(first_selected == 1 ? '>': ' ');
-    lcd_puts_P(second_choice);
-}
-
-void lcd_show_three_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, const char *third_choice, uint8_t second_col, uint8_t third_col)
-{
-    lcd_set_cursor(0, 3);
-    lcd_print(selected == 0 ? '>': ' ');
-    lcd_puts_P(first_choice);
-    lcd_set_cursor(second_col, 3);
-    lcd_print(selected == 1 ? '>': ' ');
-    lcd_puts_P(second_choice);
-	lcd_set_cursor(third_col, 3);
-    lcd_print(selected == 2 ? '>': ' ');
-    lcd_puts_P(third_choice);
+    if (third_choice)
+    {
+        lcd_set_cursor(7, 3);
+        lcd_print(selected == MIDDLE_BUTTON_CHOICE ? '>': ' ');
+        lcd_puts_P(second_choice);
+        lcd_set_cursor(13, 3);
+        lcd_print(selected == RIGHT_BUTTON_CHOICE ? '>': ' ');
+        lcd_puts_P(third_choice);
+    } else {
+        lcd_set_cursor(second_col, 3);
+        lcd_print(selected == MIDDLE_BUTTON_CHOICE ? '>': ' ');
+        lcd_puts_P(second_choice);
+    }
 }
 
 //! @brief Show single or multiple screen message with two possible choices and wait with possible timeout
@@ -3226,27 +3225,21 @@ void lcd_show_three_choices_prompt_P(uint8_t selected, const char *first_choice,
 //! @param second_choice text caption of second possible choice. Must be in PROGMEM
 //! @param third_choice text caption of second possible choice. Must be in PROGMEM. When not set to nullptr first_choice and second_choice may not be more than 5 characters long.
 //! @param second_col column on LCD where second_choice starts
-//! @param third_col column on LCD where second_choice starts
 //! @retval 0 first choice selected by user
 //! @retval 1 first choice selected by user
 //! @retval 2 third choice selected by user
 //! @retval -1 screen timed out (only possible if allow_timeouting is true)
 int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_first,
-        const char *first_choice, const char *second_choice, const char *third_choice, uint8_t second_col, uint8_t third_col)
+        const char *first_choice, const char *second_choice, const char *third_choice, uint8_t second_col)
 {
 	const char *msg_next = msg ? lcd_display_message_fullscreen_P(msg) : NULL;
 	bool multi_screen = msg_next != NULL;
 	lcd_set_custom_characters_nextpage();
 
 	// Initial status/prompt on single-screen messages
-	uint8_t yes = default_first ? 1 : 0;
+	uint8_t yes = default_first ? MIDDLE_BUTTON_CHOICE : LEFT_BUTTON_CHOICE;
 	if (!msg_next) {
-		if (third_choice)
-		{ // third_choice is not nullptr, safe to dereference
-			lcd_show_three_choices_prompt_P(yes, first_choice, second_choice, third_choice, second_col, third_col);
-		} else {
-			lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);
-		}
+		lcd_show_choices_prompt_P(yes, first_choice, second_choice, second_col, third_choice);
 	}
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = _millis();
@@ -3267,24 +3260,23 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, boo
 				if (msg_next == NULL) {
 					if (third_choice)
 					{ // third_choice is not nullptr, safe to dereference
-						if (enc_dif > lcd_encoder_diff && yes != 0) {
+						if (enc_dif > lcd_encoder_diff && yes != LEFT_BUTTON_CHOICE) {
 							// Rotating knob counter clockwise
 							yes = yes - 1;
-						} else if (enc_dif < lcd_encoder_diff && yes != 2) {
+						} else if (enc_dif < lcd_encoder_diff && yes != RIGHT_BUTTON_CHOICE) {
 							// Rotating knob clockwise
 							yes = yes + 1;
 						}
-						lcd_show_three_choices_prompt_P(yes, first_choice, second_choice, third_choice, second_col, third_col);
 					} else {
-						if (enc_dif > lcd_encoder_diff && yes != 0) {
+						if (enc_dif > lcd_encoder_diff && yes != LEFT_BUTTON_CHOICE) {
 							// Rotating knob counter clockwise
-							yes = 0;
-						} else if (enc_dif < lcd_encoder_diff && yes != 1) {
+							yes = LEFT_BUTTON_CHOICE;
+						} else if (enc_dif < lcd_encoder_diff && yes != MIDDLE_BUTTON_CHOICE) {
 							// Rotating knob clockwise
-							yes = 1;
+							yes = MIDDLE_BUTTON_CHOICE;
 						}
-						lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);
 					}
+					lcd_show_choices_prompt_P(yes, first_choice, second_choice, second_col, third_choice);
 					enc_dif = lcd_encoder_diff;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}
@@ -3311,12 +3303,7 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, boo
 			msg_next = lcd_display_message_fullscreen_P(msg_next);
 		}
 		if (msg_next == NULL) {
-			if (third_choice)
-			{ // third_choice is not nullptr, safe to dereference
-				lcd_show_three_choices_prompt_P(yes, first_choice, second_choice, third_choice, second_col, third_col);
-			} else {
-				lcd_show_two_choices_prompt_P(yes, first_choice, second_choice, second_col);
-			}
+			lcd_show_choices_prompt_P(yes, first_choice, second_choice, second_col, third_choice);
 		}
 	}
 }
