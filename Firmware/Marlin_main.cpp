@@ -648,12 +648,11 @@ void crashdet_detected(uint8_t mask)
         lcd_puts_P(_T(MSG_RESUME_PRINT));
         lcd_putc('?');
         bool yesno = lcd_show_yes_no_and_wait(false);
-		lcd_update_enable(true);
-		if (yesno)
+		if (yesno == LEFT_BUTTON_CHOICE)
 		{
 			enquecommand_P(PSTR("CRASH_RECOVER"));
 		}
-		else
+		else // MIDDLE_BUTTON_CHOICE
 		{
 			enquecommand_P(PSTR("CRASH_CANCEL"));
 		}
@@ -1583,7 +1582,7 @@ void setup()
 #ifdef UVLO_SUPPORT
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
 /*
-	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false))	recover_print();
+	  if (!lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false))	recover_print();
 	  else {
 		  eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 		  lcd_update_enable(true);
@@ -1605,8 +1604,9 @@ void setup()
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Normal recovery!")); 
           #endif 
-          if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) ) recover_print(0); 
-          else { 
+          if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) == LEFT_BUTTON_CHOICE) {
+              recover_print(0); 
+          } else { 
               eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
               lcd_update_enable(true); 
               lcd_update(2); 
@@ -3289,9 +3289,11 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			#ifdef STEEL_SHEET
 			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
-			if(result) lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
+			if(result == LEFT_BUTTON_CHOICE) {
+				lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
+			}
 			#endif //STEEL_SHEET
-		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
+			lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
 			lcd_puts_at_P(0,3,_n("1/4"));
@@ -3585,13 +3587,13 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         KEEPALIVE_STATE(PAUSED_FOR_USER);
         lcd_change_fil_state =
             lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
-        if (lcd_change_fil_state == 0) {
-			lcd_clear();
-			lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
-			current_position[X_AXIS] -= 100;
-			plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
-			st_synchronize();
-			lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=5
+        if (lcd_change_fil_state == MIDDLE_BUTTON_CHOICE) {
+            lcd_clear();
+            lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
+            current_position[X_AXIS] -= 100;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
+            st_synchronize();
+            lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=5
         }
     }
 
@@ -4918,7 +4920,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
         lcd_show_fullscreen_message_and_wait_P(_i("Stable ambient temperature 21-26C is needed a rigid stand is required."));////MSG_TEMP_CAL_WARNING c=20 r=4
         bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
 
-        if (result)
+        if (result == LEFT_BUTTON_CHOICE)
         {
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line_curposXYZE(3000 / 60);
