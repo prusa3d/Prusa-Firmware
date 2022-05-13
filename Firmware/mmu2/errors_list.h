@@ -266,12 +266,11 @@ static const char * const errorDescs[] PROGMEM = {
 enum class ButtonOperations : uint8_t {
     NoOperation = 0,
     Retry       = 1,
-    SlowLoad    = 2,
-    Continue    = 3,
-    RestartMMU  = 4,
-    Unload      = 5,
-    StopPrint   = 6,
-    DisableMMU  = 7,
+    Continue    = 2,
+    RestartMMU  = 3,
+    Unload      = 4,
+    StopPrint   = 5,
+    DisableMMU  = 6,
 };
 
 // we have max 3 buttons/operations to select from
@@ -291,7 +290,6 @@ static const char btnMore[] PROGMEM_I1 = ISTR("More\x01");
 // Used to parse the buttons from Btns().
 static const char * const btnOperation[] PROGMEM = {
     btnRetry,
-    btnSlowLoad,
     btnContinue,
     btnRestartMMU,
     btnUnload,
