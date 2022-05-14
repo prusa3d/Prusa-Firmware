@@ -3233,8 +3233,8 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
 //! @retval 1 first choice selected by user
 //! @retval 2 third choice selected by user
 //! @retval -1 screen timed out (only possible if allow_timeouting is true)
-int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection,
-        const char *first_choice, const char *second_choice, const char *third_choice, uint8_t second_col)
+int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char * const msg, bool allow_timeouting, uint8_t default_selection,
+       const char * const first_choice, const char * const second_choice, const char * const third_choice, uint8_t second_col)
 {
 	const char *msg_next = msg ? lcd_display_message_fullscreen_P(msg) : NULL;
 	bool multi_screen = msg_next != NULL;
