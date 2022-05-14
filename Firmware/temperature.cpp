@@ -1426,10 +1426,8 @@ FORCE_INLINE static void applyBabysteps() {
 }
 #endif //BABYSTEPPING
 
-FORCE_INLINE static void soft_pwm_isr()
+FORCE_INLINE static void soft_pwm_core()
 {
-  lcd_buttons_update();
-
   static uint8_t pwm_count = (1 << SOFT_PWM_SCALE);
   static uint8_t soft_pwm_0;
 #ifdef SLOW_PWM_HEATERS
@@ -1764,6 +1762,12 @@ FORCE_INLINE static void soft_pwm_isr()
   } //if ((pwm_count % 64) == 0) {
   
 #endif //ifndef SLOW_PWM_HEATERS
+}
+
+FORCE_INLINE static void soft_pwm_isr()
+{
+  lcd_buttons_update();
+  soft_pwm_core();
 
 #ifdef BABYSTEPPING
   applyBabysteps();
