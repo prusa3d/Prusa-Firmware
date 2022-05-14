@@ -1,8 +1,9 @@
 #include "mmu2_reporting.h"
 #include "mmu2_error_converter.h"
 #include "mmu2/error_codes.h"
-#include "mmu2/errors_list.h"
+#include "mmu2/buttons.h"
 #include "ultralcd.h"
+#include "language.h"
 
 namespace MMU2 {
 
@@ -26,13 +27,13 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
     //! |prusa3d.com/ERR04504|     <- URL 20 characters
     //! |                    |     <- empty line
     //! |>Retry  >Done >MoreW|     <- buttons
-    const uint16_t ei = MMUErrorCodeIndex((uint16_t)ec);
+    const uint8_t ei = PrusaErrorCodeIndex(ec);
     uint8_t choice_selected = 0;
     bool two_choices = false;
 
     // Read and determine what operations should be shown on the menu
     // Note: uint16_t is used here to avoid compiler warning. uint8_t is only half the size of void*
-    const uint8_t button_operation   = reinterpret_cast<uint16_t>(const_cast<void*>(pgm_read_ptr(&errorButtons[ei])));
+    const uint8_t button_operation   = PrusaErrorButtons(ei);
     const uint8_t button_high_nibble = BUTTON_OP_HI_NIBBLE(button_operation);
     const uint8_t button_low_nibble  = BUTTON_OP_LO_NIBBLE(button_operation);
 
@@ -46,23 +47,18 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
 back_to_choices:
     lcd_clear();
     lcd_update_enable(false);
-
+     
     // Print title and header
-    lcd_printf_P(PSTR("%S\nprusa3d.com/ERR04%hu"),
-        static_cast<const char * const>(pgm_read_ptr(&errorTitles[ei])),
-        reinterpret_cast<uint16_t>(const_cast<void*>(pgm_read_ptr(&errorCodes[ei])))
-    );
+    lcd_printf_P(PSTR("%S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
 
     // Render the choices and store selection in 'choice_selected'
     choice_selected = lcd_show_multiscreen_message_with_choices_and_wait_P(
         NULL, // NULL, since title screen is not in PROGMEM
         false,
         two_choices ? LEFT_BUTTON_CHOICE : MIDDLE_BUTTON_CHOICE,
-        static_cast<const char * const>(pgm_read_ptr(&btnOperation[button_low_nibble - 1])),
-        two_choices ?
-            btnMore
-            : static_cast<const char * const>(pgm_read_ptr(&btnOperation[button_high_nibble - 1])),
-        two_choices ? nullptr : btnMore,
+        _T(PrusaErrorButtonTitle(button_low_nibble - 1)),
+        _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_high_nibble - 1)),
+        two_choices ? nullptr : _T(PrusaErrorButtonMore()),
         two_choices ? 
             10 // If two choices, allow the first choice to have more characters
             : 7
@@ -72,9 +68,7 @@ back_to_choices:
         || (!two_choices && choice_selected == RIGHT_BUTTON_CHOICE)) // Three choices and right most button selected
     {
         // 'More' show error description
-        lcd_show_fullscreen_message_and_wait_P(
-            static_cast<const char * const>(pgm_read_ptr(&errorDescs[ei]))
-        );
+        lcd_show_fullscreen_message_and_wait_P(_T(PrusaErrorDesc(ei)));
 
         // Return back to the choice menu
         goto back_to_choices;
@@ -115,7 +109,7 @@ back_to_choices:
 
 void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
     custom_message_type = CustomMsg::MMUProgress;
-    lcd_setstatuspgm( ProgressCodeToText(ec) );
+    lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
 }
 
 Buttons ButtonPressed(uint16_t ec) { 
