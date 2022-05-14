@@ -1401,6 +1401,31 @@ void adc_ready(void) //callback from adc when sampling finished
 	temp_meas_ready = true;
 }
 
+#ifdef BABYSTEPPING
+FORCE_INLINE static void applyBabysteps() {
+  for(uint8_t axis=0;axis<3;axis++)
+  {
+    int curTodo=babystepsTodo[axis]; //get rid of volatile for performance
+
+    if(curTodo>0)
+    {
+      CRITICAL_SECTION_START;
+      babystep(axis,/*fwd*/true);
+      babystepsTodo[axis]--; //less to do next time
+      CRITICAL_SECTION_END;
+    }
+    else
+    if(curTodo<0)
+    {
+      CRITICAL_SECTION_START;
+      babystep(axis,/*fwd*/false);
+      babystepsTodo[axis]++; //less to do next time
+      CRITICAL_SECTION_END;
+    }
+  }
+}
+#endif //BABYSTEPPING
+
 FORCE_INLINE static void soft_pwm_isr()
 {
   lcd_buttons_update();
@@ -1740,28 +1765,8 @@ FORCE_INLINE static void soft_pwm_isr()
   
 #endif //ifndef SLOW_PWM_HEATERS
 
-  
 #ifdef BABYSTEPPING
-  for(uint8_t axis=0;axis<3;axis++)
-  {
-    int curTodo=babystepsTodo[axis]; //get rid of volatile for performance
-   
-    if(curTodo>0)
-    {
-      CRITICAL_SECTION_START;
-      babystep(axis,/*fwd*/true);
-      babystepsTodo[axis]--; //less to do next time
-      CRITICAL_SECTION_END;
-    }
-    else
-    if(curTodo<0)
-    {
-      CRITICAL_SECTION_START;
-      babystep(axis,/*fwd*/false);
-      babystepsTodo[axis]++; //less to do next time
-      CRITICAL_SECTION_END;
-    }
-  }
+  applyBabysteps();
 #endif //BABYSTEPPING
 
   // Check if a stack overflow happened
