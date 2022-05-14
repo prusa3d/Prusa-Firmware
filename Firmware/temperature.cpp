@@ -43,6 +43,10 @@
 #include "Timer.h"
 #include "Configuration_prusa.h"
 
+#if (ADC_OVRSAMPL != OVERSAMPLENR)
+#error "ADC_OVRSAMPL oversampling must match OVERSAMPLENR"
+#endif
+
 //===========================================================================
 //=============================public variables============================
 //===========================================================================
