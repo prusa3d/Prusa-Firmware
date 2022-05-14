@@ -29,6 +29,9 @@ static constexpr uint8_t FindErrorIndex(uint16_t pec) {
 
 // check that the searching algoritm works
 static_assert( FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_TRIGGER) == 0);
+static_assert( FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_GO_OFF) == 1);
+static_assert( FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER) == 2);
+static_assert( FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF) == 3);
 
 uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     switch (ec) {
@@ -132,7 +135,8 @@ uint8_t PrusaErrorButtons(uint8_t i){
 }
 
 const char * const PrusaErrorButtonTitle(uint8_t bi){
-    return (const char * const)pgm_read_ptr(btnOperation + bi);
+    // -1 represents the hidden NoOperation button which is not drawn in any way
+    return (const char * const)pgm_read_ptr(btnOperation + bi - 1);
 }
 
 const char * const PrusaErrorButtonMore(){

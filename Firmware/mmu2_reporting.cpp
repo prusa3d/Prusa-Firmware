@@ -56,8 +56,8 @@ back_to_choices:
         NULL, // NULL, since title screen is not in PROGMEM
         false,
         two_choices ? LEFT_BUTTON_CHOICE : MIDDLE_BUTTON_CHOICE,
-        _T(PrusaErrorButtonTitle(button_low_nibble - 1)),
-        _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_high_nibble - 1)),
+        _T(PrusaErrorButtonTitle(button_low_nibble)),
+        _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_high_nibble)),
         two_choices ? nullptr : _T(PrusaErrorButtonMore()),
         two_choices ? 
             10 // If two choices, allow the first choice to have more characters
