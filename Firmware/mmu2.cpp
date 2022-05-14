@@ -647,6 +647,8 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
             loadFilamentStarted = true;
             break;
         case ProgressCode::FeedingToNozzle:
+            // prepare for the movement of the E-motor
+            st_synchronize();
             // Nothing yet
             break;
         default:
@@ -679,7 +681,7 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
             }
             break;
         case ProgressCode::FeedingToNozzle:
-            // Nothing yet
+            execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
             break;
         default:
             // do nothing yet
