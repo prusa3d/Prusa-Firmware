@@ -315,17 +315,11 @@ void homeaxis(uint8_t axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 void homeaxis(uint8_t axis, uint8_t cnt = 1);
 #endif //TMC2130
 
-
-#ifdef FAN_SOFT_PWM
-extern unsigned char fanSpeedSoftPwm;
-#endif
-
 #ifdef FWRETRACT
 extern bool retracted[EXTRUDERS];
 extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
-
 
 extern uint8_t host_keepalive_interval;
 

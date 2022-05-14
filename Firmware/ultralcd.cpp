@@ -10,7 +10,7 @@
 #include "Marlin.h"
 #include "language.h"
 #include "cardreader.h"
-#include "temperature.h"
+#include "fancheck.h"
 #include "stepper.h"
 #include "ConfigurationStore.h"
 #include "printers.h"

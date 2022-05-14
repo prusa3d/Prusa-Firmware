@@ -22,10 +22,6 @@
 #define temperature_h 
 
 #include "Marlin.h"
-#include "planner.h"
-
-#include "stepper.h"
-
 #include "config.h"
 
 
@@ -235,39 +231,12 @@ FORCE_INLINE void autotempShutdown(){
 
 void PID_autotune(float temp, int extruder, int ncycles);
 
-void setExtruderAutoFanState(uint8_t state);
-void checkExtruderAutoFans();
-
-
-#if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
-
-enum { 
-	EFCE_OK = 0,   //!< normal operation, both fans are ok
-	EFCE_FIXED,    //!< previous fan error was fixed
-	EFCE_DETECTED, //!< fan error detected, but not reported yet
-	EFCE_REPORTED  //!< fan error detected and reported to LCD and serial
-};
-extern volatile uint8_t fan_check_error;
-
-void countFanSpeed();
-void checkFanSpeed();
-void fanSpeedError(unsigned char _fan);
-
-void check_fans();
-
-#endif //(defined(TACH_0))
-
 void check_min_temp();
 void check_max_temp();
 
-#ifdef EXTRUDER_ALTFAN_DETECT
-  extern bool extruder_altfan_detect();
-  extern void altfanOverride_toggle();
-  extern bool altfanOverride_get();
-#endif //EXTRUDER_ALTFAN_DETECT
-
-extern unsigned long extruder_autofan_last_check;
+#ifdef FAN_SOFT_PWM
+extern unsigned char fanSpeedSoftPwm;
+#endif
 extern uint8_t fanSpeedBckp;
-extern bool fan_measuring;
 
 #endif

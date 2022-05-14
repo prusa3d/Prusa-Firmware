@@ -55,6 +55,7 @@
 #include "planner.h"
 #include "stepper.h"
 #include "temperature.h"
+#include "fancheck.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "ConfigurationStore.h"

@@ -72,6 +72,7 @@
 #include "planner.h"
 #include "stepper.h"
 #include "temperature.h"
+#include "fancheck.h"
 #include "motion_control.h"
 #include "cardreader.h"
 #include "ConfigurationStore.h"
