@@ -550,7 +550,7 @@ void manage_heater()
     }
   } // End extruder for loop
 
-  manageFans();
+  checkFans();
 
   #ifndef PIDTEMPBED
   if(_millis() - previous_millis_bed_heater < BED_CHECK_INTERVAL)
@@ -1768,7 +1768,7 @@ FORCE_INLINE static void soft_pwm_isr()
   if (!SdFatUtil::test_stack_integrity()) stack_error();
 
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
-  check_fans();
+  readFanTach();
 #endif //(defined(TACH_0))
 }
 

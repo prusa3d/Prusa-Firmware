@@ -219,7 +219,7 @@ void checkExtruderAutoFans()
 #endif // any extruder auto fan pins set
 
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
-void check_fans() {
+void readFanTach() {
 #ifdef FAN_SOFT_PWM
     if (READ(TACH_0) != fan_state[0]) {
         if(fan_measuring) fan_edge_counter[0] ++;
@@ -238,7 +238,7 @@ void check_fans() {
 }
 #endif //TACH_0
 
-void manageFans()
+void checkFans()
 {
 #ifndef DEBUG_DISABLE_FANCHECK
 #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)

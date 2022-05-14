@@ -13,7 +13,7 @@ enum {
 };
 extern volatile uint8_t fan_check_error;
 
-void check_fans();
+void readFanTach();
 #endif //(defined(TACH_0))
 
 #ifdef EXTRUDER_ALTFAN_DETECT
@@ -32,5 +32,5 @@ void setExtruderAutoFanState(uint8_t state);
 void checkExtruderAutoFans();
 #endif
 
-void manageFans();
+void checkFans();
 void hotendFanSetFullSpeed();
