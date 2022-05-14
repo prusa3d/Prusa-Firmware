@@ -875,7 +875,7 @@ void tp_init()
   // timer2 already enabled earlier in the code
   // now enable the COMPB temperature interrupt
   OCR2B = 128;
-  ENABLE_TEMPERATURE_INTERRUPT();
+  ENABLE_SOFT_PWM_INTERRUPT();
 
   timer4_init(); //for tone and Extruder fan PWM
   
@@ -1401,7 +1401,7 @@ void adc_ready(void) //callback from adc when sampling finished
 	temp_meas_ready = true;
 }
 
-FORCE_INLINE static void temperature_isr()
+FORCE_INLINE static void soft_pwm_isr()
 {
   lcd_buttons_update();
 
@@ -1779,11 +1779,11 @@ ISR(TIMER2_COMPB_vect)
 ISR(TIMER0_COMPB_vect)
 #endif //SYSTEM_TIMER_2
 {
-    DISABLE_TEMPERATURE_INTERRUPT();
+    DISABLE_SOFT_PWM_INTERRUPT();
     sei();
-    temperature_isr();
+    soft_pwm_isr();
     cli();
-    ENABLE_TEMPERATURE_INTERRUPT();
+    ENABLE_SOFT_PWM_INTERRUPT();
 }
 
 void check_max_temp()

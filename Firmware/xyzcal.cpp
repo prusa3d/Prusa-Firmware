@@ -139,7 +139,7 @@ void xyzcal_meassure_enter(void)
 {
 	DBG(_n("xyzcal_meassure_enter\n"));
 	disable_heater();
-	DISABLE_TEMPERATURE_INTERRUPT();
+	DISABLE_SOFT_PWM_INTERRUPT();
 #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 	DISABLE_FANCHECK_INTERRUPT();
 #endif //(defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
@@ -156,7 +156,7 @@ void xyzcal_meassure_leave(void)
 {
 	DBG(_n("xyzcal_meassure_leave\n"));
     planner_abort_hard();
-	ENABLE_TEMPERATURE_INTERRUPT();
+	ENABLE_SOFT_PWM_INTERRUPT();
 #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 	ENABLE_FANCHECK_INTERRUPT();
 #endif //(defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
