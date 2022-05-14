@@ -20,16 +20,17 @@ constexpr InputIt find_if_cx(InputIt first, InputIt last, UnaryPredicate p) {
 // Making a constexpr FindError should instruct the compiler to optimize the ConvertMMUErrorCode
 // in such a way that no searching will ever be done at runtime.
 // A call to FindError then compiles to a single instruction even on the AVR.
-static constexpr uint16_t FindErrorIndex(uint32_t pec) {
-    constexpr uint32_t errorCodesSize = sizeof(errorCodes) / sizeof(errorCodes[0]);
-    constexpr auto errorCodesEnd = errorCodes + errorCodesSize;
-    auto i = find_if_cx(errorCodes, errorCodesEnd, [pec](uint16_t ed) -> bool {
-        return ed == pec;
-    });
-    return i != errorCodesEnd ? *i : errorCodes[errorCodesSize - 1];
+static constexpr uint8_t FindErrorIndex(uint16_t pec) {
+    constexpr uint16_t errorCodesSize = sizeof(errorCodes) / sizeof(errorCodes[0]);
+    constexpr const auto *errorCodesEnd = errorCodes + errorCodesSize;
+    const auto *i = find_if_cx(errorCodes, errorCodesEnd, [pec](uint16_t ed){ return ed == pec; });
+    return (i != errorCodesEnd) ? (i-errorCodes) : (errorCodesSize - 1);
 }
 
-const uint16_t MMUErrorCodeIndex(uint16_t ec) {
+// check that the searching algoritm works
+static_assert( FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_TRIGGER) == 0);
+
+uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     switch (ec) {
     case (uint16_t)ErrorCode::FINDA_DIDNT_SWITCH_ON:
         return FindErrorIndex(ERR_MECHANICAL_FINDA_DIDNT_TRIGGER);
@@ -66,9 +67,9 @@ const uint16_t MMUErrorCodeIndex(uint16_t ec) {
         return FindErrorIndex(ERR_SYSTEM_UNLOAD_MANUALLY);
     }
 
-//    // TMC-related errors - multiple of these can occur at once
-//    // - in such a case we report the first which gets found/converted into Prusa-Error-Codes (usually the fact, that one TMC has an issue is serious enough)
-//    // By carefully ordering the checks here we can prioritize the errors being reported to the user.
+    // TMC-related errors - multiple of these can occur at once
+    // - in such a case we report the first which gets found/converted into Prusa-Error-Codes (usually the fact, that one TMC has an issue is serious enough)
+    // By carefully ordering the checks here we can prioritize the errors being reported to the user.
     if (ec & (uint16_t)ErrorCode::TMC_PULLEY_BIT) {
         if (ec & (uint16_t)ErrorCode::TMC_IOIN_MISMATCH)
             return FindErrorIndex(ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR);
@@ -110,19 +111,32 @@ const uint16_t MMUErrorCodeIndex(uint16_t ec) {
             return FindErrorIndex(ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR);
     }
 
-//    // if nothing got caught, return a generic error
-//    return FindError(ERR_OTHER);
+    // if nothing got caught, return a generic runtime error
+    return FindErrorIndex(ERR_SYSTEM_FW_RUNTIME_ERROR);
 }
 
-void TranslateErr(uint16_t ec, char *dst, size_t dstSize) { 
-    uint16_t ei = MMUErrorCodeIndex(ec);
-    // just to prevent the compiler from stripping the data structures from the final binary for now
-    *dst = errorButtons[ei];
-    snprintf(
-        dst, dstSize, "%S %S",
-        static_cast<const char * const>(pgm_read_ptr(&errorTitles[ei])),
-        static_cast<const char * const>(pgm_read_ptr(&errorDescs[ei]))
-    );
+uint16_t PrusaErrorCode(uint8_t i){
+    return pgm_read_word(errorCodes + i);
+}
+
+const char * const PrusaErrorTitle(uint8_t i){
+    return (const char * const)pgm_read_ptr(errorTitles + i);
+}
+
+const char * const PrusaErrorDesc(uint8_t i){
+    return (const char * const)pgm_read_ptr(errorDescs + i);
+}
+
+uint8_t PrusaErrorButtons(uint8_t i){
+    return pgm_read_byte(errorButtons + i);
+}
+
+const char * const PrusaErrorButtonTitle(uint8_t bi){
+    return (const char * const)pgm_read_ptr(btnOperation + bi);
+}
+
+const char * const PrusaErrorButtonMore(){
+    return btnMore;
 }
 
 } // namespace MMU2
