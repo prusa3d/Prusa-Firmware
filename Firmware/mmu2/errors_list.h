@@ -330,7 +330,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Unload, ButtonOperations::Continue),
     Btns(ButtonOperations::StopPrint, ButtonOperations::RestartMMU),
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::DisableMMU),
+    Btns(ButtonOperations::DisableMMU, ButtonOperations::NoOperation),
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
 };
