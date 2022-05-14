@@ -57,7 +57,7 @@ back_to_choices:
     choice_selected = lcd_show_multiscreen_message_with_choices_and_wait_P(
         NULL, // NULL, since title screen is not in PROGMEM
         false,
-        false,
+        two_choices ? LEFT_BUTTON_CHOICE : MIDDLE_BUTTON_CHOICE,
         static_cast<const char * const>(pgm_read_ptr(&btnOperation[button_low_nibble - 1])),
         two_choices ?
             btnMore

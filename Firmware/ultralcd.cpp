@@ -3183,13 +3183,13 @@ lcd_wait_for_click_delay(0);
 //! @brief Show multiple screen message with yes and no possible choices and wait with possible timeout
 //! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
+//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
 //! @retval 0 yes choice selected by user
 //! @retval 1 no choice selected by user
 //! @retval -1 screen timed out
-int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes) //currently just max. n*4 + 3 lines supported (set in language header files)
+int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection) //currently just max. n*4 + 3 lines supported (set in language header files)
 {
-    return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
+    return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_selection, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
 }
 //! @brief Show a two-choice prompt on the last line of the LCD
 //! @param selected Show first choice as selected if true, the second otherwise
@@ -3220,7 +3220,7 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
 //! @brief Show single or multiple screen message with two possible choices and wait with possible timeout
 //! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting bool, if true, allows time outing of the screen
-//! @param default_first uint8_t, Control which choice is selected first. 0: left most, 1: middle, 2: right most choice. The first choice is selected by default
+//! @param default_selection uint8_t, Control which choice is selected first. 0: left most, 1: middle, 2: right most choice. The left most choice is selected by default
 //! @param first_choice text caption of first possible choice. Must be in PROGMEM
 //! @param second_choice text caption of second possible choice. Must be in PROGMEM
 //! @param third_choice text caption of second possible choice. Must be in PROGMEM. When not set to nullptr first_choice and second_choice may not be more than 5 characters long.
@@ -3229,7 +3229,7 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
 //! @retval 1 first choice selected by user
 //! @retval 2 third choice selected by user
 //! @retval -1 screen timed out (only possible if allow_timeouting is true)
-int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_first,
+int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection,
         const char *first_choice, const char *second_choice, const char *third_choice, uint8_t second_col)
 {
 	const char *msg_next = msg ? lcd_display_message_fullscreen_P(msg) : NULL;
@@ -3237,7 +3237,7 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, boo
 	lcd_set_custom_characters_nextpage();
 
 	// Initial status/prompt on single-screen messages
-	uint8_t current_selection = default_first ? MIDDLE_BUTTON_CHOICE : LEFT_BUTTON_CHOICE;
+	uint8_t current_selection = default_selection;
 	if (!msg_next) {
 		lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
 	}
@@ -3310,26 +3310,26 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, boo
 
 //! @brief Display and wait for a Yes/No choice using the last line of the LCD
 //! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
+//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
 //! @retval 0 yes choice selected by user
 //! @retval 1 no choice selected by user
 //! @retval -1 screen timed out
-int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, bool default_yes)
+int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, uint8_t default_selection)
 {
-    return lcd_show_multiscreen_message_yes_no_and_wait_P(NULL, allow_timeouting, default_yes);
+    return lcd_show_multiscreen_message_yes_no_and_wait_P(NULL, allow_timeouting, default_selection);
 }
 
 //! @brief Show single screen message with yes and no possible choices and wait with possible timeout
 //! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
+//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
 //! @retval 0 yes choice selected by user
 //! @retval 1 no choice selected by user
 //! @retval -1 screen timed out
 //! @relates lcd_show_yes_no_and_wait
-int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
+int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection)
 {
-    return lcd_show_multiscreen_message_yes_no_and_wait_P(msg, allow_timeouting, default_yes);
+    return lcd_show_multiscreen_message_yes_no_and_wait_P(msg, allow_timeouting, default_selection);
 }
 
 void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask)
