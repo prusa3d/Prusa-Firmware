@@ -49,7 +49,7 @@ back_to_choices:
     lcd_update_enable(false);
      
     // Print title and header
-    lcd_printf_P(PSTR("%S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
+    lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
 
     // Render the choices and store selection in 'choice_selected'
     choice_selected = lcd_show_multiscreen_message_with_choices_and_wait_P(
