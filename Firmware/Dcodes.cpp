@@ -573,6 +573,7 @@ void dcode_9()
 		for (uint8_t i = 0; i < ADC_CHAN_CNT; i++)
 			printf_P(PSTR("\tADC%d=%4d\t(%S)\n"), i, dcode_9_ADC_val(i) >> 4, dcode_9_ADC_name(i));
 	}
+#if 0
 	else
 	{
 		uint8_t index = 0xff;
@@ -588,6 +589,7 @@ void dcode_9()
 			}
 		}
 	}
+#endif
 }
 
     /*!

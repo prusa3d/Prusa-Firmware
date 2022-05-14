@@ -97,6 +97,7 @@ unsigned char soft_pwm_bed;
 //===========================================================================
 //=============================private variables============================
 //===========================================================================
+#define TEMP_MEAS_RATE 250
 static volatile bool temp_meas_ready = false;
 
 #ifdef PIDTEMP
@@ -265,10 +266,7 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
      target_temperature[extruder] = (int)temp; // to display the requested target extruder temperature properly on the main screen
   }
 
-
-
-
- for(;;) {
+  for(;;) {
 #ifdef WATCHDOG
     wdt_reset();
 #endif //WATCHDOG
@@ -451,9 +449,13 @@ void manage_heater()
   float pid_input;
   float pid_output;
 
-  if(temp_meas_ready != true)   //better readability
-    return; 
-// more precisely - this condition partially stabilizes time interval for regulation values evaluation (@ ~ 230ms)
+  // run at TEMP_MEAS_RATE
+  if(temp_meas_ready != true) return;
+  static unsigned long old_stamp = _millis();
+  unsigned long new_stamp = _millis();
+  unsigned long diff = new_stamp - old_stamp;
+  if(diff < TEMP_MEAS_RATE) return;
+  old_stamp = new_stamp;
 
   // ADC values need to be converted before checking: converted values are later used in MINTEMP
   updateTemperaturesFromRawValues();
@@ -774,6 +776,11 @@ static float analog2tempAmbient(int raw)
     and this function is called from normal context as it is too slow to run in interrupts and will block the stepper routine otherwise */
 static void updateTemperaturesFromRawValues()
 {
+    CRITICAL_SECTION_START;
+    adc_start_cycle();
+    temp_meas_ready = false;
+    CRITICAL_SECTION_END;
+
     for(uint8_t e=0;e<EXTRUDERS;e++)
     {
         current_temperature[e] = analog2temp(current_temperature_raw[e], e);
@@ -793,10 +800,6 @@ static void updateTemperaturesFromRawValues()
 #else //DEBUG_HEATER_BED_SIM
 	current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
 #endif //DEBUG_HEATER_BED_SIM
-
-    CRITICAL_SECTION_START;
-    temp_meas_ready = false;
-    CRITICAL_SECTION_END;
 }
 
 void tp_init()
@@ -863,15 +866,17 @@ void tp_init()
 	digitalWrite(MAX6675_SS,1);
   #endif
 
+  // initialize the ADC and start a conversion
   adc_init();
+  adc_start_cycle();
 
   timer0_init(); //enables the heatbed timer.
 
   // timer2 already enabled earlier in the code
   // now enable the COMPB temperature interrupt
   OCR2B = 128;
-  TIMSK2 |= (1<<OCIE2B);
-  
+  ENABLE_TEMPERATURE_INTERRUPT();
+
   timer4_init(); //for tone and Extruder fan PWM
   
   // Wait for temperature measurement to settle
@@ -1374,10 +1379,6 @@ int read_max6675()
 }
 #endif
 
-
-extern "C" {
-
-
 void adc_ready(void) //callback from adc when sampling finished
 {
 	current_temperature_raw[0] = adc_values[ADC_PIN_IDX(TEMP_0_PIN)]; //heater
@@ -1400,12 +1401,9 @@ void adc_ready(void) //callback from adc when sampling finished
 	temp_meas_ready = true;
 }
 
-} // extern "C"
-
 FORCE_INLINE static void temperature_isr()
 {
-	if (!temp_meas_ready) adc_cycle();
-	lcd_buttons_update();
+  lcd_buttons_update();
 
   static uint8_t pwm_count = (1 << SOFT_PWM_SCALE);
   static uint8_t soft_pwm_0;
