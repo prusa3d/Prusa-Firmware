@@ -3241,9 +3241,9 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, boo
 	lcd_set_custom_characters_nextpage();
 
 	// Initial status/prompt on single-screen messages
-	uint8_t yes = default_first ? MIDDLE_BUTTON_CHOICE : LEFT_BUTTON_CHOICE;
+	uint8_t current_selection = default_first ? MIDDLE_BUTTON_CHOICE : LEFT_BUTTON_CHOICE;
 	if (!msg_next) {
-		lcd_show_choices_prompt_P(yes, first_choice, second_choice, second_col, third_choice);
+		lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
 	}
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = _millis();
@@ -3264,23 +3264,23 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, boo
 				if (msg_next == NULL) {
 					if (third_choice)
 					{ // third_choice is not nullptr, safe to dereference
-						if (enc_dif > lcd_encoder_diff && yes != LEFT_BUTTON_CHOICE) {
+						if (enc_dif > lcd_encoder_diff && current_selection != LEFT_BUTTON_CHOICE) {
 							// Rotating knob counter clockwise
-							yes = yes - 1;
-						} else if (enc_dif < lcd_encoder_diff && yes != RIGHT_BUTTON_CHOICE) {
+							current_selection--;
+						} else if (enc_dif < lcd_encoder_diff && current_selection != RIGHT_BUTTON_CHOICE) {
 							// Rotating knob clockwise
-							yes = yes + 1;
+							current_selection++;
 						}
 					} else {
-						if (enc_dif > lcd_encoder_diff && yes != LEFT_BUTTON_CHOICE) {
+						if (enc_dif > lcd_encoder_diff && current_selection != LEFT_BUTTON_CHOICE) {
 							// Rotating knob counter clockwise
-							yes = LEFT_BUTTON_CHOICE;
-						} else if (enc_dif < lcd_encoder_diff && yes != MIDDLE_BUTTON_CHOICE) {
+							current_selection = LEFT_BUTTON_CHOICE;
+						} else if (enc_dif < lcd_encoder_diff && current_selection != MIDDLE_BUTTON_CHOICE) {
 							// Rotating knob clockwise
-							yes = MIDDLE_BUTTON_CHOICE;
+							current_selection = MIDDLE_BUTTON_CHOICE;
 						}
 					}
-					lcd_show_choices_prompt_P(yes, first_choice, second_choice, second_col, third_choice);
+					lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
 					enc_dif = lcd_encoder_diff;
 					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}
@@ -3295,7 +3295,7 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, boo
 					KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
 					lcd_update_enable(true);
-					return yes;
+					return current_selection;
 				}
 				else break;
 			}
@@ -3307,7 +3307,7 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char *msg, boo
 			msg_next = lcd_display_message_fullscreen_P(msg_next);
 		}
 		if (msg_next == NULL) {
-			lcd_show_choices_prompt_P(yes, first_choice, second_choice, second_col, third_choice);
+			lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
 		}
 	}
 }
