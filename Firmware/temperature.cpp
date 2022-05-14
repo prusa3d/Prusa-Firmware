@@ -434,11 +434,8 @@ int getHeaterPower(int heater) {
   return soft_pwm[heater];
 }
 
-// ready for eventually parameters adjusting
-void resetPID(uint8_t)                            // only for compiler-warning elimination (if function do nothing)
-//void resetPID(uint8_t extruder)
-{
-}
+// reset PID state after changing target_temperature
+void resetPID(uint8_t extruder _UNUSED) {}
 
 void manage_heater()
 {
