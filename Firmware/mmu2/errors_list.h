@@ -1,9 +1,11 @@
 // Extracted from Prusa-Error-Codes repo
 // Subject to automation and optimization
+// BEWARE - this file shall be included only into mmu2_error_converter.cpp, not anywhere else!
 #pragma once
 #include "inttypes.h"
 #include "../language.h"
 #include <avr/pgmspace.h>
+#include "buttons.h"
 
 namespace MMU2 {
 
@@ -72,7 +74,7 @@ typedef enum : uint16_t {
 // and inadvertedly falls back to copying the whole structure into RAM (which is obviously unwanted).
 // But since this file ought to be generated in the future from yaml prescription,
 // it really makes no difference if there are "nice" data structures or plain arrays.
-static const uint16_t errorCodes[] PROGMEM = {
+static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_FINDA_DIDNT_TRIGGER,
     ERR_MECHANICAL_FINDA_DIDNT_GO_OFF,
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
@@ -260,18 +262,6 @@ static const char * const errorDescs[] PROGMEM = {
     descUNLOAD_MANUALLY
 };
 
-/// Will be mapped onto dialog button responses in the FW
-/// Those responses have their unique+translated texts as well
-enum class ButtonOperations : uint8_t {
-    NoOperation,
-    Retry,
-    Continue,
-    RestartMMU,
-    Unload,
-    StopPrint,
-    DisableMMU,
-};
-
 // we have max 3 buttons/operations to select from
 // one of them is "More" to show the explanation text normally hidden in the next screens.
 // 01234567890123456789
@@ -284,7 +274,17 @@ static const char btnRestartMMU[] PROGMEM_I1 = ISTR("RstMMU");
 static const char btnUnload[] PROGMEM_I1 = ISTR("Unload");
 static const char btnStop[] PROGMEM_I1 = ISTR("Stop");
 static const char btnDisableMMU[] PROGMEM_I1 = ISTR("Disable");
-static const char btnMore[] PROGMEM_I1 = ISTR("More"); // @@TODO add that downwards facing >> character
+static const char btnMore[] PROGMEM_I1 = ISTR("More\x01");
+
+// Used to parse the buttons from Btns().
+static const char * const btnOperation[] PROGMEM = {
+    btnRetry,
+    btnContinue,
+    btnRestartMMU,
+    btnUnload,
+    btnStop,
+    btnDisableMMU
+};
 
 // We have 8 different operations/buttons at this time, so we need at least 4 bits to encode each.
 // Since one of the buttons is always "More", we can skip that one.
@@ -330,9 +330,13 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Unload, ButtonOperations::Continue),
     Btns(ButtonOperations::StopPrint, ButtonOperations::RestartMMU),
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
-    Btns(ButtonOperations::NoOperation, ButtonOperations::DisableMMU),
+    Btns(ButtonOperations::DisableMMU, ButtonOperations::NoOperation),
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
 };
+
+static_assert( sizeof(errorCodes) / sizeof(errorCodes[0]) == sizeof(errorDescs) / sizeof (errorDescs[0]));
+static_assert( sizeof(errorCodes) / sizeof(errorCodes[0]) == sizeof(errorTitles) / sizeof (errorTitles[0]));
+static_assert( sizeof(errorCodes) / sizeof(errorCodes[0]) == sizeof(errorButtons) / sizeof (errorButtons[0]));
 
 } // namespace MMU2

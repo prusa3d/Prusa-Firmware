@@ -671,6 +671,7 @@ void lcdui_print_status_line(void) {
             break;
         case CustomMsg::MMUProgress:
             // set up at mmu2_reporting.cpp, just do nothing here
+            lcd_print(lcd_status_message);
             break;
         }
     }
@@ -2297,7 +2298,7 @@ void show_preheat_nozzle_warning()
 void lcd_load_filament_color_check()
 {
 	bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, true);
-	while (!clean) {
+	while (clean == MIDDLE_BUTTON_CHOICE) {
 		lcd_update_enable(true);
 		lcd_update(2);
 		load_filament_final_feed();
@@ -3112,7 +3113,7 @@ const char* lcd_display_message_fullscreen_P(const char *msg)
  */
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 {
-    LcdUpdateDisabler lcdUpdateDisabler;
+    lcd_update_enable(false);
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
 	lcd_set_custom_characters_nextpage();
@@ -3133,7 +3134,6 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 					KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
 					lcd_update_enable(true);
-					lcd_update(2);
 					return;
 				}
 				else {
@@ -3181,61 +3181,104 @@ lcd_wait_for_click_delay(0);
 }
 
 //! @brief Show multiple screen message with yes and no possible choices and wait with possible timeout
-//! @param msg Message to show
+//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
-//! @retval 1 yes choice selected by user
-//! @retval 0 no choice selected by user
+//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
+//! @retval 0 yes choice selected by user
+//! @retval 1 no choice selected by user
 //! @retval -1 screen timed out
-int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes) //currently just max. n*4 + 3 lines supported (set in language header files)
+int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection) //currently just max. n*4 + 3 lines supported (set in language header files)
 {
-    return lcd_show_multiscreen_message_two_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO));
+    return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_selection, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
 }
-//! @brief Show multiple screen message with two possible choices and wait with possible timeout
-//! @param msg Message to show
-//! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_first if true, fist choice is selected by default, otherwise second choice is preselected
+//! @brief Show a two-choice prompt on the last line of the LCD
+//! @param selected Show first choice as selected if true, the second otherwise
 //! @param first_choice text caption of first possible choice
 //! @param second_choice text caption of second possible choice
-//! @retval 1 first choice selected by user
-//! @retval 0 second choice selected by user
-//! @retval -1 screen timed out
-int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_first,
-        const char *first_choice, const char *second_choice)
+//! @param second_col column on LCD where second choice is rendered. If third choice is set, this value is hardcoded to 7
+//! @param third_choice text caption of third, optional, choice.
+void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice = nullptr)
 {
-	const char *msg_next = lcd_display_message_fullscreen_P(msg);
-	bool multi_screen = msg_next != NULL;
-	bool yes = default_first ? true : false;
+    lcd_set_cursor(0, 3);
+    lcd_print(selected == LEFT_BUTTON_CHOICE ? '>': ' ');
+    lcd_puts_P(first_choice);
+    if (third_choice)
+    {
+        lcd_set_cursor(7, 3);
+        lcd_print(selected == MIDDLE_BUTTON_CHOICE ? '>': ' ');
+        lcd_puts_P(second_choice);
+        lcd_set_cursor(13, 3);
+        lcd_print(selected == RIGHT_BUTTON_CHOICE ? '>': ' ');
+        lcd_puts_P(third_choice);
+    } else {
+        lcd_set_cursor(second_col, 3);
+        lcd_print(selected == MIDDLE_BUTTON_CHOICE ? '>': ' ');
+        lcd_puts_P(second_choice);
+    }
+}
 
+//! @brief Show single or multiple screen message with two possible choices and wait with possible timeout
+//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
+//! @param allow_timeouting bool, if true, allows time outing of the screen
+//! @param default_selection uint8_t, Control which choice is selected first. 0: left most, 1: middle, 2: right most choice. The left most choice is selected by default
+//! @param first_choice text caption of first possible choice. Must be in PROGMEM
+//! @param second_choice text caption of second possible choice. Must be in PROGMEM
+//! @param third_choice text caption of second possible choice. Must be in PROGMEM. When not set to nullptr first_choice and second_choice may not be more than 5 characters long.
+//! @param second_col column on LCD where second_choice starts
+//! @retval 0 first choice selected by user
+//! @retval 1 first choice selected by user
+//! @retval 2 third choice selected by user
+//! @retval -1 screen timed out (only possible if allow_timeouting is true)
+int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char * const msg, bool allow_timeouting, uint8_t default_selection,
+       const char * const first_choice, const char * const second_choice, const char * const third_choice, uint8_t second_col)
+{
+	const char *msg_next = msg ? lcd_display_message_fullscreen_P(msg) : NULL;
+	bool multi_screen = msg_next != NULL;
+	lcd_set_custom_characters_nextpage();
+
+	// Initial status/prompt on single-screen messages
+	uint8_t current_selection = default_selection;
+	if (!msg_next) {
+		lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
+	}
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = _millis();
-	int8_t        enc_dif = lcd_encoder_diff;
+	int8_t enc_dif = lcd_encoder_diff;
 	lcd_consume_click();
-	//KEEPALIVE_STATE(PAUSED_FOR_USER);
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
 		for (uint8_t i = 0; i < 100; ++i) {
 			delay_keep_alive(50);
 			if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
+			{
 				return -1;
+			}
 			manage_heater();
 			manage_inactivity(true);
 
-			if (abs(enc_dif - lcd_encoder_diff) > 4) {
+			if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
 				if (msg_next == NULL) {
-					lcd_set_cursor(0, 3);
-					if (enc_dif < lcd_encoder_diff && yes) {
-						lcd_print(' ');
-						lcd_putc_at(7, 3, '>');
-						yes = false;
-						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+					if (third_choice)
+					{ // third_choice is not nullptr, safe to dereference
+						if (enc_dif > lcd_encoder_diff && current_selection != LEFT_BUTTON_CHOICE) {
+							// Rotating knob counter clockwise
+							current_selection--;
+						} else if (enc_dif < lcd_encoder_diff && current_selection != RIGHT_BUTTON_CHOICE) {
+							// Rotating knob clockwise
+							current_selection++;
+						}
+					} else {
+						if (enc_dif > lcd_encoder_diff && current_selection != LEFT_BUTTON_CHOICE) {
+							// Rotating knob counter clockwise
+							current_selection = LEFT_BUTTON_CHOICE;
+						} else if (enc_dif < lcd_encoder_diff && current_selection != MIDDLE_BUTTON_CHOICE) {
+							// Rotating knob clockwise
+							current_selection = MIDDLE_BUTTON_CHOICE;
+						}
 					}
-					else if (enc_dif > lcd_encoder_diff && !yes) {
-						lcd_print('>');
-						lcd_putc_at(7, 3, ' ');
-						yes = true;
-						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-					}
+					lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
 					enc_dif = lcd_encoder_diff;
+					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}
 				else {
 					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
@@ -3245,9 +3288,10 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 			if (lcd_clicked()) {
 				Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 				if (msg_next == NULL) {
-					//KEEPALIVE_STATE(IN_HANDLER);
+					KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
-					return yes;
+					lcd_update_enable(true);
+					return current_selection;
 				}
 				else break;
 			}
@@ -3259,88 +3303,33 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 			msg_next = lcd_display_message_fullscreen_P(msg_next);
 		}
 		if (msg_next == NULL) {
-			lcd_set_cursor(0, 3);
-			if (yes) lcd_print('>');
-			lcd_puts_at_P(1, 3, first_choice);
-			lcd_set_cursor(7, 3);
-			if (!yes) lcd_print('>');
-			lcd_puts_at_P(8, 3, second_choice);
+			lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
 		}
 	}
 }
 
-//! @brief Display and wait for a Yes/No choice using the last two lines of the LCD
+//! @brief Display and wait for a Yes/No choice using the last line of the LCD
 //! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
-//! @retval 1 yes choice selected by user
-//! @retval 0 no choice selected by user
+//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
+//! @retval 0 yes choice selected by user
+//! @retval 1 no choice selected by user
 //! @retval -1 screen timed out
-int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, bool default_yes)
+int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, uint8_t default_selection)
 {
-	if (default_yes) {
-		lcd_putc_at(0, 2, '>');
-		lcd_puts_P(_T(MSG_YES));
-		lcd_puts_at_P(1, 3, _T(MSG_NO));
-	}
-	else {
-		lcd_puts_at_P(1, 2, _T(MSG_YES));
-		lcd_putc_at(0, 3, '>');
-		lcd_puts_P(_T(MSG_NO));
-	}
-	int8_t retval = default_yes ? true : false;
-
-	// Wait for user confirmation or a timeout.
-	unsigned long previous_millis_cmd = _millis();
-	int8_t        enc_dif = lcd_encoder_diff;
-	lcd_consume_click();
-	KEEPALIVE_STATE(PAUSED_FOR_USER);
-	for (;;) {
-		if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
-		{
-		    retval = -1;
-		    break;
-		}
-		manage_heater();
-		manage_inactivity(true);
-		if (abs(enc_dif - lcd_encoder_diff) > 4) {
-			lcd_set_cursor(0, 2);
-				if (enc_dif < lcd_encoder_diff && retval) {
-					lcd_print(' ');
-					lcd_putc_at(0, 3, '>');
-					retval = 0;
-					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-
-				}
-				else if (enc_dif > lcd_encoder_diff && !retval) {
-					lcd_print('>');
-					lcd_putc_at(0, 3, ' ');
-					retval = 1;
-					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-				}
-				enc_dif = lcd_encoder_diff;
-		}
-		if (lcd_clicked()) {
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-			KEEPALIVE_STATE(IN_HANDLER);
-			break;
-		}
-	}
-    lcd_encoder_diff = 0;
-    return retval;
+    return lcd_show_multiscreen_message_yes_no_and_wait_P(NULL, allow_timeouting, default_selection);
 }
 
 //! @brief Show single screen message with yes and no possible choices and wait with possible timeout
-//! @param msg Message to show
+//! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting if true, allows time outing of the screen
-//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
-//! @retval 1 yes choice selected by user
-//! @retval 0 no choice selected by user
+//! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
+//! @retval 0 yes choice selected by user
+//! @retval 1 no choice selected by user
 //! @retval -1 screen timed out
 //! @relates lcd_show_yes_no_and_wait
-int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
+int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection)
 {
-    lcd_display_message_fullscreen_P(msg);
-    return lcd_show_yes_no_and_wait(allow_timeouting, default_yes);
+    return lcd_show_multiscreen_message_yes_no_and_wait_P(msg, allow_timeouting, default_selection);
 }
 
 void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask)
@@ -3984,7 +3973,7 @@ void menu_setlang(unsigned char lang)
 {
 	if (!lang_select(lang))
 	{
-		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, true))////MSG_COPY_SEL_LANG c=20 r=3
+		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, true) == LEFT_BUTTON_CHOICE)////MSG_COPY_SEL_LANG c=20 r=3
 			lang_boot_update_start(lang);
 		lcd_update_enable(true);
 		lcd_clear();
@@ -4185,7 +4174,7 @@ void lcd_v2_calibration()
 	    }
 	    else
 	    {
-	        loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, true);
+	        loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, true);
 	        lcd_update_enabled = true;
 
 	    }
@@ -4215,7 +4204,7 @@ void lcd_v2_calibration()
 void lcd_wizard() {
 	bool result = true;
 	if (calibration_status() != CALIBRATION_STATUS_ASSEMBLED) {
-		result = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Running Wizard will delete current calibration results and start from the beginning. Continue?"), false, false);////MSG_WIZARD_RERUN c=20 r=7
+		result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Running Wizard will delete current calibration results and start from the beginning. Continue?"), false, false);////MSG_WIZARD_RERUN c=20 r=7
 	}
 	if (result) {
 		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
@@ -4378,10 +4367,10 @@ void lcd_wizard(WizState state)
 				state = S::Restore;
 			} else {
 				wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_WELCOME), false, true);
-				if (wizard_event) {
+				if (wizard_event == LEFT_BUTTON_CHOICE) {
 					state = S::Restore;
 					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
-				} else {
+				} else { // MIDDLE_BUTTON_CHOICE
 					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 					end = true;
 				}
@@ -4417,7 +4406,9 @@ void lcd_wizard(WizState state)
 			lcd_show_fullscreen_message_and_wait_P(_i("Now remove the test print from steel sheet."));////MSG_REMOVE_TEST_PRINT c=20 r=4
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run z calibration now."));////MSG_WIZARD_Z_CAL c=20 r=8
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
-			if (!wizard_event) lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
+			if (wizard_event == MIDDLE_BUTTON_CHOICE) {
+				lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
+			}
 			wizard_event = gcode_M45(true, 0);
 			if (wizard_event) {
 				//current filament needs to be unloaded and then new filament should be loaded
@@ -4438,16 +4429,10 @@ void lcd_wizard(WizState state)
 		    //start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
-			if (MMU2::mmu2.Enabled())
-			{
-			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), true);
-			} else
-			{
-			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), true);
-			}
-			if (wizard_event) state = S::Lay1CalCold;
-			else
-			{
+			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), true);
+			if (wizard_event == LEFT_BUTTON_CHOICE) {
+				state = S::Lay1CalCold;
+			} else { // MIDDLE_BUTTON_CHOICE
 			    if(MMU2::mmu2.Enabled()) state = S::LoadFilCold;
 			    else state = S::Preheat;
 			}
@@ -4478,7 +4463,7 @@ void lcd_wizard(WizState state)
             break;
 		case S::RepeatLay1Cal:
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Do you want to repeat last step to readjust distance between nozzle and heatbed?"), false);////MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
-			if (wizard_event)
+			if (wizard_event == LEFT_BUTTON_CHOICE)
 			{
 				lcd_show_fullscreen_message_and_wait_P(_i("Please clean heatbed and then press the knob."));////MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 				state = S::Lay1CalCold;
@@ -5433,7 +5418,7 @@ char reset_menu() {
 static void lcd_disable_farm_mode()
 {
 	int8_t disable = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true, false); //allow timeouting, default no
-	if (disable)
+	if (disable == LEFT_BUTTON_CHOICE)
 	{
 		enquecommand_P(PSTR("G99"));
 		lcd_return_to_status();
@@ -7782,8 +7767,7 @@ static void menu_action_sdfile(const char* filename)
   //filename is just a pointer to card.filename, which changes everytime you try to open a file by filename. So you can't use filename directly
   //to open a file. Instead, the cached filename in cmd is used as that one is static for the whole lifetime of this function.
   if (!check_file(cmd + 4)) {
-	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=3
-	  lcd_update_enable(true);
+      result = !lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false, false);////MSG_FILE_INCOMPLETE c=20 r=3
   }
   if (result) {
 	  enquecommand(cmd);
