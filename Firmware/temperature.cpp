@@ -1777,15 +1777,11 @@ ISR(TIMER2_COMPB_vect)
 ISR(TIMER0_COMPB_vect)
 #endif //SYSTEM_TIMER_2
 {
-    static bool _lock = false;
-    if (!_lock)
-    {
-        _lock = true;
-        sei();
-        temperature_isr();
-        cli();
-        _lock = false;
-    }
+    DISABLE_TEMPERATURE_INTERRUPT();
+    sei();
+    temperature_isr();
+    cli();
+    ENABLE_TEMPERATURE_INTERRUPT();
 }
 
 void check_max_temp()
