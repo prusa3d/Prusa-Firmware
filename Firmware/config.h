@@ -6,7 +6,8 @@
 #include "pins.h"
 
 #if (defined(VOLT_IR_PIN) && defined(IR_SENSOR))
-# define IR_SENSOR_ANALOG
+// TODO: IR_SENSOR_ANALOG currently disabled as being incompatible with the new thermal regulation
+// # define IR_SENSOR_ANALOG
 #endif
 
 //ADC configuration
