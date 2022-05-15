@@ -1273,9 +1273,14 @@ void setup()
 	else { //printer version was changed so use default settings 
 		Config_ResetDefault();
 	}
-	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
 
-	tp_init();    // Initialize temperature loop
+    // writes a magic number at the end of static variables to monitor against incorrect overwriting
+    // of static memory by stack (this needs to be done before soft_pwm_init, since the check is
+    // performed inside the soft_pwm_isr)
+    SdFatUtil::set_stack_guard();
+
+    // Initialize temperature loop
+    tp_init();
 
 #ifdef EXTRUDER_ALTFAN_DETECT
 	SERIAL_ECHORPGM(_n("Extruder fan type: "));
