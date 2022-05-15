@@ -799,7 +799,7 @@ static void updateTemperaturesFromRawValues()
 #endif //DEBUG_HEATER_BED_SIM
 }
 
-void tp_init()
+void soft_pwm_init()
 {
 #if MB(RUMBA) && ((TEMP_SENSOR_0==-1)||(TEMP_SENSOR_1==-1)||(TEMP_SENSOR_2==-1)||(TEMP_SENSOR_BED==-1))
   //disable RUMBA JTAG in case the thermocouple extension is plugged on top of JTAG connector
@@ -2035,5 +2035,4 @@ bool has_temperature_compensation()
 #endif
 }
 #endif //PINDA_THERMISTOR
-
 

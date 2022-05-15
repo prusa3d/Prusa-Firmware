@@ -1280,7 +1280,7 @@ void setup()
     SdFatUtil::set_stack_guard();
 
     // Initialize temperature loop
-    tp_init();
+    soft_pwm_init();
 
 #ifdef EXTRUDER_ALTFAN_DETECT
 	SERIAL_ECHORPGM(_n("Extruder fan type: "));

@@ -39,7 +39,7 @@
 
 
 // public functions
-void tp_init();  //initialize the heating
+void soft_pwm_init(); //initialize the soft pwm isr
 void manage_heater(); //it is critical that this is called periodically.
 
 extern bool checkAllHotends(void);
