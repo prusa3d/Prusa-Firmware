@@ -1048,8 +1048,8 @@ static void fw_crash_init()
 
 static void xflash_err_msg()
 {
-	lcd_clear();
-	lcd_puts_P(_n("External SPI flash\nXFLASH is not res-\nponding. Language\nswitch unavailable."));
+    puts_P(_n("XFLASH not responding."));
+    lcd_show_fullscreen_message_and_wait_P(_n("External SPI flash\nXFLASH is not res-\nponding. Language\nswitch unavailable."));
 }
 
 // "Setup" function is called by the Arduino framework on startup.
@@ -1084,10 +1084,6 @@ void setup()
 #if (LANG_MODE != 0) //secondary language support
         update_sec_lang_from_external_flash();
 #endif //(LANG_MODE != 0)
-	}
-	else
-	{
-	    xflash_err_msg();
 	}
 #else
 	const bool xflash_success = true;
@@ -1321,12 +1317,6 @@ void setup()
 
 	tp_init();    // Initialize temperature loop
 
-	if (xflash_success) lcd_splash(); // we need to do this again, because tp_init() kills lcd
-	else
-	{
-	    xflash_err_msg();
-	    puts_P(_n("XFLASH not responding."));
-	}
 #ifdef EXTRUDER_ALTFAN_DETECT
 	SERIAL_ECHORPGM(_n("Extruder fan type: "));
 	if (extruder_altfan_detect())
@@ -1420,6 +1410,10 @@ void setup()
     // avoid unexpected initial shifts on the first move
     clamp_to_software_endstops(current_position);
     plan_set_position_curposXYZE();
+
+    // Show the xflash error message now that serial, lcd and encoder are available
+    if (!xflash_success)
+        xflash_err_msg();
 
 #ifdef FILAMENT_SENSOR
 	fsensor_init();
