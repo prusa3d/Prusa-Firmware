@@ -1279,8 +1279,9 @@ void setup()
     // performed inside the soft_pwm_isr)
     SdFatUtil::set_stack_guard();
 
-    // Initialize temperature loop
+    // Initialize pwm/temperature loops
     soft_pwm_init();
+    temp_mgr_init();
 
 #ifdef EXTRUDER_ALTFAN_DETECT
 	SERIAL_ECHORPGM(_n("Extruder fan type: "));
@@ -1365,7 +1366,9 @@ void setup()
     
 	setup_photpin();
 
+#if 0
 	servo_init();
+#endif
 
 	// Reset the machine correction matrix.
 	// It does not make sense to load the correction matrix until the machine is homed.
