@@ -1835,7 +1835,7 @@ bool has_temperature_compensation()
 #endif //PINDA_THERMISTOR
 
 
-#define TEMP_MGR_INTV   0.3 // seconds, 33.3Hz
+#define TEMP_MGR_INTV   0.27 // seconds, ~3.7Hz
 #define TIMER5_PRESCALE 256
 #define TIMER5_OCRA_OVF (uint16_t)(TEMP_MGR_INTV / ((long double)TIMER5_PRESCALE / F_CPU))
 #define ENABLE_TEMP_MGR_INTERRUPT()  TIMSK5 |=  (1<<OCIE5A)
