@@ -544,16 +544,24 @@ set_build_env_variables()
 BUILD_ENV="1.0.6"
 BOARD="prusa_einsy_rambo"
 BOARD_PACKAGE_NAME="PrusaResearch"
-if [ "$ARDUINO_ENV" == "1.8.13" ]; then
-    BOARD_VERSION="1.0.4"
+if [ "$ARDUINO_ENV" == "1.8.19" ]; then
+    BOARD_VERSION="1.0.5-1"
 else
     BOARD_VERSION="1.0.4"
 fi
-#BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
-BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
+if [ "$ARDUINO_ENV" == "1.8.19" ]; then
+    BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/package_prusa3d_index.json"
+    #BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/devel/IDE_Board_Manager/package_prusa3d_index.json"
+else
+    BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
+fi
 BOARD_FILENAME="prusa3dboards"
-#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
-BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+if [ "$ARDUINO_ENV" == "1.8.19" ]; then
+    BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+    #BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+else
+    BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+fi
 #PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
 if [[ "$BOARD_VERSION" == "1.0.3" || "$BOARD_VERSION" == "1.0.2" || "$BOARD_VERSION" == "1.0.1" ]]; then
     PF_BUILD_FILE_URL="https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
