@@ -83,6 +83,13 @@ if [ -z "$COMMUNITY_LANGUAGES" ]; then
     export COMMUNITY_LANGUAGES="$COMMUNITY_LANGUAGES"
 fi
 
+color()
+{
+    color=$1
+    shift
+    echo "$(tput setaf $color)$*$(tput sgr 0)"
+}
+
 echo "$(tput setaf 2)config.sh started$(tput sgr0)" >&2
 
 _err=0

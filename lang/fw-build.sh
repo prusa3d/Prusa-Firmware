@@ -34,16 +34,27 @@ BIN=$TMPDIR/firmware.bin
 MAP=$TMPDIR/firmware.map
 
 # Extract and patch the symbol table/language map
-echo "$(tput setaf 4)generating firmware symbol map$(tput sgr 0)" >&2
+color 4 "generating firmware symbol map" >&2
 "$OBJCOPY" -I ihex -O binary "$INOHEX" "$BIN"
 ./lang-map.py "$INOELF" "$BIN" > "$MAP"
+
+# Get the maximum size of a single language table
+maxsize=$(grep '^#define \+LANG_SIZE_RESERVED \+' "$SRCDIR/Firmware/config.h" | sed -e 's/\s\+/ /g' | cut -d ' ' -f3)
 
 # Build language catalogs
 for lang in $LANGUAGES; do
     pofile="po/Firmware_$lang.po"
-    echo "$(tput setaf 4)compiling language \"$lang\" from $pofile$(tput sgr 0)" >&2
+    binfile="$TMPDIR/lang_$lang.bin"
+
+    color 4 "compiling language \"$lang\" from $pofile" >&2
     ./lang-check.py --warn-empty "$pofile"
-    ./lang-build.py "$MAP" "$pofile" "$TMPDIR/lang_$lang.bin"
+    ./lang-build.py "$MAP" "$pofile" "$binfile"
+
+    # ensure each catalog fits the reserved size
+    if [[ $(stat -c '%s' "$binfile") -gt $maxsize ]]; then
+        color 1 "$pofile: NG! - language data exceeds $maxsize bytes" >&2
+        finish 1
+    fi
 done
 
 # Build the final hex file
