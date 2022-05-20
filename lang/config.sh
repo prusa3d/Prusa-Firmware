@@ -82,15 +82,26 @@ elif [ "$COMMUNITY_LANG_GROUP" = "3" ]; then
     COMMUNITY_LANGUAGES=$(grep --max-count=$MAX_COMMINITY_LANG "^#define COMMUNITY_LANG_GROUP3_" $SRCDIR/Firmware/config.h| cut -d '_' -f4 |cut -d ' ' -f1 |tr '[:upper:]' '[:lower:]'| tr '\n' ' ')
 fi
 
+# End of customization
+######################
+
 if [ -z "$COMMUNITY_LANGUAGES" ]; then
     export COMMUNITY_LANGUAGES="$COMMUNITY_LANGUAGES"
+fi
+
+if [ ! -t 2 -o "$TERM" = "dumb" ]; then
+    NO_COLOR=1
 fi
 
 color()
 {
     color=$1
     shift
-    echo "$(tput setaf $color)$*$(tput sgr 0)"
+    if [ "$NO_COLOR" = 0 -o -z "$NO_COLOR" ]; then
+        echo "$(tput setaf $color)$*$(tput sgr 0)"
+    else
+        echo "$*"
+    fi
 }
 
 ok() { color 2 "OK"; }
