@@ -55,8 +55,11 @@ if [ -z "$INOHEX" ]; then
 fi
 #
 # Generated multi-language hex file:
-if [ -z "$OUTHEX" ]; then
-    export OUTHEX="$LNGDIR/Firmware-intl.hex"
+if [ -z "$OUTHEX_P" ]; then
+    export OUTHEX_P="$LNGDIR/Firmware-intl"
+fi
+if [ -z "$OUTHEX_S" ]; then
+    export OUTHEX_S=".hex"
 fi
 #
 # Set default languages
@@ -111,7 +114,7 @@ echo -n " Output hex file: " >&2
 if [ -e $INOHEX ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=8; fi
 
 echo -n " Generated hex file: " >&2
-if [ -n $OUTHEX ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=8; fi
+if [ -n $OUTHEX_P -o -n $OUTHEX_S ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=8; fi
 
 echo -n " Languages: " >&2
 echo "$(tput setaf 2)$LANGUAGES$(tput sgr0)" >&2

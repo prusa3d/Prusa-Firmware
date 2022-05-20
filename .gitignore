@@ -5,6 +5,7 @@
 /lang/po/*.mo
 /lang/tmp/
 /lang/Firmware-intl.hex
+/lang/Firmware-intl-en_*.hex
 
 # Temporary files and directories
 *[~#]

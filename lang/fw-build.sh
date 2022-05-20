@@ -2,8 +2,8 @@
 # TODO: write some up-to-date description
 
 # Config:
-if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
-if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr0)" >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ]; then source config.sh; fi
+if [ -z "$CONFIG_OK" -o "$CONFIG_OK" -eq 0 ]; then echo "$(tput setaf 1)Config NG!$(tput sgr0)" >&2; exit 1; fi
 
 # Community languages
 if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
@@ -57,36 +57,65 @@ for lang in $LANGUAGES; do
     fi
 done
 
-# Build the final hex file
-echo "$(tput setaf 4)assembling final firmware image$(tput sgr 0)" >&2
-"$OBJCOPY" -I binary -O ihex "$BIN" "$OUTHEX"
-truncate -s0 "$TMPDIR/lang.bin"
-for lang in $LANGUAGES; do
-    cat "$TMPDIR/lang_$lang.bin" >> "$TMPDIR/lang.bin"
-done
-"$OBJCOPY" -I binary -O ihex "$TMPDIR/lang.bin" "$TMPDIR/lang.hex"
-cat "$TMPDIR/lang.hex" >> "$OUTHEX"
-
-# Check that the language data doesn't exceed the reserved XFLASH space
-lang_size=$(wc -c "$TMPDIR/lang.bin" | cut -f1 -d' ')
-lang_size_pad=$(( ($lang_size+4096-1) / 4096 * 4096 ))
-
-# TODO: hard-coded! get value by preprocessing LANG_SIZE from xflash_layout.h!
-lang_reserved=249856
-
-echo
-echo -n "  total size usage: " >&2
-if [ $lang_size_pad -gt $lang_reserved ]; then
-  echo -n "$(tput setaf 1)" >&2
+# Detect the printer type and choose the language type
+if grep -q '^#define \+PRINTER_TYPE \+PRINTER_MK2' "$SRCDIR/Firmware/Configuration_prusa.h"; then
+    has_xflash=0
 else
-  echo -n "$(tput setaf 2)" >&2
-fi
-echo "$lang_size_pad ($lang_size)$(tput sgr 0)" >&2
-echo "     reserved size: $(tput setaf 2)$lang_reserved$(tput sgr 0)" >&2
-if [ $lang_size_pad -gt $lang_reserved ]; then
-  echo "$(tput setaf 1)NG! - language data too large$(tput sgr 0)" >&2
-  finish 1
+    has_xflash=1
 fi
 
-echo "  multilanguage fw: $(tput setaf 2)$OUTHEX$(tput sgr 0)" >&2
+if [ "$has_xflash" = 1 ]; then
+    # Build the final hex file with XFLASH support (catalogs appended to a single hex file)
+    OUTHEX=${OUTHEX_P}${OUTHEX_S}
+
+    color 4 "assembling final firmware image" >&2
+    "$OBJCOPY" -I binary -O ihex "$BIN" "$OUTHEX"
+    truncate -s0 "$TMPDIR/lang.bin"
+    for lang in $LANGUAGES; do
+        cat "$TMPDIR/lang_$lang.bin" >> "$TMPDIR/lang.bin"
+    done
+    "$OBJCOPY" -I binary -O ihex "$TMPDIR/lang.bin" "$TMPDIR/lang.hex"
+    cat "$TMPDIR/lang.hex" >> "$OUTHEX"
+
+    # Check that the language data doesn't exceed the reserved XFLASH space
+    lang_size=$(stat -c '%s' "$TMPDIR/lang.bin")
+    lang_size_pad=$(( ($lang_size+4096-1) / 4096 * 4096 ))
+
+    # TODO: hard-coded! get value by preprocessing LANG_SIZE from xflash_layout.h!
+    lang_reserved=249856
+
+    echo
+    echo -n "  total size usage: " >&2
+    [ $lang_size_pad -gt $lang_reserved ] && c=1 || c=2
+    color $c "$lang_size_pad ($lang_size)" >&2
+    echo -n "     reserved size: " >&2
+    color 2 "$lang_reserved" >&2
+    if [ $lang_size_pad -gt $lang_reserved ]; then
+        color 1 "NG! - language data too large" >&2
+        finish 1
+    fi
+
+    echo -n "  multilanguage fw: " >&2
+    color 2 "$OUTHEX" >&2
+else
+    echo
+
+    # Build one hex file for each secondary language
+    for lang in $LANGUAGES; do
+        OUTHEX="${OUTHEX_P}-en_${lang}${OUTHEX_S}"
+
+        bintmp="$TMPDIR/fw-en_$lang.bin"
+        cp "$BIN" "$bintmp"
+
+        # patch the secondary language table
+        ./lang-patchsec.py "$INOELF" "$TMPDIR/lang_$lang.bin" "$bintmp"
+
+        # convert to hex
+        "$OBJCOPY" -I binary -O ihex "$bintmp" "$OUTHEX"
+
+        echo -n "  fw en+$lang: " >&2
+        color 2 "$OUTHEX" >&2
+    done
+fi
+
 finish 0
