@@ -35,6 +35,7 @@ Lower-level tools:
 * ``lang-extract.py``: Extract internationalized strings from source files.
 * ``lang-map.py``: Extract and patch the translation symbol map in the firmware.
 * ``lang-build.py``: Build a binary language catalog for a single po file.
+* ``lang-patchsec.py``: Embed a single secondary language catalog in the firmware.
 
 ### Building an internationalized firmware
 
