@@ -28,7 +28,7 @@ uint8_t lang_is_selected(void) { return 1; }
 #else //(LANG_MODE == 0) //secondary languages in progmem or xflash
 
 //reserved xx kbytes for secondary language table
-const char _SEC_LANG[LANG_SIZE_RESERVED] PROGMEM_I2 = "_SEC_LANG";
+const char __attribute__((aligned(256))) _SEC_LANG[LANG_SIZE_RESERVED] PROGMEM_I2 = "_SEC_LANG";
 
 //primary language signature
 const uint32_t _PRI_LANG_SIGNATURE[1] __attribute__((section(".progmem0"))) = {0xffffffff};
