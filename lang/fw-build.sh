@@ -16,7 +16,7 @@ color 2 "$LANGUAGES" >&2
 
 finish()
 {
-    echo
+    echo >&2
     if [ "$1" = "0" ]; then
         color 2 "fw-build.sh finished with success" >&2
     else
@@ -87,7 +87,7 @@ if [ "$has_xflash" = 1 ]; then
     # TODO: hard-coded! get value by preprocessing LANG_SIZE from xflash_layout.h!
     lang_reserved=249856
 
-    echo
+    echo >&2
     echo -n "  total size usage: " >&2
     [ $lang_size_pad -gt $lang_reserved ] && c=1 || c=2
     color $c "$lang_size_pad ($lang_size)" >&2
@@ -101,7 +101,7 @@ if [ "$has_xflash" = 1 ]; then
     echo -n "  multilanguage fw: " >&2
     color 2 "$OUTHEX" >&2
 else
-    echo
+    echo >&2
 
     # Build one hex file for each secondary language
     for lang in $LANGUAGES; do
