@@ -7,23 +7,26 @@ if [ -z "$CONFIG_OK" -o "$CONFIG_OK" -eq 0 ]; then echo "$(tput setaf 1)Config N
 
 # Community languages
 if [ ! -z "$COMMUNITY_LANGUAGES" ]; then
-  LANGUAGES+=" $COMMUNITY_LANGUAGES"
+    LANGUAGES+=" $COMMUNITY_LANGUAGES"
 fi
-echo "$(tput setaf 2)fw-build.sh started$(tput sgr 0)" >&2
-echo "fw-build languages: $(tput setaf 2)$LANGUAGES$(tput sgr 0)" >&2
+
+color 2 "fw-build.sh started" >&2
+echo -n "fw-build languages: " >&2
+color 2 "$LANGUAGES" >&2
 
 finish()
 {
- echo
- if [ "$1" = "0" ]; then
-  echo "$(tput setaf 2)fw-build.sh finished with success$(tput sgr 0)" >&2
- else
-  echo "$(tput setaf 1)fw-build.sh finished with errors!$(tput sgr 0)" >&2
- fi
- case "$-" in
-  *i*) echo "press enter key"; read ;;
- esac
- exit $1
+    echo
+    if [ "$1" = "0" ]; then
+        color 2 "fw-build.sh finished with success" >&2
+    else
+        color 1 "fw-build.sh finished with errors!" >&2
+    fi
+    case "$-" in
+    *i*)
+        echo "press enter key"; read ;;
+    esac
+    exit $1
 }
 
 # Clean the temporary directory

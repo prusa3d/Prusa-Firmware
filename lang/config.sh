@@ -93,39 +93,42 @@ color()
     echo "$(tput setaf $color)$*$(tput sgr 0)"
 }
 
-echo "$(tput setaf 2)config.sh started$(tput sgr0)" >&2
+ok() { color 2 "OK"; }
+ng() { color 1 "NG!"; }
+
+color 2 "config.sh started" >&2
 
 _err=0
 
 echo -n " Arduino main folder: " >&2
-if [ -d $ARDUINO ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=1; fi
+if [ -d $ARDUINO ]; then ok >&2; else ng >&2; _err=1; fi
 
 echo " AVR gcc tools:" >&2
 echo -n "   objcopy " >&2
-if [ -e $OBJCOPY ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=3; fi
+if [ -e $OBJCOPY ]; then ok >&2; else ng >&2; _err=3; fi
 
 echo -n " Output folder: " >&2
-if [ -d $OUTDIR ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=5; fi
+if [ -d $OUTDIR ]; then ok >&2; else ng >&2; _err=5; fi
 
 echo -n " Output elf file: " >&2
-if [ -e $INOELF ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=7; fi
+if [ -e $INOELF ]; then ok >&2; else ng >&2; _err=7; fi
 
 echo -n " Output hex file: " >&2
-if [ -e $INOHEX ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=8; fi
+if [ -e $INOHEX ]; then ok >&2; else ng >&2; _err=8; fi
 
 echo -n " Generated hex file: " >&2
-if [ -n $OUTHEX_P -o -n $OUTHEX_S ]; then echo "$(tput setaf 2)OK$(tput sgr0)" >&2; else echo "$(tput setaf 1)NG!$(tput sgr0)" >&2; _err=8; fi
+if [ -n $OUTHEX_P -o -n $OUTHEX_S ]; then ok >&2; else ng >&2; _err=8; fi
 
 echo -n " Languages: " >&2
-echo "$(tput setaf 2)$LANGUAGES$(tput sgr0)" >&2
+color 2 "$LANGUAGES" >&2
 
 echo -n " Community languages: " >&2
-echo "$(tput setaf 2)$COMMUNITY_LANGUAGES$(tput sgr0)" >&2
+color 2 "$COMMUNITY_LANGUAGES" >&2
 
 if [ $_err -eq 0 ]; then
- echo "$(tput setaf 2)config.sh finished with success$(tput sgr0)" >&2
- export CONFIG_OK=1
+    color 2 "config.sh finished with success" >&2
+    export CONFIG_OK=1
 else
- echo "$(tput setaf 1)config.sh finished with errors!$(tput sgr0)" >&2
- export CONFIG_OK=0
+    color 1 "config.sh finished with errors!" >&2
+    export CONFIG_OK=0
 fi
