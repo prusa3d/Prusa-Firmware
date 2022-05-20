@@ -61,7 +61,7 @@ for lang in $LANGUAGES; do
 done
 
 # Detect the printer type and choose the language type
-if grep -q '^#define \+PRINTER_TYPE \+PRINTER_MK2' "$SRCDIR/Firmware/Configuration_prusa.h"; then
+if grep -q '^#define \+PRINTER_TYPE \+PRINTER_\(MK25\|MK25S\)\b' "$SRCDIR/Firmware/Configuration_prusa.h"; then
     has_xflash=0
 else
     has_xflash=1
