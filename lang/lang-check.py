@@ -40,8 +40,10 @@ import os
 
 from lib import charset as cs
 
+COLORIZE = (stdout.isatty() and os.getenv("TERM", "dumb") != "dumb") or os.getenv('NO_COLOR') == "0"
+
 def color_maybe(color_attr, text):
-    if stdout.isatty():
+    if COLORIZE:
         return '\033[0;' + str(color_attr) + 'm' + text + '\033[0m'
     else:
         return text
