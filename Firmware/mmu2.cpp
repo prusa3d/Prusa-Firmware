@@ -18,12 +18,6 @@
 // Settings for filament load / unload from the LCD menu.
 // This is for Prusa MK3-style extruders. Customize for your hardware.
 #define MMU2_FILAMENTCHANGE_EJECT_FEED 80.0
-#define MMU2_LOAD_TO_NOZZLE_SEQUENCE \
-    { 7.2, 562 },                    \
-        { 14.4, 871 },               \
-        { 36.0, 1393 },              \
-        { 14.4, 871 },               \
-    { 50.0, 198 }
 
 #define NOZZLE_PARK_XY_FEEDRATE 50
 #define NOZZLE_PARK_Z_FEEDRATE 15
@@ -64,7 +58,10 @@ static constexpr E_Step ramming_sequence[] PROGMEM = {
     {-50.0F, 2000.0F / 60.F},
 };
 
-static constexpr E_Step load_to_nozzle_sequence[] PROGMEM = { MMU2_LOAD_TO_NOZZLE_SEQUENCE };
+static constexpr E_Step load_to_nozzle_sequence[] PROGMEM = { 
+    { 36.0F,  810.0F / 60.F}, // feed rate = 13.5mm/s - Load fast until filament reach end of nozzle
+    { 30.0F,  198.0F / 60.F}, // feed rate = 3.3mm/s  - Load slower once filament is out of the nozzle
+};
 
 namespace MMU2 {
 
