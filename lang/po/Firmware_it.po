@@ -1835,7 +1835,7 @@ msgstr "Impostazioni"
 #. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
-msgstr "Devia.grave"
+msgstr "Deviaz. forte"
 
 #. MSG_SHEET c=10
 #: ../../Firmware/menu.cpp:211 ../../Firmware/menu.cpp:223
@@ -1870,7 +1870,7 @@ msgstr "Silenz."
 #. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
-msgstr "Devia.lieve"
+msgstr "Deviaz. lieve"
 
 #. MSG_FILE_CNT c=20 r=6
 #: ../../Firmware/cardreader.cpp:817
