@@ -101,23 +101,26 @@ if [ "$has_xflash" = 1 ]; then
     echo -n "  multilanguage fw: " >&2
     color 2 "$OUTHEX" >&2
 else
+    color 4 "assembling final firmware images" >&2
     echo >&2
+    echo -n "  maximum size: " >&2
+    color 2 "$(( $maxsize ))" >&2
 
     # Build one hex file for each secondary language
     for lang in $LANGUAGES; do
         OUTHEX="${OUTHEX_P}-en_${lang}${OUTHEX_S}"
-
+        catfile="$TMPDIR/lang_$lang.bin"
         bintmp="$TMPDIR/fw-en_$lang.bin"
-        cp "$BIN" "$bintmp"
 
         # patch the secondary language table
-        ./lang-patchsec.py "$INOELF" "$TMPDIR/lang_$lang.bin" "$bintmp"
-
-        # convert to hex
+        cp "$BIN" "$bintmp"
+        ./lang-patchsec.py "$INOELF" "$catfile" "$bintmp"
         "$OBJCOPY" -I binary -O ihex "$bintmp" "$OUTHEX"
 
-        echo -n "  fw en+$lang: " >&2
-        color 2 "$OUTHEX" >&2
+        # print some stats
+        catsize=$(stat -c '%s' "$catfile")
+        echo -n "  $lang: " >&2
+        color 2 "$(printf "%5d %s" "$catsize" "$OUTHEX")" >&2
     done
 fi
 
