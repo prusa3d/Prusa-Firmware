@@ -327,9 +327,9 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         return false;
 
     LoadingToNozzleRAII ln(*this);
-    
+
     WaitForHotendTargetTempBeep();
-    
+
     {
         // used for MMU-menu operation "Load to Nozzle"
         ReportingRAII rep(CommandInProgress::ToolChange);
@@ -338,11 +338,15 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         if( extruder != MMU2_NO_TOOL ){ // we already have some filament loaded - free it + shape its tip properly
             filament_ramming();
         }
-        
+
         logic.ToolChange(index);
         manage_response(false, false); // true, true);
 
+        // The MMU's idler is disengaged at this point
+        // That means the MK3/S now has fully control
+
         // reset current position to whatever the planner thinks it is
+        st_synchronize();
         plan_set_e_position(current_position[E_AXIS]);
         
         extruder = index;
@@ -661,16 +665,20 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
                 switch ( WhereIsFilament() )
                 {
                 case FilamentState::AT_FSENSOR:
-                    // fsensor triggered, stop moving the extruder
+                    // fsensor triggered, finish FeedingToBondtech state
                     loadFilamentStarted = false;
-                    // TODO: continue to ProgressCode::FeedingToNozzle?
+                    // After the MMU knows the FSENSOR is triggered it will:
+                    // 1. Push the filament by additional 30mm (see fsensorToNozzle)
+                    // 2. Disengage the idler and push another 5mm.
+                    current_position[E_AXIS] += 30.0f + 5.0f;
+                    plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                     break;
                 case FilamentState::NOT_PRESENT:
                     // fsensor not triggered, continue moving extruder
-                    // TODO: Verify what's the best speed here?
-                    current_position[E_AXIS] += MMU2_LOAD_TO_NOZZLE_FEED_RATE;
+                    current_position[E_AXIS] += 5.0f;
                     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
-                    st_synchronize(); // Wait for the steps to be done, otherwise the moves will just add up
+                    st_synchronize(); // Wait for the steps to be done so the moves don't pile up
+                    break;
                 default:
                     // Abort here?
                     break;
