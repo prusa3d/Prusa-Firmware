@@ -1829,7 +1829,7 @@ msgstr "Postavi temperaturu:"
 msgid "Settings"
 msgstr "Postavke"
 
-#. MSG_SEVERE_SKEW c=14 c=4
+#. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
 msgstr "Veliki nagib"
@@ -1864,7 +1864,7 @@ msgstr "Pokazi granicnike"
 msgid "Silent"
 msgstr "Tih"
 
-#. MSG_SLIGHT_SKEW c=14 c=4
+#. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
 msgstr "Lagani nagib"

@@ -1837,7 +1837,7 @@ msgstr "Temp. einstellen:"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#. MSG_SEVERE_SKEW c=14 c=4
+#. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
 msgstr "Sehr schräg"
@@ -1872,7 +1872,7 @@ msgstr "Endschalter Status"
 msgid "Silent"
 msgstr "Leise"
 
-#. MSG_SLIGHT_SKEW c=14 c=4
+#. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
 msgstr "Leicht schräg"

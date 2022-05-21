@@ -1822,7 +1822,7 @@ msgstr "Nastavte teplotu:"
 msgid "Settings"
 msgstr "Nastavenie"
 
-#. MSG_SEVERE_SKEW c=14 c=4
+#. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
 msgstr "Tazke skos."
@@ -1857,7 +1857,7 @@ msgstr "Stav konc. spin."
 msgid "Silent"
 msgstr "Tichy"
 
-#. MSG_SLIGHT_SKEW c=14 c=4
+#. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
 msgstr "Lahke skos."

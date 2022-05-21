@@ -1837,7 +1837,7 @@ msgstr "Temp. instellen:"
 msgid "Settings"
 msgstr "Instellingen"
 
-#. MSG_SEVERE_SKEW c=14 c=4
+#. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
 msgstr "Erg scheef"
@@ -1872,7 +1872,7 @@ msgstr "Toon endstops"
 msgid "Silent"
 msgstr "Stil"
 
-#. MSG_SLIGHT_SKEW c=14 c=4
+#. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
 msgstr "Beetje scheef"

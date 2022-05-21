@@ -2854,10 +2854,10 @@ float _deg(float rad)
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14, c=4
+//! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14
 //! | --------------     |	STR_SEPARATOR
-//! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14, c=4
-//! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14, c=4
+//! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14
+//! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
 //! @endcode
@@ -2874,8 +2874,8 @@ static void lcd_menu_xyz_skew()
 	 ),
 	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
 	 separator,
-	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14 c=4
-	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14 c=4
+	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14
+	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14
 	);
 	if (angleDiff < 100){
 		lcd_set_cursor(15,0);

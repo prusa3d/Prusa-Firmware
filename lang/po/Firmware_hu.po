@@ -1832,7 +1832,7 @@ msgstr "Homerseklet beall.:"
 msgid "Settings"
 msgstr "Beallitasok"
 
-#. MSG_SEVERE_SKEW c=14 c=4
+#. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
 msgstr "NagyMerol.hiba"
@@ -1867,7 +1867,7 @@ msgstr "Vegallaskapcsolok"
 msgid "Silent"
 msgstr "Halk"
 
-#. MSG_SLIGHT_SKEW c=14 c=4
+#. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
 msgstr "Kis merol.hiba"

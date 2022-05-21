@@ -1829,7 +1829,7 @@ msgstr "Setati temperatura:"
 msgid "Settings"
 msgstr "Setari"
 
-#. MSG_SEVERE_SKEW c=14 c=4
+#. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
 msgstr "Dist. severa"
@@ -1864,7 +1864,7 @@ msgstr "Stare endstop-uri"
 msgid "Silent"
 msgstr "Silent."
 
-#. MSG_SLIGHT_SKEW c=14 c=4
+#. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
 msgstr "Dist. usoara"

@@ -1843,7 +1843,7 @@ msgstr "Regler temp.:"
 msgid "Settings"
 msgstr "Reglages"
 
-#. MSG_SEVERE_SKEW c=14 c=4
+#. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
 msgstr "Deviat.sev."
@@ -1878,7 +1878,7 @@ msgstr "Afficher butees"
 msgid "Silent"
 msgstr "Furtif"
 
-#. MSG_SLIGHT_SKEW c=14 c=4
+#. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
 msgstr "Deviat.leg."
