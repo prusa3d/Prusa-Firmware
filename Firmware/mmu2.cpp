@@ -348,7 +348,10 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         // reset current position to whatever the planner thinks it is
         st_synchronize();
         plan_set_e_position(current_position[E_AXIS]);
-        
+
+        // Finish loading to the nozzle with finely tuned steps.
+        execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
+
         extruder = index;
         SetActiveExtruder(0);
 
@@ -647,11 +650,6 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
             st_synchronize();
             loadFilamentStarted = true;
             break;
-        case ProgressCode::FeedingToNozzle:
-            // prepare for the movement of the E-motor
-            st_synchronize();
-            // Nothing yet
-            break;
         default:
             // do nothing yet
             break;
@@ -684,9 +682,6 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
                     break;
                 }
             }
-            break;
-        case ProgressCode::FeedingToNozzle:
-            execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
             break;
         default:
             // do nothing yet
