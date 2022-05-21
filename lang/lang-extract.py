@@ -199,6 +199,7 @@ def check_entries(catalog, warn_missing, warn_same_line):
         tokens = []
         for meta in data['data']:
             tokens.extend(regex.split(r'\s+', meta))
+        seen_keys = set()
         for token in tokens:
             if len(token) == 0:
                 continue
@@ -207,6 +208,15 @@ def check_entries(catalog, warn_missing, warn_same_line):
             if regex.match(r'[cr]=\d+$', token) is None and \
                regex.match(r'MSG_[A-Z_0-9]+$', token) is None:
                 entry_warning(entry, 'bogus annotation: ' + repr(token))
+
+            # check for repeated keys
+            key = regex.match(r'([^=])+=', token)
+            if key is not None:
+                key_name = key.group(1)
+                if key_name in seen_keys:
+                    entry_warning(entry, 'repeated annotation: ' + repr(token))
+                else:
+                    seen_keys.add(key_name)
 
             # build the inverse catalog map
             if token.startswith('MSG_'):
