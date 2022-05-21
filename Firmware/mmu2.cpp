@@ -677,9 +677,11 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
                     break;
                 case FilamentState::NOT_PRESENT:
                     // fsensor not triggered, continue moving extruder
-                    current_position[E_AXIS] += 5.0f;
-                    plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
-                    st_synchronize(); // Wait for the steps to be done so the moves don't pile up
+                    if(!blocks_queued())
+                    { // Only plan a move if there is no move ongoing
+                        current_position[E_AXIS] += 5.0f;
+                        plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+                    }
                     break;
                 default:
                     // Abort here?
