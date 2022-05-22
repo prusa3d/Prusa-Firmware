@@ -3281,7 +3281,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		{
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			#ifdef STEEL_SHEET
-			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
+			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
 			if(result == LEFT_BUTTON_CHOICE) {
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
 			}
@@ -3579,7 +3579,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     if (!MMU2::mmu2.Enabled()) {
         KEEPALIVE_STATE(PAUSED_FOR_USER);
         lcd_change_fil_state =
-            lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
+            lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, LEFT_BUTTON_CHOICE); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
         if (lcd_change_fil_state == MIDDLE_BUTTON_CHOICE) {
             lcd_clear();
             lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
@@ -4911,7 +4911,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
             break;
         }
         lcd_show_fullscreen_message_and_wait_P(_i("Stable ambient temperature 21-26C is needed a rigid stand is required."));////MSG_TEMP_CAL_WARNING c=20 r=4
-        bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
+        bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
 
         if (result == LEFT_BUTTON_CHOICE)
         {
