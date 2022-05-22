@@ -97,7 +97,7 @@ static const char separator[] PROGMEM = "--------------------";
 
 /** forward declarations **/
 
-static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg, uint8_t &nlines);
+static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg);
 // void copy_and_scalePID_i();
 // void copy_and_scalePID_d();
 
