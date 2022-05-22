@@ -356,10 +356,6 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         SetActiveExtruder(0);
 
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
-
-        // TODO: The LCD should prompt the user with a full-screen message
-        //       to ask whether the extruder is extruding the correct color.
-        //       This does not apply when the tool change is done via gcode.
         return true;
     }
 }
