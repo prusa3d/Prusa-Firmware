@@ -71,7 +71,6 @@ enum ButtonChoice
     RIGHT_BUTTON_CHOICE = 2,
 };
 
-extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
 
 extern void lcd_return_to_status();
