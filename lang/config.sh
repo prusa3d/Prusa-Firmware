@@ -54,12 +54,9 @@ if [ -z "$INOHEX" ]; then
     export INOHEX="$OUTDIR/Firmware.ino.hex"
 fi
 #
-# Generated multi-language hex file:
-if [ -z "$OUTHEX_P" ]; then
-    export OUTHEX_P="$LNGDIR/Firmware-intl"
-fi
-if [ -z "$OUTHEX_S" ]; then
-    export OUTHEX_S=".hex"
+# Generated multi-language hex file prefix:
+if [ -z "$INTLHEX" ]; then
+    export INTLHEX="$LNGDIR/Firmware-intl"
 fi
 #
 # Set default languages
@@ -127,8 +124,8 @@ if [ -e $INOELF ]; then ok >&2; else ng >&2; _err=7; fi
 echo -n " Output hex file: " >&2
 if [ -e $INOHEX ]; then ok >&2; else ng >&2; _err=8; fi
 
-echo -n " Generated hex file: " >&2
-if [ -n $OUTHEX_P -o -n $OUTHEX_S ]; then ok >&2; else ng >&2; _err=8; fi
+echo -n " Intl hex file prefix: " >&2
+if [ -n $INTLHEX ]; then ok >&2; else ng >&2; _err=8; fi
 
 echo -n " Languages: " >&2
 color 2 "$LANGUAGES" >&2

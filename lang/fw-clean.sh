@@ -10,5 +10,4 @@ TMPDIR=$(dirname "$0")/tmp
 rm -rf "$TMPDIR"
 
 # Remove internationalized firmware files
-rm -f "${OUTHEX_P}${OUTHEX_S}"
-rm -f "${OUTHEX_P}-en_"*"${OUTHEX_S}"
+rm -f "${INTLHEX}"*.hex

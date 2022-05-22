@@ -69,7 +69,7 @@ fi
 
 if [ "$has_xflash" = 1 ]; then
     # Build the final hex file with XFLASH support (catalogs appended to a single hex file)
-    OUTHEX=${OUTHEX_P}${OUTHEX_S}
+    OUTHEX="${INTLHEX}.hex"
 
     color 4 "assembling final firmware image" >&2
     "$OBJCOPY" -I binary -O ihex "$BIN" "$OUTHEX"
@@ -101,14 +101,14 @@ if [ "$has_xflash" = 1 ]; then
     echo -n "  multilanguage fw: " >&2
     color 2 "$OUTHEX" >&2
 else
+    # Build one hex file for each secondary language
     color 4 "assembling final firmware images" >&2
     echo >&2
     echo -n "  maximum size: " >&2
     color 2 "$(( $maxsize ))" >&2
 
-    # Build one hex file for each secondary language
     for lang in $LANGUAGES; do
-        OUTHEX="${OUTHEX_P}-en_${lang}${OUTHEX_S}"
+        OUTHEX="${INTLHEX}-en_${lang}.hex"
         catfile="$TMPDIR/lang_$lang.bin"
         bintmp="$TMPDIR/fw-en_$lang.bin"
 
