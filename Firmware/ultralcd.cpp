@@ -5124,12 +5124,11 @@ static void mmu_load_filament_menu() {
 static inline void lcd_mmu_load_to_nozzle_wrapper(uint8_t index){
     MMU2::mmu2.load_filament_to_nozzle(index);
 
-	// Ask user if the extruded color is correct:
-	lcd_return_to_status();
-	lcd_update_enable(true);
-	lcd_load_filament_color_check();
-	lcd_setstatuspgm(MSG_WELCOME);
-	custom_message_type = CustomMsg::Status;
+    // Ask user if the extruded color is correct:
+    lcd_return_to_status();
+    lcd_load_filament_color_check();
+    lcd_setstatuspgm(MSG_WELCOME);
+    custom_message_type = CustomMsg::Status;
 }
 
 static void mmu_load_to_nozzle_menu() {
