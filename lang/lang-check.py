@@ -127,16 +127,17 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
     translation = entry.msgstr
     line = entry.linenum
     known_msgid = msgids is None or source in msgids
+    errors = 0
 
     # Check comment syntax (non-empty and include a MSG id)
     if known_msgid or warn_empty:
         if len(meta) == 0:
             print(red("[E]: Translation doesn't contain any comment metadata on line %d" % line))
-            return
+            return False
         if not meta.startswith('MSG'):
             print(red("[E]: Critical syntax error: comment doesn't start with MSG on line %d" % line))
             print(red(" comment: " + meta))
-            return
+            return False
 
     # Check if columns and rows are defined
     tokens = meta.split(' ')
@@ -154,16 +155,18 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
         except ValueError:
             print(red("[E]: Invalid display definition on line %d" % line))
             print(red(" definition: " + meta))
-            return
+            return False
 
     if cols is None and rows is None:
         if not no_warning and known_msgid:
+            errors += 1
             print(yellow("[W]: No usable display definition on line %d" % line))
         # probably fullscreen, guess from the message length to continue checking
         cols = len(source)
     if rows is None:
         rows = 1
     elif rows > 1 and cols != 20:
+        errors += 1
         print(yellow("[W]: Multiple rows with odd number of columns on line %d" % line))
 
     # Check if translation contains unsupported characters
@@ -171,7 +174,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
     if invalid_char is not None:
         print(red('[E]: Critical syntax: Unhandled char %s found on line %d' % (repr(invalid_char), line)))
         print(red(' translation: ' + translation))
-        return
+        return False
 
     # Pre-process the translation to translated characters for a correct preview and length check
     translation = cs.trans_replace(translation)
@@ -183,11 +186,13 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
 
     # Incorrect number of rows/cols on the definition
     if rows == 1 and (len(source) > cols or rows_count_source > rows):
+        errors += 1
         print(yellow('[W]: Source text longer than %d cols as defined on line %d:' % (cols, line)))
         print_ruler(4, cols);
         print_truncated(source, cols)
         print()
     elif rows_count_source > rows:
+        errors += 1
         print(yellow('[W]: Wrapped source text longer than %d rows as defined on line %d:' % (rows, line)))
         print_ruler(6, cols);
         print_wrapped(wrapped_source, rows, cols)
@@ -195,10 +200,11 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
 
     # All further checks are against the translation
     if is_pot:
-        return
+        return (errors == 0)
 
     # Missing translation
     if len(translation) == 0 and (known_msgid or warn_empty):
+        errors += 1
         if rows == 1:
             print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
         else:
@@ -209,6 +215,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
 
     # Check for translation lenght
     if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
+        errors += 1
         print(red('[E]: Text is longer than definition on line %d: cols=%d rows=%d (rows diff=%d)'
                 % (line, cols, rows, rows_count_translation-rows)))
         print_source_translation(source, translation,
@@ -217,6 +224,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
 
     # Different count of % sequences
     if source.count('%') != translation.count('%') and len(translation) > 0:
+        errors += 1
         print(red('[E]: Unequal count of %% escapes on line %d:' % (line)))
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
@@ -241,12 +249,6 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
                                 rows, cols)
-    #elif information:
-    #    print(green('[I]: %s' % (meta)))
-    #    print_source_translation(source, translation,
-    #                            wrapped_source, wrapped_translation,
-    #                            rows, cols)
-
 
     # Short translation
     if not no_suggest and len(source) > 0 and len(translation) > 0:
@@ -255,17 +257,13 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
             print_source_translation(source, translation,
                                     wrapped_source, wrapped_translation,
                                     rows, cols)
-    #elif information:
-    #    print(green('[I]: %s' % (meta)))
-    #    print_source_translation(source, translation,
-    #                            wrapped_source, wrapped_translation,
-    #                            rows, cols)
 
     # Incorrect trailing whitespace in translation
     if not no_warning and len(translation) > 0 and \
      (source.rstrip() == source or (rows == 1 and len(source) == cols)) and \
      translation.rstrip() != translation and \
      (rows > 1 or len(translation) != len(source)):
+        errors += 1
         print(yellow('[W]: Incorrect trailing whitespace for translation on line %d:' % (line)))
         source = highlight_trailing_white(source)
         translation = highlight_trailing_white(translation)
@@ -273,11 +271,14 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
                                 rows, cols)
-    elif information:
+
+    # show the information
+    if information and errors == 0:
         print(green('[I]: %s' % (meta)))
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
                                 rows, cols)
+    return (errors == 0)
 
 
 def main():
@@ -321,10 +322,11 @@ def main():
                 msgids.add(msgid)
 
     # check each translation in turn
+    status = True
     for translation in polib.pofile(args.po):
-        check_translation(translation, msgids, args.pot, args.no_warning, args.no_suggest,
-                          args.warn_empty, args.warn_same, args.information)
-    return 0
+        status &= check_translation(translation, msgids, args.pot, args.no_warning, args.no_suggest,
+                                    args.warn_empty, args.warn_same, args.information)
+    return 0 if status else os.EX_DATAERR
 
 if __name__ == "__main__":
     exit(main())

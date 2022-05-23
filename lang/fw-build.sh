@@ -51,6 +51,10 @@ for lang in $LANGUAGES; do
 
     color 4 "compiling language \"$lang\" from $pofile" >&2
     ./lang-check.py --map "$MAP" "$pofile"
+    if [ "$?" != 0 ]; then
+        color 1 "$pofile: NG! - translation contains warnings or errors" >&2
+    fi
+
     ./lang-build.py "$MAP" "$pofile" "$binfile"
 
     # ensure each catalog fits the reserved size
