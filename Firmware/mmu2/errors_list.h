@@ -15,13 +15,13 @@ typedef enum : uint16_t {
     ERR_UNDEF = 0,
 
     ERR_MECHANICAL = 100,
-    ERR_MECHANICAL_FINDA_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FINDA_DIDNT_GO_OFF,
-    ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
-    ERR_MECHANICAL_FSENSOR_TOO_EARLY,
+    ERR_MECHANICAL_FINDA_DIDNT_TRIGGER = 101,
+    ERR_MECHANICAL_FINDA_DIDNT_GO_OFF = 102,
+    ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER = 103,
+    ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF = 104,
 
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE = 105,
+    ERR_MECHANICAL_FSENSOR_TOO_EARLY = 106,
     ERR_MECHANICAL_SELECTOR_CANNOT_HOME = 115,
     ERR_MECHANICAL_SELECTOR_CANNOT_MOVE = 116,
     ERR_MECHANICAL_IDLER_CANNOT_HOME = 125,
@@ -80,8 +80,8 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_FINDA_DIDNT_GO_OFF,
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
     ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
-    ERR_MECHANICAL_FSENSOR_TOO_EARLY,
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE,
+    ERR_MECHANICAL_FSENSOR_TOO_EARLY,
     ERR_MECHANICAL_SELECTOR_CANNOT_HOME,
     ERR_MECHANICAL_SELECTOR_CANNOT_MOVE,
     ERR_MECHANICAL_IDLER_CANNOT_HOME,
@@ -119,8 +119,8 @@ static const char titleFINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA DIDNT TRIG
 static const char titleFINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA DIDNT GO OFF");
 static const char titleFSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FSENSOR DIDNT TRIGGER");
 static const char titleFSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FSENSOR DIDNT GO OFF");
-static const char titleFSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("FSENSOR TOO EARLY");
 static const char titlePULLEY_CANNOT_MOVE[] PROGMEM_I1 = ISTR("PULLEY CANNOT MOVE");
+static const char titleFSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("FSENSOR TOO EARLY");
 static const char titleSELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("SELECTOR CANNOT MOVE");
 static const char titleSELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("SELECTOR CANNOT HOME");
 static const char titleIDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("IDLER CANNOT MOVE");
@@ -157,8 +157,8 @@ static const char * const errorTitles [] PROGMEM = {
     titleFINDA_DIDNT_GO_OFF,
     titleFSENSOR_DIDNT_TRIGGER,
     titleFSENSOR_DIDNT_GO_OFF,
-    titleFSENSOR_TOO_EARLY,
     titlePULLEY_CANNOT_MOVE,
+    titleFSENSOR_TOO_EARLY,
     titleSELECTOR_CANNOT_HOME,
     titleSELECTOR_CANNOT_MOVE,
     titleIDLER_CANNOT_HOME,
@@ -196,8 +196,8 @@ static const char descFINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA didn't trig
 static const char descFINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading manually. Ensure filament can move and FINDA works.");
 static const char descFSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading filament. Ensure filament reached the fsensor and the sensor works.");
 static const char descFSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works.");
-static const char descFSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early.");
 static const char descPULLEY_STALLED[] PROGMEM_I1 = ISTR("The Pulley motor stalled - Ensure the pulley can move and check the wiring.");
+static const char descFSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly.");
 static const char descSELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly - check for anything blocking its movement.");
 static const char descSELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Selector cannot move - check for anything blocking its movement. Check the wiring is correct.");
 static const char descIDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Idler cannot home properly - check for anything blocking its movement.");
@@ -234,8 +234,8 @@ static const char * const errorDescs[] PROGMEM = {
     descFINDA_DIDNT_GO_OFF,
     descFSENSOR_DIDNT_TRIGGER,
     descFSENSOR_DIDNT_GO_OFF,
-    descFSENSOR_TOO_EARLY,
     descPULLEY_STALLED,
+    descFSENSOR_TOO_EARLY,
     descSELECTOR_CANNOT_HOME,
     descSELECTOR_CANNOT_MOVE,
     descIDLER_CANNOT_HOME,
@@ -304,8 +304,8 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
