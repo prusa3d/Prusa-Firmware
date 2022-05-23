@@ -50,7 +50,7 @@ for lang in $LANGUAGES; do
     binfile="$TMPDIR/lang_$lang.bin"
 
     color 4 "compiling language \"$lang\" from $pofile" >&2
-    ./lang-check.py --warn-empty "$pofile"
+    ./lang-check.py --map "$MAP" "$pofile"
     ./lang-build.py "$MAP" "$pofile" "$binfile"
 
     # ensure each catalog fits the reserved size
