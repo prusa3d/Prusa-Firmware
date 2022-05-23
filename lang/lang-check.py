@@ -31,14 +31,15 @@
 
 """Check PO files for formatting errors."""
 from argparse import ArgumentParser
-from traceback import print_exc
 from sys import stdout, stderr, exit
+import codecs
 import polib
 import textwrap
 import re
 import os
 
 from lib import charset as cs
+from lib.io import load_map
 
 COLORIZE = (stdout.isatty() and os.getenv("TERM", "dumb") != "dumb") or os.getenv('NO_COLOR') == "0"
 
@@ -117,7 +118,7 @@ def ign_char_first(c):
 def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
 
-def check_translation(entry, is_pot, no_warning, warn_empty, information):
+def check_translation(entry, msgids, is_pot, no_warning, warn_empty, information):
     """Check strings to display definition."""
 
     # fetch/decode entry for easy access
@@ -195,15 +196,15 @@ def check_translation(entry, is_pot, no_warning, warn_empty, information):
         return
 
     # Missing translation
-    if len(translation) == 0 and (warn_empty or rows > 1):
-        if rows == 1:
-            print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
-        else:
-            print(yellow("[W]: Empty translation on line %d" % line))
-            print_ruler(6, cols);
-            print_wrapped(wrapped_source, rows, cols)
-            print()
-
+    if len(translation) == 0:
+        if warn_empty or msgids is None or source in msgids:
+            if rows == 1:
+                print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
+            else:
+                print(yellow("[W]: Empty translation on line %d" % line))
+                print_ruler(6, cols);
+                print_wrapped(wrapped_source, rows, cols)
+                print()
 
     # Check for translation lenght
     if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
@@ -289,19 +290,33 @@ def main():
         "--pot", action="store_true",
         help="Do not check translations")
     parser.add_argument(
-        "--warn-empty", action="store_true",
-        help="Warn about empty translations")
-    parser.add_argument(
         "--information", action="store_true",
         help="Output all translations")
+    parser.add_argument("--map",
+        help="Provide a map file to suppress warnings about unused translations")
+    parser.add_argument(
+        "--warn-empty", action="store_true",
+        help="Warn about empty translations even if unused")
 
+    # load the translations
     args = parser.parse_args()
     if not os.path.isfile(args.po):
         print("{}: file does not exist or is not a regular file".format(args.po), file=stderr)
         return 1
 
+    # load the symbol map to supress empty (but unused) translation warnings
+    msgids = None
+    if args.map:
+        msgids = set()
+        for sym in load_map(args.map):
+            if type(sym['data']) == bytes:
+                msgid = cs.source_to_unicode(codecs.decode(sym['data'], 'unicode_escape', 'strict'))
+                msgids.add(msgid)
+
+    # check each translation in turn
     for translation in polib.pofile(args.po):
-        check_translation(translation, args.pot, args.no_warning, args.warn_empty, args.information)
+        check_translation(translation, msgids, args.pot, args.no_warning,
+                          args.warn_empty, args.information)
     return 0
 
 if __name__ == "__main__":
