@@ -2,38 +2,15 @@
 from collections import defaultdict
 import codecs
 import argparse
-import ast
 import os
 import polib
 import struct
 import sys
 
 import lib.charset as cs
-from lib.io import info, warn, fatal
+from lib.io import info, warn, fatal, load_map
 
 FW_MAGIC = 0x4bb45aa5
-
-
-def load_map(path):
-    fd = open(path, "r")
-
-    # check the header
-    if fd.readline() != 'OFFSET\tSIZE\tNAME\tID\tSTRING\n':
-        fatal("invalid map file")
-
-    # parse symbols
-    syms = []
-    for line in fd:
-        line = line.rstrip('\n')
-        offset, size, name, tr_id, data = line.split('\t', 4)
-        data = ast.literal_eval(data)
-        tr_id = int(tr_id) if len(tr_id) else None
-        syms.append({'offset': int(offset, 16),
-                     'size': int(size, 16),
-                     'id': tr_id,
-                     'name': name,
-                     'data': data})
-    return syms
 
 
 def translation_ref(translation):
