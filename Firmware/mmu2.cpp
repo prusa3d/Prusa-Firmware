@@ -628,14 +628,8 @@ void MMU2::ReportError(ErrorCode ec) {
 void MMU2::ReportProgress(ProgressCode pc) {
     ReportProgressHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)pc);
 
-    // Log progress - example: MMU2:P=123 EngageIdler
-    char msg[64];
-    int len = snprintf(msg, sizeof(msg), "MMU2:P=%hu ", (uint16_t)pc);
-    // Append a human readable form of the progress code
-    TranslateProgress((uint16_t)pc, &msg[len], 64 - len);
-
     SERIAL_ECHO_START;
-    SERIAL_ECHOLN(msg);
+    SERIAL_ECHOLNRPGM( ProgressCodeToText((uint16_t)pc) );
 }
 
 void MMU2::OnMMUProgressMsg(ProgressCode pc){
