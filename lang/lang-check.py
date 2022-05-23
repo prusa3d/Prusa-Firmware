@@ -118,7 +118,7 @@ def ign_char_first(c):
 def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
 
-def check_translation(entry, msgids, is_pot, no_warning, warn_empty, information):
+def check_translation(entry, msgids, is_pot, no_warning, warn_empty, warn_same, information):
     """Check strings to display definition."""
 
     # fetch/decode entry for easy access
@@ -236,8 +236,8 @@ def check_translation(entry, msgids, is_pot, no_warning, warn_empty, information
             print_source_translation(source, translation,
                                     wrapped_source, wrapped_translation,
                                     rows, cols)
-    if not no_warning and source == translation:
-        print(yellow('[W]: Translation same as origin on line %d:' %line))
+    if not no_warning and source == translation and (warn_same or len(source.split(' ', 1)) > 1):
+        print(yellow('[W]: Translation same as original on line %d:' %line))
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
                                 rows, cols)
@@ -297,7 +297,10 @@ def main():
         help="Provide a map file to suppress warnings about unused translations")
     parser.add_argument(
         "--warn-empty", action="store_true",
-        help="Warn about empty translations even if unused")
+        help="Warn about empty definitions and translations even if unused")
+    parser.add_argument(
+        "--warn-same", action="store_true",
+        help="Warn about one-word translations which are identical to the source")
 
     # load the translations
     args = parser.parse_args()
@@ -317,7 +320,7 @@ def main():
     # check each translation in turn
     for translation in polib.pofile(args.po):
         check_translation(translation, msgids, args.pot, args.no_warning,
-                          args.warn_empty, args.information)
+                          args.warn_empty, args.warn_same, args.information)
     return 0
 
 if __name__ == "__main__":
