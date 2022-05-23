@@ -118,7 +118,7 @@ def ign_char_first(c):
 def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
 
-def check_translation(entry, msgids, is_pot, no_warning, warn_empty, warn_same, information):
+def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty, warn_same, information):
     """Check strings to display definition."""
 
     # fetch/decode entry for easy access
@@ -223,21 +223,21 @@ def check_translation(entry, msgids, is_pot, no_warning, warn_empty, warn_same, 
                                 rows, cols)
 
     # Different first/last character
-    if not no_warning and len(source) > 0 and len(translation) > 0:
+    if not no_suggest and len(source) > 0 and len(translation) > 0:
         source_end = source.rstrip()[-1]
         translation_end = translation.rstrip()[-1]
         start_diff = not (ign_char_first(source[0]) and ign_char_first(translation[0])) and source[0] != translation[0]
         end_diff = not (ign_char_last(source_end) and ign_char_last(translation_end)) and source_end != translation_end
         if start_diff or end_diff:
             if start_diff:
-                print(yellow('[W]: Differing first punctuation character (%s => %s) on line %d:' % (source[0], translation[0], line)))
+                print(yellow('[S]: Differing first punctuation character (%s => %s) on line %d:' % (source[0], translation[0], line)))
             if end_diff:
-                print(yellow('[W]: Differing last punctuation character (%s => %s) on line %d:' % (source[-1], translation[-1], line)))
+                print(yellow('[S]: Differing last punctuation character (%s => %s) on line %d:' % (source[-1], translation[-1], line)))
             print_source_translation(source, translation,
                                     wrapped_source, wrapped_translation,
                                     rows, cols)
-    if not no_warning and source == translation and (warn_same or len(source.split(' ', 1)) > 1):
-        print(yellow('[W]: Translation same as original on line %d:' %line))
+    if not no_suggest and source == translation and (warn_same or len(source.split(' ', 1)) > 1):
+        print(yellow('[S]: Translation same as original on line %d:' %line))
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
                                 rows, cols)
@@ -249,9 +249,9 @@ def check_translation(entry, msgids, is_pot, no_warning, warn_empty, warn_same, 
 
 
     # Short translation
-    if not no_warning and len(source) > 0 and len(translation) > 0:
+    if not no_suggest and len(source) > 0 and len(translation) > 0:
         if len(translation.rstrip()) < len(source.rstrip()) / 2:
-            print(yellow('[W]: Short translation on line %d:' % (line)))
+            print(yellow('[S]: Short translation on line %d:' % (line)))
             print_source_translation(source, translation,
                                     wrapped_source, wrapped_translation,
                                     rows, cols)
@@ -288,6 +288,9 @@ def main():
         "--no-warning", action="store_true",
         help="Disable warnings")
     parser.add_argument(
+        "--no-suggest", action="store_true",
+        help="Disable suggestions")
+    parser.add_argument(
         "--pot", action="store_true",
         help="Do not check translations")
     parser.add_argument(
@@ -319,7 +322,7 @@ def main():
 
     # check each translation in turn
     for translation in polib.pofile(args.po):
-        check_translation(translation, msgids, args.pot, args.no_warning,
+        check_translation(translation, msgids, args.pot, args.no_warning, args.no_suggest,
                           args.warn_empty, args.warn_same, args.information)
     return 0
 
