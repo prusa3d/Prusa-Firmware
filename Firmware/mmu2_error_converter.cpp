@@ -43,17 +43,25 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER);
     case (uint16_t)ErrorCode::FSENSOR_DIDNT_SWITCH_OFF:
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF);
+    case (uint16_t)ErrorCode::FSENSOR_TOO_EARLY:
+        return FindErrorIndex(ERR_MECHANICAL_FSENSOR_TOO_EARLY);
+        
     case (uint16_t)ErrorCode::STALLED_PULLEY:
     case (uint16_t)ErrorCode::MOVE_PULLEY_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_PULLEY_CANNOT_MOVE);
+        
     case (uint16_t)ErrorCode::HOMING_SELECTOR_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_SELECTOR_CANNOT_HOME);
     case (uint16_t)ErrorCode::MOVE_SELECTOR_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_SELECTOR_CANNOT_MOVE);
+        
     case (uint16_t)ErrorCode::HOMING_IDLER_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_IDLER_CANNOT_HOME);
-    case (uint16_t)ErrorCode::MMU_NOT_RESPONDING:
+    case (uint16_t)ErrorCode::MOVE_IDLER_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_IDLER_CANNOT_MOVE);
+        
+    case (uint16_t)ErrorCode::MMU_NOT_RESPONDING:
+        return FindErrorIndex(ERR_CONNECT_MMU_NOT_RESPONDING);
     case (uint16_t)ErrorCode::PROTOCOL_ERROR:
         return FindErrorIndex(ERR_CONNECT_COMMUNICATION_ERROR);
     case (uint16_t)ErrorCode::FILAMENT_ALREADY_LOADED:

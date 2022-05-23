@@ -30,6 +30,8 @@ static const char progressParkSelector[] PROGMEM_I1 = ISTR("Parking selector");
 static const char progressEjectFilament[] PROGMEM_I1 = ISTR("Ejecting filament");
 static const char progressRetractFinda[] PROGMEM_I1 = ISTR("Retracting from FINDA");
 static const char progressHoming[] PROGMEM_I1 = ISTR("Homing");
+static const char progressMovingSelector[] PROGMEM_I1 = ISTR("Moving selector");
+static const char progressFeedingToFSensor[] PROGMEM_I1 = ISTR("FeedingToFSensor");
 
 static const char * const progressTexts[] PROGMEM = {
     progressOk,
@@ -59,15 +61,15 @@ static const char * const progressTexts[] PROGMEM = {
     progressEjectFilament,
     progressRetractFinda,
     progressHoming,
+    progressMovingSelector,
+    progressFeedingToFSensor
 };
 
 const char * const ProgressCodeToText(uint16_t pc){
     // @@TODO ?? a better fallback option?
-    return ( pc <= 26 ) ? static_cast<const char * const>(pgm_read_ptr(&progressTexts[pc])) : static_cast<const char * const>(pgm_read_ptr(&progressTexts[0]));
-}
-
-void TranslateProgress(uint16_t pc, char *dst, size_t dstSize) { 
-    strncpy_P(dst, ProgressCodeToText(pc), dstSize); // @@TODO temporarily to prevent removal of the texts at LTO
+    return ( pc <= (sizeof(progressTexts) / sizeof(progressTexts[0])) )
+       ? static_cast<const char * const>(pgm_read_ptr(&progressTexts[pc]))
+       : static_cast<const char * const>(pgm_read_ptr(&progressTexts[0]));
 }
 
 } // namespace MMU2
