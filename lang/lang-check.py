@@ -126,15 +126,17 @@ def check_translation(entry, msgids, is_pot, no_warning, warn_empty, information
     source = entry.msgid
     translation = entry.msgstr
     line = entry.linenum
+    known_msgid = msgids is None or source in msgids
 
-    # Check comment syntax should start with `MSG`
-    if len(meta) == 0:
-        print(red("[E]: Translation doesn't contain any comment metadata on line %d" % line))
-        return
-    if not meta.startswith('MSG'):
-        print(red("[E]: Critical syntax error: comment doesn't start with MSG on line %d" % line))
-        print(red(" comment: " + meta))
-        return
+    # Check comment syntax (non-empty and include a MSG id)
+    if known_msgid or warn_empty:
+        if len(meta) == 0:
+            print(red("[E]: Translation doesn't contain any comment metadata on line %d" % line))
+            return
+        if not meta.startswith('MSG'):
+            print(red("[E]: Critical syntax error: comment doesn't start with MSG on line %d" % line))
+            print(red(" comment: " + meta))
+            return
 
     # Check if columns and rows are defined
     tokens = meta.split(' ')
@@ -155,7 +157,7 @@ def check_translation(entry, msgids, is_pot, no_warning, warn_empty, information
             return
 
     if cols is None and rows is None:
-        if not no_warning:
+        if not no_warning and known_msgid:
             print(yellow("[W]: No usable display definition on line %d" % line))
         # probably fullscreen, guess from the message length to continue checking
         cols = len(source)
@@ -196,15 +198,14 @@ def check_translation(entry, msgids, is_pot, no_warning, warn_empty, information
         return
 
     # Missing translation
-    if len(translation) == 0:
-        if warn_empty or msgids is None or source in msgids:
-            if rows == 1:
-                print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
-            else:
-                print(yellow("[W]: Empty translation on line %d" % line))
-                print_ruler(6, cols);
-                print_wrapped(wrapped_source, rows, cols)
-                print()
+    if len(translation) == 0 and (known_msgid or warn_empty):
+        if rows == 1:
+            print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
+        else:
+            print(yellow("[W]: Empty translation on line %d" % line))
+            print_ruler(6, cols);
+            print_wrapped(wrapped_source, rows, cols)
+            print()
 
     # Check for translation lenght
     if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
