@@ -94,8 +94,8 @@ def main():
         for i in range(sym_cnt):
             msgid = id_msgid.get(i)
             translation = trans_table.get(msgid)
-            if translation is None or len(translation[0].msgstr) == 0:
-                # first slot reserved for untraslated entries
+            if translation is None or len(translation[0].msgstr) == 0 or translation[0].msgstr == msgid:
+                # first slot reserved for untraslated/identical entries
                 offsets += struct.pack("<H", fixed_offset)
             else:
                 string_bin = cs.unicode_to_source(translation[0].msgstr)
