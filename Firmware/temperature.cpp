@@ -38,6 +38,7 @@
 #include "SdFatUtil.h"
 
 #include <avr/wdt.h>
+#include <util/atomic.h>
 #include "adc.h"
 #include "ConfigurationStore.h"
 #include "Timer.h"
@@ -56,13 +57,12 @@ int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
 
 #ifdef PINDA_THERMISTOR
-uint16_t current_temperature_raw_pinda =  0 ; //value with more averaging applied
-uint16_t current_temperature_raw_pinda_fast = 0; //value read from adc
+uint16_t current_temperature_raw_pinda = 0;
 float current_temperature_pinda = 0.0;
 #endif //PINDA_THERMISTOR
 
 #ifdef AMBIENT_THERMISTOR
-int current_temperature_raw_ambient =  0 ;
+int current_temperature_raw_ambient = 0;
 float current_temperature_ambient = 0.0;
 #endif //AMBIENT_THERMISTOR
 
@@ -174,7 +174,7 @@ static float analog2tempBed(int raw);
 #ifdef AMBIENT_MAXTEMP
 static float analog2tempAmbient(int raw);
 #endif
-static void updateTemperaturesFromRawValues();
+static void updateTemperatures();
 
 enum TempRunawayStates : uint8_t
 {
@@ -270,7 +270,7 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
     wdt_reset();
 #endif //WATCHDOG
     if(temp_meas_ready == true) { // temp sample ready
-      updateTemperaturesFromRawValues();
+      updateTemperatures();
 
       input = (extruder<0)?current_temperature_bed:current_temperature[extruder];
 
@@ -442,6 +442,12 @@ void manage_heater()
 #ifdef WATCHDOG
     wdt_reset();
 #endif //WATCHDOG
+
+    // syncronize temperatures with isr
+    if(temp_meas_ready)
+        updateTemperatures();
+
+    // periodically check fans
     checkFans();
 }
 
@@ -567,43 +573,6 @@ static float analog2tempAmbient(int raw)
     return celsius;
 }
 #endif //AMBIENT_THERMISTOR
-
-static void setTemperaturesFromRawValues()
-{
-    for(uint8_t e=0;e<EXTRUDERS;e++)
-    {
-        current_temperature[e] = analog2temp(current_temperature_raw[e], e);
-    }
-
-#ifdef PINDA_THERMISTOR
-	current_temperature_raw_pinda = (uint16_t)((uint32_t)current_temperature_raw_pinda * 3 + current_temperature_raw_pinda_fast) >> 2;
-	current_temperature_pinda = analog2tempBed(current_temperature_raw_pinda);
-#endif
-
-#ifdef AMBIENT_THERMISTOR
-	current_temperature_ambient = analog2tempAmbient(current_temperature_raw_ambient); //thermistor for ambient is NTCG104LH104JT1 (2000)
-#endif
-   
-#ifdef DEBUG_HEATER_BED_SIM
-	current_temperature_bed = target_temperature_bed;
-#else //DEBUG_HEATER_BED_SIM
-	current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
-#endif //DEBUG_HEATER_BED_SIM
-}
-
-/* Called to get the raw values into the the actual temperatures. The raw values are created in interrupt context,
-    and this function is called from normal context as it is too slow to run in interrupts and will block the stepper routine otherwise */
-static void updateTemperaturesFromRawValues()
-{
-    // restart a new adc conversion
-    CRITICAL_SECTION_START;
-    adc_start_cycle();
-    temp_meas_ready = false;
-    CRITICAL_SECTION_END;
-
-    // update the previous values
-    setTemperaturesFromRawValues();
-}
 
 void soft_pwm_init()
 {
@@ -1174,28 +1143,6 @@ int read_max6675()
   return max6675_temp;
 }
 #endif
-
-void adc_ready(void) //callback from adc when sampling finished
-{
-	current_temperature_raw[0] = adc_values[ADC_PIN_IDX(TEMP_0_PIN)]; //heater
-#ifdef PINDA_THERMISTOR
-	current_temperature_raw_pinda_fast = adc_values[ADC_PIN_IDX(TEMP_PINDA_PIN)];
-#endif //PINDA_THERMISTOR
-	current_temperature_bed_raw = adc_values[ADC_PIN_IDX(TEMP_BED_PIN)];
-#ifdef VOLT_PWR_PIN
-	current_voltage_raw_pwr = adc_values[ADC_PIN_IDX(VOLT_PWR_PIN)];
-#endif
-#ifdef AMBIENT_THERMISTOR
-	current_temperature_raw_ambient = adc_values[ADC_PIN_IDX(TEMP_AMBIENT_PIN)]; // 5->6
-#endif //AMBIENT_THERMISTOR
-#ifdef VOLT_BED_PIN
-	current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
-#endif
-#ifdef IR_SENSOR_ANALOG
-     current_voltage_raw_IR = adc_values[ADC_PIN_IDX(VOLT_IR_PIN)];
-#endif //IR_SENSOR_ANALOG
-	temp_meas_ready = true;
-}
 
 #ifdef BABYSTEPPING
 FORCE_INLINE static void applyBabysteps() {
@@ -1839,6 +1786,7 @@ bool has_temperature_compensation()
 #define TEMP_MGR_INTV   0.27 // seconds, ~3.7Hz
 #define TIMER5_PRESCALE 256
 #define TIMER5_OCRA_OVF (uint16_t)(TEMP_MGR_INTV / ((long double)TIMER5_PRESCALE / F_CPU))
+#define TEMP_MGR_INTERRUPT_STATE()   (TIMSK5 & (1<<OCIE5A))
 #define ENABLE_TEMP_MGR_INTERRUPT()  TIMSK5 |=  (1<<OCIE5A)
 #define DISABLE_TEMP_MGR_INTERRUPT() TIMSK5 &= ~(1<<OCIE5A)
 
@@ -1874,7 +1822,7 @@ void temp_mgr_init()
     TIFR5 |= (1<<OCF5A);
     ENABLE_TEMP_MGR_INTERRUPT();
 
-	CRITICAL_SECTION_END;
+    CRITICAL_SECTION_END;
 }
 
 static void pid_heater(uint8_t e, const float current, const int target)
@@ -2068,27 +2016,112 @@ static void pid_bed(const float current, const int target)
 #endif //TEMP_SENSOR_BED
 }
 
+// ISR-safe temperatures
+static volatile bool adc_values_ready = false;
+float current_temperature_isr[EXTRUDERS];
+int target_temperature_isr[EXTRUDERS];
+float current_temperature_bed_isr;
+int target_temperature_bed_isr;
+#ifdef PINDA_THERMISTOR
+float current_temperature_pinda_isr;
+#endif
+#ifdef AMBIENT_THERMISTOR
+float current_temperature_ambient_isr;
+#endif
+
+// ISR callback from adc when sampling finished
+void adc_ready()
+{
+    current_temperature_raw[0] = adc_values[ADC_PIN_IDX(TEMP_0_PIN)]; //heater
+    current_temperature_bed_raw = adc_values[ADC_PIN_IDX(TEMP_BED_PIN)];
+#ifdef PINDA_THERMISTOR
+    current_temperature_raw_pinda = adc_values[ADC_PIN_IDX(TEMP_PINDA_PIN)];
+#endif //PINDA_THERMISTOR
+#ifdef AMBIENT_THERMISTOR
+    current_temperature_raw_ambient = adc_values[ADC_PIN_IDX(TEMP_AMBIENT_PIN)]; // 5->6
+#endif //AMBIENT_THERMISTOR
+#ifdef VOLT_PWR_PIN
+    current_voltage_raw_pwr = adc_values[ADC_PIN_IDX(VOLT_PWR_PIN)];
+#endif
+#ifdef VOLT_BED_PIN
+    current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
+#endif
+#ifdef IR_SENSOR_ANALOG
+    current_voltage_raw_IR = adc_values[ADC_PIN_IDX(VOLT_IR_PIN)];
+#endif //IR_SENSOR_ANALOG
+    adc_values_ready = true;
+}
+
+/* Syncronize temperatures:
+   - fetch updated values from temp_mgr_isr to current values
+   - update target temperatures for temp_mgr_isr regulation
+   This function is blocking: check temp_meas_ready before calling! */
+static void updateTemperatures()
+{
+    uint8_t temp_mgr_state;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+        temp_mgr_state = TEMP_MGR_INTERRUPT_STATE();
+        DISABLE_TEMP_MGR_INTERRUPT();
+    }
+
+    for(uint8_t e=0;e<EXTRUDERS;e++) {
+        current_temperature[e] = current_temperature_isr[e];
+        target_temperature_isr[e] = target_temperature[e];
+    }
+    current_temperature_bed = current_temperature_bed_isr;
+    target_temperature_bed_isr = target_temperature_bed;
+#ifdef PINDA_THERMISTOR
+    current_temperature_pinda = current_temperature_pinda_isr;
+#endif
+#ifdef AMBIENT_THERMISTOR
+    current_temperature_ambient = current_temperature_ambient_isr;
+#endif
+
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+        if(temp_mgr_state) ENABLE_TEMP_MGR_INTERRUPT();
+        temp_meas_ready = false;
+    }
+}
+
+/* Convert raw values into actual temperatures for temp_mgr. The raw values are created in the ADC
+   interrupt context, while this function runs from the temp_mgr isr which is preemptible as
+   analog2temp is relatively slow */
+static void setIsrTemperaturesFromRawValues()
+{
+    for(uint8_t e=0;e<EXTRUDERS;e++)
+        current_temperature_isr[e] = analog2temp(current_temperature_raw[e], e);
+    current_temperature_bed_isr = analog2tempBed(current_temperature_bed_raw);
+#ifdef PINDA_THERMISTOR
+    current_temperature_pinda_isr = analog2tempBed(current_temperature_raw_pinda);
+#endif
+#ifdef AMBIENT_THERMISTOR
+    current_temperature_ambient_isr = analog2tempAmbient(current_temperature_raw_ambient); //thermistor for ambient is NTCG104LH104JT1 (2000)
+#endif
+    temp_meas_ready = true;
+}
+
 static void temp_mgr_isr()
 {
-    // ADC values need to be converted before checking: converted values are later used in MINTEMP
-    setTemperaturesFromRawValues();
+    // update *_isr temperatures from raw values for PID regulation
+    setIsrTemperaturesFromRawValues();
 
     // TODO: this is now running inside an isr and cannot directly manipulate the lcd,
     // this needs to disable temperatures and flag the error to be shown in manage_heater!
     check_max_temp();
     check_min_temp();
 
+    // PID regulation
     for(uint8_t e = 0; e < EXTRUDERS; e++)
-        pid_heater(e, current_temperature[e], target_temperature[e]);
-    pid_bed(current_temperature_bed, target_temperature_bed);
+        pid_heater(e, current_temperature_isr[e], target_temperature_isr[e]);
+    pid_bed(current_temperature_bed_isr, target_temperature_bed_isr);
 }
 
 ISR(TIMER5_COMPA_vect)
 {
     // immediately schedule a new conversion
-    if(temp_meas_ready != true) return;
+    if(adc_values_ready != true) return;
     adc_start_cycle();
-    temp_meas_ready = false;
+    adc_values_ready = false;
 
     // run temperature management with interrupts enabled to reduce latency
     DISABLE_TEMP_MGR_INTERRUPT();
