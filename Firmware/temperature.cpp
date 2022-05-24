@@ -142,8 +142,6 @@ uint8_t fanSpeedBckp = 255;
   # define ARRAY_BY_EXTRUDERS(v1, v2, v3) { v1 }
 #endif
 
-static ShortTimer oTimer4minTempHeater,oTimer4minTempBed;
-
 // Init min and max temp with extreme values to prevent false errors during startup
 static int minttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_RAW_LO_TEMP , HEATER_1_RAW_LO_TEMP , HEATER_2_RAW_LO_TEMP );
 static int maxttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_RAW_HI_TEMP , HEATER_1_RAW_HI_TEMP , HEATER_2_RAW_HI_TEMP );
@@ -1636,6 +1634,9 @@ void check_min_temp()
 {
 static bool bCheckingOnHeater=false;              // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over heaterMintemp)
 static bool bCheckingOnBed=false;                 // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over bedMintemp)
+static ShortTimer oTimer4minTempHeater;
+static ShortTimer oTimer4minTempBed;
+
 #ifdef AMBIENT_THERMISTOR
 #ifdef AMBIENT_MINTEMP
 check_min_temp_ambient();
