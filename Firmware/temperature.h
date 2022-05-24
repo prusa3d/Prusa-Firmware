@@ -210,7 +210,7 @@ FORCE_INLINE bool isCoolingBed() {
 #define CHECK_ALL_HEATERS (checkAllHotends()||(target_temperature_bed!=0))
 
 int getHeaterPower(int heater);
-void disable_heater(); // Disable all heaters
+void disable_heater(); // Disable all heaters *instantaneously*
 void updatePID();
 
 

@@ -909,45 +909,6 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 }
 #endif
 
-
-void disable_heater()
-{
-  setAllTargetHotends(0);
-  setTargetBed(0);
-  #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
-  target_temperature[0]=0;
-  soft_pwm[0]=0;
-   #if defined(HEATER_0_PIN) && HEATER_0_PIN > -1  
-     WRITE(HEATER_0_PIN,LOW);
-   #endif
-  #endif
-     
-  #if defined(TEMP_1_PIN) && TEMP_1_PIN > -1 && EXTRUDERS > 1
-    target_temperature[1]=0;
-    soft_pwm[1]=0;
-    #if defined(HEATER_1_PIN) && HEATER_1_PIN > -1 
-      WRITE(HEATER_1_PIN,LOW);
-    #endif
-  #endif
-      
-  #if defined(TEMP_2_PIN) && TEMP_2_PIN > -1 && EXTRUDERS > 2
-    target_temperature[2]=0;
-    soft_pwm[2]=0;
-    #if defined(HEATER_2_PIN) && HEATER_2_PIN > -1  
-      WRITE(HEATER_2_PIN,LOW);
-    #endif
-  #endif 
-
-  #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
-    target_temperature_bed=0;
-    soft_pwm_bed=0;
-	timer02_set_pwm0(soft_pwm_bed << 1);
-	bedPWMDisabled = 0;
-    #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-      //WRITE(HEATER_BED_PIN,LOW);
-    #endif
-  #endif 
-}
 //! codes of alert messages for the LCD - it is shorter to compare an uin8_t
 //! than raw const char * of the messages themselves.
 //! Could be used for MAXTEMP situations too - after reaching MAXTEMP and turning off the heater automagically
@@ -1786,6 +1747,25 @@ bool has_temperature_compensation()
 #define ENABLE_TEMP_MGR_INTERRUPT()  TIMSK5 |=  (1<<OCIE5A)
 #define DISABLE_TEMP_MGR_INTERRUPT() TIMSK5 &= ~(1<<OCIE5A)
 
+// RAII helper class to run a code block with temp_mgr_isr disabled
+class TempMgrGuard
+{
+    bool temp_mgr_state;
+
+public:
+    TempMgrGuard() {
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+            temp_mgr_state = TEMP_MGR_INTERRUPT_STATE();
+        }
+    }
+
+    ~TempMgrGuard() throw() {
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+            if(temp_mgr_state) ENABLE_TEMP_MGR_INTERRUPT();
+        }
+    }
+};
+
 void temp_mgr_init()
 {
     // initialize the ADC and start a conversion
@@ -2048,35 +2028,36 @@ void adc_callback()
     adc_values_ready = true;
 }
 
-/* Syncronize temperatures:
-   - fetch updated values from temp_mgr_isr to current values
-   - update target temperatures for temp_mgr_isr regulation
-   This function is blocking: check temp_meas_ready before calling! */
-static void updateTemperatures()
+static void setCurrentTemperaturesFromIsr()
 {
-    uint8_t temp_mgr_state;
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-        temp_mgr_state = TEMP_MGR_INTERRUPT_STATE();
-        DISABLE_TEMP_MGR_INTERRUPT();
-    }
-
-    for(uint8_t e=0;e<EXTRUDERS;e++) {
+    for(uint8_t e=0;e<EXTRUDERS;e++)
         current_temperature[e] = current_temperature_isr[e];
-        target_temperature_isr[e] = target_temperature[e];
-    }
     current_temperature_bed = current_temperature_bed_isr;
-    target_temperature_bed_isr = target_temperature_bed;
 #ifdef PINDA_THERMISTOR
     current_temperature_pinda = current_temperature_pinda_isr;
 #endif
 #ifdef AMBIENT_THERMISTOR
     current_temperature_ambient = current_temperature_ambient_isr;
 #endif
+}
 
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-        if(temp_mgr_state) ENABLE_TEMP_MGR_INTERRUPT();
-        temp_meas_ready = false;
-    }
+static void setIsrTargetTemperatures()
+{
+    for(uint8_t e=0;e<EXTRUDERS;e++)
+        target_temperature_isr[e] = target_temperature[e];
+    target_temperature_bed_isr = target_temperature_bed;
+}
+
+/* Synchronize temperatures:
+   - fetch updated values from temp_mgr_isr to current values
+   - update target temperatures for temp_mgr_isr regulation
+   This function is blocking: check temp_meas_ready before calling! */
+static void updateTemperatures()
+{
+    TempMgrGuard temp_mgr_guard;
+    setCurrentTemperaturesFromIsr();
+    setIsrTargetTemperatures();
+    temp_meas_ready = false;
 }
 
 /* Convert raw values into actual temperatures for temp_mgr. The raw values are created in the ADC
@@ -2096,6 +2077,13 @@ static void setIsrTemperaturesFromRawValues()
     temp_meas_ready = true;
 }
 
+static void temp_mgr_pid()
+{
+    for(uint8_t e = 0; e < EXTRUDERS; e++)
+        pid_heater(e, current_temperature_isr[e], target_temperature_isr[e]);
+    pid_bed(current_temperature_bed_isr, target_temperature_bed_isr);
+}
+
 static void temp_mgr_isr()
 {
     // update *_isr temperatures from raw values for PID regulation
@@ -2107,9 +2095,7 @@ static void temp_mgr_isr()
     check_min_temp();
 
     // PID regulation
-    for(uint8_t e = 0; e < EXTRUDERS; e++)
-        pid_heater(e, current_temperature_isr[e], target_temperature_isr[e]);
-    pid_bed(current_temperature_bed_isr, target_temperature_bed_isr);
+    temp_mgr_pid();
 }
 
 ISR(TIMER5_COMPA_vect)
@@ -2125,4 +2111,35 @@ ISR(TIMER5_COMPA_vect)
     temp_mgr_isr();
     cli();
     ENABLE_TEMP_MGR_INTERRUPT();
+}
+
+void disable_heater()
+{
+  setAllTargetHotends(0);
+  setTargetBed(0);
+
+  CRITICAL_SECTION_START;
+
+  // propagate all values down the chain
+  setIsrTargetTemperatures();
+  temp_mgr_pid();
+
+  // we can't call soft_pwm_core directly to toggle the pins as it would require removing the inline
+  // attribute, so disable each pin individually
+#if defined(HEATER_0_PIN) && HEATER_0_PIN > -1 && EXTRUDERS > 0
+  WRITE(HEATER_0_PIN,LOW);
+#endif
+#if defined(HEATER_1_PIN) && HEATER_1_PIN > -1 && EXTRUDERS > 1
+  WRITE(HEATER_1_PIN,LOW);
+#endif
+#if defined(HEATER_2_PIN) && HEATER_2_PIN > -1 && EXTRUDERS > 2
+  WRITE(HEATER_2_PIN,LOW);
+#endif
+#if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
+  // TODO: this doesn't take immediate effect!
+  timer02_set_pwm0(0);
+  bedPWMDisabled = 0;
+#endif
+
+  CRITICAL_SECTION_END;
 }
