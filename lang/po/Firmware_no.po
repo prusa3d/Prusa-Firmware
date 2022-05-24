@@ -113,7 +113,7 @@ msgstr "AutoLast filament"
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4311
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Autolasting av fil. er kun tilgjengelig nar fil.- sensoren er skrudd pa..."
+msgstr "Autolasting av fil. er kun tilgjengelig når fil.- sensoren er skrudd på..."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2642
@@ -208,7 +208,7 @@ msgstr ">Avbryt"
 # MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 #: ultralcd.cpp:3312
 msgid "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-msgstr "Kalibrer XYZ. Roter valghjulet for a bevege Z-aksen til toppstoppene. Deretter trykk."
+msgstr "Kalibrer XYZ. Roter valghjulet for å bevege Z-aksen til toppstoppene. Deretter trykk."
 
 # MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: messages.c:21
@@ -218,7 +218,7 @@ msgstr "Kalibrer Z"
 # MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 #: ultralcd.cpp:3312
 msgid "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
-msgstr "Kalibrer Z. Roter valghjulet for a bevege Z-aksen til toppstoppene. Deretter trykk."
+msgstr "Kalibrer Z. Roter valghjulet for å bevege Z-aksen til toppstoppene. Deretter trykk."
 
 # MSG_HOMEYZ_DONE c=20
 #: ultralcd.cpp:656
@@ -253,7 +253,7 @@ msgstr "Nedkjøling"
 # MSG_COPY_SEL_LANG c=20 r=3
 #: ultralcd.cpp:4429
 msgid "Copy selected language?"
-msgstr "Kopiere det valgte spraket?"
+msgstr "Kopiere det valgte språket?"
 
 # MSG_CRASHDETECT c=13
 #: messages.c:30
@@ -308,7 +308,7 @@ msgstr "Fort."
 # MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ultralcd.cpp:5007
 msgid "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
-msgstr "Vil du repetere det siste trinnet for a omjustere avstanden mellom dysen og platen?"
+msgstr "Vil du repetere det siste trinnet for å omjustere avstanden mellom dysen og platen?"
 
 # MSG_EXTRUDER_CORRECTION c=13
 #: ultralcd.cpp:5076
@@ -473,7 +473,7 @@ msgstr "Førstelagskal."
 # MSG_WIZARD_SELFTEST c=20 r=8
 #: ultralcd.cpp:4928
 msgid "First, I will run the selftest to check most common assembly problems."
-msgstr "Først skal jeg kjøre en selvtest for a sjekke vanlige byggefeil."
+msgstr "Først skal jeg kjøre en selvtest for å sjekke vanlige byggefeil."
 
 # MSG_MMU_FIX_ISSUE c=20 r=4
 #: mmu.cpp:727
@@ -623,12 +623,12 @@ msgstr "Siste printfeil"
 # MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
 #: messages.c:124
 msgid "Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."
-msgstr "Hei, jeg er din Originale Prusa i3 printer. Jeg leder deg igjennom et kort oppsett, hvor Z aksen blir kalibrert. Du er da klar til a printe."
+msgstr "Hei, jeg er din Originale Prusa i3 printer. Jeg leder deg igjennom et kort oppsett, hvor Z aksen blir kalibrert. Du er da klar til å printe."
 
 # MSG_ADDITIONAL_SHEETS c=20 r=9
 #: ultralcd.cpp:5015
 msgid "If you have additional steel sheets, calibrate their presets in Settings - HW Setup - Steel sheets."
-msgstr "Hvis du har andre stålplater, kalibrer de i Innstillinger -> HW Setup -> Stalplater."
+msgstr "Hvis du har andre stålplater, kalibrer de i Innstillinger -> HW Setup -> Stålplater."
 
 # MSG_LAST_PRINT c=18
 #: messages.c:58
@@ -708,17 +708,17 @@ msgstr "Hovedmeny"
 # MSG_BL_HIGH c=12
 #: messages.c:157
 msgid "Level Bright"
-msgstr "Niva Lyst"
+msgstr "Nivå Lyst"
 
 # MSG_BL_LOW c=12
 #: messages.c:158
 msgid "Level Dimmed"
-msgstr "Niva Dimmet"
+msgstr "Nivå Dimmet"
 
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 #: messages.c:69
 msgid "Measuring reference height of calibration point"
-msgstr "Maler referansehøyde for kalibreringspunkt"
+msgstr "Måler referansehøyde for kalibreringspunkt"
 
 # MSG_MESH_BED_LEVELING c=18
 #: messages.c:150
@@ -738,7 +738,7 @@ msgstr "MMU OK. Gjenopptar oppvarming..."
 # MSG_MEASURED_SKEW c=14
 #: ultralcd.cpp:2879
 msgid "Measured skew"
-msgstr "Malt skjevhet"
+msgstr "Målt skjevhet"
 
 # MSG_MMU_FAILS c=15
 #: messages.c:71
@@ -943,12 +943,12 @@ msgstr "Venligst sjekk:"
 # MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: messages.c:119
 msgid "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
-msgstr "Vennligst sjekk handboken og fiks problemet. Fortsett sa Veilederen ved a omstarte printeren."
+msgstr "Vennligst sjekk håndboken og fiks problemet. Fortsett så Veilederen ved å omstarte printeren."
 
 # MSG_CHECK_IDLER c=20 r=5
 #: Marlin_main.cpp:3806
 msgid "Please open idler and remove filament manually."
-msgstr "Apne taljedøren og fjern filamentet for hand."
+msgstr "Åpne taljedøren og fjern filamentet for hånd."
 
 # MSG_PLACE_STEEL_SHEET c=20 r=5
 #: messages.c:77
@@ -958,7 +958,7 @@ msgstr "Plasser stålplaten på varmesenga."
 # MSG_PRESS_TO_UNLOAD c=20 r=4
 #: messages.c:81
 msgid "Please press the knob to unload filament"
-msgstr "Trykk valghjulet for a ta ut filamentet"
+msgstr "Trykk valghjulet for å ta ut filamentet"
 
 # MSG_PULL_OUT_FILAMENT c=20 r=4
 #: messages.c:83
@@ -1018,7 +1018,7 @@ msgstr "Vennligst oppdater."
 # MSG_PRESS_TO_PREHEAT c=20 r=4
 #: Marlin_main.cpp:12065
 msgid "Press the knob to preheat nozzle and continue."
-msgstr "Trykk valghjulet for a forvarme dysen og fortsette."
+msgstr "Trykk valghjulet for å forvarme dysen og fortsette."
 
 # MSG_PAUSE c=5
 #: fsensor.cpp:730
@@ -1068,7 +1068,7 @@ msgstr "Print satt på pause"
 # MSG_RESUME_NOZZLE_TEMP c=20 r=4
 #: mmu.cpp:726
 msgid "Press the knob to resume nozzle temperature."
-msgstr "Trykk valghjulet for a fortsette oppvarming."
+msgstr "Trykk valghjulet for å fortsette oppvarming."
 
 # MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 #: messages.c:48
@@ -1078,12 +1078,12 @@ msgstr "Printeren er ikke kalibrert. Vennligst se manualen, under First Steps."
 # MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ultralcd.cpp:4804
 msgid "Please insert filament into the extruder, then press the knob to load it."
-msgstr "Sett inn filament I ekstruderen og trykk valghjulet for a laste."
+msgstr "Sett inn filament I ekstruderen og trykk valghjulet for å laste."
 
 # MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ultralcd.cpp:4799
 msgid "Please insert filament into the first tube of the MMU, then press the knob to load it."
-msgstr "Sett inn filament i det første røret bak MMU-enheten og trykk valghjulet for a laste."
+msgstr "Sett inn filament i det første røret bak MMU-enheten og trykk valghjulet for å laste."
 
 # MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ultralcd.cpp:4721
@@ -1113,7 +1113,7 @@ msgstr "Gjenopptar print"
 # MSG_REMOVE_OLD_FILAMENT c=20 r=5
 #: mmu.cpp:833
 msgid "Remove old filament and press the knob to start loading new filament."
-msgstr "Ta bort det gamle filamentet og trykk valghjulet for a laste et nytt."
+msgstr "Ta bort det gamle filamentet og trykk valghjulet for å laste et nytt."
 
 # MSG_CALIBRATE_BED_RESET c=18
 #: ultralcd.cpp:5790
@@ -1148,7 +1148,7 @@ msgstr ""
 # MSG_WIZARD_RERUN c=20 r=7
 #: ultralcd.cpp:4742
 msgid "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-msgstr "Ved a kjøre Veilederen slettes all naværende kalibreringsdata og du ma begynne på nytt. Fortsette?"
+msgstr "Ved å kjøre Veilederen slettes all nåværende kalibreringsdata og du må begynne på nytt. Fortsette?"
 
 # MSG_SD_CARD c=8
 #: messages.c:140
@@ -1168,7 +1168,7 @@ msgstr "Søker etter kalibreringspunkt"
 # MSG_LANGUAGE_SELECT c=18
 #: ultralcd.cpp:4445
 msgid "Select language"
-msgstr "Velg sprak"
+msgstr "Velg språk"
 
 # MSG_SELFTEST_OK c=20
 #: ultralcd.cpp:7586
@@ -1198,7 +1198,7 @@ msgstr "Selvtest feilet"
 # MSG_FORCE_SELFTEST c=20 r=8
 #: Marlin_main.cpp:1641
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
-msgstr "Selvtest vil bli kjørt for a kalibrere nøyaktig sensorløs hjemposisjon."
+msgstr "Selvtest vil bli kjørt for å kalibrere nøyaktig sensorløs hjemposisjon."
 
 # MSG_SEL_PREHEAT_TEMP c=20 r=6
 #: ultralcd.cpp:4984
@@ -1353,7 +1353,7 @@ msgstr "PINDA kalibrering er fullført og aktiv. Der kan bli  skrudd av i menyen
 # MSG_FS_VERIFIED c=20 r=3
 #: ultralcd.cpp:7318
 msgid "Sensor verified, remove the filament now."
-msgstr "Sensor verifiserte, fjern filamentet na."
+msgstr "Sensor verifiserte, fjern filamentet nå."
 
 # MSG_TEMPERATURE c=18
 #: ultralcd.cpp:5659
@@ -1443,7 +1443,7 @@ msgstr "Venter på PINDA nedkjøling"
 # MSG_CHANGED_BOTH c=20 r=4
 #: Marlin_main.cpp:1601
 msgid "Warning: both printer type and motherboard type changed."
-msgstr "Advarsel: Bade printertype og hovedkortype er forandret."
+msgstr "Advarsel: Både printertype og hovedkortype er forandret."
 
 # MSG_CHANGED_MOTHERBOARD c=20 r=4
 #: Marlin_main.cpp:1593
@@ -1478,7 +1478,7 @@ msgstr "XYZ cal. detaljer"
 # MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: messages.c:18
 msgid "XYZ calibration failed. Please consult the manual."
-msgstr "XYZ kal. mislyktes. Vennligst radfør med handboken."
+msgstr "XYZ kal. mislyktes. Vennligst rådfør med håndboken."
 
 # MSG_YES c=4
 #: messages.c:125
@@ -1513,17 +1513,17 @@ msgstr "X-korreksjon:"
 # MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ultralcd.cpp:3731
 msgid "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-msgstr "XYZ kalibrering OK.\x0aX og Y aksen er perpendikulær. Gratulerer!"
+msgstr "XYZ kalibrering OK.\\x0aX og Y aksen er perpendikulær. Gratulerer!"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ultralcd.cpp:3715
 msgid "XYZ calibration compromised. Front calibration points not reachable."
-msgstr "XYZ kalibreringen feilet. Front kalibreringspunkt ikke nadd."
+msgstr "XYZ kalibreringen feilet. Front kalibreringspunkt ikke nådd."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ultralcd.cpp:3718
 msgid "XYZ calibration compromised. Right front calibration point not reachable."
-msgstr "XYZ kalibreringen feilet. Høyre front kalibreringspunkt ikke nadd."
+msgstr "XYZ kalibreringen feilet. Høyre front kalibreringspunkt ikke nådd."
 
 # MSG_LOAD_ALL c=17
 #: ultralcd.cpp:6153
@@ -1538,12 +1538,12 @@ msgstr "XYZ kalibreringen feilet. Kalibreringspunkt ikke funnet."
 # MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 #: ultralcd.cpp:3703
 msgid "XYZ calibration failed. Front calibration points not reachable."
-msgstr "XYZ kalibreringen feilet. Front kalibreringspunkt ikke nadd."
+msgstr "XYZ kalibreringen feilet. Front kalibreringspunkt ikke nådd."
 
 # MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ultralcd.cpp:3706
 msgid "XYZ calibration failed. Right front calibration point not reachable."
-msgstr "XYZ kalibreringen feilet. Høyre front kalibreringspunkt ikke nadd."
+msgstr "XYZ kalibreringen feilet. Høyre front kalibreringspunkt ikke nådd."
 
 # MSG_Y_DIST_FROM_MIN c=20
 #: ultralcd.cpp:2836
@@ -1553,7 +1553,7 @@ msgstr "Y distanse fra min."
 # MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ultralcd.cpp:4836
 msgid "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-msgstr "Printeren vil nå printe en sikksakk linje. Roter valghjulet til du far den optimale høyden. Se bildene i handboka, under Kalibrering, for hvordan det skal se ut."
+msgstr "Printeren vil nå printe en sikksakk linje. Roter valghjulet til du får den optimale høyden. Se bildene i håndboka, under Kalibrering, for hvordan det skal se ut."
 
 # MSG_FIL_FAILED c=20 r=5
 #: ultralcd.cpp:7322
@@ -1573,7 +1573,7 @@ msgstr "Av"
 # MSG_ON c=3
 #: messages.c:128
 msgid "On"
-msgstr "Pa"
+msgstr "På"
 
 # MSG_BACK c=18
 #: messages.c:66
@@ -1693,7 +1693,7 @@ msgstr "Printerens dysediameter er forskjellig fra G-Code. Sjekk Innstillinger f
 # MSG_SELFTEST_FS_LEVEL c=20
 #: ultralcd.cpp:8102
 msgid "%s level expected"
-msgstr "%s niva ventet"
+msgstr "%s nivå ventet"
 
 # MSG_RENAME c=18
 #: ultralcd.cpp:6486
@@ -1723,7 +1723,7 @@ msgstr "Hjelp"
 # MSG_STEEL_SHEET c=18
 #: messages.c:68
 msgid "Steel sheets"
-msgstr "Stal plate"
+msgstr "Stål plate"
 
 # MSG_Z_CORRECTION c=13
 #: ultralcd.cpp:5074
