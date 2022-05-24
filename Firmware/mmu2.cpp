@@ -652,6 +652,7 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
         // Act accordingly - every status change (even the same state)
         switch(pc){
         case ProgressCode::FeedingToBondtech:
+        case ProgressCode::FeedingToFSensor:
             if ( loadFilamentStarted )
             {
                 switch ( WhereIsFilament() )
