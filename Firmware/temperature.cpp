@@ -431,6 +431,53 @@ int getHeaterPower(int heater) {
 // reset PID state after changing target_temperature
 void resetPID(uint8_t extruder _UNUSED) {}
 
+enum class TempErrorSource : uint8_t
+{
+    hotend,
+    bed,
+    ambient,
+};
+
+enum class TempErrorType : uint8_t
+{
+    min,
+    max,
+    runaway,
+};
+
+// error state (updated via set_temp_error from isr context)
+volatile static union
+{
+    uint8_t v;
+    struct
+    {
+        uint8_t error: 1;  // error condition
+        uint8_t assert: 1; // error is still asserted
+        uint8_t source: 2; // source
+        uint8_t index: 2;  // source index
+        uint8_t type: 2;   // error type
+    };
+} temp_error_state;
+
+// set the error type from within the temp_mgr isr to be handled in manager_heater
+// - immediately disable all heaters and turn on all fans at full speed
+// - prevent the user to set temperatures until all errors are cleared
+void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
+{
+    // keep disabling heaters and keep fans on as long as the condition is asserted
+    disable_heater();
+    hotendFanSetFullSpeed();
+
+    // set the error state
+    temp_error_state.error = true;
+    temp_error_state.assert = true;
+    temp_error_state.source = (uint8_t)source;
+    temp_error_state.index = index;
+    temp_error_state.type = (uint8_t)type;
+}
+
+void handle_temp_error();
+
 void manage_heater()
 {
 #ifdef WATCHDOG
@@ -440,6 +487,10 @@ void manage_heater()
     // syncronize temperatures with isr
     if(temp_meas_ready)
         updateTemperatures();
+
+    // handle temperature errors
+    if(temp_error_state.v)
+        handle_temp_error();
 
     // periodically check fans
     checkFans();
@@ -1493,37 +1544,38 @@ ISR(TIMER0_COMPB_vect)
     ENABLE_SOFT_PWM_INTERRUPT();
 }
 
-void check_max_temp()
+void check_max_temp_raw()
 {
-//heater
+    //heater
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
     if (current_temperature_raw[0] <= maxttemp_raw[0]) {
 #else
     if (current_temperature_raw[0] >= maxttemp_raw[0]) {
 #endif
-        max_temp_error(0);
+        set_temp_error(TempErrorSource::hotend, 0, TempErrorType::max);
     }
-//bed
+    //bed
 #if defined(BED_MAXTEMP) && (TEMP_SENSOR_BED != 0)
 #if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
     if (current_temperature_bed_raw <= bed_maxttemp_raw) {
 #else
     if (current_temperature_bed_raw >= bed_maxttemp_raw) {
 #endif
-       bed_max_temp_error();
+        set_temp_error(TempErrorSource::bed, 0, TempErrorType::max);
     }
 #endif
-//ambient
+    //ambient
 #if defined(AMBIENT_MAXTEMP) && (TEMP_SENSOR_AMBIENT != 0)
 #if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
     if (current_temperature_raw_ambient <= ambient_maxttemp_raw) {
 #else
     if (current_temperature_raw_ambient >= ambient_maxttemp_raw) {
 #endif
-       ambient_max_temp_error();
+        set_temp_error(TempErrorSource::ambient, 0, TempErrorType::max);
     }
 #endif
 }
+
 //! number of repeating the same state with consecutive step() calls
 //! used to slow down text switching
 struct alert_automaton_mintemp {
@@ -1581,23 +1633,12 @@ static alert_automaton_mintemp alert_automaton_hotend(m2hotend), alert_automaton
 
 void check_min_temp_heater0()
 {
-//heater
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
 	if (current_temperature_raw[0] >= minttemp_raw[0]) {
 #else
 	if (current_temperature_raw[0] <= minttemp_raw[0]) {
 #endif
-		menu_set_serious_error(SERIOUS_ERR_MINTEMP_HEATER);
-		min_temp_error(0);
-	} else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_HEATER) ) {
-		// no recovery, just force the user to restart the printer
-		// which is a safer variant than just continuing printing
-		// The automaton also checks for hysteresis - the temperature must have reached a few degrees above the MINTEMP, before
-		// we shall signalize, that MINTEMP has been fixed
-		// Code notice: normally the alert_automaton instance would have been placed here 
-		// as static alert_automaton_mintemp alert_automaton_hotend, but
-		// due to stupid compiler that takes 16 more bytes.
-		alert_automaton_hotend.step(current_temperature[0], minttemp[0] + TEMP_HYSTERESIS);
+        set_temp_error(TempErrorSource::hotend, 0, TempErrorType::min);
 	}
 }
 
@@ -1608,12 +1649,7 @@ void check_min_temp_bed()
 #else
 	if (current_temperature_bed_raw <= bed_minttemp_raw) {
 #endif
-		menu_set_serious_error(SERIOUS_ERR_MINTEMP_BED);
-		bed_min_temp_error();
-	} else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_BED) ){
-		// no recovery, just force the user to restart the printer
-		// which is a safer variant than just continuing printing
-		alert_automaton_bed.step(current_temperature_bed, BED_MINTEMP + TEMP_HYSTERESIS);
+        set_temp_error(TempErrorSource::bed, 0, TempErrorType::min);
 	}
 }
 
@@ -1625,71 +1661,69 @@ void check_min_temp_ambient()
 #else
 	if (current_temperature_raw_ambient <= ambient_minttemp_raw) {
 #endif
-		ambient_min_temp_error();
+        set_temp_error(TempErrorSource::ambient, 0, TempErrorType::min);
 	}
 }
 #endif
 
-void check_min_temp()
+void handle_temp_error()
 {
-static bool bCheckingOnHeater=false;              // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over heaterMintemp)
-static bool bCheckingOnBed=false;                 // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over bedMintemp)
-static ShortTimer oTimer4minTempHeater;
-static ShortTimer oTimer4minTempBed;
+    // TODO: Stop and the various *_error() functions need an overhaul!
+    // The heaters are kept disabled already at a higher level, making almost
+    // all the code inside the invidual handlers useless!
 
-#ifdef AMBIENT_THERMISTOR
-#ifdef AMBIENT_MINTEMP
-check_min_temp_ambient();
-#endif
-#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
-if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type
-#else
-if(current_temperature_raw_ambient=<(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW))
-#endif
-     {                                            // ambient temperature is low
-#endif //AMBIENT_THERMISTOR
-// *** 'common' part of code for MK2.5 & MK3
-// * nozzle checking
-if(target_temperature[active_extruder]>minttemp[active_extruder])
-     {                                            // ~ nozzle heating is on
-     bCheckingOnHeater=bCheckingOnHeater||(current_temperature[active_extruder]>(minttemp[active_extruder]+TEMP_HYSTERESIS)); // for eventually delay cutting
-     if(oTimer4minTempHeater.expired(HEATER_MINTEMP_DELAY)||(!oTimer4minTempHeater.running())||bCheckingOnHeater)
-          {
-          bCheckingOnHeater=true;                 // not necessary
-		check_min_temp_heater0();               // delay is elapsed or temperature is/was over minTemp => periodical checking is active
-          }
-     }
-else {                                            // ~ nozzle heating is off
-     oTimer4minTempHeater.start();
-     bCheckingOnHeater=false;
-     }
-// * bed checking
-if(target_temperature_bed>BED_MINTEMP)
-     {                                            // ~ bed heating is on
-     bCheckingOnBed=bCheckingOnBed||(current_temperature_bed>(BED_MINTEMP+TEMP_HYSTERESIS)); // for eventually delay cutting
-     if(oTimer4minTempBed.expired(BED_MINTEMP_DELAY)||(!oTimer4minTempBed.running())||bCheckingOnBed)
-          {
-          bCheckingOnBed=true;                    // not necessary
-		check_min_temp_bed();                   // delay is elapsed or temperature is/was over minTemp => periodical checking is active
-          }
-     }
-else {                                            // ~ bed heating is off
-     oTimer4minTempBed.start();
-     bCheckingOnBed=false;
-     }
-// *** end of 'common' part
-#ifdef AMBIENT_THERMISTOR
-     }
-else {                                            // ambient temperature is standard
-     check_min_temp_heater0();
-     check_min_temp_bed();
-     }
-#endif //AMBIENT_THERMISTOR
+    // relay to the original handler
+    switch((TempErrorSource)temp_error_state.source) {
+    case TempErrorSource::hotend:
+        switch((TempErrorType)temp_error_state.type) {
+        case TempErrorType::min:
+            if(temp_error_state.assert) {
+                menu_set_serious_error(SERIOUS_ERR_MINTEMP_HEATER);
+                min_temp_error(temp_error_state.index);
+            } else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_HEATER) ) {
+                // no recovery, just force the user to restart the printer
+                // which is a safer variant than just continuing printing
+                // The automaton also checks for hysteresis - the temperature must have reached a few degrees above the MINTEMP, before
+                // we shall signalize, that MINTEMP has been fixed
+                // Code notice: normally the alert_automaton instance would have been placed here
+                // as static alert_automaton_mintemp alert_automaton_hotend, but
+                alert_automaton_hotend.step(current_temperature[0], minttemp[0] + TEMP_HYSTERESIS);
+            }
+            break;
+        case TempErrorType::max:
+            max_temp_error(temp_error_state.index);
+            break;
+        }
+        break;
+    case TempErrorSource::bed:
+        switch((TempErrorType)temp_error_state.type) {
+        case TempErrorType::min:
+            if(temp_error_state.assert) {
+                menu_set_serious_error(SERIOUS_ERR_MINTEMP_BED);
+                bed_min_temp_error();
+            } else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_BED) ){
+                // no recovery, just force the user to restart the printer
+                // which is a safer variant than just continuing printing
+                alert_automaton_bed.step(current_temperature_bed, BED_MINTEMP + TEMP_HYSTERESIS);
+            }
+            break;
+        case TempErrorType::max:
+            bed_max_temp_error();
+            break;
+        }
+        break;
+    case TempErrorSource::ambient:
+        switch((TempErrorType)temp_error_state.type) {
+        case TempErrorType::min: ambient_min_temp_error(); break;
+        case TempErrorType::max: ambient_max_temp_error(); break;
+        case TempErrorType::runaway: break; // not needed
+        }
+        break;
+    }
 }
- 
+
 #ifdef PIDTEMP
 // Apply the scale factors to the PID values
-
 
 float scalePID_i(float i)
 {
@@ -2051,13 +2085,14 @@ static void setIsrTargetTemperatures()
 
 /* Synchronize temperatures:
    - fetch updated values from temp_mgr_isr to current values
-   - update target temperatures for temp_mgr_isr regulation
+   - update target temperatures for temp_mgr_isr regulation *if* no temperature error is set
    This function is blocking: check temp_meas_ready before calling! */
 static void updateTemperatures()
 {
     TempMgrGuard temp_mgr_guard;
     setCurrentTemperaturesFromIsr();
-    setIsrTargetTemperatures();
+    if(!temp_error_state.v)
+        setIsrTargetTemperatures();
     temp_meas_ready = false;
 }
 
@@ -2085,15 +2120,18 @@ static void temp_mgr_pid()
     pid_bed(current_temperature_bed_isr, target_temperature_bed_isr);
 }
 
+void check_temp_raw();
+
 static void temp_mgr_isr()
 {
     // update *_isr temperatures from raw values for PID regulation
     setIsrTemperaturesFromRawValues();
 
-    // TODO: this is now running inside an isr and cannot directly manipulate the lcd,
-    // this needs to disable temperatures and flag the error to be shown in manage_heater!
-    check_max_temp();
-    check_min_temp();
+    // clear the error assertion flag before checking again
+    temp_error_state.assert = false;
+
+    // check min/max temp using raw values
+    check_temp_raw();
 
     // PID regulation
     temp_mgr_pid();
@@ -2143,4 +2181,72 @@ void disable_heater()
 #endif
 
   CRITICAL_SECTION_END;
+}
+
+void check_min_temp_raw()
+{
+    static bool bCheckingOnHeater = false; // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over heaterMintemp)
+    static bool bCheckingOnBed    = false; // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over bedMintemp)
+    static ShortTimer oTimer4minTempHeater;
+    static ShortTimer oTimer4minTempBed;
+
+#ifdef AMBIENT_THERMISTOR
+#ifdef AMBIENT_MINTEMP
+    // we need to check ambient temperature
+    check_min_temp_ambient();
+#endif
+#if AMBIENT_RAW_LO_TEMP > AMBIENT_RAW_HI_TEMP
+    if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type
+#else
+    if(current_temperature_raw_ambient=<(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW))
+#endif
+    {
+        // ambient temperature is low
+#endif //AMBIENT_THERMISTOR
+        // *** 'common' part of code for MK2.5 & MK3
+        // * nozzle checking
+        if(target_temperature_isr[active_extruder]>minttemp[active_extruder]) {
+            // ~ nozzle heating is on
+            bCheckingOnHeater=bCheckingOnHeater||(current_temperature_isr[active_extruder]>(minttemp[active_extruder]+TEMP_HYSTERESIS)); // for eventually delay cutting
+            if(oTimer4minTempHeater.expired(HEATER_MINTEMP_DELAY)||(!oTimer4minTempHeater.running())||bCheckingOnHeater) {
+                bCheckingOnHeater=true;   // not necessary
+                check_min_temp_heater0(); // delay is elapsed or temperature is/was over minTemp => periodical checking is active
+            }
+        }
+        else {
+            // ~ nozzle heating is off
+            oTimer4minTempHeater.start();
+            bCheckingOnHeater=false;
+        }
+        // * bed checking
+        if(target_temperature_bed_isr>BED_MINTEMP) {
+            // ~ bed heating is on
+            bCheckingOnBed=bCheckingOnBed||(current_temperature_bed_isr>(BED_MINTEMP+TEMP_HYSTERESIS)); // for eventually delay cutting
+            if(oTimer4minTempBed.expired(BED_MINTEMP_DELAY)||(!oTimer4minTempBed.running())||bCheckingOnBed) {
+                bCheckingOnBed=true;  // not necessary
+                check_min_temp_bed(); // delay is elapsed or temperature is/was over minTemp => periodical checking is active
+            }
+        }
+        else {
+            // ~ bed heating is off
+            oTimer4minTempBed.start();
+            bCheckingOnBed=false;
+        }
+        // *** end of 'common' part
+#ifdef AMBIENT_THERMISTOR
+    }
+    else {
+        // ambient temperature is standard
+        check_min_temp_heater0();
+        check_min_temp_bed();
+    }
+#endif //AMBIENT_THERMISTOR
+}
+
+void check_temp_raw()
+{
+    // order is relevant: check_min_temp_raw requires max to be reliable due to
+    // ambient temperature being used for low handling temperatures
+    check_max_temp_raw();
+    check_min_temp_raw();
 }
