@@ -44,7 +44,7 @@
 
 - **Norwegian / Norsk**
   - Maintainers: **@pkg2000**
-  - Co-maintainers:
+  - Co-maintainers: **@trondkla**
   - Contributors:
-  - [ ] **Active**      since March 2022
+  - [X] **Active**      since May 2022
   - [X] **Maintained**  since February 2022
