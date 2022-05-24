@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: no\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: lun 23 may 2022 18:55:42 CEST\n"
-"PO-Revision-Date: lun 23 may 2022 18:55:42 CEST\n"
+"POT-Creation-Date: mar 24 may 2022 08:15:28 CEST\n"
+"PO-Revision-Date: mar 24 may 2022 08:15:28 CEST\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -56,10 +56,12 @@ msgid "[0;0] point offset"
 msgstr "[0;0] punktforskyv."
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+#: 
 msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
 msgstr "Krasjdeteksjon kan\x0abare skrus på i\x0aNormal modus"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+#: 
 msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 msgstr "ADVARSEL:\x0aKrasjdeteksjon er\x0adeaktivert i\x0aStillemodus"
 
@@ -338,12 +340,8 @@ msgstr "Endesensor"
 msgid "Endstops"
 msgstr "Endesensorer"
 
-# MSG_STACK_ERROR c=20 r=4
-msgid "Error - static memory has been overwritten"
-msgstr "Error - Statisk minne har blitt overskrevet"
-
-# MSG_CUT_FILAMENT c=16
-#: messages.c:61
+# MSG_CUT_FILAMENT c=17
+#: messages.c:63
 msgid "Cut filament"
 msgstr "Kutt filament"
 
@@ -897,11 +895,6 @@ msgstr "Gamle verdier funnet Standarinnstillinger for PID, motor etc. blir satt.
 msgid "Now remove the test print from steel sheet."
 msgstr "Fjern nå testprintet fra stålplaten."
 
-# MSG_NOZZLE_FAN c=10
-#: ultralcd.cpp:1446
-msgid "Nozzle FAN"
-msgstr "Ekst.vifte"
-
 # MSG_PAUSE_PRINT c=18
 #: messages.c:76
 msgid "Pause print"
@@ -1352,8 +1345,8 @@ msgstr "Velg temperaturen som passer ditt materiale."
 msgid "PINDA calibration failed"
 msgstr "PINDA kalibrering mislyktes"
 
-# MSG_TEMP_CALIBRATION_DONE c=20 r=12
-#: messages.c:113
+# MSG_PINDA_CALIBRATION_DONE c=20 r=8
+#: messages.c:115
 msgid "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
 msgstr "PINDA kalibrering er fullført og aktiv. Der kan bli  skrudd av i menyen under Innstillinger -> PINDA kal."
 
