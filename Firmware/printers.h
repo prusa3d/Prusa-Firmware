@@ -36,5 +36,9 @@
 #define PRINTER_MK3S_NAME          "MK3S"
 #define PRINTER_MK3S_MMU2          20302
 #define PRINTER_MK3S_MMU2_NAME     "MK3SMMU2S"
-
+// *** MK3S Bear
+#define PRINTER_MK3S_BEAR     		304
+#define PRINTER_MK3S_BEAR_NAME          "MK3S.BEAR"
+#define PRINTER_MK3S_BEAR_MMU2          20304
+#define PRINTER_MK3S_BEAR_MMU2_NAME     "MK3SMMU2S.BEAR"
 #endif //PRINTERS_H
