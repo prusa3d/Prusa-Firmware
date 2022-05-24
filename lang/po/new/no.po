@@ -56,14 +56,12 @@ msgid "[0;0] point offset"
 msgstr "[0;0] punktforskyv."
 
 # MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-#: 
 msgid "Crash detection can\x0abe turned on only in\x0aNormal mode"
-msgstr "Krasjdeteksjon kan bare skrus på i normal modus"
+msgstr "Krasjdeteksjon kan\x0abare skrus på i\x0aNormal modus"
 
 # MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-#: 
 msgid "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-msgstr "ADVARSEL:\x0aKrasjdeteksjon\x0adeaktivert i\x0aStillemodus"
+msgstr "ADVARSEL:\x0aKrasjdeteksjon er\x0adeaktivert i\x0aStillemodus"
 
 # MSG_BABYSTEPPING_Z c=15
 #: ultralcd.cpp:3024
@@ -78,12 +76,12 @@ msgstr "Alt korrekt"
 # MSG_WIZARD_DONE c=20 r=3
 #: messages.c:120
 msgid "All is done. Happy printing!"
-msgstr "Alt klart. Happy printing!"
+msgstr "Alt klart. God printing!"
 
 # MSG_AMBIENT c=14
 #: ultralcd.cpp:1717
 msgid "Ambient"
-msgstr ""
+msgstr "Omgivelse"
 
 # MSG_AUTO c=6
 #: messages.c:162
@@ -103,22 +101,22 @@ msgstr "Er venstre og høyre Z-vogn helt oppe?"
 # MSG_AUTO_HOME c=18
 #: messages.c:11
 msgid "Auto home"
-msgstr "Auto startposisjon"
+msgstr "Auto hjem"
 
 # MSG_AUTOLOAD_FILAMENT c=18
 #: ultralcd.cpp:6635
 msgid "AutoLoad filament"
-msgstr "Autolast filament"
+msgstr "AutoLast filament"
 
 # MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ultralcd.cpp:4307
 msgid "Autoloading filament available only when filament sensor is turned on..."
-msgstr "Autolast av fil. er kun tilgjengelig når filament- sensoren er skrudd på.."
+msgstr "Autolasting av fil. er kun tilgjengelig når fil.- sensoren er skrudd på..."
 
 # MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ultralcd.cpp:2638
 msgid "Autoloading filament is active, just press the knob and insert filament..."
-msgstr "Autolast av fil. er aktivert. Trykk på knappen og sett inn filament.."
+msgstr "Autolasting av fil. er aktivert. Trykk på knappen og sett inn filament..."
 
 # MSG_SELFTEST_AXIS_LENGTH c=20
 #: ultralcd.cpp:8076
@@ -133,22 +131,22 @@ msgstr "Akse"
 # MSG_SELFTEST_BEDHEATER c=20
 #: ultralcd.cpp:8034
 msgid "Bed/Heater"
-msgstr "Plate/Varmer"
+msgstr "Seng/Varmer"
 
 # MSG_BED_DONE c=20
 #: messages.c:15
 msgid "Bed done"
-msgstr "Plate ferdig"
+msgstr "Seng ferdig"
 
 # MSG_BED_HEATING c=20
 #: messages.c:16
 msgid "Bed Heating"
-msgstr "Platen varmes"
+msgstr "Sengen varmes"
 
 # MSG_BED_CORRECTION_MENU c=18
 #: ultralcd.cpp:5780
 msgid "Bed level correct"
-msgstr "Plateplan korrekt"
+msgstr "Plankorrekt seng"
 
 # MSG_BELTTEST c=18
 #: ultralcd.cpp:5760
@@ -158,7 +156,7 @@ msgstr "Belte test"
 # MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: messages.c:17
 msgid "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-msgstr "Plate planering feilet. Sensoren utløstes ikke. Rester på dysen? Venter på restart."
+msgstr "Sengeplanering feilet. Sensoren utløstes ikke. Rester på dysen? Venter på omstart."
 
 # MSG_BRIGHT c=6
 #: messages.c:160
@@ -168,12 +166,12 @@ msgstr "Lys"
 # MSG_BRIGHTNESS c=18
 #: messages.c:156
 msgid "Brightness"
-msgstr "Lyshet"
+msgstr "Lysstyrke"
 
 # MSG_BED c=13
 #: messages.c:14
 msgid "Bed"
-msgstr "Plate"
+msgstr "Seng"
 
 # MSG_BELT_STATUS c=18
 #: messages.c:19
@@ -183,12 +181,12 @@ msgstr "Beltestatus"
 # MSG_RECOVER_PRINT c=20 r=2
 #: messages.c:84
 msgid "Blackout occurred. Recover print?"
-msgstr "Strømbrudd! Gjenoppta print?"
+msgstr "Oppdaget Strømbrudd! Gjenoppta print?"
 
 # MSG_CALIBRATING_HOME c=20
 #: ultralcd.cpp:8395
 msgid "Calibrating home"
-msgstr "Kalibrerer startpos."
+msgstr "Kalibrerer hjem"
 
 # MSG_CALIBRATE_BED c=18
 #: ultralcd.cpp:5769
@@ -258,7 +256,7 @@ msgstr "Kopiere det valgte språket?"
 # MSG_CRASHDETECT c=13
 #: messages.c:30
 msgid "Crash det."
-msgstr "Krasjdet."
+msgstr "Krasjdetek."
 
 # MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 #: ultralcd.cpp:4824
@@ -268,12 +266,12 @@ msgstr "Velg filamenttype for Førstelags- kalibrering."
 # MSG_CRASH_DETECTED c=20
 #: messages.c:29
 msgid "Crash detected."
-msgstr "Krasj fant sted."
+msgstr "Krasj oppdaget."
 
 # MSG_CRASH_RESUME c=20 r=3
 #: Marlin_main.cpp:653
 msgid "Crash detected. Resume print?"
-msgstr "Krasj merket. Fortsette print?"
+msgstr "Krasj oppdaget. Fortsette print?"
 
 # MSG_CRASH c=7
 #: messages.c:28
@@ -288,17 +286,17 @@ msgstr "Dato:"
 # MSG_COMMUNITY_MADE c=18
 #: messages.c:25
 msgid "Community made"
-msgstr "Community prod."
+msgstr "Community laget"
 
 # MSG_DISABLE_STEPPERS c=18
 #: ultralcd.cpp:5660
 msgid "Disable steppers"
-msgstr "Skru av motorer"
+msgstr "Frigjør motorer"
 
 # MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: messages.c:13
 msgid "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-msgstr "Avstand mellom tuppen av dysen og platen er ikke kalibrert. Vennligst se manualen/KB for hvordan det skal se ut."
+msgstr "Avstand mellom tuppen av dysen og senga er ikke kalibrert. Vennligst se manualen, under First Steps, for hvordan det første laget skal kalibreres."
 
 # MSG_CONTINUE_SHORT c=5
 #: messages.c:154
@@ -318,17 +316,17 @@ msgstr "E-korreksjon:"
 # MSG_EJECT_FILAMENT c=17
 #: messages.c:62
 msgid "Eject filament"
-msgstr "Utløs filament"
+msgstr "Mat ut filament"
 
 # MSG_EJECTING_FILAMENT c=20
 #: mmu.cpp:1415
 msgid "Ejecting filament"
-msgstr "Utløser filament"
+msgstr "Mater ut filament"
 
 # MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ultralcd.cpp:8052
 msgid "Endstop not hit"
-msgstr "Endes. ikke truffet"
+msgstr "Traff ikke endesens."
 
 # MSG_SELFTEST_ENDSTOP c=16
 #: ultralcd.cpp:8047
@@ -338,10 +336,14 @@ msgstr "Endesensor"
 # MSG_SELFTEST_ENDSTOPS c=20
 #: ultralcd.cpp:8038
 msgid "Endstops"
-msgstr "Endesensorene"
+msgstr "Endesensorer"
 
-# MSG_CUT_FILAMENT c=17
-#: messages.c:63
+# MSG_STACK_ERROR c=20 r=4
+msgid "Error - static memory has been overwritten"
+msgstr "Error - Statisk minne har blitt overskrevet"
+
+# MSG_CUT_FILAMENT c=16
+#: messages.c:61
 msgid "Cut filament"
 msgstr "Kutt filament"
 
@@ -428,7 +430,7 @@ msgstr "Tomt filament"
 # MSG_FILAMENT_CLEAN c=20 r=2
 #: messages.c:39
 msgid "Filament extruding & with correct color?"
-msgstr "Filamentet kommer ut og med riktig farge?"
+msgstr "Filament kommer ut og har riktig farge?"
 
 # MSG_NOT_LOADED c=19
 #: ultralcd.cpp:2554
@@ -543,7 +545,7 @@ msgstr "Byttet riktig?"
 # MSG_SELFTEST_CHECK_BED c=20
 #: messages.c:96
 msgid "Checking bed"
-msgstr "Sjekker plate"
+msgstr "Sjekker seng"
 
 # MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ultralcd.cpp:8384
@@ -608,12 +610,12 @@ msgstr "Sett inn filament"
 # MSG_FILAMENT_LOADED c=20 r=2
 #: messages.c:40
 msgid "Is filament loaded?"
-msgstr "Er filamentet lastet?"
+msgstr "Er filament lastet?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
 #: messages.c:111
 msgid "Is steel sheet on heatbed?"
-msgstr "Er stålplaten på varmeplaten?"
+msgstr "Er stålplaten på varmesenga?"
 
 # MSG_LAST_PRINT_FAILURES c=20
 #: messages.c:59
@@ -638,7 +640,7 @@ msgstr "Siste print"
 # MSG_SELFTEST_EXTRUDER_FAN c=20
 #: messages.c:91
 msgid "Left hotend fan?"
-msgstr "Venst. hotend vifte?"
+msgstr "Venst. ekstr. vifte?"
 
 # MSG_LEFT c=10
 #: ultralcd.cpp:2834
@@ -668,7 +670,7 @@ msgstr "Sett inn filamentet i ekstruderen og deretter trykk inn valghjulet."
 # MSG_LOAD_FILAMENT c=17
 #: messages.c:60
 msgid "Load filament"
-msgstr "Last filament"
+msgstr "Last inn filament"
 
 # MSG_LOADING_COLOR c=20
 #: ultralcd.cpp:2506
@@ -678,7 +680,7 @@ msgstr "Laster farge"
 # MSG_LOADING_FILAMENT c=20
 #: messages.c:61
 msgid "Loading filament"
-msgstr "Laster farge"
+msgstr "Laster filament"
 
 # MSG_ITERATION c=12
 #: messages.c:55
@@ -703,7 +705,7 @@ msgstr "M117 Førstelagskal."
 # MSG_MAIN c=18
 #: messages.c:65
 msgid "Main"
-msgstr "Hoved"
+msgstr "Hovedmeny"
 
 # MSG_BL_HIGH c=12
 #: messages.c:157
@@ -723,7 +725,7 @@ msgstr "Måler referansehøyde for kalibreringspunkt"
 # MSG_MESH_BED_LEVELING c=18
 #: messages.c:150
 msgid "Mesh Bed Leveling"
-msgstr "Plateplanering"
+msgstr "Sengeplanering"
 
 # MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 #: mmu.cpp:765
@@ -895,10 +897,15 @@ msgstr "Gamle verdier funnet Standarinnstillinger for PID, motor etc. blir satt.
 msgid "Now remove the test print from steel sheet."
 msgstr "Fjern nå testprintet fra stålplaten."
 
+# MSG_NOZZLE_FAN c=10
+#: ultralcd.cpp:1446
+msgid "Nozzle FAN"
+msgstr "Ekst.vifte"
+
 # MSG_PAUSE_PRINT c=18
 #: messages.c:76
 msgid "Pause print"
-msgstr "Paus printjobben"
+msgstr "Pause printjobben"
 
 # MSG_PID_RUNNING c=20
 #: ultralcd.cpp:1322
@@ -923,7 +930,7 @@ msgstr "PINDA varmes"
 # MSG_PAPER c=20 r=10
 #: messages.c:75
 msgid "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
-msgstr "Plasser et ark under dysen mens jeg kalibrerer de 4 første punktene. Hvis dysen tar papiret, skru av printeren umiddelbart"
+msgstr "Plasser et ark under dysen mens jeg kalibrerer de 4 første punktene. Hvis dysen tar papiret, skru umiddelbart av printeren."
 
 # MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ultralcd.cpp:5006
@@ -943,7 +950,7 @@ msgstr "Venligst sjekk:"
 # MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: messages.c:119
 msgid "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
-msgstr "Vennligst sjekk håndboken og fiks problemet. Fortsett Wizard ved å restarte printeren."
+msgstr "Vennligst sjekk håndboken og fiks problemet. Fortsett så Veilederen ved å omstarte printeren."
 
 # MSG_CHECK_IDLER c=20 r=5
 #: Marlin_main.cpp:3802
@@ -953,7 +960,7 @@ msgstr "Åpne taljedøren og fjern filamentet for hånd."
 # MSG_PLACE_STEEL_SHEET c=20 r=5
 #: messages.c:77
 msgid "Please place steel sheet on heatbed."
-msgstr "Plasser stålplaten på varmeplaten."
+msgstr "Plasser stålplaten på varmesenga."
 
 # MSG_PRESS_TO_UNLOAD c=20 r=4
 #: messages.c:81
@@ -973,7 +980,7 @@ msgstr "Fjern filamentet og trykk valghjulet."
 # MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: messages.c:86
 msgid "Please remove steel sheet from heatbed."
-msgstr "Vennligst ta stålplaten av varmeplaten."
+msgstr "Vennligst ta stålplaten av varmesenga."
 
 # MSG_RUN_XYZ c=20 r=4
 #: Marlin_main.cpp:5347
@@ -983,7 +990,7 @@ msgstr "Vennligst fullfør XYZ kalibreringen først."
 # MSG_UPDATE_MMU2_FW c=20 r=4
 #: mmu.cpp:1341
 msgid "Please update firmware in your MMU2. Waiting for reset."
-msgstr "Oppdater din MMU2 systemvare. Venter på restart..."
+msgstr "Oppdater din MMU2 systemvare. Venter på omstart..."
 
 # MSG_PLEASE_WAIT c=20
 #: messages.c:78
@@ -1153,7 +1160,7 @@ msgstr "Ved å kjøre Veilederen slettes all nåværende kalibreringsdata og du 
 # MSG_SD_CARD c=8
 #: messages.c:140
 msgid "SD card"
-msgstr "SD kort"
+msgstr "SD-kort"
 
 # MSG_RIGHT c=10
 #: ultralcd.cpp:2835
@@ -1198,7 +1205,7 @@ msgstr "Selvtest feilet"
 # MSG_FORCE_SELFTEST c=20 r=8
 #: Marlin_main.cpp:1641
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
-msgstr "Selvtest vil bli kjørt for å kalibrere nøyaktig sensorløs startposisjon."
+msgstr "Selvtest vil bli kjørt for å kalibrere nøyaktig sensorløs hjemposisjon."
 
 # MSG_SEL_PREHEAT_TEMP c=20 r=6
 #: ultralcd.cpp:4980
@@ -1238,7 +1245,7 @@ msgstr "Ingen"
 # MSG_SORT_TIME c=8
 #: messages.c:142
 msgid "Time"
-msgstr "Tid"
+msgstr "Dato"
 
 # MSG_SEVERE_SKEW c=14
 #: ultralcd.cpp:2878
@@ -1298,7 +1305,7 @@ msgstr "Spinner"
 # MSG_TEMP_CAL_WARNING c=20 r=4
 #: Marlin_main.cpp:5360
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
-msgstr "Solid bord og en stabil romtemperatur på 21-26C er nødvendig."
+msgstr "En stabil rom- temperatur på 21-26C og et solid underlag er nødvendig."
 
 # MSG_STATISTICS c=18
 #: ultralcd.cpp:6063
@@ -1318,7 +1325,7 @@ msgstr "STOPPET."
 # MSG_SUPPORT c=18
 #: ultralcd.cpp:6659
 msgid "Support"
-msgstr "Hjelp"
+msgstr "System info"
 
 # MSG_SELFTEST_SWAPPED c=16
 #: ultralcd.cpp:8083
@@ -1345,10 +1352,10 @@ msgstr "Velg temperaturen som passer ditt materiale."
 msgid "PINDA calibration failed"
 msgstr "PINDA kalibrering mislyktes"
 
-# MSG_PINDA_CALIBRATION_DONE c=20 r=8
-#: messages.c:115
+# MSG_TEMP_CALIBRATION_DONE c=20 r=12
+#: messages.c:113
 msgid "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
-msgstr "PINDA kalibrering er fullført og aktiv. Der kan bli skudd av i menyen under Innstillinger -> PINDA kal."
+msgstr "PINDA kalibrering er fullført og aktiv. Der kan bli  skrudd av i menyen under Innstillinger -> PINDA kal."
 
 # MSG_FS_VERIFIED c=20 r=3
 #: ultralcd.cpp:7314
@@ -1378,7 +1385,7 @@ msgstr "Filament totalt"
 # MSG_TOTAL_PRINT_TIME c=19
 #: ultralcd.cpp:2726
 msgid "Total print time"
-msgstr "Printingtid total"
+msgstr "Printetid totalt"
 
 # MSG_TUNE c=18
 #: ultralcd.cpp:6556
@@ -1418,7 +1425,7 @@ msgstr "Totalt"
 # MSG_MENU_VOLTAGES c=15
 #: ultralcd.cpp:2040
 msgid "Voltages"
-msgstr ""
+msgstr "Strøm/Volt"
 
 # MSG_UNKNOWN c=13
 #: ultralcd.cpp:1995
@@ -1458,7 +1465,7 @@ msgstr "Advarsel: Printertype forandret."
 # MSG_UNLOAD_SUCCESSFUL c=20 r=2
 #: Marlin_main.cpp:3793
 msgid "Was filament unload successful?"
-msgstr "Ble filamentet helt lastet ut?"
+msgstr "Ble filamentet lastet helt ut?"
 
 # MSG_SELFTEST_WIRINGERROR c=18
 #: messages.c:100
@@ -1503,7 +1510,7 @@ msgstr "XYZ kalibreringen er god. Godt jobba!"
 # MSG_TIMEOUT c=12
 #: messages.c:159
 msgid "Timeout"
-msgstr ""
+msgstr "Tidsavbrudd"
 
 # MSG_X_CORRECTION c=13
 #: ultralcd.cpp:5068
@@ -1513,7 +1520,7 @@ msgstr "X-korreksjon:"
 # MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ultralcd.cpp:3727
 msgid "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-msgstr "XYZ kalibreringen OK. X/Y akse er perpendikulære. Gratulerer!"
+msgstr "XYZ kalibrering OK.\\x0aX og Y aksen er perpendikulær. Gratulerer!"
 
 # MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ultralcd.cpp:3711
@@ -1548,12 +1555,12 @@ msgstr "XYZ kalibreringen feilet. Høyre front kalibreringspunkt ikke nådd."
 # MSG_Y_DIST_FROM_MIN c=20
 #: ultralcd.cpp:2832
 msgid "Y distance from min"
-msgstr "Y distanse fra min"
+msgstr "Y distanse fra min."
 
 # MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ultralcd.cpp:4832
 msgid "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-msgstr "Printeren vil nå printe en sikksakk linje. Roter valghjulet til du får den optimale høyden. Se bildene i håndboka, under kalibrering, for hvordan det skal se ut."
+msgstr "Printeren vil nå printe en sikksakk linje. Roter valghjulet til du får den optimale høyden. Se bildene i håndboka, under Kalibrering, for hvordan det skal se ut."
 
 # MSG_FIL_FAILED c=20 r=5
 #: ultralcd.cpp:7318
@@ -1583,12 +1590,12 @@ msgstr "Tilbake"
 # MSG_CHECKS c=18
 #: ultralcd.cpp:5623
 msgid "Checks"
-msgstr "Sjekker"
+msgstr "G-code sjekk"
 
 # MSG_FALSE_TRIGGERING c=20
 #: ultralcd.cpp:8093
 msgid "False triggering"
-msgstr "Falskt trigget"
+msgstr "Falskt utløsning"
 
 # MSG_STRICT c=8
 #: messages.c:133
@@ -1628,17 +1635,17 @@ msgstr "MMU Mod."
 # MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 #: ultralcd.cpp:4356
 msgid "Mode change in progress..."
-msgstr "Modus skifter..."
+msgstr "Modus endres..."
 
 # MSG_MODEL c=8
 #: messages.c:134
 msgid "Model"
-msgstr ""
+msgstr "Modell"
 
 # MSG_NOZZLE_DIAMETER c=10
 #: messages.c:138
 msgid "Nozzle d."
-msgstr "Dyse dia."
+msgstr "Dyse diam."
 
 # MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: util.cpp:414
@@ -1678,7 +1685,7 @@ msgstr "Forvarmer for kutt"
 # MSG_PREHEATING_TO_EJECT c=20
 #: ultralcd.cpp:2296
 msgid "Preheating to eject"
-msgstr "Forvarmer for ut"
+msgstr "Forvarmer for utmat."
 
 # MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 #: util.cpp:294
