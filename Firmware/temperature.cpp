@@ -106,12 +106,9 @@ static volatile bool temp_meas_ready = false;
   static float pTerm[EXTRUDERS];
   static float iTerm[EXTRUDERS];
   static float dTerm[EXTRUDERS];
-  //int output;
   static float pid_error[EXTRUDERS];
   static float iState_sum_min[EXTRUDERS];
   static float iState_sum_max[EXTRUDERS];
-  // static float pid_input[EXTRUDERS];
-  // static float pid_output[EXTRUDERS];
   static bool pid_reset[EXTRUDERS];
 #endif //PIDTEMP
 #ifdef PIDTEMPBED
@@ -121,7 +118,6 @@ static volatile bool temp_meas_ready = false;
   static float pTerm_bed;
   static float iTerm_bed;
   static float dTerm_bed;
-  //int output;
   static float pid_error_bed;
   static float temp_iState_min_bed;
   static float temp_iState_max_bed;
