@@ -442,6 +442,7 @@ enum class TempErrorType : uint8_t
 {
     min,
     max,
+    preheat,
     runaway,
 };
 
@@ -454,8 +455,8 @@ volatile static union
         uint8_t error: 1;  // error condition
         uint8_t assert: 1; // error is still asserted
         uint8_t source: 2; // source
-        uint8_t index: 2;  // source index
-        uint8_t type: 2;   // error type
+        uint8_t index: 1;  // source index
+        uint8_t type: 3;   // error type
     };
 } temp_error_state;
 
@@ -797,7 +798,7 @@ void soft_pwm_init()
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
 void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
 {
-     float __delta;
+	float __delta;
 	float __hysteresis = 0;
 	uint16_t __timeout = 0;
 	bool temp_runaway_check_active = false;
@@ -881,11 +882,8 @@ void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _cu
 				}
 
 				if (__preheat_errors[_heater_id] > ((_isbed) ? 3 : 5)) 
-				{
-					if (farm_mode) { prusa_statistics(0); }
-					temp_runaway_stop(true, _isbed);
-					if (farm_mode) { prusa_statistics(91); }
-				}
+                    set_temp_error((_isbed?TempErrorSource::bed:TempErrorSource::hotend), _heater_id, TempErrorType::preheat);
+
 				__preheat_start[_heater_id] = _current_temperature;
 				__preheat_counter[_heater_id] = 0;
 			}
@@ -922,11 +920,7 @@ void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _cu
 				{
 					temp_runaway_error_counter[_heater_id]++;
 					if (temp_runaway_error_counter[_heater_id] * 2 > __timeout)
-					{
-						if (farm_mode) { prusa_statistics(0); }
-						temp_runaway_stop(false, _isbed);
-						if (farm_mode) { prusa_statistics(90); }
-					}
+                        set_temp_error((_isbed?TempErrorSource::bed:TempErrorSource::hotend), _heater_id, TempErrorType::runaway);
 				}
 			}
 		}
@@ -955,6 +949,11 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 	}
 
     Stop();
+
+    if (farm_mode) {
+        prusa_statistics(0);
+        prusa_statistics(isPreheat? 91 : 90);
+    }
 }
 #endif
 
@@ -1673,10 +1672,10 @@ void handle_temp_error()
     // all the code inside the invidual handlers useless!
 
     // relay to the original handler
-    switch((TempErrorSource)temp_error_state.source) {
-    case TempErrorSource::hotend:
-        switch((TempErrorType)temp_error_state.type) {
-        case TempErrorType::min:
+    switch((TempErrorType)temp_error_state.type) {
+    case TempErrorType::min:
+        switch((TempErrorSource)temp_error_state.source) {
+        case TempErrorSource::hotend:
             if(temp_error_state.assert) {
                 menu_set_serious_error(SERIOUS_ERR_MINTEMP_HEATER);
                 min_temp_error(temp_error_state.index);
@@ -1690,14 +1689,7 @@ void handle_temp_error()
                 alert_automaton_hotend.step(current_temperature[0], minttemp[0] + TEMP_HYSTERESIS);
             }
             break;
-        case TempErrorType::max:
-            max_temp_error(temp_error_state.index);
-            break;
-        }
-        break;
-    case TempErrorSource::bed:
-        switch((TempErrorType)temp_error_state.type) {
-        case TempErrorType::min:
+        case TempErrorSource::bed:
             if(temp_error_state.assert) {
                 menu_set_serious_error(SERIOUS_ERR_MINTEMP_BED);
                 bed_min_temp_error();
@@ -1707,16 +1699,36 @@ void handle_temp_error()
                 alert_automaton_bed.step(current_temperature_bed, BED_MINTEMP + TEMP_HYSTERESIS);
             }
             break;
-        case TempErrorType::max:
-            bed_max_temp_error();
+        case TempErrorSource::ambient:
+            ambient_min_temp_error();
             break;
         }
         break;
-    case TempErrorSource::ambient:
-        switch((TempErrorType)temp_error_state.type) {
-        case TempErrorType::min: ambient_min_temp_error(); break;
-        case TempErrorType::max: ambient_max_temp_error(); break;
-        case TempErrorType::runaway: break; // not needed
+    case TempErrorType::max:
+        switch((TempErrorSource)temp_error_state.source) {
+        case TempErrorSource::hotend:
+            max_temp_error(temp_error_state.index);
+            break;
+        case TempErrorSource::bed:
+            bed_max_temp_error();
+            break;
+        case TempErrorSource::ambient:
+            ambient_max_temp_error();
+            break;
+        }
+        break;
+    case TempErrorType::preheat:
+    case TempErrorType::runaway:
+        switch((TempErrorSource)temp_error_state.source) {
+        case TempErrorSource::hotend:
+        case TempErrorSource::bed:
+            temp_runaway_stop(
+                ((TempErrorType)temp_error_state.type == TempErrorType::preheat),
+                ((TempErrorSource)temp_error_state.source == TempErrorSource::bed));
+            break;
+        case TempErrorSource::ambient:
+            // not needed
+            break;
         }
         break;
     }
