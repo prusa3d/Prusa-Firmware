@@ -32,11 +32,11 @@
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "Crash detection can\x0abe turned on only in\x0aNormal mode"
-"Krasjdeteksjon kan bare skrus pa i normal modus"
+"Krasjdeteksjon kan\x0abare skrus pa i\x0aNormal modus"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
-"ADVARSEL:\x0aKrasjdeteksjon\x0adeaktivert i\x0aStillemodus"
+"ADVARSEL:\x0aKrasjdeteksjon er\x0adeaktivert i\x0aStillemodus"
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
@@ -48,11 +48,11 @@
 
 #MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
-"Alt klart. Happy printing!"
+"Alt klart. God printing!"
 
 #MSG_AMBIENT c=14
 "Ambient"
-"\x00"
+"Omgivelse"
 
 #MSG_AUTO c=6
 "Auto"
@@ -68,19 +68,19 @@
 
 #MSG_AUTO_HOME c=18
 "Auto home"
-"Auto startposisjon"
+"Auto hjem"
 
 #MSG_AUTOLOAD_FILAMENT c=18
 "AutoLoad filament"
-"Autolast filament"
+"AutoLast filament"
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Autolast av fil. er kun tilgjengelig nar filament- sensoren er skrudd pa.."
+"Autolasting av fil. er kun tilgjengelig nar fil.- sensoren er skrudd pa..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Autolast av fil. er aktivert. Trykk pa knappen og sett inn filament.."
+"Autolasting av fil. er aktivert. Trykk pa knappen og sett inn filament..."
 
 #MSG_SELFTEST_AXIS_LENGTH c=20
 "Axis length"
@@ -92,19 +92,19 @@
 
 #MSG_SELFTEST_BEDHEATER c=20
 "Bed/Heater"
-"Plate/Varmer"
+"Seng/Varmer"
 
 #MSG_BED_DONE c=20
 "Bed done"
-"Plate ferdig"
+"Seng ferdig"
 
 #MSG_BED_HEATING c=20
 "Bed Heating"
-"Platen varmes"
+"Sengen varmes"
 
 #MSG_BED_CORRECTION_MENU c=18
 "Bed level correct"
-"Plateplan korrekt"
+"Plankorrekt seng"
 
 #MSG_BELTTEST c=18
 "Belt test"
@@ -112,7 +112,7 @@
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."
-"Plate planering feilet. Sensoren utl\xefstes ikke. Rester pa dysen? Venter pa restart."
+"Sengeplanering feilet. Sensoren utl\xefstes ikke. Rester pa dysen? Venter pa omstart."
 
 #MSG_BRIGHT c=6
 "Bright"
@@ -120,11 +120,11 @@
 
 #MSG_BRIGHTNESS c=18
 "Brightness"
-"Lyshet"
+"Lysstyrke"
 
 #MSG_BED c=13
 "Bed"
-"Plate"
+"Seng"
 
 #MSG_BELT_STATUS c=18
 "Belt status"
@@ -132,11 +132,11 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"Str\xefmbrudd! Gjenoppta print?"
+"Oppdaget Str\xefmbrudd! Gjenoppta print?"
 
 #MSG_CALIBRATING_HOME c=20
 "Calibrating home"
-"Kalibrerer startpos."
+"Kalibrerer hjem"
 
 #MSG_CALIBRATE_BED c=18
 "Calibrate XYZ"
@@ -192,7 +192,7 @@
 
 #MSG_CRASHDETECT c=13
 "Crash det."
-"Krasjdet."
+"Krasjdetek."
 
 #MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 "Select a filament for the First Layer Calibration and select it in the on-screen menu."
@@ -200,11 +200,11 @@
 
 #MSG_CRASH_DETECTED c=20
 "Crash detected."
-"Krasj fant sted."
+"Krasj oppdaget."
 
 #MSG_CRASH_RESUME c=20 r=3
 "Crash detected. Resume print?"
-"Krasj merket. Fortsette print?"
+"Krasj oppdaget. Fortsette print?"
 
 #MSG_CRASH c=7
 "Crash"
@@ -216,15 +216,15 @@
 
 #MSG_COMMUNITY_MADE c=18
 "Community made"
-"Community prod."
+"Community laget"
 
 #MSG_DISABLE_STEPPERS c=18
 "Disable steppers"
-"Skru av motorer"
+"Frigj\xefr motorer"
 
 #MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-"Avstand mellom tuppen av dysen og platen er ikke kalibrert. Vennligst se manualen/KB for hvordan det skal se ut."
+"Avstand mellom tuppen av dysen og senga er ikke kalibrert. Vennligst se manualen, under First Steps, for hvordan det f\xefrste laget skal kalibreres."
 
 #MSG_CONTINUE_SHORT c=5
 "Cont."
@@ -240,15 +240,15 @@
 
 #MSG_EJECT_FILAMENT c=17
 "Eject filament"
-"Utl\xefs filament"
+"Mat ut filament"
 
 #MSG_EJECTING_FILAMENT c=20
 "Ejecting filament"
-"Utl\xefser filament"
+"Mater ut filament"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 "Endstop not hit"
-"Endes. ikke truffet"
+"Traff ikke endesens."
 
 #MSG_SELFTEST_ENDSTOP c=16
 "Endstop"
@@ -256,7 +256,7 @@
 
 #MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
-"Endesensorene"
+"Endesensorer"
 
 #MSG_CUT_FILAMENT c=17
 "Cut filament"
@@ -328,7 +328,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filamentet kommer ut og med riktig farge?"
+"Filament kommer ut og har riktig farge?"
 
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
@@ -420,7 +420,7 @@
 
 #MSG_SELFTEST_CHECK_BED c=20
 "Checking bed"
-"Sjekker plate"
+"Sjekker seng"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20
 "Checking endstops"
@@ -472,11 +472,11 @@
 
 #MSG_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
-"Er filamentet lastet?"
+"Er filament lastet?"
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"Er stalplaten pa varmeplaten?"
+"Er stalplaten pa varmesenga?"
 
 #MSG_LAST_PRINT_FAILURES c=20
 "Last print failures"
@@ -496,7 +496,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20
 "Left hotend fan?"
-"Venst. hotend vifte?"
+"Venst. ekstr. vifte?"
 
 #MSG_LEFT c=10
 "Left"
@@ -520,7 +520,7 @@
 
 #MSG_LOAD_FILAMENT c=17
 "Load filament"
-"Last filament"
+"Last inn filament"
 
 #MSG_LOADING_COLOR c=20
 "Loading color"
@@ -528,7 +528,7 @@
 
 #MSG_LOADING_FILAMENT c=20
 "Loading filament"
-"Laster farge"
+"Laster filament"
 
 #MSG_ITERATION c=12
 "Iteration"
@@ -548,7 +548,7 @@
 
 #MSG_MAIN c=18
 "Main"
-"Hoved"
+"Hovedmeny"
 
 #MSG_BL_HIGH c=12
 "Level Bright"
@@ -564,7 +564,7 @@
 
 #MSG_MESH_BED_LEVELING c=18
 "Mesh Bed Leveling"
-"Plateplanering"
+"Sengeplanering"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -704,7 +704,7 @@
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
-"Paus printjobben"
+"Pause printjobben"
 
 #MSG_PID_RUNNING c=20
 "PID cal."
@@ -724,7 +724,7 @@
 
 #MSG_PAPER c=20 r=10
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
-"Plasser et ark under dysen mens jeg kalibrerer de 4 f\xefrste punktene. Hvis dysen tar papiret, skru av printeren umiddelbart"
+"Plasser et ark under dysen mens jeg kalibrerer de 4 f\xefrste punktene. Hvis dysen tar papiret, skru umiddelbart av printeren."
 
 #MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 "Please clean heatbed and then press the knob."
@@ -740,7 +740,7 @@
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
-"Vennligst sjekk handboken og fiks problemet. Fortsett Wizard ved a restarte printeren."
+"Vennligst sjekk handboken og fiks problemet. Fortsett sa Veilederen ved a omstarte printeren."
 
 #MSG_CHECK_IDLER c=20 r=5
 "Please open idler and remove filament manually."
@@ -748,7 +748,7 @@
 
 #MSG_PLACE_STEEL_SHEET c=20 r=5
 "Please place steel sheet on heatbed."
-"Plasser stalplaten pa varmeplaten."
+"Plasser stalplaten pa varmesenga."
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
@@ -764,7 +764,7 @@
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
-"Vennligst ta stalplaten av varmeplaten."
+"Vennligst ta stalplaten av varmesenga."
 
 #MSG_RUN_XYZ c=20 r=4
 "Please run XYZ calibration first."
@@ -772,7 +772,7 @@
 
 #MSG_UPDATE_MMU2_FW c=20 r=4
 "Please update firmware in your MMU2. Waiting for reset."
-"Oppdater din MMU2 systemvare. Venter pa restart..."
+"Oppdater din MMU2 systemvare. Venter pa omstart..."
 
 #MSG_PLEASE_WAIT c=20
 "Please wait"
@@ -904,11 +904,11 @@
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
-"Ved a kj\xefre Veilederen slettes all nav\xe1rende kalibreringsdata og du ma begynne pa nytt. Fortsette?"
+"Ved a kj\xefre Veilederen slettes all nav\xe1rende kalibreringsdata og du ma begynne pa nytt. Fortsett?"
 
 #MSG_SD_CARD c=8
 "SD card"
-"SD kort"
+"SD-kort"
 
 #MSG_RIGHT c=10
 "Right"
@@ -944,7 +944,7 @@
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
-"Selvtest vil bli kj\xefrt for a kalibrere n\xefyaktig sensorl\xefs startposisjon."
+"Selvtest vil bli kj\xefrt for a kalibrere n\xefyaktig sensorl\xefs hjemposisjon."
 
 #MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
@@ -976,7 +976,7 @@
 
 #MSG_SORT_TIME c=8
 "Time"
-"Tid"
+"Dato"
 
 #MSG_SEVERE_SKEW c=14
 "Severe skew"
@@ -1024,7 +1024,7 @@
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
-"Solid bord og en stabil romtemperatur pa 21-26C er n\xefdvendig."
+"En stabil rom- temperatur pa 21-26C og et solid underlag er n\xefdvendig."
 
 #MSG_STATISTICS c=18
 "Statistics"
@@ -1040,7 +1040,7 @@
 
 #MSG_SUPPORT c=18
 "Support"
-"Hjelp"
+"System info"
 
 #MSG_SELFTEST_SWAPPED c=16
 "Swapped"
@@ -1064,7 +1064,7 @@
 
 #MSG_PINDA_CALIBRATION_DONE c=20 r=8
 "PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
-"PINDA kalibrering er fullf\xefrt og aktiv. Der kan bli skudd av i menyen under Innstillinger -> PINDA kal."
+"PINDA kalibrering er fullf\xefrt og aktiv. Der kan bli  skrudd av i menyen under Innstillinger -> PINDA kal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1088,7 +1088,7 @@
 
 #MSG_TOTAL_PRINT_TIME c=19
 "Total print time"
-"Printingtid total"
+"Printetid totalt"
 
 #MSG_TUNE c=18
 "Tune"
@@ -1120,7 +1120,7 @@
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"
-"\x00"
+"Str\xefm/Volt"
 
 #MSG_UNKNOWN c=13
 "unknown"
@@ -1152,7 +1152,7 @@
 
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
-"Ble filamentet helt lastet ut?"
+"Ble filamentet lastet helt ut?"
 
 #MSG_SELFTEST_WIRINGERROR c=18
 "Wiring error"
@@ -1188,7 +1188,7 @@
 
 #MSG_TIMEOUT c=12
 "Timeout"
-"\x00"
+"Tidsavbrudd"
 
 #MSG_X_CORRECTION c=13
 "X-correct:"
@@ -1196,7 +1196,7 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-"XYZ kalibreringen OK. X/Y akse er perpendikul\xe1re. Gratulerer!"
+"XYZ kalibrering OK.\x0aX og Y aksen er perpendikul\xe1r. Gratulerer!"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 "XYZ calibration compromised. Front calibration points not reachable."
@@ -1224,11 +1224,11 @@
 
 #MSG_Y_DIST_FROM_MIN c=20
 "Y distance from min"
-"Y distanse fra min"
+"Y distanse fra min."
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "The printer will start printing a zig-zag line. Rotate the knob until you reach the optimal height. Check the pictures in the handbook (Calibration chapter)."
-"Printeren vil na printe en sikksakk linje. Roter valghjulet til du far den optimale h\xefyden. Se bildene i handboka, under kalibrering, for hvordan det skal se ut."
+"Printeren vil na printe en sikksakk linje. Roter valghjulet til du far den optimale h\xefyden. Se bildene i handboka, under Kalibrering, for hvordan det skal se ut."
 
 #MSG_FIL_FAILED c=20 r=5
 "Verification failed, remove the filament and try again."
@@ -1252,11 +1252,11 @@
 
 #MSG_CHECKS c=18
 "Checks"
-"Sjekker"
+"G-code sjekk"
 
 #MSG_FALSE_TRIGGERING c=20
 "False triggering"
-"Falskt trigget"
+"Falskt utl\xefsning"
 
 #MSG_STRICT c=8
 "Strict"
@@ -1288,15 +1288,15 @@
 
 #MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 "Mode change in progress..."
-"Modus skifter..."
+"Modus endres..."
 
 #MSG_MODEL c=8
 "Model"
-"\x00"
+"Modell"
 
 #MSG_NOZZLE_DIAMETER c=10
 "Nozzle d."
-"Dyse dia."
+"Dyse diam."
 
 #MSG_GCODE_DIFF_CONTINUE c=20 r=4
 "G-code sliced for a different level. Continue?"
@@ -1328,7 +1328,7 @@
 
 #MSG_PREHEATING_TO_EJECT c=20
 "Preheating to eject"
-"Forvarmer for ut"
+"Forvarmer for utmat."
 
 #MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 "Printer nozzle diameter differs from the G-code. Continue?"
