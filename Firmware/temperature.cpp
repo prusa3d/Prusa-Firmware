@@ -417,6 +417,7 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
 
 void updatePID()
 {
+  // TODO: iState_sum_max and PID values should be synchronized for temp_mgr_isr
 #ifdef PIDTEMP
   for(uint_least8_t e = 0; e < EXTRUDERS; e++) {
      iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
@@ -1876,24 +1877,24 @@ void temp_mgr_init()
 	CRITICAL_SECTION_END;
 }
 
-static void pid_heater(uint8_t e)
+static void pid_heater(uint8_t e, const float current, const int target)
 {
     float pid_input;
     float pid_output;
 
 #ifdef TEMP_RUNAWAY_EXTRUDER_HYSTERESIS
-    temp_runaway_check(e+1, target_temperature[e], current_temperature[e], (int)soft_pwm[e], false);
+    temp_runaway_check(e+1, target, current, (int)soft_pwm[e], false);
 #endif
 
 #ifdef PIDTEMP
-    pid_input = current_temperature[e];
+    pid_input = current;
 
 #ifndef PID_OPENLOOP
-    if(target_temperature[e] == 0) {
+    if(target == 0) {
         pid_output = 0;
         pid_reset[e] = true;
     } else {
-        pid_error[e] = target_temperature[e] - pid_input;
+        pid_error[e] = target - pid_input;
         if(pid_reset[e]) {
             iState_sum[e] = 0.0;
             dTerm[e] = 0.0;                       // 'dState_last[e]' initial setting is not necessary (see end of if-statement)
@@ -1926,7 +1927,7 @@ static void pid_heater(uint8_t e)
     }
     dState_last[e] = pid_input;
 #else //PID_OPENLOOP
-    pid_output = constrain(target_temperature[e], 0, PID_MAX);
+    pid_output = constrain(target[e], 0, PID_MAX);
 #endif //PID_OPENLOOP
 
 #ifdef PID_DEBUG
@@ -1947,25 +1948,25 @@ static void pid_heater(uint8_t e)
 
 #else /* PID off */
     pid_output = 0;
-    if(current_temperature[e] < target_temperature[e]) {
+    if(current[e] < target[e]) {
         pid_output = PID_MAX;
     }
 #endif
 
     // Check if temperature is within the correct range
-    if((current_temperature[e] < maxttemp[e]) && (target_temperature[e] != 0))
+    if((current < maxttemp[e]) && (target != 0))
         soft_pwm[e] = (int)pid_output >> 1;
     else
         soft_pwm[e] = 0;
 }
 
-static void pid_bed()
+static void pid_bed(const float current, const int target)
 {
     float pid_input;
     float pid_output;
 
 #ifdef TEMP_RUNAWAY_BED_HYSTERESIS
-    temp_runaway_check(0, target_temperature_bed, current_temperature_bed, (int)soft_pwm_bed, true);
+    temp_runaway_check(0, target, current, (int)soft_pwm_bed, true);
 #endif
 
 #ifndef PIDTEMPBED
@@ -1977,10 +1978,10 @@ static void pid_bed()
 #if TEMP_SENSOR_BED != 0
 
 #ifdef PIDTEMPBED
-    pid_input = current_temperature_bed;
+    pid_input = current;
 
 #ifndef PID_OPENLOOP
-    pid_error_bed = target_temperature_bed - pid_input;
+    pid_error_bed = target - pid_input;
     pTerm_bed = cs.bedKp * pid_error_bed;
     temp_iState_bed += pid_error_bed;
     temp_iState_bed = constrain(temp_iState_bed, temp_iState_min_bed, temp_iState_max_bed);
@@ -2001,10 +2002,10 @@ static void pid_bed()
     }
 
 #else
-    pid_output = constrain(target_temperature_bed, 0, MAX_BED_POWER);
+    pid_output = constrain(target, 0, MAX_BED_POWER);
 #endif //PID_OPENLOOP
 
-    if(current_temperature_bed < BED_MAXTEMP)
+    if(current < BED_MAXTEMP)
     {
         soft_pwm_bed = (int)pid_output >> 1;
         timer02_set_pwm0(soft_pwm_bed << 1);
@@ -2017,9 +2018,9 @@ static void pid_bed()
 
 #elif !defined(BED_LIMIT_SWITCHING)
     // Check if temperature is within the correct range
-    if(current_temperature_bed < BED_MAXTEMP)
+    if(current < BED_MAXTEMP)
     {
-        if(current_temperature_bed >= target_temperature_bed)
+        if(current >= target)
         {
             soft_pwm_bed = 0;
             timer02_set_pwm0(soft_pwm_bed << 1);
@@ -2038,14 +2039,14 @@ static void pid_bed()
     }
 #else //#ifdef BED_LIMIT_SWITCHING
     // Check if temperature is within the correct band
-    if(current_temperature_bed < BED_MAXTEMP)
+    if(current < BED_MAXTEMP)
     {
-        if(current_temperature_bed > target_temperature_bed + BED_HYSTERESIS)
+        if(current > target + BED_HYSTERESIS)
         {
             soft_pwm_bed = 0;
             timer02_set_pwm0(soft_pwm_bed << 1);
         }
-        else if(current_temperature_bed <= target_temperature_bed - BED_HYSTERESIS)
+        else if(current <= target - BED_HYSTERESIS)
         {
             soft_pwm_bed = MAX_BED_POWER>>1;
             timer02_set_pwm0(soft_pwm_bed << 1);
@@ -2059,7 +2060,7 @@ static void pid_bed()
     }
 #endif //BED_LIMIT_SWITCHING
 
-    if(target_temperature_bed==0)
+    if(target==0)
     {
         soft_pwm_bed = 0;
         timer02_set_pwm0(soft_pwm_bed << 1);
@@ -2073,13 +2074,13 @@ static void temp_mgr_isr()
     setTemperaturesFromRawValues();
 
     // TODO: this is now running inside an isr and cannot directly manipulate the lcd,
-    // this needs to disable temperatures and flag the error to be shown in manage_heaters!
+    // this needs to disable temperatures and flag the error to be shown in manage_heater!
     check_max_temp();
     check_min_temp();
 
     for(uint8_t e = 0; e < EXTRUDERS; e++)
-        pid_heater(e);
-    pid_bed();
+        pid_heater(e, current_temperature[e], target_temperature[e]);
+    pid_bed(current_temperature_bed, target_temperature_bed);
 }
 
 ISR(TIMER5_COMPA_vect)
