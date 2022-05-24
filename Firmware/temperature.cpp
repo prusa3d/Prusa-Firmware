@@ -2030,7 +2030,7 @@ float current_temperature_ambient_isr;
 #endif
 
 // ISR callback from adc when sampling finished
-void adc_ready()
+void adc_callback()
 {
     current_temperature_raw[0] = adc_values[ADC_PIN_IDX(TEMP_0_PIN)]; //heater
     current_temperature_bed_raw = adc_values[ADC_PIN_IDX(TEMP_BED_PIN)];

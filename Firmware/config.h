@@ -21,7 +21,7 @@
 #define ADC_CHAN_CNT      8         //number of used channels)
 #endif //!IR_SENSOR_ANALOG
 #define ADC_OVRSAMPL      16        //oversampling multiplier
-#define ADC_CALLBACK      adc_ready //callback function ()
+#define ADC_CALLBACK      adc_callback //callback function ()
 
 //SWI2C configuration
 //#define SWI2C_SDA         20 //SDA on P3
