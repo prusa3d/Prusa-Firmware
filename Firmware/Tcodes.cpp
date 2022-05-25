@@ -45,7 +45,7 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
 
     if (IsInvalidTCode(strchr_pointer, index)){
         TCodeInvalid();
-    } else if (strchr_pointer[index] == 'x'){
+    } /*else if (strchr_pointer[index] == 'x'){
         // load to bondtech gears; if mmu is not present do nothing
         if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.tool_change(strchr_pointer[index], choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER)));
@@ -55,16 +55,16 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
         if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.tool_change(strchr_pointer[index], 0);
         }
-    } else {
+    }*/ else {
         SChooseFromMenu selectedSlot;
-        if (strchr_pointer[index] == '?')
-            selectedSlot = TCodeChooseFromMenu();
-        else {
+//        if (strchr_pointer[index] == '?')
+//            selectedSlot = TCodeChooseFromMenu();
+//        else {
             selectedSlot.slot = codeValue;
-            if (MMU2::mmu2.Enabled() && lcd_autoDepleteEnabled()) {
-                selectedSlot.slot = ad_getAlternative(selectedSlot.slot);
-            }
-        }
+//            if (MMU2::mmu2.Enabled() && lcd_autoDepleteEnabled()) {
+//                selectedSlot.slot = ad_getAlternative(selectedSlot.slot);
+//            }
+//        }
         st_synchronize();
 
         if (MMU2::mmu2.Enabled()) {
@@ -78,9 +78,10 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
                     manage_response(true, true, MMU_UNLOAD_MOVE);
                 }
 #endif // defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
-                MMU2::mmu2.tool_change(selectedSlot.slot);
                 if (selectedSlot.loadToNozzle){ // for single material usage with mmu
                     MMU2::mmu2.load_filament_to_nozzle(selectedSlot.slot);
+                } else {
+                    MMU2::mmu2.tool_change(selectedSlot.slot);
                 }
             }
         } else {

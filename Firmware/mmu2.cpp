@@ -59,8 +59,8 @@ static constexpr E_Step ramming_sequence[] PROGMEM = {
 };
 
 static constexpr E_Step load_to_nozzle_sequence[] PROGMEM = { 
-    { 36.0F,  810.0F / 60.F}, // feed rate = 13.5mm/s - Load fast until filament reach end of nozzle
-    { 30.0F,  198.0F / 60.F}, // feed rate = 3.3mm/s  - Load slower once filament is out of the nozzle
+    { 10.0F,  810.0F / 60.F}, // feed rate = 13.5mm/s - Load fast until filament reach end of nozzle
+    { 25.0F,  198.0F / 60.F}, // feed rate = 3.3mm/s  - Load slower once filament is out of the nozzle
 };
 
 namespace MMU2 {
@@ -663,14 +663,14 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
                     // After the MMU knows the FSENSOR is triggered it will:
                     // 1. Push the filament by additional 30mm (see fsensorToNozzle)
                     // 2. Disengage the idler and push another 5mm.
-                    current_position[E_AXIS] += 30.0f + 5.0f;
+                    current_position[E_AXIS] += 30.0f + 2.0f;
                     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                     break;
                 case FilamentState::NOT_PRESENT:
                     // fsensor not triggered, continue moving extruder
                     if(!blocks_queued())
                     { // Only plan a move if there is no move ongoing
-                        current_position[E_AXIS] += 5.0f;
+                        current_position[E_AXIS] += 2.0f;
                         plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                     }
                     break;
