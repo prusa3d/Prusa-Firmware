@@ -485,9 +485,13 @@ void manage_heater()
     wdt_reset();
 #endif //WATCHDOG
 
+    // limit execution to the same rate as temp_mgr (low-level fault handling is already handled -
+    // any remaining error handling is just user-facing and can wait one extra cycle)
+    if(!temp_meas_ready)
+        return;
+
     // syncronize temperatures with isr
-    if(temp_meas_ready)
-        updateTemperatures();
+    updateTemperatures();
 
     // handle temperature errors
     if(temp_error_state.v)
