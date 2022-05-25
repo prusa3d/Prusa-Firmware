@@ -2107,13 +2107,15 @@ static void updateTemperatures()
 {
     TempMgrGuard temp_mgr_guard;
     setCurrentTemperaturesFromIsr();
-    if(!temp_error_state.v)
+    if(!temp_error_state.v) {
+        // refuse to update target temperatures in any error condition!
         setIsrTargetTemperatures();
+    }
     temp_meas_ready = false;
 }
 
 /* Convert raw values into actual temperatures for temp_mgr. The raw values are created in the ADC
-   interrupt context, while this function runs from the temp_mgr isr which is preemptible as
+   interrupt context, while this function runs from temp_mgr_isr which *is* preemptible as
    analog2temp is relatively slow */
 static void setIsrTemperaturesFromRawValues()
 {
