@@ -183,7 +183,9 @@ bool IR_sensor::update() {
 
 bool IR_sensor::getFilamentPresent() { return !READ(IR_SENSOR_PIN); }
 
+#ifdef FSENSOR_PROBING
 bool IR_sensor::probeOtherType() { return pat9125_probe(); }
+#endif
 
 void IR_sensor::settings_init() { Filament_sensor::settings_init_common(); }
 
