@@ -1857,10 +1857,6 @@ static void pid_heater(uint8_t e, const float current, const int target)
     float pid_input;
     float pid_output;
 
-#ifdef TEMP_RUNAWAY_EXTRUDER_HYSTERESIS
-    temp_runaway_check(e+1, target, current, (int)soft_pwm[e], false);
-#endif
-
 #ifdef PIDTEMP
     pid_input = current;
 
@@ -1939,10 +1935,6 @@ static void pid_bed(const float current, const int target)
 {
     float pid_input;
     float pid_output;
-
-#ifdef TEMP_RUNAWAY_BED_HYSTERESIS
-    temp_runaway_check(0, target, current, (int)soft_pwm_bed, true);
-#endif
 
 #ifndef PIDTEMPBED
     if(_millis() - previous_millis_bed_heater < BED_CHECK_INTERVAL)
@@ -2138,6 +2130,17 @@ static void temp_mgr_pid()
     pid_bed(current_temperature_bed_isr, target_temperature_bed_isr);
 }
 
+static void check_temp_runaway()
+{
+#ifdef TEMP_RUNAWAY_EXTRUDER_HYSTERESIS
+    for(uint8_t e = 0; e < EXTRUDERS; e++)
+        temp_runaway_check(e+1, target_temperature_isr[e], current_temperature_isr[e], soft_pwm[e], false);
+#endif
+#ifdef TEMP_RUNAWAY_BED_HYSTERESIS
+    temp_runaway_check(0, target_temperature_bed_isr, current_temperature_bed_isr, soft_pwm_bed, true);
+#endif
+}
+
 void check_temp_raw();
 
 static void temp_mgr_isr()
@@ -2147,9 +2150,8 @@ static void temp_mgr_isr()
 
     // clear the error assertion flag before checking again
     temp_error_state.assert = false;
-
-    // check min/max temp using raw values
-    check_temp_raw();
+    check_temp_raw(); // check min/max temp using raw values
+    check_temp_runaway(); // classic temperature hysteresis check
 
     // PID regulation
     temp_mgr_pid();
