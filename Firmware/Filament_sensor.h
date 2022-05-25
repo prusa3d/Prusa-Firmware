@@ -5,6 +5,7 @@
 #include "pins.h"
 #include "fastio.h"
 #include "adc.h"
+#include "pat9125.h"
 
 #define FSENSOR_IR 1
 #define FSENSOR_IR_ANALOG 2
