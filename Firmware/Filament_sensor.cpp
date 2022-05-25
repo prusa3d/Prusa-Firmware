@@ -404,6 +404,7 @@ bool PAT9125_sensor::update() {
     return false;
 }
 
+#ifdef FSENSOR_PROBING
 bool PAT9125_sensor::probeOtherType() {
     SET_INPUT(IR_SENSOR_PIN); // input mode
     WRITE(IR_SENSOR_PIN, 1);  // pullup
@@ -413,6 +414,7 @@ bool PAT9125_sensor::probeOtherType() {
     WRITE(IR_SENSOR_PIN, 0); // no pullup
     return fsensorDetected;
 }
+#endif
 
 void PAT9125_sensor::setJamDetectionEnabled(bool state, bool updateEEPROM) {
     jamDetection = state;
