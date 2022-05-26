@@ -274,7 +274,7 @@ static const char btnRestartMMU[] PROGMEM_I1 = ISTR("RstMMU");
 static const char btnUnload[] PROGMEM_I1 = ISTR("Unload");
 static const char btnStop[] PROGMEM_I1 = ISTR("Stop");
 static const char btnDisableMMU[] PROGMEM_I1 = ISTR("Disable");
-static const char btnMore[] PROGMEM_I1 = ISTR("More\x01");
+static const char btnMore[] PROGMEM_I1 = ISTR("More\x06");
 
 // Used to parse the buttons from Btns().
 static const char * const btnOperation[] PROGMEM = {
