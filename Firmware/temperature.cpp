@@ -2305,11 +2305,13 @@ static void check_temp_raw()
 }
 
 #ifdef TEMP_MODEL_CHECK
+#ifndef TEMP_MODEL_VARS
 static const float TM_P = 38.;    // heater power (W)
 static const float TM_C = 11.9;   // heatblock capacitance (J/K)
 static const float TM_R = 27.;    // heatblock resistance
 static const float TM_Rf = -20.;  // full-power fan resistance change
 static const float TM_aC = -5;    // ambient temperature correction (K)
+#endif
 
 static const float TM_dTl = 2.1;  // temperature transport delay (s)
 static const uint8_t TM_dTs = (TM_dTl / TEMP_MGR_INTV + 0.5); // temperature transport delay (samples)
