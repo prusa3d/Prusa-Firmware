@@ -467,8 +467,14 @@ volatile static union
 void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
 {
     // keep disabling heaters and keep fans on as long as the condition is asserted
+#ifdef TEMP_MODEL_CHECK_WARN_ONLY
+    if(type != TempErrorType::model) {
+#endif
     disable_heater();
     hotendFanSetFullSpeed();
+#ifdef TEMP_MODEL_CHECK_WARN_ONLY
+    }
+#endif
 
     // set the error state
     temp_error_state.error = true;
