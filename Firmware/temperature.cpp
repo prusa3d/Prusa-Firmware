@@ -2299,25 +2299,25 @@ static void check_temp_raw()
 }
 
 #ifdef TEMP_MODEL_CHECK
-static const float TM_P = 38.;   // heater power (W)
-static const float TM_C = 11.9;  // heatblock capacitance (J/K)
-static const float TM_R = 27.;   // heatblock resistance
-static const float TM_Rf = -20.; // full-power fan resistance change
-static const float TM_aC = -5;   // ambient temperature correction (K)
+static const float TM_P = 38.;    // heater power (W)
+static const float TM_C = 11.9;   // heatblock capacitance (J/K)
+static const float TM_R = 27.;    // heatblock resistance
+static const float TM_Rf = -20.;  // full-power fan resistance change
+static const float TM_aC = -5;    // ambient temperature correction (K)
 
-static const float TM_dTl = 2.1;  // temperature transport delay
+static const float TM_dTl = 2.1;  // temperature transport delay (s)
 static const uint8_t TM_dTs = (TM_dTl / TEMP_MGR_INTV + 0.5); // temperature transport delay (samples)
 
 static const float TM_fS = 0.065; // simulation (1st-order IIR factor)
 static const float TM_fE = 0.05;  // error (1st-order IIR factor)
 
-static const float TM_dErr_p = 0.25; // error threshold (K, positive, actively heating)
-static const float TM_dErr_n = 0.25; // error threshold (K, negative, cooling)
+static const float TM_err = 1.;   // error threshold (K/s)
+static const float TM_err_s = TM_err / (1./TEMP_MGR_INTV); // error threshold (per sample)
 
-static float TM_dT_buf[TM_dTs];    // transport delay buffer
-static uint8_t TM_dT_idx = 0;      // transport delay buffer index
-static float TM_dErr = 0;          // last error
-static float TM_T = 0;             // last temperature
+static float TM_dT_buf[TM_dTs];   // transport delay buffer
+static uint8_t TM_dT_idx = 0;     // transport delay buffer index
+static float TM_dT_err = 0;       // last error
+static float TM_T = 0;            // last temperature
 
 #ifndef MAX
 #define MAX(A, B) (A >= B? A: B)
@@ -2349,18 +2349,18 @@ static void check_temp_model()
     TM_dT_buf[next_dT_idx] = dTf;
     TM_dT_idx = next_dT_idx;
 
-    // calculate and filter dErr
-    float dErr = (cur_temp_heater - TM_T) - lag_dT;
-    float dErrf = (TM_dErr * (1. - TM_fE)) + (dErr * TM_fE);
+    // calculate and filter dT_err
+    float dT_err = (cur_temp_heater - TM_T) - lag_dT;
+    float dT_err_f = (TM_dT_err * (1. - TM_fE)) + (dT_err * TM_fE);
     TM_T = cur_temp_heater;
-    TM_dErr = dErrf;
+    TM_dT_err = dT_err_f;
 
     // check and trigger errors
     if(TM_dT_smp) {
         // model not ready
         --TM_dT_smp;
     } else {
-        if(dErrf > TM_dErr_p || dErrf < -TM_dErr_n)
+        if(dT_err_f > TM_err_s || dT_err_f < -TM_err_s)
             set_temp_error(TempErrorSource::hotend, 0, TempErrorType::model);
     }
 }
