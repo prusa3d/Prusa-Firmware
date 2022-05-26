@@ -2327,9 +2327,12 @@ static uint8_t TM_dT_smp = MAX(TM_dTs, MAX(3/TM_fS, 3/TM_fE));
 
 static void check_temp_model()
 {
+    const float soft_pwm_inv = 1. / ((1 << 7) - 1);
+    const float soft_pwm_fan_inv = 1. / ((1 << FAN_SOFT_PWM_BITS) - 1);
+
     // input values
-    float heater_scale = (float)soft_pwm[0] / ((1 << 7) - 1);
-    float fan_scale = (float)soft_pwm_fan / ((1 << FAN_SOFT_PWM_BITS) - 1);
+    float heater_scale = soft_pwm_inv * soft_pwm[0];
+    float fan_scale = soft_pwm_fan_inv * soft_pwm_fan;
     float cur_temp_heater = current_temperature_isr[0];
     float cur_temp_ambient = current_temperature_ambient_isr + TM_aC;
 
