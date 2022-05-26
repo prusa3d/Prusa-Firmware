@@ -417,6 +417,9 @@
 #define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
+// model-based temperature check
+#define TEMP_MODEL_CHECK 1
+
 /*------------------------------------
  MOTOR CURRENT SETTINGS
  *------------------------------------*/

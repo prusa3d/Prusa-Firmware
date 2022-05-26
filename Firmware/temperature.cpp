@@ -444,6 +444,7 @@ enum class TempErrorType : uint8_t
     max,
     preheat,
     runaway,
+    model,
 };
 
 // error state (updated via set_temp_error from isr context)
@@ -1735,6 +1736,26 @@ void handle_temp_error()
             break;
         }
         break;
+    case TempErrorType::model:
+#ifdef TEMP_MODEL_CHECK
+        static bool is_new = true;
+        static bool beep_on = false;
+        printf_P(PSTR("TM: err:%u ass:%u\n"), (unsigned)temp_error_state.error,
+            (unsigned)temp_error_state.assert);
+        if(is_new) {
+            beep_on = true;
+            is_new = false;
+        }
+        WRITE(BEEPER, beep_on);
+        beep_on = !beep_on;
+        if(!temp_error_state.assert) {
+            printf_P(PSTR("TM: assertion cleared - resetting\n"));
+            temp_error_state.v = 0;
+            WRITE(BEEPER, LOW);
+            is_new = true;
+        }
+#endif
+        break;
     }
 }
 
@@ -2141,7 +2162,10 @@ static void check_temp_runaway()
 #endif
 }
 
-void check_temp_raw();
+static void check_temp_raw();
+#ifdef TEMP_MODEL_CHECK
+static void check_temp_model();
+#endif
 
 static void temp_mgr_isr()
 {
@@ -2152,6 +2176,9 @@ static void temp_mgr_isr()
     temp_error_state.assert = false;
     check_temp_raw(); // check min/max temp using raw values
     check_temp_runaway(); // classic temperature hysteresis check
+#ifdef TEMP_MODEL_CHECK
+    check_temp_model(); // model-based heater check
+#endif
 
     // PID regulation
     temp_mgr_pid();
@@ -2203,7 +2230,7 @@ void disable_heater()
   CRITICAL_SECTION_END;
 }
 
-void check_min_temp_raw()
+static void check_min_temp_raw()
 {
     static bool bCheckingOnHeater = false; // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over heaterMintemp)
     static bool bCheckingOnBed    = false; // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over bedMintemp)
@@ -2263,10 +2290,78 @@ void check_min_temp_raw()
 #endif //AMBIENT_THERMISTOR
 }
 
-void check_temp_raw()
+static void check_temp_raw()
 {
     // order is relevant: check_min_temp_raw requires max to be reliable due to
     // ambient temperature being used for low handling temperatures
     check_max_temp_raw();
     check_min_temp_raw();
 }
+
+#ifdef TEMP_MODEL_CHECK
+static const float TM_P = 38.;   // heater power (W)
+static const float TM_C = 11.9;  // heatblock capacitance (J/K)
+static const float TM_R = 27.;   // heatblock resistance
+static const float TM_Rf = -20.; // full-power fan resistance change
+static const float TM_aC = -5;   // ambient temperature correction (K)
+
+static const float TM_dTl = 2.1;  // temperature transport delay
+static const uint8_t TM_dTs = (TM_dTl / TEMP_MGR_INTV + 0.5); // temperature transport delay (samples)
+
+static const float TM_fS = 0.065; // simulation (1st-order IIR factor)
+static const float TM_fE = 0.05;  // error (1st-order IIR factor)
+
+static const float TM_dErr_p = 0.25; // error threshold (K, positive, actively heating)
+static const float TM_dErr_n = 0.25; // error threshold (K, negative, cooling)
+
+static float TM_dT_buf[TM_dTs];    // transport delay buffer
+static uint8_t TM_dT_idx = 0;      // transport delay buffer index
+static float TM_dErr = 0;          // last error
+static float TM_T = 0;             // last temperature
+
+#ifndef MAX
+#define MAX(A, B) (A >= B? A: B)
+#endif
+// samples required for settling the model (crude approximation)
+static uint8_t TM_dT_smp = MAX(TM_dTs, MAX(3/TM_fS, 3/TM_fE));
+
+static void check_temp_model()
+{
+    // input values
+    float heater_scale = (float)soft_pwm[0] / ((1 << 7) - 1);
+    float fan_scale = (float)soft_pwm_fan / ((1 << FAN_SOFT_PWM_BITS) - 1);
+    float cur_temp_heater = current_temperature_isr[0];
+    float cur_temp_ambient = current_temperature_ambient_isr + TM_aC;
+
+    // model invariants
+    float C_i = (TEMP_MGR_INTV / TM_C);
+
+    float dP = TM_P * heater_scale; // current power [W]
+    float R = TM_R + TM_Rf * fan_scale; // resistance (constant + fan modulation)
+    float dPl = (cur_temp_heater - cur_temp_ambient) / R; // [W] leakage power
+    float dT = (dP - dPl) * C_i; // expected temperature difference (K)
+
+    // filter and lag dT
+    uint8_t next_dT_idx = (TM_dT_idx == (TM_dTs - 1) ? 0: TM_dT_idx + 1);
+    float lag_dT = TM_dT_buf[next_dT_idx];
+    float prev_dT = TM_dT_buf[TM_dT_idx];
+    float dTf = (prev_dT * (1. - TM_fS)) + (dT * TM_fS);
+    TM_dT_buf[next_dT_idx] = dTf;
+    TM_dT_idx = next_dT_idx;
+
+    // calculate and filter dErr
+    float dErr = (cur_temp_heater - TM_T) - lag_dT;
+    float dErrf = (TM_dErr * (1. - TM_fE)) + (dErr * TM_fE);
+    TM_T = cur_temp_heater;
+    TM_dErr = dErrf;
+
+    // check and trigger errors
+    if(TM_dT_smp) {
+        // model not ready
+        --TM_dT_smp;
+    } else {
+        if(dErrf > TM_dErr_p || dErrf < -TM_dErr_n)
+            set_temp_error(TempErrorSource::hotend, 0, TempErrorType::model);
+    }
+}
+#endif
