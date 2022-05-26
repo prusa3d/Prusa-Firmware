@@ -2320,7 +2320,7 @@ static const float TM_fS = 0.065; // simulation (1st-order IIR factor)
 static const float TM_fE = 0.05;  // error (1st-order IIR factor)
 
 static const float TM_err = 1.;   // error threshold (K/s)
-static const float TM_err_s = TM_err / (1./TEMP_MGR_INTV); // error threshold (per sample)
+static const float TM_err_s = (TM_err * TEMP_MGR_INTV); // error threshold (per sample)
 
 static float TM_dT_buf[TM_dTs];   // transport delay buffer
 static uint8_t TM_dT_idx = 0;     // transport delay buffer index
