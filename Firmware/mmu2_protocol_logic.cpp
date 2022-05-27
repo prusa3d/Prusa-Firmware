@@ -548,7 +548,7 @@ StepStatus ProtocolLogic::Step() {
 uint8_t ProtocolLogic::CommandInProgress() const {
     if( currentState != &command )
         return 0;
-    return (uint8_t)command.ReqMsg().code; 
+    return (uint8_t)command.ReqMsg().code;
 }
 
 bool DropOutFilter::Record(StepStatus ss){
