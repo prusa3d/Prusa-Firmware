@@ -28,21 +28,6 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec);
 /// Called when the MMU sends operation progress update
 void ReportProgressHook(CommandInProgress cip, uint16_t ec);
 
-/// Button codes + extended actions performed on the printer's side
-enum Buttons : uint8_t {
-    Left = 0,
-    Middle,
-    Right,
-    
-    // performed on the printer's side
-    RestartMMU,
-    StopPrint,
-    
-    NoButton = 0xff // shall be kept last
-};
-
-Buttons ButtonPressed(uint16_t ec);
-
 /// @returns true if the MMU is communicating and available
 /// can change at runtime
 bool MMUAvailable();
