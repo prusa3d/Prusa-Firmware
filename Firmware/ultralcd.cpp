@@ -2299,11 +2299,11 @@ void show_preheat_nozzle_warning()
 
 void lcd_load_filament_color_check()
 {
-	bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LEFT_BUTTON_CHOICE);
-	while (clean == MIDDLE_BUTTON_CHOICE) {
+	bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
+	while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
 		load_filament_final_feed();
 		st_synchronize();
-		clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LEFT_BUTTON_CHOICE);
+		clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
 	}
 }
 
@@ -3193,22 +3193,24 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice = nullptr)
 {
     lcd_set_cursor(0, 3);
-    lcd_print(selected == LEFT_BUTTON_CHOICE ? '>': ' ');
+    lcd_print(selected == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
     lcd_puts_P(first_choice);
     if (third_choice)
     {
         lcd_set_cursor(7, 3);
-        lcd_print(selected == MIDDLE_BUTTON_CHOICE ? '>': ' ');
+        lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
         lcd_puts_P(second_choice);
         lcd_set_cursor(13, 3);
-        lcd_print(selected == RIGHT_BUTTON_CHOICE ? '>': ' ');
+        lcd_print(selected == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
         lcd_puts_P(third_choice);
     } else {
         lcd_set_cursor(second_col, 3);
-        lcd_print(selected == MIDDLE_BUTTON_CHOICE ? '>': ' ');
+        lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
         lcd_puts_P(second_choice);
     }
 }
+
+typedef ;
 
 //! @brief Show single or multiple screen message with two possible choices and wait with possible timeout
 //! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
@@ -3231,25 +3233,24 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char * const m
 	bool multi_screen = msg_next != NULL;
 	lcd_set_custom_characters_nextpage();
 
-	// Initial status/prompt on single-screen messages
-	uint8_t current_selection = default_selection;
-	if (!msg_next) {
-		lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
-	}
-	// Wait for user confirmation or a timeout.
-	unsigned long previous_millis_cmd = _millis();
-	int8_t enc_dif = lcd_encoder_diff;
-	lcd_consume_click();
-	KEEPALIVE_STATE(PAUSED_FOR_USER);
-	for (;;) {
-		for (uint8_t i = 0; i < 100; ++i) {
-			delay_keep_alive(50);
-			if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
-			{
-				return -1;
-			}
-			manage_heater();
-			manage_inactivity(true);
+    // Initial status/prompt on single-screen messages
+    uint8_t current_selection = default_selection;
+    if (!msg_next) {
+        lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
+    }
+    // Wait for user confirmation or a timeout.
+    unsigned long previous_millis_cmd = _millis();
+    int8_t enc_dif = lcd_encoder_diff;
+    lcd_consume_click();
+    KEEPALIVE_STATE(PAUSED_FOR_USER);
+    for (;;) {
+        for (uint8_t i = 0; i < 100; ++i) {
+            delay_keep_alive(50);
+            if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS) {
+                return -1;
+            }
+            manage_heater();
+            manage_inactivity(true);
 
 			if (multiscreen_cb)
 			{
@@ -3848,7 +3849,7 @@ void lcd_v2_calibration()
 	    }
 	    else
 	    {
-	        loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LEFT_BUTTON_CHOICE);
+	        loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_LEFT_BUTTON_CHOICE);
 	        lcd_update_enabled = true;
 
 	    }
@@ -4040,8 +4041,8 @@ void lcd_wizard(WizState state)
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_WIZARD_WELCOME_SHIPPING));
 				state = S::Restore;
 			} else {
-				wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_WELCOME), false, LEFT_BUTTON_CHOICE);
-				if (wizard_event == LEFT_BUTTON_CHOICE) {
+				wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_T(MSG_WIZARD_WELCOME), false, LCD_LEFT_BUTTON_CHOICE);
+				if (wizard_event == LCD_LEFT_BUTTON_CHOICE) {
 					state = S::Restore;
 					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
 				} else { // MIDDLE_BUTTON_CHOICE
@@ -4080,7 +4081,7 @@ void lcd_wizard(WizState state)
 			lcd_show_fullscreen_message_and_wait_P(_i("Now remove the test print from steel sheet."));////MSG_REMOVE_TEST_PRINT c=20 r=4
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run z calibration now."));////MSG_WIZARD_Z_CAL c=20 r=8
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
-			if (wizard_event == MIDDLE_BUTTON_CHOICE) {
+			if (wizard_event == LCD_MIDDLE_BUTTON_CHOICE) {
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 			}
 			wizard_event = gcode_M45(true, 0);
@@ -4104,7 +4105,7 @@ void lcd_wizard(WizState state)
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), true);
-			if (wizard_event == LEFT_BUTTON_CHOICE) {
+			if (wizard_event == LCD_LEFT_BUTTON_CHOICE) {
 				state = S::Lay1CalCold;
 			} else { // MIDDLE_BUTTON_CHOICE
 			    if(MMU2::mmu2.Enabled()) state = S::LoadFilCold;
@@ -4137,7 +4138,7 @@ void lcd_wizard(WizState state)
             break;
 		case S::RepeatLay1Cal:
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Do you want to repeat last step to readjust distance between nozzle and heatbed?"), false);////MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
-			if (wizard_event == LEFT_BUTTON_CHOICE)
+			if (wizard_event == LCD_LEFT_BUTTON_CHOICE)
 			{
 				lcd_show_fullscreen_message_and_wait_P(_i("Please clean heatbed and then press the knob."));////MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 				state = S::Lay1CalCold;
@@ -5092,7 +5093,7 @@ char reset_menu() {
 static void lcd_disable_farm_mode()
 {
 	int8_t disable = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true); //allow timeouting, default no
-	if (disable == LEFT_BUTTON_CHOICE)
+	if (disable == LCD_LEFT_BUTTON_CHOICE)
 	{
 		enquecommand_P(PSTR("G99"));
 		lcd_return_to_status();

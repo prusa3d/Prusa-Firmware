@@ -6,6 +6,8 @@
 
 namespace MMU2 {
 
+static ButtonOperations buttonSelectedOperation = ButtonOperations::NoOperation;
+
 // we don't have a constexpr find_if in C++17/STL yet
 template <class InputIt, class UnaryPredicate>
 constexpr InputIt find_if_cx(InputIt first, InputIt last, UnaryPredicate p) {
@@ -149,6 +151,133 @@ const char * const PrusaErrorButtonTitle(uint8_t bi){
 
 const char * const PrusaErrorButtonMore(){
     return btnMore;
+}
+
+struct ResetOnExit {
+    ResetOnExit() = default;
+    ~ResetOnExit(){
+        buttonSelectedOperation = ButtonOperations::NoOperation;
+    }
+};
+
+Buttons ButtonPressed(uint16_t ec) {
+    if (buttonSelectedOperation == ButtonOperations::NoOperation) {
+        return NoButton; // no button
+    }
+    
+    ResetOnExit ros; // clear buttonSelectedOperation on exit from this call
+    
+    uint8_t ei = PrusaErrorCodeIndex(ec);
+    
+    // The list of responses which occur in mmu error dialogs
+    // Return button index or perform some action on the MK4 by itself (like restart MMU)
+    // Based on Prusa-Error-Codes errors_list.h
+    // So far hardcoded, but shall be generated in the future
+    switch ( PrusaErrorCode(ei) ) {
+    case ERR_MECHANICAL_FINDA_DIDNT_TRIGGER:
+    case ERR_MECHANICAL_FINDA_DIDNT_GO_OFF:
+    case ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER:
+    case ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF:
+    case ERR_MECHANICAL_FSENSOR_TOO_EARLY:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::Retry: // "Repeat action"
+            return Middle;
+        case ButtonOperations::Continue: // "Continue"
+            return Right;
+        default:
+            break;
+        }
+        break;
+    case ERR_MECHANICAL_SELECTOR_CANNOT_HOME:
+    case ERR_MECHANICAL_IDLER_CANNOT_HOME:
+    case ERR_MECHANICAL_PULLEY_CANNOT_MOVE:
+        switch (buttonSelectedOperation) {
+        // may be allow move selector right and left in the future
+        case ButtonOperations::Retry: // "Repeat action"
+            return Middle;
+        default:
+            break;
+        }
+        break;
+        
+    case ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT:
+    case ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT:
+    case ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::Continue: // "Continue"
+            return Left;
+        case ButtonOperations::RestartMMU: // "Restart MMU"
+            return RestartMMU;
+        default:
+            break;
+        }
+        break;
+        
+    case ERR_TEMPERATURE_PULLEY_TMC_OVERHEAT_ERROR:
+    case ERR_TEMPERATURE_SELECTOR_TMC_OVERHEAT_ERROR:
+    case ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR:
+        
+    case ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR:
+    case ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_ERROR:
+    case ERR_ELECTRICAL_IDLER_TMC_DRIVER_ERROR:
+        
+    case ERR_ELECTRICAL_PULLEY_TMC_DRIVER_RESET:
+    case ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_RESET:
+    case ERR_ELECTRICAL_IDLER_TMC_DRIVER_RESET:
+        
+    case ERR_ELECTRICAL_PULLEY_TMC_UNDERVOLTAGE_ERROR:
+    case ERR_ELECTRICAL_SELECTOR_TMC_UNDERVOLTAGE_ERROR:
+    case ERR_ELECTRICAL_IDLER_TMC_UNDERVOLTAGE_ERROR:
+        
+    case ERR_ELECTRICAL_PULLEY_TMC_DRIVER_SHORTED:
+    case ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_SHORTED:
+    case ERR_ELECTRICAL_IDLER_TMC_DRIVER_SHORTED:
+        
+    case ERR_CONNECT_MMU_NOT_RESPONDING:
+    case ERR_CONNECT_COMMUNICATION_ERROR:
+        
+    case ERR_SYSTEM_QUEUE_FULL:
+    case ERR_SYSTEM_FW_RUNTIME_ERROR:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::RestartMMU: // "Restart MMU"
+            return RestartMMU;
+        default:
+            break;
+        }
+        break;
+        
+    case ERR_SYSTEM_FILAMENT_ALREADY_LOADED:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::Unload: // "Unload"
+            return Left;
+        case ButtonOperations::Continue: // "Proceed/Continue"
+            return Right;
+        case ButtonOperations::RestartMMU: // "Restart MMU"
+            return RestartMMU;
+        default:
+            break;
+        }
+        break;
+        
+    case ERR_SYSTEM_INVALID_TOOL:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::StopPrint: // "Stop print"
+            return StopPrint;
+        case ButtonOperations::RestartMMU: // "Restart MMU"
+            return RestartMMU;
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
+    }
+    
+    return NoButton;
+}
+
+void SetButtonResponse(ButtonOperations rsp){
+    buttonSelectedOperation = rsp;
 }
 
 } // namespace MMU2

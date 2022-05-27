@@ -62,12 +62,11 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
     // Read and determine what operations should be shown on the menu
     // Note: uint16_t is used here to avoid compiler warning. uint8_t is only half the size of void*
     const uint8_t button_operation   = PrusaErrorButtons(ei);
-    const uint8_t button_high_nibble = BUTTON_OP_HI_NIBBLE(button_operation);
-    const uint8_t button_low_nibble  = BUTTON_OP_LO_NIBBLE(button_operation);
+    const uint8_t button_op_right = BUTTON_OP_RIGHT(button_operation);
+    const uint8_t button_op_middle  = BUTTON_OP_MIDDLE(button_operation);
 
     // Check if the menu should have three or two choices
-    if (button_high_nibble == (uint8_t)ButtonOperations::NoOperation)
-    {
+    if (button_op_right == (uint8_t)ButtonOperations::NoOperation){
         // Two operations not specified, the error menu should only show two choices
         two_choices = true;
     }
@@ -75,78 +74,42 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
 back_to_choices:
     lcd_clear();
     lcd_update_enable(false);
-     
+
     // Print title and header
     lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
-
-    // Render static characters in third line
-    lcd_set_cursor(0, 2);
-    lcd_printf_P(PSTR("FI:  FS:    >  %c   %c"), LCD_STR_THERMOMETER[0], LCD_STR_DEGREE[0]);
 
     // Render the choices and store selection in 'choice_selected'
     choice_selected = lcd_show_multiscreen_message_with_choices_and_wait_P(
         NULL, // NULL, since title screen is not in PROGMEM
         false,
-        two_choices ? LEFT_BUTTON_CHOICE : MIDDLE_BUTTON_CHOICE,
-        _T(PrusaErrorButtonTitle(button_low_nibble)),
-        _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_high_nibble)),
+        two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, // beware - LEFT button on the LCD matches the MIDDLE button on the MMU!
+        _T(PrusaErrorButtonTitle(button_op_middle)),
+        _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)),
         two_choices ? nullptr : _T(PrusaErrorButtonMore()),
-        two_choices ? 
-            10 // If two choices, allow the first choice to have more characters
-            : 7,
-        ReportErrorHook_cb
+        two_choices ? 10 : 7 // If two choices, allow the first choice to have more characters
     );
 
-    if ((two_choices && choice_selected == MIDDLE_BUTTON_CHOICE)      // Two choices and middle button selected
-        || (!two_choices && choice_selected == RIGHT_BUTTON_CHOICE)) // Three choices and right most button selected
+    if ((two_choices && choice_selected == LCD_MIDDLE_BUTTON_CHOICE)      // Two choices and middle button selected
+        || (!two_choices && choice_selected == LCD_RIGHT_BUTTON_CHOICE)) // Three choices and right most button selected
     {
         // 'More' show error description
         lcd_show_fullscreen_message_and_wait_P(_T(PrusaErrorDesc(ei)));
 
         // Return back to the choice menu
         goto back_to_choices;
-    } else if(choice_selected == MIDDLE_BUTTON_CHOICE) {
-        // TODO: User selected middle choice, not sure what to do.
-        //       At the moment just return to the status screen
-        switch (button_high_nibble)
-        {
-        case (uint8_t)ButtonOperations::Retry:
-        case (uint8_t)ButtonOperations::Continue:
-        case (uint8_t)ButtonOperations::RestartMMU:
-        case (uint8_t)ButtonOperations::Unload:
-        case (uint8_t)ButtonOperations::StopPrint:
-        case (uint8_t)ButtonOperations::DisableMMU:
-        default:
-            lcd_update_enable(true);
-            lcd_return_to_status();
-            break;
-        }
+    } else if(choice_selected == LCD_MIDDLE_BUTTON_CHOICE) {
+        SetButtonResponse((ButtonOperations)button_op_right);
     } else {
-        // TODO: User selected the left most choice, not sure what to do.
-        //       At the moment just return to the status screen
-        switch (button_low_nibble)
-        {
-        case (uint8_t)ButtonOperations::Retry:
-        case (uint8_t)ButtonOperations::Continue:
-        case (uint8_t)ButtonOperations::RestartMMU:
-        case (uint8_t)ButtonOperations::Unload:
-        case (uint8_t)ButtonOperations::StopPrint:
-        case (uint8_t)ButtonOperations::DisableMMU:
-        default:
-            lcd_update_enable(true);
-            lcd_return_to_status();
-            break;
-        }
+        SetButtonResponse((ButtonOperations)button_op_middle);
     }
+    // if any button/command selected, close the screen
+    lcd_update_enable(true);
+    lcd_return_to_status();
 }
 
 void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
     custom_message_type = CustomMsg::MMUProgress;
     lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
-}
-
-Buttons ButtonPressed(uint16_t ec) { 
-    // query the MMU error screen if a button has been pressed/selected
 }
 
 } // namespace MMU2
