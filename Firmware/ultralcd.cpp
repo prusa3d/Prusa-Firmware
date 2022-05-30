@@ -3656,7 +3656,7 @@ void menu_setlang(unsigned char lang)
 {
 	if (!lang_select(lang))
 	{
-		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, LEFT_BUTTON_CHOICE) == LEFT_BUTTON_CHOICE)////MSG_COPY_SEL_LANG c=20 r=3
+		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, LCD_LEFT_BUTTON_CHOICE) == LCD_LEFT_BUTTON_CHOICE)////MSG_COPY_SEL_LANG c=20 r=3
 			lang_boot_update_start(lang);
 		lcd_update_enable(true);
 		lcd_clear();
