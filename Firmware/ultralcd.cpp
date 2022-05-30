@@ -3210,8 +3210,6 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
     }
 }
 
-typedef ;
-
 //! @brief Show single or multiple screen message with two possible choices and wait with possible timeout
 //! @param msg Message to show. If NULL, do not clear the screen and handle choice selection only.
 //! @param allow_timeouting bool, if true, allows time outing of the screen
