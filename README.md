@@ -1,6 +1,20 @@
-# Prusa Firmware MK3
+# Prusa Firmware MK3 (with MeatPack Support)
 
-This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3/MK2.5S/MK2.5 line of printers.
+### NOTE:
+
+Please find the primary [MeatPack OctoPrint repository here](https://github.com/scottmudge/OctoPrint-MeatPack).
+
+This is a fork of the original Prusa Firmware. I've modified it to add support for "MeatPack", a g-code compression algorithm I have developed to be used with OctoPrint. This firmware is functionally identical, but if the MeatPack OctoPrint plugin is installed and enabled, g-code can be compressed by a ratio of ~0.61 - 0.62 over the serial connection, improving print quality for parts with complex and spatially dense curvature. The compression method is extremely light-weight, and imposes virtually no computational overhead on the microprocessor running the firmware. Please see the plugin repository above for more information.
+
+Please find firmware builds with MeatPack support enabled in the "Releases" section of this repository.
+
+Latest build is here: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.10.0-MeatPack
+
+Note that versions 
+
+---
+
+This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3 line of printers.
 
 The latest official builds can be downloaded from [Prusa Drivers](https://www.prusa3d.com/drivers/). Pre-built development releases are also [available here](https://github.com/prusa3d/Prusa-Firmware/releases).
 
