@@ -1,3 +1,11 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+"Plyta %.7s\x0aZ offset: %+1.3fmm\x0a%cKontynuowac\x0a%cReset"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+"\x04Odswiezac"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 " 0.3 lub starszy"
@@ -38,7 +46,7 @@
 "All correct"
 "Wszystko OK"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 "Gotowe. Udanego drukowania!"
 
@@ -138,10 +146,6 @@
 "Calibrate Z"
 "Kalibruj Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-"Kalibruj"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 ">Anuluj"
@@ -162,7 +166,7 @@
 "Calibration done"
 "Kalibracja OK"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 "Kalibracja"
 
@@ -190,8 +194,8 @@
 "Crash det."
 "Wykr.zderzen"
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 "Wybierz filament do Kalibracji Pierwszej Warstwy i potwierdz w menu ekranowym."
 
 #MSG_CRASH_DETECTED c=20
@@ -205,10 +209,6 @@
 #MSG_CRASH c=7
 "Crash"
 "Zderzen"
-
-#MSG_CURRENT c=19
-"Current"
-"Aktualne"
 
 #MSG_DATE c=17
 "Date:"
@@ -226,7 +226,7 @@
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 "Odleglosc dyszy od powierzchni druku nie jest skalibrowana. Postepuj zgodnie z instrukcja: rozdzial Wprowadzenie - Kalibracja pierwszej warstwy."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 "Kont."
 
@@ -238,7 +238,7 @@
 "E-correct:"
 "Korekcja-E:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 "Wysun filament"
 
@@ -258,11 +258,7 @@
 "Endstops"
 "Krancowki"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-"Blad - pamiec statyczna zostala nadpisana"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 "Ciecie filamentu"
 
@@ -286,7 +282,7 @@
 "ERROR:"
 "BLAD:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 "WentHotend:"
 
@@ -338,7 +334,7 @@
 "Filament not loaded"
 "Fil. nie zaladowany"
 
-#MSG_FILAMENT_SENSOR c=20
+#MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
 "Czujnik filamentu"
 
@@ -378,13 +374,13 @@
 "Flow"
 "Przeplyw"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 "Przedni went. druku?"
 
 #MSG_BED_CORRECTION_FRONT c=14
-"Front side[um]"
-"Przod [um]"
+"Front side[\xe4m]"
+"Przod [\xe4m]"
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
@@ -450,13 +446,9 @@
 "Checking Z axis"
 "Kontrola osi Z"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 "Wybierz ekstruder:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
-"Wybierz filament:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -470,7 +462,7 @@
 "I will run z calibration now."
 "Przeprowadze kalibracje Z."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 "Ekran informacyjny"
 
@@ -511,8 +503,8 @@
 "Lewa"
 
 #MSG_BED_CORRECTION_LEFT c=14
-"Left side [um]"
-"Lewo [um]"
+"Left side [\xe4m]"
+"Lewo [\xe4m]"
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
@@ -612,7 +604,7 @@
 
 #MSG_NORMAL c=7
 "Normal"
-"Normal"
+"\x00"
 
 #MSG_SILENT c=7
 "Silent"
@@ -698,7 +690,7 @@
 "Now I will preheat nozzle for PLA."
 "Nagrzewam dysze dla PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 "Dysza"
 
@@ -709,10 +701,6 @@
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
 "Teraz zdejmij wydruk testowy ze stolu."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
-"WentHotend"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -814,7 +802,7 @@
 "Press the knob to preheat nozzle and continue."
 "Wcisnij pokretlo aby rozgrzac dysze i kontynuowac."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 "Pauza"
 
@@ -834,7 +822,7 @@
 "Preheating to unload"
 "Nagrzew. do rozlad."
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 "WentWydruk:"
 
@@ -858,10 +846,6 @@
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Drukarka nie byla jeszcze kalibrowana. Kieruj sie Samouczkiem: rozdzial Pierwsze Kroki, sekcja Konfiguracja przed drukowaniem."
 
-#MSG_PRINT_FAN c=10
-"Print FAN"
-"WentWydruk"
-
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
 "Wsun filament do ekstrudera i nacisnij pokretlo, aby go zaladowac."
@@ -875,8 +859,8 @@
 "Najpierw zaladuj filament."
 
 #MSG_BED_CORRECTION_REAR c=14
-"Rear side [um]"
-"Tyl [um]"
+"Rear side [\xe4m]"
+"Tyl [\xe4m]"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
@@ -911,8 +895,8 @@
 "Wznawianie druku"
 
 #MSG_BED_CORRECTION_RIGHT c=14
-"Right side[um]"
-"Prawo [um]"
+"Right side[\xe4m]"
+"Prawo [\xe4m]"
 
 #MSG_RPI_PORT c=13
 "RPi port"
@@ -1066,25 +1050,21 @@
 "Select filament:"
 "Wybierz filament:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
-"Kalib. temp."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
+"Kalib. PINDA"
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 "Wybierz temperature, ktora odpowiada Twojemu filamentowi."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
-"Kalibracja temp."
-
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
 "Kalibracja temperaturowa nieudana"
 
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Kalibracja temperaturowa zakonczona i wlaczona. Moze byc wylaczona z menu Ustawienia -> Kalibracja temp."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
+"Kalibracja PINDA zakonczona i wlaczona. Moze byc wylaczona z menu Ustawienia -> Kalib. PINDA"
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -1126,7 +1106,7 @@
 "to unload filament"
 "aby rozlad. filament"
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 "Rozladowanie fil"
 
@@ -1137,10 +1117,6 @@
 #MSG_TOTAL c=6
 "Total"
 "Suma"
-
-#MSG_USED c=19
-"Used during print"
-"Uzyte podczas druku"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"
@@ -1194,7 +1170,7 @@
 "XYZ calibration failed. Please consult the manual."
 "Kalibracja XYZ nieudana. Sprawdz przyczyny i rozwiazania w instrukcji."
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 "Tak"
 

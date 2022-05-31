@@ -9,6 +9,7 @@
 
 #ifdef XFLASH
 #include "xflash.h"
+#include "xflash_layout.h"
 #endif //XFLASH
 
 // Currently active language selection.
@@ -110,7 +111,7 @@ uint8_t lang_get_count()
 #ifdef XFLASH
 	XFLASH_SPI_ENTER();
 	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
-	uint32_t addr = 0x00000; //start of xflash
+	uint32_t addr = LANG_OFFSET;
 	lang_table_header_t header; //table header structure
 	while (1)
 	{
@@ -143,7 +144,7 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
 	XFLASH_SPI_ENTER();
-	uint32_t addr = 0x00000; //start of xflash
+	uint32_t addr = LANG_OFFSET;
 	lang--;
 	while (1)
 	{
@@ -176,7 +177,7 @@ uint16_t lang_get_code(uint8_t lang)
 		return pgm_read_word(((uint32_t*)(ui + 10))); //return lang code from progmem
 	}
 	XFLASH_SPI_ENTER();
-	uint32_t addr = 0x00000; //start of xflash
+	uint32_t addr = LANG_OFFSET;
 	lang_table_header_t header; //table header structure
 	lang--;
 	while (1)
@@ -210,16 +211,46 @@ const char* lang_get_name_by_code(uint16_t code)
 	case LANG_CODE_FR: return _n("Francais");
 	case LANG_CODE_IT: return _n("Italiano");
 	case LANG_CODE_PL: return _n("Polski");
-#ifdef COMMUNITY_LANG_SUPPORT //Community language support
-#ifdef COMMUNITY_LANG_NL
-	case LANG_CODE_NL: return _n("Nederlands"); //community contribution
-#endif // COMMUNITY_LANG_NL
+#ifdef COMMUNITY_LANGUAGE_SUPPORT //Community language support
+#ifdef COMMUNITY_LANG_GROUP1_NL
+	case LANG_CODE_NL: return _n("Nederlands"); //community Dutch contribution
+#endif // COMMUNITY_LANG_GROUP1_NL
+#ifdef COMMUNITY_LANG_GROUP1_SV
+	case LANG_CODE_SV: return _n("Svenska"); //community Swedish contribution
+#endif // COMMUNITY_LANG_GROUP1_SV
+#ifdef COMMUNITY_LANG_GROUP1_NO
+	case LANG_CODE_NO: return _n("Norsk"); //community Swedish contribution
+#endif // COMMUNITY_LANG_GROUP1_NO
+#ifdef COMMUNITY_LANG_GROUP1_DA
+	case LANG_CODE_DA: return _n("Dansk"); //community Danish contribution
+#endif // COMMUNITY_LANG_GROUP1_DA
+#ifdef COMMUNITY_LANG_GROUP1_SK
+	case LANG_CODE_SK: return _n("Slovencina"); //community Slovak contribution
+#endif // COMMUNITY_LANG_GROUP1_SK
+#ifdef COMMUNITY_LANG_GROUP1_SL
+	case LANG_CODE_SL: return _n("Slovenscina"); //community Slovanian contribution
+#endif // COMMUNITY_LANG_GROUP1_SL
+#ifdef COMMUNITY_LANG_GROUP1_HU
+	case LANG_CODE_HU: return _n("Magyar"); //community Hungarian contribution
+#endif // COMMUNITY_LANG_GROUP1_HU
+#ifdef COMMUNITY_LANG_GROUP1_LB
+	case LANG_CODE_LB: return _n("Letzebuergesch"); //community Luxembourgish contribution
+#endif // COMMUNITY_LANG_GROUP1_LB
+#ifdef COMMUNITY_LANG_GROUP1_HR
+	case LANG_CODE_HR: return _n("Hrvatski"); //community Croatian contribution
+#endif // COMMUNITY_LANG_GROUP1_HR
+#ifdef COMMUNITY_LANG_GROUP1_LT
+	case LANG_CODE_LT: return _n("Lietuviu"); //community Lithuanian contribution
+#endif // COMMUNITY_LANG_GROUP1_LT
+#ifdef COMMUNITY_LANG_GROUP1_RO
+	case LANG_CODE_RO: return _n("Romana"); //community Romanian contribution
+#endif // COMMUNITY_LANG_GROUP1_RO
 
 //Use the 3 lines below as a template and replace 'QR' and 'New language'
-//#ifdef COMMUNITY_LANG_QR 
+//#ifdef COMMUNITY_LANG_GROUP1_QR 
 //	case LANG_CODE_QR: return _n("New language"); //community contribution
-//#endif // COMMUNITY_LANG_QR
-#endif // COMMUNITY_LANG_SUPPORT
+//#endif // COMMUNITY_LANG_GROUP1_QR
+#endif // COMMUNITY_LANGUAGE_SUPPORT
 	}
 	return _n("??");
 }
@@ -278,5 +309,5 @@ void lang_boot_update_start(uint8_t lang)
 {
 	uint8_t cnt = lang_get_count();
 	if ((lang < 2) || (lang > cnt)) return; //only languages from xflash can be selected
-	bootapp_reboot_user0(lang << 4);
+	bootapp_reboot_user0(lang << 3);
 }

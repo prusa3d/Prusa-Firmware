@@ -27,7 +27,7 @@ public:
     inline ls_param(bool LFN, bool timestamp):LFN(LFN), timestamp(timestamp) { }
   } __attribute__((packed));
   
-  void initsd();
+  void initsd(bool doPresort = true);
   void write_command(char *buf);
   void write_command_no_newline(char *buf);
   //files auto[0-9].g on the sd card are performed in a row
@@ -135,7 +135,7 @@ private:
 
   bool autostart_stilltocheck; //the sd start is delayed, because otherwise the serial cannot answer fast enought to make contact with the hostsoftware.
   
-  int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
+  uint16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
 
   bool diveSubfolder (const char *&fileName);

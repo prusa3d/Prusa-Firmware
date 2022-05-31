@@ -1,5 +1,5 @@
-#include "Dcodes.h"
 #include "Marlin.h"
+#include "Dcodes.h"
 #include "Configuration.h"
 #include "language.h"
 #include "cmdqueue.h"
@@ -23,28 +23,25 @@ void print_hex_byte(uint8_t val)
 	print_hex_nibble(val & 15);
 }
 
-void print_hex_word(uint16_t val)
-{
-	print_hex_byte(val >> 8);
-	print_hex_byte(val & 255);
-}
+// debug range address type (fits all SRAM/PROGMEM/XFLASH memory ranges)
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES) || defined(XFLASH_DUMP)
+#include "xflash.h"
+#include "xflash_layout.h"
 
-void print_eeprom(uint16_t address, uint16_t count, uint8_t countperline = 16)
+#define DADDR_SIZE 32
+typedef uint32_t daddr_t; // XFLASH requires 24 bits
+#else
+#define DADDR_SIZE 16
+typedef uint16_t daddr_t;
+#endif
+
+void print_hex_word(daddr_t val)
 {
-	while (count)
-	{
-		print_hex_word(address);
-		putchar(' ');
-		uint8_t count_line = countperline;
-		while (count && count_line)
-		{
-			putchar(' ');
-			print_hex_byte(eeprom_read_byte((uint8_t*)address++));
-			count_line--;
-			count--;
-		}
-		putchar('\n');
-	}
+#if DADDR_SIZE > 16
+    print_hex_byte((val >> 16) & 0xFF);
+#endif
+    print_hex_byte((val >> 8) & 0xFF);
+    print_hex_byte(val & 0xFF);
 }
 
 int parse_hex(char* hex, uint8_t* data, int count)
@@ -71,12 +68,16 @@ int parse_hex(char* hex, uint8_t* data, int count)
 }
 
 
-void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperline = 16)
+enum class dcode_mem_t:uint8_t { sram, eeprom, progmem, xflash };
+
+void print_mem(daddr_t address, daddr_t count, dcode_mem_t type, uint8_t countperline = 16)
 {
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES) || defined(XFLASH_DUMP)
+    if(type == dcode_mem_t::xflash)
+        XFLASH_SPI_ENTER();
+#endif
 	while (count)
 	{
-		if (type == 2)
-			print_hex_nibble(address >> 16);
 		print_hex_word(address);
 		putchar(' ');
 		uint8_t count_line = countperline;
@@ -85,17 +86,73 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
 			uint8_t data = 0;
 			switch (type)
 			{
-			case 0: data = *((uint8_t*)address++); break;
-			case 1: data = eeprom_read_byte((uint8_t*)address++); break;
-			case 2: data = pgm_read_byte_far((uint8_t*)address++); break;
+			case dcode_mem_t::sram: data = *((uint8_t*)address); break;
+			case dcode_mem_t::eeprom: data = eeprom_read_byte((uint8_t*)address); break;
+			case dcode_mem_t::progmem: break;
+#if defined(DEBUG_DCODE6) || defined(DEBUG_DCODES) || defined(XFLASH_DUMP)
+            case dcode_mem_t::xflash: xflash_rd_data(address, &data, 1); break;
+#else
+            case dcode_mem_t::xflash: break;
+#endif
 			}
+            ++address;
 			putchar(' ');
 			print_hex_byte(data);
 			count_line--;
 			count--;
+
+            // sporadically call manage_heater, but only when interrupts are enabled (meaning
+            // print_mem is called by D2). Don't do anything otherwise: we are inside a crash
+            // handler where memory & stack needs to be preserved!
+            if((SREG & (1 << SREG_I)) && !((uint16_t)count % 8192))
+                manage_heater();
 		}
 		putchar('\n');
 	}
+}
+
+// TODO: this only handles SRAM/EEPROM 16bit addresses
+void write_mem(uint16_t address, uint16_t count, const uint8_t* data, const dcode_mem_t type)
+{
+    for (uint16_t i = 0; i < count; i++)
+    {
+        switch (type)
+        {
+        case dcode_mem_t::sram: *((uint8_t*)address) = data[i]; break;
+        case dcode_mem_t::eeprom: eeprom_write_byte((uint8_t*)address, data[i]); break;
+        case dcode_mem_t::progmem: break;
+        case dcode_mem_t::xflash: break;
+        }
+        ++address;
+    }
+}
+
+void dcode_core(daddr_t addr_start, const daddr_t addr_end, const dcode_mem_t type,
+                uint8_t dcode, const char* type_desc)
+{
+    KEEPALIVE_STATE(NOT_BUSY);
+    DBG(_N("D%d - Read/Write %S\n"), dcode, type_desc);
+    daddr_t count = -1; // RW the entire space by default
+    if (code_seen('A'))
+        addr_start = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
+    if (code_seen('C'))
+        count = code_value_long();
+    if (addr_start > addr_end)
+        addr_start = addr_end;
+    if ((addr_start + count) > addr_end || (addr_start + count) < addr_start)
+        count = addr_end - addr_start;
+    if (code_seen('X'))
+    {
+        uint8_t data[16];
+        count = parse_hex(strchr_pointer + 1, data, 16);
+        write_mem(addr_start, count, data, type);
+#if DADDR_SIZE > 16
+        DBG(_N("%lu bytes written to %S at address 0x%04lx\n"), count, type_desc, addr_start);
+#else
+        DBG(_N("%u bytes written to %S at address 0x%08x\n"), count, type_desc, addr_start);
+#endif
+    }
+    print_mem(addr_start, count, type);
 }
 
 #if defined DEBUG_DCODE3 || defined DEBUG_DCODES
@@ -120,46 +177,7 @@ void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperl
     */
 void dcode_3()
 {
-	DBG(_N("D3 - Read/Write EEPROM\n"));
-	uint16_t address = 0x0000; //default 0x0000
-	uint16_t count = EEPROM_SIZE; //default 0x1000 (entire eeprom)
-	if (code_seen('A')) // Address (0x0000-0x0fff)
-		address = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
-	if (code_seen('C')) // Count (0x0001-0x1000)
-		count = (int)code_value();
-	address &= 0x1fff;
-	if (count > EEPROM_SIZE) count = EEPROM_SIZE;
-	if ((address + count) > EEPROM_SIZE) count = EEPROM_SIZE - address;
-	if (code_seen('X')) // Data
-	{
-		uint8_t data[16];
-		count = parse_hex(strchr_pointer + 1, data, 16);
-		if (count > 0)
-		{
-			for (uint16_t i = 0; i < count; i++)
-				eeprom_write_byte((uint8_t*)(address + i), data[i]);
-			printf_P(_N("%d bytes written to EEPROM at address 0x%04x"), count, address);
-			putchar('\n');
-		}
-		else
-			count = 0;
-	}
-	print_mem(address, count, 1);
-/*	while (count)
-	{
-		print_hex_word(address);
-		putchar(' ');
-		uint8_t countperline = 16;
-		while (count && countperline)
-		{
-			uint8_t data = eeprom_read_byte((uint8_t*)address++);
-			putchar(' ');
-			print_hex_byte(data);
-			countperline--;
-			count--;
-		}
-		putchar('\n');
-	}*/
+    dcode_core(0, EEPROM_SIZE, dcode_mem_t::eeprom, 3, _N("EEPROM"));
 }
 #endif //DEBUG_DCODE3
 
@@ -239,68 +257,34 @@ void dcode_1()
 		eeprom_write_byte((unsigned char*)i, (unsigned char)0xff);
 	softReset();
 }
+#endif
 
+#if defined DEBUG_DCODE2 || defined DEBUG_DCODES
     /*!
     ### D2 - Read/Write RAM <a href="https://reprap.org/wiki/G-code#D2:_Read.2FWrite_RAM">D3: Read/Write RAM</a>
     This command can be used without any additional parameters. It will read the entire RAM.
     #### Usage
-    
+
         D2 [ A | C | X ]
-    
+
     #### Parameters
-    - `A` - Address (x0000-x1fff)
-    - `C` - Count (1-8192)
+    - `A` - Address (x0000-x21ff)
+    - `C` - Count (1-8704)
     - `X` - Data
 
 	#### Notes
 	- The hex address needs to be lowercase without the 0 before the x
-	- Count is decimal 
+	- Count is decimal
 	- The hex data needs to be lowercase
-	
+
     */
 void dcode_2()
 {
-	LOG("D2 - Read/Write RAM\n");
-	uint16_t address = 0x0000; //default 0x0000
-	uint16_t count = 0x2000; //default 0x2000 (entire ram)
-	if (code_seen('A')) // Address (0x0000-0x1fff)
-		address = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
-	if (code_seen('C')) // Count (0x0001-0x2000)
-		count = (int)code_value();
-	address &= 0x1fff;
-	if (count > 0x2000) count = 0x2000;
-	if ((address + count) > 0x2000) count = 0x2000 - address;
-	if (code_seen('X')) // Data
-	{
-		uint8_t data[16];
-		count = parse_hex(strchr_pointer + 1, data, 16);
-		if (count > 0)
-		{
-			for (uint16_t i = 0; i < count; i++)
-				*((uint8_t*)(address + i)) =  data[i];
-			LOG("%d bytes written to RAM at address %04x", count, address);
-		}
-		else
-			count = 0;
-	}
-	print_mem(address, count, 0);
-/*	while (count)
-	{
-		print_hex_word(address);
-		putchar(' ');
-		uint8_t countperline = 16;
-		while (count && countperline)
-		{
-			uint8_t data = *((uint8_t*)address++);
-			putchar(' ');
-			print_hex_byte(data);
-			countperline--;
-			count--;
-		}
-		putchar('\n');
-	}*/
+    dcode_core(RAMSTART, RAMEND+1, dcode_mem_t::sram, 2, _N("SRAM"));
 }
+#endif
 
+#ifdef DEBUG_DCODES
     /*!
     
     ### D4 - Read/Write PIN <a href="https://reprap.org/wiki/G-code#D4:_Read.2FWrite_PIN">D4: Read/Write PIN</a>
@@ -425,17 +409,32 @@ void dcode_5()
 }
 #endif //DEBUG_DCODE5
 
-#ifdef DEBUG_DCODES
-
+#if defined(XFLASH) && (defined DEBUG_DCODE6 || defined DEBUG_DCODES)
     /*!
     ### D6 - Read/Write external FLASH <a href="https://reprap.org/wiki/G-code#D6:_Read.2FWrite_external_FLASH">D6: Read/Write external Flash</a>
-    Reserved
+    This command can be used without any additional parameters. It will read the entire XFLASH.
+    #### Usage
+
+        D6 [ A | C | X ]
+
+    #### Parameters
+    - `A` - Address (x0000-x3ffff)
+    - `C` - Count (1-262144)
+    - `X` - Data
+
+	#### Notes
+	- The hex address needs to be lowercase without the 0 before the x
+	- Count is decimal
+	- The hex data needs to be lowercase
+	- Writing is currently not implemented
     */
 void dcode_6()
 {
-	LOG("D6 - Read/Write external FLASH\n");
+    dcode_core(0x0, XFLASH_SIZE, dcode_mem_t::xflash, 6, _N("XFLASH"));
 }
+#endif
 
+#ifdef DEBUG_DCODES
     /*!
     ### D7 - Read/Write Bootloader <a href="https://reprap.org/wiki/G-code#D7:_Read.2FWrite_Bootloader">D7: Read/Write Bootloader</a>
     Reserved
@@ -539,26 +538,20 @@ const char* dcode_9_ADC_name(uint8_t i)
 	return 0;
 }
 
-#ifdef AMBIENT_THERMISTOR
-extern int current_temperature_raw_ambient;
-#endif //AMBIENT_THERMISTOR
-
-#ifdef VOLT_PWR_PIN
-extern int current_voltage_raw_pwr;
-#endif //VOLT_PWR_PIN
-
-#ifdef VOLT_BED_PIN
-extern int current_voltage_raw_bed;
-#endif //VOLT_BED_PIN
-
 uint16_t dcode_9_ADC_val(uint8_t i)
 {
 	switch (i)
 	{
+#ifdef SHOW_TEMP_ADC_VALUES
 	case 0: return current_temperature_raw[0];
+#endif //SHOW_TEMP_ADC_VALUES
 	case 1: return 0;
+#ifdef SHOW_TEMP_ADC_VALUES
 	case 2: return current_temperature_bed_raw;
+#endif //SHOW_TEMP_ADC_VALUES
+#ifdef PINDA_THERMISTOR
 	case 3: return current_temperature_raw_pinda;
+#endif //PINDA_THERMISTOR
 #ifdef VOLT_PWR_PIN
 	case 4: return current_voltage_raw_pwr;
 #endif //VOLT_PWR_PIN
@@ -927,5 +920,99 @@ void dcode_9125()
 }
 #endif //PAT9125
 
-
 #endif //DEBUG_DCODES
+
+#ifdef XFLASH_DUMP
+#include "xflash_dump.h"
+
+void dcode_20()
+{
+    if(code_seen('E'))
+        xfdump_full_dump_and_reset();
+    else
+    {
+        unsigned long ts = _millis();
+        xfdump_dump();
+        ts = _millis() - ts;
+        DBG(_N("dump completed in %lums\n"), ts);
+    }
+}
+
+void dcode_21()
+{
+    if(!xfdump_check_state())
+        DBG(_N("no dump available\n"));
+    else
+    {
+        KEEPALIVE_STATE(NOT_BUSY);
+        DBG(_N("D21 - read crash dump\n"));
+        print_mem(DUMP_OFFSET, sizeof(dump_t), dcode_mem_t::xflash);
+    }
+}
+
+void dcode_22()
+{
+    if(!xfdump_check_state())
+        DBG(_N("no dump available\n"));
+    else
+    {
+        xfdump_reset();
+        DBG(_N("dump cleared\n"));
+    }
+}
+#endif
+
+#ifdef EMERGENCY_SERIAL_DUMP
+#include "asm.h"
+#include "xflash_dump.h"
+
+bool emergency_serial_dump = false;
+
+void dcode_23()
+{
+    if(code_seen('E'))
+        serial_dump_and_reset(dump_crash_reason::manual);
+    else
+    {
+        emergency_serial_dump = !code_seen('R');
+        SERIAL_ECHOPGM("serial dump ");
+        SERIAL_ECHOLNRPGM(emergency_serial_dump? _N("enabled"): _N("disabled"));
+    }
+}
+
+void __attribute__((noinline)) serial_dump_and_reset(dump_crash_reason reason)
+{
+    uint16_t sp;
+    uint32_t pc;
+
+    // we're being called from a live state, so shut off interrupts ...
+    cli();
+
+    // sample SP/PC
+    sp = SP;
+    GETPC(&pc);
+
+    // extend WDT long enough to allow writing the entire stream
+    wdt_enable(WDTO_8S);
+
+    // ... and heaters
+    WRITE(FAN_PIN, HIGH);
+    disable_heater();
+
+    // this function can also be called from within a corrupted state, so not use
+    // printf family of functions that use the heap or grow the stack.
+    SERIAL_ECHOLNPGM("D23 - emergency serial dump");
+    SERIAL_ECHOPGM("error: ");
+    MYSERIAL.print((uint8_t)reason, DEC);
+    SERIAL_ECHOPGM(" 0x");
+    MYSERIAL.print(pc, HEX);
+    SERIAL_ECHOPGM(" 0x");
+    MYSERIAL.println(sp, HEX);
+
+    print_mem(0, RAMEND+1, dcode_mem_t::sram);
+    SERIAL_ECHOLNRPGM(MSG_OK);
+
+    // reset soon
+    softReset();
+}
+#endif

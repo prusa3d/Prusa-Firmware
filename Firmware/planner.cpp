@@ -109,9 +109,9 @@ unsigned char g_uc_extruder_last_move[3] = {0,0,0};
 //===========================================================================
 //=================semi-private variables, used in inline  functions    =====
 //===========================================================================
-block_t block_buffer[BLOCK_BUFFER_SIZE];            // A ring buffer for motion instfructions
-volatile unsigned char block_buffer_head;           // Index of the next block to be pushed
-volatile unsigned char block_buffer_tail;           // Index of the block to process now
+block_t block_buffer[BLOCK_BUFFER_SIZE];    // A ring buffer for motion instfructions
+volatile uint8_t block_buffer_head;         // Index of the next block to be pushed
+volatile uint8_t block_buffer_tail;         // Index of the block to process now
 
 #ifdef PLANNER_DIAGNOSTICS
 // Diagnostic function: Minimum number of planned moves since the last 
@@ -136,17 +136,17 @@ static bool plan_reset_next_e_sched;
 
 // Returns the index of the next block in the ring buffer
 // NOTE: Removed modulo (%) operator, which uses an expensive divide and multiplication.
-static inline int8_t next_block_index(int8_t block_index) {
+static inline uint8_t next_block_index(uint8_t block_index) {
   if (++ block_index == BLOCK_BUFFER_SIZE)
-    block_index = 0; 
+    block_index = 0;
   return block_index;
 }
 
 
 // Returns the index of the previous block in the ring buffer
-static inline int8_t prev_block_index(int8_t block_index) {
+static inline uint8_t prev_block_index(uint8_t block_index) {
   if (block_index == 0)
-    block_index = BLOCK_BUFFER_SIZE; 
+    block_index = BLOCK_BUFFER_SIZE;
   -- block_index;
   return block_index;
 }
@@ -358,14 +358,14 @@ void planner_recalculate(const float &safe_final_speed)
     // Reverse pass
     // Make a local copy of block_buffer_tail, because the interrupt can alter it
     // by consuming the blocks, therefore shortening the queue.
-    unsigned char tail = block_buffer_tail;
+    uint8_t tail = block_buffer_tail;
     uint8_t block_index;
     block_t *prev, *current, *next;
 
 //    SERIAL_ECHOLNPGM("planner_recalculate - 1");
 
     // At least three blocks are in the queue?
-    unsigned char n_blocks = (block_buffer_head + BLOCK_BUFFER_SIZE - tail) & (BLOCK_BUFFER_SIZE - 1);
+    uint8_t n_blocks = (block_buffer_head + BLOCK_BUFFER_SIZE - tail) & (BLOCK_BUFFER_SIZE - 1);
     if (n_blocks >= 3) {
         // Initialize the last tripple of blocks.
         block_index = prev_block_index(block_buffer_head);
@@ -709,7 +709,7 @@ float junction_deviation = 0.1;
 void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target)
 {
     // Calculate the buffer head after we push this byte
-  int next_buffer_head = next_block_index(block_buffer_head);
+  uint8_t next_buffer_head = next_block_index(block_buffer_head);
 
   // If the buffer is full: good! That means we are well ahead of the robot. 
   // Rest here until there is room in the buffer.
@@ -1095,7 +1095,7 @@ Having the real displacement of the head, we can calculate the total movement le
      */
     block->use_advance_lead = extruder_advance_K > 0
                               && delta_mm[E_AXIS] >= 0
-                              && abs(delta_mm[Z_AXIS]) < 0.5;
+                              && fabs(delta_mm[Z_AXIS]) < 0.5;
     if (block->use_advance_lead) {
 #ifdef LA_FLOWADJ
         // M221/FLOW should change uniformly the extrusion thickness
@@ -1475,7 +1475,7 @@ void update_mode_profile()
 }
 #endif //TMC2130
 
-unsigned char number_of_blocks()
+uint8_t number_of_blocks()
 {
 	return (block_buffer_head + BLOCK_BUFFER_SIZE - block_buffer_tail) & (BLOCK_BUFFER_SIZE - 1);
 }
@@ -1505,8 +1505,8 @@ void planner_add_sd_length(uint16_t sdlen)
 
 uint16_t planner_calc_sd_length()
 {
-	unsigned char _block_buffer_head = block_buffer_head;
-	unsigned char _block_buffer_tail = block_buffer_tail;
+	uint8_t _block_buffer_head = block_buffer_head;
+	uint8_t _block_buffer_tail = block_buffer_tail;
 	uint16_t sdlen = 0;
 	while (_block_buffer_head != _block_buffer_tail)
 	{

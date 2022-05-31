@@ -119,11 +119,15 @@
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
 #define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
+// Online crash dumper
+#define EMERGENCY_SERIAL_DUMP   // Request dump via serial on stack corruption and WDR
+#define MENU_SERIAL_DUMP        // Enable "Memory dump" in Settings menu
+
 // Filament sensor
 #define FILAMENT_SENSOR
 #define PAT9125
 
-
+#define DEBUG_DCODE2
 #define DEBUG_DCODE3
 
 //#define DEBUG_BUILD
@@ -469,6 +473,7 @@
 #define TEMP_SENSOR_PINDA 1
 
 #define STACK_GUARD_TEST_VALUE 0xA2A2
+#define STACK_GUARD_MARGIN     32
 
 #define MAX_BED_TEMP_CALIBRATION 50
 #define MAX_HOTEND_TEMP_CALIBRATION 50

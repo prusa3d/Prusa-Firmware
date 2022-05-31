@@ -1,3 +1,9 @@
+#MSG_SHEET_OFFSET c=20 r=4
+"Sheet %.7s\x0aZ offset: %+1.3fmm\x0a%cContinue\x0a%cReset"
+
+#MSG_REFRESH c=18
+"\x04Refresh"
+
 #MSG_IR_03_OR_OLDER c=18
 " 0.3 or older"
 
@@ -28,7 +34,7 @@
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct"
 
-#MSG_WIZARD_DONE c=20 r=8
+#MSG_WIZARD_DONE c=20 r=3
 "All is done. Happy printing!"
 
 #MSG_AMBIENT c=14
@@ -103,9 +109,6 @@
 #MSG_HOMEYZ c=18
 "Calibrate Z"
 
-#MSG_CALIBRATE_PINDA c=17
-"Calibrate"
-
 #MSG_CANCEL2 c=10
 ">Cancel"
 
@@ -121,7 +124,7 @@
 #MSG_HOMEYZ_DONE c=20
 "Calibration done"
 
-#MSG_MENU_CALIBRATION c=18
+#MSG_CALIBRATION c=18
 "Calibration"
 
 #MSG_SD_REMOVED c=20
@@ -142,8 +145,8 @@
 #MSG_CRASHDETECT c=13
 "Crash det."
 
-#MSG_CHOOSE_FIL_1ST_LAYERCAL c=20 r=7
-"Choose a filament for the First Layer Calibration and select it in the on-screen menu."
+#MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
+"Select a filament for the First Layer Calibration and select it in the on-screen menu."
 
 #MSG_CRASH_DETECTED c=20
 "Crash detected."
@@ -153,9 +156,6 @@
 
 #MSG_CRASH c=7
 "Crash"
-
-#MSG_CURRENT c=19
-"Current"
 
 #MSG_DATE c=17
 "Date:"
@@ -169,7 +169,7 @@
 #MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 
-#MSG_FS_CONTINUE c=5
+#MSG_CONTINUE_SHORT c=5
 "Cont."
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
@@ -178,7 +178,7 @@
 #MSG_EXTRUDER_CORRECTION c=13
 "E-correct:"
 
-#MSG_EJECT_FILAMENT c=16
+#MSG_EJECT_FILAMENT c=17
 "Eject filament"
 
 #MSG_EJECTING_FILAMENT c=20
@@ -193,10 +193,7 @@
 #MSG_SELFTEST_ENDSTOPS c=20
 "Endstops"
 
-#MSG_STACK_ERROR c=20 r=4
-"Error - static memory has been overwritten"
-
-#MSG_CUT_FILAMENT c=16
+#MSG_CUT_FILAMENT c=17
 "Cut filament"
 
 #MSG_CUTTER c=9
@@ -214,7 +211,7 @@
 #MSG_ERROR c=10
 "ERROR:"
 
-#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
+#MSG_EXTRUDER_FAN_SPEED c=16
 "Extruder fan:"
 
 #MSG_INFO_EXTRUDER c=18
@@ -253,7 +250,7 @@
 #MSG_NOT_LOADED c=19
 "Filament not loaded"
 
-#MSG_FILAMENT_SENSOR c=20
+#MSG_SELFTEST_FILAMENT_SENSOR c=17
 "Filament sensor"
 
 #MSG_FILAMENT_USED c=19
@@ -283,11 +280,11 @@
 #MSG_FLOW c=15
 "Flow"
 
-#MSG_SELFTEST_COOLING_FAN c=20
+#MSG_SELFTEST_PART_FAN c=20
 "Front print fan?"
 
 #MSG_BED_CORRECTION_FRONT c=14
-"Front side[um]"
+"Front side[\xe4m]"
 
 #MSG_SELFTEST_FANS c=20
 "Front/left fans"
@@ -337,11 +334,8 @@
 #MSG_SELFTEST_CHECK_Z c=20
 "Checking Z axis"
 
-#MSG_CHOOSE_EXTRUDER c=20
-"Choose extruder:"
-
-#MSG_CHOOSE_FILAMENT c=20
-"Choose filament:"
+#MSG_SELECT_EXTRUDER c=20
+"Select extruder:"
 
 #MSG_FILAMENT c=17
 "Filament"
@@ -352,7 +346,7 @@
 #MSG_WIZARD_Z_CAL c=20 r=8
 "I will run z calibration now."
 
-#MSG_WATCH c=18
+#MSG_INFO_SCREEN c=18
 "Info screen"
 
 #MSG_INSERT_FILAMENT c=20
@@ -383,7 +377,7 @@
 "Left"
 
 #MSG_BED_CORRECTION_LEFT c=14
-"Left side [um]"
+"Left side [\xe4m]"
 
 #MSG_LIN_CORRECTION c=18
 "Lin. correction"
@@ -523,7 +517,7 @@
 #MSG_WIZARD_WILL_PREHEAT c=20 r=4
 "Now I will preheat nozzle for PLA."
 
-#MSG_NOZZLE c=12
+#MSG_NOZZLE c=10
 "Nozzle"
 
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
@@ -531,9 +525,6 @@
 
 #MSG_REMOVE_TEST_PRINT c=20 r=4
 "Now remove the test print from steel sheet."
-
-#MSG_NOZZLE_FAN c=10
-"Nozzle FAN"
 
 #MSG_PAUSE_PRINT c=18
 "Pause print"
@@ -610,7 +601,7 @@
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press the knob to preheat nozzle and continue."
 
-#MSG_FS_PAUSE c=5
+#MSG_PAUSE c=5
 "Pause"
 
 #MSG_POWER_FAILURES c=15
@@ -625,7 +616,7 @@
 #MSG_PREHEATING_TO_UNLOAD c=20
 "Preheating to unload"
 
-#MSG_SELFTEST_PRINT_FAN_SPEED c=18
+#MSG_PRINT_FAN_SPEED c=16
 "Print fan:"
 
 #MSG_CARD_MENU c=18
@@ -643,9 +634,6 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 
-#MSG_PRINT_FAN c=10
-"Print FAN"
-
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 "Please insert filament into the extruder, then press the knob to load it."
 
@@ -656,7 +644,7 @@
 "Please load filament first."
 
 #MSG_BED_CORRECTION_REAR c=14
-"Rear side [um]"
+"Rear side [\xe4m]"
 
 #MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 "Please unload the filament first, then repeat this action."
@@ -683,7 +671,7 @@
 "Resuming print"
 
 #MSG_BED_CORRECTION_RIGHT c=14
-"Right side[um]"
+"Right side[\xe4m]"
 
 #MSG_RPI_PORT c=13
 "RPi port"
@@ -724,7 +712,7 @@
 #MSG_SEL_PREHEAT_TEMP c=20 r=6
 "Select nozzle preheat temperature which matches your material."
 
-#MSG_SET_TEMPERATURE c=19
+#MSG_SET_TEMPERATURE c=20
 "Set temperature:"
 
 #MSG_SETTINGS c=18
@@ -799,20 +787,17 @@
 #MSG_SELECT_FILAMENT c=20
 "Select filament:"
 
-#MSG_TEMP_CALIBRATION c=14
-"Temp. cal."
+#MSG_PINDA_CALIBRATION c=13
+"PINDA cal."
 
 #MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 "Select temperature which matches your material."
 
-#MSG_CALIBRATION_PINDA_MENU c=17
-"Temp. calibration"
+#MSG_PINDA_CAL_FAILED c=20 r=4
+"PINDA calibration failed"
 
-#MSG_TEMP_CAL_FAILED c=20 r=8
-"Temperature calibration failed"
-
-#MSG_TEMP_CALIBRATION_DONE c=20 r=12
-"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+#MSG_PINDA_CALIBRATION_DONE c=20 r=8
+"PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."
 
 #MSG_FS_VERIFIED c=20 r=3
 "Sensor verified, remove the filament now."
@@ -844,7 +829,7 @@
 #MSG_TO_UNLOAD_FIL c=20
 "to unload filament"
 
-#MSG_UNLOAD_FILAMENT c=16
+#MSG_UNLOAD_FILAMENT c=18
 "Unload filament"
 
 #MSG_UNLOADING_FILAMENT c=20
@@ -852,9 +837,6 @@
 
 #MSG_TOTAL c=6
 "Total"
-
-#MSG_USED c=19
-"Used during print"
 
 #MSG_MENU_VOLTAGES c=15
 "Voltages"
@@ -895,7 +877,7 @@
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 "XYZ calibration failed. Please consult the manual."
 
-#MSG_YES c=3
+#MSG_YES c=4
 "Yes"
 
 #MSG_WIZARD_QUIT c=20 r=8

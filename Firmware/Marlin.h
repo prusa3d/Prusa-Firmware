@@ -236,9 +236,11 @@ void update_currents();
 void get_coordinates();
 void prepare_move();
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
-void Stop();
-bool IsStopped();
 void finishAndDisableSteppers();
+
+void UnconditionalStop(); // Stop heaters, motion and clear current print status
+void Stop();              // Emergency stop used by overtemp functions which allows recovery
+bool IsStopped();         // Returns true if the print has been stopped
 
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
@@ -246,7 +248,7 @@ void finishAndDisableSteppers();
 //put an ASCII command at the begin of the current buffer, read from flash
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
 
-void prepare_arc_move(char isclockwise);
+void prepare_arc_move(bool isclockwise);
 void clamp_to_software_endstops(float target[3]);
 void refresh_cmd_timeout(void);
 
@@ -350,7 +352,6 @@ extern unsigned long t_fan_rising_edge;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
-extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
 extern uint8_t saved_printing_type;
@@ -497,6 +498,7 @@ void marlin_wait_for_click();
 void raise_z_above(float target, bool plan=true);
 
 extern "C" void softReset();
+void stack_error();
 
 extern uint32_t IP_address;
 

@@ -67,7 +67,7 @@ bool has_temperature_compensation();
 #endif
 
 #ifdef AMBIENT_THERMISTOR
-//extern int current_temperature_raw_ambient;
+extern int current_temperature_raw_ambient;
 extern float current_temperature_ambient;
 #endif
 
@@ -220,7 +220,7 @@ FORCE_INLINE bool isCoolingBed() {
 #define CHECK_ALL_HEATERS (checkAllHotends()||(target_temperature_bed!=0))
 
 int getHeaterPower(int heater);
-void disable_heater();
+void disable_heater(); // Disable all heaters
 void updatePID();
 
 
