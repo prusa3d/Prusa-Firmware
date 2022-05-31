@@ -3566,101 +3566,86 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     else
         unload_filament(true); // unload filament for single material (used also in M702)
     st_synchronize();          // finish moves
-
-#ifdef FILAMENT_SENSOR
-    fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
-    fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
-#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-    fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
-#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-#endif
-
-    if (!MMU2::mmu2.Enabled()) {
-        KEEPALIVE_STATE(PAUSED_FOR_USER);
-        lcd_change_fil_state =
-            lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, LCD_LEFT_BUTTON_CHOICE); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
-        if (lcd_change_fil_state == LCD_MIDDLE_BUTTON_CHOICE) {
-            lcd_clear();
-            lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
-            current_position[X_AXIS] -= 100;
-            plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
-            st_synchronize();
-            lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=5
-        }
-    }
-
-    if (MMU2::mmu2.Enabled()) {
-        if (!automatic) {
-            if (saved_printing){
-                // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
-                MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
-            }
-            mmu_M600_wait_and_beep();
-            if (saved_printing) {
+    {
+        FSensorBlockRunout fsBlockRunout;
+        
+        if (!MMU2::mmu2.Enabled()) {
+            KEEPALIVE_STATE(PAUSED_FOR_USER);
+            lcd_change_fil_state =
+                lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, LCD_LEFT_BUTTON_CHOICE); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
+            if (lcd_change_fil_state == LCD_MIDDLE_BUTTON_CHOICE) {
                 lcd_clear();
                 lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
-//@@TODO                mmu_command(MmuCmd::R0);
-//                manage_response(false, false);
+                current_position[X_AXIS] -= 100;
+                plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
+                st_synchronize();
+                lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=5
             }
         }
-        mmu_M600_load_filament(automatic, HotendTempBckp);
-    } else
-        M600_load_filament();
-
-    if (!automatic)
-        M600_check_state(HotendTempBckp);
-
-    lcd_update_enable(true);
-
-    // Not let's go back to print
-    fanSpeed = fanSpeedBckp;
-
-    // Feed a little of filament to stabilize pressure
-    if (!automatic) {
-        current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
+    
+        if (MMU2::mmu2.Enabled()) {
+            if (!automatic) {
+                if (saved_printing){
+                    // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
+                    MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
+                }
+                mmu_M600_wait_and_beep();
+                if (saved_printing) {
+                    lcd_clear();
+                    lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
+//@@TODO                mmu_command(MmuCmd::R0);
+//                manage_response(false, false);
+                }
+            }
+            mmu_M600_load_filament(automatic, HotendTempBckp);
+        } else
+            M600_load_filament();
+    
+        if (!automatic)
+            M600_check_state(HotendTempBckp);
+    
+        lcd_update_enable(true);
+    
+        // Not let's go back to print
+        fanSpeed = fanSpeedBckp;
+    
+        // Feed a little of filament to stabilize pressure
+        if (!automatic) {
+            current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
+        }
+    
+        // Move XY back
+        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+        st_synchronize();
+        // Move Z back
+        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
+        st_synchronize();
+    
+        // Set E position to original
+        plan_set_e_position(lastpos[E_AXIS]);
+    
+        memcpy(current_position, lastpos, sizeof(lastpos));
+        set_destination_to_current();
+    
+        // Recover feed rate
+        feedmultiply = feedmultiplyBckp;
+        char cmd[9];
+        sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
+        enquecommand(cmd);
+        
     }
-
-    // Move XY back
-    plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
-    st_synchronize();
-    // Move Z back
-    plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
-    st_synchronize();
-
-    // Set E position to original
-    plan_set_e_position(lastpos[E_AXIS]);
-
-    memcpy(current_position, lastpos, sizeof(lastpos));
-    set_destination_to_current();
-
-    // Recover feed rate
-    feedmultiply = feedmultiplyBckp;
-    char cmd[9];
-    sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
-    enquecommand(cmd);
-
-#ifdef FILAMENT_SENSOR
-    fsensor.settings_init();
-#endif
-
+    
     lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 }
 
 void gcode_M701(uint8_t mmuSlotIndex){
     printf_P(PSTR("gcode_M701 begin\n"));
-
-#ifdef FILAMENT_SENSOR
-    fsensor.setRunoutEnabled(false);   // suppress filament runouts while loading filament.
-    fsensor.setAutoLoadEnabled(false); // suppress filament autoloads while loading filament.
-#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-    fsensor.setJamDetectionEnabled(false); // suppress filament jam detection while loading filament.
-#endif                                     //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-#endif
-
-		prusa_statistics(22);
-	}
+    
+    FSensorBlockRunout fsBlockRunout;
+    
+    prusa_statistics(22);
 
     if (MMU2::mmu2.Enabled() && mmuSlotIndex < MMU_FILAMENT_COUNT) {
         MMU2::mmu2.load_filament(mmuSlotIndex); // loads current extruder
@@ -3698,10 +3683,6 @@ void gcode_M701(uint8_t mmuSlotIndex){
     }
 
     eFilamentAction = FilamentAction::None;
-
-#ifdef FILAMENT_SENSOR
-    fsensor.settings_init(); // restore filament runout state.
-#endif
 }
 /**
  * @brief Get serial number from 32U2 processor

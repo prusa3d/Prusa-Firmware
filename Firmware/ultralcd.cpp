@@ -5196,14 +5196,7 @@ void unload_filament(bool automatic)
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
-#ifdef FILAMENT_SENSOR
-	fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
-	fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
-#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-	fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
-#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-#endif
-
+    FSensorBlockRunout fsBlockRunout;
     raise_z_above(automatic? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
 
 	//		extr_unload2();
@@ -5241,10 +5234,6 @@ void unload_filament(bool automatic)
 	custom_message_type = CustomMsg::Status;
 
 	eFilamentAction = FilamentAction::None;
-
-#ifdef FILAMENT_SENSOR
-	fsensor.settings_init(); //restore filament runout state.
-#endif
 }
 
 #include "xflash.h"
@@ -6209,8 +6198,7 @@ void printf_IRSensorAnalogBoardChange(){
 static bool lcd_selftest_IRsensor(bool bStandalone)
 {
     bool ret = false;
-    fsensor.setAutoLoadEnabled(false);
-    fsensor.setRunoutEnabled(false);
+    FSensorBlockRunout fsBlockRunout;
     IR_sensor_analog::SensorRevision oldSensorRevision = fsensor.getSensorRevision();
     IR_sensor_analog::SensorRevision newSensorRevision;
     uint16_t volt_IR_int = fsensor.getVoltRaw();
@@ -6236,7 +6224,6 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
     }
     ret = true;
 exit:
-    fsensor.settings_init();
     return ret;
 }
 

@@ -198,7 +198,7 @@ bool MMU2::tool_change(uint8_t index) {
 
     if (index != extruder) {
         ReportingRAII rep(CommandInProgress::ToolChange);
-        BlockRunoutRAII blockRunout;
+        FSensorBlockRunout blockRunout;
 
         st_synchronize();
 
@@ -227,7 +227,7 @@ bool MMU2::tool_change(char code, uint8_t slot) {
     if( ! WaitForMMUReady())
         return false;
 
-    BlockRunoutRAII blockRunout;
+    FSensorBlockRunout blockRunout;
 
     switch (code) {
     case '?': {
@@ -333,7 +333,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
     {
         // used for MMU-menu operation "Load to Nozzle"
         ReportingRAII rep(CommandInProgress::ToolChange);
-        BlockRunoutRAII blockRunout;
+        FSensorBlockRunout blockRunout;
 
         if( extruder != MMU2_NO_TOOL ){ // we already have some filament loaded - free it + shape its tip properly
             filament_ramming();

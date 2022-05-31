@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include "Filament_sensor.h"
 
 namespace MMU2 {
 
@@ -12,13 +13,5 @@ enum class FilamentState : uint_fast8_t {
 };
 
 FilamentState WhereIsFilament();
-
-/// Can be used to block printer's filament sensor handling - to avoid errorneous injecting of M600
-/// while doing a toolchange with the MMU
-class BlockRunoutRAII {
-public:
-    BlockRunoutRAII();
-    ~BlockRunoutRAII();
-};
 
 } // namespace MMU2
