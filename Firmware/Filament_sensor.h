@@ -11,6 +11,15 @@
 #define FSENSOR_IR_ANALOG 2
 #define FSENSOR_PAT9125 3
 
+/// Can be used to block printer's filament sensor handling - to avoid errorneous injecting of M600
+/// while doing a toolchange with the MMU
+/// In case of "no filament sensor" these methods default to an empty implementation
+class FSensorBlockRunout {
+public:
+    FSensorBlockRunout();
+    ~FSensorBlockRunout();
+};
+
 #ifdef FILAMENT_SENSOR
 class Filament_sensor {
 public:

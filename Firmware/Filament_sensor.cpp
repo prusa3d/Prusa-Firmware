@@ -11,13 +11,29 @@
 #include "ultralcd.h"
 
 #ifdef FILAMENT_SENSOR
-#if FILAMENT_SENSOR_TYPE == FSENSOR_IR
+FSensorBlockRunout::FSensorBlockRunout() {
+    fsensor.setRunoutEnabled(false); //suppress filament runouts while loading filament.
+    fsensor.setAutoLoadEnabled(false); //suppress filament autoloads while loading filament.
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+    fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+}
+
+FSensorBlockRunout::~FSensorBlockRunout() {
+    fsensor.settings_init(); // restore filament runout state.
+}
+
+# if FILAMENT_SENSOR_TYPE == FSENSOR_IR
 IR_sensor fsensor;
-#elif FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG
+# elif FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG
 IR_sensor_analog fsensor;
-#elif FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
+# elif FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
 PAT9125_sensor fsensor;
-#endif
+# endif
+
+#else // FILAMENT_SENSOR
+FSensorBlockRunout::FSensorBlockRunout() { }
+FSensorBlockRunout::~FSensorBlockRunout() { }
 #endif // FILAMENT_SENSOR
 
 void Filament_sensor::setEnabled(bool enabled) {
