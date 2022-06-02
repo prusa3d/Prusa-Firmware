@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: 2021-12-27 19:54+0100\n"
-"PO-Revision-Date: 2022-03-18 18:14+0100\n"
+"PO-Revision-Date: 2022-06-02 14:43+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: sv\n"
@@ -704,7 +704,7 @@ msgstr "M117 Först lager kalibr."
 # MSG_MAIN c=18
 #: messages.c:63
 msgid "Main"
-msgstr "Huvud"
+msgstr "Huvudmeny"
 
 # MSG_BL_HIGH c=12
 #: messages.c:155
