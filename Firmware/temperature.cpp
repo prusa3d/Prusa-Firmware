@@ -2187,7 +2187,8 @@ static void temp_mgr_isr()
 #endif
 
     // PID regulation
-    temp_mgr_pid();
+    if (pid_tuning_finished)
+        temp_mgr_pid();
 }
 
 ISR(TIMER5_COMPA_vect)
