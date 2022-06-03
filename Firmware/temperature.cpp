@@ -85,7 +85,17 @@ float current_temperature_bed = 0.0;
 #ifdef PIDTEMP
   float _Kp, _Ki, _Kd;
   int pid_cycle, pid_number_of_cycles;
-  bool pid_tuning_finished = true;
+  static bool pid_tuning_finished = true;
+
+  bool pidTuningRunning() {
+      return !pid_tuning_finished;
+  }
+
+  void preparePidTuning() {
+      // ensure heaters are disabled before we switch off PID management!
+      disable_heater();
+      pid_tuning_finished = false;
+  }
 #endif //PIDTEMP
   
 unsigned char soft_pwm_bed;
@@ -207,8 +217,9 @@ bool checkAllHotends(void)
 //          codegen bug causing a stack overwrite issue in process_commands()
 void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycles)
 {
+  preparePidTuning();
+
   pid_number_of_cycles = ncycles;
-  pid_tuning_finished = false;
   float input = 0.0;
   pid_cycle=0;
   bool heating = true;
@@ -242,8 +253,6 @@ void __attribute__((noinline)) PID_autotune(float temp, int extruder, int ncycle
         }
 	
   SERIAL_ECHOLNPGM("PID Autotune start");
-  
-  disable_heater(); // switch off all heaters.
 
   if (extruder<0)
   {

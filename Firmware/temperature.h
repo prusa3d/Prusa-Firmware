@@ -84,11 +84,13 @@ extern bool bedPWMDisabled;
 #ifdef PIDTEMP
   extern int pid_cycle, pid_number_of_cycles;
   extern float _Kp,_Ki,_Kd;
-  extern bool pid_tuning_finished;
   float scalePID_i(float i);
   float scalePID_d(float d);
   float unscalePID_i(float i);
   float unscalePID_d(float d);
+
+  bool pidTuningRunning(); // returns true if PID tuning is still running
+  void preparePidTuning(); // non-blocking call to set "pidTuningRunning" to true immediately
 #endif
 
 
