@@ -85,7 +85,7 @@ float current_temperature_bed = 0.0;
 #ifdef PIDTEMP
   float _Kp, _Ki, _Kd;
   int pid_cycle, pid_number_of_cycles;
-  bool pid_tuning_finished = false;
+  bool pid_tuning_finished = true;
 #endif //PIDTEMP
   
 unsigned char soft_pwm_bed;
