@@ -177,7 +177,7 @@ class DropOutFilter {
     StepStatus cause;
     uint8_t occurrences;
 public:
-    static constexpr uint8_t maxOccurrences = 3;
+    static constexpr uint8_t maxOccurrences = 10; // ideally set this to >8 seconds -> 12x heartBeatPeriod
     static_assert (maxOccurrences > 1, "we should really silently ignore at least 1 comm drop out if recovered immediately afterwards");
     DropOutFilter() = default;
     

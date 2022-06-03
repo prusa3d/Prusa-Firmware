@@ -59,8 +59,8 @@ static constexpr E_Step ramming_sequence[] PROGMEM = {
 };
 
 static constexpr E_Step load_to_nozzle_sequence[] PROGMEM = { 
-    { 36.0F,  810.0F / 60.F}, // feed rate = 13.5mm/s - Load fast until filament reach end of nozzle
-    { 30.0F,  198.0F / 60.F}, // feed rate = 3.3mm/s  - Load slower once filament is out of the nozzle
+    { 10.0F,  810.0F / 60.F}, // feed rate = 13.5mm/s - Load fast until filament reach end of nozzle
+    { 25.0F,  198.0F / 60.F}, // feed rate = 3.3mm/s  - Load slower once filament is out of the nozzle
 };
 
 namespace MMU2 {
@@ -198,7 +198,7 @@ bool MMU2::tool_change(uint8_t index) {
 
     if (index != extruder) {
         ReportingRAII rep(CommandInProgress::ToolChange);
-        BlockRunoutRAII blockRunout;
+        FSensorBlockRunout blockRunout;
 
         st_synchronize();
 
@@ -227,7 +227,7 @@ bool MMU2::tool_change(char code, uint8_t slot) {
     if( ! WaitForMMUReady())
         return false;
 
-    BlockRunoutRAII blockRunout;
+    FSensorBlockRunout blockRunout;
 
     switch (code) {
     case '?': {
@@ -333,7 +333,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
     {
         // used for MMU-menu operation "Load to Nozzle"
         ReportingRAII rep(CommandInProgress::ToolChange);
-        BlockRunoutRAII blockRunout;
+        FSensorBlockRunout blockRunout;
 
         if( extruder != MMU2_NO_TOOL ){ // we already have some filament loaded - free it + shape its tip properly
             filament_ramming();
@@ -356,10 +356,6 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         SetActiveExtruder(0);
 
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
-
-        // TODO: The LCD should prompt the user with a full-screen message
-        //       to ask whether the extruder is extruding the correct color.
-        //       This does not apply when the tool change is done via gcode.
         return true;
     }
 }
@@ -632,14 +628,8 @@ void MMU2::ReportError(ErrorCode ec) {
 void MMU2::ReportProgress(ProgressCode pc) {
     ReportProgressHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)pc);
 
-    // Log progress - example: MMU2:P=123 EngageIdler
-    char msg[64];
-    int len = snprintf(msg, sizeof(msg), "MMU2:P=%hu ", (uint16_t)pc);
-    // Append a human readable form of the progress code
-    TranslateProgress((uint16_t)pc, &msg[len], 64 - len);
-
     SERIAL_ECHO_START;
-    SERIAL_ECHOLN(msg);
+    SERIAL_ECHOLNRPGM( ProgressCodeToText((uint16_t)pc) );
 }
 
 void MMU2::OnMMUProgressMsg(ProgressCode pc){
@@ -662,6 +652,7 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
         // Act accordingly - every status change (even the same state)
         switch(pc){
         case ProgressCode::FeedingToBondtech:
+        case ProgressCode::FeedingToFSensor:
             if ( loadFilamentStarted )
             {
                 switch ( WhereIsFilament() )
@@ -672,14 +663,14 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
                     // After the MMU knows the FSENSOR is triggered it will:
                     // 1. Push the filament by additional 30mm (see fsensorToNozzle)
                     // 2. Disengage the idler and push another 5mm.
-                    current_position[E_AXIS] += 30.0f + 5.0f;
+                    current_position[E_AXIS] += 30.0f + 2.0f;
                     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                     break;
                 case FilamentState::NOT_PRESENT:
                     // fsensor not triggered, continue moving extruder
                     if(!blocks_queued())
                     { // Only plan a move if there is no move ongoing
-                        current_position[E_AXIS] += 5.0f;
+                        current_position[E_AXIS] += 2.0f;
                         plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                     }
                     break;

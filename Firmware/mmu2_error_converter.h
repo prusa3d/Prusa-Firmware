@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
+#include "mmu2/buttons.h"
 
 namespace MMU2 {
 
@@ -30,5 +31,12 @@ const char * const PrusaErrorButtonTitle(uint8_t bi);
 
 /// @returns pointer to a PROGMEM string representing the "More" button
 const char * const PrusaErrorButtonMore();
+
+/// Sets the selected button for later pick-up by the MMU state machine.
+/// Used to save the GUI selection/decoupling
+void SetButtonResponse(ButtonOperations rsp);
+
+/// @returns button index/code based on currently processed error/screen
+Buttons ButtonPressed(uint16_t ec);
 
 } // namespace MMU2

@@ -16,10 +16,8 @@ void reset() {
     WRITE(MMU_RST_PIN, 0);
     _delay_us(100);
     WRITE(MMU_RST_PIN, 1);
-#else // SW - send X0 command
-    // mmu_puts_P(PSTR("X0\n"));
-    #error todo send command if hardware pin not available
 #endif
+    // otherwise HW reset is not available
 }
 
 } // namespace MMU2

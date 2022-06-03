@@ -15,12 +15,13 @@ typedef enum : uint16_t {
     ERR_UNDEF = 0,
 
     ERR_MECHANICAL = 100,
-    ERR_MECHANICAL_FINDA_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FINDA_DIDNT_GO_OFF,
-    ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
-    ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
+    ERR_MECHANICAL_FINDA_DIDNT_TRIGGER = 101,
+    ERR_MECHANICAL_FINDA_DIDNT_GO_OFF = 102,
+    ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER = 103,
+    ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF = 104,
 
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE = 105,
+    ERR_MECHANICAL_FSENSOR_TOO_EARLY = 106,
     ERR_MECHANICAL_SELECTOR_CANNOT_HOME = 115,
     ERR_MECHANICAL_SELECTOR_CANNOT_MOVE = 116,
     ERR_MECHANICAL_IDLER_CANNOT_HOME = 125,
@@ -80,6 +81,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER,
     ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE,
+    ERR_MECHANICAL_FSENSOR_TOO_EARLY,
     ERR_MECHANICAL_SELECTOR_CANNOT_HOME,
     ERR_MECHANICAL_SELECTOR_CANNOT_MOVE,
     ERR_MECHANICAL_IDLER_CANNOT_HOME,
@@ -118,6 +120,7 @@ static const char titleFINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA DIDNT GO OF
 static const char titleFSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FSENSOR DIDNT TRIGGER");
 static const char titleFSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FSENSOR DIDNT GO OFF");
 static const char titlePULLEY_CANNOT_MOVE[] PROGMEM_I1 = ISTR("PULLEY CANNOT MOVE");
+static const char titleFSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("FSENSOR TOO EARLY");
 static const char titleSELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("SELECTOR CANNOT MOVE");
 static const char titleSELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("SELECTOR CANNOT HOME");
 static const char titleIDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("IDLER CANNOT MOVE");
@@ -155,6 +158,7 @@ static const char * const errorTitles [] PROGMEM = {
     titleFSENSOR_DIDNT_TRIGGER,
     titleFSENSOR_DIDNT_GO_OFF,
     titlePULLEY_CANNOT_MOVE,
+    titleFSENSOR_TOO_EARLY,
     titleSELECTOR_CANNOT_HOME,
     titleSELECTOR_CANNOT_MOVE,
     titleIDLER_CANNOT_HOME,
@@ -193,6 +197,7 @@ static const char descFINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA didn't switc
 static const char descFSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading filament. Ensure filament reached the fsensor and the sensor works.");
 static const char descFSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works.");
 static const char descPULLEY_STALLED[] PROGMEM_I1 = ISTR("The Pulley motor stalled - Ensure the pulley can move and check the wiring.");
+static const char descFSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly.");
 static const char descSELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly - check for anything blocking its movement.");
 static const char descSELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Selector cannot move - check for anything blocking its movement. Check the wiring is correct.");
 static const char descIDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Idler cannot home properly - check for anything blocking its movement.");
@@ -230,6 +235,7 @@ static const char * const errorDescs[] PROGMEM = {
     descFSENSOR_DIDNT_TRIGGER,
     descFSENSOR_DIDNT_GO_OFF,
     descPULLEY_STALLED,
+    descFSENSOR_TOO_EARLY,
     descSELECTOR_CANNOT_HOME,
     descSELECTOR_CANNOT_MOVE,
     descIDLER_CANNOT_HOME,
@@ -267,7 +273,8 @@ static const char * const errorDescs[] PROGMEM = {
 // 01234567890123456789
 // >bttxt >bttxt >MoreW
 // Therefore at least some of the buttons, which can occur on the screen together, need to be 5-chars long max @@TODO.
-// @@TODO beware - this doesn't correspond to the HW MMU buttons - needs to be discussed
+// Beware - we only have space for 2 buttons on the LCD while the MMU has 3 buttons
+// -> the left button on the MMU is not used/rendered on the LCD (it is also almost unused on the MMU side)
 static const char btnRetry[] PROGMEM_I1 = ISTR("Retry");
 static const char btnContinue[] PROGMEM_I1 = ISTR("Done");
 static const char btnRestartMMU[] PROGMEM_I1 = ISTR("RstMMU");
@@ -289,16 +296,17 @@ static const char * const btnOperation[] PROGMEM = {
 // We have 8 different operations/buttons at this time, so we need at least 4 bits to encode each.
 // Since one of the buttons is always "More", we can skip that one.
 // Therefore we need just 1 byte to describe the necessary buttons for each screen.
-uint8_t constexpr Btns(ButtonOperations b0, ButtonOperations b1){
-    return ((uint8_t)b1) << 4 | ((uint8_t)b0);
+uint8_t constexpr Btns(ButtonOperations bMiddle, ButtonOperations bRight){
+    return ((uint8_t)bRight) << 4 | ((uint8_t)bMiddle);
 }
 
 static const uint8_t errorButtons[] PROGMEM = {
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
+    Btns(ButtonOperations::Retry, ButtonOperations::Continue),
+    Btns(ButtonOperations::Retry, ButtonOperations::Continue),
+    Btns(ButtonOperations::Retry, ButtonOperations::Continue),
+    Btns(ButtonOperations::Retry, ButtonOperations::Continue),
     
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),
