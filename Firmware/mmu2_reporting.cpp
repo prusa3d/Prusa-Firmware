@@ -6,6 +6,7 @@
 #include "ultralcd.h"
 #include "Filament_sensor.h"
 #include "language.h"
+#include "temperature.h"
 
 namespace MMU2 {
 
