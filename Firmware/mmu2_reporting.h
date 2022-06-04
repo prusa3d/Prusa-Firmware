@@ -23,7 +23,7 @@ void BeginReport(CommandInProgress cip, uint16_t ec);
 void EndReport(CommandInProgress cip, uint16_t ec);
 
 /// Called when the MMU sends operation error (even repeatedly)
-void ReportErrorHook(CommandInProgress cip, uint16_t ec);
+void ReportErrorHook(uint16_t ec);
 
 /// Called when the MMU sends operation progress update
 void ReportProgressHook(CommandInProgress cip, uint16_t ec);
