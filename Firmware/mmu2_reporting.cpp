@@ -76,8 +76,9 @@ static void ReportErrorHookStaticRender(uint16_t ec) {
         two_choices = true;
     }
 
-    lcd_clear();
+    lcd_set_custom_characters_nextpage();
     lcd_update_enable(false);
+    lcd_clear();
 
     // Print title and header
     lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
