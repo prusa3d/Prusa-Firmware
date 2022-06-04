@@ -8129,7 +8129,10 @@ Sigma_Exit:
                     break;
                case ClPrintChecking::_Smodel:     // ~ .3
                     if(code_seen('P'))
-                         printer_smodel_check(strchr_pointer);
+                    {
+                        fSetMmuMode(MMU2::mmu2.Enabled());
+                        printer_smodel_check(strchr_pointer);
+                    }
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLNRPGM(sPrinterName);
                     break;
