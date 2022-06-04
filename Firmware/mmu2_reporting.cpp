@@ -53,7 +53,7 @@ static void ReportErrorHookDynamicRender(void)
  * @brief Renders any characters that are static on the MMU error screen i.e. they don't change.
  * @param[in] ec Error code
  */
-static void ReportErrorHookStaticRender(uint16_t ec) {
+static void ReportErrorHookStaticRender(uint8_t ei) {
     //! Show an error screen
     //! When an MMU error occurs, the LCD content will look like this:
     //! |01234567890123456789|
@@ -61,7 +61,6 @@ static void ReportErrorHookStaticRender(uint16_t ec) {
     //! |prusa3d.com/ERR04504|     <- URL 20 characters
     //! |FI:1 FS:1  5>3 t201°|     <- status line, t is thermometer symbol
     //! |>Retry  >Done >MoreW|     <- buttons
-    const uint8_t ei = PrusaErrorCodeIndex(ec);
     bool two_choices = false;
 
     // Read and determine what operations should be shown on the menu
@@ -101,9 +100,8 @@ static void ReportErrorHookStaticRender(uint16_t ec) {
  * to exit the error screen. The MMU will raise the menu
  * again if the error is not solved.
  */
-static uint8_t ReportErrorHookMonitor(uint16_t ec) {
+static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     uint8_t ret = 0;
-    const uint8_t ei = PrusaErrorCodeIndex(ec);
     bool two_choices = false;
     static int8_t enc_dif = 0;
 
@@ -211,16 +209,18 @@ void ReportErrorHook(uint16_t ec) {
         ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
     }
 
+    const uint8_t ei = PrusaErrorCodeIndex(ec);
+
     switch ((uint8_t)ReportErrorHookState)
     {
     case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:
-        ReportErrorHookStaticRender(ec);
+        ReportErrorHookStaticRender(ei);
         ReportErrorHookState = ReportErrorHookStates::MONITOR_SELECTION;
         // Fall through
     case (uint8_t)ReportErrorHookStates::MONITOR_SELECTION:
         mmu2.is_mmu_error_monitor_active = true;
         ReportErrorHookDynamicRender(); // Render dynamic characters
-        switch (ReportErrorHookMonitor(ec))
+        switch (ReportErrorHookMonitor(ei))
         {
             case 0:
                 // No choice selected, return to loop()
