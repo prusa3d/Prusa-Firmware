@@ -3214,7 +3214,6 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
 //! @param second_choice text caption of second possible choice. Must be in PROGMEM
 //! @param third_choice text caption of second possible choice. Must be in PROGMEM. When not set to nullptr first_choice and second_choice may not be more than 5 characters long.
 //! @param second_col column on LCD where second_choice starts
-//! @param multiscreen_cb an optional call back that will be called periodically when the printer is paused for user
 //! @retval 0 first choice selected by user
 //! @retval 1 first choice selected by user
 //! @retval 2 third choice selected by user
@@ -3222,7 +3221,7 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
 int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
     const char *const msg, bool allow_timeouting, uint8_t default_selection,
     const char *const first_choice, const char *const second_choice, const char *const third_choice,
-    uint8_t second_col, bool (*lcdHook)()
+    uint8_t second_col
 ) {
     const char *msg_next = msg ? lcd_display_message_fullscreen_P(msg) : NULL;
     bool multi_screen = msg_next != NULL;
@@ -3243,11 +3242,6 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
             delay_keep_alive(50);
             if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS) {
                 return -1;
-            }
-            if (lcdHook){
-                if( lcdHook()) {
-                    return -1;
-                }
             }
             manage_heater();
             manage_inactivity(true);
