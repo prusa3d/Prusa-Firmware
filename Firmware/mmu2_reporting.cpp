@@ -199,11 +199,9 @@ enum ReportErrorHookStates ReportErrorHookState;
 /**
  * @brief Render MMU error screen on the LCD. This must be non-blocking
  * and allow the MMU and printer to communicate with each other.
- * @param[in] cip Command in progress
  * @param[in] ec Error code
  */
-void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
-    
+void ReportErrorHook(uint16_t ec) {
     switch ((uint8_t)ReportErrorHookState)
     {
     case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:
@@ -211,6 +209,7 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
         ReportErrorHookState = ReportErrorHookStates::MONITOR_SELECTION;
         // Fall through
     case (uint8_t)ReportErrorHookStates::MONITOR_SELECTION:
+        mmu2.is_mmu_error_monitor_active = true;
         ReportErrorHookDynamicRender(); // Render dynamic characters
         switch (ReportErrorHookMonitor(ec))
         {
@@ -227,6 +226,7 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
                 lcd_update_enable(true);
                 lcd_return_to_status();
                 // Reset the state in case a new error is reported
+                mmu2.is_mmu_error_monitor_active = false;
                 ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
                 break;
             default:
