@@ -190,8 +190,9 @@ static uint8_t ReportErrorHookMonitor(uint16_t ec) {
 }
 
 enum class ReportErrorHookStates : uint8_t {
-    RENDER_ERROR_SCREEN = 0,
-    MONITOR_SELECTION = 1,
+    RENDER_ERROR_SCREEN  = 0,
+    MONITOR_SELECTION    = 1,
+    DISMISS_ERROR_SCREEN = 2,
 };
 
 enum ReportErrorHookStates ReportErrorHookState;
@@ -202,6 +203,14 @@ enum ReportErrorHookStates ReportErrorHookState;
  * @param[in] ec Error code
  */
 void ReportErrorHook(uint16_t ec) {
+    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK)
+    {
+        // If the error code suddenly changes to OK, that means
+        // a button was pushed on the MMU and the LCD should
+        // dismiss the error screen until MMU raises a new error
+        ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
+    }
+
     switch ((uint8_t)ReportErrorHookState)
     {
     case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:
@@ -233,6 +242,14 @@ void ReportErrorHook(uint16_t ec) {
                 break;
         }
         return; // Always return to loop() to let MMU trigger a call to ReportErrorHook again
+        break;
+    case (uint8_t)ReportErrorHookStates::DISMISS_ERROR_SCREEN:
+        lcd_set_custom_characters();
+        lcd_update_enable(true);
+        lcd_return_to_status();
+        // Reset the state in case a new error is reported
+        mmu2.is_mmu_error_monitor_active = false;
+        ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
         break;
     default:
         break;
