@@ -23,6 +23,10 @@ void EndReport(CommandInProgress cip, uint16_t ec) {
     custom_message_type = CustomMsg::Status;
 }
 
+/**
+ * @brief Renders any characters that will be updated live on the MMU error screen.
+ *Currently, this is FINDA and Filament Sensor status and Extruder temperature.
+ */
 static void ReportErrorHookDynamicRender(void)
 {
     lcd_set_cursor(3, 2);
@@ -45,6 +49,10 @@ static void ReportErrorHookDynamicRender(void)
     lcd_printf_P(PSTR("%d"), (int)(degHotend(0) + 0.5));
 }
 
+/**
+ * @brief Renders any characters that are static on the MMU error screen i.e. they don't change.
+ * @param[in] ec Error code
+ */
 static void ReportErrorHookStaticRender(uint16_t ec) {
     //! Show an error screen
     //! When an MMU error occurs, the LCD content will look like this:
@@ -82,7 +90,18 @@ static void ReportErrorHookStaticRender(uint16_t ec) {
     lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 10 : 7, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
 }
 
+/**
+ * @brief Monitors the LCD button selection without blocking MMU communication
+ * @param[in] ec Error code
+ * @return 0 if there is no knob click --
+ * 1 if user clicked 'More' and firmware should render
+ * the error screen when ReportErrorHook is called next --
+ * 2 if the user selects an operation and we would like
+ * to exit the error screen. The MMU will raise the menu
+ * again if the error is not solved.
+ */
 static uint8_t ReportErrorHookMonitor(uint16_t ec) {
+    uint8_t ret = 0;
     const uint8_t ei = PrusaErrorCodeIndex(ec);
     bool two_choices = false;
     static int8_t enc_dif = 0;
@@ -144,14 +163,9 @@ static uint8_t ReportErrorHookMonitor(uint16_t ec) {
     if (lcd_clicked()) {
         Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
         choice_selected = current_selection;
-
-        // Reset current_selection
-        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
-    }
-
-    // return to loop()
-    if (choice_selected == -1) { // No selection, continue monitoring
-        return 0;
+    } else {
+        // continue monitoring
+        return ret;
     }
 
     if ((two_choices && choice_selected == LCD_MIDDLE_BUTTON_CHOICE)      // Two choices and middle button selected
@@ -159,22 +173,19 @@ static uint8_t ReportErrorHookMonitor(uint16_t ec) {
     {
         // 'More' show error description
         lcd_show_fullscreen_message_and_wait_P(_T(PrusaErrorDesc(ei)));
-        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
-        choice_selected = -1;
-        return 1;
-
-        // Return back to the choice menu
+        ret = 1;
     } else if(choice_selected == LCD_MIDDLE_BUTTON_CHOICE) {
         SetButtonResponse((ButtonOperations)button_op_right);
-        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
-        choice_selected = -1;
-        return 2;
+        ret = 2;
     } else {
         SetButtonResponse((ButtonOperations)button_op_middle);
-        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
-        choice_selected = -1;
-        return 2;
+        ret = 2;
     }
+
+    // Reset static variables to their default value
+    current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
+    choice_selected = -1;
+    return ret;
 }
 
 enum class ReportErrorHookStates : uint8_t {
@@ -184,12 +195,17 @@ enum class ReportErrorHookStates : uint8_t {
 
 enum ReportErrorHookStates ReportErrorHookState;
 
+/**
+ * @brief Render MMU error screen on the LCD. This must be non-blocking
+ * and allow the MMU and printer to communicate with each other.
+ * @param[in] cip Command in progress
+ * @param[in] ec Error code
+ */
 void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
     
     switch ((uint8_t)ReportErrorHookState)
     {
     case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:
-        // START
         ReportErrorHookStaticRender(ec);
         ReportErrorHookState = ReportErrorHookStates::MONITOR_SELECTION;
         // Fall through
