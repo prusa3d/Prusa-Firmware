@@ -51,7 +51,7 @@ static void ReportErrorHookDynamicRender(void)
 
 /**
  * @brief Renders any characters that are static on the MMU error screen i.e. they don't change.
- * @param[in] ec Error code
+ * @param[in] ei Error code index
  */
 static void ReportErrorHookStaticRender(uint8_t ei) {
     //! Show an error screen
@@ -92,7 +92,7 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
 
 /**
  * @brief Monitors the LCD button selection without blocking MMU communication
- * @param[in] ec Error code
+ * @param[in] ei Error code index
  * @return 0 if there is no knob click --
  * 1 if user clicked 'More' and firmware should render
  * the error screen when ReportErrorHook is called next --
