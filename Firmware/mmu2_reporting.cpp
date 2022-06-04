@@ -7,6 +7,7 @@
 #include "Filament_sensor.h"
 #include "language.h"
 #include "temperature.h"
+#include "sound.h"
 
 namespace MMU2 {
 
@@ -22,12 +23,8 @@ void EndReport(CommandInProgress cip, uint16_t ec) {
     custom_message_type = CustomMsg::Status;
 }
 
-// Callback which is called while the printer is
-// waiting for the user to click a button option
-static void ReportErrorHook_cb(void)
+static void ReportErrorHookDynamicRender(void)
 {
-    //TODO: MK3S needs to request an update for the FINDA value
-    //      if we want it to be updated live on the menu screen
     lcd_set_cursor(3, 2);
     lcd_printf_P(PSTR("%d"), mmu2.FindaDetectsFilament());
 
@@ -48,7 +45,7 @@ static void ReportErrorHook_cb(void)
     lcd_printf_P(PSTR("%d"), (int)(degHotend(0) + 0.5));
 }
 
-void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
+static void ReportErrorHookStaticRender(uint16_t ec) {
     //! Show an error screen
     //! When an MMU error occurs, the LCD content will look like this:
     //! |01234567890123456789|
@@ -57,7 +54,6 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
     //! |FI:1 FS:1  5>3 t201°|     <- status line, t is thermometer symbol
     //! |>Retry  >Done >MoreW|     <- buttons
     const uint8_t ei = PrusaErrorCodeIndex(ec);
-    uint8_t choice_selected = 0;
     bool two_choices = false;
 
     // Read and determine what operations should be shown on the menu
@@ -72,40 +68,158 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
         two_choices = true;
     }
 
-back_to_choices:
     lcd_clear();
     lcd_update_enable(false);
 
     // Print title and header
     lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
 
-    // Render the choices and store selection in 'choice_selected'
-    choice_selected = lcd_show_multiscreen_message_with_choices_and_wait_P(
-        NULL, // NULL, since title screen is not in PROGMEM
-        false,
-        two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, // beware - LEFT button on the LCD matches the MIDDLE button on the MMU!
-        _T(PrusaErrorButtonTitle(button_op_middle)),
-        _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)),
-        two_choices ? nullptr : _T(PrusaErrorButtonMore()),
-        two_choices ? 10 : 7 // If two choices, allow the first choice to have more characters
-    );
+    // Render static characters in third line
+    lcd_set_cursor(0, 2);
+    lcd_printf_P(PSTR("FI:  FS:    >  %c   %c"), LCD_STR_THERMOMETER[0], LCD_STR_DEGREE[0]);
+
+    // Render the choices
+    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 10 : 7, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
+}
+
+static uint8_t ReportErrorHookMonitor(uint16_t ec) {
+    const uint8_t ei = PrusaErrorCodeIndex(ec);
+    bool two_choices = false;
+    static int8_t enc_dif = 0;
+
+    // Read and determine what operations should be shown on the menu
+    // Note: uint16_t is used here to avoid compiler warning. uint8_t is only half the size of void*
+    const uint8_t button_operation   = PrusaErrorButtons(ei);
+    const uint8_t button_op_right = BUTTON_OP_RIGHT(button_operation);
+    const uint8_t button_op_middle  = BUTTON_OP_MIDDLE(button_operation);
+
+    // Check if the menu should have three or two choices
+    if (button_op_right == (uint8_t)ButtonOperations::NoOperation){
+        // Two operations not specified, the error menu should only show two choices
+        two_choices = true;
+    }
+
+    static int8_t current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
+    static int8_t choice_selected = -1;
+
+    // Check if knob was rotated
+    if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+        if (two_choices == false) { // third_choice is not nullptr, safe to dereference
+            if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+                // Rotating knob counter clockwise
+                current_selection--;
+            } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
+                // Rotating knob clockwise
+                current_selection++;
+            }
+        } else {
+            if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+                // Rotating knob counter clockwise
+                current_selection = LCD_LEFT_BUTTON_CHOICE;
+            } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
+                // Rotating knob clockwise
+                current_selection = LCD_MIDDLE_BUTTON_CHOICE;
+            }
+        }
+
+        // Update '>' render only
+        lcd_set_cursor(0, 3);
+        lcd_print(current_selection == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
+        if (two_choices == false)
+        {
+            lcd_set_cursor(7, 3);
+            lcd_print(current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
+            lcd_set_cursor(13, 3);
+            lcd_print(current_selection == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
+        } else {
+            lcd_set_cursor(10, 3);
+            lcd_print(current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
+        }
+        // Consume rotation event and make feedback sound
+        enc_dif = lcd_encoder_diff;
+        Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+    }
+
+    // Check if knob was clicked and consume the event
+    if (lcd_clicked()) {
+        Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+        choice_selected = current_selection;
+
+        // Reset current_selection
+        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
+    }
+
+    // return to loop()
+    if (choice_selected == -1) { // No selection, continue monitoring
+        return 0;
+    }
 
     if ((two_choices && choice_selected == LCD_MIDDLE_BUTTON_CHOICE)      // Two choices and middle button selected
         || (!two_choices && choice_selected == LCD_RIGHT_BUTTON_CHOICE)) // Three choices and right most button selected
     {
         // 'More' show error description
         lcd_show_fullscreen_message_and_wait_P(_T(PrusaErrorDesc(ei)));
+        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
+        choice_selected = -1;
+        return 1;
 
         // Return back to the choice menu
-        goto back_to_choices;
     } else if(choice_selected == LCD_MIDDLE_BUTTON_CHOICE) {
         SetButtonResponse((ButtonOperations)button_op_right);
+        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
+        choice_selected = -1;
+        return 2;
     } else {
         SetButtonResponse((ButtonOperations)button_op_middle);
+        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
+        choice_selected = -1;
+        return 2;
     }
-    // if any button/command selected, close the screen
-    lcd_update_enable(true);
-    lcd_return_to_status();
+}
+
+enum class ReportErrorHookStates : uint8_t {
+    RENDER_ERROR_SCREEN = 0,
+    MONITOR_SELECTION = 1,
+};
+
+enum ReportErrorHookStates ReportErrorHookState;
+
+void ReportErrorHook(CommandInProgress cip, uint16_t ec) {
+    
+    switch ((uint8_t)ReportErrorHookState)
+    {
+    case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:
+        // START
+        ReportErrorHookStaticRender(ec);
+        ReportErrorHookState = ReportErrorHookStates::MONITOR_SELECTION;
+        // Fall through
+    case (uint8_t)ReportErrorHookStates::MONITOR_SELECTION:
+        ReportErrorHookDynamicRender(); // Render dynamic characters
+        switch (ReportErrorHookMonitor(ec))
+        {
+            case 0:
+                // No choice selected, return to loop()
+                break;
+            case 1:
+                // More button selected, change state
+                ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
+                break;
+            case 2:
+                // Exit error screen and enable lcd updates
+                lcd_set_custom_characters();
+                lcd_update_enable(true);
+                lcd_return_to_status();
+                // Reset the state in case a new error is reported
+                ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
+                break;
+            default:
+                break;
+        }
+        return; // Always return to loop() to let MMU trigger a call to ReportErrorHook again
+        break;
+    default:
+        break;
+    }
 }
 
 void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
