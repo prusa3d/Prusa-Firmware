@@ -3190,7 +3190,7 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 //! @param second_choice text caption of second possible choice
 //! @param second_col column on LCD where second choice is rendered. If third choice is set, this value is hardcoded to 7
 //! @param third_choice text caption of third, optional, choice.
-void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice = nullptr)
+void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice)
 {
     lcd_set_cursor(0, 3);
     lcd_print(selected == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');

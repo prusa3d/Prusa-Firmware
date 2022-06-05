@@ -82,7 +82,8 @@ void WaitForHotendTargetTempBeep(){
 MMU2 mmu2;
 
 MMU2::MMU2()
-    : logic(&mmu2Serial)
+    : is_mmu_error_monitor_active(false)
+    , logic(&mmu2Serial)
     , extruder(MMU2_NO_TOOL)
     , resume_position()
     , resume_hotend_temp(0)
@@ -91,7 +92,6 @@ MMU2::MMU2()
     , mmu_print_saved(false)
     , loadFilamentStarted(false)
     , loadingToNozzle(false)
-    , is_mmu_error_monitor_active(false)
 {
 }
 
