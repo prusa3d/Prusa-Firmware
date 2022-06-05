@@ -64,7 +64,6 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     bool two_choices = false;
 
     // Read and determine what operations should be shown on the menu
-    // Note: uint16_t is used here to avoid compiler warning. uint8_t is only half the size of void*
     const uint8_t button_operation   = PrusaErrorButtons(ei);
     const uint8_t button_op_right = BUTTON_OP_RIGHT(button_operation);
     const uint8_t button_op_middle  = BUTTON_OP_MIDDLE(button_operation);
@@ -106,7 +105,6 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     static int8_t enc_dif = 0;
 
     // Read and determine what operations should be shown on the menu
-    // Note: uint16_t is used here to avoid compiler warning. uint8_t is only half the size of void*
     const uint8_t button_operation   = PrusaErrorButtons(ei);
     const uint8_t button_op_right = BUTTON_OP_RIGHT(button_operation);
     const uint8_t button_op_middle  = BUTTON_OP_MIDDLE(button_operation);
