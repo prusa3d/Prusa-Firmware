@@ -97,7 +97,7 @@ static const char separator[] PROGMEM = "--------------------";
 
 /** forward declarations **/
 
-static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg, uint8_t &nlines);
+static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg);
 // void copy_and_scalePID_i();
 // void copy_and_scalePID_d();
 
@@ -2308,9 +2308,8 @@ void lcd_load_filament_color_check()
 #ifdef FILAMENT_SENSOR
 static void lcd_menu_AutoLoadFilament()
 {
-     uint8_t nlines;
-     lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament is active, just press the knob and insert filament..."),nlines);////MSG_AUTOLOADING_ENABLED c=20 r=4
-     menu_back_if_clicked();
+    lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament is active, just press the knob and insert filament..."));////MSG_AUTOLOADING_ENABLED c=20 r=4
+    menu_back_if_clicked();
 }
 #endif //FILAMENT_SENSOR
 
@@ -3032,10 +3031,9 @@ static inline bool pgm_is_interpunction(const char *c_addr)
  *
  * This function is non-blocking
  * @param msg message to be displayed from PROGMEM
- * @param nlines
  * @return rest of the text (to be displayed on next page)
  */
-static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg, uint8_t &nlines)
+static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
 {
     lcd_set_cursor(0, 0);
     const char *msgend = msg;
@@ -3084,22 +3082,15 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
         lcd_print(LCD_STR_ARROW_2_DOWN[0]);
     }
 
-    nlines = row;
     return multi_screen ? msgend : NULL;
 }
 
-const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
+const char* lcd_display_message_fullscreen_P(const char *msg)
 {
     // Disable update of the screen by the usual lcd_update(0) routine.
     lcd_update_enable(false);
     lcd_clear();
-//	uint8_t nlines;
-    return lcd_display_message_fullscreen_nonBlocking_P(msg, nlines);
-}
-const char* lcd_display_message_fullscreen_P(const char *msg) 
-{
-  uint8_t nlines;
-  return lcd_display_message_fullscreen_P(msg, nlines);
+    return lcd_display_message_fullscreen_nonBlocking_P(msg);
 }
 
 
@@ -3195,7 +3186,7 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 //! @param second_choice text caption of second possible choice
 //! @param second_col column on LCD where second choice is rendered. If third choice is set, this value is hardcoded to 7
 //! @param third_choice text caption of third, optional, choice.
-void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice = nullptr)
+void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice)
 {
     lcd_set_cursor(0, 3);
     lcd_print(selected == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
@@ -3230,7 +3221,7 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
 int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
     const char *const msg, bool allow_timeouting, uint8_t default_selection,
     const char *const first_choice, const char *const second_choice, const char *const third_choice,
-    uint8_t second_col, bool (*lcdHook)()
+    uint8_t second_col
 ) {
     const char *msg_next = msg ? lcd_display_message_fullscreen_P(msg) : NULL;
     bool multi_screen = msg_next != NULL;
@@ -3251,11 +3242,6 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
             delay_keep_alive(50);
             if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS) {
                 return -1;
-            }
-            if (lcdHook){
-                if( lcdHook()) {
-                    return -1;
-                }
             }
             manage_heater();
             manage_inactivity(true);

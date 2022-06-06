@@ -119,7 +119,10 @@ public:
 
     /// @returns current state of FINDA (true=filament present, false=filament not present)
     inline bool FindaDetectsFilament()const { return logic.FindaPressed(); }
-    
+
+    /// @returns Current error code
+    inline ErrorCode MMUCurrentErrorCode() const { return logic.Error(); }
+
     /// @returns the version of the connected MMU FW.
     /// In the future we'll return the trully detected FW version
     Version GetMMUFWVersion()const {
@@ -129,6 +132,9 @@ public:
             return { 0, 0, 0}; 
         }
     }
+
+    // Helper variable to monitor knob in MMU error screen in blocking functions e.g. manage_response
+    bool is_mmu_error_monitor_active;
 
     /// Method to read-only mmu_print_saved
     bool MMU_PRINT_SAVED() const { return mmu_print_saved; }

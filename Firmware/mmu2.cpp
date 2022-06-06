@@ -82,7 +82,8 @@ void WaitForHotendTargetTempBeep(){
 MMU2 mmu2;
 
 MMU2::MMU2()
-    : logic(&mmu2Serial)
+    : is_mmu_error_monitor_active(false)
+    , logic(&mmu2Serial)
     , extruder(MMU2_NO_TOOL)
     , resume_position()
     , resume_hotend_temp(0)
@@ -166,7 +167,14 @@ void MMU2::mmu_loop() {
     avoidRecursion = true;
 
     logicStepLastStatus = LogicStep(); // it looks like the mmu_loop doesn't need to be a blocking call
-    
+
+    if (is_mmu_error_monitor_active)
+    {
+        // Call this every iteration to keep the knob rotation responsive
+        // This includes when mmu_loop is called within manage_response
+        ReportErrorHook((uint16_t)lastErrorCode);
+    }
+
     avoidRecursion = false;
 }
 
@@ -607,7 +615,7 @@ void MMU2::ReportError(ErrorCode ec) {
     // - report only changes of states (we can miss an error message)
     // - may be some combination of MMUAvailable + UseMMU flags and decide based on their state
     // Right now the filtering of MMU_NOT_RESPONDING is done in ReportErrorHook() as it is not a problem if mmu2.cpp
-    ReportErrorHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)ec);
+    ReportErrorHook((uint16_t)ec);
 
     if( ec != lastErrorCode ){ // deduplicate: only report changes in error codes into the log
         lastErrorCode = ec;
