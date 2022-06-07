@@ -56,10 +56,35 @@ StepStatus ProtocolLogic::ProcessUARTByte(uint8_t c) {
     }
 }
 
+// searches for "ok\n" in the incoming serial data (that's the usual response of the old MMU FW)
+struct OldMMUFWDetector {
+    uint8_t ok;
+    inline constexpr OldMMUFWDetector():ok(0) { }
+    
+    enum class State : uint8_t { MatchingPart, SomethingElse, Matched };
+    
+    /// @returns true when "ok\n" gets detected
+    State Detect(uint8_t c){
+        // consume old MMU FW's data if any -> avoid confusion of protocol decoder
+        if(ok == 0 && c == 'o'){
+            ++ok;
+            return State::MatchingPart;
+        } else if(ok == 1 && c == 'k'){
+            ++ok;
+            return State::MatchingPart;
+        } else if(ok == 2 && c == '\n'){
+            return State::Matched;
+        }
+        return State::SomethingElse;
+    }
+};
+
 StepStatus ProtocolLogic::ExpectingMessage(uint32_t timeout) {
     int bytesConsumed = 0;
     int c = -1;
     
+    OldMMUFWDetector oldMMUh4x0r; // old MMU FW hacker ;)
+        
     // try to consume as many rx bytes as possible (until a message has been completed)
     while((c = uart->read()) >= 0){
         ++bytesConsumed;
@@ -72,7 +97,19 @@ StepStatus ProtocolLogic::ExpectingMessage(uint32_t timeout) {
             return MessageReady;
         case DecodeStatus::NeedMoreData:
             break;
-        case DecodeStatus::Error:
+        case DecodeStatus::Error:{
+            // consume old MMU FW's data if any -> avoid confusion of protocol decoder
+            auto old = oldMMUh4x0r.Detect(c);
+            if( old == OldMMUFWDetector::State::Matched ){
+                // hack bad FW version - BEWARE - we silently assume that the first query is an "S0"
+                // The old MMU FW responds with "ok\n" and we fake the response to a bad FW version at this spot
+                rsp = ResponseMsg(RequestMsg(RequestMsgCodes::Version, 0), ResponseMsgParamCodes::Accepted, 0);
+                return MessageReady;
+            } else if( old == OldMMUFWDetector::State::MatchingPart ){
+                break;
+            }
+            }
+            // otherwise [[fallthrough]]
         default:
             RecordUARTActivity(); // something has happened on the UART, update the timeout record
             return ProtocolError;
@@ -394,7 +431,7 @@ void ProtocolLogic::RecordReceivedByte(uint8_t c){
     lrb = (lrb+1) % lastReceivedBytes.size();
 }
 
-char NibbleToChar(uint8_t c){
+constexpr char NibbleToChar(uint8_t c){
     switch (c) {
     case 0:
     case 1:
