@@ -704,15 +704,6 @@ void soft_pwm_init()
 	digitalWrite(MAX6675_SS,1);
   #endif
 
-  timer0_init(); //enables the heatbed timer.
-
-  // timer2 already enabled earlier in the code
-  // now enable the COMPB temperature interrupt
-  OCR2B = 128;
-  ENABLE_SOFT_PWM_INTERRUPT();
-
-  timer4_init(); //for tone and Extruder fan PWM
-
 #ifdef HEATER_0_MINTEMP
   minttemp[0] = HEATER_0_MINTEMP;
   while(analog2temp(minttemp_raw[0], 0) < HEATER_0_MINTEMP) {
@@ -813,6 +804,15 @@ void soft_pwm_init()
 #endif
   }
 #endif //AMBIENT_MAXTEMP
+
+  timer0_init(); //enables the heatbed timer.
+
+  // timer2 already enabled earlier in the code
+  // now enable the COMPB temperature interrupt
+  OCR2B = 128;
+  ENABLE_SOFT_PWM_INTERRUPT();
+
+  timer4_init(); //for tone and Extruder fan PWM
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
