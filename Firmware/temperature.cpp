@@ -447,10 +447,11 @@ enum class TempErrorSource : uint8_t
     ambient,
 };
 
+// thermal error type (in order of decreasing priority!)
 enum class TempErrorType : uint8_t
 {
-    min,
     max,
+    min,
     preheat,
     runaway,
     model,
@@ -485,8 +486,8 @@ void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
     }
 #endif
 
-    // set the initial error source
-    if(!temp_error_state.error) {
+    // set the initial error source to the highest priority error
+    if(!temp_error_state.error || (uint8_t)type < temp_error_state.type) {
         temp_error_state.source = (uint8_t)source;
         temp_error_state.index = index;
         temp_error_state.type = (uint8_t)type;
