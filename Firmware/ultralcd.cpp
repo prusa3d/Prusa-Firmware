@@ -6486,7 +6486,6 @@ void printf_IRSensorAnalogBoardChange(){
 
 static bool lcd_selftest_IRsensor(bool bStandalone)
 {
-    bool ret = false;
     FSensorBlockRunout fsBlockRunout;
     IR_sensor_analog::SensorRevision oldSensorRevision = fsensor.getSensorRevision();
     IR_sensor_analog::SensorRevision newSensorRevision;
@@ -6497,7 +6496,7 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
     if(volt_IR_int < fsensor.IRsensor_Hmin_TRESHOLD){
         if(!bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"HIGH","");
-        goto exit;
+        return false;
     }
     lcd_show_fullscreen_message_and_wait_P(_i("Insert the filament (do not load it) into the extruder and then press the knob."));////MSG_INSERT_FIL c=20 r=6
     volt_IR_int = fsensor.getVoltRaw();
@@ -6505,15 +6504,13 @@ static bool lcd_selftest_IRsensor(bool bStandalone)
     if(volt_IR_int > (fsensor.IRsensor_Lmax_TRESHOLD)){
         if(!bStandalone)
             lcd_selftest_error(TestError::FsensorLevel,"LOW","");
-        goto exit;
+        return false;
     }
     if(newSensorRevision != oldSensorRevision) {
         fsensor.setSensorRevision(newSensorRevision, true);
         printf_IRSensorAnalogBoardChange();
     }
-    ret = true;
-exit:
-    return ret;
+    return true;
 }
 
 static void lcd_detect_IRsensor(){

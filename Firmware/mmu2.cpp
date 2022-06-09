@@ -168,8 +168,7 @@ void MMU2::mmu_loop() {
 
     logicStepLastStatus = LogicStep(); // it looks like the mmu_loop doesn't need to be a blocking call
 
-    if (is_mmu_error_monitor_active)
-    {
+    if (is_mmu_error_monitor_active){
         // Call this every iteration to keep the knob rotation responsive
         // This includes when mmu_loop is called within manage_response
         ReportErrorHook((uint16_t)lastErrorCode);
@@ -214,7 +213,15 @@ bool MMU2::tool_change(uint8_t index) {
         manage_response(false, false); // true, true);
         
         // reset current position to whatever the planner thinks it is
+//        SERIAL_ECHOPGM("TC1:p=");
+//        SERIAL_ECHO(position[E_AXIS]);
+//        SERIAL_ECHOPGM("TC1:cp=");
+//        SERIAL_ECHOLN(current_position[E_AXIS]);
         plan_set_e_position(current_position[E_AXIS]);
+//        SERIAL_ECHOPGM("TC2:p=");
+//        SERIAL_ECHO(position[E_AXIS]);
+//        SERIAL_ECHOPGM("TC2:cp=");
+//        SERIAL_ECHOLN(current_position[E_AXIS]);
 
         extruder = index; //filament change is finished
         SetActiveExtruder(0);
@@ -355,7 +362,15 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
 
         // reset current position to whatever the planner thinks it is
         st_synchronize();
+//        SERIAL_ECHOPGM("LFTN1:p=");
+//        SERIAL_ECHO(position[E_AXIS]);
+//        SERIAL_ECHOPGM("LFTN1:cp=");
+//        SERIAL_ECHOLN(current_position[E_AXIS]);
         plan_set_e_position(current_position[E_AXIS]);
+//        SERIAL_ECHOPGM("LFTN2:p=");
+//        SERIAL_ECHO(position[E_AXIS]);
+//        SERIAL_ECHOPGM("LFTN2:cp=");
+//        SERIAL_ECHOLN(current_position[E_AXIS]);
 
         // Finish loading to the nozzle with finely tuned steps.
         execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
@@ -371,8 +386,6 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
 bool MMU2::eject_filament(uint8_t index, bool recover) {
     if( ! WaitForMMUReady())
         return false;
-
-    WaitForHotendTargetTempBeep();
 
     ReportingRAII rep(CommandInProgress::EjectFilament);
     current_position[E_AXIS] -= MMU2_FILAMENTCHANGE_EJECT_FEED;
@@ -595,6 +608,8 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
         current_position[E_AXIS] += pgm_read_float(&(step->extrude));
         plan_buffer_line_curposXYZE(pgm_read_float(&(step->feedRate)));
         st_synchronize();
+//        SERIAL_ECHOPGM("EES:");
+//        SERIAL_ECHOLN(position[E_AXIS]);
         step++;
     }
 }
@@ -641,12 +656,12 @@ void MMU2::ReportProgress(ProgressCode pc) {
 }
 
 void MMU2::OnMMUProgressMsg(ProgressCode pc){
-    if( pc != lastProgressCode){
+    if (pc != lastProgressCode) {
         ReportProgress(pc);
         lastProgressCode = pc;
 
         // Act accordingly - one-time handling
-        switch(pc){
+        switch (pc) {
         case ProgressCode::FeedingToBondtech:
             // prepare for the movement of the E-motor
             st_synchronize();
@@ -658,26 +673,27 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
         }
     } else {
         // Act accordingly - every status change (even the same state)
-        switch(pc){
+        switch (pc) {
         case ProgressCode::FeedingToBondtech:
         case ProgressCode::FeedingToFSensor:
-            if ( loadFilamentStarted )
-            {
-                switch ( WhereIsFilament() )
-                {
+            if (loadFilamentStarted) {
+                switch (WhereIsFilament()) {
                 case FilamentState::AT_FSENSOR:
                     // fsensor triggered, finish FeedingToBondtech state
                     loadFilamentStarted = false;
                     // After the MMU knows the FSENSOR is triggered it will:
                     // 1. Push the filament by additional 30mm (see fsensorToNozzle)
                     // 2. Disengage the idler and push another 5mm.
+//                    SERIAL_ECHOPGM("ATF1=");
+//                    SERIAL_ECHO(current_position[E_AXIS]);
                     current_position[E_AXIS] += 30.0f + 2.0f;
                     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+//                    SERIAL_ECHOPGM("ATF2=");
+//                    SERIAL_ECHOLN(current_position[E_AXIS]);
                     break;
                 case FilamentState::NOT_PRESENT:
                     // fsensor not triggered, continue moving extruder
-                    if(!blocks_queued())
-                    { // Only plan a move if there is no move ongoing
+                    if (!blocks_queued()) { // Only plan a move if there is no move ongoing
                         current_position[E_AXIS] += 2.0f;
                         plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                     }

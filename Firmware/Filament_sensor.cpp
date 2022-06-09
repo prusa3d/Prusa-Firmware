@@ -17,10 +17,12 @@ FSensorBlockRunout::FSensorBlockRunout() {
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
     fsensor.setJamDetectionEnabled(false); //suppress filament jam detection while loading filament.
 #endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+//    SERIAL_ECHOLNPGM("FSBlockRunout");
 }
 
 FSensorBlockRunout::~FSensorBlockRunout() {
     fsensor.settings_init(); // restore filament runout state.
+//    SERIAL_ECHOLNPGM("FSUnBlockRunout");
 }
 
 # if FILAMENT_SENSOR_TYPE == FSENSOR_IR
@@ -113,6 +115,7 @@ void Filament_sensor::triggerFilamentInserted() {
 }
 
 void Filament_sensor::triggerFilamentRemoved() {
+//    SERIAL_ECHOLNPGM("triggerFilamentRemoved");
     if (runoutEnabled
         && (eFilamentAction == FilamentAction::None)
         && !saved_printing
@@ -124,7 +127,10 @@ void Filament_sensor::triggerFilamentRemoved() {
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
         )
     ){
-//        filRunout();
+//        SERIAL_ECHOPGM("runoutEnabled="); SERIAL_ECHOLN((int)runoutEnabled);
+//        SERIAL_ECHOPGM("eFilamentAction="); SERIAL_ECHOLN((int)eFilamentAction);
+//        SERIAL_ECHOPGM("saved_printing="); SERIAL_ECHOLN((int)saved_printing);
+        filRunout();
     }
 }
 
@@ -140,6 +146,7 @@ void Filament_sensor::filAutoLoad() {
 }
 
 void Filament_sensor::filRunout() {
+    SERIAL_ECHOLNPGM("filRunout");
     runoutEnabled = false;
     autoLoadEnabled = false;
     stop_and_save_print_to_ram(0, 0);
