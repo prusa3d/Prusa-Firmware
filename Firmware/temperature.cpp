@@ -485,12 +485,16 @@ void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
     }
 #endif
 
-    // set the error state
+    // set the initial error source
+    if(!temp_error_state.error) {
+        temp_error_state.source = (uint8_t)source;
+        temp_error_state.index = index;
+        temp_error_state.type = (uint8_t)type;
+    }
+
+    // always set the error state
     temp_error_state.error = true;
     temp_error_state.assert = true;
-    temp_error_state.source = (uint8_t)source;
-    temp_error_state.index = index;
-    temp_error_state.type = (uint8_t)type;
 }
 
 void handle_temp_error();
