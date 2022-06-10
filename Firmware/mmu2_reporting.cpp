@@ -191,7 +191,7 @@ enum class ReportErrorHookStates : uint8_t {
     DISMISS_ERROR_SCREEN = 2,
 };
 
-enum ReportErrorHookStates ReportErrorHookState;
+enum ReportErrorHookStates ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
 
 /**
  * @brief Render MMU error screen on the LCD. This must be non-blocking
