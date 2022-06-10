@@ -103,7 +103,9 @@ void MMU2::Start() {
 
     mmu2Serial.begin(MMU_BAUD);
 
-    PowerOn();
+    // PowerOn(); we cannot do that on MK3, but at least reset the MMU
+    Reset(ResetForm::ResetPin);
+
     mmu2Serial.flush(); // make sure the UART buffer is clear before starting communication
 
     extruder = MMU2_NO_TOOL;
