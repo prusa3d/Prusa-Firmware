@@ -294,6 +294,19 @@ StepStatus Idle::Step() {
                 logic->SwitchFromIdleToCommand();
                 return Processing;
             }
+            break;
+        case RequestMsgCodes::Reset:
+            // this one is kind of special
+            // we do not transfer to any "running" command (i.e. we stay in Idle),
+            // but in case there is an error reported we must make sure it gets propagated
+            if( logic->rsp.paramCode != ResponseMsgParamCodes::Finished ){
+                logic->errorCode = static_cast<ErrorCode>(logic->rsp.paramValue);
+                SendFINDAQuery(); // continue Idle state without restarting the communication
+                return CommandError;
+            } else {
+                logic->errorCode = ErrorCode::OK;
+            }
+            break;
         default:
             break;
         }
