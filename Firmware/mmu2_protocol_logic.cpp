@@ -271,8 +271,7 @@ StepStatus Idle::Step() {
     switch (state) {
     case State::Ready: // check timeout
         if (logic->Elapsed(heartBeatPeriod)) {
-            logic->SendMsg(RequestMsg(RequestMsgCodes::Query, 0));
-            state = State::QuerySent;
+            SendQuery();
             return Processing;
         }
         break;
@@ -397,6 +396,9 @@ void ProtocolLogic::PlanGenericRequest(RequestMsg rq) {
 bool ProtocolLogic::ActivatePlannedRequest(){
     if( plannedRq.code == RequestMsgCodes::Button ){
         // only issue the button to the MMU and do not restart the state machines
+        // @@TODO - this is not completely correct, but it does the job.
+        // In Idle mode the command part is not active, but we still need button handling in Idle mode (resolve MMU init errors)
+        // -> command.SendButton is not correct, but it sends the message and everything works (for now)
         command.SendButton(plannedRq.value);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
         return true;

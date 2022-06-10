@@ -510,7 +510,7 @@ void MMU2::CheckUserInput(){
         Button(btn);
         break;
     case RestartMMU:
-        Reset(CutThePower);
+        Reset(ResetPin); // we cannot do power cycle on the MK3
         break;
     case StopPrint:
         // @@TODO not sure if we shall handle this high level operation at this spot
@@ -576,14 +576,17 @@ StepStatus MMU2::LogicStep() {
         break;
     case CommandError:
         ReportError(logic.Error());
+        CheckUserInput();
         break;
     case CommunicationTimeout:
         state = xState::Connecting;
         ReportError(ErrorCode::MMU_NOT_RESPONDING);
+        CheckUserInput();
         break;
     case ProtocolError:
         state = xState::Connecting;
         ReportError(ErrorCode::PROTOCOL_ERROR);
+        CheckUserInput();
         break;
     case VersionMismatch:
         StopKeepPowered();
