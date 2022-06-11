@@ -5712,23 +5712,31 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
 	### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#M24:_Start.2Fresume_SD_print">M24: Start/resume SD print</a>
     */
     case 24:
-	  if (isPrintPaused)
-          lcd_resume_print();
-      else
+    if (isPrintPaused)
+      lcd_resume_print();
+    else
+    {
+      if (!card.get_sdpos())
       {
-          if (!card.get_sdpos())
-          {
-              // A new print has started from scratch, reset stats
-              failstats_reset_print();
+        // A new print has started from scratch, reset stats
+        failstats_reset_print();
 #ifndef LA_NOCOMPAT
-              la10c_reset();
+        la10c_reset();
 #endif
-          }
-
-          card.startFileprint();
-          starttime=_millis();
       }
-	  break;
+
+      card.startFileprint();
+      starttime=_millis();
+      if (MMU2::mmu2.Enabled())
+      {
+        if (MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent())
+        { // Filament only half way into the PTFE. Unload the filament.
+          MMU2::mmu2.unload();
+          // Tx and Tc gcodes take care of loading the filament to the nozzle.
+        }
+      }
+    }
+    break;
 
     /*!
 	### M26 - Set SD index <a href="https://reprap.org/wiki/G-code#M26:_Set_SD_position">M26: Set SD position</a>
