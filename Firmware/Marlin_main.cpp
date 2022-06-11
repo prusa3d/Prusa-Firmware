@@ -1044,7 +1044,10 @@ void setup()
 {
 	timer2_init(); // enables functional millis
 
-	MMU2::mmu2.Start();
+	if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
+    {
+        MMU2::mmu2.Start();
+    }
 
 	ultralcd_init();
 

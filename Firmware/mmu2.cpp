@@ -103,7 +103,7 @@ void MMU2::Start() {
 
     mmu2Serial.begin(MMU_BAUD);
 
-    // PowerOn(); we cannot do that on MK3, but at least reset the MMU
+    PowerOn(); // I repurposed this to serve as our EEPROM disable toggle.
     Reset(ResetForm::ResetPin);
 
     mmu2Serial.flush(); // make sure the UART buffer is clear before starting communication
@@ -117,7 +117,7 @@ void MMU2::Start() {
 
 void MMU2::Stop() {
     StopKeepPowered();
-    PowerOff();
+    PowerOff(); // This also disables the MMU in the EEPROM.
 }
 
 void MMU2::StopKeepPowered(){
@@ -146,6 +146,8 @@ void MMU2::TriggerResetPin(){
 void MMU2::PowerCycle(){
     // cut the power to the MMU and after a while restore it
     // Sadly, MK3/S/+ cannot do this 
+    // NOTE: the below will toggle the EEPROM var. Should we
+    // assert this function is never called in the MK3 FW? Do we even care?
     PowerOff();
     delay_keep_alive(1000);
     PowerOn();
@@ -511,6 +513,10 @@ void MMU2::CheckUserInput(){
         break;
     case RestartMMU:
         Reset(ResetPin); // we cannot do power cycle on the MK3
+        // ... but mmu2_power.cpp knows this and triggers a soft-reset instead.
+        break;
+    case DisableMMU:
+        Stop(); // Poweroff handles updating the EEPROM shutoff.
         break;
     case StopPrint:
         // @@TODO not sure if we shall handle this high level operation at this spot
