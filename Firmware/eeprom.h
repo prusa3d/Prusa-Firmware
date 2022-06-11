@@ -328,7 +328,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D04 3332		| uint8_t	| EEPROM_ECOOL_ENABLE					| ffh 255		| ^						| Disable extruder motor scaling for non-farm print	| LCD menu		| D3 Ax0d04 C1
 | ^					| ^			| ^										| 2ah 42		| ^						| Enable extruder motor scaling for non-farm print	| ^				| D3 Ax0d04 C1
 | 0x0D03 3321		| uint8_t	| EEPROM_FW_CRASH_FLAG					| 01h 1			| ff/00					| Last FW crash reason (dump_crash_reason)			| D21/D22		| D3 Ax0d03 C1
-| 0x0D03 3320		| uint8_t	| EEPROM_FSENSOR_JAM_DETECTION			| 01h 1			| ff/01					| fsensor pat9125 jam detection feature				| LCD menu		| D3 Ax0d02 C1
+| 0x0D02 3320		| uint8_t	| EEPROM_FSENSOR_JAM_DETECTION			| 01h 1			| ff/01					| fsensor pat9125 jam detection feature				| LCD menu		| D3 Ax0d02 C1
+| 0x0D01 3319		| uint8_t	| EEPROM_MMU_ENABLED        			| 01h 1			| ff/01					| MMU enabled                       				| LCD menu		| D3 Ax0d01 C1
 
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
@@ -547,8 +548,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
 #define EEPROM_FSENSOR_JAM_DETECTION (EEPROM_FW_CRASH_FLAG-1) // uint8_t
 
+#define EEPROM_MMU_ENABLED (EEPROM_FSENSOR_JAM_DETECTION-1) // uint8_t
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_FSENSOR_JAM_DETECTION
+#define EEPROM_LAST_ITEM EEPROM_MMU_ENABLED
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

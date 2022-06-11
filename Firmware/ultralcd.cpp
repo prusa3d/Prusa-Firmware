@@ -4664,6 +4664,25 @@ while(0)
 #define SETTINGS_CUTTER
 #endif //MMU_HAS_CUTTER
 
+static void mmu_enable_switch()
+{
+    uint8_t current_state = eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED);
+    // EEPROM update is handled by the stop and start functions.
+    if (current_state)
+    {
+        MMU2::mmu2.Stop();
+    }
+    else
+    {
+        MMU2::mmu2.Start();
+    }
+}
+
+static void mmu_reset()
+{
+    MMU2::mmu2.Reset(MMU2::MMU2::ResetForm::Software);
+}
+
 #ifdef TMC2130
 #define SETTINGS_SILENT_MODE \
 do\
@@ -5112,6 +5131,13 @@ static void lcd_settings_menu()
 	SETTINGS_AUTO_DEPLETE;
 
 	SETTINGS_CUTTER;
+
+    MENU_ITEM_TOGGLE_P(PSTR("MMU"), eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED) ? _T(MSG_ON) : _T(MSG_OFF), mmu_enable_switch);
+
+    if (MMU2::mmu2.Enabled())
+    {
+        MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
+    }
 
 	MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
 
