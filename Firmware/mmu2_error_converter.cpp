@@ -247,7 +247,14 @@ Buttons ButtonPressed(uint16_t ec) {
             break;
         }
         break;
-        
+    case ERR_SYSTEM_FW_UPDATE_NEEDED:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::RestartMMU: // "Restart MMU"
+            return DisableMMU;
+        default:
+            break;
+        }
+        break;
     case ERR_SYSTEM_FILAMENT_ALREADY_LOADED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Unload: // "Unload"

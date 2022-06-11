@@ -28,6 +28,7 @@ enum Buttons : uint8_t {
     // performed on the printer's side
     RestartMMU,
     StopPrint,
+    DisableMMU,
     
     NoButton = 0xff // shall be kept last
 };
