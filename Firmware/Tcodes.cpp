@@ -45,7 +45,7 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
 
     if (IsInvalidTCode(strchr_pointer, index)){
         TCodeInvalid();
-    } /*else if (strchr_pointer[index] == 'x'){
+    } else if (strchr_pointer[index] == 'x'){
         // load to bondtech gears; if mmu is not present do nothing
         if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.tool_change(strchr_pointer[index], choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER)));
@@ -53,9 +53,9 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
     } else if (strchr_pointer[index] == 'c'){
         // load from bondtech gears to nozzle (nozzle should be preheated)
         if (MMU2::mmu2.Enabled()) {
-            MMU2::mmu2.tool_change(strchr_pointer[index], 0);
+            MMU2::mmu2.tool_change(strchr_pointer[index], MMU2::mmu2.get_current_tool());
         }
-    }*/ else {
+    } else {
         SChooseFromMenu selectedSlot;
 //        if (strchr_pointer[index] == '?')
 //            selectedSlot = TCodeChooseFromMenu();
