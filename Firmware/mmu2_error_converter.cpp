@@ -249,7 +249,7 @@ Buttons ButtonPressed(uint16_t ec) {
         break;
     case ERR_SYSTEM_FW_UPDATE_NEEDED:
         switch (buttonSelectedOperation) {
-        case ButtonOperations::DisableMMU: // "Restart MMU"
+        case ButtonOperations::DisableMMU: // "Disable"
             return DisableMMU;
         default:
             break;
