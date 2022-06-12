@@ -4817,7 +4817,7 @@ static void lcd_settings_menu()
 
     MENU_ITEM_TOGGLE_P(PSTR("MMU"), eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED) ? _T(MSG_ON) : _T(MSG_OFF), mmu_enable_switch);
 
-    if (MMU2::mmu2.Enabled())
+    if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
     {
         MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
     }
