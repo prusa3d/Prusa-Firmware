@@ -555,6 +555,7 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             st_synchronize(); 
             return;
         case VersionMismatch: // this basically means the MMU will be disabled until reconnected
+            CheckUserInput();
             return;
         case CommunicationTimeout:
         case CommandError:
@@ -597,6 +598,7 @@ StepStatus MMU2::LogicStep() {
     case VersionMismatch:
         StopKeepPowered();
         ReportError(ErrorCode::VERSION_MISMATCH);
+        CheckUserInput();
         break;
     default:
         break;
