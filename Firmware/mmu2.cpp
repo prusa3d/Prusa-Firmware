@@ -214,7 +214,7 @@ bool MMU2::tool_change(uint8_t index) {
         st_synchronize();
 
         logic.ToolChange(index); // let the MMU pull the filament out and push a new one in
-        manage_response(false, false); // true, true);
+        manage_response(true, true);
         
         // reset current position to whatever the planner thinks it is
 //        SERIAL_ECHOPGM("TC1:p=");
@@ -283,7 +283,7 @@ bool MMU2::set_filament_type(uint8_t index, uint8_t type) {
     // cmd_arg = filamentType;
     // command(MMU_CMD_F0 + index);
 
-    manage_response(false, false); // true, true);
+    manage_response(false, false); // true, true); -- Comment: how is it possible for a filament type set to fail?
     
     return true;
 }
@@ -299,7 +299,7 @@ bool MMU2::unload() {
         filament_ramming();
 
         logic.UnloadFilament();
-        manage_response(false, false); // false, true);
+        manage_response(false, true);
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 
         // no active tool
@@ -314,7 +314,7 @@ bool MMU2::cut_filament(uint8_t index){
 
     ReportingRAII rep(CommandInProgress::CutFilament);
     logic.CutFilament(index);
-    manage_response(false, false); // false, true);
+    manage_response(false, true);
     
     return true;
 }
@@ -359,7 +359,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         }
 
         logic.ToolChange(index);
-        manage_response(false, false); // true, true);
+        manage_response(true, true);
 
         // The MMU's idler is disengaged at this point
         // That means the MK3/S now has fully control
@@ -484,6 +484,7 @@ void MMU2::ResumeAndUnPark(bool move_axes, bool turn_off_nozzle) {
                 lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature...")); // better report the event and let the GUI do its work somewhere else
             });
             LogEchoEvent("Hotend temperature reached");
+            lcd_update_enable(true); // temporary hack to stop this locking the printer...
         }
 
         if (move_axes) {
@@ -552,6 +553,7 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
         case Finished: 
             // command/operation completed, let Marlin continue its work
             // the E may have some more moves to finish - wait for them
+            ResumeAndUnPark(move_axes, turn_off_nozzle); // This is needed here otherwise recovery doesn't work.
             st_synchronize(); 
             return;
         case VersionMismatch: // this basically means the MMU will be disabled until reconnected
