@@ -32,7 +32,7 @@ void reset() {
     _delay_us(100);
     WRITE(MMU_RST_PIN, 1);
 #else
-    MMU2::Reset(MMU2::Software);
+    mmu2.Reset(MMU2::Software); // @@TODO needs to be redesigned, this power implementation shall not know anything about the MMU itself
 #endif
     // otherwise HW reset is not available
 }
