@@ -9144,6 +9144,14 @@ Sigma_Exit:
     };
 #endif
 
+#ifdef TEMP_MODEL_LOGGING
+    case 70: {
+        if(code_seen('I'))
+            temp_model_log_enable(code_value_short());
+        break;
+    }
+#endif
+
 #ifdef HEATBED_ANALYSIS
 
     /*!

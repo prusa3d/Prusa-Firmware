@@ -420,6 +420,7 @@
 // model-based temperature check
 #define TEMP_MODEL_CHECK 1
 #define TEMP_MODEL_CHECK_WARN_ONLY 1
+#define TEMP_MODEL_LOGGING 1
 
 /*------------------------------------
  MOTOR CURRENT SETTINGS

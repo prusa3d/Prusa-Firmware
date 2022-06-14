@@ -500,6 +500,11 @@ void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
 
 void handle_temp_error();
 
+#ifdef TEMP_MODEL_LOGGING
+static void temp_model_log_usr();
+static void temp_model_log_isr();
+#endif
+
 void manage_heater()
 {
 #ifdef WATCHDOG
@@ -520,6 +525,10 @@ void manage_heater()
 
     // periodically check fans
     checkFans();
+
+#ifdef TEMP_MODEL_LOGGING
+    temp_model_log_usr();
+#endif
 }
 
 #define PGM_RD_W(x)   (short)pgm_read_word(&x)
@@ -2200,6 +2209,10 @@ static void temp_mgr_isr()
     check_temp_model(); // model-based heater check
 #endif
 
+#ifdef TEMP_MODEL_LOGGING
+    temp_model_log_isr();
+#endif
+
     // PID regulation
     if (pid_tuning_finished)
         temp_mgr_pid();
@@ -2390,4 +2403,76 @@ static void check_temp_model()
             set_temp_error(TempErrorSource::hotend, 0, TempErrorType::model);
     }
 }
+
+#ifdef TEMP_MODEL_LOGGING
+static struct
+{
+    volatile struct
+    {
+        uint32_t stamp;
+        int8_t delta_ms;
+        uint8_t counter;
+        uint8_t cur_pwm;
+        float cur_temp;
+        float cur_amb;
+    } entry;
+
+    uint8_t serial;
+    bool enabled;
+} temp_model_log_buf;
+
+static void temp_model_log_usr()
+{
+    if(!temp_model_log_buf.enabled)
+        return;
+
+    uint8_t counter = temp_model_log_buf.entry.counter;
+    if (counter == temp_model_log_buf.serial)
+        return;
+
+    int8_t delta_ms;
+    uint8_t cur_pwm;
+    float cur_temp;
+    float cur_amb;
+    {
+        TempMgrGuard temp_mgr_guard;
+        delta_ms = temp_model_log_buf.entry.delta_ms;
+        counter = temp_model_log_buf.entry.counter;
+        cur_pwm = temp_model_log_buf.entry.cur_pwm;
+        cur_temp = temp_model_log_buf.entry.cur_temp;
+        cur_amb = temp_model_log_buf.entry.cur_amb;
+    }
+
+    uint8_t d = counter - temp_model_log_buf.serial;
+    temp_model_log_buf.serial = counter;
+
+    printf_P(PSTR("TML %d %d %x %lx %lx\n"), (unsigned)d - 1, (int)delta_ms + 1, (int)cur_pwm,
+        *(unsigned long*)&cur_temp, *(unsigned long*)&cur_amb);
+}
+
+static void temp_model_log_isr()
+{
+    if(!temp_model_log_buf.enabled)
+        return;
+
+    uint32_t stamp = _millis();
+    uint8_t delta_ms = stamp - temp_model_log_buf.entry.stamp - (TEMP_MGR_INTV * 1000);
+    temp_model_log_buf.entry.stamp = stamp;
+
+    ++temp_model_log_buf.entry.counter;
+    temp_model_log_buf.entry.delta_ms = delta_ms;
+    temp_model_log_buf.entry.cur_pwm = soft_pwm[0];
+    temp_model_log_buf.entry.cur_temp = current_temperature_isr[0];
+    temp_model_log_buf.entry.cur_amb = current_temperature_ambient_isr;
+}
+
+void temp_model_log_enable(bool enable)
+{
+    if(enable) {
+        TempMgrGuard temp_mgr_guard;
+        temp_model_log_buf.entry.stamp = _millis();
+    }
+    temp_model_log_buf.enabled = enable;
+}
+#endif
 #endif

@@ -228,6 +228,9 @@ FORCE_INLINE void autotempShutdown(){
 }
 
 void PID_autotune(float temp, int extruder, int ncycles);
+#ifdef TEMP_MODEL_LOGGING
+void temp_model_log_enable(bool enable);
+#endif
 
 #ifdef FAN_SOFT_PWM
 extern unsigned char fanSpeedSoftPwm;
