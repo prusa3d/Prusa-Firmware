@@ -130,7 +130,7 @@ void Filament_sensor::triggerFilamentRemoved() {
 //        SERIAL_ECHOPGM("runoutEnabled="); SERIAL_ECHOLN((int)runoutEnabled);
 //        SERIAL_ECHOPGM("eFilamentAction="); SERIAL_ECHOLN((int)eFilamentAction);
 //        SERIAL_ECHOPGM("saved_printing="); SERIAL_ECHOLN((int)saved_printing);
-        filRunout();
+//        filRunout();
     }
 }
 
