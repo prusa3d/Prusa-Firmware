@@ -1848,6 +1848,11 @@ static void lcd_stack_crash()
 }
 #endif
 
+#ifdef DEBUG_PULLUP_CRASH
+void TestPullupCrash() {
+	PORTF |= 0x01;
+}
+#endif // DEBUG_PULLUP_CRASH
 
 //! @brief Show Support Menu
 //!
@@ -1858,11 +1863,11 @@ static void lcd_stack_crash()
 //! |  3.7.2.-2363       |	c=16
 //! | prusa3d.com        |	MSG_PRUSA3D
 //! | forum.prusa3d.com  |	MSG_PRUSA3D_FORUM
-//! | howto.prusa3d.com  |	MSG_PRUSA3D_HOWTO
+//! | help.prusa3d.com  |	MSG_PRUSA3D_HELP
 //! | --------------     |	STR_SEPARATOR
 //! | 1_75mm_MK3         |	FILAMENT_SIZE
-//! | howto.prusa3d.com  |	ELECTRONICS
-//! | howto.prusa3d.com  |	NOZZLE_TYPE
+//! | help.prusa3d.com  |	ELECTRONICS
+//! | help.prusa3d.com  |	NOZZLE_TYPE
 //! | --------------     |	STR_SEPARATOR
 //! | Date:              |	c=17
 //! | MMM DD YYYY        |	__DATE__
@@ -1966,7 +1971,7 @@ static void lcd_support_menu()
       
   MENU_ITEM_BACK_P(_n("prusa3d.com"));////MSG_PRUSA3D c=18
   MENU_ITEM_BACK_P(_n("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=18
-  MENU_ITEM_BACK_P(_n("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO c=18
+  MENU_ITEM_BACK_P(_n("help.prusa3d.com"));////MSG_PRUSA3D_HELP c=18
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR(FILAMENT_SIZE));
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
@@ -2058,7 +2063,6 @@ static void lcd_support_menu()
 #endif /* DEBUG_BUILD */
 
   #endif //MK1BP
-
   MENU_END();
 }
 
@@ -8977,7 +8981,11 @@ void lcd_experimental_menu()
 #ifdef TMC2130
     MENU_ITEM_TOGGLE_P(_N("E-cool mode"), UserECoolEnabled()?_T(MSG_ON):_T(MSG_OFF), UserECool_toggle);////MSG_MENU_ECOOL c=18
 #endif
-
+    
+#ifdef DEBUG_PULLUP_CRASH
+    MENU_ITEM_FUNCTION_P(_N("Test Pullup Crash"), TestPullupCrash);
+#endif // DEBUG_PULLUP_CRASH
+    
 #ifdef PRUSA_SN_SUPPORT
     MENU_ITEM_FUNCTION_P(_N("Fake serial number"), WorkaroundPrusaSN);////MSG_WORKAROUND_PRUSA_SN c=18
 #endif //PRUSA_SN_SUPPORT

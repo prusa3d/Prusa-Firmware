@@ -8,6 +8,8 @@ enum class dump_crash_reason : uint8_t
     stack_error,
     watchdog,
     bad_isr,
+    bad_pullup_temp_isr,
+    bad_pullup_step_isr,
 };
 
 #ifdef XFLASH_DUMP
