@@ -295,6 +295,7 @@ bool MMU2::unload() {
     WaitForHotendTargetTempBeep();
 
     {
+        FSensorBlockRunout blockRunout;
         ReportingRAII rep(CommandInProgress::UnloadFilament);
         filament_ramming();
 
