@@ -1855,7 +1855,7 @@ msgstr ""
 "Skiva %.7s\n"
 "Z offset: %+1.3fmm\n"
 "%cFortsätta\n"
-"%cAterställ"
+"%cÅterställ"
 
 #. MSG_SHOW_END_STOPS c=18
 #: ../../Firmware/ultralcd.cpp:5785
