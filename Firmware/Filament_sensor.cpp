@@ -117,6 +117,7 @@ void Filament_sensor::triggerFilamentInserted() {
 void Filament_sensor::triggerFilamentRemoved() {
 //    SERIAL_ECHOLNPGM("triggerFilamentRemoved");
     if (runoutEnabled
+        && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts just before the toolchange
         && (eFilamentAction == FilamentAction::None)
         && !saved_printing
         && (
@@ -130,7 +131,7 @@ void Filament_sensor::triggerFilamentRemoved() {
 //        SERIAL_ECHOPGM("runoutEnabled="); SERIAL_ECHOLN((int)runoutEnabled);
 //        SERIAL_ECHOPGM("eFilamentAction="); SERIAL_ECHOLN((int)eFilamentAction);
 //        SERIAL_ECHOPGM("saved_printing="); SERIAL_ECHOLN((int)saved_printing);
-//        filRunout();
+        filRunout();
     }
 }
 
@@ -146,7 +147,7 @@ void Filament_sensor::filAutoLoad() {
 }
 
 void Filament_sensor::filRunout() {
-    SERIAL_ECHOLNPGM("filRunout");
+//    SERIAL_ECHOLNPGM("filRunout");
     runoutEnabled = false;
     autoLoadEnabled = false;
     stop_and_save_print_to_ram(0, 0);
