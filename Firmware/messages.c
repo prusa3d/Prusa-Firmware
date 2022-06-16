@@ -8,7 +8,7 @@
 #include "Configuration_prusa.h"
 
 //internationalized messages
-const char MSG_AUTO_HOME[] PROGMEM_I1 = ISTR("Auto home"); ////MSG_AUTO_HOMEc=18
+const char MSG_AUTO_HOME[] PROGMEM_I1 = ISTR("Auto home"); ////MSG_AUTO_HOME c=18
 const char MSG_BABYSTEP_Z[] PROGMEM_I1 = ISTR("Live adjust Z"); ////MSG_BABYSTEP_Z c=18
 const char MSG_BABYSTEP_Z_NOT_SET[] PROGMEM_I1 = ISTR("Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."); ////MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 const char MSG_BED[] PROGMEM_I1 = ISTR("Bed"); ////MSG_BED c=13
@@ -162,16 +162,16 @@ const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////MSG_DIM c=6
 const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////MSG_AUTO c=6
 #ifdef IR_SENSOR_ANALOG
 // Beware - the space at the beginning is necessary since it is reused in LCD menu items which are to be with a space
-const char MSG_IR_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////c=18
-const char MSG_IR_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////c=18
-const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////c=18
+const char MSG_IR_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////MSG_IR_04_OR_NEWER c=18
+const char MSG_IR_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////MSG_IR_03_OR_OLDER c=18
+const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////MSG_IR_UNKNOWN c=18
 #endif
 
 //not internationalized messages
-const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = ISTR("SpoolJoin"); ////c=13
-const char MSG_FIRMWARE[] PROGMEM_N1 = ISTR("Firmware"); ////c=8
-const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = ISTR("FlashAir"); ////c=8
-const char MSG_PINDA[] PROGMEM_N1 = ISTR("PINDA");////c=5
+const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = ISTR("SpoolJoin"); ////MSG_AUTO_DEPLETE c=13
+const char MSG_FIRMWARE[] PROGMEM_N1 = ISTR("Firmware"); ////MSG_FIRMWARE c=8
+const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = ISTR("FlashAir"); ////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
+const char MSG_PINDA[] PROGMEM_N1 = ISTR("PINDA");////MSG_PINDA c=5
 const char WELCOME_MSG[] PROGMEM_N1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////

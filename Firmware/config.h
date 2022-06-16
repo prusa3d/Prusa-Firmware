@@ -60,6 +60,10 @@
 
 #define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes). Maximum 32768 bytes
 
+#if (LANG_SIZE_RESERVED % 256)
+  #error "LANG_SIZE_RESERVED should be a multiple of a page size"
+#endif
+
 //Community language support
 #define COMMUNITY_LANG_GROUP 1
 
@@ -81,6 +85,7 @@
 #if (COMMUNITY_LANG_GROUP >=1 )
 #define COMMUNITY_LANGUAGE_SUPPORT
 #endif
+
 // Sanity checks for correct configuration of XFLASH_DUMP options
 #if defined(XFLASH_DUMP) && !defined(XFLASH)
 #error "XFLASH_DUMP requires XFLASH support"

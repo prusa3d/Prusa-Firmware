@@ -1580,7 +1580,7 @@ static void lcd_menu_fails_stats_print()
                       " %-7.7S X %-3d Y %-3d"),
                  _T(MSG_LAST_PRINT_FAILURES),
                  _T(MSG_POWER_FAILURES), power,
-                 _i("Runouts"), filam, fsensor_softfail, //MSG_RUNOUTS c=7
+                 _i("Runouts"), filam, fsensor_softfail, ////MSG_RUNOUTS c=7
                  _T(MSG_CRASH), crashX, crashY);
 #endif
     menu_back_if_clicked_fb();
@@ -1714,7 +1714,7 @@ static void lcd_menu_temperatures()
     lcd_menu_temperatures_line( _T(MSG_NOZZLE), (int)current_temperature[0] );
     lcd_menu_temperatures_line( _T(MSG_BED), (int)current_temperature_bed );
 #ifdef AMBIENT_THERMISTOR
-    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT
+    lcd_menu_temperatures_line( _i("Ambient"), (int)current_temperature_ambient );  ////MSG_AMBIENT c=14
 #endif //AMBIENT_THERMISTOR
 #ifdef PINDA_THERMISTOR
     lcd_menu_temperatures_line( _T(MSG_PINDA), (int)current_temperature_pinda );  ////MSG_PINDA
@@ -2020,7 +2020,7 @@ static void lcd_support_menu()
   if (IP_address) {
       
       MENU_ITEM_BACK_P(STR_SEPARATOR);
-      MENU_ITEM_BACK_P(PSTR("Printer IP Addr:"));  ////MSG_PRINTER_IP c=18
+      MENU_ITEM_BACK_P(_i("Printer IP Addr:")); ////MSG_PRINTER_IP c=18
       MENU_ITEM_BACK_P(PSTR(" "));
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
@@ -2858,10 +2858,10 @@ float _deg(float rad)
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14, c=4
+//! |Measured skew :0.00D|	MSG_MEASURED_SKEW c=14
 //! | --------------     |	STR_SEPARATOR
-//! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14, c=4
-//! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14, c=4
+//! |Slight skew   :0.12D|	MSG_SLIGHT_SKEW c=14
+//! |Severe skew   :0.25D|	MSG_SEVERE_SKEW c=14
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
 //! @endcode
@@ -2878,8 +2878,8 @@ static void lcd_menu_xyz_skew()
 	 ),
 	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
 	 separator,
-	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14, c=4
-	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14, c=4
+	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14
+	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14
 	);
 	if (angleDiff < 100){
 		lcd_set_cursor(15,0);
@@ -3025,7 +3025,7 @@ static void lcd_babystep_z()
 	    lcd_set_cursor(0, 0);
 	    lcd_print(buffer.c);
 	    lcd_set_cursor(0, 1);
-		menu_draw_float13(_i("Adjusting Z:"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
+		menu_draw_float13(_i("Adjusting Z:"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=15 // Beware: must include the ':' as its last character
 	}
 	if (LCD_CLICKED || menu_leaving)
 	{
@@ -3117,7 +3117,7 @@ void lcd_adjust_bed(void)
 //! 
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Set temperature:    |	MSG_SET_TEMPERATURE c=20
+//! |Set temperature:    |
 //! |                    |
 //! | 210                |
 //! |                    |
@@ -3126,7 +3126,7 @@ void lcd_adjust_bed(void)
 void pid_extruder()
 {
 	lcd_clear();
-	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE
+	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=20
 	pid_temp += int(lcd_encoder);
 	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
 	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
@@ -3309,7 +3309,9 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
 
     // Until confirmed by the confirmation dialog.
     for (;;) {
-        const char   *msg                 = only_z ? _i("Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.") : _i("Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.");////MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8////MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
+        const char *msg = only_z
+            ? _i("Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.")////MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
+            : _i("Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.");////MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
         const char   *msg_next            = lcd_display_message_fullscreen_P(msg);
         const bool    multi_screen        = msg_next != NULL;
         unsigned long previous_millis_msg = _millis();
@@ -4950,7 +4952,7 @@ void lcd_wizard(WizState state)
 				//current filament needs to be unloaded and then new filament should be loaded
 				//start to preheat nozzle for unloading remaining PLA filament
 				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
-				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));
+				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA.")); ////MSG_WIZARD_WILL_PREHEAT c=20 r=4
 				wait_preheat();
 				//unload current filament
 				unload_filament(true);
@@ -6662,7 +6664,7 @@ static void lcd_main_menu()
     }
     MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=18
 #ifdef LCD_TEST
-    MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_SUPPORT
+    MENU_ITEM_SUBMENU_P(_i("XFLASH init"), lcd_test_menu);////MSG_XFLASH
 #endif //LCD_TEST
 
     MENU_END();
@@ -6963,9 +6965,9 @@ static void lcd_control_temperature_menu()
 #if defined AUTOTEMP && (TEMP_SENSOR_0 != 0)
 //MENU_ITEM_EDIT removed, following code must be redesigned if AUTOTEMP enabled
   MENU_ITEM_EDIT(bool, MSG_AUTOTEMP, &autotemp_enabled);
-  MENU_ITEM_EDIT(float3, _i(" \002 Min"), &autotemp_min, 0, HEATER_0_MAXTEMP - 10);////MSG_MIN
-  MENU_ITEM_EDIT(float3, _i(" \002 Max"), &autotemp_max, 0, HEATER_0_MAXTEMP - 10);////MSG_MAX
-  MENU_ITEM_EDIT(float32, _i(" \002 Fact"), &autotemp_factor, 0.0, 1.0);////MSG_FACTOR
+  MENU_ITEM_EDIT(float3, _i(" \xdf Min"), &autotemp_min, 0, HEATER_0_MAXTEMP - 10);////MSG_MIN
+  MENU_ITEM_EDIT(float3, _i(" \xdf Max"), &autotemp_max, 0, HEATER_0_MAXTEMP - 10);////MSG_MAX
+  MENU_ITEM_EDIT(float32, _i(" \xdf Fact"), &autotemp_factor, 0.0, 1.0);////MSG_FACTOR
 #endif
 
   MENU_END();
