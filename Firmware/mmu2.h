@@ -107,6 +107,9 @@ public:
     
     /// @returns the active filament slot index (0-4) or 0xff in case of no active tool
     uint8_t get_current_tool() const;
+
+    /// @returns the previous active filament slot index (0-4) or 0xff in case of no active tool at boot-up
+    inline uint8_t get_previous_tool() const { return previous_extruder; };
     
     bool set_filament_type(uint8_t index, uint8_t type);
 
@@ -201,6 +204,7 @@ private:
     
     ProtocolLogic logic; ///< implementation of the protocol logic layer
     int extruder; ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet
+    uint8_t previous_extruder; ///< last active slot in the MMU, useful for M600
 
     xyz_pos_t resume_position;
     int16_t resume_hotend_temp;
