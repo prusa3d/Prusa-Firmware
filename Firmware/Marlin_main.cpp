@@ -3730,9 +3730,11 @@ static void mmu_M600_wait_and_beep() {
 /// @par nozzle_temp nozzle temperature to load filament
 void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
     uint8_t tmp_extruder = MMU2::mmu2.get_current_tool();
-    if (automatic) {
+
+    // TODO SpoolJoin
+    /*if (automatic) {
         tmp_extruder = ad_getAlternative(tmp_extruder);
-    }
+    }*/
     lcd_update_enable(false);
     lcd_clear();
     lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
