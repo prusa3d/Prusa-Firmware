@@ -255,11 +255,13 @@ bool MMU2::tool_change(char code, uint8_t slot) {
     } break;
 
     case 'x': {
+        set_extrude_min_temp(0); // Allow cold extrusion since Tx only loads to the gears not nozzle
         st_synchronize();
         logic.ToolChange(slot);
         manage_response(false, false);
         extruder = slot;
         SetActiveExtruder(0);
+        set_extrude_min_temp(EXTRUDE_MINTEMP);
     } break;
 
     case 'c': {
