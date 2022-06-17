@@ -3729,7 +3729,7 @@ static void mmu_M600_wait_and_beep() {
 /// @brief load filament for mmu v2
 /// @par nozzle_temp nozzle temperature to load filament
 void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
-    uint8_t tmp_extruder = MMU2::mmu2.get_current_tool();
+    uint8_t tmp_extruder = MMU2::mmu2.get_previous_tool();
 
     // TODO SpoolJoin
     /*if (automatic) {
