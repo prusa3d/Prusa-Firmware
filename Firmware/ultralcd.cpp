@@ -461,17 +461,19 @@ void lcdui_print_percent_done(void)
 // Print extruder status (5 chars total)
 void lcdui_print_extruder(void) {
     uint8_t chars = 0;
-// @@TODO   if (MMU2::mmu2.get_current_tool() == tmp_extruder) {
-//        if (MMU2::mmu2.get_current_tool() == MMU2::FILAMENT_UNKNOWN)
-//            chars = lcd_printf_P(_N(" F?"));
-//        else
-//            chars = lcd_printf_P(_N(" F%u"), MMU2::mmu2.get_current_tool() + 1);
-//    } else {
-//        if (MMU2::mmu2.get_current_tool() == MMU2::FILAMENT_UNKNOWN)
-//            chars = lcd_printf_P(_N(" ?>%u"), tmp_extruder + 1);
-//        else
-//            chars = lcd_printf_P(_N(" %u>%u"), MMU2::mmu2.get_current_tool() + 1, tmp_extruder + 1);
-//    }
+    if (MMU2::mmu2.get_current_tool() == MMU2::mmu2.get_tool_change_tool()) {
+        if (MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN) {
+            chars = lcd_printf_P(_N(" F?"));
+        } else {
+            chars = lcd_printf_P(_N(" F%u"), MMU2::mmu2.get_current_tool() + 1);
+        }
+    } else {
+        if (MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN) {
+            chars = lcd_printf_P(_N(" ?>%u"), MMU2::mmu2.get_tool_change_tool() + 1);
+        } else {
+            chars = lcd_printf_P(_N(" %u>%u"), MMU2::mmu2.get_current_tool() + 1, MMU2::mmu2.get_tool_change_tool() + 1);
+        }
+    }
     lcd_space(5 - chars);
 }
 

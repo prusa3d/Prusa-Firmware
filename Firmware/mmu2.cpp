@@ -86,6 +86,7 @@ MMU2::MMU2()
     , logic(&mmu2Serial)
     , extruder(MMU2_NO_TOOL)
     , previous_extruder(MMU2_NO_TOOL)
+    , tool_change_extruder(MMU2_NO_TOOL)
     , resume_position()
     , resume_hotend_temp(0)
     , logicStepLastStatus(StepStatus::Finished)
@@ -214,6 +215,7 @@ bool MMU2::tool_change(uint8_t index) {
 
         st_synchronize();
 
+        tool_change_extruder = index;
         logic.ToolChange(index); // let the MMU pull the filament out and push a new one in
         manage_response(true, true);
         
@@ -259,6 +261,7 @@ bool MMU2::tool_change(char code, uint8_t slot) {
     case 'x': {
         set_extrude_min_temp(0); // Allow cold extrusion since Tx only loads to the gears not nozzle
         st_synchronize();
+        tool_change_extruder = slot;
         logic.ToolChange(slot);
         manage_response(false, false);
         extruder = slot;
@@ -277,7 +280,11 @@ bool MMU2::tool_change(char code, uint8_t slot) {
 }
 
 uint8_t MMU2::get_current_tool() const {
-    return extruder == MMU2_NO_TOOL ? -1 : extruder;
+    return extruder == MMU2_NO_TOOL ? (uint8_t)FILAMENT_UNKNOWN : extruder;
+}
+
+uint8_t MMU2::get_tool_change_tool() const {
+    return tool_change_extruder == MMU2_NO_TOOL ? (uint8_t)FILAMENT_UNKNOWN : tool_change_extruder;
 }
 
 bool MMU2::set_filament_type(uint8_t index, uint8_t type) {
@@ -310,6 +317,7 @@ bool MMU2::unload() {
 
         // no active tool
         extruder = MMU2_NO_TOOL;
+        tool_change_extruder = MMU2_NO_TOOL;
     }
     return true;
 }
@@ -364,6 +372,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
             filament_ramming();
         }
 
+        tool_change_extruder = index;
         logic.ToolChange(index);
         manage_response(true, true);
 
@@ -426,6 +435,7 @@ bool MMU2::eject_filament(uint8_t index, bool recover) {
 
     // no active tool
     extruder = MMU2_NO_TOOL;
+    tool_change_extruder = MMU2_NO_TOOL;
     Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 //    disable_E0();
 
