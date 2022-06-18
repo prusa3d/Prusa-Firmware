@@ -3544,7 +3544,6 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
     lcd_print(tmp_extruder + 1);
 
     // printf_P(PSTR("T code: %d \n"), tmp_extruder);
-    // mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
     setTargetHotend(nozzle_temp, active_extruder);
 
     MMU2::mmu2.load_filament_to_nozzle(tmp_extruder);
