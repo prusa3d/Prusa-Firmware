@@ -506,7 +506,9 @@ void MMU2::ResumeHotendTemp() {
         ReportErrorHookSensorLineRender();
         waitForHotendTargetTemp(1000, []{
             ReportErrorHookDynamicRender();
+            manage_inactivity(true);
         });
+        mmu_print_saved &= ~(SavedState::Cooldown);
         LogEchoEvent("Hotend temperature reached");
         lcd_clear();
         lcd_update_enable(true); // temporary hack to stop this locking the printer...
@@ -526,6 +528,7 @@ void MMU2::ResumeUnpark()
         current_position[Z_AXIS] = resume_position.xyz[Z_AXIS];
         plan_buffer_line_curposXYZE(NOZZLE_PARK_Z_FEEDRATE);
         st_synchronize();
+        mmu_print_saved &= ~(SavedState::ParkExtruder);
     } else {
         LogEchoEvent("NOT resuming XYZ");
     }
@@ -637,6 +640,7 @@ StepStatus MMU2::LogicStep() {
         StopKeepPowered();
         ReportError(ErrorCode::VERSION_MISMATCH);
         CheckUserInput();
+        break;
     case ButtonPushed:
         lastButton = logic.Button();
         LogEchoEvent("MMU Button pushed");
