@@ -78,11 +78,11 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     lcd_update_enable(false);
     lcd_clear();
 
-    ReportErrorHookSensorLineRender();
-
     // Print title and header
     lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
 
+    ReportErrorHookSensorLineRender();
+    
     // Render the choices
     lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 10 : 7, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
 }
