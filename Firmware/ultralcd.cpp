@@ -459,6 +459,18 @@ void lcdui_print_percent_done(void)
 }
 
 // Print extruder status (5 chars total)
+// Scenario 1: "F?"
+//              There is no filament loaded and no tool change is in progress
+// Scenario 2: "F[nr.]"
+//              [nr.] ranges from 1 to 5.
+//              Shows which filament is loaded. No tool change is in progress
+// Scenario 3: "?>[nr.]"
+//              [nr.] ranges from 1 to 5.
+//              There is no filament currently loaded, but [nr.] is currently being loaded via tool change
+// Scenario 4: "[nr1.] > [nr2.]"
+//              [nr1.] ranges from 1 to 5.
+//              [nr2.] ranges from 1 to 5.
+//              Filament [nr1.] was loaded, but [nr2.] is currently being loaded via tool change
 void lcdui_print_extruder(void) {
     uint8_t chars = 0;
     if (MMU2::mmu2.get_current_tool() == MMU2::mmu2.get_tool_change_tool()) {
