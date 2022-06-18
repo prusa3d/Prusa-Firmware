@@ -529,8 +529,6 @@ void MMU2::ResumeUnpark()
         plan_buffer_line_curposXYZE(NOZZLE_PARK_Z_FEEDRATE);
         st_synchronize();
         mmu_print_saved &= ~(SavedState::ParkExtruder);
-    } else {
-        LogEchoEvent("NOT resuming XYZ");
     }
 }
 
