@@ -28,6 +28,12 @@ void ReportErrorHook(uint16_t ec);
 /// Called when the MMU sends operation progress update
 void ReportProgressHook(CommandInProgress cip, uint16_t ec);
 
+/// Remders the sensor status line. Also used by the "resume temperature" screen.
+void ReportErrorHookDynamicRender();
+
+/// Renders the static part of the sensor state line. Also used by "resuming temperature screen"
+void ReportErrorHookSensorLineRender();
+
 /// @returns true if the MMU is communicating and available
 /// can change at runtime
 bool MMUAvailable();
