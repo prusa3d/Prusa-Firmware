@@ -104,13 +104,16 @@ public:
     /// Requires unloaded filament from the printer (obviously)
     /// @returns false if the operation cannot be performed (Stopped)
     bool cut_filament(uint8_t index);
-    
+
     /// @returns the active filament slot index (0-4) or 0xff in case of no active tool
     uint8_t get_current_tool() const;
 
     /// @returns the previous active filament slot index (0-4) or 0xff in case of no active tool at boot-up
     inline uint8_t get_previous_tool() const { return previous_extruder; };
     
+    /// @returns The filament slot index (0 to 4) that will be loaded next, 0xff in case of no active tool change 
+    uint8_t get_tool_change_tool() const;
+
     bool set_filament_type(uint8_t index, uint8_t type);
 
     /// Issue a "button" click into the MMU - to be used from Error screens of the MMU
@@ -205,6 +208,7 @@ private:
     ProtocolLogic logic; ///< implementation of the protocol logic layer
     int extruder; ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet
     uint8_t previous_extruder; ///< last active slot in the MMU, useful for M600
+    uint8_t tool_change_extruder; ///< only used for UI purposes
 
     xyz_pos_t resume_position;
     int16_t resume_hotend_temp;
