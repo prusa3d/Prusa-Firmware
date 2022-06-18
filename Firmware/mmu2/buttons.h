@@ -21,9 +21,9 @@ enum class ButtonOperations : uint8_t {
 
 /// Button codes + extended actions performed on the printer's side
 enum Buttons : uint8_t {
-    Left = 0,
+    Right = 0,
     Middle,
-    Right,
+    Left,
     
     // performed on the printer's side
     RestartMMU,
