@@ -27,7 +27,7 @@ void EndReport(CommandInProgress cip, uint16_t ec) {
  * @brief Renders any characters that will be updated live on the MMU error screen.
  *Currently, this is FINDA and Filament Sensor status and Extruder temperature.
  */
-static void ReportErrorHookDynamicRender(void)
+extern void ReportErrorHookDynamicRender(void)
 {
     lcd_set_cursor(3, 2);
     lcd_printf_P(PSTR("%d"), mmu2.FindaDetectsFilament());
@@ -78,16 +78,22 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     lcd_update_enable(false);
     lcd_clear();
 
+    ReportErrorHookSensorLineRender();
+
     // Print title and header
     lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
-
-    // Render static characters in third line
-    lcd_set_cursor(0, 2);
-    lcd_printf_P(PSTR("FI:  FS:    >  %c   %c"), LCD_STR_THERMOMETER[0], LCD_STR_DEGREE[0]);
 
     // Render the choices
     lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 10 : 7, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
 }
+
+extern void ReportErrorHookSensorLineRender()
+{
+    // Render static characters in third line
+    lcd_set_cursor(0, 2);
+    lcd_printf_P(PSTR("FI:  FS:    >  %c   %c"), LCD_STR_THERMOMETER[0], LCD_STR_DEGREE[0]);
+}
+
 
 /**
  * @brief Monitors the LCD button selection without blocking MMU communication

@@ -91,7 +91,7 @@ MMU2::MMU2()
     , resume_hotend_temp(0)
     , logicStepLastStatus(StepStatus::Finished)
     , state(xState::Stopped)
-    , mmu_print_saved(false)
+    , mmu_print_saved(SavedState::None)
     , loadFilamentStarted(false)
     , loadingToNozzle(false)
 {
@@ -458,15 +458,14 @@ void MMU2::Home(uint8_t mode){
 }
 
 void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
-    if (!mmu_print_saved) { // First occurrence. Save current position, park print head, disable nozzle heater.
+    if (mmu_print_saved == SavedState::None) { // First occurrence. Save current position, park print head, disable nozzle heater.
         LogEchoEvent("Saving and parking");
         st_synchronize();
-
-        mmu_print_saved = true;
-
+      
         resume_hotend_temp = degTargetHotend(active_extruder);
 
         if (move_axes){
+            mmu_print_saved |= SavedState::ParkExtruder;
             // save current pos
             for(uint8_t i = 0; i < 3; ++i){
                 resume_position.xyz[i] = current_position[i];
@@ -487,6 +486,7 @@ void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
         }
 
         if (turn_off_nozzle){
+            mmu_print_saved |= SavedState::Cooldown;
             LogEchoEvent("Heater off");
             setAllTargetHotends(0);
         }
@@ -496,35 +496,37 @@ void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
     // gcode.reset_stepper_timeout();
 }
 
-void MMU2::ResumeAndUnPark(bool move_axes, bool turn_off_nozzle) {
-    if (mmu_print_saved) {
-        LogEchoEvent("Resuming print");
+void MMU2::ResumeHotendTemp() {
+    if ((mmu_print_saved & SavedState::Cooldown) && resume_hotend_temp) {
+        LogEchoEvent("Resuming Temp");
+        MMU2_ECHO_MSG("Restoring hotend temperature ");
+        SERIAL_ECHOLN(resume_hotend_temp);
+        setTargetHotend(resume_hotend_temp, active_extruder);
+        lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature...")); // better report the event and let the GUI do its work somewhere else
+        ReportErrorHookSensorLineRender();
+        waitForHotendTargetTemp(1000, []{
+            ReportErrorHookDynamicRender();
+        });
+        LogEchoEvent("Hotend temperature reached");
+        lcd_update_enable(true); // temporary hack to stop this locking the printer...
+    }
+}
 
-        if (turn_off_nozzle && resume_hotend_temp) {
-            MMU2_ECHO_MSG("Restoring hotend temperature ");
-            SERIAL_ECHOLN(resume_hotend_temp);
-            setTargetHotend(resume_hotend_temp, active_extruder);
-            waitForHotendTargetTemp(3000, []{
-                lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature...")); // better report the event and let the GUI do its work somewhere else
-            });
-            LogEchoEvent("Hotend temperature reached");
-            lcd_update_enable(true); // temporary hack to stop this locking the printer...
-        }
+void MMU2::ResumeUnpark()
+{
+    if (mmu_print_saved & SavedState::ParkExtruder) {
+        LogEchoEvent("Resuming XYZ");
 
-        if (move_axes) {
-            LogEchoEvent("Resuming XYZ");
-
-            current_position[X_AXIS] = resume_position.xyz[X_AXIS];
-            current_position[Y_AXIS] = resume_position.xyz[Y_AXIS];
-            plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
-            st_synchronize();
-            
-            current_position[Z_AXIS] = resume_position.xyz[Z_AXIS];
-            plan_buffer_line_curposXYZE(NOZZLE_PARK_Z_FEEDRATE);
-            st_synchronize();
-        } else {
-            LogEchoEvent("NOT resuming XYZ");
-        }
+        current_position[X_AXIS] = resume_position.xyz[X_AXIS];
+        current_position[Y_AXIS] = resume_position.xyz[Y_AXIS];
+        plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
+        st_synchronize();
+        
+        current_position[Z_AXIS] = resume_position.xyz[Z_AXIS];
+        plan_buffer_line_curposXYZE(NOZZLE_PARK_Z_FEEDRATE);
+        st_synchronize();
+    } else {
+        LogEchoEvent("NOT resuming XYZ");
     }
 }
 
@@ -534,6 +536,7 @@ void MMU2::CheckUserInput(){
     case Left:
     case Middle:
     case Right:
+        ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
         Button(btn);
         break;
     case RestartMMU:
@@ -559,7 +562,7 @@ void MMU2::CheckUserInput(){
 /// But - in case of an error, the command is not yet finished, but we must react accordingly - move the printhead elsewhere, stop heating, eat a cat or so.
 /// That's what's being done here...
 void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
-    mmu_print_saved = false;
+    mmu_print_saved = SavedState::None;
 
     KEEPALIVE_STATE(PAUSED_FOR_USER);
 
@@ -577,7 +580,7 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
         case Finished: 
             // command/operation completed, let Marlin continue its work
             // the E may have some more moves to finish - wait for them
-            ResumeAndUnPark(move_axes, turn_off_nozzle); // This is needed here otherwise recovery doesn't work.
+            ResumeUnpark(); // We can now travel back to the tower or wherever we were when we saved.
             st_synchronize(); 
             return;
         case VersionMismatch: // this basically means the MMU will be disabled until reconnected
@@ -591,7 +594,8 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             break;
         case CommunicationRecovered: // @@TODO communication recovered and may be an error recovered as well
             // may be the logic layer can detect the change of state a respond with one "Recovered" to be handled here
-            ResumeAndUnPark(move_axes, turn_off_nozzle);
+            ResumeHotendTemp();
+            ResumeUnpark();
             break;
         case Processing: // wait for the MMU to respond
         default:

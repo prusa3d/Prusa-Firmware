@@ -58,6 +58,13 @@ public:
         ResetPin = 1, ///< trigger the reset pin of the MMU
         CutThePower = 2 ///< power off and power on (that includes +5V and +24V power lines)
     };
+
+    /// Saved print state on error.
+    enum SavedState: uint8_t {
+        None = 0, // No state saved. 
+        ParkExtruder = 1, // The extruder was parked. 
+        Cooldown = 2, // The extruder was allowed to cool.
+    };
     
     /// Perform a reset of the MMU
     /// @param level physical form of the reset
@@ -143,7 +150,7 @@ public:
     bool is_mmu_error_monitor_active;
 
     /// Method to read-only mmu_print_saved
-    bool MMU_PRINT_SAVED() const { return mmu_print_saved; }
+    bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
 
 private:
     /// Perform software self-reset of the MMU (sends an X0 command)
@@ -193,8 +200,11 @@ private:
     /// Save print and park the print head
     void SaveAndPark(bool move_axes, bool turn_off_nozzle);
 
-    /// Resume print (unpark, turn on heating etc.)
-    void ResumeAndUnPark(bool move_axes, bool turn_off_nozzle);
+    /// Resume hotend temperature, if it was cooled. Safe to call if we aren't saved.
+    void ResumeHotendTemp();
+
+    /// Resume position, if the extruder was parked. Safe to all if state was not saved.
+    void ResumeUnpark();
 
     /// Check for any button/user input coming from the printer's UI
     void CheckUserInput();
@@ -220,7 +230,7 @@ private:
     
     enum xState state;
 
-    bool mmu_print_saved;
+    uint8_t mmu_print_saved;
     bool loadFilamentStarted;
     
     friend struct LoadingToNozzleRAII;
