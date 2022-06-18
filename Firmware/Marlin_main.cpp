@@ -3726,9 +3726,29 @@ static void mmu_M600_wait_and_beep() {
     WRITE(BEEPER, LOW);
 }
 
+/**
+ * @brief Handling of unload when using MMU with M600
+ * A fullscreen message showing "Unloading Filament x"
+ * should be shown on the LCD and LCD updates should be
+ * are disabled in the meantime.
+ */ 
+static void mmu_M600_unload_filament() {
+    uint8_t tmp_extruder = MMU2::mmu2.get_current_tool();
+
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, _T(MSG_UNLOADING_FILAMENT));
+    lcd_print(' ');
+    lcd_print(tmp_extruder + 1);
+
+    // unload just current filament for multimaterial printers (used also in M702)
+    MMU2::mmu2.unload();
+    lcd_update_enable(true);
+}
+
 /// @brief load filament for mmu v2
 /// @par nozzle_temp nozzle temperature to load filament
-void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
+static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
     uint8_t tmp_extruder = MMU2::mmu2.get_previous_tool();
 
     // TODO SpoolJoin
@@ -3792,7 +3812,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     // Unload filament
     if (MMU2::mmu2.Enabled())
-        MMU2::mmu2.unload(); // unload just current filament for multimaterial printers (used also in M702)
+        mmu_M600_unload_filament();
     else
         unload_filament(true); // unload filament for single material (used also in M702)
     st_synchronize();          // finish moves
