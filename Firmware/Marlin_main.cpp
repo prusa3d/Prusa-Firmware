@@ -11344,8 +11344,14 @@ void M600_check_state(float nozzle_temp)
         // Filament failed to load so load it again
         case 2:
             if (MMU2::mmu2.Enabled()){
-//@@TODO                mmu_M600_load_filament(false, nozzle_temp); //nonautomatic load; change to "wrong filament loaded" option?
-                
+                // Unload filament
+                mmu_M600_unload_filament();
+
+                // Ask to remove any old filament and load new
+                mmu_M600_wait_and_beep();
+
+                // After user clicks knob, MMU will load the filament
+                mmu_M600_load_filament(false, nozzle_temp);
             } else {
                 M600_load_filament_movements();
             }
