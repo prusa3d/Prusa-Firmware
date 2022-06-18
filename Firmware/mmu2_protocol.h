@@ -37,7 +37,8 @@ enum class ResponseMsgParamCodes : uint8_t {
     Error = 'E',
     Finished = 'F',
     Accepted = 'A',
-    Rejected = 'R'
+    Rejected = 'R', 
+    Button = 'B' // the MMU registered a button press and is sending it to the printer for processing
 };
 
 /// A request message - requests are being sent by the printer into the MMU.
