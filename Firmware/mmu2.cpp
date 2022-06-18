@@ -502,12 +502,13 @@ void MMU2::ResumeHotendTemp() {
         MMU2_ECHO_MSG("Restoring hotend temperature ");
         SERIAL_ECHOLN(resume_hotend_temp);
         setTargetHotend(resume_hotend_temp, active_extruder);
-        lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature...")); // better report the event and let the GUI do its work somewhere else
+        lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); // better report the event and let the GUI do its work somewhere else
         ReportErrorHookSensorLineRender();
         waitForHotendTargetTemp(1000, []{
             ReportErrorHookDynamicRender();
         });
         LogEchoEvent("Hotend temperature reached");
+        lcd_clear();
         lcd_update_enable(true); // temporary hack to stop this locking the printer...
     }
 }
@@ -532,6 +533,13 @@ void MMU2::ResumeUnpark()
 
 void MMU2::CheckUserInput(){
     auto btn = ButtonPressed((uint16_t)lastErrorCode);
+
+    // Was a button pressed on the MMU itself instead of the LCD?
+    if (btn == Buttons::NoButton && lastButton != Buttons::NoButton)
+    {
+        btn = lastButton;
+        lastButton = Buttons::NoButton; // Clear it. 
+    }
     switch (btn) {
     case Left:
     case Middle:
@@ -628,6 +636,10 @@ StepStatus MMU2::LogicStep() {
     case VersionMismatch:
         StopKeepPowered();
         ReportError(ErrorCode::VERSION_MISMATCH);
+        CheckUserInput();
+    case ButtonPushed:
+        lastButton = logic.Button();
+        LogEchoEvent("MMU Button pushed");
         CheckUserInput();
         break;
     default:

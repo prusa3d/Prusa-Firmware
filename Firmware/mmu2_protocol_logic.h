@@ -16,6 +16,7 @@ public:
 
 #include "mmu2/error_codes.h"
 #include "mmu2/progress_codes.h"
+#include "mmu2/buttons.h"
 #include "mmu2_protocol.h"
 
 #include "mmu2_serial.h"
@@ -38,6 +39,7 @@ enum StepStatus : uint_fast8_t {
     CommandError, ///< the command in progress stopped due to unrecoverable error, user interaction required
     VersionMismatch, ///< the MMU reports its firmware version incompatible with our implementation
     CommunicationRecovered,
+    ButtonPushed, ///< The MMU reported the user pushed one of its three buttons. 
 };
 
 
@@ -221,6 +223,9 @@ public:
     /// @returns the current/latest process code as reported by the MMU
     ProgressCode Progress() const { return progressCode; }
     
+    /// @returns the current/latest button code as reported by the MMU
+    Buttons Button() const { return buttonCode; }
+
     uint8_t CommandInProgress()const;
     
     inline bool Running()const {
@@ -297,6 +302,7 @@ private:
 
     ErrorCode errorCode;       ///< last received error code from the MMU
     ProgressCode progressCode; ///< last received progress code from the MMU
+    Buttons buttonCode;        ///< Last received button from the MMU.
 
     uint8_t lastFSensor; ///< last state of filament sensor
     

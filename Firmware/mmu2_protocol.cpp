@@ -138,6 +138,7 @@ DecodeStatus Protocol::DecodeResponse(uint8_t c) {
         case 'F':
         case 'A':
         case 'R':
+        case 'B':
             rspState = ResponseStates::ParamValue;
             responseMsg.paramCode = (ResponseMsgParamCodes)c;
             responseMsg.paramValue = 0;

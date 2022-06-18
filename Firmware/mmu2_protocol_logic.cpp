@@ -234,6 +234,11 @@ StepStatus Command::Step() {
             // - the MMU checks FINDA and fsensor even while recovering from errors
             SendAndUpdateFilamentSensor();
             return CommandError;
+        case ResponseMsgParamCodes::Button:
+            // The user pushed a button on the MMU. Save it, do what we need to do 
+            // to prepare, then pass it back to the MMU so it can work its magic.
+            logic->buttonCode = static_cast<Buttons>(logic->rsp.paramValue);
+            return ButtonPushed;
         case ResponseMsgParamCodes::Finished:
             logic->progressCode = ProgressCode::OK;
             state = State::Ready;
