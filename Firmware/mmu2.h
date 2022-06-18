@@ -225,6 +225,7 @@ private:
     
     ProgressCode lastProgressCode = ProgressCode::OK;
     ErrorCode lastErrorCode = ErrorCode::MMU_NOT_RESPONDING;
+    Buttons lastButton = Buttons::NoButton;
 
     StepStatus logicStepLastStatus;
     
