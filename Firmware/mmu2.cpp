@@ -337,11 +337,18 @@ bool MMU2::load_filament(uint8_t index) {
     if( ! WaitForMMUReady())
         return false;
 
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
+    lcd_print(' ');
+    lcd_print(index + 1);
+
     ReportingRAII rep(CommandInProgress::LoadFilament);
     logic.LoadFilament(index);
     manage_response(false, false);
     Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
-    
+    lcd_update_enable(true);
+
     return true;
 }
 
