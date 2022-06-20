@@ -7,7 +7,7 @@ for file in $FILES; do
     dos2unix "$file"
 
     # merge from the template
-    msgmerge -U -s -N "$file" po/Firmware.pot
+    msgmerge -U -s -N --suffix=".bak" "$file" po/Firmware.pot
 
     # ... and back
     unix2dos "$file"
