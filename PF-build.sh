@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.1-Build_67
+# Version: 2.0.2-Build_69
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -165,10 +165,11 @@
 # 23 Jun 2021, 3d-gussner, Improve MK404 usage
 # 24 Jun 2021, 3d-gussner, Fix MK404 user interaction not to show if compiling 'All' variants
 # 24 Jun 2021, 3d-gussner, MK404 is only supported on Linux at this moment.
-# 24 Feb 2021, 3d-gussner, Change to Arduino IDE 1.8.19 and Arduino boards 1.0.5
+# 24 Feb 2022, 3d-gussner, Change to Arduino IDE 1.8.19 and Arduino boards 1.0.5
 #                          Fix DEV_STATUS to set correctly on RC/BETA/ALPHA/DEVEL
 #                          Fix atmegaMK404 Board mem and flash modifications
 #                          Limit atmegaMK404 boards mem to 8,16,32
+# 20 Jun 2022, 3d-gussner, Change to Ardunio_boards v 1.0.5-1
 
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -225,7 +226,7 @@ while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.1-Build_67 *"
+echo "* PF-build.sh Version: 2.0.2-Build_69 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
@@ -536,20 +537,20 @@ BUILD_ENV="1.0.7"
 BOARD="prusa_einsy_rambo"
 BOARD_PACKAGE_NAME="PrusaResearch"
 if [ "$ARDUINO_ENV" == "1.8.19" ]; then
-    BOARD_VERSION="1.0.5"
+    BOARD_VERSION="1.0.5-1"
 else
     BOARD_VERSION="1.0.4"
 fi
-#BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 if [ "$ARDUINO_ENV" == "1.8.19" ]; then
     BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/package_prusa3d_index.json"
+    #BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/devel/IDE_Board_Manager/package_prusa3d_index.json"
 else
     BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 fi
 BOARD_FILENAME="prusa3dboards"
-#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
 if [ "$ARDUINO_ENV" == "1.8.19" ]; then
     BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+    #BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
 else
     BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
 fi
