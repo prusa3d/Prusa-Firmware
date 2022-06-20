@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_70
+# Version: 2.0.2-Build_69
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -173,6 +173,11 @@
 #                          Add selection of language in MK404 for MK2.5/S
 # 10 Feb 2022, 3d-gussner, Add SRCDIR for compatibility with build server
 # 13 Feb 2022, leptun    , Fix -o for "Restoring" messages after failure
+# 24 Feb 2022, 3d-gussner, Change to Arduino IDE 1.8.19 and Arduino boards 1.0.5
+#                          Fix DEV_STATUS to set correctly on RC/BETA/ALPHA/DEVEL
+#                          Fix atmegaMK404 Board mem and flash modifications
+#                          Limit atmegaMK404 boards mem to 8,16,32
+# 20 Jun 2022, 3d-gussner, Change to Ardunio_boards v 1.0.5-1
 
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -230,7 +235,7 @@ while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_70 *"
+echo "* PF-build.sh Version: 2.0.2-Build_69 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
