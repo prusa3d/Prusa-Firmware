@@ -333,20 +333,34 @@ bool MMU2::cut_filament(uint8_t index){
     return true;
 }
 
+void FullScreenMsg(const char *pgmS, uint8_t slot){
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, pgmS);
+    lcd_print(' ');
+    lcd_print(slot + 1);
+}
+
+bool MMU2::load_to_bondtech(uint8_t index){
+    FullScreenMsg(_T(MSG_TESTING_FILAMENT), index);
+    tool_change(index);
+    st_synchronize();
+    unload();
+    lcd_update_enable(true);
+    return true;
+}
+
 bool MMU2::load_filament(uint8_t index) {
     if( ! WaitForMMUReady())
         return false;
 
-    lcd_update_enable(false);
-    lcd_clear();
-    lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
-    lcd_print(' ');
-    lcd_print(index + 1);
+    FullScreenMsg(_T(MSG_LOADING_FILAMENT), index);
 
     ReportingRAII rep(CommandInProgress::LoadFilament);
     logic.LoadFilament(index);
     manage_response(false, false);
     Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
+
     lcd_update_enable(true);
 
     return true;
@@ -370,6 +384,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
 
     WaitForHotendTargetTempBeep();
 
+    FullScreenMsg(_T(MSG_LOADING_FILAMENT), index);
     {
         // used for MMU-menu operation "Load to Nozzle"
         ReportingRAII rep(CommandInProgress::ToolChange);
@@ -406,8 +421,9 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         SetActiveExtruder(0);
 
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
-        return true;
     }
+    lcd_update_enable(true);
+    return true;
 }
 
 bool MMU2::eject_filament(uint8_t index, bool recover) {
