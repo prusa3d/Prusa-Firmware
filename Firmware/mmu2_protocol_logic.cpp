@@ -163,7 +163,7 @@ StepStatus StartSeq::Step() {
         break;
     case State::S2Sent: // received response to S2 - revision
         logic->mmuFwVersionBuild = logic->rsp.paramValue;
-        if (logic->mmuFwVersionBuild != 0) {
+        if (logic->mmuFwVersionBuild < 18) {
             return VersionMismatch;
         }
         // Start General Interrogation after line up.
