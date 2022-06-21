@@ -145,7 +145,8 @@ StepStatus StartSeq::Step() {
     // solve initial handshake
     switch (state) {
     case State::S0Sent: // received response to S0 - major
-        if (logic->rsp.paramValue != 2) {
+        logic->mmuFwVersionMajor = logic->rsp.paramValue;
+        if (logic->mmuFwVersionMajor != 2) {
             return VersionMismatch;
         }
         logic->dataTO.Reset(); // got meaningful response from the MMU, stop data layer timeout tracking
@@ -153,14 +154,16 @@ StepStatus StartSeq::Step() {
         state = State::S1Sent;
         break;
     case State::S1Sent: // received response to S1 - minor
-        if (logic->rsp.paramValue != 0) {
+        logic->mmuFwVersionMinor = logic->rsp.paramValue;
+        if (logic->mmuFwVersionMinor != 0) {
             return VersionMismatch;
         }
         logic->SendMsg(RequestMsg(RequestMsgCodes::Version, 2));
         state = State::S2Sent;
         break;
     case State::S2Sent: // received response to S2 - revision
-        if (logic->rsp.paramValue != 0) {
+        logic->mmuFwVersionBuild = logic->rsp.paramValue;
+        if (logic->mmuFwVersionBuild != 0) {
             return VersionMismatch;
         }
         // Start General Interrogation after line up.
