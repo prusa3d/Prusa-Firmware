@@ -227,15 +227,26 @@ public:
     Buttons Button() const { return buttonCode; }
 
     uint8_t CommandInProgress()const;
-    
+
     inline bool Running()const {
         return state == State::Running;
     }
-    
+
     inline bool FindaPressed() const {
         return findaPressed;
     }
 
+    inline uint8_t MmuFwVersionMajor() const {
+        return mmuFwVersionMajor;
+    }
+
+    inline uint8_t MmuFwVersionMinor() const {
+        return mmuFwVersionMinor;
+    }
+
+    inline uint16_t MmuFwVersionBuild() const {
+        return mmuFwVersionBuild;
+    }
 #ifndef UNITTEST
 private:
 #endif
@@ -305,9 +316,12 @@ private:
     Buttons buttonCode;        ///< Last received button from the MMU.
 
     uint8_t lastFSensor; ///< last state of filament sensor
-    
+
     bool findaPressed;
-    
+
+    uint8_t mmuFwVersionMajor, mmuFwVersionMinor;
+    uint16_t mmuFwVersionBuild;
+
     friend class ProtocolLogicPartBase;
     friend class Stopped;
     friend class Command;
