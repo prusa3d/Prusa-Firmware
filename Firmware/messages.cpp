@@ -53,7 +53,9 @@ const char MSG_SELECT_FILAMENT[] PROGMEM_I1 = ISTR("Select filament:"); ////MSG_
 const char MSG_LAST_PRINT[] PROGMEM_I1 = ISTR("Last print"); ////MSG_LAST_PRINT c=18
 const char MSG_LAST_PRINT_FAILURES[] PROGMEM_I1 = ISTR("Last print failures"); ////MSG_LAST_PRINT_FAILURES c=20
 const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////MSG_LOAD_FILAMENT c=17
+const char MSG_LOAD_TO_BONDTECH[] PROGMEM_I1 = ISTR("Load to Bondtech"); ////c=18
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////MSG_LOADING_FILAMENT c=20
+const char MSG_TESTING_FILAMENT[] PROGMEM_I1 = ISTR("Testing filament"); ////c=20
 const char MSG_EJECT_FILAMENT[] PROGMEM_I1 = ISTR("Eject filament"); ////MSG_EJECT_FILAMENT c=17
 const char MSG_CUT_FILAMENT[] PROGMEM_I1 = ISTR("Cut filament"); ////MSG_CUT_FILAMENT c=17
 const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////MSG_M117_V2_CALIBRATION c=25
