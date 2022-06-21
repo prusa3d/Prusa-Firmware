@@ -1704,7 +1704,7 @@ static void lcd_support_menu()
 		{
 			lcd_set_cursor(6, menu_row);
 			MMU2::Version mmu_version = MMU2::mmu2.GetMMUFWVersion();
-			if ((mmu_version.major > 0) && (mmu_version.build > 0))
+			if (mmu_version.major > 0)
 				lcd_printf_P(PSTR("%d.%d.%d"), mmu_version.major, mmu_version.minor, mmu_version.build);
 			else
 				lcd_puts_P(_i("unknown"));  ////MSG_UNKNOWN c=13
