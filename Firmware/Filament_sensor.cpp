@@ -227,7 +227,7 @@ bool IR_sensor_analog::update() {
         if (voltReady) {
             voltReady = false;
             uint16_t volt = getVoltRaw();
-            printf_P(PSTR("newVoltRaw:%u\n"), volt / OVERSAMPLENR);
+//            printf_P(PSTR("newVoltRaw:%u\n"), volt / OVERSAMPLENR);
 
             // detect min-max, some long term sliding window for filtration may be added
             // avoiding floating point operations, thus computing in raw
