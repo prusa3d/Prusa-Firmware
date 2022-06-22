@@ -307,12 +307,18 @@ StepStatus Idle::Step() {
             // this one is kind of special
             // we do not transfer to any "running" command (i.e. we stay in Idle),
             // but in case there is an error reported we must make sure it gets propagated
-            if( logic->rsp.paramCode != ResponseMsgParamCodes::Finished ){
+            switch( logic->rsp.paramCode ){
+            case ResponseMsgParamCodes::Processing:
+                // @@TODO we may actually use this branch to report progress of manual operation on the MMU
+                // The MMU sends e.g. X0 P27 after its restart when the user presses an MMU button to move the Selector
+                // For now let's behave just like "finished"
+            case ResponseMsgParamCodes::Finished:
+                logic->errorCode = ErrorCode::OK;
+                break;
+            default:
                 logic->errorCode = static_cast<ErrorCode>(logic->rsp.paramValue);
                 SendFINDAQuery(); // continue Idle state without restarting the communication
                 return CommandError;
-            } else {
-                logic->errorCode = ErrorCode::OK;
             }
             break;
         default:
