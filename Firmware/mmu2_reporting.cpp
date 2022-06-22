@@ -27,26 +27,18 @@ void EndReport(CommandInProgress cip, uint16_t ec) {
  * @brief Renders any characters that will be updated live on the MMU error screen.
  *Currently, this is FINDA and Filament Sensor status and Extruder temperature.
  */
-extern void ReportErrorHookDynamicRender(void)
-{
-    lcd_set_cursor(3, 2);
-    lcd_printf_P(PSTR("%d"), mmu2.FindaDetectsFilament());
+extern void ReportErrorHookDynamicRender(void){
+    // beware - this optimization abuses the fact, that FindaDetectsFilament returns 0 or 1 and '0' is followed by '1' in the ASCII table
+    lcd_putc_at(3, 2, mmu2.FindaDetectsFilament() + '0');
+    lcd_putc_at(8, 2, fsensor.getFilamentPresent() + '0');
 
-    lcd_set_cursor(8, 2);
-    lcd_printf_P(PSTR("%d"), fsensor.getFilamentPresent());
-
-    lcd_set_cursor(11, 2);
-    lcd_print("?>?"); // This is temporary until below TODO is resolved
-
-    // TODO, see lcdui_print_extruder(void)
-    //if (MMU2::mmu2.get_current_tool() == MMU2::FILAMENT_UNKNOWN)
-    //    lcd_printf_P(_N(" ?>%u"), tmp_extruder + 1);
-    //else
-    //    lcd_printf_P(_N(" %u>%u"), MMU2::mmu2.get_current_tool() + 1, tmp_extruder + 1);
+    // print active/changing filament slot
+    lcd_set_cursor(10, 2);
+    lcdui_print_extruder();
 
     // Print active extruder temperature
     lcd_set_cursor(16, 2);
-    lcd_printf_P(PSTR("%d"), (int)(degHotend(0) + 0.5));
+    lcd_printf_P(PSTR("%3d"), (int)(degHotend(0) + 0.5));
 }
 
 /**
