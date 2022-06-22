@@ -463,7 +463,7 @@ void lcdui_print_percent_done(void)
 //              [nr1.] ranges from 1 to 5.
 //              [nr2.] ranges from 1 to 5.
 //              Filament [nr1.] was loaded, but [nr2.] is currently being loaded via tool change
-void lcdui_print_extruder(void) {
+uint8_t lcdui_print_extruder(void) {
     uint8_t chars = 0;
     if (MMU2::mmu2.get_current_tool() == MMU2::mmu2.get_tool_change_tool()) {
         if (MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN) {
@@ -478,7 +478,7 @@ void lcdui_print_extruder(void) {
             chars = lcd_printf_P(_N(" %u>%u"), MMU2::mmu2.get_current_tool() + 1, MMU2::mmu2.get_tool_change_tool() + 1);
         }
     }
-    lcd_space(5 - chars);
+    return chars;
 }
 
 // Print farm number (5 chars total)
@@ -737,14 +737,15 @@ void lcdui_print_status_screen(void)
 	//Print SD status (7 chars)
 	lcdui_print_percent_done();
 
-	if (MMU2::mmu2.Enabled())
-		//Print extruder status (5 chars)
-		lcdui_print_extruder();
-	else if (farm_mode)
-		//Print farm number (5 chars)
-		lcdui_print_farm();
-	else
-		lcd_space(5); //5 spaces
+    if (MMU2::mmu2.Enabled()) {
+        // Print extruder status (5 chars)
+        lcd_space(5 - lcdui_print_extruder());
+    } else if (farm_mode) {
+        // Print farm number (5 chars)
+        lcdui_print_farm();
+    } else {
+        lcd_space(5); // 5 spaces
+    }
 
 #ifdef CMD_DIAGNOSTICS
     //Print cmd queue diagnostics (8chars)
