@@ -204,12 +204,23 @@ enum ReportErrorHookStates ReportErrorHookState = ReportErrorHookStates::RENDER_
  * @param[in] ec Error code
  */
 void ReportErrorHook(uint16_t ec) {
-    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK)
-    {
+
+//    SERIAL_ECHOPGM("ReportErrorHookState=");
+//    SERIAL_ECHOLN((int)ReportErrorHookState);
+
+    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK) {
         // If the error code suddenly changes to OK, that means
         // a button was pushed on the MMU and the LCD should
         // dismiss the error screen until MMU raises a new error
         ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
+        mmu2.ResetRetryAttempts();
+    } else {
+        // attempt an automatic Retry button
+        if( ReportErrorHookState == ReportErrorHookStates::MONITOR_SELECTION ){
+            if( mmu2.RetryIfPossible(ec) ){
+                ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
+            }
+        }
     }
 
     const uint8_t ei = PrusaErrorCodeIndex(ec);
