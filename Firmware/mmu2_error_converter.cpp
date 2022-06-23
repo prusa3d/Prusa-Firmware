@@ -166,7 +166,10 @@ Buttons ButtonPressed(uint16_t ec) {
     }
     
     ResetOnExit ros; // clear buttonSelectedOperation on exit from this call
-    
+    return ButtonAvailable(ec);
+}
+
+Buttons ButtonAvailable(uint16_t ec) {
     uint8_t ei = PrusaErrorCodeIndex(ec);
     
     // The list of responses which occur in mmu error dialogs

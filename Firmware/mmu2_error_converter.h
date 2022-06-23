@@ -37,6 +37,12 @@ const char * const PrusaErrorButtonMore();
 void SetButtonResponse(ButtonOperations rsp);
 
 /// @returns button index/code based on currently processed error/screen
+/// Clears the "pressed" button upon exit
 Buttons ButtonPressed(uint16_t ec);
+
+/// @returns button index/code based on currently processed error/screen
+/// Used as a subfunction of ButtonPressed.
+/// Does not clear the "pressed" button upon exit
+Buttons ButtonAvailable(uint16_t ec);
 
 } // namespace MMU2
