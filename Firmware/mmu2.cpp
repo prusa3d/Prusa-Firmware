@@ -113,6 +113,7 @@ MMU2::MMU2()
     , unloadFilamentStarted(false)
     , loadingToNozzle(false)
 {
+    ResetRetryAttempts();
 }
 
 void MMU2::Start() {
@@ -221,6 +222,25 @@ bool MMU2::WaitForMMUReady(){
     default:
         return true;
     }
+}
+
+bool MMU2::RetryIfPossible(uint16_t ec){
+    if( retryAttempts ){
+        SERIAL_ECHOPGM("retryAttempts=");SERIAL_ECHOLN((uint16_t)retryAttempts);
+        SetButtonResponse(ButtonOperations::Retry);
+        // check, that Retry is actually allowed on that operation
+        if( ButtonAvailable(ec) != NoButton ){
+            SERIAL_ECHOLNPGM("RetryButtonPressed");
+            --retryAttempts; // "used" one retry attempt
+            return true;
+        }
+    }
+    return false;
+}
+
+void MMU2::ResetRetryAttempts(){
+    SERIAL_ECHOLNPGM("ResetRetryAttempts");
+    retryAttempts = 3;
 }
 
 bool MMU2::tool_change(uint8_t index) {
@@ -484,6 +504,7 @@ bool MMU2::eject_filament(uint8_t index, bool recover) {
 }
 
 void MMU2::Button(uint8_t index){
+    SERIAL_ECHOLNPGM("Button");
     logic.Button(index);
 }
 
@@ -586,6 +607,7 @@ void MMU2::CheckUserInput(){
     case Left:
     case Middle:
     case Right:
+        SERIAL_ECHOLNPGM("CheckUserInput-btnLMR");
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
         Button(btn);
         break;
