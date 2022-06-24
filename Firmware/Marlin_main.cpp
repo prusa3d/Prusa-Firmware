@@ -7760,6 +7760,54 @@ Sigma_Exit:
       PID_autotune(temp, e, c);
     }
     break;
+
+    /*!
+    ### M310 - Temperature model
+    #### Usage
+
+        M310 [ C ] [ P ] [ I R ] [ S ] [ E ] [ W ] [ A ] [ T ]
+
+    #### Parameters
+    - `P` - power
+    - `C` - capacitance
+    - `I` - resistance index position
+    - `R` - resistance value (requires `I`)
+    - `S` - set 0=disable 1=enable (default)
+    - `E` - error threshold (define min/max values in variants)
+    - `W` - warning threshold (define min/max values in variants)
+    - `T` - ambient temperature correction
+    - `A` - autotune C+R values
+    */
+    case 310:
+    {
+        // parse all parameters
+        float P = NAN, C = NAN, R = NAN, E = NAN, W = NAN, T = NAN, A = NAN;
+        int8_t I = -1, S = -1;
+        if(code_seen('C')) C = code_value();
+        if(code_seen('P')) P = code_value();
+        if(code_seen('I')) I = code_value_short();
+        if(code_seen('R')) R = code_value();
+        if(code_seen('S')) S = code_value_short();
+        if(code_seen('E')) E = code_value();
+        if(code_seen('W')) W = code_value();
+        if(code_seen('T')) T = code_value();
+        if(code_seen('A')) A = code_value();
+
+        // report values if nothing has been requested
+        if(isnan(C) && isnan(P) && isnan(R) && isnan(E) && isnan(W) && isnan(T) && isnan(A) && I < 0 && S < 0) {
+            temp_model_report_settings();
+            break;
+        }
+
+        // update all set parameters
+        if(S >= 0) temp_model_set_enabled(S);
+        if(!isnan(C) || !isnan(P) || !isnan(T) || !isnan(W) || !isnan(E)) temp_model_set_params(C, P, T, W, E);
+        if(I >= 0 && !isnan(R)) temp_model_set_resistance(I, R);
+
+        // run autotune
+        if(!isnan(A)) temp_model_autotune(A != 0? A: NAN);
+    }
+    break;
     
     /*!
 	### M400 - Wait for all moves to finish <a href="https://reprap.org/wiki/G-code#M400:_Wait_for_current_moves_to_finish">M400: Wait for current moves to finish</a>
@@ -9144,7 +9192,16 @@ Sigma_Exit:
     };
 #endif
 
-#ifdef TEMP_MODEL_LOGGING
+#ifdef TEMP_MODEL_DEBUG
+    /*!
+    ## D70 - Enable low-level temperature model logging for offline simulation
+    #### Usage
+
+        D70 [ I ]
+
+    #### Parameters
+    - `I` - Enable 0-1 (default 0)
+    */
     case 70: {
         if(code_seen('I'))
             temp_model_log_enable(code_value_short());

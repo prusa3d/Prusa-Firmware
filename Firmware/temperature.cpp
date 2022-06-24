@@ -48,6 +48,19 @@
 #error "ADC_OVRSAMPL oversampling must match OVERSAMPLENR"
 #endif
 
+// temperature manager timer configuration
+#define TEMP_MGR_INTV   0.27 // seconds, ~3.7Hz
+#define TIMER5_PRESCALE 256
+#define TIMER5_OCRA_OVF (uint16_t)(TEMP_MGR_INTV / ((long double)TIMER5_PRESCALE / F_CPU))
+#define TEMP_MGR_INTERRUPT_STATE()   (TIMSK5 & (1<<OCIE5A))
+#define ENABLE_TEMP_MGR_INTERRUPT()  TIMSK5 |=  (1<<OCIE5A)
+#define DISABLE_TEMP_MGR_INTERRUPT() TIMSK5 &= ~(1<<OCIE5A)
+
+#ifdef TEMP_MODEL
+// temperature model interface
+#include "temp_model.h"
+#endif
+
 //===========================================================================
 //=============================public variables============================
 //===========================================================================
@@ -454,7 +467,9 @@ enum class TempErrorType : uint8_t
     min,
     preheat,
     runaway,
+#ifdef TEMP_MODEL
     model,
+#endif
 };
 
 // error state (updated via set_temp_error from isr context)
@@ -477,14 +492,8 @@ volatile static union
 void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
 {
     // keep disabling heaters and keep fans on as long as the condition is asserted
-#ifdef TEMP_MODEL_CHECK_WARN_ONLY
-    if(type != TempErrorType::model) {
-#endif
     disable_heater();
     hotendFanSetFullSpeed();
-#ifdef TEMP_MODEL_CHECK_WARN_ONLY
-    }
-#endif
 
     // set the initial error source to the highest priority error
     if(!temp_error_state.error || (uint8_t)type < temp_error_state.type) {
@@ -500,11 +509,6 @@ void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
 
 void handle_temp_error();
 
-#ifdef TEMP_MODEL_LOGGING
-static void temp_model_log_usr();
-static void temp_model_log_isr();
-#endif
-
 void manage_heater()
 {
 #ifdef WATCHDOG
@@ -519,6 +523,12 @@ void manage_heater()
     // syncronize temperatures with isr
     updateTemperatures();
 
+#ifdef TEMP_MODEL
+    // handle model warnings first, so not to override the error handler
+    if(temp_model::warning_state.warning)
+        temp_model::handle_warning();
+#endif
+
     // handle temperature errors
     if(temp_error_state.v)
         handle_temp_error();
@@ -526,8 +536,8 @@ void manage_heater()
     // periodically check fans
     checkFans();
 
-#ifdef TEMP_MODEL_LOGGING
-    temp_model_log_usr();
+#ifdef TEMP_MODEL_DEBUG
+    temp_model::log_usr();
 #endif
 }
 
@@ -1765,26 +1775,19 @@ void handle_temp_error()
             break;
         }
         break;
+#ifdef TEMP_MODEL
     case TempErrorType::model:
-#ifdef TEMP_MODEL_CHECK
-        static bool is_new = true;
-        static bool beep_on = false;
-        printf_P(PSTR("TM: err:%u ass:%u\n"), (unsigned)temp_error_state.error,
-            (unsigned)temp_error_state.assert);
-        if(is_new) {
-            beep_on = true;
-            is_new = false;
-        }
-        WRITE(BEEPER, beep_on);
-        beep_on = !beep_on;
-        if(!temp_error_state.assert) {
-            printf_P(PSTR("TM: assertion cleared - resetting\n"));
+        if(temp_error_state.assert) {
+            // TODO: do something meaningful
+            SERIAL_ECHOLNPGM("TM: error triggered!");
+            WRITE(BEEPER, HIGH);
+        } else {
             temp_error_state.v = 0;
             WRITE(BEEPER, LOW);
-            is_new = true;
+            SERIAL_ECHOLNPGM("TM: error cleared");
         }
-#endif
         break;
+#endif
     }
 }
 
@@ -1841,13 +1844,6 @@ bool has_temperature_compensation()
 #endif //PINDA_THERMISTOR
 
 
-#define TEMP_MGR_INTV   0.27 // seconds, ~3.7Hz
-#define TIMER5_PRESCALE 256
-#define TIMER5_OCRA_OVF (uint16_t)(TEMP_MGR_INTV / ((long double)TIMER5_PRESCALE / F_CPU))
-#define TEMP_MGR_INTERRUPT_STATE()   (TIMSK5 & (1<<OCIE5A))
-#define ENABLE_TEMP_MGR_INTERRUPT()  TIMSK5 |=  (1<<OCIE5A)
-#define DISABLE_TEMP_MGR_INTERRUPT() TIMSK5 &= ~(1<<OCIE5A)
-
 // RAII helper class to run a code block with temp_mgr_isr disabled
 class TempMgrGuard
 {
@@ -1894,6 +1890,10 @@ void temp_mgr_init()
     // reset counter
     TCNT5 = 0;
     OCR5A = TIMER5_OCRA_OVF;
+
+#ifdef TEMP_MODEL
+    temp_model::init();
+#endif
 
     // clear pending interrupts, enable COMPA
     TIFR5 |= (1<<OCF5A);
@@ -2192,9 +2192,6 @@ static void check_temp_runaway()
 }
 
 static void check_temp_raw();
-#ifdef TEMP_MODEL_CHECK
-static void check_temp_model();
-#endif
 
 static void temp_mgr_isr()
 {
@@ -2205,12 +2202,11 @@ static void temp_mgr_isr()
     temp_error_state.assert = false;
     check_temp_raw(); // check min/max temp using raw values
     check_temp_runaway(); // classic temperature hysteresis check
-#ifdef TEMP_MODEL_CHECK
-    check_temp_model(); // model-based heater check
+#ifdef TEMP_MODEL
+    temp_model::check(); // model-based heater check
+#ifdef TEMP_MODEL_DEBUG
+    temp_model::log_isr();
 #endif
-
-#ifdef TEMP_MODEL_LOGGING
-    temp_model_log_isr();
 #endif
 
     // PID regulation
@@ -2332,147 +2328,266 @@ static void check_temp_raw()
     check_min_temp_raw();
 }
 
-#ifdef TEMP_MODEL_CHECK
-#ifndef TEMP_MODEL_VARS
-static const float TM_P = 38.;    // heater power (W)
-static const float TM_C = 11.9;   // heatblock capacitance (J/K)
-static const float TM_R = 27.;    // heatblock resistance
-static const float TM_Rf = -20.;  // full-power fan resistance change
-static const float TM_aC = -5;    // ambient temperature correction (K)
-#endif
+#ifdef TEMP_MODEL
+namespace temp_model {
 
-static const float TM_dTl = 2.1;  // temperature transport delay (s)
-static const uint8_t TM_dTs = (TM_dTl / TEMP_MGR_INTV + 0.5); // temperature transport delay (samples)
-
-static const float TM_fS = 0.065; // simulation (1st-order IIR factor)
-static const float TM_fE = 0.05;  // error (1st-order IIR factor)
-
-static const float TM_err = 1.;   // error threshold (K/s)
-static const float TM_err_s = (TM_err * TEMP_MGR_INTV); // error threshold (per sample)
-
-static float TM_dT_buf[TM_dTs];   // transport delay buffer
-static uint8_t TM_dT_idx = 0;     // transport delay buffer index
-static float TM_dT_err = 0;       // last error
-static float TM_T = 0;            // last temperature
-
-#ifndef MAX
-#define MAX(A, B) (A >= B? A: B)
-#endif
-// samples required for settling the model (crude approximation)
-static uint8_t TM_dT_smp = MAX(TM_dTs, MAX(3/TM_fS, 3/TM_fE));
-
-static void check_temp_model()
+void model_data::reset(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, float ambient_temp)
 {
-    const float soft_pwm_inv = 1. / ((1 << 7) - 1);
-    const float soft_pwm_fan_inv = 1. / ((1 << FAN_SOFT_PWM_BITS) - 1);
+    // pre-compute invariant values
+    C_i = (TEMP_MGR_INTV / C);
+    warn_s = warn * TEMP_MGR_INTV;
+    err_s = err * TEMP_MGR_INTV;
+
+    // initial values
+    memset(dT_lag_buf, 0, sizeof(dT_lag_buf));
+    dT_lag_idx = 0;
+    dT_err_prev = 0;
+    T_prev = heater_temp;
+
+    // perform one step to initialize the first delta
+    step(heater_pwm, fan_pwm, heater_temp, ambient_temp);
+
+    // clear the initialization flag
+    flag_bits.uninitialized = false;
+}
+
+void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, float ambient_temp)
+{
+    constexpr float soft_pwm_inv = 1. / ((1 << 7) - 1);
 
     // input values
-    float heater_scale = soft_pwm_inv * soft_pwm[0];
-    float fan_scale = soft_pwm_fan_inv * soft_pwm_fan;
-    float cur_temp_heater = current_temperature_isr[0];
-    float cur_temp_ambient = current_temperature_ambient_isr + TM_aC;
+    const float heater_scale = soft_pwm_inv * heater_pwm;
+    const float cur_heater_temp = heater_temp;
+    const float cur_ambient_temp = ambient_temp + Ta_corr;
+    const float cur_R = R[fan_pwm]; // resistance at current fan power (K/W)
 
-    // model invariants
-    float C_i = (TEMP_MGR_INTV / TM_C);
-
-    float dP = TM_P * heater_scale; // current power [W]
-    float R = TM_R + TM_Rf * fan_scale; // resistance (constant + fan modulation)
-    float dPl = (cur_temp_heater - cur_temp_ambient) / R; // [W] leakage power
+    float dP = P * heater_scale; // current power [W]
+    float dPl = (cur_heater_temp - cur_ambient_temp) / cur_R; // [W] leakage power
     float dT = (dP - dPl) * C_i; // expected temperature difference (K)
 
     // filter and lag dT
-    uint8_t next_dT_idx = (TM_dT_idx == (TM_dTs - 1) ? 0: TM_dT_idx + 1);
-    float lag_dT = TM_dT_buf[next_dT_idx];
-    float prev_dT = TM_dT_buf[TM_dT_idx];
-    float dTf = (prev_dT * (1. - TM_fS)) + (dT * TM_fS);
-    TM_dT_buf[next_dT_idx] = dTf;
-    TM_dT_idx = next_dT_idx;
+    uint8_t dT_next_idx = (dT_lag_idx == (TEMP_MODEL_LAG_SIZE - 1) ? 0: dT_lag_idx + 1);
+    float dT_lag = dT_lag_buf[dT_next_idx];
+    float dT_lag_prev = dT_lag_buf[dT_lag_idx];
+    float dT_f = (dT_lag_prev * (1.f - TEMP_MODEL_fS)) + (dT * TEMP_MODEL_fS);
+    dT_lag_buf[dT_next_idx] = dT_f;
+    dT_lag_idx = dT_next_idx;
 
     // calculate and filter dT_err
-    float dT_err = (cur_temp_heater - TM_T) - lag_dT;
-    float dT_err_f = (TM_dT_err * (1. - TM_fE)) + (dT_err * TM_fE);
-    TM_T = cur_temp_heater;
-    TM_dT_err = dT_err_f;
+    float dT_err = (cur_heater_temp - T_prev) - dT_lag;
+    float dT_err_f = (dT_err_prev * (1.f - TEMP_MODEL_fE)) + (dT_err * TEMP_MODEL_fE);
+    T_prev = cur_heater_temp;
+    dT_err_prev = dT_err_f;
 
     // check and trigger errors
-    if(TM_dT_smp) {
-        // model not ready
-        --TM_dT_smp;
-    } else {
-        if(dT_err_f > TM_err_s || dT_err_f < -TM_err_s)
-            set_temp_error(TempErrorSource::hotend, 0, TempErrorType::model);
+    flag_bits.error = (fabsf(dT_err_f) > err_s);
+    flag_bits.warning = (fabsf(dT_err_f) > warn_s);
+}
+
+// verify calibration status and trigger a model reset if valid
+void setup()
+{
+    if(!calibrated()) enabled = false;
+    data.flag_bits.uninitialized = true;
+}
+
+void init()
+{
+    // TODO: initialize the model with eeprom values
+    data.P = TEMP_MODEL_P;
+    data.C = TEMP_MODEL_C;
+    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
+        data.R[i] = TEMP_MODEL_R;
+    data.Ta_corr = TEMP_MODEL_Ta_corr;
+    data.warn = TEMP_MODEL_W;
+    data.err = TEMP_MODEL_E;
+
+    enabled = true;
+    setup();
+}
+
+bool calibrated()
+{
+    if(!(data.P >= 0)) return false;
+    if(!(data.C >= 0)) return false;
+    if(!(data.Ta_corr != NAN)) return false;
+    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i) {
+        if(!(temp_model::data.R[i] >= 0))
+            return false;
+    }
+    if(!(data.warn != NAN)) return false;
+    if(!(data.err != NAN)) return false;
+    return true;
+}
+
+void check()
+{
+    if(!enabled) return;
+
+    uint8_t heater_pwm = soft_pwm[0];
+    uint8_t fan_pwm = soft_pwm_fan;
+    float heater_temp = current_temperature_isr[0];
+    float ambient_temp = current_temperature_ambient_isr;
+
+    // check if a reset is required to seed the model: this needs to be done with valid
+    // ADC values, so we can't do that directly in init()
+    if(data.flag_bits.uninitialized)
+        data.reset(heater_pwm, fan_pwm, heater_temp, ambient_temp);
+
+    // step the model
+    data.step(heater_pwm, fan_pwm, heater_temp, ambient_temp);
+
+    // handle errors
+    if(data.flag_bits.error)
+        set_temp_error(TempErrorSource::hotend, 0, TempErrorType::model);
+
+    // handle warning conditions as lower-priority but with greater feedback
+    warning_state.assert = data.flag_bits.warning;
+    if(warning_state.assert) {
+        warning_state.warning = true;
+        warning_state.dT_err = temp_model::data.dT_err_prev;
     }
 }
 
-#ifdef TEMP_MODEL_LOGGING
-static struct
+void handle_warning()
 {
-    volatile struct
+    // update values
+    float warn = data.warn;
+    float dT_err;
     {
-        uint32_t stamp;
-        int8_t delta_ms;
-        uint8_t counter;
-        uint8_t cur_pwm;
-        float cur_temp;
-        float cur_amb;
-    } entry;
+        TempMgrGuard temp_mgr_guard;
+        dT_err = warning_state.dT_err;
+    }
+    dT_err /= TEMP_MGR_INTV; // per-sample => K/s
 
-    uint8_t serial;
-    bool enabled;
-} temp_model_log_buf;
+    // TODO: alert the user on the lcd
+    printf_P(PSTR("TM: error |%f|>%f\n"), (double)dT_err, (double)warn);
 
-static void temp_model_log_usr()
+    static bool beeper = false;
+    if(warning_state.assert) {
+        // beep periodically
+        beeper = !beeper;
+        WRITE(BEEPER, beeper);
+    } else {
+        // warning cleared, reset state
+        warning_state.warning = false;
+        beeper = false;
+        WRITE(BEEPER, LOW);
+    }
+}
+
+#ifdef TEMP_MODEL_DEBUG
+void log_usr()
 {
-    if(!temp_model_log_buf.enabled)
-        return;
+    if(!log_buf.enabled) return;
 
-    uint8_t counter = temp_model_log_buf.entry.counter;
-    if (counter == temp_model_log_buf.serial)
-        return;
+    uint8_t counter = log_buf.entry.counter;
+    if (counter == log_buf.serial) return;
 
     int8_t delta_ms;
     uint8_t cur_pwm;
-    float cur_temp;
-    float cur_amb;
+
+    // avoid strict-aliasing warnings
+    union { float cur_temp; uint32_t cur_temp_b; };
+    union { float cur_amb; uint32_t cur_amb_b; };
+
     {
         TempMgrGuard temp_mgr_guard;
-        delta_ms = temp_model_log_buf.entry.delta_ms;
-        counter = temp_model_log_buf.entry.counter;
-        cur_pwm = temp_model_log_buf.entry.cur_pwm;
-        cur_temp = temp_model_log_buf.entry.cur_temp;
-        cur_amb = temp_model_log_buf.entry.cur_amb;
+        delta_ms = log_buf.entry.delta_ms;
+        counter = log_buf.entry.counter;
+        cur_pwm = log_buf.entry.cur_pwm;
+        cur_temp = log_buf.entry.cur_temp;
+        cur_amb = log_buf.entry.cur_amb;
     }
 
-    uint8_t d = counter - temp_model_log_buf.serial;
-    temp_model_log_buf.serial = counter;
+    uint8_t d = counter - log_buf.serial;
+    log_buf.serial = counter;
 
-    printf_P(PSTR("TML %d %d %x %lx %lx\n"), (unsigned)d - 1, (int)delta_ms + 1, (int)cur_pwm,
-        *(unsigned long*)&cur_temp, *(unsigned long*)&cur_amb);
+    printf_P(PSTR("TML %d %d %x %lx %lx\n"), (unsigned)d - 1, (int)delta_ms + 1,
+        (int)cur_pwm, (unsigned long)cur_temp_b, (unsigned long)cur_amb_b);
 }
 
-static void temp_model_log_isr()
+void log_isr()
 {
-    if(!temp_model_log_buf.enabled)
-        return;
+    if(!log_buf.enabled) return;
 
     uint32_t stamp = _millis();
-    uint8_t delta_ms = stamp - temp_model_log_buf.entry.stamp - (TEMP_MGR_INTV * 1000);
-    temp_model_log_buf.entry.stamp = stamp;
+    uint8_t delta_ms = stamp - log_buf.entry.stamp - (TEMP_MGR_INTV * 1000);
+    log_buf.entry.stamp = stamp;
 
-    ++temp_model_log_buf.entry.counter;
-    temp_model_log_buf.entry.delta_ms = delta_ms;
-    temp_model_log_buf.entry.cur_pwm = soft_pwm[0];
-    temp_model_log_buf.entry.cur_temp = current_temperature_isr[0];
-    temp_model_log_buf.entry.cur_amb = current_temperature_ambient_isr;
+    ++log_buf.entry.counter;
+    log_buf.entry.delta_ms = delta_ms;
+    log_buf.entry.cur_pwm = soft_pwm[0];
+    log_buf.entry.cur_temp = current_temperature_isr[0];
+    log_buf.entry.cur_amb = current_temperature_ambient_isr;
+}
+#endif
+
+} // namespace temp_model
+
+void temp_model_set_enabled(bool enabled)
+{
+    // set the enabled flag
+    {
+        TempMgrGuard temp_mgr_guard;
+        temp_model::enabled = enabled;
+        temp_model::setup();
+    }
+
+    // verify that the model has been enabled
+    if(enabled && !temp_model::enabled)
+        SERIAL_ECHOLNPGM("TM: invalid parameters, cannot enable");
 }
 
+void temp_model_set_params(float C, float P, float Ta_corr, float warn, float err)
+{
+    TempMgrGuard temp_mgr_guard;
+    if(!isnan(C) && C > 0) temp_model::data.C = C;
+    if(!isnan(P) && P > 0) temp_model::data.P = P;
+    if(!isnan(Ta_corr)) temp_model::data.Ta_corr = Ta_corr;
+    if(!isnan(err) && err > 0) temp_model::data.err = err;
+    if(!isnan(warn) && warn > 0) temp_model::data.warn = warn;
+
+    // ensure warn <= err
+    if (temp_model::data.warn > temp_model::data.err)
+        temp_model::data.warn = temp_model::data.err;
+
+    temp_model::setup();
+}
+
+void temp_model_set_resistance(uint8_t index, float R)
+{
+    if(index >= TEMP_MODEL_R_SIZE || R <= 0)
+        return;
+
+    TempMgrGuard temp_mgr_guard;
+    temp_model::data.R[index] = R;
+    temp_model::setup();
+}
+
+void temp_model_report_settings()
+{
+    printf_P(PSTR("%STemperature Model settings:\n"
+            "%S  M310 P%.2f C%.2f S%u E%.2f W%.2f T%.2f\n"),
+        echomagic, echomagic, (double)temp_model::data.P, (double)temp_model::data.C, (unsigned)temp_model::enabled,
+        (double)temp_model::data.err, (double)temp_model::data.warn, (double)temp_model::data.Ta_corr);
+    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
+        printf_P(PSTR("%S  M310 I%u R%.2f\n"), echomagic, (unsigned)i, (double)temp_model::data.R[i]);
+}
+
+void temp_model_autotune(float temp)
+{
+    // TODO
+}
+
+#ifdef TEMP_MODEL_DEBUG
 void temp_model_log_enable(bool enable)
 {
     if(enable) {
         TempMgrGuard temp_mgr_guard;
-        temp_model_log_buf.entry.stamp = _millis();
+        temp_model::log_buf.entry.stamp = _millis();
     }
-    temp_model_log_buf.enabled = enable;
+    temp_model::log_buf.enabled = enable;
 }
 #endif
 #endif
