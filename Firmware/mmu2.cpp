@@ -733,6 +733,19 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
     // - report only changes of states (we can miss an error message)
     // - may be some combination of MMUAvailable + UseMMU flags and decide based on their state
     // Right now the filtering of MMU_NOT_RESPONDING is done in ReportErrorHook() as it is not a problem if mmu2.cpp
+
+    // Depending on the Progress code, we may want to do some action when an error occurs
+    switch (logic.Progress())
+    {
+    case ProgressCode::FeedingToBondtech:
+    case ProgressCode::FeedingToFSensor:
+        // FSENSOR error during load. Make sure E-motor stops moving.
+        loadFilamentStarted = false;
+        break;
+    default:
+        break;
+    }
+
     ReportErrorHook((uint16_t)ec, res);
 
     if( ec != lastErrorCode ){ // deduplicate: only report changes in error codes into the log
