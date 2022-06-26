@@ -435,7 +435,6 @@
 #define TEMP_MODEL_R_thr 0.01 // R estimation iteration threshold
 #define TEMP_MODEL_R_itr 30   // R estimation iteration limit
 
-#define TEMP_MODEL_Rf_D -15   // initial guess for resistance change with full-power fan
 #define TEMP_MODEL_Ta_corr -7 // Default ambient temperature correction
 #define TEMP_MODEL_LAG 2.1    // Temperature transport delay (s)
 

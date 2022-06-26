@@ -1779,7 +1779,7 @@ void serial_read_stream() {
  * Output autoreport values according to features requested in M155
  */
 #if defined(AUTO_REPORT)
-static void host_autoreport()
+void host_autoreport()
 {
     if (autoReportFeatures.TimerExpired())
     {
@@ -7785,8 +7785,8 @@ Sigma_Exit:
     case 310:
     {
         // parse all parameters
-        float P = NAN, C = NAN, R = NAN, E = NAN, W = NAN, T = NAN, A = NAN;
-        int8_t I = -1, S = -1, B = -1;
+        float P = NAN, C = NAN, R = NAN, E = NAN, W = NAN, T = NAN;
+        int8_t I = -1, S = -1, B = -1, A = -1;
         if(code_seen('C')) C = code_value();
         if(code_seen('P')) P = code_value();
         if(code_seen('I')) I = code_value_short();
@@ -7796,10 +7796,10 @@ Sigma_Exit:
         if(code_seen('E')) E = code_value();
         if(code_seen('W')) W = code_value();
         if(code_seen('T')) T = code_value();
-        if(code_seen('A')) A = code_value();
+        if(code_seen('A')) A = code_value_short();
 
         // report values if nothing has been requested
-        if(isnan(C) && isnan(P) && isnan(R) && isnan(E) && isnan(W) && isnan(T) && isnan(A) && I < 0 && S < 0 && B < 0) {
+        if(isnan(C) && isnan(P) && isnan(R) && isnan(E) && isnan(W) && isnan(T) && I < 0 && S < 0 && B < 0 && A < 0) {
             temp_model_report_settings();
             break;
         }
@@ -7811,7 +7811,7 @@ Sigma_Exit:
         if(I >= 0 && !isnan(R)) temp_model_set_resistance(I, R);
 
         // run autotune
-        if(!isnan(A)) temp_model_autotune(A != 0? A: NAN);
+        if(A >= 0) temp_model_autotune(A);
     }
     break;
     

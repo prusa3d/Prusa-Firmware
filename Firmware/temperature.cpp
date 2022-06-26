@@ -52,6 +52,8 @@
 #define TEMP_MGR_INTV   0.27 // seconds, ~3.7Hz
 #define TIMER5_PRESCALE 256
 #define TIMER5_OCRA_OVF (uint16_t)(TEMP_MGR_INTV / ((long double)TIMER5_PRESCALE / F_CPU))
+#define TEMP_MGR_INT_FLAG_STATE()    (TIFR5 & (1<<OCF5A))
+#define TEMP_MGR_INT_FLAG_CLEAR()    TIFR5 |= (1<<OCF5A)
 #define TEMP_MGR_INTERRUPT_STATE()   (TIMSK5 & (1<<OCIE5A))
 #define ENABLE_TEMP_MGR_INTERRUPT()  TIMSK5 |=  (1<<OCIE5A)
 #define DISABLE_TEMP_MGR_INTERRUPT() TIMSK5 &= ~(1<<OCIE5A)
@@ -1893,7 +1895,7 @@ void temp_mgr_init()
     OCR5A = TIMER5_OCRA_OVF;
 
     // clear pending interrupts, enable COMPA
-    TIFR5 |= (1<<OCF5A);
+    TEMP_MGR_INT_FLAG_CLEAR();
     ENABLE_TEMP_MGR_INTERRUPT();
 
     CRITICAL_SECTION_END;
@@ -2215,8 +2217,8 @@ ISR(TIMER5_COMPA_vect)
 {
     // immediately schedule a new conversion
     if(adc_values_ready != true) return;
-    adc_start_cycle();
     adc_values_ready = false;
+    adc_start_cycle();
 
     // run temperature management with interrupts enabled to reduce latency
     DISABLE_TEMP_MGR_INTERRUPT();
@@ -2618,9 +2620,202 @@ void temp_model_save_settings()
     eeprom_update_float((float*)EEPROM_TEMP_MODEL_E, temp_model::data.err);
 }
 
-void temp_model_autotune(float temp)
+namespace temp_model_cal {
+
+void waiting_handler()
 {
-    // TODO
+    manage_heater();
+    host_keepalive();
+    host_autoreport();
+}
+
+void wait(unsigned ms)
+{
+    unsigned long mark = _millis() + ms;
+    while(_millis() < mark)
+        waiting_handler();
+}
+
+void wait_temp()
+{
+    while(current_temperature[0] < (target_temperature[0] - TEMP_HYSTERESIS))
+        waiting_handler();
+}
+
+void cooldown(float temp)
+{
+    float old_speed = fanSpeedSoftPwm;
+    fanSpeedSoftPwm = 255;
+    while((current_temperature[0] >= temp) &&
+        (current_temperature[0] >= (current_temperature_ambient + temp_model::data.Ta_corr + TEMP_HYSTERESIS)))
+        waiting_handler();
+    fanSpeedSoftPwm = old_speed;
+}
+
+uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
+    TempMgrGuard temp_mgr_guard;
+
+    uint16_t pos = 0;
+    while(pos < samples) {
+        if(!TEMP_MGR_INT_FLAG_STATE()) {
+            // temperatures not ready yet
+            waiting_handler();
+            continue;
+        }
+        TEMP_MGR_INT_FLAG_CLEAR();
+
+        // manually repeat what the regular isr would do
+        if(adc_values_ready != true) continue;
+        adc_values_ready = false;
+        adc_start_cycle();
+        temp_mgr_isr();
+
+        // record a new entry
+        rec_entry& entry = rec_buffer[pos];
+        entry.temp = current_temperature_isr[0];
+        entry.pwm = soft_pwm[0];
+        ++pos;
+    }
+
+    return pos;
+}
+
+float cost_fn(uint16_t samples, float* const var, float v, float ambient)
+{
+    *var = v;
+    uint8_t fan_pwm = soft_pwm_fan;
+    temp_model::data.reset(rec_buffer[0].pwm, fan_pwm, rec_buffer[0].temp, ambient);
+    float err = 0;
+    for(uint16_t i = 1; i < samples; ++i) {
+        temp_model::data.step(rec_buffer[i].pwm, fan_pwm, rec_buffer[i].temp, ambient);
+        err += fabsf(temp_model::data.dT_err_prev);
+    }
+    return (err / (samples - 1));
+}
+
+constexpr float GOLDEN_RATIO = 0.6180339887498949;
+
+void update_section(float points[2], const float bounds[2])
+{
+    float d = GOLDEN_RATIO * (bounds[1] - bounds[0]);
+    points[0] = bounds[0] + d;
+    points[1] = bounds[1] - d;
+}
+
+float estimate(uint16_t samples, float* const var, float min, float max, float thr, uint16_t max_itr, float ambient)
+{
+    float e = NAN;
+    float points[2];
+    float bounds[2] = {min, max};
+    update_section(points, bounds);
+
+    for(uint8_t it = 0; it != max_itr; ++it) {
+        float c1 = cost_fn(samples, var, points[0], ambient);
+        float c2 = cost_fn(samples, var, points[1], ambient);
+        bool dir = (c2 < c1);
+        bounds[dir] = points[!dir];
+        update_section(points, bounds);
+        float x = points[!dir];
+        e = (1-GOLDEN_RATIO) * fabsf((bounds[0]-bounds[1]) / x);
+
+        printf_P(PSTR("TM iter:%u v:%.2f e:%.3f\n"), it, x, e);
+        if(e < thr) return e;
+    }
+
+    SERIAL_ECHOLNPGM("TM estimation did not converge");
+    return e;
+}
+
+void autotune(int16_t cal_temp)
+{
+    SERIAL_ECHOLNPGM("TM: autotune start");
+    uint16_t samples;
+
+    // disable the model checking during self-calibration
+    bool was_enabled = temp_model::enabled;
+    temp_model_set_enabled(false);
+
+    // bootstrap C/R values without fan
+    fanSpeedSoftPwm = 0;
+
+    for(uint8_t i = 0; i != 2; ++i) {
+        const char* PROGMEM verb = (i == 0? PSTR("initial"): PSTR("refining"));
+
+        target_temperature[0] = 0;
+        if(current_temperature[0] >= TEMP_MODEL_CAL_Tl) {
+            printf_P(PSTR("TM: cooling down to %dC\n"), TEMP_MODEL_CAL_Tl);
+            cooldown(TEMP_MODEL_CAL_Tl);
+            wait(10000);
+        }
+
+        // we need a valid R value for the initial C guess
+        if(isnan(temp_model::data.R[0]))
+            temp_model::data.R[0] = TEMP_MODEL_Rh;
+
+        printf_P(PSTR("TM: %S C estimation\n"), verb);
+        target_temperature[0] = cal_temp;
+        samples = record();
+        estimate(samples, &temp_model::data.C,
+            TEMP_MODEL_Cl, TEMP_MODEL_Ch, TEMP_MODEL_C_thr, TEMP_MODEL_C_itr,
+            current_temperature_ambient);
+
+        wait_temp();
+        if(i) break; // we don't need to refine R
+        wait(30000); // settle PID regulation
+
+        printf_P(PSTR("TM: %S R estimation @ %dC\n"), verb, cal_temp);
+        samples = record();
+        estimate(samples, &temp_model::data.R[0],
+            TEMP_MODEL_Rl, TEMP_MODEL_Rh, TEMP_MODEL_R_thr, TEMP_MODEL_R_itr,
+            current_temperature_ambient);
+    }
+
+    // Estimate fan losses at regular intervals, starting from full speed to avoid low-speed
+    // kickstart issues, although this requires us to wait more for the PID stabilization.
+    // Normally exhibits logarithmic behavior with the stock fan+shroud, so the shorter interval
+    // at lower speeds is helpful to increase the resolution of the interpolation.
+    fanSpeedSoftPwm = 255;
+    wait(30000);
+
+    for(int8_t i = TEMP_MODEL_R_SIZE; i > 0; i -= TEMP_MODEL_CAL_R_STEP) {
+        fanSpeedSoftPwm = 256 / TEMP_MODEL_R_SIZE * i - 1;
+        wait(10000);
+
+        printf_P(PSTR("TM: R[%u] estimation\n"), (unsigned)soft_pwm_fan);
+        samples = record();
+        estimate(samples, &temp_model::data.R[soft_pwm_fan],
+            TEMP_MODEL_Rl, temp_model::data.R[0], TEMP_MODEL_R_thr, TEMP_MODEL_R_itr,
+            current_temperature_ambient);
+    }
+
+    // interpolate remaining steps to speed-up calibration
+    int8_t next = TEMP_MODEL_R_SIZE - 1;
+    for(uint8_t i = TEMP_MODEL_R_SIZE - 2; i != 0; --i) {
+        if(!((TEMP_MODEL_R_SIZE - i - 1) % TEMP_MODEL_CAL_R_STEP)) {
+            next = i;
+            continue;
+        }
+        int8_t prev = next - TEMP_MODEL_CAL_R_STEP;
+        if(prev < 0) prev = 0;
+        float f = (float)(i - prev) / TEMP_MODEL_CAL_R_STEP;
+        float d = (temp_model::data.R[next] - temp_model::data.R[prev]);
+        temp_model::data.R[i] = temp_model::data.R[prev] + d * f;
+    }
+
+    // restore the initial state
+    fanSpeedSoftPwm = 0;
+    target_temperature[0] = 0;
+    temp_model_set_enabled(was_enabled);
+}
+
+} // namespace temp_model_cal
+
+void temp_model_autotune(int16_t temp)
+{
+    // TODO: ensure printer is idle/queue empty/buffer empty
+    KEEPALIVE_STATE(IN_PROCESS);
+    temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
+    temp_model_report_settings();
 }
 
 #ifdef TEMP_MODEL_DEBUG

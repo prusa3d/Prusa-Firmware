@@ -5,9 +5,10 @@
 
 #include "planner.h"
 
-constexpr uint8_t TEMP_MODEL_CAL_S = 60; // Maximum recording lenght during calibration (s)
-constexpr float TEMP_MODEL_fS = 0.065;   // simulation filter (1st-order IIR factor)
-constexpr float TEMP_MODEL_fE = 0.05;    // error filter (1st-order IIR factor)
+constexpr uint8_t TEMP_MODEL_CAL_S = 60;     // Maximum recording lenght during calibration (s)
+constexpr uint8_t TEMP_MODEL_CAL_R_STEP = 4; // Fan interpolation steps during calibration
+constexpr float TEMP_MODEL_fS = 0.065;       // simulation filter (1st-order IIR factor)
+constexpr float TEMP_MODEL_fE = 0.05;        // error filter (1st-order IIR factor)
 
 // transport delay buffer size (samples)
 constexpr uint8_t TEMP_MODEL_LAG_SIZE = (TEMP_MODEL_LAG / TEMP_MGR_INTV + 0.5);
@@ -16,18 +17,6 @@ constexpr uint8_t TEMP_MODEL_LAG_SIZE = (TEMP_MODEL_LAG / TEMP_MGR_INTV + 0.5);
 constexpr uint8_t TEMP_MODEL_R_SIZE = (1 << FAN_SOFT_PWM_BITS);
 
 namespace temp_model {
-
-// recording scratch buffer
-struct rec_entry
-{
-    float temp;  // heater temperature
-    uint8_t pwm; // heater PWM
-};
-
-constexpr uint16_t rec_buffer_size = TEMP_MODEL_CAL_S / TEMP_MGR_INTV;
-static rec_entry* const rec_buffer = (rec_entry*)block_buffer; // oh-hey, free memory!
-static_assert(sizeof(rec_entry[rec_buffer_size]) <= sizeof(block_buffer),
-    "recording length too long to fit within available buffer");
 
 struct model_data
 {
@@ -108,3 +97,19 @@ static void log_isr(); // isr log handler
 #endif
 
 } // namespace temp_model
+
+namespace temp_model_cal {
+
+// recording scratch buffer
+struct rec_entry
+{
+    float temp;  // heater temperature
+    uint8_t pwm; // heater PWM
+};
+
+constexpr uint16_t REC_BUFFER_SIZE = TEMP_MODEL_CAL_S / TEMP_MGR_INTV;
+static rec_entry* const rec_buffer = (rec_entry*)block_buffer; // oh-hey, free memory!
+static_assert(sizeof(rec_entry[REC_BUFFER_SIZE]) <= sizeof(block_buffer),
+    "recording length too long to fit within available buffer");
+
+} // namespace temp_model_cal
