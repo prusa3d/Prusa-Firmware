@@ -1853,6 +1853,7 @@ public:
     TempMgrGuard() {
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
             temp_mgr_state = TEMP_MGR_INTERRUPT_STATE();
+            DISABLE_TEMP_MGR_INTERRUPT();
         }
     }
 
