@@ -783,6 +783,12 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
         // Act accordingly - one-time handling
         switch (pc) {
         case ProgressCode::UnloadingToFinda:
+            if ((CommandInProgress)logic.CommandInProgress() == CommandInProgress::UnloadFilament)
+            {
+                // If MK3S sent U0 command, then the code below is not relevant.
+                break;
+            }
+
             // This is intended to handle Retry option on MMU error screen
             // MMU sends P3 progress code during Query, and if filament is stuck
             // in the gears, the MK3S needs to move e-axis as well.
