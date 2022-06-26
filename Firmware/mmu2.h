@@ -247,6 +247,7 @@ private:
 
     uint8_t mmu_print_saved;
     bool loadFilamentStarted;
+    bool unloadFilamentStarted;
     
     friend struct LoadingToNozzleRAII;
     /// true in case we are doing the LoadToNozzle operation - that means the filament shall be loaded all the way down to the nozzle

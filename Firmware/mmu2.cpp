@@ -93,6 +93,7 @@ MMU2::MMU2()
     , state(xState::Stopped)
     , mmu_print_saved(SavedState::None)
     , loadFilamentStarted(false)
+    , unloadFilamentStarted(false)
     , loadingToNozzle(false)
 {
 }
@@ -737,6 +738,8 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
     // Depending on the Progress code, we may want to do some action when an error occurs
     switch (logic.Progress())
     {
+    case ProgressCode::UnloadingToFinda:
+        unloadFilamentStarted = false;
     case ProgressCode::FeedingToBondtech:
     case ProgressCode::FeedingToFSensor:
         // FSENSOR error during load. Make sure E-motor stops moving.
@@ -778,6 +781,19 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
 
         // Act accordingly - one-time handling
         switch (pc) {
+        case ProgressCode::UnloadingToFinda:
+            // This is intended to handle Retry option on MMU error screen
+            // MMU sends P3 progress code during Query, and if filament is stuck
+            // in the gears, the MK3S needs to move e-axis as well.
+            st_synchronize();
+            unloadFilamentStarted = true;
+            // Unload slowly while MMU is initalising its axis
+            current_position[E_AXIS] -= 10.0f;
+            plan_buffer_line_curposXYZE(10.0f);
+            st_synchronize();
+            // Now do a fast unload in sync with the MMU
+            current_position[E_AXIS] -= 427.0f - 42.85f - 20.0f; // Roughly same distance as MMU plans
+            plan_buffer_line_curposXYZE(120.0f);
         case ProgressCode::FeedingToBondtech:
             // prepare for the movement of the E-motor
             st_synchronize();
@@ -790,6 +806,19 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
     } else {
         // Act accordingly - every status change (even the same state)
         switch (pc) {
+        case ProgressCode::UnloadingToFinda:
+            if (unloadFilamentStarted && !blocks_queued()) { // Only plan a move if there is no move ongoing
+                
+                if (mmu2.FindaDetectsFilament() == 1)
+                { // Keep moving the E-motor until and error happens or FINDA untriggers
+                    current_position[E_AXIS] -= 6.0f;
+                    plan_buffer_line_curposXYZE(60.0f);
+                } else {
+                    // Only stop moving the motor if FINDA is still triggered.
+                    // Even if the FSENSOR is 0, the filament may get stuck in the bondtech gears
+                    unloadFilamentStarted = false;
+                }
+            }
         case ProgressCode::FeedingToBondtech:
         case ProgressCode::FeedingToFSensor:
             if (loadFilamentStarted) {
