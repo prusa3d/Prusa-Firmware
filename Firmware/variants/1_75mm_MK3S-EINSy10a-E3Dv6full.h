@@ -439,7 +439,7 @@
 #define TEMP_MODEL_Ta_corr -7 // Default ambient temperature correction
 #define TEMP_MODEL_LAG 2.1    // Temperature transport delay (s)
 
-#define TEMP_MODEL_W 1.2      // Default pre-warning threshold (K/s)
+#define TEMP_MODEL_W 1.2      // Default warning threshold (K/s)
 #define TEMP_MODEL_E 1.74     // Default error threshold (K/s)
 
 #define TEMP_MODEL_CAL_Th 230 // Default calibration working temperature (C)

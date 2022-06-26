@@ -44,7 +44,7 @@ struct model_data
     float Ta_corr;                         // ambient temperature correction (K)
 
     // thresholds
-    float warn;                            // pre-warning threshold (K/s)
+    float warn;                            // warning threshold (K/s)
     float err;                             // error threshold (K/s)
 
     // status flags
@@ -61,7 +61,7 @@ struct model_data
 
     // pre-computed values (initialized via reset)
     float C_i;                             // heatblock capacitance (precomputed dT/C)
-    float warn_s;                          // pre-warning threshold (per sample)
+    float warn_s;                          // warning threshold (per sample)
     float err_s;                           // error threshold (per sample)
 
     // simulation functions
