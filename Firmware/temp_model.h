@@ -69,8 +69,9 @@ struct model_data
     void step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, float ambient_temp);
 };
 
-static bool enabled;    // model check enabled
-static model_data data; // default heater data
+static bool enabled;          // model check enabled
+static bool warn_beep = true; // beep on warning threshold
+static model_data data;       // default heater data
 
 static bool calibrated(); // return calibration/model validity status
 static void check();      // check and trigger errors or warnings based on current state

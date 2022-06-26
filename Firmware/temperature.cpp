@@ -2446,14 +2446,18 @@ void handle_warning()
 
     static bool beeper = false;
     if(warning_state.assert) {
-        // beep periodically
-        beeper = !beeper;
-        WRITE(BEEPER, beeper);
+        if(warn_beep) {
+            // beep periodically
+            beeper = !beeper;
+            WRITE(BEEPER, beeper);
+        }
     } else {
         // warning cleared, reset state
         warning_state.warning = false;
-        beeper = false;
-        WRITE(BEEPER, LOW);
+        if(warn_beep) {
+            beeper = false;
+            WRITE(BEEPER, LOW);
+        }
     }
 }
 
@@ -2520,9 +2524,15 @@ void temp_model_set_enabled(bool enabled)
         SERIAL_ECHOLNPGM("TM: invalid parameters, cannot enable");
 }
 
+void temp_model_set_warn_beep(bool enabled)
+{
+    temp_model::warn_beep = enabled;
+}
+
 void temp_model_set_params(float C, float P, float Ta_corr, float warn, float err)
 {
     TempMgrGuard temp_mgr_guard;
+
     if(!isnan(C) && C > 0) temp_model::data.C = C;
     if(!isnan(P) && P > 0) temp_model::data.P = P;
     if(!isnan(Ta_corr)) temp_model::data.Ta_corr = Ta_corr;
@@ -2570,6 +2580,7 @@ void temp_model_reset_settings()
     temp_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
     temp_model::data.warn = TEMP_MODEL_W;
     temp_model::data.err = TEMP_MODEL_E;
+    temp_model::warn_beep = true;
     temp_model::enabled = false;
 }
 
