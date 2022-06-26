@@ -36,6 +36,7 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 static constexpr float MMU2_TOOL_CHANGE_LOAD_LENGTH = 30.0F;
 
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F;
+static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F;
 static constexpr uint8_t MMU2_NO_TOOL = 99;
 static constexpr uint32_t MMU_BAUD = 115200;
 
@@ -793,7 +794,8 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
             st_synchronize();
             // Now do a fast unload in sync with the MMU
             current_position[E_AXIS] -= 427.0f - 42.85f - 20.0f; // Roughly same distance as MMU plans
-            plan_buffer_line_curposXYZE(120.0f);
+            plan_buffer_line_curposXYZE(MMU2_UNLOAD_TO_FINDA_FEED_RATE);
+            break;
         case ProgressCode::FeedingToBondtech:
             // prepare for the movement of the E-motor
             st_synchronize();
