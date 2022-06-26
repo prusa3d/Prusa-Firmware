@@ -303,8 +303,8 @@ uint8_t constexpr Btns(ButtonOperations bMiddle, ButtonOperations bRight){
 static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::Retry, ButtonOperations::Continue),//FINDA_DIDNT_TRIGGER
     Btns(ButtonOperations::Retry, ButtonOperations::Continue),//FINDA_DIDNT_GO_OFF
-    Btns(ButtonOperations::Retry, ButtonOperations::Continue),//FSENSOR_DIDNT_TRIGGER
-    Btns(ButtonOperations::Retry, ButtonOperations::Continue),//FSENSOR_DIDNT_GO_OFF
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_DIDNT_TRIGGER
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_DIDNT_GO_OFF
 
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//PULLEY_STALLED
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_TOO_EARLY
