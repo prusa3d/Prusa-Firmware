@@ -261,10 +261,15 @@ StepStatus Command::Step() {
         return ProcessFINDAReqSent(Processing, State::Wait);
     case State::ButtonSent:{
         // button is never confirmed ... may be it should be
-        // auto expmsg = logic->ExpectingMessage(linkLayerTimeout);
-        // if (expmsg != MessageReady)
-        //     return expmsg;
-        SendQuery();
+        auto expmsg = logic->ExpectingMessage(linkLayerTimeout);
+        if (expmsg != MessageReady)
+            return expmsg;
+        if (logic->rsp.paramCode == ResponseMsgParamCodes::Accepted)
+        {
+            // Button was accepted, decrement the retry.
+            mmu2.DecrementRetryAttempts();
+        }
+        SendAndUpdateFilamentSensor();
         } break;
     default:
         return ProtocolError;

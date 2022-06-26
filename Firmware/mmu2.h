@@ -168,10 +168,13 @@ public:
     /// Automagically "press" a Retry button if we have any retry attempts left
     bool RetryIfPossible(uint16_t ec);
 
-    /// Reset the retryAttempts back to the default value
-    void ResetRetryAttempts();
+    /// Decrement the retry attempts, if in a retry. 
+    // Called by the MMU protocol when a sent button is acknowledged.
+    void DecrementRetryAttempts();
 
 private:
+    /// Reset the retryAttempts back to the default value
+    void ResetRetryAttempts();
     /// Perform software self-reset of the MMU (sends an X0 command)
     void ResetX0();
     
@@ -261,6 +264,8 @@ private:
     bool loadingToNozzle;
     
     uint8_t retryAttempts;
+
+    bool inAutoRetry;
 };
 
 /// following Marlin's way of doing stuff - one and only instance of MMU implementation in the code base
