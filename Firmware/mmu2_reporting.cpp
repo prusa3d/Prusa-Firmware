@@ -100,7 +100,14 @@ extern void ReportErrorHookSensorLineRender()
 static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     uint8_t ret = 0;
     bool two_choices = false;
-    static int8_t enc_dif = 0;
+    static int8_t enc_dif = lcd_encoder_diff;
+
+    if (lcd_encoder_diff == 0)
+    {
+         // lcd_update_enable(true) was called outside ReportErrorHookMonitor
+         // It will set lcd_encoder_diff to 0, sync enc_dif
+        enc_dif = 0;
+    }
 
     // Read and determine what operations should be shown on the menu
     const uint8_t button_operation   = PrusaErrorButtons(ei);
