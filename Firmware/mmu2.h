@@ -64,6 +64,7 @@ public:
         None = 0, // No state saved. 
         ParkExtruder = 1, // The extruder was parked. 
         Cooldown = 2, // The extruder was allowed to cool.
+        CooldownPending = 4,
     };
     
     /// Perform a reset of the MMU
