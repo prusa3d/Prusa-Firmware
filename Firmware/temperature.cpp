@@ -1891,10 +1891,6 @@ void temp_mgr_init()
     TCNT5 = 0;
     OCR5A = TIMER5_OCRA_OVF;
 
-#ifdef TEMP_MODEL
-    temp_model::init();
-#endif
-
     // clear pending interrupts, enable COMPA
     TIFR5 |= (1<<OCF5A);
     ENABLE_TEMP_MGR_INTERRUPT();
@@ -2391,21 +2387,6 @@ void setup()
     data.flag_bits.uninitialized = true;
 }
 
-void init()
-{
-    // TODO: initialize the model with eeprom values
-    data.P = TEMP_MODEL_P;
-    data.C = TEMP_MODEL_C;
-    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
-        data.R[i] = TEMP_MODEL_R;
-    data.Ta_corr = TEMP_MODEL_Ta_corr;
-    data.warn = TEMP_MODEL_W;
-    data.err = TEMP_MODEL_E;
-
-    enabled = true;
-    setup();
-}
-
 bool calibrated()
 {
     if(!(data.P >= 0)) return false;
@@ -2567,12 +2548,62 @@ void temp_model_set_resistance(uint8_t index, float R)
 
 void temp_model_report_settings()
 {
-    printf_P(PSTR("%STemperature Model settings:\n"
-            "%S  M310 P%.2f C%.2f S%u E%.2f W%.2f T%.2f\n"),
-        echomagic, echomagic, (double)temp_model::data.P, (double)temp_model::data.C, (unsigned)temp_model::enabled,
-        (double)temp_model::data.err, (double)temp_model::data.warn, (double)temp_model::data.Ta_corr);
+    SERIAL_ECHO_START;
+    SERIAL_ECHOLNPGM("Temperature Model settings:");
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         printf_P(PSTR("%S  M310 I%u R%.2f\n"), echomagic, (unsigned)i, (double)temp_model::data.R[i]);
+    printf_P(PSTR("%S  M310 P%.2f C%.2f S%u B%u E%.2f W%.2f T%.2f\n"),
+        echomagic, (double)temp_model::data.P, (double)temp_model::data.C,
+        (unsigned)temp_model::enabled, (unsigned)temp_model::warn_beep,
+        (double)temp_model::data.err, (double)temp_model::data.warn,
+        (double)temp_model::data.Ta_corr);
+}
+
+void temp_model_reset_settings()
+{
+    TempMgrGuard temp_mgr_guard;
+
+    temp_model::data.P = TEMP_MODEL_P;
+    temp_model::data.C = NAN;
+    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
+        temp_model::data.R[i] = NAN;
+    temp_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
+    temp_model::data.warn = TEMP_MODEL_W;
+    temp_model::data.err = TEMP_MODEL_E;
+    temp_model::enabled = false;
+}
+
+void temp_model_load_settings()
+{
+    static_assert(TEMP_MODEL_R_SIZE == 16); // ensure we don't desync with the eeprom table
+    TempMgrGuard temp_mgr_guard;
+
+    temp_model::enabled = eeprom_read_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE);
+    temp_model::data.P = eeprom_read_float((float*)EEPROM_TEMP_MODEL_P);
+    temp_model::data.C = eeprom_read_float((float*)EEPROM_TEMP_MODEL_C);
+    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
+        temp_model::data.R[i] = eeprom_read_float((float*)EEPROM_TEMP_MODEL_R + i);
+    temp_model::data.Ta_corr = eeprom_read_float((float*)EEPROM_TEMP_MODEL_Ta_corr);
+    temp_model::data.warn = eeprom_read_float((float*)EEPROM_TEMP_MODEL_W);
+    temp_model::data.err = eeprom_read_float((float*)EEPROM_TEMP_MODEL_E);
+
+    if(!temp_model::calibrated()) {
+        SERIAL_ECHOLNPGM("TM: stored calibration invalid, resetting");
+        temp_model_reset_settings();
+    }
+    temp_model::setup();
+}
+
+void temp_model_save_settings()
+{
+    eeprom_update_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE, temp_model::enabled);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_P, temp_model::data.P);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_C, temp_model::data.C);
+    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
+        eeprom_update_float((float*)EEPROM_TEMP_MODEL_R + i, temp_model::data.R[i]);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_Ta_corr, temp_model::data.Ta_corr);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_W, temp_model::data.warn);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_E, temp_model::data.err);
 }
 
 void temp_model_autotune(float temp)

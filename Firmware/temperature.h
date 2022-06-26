@@ -233,7 +233,12 @@ void PID_autotune(float temp, int extruder, int ncycles);
 void temp_model_set_enabled(bool enabled);
 void temp_model_set_params(float C = NAN, float P = NAN, float Ta_corr = NAN, float warn = NAN, float err = NAN);
 void temp_model_set_resistance(uint8_t index, float R);
+
 void temp_model_report_settings();
+void temp_model_reset_settings();
+void temp_model_load_settings();
+void temp_model_save_settings();
+
 void temp_model_autotune(float temp = NAN);
 
 #ifdef TEMP_MODEL_DEBUG

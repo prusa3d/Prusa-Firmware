@@ -72,7 +72,6 @@ struct model_data
 static bool enabled;    // model check enabled
 static model_data data; // default heater data
 
-static void init();       // initialize and setup the model subsystem
 static bool calibrated(); // return calibration/model validity status
 static void check();      // check and trigger errors or warnings based on current state
 

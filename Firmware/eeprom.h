@@ -550,8 +550,16 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_ECOOL_ENABLE (EEPROM_JOB_ID-1) // uint8_t
 #define EEPROM_FW_CRASH_FLAG (EEPROM_ECOOL_ENABLE-1) // uint8_t
 
+#define EEPROM_TEMP_MODEL_ENABLE (EEPROM_FW_CRASH_FLAG-1) // uint8_t
+#define EEPROM_TEMP_MODEL_P (EEPROM_TEMP_MODEL_ENABLE-4) // float
+#define EEPROM_TEMP_MODEL_C (EEPROM_TEMP_MODEL_P-4) // float
+#define EEPROM_TEMP_MODEL_R (EEPROM_TEMP_MODEL_C-4*16) // float[16]
+#define EEPROM_TEMP_MODEL_Ta_corr (EEPROM_TEMP_MODEL_R-4) // float
+#define EEPROM_TEMP_MODEL_W (EEPROM_TEMP_MODEL_Ta_corr-4) // float
+#define EEPROM_TEMP_MODEL_E (EEPROM_TEMP_MODEL_W-4) // float
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_FW_CRASH_FLAG
+#define EEPROM_LAST_ITEM EEPROM_TEMP_MODEL_E
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

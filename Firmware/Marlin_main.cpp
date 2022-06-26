@@ -7765,13 +7765,16 @@ Sigma_Exit:
     ### M310 - Temperature model
     #### Usage
 
-        M310 [ C ] [ P ] [ I R ] [ S ] [ E ] [ W ] [ A ] [ T ]
+        M310
+        M310 [ I ] [ R ]
+        M310 [ P ] [ C ] [ S ] [ E ] [ W ] [ T ]
+        M310 [ A ]
 
     #### Parameters
-    - `P` - power
-    - `C` - capacitance
     - `I` - resistance index position
     - `R` - resistance value (requires `I`)
+    - `P` - power
+    - `C` - capacitance
     - `S` - set 0=disable 1=enable (default)
     - `E` - error threshold (define min/max values in variants)
     - `W` - warning threshold (define min/max values in variants)
