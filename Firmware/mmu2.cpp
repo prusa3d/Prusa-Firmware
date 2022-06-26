@@ -502,9 +502,10 @@ void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
         }
 
         if (turn_off_nozzle){
-            mmu_print_saved |= SavedState::Cooldown;
-            LogEchoEvent("Heater off");
-            setAllTargetHotends(0);
+            mmu_print_saved |= SavedState::CooldownPending;
+            LogEchoEvent("Heater cooldown pending");
+            // This just sets the flag that we should timeout and shut off the nozzle in 30 minutes...
+            //setAllTargetHotends(0);
         }
     }
     // keep the motors powered forever (until some other strategy is chosen)
@@ -513,10 +514,17 @@ void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
 }
 
 void MMU2::ResumeHotendTemp() {
+    if ((mmu_print_saved & SavedState::CooldownPending))
+    {
+        // Clear the "pending" flag if we haven't cooled yet.
+        mmu_print_saved &= ~(SavedState::CooldownPending);
+        LogEchoEvent("Cooldown flag cleared");
+    }
     if ((mmu_print_saved & SavedState::Cooldown) && resume_hotend_temp) {
         LogEchoEvent("Resuming Temp");
         MMU2_ECHO_MSG("Restoring hotend temperature ");
         SERIAL_ECHOLN(resume_hotend_temp);
+        mmu_print_saved &= ~(SavedState::Cooldown);
         setTargetHotend(resume_hotend_temp, active_extruder);
         lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); // better report the event and let the GUI do its work somewhere else
         ReportErrorHookSensorLineRender();
@@ -524,10 +532,9 @@ void MMU2::ResumeHotendTemp() {
             ReportErrorHookDynamicRender();
             manage_inactivity(true);
         });
-        mmu_print_saved &= ~(SavedState::Cooldown);
+        lcd_update_enable(true); // temporary hack to stop this locking the printer...
         LogEchoEvent("Hotend temperature reached");
         lcd_clear();
-        lcd_update_enable(true); // temporary hack to stop this locking the printer...
     }
 }
 
@@ -591,6 +598,8 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
 
     KEEPALIVE_STATE(PAUSED_FOR_USER);
 
+    LongTimer nozzleTimeout;
+
     for (;;) {
         // in our new implementation, we know the exact state of the MMU at any moment, we do not have to wait for a timeout
         // So in this case we shall decide if the operation is:
@@ -600,6 +609,27 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
         manage_heater();
         manage_inactivity(true); // calls LogicStep() and remembers its return status
         lcd_update(0);
+
+        if (mmu_print_saved & SavedState::CooldownPending)
+        {
+            if (!nozzleTimeout.running())
+            {
+                nozzleTimeout.start();
+                LogEchoEvent(" Cooling Timeout started");
+            } 
+            else if (nozzleTimeout.expired(DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul)) // mins->msec. TODO: do we use the global or have our own independent timeout
+            {
+                mmu_print_saved &= ~(SavedState::CooldownPending);
+                mmu_print_saved |= SavedState::Cooldown;
+                setAllTargetHotends(0);
+                LogEchoEvent("Heater cooldown");
+            }
+        }
+        else if (nozzleTimeout.running())
+        {
+            nozzleTimeout.stop();
+            LogEchoEvent("Cooling timer stopped");
+        }
 
         switch (logicStepLastStatus) {
         case Finished: 
