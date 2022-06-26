@@ -205,7 +205,6 @@ void ReportErrorHook(uint16_t ec, uint8_t res) {
         // a button was pushed on the MMU and the LCD should
         // dismiss the error screen until MMU raises a new error
         ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
-        mmu2.ResetRetryAttempts();
     } else {
         // attempt an automatic Retry button
         if( ReportErrorHookState == ReportErrorHookStates::MONITOR_SELECTION ){
