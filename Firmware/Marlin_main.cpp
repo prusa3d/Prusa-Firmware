@@ -7808,11 +7808,13 @@ Sigma_Exit:
             break;
         }
 
-        // update all set parameters
-        if(S >= 0) temp_model_set_enabled(S);
+        // update all parameters
         if(B >= 0) temp_model_set_warn_beep(B);
         if(!isnan(C) || !isnan(P) || !isnan(T) || !isnan(W) || !isnan(E)) temp_model_set_params(C, P, T, W, E);
         if(I >= 0 && !isnan(R)) temp_model_set_resistance(I, R);
+
+        // enable the model last, if requested
+        if(S >= 0) temp_model_set_enabled(S);
 
         // run autotune
         if(A >= 0) temp_model_autotune(A);
