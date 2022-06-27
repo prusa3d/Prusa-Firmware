@@ -2627,6 +2627,7 @@ void waiting_handler()
     manage_heater();
     host_keepalive();
     host_autoreport();
+    lcd_update(0);
 }
 
 void wait(unsigned ms)
@@ -2668,8 +2669,8 @@ uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
     uint16_t pos = 0;
     while(pos < samples) {
         if(!TEMP_MGR_INT_FLAG_STATE()) {
-            // temperatures not ready yet
-            waiting_handler();
+            // temperatures not ready yet, just manage heaters while waiting to reduce jitter
+            manage_heater();
             continue;
         }
         TEMP_MGR_INT_FLAG_CLEAR();
@@ -2689,6 +2690,9 @@ uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
         entry.temp = current_temperature_isr[0];
         entry.pwm = soft_pwm[0];
         ++pos;
+
+        // it's now safer to give regular serial/lcd updates a shot
+        waiting_handler();
     }
 
     return pos;
