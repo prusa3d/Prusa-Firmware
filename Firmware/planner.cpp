@@ -703,12 +703,14 @@ float junction_deviation = 0.1;
 // calculation the caller must also provide the physical length of the line in millimeters.
 void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target)
 {
-    // Calculate the buffer head after we push this byte
+  // Calculate the buffer head after we push this byte
   uint8_t next_buffer_head = next_block_index(block_buffer_head);
+
+  // TODO: shouldn't this be reset only in the outer marlin loop?
+  waiting_inside_plan_buffer_line_print_aborted = false;
 
   // If the buffer is full: good! That means we are well ahead of the robot. 
   // Rest here until there is room in the buffer.
-  waiting_inside_plan_buffer_line_print_aborted = false;
   if (block_buffer_tail == next_buffer_head) {
       do {
           manage_heater(); 
