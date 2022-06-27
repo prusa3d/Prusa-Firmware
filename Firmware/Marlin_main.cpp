@@ -572,6 +572,10 @@ void servo_init()
   #endif
 }
 
+bool printer_active()
+{
+    return PRINTER_ACTIVE;
+}
 
 bool fans_check_enabled = true;
 

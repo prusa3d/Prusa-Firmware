@@ -2838,7 +2838,11 @@ bool autotune(int16_t cal_temp)
 
 void temp_model_autotune(int16_t temp)
 {
-    // TODO: ensure printer is idle/queue empty/buffer empty
+    if(moves_planned() || printer_active()) {
+        SERIAL_ECHOLNPGM("TM: printer needs to be idle for calibration");
+        return;
+    }
+
     KEEPALIVE_STATE(IN_PROCESS);
 
     // disable the model checking during self-calibration
