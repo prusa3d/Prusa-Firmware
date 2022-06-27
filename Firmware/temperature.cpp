@@ -2632,23 +2632,33 @@ void waiting_handler()
 void wait(unsigned ms)
 {
     unsigned long mark = _millis() + ms;
-    while(_millis() < mark)
+    while(_millis() < mark) {
+        if(temp_error_state.v) break;
         waiting_handler();
+    }
 }
 
 void wait_temp()
 {
-    while(current_temperature[0] < (target_temperature[0] - TEMP_HYSTERESIS))
+    while(current_temperature[0] < (target_temperature[0] - TEMP_HYSTERESIS)) {
+        if(temp_error_state.v) break;
         waiting_handler();
+    }
 }
 
 void cooldown(float temp)
 {
     float old_speed = fanSpeedSoftPwm;
     fanSpeedSoftPwm = 255;
-    while((current_temperature[0] >= temp) &&
-        (current_temperature[0] >= (current_temperature_ambient + temp_model::data.Ta_corr + TEMP_HYSTERESIS)))
+    while(current_temperature[0] >= temp) {
+        if(temp_error_state.v) break;
+        float ambient = current_temperature_ambient + temp_model::data.Ta_corr;
+        if(current_temperature[0] < (ambient + TEMP_HYSTERESIS)) {
+            // do not get stuck waiting very close to ambient temperature
+            break;
+        }
         waiting_handler();
+    }
     fanSpeedSoftPwm = old_speed;
 }
 
@@ -2669,6 +2679,10 @@ uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
         adc_values_ready = false;
         adc_start_cycle();
         temp_mgr_isr();
+
+        // stop recording for an hard error condition
+        if(temp_error_state.v)
+            return 0;
 
         // record a new entry
         rec_entry& entry = rec_buffer[pos];
@@ -2723,17 +2737,13 @@ float estimate(uint16_t samples, float* const var, float min, float max, float t
     }
 
     SERIAL_ECHOLNPGM("TM estimation did not converge");
-    return e;
+    return NAN;
 }
 
-void autotune(int16_t cal_temp)
+bool autotune(int16_t cal_temp)
 {
-    SERIAL_ECHOLNPGM("TM: autotune start");
     uint16_t samples;
-
-    // disable the model checking during self-calibration
-    bool was_enabled = temp_model::enabled;
-    temp_model_set_enabled(false);
+    float e;
 
     // bootstrap C/R values without fan
     fanSpeedSoftPwm = 0;
@@ -2755,9 +2765,14 @@ void autotune(int16_t cal_temp)
         printf_P(PSTR("TM: %S C estimation\n"), verb);
         target_temperature[0] = cal_temp;
         samples = record();
-        estimate(samples, &temp_model::data.C,
+        if(temp_error_state.v || !samples)
+            return true;
+
+        e = estimate(samples, &temp_model::data.C,
             TEMP_MODEL_Cl, TEMP_MODEL_Ch, TEMP_MODEL_C_thr, TEMP_MODEL_C_itr,
             current_temperature_ambient);
+        if(isnan(e))
+            return true;
 
         wait_temp();
         if(i) break; // we don't need to refine R
@@ -2765,9 +2780,14 @@ void autotune(int16_t cal_temp)
 
         printf_P(PSTR("TM: %S R estimation @ %dC\n"), verb, cal_temp);
         samples = record();
-        estimate(samples, &temp_model::data.R[0],
+        if(temp_error_state.v || !samples)
+            return true;
+
+        e = estimate(samples, &temp_model::data.R[0],
             TEMP_MODEL_Rl, TEMP_MODEL_Rh, TEMP_MODEL_R_thr, TEMP_MODEL_R_itr,
             current_temperature_ambient);
+        if(isnan(e))
+            return true;
     }
 
     // Estimate fan losses at regular intervals, starting from full speed to avoid low-speed
@@ -2783,9 +2803,14 @@ void autotune(int16_t cal_temp)
 
         printf_P(PSTR("TM: R[%u] estimation\n"), (unsigned)soft_pwm_fan);
         samples = record();
-        estimate(samples, &temp_model::data.R[soft_pwm_fan],
+        if(temp_error_state.v || !samples)
+            return true;
+
+        e = estimate(samples, &temp_model::data.R[soft_pwm_fan],
             TEMP_MODEL_Rl, temp_model::data.R[0], TEMP_MODEL_R_thr, TEMP_MODEL_R_itr,
             current_temperature_ambient);
+        if(isnan(e))
+            return true;
     }
 
     // interpolate remaining steps to speed-up calibration
@@ -2802,10 +2827,7 @@ void autotune(int16_t cal_temp)
         temp_model::data.R[i] = temp_model::data.R[prev] + d * f;
     }
 
-    // restore the initial state
-    fanSpeedSoftPwm = 0;
-    target_temperature[0] = 0;
-    temp_model_set_enabled(was_enabled);
+    return false;
 }
 
 } // namespace temp_model_cal
@@ -2814,8 +2836,26 @@ void temp_model_autotune(int16_t temp)
 {
     // TODO: ensure printer is idle/queue empty/buffer empty
     KEEPALIVE_STATE(IN_PROCESS);
-    temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
-    temp_model_report_settings();
+
+    // disable the model checking during self-calibration
+    bool was_enabled = temp_model::enabled;
+    temp_model_set_enabled(false);
+
+    SERIAL_ECHOLNPGM("TM: autotune start");
+    bool err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
+
+    // always reset temperature
+    target_temperature[0] = 0;
+
+    if(err) {
+        SERIAL_ECHOLNPGM("TM: autotune failed");
+        if(temp_error_state.v)
+            fanSpeedSoftPwm = 255;
+    } else {
+        fanSpeedSoftPwm = 0;
+        temp_model_set_enabled(was_enabled);
+        temp_model_report_settings();
+    }
 }
 
 #ifdef TEMP_MODEL_DEBUG
