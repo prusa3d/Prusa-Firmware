@@ -9967,7 +9967,9 @@ void UnconditionalStop()
     CRITICAL_SECTION_END;
 }
 
-// Stop: Emergency stop used by overtemp functions which allows recovery
+// Emergency stop used by overtemp functions which allows recovery
+//
+//   This function is called *continuously* during a thermal failure.
 //
 //   In addition to stopping the print, this prevents subsequent G[0-3] commands to be
 //   processed via USB (using "Stopped") until the print is resumed via M999 or
@@ -9977,29 +9979,35 @@ void UnconditionalStop()
 //   will introduce either over/under extrusion on the current segment, and will not
 //   survive a power panic. Switching Stop() to use the pause machinery instead (with
 //   the addition of disabling the headers) could allow true recovery in the future.
-void Stop()
+void ThermalStop(bool pause)
 {
-  // Keep disabling heaters
-  disable_heater();
+    if(Stopped == false) {
+        Stopped = true;
+        if(pause && (IS_SD_PRINTING || usb_timer.running())) {
+            if (!isPrintPaused) {
+                // we cannot make a distinction for an host here, the pause must be instantaneous
+                lcd_pause_print();
+            }
+        } else {
+            // We got a hard thermal error and/or there is no print going on. Just stop.
+            lcd_print_stop();
+        }
+        Stopped_gcode_LastN = gcode_LastN; // Save last g_code for "restart"
 
-  // Call the regular stop function if that's the first time during a new print
-  if(Stopped == false) {
-    Stopped = true;
-    lcd_print_stop();
-    Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
+        // Eventually report the stopped status (though this is usually overridden by a
+        // higher-priority alert status message)
+        SERIAL_ERROR_START;
+        SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
+        LCD_MESSAGERPGM(_T(MSG_STOPPED));
 
-    // Eventually report the stopped status (though this is usually overridden by a
-    // higher-priority alert status message)
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
-    LCD_MESSAGERPGM(_T(MSG_STOPPED));
-  }
+        Sound_MakeCustom(1000,0,true);
+    }
 
-  // Return to the status screen to stop any pending menu action which could have been
-  // started by the user while stuck in the Stopped state. This also ensures the NEW
-  // error is immediately shown.
-  if (menu_menu != lcd_status_screen)
-      lcd_return_to_status();
+    // Return to the status screen to stop any pending menu action which could have been
+    // started by the user while stuck in the Stopped state. This also ensures the NEW
+    // error is immediately shown.
+    if (menu_menu != lcd_status_screen)
+        lcd_return_to_status();
 }
 
 bool IsStopped() { return Stopped; };

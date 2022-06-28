@@ -842,7 +842,7 @@ void soft_pwm_init()
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
+static void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
 {
 	float __delta;
 	float __hysteresis = 0;
@@ -851,7 +851,6 @@ void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _cu
 	static float __preheat_start[2] = { 0,0}; //currently just bed and one extruder
 	static uint8_t __preheat_counter[2] = { 0,0};
 	static uint8_t __preheat_errors[2] = { 0,0};
-		
 
 	if (_millis() - temp_runaway_timer[_heater_id] > 2000)
 	{
@@ -974,32 +973,32 @@ void temp_runaway_check(uint8_t _heater_id, float _target_temperature, float _cu
 	}
 }
 
-void temp_runaway_stop(bool isPreheat, bool isBed)
+static void temp_runaway_stop(bool isPreheat, bool isBed)
 {
-    disable_heater();
-    Sound_MakeCustom(200,0,true);
-
-    if (isPreheat)
-	{
-		lcd_setalertstatuspgm(isBed? PSTR("BED PREHEAT ERROR") : PSTR("PREHEAT ERROR"), LCD_STATUS_CRITICAL);
-		SERIAL_ERROR_START;
-		isBed ? SERIAL_ERRORLNPGM(" THERMAL RUNAWAY (PREHEAT HEATBED)") : SERIAL_ERRORLNPGM(" THERMAL RUNAWAY (PREHEAT HOTEND)");
-
-        hotendFanSetFullSpeed();
-	}
-	else
-	{
-		lcd_setalertstatuspgm(isBed? PSTR("BED THERMAL RUNAWAY") : PSTR("THERMAL RUNAWAY"), LCD_STATUS_CRITICAL);
-		SERIAL_ERROR_START;
-		isBed ? SERIAL_ERRORLNPGM(" HEATBED THERMAL RUNAWAY") : SERIAL_ERRORLNPGM(" HOTEND THERMAL RUNAWAY");
-	}
-
-    Stop();
-
-    if (farm_mode) {
-        prusa_statistics(0);
-        prusa_statistics(isPreheat? 91 : 90);
+    if(IsStopped() == false) {
+        if (isPreheat) {
+            lcd_setalertstatuspgm(isBed? PSTR("BED PREHEAT ERROR") : PSTR("PREHEAT ERROR"), LCD_STATUS_CRITICAL);
+            SERIAL_ERROR_START;
+            if (isBed) {
+                SERIAL_ERRORLNPGM(" THERMAL RUNAWAY (PREHEAT HEATBED)");
+            } else {
+                SERIAL_ERRORLNPGM(" THERMAL RUNAWAY (PREHEAT HOTEND)");
+            }
+        } else {
+            lcd_setalertstatuspgm(isBed? PSTR("BED THERMAL RUNAWAY") : PSTR("THERMAL RUNAWAY"), LCD_STATUS_CRITICAL);
+            SERIAL_ERROR_START;
+            if (isBed) {
+                SERIAL_ERRORLNPGM(" HEATBED THERMAL RUNAWAY");
+            } else {
+                SERIAL_ERRORLNPGM(" HOTEND THERMAL RUNAWAY");
+            }
+        }
+        if (farm_mode) {
+            prusa_statistics(0);
+            prusa_statistics(isPreheat? 91 : 90);
+        }
     }
+    ThermalStop();
 }
 #endif
 
@@ -1011,12 +1010,12 @@ enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_
 
 //! remember the last alert message sent to the LCD
 //! to prevent flicker and improve speed
-uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
+static uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
 
 
 //! update the current temperature error message
 //! @param type short error abbreviation (PROGMEM)
-void temp_update_messagepgm(const char* PROGMEM type)
+static void temp_update_messagepgm(const char* PROGMEM type)
 {
     char msg[LCD_WIDTH];
     strcpy_P(msg, PSTR("Err: "));
@@ -1027,7 +1026,7 @@ void temp_update_messagepgm(const char* PROGMEM type)
 //! signal a temperature error on both the lcd and serial
 //! @param type short error abbreviation (PROGMEM)
 //! @param e optional extruder index for hotend errors
-void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDERS)
+static void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDERS)
 {
     temp_update_messagepgm(type);
 
@@ -1044,60 +1043,38 @@ void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDERS)
 }
 
 
-void max_temp_error(uint8_t e) {
-  disable_heater();
-  if(IsStopped() == false) {
-    temp_error_messagepgm(PSTR("MAXTEMP"), e);
-  }
-  #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-  Stop();
-  #endif
-
-  hotendFanSetFullSpeed();
-  if (farm_mode) { prusa_statistics(93); }
-}
-
-void min_temp_error(uint8_t e) {
-#ifdef DEBUG_DISABLE_MINTEMP
-	return;
+static void max_temp_error(uint8_t e) {
+    if(IsStopped() == false) {
+        temp_error_messagepgm(PSTR("MAXTEMP"), e);
+        if (farm_mode) prusa_statistics(93);
+    }
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+    ThermalStop();
 #endif
-  disable_heater();
-//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
-	static const char err[] PROGMEM = "MINTEMP";
-  if(IsStopped() == false) {
-    temp_error_messagepgm(err, e);
-    last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
-  } else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
-	// we are already stopped due to some error, only update the status message without flickering
-    temp_update_messagepgm(err);
-	last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
-  }
-  #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-//	if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){
-//		last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
-//		lcd_print_stop();
-//	}
-  Stop();
-  #endif
-  if (farm_mode) { prusa_statistics(92); }
-
 }
 
-void bed_max_temp_error(void) {
-  disable_heater();
-  if(IsStopped() == false) {
-    temp_error_messagepgm(PSTR("MAXTEMP BED"));
-  }
-  #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-  Stop();
-  #endif
+static void min_temp_error(uint8_t e) {
+    static const char err[] PROGMEM = "MINTEMP";
+    if(IsStopped() == false) {
+        temp_error_messagepgm(err, e);
+        last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
+        if (farm_mode) prusa_statistics(92);
+    } else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
+        // we are already stopped due to some error, only update the status message without flickering
+        temp_update_messagepgm(err);
+        last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
+    }
+    ThermalStop();
 }
 
-void bed_min_temp_error(void) {
-#ifdef DEBUG_DISABLE_MINTEMP
-	return;
-#endif
-    disable_heater();
+static void bed_max_temp_error(void) {
+    if(IsStopped() == false) {
+        temp_error_messagepgm(PSTR("MAXTEMP BED"));
+    }
+    ThermalStop();
+}
+
+static void bed_min_temp_error(void) {
     static const char err[] PROGMEM = "MINTEMP BED";
     if(IsStopped() == false) {
         temp_error_messagepgm(err);
@@ -1107,34 +1084,23 @@ void bed_min_temp_error(void) {
         temp_update_messagepgm(err);
 		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
     }
-#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-    Stop();
-#endif
+    ThermalStop();
 }
 
 
 #ifdef AMBIENT_THERMISTOR
-void ambient_max_temp_error(void) {
-    disable_heater();
+static void ambient_max_temp_error(void) {
     if(IsStopped() == false) {
         temp_error_messagepgm(PSTR("MAXTEMP AMB"));
     }
-#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-    Stop();
-#endif
+    ThermalStop();
 }
 
-void ambient_min_temp_error(void) {
-#ifdef DEBUG_DISABLE_MINTEMP
-	return;
-#endif
-    disable_heater();
+static void ambient_min_temp_error(void) {
     if(IsStopped() == false) {
         temp_error_messagepgm(PSTR("MINTEMP AMB"));
     }
-#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-    Stop();
-#endif
+    ThermalStop();
 }
 #endif
 
@@ -1713,10 +1679,6 @@ void check_min_temp_ambient()
 
 void handle_temp_error()
 {
-    // TODO: Stop and the various *_error() functions need an overhaul!
-    // The heaters are kept disabled already at a higher level, making almost
-    // all the code inside the invidual handlers useless!
-
     // relay to the original handler
     switch((TempErrorType)temp_error_state.type) {
     case TempErrorType::min:
