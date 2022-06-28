@@ -25,13 +25,10 @@ void lcd_setstatuspgm(const char* message);
 void lcd_setalertstatus(const char* message, uint8_t severity = LCD_STATUS_ALERT);
 void lcd_setalertstatuspgm(const char* message, uint8_t severity = LCD_STATUS_ALERT);
 
-//! only update the alert message on the main status screen
-//! has no sideeffects, may be called multiple times
-void lcd_updatestatus(const char *message);
-void lcd_updatestatuspgm(const char *message);
-
-void lcd_reset_alert_level();
+//! Get/reset the current alert level
 uint8_t get_message_level();
+void lcd_reset_alert_level();
+
 void lcd_adjust_z();
 void lcd_pick_babystep();
 void lcd_alright();

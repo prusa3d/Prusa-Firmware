@@ -7956,7 +7956,7 @@ void lcd_setstatus(const char* message)
   lcd_updatestatus(message);
 }
 
-void lcd_updatestatuspgm(const char *message){
+static void lcd_updatestatuspgm(const char *message){
 	strncpy_P(lcd_status_message, message, LCD_WIDTH);
 	lcd_status_message[LCD_WIDTH] = 0;
 	lcd_finishstatus();
@@ -7971,7 +7971,8 @@ void lcd_setstatuspgm(const char* message)
   lcd_updatestatuspgm(message);
 }
 
-void lcd_updatestatus(const char *message){
+static void lcd_updatestatus(const char *message)
+{
 	strncpy(lcd_status_message, message, LCD_WIDTH);
 	lcd_status_message[LCD_WIDTH] = 0;
 	lcd_finishstatus();

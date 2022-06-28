@@ -1626,12 +1626,12 @@ public:
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
 		case States::ShowPleaseRestart: // displaying "Please restart"
-			lcd_updatestatuspgm(m1);
+			lcd_setalertstatuspgm(m1);
 			substep(States::ShowMintemp);
 			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
 			break;
 		case States::ShowMintemp: // displaying "MINTEMP fixed"
-			lcd_updatestatuspgm(m2);
+			lcd_setalertstatuspgm(m2);
 			substep(States::ShowPleaseRestart);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
