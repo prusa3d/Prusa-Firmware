@@ -34,6 +34,7 @@
 #include "menu.h"
 #include "sound.h"
 #include "fancheck.h"
+#include "messages.h"
 
 #include "SdFatUtil.h"
 
@@ -2406,23 +2407,22 @@ void handle_warning()
     }
     dT_err /= TEMP_MGR_INTV; // per-sample => K/s
 
-    // TODO: alert the user on the lcd
     printf_P(PSTR("TM: error |%f|>%f\n"), (double)dT_err, (double)warn);
 
-    static bool beeper = false;
+    static bool first = true;
     if(warning_state.assert) {
-        if(warn_beep) {
-            // beep periodically
-            beeper = !beeper;
-            WRITE(BEEPER, beeper);
+        if (first) {
+            lcd_setalertstatuspgm(MSG_THERMAL_ANOMALY, LCD_STATUS_INFO);
+            if(warn_beep) WRITE(BEEPER, HIGH);
+            first = false;
+        } else {
+            if(warn_beep) TOGGLE(BEEPER);
         }
     } else {
         // warning cleared, reset state
         warning_state.warning = false;
-        if(warn_beep) {
-            beeper = false;
-            WRITE(BEEPER, LOW);
-        }
+        if(warn_beep) WRITE(BEEPER, LOW);
+        first = true;
     }
 }
 

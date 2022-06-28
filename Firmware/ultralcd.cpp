@@ -94,13 +94,14 @@ static bool lcd_autoDeplete;
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
 
+/* LCD message status */
+static LongTimer lcd_status_message_timeout;
+static uint8_t lcd_status_message_level;
+static char lcd_status_message[LCD_WIDTH + 1] = WELCOME_MSG;
+
 /* !Configuration settings */
 
-uint8_t lcd_status_message_level;
-char lcd_status_message[LCD_WIDTH + 1] = WELCOME_MSG;
-
 static uint8_t lay1cal_filament = 0;
-
 
 static const char separator[] PROGMEM = "--------------------";
 
@@ -597,7 +598,12 @@ void lcdui_print_status_line(void)
             break;
         }
     }
-    else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status)) { // If printing from SD, show what we are printing
+    else if ((IS_SD_PRINTING) &&
+        (custom_message_type == CustomMsg::Status) &&
+        (lcd_status_message_level <= LCD_STATUS_INFO) &&
+        lcd_status_message_timeout.expired_cont(LCD_STATUS_INFO_TIMEOUT))
+    {
+        // If printing from SD, show what we are printing
 		const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
         if(strlen(longFilenameOLD) > LCD_WIDTH) {
             uint8_t gh = scrollstuff;
@@ -7949,58 +7955,70 @@ void lcd_finishstatus() {
 
 }
 
-void lcd_setstatus(const char* message)
+static bool lcd_message_check(uint8_t priority)
 {
-  if (lcd_status_message_level > 0)
-    return;
-  lcd_updatestatus(message);
+    // regular priority check
+    if (priority >= lcd_status_message_level)
+        return true;
+
+    // check if we can override an info message yet
+    if (lcd_status_message_level == LCD_STATUS_INFO) {
+        return lcd_status_message_timeout.expired_cont(LCD_STATUS_INFO_TIMEOUT);
+    }
+
+    return false;
 }
 
-static void lcd_updatestatuspgm(const char *message){
-	strncpy_P(lcd_status_message, message, LCD_WIDTH);
+static void lcd_updatestatus(const char *message, bool progmem = false)
+{
+    if (progmem)
+        strncpy_P(lcd_status_message, message, LCD_WIDTH);
+    else
+        strncpy(lcd_status_message, message, LCD_WIDTH);
+
 	lcd_status_message[LCD_WIDTH] = 0;
 	lcd_finishstatus();
 	// hack lcd_draw_update to 1, i.e. without clear
 	lcd_draw_update = 1;
+}
+
+void lcd_setstatus(const char* message)
+{
+    if (lcd_message_check(LCD_STATUS_NONE))
+        lcd_updatestatus(message);
 }
 
 void lcd_setstatuspgm(const char* message)
 {
-  if (lcd_status_message_level > 0)
-    return;
-  lcd_updatestatuspgm(message);
+    if (lcd_message_check(LCD_STATUS_NONE))
+        lcd_updatestatus(message, true);
 }
 
-static void lcd_updatestatus(const char *message)
+void lcd_setalertstatus_(const char* message, uint8_t severity, bool progmem)
 {
-	strncpy(lcd_status_message, message, LCD_WIDTH);
-	lcd_status_message[LCD_WIDTH] = 0;
-	lcd_finishstatus();
-	// hack lcd_draw_update to 1, i.e. without clear
-	lcd_draw_update = 1;
-}
-
-void lcd_setalertstatuspgm(const char* message, uint8_t severity)
-{
-  if (severity > lcd_status_message_level) {
-      lcd_updatestatuspgm(message);
-      lcd_status_message_level = severity;
-      lcd_return_to_status();
-  }
+    if (lcd_message_check(severity)) {
+        lcd_updatestatus(message, progmem);
+        lcd_status_message_timeout.start();
+        lcd_status_message_level = severity;
+        custom_message_type = CustomMsg::Status;
+        custom_message_state = 0;
+        lcd_return_to_status();
+    }
 }
 
 void lcd_setalertstatus(const char* message, uint8_t severity)
 {
-  if (severity > lcd_status_message_level) {
-      lcd_updatestatus(message);
-      lcd_status_message_level = severity;
-      lcd_return_to_status();
-  }
+    lcd_setalertstatus_(message, severity, false);
+}
+
+void lcd_setalertstatuspgm(const char* message, uint8_t severity)
+{
+    lcd_setalertstatus_(message, severity, true);
 }
 
 void lcd_reset_alert_level()
 {
-  lcd_status_message_level = 0;
+    lcd_status_message_level = 0;
 }
 
 uint8_t get_message_level()

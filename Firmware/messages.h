@@ -168,6 +168,9 @@ extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];
 extern const char MSG_IR_UNKNOWN[];
 #endif
+#ifdef TEMP_MODEL
+extern const char MSG_THERMAL_ANOMALY[];
+#endif
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

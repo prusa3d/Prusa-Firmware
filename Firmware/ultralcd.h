@@ -9,13 +9,18 @@ extern void menu_lcd_lcdupdate_func(void);
 
 // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
 void ultralcd_init();
-void lcd_setstatus(const char* message);
-void lcd_setstatuspgm(const char* message);
 
 //! LCD status severities
-#define LCD_STATUS_CRITICAL 2 //< Heater failure
-#define LCD_STATUS_ALERT    1 //< Other hardware issue
+#define LCD_STATUS_CRITICAL 3 //< Heater failure
+#define LCD_STATUS_ALERT    2 //< Other hardware issue
+#define LCD_STATUS_INFO     1 //< Message times out after a while
 #define LCD_STATUS_NONE     0 //< No alert message set
+
+#define LCD_STATUS_INFO_TIMEOUT 20000
+
+// Set the current status message (equivalent to LCD_STATUS_NONE)
+void lcd_setstatus(const char* message);
+void lcd_setstatuspgm(const char* message);
 
 //! return to the main status screen and display the alert message
 //! Beware - it has sideeffects:
