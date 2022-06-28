@@ -2627,6 +2627,7 @@ void waiting_handler()
     manage_heater();
     host_keepalive();
     host_autoreport();
+    checkFans();
     lcd_update(0);
 }
 
@@ -2698,10 +2699,9 @@ uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
     return pos;
 }
 
-float cost_fn(uint16_t samples, float* const var, float v, float ambient)
+float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pwm, float ambient)
 {
     *var = v;
-    uint8_t fan_pwm = soft_pwm_fan;
     temp_model::data.reset(rec_buffer[0].pwm, fan_pwm, rec_buffer[0].temp, ambient);
     float err = 0;
     for(uint16_t i = 1; i < samples; ++i) {
@@ -2720,7 +2720,10 @@ void update_section(float points[2], const float bounds[2])
     points[1] = bounds[1] - d;
 }
 
-float estimate(uint16_t samples, float* const var, float min, float max, float thr, uint16_t max_itr, float ambient)
+float estimate(uint16_t samples,
+    float* const var, float min, float max,
+    float thr, uint16_t max_itr,
+    uint8_t fan_pwm, float ambient)
 {
     float e = NAN;
     float points[2];
@@ -2728,8 +2731,8 @@ float estimate(uint16_t samples, float* const var, float min, float max, float t
     update_section(points, bounds);
 
     for(uint8_t it = 0; it != max_itr; ++it) {
-        float c1 = cost_fn(samples, var, points[0], ambient);
-        float c2 = cost_fn(samples, var, points[1], ambient);
+        float c1 = cost_fn(samples, var, points[0], fan_pwm, ambient);
+        float c2 = cost_fn(samples, var, points[1], fan_pwm, ambient);
         bool dir = (c2 < c1);
         bounds[dir] = points[!dir];
         update_section(points, bounds);
@@ -2774,7 +2777,7 @@ bool autotune(int16_t cal_temp)
 
         e = estimate(samples, &temp_model::data.C,
             TEMP_MODEL_Cl, TEMP_MODEL_Ch, TEMP_MODEL_C_thr, TEMP_MODEL_C_itr,
-            current_temperature_ambient);
+            0, current_temperature_ambient);
         if(isnan(e))
             return true;
 
@@ -2789,7 +2792,7 @@ bool autotune(int16_t cal_temp)
 
         e = estimate(samples, &temp_model::data.R[0],
             TEMP_MODEL_Rl, TEMP_MODEL_Rh, TEMP_MODEL_R_thr, TEMP_MODEL_R_itr,
-            current_temperature_ambient);
+            0, current_temperature_ambient);
         if(isnan(e))
             return true;
     }
@@ -2805,14 +2808,16 @@ bool autotune(int16_t cal_temp)
         fanSpeedSoftPwm = 256 / TEMP_MODEL_R_SIZE * i - 1;
         wait(10000);
 
-        printf_P(PSTR("TM: R[%u] estimation\n"), (unsigned)soft_pwm_fan);
+        printf_P(PSTR("TM: R[%u] estimation\n"), (unsigned)i);
         samples = record();
         if(temp_error_state.v || !samples)
             return true;
 
-        e = estimate(samples, &temp_model::data.R[soft_pwm_fan],
+        // a fixed fan pwm (the norminal value) is used here, as soft_pwm_fan will be modified
+        // during fan measurements and we'd like to include that skew during normal operation.
+        e = estimate(samples, &temp_model::data.R[i],
             TEMP_MODEL_Rl, temp_model::data.R[0], TEMP_MODEL_R_thr, TEMP_MODEL_R_itr,
-            current_temperature_ambient);
+            i, current_temperature_ambient);
         if(isnan(e))
             return true;
     }
