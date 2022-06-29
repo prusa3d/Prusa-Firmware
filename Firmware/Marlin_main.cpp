@@ -2222,6 +2222,7 @@ void raise_z_above(float target, bool plan)
 
     // Z needs raising
     current_position[Z_AXIS] = target;
+    clamp_to_software_endstops(current_position);
 
 #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
     bool z_min_endstop = (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
@@ -10839,15 +10840,15 @@ void long_pause() //long pause print
     // Stop heaters
     setAllTargetHotends(0);
 
-	//lift z
-	current_position[Z_AXIS] += Z_PAUSE_LIFT;
-	clamp_to_software_endstops(current_position);
-	plan_buffer_line_curposXYZE(15);
+    // Lift z
+    raise_z_above(current_position[Z_AXIS] + Z_PAUSE_LIFT, true);
 
-	//Move XY to side
-	current_position[X_AXIS] = X_PAUSE_POS;
-	current_position[Y_AXIS] = Y_PAUSE_POS;
-	plan_buffer_line_curposXYZE(50);
+    // Move XY to side
+    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
+        current_position[X_AXIS] = X_PAUSE_POS;
+        current_position[Y_AXIS] = Y_PAUSE_POS;
+        plan_buffer_line_curposXYZE(50);
+    }
 
 	// Turn off the print fan
 	fanSpeed = 0;
