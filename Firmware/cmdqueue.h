@@ -54,7 +54,6 @@ extern char *strchr_pointer;
 
 extern long gcode_N;
 extern long gcode_LastN;
-extern long Stopped_gcode_LastN;
 
 extern bool cmdqueue_pop_front();
 extern void cmdqueue_reset();

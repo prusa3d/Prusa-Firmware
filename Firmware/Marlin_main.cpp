@@ -1843,7 +1843,14 @@ void host_keepalive() {
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
 {
-	KEEPALIVE_STATE(NOT_BUSY);
+    if(Stopped) {
+        // Currently Stopped (possibly due to an error) and not accepting new serial commands.
+        // Signal to the host that we're currently busy waiting for supervision.
+        KEEPALIVE_STATE(PAUSED_FOR_USER);
+    } else {
+        // Printer is available for processing, reset state
+        KEEPALIVE_STATE(NOT_BUSY);
+    }
 
 	if (isPrintPaused && saved_printing_type == PRINTING_TYPE_USB) { //keep believing that usb is being printed. Prevents accessing dangerous menus while pausing.
 		usb_timer.start();
@@ -4648,7 +4655,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     */
     case 0: // G0 -> G1
     case 1: // G1
-      if(Stopped == false) {
+        {
             get_coordinates(); // For X Y Z E F
 
             // When recovering from a previous print move, restore the originally
@@ -4707,7 +4714,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
 	
     */
     case 2: 
-      if(Stopped == false) {
+      {
         get_arc_coordinates();
         prepare_arc_move(true);
       }
@@ -4715,7 +4722,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
  
     // -------------------------------
     case 3: 
-      if(Stopped == false) {
+      {
         get_arc_coordinates();
         prepare_arc_move(false);
       }
@@ -8777,16 +8784,6 @@ Sigma_Exit:
 	}
 	break;
 
-    /*!
-    ### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#M999:_Restart_after_being_stopped_by_error">M999: Restart after being stopped by error</a>
-    @todo Usually doesn't work. Should be fixed or removed. Most of the time, if `Stopped` it set, the print fails and is unrecoverable.
-    */
-    case 999:
-      Stopped = false;
-      lcd_reset_alert_level();
-      gcode_LastN = Stopped_gcode_LastN;
-      FlushSerialRequestResend();
-    break;
 	/*!
 	#### End of M-Commands
     */
@@ -8930,7 +8927,7 @@ Sigma_Exit:
                       active_extruder = tmp_extruder;
                       plan_set_position_curposXYZE();
                       // Move to the old position if 'F' was in the parameters
-                      if (make_move && Stopped == false) {
+                      if (make_move) {
                           prepare_move();
                       }
                   }
@@ -9992,12 +9989,13 @@ void ThermalStop(bool pause)
             // We got a hard thermal error and/or there is no print going on. Just stop.
             lcd_print_stop();
         }
-        Stopped_gcode_LastN = gcode_LastN; // Save last g_code for "restart"
 
-        // Eventually report the stopped status (though this is usually overridden by a
-        // higher-priority alert status message)
+        // Report the status on the serial, switch to a busy state
         SERIAL_ERROR_START;
         SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
+
+        // Eventually report the stopped status on the lcd (though this is usually overridden by a
+        // higher-priority alert status message)
         LCD_MESSAGERPGM(_T(MSG_STOPPED));
 
         Sound_MakeCustom(1000,0,true);
