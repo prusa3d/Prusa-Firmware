@@ -7773,6 +7773,7 @@ Sigma_Exit:
     }
     break;
 
+#ifdef TEMP_MODEL
     /*!
     ### M310 - Temperature model
     #### Usage
@@ -7828,6 +7829,7 @@ Sigma_Exit:
         if(A >= 0) temp_model_autotune(A);
     }
     break;
+#endif
     
     /*!
 	### M400 - Wait for all moves to finish <a href="https://reprap.org/wiki/G-code#M400:_Wait_for_current_moves_to_finish">M400: Wait for current moves to finish</a>
