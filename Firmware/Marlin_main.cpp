@@ -455,9 +455,10 @@ static void temp_compensation_start();
 static void temp_compensation_apply();
 #endif
 
-#ifdef PRUSA_SN_SUPPORT
+#ifdef PRUSA_32u2_ENHANCED_FW
 static uint8_t get_PRUSA_SN(char* SN);
-#endif //PRUSA_SN_SUPPORT
+static uint8_t get_PRUSA_DM(char* DM);
+#endif //PRUSA_32u2_ENHANCED_FW
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -1123,7 +1124,7 @@ void setup()
     }
 #endif //TMC2130
 
-#ifdef PRUSA_SN_SUPPORT
+#ifdef PRUSA_32u2_ENHANCED_FW
     //Check for valid SN in EEPROM. Try to retrieve it in case it's invalid.
     //SN is valid only if it is NULL terminated and starts with "CZPX".
     {
@@ -1140,7 +1141,24 @@ void setup()
                 puts_P(PSTR("SN update failed"));
         }
     }
-#endif //PRUSA_SN_SUPPORT
+
+    //Check for valid datamatrix ID in EEPROM. Try to retrieve it in case it's invalid.
+    //datamatrix ID is valid only if it is NULL terminated and contains the "-" character
+    {
+        char DM[25];
+        eeprom_read_block(DM, (uint8_t*)EEPROM_PRUSA_DM, 25);
+        if (DM[24] || DM[4] != 0x2D)
+        {
+            if (!get_PRUSA_DM(DM))
+            {
+                eeprom_update_block(DM, (uint8_t*)EEPROM_PRUSA_DM, 25);
+                puts_P(PSTR("Datamatrix ID updated"));
+            }
+            else
+                puts_P(PSTR("Datamatrix ID update failed"));
+        }
+    }
+#endif //PRUSA_32u2_ENHANCED_FW
 
 
 #ifndef XFLASH
@@ -3850,6 +3868,8 @@ void gcode_M701()
 #endif //FSENSOR_QUALITY
 	}
 }
+
+#ifdef PRUSA_32u2_ENHANCED_FW
 /**
  * @brief Get serial number from 32U2 processor
  *
@@ -3865,7 +3885,6 @@ void gcode_M701()
  * @return 0 on success
  * @return 1 on general failure
  */
-#ifdef PRUSA_SN_SUPPORT
 static uint8_t get_PRUSA_SN(char* SN)
 {
     uint8_t selectedSerialPort_bak = selectedSerialPort;
@@ -3900,7 +3919,58 @@ exit:
     selectedSerialPort = selectedSerialPort_bak;
     return !SN_valid;
 }
-#endif //PRUSA_SN_SUPPORT
+
+/**
+ * @brief Get datamatrix ID from 32U2 processor
+ *
+ * Typical format of datamatrix ID is:4914-2714560811025003600
+ *
+ * Send command ;D to serial port 0 to retrieve datamatrix ID stored in 32U2 processor,
+ * reply is stored in *DM.
+ * Operation takes typically 29 ms. If no valid datamatrix ID can be retrieved within  
+ * the 250ms window, the function aborts and returns a general failure flag.
+ * The command will fail if the 32U2 processor is unpowered via USB since it is isolated 
+ * from the rest of the electronics. In that case the value that is stored in the EEPROM 
+ * should be used instead.
+ * 
+ * @return 0 on success
+ * @return 1 on general failure
+ */
+static uint8_t get_PRUSA_DM(char* DM)
+{
+    uint8_t selectedSerialPort_bak = selectedSerialPort;
+    uint8_t rxIndex;
+    bool DM_valid = false;
+    ShortTimer timeout;
+
+    selectedSerialPort = 0;
+    timeout.start();
+    
+    while (!DM_valid)
+    {
+        rxIndex = 0;
+        _delay(50);
+        MYSERIAL.flush(); //clear RX buffer
+        SERIAL_ECHOLNRPGM(PSTR(";D"));
+        while (rxIndex < 24)
+        {
+            if (timeout.expired(250u))
+                goto exit;
+            if (MYSERIAL.available() > 0)
+            {
+                DM[rxIndex] = MYSERIAL.read();
+                rxIndex++;
+            }
+        }
+        DM[rxIndex] = 0;
+        // printf_P(PSTR("DM:%s\n"), DM);
+        if (DM[4] == 0x2D) DM_valid = true;
+    }
+exit:
+    selectedSerialPort = selectedSerialPort_bak;
+    return !DM_valid;
+}
+#endif //PRUSA_32u2_ENHANCED_FW
 
 //! Detection of faulty RAMBo 1.1b boards equipped with bigger capacitors
 //! at the TACH_1 pin, which causes bad detection of print fan speed.
@@ -4496,8 +4566,8 @@ void process_commands()
 
 	}
 #endif //PRUSA_M28
-#ifdef PRUSA_SN_SUPPORT
-	else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
+#ifdef PRUSA_32u2_ENHANCED_FW
+    else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
         eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
         if (SN[19])
@@ -4505,7 +4575,15 @@ void process_commands()
         else
             puts(SN);
     }
-#endif //PRUSA_SN_SUPPORT
+    else if (code_seen_P(PSTR("DM"))) { // PRUSA DM
+        char DM[25];
+        eeprom_read_block(DM, (uint8_t*)EEPROM_PRUSA_DM, 25);
+        if (DM[24])
+            puts_P(PSTR("DM invalid"));
+        else
+            puts(DM);
+    }
+#endif //PRUSA_32u2_ENHANCED_FW
     else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
 
       SERIAL_PROTOCOLLN(FW_VERSION_FULL);

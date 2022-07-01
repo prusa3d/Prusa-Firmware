@@ -334,6 +334,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 03h 3			| ^						| bad_isr											| ^				| ^
 | ^					| ^			| ^										| 04h 4			| ^						| bad_pullup_temp_isr								| ^				| ^
 | ^					| ^			| ^										| 05h 5			| ^						| bad_pullup_step_isr								| ^				| ^
+| 0x0CEA 3307		| char[25]	| EEPROM_PRUSA_DM						| DM[24] == 0	| ffffffffffffffff...	| PRUSA Datamatrix ID string						| PRUSA DM		| D3 Ax0cea C1
 
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
@@ -550,8 +551,11 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_ECOOL_ENABLE (EEPROM_JOB_ID-1) // uint8_t
 #define EEPROM_FW_CRASH_FLAG (EEPROM_ECOOL_ENABLE-1) // uint8_t
 
+#define EEPROM_PRUSA_DM (EEPROM_FW_CRASH_FLAG-25) // char[25]
+
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_FW_CRASH_FLAG
+#define EEPROM_LAST_ITEM EEPROM_PRUSA_DM
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

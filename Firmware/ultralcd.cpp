@@ -8232,14 +8232,19 @@ bool FarmOrUserECool(){
     return farm_mode || UserECoolEnabled();
 }
 
-#ifdef PRUSA_SN_SUPPORT
-void WorkaroundPrusaSN() {
+#ifdef PRUSA_32u2_ENHANCED_FW
+void WorkaroundPrusa32u2() {
     const char *SN = PSTR("CZPXInvalidSerialNr");
     for (uint8_t i = 0; i < 20; i++) {
         eeprom_update_byte((uint8_t*)EEPROM_PRUSA_SN + i, pgm_read_byte(SN++));
     }
+    
+    const char *DM = PSTR("AAAA-invalidDatamatrixID");
+    for (uint8_t i = 0; i < 25; i++) {
+        eeprom_update_byte((uint8_t*)EEPROM_PRUSA_DM + i, pgm_read_byte(DM++));
+    }
 }
-#endif //PRUSA_SN_SUPPORT
+#endif //PRUSA_32u2_ENHANCED_FW
 
 void lcd_experimental_menu()
 {
@@ -8258,9 +8263,9 @@ void lcd_experimental_menu()
     MENU_ITEM_FUNCTION_P(_N("Test Pullup Crash"), TestPullupCrash);
 #endif // DEBUG_PULLUP_CRASH
     
-#ifdef PRUSA_SN_SUPPORT
-    MENU_ITEM_FUNCTION_P(_N("Fake serial number"), WorkaroundPrusaSN);////MSG_WORKAROUND_PRUSA_SN c=18
-#endif //PRUSA_SN_SUPPORT
+#ifdef PRUSA_32u2_ENHANCED_FW
+    MENU_ITEM_FUNCTION_P(_N("Set invalid SN/DM"), WorkaroundPrusa32u2);////MSG_WORKAROUND_PRUSA_SN c=18
+#endif //PRUSA_32u2_ENHANCED_FW
     MENU_END();
 }
 

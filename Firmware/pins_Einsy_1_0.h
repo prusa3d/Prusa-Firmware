@@ -15,7 +15,7 @@
 #define AMBIENT_THERMISTOR
 #define PINDA_THERMISTOR
 
-#define PRUSA_SN_SUPPORT //enables the "PRUSA SN" command and 32u2 enhanced firmware support
+#define PRUSA_32u2_ENHANCED_FW //enables the 32u2 enhanced firmware support ("PRUSA SN" and "PRUSA DM" commands)
 
 #define XFLASH                 // external 256kB flash
 #define BOOTAPP                  // bootloader support
