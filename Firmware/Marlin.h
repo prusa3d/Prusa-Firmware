@@ -448,7 +448,6 @@ extern void cancel_saved_printing();
 extern uint8_t calc_percent_done();
 
 
-
 // States for managing Marlin and host communication
 // Marlin sends messages if blocked or busy
 /*enum MarlinBusyState {
