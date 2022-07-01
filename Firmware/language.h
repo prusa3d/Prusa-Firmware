@@ -29,6 +29,7 @@
 #define ISTR(s) s
 #define _i(s) _I(s)
 #define _T(s) s
+#define _O(s) s
 #else //(LANG_MODE == 0)
 // section .loc_sec (originaly .progmem0) will be used for localized translated strings
 #define PROGMEM_I2 __attribute__((section(".loc_sec")))
@@ -40,6 +41,7 @@
 #define ISTR(s) "\xff\xff" s
 #define _i(s) lang_get_translation(_I(s))
 #define _T(s) lang_get_translation(s)
+#define _O(s) (s + 2)
 #endif //(LANG_MODE == 0)
 #define _N(s) (__extension__({static const char __c[] PROGMEM_N1 = s; &__c[0];}))
 #define _n(s) _N(s)
