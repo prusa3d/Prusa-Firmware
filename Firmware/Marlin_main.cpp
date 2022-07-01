@@ -1044,10 +1044,6 @@ void setup()
 {
 	timer2_init(); // enables functional millis
 
-	if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
-    {
-        MMU2::mmu2.Start();
-    }
 
 	ultralcd_init();
 
@@ -1062,6 +1058,12 @@ void setup()
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
 	stdout = uartout;
+
+	if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
+    {
+        MMU2::mmu2.Start();
+    }
+
 
 #ifdef XFLASH
     bool xflash_success = xflash_init();
