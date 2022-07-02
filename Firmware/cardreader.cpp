@@ -942,7 +942,7 @@ void CardReader::presort() {
 
         /// pop the position
         const uint16_t o1 = sort_order[i];
-        getfilename_simple(sort_positions[o1]);
+        getfilename_simple(sort_entries[o1]);
         strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
         crmod_date_bckp = crmodDate;
         crmod_time_bckp = crmodTime;
@@ -965,7 +965,7 @@ void CardReader::presort() {
           manage_heater();
           const uint16_t o2 = sort_order[j - 1];
 
-          getfilename_simple(sort_positions[o2]);
+          getfilename_simple(sort_entries[o2]);
           char *name2 = LONGEST_FILENAME; // use the string in-place
 
           // Sort the current pair according to settings.
