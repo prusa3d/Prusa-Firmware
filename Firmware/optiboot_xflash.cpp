@@ -88,8 +88,8 @@ uint8_t optiboot_xflash_enter()
   if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0)) return 1;
   uint8_t ch;
   uint8_t rampz = 0;
-  register uint16_t address = 0;
-  register pagelen_t length;
+  uint16_t address = 0;
+  pagelen_t length;
   // Use the planner's queue for the receive / transmit buffers.
 //  uint8_t *buff = (uint8_t*)block_buffer;
   uint8_t buff[260];
@@ -271,7 +271,7 @@ uint8_t optiboot_xflash_enter()
     /* Read memory block mode, length is big endian.  */
     else if(ch == STK_READ_PAGE) {
       uint32_t addr = (((uint32_t)rampz) << 16) | address;
-      register pagelen_t i;
+      pagelen_t i;
       // Read the page length, with the length transferred each nibble separately to work around
       // the Prusa's USB to serial infamous semicolon issue.
       length  = ((pagelen_t)getch()) << 8;
