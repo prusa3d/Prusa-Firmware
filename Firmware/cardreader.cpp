@@ -825,7 +825,6 @@ void CardReader::presort() {
 
 		if (fileCnt > 1) {
 			// Init sort order.
-			uint8_t sort_order[fileCnt];
 			for (uint16_t i = 0; i < fileCnt; i++) {
 				if (!IS_SD_INSERTED) return;
 				manage_heater();
@@ -833,7 +832,6 @@ void CardReader::presort() {
 					getfilename(0);
 				else
 					getfilename_next(position);
-				sort_order[i] = i;
 				sort_entries[i] = position >> 5;
 				#if HAS_FOLDER_SORTING
 				if (filenameIsDir) dirCnt++;
@@ -864,8 +862,8 @@ void CardReader::presort() {
         counter += i;
 
         /// pop the position
-        const uint16_t o1 = sort_order[i];
-        getfilename_simple(sort_entries[o1]);
+        const uint16_t o1 = sort_entries[i];
+        getfilename_simple(o1);
         strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
         crmod_date_bckp = crmodDate;
         crmod_time_bckp = crmodTime;
@@ -880,15 +878,15 @@ void CardReader::presort() {
           
           #ifdef SORTING_DUMP
           for (uint16_t z = 0; z < fileCnt; z++){
-            printf_P(PSTR("%2u "), sort_order[z]);
+            printf_P(PSTR("%2u "), sort_entries[z]);
           }
           MYSERIAL.println();
           #endif
           
           manage_heater();
-          const uint16_t o2 = sort_order[j - 1];
+          const uint16_t o2 = sort_entries[j - 1];
 
-          getfilename_simple(sort_entries[o2]);
+          getfilename_simple(o2);
           char *name2 = LONGEST_FILENAME; // use the string in-place
 
           // Sort the current pair according to settings.
@@ -905,11 +903,11 @@ void CardReader::presort() {
             #ifdef SORTING_DUMP
             puts_P(PSTR("shift"));
             #endif            
-            sort_order[j] = o2;
+            sort_entries[j] = o2;
           }
         }
         /// place the position
-        sort_order[j] = o1;
+        sort_entries[j] = o1;
       }
 
 #else //Bubble Sort
@@ -937,22 +935,22 @@ void CardReader::presort() {
 					#ifdef SORTING_DUMP
 					for (uint16_t z = 0; z < fileCnt; z++)
 					{
-						printf_P(PSTR("%2u "), sort_order[z]);
+						printf_P(PSTR("%2u "), sort_entries[z]);
 					}
 					MYSERIAL.println();
 					#endif
 					manage_heater();
-					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];
+					const uint16_t o1 = sort_entries[j], o2 = sort_entries[j + 1];
 
 					counter++;
-					getfilename_simple(sort_entries[o1]);
+					getfilename_simple(o1);
 					strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
 					crmod_date_bckp = crmodDate;
 					crmod_time_bckp = crmodTime;
 					#if HAS_FOLDER_SORTING
 					bool dir1 = filenameIsDir;
 					#endif
-					getfilename_simple(sort_entries[o2]);
+					getfilename_simple(o2);
 					char *name2 = LONGEST_FILENAME; // use the string in-place
 
 													// Sort the current pair according to settings.
@@ -968,8 +966,8 @@ void CardReader::presort() {
 						puts_P(PSTR("swap"));
 						#endif
 						
-						sort_order[j] = o2;
-						sort_order[j + 1] = o1;
+						sort_entries[j] = o2;
+						sort_entries[j + 1] = o1;
 						didSwap = true;
 					}
 				}
@@ -983,32 +981,10 @@ void CardReader::presort() {
 			
 			#ifdef SORTING_DUMP
 			for (uint16_t z = 0; z < fileCnt; z++)
-				printf_P(PSTR("%2u "), sort_order[z]);
+				printf_P(PSTR("%2u "), sort_entries[z]);
 			SERIAL_PROTOCOLLN();
 			#endif
 
-			uint8_t sort_order_reverse_index[fileCnt];
-			for (uint8_t i = 0; i < fileCnt; i++)
-				sort_order_reverse_index[sort_order[i]] = i;
-			for (uint8_t i = 0; i < fileCnt; i++)
-			{
-				if (sort_order_reverse_index[i] != i)
-				{
-					uint32_t el = sort_entries[i];
-					uint8_t idx = sort_order_reverse_index[i];
-					while (idx != i)
-					{
-						uint32_t el1 = sort_entries[idx];
-						uint8_t idx1 = sort_order_reverse_index[idx];
-						sort_order_reverse_index[idx] = idx;
-						sort_entries[idx] = el;
-						idx = idx1;
-						el = el1;
-					}
-					sort_order_reverse_index[idx] = idx;
-					sort_entries[idx] = el;
-				}
-			}
 			menu_progressbar_finish();
 		}
 		else {
