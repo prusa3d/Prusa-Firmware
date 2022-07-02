@@ -847,6 +847,7 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
                     unloadFilamentStarted = false;
                 }
             }
+            break;
         case ProgressCode::FeedingToBondtech:
         case ProgressCode::FeedingToFSensor:
             if (loadFilamentStarted) {
