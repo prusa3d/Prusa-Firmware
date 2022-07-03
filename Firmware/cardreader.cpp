@@ -791,57 +791,52 @@ void CardReader::getfilename_sorted(const uint16_t nr, uint8_t sdSort) {
 *  - Most RAM: Buffer the directory and return filenames from RAM
 */
 void CardReader::presort() {
+	// Throw away old sort index
+	flush_presort();
+	
 	if (farm_mode || IS_SD_INSERTED == false) return; //sorting is not used in farm mode
 	uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 
-	if (sdSort == SD_SORT_NONE) return; //sd sort is turned off
-
 	KEEPALIVE_STATE(IN_HANDLER);
-
-	// Throw away old sort index
-	flush_presort();
 
 	// If there are files, sort up to the limit
 	uint16_t fileCnt = getnrfilenames();
 	if (fileCnt > 0) {
-
 		// Never sort more than the max allowed
 		// If you use folders to organize, 20 may be enough
 		if (fileCnt > SDSORT_LIMIT) {
-			lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=6
+			if (sdSort != SD_SORT_NONE) {
+				lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=6
+			}
 			fileCnt = SDSORT_LIMIT;
 		}
 
-		// By default re-read the names from SD for every compare
-		// retaining only two filenames at a time. This is very
-		// slow but is safest and uses minimal RAM.
-		char name1[LONG_FILENAME_LENGTH];
-		uint16_t crmod_time_bckp;
-		uint16_t crmod_date_bckp;
+		sort_count = fileCnt;
+		
+		// Init sort order.
+		for (uint16_t i = 0; i < fileCnt; i++) {
+			if (!IS_SD_INSERTED) return;
+			manage_heater();
+			if (i == 0)
+				getfilename(0);
+			else
+				getfilename_next(position);
+			sort_entries[i] = position >> 5;
+		}
 
-		#if HAS_FOLDER_SORTING
-		uint16_t dirCnt = 0;
-		#endif
-
-		if (fileCnt > 1) {
-			// Init sort order.
-			for (uint16_t i = 0; i < fileCnt; i++) {
-				if (!IS_SD_INSERTED) return;
-				manage_heater();
-				if (i == 0)
-					getfilename(0);
-				else
-					getfilename_next(position);
-				sort_entries[i] = position >> 5;
-				#if HAS_FOLDER_SORTING
-				if (filenameIsDir) dirCnt++;
-				#endif
-			}
+		if ((fileCnt > 1) && (sdSort != SD_SORT_NONE)) {
 
 #ifdef SORTING_SPEEDTEST
 			LongTimer sortingSpeedtestTimer;
 			sortingSpeedtestTimer.start();
 #endif //SORTING_SPEEDTEST
+
+			// By default re-read the names from SD for every compare
+			// retaining only two filenames at a time. This is very
+			// slow but is safest and uses minimal RAM.
+			char name1[LONG_FILENAME_LENGTH];
+			uint16_t crmod_time_bckp;
+			uint16_t crmod_date_bckp;
 
 #ifdef INSERTSORT
 
@@ -987,12 +982,6 @@ void CardReader::presort() {
 
 			menu_progressbar_finish();
 		}
-		else {
-			getfilename(0);
-			sort_entries[0] = position >> 5;
-		}
-
-		sort_count = fileCnt;
 	}
 
 	lcd_update(2);
