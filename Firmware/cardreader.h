@@ -64,6 +64,7 @@ public:
   #ifdef SDCARD_SORT_ALPHA
      void presort();
      void getfilename_sorted(const uint16_t nr, uint8_t sdSort);
+     void getfilename_afterMaxSorting(uint16_t entry, const char * const match = NULL);
   #endif
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
@@ -98,8 +99,8 @@ public:
   int lastnr; //last number of the autostart;
 #ifdef SDCARD_SORT_ALPHA
   bool presort_flag;
-  char dir_names[MAX_DIR_DEPTH][9];
 #endif // SDCARD_SORT_ALPHA
+  char dir_names[MAX_DIR_DEPTH][9];
 private:
   SdFile root,*curDir,workDir,workDirParents[MAX_DIR_DEPTH];
   uint16_t workDirDepth;
@@ -108,6 +109,7 @@ private:
 #ifdef SDCARD_SORT_ALPHA
   uint16_t sort_count;        // Count of sorted items in the current directory
   uint16_t sort_entries[SDSORT_LIMIT];
+  uint16_t lastSortedFilePosition;
 
 #endif // SDCARD_SORT_ALPHA
 
