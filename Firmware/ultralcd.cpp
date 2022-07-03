@@ -6396,6 +6396,7 @@ void lcd_sdcard_menu()
 			_md->fileCnt = card.getnrfilenames();
 			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 			_md->menuState = _standard;
+			_md->row = -1; // assume that no SD file/dir is currently selected. Once they are rendered, it will be changed to the correct row for the _scrolling state.
 		}
 		// FALLTHRU
 		case _standard: //normal menu structure.
@@ -6405,7 +6406,7 @@ void lcd_sdcard_menu()
 				_md->lcd_scrollTimer.start();
 				lcd_draw_update = 1;
 			}
-			if (_md->lcd_scrollTimer.expired(500) && (_md->row != -1)) //switch to the scrolling state on timeout if a file/dir is selected.
+			if ((lcd_draw_update == 0) && _md->lcd_scrollTimer.expired(500) && (_md->row != -1)) //switch to the scrolling state on timeout if a file/dir is selected.
 			{
 				_md->menuState = _scrolling;
 				_md->offset = 0;
