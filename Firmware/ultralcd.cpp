@@ -363,9 +363,10 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_clicked = false;
-			lcd_update_enabled = 0;
+			lcd_consume_click();
+			lcd_update_enabled = false;
 			menu_action_sddirectory(str_fn);
-			lcd_update_enabled = 1;
+			lcd_update_enabled = true;
 			/* return */ menu_item_ret();
 			return 1;
 		}
@@ -384,8 +385,11 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
+			menu_clicked = false;
 			lcd_consume_click();
+			lcd_update_enabled = false;
 			menu_action_sdfile(str_fn);
+			lcd_update_enabled = true;
 			/* return */ menu_item_ret();
 			return 1;
 		}
@@ -6387,7 +6391,9 @@ void lcd_sdcard_menu()
 			if (card.presort_flag == true) //used to force resorting if sorting type is changed.
 			{
 				card.presort_flag = false;
+				lcd_update_enabled = false;
 				card.presort();
+				lcd_update_enabled = true;
 			}
 			_md->fileCnt = card.getnrfilenames();
 			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
