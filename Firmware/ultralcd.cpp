@@ -367,8 +367,7 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 			lcd_update_enabled = false;
 			menu_action_sddirectory(str_fn);
 			lcd_update_enabled = true;
-			/* return */ menu_item_ret();
-			return 1;
+			return menu_item_ret();
 		}
 	}
 	menu_item++;
@@ -390,8 +389,7 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 			lcd_update_enabled = false;
 			menu_action_sdfile(str_fn);
 			lcd_update_enabled = true;
-			/* return */ menu_item_ret();
-			return 1;
+			return menu_item_ret();
 		}
 	}
 	menu_item++;
