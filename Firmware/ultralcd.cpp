@@ -3131,8 +3131,6 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 				if (msg_next == NULL) {
 					KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
-					lcd_update_enable(true);
-					lcd_update(2);
 					return;
 				}
 				else {
