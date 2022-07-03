@@ -11172,6 +11172,16 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 }
 
+void restore_extruder_temperture_from_ram() {
+    if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
+    {
+        setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
+        heating_status = HeatingStatus::EXTRUDER_HEATING;
+        wait_for_heater(_millis(), saved_active_extruder);
+        heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
+    }
+}
+
 //! @brief Restore print from ram
 //!
 //! Restore print saved by stop_and_save_print_to_ram(). Is blocking, restores
@@ -11198,13 +11208,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	// restore active_extruder
 	active_extruder = saved_active_extruder;
 	fanSpeed = saved_fan_speed;
-	if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
-	{
-		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
-		heating_status = HeatingStatus::EXTRUDER_HEATING;
-		wait_for_heater(_millis(), saved_active_extruder);
-		heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
-	}
+	restore_extruder_temperture_from_ram();
 	axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);

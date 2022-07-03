@@ -6005,7 +6005,18 @@ void print_stop()
         fanSpeed = 0;
     }
 
-    if (MMU2::mmu2.Enabled()) MMU2::mmu2.unload(); //M702 C
+    if (MMU2::mmu2.Enabled())
+    {
+        if (isPrintPaused)
+        {
+            // Restore temperature saved in ram after pausing print
+            restore_extruder_temperture_from_ram();
+        }
+        MMU2::mmu2.unload(); //M702 C
+    }
+
+    lcd_cooldown(); //turns off heaters and fan; goes to status screen.
+
     finishAndDisableSteppers(); //M84
     axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
 }
