@@ -984,14 +984,11 @@ void CardReader::presort() {
 		}
 	}
 
-	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);
 }
 
 void CardReader::flush_presort() {
-	if (sort_count > 0) {
-		sort_count = 0;
-	}
+	sort_count = 0;
 }
 
 #endif // SDCARD_SORT_ALPHA
