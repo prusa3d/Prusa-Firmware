@@ -231,7 +231,7 @@
 	  #define SD_SORT_NONE 2
 	  #define INSERTSORT
 	  // #define SORTING_DUMP
-	  #define SORTING_SPEEDTEST
+	  // #define SORTING_SPEEDTEST
 	
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
 	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
