@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import argparse
-import os, sys
+import sys
 
 from lib.dump import decode_dump
 
@@ -21,7 +21,7 @@ def main():
     # decode the dump data
     dump = decode_dump(args.dump)
     if dump is None:
-        return os.EX_DATAERR
+        return 1
 
     # output descriptors
     if args.info:

@@ -326,7 +326,7 @@ def main():
     for translation in polib.pofile(args.po):
         status &= check_translation(translation, msgids, args.pot, args.no_warning, args.no_suggest,
                                     args.warn_empty, args.warn_same, args.information)
-    return 0 if status else os.EX_DATAERR
+    return 0 if status else 1
 
 if __name__ == "__main__":
     exit(main())
