@@ -29,6 +29,7 @@
 #define ISTR(s) s
 #define _i(s) _I(s)
 #define _T(s) s
+#define _O(s) s
 #else //(LANG_MODE == 0)
 // section .loc_sec (originaly .progmem0) will be used for localized translated strings
 #define PROGMEM_I2 __attribute__((section(".loc_sec")))
@@ -40,6 +41,7 @@
 #define ISTR(s) "\xff\xff" s
 #define _i(s) lang_get_translation(_I(s))
 #define _T(s) lang_get_translation(s)
+#define _O(s) (s + 2)
 #endif //(LANG_MODE == 0)
 #define _N(s) (__extension__({static const char __c[] PROGMEM_N1 = s; &__c[0];}))
 #define _n(s) _N(s)
@@ -94,15 +96,45 @@ typedef struct
 #define LANG_CODE_FR 0x6672 //!<'fr'
 #define LANG_CODE_IT 0x6974 //!<'it'
 #define LANG_CODE_PL 0x706c //!<'pl'
-#ifdef COMMUNITY_LANG_SUPPORT //Community language support
-#ifdef COMMUNITY_LANG_NL
+#ifdef COMMUNITY_LANGUAGE_SUPPORT //Community language support
+#ifdef COMMUNITY_LANG_GROUP1_NL
 #define LANG_CODE_NL 0x6e6c //!<'nl'
-#endif // COMMUNITY_LANG_NL
+#endif // COMMUNITY_LANG_GROUP1_NL
+#ifdef COMMUNITY_LANG_GROUP1_SV
+#define LANG_CODE_SV 0x7376 //!<'sv'
+#endif // COMMUNITY_LANG_GROUP1_SV
+#ifdef COMMUNITY_LANG_GROUP1_NO
+#define LANG_CODE_NO 0x6E6F //!<'no'
+#endif // COMMUNITY_LANG_GROUP1_NO
+#ifdef COMMUNITY_LANG_GROUP1_DA
+#define LANG_CODE_DA 0x6461 //!<'da'
+#endif // COMMUNITY_LANG_GROUP1_DA
+#ifdef COMMUNITY_LANG_GROUP1_SL
+#define LANG_CODE_SL 0x736C //!<'sl'
+#endif // COMMUNITY_LANG_GROUP1_SL
+#ifdef COMMUNITY_LANG_GROUP1_HU
+#define LANG_CODE_HU 0x6875 //!<'hu'
+#endif // COMMUNITY_LANG_GROUP1_HU
+#ifdef COMMUNITY_LANG_GROUP1_LB
+#define LANG_CODE_LB 0x6C62 //!<'lb'
+#endif // COMMUNITY_LANG_GROUP1_LB
+#ifdef COMMUNITY_LANG_GROUP1_HR
+#define LANG_CODE_HR 0x6872 //!<'hr'
+#endif // COMMUNITY_LANG_GROUP1_HR
+#ifdef COMMUNITY_LANG_GROUP1_LT
+#define LANG_CODE_LT 0x6C74 //!<'lt'
+#endif // COMMUNITY_LANG_GROUP1_LT
+#ifdef COMMUNITY_LANG_GROUP1_SK
+#define LANG_CODE_SK 0x736b //!<'sk'
+#endif // COMMUNITY_LANG_GROUP1_SK
+#ifdef COMMUNITY_LANG_GROUP1_RO
+#define LANG_CODE_RO 0x726F //!<'ro'
+#endif // COMMUNITY_LANG_GROUP1_RO
 //Use the 3 lines below as a template and replace 'QR', '0X7172' and 'qr'
-//#ifdef COMMUNITY_LANG_QR
+//#ifdef COMMUNITY_LANG_GROUP1_QR
 //#define LANG_CODE_QR 0x7172 //!<'qr'
-//#endif // COMMUNITY_LANG_QR
-#endif // COMMUNITY_LANG_SUPPORT
+//#endif // COMMUNITY_LANG_GROUP1_QR
+#endif // COMMUNITY_LANGUAGE_SUPPORT
 ///@}
 
 #if defined(__cplusplus)
@@ -115,8 +147,6 @@ extern uint8_t lang_selected;
 #if (LANG_MODE != 0)
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
-/** @def _SEC_LANG_TABLE
- *  @brief Align table to start of 256 byte page */
 #define _SEC_LANG_TABLE ((uint16_t)&_SEC_LANG)
 #endif //(LANG_MODE != 0)
 

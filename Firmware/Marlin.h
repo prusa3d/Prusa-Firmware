@@ -504,6 +504,7 @@ void raise_z_above(float target, bool plan=true);
 
 extern "C" void softReset();
 void stack_error();
+void pullup_error(bool fromTempISR);
 
 extern uint32_t IP_address;
 

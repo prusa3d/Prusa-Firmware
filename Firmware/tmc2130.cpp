@@ -976,7 +976,7 @@ void bubblesort_uint8(uint8_t* data, uint8_t size, uint8_t* data2)
 		for (uint8_t i = 0; i < (size - 1); i++)
 			if (data[i] > data[i+1])
 			{
-				uint8_t register d = data[i];
+				uint8_t d = data[i];
 				data[i] = data[i+1];
 				data[i+1] = d;
 				if (data2)

@@ -1,13 +1,13 @@
-# Translation of Prusa-Firmware into Czech.
+# Translation of Prusa-Firmware into Slovanian.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Wed 16 Mar 2022 09:24:38 AM CET\n"
-"PO-Revision-Date: Wed 16 Mar 2022 09:24:38 AM CET\n"
+"POT-Creation-Date: Wed 16 Mar 2022 09:31:25 AM CET\n"
+"PO-Revision-Date: Wed 16 Mar 2022 09:31:25 AM CET\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: cs\n"
+"Language: sl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,12 +18,12 @@ msgstr ""
 #. MSG_IR_03_OR_OLDER c=18
 #: ../../Firmware/fsensor.cpp:178 ../../Firmware/messages.c:166
 msgid " 0.3 or older"
-msgstr " 0.3 nebo starsi"
+msgstr ""
 
 #. MSG_IR_04_OR_NEWER c=18
 #: ../../Firmware/fsensor.cpp:180 ../../Firmware/messages.c:165
 msgid " 0.4 or newer"
-msgstr " 0.4 nebo novejsi"
+msgstr ""
 
 #. MSG_FACTOR
 #: ../../Firmware/ultralcd.cpp:6966
@@ -43,35 +43,35 @@ msgstr ""
 #. MSG_SELFTEST_FS_LEVEL c=20
 #: ../../Firmware/ultralcd.cpp:8100
 msgid "%s level expected"
-msgstr "%s ocekavana verze"
+msgstr ""
 
 #. MSG_CANCEL c=9
 #: ../../Firmware/messages.c:20 ../../Firmware/ultralcd.cpp:2279
 #: ../../Firmware/ultralcd.cpp:4691
 msgid ">Cancel"
-msgstr ">Zrusit"
+msgstr ""
 
 #. MSG_BABYSTEPPING_Z c=15
 #. Beware: must include the ':' as its last character
 #: ../../Firmware/ultralcd.cpp:3024
 msgid "Adjusting Z:"
-msgstr "Doladeni Z:"
+msgstr ""
 
 #. MSG_SELFTEST_CHECK_ALLCORRECT c=20
 #: ../../Firmware/ultralcd.cpp:8395
 msgid "All correct"
-msgstr "Vse OK"
+msgstr ""
 
 #. MSG_WIZARD_DONE c=20 r=3
 #: ../../Firmware/messages.c:120 ../../Firmware/ultralcd.cpp:5031
 #: ../../Firmware/ultralcd.cpp:5040
 msgid "All is done. Happy printing!"
-msgstr "Vse je hotovo. Tisku zdar!"
+msgstr ""
 
 #. MSG_SORT_ALPHA c=8
 #: ../../Firmware/messages.c:143 ../../Firmware/ultralcd.cpp:5264
 msgid "Alphabet"
-msgstr "Abeceda"
+msgstr ""
 
 #: ../../Firmware/ultralcd.cpp:5168
 msgid "Always"
@@ -80,17 +80,17 @@ msgstr ""
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1717
 msgid "Ambient"
-msgstr "Okoli"
+msgstr ""
 
 #. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 #: ../../Firmware/ultralcd.cpp:3347
 msgid "Are left and right Z~carriages all up?"
-msgstr "Dojely oba Z voziky k~hornimu dorazu?"
+msgstr ""
 
 #. MSG_SOUND_BLIND c=7
 #: ../../Firmware/messages.c:148 ../../Firmware/ultralcd.cpp:5319
 msgid "Assist"
-msgstr "Asist."
+msgstr ""
 
 #. MSG_AUTO c=6
 #: ../../Firmware/messages.c:162 ../../Firmware/ultralcd.cpp:6931
@@ -112,45 +112,41 @@ msgstr ""
 #: ../../Firmware/messages.c:107 ../../Firmware/ultralcd.cpp:5224
 #: ../../Firmware/ultralcd.cpp:6846
 msgid "Auto power"
-msgstr "Automat."
+msgstr ""
 
 #. MSG_AUTOLOAD_FILAMENT c=18
 #: ../../Firmware/ultralcd.cpp:6637
 msgid "AutoLoad filament"
-msgstr "AutoZavedeni fil."
+msgstr ""
 
 #. MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4309
 msgid ""
 "Autoloading filament available only when filament sensor is turned on..."
 msgstr ""
-"Automaticke zavadeni filamentu je mozne pouze pri zapnutem filament "
-"senzoru..."
 
 #. MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:2638
 msgid ""
 "Autoloading filament is active, just press the knob and insert filament..."
 msgstr ""
-"Automaticke zavadeni filamentu aktivni, stisknete tlacitko a vlozte "
-"filament..."
 
 #. MSG_SELFTEST_AXIS c=16
 #: ../../Firmware/ultralcd.cpp:8079
 msgid "Axis"
-msgstr "Osa"
+msgstr ""
 
 #. MSG_SELFTEST_AXIS_LENGTH c=20
 #: ../../Firmware/ultralcd.cpp:8078
 msgid "Axis length"
-msgstr "Delka osy"
+msgstr ""
 
 #. MSG_BACK c=18
 #: ../../Firmware/messages.c:66 ../../Firmware/ultralcd.cpp:2417
 #: ../../Firmware/ultralcd.cpp:3103 ../../Firmware/ultralcd.cpp:6928
 #: ../../Firmware/ultralcd.cpp:8971
 msgid "Back"
-msgstr "Zpet"
+msgstr ""
 
 #. MSG_BED c=13
 #: ../../Firmware/Marlin_main.cpp:2155 ../../Firmware/Marlin_main.cpp:5196
@@ -158,24 +154,24 @@ msgstr "Zpet"
 #: ../../Firmware/ultralcd.cpp:1715 ../../Firmware/ultralcd.cpp:6790
 #: ../../Firmware/ultralcd.cpp:6958
 msgid "Bed"
-msgstr "Podlozka"
+msgstr ""
 
 #. MSG_BED_HEATING c=20
 #: ../../Firmware/Marlin_main.cpp:6700 ../../Firmware/messages.c:16
 #: ../../Firmware/ultralcd.cpp:599
 msgid "Bed Heating"
-msgstr "Zahrivani bedu"
+msgstr ""
 
 #. MSG_BED_DONE c=20
 #: ../../Firmware/Marlin_main.cpp:6739 ../../Firmware/messages.c:15
 #: ../../Firmware/ultralcd.cpp:602
 msgid "Bed done"
-msgstr "Bed OK."
+msgstr ""
 
 #. MSG_BED_CORRECTION_MENU c=18
 #: ../../Firmware/ultralcd.cpp:5782
 msgid "Bed level correct"
-msgstr "Korekce podlozky"
+msgstr ""
 
 #. MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 #: ../../Firmware/Marlin_main.cpp:2317 ../../Firmware/Marlin_main.cpp:3193
@@ -187,51 +183,50 @@ msgid ""
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for "
 "reset."
 msgstr ""
-"Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
 
 #. MSG_SELFTEST_BEDHEATER c=20
 #: ../../Firmware/ultralcd.cpp:8036
 msgid "Bed/Heater"
-msgstr "Podlozka/Topeni"
+msgstr ""
 
 #. MSG_BELT_STATUS c=18
 #: ../../Firmware/messages.c:19 ../../Firmware/ultralcd.cpp:1770
 #: ../../Firmware/ultralcd.cpp:2034
 msgid "Belt status"
-msgstr "Stav remenu"
+msgstr ""
 
 #. MSG_BELTTEST c=18
 #: ../../Firmware/ultralcd.cpp:5762
 msgid "Belt test"
-msgstr "Test remenu"
+msgstr ""
 
 #. MSG_RECOVER_PRINT c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:1634 ../../Firmware/Marlin_main.cpp:1656
 #: ../../Firmware/messages.c:84
 msgid "Blackout occurred. Recover print?"
-msgstr "Detekovan vypadek proudu.Obnovit tisk?"
+msgstr ""
 
 #. MSG_BRIGHT c=6
 #: ../../Firmware/messages.c:160 ../../Firmware/ultralcd.cpp:6931
 msgid "Bright"
-msgstr "Jasny"
+msgstr ""
 
 #. MSG_BRIGHTNESS c=18
 #: ../../Firmware/messages.c:156 ../../Firmware/ultralcd.cpp:5710
 #: ../../Firmware/ultralcd.cpp:6856
 msgid "Brightness"
-msgstr "Podsviceni"
+msgstr ""
 
 #. MSG_CALIBRATE_BED c=18
 #: ../../Firmware/ultralcd.cpp:5771
 msgid "Calibrate XYZ"
-msgstr "Kalibrace XYZ"
+msgstr ""
 
 #. MSG_HOMEYZ c=18
 #: ../../Firmware/messages.c:54 ../../Firmware/ultralcd.cpp:5768
 #: ../../Firmware/ultralcd.cpp:5773
 msgid "Calibrate Z"
-msgstr "Kalibrovat Z"
+msgstr ""
 
 #. MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3310
@@ -239,14 +234,12 @@ msgid ""
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibrace XYZ. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte "
-"tlacitkem."
 
 #. MSG_CALIBRATE_Z_AUTO c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:2273 ../../Firmware/messages.c:21
 #: ../../Firmware/ultralcd.cpp:643
 msgid "Calibrating Z"
-msgstr "Kalibruji Z"
+msgstr ""
 
 #. MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3309
@@ -254,28 +247,26 @@ msgid ""
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibrace Z. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte "
-"tlacitkem."
 
 #. MSG_CALIBRATING_HOME c=20
 #: ../../Firmware/ultralcd.cpp:8397
 msgid "Calibrating home"
-msgstr "Kalibruji vychozi p."
+msgstr ""
 
 #. MSG_CALIBRATION c=18
 #: ../../Firmware/messages.c:70 ../../Firmware/ultralcd.cpp:6648
 msgid "Calibration"
-msgstr "Kalibrace"
+msgstr ""
 
 #. MSG_HOMEYZ_DONE c=20
 #: ../../Firmware/ultralcd.cpp:656
 msgid "Calibration done"
-msgstr "Kalibrace OK"
+msgstr ""
 
 #. MSG_SD_REMOVED c=20
 #: ../../Firmware/ultralcd.cpp:8844
 msgid "Card removed"
-msgstr "Karta vyjmuta"
+msgstr ""
 
 #. MSG_CNG_SDCARD
 #: ../../Firmware/ultralcd.cpp:6597
@@ -291,75 +282,75 @@ msgstr ""
 #: ../../Firmware/messages.c:45 ../../Firmware/ultralcd.cpp:6555
 #: ../../Firmware/ultralcd.cpp:6799
 msgid "Change filament"
-msgstr "Vymenit filament"
+msgstr ""
 
 #. MSG_CHANGE_SUCCESS c=20
 #: ../../Firmware/ultralcd.cpp:2484
 msgid "Change success!"
-msgstr "Zmena uspesna!"
+msgstr ""
 
 #. MSG_CORRECTLY c=20
 #: ../../Firmware/ultralcd.cpp:2552
 msgid "Changed correctly?"
-msgstr "Vymena ok?"
+msgstr ""
 
 #. MSG_CHECKING_X c=20
 #: ../../Firmware/messages.c:23 ../../Firmware/ultralcd.cpp:7240
 #: ../../Firmware/ultralcd.cpp:8387
 msgid "Checking X axis"
-msgstr "Kontrola osy X"
+msgstr ""
 
 #. MSG_CHECKING_Y c=20
 #: ../../Firmware/messages.c:24 ../../Firmware/ultralcd.cpp:7249
 #: ../../Firmware/ultralcd.cpp:8388
 msgid "Checking Y axis"
-msgstr "Kontrola osy Y"
+msgstr ""
 
 #. MSG_SELFTEST_CHECK_Z c=20
 #: ../../Firmware/ultralcd.cpp:8389
 msgid "Checking Z axis"
-msgstr "Kontrola osy Z"
+msgstr ""
 
 #. MSG_SELFTEST_CHECK_BED c=20
 #: ../../Firmware/messages.c:96 ../../Firmware/ultralcd.cpp:8390
 msgid "Checking bed"
-msgstr "Kontrola podlozky"
+msgstr ""
 
 #. MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ../../Firmware/ultralcd.cpp:8386
 msgid "Checking endstops"
-msgstr "Kontrola endstopu"
+msgstr ""
 
 #. MSG_CHECKING_FILE c=17
 #: ../../Firmware/ultralcd.cpp:8485
 msgid "Checking file"
-msgstr "Kontroluji soubor"
+msgstr ""
 
 #. MSG_SELFTEST_CHECK_HOTEND c=20
 #: ../../Firmware/ultralcd.cpp:8392
 msgid "Checking hotend"
-msgstr "Kontrola hotend"
+msgstr ""
 
 #. MSG_SELFTEST_CHECK_FSENSOR c=20
 #: ../../Firmware/messages.c:97 ../../Firmware/ultralcd.cpp:8393
 #: ../../Firmware/ultralcd.cpp:8394
 msgid "Checking sensors"
-msgstr "Kontrola senzoru"
+msgstr ""
 
 #. MSG_CHECKS c=18
 #: ../../Firmware/ultralcd.cpp:5625
 msgid "Checks"
-msgstr "Kontrola"
+msgstr ""
 
 #. MSG_NOT_COLOR c=19
 #: ../../Firmware/ultralcd.cpp:2555
 msgid "Color not correct"
-msgstr "Barva neni cista"
+msgstr ""
 
 #. MSG_COMMUNITY_MADE c=18
 #: ../../Firmware/messages.c:25 ../../Firmware/ultralcd.cpp:4489
 msgid "Community made"
-msgstr "Komunitni prekl."
+msgstr ""
 
 #: ../../Firmware/ultralcd.cpp:8619
 msgid "Connect printer to"
@@ -368,23 +359,23 @@ msgstr ""
 #. MSG_CONTINUE_SHORT c=5
 #: ../../Firmware/messages.c:154 ../../Firmware/ultralcd.cpp:5564
 msgid "Cont."
-msgstr "Pokr."
+msgstr ""
 
 #. MSG_COOLDOWN c=18
 #: ../../Firmware/messages.c:27 ../../Firmware/ultralcd.cpp:2441
 msgid "Cooldown"
-msgstr "Zchladit"
+msgstr ""
 
 #. MSG_COPY_SEL_LANG c=20 r=3
 #: ../../Firmware/ultralcd.cpp:4427
 msgid "Copy selected language?"
-msgstr "Kopirovat vybrany jazyk?"
+msgstr ""
 
 #. MSG_CRASH c=7
 #: ../../Firmware/messages.c:28 ../../Firmware/ultralcd.cpp:1533
 #: ../../Firmware/ultralcd.cpp:1574 ../../Firmware/ultralcd.cpp:1584
 msgid "Crash"
-msgstr "Naraz"
+msgstr ""
 
 #. MSG_CRASHDETECT c=13
 #: ../../Firmware/messages.c:30 ../../Firmware/ultralcd.cpp:5201
@@ -392,17 +383,17 @@ msgstr "Naraz"
 #: ../../Firmware/ultralcd.cpp:6836 ../../Firmware/ultralcd.cpp:6837
 #: ../../Firmware/ultralcd.cpp:6839
 msgid "Crash det."
-msgstr "Det. narazu"
+msgstr ""
 
 #. MSG_CRASH_DETECTED c=20
 #: ../../Firmware/Marlin_main.cpp:645 ../../Firmware/messages.c:29
 msgid "Crash detected."
-msgstr "Detekovan naraz."
+msgstr ""
 
 #. MSG_CRASH_RESUME c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:653
 msgid "Crash detected. Resume print?"
-msgstr "Detekovan naraz. Obnovit tisk?"
+msgstr ""
 
 #. MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4281
@@ -411,9 +402,6 @@ msgid ""
 "be turned on only in\n"
 "Normal mode"
 msgstr ""
-"Crash detekce muze\n"
-"byt zapnuta pouze v\n"
-"Normal modu"
 
 #. MSG_CURRENT c=19
 #: ../../Firmware/ultralcd.cpp:5913
@@ -426,33 +414,33 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:6221 ../../Firmware/ultralcd.cpp:6222
 #: ../../Firmware/ultralcd.cpp:6628
 msgid "Cut filament"
-msgstr "Ustrihnout"
+msgstr ""
 
 #. MSG_CUTTER c=9
 #: ../../Firmware/messages.c:130 ../../Firmware/ultralcd.cpp:5163
 #: ../../Firmware/ultralcd.cpp:5168 ../../Firmware/ultralcd.cpp:5173
 msgid "Cutter"
-msgstr "Strihani"
+msgstr ""
 
 #. MSG_MMU_CUTTING_FIL c=18
 #: ../../Firmware/mmu.cpp:1387
 msgid "Cutting filament"
-msgstr "Strihani filamentu"
+msgstr ""
 
 #. MSG_DATE c=17
 #: ../../Firmware/ultralcd.cpp:1975
 msgid "Date:"
-msgstr "Datum:"
+msgstr ""
 
 #. MSG_DIM c=6
 #: ../../Firmware/messages.c:161 ../../Firmware/ultralcd.cpp:6931
 msgid "Dim"
-msgstr "Temny"
+msgstr ""
 
 #. MSG_DISABLE_STEPPERS c=18
 #: ../../Firmware/ultralcd.cpp:5662
 msgid "Disable steppers"
-msgstr "Vypnout motory"
+msgstr ""
 
 #. MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: ../../Firmware/Marlin_main.cpp:1579 ../../Firmware/Marlin_main.cpp:3612
@@ -462,8 +450,6 @@ msgid ""
 "Please follow the manual, chapter First steps, section First layer "
 "calibration."
 msgstr ""
-"Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim "
-"podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ../../Firmware/ultralcd.cpp:5005
@@ -471,7 +457,6 @@ msgid ""
 "Do you want to repeat last step to readjust distance between nozzle and "
 "heatbed?"
 msgstr ""
-"Chcete opakovat posledni krok a pozmenit vzdalenost mezi tryskou a podlozkou?"
 
 #: ../../Firmware/mmu.cpp:872
 msgid "Do you want to switch extruder?"
@@ -485,17 +470,17 @@ msgstr ""
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:5074
 msgid "E-correct:"
-msgstr "Korekce E:"
+msgstr ""
 
 #. MSG_ERROR c=10
 #: ../../Firmware/messages.c:31 ../../Firmware/ultralcd.cpp:2616
 msgid "ERROR:"
-msgstr "CHYBA:"
+msgstr ""
 
 #. MSG_FSENS_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4322
 msgid "ERROR: Filament sensor is not responding, please check connection."
-msgstr "CHYBA: Filament senzor nereaguje, zkontrolujte prosim zapojeni."
+msgstr ""
 
 #. MSG_EJECT_FILAMENT c=17
 #: ../../Firmware/messages.c:62 ../../Firmware/ultralcd.cpp:6196
@@ -503,27 +488,27 @@ msgstr "CHYBA: Filament senzor nereaguje, zkontrolujte prosim zapojeni."
 #: ../../Firmware/ultralcd.cpp:6199 ../../Firmware/ultralcd.cpp:6200
 #: ../../Firmware/ultralcd.cpp:6626
 msgid "Eject filament"
-msgstr "Vysunout fil."
+msgstr ""
 
 #. MSG_EJECTING_FILAMENT c=20
 #: ../../Firmware/mmu.cpp:1415
 msgid "Ejecting filament"
-msgstr "Vysouvam filament"
+msgstr ""
 
 #. MSG_SELFTEST_ENDSTOP c=16
 #: ../../Firmware/ultralcd.cpp:8049
 msgid "Endstop"
-msgstr "Koncovy spinac"
+msgstr ""
 
 #. MSG_SELFTEST_ENDSTOP_NOTHIT c=20
 #: ../../Firmware/ultralcd.cpp:8054
 msgid "Endstop not hit"
-msgstr "Kon. spinac nesepnut"
+msgstr ""
 
 #. MSG_SELFTEST_ENDSTOPS c=20
 #: ../../Firmware/ultralcd.cpp:8040
 msgid "Endstops"
-msgstr "Konc. spinace"
+msgstr ""
 
 #. MSG_EXTRUDER c=17
 #: ../../Firmware/Marlin_main.cpp:8967 ../../Firmware/messages.c:32
@@ -555,7 +540,7 @@ msgstr ""
 #: ../../Firmware/messages.c:37 ../../Firmware/ultralcd.cpp:1438
 #: ../../Firmware/ultralcd.cpp:8403
 msgid "Extruder fan:"
-msgstr "Levy vent.:"
+msgstr ""
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:2030
@@ -567,64 +552,64 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:5097 ../../Firmware/ultralcd.cpp:5108
 #: ../../Firmware/ultralcd.cpp:5110
 msgid "F. autoload"
-msgstr "F. autozav."
+msgstr ""
 
 #. MSG_FS_ACTION c=10
 #: ../../Firmware/messages.c:153 ../../Firmware/ultralcd.cpp:5564
 #: ../../Firmware/ultralcd.cpp:5567
 msgid "FS Action"
-msgstr "FS reakce"
+msgstr ""
 
 #. MSG_FS_V_03_OR_OLDER c=18
 #: ../../Firmware/Marlin_main.cpp:9927
 msgid "FS v0.3 or older"
-msgstr "FS 0.3 nebo starsi"
+msgstr ""
 
 #. MSG_FS_V_04_OR_NEWER c=18
 #: ../../Firmware/Marlin_main.cpp:9919
 msgid "FS v0.4 or newer"
-msgstr "FS 0.4 a novejsi"
+msgstr ""
 
 #. MSG_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:6656
 msgid "Fail stats"
-msgstr "Selhani"
+msgstr ""
 
 #. MSG_MMU_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:6659
 msgid "Fail stats MMU"
-msgstr "Selhani MMU"
+msgstr ""
 
 #. MSG_FALSE_TRIGGERING c=20
 #: ../../Firmware/ultralcd.cpp:8095
 msgid "False triggering"
-msgstr "Falesne spusteni"
+msgstr ""
 
 #. MSG_FAN_SPEED c=14
 #: ../../Firmware/messages.c:36 ../../Firmware/ultralcd.cpp:6792
 #: ../../Firmware/ultralcd.cpp:6960
 msgid "Fan speed"
-msgstr "Rychlost vent."
+msgstr ""
 
 #. MSG_SELFTEST_FAN c=20
 #: ../../Firmware/messages.c:93 ../../Firmware/ultralcd.cpp:8207
 #: ../../Firmware/ultralcd.cpp:8383 ../../Firmware/ultralcd.cpp:8384
 #: ../../Firmware/ultralcd.cpp:8385
 msgid "Fan test"
-msgstr "Test ventilatoru"
+msgstr ""
 
 #. MSG_FANS_CHECK c=13
 #: ../../Firmware/messages.c:33 ../../Firmware/ultralcd.cpp:5671
 #: ../../Firmware/ultralcd.cpp:6825
 msgid "Fans check"
-msgstr "Kontr. vent."
+msgstr ""
 
 #. MSG_FIL_RUNOUTS c=15
 #: ../../Firmware/messages.c:34 ../../Firmware/ultralcd.cpp:1532
 #: ../../Firmware/ultralcd.cpp:1573 ../../Firmware/ultralcd.cpp:1639
 #: ../../Firmware/ultralcd.cpp:1641
 msgid "Fil. runouts"
-msgstr "Vypadky filam."
+msgstr ""
 
 #. MSG_FSENSOR c=12
 #: ../../Firmware/messages.c:51 ../../Firmware/ultralcd.cpp:3854
@@ -632,7 +617,7 @@ msgstr "Vypadky filam."
 #: ../../Firmware/ultralcd.cpp:5104 ../../Firmware/ultralcd.cpp:6806
 #: ../../Firmware/ultralcd.cpp:6810 ../../Firmware/ultralcd.cpp:6814
 msgid "Fil. sensor"
-msgstr "Fil. senzor"
+msgstr ""
 
 #: ../../Firmware/Marlin_main.cpp:3875 ../../Firmware/Marlin_main.cpp:12123
 msgid "Fil. sensor response is poor, disable it?"
@@ -648,35 +633,35 @@ msgstr ""
 #: ../../Firmware/messages.c:39 ../../Firmware/ultralcd.cpp:2624
 #: ../../Firmware/ultralcd.cpp:2630
 msgid "Filament extruding & with correct color?"
-msgstr "Filament vytlacen a spravne barvy?"
+msgstr ""
 
 #. MSG_NOT_LOADED c=19
 #: ../../Firmware/ultralcd.cpp:2554
 msgid "Filament not loaded"
-msgstr "Filament nezaveden"
+msgstr ""
 
 #. MSG_SELFTEST_FILAMENT_SENSOR c=17
 #: ../../Firmware/messages.c:99 ../../Firmware/ultralcd.cpp:8090
 #: ../../Firmware/ultralcd.cpp:8094 ../../Firmware/ultralcd.cpp:8098
 #: ../../Firmware/ultralcd.cpp:8412
 msgid "Filament sensor"
-msgstr "Senzor filamentu"
+msgstr ""
 
 #. MSG_FILAMENT_USED c=19
 #: ../../Firmware/ultralcd.cpp:2703
 msgid "Filament used"
-msgstr "Spotrebovano filam."
+msgstr ""
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
 #: ../../Firmware/ultralcd.cpp:8539
 msgid "File incomplete. Continue anyway?"
-msgstr "Soubor nekompletni. Pokracovat?"
+msgstr ""
 
 #. MSG_FINISHING_MOVEMENTS c=20
 #: ../../Firmware/messages.c:47 ../../Firmware/ultralcd.cpp:6377
 #: ../../Firmware/ultralcd.cpp:6697
 msgid "Finishing movements"
-msgstr "Dokoncovani pohybu"
+msgstr ""
 
 #. MSG_FIRMWARE c=8
 #: ../../Firmware/messages.c:172 ../../Firmware/ultralcd.cpp:5474
@@ -689,19 +674,17 @@ msgstr ""
 #: ../../Firmware/messages.c:126 ../../Firmware/ultralcd.cpp:5758
 #: ../../Firmware/ultralcd.cpp:6482
 msgid "First layer cal."
-msgstr "Kal. prvni vrstvy"
+msgstr ""
 
 #. MSG_WIZARD_SELFTEST c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4926
 msgid "First, I will run the selftest to check most common assembly problems."
 msgstr ""
-"Nejdriv pomoci selftestu zkontoluji nejcastejsi chyby vznikajici pri "
-"sestaveni tiskarny."
 
 #. MSG_MMU_FIX_ISSUE c=20 r=4
 #: ../../Firmware/mmu.cpp:727
 msgid "Fix the issue and then press button on MMU unit."
-msgstr "Opravte chybu a pote stisknete tlacitko na jednotce MMU."
+msgstr ""
 
 #. MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
 #: ../../Firmware/messages.c:173 ../../Firmware/ultralcd.cpp:5255
@@ -712,28 +695,28 @@ msgstr ""
 #. MSG_FLOW c=15
 #: ../../Firmware/ultralcd.cpp:6793
 msgid "Flow"
-msgstr "Prutok"
+msgstr ""
 
 #. MSG_SELFTEST_PART_FAN c=20
 #: ../../Firmware/messages.c:90 ../../Firmware/ultralcd.cpp:8060
 #: ../../Firmware/ultralcd.cpp:8213 ../../Firmware/ultralcd.cpp:8218
 msgid "Front print fan?"
-msgstr "Predni tiskovy vent?"
+msgstr ""
 
 #. MSG_BED_CORRECTION_FRONT c=14
 #: ../../Firmware/ultralcd.cpp:3106
 msgid "Front side[μm]"
-msgstr "Vpredu [μm]"
+msgstr ""
 
 #. MSG_SELFTEST_FANS c=20
 #: ../../Firmware/ultralcd.cpp:8084
 msgid "Front/left fans"
-msgstr "Predni/levy vent."
+msgstr ""
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: ../../Firmware/util.cpp:414
 msgid "G-code sliced for a different level. Continue?"
-msgstr "G-code je pripraven pro jinou verzi. Pokracovat?"
+msgstr ""
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=7
 #: ../../Firmware/util.cpp:420
@@ -741,14 +724,12 @@ msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
 msgstr ""
-"G-code je pripraven pro jinou verzi. Prosim preslicujte model znovu. Tisk "
-"zrusen."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 #: ../../Firmware/messages.c:136 ../../Firmware/util.cpp:331
 #: ../../Firmware/util.cpp:480
 msgid "G-code sliced for a different printer type. Continue?"
-msgstr "G-code je pripraven pro jiny typ tiskarny. Pokracovat?"
+msgstr ""
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.c:137 ../../Firmware/util.cpp:337
@@ -757,13 +738,11 @@ msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again. "
 "Print cancelled."
 msgstr ""
-"G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. "
-"Tisk zrusen."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 #: ../../Firmware/util.cpp:381
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code je pripraven pro novejsi firmware. Pokracovat?"
+msgstr ""
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:387
@@ -771,8 +750,6 @@ msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
 msgstr ""
-"G-code je pripraven pro novejsi firmware. Prosim aktualizujte firmware. Tisk "
-"zrusen."
 
 #. MSG_GCODE c=8
 #: ../../Firmware/messages.c:135 ../../Firmware/ultralcd.cpp:5515
@@ -785,29 +762,29 @@ msgstr ""
 #: ../../Firmware/messages.c:104 ../../Firmware/ultralcd.cpp:5532
 #: ../../Firmware/ultralcd.cpp:5586 ../../Firmware/ultralcd.cpp:5678
 msgid "HW Setup"
-msgstr "HW nastaveni"
+msgstr ""
 
 #. MSG_SELFTEST_HEATERTHERMISTOR c=20
 #: ../../Firmware/ultralcd.cpp:8032
 msgid "Heater/Thermistor"
-msgstr "Topeni/Termistor"
+msgstr ""
 
 #. MSG_HEATING c=20
 #: ../../Firmware/Marlin_main.cpp:6640 ../../Firmware/messages.c:52
 #: ../../Firmware/ultralcd.cpp:591
 msgid "Heating"
-msgstr "Zahrivani"
+msgstr ""
 
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:9840
 msgid "Heating disabled by safety timer."
-msgstr "Zahrivani preruseno bezpecnostnim casovacem."
+msgstr ""
 
 #. MSG_HEATING_COMPLETE c=20
 #: ../../Firmware/Marlin_main.cpp:6673 ../../Firmware/messages.c:53
 #: ../../Firmware/ultralcd.cpp:594
 msgid "Heating done."
-msgstr "Zahrivani OK."
+msgstr ""
 
 #. MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
 #: ../../Firmware/messages.c:124 ../../Firmware/ultralcd.cpp:4902
@@ -816,8 +793,6 @@ msgid ""
 "setup process, in which the Z-axis will be calibrated. Then, you will be "
 "ready to print."
 msgstr ""
-"Ahoj, jsem vase tiskarna Original Prusa i3. Provedu vas kratkym procesem "
-"nastaveni, ve kterem zkalibrujeme osu Z. Pak budete moct zacit tisknout."
 
 #. MSG_WIZARD_WELCOME c=20 r=7
 #: ../../Firmware/messages.c:123 ../../Firmware/ultralcd.cpp:4905
@@ -825,25 +800,25 @@ msgid ""
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you "
 "through the setup process?"
 msgstr ""
-"Dobry den, jsem vase tiskarna Original Prusa i3. Chcete abych Vas provedla "
-"kalibracnim procesem?"
+"Zivjo, jaz sem vas originalni tiskalnik Prusa i3. Ali zelite, da vas vodim "
+"skozi postopek nastavitve?"
 
 #. MSG_HIGH_POWER c=10
 #: ../../Firmware/messages.c:106 ../../Firmware/ultralcd.cpp:5218
 #: ../../Firmware/ultralcd.cpp:5227 ../../Firmware/ultralcd.cpp:6844
 #: ../../Firmware/ultralcd.cpp:6847
 msgid "High power"
-msgstr "Vys. vykon"
+msgstr ""
 
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4935
 msgid "I will run xyz calibration now. It will take approx. 12 mins."
-msgstr "Nyni provedu xyz kalibraci. Zabere to priblizne 12 min."
+msgstr ""
 
 #. MSG_WIZARD_Z_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4943
 msgid "I will run z calibration now."
-msgstr "Nyni provedu z kalibraci."
+msgstr ""
 
 #. MSG_ADDITIONAL_SHEETS c=20 r=9
 #: ../../Firmware/ultralcd.cpp:5013
@@ -851,8 +826,6 @@ msgid ""
 "If you have additional steel sheets, calibrate their presets in Settings - "
 "HW Setup - Steel sheets."
 msgstr ""
-"Mate-li vice tiskovych platu, kalibrujte je v menu Nastaveni - HW nastaveni "
-"- Tiskove platy"
 
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60
 #: ../../Firmware/mesh_bed_calibration.cpp:2531
@@ -862,7 +835,7 @@ msgstr ""
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.c:118 ../../Firmware/ultralcd.cpp:6536
 msgid "Info screen"
-msgstr "Informace"
+msgstr ""
 
 #. MSG_INIT_SDCARD
 #: ../../Firmware/ultralcd.cpp:6604
@@ -872,7 +845,7 @@ msgstr ""
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2472
 msgid "Insert filament"
-msgstr "Vlozte filament"
+msgstr ""
 
 #. MSG_FILAMENT_LOADING_T0 c=20 r=4
 #: ../../Firmware/messages.c:41 ../../Firmware/mmu.cpp:976
@@ -903,79 +876,79 @@ msgstr ""
 msgid ""
 "Insert the filament (do not load it) into the extruder and then press the "
 "knob."
-msgstr "Vlozte filament (nezavadejte) do extruderu a stisknete tlacitko"
+msgstr ""
 
 #. MSG_FILAMENT_LOADED c=20 r=2
 #: ../../Firmware/messages.c:40 ../../Firmware/ultralcd.cpp:4711
 #: ../../Firmware/ultralcd.cpp:4968 ../../Firmware/ultralcd.cpp:4971
 msgid "Is filament loaded?"
-msgstr "Je filament zaveden?"
+msgstr ""
 
 #. MSG_STEEL_SHEET_CHECK c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:3513 ../../Firmware/Marlin_main.cpp:5315
 #: ../../Firmware/messages.c:111 ../../Firmware/ultralcd.cpp:4944
 msgid "Is steel sheet on heatbed?"
-msgstr "Je tiskovy plat na podlozce?"
+msgstr ""
 
 #. MSG_ITERATION c=12
 #: ../../Firmware/mesh_bed_calibration.cpp:2253 ../../Firmware/messages.c:55
 msgid "Iteration"
-msgstr "Opakovani"
+msgstr ""
 
 #. MSG_LAST_PRINT c=18
 #: ../../Firmware/messages.c:58 ../../Firmware/ultralcd.cpp:1460
 #: ../../Firmware/ultralcd.cpp:1608
 msgid "Last print"
-msgstr "Posledni tisk"
+msgstr ""
 
 #. MSG_LAST_PRINT_FAILURES c=20
 #: ../../Firmware/messages.c:59 ../../Firmware/ultralcd.cpp:1481
 #: ../../Firmware/ultralcd.cpp:1571 ../../Firmware/ultralcd.cpp:1581
 #: ../../Firmware/ultralcd.cpp:1638
 msgid "Last print failures"
-msgstr "Selhani posl. tisku"
+msgstr ""
 
 #. MSG_LEFT c=10
 #: ../../Firmware/ultralcd.cpp:2834
 msgid "Left"
-msgstr "Vlevo"
+msgstr ""
 
 #. MSG_SELFTEST_EXTRUDER_FAN c=20
 #: ../../Firmware/messages.c:91 ../../Firmware/ultralcd.cpp:8066
 #: ../../Firmware/ultralcd.cpp:8213 ../../Firmware/ultralcd.cpp:8218
 msgid "Left hotend fan?"
-msgstr "Levy vent na trysce?"
+msgstr ""
 
 #. MSG_BED_CORRECTION_LEFT c=14
 #: ../../Firmware/ultralcd.cpp:3104
 msgid "Left side [μm]"
-msgstr "Vlevo [μm]"
+msgstr ""
 
 #. MSG_BL_HIGH c=12
 #: ../../Firmware/messages.c:157 ../../Firmware/ultralcd.cpp:6929
 msgid "Level Bright"
-msgstr "Normalni"
+msgstr ""
 
 #. MSG_BL_LOW c=12
 #: ../../Firmware/messages.c:158 ../../Firmware/ultralcd.cpp:6930
 msgid "Level Dimmed"
-msgstr "Ztlumeny"
+msgstr ""
 
 #. MSG_LIN_CORRECTION c=18
 #: ../../Firmware/ultralcd.cpp:5686
 msgid "Lin. correction"
-msgstr "Korekce lin."
+msgstr ""
 
 #. MSG_BABYSTEP_Z c=18
 #: ../../Firmware/messages.c:12 ../../Firmware/ultralcd.cpp:5698
 #: ../../Firmware/ultralcd.cpp:6551
 msgid "Live adjust Z"
-msgstr "Doladeni osy Z"
+msgstr ""
 
 #. MSG_LOAD_ALL c=17
 #: ../../Firmware/ultralcd.cpp:6151
 msgid "Load all"
-msgstr "Zavest vse"
+msgstr ""
 
 #. MSG_LOAD_FILAMENT c=17
 #: ../../Firmware/messages.c:60 ../../Firmware/ultralcd.cpp:6152
@@ -986,17 +959,17 @@ msgstr "Zavest vse"
 #: ../../Firmware/ultralcd.cpp:6174 ../../Firmware/ultralcd.cpp:6621
 #: ../../Firmware/ultralcd.cpp:6642
 msgid "Load filament"
-msgstr "Zavest filament"
+msgstr ""
 
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:6622
 msgid "Load to nozzle"
-msgstr "Zavest do trysky"
+msgstr ""
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2506
 msgid "Loading color"
-msgstr "Cisteni barvy"
+msgstr ""
 
 #. MSG_LOADING_FILAMENT c=20
 #: ../../Firmware/Marlin_main.cpp:3846 ../../Firmware/messages.c:61
@@ -1005,92 +978,92 @@ msgstr "Cisteni barvy"
 #: ../../Firmware/mmu.cpp:1353 ../../Firmware/mmu.cpp:1365
 #: ../../Firmware/ultralcd.cpp:2517 ../../Firmware/ultralcd.cpp:4806
 msgid "Loading filament"
-msgstr "Zavadeni filamentu"
+msgstr ""
 
 #. MSG_LOOSE_PULLEY c=20
 #: ../../Firmware/ultralcd.cpp:8072
 msgid "Loose pulley"
-msgstr "Uvolnena remenicka"
+msgstr ""
 
 #. MSG_SOUND_LOUD c=7
 #: ../../Firmware/messages.c:146 ../../Firmware/ultralcd.cpp:5310
 #: ../../Firmware/ultralcd.cpp:5322
 msgid "Loud"
-msgstr "Hlasity"
+msgstr ""
 
 #. MSG_M117_V2_CALIBRATION c=25
 #: ../../Firmware/first_lay_cal.cpp:28 ../../Firmware/messages.c:64
 #: ../../Firmware/ultralcd.cpp:932
 msgid "M117 First layer cal."
-msgstr "M117 Kal. prvni vrstvy"
+msgstr ""
 
 #. MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:884
 msgid "MK3 firmware detected on MK3S printer"
-msgstr "MK3 firmware detekovan na MK3S tiskarne"
+msgstr ""
 
 #. MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:877
 msgid "MK3S firmware detected on MK3 printer"
-msgstr "MK3S firmware detekovan na tiskarne MK3"
+msgstr ""
 
 #. MSG_MMU_MODE c=8
 #: ../../Firmware/messages.c:139 ../../Firmware/ultralcd.cpp:5241
 #: ../../Firmware/ultralcd.cpp:5242
 msgid "MMU Mode"
-msgstr "MMU mod"
+msgstr ""
 
 #. MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 #: ../../Firmware/mmu.cpp:765
 msgid "MMU OK. Resuming position..."
-msgstr "MMU OK. Pokracuji v tisku..."
+msgstr ""
 
 #. MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 #: ../../Firmware/mmu.cpp:758
 msgid "MMU OK. Resuming temperature..."
-msgstr "MMU OK. Pokracuji v nahrivani..."
+msgstr ""
 
 #. MSG_MMU_OK_RESUMING c=20 r=4
 #: ../../Firmware/mmu.cpp:776
 msgid "MMU OK. Resuming..."
-msgstr "MMU OK. Pokracuji..."
+msgstr ""
 
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.c:71 ../../Firmware/ultralcd.cpp:1482
 #: ../../Firmware/ultralcd.cpp:1505
 msgid "MMU fails"
-msgstr "Selhani MMU"
+msgstr ""
 
 #. MSG_MMU_LOAD_FAILED c=20
 #: ../../Firmware/mmu.cpp:1587
 msgid "MMU load failed"
-msgstr "Zavedeni MMU selhalo"
+msgstr ""
 
 #. MSG_MMU_LOAD_FAILS c=15
 #: ../../Firmware/messages.c:72 ../../Firmware/ultralcd.cpp:1483
 #: ../../Firmware/ultralcd.cpp:1506
 msgid "MMU load fails"
-msgstr "MMU selhani zav"
+msgstr ""
 
 #. MSG_MMU_USER_ATTENTION c=20 r=3
 #: ../../Firmware/mmu.cpp:722
 msgid "MMU needs user attention."
-msgstr "MMU potrebuje zasah uzivatele."
+msgstr ""
 
 #. MSG_MMU_POWER_FAILS c=15
 #: ../../Firmware/ultralcd.cpp:1507
 msgid "MMU power fails"
-msgstr "MMU vyp. proudu"
+msgstr ""
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1987
 msgid "MMU2 connected"
-msgstr "MMU2 pripojeno"
+msgstr ""
 
 #. MSG_MAGNETS_COMP c=13
 #: ../../Firmware/messages.c:152 ../../Firmware/ultralcd.cpp:6903
 msgid "Magnets comp."
-msgstr "Komp. magnetu"
+msgstr ""
 
 #. MSG_MAIN c=18
 #: ../../Firmware/messages.c:65 ../../Firmware/ultralcd.cpp:1459
@@ -1102,7 +1075,7 @@ msgstr "Komp. magnetu"
 #: ../../Firmware/ultralcd.cpp:6243 ../../Firmware/ultralcd.cpp:6259
 #: ../../Firmware/ultralcd.cpp:6786
 msgid "Main"
-msgstr "Hlavni nabidka"
+msgstr ""
 
 #. MSG_MARK_FIL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4557
@@ -1112,13 +1085,13 @@ msgstr ""
 #. MSG_MEASURED_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2875
 msgid "Measured skew"
-msgstr "Merene zkos."
+msgstr ""
 
 #. MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3494
 #: ../../Firmware/mesh_bed_calibration.cpp:2840 ../../Firmware/messages.c:69
 msgid "Measuring reference height of calibration point"
-msgstr "Merim referencni vysku kalibracniho bodu"
+msgstr ""
 
 #. MSG_MESH c=12
 #: ../../Firmware/messages.c:149 ../../Firmware/ultralcd.cpp:6899
@@ -1140,7 +1113,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:6845 ../../Firmware/ultralcd.cpp:6846
 #: ../../Firmware/ultralcd.cpp:6847 ../../Firmware/ultralcd.cpp:6931
 msgid "Mode"
-msgstr "Mod"
+msgstr ""
 
 #: ../../Firmware/ultralcd.cpp:5288
 msgid "Mode    [Fast]"
@@ -1157,7 +1130,7 @@ msgstr ""
 #. MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 #: ../../Firmware/ultralcd.cpp:4358
 msgid "Mode change in progress..."
-msgstr "Probiha zmena modu..."
+msgstr ""
 
 #. MSG_MODEL c=8
 #: ../../Firmware/messages.c:134 ../../Firmware/ultralcd.cpp:5435
@@ -1175,22 +1148,22 @@ msgstr ""
 #. MSG_MOVE_X c=18
 #: ../../Firmware/ultralcd.cpp:4225
 msgid "Move X"
-msgstr "Posunout X"
+msgstr ""
 
 #. MSG_MOVE_Y c=18
 #: ../../Firmware/ultralcd.cpp:4226
 msgid "Move Y"
-msgstr "Posunout Y"
+msgstr ""
 
 #. MSG_MOVE_Z c=18
 #: ../../Firmware/ultralcd.cpp:4227
 msgid "Move Z"
-msgstr "Posunout Z"
+msgstr ""
 
 #. MSG_MOVE_AXIS c=18
 #: ../../Firmware/ultralcd.cpp:5661
 msgid "Move axis"
-msgstr "Posunout osu"
+msgstr ""
 
 #. MSG_NA c=3
 #: ../../Firmware/menu.cpp:198 ../../Firmware/messages.c:129
@@ -1204,7 +1177,7 @@ msgstr ""
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:195
 msgid "New firmware version available:"
-msgstr "Vysla nova verze firmware:"
+msgstr ""
 
 #. MSG_NO c=4
 #: ../../Firmware/messages.c:73 ../../Firmware/ultralcd.cpp:3156
@@ -1212,17 +1185,17 @@ msgstr "Vysla nova verze firmware:"
 #: ../../Firmware/ultralcd.cpp:3647 ../../Firmware/ultralcd.cpp:5645
 #: ../../Firmware/ultralcd.cpp:7047
 msgid "No"
-msgstr "Ne"
+msgstr ""
 
 #. MSG_NO_CARD c=18
 #: ../../Firmware/ultralcd.cpp:6602
 msgid "No SD card"
-msgstr "Zadna SD karta"
+msgstr ""
 
 #. MSG_NO_MOVE c=20
 #: ../../Firmware/Marlin_main.cpp:5815
 msgid "No move."
-msgstr "Bez pohybu."
+msgstr ""
 
 #. MSG_ERR_NO_THERMISTORS
 #: ../../Firmware/Marlin_main.cpp:2655
@@ -1236,7 +1209,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:5474 ../../Firmware/ultralcd.cpp:5483
 #: ../../Firmware/ultralcd.cpp:5515 ../../Firmware/ultralcd.cpp:5524
 msgid "None"
-msgstr "Zadne"
+msgstr ""
 
 #. MSG_NORMAL c=7
 #: ../../Firmware/messages.c:109 ../../Firmware/ultralcd.cpp:5196
@@ -1248,29 +1221,29 @@ msgstr ""
 #. MSG_SELFTEST_NOTCONNECTED c=20
 #: ../../Firmware/ultralcd.cpp:8033
 msgid "Not connected"
-msgstr "Nezapojeno"
+msgstr ""
 
 #. MSG_SELFTEST_FAN_NO c=19
 #: ../../Firmware/messages.c:94 ../../Firmware/ultralcd.cpp:8232
 #: ../../Firmware/ultralcd.cpp:8247 ../../Firmware/ultralcd.cpp:8255
 msgid "Not spinning"
-msgstr "Netoci se"
+msgstr ""
 
 #. MSG_WIZARD_V2_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4822
 msgid ""
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
-msgstr "Nyni zkalibruji vzdalenost mezi koncem trysky a povrchem podlozky."
+msgstr ""
 
 #. MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4951
 msgid "Now I will preheat nozzle for PLA."
-msgstr "Nyni predehreji trysku pro PLA."
+msgstr ""
 
 #. MSG_REMOVE_TEST_PRINT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4942
 msgid "Now remove the test print from steel sheet."
-msgstr "Nyni odstrante testovaci vytisk z tiskoveho platu."
+msgstr ""
 
 #. MSG_NOZZLE c=10
 #: ../../Firmware/messages.c:74 ../../Firmware/ultralcd.cpp:1714
@@ -1278,12 +1251,12 @@ msgstr "Nyni odstrante testovaci vytisk z tiskoveho platu."
 #: ../../Firmware/ultralcd.cpp:5359 ../../Firmware/ultralcd.cpp:5362
 #: ../../Firmware/ultralcd.cpp:6789 ../../Firmware/ultralcd.cpp:6949
 msgid "Nozzle"
-msgstr "Tryska"
+msgstr ""
 
 #. MSG_NOZZLE_DIAMETER c=10
 #: ../../Firmware/messages.c:138 ../../Firmware/ultralcd.cpp:5406
 msgid "Nozzle d."
-msgstr "Tryska"
+msgstr ""
 
 #. MSG_NOZZLE1
 #: ../../Firmware/ultralcd.cpp:6952
@@ -1306,12 +1279,12 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:6903 ../../Firmware/ultralcd.cpp:8974
 #: ../../Firmware/ultralcd.cpp:8978
 msgid "Off"
-msgstr "Vyp"
+msgstr ""
 
 #. MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 #: ../../Firmware/Marlin_main.cpp:1562
 msgid "Old settings found. Default PID, Esteps etc. will be set."
-msgstr "Neplatne hodnoty nastaveni. Bude pouzito vychozi PID, Esteps atd."
+msgstr ""
 
 #. MSG_ON c=3
 #: ../../Firmware/messages.c:128 ../../Firmware/ultralcd.cpp:5104
@@ -1323,27 +1296,27 @@ msgstr "Neplatne hodnoty nastaveni. Bude pouzito vychozi PID, Esteps atd."
 #: ../../Firmware/ultralcd.cpp:6903 ../../Firmware/ultralcd.cpp:8974
 #: ../../Firmware/ultralcd.cpp:8978
 msgid "On"
-msgstr "Zap"
+msgstr ""
 
 #. MSG_SOUND_ONCE c=7
 #: ../../Firmware/messages.c:147 ../../Firmware/ultralcd.cpp:5313
 msgid "Once"
-msgstr "Jednou"
+msgstr ""
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1322
 msgid "PID cal."
-msgstr "PID kal."
+msgstr ""
 
 #. MSG_PID_FINISHED c=20
 #: ../../Firmware/ultralcd.cpp:1328
 msgid "PID cal. finished"
-msgstr "PID kal. ukoncena"
+msgstr ""
 
 #. MSG_PID_EXTRUDER c=17
 #: ../../Firmware/ultralcd.cpp:5783
 msgid "PID calibration"
-msgstr "PID kalibrace"
+msgstr ""
 
 #. MSG_PINDA c=5
 #: ../../Firmware/messages.c:174 ../../Firmware/ultralcd.cpp:1720
@@ -1354,19 +1327,19 @@ msgstr ""
 #. MSG_PINDA_PREHEAT c=20
 #: ../../Firmware/ultralcd.cpp:678
 msgid "PINDA Heating"
-msgstr "Nahrivani PINDA"
+msgstr ""
 
 #. MSG_PINDA_CALIBRATION c=13
 #: ../../Firmware/Marlin_main.cpp:5362 ../../Firmware/Marlin_main.cpp:5463
 #: ../../Firmware/messages.c:114 ../../Firmware/ultralcd.cpp:675
 #: ../../Firmware/ultralcd.cpp:5690 ../../Firmware/ultralcd.cpp:5796
 msgid "PINDA cal."
-msgstr "PINDA kal."
+msgstr ""
 
 #. MSG_PINDA_CAL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3763
 msgid "PINDA calibration failed"
-msgstr "PINDA kalibrace selhala"
+msgstr ""
 
 #. MSG_PINDA_CALIBRATION_DONE c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:5540 ../../Firmware/messages.c:115
@@ -1375,19 +1348,17 @@ msgid ""
 "PINDA calibration is finished and active. It can be disabled in menu "
 "Settings->PINDA cal."
 msgstr ""
-"PINDA kalibrace dokoncena a je nyni aktivni. Zabere je mozno deaktivovat v "
-"menu Nastaveni->Tepl. kal."
 
 #. MSG_PAUSE c=5
 #: ../../Firmware/messages.c:155 ../../Firmware/ultralcd.cpp:5567
 msgid "Pause"
-msgstr "Pauza"
+msgstr ""
 
 #. MSG_PAUSE_PRINT c=18
 #: ../../Firmware/messages.c:76 ../../Firmware/ultralcd.cpp:6565
 #: ../../Firmware/ultralcd.cpp:6567
 msgid "Pause print"
-msgstr "Pozastavit tisk"
+msgstr ""
 
 #. MSG_PICK_Z
 #: ../../Firmware/ultralcd.cpp:4131
@@ -1400,8 +1371,6 @@ msgid ""
 "Place a sheet of paper under the nozzle during the calibration of first 4 "
 "points. If the nozzle catches the paper, power off the printer immediately."
 msgstr ""
-"Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni "
-"prvnich 4 bodu. Pokud tryska zachyti papir, okamzite vypnete tiskarnu."
 
 #. MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 #: ../../Firmware/messages.c:119 ../../Firmware/ultralcd.cpp:5036
@@ -1409,36 +1378,32 @@ msgid ""
 "Please check our handbook and fix the problem. Then resume the Wizard by "
 "rebooting the printer."
 msgstr ""
-"Prosim nahlednete do prirucky 3D tiskare a opravte problem. Pote obnovte "
-"Pruvodce restartovanim tiskarny."
 
 #. MSG_CHECK_IR_CONNECTION c=20 r=4
 #: ../../Firmware/ultralcd.cpp:7312
 msgid "Please check the IR sensor connection, unload filament if present."
-msgstr "Prosim zkontrolujte zapojeni IR senzoru a vyjmuty filament"
+msgstr ""
 
 #. MSG_SELFTEST_PLEASECHECK c=20
 #: ../../Firmware/ultralcd.cpp:8027
 msgid "Please check:"
-msgstr "Zkontrolujte:"
+msgstr ""
 
 #. MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ../../Firmware/ultralcd.cpp:5008
 msgid "Please clean heatbed and then press the knob."
-msgstr "Prosim ocistete podlozku a stisknete tlacitko."
+msgstr ""
 
 #. MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3492 ../../Firmware/messages.c:26
 msgid "Please clean the nozzle for calibration. Click when done."
 msgstr ""
-"Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
 
 #. MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ../../Firmware/ultralcd.cpp:4802
 msgid ""
 "Please insert filament into the extruder, then press the knob to load it."
 msgstr ""
-"Prosim vlozte filament do extruderu a stisknete tlacitko k jeho zavedeni"
 
 #. MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ../../Firmware/ultralcd.cpp:4797
@@ -1446,71 +1411,69 @@ msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
 msgstr ""
-"Prosim vlozte filament do prvni trubicky MMU a stisknete tlacitko k jeho "
-"zavedeni"
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4719
 msgid "Please load filament first."
-msgstr "Prosim nejdriv zavedte filament"
+msgstr ""
 
 #. MSG_CHECK_IDLER c=20 r=5
 #: ../../Firmware/Marlin_main.cpp:3756
 msgid "Please open idler and remove filament manually."
-msgstr "Prosim otevrete idler a manualne odstrante filament."
+msgstr ""
 
 #. MSG_PLACE_STEEL_SHEET c=20 r=5
 #: ../../Firmware/mesh_bed_calibration.cpp:2799 ../../Firmware/messages.c:77
 #: ../../Firmware/ultralcd.cpp:4945
 msgid "Please place steel sheet on heatbed."
-msgstr "Umistete prosim tiskovy plat na podlozku"
+msgstr ""
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:11984 ../../Firmware/Marlin_main.cpp:12037
 #: ../../Firmware/messages.c:81
 msgid "Please press the knob to unload filament"
-msgstr "Pro vysunuti filamentu stisknete prosim tlacitko"
+msgstr ""
 
 #. MSG_PULL_OUT_FILAMENT c=20 r=4
 #: ../../Firmware/messages.c:83 ../../Firmware/ultralcd.cpp:6290
 msgid "Please pull out filament immediately"
-msgstr "Prosim vyjmete urychlene filament"
+msgstr ""
 
 #. MSG_EJECT_REMOVE c=20 r=4
 #: ../../Firmware/mmu.cpp:1421
 msgid "Please remove filament and then press the knob."
-msgstr "Prosim vyjmete filament a pote stisknete tlacitko."
+msgstr ""
 
 #. MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 #: ../../Firmware/ultralcd.cpp:4941
 msgid "Please remove shipping helpers first."
-msgstr "Nejprve prosim sundejte transportni soucastky."
+msgstr ""
 
 #. MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3514 ../../Firmware/Marlin_main.cpp:5325
 #: ../../Firmware/messages.c:86
 msgid "Please remove steel sheet from heatbed."
-msgstr "Odstrante prosim tiskovy plat z podlozky."
+msgstr ""
 
 #. MSG_RUN_XYZ c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:5301
 msgid "Please run XYZ calibration first."
-msgstr "Nejprve spustte kalibraci XYZ."
+msgstr ""
 
 #. MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:7309
 msgid "Please unload the filament first, then repeat this action."
-msgstr "Prosim vyjmete filament a zopakujte tuto akci"
+msgstr ""
 
 #. MSG_UPDATE_MMU2_FW c=20 r=4
 #: ../../Firmware/mmu.cpp:1341
 msgid "Please update firmware in your MMU2. Waiting for reset."
-msgstr "Prosim aktualizujte firmware ve vasi MMU2 jednotce. Cekam na reset."
+msgstr ""
 
 #. MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 #: ../../Firmware/util.cpp:199
 msgid "Please upgrade."
-msgstr "Prosim aktualizujte."
+msgstr ""
 
 #. MSG_PLEASE_WAIT c=20
 #: ../../Firmware/Marlin_main.cpp:3752 ../../Firmware/Marlin_main.cpp:3768
@@ -1519,49 +1482,49 @@ msgstr "Prosim aktualizujte."
 #: ../../Firmware/ultralcd.cpp:2507 ../../Firmware/ultralcd.cpp:2518
 #: ../../Firmware/ultralcd.cpp:4561
 msgid "Please wait"
-msgstr "Prosim cekejte"
+msgstr ""
 
 #. MSG_POWER_FAILURES c=15
 #: ../../Firmware/messages.c:79 ../../Firmware/ultralcd.cpp:1531
 #: ../../Firmware/ultralcd.cpp:1572 ../../Firmware/ultralcd.cpp:1582
 msgid "Power failures"
-msgstr "Vypadky proudu"
+msgstr ""
 
 #. MSG_PREHEAT c=18
 #: ../../Firmware/ultralcd.cpp:6560
 msgid "Preheat"
-msgstr "Predehrev"
+msgstr ""
 
 #. MSG_PREHEAT_NOZZLE c=20
 #: ../../Firmware/messages.c:80 ../../Firmware/ultralcd.cpp:2617
 msgid "Preheat the nozzle!"
-msgstr "Predehrejte trysku!"
+msgstr ""
 
 #. MSG_WIZARD_HEATING c=20 r=3
 #: ../../Firmware/messages.c:121 ../../Firmware/ultralcd.cpp:3256
 #: ../../Firmware/ultralcd.cpp:4780 ../../Firmware/ultralcd.cpp:4783
 msgid "Preheating nozzle. Please wait."
-msgstr "Predehrev trysky. Prosim cekejte."
+msgstr ""
 
 #. MSG_PREHEATING_TO_CUT c=20
 #: ../../Firmware/ultralcd.cpp:2299
 msgid "Preheating to cut"
-msgstr "Predehrev ke strihu"
+msgstr ""
 
 #. MSG_PREHEATING_TO_EJECT c=20
 #: ../../Firmware/ultralcd.cpp:2296
 msgid "Preheating to eject"
-msgstr "Predehrev k vysunuti"
+msgstr ""
 
 #. MSG_PREHEATING_TO_LOAD c=20
 #: ../../Firmware/ultralcd.cpp:2287
 msgid "Preheating to load"
-msgstr "Predehrev k zavedeni"
+msgstr ""
 
 #. MSG_PREHEATING_TO_UNLOAD c=20
 #: ../../Firmware/ultralcd.cpp:2292
 msgid "Preheating to unload"
-msgstr "Predehrev k vyjmuti"
+msgstr ""
 
 #. MSG_PREPARE_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2470
@@ -1571,48 +1534,48 @@ msgstr ""
 #. MSG_PRESS_KNOB c=20
 #: ../../Firmware/ultralcd.cpp:2120
 msgid "Press the knob"
-msgstr "Stisknete tlacitko"
+msgstr ""
 
 #. MSG_PRESS_TO_PREHEAT c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:12015
 msgid "Press the knob to preheat nozzle and continue."
-msgstr "Pro nahrati trysky a pokracovani stisknete tlacitko."
+msgstr ""
 
 #. MSG_RESUME_NOZZLE_TEMP c=20 r=4
 #: ../../Firmware/mmu.cpp:726
 msgid "Press the knob to resume nozzle temperature."
-msgstr "Pro pokracovani nahrivani trysky stisknete tlacitko."
+msgstr ""
 
 #. MSG_PRINT_ABORTED c=20
 #: ../../Firmware/messages.c:82 ../../Firmware/ultralcd.cpp:7006
 msgid "Print aborted"
-msgstr "Tisk prerusen"
+msgstr ""
 
 #. MSG_PRINT_FAN_SPEED c=16
 #: ../../Firmware/messages.c:38 ../../Firmware/ultralcd.cpp:1438
 #: ../../Firmware/ultralcd.cpp:8406
 msgid "Print fan:"
-msgstr "Tiskovy vent.:"
+msgstr ""
 
 #. MSG_CARD_MENU c=18
 #: ../../Firmware/messages.c:22 ../../Firmware/ultralcd.cpp:6593
 msgid "Print from SD"
-msgstr "Tisk z SD"
+msgstr ""
 
 #. MSG_PRINT_PAUSED c=20
 #: ../../Firmware/ultralcd.cpp:902
 msgid "Print paused"
-msgstr "Tisk pozastaven"
+msgstr ""
 
 #. MSG_PRINT_TIME c=19
 #: ../../Firmware/ultralcd.cpp:2704
 msgid "Print time"
-msgstr "Cas tisku"
+msgstr ""
 
 #. MSG_PRINTER_IP c=18
 #: ../../Firmware/ultralcd.cpp:2018
 msgid "Printer IP Addr:"
-msgstr "IP adr. tiskarny:"
+msgstr ""
 
 #. MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1575 ../../Firmware/messages.c:48
@@ -1620,13 +1583,11 @@ msgid ""
 "Printer has not been calibrated yet. Please follow the manual, chapter First "
 "steps, section Calibration flow."
 msgstr ""
-"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, "
-"kapitola Zaciname, odstavec Postup kalibrace."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 #: ../../Firmware/util.cpp:295
 msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr "Prumer trysky tiskarny se lisi od G-code. Pokracovat?"
+msgstr ""
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:301
@@ -1634,8 +1595,6 @@ msgid ""
 "Printer nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
-"Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. "
-"Tisk zrusen."
 
 #. MSG_RPI_PORT c=13
 #: ../../Firmware/messages.c:144 ../../Firmware/ultralcd.cpp:5694
@@ -1645,22 +1604,22 @@ msgstr ""
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:3107
 msgid "Rear side [μm]"
-msgstr "Vzadu [μm]"
+msgstr ""
 
 #. MSG_RECOVERING_PRINT c=20
 #: ../../Firmware/Marlin_main.cpp:11359
 msgid "Recovering print"
-msgstr "Obnovovani tisku"
+msgstr ""
 
 #. MSG_REMOVE_OLD_FILAMENT c=20 r=5
 #: ../../Firmware/mmu.cpp:833
 msgid "Remove old filament and press the knob to start loading new filament."
-msgstr "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
+msgstr ""
 
 #. MSG_RENAME c=18
 #: ../../Firmware/ultralcd.cpp:6484
 msgid "Rename"
-msgstr "Prejmenovat"
+msgstr ""
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.c:87 ../../Firmware/ultralcd.cpp:3108
@@ -1671,28 +1630,28 @@ msgstr ""
 #. MSG_CALIBRATE_BED_RESET c=18
 #: ../../Firmware/ultralcd.cpp:5788
 msgid "Reset XYZ calibr."
-msgstr "Reset XYZ kalibr."
+msgstr ""
 
 #. MSG_RESUME_PRINT c=18
 #: ../../Firmware/messages.c:88 ../../Firmware/ultralcd.cpp:6577
 #: ../../Firmware/ultralcd.cpp:6579
 msgid "Resume print"
-msgstr "Pokracovat"
+msgstr ""
 
 #. MSG_RESUMING_PRINT c=20
 #: ../../Firmware/messages.c:89 ../../Firmware/ultralcd.cpp:686
 msgid "Resuming print"
-msgstr "Obnoveni tisku"
+msgstr ""
 
 #. MSG_RIGHT c=10
 #: ../../Firmware/ultralcd.cpp:2835
 msgid "Right"
-msgstr "Vpravo"
+msgstr ""
 
 #. MSG_BED_CORRECTION_RIGHT c=14
 #: ../../Firmware/ultralcd.cpp:3105
 msgid "Right side[μm]"
-msgstr "Vpravo [μm]"
+msgstr ""
 
 #. MSG_E_CAL_KNOB c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4552
@@ -1705,8 +1664,6 @@ msgid ""
 "Running Wizard will delete current calibration results and start from the "
 "beginning. Continue?"
 msgstr ""
-"Spusteni Pruvodce vymaze ulozene vysledky vsech kalibraci a spusti "
-"kalibracni proces od zacatku. Pokracovat?"
 
 #. MSG_RUNOUTS c=7
 #: ../../Firmware/ultralcd.cpp:1583
@@ -1718,57 +1675,57 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:5257 ../../Firmware/ultralcd.cpp:5274
 #: ../../Firmware/ultralcd.cpp:5276
 msgid "SD card"
-msgstr "SD karta"
+msgstr ""
 
 #. MSG_STOPPED c=20
 #: ../../Firmware/Marlin_main.cpp:10175 ../../Firmware/cmdqueue.cpp:495
 #: ../../Firmware/messages.c:113
 msgid "STOPPED."
-msgstr "ZASTAVENO."
+msgstr ""
 
 #. MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3498 ../../Firmware/Marlin_main.cpp:3518
 #: ../../Firmware/mesh_bed_calibration.cpp:2234 ../../Firmware/messages.c:46
 msgid "Searching bed calibration point"
-msgstr "Hledam kalibracni bod podlozky"
+msgstr ""
 
 #. MSG_SELECT c=18
 #: ../../Firmware/ultralcd.cpp:6477
 msgid "Select"
-msgstr "Vybrat"
+msgstr ""
 
 #. MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
 #: ../../Firmware/ultralcd.cpp:4826
 msgid ""
 "Select a filament for the First Layer Calibration and select it in the on-"
 "screen menu."
-msgstr "Zvolte filament pro kalibraci prvni vrstvy z nasledujiciho menu"
+msgstr ""
 
 #. MSG_SELECT_EXTRUDER c=20
 #: ../../Firmware/Marlin_main.cpp:8967 ../../Firmware/messages.c:56
 msgid "Select extruder:"
-msgstr "Vyberte extruder:"
+msgstr ""
 
 #. MSG_SELECT_FILAMENT c=20
 #: ../../Firmware/Marlin_main.cpp:8936 ../../Firmware/Marlin_main.cpp:8963
 #: ../../Firmware/messages.c:57 ../../Firmware/ultralcd.cpp:4690
 msgid "Select filament:"
-msgstr "Zvolte filament:"
+msgstr ""
 
 #. MSG_LANGUAGE_SELECT c=18
 #: ../../Firmware/ultralcd.cpp:4443 ../../Firmware/ultralcd.cpp:5701
 msgid "Select language"
-msgstr "Vyber jazyka"
+msgstr ""
 
 #. MSG_SEL_PREHEAT_TEMP c=20 r=6
 #: ../../Firmware/ultralcd.cpp:4982
 msgid "Select nozzle preheat temperature which matches your material."
-msgstr "Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
+msgstr ""
 
 #. MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4831
 msgid "Select temperature which matches your material."
-msgstr "Zvolte teplotu, ktera odpovida vasemu materialu."
+msgstr ""
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:7584
@@ -1788,33 +1745,33 @@ msgstr ""
 #. MSG_SELFTEST_ERROR c=20
 #: ../../Firmware/ultralcd.cpp:8026
 msgid "Selftest error!"
-msgstr "Chyba Selftestu!"
+msgstr ""
 
 #. MSG_SELFTEST_FAILED c=20
 #: ../../Firmware/messages.c:92 ../../Firmware/ultralcd.cpp:7588
 #: ../../Firmware/ultralcd.cpp:8113 ../../Firmware/ultralcd.cpp:8396
 msgid "Selftest failed"
-msgstr "Selftest selhal"
+msgstr ""
 
 #. MSG_FORCE_SELFTEST c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1594
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
-msgstr "Pro kalibraci presneho rehomovani bude nyni spusten selftest."
+msgstr ""
 
 #. MSG_INFO_SENSORS c=18
 #: ../../Firmware/ultralcd.cpp:2031
 msgid "Sensor info"
-msgstr "Senzor info"
+msgstr ""
 
 #. MSG_FS_VERIFIED c=20 r=3
 #: ../../Firmware/ultralcd.cpp:7316
 msgid "Sensor verified, remove the filament now."
-msgstr "Senzor overen, vyjmete filament."
+msgstr ""
 
 #. MSG_SET_TEMPERATURE c=20
 #: ../../Firmware/ultralcd.cpp:3125
 msgid "Set temperature:"
-msgstr "Nastavte teplotu:"
+msgstr ""
 
 #. MSG_SETTINGS c=18
 #: ../../Firmware/messages.c:101 ../../Firmware/ultralcd.cpp:4224
@@ -1822,18 +1779,18 @@ msgstr "Nastavte teplotu:"
 #: ../../Firmware/ultralcd.cpp:6647 ../../Firmware/ultralcd.cpp:6894
 #: ../../Firmware/ultralcd.cpp:6947
 msgid "Settings"
-msgstr "Nastaveni"
+msgstr ""
 
 #. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2878
 msgid "Severe skew"
-msgstr "Tezke zkos."
+msgstr ""
 
 #. MSG_SHEET c=10
 #: ../../Firmware/menu.cpp:211 ../../Firmware/menu.cpp:223
 #: ../../Firmware/messages.c:67
 msgid "Sheet"
-msgstr "Plat"
+msgstr ""
 
 #. MSG_SHEET_OFFSET c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4680
@@ -1843,26 +1800,22 @@ msgid ""
 "%cContinue\n"
 "%cReset"
 msgstr ""
-"Plat %.7s\n"
-"Z offset: %+1.3fmm\n"
-"%cPokracovat\n"
-"%cReset"
 
 #. MSG_SHOW_END_STOPS c=18
 #: ../../Firmware/ultralcd.cpp:5785
 msgid "Show end stops"
-msgstr "Stav konc. spin."
+msgstr ""
 
 #. MSG_SILENT c=7
 #: ../../Firmware/messages.c:108 ../../Firmware/ultralcd.cpp:5221
 #: ../../Firmware/ultralcd.cpp:5316 ../../Firmware/ultralcd.cpp:6845
 msgid "Silent"
-msgstr "Tichy"
+msgstr ""
 
 #. MSG_SLIGHT_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2877
 msgid "Slight skew"
-msgstr "Lehke zkos."
+msgstr ""
 
 #. MSG_FILE_CNT c=20 r=6
 #: ../../Firmware/cardreader.cpp:817
@@ -1870,24 +1823,22 @@ msgid ""
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is "
 "100."
 msgstr ""
-"Nektere soubory nebudou setrideny. Maximalni pocet souboru ve slozce pro "
-"setrideni je 100."
 
 #. MSG_ZLEVELING_ENFORCED c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3260
 msgid "Some problem encountered, Z-leveling enforced ..."
-msgstr "Vyskytl se problem, srovnavam osu Z ..."
+msgstr ""
 
 #. MSG_SORT c=7
 #: ../../Firmware/messages.c:141 ../../Firmware/ultralcd.cpp:5263
 #: ../../Firmware/ultralcd.cpp:5264 ../../Firmware/ultralcd.cpp:5265
 msgid "Sort"
-msgstr "Trideni"
+msgstr ""
 
 #. MSG_SORTING_FILES c=20
 #: ../../Firmware/cardreader.cpp:882 ../../Firmware/cardreader.cpp:942
 msgid "Sorting files"
-msgstr "Trideni souboru"
+msgstr ""
 
 #. MSG_SORTING_FOLDERS c=20
 #: ../../Firmware/cardreader.cpp:883
@@ -1899,18 +1850,18 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:5313 ../../Firmware/ultralcd.cpp:5316
 #: ../../Firmware/ultralcd.cpp:5319 ../../Firmware/ultralcd.cpp:5322
 msgid "Sound"
-msgstr "Zvuk"
+msgstr ""
 
 #. MSG_SPEED c=15
 #: ../../Firmware/ultralcd.cpp:6787
 msgid "Speed"
-msgstr "Rychlost"
+msgstr ""
 
 #. MSG_SELFTEST_FAN_YES c=19
 #: ../../Firmware/messages.c:95 ../../Firmware/ultralcd.cpp:8230
 #: ../../Firmware/ultralcd.cpp:8245 ../../Firmware/ultralcd.cpp:8253
 msgid "Spinning"
-msgstr "Toci se"
+msgstr ""
 
 #. MSG_AUTO_DEPLETE c=13
 #: ../../Firmware/messages.c:171 ../../Firmware/ultralcd.cpp:5136
@@ -1921,57 +1872,57 @@ msgstr ""
 #. MSG_TEMP_CAL_WARNING c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:5314
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
-msgstr "Je vyzadovana stabilni pokojova teplota 21-26C a pevna podlozka."
+msgstr ""
 
 #. MSG_STATISTICS c=18
 #: ../../Firmware/ultralcd.cpp:6652
 msgid "Statistics"
-msgstr "Statistika"
+msgstr ""
 
 #. MSG_STEALTH c=7
 #: ../../Firmware/messages.c:110 ../../Firmware/ultralcd.cpp:5198
 #: ../../Firmware/ultralcd.cpp:5242 ../../Firmware/ultralcd.cpp:6832
 msgid "Stealth"
-msgstr "Tichy"
+msgstr ""
 
 #. MSG_STEEL_SHEETS c=18
 #: ../../Firmware/messages.c:68 ../../Firmware/ultralcd.cpp:5623
 #: ../../Firmware/ultralcd.cpp:6474
 msgid "Steel sheets"
-msgstr "Tiskove platy"
+msgstr ""
 
 #. MSG_STOP_PRINT c=18
 #: ../../Firmware/messages.c:112 ../../Firmware/ultralcd.cpp:6584
 #: ../../Firmware/ultralcd.cpp:7046
 msgid "Stop print"
-msgstr "Zastavit tisk"
+msgstr ""
 
 #. MSG_STRICT c=8
 #: ../../Firmware/messages.c:133 ../../Firmware/ultralcd.cpp:5359
 #: ../../Firmware/ultralcd.cpp:5441 ../../Firmware/ultralcd.cpp:5480
 #: ../../Firmware/ultralcd.cpp:5521
 msgid "Strict"
-msgstr "Prisne"
+msgstr ""
 
 #. MSG_SUPPORT c=18
 #: ../../Firmware/ultralcd.cpp:6661
 msgid "Support"
-msgstr "Podpora"
+msgstr ""
 
 #. MSG_SELFTEST_SWAPPED c=16
 #: ../../Firmware/ultralcd.cpp:8085
 msgid "Swapped"
-msgstr "Prohozene"
+msgstr ""
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:5657
 msgid "Temperature"
-msgstr "Teplota"
+msgstr ""
 
 #. MSG_MENU_TEMPERATURES c=18
 #: ../../Firmware/ultralcd.cpp:2037
 msgid "Temperatures"
-msgstr "Teploty"
+msgstr ""
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:4834
@@ -1980,8 +1931,6 @@ msgid ""
 "reach the optimal height. Check the pictures in the handbook (Calibration "
 "chapter)."
 msgstr ""
-"Tiskarna zacne tisknout lomenou caru. Otacenim tlacitka nastavte optimalni "
-"vysku. Postupujte podle obrazku v handbooku (kapitola Kalibrace)."
 
 #. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 #: ../../Firmware/Marlin_main.cpp:1588 ../../Firmware/messages.c:49
@@ -1989,13 +1938,11 @@ msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
 msgstr ""
-"Je potreba kalibrovat osu Z. Prosim postupujte dle prirucky, kapitola "
-"Zaciname, sekce Postup kalibrace."
 
 #. MSG_SORT_TIME c=8
 #: ../../Firmware/messages.c:142 ../../Firmware/ultralcd.cpp:5263
 msgid "Time"
-msgstr "Cas"
+msgstr ""
 
 #. MSG_TIMEOUT c=12
 #: ../../Firmware/messages.c:159 ../../Firmware/ultralcd.cpp:6932
@@ -2006,28 +1953,28 @@ msgstr ""
 #: ../../Firmware/messages.c:102 ../../Firmware/ultralcd.cpp:1461
 #: ../../Firmware/ultralcd.cpp:1609
 msgid "Total"
-msgstr "Celkem"
+msgstr ""
 
 #. MSG_TOTAL_FAILURES c=20
 #: ../../Firmware/messages.c:103 ../../Firmware/ultralcd.cpp:1504
 #: ../../Firmware/ultralcd.cpp:1530 ../../Firmware/ultralcd.cpp:1640
 msgid "Total failures"
-msgstr "Celkem selhani"
+msgstr ""
 
 #. MSG_TOTAL_FILAMENT c=19
 #: ../../Firmware/ultralcd.cpp:2725
 msgid "Total filament"
-msgstr "Filament celkem"
+msgstr ""
 
 #. MSG_TOTAL_PRINT_TIME c=19
 #: ../../Firmware/ultralcd.cpp:2726
 msgid "Total print time"
-msgstr "Celkovy cas tisku"
+msgstr ""
 
 #. MSG_TUNE c=18
 #: ../../Firmware/ultralcd.cpp:6558
 msgid "Tune"
-msgstr "Ladit"
+msgstr ""
 
 #. MSG_UNLOAD_ALL c=17
 #: ../../Firmware/ultralcd.cpp:6244
@@ -2039,7 +1986,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:6625 ../../Firmware/ultralcd.cpp:6632
 #: ../../Firmware/ultralcd.cpp:6645
 msgid "Unload filament"
-msgstr "Vyjmout filament"
+msgstr ""
 
 #. MSG_UNLOAD_FILAMENT_1 c=17
 #: ../../Firmware/ultralcd.cpp:6245
@@ -2070,7 +2017,7 @@ msgstr ""
 #: ../../Firmware/messages.c:117 ../../Firmware/mmu.cpp:1085
 #: ../../Firmware/mmu.cpp:1118 ../../Firmware/ultralcd.cpp:6274
 msgid "Unloading filament"
-msgstr "Vysouvam filament"
+msgstr ""
 
 #. MSG_USED c=19
 #: ../../Firmware/ultralcd.cpp:5912
@@ -2080,12 +2027,12 @@ msgstr ""
 #. MSG_FIL_FAILED c=20 r=5
 #: ../../Firmware/ultralcd.cpp:7320
 msgid "Verification failed, remove the filament and try again."
-msgstr "Overeni selhalo, vyjmete filament a zkuste znovu."
+msgstr ""
 
 #. MSG_MENU_VOLTAGES c=18
 #: ../../Firmware/ultralcd.cpp:2040
 msgid "Voltages"
-msgstr "Napeti"
+msgstr ""
 
 #. MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4294
@@ -2095,69 +2042,65 @@ msgid ""
 "disabled in\n"
 "Stealth mode"
 msgstr ""
-"POZOR:\n"
-"Crash detekce\n"
-"deaktivovana ve\n"
-"Stealth modu"
 
 #. MSG_USERWAIT c=20
 #: ../../Firmware/Marlin_main.cpp:4311
 msgid "Wait for user..."
-msgstr "Ceka se na uzivatele"
+msgstr ""
 
 #. MSG_WAITING_TEMP_PINDA c=20 r=3
 #: ../../Firmware/ultralcd.cpp:3234
 msgid "Waiting for PINDA probe cooling"
-msgstr "Cekani na zchladnuti PINDA"
+msgstr ""
 
 #. MSG_WAITING_TEMP c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3273
 msgid "Waiting for nozzle and bed cooling"
-msgstr "Cekani na zchladnuti trysky a podlozky."
+msgstr ""
 
 #. MSG_WARN c=8
 #: ../../Firmware/messages.c:132 ../../Firmware/ultralcd.cpp:5356
 #: ../../Firmware/ultralcd.cpp:5438 ../../Firmware/ultralcd.cpp:5477
 #: ../../Firmware/ultralcd.cpp:5518
 msgid "Warn"
-msgstr "Varovat"
+msgstr ""
 
 #. MSG_CHANGED_BOTH c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1554
 msgid "Warning: both printer type and motherboard type changed."
-msgstr "Varovani: doslo ke zmene typu tiskarny a motherboardu."
+msgstr ""
 
 #. MSG_CHANGED_MOTHERBOARD c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1546
 msgid "Warning: motherboard type changed."
-msgstr "Varovani: doslo ke zmene typu motherboardu."
+msgstr ""
 
 #. MSG_CHANGED_PRINTER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1550
 msgid "Warning: printer type changed."
-msgstr "Varovani: doslo ke zmene typu tiskarny."
+msgstr ""
 
 #. MSG_UNLOAD_SUCCESSFUL c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:3747
 msgid "Was filament unload successful?"
-msgstr "Bylo vysunuti filamentu uspesne?"
+msgstr ""
 
 #. MSG_SELFTEST_WIRINGERROR c=18
 #: ../../Firmware/messages.c:100 ../../Firmware/ultralcd.cpp:8037
 #: ../../Firmware/ultralcd.cpp:8041 ../../Firmware/ultralcd.cpp:8061
 #: ../../Firmware/ultralcd.cpp:8067 ../../Firmware/ultralcd.cpp:8091
 msgid "Wiring error"
-msgstr "Chyba zapojeni"
+msgstr ""
 
 #. MSG_WIZARD c=17
 #: ../../Firmware/ultralcd.cpp:5755
 msgid "Wizard"
-msgstr "Pruvodce"
+msgstr ""
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:5070
 msgid "X-correct:"
-msgstr "Korekce X:"
+msgstr ""
 
 #. MSG_XFLASH
 #: ../../Firmware/ultralcd.cpp:6663
@@ -2167,22 +2110,22 @@ msgstr ""
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:2029
 msgid "XYZ cal. details"
-msgstr "Detaily XYZ kal."
+msgstr ""
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3735
 msgid "XYZ calibration all right. Skew will be corrected automatically."
-msgstr "Kalibrace XYZ v poradku. Zkoseni bude automaticky vyrovnano pri tisku."
+msgstr ""
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3732
 msgid "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-msgstr "Kalibrace XYZ v poradku. X/Y osy mirne zkosene. Dobra prace!"
+msgstr ""
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3713
 msgid "XYZ calibration compromised. Front calibration points not reachable."
-msgstr "Kalibrace XYZ nepresna. Predni kalibracni body moc vpredu."
+msgstr ""
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3719
@@ -2194,18 +2137,17 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3716
 msgid ""
 "XYZ calibration compromised. Right front calibration point not reachable."
-msgstr "Kalibrace XYZ nepresna. Pravy predni bod moc vpredu."
+msgstr ""
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3695
 msgid "XYZ calibration failed. Bed calibration point was not found."
-msgstr "Kalibrace XYZ selhala. Kalibracni bod podlozky nenalezen."
+msgstr ""
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3701
 msgid "XYZ calibration failed. Front calibration points not reachable."
 msgstr ""
-"Kalibrace XYZ selhala. Predni kalibracni body moc vpredu. Srovnejte tiskarnu."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3707
@@ -2216,28 +2158,27 @@ msgstr ""
 #: ../../Firmware/messages.c:18 ../../Firmware/ultralcd.cpp:3698
 #: ../../Firmware/ultralcd.cpp:3726
 msgid "XYZ calibration failed. Please consult the manual."
-msgstr "Kalibrace XYZ selhala. Nahlednete do manualu."
+msgstr ""
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3704
 msgid "XYZ calibration failed. Right front calibration point not reachable."
 msgstr ""
-"Kalibrace XYZ selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3729
 msgid "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-msgstr "Kalibrace XYZ v poradku. X/Y osy jsou kolme. Gratuluji!"
+msgstr ""
 
 #. MSG_Y_DIST_FROM_MIN c=20
 #: ../../Firmware/ultralcd.cpp:2832
 msgid "Y distance from min"
-msgstr "Y vzdalenost od min"
+msgstr ""
 
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:5071
 msgid "Y-correct:"
-msgstr "Korekce Y:"
+msgstr ""
 
 #. MSG_YES c=4
 #: ../../Firmware/messages.c:125 ../../Firmware/ultralcd.cpp:2553
@@ -2245,7 +2186,7 @@ msgstr "Korekce Y:"
 #: ../../Firmware/ultralcd.cpp:3641 ../../Firmware/ultralcd.cpp:3645
 #: ../../Firmware/ultralcd.cpp:5645 ../../Firmware/ultralcd.cpp:7048
 msgid "Yes"
-msgstr "Ano"
+msgstr ""
 
 #. MSG_FW_VERSION_ALPHA c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:850
@@ -2264,27 +2205,27 @@ msgstr ""
 #. MSG_WIZARD_QUIT c=20 r=8
 #: ../../Firmware/messages.c:122 ../../Firmware/ultralcd.cpp:5047
 msgid "You can always resume the Wizard from Calibration -> Wizard."
-msgstr "Pruvodce muzete kdykoliv znovu spustit z menu Kalibrace -> Pruvodce"
+msgstr ""
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:5072
 msgid "Z-correct:"
-msgstr "Korekce Z:"
+msgstr ""
 
 #. MSG_Z_PROBE_NR c=14
 #: ../../Firmware/messages.c:151 ../../Firmware/ultralcd.cpp:6902
 msgid "Z-probe nr."
-msgstr "Pocet mereni Z"
+msgstr ""
 
 #. MSG_MEASURED_OFFSET c=20
 #: ../../Firmware/ultralcd.cpp:2903
 msgid "[0;0] point offset"
-msgstr "[0;0] odsazeni bodu"
+msgstr ""
 
 #. MSG_PRESS c=20 r=2
 #: ../../Firmware/ultralcd.cpp:2475
 msgid "and press the knob"
-msgstr "a stisknete tlacitko"
+msgstr ""
 
 #: ../../Firmware/ultralcd.cpp:8620
 msgid "monitoring or hold"
@@ -2297,25 +2238,25 @@ msgstr ""
 #. MSG_TO_LOAD_FIL c=20
 #: ../../Firmware/ultralcd.cpp:2127
 msgid "to load filament"
-msgstr "k zavedeni filamentu"
+msgstr ""
 
 #. MSG_TO_UNLOAD_FIL c=20
 #: ../../Firmware/ultralcd.cpp:2131
 msgid "to unload filament"
-msgstr "k vyjmuti filamentu"
+msgstr ""
 
 #. MSG_UNKNOWN c=13
 #: ../../Firmware/ultralcd.cpp:1995
 msgid "unknown"
-msgstr "neznamy"
+msgstr ""
 
 #. MSG_IR_UNKNOWN c=18
 #: ../../Firmware/fsensor.cpp:182 ../../Firmware/messages.c:167
 msgid "unknown state"
-msgstr "neznamy stav"
+msgstr ""
 
 #. MSG_REFRESH c=18
 #: ../../Firmware/messages.c:85 ../../Firmware/ultralcd.cpp:7133
 #: ../../Firmware/ultralcd.cpp:7136
 msgid "🔃Refresh"
-msgstr "🔃Obnovit"
+msgstr ""
