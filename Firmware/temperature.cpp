@@ -460,7 +460,9 @@ enum class TempErrorSource : uint8_t
 {
     hotend,
     bed,
+#ifdef AMBIENT_THERMISTOR
     ambient,
+#endif
 };
 
 // thermal error type (in order of decreasing priority!)
@@ -1708,9 +1710,11 @@ void handle_temp_error()
                 alert_automaton_bed.step(current_temperature_bed, BED_MINTEMP + TEMP_HYSTERESIS);
             }
             break;
+#ifdef AMBIENT_THERMISTOR
         case TempErrorSource::ambient:
             ambient_min_temp_error();
             break;
+#endif
         }
         break;
     case TempErrorType::max:
@@ -1721,9 +1725,11 @@ void handle_temp_error()
         case TempErrorSource::bed:
             bed_max_temp_error();
             break;
+#ifdef AMBIENT_THERMISTOR
         case TempErrorSource::ambient:
             ambient_max_temp_error();
             break;
+#endif
         }
         break;
     case TempErrorType::preheat:
@@ -1735,9 +1741,11 @@ void handle_temp_error()
                 ((TempErrorType)temp_error_state.type == TempErrorType::preheat),
                 ((TempErrorSource)temp_error_state.source == TempErrorSource::bed));
             break;
+#ifdef AMBIENT_THERMISTOR
         case TempErrorSource::ambient:
             // not needed
             break;
+#endif
         }
         break;
 #ifdef TEMP_MODEL
