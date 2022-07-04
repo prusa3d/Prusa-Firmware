@@ -7789,6 +7789,11 @@ static bool check_file(const char* filename) {
 		card.sdprinting = true;
 		get_command();
 		result = check_commands();
+#ifdef CMDBUFFER_DEBUG
+		// Kick watchdog because the file check is very slow
+		// with the CMDBUFFER_DEBUG enabled
+		manage_heater();
+#endif // CMDBUFFER_DEBUG
 	}
 	
 	menu_progressbar_finish();
