@@ -69,6 +69,9 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+#include <util/atomic.h>
+
+
 //===========================================================================
 //=============================public variables ============================
 //===========================================================================
@@ -593,17 +596,7 @@ void check_axes_activity()
 #endif
 }
 
-bool waiting_inside_plan_buffer_line_print_aborted = false;
-/*
-void planner_abort_soft()
-{
-    // Empty the queue.
-    while (blocks_queued()) plan_discard_current_block();
-    // Relay to planner wait routine, that the current line shall be canceled.
-    waiting_inside_plan_buffer_line_print_aborted = true;
-    //current_position[i]
-}
-*/
+bool planner_aborted = false;
 
 #ifdef PLANNER_DIAGNOSTICS
 static inline void planner_update_queue_min_counter()
@@ -665,6 +658,9 @@ void planner_abort_hard()
 #endif
     }
 #endif
+    // Relay to planner wait routine, that the current line shall be canceled.
+    planner_aborted = true;
+
     // Clear the planner queue, reset and re-enable the stepper timer.
     quickStop();
 
@@ -680,9 +676,6 @@ void planner_abort_hard()
 
     plan_reset_next_e_queue = false;
     plan_reset_next_e_sched = false;
-
-    // Relay to planner wait routine, that the current line shall be canceled.
-    waiting_inside_plan_buffer_line_print_aborted = true;
 }
 
 void plan_buffer_line_curposXYZE(float feed_rate) {
@@ -706,10 +699,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Calculate the buffer head after we push this byte
   uint8_t next_buffer_head = next_block_index(block_buffer_head);
 
-  // TODO: shouldn't this be reset only in the outer marlin loop?
-  waiting_inside_plan_buffer_line_print_aborted = false;
-
-  // If the buffer is full: good! That means we are well ahead of the robot. 
+  // If the buffer is full: good! That means we are well ahead of the robot.
   // Rest here until there is room in the buffer.
   if (block_buffer_tail == next_buffer_head) {
       do {
@@ -718,18 +708,14 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
           manage_inactivity(false); 
           lcd_update(0);
       } while (block_buffer_tail == next_buffer_head);
-      if (waiting_inside_plan_buffer_line_print_aborted) {
-          // Inside the lcd_update(0) routine the print has been aborted.
-          // Cancel the print, do not plan the current line this routine is waiting on.
-#ifdef PLANNER_DIAGNOSTICS
-          planner_update_queue_min_counter();
-#endif /* PLANNER_DIAGNOSTICS */
-          return;
-      }
   }
 #ifdef PLANNER_DIAGNOSTICS
   planner_update_queue_min_counter();
 #endif /* PLANNER_DIAGNOSTICS */
+  if(planner_aborted) {
+      // avoid planning the block early if aborted
+      return;
+  }
 
   // Prepare to set up new block
   block_t *block = &block_buffer[block_buffer_head];
@@ -1334,8 +1320,12 @@ Having the real displacement of the head, we can calculate the total movement le
   if (block->step_event_count.wide <= 32767)
     block->flag |= BLOCK_FLAG_DDA_LOWRES;
 
-  // Move the buffer head. From now the block may be picked up by the stepper interrupt controller.
-  block_buffer_head = next_buffer_head;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+      // Move the buffer head ensuring the current block hasn't been cancelled from an isr context
+      // (this is possible both during crash detection *and* uvlo, thus needing a global cli)
+      if(planner_aborted) return;
+      block_buffer_head = next_buffer_head;
+  }
 
   // Update position
   memcpy(position, target, sizeof(target)); // position[] = target[]

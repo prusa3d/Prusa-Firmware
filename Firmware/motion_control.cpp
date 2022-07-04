@@ -151,7 +151,7 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
             // Insert the segment into the buffer
             plan_buffer_line(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS], feed_rate, extruder, position);
             // Handle the situation where the planner is aborted hard.
-            if (waiting_inside_plan_buffer_line_print_aborted)
+            if (planner_aborted)
                 return;
         }
     }

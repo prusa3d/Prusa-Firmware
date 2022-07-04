@@ -1843,6 +1843,9 @@ void host_keepalive() {
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
 {
+    // Reset a previously aborted command, we can now start processing motion again
+    planner_aborted = false;
+
     if(Stopped) {
         // Currently Stopped (possibly due to an error) and not accepting new serial commands.
         // Signal to the host that we're currently busy waiting for supervision.
@@ -2999,7 +3002,7 @@ static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
 static void gcode_G80()
 {
     st_synchronize();
-    if (waiting_inside_plan_buffer_line_print_aborted)
+    if (planner_aborted)
         return;
 
     mesh_bed_leveling_flag = true;
@@ -3093,7 +3096,7 @@ static void gcode_G80()
     plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
     // Wait until the move is finished.
     st_synchronize();
-    if (waiting_inside_plan_buffer_line_print_aborted)
+    if (planner_aborted)
     {
         custom_message_type = custom_message_type_old;
         custom_message_state = custom_message_state_old;
@@ -3168,7 +3171,7 @@ static void gcode_G80()
         //printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
         plan_buffer_line_curposXYZE(XY_AXIS_FEEDRATE);
         st_synchronize();
-        if (waiting_inside_plan_buffer_line_print_aborted)
+        if (planner_aborted)
         {
             custom_message_type = custom_message_type_old;
             custom_message_state = custom_message_state_old;
@@ -9546,7 +9549,7 @@ void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const
                                  current_position[Z_AXIS] + t * dz,
                                  current_position[E_AXIS] + t * de,
                                  feed_rate, extruder, gcode_target);
-                if (waiting_inside_plan_buffer_line_print_aborted)
+                if (planner_aborted)
                     return;
             }
         }
@@ -10957,6 +10960,7 @@ void uvlo_()
 
     // Enable stepper driver interrupt to move Z axis. This should be fine as the planner and
     // command queues are empty, SD card printing is disabled, usb is inhibited.
+    planner_aborted = false;
     sei();
 
     // Retract
@@ -11089,6 +11093,7 @@ void uvlo_tiny()
 
         // Enable stepper driver interrupt to move Z axis. This should be fine as the planner and
         // command queues are empty, SD card printing is disabled, usb is inhibited.
+        planner_aborted = false;
         sei();
 
         // The axis was moved: adjust Z as done on a regular UVLO.
@@ -11568,7 +11573,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   st_reset_timer();
 	sei();
 	if ((z_move != 0) || (e_move != 0)) { // extruder or z move
-#if 1
+
     // Rather than calling plan_buffer_line directly, push the move into the command queue so that
     // the caller can continue processing. This is used during powerpanic to save the state as we
     // move away from the print.
@@ -11600,13 +11605,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     // If this call is invoked from the main Arduino loop() function, let the caller know that the command
     // in the command queue is not the original command, but a new one, so it should not be removed from the queue.
     repeatcommand_front();
-#else
-		plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS] + z_move, saved_pos[E_AXIS] + e_move, homing_feedrate[Z_AXIS], active_extruder);
-    st_synchronize(); //wait moving
-    memcpy(current_position, saved_pos, sizeof(saved_pos));
-    set_destination_to_current();
-#endif
-    waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
   }
 }
 
@@ -11690,7 +11688,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	lcd_setstatuspgm(MSG_WELCOME);
     saved_printing_type = PRINTING_TYPE_NONE;
 	saved_printing = false;
-    waiting_inside_plan_buffer_line_print_aborted = true; //unroll the stack
+    planner_aborted = true; // unroll the stack
 }
 
 // Cancel the state related to a currently saved print
