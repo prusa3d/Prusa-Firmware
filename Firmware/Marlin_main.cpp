@@ -4264,7 +4264,7 @@ void process_commands()
         if (starpos != NULL)
             *(starpos) = '\0';
         lcd_setstatus(strchr_pointer + 5);
-        custom_message_type = CustomMsg::MsgUpdate;
+        custom_message_type = CustomMsg::M117;
     }
 
     /*!
@@ -4762,7 +4762,13 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL
+      if(codenum != 0)
+      {
+        if(custom_message_type != CustomMsg::M117)
+        {
+          LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL
+        }
+      }
       st_synchronize();
       codenum += _millis();  // keep track of when we started waiting
       previous_millis_cmd.start();

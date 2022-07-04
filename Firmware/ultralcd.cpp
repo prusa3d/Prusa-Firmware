@@ -618,7 +618,7 @@ void lcdui_print_status_line(void)
         }
     } else { // Otherwise check for other special events
         switch (custom_message_type) {
-        case CustomMsg::MsgUpdate: //Short message even while printing from SD
+        case CustomMsg::M117:   // M117 Set the status line message on the LCD
         case CustomMsg::Status: // Nothing special, print status message normally
         case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
             lcd_print(lcd_status_message);
@@ -875,10 +875,13 @@ void lcd_commands()
 	{
 		if (!blocks_queued() && !homing_flag)
 		{
-			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20
-            lcd_commands_type = LcdCommands::Idle;
-            lcd_commands_step = 0;
-            long_pause();
+			if (custom_message_type != CustomMsg::M117)
+			{
+				lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20
+			}
+			lcd_commands_type = LcdCommands::Idle;
+			lcd_commands_step = 0;
+			long_pause();
 		}
 	}
 
