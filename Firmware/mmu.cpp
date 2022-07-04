@@ -752,14 +752,14 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				lcd_clear();
 				setTargetHotend(hotend_temp_bckp, active_extruder);
 				if (((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5)) {
-					lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature..."));
+					lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature...")); ////MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 					delay_keep_alive(3000);
 				}
 				mmu_wait_for_heater_blocking();
 			  }			  
 			  if (move_axes) {
 				  lcd_clear();
-				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming position..."));
+				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming position...")); ////MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 				  current_position[X_AXIS] = x_position_bckp;
 				  current_position[Y_AXIS] = y_position_bckp;
 				  plan_buffer_line_curposXYZE(50);
@@ -770,7 +770,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 			  }
 			  else {
 				  lcd_clear();
-				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming..."));
+				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming...")); ////MSG_MMU_OK_RESUMING c=20 r=4
 				  delay_keep_alive(1000); //delay just for showing MMU OK message for a while in case that there are no xyz movements
 			  }
 		  }
@@ -998,7 +998,7 @@ bool mmu_check_version()
 void mmu_show_warning()
 {
 	printf_P(PSTR("MMU2 firmware version invalid. Required version: build number %d or higher."), MMU_REQUIRED_FW_BUILDNR);
-	kill(_i("Please update firmware in your MMU2. Waiting for reset."));
+	kill(_i("Please update firmware in your MMU2. Waiting for reset.")); ////MSG_UPDATE_MMU2_FW c=20 r=4
 }
 
 void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
@@ -1072,13 +1072,13 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 			{
 			    LcdUpdateDisabler disableLcdUpdate;
                 lcd_clear();
-                lcd_puts_at_P(0, 1, _i("Ejecting filament"));
+                lcd_puts_at_P(0, 1, _i("Ejecting filament")); ////MSG_EJECTING_FILAMENT c=20
                 mmu_filament_ramming();
                 mmu_command(MmuCmd::E0 + filament);
                 manage_response(false, false, MMU_UNLOAD_MOVE);
                 if (recover)
                 {
-                    lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
+                    lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob.")); ////MSG_EJECT_REMOVE c=20 r=4
                     mmu_command(MmuCmd::R0);
                     manage_response(false, false);
                 }

@@ -1,6 +1,6 @@
 dist: focal
 before_install:
-  - sudo apt-get install -y ninja-build
+  - sudo apt-get install -y ninja-build python3-polib python3-pyelftools
   # Arduino IDE adds a lot of noise caused by network traffic, trying to firewall it off
   - sudo iptables -P INPUT DROP
   - sudo iptables -P FORWARD DROP

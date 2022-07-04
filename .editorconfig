@@ -15,4 +15,3 @@ max_line_length             = 100
 
 [lang/po/*.po]
 end_of_line                 = crlf
-trim_trailing_whitespace    = false
