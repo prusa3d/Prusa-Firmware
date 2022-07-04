@@ -7039,8 +7039,17 @@ Sigma_Exit:
       break;
 
     /*!
-	### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#M201:_Set_max_printing_acceleration">M201: Set max printing acceleration</a>
+	### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#M201:_Set_max_acceleration">M201: Set max printing acceleration</a>
     For each axis individually.
+    ##### Usage
+
+    M201 [ X | Y | Z | E ]
+
+    ##### Parameters
+    - `X` - Acceleration for X axis in units/s^2
+    - `Y` - Acceleration for Y axis in units/s^2
+    - `Z` - Acceleration for Z axis in units/s^2
+    - `E` - Acceleration for the active or specified extruder in units/s^2
     */
     case 201:
 		for (int8_t i = 0; i < NUM_AXIS; i++)
@@ -7076,8 +7085,17 @@ Sigma_Exit:
     #endif
 
     /*!
-	### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#M203:_Set_maximum_feedrate">M203: Set maximum feedrate</a>
+    ### M203 - Set Max Feedrate <a href="https://reprap.org/wiki/G-code#M203:_Set_maximum_feedrate">M203: Set maximum feedrate</a>
     For each axis individually.
+    ##### Usage
+
+    M203 [ X | Y | Z | E ]
+
+    ##### Parameters
+    - `X` - Maximum feedrate for X axis
+    - `Y` - Maximum feedrate for Y axis
+    - `Z` - Maximum feedrate for Z axis
+    - `E` - Maximum feedrate for extruder drives
     */
     case 203: // M203 max feedrate mm/sec
 		for (uint8_t i = 0; i < NUM_AXIS; i++)
@@ -8659,13 +8677,19 @@ Sigma_Exit:
     }
     break;
 
-  /*!
-  ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
-  
-  */
+    /*!
+    ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
+    #### Usage
+
+        M701 [ E | T ]
+
+    #### Parameters
+    - `E` - ID of filament to load, ranges from 0 to 4
+    - `T` - Alias of `E`. Used for compatibility with Marlin
+    */
 	case 701:
 	{
-		if (mmu_enabled && code_seen('E'))
+		if (mmu_enabled && (code_seen('E') || code_seen('T')))
 			tmp_extruder = code_value_uint8();
 		gcode_M701();
 	}
@@ -8675,7 +8699,7 @@ Sigma_Exit:
     ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">G32: Undock Z Probe sled</a>
     #### Usage
     
-        M702 [ U | C ]
+        M702 [ C ]
     
     #### Parameters
     - `C` - Unload just current filament
