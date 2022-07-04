@@ -1693,10 +1693,6 @@ void stack_error() {
     crash_and_burn(dump_crash_reason::stack_error);
 }
 
-void pullup_error(bool fromTempISR) {
-    crash_and_burn(fromTempISR ? dump_crash_reason::bad_pullup_temp_isr : dump_crash_reason::bad_pullup_step_isr);
-}
-
 #ifdef PRUSA_M28
 void trace();
 
