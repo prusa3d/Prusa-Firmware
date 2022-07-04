@@ -3688,6 +3688,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     //Lift Z
     current_position[Z_AXIS] += z_shift;
+    clamp_to_software_endstops(current_position);
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_ZFEED);
     st_synchronize();
 
@@ -10758,7 +10759,7 @@ void long_pause() //long pause print
 
 	//lift z
 	current_position[Z_AXIS] += Z_PAUSE_LIFT;
-	if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+	clamp_to_software_endstops(current_position);
 	plan_buffer_line_curposXYZE(15);
 
 	//Move XY to side

@@ -6307,8 +6307,11 @@ void lcd_print_stop()
 
     lcd_cooldown(); //turns off heaters and fan; goes to status screen.
 
-    current_position[Z_AXIS] += 10; //lift Z.
-    plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
+    if (axis_known_position[Z_AXIS]) {
+        current_position[Z_AXIS] += Z_CANCEL_LIFT;
+        clamp_to_software_endstops(current_position);
+        plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
+    }
 
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
     {
