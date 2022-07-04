@@ -9951,6 +9951,7 @@ void UnconditionalStop()
     // Disable all heaters and unroll the temperature wait loop stack
     disable_heater();
     cancel_heatup = true;
+    heating_status = HeatingStatus::NO_HEATING;
 
     // Clear any saved printing state
     cancel_saved_printing();
@@ -10843,6 +10844,7 @@ void long_pause() //long pause print
 	start_pause_print = _millis();
 
     // Stop heaters
+    heating_status = HeatingStatus::NO_HEATING;
     setAllTargetHotends(0);
 
     // Lift z

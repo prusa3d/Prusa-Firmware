@@ -872,14 +872,34 @@ void lcd_status_screen()                          // NOT static due to using ins
 	}
 }
 
+void print_stop();
+
 void lcd_commands()
 {
+    if (planner_aborted) {
+        // we are still within an aborted command. do not process any LCD command until we return
+        return;
+    }
+
+    if (lcd_commands_type == LcdCommands::StopPrint)
+    {
+        if (!blocks_queued() && !homing_flag)
+        {
+            custom_message_type = CustomMsg::Status;
+            lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
+            lcd_commands_type = LcdCommands::Idle;
+            lcd_commands_step = 0;
+            print_stop();
+        }
+    }
+
 	if (lcd_commands_type == LcdCommands::LongPause)
 	{
 		if (!blocks_queued() && !homing_flag)
 		{
 			if (custom_message_type != CustomMsg::M117)
 			{
+				custom_message_type = CustomMsg::Status;
 				lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20
 			}
 			lcd_commands_type = LcdCommands::Idle;
@@ -1070,12 +1090,16 @@ void lcd_return_to_status()
 void lcd_pause_print()
 {
     stop_and_save_print_to_ram(0.0, -default_retraction);
-    lcd_return_to_status();
-    isPrintPaused = true;
-    if (LcdCommands::Idle == lcd_commands_type) {
-        lcd_commands_type = LcdCommands::LongPause;
+
+    if (!card.sdprinting) {
+        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_PAUSED);
     }
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
+
+    isPrintPaused = true;
+
+    // return to status is required to continue processing in the main loop!
+    lcd_commands_type = LcdCommands::LongPause;
+    lcd_return_to_status();
 }
 
 //! @brief Send host action "pause"
@@ -6289,38 +6313,19 @@ static void lcd_sd_updir()
   menu_data_reset(); //Forces reloading of cached variables.
 }
 
-void lcd_print_stop()
+// continue stopping the print from the main loop after lcd_print_stop() is called
+void print_stop()
 {
-    if (!card.sdprinting) {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
-    }
-    UnconditionalStop();
+    // save printing time
+    stoptime = _millis();
+    unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
+    save_statistics(total_filament_used, t);
 
-    // TODO: all the following should be moved in the main marlin loop!
-#ifdef MESH_BED_LEVELING
-    mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
-#endif
+    // lift Z
+    raise_z_above(current_position[Z_AXIS] + 10, true);
 
-	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-	stoptime = _millis();
-	unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
-	pause_time = 0;
-	save_statistics(total_filament_used, t);
-
-    // reset current command
-    lcd_commands_step = 0;
-    lcd_commands_type = LcdCommands::Idle;
-
-    lcd_cooldown(); //turns off heaters and fan; goes to status screen.
-
-    if (axis_known_position[Z_AXIS]) {
-        current_position[Z_AXIS] += Z_CANCEL_LIFT;
-        clamp_to_software_endstops(current_position);
-        plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
-    }
-
-    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
-    {
+    // if axis are homed, move to parking position.
+    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
         current_position[X_AXIS] = X_CANCEL_POS;
         current_position[Y_AXIS] = Y_CANCEL_POS;
         plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
@@ -6328,17 +6333,32 @@ void lcd_print_stop()
     st_synchronize();
 
     if (mmu_enabled) extr_unload(); //M702 C
-
     finishAndDisableSteppers(); //M84
-
-    lcd_setstatuspgm(MSG_WELCOME);
-    custom_message_type = CustomMsg::Status;
-
-    planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
-    
     axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
-    
-    isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
+}
+
+void lcd_print_stop()
+{
+    // UnconditionalStop() will internally cause planner_abort_hard(), meaning we _cannot_ plan
+    // any more move in this call! Any further move must happen inside print_stop(), which is called
+    // by the main loop one iteration later.
+    UnconditionalStop();
+
+    if (!card.sdprinting) {
+        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
+    }
+
+#ifdef MESH_BED_LEVELING
+    mbl.active = false;
+#endif
+
+    // clear any pending paused state immediately
+    pause_time = 0;
+    isPrintPaused = false;
+
+    // return to status is required to continue processing in the main loop!
+    lcd_commands_type = LcdCommands::StopPrint;
+    lcd_return_to_status();
 }
 
 void lcd_sdcard_stop()
