@@ -6309,6 +6309,7 @@ void lcd_print_stop()
 
     if (axis_known_position[Z_AXIS]) {
         current_position[Z_AXIS] += Z_CANCEL_LIFT;
+        clamp_to_software_endstops(current_position);
         plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
     }
 
