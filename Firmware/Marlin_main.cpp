@@ -8856,14 +8856,15 @@ Sigma_Exit:
     ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
     #### Usage
 
-        M701 [ E ]
+        M701 [ E | T ]
 
     #### Parameters
     - `E` - ID of filament to load, ranges from 0 to 4
+    - `T` - Alias of `E`. Used for compatibility with Marlin
     */
 	case 701:
 	{
-		if (mmu_enabled && code_seen('E'))
+		if (mmu_enabled && (code_seen('E') || code_seen('T')))
 			tmp_extruder = code_value_uint8();
 		gcode_M701();
 	}
