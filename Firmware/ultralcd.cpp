@@ -225,7 +225,7 @@ enum class FanCheck : uint_least8_t {
  *
  * @returns a TestError noerror, extruderFan, printFan or swappedFan.
  */
-static FanCheck lcd_selftest_fan_auto(int _fan);
+static FanCheck lcd_selftest_fan_auto(uint8_t _fan);
 #endif //FANCHECK
 
 #ifdef PAT9125
@@ -6655,15 +6655,15 @@ bool lcd_selftest()
 	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_0))
 	switch (lcd_selftest_fan_auto(0)){		// check extruder Fan
-		case FanCheck::ExtruderFan:
-			_result = false;
-			break;
-		case FanCheck::SwappedFan:
-			_swapped_fan = true;
-			// FALLTHRU
-		default:
-			_result = true;
-			break;
+    case FanCheck::SwappedFan:
+        _swapped_fan = true; // swapped is merely a hint (checked later)
+        // FALLTHRU
+    case FanCheck::Success:
+        _result = true;
+        break;
+    default:
+        _result = false;
+        break;
 	}
 #else //defined(TACH_0)
 	_result = lcd_selftest_manual_fan_check(0, false);
@@ -6677,17 +6677,17 @@ bool lcd_selftest()
 	{
 		_progress = lcd_selftest_screen(TestScreen::PrintFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_1))
-	switch (lcd_selftest_fan_auto(1)){		// check print fan
-		case FanCheck::PrintFan:
-			_result = false;
-			break;
-		case FanCheck::SwappedFan:
-			_swapped_fan = true;
-			// FALLTHRU
-		default:
-			_result = true;
-			break;
-	}
+        switch (lcd_selftest_fan_auto(1)){		// check print fan
+        case FanCheck::SwappedFan:
+            _swapped_fan = true; // swapped is merely a hint (checked later)
+            // FALLTHRU
+        case FanCheck::Success:
+            _result = true;
+            break;
+        default:
+            _result = false;
+            break;
+        }
 #else //defined(TACH_1)
 		_result = lcd_selftest_manual_fan_check(1, false);
 #endif //defined(TACH_1)
@@ -7571,90 +7571,72 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 }
 
 #ifdef FANCHECK
-static FanCheck lcd_selftest_fan_auto(int _fan)
+// Set print fan speed
+static void lcd_selftest_setfan(uint8_t speed) {
+    // set the fan speed
+    fanSpeed = speed;
+#ifdef FAN_SOFT_PWM
+    fanSpeedSoftPwm = speed;
+#endif
+    manage_heater();
+}
+
+// Wait for the specified number of seconds while displaying some single-character indicator on the
+// screen coordinate col/row, then perform fan measurement
+static void lcd_selftest_measure_fans(uint8_t delay, uint8_t col, uint8_t row) {
+    // spin-up delay
+    static char symbols[] = {'-', '|'};
+    static_assert(1000 / sizeof(symbols) * sizeof(symbols) == 1000);
+    while(delay--) {
+        for(uint8_t i = 0; i != sizeof(symbols); ++i) {
+            lcd_putc_at(col, row, symbols[i]);
+            delay_keep_alive(1000 / sizeof(symbols));
+        }
+    }
+
+#ifdef FANCHECK
+    extruder_autofan_last_check = _millis();
+#endif
+    fan_measuring = true;
+    while(fan_measuring) {
+        delay_keep_alive(100);
+    }
+
+    gcode_M123();
+}
+
+static FanCheck lcd_selftest_fan_auto(uint8_t _fan)
 {
+    // speed threshold to differentiate between extruder and print fan
+    static const int printFanThr = FANCHECK_AUTO_PRINT_FAN_THRS; // >= FANCHECK_AUTO_PRINT_FAN_THRS RPS
+
+    // speed threshold to mark a fan as failed
+    static const int failThr = FANCHECK_AUTO_FAIL_THRS; // < FANCHECK_AUTO_FAIL_THRS RPM would mean either a faulty Noctua, Altfan or print fan
+
 	switch (_fan) {
 	case 0:
-		fanSpeed = 0;
-		manage_heater();			//turn off fan
-		setExtruderAutoFanState(3); //extruder fan
-#ifdef FAN_SOFT_PWM
-		extruder_autofan_last_check = _millis();
-		fan_measuring = true;
-#endif //FAN_SOFT_PWM
-		_delay(2000);
-		setExtruderAutoFanState(0); //extruder fan
-		manage_heater();			//count average fan speed from 2s delay and turn off fans
-
-		puts_P(PSTR("Test 1:"));
-		printf_P(PSTR("Print fan speed: %d\n"), fan_speed[1]);
-		printf_P(PSTR("Extr fan speed: %d\n"), fan_speed[0]);
-
-		if (fan_speed[0] < 20) { // < 1200 RPM would mean either a faulty Noctua or Altfan
+        setExtruderAutoFanState(3); // extruder fan
+        lcd_selftest_setfan(0); // print fan off
+        lcd_selftest_measure_fans(2, 18, 2);
+        setExtruderAutoFanState(0); // extruder fan off
+		if (fan_speed[0] < failThr) {
 			return FanCheck::ExtruderFan;
 		}
-#ifdef FAN_SOFT_PWM
-		else if (fan_speed[0] > 50 ) { // printerFan is faster
+		if (fan_speed[0] >= printFanThr ) {
 			return FanCheck::SwappedFan;
 		}
 		break;
-#endif
 
 	case 1:
-		//will it work with Thotend > 50 C ?
-#ifdef FAN_SOFT_PWM
-		fanSpeed = 255;
-		fanSpeedSoftPwm = 255;
-		extruder_autofan_last_check = _millis(); //store time when measurement starts
-		fan_measuring = true; //start fan measuring, rest is on manage_heater
-#else //FAN_SOFT_PWM
-		fanSpeed = 150;				//print fan
-#endif //FAN_SOFT_PWM
-		for (uint8_t i = 0; i < 5; i++) {
-			delay_keep_alive(1000);
-			lcd_putc_at(18, 3, '-');
-			delay_keep_alive(1000);
-			lcd_putc_at(18, 3, '|');
-		}
-		fanSpeed = 0;
-
-#ifdef FAN_SOFT_PWM
-		fanSpeedSoftPwm = 0;
-#else //FAN_SOFT_PWM
-		manage_heater();			//turn off fan
-		manage_inactivity(true);	//to turn off print fan
-#endif //FAN_SOFT_PWM
-		puts_P(PSTR("Test 2:"));
-		printf_P(PSTR("Print fan speed: %d\n"), fan_speed[1]);
-		printf_P(PSTR("Extr fan speed: %d\n"), fan_speed[0]);
-		if (!fan_speed[1]) {
-			return FanCheck::PrintFan;
-		}
-
-#ifdef FAN_SOFT_PWM
-		fanSpeed = 80;
-		fanSpeedSoftPwm = 80;
-
-		for (uint8_t i = 0; i < 5; i++) {
-			delay_keep_alive(1000);
-			lcd_putc_at(18, 3, '-');
-			delay_keep_alive(1000);
-			lcd_putc_at(18, 3, '|');
-		}
-		fanSpeed = 0;
-
-		// noctua speed is between 17 and 24, turbine more then 30
-		if (fan_speed[1] < 30) {
+        lcd_selftest_setfan(255);
+        lcd_selftest_measure_fans(5, 18, 3);
+        lcd_selftest_setfan(0);
+        if (fan_speed[1] < failThr) {
+            return FanCheck::PrintFan;
+        }
+		if (fan_speed[1] < printFanThr) {
 			return FanCheck::SwappedFan;
 		}
-#else
-		// fan is spinning, but measured RPM are too low for print fan, it must
-		// be left extruder fan
-		else if (fan_speed[1] < 34) {
-			return FanCheck::SwappedFan;
-		}
-#endif //FAN_SOFT_PWM
-		break;
 	}
 	return FanCheck::Success;
 }
