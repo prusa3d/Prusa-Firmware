@@ -2312,7 +2312,7 @@ static void lcd_menu_AutoLoadFilament()
 static void preheat_or_continue()
 {
     bFilamentFirstRun = false;
-    if (target_temperature[0] >= EXTRUDE_MINTEMP)
+    if (target_temperature[0] >= extrude_min_temp)
     {
         bFilamentPreheatState = true;
         mFilamentItem(target_temperature[0], target_temperature_bed);
@@ -2445,7 +2445,7 @@ static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 
 void lcd_move_e()
 {
-	if (degHotend0() > EXTRUDE_MINTEMP)
+	if ((int)degHotend0() > extrude_min_temp)
 	{
 		if (lcd_encoder != 0)
 		{
@@ -5555,7 +5555,7 @@ static void mmu_cut_filament_menu()
     {
         eFilamentAction=FilamentAction::MmuCut;
         bFilamentFirstRun=false;
-        if(target_temperature[0]>=EXTRUDE_MINTEMP)
+        if(target_temperature[0] >= extrude_min_temp)
         {
             bFilamentPreheatState=true;
             mFilamentItem(target_temperature[0],target_temperature_bed);

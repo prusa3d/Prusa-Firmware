@@ -122,7 +122,7 @@ static uint8_t g_cntr_planner_queue_min = 0;
 //=============================private variables ============================
 //===========================================================================
 #ifdef PREVENT_DANGEROUS_EXTRUDE
-float extrude_min_temp=EXTRUDE_MINTEMP;
+int extrude_min_temp = EXTRUDE_MINTEMP;
 #endif
 
 #ifdef LIN_ADVANCE
@@ -833,7 +833,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   #ifdef PREVENT_DANGEROUS_EXTRUDE
   if(target[E_AXIS]!=position[E_AXIS])
   {
-    if(degHotend(active_extruder)<extrude_min_temp)
+    if((int)degHotend(active_extruder)<extrude_min_temp)
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
       #ifdef LIN_ADVANCE
@@ -1434,9 +1434,9 @@ void plan_reset_next_e()
 }
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
-void set_extrude_min_temp(float temp)
+void set_extrude_min_temp(int temp)
 {
-  extrude_min_temp=temp;
+  extrude_min_temp = temp;
 }
 #endif
 
