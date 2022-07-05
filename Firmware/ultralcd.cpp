@@ -7611,10 +7611,10 @@ static void lcd_selftest_measure_fans(uint8_t delay, uint8_t col, uint8_t row) {
 static FanCheck lcd_selftest_fan_auto(uint8_t _fan)
 {
     // speed threshold to differentiate between extruder and print fan
-    static const int printFanThr = 70; // >=4200 RPM
+    static const int printFanThr = FANCHECK_AUTO_PRINT_FAN_THRS; // >= FANCHECK_AUTO_PRINT_FAN_THRS RPS
 
     // speed threshold to mark a fan as failed
-    static const int failThr = 20; // <1200 RPM would mean either a faulty Noctua, Altfan or print fan
+    static const int failThr = FANCHECK_AUTO_FAIL_THRS; // < FANCHECK_AUTO_FAIL_THRS RPM would mean either a faulty Noctua, Altfan or print fan
 
 	switch (_fan) {
 	case 0:
