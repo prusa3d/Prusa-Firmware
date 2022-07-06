@@ -2784,8 +2784,8 @@ bool autotune(int16_t cal_temp)
     fanSpeedSoftPwm = 255;
     wait(30000);
 
-    for(int8_t i = TEMP_MODEL_R_SIZE; i > 0; i -= TEMP_MODEL_CAL_R_STEP) {
-        fanSpeedSoftPwm = 256 / TEMP_MODEL_R_SIZE * i - 1;
+    for(int8_t i = TEMP_MODEL_R_SIZE - 1; i > 0; i -= TEMP_MODEL_CAL_R_STEP) {
+        fanSpeedSoftPwm = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
         wait(10000);
 
         printf_P(PSTR("TM: R[%u] estimation\n"), (unsigned)i);
@@ -2803,6 +2803,7 @@ bool autotune(int16_t cal_temp)
     }
 
     // interpolate remaining steps to speed-up calibration
+    // TODO: verify that the sampled values are monotically increasing?
     int8_t next = TEMP_MODEL_R_SIZE - 1;
     for(uint8_t i = TEMP_MODEL_R_SIZE - 2; i != 0; --i) {
         if(!((TEMP_MODEL_R_SIZE - i - 1) % TEMP_MODEL_CAL_R_STEP)) {
