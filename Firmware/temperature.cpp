@@ -2695,6 +2695,7 @@ float estimate(uint16_t samples,
     float thr, uint16_t max_itr,
     uint8_t fan_pwm, float ambient)
 {
+    float orig = *var;
     float e = NAN;
     float points[2];
     float bounds[2] = {min, max};
@@ -2710,10 +2711,19 @@ float estimate(uint16_t samples,
         e = (1-GOLDEN_RATIO) * fabsf((bounds[0]-bounds[1]) / x);
 
         printf_P(PSTR("TM iter:%u v:%.2f e:%.3f\n"), it, x, e);
-        if(e < thr) return e;
+        if(e < thr) {
+            if(x == min || x == max) {
+                // real value likely outside of the search boundaries
+                break;
+            }
+
+            *var = x;
+            return e;
+        }
     }
 
     SERIAL_ECHOLNPGM("TM estimation did not converge");
+    *var = orig;
     return NAN;
 }
 
