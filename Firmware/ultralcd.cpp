@@ -5692,19 +5692,30 @@ static bool fan_error_selftest()
     return 0;
 }
 
+bool resume_print_checks() {
+    // reset the lcd status so that a newer error will be shown
+    lcd_return_to_status();
+    lcd_reset_alert_level();
+
+    // ensure thermal issues (temp or fan) are resolved before we allow to resume
+    if (get_temp_error()
+#ifdef FANCHECK
+        || fan_error_selftest()
+#endif
+        ) {
+        return false; // abort if error persists
+    }
+
+    return true;
+}
+
 //! @brief Resume paused print, send host action "resumed"
 //! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
 //! as restore_print_from_ram_and_continue() calls lcd_update() internally.
 void lcd_resume_print()
 {
-    lcd_return_to_status();
-    lcd_reset_alert_level();
-
-    // ensure thermal issues (temp or fan) are resolved before we allow to resume
-    if (get_temp_error() || fan_error_selftest()) {
-        if (usb_timer.running()) SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
-        return; // abort if error persists
-    }
+    // reset lcd and ensure we can resume first
+    if (!resume_print_checks()) return;
 
     cmdqueue_serial_disabled = false;
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
@@ -5722,7 +5733,11 @@ void lcd_resume_print()
 //! @brief Resume paused USB/host print, send host action "resume"
 void lcd_resume_usb_print()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUME); //resume octoprint
+    // reset lcd and ensure we can resume first
+    if (!resume_print_checks()) return;
+
+    // resume the usb host
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUME);
 }
 
 static void change_sheet()

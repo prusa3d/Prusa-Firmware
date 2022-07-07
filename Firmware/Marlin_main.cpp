@@ -1863,13 +1863,6 @@ void loop()
 		;
 	}
     
-#ifdef FANCHECK
-    if (fan_check_error && isPrintPaused && !IS_SD_PRINTING) {
-        KEEPALIVE_STATE(PAUSED_FOR_USER);
-        host_keepalive(); //prevent timeouts since usb processing is disabled until print is resumed. This is for a crude way of pausing a print on all hosts.
-    }
-#endif
-
 #ifdef PRUSA_M28
     if (prusa_sd_card_upload)
     {
@@ -4197,16 +4190,6 @@ There are reasons why some G Codes aren't in numerical order.
 
 void process_commands()
 {
-#ifdef FANCHECK
-    if(fan_check_error == EFCE_DETECTED) {
-        fan_check_error = EFCE_REPORTED;
-        if (usb_timer.running())
-            lcd_pause_usb_print();
-        else
-            lcd_pause_print();
-    }
-#endif
-
 	if (!buflen) return; //empty command
 
 #ifdef CMDBUFFER_DEBUG

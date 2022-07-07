@@ -82,21 +82,22 @@ static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 }
 
 void fanSpeedError(unsigned char _fan) {
-    if (get_message_level() != 0 && isPrintPaused) return;
-    //to ensure that target temp. is not set to zero in case that we are resuming print
-    if (card.sdprinting || usb_timer.running()) {
-        if (heating_status != HeatingStatus::NO_HEATING) {
-            lcd_print_stop();
-        }
-        else {
-            fan_check_error = EFCE_DETECTED; //plans error for next processed command
+    if (fan_check_error == EFCE_REPORTED) return;
+    fan_check_error = EFCE_REPORTED;
+
+    if (IS_SD_PRINTING || usb_timer.running()) {
+        // A print is ongoing, pause the print normally
+        if(!isPrintPaused) {
+            if (usb_timer.running())
+                lcd_pause_usb_print();
+            else
+                lcd_pause_print();
         }
     }
     else {
-        // SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED); //Why pause octoprint? usb_timer.running() would be true in that case, so there is no need for this.
+        // Nothing is going on, but still turn off heaters and report the error
         setTargetHotend0(0);
         heating_status = HeatingStatus::NO_HEATING;
-        fan_check_error = EFCE_REPORTED;
     }
     switch (_fan) {
     case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
