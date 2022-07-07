@@ -11226,7 +11226,7 @@ void recover_print(uint8_t automatic) {
   // Set the target bed and nozzle temperatures and wait.
 	sprintf_P(cmd, PSTR("M104 S%d"), target_temperature[active_extruder]);
 	enquecommand(cmd);
-	sprintf_P(cmd, PSTR("M190 S%d"), target_temperature_bed);
+	sprintf_P(cmd, PSTR("M140 S%d"), target_temperature_bed);
 	enquecommand(cmd);
 	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
 	enquecommand(cmd);
