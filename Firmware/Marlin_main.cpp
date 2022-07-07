@@ -9989,7 +9989,7 @@ void ThermalStop(bool pause)
         Stopped = true;
         if(pause && (IS_SD_PRINTING || usb_timer.running())) {
             if (!isPrintPaused) {
-                // we cannot make a distinction for an host here, the pause must be instantaneous
+                // we cannot make a distinction for the host here, the pause must be instantaneous
                 lcd_pause_print();
             }
         } else {
@@ -10005,7 +10005,9 @@ void ThermalStop(bool pause)
         // higher-priority alert status message)
         LCD_MESSAGERPGM(_T(MSG_STOPPED));
 
-        Sound_MakeCustom(1000,0,true);
+        // Make a warning sound! We cannot use Sound_MakeCustom as this would stop further moves.
+        // Turn on the speaker here (if not already), and turn it off when back in the main loop.
+        WRITE(BEEPER, HIGH);
     }
 
     // Return to the status screen to stop any pending menu action which could have been
@@ -10857,8 +10859,14 @@ void long_pause() //long pause print
         plan_buffer_line_curposXYZE(50);
     }
 
-	// Turn off the print fan
-	fanSpeed = 0;
+    // did we come here from a thermal error?
+    if(get_temp_error()) {
+        // time to stop the error beep
+        WRITE(BEEPER, LOW);
+    } else {
+        // Turn off the print fan
+        fanSpeed = 0;
+    }
 }
 
 void serialecho_temperatures() {

@@ -5698,16 +5698,20 @@ static bool fan_error_selftest()
 void lcd_resume_print()
 {
     lcd_return_to_status();
-    lcd_reset_alert_level(); //for fan speed error
-    if (fan_error_selftest()) {
+    lcd_reset_alert_level();
+
+    // ensure thermal issues (temp or fan) are resolved before we allow to resume
+    if (get_temp_error() || fan_error_selftest()) {
         if (usb_timer.running()) SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
-        return; //abort if error persists
+        return; // abort if error persists
     }
+
     cmdqueue_serial_disabled = false;
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
     custom_message_type = CustomMsg::Resuming;
     isPrintPaused = false;
+    Stopped = false; // resume processing USB commands again
     restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
@@ -5899,14 +5903,16 @@ static void lcd_main_menu()
     }
     if(isPrintPaused)
     {
+        // only allow resuming if hardware errors (temperature or fan) are cleared
+        if(!get_temp_error()
 #ifdef FANCHECK
-        if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+            && ((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
 #endif //FANCHECK
-        {
-            if (usb_timer.running()) {
-                MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);
-            } else {
+           ) {
+            if (saved_printing) {
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);
+            } else {
+                MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);
             }
         }
     }
@@ -6331,6 +6337,15 @@ void print_stop()
         plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
     }
     st_synchronize();
+
+    // did we come here from a thermal error?
+    if(get_temp_error()) {
+        // time to stop the error beep
+        WRITE(BEEPER, LOW);
+    } else {
+        // Turn off the print fan
+        fanSpeed = 0;
+    }
 
     if (mmu_enabled) extr_unload(); //M702 C
     finishAndDisableSteppers(); //M84

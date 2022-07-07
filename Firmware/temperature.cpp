@@ -512,6 +512,11 @@ void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
     temp_error_state.assert = true;
 }
 
+bool get_temp_error()
+{
+    return temp_error_state.v;
+}
+
 void handle_temp_error();
 
 void manage_heater()
@@ -1751,8 +1756,11 @@ void handle_temp_error()
 #ifdef TEMP_MODEL
     case TempErrorType::model:
         if(temp_error_state.assert) {
-            // TODO: do something meaningful
-            SERIAL_ECHOLNPGM("TM: error triggered!");
+            if(IsStopped() == false) {
+                lcd_setalertstatuspgm(MSG_PAUSED_THERMAL_ERROR, LCD_STATUS_CRITICAL);
+                SERIAL_ECHOLNPGM("TM: error triggered!");
+            }
+            ThermalStop(true);
             WRITE(BEEPER, HIGH);
         } else {
             temp_error_state.v = 0;
