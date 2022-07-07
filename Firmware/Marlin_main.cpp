@@ -381,6 +381,7 @@ static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float
 static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
 static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
+static float saved_bed_temperature = 0.0; //!< Bed temperature
 static bool saved_extruder_relative_mode = false;
 static int saved_fanSpeed = 0; //!< Print fan speed
 //! @}
@@ -11573,6 +11574,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
+	saved_bed_temperature = degBed();
 	saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
 	saved_fanSpeed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
@@ -11637,9 +11639,12 @@ void restore_print_from_ram_and_continue(float e_move)
     if (fan_check_error == EFCE_FIXED) fan_check_error = EFCE_OK; //reenable serial stream processing if printing from usb
 #endif
 	
-//	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
-//	    current_position[axis] = st_get_position_mm(axis);
-	active_extruder = saved_active_extruder; //restore active_extruder
+    // restore bed temperature (bed can be disabled during a thermal warning)
+    if (degBed() != saved_bed_temperature)
+        setTargetBed(saved_bed_temperature);
+
+	// restore active_extruder
+	active_extruder = saved_active_extruder;
 	fanSpeed = saved_fanSpeed;
 	if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
 	{
