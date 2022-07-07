@@ -383,7 +383,7 @@ static uint8_t saved_active_extruder = 0;
 float saved_extruder_temperature = 0.0; //!< Active extruder temperature
 float saved_bed_temperature = 0.0; //!< Bed temperature
 static bool saved_extruder_relative_mode = false;
-static int saved_fanSpeed = 0; //!< Print fan speed
+int saved_fan_speed = 0; //!< Print fan speed
 //! @}
 
 static int saved_feedmultiply_mm = 100;
@@ -9997,9 +9997,11 @@ void ThermalStop(bool allow_pause)
                 // original values after the pause handler is called.
                 float bed_temp = saved_bed_temperature;
                 float ext_temp = saved_extruder_temperature;
+                int fan_speed = saved_fan_speed;
                 lcd_pause_print();
                 saved_bed_temperature = bed_temp;
                 saved_extruder_temperature = ext_temp;
+                saved_fan_speed = fan_speed;
             }
         } else {
             // We got a hard thermal error and/or there is no print going on. Just stop.
@@ -11584,7 +11586,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	saved_extruder_temperature = degTargetHotend(active_extruder);
 	saved_bed_temperature = degBed();
 	saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
-	saved_fanSpeed = fanSpeed;
+	saved_fan_speed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
@@ -11653,7 +11655,7 @@ void restore_print_from_ram_and_continue(float e_move)
 
 	// restore active_extruder
 	active_extruder = saved_active_extruder;
-	fanSpeed = saved_fanSpeed;
+	fanSpeed = saved_fan_speed;
 	if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
 	{
 		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);

@@ -500,6 +500,7 @@ void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
     if(!temp_error_state.error) {
         saved_bed_temperature = target_temperature_bed;
         saved_extruder_temperature = target_temperature[index];
+        saved_fan_speed = fanSpeed;
     }
 
     // keep disabling heaters and keep fans on as long as the condition is asserted

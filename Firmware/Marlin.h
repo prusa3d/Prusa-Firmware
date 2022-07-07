@@ -340,6 +340,7 @@ extern uint8_t saved_printing_type;
 
 extern float saved_extruder_temperature; //!< Active extruder temperature
 extern float saved_bed_temperature; //!< Bed temperature
+extern int saved_fan_speed; //!< Print fan speed
 
 //save/restore printing in case that mmu is not responding
 extern bool mmu_print_saved;
