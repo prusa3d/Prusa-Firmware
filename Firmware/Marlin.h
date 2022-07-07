@@ -241,10 +241,10 @@ void prepare_move();
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void finishAndDisableSteppers();
 
-void UnconditionalStop();             // Stop heaters, motion and clear current print status
-void ThermalStop(bool pause = false); // Emergency stop used by overtemp functions which allows
-                                      // recovery (with pause=true)
-bool IsStopped();                     // Returns true if the print has been stopped
+void UnconditionalStop();                   // Stop heaters, motion and clear current print status
+void ThermalStop(bool allow_pause = false); // Emergency stop used by overtemp functions which allows
+                                            // recovery (with pause=true)
+bool IsStopped();                           // Returns true if the print has been stopped
 
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)

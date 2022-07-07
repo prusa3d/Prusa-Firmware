@@ -9983,11 +9983,11 @@ void UnconditionalStop()
 //   will introduce either over/under extrusion on the current segment, and will not
 //   survive a power panic. Switching Stop() to use the pause machinery instead (with
 //   the addition of disabling the headers) could allow true recovery in the future.
-void ThermalStop(bool pause)
+void ThermalStop(bool allow_pause)
 {
     if(Stopped == false) {
         Stopped = true;
-        if(pause && (IS_SD_PRINTING || usb_timer.running())) {
+        if(allow_pause && (IS_SD_PRINTING || usb_timer.running())) {
             if (!isPrintPaused) {
                 // we cannot make a distinction for the host here, the pause must be instantaneous
                 lcd_pause_print();
