@@ -496,6 +496,12 @@ volatile static union
 // - prevent the user to set temperatures until all errors are cleared
 void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
 {
+    // save the original target temperatures for recovery before disabling heaters
+    if(!temp_error_state.error) {
+        saved_bed_temperature = target_temperature_bed;
+        saved_extruder_temperature = target_temperature[index];
+    }
+
     // keep disabling heaters and keep fans on as long as the condition is asserted
     disable_heater();
     hotendFanSetFullSpeed();

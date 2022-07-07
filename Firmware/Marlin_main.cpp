@@ -380,8 +380,8 @@ static float saved_pos[4] = { X_COORD_INVALID, 0, 0, 0 };
 static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
 static uint8_t saved_active_extruder = 0;
-static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
-static float saved_bed_temperature = 0.0; //!< Bed temperature
+float saved_extruder_temperature = 0.0; //!< Active extruder temperature
+float saved_bed_temperature = 0.0; //!< Bed temperature
 static bool saved_extruder_relative_mode = false;
 static int saved_fanSpeed = 0; //!< Print fan speed
 //! @}
@@ -9991,7 +9991,15 @@ void ThermalStop(bool allow_pause)
         if(allow_pause && (IS_SD_PRINTING || usb_timer.running())) {
             if (!isPrintPaused) {
                 // we cannot make a distinction for the host here, the pause must be instantaneous
+                // so we call the lcd_pause_print to save the print state internally. Thermal errors
+                // disable heaters and save the original temperatures to saved_*, which will get
+                // overwritten by stop_and_save_print_to_ram. For this corner-case, re-instate the
+                // original values after the pause handler is called.
+                float bed_temp = saved_bed_temperature;
+                float ext_temp = saved_extruder_temperature;
                 lcd_pause_print();
+                saved_bed_temperature = bed_temp;
+                saved_extruder_temperature = ext_temp;
             }
         } else {
             // We got a hard thermal error and/or there is no print going on. Just stop.
