@@ -211,6 +211,7 @@ void checkExtruderAutoFans()
     {
         fanState &= ~1;
         fanState |= current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE;
+        fanState |= get_temp_error();
     }
     setExtruderAutoFanState(fanState);
 #endif
