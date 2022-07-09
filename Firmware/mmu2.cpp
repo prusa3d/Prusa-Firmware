@@ -678,6 +678,7 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
 }
 
 StepStatus MMU2::LogicStep() {
+    CheckUserInput(); // Process any buttons before proceeding with another MMU Query
     StepStatus ss = logic.Step();
     switch (ss) {
     case Finished:
@@ -686,27 +687,23 @@ StepStatus MMU2::LogicStep() {
         break;
     case CommandError:
         ReportError(logic.Error(), ErrorSourceMMU);
-        CheckUserInput();
         break;
     case CommunicationTimeout:
         state = xState::Connecting;
         ReportError(ErrorCode::MMU_NOT_RESPONDING, ErrorSourcePrinter);
-        CheckUserInput();
         break;
     case ProtocolError:
         state = xState::Connecting;
         ReportError(ErrorCode::PROTOCOL_ERROR, ErrorSourcePrinter);
-        CheckUserInput();
         break;
     case VersionMismatch:
         StopKeepPowered();
         ReportError(ErrorCode::VERSION_MISMATCH, ErrorSourcePrinter);
-        CheckUserInput();
         break;
     case ButtonPushed:
         lastButton = logic.Button();
         LogEchoEvent("MMU Button pushed");
-        CheckUserInput();
+        CheckUserInput(); // Process the button immediately
         break;
     default:
         break;
