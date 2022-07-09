@@ -198,13 +198,8 @@ enum class ReportErrorHookStates : uint8_t {
 
 enum ReportErrorHookStates ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
 
-/**
- * @brief Render MMU error screen on the LCD. This must be non-blocking
- * and allow the MMU and printer to communicate with each other.
- * @param[in] ec Error code
- */
-void ReportErrorHook(uint16_t ec) {
-    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK)
+void ReportErrorHook(uint16_t ec, uint8_t res) {
+    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && res == MMU2::ErrorSourceMMU)
     {
         // If the error code suddenly changes to OK, that means
         // a button was pushed on the MMU and the LCD should

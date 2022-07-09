@@ -66,7 +66,13 @@ public:
         Cooldown = 2, // The extruder was allowed to cool.
         CooldownPending = 4,
     };
-    
+
+    /// Source of operation error
+    enum ReportErrorSource: uint8_t {
+        ErrorSourcePrinter = 0,
+        ErrorSourceMMU = 1,
+    };
+
     /// Perform a reset of the MMU
     /// @param level physical form of the reset
     void Reset(ResetForm level);
@@ -188,7 +194,8 @@ private:
 
     /// Reports an error into attached ExtUIs
     /// @param ec error code, see ErrorCode
-    void ReportError(ErrorCode ec);
+    /// @param res reporter error source, is either Printer (0) or MMU (1)
+    void ReportError(ErrorCode ec, uint8_t res);
 
     /// Reports progress of operations into attached ExtUIs
     /// @param pc progress code, see ProgressCode
