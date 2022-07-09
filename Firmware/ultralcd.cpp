@@ -1091,10 +1091,7 @@ void lcd_pause_print()
 {
     stop_and_save_print_to_ram(0.0, -default_retraction);
 
-    if (!card.sdprinting) {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_PAUSED);
-    }
-
+    SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_PAUSED);
     isPrintPaused = true;
 
     // return to status is required to continue processing in the main loop!
@@ -1105,7 +1102,7 @@ void lcd_pause_print()
 //! @brief Send host action "pause"
 void lcd_pause_usb_print()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_ASK_PAUSE);
 }
 
 static void lcd_move_menu_axis();
@@ -5737,7 +5734,7 @@ void lcd_resume_usb_print()
     if (!resume_print_checks()) return;
 
     // resume the usb host
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUME);
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_ASK_RESUME);
 }
 
 static void change_sheet()
