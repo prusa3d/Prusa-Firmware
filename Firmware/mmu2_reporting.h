@@ -22,8 +22,14 @@ void BeginReport(CommandInProgress cip, uint16_t ec);
 /// Called at the end of every MMU operation
 void EndReport(CommandInProgress cip, uint16_t ec);
 
-/// Called when the MMU sends operation error (even repeatedly)
-void ReportErrorHook(uint16_t ec);
+/**
+ * @brief Called when the MMU or MK3S sends operation error (even repeatedly).
+ * Render MMU error screen on the LCD. This must be non-blocking
+ * and allow the MMU and printer to communicate with each other.
+ * @param[in] ec error code
+ * @param[in] res reporter error source, is either Printer (0) or MMU (1)
+ */
+void ReportErrorHook(uint16_t ec, uint8_t res);
 
 /// Called when the MMU sends operation progress update
 void ReportProgressHook(CommandInProgress cip, uint16_t ec);
