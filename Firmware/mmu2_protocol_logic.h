@@ -244,7 +244,7 @@ public:
         return mmuFwVersionMinor;
     }
 
-    inline uint16_t MmuFwVersionBuild() const {
+    inline uint8_t MmuFwVersionBuild() const {
         return mmuFwVersionBuild;
     }
 #ifndef UNITTEST
@@ -320,7 +320,7 @@ private:
     bool findaPressed;
 
     uint8_t mmuFwVersionMajor, mmuFwVersionMinor;
-    uint16_t mmuFwVersionBuild;
+    uint8_t mmuFwVersionBuild;
 
     friend class ProtocolLogicPartBase;
     friend class Stopped;
