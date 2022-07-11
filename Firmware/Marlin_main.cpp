@@ -11172,7 +11172,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 }
 
-void restore_extruder_temperture_from_ram() {
+void restore_extruder_temperature_from_ram() {
     if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
     {
         setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
