@@ -2435,9 +2435,10 @@ void handle_warning()
     static bool first = true;
     if(warning_state.assert) {
         if (first) {
-            lcd_setalertstatuspgm(MSG_THERMAL_ANOMALY, LCD_STATUS_INFO);
-            if(warn_beep) WRITE(BEEPER, HIGH);
-            first = false;
+            if(warn_beep) {
+                lcd_setalertstatuspgm(MSG_THERMAL_ANOMALY, LCD_STATUS_INFO);
+                WRITE(BEEPER, HIGH);
+            }
         } else {
             if(warn_beep) TOGGLE(BEEPER);
         }
