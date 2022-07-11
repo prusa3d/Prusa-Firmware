@@ -4149,6 +4149,7 @@ extern uint8_t st_backlash_y;
 //!@n M302 - Allow cold extrudes, or set the minimum extrude S<temperature>.
 //!@n M303 - PID relay autotune S<temperature> sets the target temperature. (default target temperature = 150C)
 //!@n M304 - Set bed PID parameters P I and D
+//!@n M310 - Temperature model settings
 //!@n M400 - Finish all moves
 //!@n M401 - Lower z-probe if present
 //!@n M402 - Raise z-probe if present
@@ -7762,13 +7763,13 @@ Sigma_Exit:
 
 #ifdef TEMP_MODEL
     /*!
-    ### M310 - Temperature model
+    ### M310 - Temperature model settings
     #### Usage
 
-        M310
-        M310 [ I ] [ R ]
-        M310 [ P ] [ C ] [ S ] [ E ] [ W ] [ T ]
-        M310 [ A ]
+        M310                                           ; report values
+        M310 [ I ] [ R ]                               ; set resistance at specifiex index
+        M310 [ P ] [ C ] [ S ] [ B ] [ E ] [ W ] [ T ] ; other parameters
+        M310 [ A ]                                     ; autotune
 
     #### Parameters
     - `I` - resistance index position
@@ -7776,7 +7777,7 @@ Sigma_Exit:
     - `P` - power
     - `C` - capacitance
     - `S` - set 0=disable 1=enable (default)
-    - `B` - beep on warning threshold 0=disable 1=enable (default)
+    - `B` - beep and warn when reaching warning threshold 0=disable 1=enable (default)
     - `E` - error threshold (define min/max values in variants)
     - `W` - warning threshold (define min/max values in variants)
     - `T` - ambient temperature correction
