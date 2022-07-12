@@ -444,35 +444,23 @@ pStrEnd=strchr(pStrBegin,GCODE_DELIMITER);
 if(!pStrEnd)
      return(NULL);
 *nLength=pStrEnd-pStrBegin;
-return(pStrBegin);
+pStrBegin[*nLength] = '\0';
+return pStrBegin;
 }
 
 void printer_smodel_check(char* pStrPos)
 {
 char* pResult;
 size_t nLength,nPrinterNameLength;
-bool bCheckOK;
-char sPrinterName[PRINTER_NAME_LENGTH+sizeof(ELLIPSIS)-1+1]="";
 
-nPrinterNameLength=strlen_P(::sPrinterName);
-pResult=code_string(pStrPos,&nLength);
-if(pResult!=NULL)
-     {
-     strlcpy(sPrinterName,pResult,min(nPrinterNameLength,nLength)+1);
-     if(nLength>nPrinterNameLength)
-          strcat(sPrinterName,ELLIPSIS);
-     bCheckOK=(nLength==nPrinterNameLength);
-     if(bCheckOK&&(!strncasecmp_P(pResult,::sPrinterName,nLength))) // i.e. string compare execute only if lengths are same
-          return;
-     }
-//SERIAL_ECHO_START;
-//SERIAL_ECHOLNPGM("Printer model differs from the G-code ...");
-//SERIAL_ECHOPGM("actual  : \"");
-//serialprintPGM(::sPrinterName);
-//SERIAL_ECHOLNPGM("\"");
-//SERIAL_ECHOPGM("expected: \"");
-////SERIAL_ECHO(sPrinterName);
-//SERIAL_ECHOLNPGM("\"");
+nPrinterNameLength = strlen_P(sPrinterName);
+pResult = code_string(pStrPos,&nLength);
+
+if(pResult != NULL && nLength == nPrinterNameLength) {
+     // Only compare them if the lengths match
+     if (strcmp_P(pResult, sPrinterName) == 0) return;
+}
+
 switch(oCheckModel)
      {
      case ClCheckModel::_Warn:
