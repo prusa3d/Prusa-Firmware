@@ -10,7 +10,7 @@
 # 3. Install latest updates with 'sudo apt-get upgrade'
 # 
 #
-# Version: 1.0.0-Build_15
+# Version: 1.0.0-Build_18
 # Change log:
 # 11 Feb 2021, 3d-gussner, Inital
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
@@ -77,7 +77,7 @@ while getopts c:f:g:m:n:p:u:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* MK404-build.sh Version: 1.0.0-Build_15 *"
+echo "* MK404-build.sh Version: 1.0.0-Build_18 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-c$(tput sgr0) Check for update"
