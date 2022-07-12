@@ -7598,6 +7598,7 @@ Sigma_Exit:
       uint16_t beepS = code_seen('S') ? code_value() : 0;
       uint16_t beepP = code_seen('P') ? code_value() : 1000;
       #if BEEPER > 0
+      if (beepP > 0)
         Sound_MakeCustom(beepP,beepS,false);
       #endif
     }
