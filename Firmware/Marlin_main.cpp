@@ -7595,18 +7595,12 @@ Sigma_Exit:
     */
     case 300: // M300
     {
-      uint16_t beepS = code_seen('S') ? code_value() : 110;
+      uint16_t beepS = code_seen('S') ? code_value() : 0;
       uint16_t beepP = code_seen('P') ? code_value() : 1000;
-      if (beepS > 0)
-      {
-        #if BEEPER > 0
-          Sound_MakeCustom(beepP,beepS,false);
-        #endif
-      }
-      else
-      {
-        _delay(beepP);
-      }
+      #if BEEPER > 0
+      if (beepP > 0)
+        Sound_MakeCustom(beepP,beepS,false);
+      #endif
     }
     break;
     #endif // M300
