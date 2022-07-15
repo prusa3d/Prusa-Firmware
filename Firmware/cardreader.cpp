@@ -779,7 +779,15 @@ void CardReader::getfilename_sorted(const uint16_t nr, uint8_t sdSort) {
     if (nr < sort_count)
         getfilename_simple(sort_entries[(sdSort == SD_SORT_ALPHA) ? (sort_count - nr - 1) : nr]);
     else
-        getfilename(nr);
+        getfilename_afterMaxSorting(nr);
+}
+
+void CardReader::getfilename_afterMaxSorting(uint16_t entry, const char * const match/*=NULL*/)
+{
+	curDir = &workDir;
+	nrFiles = entry - sort_count + 1;
+	curDir->seekSet(lastSortedFilePosition << 5);
+	lsDive("", *curDir, match, LS_GetFilename);
 }
 
 /**
@@ -830,6 +838,7 @@ void CardReader::presort() {
 			LongTimer sortingSpeedtestTimer;
 			sortingSpeedtestTimer.start();
 #endif //SORTING_SPEEDTEST
+			lastSortedFilePosition = position >> 5;
 
 			// By default re-read the names from SD for every compare
 			// retaining only two filenames at a time. This is very
@@ -984,14 +993,12 @@ void CardReader::presort() {
 		}
 	}
 
-	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);
 }
 
 void CardReader::flush_presort() {
-	if (sort_count > 0) {
-		sort_count = 0;
-	}
+	sort_count = 0;
+	lastSortedFilePosition = 0;
 }
 
 #endif // SDCARD_SORT_ALPHA

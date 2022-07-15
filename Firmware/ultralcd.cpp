@@ -363,11 +363,11 @@ uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_clicked = false;
-			lcd_update_enabled = 0;
+			lcd_consume_click();
+			lcd_update_enabled = false;
 			menu_action_sddirectory(str_fn);
-			lcd_update_enabled = 1;
-			/* return */ menu_item_ret();
-			return 1;
+			lcd_update_enabled = true;
+			return menu_item_ret();
 		}
 	}
 	menu_item++;
@@ -384,10 +384,12 @@ static uint8_t menu_item_sdfile(const char* str_fn, char* str_fnl)
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
+			menu_clicked = false;
 			lcd_consume_click();
+			lcd_update_enabled = false;
 			menu_action_sdfile(str_fn);
-			/* return */ menu_item_ret();
-			return 1;
+			lcd_update_enabled = true;
+			return menu_item_ret();
 		}
 	}
 	menu_item++;
@@ -3131,8 +3133,6 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 				if (msg_next == NULL) {
 					KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
-					lcd_update_enable(true);
-					lcd_update(2);
 					return;
 				}
 				else {
@@ -6389,11 +6389,14 @@ void lcd_sdcard_menu()
 			if (card.presort_flag == true) //used to force resorting if sorting type is changed.
 			{
 				card.presort_flag = false;
+				lcd_update_enabled = false;
 				card.presort();
+				lcd_update_enabled = true;
 			}
 			_md->fileCnt = card.getnrfilenames();
 			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 			_md->menuState = _standard;
+			_md->row = -1; // assume that no SD file/dir is currently selected. Once they are rendered, it will be changed to the correct row for the _scrolling state.
 		}
 		// FALLTHRU
 		case _standard: //normal menu structure.
@@ -6403,7 +6406,7 @@ void lcd_sdcard_menu()
 				_md->lcd_scrollTimer.start();
 				lcd_draw_update = 1;
 			}
-			if (_md->lcd_scrollTimer.expired(500) && (_md->row != -1)) //switch to the scrolling state on timeout if a file/dir is selected.
+			if ((lcd_draw_update == 0) && _md->lcd_scrollTimer.expired(500) && (_md->row != -1)) //switch to the scrolling state on timeout if a file/dir is selected.
 			{
 				_md->menuState = _scrolling;
 				_md->offset = 0;

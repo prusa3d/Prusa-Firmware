@@ -702,6 +702,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 
 void lcd_update_enable(uint8_t enabled)
 {
+	// printf_P(PSTR("lcd_update_enable(%u -> %u)\n"), lcd_update_enabled, enabled);
 	if (lcd_update_enabled != enabled)
 	{
 		lcd_update_enabled = enabled;
