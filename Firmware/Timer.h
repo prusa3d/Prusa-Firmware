@@ -22,6 +22,7 @@ public:
     void stop(){m_isRunning = false;}
     bool running()const {return m_isRunning;}
     bool expired(T msPeriod);
+    T elapsed();
 protected:
     T started()const {return m_started;}
 private:

@@ -6440,10 +6440,7 @@ void lcd_sdcard_menu()
 				{
 					//load filename to memory.
 #ifdef SDCARD_SORT_ALPHA
-					if (_md->sdSort == SD_SORT_NONE)
-						card.getfilename(i);
-					else
-						card.getfilename_sorted(i, _md->sdSort);
+					card.getfilename_sorted(i, _md->sdSort);
 #else
 					card.getfilename(i);
 #endif
@@ -6471,10 +6468,7 @@ void lcd_sdcard_menu()
 			{
 				//load filename to memory.
 #ifdef SDCARD_SORT_ALPHA
-				if (_md->sdSort == SD_SORT_NONE)
-					card.getfilename(_md->selectedFileID);
-				else
-					card.getfilename_sorted(_md->selectedFileID, _md->sdSort);
+				card.getfilename_sorted(_md->selectedFileID, _md->sdSort);
 #else
 				card.getfilename(_md->selectedFileID);
 #endif
