@@ -35,6 +35,7 @@
 #include "sound.h"
 #include "fancheck.h"
 #include "messages.h"
+#include "language.h"
 
 #include "SdFatUtil.h"
 
@@ -2810,7 +2811,11 @@ void temp_model_autotune(int16_t temp)
         return;
     }
 
+    // lockout the printer during calibration
     KEEPALIVE_STATE(IN_PROCESS);
+    menu_set_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
+    lcd_setstatuspgm(_i("Temp. model autotune"));
+    lcd_return_to_status();
 
     // disable the model checking during self-calibration
     bool was_enabled = temp_model::enabled;
@@ -2824,13 +2829,17 @@ void temp_model_autotune(int16_t temp)
 
     if(err) {
         SERIAL_ECHOLNPGM("TM: autotune failed");
+        lcd_setstatuspgm(_i("TM autotune failed"));
         if(temp_error_state.v)
             fanSpeedSoftPwm = 255;
     } else {
+        lcd_setstatuspgm(MSG_WELCOME);
         fanSpeedSoftPwm = 0;
         temp_model_set_enabled(was_enabled);
         temp_model_report_settings();
     }
+
+    menu_unset_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
 }
 
 #ifdef TEMP_MODEL_DEBUG
