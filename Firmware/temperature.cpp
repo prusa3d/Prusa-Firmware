@@ -1017,33 +1017,15 @@ static void temp_runaway_stop(bool isPreheat, bool isBed)
 }
 #endif
 
-//! codes of alert messages for the LCD - it is shorter to compare an uin8_t
-//! than raw const char * of the messages themselves.
-//! Could be used for MAXTEMP situations too - after reaching MAXTEMP and turning off the heater automagically
-//! the heater/bed may cool down and a similar alert message like "MAXTERM fixed..." may be displayed.
-enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_MINTEMPFIXED, LCDALERT_PLEASERESTART };
-
-//! remember the last alert message sent to the LCD
-//! to prevent flicker and improve speed
-static uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
-
-
-//! update the current temperature error message
-//! @param type short error abbreviation (PROGMEM)
-static void temp_update_messagepgm(const char* PROGMEM type)
-{
-    char msg[LCD_WIDTH];
-    strcpy_P(msg, PSTR("Err: "));
-    strcat_P(msg, type);
-    lcd_setalertstatus(msg, LCD_STATUS_CRITICAL);
-}
-
 //! signal a temperature error on both the lcd and serial
 //! @param type short error abbreviation (PROGMEM)
 //! @param e optional extruder index for hotend errors
 static void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDERS)
 {
-    temp_update_messagepgm(type);
+    char msg[LCD_WIDTH];
+    strcpy_P(msg, PSTR("Err: "));
+    strcat_P(msg, type);
+    lcd_setalertstatus(msg, LCD_STATUS_CRITICAL);
 
     SERIAL_ERROR_START;
 
@@ -1072,12 +1054,7 @@ static void min_temp_error(uint8_t e) {
     static const char err[] PROGMEM = "MINTEMP";
     if(IsStopped() == false) {
         temp_error_messagepgm(err, e);
-        last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
         if (farm_mode) prusa_statistics(92);
-    } else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
-        // we are already stopped due to some error, only update the status message without flickering
-        temp_update_messagepgm(err);
-        last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
     }
     ThermalStop();
 }
@@ -1093,12 +1070,7 @@ static void bed_min_temp_error(void) {
     static const char err[] PROGMEM = "MINTEMP BED";
     if(IsStopped() == false) {
         temp_error_messagepgm(err);
-		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
-	} else if( last_alert_sent_to_lcd != LCDALERT_BEDMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
-		// we are already stopped due to some error, only update the status message without flickering
-        temp_update_messagepgm(err);
-		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
-    }
+	}
     ThermalStop();
 }
 
@@ -1613,9 +1585,10 @@ private:
 	States state = States::Init;
 	uint8_t repeat = ALERT_AUTOMATON_SPEED_DIV;
 
-	void substep(States next_state){
+	void substep(const char* next_msg, States next_state){
 		if( repeat == 0 ){
 			state = next_state; // advance to the next state
+			lcd_setalertstatuspgm(next_msg, LCD_STATUS_CRITICAL);
 			repeat = ALERT_AUTOMATON_SPEED_DIV; // and prepare repeating for it too
 		} else {
 			--repeat;
@@ -1630,25 +1603,18 @@ public:
 		switch(state){
 		case States::Init: // initial state - check hysteresis
 			if( current_temp > mintemp ){
+				lcd_setalertstatuspgm(m2, LCD_STATUS_CRITICAL);
 				state = States::TempAboveMintemp;
 			}
 			// otherwise keep the Err MINTEMP alert message on the display,
 			// i.e. do not transfer to state 1
 			break;
 		case States::TempAboveMintemp: // the temperature has risen above the hysteresis check
-			lcd_setalertstatuspgm(m2, LCD_STATUS_CRITICAL);
-			substep(States::ShowMintemp);
-			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
+		case States::ShowMintemp: // displaying "MINTEMP fixed"
+			substep(m1, States::ShowPleaseRestart);
 			break;
 		case States::ShowPleaseRestart: // displaying "Please restart"
-			lcd_setalertstatuspgm(m1, LCD_STATUS_CRITICAL);
-			substep(States::ShowMintemp);
-			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
-			break;
-		case States::ShowMintemp: // displaying "MINTEMP fixed"
-			lcd_setalertstatuspgm(m2, LCD_STATUS_CRITICAL);
-			substep(States::ShowPleaseRestart);
-			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
+			substep(m2, States::ShowMintemp);
 			break;
 		}
 	}
