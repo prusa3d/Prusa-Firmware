@@ -1700,7 +1700,6 @@ void handle_temp_error()
         switch((TempErrorSource)temp_error_state.source) {
         case TempErrorSource::hotend:
             if(temp_error_state.assert) {
-                menu_set_serious_error(SERIOUS_ERR_MINTEMP_HEATER);
                 min_temp_error(temp_error_state.index);
             } else {
                 // no recovery, just force the user to restart the printer
@@ -1714,7 +1713,6 @@ void handle_temp_error()
             break;
         case TempErrorSource::bed:
             if(temp_error_state.assert) {
-                menu_set_serious_error(SERIOUS_ERR_MINTEMP_BED);
                 bed_min_temp_error();
             } else {
                 // no recovery, just force the user to restart the printer
@@ -1772,6 +1770,7 @@ void handle_temp_error()
         } else {
             temp_error_state.v = 0;
             WRITE(BEEPER, LOW);
+            menu_unset_block(MENU_BLOCK_THERMAL_ERROR);
             SERIAL_ECHOLNPGM("TM: error cleared");
         }
         break;

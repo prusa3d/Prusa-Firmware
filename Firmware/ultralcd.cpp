@@ -863,7 +863,7 @@ void lcd_status_screen()                          // NOT static due to using ins
 	}
 
 	if (current_click
-		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
+		&& ( menu_block_mask == MENU_BLOCK_NONE ) // or a serious error blocks entering the menu
 	)
 	{
 		menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
@@ -8076,7 +8076,7 @@ uint8_t get_message_level()
 void menu_lcd_longpress_func(void)
 {
 	backlight_wake();
-    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_entering_on_serious_errors != SERIOUS_ERR_NONE)
+    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE)
     {
         // disable longpress during re-entry, while homing, calibration or if a serious error
         lcd_quick_feedback();
