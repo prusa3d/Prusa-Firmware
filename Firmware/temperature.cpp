@@ -1636,17 +1636,17 @@ public:
 			// i.e. do not transfer to state 1
 			break;
 		case States::TempAboveMintemp: // the temperature has risen above the hysteresis check
-			lcd_setalertstatuspgm(m2);
+			lcd_setalertstatuspgm(m2, LCD_STATUS_CRITICAL);
 			substep(States::ShowMintemp);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
 		case States::ShowPleaseRestart: // displaying "Please restart"
-			lcd_setalertstatuspgm(m1);
+			lcd_setalertstatuspgm(m1, LCD_STATUS_CRITICAL);
 			substep(States::ShowMintemp);
 			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
 			break;
 		case States::ShowMintemp: // displaying "MINTEMP fixed"
-			lcd_setalertstatuspgm(m2);
+			lcd_setalertstatuspgm(m2, LCD_STATUS_CRITICAL);
 			substep(States::ShowPleaseRestart);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
@@ -1702,7 +1702,7 @@ void handle_temp_error()
             if(temp_error_state.assert) {
                 menu_set_serious_error(SERIOUS_ERR_MINTEMP_HEATER);
                 min_temp_error(temp_error_state.index);
-            } else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_HEATER) ) {
+            } else {
                 // no recovery, just force the user to restart the printer
                 // which is a safer variant than just continuing printing
                 // The automaton also checks for hysteresis - the temperature must have reached a few degrees above the MINTEMP, before
@@ -1716,7 +1716,7 @@ void handle_temp_error()
             if(temp_error_state.assert) {
                 menu_set_serious_error(SERIOUS_ERR_MINTEMP_BED);
                 bed_min_temp_error();
-            } else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_BED) ){
+            } else {
                 // no recovery, just force the user to restart the printer
                 // which is a safer variant than just continuing printing
                 alert_automaton_bed.step(current_temperature_bed, BED_MINTEMP + TEMP_HYSTERESIS);
