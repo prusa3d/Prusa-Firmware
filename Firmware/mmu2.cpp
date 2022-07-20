@@ -244,7 +244,7 @@ bool MMU2::RetryIfPossible(uint16_t ec){
 
 void MMU2::ResetRetryAttempts(){
     SERIAL_ECHOLNPGM("ResetRetryAttempts");
-    retryAttempts = 3;
+    retryAttempts = MAX_RETRIES;
 }
 
 void MMU2::DecrementRetryAttempts(){
