@@ -6,6 +6,8 @@ struct E_Step;
 
 namespace MMU2 {
 
+static constexpr uint8_t MAX_RETRIES = 3U;
+
 /// @@TODO hmmm, 12 bytes... may be we can reduce that
 struct xyz_pos_t {
     float xyz[3];
