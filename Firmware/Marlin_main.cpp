@@ -7767,20 +7767,20 @@ Sigma_Exit:
     #### Usage
 
         M310                                           ; report values
-        M310 [ I ] [ R ]                               ; set resistance at specifiex index
+        M310 [ I ] [ R ]                               ; set resistance at index
         M310 [ P ] [ C ] [ S ] [ B ] [ E ] [ W ] [ T ] ; other parameters
         M310 [ A ]                                     ; autotune
 
     #### Parameters
-    - `I` - resistance index position
-    - `R` - resistance value (requires `I`)
-    - `P` - power
-    - `C` - capacitance
-    - `S` - set 0=disable 1=enable (default)
-    - `B` - beep and warn when reaching warning threshold 0=disable 1=enable (default)
-    - `E` - error threshold (define min/max values in variants)
-    - `W` - warning threshold (define min/max values in variants)
-    - `T` - ambient temperature correction
+    - `I` - resistance index position (0-15)
+    - `R` - resistance value at index (K/W; requires `I`)
+    - `P` - power (W)
+    - `C` - capacitance (J/K)
+    - `S` - set 0=disable 1=enable
+    - `B` - beep and warn when reaching warning threshold 0=disable 1=enable (default: 1)
+    - `E` - error threshold (K/s; default in variant)
+    - `W` - warning threshold (K/s; default in variant)
+    - `T` - ambient temperature correction (K; default in variant)
     - `A` - autotune C+R values
     */
     case 310:
