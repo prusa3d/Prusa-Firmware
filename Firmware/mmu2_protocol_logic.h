@@ -77,7 +77,7 @@ protected:
         Ready,
         Wait,
 
-        S0Sent,
+        S0Sent, // beware - due to optimization reasons these SxSent must be kept one after another
         S1Sent,
         S2Sent,
         QuerySent,
@@ -86,7 +86,8 @@ protected:
         FINDAReqSent,
         ButtonSent,
 
-        ContinueFromIdle
+        ContinueFromIdle,
+        RecoveringProtocolError
     };
 
     State state; ///< internal state of the sub-automaton
@@ -108,6 +109,8 @@ protected:
     void SendAndUpdateFilamentSensor();
 
     void SendButton(uint8_t btn);
+
+    void SendVersion(uint8_t stage);
 };
 
 /// Starting sequence of the communication with the MMU.
@@ -117,6 +120,14 @@ protected:
 class StartSeq : public ProtocolLogicPartBase {
 public:
     inline StartSeq(ProtocolLogic *logic)
+        : ProtocolLogicPartBase(logic) {}
+    void Restart() override;
+    StepStatus Step() override;
+};
+
+class DelayedRestart : public ProtocolLogicPartBase {
+public:
+    inline DelayedRestart(ProtocolLogic *logic)
         : ProtocolLogicPartBase(logic) {}
     void Restart() override;
     StepStatus Step() override;
@@ -250,13 +261,12 @@ public:
 #ifndef UNITTEST
 private:
 #endif
-    
-    StepStatus ProcessUARTByte(uint8_t c);
     StepStatus ExpectingMessage(uint32_t timeout);
     void SendMsg(RequestMsg rq);
     void SwitchToIdle();
-    void HandleCommunicationTimeout();
-    StepStatus HandleCommError(const char *msg, StepStatus ss);
+    StepStatus SuppressShortDropOuts(const char *msg, StepStatus ss);
+    StepStatus HandleCommunicationTimeout();
+    StepStatus HandleProtocolError();
     bool Elapsed(uint32_t timeout) const;
     void RecordUARTActivity();
     void RecordReceivedByte(uint8_t c);
@@ -276,6 +286,7 @@ private:
     // individual sub-state machines - may be they can be combined into a union since only one is active at once
     Stopped stopped;
     StartSeq startSeq;
+    DelayedRestart delayedRestart;
     Idle idle;
     Command command;
     ProtocolLogicPartBase *currentState; ///< command currently being processed
@@ -327,6 +338,7 @@ private:
     friend class Command;
     friend class Idle;
     friend class StartSeq;
+    friend class DelayedRestart;
 
     friend class MMU2;
 };
