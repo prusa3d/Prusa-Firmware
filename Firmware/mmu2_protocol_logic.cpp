@@ -6,6 +6,10 @@
 
 namespace MMU2 {
 
+static constexpr uint8_t supportedMmuFWVersionMajor = 2;
+static constexpr uint8_t supportedMmuFWVersionMinor = 0;
+static constexpr uint8_t supportedMmuFWVersionBuild = 19;
+
 StepStatus ProtocolLogicPartBase::ProcessFINDAReqSent(StepStatus finishedRV, State nextState){
     if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
         return expmsg;
@@ -140,7 +144,7 @@ StepStatus StartSeq::Step() {
                 SendVersion(0);
         } else {
             logic->mmuFwVersionMajor = logic->rsp.paramValue;
-            if (logic->mmuFwVersionMajor != 2) {
+            if (logic->mmuFwVersionMajor != supportedMmuFWVersionMajor) {
                 return VersionMismatch;
             }
             logic->dataTO.Reset(); // got meaningful response from the MMU, stop data layer timeout tracking
@@ -153,7 +157,7 @@ StepStatus StartSeq::Step() {
                 SendVersion(1);
         } else {
             logic->mmuFwVersionMinor = logic->rsp.paramValue;
-            if (logic->mmuFwVersionMinor != 0) {
+            if (logic->mmuFwVersionMinor != supportedMmuFWVersionMinor) {
                 return VersionMismatch;
             }
                 SendVersion(2);
@@ -165,7 +169,7 @@ StepStatus StartSeq::Step() {
                 SendVersion(2);
         } else {
             logic->mmuFwVersionBuild = logic->rsp.paramValue;
-            if (logic->mmuFwVersionBuild < 18) {
+            if (logic->mmuFwVersionBuild < supportedMmuFWVersionBuild) {
                 return VersionMismatch;
             }
             // Start General Interrogation after line up.
