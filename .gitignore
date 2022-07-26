@@ -2,7 +2,8 @@
 /.settings
 /.project
 /.cproject
-/.vscode
+
+/build/
 
 # Temporary configuration
 /Firmware/Configuration_prusa.h
@@ -23,3 +24,4 @@ __pycache__
 # Generated files
 /build-env/
 /Firmware/Doc/
+compile_commands.json
