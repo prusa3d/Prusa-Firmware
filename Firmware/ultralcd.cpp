@@ -789,6 +789,11 @@ void lcd_status_screen()                          // NOT static due to using ins
 	else if (feedmultiply > 999)
 		feedmultiply = 999;
 
+	if (lcd_draw_update) {
+		// Update the status screen immediately
+		lcd_status_update_delay = 0;
+	}
+
 	if (lcd_status_update_delay)
 		lcd_status_update_delay--;
 	else
