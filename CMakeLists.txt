@@ -100,8 +100,6 @@ function(fw_add_variant variant_name)
 #   # configure linker script
    set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/.dependencies/1.8.19-1.0.5-1-linux-64/portable/packages/PrusaResearch/hardware/avr/1.0.5-1/ldscripts/avr6.xn)
    target_link_options(${variant_name} PUBLIC -Wl,-T,${LINKER_SCRIPT})
-   add_link_dependency(${variant_name} ${LINKER_SCRIPT})
-
 
   # limit the text section to 248K (256K - 8k reserved for the bootloader)
   target_link_options(${variant_name} PUBLIC -Wl,--defsym=__TEXT_REGION_LENGTH__=248K)
