@@ -3,8 +3,7 @@ include("${PROJECT_CMAKE_DIR}/Utilities.cmake")
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR avr)
 set(CMAKE_CROSSCOMPILING 1)
-set(AVR_GCC_VERSION 7.3.0)
-set(AVR_TOOLCHAIN_DIR "${PROJECT_CMAKE_DIR}/../.dependencies/avr-gcc-${AVR_GCC_VERSION}/")
+get_dependency_directory("avr-gcc" AVR_TOOLCHAIN_DIR)
 message( "tc dir is ${AVR_TOOLCHAIN_DIR}")
 #
 # Utilities

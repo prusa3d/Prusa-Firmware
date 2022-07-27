@@ -61,7 +61,7 @@ dependencies = {
         }
     },
 }
-pip_dependencies = []
+pip_dependencies = ["pyelftools"]
 # yapf: enable
 
 
