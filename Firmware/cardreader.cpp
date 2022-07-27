@@ -1007,7 +1007,6 @@ void CardReader::flush_presort() {
 
 void CardReader::printingHasFinished()
 {
-    st_synchronize();
     if(file_subcall_ctr>0) //heading up to a parent file that called current as a procedure.
     {
       file.close();
