@@ -9,7 +9,7 @@ endif()
 function(get_recommended_gcc_version var)
   execute_process(
     COMMAND "${Python3_EXECUTABLE}" "${PROJECT_ROOT_DIR}/utils/bootstrap.py"
-            "--print-dependency-version" "gcc-avr"
+            "--print-dependency-version" "avr-gcc"
     OUTPUT_VARIABLE RECOMMENDED_VERSION
     OUTPUT_STRIP_TRAILING_WHITESPACE
     RESULT_VARIABLE RETVAL
