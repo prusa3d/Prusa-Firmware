@@ -6,6 +6,13 @@ set (CMAKE_CXX_STANDARD 11)
 get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
 project(Prusa-Firmware)
 
+FILE(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/config.h MAX_SIZE_LINE REGEX "^#define \+LANG_SIZE_RESERVED \+")
+STRING(REGEX MATCH "0x[0-9]+" MAX_SIZE_HEX "${MAX_SIZE_LINE}")
+math(EXPR LANG_MAX_SIZE "${MAX_SIZE_HEX}" OUTPUT_FORMAT DECIMAL)
+message("Language maximum size (from config.h): ${LANG_MAX_SIZE} bytes")
+
+set (LANG_BIN_MAX 249856) # Ditto, this in xflash_layout.h
+
 get_recommended_gcc_version(RECOMMENDED_TOOLCHAIN_VERSION)
 if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL
                             ${RECOMMENDED_TOOLCHAIN_VERSION}
@@ -83,6 +90,7 @@ file(GLOB AVR_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PRUSA_BOARDS_DIR}/cores/p
 file(GLOB LANG_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/lang/po ${PROJECT_SOURCE_DIR}/lang/po/Firmware_??.po)
 string(REPLACE "Firmware_" "" LANG_VARIANTS "${LANG_VARIANTS}")
 string(REPLACE ".po" "" LANG_VARIANTS "${LANG_VARIANTS}")
+list(SORT LANG_VARIANTS)
 message("Languages found: ${LANG_VARIANTS}")
 
 add_library(avr_core STATIC ${AVR_SOURCES})
@@ -94,10 +102,24 @@ target_compile_options(avr_core PUBLIC -mmcu=atmega2560)
 
 function(fw_add_variant variant_name)
 
-  add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS})
+  # Create the Configuration_Prusa.h for this variant so it can be #included.
+  set(VARIANT_CFG_DIR "${CMAKE_CURRENT_BINARY_DIR}/${variant_name}_include")
+  set(VARIANT_CFG_FILE "${VARIANT_CFG_DIR}/Configuration_prusa.h")
+  add_custom_command(OUTPUT ${VARIANT_CFG_FILE}
+      COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/Firmware/variants/${variant_name}.h ${VARIANT_CFG_FILE}
+      COMMENT "Generating Configuration_prusa.h for ${variant_name}"
+      BYPRODUCTS ${VARIANT_CFG_DIR}
+  )
+
+  add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_FILE})
 
   set_target_properties(${variant_name} PROPERTIES CXX_STANDARD 14)
 
+  target_include_directories(${variant_name} PRIVATE Firmware
+    ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
+    ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
+    ${VARIANT_CFG_DIR} # Include the header for this variant.
+    )
 
 #   # configure linker script
    set(LINKER_SCRIPT ${PRUSA_BOARDS_DIR}/ldscripts/avr6.xn)
@@ -125,23 +147,16 @@ function(fw_add_variant variant_name)
   # generate linker map file
   target_link_options(${variant_name} PUBLIC -Wl,-Map=${variant_name}.map)
 
-
-  target_include_directories(${variant_name} PRIVATE Firmware
-    ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
-    ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
-    ${PROJECT_SOURCE_DIR}/cmake/helpers/ # Add our magic config helper :)
-    )
-
   target_compile_options(${variant_name} PRIVATE) # turn this on for lolz -Wdouble-promotion)
-  string(REPLACE "-" "_" DEFINE_NAME "${variant_name}")
-  target_compile_definitions(${variant_name} PRIVATE H${DEFINE_NAME} ARDUINO=10600 __AVR_ATmega2560__)
+  target_compile_definitions(${variant_name} PRIVATE ARDUINO=10600 __AVR_ATmega2560__)
   target_link_libraries(${variant_name} avr_core)
 
   #Construct language map
-  set(LANG_MAP ${CMAKE_CURRENT_BINARY_DIR}/lang/${variant_name}_lang.map)
+  set(LANG_TMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/lang)
+  set(LANG_MAP ${LANG_TMP_DIR}/${variant_name}_lang.map)
   set(LANG_FWBIN ${CMAKE_BINARY_DIR}/${variant_name}.bin)
-  set(LANG_FINAL_BIN ${CMAKE_CURRENT_BINARY_DIR}/lang/${variant_name}_lang.bin)
-  set(LANG_FINAL_HEX ${CMAKE_CURRENT_BINARY_DIR}/lang/${variant_name}_lang.hex)
+  set(LANG_FINAL_BIN ${LANG_TMP_DIR}/${variant_name}_lang.bin)
+  set(LANG_FINAL_HEX ${LANG_TMP_DIR}/${variant_name}_lang.hex)
 
   add_custom_command(OUTPUT ${LANG_FWBIN}
     COMMAND "${CMAKE_OBJCOPY}" -I ihex -O binary ${CMAKE_BINARY_DIR}/${variant_name}.hex ${LANG_FWBIN}
@@ -153,22 +168,31 @@ function(fw_add_variant variant_name)
   )
 
   set(LANG_BINS "")
+
   foreach (LANG IN LISTS LANG_VARIANTS)
-    set(LANG_BIN ${CMAKE_CURRENT_BINARY_DIR}/lang/${variant_name}_${LANG}.bin)
+    set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
 
     set(PO_FILE "${CMAKE_CURRENT_SOURCE_DIR}/lang/po/Firmware_${LANG}.po")
     add_custom_command(OUTPUT ${LANG_BIN}
   #      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-check.py --no-warning --map "${LANG_MAP}" "${PO_FILE}"
   #      COMMAND ${CMAKE_COMMAND} -E echo "Building lang_${LANG}.bin"
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
+        # Check bin size:
+        COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_MAX_SIZE}
+            -DLANG_FILE=${LANG_BIN}
+            -P ${PROJECT_CMAKE_DIR}/Check_lang_size.cmake
         DEPENDS ${LANG_MAP}
         COMMENT "Generating ${variant_name}_${LANG}.bin from .po"
         )
         LIST(APPEND LANG_BINS ${LANG_BIN})
+
   endforeach()
   add_custom_command( OUTPUT ${LANG_FINAL_BIN}
     # TODO - needs differentiation for platforms, e.g. copy /b on Win
     COMMAND cat ${LANG_BINS} > ${LANG_FINAL_BIN}
+    COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX}
+        -DLANG_FILE=${LANG_FINAL_BIN}
+        -P ${PROJECT_CMAKE_DIR}/Check_final_lang_bin_size.cmake
     DEPENDS ${LANG_BINS}
     COMMENT "Merging language binaries"
   )
