@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 include(cmake/Utilities.cmake)
 
 set (CMAKE_CXX_STANDARD 11)
+set (PRUSA_BOARDS 1.0.5-2)
 project(Prusa-Firmware)
 
 get_recommended_gcc_version(RECOMMENDED_TOOLCHAIN_VERSION)
@@ -75,7 +76,7 @@ endif()
 #
 file(GLOB FW_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.c*)
 file(GLOB FW_HEADERS RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.h*)
-file(GLOB AVR_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/.dependencies/1.8.19-1.0.5-1-linux-64/portable/packages/PrusaResearch/hardware/avr/1.0.5-1/cores/prusa_einsy_rambo/*.c*)
+file(GLOB AVR_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/.dependencies/prusa3dboards-${PRUSA_BOARDS}/cores/prusa_einsy_rambo/*.c*)
 
   # Setup language resources:
 file(GLOB LANG_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/lang/po ${PROJECT_SOURCE_DIR}/lang/po/Firmware_??.po)
@@ -85,8 +86,8 @@ message("Languages found: ${LANG_VARIANTS}")
 
 add_library(avr_core STATIC ${AVR_SOURCES})
 target_include_directories(avr_core PRIVATE
-  ${PROJECT_SOURCE_DIR}/.dependencies/1.8.19-1.0.5-1-linux-64/portable/packages/PrusaResearch/hardware/avr/1.0.5-1/cores/prusa_einsy_rambo/
-  ${PROJECT_SOURCE_DIR}/.dependencies/1.8.19-1.0.5-1-linux-64/portable/packages/PrusaResearch/hardware/avr/1.0.5-1/variants/prusa_einsy_rambo/
+  ${PROJECT_SOURCE_DIR}/.dependencies/prusa3dboards-${PRUSA_BOARDS}/cores/prusa_einsy_rambo/
+  ${PROJECT_SOURCE_DIR}/.dependencies/prusa3dboards-${PRUSA_BOARDS}/variants/prusa_einsy_rambo/
 )
 target_compile_options(avr_core PUBLIC -mmcu=atmega2560)
 
@@ -98,7 +99,7 @@ function(fw_add_variant variant_name)
 
 
 #   # configure linker script
-   set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/.dependencies/1.8.19-1.0.5-1-linux-64/portable/packages/PrusaResearch/hardware/avr/1.0.5-1/ldscripts/avr6.xn)
+   set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/.dependencies/prusa3dboards-${PRUSA_BOARDS}/ldscripts/avr6.xn)
    target_link_options(${variant_name} PUBLIC -Wl,-T,${LINKER_SCRIPT})
 
   # limit the text section to 248K (256K - 8k reserved for the bootloader)
@@ -125,8 +126,8 @@ function(fw_add_variant variant_name)
 
 
   target_include_directories(${variant_name} PRIVATE Firmware
-    ${PROJECT_SOURCE_DIR}/.dependencies/1.8.19-1.0.5-1-linux-64/portable/packages/PrusaResearch/hardware/avr/1.0.5-1/cores/prusa_einsy_rambo/
-    ${PROJECT_SOURCE_DIR}/.dependencies/1.8.19-1.0.5-1-linux-64/portable/packages/PrusaResearch/hardware/avr/1.0.5-1/variants/prusa_einsy_rambo/
+    ${PROJECT_SOURCE_DIR}/.dependencies/prusa3dboards-${PRUSA_BOARDS}/cores/prusa_einsy_rambo/
+    ${PROJECT_SOURCE_DIR}/.dependencies/prusa3dboards-${PRUSA_BOARDS}/variants/prusa_einsy_rambo/
     ${PROJECT_SOURCE_DIR}/cmake/helpers/ # Add our magic config helper :)
     )
 

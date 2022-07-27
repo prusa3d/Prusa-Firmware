@@ -3,8 +3,9 @@
 /.project
 /.cproject
 
+#cmake
 /build/
-
+.dependencies
 # Temporary configuration
 /Firmware/Configuration_prusa.h
 
