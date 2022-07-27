@@ -534,7 +534,7 @@ void get_command()
     }
 
   #ifdef SDSUPPORT
-  if(!card.sdprinting || serial_count!=0){
+  if(!card.sdprinting || !card.isFileOpen() || serial_count!=0){
     // If there is a half filled buffer from serial line, wait until return before
     // continuing with the serial line.
      return;
@@ -631,6 +631,10 @@ void get_command()
       // cleared by printingHasFinished after peforming all remaining moves.
       if(!cmdqueue_calc_sd_length())
       {
+          // queue is complete, but before we process EOF commands prevent
+          // re-entry by disabling SD processing from any st_synchronize call
+          card.closefile();
+
           SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
           stoptime=_millis();
           char time[30];
