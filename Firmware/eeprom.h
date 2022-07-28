@@ -333,7 +333,6 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 03h 3			| ^						| bad_isr											| ^				| ^
 | ^					| ^			| ^										| 04h 4			| ^						| bad_pullup_temp_isr								| ^				| ^
 | ^					| ^			| ^										| 05h 5			| ^						| bad_pullup_step_isr								| ^				| ^
-| 0x0D03 3321		| uint8_t	| EEPROM_FW_CRASH_FLAG					| 01h 1			| ff/00					| Last FW crash reason (dump_crash_reason)			| D21/D22		| D3 Ax0d03 C1
 | 0x0D02 3320		| uint8_t	| EEPROM_FSENSOR_JAM_DETECTION			| 01h 1			| ff/01					| fsensor pat9125 jam detection feature				| LCD menu		| D3 Ax0d02 C1
 | 0x0D01 3319		| uint8_t	| EEPROM_MMU_ENABLED        			| 01h 1			| ff/01					| MMU enabled                       				| LCD menu		| D3 Ax0d01 C1
 

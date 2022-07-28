@@ -30,9 +30,9 @@ struct SChooseFromMenu {
 
 SChooseFromMenu TCodeChooseFromMenu() {
     if (MMU2::mmu2.Enabled()) {
-        return SChooseFromMenu( choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT)), true );
+        return SChooseFromMenu( choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT)), true );
     } else {
-        return SChooseFromMenu( choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER)), false );
+        return SChooseFromMenu( choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER)), false );
     }
 }
 
@@ -48,7 +48,7 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
     } else if (strchr_pointer[index] == 'x'){
         // load to bondtech gears; if mmu is not present do nothing
         if (MMU2::mmu2.Enabled()) {
-            MMU2::mmu2.tool_change(strchr_pointer[index], choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER)));
+            MMU2::mmu2.tool_change(strchr_pointer[index], choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER)));
         }
     } else if (strchr_pointer[index] == 'c'){
         // load from bondtech gears to nozzle (nozzle should be preheated)
