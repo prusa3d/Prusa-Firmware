@@ -100,6 +100,9 @@ target_include_directories(avr_core PRIVATE
 )
 target_compile_options(avr_core PUBLIC -mmcu=atmega2560)
 
+# Meta target to build absolutely everything
+add_custom_target(ALL_FIRMWARE)
+
 function(fw_add_variant variant_name)
 
   # Create the Configuration_Prusa.h for this variant so it can be #included.
@@ -110,6 +113,8 @@ function(fw_add_variant variant_name)
       COMMENT "Generating Configuration_prusa.h for ${variant_name}"
       BYPRODUCTS ${VARIANT_CFG_DIR}
   )
+  STRING(REPLACE "1_75mm_" "" variant_name "${variant_name}")
+  STRING(REPLACE "-E3Dv6full" "" variant_name "${variant_name}")
 
   add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_FILE})
 
@@ -187,43 +192,75 @@ function(fw_add_variant variant_name)
         LIST(APPEND LANG_BINS ${LANG_BIN})
 
   endforeach()
-  add_custom_command( OUTPUT ${LANG_FINAL_BIN}
+  string(FIND ${variant_name} "MK3" HAS_XFLASH)
+  if (HAS_XFLASH GREATER 0)
+    add_custom_command( OUTPUT ${LANG_FINAL_BIN}
+        # TODO - needs differentiation for platforms, e.g. copy /b on Win
+        COMMAND cat ${LANG_BINS} > ${LANG_FINAL_BIN}
+        COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX}
+            -DLANG_FILE=${LANG_FINAL_BIN}
+            -P ${PROJECT_CMAKE_DIR}/Check_final_lang_bin_size.cmake
+        DEPENDS ${LANG_BINS}
+        COMMENT "Merging language binaries"
+    )
+    add_custom_command( OUTPUT ${LANG_FINAL_HEX}
     # TODO - needs differentiation for platforms, e.g. copy /b on Win
-    COMMAND cat ${LANG_BINS} > ${LANG_FINAL_BIN}
-    COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX}
-        -DLANG_FILE=${LANG_FINAL_BIN}
-        -P ${PROJECT_CMAKE_DIR}/Check_final_lang_bin_size.cmake
-    DEPENDS ${LANG_BINS}
-    COMMENT "Merging language binaries"
-  )
-  add_custom_command( OUTPUT ${LANG_FINAL_HEX}
-  # TODO - needs differentiation for platforms, e.g. copy /b on Win
-    COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${LANG_FINAL_BIN} ${LANG_FINAL_HEX}
-    DEPENDS ${LANG_FINAL_BIN}
-    COMMENT "Generating Hex for language data"
-  )
-  set(LANG_HEX ${CMAKE_BINARY_DIR}/${variant_name}-lang.hex)
-  add_custom_target(${variant_name}-languages
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/${variant_name}.hex ${LANG_HEX}
-    COMMAND cat ${LANG_FINAL_HEX} >> ${LANG_HEX}
-    COMMENT "Generating final ${variant_name}-lang.hex"
-    BYPRODUCTS ${LANG_HEX}
-    DEPENDS ${LANG_FINAL_HEX}
-  )
+        COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${LANG_FINAL_BIN} ${LANG_FINAL_HEX}
+        DEPENDS ${LANG_FINAL_BIN}
+        COMMENT "Generating Hex for language data"
+    )
+    set(LANG_HEX ${CMAKE_BINARY_DIR}/${variant_name}-lang.hex)
+    add_custom_target(${variant_name}-languages
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/${variant_name}.hex ${LANG_HEX}
+        COMMAND cat ${LANG_FINAL_HEX} >> ${LANG_HEX}
+        COMMENT "Generating final ${variant_name}-lang.hex"
+        BYPRODUCTS ${LANG_HEX}
+        DEPENDS ${LANG_FINAL_HEX}
+    )
+    add_dependencies(ALL_FIRMWARE ${variant_name}-languages)
+  else()
+    set (ALL_VARIANT_HEXES "")
+    # Non-xflash, e.g. MK2.5
+    foreach(LANG IN LISTS LANG_VARIANTS)
+        SET(LANG_HEX_FN ${variant_name}-en_${LANG})
+        SET(LANG_HEX ${CMAKE_BINARY_DIR}/${LANG_HEX_FN}.hex)
+        SET(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
+        SET(LANG_FWBIN_TMP ${LANG_TMP_DIR}/${variant_name}-en_${LANG}.bin)
 
+        #Intermediate 2-lang bin
+        add_custom_command(OUTPUT ${LANG_FWBIN_TMP}
+            COMMAND ${CMAKE_COMMAND} -E copy ${LANG_FWBIN} ${LANG_FWBIN_TMP}
+            COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-patchsec.py ${CMAKE_BINARY_DIR}/${variant_name} ${LANG_BIN} ${LANG_FWBIN_TMP}
+            DEPENDS ${LANG_FWBIN} ${LANG_BIN}
+            COMMENT "Generating ${variant_name}-en_${LANG}.bin"
+        )
+
+        #Final hex:
+        add_custom_target(${LANG_HEX_FN}
+            COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${LANG_FWBIN_TMP} ${LANG_HEX}
+            BYPRODUCTS ${LANG_HEX}
+            DEPENDS ${LANG_FWBIN_TMP}
+            COMMENT "Creating ${LANG_HEX_FN}.hex"
+        )
+        LIST(APPEND ALL_VARIANT_HEXES ${LANG_HEX})
+    endforeach()
+    add_custom_target("${variant_name}-All-Languages"
+        DEPENDS ${ALL_VARIANT_HEXES}
+    )
+    add_dependencies(ALL_FIRMWARE "${variant_name}-All-Languages")
+  endif()
 endfunction()
 
 
 if(CMAKE_CROSSCOMPILING)
 
-  add_custom_target(All_Firmware)
+
 
   file(GLOB FW_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/Firmware/variants ${PROJECT_SOURCE_DIR}/Firmware/variants/*.h)
   foreach(THIS_VAR IN LISTS FW_VARIANTS)
     string(REPLACE ".h" "" TRIMMED_NAME "${THIS_VAR}")
     message("Variant added: ${TRIMMED_NAME}")
     fw_add_variant(${TRIMMED_NAME})
-    add_dependencies(All_Firmware ${TRIMMED_NAME})
 
   endforeach(THIS_VAR IN LISTS FW_VARIANTS)
 
