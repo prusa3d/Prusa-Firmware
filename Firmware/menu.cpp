@@ -384,7 +384,9 @@ uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t)
         {
             menu_clicked = false;
             lcd_consume_click();
+            lcd_update_enabled = 0;
             if (func) func(fn_par);
+            lcd_update_enabled = 1;
             return menu_item_ret();
         }
     }

@@ -1268,6 +1268,7 @@ static void lcd_menu_fails_stats_total()
 //! @endcode
 
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
+//! @todo leptun refactor this piece of code please
 static void lcd_menu_fails_stats_print()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1854,6 +1855,7 @@ switch(eFilamentAction)
      }
     if(lcd_clicked()
 #ifdef FILAMENT_SENSOR
+/// @todo leptun - add this as a specific retest item
         || (((eFilamentAction == FilamentAction::Load) || (eFilamentAction == FilamentAction::AutoLoad)) && fsensor.getFilamentLoadEvent())
 #endif //FILAMENT_SENSOR
     ) {
@@ -2324,7 +2326,7 @@ void show_preheat_nozzle_warning()
 
 void lcd_load_filament_color_check()
 {
-	bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
+	int8_t clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
 	while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
 		load_filament_final_feed();
 		st_synchronize();
@@ -2340,14 +2342,13 @@ static void lcd_menu_AutoLoadFilament()
 }
 #endif //FILAMENT_SENSOR
 
-static void preheat_or_continue()
-{
-    if (target_temperature[0] >= extrude_min_temp)
-    {
+static void preheat_or_continue() {
+    if (target_temperature[0] >= extrude_min_temp) {
         bFilamentPreheatState = true;
         mFilamentItem(target_temperature[0], target_temperature_bed);
+    } else {
+        lcd_generic_preheat_menu();
     }
-    else lcd_generic_preheat_menu();
 }
 
 static void lcd_LoadFilament()
@@ -3131,7 +3132,7 @@ const char* lcd_display_message_fullscreen_P(const char *msg)
  */
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 {
-    lcd_update_enable(false);
+    LcdUpdateDisabler lcdUpdateDisabler;
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
 	lcd_set_custom_characters_nextpage();
@@ -3151,7 +3152,6 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 				if (msg_next == NULL) {
 					KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
-					lcd_update_enable(true);
 					return;
 				}
 				else {
@@ -3275,60 +3275,60 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(const char * const m
             manage_heater();
             manage_inactivity(true);
 
-			if (multiscreen_cb)
-			{
-				multiscreen_cb();
-			}
-			
+            if (multiscreen_cb) {
+                multiscreen_cb();
+            }
 
-			if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
-				if (msg_next == NULL) {
+
+
+            if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+                if (msg_next == NULL) {
                     if (third_choice) { // third_choice is not nullptr, safe to dereference
-						if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
-							// Rotating knob counter clockwise
-							current_selection--;
-						} else if (enc_dif < lcd_encoder_diff && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
-							// Rotating knob clockwise
-							current_selection++;
-						}
-					} else {
-						if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
-							// Rotating knob counter clockwise
-							current_selection = LCD_LEFT_BUTTON_CHOICE;
-						} else if (enc_dif < lcd_encoder_diff && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
-							// Rotating knob clockwise
-							current_selection = LCD_MIDDLE_BUTTON_CHOICE;
-						}
-					}
-					lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
-					enc_dif = lcd_encoder_diff;
-					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+                        if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+                            // Rotating knob counter clockwise
+                            current_selection--;
+                        } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_RIGHT_BUTTON_CHOICE) {
+                            // Rotating knob clockwise
+                            current_selection++;
+                        }
+                    } else {
+                        if (enc_dif > lcd_encoder_diff && current_selection != LCD_LEFT_BUTTON_CHOICE) {
+                            // Rotating knob counter clockwise
+                            current_selection = LCD_LEFT_BUTTON_CHOICE;
+                        } else if (enc_dif < lcd_encoder_diff && current_selection != LCD_MIDDLE_BUTTON_CHOICE) {
+                            // Rotating knob clockwise
+                            current_selection = LCD_MIDDLE_BUTTON_CHOICE;
+                        }
+                    }
+                    lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
+                    enc_dif = lcd_encoder_diff;
+                    Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
                 } else {
-					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-					break; //turning knob skips waiting loop
-				}
-			}
-			if (lcd_clicked()) {
-				Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-				if (msg_next == NULL) {
-					KEEPALIVE_STATE(IN_HANDLER);
-					lcd_set_custom_characters();
-					lcd_update_enable(true);
-					return current_selection;
+                    Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+                    break; // turning knob skips waiting loop
+                }
+            }
+            if (lcd_clicked()) {
+                Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+                if (msg_next == NULL) {
+                    KEEPALIVE_STATE(IN_HANDLER);
+                    lcd_set_custom_characters();
+                    lcd_update_enable(true);
+                    return current_selection;
                 } else
                     break;
-			}
-		}
-		if (multi_screen) {
-			if (msg_next == NULL) {
-				msg_next = msg;
-			}
-			msg_next = lcd_display_message_fullscreen_P(msg_next);
-		}
-		if (msg_next == NULL) {
-			lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
-		}
-	}
+            }
+        }
+        if (multi_screen) {
+            if (msg_next == NULL) {
+                msg_next = msg;
+            }
+            msg_next = lcd_display_message_fullscreen_P(msg_next);
+        }
+        if (msg_next == NULL) {
+            lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
+        }
+    }
 }
 
 //! @brief Display and wait for a Yes/No choice using the last line of the LCD
@@ -3970,7 +3970,7 @@ static void lcd_wizard_load() {
 bool lcd_autoDepleteEnabled()
 {
     return (lcd_autoDeplete
-#ifdef FILAMENT_SENSOR ///should be removed during mmu2 refactoring
+#ifdef FILAMENT_SENSOR // @todo leptun: should be removed during mmu2 refactoring - needs checking
     && fsensor.isReady()
 #endif
     );
@@ -4296,10 +4296,10 @@ static void lcd_fsensor_settings_menu() {
         
         switch(fsensor.getActionOnError()) {
             case Filament_sensor::SensorActionOnError::_Continue:
-                MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_CONTINUE), lcd_fsensor_actionNA_set);
+                MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_CONTINUE_SHORT), lcd_fsensor_actionNA_set);
                 break;
             case Filament_sensor::SensorActionOnError::_Pause:
-                MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_FS_PAUSE), lcd_fsensor_actionNA_set);
+                MENU_ITEM_TOGGLE_P(_T(MSG_FS_ACTION), _T(MSG_PAUSE), lcd_fsensor_actionNA_set);
                 break;
             default:
                 lcd_fsensor_actionNA_set();
@@ -7520,6 +7520,7 @@ static void menu_action_sdfile(const char* filename)
   //to open a file. Instead, the cached filename in cmd is used as that one is static for the whole lifetime of this function.
   if (!check_file(cmd + 4)) {
       result = !lcd_show_fullscreen_message_yes_no_and_wait_P(_i("File incomplete. Continue anyway?"), false);////MSG_FILE_INCOMPLETE c=20 r=3
+      lcd_update_enable(true);
   }
   if (result) {
 	  enquecommand(cmd);
@@ -7776,7 +7777,7 @@ void menu_lcd_lcdupdate_func(void)
 	}
 #endif//CARDINSERTED
 	backlight_update();
-	if (lcd_next_update_millis < _millis() || lcd_draw_update)
+	if (lcd_next_update_millis < _millis())
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
 		{
