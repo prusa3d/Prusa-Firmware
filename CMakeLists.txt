@@ -3,6 +3,8 @@ include(cmake/Utilities.cmake)
 
 set (CMAKE_CXX_STANDARD 11)
 
+OPTION(SECONDARY_LANGUAGES "Secondary language support in the firmware" ON)
+
 get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
 project(Prusa-Firmware)
 
@@ -153,8 +155,19 @@ function(fw_add_variant variant_name)
   target_link_options(${variant_name} PUBLIC -Wl,-Map=${variant_name}.map)
 
   target_compile_options(${variant_name} PRIVATE) # turn this on for lolz -Wdouble-promotion)
-  target_compile_definitions(${variant_name} PRIVATE ARDUINO=10600 __AVR_ATmega2560__)
+  target_compile_definitions(${variant_name} PRIVATE
+    ARDUINO=10600
+    __AVR_ATmega2560__
+    CMAKE_LANG_CONTROL
+    )
   target_link_libraries(${variant_name} avr_core)
+  if (SECONDARY_LANGUAGES)
+    target_compile_definitions(${variant_name} PUBLIC LANG_MODE=1)
+  else()
+    target_compile_definitions(${variant_name} PUBLIC LANG_MODE=0)
+    add_dependencies(ALL_FIRMWARE "${variant_name}")
+    return() #Done, if no languages there's nothing else to do.
+  endif()
 
   #Construct language map
   set(LANG_TMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/lang)
@@ -194,25 +207,40 @@ function(fw_add_variant variant_name)
   endforeach()
   string(FIND ${variant_name} "MK3" HAS_XFLASH)
   if (${HAS_XFLASH} GREATER_EQUAL 0)
+    if (WIN32)
+        STRING(REPLACE ";" " + " LANG_CMD_TMP "${LANG_BINS}")
+        add_custom_command( OUTPUT ${LANG_FINAL_BIN}
+            COMMAND copy /b ${LANG_CMD_TMP} ${LANG_FINAL_BIN}
+            DEPENDS ${LANG_BINS}
+            COMMENT "Merging language binaries (W32)"
+        )
+    else()
+        add_custom_command( OUTPUT ${LANG_FINAL_BIN}
+            COMMAND cat ${LANG_BINS} > ${LANG_FINAL_BIN}
+            DEPENDS ${LANG_BINS}
+            COMMENT "Merging language binaries (Non-W32)"
+        )
+    endif()
     add_custom_command( OUTPUT ${LANG_FINAL_BIN}
-        # TODO - needs differentiation for platforms, e.g. copy /b on Win
-        COMMAND cat ${LANG_BINS} > ${LANG_FINAL_BIN}
         COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX}
             -DLANG_FILE=${LANG_FINAL_BIN}
             -P ${PROJECT_CMAKE_DIR}/Check_final_lang_bin_size.cmake
-        DEPENDS ${LANG_BINS}
-        COMMENT "Merging language binaries"
+        APPEND
     )
     add_custom_command( OUTPUT ${LANG_FINAL_HEX}
-    # TODO - needs differentiation for platforms, e.g. copy /b on Win
         COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${LANG_FINAL_BIN} ${LANG_FINAL_HEX}
         DEPENDS ${LANG_FINAL_BIN}
         COMMENT "Generating Hex for language data"
     )
     set(LANG_HEX ${CMAKE_BINARY_DIR}/${variant_name}-lang.hex)
+    if (WIN32)
+        SET(TEXT_MERGE_CMD "type")
+    else()
+        SET(TEXT_MERGE_CMD "cat")
+    endif()
     add_custom_target(${variant_name}-languages
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/${variant_name}.hex ${LANG_HEX}
-        COMMAND cat ${LANG_FINAL_HEX} >> ${LANG_HEX}
+        COMMAND ${TEXT_MERGE_CMD} ${LANG_FINAL_HEX} >> ${LANG_HEX}
         COMMENT "Generating final ${variant_name}-lang.hex"
         BYPRODUCTS ${LANG_HEX}
         DEPENDS ${LANG_FINAL_HEX}
