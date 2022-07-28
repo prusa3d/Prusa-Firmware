@@ -68,6 +68,7 @@ enum LCDButtonChoice : uint_fast8_t {
     LCD_LEFT_BUTTON_CHOICE = 0,
     LCD_MIDDLE_BUTTON_CHOICE = 1,
     LCD_RIGHT_BUTTON_CHOICE = 2,
+    LCD_BUTTON_TIMEOUT      = 0xFF,
 };
 
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
@@ -77,13 +78,13 @@ extern void lcd_wait_for_click();
 extern bool lcd_wait_for_click_delay(uint16_t nDelay);
 void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice = nullptr);
 extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
-extern int8_t lcd_show_yes_no_and_wait(bool allow_timeouting = true, uint8_t default_selection = LCD_MIDDLE_BUTTON_CHOICE);
-extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, uint8_t default_selection = LCD_MIDDLE_BUTTON_CHOICE);
-extern int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
+extern uint8_t lcd_show_yes_no_and_wait(bool allow_timeouting = true, uint8_t default_selection = LCD_MIDDLE_BUTTON_CHOICE);
+extern uint8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, uint8_t default_selection = LCD_MIDDLE_BUTTON_CHOICE);
+extern uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
     const char * const msg, bool allow_timeouting, uint8_t default_selection,
     const char * const first_choice, const char * const second_choice, const char * const third_choice = nullptr,
     uint8_t second_col = 7);
-extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, uint8_t default_selection = LCD_MIDDLE_BUTTON_CHOICE);
+extern uint8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, uint8_t default_selection = LCD_MIDDLE_BUTTON_CHOICE);
 // Ask the user to move the Z axis up to the end stoppers and let
 // the user confirm that it has been done.
 

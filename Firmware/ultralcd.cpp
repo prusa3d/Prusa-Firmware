@@ -2326,7 +2326,7 @@ void show_preheat_nozzle_warning()
 
 void lcd_load_filament_color_check()
 {
-	int8_t clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
+	uint8_t clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, LCD_LEFT_BUTTON_CHOICE);
 	while (clean == LCD_MIDDLE_BUTTON_CHOICE) {
 		load_filament_final_feed();
 		st_synchronize();
@@ -3018,10 +3018,10 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             }
         }
         // Let the user confirm, that the Z carriage is at the top end stoppers.
-        int8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z~carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
-        if (result == -1)
+        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z~carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
+        if (result == LCD_BUTTON_TIMEOUT)
             goto canceled;
-        else if (result == 1)
+        else if (result == LCD_MIDDLE_BUTTON_CHOICE)
             goto calibrated;
         // otherwise perform another round of the Z up dialog.
     }
@@ -3204,8 +3204,8 @@ lcd_wait_for_click_delay(0);
 //! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
 //! @retval 0 yes choice selected by user
 //! @retval 1 no choice selected by user
-//! @retval -1 screen timed out
-int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection) //currently just max. n*4 + 3 lines supported (set in language header files)
+//! @retval 0xFF button timeout (only possible if allow_timeouting is true)
+uint8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection) //currently just max. n*4 + 3 lines supported (set in language header files)
 {
     return lcd_show_multiscreen_message_with_choices_and_wait_P(msg, allow_timeouting, default_selection, _T(MSG_YES), _T(MSG_NO), nullptr, 10);
 }
@@ -3246,8 +3246,8 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
 //! @retval 0 first choice selected by user
 //! @retval 1 first choice selected by user
 //! @retval 2 third choice selected by user
-//! @retval -1 screen timed out (only possible if allow_timeouting is true)
-int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
+//! @retval 0xFF button timeout (only possible if allow_timeouting is true)
+uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
     const char *const msg, bool allow_timeouting, uint8_t default_selection,
     const char *const first_choice, const char *const second_choice, const char *const third_choice,
     uint8_t second_col
@@ -3270,7 +3270,7 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
         for (uint8_t i = 0; i < 100; ++i) {
             delay_keep_alive(50);
             if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS) {
-                return -1;
+                return LCD_BUTTON_TIMEOUT;
             }
             manage_heater();
             manage_inactivity(true);
@@ -3330,8 +3330,8 @@ int8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
 //! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
 //! @retval 0 yes choice selected by user
 //! @retval 1 no choice selected by user
-//! @retval -1 screen timed out
-int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, uint8_t default_selection)
+//! @retval 0xFF button timeout (only possible if allow_timeouting is true)
+uint8_t lcd_show_yes_no_and_wait(bool allow_timeouting, uint8_t default_selection)
 {
     return lcd_show_multiscreen_message_yes_no_and_wait_P(NULL, allow_timeouting, default_selection);
 }
@@ -3342,9 +3342,9 @@ int8_t lcd_show_yes_no_and_wait(bool allow_timeouting, uint8_t default_selection
 //! @param default_selection if 0, 'Yes' choice is selected by default, otherwise 'No' choice is preselected
 //! @retval 0 yes choice selected by user
 //! @retval 1 no choice selected by user
-//! @retval -1 screen timed out
+//! @retval 0xFF button timeout (only possible if allow_timeouting is true)
 //! @relates lcd_show_yes_no_and_wait
-int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection)
+uint8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, uint8_t default_selection)
 {
     return lcd_show_multiscreen_message_yes_no_and_wait_P(msg, allow_timeouting, default_selection);
 }
@@ -4028,7 +4028,7 @@ void lcd_wizard(WizState state)
 {
     using S = WizState;
 	bool end = false;
-	int8_t wizard_event;
+	uint8_t wizard_event;
 	const char *msg = NULL;
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
@@ -5133,7 +5133,7 @@ char reset_menu() {
 
 static void lcd_disable_farm_mode()
 {
-	int8_t disable = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true); //allow timeouting, default no
+	uint8_t disable = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true); //allow timeouting, default no
 	if (disable == LCD_LEFT_BUTTON_CHOICE)
 	{
 		enquecommand_P(PSTR("G99"));
