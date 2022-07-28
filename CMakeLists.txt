@@ -3,7 +3,18 @@ include(cmake/Utilities.cmake)
 
 set (CMAKE_CXX_STANDARD 11)
 
+MESSAGE(WARNING     "
+***************** YOUR ATTENTION PLEASE *****************
+CMake support is experimental. There is no guarantee at this time. If you have problems you are encouraged to fall back to the tried-and-true methods.
+*********************** THANK YOU **********************
+We now return to your regularly scheduled Firmware Build."
+)
+
 OPTION(SECONDARY_LANGUAGES "Secondary language support in the firmware" ON)
+
+SET(MAIN_LANGUAGES cs de es fr it pl CACHE STRING "The list of 'main' languages to be included, in the correct order")
+SET(COMMUNITY_LANGUAGES nl ro hu hr sk sv no CACHE STRING "The list of community languages to be included, in the correct order")
+SET(SELECTED_LANGUAGES ${MAIN_LANGUAGES} ${COMMUNITY_LANGUAGES})
 
 get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
 project(Prusa-Firmware)
@@ -13,7 +24,7 @@ STRING(REGEX MATCH "0x[0-9]+" MAX_SIZE_HEX "${MAX_SIZE_LINE}")
 math(EXPR LANG_MAX_SIZE "${MAX_SIZE_HEX}" OUTPUT_FORMAT DECIMAL)
 message("Language maximum size (from config.h): ${LANG_MAX_SIZE} bytes")
 
-set (LANG_BIN_MAX 249856) # Ditto, this in xflash_layout.h
+set (LANG_BIN_MAX 249856) # Ditto, this in xflash_layout.h but needs invocation of the preprocessor... :-/
 
 get_recommended_gcc_version(RECOMMENDED_TOOLCHAIN_VERSION)
 if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL
@@ -88,12 +99,12 @@ file(GLOB FW_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmwa
 file(GLOB FW_HEADERS RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.h*)
 file(GLOB AVR_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/*.c*)
 
-	# Setup language resources:
-file(GLOB LANG_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/lang/po ${PROJECT_SOURCE_DIR}/lang/po/Firmware_??.po)
-string(REPLACE "Firmware_" "" LANG_VARIANTS "${LANG_VARIANTS}")
-string(REPLACE ".po" "" LANG_VARIANTS "${LANG_VARIANTS}")
-list(SORT LANG_VARIANTS)
-message("Languages found: ${LANG_VARIANTS}")
+# Setup language resources:
+# file(GLOB LANG_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/lang/po ${PROJECT_SOURCE_DIR}/lang/po/Firmware_??.po)
+# string(REPLACE "Firmware_" "" LANG_VARIANTS "${LANG_VARIANTS}")
+# string(REPLACE ".po" "" LANG_VARIANTS "${LANG_VARIANTS}")
+# list(SORT LANG_VARIANTS)
+# message("Languages found: ${LANG_VARIANTS}")
 
 add_library(avr_core STATIC ${AVR_SOURCES})
 target_include_directories(avr_core PRIVATE
@@ -187,7 +198,7 @@ function(fw_add_variant variant_name)
 
 	set(LANG_BINS "")
 
-	foreach (LANG IN LISTS LANG_VARIANTS)
+	foreach (LANG IN LISTS SELECTED_LANGUAGES)
 		set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
 
 		set(PO_FILE "${CMAKE_CURRENT_SOURCE_DIR}/lang/po/Firmware_${LANG}.po")
@@ -249,7 +260,7 @@ function(fw_add_variant variant_name)
 	else()
 		set (ALL_VARIANT_HEXES "")
 		# Non-xflash, e.g. MK2.5
-		foreach(LANG IN LISTS LANG_VARIANTS)
+		foreach(LANG IN LISTS SELECTED_LANGUAGES)
 			SET(LANG_HEX_FN ${variant_name}-en_${LANG})
 			SET(LANG_HEX ${CMAKE_BINARY_DIR}/${LANG_HEX_FN}.hex)
 			SET(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
