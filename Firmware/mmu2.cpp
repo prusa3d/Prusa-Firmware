@@ -796,6 +796,7 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
     {
     case ProgressCode::UnloadingToFinda:
         unloadFilamentStarted = false;
+        break;
     case ProgressCode::FeedingToBondtech:
     case ProgressCode::FeedingToFSensor:
         // FSENSOR error during load. Make sure E-motor stops moving.
