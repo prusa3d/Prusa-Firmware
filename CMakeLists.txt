@@ -193,7 +193,7 @@ function(fw_add_variant variant_name)
 
   endforeach()
   string(FIND ${variant_name} "MK3" HAS_XFLASH)
-  if (HAS_XFLASH GREATER 0)
+  if (${HAS_XFLASH} GREATER_EQUAL 0)
     add_custom_command( OUTPUT ${LANG_FINAL_BIN}
         # TODO - needs differentiation for platforms, e.g. copy /b on Win
         COMMAND cat ${LANG_BINS} > ${LANG_FINAL_BIN}
