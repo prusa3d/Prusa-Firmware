@@ -262,8 +262,16 @@ void ReportErrorHook(uint16_t ec, uint8_t res) {
 }
 
 void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
-    custom_message_type = CustomMsg::MMUProgress;
-    lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
+    if (cip != CommandInProgress::NoCommand)
+    {
+        custom_message_type = CustomMsg::MMUProgress;
+        lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
+    } else {
+        // If there is no command in progress we can display other
+        // useful information such as the name of the SD file 
+        // being printed
+        custom_message_type = CustomMsg::Status;
+    }
 }
 
 } // namespace MMU2
