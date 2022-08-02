@@ -7763,13 +7763,16 @@ Sigma_Exit:
 
 #ifdef TEMP_MODEL
     /*!
-    ### M310 - Temperature model settings
+    ### M310 - Temperature model settings <a href="https://reprap.org/wiki/G-code#M310:_Temperature_model_settings">M310: Temperature model settings</a>
     #### Usage
 
         M310                                           ; report values
-        M310 [ I ] [ R ]                               ; set resistance at index
-        M310 [ P ] [ C ] [ S ] [ B ] [ E ] [ W ] [ T ] ; other parameters
         M310 [ A ]                                     ; autotune
+        M310 [ S ]                                     ; set 0=disable 1=enable
+        M310 [ I ] [ R ]                               ; set resistance at index
+        M310 [ P | C ]                                 ; set power, capacitance
+        M310 [ B | E | W ]                             ; set beeper, warning and error threshold
+        M310 [ T ]                                     ; set ambient temperature correction
 
     #### Parameters
     - `I` - resistance index position (0-15)
