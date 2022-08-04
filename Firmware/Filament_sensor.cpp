@@ -107,9 +107,17 @@ bool Filament_sensor::checkFilamentEvents() {
 }
 
 void Filament_sensor::triggerFilamentInserted() {
-    if (autoLoadEnabled && (eFilamentAction == FilamentAction::None) &&
-        !(moves_planned() || IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) ||
-          eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE))) {
+    if (autoLoadEnabled
+        && (eFilamentAction == FilamentAction::None)
+        && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts while the MMU is in charge
+        && !(
+            moves_planned()
+            || IS_SD_PRINTING
+            || usb_timer.running()
+            || (lcd_commands_type == LcdCommands::Layer1Cal)
+            || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
+            )
+        ) {
         filAutoLoad();
     }
 }

@@ -276,6 +276,7 @@ private:
     void LogError(const char *reason);
     void LogResponse();
     void SwitchFromIdleToCommand();
+    void SwitchFromStartToIdle();
     
     enum class State : uint_fast8_t {
         Stopped,      ///< stopped for whatever reason
