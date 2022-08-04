@@ -180,7 +180,10 @@ StepStatus StartSeq::Step() {
         break;
     case State::FilamentSensorStateSent:
         state = State::Ready;
-        return Finished;
+        logic->SwitchFromStartToIdle();
+        return Processing; // Returning Finished is not a good idea in case of a fast error recovery
+        // - it tells the printer, that the command which experienced a protocol error and recovered successfully actually terminated.
+        // In such a case we must return "Processing" in order to keep the MMU state machine running and prevent the printer from executing next G-codes.
         break;
     case State::RecoveringProtocolError:
         // timer elapsed, clear the input buffer
@@ -481,6 +484,14 @@ void ProtocolLogic::SwitchToIdle() {
     state = State::Running;
     currentState = &idle;
     idle.Restart();
+}
+
+void ProtocolLogic::SwitchFromStartToIdle(){
+    state = State::Running;
+    currentState = &idle;
+    idle.Restart();
+    idle.SendQuery(); // force sending Q0 immediately
+    idle.state = Idle::State::QuerySent;
 }
 
 bool ProtocolLogic::Elapsed(uint32_t timeout) const {
