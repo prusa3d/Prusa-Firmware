@@ -129,6 +129,7 @@ void ProtocolLogic::SendMsg(RequestMsg rq) {
 }
 
 void StartSeq::Restart() {
+    retries = maxRetries;
     SendVersion(0);
 }
 
@@ -141,41 +142,61 @@ StepStatus StartSeq::Step() {
     case State::S0Sent: // received response to S0 - major
         if( logic->rsp.request.code != RequestMsgCodes::Version || logic->rsp.request.value != 0 ){
             // got a response to something else - protocol corruption probably, repeat the query
-                SendVersion(0);
+            SendVersion(0);
         } else {
             logic->mmuFwVersionMajor = logic->rsp.paramValue;
             if (logic->mmuFwVersionMajor != supportedMmuFWVersionMajor) {
-                return VersionMismatch;
-            }
-            logic->dataTO.Reset(); // got meaningful response from the MMU, stop data layer timeout tracking
+                if( --retries == 0){
+                    // if (--retries == 0) has a specific meaning - since we are losing bytes on the UART for no obvious reason
+                    // it can happen, that the reported version number is not complete - i.e. "1" instead of "19"
+                    // Therefore we drop the MMU only if we run out of retries for this very reason.
+                    // There is a limited amount of retries per the whole start seq.
+                    // We also must be able to actually detect an unsupported MMU FW version, so the amount of retries shall be kept small.
+                    return VersionMismatch;
+                } else {
+                    SendVersion(0);
+                }
+            } else {
+                logic->dataTO.Reset(); // got meaningful response from the MMU, stop data layer timeout tracking
                 SendVersion(1);
+            }
         }
         break;
     case State::S1Sent: // received response to S1 - minor
         if( logic->rsp.request.code != RequestMsgCodes::Version || logic->rsp.request.value != 1 ){
             // got a response to something else - protocol corruption probably, repeat the query OR restart the comm by issuing S0?
-                SendVersion(1);
+            SendVersion(1);
         } else {
             logic->mmuFwVersionMinor = logic->rsp.paramValue;
-            if (logic->mmuFwVersionMinor != supportedMmuFWVersionMinor) {
-                return VersionMismatch;
-            }
+            if (logic->mmuFwVersionMinor != supportedMmuFWVersionMinor){
+                if( --retries == 0) {
+                    return VersionMismatch;
+                } else {
+                    SendVersion(1);
+                }
+            } else {
                 SendVersion(2);
+            }
         }
         break;
     case State::S2Sent: // received response to S2 - revision
         if( logic->rsp.request.code != RequestMsgCodes::Version || logic->rsp.request.value != 2 ){
             // got a response to something else - protocol corruption probably, repeat the query OR restart the comm by issuing S0?
-                SendVersion(2);
+            SendVersion(2);
         } else {
             logic->mmuFwVersionBuild = logic->rsp.paramValue;
-            if (logic->mmuFwVersionBuild < supportedMmuFWVersionBuild) {
-                return VersionMismatch;
+            if (logic->mmuFwVersionBuild < supportedMmuFWVersionBuild){
+                if( --retries == 0 ) {
+                    return VersionMismatch;
+                } else {
+                    SendVersion(2);
+                }
+            } else {
+                // Start General Interrogation after line up.
+                // For now we just send the state of the filament sensor, but we may request
+                // data point states from the MMU as well. TBD in the future, especially with another protocol
+                SendAndUpdateFilamentSensor();
             }
-            // Start General Interrogation after line up.
-            // For now we just send the state of the filament sensor, but we may request
-            // data point states from the MMU as well. TBD in the future, especially with another protocol
-            SendAndUpdateFilamentSensor();
         }
         break;
     case State::FilamentSensorStateSent:
