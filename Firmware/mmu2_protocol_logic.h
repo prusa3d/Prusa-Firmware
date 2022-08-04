@@ -120,9 +120,13 @@ protected:
 class StartSeq : public ProtocolLogicPartBase {
 public:
     inline StartSeq(ProtocolLogic *logic)
-        : ProtocolLogicPartBase(logic) {}
+        : ProtocolLogicPartBase(logic)
+        , retries(maxRetries) {}
     void Restart() override;
     StepStatus Step() override;
+private:
+    static constexpr uint8_t maxRetries = 6;
+    uint8_t retries;
 };
 
 class DelayedRestart : public ProtocolLogicPartBase {
