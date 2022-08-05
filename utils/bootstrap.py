@@ -39,9 +39,9 @@ dependencies = {
     'cmake': {
         'version': '3.22.5',
         'url': {
-            'Linux': 'https://github.com/Kitware/CMake/releases/download/v3.22.5/cmake-3.22.5-Linux-x86_64.tar.gz',
-            'Windows': 'https://github.com/Kitware/CMake/releases/download/v3.22.5/cmake-3.22.5-win64-x64.zip',
-            'Darwin': 'https://github.com/Kitware/CMake/releases/download/v3.22.5/cmake-3.22.5-Darwin-x86_64.tar.gz',
+            'Linux': 'https://github.com/Kitware/CMake/releases/download/v3.22.5/cmake-3.22.5-linux-x86_64.tar.gz',
+            'Windows': 'https://github.com/Kitware/CMake/releases/download/v3.22.5/cmake-3.22.5-windows-x86_64.zip',
+            'Darwin': 'https://github.com/Kitware/CMake/releases/download/v3.22.5/cmake-3.22.5-macos-universal.tar.gz',
         },
     },
     'avr-gcc': {
@@ -61,7 +61,7 @@ dependencies = {
         }
     },
 }
-pip_dependencies = ["pyelftools"]
+pip_dependencies = ["pyelftools","polib","regex"]
 # yapf: enable
 
 
