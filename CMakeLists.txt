@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 include(cmake/Utilities.cmake)
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 
 MESSAGE(WARNING     "
 ***************** YOUR ATTENTION PLEASE *****************
@@ -54,6 +54,23 @@ endif()
 # include symbols
 add_compile_options(-g)
 
+#
+# Firmware - get file lists.
+#
+file(GLOB FW_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.c*)
+file(GLOB FW_HEADERS RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.h*)
+foreach(_FILE ${FW_SOURCES})
+    get_filename_component(_BASE ${_FILE} NAME)
+    set_property(SOURCE ${_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=${_BASE}.o")
+endforeach()
+
+file(GLOB AVR_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/*.c*)
+
+foreach(_FILE ${AVR_SOURCES})
+    get_filename_component(_BASE ${_FILE} NAME)
+    set_property(SOURCE ${_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=core/${_BASE}.o")
+endforeach()
+
 # optimizations
 if(CMAKE_CROSSCOMPILING)
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -63,17 +80,28 @@ if(CMAKE_CROSSCOMPILING)
 	endif()
 
 	# mcu related settings
-	set(MCU_FLAGS -mmcu=atmega2560 -DF_CPU=16000000L)
+	set(MCU_FLAGS -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10819 -DARDUINO_AVR_PRUSA_EINSY_RAMBO -DARDUINO_ARCH_AVR)
 	add_compile_options(${MCU_FLAGS})
-	add_link_options(${MCU_FLAGS})
 
-	# split and gc sections
-	add_compile_options(-ffunction-sections -fdata-sections)
-	add_link_options(-Wl,--gc-sections)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
+    add_compile_options(-Wall -Wextra -Wno-expansion-to-defined -ffunction-sections -fdata-sections -MMD -flto -fno-fat-lto-objects)
+
+    # split and gc sections
+    add_link_options(-Os -g -flto -Wl,--gc-sections -mmcu=atmega2560 -Wl,-u,vfprintf -lprintf_flt -lm )
+
+    # Create this target before we apply the GC options
+    add_library(avr_core STATIC ${AVR_SOURCES})
+    target_include_directories(avr_core PRIVATE
+        ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
+        ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
+        )
+
+
 
 	# disable exceptions and related metadata
-	add_compile_options(-fno-exceptions -fno-unwind-tables)
-	add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
+	add_compile_options(-fno-unwind-tables)
 	add_link_options(-Wl,--defsym,__exidx_start=0,--defsym,__exidx_end=0)
 else()
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -84,20 +112,16 @@ else()
 endif()
 
 # enable all warnings (well, not all, but some)
-add_compile_options(-Wall -Wsign-compare)
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-std=c++14>)
+add_compile_options(-Wsign-compare)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-std=gnu++17>)
+add_compile_options($<$<COMPILE_LANGUAGE:C>:-std=gnu11>)
 
 # support _DEBUG macro (some code uses to recognize debug builds)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_compile_definitions(_DEBUG)
 endif()
 
-#
-# Firmware - get file lists.
-#
-file(GLOB FW_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.c*)
-file(GLOB FW_HEADERS RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.h*)
-file(GLOB AVR_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/*.c*)
+
 
 # Setup language resources:
 # file(GLOB LANG_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/lang/po ${PROJECT_SOURCE_DIR}/lang/po/Firmware_??.po)
@@ -106,12 +130,6 @@ file(GLOB AVR_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PRUSA_BOARDS_DIR}/cores/p
 # list(SORT LANG_VARIANTS)
 # message("Languages found: ${LANG_VARIANTS}")
 
-add_library(avr_core STATIC ${AVR_SOURCES})
-target_include_directories(avr_core PRIVATE
-	${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
-	${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
-)
-target_compile_options(avr_core PUBLIC -mmcu=atmega2560)
 
 # Meta target to build absolutely everything
 add_custom_target(ALL_FIRMWARE)
@@ -131,13 +149,15 @@ function(fw_add_variant variant_name)
 
 	add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_FILE})
 
-	set_target_properties(${variant_name} PROPERTIES CXX_STANDARD 14)
+	set_target_properties(${variant_name} PROPERTIES CXX_STANDARD 17)
 
 	target_include_directories(${variant_name} PRIVATE Firmware
 		${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
 		${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
 		${VARIANT_CFG_DIR} # Include the header for this variant.
 	)
+
+    target_link_libraries(${variant_name} avr_core)
 
 #   # configure linker script
 	 set(LINKER_SCRIPT ${PRUSA_BOARDS_DIR}/ldscripts/avr6.xn)
@@ -167,15 +187,19 @@ function(fw_add_variant variant_name)
 
 	target_compile_options(${variant_name} PRIVATE) # turn this on for lolz -Wdouble-promotion)
 	target_compile_definitions(${variant_name} PRIVATE
-		ARDUINO=10600
-		__AVR_ATmega2560__
 		CMAKE_LANG_CONTROL
 	)
-	target_link_libraries(${variant_name} avr_core)
+
 	if (SECONDARY_LANGUAGES)
 		target_compile_definitions(${variant_name} PUBLIC LANG_MODE=1)
 	else()
 		target_compile_definitions(${variant_name} PUBLIC LANG_MODE=0)
+        add_custom_command(
+            TARGET ${variant_name}
+            POST_BUILD
+            COMMAND ${CMAKE_OBJCOPY} -O ihex ${CMAKE_BINARY_DIR}/${variant_name} ${CMAKE_BINARY_DIR}/${variant_name}-EN_ONLY.hex
+            COMMENT "Generating ${variant_name} hex"
+        )
 		add_dependencies(ALL_FIRMWARE "${variant_name}")
 		return() #Done, if no languages there's nothing else to do.
 	endif()
@@ -218,20 +242,11 @@ function(fw_add_variant variant_name)
 	endforeach()
 	string(FIND ${variant_name} "MK3" HAS_XFLASH)
 	if (${HAS_XFLASH} GREATER_EQUAL 0)
-		if (WIN32)
-			STRING(REPLACE ";" " + " LANG_CMD_TMP "${LANG_BINS}")
-			add_custom_command( OUTPUT ${LANG_FINAL_BIN}
-				COMMAND copy /b ${LANG_CMD_TMP} ${LANG_FINAL_BIN}
-				DEPENDS ${LANG_BINS}
-				COMMENT "Merging language binaries (W32)"
-			)
-		else()
-			add_custom_command( OUTPUT ${LANG_FINAL_BIN}
-				COMMAND cat ${LANG_BINS} > ${LANG_FINAL_BIN}
-				DEPENDS ${LANG_BINS}
-				COMMENT "Merging language binaries (Non-W32)"
-			)
-		endif()
+        add_custom_command( OUTPUT ${LANG_FINAL_BIN}
+            COMMAND ${CMAKE_COMMEAND} -E cat ${LANG_BINS} > ${LANG_FINAL_BIN}
+            DEPENDS ${LANG_BINS}
+            COMMENT "Merging language binaries (Non-W32)"
+        )
 		add_custom_command( OUTPUT ${LANG_FINAL_BIN}
 			COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX}
 				-DLANG_FILE=${LANG_FINAL_BIN}
@@ -244,14 +259,10 @@ function(fw_add_variant variant_name)
 			COMMENT "Generating Hex for language data"
 		)
 		set(LANG_HEX ${CMAKE_BINARY_DIR}/${variant_name}-lang.hex)
-		if (WIN32)
-				SET(TEXT_MERGE_CMD "type")
-		else()
-				SET(TEXT_MERGE_CMD "cat")
-		endif()
+
 		add_custom_target(${variant_name}-languages
 			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/${variant_name}.hex ${LANG_HEX}
-			COMMAND ${TEXT_MERGE_CMD} ${LANG_FINAL_HEX} >> ${LANG_HEX}
+			COMMAND ${CMAKE_COMMAND} -E cat ${LANG_FINAL_HEX} >> ${LANG_HEX}
 			COMMENT "Generating final ${variant_name}-lang.hex"
 			BYPRODUCTS ${LANG_HEX}
 			DEPENDS ${LANG_FINAL_HEX}
