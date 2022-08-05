@@ -243,7 +243,7 @@ function(fw_add_variant variant_name)
 	string(FIND ${variant_name} "MK3" HAS_XFLASH)
 	if (${HAS_XFLASH} GREATER_EQUAL 0)
         add_custom_command( OUTPUT ${LANG_FINAL_BIN}
-            COMMAND ${CMAKE_COMMEAND} -E cat ${LANG_BINS} > ${LANG_FINAL_BIN}
+            COMMAND ${CMAKE_COMMAND} -E cat ${LANG_BINS} > ${LANG_FINAL_BIN}
             DEPENDS ${LANG_BINS}
             COMMENT "Merging language binaries (Non-W32)"
         )
