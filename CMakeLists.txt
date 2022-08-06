@@ -1,7 +1,51 @@
 cmake_minimum_required(VERSION 3.15)
 include(cmake/Utilities.cmake)
+include(cmake/GetGitRevisionDescription.cmake)
 
-set (CMAKE_CXX_STANDARD 17)
+#set (CMAKE_CXX_STANDARD 17)
+
+SET(PROJECT_VERSION_SUFFIX
+    "<auto>"
+    CACHE
+      STRING
+      "Full version suffix to be shown on the info screen in settings (e.g. full_version=4.0.3-BETA+1035.PR111.B4, suffix=-BETA+1035.PR111.B4). Defaults to '+<commit sha>.<dirty?>.<debug?>' if set to '<auto>'."
+    )
+SET(PROJECT_VERSION_SUFFIX_SHORT
+    "<auto>"
+    CACHE
+      STRING
+      "Short version suffix to be shown on splash screen. Defaults to '+<BUILD_NUMBER>' if set to '<auto>'."
+    )
+SET(BUILD_NUMBER
+    ""
+    CACHE STRING "Build number of the firmware. Resolved automatically if not specified."
+    )
+
+
+INCLUDE(cmake/ProjectVersion.cmake)
+resolve_version_variables()
+
+
+SET(PROJECT_VERSION_FLAVOUR "" CACHE STRING "Firmware flavour to build - DEBUG, DEVEL, APLHA, BETA or RC")
+SET(PROJECT_VERSION_FLAVOUR_REVISION "" CACHE STRING "Firmware flavour version, e.g. 1 for RC1, etc")
+
+
+IF( NOT PROJECT_VERSION_FLAVOUR STREQUAL "")
+    SET(PROJECT_VERSION "${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOUR}")
+    add_compile_definitions(FW_FLAVOR=${PROJECT_VERSION_FLAVOUR})
+    IF( NOT PROJECT_VERSION_FLAVOUR_REVISION STREQUAL "")
+        SET(PROJECT_VERSION "${PROJECT_VERSION}${PROJECT_VERSION_FLAVOUR_REVISION}")
+        add_compile_definitions(FW_FLAVERSION=${PROJECT_VERSION_FLAVOUR_REVISION})
+    ENDIF()
+ENDIF()
+
+# Inform user about the resolved settings
+MESSAGE(STATUS "Project version: ${PROJECT_VERSION}")
+MESSAGE(
+  STATUS "Project version with short suffix: ${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}"
+  )
+
+SET(FN_PREFIX "FW${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}")
 
 MESSAGE(WARNING     "
 ***************** YOUR ATTENTION PLEASE *****************
@@ -113,7 +157,6 @@ endif()
 
 # enable all warnings (well, not all, but some)
 add_compile_options(-Wsign-compare)
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-std=gnu++17>)
 add_compile_options($<$<COMPILE_LANGUAGE:C>:-std=gnu11>)
 
 # support _DEBUG macro (some code uses to recognize debug builds)
@@ -197,7 +240,7 @@ function(fw_add_variant variant_name)
         add_custom_command(
             TARGET ${variant_name}
             POST_BUILD
-            COMMAND ${CMAKE_OBJCOPY} -O ihex ${CMAKE_BINARY_DIR}/${variant_name} ${CMAKE_BINARY_DIR}/${variant_name}-EN_ONLY.hex
+            COMMAND ${CMAKE_OBJCOPY} -O ihex ${CMAKE_BINARY_DIR}/${variant_name} ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${variant_name}-EN_ONLY.hex
             COMMENT "Generating ${variant_name} hex"
         )
 		add_dependencies(ALL_FIRMWARE "${variant_name}")
@@ -258,7 +301,7 @@ function(fw_add_variant variant_name)
 			DEPENDS ${LANG_FINAL_BIN}
 			COMMENT "Generating Hex for language data"
 		)
-		set(LANG_HEX ${CMAKE_BINARY_DIR}/${variant_name}-lang.hex)
+		set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${variant_name}-lang.hex)
 
 		add_custom_target(${variant_name}-languages
 			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/${variant_name}.hex ${LANG_HEX}
@@ -273,7 +316,7 @@ function(fw_add_variant variant_name)
 		# Non-xflash, e.g. MK2.5
 		foreach(LANG IN LISTS SELECTED_LANGUAGES)
 			SET(LANG_HEX_FN ${variant_name}-en_${LANG})
-			SET(LANG_HEX ${CMAKE_BINARY_DIR}/${LANG_HEX_FN}.hex)
+			SET(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${LANG_HEX_FN}.hex)
 			SET(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
 			SET(LANG_FWBIN_TMP ${LANG_TMP_DIR}/${variant_name}-en_${LANG}.bin)
 
@@ -292,7 +335,7 @@ function(fw_add_variant variant_name)
 				DEPENDS ${LANG_FWBIN_TMP}
 				COMMENT "Creating ${LANG_HEX_FN}.hex"
 			)
-			LIST(APPEND ALL_VARIANT_HEXES ${LANG_HEX})
+			LIST(APPEND ALL_VARIANT_HEXES ${LANG_HEX_FN})
 		endforeach()
 		add_custom_target("${variant_name}-All-Languages"
 			DEPENDS ${ALL_VARIANT_HEXES}
