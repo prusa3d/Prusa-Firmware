@@ -364,6 +364,12 @@ StepStatus Idle::Step() {
             // we do not transfer to any "running" command (i.e. we stay in Idle),
             // but in case there is an error reported we must make sure it gets propagated
             switch( logic->rsp.paramCode ){
+            case ResponseMsgParamCodes::Button:
+                // The user pushed a button on the MMU. Save it, do what we need to do 
+                // to prepare, then pass it back to the MMU so it can work its magic.
+                logic->buttonCode = static_cast<Buttons>(logic->rsp.paramValue);
+                SendFINDAQuery();
+                return ButtonPushed;
             case ResponseMsgParamCodes::Processing:
                 // @@TODO we may actually use this branch to report progress of manual operation on the MMU
                 // The MMU sends e.g. X0 P27 after its restart when the user presses an MMU button to move the Selector
@@ -385,6 +391,16 @@ StepStatus Idle::Step() {
         break;
     case State::FINDAReqSent:
         return ProcessFINDAReqSent(Finished, State::Ready);
+    case State::ButtonSent:{
+        // button is never confirmed ... may be it should be
+        if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+            return expmsg;
+        if (logic->rsp.paramCode == ResponseMsgParamCodes::Accepted) {
+            // Button was accepted, decrement the retry.
+            mmu2.DecrementRetryAttempts();
+        }
+        SendFINDAQuery();
+        } break;
     default:
         return ProtocolError;
     }
