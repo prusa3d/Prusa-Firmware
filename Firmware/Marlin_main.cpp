@@ -1059,12 +1059,6 @@ void setup()
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
 	stdout = uartout;
 
-	if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
-    {
-        MMU2::mmu2.Start();
-    }
-
-
 #ifdef XFLASH
     bool xflash_success = xflash_init();
 	uint8_t optiboot_status = 1;
@@ -1121,6 +1115,10 @@ void setup()
 #endif
 	SERIAL_ECHO_START;
 	puts_P(PSTR(" " FW_VERSION_FULL));
+
+	if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED)) {
+		MMU2::mmu2.Start();
+	}
 
 	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
 

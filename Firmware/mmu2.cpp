@@ -113,9 +113,7 @@ MMU2::MMU2()
     , unloadFilamentStarted(false)
     , loadingToNozzle(false)
     , inAutoRetry(false)
-{
-    ResetRetryAttempts();
-}
+{}
 
 void MMU2::Start() {
 #ifdef MMU_HWRESET
@@ -135,6 +133,8 @@ void MMU2::Start() {
 
     // start the communication
     logic.Start();
+
+    ResetRetryAttempts();
 }
 
 void MMU2::Stop() {
