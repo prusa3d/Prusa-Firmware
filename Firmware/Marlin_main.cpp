@@ -4248,7 +4248,7 @@ void process_commands()
     */
 
     else if (code_seen_P(PSTR("M0")) || code_seen_P(PSTR("M1 "))) {// M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
-        char *src = strchr_pointer + 2;
+        const char *src = strchr_pointer + 2;
         codenum = 0;
         bool hasP = false, hasS = false;
         if (code_seen('P')) {
@@ -5774,7 +5774,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
       }
       starpos = (strchr(strchr_pointer + 4,'*'));
 
-      char* namestartpos = (strchr(strchr_pointer + 4,'!'));   //find ! to indicate filename string start.
+      const char* namestartpos = (strchr(strchr_pointer + 4,'!'));   //find ! to indicate filename string start.
       if(namestartpos==NULL)
       {
         namestartpos=strchr_pointer + 4; //default name position, 4 letters after the M
