@@ -101,14 +101,100 @@ add_compile_options(-g)
 #
 # Firmware - get file lists.
 #
-file(GLOB FW_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.c*)
-file(GLOB FW_HEADERS RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/Firmware/*.h*)
+SET(FW_SOURCES
+    adc.c
+    bootapp.c
+    timer02.c
+    sm4.c
+    spi.c
+    rbuf.c
+    swi2c.c
+    language.c
+    tone04.c
+    uart2.c
+    xflash.c
+    Marlin_main.cpp
+    AutoDeplete.cpp
+    Configuration.cpp
+    BlinkM.cpp
+    Dcodes.cpp
+    MarlinSerial.cpp
+    ConfigurationStore.cpp
+    Sd2Card.cpp
+    SdBaseFile.cpp
+    SdFatUtil.cpp
+    SdFile.cpp
+    SdVolume.cpp
+    Servo.cpp
+    Timer.cpp
+    backlight.cpp
+    cardreader.cpp
+    cmdqueue.cpp
+    conv2str.cpp
+    eeprom.cpp
+    first_lay_cal.cpp
+    fsensor.cpp
+    heatbed_pwm.cpp
+    la10compat.cpp
+    lcd.cpp
+    menu.cpp
+    mesh_bed_calibration.cpp
+    mesh_bed_leveling.cpp
+    messages.cpp
+    mmu.cpp
+    motion_control.cpp
+    optiboot_xflash.cpp
+    pat9125.cpp
+    planner.cpp
+    qr_solve.cpp
+    sound.cpp
+    speed_lookuptable.cpp
+    stepper.cpp
+    swspi.cpp
+    temperature.cpp
+    tmc2130.cpp
+    twi.cpp
+    ultralcd.cpp
+    util.cpp
+    vector_3.cpp
+    xflash_dump.cpp
+    xyzcal.cpp
+)
+list(TRANSFORM FW_SOURCES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/)
+
 foreach(_FILE ${FW_SOURCES})
     get_filename_component(_BASE ${_FILE} NAME)
     set_property(SOURCE ${_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=${_BASE}.o")
 endforeach()
 
-file(GLOB AVR_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/*.c*)
+
+set(AVR_SOURCES
+    wiring_digital.c
+    WInterrupts.c
+    wiring_pulse.c
+    hooks.c
+    wiring.c
+    wiring_analog.c
+    wiring_shift.c
+    CDC.cpp
+    PluggableUSB.cpp
+    HardwareSerial.cpp
+    HardwareSerial0.cpp
+    HardwareSerial1.cpp
+    HardwareSerial3.cpp
+    IPAddress.cpp
+    HardwareSerial2.cpp
+    Print.cpp
+    Stream.cpp
+    Tone.cpp
+    USBCore.cpp
+    WMath.cpp
+    WString.cpp
+    abi.cpp
+    main.cpp
+#   new.cpp # What happened to this? it was removed in 1.0.5-1 to 1.0.5.2?
+)
+list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 
 foreach(_FILE ${AVR_SOURCES})
     get_filename_component(_BASE ${_FILE} NAME)
