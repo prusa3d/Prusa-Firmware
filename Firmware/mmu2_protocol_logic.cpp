@@ -314,7 +314,6 @@ StepStatus Command::Step() {
     case State::FINDAReqSent:
         return ProcessFINDAReqSent(Processing, State::Wait);
     case State::ButtonSent:{
-        // button is never confirmed ... may be it should be
         if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
             return expmsg;
         if (logic->rsp.paramCode == ResponseMsgParamCodes::Accepted) {
@@ -392,7 +391,6 @@ StepStatus Idle::Step() {
     case State::FINDAReqSent:
         return ProcessFINDAReqSent(Finished, State::Ready);
     case State::ButtonSent:{
-        // button is never confirmed ... may be it should be
         if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
             return expmsg;
         if (logic->rsp.paramCode == ResponseMsgParamCodes::Accepted) {
