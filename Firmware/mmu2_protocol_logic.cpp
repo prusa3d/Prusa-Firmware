@@ -378,7 +378,7 @@ StepStatus Idle::Step() {
             }
             break;
         default:
-            break;
+            return ProtocolError;
         }
         SendFINDAQuery();
         return Processing;
