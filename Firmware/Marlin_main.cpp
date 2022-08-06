@@ -5675,6 +5675,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
           {
               // A new print has started from scratch, reset stats
               failstats_reset_print();
+              sdpos_atomic = 0;
 #ifndef LA_NOCOMPAT
               la10c_reset();
 #endif
@@ -5802,6 +5803,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
             {
                 // A new print has started from scratch, reset stats
                 failstats_reset_print();
+                sdpos_atomic = 0;
 #ifndef LA_NOCOMPAT
                 la10c_reset();
 #endif
