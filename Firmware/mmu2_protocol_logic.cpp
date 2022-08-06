@@ -480,7 +480,7 @@ bool ProtocolLogic::ActivatePlannedRequest(){
         // @@TODO - this is not completely correct, but it does the job.
         // In Idle mode the command part is not active, but we still need button handling in Idle mode (resolve MMU init errors)
         // -> command.SendButton is not correct, but it sends the message and everything works (for now)
-        command.SendButton(plannedRq.value);
+        currentState->SendButton(plannedRq.value);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
         return true;
     } else if( plannedRq.code != RequestMsgCodes::unknown ){
