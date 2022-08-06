@@ -5,6 +5,7 @@
 
 #cmake
 /build/
+/build_gen/
 .dependencies
 # Temporary configuration
 /Firmware/Configuration_prusa.h

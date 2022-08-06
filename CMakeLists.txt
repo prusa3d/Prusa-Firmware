@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 include(cmake/Utilities.cmake)
 include(cmake/GetGitRevisionDescription.cmake)
 
-#set (CMAKE_CXX_STANDARD 17)
-
 SET(PROJECT_VERSION_SUFFIX
     "<auto>"
     CACHE
@@ -262,90 +260,103 @@ endif()
 
 # Meta target to build absolutely everything
 add_custom_target(ALL_FIRMWARE)
+add_custom_target(ALL_ENGLISH)
+add_custom_target(ALL_MULTILANG)
+add_dependencies(ALL_FIRMWARE ALL_ENGLISH ALL_MULTILANG)
+
+function(add_base_binary variant_name)
+    add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_FILE})
+
+    set_target_properties(${variant_name} PROPERTIES CXX_STANDARD 17)
+
+    target_include_directories(${variant_name} PRIVATE Firmware
+        ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
+        ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
+        ${VARIANT_CFG_DIR} # Include the header for this variant.
+    )
+
+    target_link_libraries(${variant_name} avr_core)
+
+    #   # configure linker script
+    set(LINKER_SCRIPT ${PRUSA_BOARDS_DIR}/ldscripts/avr6.xn)
+    target_link_options(${variant_name} PUBLIC -Wl,-T,${LINKER_SCRIPT})
+
+    # limit the text section to 248K (256K - 8k reserved for the bootloader)
+    target_link_options(${variant_name} PUBLIC -Wl,--defsym=__TEXT_REGION_LENGTH__=248K)
+
+    # generate firmware.bin file
+    objcopy(${variant_name} "ihex" ".hex")
+
+    # produce ASM listing. Note we also specify the .map as a byproduct so it gets cleaned
+    # because link_options doesn't have a "generated outputs" feature.
+    add_custom_command(
+        TARGET ${variant_name} POST_BUILD COMMAND ${CMAKE_OBJDUMP} -CSd ${variant_name} > ${variant_name}.asm
+        BYPRODUCTS ${variant_name}.asm ${variant_name}.map
+    )
+
+    # inform about the firmware's size in terminal
+    add_custom_command(
+        TARGET ${variant_name} POST_BUILD COMMAND ${CMAKE_SIZE_UTIL} -C --mcu=atmega2560 ${variant_name}
+    )
+    report_size(${variant_name})
+
+    # generate linker map file
+    target_link_options(${variant_name} PUBLIC -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.map)
+
+    target_compile_definitions(${variant_name} PRIVATE
+       CMAKE_LANG_CONTROL
+    )
+endfunction()
 
 function(fw_add_variant variant_name)
 
 	# Create the Configuration_Prusa.h for this variant so it can be #included.
-	set(VARIANT_CFG_DIR "${CMAKE_CURRENT_BINARY_DIR}/${variant_name}_include")
+	set(VARIANT_CFG_DIR "${CMAKE_CURRENT_BINARY_DIR}/include")
 	set(VARIANT_CFG_FILE "${VARIANT_CFG_DIR}/Configuration_prusa.h")
 	add_custom_command(OUTPUT ${VARIANT_CFG_FILE}
-		COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/Firmware/variants/${variant_name}.h ${VARIANT_CFG_FILE}
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/Firmware/variants/${variant_name}.h ${VARIANT_CFG_FILE}
 		COMMENT "Generating Configuration_prusa.h for ${variant_name}"
 		BYPRODUCTS ${VARIANT_CFG_DIR}
 	)
 	STRING(REPLACE "1_75mm_" "" variant_name "${variant_name}")
 	STRING(REPLACE "-E3Dv6full" "" variant_name "${variant_name}")
 
-	add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_FILE})
+    SET(FW_EN "${variant_name}_EN-only")
+    SET(FW_MULTI "${variant_name}_Multilang")
 
-	set_target_properties(${variant_name} PROPERTIES CXX_STANDARD 17)
+    add_base_binary(${FW_EN})
+	# target_compile_options(${variant_name} PRIVATE) # turn this on for lolz -Wdouble-promotion)
 
-	target_include_directories(${variant_name} PRIVATE Firmware
-		${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
-		${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
-		${VARIANT_CFG_DIR} # Include the header for this variant.
-	)
-
-    target_link_libraries(${variant_name} avr_core)
-
-#   # configure linker script
-	 set(LINKER_SCRIPT ${PRUSA_BOARDS_DIR}/ldscripts/avr6.xn)
-	 target_link_options(${variant_name} PUBLIC -Wl,-T,${LINKER_SCRIPT})
-
-	# limit the text section to 248K (256K - 8k reserved for the bootloader)
-	target_link_options(${variant_name} PUBLIC -Wl,--defsym=__TEXT_REGION_LENGTH__=248K)
-
-	# generate firmware.bin file
-	objcopy(${variant_name} "ihex" ".hex")
-
-	# produce ASM listing. Note we also specify the .map as a byproduct so it gets cleaned
-	# because link_options doesn't have a "generated outputs" feature.
-	add_custom_command(
-		TARGET ${variant_name} POST_BUILD COMMAND ${CMAKE_OBJDUMP} -CSd ${variant_name} > ${variant_name}.asm
-		BYPRODUCTS ${variant_name}.asm ${variant_name}.map
-	)
-
-	# inform about the firmware's size in terminal
-	add_custom_command(
-		TARGET ${variant_name} POST_BUILD COMMAND ${CMAKE_SIZE_UTIL} -C --mcu=atmega2560 ${variant_name}
-	)
-	report_size(${variant_name})
-
-	# generate linker map file
-	target_link_options(${variant_name} PUBLIC -Wl,-Map=${variant_name}.map)
-
-	target_compile_options(${variant_name} PRIVATE) # turn this on for lolz -Wdouble-promotion)
-	target_compile_definitions(${variant_name} PRIVATE
-		CMAKE_LANG_CONTROL
-	)
-
-	if (SECONDARY_LANGUAGES)
-		target_compile_definitions(${variant_name} PUBLIC LANG_MODE=1)
-	else()
-		target_compile_definitions(${variant_name} PUBLIC LANG_MODE=0)
-        add_custom_command(
-            TARGET ${variant_name}
-            POST_BUILD
-            COMMAND ${CMAKE_OBJCOPY} -O ihex ${CMAKE_BINARY_DIR}/${variant_name} ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${variant_name}-EN_ONLY.hex
-            COMMENT "Generating ${variant_name} hex"
+    target_compile_definitions(${FW_EN} PUBLIC LANG_MODE=0)
+    add_custom_command(
+        TARGET ${FW_EN}
+        POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${CMAKE_CURRENT_BINARY_DIR}/${FW_EN} ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex
+        BYPRODUCTS ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex
+        COMMENT "Generating ${variant_name} hex"
         )
-		add_dependencies(ALL_FIRMWARE "${variant_name}")
+		add_dependencies(ALL_ENGLISH "${FW_EN}")
+
+    if (NOT SECONDARY_LANGUAGES)
 		return() #Done, if no languages there's nothing else to do.
+	else()
+        add_base_binary(${FW_MULTI})
+        target_compile_definitions(${FW_MULTI} PUBLIC LANG_MODE=1)
 	endif()
 
 	#Construct language map
-	set(LANG_TMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/lang)
+	set(LANG_TMP_DIR ${CMAKE_BINARY_DIR}/${variant_name}/lang)
 	set(LANG_MAP ${LANG_TMP_DIR}/${variant_name}_lang.map)
-	set(LANG_FWBIN ${CMAKE_BINARY_DIR}/${variant_name}.bin)
+	set(LANG_FWBIN ${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.bin)
 	set(LANG_FINAL_BIN ${LANG_TMP_DIR}/${variant_name}_lang.bin)
 	set(LANG_FINAL_HEX ${LANG_TMP_DIR}/${variant_name}_lang.hex)
 
 	add_custom_command(OUTPUT ${LANG_FWBIN}
-		COMMAND "${CMAKE_OBJCOPY}" -I ihex -O binary ${CMAKE_BINARY_DIR}/${variant_name}.hex ${LANG_FWBIN}
-		DEPENDS ${variant_name}
+		COMMAND "${CMAKE_OBJCOPY}" -I ihex -O binary ${CMAKE_CURRENT_BINARY_DIR}/${variant_name}_Multilang.hex ${LANG_FWBIN}
+		DEPENDS ${FW_MULTI}
 	)
 	add_custom_command(OUTPUT ${LANG_MAP}
-		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-map.py "${CMAKE_BINARY_DIR}/${variant_name}" "${LANG_FWBIN}" > "${LANG_MAP}"
+		COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-map.py "${FW_MULTI}" "${LANG_FWBIN}" > "${LANG_MAP}"
 		DEPENDS ${LANG_FWBIN}
 	)
 
@@ -354,11 +365,11 @@ function(fw_add_variant variant_name)
 	foreach (LANG IN LISTS SELECTED_LANGUAGES)
 		set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
 
-		set(PO_FILE "${CMAKE_CURRENT_SOURCE_DIR}/lang/po/Firmware_${LANG}.po")
+		set(PO_FILE "${CMAKE_SOURCE_DIR}/lang/po/Firmware_${LANG}.po")
 		add_custom_command(OUTPUT ${LANG_BIN}
 	#      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-check.py --no-warning --map "${LANG_MAP}" "${PO_FILE}"
 	#      COMMAND ${CMAKE_COMMAND} -E echo "Building lang_${LANG}.bin"
-			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
+			COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
 			# Check bin size:
 			COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_MAX_SIZE}
 				-DLANG_FILE=${LANG_BIN}
@@ -374,7 +385,7 @@ function(fw_add_variant variant_name)
         add_custom_command( OUTPUT ${LANG_FINAL_BIN}
             COMMAND ${CMAKE_COMMAND} -E cat ${LANG_BINS} > ${LANG_FINAL_BIN}
             DEPENDS ${LANG_BINS}
-            COMMENT "Merging language binaries (Non-W32)"
+            COMMENT "Merging language binaries"
         )
 		add_custom_command( OUTPUT ${LANG_FINAL_BIN}
 			COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX}
@@ -387,16 +398,16 @@ function(fw_add_variant variant_name)
 			DEPENDS ${LANG_FINAL_BIN}
 			COMMENT "Generating Hex for language data"
 		)
-		set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${variant_name}-lang.hex)
+		set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${variant_name}-Languages.hex)
 
-		add_custom_target(${variant_name}-languages
-			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/${variant_name}.hex ${LANG_HEX}
+		add_custom_target(${variant_name}-language-hex
+			COMMAND ${CMAKE_COMMAND} -E copy ${FW_MULTI}.hex ${LANG_HEX}
 			COMMAND ${CMAKE_COMMAND} -E cat ${LANG_FINAL_HEX} >> ${LANG_HEX}
-			COMMENT "Generating final ${variant_name}-lang.hex"
+			COMMENT "Generating final ${variant_name}-Languages.hex"
 			BYPRODUCTS ${LANG_HEX}
 			DEPENDS ${LANG_FINAL_HEX}
 		)
-		add_dependencies(ALL_FIRMWARE ${variant_name}-languages)
+		add_dependencies(ALL_MULTILANG ${variant_name}-language-hex)
 	else()
 		set (ALL_VARIANT_HEXES "")
 		# Non-xflash, e.g. MK2.5
@@ -409,7 +420,7 @@ function(fw_add_variant variant_name)
 			#Intermediate 2-lang bin
 			add_custom_command(OUTPUT ${LANG_FWBIN_TMP}
 				COMMAND ${CMAKE_COMMAND} -E copy ${LANG_FWBIN} ${LANG_FWBIN_TMP}
-				COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-patchsec.py ${CMAKE_BINARY_DIR}/${variant_name} ${LANG_BIN} ${LANG_FWBIN_TMP}
+				COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_MULTI} ${LANG_BIN} ${LANG_FWBIN_TMP}
 				DEPENDS ${LANG_FWBIN} ${LANG_BIN}
 				COMMENT "Generating ${variant_name}-en_${LANG}.bin"
 			)
@@ -426,7 +437,7 @@ function(fw_add_variant variant_name)
 		add_custom_target("${variant_name}-All-Languages"
 			DEPENDS ${ALL_VARIANT_HEXES}
 		)
-		add_dependencies(ALL_FIRMWARE "${variant_name}-All-Languages")
+		add_dependencies(ALL_MULTILANG "${variant_name}-All-Languages")
 	endif()
 endfunction()
 
@@ -437,7 +448,13 @@ if(CMAKE_CROSSCOMPILING)
 	foreach(THIS_VAR IN LISTS FW_VARIANTS)
 		string(REPLACE ".h" "" TRIMMED_NAME "${THIS_VAR}")
 		message("Variant added: ${TRIMMED_NAME}")
-		fw_add_variant(${TRIMMED_NAME})
+        string(REPLACE "-E3Dv6full" "" DIR_NAME "${TRIMMED_NAME}")
+        string(REPLACE "1_75mm_" "" DIR_NAME "${DIR_NAME}")
+        # Generate a file in a subfolder so that we can organize things a little more neatly in VS code
+        FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
+        FILE(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt "project(${DIR_NAME})\nfw_add_variant(${TRIMMED_NAME})")
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
+		#fw_add_variant(${TRIMMED_NAME})
 	endforeach(THIS_VAR IN LISTS FW_VARIANTS)
 
 endif()
