@@ -18,6 +18,14 @@ StepStatus ProtocolLogicPartBase::ProcessFINDAReqSent(StepStatus finishedRV, Sta
     return finishedRV;
 }
 
+StepStatus ProtocolLogicPartBase::ProcessStatisticsReqSent(StepStatus finishedRV, State nextState){
+    if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+        return expmsg;
+    logic->fail_statistics = logic->rsp.paramValue;
+    state = nextState;
+    return finishedRV;
+}
+
 void ProtocolLogicPartBase::CheckAndReportAsyncEvents(){
     // even when waiting for a query period, we need to report a change in filament sensor's state
     // - it is vital for a precise synchronization of moves of the printer and the MMU
@@ -126,6 +134,10 @@ void ProtocolLogic::SendMsg(RequestMsg rq) {
     uart->write(txbuff, len);
     LogRequestMsg(txbuff, len);
     RecordUARTActivity();
+    if (rq.code == RequestMsgCodes::Version && rq.value == 3 ){
+        // Set the state so the value sent by MMU is read later
+        currentState->state = currentState->State::S3Sent;
+    }
 }
 
 void StartSeq::Restart() {
@@ -311,6 +323,8 @@ StepStatus Command::Step() {
             return expmsg;
         SendFINDAQuery();
         break;
+    case State::S3Sent:
+        return ProcessStatisticsReqSent(Processing, State::Wait);
     case State::FINDAReqSent:
         return ProcessFINDAReqSent(Processing, State::Wait);
     case State::ButtonSent:{
@@ -388,6 +402,8 @@ StepStatus Idle::Step() {
         SendFINDAQuery();
         return Processing;
         break;
+    case State::S3Sent:
+        return ProcessStatisticsReqSent(Finished, State::Ready);
     case State::FINDAReqSent:
         return ProcessFINDAReqSent(Finished, State::Ready);
     case State::ButtonSent:{
@@ -432,6 +448,7 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart)
     , buttonCode(NoButton)
     , lastFSensor((uint8_t)WhereIsFilament())
     , findaPressed(false)
+    , fail_statistics(0)
     , mmuFwVersionMajor(0)
     , mmuFwVersionMinor(0)
     , mmuFwVersionBuild(0)
@@ -451,6 +468,10 @@ void ProtocolLogic::Stop() {
 
 void ProtocolLogic::ToolChange(uint8_t slot) {
     PlanGenericRequest(RequestMsg(RequestMsgCodes::Tool, slot));
+}
+
+void ProtocolLogic::Statistics() {
+    PlanGenericRequest(RequestMsg(RequestMsgCodes::Version, 3));
 }
 
 void ProtocolLogic::UnloadFilament() {
