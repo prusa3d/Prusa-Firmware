@@ -332,6 +332,10 @@ bool MMU2::tool_change(char code, uint8_t slot) {
     return true;
 }
 
+void MMU2::get_statistics() {
+    logic.Statistics();
+}
+
 uint8_t MMU2::get_current_tool() const {
     return extruder == MMU2_NO_TOOL ? (uint8_t)FILAMENT_UNKNOWN : extruder;
 }

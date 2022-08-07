@@ -134,6 +134,9 @@ public:
     /// @returns false if the operation cannot be performed (Stopped)
     bool cut_filament(uint8_t index);
 
+    /// Issue a planned request for statistics data from MMU
+    void get_statistics();
+
     /// Issue a Try-Load command
     /// It behaves very similarly like a ToolChange, but it doesn't load the filament
     /// all the way down to the nozzle. The sole purpose of this operation
@@ -160,6 +163,8 @@ public:
 
     /// @returns current state of FINDA (true=filament present, false=filament not present)
     inline bool FindaDetectsFilament()const { return logic.FindaPressed(); }
+
+    inline uint16_t TotalFailStatistics()const { return logic.FailStatistics(); }
 
     /// @returns Current error code
     inline ErrorCode MMUCurrentErrorCode() const { return logic.Error(); }

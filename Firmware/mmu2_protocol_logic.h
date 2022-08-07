@@ -80,6 +80,7 @@ protected:
         S0Sent, // beware - due to optimization reasons these SxSent must be kept one after another
         S1Sent,
         S2Sent,
+        S3Sent,
         QuerySent,
         CommandSent,
         FilamentSensorStateSent,
@@ -96,7 +97,12 @@ protected:
     /// @param finishedRV returned value in case the message was successfully received and processed
     /// @param nextState is a state where the state machine should transfer to after the message was successfully received and processed
     StepStatus ProcessFINDAReqSent(StepStatus finishedRV, State nextState);
-    
+
+    /// @returns the status of processing of the statistics query response
+    /// @param finishedRV returned value in case the message was successfully received and processed
+    /// @param nextState is a state where the state machine should transfer to after the message was successfully received and processed
+    StepStatus ProcessStatisticsReqSent(StepStatus finishedRV, State nextState);
+
     /// Called repeatedly while waiting for a query (Q0) period.
     /// All event checks to report immediately from the printer to the MMU shall be done in this method.
     /// So far, the only such a case is the filament sensor, but there can be more like this in the future.
@@ -221,6 +227,7 @@ public:
 
     // Issue commands to the MMU
     void ToolChange(uint8_t slot);
+    void Statistics();
     void UnloadFilament();
     void LoadFilament(uint8_t slot);
     void EjectFilament(uint8_t slot);
@@ -249,6 +256,10 @@ public:
 
     inline bool FindaPressed() const {
         return findaPressed;
+    }
+
+    inline uint16_t FailStatistics() const {
+        return fail_statistics;
     }
 
     inline uint8_t MmuFwVersionMajor() const {
@@ -334,6 +345,7 @@ private:
     uint8_t lastFSensor; ///< last state of filament sensor
 
     bool findaPressed;
+    uint16_t fail_statistics;
 
     uint8_t mmuFwVersionMajor, mmuFwVersionMinor;
     uint8_t mmuFwVersionBuild;
