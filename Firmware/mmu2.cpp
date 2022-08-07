@@ -811,7 +811,7 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
     if( ec != lastErrorCode ){ // deduplicate: only report changes in error codes into the log
         lastErrorCode = ec;
         SERIAL_ECHO_START;
-        SERIAL_ECHOLNRPGM( PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec)) );
+        SERIAL_ECHOLNRPGM( _T(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))) );
     }
 
     static_assert(mmu2Magic[0] == 'M' 
@@ -828,7 +828,7 @@ void MMU2::ReportProgress(ProgressCode pc) {
     ReportProgressHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)pc);
 
     SERIAL_ECHO_START;
-    SERIAL_ECHOLNRPGM( ProgressCodeToText((uint16_t)pc) );
+    SERIAL_ECHOLNRPGM( _T(ProgressCodeToText((uint16_t)pc)) );
 }
 
 void MMU2::OnMMUProgressMsg(ProgressCode pc){
