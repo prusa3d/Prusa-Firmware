@@ -173,7 +173,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     uint8_t ei = PrusaErrorCodeIndex(ec);
     
     // The list of responses which occur in mmu error dialogs
-    // Return button index or perform some action on the MK4 by itself (like restart MMU)
+    // Return button index or perform some action on the MK3 by itself (like restart MMU)
     // Based on Prusa-Error-Codes errors_list.h
     // So far hardcoded, but shall be generated in the future
     switch ( PrusaErrorCode(ei) ) {
