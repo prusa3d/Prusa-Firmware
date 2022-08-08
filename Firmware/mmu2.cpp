@@ -113,7 +113,9 @@ MMU2::MMU2()
     , unloadFilamentStarted(false)
     , loadingToNozzle(false)
     , inAutoRetry(false)
-{}
+    , retryAttempts(MAX_RETRIES)
+{
+}
 
 void MMU2::Start() {
 #ifdef MMU_HWRESET
