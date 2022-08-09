@@ -165,10 +165,10 @@ extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");///
 #endif
 
 //not internationalized messages
-const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = ISTR("SpoolJoin"); ////MSG_AUTO_DEPLETE c=13
-const char MSG_FIRMWARE[] PROGMEM_N1 = ISTR("Firmware"); ////MSG_FIRMWARE c=8
-const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = ISTR("FlashAir"); ////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
-const char MSG_PINDA[] PROGMEM_N1 = ISTR("PINDA");////MSG_PINDA c=5
+const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = "SpoolJoin"; ////MSG_AUTO_DEPLETE c=13
+const char MSG_FIRMWARE[] PROGMEM_N1 = "Firmware"; ////MSG_FIRMWARE c=8
+const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = "FlashAir"; ////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
+const char MSG_PINDA[] PROGMEM_N1 = "PINDA"; ////MSG_PINDA c=5
 const char MSG_WELCOME[] PROGMEM_N1 = WELCOME_MSG;
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////
