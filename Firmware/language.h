@@ -26,10 +26,10 @@
 #define PROGMEM_I1 __attribute__((section(".progmem1")))
 #define PROGMEM_N1 __attribute__((section(".progmem2")))
 #define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = s; &__c[0];}))
-#define ISTR(s) s
-#define _i(s) _I(s)
-#define _T(s) s
-#define _O(s) s
+#define ISTR(s) (s) // declare a translatable string
+#define _i(s) _I(s) // declare a translatable string and return the translated form
+#define _T(s) (s)   // return translated string from reference
+#define _O(s) (s)   // return original (untranslated) string from reference
 #else //(LANG_MODE == 0)
 // section .loc_sec (originaly .progmem0) will be used for localized translated strings
 #define PROGMEM_I2 __attribute__((section(".loc_sec")))
@@ -43,8 +43,9 @@
 #define _T(s) lang_get_translation(s)
 #define _O(s) (s + 2)
 #endif //(LANG_MODE == 0)
+
 #define _N(s) (__extension__({static const char __c[] PROGMEM_N1 = s; &__c[0];}))
-#define _n(s) _N(s)
+#define _n(s) _N(s) // declare and return untranslated string
 
 /** @brief lang_table_header_t structure - (size= 16byte) */
 typedef struct
