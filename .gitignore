@@ -12,6 +12,7 @@
 /lang/tmp/
 /lang/Firmware-intl.hex
 /lang/Firmware-intl-en_*.hex
+/lang/*.map
 
 # Temporary files and directories
 *[~#]
