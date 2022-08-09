@@ -35,11 +35,14 @@ rm -rf "$TMPDIR"
 mkdir -p "$TMPDIR"
 BIN=$TMPDIR/firmware.bin
 MAP=$TMPDIR/firmware.map
+VARIANT=$(grep '^#define \+PRINTER_TYPE ' "$SRCDIR/Firmware/Configuration_prusa.h"|cut -d '_' -f3)
+
 
 # Extract and patch the symbol table/language map
 color 4 "generating firmware symbol map" >&2
 "$OBJCOPY" -I ihex -O binary "$INOHEX" "$BIN"
 ./lang-map.py "$INOELF" "$BIN" > "$MAP"
+cp -f $MAP firmware_$VARIANT.map
 
 # Get the maximum size of a single language table
 maxsize=$(grep '^#define \+LANG_SIZE_RESERVED \+' "$SRCDIR/Firmware/config.h" | sed -e 's/\s\+/ /g' | cut -d ' ' -f3)
@@ -78,8 +81,25 @@ if [ "$has_xflash" = 1 ]; then
     color 4 "assembling final firmware image" >&2
     "$OBJCOPY" -I binary -O ihex "$BIN" "$OUTHEX"
     truncate -s0 "$TMPDIR/lang.bin"
+    individual_lang_reserved_hex=$(grep --max-count=1 "^#define LANG_SIZE_RESERVED *" $SRCDIR/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3|cut -d 'x' -f2)
+    individual_lang_reserved=$((16#$individual_lang_reserved_hex))
     for lang in $LANGUAGES; do
         cat "$TMPDIR/lang_$lang.bin" >> "$TMPDIR/lang.bin"
+        lang_size=$(stat -c '%s' "$TMPDIR/lang_$lang.bin")
+        lang_size_pad=$(( ($lang_size+256-1) / 256 * 256 ))
+        lang_free=$(($individual_lang_reserved - $lang_size))
+        echo >&2
+        echo -n "  size usage" >&2
+        [ $lang_size -gt $individual_lang_reserved ] && c=1 || c=2
+        color $c " $lang $lang_size_pad ($lang_size)" >&2
+        echo -n "  reserved size " >&2
+        color 2 "$individual_lang_reserved" >&2
+        echo -n "     free bytes " >&2
+        color 2 "$lang_free" >&2
+    if [ $lang_size_pad -gt $individual_lang_reserved ]; then
+        color 1 "NG! - language $lang data too large" >&2
+        finish 1
+    fi
     done
     "$OBJCOPY" -I binary -O ihex "$TMPDIR/lang.bin" "$TMPDIR/lang.hex"
     cat "$TMPDIR/lang.hex" >> "$OUTHEX"

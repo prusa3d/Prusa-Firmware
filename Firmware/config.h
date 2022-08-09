@@ -59,7 +59,9 @@
 //#define LANG_MODE              0 // primary language only
 #define LANG_MODE              1 // sec. language support
 
-#define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes). Maximum 32768 bytes
+#define LANG_SIZE_RESERVED     0x3900 // reserved space for secondary language (14592 bytes).
+                                      // 0x3D00 Maximum 15616 bytes as it depends on xflash_layout.h
+                                      // 16 Languages max. per group including stock 
 
 #if (LANG_SIZE_RESERVED % 256)
   #error "LANG_SIZE_RESERVED should be a multiple of a page size"
@@ -79,9 +81,12 @@
 //#define COMMUNITY_LANG_GROUP1_DA // Community Danish language
 //#define COMMUNITY_LANG_GROUP1_SL // Community Slovanian language
 //#define COMMUNITY_LANG_GROUP1_LB // Community Luxembourgish language
-//#define COMMUNITY_LANG_GROUP1_LT // Community Lithuanian language
+#endif //COMMUNITY_LANG_GROUP 1
+
+#if (COMMUNITY_LANG_GROUP == 2)
+#define COMMUNITY_LANG_GROUP2_LT // Community Lithuanian language
 //#define COMMUNITY_LANG_GROUP1_QR // Community new language //..use this as a template and replace 'QR'
-#endif
+#endif //COMMUNITY_LANG_GROUP 2
 
 #if (COMMUNITY_LANG_GROUP >=1 )
 #define COMMUNITY_LANGUAGE_SUPPORT
