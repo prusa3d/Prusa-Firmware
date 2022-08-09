@@ -121,6 +121,10 @@ def ign_char_last(c):
 def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty, warn_same, information):
     """Check strings to display definition."""
 
+    # do not check obsolete/deleted entriees
+    if entry.obsolete:
+        return True
+
     # fetch/decode entry for easy access
     meta = entry.comment.split('\n', 1)[0]
     source = entry.msgid

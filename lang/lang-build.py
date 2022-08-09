@@ -68,6 +68,8 @@ def main():
     # build a catalog of all translations
     trans_table = {}
     for translation in po:
+        if translation.obsolete:
+            continue
         msgid = translation.msgid
         found = msgid in msgid_data
         if found:
