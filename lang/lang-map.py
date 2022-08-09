@@ -26,7 +26,7 @@ def get_lang_symbols(elf, symtab):
         sym_start = sym.entry.st_value
         sym_size = sym.entry.st_size
         sym_end = sym_start + sym_size
-        if sym_start >= pri_start and sym_end < pri_end and sym_size > 0:
+        if sym_start >= pri_start and sym_end <= pri_end and sym_size > 0:
             data = text_data[sym_start:sym_end]
 
             # perform basic checks on the language section
