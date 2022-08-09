@@ -46,6 +46,7 @@
 
 #define _N(s) (__extension__({static const char __c[] PROGMEM_N1 = s; &__c[0];}))
 #define _n(s) _N(s) // declare and return untranslated string
+#define _R(s) (s)   // return reference to translatable string (for warning suppression)
 
 /** @brief lang_table_header_t structure - (size= 16byte) */
 typedef struct

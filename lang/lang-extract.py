@@ -149,8 +149,8 @@ def extract_refs(path, catalog):
 
     # match message catalog references to add backrefs
     RE_CAT = r'''
-        (?<!(?:/[/*]|^\s*\#) [^\n]*)         # not on a comment or preprocessor
-        \b (?:_[TO]) \s* \( \s* (\w+) \s* \) # $1 catalog name
+        (?<!(?:/[/*]|^\s*\#) [^\n]*)          # not on a comment or preprocessor
+        \b (?:_[TOR]) \s* \( \s* (\w+) \s* \) # $1 catalog name
     '''
 
     for m in regex.finditer(RE_CAT, source, regex.M|regex.X):
