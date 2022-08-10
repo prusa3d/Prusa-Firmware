@@ -1,13 +1,13 @@
 /// @file protocol.h
 #pragma once
 #include <stdint.h>
+#include "mmu2_crc.h"
 
 namespace modules {
 
 /// @brief The MMU communication protocol implementation and related stuff.
 ///
 /// See description of the new protocol in the MMU 2021 doc
-/// @@TODO possibly add some checksum to verify the correctness of messages
 namespace protocol {
 
 /// Definition of request message codes
@@ -23,11 +23,12 @@ enum class RequestMsgCodes : uint8_t {
     Version = 'S',
     Button = 'B',
     Eject = 'E',
-    Wait = 'W',
+    Write = 'W',
     Cut = 'K',
     FilamentType = 'F',
     FilamentSensor = 'f',
-    Home = 'H'
+    Home = 'H',
+    Read = 'R'
 };
 
 /// Definition of response message parameter codes
@@ -37,20 +38,50 @@ enum class ResponseMsgParamCodes : uint8_t {
     Error = 'E',
     Finished = 'F',
     Accepted = 'A',
-    Rejected = 'R', 
+    Rejected = 'R',
     Button = 'B' // the MMU registered a button press and is sending it to the printer for processing
 };
 
 /// A request message - requests are being sent by the printer into the MMU.
 struct RequestMsg {
     RequestMsgCodes code; ///< code of the request message
-    uint8_t value; ///< value of the request message
+    uint8_t value; ///< value of the request message or address of variable to read/write
+    uint16_t value2; ///< in case or write messages - value to be written into the register
+
+    /// CRC8 check - please note we abuse this byte for CRC of ResponseMsgs as well.
+    /// The crc8 byte itself is not added into the CRC computation (obviously ;) )
+    /// Beware - adding any members of this data structure may need changing the way CRC is being computed!
+    uint8_t crc8;
+
+    constexpr uint8_t ComputeCRC8() const {
+        uint8_t crc = 0;
+        crc = modules::crc::CRC8::CCITT_updateCX(0, (uint8_t)code);
+        crc = modules::crc::CRC8::CCITT_updateCX(crc, value);
+        crc = modules::crc::CRC8::CCITT_updateCX(crc, value2);
+        return crc;
+    }
 
     /// @param code of the request message
     /// @param value of the request message
-    inline RequestMsg(RequestMsgCodes code, uint8_t value)
+    inline constexpr RequestMsg(RequestMsgCodes code, uint8_t value)
         : code(code)
-        , value(value) {}
+        , value(value)
+        , value2(0)
+        , crc8(ComputeCRC8()) {
+    }
+
+    /// Intended for write requests
+    /// @param code of the request message ('W')
+    /// @param address of the register
+    /// @param value to write into the register
+    inline constexpr RequestMsg(RequestMsgCodes code, uint8_t address, uint16_t value)
+        : code(code)
+        , value(address)
+        , value2(value)
+        , crc8(ComputeCRC8()) {
+    }
+
+    constexpr uint8_t CRC() const { return crc8; }
 };
 
 /// A response message - responses are being sent from the MMU into the printer as a response to a request message.
@@ -59,13 +90,33 @@ struct ResponseMsg {
     ResponseMsgParamCodes paramCode; ///< code of the parameter
     uint16_t paramValue; ///< value of the parameter
 
+    constexpr uint8_t ComputeCRC8() const {
+        uint8_t crc = request.ComputeCRC8();
+        crc = modules::crc::CRC8::CCITT_updateCX(crc, (uint8_t)paramCode);
+        crc = modules::crc::CRC8::CCITT_updateW(crc, paramValue);
+        return crc;
+    }
+
     /// @param request the source request message this response is a reply to
     /// @param paramCode code of the parameter
     /// @param paramValue value of the parameter
-    inline ResponseMsg(RequestMsg request, ResponseMsgParamCodes paramCode, uint16_t paramValue)
+    inline constexpr ResponseMsg(RequestMsg request, ResponseMsgParamCodes paramCode, uint16_t paramValue)
         : request(request)
         , paramCode(paramCode)
-        , paramValue(paramValue) {}
+        , paramValue(paramValue) {
+        this->request.crc8 = ComputeCRC8();
+    }
+
+    constexpr uint8_t CRC() const { return request.crc8; }
+};
+
+/// Combined commandStatus and its value into one data structure (optimization purposes)
+struct ResponseCommandStatus {
+    ResponseMsgParamCodes code;
+    uint16_t value;
+    inline constexpr ResponseCommandStatus(ResponseMsgParamCodes code, uint16_t value)
+        : code(code)
+        , value(value) {}
 };
 
 /// Message decoding return values
@@ -101,9 +152,18 @@ public:
     /// @returns number of bytes written into txbuff
     static uint8_t EncodeRequest(const RequestMsg &msg, uint8_t *txbuff);
 
+    /// Encodes Write request message msg into txbuff memory
+    /// It is expected the txbuff is large enough to fit the message
+    /// @returns number of bytes written into txbuff
+    static uint8_t EncodeWriteRequest(uint8_t address, uint16_t value, uint8_t *txbuff);
+
     /// @returns the maximum byte length necessary to encode a request message
     /// Beneficial in case of pre-allocating a buffer for enconding a RequestMsg.
-    static constexpr uint8_t MaxRequestSize() { return 3; }
+    static constexpr uint8_t MaxRequestSize() { return 13; }
+
+    /// @returns the maximum byte length necessary to encode a response message
+    /// Beneficial in case of pre-allocating a buffer for enconding a ResponseMsg.
+    static constexpr uint8_t MaxResponseSize() { return 14; }
 
     /// Encode generic response Command Accepted or Rejected
     /// @param msg source request message for this response
@@ -124,7 +184,7 @@ public:
     /// @param value version number (0-255)
     /// @param txbuff where to format the message
     /// @returns number of bytes written into txbuff
-    static uint8_t EncodeResponseVersion(const RequestMsg &msg, uint8_t value, uint8_t *txbuff);
+    static uint8_t EncodeResponseVersion(const RequestMsg &msg, uint16_t value, uint8_t *txbuff);
 
     /// Encode response to Query operation status
     /// @param msg source request message for this response
@@ -132,7 +192,15 @@ public:
     /// @param value related to status of operation(e.g. error code or progress)
     /// @param txbuff where to format the message
     /// @returns number of bytes written into txbuff
-    static uint8_t EncodeResponseQueryOperation(const RequestMsg &msg, ResponseMsgParamCodes code, uint16_t value, uint8_t *txbuff);
+    static uint8_t EncodeResponseQueryOperation(const RequestMsg &msg, ResponseCommandStatus rcs, uint8_t *txbuff);
+
+    /// Encode response to Read query
+    /// @param msg source request message for this response
+    /// @param accepted true if the read query was accepted
+    /// @param value2 variable value
+    /// @param txbuff where to format the message
+    /// @returns number of bytes written into txbuff
+    static uint8_t EncodeResponseRead(const RequestMsg &msg, bool accepted, uint16_t value2, uint8_t *txbuff);
 
     /// @returns the most recently lexed request message
     inline const RequestMsg GetRequestMsg() const { return requestMsg; }
@@ -150,10 +218,15 @@ public:
         rspState = ResponseStates::RequestCode;
     }
 
+#ifndef UNITTEST
 private:
+#endif
     enum class RequestStates : uint8_t {
         Code, ///< starting state - expects message code
         Value, ///< expecting code value
+        Address, ///< expecting address for Write command
+        WriteValue, ///< value to be written (Write command)
+        CRC, ///< CRC
         Error ///< automaton in error state
     };
 
@@ -165,18 +238,84 @@ private:
         RequestValue, ///< expecting code value
         ParamCode, ///< expecting param code
         ParamValue, ///< expecting param value
+        CRC, ///< expecting CRC value
         Error ///< automaton in error state
     };
 
     ResponseStates rspState;
     ResponseMsg responseMsg;
 
-    static bool IsNewLine(uint8_t c) {
+    static constexpr bool IsNewLine(uint8_t c) {
         return c == '\n' || c == '\r';
     }
-    static bool IsDigit(uint8_t c) {
+    static constexpr bool IsDigit(uint8_t c) {
         return c >= '0' && c <= '9';
     }
+    static constexpr bool IsCRCSeparator(uint8_t c) {
+        return c == '*';
+    }
+    static constexpr bool IsHexDigit(uint8_t c) {
+        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
+    }
+    static constexpr uint8_t Char2Nibble(uint8_t c) {
+        switch (c) {
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            return c - '0';
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+        case 'e':
+        case 'f':
+            return c - 'a' + 10;
+        default:
+            return 0;
+        }
+    }
+
+    static constexpr uint8_t Nibble2Char(uint8_t n) {
+        switch (n) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+            return n + '0';
+        case 0xa:
+        case 0xb:
+        case 0xc:
+        case 0xd:
+        case 0xe:
+        case 0xf:
+            return n - 10 + 'a';
+        default:
+            return 0;
+        }
+    }
+
+    /// @returns number of characters written
+    static uint8_t UInt8ToHex(uint8_t value, uint8_t *dst);
+
+    /// @returns number of characters written
+    static uint8_t UInt16ToHex(uint16_t value, uint8_t *dst);
+
+    static uint8_t BeginEncodeRequest(const RequestMsg &msg, uint8_t *dst);
+
+    static uint8_t AppendCRC(uint8_t crc, uint8_t *dst);
 };
 
 } // namespace protocol

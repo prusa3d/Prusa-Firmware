@@ -7,8 +7,8 @@
 namespace MMU2 {
 
 static constexpr uint8_t supportedMmuFWVersionMajor = 2;
-static constexpr uint8_t supportedMmuFWVersionMinor = 0;
-static constexpr uint8_t supportedMmuFWVersionBuild = 19;
+static constexpr uint8_t supportedMmuFWVersionMinor = 1;
+static constexpr uint8_t supportedMmuFWVersionBuild = 1;
 
 StepStatus ProtocolLogicPartBase::ProcessFINDAReqSent(StepStatus finishedRV, State nextState){
     if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
