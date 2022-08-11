@@ -42,6 +42,7 @@ from lib import charset as cs
 from lib.io import load_map
 
 COLORIZE = (stdout.isatty() and os.getenv("TERM", "dumb") != "dumb") or os.getenv('NO_COLOR') == "0"
+LCD_WIDTH = 20
 
 def color_maybe(color_attr, text):
     if COLORIZE:
@@ -161,15 +162,18 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
             print(red(" definition: " + meta))
             return False
 
-    if cols is None and rows is None:
-        if not no_warning and known_msgid:
+    if not cols:
+        if not no_warning and known_msgid and not rows:
             errors += 1
             print(yellow("[W]: No usable display definition on line %d" % line))
         # probably fullscreen, guess from the message length to continue checking
-        cols = len(source)
-    if rows is None:
+        cols = len(LCD_WIDTH)
+    if cols > LCD_WIDTH:
+        errors += 1
+        print(yellow("[W]: Invalid column count on line %d" % line))
+    if not rows:
         rows = 1
-    elif rows > 1 and cols != 20:
+    elif rows > 1 and cols != LCD_WIDTH:
         errors += 1
         print(yellow("[W]: Multiple rows with odd number of columns on line %d" % line))
 
