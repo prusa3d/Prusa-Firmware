@@ -14,27 +14,19 @@
 //! @brief Wait for preheat
 void lay1cal_wait_preheat()
 {
-    static const char cmd_preheat_0[] PROGMEM = "M107";
-    static const char cmd_preheat_1[] PROGMEM = "M190";
-    static const char cmd_preheat_2[] PROGMEM = "M109";
-    static const char cmd_preheat_4[] PROGMEM = "G28";
-    static const char cmd_preheat_5[] PROGMEM = "G92 E0.0";
-
     const char * const preheat_cmd[] =
     {
-        cmd_preheat_0,
-        cmd_preheat_1,
-        cmd_preheat_2,
-        _T(MSG_M117_V2_CALIBRATION),
-        cmd_preheat_4,
-        cmd_preheat_5,
+        PSTR("M107"),
+        PSTR("M190"),
+        PSTR("M109"),
+        PSTR("G28"),
+        PSTR("G92 E0.0")
     };
 
     for (uint8_t i = 0; i < (sizeof(preheat_cmd)/sizeof(preheat_cmd[0])); ++i)
     {
         enquecommand_P(preheat_cmd[i]);
     }
-
 }
 
 //! @brief Load filament
