@@ -54,7 +54,6 @@ const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////MSG_LOAD_
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////MSG_LOADING_FILAMENT c=20
 const char MSG_EJECT_FILAMENT[] PROGMEM_I1 = ISTR("Eject filament"); ////MSG_EJECT_FILAMENT c=17
 const char MSG_CUT_FILAMENT[] PROGMEM_I1 = ISTR("Cut filament"); ////MSG_CUT_FILAMENT c=17
-const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////MSG_M117_V2_CALIBRATION c=25
 const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////MSG_MAIN c=18
 const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////MSG_BACK c=18
 const char MSG_SHEET[] PROGMEM_I1 = ISTR("Sheet"); ////MSG_SHEET c=10
