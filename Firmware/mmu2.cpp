@@ -14,6 +14,7 @@
 #include "strlen_cx.h"
 #include "temperature.h"
 #include "ultralcd.h"
+#include "cardreader.h" // for IS_SD_PRINTING
 
 // Settings for filament load / unload from the LCD menu.
 // This is for Prusa MK3-style extruders. Customize for your hardware.
@@ -38,20 +39,9 @@ static constexpr float MMU2_TOOL_CHANGE_LOAD_LENGTH = 30.0F;
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
 static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F; // mm/s
 
-// The first the MMU does is initialise its axis. Meanwhile the E-motor will unload 10mm of filament in approx. 1 second.
-static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_START_LENGTH = 10.0f; // mm
-static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_START_FEED_RATE = 10.0f; // mm/s
-
-// This is -config::defaultBowdenLength - config::feedToFinda - config::filamentMinLoadedToMMU
-// To prevent an error 'too long extrusion prevented' this distance is split into two constants:
-static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_BOWDEN_LENGTH = 427.0f; // mm
-static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_EXTRA_LENGTH = 42.85f + 20.0f; // mm
-
-// The E-motor must move endlessly until the MMU raises an error, or the FINDA untriggers
-// This must be non-blocking for the MMU communications, so we need to unload small segments of
-// filament at a time. A fine balance is 6mm of filament at 60mm/s. Though this can be fine tuned.
-static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_FINE_STEP_LENGTH = 6.0f; // mm
-static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_FINE_STEP_FEED_RATE = 60.0f; // mm/s
+// The first the MMU does is initialise its axis. Meanwhile the E-motor will unload 20mm of filament in approx. 1 second.
+static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH = 20.0f; // mm
+static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE = 20.0f; // mm/s
 
 static constexpr uint8_t MMU2_NO_TOOL = 99;
 static constexpr uint32_t MMU_BAUD = 115200;
@@ -262,6 +252,13 @@ bool MMU2::tool_change(uint8_t index) {
         return false;
 
     if (index != extruder) {
+        if (!IS_SD_PRINTING && !usb_timer.running())
+        {
+            // If Tcodes are used manually through the serial
+            // we need to unload manually as well
+            unload();
+        }
+
         ReportingRAII rep(CommandInProgress::ToolChange);
         FSensorBlockRunout blockRunout;
 
@@ -840,27 +837,22 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
         // Act accordingly - one-time handling
         switch (pc) {
         case ProgressCode::UnloadingToFinda:
-            if ((CommandInProgress)logic.CommandInProgress() == CommandInProgress::UnloadFilament)
+            if ((CommandInProgress)logic.CommandInProgress() == CommandInProgress::UnloadFilament
+            || ((CommandInProgress)logic.CommandInProgress() == CommandInProgress::ToolChange))
             {
-                // If MK3S sent U0 command, then the code below is not relevant.
+                // If MK3S sent U0 command, ramming sequence takes care of releasing the filament.
+                // If Toolchange is done while printing, PrusaSlicer takes care of releasing the filament
+                // If printing is not in progress, ToolChange will issue a U0 command.
                 break;
             }
-
-            // This is intended to handle Retry option on MMU error screen
-            // MMU sends P3 progress code during Query, and if filament is stuck
-            // in the gears, the MK3S needs to move e-axis as well.
-            st_synchronize();
-            unloadFilamentStarted = true;
-            // Unload slowly while MMU is initialising its axis
-            current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_START_LENGTH;
-            plan_buffer_line_curposXYZE(MMU2_RETRY_UNLOAD_TO_FINDA_START_FEED_RATE);
-            st_synchronize();
-            // Now do a fast unload in sync with the MMU
-            current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_EXTRA_LENGTH;
-            plan_buffer_line_curposXYZE(MMU2_UNLOAD_TO_FINDA_FEED_RATE);
-            st_synchronize();
-            current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_BOWDEN_LENGTH; // Roughly same distance as MMU plans
-            plan_buffer_line_curposXYZE(MMU2_UNLOAD_TO_FINDA_FEED_RATE);
+            else
+            {
+                // We're likely recovering from an MMU error
+                st_synchronize();
+                unloadFilamentStarted = true;
+                current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH;
+                plan_buffer_line_curposXYZE(MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE);
+            }
             break;
         case ProgressCode::FeedingToFSensor:
             // prepare for the movement of the E-motor
@@ -876,14 +868,10 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
         switch (pc) {
         case ProgressCode::UnloadingToFinda:
             if (unloadFilamentStarted && !blocks_queued()) { // Only plan a move if there is no move ongoing
-                
-                if (mmu2.FindaDetectsFilament() == 1)
+                if (fsensor.getFilamentPresent() == 1)
                 {
-                    // We cannot rely on the FSENSOR reading to stop the E-motor
-                    // because the filament can get stuck in the bondtech gears.
-                    // Use FINDA instead.
-                    current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_FINE_STEP_LENGTH;
-                    plan_buffer_line_curposXYZE(MMU2_RETRY_UNLOAD_TO_FINDA_FINE_STEP_FEED_RATE);
+                    current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH;
+                    plan_buffer_line_curposXYZE(MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE);
                 } else {
                     unloadFilamentStarted = false;
                 }
