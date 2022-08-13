@@ -799,7 +799,6 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
     case ProgressCode::UnloadingToFinda:
         unloadFilamentStarted = false;
         break;
-    case ProgressCode::FeedingToBondtech:
     case ProgressCode::FeedingToFSensor:
         // FSENSOR error during load. Make sure E-motor stops moving.
         loadFilamentStarted = false;
@@ -863,7 +862,7 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
             current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_BOWDEN_LENGTH; // Roughly same distance as MMU plans
             plan_buffer_line_curposXYZE(MMU2_UNLOAD_TO_FINDA_FEED_RATE);
             break;
-        case ProgressCode::FeedingToBondtech:
+        case ProgressCode::FeedingToFSensor:
             // prepare for the movement of the E-motor
             st_synchronize();
             loadFilamentStarted = true;
@@ -890,7 +889,6 @@ void MMU2::OnMMUProgressMsg(ProgressCode pc){
                 }
             }
             break;
-        case ProgressCode::FeedingToBondtech:
         case ProgressCode::FeedingToFSensor:
             if (loadFilamentStarted) {
                 switch (WhereIsFilament()) {
