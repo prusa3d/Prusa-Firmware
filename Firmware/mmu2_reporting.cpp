@@ -15,7 +15,7 @@ const char * const ProgressCodeToText(uint16_t pc); // we may join progress conv
 
 void BeginReport(CommandInProgress cip, uint16_t ec) {
     custom_message_type = CustomMsg::MMUProgress;
-    lcd_setstatuspgm( ProgressCodeToText(ec) );
+    lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
 }
 
 void EndReport(CommandInProgress cip, uint16_t ec) {
