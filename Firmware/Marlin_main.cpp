@@ -4648,20 +4648,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     case 0: // G0 -> G1
     case 1: // G1
         {
-        // When recovering from a previous print move, restore the originally
-        // calculated start position on the first USB/SD command. This accounts
-        // properly for relative moves
-        uint16_t start_segment_idx = 1;
-        if (
-            (saved_start_position[0] != SAVED_START_POSITION_UNSET) && (
-                (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) ||
-                (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)
-            )
-        ) {
-            memcpy(current_position, saved_start_position, sizeof(current_position));
-            saved_start_position[0] = SAVED_START_POSITION_UNSET;
-            start_segment_idx = saved_segment_idx;
-        }
+        uint16_t start_segment_idx = restore_interrupted_gcode();
         get_coordinates(); // For X Y Z E F
 
 		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
@@ -4711,25 +4698,12 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     case 2:
     case 3:
     {
-        // When recovering from a previous print move, restore the originally
-        // calculated start position on the first USB/SD command. This accounts
-        // properly for relative moves
-        uint16_t start_segment_idx = 1;
-        if (
-            (saved_start_position[0] != SAVED_START_POSITION_UNSET) && (
-                (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) ||
-                (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)
-            )
-        ) {
-            memcpy(current_position, saved_start_position, sizeof(current_position));
-            saved_start_position[0] = SAVED_START_POSITION_UNSET;
-            start_segment_idx = saved_segment_idx;
-        }
+        uint16_t start_segment_idx = restore_interrupted_gcode();
 #ifdef SF_ARC_FIX
         bool relative_mode_backup = relative_mode;
         relative_mode = true;
 #endif
-        get_coordinates();
+        get_coordinates(); // For X Y Z E F
 #ifdef SF_ARC_FIX
         relative_mode=relative_mode_backup;
 #endif
@@ -9501,6 +9475,24 @@ void clamp_to_software_endstops(float target[3])
     if (max_software_endstops) {
         if (target[Z_AXIS] > max_pos[Z_AXIS]) target[Z_AXIS] = max_pos[Z_AXIS];
     }
+}
+
+uint16_t restore_interrupted_gcode() {
+    // When recovering from a previous print move, restore the originally
+    // calculated start position on the first USB/SD command. This accounts
+    // properly for relative moves
+    if (
+        (saved_start_position[0] != SAVED_START_POSITION_UNSET) && (
+            (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) ||
+            (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)
+        )
+    ) {
+        memcpy(current_position, saved_start_position, sizeof(current_position));
+        saved_start_position[0] = SAVED_START_POSITION_UNSET;
+        return saved_segment_idx;
+    }
+    else
+        return 0;
 }
 
 #ifdef MESH_BED_LEVELING

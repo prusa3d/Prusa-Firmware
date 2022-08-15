@@ -289,6 +289,7 @@ extern float default_retraction;
 void get_coordinates();
 void prepare_move(uint16_t start_segment_idx = 0);
 void prepare_arc_move(bool isclockwise, uint16_t start_segment_idx = 0);
+uint16_t restore_interrupted_gcode();
 
 #ifdef TMC2130
 void homeaxis(uint8_t axis, uint8_t cnt = 1, uint8_t* pstep = 0);
