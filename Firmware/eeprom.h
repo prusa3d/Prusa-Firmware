@@ -298,11 +298,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor type IR 0.4 or newer				| ^				| ^
 | 0x0D47 3399		| uint8		| EEPROM_FSENSOR_ACTION_NA				| 00h 0			| ffh 255				| Filament Sensor action: __Continue__				| LCD menu		| D3 Ax0d47 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor action: __Pause__					| ^				| ^
-| 0x0D37 3383		| float		| EEPROM_UVLO_SAVED_TARGET				| ???			| ff ff ff ffh			| Power panic saved target all-axis					| ???			| D3 Ax0d37 C16
-| ^					| ^			| ^										| ???			| ^						| Power panic saved target e-axis					| ^				| D3 Ax0d43 C4
-| ^					| ^			| ^										| ???			| ^						| Power panic saved target z-axis					| ^				| D3 Ax0d3f C4
-| ^					| ^			| ^										| ???			| ^						| Power panic saved target y-axis					| ^				| D3 Ax0d3b C4
-| ^					| ^			| ^										| ???			| ^						| Power panic saved target x-axis					| ^				| D3 Ax0d37 C4
+| 0x0D37 3383		| float		| EEPROM_UVLO_SAVED_START_POSITION		| ???			| ff ff ff ffh			| Power panic saved start position all-axis			| ???			| D3 Ax0d37 C16
+| ^					| ^			| ^										| ???			| ^						| Power panic saved start position e-axis			| ^				| D3 Ax0d43 C4
+| ^					| ^			| ^										| ???			| ^						| Power panic saved start position z-axis			| ^				| D3 Ax0d3f C4
+| ^					| ^			| ^										| ???			| ^						| Power panic saved start position y-axis			| ^				| D3 Ax0d3b C4
+| ^					| ^			| ^										| ???			| ^						| Power panic saved start position x-axis			| ^				| D3 Ax0d37 C4
 | 0x0D35 3381		| uint16	| EEPROM_UVLO_FEEDMULTIPLY				| ???			| ff ffh 65355			| Power panic saved feed multiplier					| ???			| D3 Ax0d35 C2
 | 0x0D34 3380		| uint8		| EEPROM_BACKLIGHT_LEVEL_HIGH			| 00h - ffh 	| 82h 130				| LCD backlight bright:	__128__	Dim value to 255	| LCD menu		| D3 Ax0d34 C1
 | 0x0D33 3379		| uint8		| EEPROM_BACKLIGHT_LEVEL_LOW			| 00h - ffh		| 32h 50				| LCD backlight dim:	__50__ 	0 to Bright value	| LCD menu		| D3 Ax0d33 C1
@@ -526,8 +526,8 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_FSENSOR_PCB (EEPROM_SHEETS_BASE-1) // uint8
 #define EEPROM_FSENSOR_ACTION_NA (EEPROM_FSENSOR_PCB-1) // uint8
 
-#define EEPROM_UVLO_SAVED_TARGET (EEPROM_FSENSOR_ACTION_NA - 4*4) // 4 x float for saved target for all axes
-#define EEPROM_UVLO_FEEDMULTIPLY (EEPROM_UVLO_SAVED_TARGET - 2) // uint16_t for feedmultiply
+#define EEPROM_UVLO_SAVED_START_POSITION (EEPROM_FSENSOR_ACTION_NA - 4*4) // 4 x float for saved start position for all axes
+#define EEPROM_UVLO_FEEDMULTIPLY (EEPROM_UVLO_SAVED_START_POSITION - 2) // uint16_t for feedmultiply
 
 #define EEPROM_BACKLIGHT_LEVEL_HIGH (EEPROM_UVLO_FEEDMULTIPLY-1) // uint8
 #define EEPROM_BACKLIGHT_LEVEL_LOW (EEPROM_BACKLIGHT_LEVEL_HIGH-1) // uint8

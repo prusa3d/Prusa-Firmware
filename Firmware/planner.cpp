@@ -703,8 +703,12 @@ float junction_deviation = 0.1;
 // Add a new linear movement to the buffer. steps_x, _y and _z is the absolute position in 
 // mm. Microseconds specify how many microseconds the move should take to perform. To aid acceleration
 // calculation the caller must also provide the physical length of the line in millimeters.
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target)
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_start_position, uint16_t segment_idx)
 {
+  // CRITICAL_SECTION_START; //prevent stack overflow in ISR
+  // printf_P(PSTR("plan_buffer_line(%f, %f, %f, %f, %f, %u, [%f,%f,%f,%f], %u)\n"), x, y, z, e, feed_rate, extruder, gcode_start_position[0], gcode_start_position[1], gcode_start_position[2], gcode_start_position[3], segment_idx);
+  // CRITICAL_SECTION_END;
+
   // Calculate the buffer head after we push this byte
   uint8_t next_buffer_head = next_block_index(block_buffer_head);
 
@@ -735,16 +739,14 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Set sdlen for calculating sd position
   block->sdlen = 0;
 
-  // Save original destination of the move
-  if (gcode_target)
-      memcpy(block->gcode_target, gcode_target, sizeof(block_t::gcode_target));
+  // Save original start position of the move
+  if (gcode_start_position)
+      memcpy(block->gcode_start_position, gcode_start_position, sizeof(block_t::gcode_start_position));
   else
-  {
-      block->gcode_target[X_AXIS] = x;
-      block->gcode_target[Y_AXIS] = y;
-      block->gcode_target[Z_AXIS] = z;
-      block->gcode_target[E_AXIS] = e;
-  }
+      memcpy(block->gcode_start_position, current_position, sizeof(block_t::gcode_start_position));
+  
+  // Save the index of this segment (when a single G0/1/2/3 command plans multiple segments)
+  block->segment_idx = segment_idx;
 
   // Save the global feedrate at scheduling time
   block->gcode_feedrate = feedrate;

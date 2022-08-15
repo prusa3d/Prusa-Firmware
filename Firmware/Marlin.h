@@ -236,8 +236,6 @@ void FlushSerialRequestResend();
 void ClearToSend();
 void update_currents();
 
-void get_coordinates();
-void prepare_move();
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void finishAndDisableSteppers();
 
@@ -252,7 +250,6 @@ bool IsStopped();                           // Returns true if the print has bee
 //put an ASCII command at the begin of the current buffer, read from flash
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
 
-void prepare_arc_move(bool isclockwise);
 void clamp_to_software_endstops(float target[3]);
 void refresh_cmd_timeout(void);
 
@@ -288,6 +285,10 @@ extern int fanSpeed;
 extern uint8_t newFanSpeed;
 extern int8_t lcd_change_fil_state;
 extern float default_retraction;
+
+void get_coordinates();
+void prepare_move(uint16_t start_segment_idx = 0);
+void prepare_arc_move(bool isclockwise, uint16_t start_segment_idx = 0);
 
 #ifdef TMC2130
 void homeaxis(uint8_t axis, uint8_t cnt = 1, uint8_t* pstep = 0);
