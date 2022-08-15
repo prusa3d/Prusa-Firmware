@@ -142,9 +142,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F75h 3957		| uint16	| EEPROM_UVLO_MESH_BED_LEVELING			| ???			| ff ffh 65535			| Power Panic Mesh Bed Leveling						| ???			| D3 Ax0f75 C18 
 | 0x0F73h 3955		| uint16	| EEPROM_UVLO_Z_MICROSTEPS				| ???			| ff ffh 65535			| Power Panic Z microsteps							| ???			| D3 Ax0f73 C2 
 | 0x0F72h 3954		| uint8		| EEPROM_UVLO_E_ABS						| ???			| ffh 255				| Power Panic ??? position							| ???			| D3 Ax0f72 C1
-| 0x0F6Eh 3950		| foat		| EEPROM_UVLO_CURRENT_POSITION_E		| ???			| ff ff ff ffh			| Power Panic E position							| ???			| D3 Ax0f6e C4
-| 0x0F6Dh 3949		| ???		| _EEPROM_FREE_NR2_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6d C1
-| 0x0F6Ch 3948		| ???		| _EEPROM_FREE_NR3_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6c C1
+| 0x0F6Eh 3950		| float		| EEPROM_UVLO_CURRENT_POSITION_E		| ???			| ff ff ff ffh			| Power Panic E position							| ???			| D3 Ax0f6e C4
+| 0x0F6Ch 3948		| uint16_t	| EEPROM_UVLO_SAVED_SEGMENT_IDX			| all			| ff ffh 65535			| Power Panic index of multi-segment move			| ???			| D3 Ax0f6c C2
 | 0x0F6Bh 3947		| ???		| _EEPROM_FREE_NR4_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6b C1
 | 0x0F6Ah 3946		| ???		| _EEPROM_FREE_NR5_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6a C1
 | 0x0F69h 3945		| uint8		| EEPROM_CRASH_DET						| ffh 255		| ffh 255				| Crash detection: __enabled__						| LCD menu		| D3 Ax0f69 C1
@@ -398,15 +397,14 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1) 
 #define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
 #define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
-
 #define EEPROM_UVLO_Z_MICROSTEPS     (EEPROM_UVLO_MESH_BED_LEVELING - 2) // uint16_t (could be removed)
 #define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
 #define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4)                 //float for current position in E
+#define EEPROM_UVLO_SAVED_SEGMENT_IDX   (EEPROM_UVLO_CURRENT_POSITION_E - 2) //uint16_t
 
-#define EEPROM_FREE_NR2         (EEPROM_UVLO_CURRENT_POSITION_E - 1)			// FREE EEPROM SPACE
-#define EEPROM_FREE_NR3         (EEPROM_FREE_NR2 - 1)							// FREE EEPROM SPACE
-#define EEPROM_FREE_NR4         (EEPROM_FREE_NR3 - 1)							// FREE EEPROM SPACE
+#define EEPROM_FREE_NR4         (EEPROM_UVLO_SAVED_SEGMENT_IDX - 1)							// FREE EEPROM SPACE
 #define EEPROM_FREE_NR5         (EEPROM_FREE_NR4 - 1)							// FREE EEPROM SPACE
+
 // Crash detection mode EEPROM setting 
 #define EEPROM_CRASH_DET         (EEPROM_FREE_NR5 - 1)       				    // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-12) 
 // Crash detection counter Y (last print)

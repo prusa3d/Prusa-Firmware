@@ -11031,6 +11031,8 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+1*4), saved_start_position[Y_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+2*4), saved_start_position[Z_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+3*4), saved_start_position[E_AXIS]);
+    
+    eeprom_update_word((uint16_t*)EEPROM_UVLO_SAVED_SEGMENT_IDX, saved_segment_idx);
 
 #ifdef LIN_ADVANCE
 	eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
@@ -11304,6 +11306,8 @@ bool recover_machine_state_after_power_panic()
   saved_start_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+1*4));
   saved_start_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+2*4));
   saved_start_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+3*4));
+  
+  saved_segment_idx = eeprom_read_word((uint16_t*)EEPROM_UVLO_SAVED_SEGMENT_IDX);
 
 #ifdef LIN_ADVANCE
   extruder_advance_K = eeprom_read_float((float*)EEPROM_UVLO_LA_K);
