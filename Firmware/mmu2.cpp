@@ -538,15 +538,15 @@ void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
             }
 
             // lift Z
-            current_position[Z_AXIS] += Z_PAUSE_LIFT;
+            current_position[Z_AXIS] += MMU_ERR_Z_PAUSE_LIFT;
             if (current_position[Z_AXIS] > Z_MAX_POS) 
                 current_position[Z_AXIS] = Z_MAX_POS;
             plan_buffer_line_curposXYZE(NOZZLE_PARK_Z_FEEDRATE);
             st_synchronize();
 
             // move XY aside
-            current_position[X_AXIS] = X_PAUSE_POS;
-            current_position[Y_AXIS] = Y_PAUSE_POS;
+            current_position[X_AXIS] = MMU_ERR_X_PAUSE_POS;
+            current_position[Y_AXIS] = MMU_ERR_Y_PAUSE_POS;
             plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
             st_synchronize();
         }
