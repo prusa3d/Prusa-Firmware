@@ -241,7 +241,7 @@ private:
     bool WaitForMMUReady();
 
     ProtocolLogic logic; ///< implementation of the protocol logic layer
-    int extruder; ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet
+    uint8_t extruder; ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet
     uint8_t previous_extruder; ///< last active slot in the MMU, useful for M600
     uint8_t tool_change_extruder; ///< only used for UI purposes
 
