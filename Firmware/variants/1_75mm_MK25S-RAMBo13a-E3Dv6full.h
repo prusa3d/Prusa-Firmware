@@ -516,6 +516,11 @@
 //#define MMU_ALWAYS_CUT
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
+// MMU Error pause position
+#define MMU_ERR_X_PAUSE_POS 125
+#define MMU_ERR_Y_PAUSE_POS 0
+#define MMU_ERR_Z_PAUSE_LIFT 20
+
 // Default Arc Interpolation Settings (Now configurable via M214)
 #define DEFAULT_N_ARC_CORRECTION       25 // Number of interpolated segments between corrections.
 /* A value of 1 or less for N_ARC_CORRECTION will trigger the use of Sin and Cos for every arc, which will improve accuracy at the
