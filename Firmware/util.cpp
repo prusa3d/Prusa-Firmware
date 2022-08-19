@@ -431,7 +431,7 @@ lcd_update_enable(true);           // display / status-line recovery
 #define GCODE_DELIMITER '"'
 #define ELLIPSIS "..."
 
-char* code_string(char* pStr,size_t* nLength)
+char* code_string(const char* pStr,size_t* nLength)
 {
 char* pStrBegin;
 char* pStrEnd;
@@ -444,11 +444,10 @@ pStrEnd=strchr(pStrBegin,GCODE_DELIMITER);
 if(!pStrEnd)
      return(NULL);
 *nLength=pStrEnd-pStrBegin;
-pStrBegin[*nLength] = '\0';
 return pStrBegin;
 }
 
-void printer_smodel_check(char* pStrPos)
+void printer_smodel_check(const char* pStrPos)
 {
 char* pResult;
 size_t nLength,nPrinterNameLength;
@@ -458,7 +457,7 @@ pResult = code_string(pStrPos,&nLength);
 
 if(pResult != NULL && nLength == nPrinterNameLength) {
      // Only compare them if the lengths match
-     if (strcmp_P(pResult, sPrinterName) == 0) return;
+     if (strncmp_P(pResult, sPrinterName, nLength) == 0) return;
 }
 
 switch(oCheckModel)

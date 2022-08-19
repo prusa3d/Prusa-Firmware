@@ -44,7 +44,7 @@ void print_hex_word(daddr_t val)
     print_hex_byte(val & 0xFF);
 }
 
-int parse_hex(char* hex, uint8_t* data, int count)
+int parse_hex(const char* hex, uint8_t* data, int count)
 {
 	int parsed = 0;
 	while (*hex)

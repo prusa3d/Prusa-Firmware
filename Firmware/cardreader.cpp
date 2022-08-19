@@ -1008,9 +1008,10 @@ void CardReader::flush_presort() {
 void CardReader::printingHasFinished()
 {
     st_synchronize();
+    file.close();
+
     if(file_subcall_ctr>0) //heading up to a parent file that called current as a procedure.
     {
-      file.close();
       file_subcall_ctr--;
       openFileReadFilteredGcode(filenames[file_subcall_ctr],true);
       setIndex(filespos[file_subcall_ctr]);
@@ -1018,8 +1019,6 @@ void CardReader::printingHasFinished()
     }
     else
     {
-      quickStop();
-      file.close();
       sdprinting = false;
       if(SD_FINISHED_STEPPERRELEASE)
       {
