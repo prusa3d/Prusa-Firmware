@@ -758,6 +758,7 @@ void lcdui_print_status_screen(void)
 // Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent
 void lcd_status_screen()                          // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
+	static uint8_t lcd_status_update_delay = 0;
 #ifdef ULTIPANEL_FEEDMULTIPLY
 	// Dead zone at 100% feedrate
 	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
@@ -788,14 +789,17 @@ void lcd_status_screen()                          // NOT static due to using ins
 	else if (feedmultiply > 999)
 		feedmultiply = 999;
 
+	if (lcd_draw_update) {
+		// Update the status screen immediately
+		lcd_status_update_delay = 0;
+	}
+
 	if (lcd_status_update_delay)
 		lcd_status_update_delay--;
 	else
-		lcd_draw_update = 1;
-
-
-	if (lcd_draw_update)
-	{
+	{	// Redraw the main screen every second (see LCD_UPDATE_INTERVAL).
+		// This is easier then trying keep track of all things that change on the screen
+		lcd_status_update_delay = 10;
 		ReInitLCD++;
 		if (ReInitLCD == 30)
 		{
@@ -832,10 +836,9 @@ void lcd_status_screen()                          // NOT static due to using ins
 			}
 		} // end of farm_mode
 
-		lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
 		if (lcd_commands_type != LcdCommands::Idle)
 			lcd_commands();
-	} // end of lcd_draw_update
+	}
 
 	bool current_click = LCD_CLICKED;
 
