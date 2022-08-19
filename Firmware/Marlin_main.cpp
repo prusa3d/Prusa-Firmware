@@ -4806,11 +4806,11 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
       long home_z_value = 0;
       // Which axes should be homed?
       bool home_x = code_seen(axis_codes[X_AXIS]);
-      home_x_value = code_value_long();
+      if (home_x) home_x_value = code_value_long();
       bool home_y = code_seen(axis_codes[Y_AXIS]);
-      home_y_value = code_value_long();
+      if (home_y) home_y_value = code_value_long();
       bool home_z = code_seen(axis_codes[Z_AXIS]);
-      home_z_value = code_value_long();
+      if (home_z) home_z_value = code_value_long();
       bool without_mbl = code_seen('W');
       // calibrate?
 #ifdef TMC2130
