@@ -12,18 +12,12 @@ namespace MMU2 {
 // so we just block the MMU via EEPROM var instead.
 void power_on()
 {
-    if (!eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
-    {
-        eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, true);
-    }
+    eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, true);
 }
 
 void power_off()
 {
-    if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
-    {
-        eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
-    }
+    eeprom_update_byte((uint8_t *)EEPROM_MMU_ENABLED, false);
 }
 
 void reset() {
