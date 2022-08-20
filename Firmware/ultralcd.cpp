@@ -5212,7 +5212,7 @@ static void lcd_main_menu()
         }
     }
 
-    if ( ! ( printJobOngoing() || (lcd_commands_type != LcdCommands::Idle) || Stopped) ) {
+    if ( ! ( printJobOngoing() || (lcd_commands_type != LcdCommands::Idle) || loading_flag || Stopped ) ) {
         if (MMU2::mmu2.Enabled()) {
             if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
                 // The MMU 'Load filament' state machine will reject the command if any 
