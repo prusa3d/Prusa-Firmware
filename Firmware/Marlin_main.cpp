@@ -8586,6 +8586,84 @@ Sigma_Exit:
 	}
 	break;
 
+    /*!
+    ### M704 - Load to MMU
+    #### Usage
+
+        M704 [ P ]
+
+    #### Parameters
+    - `P` - n index of slot (zero based, so 0-4 like T0 and T4)
+    */
+    case 704:
+    {
+        uint8_t mmuSlotIndex = 0xffU;
+        if (MMU2::mmu2.Enabled() && code_seen('P'))
+        {
+            mmuSlotIndex = code_value_uint8();
+            if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
+                MMU2::mmu2.load_filament(mmuSlotIndex);
+            }
+        }
+    }
+    break;
+
+    /*!
+    ### M705 - Eject filament
+    #### Usage
+
+        M705 [ P ]
+
+    #### Parameters
+    - `P` - n index of slot (zero based, so 0-4 like T0 and T4)
+    */
+    case 705:
+    {
+        uint8_t mmuSlotIndex = 0xffU;
+        if (MMU2::mmu2.Enabled() && code_seen('P'))
+        {
+            mmuSlotIndex = code_value_uint8();
+            if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
+                // TODO: should recover be false?
+                MMU2::mmu2.eject_filament(mmuSlotIndex, false);
+            }
+        }
+    }
+    break;
+
+
+    /*!
+    ### M706 - Cut filament
+    #### Usage
+
+        M706 [ P ]
+
+    #### Parameters
+    - `P` - n index of slot (zero based, so 0-4 like T0 and T4)
+    */
+    case 706:
+    {
+        uint8_t mmuSlotIndex = 0xffU;
+        if (MMU2::mmu2.Enabled() && code_seen('P'))
+        {
+            mmuSlotIndex = code_value_uint8();
+            if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
+                MMU2::mmu2.cut_filament(mmuSlotIndex);
+            }
+        }
+    }
+    break;
+
+    /*!
+    ### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#M999:_Restart_after_being_stopped_by_error">M999: Restart after being stopped by error</a>
+    @todo Usually doesn't work. Should be fixed or removed. Most of the time, if `Stopped` it set, the print fails and is unrecoverable.
+    */
+    case 999:
+      Stopped = false;
+      lcd_reset_alert_level();
+      gcode_LastN = Stopped_gcode_LastN;
+      FlushSerialRequestResend();
+    break;
 	/*!
 	#### End of M-Commands
     */
