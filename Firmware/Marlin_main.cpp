@@ -513,9 +513,8 @@ bool __attribute__((noinline)) printJobOngoing() {
 bool __attribute__((noinline)) printer_active() {
     return printJobOngoing()
         || isPrintPaused
-        || (custom_message_type == CustomMsg::TempCal)
         || saved_printing
-        || (lcd_commands_type == LcdCommands::Layer1Cal)
+        || (lcd_commands_type != LcdCommands::Idle)
         || MMU2::mmu2.MMU_PRINT_SAVED()
         || homing_flag
         || mesh_bed_leveling_flag;

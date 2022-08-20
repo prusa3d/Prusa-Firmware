@@ -5179,9 +5179,9 @@ static void lcd_main_menu()
     }
 #endif
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
-    if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal) {
+    if (card.cardOK || lcd_commands_type != LcdCommands::Idle) {
         if (!card.isFileOpen()) {
-            if (!usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
+            if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
                 bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
                 MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
             }
@@ -5198,7 +5198,7 @@ static void lcd_main_menu()
     }
 #endif //SDSUPPORT
 
-    if(!isPrintPaused && !printJobOngoing() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
+    if(!isPrintPaused && !printJobOngoing() && (lcd_commands_type == LcdCommands::Idle)) {
         if (!farm_mode) {
             const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
             const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
@@ -5208,7 +5208,7 @@ static void lcd_main_menu()
         }
     }
 
-    if ( ! ( printJobOngoing() || (lcd_commands_type == LcdCommands::Layer1Cal || Stopped) ) ) {
+    if ( ! ( printJobOngoing() || (lcd_commands_type != LcdCommands::Idle) || Stopped) ) {
         if (MMU2::mmu2.Enabled()) {
             if(!MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent()) {
                 // The MMU 'Load filament' state machine will reject the command if any 
@@ -5239,7 +5239,7 @@ static void lcd_main_menu()
     if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_CALIBRATION), lcd_calibration_menu);
     }
 
-    if (!usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
+    if (!usb_timer.running() && (lcd_commands_type == LcdCommands::Idle)) {
         MENU_ITEM_SUBMENU_P(_i("Statistics"), lcd_menu_statistics);////MSG_STATISTICS c=18
     }
 
