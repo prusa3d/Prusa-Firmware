@@ -1867,7 +1867,10 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
                     if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
                 }
                 if (eFilamentAction == FilamentAction::UnLoad)
-                enquecommand_P(MSG_M702); // unload filament
+                {
+                    loading_flag = true;
+                    enquecommand_P(MSG_M702); // unload filament
+                }
             }
             break;
         case FilamentAction::MmuLoad:
@@ -4886,6 +4889,7 @@ void unload_filament(float unloadLength)
 	lcd_setstatuspgm(MSG_WELCOME);
 	custom_message_type = CustomMsg::Status;
 	eFilamentAction = FilamentAction::None;
+	loading_flag = false;
 }
 
 /// @brief Set print fan speed
