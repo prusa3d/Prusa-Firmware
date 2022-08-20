@@ -6917,7 +6917,8 @@ static bool check_file(const char* filename) {
 
 static void menu_action_sdfile(const char* filename)
 {
-  loading_flag = false;
+  if(loading_flag) return;
+
   char cmd[30];
   char* c;
   bool result = true;
