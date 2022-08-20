@@ -8648,6 +8648,38 @@ Sigma_Exit:
     break;
 
     /*!
+    ### M709 - MMU turn on/off/reset
+    The MK3S cannot not power off the MMU, for that reason the functionality is not supported.
+    #### Usage
+
+        M709 [ X ]
+
+        M709 X0 - issue an X0 command via communication into the MMU (soft reset)
+        M709 X1 - toggle the MMU's reset pin (hardware reset)
+
+    #### Parameters
+    - `X` - Reset MMU
+    */
+    case 709:
+    {
+        if (MMU2::mmu2.Enabled() && code_seen('X'))
+        {
+            switch (code_value_uint8())
+            {
+            case 0:
+                MMU2::mmu2.Reset(MMU2::MMU2::Software);
+                break;
+            case 1:
+                MMU2::mmu2.Reset(MMU2::MMU2::ResetPin);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    break;
+
+    /*!
     ### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#M999:_Restart_after_being_stopped_by_error">M999: Restart after being stopped by error</a>
     @todo Usually doesn't work. Should be fixed or removed. Most of the time, if `Stopped` it set, the print fails and is unrecoverable.
     */
