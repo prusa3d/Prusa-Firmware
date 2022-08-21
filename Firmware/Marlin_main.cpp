@@ -9492,7 +9492,7 @@ uint16_t restore_interrupted_gcode() {
         return saved_segment_idx;
     }
     else
-        return 0;
+        return 1; //begin with the first segment
 }
 
 #ifdef MESH_BED_LEVELING
