@@ -498,7 +498,7 @@ volatile static union
 void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
 {
     // save the original target temperatures for recovery before disabling heaters
-    if(!temp_error_state.error) {
+    if(!temp_error_state.error && !saved_printing) {
         saved_bed_temperature = target_temperature_bed;
         saved_extruder_temperature = target_temperature[index];
         saved_fan_speed = fanSpeed;
