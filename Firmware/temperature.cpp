@@ -1157,18 +1157,18 @@ FORCE_INLINE static void applyBabysteps() {
 
     if(curTodo>0)
     {
-      CRITICAL_SECTION_START;
-      babystep(axis,/*fwd*/true);
-      babystepsTodo[axis]--; //less to do next time
-      CRITICAL_SECTION_END;
+      ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+        babystep(axis,/*fwd*/true);
+        babystepsTodo[axis]--; //less to do next time
+      }
     }
     else
     if(curTodo<0)
     {
-      CRITICAL_SECTION_START;
-      babystep(axis,/*fwd*/false);
-      babystepsTodo[axis]++; //less to do next time
-      CRITICAL_SECTION_END;
+      ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+        babystep(axis,/*fwd*/false);
+        babystepsTodo[axis]++; //less to do next time
+      }
     }
   }
 }
@@ -1537,9 +1537,9 @@ ISR(TIMER0_COMPB_vect)
 #endif //SYSTEM_TIMER_2
 {
     DISABLE_SOFT_PWM_INTERRUPT();
-    sei();
-    soft_pwm_isr();
-    cli();
+    NONATOMIC_BLOCK(NONATOMIC_FORCEOFF) {
+        soft_pwm_isr();
+    }
     ENABLE_SOFT_PWM_INTERRUPT();
 }
 
@@ -1825,32 +1825,32 @@ void temp_mgr_init()
     adc_start_cycle();
 
     // initialize timer5
-    CRITICAL_SECTION_START;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 
-    // CTC
-    TCCR5B &= ~(1<<WGM53);
-    TCCR5B |=  (1<<WGM52);
-    TCCR5A &= ~(1<<WGM51);
-    TCCR5A &= ~(1<<WGM50);
+        // CTC
+        TCCR5B &= ~(1<<WGM53);
+        TCCR5B |=  (1<<WGM52);
+        TCCR5A &= ~(1<<WGM51);
+        TCCR5A &= ~(1<<WGM50);
 
-    // output mode = 00 (disconnected)
-    TCCR5A &= ~(3<<COM5A0);
-    TCCR5A &= ~(3<<COM5B0);
+        // output mode = 00 (disconnected)
+        TCCR5A &= ~(3<<COM5A0);
+        TCCR5A &= ~(3<<COM5B0);
 
-    // x/256 prescaler
-    TCCR5B |=  (1<<CS52);
-    TCCR5B &= ~(1<<CS51);
-    TCCR5B &= ~(1<<CS50);
+        // x/256 prescaler
+        TCCR5B |=  (1<<CS52);
+        TCCR5B &= ~(1<<CS51);
+        TCCR5B &= ~(1<<CS50);
 
-    // reset counter
-    TCNT5 = 0;
-    OCR5A = TIMER5_OCRA_OVF;
+        // reset counter
+        TCNT5 = 0;
+        OCR5A = TIMER5_OCRA_OVF;
 
-    // clear pending interrupts, enable COMPA
-    TEMP_MGR_INT_FLAG_CLEAR();
-    ENABLE_TEMP_MGR_INTERRUPT();
+        // clear pending interrupts, enable COMPA
+        TEMP_MGR_INT_FLAG_CLEAR();
+        ENABLE_TEMP_MGR_INTERRUPT();
 
-    CRITICAL_SECTION_END;
+    }
 }
 
 static void pid_heater(uint8_t e, const float current, const int target)
@@ -2174,9 +2174,9 @@ ISR(TIMER5_COMPA_vect)
 
     // run temperature management with interrupts enabled to reduce latency
     DISABLE_TEMP_MGR_INTERRUPT();
-    sei();
-    temp_mgr_isr();
-    cli();
+    NONATOMIC_BLOCK(NONATOMIC_FORCEOFF) {
+        temp_mgr_isr();
+    }
     ENABLE_TEMP_MGR_INTERRUPT();
 }
 
@@ -2185,30 +2185,28 @@ void disable_heater()
   setAllTargetHotends(0);
   setTargetBed(0);
 
-  CRITICAL_SECTION_START;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+      // propagate all values down the chain
+      setIsrTargetTemperatures();
+      temp_mgr_pid();
 
-  // propagate all values down the chain
-  setIsrTargetTemperatures();
-  temp_mgr_pid();
-
-  // we can't call soft_pwm_core directly to toggle the pins as it would require removing the inline
-  // attribute, so disable each pin individually
+      // we can't call soft_pwm_core directly to toggle the pins as it would require removing the inline
+      // attribute, so disable each pin individually
 #if defined(HEATER_0_PIN) && HEATER_0_PIN > -1 && EXTRUDERS > 0
-  WRITE(HEATER_0_PIN,LOW);
+      WRITE(HEATER_0_PIN,LOW);
 #endif
 #if defined(HEATER_1_PIN) && HEATER_1_PIN > -1 && EXTRUDERS > 1
-  WRITE(HEATER_1_PIN,LOW);
+      WRITE(HEATER_1_PIN,LOW);
 #endif
 #if defined(HEATER_2_PIN) && HEATER_2_PIN > -1 && EXTRUDERS > 2
-  WRITE(HEATER_2_PIN,LOW);
+      WRITE(HEATER_2_PIN,LOW);
 #endif
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-  // TODO: this doesn't take immediate effect!
-  timer02_set_pwm0(0);
-  bedPWMDisabled = 0;
+      // TODO: this doesn't take immediate effect!
+      timer02_set_pwm0(0);
+      bedPWMDisabled = 0;
 #endif
-
-  CRITICAL_SECTION_END;
+  }
 }
 
 static void check_min_temp_raw()
