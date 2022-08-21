@@ -9960,17 +9960,12 @@ void UnconditionalStop()
 }
 
 // Emergency stop used by overtemp functions which allows recovery
+// WARNING: This function is called *continuously* during a thermal failure.
 //
-//   This function is called *continuously* during a thermal failure.
-//
-//   In addition to stopping the print, this prevents subsequent G[0-3] commands to be
-//   processed via USB (using "Stopped") until the print is resumed via M999 or
-//   manually started from scratch with the LCD.
-//
-//   Note that the current instruction is completely discarded, so resuming from Stop()
-//   will introduce either over/under extrusion on the current segment, and will not
-//   survive a power panic. Switching Stop() to use the pause machinery instead (with
-//   the addition of disabling the headers) could allow true recovery in the future.
+// This either pauses (for thermal model errors) or stops *without recovery* depending on
+// "allow_pause". If pause is allowed, this forces a printer-initiated instantanenous pause (just
+// like an LCD pause) that bypasses the host pausing functionality. In this state the printer is
+// kept in busy state and *must* be recovered from the LCD.
 void ThermalStop(bool allow_pause)
 {
     if(Stopped == false) {
