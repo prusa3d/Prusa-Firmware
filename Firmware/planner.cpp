@@ -609,12 +609,8 @@ static inline void planner_update_queue_min_counter()
 
 extern volatile uint32_t step_events_completed; // The number of step events executed in the current block
 
-void planner_abort_hard()
+void planner_reset_position()
 {
-    // Abort the stepper routine and flush the planner queue.
-    DISABLE_STEPPER_DRIVER_INTERRUPT();
-
-    // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
     // First update the planner's current position in the physical motor steps.
     position[X_AXIS] = st_get_position(X_AXIS);
     position[Y_AXIS] = st_get_position(Y_AXIS);
@@ -626,6 +622,7 @@ void planner_abort_hard()
     current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
     current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
     current_position[E_AXIS] = st_get_position_mm(E_AXIS);
+
     // Apply the mesh bed leveling correction to the Z axis.
 #ifdef MESH_BED_LEVELING
     if (mbl.active) {
@@ -658,11 +655,6 @@ void planner_abort_hard()
 #endif
     }
 #endif
-    // Relay to planner wait routine, that the current line shall be canceled.
-    planner_aborted = true;
-
-    // Clear the planner queue, reset and re-enable the stepper timer.
-    quickStop();
 
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
@@ -670,10 +662,27 @@ void planner_abort_hard()
 #ifdef LIN_ADVANCE
     memcpy(position_float, current_position, sizeof(position_float));
 #endif
+}
+
+void planner_abort_hard()
+{
+    // Abort the stepper routine and flush the planner queue.
+    DISABLE_STEPPER_DRIVER_INTERRUPT();
+
+    // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
+    planner_reset_position();
+
+    // Relay to planner wait routine that the current line shall be canceled.
+    planner_aborted = true;
+
+    // Clear the planner queue, reset and re-enable the stepper timer.
+    quickStop();
+
     // Resets planner junction speeds. Assumes start from rest.
     previous_nominal_speed = 0.0;
     memset(previous_speed, 0, sizeof(previous_speed));
 
+    // Reset position sync requests
     plan_reset_next_e_queue = false;
     plan_reset_next_e_sched = false;
 }

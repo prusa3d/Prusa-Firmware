@@ -158,7 +158,9 @@ void xyzcal_meassure_enter(void)
 void xyzcal_meassure_leave(void)
 {
 	DBG(_n("xyzcal_meassure_leave\n"));
-    planner_abort_hard();
+
+	// resync planner position from counters (changed by xyzcal_update_pos)
+	planner_reset_position();
 
 	// re-enable interrupts
 #ifdef WATCHDOG
