@@ -24,20 +24,6 @@
 #include "Marlin.h"
 #include "config.h"
 
-
-#ifdef SYSTEM_TIMER_2
-
-#define ENABLE_SOFT_PWM_INTERRUPT()  TIMSK2 |= (1<<OCIE2B)
-#define DISABLE_SOFT_PWM_INTERRUPT() TIMSK2 &= ~(1<<OCIE2B)
-
-#else //SYSTEM_TIMER_2
-
-#define ENABLE_SOFT_PWM_INTERRUPT()  TIMSK0 |= (1<<OCIE0B)
-#define DISABLE_SOFT_PWM_INTERRUPT() TIMSK0 &= ~(1<<OCIE0B)
-
-#endif //SYSTEM_TIMER_2
-
-
 // public functions
 void soft_pwm_init(); //initialize the soft pwm isr
 void temp_mgr_init(); //initialize the temperature handler

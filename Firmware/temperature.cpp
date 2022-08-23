@@ -50,6 +50,14 @@
 #error "ADC_OVRSAMPL oversampling must match OVERSAMPLENR"
 #endif
 
+#ifdef SYSTEM_TIMER_2
+#define ENABLE_SOFT_PWM_INTERRUPT()  TIMSK2 |= (1<<OCIE2B)
+#define DISABLE_SOFT_PWM_INTERRUPT() TIMSK2 &= ~(1<<OCIE2B)
+#else //SYSTEM_TIMER_2
+#define ENABLE_SOFT_PWM_INTERRUPT()  TIMSK0 |= (1<<OCIE0B)
+#define DISABLE_SOFT_PWM_INTERRUPT() TIMSK0 &= ~(1<<OCIE0B)
+#endif //SYSTEM_TIMER_2
+
 // temperature manager timer configuration
 #define TEMP_MGR_INTV   0.27 // seconds, ~3.7Hz
 #define TIMER5_PRESCALE 256
