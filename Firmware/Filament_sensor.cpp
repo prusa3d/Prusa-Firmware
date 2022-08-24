@@ -41,9 +41,9 @@ FSensorBlockRunout::~FSensorBlockRunout() { }
 void Filament_sensor::setEnabled(bool enabled) {
     eeprom_update_byte((uint8_t *)EEPROM_FSENSOR, enabled);
     if (enabled) {
-        init();
+        fsensor.init();
     } else {
-        deinit();
+        fsensor.deinit();
     }
 }
 
@@ -89,16 +89,16 @@ bool Filament_sensor::checkFilamentEvents() {
         return false;
     }
 
-    bool newFilamentPresent = getFilamentPresent();
+    bool newFilamentPresent = fsensor.getFilamentPresent();
     if (oldFilamentPresent != newFilamentPresent) {
         oldFilamentPresent = newFilamentPresent;
         eventBlankingTimer.start();
         if (newFilamentPresent) { // filament insertion
-            puts_P(PSTR("filament inserted"));
+//            puts_P(PSTR("filament inserted"));
             triggerFilamentInserted();
             postponedLoadEvent = true;
         } else { // filament removal
-            puts_P(PSTR("filament removed"));
+//            puts_P(PSTR("filament removed"));
             triggerFilamentRemoved();
         }
         return true;
@@ -111,7 +111,7 @@ void Filament_sensor::triggerFilamentInserted() {
         && (eFilamentAction == FilamentAction::None)
         && (! MMU2::mmu2.Enabled() ) // quick and dirty hack to prevent spurious runouts while the MMU is in charge
         && !(
-            moves_planned()
+            moves_planned() != 0
             || IS_SD_PRINTING
             || usb_timer.running()
             || (lcd_commands_type == LcdCommands::Layer1Cal)
@@ -129,7 +129,7 @@ void Filament_sensor::triggerFilamentRemoved() {
         && (eFilamentAction == FilamentAction::None)
         && !saved_printing
         && (
-            moves_planned()
+            moves_planned() != 0
             || IS_SD_PRINTING
             || usb_timer.running()
             || (lcd_commands_type == LcdCommands::Layer1Cal)
@@ -175,16 +175,16 @@ void Filament_sensor::triggerError() {
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 void IR_sensor::init() {
     if (state == State::error) {
-        deinit(); // deinit first if there was an error.
+        fsensor.deinit(); // deinit first if there was an error.
     }
-    puts_P(PSTR("fsensor::init()"));
+//    puts_P(PSTR("fsensor::init()"));
     SET_INPUT(IR_SENSOR_PIN); // input mode
     WRITE(IR_SENSOR_PIN, 1);  // pullup
     settings_init();          // also sets the state to State::initializing
 }
 
 void IR_sensor::deinit() {
-    puts_P(PSTR("fsensor::deinit()"));
+//    puts_P(PSTR("fsensor::deinit()"));
     SET_INPUT(IR_SENSOR_PIN); // input mode
     WRITE(IR_SENSOR_PIN, 0);  // no pullup
     state = State::disabled;
@@ -194,16 +194,12 @@ bool IR_sensor::update() {
     switch (state) {
     case State::initializing:
         state = State::ready; // the IR sensor gets ready instantly as it's just a gpio read operation.
-        oldFilamentPresent =
-            getFilamentPresent(); // initialize the current filament state so that we don't create a switching event right after the sensor is ready.
-        // fallthru
+        // initialize the current filament state so that we don't create a switching event right after the sensor is ready.
+        oldFilamentPresent = fsensor.getFilamentPresent();
+        [[fallthrough]];
     case State::ready: {
         postponedLoadEvent = false;
-        bool event = checkFilamentEvents();
-
-        ; //
-
-        return event;
+        return checkFilamentEvents();
     } break;
     case State::disabled:
     case State::error:
@@ -213,7 +209,7 @@ bool IR_sensor::update() {
     return false;
 }
 
-bool IR_sensor::getFilamentPresent() { return !READ(IR_SENSOR_PIN); }
+
 
 #ifdef FSENSOR_PROBING
 bool IR_sensor::probeOtherType() { return pat9125_probe(); }
@@ -224,16 +220,15 @@ void IR_sensor::settings_init() { Filament_sensor::settings_init_common(); }
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 void IR_sensor_analog::init() {
     IR_sensor::init();
-    settings_init();
+    IR_sensor::settings_init();
+    sensorRevision = (SensorRevision)eeprom_read_byte((uint8_t *)EEPROM_FSENSOR_PCB);
 }
-
-void IR_sensor_analog::deinit() { IR_sensor::deinit(); }
 
 bool IR_sensor_analog::update() {
     bool event = IR_sensor::update();
     if (state == State::ready) {
-        if (voltReady) {
-            voltReady = false;
+        if (getVoltReady()) {
+            clearVoltReady();
             uint16_t volt = getVoltRaw();
 //            printf_P(PSTR("newVoltRaw:%u\n"), volt / OVERSAMPLENR);
 
@@ -282,14 +277,7 @@ void IR_sensor_analog::voltUpdate(uint16_t raw) { // to be called from the ADC I
 }
 
 uint16_t IR_sensor_analog::getVoltRaw() {
-    uint16_t newVoltRaw;
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { newVoltRaw = voltRaw; }
-    return newVoltRaw;
-}
-
-void IR_sensor_analog::settings_init() {
-    IR_sensor::settings_init();
-    sensorRevision = (SensorRevision)eeprom_read_byte((uint8_t *)EEPROM_FSENSOR_PCB);
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { return voltRaw; }
 }
 
 const char *IR_sensor_analog::getIRVersionText() {
@@ -349,6 +337,14 @@ bool IR_sensor_analog::checkVoltage(uint16_t raw) {
     return true;
 }
 
+bool IR_sensor_analog::getVoltReady() const {
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){ return voltReady; }
+}
+
+void IR_sensor_analog::clearVoltReady(){
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){ voltReady = false; }
+}
+
 void IR_sensor_analog::IR_ANALOG_Check(SensorRevision isVersion, SensorRevision switchTo) {
     bool bTemp = (!CHECK_ALL_HEATERS);
     bTemp = bTemp && (menu_menu == lcd_status_screen);
@@ -383,7 +379,7 @@ void PAT9125_sensor::init() {
     if (state == State::error) {
         deinit(); // deinit first if there was an error.
     }
-    puts_P(PSTR("fsensor::init()"));
+//    puts_P(PSTR("fsensor::init()"));
 
     settings_init(); // also sets the state to State::initializing
 
@@ -402,7 +398,7 @@ void PAT9125_sensor::init() {
 }
 
 void PAT9125_sensor::deinit() {
-    puts_P(PSTR("fsensor::deinit()"));
+//    puts_P(PSTR("fsensor::deinit()"));
     ; //
     state = State::disabled;
     filter = 0;
@@ -459,15 +455,13 @@ void PAT9125_sensor::setJamDetectionEnabled(bool state, bool updateEEPROM) {
 }
 
 void PAT9125_sensor::settings_init() {
-    puts_P(PSTR("settings_init"));
+//    puts_P(PSTR("settings_init"));
     Filament_sensor::settings_init_common();
     setJamDetectionEnabled(eeprom_read_byte((uint8_t *)EEPROM_FSENSOR_JAM_DETECTION));
 }
 
 int16_t PAT9125_sensor::getStepCount() {
-    int16_t st_cnt;
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { st_cnt = stepCount; }
-    return st_cnt;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { return stepCount; }
 }
 
 void PAT9125_sensor::resetStepCount() {
