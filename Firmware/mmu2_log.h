@@ -8,6 +8,18 @@
 // and MMU2::ReportError + MMU2::ReportProgress
 static constexpr char mmu2Magic[] PROGMEM = "MMU2:";
 
+namespace MMU2 {
+
+/// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
+/// @param msg pointer to a string in PROGMEM
+void LogErrorEvent_P(const char *msg);
+
+/// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
+/// @param msg pointer to a string in PROGMEM
+void LogEchoEvent_P(const char *msg);
+
+} // namespace
+
 #define SERIAL_MMU2() { serialprintPGM(mmu2Magic); }
 
 #define MMU2_ECHO_MSG(S) do{ SERIAL_ECHO_START; SERIAL_MMU2(); SERIAL_ECHO(S); }while(0)

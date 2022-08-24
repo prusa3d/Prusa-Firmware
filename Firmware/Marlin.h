@@ -316,8 +316,9 @@ extern bool fan_state[2];
 extern int fan_edge_counter[2];
 extern int fan_speed[2];
 
-// Handling multiple extruders pins
-extern uint8_t active_extruder;
+// Active extruder becomes a #define to make the whole firmware compilable.
+// We may even remove the references to it wherever possible in the future
+#define active_extruder 0
 
 //Long pause
 extern unsigned long pause_time;
