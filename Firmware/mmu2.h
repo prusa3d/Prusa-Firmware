@@ -201,7 +201,6 @@ private:
     
     void filament_ramming();
     void execute_extruder_sequence(const E_Step *sequence, uint8_t steps);
-    void SetActiveExtruder(uint8_t ex);
 
     /// Reports an error into attached ExtUIs
     /// @param ec error code, see ErrorCode
@@ -215,13 +214,11 @@ private:
     /// Responds to a change of MMU's progress
     /// - plans additional steps, e.g. starts the E-motor after fsensor trigger
     void OnMMUProgressMsg(ProgressCode pc);
+    /// Progress code changed - act accordingly
+    void OnMMUProgressMsgChanged(ProgressCode pc);
+    /// Repeated calls when progress code remains the same
+    void OnMMUProgressMsgSame(ProgressCode pc);
     
-    /// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
-    void LogErrorEvent(const char *msg);
-    
-    /// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
-    void LogEchoEvent(const char *msg);
-
     /// Save print and park the print head
     void SaveAndPark(bool move_axes, bool turn_off_nozzle);
 

@@ -911,8 +911,6 @@ block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-p
     block->direction_bits |= (1<<E_AXIS); 
   }
 
-  block->active_extruder = extruder;
-
   //enable active axes
   #ifdef COREXY
   if((block->steps_x.wide != 0) || (block->steps_y.wide != 0))

@@ -244,7 +244,6 @@ float extruder_offset[NUM_EXTRUDER_OFFSETS][EXTRUDERS] = {
 };
 #endif
 
-uint8_t active_extruder = 0;
 int fanSpeed=0;
 uint8_t newFanSpeed = 0;
 
@@ -362,9 +361,7 @@ uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { X_COORD_INVALID, 0, 0, 0 };
 static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
-static uint8_t saved_active_extruder = 0;
-float saved_extruder_temperature = 0.0; //!< Active extruder temperature
-float saved_bed_temperature = 0.0; //!< Bed temperature
+static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
 static bool saved_extruder_relative_mode = false;
 int saved_fan_speed = 0; //!< Print fan speed
 //! @}
@@ -11122,7 +11119,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
 
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
-	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
 	saved_bed_temperature = degTargetBed();
 	saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
@@ -11171,11 +11167,11 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 }
 
 void restore_extruder_temperature_from_ram() {
-    if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
+    if (degTargetHotend(active_extruder) != saved_extruder_temperature)
     {
-        setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
+        setTargetHotendSafe(saved_extruder_temperature, active_extruder);
         heating_status = HeatingStatus::EXTRUDER_HEATING;
-        wait_for_heater(_millis(), saved_active_extruder);
+        wait_for_heater(_millis(), active_extruder);
         heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
     }
 }
@@ -11202,11 +11198,8 @@ void restore_print_from_ram_and_continue(float e_move)
     // restore bed temperature (bed can be disabled during a thermal warning)
     if (degBed() != saved_bed_temperature)
         setTargetBed(saved_bed_temperature);
-
-	// restore active_extruder
-	active_extruder = saved_active_extruder;
 	fanSpeed = saved_fan_speed;
-	restore_extruder_temperture_from_ram();
+	restore_extruder_temperature_from_ram();
 	axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
