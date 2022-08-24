@@ -273,15 +273,7 @@ bool MMU2::tool_change(uint8_t index) {
         manage_response(true, true);
         
         // reset current position to whatever the planner thinks it is
-//        SERIAL_ECHOPGM("TC1:p=");
-//        SERIAL_ECHO(position[E_AXIS]);
-//        SERIAL_ECHOPGM("TC1:cp=");
-//        SERIAL_ECHOLN(current_position[E_AXIS]);
         plan_set_e_position(current_position[E_AXIS]);
-//        SERIAL_ECHOPGM("TC2:p=");
-//        SERIAL_ECHO(position[E_AXIS]);
-//        SERIAL_ECHOPGM("TC2:cp=");
-//        SERIAL_ECHOLN(current_position[E_AXIS]);
 
         extruder = index; //filament change is finished
         previous_extruder = extruder;
@@ -454,15 +446,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
 
         // reset current position to whatever the planner thinks it is
         st_synchronize();
-//        SERIAL_ECHOPGM("LFTN1:p=");
-//        SERIAL_ECHO(position[E_AXIS]);
-//        SERIAL_ECHOPGM("LFTN1:cp=");
-//        SERIAL_ECHOLN(current_position[E_AXIS]);
         plan_set_e_position(current_position[E_AXIS]);
-//        SERIAL_ECHOPGM("LFTN2:p=");
-//        SERIAL_ECHO(position[E_AXIS]);
-//        SERIAL_ECHOPGM("LFTN2:cp=");
-//        SERIAL_ECHOLN(current_position[E_AXIS]);
 
         // Finish loading to the nozzle with finely tuned steps.
         execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
@@ -573,7 +557,7 @@ void MMU2::ResumeHotendTemp() {
     }
     if ((mmu_print_saved & SavedState::Cooldown) && resume_hotend_temp) {
         LogEchoEvent_P(PSTR("Resuming Temp"));
-        MMU2_ECHO_MSG("Restoring hotend temperature ");
+        MMU2_ECHO_MSGRPGM(PSTR("Restoring hotend temperature "));
         SERIAL_ECHOLN(resume_hotend_temp);
         mmu_print_saved &= ~(SavedState::Cooldown);
         setTargetHotend(resume_hotend_temp, active_extruder);
