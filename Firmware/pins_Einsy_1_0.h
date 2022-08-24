@@ -78,6 +78,9 @@
 #define VOLT_IR_PIN          8 //A8
 
 
+#define TEMP_TIM 5
+
+
 #define E0_TMC2130_CS       66
 #define E0_TMC2130_DIAG     65
 #define E0_STEP_PIN         34

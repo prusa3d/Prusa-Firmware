@@ -60,6 +60,8 @@
 #define TEMP_PINDA_PIN          1 //A1
 
 
+#define TEMP_TIM 3
+
 
 #define E0_STEP_PIN            34
 #define E0_DIR_PIN             43

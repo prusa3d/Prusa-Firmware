@@ -60,13 +60,36 @@
 
 // temperature manager timer configuration
 #define TEMP_MGR_INTV   0.27 // seconds, ~3.7Hz
-#define TIMER5_PRESCALE 256
-#define TIMER5_OCRA_OVF (uint16_t)(TEMP_MGR_INTV / ((long double)TIMER5_PRESCALE / F_CPU))
-#define TEMP_MGR_INT_FLAG_STATE()    (TIFR5 & (1<<OCF5A))
-#define TEMP_MGR_INT_FLAG_CLEAR()    TIFR5 |= (1<<OCF5A)
-#define TEMP_MGR_INTERRUPT_STATE()   (TIMSK5 & (1<<OCIE5A))
-#define ENABLE_TEMP_MGR_INTERRUPT()  TIMSK5 |=  (1<<OCIE5A)
-#define DISABLE_TEMP_MGR_INTERRUPT() TIMSK5 &= ~(1<<OCIE5A)
+#define TEMP_TIM_PRESCALE 256
+#define TEMP_TIM_OCRA_OVF (uint16_t)(TEMP_MGR_INTV / ((long double)TEMP_TIM_PRESCALE / F_CPU))
+#define TEMP_TIM_REGNAME(registerbase,number,suffix) _REGNAME(registerbase,number,suffix)
+#undef B0 //Necessary hack because of "binary.h" included in "Arduino.h" included in "system_timer.h" included in this file...
+#define TCCRxA TEMP_TIM_REGNAME(TCCR, TEMP_TIM, A)
+#define TCCRxB TEMP_TIM_REGNAME(TCCR, TEMP_TIM, B)
+#define TCCRxC TEMP_TIM_REGNAME(TCCR, TEMP_TIM, C)
+#define TCNTx TEMP_TIM_REGNAME(TCNT, TEMP_TIM,)
+#define OCRxA TEMP_TIM_REGNAME(OCR, TEMP_TIM, A)
+#define TIMSKx TEMP_TIM_REGNAME(TIMSK, TEMP_TIM,)
+#define TIFRx TEMP_TIM_REGNAME(TIFR, TEMP_TIM,)
+#define TIMERx_COMPA_vect TEMP_TIM_REGNAME(TIMER, TEMP_TIM, _COMPA_vect)
+#define CSx0 TEMP_TIM_REGNAME(CS, TEMP_TIM, 0)
+#define CSx1 TEMP_TIM_REGNAME(CS, TEMP_TIM, 1)
+#define CSx2 TEMP_TIM_REGNAME(CS, TEMP_TIM, 2)
+#define WGMx0 TEMP_TIM_REGNAME(WGM, TEMP_TIM, 0)
+#define WGMx1 TEMP_TIM_REGNAME(WGM, TEMP_TIM, 1)
+#define WGMx2 TEMP_TIM_REGNAME(WGM, TEMP_TIM, 2)
+#define WGMx3 TEMP_TIM_REGNAME(WGM, TEMP_TIM, 3)
+#define COMxA0 TEMP_TIM_REGNAME(COM, TEMP_TIM, A0)
+#define COMxB0 TEMP_TIM_REGNAME(COM, TEMP_TIM, B0)
+#define COMxC0 TEMP_TIM_REGNAME(COM, TEMP_TIM, C0)
+#define OCIExA TEMP_TIM_REGNAME(OCIE, TEMP_TIM, A)
+#define OCFxA TEMP_TIM_REGNAME(OCF, TEMP_TIM, A)
+
+#define TEMP_MGR_INT_FLAG_STATE()    (TIFRx & (1<<OCFxA))
+#define TEMP_MGR_INT_FLAG_CLEAR()    TIFRx |= (1<<OCFxA)
+#define TEMP_MGR_INTERRUPT_STATE()   (TIMSKx & (1<<OCIExA))
+#define ENABLE_TEMP_MGR_INTERRUPT()  TIMSKx |=  (1<<OCIExA)
+#define DISABLE_TEMP_MGR_INTERRUPT() TIMSKx &= ~(1<<OCIExA)
 
 #ifdef TEMP_MODEL
 // temperature model interface
@@ -1837,27 +1860,27 @@ void temp_mgr_init()
     adc_init();
     adc_start_cycle();
 
-    // initialize timer5
+    // initialize temperature timer
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 
         // CTC
-        TCCR5B &= ~(1<<WGM53);
-        TCCR5B |=  (1<<WGM52);
-        TCCR5A &= ~(1<<WGM51);
-        TCCR5A &= ~(1<<WGM50);
+        TCCRxB &= ~(1<<WGMx3);
+        TCCRxB |=  (1<<WGMx2);
+        TCCRxA &= ~(1<<WGMx1);
+        TCCRxA &= ~(1<<WGMx0);
 
         // output mode = 00 (disconnected)
-        TCCR5A &= ~(3<<COM5A0);
-        TCCR5A &= ~(3<<COM5B0);
+        TCCRxA &= ~(3<<COMxA0);
+        TCCRxA &= ~(3<<COMxB0);
 
         // x/256 prescaler
-        TCCR5B |=  (1<<CS52);
-        TCCR5B &= ~(1<<CS51);
-        TCCR5B &= ~(1<<CS50);
+        TCCRxB |=  (1<<CSx2);
+        TCCRxB &= ~(1<<CSx1);
+        TCCRxB &= ~(1<<CSx0);
 
         // reset counter
-        TCNT5 = 0;
-        OCR5A = TIMER5_OCRA_OVF;
+        TCNTx = 0;
+        OCRxA = TEMP_TIM_OCRA_OVF;
 
         // clear pending interrupts, enable COMPA
         TEMP_MGR_INT_FLAG_CLEAR();
@@ -2178,7 +2201,7 @@ static void temp_mgr_isr()
         temp_mgr_pid();
 }
 
-ISR(TIMER5_COMPA_vect)
+ISR(TIMERx_COMPA_vect)
 {
     // immediately schedule a new conversion
     if(adc_values_ready != true) return;
