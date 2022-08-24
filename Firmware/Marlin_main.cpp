@@ -304,10 +304,11 @@ uint8_t saved_filament_type;
 // Define some coordinates outside the clamp limits (making them invalid past the parsing stage) so
 // that they can be used later for various logical checks
 #define X_COORD_INVALID (X_MIN_POS-1)
-#define Y_COORD_INVALID (Y_MIN_POS-1)
 
-#define SAVED_TARGET_UNSET X_COORD_INVALID
-float saved_target[NUM_AXIS] = {SAVED_TARGET_UNSET, 0, 0, 0};
+#define SAVED_START_POSITION_UNSET X_COORD_INVALID
+float saved_start_position[NUM_AXIS] = {SAVED_START_POSITION_UNSET, 0, 0, 0};
+
+uint16_t saved_segment_idx = 0;
 
 // save/restore printing in case that mmu was not responding 
 bool mmu_print_saved = false;
@@ -445,7 +446,6 @@ AutoReportFeatures autoReportFeatures;
 //=============================Routines======================================
 //===========================================================================
 
-static void get_arc_coordinates();
 static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
@@ -4648,18 +4648,8 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
     case 0: // G0 -> G1
     case 1: // G1
         {
-            get_coordinates(); // For X Y Z E F
-
-            // When recovering from a previous print move, restore the originally
-            // calculated target position on the first USB/SD command. This accounts
-            // properly for relative moves
-            if ((saved_target[0] != SAVED_TARGET_UNSET) &&
-                ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) ||
-                 (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)))
-            {
-                memcpy(destination, saved_target, sizeof(destination));
-                saved_target[0] = SAVED_TARGET_UNSET;
-            }
+        uint16_t start_segment_idx = restore_interrupted_gcode();
+        get_coordinates(); // For X Y Z E F
 
 		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
 			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
@@ -4680,7 +4670,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
         }
 #endif //FWRETRACT
 
-        prepare_move();
+        prepare_move(start_segment_idx);
         //ClearToSend();
       }
       break;
@@ -4705,21 +4695,24 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
 	  - `F` - The feedrate per minute of the move between the starting point and ending point (if supplied)
 	
     */
-    case 2: 
-      {
-        get_arc_coordinates();
-        prepare_arc_move(true);
-      }
-      break;
- 
-    // -------------------------------
-    case 3: 
-      {
-        get_arc_coordinates();
-        prepare_arc_move(false);
-      }
-      break;
+    case 2:
+    case 3:
+    {
+        uint16_t start_segment_idx = restore_interrupted_gcode();
+#ifdef SF_ARC_FIX
+        bool relative_mode_backup = relative_mode;
+        relative_mode = true;
+#endif
+        get_coordinates(); // For X Y Z E F
+#ifdef SF_ARC_FIX
+        relative_mode=relative_mode_backup;
+#endif
 
+        offset[0] = code_seen('I') ? code_value() : 0.f;
+        offset[1] = code_seen('J') ? code_value() : 0.f;
+        
+        prepare_arc_move((gcode_in_progress == 2), start_segment_idx);
+    } break;
 
     /*!
 	### G4 - Dwell <a href="https://reprap.org/wiki/G-code#G4:_Dwell">G4: Dwell</a>
@@ -9426,8 +9419,7 @@ void update_currents() {
 }
 #endif //MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
 
-void get_coordinates()
-{
+void get_coordinates() {
   bool seen[4]={false,false,false,false};
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
@@ -9464,31 +9456,6 @@ void get_coordinates()
   }
 }
 
-void get_arc_coordinates()
-{
-#ifdef SF_ARC_FIX
-   bool relative_mode_backup = relative_mode;
-   relative_mode = true;
-#endif
-   get_coordinates();
-#ifdef SF_ARC_FIX
-   relative_mode=relative_mode_backup;
-#endif
-
-   if(code_seen('I')) {
-     offset[0] = code_value();
-   }
-   else {
-     offset[0] = 0.0;
-   }
-   if(code_seen('J')) {
-     offset[1] = code_value();
-   }
-   else {
-     offset[1] = 0.0;
-   }
-}
-
 void clamp_to_software_endstops(float target[3])
 {
 #ifdef DEBUG_DISABLE_SWLIMITS
@@ -9510,59 +9477,70 @@ void clamp_to_software_endstops(float target[3])
     }
 }
 
+uint16_t restore_interrupted_gcode() {
+    // When recovering from a previous print move, restore the originally
+    // calculated start position on the first USB/SD command. This accounts
+    // properly for relative moves
+    if (
+        (saved_start_position[0] != SAVED_START_POSITION_UNSET) && (
+            (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) ||
+            (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)
+        )
+    ) {
+        memcpy(current_position, saved_start_position, sizeof(current_position));
+        saved_start_position[0] = SAVED_START_POSITION_UNSET;
+        return saved_segment_idx;
+    }
+    else
+        return 1; //begin with the first segment
+}
+
 #ifdef MESH_BED_LEVELING
-void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
+void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder, uint16_t start_segment_idx = 0) {
         float dx = x - current_position[X_AXIS];
         float dy = y - current_position[Y_AXIS];
-        int n_segments = 0;
+        uint16_t n_segments = 0;
 
         if (mbl.active) {
             float len = fabs(dx) + fabs(dy);
             if (len > 0)
                 // Split to 3cm segments or shorter.
-                n_segments = int(ceil(len / 30.f));
+                n_segments = uint16_t(ceil(len / 30.f));
         }
 
-        if (n_segments > 1) {
-            // In a multi-segment move explicitly set the final target in the plan
-            // as the move will be recalculated in it's entirety
-            float gcode_target[NUM_AXIS];
-            gcode_target[X_AXIS] = x;
-            gcode_target[Y_AXIS] = y;
-            gcode_target[Z_AXIS] = z;
-            gcode_target[E_AXIS] = e;
+        if (n_segments > 1 && start_segment_idx) {
 
             float dz = z - current_position[Z_AXIS];
             float de = e - current_position[E_AXIS];
 
-            for (int i = 1; i < n_segments; ++ i) {
+            for (uint16_t i = start_segment_idx; i < n_segments; ++ i) {
                 float t = float(i) / float(n_segments);
                 plan_buffer_line(current_position[X_AXIS] + t * dx,
                                  current_position[Y_AXIS] + t * dy,
                                  current_position[Z_AXIS] + t * dz,
                                  current_position[E_AXIS] + t * de,
-                                 feed_rate, extruder, gcode_target);
+                                 feed_rate, extruder, current_position, i);
                 if (planner_aborted)
                     return;
             }
         }
         // The rest of the path.
-        plan_buffer_line(x, y, z, e, feed_rate, extruder);
+        plan_buffer_line(x, y, z, e, feed_rate, extruder, current_position);
     }
 #endif  // MESH_BED_LEVELING
     
-void prepare_move()
+void prepare_move(uint16_t start_segment_idx)
 {
   clamp_to_software_endstops(destination);
   previous_millis_cmd.start();
 
   // Do not use feedmultiply for E or Z only moves
-  if( (current_position[X_AXIS] == destination [X_AXIS]) && (current_position[Y_AXIS] == destination [Y_AXIS])) {
+  if((current_position[X_AXIS] == destination[X_AXIS]) && (current_position[Y_AXIS] == destination[Y_AXIS])) {
       plan_buffer_line_destinationXYZE(feedrate/60);
   }
   else {
 #ifdef MESH_BED_LEVELING
-    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
+    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder, start_segment_idx);
 #else
      plan_buffer_line_destinationXYZE(feedrate*feedmultiply*(1./(60.f*100.f)));
 #endif
@@ -9571,10 +9549,10 @@ void prepare_move()
   set_current_to_destination();
 }
 
-void prepare_arc_move(bool isclockwise) {
+void prepare_arc_move(bool isclockwise, uint16_t start_segment_idx) {
     float r = hypot(offset[X_AXIS], offset[Y_AXIS]); // Compute arc radius for mc_arc
     // Trace the arc
-    mc_arc(current_position, destination, offset, feedrate * feedmultiply / 60 / 100.0, r, isclockwise, active_extruder);
+    mc_arc(current_position, destination, offset, feedrate * feedmultiply / 60 / 100.0, r, isclockwise, active_extruder, start_segment_idx);
     // As far as the parser is concerned, the position is now == target. In reality the
     // motion control system might still be processing the action and the real tool position
     // in any intermediate location.
@@ -10934,13 +10912,15 @@ void uvlo_()
     uint16_t feedrate_bckp;
     if (current_block && !pos_invalid)
     {
-        memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+        memcpy(saved_start_position, current_block->gcode_start_position, sizeof(saved_start_position));
         feedrate_bckp = current_block->gcode_feedrate;
+        saved_segment_idx = current_block->segment_idx;
     }
     else
     {
-        saved_target[0] = SAVED_TARGET_UNSET;
+        saved_start_position[0] = SAVED_START_POSITION_UNSET;
         feedrate_bckp = feedrate;
+        saved_segment_idx = 0;
     }
 
     // From this point on and up to the print recovery, Z should not move during X/Y travels and
@@ -11039,10 +11019,12 @@ void uvlo_()
 	eeprom_update_float((float*)(EEPROM_UVLO_TRAVEL_ACCELL), cs.travel_acceleration);
 
     // Store the saved target
-    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4), saved_target[X_AXIS]);
-    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4), saved_target[Y_AXIS]);
-    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4), saved_target[Z_AXIS]);
-    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4), saved_target[E_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+0*4), saved_start_position[X_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+1*4), saved_start_position[Y_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+2*4), saved_start_position[Z_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+3*4), saved_start_position[E_AXIS]);
+    
+    eeprom_update_word((uint16_t*)EEPROM_UVLO_SAVED_SEGMENT_IDX, saved_segment_idx);
 
 #ifdef LIN_ADVANCE
 	eeprom_update_float((float*)(EEPROM_UVLO_LA_K), extruder_advance_K);
@@ -11312,10 +11294,12 @@ bool recover_machine_state_after_power_panic()
   extrudemultiply = (int)eeprom_read_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY));
 
   // 9) Recover the saved target
-  saved_target[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+0*4));
-  saved_target[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+1*4));
-  saved_target[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+2*4));
-  saved_target[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_TARGET+3*4));
+  saved_start_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+0*4));
+  saved_start_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+1*4));
+  saved_start_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+2*4));
+  saved_start_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_SAVED_START_POSITION+3*4));
+  
+  saved_segment_idx = eeprom_read_word((uint16_t*)EEPROM_UVLO_SAVED_SEGMENT_IDX);
 
 #ifdef LIN_ADVANCE
   extruder_advance_K = eeprom_read_float((float*)EEPROM_UVLO_LA_K);
@@ -11557,13 +11541,16 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   bool pos_invalid = XY_NO_RESTORE_FLAG;
   if (current_block && !pos_invalid)
   {
-      memcpy(saved_target, current_block->gcode_target, sizeof(saved_target));
+      memcpy(saved_start_position, current_block->gcode_start_position, sizeof(saved_start_position));
       saved_feedrate2 = current_block->gcode_feedrate;
+      saved_segment_idx = current_block->segment_idx;
+      // printf_P(PSTR("stop_and_save_print_to_ram: %f, %f, %f, %f, %u\n"), saved_start_position[0], saved_start_position[1], saved_start_position[2], saved_start_position[3], saved_segment_idx);
   }
   else
   {
-      saved_target[0] = SAVED_TARGET_UNSET;
+      saved_start_position[0] = SAVED_START_POSITION_UNSET;
       saved_feedrate2 = feedrate;
+      saved_segment_idx = 0;
   }
 
 	planner_abort_hard(); //abort printing
@@ -11710,7 +11697,7 @@ void restore_print_from_ram_and_continue(float e_move)
 void cancel_saved_printing()
 {
     eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
-    saved_target[0] = SAVED_TARGET_UNSET;
+    saved_start_position[0] = SAVED_START_POSITION_UNSET;
     saved_printing_type = PRINTING_TYPE_NONE;
     saved_printing = false;
 }
