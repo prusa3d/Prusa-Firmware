@@ -24,6 +24,8 @@ void LogEchoEvent_P(const char *msg);
 
 #define MMU2_ECHO_MSG(S) do{ SERIAL_ECHO_START; SERIAL_MMU2(); SERIAL_ECHO(S); }while(0)
 #define MMU2_ERROR_MSG(S) do{ SERIAL_ERROR_START; SERIAL_MMU2(); SERIAL_ECHO(S); }while(0)
+#define MMU2_ECHO_MSGRPGM(S) do{ SERIAL_ECHO_START; SERIAL_MMU2(); SERIAL_ECHORPGM(S); }while(0)
+#define MMU2_ERROR_MSGRPGM(S) do{ SERIAL_ERROR_START; SERIAL_MMU2(); SERIAL_ECHORPGM(S); }while(0)
 
 #else // #ifndef UNITTEST
 
@@ -31,5 +33,7 @@ void LogEchoEvent_P(const char *msg);
 #define MMU2_ERROR_MSG(S) /* */
 #define SERIAL_ECHO(S) /* */
 #define SERIAL_ECHOLN(S) /* */
+#define MMU2_ECHO_MSGRPGM(S) /* */
+#define MMU2_ERROR_MSGRPGM(S) /* */
 
 #endif // #ifndef UNITTEST
