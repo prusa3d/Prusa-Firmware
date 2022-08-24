@@ -20,17 +20,17 @@ public:
     ~FSensorBlockRunout();
 };
 
+/// Base class Filament sensor
+/// 
+/// Ideally, there could have been a nice class hierarchy of filament sensor types with common functionality
+/// extracted into this base class.
+/// But:
+/// - virtual methods take more space
+/// - we don't need to switch among different filament sensors at runtime
+/// Therefore the class hierarchy carefully avoids using virtual methods and doesn't look too fancy.
 #ifdef FILAMENT_SENSOR
 class Filament_sensor {
 public:
-    virtual void init() = 0;
-    virtual void deinit() = 0;
-    virtual bool update() = 0;
-    virtual bool getFilamentPresent() = 0;
-#ifdef FSENSOR_PROBING
-    virtual bool probeOtherType() = 0; //checks if the wrong fsensor type is detected.
-#endif
-    
     enum class State : uint8_t {
         disabled = 0,
         initializing,
@@ -44,41 +44,22 @@ public:
         _Undef = EEPROM_EMPTY_VALUE
     };
     
-    void setEnabled(bool enabled);
+    static void setEnabled(bool enabled);
     
     void setAutoLoadEnabled(bool state, bool updateEEPROM = false);
-    
-    bool getAutoLoadEnabled() {
-        return autoLoadEnabled;
-    }
+    bool getAutoLoadEnabled() const { return autoLoadEnabled; }
     
     void setRunoutEnabled(bool state, bool updateEEPROM = false);
-    
-    bool getRunoutEnabled() {
-        return runoutEnabled;
-    }
+    bool getRunoutEnabled() const { return runoutEnabled; }
     
     void setActionOnError(SensorActionOnError state, bool updateEEPROM = false);
+    SensorActionOnError getActionOnError() const { return sensorActionOnError; }
     
-    SensorActionOnError getActionOnError() {
-        return sensorActionOnError;
-    }
+    bool getFilamentLoadEvent() const { return postponedLoadEvent; }
     
-    bool getFilamentLoadEvent() {
-        return postponedLoadEvent;
-    }
-    
-    bool isError() {
-        return state == State::error;
-    }
-    
-    bool isReady() {
-        return state == State::ready;
-    }
-    
-    bool isEnabled() {
-        return state != State::disabled;
-    }
+    bool isError() const { return state == State::error; }
+    bool isReady() const { return state == State::ready; }
+    bool isEnabled() const { return state != State::disabled; }
     
 protected:
     void settings_init_common();
@@ -89,7 +70,7 @@ protected:
     
     void triggerFilamentRemoved();
     
-    void filAutoLoad();
+    static void filAutoLoad();
     
     void filRunout();
     
@@ -107,12 +88,12 @@ protected:
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 class IR_sensor: public Filament_sensor {
 public:
-    void init() override;
-    void deinit() override;
-    bool update()override ;
-    bool getFilamentPresent()override;
+    void init();
+    void deinit();
+    bool update();
+    bool getFilamentPresent() const { return !READ(IR_SENSOR_PIN); }
 #ifdef FSENSOR_PROBING
-    bool probeOtherType()override;
+    static bool probeOtherType(); //checks if the wrong fsensor type is detected.
 #endif
     void settings_init();
 };
@@ -127,14 +108,11 @@ constexpr static float Raw2Voltage(uint16_t raw) {
 
 class IR_sensor_analog: public IR_sensor {
 public:
-    void init()override;
-    void deinit()override;
-    bool update()override;
+    void init();
+    bool update();
     void voltUpdate(uint16_t raw);
     
-    uint16_t getVoltRaw();
-    
-    void settings_init();
+    uint16_t __attribute__((noinline)) getVoltRaw();
     
     enum class SensorRevision : uint8_t {
         _Old = 0,
@@ -142,17 +120,12 @@ public:
         _Undef = EEPROM_EMPTY_VALUE
     };
     
-    SensorRevision getSensorRevision() {
-        return sensorRevision;
-    }
+    SensorRevision getSensorRevision() const { return sensorRevision; }
     
-    const char* getIRVersionText();
+    const char* __attribute__((noinline)) getIRVersionText();
     
     void setSensorRevision(SensorRevision rev, bool updateEEPROM = false);
     
-    bool checkVoltage(uint16_t raw);
-    
-    // Voltage2Raw is not constexpr :/
     constexpr static uint16_t IRsensor_Ldiode_TRESHOLD = Voltage2Raw(0.3F); // ~0.3V, raw value=982
     constexpr static uint16_t IRsensor_Lmax_TRESHOLD = Voltage2Raw(1.5F); // ~1.5V (0.3*Vcc), raw value=4910
     constexpr static uint16_t IRsensor_Hmin_TRESHOLD = Voltage2Raw(3.0F); // ~3.0V (0.6*Vcc), raw value=9821
@@ -161,8 +134,14 @@ public:
     
 private:
     SensorRevision sensorRevision;
-    volatile bool voltReady; //this gets set by the adc ISR
-    volatile uint16_t voltRaw;
+    
+    bool voltReady; // set by the adc ISR, therefore avoid accessing the variable directly but use getVoltReady()
+    bool getVoltReady()const;
+    void clearVoltReady();
+    
+    uint16_t voltRaw; // set by the adc ISR, therefore avoid accessing the variable directly but use getVoltRaw()
+    bool checkVoltage(uint16_t raw);
+    
     uint16_t minVolt = Voltage2Raw(6.F);
     uint16_t maxVolt = 0;
     uint16_t nFSCheckCount;
@@ -181,22 +160,16 @@ private:
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 class PAT9125_sensor: public Filament_sensor {
 public:
-    void init()override;
-    void deinit()override;
-    bool update()override;
-    bool getFilamentPresent() override{
-        return filterFilPresent;
-    }
-    
+    void init();
+    void deinit();
+    bool update();
+    bool getFilamentPresent() const { return filterFilPresent; }
 #ifdef FSENSOR_PROBING
-    bool probeOtherType() override;
+    bool probeOtherType(); //checks if the wrong fsensor type is detected.
 #endif
     
     void setJamDetectionEnabled(bool state, bool updateEEPROM = false);
-    
-    bool getJamDetectionEnabled() {
-        return jamDetection;
-    }
+    bool getJamDetectionEnabled() const { return jamDetection; }
     
     void stStep(bool rev) { //from stepper isr
         stepCount += rev ? -1 : 1;
@@ -212,7 +185,7 @@ private:
     
     bool jamDetection;
     int16_t oldPos;
-    volatile int16_t stepCount;
+    int16_t stepCount;
     int16_t chunkSteps;
     uint8_t jamErrCnt;
     
