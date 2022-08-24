@@ -241,9 +241,10 @@ void prepare_move();
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void finishAndDisableSteppers();
 
-void UnconditionalStop(); // Stop heaters, motion and clear current print status
-void Stop();              // Emergency stop used by overtemp functions which allows recovery
-bool IsStopped();         // Returns true if the print has been stopped
+void UnconditionalStop();                   // Stop heaters, motion and clear current print status
+void ThermalStop(bool allow_pause = false); // Emergency stop used by overtemp functions which allows
+                                            // recovery (with pause=true)
+bool IsStopped();                           // Returns true if the print has been stopped
 
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
@@ -254,27 +255,6 @@ bool IsStopped();         // Returns true if the print has been stopped
 void prepare_arc_move(bool isclockwise);
 void clamp_to_software_endstops(float target[3]);
 void refresh_cmd_timeout(void);
-
-// Timer counter, incremented by the 1ms Arduino timer.
-// The standard Arduino timer() function returns this value atomically
-// by disabling / enabling interrupts. This is costly, if the interrupts are known
-// to be disabled.
-#ifdef SYSTEM_TIMER_2
-extern volatile unsigned long timer2_millis;
-#else //SYSTEM_TIMER_2
-extern volatile unsigned long timer0_millis;
-#endif //SYSTEM_TIMER_2
-
-// An unsynchronized equivalent to a standard Arduino _millis() function.
-// To be used inside an interrupt routine.
-
-FORCE_INLINE unsigned long millis_nc() { 
-#ifdef SYSTEM_TIMER_2
-	return timer2_millis;
-#else //SYSTEM_TIMER_2
-	return timer0_millis;
-#endif //SYSTEM_TIMER_2
-}
 
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val);
@@ -315,17 +295,11 @@ void homeaxis(uint8_t axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 void homeaxis(uint8_t axis, uint8_t cnt = 1);
 #endif //TMC2130
 
-
-#ifdef FAN_SOFT_PWM
-extern unsigned char fanSpeedSoftPwm;
-#endif
-
 #ifdef FWRETRACT
 extern bool retracted[EXTRUDERS];
 extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
-
 
 extern uint8_t host_keepalive_interval;
 
@@ -364,6 +338,10 @@ extern uint8_t saved_printing_type;
 #define PRINTING_TYPE_USB 1
 #define PRINTING_TYPE_NONE 2
 
+extern float saved_extruder_temperature; //!< Active extruder temperature
+extern float saved_bed_temperature; //!< Bed temperature
+extern int saved_fan_speed; //!< Print fan speed
+
 //save/restore printing in case that mmu is not responding
 extern bool mmu_print_saved;
 
@@ -384,6 +362,8 @@ extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT 0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || usb_timer.running() || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || mmu_print_saved || homing_flag || mesh_bed_leveling_flag)
+
+extern bool printer_active();
 
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
@@ -467,6 +447,7 @@ extern uint8_t calc_percent_done();
 
 #define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
 extern void host_keepalive();
+extern void host_autoreport();
 //extern MarlinBusyState busy_state;
 extern int8_t busy_state;
 
@@ -504,7 +485,6 @@ void raise_z_above(float target, bool plan=true);
 
 extern "C" void softReset();
 void stack_error();
-void pullup_error(bool fromTempISR);
 
 extern uint32_t IP_address;
 

@@ -168,6 +168,10 @@ extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];
 extern const char MSG_IR_UNKNOWN[];
 #endif
+#ifdef TEMP_MODEL
+extern const char MSG_THERMAL_ANOMALY[];
+extern const char MSG_PAUSED_THERMAL_ERROR[];
+#endif
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
@@ -193,9 +197,9 @@ extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ENDSTOP_HIT[];
 extern const char MSG_EJECT_FILAMENT[];
 extern const char MSG_CUT_FILAMENT[];
-extern const char MSG_OCTOPRINT_PAUSE[];
+extern const char MSG_OCTOPRINT_ASK_PAUSE[];
 extern const char MSG_OCTOPRINT_PAUSED[];
-extern const char MSG_OCTOPRINT_RESUME[];
+extern const char MSG_OCTOPRINT_ASK_RESUME[];
 extern const char MSG_OCTOPRINT_RESUMED[];
 extern const char MSG_OCTOPRINT_CANCEL[];
 extern const char MSG_FANCHECK_EXTRUDER[];

@@ -75,6 +75,9 @@ void Config_StoreSettings()
   
   if (EEPROM_writeData(reinterpret_cast<uint8_t*>(EEPROM_M500_base),reinterpret_cast<uint8_t*>(&cs),sizeof(cs),0), "cs, invalid version")
   {
+#ifdef TEMP_MODEL
+      temp_model_save_settings();
+#endif
       strcpy(cs.version,EEPROM_VERSION); //!< validate data if write succeed
       EEPROM_writeData(reinterpret_cast<uint8_t*>(EEPROM_M500_base->version), reinterpret_cast<uint8_t*>(cs.version), sizeof(cs.version), "cs.version valid");
   }
@@ -173,6 +176,9 @@ void Config_PrintSettings(uint8_t level)
     printf_P(PSTR(
         "%SArc Settings: P:Max length(mm) S:Min length (mm) N:Corrections R:Min segments F:Segments/sec.\n%S  M214 P%.2f S%.2f N%d R%d F%d\n"),
         echomagic, echomagic, cs.mm_per_arc_segment, cs.min_mm_per_arc_segment, cs.n_arc_correction, cs.min_arc_segments, cs.arc_segments_per_sec);
+#ifdef TEMP_MODEL
+    temp_model_report_settings();
+#endif
 }
 #endif
 
@@ -321,6 +327,10 @@ bool Config_RetrieveSettings()
 
     // Call updatePID (similar to when we have processed M301)
     updatePID();
+#ifdef TEMP_MODEL
+    temp_model_load_settings();
+#endif
+
         SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
     }
@@ -353,6 +363,9 @@ void Config_ResetDefault()
 #ifdef PIDTEMP
     updatePID();
 #endif//PIDTEMP
+#ifdef TEMP_MODEL
+    temp_model_reset_settings();
+#endif
 
   calculate_extruder_multipliers();
 

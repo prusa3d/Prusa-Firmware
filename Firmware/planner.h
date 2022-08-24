@@ -255,11 +255,14 @@ FORCE_INLINE bool planner_queue_full() {
     return block_buffer_tail == next_block_index;
 }
 
+// Reset machine position from stepper counters
+extern void planner_reset_position();
+
 // Abort the stepper routine, clean up the block queue,
 // wait for the steppers to stop,
 // update planner's current position and the current_position of the front end.
 extern void planner_abort_hard();
-extern bool waiting_inside_plan_buffer_line_print_aborted;
+extern bool planner_aborted;
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
 extern int extrude_min_temp;

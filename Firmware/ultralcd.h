@@ -9,13 +9,18 @@ extern void menu_lcd_lcdupdate_func(void);
 
 // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
 void ultralcd_init();
-void lcd_setstatus(const char* message);
-void lcd_setstatuspgm(const char* message);
 
 //! LCD status severities
-#define LCD_STATUS_CRITICAL 2 //< Heater failure
-#define LCD_STATUS_ALERT    1 //< Other hardware issue
+#define LCD_STATUS_CRITICAL 3 //< Heater failure
+#define LCD_STATUS_ALERT    2 //< Other hardware issue
+#define LCD_STATUS_INFO     1 //< Message times out after a while
 #define LCD_STATUS_NONE     0 //< No alert message set
+
+#define LCD_STATUS_INFO_TIMEOUT 20000
+
+// Set the current status message (equivalent to LCD_STATUS_NONE)
+void lcd_setstatus(const char* message);
+void lcd_setstatuspgm(const char* message);
 
 //! return to the main status screen and display the alert message
 //! Beware - it has sideeffects:
@@ -25,13 +30,10 @@ void lcd_setstatuspgm(const char* message);
 void lcd_setalertstatus(const char* message, uint8_t severity = LCD_STATUS_ALERT);
 void lcd_setalertstatuspgm(const char* message, uint8_t severity = LCD_STATUS_ALERT);
 
-//! only update the alert message on the main status screen
-//! has no sideeffects, may be called multiple times
-void lcd_updatestatus(const char *message);
-void lcd_updatestatuspgm(const char *message);
-
-void lcd_reset_alert_level();
+//! Get/reset the current alert level
 uint8_t get_message_level();
+void lcd_reset_alert_level();
+
 void lcd_adjust_z();
 void lcd_pick_babystep();
 void lcd_alright();

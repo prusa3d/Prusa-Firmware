@@ -28,7 +28,6 @@ ShortTimer serialTimeoutTimer;
 
 long gcode_N = 0;
 long gcode_LastN = 0;
-long Stopped_gcode_LastN = 0;
 
 uint32_t sdpos_atomic = 0;
 
@@ -464,8 +463,6 @@ void get_command()
 
 			  // Don't parse N again with code_seen('N')
 			  cmdbuffer[bufindw + CMDHDRSIZE] = '$';
-			  //if no errors, continue parsing
-			  gcode_LastN = gcode_N;
 		}
         // if we don't receive 'N' but still see '*'
         if ((cmdbuffer[bufindw + CMDHDRSIZE] != 'N') && (cmdbuffer[bufindw + CMDHDRSIZE] != '$') && (strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*') != NULL))
@@ -478,35 +475,48 @@ void get_command()
             serial_count = 0;
             return;
         }
+        // Handle KILL early, even when Stopped
+        if(strcmp(cmdbuffer+bufindw+CMDHDRSIZE, "M112") == 0)
+          kill(MSG_M112_KILL, 2);
+        // Handle the USB timer
         if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
             if (!IS_SD_PRINTING) {
                 usb_timer.start();
             }
-            if (Stopped == true) {
-                if (code_value_uint8() <= 3) {
-                    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
-                    LCD_MESSAGERPGM(_T(MSG_STOPPED));
-                }
-            }
-        } // end of 'G' command
+        }
+        if (Stopped == true) {
+            // Stopped can be set either during error states (thermal error: cannot continue), or
+            // when a printer-initiated action is processed. In such case the printer will send to
+            // the host an action, but cannot know if the action has been processed while new
+            // commands are being sent. In this situation we just drop the command while issuing
+            // periodic "busy" messages in the main loop. Since we're not incrementing the received
+            // line number, a request for resend will happen (if necessary), ensuring we don't skip
+            // commands whenever Stopped is cleared and processing resumes.
+            serial_count = 0;
+            return;
+        }
 
-        //If command was e-stop process now
-        if(strcmp(cmdbuffer+bufindw+CMDHDRSIZE, "M112") == 0)
-          kill(MSG_M112_KILL, 2);
-        
-        // Store the current line into buffer, move to the next line.
+        // Command is complete: store the current line into buffer, move to the next line.
+
 		// Store type of entry
         cmdbuffer[bufindw] = gcode_N ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
+
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
         SERIAL_ECHO(cmdbuffer+bufindw+CMDHDRSIZE);
         SERIAL_ECHOLNPGM("");
 #endif /* CMDBUFFER_DEBUG */
+
+        // Store command itself
         bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
         if (bufindw == sizeof(cmdbuffer))
             bufindw = 0;
         ++ buflen;
+
+        // Update the processed gcode line
+        gcode_LastN = gcode_N;
+
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHOPGM("Number of commands in the buffer: ");
         SERIAL_ECHO(buflen);

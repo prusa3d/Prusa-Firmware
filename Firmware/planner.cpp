@@ -55,6 +55,7 @@
 #include "planner.h"
 #include "stepper.h"
 #include "temperature.h"
+#include "fancheck.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "ConfigurationStore.h"
@@ -67,6 +68,9 @@
 #ifdef TMC2130
 #include "tmc2130.h"
 #endif //TMC2130
+
+#include <util/atomic.h>
+
 
 //===========================================================================
 //=============================public variables ============================
@@ -592,17 +596,7 @@ void check_axes_activity()
 #endif
 }
 
-bool waiting_inside_plan_buffer_line_print_aborted = false;
-/*
-void planner_abort_soft()
-{
-    // Empty the queue.
-    while (blocks_queued()) plan_discard_current_block();
-    // Relay to planner wait routine, that the current line shall be canceled.
-    waiting_inside_plan_buffer_line_print_aborted = true;
-    //current_position[i]
-}
-*/
+bool planner_aborted = false;
 
 #ifdef PLANNER_DIAGNOSTICS
 static inline void planner_update_queue_min_counter()
@@ -615,12 +609,8 @@ static inline void planner_update_queue_min_counter()
 
 extern volatile uint32_t step_events_completed; // The number of step events executed in the current block
 
-void planner_abort_hard()
+void planner_reset_position()
 {
-    // Abort the stepper routine and flush the planner queue.
-    DISABLE_STEPPER_DRIVER_INTERRUPT();
-
-    // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
     // First update the planner's current position in the physical motor steps.
     position[X_AXIS] = st_get_position(X_AXIS);
     position[Y_AXIS] = st_get_position(Y_AXIS);
@@ -632,6 +622,7 @@ void planner_abort_hard()
     current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
     current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
     current_position[E_AXIS] = st_get_position_mm(E_AXIS);
+
     // Apply the mesh bed leveling correction to the Z axis.
 #ifdef MESH_BED_LEVELING
     if (mbl.active) {
@@ -664,8 +655,6 @@ void planner_abort_hard()
 #endif
     }
 #endif
-    // Clear the planner queue, reset and re-enable the stepper timer.
-    quickStop();
 
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
@@ -673,15 +662,29 @@ void planner_abort_hard()
 #ifdef LIN_ADVANCE
     memcpy(position_float, current_position, sizeof(position_float));
 #endif
+}
+
+void planner_abort_hard()
+{
+    // Abort the stepper routine and flush the planner queue.
+    DISABLE_STEPPER_DRIVER_INTERRUPT();
+
+    // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
+    planner_reset_position();
+
+    // Relay to planner wait routine that the current line shall be canceled.
+    planner_aborted = true;
+
+    // Clear the planner queue, reset and re-enable the stepper timer.
+    quickStop();
+
     // Resets planner junction speeds. Assumes start from rest.
     previous_nominal_speed = 0.0;
     memset(previous_speed, 0, sizeof(previous_speed));
 
+    // Reset position sync requests
     plan_reset_next_e_queue = false;
     plan_reset_next_e_sched = false;
-
-    // Relay to planner wait routine, that the current line shall be canceled.
-    waiting_inside_plan_buffer_line_print_aborted = true;
 }
 
 void plan_buffer_line_curposXYZE(float feed_rate) {
@@ -702,12 +705,11 @@ float junction_deviation = 0.1;
 // calculation the caller must also provide the physical length of the line in millimeters.
 void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target)
 {
-    // Calculate the buffer head after we push this byte
+  // Calculate the buffer head after we push this byte
   uint8_t next_buffer_head = next_block_index(block_buffer_head);
 
-  // If the buffer is full: good! That means we are well ahead of the robot. 
+  // If the buffer is full: good! That means we are well ahead of the robot.
   // Rest here until there is room in the buffer.
-  waiting_inside_plan_buffer_line_print_aborted = false;
   if (block_buffer_tail == next_buffer_head) {
       do {
           manage_heater(); 
@@ -715,18 +717,14 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
           manage_inactivity(false); 
           lcd_update(0);
       } while (block_buffer_tail == next_buffer_head);
-      if (waiting_inside_plan_buffer_line_print_aborted) {
-          // Inside the lcd_update(0) routine the print has been aborted.
-          // Cancel the print, do not plan the current line this routine is waiting on.
-#ifdef PLANNER_DIAGNOSTICS
-          planner_update_queue_min_counter();
-#endif /* PLANNER_DIAGNOSTICS */
-          return;
-      }
   }
 #ifdef PLANNER_DIAGNOSTICS
   planner_update_queue_min_counter();
 #endif /* PLANNER_DIAGNOSTICS */
+  if(planner_aborted) {
+      // avoid planning the block early if aborted
+      return;
+  }
 
   // Prepare to set up new block
   block_t *block = &block_buffer[block_buffer_head];
@@ -1331,8 +1329,12 @@ Having the real displacement of the head, we can calculate the total movement le
   if (block->step_event_count.wide <= 32767)
     block->flag |= BLOCK_FLAG_DDA_LOWRES;
 
-  // Move the buffer head. From now the block may be picked up by the stepper interrupt controller.
-  block_buffer_head = next_buffer_head;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+      // Move the buffer head ensuring the current block hasn't been cancelled from an isr context
+      // (this is possible both during crash detection *and* uvlo, thus needing a global cli)
+      if(planner_aborted) return;
+      block_buffer_head = next_buffer_head;
+  }
 
   // Update position
   memcpy(position, target, sizeof(target)); // position[] = target[]

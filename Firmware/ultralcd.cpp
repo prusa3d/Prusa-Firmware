@@ -10,7 +10,7 @@
 #include "Marlin.h"
 #include "language.h"
 #include "cardreader.h"
-#include "temperature.h"
+#include "fancheck.h"
 #include "stepper.h"
 #include "ConfigurationStore.h"
 #include "printers.h"
@@ -94,13 +94,14 @@ static bool lcd_autoDeplete;
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
 
+/* LCD message status */
+static LongTimer lcd_status_message_timeout;
+static uint8_t lcd_status_message_level;
+static char lcd_status_message[LCD_WIDTH + 1] = WELCOME_MSG;
+
 /* !Configuration settings */
 
-uint8_t lcd_status_message_level;
-char lcd_status_message[LCD_WIDTH + 1] = WELCOME_MSG;
-
 static uint8_t lay1cal_filament = 0;
-
 
 static const char separator[] PROGMEM = "--------------------";
 
@@ -597,7 +598,12 @@ void lcdui_print_status_line(void)
             break;
         }
     }
-    else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status)) { // If printing from SD, show what we are printing
+    else if ((IS_SD_PRINTING) &&
+        (custom_message_type == CustomMsg::Status) &&
+        (lcd_status_message_level <= LCD_STATUS_INFO) &&
+        lcd_status_message_timeout.expired_cont(LCD_STATUS_INFO_TIMEOUT))
+    {
+        // If printing from SD, show what we are printing
 		const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
         if(strlen(longFilenameOLD) > LCD_WIDTH) {
             uint8_t gh = scrollstuff;
@@ -860,7 +866,7 @@ void lcd_status_screen()                          // NOT static due to using ins
 	}
 
 	if (current_click
-		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
+		&& ( menu_block_mask == MENU_BLOCK_NONE ) // or a serious error blocks entering the menu
 	)
 	{
 		menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
@@ -869,14 +875,34 @@ void lcd_status_screen()                          // NOT static due to using ins
 	}
 }
 
+void print_stop();
+
 void lcd_commands()
 {
+    if (planner_aborted) {
+        // we are still within an aborted command. do not process any LCD command until we return
+        return;
+    }
+
+    if (lcd_commands_type == LcdCommands::StopPrint)
+    {
+        if (!blocks_queued() && !homing_flag)
+        {
+            custom_message_type = CustomMsg::Status;
+            lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
+            lcd_commands_type = LcdCommands::Idle;
+            lcd_commands_step = 0;
+            print_stop();
+        }
+    }
+
 	if (lcd_commands_type == LcdCommands::LongPause)
 	{
 		if (!blocks_queued() && !homing_flag)
 		{
 			if (custom_message_type != CustomMsg::M117)
 			{
+				custom_message_type = CustomMsg::Status;
 				lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20
 			}
 			lcd_commands_type = LcdCommands::Idle;
@@ -1021,14 +1047,14 @@ void lcd_commands()
 			lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
+			preparePidTuning(); // ensure we don't move to the next step early
 			sprintf_P(cmd1, PSTR("M303 E0 S%3u"), pid_temp);
 			// setting the correct target temperature (for visualization) is done in PID_autotune
 			enquecommand(cmd1);
 			lcd_setstatuspgm(_i("PID cal."));////MSG_PID_RUNNING c=20
 			lcd_commands_step = 2;
 		}
-		if (lcd_commands_step == 2 && pid_tuning_finished) { //saving to eeprom
-			pid_tuning_finished = false;
+		if (lcd_commands_step == 2 && !pidTuningRunning()) { //saving to eeprom
 			custom_message_state = 0;
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
 			setAllTargetHotends(0);  // reset all hotends temperature including the number displayed on the main screen
@@ -1067,18 +1093,19 @@ void lcd_return_to_status()
 void lcd_pause_print()
 {
     stop_and_save_print_to_ram(0.0, -default_retraction);
-    lcd_return_to_status();
+
+    SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_PAUSED);
     isPrintPaused = true;
-    if (LcdCommands::Idle == lcd_commands_type) {
-        lcd_commands_type = LcdCommands::LongPause;
-    }
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
+
+    // return to status is required to continue processing in the main loop!
+    lcd_commands_type = LcdCommands::LongPause;
+    lcd_return_to_status();
 }
 
 //! @brief Send host action "pause"
 void lcd_pause_usb_print()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_ASK_PAUSE);
 }
 
 static void lcd_move_menu_axis();
@@ -5665,22 +5692,37 @@ static bool fan_error_selftest()
     return 0;
 }
 
+bool resume_print_checks() {
+    // reset the lcd status so that a newer error will be shown
+    lcd_return_to_status();
+    lcd_reset_alert_level();
+
+    // ensure thermal issues (temp or fan) are resolved before we allow to resume
+    if (get_temp_error()
+#ifdef FANCHECK
+        || fan_error_selftest()
+#endif
+        ) {
+        return false; // abort if error persists
+    }
+
+    return true;
+}
+
 //! @brief Resume paused print, send host action "resumed"
 //! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
 //! as restore_print_from_ram_and_continue() calls lcd_update() internally.
 void lcd_resume_print()
 {
-    lcd_return_to_status();
-    lcd_reset_alert_level(); //for fan speed error
-    if (fan_error_selftest()) {
-        if (usb_timer.running()) SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSED);
-        return; //abort if error persists
-    }
+    // reset lcd and ensure we can resume first
+    if (!resume_print_checks()) return;
+
     cmdqueue_serial_disabled = false;
     lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
     st_synchronize();
     custom_message_type = CustomMsg::Resuming;
     isPrintPaused = false;
+    Stopped = false; // resume processing USB commands again
     restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
@@ -5691,7 +5733,11 @@ void lcd_resume_print()
 //! @brief Resume paused USB/host print, send host action "resume"
 void lcd_resume_usb_print()
 {
-    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_RESUME); //resume octoprint
+    // reset lcd and ensure we can resume first
+    if (!resume_print_checks()) return;
+
+    // resume the usb host
+    SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_ASK_RESUME);
 }
 
 static void change_sheet()
@@ -5872,14 +5918,16 @@ static void lcd_main_menu()
     }
     if(isPrintPaused)
     {
+        // only allow resuming if hardware errors (temperature or fan) are cleared
+        if(!get_temp_error()
 #ifdef FANCHECK
-        if((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
+            && ((fan_check_error == EFCE_FIXED) || (fan_check_error == EFCE_OK))
 #endif //FANCHECK
-        {
-            if (usb_timer.running()) {
-                MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);
-            } else {
+           ) {
+            if (saved_printing) {
                 MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_print);
+            } else {
+                MENU_ITEM_SUBMENU_P(_T(MSG_RESUME_PRINT), lcd_resume_usb_print);
             }
         }
     }
@@ -6286,56 +6334,61 @@ static void lcd_sd_updir()
   menu_data_reset(); //Forces reloading of cached variables.
 }
 
-void lcd_print_stop()
+// continue stopping the print from the main loop after lcd_print_stop() is called
+void print_stop()
 {
-    if (!card.sdprinting) {
-        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
-    }
-    UnconditionalStop();
+    // save printing time
+    stoptime = _millis();
+    unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
+    save_statistics(total_filament_used, t);
 
-    // TODO: all the following should be moved in the main marlin loop!
-#ifdef MESH_BED_LEVELING
-    mbl.active = false; //also prevents undoing the mbl compensation a second time in the second planner_abort_hard()
-#endif
+    // lift Z
+    raise_z_above(current_position[Z_AXIS] + 10, true);
 
-	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-	stoptime = _millis();
-	unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
-	pause_time = 0;
-	save_statistics(total_filament_used, t);
-
-    // reset current command
-    lcd_commands_step = 0;
-    lcd_commands_type = LcdCommands::Idle;
-
-    lcd_cooldown(); //turns off heaters and fan; goes to status screen.
-
-    if (axis_known_position[Z_AXIS]) {
-        current_position[Z_AXIS] += Z_CANCEL_LIFT;
-        clamp_to_software_endstops(current_position);
-        plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
-    }
-
-    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) //if axis are homed, move to parked position.
-    {
+    // if axis are homed, move to parking position.
+    if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
         current_position[X_AXIS] = X_CANCEL_POS;
         current_position[Y_AXIS] = Y_CANCEL_POS;
         plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
     }
     st_synchronize();
 
+    // did we come here from a thermal error?
+    if(get_temp_error()) {
+        // time to stop the error beep
+        WRITE(BEEPER, LOW);
+    } else {
+        // Turn off the print fan
+        fanSpeed = 0;
+    }
+
     if (mmu_enabled) extr_unload(); //M702 C
-
     finishAndDisableSteppers(); //M84
-
-    lcd_setstatuspgm(MSG_WELCOME);
-    custom_message_type = CustomMsg::Status;
-
-    planner_abort_hard(); //needs to be done since plan_buffer_line resets waiting_inside_plan_buffer_line_print_aborted to false. Also copies current to destination.
-    
     axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
-    
-    isPrintPaused = false; //clear isPrintPaused flag to allow starting next print after pause->stop scenario.
+}
+
+void lcd_print_stop()
+{
+    // UnconditionalStop() will internally cause planner_abort_hard(), meaning we _cannot_ plan
+    // any more move in this call! Any further move must happen inside print_stop(), which is called
+    // by the main loop one iteration later.
+    UnconditionalStop();
+
+    if (!card.sdprinting) {
+        SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); // for Octoprint
+    }
+
+#ifdef MESH_BED_LEVELING
+    mbl.active = false;
+#endif
+
+    // clear any pending paused state immediately
+    pause_time = 0;
+    isPrintPaused = false;
+
+    // return to status is required to continue processing in the main loop!
+    lcd_commands_type = LcdCommands::StopPrint;
+    lcd_return_to_status();
 }
 
 void lcd_sdcard_stop()
@@ -7952,57 +8005,70 @@ void lcd_finishstatus() {
 
 }
 
-void lcd_setstatus(const char* message)
+static bool lcd_message_check(uint8_t priority)
 {
-  if (lcd_status_message_level > 0)
-    return;
-  lcd_updatestatus(message);
+    // regular priority check
+    if (priority >= lcd_status_message_level)
+        return true;
+
+    // check if we can override an info message yet
+    if (lcd_status_message_level == LCD_STATUS_INFO) {
+        return lcd_status_message_timeout.expired_cont(LCD_STATUS_INFO_TIMEOUT);
+    }
+
+    return false;
 }
 
-void lcd_updatestatuspgm(const char *message){
-	strncpy_P(lcd_status_message, message, LCD_WIDTH);
+static void lcd_updatestatus(const char *message, bool progmem = false)
+{
+    if (progmem)
+        strncpy_P(lcd_status_message, message, LCD_WIDTH);
+    else
+        strncpy(lcd_status_message, message, LCD_WIDTH);
+
 	lcd_status_message[LCD_WIDTH] = 0;
 	lcd_finishstatus();
 	// hack lcd_draw_update to 1, i.e. without clear
 	lcd_draw_update = 1;
+}
+
+void lcd_setstatus(const char* message)
+{
+    if (lcd_message_check(LCD_STATUS_NONE))
+        lcd_updatestatus(message);
 }
 
 void lcd_setstatuspgm(const char* message)
 {
-  if (lcd_status_message_level > 0)
-    return;
-  lcd_updatestatuspgm(message);
+    if (lcd_message_check(LCD_STATUS_NONE))
+        lcd_updatestatus(message, true);
 }
 
-void lcd_updatestatus(const char *message){
-	strncpy(lcd_status_message, message, LCD_WIDTH);
-	lcd_status_message[LCD_WIDTH] = 0;
-	lcd_finishstatus();
-	// hack lcd_draw_update to 1, i.e. without clear
-	lcd_draw_update = 1;
-}
-
-void lcd_setalertstatuspgm(const char* message, uint8_t severity)
+void lcd_setalertstatus_(const char* message, uint8_t severity, bool progmem)
 {
-  if (severity > lcd_status_message_level) {
-      lcd_updatestatuspgm(message);
-      lcd_status_message_level = severity;
-      lcd_return_to_status();
-  }
+    if (lcd_message_check(severity)) {
+        lcd_updatestatus(message, progmem);
+        lcd_status_message_timeout.start();
+        lcd_status_message_level = severity;
+        custom_message_type = CustomMsg::Status;
+        custom_message_state = 0;
+        lcd_return_to_status();
+    }
 }
 
 void lcd_setalertstatus(const char* message, uint8_t severity)
 {
-  if (severity > lcd_status_message_level) {
-      lcd_updatestatus(message);
-      lcd_status_message_level = severity;
-      lcd_return_to_status();
-  }
+    lcd_setalertstatus_(message, severity, false);
+}
+
+void lcd_setalertstatuspgm(const char* message, uint8_t severity)
+{
+    lcd_setalertstatus_(message, severity, true);
 }
 
 void lcd_reset_alert_level()
 {
-  lcd_status_message_level = 0;
+    lcd_status_message_level = 0;
 }
 
 uint8_t get_message_level()
@@ -8013,9 +8079,9 @@ uint8_t get_message_level()
 void menu_lcd_longpress_func(void)
 {
 	backlight_wake();
-    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
+    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE)
     {
-        // disable longpress during re-entry, while homing or calibration
+        // disable longpress during re-entry, while homing, calibration or if a serious error
         lcd_quick_feedback();
         return;
     }

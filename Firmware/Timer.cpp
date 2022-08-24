@@ -77,5 +77,11 @@ T Timer<T>::elapsed() {
   return m_isRunning ? (_millis() - m_started) : 0;
 }
 
+template<typename T>
+bool Timer<T>::expired_cont(T msPeriod)
+{
+    return !m_isRunning || expired(msPeriod);
+}
+
 template class Timer<unsigned long>;
 template class Timer<unsigned short>;
