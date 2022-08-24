@@ -7916,6 +7916,7 @@ void ultralcd_init()
 #if defined (SDSUPPORT) && defined(SDCARDDETECT) && (SDCARDDETECT > 0)
   SET_INPUT(SDCARDDETECT);
   WRITE(SDCARDDETECT, HIGH);
+  _delay_ms(1); //wait for the pullups to raise the line
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
   lcd_encoder_diff = 0;
