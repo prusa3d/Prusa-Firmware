@@ -10,55 +10,45 @@ static constexpr uint8_t supportedMmuFWVersionMajor = 2;
 static constexpr uint8_t supportedMmuFWVersionMinor = 1;
 static constexpr uint8_t supportedMmuFWVersionBuild = 1;
 
-StepStatus ProtocolLogicPartBase::ProcessFINDAReqSent(StepStatus finishedRV, State nextState){
-    if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
-        return expmsg;
-    logic->findaPressed = logic->rsp.paramValue;
-    state = nextState;
-    return finishedRV;
-}
-
-StepStatus ProtocolLogicPartBase::ProcessStatisticsReqSent(StepStatus finishedRV, State nextState){
-    if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
-        return expmsg;
-    logic->fail_statistics = logic->rsp.paramValue;
-    state = nextState;
-    return finishedRV;
-}
-
-void ProtocolLogicPartBase::CheckAndReportAsyncEvents(){
+void ProtocolLogic::CheckAndReportAsyncEvents(){
     // even when waiting for a query period, we need to report a change in filament sensor's state
     // - it is vital for a precise synchronization of moves of the printer and the MMU
     uint8_t fs = (uint8_t)WhereIsFilament();
-    if( fs != logic->lastFSensor ){
+    if( fs != lastFSensor ){
         SendAndUpdateFilamentSensor();
     }
 }
 
-void ProtocolLogicPartBase::SendQuery(){
-    logic->SendMsg(RequestMsg(RequestMsgCodes::Query, 0));
-    state = State::QuerySent;
+void ProtocolLogic::SendQuery(){
+    SendMsg(RequestMsg(RequestMsgCodes::Query, 0));
+    scopeState = ScopeState::QuerySent;
 }
 
-void ProtocolLogicPartBase::SendFINDAQuery(){
-    logic->SendMsg(RequestMsg(RequestMsgCodes::Finda, 0 ) );
-    state = State::FINDAReqSent;
+void ProtocolLogic::SendFINDAQuery(){
+    SendMsg(RequestMsg(RequestMsgCodes::Finda, 0 ) );
+    scopeState = ScopeState::FINDAReqSent;
 }
 
-void ProtocolLogicPartBase::SendAndUpdateFilamentSensor(){
-    logic->SendMsg(RequestMsg(RequestMsgCodes::FilamentSensor, logic->lastFSensor = (uint8_t)WhereIsFilament() ) );
-    state = State::FilamentSensorStateSent;
+void ProtocolLogic::SendAndUpdateFilamentSensor(){
+    SendMsg(RequestMsg(RequestMsgCodes::FilamentSensor, lastFSensor = (uint8_t)WhereIsFilament() ) );
+    scopeState = ScopeState::FilamentSensorStateSent;
 }
 
-void ProtocolLogicPartBase::SendButton(uint8_t btn){
-    logic->SendMsg(RequestMsg(RequestMsgCodes::Button, btn));
-    state = State::ButtonSent;
+void ProtocolLogic::SendButton(uint8_t btn){
+    SendMsg(RequestMsg(RequestMsgCodes::Button, btn));
+    scopeState = ScopeState::ButtonSent;
 }
 
-void ProtocolLogicPartBase::SendVersion(uint8_t stage) {
-    logic->SendMsg(RequestMsg(RequestMsgCodes::Version, stage));
-    state = (State)((uint_fast8_t)State::S0Sent + stage);
+void ProtocolLogic::SendVersion(uint8_t stage) {
+    SendMsg(RequestMsg(RequestMsgCodes::Version, stage));
+    scopeState = (ScopeState)((uint_fast8_t)ScopeState::S0Sent + stage);
 }
+
+void ProtocolLogic::SendReadRegister(uint8_t index, ScopeState nextState) {
+    SendMsg(RequestMsg(RequestMsgCodes::Read, index));
+    scopeState = nextState;
+}
+
 
 // searches for "ok\n" in the incoming serial data (that's the usual response of the old MMU FW)
 struct OldMMUFWDetector {
@@ -113,7 +103,7 @@ StepStatus ProtocolLogic::ExpectingMessage(uint32_t timeout) {
                 break;
             }
             }
-            // otherwise [[fallthrough]]
+            [[fallthrough]]; // otherwise
         default:
             RecordUARTActivity(); // something has happened on the UART, update the timeout record
             return ProtocolError;
@@ -134,30 +124,39 @@ void ProtocolLogic::SendMsg(RequestMsg rq) {
     uart->write(txbuff, len);
     LogRequestMsg(txbuff, len);
     RecordUARTActivity();
-    if (rq.code == RequestMsgCodes::Version && rq.value == 3 ){
-        // Set the state so the value sent by MMU is read later
-        currentState->state = currentState->State::S3Sent;
-    }
 }
 
-void StartSeq::Restart() {
+void ProtocolLogic::StartSeqRestart() {
     retries = maxRetries;
     SendVersion(0);
 }
 
-StepStatus StartSeq::Step() {
-    if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
-        return expmsg;
+void ProtocolLogic::DelayedRestartRestart() {
+    scopeState = ScopeState::RecoveringProtocolError;
+}
 
+void ProtocolLogic::CommandRestart() {
+    scopeState = ScopeState::CommandSent;
+    SendMsg(rq);
+}
+
+void ProtocolLogic::IdleRestart() {
+    scopeState = ScopeState::Ready;
+}
+
+StepStatus ProtocolLogic::StartSeqStep(){
+    if (auto expmsg = ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+        return expmsg;
+    
     // solve initial handshake
-    switch (state) {
-    case State::S0Sent: // received response to S0 - major
-        if( logic->rsp.request.code != RequestMsgCodes::Version || logic->rsp.request.value != 0 ){
+    switch (scopeState) {
+    case ScopeState::S0Sent: // received response to S0 - major
+        if( rsp.request.code != RequestMsgCodes::Version || rsp.request.value != 0 ){
             // got a response to something else - protocol corruption probably, repeat the query
             SendVersion(0);
         } else {
-            logic->mmuFwVersionMajor = logic->rsp.paramValue;
-            if (logic->mmuFwVersionMajor != supportedMmuFWVersionMajor) {
+            mmuFwVersionMajor = rsp.paramValue;
+            if (mmuFwVersionMajor != supportedMmuFWVersionMajor) {
                 if( --retries == 0){
                     // if (--retries == 0) has a specific meaning - since we are losing bytes on the UART for no obvious reason
                     // it can happen, that the reported version number is not complete - i.e. "1" instead of "19"
@@ -169,18 +168,18 @@ StepStatus StartSeq::Step() {
                     SendVersion(0);
                 }
             } else {
-                logic->dataTO.Reset(); // got meaningful response from the MMU, stop data layer timeout tracking
+                dataTO.Reset(); // got meaningful response from the MMU, stop data layer timeout tracking
                 SendVersion(1);
             }
         }
         break;
-    case State::S1Sent: // received response to S1 - minor
-        if( logic->rsp.request.code != RequestMsgCodes::Version || logic->rsp.request.value != 1 ){
+    case ScopeState::S1Sent: // received response to S1 - minor
+        if( rsp.request.code != RequestMsgCodes::Version || rsp.request.value != 1 ){
             // got a response to something else - protocol corruption probably, repeat the query OR restart the comm by issuing S0?
             SendVersion(1);
         } else {
-            logic->mmuFwVersionMinor = logic->rsp.paramValue;
-            if (logic->mmuFwVersionMinor != supportedMmuFWVersionMinor){
+            mmuFwVersionMinor = rsp.paramValue;
+            if (mmuFwVersionMinor != supportedMmuFWVersionMinor){
                 if( --retries == 0) {
                     return VersionMismatch;
                 } else {
@@ -191,13 +190,13 @@ StepStatus StartSeq::Step() {
             }
         }
         break;
-    case State::S2Sent: // received response to S2 - revision
-        if( logic->rsp.request.code != RequestMsgCodes::Version || logic->rsp.request.value != 2 ){
+    case ScopeState::S2Sent: // received response to S2 - revision
+        if( rsp.request.code != RequestMsgCodes::Version || rsp.request.value != 2 ){
             // got a response to something else - protocol corruption probably, repeat the query OR restart the comm by issuing S0?
             SendVersion(2);
         } else {
-            logic->mmuFwVersionBuild = logic->rsp.paramValue;
-            if (logic->mmuFwVersionBuild < supportedMmuFWVersionBuild){
+            mmuFwVersionBuild = rsp.paramValue;
+            if (mmuFwVersionBuild < supportedMmuFWVersionBuild){
                 if( --retries == 0 ) {
                     return VersionMismatch;
                 } else {
@@ -211,37 +210,33 @@ StepStatus StartSeq::Step() {
             }
         }
         break;
-    case State::FilamentSensorStateSent:
-        state = State::Ready;
-        logic->SwitchFromStartToIdle();
+    case ScopeState::FilamentSensorStateSent:
+        scopeState = ScopeState::Ready;
+        SwitchFromStartToIdle();
         return Processing; // Returning Finished is not a good idea in case of a fast error recovery
         // - it tells the printer, that the command which experienced a protocol error and recovered successfully actually terminated.
         // In such a case we must return "Processing" in order to keep the MMU state machine running and prevent the printer from executing next G-codes.
         break;
-    case State::RecoveringProtocolError:
+    case ScopeState::RecoveringProtocolError:
         // timer elapsed, clear the input buffer
-            while (logic->uart->read() >= 0)
-                ;
-            SendVersion(0);
+        while (uart->read() >= 0)
+            ;
+        SendVersion(0);
         break;
     default:
         return VersionMismatch;
     }
-    return Processing;
+    return Finished;
 }
 
-void DelayedRestart::Restart() {
-    state = State::RecoveringProtocolError;
-}
-
-StepStatus DelayedRestart::Step() {
-    switch (state) {
-    case State::RecoveringProtocolError:
-        if (logic->Elapsed(heartBeatPeriod)) { // this basically means, that we are waiting until there is some traffic on
-            while (logic->uart->read() != -1)
+StepStatus ProtocolLogic::DelayedRestartStep() {
+    switch (scopeState) {
+    case ScopeState::RecoveringProtocolError:
+        if (Elapsed(heartBeatPeriod)) { // this basically means, that we are waiting until there is some traffic on
+            while (uart->read() != -1)
                 ; // clear the input buffer
             // switch to StartSeq
-            logic->Start();
+            Start();
         }
         return Processing;
         break;
@@ -251,34 +246,10 @@ StepStatus DelayedRestart::Step() {
     return Finished;
 }
 
-void Command::Restart() {
-    state = State::CommandSent;
-    logic->SendMsg(logic->command.rq);
-}
-
-StepStatus Command::Step() {
-    switch (state) {
-    case State::CommandSent: {
-        if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
-            return expmsg;
-
-        switch (logic->rsp.paramCode) { // the response should be either accepted or rejected
-        case ResponseMsgParamCodes::Accepted:
-            logic->progressCode = ProgressCode::OK;
-            logic->errorCode = ErrorCode::RUNNING;
-            state = State::Wait;
-            break;
-        case ResponseMsgParamCodes::Rejected:
-            // rejected - should normally not happen, but report the error up
-            logic->progressCode = ProgressCode::OK;
-            logic->errorCode = ErrorCode::PROTOCOL_ERROR;
-            return CommandRejected;
-        default:
-            return ProtocolError;
-        }
-        } break;
-    case State::Wait:
-        if (logic->Elapsed(heartBeatPeriod)) {
+StepStatus ProtocolLogic::CommandStep() {
+    switch (scopeState) {
+    case ScopeState::Wait:
+        if (Elapsed(heartBeatPeriod)) {
             SendQuery();
         } else { 
             // even when waiting for a query period, we need to report a change in filament sensor's state
@@ -286,20 +257,39 @@ StepStatus Command::Step() {
             CheckAndReportAsyncEvents();
         }
         break;
-    case State::QuerySent:
-        if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+    case ScopeState::CommandSent: {
+        if (auto expmsg = ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+            return expmsg;
+
+        switch (rsp.paramCode) { // the response should be either accepted or rejected
+        case ResponseMsgParamCodes::Accepted:
+            progressCode = ProgressCode::OK;
+            errorCode = ErrorCode::RUNNING;
+            scopeState = ScopeState::Wait;
+            break;
+        case ResponseMsgParamCodes::Rejected:
+            // rejected - should normally not happen, but report the error up
+            progressCode = ProgressCode::OK;
+            errorCode = ErrorCode::PROTOCOL_ERROR;
+            return CommandRejected;
+        default:
+            return ProtocolError;
+        }
+        } break;
+    case ScopeState::QuerySent:
+        if (auto expmsg = ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
             return expmsg;
         [[fallthrough]];
-    case State::ContinueFromIdle:
-        switch (logic->rsp.paramCode) {
+    case ScopeState::ContinueFromIdle:
+        switch (rsp.paramCode) {
         case ResponseMsgParamCodes::Processing:
-            logic->progressCode = static_cast<ProgressCode>(logic->rsp.paramValue);
-            logic->errorCode = ErrorCode::OK;
+            progressCode = static_cast<ProgressCode>(rsp.paramValue);
+            errorCode = ErrorCode::OK;
             SendAndUpdateFilamentSensor(); // keep on reporting the state of fsensor regularly
             break;
         case ResponseMsgParamCodes::Error:
             // in case of an error the progress code remains as it has been before
-            logic->errorCode = static_cast<ErrorCode>(logic->rsp.paramValue);
+            errorCode = static_cast<ErrorCode>(rsp.paramValue);
             // keep on reporting the state of fsensor regularly even in command error state
             // - the MMU checks FINDA and fsensor even while recovering from errors
             SendAndUpdateFilamentSensor();
@@ -307,118 +297,126 @@ StepStatus Command::Step() {
         case ResponseMsgParamCodes::Button:
             // The user pushed a button on the MMU. Save it, do what we need to do 
             // to prepare, then pass it back to the MMU so it can work its magic.
-            logic->buttonCode = static_cast<Buttons>(logic->rsp.paramValue);
+            buttonCode = static_cast<Buttons>(rsp.paramValue);
             SendAndUpdateFilamentSensor();
             return ButtonPushed;
         case ResponseMsgParamCodes::Finished:
-            logic->progressCode = ProgressCode::OK;
-            state = State::Ready;
+            progressCode = ProgressCode::OK;
+            scopeState = ScopeState::Ready;
             return Finished;
         default:
             return ProtocolError;
         }
         break;
-    case State::FilamentSensorStateSent:
-        if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+    case ScopeState::FilamentSensorStateSent:
+        if (auto expmsg = ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
             return expmsg;
         SendFINDAQuery();
-        break;
-    case State::S3Sent:
-        return ProcessStatisticsReqSent(Processing, State::Wait);
-    case State::FINDAReqSent:
-        return ProcessFINDAReqSent(Processing, State::Wait);
-    case State::ButtonSent:{
-        if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+        scopeState = ScopeState::FINDAReqSent;
+        return Processing;
+    case ScopeState::FINDAReqSent:
+        if (auto expmsg = ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
             return expmsg;
-        if (logic->rsp.paramCode == ResponseMsgParamCodes::Accepted) {
+        SendReadRegister(3, ScopeState::StatisticsSent);
+        scopeState = ScopeState::StatisticsSent;
+        return Processing;
+    case ScopeState::StatisticsSent:
+        if (auto expmsg = ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+            return expmsg;
+        scopeState = ScopeState::Wait;
+        return Processing;
+    case ScopeState::ButtonSent:
+        if (auto expmsg = ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+            return expmsg;
+        if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
             // Button was accepted, decrement the retry.
             mmu2.DecrementRetryAttempts();
         }
         SendAndUpdateFilamentSensor();
-        } break;
+        break;
     default:
         return ProtocolError;
     }
     return Processing;
 }
 
-void Idle::Restart() {
-    state = State::Ready;
-}
-
-StepStatus Idle::Step() {
-    switch (state) {
-    case State::Ready: // check timeout
-        if (logic->Elapsed(heartBeatPeriod)) {
+StepStatus ProtocolLogic::IdleStep() {
+    if(scopeState == ScopeState::Ready){ // check timeout
+        if (Elapsed(heartBeatPeriod)) {
             SendQuery();
             return Processing;
         }
-        break;
-    case State::QuerySent: // check UART
-        if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
+    } else {
+        if (auto expmsg = ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
             return expmsg;
-        // If we are accidentally in Idle and we receive something like "T0 P1" - that means the communication dropped out while a command was in progress.
-        // That causes no issues here, we just need to switch to Command processing and continue there from now on.
-        // The usual response in this case should be some command and "F" - finished - that confirms we are in an Idle state even on the MMU side.
-        switch( logic->rsp.request.code ){
-        case RequestMsgCodes::Cut:
-        case RequestMsgCodes::Eject:
-        case RequestMsgCodes::Load:
-        case RequestMsgCodes::Mode:
-        case RequestMsgCodes::Tool:
-        case RequestMsgCodes::Unload:
-            if( logic->rsp.paramCode != ResponseMsgParamCodes::Finished ){
-                logic->SwitchFromIdleToCommand();
-                return Processing;
-            }
-            break;
-        case RequestMsgCodes::Reset:
-            // this one is kind of special
-            // we do not transfer to any "running" command (i.e. we stay in Idle),
-            // but in case there is an error reported we must make sure it gets propagated
-            switch( logic->rsp.paramCode ){
-            case ResponseMsgParamCodes::Button:
-                // The user pushed a button on the MMU. Save it, do what we need to do 
-                // to prepare, then pass it back to the MMU so it can work its magic.
-                logic->buttonCode = static_cast<Buttons>(logic->rsp.paramValue);
-                SendFINDAQuery();
-                return ButtonPushed;
-            case ResponseMsgParamCodes::Processing:
-                // @@TODO we may actually use this branch to report progress of manual operation on the MMU
-                // The MMU sends e.g. X0 P27 after its restart when the user presses an MMU button to move the Selector
-                // For now let's behave just like "finished"
-            case ResponseMsgParamCodes::Finished:
-                logic->errorCode = ErrorCode::OK;
+        
+        switch (scopeState) {
+        case ScopeState::QuerySent: // check UART
+            // If we are accidentally in Idle and we receive something like "T0 P1" - that means the communication dropped out while a command was in progress.
+            // That causes no issues here, we just need to switch to Command processing and continue there from now on.
+            // The usual response in this case should be some command and "F" - finished - that confirms we are in an Idle state even on the MMU side.
+            switch( rsp.request.code ){
+            case RequestMsgCodes::Cut:
+            case RequestMsgCodes::Eject:
+            case RequestMsgCodes::Load:
+            case RequestMsgCodes::Mode:
+            case RequestMsgCodes::Tool:
+            case RequestMsgCodes::Unload:
+                if( rsp.paramCode != ResponseMsgParamCodes::Finished ){
+                    SwitchFromIdleToCommand();
+                    return Processing;
+                }
+                break;
+            case RequestMsgCodes::Reset:
+                // this one is kind of special
+                // we do not transfer to any "running" command (i.e. we stay in Idle),
+                // but in case there is an error reported we must make sure it gets propagated
+                switch( rsp.paramCode ){
+                case ResponseMsgParamCodes::Button:
+                    // The user pushed a button on the MMU. Save it, do what we need to do 
+                    // to prepare, then pass it back to the MMU so it can work its magic.
+                    buttonCode = static_cast<Buttons>(rsp.paramValue);
+                    SendFINDAQuery();
+                    return ButtonPushed;
+                case ResponseMsgParamCodes::Processing:
+                    // @@TODO we may actually use this branch to report progress of manual operation on the MMU
+                    // The MMU sends e.g. X0 P27 after its restart when the user presses an MMU button to move the Selector
+                    // For now let's behave just like "finished"
+                case ResponseMsgParamCodes::Finished:
+                    errorCode = ErrorCode::OK;
+                    break;
+                default:
+                    errorCode = static_cast<ErrorCode>(rsp.paramValue);
+                    SendFINDAQuery(); // continue Idle state without restarting the communication
+                    return CommandError;
+                }
                 break;
             default:
-                logic->errorCode = static_cast<ErrorCode>(logic->rsp.paramValue);
-                SendFINDAQuery(); // continue Idle state without restarting the communication
-                return CommandError;
+                return ProtocolError;
             }
+            SendFINDAQuery();
+            return Processing;
+            break;
+        case ScopeState::FINDAReqSent:
+            SendReadRegister(3, ScopeState::StatisticsSent);
+            scopeState = ScopeState::StatisticsSent;
+            return Processing;
+        case ScopeState::StatisticsSent:
+            failStatistics = rsp.paramValue;
+            scopeState = ScopeState::Ready;
+            return Processing;
+        case ScopeState::ButtonSent:
+            if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
+                // Button was accepted, decrement the retry.
+                mmu2.DecrementRetryAttempts();
+            }
+            SendFINDAQuery();
             break;
         default:
             return ProtocolError;
         }
-        SendFINDAQuery();
-        return Processing;
-        break;
-    case State::S3Sent:
-        return ProcessStatisticsReqSent(Finished, State::Ready);
-    case State::FINDAReqSent:
-        return ProcessFINDAReqSent(Finished, State::Ready);
-    case State::ButtonSent:{
-        if (auto expmsg = logic->ExpectingMessage(linkLayerTimeout); expmsg != MessageReady)
-            return expmsg;
-        if (logic->rsp.paramCode == ResponseMsgParamCodes::Accepted) {
-            // Button was accepted, decrement the retry.
-            mmu2.DecrementRetryAttempts();
-        }
-        SendFINDAQuery();
-        } break;
-    default:
-        return ProtocolError;
     }
-
+    
     // The "return Finished" in this state machine requires a bit of explanation:
     // The Idle state either did nothing (still waiting for the heartbeat timeout)
     // or just successfully received the answer to Q0, whatever that was.
@@ -430,12 +428,8 @@ StepStatus Idle::Step() {
 }
 
 ProtocolLogic::ProtocolLogic(MMU2Serial *uart)
-    : stopped(this)
-    , startSeq(this)
-    , delayedRestart(this)
-    , idle(this)
-    , command(this)
-    , currentState(&stopped)
+    : currentScope(Scope::Stopped)
+    , scopeState(ScopeState::Ready)
     , plannedRq(RequestMsgCodes::unknown, 0)
     , lastUARTActivityMs(0)
     , dataTO()
@@ -448,7 +442,7 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart)
     , buttonCode(NoButton)
     , lastFSensor((uint8_t)WhereIsFilament())
     , findaPressed(false)
-    , fail_statistics(0)
+    , failStatistics(0)
     , mmuFwVersionMajor(0)
     , mmuFwVersionMinor(0)
     , mmuFwVersionBuild(0)
@@ -456,14 +450,14 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart)
 
 void ProtocolLogic::Start() {
     state = State::InitSequence;
-    currentState = &startSeq;
+    currentScope = Scope::StartSeq;
     protocol.ResetResponseDecoder(); // important - finished delayed restart relies on this
-    startSeq.Restart();
+    StartSeqRestart();
 }
 
 void ProtocolLogic::Stop() {
     state = State::Stopped;
-    currentState = &stopped;
+    currentScope = Scope::Stopped;
 }
 
 void ProtocolLogic::ToolChange(uint8_t slot) {
@@ -504,7 +498,7 @@ void ProtocolLogic::Home(uint8_t mode){
 
 void ProtocolLogic::PlanGenericRequest(RequestMsg rq) {
     plannedRq = rq;
-    if( ! currentState->ExpectsResponse() ){
+    if( ! ExpectsResponse() ){
         ActivatePlannedRequest();
     } // otherwise wait for an empty window to activate the request
 }
@@ -512,39 +506,57 @@ void ProtocolLogic::PlanGenericRequest(RequestMsg rq) {
 bool ProtocolLogic::ActivatePlannedRequest(){
     if( plannedRq.code == RequestMsgCodes::Button ){
         // only issue the button to the MMU and do not restart the state machines
-        currentState->SendButton(plannedRq.value);
+        SendButton(plannedRq.value);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
         return true;
     } else if( plannedRq.code != RequestMsgCodes::unknown ){
-        currentState = &command;
-        command.SetRequestMsg(plannedRq);
+        currentScope = Scope::Command;
+        SetRequestMsg(plannedRq);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
-        command.Restart();
+        CommandRestart();
         return true;
     }
     return false;
 }
 
 void ProtocolLogic::SwitchFromIdleToCommand(){
-    currentState = &command;
-    command.SetRequestMsg(rsp.request);
+    currentScope = Scope::Command;
+    SetRequestMsg(rsp.request);
     // we are recovering from a communication drop out, the command is already running
     // and we have just received a response to a Q0 message about a command progress
-    command.ContinueFromIdle();
+    CommandContinueFromIdle();
 }
 
 void ProtocolLogic::SwitchToIdle() {
     state = State::Running;
-    currentState = &idle;
-    idle.Restart();
+    currentScope = Scope::Idle;
+    IdleRestart();
 }
 
 void ProtocolLogic::SwitchFromStartToIdle(){
     state = State::Running;
-    currentState = &idle;
-    idle.Restart();
-    idle.SendQuery(); // force sending Q0 immediately
-    idle.state = Idle::State::QuerySent;
+    currentScope = Scope::Idle;
+    IdleRestart();
+    SendQuery(); // force sending Q0 immediately
+    scopeState = ScopeState::QuerySent;
+}
+
+StepStatus ProtocolLogic::ScopeStep(){
+    switch(currentScope){
+    case Scope::StartSeq:
+        return StartSeqStep();
+    case Scope::DelayedRestart:
+        return DelayedRestartStep();
+    case Scope::Idle:
+        return IdleStep();
+    case Scope::Command:
+        return CommandStep();
+    case Scope::Stopped:
+        return StoppedStep();
+    default:
+        break;
+    }
+    return Finished;
 }
 
 bool ProtocolLogic::Elapsed(uint32_t timeout) const {
@@ -667,16 +679,16 @@ StepStatus ProtocolLogic::HandleCommunicationTimeout() {
 StepStatus ProtocolLogic::HandleProtocolError() {
     uart->flush(); // clear the output buffer
     state = State::InitSequence;
-    currentState = &delayedRestart;
-    delayedRestart.Restart();
+    currentScope = Scope::DelayedRestart;
+    DelayedRestartRestart();
     return SuppressShortDropOuts(PSTR("Protocol Error"), ProtocolError);
 }
 
 StepStatus ProtocolLogic::Step() {
-    if( ! currentState->ExpectsResponse() ){ // if not waiting for a response, activate a planned request immediately
+    if( ! ExpectsResponse() ){ // if not waiting for a response, activate a planned request immediately
         ActivatePlannedRequest();
     }
-    auto currentStatus = currentState->Step();
+    auto currentStatus = ScopeStep();
     switch (currentStatus) {
     case Processing:
         // we are ok, the state machine continues correctly
@@ -685,12 +697,12 @@ StepStatus ProtocolLogic::Step() {
         // We are ok, switching to Idle if there is no potential next request planned.
         // But the trouble is we must report a finished command if the previous command has just been finished
         // i.e. only try to find some planned command if we just finished the Idle cycle
-        bool previousCommandFinished = currentState == &command; // @@TODO this is a nasty hack :( 
+        bool previousCommandFinished = currentScope == Scope::Command; // @@TODO this is a nasty hack :( 
         if( ! ActivatePlannedRequest() ){ // if nothing is planned, switch to Idle
             SwitchToIdle();
         } else {
             // if the previous cycle was Idle and now we have planned a new command -> avoid returning Finished
-            if( ! previousCommandFinished && currentState == &command){
+            if( ! previousCommandFinished && currentScope == Scope::Command){
                 currentStatus = Processing;
             }
         }
@@ -700,7 +712,7 @@ StepStatus ProtocolLogic::Step() {
         // no change in state
         // @@TODO wait until Q0 returns command in progress finished, then we can send this one
         LogError(PSTR("Command rejected"));
-        command.Restart();
+        CommandRestart();
         break;
     case CommandError:
         LogError(PSTR("Command Error"));
@@ -724,9 +736,9 @@ StepStatus ProtocolLogic::Step() {
 }
 
 uint8_t ProtocolLogic::CommandInProgress() const {
-    if( currentState != &command )
+    if( currentScope != Scope::Command )
         return 0;
-    return (uint8_t)command.ReqMsg().code;
+    return (uint8_t)ReqMsg().code;
 }
 
 bool DropOutFilter::Record(StepStatus ss){
