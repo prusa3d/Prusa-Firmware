@@ -268,7 +268,7 @@ private:
     StepStatus ExpectingMessage(uint32_t timeout);
     void SendMsg(RequestMsg rq);
     void SwitchToIdle();
-    StepStatus SuppressShortDropOuts(const char *msg, StepStatus ss);
+    StepStatus SuppressShortDropOuts(const char *msg_P, StepStatus ss);
     StepStatus HandleCommunicationTimeout();
     StepStatus HandleProtocolError();
     bool Elapsed(uint32_t timeout) const;
@@ -277,7 +277,7 @@ private:
     void FormatLastReceivedBytes(char *dst);
     void FormatLastResponseMsgAndClearLRB(char *dst);
     void LogRequestMsg(const uint8_t *txbuff, uint8_t size);
-    void LogError(const char *reason);
+    void LogError(const char *reason_P);
     void LogResponse();
     void SwitchFromIdleToCommand();
     void SwitchFromStartToIdle();

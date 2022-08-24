@@ -598,7 +598,7 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size){
     }
     tmp[size+1] = '\n';
     tmp[size+2] = 0;
-    if( !strncmp(tmp, ">S0.\n", rqs) && !strncmp(lastMsg, tmp, rqs) ){
+    if( !strncmp_P(tmp, PSTR(">S0*99.\n"), rqs) && !strncmp(lastMsg, tmp, rqs) ){
         // @@TODO we skip the repeated request msgs for now 
         // to avoid spoiling the whole log just with ">S0" messages
         // especially when the MMU is not connected.
@@ -611,12 +611,12 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size){
     memcpy(lastMsg, tmp, rqs);
 }
 
-void ProtocolLogic::LogError(const char *reason){
+void ProtocolLogic::LogError(const char *reason_P){
     char lrb[lastReceivedBytes.size() * 3];
     FormatLastReceivedBytes(lrb);
     
-    MMU2_ERROR_MSG(reason);
-    SERIAL_ECHO(", last bytes: ");
+    MMU2_ERROR_MSGRPGM(reason_P);
+    SERIAL_ECHOPGM(", last bytes: ");
     SERIAL_ECHOLN(lrb);
 }
 
@@ -627,9 +627,9 @@ void ProtocolLogic::LogResponse(){
     SERIAL_ECHOLN();
 }
 
-StepStatus ProtocolLogic::SuppressShortDropOuts(const char *msg, StepStatus ss) {
+StepStatus ProtocolLogic::SuppressShortDropOuts(const char *msg_P, StepStatus ss) {
     if( dataTO.Record(ss) ){
-        LogError(msg);
+        LogError(msg_P);
         return dataTO.InitialCause();
     } else {
         return Processing; // suppress short drop outs of communication
@@ -640,7 +640,7 @@ StepStatus ProtocolLogic::HandleCommunicationTimeout() {
     uart->flush(); // clear the output buffer
     protocol.ResetResponseDecoder();
     Start();
-    return SuppressShortDropOuts("Communication timeout", CommunicationTimeout);
+    return SuppressShortDropOuts(PSTR("Communication timeout"), CommunicationTimeout);
 }
 
 StepStatus ProtocolLogic::HandleProtocolError() {
@@ -648,7 +648,7 @@ StepStatus ProtocolLogic::HandleProtocolError() {
     state = State::InitSequence;
     currentState = &delayedRestart;
     delayedRestart.Restart();
-    return SuppressShortDropOuts("Protocol Error", ProtocolError);
+    return SuppressShortDropOuts(PSTR("Protocol Error"), ProtocolError);
 }
 
 StepStatus ProtocolLogic::Step() {
@@ -678,16 +678,16 @@ StepStatus ProtocolLogic::Step() {
         // we have to repeat it - that's the only thing we can do
         // no change in state
         // @@TODO wait until Q0 returns command in progress finished, then we can send this one
-        LogError("Command rejected");
+        LogError(PSTR("Command rejected"));
         command.Restart();
         break;
     case CommandError:
-        LogError("Command Error");
+        LogError(PSTR("Command Error"));
         // we shall probably transfer into the Idle state and await further instructions from the upper layer
         // Idle state may solve the problem of keeping up the heart beat running
         break;
     case VersionMismatch:
-        LogError("Version mismatch");
+        LogError(PSTR("Version mismatch"));
         Stop(); // cannot continue
         break;
     case ProtocolError:
