@@ -16,3 +16,4 @@ extern void farm_mode_init();
 extern bool farm_prusa_code_seen();
 extern void farm_gcode_g98();
 extern void farm_gcode_g99();
+extern void farm_disable();
