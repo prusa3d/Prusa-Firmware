@@ -368,16 +368,6 @@ void repeatcommand_front()
     cmdbuffer_front_already_processed = true;
 } 
 
-void proc_commands() {
-	if (buflen)
-	{
-		process_commands();
-		if (!cmdbuffer_front_already_processed)
-			cmdqueue_pop_front();
-		cmdbuffer_front_already_processed = false;
-	}
-}
-
 void get_command()
 {
     // Test and reserve space for the new command string.

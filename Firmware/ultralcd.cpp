@@ -56,7 +56,6 @@
 #include "Prusa_farm.h"
 
 int clock_interval = 0;
-static ShortTimer NcTime;
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -82,8 +81,6 @@ CustomMsg custom_message_type = CustomMsg::Status;
 uint8_t custom_message_state = 0;
 
 bool isPrintPaused = false;
-uint8_t farm_timer = 8;
-bool printer_connected = true;
 
 static ShortTimer display_time; //just timer for showing pid finished message on lcd;
 static uint16_t pid_temp = DEFAULT_PID_TEMP;
@@ -125,11 +122,6 @@ static void lcd_control_temperature_menu();
 #ifdef TMC2130
 static void lcd_settings_linearity_correction_menu_save();
 #endif
-static void prusa_stat_printerstatus(uint8_t _status);
-static void prusa_stat_farm_number();
-static void prusa_stat_diameter();
-static void prusa_stat_temperatures();
-static void prusa_stat_printinfo();
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
@@ -249,10 +241,6 @@ static void lcd_cutter_enabled();
  static void lcd_sort_type_set();
 #endif
 static void lcd_babystep_z();
-static void lcd_send_status();
-#ifdef FARM_CONNECT_MESSAGE
-static void lcd_connect_printer();
-#endif //FARM_CONNECT_MESSAGE
 
 //! Beware: has side effects - forces lcd_draw_update to 2, which means clear the display
 void lcd_finishstatus();
@@ -820,27 +808,7 @@ void lcd_status_screen()                          // NOT static due to using ins
 
 		lcdui_print_status_screen();
 
-		if (farm_mode)
-		{
-			farm_timer--;
-			if (farm_timer < 1)
-			{
-				farm_timer = 10;
-				prusa_statistics(0);
-			}
-			switch (farm_timer)
-			{
-			case 8:
-				prusa_statistics(21);
-				if(loading_flag)
-					prusa_statistics(22);
-				break;
-			case 5:
-				if (IS_SD_PRINTING)
-					prusa_statistics(20);
-				break;
-			}
-		} // end of farm_mode
+		prusa_statistics_update_from_status_screen();
 
 		if (lcd_commands_type != LcdCommands::Idle)
 			lcd_commands();
@@ -3576,321 +3544,6 @@ void lcd_menu_show_sensors_state()                // NOT static due to using ins
 	}
 }
 
-void prusa_statistics_err(char c){
-	SERIAL_ECHOPGM("{[ERR:");
-	SERIAL_ECHO(c);
-	SERIAL_ECHO(']');
-	prusa_stat_farm_number();
-}
-
-static void prusa_statistics_case0(uint8_t statnr){
-	SERIAL_ECHO('{');
-	prusa_stat_printerstatus(statnr);
-	prusa_stat_farm_number();
-	prusa_stat_printinfo();
-}
-
-void prusa_statistics(uint8_t _message, uint8_t _fil_nr) {
-#ifdef DEBUG_DISABLE_PRUSA_STATISTICS
-	return;
-#endif //DEBUG_DISABLE_PRUSA_STATISTICS
-	switch (_message)
-	{
-
-	case 0: // default message
-		if (busy_state == PAUSED_FOR_USER) 
-		{   
-			prusa_statistics_case0(15);
-		}
-		else if (isPrintPaused)
-		{
-			prusa_statistics_case0(14);
-		}
-		else if (IS_SD_PRINTING || loading_flag)
-		{
-			prusa_statistics_case0(4);
-		}
-		else
-		{
-			SERIAL_ECHO('{');
-			prusa_stat_printerstatus(1);
-			prusa_stat_farm_number();
-			prusa_stat_diameter();
-			status_number = 1;
-		}
-		break;
-
-	case 1:		// 1 heating
-		SERIAL_ECHO('{');
-		prusa_stat_printerstatus(2);
-		prusa_stat_farm_number();
-		status_number = 2;
-		farm_timer = 1;
-		break;
-
-	case 2:		// heating done
-		SERIAL_ECHO('{');
-		prusa_stat_printerstatus(3);
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN('}');
-		status_number = 3;
-		farm_timer = 1;
-
-		if (IS_SD_PRINTING || loading_flag)
-		{
-			SERIAL_ECHO('{');
-			prusa_stat_printerstatus(4);
-			prusa_stat_farm_number();
-			status_number = 4;
-		}
-		else
-		{
-			SERIAL_ECHO('{');
-			prusa_stat_printerstatus(3);
-			prusa_stat_farm_number();
-			status_number = 3;
-		}
-		farm_timer = 1;
-		break;
-
-	case 3:		// filament change
-		// must do a return here to prevent doing SERIAL_ECHOLN("}") at the very end of this function
-		// saved a considerable amount of FLASH
-		return;
-		break;
-	case 4:		// print succesfull
-		SERIAL_ECHOPGM("{[RES:1][FIL:");
-		MYSERIAL.print(int(_fil_nr));
-		SERIAL_ECHO(']');
-		prusa_stat_printerstatus(status_number);
-		prusa_stat_farm_number();
-		farm_timer = 2;
-		break;
-	case 5:		// print not succesfull
-		SERIAL_ECHOPGM("{[RES:0][FIL:");
-		MYSERIAL.print(int(_fil_nr));
-		SERIAL_ECHO(']');
-		prusa_stat_printerstatus(status_number);
-		prusa_stat_farm_number();
-		farm_timer = 2;
-		break;
-	case 6:		// print done
-		SERIAL_ECHOPGM("{[PRN:8]");
-		prusa_stat_farm_number();
-		status_number = 8;
-		farm_timer = 2;
-		break;
-	case 7:		// print done - stopped
-		SERIAL_ECHOPGM("{[PRN:9]");
-		prusa_stat_farm_number();
-		status_number = 9;
-		farm_timer = 2;
-		break;
-	case 8:		// printer started
-		SERIAL_ECHOPGM("{[PRN:0]");
-		prusa_stat_farm_number();
-		status_number = 0;
-		farm_timer = 2;
-		break;
-	case 20:		// echo farm no
-		SERIAL_ECHO('{');
-		prusa_stat_printerstatus(status_number);
-		prusa_stat_farm_number();
-		farm_timer = 4;
-		break;
-	case 21: // temperatures
-		SERIAL_ECHO('{');
-		prusa_stat_temperatures();
-		prusa_stat_farm_number();
-		prusa_stat_printerstatus(status_number);
-		break;
-    case 22: // waiting for filament change
-        SERIAL_ECHOPGM("{[PRN:5]");
-		prusa_stat_farm_number();
-		status_number = 5;
-        break;
-	
-	case 90: // Error - Thermal Runaway
-		prusa_statistics_err('1');
-		break;
-	case 91: // Error - Thermal Runaway Preheat
-		prusa_statistics_err('2');
-		break;
-	case 92: // Error - Min temp
-		prusa_statistics_err('3');
-		break;
-	case 93: // Error - Max temp
-		prusa_statistics_err('4');
-		break;
-
-    case 99:		// heartbeat
-        SERIAL_ECHOPGM("{[PRN:99]");
-        prusa_stat_temperatures();
-		prusa_stat_farm_number();
-        break;
-	}
-	SERIAL_ECHOLN('}');	
-
-}
-
-static void prusa_stat_printerstatus(uint8_t _status)
-{
-	SERIAL_ECHOPGM("[PRN:");
-	SERIAL_ECHO(_status);
-	SERIAL_ECHO(']');
-}
-
-static void prusa_stat_farm_number() {
-	SERIAL_ECHOPGM("[PFN:0]");
-}
-
-static void prusa_stat_diameter() {
-	SERIAL_ECHOPGM("[DIA:");
-	SERIAL_ECHO(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM));
-	SERIAL_ECHO(']');
-}
-
-static void prusa_stat_temperatures()
-{
-	SERIAL_ECHOPGM("[ST0:");
-	SERIAL_ECHO(target_temperature[0]);
-	SERIAL_ECHOPGM("][STB:");
-	SERIAL_ECHO(target_temperature_bed);
-	SERIAL_ECHOPGM("][AT0:");
-	SERIAL_ECHO(current_temperature[0]);
-	SERIAL_ECHOPGM("][ATB:");
-	SERIAL_ECHO(current_temperature_bed);
-	SERIAL_ECHO(']');
-}
-
-static void prusa_stat_printinfo()
-{
-	SERIAL_ECHOPGM("[TFU:");
-	SERIAL_ECHO(total_filament_used);
-	SERIAL_ECHOPGM("][PCD:");
-	SERIAL_ECHO(itostr3(card.percentDone()));
-	SERIAL_ECHOPGM("][FEM:");
-	SERIAL_ECHO(itostr3(feedmultiply));
-	SERIAL_ECHOPGM("][FNM:");
-	SERIAL_ECHO(card.longFilename[0] ? card.longFilename : card.filename);
-	SERIAL_ECHOPGM("][TIM:");
-	if (starttime != 0)
-	{
-		SERIAL_ECHO(_millis() / 1000 - starttime / 1000);
-	}
-	else
-	{
-		SERIAL_ECHO(0);
-	}
-	SERIAL_ECHOPGM("][FWR:");
-	SERIAL_ECHORPGM(FW_VERSION_STR_P());
-	SERIAL_ECHO(']');
-     prusa_stat_diameter();
-}
-
-/*
-void lcd_pick_babystep(){
-    int enc_dif = 0;
-    int cursor_pos = 1;
-    int fsm = 0;
-    
-    
-    
-    
-    lcd_clear();
-    
-    lcd_set_cursor(0, 0);
-    
-    lcd_puts_P(_i("Pick print"));////MSG_PICK_Z
-    
-    
-    lcd_set_cursor(3, 2);
-    
-    lcd_print('1');
-    
-    lcd_set_cursor(3, 3);
-    
-    lcd_print('2');
-    
-    lcd_set_cursor(12, 2);
-    
-    lcd_print('3');
-    
-    lcd_set_cursor(12, 3);
-    
-    lcd_print('4');
-    
-    lcd_set_cursor(1, 2);
-    
-    lcd_print('>');
-    
-    
-    enc_dif = lcd_encoder_diff;
-    
-    while (fsm == 0) {
-        
-        manage_heater();
-        manage_inactivity(true);
-        
-        if ( abs((enc_dif - lcd_encoder_diff)) > 4 ) {
-            
-            if ( (abs(enc_dif - lcd_encoder_diff)) > 1 ) {
-                if (enc_dif > lcd_encoder_diff ) {
-                    cursor_pos --;
-                }
-                
-                if (enc_dif < lcd_encoder_diff  ) {
-                    cursor_pos ++;
-                }
-                
-                if (cursor_pos > 4) {
-                    cursor_pos = 4;
-                }
-                
-                if (cursor_pos < 1) {
-                    cursor_pos = 1;
-                }
-
-                
-                lcd_set_cursor(1, 2);
-                lcd_print(' ');
-                lcd_set_cursor(1, 3);
-                lcd_print(' ');
-                lcd_set_cursor(10, 2);
-                lcd_print(' ');
-                lcd_set_cursor(10, 3);
-                lcd_print(' ');
-                
-                if (cursor_pos < 3) {
-                    lcd_set_cursor(1, cursor_pos+1);
-                    lcd_print('>');
-                }else{
-                    lcd_set_cursor(10, cursor_pos-1);
-                    lcd_print('>');
-                }
-                
-   
-                enc_dif = lcd_encoder_diff;
-                _delay(100);
-            }
-            
-        }
-        
-        if (lcd_clicked()) {
-            fsm = cursor_pos;
-            int babyStepZ;
-            babyStepZ = eeprom_read_word((uint16_t*)EEPROM_BABYSTEP_Z0+(fsm-1));
-            eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, babyStepZ);
-            calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-            _delay(500);
-            
-        }
-    };
-    
-    lcd_clear();
-    lcd_return_to_status();
-}
-*/
 void lcd_move_menu_axis()
 {
 	MENU_BEGIN();
@@ -7919,71 +7572,6 @@ void ultralcd_init()
   lcd_encoder_diff = 0;
 }
 
-
-
-
-
-void lcd_printer_connected() {
-	printer_connected = true;
-}
-
-static void lcd_send_status() {
-	if (farm_mode && no_response && (NcTime.expired(NC_TIME * 1000))) {
-		//send important status messages periodicaly
-		prusa_statistics(important_status, saved_filament_type);
-		NcTime.start();
-#ifdef FARM_CONNECT_MESSAGE
-		lcd_connect_printer();
-#endif //FARM_CONNECT_MESSAGE
-	}
-}
-
-#ifdef FARM_CONNECT_MESSAGE
-static void lcd_connect_printer() {
-	lcd_update_enable(false);
-	lcd_clear();
-	
-	int i = 0;
-	int t = 0;
-	lcd_puts_at_P(0, 0, _i("Connect printer to")); 
-	lcd_puts_at_P(0, 1, _i("monitoring or hold"));
-	lcd_puts_at_P(0, 2, _i("the knob to continue"));
-	while (no_response) {
-		i++;
-		t++;		
-		delay_keep_alive(100);
-		proc_commands();
-		if (t == 10) {
-			prusa_statistics(important_status, saved_filament_type);
-			t = 0;
-		}
-		if (READ(BTN_ENC)) { //if button is not pressed
-			i = 0; 
-			lcd_puts_at_P(0, 3, PSTR("                    "));
-		}
-		if (i!=0) lcd_puts_at_P((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3, LCD_STR_SOLID_BLOCK[0]);
-		if (i == NC_BUTTON_LONG_PRESS * 10) {
-			no_response = false;
-		}
-	}
-	lcd_update_enable(true);
-	lcd_update(2);
-}
-#endif //FARM_CONNECT_MESSAGE
-
-void lcd_ping() { //chceck if printer is connected to monitoring when in farm mode
-	if (farm_mode) {
-		bool empty = cmd_buffer_empty();
-		if ((_millis() - PingTime) * 0.001 > (empty ? PING_TIME : PING_TIME_LONG)) { //if commands buffer is empty use shorter time period
-																							  //if there are comamnds in buffer, some long gcodes can delay execution of ping command
-																							  //therefore longer period is used
-			printer_connected = false;
-		}
-		else {
-			lcd_printer_connected();
-		}
-	}
-}
 void lcd_ignore_click(bool b)
 {
   ignore_click = b;
@@ -8229,8 +7817,7 @@ void menu_lcd_lcdupdate_func(void)
 		if (lcd_draw_update) lcd_draw_update--;
 		lcd_next_update_millis = _millis() + LCD_UPDATE_INTERVAL;
 	}
-	lcd_ping(); //check that we have received ping command if we are in farm mode
-	lcd_send_status();
+	prusa_statistics_update_from_lcd_update();
 	if (lcd_commands_type == LcdCommands::Layer1Cal) lcd_commands();
 }
 

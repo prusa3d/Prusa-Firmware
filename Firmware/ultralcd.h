@@ -47,9 +47,7 @@ void lcd_pause_print();
 void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
-void prusa_statistics(uint8_t _message, uint8_t _col_nr = 0);
 void lcd_load_filament_color_check();
-//void lcd_mylang();
 
 extern void lcd_belttest();
 extern bool lcd_selftest();
@@ -188,8 +186,6 @@ void mFilamentItemForce();
 void lcd_generic_preheat_menu();
 void unload_filament(bool automatic = false);
 
-void lcd_printer_connected();
-void lcd_ping();
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();

@@ -312,12 +312,7 @@ extern bool homing_flag;
 extern bool loading_flag;
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
-extern uint8_t status_number;
 extern uint8_t heating_status_counter;
-extern unsigned long PingTime;
-extern bool no_response;
-extern uint8_t important_status;
-extern uint8_t saved_filament_type;
 
 extern bool fan_state[2];
 extern int fan_edge_counter[2];
@@ -473,8 +468,6 @@ void gcode_M123();
 void gcode_M701();
 
 #define UVLO !(PINE & (1<<4))
-
-void proc_commands();
 
 
 void M600_load_filament();
