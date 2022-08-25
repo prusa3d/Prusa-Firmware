@@ -187,6 +187,9 @@ bool force_selftest_if_fw_version()
 
 bool show_upgrade_dialog_if_version_newer(const char *version_string)
 {
+    if(oCheckVersion == ClCheckVersion::_None)
+        return false;
+
     int8_t upgrade = is_provided_version_newer(version_string);
     if (upgrade < 0)
         return false;
