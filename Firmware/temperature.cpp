@@ -1041,10 +1041,8 @@ static void temp_runaway_stop(bool isPreheat, bool isBed)
                 SERIAL_ERRORLNPGM(" HOTEND THERMAL RUNAWAY");
             }
         }
-        if (farm_mode) {
-            prusa_statistics(0);
-            prusa_statistics(isPreheat? 91 : 90);
-        }
+        prusa_statistics(0);
+        prusa_statistics(isPreheat? 91 : 90);
     }
     ThermalStop();
 }
@@ -1076,7 +1074,7 @@ static void temp_error_messagepgm(const char* PROGMEM type, uint8_t e = EXTRUDER
 static void max_temp_error(uint8_t e) {
     if(IsStopped() == false) {
         temp_error_messagepgm(PSTR("MAXTEMP"), e);
-        if (farm_mode) prusa_statistics(93);
+        prusa_statistics(93);
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     ThermalStop();
@@ -1087,7 +1085,7 @@ static void min_temp_error(uint8_t e) {
     static const char err[] PROGMEM = "MINTEMP";
     if(IsStopped() == false) {
         temp_error_messagepgm(err, e);
-        if (farm_mode) prusa_statistics(92);
+        prusa_statistics(92);
     }
     ThermalStop();
 }

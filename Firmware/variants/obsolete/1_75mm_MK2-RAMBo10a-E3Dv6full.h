@@ -419,18 +419,10 @@ THERMISTORS SETTINGS
 #define PINDA_STEP_T 10
 #define PINDA_MAX_T 100
 
-#define PING_TIME 60 //time in s
-#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid 0 triggering when dealing with long gcodes
-#define PING_ALLERT_PERIOD 60 //time in s
-
-#define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
-#define NC_BUTTON_LONG_PRESS 15 //time in s
-
 #define LONG_PRESS_TIME 1000 //time in ms for button long press 
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
 #define DEFAULT_PID_TEMP 210
-
 
 #define END_FILE_SECTION 20000 //number of bytes from end of file used for checking if file is complete
 
