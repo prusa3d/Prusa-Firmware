@@ -2609,7 +2609,7 @@ void temp_model_save_settings()
 namespace temp_model_cal {
 
 // set current fan speed for both front/backend
-static void set_fan_speed(uint8_t fan_speed)
+static __attribute__((noinline)) void set_fan_speed(uint8_t fan_speed)
 {
     fanSpeed = fan_speed;
 #ifdef FAN_SOFT_PWM
@@ -2617,7 +2617,7 @@ static void set_fan_speed(uint8_t fan_speed)
 #endif
 }
 
-void waiting_handler()
+static void waiting_handler()
 {
     manage_heater();
     host_keepalive();
@@ -2626,7 +2626,7 @@ void waiting_handler()
     lcd_update(0);
 }
 
-void wait(unsigned ms)
+static void wait(unsigned ms)
 {
     unsigned long mark = _millis() + ms;
     while(_millis() < mark) {
@@ -2635,7 +2635,7 @@ void wait(unsigned ms)
     }
 }
 
-void wait_temp()
+static void __attribute__((noinline)) wait_temp()
 {
     while(current_temperature[0] < (target_temperature[0] - TEMP_HYSTERESIS)) {
         if(temp_error_state.v) break;
@@ -2643,7 +2643,7 @@ void wait_temp()
     }
 }
 
-void cooldown(float temp)
+static void cooldown(float temp)
 {
     uint8_t old_speed = fanSpeed;
     set_fan_speed(255);
@@ -2659,7 +2659,7 @@ void cooldown(float temp)
     set_fan_speed(old_speed);
 }
 
-uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
+static uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
     TempMgrGuard temp_mgr_guard;
 
     uint16_t pos = 0;
@@ -2694,7 +2694,7 @@ uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
     return pos;
 }
 
-float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pwm, float ambient)
+static float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pwm, float ambient)
 {
     *var = v;
     temp_model::data.reset(rec_buffer[0].pwm, fan_pwm, rec_buffer[0].temp, ambient);
@@ -2708,14 +2708,14 @@ float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pwm, floa
 
 constexpr float GOLDEN_RATIO = 0.6180339887498949;
 
-void update_section(float points[2], const float bounds[2])
+static void update_section(float points[2], const float bounds[2])
 {
     float d = GOLDEN_RATIO * (bounds[1] - bounds[0]);
     points[0] = bounds[0] + d;
     points[1] = bounds[1] - d;
 }
 
-float estimate(uint16_t samples,
+static float estimate(uint16_t samples,
     float* const var, float min, float max,
     float thr, uint16_t max_itr,
     uint8_t fan_pwm, float ambient)
@@ -2752,7 +2752,7 @@ float estimate(uint16_t samples,
     return NAN;
 }
 
-bool autotune(int16_t cal_temp)
+static bool autotune(int16_t cal_temp)
 {
     uint16_t samples;
     float e;
