@@ -394,11 +394,15 @@ void farm_gcode_g98() {
 }
 
 void farm_gcode_g99() {
-    farm_mode = 0;
+    farm_disable();
     printer_connected = true;
-    eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
     lcd_update(2);
     fCheckModeInit(); // alternatively invoke printer reset
+}
+
+void farm_disable() {
+    farm_mode = false;
+    eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
 }
 
 #else //PRUSA_FARM
@@ -423,6 +427,9 @@ void farm_gcode_g98() {
 }
 
 void farm_gcode_g99() {
+}
+
+void farm_disable() {
 }
 
 #endif //PRUSA_FARM
