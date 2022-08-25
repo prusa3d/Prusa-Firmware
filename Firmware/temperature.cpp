@@ -2608,6 +2608,15 @@ void temp_model_save_settings()
 
 namespace temp_model_cal {
 
+// set current fan speed for both front/backend
+static void set_fan_speed(uint8_t fan_speed)
+{
+    fanSpeed = fan_speed;
+#ifdef FAN_SOFT_PWM
+    fanSpeedSoftPwm = fan_speed;
+#endif
+}
+
 void waiting_handler()
 {
     manage_heater();
@@ -2636,8 +2645,8 @@ void wait_temp()
 
 void cooldown(float temp)
 {
-    float old_speed = fanSpeedSoftPwm;
-    fanSpeedSoftPwm = 255;
+    uint8_t old_speed = fanSpeed;
+    set_fan_speed(255);
     while(current_temperature[0] >= temp) {
         if(temp_error_state.v) break;
         float ambient = current_temperature_ambient + temp_model::data.Ta_corr;
@@ -2647,7 +2656,7 @@ void cooldown(float temp)
         }
         waiting_handler();
     }
-    fanSpeedSoftPwm = old_speed;
+    set_fan_speed(old_speed);
 }
 
 uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
@@ -2749,7 +2758,7 @@ bool autotune(int16_t cal_temp)
     float e;
 
     // bootstrap C/R values without fan
-    fanSpeedSoftPwm = 0;
+    set_fan_speed(0);
 
     for(uint8_t i = 0; i != 2; ++i) {
         const char* PROGMEM verb = (i == 0? PSTR("initial"): PSTR("refining"));
@@ -2797,11 +2806,12 @@ bool autotune(int16_t cal_temp)
     // kickstart issues, although this requires us to wait more for the PID stabilization.
     // Normally exhibits logarithmic behavior with the stock fan+shroud, so the shorter interval
     // at lower speeds is helpful to increase the resolution of the interpolation.
-    fanSpeedSoftPwm = 255;
+    set_fan_speed(255);
     wait(30000);
 
     for(int8_t i = TEMP_MODEL_R_SIZE - 1; i > 0; i -= TEMP_MODEL_CAL_R_STEP) {
-        fanSpeedSoftPwm = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
+        uint8_t speed = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
+        set_fan_speed(speed);
         wait(10000);
 
         printf_P(PSTR("TM: R[%u] estimation\n"), (unsigned)i);
@@ -2865,10 +2875,10 @@ void temp_model_autotune(int16_t temp)
         SERIAL_ECHOLNPGM("TM: autotune failed");
         lcd_setstatuspgm(_i("TM autotune failed"));
         if(temp_error_state.v)
-            fanSpeedSoftPwm = 255;
+            temp_model_cal::set_fan_speed(255);
     } else {
         lcd_setstatuspgm(MSG_WELCOME);
-        fanSpeedSoftPwm = 0;
+        temp_model_cal::set_fan_speed(0);
         temp_model_set_enabled(was_enabled);
         temp_model_report_settings();
     }
