@@ -6,6 +6,7 @@
 #include "language.h"
 #include "util.h"
 #include <avr/pgmspace.h>
+#include "Prusa_farm.h"
 
 // Allocate the version string in the program memory. Otherwise the string lands either on the stack or in the global RAM.
 static const char FW_VERSION_STR[] PROGMEM = FW_VERSION;

@@ -567,5 +567,7 @@ enum CalibrationStatus
 #include "Configuration_adv.h"
 #include "thermistortables.h"
 
+#define PRUSA_FARM
+
 
 #endif //__CONFIGURATION_H

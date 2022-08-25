@@ -45,6 +45,7 @@
 #include "ConfigurationStore.h"
 #include "Timer.h"
 #include "Configuration_prusa.h"
+#include "Prusa_farm.h"
 
 #if (ADC_OVRSAMPL != OVERSAMPLENR)
 #error "ADC_OVRSAMPL oversampling must match OVERSAMPLENR"
