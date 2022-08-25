@@ -2608,7 +2608,16 @@ void temp_model_save_settings()
 
 namespace temp_model_cal {
 
-void waiting_handler()
+// set current fan speed for both front/backend
+static __attribute__((noinline)) void set_fan_speed(uint8_t fan_speed)
+{
+    fanSpeed = fan_speed;
+#ifdef FAN_SOFT_PWM
+    fanSpeedSoftPwm = fan_speed;
+#endif
+}
+
+static void waiting_handler()
 {
     manage_heater();
     host_keepalive();
@@ -2617,7 +2626,7 @@ void waiting_handler()
     lcd_update(0);
 }
 
-void wait(unsigned ms)
+static void wait(unsigned ms)
 {
     unsigned long mark = _millis() + ms;
     while(_millis() < mark) {
@@ -2626,7 +2635,7 @@ void wait(unsigned ms)
     }
 }
 
-void wait_temp()
+static void __attribute__((noinline)) wait_temp()
 {
     while(current_temperature[0] < (target_temperature[0] - TEMP_HYSTERESIS)) {
         if(temp_error_state.v) break;
@@ -2634,10 +2643,10 @@ void wait_temp()
     }
 }
 
-void cooldown(float temp)
+static void cooldown(float temp)
 {
-    float old_speed = fanSpeedSoftPwm;
-    fanSpeedSoftPwm = 255;
+    uint8_t old_speed = fanSpeed;
+    set_fan_speed(255);
     while(current_temperature[0] >= temp) {
         if(temp_error_state.v) break;
         float ambient = current_temperature_ambient + temp_model::data.Ta_corr;
@@ -2647,10 +2656,10 @@ void cooldown(float temp)
         }
         waiting_handler();
     }
-    fanSpeedSoftPwm = old_speed;
+    set_fan_speed(old_speed);
 }
 
-uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
+static uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
     TempMgrGuard temp_mgr_guard;
 
     uint16_t pos = 0;
@@ -2685,7 +2694,7 @@ uint16_t record(uint16_t samples = REC_BUFFER_SIZE) {
     return pos;
 }
 
-float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pwm, float ambient)
+static float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pwm, float ambient)
 {
     *var = v;
     temp_model::data.reset(rec_buffer[0].pwm, fan_pwm, rec_buffer[0].temp, ambient);
@@ -2699,14 +2708,14 @@ float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pwm, floa
 
 constexpr float GOLDEN_RATIO = 0.6180339887498949;
 
-void update_section(float points[2], const float bounds[2])
+static void update_section(float points[2], const float bounds[2])
 {
     float d = GOLDEN_RATIO * (bounds[1] - bounds[0]);
     points[0] = bounds[0] + d;
     points[1] = bounds[1] - d;
 }
 
-float estimate(uint16_t samples,
+static float estimate(uint16_t samples,
     float* const var, float min, float max,
     float thr, uint16_t max_itr,
     uint8_t fan_pwm, float ambient)
@@ -2743,13 +2752,13 @@ float estimate(uint16_t samples,
     return NAN;
 }
 
-bool autotune(int16_t cal_temp)
+static bool autotune(int16_t cal_temp)
 {
     uint16_t samples;
     float e;
 
     // bootstrap C/R values without fan
-    fanSpeedSoftPwm = 0;
+    set_fan_speed(0);
 
     for(uint8_t i = 0; i != 2; ++i) {
         const char* PROGMEM verb = (i == 0? PSTR("initial"): PSTR("refining"));
@@ -2797,11 +2806,12 @@ bool autotune(int16_t cal_temp)
     // kickstart issues, although this requires us to wait more for the PID stabilization.
     // Normally exhibits logarithmic behavior with the stock fan+shroud, so the shorter interval
     // at lower speeds is helpful to increase the resolution of the interpolation.
-    fanSpeedSoftPwm = 255;
+    set_fan_speed(255);
     wait(30000);
 
     for(int8_t i = TEMP_MODEL_R_SIZE - 1; i > 0; i -= TEMP_MODEL_CAL_R_STEP) {
-        fanSpeedSoftPwm = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
+        uint8_t speed = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
+        set_fan_speed(speed);
         wait(10000);
 
         printf_P(PSTR("TM: R[%u] estimation\n"), (unsigned)i);
@@ -2865,10 +2875,10 @@ void temp_model_autotune(int16_t temp)
         SERIAL_ECHOLNPGM("TM: autotune failed");
         lcd_setstatuspgm(_i("TM autotune failed"));
         if(temp_error_state.v)
-            fanSpeedSoftPwm = 255;
+            temp_model_cal::set_fan_speed(255);
     } else {
         lcd_setstatuspgm(MSG_WELCOME);
-        fanSpeedSoftPwm = 0;
+        temp_model_cal::set_fan_speed(0);
         temp_model_set_enabled(was_enabled);
         temp_model_report_settings();
     }
