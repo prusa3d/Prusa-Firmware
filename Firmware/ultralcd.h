@@ -130,8 +130,6 @@ enum class CustomMsg : uint_least8_t
 extern CustomMsg custom_message_type;
 extern uint8_t custom_message_state;
 
-extern uint8_t farm_mode;
-
 extern bool UserECoolEnabled();
 extern bool FarmOrUserECool();
 

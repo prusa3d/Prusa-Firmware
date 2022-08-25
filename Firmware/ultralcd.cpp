@@ -53,6 +53,7 @@
 #include "la10compat.h"
 #endif
 
+#include "Prusa_farm.h"
 
 int clock_interval = 0;
 static ShortTimer NcTime;
@@ -81,7 +82,6 @@ CustomMsg custom_message_type = CustomMsg::Status;
 uint8_t custom_message_state = 0;
 
 bool isPrintPaused = false;
-uint8_t farm_mode = 0;
 uint8_t farm_timer = 8;
 bool printer_connected = true;
 
@@ -5938,12 +5938,9 @@ static void lcd_main_menu()
     if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal) {
         if (!card.isFileOpen()) {
             if (!usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal)) {
-            //if (farm_mode) MENU_ITEM_SUBMENU_P(MSG_FARM_CARD_MENU, lcd_farm_sdcard_menu);
-            /*else*/{
-                        bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
-                        MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
-                    }
-        }
+                bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
+                MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
+            }
 #if SDCARDDETECT < 1
         MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user////MSG_CNG_SDCARD
 #endif //SDCARDDETECT
