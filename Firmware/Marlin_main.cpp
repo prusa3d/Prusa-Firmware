@@ -7930,6 +7930,7 @@ Sigma_Exit:
     break;
     #endif
 
+#ifdef ENABLE_AUTO_BED_LEVELING
 	/*!
 	### M851 - Set Z-Probe Offset <a href="https://reprap.org/wiki/G-code#M851:_Set_Z-Probe_Offset">M851: Set Z-Probe Offset"</a>
     Sets the Z-probe Z offset. This offset is used to determine the actual Z position of the nozzle when using a probe to home Z with G28. This value may also be used by G81 (Prusa) / G29 (Marlin) to apply correction to the Z position.
@@ -7976,6 +7977,7 @@ Sigma_Exit:
       break;
     }
     #endif // CUSTOM_M_CODE_SET_Z_PROBE_OFFSET
+#endif // ENABLE_AUTO_BED_LEVELING
 
 	/*!
 	### M552 - Set IP address <a href="https://reprap.org/wiki/G-code#M552:_Set_IP_address.2C_enable.2Fdisable_network_interface">M552: Set IP address, enable/disable network interface"</a>
