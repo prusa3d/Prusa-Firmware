@@ -444,10 +444,12 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // Custom M code points
 #define CUSTOM_M_CODES
 #ifdef CUSTOM_M_CODES
+#ifdef ENABLE_AUTO_BED_LEVELING
   #define CUSTOM_M_CODE_SET_Z_PROBE_OFFSET 851
   #define Z_PROBE_OFFSET_RANGE_MIN -15
   #define Z_PROBE_OFFSET_RANGE_MAX -5
-#endif
+#endif // ENABLE_AUTO_BED_LEVELING
+#endif // CUSTOM_M_CODES
 
 
 // EEPROM

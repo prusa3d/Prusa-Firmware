@@ -181,7 +181,9 @@ const char MSG_WATCHDOG_RESET[] PROGMEM_N1 = " Watchdog Reset"; ////
 const char MSG_Z_MAX[] PROGMEM_N1 = "z_max: "; ////
 const char MSG_Z_MIN[] PROGMEM_N1 = "z_min: "; ////
 const char MSG_ZPROBE_OUT[] PROGMEM_N1 = "Z probe out. bed"; ////
+#ifdef ENABLE_AUTO_BED_LEVELING
 const char MSG_ZPROBE_ZOFFSET[] PROGMEM_N1 = "Z Offset"; ////
+#endif
 const char MSG_TMC_OVERTEMP[] PROGMEM_N1 = "TMC DRIVER OVERTEMP"; ////
 const char MSG_Enqueing[] PROGMEM_N1 = "enqueing \""; ////
 const char MSG_ENDSTOPS_HIT[] PROGMEM_N1 = "endstops hit: "; ////
