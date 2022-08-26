@@ -290,7 +290,7 @@ void CardReader::getDirName(char* name, uint8_t level)
 		workDirParents[level].getFilename(name);
 }
 
-uint16_t CardReader::getWorkDirDepth() {
+uint8_t CardReader::getWorkDirDepth() {
 	return workDirDepth;
 }
 
@@ -738,7 +738,7 @@ bool CardReader::chdir(const char * relpath, bool doPresort)
     puts(relpath);
 
     if (workDirDepth < MAX_DIR_DEPTH) {
-      for (int d = ++workDirDepth; d--;)
+      for (uint8_t d = ++workDirDepth; d--;)
         workDirParents[d+1] = workDirParents[d];
       workDirParents[0]=*parent;
     }
@@ -760,7 +760,7 @@ void CardReader::updir()
   {
     --workDirDepth;
     workDir = workDirParents[0];
-    for (unsigned int d = 0; d < workDirDepth; d++)
+    for (uint8_t d = 0; d < workDirDepth; d++)
     {
         workDirParents[d] = workDirParents[d+1];
     }
