@@ -9746,7 +9746,6 @@ if(0)
 						lcd_update_enable(true);
 */
 						eFilamentAction=FilamentAction::AutoLoad;
-						bFilamentFirstRun=false;
 						if(target_temperature[0] >= extrude_min_temp){
 							bFilamentPreheatState=true;
 //							mFilamentItem(target_temperature[0],target_temperature_bed);
