@@ -53,7 +53,7 @@ public:
   void getAbsFilename(char *t);
   void printAbsFilenameFast();
   void getDirName(char* name, uint8_t level);
-  uint16_t getWorkDirDepth();
+  uint8_t getWorkDirDepth();
   
 
   void ls(ls_param params);
@@ -103,7 +103,7 @@ public:
   char dir_names[MAX_DIR_DEPTH][9];
 private:
   SdFile root,*curDir,workDir,workDirParents[MAX_DIR_DEPTH];
-  uint16_t workDirDepth;
+  uint8_t workDirDepth;
 
   // Sort files and folders alphabetically.
 #ifdef SDCARD_SORT_ALPHA

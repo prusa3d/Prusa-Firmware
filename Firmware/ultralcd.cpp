@@ -7857,7 +7857,7 @@ static void menu_action_sdfile(const char* filename)
 	  }
   }
 
-  uint8_t depth = (uint8_t)card.getWorkDirDepth();
+  uint8_t depth = card.getWorkDirDepth();
   eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
 
   for (uint_least8_t i = 0; i < depth; i++) {
