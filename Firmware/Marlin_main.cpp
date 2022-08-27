@@ -8698,7 +8698,7 @@ Sigma_Exit:
 
         M707 [ A | C ]
 
-        M707 A14 C2 - Read two bytes from address 0x14
+        M707 A0x14 C2 - Read two bytes from register 0x14
 
     #### Parameters
     - `A` - Address of register in hexidecimal. Default value is 0.
@@ -8727,7 +8727,7 @@ Sigma_Exit:
 
         M708 [ A | X | C ]
 
-        M708 A14 X30 C1 - Write to register 0x14 the value 30 which is 1 byte.
+        M708 A0x14 X30 C1 - Write to register 0x14 the value 30 which is 1 byte.
 
     #### Parameters
     - `A` - Address of register in hexidecimal. Default value is 0.
