@@ -11,10 +11,6 @@
 
 #ifdef PRUSA_FARM
 
-#define PING_TIME 60 //time in s
-#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid 0 triggering when dealing with long gcodes
-#define PING_ALLERT_PERIOD 60 //time in s
-
 #define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
 #define NC_BUTTON_LONG_PRESS 15 //time in s
 
@@ -22,11 +18,14 @@ uint8_t farm_mode = 0;
 
 static ShortTimer NcTime;
 static uint8_t farm_timer = 8;
-static bool printer_connected = true;
-static unsigned long PingTime = 0;
 static uint8_t status_number = 0;
 static bool no_response = false;
-static uint8_t important_status;
+#ifdef PRUSA_M28
+#define CHUNK_SIZE 64 // bytes
+#define SAFETY_MARGIN 1
+bool prusa_sd_card_upload = false;
+char chunk[CHUNK_SIZE+SAFETY_MARGIN];
+#endif
 
 
 static void prusa_statistics_err(char c);
@@ -40,7 +39,9 @@ static void lcd_send_status();
 static void proc_commands();
 static void lcd_connect_printer();
 #endif //FARM_CONNECT_MESSAGE
-static void lcd_ping();
+#ifdef PRUSA_M28
+static void trace();
+#endif
 
 
 static void prusa_statistics_err(char c) {
@@ -110,7 +111,7 @@ static void prusa_stat_printinfo() {
 static void lcd_send_status() {
     if (farm_mode && no_response && (NcTime.expired(NC_TIME * 1000))) {
         //send important status messages periodicaly
-        prusa_statistics(important_status);
+        prusa_statistics(8);
         NcTime.start();
 #ifdef FARM_CONNECT_MESSAGE
         lcd_connect_printer();
@@ -143,7 +144,7 @@ static void lcd_connect_printer() {
         delay_keep_alive(100);
         proc_commands();
         if (t == 10) {
-            prusa_statistics(important_status);
+            prusa_statistics(8);
             t = 0;
         }
         if (READ(BTN_ENC)) { //if button is not pressed
@@ -160,23 +161,76 @@ static void lcd_connect_printer() {
 }
 #endif //FARM_CONNECT_MESSAGE
 
-static void lcd_ping() { //chceck if printer is connected to monitoring when in farm mode
-    if (farm_mode) {
-        bool empty = cmd_buffer_empty();
-        if ((_millis() - PingTime) * 0.001 > (empty ? PING_TIME : PING_TIME_LONG)) {
-            //if commands buffer is empty use shorter time period
-            //if there are comamnds in buffer, some long gcodes can delay execution of ping command
-            //therefore longer period is used
-            printer_connected = false;
+#ifdef PRUSA_M28
+static void trace() {
+    Sound_MakeCustom(25,440,true);
+}
+
+void serial_read_stream() {
+
+    setAllTargetHotends(0);
+    setTargetBed(0);
+
+    lcd_clear();
+    lcd_puts_P(PSTR(" Upload in progress"));
+
+    // first wait for how many bytes we will receive
+    uint32_t bytesToReceive;
+
+    // receive the four bytes
+    char bytesToReceiveBuffer[4];
+    for (int i=0; i<4; i++) {
+        int data;
+        while ((data = MYSERIAL.read()) == -1) {};
+        bytesToReceiveBuffer[i] = data;
+
+    }
+
+    // make it a uint32
+    memcpy(&bytesToReceive, &bytesToReceiveBuffer, 4);
+
+    // we're ready, notify the sender
+    MYSERIAL.write('+');
+
+    // lock in the routine
+    uint32_t receivedBytes = 0;
+    while (prusa_sd_card_upload) {
+        int i;
+        for (i=0; i<CHUNK_SIZE; i++) {
+            int data;
+
+            // check if we're not done
+            if (receivedBytes == bytesToReceive) {
+                break;
+            }
+
+            // read the next byte
+            while ((data = MYSERIAL.read()) == -1) {};
+            receivedBytes++;
+
+            // save it to the chunk
+            chunk[i] = data;
         }
-        else {
-            printer_connected = true;
+
+        // write the chunk to SD
+        card.write_command_no_newline(&chunk[0]);
+
+        // notify the sender we're ready for more data
+        MYSERIAL.write('+');
+
+        // for safety
+        manage_heater();
+
+        // check if we're done
+        if(receivedBytes == bytesToReceive) {
+            trace(); // beep
+            card.closefile();
+            prusa_sd_card_upload = false;
+            SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
         }
     }
 }
-
-
-
+#endif //PRUSA_M28
 
 
 void prusa_statistics(uint8_t _message) {
@@ -336,7 +390,6 @@ void prusa_statistics_update_from_status_screen() {
 }
 
 void prusa_statistics_update_from_lcd_update() {
-    lcd_ping(); //check that we have received ping command if we are in farm mode
     lcd_send_status();
 }
 
@@ -348,7 +401,6 @@ void farm_mode_init() {
     }
     else if (farm_mode) {
         no_response = true; //we need confirmation by recieving PRUSA thx
-        important_status = 8;
         prusa_statistics(8);
 #ifdef HAS_SECOND_SERIAL_PORT
         selectedSerialPort = 1;
@@ -368,14 +420,32 @@ bool farm_prusa_code_seen() {
     if (!farm_mode)
         return false;
     
-    if (code_seen_P(PSTR("Ping"))) {  // PRUSA Ping
-        PingTime = _millis();
-    }
-    else if (code_seen_P(PSTR("PRN"))) { // PRUSA PRN
+    if (code_seen_P(PSTR("PRN"))) { // PRUSA PRN
         printf_P(_N("%u"), status_number);
     }
     else if (code_seen_P(PSTR("thx"))) { // PRUSA thx
         no_response = false;
+    }
+#ifdef PRUSA_M28
+    else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
+        trace();
+        prusa_sd_card_upload = true;
+        card.openFileWrite(strchr_pointer+4);
+    }
+#endif //PRUSA_M28
+    else if (code_seen_P(PSTR("fv"))) { // PRUSA fv
+        // get file version
+#ifdef SDSUPPORT
+        card.openFileReadFilteredGcode(strchr_pointer + 3, true);
+        while (true) {
+            uint16_t readByte = card.getFilteredGcodeChar();
+            MYSERIAL.write(readByte);
+            if (readByte == '\n') {
+                break;
+            }
+        }
+        card.closefile();
+#endif // SDSUPPORT
     }
     else {
         return false;
@@ -386,7 +456,6 @@ bool farm_prusa_code_seen() {
 
 void farm_gcode_g98() {
     farm_mode = 1;
-    PingTime = _millis();
     eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
     SilentModeMenu = SILENT_MODE_OFF;
     eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
@@ -395,7 +464,6 @@ void farm_gcode_g98() {
 
 void farm_gcode_g99() {
     farm_disable();
-    printer_connected = true;
     lcd_update(2);
     fCheckModeInit(); // alternatively invoke printer reset
 }
