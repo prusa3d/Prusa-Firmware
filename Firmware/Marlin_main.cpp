@@ -3585,7 +3585,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     if (MMU2::mmu2.Enabled())
         mmu_M600_unload_filament();
     else
-        unload_filament(true); // unload filament for single material (used also in M702)
+        unload_filament(FILAMENTCHANGE_FINALRETRACT, true); // unload filament for single material (used also in M702)
     st_synchronize();          // finish moves
     {
         FSensorBlockRunout fsBlockRunout;
@@ -8618,7 +8618,10 @@ Sigma_Exit:
     */
     case 702:
     {
-        // TODO: Implement U parameter
+        float unloadLength = FILAMENTCHANGE_FINALRETRACT;
+        if (code_seen('U')) {
+            unloadLength = code_value();
+        }
 
         if (code_seen('Z'))
         {
@@ -8628,11 +8631,10 @@ Sigma_Exit:
             raise_z_above(MIN_Z_FOR_UNLOAD, false);
         }
 
-        if (MMU2::mmu2.Enabled())
-        {
+        if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.unload();
         } else {
-            unload_filament();
+            unload_filament(unloadLength, false);
         }
     }
     break;
