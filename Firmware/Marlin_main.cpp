@@ -3705,7 +3705,6 @@ void gcode_M701(uint8_t mmuSlotIndex){
         lcd_update_enable(true);
         lcd_update(2);
         lcd_setstatuspgm(MSG_WELCOME);
-        disable_z();
         loading_flag = false;
         custom_message_type = CustomMsg::Status;
     }
