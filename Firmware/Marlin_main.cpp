@@ -8547,22 +8547,42 @@ Sigma_Exit:
 
     /*!
     ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
+    Load filament into the active extruder.
     #### Usage
 
-        M701 [ E | T ]
+        M701 [ P | T | L | Z ]
 
     #### Parameters
-    - `E` - ID of filament to load, ranges from 0 to 4
-    - `T` - Alias of `E`. Used for compatibility with Marlin
+    - `P` - n index of MMU slot (zero based, so 0-4 like T0 and T4)
+    - `T` - Alias of `P`. Used for compatibility with Marlin
+    - `L` - Extrude distance for insertion (positive value)(manual reload)
+    - `Z` - Move the Z axis by this distance. Default value MIN_Z_FOR_LOAD
     */
-	case 701:
-	{
+    case 701:
+    {
         uint8_t mmuSlotIndex = 0xffU;
-		if (MMU2::mmu2.Enabled() && code_seen('E'))
-			mmuSlotIndex = code_value_uint8();
-		gcode_M701(mmuSlotIndex);
-	}
-	break;
+        if( MMU2::mmu2.Enabled() )
+        {
+            if( code_seen('P') || code_seen('T') ) {
+                mmuSlotIndex = code_value_uint8();
+            }
+        }
+
+        // TODO: Implement L parameter
+
+        enable_z();
+        if (code_seen('Z'))
+        {
+            float z_target = code_value();
+            raise_z_above(z_target, false);
+        } else {
+            raise_z_above(MIN_Z_FOR_LOAD, false);
+        }
+        disable_z();
+
+        gcode_M701(mmuSlotIndex);
+    }
+    break;
 
     /*!
     ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">G32: Undock Z Probe sled</a>
