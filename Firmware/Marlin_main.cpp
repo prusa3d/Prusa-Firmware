@@ -205,10 +205,6 @@ static LongTimer crashDetTimer;
 
 bool mesh_bed_leveling_flag = false;
 
-#ifdef PRUSA_M28
-bool prusa_sd_card_upload = false;
-#endif
-
 unsigned long total_filament_used;
 HeatingStatus heating_status;
 uint8_t heating_status_counter;
@@ -1677,79 +1673,6 @@ void stack_error() {
     crash_and_burn(dump_crash_reason::stack_error);
 }
 
-#ifdef PRUSA_M28
-void trace();
-
-#define CHUNK_SIZE 64 // bytes
-#define SAFETY_MARGIN 1
-char chunk[CHUNK_SIZE+SAFETY_MARGIN];
-
-void serial_read_stream() {
-
-    setAllTargetHotends(0);
-    setTargetBed(0);
-
-    lcd_clear();
-    lcd_puts_P(PSTR(" Upload in progress"));
-
-    // first wait for how many bytes we will receive
-    uint32_t bytesToReceive;
-
-    // receive the four bytes
-    char bytesToReceiveBuffer[4];
-    for (int i=0; i<4; i++) {
-        int data;
-        while ((data = MYSERIAL.read()) == -1) {};
-        bytesToReceiveBuffer[i] = data;
-
-    }
-
-    // make it a uint32
-    memcpy(&bytesToReceive, &bytesToReceiveBuffer, 4);
-
-    // we're ready, notify the sender
-    MYSERIAL.write('+');
-
-    // lock in the routine
-    uint32_t receivedBytes = 0;
-    while (prusa_sd_card_upload) {
-        int i;
-        for (i=0; i<CHUNK_SIZE; i++) {
-            int data;
-
-            // check if we're not done
-            if (receivedBytes == bytesToReceive) {
-                break;
-            }
-
-            // read the next byte
-            while ((data = MYSERIAL.read()) == -1) {};
-            receivedBytes++;
-
-            // save it to the chunk
-            chunk[i] = data;
-        }
-
-        // write the chunk to SD
-        card.write_command_no_newline(&chunk[0]);
-
-        // notify the sender we're ready for more data
-        MYSERIAL.write('+');
-
-        // for safety
-        manage_heater();
-
-        // check if we're done
-        if(receivedBytes == bytesToReceive) {
-            trace(); // beep
-            card.closefile();
-            prusa_sd_card_upload = false;
-            SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
-        }
-    }
-}
-#endif //PRUSA_M28
-
 
 /**
  * Output autoreport values according to features requested in M155
@@ -2481,96 +2404,7 @@ void retract(bool retracting, bool swapretract = false) {
 } //retract
 #endif //FWRETRACT
 
-#ifdef PRUSA_M28
-void trace() {
-    Sound_MakeCustom(25,440,true);
-}
-#endif
 
-/*
-void ramming() {
-//	  float tmp[4] = DEFAULT_MAX_FEEDRATE;
-	if (current_temperature[0] < 230) {
-		//PLA
-
-		max_feedrate[E_AXIS] = 50;
-		//current_position[E_AXIS] -= 8;
-		//plan_buffer_line_curposXYZE(2100 / 60, active_extruder);
-		//current_position[E_AXIS] += 8;
-		//plan_buffer_line_curposXYZE(2100 / 60, active_extruder);
-		current_position[E_AXIS] += 5.4;
-		plan_buffer_line_curposXYZE(2800 / 60, active_extruder);
-		current_position[E_AXIS] += 3.2;
-		plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
-		current_position[E_AXIS] += 3;
-		plan_buffer_line_curposXYZE(3400 / 60, active_extruder);
-		st_synchronize();
-		max_feedrate[E_AXIS] = 80;
-		current_position[E_AXIS] -= 82;
-		plan_buffer_line_curposXYZE(9500 / 60, active_extruder);
-		max_feedrate[E_AXIS] = 50;//tmp[E_AXIS];
-		current_position[E_AXIS] -= 20;
-		plan_buffer_line_curposXYZE(1200 / 60, active_extruder);
-		current_position[E_AXIS] += 5;
-		plan_buffer_line_curposXYZE(400 / 60, active_extruder);
-		current_position[E_AXIS] += 5;
-		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
-		current_position[E_AXIS] -= 10;
-		st_synchronize();
-		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
-		current_position[E_AXIS] += 10;
-		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
-		current_position[E_AXIS] -= 10;
-		plan_buffer_line_curposXYZE(800 / 60, active_extruder);
-		current_position[E_AXIS] += 10;
-		plan_buffer_line_curposXYZE(800 / 60, active_extruder);
-		current_position[E_AXIS] -= 10;
-		plan_buffer_line_curposXYZE(800 / 60, active_extruder);
-		st_synchronize();
-	}
-	else {
-		//ABS
-		max_feedrate[E_AXIS] = 50;
-		//current_position[E_AXIS] -= 8;
-		//plan_buffer_line_curposXYZE(2100 / 60, active_extruder);
-		//current_position[E_AXIS] += 8;
-		//plan_buffer_line_curposXYZE(2100 / 60, active_extruder);
-		current_position[E_AXIS] += 3.1;
-		plan_buffer_line_curposXYZE(2000 / 60, active_extruder);
-		current_position[E_AXIS] += 3.1;
-		plan_buffer_line_curposXYZE(2500 / 60, active_extruder);
-		current_position[E_AXIS] += 4;
-		plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
-		st_synchronize();
-		//current_position[X_AXIS] += 23; //delay
-		//plan_buffer_line_curposXYZE(600/60, active_extruder); //delay
-		//current_position[X_AXIS] -= 23; //delay
-		//plan_buffer_line_curposXYZE(600/60, active_extruder); //delay
-		_delay(4700);
-		max_feedrate[E_AXIS] = 80;
-		current_position[E_AXIS] -= 92;
-		plan_buffer_line_curposXYZE(9900 / 60, active_extruder);
-		max_feedrate[E_AXIS] = 50;//tmp[E_AXIS];
-		current_position[E_AXIS] -= 5;
-		plan_buffer_line_curposXYZE(800 / 60, active_extruder);
-		current_position[E_AXIS] += 5;
-		plan_buffer_line_curposXYZE(400 / 60, active_extruder);
-		current_position[E_AXIS] -= 5;
-		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
-		st_synchronize();
-		current_position[E_AXIS] += 5;
-		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
-		current_position[E_AXIS] -= 5;
-		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
-		current_position[E_AXIS] += 5;
-		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
-		current_position[E_AXIS] -= 5;
-		plan_buffer_line_curposXYZE(600 / 60, active_extruder);
-		st_synchronize();
-
-	}
-  }
-*/
 
 #ifdef TMC2130
 void force_high_power_mode(bool start_high_power_section) {
@@ -4384,10 +4218,9 @@ void process_commands()
     
     Set of internal PRUSA commands
     #### Usage
-         PRUSA [ Ping | PRN | FAN | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | FR ]
+         PRUSA [ PRN | FAN | thx | uvlo | MMURES | RESET | fv | M28 | SN | Fir | Rev | Lang | Lz | FR ]
     
     #### Parameters
-      - `Ping` 
       - `PRN` - Prints revision of the printer
       - `FAN` - Prints fan details
       - `thx` 
@@ -4408,7 +4241,7 @@ void process_commands()
     */
 
         if (farm_prusa_code_seen()) {}
-        else if( code_seen_P(PSTR("FANPINTST"))) {
+        else if(code_seen_P(PSTR("FANPINTST"))) {
             gcode_PRUSA_BadRAMBoFanTest();
         }
         else if (code_seen_P(PSTR("FAN"))) { // PRUSA FAN
@@ -4432,30 +4265,7 @@ void process_commands()
 #elif defined(BOOTAPP) //this is a safety precaution. This is because the new bootloader turns off the heaters, but the old one doesn't. The watchdog should be used most of the time.
             asm volatile("jmp 0x3E000");
 #endif
-        } else if (code_seen_P(PSTR("fv"))) { // PRUSA fv
-        // get file version
-        #ifdef SDSUPPORT
-        card.openFileReadFilteredGcode(strchr_pointer + 3,true);
-        while (true) {
-            uint16_t readByte = card.getFilteredGcodeChar();
-            MYSERIAL.write(readByte);
-            if (readByte=='\n') {
-                break;
-            }
         }
-        card.closefile();
-
-        #endif // SDSUPPORT
-
-    }
-#ifdef PRUSA_M28
-	else if (code_seen_P(PSTR("M28"))) { // PRUSA M28
-        trace();
-        prusa_sd_card_upload = true;
-        card.openFileWrite(strchr_pointer+4);
-
-	}
-#endif //PRUSA_M28
 #ifdef PRUSA_SN_SUPPORT
 	else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];

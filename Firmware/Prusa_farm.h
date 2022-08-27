@@ -9,6 +9,10 @@ extern uint8_t farm_mode;
 #define farm_mode 0
 #endif
 
+#ifdef PRUSA_M28
+extern bool prusa_sd_card_upload;
+extern void serial_read_stream();
+#endif
 extern void prusa_statistics(uint8_t _message);
 extern void prusa_statistics_update_from_status_screen();
 extern void prusa_statistics_update_from_lcd_update();
