@@ -8580,23 +8580,32 @@ Sigma_Exit:
     ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">G32: Undock Z Probe sled</a>
     #### Usage
     
-        M702 [ C ]
+        M702 [ U | Z ]
     
     #### Parameters
-    - `C` - Unload just current filament
-    - without any parameters unload all filaments
+    - `U` - Retract distance for removal (manual reload). Default value is 0.
+    - `Z` - Move the Z axis by this distance. Default value MIN_Z_FOR_UNLOAD.
     */
-	case 702:
-	{
-		if (code_seen('C')) {
-			if(MMU2::mmu2.Enabled()) MMU2::mmu2.unload(); //! if "C" unload current filament; if mmu is not present no action is performed
-		}
-		else {
-			if(MMU2::mmu2.Enabled()) MMU2::mmu2.unload(); //! unload current filament
-			else unload_filament();
-		}
-	}
-	break;
+    case 702:
+    {
+        // TODO: Implement U parameter
+
+        if (code_seen('Z'))
+        {
+            float z_target = code_value();
+            raise_z_above(z_target, false);
+        } else {
+            raise_z_above(MIN_Z_FOR_UNLOAD, false);
+        }
+
+        if (MMU2::mmu2.Enabled())
+        {
+            MMU2::mmu2.unload();
+        } else {
+            unload_filament();
+        }
+    }
+    break;
 
     /*!
     ### M704 - Load to MMU
