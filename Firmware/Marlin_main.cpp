@@ -8593,7 +8593,6 @@ Sigma_Exit:
             fastLoadLength = code_value();
         }
 
-        enable_z();
         if (code_seen('Z'))
         {
             z_target = code_value();
@@ -8601,7 +8600,6 @@ Sigma_Exit:
 
         // Raise the Z axis
         raise_z_above(z_target, false);
-        disable_z();
 
         gcode_M701(fastLoadLength, mmuSlotIndex);
     }
