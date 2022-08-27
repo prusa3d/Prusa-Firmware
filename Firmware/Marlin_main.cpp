@@ -3668,7 +3668,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     custom_message_type = CustomMsg::Status;
 }
 
-void gcode_M701(uint8_t mmuSlotIndex){
+void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
     printf_P(PSTR("gcode_M701 begin\n"));
     
     FSensorBlockRunout fsBlockRunout;
@@ -3684,10 +3684,10 @@ void gcode_M701(uint8_t mmuSlotIndex){
         const int feed_mm_before_raising = 30;
         static_assert(feed_mm_before_raising <= FILAMENTCHANGE_FIRSTFEED);
 
-		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
+        lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 		current_position[E_AXIS] += FILAMENTCHANGE_FIRSTFEED - feed_mm_before_raising;
 		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
-		st_synchronize();
+        st_synchronize();
 
 		raise_z_above(MIN_Z_FOR_LOAD, false);
 		current_position[E_AXIS] += feed_mm_before_raising;
@@ -8586,6 +8586,7 @@ Sigma_Exit:
     case 701:
     {
         uint8_t mmuSlotIndex = 0xffU;
+        float fastLoadLength = FILAMENTCHANGE_FIRSTFEED; // Only used without MMU
         if( MMU2::mmu2.Enabled() )
         {
             if( code_seen('P') || code_seen('T') ) {
@@ -8593,7 +8594,10 @@ Sigma_Exit:
             }
         }
 
-        // TODO: Implement L parameter
+        if (code_seen('L'))
+        {
+            fastLoadLength = code_value();
+        }
 
         enable_z();
         if (code_seen('Z'))
@@ -8605,7 +8609,7 @@ Sigma_Exit:
         }
         disable_z();
 
-        gcode_M701(mmuSlotIndex);
+        gcode_M701(fastLoadLength, mmuSlotIndex);
     }
     break;
 
