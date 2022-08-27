@@ -8704,7 +8704,7 @@ Sigma_Exit:
         if ( MMU2::mmu2.Enabled() )
         {
             if( code_seen('A') ) {
-                addr = code_value_uint8();
+                addr = uint8_t(strtol(strchr_pointer+1, NULL, 0));
             }
             if( code_seen('C') ) {
                 nrbytes = code_value_uint8();
@@ -8735,7 +8735,7 @@ Sigma_Exit:
         if ( MMU2::mmu2.Enabled() )
         {
             if( code_seen('A') ) {
-                addr = code_value_uint8();
+                addr = uint8_t(strtol(strchr_pointer+1, NULL, 0));
             }
             if( code_seen('X') ) {
                 data = code_value_uint8();
