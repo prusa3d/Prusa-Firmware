@@ -3662,8 +3662,6 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 }
 
 void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
-    printf_P(PSTR("gcode_M701 begin\n"));
-    
     FSensorBlockRunout fsBlockRunout;
     
     prusa_statistics(22);
