@@ -5255,7 +5255,12 @@ void unload_filament(bool automatic)
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
     FSensorBlockRunout fsBlockRunout;
-    raise_z_above(automatic? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
+
+    if (automatic)
+    {
+        // M600
+        raise_z_above(MIN_Z_FOR_SWAP);
+    }
 
 	//		extr_unload2();
 
