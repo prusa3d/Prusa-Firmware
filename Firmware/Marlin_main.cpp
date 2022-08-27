@@ -8587,6 +8587,7 @@ Sigma_Exit:
     {
         uint8_t mmuSlotIndex = 0xffU;
         float fastLoadLength = FILAMENTCHANGE_FIRSTFEED; // Only used without MMU
+        float z_target = MIN_Z_FOR_LOAD;
         if( MMU2::mmu2.Enabled() )
         {
             if( code_seen('P') || code_seen('T') ) {
@@ -8602,11 +8603,11 @@ Sigma_Exit:
         enable_z();
         if (code_seen('Z'))
         {
-            float z_target = code_value();
-            raise_z_above(z_target, false);
-        } else {
-            raise_z_above(MIN_Z_FOR_LOAD, false);
+            z_target = code_value();
         }
+
+        // Raise the Z axis
+        raise_z_above(z_target, false);
         disable_z();
 
         gcode_M701(fastLoadLength, mmuSlotIndex);
@@ -8625,6 +8626,7 @@ Sigma_Exit:
     */
     case 702:
     {
+        float z_target = MIN_Z_FOR_UNLOAD;
         float unloadLength = FILAMENTCHANGE_FINALRETRACT;
         if (code_seen('U')) {
             unloadLength = code_value();
@@ -8632,11 +8634,11 @@ Sigma_Exit:
 
         if (code_seen('Z'))
         {
-            float z_target = code_value();
-            raise_z_above(z_target, false);
-        } else {
-            raise_z_above(MIN_Z_FOR_UNLOAD, false);
+            z_target = code_value();
         }
+
+        // Raise the Z axis
+        raise_z_above(z_target, false);
 
         if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.unload();
