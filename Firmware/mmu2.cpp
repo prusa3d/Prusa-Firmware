@@ -179,6 +179,16 @@ void MMU2::PowerOn(){
     power_on();
 }
 
+void MMU2::ReadRegister(uint8_t address, uint8_t nrbytes){
+    // TODO, implement for gcode M707
+    // Currently this function is NOP
+}
+
+void MMU2::WriteRegister(uint8_t address, uint8_t data, uint8_t nrbytes){
+    // TODO, implement for gcode M708
+    // Currently this function is NOP
+}
+
 void MMU2::mmu_loop() {
     // We only leave this method if the current command was successfully completed - that's the Marlin's way of blocking operation
     // Atomic compare_exchange would have been the most appropriate solution here, but this gets called only in Marlin's task,
