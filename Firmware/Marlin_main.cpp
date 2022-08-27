@@ -3704,6 +3704,33 @@ void gcode_M701(uint8_t mmuSlotIndex){
 
     eFilamentAction = FilamentAction::None;
 }
+
+// Common gcode shared by the gcodes. This saves some flash memory
+static void gcodes_M704_M705_M706(uint16_t gcode)
+{
+    uint8_t mmuSlotIndex = 0xffU;
+    if (MMU2::mmu2.Enabled() && code_seen('P'))
+    {
+        mmuSlotIndex = code_value_uint8();
+        if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
+            switch (gcode)
+            {
+            case 704:
+                MMU2::mmu2.load_filament(mmuSlotIndex);
+                break;
+            case 705:
+                MMU2::mmu2.eject_filament(mmuSlotIndex, false);
+                break;
+            case 706:
+                MMU2::mmu2.cut_filament(mmuSlotIndex);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
+
 /**
  * @brief Get serial number from 32U2 processor
  *
@@ -8618,14 +8645,7 @@ Sigma_Exit:
     */
     case 704:
     {
-        uint8_t mmuSlotIndex = 0xffU;
-        if (MMU2::mmu2.Enabled() && code_seen('P'))
-        {
-            mmuSlotIndex = code_value_uint8();
-            if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
-                MMU2::mmu2.load_filament(mmuSlotIndex);
-            }
-        }
+        gcodes_M704_M705_M706(704);
     }
     break;
 
@@ -8640,15 +8660,7 @@ Sigma_Exit:
     */
     case 705:
     {
-        uint8_t mmuSlotIndex = 0xffU;
-        if (MMU2::mmu2.Enabled() && code_seen('P'))
-        {
-            mmuSlotIndex = code_value_uint8();
-            if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
-                // TODO: should recover be false?
-                MMU2::mmu2.eject_filament(mmuSlotIndex, false);
-            }
-        }
+        gcodes_M704_M705_M706(705);
     }
     break;
 
@@ -8664,14 +8676,7 @@ Sigma_Exit:
     */
     case 706:
     {
-        uint8_t mmuSlotIndex = 0xffU;
-        if (MMU2::mmu2.Enabled() && code_seen('P'))
-        {
-            mmuSlotIndex = code_value_uint8();
-            if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
-                MMU2::mmu2.cut_filament(mmuSlotIndex);
-            }
-        }
+        gcodes_M704_M705_M706(706);
     }
     break;
 
