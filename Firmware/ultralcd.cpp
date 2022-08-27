@@ -3958,7 +3958,7 @@ static void lcd_wizard_load() {
     lcd_clear();
     lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
     loading_flag = true;
-    gcode_M701(0);
+    gcode_M701(FILAMENTCHANGE_FIRSTFEED, 0);
 }
 
 bool lcd_autoDepleteEnabled()
