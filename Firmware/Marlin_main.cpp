@@ -8648,6 +8648,69 @@ Sigma_Exit:
     break;
 
     /*!
+    ### M707 - Read from MMU register
+    #### Usage
+
+        M707 [ A | C ]
+
+        M707 A14 C2 - Read two bytes from address 0x14
+
+    #### Parameters
+    - `A` - Address of register in hexidecimal. Default value is 0.
+    - `C` - Number of bytes to read. Default value is 0.
+    */
+    case 707:
+    {
+        uint8_t addr = 0;
+        uint8_t nrbytes = 0;
+        if ( MMU2::mmu2.Enabled() )
+        {
+            if( code_seen('A') ) {
+                addr = code_value_uint8();
+            }
+            if( code_seen('C') ) {
+                nrbytes = code_value_uint8();
+            }
+            MMU2::mmu2.ReadRegister(addr, nrbytes);
+        }
+    }
+    break;
+
+    /*!
+    ### M708 - Write to MMU register
+    #### Usage
+
+        M708 [ A | X | C ]
+
+        M708 A14 X30 C1 - Write to register 0x14 the value 30 which is 1 byte.
+
+    #### Parameters
+    - `A` - Address of register in hexidecimal. Default value is 0.
+    - `X` - Data to write. Default value is 0.
+    - `C` - Number of bytes to write. Default value is 0.
+    */
+    case 708:
+    {
+        uint8_t addr = 0;
+        uint8_t data = 0;
+        uint8_t nrbytes = 0;
+        if ( MMU2::mmu2.Enabled() )
+        {
+            if( code_seen('A') ) {
+                addr = code_value_uint8();
+            }
+            if( code_seen('X') ) {
+                data = code_value_uint8();
+            }
+            if( code_seen('C') ) {
+                nrbytes = code_value_uint8();
+            }
+            MMU2::mmu2.WriteRegister(addr, data, nrbytes);
+        }
+    }
+    break;
+
+    /*!
     ### M709 - MMU turn on/off/reset
     The MK3S cannot not power off the MMU, for that reason the functionality is not supported.
     #### Usage
