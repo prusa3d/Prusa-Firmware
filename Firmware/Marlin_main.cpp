@@ -3669,8 +3669,7 @@ void gcode_M701(uint8_t mmuSlotIndex){
     prusa_statistics(22);
 
     if (MMU2::mmu2.Enabled() && mmuSlotIndex < MMU_FILAMENT_COUNT) {
-        MMU2::mmu2.load_filament(mmuSlotIndex); // loads current extruder
-        // mmu_extruder = mmuSlotIndex; // @@TODO shall load filament set current tool to some specific index? We don't do that anymore.
+        MMU2::mmu2.load_filament_to_nozzle(mmuSlotIndex);
     } else {
         enable_z();
         custom_message_type = CustomMsg::FilamentLoading;
@@ -8565,7 +8564,7 @@ Sigma_Exit:
     break;
 
     /*!
-    ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
+    ### M701 - Load filament to extruder <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
     Load filament into the active extruder.
     #### Usage
 
