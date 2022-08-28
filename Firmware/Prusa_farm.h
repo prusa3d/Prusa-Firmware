@@ -3,6 +3,8 @@
 #include <inttypes.h>
 #include "Configuration.h"
 
+#define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
+
 #ifdef PRUSA_FARM
 extern uint8_t farm_mode;
 #else

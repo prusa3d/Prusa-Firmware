@@ -118,7 +118,6 @@
 // Safety timer
 #define SAFETYTIMER
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
-#define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 // Online crash dumper
 #define EMERGENCY_SERIAL_DUMP   // Request dump via serial on stack corruption and WDR
