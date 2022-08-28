@@ -44,6 +44,8 @@ int fsensor_counter; //counter for e-steps
 #include "mmu.h"
 #include "ConfigurationStore.h"
 
+#include "Prusa_farm.h"
+
 #ifdef DEBUG_STACK_MONITOR
 uint16_t SP_min = 0x21FF;
 #endif //DEBUG_STACK_MONITOR
