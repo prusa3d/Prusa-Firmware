@@ -3449,32 +3449,6 @@ void gcode_M123()
 }
 #endif //FANCHECK and TACH_0 or TACH_1
 
-//! extracted code to compute z_shift for M600 in case of filament change operation 
-//! requested from fsensors.
-//! The function ensures, that the printhead lifts to at least 25mm above the heat bed
-//! unlike the previous implementation, which was adding 25mm even when the head was
-//! printing at e.g. 24mm height.
-//! A safety margin of FILAMENTCHANGE_ZADD is added in all cases to avoid touching
-//! the printout.
-//! This function is templated to enable fast change of computation data type.
-//! @return new z_shift value
-template<typename T>
-static T gcode_M600_filament_change_z_shift()
-{
-#ifdef FILAMENTCHANGE_ZADD
-	static_assert(Z_MAX_POS < (255 - FILAMENTCHANGE_ZADD), "Z-range too high, change the T type from uint8_t to uint16_t");
-	// avoid floating point arithmetics when not necessary - results in shorter code
-	T z_shift = T(FILAMENTCHANGE_ZADD); // always move above printout
-	T ztmp = T( current_position[Z_AXIS] );
-	if((ztmp + z_shift) < T(MIN_Z_FOR_SWAP)){
-		z_shift = T(MIN_Z_FOR_SWAP) - ztmp; // make sure to be at least 25mm above the heat bed
-	}
-	return z_shift;
-#else
-	return T(0);
-#endif
-}
-
 static void mmu_M600_wait_and_beep() {
     // Beep and wait for user to remove old filament and prepare new filament for load
     KEEPALIVE_STATE(PAUSED_FOR_USER);
@@ -3575,11 +3549,8 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
     st_synchronize();
 
-    // Lift Z
-    current_position[Z_AXIS] += z_shift;
-    clamp_to_software_endstops(current_position);
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_ZFEED);
-    st_synchronize();
+    // Raise the Z axis
+    float delta = raise_z(z_shift, false);
 
     // Move XY to side
     current_position[X_AXIS] = x_position;
@@ -3647,14 +3618,13 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
             current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
             plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
         }
-    
+
+        // Recover Z axis
+        raise_z(-delta, false);
+
         // Move XY back
         plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
         st_synchronize();
-        // Move Z back
-        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
-        st_synchronize();
-    
         // Set E position to original
         plan_set_e_position(lastpos[E_AXIS]);
     
@@ -7859,7 +7829,7 @@ Sigma_Exit:
       
     - `X`    - X position, default 211
     - `Y`    - Y position, default 0
-    - `Z`    - relative lift Z, default 2.
+    - `Z`    - relative lift Z, default MIN_Z_FOR_SWAP.
     - `E`    - initial retract, default -2
     - `L`    - later retract distance for removal, default -80
     - `AUTO` - Automatically (only with MMU)
@@ -7870,7 +7840,7 @@ Sigma_Exit:
 
 		float x_position = current_position[X_AXIS];
 		float y_position = current_position[Y_AXIS];
-		float z_shift = 0; // is it necessary to be a float?
+		float z_shift = MIN_Z_FOR_SWAP;
 		float e_shift_init = 0;
 		float e_shift_late = 0;
 		bool automatic = false;
@@ -7899,16 +7869,10 @@ Sigma_Exit:
 		  #endif	
 		}
 
-        //Lift Z
-        if(code_seen('Z'))
-        {
-          z_shift = code_value();
-        }
-        else
-        {
-			z_shift = gcode_M600_filament_change_z_shift<uint8_t>();
-        }
-		//Move XY to side
+        // Z lift. For safety only allow positive values
+        if (code_seen('Z')) z_shift = fabs(code_value());
+
+        //Move XY to side
         if(code_seen('X'))
         {
           x_position = code_value();
