@@ -11563,7 +11563,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
-	saved_bed_temperature = degBed();
+	saved_bed_temperature = degTargetBed();
 	saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
 	saved_fan_speed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
