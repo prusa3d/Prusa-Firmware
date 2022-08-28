@@ -478,6 +478,9 @@ void get_command()
         // Handle KILL early, even when Stopped
         if(strcmp(cmdbuffer+bufindw+CMDHDRSIZE, "M112") == 0)
           kill(MSG_M112_KILL, 2);
+        // Stop print
+        if (strcmp(cmdbuffer+bufindw+CMDHDRSIZE, "M603") == 0)
+          lcd_print_stop();
         // Handle the USB timer
         if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
             if (!IS_SD_PRINTING) {
