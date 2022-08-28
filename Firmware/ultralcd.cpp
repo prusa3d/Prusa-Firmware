@@ -5262,7 +5262,7 @@ void unload_filament(float unloadLength, bool automatic)
         raise_z_above(MIN_Z_FOR_SWAP);
     }
 
-    current_position[E_AXIS] -= unloadLength;
+    current_position[E_AXIS] += unloadLength;
     plan_buffer_line_curposXYZE(1000 / 60);
     st_synchronize();
 
