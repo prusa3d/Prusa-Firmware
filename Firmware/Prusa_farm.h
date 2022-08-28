@@ -3,6 +3,9 @@
 #include <inttypes.h>
 #include "Configuration.h"
 
+#define FARM_PREHEAT_HOTEND_TEMP 250
+#define FARM_PREHEAT_HPB_TEMP 80
+
 #define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 #define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
 #define NC_BUTTON_LONG_PRESS 15 //time in s
