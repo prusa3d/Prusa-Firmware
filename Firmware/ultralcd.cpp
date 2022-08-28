@@ -968,6 +968,7 @@ void lcd_commands()
 			}
 		}
 
+#ifdef PRUSA_FARM
 	if (lcd_commands_type == LcdCommands::FarmModeConfirm)   /// farm mode confirm
 	{
 
@@ -1005,6 +1006,8 @@ void lcd_commands()
 		}
 
 	}
+#endif //PRUSA_FARM
+
 	if (lcd_commands_type == LcdCommands::PidExtruder) {
 		char cmd1[30];
 		
