@@ -5262,8 +5262,22 @@ void unload_filament(float unloadLength, bool automatic)
         raise_z_above(MIN_Z_FOR_SWAP);
     }
 
+    // Retract filament
+    current_position[E_AXIS] += -FILAMENT_UNLOAD_PURGE_RETRACT;
+    plan_buffer_line_curposXYZE(PAUSE_PARK_RETRACT_FEEDRATE);
+    st_synchronize();
+
+    // Wait for filament to cool
+    delay_keep_alive(FILAMENT_UNLOAD_PURGE_DELAY);
+
+    // Quickly purge
+    current_position[E_AXIS] += (FILAMENT_UNLOAD_PURGE_RETRACT + FILAMENT_UNLOAD_PURGE_LENGTH);
+    plan_buffer_line_curposXYZE(FILAMENT_UNLOAD_PURGE_FEEDRATE);
+    st_synchronize();
+
+    // Configurable length
     current_position[E_AXIS] += unloadLength;
-    plan_buffer_line_curposXYZE(1000 / 60);
+    plan_buffer_line_curposXYZE(FILAMENT_CHANGE_UNLOAD_FEEDRATE);
     st_synchronize();
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
