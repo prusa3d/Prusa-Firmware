@@ -12,6 +12,7 @@
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
 #define TMC2130_GCONF_SGSENS 0x00000180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [open collector])
+#define TMC2130_GCONF_DYNAMIC_SGSENS 0x00000184 // stealthChop/spreadCycle (dynamic) with stallguard (stall activates DIAG0 and DIAG1 [open collector])
 #define TMC2130_GCONF_SILENT 0x00000004 // stealthChop
 
 
@@ -182,9 +183,9 @@ void tmc2130_init(TMCInitParams params)
 #else //TMC2130_STEALTH_Z
 		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
-		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
+		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_DYNAMIC_SGSENS);
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
-		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
+		tmc2130_wr_TPWMTHRS(axis, (tmc2130_mode == TMC2130_MODE_SILENT)?0:0xFFFF0);
 #endif //TMC2130_STEALTH_Z
 	}
 	for (uint_least8_t axis = 3; axis < 4; axis++) // E axis
