@@ -2081,16 +2081,14 @@ bool check_commands() {
 	
 }
 
-
-// raise_z_above: slowly raise Z to the requested height
-//
-// contrarily to a simple move, this function will carefully plan a move
-// when the current Z position is unknown. In such cases, stallguard is
-// enabled and will prevent prolonged pushing against the Z tops
-void raise_z_above(float target, bool plan)
+/// @brief Safely move Z-axis by distance delta (mm)
+/// @param delta travel distance in mm
+/// @param plan plan the move if the axis is homed (non-blocking)
+/// @returns The actual travel distance in mm. Endstop may limit the requested move. Note that
+/// when plan = true and the printer is homed, the function returns 0.
+float raise_z(float delta, bool plan)
 {
-    if (current_position[Z_AXIS] >= target)
-        return;
+    float travel_z = current_position[Z_AXIS];
 
     // Z needs raising
     current_position[Z_AXIS] = target;
@@ -2106,7 +2104,7 @@ void raise_z_above(float target, bool plan)
     {
         // current position is known or very low, it's safe to raise Z
         if(plan) plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
-        return;
+        return 0;
     }
 
     // ensure Z is powered in normal mode to overcome initial load
@@ -2120,6 +2118,9 @@ void raise_z_above(float target, bool plan)
 #endif //TMC2130
     plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
     st_synchronize();
+
+    // Get the final travel distance
+    travel_z = st_get_position_mm(Z_AXIS) - travel_z;
 #ifdef TMC2130
     if (endstop_z_hit_on_purpose())
     {
@@ -2130,6 +2131,21 @@ void raise_z_above(float target, bool plan)
     tmc2130_home_exit();
 #endif //TMC2130
     enable_z_endstop(z_endstop_enabled);
+    return travel_z;
+}
+
+// raise_z_above: slowly raise Z to the requested height
+//
+// contrarily to a simple move, this function will carefully plan a move
+// when the current Z position is unknown. In such cases, stallguard is
+// enabled and will prevent prolonged pushing against the Z tops
+void raise_z_above(float target, bool plan)
+{
+    if (current_position[Z_AXIS] >= target)
+        return;
+
+    // Use absolute value in case the current position is unknown
+    raise_z(fabs(current_position[Z_AXIS] - target), plan);
 }
 
 
@@ -8586,20 +8602,19 @@ Sigma_Exit:
             }
         }
 
-        if (code_seen('L'))
-        {
-            fastLoadLength = code_value();
-        }
+        if (code_seen('L')) fastLoadLength = code_value();
 
-        if (code_seen('Z'))
-        {
-            z_target = code_value();
-        }
+        // Z lift. For safety only allow positive values
+        if (code_seen('Z')) z_target = fabs(code_value());
 
         // Raise the Z axis
-        raise_z_above(z_target, false);
+        float delta = raise_z(z_target, false);
 
+        // Load filament
         gcode_M701(fastLoadLength, mmuSlotIndex);
+
+        // Restore Z axis
+        raise_z(-delta);
     }
     break;
 
@@ -8617,23 +8632,20 @@ Sigma_Exit:
     {
         float z_target = MIN_Z_FOR_UNLOAD;
         float unloadLength = FILAMENTCHANGE_FINALRETRACT;
-        if (code_seen('U')) {
-            unloadLength = code_value();
-        }
+        if (code_seen('U')) unloadLength = code_value();
 
-        if (code_seen('Z'))
-        {
-            z_target = code_value();
-        }
+        // For safety only allow positive values
+        if (code_seen('Z')) z_target = fabs(code_value());
 
         // Raise the Z axis
-        raise_z_above(z_target, false);
+        float delta = raise_z(z_target, false);
 
-        if (MMU2::mmu2.Enabled()) {
-            MMU2::mmu2.unload();
-        } else {
-            unload_filament(unloadLength, false);
-        }
+        // Unload filament
+        if (MMU2::mmu2.Enabled())  MMU2::mmu2.unload();
+        else unload_filament(unloadLength, false);
+
+        // Restore Z axis
+        raise_z(-delta);
     }
     break;
 
