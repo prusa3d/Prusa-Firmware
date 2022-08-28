@@ -2552,7 +2552,6 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 	//if we are homing all axes, first move z higher to protect heatbed/steel sheet
 	if (home_all_axes) {
         raise_z_above(MESH_HOME_Z_SEARCH);
-		st_synchronize();
 	}
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
@@ -2657,11 +2656,9 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
           if(home_z) {
             #if defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
               raise_z_above(Z_RAISE_BEFORE_HOMING);
-              st_synchronize();
             #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
             #ifdef MESH_BED_LEVELING  // If Mesh bed leveling, move X&Y to safe position for home
               raise_z_above(MESH_HOME_Z_SEARCH);
-              st_synchronize();
               if (!axis_known_position[X_AXIS]) homeaxis(X_AXIS);
               if (!axis_known_position[Y_AXIS]) homeaxis(Y_AXIS);
               // 1st mesh bed leveling measurement point, corrected.
@@ -3264,7 +3261,6 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	int l_feedmultiply = setup_for_endstop_move();
 	lcd_display_message_fullscreen_P(_T(MSG_AUTO_HOME));
   raise_z_above(MESH_HOME_Z_SEARCH);
-  st_synchronize();
 	home_xy();
 
 	enable_endstops(false);

@@ -6614,7 +6614,6 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 
 
 	raise_z_above(MESH_HOME_Z_SEARCH);
-	st_synchronize();
 	tmc2130_home_enter(1 << axis);
 
 // first axis length measurement begin	
