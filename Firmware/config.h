@@ -108,4 +108,11 @@
 #define EMERGENCY_HANDLERS
 #endif
 
+//FARM_MODE
+#if ( LANG_MODE == 0 ) && defined(XFLASH) //Save resources on EINSY and disable FARM_MODE on multi-language version
+#define PRUSA_FARM
+#endif //PRUSA_FARM only in english on EINSYs
+#ifndef XFLASH //enable FARM_MODE on miniRAMBo boards
+#define PRUSA_FARM
+#endif
 #endif //_CONFIG_H

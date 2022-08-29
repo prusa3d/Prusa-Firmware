@@ -1,7 +1,7 @@
 #pragma once
 
 #include <inttypes.h>
-#include "Configuration.h"
+#include "config.h"
 
 #define FARM_PREHEAT_HOTEND_TEMP 250
 #define FARM_PREHEAT_HPB_TEMP 80
