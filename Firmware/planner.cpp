@@ -99,8 +99,6 @@ static float previous_speed[NUM_AXIS]; // Speed of previous path line segment
 static float previous_nominal_speed; // Nominal speed of previous path line segment
 static float previous_safe_speed; // Exit speed limited by a jerk to full halt of a previous last segment.
 
-uint8_t maxlimit_status;
-
 #ifdef AUTOTEMP
 float autotemp_max=250;
 float autotemp_min=210;
@@ -658,7 +656,7 @@ void planner_reset_position()
 
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
-    memcpy(destination, current_position, sizeof(destination));
+    set_destination_to_current();
 #ifdef LIN_ADVANCE
     memcpy(position_float, current_position, sizeof(position_float));
 #endif

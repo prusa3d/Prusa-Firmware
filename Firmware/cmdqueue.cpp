@@ -416,7 +416,7 @@ void get_command()
 
 		  // Line numbers must be first in buffer
 
-		  if ((strstr(cmdbuffer+bufindw+CMDHDRSIZE, "PRUSA") == NULL) &&
+		  if ((strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("PRUSA")) == NULL) &&
 			  (cmdbuffer[bufindw+CMDHDRSIZE] == 'N')) {
 
 			  // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,

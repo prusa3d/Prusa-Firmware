@@ -641,7 +641,6 @@ void crashdet_detected(uint8_t mask)
     lcd_setstatus(msg);
 
 	gcode_G28(true, true, false); //home X and Y
-	st_synchronize();
 
 	if (automatic_recovery_after_crash) {
 		enquecommand_P(PSTR("CRASH_RECOVER"));
@@ -9746,7 +9745,6 @@ if(0)
 						lcd_update_enable(true);
 */
 						eFilamentAction=FilamentAction::AutoLoad;
-						bFilamentFirstRun=false;
 						if(target_temperature[0] >= extrude_min_temp){
 							bFilamentPreheatState=true;
 //							mFilamentItem(target_temperature[0],target_temperature_bed);
@@ -11315,7 +11313,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 	int feedmultiply_rec;
 	uint8_t fan_speed_rec;
 	char cmd[48];
-	char filename[13];
+	char filename[FILENAME_LENGTH];
 	uint8_t depth = 0;
 	char dir_name[9];
 

@@ -1737,7 +1737,7 @@ static void lcd_support_menu()
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
           ip4_to_str(_md->ip_str, (uint8_t*)(&_md->ip));
-          lcd_printf_P(PSTR("%s"), _md->ip_str);
+          lcd_print(_md->ip_str);
       }
   }
   
@@ -1750,7 +1750,7 @@ static void lcd_support_menu()
       if (((menu_item - 1) == menu_line) && lcd_draw_update) {
           lcd_set_cursor(2, menu_row);
           ip4_to_str(_md->ip_str, (uint8_t*)(&IP_address));
-          lcd_printf_P(PSTR("%s"), _md->ip_str);
+          lcd_print(_md->ip_str);
       }
   }
 
@@ -1833,7 +1833,6 @@ void lcd_set_filament_oq_meass()
 
 
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
-bool bFilamentFirstRun;
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
 static bool bFilamentWaitingFlag=false;
@@ -2343,7 +2342,6 @@ static void lcd_menu_AutoLoadFilament()
 
 static void preheat_or_continue()
 {
-    bFilamentFirstRun = false;
     if (target_temperature[0] >= extrude_min_temp)
     {
         bFilamentPreheatState = true;
@@ -2684,8 +2682,6 @@ static void lcd_babystep_z()
 		lcd_draw_update = 1;
 		//SERIAL_ECHO("Z baby step: ");
 		//SERIAL_ECHO(_md->babystepMem[2]);
-		// Wait 90 seconds before closing the live adjust dialog.
-		lcd_timeoutToStatus.start();
 	}
 
 	if (lcd_encoder != 0)
@@ -3569,11 +3565,7 @@ void lcd_menu_show_sensors_state()                // NOT static due to using ins
 {
 	lcd_timeoutToStatus.stop();
 	lcd_show_sensors_state();
-	if(LCD_CLICKED)
-	{
-		lcd_timeoutToStatus.start();
-		menu_back();
-	}
+	menu_back_if_clicked();
 }
 
 void prusa_statistics_err(char c){
@@ -5584,7 +5576,6 @@ static void mmu_cut_filament_menu()
     else
     {
         eFilamentAction=FilamentAction::MmuCut;
-        bFilamentFirstRun=false;
         if(target_temperature[0] >= extrude_min_temp)
         {
             bFilamentPreheatState=true;
@@ -5983,10 +5974,8 @@ static void lcd_main_menu()
             else
 #endif //FILAMENT_SENSOR
             {
-                bFilamentFirstRun=true;
                 MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
             }
-            bFilamentFirstRun=true;
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
         }
     MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
@@ -6169,18 +6158,20 @@ static void lcd_tune_menu()
 
 
 #ifdef TMC2130
-     if(!farm_mode)
-     {
-          if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
-          else MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
-
-          if (SilentModeMenu == SILENT_MODE_NORMAL)
-          {
-               if (lcd_crash_detect_enabled()) MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_ON), crash_mode_switch);
-               else MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_OFF), crash_mode_switch);
-          }
-          else MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
-     }
+    if(!farm_mode)
+    {
+        if (SilentModeMenu == SILENT_MODE_NORMAL) {
+              MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
+            if (lcd_crash_detect_enabled()) {
+                MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_ON), crash_mode_switch);
+            } else {
+                MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_OFF), crash_mode_switch);
+            }
+        } else {
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
+            MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), NULL, lcd_crash_mode_info);
+        }
+    }
 #else //TMC2130
 	if (!farm_mode) { //dont show in menu if we are in farm mode
 		switch (SilentModeMenu) {
