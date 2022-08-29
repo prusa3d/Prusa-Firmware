@@ -2486,7 +2486,7 @@ void log_isr()
     if(!log_buf.enabled) return;
 
     uint32_t stamp = _millis();
-    uint8_t delta_ms = stamp - log_buf.entry.stamp - (TEMP_MGR_INTV * 1000);
+    uint8_t delta_ms = stamp - log_buf.entry.stamp - (uint32_t)(TEMP_MGR_INTV * 1000);
     log_buf.entry.stamp = stamp;
 
     ++log_buf.entry.counter;
