@@ -3626,6 +3626,9 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
             plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
         }
 
+        // TODO: Move the Z-axis after XY, not before. Currently this does not work
+        // and raise_z seems to have no affect after XY move for unknown reasons.
+        // This needs to be looked into.
         // Recover Z axis
         raise_z(-delta, false);
 
