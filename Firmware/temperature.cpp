@@ -1759,7 +1759,6 @@ void handle_temp_error()
     case TempErrorType::model:
         if(temp_error_state.assert) {
             if(IsStopped() == false) {
-                lcd_setalertstatuspgm(MSG_PAUSED_THERMAL_ERROR, LCD_STATUS_CRITICAL);
                 SERIAL_ECHOLNPGM("TM: error triggered!");
             }
             ThermalStop(true);
@@ -2435,7 +2434,7 @@ void handle_warning()
     if(warning_state.assert) {
         if (first) {
             if(warn_beep) {
-                lcd_setalertstatuspgm(MSG_THERMAL_ANOMALY, LCD_STATUS_INFO);
+                lcd_setalertstatuspgm(_T(MSG_THERMAL_ANOMALY), LCD_STATUS_INFO);
                 WRITE(BEEPER, HIGH);
             }
         } else {

@@ -9703,6 +9703,8 @@ void ThermalStop(bool allow_pause)
         Stopped = true;
         if(allow_pause && (IS_SD_PRINTING || usb_timer.running())) {
             if (!isPrintPaused) {
+                lcd_setalertstatuspgm(_T(MSG_PAUSED_THERMAL_ERROR), LCD_STATUS_CRITICAL);
+
                 // we cannot make a distinction for the host here, the pause must be instantaneous
                 // so we call the lcd_pause_print to save the print state internally. Thermal errors
                 // disable heaters and save the original temperatures to saved_*, which will get
