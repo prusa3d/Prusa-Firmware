@@ -34,20 +34,19 @@ enum StepStatus : uint_fast8_t {
     MessageReady, ///< a message has been successfully decoded from the received bytes
     Finished,
     CommunicationTimeout, ///< the MMU failed to respond to a request within a specified time frame
-    ProtocolError, ///< bytes read from the MMU didn't form a valid response
-    CommandRejected, ///< the MMU rejected the command due to some other command in progress, may be the user is operating the MMU locally (button commands)
-    CommandError, ///< the command in progress stopped due to unrecoverable error, user interaction required
-    VersionMismatch, ///< the MMU reports its firmware version incompatible with our implementation
+    ProtocolError,        ///< bytes read from the MMU didn't form a valid response
+    CommandRejected,      ///< the MMU rejected the command due to some other command in progress, may be the user is operating the MMU locally (button commands)
+    CommandError,         ///< the command in progress stopped due to unrecoverable error, user interaction required
+    VersionMismatch,      ///< the MMU reports its firmware version incompatible with our implementation
     CommunicationRecovered,
-    ButtonPushed, ///< The MMU reported the user pushed one of its three buttons. 
+    ButtonPushed, ///< The MMU reported the user pushed one of its three buttons.
 };
 
-
-static constexpr uint32_t linkLayerTimeout = 2000; ///< default link layer communication timeout
+static constexpr uint32_t linkLayerTimeout = 2000;                 ///< default link layer communication timeout
 static constexpr uint32_t dataLayerTimeout = linkLayerTimeout * 3; ///< data layer communication timeout
-static constexpr uint32_t heartBeatPeriod = linkLayerTimeout / 2; ///< period of heart beat messages (Q0)
+static constexpr uint32_t heartBeatPeriod = linkLayerTimeout / 2;  ///< period of heart beat messages (Q0)
 
-static_assert( heartBeatPeriod < linkLayerTimeout && linkLayerTimeout < dataLayerTimeout, "Incorrect ordering of timeouts");
+static_assert(heartBeatPeriod < linkLayerTimeout && linkLayerTimeout < dataLayerTimeout, "Incorrect ordering of timeouts");
 
 ///< Filter of short consecutive drop outs which are recovered instantly
 class DropOutFilter {
@@ -55,17 +54,17 @@ class DropOutFilter {
     uint8_t occurrences;
 public:
     static constexpr uint8_t maxOccurrences = 10; // ideally set this to >8 seconds -> 12x heartBeatPeriod
-    static_assert (maxOccurrences > 1, "we should really silently ignore at least 1 comm drop out if recovered immediately afterwards");
+    static_assert(maxOccurrences > 1, "we should really silently ignore at least 1 comm drop out if recovered immediately afterwards");
     DropOutFilter() = default;
-    
+
     /// @returns true if the error should be reported to higher levels (max. number of consecutive occurrences reached)
     bool Record(StepStatus ss);
-    
+
     /// @returns the initial cause which started this drop out event
-    inline StepStatus InitialCause()const { return cause; }
-    
+    inline StepStatus InitialCause() const { return cause; }
+
     /// Rearms the object for further processing - basically call this once the MMU responds with something meaningful (e.g. S0 A2)
-    inline void Reset(){ occurrences = maxOccurrences; }
+    inline void Reset() { occurrences = maxOccurrences; }
 };
 
 /// Logic layer of the MMU vs. printer communication protocol
@@ -98,13 +97,13 @@ public:
 
     /// @returns the current/latest process code as reported by the MMU
     ProgressCode Progress() const { return progressCode; }
-    
+
     /// @returns the current/latest button code as reported by the MMU
     Buttons Button() const { return buttonCode; }
 
-    uint8_t CommandInProgress()const;
+    uint8_t CommandInProgress() const;
 
-    inline bool Running()const {
+    inline bool Running() const {
         return state == State::Running;
     }
 
@@ -117,20 +116,20 @@ public:
     }
 
     inline uint8_t MmuFwVersionMajor() const {
-        return mmuFwVersionMajor;
+        return mmuFwVersion[0];
     }
 
     inline uint8_t MmuFwVersionMinor() const {
-        return mmuFwVersionMinor;
+        return mmuFwVersion[1];
     }
 
-    inline uint8_t MmuFwVersionBuild() const {
-        return mmuFwVersionBuild;
+    inline uint8_t MmuFwVersionRevision() const {
+        return mmuFwVersion[2];
     }
 #ifndef UNITTEST
 private:
 #endif
-    StepStatus ExpectingMessage(uint32_t timeout);
+    StepStatus ExpectingMessage();
     void SendMsg(RequestMsg rq);
     void SwitchToIdle();
     StepStatus SuppressShortDropOuts(const char *msg_P, StepStatus ss);
@@ -144,9 +143,9 @@ private:
     void LogRequestMsg(const uint8_t *txbuff, uint8_t size);
     void LogError(const char *reason_P);
     void LogResponse();
-    void SwitchFromIdleToCommand();
+    StepStatus SwitchFromIdleToCommand();
     void SwitchFromStartToIdle();
-    
+
     enum class State : uint_fast8_t {
         Stopped,      ///< stopped for whatever reason
         InitSequence, ///< initial sequence running
@@ -170,17 +169,14 @@ private:
         Command
     };
     Scope currentScope;
-    
+
     // basic scope members
     /// @returns true if the state machine is waiting for a response from the MMU
-    bool ExpectsResponse()const { return scopeState != ScopeState::Ready && scopeState != ScopeState::Wait; }
-    
+    bool ExpectsResponse() const { return ((uint8_t)scopeState & (uint8_t)ScopeState::NotExpectsResponse) == 0; }
+
     /// Common internal states of the derived sub-automata
     /// General rule of thumb: *Sent states are waiting for a response from the MMU
-    enum class ScopeState : uint_fast8_t { 
-        Ready,
-        Wait,
-        
+    enum class ScopeState : uint_fast8_t {
         S0Sent, // beware - due to optimization reasons these SxSent must be kept one after another
         S1Sent,
         S2Sent,
@@ -191,23 +187,26 @@ private:
         FINDAReqSent,
         StatisticsSent,
         ButtonSent,
-        
-        ContinueFromIdle,
-        RecoveringProtocolError
+
+        // States which do not expect a message - MSb set
+        NotExpectsResponse = 0x80,
+        Wait = NotExpectsResponse + 1,
+        Ready = NotExpectsResponse + 2,
+        RecoveringProtocolError = NotExpectsResponse + 3,
     };
-    
+
     ScopeState scopeState; ///< internal state of the sub-automaton
-    
+
     /// @returns the status of processing of the FINDA query response
     /// @param finishedRV returned value in case the message was successfully received and processed
     /// @param nextState is a state where the state machine should transfer to after the message was successfully received and processed
     // StepStatus ProcessFINDAReqSent(StepStatus finishedRV, State nextState);
-    
+
     /// @returns the status of processing of the statistics query response
     /// @param finishedRV returned value in case the message was successfully received and processed
     /// @param nextState is a state where the state machine should transfer to after the message was successfully received and processed
     // StepStatus ProcessStatisticsReqSent(StepStatus finishedRV, State nextState);
-    
+
     /// Called repeatedly while waiting for a query (Q0) period.
     /// All event checks to report immediately from the printer to the MMU shall be done in this method.
     /// So far, the only such a case is the filament sensor, but there can be more like this in the future.
@@ -218,42 +217,45 @@ private:
     void SendButton(uint8_t btn);
     void SendVersion(uint8_t stage);
     void SendReadRegister(uint8_t index, ScopeState nextState);
-    
+
+    StepStatus ProcessVersionResponse(uint8_t stage);
+
     /// Top level split - calls the appropriate step based on current scope
     StepStatus ScopeStep();
-    
+
     static constexpr uint8_t maxRetries = 6;
     uint8_t retries;
-    
+
     void StartSeqRestart();
     void DelayedRestartRestart();
     void IdleRestart();
     void CommandRestart();
-    
+
     StepStatus StartSeqStep();
-    StepStatus DelayedRestartStep();
+    StepStatus DelayedRestartWait();
     StepStatus IdleStep();
+    StepStatus IdleWait();
     StepStatus CommandStep();
-    StepStatus StoppedStep(){ return Processing; }
-    
+    StepStatus CommandWait();
+    StepStatus StoppedStep() { return Processing; }
+
+    StepStatus ProcessCommandQueryResponse();
+
     inline void SetRequestMsg(RequestMsg msg) {
         rq = msg;
     }
-    void CommandContinueFromIdle(){
-        scopeState = ScopeState::ContinueFromIdle;
-    }
-    inline const RequestMsg &ReqMsg()const { return rq; }
+    inline const RequestMsg &ReqMsg() const { return rq; }
     RequestMsg rq = RequestMsg(RequestMsgCodes::unknown, 0);
-    
+
     /// Records the next planned state, "unknown" msg code if no command is planned.
     /// This is not intended to be a queue of commands to process, protocol_logic must not queue commands.
     /// It exists solely to prevent breaking the Request-Response protocol handshake -
     /// - during tests it turned out, that the commands from Marlin are coming in such an asynchronnous way, that
     /// we could accidentally send T2 immediately after Q0 without waiting for reception of response to Q0.
-    /// 
+    ///
     /// Beware, if Marlin manages to call PlanGenericCommand multiple times before a response comes,
     /// these variables will get overwritten by the last call.
-    /// However, that should not happen under normal circumstances as Marlin should wait for the Command to finish, 
+    /// However, that should not happen under normal circumstances as Marlin should wait for the Command to finish,
     /// which includes all responses (and error recovery if any).
     RequestMsg plannedRq;
 
@@ -263,7 +265,7 @@ private:
     bool ActivatePlannedRequest();
 
     uint32_t lastUARTActivityMs; ///< timestamp - last ms when something occurred on the UART
-    DropOutFilter dataTO; ///< Filter of short consecutive drop outs which are recovered instantly
+    DropOutFilter dataTO;        ///< Filter of short consecutive drop outs which are recovered instantly
 
     ResponseMsg rsp; ///< decoded response message from the MMU protocol
 
@@ -285,8 +287,8 @@ private:
     bool findaPressed;
     uint16_t failStatistics;
 
-    uint8_t mmuFwVersionMajor, mmuFwVersionMinor;
-    uint8_t mmuFwVersionBuild;
+    uint8_t mmuFwVersion[3];
+    uint16_t mmuFwVersionBuild;
 
     friend class ProtocolLogicPartBase;
     friend class Stopped;

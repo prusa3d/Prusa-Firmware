@@ -173,7 +173,7 @@ public:
     /// In the future we'll return the trully detected FW version
     Version GetMMUFWVersion()const {
         if( State() == xState::Active ){
-            return { logic.MmuFwVersionMajor(), logic.MmuFwVersionMinor(), logic.MmuFwVersionBuild() };
+            return { logic.MmuFwVersionMajor(), logic.MmuFwVersionMinor(), logic.MmuFwVersionRevision() };
         } else {
             return { 0, 0, 0}; 
         }
