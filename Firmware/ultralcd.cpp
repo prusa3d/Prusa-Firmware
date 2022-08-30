@@ -4145,7 +4145,7 @@ void lcd_wizard(WizState state)
 				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA.")); ////MSG_WIZARD_WILL_PREHEAT c=20 r=4
 				wait_preheat();
 				//unload current filament
-				unload_filament(true);
+				unload_filament();
 				//load filament
 				lcd_wizard_load();
 				setTargetHotend(0, 0); //we are finished, cooldown nozzle
@@ -5244,25 +5244,32 @@ static void mmu_cut_filament_menu()
 
 
 // unload filament for single material printer (used in M702 gcode)
-// @param automatic: If true, unload_filament is part of a unload+load sequence (M600)
-void unload_filament(bool automatic)
+void unload_filament(UnloadType unload)
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
-    raise_z_above(automatic? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
+    raise_z_above(unload == UnloadType::Swap? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
+    if (unload == UnloadType::Purge)
+    {
+        // extrude slowly
+        current_position[E_AXIS] += FILAMENTCHANGE_UNLOADFEED;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
+        st_synchronize();
 
-	//		extr_unload2();
+        // relieve leftover pressure
+        current_position[E_AXIS] += 0.1;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME / 2);
+        st_synchronize();
+    }
 
-	current_position[E_AXIS] -= 45;
-	plan_buffer_line_curposXYZE(5200 / 60);
-	st_synchronize();
-	current_position[E_AXIS] -= 15;
-	plan_buffer_line_curposXYZE(1000 / 60);
-	st_synchronize();
-	current_position[E_AXIS] -= 20;
-	plan_buffer_line_curposXYZE(1000 / 60);
-	st_synchronize();
+    // retract & eject
+    current_position[E_AXIS] += FILAMENTCHANGE_FIRSTRETRACT;
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
+    st_synchronize();
+    current_position[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_EJECT);
+    st_synchronize();
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
 

@@ -183,7 +183,17 @@ extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentItemForce();
 void lcd_generic_preheat_menu();
-void unload_filament(bool automatic = false);
+
+
+enum class UnloadType : uint8_t
+{
+    Purge,     // user-triggered unload, perform an extra purge before unload
+    Swap,      // part of an M600 sequence (no extra purge necessary)
+    Runout,    // triggered by runout (extra purge not possible)
+};
+
+void unload_filament(UnloadType unload=UnloadType::Purge);
+
 
 
 void lcd_wait_for_heater();
