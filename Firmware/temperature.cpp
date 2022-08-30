@@ -2715,7 +2715,6 @@ static float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pw
         temp_model::data.step(rec_buffer[i].pwm, fan_pwm, rec_buffer[i].temp, ambient);
         float err_v = temp_model::data.dT_err_prev;
         if(!isnan(err_v)) {
-            err_v = fabsf(err_v);
             err += err_v * err_v;
             ++cnt;
         }
