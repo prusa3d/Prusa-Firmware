@@ -2314,7 +2314,8 @@ static void check_temp_raw()
 #ifdef TEMP_MODEL
 namespace temp_model {
 
-void model_data::reset(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, float ambient_temp)
+void model_data::reset(uint8_t heater_pwm _UNUSED, uint8_t fan_pwm _UNUSED,
+    float heater_temp _UNUSED, float ambient_temp _UNUSED)
 {
     // pre-compute invariant values
     C_i = (TEMP_MGR_INTV / C);
@@ -2322,16 +2323,20 @@ void model_data::reset(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, f
     err_s = err * TEMP_MGR_INTV;
 
     // initial values
-    memset(dT_lag_buf, 0, sizeof(dT_lag_buf));
+    for(uint8_t i = 0; i != TEMP_MODEL_LAG_SIZE; ++i)
+        dT_lag_buf[i] = NAN;
     dT_lag_idx = 0;
     dT_err_prev = 0;
-    T_prev = heater_temp;
-
-    // perform one step to initialize the first delta
-    step(heater_pwm, fan_pwm, heater_temp, ambient_temp);
+    T_prev = NAN;
 
     // clear the initialization flag
     flag_bits.uninitialized = false;
+}
+
+static constexpr float iir_mul(const float a, const float b, const float f, const float nanv)
+{
+    const float a_ = !isnan(a) ? a : nanv;
+    return (a_ * (1.f - f)) + (b * f);
 }
 
 void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, float ambient_temp)
@@ -2352,13 +2357,13 @@ void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, fl
     uint8_t dT_next_idx = (dT_lag_idx == (TEMP_MODEL_LAG_SIZE - 1) ? 0: dT_lag_idx + 1);
     float dT_lag = dT_lag_buf[dT_next_idx];
     float dT_lag_prev = dT_lag_buf[dT_lag_idx];
-    float dT_f = (dT_lag_prev * (1.f - TEMP_MODEL_fS)) + (dT * TEMP_MODEL_fS);
+    float dT_f = iir_mul(dT_lag_prev, dT, TEMP_MODEL_fS, dT);
     dT_lag_buf[dT_next_idx] = dT_f;
     dT_lag_idx = dT_next_idx;
 
     // calculate and filter dT_err
     float dT_err = (cur_heater_temp - T_prev) - dT_lag;
-    float dT_err_f = (dT_err_prev * (1.f - TEMP_MODEL_fE)) + (dT_err * TEMP_MODEL_fE);
+    float dT_err_f = iir_mul(dT_err_prev, dT_err, TEMP_MODEL_fE, 0.);
     T_prev = cur_heater_temp;
     dT_err_prev = dT_err_f;
 
@@ -2697,11 +2702,17 @@ static float cost_fn(uint16_t samples, float* const var, float v, uint8_t fan_pw
     *var = v;
     temp_model::data.reset(rec_buffer[0].pwm, fan_pwm, rec_buffer[0].temp, ambient);
     float err = 0;
+    uint16_t cnt = 0;
     for(uint16_t i = 1; i < samples; ++i) {
         temp_model::data.step(rec_buffer[i].pwm, fan_pwm, rec_buffer[i].temp, ambient);
-        err += fabsf(temp_model::data.dT_err_prev);
+        float err_v = temp_model::data.dT_err_prev;
+        if(!isnan(err_v)) {
+            err_v = fabsf(err_v);
+            err += err_v * err_v;
+            ++cnt;
+        }
     }
-    return (err / (samples - 1));
+    return cnt ? (err / cnt) : NAN;
 }
 
 constexpr float GOLDEN_RATIO = 0.6180339887498949;
