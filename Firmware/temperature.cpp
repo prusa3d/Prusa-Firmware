@@ -2503,6 +2503,13 @@ void log_isr()
 
 } // namespace temp_model
 
+static void temp_model_reset_enabled(bool enabled)
+{
+    TempMgrGuard temp_mgr_guard;
+    temp_model::enabled = enabled;
+    temp_model::data.flag_bits.uninitialized = true;
+}
+
 void temp_model_set_enabled(bool enabled)
 {
     // set the enabled flag
@@ -2567,8 +2574,9 @@ void temp_model_reset_settings()
     TempMgrGuard temp_mgr_guard;
 
     temp_model::data.P = TEMP_MODEL_P;
-    temp_model::data.C = NAN;
-    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
+    temp_model::data.C = TEMP_MODEL_C;
+    temp_model::data.R[0] = TEMP_MODEL_R;
+    for(uint8_t i = 1; i != TEMP_MODEL_R_SIZE; ++i)
         temp_model::data.R[i] = NAN;
     temp_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
     temp_model::data.warn = TEMP_MODEL_W;
@@ -2730,6 +2738,11 @@ static float estimate(uint16_t samples,
     float thr, uint16_t max_itr,
     uint8_t fan_pwm, float ambient)
 {
+    // during estimation we alter the model values without an extra copy to conserve memory
+    // so we cannot keep the main checker active until a value has been found
+    bool was_enabled = temp_model::enabled;
+    temp_model_reset_enabled(false);
+
     float orig = *var;
     float e = NAN;
     float points[2];
@@ -2753,12 +2766,14 @@ static float estimate(uint16_t samples,
             }
 
             *var = x;
+            temp_model_reset_enabled(was_enabled);
             return e;
         }
     }
 
     SERIAL_ECHOLNPGM("TM estimation did not converge");
     *var = orig;
+    temp_model_reset_enabled(was_enabled);
     return NAN;
 }
 
@@ -2858,7 +2873,7 @@ static bool autotune(int16_t cal_temp)
 
 } // namespace temp_model_cal
 
-void temp_model_autotune(int16_t temp)
+void temp_model_autotune(int16_t temp, bool selftest)
 {
     if(moves_planned() || printer_active()) {
         SERIAL_ECHOLNPGM("TM: printer needs to be idle for calibration");
@@ -2871,15 +2886,15 @@ void temp_model_autotune(int16_t temp)
     lcd_setstatuspgm(_i("Temp. model autotune"));
     lcd_return_to_status();
 
-    // disable the model checking during self-calibration
+    // set the model checking state during self-calibration
     bool was_enabled = temp_model::enabled;
-    temp_model_set_enabled(false);
+    temp_model_reset_enabled(selftest);
 
     SERIAL_ECHOLNPGM("TM: autotune start");
     bool err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
 
     // always reset temperature
-    target_temperature[0] = 0;
+    disable_heater();
 
     if(err) {
         SERIAL_ECHOLNPGM("TM: autotune failed");

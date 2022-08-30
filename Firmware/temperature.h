@@ -227,7 +227,7 @@ void temp_model_reset_settings();
 void temp_model_load_settings();
 void temp_model_save_settings();
 
-void temp_model_autotune(int16_t temp = 0);
+void temp_model_autotune(int16_t temp = 0, bool selftest = false);
 
 #ifdef TEMP_MODEL_DEBUG
 void temp_model_log_enable(bool enable);
