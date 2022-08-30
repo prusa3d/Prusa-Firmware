@@ -148,7 +148,7 @@ StepStatus ProtocolLogic::ProcessVersionResponse(uint8_t stage) {
         SendVersion(stage);
     } else {
         mmuFwVersion[stage] = rsp.paramValue;
-        if (mmuFwVersion[stage] != pgm_read_byte(supportedMmuFWVersion[stage])) {
+        if (mmuFwVersion[stage] != pgm_read_byte(supportedMmuFWVersion + stage)) {
             if (--retries == 0) {
                 return VersionMismatch;
             } else {
