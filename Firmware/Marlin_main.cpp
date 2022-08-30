@@ -2110,6 +2110,7 @@ float raise_z(float delta, bool plan)
     if (axis_known_position[Z_AXIS] || z_min_endstop)
     {
         // current position is known or very low, it's safe to raise Z
+        clamp_to_software_endstops(current_position);
         if(plan) plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
         return 0;
     }
