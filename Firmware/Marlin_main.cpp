@@ -2090,10 +2090,8 @@ bool check_commands() {
 
 /// @brief Safely move Z-axis by distance delta (mm)
 /// @param delta travel distance in mm
-/// @param plan plan the move if the axis is homed (non-blocking)
-/// @returns The actual travel distance in mm. Endstop may limit the requested move. Note that
-/// when plan = true and the printer is homed, the function returns 0.
-float raise_z(float delta, bool plan)
+/// @returns The actual travel distance in mm. Endstop may limit the requested move.
+float raise_z(float delta)
 {
     float travel_z = current_position[Z_AXIS];
 
@@ -2111,34 +2109,38 @@ float raise_z(float delta, bool plan)
     {
         // current position is known or very low, it's safe to raise Z
         clamp_to_software_endstops(current_position);
-        if(plan) plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
-        return 0;
+        plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
+        st_synchronize();
+
+        // Get the final travel distance
+        travel_z = current_position[Z_AXIS] - travel_z;
+    } else {
+        // ensure Z is powered in normal mode to overcome initial load
+        enable_z();
+        st_synchronize();
+
+        // rely on crashguard to limit damage
+        bool z_endstop_enabled = enable_z_endstop(true);
+#ifdef TMC2130
+        tmc2130_home_enter(Z_AXIS_MASK);
+#endif //TMC2130
+        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
+        st_synchronize();
+
+        // Get the final travel distance
+        travel_z = current_position[Z_AXIS] - travel_z;
+#ifdef TMC2130
+        if (endstop_z_hit_on_purpose())
+        {
+            // not necessarily exact, but will avoid further vertical moves
+            current_position[Z_AXIS] = max_pos[Z_AXIS];
+            plan_set_position_curposXYZE();
+        }
+        tmc2130_home_exit();
+#endif //TMC2130
+        enable_z_endstop(z_endstop_enabled);
     }
 
-    // ensure Z is powered in normal mode to overcome initial load
-    enable_z();
-    st_synchronize();
-
-    // rely on crashguard to limit damage
-    bool z_endstop_enabled = enable_z_endstop(true);
-#ifdef TMC2130
-    tmc2130_home_enter(Z_AXIS_MASK);
-#endif //TMC2130
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
-    st_synchronize();
-
-    // Get the final travel distance
-    travel_z = st_get_position_mm(Z_AXIS) - travel_z;
-#ifdef TMC2130
-    if (endstop_z_hit_on_purpose())
-    {
-        // not necessarily exact, but will avoid further vertical moves
-        current_position[Z_AXIS] = max_pos[Z_AXIS];
-        plan_set_position_curposXYZE();
-    }
-    tmc2130_home_exit();
-#endif //TMC2130
-    enable_z_endstop(z_endstop_enabled);
     return travel_z;
 }
 
@@ -2147,13 +2149,13 @@ float raise_z(float delta, bool plan)
 // contrarily to a simple move, this function will carefully plan a move
 // when the current Z position is unknown. In such cases, stallguard is
 // enabled and will prevent prolonged pushing against the Z tops
-void raise_z_above(float target, bool plan)
+void raise_z_above(float target)
 {
     if (current_position[Z_AXIS] >= target)
         return;
 
     // Use absolute value in case the current position is unknown
-    raise_z(fabs(current_position[Z_AXIS] - target), plan);
+    raise_z(fabs(current_position[Z_AXIS] - target));
 }
 
 
@@ -3558,7 +3560,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     st_synchronize();
 
     // Raise the Z axis
-    float delta = raise_z(z_shift, false);
+    float delta = raise_z(z_shift);
 
     // Move XY to side
     current_position[X_AXIS] = x_position;
@@ -3631,7 +3633,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         // and raise_z seems to have no affect after XY move for unknown reasons.
         // This needs to be looked into.
         // Recover Z axis
-        raise_z(-delta, false);
+        raise_z(-delta);
 
         // Move XY back
         plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
@@ -8579,7 +8581,7 @@ Sigma_Exit:
         if (code_seen('Z')) z_target = fabs(code_value());
 
         // Raise the Z axis
-        float delta = raise_z(z_target, false);
+        float delta = raise_z(z_target);
 
         // Load filament
         gcode_M701(fastLoadLength, mmuSlotIndex);
@@ -8609,11 +8611,11 @@ Sigma_Exit:
         if (code_seen('Z')) z_target = fabs(code_value());
 
         // Raise the Z axis
-        float delta = raise_z(z_target, false);
+        float delta = raise_z(z_target);
 
         // Unload filament
         if (MMU2::mmu2.Enabled())  MMU2::mmu2.unload();
-        else unload_filament(unloadLength, false);
+        else unload_filament(unloadLength);
 
         // Restore Z axis
         raise_z(-delta);
