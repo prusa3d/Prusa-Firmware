@@ -168,9 +168,9 @@ extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];
 extern const char MSG_IR_UNKNOWN[];
 #endif
+extern const char MSG_PAUSED_THERMAL_ERROR[];
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[];
-extern const char MSG_PAUSED_THERMAL_ERROR[];
 #endif
 
 //not internationalized messages
