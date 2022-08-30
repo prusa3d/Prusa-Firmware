@@ -476,8 +476,8 @@ void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
 void marlin_wait_for_click();
-float raise_z(float delta, bool plan = true);
-void raise_z_above(float target, bool plan=true);
+float raise_z(float delta);
+void raise_z_above(float target);
 
 extern "C" void softReset();
 void stack_error();
