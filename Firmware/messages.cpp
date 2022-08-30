@@ -159,9 +159,9 @@ const char MSG_IR_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////MSG_IR_04
 const char MSG_IR_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////MSG_IR_03_OR_OLDER c=18
 const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////MSG_IR_UNKNOWN c=18
 #endif
+extern const char MSG_PAUSED_THERMAL_ERROR[] PROGMEM_I1 = ISTR("PAUSED THERMAL ERROR");////c=20
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");////c=20
-extern const char MSG_PAUSED_THERMAL_ERROR[] PROGMEM_I1 = ISTR("PAUSED THERMAL ERROR");////c=20
 #endif
 
 //not internationalized messages
