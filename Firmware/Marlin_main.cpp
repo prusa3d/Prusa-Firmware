@@ -2121,7 +2121,7 @@ float raise_z(float delta)
         st_synchronize();
 
         // Get the final travel distance
-        travel_z = current_position[Z_AXIS] - travel_z;
+        travel_z = st_get_position_mm(Z_AXIS) - travel_z;
 #ifdef TMC2130
         if (endstop_z_hit_on_purpose())
         {
