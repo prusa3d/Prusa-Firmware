@@ -2768,15 +2768,15 @@ static bool autotune(int16_t cal_temp)
             wait(10000);
         }
 
-        // we need a valid R value for the initial C guess
-        if(isnan(temp_model::data.R[0]))
-            temp_model::data.R[0] = TEMP_MODEL_Rh;
-
         printf_P(PSTR("TM: %S C estimation\n"), verb);
         target_temperature[0] = cal_temp;
         samples = record();
         if(temp_error_state.v || !samples)
             return true;
+
+        // we need a high R value for the initial C guess
+        if(isnan(temp_model::data.R[0]))
+            temp_model::data.R[0] = TEMP_MODEL_Rh;
 
         e = estimate(samples, &temp_model::data.C,
             TEMP_MODEL_Cl, TEMP_MODEL_Ch, TEMP_MODEL_C_thr, TEMP_MODEL_C_itr,
