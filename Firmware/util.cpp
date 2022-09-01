@@ -436,7 +436,7 @@ pStrBegin[*nLength] = '\0';
 return pStrBegin;
 }
 
-void printer_smodel_check(const char *pStrPos) {
+void printer_smodel_check(char *pStrPos) {
 char* pResult;
 size_t nLength,nPrinterNameLength;
 
