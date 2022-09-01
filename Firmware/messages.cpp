@@ -159,12 +159,11 @@ const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////MSG_DIM c=6
 const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////MSG_AUTO c=6
 const char MSG_FS_V_03_OR_OLDER[] PROGMEM_I1 = ISTR("FS v0.3 or older"); ////MSG_FS_V_03_OR_OLDER c=18
 const char MSG_FS_V_04_OR_NEWER[] PROGMEM_I1 = ISTR("FS v0.4 or newer"); ////MSG_FS_V_04_OR_NEWER c=18
-#ifdef IR_SENSOR_ANALOG
 // Beware - the space at the beginning is necessary since it is reused in LCD menu items which are to be with a space
 const char MSG_IR_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////MSG_IR_04_OR_NEWER c=18
 const char MSG_IR_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////MSG_IR_03_OR_OLDER c=18
 const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////MSG_IR_UNKNOWN c=18
-#endif
+
 extern const char MSG_PAUSED_THERMAL_ERROR[] PROGMEM_I1 = ISTR("PAUSED THERMAL ERROR");////c=20
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");////c=20

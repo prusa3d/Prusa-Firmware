@@ -7,6 +7,7 @@
 #include "cardreader.h"
 #include "eeprom.h"
 #include "menu.h"
+#include "planner.h"
 #include "temperature.h"
 #include "ultralcd.h"
 

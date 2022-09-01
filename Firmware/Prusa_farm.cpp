@@ -7,7 +7,7 @@
 #include "conv2str.h"
 #include "util.h"
 #include "ultralcd.h"
-#include "fsensor.h" //to be converted to Filament_sensor.h...
+#include "Filament_sensor.h"
 
 #ifdef PRUSA_FARM
 uint8_t farm_mode = 0;
@@ -405,7 +405,7 @@ void farm_mode_init() {
 #ifdef FILAMENT_SENSOR
         //to be converted to Filament_sensor.h...
         //disabled filament autoload (PFW360)
-        fsensor_autoload_set(false);
+        fsensor.setAutoLoadEnabled(false);
 #endif //FILAMENT_SENSOR
         // ~ FanCheck -> on
         eeprom_update_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED, true);
