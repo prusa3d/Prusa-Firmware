@@ -302,7 +302,6 @@ StepStatus ProtocolLogic::CommandStep() {
         return ProcessCommandQueryResponse();
     case ScopeState::FilamentSensorStateSent:
         SendFINDAQuery();
-        scopeState = ScopeState::FINDAReqSent;
         return Processing;
     case ScopeState::FINDAReqSent:
         SendReadRegister(4, ScopeState::StatisticsSent);
@@ -380,7 +379,6 @@ StepStatus ProtocolLogic::IdleStep() {
         }
         SendFINDAQuery();
         return Processing;
-        break;
     case ScopeState::FINDAReqSent:
         SendReadRegister(4, ScopeState::StatisticsSent);
         scopeState = ScopeState::StatisticsSent;
@@ -519,7 +517,6 @@ void ProtocolLogic::SwitchFromStartToIdle() {
     currentScope = Scope::Idle;
     IdleRestart();
     SendQuery(); // force sending Q0 immediately
-    scopeState = ScopeState::QuerySent;
 }
 
 bool ProtocolLogic::Elapsed(uint32_t timeout) const {
