@@ -163,7 +163,7 @@ StepStatus ProtocolLogic::ProcessVersionResponse(uint8_t stage) {
 }
 
 StepStatus ProtocolLogic::ScopeStep() {
-    if ((uint_fast8_t)scopeState & (uint8_t)ScopeState::NotExpectsResponse) {
+    if ( ! ExpectsResponse() ) {
         // we are waiting for something
         switch (currentScope) {
         case Scope::DelayedRestart:
