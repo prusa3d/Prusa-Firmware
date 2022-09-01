@@ -361,7 +361,8 @@ uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { X_COORD_INVALID, 0, 0, 0 };
 static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
-static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
+float saved_extruder_temperature = 0.0; //!< Active extruder temperature
+float saved_bed_temperature = 0.0;
 static bool saved_extruder_relative_mode = false;
 int saved_fan_speed = 0; //!< Print fan speed
 //! @}
@@ -2096,7 +2097,7 @@ float raise_z(float delta)
     float travel_z = current_position[Z_AXIS];
 
     // Z needs raising
-    current_position[Z_AXIS] = target;
+    current_position[Z_AXIS] += travel_z;
     clamp_to_software_endstops(current_position);
 
 #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
@@ -3675,7 +3676,7 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
 		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
         st_synchronize();
 
-		raise_z_above(MIN_Z_FOR_LOAD, false);
+		raise_z_above(MIN_Z_FOR_LOAD/*, false*/);
 		current_position[E_AXIS] += feed_mm_before_raising;
 		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
 
@@ -8770,7 +8771,7 @@ Sigma_Exit:
     case 999:
       Stopped = false;
       lcd_reset_alert_level();
-      gcode_LastN = Stopped_gcode_LastN;
+//@@TODO      gcode_LastN = Stopped_gcode_LastN;
       FlushSerialRequestResend();
     break;
 	/*!
@@ -10576,7 +10577,7 @@ void long_pause() //long pause print
     setAllTargetHotends(0);
 
     // Lift z
-    raise_z_above(current_position[Z_AXIS] + Z_PAUSE_LIFT, true);
+    raise_z_above(current_position[Z_AXIS] + Z_PAUSE_LIFT/*, true*/);
 
     // Move XY to side
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
