@@ -395,7 +395,7 @@ StepStatus ProtocolLogic::IdleStep() {
             mmu2.DecrementRetryAttempts();
         }
         SendFINDAQuery();
-        break;
+        return Processing;
     default:
         return ProtocolError;
     }
