@@ -8949,13 +8949,13 @@ Sigma_Exit:
     ## D70 - Enable low-level temperature model logging for offline simulation
     #### Usage
 
-        D70 [ I ]
+        D70 [ S ]
 
     #### Parameters
-    - `I` - Enable 0-1 (default 0)
+    - `S` - Enable 0-1 (default 0)
     */
     case 70: {
-        if(code_seen('I'))
+        if(code_seen('S'))
             temp_model_log_enable(code_value_short());
         break;
     }
