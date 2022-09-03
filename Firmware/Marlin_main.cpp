@@ -9837,23 +9837,9 @@ bool setTargetedHotend(int code, uint8_t &extruder)
       extruder = code_value_uint8();
     if(extruder >= EXTRUDERS) {
       SERIAL_ECHO_START;
-      switch(code){
-        case 104:
-          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER
-          break;
-        case 105:
-          SERIAL_ECHORPGM(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER
-          break;
-        case 109:
-          SERIAL_ECHORPGM(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER
-          break;
-        case 218:
-          SERIAL_ECHORPGM(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER
-          break;
-        case 221:
-          SERIAL_ECHORPGM(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER
-          break;
-      }
+      serialprintPGM(PSTR("M"));
+      SERIAL_ECHO(code);
+      SERIAL_ECHOPGM(" Invalid extruder ");
       SERIAL_PROTOCOLLN((int)extruder);
       return true;
     }
