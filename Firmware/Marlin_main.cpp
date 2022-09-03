@@ -3573,7 +3573,8 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     {
         FSensorBlockRunout fsBlockRunout;
         
-        if (!MMU2::mmu2.Enabled()) {
+        if (!MMU2::mmu2.Enabled())
+        {
             KEEPALIVE_STATE(PAUSED_FOR_USER);
             uint8_t choice =
                 lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, LCD_LEFT_BUTTON_CHOICE); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
@@ -3585,9 +3586,10 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 st_synchronize();
                 lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=5
             }
+            M600_load_filament();
         }
-    
-        if (MMU2::mmu2.Enabled()) {
+        else // MMU is enabled
+        {
             if (!automatic) {
                 if (saved_printing){
                     // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
@@ -3602,9 +3604,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 }
             }
             mmu_M600_load_filament(automatic, HotendTempBckp);
-        } else
-            M600_load_filament();
-    
+        }
         if (!automatic)
             M600_check_state(HotendTempBckp);
     
