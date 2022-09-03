@@ -3698,7 +3698,11 @@ static void gcodes_M704_M705_M706(uint16_t gcode)
                 MMU2::mmu2.eject_filament(mmuSlotIndex, false);
                 break;
             case 706:
-                MMU2::mmu2.cut_filament(mmuSlotIndex);
+#ifdef MMU_HAS_CUTTER
+                if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0){
+                    MMU2::mmu2.cut_filament(mmuSlotIndex);
+                }
+#endif // MMU_HAS_CUTTER
                 break;
             default:
                 break;
