@@ -11652,8 +11652,6 @@ void marlin_wait_for_click()
     KEEPALIVE_STATE(busy_state_backup);
 }
 
-#define FIL_LOAD_LENGTH 60
-
 #ifdef PSU_Delta
 bool bEnableForce_z;
 
