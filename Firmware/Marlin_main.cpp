@@ -3516,11 +3516,6 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
     /*if (automatic) {
         tmp_extruder = ad_getAlternative(tmp_extruder);
     }*/
-    lcd_update_enable(false);
-    lcd_clear();
-    lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
-    lcd_print(' ');
-    lcd_print(slot + 1);
 
     setTargetHotend(nozzle_temp, active_extruder);
 
