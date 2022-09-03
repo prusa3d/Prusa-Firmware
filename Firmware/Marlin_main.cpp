@@ -2096,9 +2096,8 @@ float raise_z(float delta)
 {
     float travel_z = current_position[Z_AXIS];
 
-    // Z needs raising
-    current_position[Z_AXIS] += travel_z;
-    clamp_to_software_endstops(current_position);
+    // Prepare to move Z axis
+    current_position[Z_AXIS] += delta;
 
 #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
     bool z_min_endstop = (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
@@ -3665,20 +3664,11 @@ void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
     if (MMU2::mmu2.Enabled() && mmuSlotIndex < MMU_FILAMENT_COUNT) {
         MMU2::mmu2.load_filament_to_nozzle(mmuSlotIndex);
     } else {
-        enable_z();
         custom_message_type = CustomMsg::FilamentLoading;
-
-        const int feed_mm_before_raising = 30;
-        static_assert(feed_mm_before_raising <= FILAMENTCHANGE_FIRSTFEED);
-
         lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
-		current_position[E_AXIS] += FILAMENTCHANGE_FIRSTFEED - feed_mm_before_raising;
-		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
-        st_synchronize();
 
-		raise_z_above(MIN_Z_FOR_LOAD/*, false*/);
-		current_position[E_AXIS] += feed_mm_before_raising;
-		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
+        current_position[E_AXIS] += fastLoadLength;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
 
         load_filament_final_feed(); // slow sequence
         st_synchronize();
@@ -10577,7 +10567,7 @@ void long_pause() //long pause print
     setAllTargetHotends(0);
 
     // Lift z
-    raise_z_above(current_position[Z_AXIS] + Z_PAUSE_LIFT/*, true*/);
+    raise_z_above(current_position[Z_AXIS] + Z_PAUSE_LIFT);
 
     // Move XY to side
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
