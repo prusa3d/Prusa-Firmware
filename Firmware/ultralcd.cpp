@@ -964,7 +964,7 @@ void lcd_commands()
                 enquecommand_P(PSTR("M140 S0")); // turn off heatbed
                 enquecommand_P(PSTR("G1 Z10 F1300.000")); //lift Z
                 enquecommand_P(PSTR("G1 X10 Y180 F4000")); //Go to parking position
-                if (MMU2::mmu2.Enabled()) enquecommand_P(PSTR("M702 C")); //unload from nozzle
+                if (MMU2::mmu2.Enabled()) enquecommand_P(PSTR("M702")); //unload from nozzle
                 enquecommand_P(PSTR("M84"));// disable motors
                 forceMenuExpire = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
                 lcd_commands_step = 1;
@@ -3956,6 +3956,7 @@ static void lcd_wizard_load() {
     lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
     loading_flag = true;
     gcode_M701(FILAMENTCHANGE_FIRSTFEED, 0);
+    //enquecommand_P(PSTR("M701"));
 }
 
 bool lcd_autoDepleteEnabled()
