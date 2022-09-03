@@ -2255,74 +2255,61 @@ void lcd_loading_filament() {
 
 
 
-void lcd_alright() {
-  int enc_dif = 0;
-  int cursor_pos = 1;
+uint8_t lcd_alright() {
+    int8_t enc_dif = 0;
+    uint8_t cursor_pos = 1;
+
+    lcd_clear();
+    lcd_puts_at_P(0, 0, _i("Changed correctly?"));////MSG_CORRECTLY c=20
+    lcd_puts_at_P(1, 1, _T(MSG_YES));
+    lcd_puts_at_P(1, 2, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
+    lcd_puts_at_P(1, 3, _i("Color not correct"));////MSG_NOT_COLOR c=19
+    lcd_putc_at(0, 1, '>');
 
 
+    enc_dif = lcd_encoder_diff;
+    lcd_consume_click();
+    while (1)
+    {
+        manage_heater();
+        manage_inactivity(true);
 
+        if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
+        {
 
-  lcd_clear();
+            if (enc_dif > lcd_encoder_diff ) {
+                // Rotating knob counter clockwise
+                cursor_pos--;
+            } else if (enc_dif < lcd_encoder_diff) {
+                // Rotating knob clockwise
+                cursor_pos++;
+            }
+            if (cursor_pos > 3) {
+                cursor_pos = 3;
+                Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+            } else if (cursor_pos < 1) {
+                cursor_pos = 1;
+                Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+            }
 
-  lcd_puts_at_P(0, 0, _i("Changed correctly?"));////MSG_CORRECTLY c=20
-  lcd_puts_at_P(1, 1, _T(MSG_YES));
-  lcd_puts_at_P(1, 2, _i("Filament not loaded"));////MSG_NOT_LOADED c=19
-  lcd_puts_at_P(1, 3, _i("Color not correct"));////MSG_NOT_COLOR c=19
-  lcd_putc_at(0, 1, '>');
+            // Update '>' render only
+            lcd_puts_at_P(0, 1, PSTR(" \n \n "));
+            lcd_putc_at(0, cursor_pos, '>');
 
-
-  enc_dif = lcd_encoder_diff;
-  lcd_consume_click();
-  while (lcd_change_fil_state == 0) {
-
-    manage_heater();
-    manage_inactivity(true);
-
-    if ( abs((enc_dif - lcd_encoder_diff)) > 4 ) {
-
-      if ( (abs(enc_dif - lcd_encoder_diff)) > 1 ) {
-        if (enc_dif > lcd_encoder_diff ) {
-          cursor_pos --;
+            // Consume rotation event and make feedback sound
+            enc_dif = lcd_encoder_diff;
+            Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+            _delay(100);
         }
 
-        if (enc_dif < lcd_encoder_diff  ) {
-          cursor_pos ++;
+        if (lcd_clicked())
+        {
+            Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+            lcd_clear();
+            lcd_return_to_status();
+            return cursor_pos;
         }
-
-        if (cursor_pos > 3) {
-          cursor_pos = 3;
-					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-        }
-
-        if (cursor_pos < 1) {
-          cursor_pos = 1;
-					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-        }
-        lcd_puts_at_P(0, 1, PSTR(" \n \n "));
-        lcd_putc_at(0, cursor_pos, '>');
-        enc_dif = lcd_encoder_diff;
-				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-        _delay(100);
-      }
-
-    }
-
-
-    if (lcd_clicked()) {
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-      lcd_change_fil_state = cursor_pos;
-      _delay(500);
-
-    }
-
-
-
-  };
-
-
-  lcd_clear();
-  lcd_return_to_status();
-
+    };
 }
 
 void show_preheat_nozzle_warning()

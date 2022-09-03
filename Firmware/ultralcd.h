@@ -36,7 +36,7 @@ void lcd_reset_alert_level();
 
 void lcd_adjust_z();
 void lcd_pick_babystep();
-void lcd_alright();
+uint8_t lcd_alright();
 void show_preheat_nozzle_warning();
 void lcd_wait_interact();
 void lcd_loading_filament();

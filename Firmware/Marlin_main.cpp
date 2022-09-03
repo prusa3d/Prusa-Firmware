@@ -189,8 +189,6 @@ int extruder_multiply[EXTRUDERS] = {100
 
 bool homing_flag = false;
 
-int8_t lcd_change_fil_state = 0;
-
 unsigned long pause_time = 0;
 unsigned long start_pause_print = _millis();
 unsigned long t_fan_rising_edge = _millis();
@@ -3566,8 +3564,6 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     if (!MMU2::mmu2.Enabled())
         M600_wait_for_user(HotendTempBckp);
 
-    lcd_change_fil_state = 0;
-
     // Unload filament
     if (MMU2::mmu2.Enabled())
         mmu_M600_unload_filament();
@@ -3579,9 +3575,9 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         
         if (!MMU2::mmu2.Enabled()) {
             KEEPALIVE_STATE(PAUSED_FOR_USER);
-            lcd_change_fil_state =
+            uint8_t choice =
                 lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, LCD_LEFT_BUTTON_CHOICE); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
-            if (lcd_change_fil_state == LCD_MIDDLE_BUTTON_CHOICE) {
+            if (choice == LCD_MIDDLE_BUTTON_CHOICE) {
                 lcd_clear();
                 lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
                 current_position[X_AXIS] -= 100;
@@ -11505,14 +11501,13 @@ void load_filament_final_feed()
 //! @par nozzle_temp nozzle temperature to load filament
 void M600_check_state(float nozzle_temp)
 {
-    lcd_change_fil_state = 0;
-    while (lcd_change_fil_state != 1)
+    uint8_t lcd_change_filament_state = 0;
+    while (lcd_change_filament_state != 1)
     {
-        lcd_change_fil_state = 0;
         KEEPALIVE_STATE(PAUSED_FOR_USER);
-        lcd_alright();
+        lcd_change_filament_state = lcd_alright();
         KEEPALIVE_STATE(IN_HANDLER);
-        switch(lcd_change_fil_state)
+        switch(lcd_change_filament_state)
         {
         // Filament failed to load so load it again
         case 2:

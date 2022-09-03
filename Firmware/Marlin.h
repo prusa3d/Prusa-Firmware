@@ -281,7 +281,6 @@ extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
 extern uint8_t newFanSpeed;
-extern int8_t lcd_change_fil_state;
 extern float default_retraction;
 
 void get_coordinates();
