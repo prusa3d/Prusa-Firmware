@@ -96,7 +96,6 @@ MMU2::MMU2()
     : is_mmu_error_monitor_active(false)
     , logic(&mmu2Serial)
     , extruder(MMU2_NO_TOOL)
-    , previous_extruder(MMU2_NO_TOOL)
     , tool_change_extruder(MMU2_NO_TOOL)
     , resume_position()
     , resume_hotend_temp(0)
@@ -286,7 +285,6 @@ bool MMU2::tool_change(uint8_t index) {
         plan_set_e_position(current_position[E_AXIS]);
 
         extruder = index; //filament change is finished
-        previous_extruder = extruder;
 
         // @@TODO really report onto the serial? May be for the Octoprint? Not important now
         //        SERIAL_ECHO_START();
@@ -319,7 +317,6 @@ bool MMU2::tool_change(char code, uint8_t slot) {
         logic.ToolChange(slot);
         manage_response(false, false);
         extruder = slot;
-        previous_extruder = extruder;
         set_extrude_min_temp(EXTRUDE_MINTEMP);
     } break;
 
@@ -466,7 +463,6 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
 
         extruder = index;
-        previous_extruder = extruder;
 
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
     }

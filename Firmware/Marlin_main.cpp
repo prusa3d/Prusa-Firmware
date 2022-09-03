@@ -3512,8 +3512,8 @@ static void mmu_M600_unload_filament() {
 /// @brief load filament for mmu v2
 /// @par nozzle_temp nozzle temperature to load filament
 static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
-    uint8_t tmp_extruder = MMU2::mmu2.get_previous_tool();
-
+    // TODO: Only ask for the slot if automatic/ SpoolJoin is off
+    uint8_t slot = choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER));
     // TODO SpoolJoin
     /*if (automatic) {
         tmp_extruder = ad_getAlternative(tmp_extruder);
@@ -3522,12 +3522,11 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
     lcd_clear();
     lcd_puts_at_P(0, 1, _T(MSG_LOADING_FILAMENT));
     lcd_print(' ');
-    lcd_print(tmp_extruder + 1);
+    lcd_print(slot + 1);
 
-    // printf_P(PSTR("T code: %d \n"), tmp_extruder);
     setTargetHotend(nozzle_temp, active_extruder);
 
-    MMU2::mmu2.load_filament_to_nozzle(tmp_extruder);
+    MMU2::mmu2.load_filament_to_nozzle(slot);
 
     load_filament_final_feed(); // @@TODO verify
     st_synchronize();
