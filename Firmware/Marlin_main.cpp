@@ -3061,9 +3061,7 @@ static void gcode_G80()
 #endif // TMC2130
             // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
             bState=enable_z_endstop(false);
-            current_position[Z_AXIS] -= 1;
-            plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-            st_synchronize();
+            raise_z(-1);
             enable_z_endstop(true);
 #ifdef TMC2130
             tmc2130_home_enter(Z_AXIS_MASK);
@@ -3314,9 +3312,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		}
 			
 		bool endstops_enabled  = enable_endstops(false);
-        current_position[Z_AXIS] -= 1; //move 1mm down with disabled endstop
-        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-        st_synchronize();
+    raise_z(-1);
 
 		// Move the print head close to the bed.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -10571,7 +10567,7 @@ void long_pause() //long pause print
     setAllTargetHotends(0);
 
     // Lift z
-    raise_z_above(current_position[Z_AXIS] + Z_PAUSE_LIFT);
+    raise_z(Z_PAUSE_LIFT);
 
     // Move XY to side
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
