@@ -254,7 +254,7 @@ void lay1cal_finish(bool mmu_enabled)
     static const char cmd_cal_finish_3[] PROGMEM = "M140 S0"; // turn off heatbed
     static const char cmd_cal_finish_4[] PROGMEM = "G1 Z10 F1300"; //lift Z
     static const char cmd_cal_finish_5[] PROGMEM = "G1 X10 Y180 F4000"; //Go to parking position
-    static const char cmd_cal_finish_6[] PROGMEM = "M702 C"; //unload from nozzle
+    static const char cmd_cal_finish_6[] PROGMEM = "M702"; //unload from nozzle
     static const char cmd_cal_finish_7[] PROGMEM = "M84";// disable motors
 
     static const char * const cmd_cal_finish[] PROGMEM =
