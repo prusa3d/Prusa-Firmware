@@ -6001,7 +6001,7 @@ void print_stop()
     save_statistics(total_filament_used, t);
 
     // lift Z
-    raise_z_above(current_position[Z_AXIS] + 10/*, true*/);
+    raise_z_above(current_position[Z_AXIS] + 10);
 
     // if axis are homed, move to parking position.
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
