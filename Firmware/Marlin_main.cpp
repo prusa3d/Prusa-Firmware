@@ -3489,13 +3489,13 @@ static void mmu_M600_wait_and_beep() {
  * are disabled in the meantime.
  */ 
 static void mmu_M600_unload_filament() {
-    uint8_t tmp_extruder = MMU2::mmu2.get_current_tool();
+    if (MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN) return;
 
     lcd_update_enable(false);
     lcd_clear();
     lcd_puts_at_P(0, 1, _T(MSG_UNLOADING_FILAMENT));
     lcd_print(' ');
-    lcd_print(tmp_extruder + 1);
+    lcd_print(MMU2::mmu2.get_current_tool() + 1);
 
     // unload just current filament for multimaterial printers (used also in M702)
     MMU2::mmu2.unload();
