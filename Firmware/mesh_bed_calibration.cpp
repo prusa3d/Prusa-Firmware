@@ -995,8 +995,7 @@ bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
 		//printf_P(PSTR("Zs: %f, Z: %f, delta Z: %f"), z_bckp, current_position[Z_AXIS], (z_bckp - current_position[Z_AXIS]));
 		if (fabs(current_position[Z_AXIS] - z_bckp) < 0.025) {
 			//printf_P(PSTR("PINDA triggered immediately, move Z higher and repeat measurement\n")); 
-			current_position[Z_AXIS] += 0.5;
-			go_to_current(homing_feedrate[Z_AXIS]/60);
+			raise_z(0.5);
 			current_position[Z_AXIS] = minimum_z;
             go_to_current(homing_feedrate[Z_AXIS]/(4*60));
             // we have to let the planner know where we are right now as it is not where we said to go.
@@ -2792,10 +2791,7 @@ canceled:
 bool sample_z() {
 	bool sampled = true;
 	//make space
-	current_position[Z_AXIS] += 150;
-	go_to_current(homing_feedrate[Z_AXIS] / 60);
-	//plan_buffer_line_curposXYZE(feedrate, active_extruder););
-
+	raise_z(150);
 	lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 
 	// Sample Z heights for the mesh bed leveling.

@@ -6003,7 +6003,7 @@ void print_stop()
     save_statistics(total_filament_used, t);
 
     // lift Z
-    raise_z_above(current_position[Z_AXIS] + 10);
+    raise_z(10);
 
     // if axis are homed, move to parking position.
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
@@ -6497,9 +6497,7 @@ bool lcd_selftest()
 		//current_position[X_AXIS] += 0;
 		current_position[Y_AXIS] += 4;
 #endif //TMC2130
-		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-		st_synchronize();
+		raise_z(10);
         set_destination_to_current();
 		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 1500);
 #ifdef TMC2130
@@ -6509,17 +6507,13 @@ bool lcd_selftest()
 #endif //TMC2130
 
 		//raise Z to not damage the bed during and hotend testing
-		current_position[Z_AXIS] += 20;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-		st_synchronize();
+		raise_z(20);
 	}
 
 #ifdef TMC2130
 	if (_result)
 	{
-		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
-		plan_buffer_line_curposXYZE(manual_feedrate[0] / 60);
-		st_synchronize();
+		raise_z(10);
 		_progress = lcd_selftest_screen(TestScreen::Home, 0, 2, true, 0);
 		bool bres = tmc2130_home_calibrate(X_AXIS);
 		_progress = lcd_selftest_screen(TestScreen::Home, 1, 2, true, 0);
