@@ -3537,7 +3537,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     st_synchronize();
 
     // Raise the Z axis
-    float delta = raise_z(z_shift);
+    raise_z(z_shift);
 
     // Move XY to side
     current_position[X_AXIS] = x_position;
@@ -3604,15 +3604,14 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
             plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
         }
 
-        // TODO: Move the Z-axis after XY, not before. Currently this does not work
-        // and raise_z seems to have no affect after XY move for unknown reasons.
-        // This needs to be looked into.
-        // Recover Z axis
-        raise_z(-delta);
-
         // Move XY back
         plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
         st_synchronize();
+
+        // Move Z back
+        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
+        st_synchronize();
+
         // Set E position to original
         plan_set_e_position(lastpos[E_AXIS]);
     
