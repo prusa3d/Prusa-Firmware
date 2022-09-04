@@ -1108,6 +1108,7 @@ void setup()
 	if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED)) {
 		MMU2::mmu2.Start();
 	}
+	SpoolJoin::spooljoin.initSpoolJoinStatus();
 
 	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
 
@@ -3503,12 +3504,13 @@ static void mmu_M600_unload_filament() {
 /// @brief load filament for mmu v2
 /// @par nozzle_temp nozzle temperature to load filament
 static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
-    // TODO: Only ask for the slot if automatic/ SpoolJoin is off
-    uint8_t slot = choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER));
-    // TODO SpoolJoin
-    /*if (automatic) {
-        tmp_extruder = ad_getAlternative(tmp_extruder);
-    }*/
+    uint8_t slot;
+    if (automatic) {
+        slot = SpoolJoin::spooljoin.nextSlot();
+    } else {
+        // Only ask for the slot if automatic/SpoolJoin is off
+        slot = choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER));
+    }
 
     setTargetHotend(nozzle_temp, active_extruder);
 

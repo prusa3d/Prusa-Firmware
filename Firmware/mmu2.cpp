@@ -15,6 +15,7 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #include "cardreader.h" // for IS_SD_PRINTING
+#include "AutoDeplete.h"
 
 // As of FW 3.12 we only support building the FW with only one extruder, all the multi-extruder infrastructure will be removed.
 // Saves at least 800B of code size
@@ -209,6 +210,20 @@ void MMU2::mmu_loop() {
         // Call this every iteration to keep the knob rotation responsive
         // This includes when mmu_loop is called within manage_response
         ReportErrorHook((uint16_t)lastErrorCode, mmu2.MMUCurrentErrorCode() == ErrorCode::OK ? ErrorSourcePrinter : ErrorSourceMMU);
+    }
+
+    // Check for FINDA filament runout
+    if (!FindaDetectsFilament() && CHECK_FSENSOR) {
+        stop_and_save_print_to_ram(0, 0);
+        restore_print_from_ram_and_continue(0);
+        if (SpoolJoin::spooljoin.isSpoolJoinEnabled() && get_current_tool() != (uint8_t)FILAMENT_UNKNOWN) // Can't auto if F=?
+        {
+            enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
+        }
+        else
+        {
+            enquecommand_front_P(PSTR("M600")); //save print and run M600 command
+        }
     }
 
     avoidRecursion = false;
