@@ -1,79 +1,66 @@
-//! @file
-//! @author: Marek Bel
-//! @date Jan 3, 2019
-
 #include "AutoDeplete.h"
-#include "assert.h"
+#include "eeprom.h"
+#include "Filament_sensor.h"
 
-//! @brief bit field marking depleted filaments
-//!
-//! binary 1 marks filament as depleted
-//! Zero initialized value means, that no filament is depleted.
-static uint8_t depleted;
-static const uint8_t filamentCount = 5;
+namespace SpoolJoin {
 
-//! @return binary 1 for all filaments
-//! @par fCount number of filaments
-static constexpr uint8_t allDepleted(uint8_t fCount)
+SpoolJoin spooljoin;
+
+SpoolJoin::SpoolJoin()
+    : status(EEPROM::Unknown)
+    , currentMMUSlot(0)
 {
-    return fCount == 1 ? 1 : ((1 << (fCount - 1)) | allDepleted(fCount - 1));
 }
 
-//! @brief Is filament available for printing?
-//! @par filament Filament number to be checked
-//! @retval true Filament is available for printing.
-//! @retval false Filament is not available for printing.
-static bool loaded(uint8_t filament)
+void SpoolJoin::updateSpoolJoinStatus(EEPROM newStatus)
 {
-    if (depleted & (1 << filament)) return false;
-    return true;
+    status = newStatus;
+    eeprom_write_byte((uint8_t*)EEPROM_AUTO_DEPLETE, (uint8_t)status);
 }
 
-//! @brief Mark filament as not available for printing.
-//! @par filament filament to be marked
-void ad_markDepleted(uint8_t filament)
+void SpoolJoin::initSpoolJoinStatus()
 {
-    assert(filament < filamentCount);
-    if (filament < filamentCount)
+    EEPROM currentStatus = (EEPROM)eeprom_read_byte((uint8_t*)EEPROM_AUTO_DEPLETE);
+    if( currentStatus == EEPROM::Empty)
     {
-        depleted |= 1 << filament;
+        // By default SpoolJoin is disabled
+        updateSpoolJoinStatus(EEPROM::Disabled);
+    } else {
+        updateSpoolJoinStatus(currentStatus);
     }
 }
 
-//! @brief Mark filament as available for printing.
-//! @par filament filament to be marked
-void ad_markLoaded(uint8_t filament)
+void SpoolJoin::toggleSpoolJoin()
 {
-    assert(filament < filamentCount);
-    if (filament < filamentCount)
+    if (eeprom_read_byte((uint8_t*)EEPROM_AUTO_DEPLETE) == (uint8_t)EEPROM::Disabled)
     {
-        depleted &= ~(1 << filament);
+        eeprom_write_byte((uint8_t*)EEPROM_AUTO_DEPLETE, (uint8_t)EEPROM::Enabled);
+    } else {
+        eeprom_write_byte((uint8_t*)EEPROM_AUTO_DEPLETE, (uint8_t)EEPROM::Disabled);
     }
 }
 
-//! @brief Get alternative filament, which is not depleted
-//! @par filament filament
-//! @return Filament, if it is depleted, returns next available,
-//! if all filaments are depleted, returns filament function parameter.
-uint8_t ad_getAlternative(uint8_t filament)
+uint8_t SpoolJoin::isSpoolJoinEnabled()
 {
-    assert(filament < filamentCount);
-    for (uint8_t i = 0; i<filamentCount; ++i)
+    if(eeprom_read_byte((uint8_t*)EEPROM_AUTO_DEPLETE) == (uint8_t)EEPROM::Enabled
+#ifdef FILAMENT_SENSOR
+    && fsensor.isReady()
+#endif
+    )
     {
-        uint8_t nextFilament = (filament + i) % filamentCount;
-        if (loaded(nextFilament)) return nextFilament;
+        return 1;
+    } else {
+        return 0;
     }
-    return filament;
 }
 
-//! @brief Are all filaments depleted?
-//! @retval true All filaments are depleted.
-//! @retval false All filaments are not depleted.
-bool ad_allDepleted()
+
+uint8_t SpoolJoin::nextSlot()
 {
-    if (allDepleted(filamentCount) == depleted)
-    {
-        return true;
-    }
-    return false;
+    if (currentMMUSlot == 4) currentMMUSlot = 0;
+    else currentMMUSlot++;
+
+    return currentMMUSlot;
+}
+
 }
