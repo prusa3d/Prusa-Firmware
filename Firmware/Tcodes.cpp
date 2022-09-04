@@ -57,14 +57,13 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
         }
     } else {
         SChooseFromMenu selectedSlot;
-//        if (strchr_pointer[index] == '?')
-//            selectedSlot = TCodeChooseFromMenu();
-//        else {
+        if (strchr_pointer[index] == '?') {
+            selectedSlot = TCodeChooseFromMenu();
+        } else if (MMU2::mmu2.Enabled() && SpoolJoin::spooljoin.isSpoolJoinEnabled()) {
+            selectedSlot.slot = SpoolJoin::spooljoin.nextSlot();
+        } else {
             selectedSlot.slot = codeValue;
-//            if (MMU2::mmu2.Enabled() && lcd_autoDepleteEnabled()) {
-//                selectedSlot.slot = ad_getAlternative(selectedSlot.slot);
-//            }
-//        }
+        }
         st_synchronize();
 
         if (MMU2::mmu2.Enabled()) {

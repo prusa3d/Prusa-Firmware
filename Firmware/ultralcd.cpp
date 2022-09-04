@@ -37,6 +37,7 @@
 #include "sound.h"
 
 #include "mmu2.h"
+#include "AutoDeplete.h"
 
 #include "static_assert.h"
 #include "first_lay_cal.h"
@@ -75,9 +76,6 @@ bool isPrintPaused = false;
 
 static ShortTimer display_time; //just timer for showing pid finished message on lcd;
 static uint16_t pid_temp = DEFAULT_PID_TEMP;
-
-static bool lcd_autoDeplete;
-
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
 
@@ -3958,15 +3956,6 @@ static void lcd_wizard_load() {
     //enquecommand_P(PSTR("M701"));
 }
 
-bool lcd_autoDepleteEnabled()
-{
-    return (lcd_autoDeplete
-#ifdef FILAMENT_SENSOR // @todo leptun: should be removed during mmu2 refactoring - needs checking
-    && fsensor.isReady()
-#endif
-    );
-}
-
 static void wizard_lay1cal_message(bool cold)
 {
     lcd_show_fullscreen_message_and_wait_P(
@@ -4302,12 +4291,6 @@ static void lcd_fsensor_settings_menu() {
 
 #endif //FILAMENT_SENSOR
 
-static void auto_deplete_switch()
-{
-    lcd_autoDeplete = !lcd_autoDeplete;
-    eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, lcd_autoDeplete);
-}
-
 static void settingsAutoDeplete()
 {
     if (MMU2::mmu2.Enabled())
@@ -4319,7 +4302,7 @@ static void settingsAutoDeplete()
         else
 #endif //FILAMENT_SENSOR
         {
-            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), lcd_autoDeplete ? _T(MSG_ON) : _T(MSG_OFF), auto_deplete_switch);
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
         }
     }
 }
@@ -7538,12 +7521,6 @@ void menu_action_sddirectory(const char* filename)
 
 void ultralcd_init()
 {
-    {
-        uint8_t autoDepleteRaw = eeprom_read_byte(reinterpret_cast<uint8_t*>(EEPROM_AUTO_DEPLETE));
-        if (0xff == autoDepleteRaw) lcd_autoDeplete = false;
-        else lcd_autoDeplete = autoDepleteRaw;
-
-    }
     backlight_init();
 	lcd_init();
 	lcd_refresh();

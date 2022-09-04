@@ -215,7 +215,6 @@ void lcd_language();
 #endif
 
 void lcd_wizard();
-bool lcd_autoDepleteEnabled();
 
 //! @brief Wizard state
 enum class WizState : uint8_t
