@@ -178,14 +178,20 @@ void MMU2::PowerOn(){
     power_on();
 }
 
-void MMU2::ReadRegister(uint8_t address, uint8_t nrbytes){
-    // TODO, implement for gcode M707
-    // Currently this function is NOP
+bool MMU2::ReadRegister(uint8_t address){
+    if( ! WaitForMMUReady())
+        return false;
+    logic.ReadRegister(address); // we may signal the accepted/rejected status of the response as return value of this function
+    manage_response(false, false);
+    return true;
 }
 
-void MMU2::WriteRegister(uint8_t address, uint8_t data, uint8_t nrbytes){
-    // TODO, implement for gcode M708
-    // Currently this function is NOP
+bool MMU2::WriteRegister(uint8_t address, uint16_t data){
+    if( ! WaitForMMUReady())
+        return false;
+    logic.WriteRegister(address, data); // we may signal the accepted/rejected status of the response as return value of this function
+    manage_response(false, false);
+    return true;
 }
 
 void MMU2::mmu_loop() {

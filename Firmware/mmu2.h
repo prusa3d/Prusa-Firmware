@@ -87,16 +87,14 @@ public:
 
     /// Read from a MMU register (See gcode M707)
     /// @param address Address of register in hexidecimal
-    /// @param nrbytes Number of bytes to read
-    /// @returns no return
-    void ReadRegister(uint8_t address, uint8_t nrbytes);
+    /// @returns true upon success
+    bool ReadRegister(uint8_t address);
 
     /// Write from a MMU register (See gcode M708)
     /// @param address Address of register in hexidecimal
     /// @param data Data to write to register
-    /// @param nrbytes Number of bytes to write
-    /// @returns no return
-    void WriteRegister(uint8_t address, uint8_t data, uint8_t nrbytes);
+    /// @returns true upon success
+    bool WriteRegister(uint8_t address, uint16_t data);
 
 
     /// The main loop of MMU processing.

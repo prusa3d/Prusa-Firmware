@@ -57,7 +57,7 @@ struct RequestMsg {
         uint8_t crc = 0;
         crc = modules::crc::CRC8::CCITT_updateCX(0, (uint8_t)code);
         crc = modules::crc::CRC8::CCITT_updateCX(crc, value);
-        crc = modules::crc::CRC8::CCITT_updateCX(crc, value2);
+        crc = modules::crc::CRC8::CCITT_updateW(crc, value2);
         return crc;
     }
 
@@ -179,12 +179,12 @@ public:
     /// @returns number of bytes written into txbuff
     static uint8_t EncodeResponseReadFINDA(const RequestMsg &msg, uint8_t findaValue, uint8_t *txbuff);
 
-    /// Encode response to Version query
-    /// @param msg source request message for this response
-    /// @param value version number (0-255)
-    /// @param txbuff where to format the message
-    /// @returns number of bytes written into txbuff
-    static uint8_t EncodeResponseVersion(const RequestMsg &msg, uint16_t value, uint8_t *txbuff);
+
+
+
+
+
+
 
     /// Encode response to Query operation status
     /// @param msg source request message for this response

@@ -88,6 +88,8 @@ public:
     void ResetMMU();
     void Button(uint8_t index);
     void Home(uint8_t mode);
+    void ReadRegister(uint8_t address);
+    void WriteRegister(uint8_t address, uint16_t data);
 
     /// Step the state machine
     StepStatus Step();
@@ -131,6 +133,7 @@ private:
 #endif
     StepStatus ExpectingMessage();
     void SendMsg(RequestMsg rq);
+    void SendWriteMsg(RequestMsg rq);
     void SwitchToIdle();
     StepStatus SuppressShortDropOuts(const char *msg_P, StepStatus ss);
     StepStatus HandleCommunicationTimeout();
@@ -187,6 +190,8 @@ private:
         FINDAReqSent,
         StatisticsSent,
         ButtonSent,
+        ReadRegisterSent,
+        WriteRegisterSent,
 
         // States which do not expect a message - MSb set
         NotExpectsResponse = 0x80,
@@ -217,6 +222,7 @@ private:
     void SendButton(uint8_t btn);
     void SendVersion(uint8_t stage);
     void SendReadRegister(uint8_t index, ScopeState nextState);
+    void SendWriteRegister(uint8_t index, uint16_t value, ScopeState nextState);
 
     StepStatus ProcessVersionResponse(uint8_t stage);
 
