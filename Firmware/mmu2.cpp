@@ -15,7 +15,7 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #include "cardreader.h" // for IS_SD_PRINTING
-#include "AutoDeplete.h"
+#include "SpoolJoin.h"
 
 // As of FW 3.12 we only support building the FW with only one extruder, all the multi-extruder infrastructure will be removed.
 // Saves at least 800B of code size
