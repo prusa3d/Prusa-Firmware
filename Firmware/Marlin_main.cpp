@@ -88,7 +88,7 @@
 
 #include "Tcodes.h"
 #include "Dcodes.h"
-#include "AutoDeplete.h"
+#include "SpoolJoin.h"
 
 #ifndef LA_NOCOMPAT
 #include "la10compat.h"
