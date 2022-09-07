@@ -8648,64 +8648,52 @@ Sigma_Exit:
     ### M707 - Read from MMU register
     #### Usage
 
-        M707 [ A | C ]
+        M707 [ A ]
 
-        M707 A0x14 C2 - Read two bytes from register 0x14
+        M707 A0x14 - Read a 16bit integer from register 0x14 and prints the result onto the serial line.
+
+        Does nothing if the A parameter is not present or if MMU is not enabled.
 
     #### Parameters
-    - `A` - Address of register in hexidecimal. Default value is 0.
-    - `C` - Number of bytes to read. Default value is 0.
+    - `A` - Address of register in hexidecimal.
     */
-    case 707:
-    {
-        uint8_t addr = 0;
-        uint8_t nrbytes = 0;
-        if ( MMU2::mmu2.Enabled() )
-        {
+    case 707: {
+        if ( MMU2::mmu2.Enabled() ) {
             if( code_seen('A') ) {
-                addr = uint8_t(strtol(strchr_pointer+1, NULL, 0));
+                MMU2::mmu2.ReadRegister(uint8_t(strtol(strchr_pointer+1, NULL, 16)));
             }
-            if( code_seen('C') ) {
-                nrbytes = code_value_uint8();
-            }
-            MMU2::mmu2.ReadRegister(addr, nrbytes);
         }
-    }
-    break;
+    } break;
 
     /*!
     ### M708 - Write to MMU register
     #### Usage
 
-        M708 [ A | X | C ]
+        M708 [ A | X ]
 
-        M708 A0x14 X30 C1 - Write to register 0x14 the value 30 which is 1 byte.
+        M708 A0x14 X30 - Write to register 0x14 the value 30.
+
+        Does nothing if A parameter is missing
 
     #### Parameters
-    - `A` - Address of register in hexidecimal. Default value is 0.
-    - `X` - Data to write. Default value is 0.
-    - `C` - Number of bytes to write. Default value is 0.
+    - `A` - Address of register in hexidecimal.
+    - `X` - Data to write (16-bit integer). Default value 0.
     */
-    case 708:
-    {
-        uint8_t addr = 0;
-        uint8_t data = 0;
-        uint8_t nrbytes = 0;
-        if ( MMU2::mmu2.Enabled() )
-        {
+    case 708: {
+        if ( MMU2::mmu2.Enabled() ){
+            uint8_t addr = 0;
             if( code_seen('A') ) {
-                addr = uint8_t(strtol(strchr_pointer+1, NULL, 0));
+                addr = uint8_t(strtol(strchr_pointer+1, NULL, 16));
             }
+            uint8_t data = 0;
             if( code_seen('X') ) {
                 data = code_value_uint8();
             }
-            if( code_seen('C') ) {
-                nrbytes = code_value_uint8();
+            if(addr){
+                MMU2::mmu2.WriteRegister(addr, data);
             }
-            MMU2::mmu2.WriteRegister(addr, data, nrbytes);
         }
-    }
-    break;
+    } break;
 
     /*!
     ### M709 - MMU turn on/off/reset
