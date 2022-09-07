@@ -6,7 +6,7 @@
 
 namespace MMU2 {
 
-static const uint8_t supportedMmuFWVersion[3] PROGMEM = { 2, 1, 1 };
+static const uint8_t supportedMmuFWVersion[3] PROGMEM = { 2, 1, 3 };
 
 void ProtocolLogic::CheckAndReportAsyncEvents() {
     // even when waiting for a query period, we need to report a change in filament sensor's state
@@ -47,6 +47,10 @@ void ProtocolLogic::SendReadRegister(uint8_t index, ScopeState nextState) {
     scopeState = nextState;
 }
 
+void ProtocolLogic::SendWriteRegister(uint8_t index, uint16_t value, ScopeState nextState){
+    SendWriteMsg(RequestMsg(RequestMsgCodes::Write, index, value));
+    scopeState = nextState;
+}
 
 // searches for "ok\n" in the incoming serial data (that's the usual response of the old MMU FW)
 struct OldMMUFWDetector {
@@ -119,6 +123,14 @@ StepStatus ProtocolLogic::ExpectingMessage() {
 void ProtocolLogic::SendMsg(RequestMsg rq) {
     uint8_t txbuff[Protocol::MaxRequestSize()];
     uint8_t len = Protocol::EncodeRequest(rq, txbuff);
+    uart->write(txbuff, len);
+    LogRequestMsg(txbuff, len);
+    RecordUARTActivity();
+}
+
+void ProtocolLogic::SendWriteMsg(RequestMsg rq){
+    uint8_t txbuff[Protocol::MaxRequestSize()];
+    uint8_t len = Protocol::EncodeWriteRequest(rq.value, rq.value2, txbuff);
     uart->write(txbuff, len);
     LogRequestMsg(txbuff, len);
     RecordUARTActivity();
@@ -394,6 +406,16 @@ StepStatus ProtocolLogic::IdleStep() {
         }
         SendFINDAQuery();
         return Processing;
+    case ScopeState::ReadRegisterSent:
+        if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
+            // @@TODO just dump the value onto the serial
+        }
+        return Finished;
+    case ScopeState::WriteRegisterSent:
+        if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
+            // @@TODO do something? Retry if not accepted?
+        }
+        return Finished;
     default:
         return ProtocolError;
     }
@@ -475,6 +497,14 @@ void ProtocolLogic::Home(uint8_t mode) {
     PlanGenericRequest(RequestMsg(RequestMsgCodes::Home, mode));
 }
 
+void ProtocolLogic::ReadRegister(uint8_t address){
+    PlanGenericRequest(RequestMsg(RequestMsgCodes::Read, address));
+}
+
+void ProtocolLogic::WriteRegister(uint8_t address, uint16_t data){
+    PlanGenericRequest(RequestMsg(RequestMsgCodes::Write, address, data));
+}
+
 void ProtocolLogic::PlanGenericRequest(RequestMsg rq) {
     plannedRq = rq;
     if (!ExpectsResponse()) {
@@ -483,19 +513,29 @@ void ProtocolLogic::PlanGenericRequest(RequestMsg rq) {
 }
 
 bool ProtocolLogic::ActivatePlannedRequest() {
-    if (plannedRq.code == RequestMsgCodes::Button) {
+    switch(plannedRq.code){
+    case RequestMsgCodes::Button:
         // only issue the button to the MMU and do not restart the state machines
         SendButton(plannedRq.value);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
         return true;
-    } else if (plannedRq.code != RequestMsgCodes::unknown) {
+    case RequestMsgCodes::Read:
+        SendReadRegister(plannedRq.value, ScopeState::ReadRegisterSent );
+        plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
+        return true;
+    case RequestMsgCodes::Write:
+        SendWriteRegister(plannedRq.value, plannedRq.value2, ScopeState::WriteRegisterSent );
+        plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
+        return true;
+    case RequestMsgCodes::unknown:
+        return false;
+    default:// commands
         currentScope = Scope::Command;
         SetRequestMsg(plannedRq);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
         CommandRestart();
         return true;
     }
-    return false;
 }
 
 StepStatus ProtocolLogic::SwitchFromIdleToCommand() {
