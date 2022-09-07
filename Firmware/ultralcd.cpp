@@ -37,7 +37,7 @@
 #include "sound.h"
 
 #include "mmu2.h"
-#include "AutoDeplete.h"
+#include "SpoolJoin.h"
 
 #include "static_assert.h"
 #include "first_lay_cal.h"
