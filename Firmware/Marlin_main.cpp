@@ -8599,7 +8599,7 @@ Sigma_Exit:
     break;
 
     /*!
-    ### M704 - Load to MMU
+    ### M704 - Load to MMU <a href="https://reprap.org/wiki/G-code#M704:_Load_to_MMU">M704: Load to MMU</a>
     #### Usage
 
         M704 [ P ]
@@ -8614,7 +8614,7 @@ Sigma_Exit:
     break;
 
     /*!
-    ### M705 - Eject filament
+    ### M705 - Eject filament <a href="https://reprap.org/wiki/G-code#M705:_Eject_filament">M705: Eject filament</a>
     #### Usage
 
         M705 [ P ]
@@ -8630,7 +8630,7 @@ Sigma_Exit:
 
 
     /*!
-    ### M706 - Cut filament
+    ### M706 - Cut filament <a href="https://reprap.org/wiki/G-code#M706:_Cut_filament">M706: Cut filament</a>
     #### Usage
 
         M706 [ P ]
@@ -8645,17 +8645,20 @@ Sigma_Exit:
     break;
 
     /*!
-    ### M707 - Read from MMU register
+    ### M707 - Read from MMU register <a href="https://reprap.org/wiki/G-code#M707:_Read_from_MMU_register">M707: Read from MMU register</a>
     #### Usage
 
         M707 [ A ]
 
-        M707 A0x14 - Read a 16bit integer from register 0x14 and prints the result onto the serial line.
-
-        Does nothing if the A parameter is not present or if MMU is not enabled.
-
     #### Parameters
     - `A` - Address of register in hexidecimal.
+
+    #### Example
+
+    M707 A0x1b - Read a 8bit integer from register 0x1b and prints the result onto the serial line.
+
+    Does nothing if the A parameter is not present or if MMU is not enabled.
+
     */
     case 707: {
         if ( MMU2::mmu2.Enabled() ) {
@@ -8666,18 +8669,19 @@ Sigma_Exit:
     } break;
 
     /*!
-    ### M708 - Write to MMU register
+    ### M708 - Write to MMU register <a href="https://reprap.org/wiki/G-code#M708:_Write_to_MMU_register">M707: Write to MMU register</a>
     #### Usage
 
         M708 [ A | X ]
 
-        M708 A0x14 X30 - Write to register 0x14 the value 30.
-
-        Does nothing if A parameter is missing
-
     #### Parameters
     - `A` - Address of register in hexidecimal.
     - `X` - Data to write (16-bit integer). Default value 0.
+
+    #### Example
+    M708 A0x1b X05 - Write to register 0x1b the value 05.
+
+    Does nothing if A parameter is missing or if MMU is not enabled.
     */
     case 708: {
         if ( MMU2::mmu2.Enabled() ){
@@ -8696,17 +8700,21 @@ Sigma_Exit:
     } break;
 
     /*!
-    ### M709 - MMU turn on/off/reset
+    ### M709 - MMU reset <a href="https://reprap.org/wiki/G-code#M709:_MMU_reset">M709: MMU reset</a>
     The MK3S cannot not power off the MMU, for that reason the functionality is not supported.
     #### Usage
 
         M709 [ X ]
 
-        M709 X0 - issue an X0 command via communication into the MMU (soft reset)
-        M709 X1 - toggle the MMU's reset pin (hardware reset)
-
     #### Parameters
-    - `X` - Reset MMU
+    - `X` - Reset MMU (0:soft reset | 1:hardware reset)
+
+    #### Example
+
+    M709 X0 - issue an X0 command via communication into the MMU (soft reset)
+
+    M709 X1 - toggle the MMU's reset pin (hardware reset)
+
     */
     case 709:
     {
