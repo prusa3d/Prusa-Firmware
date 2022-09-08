@@ -74,8 +74,7 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
             } else {
 #if defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
                 if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED)) {
-                    mmu_command(MmuCmd::K0 + selectedSlot);
-                    manage_response(true, true, MMU_UNLOAD_MOVE);
+                    MMU2::mmu2.cut_filament(selectedSlot.slot);
                 }
 #endif // defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
                 if (selectedSlot.loadToNozzle){ // for single material usage with mmu
