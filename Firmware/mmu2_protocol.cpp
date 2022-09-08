@@ -259,7 +259,15 @@ DecodeStatus Protocol::DecodeResponse(uint8_t c) {
 }
 
 uint8_t Protocol::EncodeResponseCmdAR(const RequestMsg &msg, ResponseMsgParamCodes ar, uint8_t *txbuff) {
-    const ResponseMsg rsp(msg, ar, 0); // this needs some cleanup @@TODO - check assembly how bad is it
+    // BEWARE:
+    // ResponseMsg rsp(RequestMsg(msg.code, msg.value), ar, 0);
+    // ... is NOT the same as:
+    // ResponseMsg rsp(msg, ar, 0);
+    // ... because of the usually unused parameter value2 (which only comes non-zero in write requests).
+    // It took me a few hours to find out why the CRC from the MMU never matched all the other sides (unit tests and the MK3S)
+    // It is because this was the only place where the original request kept its value2 non-zero.
+    // In the response, we must make sure value2 is actually zero unless being sent along with it (which is not right now)
+    const ResponseMsg rsp(RequestMsg(msg.code, msg.value), ar, 0); // this needs some cleanup @@TODO - check assembly how bad is it
     uint8_t i = BeginEncodeRequest(rsp.request, txbuff);
     txbuff[i] = (uint8_t)ar;
     ++i;
@@ -271,10 +279,6 @@ uint8_t Protocol::EncodeResponseCmdAR(const RequestMsg &msg, ResponseMsgParamCod
 
 uint8_t Protocol::EncodeResponseReadFINDA(const RequestMsg &msg, uint8_t findaValue, uint8_t *txbuff) {
     return EncodeResponseRead(msg, true, findaValue, txbuff);
-
-
-
-
 }
 
 uint8_t Protocol::EncodeResponseQueryOperation(const RequestMsg &msg, ResponseCommandStatus rcs, uint8_t *txbuff) {
