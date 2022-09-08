@@ -4266,7 +4266,6 @@ void process_commands()
             asm volatile("jmp 0x3E000");
 #endif
         }
-#ifdef PRUSA_SN_SUPPORT
 	else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
         eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
@@ -4275,7 +4274,6 @@ void process_commands()
         else
             puts(SN);
     }
-#endif //PRUSA_SN_SUPPORT
     else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
 
       SERIAL_PROTOCOLLN(FW_VERSION_FULL);
