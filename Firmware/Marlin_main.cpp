@@ -8691,9 +8691,9 @@ Sigma_Exit:
             if( code_seen('A') ) {
                 addr = uint8_t(strtol(strchr_pointer+1, NULL, 16));
             }
-            uint8_t data = 0;
+            uint16_t data = 0;
             if( code_seen('X') ) {
-                data = code_value_uint8();
+                data = code_value_short();
             }
             if(addr){
                 MMU2::mmu2.WriteRegister(addr, data);
