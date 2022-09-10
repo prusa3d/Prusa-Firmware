@@ -420,7 +420,7 @@ void gcode_level_check(uint16_t nGcodeLevel) {
 #define GCODE_DELIMITER '"'
 #define ELLIPSIS "..."
 
-char *code_string(char *pStr, size_t *nLength) {
+char *code_string(const char *pStr, size_t *nLength) {
 char* pStrBegin;
 char* pStrEnd;
 
@@ -432,11 +432,10 @@ pStrEnd=strchr(pStrBegin,GCODE_DELIMITER);
 if(!pStrEnd)
      return(NULL);
 *nLength=pStrEnd-pStrBegin;
-pStrBegin[*nLength] = '\0';
 return pStrBegin;
 }
 
-void printer_smodel_check(char *pStrPos) {
+void printer_smodel_check(const char *pStrPos) {
 char* pResult;
 size_t nLength,nPrinterNameLength;
 
