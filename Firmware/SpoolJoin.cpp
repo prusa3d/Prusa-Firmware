@@ -1,4 +1,5 @@
 #include "SpoolJoin.h"
+#include "Marlin.h"
 #include "eeprom.h"
 
 namespace SpoolJoin {
@@ -26,6 +27,15 @@ void SpoolJoin::initSpoolJoinStatus()
         updateSpoolJoinStatus(EEPROM::Disabled);
     } else {
         updateSpoolJoinStatus(currentStatus);
+    }
+
+    // Useful information to see during bootup
+    SERIAL_ECHOPGM("SpoolJoin is ");
+    if (isSpoolJoinEnabled())
+    {
+        SERIAL_ECHOLNPGM("enabled");
+    } else {
+        SERIAL_ECHOLNPGM("disabled");
     }
 }
 
