@@ -67,13 +67,13 @@ void SpoolJoin::setSlot(uint8_t slot)
 
 uint8_t SpoolJoin::nextSlot()
 {
-    SERIAL_ECHOPGM("SpoolJoin: Changing slot from ");
+    SERIAL_ECHOPGM("SpoolJoin: ");
     SERIAL_ECHO((int)currentMMUSlot);
 
     if (currentMMUSlot >= 4) currentMMUSlot = 0;
     else currentMMUSlot++;
 
-    SERIAL_ECHOPGM(" to ");
+    SERIAL_ECHOPGM(" -> ");
     SERIAL_ECHOLN((int)currentMMUSlot);
 
     return currentMMUSlot;
