@@ -33,6 +33,10 @@ public:
     /// @brief Check if SpoolJoin is enabled
     uint8_t isSpoolJoinEnabled();
 
+    /// @brief Update the saved MMU slot number so SpoolJoin can determine the next slot to use
+    /// @param slot number of the slot to set
+    void setSlot(uint8_t slot);
+
     /// @brief Fetch the next slot number should count from 0 to 4.
     /// When filament slot 4 is depleted, the next slot should be 0.
     /// @returns the next slot, ranges from 0 to 4
