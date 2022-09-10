@@ -31,7 +31,8 @@ public:
     static void toggleSpoolJoin();
 
     /// @brief Check if SpoolJoin is enabled
-    uint8_t isSpoolJoinEnabled();
+    /// @returns true if enabled, false if disabled
+    bool isSpoolJoinEnabled();
 
     /// @brief Update the saved MMU slot number so SpoolJoin can determine the next slot to use
     /// @param slot number of the slot to set
