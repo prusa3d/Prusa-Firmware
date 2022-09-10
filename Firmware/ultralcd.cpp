@@ -4295,15 +4295,7 @@ static void settingsSpoolJoin()
 {
     if (MMU2::mmu2.Enabled())
     {
-#ifdef FILAMENT_SENSOR
-        if (fsensor.isError()) {
-            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_NA), fsensor_reinit);
-        }
-        else
-#endif //FILAMENT_SENSOR
-        {
-            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
-        }
+        MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
     }
 }
 
