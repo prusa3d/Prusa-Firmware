@@ -1,6 +1,5 @@
 #include "SpoolJoin.h"
 #include "eeprom.h"
-#include "Filament_sensor.h"
 
 namespace SpoolJoin {
 
@@ -42,12 +41,7 @@ void SpoolJoin::toggleSpoolJoin()
 
 uint8_t SpoolJoin::isSpoolJoinEnabled()
 {
-    if(eeprom_read_byte((uint8_t*)EEPROM_AUTO_DEPLETE) == (uint8_t)EEPROM::Enabled
-#ifdef FILAMENT_SENSOR
-    && fsensor.isReady()
-#endif
-    )
-    {
+    if(eeprom_read_byte((uint8_t*)EEPROM_AUTO_DEPLETE) == (uint8_t)EEPROM::Enabled) {
         return 1;
     } else {
         return 0;
