@@ -59,8 +59,9 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
         SChooseFromMenu selectedSlot;
         if (strchr_pointer[index] == '?') {
             selectedSlot = TCodeChooseFromMenu();
-        } else if (MMU2::mmu2.Enabled() && SpoolJoin::spooljoin.isSpoolJoinEnabled()) {
-            selectedSlot.slot = SpoolJoin::spooljoin.nextSlot();
+        /*} else if (MMU2::mmu2.Enabled() && SpoolJoin::spooljoin.isSpoolJoinEnabled()) {
+            // TODO: What if the next slot has no filament?
+            selectedSlot.slot = SpoolJoin::spooljoin.nextSlot();*/
         } else {
             selectedSlot.slot = codeValue;
         }
