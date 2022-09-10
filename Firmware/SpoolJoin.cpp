@@ -58,12 +58,17 @@ uint8_t SpoolJoin::isSpoolJoinEnabled()
     }
 }
 
+void SpoolJoin::setSlot(uint8_t slot)
+{
+    currentMMUSlot = slot;
+}
 
 uint8_t SpoolJoin::nextSlot()
 {
     SERIAL_ECHOPGM("SpoolJoin: Changing slot from ");
     SERIAL_ECHO((int)currentMMUSlot);
-    if (currentMMUSlot == 4) currentMMUSlot = 0;
+
+    if (currentMMUSlot >= 4) currentMMUSlot = 0;
     else currentMMUSlot++;
 
     SERIAL_ECHOPGM(" to ");
