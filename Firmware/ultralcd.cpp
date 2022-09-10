@@ -4291,7 +4291,7 @@ static void lcd_fsensor_settings_menu() {
 
 #endif //FILAMENT_SENSOR
 
-static void settingsAutoDeplete()
+static void settingsSpoolJoin()
 {
     if (MMU2::mmu2.Enabled())
     {
@@ -4307,10 +4307,10 @@ static void settingsAutoDeplete()
     }
 }
 
-#define SETTINGS_AUTO_DEPLETE \
+#define SETTINGS_SPOOLJOIN \
 do\
 {\
-    settingsAutoDeplete();\
+    settingsSpoolJoin();\
 }\
 while(0)\
 
@@ -4810,7 +4810,7 @@ static void lcd_settings_menu()
     MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
 #endif //FILAMENT_SENSOR
 
-	SETTINGS_AUTO_DEPLETE;
+	SETTINGS_SPOOLJOIN;
 
 	SETTINGS_CUTTER;
 
@@ -5789,7 +5789,7 @@ static void lcd_tune_menu()
     MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
 #endif //FILAMENT_SENSOR
 
-	SETTINGS_AUTO_DEPLETE;
+	SETTINGS_SPOOLJOIN;
 
 	SETTINGS_CUTTER;
 
