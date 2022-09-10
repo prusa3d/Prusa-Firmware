@@ -15,7 +15,6 @@ public:
         Unknown, ///< SpoolJoin is unknown while printer is booting up
         Enabled, ///< SpoolJoin is enabled in EEPROM
         Disabled, ///< SpoolJoin is disabled in EEPROM
-        NA, ///< SpoolJoin is 'Not Applicable' when Fsensor is faulty
         Empty = 0xFF ///< EEPROM has not been set before and all bits are 1 (0xFF) - either a new printer or user erased the memory
     };
 
