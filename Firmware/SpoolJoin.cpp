@@ -51,12 +51,12 @@ void SpoolJoin::toggleSpoolJoin()
     }
 }
 
-uint8_t SpoolJoin::isSpoolJoinEnabled()
+bool SpoolJoin::isSpoolJoinEnabled()
 {
     if(eeprom_read_byte((uint8_t*)EEPROM_AUTO_DEPLETE) == (uint8_t)EEPROM::Enabled) {
-        return 1;
+        return true;
     } else {
-        return 0;
+        return false;
     }
 }
 
