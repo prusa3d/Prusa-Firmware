@@ -1,6 +1,8 @@
 #include "SpoolJoin.h"
 #include "Marlin.h"
 #include "eeprom.h"
+#include "messages.h"
+#include "language.h"
 
 namespace SpoolJoin {
 
@@ -33,9 +35,9 @@ void SpoolJoin::initSpoolJoinStatus()
     SERIAL_ECHOPGM("SpoolJoin is ");
     if (isSpoolJoinEnabled())
     {
-        SERIAL_ECHOLNPGM("enabled");
+        SERIAL_ECHOLNRPGM(_O(MSG_ON));
     } else {
-        SERIAL_ECHOLNPGM("disabled");
+        SERIAL_ECHOLNRPGM(_O(MSG_OFF));
     }
 }
 
