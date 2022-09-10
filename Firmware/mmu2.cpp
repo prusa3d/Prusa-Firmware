@@ -214,6 +214,7 @@ void MMU2::mmu_loop() {
 
     // Check for FINDA filament runout
     if (!FindaDetectsFilament() && CHECK_FSENSOR) {
+        SERIAL_ECHOLNPGM("FINDA filament runout!");
         stop_and_save_print_to_ram(0, 0);
         restore_print_from_ram_and_continue(0);
         if (SpoolJoin::spooljoin.isSpoolJoinEnabled() && get_current_tool() != (uint8_t)FILAMENT_UNKNOWN) // Can't auto if F=?
