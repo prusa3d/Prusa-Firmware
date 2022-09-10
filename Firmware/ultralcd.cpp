@@ -76,7 +76,6 @@ bool isPrintPaused = false;
 static ShortTimer display_time; //just timer for showing pid finished message on lcd;
 static uint16_t pid_temp = DEFAULT_PID_TEMP;
 
-static bool forceMenuExpire = false;
 static bool lcd_autoDeplete;
 
 
@@ -966,7 +965,7 @@ void lcd_commands()
                 enquecommand_P(PSTR("G1 X10 Y180 F4000")); //Go to parking position
                 if (MMU2::mmu2.Enabled()) enquecommand_P(PSTR("M702")); //unload from nozzle
                 enquecommand_P(PSTR("M84"));// disable motors
-                forceMenuExpire = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
+                lcd_return_to_status(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
                 lcd_commands_step = 1;
                 break;
             case 1:
@@ -7722,13 +7721,6 @@ static inline bool other_menu_expired()
             && menu_menu != lcd_babystep_z
             && lcd_timeoutToStatus.expired(LCD_TIMEOUT_TO_STATUS));
 }
-static inline bool forced_menu_expire()
-{
-    bool retval = (menu_menu != lcd_status_screen
-            && forceMenuExpire);
-    forceMenuExpire = false;
-    return retval;
-}
 
 void menu_lcd_lcdupdate_func(void)
 {
@@ -7796,7 +7788,7 @@ void menu_lcd_lcdupdate_func(void)
 
 		(*menu_menu)();
 
-		if (z_menu_expired() || other_menu_expired() || forced_menu_expire())
+		if (z_menu_expired() || other_menu_expired())
 		{
 		// Exiting a menu. Let's call the menu function the last time with menu_leaving flag set to true
 		// to give it a chance to save its state.
