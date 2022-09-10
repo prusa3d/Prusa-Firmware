@@ -316,6 +316,7 @@ StepStatus ProtocolLogic::CommandStep() {
         SendFINDAQuery();
         return Processing;
     case ScopeState::FINDAReqSent:
+        findaPressed = rsp.paramValue;
         SendReadRegister(4, ScopeState::StatisticsSent);
         scopeState = ScopeState::StatisticsSent;
         return Processing;
@@ -392,6 +393,7 @@ StepStatus ProtocolLogic::IdleStep() {
         SendFINDAQuery();
         return Processing;
     case ScopeState::FINDAReqSent:
+        findaPressed = rsp.paramValue;
         SendReadRegister(4, ScopeState::StatisticsSent);
         scopeState = ScopeState::StatisticsSent;
         return Processing;
