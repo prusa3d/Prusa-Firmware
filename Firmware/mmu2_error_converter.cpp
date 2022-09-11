@@ -179,9 +179,6 @@ Buttons ButtonAvailable(uint16_t ec) {
     switch ( PrusaErrorCode(ei) ) {
     case ERR_MECHANICAL_FINDA_DIDNT_TRIGGER:
     case ERR_MECHANICAL_FINDA_DIDNT_GO_OFF:
-    case ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER:
-    case ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF:
-    case ERR_MECHANICAL_FSENSOR_TOO_EARLY:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Retry: // "Repeat action"
             return Middle;
@@ -191,6 +188,9 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
+    case ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER:
+    case ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF:
+    case ERR_MECHANICAL_FSENSOR_TOO_EARLY:
     case ERR_MECHANICAL_SELECTOR_CANNOT_HOME:
     case ERR_MECHANICAL_SELECTOR_CANNOT_MOVE:
     case ERR_MECHANICAL_IDLER_CANNOT_HOME:
