@@ -265,8 +265,6 @@ Buttons ButtonAvailable(uint16_t ec) {
             return Left;
         case ButtonOperations::Continue: // "Proceed/Continue"
             return Right;
-        case ButtonOperations::RestartMMU: // "Restart MMU"
-            return RestartMMU;
         default:
             break;
         }
