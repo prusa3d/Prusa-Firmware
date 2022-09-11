@@ -244,6 +244,11 @@ private:
     /// Check for any button/user input coming from the printer's UI
     void CheckUserInput();
 
+    /// @brief Check whether to trigger a FINDA runout. If triggered this function will call M600 AUTO
+    /// if SpoolJoin is enabled, otherwise M600 is called without AUTO which will prompt the user
+    /// for the next filament slot to use
+    void CheckFINDARunout();
+
     /// Entry check of all external commands.
     /// It can wait until the MMU becomes ready.
     /// Optionally, it can also emit/display an error screen and the user can decide what to do next.

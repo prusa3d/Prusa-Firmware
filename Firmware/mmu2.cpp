@@ -212,6 +212,11 @@ void MMU2::mmu_loop() {
         ReportErrorHook((uint16_t)lastErrorCode, mmu2.MMUCurrentErrorCode() == ErrorCode::OK ? ErrorSourcePrinter : ErrorSourceMMU);
     }
 
+    avoidRecursion = false;
+}
+
+void MMU2::CheckFINDARunout()
+{
     // Check for FINDA filament runout
     if (!FindaDetectsFilament() && CHECK_FSENSOR) {
         SERIAL_ECHOLNPGM("FINDA filament runout!");
@@ -226,8 +231,6 @@ void MMU2::mmu_loop() {
             enquecommand_front_P(PSTR("M600")); //save print and run M600 command
         }
     }
-
-    avoidRecursion = false;
 }
 
 struct ReportingRAII {
@@ -731,6 +734,9 @@ StepStatus MMU2::LogicStep() {
     StepStatus ss = logic.Step();
     switch (ss) {
     case Finished:
+        // At this point it is safe to trigger a runout and not interrupt the MMU protocol
+        CheckFINDARunout();
+        break;
     case Processing:
         OnMMUProgressMsg(logic.Progress());
         break;
