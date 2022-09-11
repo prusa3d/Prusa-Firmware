@@ -811,13 +811,13 @@ void MMU2::ReportError(ErrorCode ec, ReportErrorSource res) {
         break;
     }
 
-    ReportErrorHook((uint16_t)ec);
-
     if( ec != lastErrorCode ){ // deduplicate: only report changes in error codes into the log
         lastErrorCode = ec;
         lastErrorSource = res;
         LogErrorEvent_P( _T(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))) );
     }
+
+    ReportErrorHook((uint16_t)ec);
 
     static_assert(mmu2Magic[0] == 'M' 
         && mmu2Magic[1] == 'M' 
