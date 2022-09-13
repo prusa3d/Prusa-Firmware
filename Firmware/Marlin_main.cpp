@@ -2460,7 +2460,7 @@ void gcode_M105(uint8_t extruder)
     }
 #else
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(_i("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS
+    SERIAL_ERRORLNRPGM(_n("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS
 #endif
 
     SERIAL_PROTOCOLPGM(" @:");
