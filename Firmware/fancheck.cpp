@@ -137,7 +137,7 @@ void checkFanSpeed()
         // we may even send some info to the LCD from here
         fan_check_error = EFCE_FIXED;
     }
-    if ((fan_check_error == EFCE_FIXED) && !PRINTER_ACTIVE){
+    if ((fan_check_error == EFCE_FIXED) && !printer_active()){
         fan_check_error = EFCE_OK; //if the issue is fixed while the printer is doing nothing, reenable processing immediately.
         lcd_reset_alert_level(); //for another fan speed error
     }

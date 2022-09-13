@@ -551,9 +551,16 @@ void servo_init()
   #endif
 }
 
-bool printer_active()
-{
-    return PRINTER_ACTIVE;
+bool __attribute__((noinline)) printer_active() {
+    return IS_SD_PRINTING
+        || usb_timer.running()
+        || isPrintPaused
+        || (custom_message_type == CustomMsg::TempCal)
+        || saved_printing
+        || (lcd_commands_type == LcdCommands::Layer1Cal)
+        || MMU2::mmu2.MMU_PRINT_SAVED()
+        || homing_flag
+        || mesh_bed_leveling_flag;
 }
 
 bool fans_check_enabled = true;
@@ -9455,7 +9462,7 @@ static void handleSafetyTimer()
 #if (EXTRUDERS > 1)
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
-    if ((PRINTER_ACTIVE) || (!degTargetBed() && !degTargetHotend(0)) || (!safetytimer_inactive_time))
+    if (printer_active() || (!degTargetBed() && !degTargetHotend(0)) || (!safetytimer_inactive_time))
     {
         safetyTimer.stop();
     }
@@ -10881,7 +10888,7 @@ ISR(INT4_vect) {
 	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
 	SERIAL_ECHOLNPGM("INT4");
     //fire normal uvlo only in case where EEPROM_UVLO is 0 or if IS_SD_PRINTING is 1. 
-     if(PRINTER_ACTIVE && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))) uvlo_();
+     if(printer_active() && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))) uvlo_();
      if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
 }
 
