@@ -355,7 +355,6 @@ extern uint16_t gcode_in_progress;
 extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT 0xff
-#define PRINTER_ACTIVE (IS_SD_PRINTING || usb_timer.running() || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || mmu_print_saved || homing_flag || mesh_bed_leveling_flag)
 
 extern bool printer_active();
 

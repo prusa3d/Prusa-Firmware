@@ -436,7 +436,7 @@ void lcdui_print_percent_done(void)
 {
 	const char* src = usb_timer.running()?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
 	char per[4];
-	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
+	bool num = IS_SD_PRINTING || (printer_active() && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
 	if (!num || heating_status != HeatingStatus::NO_HEATING) // either not printing or heating
 	{
 		const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
@@ -492,7 +492,7 @@ void lcdui_print_time(void)
 {
     //if remaining print time estimation is available print it else print elapsed time
     int chars = 0;
-    if (PRINTER_ACTIVE) {
+    if (printer_active()) {
         uint16_t print_t = PRINT_TIME_REMAINING_INIT;
         uint16_t print_tr = PRINT_TIME_REMAINING_INIT;
         uint16_t print_tc = PRINT_TIME_REMAINING_INIT;
@@ -4850,7 +4850,7 @@ static void lcd_settings_menu()
 
 	MENU_ITEM_SUBMENU_P(_i("Temperature"), lcd_control_temperature_menu);////MSG_TEMPERATURE c=18
 
-	if (!PRINTER_ACTIVE || isPrintPaused)
+	if (!printer_active() || isPrintPaused)
     {
 	    MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_axis);////MSG_MOVE_AXIS c=18
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=18
@@ -5550,7 +5550,7 @@ static void lcd_main_menu()
     if (farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8
 
-    if ( moves_planned() || PRINTER_ACTIVE ) {
+    if ( moves_planned() || printer_active() ) {
         MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE c=18
     } else {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
