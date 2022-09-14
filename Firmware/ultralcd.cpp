@@ -4313,7 +4313,7 @@ static void settingsCutter()
 #ifdef MMU_ALWAYS_CUT
         else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
         {
-            MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _i("Always"), lcd_cutter_enabled);
+            MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ALWAYS), lcd_cutter_enabled);
         }
 #endif
         else
