@@ -14,7 +14,7 @@ const char MSG_BED_HEATING[] PROGMEM_I1 = ISTR("Bed Heating"); ////MSG_BED_HEATI
 const char MSG_BED_LEVELING_FAILED_POINT_LOW[] PROGMEM_I1 = ISTR("Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for reset."); ////MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
 const char MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED[] PROGMEM_I1 = ISTR("XYZ calibration failed. Please consult the manual."); ////MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 const char MSG_BELT_STATUS[] PROGMEM_I1 = ISTR("Belt status");////MSG_BELT_STATUS c=18
-const char MSG_CANCEL[] PROGMEM_I1 = ISTR(">Cancel");////MSG_CANCEL c=9
+const char MSG_CANCEL[] PROGMEM_I1 = ISTR(">Cancel");////MSG_CANCEL c=10
 const char MSG_CALIBRATE_Z_AUTO[] PROGMEM_I1 = ISTR("Calibrating Z"); ////MSG_CALIBRATE_Z_AUTO c=20 r=2
 const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////MSG_CARD_MENU c=18
 const char MSG_CHECKING_X[] PROGMEM_I1 = ISTR("Checking X axis"); ////MSG_CHECKING_X c=20
@@ -91,6 +91,8 @@ const char MSG_SELFTEST_MOTOR[] PROGMEM_I1 = ISTR("Motor"); ////MSG_SELFTEST_MOT
 const char MSG_SELFTEST_FILAMENT_SENSOR[] PROGMEM_I1 = ISTR("Filament sensor"); ////MSG_SELFTEST_FILAMENT_SENSOR c=17
 const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////MSG_SELFTEST_WIRINGERROR c=18
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////MSG_SETTINGS c=18
+const char MSG_SELECT_LANGUAGE[] PROGMEM_I1 = ISTR("Select language"); ////MSG_SELECT_LANGUAGE c=18
+const char MSG_SORTING_FILES[] PROGMEM_I1 = ISTR("Sorting files"); ////MSG_SORTING_FILES c=20
 const char MSG_TOTAL[] PROGMEM_I1 = ISTR("Total"); ////MSG_TOTAL c=6
 const char MSG_TOTAL_FAILURES[] PROGMEM_I1 = ISTR("Total failures"); ////MSG_TOTAL_FAILURES c=20
 const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////MSG_HW_SETUP c=18
@@ -158,7 +160,7 @@ const char MSG_IR_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////MSG_IR_04
 const char MSG_IR_03_OR_OLDER[] PROGMEM_I1 = ISTR(" 0.3 or older");////MSG_IR_03_OR_OLDER c=18
 const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////MSG_IR_UNKNOWN c=18
 #endif
-extern const char MSG_PAUSED_THERMAL_ERROR[] PROGMEM_I1 = ISTR("PAUSED THERMAL ERROR");////MSG_THERMAL_ERROR_PAUSED c=20
+extern const char MSG_PAUSED_THERMAL_ERROR[] PROGMEM_I1 = ISTR("PAUSED THERMAL ERROR");////MSG_PAUSED_THERMAL_ERROR c=20
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");////MSG_THERMAL_ANOMALY c=20
 #endif

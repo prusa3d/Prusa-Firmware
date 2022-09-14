@@ -3456,7 +3456,7 @@ static void lcd_show_sensors_state()
 	
 	if (ir_sensor_detected) {
 		idler_state = !READ(IR_SENSOR_PIN);
-		lcd_puts_at_P(0, 1, _i("Fil. sensor"));
+		lcd_puts_at_P(0, 1, _T(MSG_FSENSOR));
 		lcd_set_cursor(LCD_WIDTH - 3, 1);
 		lcd_print_state(idler_state);
 	}
@@ -3684,7 +3684,7 @@ static void lcd_community_language_menu()
 {
 	MENU_BEGIN();
 	uint8_t cnt = lang_get_count();
-	MENU_ITEM_BACK_P(_i("Select language")); //Back to previous Menu
+	MENU_ITEM_BACK_P(_T(MSG_SELECT_LANGUAGE)); //Back to previous Menu
 	for (int i = 8; i < cnt; i++) //all community languages
 		if (menu_item_text_P(lang_get_name_by_code(lang_get_code(i))))
 		{
@@ -4846,7 +4846,7 @@ static void lcd_settings_menu()
 		MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);
 
 #if (LANG_MODE != 0)
-	MENU_ITEM_SUBMENU_P(_i("Select language"), lcd_language_menu);////MSG_LANGUAGE_SELECT c=18
+	MENU_ITEM_SUBMENU_P(_T(MSG_SELECT_LANGUAGE), lcd_language_menu);////MSG_LANGUAGE_SELECT c=18
 #endif //(LANG_MODE != 0)
 
 	SETTINGS_SD;
