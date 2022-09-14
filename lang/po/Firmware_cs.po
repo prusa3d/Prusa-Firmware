@@ -256,7 +256,7 @@ msgstr "Kalibrace OK"
 msgid "Card removed"
 msgstr "Karta vyjmuta"
 
-#. MSG_CNG_SDCARD
+#. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5546
 msgid "Change SD card"
 msgstr ""

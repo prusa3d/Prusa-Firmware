@@ -253,7 +253,7 @@ msgstr "Kalibracio kesz"
 msgid "Card removed"
 msgstr "Kartya eltavolitva"
 
-#. MSG_CNG_SDCARD
+#. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5546
 msgid "Change SD card"
 msgstr ""
