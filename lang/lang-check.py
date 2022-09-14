@@ -167,7 +167,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
             errors += 1
             print(yellow("[W]: No usable display definition on line %d" % line))
         # probably fullscreen, guess from the message length to continue checking
-        cols = len(LCD_WIDTH)
+        cols = LCD_WIDTH
     if cols > LCD_WIDTH:
         errors += 1
         print(yellow("[W]: Invalid column count on line %d" % line))
