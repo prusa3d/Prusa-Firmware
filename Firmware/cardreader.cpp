@@ -859,7 +859,7 @@ void CardReader::presort() {
 #endif
 
       uint16_t counter = 0;
-      menu_progressbar_init(fileCnt * fileCnt / 2, _i("Sorting files"));
+      menu_progressbar_init(fileCnt * fileCnt / 2, _i("Sorting files")); ////MSG_SORTING_FILES c=18
 
       for (uint16_t i = 1; i < fileCnt; ++i){
         // if (!IS_SD_INSERTED) return;

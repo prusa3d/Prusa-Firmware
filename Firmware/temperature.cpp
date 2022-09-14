@@ -2881,7 +2881,7 @@ void temp_model_autotune(int16_t temp, bool selftest)
     // lockout the printer during calibration
     KEEPALIVE_STATE(IN_PROCESS);
     menu_set_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
-    lcd_setstatuspgm(_i("Temp. model autotune"));
+    lcd_setstatuspgm(_i("Temp. model autotune")); ////MSG_TEMP_MODEL_AUTOTUNE c=20
     lcd_return_to_status();
 
     // set the model checking state during self-calibration
@@ -2896,7 +2896,7 @@ void temp_model_autotune(int16_t temp, bool selftest)
 
     if(err) {
         SERIAL_ECHOLNPGM("TM: autotune failed");
-        lcd_setstatuspgm(_i("TM autotune failed"));
+        lcd_setstatuspgm(_i("TM autotune failed")); ////MSG_TM_AUTOTUNE_FAILED c=20
         if(temp_error_state.v)
             temp_model_cal::set_fan_speed(255);
     } else {
