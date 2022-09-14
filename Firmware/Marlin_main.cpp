@@ -3664,7 +3664,7 @@ void gcode_M701()
 
         if (!fsensor_oq_result())
         {
-            bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
+            bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_n("Fil. sensor response is poor, disable it?"), false, true);
             lcd_update_enable(true);
             lcd_update(2);
             if (disable)
@@ -11693,7 +11693,7 @@ void M600_load_filament() {
 
 	if (!fsensor_oq_result())
 	{
-		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
+		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_n("Fil. sensor response is poor, disable it?"), false, true);
 		lcd_update_enable(true);
 		lcd_update(2);
 		if (disable)
