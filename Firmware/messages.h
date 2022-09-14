@@ -11,6 +11,7 @@ extern "C" {
 
 // LCD Menu Messages
 //internationalized messages
+extern const char MSG_ALWAYS[];
 extern const char MSG_AUTO_HOME[];
 extern const char MSG_BABYSTEP_Z[];
 extern const char MSG_BABYSTEP_Z_NOT_SET[];
