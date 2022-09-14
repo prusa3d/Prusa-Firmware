@@ -98,6 +98,8 @@ extern const char MSG_SELFTEST_MOTOR[];
 extern const char MSG_SELFTEST_FILAMENT_SENSOR[];
 extern const char MSG_SELFTEST_WIRINGERROR[];
 extern const char MSG_SETTINGS[];
+extern const char MSG_SELECT_LANGUAGE[];
+extern const char MSG_SORTING_FILES[];
 extern const char MSG_TOTAL[];
 extern const char MSG_TOTAL_FAILURES[];
 extern const char MSG_HW_SETUP[];
