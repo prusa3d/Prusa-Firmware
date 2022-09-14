@@ -61,7 +61,7 @@ msgstr "Alfabet"
 #. MSG_ALWAYS c=6
 #: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4316
 msgid "Always"
-msgstr ""
+msgstr "Altijd"
 
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1413
@@ -81,7 +81,7 @@ msgstr "Assist."
 #. MSG_AUTO c=6
 #: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5872
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. MSG_AUTO_HOME c=18
 #: ../../Firmware/Marlin_main.cpp:3268 ../../Firmware/messages.cpp:9
@@ -93,7 +93,7 @@ msgstr "Startpositie"
 #: ../../Firmware/messages.cpp:102 ../../Firmware/ultralcd.cpp:4372
 #: ../../Firmware/ultralcd.cpp:5787
 msgid "Auto power"
-msgstr ""
+msgstr "Auto power"
 
 #. MSG_AUTOLOAD_FILAMENT c=18
 #: ../../Firmware/ultralcd.cpp:5580
@@ -137,7 +137,7 @@ msgstr "terug"
 #: ../../Firmware/ultralcd.cpp:1411 ../../Firmware/ultralcd.cpp:5729
 #: ../../Firmware/ultralcd.cpp:5899
 msgid "Bed"
-msgstr ""
+msgstr "Bed"
 
 #. MSG_BED_HEATING c=20
 #: ../../Firmware/Marlin_main.cpp:6257 ../../Firmware/messages.cpp:14
@@ -256,10 +256,10 @@ msgstr "Kalibratie klaar"
 msgid "Card removed"
 msgstr "SD verwijderd"
 
-#. MSG_CNG_SDCARD
+#. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5546
 msgid "Change SD card"
-msgstr ""
+msgstr "Wissel SD kaart"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5505
@@ -323,7 +323,7 @@ msgstr "Controleer sensors"
 #. MSG_CHECKS c=18
 #: ../../Firmware/ultralcd.cpp:4773
 msgid "Checks"
-msgstr ""
+msgstr "Checks"
 
 #. MSG_NOT_COLOR c=19
 #: ../../Firmware/ultralcd.cpp:2226
@@ -354,7 +354,7 @@ msgstr "Geselecteerde taal kopieren?"
 #: ../../Firmware/messages.cpp:26 ../../Firmware/ultralcd.cpp:1229
 #: ../../Firmware/ultralcd.cpp:1270 ../../Firmware/ultralcd.cpp:1280
 msgid "Crash"
-msgstr ""
+msgstr "Crash"
 
 #. MSG_CRASHDETECT c=13
 #: ../../Firmware/messages.cpp:28 ../../Firmware/ultralcd.cpp:4349
@@ -405,7 +405,7 @@ msgstr "Datum:"
 #. MSG_DIM c=6
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5872
 msgid "Dim"
-msgstr ""
+msgstr "Dim"
 
 #. MSG_DISABLE_STEPPERS c=18
 #: ../../Firmware/ultralcd.cpp:4810
@@ -478,18 +478,18 @@ msgstr "Eindstops"
 #: ../../Firmware/Marlin_main.cpp:8605 ../../Firmware/messages.cpp:30
 #: ../../Firmware/ultralcd.cpp:3503
 msgid "Extruder"
-msgstr ""
+msgstr "Extruder"
 
 #. MSG_EXTRUDER_FAN_SPEED c=16
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1134
 #: ../../Firmware/ultralcd.cpp:7329
 msgid "Extruder fan:"
-msgstr ""
+msgstr "Extruder fan:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1730
 msgid "Extruder info"
-msgstr ""
+msgstr "Extruder info"
 
 #. MSG_FSENSOR_AUTOLOAD c=13
 #: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4237
@@ -540,13 +540,13 @@ msgstr "Fan snelh."
 #: ../../Firmware/ultralcd.cpp:7309 ../../Firmware/ultralcd.cpp:7310
 #: ../../Firmware/ultralcd.cpp:7311
 msgid "Fan test"
-msgstr ""
+msgstr "Fan test"
 
 #. MSG_FANS_CHECK c=13
 #: ../../Firmware/messages.cpp:31 ../../Firmware/ultralcd.cpp:4819
 #: ../../Firmware/ultralcd.cpp:5764
 msgid "Fans check"
-msgstr ""
+msgstr "Fans check"
 
 #. MSG_FIL_RUNOUTS c=15
 #: ../../Firmware/messages.cpp:32 ../../Firmware/ultralcd.cpp:1228
@@ -561,13 +561,13 @@ msgstr "Fil. fouten"
 #: ../../Firmware/ultralcd.cpp:4252 ../../Firmware/ultralcd.cpp:5745
 #: ../../Firmware/ultralcd.cpp:5749 ../../Firmware/ultralcd.cpp:5753
 msgid "Fil. sensor"
-msgstr ""
+msgstr "Fil. sensor"
 
 #. MSG_FILAMENT c=17
 #: ../../Firmware/Marlin_main.cpp:8574 ../../Firmware/Marlin_main.cpp:8601
 #: ../../Firmware/messages.cpp:33 ../../Firmware/ultralcd.cpp:3843
 msgid "Filament"
-msgstr ""
+msgstr "Filament"
 
 #. MSG_FILAMENT_CLEAN c=20 r=2
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2295
@@ -691,7 +691,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4666 ../../Firmware/ultralcd.cpp:4669
 #: ../../Firmware/ultralcd.cpp:4672
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4680
@@ -770,7 +770,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2531
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Verbetering van het bedijkingspunt"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:5486
@@ -780,7 +780,7 @@ msgstr "Info scherm"
 #. MSG_INIT_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5553
 msgid "Init. SD card"
-msgstr ""
+msgstr "Init. SD kaart"
 
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2160
@@ -995,7 +995,7 @@ msgstr "Referentie hoogte van het kalibratiepunt meten"
 #. MSG_MESH c=12
 #: ../../Firmware/messages.cpp:144 ../../Firmware/ultralcd.cpp:5840
 msgid "Mesh"
-msgstr ""
+msgstr "Mesh"
 
 #. MSG_MESH_BED_LEVELING c=18
 #: ../../Firmware/messages.cpp:145 ../../Firmware/ultralcd.cpp:4831
@@ -1024,13 +1024,13 @@ msgstr "Moduswijziging bezig..."
 #: ../../Firmware/ultralcd.cpp:4586 ../../Firmware/ultralcd.cpp:4589
 #: ../../Firmware/ultralcd.cpp:4592
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:91 ../../Firmware/ultralcd.cpp:6990
 #: ../../Firmware/ultralcd.cpp:6999 ../../Firmware/ultralcd.cpp:7017
 msgid "Motor"
-msgstr ""
+msgstr "Motor"
 
 #. MSG_MOVE_X c=18
 #: ../../Firmware/ultralcd.cpp:3500
@@ -1179,7 +1179,7 @@ msgstr "Eenmaal"
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9715 ../../Firmware/messages.cpp:164
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "PAUSE TERMISCHE FOUT"
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1025
@@ -1425,7 +1425,7 @@ msgstr "Print afgebroken"
 #: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1134
 #: ../../Firmware/ultralcd.cpp:7332
 msgid "Print fan:"
-msgstr ""
+msgstr "Print fan:"
 
 #. MSG_CARD_MENU c=18
 #: ../../Firmware/messages.cpp:20 ../../Firmware/ultralcd.cpp:5543
@@ -1474,7 +1474,7 @@ msgstr ""
 #. MSG_RPI_PORT c=13
 #: ../../Firmware/messages.cpp:139 ../../Firmware/ultralcd.cpp:4842
 msgid "RPi port"
-msgstr ""
+msgstr "RPi port"
 
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:2763
@@ -1501,7 +1501,7 @@ msgstr "Hernoem"
 #: ../../Firmware/messages.cpp:80 ../../Firmware/ultralcd.cpp:2764
 #: ../../Firmware/ultralcd.cpp:5435
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #. MSG_CALIBRATE_BED_RESET c=18
 #: ../../Firmware/ultralcd.cpp:4925
@@ -1640,7 +1640,7 @@ msgstr ""
 #. MSG_INFO_SENSORS c=18
 #: ../../Firmware/ultralcd.cpp:1731
 msgid "Sensor info"
-msgstr ""
+msgstr "Sensor info"
 
 #. MSG_FS_VERIFIED c=20 r=3
 #: ../../Firmware/ultralcd.cpp:6262
@@ -1784,7 +1784,7 @@ msgstr "Strikt"
 #. MSG_SUPPORT c=18
 #: ../../Firmware/ultralcd.cpp:5602
 msgid "Support"
-msgstr ""
+msgstr "Support"
 
 #. MSG_SELFTEST_SWAPPED c=16
 #: ../../Firmware/ultralcd.cpp:7029
@@ -1794,17 +1794,17 @@ msgstr "Gewisseld"
 #. MSG_THERMAL_ANOMALY c=20
 #: ../../Firmware/messages.cpp:166 ../../Firmware/temperature.cpp:2442
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "THERMISCHE ANOMALIE"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
 #: ../../Firmware/temperature.cpp:2899
 msgid "TM autotune failed"
-msgstr ""
+msgstr "TM autotune mislukt"
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2884
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Temp. model autotune"
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4805
@@ -1961,7 +1961,7 @@ msgstr "Aansluitingsfout"
 #. MSG_WIZARD c=17
 #: ../../Firmware/ultralcd.cpp:4903
 msgid "Wizard"
-msgstr ""
+msgstr "Wizard"
 
 #. MSG_X_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4218
@@ -1971,7 +1971,7 @@ msgstr "X-correctie:"
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5604
 msgid "XFLASH init"
-msgstr ""
+msgstr "XFLASH init"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1729
@@ -2020,7 +2020,7 @@ msgstr "XYZ-kalibratie mislukt. Voorste kalibratiepunten niet bereikbaar."
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3313
 msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ-kalibratie mislukt. Kalibratiepunt linksvoor niet bereikbaar."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3304
@@ -2118,7 +2118,7 @@ msgstr "Status onbekend"
 #: ../../Firmware/messages.cpp:78 ../../Firmware/ultralcd.cpp:6085
 #: ../../Firmware/ultralcd.cpp:6088
 msgid "🔃Refresh"
-msgstr ""
+msgstr "🔃Refresh"
 
 #~ msgid "Crash detected. Resume print?"
 #~ msgstr "Crash gedetecteerd. Print voorzetten?"

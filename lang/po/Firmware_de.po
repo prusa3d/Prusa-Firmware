@@ -56,12 +56,12 @@ msgstr "Alles abgeschlossen. Viel Spaß beim Drucken!"
 #. MSG_SORT_ALPHA c=8
 #: ../../Firmware/messages.cpp:138 ../../Firmware/ultralcd.cpp:4412
 msgid "Alphabet"
-msgstr ""
+msgstr "Alphabet"
 
 #. MSG_ALWAYS c=6
 #: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4316
 msgid "Always"
-msgstr ""
+msgstr "Immer"
 
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1413
@@ -81,7 +81,7 @@ msgstr "Assist."
 #. MSG_AUTO c=6
 #: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5872
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. MSG_AUTO_HOME c=18
 #: ../../Firmware/Marlin_main.cpp:3268 ../../Firmware/messages.cpp:9
@@ -255,10 +255,10 @@ msgstr "Kalibrierung OK"
 msgid "Card removed"
 msgstr "SD Karte entfernt"
 
-#. MSG_CNG_SDCARD
+#. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5546
 msgid "Change SD card"
-msgstr ""
+msgstr "Wechsel SD Karte"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5505
@@ -337,7 +337,7 @@ msgstr "Von der Community"
 #. MSG_CONTINUE_SHORT c=5
 #: ../../Firmware/messages.cpp:149 ../../Firmware/ultralcd.cpp:4712
 msgid "Cont."
-msgstr ""
+msgstr "Weit."
 
 #. MSG_COOLDOWN c=18
 #: ../../Firmware/messages.cpp:25 ../../Firmware/ultralcd.cpp:2133
@@ -353,7 +353,7 @@ msgstr "Gewählte Sprache kopieren?"
 #: ../../Firmware/messages.cpp:26 ../../Firmware/ultralcd.cpp:1229
 #: ../../Firmware/ultralcd.cpp:1270 ../../Firmware/ultralcd.cpp:1280
 msgid "Crash"
-msgstr ""
+msgstr "Crash"
 
 #. MSG_CRASHDETECT c=13
 #: ../../Firmware/messages.cpp:28 ../../Firmware/ultralcd.cpp:4349
@@ -477,7 +477,7 @@ msgstr "Endschalter"
 #: ../../Firmware/Marlin_main.cpp:8605 ../../Firmware/messages.cpp:30
 #: ../../Firmware/ultralcd.cpp:3503
 msgid "Extruder"
-msgstr ""
+msgstr "Extruder"
 
 #. MSG_EXTRUDER_FAN_SPEED c=16
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1134
@@ -566,7 +566,7 @@ msgstr "Fil. Sensor"
 #: ../../Firmware/Marlin_main.cpp:8574 ../../Firmware/Marlin_main.cpp:8601
 #: ../../Firmware/messages.cpp:33 ../../Firmware/ultralcd.cpp:3843
 msgid "Filament"
-msgstr ""
+msgstr "Filament"
 
 #. MSG_FILAMENT_CLEAN c=20 r=2
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2295
@@ -690,7 +690,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4666 ../../Firmware/ultralcd.cpp:4669
 #: ../../Firmware/ultralcd.cpp:4672
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4680
@@ -771,7 +771,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2531
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Verbesserung des Bettkalibrierungspunkts"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:5486
@@ -781,7 +781,7 @@ msgstr "Infoanzeige"
 #. MSG_INIT_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5553
 msgid "Init. SD card"
-msgstr ""
+msgstr "Init. SD Karte"
 
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2160
@@ -1032,7 +1032,7 @@ msgstr "Modell"
 #: ../../Firmware/messages.cpp:91 ../../Firmware/ultralcd.cpp:6990
 #: ../../Firmware/ultralcd.cpp:6999 ../../Firmware/ultralcd.cpp:7017
 msgid "Motor"
-msgstr ""
+msgstr "Motor"
 
 #. MSG_MOVE_X c=18
 #: ../../Firmware/ultralcd.cpp:3500
@@ -1099,7 +1099,7 @@ msgstr "Ohne"
 #: ../../Firmware/ultralcd.cpp:4389 ../../Firmware/ultralcd.cpp:4405
 #: ../../Firmware/ultralcd.cpp:4424 ../../Firmware/ultralcd.cpp:5771
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #. MSG_SELFTEST_NOTCONNECTED c=20
 #: ../../Firmware/ultralcd.cpp:6977
@@ -1181,7 +1181,7 @@ msgstr "Einmal"
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9715 ../../Firmware/messages.cpp:164
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "PAUSE THERM. FEHLER"
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1025
@@ -1228,7 +1228,7 @@ msgstr ""
 #. MSG_PAUSE c=5
 #: ../../Firmware/messages.cpp:150 ../../Firmware/ultralcd.cpp:4715
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #. MSG_PAUSE_PRINT c=18
 #: ../../Firmware/messages.cpp:69 ../../Firmware/ultralcd.cpp:5515
@@ -1477,7 +1477,7 @@ msgstr ""
 #. MSG_RPI_PORT c=13
 #: ../../Firmware/messages.cpp:139 ../../Firmware/ultralcd.cpp:4842
 msgid "RPi port"
-msgstr ""
+msgstr "RPi port"
 
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:2763
@@ -1505,7 +1505,7 @@ msgstr "Umbenennen"
 #: ../../Firmware/messages.cpp:80 ../../Firmware/ultralcd.cpp:2764
 #: ../../Firmware/ultralcd.cpp:5435
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #. MSG_CALIBRATE_BED_RESET c=18
 #: ../../Firmware/ultralcd.cpp:4925
@@ -1782,7 +1782,7 @@ msgstr "Strikt"
 #. MSG_SUPPORT c=18
 #: ../../Firmware/ultralcd.cpp:5602
 msgid "Support"
-msgstr ""
+msgstr "Support"
 
 #. MSG_SELFTEST_SWAPPED c=16
 #: ../../Firmware/ultralcd.cpp:7029
@@ -1792,17 +1792,17 @@ msgstr "Ausgetauscht"
 #. MSG_THERMAL_ANOMALY c=20
 #: ../../Firmware/messages.cpp:166 ../../Firmware/temperature.cpp:2442
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "THERMISCHE ANOMALIE"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
 #: ../../Firmware/temperature.cpp:2899
 msgid "TM autotune failed"
-msgstr ""
+msgstr "TM kal. fehlgeschlg."
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2884
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Temp. Model Autokal."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4805
@@ -1842,7 +1842,7 @@ msgstr "Zeit"
 #. MSG_TIMEOUT c=12
 #: ../../Firmware/messages.cpp:154 ../../Firmware/ultralcd.cpp:5873
 msgid "Timeout"
-msgstr ""
+msgstr "Timeout"
 
 #. MSG_TOTAL c=6
 #: ../../Firmware/messages.cpp:97 ../../Firmware/ultralcd.cpp:1157
@@ -1970,7 +1970,7 @@ msgstr "X-Korrektur:"
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5604
 msgid "XFLASH init"
-msgstr ""
+msgstr "XFLASH init"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1729

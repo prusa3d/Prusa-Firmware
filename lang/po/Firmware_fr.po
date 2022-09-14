@@ -255,7 +255,7 @@ msgstr "Calibration terminee"
 msgid "Card removed"
 msgstr "Carte retiree"
 
-#. MSG_CNG_SDCARD
+#. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5546
 msgid "Change SD card"
 msgstr ""
