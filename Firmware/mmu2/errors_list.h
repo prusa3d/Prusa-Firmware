@@ -145,7 +145,7 @@ static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER S
 //static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
 static const char MSG_TITLE_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU NOT RESPONDING"); ////MSG_TITLE_MMU_NOT_RESPONDING c=20
 static const char MSG_TITLE_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("COMMUNICATION ERROR"); ////MSG_TITLE_COMMUNICATION_ERROR c=20
-static const char MSG_TITLE_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("FILAMENT ALREADY LOA"); ////MSG_TITLE_FILAMENT_ALREADY_LOADED c=20
+static const char MSG_TITLE_FIL_ALREADY_LOADED[] PROGMEM_I1 = ISTR("FILAMENT ALREADY LOA"); ////MSG_TITLE_FIL_ALREADY_LOADED c=20
 static const char MSG_TITLE_INVALID_TOOL[] PROGMEM_I1 = ISTR("INVALID TOOL"); ////MSG_TITLE_INVALID_TOOL c=20
 static const char MSG_TITLE_QUEUE_FULL[] PROGMEM_I1 = ISTR("QUEUE FULL"); ////MSG_TITLE_QUEUE_FULL c=20
 static const char MSG_TITLE_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("MMU FW UPDATE NEEDED"); ////MSG_TITLE_FW_UPDATE_NEEDED c=20
@@ -183,7 +183,7 @@ static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_TMC_DRIVER_SHORTED),
     _R(MSG_TITLE_MMU_NOT_RESPONDING),
     _R(MSG_TITLE_COMMUNICATION_ERROR),
-    _R(MSG_TITLE_FILAMENT_ALREADY_LOADED),
+    _R(MSG_TITLE_FIL_ALREADY_LOADED),
     _R(MSG_TITLE_INVALID_TOOL),
     _R(MSG_TITLE_QUEUE_FULL),
     _R(MSG_TITLE_FW_UPDATE_NEEDED),
@@ -193,18 +193,18 @@ static const char * const errorTitles [] PROGMEM = {
 
 // @@TODO looking at the texts, they can be composed of several parts and/or parametrized (could save a lot of space ;) )
 // Moreover, some of them have been disabled in favour of saving some more code size.
-static const char MSG_DESC_FINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA didn't trigger while loading the filament. Ensure the filament can move and FINDA works."); ////MSG_DESC_FINDA_DIDNT_TRIGGER c=20
-static const char MSG_DESC_FINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading manually. Ensure filament can move and FINDA works."); ////MSG_DESC_FINDA_DIDNT_GO_OFF c=20
-static const char MSG_DESC_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading the filament. Ensure the filament reached the fsensor and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20
-static const char MSG_DESC_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20
-static const char MSG_DESC_PULLEY_STALLED[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_STALLED c=20
-static const char MSG_DESC_FSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly."); ////MSG_DESC_FSENSOR_TOO_EARLY c=20
-static const char MSG_DESC_SELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_SELECTOR_CANNOT_HOME c=20
+static const char MSG_DESC_FINDA_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("FINDA didn't trigger while loading the filament. Ensure the filament can move and FINDA works."); ////MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
+static const char MSG_DESC_FINDA_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("FINDA didn't switch off while unloading filament. Try unloading manually. Ensure filament can move and FINDA works."); ////MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
+static const char MSG_DESC_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament sensor didn't trigger while loading the filament. Ensure the filament reached the fsensor and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
+static const char MSG_DESC_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
+static const char MSG_DESC_PULLEY_STALLED[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_STALLED c=20 r=8
+static const char MSG_DESC_FSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly."); ////MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
+static const char MSG_DESC_SELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 static const char MSG_DESC_CANNOT_MOVE[] PROGMEM_I1 = ISTR(""); // these errors have been disabled
 //static const char MSG_DESC_SELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Selector cannot move. Check for anything blocking its movement. Check the wiring is correct.");
-static const char MSG_DESC_IDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Idler cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_IDLER_CANNOT_HOME c=20
+static const char MSG_DESC_IDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Idler cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
 //static const char MSG_DESC_IDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Idler cannot move properly. Check for anything blocking its movement. Check the wiring is correct.");
-static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////MSG_DESC_TMC c=20
+static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////MSG_DESC_TMC c=20 r=8
 //static const char MSG_DESC_PULLEY_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Pulley motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
 //static const char MSG_DESC_SELECTOR_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Selector motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
 //static const char MSG_DESC_IDLER_WARNING_TMC_TOO_HOT[] PROGMEM_I1 = ISTR("TMC driver for the Idler motor is almost overheating. Make sure there is sufficient airflow near the MMU board.");
@@ -223,14 +223,14 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_PULLEY_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Pulley TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_SELECTOR_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_IDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors. If the issue persists contact support.");
-static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU unit not responding. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_MMU_NOT_RESPONDING c=20
-static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_COMMUNICATION_ERROR c=20
-static const char MSG_DESC_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); ////MSG_DESC_FILAMENT_ALREADY_LOADED c=20
-static const char MSG_DESC_INVALID_TOOL[] PROGMEM_I1 = ISTR("Requested filament tool is not available on this hardware. Check the G-code for tool index out of range (T0-T4)."); ////MSG_DESC_INVALID_TOOL c=20
-static const char MSG_DESC_QUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal error, please reset the MMU."); ////MSG_DESC_QUEUE_FULL c=20
-static const char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit reports its FW version incompatible with the printer's firmware. Make sure the MMU firmware is up to date."); ////MSG_DESC_FW_UPDATE_NEEDED c=20
-static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU unit or updating the firmware. If the issue persists, contact support."); ////MSG_DESC_FW_RUNTIME_ERROR c=20
-static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Unexpected FINDA reading. Ensure no filament is under FINDA and the selector is free. Check FINDA connection."); ////MSG_DESC_UNLOAD_MANUALLY c=20
+static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU unit not responding. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
+static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=8
+static const char MSG_DESC_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); ////MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
+static const char MSG_DESC_INVALID_TOOL[] PROGMEM_I1 = ISTR("Requested filament tool is not available on this hardware. Check the G-code for tool index out of range (T0-T4)."); ////MSG_DESC_INVALID_TOOL c=20 r=8
+static const char MSG_DESC_QUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal error, please reset the MMU."); ////MSG_DESC_QUEUE_FULL c=20 r=8
+static const char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit reports its FW version incompatible with the printer's firmware. Make sure the MMU firmware is up to date."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
+static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU unit or updating the firmware. If the issue persists, contact support."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
+static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Unexpected FINDA reading. Ensure no filament is under FINDA and the selector is free. Check FINDA connection."); ////MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 
 static const char * const errorDescs[] PROGMEM = {
     MSG_DESC_FINDA_DIDNT_TRIGGER,

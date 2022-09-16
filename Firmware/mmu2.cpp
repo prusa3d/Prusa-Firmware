@@ -595,7 +595,8 @@ void MMU2::ResumeHotendTemp() {
         SERIAL_ECHOLN(resume_hotend_temp);
         mmu_print_saved &= ~(SavedState::Cooldown);
         setTargetHotend(resume_hotend_temp, active_extruder);
-        lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); // better report the event and let the GUI do its work somewhere else
+        lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); ////MSG_MMU_RESTORE_TEMP c=20 r=4
+        //@todo better report the event and let the GUI do its work somewhere else
         ReportErrorHookSensorLineRender();
         waitForHotendTargetTemp(1000, []{
             ReportErrorHookDynamicRender();
