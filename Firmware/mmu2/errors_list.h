@@ -224,12 +224,12 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_SELECTOR_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_IDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU unit not responding. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
-static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=8
+static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 static const char MSG_DESC_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); ////MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 static const char MSG_DESC_INVALID_TOOL[] PROGMEM_I1 = ISTR("Requested filament tool is not available on this hardware. Check the G-code for tool index out of range (T0-T4)."); ////MSG_DESC_INVALID_TOOL c=20 r=8
 static const char MSG_DESC_QUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal error, please reset the MMU."); ////MSG_DESC_QUEUE_FULL c=20 r=8
-static const char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit reports its FW version incompatible with the printer's firmware. Make sure the MMU firmware is up to date."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=8
-static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU unit or updating the firmware. If the issue persists, contact support."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=8
+static const char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit reports its FW version incompatible with the printer's firmware. Make sure the MMU firmware is up to date."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU unit or updating the firmware. If the issue persists, contact support."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Unexpected FINDA reading. Ensure no filament is under FINDA and the selector is free. Check FINDA connection."); ////MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 
 static const char * const errorDescs[] PROGMEM = {
@@ -280,7 +280,7 @@ static const char * const errorDescs[] PROGMEM = {
 // -> the left button on the MMU is not used/rendered on the LCD (it is also almost unused on the MMU side)
 static const char MSG_BTN_RETRY[] PROGMEM_I1 = ISTR("Retry"); ////MSG_BTN_RETRY c=5
 static const char MSG_BTN_CONTINUE[] PROGMEM_I1 = ISTR("Done"); ////MSG_BTN_CONTINUE c=5
-static const char MSG_BTN_RESTART_MMU[] PROGMEM_I1 = ISTR("RstMMU"); ////MSG_BTN_RESTART_MMU c=9
+static const char MSG_BTN_RESTART_MMU[] PROGMEM_I1 = ISTR("Reset MMU"); ////MSG_BTN_RESTART_MMU c=9
 static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=6
 static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=5
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=9
