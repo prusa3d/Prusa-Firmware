@@ -667,7 +667,7 @@ void MMU2::CheckUserInput(){
 void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
     mmu_print_saved = SavedState::None;
 
-    KEEPALIVE_STATE(PAUSED_FOR_USER);
+    KEEPALIVE_STATE(IN_PROCESS);
 
     LongTimer nozzleTimeout;
 
