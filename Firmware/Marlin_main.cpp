@@ -558,7 +558,7 @@ bool __attribute__((noinline)) printer_active() {
         || (custom_message_type == CustomMsg::TempCal)
         || saved_printing
         || (lcd_commands_type == LcdCommands::Layer1Cal)
-        || mmu_print_saved
+        || MMU2::mmu2.MMU_PRINT_SAVED()
         || homing_flag
         || mesh_bed_leveling_flag;
 }

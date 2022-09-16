@@ -172,9 +172,11 @@ extern const char MSG_DIM[];
 extern const char MSG_AUTO[];
 extern const char MSG_FS_V_03_OR_OLDER[];
 extern const char MSG_FS_V_04_OR_NEWER[];
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];
 extern const char MSG_IR_UNKNOWN[];
+#endif
 extern const char MSG_PAUSED_THERMAL_ERROR[];
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[];
