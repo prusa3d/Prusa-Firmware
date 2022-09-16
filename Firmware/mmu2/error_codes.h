@@ -41,7 +41,7 @@ enum class ErrorCode : uint_fast16_t {
 
     FINDA_VS_EEPROM_DISREPANCY = 0x8008, ///< E32776 FINDA is pressed but we have no such record in EEPROM - this can only happen at the start of the MMU and can be resolved by issuing an Unload command
 
-    FSENSOR_TOO_EARLY = 0x8009, ///< E32777 FSensor triggered while doing FastFeedToBondtech - that means either:
+    FSENSOR_TOO_EARLY = 0x8009, ///< E32777 FSensor triggered while doing FastFeedToExtruder - that means either:
     ///< - the PTFE is too short
     ///< - a piece of filament was left inside - pushed in front of the loaded filament causing the fsensor trigger too early
     ///< - fsensor is faulty producing bogus triggers

@@ -11,7 +11,7 @@ static const char progressDisengeIdler[] PROGMEM_I1     = ISTR("Disengaging idle
 static const char progressUnloadFinda[] PROGMEM_I1      = ISTR("Unloading to FINDA");
 static const char progressUnloadPulley[] PROGMEM_I1     = ISTR("Unloading to pulley");
 static const char progressFeedFinda[] PROGMEM_I1        = ISTR("Feeding to FINDA");
-static const char progressFeedBondtech[] PROGMEM_I1     = ISTR("Feeding to extruder");
+static const char progressFeedExtruder[] PROGMEM_I1     = ISTR("Feeding to extruder");
 static const char progressFeedNozzle[] PROGMEM_I1       = ISTR("Feeding to nozzle");
 static const char progressAvoidGrind[] PROGMEM_I1       = ISTR("Avoiding grind");
 static const char progressFinishMoves[] PROGMEM_I1      = ISTR("Finishing moves");
@@ -40,7 +40,7 @@ static const char * const progressTexts[] PROGMEM = {
     progressUnloadFinda,
     progressUnloadPulley,
     progressFeedFinda,
-    progressFeedBondtech,
+    progressFeedExtruder,
     progressFeedNozzle,
     progressAvoidGrind,
     progressFinishMoves,

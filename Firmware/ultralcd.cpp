@@ -122,7 +122,7 @@ static void lcd_v2_calibration();
 
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
-static void mmu_load_to_bondtech_menu();
+static void mmu_load_to_extruder_menu();
 static void preheat_or_continue();
 
 #ifdef MMU_HAS_CUTTER
@@ -1846,7 +1846,7 @@ switch(eFilamentAction)
      case FilamentAction::Load:
      case FilamentAction::AutoLoad:
      case FilamentAction::MmuLoad:
-     case FilamentAction::MmuLoadBondtech:
+     case FilamentAction::MmuLoadExtruder:
           lcd_puts_P(_i("to load filament"));     ////MSG_TO_LOAD_FIL c=20
           break;
      case FilamentAction::UnLoad:
@@ -1886,7 +1886,7 @@ switch(eFilamentAction)
                enquecommand_P(PSTR("M702"));      // unload filament
                break;
           case FilamentAction::MmuLoad:
-          case FilamentAction::MmuLoadBondtech:
+          case FilamentAction::MmuLoadExtruder:
           case FilamentAction::MmuUnLoad:
           case FilamentAction::MmuEject:
           case FilamentAction::MmuCut:
@@ -1958,11 +1958,11 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             menu_back(nLevel);
             menu_submenu(mmu_load_to_nozzle_menu);
             break;
-        case FilamentAction::MmuLoadBondtech:
+        case FilamentAction::MmuLoadExtruder:
             nLevel = bFilamentPreheatState ? 1 : 2;
             bFilamentAction = true;
             menu_back(nLevel);
-            menu_submenu(mmu_load_to_bondtech_menu);
+            menu_submenu(mmu_load_to_extruder_menu);
             break;
         case FilamentAction::MmuUnLoad:
             nLevel = bFilamentPreheatState ? 1 : 2;
@@ -2018,7 +2018,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             case FilamentAction::Load:
             case FilamentAction::AutoLoad:
             case FilamentAction::MmuLoad:
-            case FilamentAction::MmuLoadBondtech:
+            case FilamentAction::MmuLoadExtruder:
                 lcd_puts_P(_i("Preheating to load")); ////MSG_PREHEATING_TO_LOAD c=20
                 if (once) raise_z_above(MIN_Z_FOR_LOAD);
                 break;
@@ -5195,26 +5195,26 @@ static void mmu_cut_filament_menu() {
 }
 #endif //MMU_HAS_CUTTER
 
-static inline void load_to_bondtech_all_wrapper(){
+static inline void load_to_extruder_all_wrapper(){
     for(uint8_t i = 0; i < 5; ++i){
-        MMU2::mmu2.load_to_bondtech(i);
+        MMU2::mmu2.load_to_extruder(i);
     }
 }
 
-static inline void load_to_bondtech_wrapper(uint8_t i){
-    MMU2::mmu2.load_to_bondtech(i);
+static inline void load_to_extruder_wrapper(uint8_t i){
+    MMU2::mmu2.load_to_extruder(i);
 }
 
-static void mmu_load_to_bondtech_menu() {
+static void mmu_load_to_extruder_menu() {
     if (bFilamentAction) {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_P(_i("Load all"), load_to_bondtech_all_wrapper); ////MSG_LOAD_ALL c=18
+        MENU_ITEM_FUNCTION_P(_i("Load all"), load_to_extruder_all_wrapper); ////MSG_LOAD_ALL c=18
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_to_bondtech_wrapper, i); ////MSG_LOAD_FILAMENT c=16
+            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_to_extruder_wrapper, i); ////MSG_LOAD_FILAMENT c=16
         MENU_END();
     } else {
-        eFilamentAction = FilamentAction::MmuLoadBondtech;
+        eFilamentAction = FilamentAction::MmuLoadExtruder;
         preheat_or_continue();
     }
 }
@@ -5603,7 +5603,7 @@ static void lcd_main_menu()
     if ( ! ( IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) ) ) {
         if (MMU2::mmu2.Enabled()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), mmu_load_filament_menu);
-            MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_TO_BONDTECH), mmu_load_to_bondtech_menu);
+            MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_TO_EXTRUDER), mmu_load_to_extruder_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
             MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FILAMENT), mmu_fil_eject_menu);

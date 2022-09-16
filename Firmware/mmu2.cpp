@@ -422,7 +422,7 @@ void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_print(slot + 1);
 }
 
-bool MMU2::load_to_bondtech(uint8_t index){
+bool MMU2::load_to_extruder(uint8_t index){
     FullScreenMsg(_T(MSG_TESTING_FILAMENT), index);
     tool_change(index);
     st_synchronize();
@@ -888,7 +888,7 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc){
         if (loadFilamentStarted) {
             switch (WhereIsFilament()) {
             case FilamentState::AT_FSENSOR:
-                // fsensor triggered, finish FeedingToBondtech state
+                // fsensor triggered, finish FeedingToExtruder state
                 loadFilamentStarted = false;
                 // After the MMU knows the FSENSOR is triggered it will:
                 // 1. Push the filament by additional 30mm (see fsensorToNozzle)

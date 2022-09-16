@@ -46,12 +46,12 @@ void TCodes(char *const strchr_pointer, uint8_t codeValue) {
     if (IsInvalidTCode(strchr_pointer, index)){
         TCodeInvalid();
     } else if (strchr_pointer[index] == 'x'){
-        // load to bondtech gears; if mmu is not present do nothing
+        // load to extruder gears; if mmu is not present do nothing
         if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.tool_change(strchr_pointer[index], choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER)));
         }
     } else if (strchr_pointer[index] == 'c'){
-        // load from bondtech gears to nozzle (nozzle should be preheated)
+        // load from extruder gears to nozzle (nozzle should be preheated)
         if (MMU2::mmu2.Enabled()) {
             MMU2::mmu2.tool_change(strchr_pointer[index], MMU2::mmu2.get_current_tool());
         }
