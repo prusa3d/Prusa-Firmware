@@ -4295,7 +4295,7 @@ static void settingsSpoolJoin()
 {
     if (MMU2::mmu2.Enabled())
     {
-        MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
+        MENU_ITEM_TOGGLE_P(MSG_SPOOL_JOIN, SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
     }
 }
 

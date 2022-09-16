@@ -134,7 +134,7 @@ extern const char MSG_WELCOME[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
 extern const char MSG_NA[];
-extern const char MSG_AUTO_DEPLETE[];
+extern const char MSG_SPOOL_JOIN[];
 extern const char MSG_CUTTER[];
 extern const char MSG_NONE[];
 extern const char MSG_WARN[];

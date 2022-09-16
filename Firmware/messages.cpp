@@ -112,8 +112,8 @@ const char MSG_STOP_PRINT[] PROGMEM_I1 = ISTR("Stop print"); ////MSG_STOP_PRINT 
 const char MSG_STOPPED[] PROGMEM_I1 = ISTR("STOPPED."); ////MSG_STOPPED c=20
 const char MSG_PINDA_CALIBRATION[] PROGMEM_I1 = ISTR("PINDA cal."); ////MSG_PINDA_CALIBRATION c=13
 const char MSG_PINDA_CALIBRATION_DONE[] PROGMEM_I1 = ISTR("PINDA calibration is finished and active. It can be disabled in menu Settings->PINDA cal."); ////MSG_PINDA_CALIBRATION_DONE c=20 r=8
-const char MSG_UNLOAD_FILAMENT[] PROGMEM_I1 = ISTR("Unload filament"); ////Number 1 to 5 is added behind text e.g. "Unload filament" c=16
-const char MSG_UNLOADING_FILAMENT[] PROGMEM_I1 = ISTR("Unloading filament"); ////c=20
+const char MSG_UNLOAD_FILAMENT[] PROGMEM_I1 = ISTR("Unload filament"); ////MSG_UNLOAD_FILAMENT c=16
+const char MSG_UNLOADING_FILAMENT[] PROGMEM_I1 = ISTR("Unloading filament"); ////MSG_UNLOADING_FILAMENT c=20
 const char MSG_INFO_SCREEN[] PROGMEM_I1 = ISTR("Info screen"); ////MSG_INFO_SCREEN c=18
 const char MSG_WIZARD_CALIBRATION_FAILED[] PROGMEM_I1 = ISTR("Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."); ////MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 const char MSG_WIZARD_DONE[] PROGMEM_I1 = ISTR("All is done. Happy printing!"); ////MSG_WIZARD_DONE c=20 r=3
@@ -173,7 +173,7 @@ extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");///
 #endif
 
 //not internationalized messages
-const char MSG_AUTO_DEPLETE[] PROGMEM_N1 = "SpoolJoin"; ////MSG_AUTO_DEPLETE c=13
+const char MSG_SPOOL_JOIN[] PROGMEM_N1 = "SpoolJoin"; ////MSG_SPOOL_JOIN c=13
 const char MSG_FIRMWARE[] PROGMEM_N1 = "Firmware"; ////MSG_FIRMWARE c=8
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = "FlashAir"; ////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8
 const char MSG_PINDA[] PROGMEM_N1 = "PINDA"; ////MSG_PINDA c=5
