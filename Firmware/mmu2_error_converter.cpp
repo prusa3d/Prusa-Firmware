@@ -150,7 +150,7 @@ const char * const PrusaErrorButtonTitle(uint8_t bi){
 }
 
 const char * const PrusaErrorButtonMore(){
-    return btnMore;
+    return _R(MSG_BTN_MORE);
 }
 
 struct ResetOnExit {
