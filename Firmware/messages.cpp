@@ -54,7 +54,7 @@ const char MSG_SELECT_FILAMENT[] PROGMEM_I1 = ISTR("Select filament:"); ////MSG_
 const char MSG_LAST_PRINT[] PROGMEM_I1 = ISTR("Last print"); ////MSG_LAST_PRINT c=18
 const char MSG_LAST_PRINT_FAILURES[] PROGMEM_I1 = ISTR("Last print failures"); ////MSG_LAST_PRINT_FAILURES c=20
 const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////MSG_LOAD_FILAMENT c=17
-const char MSG_LOAD_TO_EXTRUDER[] PROGMEM_I1 = ISTR("Load to Extruder"); ////MSG_LOAD_TO_EXTRUDER c=18
+const char MSG_LOAD_TO_EXTRUDER[] PROGMEM_I1 = ISTR("Load to extruder"); ////MSG_LOAD_TO_EXTRUDER c=18
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////MSG_LOADING_FILAMENT c=20
 const char MSG_TESTING_FILAMENT[] PROGMEM_I1 = ISTR("Testing filament"); ////MSG_TESTING_FILAMENT c=20
 const char MSG_EJECT_FILAMENT[] PROGMEM_I1 = ISTR("Eject filament"); ////MSG_EJECT_FILAMENT c=17
@@ -159,8 +159,6 @@ const char MSG_TIMEOUT[] PROGMEM_I1 = ISTR("Timeout"); ////MSG_TIMEOUT c=12
 const char MSG_BRIGHT[] PROGMEM_I1 = ISTR("Bright"); ////MSG_BRIGHT c=6
 const char MSG_DIM[] PROGMEM_I1 = ISTR("Dim"); ////MSG_DIM c=6
 const char MSG_AUTO[] PROGMEM_I1 = ISTR("Auto"); ////MSG_AUTO c=6
-const char MSG_FS_V_03_OR_OLDER[] PROGMEM_I1 = ISTR("FS v0.3 or older"); ////MSG_FS_V_03_OR_OLDER c=18
-const char MSG_FS_V_04_OR_NEWER[] PROGMEM_I1 = ISTR("FS v0.4 or newer"); ////MSG_FS_V_04_OR_NEWER c=18
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 // Beware - the space at the beginning is necessary since it is reused in LCD menu items which are to be with a space
 const char MSG_IR_04_OR_NEWER[] PROGMEM_I1 = ISTR(" 0.4 or newer");////MSG_IR_04_OR_NEWER c=18
