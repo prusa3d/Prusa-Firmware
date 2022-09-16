@@ -52,7 +52,7 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     //! |MMU FW update needed|     <- title/header of the error: max 20 characters
     //! |prusa3d.com/ERR04504|     <- URL 20 characters
     //! |FI:1 FS:1  5>3 t201°|     <- status line, t is thermometer symbol
-    //! |>Retry  >Done >MoreW|     <- buttons
+    //! |>Retry >Done >MoreW |     <- buttons
     bool two_choices = false;
 
     // Read and determine what operations should be shown on the menu
@@ -144,6 +144,24 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
         }
 
         // Update '>' render only
+        //! @brief Button menu
+        //!
+        //! @code{.unparsed}
+        //! |01234567890123456789|
+        //! |                    |
+        //! |                    |
+        //! |                    |
+        //! |>(left)             |
+        //! ----------------------
+        //! Three choices 
+        //! |>(left)>(mid)>(righ)|
+        //! ----------------------
+        //! Two choises
+        //! ----------------------
+        //! |>(left)   >(mid)    |
+        //! ----------------------
+        //! @endcode
+        //
         lcd_set_cursor(0, 3);
         lcd_print(current_selection == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
         if (two_choices == false)
