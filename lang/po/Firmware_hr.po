@@ -15,6 +15,13 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
+#. MSG_DESC_CANNOT_MOVE c=20
+#. these errors have been disabled
+#: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
+#: ../../Firmware/mmu2/errors_list.h:245
+msgid " "
+msgstr ""
+
 #. MSG_IR_03_OR_OLDER c=18
 #: ../../Firmware/Filament_sensor.cpp:287
 #: ../../Firmware/Filament_sensor.cpp:362 ../../Firmware/messages.cpp:165
@@ -257,7 +264,7 @@ msgid "Calibration done"
 msgstr "Kalibracija gotova"
 
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:228
+#: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:266
 msgid "Cannot perform the action, filament is already loaded. Unload it first."
 msgstr ""
 
@@ -568,14 +575,14 @@ msgid "FINDA DIDNT TRIGGER"
 msgstr ""
 
 #. MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:197
+#: ../../Firmware/mmu2/errors_list.h:197 ../../Firmware/mmu2/errors_list.h:237
 msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:196
+#: ../../Firmware/mmu2/errors_list.h:196 ../../Firmware/mmu2/errors_list.h:236
 msgid ""
 "FINDA didn't trigger while loading the filament. Ensure the filament can "
 "move and FINDA works."
@@ -709,21 +716,21 @@ msgid "Filament sensor"
 msgstr "Senzor filamenta"
 
 #. MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:199
+#: ../../Firmware/mmu2/errors_list.h:199 ../../Firmware/mmu2/errors_list.h:239
 msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
 msgstr ""
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:198
+#: ../../Firmware/mmu2/errors_list.h:198 ../../Firmware/mmu2/errors_list.h:238
 msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the "
 "filament reached the fsensor and the sensor works."
 msgstr ""
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:201
+#: ../../Firmware/mmu2/errors_list.h:201 ../../Firmware/mmu2/errors_list.h:241
 msgid ""
 "Filament sensor triggered too early while loading to extruder. Check there "
 "isn't anything stuck in PTFE tube. Check that sensor reads properly."
@@ -954,7 +961,7 @@ msgstr ""
 "Umetnite filament (nemojte ga puniti) u ekstruder i zatim pritisnite gumb."
 
 #. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
-#: ../../Firmware/mmu2/errors_list.h:232
+#: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:270
 msgid ""
 "Internal runtime error. Try resetting the MMU unit or updating the firmware. "
 "If the issue persists, contact support."
@@ -1079,7 +1086,7 @@ msgid "MMU FW UPDATE NEEDED"
 msgstr ""
 
 #. MSG_DESC_QUEUE_FULL c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:230
+#: ../../Firmware/mmu2/errors_list.h:230 ../../Firmware/mmu2/errors_list.h:268
 msgid "MMU Firmware internal error, please reset the MMU."
 msgstr ""
 
@@ -1111,14 +1118,14 @@ msgid "MMU load fails"
 msgstr "Neusp. MMU punj"
 
 #. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
-#: ../../Firmware/mmu2/errors_list.h:227
+#: ../../Firmware/mmu2/errors_list.h:227 ../../Firmware/mmu2/errors_list.h:265
 msgid ""
 "MMU unit not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:226
+#: ../../Firmware/mmu2/errors_list.h:226 ../../Firmware/mmu2/errors_list.h:264
 msgid ""
 "MMU unit not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
@@ -1191,7 +1198,16 @@ msgid "Model"
 msgstr ""
 
 #. MSG_DESC_TMC c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:207
+#: ../../Firmware/mmu2/errors_list.h:207 ../../Firmware/mmu2/errors_list.h:246
+#: ../../Firmware/mmu2/errors_list.h:247 ../../Firmware/mmu2/errors_list.h:248
+#: ../../Firmware/mmu2/errors_list.h:249 ../../Firmware/mmu2/errors_list.h:250
+#: ../../Firmware/mmu2/errors_list.h:251 ../../Firmware/mmu2/errors_list.h:252
+#: ../../Firmware/mmu2/errors_list.h:253 ../../Firmware/mmu2/errors_list.h:254
+#: ../../Firmware/mmu2/errors_list.h:255 ../../Firmware/mmu2/errors_list.h:256
+#: ../../Firmware/mmu2/errors_list.h:257 ../../Firmware/mmu2/errors_list.h:258
+#: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:260
+#: ../../Firmware/mmu2/errors_list.h:261 ../../Firmware/mmu2/errors_list.h:262
+#: ../../Firmware/mmu2/errors_list.h:263
 msgid "More details online."
 msgstr ""
 
@@ -1665,7 +1681,7 @@ msgstr ""
 "vrijednost u postavkama. Print je otkazan."
 
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:200
+#: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:240
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
 msgstr ""
 
@@ -1708,7 +1724,7 @@ msgid "Rename"
 msgstr "Preimenuj"
 
 #. MSG_DESC_INVALID_TOOL c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:229
+#: ../../Firmware/mmu2/errors_list.h:229 ../../Firmware/mmu2/errors_list.h:267
 msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
@@ -2106,20 +2122,20 @@ msgid "Testing filament"
 msgstr ""
 
 #. MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:205
+#: ../../Firmware/mmu2/errors_list.h:205 ../../Firmware/mmu2/errors_list.h:244
 msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
-#: ../../Firmware/mmu2/errors_list.h:231
+#: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:269
 msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:202
+#: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
 msgstr ""
@@ -2186,7 +2202,7 @@ msgid "UNLOAD MANUALLY"
 msgstr ""
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
-#: ../../Firmware/mmu2/errors_list.h:233
+#: ../../Firmware/mmu2/errors_list.h:233 ../../Firmware/mmu2/errors_list.h:271
 msgid ""
 "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector "
 "is free. Check FINDA connection."
