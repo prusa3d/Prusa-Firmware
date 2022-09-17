@@ -196,6 +196,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_MECHANICAL_IDLER_CANNOT_HOME:
     case ERR_MECHANICAL_IDLER_CANNOT_MOVE:
     case ERR_MECHANICAL_PULLEY_CANNOT_MOVE:
+    case ERR_SYSTEM_UNLOAD_MANUALLY:
         switch (buttonSelectedOperation) {
         // may be allow move selector right and left in the future
         case ButtonOperations::Retry: // "Repeat action"
