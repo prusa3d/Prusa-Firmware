@@ -5095,7 +5095,7 @@ static inline void load_filament_wrapper(uint8_t i){
 static void mmu_load_filament_menu() {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    MENU_ITEM_FUNCTION_P(_i("Load all"), load_all_wrapper); ////MSG_LOAD_ALL c=18
+    MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_ALL), load_all_wrapper);
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
         MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_filament_wrapper, i); ////MSG_LOAD_FILAMENT c=16
     MENU_END();
@@ -5175,7 +5175,7 @@ static void mmu_load_to_extruder_menu() {
     if (bFilamentAction) {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_P(_i("Load all"), load_to_extruder_all_wrapper); ////MSG_LOAD_ALL c=18
+        MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_ALL), load_to_extruder_all_wrapper);
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
             MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_to_extruder_wrapper, i); ////MSG_LOAD_FILAMENT c=16
         MENU_END();

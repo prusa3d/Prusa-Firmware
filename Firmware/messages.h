@@ -179,6 +179,7 @@ extern const char MSG_PAUSED_THERMAL_ERROR[];
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[];
 #endif
+extern const char MSG_LOAD_ALL[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
