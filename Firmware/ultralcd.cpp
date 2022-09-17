@@ -669,11 +669,6 @@ void lcdui_print_status_line(void)
             break;
         }
     }
-
-    // Fill the rest of line to have nice and clean output
-    for(uint8_t fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
-        if ((lcd_status_message[fillspace] <= 31 ))
-            lcd_print(' ');
 }
 
 //! @brief Show Status Screen
