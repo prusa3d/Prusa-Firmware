@@ -94,7 +94,7 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 /* LCD message status */
 static LongTimer lcd_status_message_timeout;
 static uint8_t lcd_status_message_level;
-static char lcd_status_message[LCD_WIDTH + 1] = WELCOME_MSG;
+static char lcd_status_message[LCD_WIDTH + 1];
 
 /* !Configuration settings */
 
