@@ -64,7 +64,7 @@
 //#define LANG_MODE              0 // primary language only
 #define LANG_MODE              1 // sec. language support
 
-#define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes).
+#define LANG_SIZE_RESERVED     0x3500 // reserved space for secondary language (13568 bytes).
                                       // 0x3D00 Maximum 15616 bytes as it depends on xflash_layout.h
                                       // 16 Languages max. per group including stock 
 

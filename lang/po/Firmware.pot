@@ -575,7 +575,7 @@ msgstr ""
 
 #. MSG_TITLE_FSENSOR_DIDNT_TRIGGER c=20
 #: ../../Firmware/mmu2/errors_list.h:120 ../../Firmware/mmu2/errors_list.h:158
-msgid "FSENSOR DIDNT TRIGGER"
+msgid "FSENSOR DIDNT TRIGG."
 msgstr ""
 
 #. MSG_TITLE_FSENSOR_TOO_EARLY c=20
