@@ -15,13 +15,6 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#. MSG_DESC_CANNOT_MOVE c=20
-#. these errors have been disabled
-#: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
-#: ../../Firmware/mmu2/errors_list.h:245
-msgid " "
-msgstr ""
-
 #. MSG_IR_03_OR_OLDER c=18
 #: ../../Firmware/Filament_sensor.cpp:287
 #: ../../Firmware/Filament_sensor.cpp:362 ../../Firmware/messages.cpp:165
@@ -255,6 +248,12 @@ msgstr ""
 #. MSG_HOMEYZ_DONE c=20
 #: ../../Firmware/ultralcd.cpp:644
 msgid "Calibration done"
+msgstr ""
+
+#. MSG_DESC_CANNOT_MOVE c=20 r=4
+#: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
+#: ../../Firmware/mmu2/errors_list.h:245
+msgid "Can't move Selector or Idler."
 msgstr ""
 
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8

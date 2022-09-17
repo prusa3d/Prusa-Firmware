@@ -15,13 +15,6 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#. MSG_DESC_CANNOT_MOVE c=20
-#. these errors have been disabled
-#: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
-#: ../../Firmware/mmu2/errors_list.h:245
-msgid " "
-msgstr ""
-
 #. MSG_IR_03_OR_OLDER c=18
 #: ../../Firmware/Filament_sensor.cpp:287
 #: ../../Firmware/Filament_sensor.cpp:362 ../../Firmware/messages.cpp:165
@@ -263,6 +256,12 @@ msgstr "Kalibratie"
 #: ../../Firmware/ultralcd.cpp:644
 msgid "Calibration done"
 msgstr "Kalibratie klaar"
+
+#. MSG_DESC_CANNOT_MOVE c=20 r=4
+#: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
+#: ../../Firmware/mmu2/errors_list.h:245
+msgid "Can't move Selector or Idler."
+msgstr ""
 
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:266
@@ -578,7 +577,7 @@ msgstr "FILAMENT AL GELADEN"
 #. MSG_TITLE_FINDA_DIDNT_TRIGGER c=20
 #: ../../Firmware/mmu2/errors_list.h:118 ../../Firmware/mmu2/errors_list.h:156
 msgid "FINDA DIDNT TRIGGER"
-msgstr ""
+msgstr "FINDA TRIGGERDE NIET"
 
 #. MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:197 ../../Firmware/mmu2/errors_list.h:237
@@ -912,7 +911,7 @@ msgstr "Hoog verm."
 #: ../../Firmware/mmu2_progress_converter.cpp:29
 #: ../../Firmware/mmu2_progress_converter.cpp:60
 msgid "Homing"
-msgstr ""
+msgstr "Startpositie"
 
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4041
@@ -927,17 +926,17 @@ msgstr "Begin nu met z-kalibratie."
 #. MSG_TITLE_IDLER_CANNOT_HOME c=20
 #: ../../Firmware/mmu2/errors_list.h:127 ../../Firmware/mmu2/errors_list.h:164
 msgid "IDLER CANNOT HOME"
-msgstr ""
+msgstr "RIEMS. STARTPOS.FOUT"
 
 #. MSG_TITLE_IDLER_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:126 ../../Firmware/mmu2/errors_list.h:165
 msgid "IDLER CANNOT MOVE"
-msgstr ""
+msgstr "RIEMSCH. BEWEGT NIET"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:149 ../../Firmware/mmu2/errors_list.h:187
 msgid "INVALID TOOL"
-msgstr ""
+msgstr "ONGELDIG TOOL"
 
 #. MSG_ADDITIONAL_SHEETS c=20 r=9
 #: ../../Firmware/ultralcd.cpp:4115
@@ -1055,7 +1054,7 @@ msgstr "Live Z aanpassen"
 #: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5098
 #: ../../Firmware/ultralcd.cpp:5178
 msgid "Load All"
-msgstr ""
+msgstr "Laad alle"
 
 #. MSG_LOAD_FILAMENT c=17
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:5100
@@ -1067,7 +1066,7 @@ msgstr "Filament laden"
 #. MSG_LOAD_TO_EXTRUDER c=18
 #: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:5572
 msgid "Load to extruder"
-msgstr ""
+msgstr "Laad naar extruder"
 
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:5573
@@ -1101,12 +1100,12 @@ msgstr "Hard"
 #. MSG_TITLE_FW_UPDATE_NEEDED c=20
 #: ../../Firmware/mmu2/errors_list.h:151 ../../Firmware/mmu2/errors_list.h:189
 msgid "MMU FW UPDATE NEEDED"
-msgstr ""
+msgstr "MMU FW UPDATE NODIG"
 
 #. MSG_DESC_QUEUE_FULL c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:230 ../../Firmware/mmu2/errors_list.h:268
 msgid "MMU Firmware internal error, please reset the MMU."
-msgstr ""
+msgstr "MMU Firmware interne fout, reset de MMU."
 
 #. MSG_MMU_MODE c=8
 #: ../../Firmware/messages.cpp:138 ../../Firmware/ultralcd.cpp:4379
@@ -1117,12 +1116,12 @@ msgstr "MMU Mod"
 #. MSG_TITLE_MMU_NOT_RESPONDING c=20
 #: ../../Firmware/mmu2/errors_list.h:146 ../../Firmware/mmu2/errors_list.h:184
 msgid "MMU NOT RESPONDING"
-msgstr ""
+msgstr "MMU REAGEERT NIET"
 
 #. MSG_MMU_RESTORE_TEMP c=20 r=4
 #: ../../Firmware/mmu2.cpp:598
 msgid "MMU Retry: Restoring temperature..."
-msgstr ""
+msgstr "MMU Retry: Temperatuur herstellen..."
 
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1187
@@ -1231,13 +1230,13 @@ msgstr "Model"
 #: ../../Firmware/mmu2/errors_list.h:261 ../../Firmware/mmu2/errors_list.h:262
 #: ../../Firmware/mmu2/errors_list.h:263
 msgid "More details online."
-msgstr ""
+msgstr "Meer details online."
 
 #. MSG_BTN_MORE c=5
 #: ../../Firmware/mmu2/errors_list.h:287
 #: ../../Firmware/mmu2_error_converter.cpp:153
 msgid "More⏬"
-msgstr ""
+msgstr "Meer⏬"
 
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:95 ../../Firmware/ultralcd.cpp:6981
@@ -1269,7 +1268,7 @@ msgstr "As verplaatsen"
 #: ../../Firmware/mmu2_progress_converter.cpp:30
 #: ../../Firmware/mmu2_progress_converter.cpp:61
 msgid "Moving selector"
-msgstr ""
+msgstr "Bewege selector"
 
 #. MSG_NA c=3
 #: ../../Firmware/menu.cpp:196 ../../Firmware/messages.cpp:128
@@ -1362,7 +1361,7 @@ msgstr "Tuit d."
 #: ../../Firmware/mmu2_progress_converter.cpp:8
 #: ../../Firmware/mmu2_progress_converter.cpp:34
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #. MSG_OFF c=3
 #: ../../Firmware/SpoolJoin.cpp:40 ../../Firmware/menu.cpp:467
@@ -1453,13 +1452,13 @@ msgstr ""
 #. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:122 ../../Firmware/mmu2/errors_list.h:160
 msgid "PULLEY CANNOT MOVE"
-msgstr ""
+msgstr "RIEMSCH. BEWEGT NIET"
 
 #. MSG_PROGRESS_PARK_SELECTOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:26
 #: ../../Firmware/mmu2_progress_converter.cpp:57
 msgid "Parking selector"
-msgstr ""
+msgstr "Parkere selector"
 
 #. MSG_PAUSE c=5
 #: ../../Firmware/messages.cpp:154 ../../Firmware/ultralcd.cpp:4248
@@ -1476,7 +1475,7 @@ msgstr "Print pauzeren"
 #: ../../Firmware/mmu2_progress_converter.cpp:24
 #: ../../Firmware/mmu2_progress_converter.cpp:55
 msgid "Performing cut"
-msgstr ""
+msgstr "Voer cut uit"
 
 #. MSG_PAPER c=20 r=10
 #: ../../Firmware/Marlin_main.cpp:3306 ../../Firmware/messages.cpp:72
@@ -1639,7 +1638,7 @@ msgstr "Opwarmen uitwerpen"
 #: ../../Firmware/mmu2_progress_converter.cpp:22
 #: ../../Firmware/mmu2_progress_converter.cpp:53
 msgid "Preparing blade"
-msgstr ""
+msgstr "Bereid mes voor"
 
 #. MSG_PRESS_KNOB c=20
 #: ../../Firmware/ultralcd.cpp:1809
@@ -1709,18 +1708,19 @@ msgstr ""
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:240
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
-msgstr ""
+msgstr "Pulley motor is vastgelopen. Controleer of de poelie kan bewegen en "
+"controleer de bedrading."
 
 #. MSG_PROGRESS_PUSH_FILAMENT c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:23
 #: ../../Firmware/mmu2_progress_converter.cpp:54
 msgid "Pushing filament"
-msgstr ""
+msgstr "Duwe filament"
 
 #. MSG_TITLE_QUEUE_FULL c=20
 #: ../../Firmware/mmu2/errors_list.h:150 ../../Firmware/mmu2/errors_list.h:188
 msgid "QUEUE FULL"
-msgstr ""
+msgstr "QUEUE VOL"
 
 #. MSG_RPI_PORT c=13
 #: ../../Firmware/messages.cpp:143 ../../Firmware/ultralcd.cpp:4805
@@ -1754,6 +1754,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
+"De gevraagde filament tool is niet beschikbaar op deze hardware. Controleer "
+"de G-code voor filament index buiten bereik (T0-T4)."
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:2754
@@ -1764,7 +1766,7 @@ msgstr "Reset"
 #. MSG_BTN_RESTART_MMU c=9
 #: ../../Firmware/mmu2/errors_list.h:283 ../../Firmware/mmu2/errors_list.h:293
 msgid "Reset MMU"
-msgstr ""
+msgstr "Reset MMU"
 
 #. MSG_CALIBRATE_BED_RESET c=18
 #: ../../Firmware/ultralcd.cpp:4888
@@ -1786,18 +1788,18 @@ msgstr "Hervatten print"
 #: ../../Firmware/mmu2_progress_converter.cpp:28
 #: ../../Firmware/mmu2_progress_converter.cpp:59
 msgid "Retract from FINDA"
-msgstr ""
+msgstr "Intrekken van FINDA"
 
 #. MSG_BTN_RETRY c=5
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
 msgid "Retry"
-msgstr ""
+msgstr "Retry"
 
 #. MSG_PROGRESS_RETURN_SELECTOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:25
 #: ../../Firmware/mmu2_progress_converter.cpp:56
 msgid "Returning selector"
-msgstr ""
+msgstr "Selctor terugrijden"
 
 #. MSG_RIGHT c=10
 #: ../../Firmware/ultralcd.cpp:2495
@@ -1828,12 +1830,12 @@ msgstr "SD kaart"
 #. MSG_TITLE_SELECTOR_CANNOT_HOME c=20
 #: ../../Firmware/mmu2/errors_list.h:125 ../../Firmware/mmu2/errors_list.h:162
 msgid "SELECTOR CANNOT HOME"
-msgstr ""
+msgstr "SELC. STARTPOS. FOUT"
 
 #. MSG_TITLE_SELECTOR_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:124 ../../Firmware/mmu2/errors_list.h:163
 msgid "SELECTOR CANNOT MOVE"
-msgstr ""
+msgstr "SELECTOR BEWEG FOUT"
 
 #. MSG_STOPPED c=20
 #: ../../Firmware/Marlin_main.cpp:9706 ../../Firmware/messages.cpp:112
@@ -1894,7 +1896,7 @@ msgstr "Selecteer de temperatuur die overeenkomt met uw materiaal."
 #: ../../Firmware/mmu2_progress_converter.cpp:21
 #: ../../Firmware/mmu2_progress_converter.cpp:52
 msgid "Selecting fil. slot"
-msgstr ""
+msgstr "Selectere fil. slot"
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6522
@@ -2063,7 +2065,7 @@ msgstr "Staalplaten"
 #. MSG_BTN_STOP c=5
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:295
 msgid "Stop"
-msgstr ""
+msgstr "Stop"
 
 #. MSG_STOP_PRINT c=18
 #: ../../Firmware/messages.cpp:111 ../../Firmware/ultralcd.cpp:5537
@@ -2102,31 +2104,31 @@ msgstr "TM autotune mislukt"
 #: ../../Firmware/mmu2/errors_list.h:134 ../../Firmware/mmu2/errors_list.h:172
 #: ../../Firmware/mmu2/errors_list.h:173 ../../Firmware/mmu2/errors_list.h:174
 msgid "TMC DRIVER ERROR"
-msgstr ""
+msgstr "TMC FOUT"
 
 #. MSG_TITLE_TMC_DRIVER_RESET c=20
 #: ../../Firmware/mmu2/errors_list.h:137 ../../Firmware/mmu2/errors_list.h:175
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:177
 msgid "TMC DRIVER RESET"
-msgstr ""
+msgstr "TMC RESET"
 
 #. MSG_TITLE_TMC_DRIVER_SHORTED c=20
 #: ../../Firmware/mmu2/errors_list.h:143 ../../Firmware/mmu2/errors_list.h:181
 #: ../../Firmware/mmu2/errors_list.h:182 ../../Firmware/mmu2/errors_list.h:183
 msgid "TMC DRIVER SHORTED"
-msgstr ""
+msgstr "TMC KORTSLUITING"
 
 #. MSG_TITLE_TMC_OVERHEAT_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:131 ../../Firmware/mmu2/errors_list.h:169
 #: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:171
 msgid "TMC OVERHEAT ERROR"
-msgstr ""
+msgstr "TMC OVERHITTINGSFOUT"
 
 #. MSG_TITLE_TMC_UNDERVOLTAGE_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:140 ../../Firmware/mmu2/errors_list.h:178
 #: ../../Firmware/mmu2/errors_list.h:179 ../../Firmware/mmu2/errors_list.h:180
 msgid "TMC UNDERVOLTAGE ERR"
-msgstr ""
+msgstr "TMC ONDERVOLT. FOUT"
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2882
@@ -2146,13 +2148,15 @@ msgstr "Temperaturen"
 #. MSG_TESTING_FILAMENT c=20
 #: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2.cpp:426
 msgid "Testing filament"
-msgstr ""
+msgstr "Teste filament"
 
 #. MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:205 ../../Firmware/mmu2/errors_list.h:244
 msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
+"Het riemschijf kan niet goed bewegen. Controleer of er iets de beweging"
+" blokkeert."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:269
@@ -2160,12 +2164,14 @@ msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
+"De MMU meldt dat zijn FW-versie niet compatibel is met de firmware van"
+" de printer. Controleer of de MMU-firmware up-to-date is."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
-msgstr ""
+msgstr "De selector kan niet startpositie finden. Controleer of er iets in de weg zit."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:3940
@@ -2227,7 +2233,7 @@ msgstr "Fijnafstemming"
 #. MSG_TITLE_UNLOAD_MANUALLY c=20
 #: ../../Firmware/mmu2/errors_list.h:153 ../../Firmware/mmu2/errors_list.h:191
 msgid "UNLOAD MANUALLY"
-msgstr ""
+msgstr "ONTLAAD MANUEEL"
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:233 ../../Firmware/mmu2/errors_list.h:271
@@ -2235,11 +2241,13 @@ msgid ""
 "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector "
 "is free. Check FINDA connection."
 msgstr ""
+"Onverwachte FINDA-aflezing. Zorg ervoor dat er geen filament onder FINDA zit"
+" en dat de selecteur vrij is. Controleer de FINDA-verbinding."
 
 #. MSG_BTN_UNLOAD c=6
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
 msgid "Unload"
-msgstr ""
+msgstr "Ontla."
 
 #. MSG_UNLOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:115 ../../Firmware/ultralcd.cpp:5574
@@ -2258,13 +2266,13 @@ msgstr "Uitwerpen filament"
 #: ../../Firmware/mmu2_progress_converter.cpp:11
 #: ../../Firmware/mmu2_progress_converter.cpp:37
 msgid "Unloading to FINDA"
-msgstr ""
+msgstr "Ontlade naar FINDA"
 
 #. MSG_PROGRESS_UNLOAD_PULLEY c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:12
 #: ../../Firmware/mmu2_progress_converter.cpp:38
 msgid "Unloading to pulley"
-msgstr ""
+msgstr "Ontlade n. riemschi."
 
 #. MSG_FIL_FAILED c=20 r=5
 #: ../../Firmware/ultralcd.cpp:6265
@@ -2280,7 +2288,7 @@ msgstr "Spanning"
 #: ../../Firmware/mmu2/errors_list.h:128 ../../Firmware/mmu2/errors_list.h:166
 #: ../../Firmware/mmu2/errors_list.h:167 ../../Firmware/mmu2/errors_list.h:168
 msgid "WARNING TMC TOO HOT"
-msgstr ""
+msgstr "WAARSCH. TMC TE HEET"
 
 #. MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3551

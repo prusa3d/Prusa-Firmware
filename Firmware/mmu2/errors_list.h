@@ -200,7 +200,7 @@ static const char MSG_DESC_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament se
 static const char MSG_DESC_PULLEY_STALLED[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_STALLED c=20 r=8
 static const char MSG_DESC_FSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly."); ////MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 static const char MSG_DESC_SELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
-static const char MSG_DESC_CANNOT_MOVE[] PROGMEM_I1 = ISTR(" "); /////MSG_DESC_CANNOT_MOVE c=20 //these errors have been disabled
+static const char MSG_DESC_CANNOT_MOVE[] PROGMEM_I1 = ISTR("Can't move Selector or Idler."); /////MSG_DESC_CANNOT_MOVE c=20 r=4
 //static const char MSG_DESC_SELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Selector cannot move. Check for anything blocking its movement. Check the wiring is correct.");
 static const char MSG_DESC_IDLER_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Idler cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
 //static const char MSG_DESC_IDLER_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Idler cannot move properly. Check for anything blocking its movement. Check the wiring is correct.");
