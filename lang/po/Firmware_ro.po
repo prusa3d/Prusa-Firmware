@@ -720,7 +720,7 @@ msgstr "Incalzirea dezactivata de timer-ul de siguranta"
 msgid "Heating done."
 msgstr "Incalzirea gata."
 
-#. MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+#. MSG_WIZARD_WELCOME_SHIPPING c=20 r=12
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4050
 msgid ""
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short "

@@ -120,7 +120,7 @@ const char MSG_WIZARD_DONE[] PROGMEM_I1 = ISTR("All is done. Happy printing!"); 
 const char MSG_WIZARD_HEATING[] PROGMEM_I1 = ISTR("Preheating nozzle. Please wait."); ////MSG_WIZARD_HEATING c=20 r=3
 const char MSG_WIZARD_QUIT[] PROGMEM_I1 = ISTR("You can always resume the Wizard from Calibration -> Wizard."); ////MSG_WIZARD_QUIT c=20 r=8
 const char MSG_WIZARD_WELCOME[] PROGMEM_I1 = ISTR("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"); ////MSG_WIZARD_WELCOME c=20 r=7
-const char MSG_WIZARD_WELCOME_SHIPPING[] PROGMEM_I1 = ISTR("Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."); ////MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+const char MSG_WIZARD_WELCOME_SHIPPING[] PROGMEM_I1 = ISTR("Hi, I am your Original Prusa i3 printer. I will guide you through a short setup process, in which the Z-axis will be calibrated. Then, you will be ready to print."); ////MSG_WIZARD_WELCOME_SHIPPING c=20 r=12
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////MSG_YES c=4
 const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////MSG_V2_CALIBRATION c=18
 const char MSG_OFF[] PROGMEM_I1 = ISTR("Off"); ////MSG_OFF c=3

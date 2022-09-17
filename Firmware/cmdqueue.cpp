@@ -573,7 +573,7 @@ void get_command()
         // This is either an empty line, or a line with just a comment.
         // Continue to the following line, and continue accumulating the number of bytes
         // read from the sdcard into sd_count, 
-        // so that the lenght of the already read empty lines and comments will be added
+        // so that the length of the already read empty lines and comments will be added
         // to the following non-empty line. 
         return; // prevent cycling indefinitely - let manage_heaters do their job
       }

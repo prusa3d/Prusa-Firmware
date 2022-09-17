@@ -717,7 +717,7 @@ msgstr "Grzanie wylaczone przez wyl. czasowy"
 msgid "Heating done."
 msgstr "Grzanie zakonczone"
 
-#. MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
+#. MSG_WIZARD_WELCOME_SHIPPING c=20 r=12
 #: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4050
 msgid ""
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short "

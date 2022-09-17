@@ -1791,7 +1791,7 @@ void loop()
       // The first character in the block is the block type.      
       char *ptr = cmdbuffer + bufindr;
       if (*ptr == CMDBUFFER_CURRENT_TYPE_SDCARD) {
-        // To support power panic, move the lenght of the command on the SD card to a planner buffer.
+        // To support power panic, move the length of the command on the SD card to a planner buffer.
         union {
           struct {
               char lo;
