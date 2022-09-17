@@ -53,7 +53,7 @@ for lang in $LANGUAGES; do
     binfile="$TMPDIR/lang_$lang.bin"
 
     color 4 "compiling language \"$lang\" from $pofile" >&2
-    ./lang-check.py --map "$MAP" "$pofile"
+    ./lang-check.py --map "$MAP" "$pofile" --no-suggest
     if [ "$?" != 0 ]; then
         color 1 "$pofile: NG! - translation contains warnings or errors" >&2
     fi
@@ -61,8 +61,9 @@ for lang in $LANGUAGES; do
     ./lang-build.py "$MAP" "$pofile" "$binfile"
 
     # ensure each catalog fits the reserved size
-    if [[ $(stat -c '%s' "$binfile") -gt $maxsize ]]; then
-        color 1 "$pofile: NG! - language data exceeds $maxsize bytes" >&2
+    currentsize=$(stat -c '%s' "$binfile")
+    if [[ $currentsize -gt $maxsize ]]; then
+        color 1 "$pofile: NG! - language data exceeds $maxsize bytes, it uses $currentsize" >&2
         finish 1
     fi
 done
