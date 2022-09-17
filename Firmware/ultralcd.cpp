@@ -7518,6 +7518,9 @@ void ultralcd_init()
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
   lcd_encoder_diff = 0;
+
+  // Initialise status line
+  lcd_setstatuspgm(MSG_WELCOME);
 }
 
 void lcd_ignore_click(bool b)
