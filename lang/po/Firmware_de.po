@@ -579,8 +579,9 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
-"Die FINDA schaltete sich beim Entladen nicht aus. Versuchen Sie, Fil. manuell zu"
-" entladen. Überprüfen Sie, dass sich Fil. bewegen kann und die FINDA funktioniert."
+"Die FINDA schaltete sich beim Entladen nicht aus. Versuchen Sie, Fil. "
+"manuell zu entladen. Überprüfen Sie, dass sich Fil. bewegen kann und die "
+"FINDA funktioniert."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:196
@@ -724,8 +725,8 @@ msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
 msgstr ""
-"Der FSensor hat sich beim Entladen des Fil. nicht abgeschaltet. Stellen"
-" Sie sicher, dass sich das Fil. bewegen kann und der Sensor funktioniert."
+"Der FSensor hat sich beim Entladen des Fil. nicht abgeschaltet. Stellen Sie "
+"sicher, dass sich das Fil. bewegen kann und der Sensor funktioniert."
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:198
@@ -733,8 +734,9 @@ msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the "
 "filament reached the fsensor and the sensor works."
 msgstr ""
-"Der FSensor hat beim Laden des Filaments nicht ausgelöst. Stellen Sie sicher, "
-"dass das Filament den Sensor erreicht hat und der Sensor funktioniert."
+"Der FSensor hat beim Laden des Filaments nicht ausgelöst. Stellen Sie "
+"sicher, dass das Filament den Sensor erreicht hat und der Sensor "
+"funktioniert."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:201
@@ -1049,9 +1051,10 @@ msgid "Live adjust Z"
 msgstr "Z einstellen"
 
 #. MSG_LOAD_ALL c=18
-#: ../../Firmware/ultralcd.cpp:5098 ../../Firmware/ultralcd.cpp:5178
-msgid "Load all"
-msgstr "Alle laden"
+#: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5098
+#: ../../Firmware/ultralcd.cpp:5178
+msgid "Load All"
+msgstr ""
 
 #. MSG_LOAD_FILAMENT c=17
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:5100
@@ -1147,8 +1150,9 @@ msgid ""
 "MMU unit not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"MMU-Einheit antwortet nicht. Überprüfen Sie die Verkabelung und die Anschlüsse. "
-"Wenn das Problem weiterhin besteht, wenden Sie sich an den Support."
+"MMU-Einheit antwortet nicht. Überprüfen Sie die Verkabelung und die "
+"Anschlüsse. Wenn das Problem weiterhin besteht, wenden Sie sich an den "
+"Support."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1679
@@ -1755,6 +1759,11 @@ msgstr ""
 msgid "Reset"
 msgstr "Reset"
 
+#. MSG_BTN_RESTART_MMU c=9
+#: ../../Firmware/mmu2/errors_list.h:283 ../../Firmware/mmu2/errors_list.h:293
+msgid "Reset MMU"
+msgstr "Reset MMU"
+
 #. MSG_CALIBRATE_BED_RESET c=18
 #: ../../Firmware/ultralcd.cpp:4888
 msgid "Reset XYZ calibr."
@@ -1797,11 +1806,6 @@ msgstr "Rechts"
 #: ../../Firmware/ultralcd.cpp:2751
 msgid "Right side[μm]"
 msgstr "Rechts [μm]"
-
-#. MSG_BTN_RESTART_MMU c=9
-#: ../../Firmware/mmu2/errors_list.h:283 ../../Firmware/mmu2/errors_list.h:293
-msgid "Reset MMU"
-msgstr "Reset MMU"
 
 #. MSG_WIZARD_RERUN c=20 r=7
 #: ../../Firmware/ultralcd.cpp:3857
@@ -2142,7 +2146,7 @@ msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
 "Die Spannrolle kann die Startposition nicht richtig erreichen. Prüfen Sie, "
-"ob irgendetwas seine Bewegung blockiert.
+"ob irgendetwas seine Bewegung blockiert."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:231
@@ -2150,17 +2154,17 @@ msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
-"Die MMU-Einheit meldet, dass ihre FW-Version nicht mit der Firmware"
-" des Druckers kompatibel ist. Stellen Sie sicher, dass die "
-"MMU-Firmware auf dem neuesten Stand ist."
+"Die MMU-Einheit meldet, dass ihre FW-Version nicht mit der Firmware des "
+"Druckers kompatibel ist. Stellen Sie sicher, dass die MMU-Firmware auf dem "
+"neuesten Stand ist."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:202
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
 msgstr ""
-"Der Selektor kann die Startposition nicht richtig erreichen. Prüfen Sie, "
-"ob irgendetwas seine Bewegung blockiert.
+"Der Selektor kann die Startposition nicht richtig erreichen. Prüfen Sie, ob "
+"irgendetwas seine Bewegung blockiert."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:3940
@@ -2535,6 +2539,9 @@ msgstr "🔃Aktualisiere"
 
 #~ msgid "Fix the issue and then press button on MMU unit."
 #~ msgstr "Beseitigen Sie das Problem und drücken Sie dann den Knopf am MMU."
+
+#~ msgid "Load all"
+#~ msgstr "Alle laden"
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117 Erste-Schicht Kal."
