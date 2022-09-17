@@ -993,8 +993,9 @@ msgid "Live adjust Z"
 msgstr ""
 
 #. MSG_LOAD_ALL c=18
-#: ../../Firmware/ultralcd.cpp:5098 ../../Firmware/ultralcd.cpp:5178
-msgid "Load all"
+#: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5098
+#: ../../Firmware/ultralcd.cpp:5178
+msgid "Load All"
 msgstr ""
 
 #. MSG_LOAD_FILAMENT c=17
@@ -1670,6 +1671,11 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
+#. MSG_BTN_RESTART_MMU c=9
+#: ../../Firmware/mmu2/errors_list.h:283 ../../Firmware/mmu2/errors_list.h:293
+msgid "Reset MMU"
+msgstr ""
+
 #. MSG_CALIBRATE_BED_RESET c=18
 #: ../../Firmware/ultralcd.cpp:4888
 msgid "Reset XYZ calibr."
@@ -1711,11 +1717,6 @@ msgstr ""
 #. MSG_BED_CORRECTION_RIGHT c=14
 #: ../../Firmware/ultralcd.cpp:2751
 msgid "Right side[μm]"
-msgstr ""
-
-#. MSG_BTN_RESTART_MMU c=9
-#: ../../Firmware/mmu2/errors_list.h:283 ../../Firmware/mmu2/errors_list.h:293
-msgid "Reset MMU"
 msgstr ""
 
 #. MSG_WIZARD_RERUN c=20 r=7
