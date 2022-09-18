@@ -165,61 +165,33 @@ static bool cmdqueue_could_enqueue_back(size_t len_asked, bool atomic_update = f
         // Full buffer.
         return false;
 
-    if (serial_count > 0) {
-        // If there is some data stored starting at bufindw, len_asked is certainly smaller than
-        // the allocated data buffer. Try to reserve a new buffer and to move the already received
-        // serial data.
-        // How much memory to reserve for the commands pushed to the front?
-        // End of the queue, when pushing to the end.
-        size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
-        if (bufindw < bufindr)
-            // Simple case. There is a contiguous space between the write buffer and the read buffer.
-            return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
-        // Otherwise the free space is split between the start and end.
-        if (// Could one fit to the end, including the reserve?
-            endw + CMDBUFFER_RESERVE_FRONT <= sizeof(cmdbuffer) ||
-            // Could one fit to the end, and the reserve to the start?
-            (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
-            return true;
-        // Could one fit both to the start?
-        if (len_asked + (1 + CMDHDRSIZE) + CMDBUFFER_RESERVE_FRONT <= bufindr) {
-            // Mark the rest of the buffer as used.
-            memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
-            // and point to the start.
-            // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
-            if (atomic_update)
-                cli();
-            bufindw = 0;
-            if (atomic_update)
-                sei();
-            return true;
-        }
-    } else {
-        // How much memory to reserve for the commands pushed to the front?
-        // End of the queue, when pushing to the end.
-        size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
-        if (bufindw < bufindr)
-            // Simple case. There is a contiguous space between the write buffer and the read buffer.
-            return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
-        // Otherwise the free space is split between the start and end.
-        if (// Could one fit to the end, including the reserve?
-            endw + CMDBUFFER_RESERVE_FRONT <= sizeof(cmdbuffer) ||
-            // Could one fit to the end, and the reserve to the start?
-            (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
-            return true;
-        // Could one fit both to the start?
-        if (len_asked + (1 + CMDHDRSIZE) + CMDBUFFER_RESERVE_FRONT <= bufindr) {
-            // Mark the rest of the buffer as used.
-            memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
-            // and point to the start.
-            // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
-            if (atomic_update)
-                cli();
-            bufindw = 0;
-            if (atomic_update)
-                sei();
-            return true;
-        }
+    // If there is some data stored starting at bufindw, len_asked is certainly smaller than
+    // the allocated data buffer. Try to reserve a new buffer and to move the already received
+    // serial data.
+    // How much memory to reserve for the commands pushed to the front?
+    // End of the queue, when pushing to the end.
+    size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
+    if (bufindw < bufindr)
+        // Simple case. There is a contiguous space between the write buffer and the read buffer.
+        return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
+    // Otherwise the free space is split between the start and end.
+    if (// Could one fit to the end, including the reserve?
+        endw + CMDBUFFER_RESERVE_FRONT <= sizeof(cmdbuffer) ||
+        // Could one fit to the end, and the reserve to the start?
+        (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
+        return true;
+    // Could one fit both to the start?
+    if (len_asked + (1 + CMDHDRSIZE) + CMDBUFFER_RESERVE_FRONT <= bufindr) {
+        // Mark the rest of the buffer as used.
+        memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
+        // and point to the start.
+        // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
+        if (atomic_update)
+            cli();
+        bufindw = 0;
+        if (atomic_update)
+            sei();
+        return true;
     }
     return false;
 }
