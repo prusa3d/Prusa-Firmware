@@ -156,7 +156,7 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
         //! Three choices 
         //! |>(left)>(mid)>(righ)|
         //! ----------------------
-        //! Two choises
+        //! Two choices
         //! ----------------------
         //! |>(left)   >(mid)    |
         //! ----------------------
