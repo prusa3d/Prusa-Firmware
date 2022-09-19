@@ -1,3 +1,4 @@
+#include <util/atomic.h>
 #include "cmdqueue.h"
 #include "cardreader.h"
 #include "ultralcd.h"
@@ -155,7 +156,7 @@ static bool cmdqueue_could_enqueue_front(size_t len_asked)
 // len_asked does not contain the zero terminator size.
 // This function may update bufindw, therefore for the power panic to work, this function must be called
 // with the interrupts disabled!
-static bool cmdqueue_could_enqueue_back(size_t len_asked, bool atomic_update = false)
+static bool cmdqueue_could_enqueue_back(size_t len_asked)
 {
     // MAX_CMD_SIZE has to accommodate the zero terminator.
     if (len_asked >= MAX_CMD_SIZE)
@@ -186,11 +187,7 @@ static bool cmdqueue_could_enqueue_back(size_t len_asked, bool atomic_update = f
         memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
         // and point to the start.
         // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
-        if (atomic_update)
-            cli();
-        bufindw = 0;
-        if (atomic_update)
-            sei();
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { bufindw = 0; }
         return true;
     }
     return false;
@@ -343,7 +340,7 @@ void repeatcommand_front()
 void get_command()
 {
     // Test and reserve space for the new command string.
-    if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1, true))
+    if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1))
       return;
 
 	if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
@@ -489,7 +486,7 @@ void get_command()
       serial_count = 0; //clear buffer
       // Don't call cmdqueue_could_enqueue_back if there are no characters waiting
       // in the queue, as this function will reserve the memory.
-      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
+      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
           return;
     } // end of "end of line" processing
     else {
@@ -587,7 +584,7 @@ void get_command()
       if(card.eof()) break;
 
       // The following line will reserve buffer space if available.
-      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
+      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
           return;
     }
     else
