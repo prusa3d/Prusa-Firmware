@@ -156,7 +156,7 @@ static bool cmdqueue_could_enqueue_front(size_t len_asked)
 // len_asked does not contain the zero terminator size.
 // This function may update bufindw, therefore for the power panic to work, this function must be called
 // with the interrupts disabled!
-static bool cmdqueue_could_enqueue_back(size_t len_asked)
+static bool __attribute__((noinline)) cmdqueue_could_enqueue_back(size_t len_asked)
 {
     // MAX_CMD_SIZE has to accommodate the zero terminator.
     if (len_asked >= MAX_CMD_SIZE)
