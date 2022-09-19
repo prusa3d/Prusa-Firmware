@@ -17,8 +17,8 @@ extern PGM_P sPrinterName;
 
 // Firmware version
 #define FW_MAJOR 3
-#define FW_MINOR 11
-#define FW_REVISION 1
+#define FW_MINOR 13
+#define FW_REVISION 0
 //#define FW_FLAVOR RC      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
 //#define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed.
 #ifndef FW_FLAVOR
