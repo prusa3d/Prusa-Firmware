@@ -261,7 +261,7 @@ msgstr "Kalibratie klaar"
 #: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
 #: ../../Firmware/mmu2/errors_list.h:245
 msgid "Can't move Selector or Idler."
-msgstr "Kan selector of riemschijf niet bewegen."
+msgstr "Kan selector of spanrol niet bewegen."
 
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:266
@@ -436,7 +436,7 @@ msgstr "Motoren uit"
 #: ../../Firmware/mmu2_progress_converter.cpp:36
 #: ../../Firmware/mmu2_progress_converter.cpp:44
 msgid "Disengaging idler"
-msgstr "Ontkoppel rondesel"
+msgstr "Ontkoppel spanrol"
 
 #. MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: ../../Firmware/Marlin_main.cpp:1530 ../../Firmware/Marlin_main.cpp:3400
@@ -531,7 +531,7 @@ msgstr "Eindstops"
 #: ../../Firmware/mmu2_progress_converter.cpp:35
 #: ../../Firmware/mmu2_progress_converter.cpp:45
 msgid "Engaging idler"
-msgstr "Koppeln rolspel"
+msgstr "Koppel spanrol"
 
 #. MSG_EXTRUDER c=17
 #: ../../Firmware/Marlin_main.cpp:3519 ../../Firmware/Tcodes.cpp:35
@@ -926,12 +926,12 @@ msgstr "Begin nu met z-kalibratie."
 #. MSG_TITLE_IDLER_CANNOT_HOME c=20
 #: ../../Firmware/mmu2/errors_list.h:127 ../../Firmware/mmu2/errors_list.h:164
 msgid "IDLER CANNOT HOME"
-msgstr "RIEMS. STARTPOS.FOUT"
+msgstr "SPANROL STARTPOSFOUT"
 
 #. MSG_TITLE_IDLER_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:126 ../../Firmware/mmu2/errors_list.h:165
 msgid "IDLER CANNOT MOVE"
-msgstr "RIEMSCH. BEWEGT NIET"
+msgstr "SPANROL BEWEGT NIET"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:149 ../../Firmware/mmu2/errors_list.h:187
@@ -1540,7 +1540,7 @@ msgstr "Laad a.u.b. eerst filament."
 #. MSG_CHECK_IDLER c=20 r=5
 #: ../../Firmware/Marlin_main.cpp:3581
 msgid "Please open idler and remove filament manually."
-msgstr "Open rondsel en verwijder filament handmatig."
+msgstr "Open spanrol en verwijder filament handmatig."
 
 #. MSG_PLACE_STEEL_SHEET c=20 r=5
 #: ../../Firmware/mesh_bed_calibration.cpp:2795 ../../Firmware/messages.cpp:74
@@ -1708,7 +1708,7 @@ msgstr ""
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:240
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
-msgstr "Pulley motor is vastgelopen. Controleer of de poelie kan bewegen en "
+msgstr "Riemschijf motor is vastgelopen. Controleer of de poelie kan bewegen en "
 "controleer de bedrading."
 
 #. MSG_PROGRESS_PUSH_FILAMENT c=20
@@ -1830,7 +1830,7 @@ msgstr "SD kaart"
 #. MSG_TITLE_SELECTOR_CANNOT_HOME c=20
 #: ../../Firmware/mmu2/errors_list.h:125 ../../Firmware/mmu2/errors_list.h:162
 msgid "SELECTOR CANNOT HOME"
-msgstr "SELC. STARTPOS. FOUT"
+msgstr "SELECTOR STARTP_FOUT"
 
 #. MSG_TITLE_SELECTOR_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:124 ../../Firmware/mmu2/errors_list.h:163
@@ -2155,7 +2155,7 @@ msgstr "Teste filament"
 msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
-"Het riemschijf kan niet goed bewegen. Controleer of er iets de beweging"
+"Het spanrol kan niet goed bewegen. Controleer of er iets de beweging"
 " blokkeert."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
