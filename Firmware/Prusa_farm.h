@@ -10,6 +10,8 @@
 #define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
 #define NC_BUTTON_LONG_PRESS 15 //time in s
 
+//#define FARM_CONNECT_MESSAGE
+
 #ifdef PRUSA_FARM
 extern uint8_t farm_mode;
 #else

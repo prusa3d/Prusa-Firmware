@@ -359,10 +359,10 @@ void IR_sensor_analog::IR_ANALOG_Check(SensorRevision isVersion, SensorRevision 
             printf_IRSensorAnalogBoardChange();
             switch (switchTo) {
             case SensorRevision::_Old:
-                lcd_setstatuspgm(_T(MSG_FS_V_03_OR_OLDER)); ////MSG_FS_V_03_OR_OLDER c=18
+                lcd_setstatuspgm(_T(MSG_IR_03_OR_OLDER));
                 break;
             case SensorRevision::_Rev04:
-                lcd_setstatuspgm(_T(MSG_FS_V_04_OR_NEWER)); ////MSG_FS_V_04_OR_NEWER c=18
+                lcd_setstatuspgm(_T(MSG_IR_04_OR_NEWER));
                 break;
             default:
                 break;

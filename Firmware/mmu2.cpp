@@ -429,7 +429,7 @@ void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_print(slot + 1);
 }
 
-bool MMU2::load_to_bondtech(uint8_t index){
+bool MMU2::load_to_extruder(uint8_t index){
     FullScreenMsg(_T(MSG_TESTING_FILAMENT), index);
     tool_change(index);
     st_synchronize();
@@ -602,7 +602,8 @@ void MMU2::ResumeHotendTemp() {
         SERIAL_ECHOLN(resume_hotend_temp);
         mmu_print_saved &= ~(SavedState::Cooldown);
         setTargetHotend(resume_hotend_temp, active_extruder);
-        lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); // better report the event and let the GUI do its work somewhere else
+        lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); ////MSG_MMU_RESTORE_TEMP c=20 r=4
+        //@todo better report the event and let the GUI do its work somewhere else
         ReportErrorHookSensorLineRender();
         waitForHotendTargetTemp(1000, []{
             ReportErrorHookDynamicRender();
@@ -673,7 +674,7 @@ void MMU2::CheckUserInput(){
 void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
     mmu_print_saved = SavedState::None;
 
-    KEEPALIVE_STATE(PAUSED_FOR_USER);
+    KEEPALIVE_STATE(IN_PROCESS);
 
     LongTimer nozzleTimeout;
 
@@ -822,7 +823,7 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
 
     if( ec != lastErrorCode ){ // deduplicate: only report changes in error codes into the log
         lastErrorCode = ec;
-        LogErrorEvent_P( _T(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))) );
+        LogErrorEvent_P( _O(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))) );
     }
 
     static_assert(mmu2Magic[0] == 'M' 
@@ -837,7 +838,7 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
 
 void MMU2::ReportProgress(ProgressCode pc) {
     ReportProgressHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)pc);
-    LogEchoEvent_P( _T(ProgressCodeToText((uint16_t)pc)) );
+    LogEchoEvent_P( _O(ProgressCodeToText((uint16_t)pc)) );
 }
 
 void MMU2::OnMMUProgressMsg(ProgressCode pc){
@@ -895,7 +896,7 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc){
         if (loadFilamentStarted) {
             switch (WhereIsFilament()) {
             case FilamentState::AT_FSENSOR:
-                // fsensor triggered, finish FeedingToBondtech state
+                // fsensor triggered, finish FeedingToExtruder state
                 loadFilamentStarted = false;
                 // After the MMU knows the FSENSOR is triggered it will:
                 // 1. Push the filament by additional 30mm (see fsensorToNozzle)

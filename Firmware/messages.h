@@ -60,7 +60,7 @@ extern const char MSG_SELECT_FILAMENT[];
 extern const char MSG_LAST_PRINT[];
 extern const char MSG_LAST_PRINT_FAILURES[];
 extern const char MSG_LOAD_FILAMENT[];
-extern const char MSG_LOAD_TO_BONDTECH[];
+extern const char MSG_LOAD_TO_EXTRUDER[];
 extern const char MSG_LOADING_FILAMENT[];
 extern const char MSG_TESTING_FILAMENT[];
 extern const char MSG_M117_V2_CALIBRATION[];
@@ -134,7 +134,7 @@ extern const char MSG_WELCOME[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
 extern const char MSG_NA[];
-extern const char MSG_AUTO_DEPLETE[];
+extern const char MSG_SPOOL_JOIN[];
 extern const char MSG_CUTTER[];
 extern const char MSG_NONE[];
 extern const char MSG_WARN[];
@@ -170,8 +170,6 @@ extern const char MSG_TIMEOUT[];
 extern const char MSG_BRIGHT[];
 extern const char MSG_DIM[];
 extern const char MSG_AUTO[];
-extern const char MSG_FS_V_03_OR_OLDER[];
-extern const char MSG_FS_V_04_OR_NEWER[];
 #if (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];
@@ -181,6 +179,7 @@ extern const char MSG_PAUSED_THERMAL_ERROR[];
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[];
 #endif
+extern const char MSG_LOAD_ALL[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

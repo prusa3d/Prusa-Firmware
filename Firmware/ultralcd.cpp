@@ -122,7 +122,7 @@ static void lcd_v2_calibration();
 
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
-static void mmu_load_to_bondtech_menu();
+static void mmu_load_to_extruder_menu();
 static void preheat_or_continue();
 
 #ifdef MMU_HAS_CUTTER
@@ -1136,7 +1136,6 @@ static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize
 //! |                    |
 //! ----------------------
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 void lcd_menu_extruder_info()                     // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
 
@@ -1179,7 +1178,6 @@ static void lcd_menu_fails_stats_mmu()
 //! |                    |
 //! ----------------------
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_mmu_print()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1238,7 +1236,6 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" " %-16.16S%-
 //! | Crash   X:000 Y:000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_total()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1263,18 +1260,6 @@ static void lcd_menu_fails_stats_total()
 //! | Crash   X 000 Y 000|	MSG_CRASH c=7
 //! ----------------------
 //! @endcode
-//! @brief Show Last Print Failures Statistics with PAT9125
-//!
-//! @code{.unparsed}
-//! |01234567890123456789|
-//! |Last print failures |	MSG_LAST_PRINT_FAILURES c=20
-//! | Power failures  000|	MSG_POWER_FAILURES c=15
-//! | Runouts H 000 S 000|	MSG_RUNOUTS c=7
-//! | Crash   X:000 Y:000|	MSG_CRASH c=7
-//! ----------------------
-//! @endcode
-
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 //! @todo leptun refactor this piece of code please
 static void lcd_menu_fails_stats_print()
 {
@@ -1284,25 +1269,11 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
     lcd_home();
-#if FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
-    // On the MK3 include detailed PAT9125 statistics about soft failures
-    lcd_printf_P(PSTR("%S\n"
-                      " %-16.16S%-3d\n"
-                      " %-7.7S: %-3d\n"
-                      " %-7.7S X %-3d Y %-3d"),
-                 _T(MSG_LAST_PRINT_FAILURES),
-                 _T(MSG_POWER_FAILURES), power,
-                 _i("Runouts"), filam, //MSG_RUNOUTS c=7
-                 _T(MSG_CRASH), crashX, crashY);
-#elif (FILAMENT_SENSOR_TYPE == FSENSOR_IR) || (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
     lcd_printf_P(failStatsFmt,
         _T(MSG_LAST_PRINT_FAILURES),
         _T(MSG_POWER_FAILURES), power,
         _T(MSG_FIL_RUNOUTS), filam,
         _T(MSG_CRASH), crashX, crashY);
-#else
-#error This menu should have a filament sensor defined
-#endif
     menu_back_if_clicked_fb();
 }
 
@@ -1347,7 +1318,6 @@ static const char failStatsFmt[] PROGMEM = "%S\n" " %-16.16S%-3d\n" "%S\n" " %-1
 //! | Fil. runouts    000|	MSG_FIL_RUNOUTS c=15
 //! ----------------------
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1426,7 +1396,6 @@ static void lcd_menu_temperatures_line(const char *ipgmLabel, int value){
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_temperatures()
 {
     lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1457,7 +1426,6 @@ static void lcd_menu_temperatures()
 //! | IR :         00.0V |  c=12 optional
 //! ----------------------
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_voltages()
 {
     lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1483,7 +1451,6 @@ static void lcd_menu_voltages()
 //! |                    |
 //! ----------------------
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_belt_status()
 {
 	lcd_home();
@@ -1846,7 +1813,7 @@ switch(eFilamentAction)
      case FilamentAction::Load:
      case FilamentAction::AutoLoad:
      case FilamentAction::MmuLoad:
-     case FilamentAction::MmuLoadBondtech:
+     case FilamentAction::MmuLoadExtruder:
           lcd_puts_P(_i("to load filament"));     ////MSG_TO_LOAD_FIL c=20
           break;
      case FilamentAction::UnLoad:
@@ -1886,7 +1853,7 @@ switch(eFilamentAction)
                enquecommand_P(PSTR("M702"));      // unload filament
                break;
           case FilamentAction::MmuLoad:
-          case FilamentAction::MmuLoadBondtech:
+          case FilamentAction::MmuLoadExtruder:
           case FilamentAction::MmuUnLoad:
           case FilamentAction::MmuEject:
           case FilamentAction::MmuCut:
@@ -1958,11 +1925,11 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             menu_back(nLevel);
             menu_submenu(mmu_load_to_nozzle_menu);
             break;
-        case FilamentAction::MmuLoadBondtech:
+        case FilamentAction::MmuLoadExtruder:
             nLevel = bFilamentPreheatState ? 1 : 2;
             bFilamentAction = true;
             menu_back(nLevel);
-            menu_submenu(mmu_load_to_bondtech_menu);
+            menu_submenu(mmu_load_to_extruder_menu);
             break;
         case FilamentAction::MmuUnLoad:
             nLevel = bFilamentPreheatState ? 1 : 2;
@@ -2018,7 +1985,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             case FilamentAction::Load:
             case FilamentAction::AutoLoad:
             case FilamentAction::MmuLoad:
-            case FilamentAction::MmuLoadBondtech:
+            case FilamentAction::MmuLoadExtruder:
                 lcd_puts_P(_i("Preheating to load")); ////MSG_PREHEATING_TO_LOAD c=20
                 if (once) raise_z_above(MIN_Z_FOR_LOAD);
                 break;
@@ -2375,7 +2342,6 @@ static void lcd_LoadFilament()
 //! |        00d 00h 00m |
 //! ----------------------
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations. Translations missing for "d"days, "h"ours, "m"inutes", "s"seconds".
 void lcd_menu_statistics()
 {
     lcd_timeoutToStatus.stop(); //infinite timeout
@@ -4295,7 +4261,7 @@ static void settingsSpoolJoin()
 {
     if (MMU2::mmu2.Enabled())
     {
-        MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
+        MENU_ITEM_TOGGLE_P(MSG_SPOOL_JOIN, SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
     }
 }
 
@@ -5129,7 +5095,7 @@ static inline void load_filament_wrapper(uint8_t i){
 static void mmu_load_filament_menu() {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    MENU_ITEM_FUNCTION_P(_i("Load all"), load_all_wrapper); ////MSG_LOAD_ALL c=18
+    MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_ALL), load_all_wrapper);
     for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
         MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_filament_wrapper, i); ////MSG_LOAD_FILAMENT c=16
     MENU_END();
@@ -5195,26 +5161,26 @@ static void mmu_cut_filament_menu() {
 }
 #endif //MMU_HAS_CUTTER
 
-static inline void load_to_bondtech_all_wrapper(){
+static inline void load_to_extruder_all_wrapper(){
     for(uint8_t i = 0; i < 5; ++i){
-        MMU2::mmu2.load_to_bondtech(i);
+        MMU2::mmu2.load_to_extruder(i);
     }
 }
 
-static inline void load_to_bondtech_wrapper(uint8_t i){
-    MMU2::mmu2.load_to_bondtech(i);
+static inline void load_to_extruder_wrapper(uint8_t i){
+    MMU2::mmu2.load_to_extruder(i);
 }
 
-static void mmu_load_to_bondtech_menu() {
+static void mmu_load_to_extruder_menu() {
     if (bFilamentAction) {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_P(_i("Load all"), load_to_bondtech_all_wrapper); ////MSG_LOAD_ALL c=18
+        MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_ALL), load_to_extruder_all_wrapper);
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_to_bondtech_wrapper, i); ////MSG_LOAD_FILAMENT c=16
+            MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', load_to_extruder_wrapper, i); ////MSG_LOAD_FILAMENT c=16
         MENU_END();
     } else {
-        eFilamentAction = FilamentAction::MmuLoadBondtech;
+        eFilamentAction = FilamentAction::MmuLoadExtruder;
         preheat_or_continue();
     }
 }
@@ -5578,14 +5544,14 @@ static void lcd_main_menu()
                 MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
             }
 #if SDCARDDETECT < 1
-        MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user////MSG_CNG_SDCARD c=18
+        MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user ////MSG_CNG_SDCARD c=18
 #endif //SDCARDDETECT
         }
     } else {
         bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
-        MENU_ITEM_SUBMENU_P(_i("No SD card"), lcd_sdcard_menu);////MSG_NO_CARD c=18
+        MENU_ITEM_SUBMENU_P(_i("No SD card"), lcd_sdcard_menu); ////MSG_NO_CARD c=18
 #if SDCARDDETECT < 1
-        MENU_ITEM_GCODE_P(_i("Init. SD card"), PSTR("M21")); // Manually initialize the SD-card via user interface////MSG_INIT_SDCARD c=18
+        MENU_ITEM_GCODE_P(_i("Init. SD card"), PSTR("M21")); // Manually initialize the SD-card via user interface ////MSG_INIT_SDCARD c=18
 #endif //SDCARDDETECT
     }
 #endif //SDSUPPORT
@@ -5603,7 +5569,7 @@ static void lcd_main_menu()
     if ( ! ( IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) ) ) {
         if (MMU2::mmu2.Enabled()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), mmu_load_filament_menu);
-            MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_TO_BONDTECH), mmu_load_to_bondtech_menu);
+            MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_TO_EXTRUDER), mmu_load_to_extruder_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
             MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FILAMENT), mmu_fil_eject_menu);

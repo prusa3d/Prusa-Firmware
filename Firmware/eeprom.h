@@ -216,7 +216,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| Sound mode: __once__								| ^				| ^
 | ^					| ^			| ^										| 02h 1			| ^						| Sound mode: __silent__							| ^				| ^
 | ^					| ^			| ^										| 03h 1			| ^						| Sound mode: __assist__							| ^				| ^
-| 0x0ED6 3798		| bool		| EEPROM_AUTO_DEPLETE					| 01h 1			| ffh 255				| MMU2/s autodeplete: __on__						| ???			| D3 Ax0ed6 C1
+| 0x0ED6 3798		| bool		| EEPROM_SPOOL_JOIN					| 01h 1			| ffh 255				| MMU2/s autodeplete: __on__						| ???			| D3 Ax0ed6 C1
 | ^					| ^			| ^										| 00h 0			| ^						| MMU2/s autodeplete: __off__						| ^				| ^
 | 0x0ED5 3797		| bool		| EEPROM_FSENS_RUNOUT_ENABLED			| 01h 1			| ffh 255		__P__	| Filament runout: __enabled__						| LCD menu		| D3 Ax0ed5 C1
 | ^					| ^			| ^										| 00h 0			| ^						| Filament runout: __disabled__						| LCD menu		| ^
@@ -494,9 +494,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 
 // Sound Mode
 #define EEPROM_SOUND_MODE (EEPROM_UVLO_TARGET_HOTEND-1) // uint8
-#define EEPROM_AUTO_DEPLETE (EEPROM_SOUND_MODE-1) //bool
+#define EEPROM_SPOOL_JOIN (EEPROM_SOUND_MODE-1) //bool
 
-#define EEPROM_FSENS_RUNOUT_ENABLED (EEPROM_AUTO_DEPLETE - 1) //bool
+#define EEPROM_FSENS_RUNOUT_ENABLED (EEPROM_SPOOL_JOIN - 1) //bool
 
 #define EEPROM_MMU_FAIL_TOT (EEPROM_FSENS_RUNOUT_ENABLED - 2) //uint16_t
 #define EEPROM_MMU_FAIL (EEPROM_MMU_FAIL_TOT - 1) //uint8_t
