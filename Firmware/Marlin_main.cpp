@@ -4285,11 +4285,11 @@ void process_commands()
 #endif //PRUSA_SN_SUPPORT
     else if(code_seen_P(PSTR("Fir"))){ // PRUSA Fir
 
-      SERIAL_PROTOCOLLN(FW_VERSION_FULL);
+      SERIAL_PROTOCOLLNPGM(FW_VERSION_FULL);
 
     } else if(code_seen_P(PSTR("Rev"))){ // PRUSA Rev
 
-      SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
+      SERIAL_PROTOCOLLNPGM(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
     } else if(code_seen_P(PSTR("Lang"))) { // PRUSA Lang
 	  lang_reset();
