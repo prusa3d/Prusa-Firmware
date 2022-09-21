@@ -94,7 +94,7 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 /* LCD message status */
 static LongTimer lcd_status_message_timeout;
 static uint8_t lcd_status_message_level;
-static char lcd_status_message[LCD_WIDTH + 1] = WELCOME_MSG;
+static char lcd_status_message[LCD_WIDTH + 1];
 
 /* !Configuration settings */
 
@@ -669,11 +669,6 @@ void lcdui_print_status_line(void)
             break;
         }
     }
-
-    // Fill the rest of line to have nice and clean output
-    for(uint8_t fillspace = 0; fillspace < LCD_WIDTH; fillspace++)
-        if ((lcd_status_message[fillspace] <= 31 ))
-            lcd_print(' ');
 }
 
 //! @brief Show Status Screen
@@ -7518,6 +7513,9 @@ void ultralcd_init()
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
   lcd_encoder_diff = 0;
+
+  // Initialise status line
+  lcd_setstatuspgm(MSG_WELCOME);
 }
 
 void lcd_ignore_click(bool b)

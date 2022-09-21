@@ -422,7 +422,7 @@
 #define TEMP_MODEL_C_thr 0.01 // C estimation iteration threshold
 #define TEMP_MODEL_C_itr 30   // C estimation iteration limit
 
-#define TEMP_MODEL_R 29.7     // initial guess for heatblock resistance (K/W)
+#define TEMP_MODEL_R 20.5     // initial guess for heatblock resistance (K/W)
 #define TEMP_MODEL_Rl 5       // R estimation lower limit
 #define TEMP_MODEL_Rh 50      // R estimation upper limit
 #define TEMP_MODEL_R_thr 0.01 // R estimation iteration threshold

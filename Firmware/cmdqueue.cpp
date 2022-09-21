@@ -1,3 +1,4 @@
+#include <util/atomic.h>
 #include "cmdqueue.h"
 #include "cardreader.h"
 #include "ultralcd.h"
@@ -26,10 +27,7 @@ bool comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
 ShortTimer serialTimeoutTimer;
-
-long gcode_N = 0;
 long gcode_LastN = 0;
-
 uint32_t sdpos_atomic = 0;
 
 
@@ -155,7 +153,7 @@ static bool cmdqueue_could_enqueue_front(size_t len_asked)
 // len_asked does not contain the zero terminator size.
 // This function may update bufindw, therefore for the power panic to work, this function must be called
 // with the interrupts disabled!
-static bool cmdqueue_could_enqueue_back(size_t len_asked, bool atomic_update = false)
+static bool __attribute__((noinline)) cmdqueue_could_enqueue_back(size_t len_asked)
 {
     // MAX_CMD_SIZE has to accommodate the zero terminator.
     if (len_asked >= MAX_CMD_SIZE)
@@ -165,61 +163,29 @@ static bool cmdqueue_could_enqueue_back(size_t len_asked, bool atomic_update = f
         // Full buffer.
         return false;
 
-    if (serial_count > 0) {
-        // If there is some data stored starting at bufindw, len_asked is certainly smaller than
-        // the allocated data buffer. Try to reserve a new buffer and to move the already received
-        // serial data.
-        // How much memory to reserve for the commands pushed to the front?
-        // End of the queue, when pushing to the end.
-        size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
-        if (bufindw < bufindr)
-            // Simple case. There is a contiguous space between the write buffer and the read buffer.
-            return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
-        // Otherwise the free space is split between the start and end.
-        if (// Could one fit to the end, including the reserve?
-            endw + CMDBUFFER_RESERVE_FRONT <= sizeof(cmdbuffer) ||
-            // Could one fit to the end, and the reserve to the start?
-            (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
-            return true;
-        // Could one fit both to the start?
-        if (len_asked + (1 + CMDHDRSIZE) + CMDBUFFER_RESERVE_FRONT <= bufindr) {
-            // Mark the rest of the buffer as used.
-            memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
-            // and point to the start.
-            // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
-            if (atomic_update)
-                cli();
-            bufindw = 0;
-            if (atomic_update)
-                sei();
-            return true;
-        }
-    } else {
-        // How much memory to reserve for the commands pushed to the front?
-        // End of the queue, when pushing to the end.
-        size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
-        if (bufindw < bufindr)
-            // Simple case. There is a contiguous space between the write buffer and the read buffer.
-            return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
-        // Otherwise the free space is split between the start and end.
-        if (// Could one fit to the end, including the reserve?
-            endw + CMDBUFFER_RESERVE_FRONT <= sizeof(cmdbuffer) ||
-            // Could one fit to the end, and the reserve to the start?
-            (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
-            return true;
-        // Could one fit both to the start?
-        if (len_asked + (1 + CMDHDRSIZE) + CMDBUFFER_RESERVE_FRONT <= bufindr) {
-            // Mark the rest of the buffer as used.
-            memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
-            // and point to the start.
-            // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
-            if (atomic_update)
-                cli();
-            bufindw = 0;
-            if (atomic_update)
-                sei();
-            return true;
-        }
+    // If there is some data stored starting at bufindw, len_asked is certainly smaller than
+    // the allocated data buffer. Try to reserve a new buffer and to move the already received
+    // serial data.
+    // How much memory to reserve for the commands pushed to the front?
+    // End of the queue, when pushing to the end.
+    size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
+    if (bufindw < bufindr)
+        // Simple case. There is a contiguous space between the write buffer and the read buffer.
+        return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
+    // Otherwise the free space is split between the start and end.
+    if (// Could one fit to the end, including the reserve?
+        endw + CMDBUFFER_RESERVE_FRONT <= sizeof(cmdbuffer) ||
+        // Could one fit to the end, and the reserve to the start?
+        (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
+        return true;
+    // Could one fit both to the start?
+    if (len_asked + (1 + CMDHDRSIZE) + CMDBUFFER_RESERVE_FRONT <= bufindr) {
+        // Mark the rest of the buffer as used.
+        memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
+        // and point to the start.
+        // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { bufindw = 0; }
+        return true;
     }
     return false;
 }
@@ -371,7 +337,7 @@ void repeatcommand_front()
 void get_command()
 {
     // Test and reserve space for the new command string.
-    if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1, true))
+    if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1))
       return;
 
 	if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
@@ -403,7 +369,7 @@ void get_command()
       cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
       if(!comment_mode){
 		  
-		  gcode_N = 0;
+		  long gcode_N = -1;
 
 		  // Line numbers must be first in buffer
 
@@ -490,7 +456,7 @@ void get_command()
         // Command is complete: store the current line into buffer, move to the next line.
 
 		// Store type of entry
-        cmdbuffer[bufindw] = gcode_N ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
+        cmdbuffer[bufindw] = gcode_N >= 0 ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
 
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
@@ -506,7 +472,8 @@ void get_command()
         ++ buflen;
 
         // Update the processed gcode line
-        gcode_LastN = gcode_N;
+        if (gcode_N >= 0)
+            gcode_LastN = gcode_N;
 
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHOPGM("Number of commands in the buffer: ");
@@ -517,7 +484,7 @@ void get_command()
       serial_count = 0; //clear buffer
       // Don't call cmdqueue_could_enqueue_back if there are no characters waiting
       // in the queue, as this function will reserve the memory.
-      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
+      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
           return;
     } // end of "end of line" processing
     else {
@@ -615,7 +582,7 @@ void get_command()
       if(card.eof()) break;
 
       // The following line will reserve buffer space if available.
-      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
+      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
           return;
     }
     else
