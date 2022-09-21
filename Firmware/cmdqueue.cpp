@@ -26,10 +26,7 @@ bool comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
 ShortTimer serialTimeoutTimer;
-
-long gcode_N = 0;
 long gcode_LastN = 0;
-
 uint32_t sdpos_atomic = 0;
 
 
@@ -403,7 +400,7 @@ void get_command()
       cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
       if(!comment_mode){
 		  
-		  gcode_N = 0;
+		  long gcode_N = -1;
 
 		  // Line numbers must be first in buffer
 
@@ -490,7 +487,7 @@ void get_command()
         // Command is complete: store the current line into buffer, move to the next line.
 
 		// Store type of entry
-        cmdbuffer[bufindw] = gcode_N ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
+        cmdbuffer[bufindw] = gcode_N >= 0 ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
 
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
@@ -506,7 +503,8 @@ void get_command()
         ++ buflen;
 
         // Update the processed gcode line
-        gcode_LastN = gcode_N;
+        if (gcode_N >= 0)
+            gcode_LastN = gcode_N;
 
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHOPGM("Number of commands in the buffer: ");
