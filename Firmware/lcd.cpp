@@ -528,6 +528,12 @@ void lcd_print(const char* s)
 	while (*s) lcd_write(*(s++));
 }
 
+void lcd_print_pad(const char* s, uint8_t len)
+{
+    while (len-- && *s) lcd_write(*(s++));
+    lcd_space(len);
+}
+
 void lcd_print(char c, int base)
 {
 	lcd_print((long) c, base);
