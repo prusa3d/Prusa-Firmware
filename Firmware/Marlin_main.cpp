@@ -9927,13 +9927,14 @@ void calculate_extruder_multipliers() {
 #endif
 }
 
-void delay_keep_alive(unsigned int ms)
+void delay_keep_alive(unsigned int ms, bool do_update_lcd /* = true */)
 {
     for (;;) {
         manage_heater();
         // Manage inactivity, but don't disable steppers on timeout.
         manage_inactivity(true);
-        lcd_update(0);
+        if (do_update_lcd)
+            lcd_update(0);
         if (ms == 0)
             break;
         else if (ms >= 50) {
