@@ -584,7 +584,7 @@ void dcode_9()
 			if (code_seen('V')) // value to be written as simulated
 			{
 				adc_sim_mask |= (1 << index);
-				adc_values[index] = (((int)code_value()) << 4);
+				adc_values[index] = ((uint16_t)code_value_short() << 4);
 				printf_P(PSTR("ADC%d=%4d\n"), index, adc_values[index] >> 4);
 			}
 		}
