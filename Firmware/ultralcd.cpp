@@ -242,9 +242,6 @@ static void lcd_cutter_enabled();
 #endif
 static void lcd_babystep_z();
 
-//! Beware: has side effects - forces lcd_draw_update to 2, which means clear the display
-void lcd_finishstatus();
-
 static void lcd_sdcard_menu();
 static void lcd_sheet_menu();
 
@@ -7422,7 +7419,6 @@ static bool check_file(const char* filename) {
 	card.printingHasFinished();
 
 	lcd_setstatuspgm(MSG_WELCOME);
-	lcd_finishstatus();
 	return result;
 }
 
@@ -7524,11 +7520,6 @@ void lcd_ignore_click(bool b)
   wait_for_unclick = false;
 }
 
-void lcd_finishstatus() {
-  SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
-  lcd_draw_update = 2;
-}
-
 static bool lcd_message_check(uint8_t priority)
 {
     // regular priority check
@@ -7551,7 +7542,9 @@ static void lcd_updatestatus(const char *message, bool progmem = false)
         strncpy(lcd_status_message, message, LCD_WIDTH);
 
 	lcd_status_message[LCD_WIDTH] = 0;
-	lcd_finishstatus();
+
+	SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
+
 	// hack lcd_draw_update to 1, i.e. without clear
 	lcd_draw_update = 1;
 }
