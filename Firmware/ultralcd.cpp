@@ -242,9 +242,6 @@ static void lcd_cutter_enabled();
 #endif
 static void lcd_babystep_z();
 
-//! Beware: has side effects - forces lcd_draw_update to 2, which means clear the display
-void lcd_finishstatus();
-
 static void lcd_sdcard_menu();
 static void lcd_sheet_menu();
 
@@ -617,7 +614,7 @@ void lcdui_print_status_line(void)
         case CustomMsg::M117:   // M117 Set the status line message on the LCD
         case CustomMsg::Status: // Nothing special, print status message normally
         case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
-            lcd_print(lcd_status_message);
+            lcd_print_pad(lcd_status_message, LCD_WIDTH);
         break;
         case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
             if (custom_message_state > 10) {
@@ -641,10 +638,10 @@ void lcdui_print_status_line(void)
             }
             break;
         case CustomMsg::FilamentLoading: // If loading filament, print status
-            lcd_print(lcd_status_message);
+            lcd_print_pad(lcd_status_message, LCD_WIDTH);
             break;
         case CustomMsg::PidCal: // PID tuning in progress
-            lcd_print(lcd_status_message);
+            lcd_print_pad(lcd_status_message, LCD_WIDTH);
             if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0) {
                 lcd_set_cursor(10, 3);
                 lcd_print(itostr3(pid_cycle));
@@ -7422,7 +7419,6 @@ static bool check_file(const char* filename) {
 	card.printingHasFinished();
 
 	lcd_setstatuspgm(MSG_WELCOME);
-	lcd_finishstatus();
 	return result;
 }
 
@@ -7482,16 +7478,6 @@ void menu_action_sddirectory(const char* filename)
 
 /** LCD API **/
 
-static void lcd_padstatus() {
-  int len = strlen(lcd_status_message);
-  if (len > 0) {
-    while (len < LCD_WIDTH) {
-      lcd_status_message[len++] = ' ';
-    }
-  }
-  lcd_status_message[LCD_WIDTH] = '\0';
-}
-
 void ultralcd_init()
 {
     {
@@ -7526,19 +7512,12 @@ void ultralcd_init()
 
   // Initialise status line
   strncpy_P(lcd_status_message, MSG_WELCOME, LCD_WIDTH);
-  lcd_padstatus();
 }
 
 void lcd_ignore_click(bool b)
 {
   ignore_click = b;
   wait_for_unclick = false;
-}
-
-void lcd_finishstatus() {
-  SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
-  lcd_padstatus();
-  lcd_draw_update = 2;
 }
 
 static bool lcd_message_check(uint8_t priority)
@@ -7563,7 +7542,9 @@ static void lcd_updatestatus(const char *message, bool progmem = false)
         strncpy(lcd_status_message, message, LCD_WIDTH);
 
 	lcd_status_message[LCD_WIDTH] = 0;
-	lcd_finishstatus();
+
+	SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
+
 	// hack lcd_draw_update to 1, i.e. without clear
 	lcd_draw_update = 1;
 }
@@ -7583,12 +7564,18 @@ void lcd_setstatuspgm(const char* message)
 void lcd_setalertstatus_(const char* message, uint8_t severity, bool progmem)
 {
     if (lcd_message_check(severity)) {
+        bool same = !(progmem?
+            strcmp_P(lcd_status_message, message):
+            strcmp(lcd_status_message, message));
         lcd_updatestatus(message, progmem);
         lcd_status_message_timeout.start();
         lcd_status_message_level = severity;
         custom_message_type = CustomMsg::Status;
         custom_message_state = 0;
-        lcd_return_to_status();
+        if (!same) {
+            // do not kick the user out of the menus if the message is unchanged
+            lcd_return_to_status();
+        }
     }
 }
 
