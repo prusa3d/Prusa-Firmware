@@ -10,6 +10,7 @@
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK25
 #define PRINTER_NAME PRINTER_MK25_NAME
+#define PRINTER_NAME_ALTERNATE PRINTER_MK25S_NAME //the other similar printer to this.
 #define PRINTER_MMU_TYPE PRINTER_MK25_MMU2
 #define PRINTER_MMU_NAME PRINTER_MK25_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK25"
@@ -126,7 +127,7 @@
 
 // Filament sensor
 #define FILAMENT_SENSOR
-#define PAT9125
+#define FILAMENT_SENSOR_TYPE FSENSOR_PAT9125
 
 #define DEBUG_DCODE2
 #define DEBUG_DCODE3
@@ -136,7 +137,7 @@
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes
 #define DEBUG_STACK_MONITOR        //Stack monitor in stepper ISR
-//#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
+//#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD
 //#define DEBUG_RESUME_PRINT       //Resume/save print debug enable 
 //#define DEBUG_UVLO_AUTOMATIC_RECOVER // Power panic automatic recovery debug output 
 //#define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
@@ -158,8 +159,6 @@
 //#define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 //#define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
-
-//#define FSENSOR_QUALITY
 
 
 /*------------------------------------
@@ -509,6 +508,11 @@
 #define MMU_HAS_CUTTER
 
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
+
+// MMU Error pause position
+#define MMU_ERR_X_PAUSE_POS 125
+#define MMU_ERR_Y_PAUSE_POS 0
+#define MMU_ERR_Z_PAUSE_LIFT 20
 
 //#define HEATBED_ANALYSIS //for meash bed leveling and heatbed analysis D-codes D80 and D81
 //#define MICROMETER_LOGGING //related to D-codes D80 and D81, currently works on MK2.5 only (MK3 board pin definitions missing)

@@ -36,12 +36,9 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-#include "fsensor.h"
-int fsensor_counter; //counter for e-steps
-#endif //FILAMENT_SENSOR
+#include "Filament_sensor.h"
 
-#include "mmu.h"
+#include "mmu2.h"
 #include "ConfigurationStore.h"
 
 #include "Prusa_farm.h"
@@ -457,9 +454,6 @@ FORCE_INLINE void stepper_next_block()
 #endif /* LIN_ADVANCE */
       count_direction[E_AXIS] = 1;
     }
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-    fsensor_st_block_begin(count_direction[E_AXIS] < 0);
-#endif //FILAMENT_SENSOR
   }
   else {
       _NEXT_ISR(2000); // 1kHz.
@@ -704,9 +698,9 @@ FORCE_INLINE void stepper_tick_lowres()
 #ifdef LIN_ADVANCE
       e_steps += count_direction[E_AXIS];
 #else
-	#ifdef FILAMENT_SENSOR
-	  fsensor_counter += count_direction[E_AXIS];
-	#endif //FILAMENT_SENSOR
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+      fsensor.stStep(count_direction[E_AXIS] < 0);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
       STEP_NC_LO(E_AXIS);
 #endif
     }
@@ -766,9 +760,9 @@ FORCE_INLINE void stepper_tick_highres()
 #ifdef LIN_ADVANCE
       e_steps += count_direction[E_AXIS];
 #else
-    #ifdef FILAMENT_SENSOR
-      fsensor_counter += count_direction[E_AXIS];
-    #endif //FILAMENT_SENSOR
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+      fsensor.stStep(count_direction[E_AXIS] < 0);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
       STEP_NC_LO(E_AXIS);
 #endif
     }
@@ -963,21 +957,9 @@ FORCE_INLINE void isr() {
 
     // If current block is finished, reset pointer
     if (step_events_completed.wide >= current_block->step_event_count.wide) {
-#if !defined(LIN_ADVANCE) && defined(FILAMENT_SENSOR)
-		fsensor_st_block_chunk(fsensor_counter);
-		fsensor_counter = 0;
-#endif //FILAMENT_SENSOR
-
       current_block = NULL;
       plan_discard_current_block();
     }
-#if !defined(LIN_ADVANCE) && defined(FILAMENT_SENSOR)
-	else if ((abs(fsensor_counter) >= fsensor_chunk_len))
-  	{
-      fsensor_st_block_chunk(fsensor_counter);
-  	  fsensor_counter = 0;
-  	}
-#endif //FILAMENT_SENSOR
   }
 
 #ifdef TMC2130
@@ -1073,19 +1055,11 @@ FORCE_INLINE void advance_isr_scheduler() {
             STEP_NC_HI(E_AXIS);
             e_steps += (rev? 1: -1);
             STEP_NC_LO(E_AXIS);
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-            fsensor_counter += (rev? -1: 1);
-#endif
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+            fsensor.stStep(rev);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
         }
         while(--max_ticks);
-
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-        if (abs(fsensor_counter) >= fsensor_chunk_len)
-        {
-            fsensor_st_block_chunk(fsensor_counter);
-            fsensor_counter = 0;
-        }
-#endif
     }
 
     // Schedule the next closest tick, ignoring advance if scheduled too
@@ -1668,13 +1642,3 @@ void microstep_readings()
       #endif
 }
 #endif //TMC2130
-
-
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-void st_reset_fsensor()
-{
-    CRITICAL_SECTION_START;
-    fsensor_counter = 0;
-    CRITICAL_SECTION_END;
-}
-#endif //FILAMENT_SENSOR

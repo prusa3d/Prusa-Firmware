@@ -75,7 +75,6 @@ typedef struct {
   dda_usteps_t step_event_count;            // The number of step events required to complete this block
   uint32_t acceleration_rate;               // The acceleration rate used for acceleration calculation
   unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
-  unsigned char active_extruder;            // Selects the active extruder
   // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
   uint32_t accelerate_until;                // The index of the step event on which to stop acceleration
   uint32_t decelerate_after;                // The index of the step event on which to start decelerating

@@ -47,7 +47,9 @@ extern const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[];
 extern const char MSG_FINISHING_MOVEMENTS[];
 extern const char MSG_FOLLOW_CALIBRATION_FLOW[];
 extern const char MSG_FOLLOW_Z_CALIBRATION_FLOW[];
+extern const char MSG_FSENSOR_RUNOUT[];
 extern const char MSG_FSENSOR_AUTOLOAD[];
+extern const char MSG_FSENSOR_JAM_DETECTION[];
 extern const char MSG_FSENSOR[];
 extern const char MSG_HEATING[];
 extern const char MSG_HEATING_COMPLETE[];
@@ -58,7 +60,9 @@ extern const char MSG_SELECT_FILAMENT[];
 extern const char MSG_LAST_PRINT[];
 extern const char MSG_LAST_PRINT_FAILURES[];
 extern const char MSG_LOAD_FILAMENT[];
+extern const char MSG_LOAD_TO_EXTRUDER[];
 extern const char MSG_LOADING_FILAMENT[];
+extern const char MSG_TESTING_FILAMENT[];
 extern const char MSG_M117_V2_CALIBRATION[];
 extern const char MSG_MAIN[];
 extern const char MSG_BACK[];
@@ -130,7 +134,7 @@ extern const char MSG_WELCOME[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
 extern const char MSG_NA[];
-extern const char MSG_AUTO_DEPLETE[];
+extern const char MSG_SPOOL_JOIN[];
 extern const char MSG_CUTTER[];
 extern const char MSG_NONE[];
 extern const char MSG_WARN[];
@@ -166,7 +170,7 @@ extern const char MSG_TIMEOUT[];
 extern const char MSG_BRIGHT[];
 extern const char MSG_DIM[];
 extern const char MSG_AUTO[];
-#ifdef IR_SENSOR_ANALOG
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];
 extern const char MSG_IR_UNKNOWN[];
@@ -175,6 +179,7 @@ extern const char MSG_PAUSED_THERMAL_ERROR[];
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[];
 #endif
+extern const char MSG_LOAD_ALL[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

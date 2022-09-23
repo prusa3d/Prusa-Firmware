@@ -86,8 +86,9 @@
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
 
+#include "Tcodes.h"
 #include "Dcodes.h"
-#include "AutoDeplete.h"
+#include "SpoolJoin.h"
 
 #ifndef LA_NOCOMPAT
 #include "la10compat.h"
@@ -95,12 +96,7 @@
 
 #include "spi.h"
 
-#ifdef FILAMENT_SENSOR
-#include "fsensor.h"
-#ifdef IR_SENSOR
-#include "pat9125.h" // for pat9125_probe
-#endif
-#endif //FILAMENT_SENSOR
+#include "Filament_sensor.h"
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -130,7 +126,7 @@
 #include <SPI.h>
 #endif
 
-#include "mmu.h"
+#include "mmu2.h"
 
 #define VERSION_STRING  "1.0.2"
 
@@ -193,8 +189,6 @@ int extruder_multiply[EXTRUDERS] = {100
 
 bool homing_flag = false;
 
-int8_t lcd_change_fil_state = 0;
-
 unsigned long pause_time = 0;
 unsigned long start_pause_print = _millis();
 unsigned long t_fan_rising_edge = _millis();
@@ -248,7 +242,6 @@ float extruder_offset[NUM_EXTRUDER_OFFSETS][EXTRUDERS] = {
 };
 #endif
 
-uint8_t active_extruder = 0;
 int fanSpeed=0;
 uint8_t newFanSpeed = 0;
 
@@ -298,9 +291,6 @@ const char G28W0[] PROGMEM = "G28 W0";
 float saved_start_position[NUM_AXIS] = {SAVED_START_POSITION_UNSET, 0, 0, 0};
 
 uint16_t saved_segment_idx = 0;
-
-// save/restore printing in case that mmu was not responding 
-bool mmu_print_saved = false;
 
 // storing estimated time to end of print counted by slicer
 uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
@@ -369,9 +359,8 @@ uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { X_COORD_INVALID, 0, 0, 0 };
 static uint16_t saved_feedrate2 = 0; //!< Default feedrate (truncated from float)
 static int saved_feedmultiply2 = 0;
-static uint8_t saved_active_extruder = 0;
 float saved_extruder_temperature = 0.0; //!< Active extruder temperature
-float saved_bed_temperature = 0.0; //!< Bed temperature
+float saved_bed_temperature = 0.0;
 static bool saved_extruder_relative_mode = false;
 int saved_fan_speed = 0; //!< Print fan speed
 //! @}
@@ -569,7 +558,7 @@ bool __attribute__((noinline)) printer_active() {
         || (custom_message_type == CustomMsg::TempCal)
         || saved_printing
         || (lcd_commands_type == LcdCommands::Layer1Cal)
-        || mmu_print_saved
+        || MMU2::mmu2.MMU_PRINT_SAVED()
         || homing_flag
         || mesh_bed_leveling_flag;
 }
@@ -654,13 +643,12 @@ void crashdet_detected(uint8_t mask)
         lcd_set_cursor(0, 1);
         lcd_puts_P(_T(MSG_RESUME_PRINT));
         lcd_putc('?');
-        bool yesno = lcd_show_yes_no_and_wait(false);
-		lcd_update_enable(true);
-		if (yesno)
+        uint8_t yesno = lcd_show_yes_no_and_wait(false);
+		if (yesno == LCD_LEFT_BUTTON_CHOICE)
 		{
 			enquecommand_P(PSTR("CRASH_RECOVER"));
 		}
-		else
+		else // LCD_MIDDLE_BUTTON_CHOICE
 		{
 			enquecommand_P(PSTR("CRASH_CANCEL"));
 		}
@@ -695,9 +683,6 @@ void failstats_reset_print()
 	eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-    fsensor_softfail = 0;
-#endif
 }
 
 void softReset()
@@ -764,8 +749,12 @@ static void factory_reset(char level)
 		farm_disable();
 
 #ifdef FILAMENT_SENSOR
-		fsensor_enable();
-		fsensor_autoload_set(true);
+		fsensor.setEnabled(true);
+		fsensor.setAutoLoadEnabled(true, true);
+		fsensor.setRunoutEnabled(true, true);
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+		fsensor.setJamDetectionEnabled(true, true);
+#endif //(FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 #endif //FILAMENT_SENSOR
 		break;
 
@@ -864,24 +853,14 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
+#if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
 //! @brief try to check if firmware is on right type of printer
-static void check_if_fw_is_on_right_printer(){
-#ifdef FILAMENT_SENSOR
-  if((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3S)){
-    #ifdef IR_SENSOR
-      if (pat9125_probe()){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}////MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
-    #endif //IR_SENSOR
-
-    #ifdef PAT9125
-      //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
-      const uint8_t ir_detected = !READ(IR_SENSOR_PIN);
-      if (ir_detected){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}////MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
-    #endif //PAT9125
-  }
-#endif //FILAMENT_SENSOR
+static void check_if_fw_is_on_right_printer() {
+    if (fsensor.probeOtherType()) {
+        lcd_show_fullscreen_message_and_wait_P(_i(PRINTER_NAME " firmware detected on " PRINTER_NAME_ALTERNATE " printer"));////c=20 r=4
+    }
 }
+#endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
 
 uint8_t check_printer_version()
 {
@@ -1061,7 +1040,6 @@ void setup()
 {
 	timer2_init(); // enables functional millis
 
-	mmu_init();
 
 	ultralcd_init();
 
@@ -1133,6 +1111,11 @@ void setup()
 #endif
 	SERIAL_ECHO_START;
 	puts_P(PSTR(" " FW_VERSION_FULL));
+
+	if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED)) {
+		MMU2::mmu2.Start();
+	}
+	SpoolJoin::spooljoin.initSpoolJoinStatus();
 
 	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
 
@@ -1365,7 +1348,7 @@ void setup()
         xflash_err_msg();
 
 #ifdef FILAMENT_SENSOR
-	fsensor_init();
+    fsensor.init();
 #endif //FILAMENT_SENSOR
 
 
@@ -1497,15 +1480,13 @@ void setup()
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
 
-#ifdef PAT9125
-	fsensor_setup_interrupt();
-#endif //PAT9125
-
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
   if (!farm_mode) {
+#if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
     check_if_fw_is_on_right_printer();
+#endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
     show_fw_version_warnings();    
   }
 
@@ -1601,7 +1582,7 @@ void setup()
 #ifdef UVLO_SUPPORT
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
 /*
-	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false))	recover_print();
+	  if (!lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false))	recover_print();
 	  else {
 		  eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 		  lcd_update_enable(true);
@@ -1623,8 +1604,9 @@ void setup()
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Normal recovery!")); 
           #endif 
-          if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) ) recover_print(0); 
-          else { 
+          if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) == LCD_LEFT_BUTTON_CHOICE) {
+              recover_print(0); 
+          } else { 
               eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
               lcd_update_enable(true); 
               lcd_update(2); 
@@ -1639,7 +1621,6 @@ void setup()
 #endif //UVLO_SUPPORT
 
   fCheckModeInit();
-  fSetMmuMode(mmu_enabled);
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
@@ -1810,7 +1791,7 @@ void loop()
       // The first character in the block is the block type.      
       char *ptr = cmdbuffer + bufindr;
       if (*ptr == CMDBUFFER_CURRENT_TYPE_SDCARD) {
-        // To support power panic, move the lenght of the command on the SD card to a planner buffer.
+        // To support power panic, move the length of the command on the SD card to a planner buffer.
         union {
           struct {
               char lo;
@@ -1872,7 +1853,7 @@ void loop()
 		}
 	}
 #endif //TMC2130
-	mmu_loop();
+	MMU2::mmu2.mmu_loop();
 }
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
@@ -2107,20 +2088,15 @@ bool check_commands() {
 	
 }
 
-
-// raise_z_above: slowly raise Z to the requested height
-//
-// contrarily to a simple move, this function will carefully plan a move
-// when the current Z position is unknown. In such cases, stallguard is
-// enabled and will prevent prolonged pushing against the Z tops
-void raise_z_above(float target, bool plan)
+/// @brief Safely move Z-axis by distance delta (mm)
+/// @param delta travel distance in mm
+/// @returns The actual travel distance in mm. Endstop may limit the requested move.
+float raise_z(float delta)
 {
-    if (current_position[Z_AXIS] >= target)
-        return;
+    float travel_z = current_position[Z_AXIS];
 
-    // Z needs raising
-    current_position[Z_AXIS] = target;
-    clamp_to_software_endstops(current_position);
+    // Prepare to move Z axis
+    current_position[Z_AXIS] += delta;
 
 #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
     bool z_min_endstop = (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
@@ -2131,31 +2107,54 @@ void raise_z_above(float target, bool plan)
     if (axis_known_position[Z_AXIS] || z_min_endstop)
     {
         // current position is known or very low, it's safe to raise Z
-        if(plan) plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
+        clamp_to_software_endstops(current_position);
+        plan_buffer_line_curposXYZE(max_feedrate[Z_AXIS]);
+        st_synchronize();
+
+        // Get the final travel distance
+        travel_z = current_position[Z_AXIS] - travel_z;
+    } else {
+        // ensure Z is powered in normal mode to overcome initial load
+        enable_z();
+        st_synchronize();
+
+        // rely on crashguard to limit damage
+        bool z_endstop_enabled = enable_z_endstop(true);
+#ifdef TMC2130
+        tmc2130_home_enter(Z_AXIS_MASK);
+#endif //TMC2130
+        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
+        st_synchronize();
+
+        // Get the final travel distance
+        travel_z = st_get_position_mm(Z_AXIS) - travel_z;
+#ifdef TMC2130
+        if (endstop_z_hit_on_purpose())
+        {
+            // not necessarily exact, but will avoid further vertical moves
+            current_position[Z_AXIS] = max_pos[Z_AXIS];
+            plan_set_position_curposXYZE();
+        }
+        tmc2130_home_exit();
+#endif //TMC2130
+        enable_z_endstop(z_endstop_enabled);
+    }
+
+    return travel_z;
+}
+
+// raise_z_above: slowly raise Z to the requested height
+//
+// contrarily to a simple move, this function will carefully plan a move
+// when the current Z position is unknown. In such cases, stallguard is
+// enabled and will prevent prolonged pushing against the Z tops
+void raise_z_above(float target)
+{
+    if (current_position[Z_AXIS] >= target)
         return;
-    }
 
-    // ensure Z is powered in normal mode to overcome initial load
-    enable_z();
-    st_synchronize();
-
-    // rely on crashguard to limit damage
-    bool z_endstop_enabled = enable_z_endstop(true);
-#ifdef TMC2130
-    tmc2130_home_enter(Z_AXIS_MASK);
-#endif //TMC2130
-    plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
-    st_synchronize();
-#ifdef TMC2130
-    if (endstop_z_hit_on_purpose())
-    {
-        // not necessarily exact, but will avoid further vertical moves
-        current_position[Z_AXIS] = max_pos[Z_AXIS];
-        plan_set_position_curposXYZE();
-    }
-    tmc2130_home_exit();
-#endif //TMC2130
-    enable_z_endstop(z_endstop_enabled);
+    // Use absolute value in case the current position is unknown
+    raise_z(fabs(current_position[Z_AXIS] - target));
 }
 
 
@@ -2178,7 +2177,6 @@ bool calibrate_z_auto()
 	//	current_position[axis] = 0;
 	//	plan_set_position_curposXYZE();
 	tmc2130_home_exit();
-	enable_endstops(false);
 	current_position[Z_AXIS] = 0;
 	plan_set_position_curposXYZE();
 	set_destination_to_current();
@@ -2555,7 +2553,6 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 	//if we are homing all axes, first move z higher to protect heatbed/steel sheet
 	if (home_all_axes) {
         raise_z_above(MESH_HOME_Z_SEARCH);
-		st_synchronize();
 	}
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
@@ -2660,11 +2657,9 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
           if(home_z) {
             #if defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
               raise_z_above(Z_RAISE_BEFORE_HOMING);
-              st_synchronize();
             #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
             #ifdef MESH_BED_LEVELING  // If Mesh bed leveling, move X&Y to safe position for home
               raise_z_above(MESH_HOME_Z_SEARCH);
-              st_synchronize();
               if (!axis_known_position[X_AXIS]) homeaxis(X_AXIS);
               if (!axis_known_position[Y_AXIS]) homeaxis(Y_AXIS);
               // 1st mesh bed leveling measurement point, corrected.
@@ -3064,9 +3059,7 @@ static void gcode_G80()
 #endif // TMC2130
             // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
             bState=enable_z_endstop(false);
-            current_position[Z_AXIS] -= 1;
-            plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-            st_synchronize();
+            raise_z(-1);
             enable_z_endstop(true);
 #ifdef TMC2130
             tmc2130_home_enter(Z_AXIS_MASK);
@@ -3267,7 +3260,6 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	int l_feedmultiply = setup_for_endstop_move();
 	lcd_display_message_fullscreen_P(_T(MSG_AUTO_HOME));
   raise_z_above(MESH_HOME_Z_SEARCH);
-  st_synchronize();
 	home_xy();
 
 	enable_endstops(false);
@@ -3306,19 +3298,19 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		{
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			#ifdef STEEL_SHEET
-			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
-			if(result) lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
+			uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
+			if(result == LCD_LEFT_BUTTON_CHOICE) {
+				lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
+			}
 			#endif //STEEL_SHEET
-		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
+			lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
 			lcd_puts_at_P(0,3,_n("1/4"));
 		}
 			
 		bool endstops_enabled  = enable_endstops(false);
-        current_position[Z_AXIS] -= 1; //move 1mm down with disabled endstop
-        plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 40);
-        st_synchronize();
+    raise_z(-1);
 
 		// Move the print head close to the bed.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -3461,218 +3453,254 @@ void gcode_M123()
 }
 #endif //FANCHECK and TACH_0 or TACH_1
 
-//! extracted code to compute z_shift for M600 in case of filament change operation 
-//! requested from fsensors.
-//! The function ensures, that the printhead lifts to at least 25mm above the heat bed
-//! unlike the previous implementation, which was adding 25mm even when the head was
-//! printing at e.g. 24mm height.
-//! A safety margin of FILAMENTCHANGE_ZADD is added in all cases to avoid touching
-//! the printout.
-//! This function is templated to enable fast change of computation data type.
-//! @return new z_shift value
-template<typename T>
-static T gcode_M600_filament_change_z_shift()
-{
-#ifdef FILAMENTCHANGE_ZADD
-	static_assert(Z_MAX_POS < (255 - FILAMENTCHANGE_ZADD), "Z-range too high, change the T type from uint8_t to uint16_t");
-	// avoid floating point arithmetics when not necessary - results in shorter code
-	T z_shift = T(FILAMENTCHANGE_ZADD); // always move above printout
-	T ztmp = T( current_position[Z_AXIS] );
-	if((ztmp + z_shift) < T(MIN_Z_FOR_SWAP)){
-		z_shift = T(MIN_Z_FOR_SWAP) - ztmp; // make sure to be at least 25mm above the heat bed
-	}
-	return z_shift;
-#else
-	return T(0);
-#endif
-}	
+static void mmu_M600_wait_and_beep() {
+    // Beep and wait for user to remove old filament and prepare new filament for load
+    KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
-{
+    int counterBeep = 0;
+    lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
+    bool bFirst = true;
+
+    while (!lcd_clicked()) {
+        manage_heater();
+        manage_inactivity(true);
+
+#if BEEPER > 0
+        if (counterBeep == 500) {
+            counterBeep = 0;
+        }
+        SET_OUTPUT(BEEPER);
+        if (counterBeep == 0) {
+            if ((eSoundMode == e_SOUND_MODE_BLIND) || (eSoundMode == e_SOUND_MODE_LOUD) || ((eSoundMode == e_SOUND_MODE_ONCE) && bFirst)) {
+                bFirst = false;
+                WRITE(BEEPER, HIGH);
+            }
+        }
+        if (counterBeep == 20) {
+            WRITE(BEEPER, LOW);
+        }
+
+        counterBeep++;
+#endif // BEEPER > 0
+
+        delay_keep_alive(4);
+    }
+    WRITE(BEEPER, LOW);
+}
+
+/**
+ * @brief Handling of unload when using MMU with M600
+ * A fullscreen message showing "Unloading Filament x"
+ * should be shown on the LCD and LCD updates should be
+ * are disabled in the meantime.
+ */ 
+static void mmu_M600_unload_filament() {
+    if (MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN) return;
+
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, _T(MSG_UNLOADING_FILAMENT));
+    lcd_print(' ');
+    lcd_print(MMU2::mmu2.get_current_tool() + 1);
+
+    // unload just current filament for multimaterial printers (used also in M702)
+    MMU2::mmu2.unload();
+    lcd_update_enable(true);
+}
+
+/// @brief load filament for mmu v2
+/// @par nozzle_temp nozzle temperature to load filament
+static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
+    uint8_t slot;
+    if (automatic) {
+        slot = SpoolJoin::spooljoin.nextSlot();
+    } else {
+        // Only ask for the slot if automatic/SpoolJoin is off
+        slot = choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER));
+    }
+
+    setTargetHotend(nozzle_temp, active_extruder);
+
+    MMU2::mmu2.load_filament_to_nozzle(slot);
+
+    load_filament_final_feed(); // @@TODO verify
+    st_synchronize();
+}
+
+static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/) {
     st_synchronize();
     float lastpos[4];
 
-    prusa_statistics(22);
-
+        prusa_statistics(22);
+    
     //First backup current position and settings
     int feedmultiplyBckp = feedmultiply;
     float HotendTempBckp = degTargetHotend(active_extruder);
     int fanSpeedBckp = fanSpeed;
 
-    lastpos[X_AXIS] = current_position[X_AXIS];
-    lastpos[Y_AXIS] = current_position[Y_AXIS];
-    lastpos[Z_AXIS] = current_position[Z_AXIS];
-    lastpos[E_AXIS] = current_position[E_AXIS];
+    memcpy(lastpos, current_position, sizeof(lastpos));
 
-    //Retract E
+    // Retract E
     current_position[E_AXIS] += e_shift;
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
     st_synchronize();
 
-    //Lift Z
-    current_position[Z_AXIS] += z_shift;
-    clamp_to_software_endstops(current_position);
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_ZFEED);
-    st_synchronize();
+    // Raise the Z axis
+    raise_z(z_shift);
 
-    //Move XY to side
+    // Move XY to side
     current_position[X_AXIS] = x_position;
     current_position[Y_AXIS] = y_position;
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
     st_synchronize();
 
-    //Beep, manage nozzle heater and wait for user to start unload filament
-    if(!mmu_enabled) M600_wait_for_user(HotendTempBckp);
-
-    lcd_change_fil_state = 0;
+    // Beep, manage nozzle heater and wait for user to start unload filament
+    if (!MMU2::mmu2.Enabled())
+        M600_wait_for_user(HotendTempBckp);
 
     // Unload filament
-    if (mmu_enabled) extr_unload();	//unload just current filament for multimaterial printers (used also in M702)
-    else unload_filament(true); //unload filament for single material (used also in M702)
-    //finish moves
-    st_synchronize();
-
-    if (!mmu_enabled)
+    if (MMU2::mmu2.Enabled())
+        mmu_M600_unload_filament();
+    else
+        unload_filament(FILAMENTCHANGE_FINALRETRACT, true); // unload filament for single material (used also in M702)
+    st_synchronize();          // finish moves
     {
-        KEEPALIVE_STATE(PAUSED_FOR_USER);
-        lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(
-                _i("Was filament unload successful?"), ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
-                false, true);
-        if (lcd_change_fil_state == 0)
+        FSensorBlockRunout fsBlockRunout;
+        
+        if (!MMU2::mmu2.Enabled())
         {
-			lcd_clear();
-			lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
-			current_position[X_AXIS] -= 100;
-			plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
-			st_synchronize();
-			lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=5
-        }
-    }
-
-    if (mmu_enabled)
-    {
-        if (!automatic) {
-            if (saved_printing) mmu_eject_filament(mmu_extruder, false); //if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
-            mmu_M600_wait_and_beep();
-            if (saved_printing) {
-
+            KEEPALIVE_STATE(PAUSED_FOR_USER);
+            uint8_t choice =
+                lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, LCD_LEFT_BUTTON_CHOICE); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
+            if (choice == LCD_MIDDLE_BUTTON_CHOICE) {
                 lcd_clear();
                 lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
-
-                mmu_command(MmuCmd::R0);
-                manage_response(false, false);
+                current_position[X_AXIS] -= 100;
+                plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
+                st_synchronize();
+                lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually.")); ////MSG_CHECK_IDLER c=20 r=5
             }
+            M600_load_filament();
         }
-        mmu_M600_load_filament(automatic, HotendTempBckp);
+        else // MMU is enabled
+        {
+            if (!automatic) {
+                if (saved_printing){
+                    // if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
+                    MMU2::mmu2.eject_filament(MMU2::mmu2.get_current_tool(), false);
+                }
+                mmu_M600_wait_and_beep();
+                if (saved_printing) {
+                    lcd_clear();
+                    lcd_puts_at_P(0, 2, _T(MSG_PLEASE_WAIT));
+//@@TODO                mmu_command(MmuCmd::R0);
+//                manage_response(false, false);
+                }
+            }
+            mmu_M600_load_filament(automatic, HotendTempBckp);
+        }
+        if (!automatic)
+            M600_check_state(HotendTempBckp);
+    
+        lcd_update_enable(true);
+    
+        // Not let's go back to print
+        fanSpeed = fanSpeedBckp;
+    
+        // Feed a little of filament to stabilize pressure
+        if (!automatic) {
+            current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
+            plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
+        }
+
+        // Move XY back
+        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+        st_synchronize();
+
+        // Move Z back
+        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
+        st_synchronize();
+
+        // Set E position to original
+        plan_set_e_position(lastpos[E_AXIS]);
+    
+        memcpy(current_position, lastpos, sizeof(lastpos));
+        set_destination_to_current();
+    
+        // Recover feed rate
+        feedmultiply = feedmultiplyBckp;
+        char cmd[9];
+        sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
+        enquecommand(cmd);
+        
     }
-    else
-        M600_load_filament();
-
-    if (!automatic) M600_check_state(HotendTempBckp);
-
-		lcd_update_enable(true);
-
-    //Not let's go back to print
-    fanSpeed = fanSpeedBckp;
-
-    //Feed a little of filament to stabilize pressure
-    if (!automatic)
-    {
-        current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
-    }
-
-    //Move XY back
-    plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],
-            FILAMENTCHANGE_XYFEED, active_extruder);
-    st_synchronize();
-    //Move Z back
-    plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS],
-            FILAMENTCHANGE_ZFEED, active_extruder);
-    st_synchronize();
-
-    //Set E position to original
-    plan_set_e_position(lastpos[E_AXIS]);
-
-    memcpy(current_position, lastpos, sizeof(lastpos));
-    set_destination_to_current();
-
-    //Recover feed rate
-    feedmultiply = feedmultiplyBckp;
-    char cmd[9];
-    sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
-    enquecommand(cmd);
-
-#ifdef IR_SENSOR
-	//this will set fsensor_watch_autoload to correct value and prevent possible M701 gcode enqueuing when M600 is finished
-	fsensor_check_autoload();
-#endif //IR_SENSOR
-
+    
     lcd_setstatuspgm(MSG_WELCOME);
     custom_message_type = CustomMsg::Status;
 }
 
-void gcode_M701()
-{
-	printf_P(PSTR("gcode_M701 begin\n"));
-
+void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex){
+    FSensorBlockRunout fsBlockRunout;
+    
     prusa_statistics(22);
 
-	if (mmu_enabled) 
-	{
-		extr_adj(tmp_extruder);//loads current extruder
-		mmu_extruder = tmp_extruder;
-	}
-	else
-	{
-		enable_z();
-		custom_message_type = CustomMsg::FilamentLoading;
+    if (MMU2::mmu2.Enabled() && mmuSlotIndex < MMU_FILAMENT_COUNT) {
+        MMU2::mmu2.load_filament_to_nozzle(mmuSlotIndex);
+    } else {
+        custom_message_type = CustomMsg::FilamentLoading;
+        lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 
-#ifdef FSENSOR_QUALITY
-		fsensor_oq_meassure_start(40);
-#endif //FSENSOR_QUALITY
+        current_position[E_AXIS] += fastLoadLength;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
 
-        const int feed_mm_before_raising = 30;
-        static_assert(feed_mm_before_raising <= FILAMENTCHANGE_FIRSTFEED);
+        load_filament_final_feed(); // slow sequence
+        st_synchronize();
 
-		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
-		current_position[E_AXIS] += FILAMENTCHANGE_FIRSTFEED - feed_mm_before_raising;
-		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
-		st_synchronize();
+        Sound_MakeCustom(50, 500, false);
 
-        raise_z_above(MIN_Z_FOR_LOAD, false);
-		current_position[E_AXIS] += feed_mm_before_raising;
-		plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_FIRST); //fast sequence
-		
-		load_filament_final_feed(); //slow sequence
-		st_synchronize();
-
-    Sound_MakeCustom(50,500,false);
-
-		if (!farm_mode && loading_flag) {
-			lcd_load_filament_color_check();
-		}
-		lcd_update_enable(true);
-		lcd_update(2);
-		lcd_setstatuspgm(MSG_WELCOME);
-		disable_z();
-		loading_flag = false;
-		custom_message_type = CustomMsg::Status;
-
-#ifdef FSENSOR_QUALITY
-        fsensor_oq_meassure_stop();
-
-        if (!fsensor_oq_result())
-        {
-            bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_n("Fil. sensor response is poor, disable it?"), false, true);
-            lcd_update_enable(true);
-            lcd_update(2);
-            if (disable)
-                fsensor_disable();
+        if (!farm_mode && loading_flag) {
+            lcd_load_filament_color_check();
         }
-#endif //FSENSOR_QUALITY
-	}
+        lcd_update_enable(true);
+        lcd_update(2);
+        lcd_setstatuspgm(MSG_WELCOME);
+        loading_flag = false;
+        custom_message_type = CustomMsg::Status;
+    }
+
+    eFilamentAction = FilamentAction::None;
 }
+
+// Common gcode shared by the gcodes. This saves some flash memory
+static void gcodes_M704_M705_M706(uint16_t gcode)
+{
+    uint8_t mmuSlotIndex = 0xffU;
+    if (MMU2::mmu2.Enabled() && code_seen('P'))
+    {
+        mmuSlotIndex = code_value_uint8();
+        if (mmuSlotIndex < MMU_FILAMENT_COUNT) {
+            switch (gcode)
+            {
+            case 704:
+                MMU2::mmu2.load_filament(mmuSlotIndex);
+                break;
+            case 705:
+                MMU2::mmu2.eject_filament(mmuSlotIndex, false);
+                break;
+            case 706:
+#ifdef MMU_HAS_CUTTER
+                if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0){
+                    MMU2::mmu2.cut_filament(mmuSlotIndex);
+                }
+#endif // MMU_HAS_CUTTER
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
+
 /**
  * @brief Get serial number from 32U2 processor
  *
@@ -4260,7 +4288,7 @@ void process_commands()
         }
 		else if (code_seen_P(PSTR("MMURES"))) // PRUSA MMURES
 		{
-			mmu_reset();
+			MMU2::mmu2.Reset(MMU2::MMU2::Software);
 		}
 		else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
 #ifdef WATCHDOG
@@ -4880,9 +4908,9 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
             break;
         }
         lcd_show_fullscreen_message_and_wait_P(_i("Stable ambient temperature 21-26C is needed a rigid stand is required."));////MSG_TEMP_CAL_WARNING c=20 r=4
-        bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
+        uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false);
 
-        if (result)
+        if (result == LCD_LEFT_BUTTON_CHOICE)
         {
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line_curposXYZE(3000 / 60);
@@ -5430,24 +5458,32 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
 	### M24 - Start SD print <a href="https://reprap.org/wiki/G-code#M24:_Start.2Fresume_SD_print">M24: Start/resume SD print</a>
     */
     case 24:
-	  if (isPrintPaused)
-          lcd_resume_print();
-      else
+    if (isPrintPaused)
+      lcd_resume_print();
+    else
+    {
+      if (!card.get_sdpos())
       {
-          if (!card.get_sdpos())
-          {
               // A new print has started from scratch, reset stats
               failstats_reset_print();
               sdpos_atomic = 0;
 #ifndef LA_NOCOMPAT
-              la10c_reset();
+        la10c_reset();
 #endif
-          }
-
-          card.startFileprint();
-          starttime=_millis();
       }
-	  break;
+
+      card.startFileprint();
+      starttime=_millis();
+      if (MMU2::mmu2.Enabled())
+      {
+        if (MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent())
+        { // Filament only half way into the PTFE. Unload the filament.
+          MMU2::mmu2.unload();
+          // Tx and Tc gcodes take care of loading the filament to the nozzle.
+        }
+      }
+    }
+    break;
 
     /*!
 	### M26 - Set SD index <a href="https://reprap.org/wiki/G-code#M26:_Set_SD_position">M26: Set SD position</a>
@@ -6505,9 +6541,9 @@ Sigma_Exit:
               axis_steps_per_sqr_second[i] *= factor;
             }
             cs.axis_steps_per_unit[i] = value;
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-            fsensor_set_axis_steps_per_unit(value);
-#endif
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+            fsensor.init();
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
           }
           else {
             cs.axis_steps_per_unit[i] = code_value();
@@ -7611,14 +7647,13 @@ Sigma_Exit:
 	{
 		// currently three different materials are needed (default, flex and PVA)
 		// add storing this information for different load/unload profiles etc. in the future
-		// firmware does not wait for "ok" from mmu
-		if (mmu_enabled)
+		if (MMU2::mmu2.Enabled())
 		{
 			uint8_t extruder = 255;
 			uint8_t filament = FILAMENT_UNDEFINED;
 			if(code_seen('E')) extruder = code_value_uint8();
 			if(code_seen('F')) filament = code_value_uint8();
-			mmu_set_filament_type(extruder, filament);
+			MMU2::mmu2.set_filament_type(extruder, filament);
 		}
 	}
 	break;
@@ -7785,7 +7820,7 @@ Sigma_Exit:
       
     - `X`    - X position, default 211
     - `Y`    - Y position, default 0
-    - `Z`    - relative lift Z, default 2.
+    - `Z`    - relative lift Z, default MIN_Z_FOR_SWAP.
     - `E`    - initial retract, default -2
     - `L`    - later retract distance for removal, default -80
     - `AUTO` - Automatically (only with MMU)
@@ -7796,7 +7831,7 @@ Sigma_Exit:
 
 		float x_position = current_position[X_AXIS];
 		float y_position = current_position[Y_AXIS];
-		float z_shift = 0; // is it necessary to be a float?
+		float z_shift = MIN_Z_FOR_SWAP;
 		float e_shift_init = 0;
 		float e_shift_late = 0;
 		bool automatic = false;
@@ -7825,16 +7860,10 @@ Sigma_Exit:
 		  #endif	
 		}
 
-        //Lift Z
-        if(code_seen('Z'))
-        {
-          z_shift = code_value();
-        }
-        else
-        {
-			z_shift = gcode_M600_filament_change_z_shift<uint8_t>();
-        }
-		//Move XY to side
+        // Z lift. For safety only allow positive values
+        if (code_seen('Z')) z_shift = fabs(code_value());
+
+        //Move XY to side
         if(code_seen('X'))
         {
           x_position = code_value();
@@ -7856,7 +7885,7 @@ Sigma_Exit:
           #endif
         }
 
-		if (mmu_enabled && code_seen_P(PSTR("AUTO")))
+		if (MMU2::mmu2.Enabled() && code_seen_P(PSTR("AUTO")))
 			automatic = true;
 
 		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
@@ -8103,6 +8132,8 @@ Sigma_Exit:
                          {
                          uint16_t nPrinterModel;
                          nPrinterModel=(uint16_t)code_value_long();
+                         // based on current state of MMU (active/stopped/connecting) perform a runtime update of the printer type
+                         fSetMmuMode(MMU2::mmu2.Enabled());
                          printer_model_check(nPrinterModel);
                          }
                     else if(code_seen('Q'))
@@ -8110,7 +8141,10 @@ Sigma_Exit:
                     break;
                case ClPrintChecking::_Smodel:     // ~ .3
                     if(code_seen('P'))
-                         printer_smodel_check(strchr_pointer);
+                    {
+                        fSetMmuMode(MMU2::mmu2.Enabled());
+                        printer_smodel_check(strchr_pointer);
+                    }
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLNRPGM(sPrinterName);
                     break;
@@ -8441,10 +8475,10 @@ Sigma_Exit:
 						cs.axis_steps_per_unit[i] /= fac;
 						position[i] /= fac;
 					}
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-                    if (i == E_AXIS)
-                        fsensor_set_axis_steps_per_unit(cs.axis_steps_per_unit[i]);
-#endif
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+					if (i == E_AXIS)
+						fsensor.init();
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 				}
 			}
 		}
@@ -8495,45 +8529,224 @@ Sigma_Exit:
     break;
 
     /*!
-    ### M701 - Load filament <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
+    ### M701 - Load filament to extruder <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>
+    Load filament into the active extruder.
     #### Usage
 
-        M701 [ E | T ]
+        M701 [ P | T | L | Z ]
 
     #### Parameters
-    - `E` - ID of filament to load, ranges from 0 to 4
-    - `T` - Alias of `E`. Used for compatibility with Marlin
+    - `P` - n index of MMU slot (zero based, so 0-4 like T0 and T4)
+    - `T` - Alias of `P`. Used for compatibility with Marlin
+    - `L` - Extrude distance for insertion (positive value)(manual reload)
+    - `Z` - Move the Z axis by this distance. Default value MIN_Z_FOR_LOAD
     */
-	case 701:
-	{
-		if (mmu_enabled && (code_seen('E') || code_seen('T')))
-			tmp_extruder = code_value_uint8();
-		gcode_M701();
-	}
-	break;
+    case 701:
+    {
+        uint8_t mmuSlotIndex = 0xffU;
+        float fastLoadLength = FILAMENTCHANGE_FIRSTFEED; // Only used without MMU
+        float z_target = MIN_Z_FOR_LOAD;
+        if( MMU2::mmu2.Enabled() )
+        {
+            if( code_seen('P') || code_seen('T') ) {
+                mmuSlotIndex = code_value_uint8();
+            }
+        }
+
+        if (code_seen('L')) fastLoadLength = code_value();
+
+        // Z lift. For safety only allow positive values
+        if (code_seen('Z')) z_target = fabs(code_value());
+
+        // Raise the Z axis
+        float delta = raise_z(z_target);
+
+        // Load filament
+        gcode_M701(fastLoadLength, mmuSlotIndex);
+
+        // Restore Z axis
+        raise_z(-delta);
+    }
+    break;
 
     /*!
     ### M702 - Unload filament <a href="https://reprap.org/wiki/G-code#M702:_Unload_filament">G32: Undock Z Probe sled</a>
     #### Usage
     
-        M702 [ C ]
+        M702 [ U | Z ]
     
     #### Parameters
-    - `C` - Unload just current filament
-    - without any parameters unload all filaments
+    - `U` - Retract distance for removal (manual reload). Default value is 0.
+    - `Z` - Move the Z axis by this distance. Default value MIN_Z_FOR_UNLOAD.
     */
-	case 702:
-	{
-		if (code_seen('C')) {
-			if(mmu_enabled) extr_unload(); //! if "C" unload current filament; if mmu is not present no action is performed
-		}
-		else {
-			if(mmu_enabled) extr_unload(); //! unload current filament
-			else unload_filament();
-		}
-	}
-	break;
+    case 702:
+    {
+        float z_target = MIN_Z_FOR_UNLOAD;
+        float unloadLength = FILAMENTCHANGE_FINALRETRACT;
+        if (code_seen('U')) unloadLength = code_value();
 
+        // For safety only allow positive values
+        if (code_seen('Z')) z_target = fabs(code_value());
+
+        // Raise the Z axis
+        float delta = raise_z(z_target);
+
+        // Unload filament
+        if (MMU2::mmu2.Enabled())  MMU2::mmu2.unload();
+        else unload_filament(unloadLength);
+
+        // Restore Z axis
+        raise_z(-delta);
+    }
+    break;
+
+    /*!
+    ### M704 - Load to MMU <a href="https://reprap.org/wiki/G-code#M704:_Load_to_MMU">M704: Load to MMU</a>
+    #### Usage
+
+        M704 [ P ]
+
+    #### Parameters
+    - `P` - n index of slot (zero based, so 0-4 like T0 and T4)
+    */
+    case 704:
+    {
+        gcodes_M704_M705_M706(704);
+    }
+    break;
+
+    /*!
+    ### M705 - Eject filament <a href="https://reprap.org/wiki/G-code#M705:_Eject_filament">M705: Eject filament</a>
+    #### Usage
+
+        M705 [ P ]
+
+    #### Parameters
+    - `P` - n index of slot (zero based, so 0-4 like T0 and T4)
+    */
+    case 705:
+    {
+        gcodes_M704_M705_M706(705);
+    }
+    break;
+
+
+    /*!
+    ### M706 - Cut filament <a href="https://reprap.org/wiki/G-code#M706:_Cut_filament">M706: Cut filament</a>
+    #### Usage
+
+        M706 [ P ]
+
+    #### Parameters
+    - `P` - n index of slot (zero based, so 0-4 like T0 and T4)
+    */
+    case 706:
+    {
+        gcodes_M704_M705_M706(706);
+    }
+    break;
+
+    /*!
+    ### M707 - Read from MMU register <a href="https://reprap.org/wiki/G-code#M707:_Read_from_MMU_register">M707: Read from MMU register</a>
+    #### Usage
+
+        M707 [ A ]
+
+    #### Parameters
+    - `A` - Address of register in hexidecimal.
+
+    #### Example
+
+    M707 A0x1b - Read a 8bit integer from register 0x1b and prints the result onto the serial line.
+
+    Does nothing if the A parameter is not present or if MMU is not enabled.
+
+    */
+    case 707: {
+        if ( MMU2::mmu2.Enabled() ) {
+            if( code_seen('A') ) {
+                MMU2::mmu2.ReadRegister(uint8_t(strtol(strchr_pointer+1, NULL, 16)));
+            }
+        }
+    } break;
+
+    /*!
+    ### M708 - Write to MMU register <a href="https://reprap.org/wiki/G-code#M708:_Write_to_MMU_register">M707: Write to MMU register</a>
+    #### Usage
+
+        M708 [ A | X ]
+
+    #### Parameters
+    - `A` - Address of register in hexidecimal.
+    - `X` - Data to write (16-bit integer). Default value 0.
+
+    #### Example
+    M708 A0x1b X05 - Write to register 0x1b the value 05.
+
+    Does nothing if A parameter is missing or if MMU is not enabled.
+    */
+    case 708: {
+        if ( MMU2::mmu2.Enabled() ){
+            uint8_t addr = 0;
+            if( code_seen('A') ) {
+                addr = uint8_t(strtol(strchr_pointer+1, NULL, 16));
+            }
+            uint16_t data = 0;
+            if( code_seen('X') ) {
+                data = code_value_short();
+            }
+            if(addr){
+                MMU2::mmu2.WriteRegister(addr, data);
+            }
+        }
+    } break;
+
+    /*!
+    ### M709 - MMU reset <a href="https://reprap.org/wiki/G-code#M709:_MMU_reset">M709: MMU reset</a>
+    The MK3S cannot not power off the MMU, for that reason the functionality is not supported.
+    #### Usage
+
+        M709 [ X ]
+
+    #### Parameters
+    - `X` - Reset MMU (0:soft reset | 1:hardware reset)
+
+    #### Example
+
+    M709 X0 - issue an X0 command via communication into the MMU (soft reset)
+
+    M709 X1 - toggle the MMU's reset pin (hardware reset)
+
+    */
+    case 709:
+    {
+        if (MMU2::mmu2.Enabled() && code_seen('X'))
+        {
+            switch (code_value_uint8())
+            {
+            case 0:
+                MMU2::mmu2.Reset(MMU2::MMU2::Software);
+                break;
+            case 1:
+                MMU2::mmu2.Reset(MMU2::MMU2::ResetPin);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    break;
+
+    /*!
+    ### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#M999:_Restart_after_being_stopped_by_error">M999: Restart after being stopped by error</a>
+    @todo Usually doesn't work. Should be fixed or removed. Most of the time, if `Stopped` it set, the print fails and is unrecoverable.
+    */
+    case 999:
+      Stopped = false;
+      lcd_reset_alert_level();
+//@@TODO      gcode_LastN = Stopped_gcode_LastN;
+      FlushSerialRequestResend();
+    break;
 	/*!
 	#### End of M-Commands
     */
@@ -8555,139 +8768,8 @@ Sigma_Exit:
   @n Tx Same as T?, except nozzle doesn't have to be preheated. Tc must be placed after extruder nozzle is preheated to finish filament load.
   @n Tc Load to nozzle after filament was prepared by Tc and extruder nozzle is already heated.
   */
-  else if(code_seen('T'))
-  {
-      static const char duplicate_Tcode_ignored[] PROGMEM = "Duplicate T-code ignored.";
-      
-      int index;
-      bool load_to_nozzle = false;
-      for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
-
-      *(strchr_pointer + index) = tolower(*(strchr_pointer + index));
-
-      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '4') && *(strchr_pointer + index) != '?' && *(strchr_pointer + index) != 'x' && *(strchr_pointer + index) != 'c') {
-          SERIAL_ECHOLNPGM("Invalid T code.");
-      }
-	  else if (*(strchr_pointer + index) == 'x'){ //load to bondtech gears; if mmu is not present do nothing
-		if (mmu_enabled)
-		{
-			tmp_extruder = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
-			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
-			{
-				puts_P(duplicate_Tcode_ignored);
-			}
-			else
-			{
-				st_synchronize();
-				mmu_command(MmuCmd::T0 + tmp_extruder);
-				manage_response(true, true, MMU_TCODE_MOVE);
-			}
-		}
-	  }
-	  else if (*(strchr_pointer + index) == 'c') { //load to from bondtech gears to nozzle (nozzle should be preheated)
-	  	if (mmu_enabled) 
-		{
-			st_synchronize();
-			mmu_continue_loading(usb_timer.running()  || (lcd_commands_type == LcdCommands::Layer1Cal));
-			mmu_extruder = tmp_extruder; //filament change is finished
-			mmu_load_to_nozzle();
-		}
-	  }
-      else {
-          if (*(strchr_pointer + index) == '?')
-          {
-              if(mmu_enabled)
-              {
-                  tmp_extruder = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
-                  load_to_nozzle = true;
-              } else
-              {
-                  tmp_extruder = choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER));
-              }
-          }
-          else {
-              tmp_extruder = code_value();
-              if (mmu_enabled && lcd_autoDepleteEnabled())
-              {
-                  tmp_extruder = ad_getAlternative(tmp_extruder);
-              }
-          }
-          st_synchronize();
-
-          if (mmu_enabled)
-          {
-              if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
-              {
-                  puts_P(duplicate_Tcode_ignored);
-              }
-			  else
-			  {
-#if defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
-			      if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
-                  {
-                      mmu_command(MmuCmd::K0 + tmp_extruder);
-                      manage_response(true, true, MMU_UNLOAD_MOVE);
-                  }
-#endif //defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
-				  mmu_command(MmuCmd::T0 + tmp_extruder);
-				  manage_response(true, true, MMU_TCODE_MOVE);
-		          mmu_continue_loading(usb_timer.running()  || (lcd_commands_type == LcdCommands::Layer1Cal));
-
-				  mmu_extruder = tmp_extruder; //filament change is finished
-
-				  if (load_to_nozzle)// for single material usage with mmu
-				  {
-					  mmu_load_to_nozzle();
-				  }
-			  }
-          }
-          else
-          {
-              if (tmp_extruder >= EXTRUDERS) {
-                  SERIAL_ECHO_START;
-                  SERIAL_ECHO('T');
-                  SERIAL_PROTOCOLLN((int)tmp_extruder);
-                  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER
-              }
-              else {
-#if EXTRUDERS > 1
-                  bool make_move = false;
-#endif
-                  if (code_seen('F')) {
-#if EXTRUDERS > 1
-                      make_move = true;
-#endif
-                      next_feedrate = code_value();
-                      if (next_feedrate > 0.0) {
-                          feedrate = next_feedrate;
-                      }
-                  }
-#if EXTRUDERS > 1
-                  if (tmp_extruder != active_extruder) {
-                      // Save current position to return to after applying extruder offset
-                      set_destination_to_current();
-                      // Offset extruder (only by XY)
-                      int i;
-                      for (i = 0; i < 2; i++) {
-                          current_position[i] = current_position[i] -
-                                  extruder_offset[i][active_extruder] +
-                                  extruder_offset[i][tmp_extruder];
-                      }
-                      // Set the new active extruder and position
-                      active_extruder = tmp_extruder;
-                      plan_set_position_curposXYZE();
-                      // Move to the old position if 'F' was in the parameters
-                      if (make_move) {
-                          prepare_move();
-                      }
-                  }
-#endif
-                  SERIAL_ECHO_START;
-                  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER
-                  SERIAL_PROTOCOLLN((int)active_extruder);
-              }
-          }
-      }
+  else if(code_seen('T')){
+        TCodes(strchr_pointer, code_value());
   } // end if(code_seen('T')) (end of T codes)
   /*!
   #### End of T-Codes
@@ -9075,7 +9157,7 @@ Sigma_Exit:
 		dcode_2130(); break;
 #endif //TMC2130
 
-#if (defined (FILAMENT_SENSOR) && defined(PAT9125))
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
     /*!
     ### D9125 - PAT9125 filament sensor <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9125: PAT9125 filament sensor</a>
@@ -9093,7 +9175,7 @@ Sigma_Exit:
     */
 	case 9125:
 		dcode_9125(); break;
-#endif //FILAMENT_SENSOR
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
 #endif //DEBUG_DCODES
 
@@ -9397,133 +9479,13 @@ static void handleSafetyTimer()
 }
 #endif //SAFETYTIMER
 
-#ifdef IR_SENSOR_ANALOG
-#define FS_CHECK_COUNT 16
-/// Switching mechanism of the fsensor type.
-/// Called from 2 spots which have a very similar behavior
-/// 1: ClFsensorPCB::_Old -> ClFsensorPCB::_Rev04 and print _i("FS v0.4 or newer")
-/// 2: ClFsensorPCB::_Rev04 -> oFsensorPCB=ClFsensorPCB::_Old and print _i("FS v0.3 or older")
-void manage_inactivity_IR_ANALOG_Check(uint16_t &nFSCheckCount, ClFsensorPCB isVersion, ClFsensorPCB switchTo, const char *statusLineTxt_P) {
-    bool bTemp = (!CHECK_ALL_HEATERS);
-    bTemp = bTemp && (menu_menu == lcd_status_screen);
-    bTemp = bTemp && ((oFsensorPCB == isVersion) || (oFsensorPCB == ClFsensorPCB::_Undef));
-    bTemp = bTemp && fsensor_enabled;
-    if (bTemp) {
-        nFSCheckCount++;
-        if (nFSCheckCount > FS_CHECK_COUNT) {
-            nFSCheckCount = 0; // not necessary
-            oFsensorPCB = switchTo;
-            eeprom_update_byte((uint8_t *)EEPROM_FSENSOR_PCB, (uint8_t)oFsensorPCB);
-            printf_IRSensorAnalogBoardChange();
-            lcd_setstatuspgm(statusLineTxt_P);
-        }
-    } else {
-        nFSCheckCount = 0;
-    }
-}
-#endif
-
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-bool bInhibitFlag = false;
-#ifdef IR_SENSOR_ANALOG
-static uint16_t nFSCheckCount=0;
-#endif // IR_SENSOR_ANALOG
-
-	if (mmu_enabled == false)
-	{
-//-//		if (mcode_in_progress != 600) //M600 not in progress
-		if (!printer_active()) bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); //Block Filament sensor actions if PRINTER is not active and Support::SensorInfo menu active
-#ifdef IR_SENSOR_ANALOG
-		bInhibitFlag=bInhibitFlag||bMenuFSDetect; // Block Filament sensor actions if Settings::HWsetup::FSdetect menu active
-#endif // IR_SENSOR_ANALOG
-		if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag) && (menu_menu != lcd_move_e)) //M600 not in progress, preHeat @ autoLoad menu not active
-		{
-			if (!moves_planned() && !IS_SD_PRINTING && !usb_timer.running() && (lcd_commands_type != LcdCommands::Layer1Cal) && ! eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
-			{
-#ifdef IR_SENSOR_ANALOG
-				static uint16_t minVolt = Voltage2Raw(6.F), maxVolt = 0;
-				// detect min-max, some long term sliding window for filtration may be added
-				// avoiding floating point operations, thus computing in raw
-				if( current_voltage_raw_IR > maxVolt )maxVolt = current_voltage_raw_IR;
-				if( current_voltage_raw_IR < minVolt )minVolt = current_voltage_raw_IR;
-				
-#if 0 // Start: IR Sensor debug info
-				{ // debug print
-					static uint16_t lastVolt = ~0U;
-					if( current_voltage_raw_IR != lastVolt ){
-						printf_P(PSTR("fs volt=%4.2fV (min=%4.2f max=%4.2f)\n"), Raw2Voltage(current_voltage_raw_IR), Raw2Voltage(minVolt), Raw2Voltage(maxVolt) );
-						lastVolt = current_voltage_raw_IR;
-					}
-				}
-#endif // End: IR Sensor debug info
-				//! The trouble is, I can hold the filament in the hole in such a way, that it creates the exact voltage
-				//! to be detected as the new fsensor
-				//! We can either fake it by extending the detection window to a looooong time
-				//! or do some other countermeasures
-				
-				//! what we want to detect:
-				//! if minvolt gets below ~0.3V, it means there is an old fsensor
-				//! if maxvolt gets above 4.6V, it means we either have an old fsensor or broken cables/fsensor
-				//! So I'm waiting for a situation, when minVolt gets to range <0, 1.5> and maxVolt gets into range <3.0, 5>
-				//! If and only if minVolt is in range <0.3, 1.5> and maxVolt is in range <3.0, 4.6>, I'm considering a situation with the new fsensor
-				if( minVolt >= IRsensor_Ldiode_TRESHOLD && minVolt <= IRsensor_Lmax_TRESHOLD 
-				 && maxVolt >= IRsensor_Hmin_TRESHOLD && maxVolt <= IRsensor_Hopen_TRESHOLD
-				){
-					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Old, ClFsensorPCB::_Rev04, _i("FS v0.4 or newer") ); ////MSG_FS_V_04_OR_NEWER c=18
-				} 
-				//! If and only if minVolt is in range <0.0, 0.3> and maxVolt is in range  <4.6, 5.0V>, I'm considering a situation with the old fsensor
-				//! Note, we are not relying on one voltage here - getting just +5V can mean an old fsensor or a broken new sensor - that's why
-				//! we need to have both voltages detected correctly to allow switching back to the old fsensor.
-				else if( minVolt < IRsensor_Ldiode_TRESHOLD 
-				 && maxVolt > IRsensor_Hopen_TRESHOLD && maxVolt <= IRsensor_VMax_TRESHOLD
-				){
-					manage_inactivity_IR_ANALOG_Check(nFSCheckCount, ClFsensorPCB::_Rev04, oFsensorPCB=ClFsensorPCB::_Old, _i("FS v0.3 or older")); ////MSG_FS_V_03_OR_OLDER c=18
-				}
-#endif // IR_SENSOR_ANALOG
-				if (fsensor_check_autoload())
-				{
-#ifdef PAT9125
-					fsensor_autoload_check_stop();
-#endif //PAT9125
-//-//					if ((int)degHotend0() > extrude_min_temp)
-if(0)
-					{
-						Sound_MakeCustom(50,1000,false);
-						loading_flag = true;
-						enquecommand_front_P((PSTR("M701")));
-					}
-					else
-					{
-/*
-						lcd_update_enable(false);
-						show_preheat_nozzle_warning();
-						lcd_update_enable(true);
-*/
-						eFilamentAction=FilamentAction::AutoLoad;
-						if(target_temperature[0] >= extrude_min_temp){
-							bFilamentPreheatState=true;
-//							mFilamentItem(target_temperature[0],target_temperature_bed);
-							menu_submenu(mFilamentItemForce);
-						} else {
-							menu_submenu(lcd_generic_preheat_menu);
-							lcd_timeoutToStatus.start();
-						}
-					}
-				}
-			}
-			else
-			{
-#ifdef PAT9125
-				fsensor_autoload_check_stop();
-#endif //PAT9125
-                if (fsensor_enabled && !saved_printing)
-                    fsensor_update();
-			}
-		}
-	}
-#endif //FILAMENT_SENSOR
+    if (fsensor.update()) {
+        lcd_draw_update = 1; //cause lcd update so that fsensor event polling can be done from the lcd draw routine.
+    }
+#endif
 
 #ifdef SAFETYTIMER
 	handleSafetyTimer();
@@ -9608,7 +9570,7 @@ if(0)
     }
   #endif
   check_axes_activity();
-  mmu_loop();
+  MMU2::mmu2.mmu_loop();
 
   // handle longpress
   if(lcd_longpress_trigger)
@@ -9864,23 +9826,9 @@ bool setTargetedHotend(int code, uint8_t &extruder)
       extruder = code_value_uint8();
     if(extruder >= EXTRUDERS) {
       SERIAL_ECHO_START;
-      switch(code){
-        case 104:
-          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER
-          break;
-        case 105:
-          SERIAL_ECHORPGM(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER
-          break;
-        case 109:
-          SERIAL_ECHORPGM(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER
-          break;
-        case 218:
-          SERIAL_ECHORPGM(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER
-          break;
-        case 221:
-          SERIAL_ECHORPGM(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER
-          break;
-      }
+      serialprintPGM(PSTR("M"));
+      SERIAL_ECHO(code);
+      SERIAL_ECHOPGM(" Invalid extruder ");
       SERIAL_PROTOCOLLN((int)extruder);
       return true;
     }
@@ -10588,7 +10536,7 @@ void long_pause() //long pause print
     setAllTargetHotends(0);
 
     // Lift z
-    raise_z_above(current_position[Z_AXIS] + Z_PAUSE_LIFT, true);
+    raise_z(Z_PAUSE_LIFT);
 
     // Move XY to side
     if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) {
@@ -11318,7 +11266,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     if (pos_invalid) saved_pos[X_AXIS] = X_COORD_INVALID;
 
     saved_feedmultiply2 = feedmultiply; //save feedmultiply
-	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
 	saved_bed_temperature = degTargetBed();
 	saved_extruder_relative_mode = axis_relative_modes & E_AXIS_MASK;
@@ -11366,6 +11313,16 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 }
 
+void restore_extruder_temperature_from_ram() {
+    if (degTargetHotend(active_extruder) != saved_extruder_temperature)
+    {
+        setTargetHotendSafe(saved_extruder_temperature, active_extruder);
+        heating_status = HeatingStatus::EXTRUDER_HEATING;
+        wait_for_heater(_millis(), active_extruder);
+        heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
+    }
+}
+
 //! @brief Restore print from ram
 //!
 //! Restore print saved by stop_and_save_print_to_ram(). Is blocking, restores
@@ -11388,17 +11345,8 @@ void restore_print_from_ram_and_continue(float e_move)
     // restore bed temperature (bed can be disabled during a thermal warning)
     if (degBed() != saved_bed_temperature)
         setTargetBed(saved_bed_temperature);
-
-	// restore active_extruder
-	active_extruder = saved_active_extruder;
 	fanSpeed = saved_fan_speed;
-	if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
-	{
-		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
-		heating_status = HeatingStatus::EXTRUDER_HEATING;
-		wait_for_heater(_millis(), saved_active_extruder);
-		heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
-	}
+	restore_extruder_temperature_from_ram();
 	axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
@@ -11528,21 +11476,28 @@ void load_filament_final_feed()
 //! @par nozzle_temp nozzle temperature to load filament
 void M600_check_state(float nozzle_temp)
 {
-    lcd_change_fil_state = 0;
-    while (lcd_change_fil_state != 1)
+    uint8_t lcd_change_filament_state = 0;
+    while (lcd_change_filament_state != 1)
     {
-        lcd_change_fil_state = 0;
         KEEPALIVE_STATE(PAUSED_FOR_USER);
-        lcd_alright();
+        lcd_change_filament_state = lcd_alright();
         KEEPALIVE_STATE(IN_HANDLER);
-        switch(lcd_change_fil_state)
+        switch(lcd_change_filament_state)
         {
         // Filament failed to load so load it again
         case 2:
-            if (mmu_enabled)
-                mmu_M600_load_filament(false, nozzle_temp); //nonautomatic load; change to "wrong filament loaded" option?
-            else
+            if (MMU2::mmu2.Enabled()){
+                // Unload filament
+                mmu_M600_unload_filament();
+
+                // Ask to remove any old filament and load new
+                mmu_M600_wait_and_beep();
+
+                // After user clicks knob, MMU will load the filament
+                mmu_M600_load_filament(false, nozzle_temp);
+            } else {
                 M600_load_filament_movements();
+            }
             break;
 
         // Filament loaded properly but color is not clear
@@ -11660,46 +11615,23 @@ void M600_load_filament() {
 	//load_filament_time = _millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-#ifdef PAT9125
-	fsensor_autoload_check_start();
-#endif //PAT9125
 	while(!lcd_clicked())
 	{
 		manage_heater();
 		manage_inactivity(true);
 #ifdef FILAMENT_SENSOR
-		if (fsensor_check_autoload())
-		{
-      Sound_MakeCustom(50,1000,false);
+		if (fsensor.getFilamentLoadEvent()) {
+			Sound_MakeCustom(50,1000,false);
 			break;
 		}
 #endif //FILAMENT_SENSOR
 	}
-#ifdef PAT9125
-	fsensor_autoload_check_stop();
-#endif //PAT9125
 	KEEPALIVE_STATE(IN_HANDLER);
-
-#ifdef FSENSOR_QUALITY
-	fsensor_oq_meassure_start(70);
-#endif //FSENSOR_QUALITY
 
 	M600_load_filament_movements();
 
-      Sound_MakeCustom(50,1000,false);
+	Sound_MakeCustom(50,1000,false);
 
-#ifdef FSENSOR_QUALITY
-	fsensor_oq_meassure_stop();
-
-	if (!fsensor_oq_result())
-	{
-		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_n("Fil. sensor response is poor, disable it?"), false, true);
-		lcd_update_enable(true);
-		lcd_update(2);
-		if (disable)
-			fsensor_disable();
-	}
-#endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
 }
 
@@ -11720,8 +11652,6 @@ void marlin_wait_for_click()
     }
     KEEPALIVE_STATE(busy_state_backup);
 }
-
-#define FIL_LOAD_LENGTH 60
 
 #ifdef PSU_Delta
 bool bEnableForce_z;

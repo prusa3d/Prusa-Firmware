@@ -5,7 +5,7 @@
 
 #include "planner.h"
 
-constexpr uint8_t TEMP_MODEL_CAL_S = 60;     // Maximum recording lenght during calibration (s)
+constexpr uint8_t TEMP_MODEL_CAL_S = 60;     // Maximum recording length during calibration (s)
 constexpr uint8_t TEMP_MODEL_CAL_R_STEP = 4; // Fan interpolation steps during calibration
 constexpr float TEMP_MODEL_fS = 0.065;       // simulation filter (1st-order IIR factor)
 constexpr float TEMP_MODEL_fE = 0.05;        // error filter (1st-order IIR factor)

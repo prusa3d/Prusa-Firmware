@@ -119,7 +119,7 @@ def ign_char_first(c):
 def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
 
-def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty, warn_same, information):
+def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty, warn_same, information, shorter):
     """Check strings to display definition."""
 
     # do not check obsolete/deleted entriees
@@ -221,10 +221,18 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
             print_wrapped(wrapped_source, rows, cols)
             print()
 
-    # Check for translation lenght
+    # Check for translation length too long
     if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
         errors += 1
         print(red('[E]: Text is longer than definition on line %d: cols=%d rows=%d (rows diff=%d)'
+                % (line, cols, rows, rows_count_translation-rows)))
+        print_source_translation(source, translation,
+                                wrapped_source, wrapped_translation,
+                                rows, cols)
+
+    # Check for translation length shorter
+    if shorter and (rows_count_translation < rows-1):
+        print(yellow('[S]: Text is shorter than definition on line %d: cols=%d rows=%d (rows diff=%d)'
                 % (line, cols, rows, rows_count_translation-rows)))
         print_source_translation(source, translation,
                                 wrapped_source, wrapped_translation,
@@ -313,6 +321,9 @@ def main():
     parser.add_argument(
         "--warn-same", action="store_true",
         help="Warn about one-word translations which are identical to the source")
+    parser.add_argument(
+        "--shorter", action="store_true",
+        help="Show message if it is shorter than expected.")
 
     # load the translations
     args = parser.parse_args()
@@ -333,7 +344,7 @@ def main():
     status = True
     for translation in polib.pofile(args.po):
         status &= check_translation(translation, msgids, args.pot, args.no_warning, args.no_suggest,
-                                    args.warn_empty, args.warn_same, args.information)
+                                    args.warn_empty, args.warn_same, args.information, args.shorter)
     return 0 if status else 1
 
 if __name__ == "__main__":

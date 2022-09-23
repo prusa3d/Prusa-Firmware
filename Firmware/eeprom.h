@@ -216,10 +216,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| Sound mode: __once__								| ^				| ^
 | ^					| ^			| ^										| 02h 1			| ^						| Sound mode: __silent__							| ^				| ^
 | ^					| ^			| ^										| 03h 1			| ^						| Sound mode: __assist__							| ^				| ^
-| 0x0ED6 3798		| bool		| EEPROM_AUTO_DEPLETE					| 01h 1			| ffh 255				| MMU2/s autodeplete: __on__						| ???			| D3 Ax0ed6 C1
+| 0x0ED6 3798		| bool		| EEPROM_SPOOL_JOIN					| 01h 1			| ffh 255				| MMU2/s autodeplete: __on__						| ???			| D3 Ax0ed6 C1
 | ^					| ^			| ^										| 00h 0			| ^						| MMU2/s autodeplete: __off__						| ^				| ^
-| 0x0ED5 3797		| bool		| EEPROM_FSENS_OQ_MEASS_ENABLED			| ???			| ffh 255				| PAT1925 ???										| ???			| D3 Ax0ed5 C1
-| ^					| ^			| ^										| ???			| ^						| PAT1925 ???										| ^				| ^
+| 0x0ED5 3797		| bool		| EEPROM_FSENS_RUNOUT_ENABLED			| 01h 1			| ffh 255		__P__	| Filament runout: __enabled__						| LCD menu		| D3 Ax0ed5 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Filament runout: __disabled__						| LCD menu		| ^
 | 0x0ED3 3795		| uint16	| EEPROM_MMU_FAIL_TOT					| ???			| ff ffh 65535	__S/P__	| MMU2/s total failures								| ???			| D3 Ax0ed3 C2
 | 0x0ED2 3794		| uint8		| EEPROM_MMU_FAIL						| ???			| ffh 255		__S/P__	| MMU2/s fails during print							| ???			| D3 Ax0ed2 C1
 | 0x0ED0 3792		| uint16	| EEPROM_MMU_LOAD_FAIL_TOT				| ???			| ff ffh 65535	__S/P__	| MMU2/s total load failures						| ???			| D3 Ax0ed0 C2
@@ -333,6 +333,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 03h 3			| ^						| bad_isr											| ^				| ^
 | ^					| ^			| ^										| 04h 4			| ^						| bad_pullup_temp_isr								| ^				| ^
 | ^					| ^			| ^										| 05h 5			| ^						| bad_pullup_step_isr								| ^				| ^
+| 0x0D02 3320		| uint8_t	| EEPROM_FSENSOR_JAM_DETECTION			| 01h 1			| ff/01					| fsensor pat9125 jam detection feature				| LCD menu		| D3 Ax0d02 C1
+| 0x0D01 3319		| uint8_t	| EEPROM_MMU_ENABLED        			| 01h 1			| ff/01					| MMU enabled                       				| LCD menu		| D3 Ax0d01 C1
 
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
@@ -492,11 +494,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 
 // Sound Mode
 #define EEPROM_SOUND_MODE (EEPROM_UVLO_TARGET_HOTEND-1) // uint8
-#define EEPROM_AUTO_DEPLETE (EEPROM_SOUND_MODE-1) //bool
+#define EEPROM_SPOOL_JOIN (EEPROM_SOUND_MODE-1) //bool
 
-#define EEPROM_FSENS_OQ_MEASS_ENABLED (EEPROM_AUTO_DEPLETE - 1) //bool
+#define EEPROM_FSENS_RUNOUT_ENABLED (EEPROM_SPOOL_JOIN - 1) //bool
 
-#define EEPROM_MMU_FAIL_TOT (EEPROM_FSENS_OQ_MEASS_ENABLED - 2) //uint16_t
+#define EEPROM_MMU_FAIL_TOT (EEPROM_FSENS_RUNOUT_ENABLED - 2) //uint16_t
 #define EEPROM_MMU_FAIL (EEPROM_MMU_FAIL_TOT - 1) //uint8_t
 
 #define EEPROM_MMU_LOAD_FAIL_TOT (EEPROM_MMU_FAIL - 2) //uint16_t
@@ -556,8 +558,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_TEMP_MODEL_W (EEPROM_TEMP_MODEL_Ta_corr-4) // float
 #define EEPROM_TEMP_MODEL_E (EEPROM_TEMP_MODEL_W-4) // float
 
+#define EEPROM_FSENSOR_JAM_DETECTION (EEPROM_TEMP_MODEL_E-1) // uint8_t
+#define EEPROM_MMU_ENABLED (EEPROM_FSENSOR_JAM_DETECTION-1) // uint8_t
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_TEMP_MODEL_E
+#define EEPROM_LAST_ITEM EEPROM_MMU_ENABLED
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

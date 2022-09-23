@@ -1,5 +1,5 @@
-#ifndef UTIL_H
-#define UTIL_H
+#pragma once
+#include <stdint.h>
 
 extern const char* FW_VERSION_STR_P();
 
@@ -112,5 +112,3 @@ void fSetMmuMode(bool bMMu);
 
 #define IP4_STR_SIZE 16
 extern void ip4_to_str(char* dest, uint8_t* IP);
-
-#endif /* UTIL_H */

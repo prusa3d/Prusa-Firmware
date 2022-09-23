@@ -17,7 +17,6 @@ set(TEST_SOURCES
 	Tests/AutoDeplete_test.cpp
 	Tests/PrusaStatistics_test.cpp
 	Firmware/Timer.cpp
-	Firmware/AutoDeplete.cpp
 )
 add_executable(tests ${TEST_SOURCES})
 target_include_directories(tests PRIVATE Tests)

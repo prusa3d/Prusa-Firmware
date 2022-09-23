@@ -21,6 +21,7 @@
 #include "Configuration.h"
 #include "pins.h"
 #include "Timer.h"
+#include "mmu2.h"
 extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
@@ -280,7 +281,6 @@ extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
 extern uint8_t newFanSpeed;
-extern int8_t lcd_change_fil_state;
 extern float default_retraction;
 
 void get_coordinates();
@@ -315,8 +315,9 @@ extern bool fan_state[2];
 extern int fan_edge_counter[2];
 extern int fan_speed[2];
 
-// Handling multiple extruders pins
-extern uint8_t active_extruder;
+// Active extruder becomes a #define to make the whole firmware compilable.
+// We may even remove the references to it wherever possible in the future
+#define active_extruder 0
 
 //Long pause
 extern unsigned long pause_time;
@@ -413,6 +414,7 @@ extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
+void restore_extruder_temperature_from_ram();
 extern void restore_print_from_ram_and_continue(float e_move);
 extern void cancel_saved_printing();
 
@@ -461,7 +463,7 @@ void gcode_M114();
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
 void gcode_M123();
 #endif //FANCHECK and TACH_0 and TACH_1
-void gcode_M701();
+void gcode_M701(float fastLoadLength, uint8_t mmuSlotIndex);
 
 #define UVLO !(PINE & (1<<4))
 
@@ -472,7 +474,8 @@ void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
 void marlin_wait_for_click();
-void raise_z_above(float target, bool plan=true);
+float raise_z(float delta);
+void raise_z_above(float target);
 
 extern "C" void softReset();
 void stack_error();
