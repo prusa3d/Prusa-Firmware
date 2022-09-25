@@ -269,10 +269,11 @@ function(add_base_binary variant_name)
 
     set_target_properties(${variant_name} PROPERTIES CXX_STANDARD 17)
 
-    target_include_directories(${variant_name} PRIVATE Firmware
+    target_include_directories(${variant_name} PRIVATE
         ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
         ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
         ${VARIANT_CFG_DIR} # Include the header for this variant.
+        ${CMAKE_SOURCE_DIR}/Firmware
     )
 
     target_link_libraries(${variant_name} avr_core)
