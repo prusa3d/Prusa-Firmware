@@ -1331,7 +1331,7 @@ msgstr "Teraz skalibrujem vzdialenost medzi koncom trysky a povrchom podlozky."
 #. MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4059
 msgid "Now I will preheat nozzle for PLA."
-msgstr "Teraz predhorejem trysku pre PLA."
+msgstr "Teraz predohrejem trysku pre PLA."
 
 #. MSG_REMOVE_TEST_PRINT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4048
