@@ -79,6 +79,20 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     case (uint16_t)ErrorCode::FINDA_VS_EEPROM_DISREPANCY:
         return FindErrorIndex(ERR_SYSTEM_UNLOAD_MANUALLY);
     }
+    
+    // Electrical issues which can be detected somehow.
+    // Need to be placed before TMC-related errors in order to process couples of error bits between single ones
+    // and to keep the code size down.
+    if (ec & (uint16_t)ErrorCode::TMC_PULLEY_BIT) {
+        if (ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+            return FindErrorIndex(ERR_ELECTRICAL_PULLEY_SELFTEST_FAILED);
+    } else if (ec & (uint16_t)ErrorCode::TMC_SELECTOR_BIT) {
+        if (ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+            return FindErrorIndex(ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED);
+    } else if (ec & (uint16_t)ErrorCode::TMC_IDLER_BIT) {
+        if (ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+            return FindErrorIndex(ERR_ELECTRICAL_IDLER_SELFTEST_FAILED);
+    }
 
     // TMC-related errors - multiple of these can occur at once
     // - in such a case we report the first which gets found/converted into Prusa-Error-Codes (usually the fact, that one TMC has an issue is serious enough)
