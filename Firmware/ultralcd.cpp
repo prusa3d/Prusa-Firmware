@@ -3712,6 +3712,16 @@ void lcd_mesh_calibration_z()
   lcd_return_to_status();
 }
 
+#ifdef TEMP_MODEL
+void lcd_temp_model_cal()
+{
+  enquecommand_P(PSTR("M310 A F0"));
+  enquecommand_P(PSTR("M310 S1"));
+  enquecommand_P(PSTR("M500"));
+  lcd_return_to_status();
+}
+#endif //TEMP_MODEL
+
 void lcd_temp_calibration_set() {
 	bool temp_cal_active = eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE);
 	temp_cal_active = !temp_cal_active;
@@ -4874,6 +4884,9 @@ static void lcd_calibration_menu()
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=18
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17
+#ifdef TEMP_MODEL
+    MENU_ITEM_SUBMENU_P(_i("Temp. model cal."),lcd_temp_model_cal); ////MSG_TEMP_MODEL_CAL c=18
+#endif //TEMP_MODEL
 #ifndef TMC2130
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=18
 #endif
