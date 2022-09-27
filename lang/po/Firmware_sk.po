@@ -677,7 +677,7 @@ msgstr "Predny tlacovy vent?"
 #. MSG_BED_CORRECTION_FRONT c=14
 #: ../../Firmware/ultralcd.cpp:2754
 msgid "Front side[μm]"
-msgstr "Predna str. [μm]"
+msgstr "Predna st.[μm]"
 
 #. MSG_SELFTEST_FANS c=20
 #: ../../Firmware/ultralcd.cpp:7020
