@@ -177,7 +177,7 @@ extern const char MSG_LOAD_ALL[];
 
 //not internationalized messages
 extern const char MSG_FW_VERSION_BETA[];
-extern const char MSG_AUTO_DEPLETE[];
+extern const char MSG_SPOOL_JOIN[];
 extern const char MSG_FIRMWARE[];
 extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];
 extern const char MSG_PINDA[];
