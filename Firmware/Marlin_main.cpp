@@ -832,20 +832,20 @@ void factory_reset()
 void show_fw_version_warnings() {
 	if (FW_DEV_VERSION == FW_VERSION_GOLD || FW_DEV_VERSION == FW_VERSION_RC) return;
 	switch (FW_DEV_VERSION) {
-	case(FW_VERSION_ALPHA):   lcd_show_fullscreen_message_and_wait_P(_i("You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage."));   break;////MSG_FW_VERSION_ALPHA c=20 r=8
-	case(FW_VERSION_BETA):    lcd_show_fullscreen_message_and_wait_P(_i("You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."));    break;////MSG_FW_VERSION_BETA c=20 r=8
+	case(FW_VERSION_BETA):    lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA);   break;
+	case(FW_VERSION_ALPHA):
   case(FW_VERSION_DEVEL):
 	case(FW_VERSION_DEBUG):
     lcd_update_enable(false);
     lcd_clear();
-  #if FW_DEV_VERSION == FW_VERSION_DEVEL
+  #if (FW_DEV_VERSION == FW_VERSION_DEVEL || FW_DEV_VERSION == FW_VERSION_ALPHA)
     lcd_puts_at_P(0, 0, PSTR("Development build !!"));
   #else
     lcd_puts_at_P(0, 0, PSTR("Debbugging build !!!"));
   #endif
     lcd_puts_at_P(0, 1, PSTR("May destroy printer!"));
-    lcd_puts_at_P(0, 2, PSTR("ver ")); lcd_puts_P(PSTR(FW_VERSION_FULL));
-    lcd_puts_at_P(0, 3, PSTR(FW_REPOSITORY));
+    lcd_puts_at_P(0, 2, PSTR("FW")); lcd_puts_P(PSTR(FW_VERSION_FULL));
+    lcd_puts_at_P(0, 3, PSTR("Repo: ")); lcd_puts_P(PSTR(FW_REPOSITORY));
     lcd_wait_for_click();
     break;
 //	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
