@@ -72,7 +72,6 @@ extern const char MSG_NO[];
 extern const char MSG_NOZZLE[];
 extern const char MSG_PAPER[];
 extern const char MSG_PAUSE_PRINT[];
-extern const char MSG_PINDA[];
 extern const char MSG_PLACE_STEEL_SHEET[];
 extern const char MSG_PLEASE_WAIT[];
 extern const char MSG_POWER_FAILURES[];
@@ -86,7 +85,6 @@ extern const char MSG_REMOVE_STEEL_SHEET[];
 extern const char MSG_RESET[];
 extern const char MSG_RESUME_PRINT[];
 extern const char MSG_RESUMING_PRINT[];
-extern const char MSG_SD_WORKDIR_FAIL[];
 extern const char MSG_SELFTEST_PART_FAN[];
 extern const char MSG_SELFTEST_EXTRUDER_FAN[];
 extern const char MSG_SELFTEST_FAILED[];
@@ -126,24 +124,20 @@ extern const char MSG_WIZARD_WELCOME[];
 extern const char MSG_WIZARD_WELCOME_SHIPPING[];
 extern const char MSG_YES[];
 extern const char MSG_V2_CALIBRATION[];
-extern const char MSG_WELCOME[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
 extern const char MSG_NA[];
-extern const char MSG_AUTO_DEPLETE[];
 extern const char MSG_CUTTER[];
 extern const char MSG_NONE[];
 extern const char MSG_WARN[];
 extern const char MSG_STRICT[];
 extern const char MSG_MODEL[];
-extern const char MSG_FIRMWARE[];
 extern const char MSG_GCODE[];
 extern const char MSG_GCODE_DIFF_PRINTER_CONTINUE[];
 extern const char MSG_GCODE_DIFF_PRINTER_CANCELLED[];
 extern const char MSG_NOZZLE_DIAMETER[];
 extern const char MSG_MMU_MODE[];
 extern const char MSG_SD_CARD[];
-extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];
 extern const char MSG_SORT[];
 extern const char MSG_SORT_TIME[];
 extern const char MSG_SORT_ALPHA[];
@@ -177,6 +171,15 @@ extern const char MSG_THERMAL_ANOMALY[];
 #endif
 
 //not internationalized messages
+#if 0
+extern const char MSG_FW_VERSION_BETA[];
+#endif
+extern const char MSG_AUTO_DEPLETE[];
+extern const char MSG_FIRMWARE[];
+extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];
+extern const char MSG_PINDA[];
+extern const char MSG_WELCOME[];
+extern const char MSG_SD_WORKDIR_FAIL[];
 extern const char MSG_BROWNOUT_RESET[];
 extern const char MSG_EXTERNAL_RESET[];
 extern const char MSG_FILE_SAVED[];

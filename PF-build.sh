@@ -85,7 +85,7 @@
 # 15 Feb 2019, 3d-gussner, troubleshooting and minor fixes
 # 16 Feb 2019, 3d-gussner, Script can be run using arguments
 #                          $1 = variant, example "1_75mm_MK3-EINSy10a-E3Dv6full.h" at this moment it is not possible to use ALL
-#                          $2 = multi language OR English only [ALL/EN_ONLY]
+#                          $2 = multi language OR English only [ALL/EN_FARM]
 #                          $3 = development status [GOLD/RC/BETA/ALPHA/DEVEL/DEBUG]
 #                          If one argument is wrong a list of valid one will be shown
 # 13 Mar 2019, 3d-gussner, MKbel updated the Linux build environment to version 1.0.2 with an Fix maximum firmware flash size.
@@ -124,7 +124,7 @@
 #                          After compiling All multi-language variants it makes it easier to find missing or unused translations.
 # 12 May 2020, DRracer   , Cleanup double MK2/s MK25/s `not_tran` and `not_used` files
 # 13 May 2020, leptun    , If cleanup files do not exist don't try to.
-# 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_ONLY. Thank to @leptun for pointing out.
+# 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_FARM. Thank to @leptun for pointing out.
 #                          Change Build number to script commits 'git rev-list --count HEAD PF-build.sh'
 # 02 Oct 2020, 3d-gussner, Add UNKNOWN as argument option
 # 05 Oct 2020, 3d-gussner, Disable pause and warnings using command line with all needed arguments
@@ -268,7 +268,7 @@ echo "  -d : '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)',
 echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
 echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.19$(tput sgr0)'"
 echo "  -j : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
+echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_FARM$(tput sgr0)' for English only"
 echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
 echo "  -n : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -o : '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
@@ -882,7 +882,7 @@ else
     fi
 fi
 
-#'-l' argument defines if it is an English only version. Known values EN_ONLY / ALL
+#'-l' argument defines if it is an English only version. Known values EN_FARM / ALL
 #Check default language mode
 MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "^#define LANG_MODE *" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
@@ -897,7 +897,7 @@ if [ -z "$language_flag" ] ; then
                 break
                 ;;
             "English only") 
-                LANGUAGES="EN_ONLY"
+                LANGUAGES="EN_FARM"
                 break
                 ;;
             *)
@@ -906,11 +906,11 @@ if [ -z "$language_flag" ] ; then
         esac
     done
 else
-    if [[ "$language_flag" == "ALL" || "$language_flag" == "EN_ONLY" ]] ; then
+    if [[ "$language_flag" == "ALL" || "$language_flag" == "EN_FARM" ]] ; then
         LANGUAGES=$language_flag
     else
         echo "$(tput setaf 1)Language argument is wrong!$(tput sgr0)"
-        echo "Only $(tput setaf 2)'ALL'$(tput sgr0) or $(tput setaf 2)'EN_ONLY'$(tput sgr0) are allowed as language '-l' argument!"
+        echo "Only $(tput setaf 2)'ALL'$(tput sgr0) or $(tput setaf 2)'EN_FARM'$(tput sgr0) are allowed as language '-l' argument!"
         failures 5
     fi
 fi
@@ -1110,9 +1110,9 @@ prepare_hex_folders()
         if [ $OUTPUT == "1" ] ; then
             read -t 10 -p "Press Enter to continue..."
         fi
-    elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex"  &&  "$LANGUAGES" == "EN_ONLY" ]]; then
+    elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.hex"  &&  "$LANGUAGES" == "EN_FARM" ]]; then
         echo ""
-        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex | xargs -n1 basename
+        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.hex | xargs -n1 basename
         echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
         if [ $OUTPUT == "1" ] ; then
             read -t 10 -p "Press Enter to continue..."
@@ -1171,7 +1171,7 @@ prepare_variant_for_compiling()
     sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
     #Prepare English only or multi-language version to be build
-    if [ $LANGUAGES == "EN_ONLY" ]; then
+    if [ $LANGUAGES == "EN_FARM" ]; then
         echo " "
         echo "English only language firmware will be built"
         sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
@@ -1379,17 +1379,17 @@ create_multi_firmware()
 }
 #### End: Create and save Multi Language Prusa Firmware
 
-#### Start: Save EN_ONLY language Prusa Firmware
+#### Start: Save EN_FARM language Prusa Firmware
 save_en_firmware()
 {
     #else
         echo "$(tput setaf 2)Copying English only firmware to PF-build-hex folder$(tput sgr 0)"
-        cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex || failures 12
+        cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.hex || failures 12
         echo "$(tput setaf 2)Copying English only elf file to PF-build-hex folder$(tput sgr 0)"
-        cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.elf || failures 12
+        cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.elf || failures 12
     #fi
 }
-#### End: Save EN_ONLY language Prusa Firmware
+#### End: Save EN_FARM language Prusa Firmware
 
 #### Start: Cleanup Firmware
 cleanup_firmware()
@@ -1562,7 +1562,7 @@ if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
     #cd ../MK404/master/build
 
 
-#Decide which hex file to use EN_ONLY or Multi language
+#Decide which hex file to use EN_FARM or Multi language
     if [ "$LANGUAGES" == "ALL" ]; then
         if [[ "$MK404_PRINTER" == "MK3" || "$MK404_PRINTER" == "MK3S" ]]; then
             MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
@@ -1575,7 +1575,7 @@ if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
             done
         fi
     else
-        MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex
+        MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.hex
     fi
 
 # Start MK404
