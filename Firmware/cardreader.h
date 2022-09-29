@@ -53,7 +53,7 @@ public:
   void getAbsFilename(char *t);
   void printAbsFilenameFast();
   void getDirName(char* name, uint8_t level);
-  uint16_t getWorkDirDepth();
+  uint8_t getWorkDirDepth();
   
 
   void ls(ls_param params);
@@ -63,11 +63,8 @@ public:
 
   #ifdef SDCARD_SORT_ALPHA
      void presort();
-	 #ifdef SDSORT_QUICKSORT
-		void swap(uint8_t left, uint8_t right);
-		void quicksort(uint8_t left, uint8_t right);
-	 #endif //SDSORT_QUICKSORT
      void getfilename_sorted(const uint16_t nr, uint8_t sdSort);
+     void getfilename_afterMaxSorting(uint16_t entry, const char * const match = NULL);
   #endif
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
@@ -92,7 +89,7 @@ public:
   bool logging;
   bool sdprinting ;  
   bool cardOK ;
-  char filename[13];
+  char filename[FILENAME_LENGTH];
   // There are scenarios when simple modification time is not enough (on MS Windows)
   // Therefore these timestamps hold the most recent one of creation/modification date/times
   uint16_t crmodTime, crmodDate;
@@ -102,16 +99,17 @@ public:
   int lastnr; //last number of the autostart;
 #ifdef SDCARD_SORT_ALPHA
   bool presort_flag;
-  char dir_names[MAX_DIR_DEPTH][9];
 #endif // SDCARD_SORT_ALPHA
+  char dir_names[MAX_DIR_DEPTH][9];
 private:
   SdFile root,*curDir,workDir,workDirParents[MAX_DIR_DEPTH];
-  uint16_t workDirDepth;
+  uint8_t workDirDepth;
 
   // Sort files and folders alphabetically.
 #ifdef SDCARD_SORT_ALPHA
   uint16_t sort_count;        // Count of sorted items in the current directory
   uint16_t sort_entries[SDSORT_LIMIT];
+  uint16_t lastSortedFilePosition;
 
 #endif // SDCARD_SORT_ALPHA
 

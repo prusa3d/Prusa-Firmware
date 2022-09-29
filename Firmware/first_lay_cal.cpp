@@ -8,33 +8,25 @@
 #include "language.h"
 #include "Marlin.h"
 #include "cmdqueue.h"
-#include "mmu.h"
+#include "mmu2.h"
 #include <avr/pgmspace.h>
 
 //! @brief Wait for preheat
 void lay1cal_wait_preheat()
 {
-    static const char cmd_preheat_0[] PROGMEM = "M107";
-    static const char cmd_preheat_1[] PROGMEM = "M190";
-    static const char cmd_preheat_2[] PROGMEM = "M109";
-    static const char cmd_preheat_4[] PROGMEM = "G28";
-    static const char cmd_preheat_5[] PROGMEM = "G92 E0.0";
-
     const char * const preheat_cmd[] =
     {
-        cmd_preheat_0,
-        cmd_preheat_1,
-        cmd_preheat_2,
-        _T(MSG_M117_V2_CALIBRATION),
-        cmd_preheat_4,
-        cmd_preheat_5,
+        PSTR("M107"),
+        PSTR("M190"),
+        PSTR("M109"),
+        PSTR("G28"),
+        PSTR("G92 E0.0")
     };
 
     for (uint8_t i = 0; i < (sizeof(preheat_cmd)/sizeof(preheat_cmd[0])); ++i)
     {
         enquecommand_P(preheat_cmd[i]);
     }
-
 }
 
 //! @brief Load filament
@@ -42,7 +34,7 @@ void lay1cal_wait_preheat()
 //! @param filament filament to use (applies for MMU only)
 void lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
 {
-    if (mmu_enabled)
+    if (MMU2::mmu2.Enabled())
     {
         enquecommand_P(PSTR("M83"));
         enquecommand_P(PSTR("G1 Y-3.0 F1000.0"));
@@ -81,7 +73,7 @@ void lay1cal_intro_line()
         cmd_intro_mmu_12,
     };
 
-    if (mmu_enabled)
+    if (MMU2::mmu2.Enabled())
     {
         for (uint8_t i = 0; i < (sizeof(intro_mmu_cmd)/sizeof(intro_mmu_cmd[0])); ++i)
         {

@@ -11,6 +11,7 @@ extern "C" {
 
 // LCD Menu Messages
 //internationalized messages
+extern const char MSG_ALWAYS[];
 extern const char MSG_AUTO_HOME[];
 extern const char MSG_BABYSTEP_Z[];
 extern const char MSG_BABYSTEP_Z_NOT_SET[];
@@ -46,7 +47,9 @@ extern const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[];
 extern const char MSG_FINISHING_MOVEMENTS[];
 extern const char MSG_FOLLOW_CALIBRATION_FLOW[];
 extern const char MSG_FOLLOW_Z_CALIBRATION_FLOW[];
+extern const char MSG_FSENSOR_RUNOUT[];
 extern const char MSG_FSENSOR_AUTOLOAD[];
+extern const char MSG_FSENSOR_JAM_DETECTION[];
 extern const char MSG_FSENSOR[];
 extern const char MSG_HEATING[];
 extern const char MSG_HEATING_COMPLETE[];
@@ -57,7 +60,9 @@ extern const char MSG_SELECT_FILAMENT[];
 extern const char MSG_LAST_PRINT[];
 extern const char MSG_LAST_PRINT_FAILURES[];
 extern const char MSG_LOAD_FILAMENT[];
+extern const char MSG_LOAD_TO_EXTRUDER[];
 extern const char MSG_LOADING_FILAMENT[];
+extern const char MSG_TESTING_FILAMENT[];
 extern const char MSG_M117_V2_CALIBRATION[];
 extern const char MSG_MAIN[];
 extern const char MSG_BACK[];
@@ -71,7 +76,6 @@ extern const char MSG_NO[];
 extern const char MSG_NOZZLE[];
 extern const char MSG_PAPER[];
 extern const char MSG_PAUSE_PRINT[];
-extern const char MSG_PINDA[];
 extern const char MSG_PLACE_STEEL_SHEET[];
 extern const char MSG_PLEASE_WAIT[];
 extern const char MSG_POWER_FAILURES[];
@@ -85,7 +89,6 @@ extern const char MSG_REMOVE_STEEL_SHEET[];
 extern const char MSG_RESET[];
 extern const char MSG_RESUME_PRINT[];
 extern const char MSG_RESUMING_PRINT[];
-extern const char MSG_SD_WORKDIR_FAIL[];
 extern const char MSG_SELFTEST_PART_FAN[];
 extern const char MSG_SELFTEST_EXTRUDER_FAN[];
 extern const char MSG_SELFTEST_FAILED[];
@@ -98,6 +101,8 @@ extern const char MSG_SELFTEST_MOTOR[];
 extern const char MSG_SELFTEST_FILAMENT_SENSOR[];
 extern const char MSG_SELFTEST_WIRINGERROR[];
 extern const char MSG_SETTINGS[];
+extern const char MSG_SELECT_LANGUAGE[];
+extern const char MSG_SORTING_FILES[];
 extern const char MSG_TOTAL[];
 extern const char MSG_TOTAL_FAILURES[];
 extern const char MSG_HW_SETUP[];
@@ -123,24 +128,20 @@ extern const char MSG_WIZARD_WELCOME[];
 extern const char MSG_WIZARD_WELCOME_SHIPPING[];
 extern const char MSG_YES[];
 extern const char MSG_V2_CALIBRATION[];
-extern const char MSG_WELCOME[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
 extern const char MSG_NA[];
-extern const char MSG_AUTO_DEPLETE[];
 extern const char MSG_CUTTER[];
 extern const char MSG_NONE[];
 extern const char MSG_WARN[];
 extern const char MSG_STRICT[];
 extern const char MSG_MODEL[];
-extern const char MSG_FIRMWARE[];
 extern const char MSG_GCODE[];
 extern const char MSG_GCODE_DIFF_PRINTER_CONTINUE[];
 extern const char MSG_GCODE_DIFF_PRINTER_CANCELLED[];
 extern const char MSG_NOZZLE_DIAMETER[];
 extern const char MSG_MMU_MODE[];
 extern const char MSG_SD_CARD[];
-extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];
 extern const char MSG_SORT[];
 extern const char MSG_SORT_TIME[];
 extern const char MSG_SORT_ALPHA[];
@@ -163,13 +164,27 @@ extern const char MSG_TIMEOUT[];
 extern const char MSG_BRIGHT[];
 extern const char MSG_DIM[];
 extern const char MSG_AUTO[];
-#ifdef IR_SENSOR_ANALOG
+#if (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 extern const char MSG_IR_04_OR_NEWER[];
 extern const char MSG_IR_03_OR_OLDER[];
 extern const char MSG_IR_UNKNOWN[];
 #endif
+extern const char MSG_PAUSED_THERMAL_ERROR[];
+#ifdef TEMP_MODEL
+extern const char MSG_THERMAL_ANOMALY[];
+#endif
+extern const char MSG_LOAD_ALL[];
 
 //not internationalized messages
+#if 0
+extern const char MSG_FW_VERSION_BETA[];
+#endif
+extern const char MSG_SPOOL_JOIN[];
+extern const char MSG_FIRMWARE[];
+extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];
+extern const char MSG_PINDA[];
+extern const char MSG_WELCOME[];
+extern const char MSG_SD_WORKDIR_FAIL[];
 extern const char MSG_BROWNOUT_RESET[];
 extern const char MSG_EXTERNAL_RESET[];
 extern const char MSG_FILE_SAVED[];
@@ -180,7 +195,9 @@ extern const char MSG_WATCHDOG_RESET[];
 extern const char MSG_Z_MAX[];
 extern const char MSG_Z_MIN[];
 extern const char MSG_ZPROBE_OUT[];
+#ifdef ENABLE_AUTO_BED_LEVELING
 extern const char MSG_ZPROBE_ZOFFSET[];
+#endif
 extern const char MSG_TMC_OVERTEMP[];
 extern const char MSG_Enqueing[];
 extern const char MSG_ENDSTOPS_HIT[];
@@ -193,9 +210,9 @@ extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ENDSTOP_HIT[];
 extern const char MSG_EJECT_FILAMENT[];
 extern const char MSG_CUT_FILAMENT[];
-extern const char MSG_OCTOPRINT_PAUSE[];
+extern const char MSG_OCTOPRINT_ASK_PAUSE[];
 extern const char MSG_OCTOPRINT_PAUSED[];
-extern const char MSG_OCTOPRINT_RESUME[];
+extern const char MSG_OCTOPRINT_ASK_RESUME[];
 extern const char MSG_OCTOPRINT_RESUMED[];
 extern const char MSG_OCTOPRINT_CANCEL[];
 extern const char MSG_FANCHECK_EXTRUDER[];

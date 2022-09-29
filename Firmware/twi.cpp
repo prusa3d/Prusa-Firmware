@@ -21,6 +21,7 @@
 
 
 #include <math.h>
+#include <util/delay.h>
 #include "config.h"
 #include "fastio.h"
 #include "twi.h"
@@ -29,8 +30,24 @@
 
 void twi_init(void)
 {
-  // activate internal pullups for twi.
+  // activate internal pullups for SDA
+  SET_INPUT(SDA_PIN);
   WRITE(SDA_PIN, 1);
+  
+  // start with the SDA pulled low
+  WRITE(SCL_PIN, 0);
+  SET_OUTPUT(SCL_PIN);
+  
+  // clock 10 cycles to make sure that the sensor is not stuck in a register read.
+  for (uint8_t i = 0; i < 10; i++) {
+    WRITE(SCL_PIN, 1);
+    _delay_us((1000000 / TWI_FREQ) / 2);
+    WRITE(SCL_PIN, 0);
+    _delay_us((1000000 / TWI_FREQ) / 2);
+  }
+
+  // activate internal pullups for SCL
+  SET_INPUT(SCL_PIN);
   WRITE(SCL_PIN, 1);
 
   // initialize twi prescaler and bit rate
@@ -98,6 +115,25 @@ static uint8_t twi_start(uint8_t address, uint8_t reg)
       return 3;
 
   return 0;
+}
+
+
+uint8_t twi_check(uint8_t address)
+{
+    // send start condition
+    TWCR = _BV(TWEN) | _BV(TWINT) | _BV(TWSTA);
+    if(twi_wait(TW_START))
+        return 1;
+    
+      // send address
+    TWDR = TW_WRITE | (address << 1);
+    TWCR = _BV(TWEN) | _BV(TWINT);
+    if(twi_wait(TW_MT_SLA_ACK))
+        return 2;
+    
+    // send stop
+    twi_stop();
+    return 0;
 }
 
 

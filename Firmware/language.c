@@ -240,9 +240,9 @@ const char* lang_get_name_by_code(uint16_t code)
 #ifdef COMMUNITY_LANG_GROUP1_HR
 	case LANG_CODE_HR: return _n("Hrvatski"); //community Croatian contribution
 #endif // COMMUNITY_LANG_GROUP1_HR
-#ifdef COMMUNITY_LANG_GROUP1_LT
+#ifdef COMMUNITY_LANG_GROUP2_LT
 	case LANG_CODE_LT: return _n("Lietuviu"); //community Lithuanian contribution
-#endif // COMMUNITY_LANG_GROUP1_LT
+#endif // COMMUNITY_LANG_GROUP2_LT
 #ifdef COMMUNITY_LANG_GROUP1_RO
 	case LANG_CODE_RO: return _n("Romana"); //community Romanian contribution
 #endif // COMMUNITY_LANG_GROUP1_RO

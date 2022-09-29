@@ -528,6 +528,15 @@ void lcd_print(const char* s)
 	while (*s) lcd_write(*(s++));
 }
 
+void lcd_print_pad(const char* s, uint8_t len)
+{
+    while (len && *s) {
+        lcd_write(*(s++));
+        --len;
+    }
+    lcd_space(len);
+}
+
 void lcd_print(char c, int base)
 {
 	lcd_print((long) c, base);
@@ -638,7 +647,6 @@ uint8_t lcd_button_pressed = 0;
 uint8_t lcd_update_enabled = 1;
 
 uint32_t lcd_next_update_millis = 0;
-uint8_t lcd_status_update_delay = 0;
 
 
 
@@ -702,6 +710,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 
 void lcd_update_enable(uint8_t enabled)
 {
+	// printf_P(PSTR("lcd_update_enable(%u -> %u)\n"), lcd_update_enabled, enabled);
 	if (lcd_update_enabled != enabled)
 	{
 		lcd_update_enabled = enabled;

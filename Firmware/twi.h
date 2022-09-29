@@ -26,7 +26,7 @@
 #define TWI_FREQ 400000L
 #endif
 
-#define TWI_TIMEOUT_MS 100
+#define TWI_TIMEOUT_MS 10
 
 /*
  * Function twi_init
@@ -43,6 +43,14 @@ void twi_init(void);
  * Output   none
  */
 void twi_disable(void);
+
+/*
+ * Function twi_check
+ * Desc     checks if a device exists on the bus
+ * Input    address: 7bit i2c device address
+ * Output   0 on device found at address
+ */
+uint8_t twi_check(uint8_t address);
 
 /*
  * Function twi_r8

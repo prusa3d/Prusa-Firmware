@@ -26,13 +26,16 @@
 
 // The arc is approximated by generating a huge number of tiny, linear segments. The length of each 
 // segment is configured in settings.mm_per_arc_segment.  
-void mc_arc(float* position, float* target, float* offset, float feed_rate, float radius, bool isclockwise, uint8_t extruder)
+void mc_arc(const float* position, float* target, const float* offset, float feed_rate, float radius, bool isclockwise, uint8_t extruder, uint16_t start_segment_idx)
 {
+    float start_position[4];
+    memcpy(start_position, position, sizeof(start_position));
+    
     float r_axis_x = -offset[X_AXIS];  // Radius vector from center to current location
     float r_axis_y = -offset[Y_AXIS];
-    float center_axis_x = position[X_AXIS] - r_axis_x;
-    float center_axis_y = position[Y_AXIS] - r_axis_y;
-    float travel_z = target[Z_AXIS] - position[Z_AXIS];
+    float center_axis_x = start_position[X_AXIS] - r_axis_x;
+    float center_axis_y = start_position[Y_AXIS] - r_axis_y;
+    float travel_z = target[Z_AXIS] - start_position[Z_AXIS];
     float rt_x = target[X_AXIS] - center_axis_x;
     float rt_y = target[Y_AXIS] - center_axis_y;
     // 20200419 - Add a variable that will be used to hold the arc segment length
@@ -40,7 +43,7 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     // 20210109 - Add a variable to hold the n_arc_correction value
     unsigned char n_arc_correction = cs.n_arc_correction;
 
-    // CCW angle between position and target from circle center. Only one atan2() trig computation required.
+    // CCW angle between start_position and target from circle center. Only one atan2() trig computation required.
     float angular_travel_total = atan2(r_axis_x * rt_y - r_axis_y * rt_x, r_axis_x * rt_x + r_axis_y * rt_y);
     if (angular_travel_total < 0) { angular_travel_total += 2 * M_PI; }
 
@@ -76,7 +79,7 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
 
     //20141002:full circle for G03 did not work, e.g. G03 X80 Y80 I20 J0 F2000 is giving an Angle of zero so head is not moving
     //to compensate when start pos = target pos && angle is zero -> angle = 2Pi
-    if (position[X_AXIS] == target[X_AXIS] && position[Y_AXIS] == target[Y_AXIS] && angular_travel_total == 0)
+    if (start_position[X_AXIS] == target[X_AXIS] && start_position[Y_AXIS] == target[Y_AXIS] && angular_travel_total == 0)
     {
         angular_travel_total += 2 * M_PI;
     }
@@ -113,13 +116,13 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
     */
 
     // If there is only one segment, no need to do a bunch of work since this is a straight line!
-    if (segments > 1)
+    if (segments > 1 && start_segment_idx)
     {
         // Calculate theta per segments, and linear (z) travel per segment, e travel per segment
         // as well as the small angle approximation for sin and cos.
         const float theta_per_segment = angular_travel_total / segments,
             linear_per_segment = travel_z / (segments),
-            segment_extruder_travel = (target[E_AXIS] - position[E_AXIS]) / (segments),
+            segment_extruder_travel = (target[E_AXIS] - start_position[E_AXIS]) / (segments),
             sq_theta_per_segment = theta_per_segment * theta_per_segment,
             sin_T = theta_per_segment - sq_theta_per_segment * theta_per_segment / 6,
             cos_T = 1 - 0.5f * sq_theta_per_segment;
@@ -142,21 +145,22 @@ void mc_arc(float* position, float* target, float* offset, float feed_rate, floa
             }
 
             // Update Position
-            position[X_AXIS] = center_axis_x + r_axis_x;
-            position[Y_AXIS] = center_axis_y + r_axis_y;
-            position[Z_AXIS] += linear_per_segment;
-            position[E_AXIS] += segment_extruder_travel;
+            start_position[X_AXIS] = center_axis_x + r_axis_x;
+            start_position[Y_AXIS] = center_axis_y + r_axis_y;
+            start_position[Z_AXIS] += linear_per_segment;
+            start_position[E_AXIS] += segment_extruder_travel;
             // Clamp to the calculated position.
-            clamp_to_software_endstops(position);
+            clamp_to_software_endstops(start_position);
             // Insert the segment into the buffer
-            plan_buffer_line(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS], feed_rate, extruder, position);
+            if (i >= start_segment_idx)
+                plan_buffer_line(start_position[X_AXIS], start_position[Y_AXIS], start_position[Z_AXIS], start_position[E_AXIS], feed_rate, extruder, position, i);
             // Handle the situation where the planner is aborted hard.
-            if (waiting_inside_plan_buffer_line_print_aborted)
+            if (planner_aborted)
                 return;
         }
     }
     // Clamp to the target position.
     clamp_to_software_endstops(target);
     // Ensure last segment arrives at target location.
-    plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], feed_rate, extruder, target);
+    plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], feed_rate, extruder, position, 0);
 }

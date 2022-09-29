@@ -12,7 +12,7 @@
 #define uart2_txcomplete (UCSR2A & (1 << TXC2))
 #define uart2_txready    (UCSR2A & (1 << UDRE2))
 
-uint8_t uart2_ibuf[14] = {0, 0};
+uint8_t uart2_ibuf[20] = {0, 0};
 
 FILE _uart2io = {0};
 
@@ -33,13 +33,13 @@ int uart2_getchar(_UNUSED FILE *stream)
 }
 
 //uart init (io + FILE stream)
-void uart2_init(void)
+void uart2_init(uint32_t baudRate)
 {
 	DDRH &=	~0x01;
 	PORTH |= 0x01;
 	rbuf_ini(uart2_ibuf, sizeof(uart2_ibuf) - 4);
 	UCSR2A |= (1 << U2X2); // baudrate multiplier
-	UBRR2L = UART_BAUD_SELECT(UART2_BAUD, F_CPU); // select baudrate
+	UBRR2L = UART_BAUD_SELECT(baudRate, F_CPU); // select baudrate
 	UCSR2B = (1 << RXEN2) | (1 << TXEN2); // enable receiver and transmitter
 	UCSR2B |= (1 << RXCIE2); // enable rx interrupt
 	fdev_setup_stream(uart2io, uart2_putchar, uart2_getchar, _FDEV_SETUP_WRITE | _FDEV_SETUP_READ); //setup uart2 i/o stream

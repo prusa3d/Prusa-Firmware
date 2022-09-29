@@ -44,7 +44,7 @@ void print_hex_word(daddr_t val)
     print_hex_byte(val & 0xFF);
 }
 
-int parse_hex(char* hex, uint8_t* data, int count)
+int parse_hex(const char* hex, uint8_t* data, int count)
 {
 	int parsed = 0;
 	while (*hex)
@@ -573,6 +573,7 @@ void dcode_9()
 		for (uint8_t i = 0; i < ADC_CHAN_CNT; i++)
 			printf_P(PSTR("\tADC%d=%4d\t(%S)\n"), i, dcode_9_ADC_val(i) >> 4, dcode_9_ADC_name(i));
 	}
+#if 0
 	else
 	{
 		uint8_t index = 0xff;
@@ -583,11 +584,12 @@ void dcode_9()
 			if (code_seen('V')) // value to be written as simulated
 			{
 				adc_sim_mask |= (1 << index);
-				adc_values[index] = (((int)code_value()) << 4);
+				adc_values[index] = ((uint16_t)code_value_short() << 4);
 				printf_P(PSTR("ADC%d=%4d\n"), index, adc_values[index] >> 4);
 			}
 		}
 	}
+#endif
 }
 
     /*!
@@ -863,7 +865,7 @@ void dcode_2130()
 }
 #endif //TMC2130
 
-#ifdef PAT9125
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
     /*!
     ### D9125 - PAT9125 filament sensor <a href="https://reprap.org/wiki/G-code#D9:_Read.2FWrite_ADC">D9125: PAT9125 filament sensor</a>
     #### Usage
@@ -876,7 +878,6 @@ void dcode_2130()
     - `R` - Resolution. Not active in code
     - `X` - X values
     - `Y` - Y values
-    - `L` - Activate filament sensor log
     */
 void dcode_9125()
 {
@@ -910,15 +911,8 @@ void dcode_9125()
 		pat9125_y = (int)code_value();
 		LOG("pat9125_y=%d\n", pat9125_y);
 	}
-#ifdef DEBUG_FSENSOR_LOG
-	if (code_seen('L'))
-	{
-		fsensor_log = (int)code_value();
-		LOG("fsensor_log=%d\n", fsensor_log);
-	}
-#endif //DEBUG_FSENSOR_LOG
 }
-#endif //PAT9125
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
 #endif //DEBUG_DCODES
 
