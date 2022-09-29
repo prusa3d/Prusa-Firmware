@@ -127,6 +127,7 @@ extern const char MSG_V2_CALIBRATION[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
 extern const char MSG_NA[];
+extern const char MSG_CUTTER[];
 extern const char MSG_NONE[];
 extern const char MSG_WARN[];
 extern const char MSG_STRICT[];
@@ -170,7 +171,9 @@ extern const char MSG_THERMAL_ANOMALY[];
 #endif
 
 //not internationalized messages
+#if 0
 extern const char MSG_FW_VERSION_BETA[];
+#endif
 extern const char MSG_AUTO_DEPLETE[];
 extern const char MSG_FIRMWARE[];
 extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];

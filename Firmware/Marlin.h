@@ -385,7 +385,9 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
 #endif //HEATBED_ANALYSIS
 float temp_comp_interpolation(float temperature);
+#if 0
 void show_fw_version_warnings();
+#endif
 uint8_t check_printer_version();
 
 #ifdef PINDA_THERMISTOR
