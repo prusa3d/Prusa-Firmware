@@ -828,7 +828,7 @@ void factory_reset()
 	}
 	KEEPALIVE_STATE(IN_HANDLER);
 }
-
+#if 0
 void show_fw_version_warnings() {
 	if (FW_DEV_VERSION == FW_VERSION_GOLD || FW_DEV_VERSION == FW_VERSION_RC) return;
 	switch (FW_DEV_VERSION) {
@@ -852,6 +852,7 @@ void show_fw_version_warnings() {
 	}
 	lcd_update_enable(true);
 }
+#endif
 
 #if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
 //! @brief try to check if firmware is on right type of printer
@@ -1487,7 +1488,9 @@ void setup()
 #if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
     check_if_fw_is_on_right_printer();
 #endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
+#if 0
     show_fw_version_warnings();    
+#endif
   }
 
   switch (hw_changed) { 
@@ -1593,17 +1596,17 @@ void setup()
       manage_heater(); // Update temperatures 
 #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
 		printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED));
-#endif 
+#endif
      if ( degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET) ){ 
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Automatic recovery!")); 
-          #endif 
+          #endif
          recover_print(1); 
       } 
       else{ 
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Normal recovery!")); 
-          #endif 
+          #endif
           if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) == LCD_LEFT_BUTTON_CHOICE) {
               recover_print(0); 
           } else { 
@@ -4570,7 +4573,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
         retract(false,retracted_swap[active_extruder]);
        #else
         retract(false);
-       #endif 
+       #endif
       break;
 #endif //FWRETRACT
 

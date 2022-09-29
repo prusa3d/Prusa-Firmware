@@ -176,7 +176,9 @@ extern const char MSG_THERMAL_ANOMALY[];
 extern const char MSG_LOAD_ALL[];
 
 //not internationalized messages
+#if 0
 extern const char MSG_FW_VERSION_BETA[];
+#endif
 extern const char MSG_SPOOL_JOIN[];
 extern const char MSG_FIRMWARE[];
 extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];
