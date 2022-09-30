@@ -105,6 +105,8 @@ if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_u
         eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
         eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
     }
+//Set Cutter OFF if 0xff
+    if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED, 0);
 }
 
 //! @brief Get default sheet name for index

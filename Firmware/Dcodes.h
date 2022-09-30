@@ -53,9 +53,9 @@ extern void dcode_81(); //D81 - Bed analysis. This command will log data to SD c
 	extern void dcode_2130(); //D2130 - TMC2130
 #endif //TMC2130
 
-#ifdef PAT9125
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 	extern void dcode_9125(); //D9125 - PAT9125
-#endif //PAT9125
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
 
 #endif //DCODES_H

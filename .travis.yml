@@ -9,12 +9,13 @@ before_install:
   - sudo iptables -A OUTPUT -o lo -j ACCEPT
   - sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 script:
-  - bash -x test.sh
   - cp Firmware/variants/1_75mm_MK3S-EINSy10a-E3Dv6full.h Firmware/Configuration_prusa.h
   - bash -x build.sh || { echo "1_75mm_MK3S-EINSy10a-E3Dv6full variant failed" && false; }
+  - bash -x build.sh EN_ONLY || { echo "1_75mm_MK3S-EINSy10a-E3Dv6full EN_ONLY failed" && false; }
   - rm Firmware/Configuration_prusa.h
   - cp Firmware/variants/1_75mm_MK3-EINSy10a-E3Dv6full.h Firmware/Configuration_prusa.h
   - bash -x build.sh || { echo "1_75mm_MK3-EINSy10a-E3Dv6full variant failed" && false; }
+  - bash -x build.sh EN_ONLY || { echo "1_75mm_MK3-EINSy10a-E3Dv6full EN_ONLY failed" && false; }
   - rm Firmware/Configuration_prusa.h
   - cp Firmware/variants/1_75mm_MK25S-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
   - bash -x build.sh || { echo "1_75mm_MK25S-RAMBo13a-E3Dv6full variant failed" && false; }

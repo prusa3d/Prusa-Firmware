@@ -528,6 +528,12 @@ void lcd_print(const char* s)
 	while (*s) lcd_write(*(s++));
 }
 
+void lcd_print_pad(const char* s, uint8_t len)
+{
+    while (len-- && *s) lcd_write(*(s++));
+    lcd_space(len);
+}
+
 void lcd_print(char c, int base)
 {
 	lcd_print((long) c, base);
@@ -638,7 +644,6 @@ uint8_t lcd_button_pressed = 0;
 uint8_t lcd_update_enabled = 1;
 
 uint32_t lcd_next_update_millis = 0;
-uint8_t lcd_status_update_delay = 0;
 
 
 

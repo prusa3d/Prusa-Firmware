@@ -1,5 +1,5 @@
-#ifndef UTIL_H
-#define UTIL_H
+#pragma once
+#include <stdint.h>
 
 extern const char* FW_VERSION_STR_P();
 
@@ -104,7 +104,7 @@ extern ClCheckGcode oCheckGcode;
 void fCheckModeInit();
 void nozzle_diameter_check(uint16_t nDiameter);
 void printer_model_check(uint16_t nPrinterModel);
-void printer_smodel_check(char* pStrPos);
+void printer_smodel_check(const char* pStrPos);
 void fw_version_check(const char *pVersion);
 void gcode_level_check(uint16_t nGcodeLevel);
 
@@ -112,5 +112,3 @@ void fSetMmuMode(bool bMMu);
 
 #define IP4_STR_SIZE 16
 extern void ip4_to_str(char* dest, uint8_t* IP);
-
-#endif /* UTIL_H */

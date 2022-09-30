@@ -11,6 +11,7 @@
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK3
 #define PRINTER_NAME PRINTER_MK3_NAME
+#define PRINTER_NAME_ALTERNATE PRINTER_MK3S_NAME //the other similar printer to this.
 #define PRINTER_MMU_TYPE PRINTER_MK3_MMU2
 #define PRINTER_MMU_NAME PRINTER_MK3_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK3"
@@ -138,7 +139,6 @@
 // Safety timer
 #define SAFETYTIMER
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
-#define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 // Offline crash dumper
 #define XFLASH_DUMP     // enable dump functionality (including D20/D21/D22)
@@ -151,7 +151,8 @@
 
 // Filament sensor
 #define FILAMENT_SENSOR
-#define PAT9125
+#define FILAMENT_SENSOR_TYPE FSENSOR_PAT9125
+#define FSENSOR_PROBING
 
 // Backlash - 
 //#define BACKLASH_X
@@ -178,7 +179,6 @@
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes
 #define DEBUG_STACK_MONITOR        //Stack monitor in stepper ISR
-//#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
 //#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD
 //#define DEBUG_RESUME_PRINT       //Resume/save print debug enable 
 //#define DEBUG_UVLO_AUTOMATIC_RECOVER // Power panic automatic recovery debug output 
@@ -193,7 +193,6 @@
 //#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
 //#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
 //#define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
-//#define DEBUG_DISABLE_PRUSA_STATISTICS //disable prusa_statistics() mesages
 //#define DEBUG_DISABLE_FORCE_SELFTEST //disable force selftest
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
 //#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
@@ -204,8 +203,6 @@
 #define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 #define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
-
-//#define FSENSOR_QUALITY
 
 
 #define LINEARITY_CORRECTION
@@ -413,6 +410,34 @@
 #define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
+// model-based temperature check
+#define TEMP_MODEL 1          // enable model-based temperature checks
+#define TEMP_MODEL_DEBUG 1    // extended runtime logging
+
+#define TEMP_MODEL_P 38.      // heater power (W)
+
+#define TEMP_MODEL_C 12.1     // initial guess for heatblock capacitance (J/K)
+#define TEMP_MODEL_Cl 5       // C estimation lower limit
+#define TEMP_MODEL_Ch 20      // C estimation upper limit
+#define TEMP_MODEL_C_thr 0.01 // C estimation iteration threshold
+#define TEMP_MODEL_C_itr 30   // C estimation iteration limit
+
+#define TEMP_MODEL_R 20.5     // initial guess for heatblock resistance (K/W)
+#define TEMP_MODEL_Rl 5       // R estimation lower limit
+#define TEMP_MODEL_Rh 50      // R estimation upper limit
+#define TEMP_MODEL_R_thr 0.01 // R estimation iteration threshold
+#define TEMP_MODEL_R_itr 30   // R estimation iteration limit
+
+#define TEMP_MODEL_Ta_corr -7 // Default ambient temperature correction
+#define TEMP_MODEL_LAG 2.1    // Temperature transport delay (s)
+
+#define TEMP_MODEL_W 1.2      // Default warning threshold (K/s)
+#define TEMP_MODEL_E 1.74     // Default error threshold (K/s)
+
+#define TEMP_MODEL_CAL_Th 230 // Default calibration working temperature (C)
+#define TEMP_MODEL_CAL_Tl 50  // Default calibration cooling temperature (C)
+
+
 /*------------------------------------
  MOTOR CURRENT SETTINGS
  *------------------------------------*/
@@ -503,15 +528,9 @@
 // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
 
-//connect message when communication with monitoring broken
-//#define FARM_CONNECT_MESSAGE
-
 /*-----------------------------------
  PREHEAT SETTINGS
  *------------------------------------*/
-
-#define FARM_PREHEAT_HOTEND_TEMP 250
-#define FARM_PREHEAT_HPB_TEMP 80
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
 #define PLA_PREHEAT_HPB_TEMP 60
@@ -625,13 +644,6 @@
 #define PINDA_STEP_T 10
 #define PINDA_MAX_T 100
 
-#define PING_TIME 60 //time in s
-#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid 0 triggering when dealing with long gcodes
-#define PING_ALLERT_PERIOD 60 //time in s
-
-#define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
-#define NC_BUTTON_LONG_PRESS 15 //time in s
-
 #define LONG_PRESS_TIME 1000 //time in ms for button long press
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
@@ -668,6 +680,11 @@
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
 #define MMU_HAS_CUTTER
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
+
+// MMU Error pause position
+#define MMU_ERR_X_PAUSE_POS 125
+#define MMU_ERR_Y_PAUSE_POS 0
+#define MMU_ERR_Z_PAUSE_LIFT 20
 
 // Default Arc Interpolation Settings (Now configurable via M214)
 #define DEFAULT_N_ARC_CORRECTION       25 // Number of interpolated segments between corrections.

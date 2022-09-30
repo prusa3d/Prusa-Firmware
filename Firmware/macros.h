@@ -11,6 +11,9 @@
   #define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
+#define _REGNAME(registerbase,number,suffix) registerbase##number##suffix
+#define _REGNAME_SHORT(registerbase,suffix) registerbase##suffix
+
 // Macros to make a string from a macro
 #define STRINGIFY_(M) #M
 #define STRINGIFY(M) STRINGIFY_(M)

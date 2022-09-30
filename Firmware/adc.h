@@ -1,14 +1,7 @@
-//adc.h
-#ifndef _ADC_H
-#define _ADC_H
+#pragma once
 
 #include <inttypes.h>
 #include "config.h"
-
-
-#if defined(__cplusplus)
-extern "C" {
-#endif //defined(__cplusplus)
 
 /*
 http://resnet.uoregon.edu/~gurney_j/jmpc/bitwise.html
@@ -22,24 +15,11 @@ http://resnet.uoregon.edu/~gurney_j/jmpc/bitwise.html
 # error "ADC_CHAN_MSK oes not match ADC_CHAN_CNT"
 #endif
 
-extern uint8_t adc_state;
-extern uint8_t adc_count;
-extern uint16_t adc_values[ADC_CHAN_CNT];
-extern uint16_t adc_sim_mask;
+#define VOLT_DIV_REF 5 //[V]
 
+extern volatile uint8_t adc_channel;
+extern volatile uint16_t adc_values[ADC_CHAN_CNT];
 
-extern void adc_init(void);
-
-extern void adc_reset(void);
-
-extern void adc_setmux(uint8_t ch);
-
-extern uint8_t adc_chan(uint8_t index);
-
-extern void adc_cycle(void);
-
-
-#if defined(__cplusplus)
-}
-#endif //defined(__cplusplus)
-#endif //_ADC_H
+extern void adc_init();
+extern void adc_start_cycle(); //should be called from an atomic context only
+static inline bool adc_cycle_done() { return adc_channel >= ADC_CHAN_CNT; }

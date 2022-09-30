@@ -19,7 +19,7 @@ typedef struct
     unsigned long minsegmenttime;
     float max_jerk[4]; //!< Jerk is a maximum immediate velocity change.
     float add_homing[3];
-    float zprobe_zoffset;
+    float zprobe_zoffset; //!< Only used with define ENABLE_AUTO_BED_LEVELING
     float Kp;
     float Ki;
     float Kd;

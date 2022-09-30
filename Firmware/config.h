@@ -6,7 +6,8 @@
 #include "pins.h"
 
 #if (defined(VOLT_IR_PIN) && defined(IR_SENSOR))
-# define IR_SENSOR_ANALOG
+// TODO: IR_SENSOR_ANALOG currently disabled as being incompatible with the new thermal regulation
+// # define IR_SENSOR_ANALOG
 #endif
 
 //ADC configuration
@@ -20,7 +21,7 @@
 #define ADC_CHAN_CNT      8         //number of used channels)
 #endif //!IR_SENSOR_ANALOG
 #define ADC_OVRSAMPL      16        //oversampling multiplier
-#define ADC_CALLBACK      adc_ready //callback function ()
+#define ADC_CALLBACK      adc_callback //callback function ()
 
 //SWI2C configuration
 //#define SWI2C_SDA         20 //SDA on P3
@@ -42,7 +43,12 @@
 //#define PAT9125_I2C_ADDR  0x73  //ID=NC
 #define PAT9125_XRES      0
 #define PAT9125_YRES      240                   // maximum resolution (5*X cpi)
-#define PAT9124_YRES_MM   (5*PAT9125_YRES/25.4) // counts per mm
+#define PAT9125_YRES_MM   (5*PAT9125_YRES/25.4) // counts per mm
+#define PAT9125_INVERT_X  0 //1 means flipped
+#define PAT9125_INVERT_Y  1 //1 means flipped
+#define PAT9125_SWAP_XY   0 //X is Y and Y is X
+#define PAT9125_12B_RES   1 //8bit or 12bit signed motion data
+#define PAT9125_NEW_INIT  1 //set to 1 to use the magic sequence provided by pixart.
 
 //SM4 configuration
 #define SM4_DEFDELAY      500       //default step delay [us]
@@ -62,7 +68,9 @@
 #define LANG_MODE              1 // sec. language support
 #endif
 
-#define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes). Maximum 32768 bytes
+#define LANG_SIZE_RESERVED     0x3500 // reserved space for secondary language (13568 bytes).
+                                      // 0x3D00 Maximum 15616 bytes as it depends on xflash_layout.h
+                                      // 16 Languages max. per group including stock 
 
 #if (LANG_SIZE_RESERVED % 256)
   #error "LANG_SIZE_RESERVED should be a multiple of a page size"
@@ -82,9 +90,12 @@
 //#define COMMUNITY_LANG_GROUP1_DA // Community Danish language
 //#define COMMUNITY_LANG_GROUP1_SL // Community Slovanian language
 //#define COMMUNITY_LANG_GROUP1_LB // Community Luxembourgish language
-//#define COMMUNITY_LANG_GROUP1_LT // Community Lithuanian language
+#endif //COMMUNITY_LANG_GROUP 1
+
+#if (COMMUNITY_LANG_GROUP == 2)
+#define COMMUNITY_LANG_GROUP2_LT // Community Lithuanian language
 //#define COMMUNITY_LANG_GROUP1_QR // Community new language //..use this as a template and replace 'QR'
-#endif
+#endif //COMMUNITY_LANG_GROUP 2
 
 #if (COMMUNITY_LANG_GROUP >=1 )
 #define COMMUNITY_LANGUAGE_SUPPORT
@@ -111,4 +122,11 @@
 #define EMERGENCY_HANDLERS
 #endif
 
+//FARM_MODE
+#if ( LANG_MODE == 0 ) && defined(XFLASH) //Save resources on EINSY and disable FARM_MODE on multi-language version
+#define PRUSA_FARM
+#endif //PRUSA_FARM only in english on EINSYs
+#ifndef XFLASH //enable FARM_MODE on miniRAMBo boards
+#define PRUSA_FARM
+#endif
 #endif //_CONFIG_H

@@ -100,61 +100,74 @@ add_compile_options(-g)
 # Firmware - get file lists.
 #
 SET(FW_SOURCES
-    adc.c
-    bootapp.c
-    timer02.c
-    sm4.c
-    spi.c
-    rbuf.c
-    swi2c.c
-    language.c
-    tone04.c
-    uart2.c
-    xflash.c
-    Marlin_main.cpp
-    AutoDeplete.cpp
-    Configuration.cpp
+    adc.cpp
+    backlight.cpp
     BlinkM.cpp
-    Dcodes.cpp
-    MarlinSerial.cpp
+    bootapp.c
+    cardreader.cpp
+    cmdqueue.cpp
+    Configuration.cpp
     ConfigurationStore.cpp
+    conv2str.cpp
+    Dcodes.cpp
+    eeprom.cpp
+    fancheck.cpp
+    Filament_sensor.cpp
+    first_lay_cal.cpp
+    heatbed_pwm.cpp
+    la10compat.cpp
+    language.c
+    lcd.cpp
+    Marlin_main.cpp
+    MarlinSerial.cpp
+    menu.cpp
+    mesh_bed_calibration.cpp
+    mesh_bed_leveling.cpp
+    messages.cpp
+    mmu2.cpp
+    mmu2_crc.cpp
+    mmu2_error_converter.cpp
+    mmu2_fsensor.cpp
+    mmu2_log.cpp
+    mmu2_power.cpp
+    mmu2_progress_converter.cpp
+    mmu2_protocol.cpp
+    mmu2_protocol_logic.cpp
+    mmu2_reporting.cpp
+    mmu2_serial.cpp
+    motion_control.cpp
+    optiboot_xflash.cpp
+    pat9125.cpp
+    planner.cpp
+    Prusa_farm.cpp
+    qr_solve.cpp
+    rbuf.c
     Sd2Card.cpp
     SdBaseFile.cpp
     SdFatUtil.cpp
     SdFile.cpp
     SdVolume.cpp
     Servo.cpp
-    Timer.cpp
-    backlight.cpp
-    cardreader.cpp
-    cmdqueue.cpp
-    conv2str.cpp
-    eeprom.cpp
-    first_lay_cal.cpp
-    fsensor.cpp
-    heatbed_pwm.cpp
-    la10compat.cpp
-    lcd.cpp
-    menu.cpp
-    mesh_bed_calibration.cpp
-    mesh_bed_leveling.cpp
-    messages.cpp
-    mmu.cpp
-    motion_control.cpp
-    optiboot_xflash.cpp
-    pat9125.cpp
-    planner.cpp
-    qr_solve.cpp
+    sm4.c
     sound.cpp
     speed_lookuptable.cpp
+    spi.c
+    SpoolJoin.cpp
     stepper.cpp
+    swi2c.c
     swspi.cpp
+    Tcodes.cpp
     temperature.cpp
+    timer02.c
+    Timer.cpp
     tmc2130.cpp
+    tone04.c
     twi.cpp
+    uart2.c
     ultralcd.cpp
     util.cpp
     vector_3.cpp
+    xflash.c
     xflash_dump.cpp
     xyzcal.cpp
 )

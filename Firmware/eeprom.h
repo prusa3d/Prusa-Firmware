@@ -142,9 +142,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0F75h 3957		| uint16	| EEPROM_UVLO_MESH_BED_LEVELING			| ???			| ff ffh 65535			| Power Panic Mesh Bed Leveling						| ???			| D3 Ax0f75 C18 
 | 0x0F73h 3955		| uint16	| EEPROM_UVLO_Z_MICROSTEPS				| ???			| ff ffh 65535			| Power Panic Z microsteps							| ???			| D3 Ax0f73 C2 
 | 0x0F72h 3954		| uint8		| EEPROM_UVLO_E_ABS						| ???			| ffh 255				| Power Panic ??? position							| ???			| D3 Ax0f72 C1
-| 0x0F6Eh 3950		| foat		| EEPROM_UVLO_CURRENT_POSITION_E		| ???			| ff ff ff ffh			| Power Panic E position							| ???			| D3 Ax0f6e C4
-| 0x0F6Dh 3949		| ???		| _EEPROM_FREE_NR2_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6d C1
-| 0x0F6Ch 3948		| ???		| _EEPROM_FREE_NR3_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6c C1
+| 0x0F6Eh 3950		| float		| EEPROM_UVLO_CURRENT_POSITION_E		| ???			| ff ff ff ffh			| Power Panic E position							| ???			| D3 Ax0f6e C4
+| 0x0F6Ch 3948		| uint16_t	| EEPROM_UVLO_SAVED_SEGMENT_IDX			| all			| ff ffh 65535			| Power Panic index of multi-segment move			| ???			| D3 Ax0f6c C2
 | 0x0F6Bh 3947		| ???		| _EEPROM_FREE_NR4_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6b C1
 | 0x0F6Ah 3946		| ???		| _EEPROM_FREE_NR5_						| ???			| ffh 255				| _Free EEPROM space_								| _free space_	| D3 Ax0f6a C1
 | 0x0F69h 3945		| uint8		| EEPROM_CRASH_DET						| ffh 255		| ffh 255				| Crash detection: __enabled__						| LCD menu		| D3 Ax0f69 C1
@@ -217,10 +216,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| Sound mode: __once__								| ^				| ^
 | ^					| ^			| ^										| 02h 1			| ^						| Sound mode: __silent__							| ^				| ^
 | ^					| ^			| ^										| 03h 1			| ^						| Sound mode: __assist__							| ^				| ^
-| 0x0ED6 3798		| bool		| EEPROM_AUTO_DEPLETE					| 01h 1			| ffh 255				| MMU2/s autodeplete: __on__						| ???			| D3 Ax0ed6 C1
+| 0x0ED6 3798		| bool		| EEPROM_SPOOL_JOIN					| 01h 1			| ffh 255				| MMU2/s autodeplete: __on__						| ???			| D3 Ax0ed6 C1
 | ^					| ^			| ^										| 00h 0			| ^						| MMU2/s autodeplete: __off__						| ^				| ^
-| 0x0ED5 3797		| bool		| EEPROM_FSENS_OQ_MEASS_ENABLED			| ???			| ffh 255				| PAT1925 ???										| ???			| D3 Ax0ed5 C1
-| ^					| ^			| ^										| ???			| ^						| PAT1925 ???										| ^				| ^
+| 0x0ED5 3797		| bool		| EEPROM_FSENS_RUNOUT_ENABLED			| 01h 1			| ffh 255		__P__	| Filament runout: __enabled__						| LCD menu		| D3 Ax0ed5 C1
+| ^					| ^			| ^										| 00h 0			| ^						| Filament runout: __disabled__						| LCD menu		| ^
 | 0x0ED3 3795		| uint16	| EEPROM_MMU_FAIL_TOT					| ???			| ff ffh 65535	__S/P__	| MMU2/s total failures								| ???			| D3 Ax0ed3 C2
 | 0x0ED2 3794		| uint8		| EEPROM_MMU_FAIL						| ???			| ffh 255		__S/P__	| MMU2/s fails during print							| ???			| D3 Ax0ed2 C1
 | 0x0ED0 3792		| uint16	| EEPROM_MMU_LOAD_FAIL_TOT				| ???			| ff ffh 65535	__S/P__	| MMU2/s total load failures						| ???			| D3 Ax0ed0 C2
@@ -298,11 +297,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor type IR 0.4 or newer				| ^				| ^
 | 0x0D47 3399		| uint8		| EEPROM_FSENSOR_ACTION_NA				| 00h 0			| ffh 255				| Filament Sensor action: __Continue__				| LCD menu		| D3 Ax0d47 C1
 | ^					| ^			| ^										| 01h 1			| ^						| Filament Sensor action: __Pause__					| ^				| ^
-| 0x0D37 3383		| float		| EEPROM_UVLO_SAVED_TARGET				| ???			| ff ff ff ffh			| Power panic saved target all-axis					| ???			| D3 Ax0d37 C16
-| ^					| ^			| ^										| ???			| ^						| Power panic saved target e-axis					| ^				| D3 Ax0d43 C4
-| ^					| ^			| ^										| ???			| ^						| Power panic saved target z-axis					| ^				| D3 Ax0d3f C4
-| ^					| ^			| ^										| ???			| ^						| Power panic saved target y-axis					| ^				| D3 Ax0d3b C4
-| ^					| ^			| ^										| ???			| ^						| Power panic saved target x-axis					| ^				| D3 Ax0d37 C4
+| 0x0D37 3383		| float		| EEPROM_UVLO_SAVED_START_POSITION		| ???			| ff ff ff ffh			| Power panic saved start position all-axis			| ???			| D3 Ax0d37 C16
+| ^					| ^			| ^										| ???			| ^						| Power panic saved start position e-axis			| ^				| D3 Ax0d43 C4
+| ^					| ^			| ^										| ???			| ^						| Power panic saved start position z-axis			| ^				| D3 Ax0d3f C4
+| ^					| ^			| ^										| ???			| ^						| Power panic saved start position y-axis			| ^				| D3 Ax0d3b C4
+| ^					| ^			| ^										| ???			| ^						| Power panic saved start position x-axis			| ^				| D3 Ax0d37 C4
 | 0x0D35 3381		| uint16	| EEPROM_UVLO_FEEDMULTIPLY				| ???			| ff ffh 65355			| Power panic saved feed multiplier					| ???			| D3 Ax0d35 C2
 | 0x0D34 3380		| uint8		| EEPROM_BACKLIGHT_LEVEL_HIGH			| 00h - ffh 	| 82h 130				| LCD backlight bright:	__128__	Dim value to 255	| LCD menu		| D3 Ax0d34 C1
 | 0x0D33 3379		| uint8		| EEPROM_BACKLIGHT_LEVEL_LOW			| 00h - ffh		| 32h 50				| LCD backlight dim:	__50__ 	0 to Bright value	| LCD menu		| D3 Ax0d33 C1
@@ -334,6 +333,8 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^					| ^			| ^										| 03h 3			| ^						| bad_isr											| ^				| ^
 | ^					| ^			| ^										| 04h 4			| ^						| bad_pullup_temp_isr								| ^				| ^
 | ^					| ^			| ^										| 05h 5			| ^						| bad_pullup_step_isr								| ^				| ^
+| 0x0D02 3320		| uint8_t	| EEPROM_FSENSOR_JAM_DETECTION			| 01h 1			| ff/01					| fsensor pat9125 jam detection feature				| LCD menu		| D3 Ax0d02 C1
+| 0x0D01 3319		| uint8_t	| EEPROM_MMU_ENABLED        			| 01h 1			| ff/01					| MMU enabled                       				| LCD menu		| D3 Ax0d01 C1
 
 | Address begin		| Bit/Type 	| Name 									| Valid values	| Default/FactoryReset	| Description 										| Gcode/Function| Debug code
 | :--:				| :--: 		| :--: 									| :--:			| :--:					| :--:												| :--:			| :--:
@@ -398,15 +399,14 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1) 
 #define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
 #define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
-
 #define EEPROM_UVLO_Z_MICROSTEPS     (EEPROM_UVLO_MESH_BED_LEVELING - 2) // uint16_t (could be removed)
 #define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
 #define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4)                 //float for current position in E
+#define EEPROM_UVLO_SAVED_SEGMENT_IDX   (EEPROM_UVLO_CURRENT_POSITION_E - 2) //uint16_t
 
-#define EEPROM_FREE_NR2         (EEPROM_UVLO_CURRENT_POSITION_E - 1)			// FREE EEPROM SPACE
-#define EEPROM_FREE_NR3         (EEPROM_FREE_NR2 - 1)							// FREE EEPROM SPACE
-#define EEPROM_FREE_NR4         (EEPROM_FREE_NR3 - 1)							// FREE EEPROM SPACE
+#define EEPROM_FREE_NR4         (EEPROM_UVLO_SAVED_SEGMENT_IDX - 1)							// FREE EEPROM SPACE
 #define EEPROM_FREE_NR5         (EEPROM_FREE_NR4 - 1)							// FREE EEPROM SPACE
+
 // Crash detection mode EEPROM setting 
 #define EEPROM_CRASH_DET         (EEPROM_FREE_NR5 - 1)       				    // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-12) 
 // Crash detection counter Y (last print)
@@ -494,11 +494,11 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 
 // Sound Mode
 #define EEPROM_SOUND_MODE (EEPROM_UVLO_TARGET_HOTEND-1) // uint8
-#define EEPROM_AUTO_DEPLETE (EEPROM_SOUND_MODE-1) //bool
+#define EEPROM_SPOOL_JOIN (EEPROM_SOUND_MODE-1) //bool
 
-#define EEPROM_FSENS_OQ_MEASS_ENABLED (EEPROM_AUTO_DEPLETE - 1) //bool
+#define EEPROM_FSENS_RUNOUT_ENABLED (EEPROM_SPOOL_JOIN - 1) //bool
 
-#define EEPROM_MMU_FAIL_TOT (EEPROM_FSENS_OQ_MEASS_ENABLED - 2) //uint16_t
+#define EEPROM_MMU_FAIL_TOT (EEPROM_FSENS_RUNOUT_ENABLED - 2) //uint16_t
 #define EEPROM_MMU_FAIL (EEPROM_MMU_FAIL_TOT - 1) //uint8_t
 
 #define EEPROM_MMU_LOAD_FAIL_TOT (EEPROM_MMU_FAIL - 2) //uint16_t
@@ -526,8 +526,8 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_FSENSOR_PCB (EEPROM_SHEETS_BASE-1) // uint8
 #define EEPROM_FSENSOR_ACTION_NA (EEPROM_FSENSOR_PCB-1) // uint8
 
-#define EEPROM_UVLO_SAVED_TARGET (EEPROM_FSENSOR_ACTION_NA - 4*4) // 4 x float for saved target for all axes
-#define EEPROM_UVLO_FEEDMULTIPLY (EEPROM_UVLO_SAVED_TARGET - 2) // uint16_t for feedmultiply
+#define EEPROM_UVLO_SAVED_START_POSITION (EEPROM_FSENSOR_ACTION_NA - 4*4) // 4 x float for saved start position for all axes
+#define EEPROM_UVLO_FEEDMULTIPLY (EEPROM_UVLO_SAVED_START_POSITION - 2) // uint16_t for feedmultiply
 
 #define EEPROM_BACKLIGHT_LEVEL_HIGH (EEPROM_UVLO_FEEDMULTIPLY-1) // uint8
 #define EEPROM_BACKLIGHT_LEVEL_LOW (EEPROM_BACKLIGHT_LEVEL_HIGH-1) // uint8
@@ -550,8 +550,18 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_ECOOL_ENABLE (EEPROM_JOB_ID-1) // uint8_t
 #define EEPROM_FW_CRASH_FLAG (EEPROM_ECOOL_ENABLE-1) // uint8_t
 
+#define EEPROM_TEMP_MODEL_ENABLE (EEPROM_FW_CRASH_FLAG-1) // uint8_t
+#define EEPROM_TEMP_MODEL_P (EEPROM_TEMP_MODEL_ENABLE-4) // float
+#define EEPROM_TEMP_MODEL_C (EEPROM_TEMP_MODEL_P-4) // float
+#define EEPROM_TEMP_MODEL_R (EEPROM_TEMP_MODEL_C-4*16) // float[16]
+#define EEPROM_TEMP_MODEL_Ta_corr (EEPROM_TEMP_MODEL_R-4) // float
+#define EEPROM_TEMP_MODEL_W (EEPROM_TEMP_MODEL_Ta_corr-4) // float
+#define EEPROM_TEMP_MODEL_E (EEPROM_TEMP_MODEL_W-4) // float
+
+#define EEPROM_FSENSOR_JAM_DETECTION (EEPROM_TEMP_MODEL_E-1) // uint8_t
+#define EEPROM_MMU_ENABLED (EEPROM_FSENSOR_JAM_DETECTION-1) // uint8_t
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_FW_CRASH_FLAG
+#define EEPROM_LAST_ITEM EEPROM_MMU_ENABLED
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

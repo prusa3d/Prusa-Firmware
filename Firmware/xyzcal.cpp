@@ -138,15 +138,18 @@ pos_mm_t pos_2_mm(float pos){
 void xyzcal_meassure_enter(void)
 {
 	DBG(_n("xyzcal_meassure_enter\n"));
+
+	// disable heaters and stop motion before we initialize sm4
 	disable_heater();
-	DISABLE_TEMPERATURE_INTERRUPT();
-#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
-	DISABLE_FANCHECK_INTERRUPT();
-#endif //(defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
+	st_synchronize();
+
+	// disable incompatible interrupts
 	DISABLE_STEPPER_DRIVER_INTERRUPT();
 #ifdef WATCHDOG
 	wdt_disable();
 #endif //WATCHDOG
+
+	// setup internal callbacks
 	sm4_stop_cb = 0;
 	sm4_update_pos_cb = xyzcal_update_pos;
 	sm4_calc_delay_cb = xyzcal_calc_delay;
@@ -155,21 +158,18 @@ void xyzcal_meassure_enter(void)
 void xyzcal_meassure_leave(void)
 {
 	DBG(_n("xyzcal_meassure_leave\n"));
-    planner_abort_hard();
-	ENABLE_TEMPERATURE_INTERRUPT();
-#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
-	ENABLE_FANCHECK_INTERRUPT();
-#endif //(defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
-	ENABLE_STEPPER_DRIVER_INTERRUPT();
+
+	// resync planner position from counters (changed by xyzcal_update_pos)
+	planner_reset_position();
+
+	// re-enable interrupts
 #ifdef WATCHDOG
 	wdt_enable(WDTO_4S);
 #ifdef EMERGENCY_HANDLERS
 	WDTCSR |= (1 << WDIE);
 #endif //EMERGENCY_HANDLERS
 #endif //WATCHDOG
-	sm4_stop_cb = 0;
-	sm4_update_pos_cb = 0;
-	sm4_calc_delay_cb = 0;
+	ENABLE_STEPPER_DRIVER_INTERRUPT();
 }
 
 
@@ -999,13 +999,9 @@ BedSkewOffsetDetectionResultType xyzcal_scan_and_process(){
 	return ret;
 }
 
-BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy(void){
-	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-
-    //@size=258
+BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy(void) {
     // DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
-	st_synchronize();
-
+	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 	xyzcal_meassure_enter();
 	if (xyzcal_searchZ())
 		ret = xyzcal_scan_and_process();
