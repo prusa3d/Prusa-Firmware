@@ -204,11 +204,12 @@ private:
 extern void lcd_set_custom_characters(void);
 extern void lcd_set_custom_characters_nextpage(void);
 
-//! @brief Consume click event
+//! @brief Consume click and longpress event
 inline void lcd_consume_click()
 {
     lcd_button_pressed = 0;
     lcd_buttons &= 0xff^EN_C;
+    lcd_longpress_trigger = 0;
 }
 
 
