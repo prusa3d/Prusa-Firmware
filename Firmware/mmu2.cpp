@@ -380,6 +380,8 @@ bool MMU2::set_filament_type(uint8_t index, uint8_t type) {
         return false;
     
     // @@TODO - this is not supported in the new MMU yet
+    index = index; // @@TODO
+    type = type; // @@TODO
     // cmd_arg = filamentType;
     // command(MMU_CMD_F0 + index);
 

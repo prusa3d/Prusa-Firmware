@@ -62,11 +62,11 @@ static const char * const progressTexts[] PROGMEM = {
     _R(MSG_PROGRESS_FEED_FSENSOR)
 };
 
-const char * const ProgressCodeToText(uint16_t pc){
+const char * ProgressCodeToText(uint16_t pc){
     // @@TODO ?? a better fallback option?
     return ( pc <= (sizeof(progressTexts) / sizeof(progressTexts[0])) )
-       ? static_cast<const char * const>(pgm_read_ptr(&progressTexts[pc]))
-       : static_cast<const char * const>(pgm_read_ptr(&progressTexts[0]));
+       ? static_cast<const char *>(pgm_read_ptr(&progressTexts[pc]))
+       : static_cast<const char *>(pgm_read_ptr(&progressTexts[0]));
 }
 
 } // namespace MMU2

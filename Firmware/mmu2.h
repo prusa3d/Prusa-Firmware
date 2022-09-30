@@ -279,9 +279,8 @@ private:
     /// unlike the mid-print ToolChange commands, which only load the first ~30mm and then the G-code takes over.
     bool loadingToNozzle;
     
-    uint8_t retryAttempts;
-
     bool inAutoRetry;
+    uint8_t retryAttempts;
 };
 
 /// following Marlin's way of doing stuff - one and only instance of MMU implementation in the code base

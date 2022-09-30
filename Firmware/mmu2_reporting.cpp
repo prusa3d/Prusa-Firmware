@@ -11,14 +11,14 @@
 
 namespace MMU2 {
 
-const char * const ProgressCodeToText(uint16_t pc); // we may join progress convertor and reporter together
+const char * ProgressCodeToText(uint16_t pc); // we may join progress convertor and reporter together
 
-void BeginReport(CommandInProgress cip, uint16_t ec) {
+void BeginReport(CommandInProgress /*cip*/, uint16_t ec) {
     custom_message_type = CustomMsg::MMUProgress;
     lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
 }
 
-void EndReport(CommandInProgress cip, uint16_t ec) {
+void EndReport(CommandInProgress /*cip*/, uint16_t /*ec*/) {
     // clear the status msg line - let the printed filename get visible again
     custom_message_type = CustomMsg::Status;
 }

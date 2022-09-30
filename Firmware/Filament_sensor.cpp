@@ -278,7 +278,9 @@ void IR_sensor_analog::voltUpdate(uint16_t raw) { // to be called from the ADC I
 }
 
 uint16_t IR_sensor_analog::getVoltRaw() {
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { return voltRaw; }
+    uint16_t ret;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { ret = voltRaw; }
+    return ret;
 }
 
 const char *IR_sensor_analog::getIRVersionText() {
@@ -339,7 +341,9 @@ bool IR_sensor_analog::checkVoltage(uint16_t raw) {
 }
 
 bool IR_sensor_analog::getVoltReady() const {
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){ return voltReady; }
+    bool ret;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){ ret = voltReady; }
+    return ret;
 }
 
 void IR_sensor_analog::clearVoltReady(){
