@@ -1745,8 +1745,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"Instrumentul de Fil. solicitat nu este disponibil pe acest hardware. Verifica G-codul "
-"pentru indicele instrumentului in afara intervalului (T0-T4)."
+"Instrumentul de Fil. solicitat nu este disponibil pe acest hardware. Verifica"
+"G-codul ptr indexul instrum. in afara intervalului (T0-T4)."
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:2754
@@ -2157,7 +2157,7 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
-msgstr "Selector-ul nu poate reveni" corect. Verificati daca exista ceva care blocheza"
+msgstr "Selector-ul nu poate reveni corect. Verificati daca exista ceva care blocheza"
 "miscarea."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
