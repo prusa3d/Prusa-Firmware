@@ -19,7 +19,7 @@ void MMU2Serial::flush() {
     // @@TODO - clear the output buffer
 }
 
-size_t MMU2Serial::write(const uint8_t *buffer, size_t size) {
+void MMU2Serial::write(const uint8_t *buffer, size_t size) {
     while(size--){
         fputc(*buffer, uart2io);
         ++buffer;
