@@ -4,6 +4,6 @@
 
 namespace MMU2 {
 
-const char * const ProgressCodeToText(uint16_t pc);
+const char * ProgressCodeToText(uint16_t pc);
 
 }

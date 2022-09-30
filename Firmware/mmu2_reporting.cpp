@@ -11,7 +11,7 @@
 
 namespace MMU2 {
 
-const char * const ProgressCodeToText(uint16_t pc); // we may join progress convertor and reporter together
+const char * ProgressCodeToText(uint16_t pc); // we may join progress convertor and reporter together
 
 void BeginReport(CommandInProgress cip, uint16_t ec) {
     custom_message_type = CustomMsg::MMUProgress;
