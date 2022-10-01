@@ -74,9 +74,9 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
 
     ReportErrorHookSensorLineRender();
-    
+
     // Render the choices
-    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), 9, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
+    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 18 : 9, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
 }
 
 extern void ReportErrorHookSensorLineRender()
@@ -164,12 +164,16 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
         //
         lcd_set_cursor(0, 3);
         lcd_print(current_selection == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
-        lcd_set_cursor(9, 3);
-        lcd_print(current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
         if (two_choices == false)
         {
+            lcd_set_cursor(9, 3);
+            lcd_print(current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
             lcd_set_cursor(18, 3);
             lcd_print(current_selection == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
+        } else {
+            // More button for two button screen
+            lcd_set_cursor(18, 3);
+            lcd_print(current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
         }
         // Consume rotation event and make feedback sound
         enc_dif = lcd_encoder_diff;
