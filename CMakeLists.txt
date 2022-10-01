@@ -321,7 +321,7 @@ function(add_base_binary variant_name)
     # produce ASM listing. Note we also specify the .map as a byproduct so it gets cleaned
     # because link_options doesn't have a "generated outputs" feature.
     add_custom_command(
-        TARGET ${variant_name} POST_BUILD COMMAND ${CMAKE_OBJDUMP} -CSd ${variant_name} > ${variant_name}.asm
+        TARGET ${variant_name} POST_BUILD COMMAND ${CMAKE_OBJDUMP} --prefix ${CMAKE_SOURCE_DIR} -CSd ${variant_name} > ${variant_name}.asm
         BYPRODUCTS ${variant_name}.asm ${variant_name}.map
     )
 
