@@ -1200,10 +1200,15 @@ static void lcd_menu_fails_stats_mmu_total()
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n"/* " %-16.16S%-3d\n" " %-16.16S%-3d"*/), 
         _T(MSG_TOTAL_FAILURES),
-        _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ),
-        _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
-        _i("MMU power fails"), clamp999( mmu_power_failures )); ////MSG_MMU_POWER_FAILS c=15
-    menu_back_if_clicked();
+        _T(MSG_MMU_FAILS), clamp999( MMU2::mmu2.TotalFailStatistics() ));//,
+        //_T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
+        //_i("MMU power fails"), clamp999( mmu_power_failures )); ////MSG_MMU_POWER_FAILS c=15
+    if (lcd_clicked())
+    {
+        first_time_opening_menu = 0;
+        lcd_quick_feedback();
+        menu_back();
+    }
 }
 
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
@@ -1257,7 +1262,7 @@ static void lcd_menu_fails_stats_print()
         _T(MSG_POWER_FAILURES), power,
         _T(MSG_FIL_RUNOUTS), filam,
         _T(MSG_CRASH), crashX, crashY);
-    menu_back_if_clicked_fb();
+    menu_back_if_clicked();
 }
 
 //! @brief Open fail statistics menu
