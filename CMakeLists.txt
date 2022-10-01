@@ -267,7 +267,7 @@ if(CMAKE_CROSSCOMPILING)
 
     # split and gc sections
     add_compile_options(-ffunction-sections -fdata-sections)
-    add_link_options(-Wl,--gc-sections)
+    add_link_options(-ffunction-sections -fdata-sections -Wl,--gc-sections)
 
     # LTO (with custom options)
     add_compile_options(-flto -fno-fat-lto-objects)
