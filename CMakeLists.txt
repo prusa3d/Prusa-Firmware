@@ -94,8 +94,18 @@ endif()
 # Global Compiler & Linker Configuration
 #
 
-# include symbols
-add_compile_options(-g)
+# enable warnings
+add_compile_options(-Wall -Wextra -Wno-expansion-to-defined -Wsign-compare)
+
+# default standards for all targets
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+# support _DEBUG macro (some code uses to recognize debug builds)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_compile_definitions(_DEBUG)
+endif()
+
 
 #
 # Firmware - get file lists.
@@ -213,25 +223,35 @@ foreach(_FILE ${AVR_SOURCES})
     set_property(SOURCE ${_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=core/${_BASE}.o")
 endforeach()
 
-# optimizations
+#
+# Target configuration
+#
 if(CMAKE_CROSSCOMPILING)
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		add_compile_options(-Og)
-	else()
-		add_compile_options(-Os)
-	endif()
+    # default optimization flags
+    set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Os -g -DNDEBUG")
+    set(CMAKE_C_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
+    set(CMAKE_C_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 
-	# mcu related settings
-	set(MCU_FLAGS -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10819 -DARDUINO_AVR_PRUSA_EINSY_RAMBO -DARDUINO_ARCH_AVR)
-	add_compile_options(${MCU_FLAGS})
+    # mcu and target-related settings
+    add_compile_options(-mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10819 -DARDUINO_AVR_PRUSA_EINSY_RAMBO -DARDUINO_ARCH_AVR)
+    add_link_options(-mmcu=atmega2560 -Wl,-u,vfprintf -lprintf_flt -lm)
 
-    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+    # disable some C++ language features
     add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>)
     add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
-    add_compile_options(-Wall -Wextra -Wno-expansion-to-defined -ffunction-sections -fdata-sections -MMD -flto -fno-fat-lto-objects)
+
+    # disable exceptions
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-unwind-tables>)
 
     # split and gc sections
-    add_link_options(-Os -g -flto -Wl,--gc-sections -mmcu=atmega2560 -Wl,-u,vfprintf -lprintf_flt -lm )
+    add_compile_options(-ffunction-sections -fdata-sections)
+    add_link_options(-Wl,--gc-sections)
+
+    # LTO (with custom options)
+    add_compile_options(-flto -fno-fat-lto-objects)
+    add_link_options(-flto)
 
     # Create this target before we apply the GC options
     add_library(avr_core STATIC ${AVR_SOURCES})
@@ -239,30 +259,7 @@ if(CMAKE_CROSSCOMPILING)
         ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
         ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
         )
-
-
-
-	# disable exceptions and related metadata
-	add_compile_options(-fno-unwind-tables)
-	add_link_options(-Wl,--defsym,__exidx_start=0,--defsym,__exidx_end=0)
-else()
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		add_compile_options(-O0)
-	else()
-		add_compile_options(-O2)
-	endif()
 endif()
-
-# enable all warnings (well, not all, but some)
-add_compile_options(-Wsign-compare)
-add_compile_options($<$<COMPILE_LANGUAGE:C>:-std=gnu11>)
-
-# support _DEBUG macro (some code uses to recognize debug builds)
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	add_compile_definitions(_DEBUG)
-endif()
-
-
 
 # Setup language resources:
 # file(GLOB LANG_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/lang/po ${PROJECT_SOURCE_DIR}/lang/po/Firmware_??.po)
@@ -280,8 +277,6 @@ add_dependencies(ALL_FIRMWARE ALL_ENGLISH ALL_MULTILANG)
 
 function(add_base_binary variant_name)
     add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_FILE})
-
-    set_target_properties(${variant_name} PROPERTIES CXX_STANDARD 17)
 
     target_include_directories(${variant_name} PRIVATE
         ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
