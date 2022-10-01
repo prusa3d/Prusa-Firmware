@@ -11348,11 +11348,11 @@ void restore_print_from_ram_and_continue(float e_move)
     // restore bed temperature (bed can be disabled during a thermal warning)
     if (degBed() != saved_bed_temperature)
         setTargetBed(saved_bed_temperature);
-	fanSpeed = saved_fan_speed;
-	restore_extruder_temperature_from_ram();
-	axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
-	float e = saved_pos[E_AXIS] - e_move;
-	plan_set_e_position(e);
+    fanSpeed = saved_fan_speed;
+    restore_extruder_temperature_from_ram();
+    axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
+    float e = saved_pos[E_AXIS] - e_move;
+    plan_set_e_position(e);
   
   #ifdef FANCHECK
     fans_check_enabled = false;

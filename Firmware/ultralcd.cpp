@@ -7525,12 +7525,12 @@ static void lcd_updatestatus(const char *message, bool progmem = false)
     else
         strncpy(lcd_status_message, message, LCD_WIDTH);
 
-	lcd_status_message[LCD_WIDTH] = 0;
+    lcd_status_message[LCD_WIDTH] = 0;
 
-	SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
+    SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
 
-	// hack lcd_draw_update to 1, i.e. without clear
-	lcd_draw_update = 1;
+    // hack lcd_draw_update to 1, i.e. without clear
+    lcd_draw_update = 1;
 }
 
 void lcd_setstatus(const char* message)
