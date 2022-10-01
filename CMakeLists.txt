@@ -214,37 +214,33 @@ list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 
 
 #
-# Reproducible build support
-#
-
-function(set_reproducible_sources source_list prefix)
-    foreach(file IN LISTS ${source_list})
-        get_filename_component(base ${file} NAME)
-        set(target "${prefix}${base}")
-        set_property(SOURCE ${file} APPEND PROPERTY COMPILE_OPTIONS "-frandom-seed=${target}.o")
-    endforeach()
-endfunction()
-
-function(set_reproducible_target target)
-    set_target_properties(${target} PROPERTIES STATIC_LIBRARY_OPTIONS "-D")
-endfunction()
-
-set_reproducible_sources(AVR_SOURCES "core/")
-
-add_link_options(-fdebug-prefix-map=${CMAKE_SOURCE_DIR}=)
-add_link_options(-fdebug-prefix-map=${CMAKE_BINARY_DIR}=)
-if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "8")
-    add_compile_options(-ffile-prefix-map=${CMAKE_SOURCE_DIR}=)
-endif()
-
-# TODO: get date from the last git commit to set as epoch
-set(ENV{SOURCE_DATE_EPOCH} 0)
-
-
-#
 # Target configuration
 #
 if(CMAKE_CROSSCOMPILING)
+    # Reproducible build support
+    function(set_reproducible_sources source_list prefix)
+        foreach(file IN LISTS ${source_list})
+            get_filename_component(base ${file} NAME)
+            set(target "${prefix}${base}")
+            set_property(SOURCE ${file} APPEND PROPERTY COMPILE_OPTIONS "-frandom-seed=${target}.o")
+        endforeach()
+    endfunction()
+
+    function(set_reproducible_target target)
+        set_target_properties(${target} PROPERTIES STATIC_LIBRARY_OPTIONS "-D")
+    endfunction()
+
+    set_reproducible_sources(AVR_SOURCES "core/")
+
+    add_link_options(-fdebug-prefix-map=${CMAKE_SOURCE_DIR}=)
+    add_link_options(-fdebug-prefix-map=${CMAKE_BINARY_DIR}=)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "8")
+        add_compile_options(-ffile-prefix-map=${CMAKE_SOURCE_DIR}=)
+    endif()
+
+    # TODO: get date from the last git commit to set as epoch
+    set(ENV{SOURCE_DATE_EPOCH} 0)
+
     # default optimization flags
     set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
     set(CMAKE_CXX_FLAGS_RELEASE "-Os -g -DNDEBUG")
