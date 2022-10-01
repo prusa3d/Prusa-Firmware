@@ -486,11 +486,9 @@ if(NOT CMAKE_CROSSCOMPILING)
 	set(TEST_SOURCES
 		Tests/tests.cpp
 		Tests/Example_test.cpp
-		Tests/Timer_test.cpp
-		Tests/AutoDeplete_test.cpp
 		Tests/PrusaStatistics_test.cpp
-		Firmware/Timer.cpp
-		Firmware/AutoDeplete.cpp
+#		Tests/Timer_test.cpp
+#		Firmware/Timer.cpp
 	)
 	add_executable(tests ${TEST_SOURCES})
 	target_include_directories(tests PRIVATE Tests)
