@@ -3172,18 +3172,14 @@ void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const
     lcd_set_cursor(0, 3);
     lcd_print(selected == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
     lcd_puts_P(first_choice);
+    lcd_set_cursor(second_col, 3);
+    lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
+    lcd_puts_P(second_choice);
     if (third_choice)
     {
-        lcd_set_cursor(9, 3);
-        lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
-        lcd_puts_P(second_choice);
         lcd_set_cursor(18, 3);
         lcd_print(selected == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
         lcd_puts_P(third_choice);
-    } else {
-        lcd_set_cursor(second_col, 3);
-        lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
-        lcd_puts_P(second_choice);
     }
 }
 
