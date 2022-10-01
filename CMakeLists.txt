@@ -240,6 +240,12 @@ if(CMAKE_CROSSCOMPILING)
 
     # TODO: get date from the last git commit to set as epoch
     set(ENV{SOURCE_DATE_EPOCH} 0)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8")
+        string(TIMESTAMP SOURCE_DATE_EPOCH "%Y-%m-%d")
+        add_compile_definitions(SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}")
+        string(TIMESTAMP SOURCE_TIME_EPOCH "%H:%M:%S")
+        add_compile_definitions(SOURCE_TIME_EPOCH="${SOURCE_TIME_EPOCH}")
+    endif()
 
     # default optimization flags
     set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
