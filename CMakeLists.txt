@@ -60,6 +60,7 @@ SET(SELECTED_LANGUAGES ${MAIN_LANGUAGES} ${COMMUNITY_LANGUAGES})
 
 get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
 project(Prusa-Firmware)
+add_subdirectory(lib)
 
 FILE(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/config.h MAX_SIZE_LINE REGEX "^#define \+LANG_SIZE_RESERVED \+")
 STRING(REGEX MATCH "0x[0-9]+" MAX_SIZE_HEX "${MAX_SIZE_LINE}")
@@ -477,10 +478,8 @@ if(NOT CMAKE_CROSSCOMPILING)
 	# do not build the firmware by default (tests are the focus if not crosscompiling)
 	project(cmake_test)
 
-	# Prepare "Catch" library for other executables
-	set(CATCH_INCLUDE_DIR Catch2)
-	add_library(Catch INTERFACE)
-	target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+	# include catch_discover_tests function from Catch2
+	include(${Catch2_SOURCE_DIR}/contrib/Catch.cmake)
 
 	# Make test executable
 	set(TEST_SOURCES
@@ -492,6 +491,9 @@ if(NOT CMAKE_CROSSCOMPILING)
 	)
 	add_executable(tests ${TEST_SOURCES})
 	target_include_directories(tests PRIVATE Tests)
-	target_link_libraries(tests Catch)
+	target_link_libraries(tests Catch2::Catch2)
+
+	enable_testing()
+	catch_discover_tests(tests)
 
 endif()
