@@ -184,12 +184,6 @@ SET(FW_SOURCES
 )
 list(TRANSFORM FW_SOURCES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/)
 
-foreach(_FILE ${FW_SOURCES})
-    get_filename_component(_BASE ${_FILE} NAME)
-    set_property(SOURCE ${_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=${_BASE}.o")
-endforeach()
-
-
 set(AVR_SOURCES
     wiring_digital.c
     WInterrupts.c
@@ -218,10 +212,34 @@ set(AVR_SOURCES
 )
 list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 
-foreach(_FILE ${AVR_SOURCES})
-    get_filename_component(_BASE ${_FILE} NAME)
-    set_property(SOURCE ${_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=core/${_BASE}.o")
-endforeach()
+
+#
+# Reproducible build support
+#
+
+function(set_reproducible_sources source_list prefix)
+    foreach(file IN LISTS ${source_list})
+        get_filename_component(base ${file} NAME)
+        set(target "${prefix}${base}")
+        set_property(SOURCE ${file} APPEND PROPERTY COMPILE_OPTIONS "-frandom-seed=${target}.o")
+    endforeach()
+endfunction()
+
+function(set_reproducible_target target)
+    set_target_properties(${target} PROPERTIES STATIC_LIBRARY_OPTIONS "-D")
+endfunction()
+
+set_reproducible_sources(AVR_SOURCES "core/")
+
+add_link_options(-fdebug-prefix-map=${CMAKE_SOURCE_DIR}=)
+add_link_options(-fdebug-prefix-map=${CMAKE_BINARY_DIR}=)
+if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "8")
+    add_compile_options(-ffile-prefix-map=${CMAKE_SOURCE_DIR}=)
+endif()
+
+# TODO: get date from the last git commit to set as epoch
+set(ENV{SOURCE_DATE_EPOCH} 0)
+
 
 #
 # Target configuration
@@ -255,6 +273,7 @@ if(CMAKE_CROSSCOMPILING)
 
     # Create this target before we apply the GC options
     add_library(avr_core STATIC ${AVR_SOURCES})
+    set_reproducible_target(avr_core)
     target_include_directories(avr_core PRIVATE
         ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
         ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
@@ -319,6 +338,8 @@ function(add_base_binary variant_name)
 endfunction()
 
 function(fw_add_variant variant_name)
+	# Set FW_SOURCES to be reproducible in this variant as it's set in a separate project
+	set_reproducible_sources(FW_SOURCES "Firmware/")
 
 	# Create the Configuration_Prusa.h for this variant so it can be #included.
 	set(VARIANT_CFG_DIR "${CMAKE_CURRENT_BINARY_DIR}/include")
