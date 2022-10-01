@@ -52,7 +52,7 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     //! |MMU FW update needed|     <- title/header of the error: max 20 characters
     //! |prusa3d.com/ERR04504|     <- URL 20 characters
     //! |FI:1 FS:1  5>3 t201°|     <- status line, t is thermometer symbol
-    //! |>Retry >Done >MoreW |     <- buttons
+    //! |>Retry   >Done    >W|     <- buttons
     bool two_choices = false;
 
     // Read and determine what operations should be shown on the menu
@@ -76,7 +76,7 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     ReportErrorHookSensorLineRender();
     
     // Render the choices
-    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 10 : 7, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
+    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), 10, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
 }
 
 extern void ReportErrorHookSensorLineRender()
@@ -166,9 +166,9 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
         lcd_print(current_selection == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
         if (two_choices == false)
         {
-            lcd_set_cursor(7, 3);
+            lcd_set_cursor(9, 3);
             lcd_print(current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
-            lcd_set_cursor(13, 3);
+            lcd_set_cursor(18, 3);
             lcd_print(current_selection == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
         } else {
             lcd_set_cursor(10, 3);
