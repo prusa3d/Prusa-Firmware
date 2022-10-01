@@ -475,25 +475,6 @@ if(CMAKE_CROSSCOMPILING)
 endif()
 
 if(NOT CMAKE_CROSSCOMPILING)
-	# do not build the firmware by default (tests are the focus if not crosscompiling)
-	project(cmake_test)
-
-	# include catch_discover_tests function from Catch2
-	include(${Catch2_SOURCE_DIR}/contrib/Catch.cmake)
-
-	# Make test executable
-	set(TEST_SOURCES
-		Tests/tests.cpp
-		Tests/Example_test.cpp
-		Tests/PrusaStatistics_test.cpp
-#		Tests/Timer_test.cpp
-#		Firmware/Timer.cpp
-	)
-	add_executable(tests ${TEST_SOURCES})
-	target_include_directories(tests PRIVATE Tests)
-	target_link_libraries(tests Catch2::Catch2)
-
-	enable_testing()
-	catch_discover_tests(tests)
-
+    enable_testing()
+    add_subdirectory(tests)
 endif()
