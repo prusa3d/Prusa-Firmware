@@ -459,18 +459,25 @@ endfunction()
 
 if(CMAKE_CROSSCOMPILING)
 
-	file(GLOB FW_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/Firmware/variants ${PROJECT_SOURCE_DIR}/Firmware/variants/*.h)
-	foreach(THIS_VAR IN LISTS FW_VARIANTS)
-		string(REPLACE ".h" "" TRIMMED_NAME "${THIS_VAR}")
-		message("Variant added: ${TRIMMED_NAME}")
-        string(REPLACE "-E3Dv6full" "" DIR_NAME "${TRIMMED_NAME}")
+    # build a list of all supported variants
+    file(GLOB ALL_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/Firmware/variants ${PROJECT_SOURCE_DIR}/Firmware/variants/*.h)
+    list(TRANSFORM ALL_VARIANTS REPLACE "\.h$" "")
+    set(FW_VARIANTS ${ALL_VARIANTS} CACHE STRING "Firmware variants to be built")
+
+    foreach(THIS_VAR IN LISTS FW_VARIANTS)
+        if(NOT ${THIS_VAR} IN_LIST ALL_VARIANTS)
+            message(FATAL_ERROR "Variant ${THIS_VAR} does not exist")
+        endif()
+
+        message("Variant added: ${THIS_VAR}")
+        string(REPLACE "-E3Dv6full" "" DIR_NAME "${THIS_VAR}")
         string(REPLACE "1_75mm_" "" DIR_NAME "${DIR_NAME}")
         # Generate a file in a subfolder so that we can organize things a little more neatly in VS code
         FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
-        FILE(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt "project(${DIR_NAME})\nfw_add_variant(${TRIMMED_NAME})")
+        FILE(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt "project(${DIR_NAME})\nfw_add_variant(${THIS_VAR})")
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
-		#fw_add_variant(${TRIMMED_NAME})
-	endforeach(THIS_VAR IN LISTS FW_VARIANTS)
+        #fw_add_variant(${TRIMMED_NAME})
+    endforeach(THIS_VAR IN LISTS FW_VARIANTS)
 
 endif()
 
