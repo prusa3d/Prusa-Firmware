@@ -64,15 +64,13 @@
 
 // bitmasks for flag argument settings
 #define LCD_RS_FLAG 0x01
-#define LCD_HALF_FLAG 0x02
 
 FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
-uint8_t lcd_displayfunction = 0;
-uint8_t lcd_displaycontrol = 0;
-uint8_t lcd_displaymode = 0;
-
-uint8_t lcd_currline;
+static uint8_t lcd_displayfunction = 0;
+static uint8_t lcd_displaycontrol = 0;
+static uint8_t lcd_displaymode = 0;
+static uint8_t lcd_currline;
 
 #ifdef VT100
 uint8_t lcd_escape[8];
@@ -125,13 +123,12 @@ static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAUL
 {
 	WRITE(LCD_PINS_RS,flags&LCD_RS_FLAG);
 	_delay_us(5);
+#ifdef LCD_8BIT
 	lcd_writebits(data);
-#ifndef LCD_8BIT
-	if (!(flags & LCD_HALF_FLAG))
-	{
-		_delay_us(LCD_DEFAULT_DELAY);
-		lcd_writebits(data<<4);
-	}
+#else // LCD is in 4-bit mode
+	lcd_writebits(data);
+	delayMicroseconds(duration);
+	lcd_writebits(data<<4);
 #endif
 	delayMicroseconds(duration);
 }
@@ -162,17 +159,7 @@ static void lcd_begin(uint8_t clear)
 {
 	lcd_currline = 0;
 
-	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 4500); // wait min 4.1ms
-	// second try
-	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 150);
-	// third go!
-	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 150);
-#ifndef LCD_8BIT
-	// set to 4-bit interface
-	lcd_send(LCD_FUNCTIONSET | LCD_4BITMODE, LOW | LCD_HALF_FLAG, 150);
-#endif
-
-	// finally, set # lines, font size, etc.0
+	// Set 8-bit/4-bit mode, # lines, font size,
 	lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);
 	// turn the display on with no cursor or blinking default
 	lcd_displaycontrol = LCD_CURSOROFF | LCD_BLINKOFF;  
