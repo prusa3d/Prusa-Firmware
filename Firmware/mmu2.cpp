@@ -795,7 +795,7 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     }
 }
 
-void MMU2::ReportError(ErrorCode ec, ReportErrorSource res) {
+void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
     // Due to a potential lossy error reporting layers linked to this hook
     // we'd better report everything to make sure especially the error states
     // do not get lost. 
