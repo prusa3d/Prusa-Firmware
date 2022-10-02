@@ -216,7 +216,7 @@ void MMU2::mmu_loop() {
     if (is_mmu_error_monitor_active){
         // Call this every iteration to keep the knob rotation responsive
         // This includes when mmu_loop is called within manage_response
-        ReportErrorHook((uint16_t)lastErrorCode, mmu2.MMUCurrentErrorCode() == ErrorCode::OK ? ErrorSourcePrinter : ErrorSourceMMU);
+        ReportErrorHook((uint16_t)lastErrorCode);
     }
 
     avoidRecursion = false;
@@ -795,7 +795,7 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     }
 }
 
-void MMU2::ReportError(ErrorCode ec, uint8_t res) {
+void MMU2::ReportError(ErrorCode ec, ReportErrorSource res) {
     // Due to a potential lossy error reporting layers linked to this hook
     // we'd better report everything to make sure especially the error states
     // do not get lost. 
@@ -821,12 +821,13 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
         break;
     }
 
-    ReportErrorHook((uint16_t)ec, res);
-
     if( ec != lastErrorCode ){ // deduplicate: only report changes in error codes into the log
         lastErrorCode = ec;
+        lastErrorSource = res;
         LogErrorEvent_P( _O(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))) );
     }
+
+    ReportErrorHook((uint16_t)ec);
 
     static_assert(mmu2Magic[0] == 'M' 
         && mmu2Magic[1] == 'M' 
