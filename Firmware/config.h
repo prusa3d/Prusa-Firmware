@@ -60,9 +60,13 @@
 #define TMC2130_SPCR           SPI_SPCR(TMC2130_SPI_RATE, 1, 1, 1, 0)
 #define TMC2130_SPSR           SPI_SPSR(TMC2130_SPI_RATE)
 
+// This is set by the cmake build to be able to take control of
+// the language flag, without breaking existing build mechanisms.
+#ifndef CMAKE_LANG_CONTROL
 //LANG - Multi-language support
 //#define LANG_MODE              0 // primary language only
 #define LANG_MODE              1 // sec. language support
+#endif
 
 #define LANG_SIZE_RESERVED     0x3500 // reserved space for secondary language (13568 bytes).
                                       // 0x3D00 Maximum 15616 bytes as it depends on xflash_layout.h

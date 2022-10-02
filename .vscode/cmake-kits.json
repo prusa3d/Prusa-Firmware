@@ -1,0 +1,9 @@
+[
+    {
+        "name": "Local_avr-gcc-none-eabi",
+        "toolchainFile": "${workspaceFolder}/cmake/LocalAvrGcc.cmake",
+        "cmakeSettings": {
+            "CMAKE_MAKE_PROGRAM": "${workspaceFolder}/.dependencies/ninja-1.10.2/ninja"
+        }
+    }
+]
