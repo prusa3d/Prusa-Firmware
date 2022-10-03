@@ -388,6 +388,7 @@ function(fw_add_variant variant_name)
 
   # Multi-language build/s
   set(FW_LANG_BASE "${variant_name}_Multilang_base")
+  set(FW_LANG_PATCH "${variant_name}_Multilang_patch")
   set(FW_LANG_FINAL "${variant_name}_Multilang")
   add_base_binary(${FW_LANG_BASE})
   target_compile_definitions(${FW_LANG_BASE} PUBLIC LANG_MODE=1)
@@ -398,15 +399,12 @@ function(fw_add_variant variant_name)
   set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
 
   add_custom_command(
-    OUTPUT ${FW_LANG_BASE}.bin
-    COMMAND ${CMAKE_OBJCOPY} -I ihex -O binary ${FW_LANG_BASE}.hex
-            ${FW_LANG_BASE}.bin
-    DEPENDS ${FW_LANG_BASE}.hex)
-  add_custom_command(
     OUTPUT ${LANG_MAP}
-    COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-map.py ${FW_LANG_BASE}
-            ${FW_LANG_BASE}.bin > ${LANG_MAP}
-    DEPENDS ${FW_LANG_BASE}.bin
+    COMMAND ${CMAKE_OBJCOPY} -O binary ${FW_LANG_BASE} ${FW_LANG_PATCH}.bin
+    COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-map.py ${FW_LANG_BASE} ${FW_LANG_PATCH}.bin > ${LANG_MAP}
+    COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_PATCH}.bin ${FW_LANG_PATCH}.hex
+    DEPENDS ${FW_LANG_BASE}
+    BYPRODUCTS ${FW_LANG_PATCH}.bin ${FW_LANG_PATCH}.hex
     COMMENT "Generating ${variant_name} language map")
 
   set(LANG_BINS "")
@@ -454,10 +452,10 @@ function(fw_add_variant variant_name)
 
     add_custom_command(
       OUTPUT ${FW_LANG_FINAL}.hex
-      COMMAND ${CMAKE_COMMAND} -E cat ${FW_LANG_BASE}.hex ${LANG_CATHEX} > ${FW_LANG_FINAL}.hex
+      COMMAND ${CMAKE_COMMAND} -E cat ${FW_LANG_PATCH}.hex ${LANG_CATHEX} > ${FW_LANG_FINAL}.hex
       COMMAND ${CMAKE_COMMAND} -E copy ${FW_LANG_FINAL}.hex ${LANG_HEX}
       BYPRODUCTS ${LANG_HEX}
-      DEPENDS ${LANG_CATHEX}
+      DEPENDS ${FW_LANG_PATCH}.hex ${LANG_CATHEX}
       COMMENT "Generating final ${FW_LANG_FINAL}.hex")
     add_custom_target(${FW_LANG_FINAL} DEPENDS ${FW_LANG_FINAL}.hex)
     add_dependencies(ALL_MULTILANG ${FW_LANG_FINAL})
