@@ -306,15 +306,17 @@ endif()
 # ".po" "" LANG_VARIANTS "${LANG_VARIANTS}") list(SORT LANG_VARIANTS)
 # message("Languages found: ${LANG_VARIANTS}")
 
-# Meta target to build absolutely everything
+# Meta targets to build absolutely everything
 add_custom_target(ALL_FIRMWARE)
 add_custom_target(ALL_ENGLISH)
 add_custom_target(ALL_MULTILANG)
 add_dependencies(ALL_FIRMWARE ALL_ENGLISH ALL_MULTILANG)
+set_target_properties(ALL_MULTILANG PROPERTIES EXCLUDE_FROM_ALL FALSE)
 
 function(add_base_binary variant_name)
   add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS}
                                  ${VARIANT_CFG_FILE})
+  set_target_properties(${variant_name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
   target_include_directories(
     ${variant_name}
@@ -378,8 +380,9 @@ function(fw_add_variant variant_name)
   string(REPLACE "1_75mm_" "" variant_name "${variant_name}")
   string(REPLACE "-E3Dv6full" "" variant_name "${variant_name}")
 
+  # Single-language build
   set(FW_EN "${variant_name}_EN-only")
-  set(FW_MULTI "${variant_name}_Multilang")
+  set(FW_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex)
 
   add_base_binary(${FW_EN})
   # target_compile_options(${variant_name} PRIVATE) # turn this on for lolz
@@ -390,17 +393,14 @@ function(fw_add_variant variant_name)
     TARGET ${FW_EN}
     POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O ihex ${CMAKE_CURRENT_BINARY_DIR}/${FW_EN}
-            ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex
-    BYPRODUCTS ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex
-    COMMENT "Generating ${variant_name} hex")
-  add_dependencies(ALL_ENGLISH "${FW_EN}")
+            ${FW_HEX}
+    BYPRODUCTS ${FW_HEX}
+    COMMENT "Generating ${FW_EN}.hex")
+  add_dependencies(ALL_ENGLISH ${FW_EN})
 
-  if(NOT SECONDARY_LANGUAGES)
-    return() # Done, if no languages there's nothing else to do.
-  else()
-    add_base_binary(${FW_MULTI})
-    target_compile_definitions(${FW_MULTI} PUBLIC LANG_MODE=1)
-  endif()
+  # Multi-language build/s
+  add_base_binary(${FW_MULTI})
+  target_compile_definitions(${FW_MULTI} PUBLIC LANG_MODE=1)
 
   # Construct language map
   set(LANG_TMP_DIR ${CMAKE_BINARY_DIR}/${variant_name}/lang)
@@ -441,8 +441,8 @@ function(fw_add_variant variant_name)
       DEPENDS ${LANG_MAP}
       COMMENT "Generating ${variant_name}_${LANG}.bin from .po")
     list(APPEND LANG_BINS ${LANG_BIN})
-
   endforeach()
+
   string(FIND ${variant_name} "MK3" HAS_XFLASH)
   if(${HAS_XFLASH} GREATER_EQUAL 0)
     add_custom_command(
