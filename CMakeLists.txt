@@ -59,6 +59,7 @@ We now return to your regularly scheduled Firmware Build."
 
 option(SECONDARY_LANGUAGES "Secondary language support in the firmware" ON)
 
+# Language configuration
 set(MAIN_LANGUAGES
     cs de es fr it pl
     CACHE STRING "The list of 'main' languages to be included, in the correct order"
@@ -79,6 +80,7 @@ get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
 project(Prusa-Firmware)
 add_subdirectory(lib)
 
+# Get LANG_MAX_SIZE from sources
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/config.h MAX_SIZE_LINE
      REGEX "^#define \+LANG_SIZE_RESERVED \+"
      )
@@ -86,8 +88,8 @@ string(REGEX MATCH "0x[0-9]+" MAX_SIZE_HEX "${MAX_SIZE_LINE}")
 math(EXPR LANG_MAX_SIZE "${MAX_SIZE_HEX}" OUTPUT_FORMAT DECIMAL)
 message("Language maximum size (from config.h): ${LANG_MAX_SIZE} bytes")
 
-set(LANG_BIN_MAX 249856) # Ditto, this in xflash_layout.h but needs invocation of the
-                         # preprocessor... :-/
+# Ditto, this in xflash_layout.h but needs invocation of the preprocessor... :-/
+set(LANG_BIN_MAX 249856)
 
 get_recommended_gcc_version(RECOMMENDED_TOOLCHAIN_VERSION)
 if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL
@@ -227,7 +229,6 @@ set(AVR_SOURCES
     WString.cpp
     abi.cpp
     main.cpp
-    # new.cpp # What happened to this? it was removed in 1.0.5-1 to 1.0.5.2?
     )
 list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 
@@ -482,7 +483,7 @@ function(fw_add_variant variant_name)
       set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
       set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
 
-      # Intermediate 2-lang bin
+      # Patched binary with pre-baked secondary language
       add_custom_command(
         OUTPUT ${FW_LANG_FINAL}.bin
         COMMAND ${CMAKE_OBJCOPY} -O binary ${FW_LANG_BASE} ${FW_LANG_FINAL}.bin
@@ -492,7 +493,7 @@ function(fw_add_variant variant_name)
         COMMENT "Generating ${FW_LANG_FINAL}.bin"
         )
 
-      # Final hex
+      # Final hex files
       add_custom_command(
         OUTPUT ${FW_LANG_FINAL}.hex
         COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_FINAL}.bin ${FW_LANG_FINAL}.hex
@@ -531,17 +532,19 @@ if(CMAKE_CROSSCOMPILING)
     message("Variant added: ${THIS_VAR}")
     string(REPLACE "-E3Dv6full" "" DIR_NAME "${THIS_VAR}")
     string(REPLACE "1_75mm_" "" DIR_NAME "${DIR_NAME}")
+
     # Generate a file in a subfolder so that we can organize things a little more neatly in VS code
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
     file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt
          "project(${DIR_NAME})\nfw_add_variant(${THIS_VAR})"
          )
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
-    # fw_add_variant(${TRIMMED_NAME})
   endforeach(THIS_VAR IN LISTS FW_VARIANTS)
-
 endif()
 
+#
+# Tests
+#
 if(NOT CMAKE_CROSSCOMPILING)
   enable_testing()
   add_subdirectory(tests)
