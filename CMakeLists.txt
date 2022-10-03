@@ -309,7 +309,7 @@ set_target_properties(ALL_MULTILANG PROPERTIES EXCLUDE_FROM_ALL FALSE)
 
 function(add_base_binary variant_name)
   add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS}
-                                 ${VARIANT_CFG_FILE})
+                                 ${VARIANT_CFG_DST})
   set_target_properties(${variant_name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
   target_include_directories(
@@ -361,16 +361,16 @@ function(fw_add_variant variant_name)
   set_reproducible_sources(FW_SOURCES "Firmware/")
 
   # Create the Configuration_Prusa.h for this variant so it can be #included.
-  set(VARIANT_CFG_DIR "${CMAKE_CURRENT_BINARY_DIR}/include")
-  set(VARIANT_CFG_FILE "${VARIANT_CFG_DIR}/Configuration_prusa.h")
+  set(VARIANT_CFG_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
+  set(VARIANT_CFG_DST ${VARIANT_CFG_DIR}/Configuration_prusa.h)
+  set(VARIANT_CFG_SRC ${CMAKE_SOURCE_DIR}/Firmware/variants/${variant_name}.h)
   add_custom_command(
-    OUTPUT ${VARIANT_CFG_FILE}
+    OUTPUT ${VARIANT_CFG_DST}
     COMMAND
-      ${CMAKE_COMMAND} -E copy
-      ${CMAKE_SOURCE_DIR}/Firmware/variants/${variant_name}.h
-      ${VARIANT_CFG_FILE}
+      ${CMAKE_COMMAND} -E copy ${VARIANT_CFG_SRC} ${VARIANT_CFG_DST}
     COMMENT "Generating Configuration_prusa.h for ${variant_name}"
-    BYPRODUCTS ${VARIANT_CFG_DIR})
+    BYPRODUCTS ${VARIANT_CFG_DIR}
+    DEPENDS ${VARIANT_CFG_SRC})
   string(REPLACE "1_75mm_" "" variant_name "${variant_name}")
   string(REPLACE "-E3Dv6full" "" variant_name "${variant_name}")
 
