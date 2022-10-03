@@ -389,14 +389,12 @@ function(fw_add_variant variant_name)
   # Multi-language build/s
   set(FW_LANG_BASE "${variant_name}_Multilang_base")
   set(FW_LANG_PATCH "${variant_name}_Multilang_patch")
-  set(FW_LANG_FINAL "${variant_name}_Multilang")
   add_base_binary(${FW_LANG_BASE})
   target_compile_definitions(${FW_LANG_BASE} PUBLIC LANG_MODE=1)
 
   # Construct language map
   set(LANG_TMP_DIR lang)
   set(LANG_MAP ${LANG_TMP_DIR}/${variant_name}_lang.map)
-  set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
 
   add_custom_command(
     OUTPUT ${LANG_MAP}
@@ -407,6 +405,7 @@ function(fw_add_variant variant_name)
     BYPRODUCTS ${FW_LANG_PATCH}.bin ${FW_LANG_PATCH}.hex
     COMMENT "Generating ${variant_name} language map")
 
+  # Build language catalogs
   set(LANG_BINS "")
   foreach(LANG IN LISTS SELECTED_LANGUAGES)
     set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
@@ -430,6 +429,9 @@ function(fw_add_variant variant_name)
 
   string(FIND ${variant_name} "MK3" HAS_XFLASH)
   if(${HAS_XFLASH} GREATER_EQUAL 0)
+    # X-Flash based build (catalogs appended to patched binary)
+    set(FW_LANG_FINAL "${variant_name}_Multilang")
+    set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
     set(LANG_CATBIN ${LANG_TMP_DIR}/${variant_name}_cat.bin)
     set(LANG_CATHEX ${LANG_TMP_DIR}/${variant_name}_cat.hex)
 
