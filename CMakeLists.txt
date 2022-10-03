@@ -300,12 +300,6 @@ if(CMAKE_CROSSCOMPILING)
                      ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/)
 endif()
 
-# Setup language resources: file(GLOB LANG_VARIANTS RELATIVE
-# ${PROJECT_SOURCE_DIR}/lang/po ${PROJECT_SOURCE_DIR}/lang/po/Firmware_??.po)
-# string(REPLACE "Firmware_" "" LANG_VARIANTS "${LANG_VARIANTS}") string(REPLACE
-# ".po" "" LANG_VARIANTS "${LANG_VARIANTS}") list(SORT LANG_VARIANTS)
-# message("Languages found: ${LANG_VARIANTS}")
-
 # Meta targets to build absolutely everything
 add_custom_target(ALL_FIRMWARE)
 add_custom_target(ALL_ENGLISH)
@@ -385,9 +379,6 @@ function(fw_add_variant variant_name)
   set(FW_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex)
 
   add_base_binary(${FW_EN})
-  # target_compile_options(${variant_name} PRIVATE) # turn this on for lolz
-  # -Wdouble-promotion)
-
   target_compile_definitions(${FW_EN} PUBLIC LANG_MODE=0)
   add_custom_command(
     TARGET ${FW_EN}
@@ -399,80 +390,80 @@ function(fw_add_variant variant_name)
   add_dependencies(ALL_ENGLISH ${FW_EN})
 
   # Multi-language build/s
-  add_base_binary(${FW_MULTI})
-  target_compile_definitions(${FW_MULTI} PUBLIC LANG_MODE=1)
+  set(FW_LANG_BASE "${variant_name}_Multilang_base")
+  set(FW_LANG_FINAL "${variant_name}_Multilang")
+  add_base_binary(${FW_LANG_BASE})
+  target_compile_definitions(${FW_LANG_BASE} PUBLIC LANG_MODE=1)
 
   # Construct language map
-  set(LANG_TMP_DIR ${CMAKE_BINARY_DIR}/${variant_name}/lang)
+  set(LANG_TMP_DIR lang)
   set(LANG_MAP ${LANG_TMP_DIR}/${variant_name}_lang.map)
-  set(LANG_FWBIN ${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.bin)
-  set(LANG_FINAL_BIN ${LANG_TMP_DIR}/${variant_name}_lang.bin)
-  set(LANG_FINAL_HEX ${LANG_TMP_DIR}/${variant_name}_lang.hex)
+  set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
 
   add_custom_command(
-    OUTPUT ${LANG_FWBIN}
-    COMMAND
-      "${CMAKE_OBJCOPY}" -I ihex -O binary
-      ${CMAKE_CURRENT_BINARY_DIR}/${variant_name}_Multilang.hex ${LANG_FWBIN}
-    DEPENDS ${FW_MULTI})
+    OUTPUT ${FW_LANG_BASE}.bin
+    COMMAND ${CMAKE_OBJCOPY} -I ihex -O binary ${FW_LANG_BASE}.hex
+            ${FW_LANG_BASE}.bin
+    DEPENDS ${FW_LANG_BASE}.hex)
   add_custom_command(
     OUTPUT ${LANG_MAP}
-    COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-map.py "${FW_MULTI}" "${LANG_FWBIN}" >
-            "${LANG_MAP}"
-    DEPENDS ${LANG_FWBIN})
+    COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-map.py ${FW_LANG_BASE}
+            ${FW_LANG_BASE}.bin > ${LANG_MAP}
+    DEPENDS ${FW_LANG_BASE}.bin
+    COMMENT "Generating ${variant_name} language map")
 
   set(LANG_BINS "")
-
   foreach(LANG IN LISTS SELECTED_LANGUAGES)
     set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
-
     set(PO_FILE "${CMAKE_SOURCE_DIR}/lang/po/Firmware_${LANG}.po")
+
     add_custom_command(
       OUTPUT ${LANG_BIN}
-      # COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-check.py --no-warning
-      # --map "${LANG_MAP}" "${PO_FILE}" COMMAND ${CMAKE_COMMAND} -E echo
-      # "Building lang_${LANG}.bin"
-      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE}
-              ${LANG_BIN}
+      #[[
+      # Check po file:
+      #COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-check.py --no-warning --map ${LANG_MAP} ${PO_FILE}
+      #]]
+      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
       # Check bin size:
       COMMAND
         ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_MAX_SIZE}
         -DLANG_FILE=${LANG_BIN} -P ${PROJECT_CMAKE_DIR}/Check_lang_size.cmake
-      DEPENDS ${LANG_MAP}
-      COMMENT "Generating ${variant_name}_${LANG}.bin from .po")
+      DEPENDS ${LANG_MAP} ${PO_FILE}
+      COMMENT "Generating ${variant_name}_${LANG}.bin")
     list(APPEND LANG_BINS ${LANG_BIN})
   endforeach()
 
   string(FIND ${variant_name} "MK3" HAS_XFLASH)
   if(${HAS_XFLASH} GREATER_EQUAL 0)
-    add_custom_command(
-      OUTPUT ${LANG_FINAL_BIN}
-      COMMAND ${CMAKE_COMMAND} -E cat ${LANG_BINS} > ${LANG_FINAL_BIN}
-      DEPENDS ${LANG_BINS}
-      COMMENT "Merging language binaries")
-    add_custom_command(
-      OUTPUT ${LANG_FINAL_BIN}
-      COMMAND
-        ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX}
-        -DLANG_FILE=${LANG_FINAL_BIN} -P
-        ${PROJECT_CMAKE_DIR}/Check_final_lang_bin_size.cmake
-      APPEND)
-    add_custom_command(
-      OUTPUT ${LANG_FINAL_HEX}
-      COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${LANG_FINAL_BIN}
-              ${LANG_FINAL_HEX}
-      DEPENDS ${LANG_FINAL_BIN}
-      COMMENT "Generating Hex for language data")
-    set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${variant_name}-Languages.hex)
+    set(LANG_CATBIN ${LANG_TMP_DIR}/${variant_name}_cat.bin)
+    set(LANG_CATHEX ${LANG_TMP_DIR}/${variant_name}_cat.hex)
 
-    add_custom_target(
-      ${variant_name}-language-hex
-      COMMAND ${CMAKE_COMMAND} -E copy ${FW_MULTI}.hex ${LANG_HEX}
-      COMMAND ${CMAKE_COMMAND} -E cat ${LANG_FINAL_HEX} >> ${LANG_HEX}
-      COMMENT "Generating final ${variant_name}-Languages.hex"
+    add_custom_command(
+      OUTPUT ${LANG_CATBIN}
+      COMMAND ${CMAKE_COMMAND} -E cat ${LANG_BINS} > ${LANG_CATBIN}
+      DEPENDS ${LANG_BINS}
+      COMMENT "Merging language catalogs")
+    #[[
+    #add_custom_command(OUTPUT ${LANG_FINAL_BIN}
+    #  COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX} -DLANG_FILE=${LANG_FINAL_BIN}
+    #                           -P ${PROJECT_CMAKE_DIR}/Check_final_lang_bin_size.cmake
+    #  APPEND)
+    #]]
+    add_custom_command(
+      OUTPUT ${LANG_CATHEX}
+      COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${LANG_CATBIN} ${LANG_CATHEX}
+      DEPENDS ${LANG_CATBIN}
+      COMMENT "Generating Hex for language data")
+
+    add_custom_command(
+      OUTPUT ${FW_LANG_FINAL}.hex
+      COMMAND ${CMAKE_COMMAND} -E cat ${FW_LANG_BASE}.hex ${LANG_CATHEX} > ${FW_LANG_FINAL}.hex
+      COMMAND ${CMAKE_COMMAND} -E copy ${FW_LANG_FINAL}.hex ${LANG_HEX}
       BYPRODUCTS ${LANG_HEX}
-      DEPENDS ${LANG_FINAL_HEX})
-    add_dependencies(ALL_MULTILANG ${variant_name}-language-hex)
+      DEPENDS ${LANG_CATHEX}
+      COMMENT "Generating final ${FW_LANG_FINAL}.hex")
+    add_custom_target(${FW_LANG_FINAL} DEPENDS ${FW_LANG_FINAL}.hex)
+    add_dependencies(ALL_MULTILANG ${FW_LANG_FINAL})
   else()
     set(ALL_VARIANT_HEXES "")
     # Non-xflash, e.g. MK2.5
