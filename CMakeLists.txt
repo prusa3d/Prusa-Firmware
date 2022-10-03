@@ -7,28 +7,29 @@ set(PROJECT_VERSION_SUFFIX
     CACHE
       STRING
       "Full version suffix to be shown on the info screen in settings (e.g. full_version=4.0.3-BETA+1035.PR111.B4, suffix=-BETA+1035.PR111.B4). Defaults to '+<commit sha>.<dirty?>.<debug?>' if set to '<auto>'."
-)
+    )
 set(PROJECT_VERSION_SUFFIX_SHORT
     "<auto>"
     CACHE
       STRING
       "Short version suffix to be shown on splash screen. Defaults to '+<BUILD_NUMBER>' if set to '<auto>'."
-)
+    )
 set(BUILD_NUMBER
     ""
-    CACHE
-      STRING
-      "Build number of the firmware. Resolved automatically if not specified.")
+    CACHE STRING "Build number of the firmware. Resolved automatically if not specified."
+    )
 
 include(cmake/ProjectVersion.cmake)
 resolve_version_variables()
 
 set(PROJECT_VERSION_FLAVOUR
     ""
-    CACHE STRING "Firmware flavour to build - DEBUG, DEVEL, APLHA, BETA or RC")
+    CACHE STRING "Firmware flavour to build - DEBUG, DEVEL, APLHA, BETA or RC"
+    )
 set(PROJECT_VERSION_FLAVOUR_REVISION
     ""
-    CACHE STRING "Firmware flavour version, e.g. 1 for RC1, etc")
+    CACHE STRING "Firmware flavour version, e.g. 1 for RC1, etc"
+    )
 
 if(NOT PROJECT_VERSION_FLAVOUR STREQUAL "")
   set(PROJECT_VERSION "${PROJECT_VERSION}-${PROJECT_VERSION_FLAVOUR}")
@@ -42,9 +43,8 @@ endif()
 # Inform user about the resolved settings
 message(STATUS "Project version: ${PROJECT_VERSION}")
 message(
-  STATUS
-    "Project version with short suffix: ${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}"
-)
+  STATUS "Project version with short suffix: ${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}"
+  )
 
 set(FN_PREFIX "FW${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}")
 
@@ -54,14 +54,15 @@ message(
 ***************** YOUR ATTENTION PLEASE *****************
 CMake support is experimental. There is no guarantee at this time. If you have problems you are encouraged to fall back to the tried-and-true methods.
 *********************** THANK YOU **********************
-We now return to your regularly scheduled Firmware Build.")
+We now return to your regularly scheduled Firmware Build."
+  )
 
 option(SECONDARY_LANGUAGES "Secondary language support in the firmware" ON)
 
 set(MAIN_LANGUAGES
     cs de es fr it pl
-    CACHE STRING
-          "The list of 'main' languages to be included, in the correct order")
+    CACHE STRING "The list of 'main' languages to be included, in the correct order"
+    )
 set(COMMUNITY_LANGUAGES
     nl
     ro
@@ -70,9 +71,8 @@ set(COMMUNITY_LANGUAGES
     sk
     sv
     no
-    CACHE STRING
-          "The list of community languages to be included, in the correct order"
-)
+    CACHE STRING "The list of community languages to be included, in the correct order"
+    )
 set(SELECTED_LANGUAGES ${MAIN_LANGUAGES} ${COMMUNITY_LANGUAGES})
 
 get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
@@ -80,26 +80,28 @@ project(Prusa-Firmware)
 add_subdirectory(lib)
 
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/config.h MAX_SIZE_LINE
-     REGEX "^#define \+LANG_SIZE_RESERVED \+")
+     REGEX "^#define \+LANG_SIZE_RESERVED \+"
+     )
 string(REGEX MATCH "0x[0-9]+" MAX_SIZE_HEX "${MAX_SIZE_LINE}")
 math(EXPR LANG_MAX_SIZE "${MAX_SIZE_HEX}" OUTPUT_FORMAT DECIMAL)
 message("Language maximum size (from config.h): ${LANG_MAX_SIZE} bytes")
 
-set(LANG_BIN_MAX 249856) # Ditto, this in xflash_layout.h but needs invocation
-                         # of the preprocessor... :-/
+set(LANG_BIN_MAX 249856) # Ditto, this in xflash_layout.h but needs invocation of the
+                         # preprocessor... :-/
 
 get_recommended_gcc_version(RECOMMENDED_TOOLCHAIN_VERSION)
 if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL
-                            ${RECOMMENDED_TOOLCHAIN_VERSION})
-  message(
-    WARNING "Recommended AVR toolchain is ${RECOMMENDED_TOOLCHAIN_VERSION}"
-            ", but you have ${CMAKE_CXX_COMPILER_VERSION}")
+                            ${RECOMMENDED_TOOLCHAIN_VERSION}
+   )
+  message(WARNING "Recommended AVR toolchain is ${RECOMMENDED_TOOLCHAIN_VERSION}"
+                  ", but you have ${CMAKE_CXX_COMPILER_VERSION}"
+          )
 
 elseif(NOT CMAKE_CROSSCOMPILING AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message(
     WARNING
       "Recommended compiler for host tools and unittests is GCC, you have ${CMAKE_CXX_COMPILER_ID}."
-  )
+    )
 endif()
 
 # append custom C/C++ flags
@@ -197,7 +199,8 @@ set(FW_SOURCES
     vector_3.cpp
     xflash.c
     xflash_dump.cpp
-    xyzcal.cpp)
+    xyzcal.cpp
+    )
 list(TRANSFORM FW_SOURCES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/)
 
 set(AVR_SOURCES
@@ -225,7 +228,7 @@ set(AVR_SOURCES
     abi.cpp
     main.cpp
     # new.cpp # What happened to this? it was removed in 1.0.5-1 to 1.0.5.2?
-)
+    )
 list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 
 #
@@ -240,7 +243,8 @@ if(CMAKE_CROSSCOMPILING)
       set_property(
         SOURCE ${file}
         APPEND
-        PROPERTY COMPILE_OPTIONS "-frandom-seed=${target}.o")
+        PROPERTY COMPILE_OPTIONS "-frandom-seed=${target}.o"
+        )
     endforeach()
   endfunction()
 
@@ -272,8 +276,10 @@ if(CMAKE_CROSSCOMPILING)
   set(CMAKE_C_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 
   # mcu and target-related settings
-  add_compile_options(-mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10819
-                      -DARDUINO_AVR_PRUSA_EINSY_RAMBO -DARDUINO_ARCH_AVR)
+  add_compile_options(
+    -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10819 -DARDUINO_AVR_PRUSA_EINSY_RAMBO
+    -DARDUINO_ARCH_AVR
+    )
   add_link_options(-mmcu=atmega2560 -Wl,-u,vfprintf -lprintf_flt -lm)
 
   # disable some C++ language features
@@ -297,7 +303,8 @@ if(CMAKE_CROSSCOMPILING)
   set_reproducible_target(avr_core)
   target_include_directories(
     avr_core PRIVATE ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
-                     ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/)
+                     ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
+    )
 endif()
 
 # Meta targets to build absolutely everything
@@ -308,8 +315,7 @@ add_dependencies(ALL_FIRMWARE ALL_ENGLISH ALL_MULTILANG)
 set_target_properties(ALL_MULTILANG PROPERTIES EXCLUDE_FROM_ALL FALSE)
 
 function(add_base_binary variant_name)
-  add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS}
-                                 ${VARIANT_CFG_DST})
+  add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_DST})
   set_target_properties(${variant_name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
   target_include_directories(
@@ -317,7 +323,8 @@ function(add_base_binary variant_name)
     PRIVATE ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
             ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
             ${VARIANT_CFG_DIR} # Include the header for this variant.
-            ${CMAKE_SOURCE_DIR}/Firmware)
+            ${CMAKE_SOURCE_DIR}/Firmware
+    )
 
   target_link_libraries(${variant_name} avr_core)
 
@@ -326,35 +333,35 @@ function(add_base_binary variant_name)
   target_link_options(${variant_name} PUBLIC -Wl,-T,${LINKER_SCRIPT})
 
   # limit the text section to 248K (256K - 8k reserved for the bootloader)
-  target_link_options(${variant_name} PUBLIC
-                      -Wl,--defsym=__TEXT_REGION_LENGTH__=248K)
+  target_link_options(${variant_name} PUBLIC -Wl,--defsym=__TEXT_REGION_LENGTH__=248K)
 
-  # produce ASM listing. Note we also specify the .map as a byproduct so it gets
-  # cleaned because link_options doesn't have a "generated outputs" feature.
+  # produce ASM listing. Note we also specify the .map as a byproduct so it gets cleaned because
+  # link_options doesn't have a "generated outputs" feature.
   add_custom_command(
     TARGET ${variant_name}
     POST_BUILD
-    COMMAND ${CMAKE_OBJDUMP} --prefix ${CMAKE_SOURCE_DIR} -CSd ${variant_name} >
-            ${variant_name}.asm
-    BYPRODUCTS ${variant_name}.asm ${variant_name}.map)
+    COMMAND ${CMAKE_OBJDUMP} --prefix ${CMAKE_SOURCE_DIR} -CSd ${variant_name} > ${variant_name}.asm
+    BYPRODUCTS ${variant_name}.asm ${variant_name}.map
+    )
 
   # inform about the firmware's size in terminal
   add_custom_command(
     TARGET ${variant_name}
     POST_BUILD
-    COMMAND ${CMAKE_SIZE_UTIL} -C --mcu=atmega2560 ${variant_name})
+    COMMAND ${CMAKE_SIZE_UTIL} -C --mcu=atmega2560 ${variant_name}
+    )
   report_size(${variant_name})
 
   # generate linker map file
-  target_link_options(${variant_name} PUBLIC
-                      -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.map)
+  target_link_options(
+    ${variant_name} PUBLIC -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.map
+    )
 
   target_compile_definitions(${variant_name} PRIVATE CMAKE_LANG_CONTROL)
 endfunction()
 
 function(fw_add_variant variant_name)
-  # Set FW_SOURCES to be reproducible in this variant as it's set in a separate
-  # project
+  # Set FW_SOURCES to be reproducible in this variant as it's set in a separate project
   set_reproducible_sources(FW_SOURCES "Firmware/")
 
   # Create the Configuration_Prusa.h for this variant so it can be #included.
@@ -363,11 +370,11 @@ function(fw_add_variant variant_name)
   set(VARIANT_CFG_SRC ${CMAKE_SOURCE_DIR}/Firmware/variants/${variant_name}.h)
   add_custom_command(
     OUTPUT ${VARIANT_CFG_DST}
-    COMMAND
-      ${CMAKE_COMMAND} -E copy ${VARIANT_CFG_SRC} ${VARIANT_CFG_DST}
+    COMMAND ${CMAKE_COMMAND} -E copy ${VARIANT_CFG_SRC} ${VARIANT_CFG_DST}
     COMMENT "Generating Configuration_prusa.h for ${variant_name}"
     BYPRODUCTS ${VARIANT_CFG_DIR}
-    DEPENDS ${VARIANT_CFG_SRC})
+    DEPENDS ${VARIANT_CFG_SRC}
+    )
   string(REPLACE "1_75mm_" "" variant_name "${variant_name}")
   string(REPLACE "-E3Dv6full" "" variant_name "${variant_name}")
 
@@ -383,7 +390,8 @@ function(fw_add_variant variant_name)
     COMMAND ${CMAKE_OBJCOPY} -O ihex ${FW_EN} ${FW_EN}.hex
     COMMAND ${CMAKE_OBJCOPY} -O ihex ${FW_EN} ${FW_HEX}
     BYPRODUCTS ${FW_EN}.hex ${FW_HEX}
-    COMMENT "Generating ${FW_EN}.hex")
+    COMMENT "Generating ${FW_EN}.hex"
+    )
   add_dependencies(ALL_ENGLISH ${FW_EN})
 
   # Multi-language build/s
@@ -403,7 +411,8 @@ function(fw_add_variant variant_name)
     COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_PATCH}.bin ${FW_LANG_PATCH}.hex
     DEPENDS ${FW_LANG_BASE}
     BYPRODUCTS ${FW_LANG_PATCH}.bin ${FW_LANG_PATCH}.hex
-    COMMENT "Generating ${variant_name} language map")
+    COMMENT "Generating ${variant_name} language map"
+    )
 
   # Build language catalogs
   set(LANG_BINS "")
@@ -419,11 +428,11 @@ function(fw_add_variant variant_name)
       #]]
       COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
       # Check bin size:
-      COMMAND
-        ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_MAX_SIZE}
-        -DLANG_FILE=${LANG_BIN} -P ${PROJECT_CMAKE_DIR}/Check_lang_size.cmake
+      COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_MAX_SIZE} -DLANG_FILE=${LANG_BIN} -P
+              ${PROJECT_CMAKE_DIR}/Check_lang_size.cmake
       DEPENDS ${LANG_MAP} ${PO_FILE}
-      COMMENT "Generating ${variant_name}_${LANG}.bin")
+      COMMENT "Generating ${variant_name}_${LANG}.bin"
+      )
     list(APPEND LANG_BINS ${LANG_BIN})
   endforeach()
 
@@ -439,7 +448,8 @@ function(fw_add_variant variant_name)
       OUTPUT ${LANG_CATBIN}
       COMMAND ${CMAKE_COMMAND} -E cat ${LANG_BINS} > ${LANG_CATBIN}
       DEPENDS ${LANG_BINS}
-      COMMENT "Merging language catalogs")
+      COMMENT "Merging language catalogs"
+      )
     #[[
     #add_custom_command(OUTPUT ${LANG_FINAL_BIN}
     #  COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_BIN_MAX} -DLANG_FILE=${LANG_FINAL_BIN}
@@ -450,7 +460,8 @@ function(fw_add_variant variant_name)
       OUTPUT ${LANG_CATHEX}
       COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${LANG_CATBIN} ${LANG_CATHEX}
       DEPENDS ${LANG_CATBIN}
-      COMMENT "Generating Hex for language data")
+      COMMENT "Generating Hex for language data"
+      )
 
     add_custom_command(
       OUTPUT ${FW_LANG_FINAL}.hex
@@ -458,7 +469,8 @@ function(fw_add_variant variant_name)
       COMMAND ${CMAKE_COMMAND} -E copy ${FW_LANG_FINAL}.hex ${LANG_HEX}
       BYPRODUCTS ${LANG_HEX}
       DEPENDS ${FW_LANG_PATCH}.hex ${LANG_CATHEX}
-      COMMENT "Generating final ${FW_LANG_FINAL}.hex")
+      COMMENT "Generating final ${FW_LANG_FINAL}.hex"
+      )
 
     add_custom_target(${FW_LANG_FINAL} DEPENDS ${FW_LANG_FINAL}.hex)
     add_dependencies(ALL_MULTILANG ${FW_LANG_FINAL})
@@ -474,23 +486,25 @@ function(fw_add_variant variant_name)
       add_custom_command(
         OUTPUT ${FW_LANG_FINAL}.bin
         COMMAND ${CMAKE_OBJCOPY} -O binary ${FW_LANG_BASE} ${FW_LANG_FINAL}.bin
-        COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE}
-                ${LANG_BIN} ${FW_LANG_FINAL}.bin
+        COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE} ${LANG_BIN}
+                ${FW_LANG_FINAL}.bin
         DEPENDS ${FW_LANG_BASE} ${LANG_BIN}
-        COMMENT "Generating ${FW_LANG_FINAL}.bin")
+        COMMENT "Generating ${FW_LANG_FINAL}.bin"
+        )
 
       # Final hex
-      add_custom_command(OUTPUT ${FW_LANG_FINAL}.hex
+      add_custom_command(
+        OUTPUT ${FW_LANG_FINAL}.hex
         COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_FINAL}.bin ${FW_LANG_FINAL}.hex
         COMMAND ${CMAKE_COMMAND} -E copy ${FW_LANG_FINAL}.hex ${LANG_HEX}
         DEPENDS ${FW_LANG_FINAL}.bin
-        COMMENT "Creating ${FW_LANG_FINAL}.hex")
+        COMMENT "Creating ${FW_LANG_FINAL}.hex"
+        )
 
       add_custom_target(${FW_LANG_FINAL} DEPENDS ${FW_LANG_FINAL}.hex)
       list(APPEND ALL_VARIANT_HEXES ${FW_LANG_FINAL})
     endforeach()
-    add_custom_target("${variant_name}-All-Languages"
-                      DEPENDS ${ALL_VARIANT_HEXES})
+    add_custom_target("${variant_name}-All-Languages" DEPENDS ${ALL_VARIANT_HEXES})
     add_dependencies(ALL_MULTILANG "${variant_name}-All-Languages")
   endif()
 endfunction()
@@ -501,11 +515,13 @@ if(CMAKE_CROSSCOMPILING)
   file(
     GLOB ALL_VARIANTS
     RELATIVE ${PROJECT_SOURCE_DIR}/Firmware/variants
-    ${PROJECT_SOURCE_DIR}/Firmware/variants/*.h)
+    ${PROJECT_SOURCE_DIR}/Firmware/variants/*.h
+    )
   list(TRANSFORM ALL_VARIANTS REPLACE "\.h$" "")
   set(FW_VARIANTS
       ${ALL_VARIANTS}
-      CACHE STRING "Firmware variants to be built")
+      CACHE STRING "Firmware variants to be built"
+      )
 
   foreach(THIS_VAR IN LISTS FW_VARIANTS)
     if(NOT ${THIS_VAR} IN_LIST ALL_VARIANTS)
@@ -515,11 +531,11 @@ if(CMAKE_CROSSCOMPILING)
     message("Variant added: ${THIS_VAR}")
     string(REPLACE "-E3Dv6full" "" DIR_NAME "${THIS_VAR}")
     string(REPLACE "1_75mm_" "" DIR_NAME "${DIR_NAME}")
-    # Generate a file in a subfolder so that we can organize things a little
-    # more neatly in VS code
+    # Generate a file in a subfolder so that we can organize things a little more neatly in VS code
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
     file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt
-         "project(${DIR_NAME})\nfw_add_variant(${THIS_VAR})")
+         "project(${DIR_NAME})\nfw_add_variant(${THIS_VAR})"
+         )
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
     # fw_add_variant(${TRIMMED_NAME})
   endforeach(THIS_VAR IN LISTS FW_VARIANTS)
