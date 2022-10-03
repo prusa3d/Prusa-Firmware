@@ -466,7 +466,9 @@ void PAT9125_sensor::settings_init() {
 }
 
 int16_t PAT9125_sensor::getStepCount() {
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { return stepCount; }
+    int16_t ret;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { ret = stepCount; }
+    return ret;
 }
 
 void PAT9125_sensor::resetStepCount() {
