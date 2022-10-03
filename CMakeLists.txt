@@ -459,34 +459,35 @@ function(fw_add_variant variant_name)
       BYPRODUCTS ${LANG_HEX}
       DEPENDS ${FW_LANG_PATCH}.hex ${LANG_CATHEX}
       COMMENT "Generating final ${FW_LANG_FINAL}.hex")
+
     add_custom_target(${FW_LANG_FINAL} DEPENDS ${FW_LANG_FINAL}.hex)
     add_dependencies(ALL_MULTILANG ${FW_LANG_FINAL})
   else()
     set(ALL_VARIANT_HEXES "")
     # Non-xflash, e.g. MK2.5
     foreach(LANG IN LISTS SELECTED_LANGUAGES)
-      set(LANG_HEX_FN ${variant_name}-en_${LANG})
-      set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${LANG_HEX_FN}.hex)
+      set(FW_LANG_FINAL ${variant_name}-en_${LANG})
+      set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
       set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
-      set(LANG_FWBIN_TMP ${LANG_TMP_DIR}/${variant_name}-en_${LANG}.bin)
 
       # Intermediate 2-lang bin
       add_custom_command(
-        OUTPUT ${LANG_FWBIN_TMP}
-        COMMAND ${CMAKE_COMMAND} -E copy ${LANG_FWBIN} ${LANG_FWBIN_TMP}
-        COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_MULTI}
-                ${LANG_BIN} ${LANG_FWBIN_TMP}
-        DEPENDS ${LANG_FWBIN} ${LANG_BIN}
-        COMMENT "Generating ${variant_name}-en_${LANG}.bin")
+        OUTPUT ${FW_LANG_FINAL}.bin
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${FW_LANG_BASE} ${FW_LANG_FINAL}.bin
+        COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-patchsec.py ${FW_LANG_BASE}
+                ${LANG_BIN} ${FW_LANG_FINAL}.bin
+        DEPENDS ${FW_LANG_BASE} ${LANG_BIN}
+        COMMENT "Generating ${FW_LANG_FINAL}.bin")
 
-      # Final hex:
-      add_custom_target(
-        ${LANG_HEX_FN}
-        COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${LANG_FWBIN_TMP} ${LANG_HEX}
-        BYPRODUCTS ${LANG_HEX}
-        DEPENDS ${LANG_FWBIN_TMP}
-        COMMENT "Creating ${LANG_HEX_FN}.hex")
-      list(APPEND ALL_VARIANT_HEXES ${LANG_HEX_FN})
+      # Final hex
+      add_custom_command(OUTPUT ${FW_LANG_FINAL}.hex
+        COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_FINAL}.bin ${FW_LANG_FINAL}.hex
+        COMMAND ${CMAKE_COMMAND} -E copy ${FW_LANG_FINAL}.hex ${LANG_HEX}
+        DEPENDS ${FW_LANG_FINAL}.bin
+        COMMENT "Creating ${FW_LANG_FINAL}.hex")
+
+      add_custom_target(${FW_LANG_FINAL} DEPENDS ${FW_LANG_FINAL}.hex)
+      list(APPEND ALL_VARIANT_HEXES ${FW_LANG_FINAL})
     endforeach()
     add_custom_target("${variant_name}-All-Languages"
                       DEPENDS ${ALL_VARIANT_HEXES})
