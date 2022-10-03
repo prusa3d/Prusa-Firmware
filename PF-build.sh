@@ -530,19 +530,6 @@ fi
 }
 # End: Check python ... needed during language build
 
-#Start: Check gawk ... needed during language build
-check_gawk()
-{
-if ! type gawk > /dev/null; then
-    if [ $TARGET_OS == "linux" ]; then
-        echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
-        echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
-        #sudo apt-get update && apt-get install gawk
-        failures 4
-    fi
-fi
-}
-#End: Check gawk ... needed during language build
 
 #### Start: Set build environment 
 set_build_env_variables()
@@ -1601,7 +1588,6 @@ check_OS
 check_wget
 check_zip
 check_python
-check_gawk
 
 #### Check for options/flags
 echo "Check for options"
