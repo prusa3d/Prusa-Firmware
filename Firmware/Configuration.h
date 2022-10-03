@@ -63,6 +63,13 @@ extern PGM_P sPrinterName;
 #undef DEBUG_BUILD
 #endif
 
+#ifndef SOURCE_DATE_EPOCH
+#define SOURCE_DATE_EPOCH __DATE__
+#endif
+#ifndef SOURCE_TIME_EPOCH
+#define SOURCE_TIME_EPOCH __TIME__
+#endif
+
 #include "Configuration_prusa.h"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
@@ -78,9 +85,7 @@ extern PGM_P sPrinterName;
 // startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
 // build by the user have been successfully uploaded into firmware.
 
-//#define STRING_VERSION "1.0.2"
-
-#define STRING_VERSION_CONFIG_H __DATE__ " " __TIME__ // build date and time
+#define STRING_VERSION_CONFIG_H SOURCE_DATE_EPOCH " " SOURCE_TIME_EPOCH // build date and time
 #define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.

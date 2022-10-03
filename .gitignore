@@ -3,10 +3,12 @@
 /.project
 /.cproject
 
-#cmake
+# cmake
 /build/
 /build_gen/
-.dependencies
+/.dependencies
+/compile_commands.json
+
 # Temporary configuration
 /Firmware/Configuration_prusa.h
 
@@ -27,4 +29,3 @@ __pycache__
 # Generated files
 /build-env/
 /Firmware/Doc/
-compile_commands.json

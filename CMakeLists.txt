@@ -60,6 +60,7 @@ SET(SELECTED_LANGUAGES ${MAIN_LANGUAGES} ${COMMUNITY_LANGUAGES})
 
 get_dependency_directory(prusa3dboards PRUSA_BOARDS_DIR)
 project(Prusa-Firmware)
+add_subdirectory(lib)
 
 FILE(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/config.h MAX_SIZE_LINE REGEX "^#define \+LANG_SIZE_RESERVED \+")
 STRING(REGEX MATCH "0x[0-9]+" MAX_SIZE_HEX "${MAX_SIZE_LINE}")
@@ -93,8 +94,18 @@ endif()
 # Global Compiler & Linker Configuration
 #
 
-# include symbols
-add_compile_options(-g)
+# enable warnings
+add_compile_options(-Wall -Wextra -Wno-expansion-to-defined -Wsign-compare)
+
+# default standards for all targets
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+# support _DEBUG macro (some code uses to recognize debug builds)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_compile_definitions(_DEBUG)
+endif()
+
 
 #
 # Firmware - get file lists.
@@ -173,12 +184,6 @@ SET(FW_SOURCES
 )
 list(TRANSFORM FW_SOURCES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/Firmware/)
 
-foreach(_FILE ${FW_SOURCES})
-    get_filename_component(_BASE ${_FILE} NAME)
-    set_property(SOURCE ${_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=${_BASE}.o")
-endforeach()
-
-
 set(AVR_SOURCES
     wiring_digital.c
     WInterrupts.c
@@ -207,61 +212,75 @@ set(AVR_SOURCES
 )
 list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 
-foreach(_FILE ${AVR_SOURCES})
-    get_filename_component(_BASE ${_FILE} NAME)
-    set_property(SOURCE ${_FILE} APPEND_STRING PROPERTY COMPILE_FLAGS "-frandom-seed=core/${_BASE}.o")
-endforeach()
 
-# optimizations
+#
+# Target configuration
+#
 if(CMAKE_CROSSCOMPILING)
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		add_compile_options(-Og)
-	else()
-		add_compile_options(-Os)
-	endif()
+    # Reproducible build support
+    function(set_reproducible_sources source_list prefix)
+        foreach(file IN LISTS ${source_list})
+            get_filename_component(base ${file} NAME)
+            set(target "${prefix}${base}")
+            set_property(SOURCE ${file} APPEND PROPERTY COMPILE_OPTIONS "-frandom-seed=${target}.o")
+        endforeach()
+    endfunction()
 
-	# mcu related settings
-	set(MCU_FLAGS -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10819 -DARDUINO_AVR_PRUSA_EINSY_RAMBO -DARDUINO_ARCH_AVR)
-	add_compile_options(${MCU_FLAGS})
+    function(set_reproducible_target target)
+        set_target_properties(${target} PROPERTIES STATIC_LIBRARY_OPTIONS "-D")
+    endfunction()
 
-    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+    set_reproducible_sources(AVR_SOURCES "core/")
+
+    add_link_options(-fdebug-prefix-map=${CMAKE_SOURCE_DIR}=)
+    add_link_options(-fdebug-prefix-map=${CMAKE_BINARY_DIR}=)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "8")
+        add_compile_options(-ffile-prefix-map=${CMAKE_SOURCE_DIR}=)
+    endif()
+
+    # TODO: get date from the last git commit to set as epoch
+    set(ENV{SOURCE_DATE_EPOCH} 0)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8")
+        string(TIMESTAMP SOURCE_DATE_EPOCH "%Y-%m-%d")
+        add_compile_definitions(SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}")
+        string(TIMESTAMP SOURCE_TIME_EPOCH "%H:%M:%S")
+        add_compile_definitions(SOURCE_TIME_EPOCH="${SOURCE_TIME_EPOCH}")
+    endif()
+
+    # default optimization flags
+    set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Os -g -DNDEBUG")
+    set(CMAKE_C_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
+    set(CMAKE_C_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+
+    # mcu and target-related settings
+    add_compile_options(-mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10819 -DARDUINO_AVR_PRUSA_EINSY_RAMBO -DARDUINO_ARCH_AVR)
+    add_link_options(-mmcu=atmega2560 -Wl,-u,vfprintf -lprintf_flt -lm)
+
+    # disable some C++ language features
     add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>)
     add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
-    add_compile_options(-Wall -Wextra -Wno-expansion-to-defined -ffunction-sections -fdata-sections -MMD -flto -fno-fat-lto-objects)
+
+    # disable exceptions
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-unwind-tables>)
 
     # split and gc sections
-    add_link_options(-Os -g -flto -Wl,--gc-sections -mmcu=atmega2560 -Wl,-u,vfprintf -lprintf_flt -lm )
+    add_compile_options(-ffunction-sections -fdata-sections)
+    add_link_options(-ffunction-sections -fdata-sections -Wl,--gc-sections)
+
+    # LTO (with custom options)
+    add_compile_options(-flto -fno-fat-lto-objects)
+    add_link_options(-flto)
 
     # Create this target before we apply the GC options
     add_library(avr_core STATIC ${AVR_SOURCES})
+    set_reproducible_target(avr_core)
     target_include_directories(avr_core PRIVATE
         ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
         ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
         )
-
-
-
-	# disable exceptions and related metadata
-	add_compile_options(-fno-unwind-tables)
-	add_link_options(-Wl,--defsym,__exidx_start=0,--defsym,__exidx_end=0)
-else()
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		add_compile_options(-O0)
-	else()
-		add_compile_options(-O2)
-	endif()
 endif()
-
-# enable all warnings (well, not all, but some)
-add_compile_options(-Wsign-compare)
-add_compile_options($<$<COMPILE_LANGUAGE:C>:-std=gnu11>)
-
-# support _DEBUG macro (some code uses to recognize debug builds)
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	add_compile_definitions(_DEBUG)
-endif()
-
-
 
 # Setup language resources:
 # file(GLOB LANG_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/lang/po ${PROJECT_SOURCE_DIR}/lang/po/Firmware_??.po)
@@ -279,8 +298,6 @@ add_dependencies(ALL_FIRMWARE ALL_ENGLISH ALL_MULTILANG)
 
 function(add_base_binary variant_name)
     add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_FILE})
-
-    set_target_properties(${variant_name} PROPERTIES CXX_STANDARD 17)
 
     target_include_directories(${variant_name} PRIVATE
         ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
@@ -304,7 +321,7 @@ function(add_base_binary variant_name)
     # produce ASM listing. Note we also specify the .map as a byproduct so it gets cleaned
     # because link_options doesn't have a "generated outputs" feature.
     add_custom_command(
-        TARGET ${variant_name} POST_BUILD COMMAND ${CMAKE_OBJDUMP} -CSd ${variant_name} > ${variant_name}.asm
+        TARGET ${variant_name} POST_BUILD COMMAND ${CMAKE_OBJDUMP} --prefix ${CMAKE_SOURCE_DIR} -CSd ${variant_name} > ${variant_name}.asm
         BYPRODUCTS ${variant_name}.asm ${variant_name}.map
     )
 
@@ -323,6 +340,8 @@ function(add_base_binary variant_name)
 endfunction()
 
 function(fw_add_variant variant_name)
+	# Set FW_SOURCES to be reproducible in this variant as it's set in a separate project
+	set_reproducible_sources(FW_SOURCES "Firmware/")
 
 	# Create the Configuration_Prusa.h for this variant so it can be #included.
 	set(VARIANT_CFG_DIR "${CMAKE_CURRENT_BINARY_DIR}/include")
@@ -458,42 +477,29 @@ endfunction()
 
 if(CMAKE_CROSSCOMPILING)
 
-	file(GLOB FW_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/Firmware/variants ${PROJECT_SOURCE_DIR}/Firmware/variants/*.h)
-	foreach(THIS_VAR IN LISTS FW_VARIANTS)
-		string(REPLACE ".h" "" TRIMMED_NAME "${THIS_VAR}")
-		message("Variant added: ${TRIMMED_NAME}")
-        string(REPLACE "-E3Dv6full" "" DIR_NAME "${TRIMMED_NAME}")
+    # build a list of all supported variants
+    file(GLOB ALL_VARIANTS RELATIVE ${PROJECT_SOURCE_DIR}/Firmware/variants ${PROJECT_SOURCE_DIR}/Firmware/variants/*.h)
+    list(TRANSFORM ALL_VARIANTS REPLACE "\.h$" "")
+    set(FW_VARIANTS ${ALL_VARIANTS} CACHE STRING "Firmware variants to be built")
+
+    foreach(THIS_VAR IN LISTS FW_VARIANTS)
+        if(NOT ${THIS_VAR} IN_LIST ALL_VARIANTS)
+            message(FATAL_ERROR "Variant ${THIS_VAR} does not exist")
+        endif()
+
+        message("Variant added: ${THIS_VAR}")
+        string(REPLACE "-E3Dv6full" "" DIR_NAME "${THIS_VAR}")
         string(REPLACE "1_75mm_" "" DIR_NAME "${DIR_NAME}")
         # Generate a file in a subfolder so that we can organize things a little more neatly in VS code
         FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
-        FILE(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt "project(${DIR_NAME})\nfw_add_variant(${TRIMMED_NAME})")
+        FILE(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME}/CMakeLists.txt "project(${DIR_NAME})\nfw_add_variant(${THIS_VAR})")
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build_gen/${DIR_NAME})
-		#fw_add_variant(${TRIMMED_NAME})
-	endforeach(THIS_VAR IN LISTS FW_VARIANTS)
+        #fw_add_variant(${TRIMMED_NAME})
+    endforeach(THIS_VAR IN LISTS FW_VARIANTS)
 
 endif()
 
 if(NOT CMAKE_CROSSCOMPILING)
-	# do not build the firmware by default (tests are the focus if not crosscompiling)
-	project(cmake_test)
-
-	# Prepare "Catch" library for other executables
-	set(CATCH_INCLUDE_DIR Catch2)
-	add_library(Catch INTERFACE)
-	target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-
-	# Make test executable
-	set(TEST_SOURCES
-		Tests/tests.cpp
-		Tests/Example_test.cpp
-		Tests/Timer_test.cpp
-		Tests/AutoDeplete_test.cpp
-		Tests/PrusaStatistics_test.cpp
-		Firmware/Timer.cpp
-		Firmware/AutoDeplete.cpp
-	)
-	add_executable(tests ${TEST_SOURCES})
-	target_include_directories(tests PRIVATE Tests)
-	target_link_libraries(tests Catch)
-
+    enable_testing()
+    add_subdirectory(tests)
 endif()
