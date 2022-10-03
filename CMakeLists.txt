@@ -498,6 +498,7 @@ function(fw_add_variant variant_name)
         OUTPUT ${FW_LANG_FINAL}.hex
         COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_FINAL}.bin ${FW_LANG_FINAL}.hex
         COMMAND ${CMAKE_COMMAND} -E copy ${FW_LANG_FINAL}.hex ${LANG_HEX}
+        BYPRODUCTS ${LANG_HEX}
         DEPENDS ${FW_LANG_FINAL}.bin
         COMMENT "Creating ${FW_LANG_FINAL}.hex"
         )
