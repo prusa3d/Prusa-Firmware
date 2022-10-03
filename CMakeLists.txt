@@ -329,9 +329,6 @@ function(add_base_binary variant_name)
   target_link_options(${variant_name} PUBLIC
                       -Wl,--defsym=__TEXT_REGION_LENGTH__=248K)
 
-  # generate firmware.bin file
-  objcopy(${variant_name} "ihex" ".hex")
-
   # produce ASM listing. Note we also specify the .map as a byproduct so it gets
   # cleaned because link_options doesn't have a "generated outputs" feature.
   add_custom_command(
@@ -383,9 +380,9 @@ function(fw_add_variant variant_name)
   add_custom_command(
     TARGET ${FW_EN}
     POST_BUILD
-    COMMAND ${CMAKE_OBJCOPY} -O ihex ${CMAKE_CURRENT_BINARY_DIR}/${FW_EN}
-            ${FW_HEX}
-    BYPRODUCTS ${FW_HEX}
+    COMMAND ${CMAKE_OBJCOPY} -O ihex ${FW_EN} ${FW_EN}.hex
+    COMMAND ${CMAKE_OBJCOPY} -O ihex ${FW_EN} ${FW_HEX}
+    BYPRODUCTS ${FW_EN}.hex ${FW_HEX}
     COMMENT "Generating ${FW_EN}.hex")
   add_dependencies(ALL_ENGLISH ${FW_EN})
 
