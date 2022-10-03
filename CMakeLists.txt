@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.19)
 include(cmake/Utilities.cmake)
 include(cmake/GetGitRevisionDescription.cmake)
 
@@ -389,7 +389,7 @@ function(fw_add_variant variant_name)
     TARGET ${FW_EN}
     POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O ihex ${FW_EN} ${FW_EN}.hex
-    COMMAND ${CMAKE_OBJCOPY} -O ihex ${FW_EN} ${FW_HEX}
+    COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_EN}.hex ${FW_HEX}
     BYPRODUCTS ${FW_EN}.hex ${FW_HEX}
     COMMENT "Generating ${FW_EN}.hex"
     )
@@ -467,7 +467,7 @@ function(fw_add_variant variant_name)
     add_custom_command(
       OUTPUT ${FW_LANG_FINAL}.hex
       COMMAND ${CMAKE_COMMAND} -E cat ${FW_LANG_PATCH}.hex ${LANG_CATHEX} > ${FW_LANG_FINAL}.hex
-      COMMAND ${CMAKE_COMMAND} -E copy ${FW_LANG_FINAL}.hex ${LANG_HEX}
+      COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${LANG_HEX}
       BYPRODUCTS ${LANG_HEX}
       DEPENDS ${FW_LANG_PATCH}.hex ${LANG_CATHEX}
       COMMENT "Generating final ${FW_LANG_FINAL}.hex"
@@ -497,7 +497,7 @@ function(fw_add_variant variant_name)
       add_custom_command(
         OUTPUT ${FW_LANG_FINAL}.hex
         COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_FINAL}.bin ${FW_LANG_FINAL}.hex
-        COMMAND ${CMAKE_COMMAND} -E copy ${FW_LANG_FINAL}.hex ${LANG_HEX}
+        COMMAND ${CMAKE_COMMAND} -E create_hardlink ${FW_LANG_FINAL}.hex ${LANG_HEX}
         BYPRODUCTS ${LANG_HEX}
         DEPENDS ${FW_LANG_FINAL}.bin
         COMMENT "Creating ${FW_LANG_FINAL}.hex"
