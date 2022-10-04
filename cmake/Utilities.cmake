@@ -38,6 +38,7 @@ function(get_dependency_directory dependency var)
     message(FATAL_ERROR "Failed to find directory with ${dependency}")
   endif()
 
+  file(TO_CMAKE_PATH "${DEPENDENCY_DIRECTORY}" DEPENDENCY_DIRECTORY)
   set(${var}
       ${DEPENDENCY_DIRECTORY}
       PARENT_SCOPE
