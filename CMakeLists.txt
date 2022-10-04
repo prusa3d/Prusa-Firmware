@@ -329,7 +329,7 @@ function(add_base_binary variant_name)
 
   target_link_libraries(${variant_name} avr_core)
 
-  # # configure linker script
+  # configure linker script
   set(LINKER_SCRIPT ${PRUSA_BOARDS_DIR}/ldscripts/avr6.xn)
   target_link_options(${variant_name} PUBLIC -Wl,-T,${LINKER_SCRIPT})
 
