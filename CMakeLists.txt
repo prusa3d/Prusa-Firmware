@@ -358,24 +358,14 @@ function(add_base_binary variant_name)
     ${variant_name} PUBLIC -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.map
     )
 
-  target_compile_definitions(${variant_name} PRIVATE CMAKE_LANG_CONTROL)
+  target_compile_definitions(${variant_name} PRIVATE CMAKE_CONTROL)
 endfunction()
 
 function(fw_add_variant variant_name)
   # Set FW_SOURCES to be reproducible in this variant as it's set in a separate project
   set_reproducible_sources(FW_SOURCES "Firmware/")
 
-  # Create the Configuration_Prusa.h for this variant so it can be #included.
-  set(VARIANT_CFG_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
-  set(VARIANT_CFG_DST ${VARIANT_CFG_DIR}/Configuration_prusa.h)
-  set(VARIANT_CFG_SRC ${CMAKE_SOURCE_DIR}/Firmware/variants/${variant_name}.h)
-  add_custom_command(
-    OUTPUT ${VARIANT_CFG_DST}
-    COMMAND ${CMAKE_COMMAND} -E copy ${VARIANT_CFG_SRC} ${VARIANT_CFG_DST}
-    COMMENT "Generating Configuration_prusa.h for ${variant_name}"
-    BYPRODUCTS ${VARIANT_CFG_DIR}
-    DEPENDS ${VARIANT_CFG_SRC}
-    )
+  set(variant_header "variants/${variant_name}.h")
   string(REPLACE "1_75mm_" "" variant_name "${variant_name}")
   string(REPLACE "-E3Dv6full" "" variant_name "${variant_name}")
 
@@ -384,7 +374,7 @@ function(fw_add_variant variant_name)
   set(FW_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex)
 
   add_base_binary(${FW_EN})
-  target_compile_definitions(${FW_EN} PUBLIC LANG_MODE=0)
+  target_compile_definitions(${FW_EN} PUBLIC LANG_MODE=0 FW_VARIANT="${variant_header}")
   add_custom_command(
     TARGET ${FW_EN}
     POST_BUILD
@@ -399,7 +389,7 @@ function(fw_add_variant variant_name)
   set(FW_LANG_BASE "${variant_name}_Multilang_base")
   set(FW_LANG_PATCH "${variant_name}_Multilang_patch")
   add_base_binary(${FW_LANG_BASE})
-  target_compile_definitions(${FW_LANG_BASE} PUBLIC LANG_MODE=1)
+  target_compile_definitions(${FW_LANG_BASE} PUBLIC LANG_MODE=1 FW_VARIANT="${variant_header}")
 
   # Construct language map
   set(LANG_TMP_DIR lang)
