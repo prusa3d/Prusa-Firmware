@@ -530,19 +530,6 @@ fi
 }
 # End: Check python ... needed during language build
 
-#Start: Check gawk ... needed during language build
-check_gawk()
-{
-if ! type gawk > /dev/null; then
-    if [ $TARGET_OS == "linux" ]; then
-        echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
-        echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
-        #sudo apt-get update && apt-get install gawk
-        failures 4
-    fi
-fi
-}
-#End: Check gawk ... needed during language build
 
 #### Start: Set build environment 
 set_build_env_variables()
@@ -551,20 +538,20 @@ BUILD_ENV="1.0.8"
 BOARD="prusa_einsy_rambo"
 BOARD_PACKAGE_NAME="PrusaResearch"
 if [ "$ARDUINO_ENV" == "1.8.19" ]; then
-    BOARD_VERSION="1.0.5-2"
+    BOARD_VERSION="1.0.6"
 else
     BOARD_VERSION="1.0.4"
 fi
 if [ "$ARDUINO_ENV" == "1.8.19" ]; then
-    BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/package_prusa3d_index.json"
-    #BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/devel/IDE_Board_Manager/package_prusa3d_index.json"
+    BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
+    #BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 else
     BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 fi
 BOARD_FILENAME="prusa3dboards"
 if [ "$ARDUINO_ENV" == "1.8.19" ]; then
-    BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
-    #BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+    BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+    #BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
 else
     BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
 fi
@@ -1601,7 +1588,6 @@ check_OS
 check_wget
 check_zip
 check_python
-check_gawk
 
 #### Check for options/flags
 echo "Check for options"
