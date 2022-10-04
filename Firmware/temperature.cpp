@@ -44,7 +44,7 @@
 #include "adc.h"
 #include "ConfigurationStore.h"
 #include "Timer.h"
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 #include "Prusa_farm.h"
 
 #if (ADC_OVRSAMPL != OVERSAMPLENR)

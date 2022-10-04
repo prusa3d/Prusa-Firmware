@@ -4,7 +4,7 @@
 #include <util/delay.h>
 #include <avr/pgmspace.h>
 #include "stdbool.h"
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 #include "pins.h"
 #include "fastio.h"
 

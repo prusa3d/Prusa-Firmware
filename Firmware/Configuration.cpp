@@ -1,5 +1,5 @@
 #include "Configuration.h"
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 
 const uint16_t _nPrinterType PROGMEM=PRINTER_TYPE;
 const char _sPrinterName[] PROGMEM=PRINTER_NAME;

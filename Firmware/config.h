@@ -2,7 +2,7 @@
 #define _CONFIG_H
 
 
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 #include "pins.h"
 
 #if (defined(VOLT_IR_PIN) && defined(IR_SENSOR))

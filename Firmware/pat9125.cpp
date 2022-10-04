@@ -4,7 +4,7 @@
 #include <avr/pgmspace.h>
 #include "config.h"
 #include <stdio.h>
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
 
