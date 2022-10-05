@@ -1,4 +1,5 @@
 dist: focal
+
 before_install:
   # Prepare build environment
   - ./utils/bootstrap.py
