@@ -24,8 +24,8 @@ jobs:
       script: ./.github/travis/cmake-build.sh
 
     # cmake tests
-    - stage: tests
-      script: ./.github/travis/cmake-test.sh
+    #- stage: tests
+    #  script: ./.github/travis/cmake-test.sh
 
 stages:
   - cmake
