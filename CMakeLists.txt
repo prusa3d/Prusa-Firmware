@@ -323,7 +323,6 @@ function(add_base_binary variant_name)
     ${variant_name}
     PRIVATE ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
             ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
-            ${VARIANT_CFG_DIR} # Include the header for this variant.
             ${CMAKE_SOURCE_DIR}/Firmware
     )
 
