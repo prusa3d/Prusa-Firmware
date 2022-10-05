@@ -1,4 +1,5 @@
 dist: focal
+language: minimal
 
 before_install:
   # Prepare the dependencies for the old build environment
