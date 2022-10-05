@@ -70,7 +70,7 @@ extern PGM_P sPrinterName;
 #define SOURCE_TIME_EPOCH __TIME__
 #endif
 
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10

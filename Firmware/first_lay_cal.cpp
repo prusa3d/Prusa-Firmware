@@ -4,7 +4,7 @@
 //! @brief First layer (Z offset) calibration
 
 #include "first_lay_cal.h"
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 #include "language.h"
 #include "Marlin.h"
 #include "cmdqueue.h"

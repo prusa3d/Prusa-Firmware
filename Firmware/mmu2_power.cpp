@@ -1,5 +1,5 @@
 #include "mmu2_power.h"
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 #include "pins.h"
 #include "fastio.h"
 #include <util/delay.h>

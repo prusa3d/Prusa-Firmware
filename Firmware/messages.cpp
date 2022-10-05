@@ -1,8 +1,8 @@
 //messages.c
 #include "language.h"
 
-//this is because we need include Configuration_prusa.h (CUSTOM_MENDEL_NAME)
-#include "Configuration_prusa.h"
+//this is because we need CUSTOM_MENDEL_NAME
+#include "Configuration_var.h"
 
 //internationalized messages
 const char MSG_ALWAYS[] PROGMEM_I1 = ISTR("Always"); ////MSG_ALWAYS c=6
