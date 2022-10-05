@@ -1,7 +1,10 @@
 #!/bin/sh
-set -e
-export PATH=$PWD/.dependencies/cmake-*/bin:$PWD/.dependencies/ninja-*:$PATH
-rm -rf build && mkdir build && cd build
+set -xe
+export PATH=$PWD/.dependencies/cmake-3.22.5/bin:$PATH
+export PATH=$PWD/.dependencies/ninja-1.10.2:$PATH
+rm -rf build
+mkdir build
+cd build
 cmake .. -G Ninja
 ninja tests
 ctest

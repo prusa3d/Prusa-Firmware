@@ -2,6 +2,7 @@ dist: focal
 
 before_install:
   # Prepare build environment
+  - sudo apt-get install python3
   - ./utils/bootstrap.py
   # Arduino IDE adds a lot of noise caused by network traffic, trying to firewall it off
   - sudo iptables -P INPUT DROP
