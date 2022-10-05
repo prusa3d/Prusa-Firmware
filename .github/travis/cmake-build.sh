@@ -5,5 +5,5 @@ export PATH=$PWD/.dependencies/ninja-1.10.2:$PATH
 rm -rf build
 mkdir build
 cd build
-cmake .. -CCMAKE_TOOCHAIN_FILE="../cmake/LocalAvrGcc.cmake" -G Ninja
+cmake .. -DCMAKE_TOOCHAIN_FILE="../cmake/LocalAvrGcc.cmake" -G Ninja
 ninja ALL_FIRMWARE
