@@ -30,4 +30,4 @@ jobs:
 stages:
   - cmake
   - legacy
-  - tests
+  #- tests
