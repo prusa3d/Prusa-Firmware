@@ -1,9 +1,9 @@
 dist: focal
 
 before_install:
-  # Prepare build environment
-  - sudo apt-get update
-  - sudo apt-get install -y python3
+  # Prepare the old build environment
+  - sudo apt-get install -y python3-polib python3-pyelftools
+  # Bootstrap new build environment
   - ./utils/bootstrap.py
   # Arduino IDE adds a lot of noise caused by network traffic, trying to firewall it off
   - sudo iptables -P INPUT DROP
