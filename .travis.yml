@@ -1,3 +1,5 @@
+# I hate you travis
+# I really do
 dist: focal
 
 before_install:
