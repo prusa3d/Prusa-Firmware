@@ -24,13 +24,16 @@ extern const char _sPrinterMmuName[] PROGMEM;
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION) "-" STR(FW_FLAVOR) "" STR(FW_FLAVERSION)
 #endif
 
-#define FW_COMMIT_NR 6853
-
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
+// The full version string and repository source are set via cmake
+#ifndef CMAKE_CONTROL
+#define FW_COMMIT_NR 6853
+#define FW_COMMIT_HASH 0
 #define FW_REPOSITORY "Unknown"
-#define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
+#define FW_DEV_VERSION FW_VERSION_UNKNOWN
+#define FW_VERSION_FULL FW_VERSION "-unknown"
+#endif
 
 // G-code language level
 #define GCODE_LEVEL 1
