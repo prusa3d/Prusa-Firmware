@@ -335,12 +335,12 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 05h 5        | ^                     | bad_pullup_step_isr                               | ^            | ^
 | 0x0D02 3330 | uint8   | EEPROM_TEMP_MODEL_ENABLE              | 00h 0        | ff/00                 | Temp model deactivated                            | Temp model   | D3 Ax0d02 C1
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Temp model activated                              | ^            | ^
-| 0X0CFE 3326 | float   | EEPROM_TEMP_MODEL_P                   | ???          | ff ff ff ffh          | Temp model power (W)                              | Temp model   | D3 Ax0cfe C4
-| 0X0CFA 3322 | float   | EEPROM_TEMP_MODEL_C                   | ???          | ff ff ff ffh          | Temp model capacitance (J/K)                      | Temp model   | D3 Ax0cfa C4
-| 0X0CBA 3258 |float[16]| EEPROM_TEMP_MODEL_R                   | ???          | ff ff ff ffh          | Temp model resistance (K/W)                       | Temp model   | D3 Ax0cba C64
-| 0X0CB6 3254 | float   | EEPROM_TEMP_MODEL_Ta_corr             | ???          | ff ff ff ffh          | Temp model ambient temperature correction (K)     | Temp model   | D3 Ax0cb6 C4
-| 0X0CB2 3250 | float   | EEPROM_TEMP_MODEL_W                   | ???          | ff ff ff ffh          | Temp model warning threshold (K/s)                | Temp model   | D3 Ax0cb2 C4
-| 0X0CAE 3246 | float   | EEPROM_TEMP_MODEL_E                   | ???          | ff ff ff ffh          | Temp model error threshold (K/s)                  | Temp model   | D3 Ax0cae C4
+| 0x0CFE 3326 | float   | EEPROM_TEMP_MODEL_P                   | ???          | ff ff ff ffh          | Temp model power (W)                              | Temp model   | D3 Ax0cfe C4
+| 0x0CFA 3322 | float   | EEPROM_TEMP_MODEL_C                   | ???          | ff ff ff ffh          | Temp model capacitance (J/K)                      | Temp model   | D3 Ax0cfa C4
+| 0x0CBA 3258 |float[16]| EEPROM_TEMP_MODEL_R                   | ???          | ff ff ff ffh          | Temp model resistance (K/W)                       | Temp model   | D3 Ax0cba C64
+| 0x0CB6 3254 | float   | EEPROM_TEMP_MODEL_Ta_corr             | ???          | ff ff ff ffh          | Temp model ambient temperature correction (K)     | Temp model   | D3 Ax0cb6 C4
+| 0x0CB2 3250 | float   | EEPROM_TEMP_MODEL_W                   | ???          | ff ff ff ffh          | Temp model warning threshold (K/s)                | Temp model   | D3 Ax0cb2 C4
+| 0x0CAE 3246 | float   | EEPROM_TEMP_MODEL_E                   | ???          | ff ff ff ffh          | Temp model error threshold (K/s)                  | Temp model   | D3 Ax0cae C4
 | 0x0CAD 3245 | uint8   | EEPROM_FSENSOR_JAM_DETECTION          | 01h 1        | ff/01                 | fsensor pat9125 jam detection feature             | LCD menu     | D3 Ax0cad C1
 | 0x0CAC 3244 | uint8   | EEPROM_MMU_ENABLED                    | 01h 1        | ff/01                 | MMU enabled                                       | LCD menu     | D3 Ax0cac C1
 
