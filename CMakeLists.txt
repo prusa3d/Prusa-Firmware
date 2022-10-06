@@ -23,6 +23,10 @@ set(PROJECT_VERSION_FULL
 if(PROJECT_VERSION_FULL STREQUAL "<auto>")
   set(PROJECT_VERSION_FULL "${FW_COMMIT_DSC}")
 endif()
+set(PROJECT_REPOSITORY
+    "Unknown"
+    CACHE STRING "Repository string to be shown on the info screen in settings."
+    )
 set(FN_PREFIX "FW${PROJECT_VERSION}+${PROJECT_VERSION_SUFFIX}")
 
 # Inform user about the resolved settings
@@ -300,7 +304,11 @@ function(add_base_binary variant_name)
     ${variant_name} PUBLIC -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${variant_name}.map
     )
 
-  target_compile_definitions(${variant_name} PRIVATE CMAKE_CONTROL)
+  target_compile_definitions(
+    ${variant_name}
+    PRIVATE CMAKE_CONTROL FW_REPOSITORY="${PROJECT_REPOSITORY}"
+            FW_VERSION_FULL="${PROJECT_VERSION_FULL}" FW_COMMIT_HASH=0x${FW_COMMIT_HASH}
+    )
 endfunction()
 
 function(fw_add_variant variant_name)
