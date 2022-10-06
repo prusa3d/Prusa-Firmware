@@ -14,19 +14,7 @@ const uint16_t FW_VERSION_NR[4] PROGMEM = {
     FW_MAJOR,
     FW_MINOR,
     FW_REVISION,
-#ifndef FW_FLAVOR
-    FW_COMMIT_NR
-#else
-#   if FW_DEV_VERSION == FW_VERSION_ALPHA
-    FIRMWARE_REVISION_ALPHA + FW_FLAVERSION
-#   elif FW_DEV_VERSION == FW_VERSION_BETA
-    FIRMWARE_REVISION_BETA + FW_FLAVERSION
-#   elif FW_DEV_VERSION == FW_VERSION_RC
-    FIRMWARE_REVISION_RC + FW_FLAVERSION
-#   elif FW_DEV_VERSION == FW_VERSION_GOLD
-    0
-#   endif
-#endif
+(uint16_t)(FW_COMMIT_HASH) // explicitly truncate the hash to fit
 };
 
 const char* FW_VERSION_STR_P()
