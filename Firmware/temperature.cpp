@@ -2906,6 +2906,7 @@ void temp_model_autotune(int16_t temp, bool selftest)
         temp_model_report_settings();
     }
 
+    lcd_consume_click();
     menu_unset_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
 }
 
