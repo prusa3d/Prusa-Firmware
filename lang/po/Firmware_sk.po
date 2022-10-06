@@ -904,7 +904,7 @@ msgstr "Doladenie osi Z"
 #. MSG_LOAD_ALL c=18
 #: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5098
 #: ../../Firmware/ultralcd.cpp:5178
-msgid "Load All"
+msgid "Load all"
 msgstr "Zaviest vsetko"
 
 #. MSG_LOAD_FILAMENT c=17
