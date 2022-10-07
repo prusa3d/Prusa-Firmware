@@ -1117,7 +1117,10 @@ void setup()
 		SERIAL_PROTOCOLLNPGM("start");
 #endif
 	SERIAL_ECHO_START;
+	SERIAL_ECHOLNPGM(CUSTOM_MENDEL_NAME);
 	puts_P(PSTR(" " FW_VERSION_FULL));
+	puts_P(PSTR(" repo " FW_REPOSITORY));
+	puts_P(PSTR(" date " SOURCE_DATE_EPOCH));
 
 	// by default the MMU shall remain disabled - PFW-1418
 	if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0)) {
