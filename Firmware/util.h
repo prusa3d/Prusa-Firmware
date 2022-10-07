@@ -3,7 +3,9 @@
 
 extern const uint16_t FW_VERSION_NR[4];
 extern const char* FW_VERSION_STR_P();
-extern uint32_t FW_VERSION_HASH_P();
+
+extern const uint32_t FW_VERSION_HASH PROGMEM;
+static inline uint32_t FW_VERSION_HASH_P() { return (uint32_t)pgm_read_dword(&FW_VERSION_HASH); }
 
 // Definition of a firmware flavor numerical values.
 // To keep it short as possible

@@ -35,11 +35,6 @@ const char* FW_VERSION_STR_P()
     return FW_VERSION_STR;
 }
 
-uint32_t FW_VERSION_HASH_P()
-{
-    return (uint32_t)pgm_read_dword(&FW_VERSION_HASH);
-}
-
 const char FW_PRUSA3D_MAGIC_STR[] PROGMEM = FW_PRUSA3D_MAGIC;
 
 const char* FW_PRUSA3D_MAGIC_STR_P()
