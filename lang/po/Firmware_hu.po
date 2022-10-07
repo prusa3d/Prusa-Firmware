@@ -4,107 +4,103 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Wed 16 Mar 2022 09:25:06 AM CET\n"
-"PO-Revision-Date: Wed 16 Mar 2022 09:25:06 AM CET\n"
+"PO-Revision-Date: 2022-10-07 14:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.7\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 3.1.1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #. MSG_IR_03_OR_OLDER c=18
-#: ../../Firmware/fsensor.cpp:178 ../../Firmware/messages.cpp:161
+#: ../../Firmware/Filament_sensor.cpp:287
+#: ../../Firmware/Filament_sensor.cpp:362 ../../Firmware/messages.cpp:165
 msgid " 0.3 or older"
 msgstr " 0.3 vagy regebbi"
 
 #. MSG_IR_04_OR_NEWER c=18
-#: ../../Firmware/fsensor.cpp:180 ../../Firmware/messages.cpp:160
+#: ../../Firmware/Filament_sensor.cpp:289
+#: ../../Firmware/Filament_sensor.cpp:365 ../../Firmware/messages.cpp:164
 msgid " 0.4 or newer"
 msgstr " 0.4 v. ujabb"
 
 #. MSG_SELFTEST_FS_LEVEL c=20
-#: ../../Firmware/ultralcd.cpp:7036
+#: ../../Firmware/ultralcd.cpp:7035
 msgid "%s level expected"
 msgstr "Vart szint: %s"
 
 #. MSG_CANCEL c=10
-#: ../../Firmware/messages.cpp:18 ../../Firmware/ultralcd.cpp:1968
-#: ../../Firmware/ultralcd.cpp:3835
+#: ../../Firmware/messages.cpp:18 ../../Firmware/ultralcd.cpp:1980
+#: ../../Firmware/ultralcd.cpp:3806
 msgid ">Cancel"
 msgstr ">Megsem"
 
 #. MSG_BABYSTEPPING_Z c=15
 #. Beware: must include the ':' as its last character
-#: ../../Firmware/ultralcd.cpp:2670
+#: ../../Firmware/ultralcd.cpp:2668
 msgid "Adjusting Z:"
 msgstr "Z allitasa:"
 
 #. MSG_SELFTEST_CHECK_ALLCORRECT c=20
-#: ../../Firmware/ultralcd.cpp:7313
+#: ../../Firmware/ultralcd.cpp:7311
 msgid "All correct"
 msgstr "Minden rendben"
 
 #. MSG_WIZARD_DONE c=20 r=3
-#: ../../Firmware/messages.cpp:115 ../../Firmware/ultralcd.cpp:4171
-#: ../../Firmware/ultralcd.cpp:4180
+#: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4133
+#: ../../Firmware/ultralcd.cpp:4142
 msgid "All is done. Happy printing!"
 msgstr "Keszen vagyunk. Jo nyomtatast!"
 
 #. MSG_SORT_ALPHA c=8
-#: ../../Firmware/messages.cpp:138 ../../Firmware/ultralcd.cpp:4404
+#: ../../Firmware/messages.cpp:142 ../../Firmware/ultralcd.cpp:4402
 msgid "Alphabet"
 msgstr "Abece"
 
 #. MSG_ALWAYS c=6
-#: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4308
+#: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4287
 msgid "Always"
-msgstr ""
+msgstr "Mindig"
 
 #. MSG_AMBIENT c=14
-#: ../../Firmware/ultralcd.cpp:1405
+#: ../../Firmware/ultralcd.cpp:1406
 msgid "Ambient"
 msgstr "Kornyezet"
 
 #. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
-#: ../../Firmware/ultralcd.cpp:2983
+#: ../../Firmware/ultralcd.cpp:2981
 msgid "Are left and right Z~carriages all up?"
 msgstr "A Z tengely a felso vegponton van?"
 
 #. MSG_SOUND_BLIND c=7
-#: ../../Firmware/messages.cpp:143 ../../Firmware/ultralcd.cpp:4459
+#: ../../Firmware/messages.cpp:147 ../../Firmware/ultralcd.cpp:4457
 msgid "Assist"
 msgstr "Seged"
 
 #. MSG_AUTO c=6
-#: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5864
+#: ../../Firmware/messages.cpp:161 ../../Firmware/ultralcd.cpp:5862
 msgid "Auto"
 msgstr "Autom."
 
 #. MSG_AUTO_HOME c=18
-#: ../../Firmware/Marlin_main.cpp:3271 ../../Firmware/messages.cpp:9
-#: ../../Firmware/ultralcd.cpp:4900
+#: ../../Firmware/Marlin_main.cpp:3261 ../../Firmware/messages.cpp:9
+#: ../../Firmware/ultralcd.cpp:4871
 msgid "Auto home"
-msgstr ""
+msgstr "Auto homeolas"
 
 #. MSG_AUTO_POWER c=10
-#: ../../Firmware/messages.cpp:102 ../../Firmware/ultralcd.cpp:4364
-#: ../../Firmware/ultralcd.cpp:5779
+#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:4362
+#: ../../Firmware/ultralcd.cpp:5777
 msgid "Auto power"
 msgstr "Auto ero"
 
 #. MSG_AUTOLOAD_FILAMENT c=18
-#: ../../Firmware/ultralcd.cpp:5572
+#: ../../Firmware/ultralcd.cpp:5584
 msgid "AutoLoad filament"
 msgstr "Fil. auto.betolt."
-
-#. MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
-#: ../../Firmware/ultralcd.cpp:3549
-msgid ""
-"Autoloading filament available only when filament sensor is turned on..."
-msgstr "Filament autom. betolteste csak bekapcs. fil. szenzorral mukodik."
 
 #. MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:2301
@@ -112,53 +108,60 @@ msgid ""
 "Autoloading filament is active, just press the knob and insert filament..."
 msgstr "Autom. betoltes be, nyomd meg a gombot es helyzed be a filamentet."
 
+#. MSG_PROGRESS_AVOID_GRIND c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:16
+#: ../../Firmware/mmu2_progress_converter.cpp:42
+msgid "Avoiding grind"
+msgstr "Daralas megelozese"
+
 #. MSG_SELFTEST_AXIS c=16
-#: ../../Firmware/ultralcd.cpp:7015
+#: ../../Firmware/ultralcd.cpp:7014
 msgid "Axis"
 msgstr "Tengely"
 
 #. MSG_SELFTEST_AXIS_LENGTH c=20
-#: ../../Firmware/ultralcd.cpp:7014
+#: ../../Firmware/ultralcd.cpp:7013
 msgid "Axis length"
 msgstr "Tengely hossz"
 
 #. MSG_BACK c=18
-#: ../../Firmware/messages.cpp:59 ../../Firmware/ultralcd.cpp:2751
-#: ../../Firmware/ultralcd.cpp:5861 ../../Firmware/ultralcd.cpp:7838
+#: ../../Firmware/messages.cpp:63 ../../Firmware/ultralcd.cpp:2749
+#: ../../Firmware/ultralcd.cpp:4223 ../../Firmware/ultralcd.cpp:5859
+#: ../../Firmware/ultralcd.cpp:7826
 msgid "Back"
 msgstr "Vissza"
 
 #. MSG_BED c=13
-#: ../../Firmware/Marlin_main.cpp:2051 ../../Firmware/Marlin_main.cpp:4767
-#: ../../Firmware/Marlin_main.cpp:4819 ../../Firmware/messages.cpp:12
-#: ../../Firmware/ultralcd.cpp:1403 ../../Firmware/ultralcd.cpp:5721
-#: ../../Firmware/ultralcd.cpp:5891
+#: ../../Firmware/Marlin_main.cpp:2029 ../../Firmware/Marlin_main.cpp:4792
+#: ../../Firmware/Marlin_main.cpp:4844 ../../Firmware/messages.cpp:12
+#: ../../Firmware/ultralcd.cpp:1404 ../../Firmware/ultralcd.cpp:5734
+#: ../../Firmware/ultralcd.cpp:5889
 msgid "Bed"
 msgstr "Asztal"
 
 #. MSG_BED_HEATING c=20
-#: ../../Firmware/Marlin_main.cpp:6260 ../../Firmware/messages.cpp:14
-#: ../../Firmware/ultralcd.cpp:575
+#: ../../Firmware/Marlin_main.cpp:6293 ../../Firmware/messages.cpp:14
+#: ../../Firmware/ultralcd.cpp:585
 msgid "Bed Heating"
 msgstr "Asztal futes"
 
 #. MSG_BED_DONE c=20
-#: ../../Firmware/Marlin_main.cpp:6298 ../../Firmware/messages.cpp:13
-#: ../../Firmware/ultralcd.cpp:578
+#: ../../Firmware/Marlin_main.cpp:6331 ../../Firmware/messages.cpp:13
+#: ../../Firmware/ultralcd.cpp:588
 msgid "Bed done"
 msgstr "Asztal kesz"
 
 #. MSG_BED_CORRECTION_MENU c=18
-#: ../../Firmware/ultralcd.cpp:4912
+#: ../../Firmware/ultralcd.cpp:4883
 msgid "Bed level correct"
 msgstr "Szint. korrekcio"
 
 #. MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=6
-#: ../../Firmware/Marlin_main.cpp:2214 ../../Firmware/Marlin_main.cpp:2993
-#: ../../Firmware/Marlin_main.cpp:3003
-#: ../../Firmware/mesh_bed_calibration.cpp:2862
-#: ../../Firmware/mesh_bed_calibration.cpp:2870
-#: ../../Firmware/mesh_bed_calibration.cpp:2896 ../../Firmware/messages.cpp:15
+#: ../../Firmware/Marlin_main.cpp:2209 ../../Firmware/Marlin_main.cpp:2985
+#: ../../Firmware/Marlin_main.cpp:2995
+#: ../../Firmware/mesh_bed_calibration.cpp:2858
+#: ../../Firmware/mesh_bed_calibration.cpp:2866
+#: ../../Firmware/mesh_bed_calibration.cpp:2892 ../../Firmware/messages.cpp:15
 msgid ""
 "Bed leveling failed. Sensor didn't trigger. Debris on nozzle? Waiting for "
 "reset."
@@ -167,50 +170,55 @@ msgstr ""
 "az ujrainditast."
 
 #. MSG_SELFTEST_BEDHEATER c=20
-#: ../../Firmware/ultralcd.cpp:6972
+#: ../../Firmware/ultralcd.cpp:6971
 msgid "Bed/Heater"
 msgstr "Asztal/Fej futes"
 
 #. MSG_BELT_STATUS c=18
-#: ../../Firmware/messages.cpp:17 ../../Firmware/ultralcd.cpp:1458
+#: ../../Firmware/messages.cpp:17 ../../Firmware/ultralcd.cpp:1457
 #: ../../Firmware/ultralcd.cpp:1726
 msgid "Belt status"
 msgstr "Szij allapot"
 
 #. MSG_BELTTEST c=18
-#: ../../Firmware/ultralcd.cpp:4902
+#: ../../Firmware/ultralcd.cpp:4873
 msgid "Belt test"
 msgstr "Szij teszt"
 
 #. MSG_RECOVER_PRINT c=20 r=2
-#: ../../Firmware/Marlin_main.cpp:1607 ../../Firmware/Marlin_main.cpp:1629
-#: ../../Firmware/messages.cpp:77
+#: ../../Firmware/Marlin_main.cpp:1585 ../../Firmware/Marlin_main.cpp:1607
+#: ../../Firmware/messages.cpp:81
 msgid "Blackout occurred. Recover print?"
 msgstr "Aramkieses volt, nyomt. folytatasa?"
 
 #. MSG_BRIGHT c=6
-#: ../../Firmware/messages.cpp:155 ../../Firmware/ultralcd.cpp:5864
+#: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:5862
 msgid "Bright"
 msgstr "Fenyes"
 
 #. MSG_BRIGHTNESS c=18
-#: ../../Firmware/messages.cpp:151 ../../Firmware/ultralcd.cpp:4850
-#: ../../Firmware/ultralcd.cpp:5789
+#: ../../Firmware/messages.cpp:155 ../../Firmware/ultralcd.cpp:4821
+#: ../../Firmware/ultralcd.cpp:5787
 msgid "Brightness"
 msgstr "Fenyero"
 
+#. MSG_TITLE_COMMUNICATION_ERROR c=20
+#: ../../Firmware/mmu2/errors_list.h:147 ../../Firmware/mmu2/errors_list.h:185
+msgid "COMMUNICATION ERROR"
+msgstr "KOMUNIKACIOS HIBA"
+
 #. MSG_CALIBRATE_BED c=18
-#: ../../Firmware/ultralcd.cpp:4906
+#: ../../Firmware/ultralcd.cpp:4877
 msgid "Calibrate XYZ"
 msgstr "XYZ kalibracio"
 
 #. MSG_HOMEYZ c=18
-#: ../../Firmware/messages.cpp:48 ../../Firmware/ultralcd.cpp:4908
+#: ../../Firmware/messages.cpp:50 ../../Firmware/ultralcd.cpp:4879
 msgid "Calibrate Z"
 msgstr "Z kalibracio"
 
 #. MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
-#: ../../Firmware/ultralcd.cpp:2946
+#: ../../Firmware/ultralcd.cpp:2944
 msgid ""
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
@@ -219,13 +227,13 @@ msgstr ""
 "nem er, majd nyomd meg ha keszen vagy."
 
 #. MSG_CALIBRATE_Z_AUTO c=20 r=2
-#: ../../Firmware/Marlin_main.cpp:2170 ../../Firmware/messages.cpp:19
-#: ../../Firmware/ultralcd.cpp:623
+#: ../../Firmware/Marlin_main.cpp:2166 ../../Firmware/messages.cpp:19
+#: ../../Firmware/ultralcd.cpp:633
 msgid "Calibrating Z"
 msgstr "Z kalibralasa"
 
 #. MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
-#: ../../Firmware/ultralcd.cpp:2945
+#: ../../Firmware/ultralcd.cpp:2943
 msgid ""
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
@@ -234,140 +242,152 @@ msgstr ""
 "er, majd nyomd meg ha keszen vagy."
 
 #. MSG_CALIBRATING_HOME c=20
-#: ../../Firmware/ultralcd.cpp:7315
+#: ../../Firmware/ultralcd.cpp:7313
 msgid "Calibrating home"
 msgstr "Home poz. kalibralas"
 
 #. MSG_CALIBRATION c=18
-#: ../../Firmware/messages.cpp:63 ../../Firmware/ultralcd.cpp:5581
+#: ../../Firmware/messages.cpp:67 ../../Firmware/ultralcd.cpp:5594
 msgid "Calibration"
 msgstr "Kalibracio"
 
 #. MSG_HOMEYZ_DONE c=20
-#: ../../Firmware/ultralcd.cpp:635
+#: ../../Firmware/ultralcd.cpp:644
 msgid "Calibration done"
 msgstr "Kalibracio kesz"
 
+#. MSG_DESC_CANNOT_MOVE c=20 r=4
+#: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
+#: ../../Firmware/mmu2/errors_list.h:245
+msgid "Can't move Selector or Idler."
+msgstr "Nem tudom mozgatni a Fejet vagy a Gorgot"
+
+#. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:266
+msgid "Cannot perform the action, filament is already loaded. Unload it first."
+msgstr ""
+"A muvelet nem hajthato vegre, a filament mar be van toltve. Vedd ki elobb."
+
 #. MSG_SD_REMOVED c=20
-#: ../../Firmware/ultralcd.cpp:7712
+#: ../../Firmware/ultralcd.cpp:7700
 msgid "Card removed"
 msgstr "Kartya eltavolitva"
 
 #. MSG_CNG_SDCARD c=18
-#: ../../Firmware/ultralcd.cpp:5538
+#: ../../Firmware/ultralcd.cpp:5547
 msgid "Change SD card"
-msgstr ""
+msgstr "Cserelj SD kartyat"
 
 #. MSG_FILAMENTCHANGE c=18
-#: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5497
-#: ../../Firmware/ultralcd.cpp:5730
+#: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5506
+#: ../../Firmware/ultralcd.cpp:5743
 msgid "Change filament"
 msgstr "Filament csere"
 
 #. MSG_CHANGE_SUCCESS c=20
-#: ../../Firmware/ultralcd.cpp:2163
+#: ../../Firmware/ultralcd.cpp:2179
 msgid "Change success!"
 msgstr "Csere sikerult!"
 
 #. MSG_CORRECTLY c=20
-#: ../../Firmware/ultralcd.cpp:2215
+#: ../../Firmware/ultralcd.cpp:2227
 msgid "Changed correctly?"
 msgstr "Sikerult a csere?"
 
 #. MSG_CHECKING_X c=20
-#: ../../Firmware/messages.cpp:21 ../../Firmware/ultralcd.cpp:6178
-#: ../../Firmware/ultralcd.cpp:7305
+#: ../../Firmware/messages.cpp:21 ../../Firmware/ultralcd.cpp:6187
+#: ../../Firmware/ultralcd.cpp:7303
 msgid "Checking X axis"
 msgstr "X tengely ellenorzes"
 
 #. MSG_CHECKING_Y c=20
-#: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:6187
-#: ../../Firmware/ultralcd.cpp:7306
+#: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:6196
+#: ../../Firmware/ultralcd.cpp:7304
 msgid "Checking Y axis"
 msgstr "Y tengely ellenorzes"
 
 #. MSG_SELFTEST_CHECK_Z c=20
-#: ../../Firmware/ultralcd.cpp:7307
+#: ../../Firmware/ultralcd.cpp:7305
 msgid "Checking Z axis"
 msgstr "Z tengely ellenorzes"
 
 #. MSG_SELFTEST_CHECK_BED c=20
-#: ../../Firmware/messages.cpp:89 ../../Firmware/ultralcd.cpp:7308
+#: ../../Firmware/messages.cpp:93 ../../Firmware/ultralcd.cpp:7306
 msgid "Checking bed"
 msgstr "Asztal ellenorzese"
 
 #. MSG_SELFTEST_CHECK_ENDSTOPS c=20
-#: ../../Firmware/ultralcd.cpp:7304
+#: ../../Firmware/ultralcd.cpp:7302
 msgid "Checking endstops"
 msgstr "Vegallaskapcs. ellen"
 
 #. MSG_CHECKING_FILE c=17
-#: ../../Firmware/ultralcd.cpp:7403
+#: ../../Firmware/ultralcd.cpp:7401
 msgid "Checking file"
 msgstr "Fajl ellenorzese"
 
 #. MSG_SELFTEST_CHECK_HOTEND c=20
-#: ../../Firmware/ultralcd.cpp:7310
+#: ../../Firmware/ultralcd.cpp:7308
 msgid "Checking hotend"
 msgstr "Hotend ellenorzese"
 
 #. MSG_SELFTEST_CHECK_FSENSOR c=20
-#: ../../Firmware/messages.cpp:90 ../../Firmware/ultralcd.cpp:7311
-#: ../../Firmware/ultralcd.cpp:7312
+#: ../../Firmware/messages.cpp:94 ../../Firmware/ultralcd.cpp:7309
+#: ../../Firmware/ultralcd.cpp:7310
 msgid "Checking sensors"
 msgstr "Szenz. ellenorzese"
 
 #. MSG_CHECKS c=18
-#: ../../Firmware/ultralcd.cpp:4765
+#: ../../Firmware/ultralcd.cpp:4728
 msgid "Checks"
 msgstr "Ellenorzesek"
 
 #. MSG_NOT_COLOR c=19
-#: ../../Firmware/ultralcd.cpp:2218
+#: ../../Firmware/ultralcd.cpp:2230
 msgid "Color not correct"
 msgstr "Szin nem jo"
 
 #. MSG_COMMUNITY_MADE c=18
-#: ../../Firmware/messages.cpp:23 ../../Firmware/ultralcd.cpp:3725
+#: ../../Firmware/messages.cpp:23 ../../Firmware/ultralcd.cpp:3696
 msgid "Community made"
 msgstr "Kozossegi"
 
 #. MSG_CONTINUE_SHORT c=5
-#: ../../Firmware/messages.cpp:149 ../../Firmware/ultralcd.cpp:4704
+#: ../../Firmware/messages.cpp:153 ../../Firmware/ultralcd.cpp:4245
 msgid "Cont."
 msgstr "Folyt"
 
 #. MSG_COOLDOWN c=18
-#: ../../Firmware/messages.cpp:25 ../../Firmware/ultralcd.cpp:2125
+#: ../../Firmware/messages.cpp:25 ../../Firmware/ultralcd.cpp:2138
 msgid "Cooldown"
 msgstr "Lehutes"
 
 #. MSG_COPY_SEL_LANG c=20 r=3
-#: ../../Firmware/ultralcd.cpp:3663
+#: ../../Firmware/ultralcd.cpp:3634
 msgid "Copy selected language?"
 msgstr "Kivalasztott nyelv masolasa?"
 
 #. MSG_CRASH c=7
-#: ../../Firmware/messages.cpp:26 ../../Firmware/ultralcd.cpp:1221
-#: ../../Firmware/ultralcd.cpp:1262 ../../Firmware/ultralcd.cpp:1272
+#: ../../Firmware/messages.cpp:26 ../../Firmware/ultralcd.cpp:1247
+#: ../../Firmware/ultralcd.cpp:1276
 msgid "Crash"
 msgstr "Utkozes"
 
 #. MSG_CRASHDETECT c=13
-#: ../../Firmware/messages.cpp:28 ../../Firmware/ultralcd.cpp:4341
-#: ../../Firmware/ultralcd.cpp:4342 ../../Firmware/ultralcd.cpp:4344
-#: ../../Firmware/ultralcd.cpp:5765 ../../Firmware/ultralcd.cpp:5767
-#: ../../Firmware/ultralcd.cpp:5771
+#: ../../Firmware/messages.cpp:28 ../../Firmware/ultralcd.cpp:4339
+#: ../../Firmware/ultralcd.cpp:4340 ../../Firmware/ultralcd.cpp:4342
+#: ../../Firmware/ultralcd.cpp:5763 ../../Firmware/ultralcd.cpp:5765
+#: ../../Firmware/ultralcd.cpp:5769
 msgid "Crash det."
 msgstr "Utkozes erz."
 
 #. MSG_CRASH_DETECTED c=20
-#: ../../Firmware/Marlin_main.cpp:597 ../../Firmware/messages.cpp:27
+#: ../../Firmware/Marlin_main.cpp:586 ../../Firmware/messages.cpp:27
 msgid "Crash detected."
 msgstr "Utkozes erzekelve."
 
 #. MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-#: ../../Firmware/ultralcd.cpp:3521
+#: ../../Firmware/ultralcd.cpp:3538
 msgid ""
 "Crash detection can\n"
 "be turned on only in\n"
@@ -378,39 +398,46 @@ msgstr ""
 "kapcsolhato be"
 
 #. MSG_CUT_FILAMENT c=17
-#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:5175
-#: ../../Firmware/ultralcd.cpp:5567
+#: ../../Firmware/messages.cpp:61 ../../Firmware/ultralcd.cpp:5155
+#: ../../Firmware/ultralcd.cpp:5578
 msgid "Cut filament"
 msgstr "Filament vagasa"
 
 #. MSG_CUTTER c=9
-#: ../../Firmware/messages.cpp:125 ../../Firmware/ultralcd.cpp:4303
-#: ../../Firmware/ultralcd.cpp:4308 ../../Firmware/ultralcd.cpp:4313
+#: ../../Firmware/messages.cpp:129 ../../Firmware/ultralcd.cpp:4282
+#: ../../Firmware/ultralcd.cpp:4287 ../../Firmware/ultralcd.cpp:4292
 msgid "Cutter"
 msgstr "Vago"
 
-#. MSG_MMU_CUTTING_FIL c=18
-#: ../../Firmware/mmu.cpp:1048
-msgid "Cutting filament"
-msgstr "Filament vagasa"
-
 #. MSG_DATE c=17
-#: ../../Firmware/ultralcd.cpp:1668
+#: ../../Firmware/ultralcd.cpp:1667
 msgid "Date:"
 msgstr "Datum:"
 
 #. MSG_DIM c=6
-#: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5864
+#: ../../Firmware/messages.cpp:160 ../../Firmware/ultralcd.cpp:5862
 msgid "Dim"
 msgstr "Sotet"
 
+#. MSG_BTN_DISABLE_MMU c=9
+#: ../../Firmware/mmu2/errors_list.h:286 ../../Firmware/mmu2/errors_list.h:296
+msgid "Disable"
+msgstr "Letilt"
+
 #. MSG_DISABLE_STEPPERS c=18
-#: ../../Firmware/ultralcd.cpp:4802
+#: ../../Firmware/ultralcd.cpp:4764
 msgid "Disable steppers"
 msgstr "Motorok kikapcsol."
 
+#. MSG_PROGRESS_DISENGAGE_IDLER c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:10
+#: ../../Firmware/mmu2_progress_converter.cpp:36
+#: ../../Firmware/mmu2_progress_converter.cpp:44
+msgid "Disengaging idler"
+msgstr "Gorgo levalasztasa"
+
 #. MSG_BABYSTEP_Z_NOT_SET c=20 r=12
-#: ../../Firmware/Marlin_main.cpp:1552 ../../Firmware/Marlin_main.cpp:3411
+#: ../../Firmware/Marlin_main.cpp:1530 ../../Firmware/Marlin_main.cpp:3400
 #: ../../Firmware/messages.cpp:11
 msgid ""
 "Distance between tip of the nozzle and the bed surface has not been set yet. "
@@ -422,7 +449,7 @@ msgstr ""
 "bekezdest."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
-#: ../../Firmware/ultralcd.cpp:4145
+#: ../../Firmware/ultralcd.cpp:4107
 msgid ""
 "Do you want to repeat last step to readjust distance between nozzle and "
 "heatbed?"
@@ -430,222 +457,355 @@ msgstr ""
 "Meg szeretned ismetelni az utolso lepest, hogy finomhangold a fuvoka es az "
 "asztal kozotti tavolsagot?"
 
+#. MSG_BTN_CONTINUE c=5
+#: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:292
+msgid "Done"
+msgstr "Kesz"
+
 #. MSG_EXTRUDER_CORRECTION c=13
-#: ../../Firmware/ultralcd.cpp:4214
+#: ../../Firmware/ultralcd.cpp:4176
 msgid "E-correct:"
 msgstr "E-korrekcio:"
 
+#. MSG_PROGRESS_ERR_HELP_FIL c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:19
+#: ../../Firmware/mmu2_progress_converter.cpp:48
+msgid "ERR Help filament"
+msgstr "HIBA SEGITS A FILAM."
+
+#. MSG_PROGRESS_ERR_INTERNAL c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:18
+#: ../../Firmware/mmu2_progress_converter.cpp:47
+msgid "ERR Internal"
+msgstr "Belso hiba"
+
+#. MSG_PROGRESS_ERR_TMC c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:20
+#: ../../Firmware/mmu2_progress_converter.cpp:49
+msgid "ERR TMC failed"
+msgstr "TMC HIBA"
+
+#. MSG_PROGRESS_WAIT_USER c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:17
+#: ../../Firmware/mmu2_progress_converter.cpp:46
+msgid "ERR Wait for User"
+msgstr "Felh. varakozas HIBA"
+
 #. MSG_ERROR c=10
-#: ../../Firmware/messages.cpp:29 ../../Firmware/ultralcd.cpp:2279
+#: ../../Firmware/messages.cpp:29 ../../Firmware/ultralcd.cpp:2282
 msgid "ERROR:"
 msgstr "HIBA:"
 
-#. MSG_FSENS_NOT_RESPONDING c=20 r=4
-#: ../../Firmware/ultralcd.cpp:3562
-msgid "ERROR: Filament sensor is not responding, please check connection."
-msgstr "HIBA: A fil. szenzor nem valaszol, ellenorizd a csatlakozast."
-
 #. MSG_EJECT_FILAMENT c=17
-#: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:5156
-#: ../../Firmware/ultralcd.cpp:5565
+#: ../../Firmware/messages.cpp:60 ../../Firmware/ultralcd.cpp:5137
+#: ../../Firmware/ultralcd.cpp:5575
 msgid "Eject filament"
 msgstr "Filament kiadasa"
 
-#. MSG_EJECTING_FILAMENT c=20
-#: ../../Firmware/mmu.cpp:1076
+#. MSG_PROGRESS_EJECT_FILAMENT c=20
+#. @@todo duplicate
+#: ../../Firmware/mmu2_progress_converter.cpp:27
+#: ../../Firmware/mmu2_progress_converter.cpp:58
 msgid "Ejecting filament"
 msgstr "Filament kiadasa"
 
 #. MSG_SELFTEST_ENDSTOP c=16
-#: ../../Firmware/ultralcd.cpp:6985
+#: ../../Firmware/ultralcd.cpp:6984
 msgid "Endstop"
 msgstr "Vegallaskapcsolo"
 
 #. MSG_SELFTEST_ENDSTOP_NOTHIT c=20
-#: ../../Firmware/ultralcd.cpp:6990
+#: ../../Firmware/ultralcd.cpp:6989
 msgid "Endstop not hit"
 msgstr "Vegallask. nem kapcs"
 
 #. MSG_SELFTEST_ENDSTOPS c=20
-#: ../../Firmware/ultralcd.cpp:6976
+#: ../../Firmware/ultralcd.cpp:6975
 msgid "Endstops"
 msgstr "Vegallaskapcsolok"
 
+#. MSG_PROGRESS_ENGAGE_IDLER c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:9
+#: ../../Firmware/mmu2_progress_converter.cpp:35
+#: ../../Firmware/mmu2_progress_converter.cpp:45
+msgid "Engaging idler"
+msgstr "Gorgo becsatolasa"
+
 #. MSG_EXTRUDER c=17
-#: ../../Firmware/Marlin_main.cpp:8608 ../../Firmware/messages.cpp:30
-#: ../../Firmware/ultralcd.cpp:3495
+#: ../../Firmware/Marlin_main.cpp:3519 ../../Firmware/Tcodes.cpp:35
+#: ../../Firmware/Tcodes.cpp:51 ../../Firmware/messages.cpp:30
+#: ../../Firmware/ultralcd.cpp:3512
 msgid "Extruder"
-msgstr ""
+msgstr "Extruder"
 
 #. MSG_EXTRUDER_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7321
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7319
 msgid "Extruder fan:"
 msgstr "Extruder vent.:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
 msgid "Extruder info"
-msgstr ""
+msgstr "Extruder info"
 
 #. MSG_FSENSOR_AUTOLOAD c=13
-#: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4229
-#: ../../Firmware/ultralcd.cpp:4237 ../../Firmware/ultralcd.cpp:4248
-#: ../../Firmware/ultralcd.cpp:4250
+#: ../../Firmware/messages.cpp:45 ../../Firmware/ultralcd.cpp:4230
+#: ../../Firmware/ultralcd.cpp:4237
 msgid "F. autoload"
 msgstr "F. autobetolt"
 
+#. MSG_FSENSOR_JAM_DETECTION c=13
+#: ../../Firmware/messages.cpp:46 ../../Firmware/ultralcd.cpp:4232
+#: ../../Firmware/ultralcd.cpp:4239
+msgid "F. jam detect"
+msgstr "Dugul. eszlel"
+
+#. MSG_FSENSOR_RUNOUT c=13
+#: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4229
+#: ../../Firmware/ultralcd.cpp:4236
+msgid "F. runout"
+msgstr "F. fogyas"
+
+#. MSG_TITLE_FIL_ALREADY_LOADED c=20
+#: ../../Firmware/mmu2/errors_list.h:148 ../../Firmware/mmu2/errors_list.h:186
+msgid "FILAMENT ALREADY LOA"
+msgstr "FILAMENT MAR BENT"
+
+#. MSG_TITLE_FINDA_DIDNT_TRIGGER c=20
+#: ../../Firmware/mmu2/errors_list.h:118 ../../Firmware/mmu2/errors_list.h:156
+msgid "FINDA DIDNT TRIGGER"
+msgstr "FINDA NEM KAPCSOLT"
+
+#. MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:197 ../../Firmware/mmu2/errors_list.h:237
+msgid ""
+"FINDA didn't switch off while unloading filament. Try unloading manually. "
+"Ensure filament can move and FINDA works."
+msgstr ""
+"A FINDA nem kapcsolt filament kiadas kozben. Vedd ki kezzel. Ellenorizd a "
+"fil. utjat es a FINDA mukodeset."
+
+#. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:196 ../../Firmware/mmu2/errors_list.h:236
+msgid ""
+"FINDA didn't trigger while loading the filament. Ensure the filament can "
+"move and FINDA works."
+msgstr ""
+"A FINDA nem kapcsolt filament betoltese kozben. Ellenorizd a fil. utjat es a "
+"FINDA mukodeset."
+
+#. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
+#: ../../Firmware/mmu2/errors_list.h:119 ../../Firmware/mmu2/errors_list.h:157
+msgid "FINDA: FILAM. STUCK"
+msgstr "FINDA: FIL. SZORULT"
+
 #. MSG_FS_ACTION c=10
-#: ../../Firmware/messages.cpp:148 ../../Firmware/ultralcd.cpp:4704
-#: ../../Firmware/ultralcd.cpp:4707
+#: ../../Firmware/messages.cpp:152 ../../Firmware/ultralcd.cpp:4245
+#: ../../Firmware/ultralcd.cpp:4248
 msgid "FS Action"
 msgstr "FSz akcio"
 
-#. MSG_FS_V_03_OR_OLDER c=18
-#: ../../Firmware/Marlin_main.cpp:9485
-msgid "FS v0.3 or older"
-msgstr "FS v0.3 v. regebbi"
+#. MSG_TITLE_FSENSOR_DIDNT_TRIGGER c=20
+#: ../../Firmware/mmu2/errors_list.h:120 ../../Firmware/mmu2/errors_list.h:158
+msgid "FSENSOR DIDNT TRIGG."
+msgstr "FSZENZOR NEM KAPCSOL"
 
-#. MSG_FS_V_04_OR_NEWER c=18
-#: ../../Firmware/Marlin_main.cpp:9477
-msgid "FS v0.4 or newer"
-msgstr "FS v0.4 vagy ujabb"
+#. MSG_TITLE_FSENSOR_TOO_EARLY c=20
+#: ../../Firmware/mmu2/errors_list.h:123 ../../Firmware/mmu2/errors_list.h:161
+msgid "FSENSOR TOO EARLY"
+msgstr "FSZENZ. TUL HAMAR"
+
+#. MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
+#: ../../Firmware/mmu2/errors_list.h:121 ../../Firmware/mmu2/errors_list.h:159
+msgid "FSENSOR: FIL. STUCK"
+msgstr "FSZENZOR: F SZORULT"
+
+#. MSG_TITLE_FW_RUNTIME_ERROR c=20
+#: ../../Firmware/mmu2/errors_list.h:152 ../../Firmware/mmu2/errors_list.h:190
+msgid "FW RUNTIME ERROR"
+msgstr "FW FUTAS HIBA"
 
 #. MSG_FAIL_STATS c=18
-#: ../../Firmware/ultralcd.cpp:5589
+#: ../../Firmware/ultralcd.cpp:5602
 msgid "Fail stats"
 msgstr "Hiba statisztika"
 
 #. MSG_MMU_FAIL_STATS c=18
-#: ../../Firmware/ultralcd.cpp:5592
+#: ../../Firmware/ultralcd.cpp:5605
 msgid "Fail stats MMU"
 msgstr "MMU hiba stat."
 
 #. MSG_FALSE_TRIGGERING c=20
-#: ../../Firmware/ultralcd.cpp:7031
+#: ../../Firmware/ultralcd.cpp:7030
 msgid "False triggering"
 msgstr "Hamis kivalto ok"
 
 #. MSG_FAN_SPEED c=14
-#: ../../Firmware/messages.cpp:34 ../../Firmware/ultralcd.cpp:5723
-#: ../../Firmware/ultralcd.cpp:5893
+#: ../../Firmware/messages.cpp:34 ../../Firmware/ultralcd.cpp:5736
+#: ../../Firmware/ultralcd.cpp:5891
 msgid "Fan speed"
 msgstr "Vent. sebesseg"
 
 #. MSG_SELFTEST_FAN c=20
-#: ../../Firmware/messages.cpp:86 ../../Firmware/ultralcd.cpp:7143
-#: ../../Firmware/ultralcd.cpp:7301 ../../Firmware/ultralcd.cpp:7302
-#: ../../Firmware/ultralcd.cpp:7303
+#: ../../Firmware/messages.cpp:90 ../../Firmware/ultralcd.cpp:7141
+#: ../../Firmware/ultralcd.cpp:7299 ../../Firmware/ultralcd.cpp:7300
+#: ../../Firmware/ultralcd.cpp:7301
 msgid "Fan test"
 msgstr "Ventillator teszt"
 
 #. MSG_FANS_CHECK c=13
-#: ../../Firmware/messages.cpp:31 ../../Firmware/ultralcd.cpp:4811
-#: ../../Firmware/ultralcd.cpp:5756
+#: ../../Firmware/messages.cpp:31 ../../Firmware/ultralcd.cpp:4782
+#: ../../Firmware/ultralcd.cpp:5754
 msgid "Fans check"
 msgstr "Vent.proba"
 
+#. MSG_PROGRESS_FEED_FINDA c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:13
+#: ../../Firmware/mmu2_progress_converter.cpp:39
+msgid "Feeding to FINDA"
+msgstr "FINDAhoz toltes"
+
+#. MSG_PROGRESS_FEED_FSENSOR c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:31
+#: ../../Firmware/mmu2_progress_converter.cpp:62
+msgid "Feeding to FSensor"
+msgstr "Fszenzorhoz toltes"
+
+#. MSG_PROGRESS_FEED_EXTRUDER c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:14
+#: ../../Firmware/mmu2_progress_converter.cpp:40
+msgid "Feeding to extruder"
+msgstr "Extruderhez toltes"
+
+#. MSG_PROGRESS_FEED_NOZZLE c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:15
+#: ../../Firmware/mmu2_progress_converter.cpp:41
+msgid "Feeding to nozzle"
+msgstr "Fuvokahoz toltes"
+
 #. MSG_FIL_RUNOUTS c=15
-#: ../../Firmware/messages.cpp:32 ../../Firmware/ultralcd.cpp:1220
-#: ../../Firmware/ultralcd.cpp:1261 ../../Firmware/ultralcd.cpp:1327
-#: ../../Firmware/ultralcd.cpp:1329
+#: ../../Firmware/messages.cpp:32 ../../Firmware/ultralcd.cpp:1246
+#: ../../Firmware/ultralcd.cpp:1275 ../../Firmware/ultralcd.cpp:1329
+#: ../../Firmware/ultralcd.cpp:1331
 msgid "Fil. runouts"
 msgstr "Fil. kifutasok"
 
 #. MSG_FSENSOR c=12
-#: ../../Firmware/messages.cpp:45 ../../Firmware/ultralcd.cpp:3451
-#: ../../Firmware/ultralcd.cpp:4228 ../../Firmware/ultralcd.cpp:4234
-#: ../../Firmware/ultralcd.cpp:4244 ../../Firmware/ultralcd.cpp:5737
-#: ../../Firmware/ultralcd.cpp:5741 ../../Firmware/ultralcd.cpp:5745
+#: ../../Firmware/messages.cpp:47 ../../Firmware/ultralcd.cpp:3473
+#: ../../Firmware/ultralcd.cpp:4225 ../../Firmware/ultralcd.cpp:4768
+#: ../../Firmware/ultralcd.cpp:5747
 msgid "Fil. sensor"
 msgstr "Fil. szenzor"
 
 #. MSG_FILAMENT c=17
-#: ../../Firmware/Marlin_main.cpp:8577 ../../Firmware/Marlin_main.cpp:8604
-#: ../../Firmware/messages.cpp:33 ../../Firmware/ultralcd.cpp:3835
+#: ../../Firmware/Tcodes.cpp:33 ../../Firmware/messages.cpp:33
+#: ../../Firmware/ultralcd.cpp:3806
 msgid "Filament"
-msgstr ""
+msgstr "Filament"
 
 #. MSG_FILAMENT_CLEAN c=20 r=2
-#: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2287
-#: ../../Firmware/ultralcd.cpp:2293
+#: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2290
+#: ../../Firmware/ultralcd.cpp:2294
 msgid "Filament extruding & with correct color?"
 msgstr "Filament es a szine rendben?"
 
 #. MSG_NOT_LOADED c=19
-#: ../../Firmware/ultralcd.cpp:2217
+#: ../../Firmware/ultralcd.cpp:2229
 msgid "Filament not loaded"
 msgstr "Fil. nincs betoltve"
 
 #. MSG_SELFTEST_FILAMENT_SENSOR c=17
-#: ../../Firmware/messages.cpp:92 ../../Firmware/ultralcd.cpp:7026
-#: ../../Firmware/ultralcd.cpp:7030 ../../Firmware/ultralcd.cpp:7034
-#: ../../Firmware/ultralcd.cpp:7330
+#: ../../Firmware/messages.cpp:96 ../../Firmware/ultralcd.cpp:7025
+#: ../../Firmware/ultralcd.cpp:7029 ../../Firmware/ultralcd.cpp:7033
+#: ../../Firmware/ultralcd.cpp:7328
 msgid "Filament sensor"
 msgstr "Filament szenzor"
 
+#. MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:199 ../../Firmware/mmu2/errors_list.h:239
+msgid ""
+"Filament sensor didn't switch off while unloading filament. Ensure filament "
+"can move and the sensor works."
+msgstr ""
+"A filament szenzor nem kapcsolt ki a filament kiadasa kozben. Ellenorizd a "
+"filament utjat es a szenort."
+
+#. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:198 ../../Firmware/mmu2/errors_list.h:238
+msgid ""
+"Filament sensor didn't trigger while loading the filament. Ensure the "
+"filament reached the fsensor and the sensor works."
+msgstr ""
+"A filament szenzor nem kapcsolt be a filament betoltese kozben. Ellenorizd a "
+"filament utjat es a szenort."
+
+#. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:201 ../../Firmware/mmu2/errors_list.h:241
+msgid ""
+"Filament sensor triggered too early while loading to extruder. Check there "
+"isn't anything stuck in PTFE tube. Check that sensor reads properly."
+msgstr ""
+"A filament szenzor tul hamar kapcsolt a filament extruderbe toltesekor. "
+"Ellenorizd a PTFE csovet es a szenzort."
+
 #. MSG_FILAMENT_USED c=19
-#: ../../Firmware/ultralcd.cpp:2365
+#: ../../Firmware/ultralcd.cpp:2363
 msgid "Filament used"
 msgstr "Felhasznalt filam."
 
 #. MSG_FILE_INCOMPLETE c=20 r=3
-#: ../../Firmware/ultralcd.cpp:7461
+#: ../../Firmware/ultralcd.cpp:7460
 msgid "File incomplete. Continue anyway?"
 msgstr "A fajl vege hianyzik. Folytatod igy is?"
 
 #. MSG_FINISHING_MOVEMENTS c=20
-#: ../../Firmware/messages.cpp:41 ../../Firmware/ultralcd.cpp:5314
-#: ../../Firmware/ultralcd.cpp:5630
+#: ../../Firmware/messages.cpp:41 ../../Firmware/mmu2_progress_converter.cpp:43
+#: ../../Firmware/ultralcd.cpp:5323 ../../Firmware/ultralcd.cpp:5643
 msgid "Finishing movements"
 msgstr "Mozdulat befejezese"
 
 #. MSG_V2_CALIBRATION c=18
-#: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4898
-#: ../../Firmware/ultralcd.cpp:5424
+#: ../../Firmware/messages.cpp:125 ../../Firmware/ultralcd.cpp:4869
+#: ../../Firmware/ultralcd.cpp:5433
 msgid "First layer cal."
 msgstr "Elso reteg kal."
 
 #. MSG_WIZARD_SELFTEST c=20 r=8
-#: ../../Firmware/ultralcd.cpp:4066
+#: ../../Firmware/ultralcd.cpp:4032
 msgid "First, I will run the selftest to check most common assembly problems."
 msgstr ""
 "Elsokent lefuttatom az onellenorzest, hogy megnezzem a leggyakoribb "
 "osszeszerelesi problemakat."
 
-#. MSG_MMU_FIX_ISSUE c=20 r=4
-#: ../../Firmware/mmu.cpp:728
-msgid "Fix the issue and then press button on MMU unit."
-msgstr "Hozd helyre a hibat, majd nyomd meg a gombot az MMU egysegen."
-
 #. MSG_FLOW c=15
-#: ../../Firmware/ultralcd.cpp:5724
+#: ../../Firmware/ultralcd.cpp:5737
 msgid "Flow"
-msgstr ""
+msgstr "Flow"
 
 #. MSG_SELFTEST_PART_FAN c=20
-#: ../../Firmware/messages.cpp:83 ../../Firmware/ultralcd.cpp:6996
-#: ../../Firmware/ultralcd.cpp:7149 ../../Firmware/ultralcd.cpp:7154
+#: ../../Firmware/messages.cpp:87 ../../Firmware/ultralcd.cpp:6995
+#: ../../Firmware/ultralcd.cpp:7147 ../../Firmware/ultralcd.cpp:7152
 msgid "Front print fan?"
 msgstr "Elso targyhuto vent?"
 
 #. MSG_BED_CORRECTION_FRONT c=14
-#: ../../Firmware/ultralcd.cpp:2754
+#: ../../Firmware/ultralcd.cpp:2752
 msgid "Front side[μm]"
 msgstr "Elulso old[μm]"
 
 #. MSG_SELFTEST_FANS c=20
-#: ../../Firmware/ultralcd.cpp:7020
+#: ../../Firmware/ultralcd.cpp:7019
 msgid "Front/left fans"
 msgstr "Elso/bal ventillator"
 
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=4
-#: ../../Firmware/util.cpp:418
+#: ../../Firmware/util.cpp:402
 msgid "G-code sliced for a different level. Continue?"
 msgstr "A G-kod mas szintre lett elokesztve. Folytassam?"
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=7
-#: ../../Firmware/util.cpp:424
+#: ../../Firmware/util.cpp:409
 msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
@@ -654,14 +814,14 @@ msgstr ""
 "megallitva."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
-#: ../../Firmware/messages.cpp:131 ../../Firmware/util.cpp:335
-#: ../../Firmware/util.cpp:471
+#: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
+#: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
 msgstr "A G-kod mas nyomtato tipusra lett elokesztve. Folytassam?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
-#: ../../Firmware/messages.cpp:132 ../../Firmware/util.cpp:341
-#: ../../Firmware/util.cpp:477
+#: ../../Firmware/messages.cpp:136 ../../Firmware/util.cpp:329
+#: ../../Firmware/util.cpp:460
 msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again. "
 "Print cancelled."
@@ -670,12 +830,12 @@ msgstr ""
 "Nyomtatas megallitva."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
-#: ../../Firmware/util.cpp:385
+#: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
 msgstr "A G-kod ujabb firmverre lett elokesztve. Folytassam?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
-#: ../../Firmware/util.cpp:391
+#: ../../Firmware/util.cpp:377
 msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
@@ -684,42 +844,42 @@ msgstr ""
 "Nyomtatas megallitva."
 
 #. MSG_GCODE c=8
-#: ../../Firmware/messages.cpp:130 ../../Firmware/ultralcd.cpp:4655
-#: ../../Firmware/ultralcd.cpp:4658 ../../Firmware/ultralcd.cpp:4661
-#: ../../Firmware/ultralcd.cpp:4664
+#: ../../Firmware/messages.cpp:134 ../../Firmware/ultralcd.cpp:4653
+#: ../../Firmware/ultralcd.cpp:4656 ../../Firmware/ultralcd.cpp:4659
+#: ../../Firmware/ultralcd.cpp:4662
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
-#: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4672
-#: ../../Firmware/ultralcd.cpp:4726 ../../Firmware/ultralcd.cpp:4818
+#: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:4670
+#: ../../Firmware/ultralcd.cpp:4689 ../../Firmware/ultralcd.cpp:4789
 msgid "HW Setup"
 msgstr "HW beallitas"
 
 #. MSG_SELFTEST_HEATERTHERMISTOR c=20
-#: ../../Firmware/ultralcd.cpp:6968
+#: ../../Firmware/ultralcd.cpp:6967
 msgid "Heater/Thermistor"
 msgstr "Futotest/Termisztor"
 
 #. MSG_HEATING c=20
-#: ../../Firmware/Marlin_main.cpp:6203 ../../Firmware/messages.cpp:46
-#: ../../Firmware/ultralcd.cpp:567
+#: ../../Firmware/Marlin_main.cpp:6236 ../../Firmware/messages.cpp:48
+#: ../../Firmware/ultralcd.cpp:577
 msgid "Heating"
 msgstr "Futes folyamatban"
 
 #. MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:9398
+#: ../../Firmware/Marlin_main.cpp:9477
 msgid "Heating disabled by safety timer."
 msgstr "A bizonsagi idozito leallitotta a futest"
 
 #. MSG_HEATING_COMPLETE c=20
-#: ../../Firmware/Marlin_main.cpp:6234 ../../Firmware/messages.cpp:47
-#: ../../Firmware/ultralcd.cpp:570
+#: ../../Firmware/Marlin_main.cpp:6267 ../../Firmware/messages.cpp:49
+#: ../../Firmware/ultralcd.cpp:580
 msgid "Heating done."
 msgstr "Futes kesz."
 
-#. MSG_WIZARD_WELCOME_SHIPPING c=20 r=16
-#: ../../Firmware/messages.cpp:119 ../../Firmware/ultralcd.cpp:4042
+#. MSG_WIZARD_WELCOME_SHIPPING c=20 r=12
+#: ../../Firmware/messages.cpp:123 ../../Firmware/ultralcd.cpp:4008
 msgid ""
 "Hi, I am your Original Prusa i3 printer. I will guide you through a short "
 "setup process, in which the Z-axis will be calibrated. Then, you will be "
@@ -730,7 +890,7 @@ msgstr ""
 "nyomtathatsz is."
 
 #. MSG_WIZARD_WELCOME c=20 r=7
-#: ../../Firmware/messages.cpp:118 ../../Firmware/ultralcd.cpp:4045
+#: ../../Firmware/messages.cpp:122 ../../Firmware/ultralcd.cpp:4011
 msgid ""
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you "
 "through the setup process?"
@@ -739,24 +899,45 @@ msgstr ""
 "a beallitasi folyamaton?"
 
 #. MSG_HIGH_POWER c=10
-#: ../../Firmware/messages.cpp:101 ../../Firmware/ultralcd.cpp:4358
-#: ../../Firmware/ultralcd.cpp:4367 ../../Firmware/ultralcd.cpp:5777
-#: ../../Firmware/ultralcd.cpp:5780
+#: ../../Firmware/messages.cpp:105 ../../Firmware/ultralcd.cpp:4356
+#: ../../Firmware/ultralcd.cpp:4365 ../../Firmware/ultralcd.cpp:5775
+#: ../../Firmware/ultralcd.cpp:5778
 msgid "High power"
 msgstr "Magas ero"
 
+#. MSG_PROGRESS_HOMING c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:29
+#: ../../Firmware/mmu2_progress_converter.cpp:60
+msgid "Homing"
+msgstr "Homeolas"
+
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
-#: ../../Firmware/ultralcd.cpp:4075
+#: ../../Firmware/ultralcd.cpp:4041
 msgid "I will run xyz calibration now. It will take approx. 12 mins."
 msgstr "Lefuttatom az XYZ kalibraciot. Ez kb. 12 percet vesz igenybe."
 
 #. MSG_WIZARD_Z_CAL c=20 r=8
-#: ../../Firmware/ultralcd.cpp:4083
+#: ../../Firmware/ultralcd.cpp:4049
 msgid "I will run z calibration now."
 msgstr "Lefuttatom a Z kalibraciot."
 
+#. MSG_TITLE_IDLER_CANNOT_HOME c=20
+#: ../../Firmware/mmu2/errors_list.h:127 ../../Firmware/mmu2/errors_list.h:164
+msgid "IDLER CANNOT HOME"
+msgstr "GORGO NEM MOZOG"
+
+#. MSG_TITLE_IDLER_CANNOT_MOVE c=20
+#: ../../Firmware/mmu2/errors_list.h:126 ../../Firmware/mmu2/errors_list.h:165
+msgid "IDLER CANNOT MOVE"
+msgstr "GORGO NEM MOZOG"
+
+#. MSG_TITLE_INVALID_TOOL c=20
+#: ../../Firmware/mmu2/errors_list.h:149 ../../Firmware/mmu2/errors_list.h:187
+msgid "INVALID TOOL"
+msgstr "HELYTELEN SZERSZAM"
+
 #. MSG_ADDITIONAL_SHEETS c=20 r=9
-#: ../../Firmware/ultralcd.cpp:4153
+#: ../../Firmware/ultralcd.cpp:4115
 msgid ""
 "If you have additional steel sheets, calibrate their presets in Settings - "
 "HW Setup - Steel sheets."
@@ -765,27 +946,27 @@ msgstr ""
 "Acellapok menupont alatt."
 
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
-#: ../../Firmware/mesh_bed_calibration.cpp:2531
+#: ../../Firmware/mesh_bed_calibration.cpp:2530
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Bed kalibracio pontositasa"
 
 #. MSG_INFO_SCREEN c=18
-#: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:5478
+#: ../../Firmware/messages.cpp:117 ../../Firmware/ultralcd.cpp:5487
 msgid "Info screen"
 msgstr "Info kepernyo"
 
 #. MSG_INIT_SDCARD c=18
-#: ../../Firmware/ultralcd.cpp:5545
+#: ../../Firmware/ultralcd.cpp:5554
 msgid "Init. SD card"
-msgstr ""
+msgstr "SD kartya inic."
 
 #. MSG_INSERT_FILAMENT c=20
-#: ../../Firmware/ultralcd.cpp:2152
+#: ../../Firmware/ultralcd.cpp:2165
 msgid "Insert filament"
 msgstr "Helyezd be a filam."
 
 #. MSG_INSERT_FIL c=20 r=6
-#: ../../Firmware/ultralcd.cpp:6223
+#: ../../Firmware/ultralcd.cpp:6233
 msgid ""
 "Insert the filament (do not load it) into the extruder and then press the "
 "knob."
@@ -793,271 +974,309 @@ msgstr ""
 "Helyezd be a filamentet az extruderbe (ne toltsd be), majd nyomtd meg a "
 "gombot."
 
+#. MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
+#: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:270
+msgid ""
+"Internal runtime error. Try resetting the MMU unit or updating the firmware. "
+"If the issue persists, contact support."
+msgstr ""
+"Futas kozbeni hiba. Inditsd ujra az MMU-t vagy frissitsd a firmwaret. Ha a "
+"problema fennall, fordulj a supporthoz."
+
 #. MSG_FILAMENT_LOADED c=20 r=2
-#: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3855
-#: ../../Firmware/ultralcd.cpp:4108 ../../Firmware/ultralcd.cpp:4111
+#: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3827
+#: ../../Firmware/ultralcd.cpp:4074
 msgid "Is filament loaded?"
 msgstr "Filament behelyezve?"
 
 #. MSG_STEEL_SHEET_CHECK c=20 r=2
-#: ../../Firmware/Marlin_main.cpp:3312 ../../Firmware/Marlin_main.cpp:4886
-#: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:4084
+#: ../../Firmware/Marlin_main.cpp:3301 ../../Firmware/Marlin_main.cpp:4911
+#: ../../Firmware/messages.cpp:110 ../../Firmware/ultralcd.cpp:4050
 msgid "Is steel sheet on heatbed?"
 msgstr "Rajta van az acellap a targyasztalon?"
 
 #. MSG_ITERATION c=12
-#: ../../Firmware/mesh_bed_calibration.cpp:2253 ../../Firmware/messages.cpp:49
+#: ../../Firmware/mesh_bed_calibration.cpp:2252 ../../Firmware/messages.cpp:51
 msgid "Iteration"
 msgstr "Iteracio"
 
 #. MSG_LAST_PRINT c=18
-#: ../../Firmware/messages.cpp:52 ../../Firmware/ultralcd.cpp:1148
-#: ../../Firmware/ultralcd.cpp:1296
+#: ../../Firmware/messages.cpp:54 ../../Firmware/ultralcd.cpp:1166
+#: ../../Firmware/ultralcd.cpp:1299
 msgid "Last print"
 msgstr "Utolso nyomtatas"
 
 #. MSG_LAST_PRINT_FAILURES c=20
-#: ../../Firmware/messages.cpp:53 ../../Firmware/ultralcd.cpp:1169
-#: ../../Firmware/ultralcd.cpp:1259 ../../Firmware/ultralcd.cpp:1269
-#: ../../Firmware/ultralcd.cpp:1326
+#: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:1186
+#: ../../Firmware/ultralcd.cpp:1273 ../../Firmware/ultralcd.cpp:1328
 msgid "Last print failures"
 msgstr "Utolso nyomt. hibak"
 
 #. MSG_LEFT c=10
-#: ../../Firmware/ultralcd.cpp:2496
+#: ../../Firmware/ultralcd.cpp:2494
 msgid "Left"
 msgstr "Bal"
 
 #. MSG_SELFTEST_EXTRUDER_FAN c=20
-#: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:7002
-#: ../../Firmware/ultralcd.cpp:7149 ../../Firmware/ultralcd.cpp:7154
+#: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:7001
+#: ../../Firmware/ultralcd.cpp:7147 ../../Firmware/ultralcd.cpp:7152
 msgid "Left hotend fan?"
 msgstr "Bal hotend vent.?"
 
 #. MSG_BED_CORRECTION_LEFT c=14
-#: ../../Firmware/ultralcd.cpp:2752
+#: ../../Firmware/ultralcd.cpp:2750
 msgid "Left side [μm]"
 msgstr "Bal [μm]"
 
 #. MSG_BL_HIGH c=12
-#: ../../Firmware/messages.cpp:152 ../../Firmware/ultralcd.cpp:5862
+#: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5860
 msgid "Level Bright"
 msgstr "Fenyes szint"
 
 #. MSG_BL_LOW c=12
-#: ../../Firmware/messages.cpp:153 ../../Firmware/ultralcd.cpp:5863
+#: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5861
 msgid "Level Dimmed"
 msgstr "Sotet szint"
 
 #. MSG_LIN_CORRECTION c=18
-#: ../../Firmware/ultralcd.cpp:4826
+#: ../../Firmware/ultralcd.cpp:4797
 msgid "Lin. correction"
 msgstr "Lin. korrekcio"
 
 #. MSG_BABYSTEP_Z c=18
-#: ../../Firmware/messages.cpp:10 ../../Firmware/ultralcd.cpp:4838
-#: ../../Firmware/ultralcd.cpp:5493
+#: ../../Firmware/messages.cpp:10 ../../Firmware/ultralcd.cpp:4809
+#: ../../Firmware/ultralcd.cpp:5502
 msgid "Live adjust Z"
 msgstr "Z magassag beall."
 
 #. MSG_LOAD_ALL c=18
-#: ../../Firmware/ultralcd.cpp:5120
-msgid "Load all"
-msgstr "Osszes betolt."
+#: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5098
+#: ../../Firmware/ultralcd.cpp:5178
+msgid "Load All"
+msgstr "Ossz.bet"
 
 #. MSG_LOAD_FILAMENT c=17
-#: ../../Firmware/messages.cpp:54 ../../Firmware/ultralcd.cpp:5122
-#: ../../Firmware/ultralcd.cpp:5133 ../../Firmware/ultralcd.cpp:5562
-#: ../../Firmware/ultralcd.cpp:5576
+#: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:5100
+#: ../../Firmware/ultralcd.cpp:5119 ../../Firmware/ultralcd.cpp:5180
+#: ../../Firmware/ultralcd.cpp:5571 ../../Firmware/ultralcd.cpp:5589
 msgid "Load filament"
 msgstr "Filament betolt."
 
+#. MSG_LOAD_TO_EXTRUDER c=18
+#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:5572
+msgid "Load to extruder"
+msgstr "Extruderbe toltes"
+
 #. MSG_LOAD_TO_NOZZLE c=18
-#: ../../Firmware/ultralcd.cpp:5563
+#: ../../Firmware/ultralcd.cpp:5573
 msgid "Load to nozzle"
 msgstr "Betolt. fuvokahoz"
 
 #. MSG_LOADING_COLOR c=20
-#: ../../Firmware/ultralcd.cpp:2185
+#: ../../Firmware/ultralcd.cpp:2201
 msgid "Loading color"
 msgstr "Szin tisztitasa"
 
 #. MSG_LOADING_FILAMENT c=20
-#: ../../Firmware/Marlin_main.cpp:3641 ../../Firmware/messages.cpp:55
-#: ../../Firmware/mmu.cpp:872 ../../Firmware/mmu.cpp:906
-#: ../../Firmware/mmu.cpp:1014 ../../Firmware/mmu.cpp:1026
-#: ../../Firmware/ultralcd.cpp:2196 ../../Firmware/ultralcd.cpp:3949
+#: ../../Firmware/Marlin_main.cpp:3651 ../../Firmware/messages.cpp:58
+#: ../../Firmware/mmu2.cpp:438 ../../Firmware/mmu2.cpp:468
+#: ../../Firmware/mmu2_progress_converter.cpp:51
+#: ../../Firmware/ultralcd.cpp:2212 ../../Firmware/ultralcd.cpp:3919
 msgid "Loading filament"
 msgstr "Filament betoltese"
 
 #. MSG_LOOSE_PULLEY c=20
-#: ../../Firmware/ultralcd.cpp:7008
+#: ../../Firmware/ultralcd.cpp:7007
 msgid "Loose pulley"
 msgstr "Laza szijtarcsa"
 
 #. MSG_SOUND_LOUD c=7
-#: ../../Firmware/messages.cpp:141 ../../Firmware/ultralcd.cpp:4450
-#: ../../Firmware/ultralcd.cpp:4462
+#: ../../Firmware/messages.cpp:145 ../../Firmware/ultralcd.cpp:4448
+#: ../../Firmware/ultralcd.cpp:4460
 msgid "Loud"
 msgstr "Hangos"
 
-#. MSG_MK3_FIRMWARE_ON_MK3S c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:881
-msgid "MK3 firmware detected on MK3S printer"
-msgstr "MK3 firmver telepitve MK3S nyomtatora"
+#. MSG_TITLE_FW_UPDATE_NEEDED c=20
+#: ../../Firmware/mmu2/errors_list.h:151 ../../Firmware/mmu2/errors_list.h:189
+msgid "MMU FW UPDATE NEEDED"
+msgstr "MMU FW FRISSIT. KELL"
 
-#. MSG_MK3S_FIRMWARE_ON_MK3 c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:874
-msgid "MK3S firmware detected on MK3 printer"
-msgstr "MK3S firmver eszlelve MK3 nyomtaton"
+#. MSG_DESC_QUEUE_FULL c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:230 ../../Firmware/mmu2/errors_list.h:268
+msgid "MMU Firmware internal error, please reset the MMU."
+msgstr "MMU Firmware hiba, kerlek inditsd ujra az MMU-t"
 
 #. MSG_MMU_MODE c=8
-#: ../../Firmware/messages.cpp:134 ../../Firmware/ultralcd.cpp:4381
-#: ../../Firmware/ultralcd.cpp:4382
+#: ../../Firmware/messages.cpp:138 ../../Firmware/ultralcd.cpp:4379
+#: ../../Firmware/ultralcd.cpp:4380
 msgid "MMU Mode"
 msgstr "MMU Mod"
 
-#. MSG_MMU_OK_RESUMING_POSITION c=20 r=4
-#: ../../Firmware/mmu.cpp:763
-msgid "MMU OK. Resuming position..."
-msgstr "MMU OK. Pozicio visszaallitasa..."
+#. MSG_TITLE_MMU_NOT_RESPONDING c=20
+#: ../../Firmware/mmu2/errors_list.h:146 ../../Firmware/mmu2/errors_list.h:184
+msgid "MMU NOT RESPONDING"
+msgstr "MMU NEM VALASZOL"
 
-#. MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
-#: ../../Firmware/mmu.cpp:756
-msgid "MMU OK. Resuming temperature..."
-msgstr "MMU OK. Homerseklet visszaallitasa..."
-
-#. MSG_MMU_OK_RESUMING c=20 r=4
-#: ../../Firmware/mmu.cpp:774
-msgid "MMU OK. Resuming..."
-msgstr "MMU OK. Folytatom..."
+#. MSG_MMU_RESTORE_TEMP c=20 r=4
+#: ../../Firmware/mmu2.cpp:598
+msgid "MMU Retry: Restoring temperature..."
+msgstr "MMU Ujra: Homerseklet visszaallitasa"
 
 #. MSG_MMU_FAILS c=15
-#: ../../Firmware/messages.cpp:64 ../../Firmware/ultralcd.cpp:1170
-#: ../../Firmware/ultralcd.cpp:1193
+#: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1187
+#: ../../Firmware/ultralcd.cpp:1215
 msgid "MMU fails"
 msgstr "MMU hibak"
 
-#. MSG_MMU_LOAD_FAILED c=20
-#: ../../Firmware/mmu.cpp:1248
-msgid "MMU load failed"
-msgstr "MMU betolt.hiba"
-
 #. MSG_MMU_LOAD_FAILS c=15
-#: ../../Firmware/messages.cpp:65 ../../Firmware/ultralcd.cpp:1171
-#: ../../Firmware/ultralcd.cpp:1194
+#: ../../Firmware/messages.cpp:69 ../../Firmware/ultralcd.cpp:1188
 msgid "MMU load fails"
 msgstr "MMU bet. hibak"
 
-#. MSG_MMU_USER_ATTENTION c=20 r=3
-#: ../../Firmware/mmu.cpp:723
-msgid "MMU needs user attention."
-msgstr "Az MMU felhasznaloi figyelmet igenyel."
+#. MSG_DESC_COMMUNICATION_ERROR c=20 r=9
+#: ../../Firmware/mmu2/errors_list.h:227 ../../Firmware/mmu2/errors_list.h:265
+msgid ""
+"MMU unit not responding correctly. Check the wiring and connectors. If the "
+"issue persists, contact support."
+msgstr ""
+"Az MMU helytelenul valaszol. Nezd meg a kabelezest es a konnektorokat. Ha a "
+"problema fennall, keresd a supportot."
 
-#. MSG_MMU_POWER_FAILS c=15
-#: ../../Firmware/ultralcd.cpp:1195
-msgid "MMU power fails"
-msgstr "MMU tap hibak"
+#. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:226 ../../Firmware/mmu2/errors_list.h:264
+msgid ""
+"MMU unit not responding. Check the wiring and connectors. If the issue "
+"persists, contact support."
+msgstr ""
+"Az MMU nem valaszol. Nezd meg a kabelezest es a konnektorokat. Ha a problema "
+"fennall, keresd a supportot."
 
 #. MSG_MMU_CONNECTED c=18
-#: ../../Firmware/ultralcd.cpp:1680
+#: ../../Firmware/ultralcd.cpp:1679
 msgid "MMU2 connected"
 msgstr "MMU2 csatlakozott"
 
 #. MSG_MAGNETS_COMP c=13
-#: ../../Firmware/messages.cpp:147 ../../Firmware/ultralcd.cpp:5836
+#: ../../Firmware/messages.cpp:151 ../../Firmware/ultralcd.cpp:5834
 msgid "Magnets comp."
 msgstr "Magnes komp."
 
 #. MSG_MAIN c=18
-#: ../../Firmware/messages.cpp:58 ../../Firmware/ultralcd.cpp:1147
-#: ../../Firmware/ultralcd.cpp:1295 ../../Firmware/ultralcd.cpp:1338
-#: ../../Firmware/ultralcd.cpp:1645 ../../Firmware/ultralcd.cpp:4795
-#: ../../Firmware/ultralcd.cpp:4892 ../../Firmware/ultralcd.cpp:5119
-#: ../../Firmware/ultralcd.cpp:5131 ../../Firmware/ultralcd.cpp:5154
-#: ../../Firmware/ultralcd.cpp:5173 ../../Firmware/ultralcd.cpp:5717
+#: ../../Firmware/messages.cpp:62 ../../Firmware/ultralcd.cpp:1165
+#: ../../Firmware/ultralcd.cpp:1298 ../../Firmware/ultralcd.cpp:1340
+#: ../../Firmware/ultralcd.cpp:1644 ../../Firmware/ultralcd.cpp:4757
+#: ../../Firmware/ultralcd.cpp:4863 ../../Firmware/ultralcd.cpp:5097
+#: ../../Firmware/ultralcd.cpp:5117 ../../Firmware/ultralcd.cpp:5135
+#: ../../Firmware/ultralcd.cpp:5153 ../../Firmware/ultralcd.cpp:5177
+#: ../../Firmware/ultralcd.cpp:5730
 msgid "Main"
 msgstr "Fomenu"
 
 #. MSG_MEASURED_SKEW c=14
-#: ../../Firmware/ultralcd.cpp:2537
+#: ../../Firmware/ultralcd.cpp:2535
 msgid "Measured skew"
 msgstr "Meroleg. hiba"
 
 #. MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=20 r=3
-#: ../../Firmware/Marlin_main.cpp:3293
-#: ../../Firmware/mesh_bed_calibration.cpp:2840 ../../Firmware/messages.cpp:62
+#: ../../Firmware/Marlin_main.cpp:3282
+#: ../../Firmware/mesh_bed_calibration.cpp:2836 ../../Firmware/messages.cpp:66
 msgid "Measuring reference height of calibration point"
 msgstr "Kalibracios pont magassaganak merese"
 
 #. MSG_MESH c=12
-#: ../../Firmware/messages.cpp:144 ../../Firmware/ultralcd.cpp:5832
+#: ../../Firmware/messages.cpp:148 ../../Firmware/ultralcd.cpp:5830
 msgid "Mesh"
 msgstr "Halo"
 
 #. MSG_MESH_BED_LEVELING c=18
-#: ../../Firmware/messages.cpp:145 ../../Firmware/ultralcd.cpp:4823
-#: ../../Firmware/ultralcd.cpp:4910
+#: ../../Firmware/messages.cpp:149 ../../Firmware/ultralcd.cpp:4794
+#: ../../Firmware/ultralcd.cpp:4881
 msgid "Mesh Bed Leveling"
 msgstr "Asztal szintezes"
 
 #. MSG_MODE c=6
-#: ../../Firmware/messages.cpp:100 ../../Firmware/ultralcd.cpp:4336
-#: ../../Firmware/ultralcd.cpp:4338 ../../Firmware/ultralcd.cpp:4358
-#: ../../Firmware/ultralcd.cpp:4361 ../../Firmware/ultralcd.cpp:4364
-#: ../../Firmware/ultralcd.cpp:4367 ../../Firmware/ultralcd.cpp:5763
-#: ../../Firmware/ultralcd.cpp:5770 ../../Firmware/ultralcd.cpp:5777
-#: ../../Firmware/ultralcd.cpp:5778 ../../Firmware/ultralcd.cpp:5779
-#: ../../Firmware/ultralcd.cpp:5780 ../../Firmware/ultralcd.cpp:5864
+#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:4334
+#: ../../Firmware/ultralcd.cpp:4336 ../../Firmware/ultralcd.cpp:4356
+#: ../../Firmware/ultralcd.cpp:4359 ../../Firmware/ultralcd.cpp:4362
+#: ../../Firmware/ultralcd.cpp:4365 ../../Firmware/ultralcd.cpp:5761
+#: ../../Firmware/ultralcd.cpp:5768 ../../Firmware/ultralcd.cpp:5775
+#: ../../Firmware/ultralcd.cpp:5776 ../../Firmware/ultralcd.cpp:5777
+#: ../../Firmware/ultralcd.cpp:5778 ../../Firmware/ultralcd.cpp:5862
 msgid "Mode"
 msgstr "Mod"
 
 #. MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
-#: ../../Firmware/ultralcd.cpp:3598
+#: ../../Firmware/ultralcd.cpp:3587
 msgid "Mode change in progress..."
 msgstr "Modvaltas folyamatban..."
 
 #. MSG_MODEL c=8
-#: ../../Firmware/messages.cpp:129 ../../Firmware/ultralcd.cpp:4575
-#: ../../Firmware/ultralcd.cpp:4578 ../../Firmware/ultralcd.cpp:4581
-#: ../../Firmware/ultralcd.cpp:4584
+#: ../../Firmware/messages.cpp:133 ../../Firmware/ultralcd.cpp:4573
+#: ../../Firmware/ultralcd.cpp:4576 ../../Firmware/ultralcd.cpp:4579
+#: ../../Firmware/ultralcd.cpp:4582
 msgid "Model"
 msgstr "Modell"
 
+#. MSG_DESC_TMC c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:207 ../../Firmware/mmu2/errors_list.h:246
+#: ../../Firmware/mmu2/errors_list.h:247 ../../Firmware/mmu2/errors_list.h:248
+#: ../../Firmware/mmu2/errors_list.h:249 ../../Firmware/mmu2/errors_list.h:250
+#: ../../Firmware/mmu2/errors_list.h:251 ../../Firmware/mmu2/errors_list.h:252
+#: ../../Firmware/mmu2/errors_list.h:253 ../../Firmware/mmu2/errors_list.h:254
+#: ../../Firmware/mmu2/errors_list.h:255 ../../Firmware/mmu2/errors_list.h:256
+#: ../../Firmware/mmu2/errors_list.h:257 ../../Firmware/mmu2/errors_list.h:258
+#: ../../Firmware/mmu2/errors_list.h:259 ../../Firmware/mmu2/errors_list.h:260
+#: ../../Firmware/mmu2/errors_list.h:261 ../../Firmware/mmu2/errors_list.h:262
+#: ../../Firmware/mmu2/errors_list.h:263
+msgid "More details online."
+msgstr "Tovabbi reszletek a neten."
+
+#. MSG_BTN_MORE c=5
+#: ../../Firmware/mmu2/errors_list.h:287
+#: ../../Firmware/mmu2_error_converter.cpp:153
+msgid "More⏬"
+msgstr "Tobb⏬"
+
 #. MSG_SELFTEST_MOTOR c=18
-#: ../../Firmware/messages.cpp:91 ../../Firmware/ultralcd.cpp:6982
-#: ../../Firmware/ultralcd.cpp:6991 ../../Firmware/ultralcd.cpp:7009
+#: ../../Firmware/messages.cpp:95 ../../Firmware/ultralcd.cpp:6981
+#: ../../Firmware/ultralcd.cpp:6990 ../../Firmware/ultralcd.cpp:7008
 msgid "Motor"
-msgstr ""
+msgstr "Motor"
 
 #. MSG_MOVE_X c=18
-#: ../../Firmware/ultralcd.cpp:3492
+#: ../../Firmware/ultralcd.cpp:3509
 msgid "Move X"
 msgstr "X mozgatasa"
 
 #. MSG_MOVE_Y c=18
-#: ../../Firmware/ultralcd.cpp:3493
+#: ../../Firmware/ultralcd.cpp:3510
 msgid "Move Y"
 msgstr "Y mozgatasa"
 
 #. MSG_MOVE_Z c=18
-#: ../../Firmware/ultralcd.cpp:3494
+#: ../../Firmware/ultralcd.cpp:3511
 msgid "Move Z"
 msgstr "Z mozgatasa"
 
 #. MSG_MOVE_AXIS c=18
-#: ../../Firmware/ultralcd.cpp:4801
+#: ../../Firmware/ultralcd.cpp:4763
 msgid "Move axis"
 msgstr "Tengely mozgatasa"
 
+#. MSG_PROGRESS_MOVING_SELECTOR c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:30
+#: ../../Firmware/mmu2_progress_converter.cpp:61
+msgid "Moving selector"
+msgstr "Szelektor mozgatasa"
+
 #. MSG_NA c=3
-#: ../../Firmware/menu.cpp:196 ../../Firmware/messages.cpp:124
-#: ../../Firmware/ultralcd.cpp:2502 ../../Firmware/ultralcd.cpp:2547
-#: ../../Firmware/ultralcd.cpp:3411 ../../Firmware/ultralcd.cpp:4228
-#: ../../Firmware/ultralcd.cpp:4276 ../../Firmware/ultralcd.cpp:5737
-#: ../../Firmware/ultralcd.cpp:5836
+#: ../../Firmware/menu.cpp:196 ../../Firmware/messages.cpp:128
+#: ../../Firmware/ultralcd.cpp:2500 ../../Firmware/ultralcd.cpp:2545
+#: ../../Firmware/ultralcd.cpp:3434 ../../Firmware/ultralcd.cpp:4229
+#: ../../Firmware/ultralcd.cpp:4230 ../../Firmware/ultralcd.cpp:4232
+#: ../../Firmware/ultralcd.cpp:5834
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:199
@@ -1065,172 +1284,197 @@ msgid "New firmware version available:"
 msgstr "Uj firmver verzio erheto el:"
 
 #. MSG_NO c=4
-#: ../../Firmware/messages.cpp:66 ../../Firmware/ultralcd.cpp:2804
-#: ../../Firmware/ultralcd.cpp:3180 ../../Firmware/ultralcd.cpp:4785
-#: ../../Firmware/ultralcd.cpp:5988
+#: ../../Firmware/messages.cpp:70 ../../Firmware/ultralcd.cpp:2802
+#: ../../Firmware/ultralcd.cpp:3170 ../../Firmware/ultralcd.cpp:4747
+#: ../../Firmware/ultralcd.cpp:5997
 msgid "No"
 msgstr "Nem"
 
 #. MSG_NO_CARD c=18
-#: ../../Firmware/ultralcd.cpp:5543
+#: ../../Firmware/ultralcd.cpp:5552
 msgid "No SD card"
 msgstr "Nincs SD kartya"
 
 #. MSG_NO_MOVE c=20
-#: ../../Firmware/Marlin_main.cpp:5377
+#: ../../Firmware/Marlin_main.cpp:5402
 msgid "No move."
 msgstr "Nincs mozgas."
 
 #. MSG_NONE c=8
-#: ../../Firmware/messages.cpp:126 ../../Firmware/ultralcd.cpp:4405
-#: ../../Firmware/ultralcd.cpp:4493 ../../Firmware/ultralcd.cpp:4502
-#: ../../Firmware/ultralcd.cpp:4575 ../../Firmware/ultralcd.cpp:4584
-#: ../../Firmware/ultralcd.cpp:4614 ../../Firmware/ultralcd.cpp:4623
-#: ../../Firmware/ultralcd.cpp:4655 ../../Firmware/ultralcd.cpp:4664
+#: ../../Firmware/messages.cpp:130 ../../Firmware/ultralcd.cpp:4403
+#: ../../Firmware/ultralcd.cpp:4491 ../../Firmware/ultralcd.cpp:4500
+#: ../../Firmware/ultralcd.cpp:4573 ../../Firmware/ultralcd.cpp:4582
+#: ../../Firmware/ultralcd.cpp:4612 ../../Firmware/ultralcd.cpp:4621
+#: ../../Firmware/ultralcd.cpp:4653 ../../Firmware/ultralcd.cpp:4662
 msgid "None"
 msgstr "Nincs"
 
 #. MSG_NORMAL c=7
-#: ../../Firmware/messages.cpp:104 ../../Firmware/ultralcd.cpp:4336
-#: ../../Firmware/ultralcd.cpp:4381 ../../Firmware/ultralcd.cpp:4397
-#: ../../Firmware/ultralcd.cpp:4416 ../../Firmware/ultralcd.cpp:5763
+#: ../../Firmware/messages.cpp:108 ../../Firmware/ultralcd.cpp:4334
+#: ../../Firmware/ultralcd.cpp:4379 ../../Firmware/ultralcd.cpp:4395
+#: ../../Firmware/ultralcd.cpp:4414 ../../Firmware/ultralcd.cpp:5761
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #. MSG_SELFTEST_NOTCONNECTED c=20
-#: ../../Firmware/ultralcd.cpp:6969
+#: ../../Firmware/ultralcd.cpp:6968
 msgid "Not connected"
 msgstr "Nincs csatlakoztatva"
 
 #. MSG_SELFTEST_FAN_NO c=19
-#: ../../Firmware/messages.cpp:87 ../../Firmware/ultralcd.cpp:7168
-#: ../../Firmware/ultralcd.cpp:7183 ../../Firmware/ultralcd.cpp:7191
+#: ../../Firmware/messages.cpp:91 ../../Firmware/ultralcd.cpp:7166
+#: ../../Firmware/ultralcd.cpp:7181 ../../Firmware/ultralcd.cpp:7189
 msgid "Not spinning"
 msgstr "Nem forog"
 
 #. MSG_WIZARD_V2_CAL c=20 r=8
-#: ../../Firmware/ultralcd.cpp:3962
+#: ../../Firmware/ultralcd.cpp:3928
 msgid ""
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
 msgstr ""
 "Most beallitjuk a fuvoka hegye es a targyasztal felulete kozotti tavolsagot."
 
 #. MSG_WIZARD_WILL_PREHEAT c=20 r=4
-#: ../../Firmware/ultralcd.cpp:4091
+#: ../../Firmware/ultralcd.cpp:4059
 msgid "Now I will preheat nozzle for PLA."
 msgstr "Felfutom a fuvokat PLA-hoz."
 
 #. MSG_REMOVE_TEST_PRINT c=20 r=4
-#: ../../Firmware/ultralcd.cpp:4082
+#: ../../Firmware/ultralcd.cpp:4048
 msgid "Now remove the test print from steel sheet."
 msgstr "Vedd le a tesztnyomatot az acellaprol."
 
 #. MSG_NOZZLE c=10
-#: ../../Firmware/messages.cpp:67 ../../Firmware/ultralcd.cpp:1402
-#: ../../Firmware/ultralcd.cpp:4493 ../../Firmware/ultralcd.cpp:4496
-#: ../../Firmware/ultralcd.cpp:4499 ../../Firmware/ultralcd.cpp:4502
-#: ../../Firmware/ultralcd.cpp:5720 ../../Firmware/ultralcd.cpp:5882
+#: ../../Firmware/messages.cpp:71 ../../Firmware/ultralcd.cpp:1403
+#: ../../Firmware/ultralcd.cpp:4491 ../../Firmware/ultralcd.cpp:4494
+#: ../../Firmware/ultralcd.cpp:4497 ../../Firmware/ultralcd.cpp:4500
+#: ../../Firmware/ultralcd.cpp:5733 ../../Firmware/ultralcd.cpp:5880
 msgid "Nozzle"
 msgstr "Fuvoka"
 
 #. MSG_NOZZLE_DIAMETER c=10
-#: ../../Firmware/messages.cpp:133 ../../Firmware/ultralcd.cpp:4546
+#: ../../Firmware/messages.cpp:137 ../../Firmware/ultralcd.cpp:4544
 msgid "Nozzle d."
 msgstr "Fuv. atm."
 
+#. MSG_PROGRESS_OK c=4
+#: ../../Firmware/mmu2_progress_converter.cpp:8
+#: ../../Firmware/mmu2_progress_converter.cpp:34
+msgid "OK"
+msgstr "OK"
+
 #. MSG_OFF c=3
-#: ../../Firmware/menu.cpp:467 ../../Firmware/messages.cpp:122
-#: ../../Firmware/ultralcd.cpp:4234 ../../Firmware/ultralcd.cpp:4250
-#: ../../Firmware/ultralcd.cpp:4284 ../../Firmware/ultralcd.cpp:4313
-#: ../../Firmware/ultralcd.cpp:4342 ../../Firmware/ultralcd.cpp:4811
-#: ../../Firmware/ultralcd.cpp:4830 ../../Firmware/ultralcd.cpp:4834
-#: ../../Firmware/ultralcd.cpp:5644 ../../Firmware/ultralcd.cpp:5741
-#: ../../Firmware/ultralcd.cpp:5756 ../../Firmware/ultralcd.cpp:5767
-#: ../../Firmware/ultralcd.cpp:5836 ../../Firmware/ultralcd.cpp:7841
-#: ../../Firmware/ultralcd.cpp:7845
+#: ../../Firmware/SpoolJoin.cpp:40 ../../Firmware/menu.cpp:467
+#: ../../Firmware/messages.cpp:126 ../../Firmware/ultralcd.cpp:4225
+#: ../../Firmware/ultralcd.cpp:4236 ../../Firmware/ultralcd.cpp:4237
+#: ../../Firmware/ultralcd.cpp:4239 ../../Firmware/ultralcd.cpp:4264
+#: ../../Firmware/ultralcd.cpp:4292 ../../Firmware/ultralcd.cpp:4340
+#: ../../Firmware/ultralcd.cpp:4775 ../../Firmware/ultralcd.cpp:4782
+#: ../../Firmware/ultralcd.cpp:4801 ../../Firmware/ultralcd.cpp:4805
+#: ../../Firmware/ultralcd.cpp:5657 ../../Firmware/ultralcd.cpp:5754
+#: ../../Firmware/ultralcd.cpp:5765 ../../Firmware/ultralcd.cpp:5834
+#: ../../Firmware/ultralcd.cpp:7829 ../../Firmware/ultralcd.cpp:7833
 msgid "Off"
 msgstr "Ki"
 
 #. MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
-#: ../../Firmware/Marlin_main.cpp:1535
+#: ../../Firmware/Marlin_main.cpp:1513
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr "Regi beallitasokat talaltam. Az alap PID, Esteps, stb. lesz beallitva."
 
 #. MSG_ON c=3
-#: ../../Firmware/messages.cpp:123 ../../Firmware/ultralcd.cpp:4244
-#: ../../Firmware/ultralcd.cpp:4248 ../../Firmware/ultralcd.cpp:4280
-#: ../../Firmware/ultralcd.cpp:4303 ../../Firmware/ultralcd.cpp:4341
-#: ../../Firmware/ultralcd.cpp:4811 ../../Firmware/ultralcd.cpp:4830
-#: ../../Firmware/ultralcd.cpp:4834 ../../Firmware/ultralcd.cpp:5745
-#: ../../Firmware/ultralcd.cpp:5756 ../../Firmware/ultralcd.cpp:5765
-#: ../../Firmware/ultralcd.cpp:5836 ../../Firmware/ultralcd.cpp:7841
-#: ../../Firmware/ultralcd.cpp:7845
+#: ../../Firmware/SpoolJoin.cpp:38 ../../Firmware/messages.cpp:127
+#: ../../Firmware/ultralcd.cpp:4225 ../../Firmware/ultralcd.cpp:4236
+#: ../../Firmware/ultralcd.cpp:4237 ../../Firmware/ultralcd.cpp:4239
+#: ../../Firmware/ultralcd.cpp:4264 ../../Firmware/ultralcd.cpp:4282
+#: ../../Firmware/ultralcd.cpp:4339 ../../Firmware/ultralcd.cpp:4775
+#: ../../Firmware/ultralcd.cpp:4782 ../../Firmware/ultralcd.cpp:4801
+#: ../../Firmware/ultralcd.cpp:4805 ../../Firmware/ultralcd.cpp:5754
+#: ../../Firmware/ultralcd.cpp:5763 ../../Firmware/ultralcd.cpp:5834
+#: ../../Firmware/ultralcd.cpp:7829 ../../Firmware/ultralcd.cpp:7833
 msgid "On"
 msgstr "Be"
 
 #. MSG_SOUND_ONCE c=7
-#: ../../Firmware/messages.cpp:142 ../../Firmware/ultralcd.cpp:4453
+#: ../../Firmware/messages.cpp:146 ../../Firmware/ultralcd.cpp:4451
 msgid "Once"
 msgstr "Egyszer"
 
 #. MSG_PAUSED_THERMAL_ERROR c=20
-#: ../../Firmware/Marlin_main.cpp:9718 ../../Firmware/messages.cpp:164
+#: ../../Firmware/Marlin_main.cpp:9677 ../../Firmware/messages.cpp:168
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "SZUNET HOMERSEK.HIBA"
 
 #. MSG_PID_RUNNING c=20
-#: ../../Firmware/ultralcd.cpp:1017
+#: ../../Firmware/ultralcd.cpp:1036
 msgid "PID cal."
 msgstr "PID kalibracio"
 
 #. MSG_PID_FINISHED c=20
-#: ../../Firmware/ultralcd.cpp:1022
+#: ../../Firmware/ultralcd.cpp:1041
 msgid "PID cal. finished"
 msgstr "PID kal. kesz"
 
 #. MSG_PID_EXTRUDER c=17
-#: ../../Firmware/ultralcd.cpp:4913
+#: ../../Firmware/ultralcd.cpp:4884
 msgid "PID calibration"
 msgstr "PID kalibracio"
 
 #. MSG_PINDA_PREHEAT c=20
-#: ../../Firmware/ultralcd.cpp:657
+#: ../../Firmware/ultralcd.cpp:666
 msgid "PINDA Heating"
 msgstr "PINDA Futes"
 
 #. MSG_PINDA_CALIBRATION c=13
-#: ../../Firmware/Marlin_main.cpp:4932 ../../Firmware/Marlin_main.cpp:5035
-#: ../../Firmware/messages.cpp:109 ../../Firmware/ultralcd.cpp:654
-#: ../../Firmware/ultralcd.cpp:4830 ../../Firmware/ultralcd.cpp:4920
+#: ../../Firmware/Marlin_main.cpp:4957 ../../Firmware/Marlin_main.cpp:5060
+#: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:663
+#: ../../Firmware/ultralcd.cpp:4801 ../../Firmware/ultralcd.cpp:4891
 msgid "PINDA cal."
 msgstr "PINDA kal."
 
 #. MSG_PINDA_CAL_FAILED c=20 r=4
-#: ../../Firmware/ultralcd.cpp:3361
+#: ../../Firmware/ultralcd.cpp:3384
 msgid "PINDA calibration failed"
 msgstr "PINDA kalibracio sikertelen."
 
 #. MSG_PINDA_CALIBRATION_DONE c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:5112 ../../Firmware/messages.cpp:110
-#: ../../Firmware/ultralcd.cpp:3355
+#: ../../Firmware/Marlin_main.cpp:5137 ../../Firmware/messages.cpp:114
+#: ../../Firmware/ultralcd.cpp:3378
 msgid ""
 "PINDA calibration is finished and active. It can be disabled in menu "
 "Settings->PINDA cal."
 msgstr "PINDA kalibracio sikeres es aktiv. A Beallitasok ->PINDA kal."
 
+#. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
+#: ../../Firmware/mmu2/errors_list.h:122 ../../Firmware/mmu2/errors_list.h:160
+msgid "PULLEY CANNOT MOVE"
+msgstr "GORGO NEM MOZOG"
+
+#. MSG_PROGRESS_PARK_SELECTOR c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:26
+#: ../../Firmware/mmu2_progress_converter.cpp:57
+msgid "Parking selector"
+msgstr "Szelektor parkolasa"
+
 #. MSG_PAUSE c=5
-#: ../../Firmware/messages.cpp:150 ../../Firmware/ultralcd.cpp:4707
+#: ../../Firmware/messages.cpp:154 ../../Firmware/ultralcd.cpp:4248
 msgid "Pause"
 msgstr "Szun."
 
 #. MSG_PAUSE_PRINT c=18
-#: ../../Firmware/messages.cpp:69 ../../Firmware/ultralcd.cpp:5507
-#: ../../Firmware/ultralcd.cpp:5509
+#: ../../Firmware/messages.cpp:73 ../../Firmware/ultralcd.cpp:5516
+#: ../../Firmware/ultralcd.cpp:5518
 msgid "Pause print"
 msgstr "Nyomtatas szunet"
 
+#. MSG_PROGRESS_PERFORM_CUT c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:24
+#: ../../Firmware/mmu2_progress_converter.cpp:55
+msgid "Performing cut"
+msgstr "Filament vagas"
+
 #. MSG_PAPER c=20 r=10
-#: ../../Firmware/Marlin_main.cpp:3315 ../../Firmware/messages.cpp:68
+#: ../../Firmware/Marlin_main.cpp:3306 ../../Firmware/messages.cpp:72
 msgid ""
 "Place a sheet of paper under the nozzle during the calibration of first 4 "
 "points. If the nozzle catches the paper, power off the printer immediately."
@@ -1239,7 +1483,7 @@ msgstr ""
 "fuvoka hozzaer a papirlaphoz, azonnal kapcsold ki a nyomtatot."
 
 #. MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
-#: ../../Firmware/messages.cpp:114 ../../Firmware/ultralcd.cpp:4176
+#: ../../Firmware/messages.cpp:118 ../../Firmware/ultralcd.cpp:4138
 msgid ""
 "Please check our handbook and fix the problem. Then resume the Wizard by "
 "rebooting the printer."
@@ -1248,29 +1492,29 @@ msgstr ""
 "folytathatod az uzembe helyezest a nyomtato ujrainditasaval."
 
 #. MSG_CHECK_IR_CONNECTION c=20 r=4
-#: ../../Firmware/ultralcd.cpp:6250
+#: ../../Firmware/ultralcd.cpp:6258
 msgid "Please check the IR sensor connection, unload filament if present."
 msgstr "Nezd meg az IR szenzor csatlakoz., vedd ki a filam., ha bent van."
 
 #. MSG_SELFTEST_PLEASECHECK c=20
-#: ../../Firmware/ultralcd.cpp:6963
+#: ../../Firmware/ultralcd.cpp:6962
 msgid "Please check:"
 msgstr "Kerlek ellenorizd:"
 
 #. MSG_WIZARD_CLEAN_HEATBED c=20 r=8
-#: ../../Firmware/ultralcd.cpp:4148
+#: ../../Firmware/ultralcd.cpp:4110
 msgid "Please clean heatbed and then press the knob."
 msgstr "Kerlek, tisztisd le a targyasztalt, majd nyomd meg a gombot."
 
 #. MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:3291 ../../Firmware/messages.cpp:24
+#: ../../Firmware/Marlin_main.cpp:3280 ../../Firmware/messages.cpp:24
 msgid "Please clean the nozzle for calibration. Click when done."
 msgstr ""
 "Kerlek, tisztisd meg a fuvokat kalibracio elott. Nyomd meg a gombot, ha "
 "keszen vagy."
 
 #. MSG_WIZARD_LOAD_FILAMENT c=20 r=6
-#: ../../Firmware/ultralcd.cpp:3945
+#: ../../Firmware/ultralcd.cpp:3915
 msgid ""
 "Please insert filament into the extruder, then press the knob to load it."
 msgstr ""
@@ -1278,7 +1522,7 @@ msgstr ""
 "betolteshez."
 
 #. MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
-#: ../../Firmware/ultralcd.cpp:3940
+#: ../../Firmware/ultralcd.cpp:3912
 msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
@@ -1287,63 +1531,53 @@ msgstr ""
 "a betolteshez."
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
-#: ../../Firmware/ultralcd.cpp:3863
+#: ../../Firmware/ultralcd.cpp:3835
 msgid "Please load filament first."
 msgstr "Kerlek eloszor toltsd be a filamentet."
 
 #. MSG_CHECK_IDLER c=20 r=5
-#: ../../Firmware/Marlin_main.cpp:3551
+#: ../../Firmware/Marlin_main.cpp:3581
 msgid "Please open idler and remove filament manually."
 msgstr ""
 "Kerlek, nyisd ki a nyomogorgo ajtajat, es tavolitsd el a filamentet kezzel."
 
 #. MSG_PLACE_STEEL_SHEET c=20 r=5
-#: ../../Firmware/mesh_bed_calibration.cpp:2799 ../../Firmware/messages.cpp:70
-#: ../../Firmware/ultralcd.cpp:4085
+#: ../../Firmware/mesh_bed_calibration.cpp:2795 ../../Firmware/messages.cpp:74
+#: ../../Firmware/ultralcd.cpp:4052
 msgid "Please place steel sheet on heatbed."
 msgstr "Kerlek, helyzed az acellapot a targyasztalra."
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11580 ../../Firmware/Marlin_main.cpp:11633
-#: ../../Firmware/messages.cpp:74
+#: ../../Firmware/Marlin_main.cpp:11532 ../../Firmware/Marlin_main.cpp:11585
+#: ../../Firmware/messages.cpp:78
 msgid "Please press the knob to unload filament"
 msgstr "Kerlek, nyomd meg a gombot a filament kiadasahoz"
 
 #. MSG_PULL_OUT_FILAMENT c=20 r=4
-#: ../../Firmware/messages.cpp:76 ../../Firmware/ultralcd.cpp:5213
+#: ../../Firmware/messages.cpp:80 ../../Firmware/ultralcd.cpp:5221
 msgid "Please pull out filament immediately"
 msgstr "Kerlek, huzd ki a filamentet most"
 
-#. MSG_EJECT_REMOVE c=20 r=4
-#: ../../Firmware/mmu.cpp:1082
-msgid "Please remove filament and then press the knob."
-msgstr "Kerlek, tavolitsd el a filamentet, majd nyomd meg a gombot."
-
 #. MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
-#: ../../Firmware/ultralcd.cpp:4081
+#: ../../Firmware/ultralcd.cpp:4047
 msgid "Please remove shipping helpers first."
 msgstr "Tavolitsd el a szallitasi segedanyagokat."
 
 #. MSG_REMOVE_STEEL_SHEET c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:3313 ../../Firmware/Marlin_main.cpp:4896
-#: ../../Firmware/messages.cpp:79
+#: ../../Firmware/Marlin_main.cpp:3303 ../../Firmware/Marlin_main.cpp:4921
+#: ../../Firmware/messages.cpp:83
 msgid "Please remove steel sheet from heatbed."
 msgstr "Kerlek, tavolisd el az acellapot az asztalrol."
 
 #. MSG_RUN_XYZ c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:4872
+#: ../../Firmware/Marlin_main.cpp:4897
 msgid "Please run XYZ calibration first."
 msgstr "Kerlek, elobb futtasd le az XYZ kalibraciot."
 
 #. MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
-#: ../../Firmware/ultralcd.cpp:6247
+#: ../../Firmware/ultralcd.cpp:6255
 msgid "Please unload the filament first, then repeat this action."
 msgstr "Kerlek eloszor vedd ki a filamentet, majd probalkozz ujra."
-
-#. MSG_UPDATE_MMU2_FW c=20 r=4
-#: ../../Firmware/mmu.cpp:1002
-msgid "Please update firmware in your MMU2. Waiting for reset."
-msgstr "Kerlek, frissitsd az MMU2 firmverjet. Varom az ujrainditast."
 
 #. MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 #: ../../Firmware/util.cpp:203
@@ -1351,53 +1585,59 @@ msgid "Please upgrade."
 msgstr "Kerlek frissits."
 
 #. MSG_PLEASE_WAIT c=20
-#: ../../Firmware/Marlin_main.cpp:3547 ../../Firmware/Marlin_main.cpp:3563
-#: ../../Firmware/Marlin_main.cpp:7931 ../../Firmware/messages.cpp:71
-#: ../../Firmware/ultralcd.cpp:2186 ../../Firmware/ultralcd.cpp:2197
+#: ../../Firmware/Marlin_main.cpp:3577 ../../Firmware/Marlin_main.cpp:3595
+#: ../../Firmware/Marlin_main.cpp:7957 ../../Firmware/messages.cpp:75
+#: ../../Firmware/ultralcd.cpp:2202 ../../Firmware/ultralcd.cpp:2213
 msgid "Please wait"
 msgstr "Kerlek varj"
 
 #. MSG_POWER_FAILURES c=15
-#: ../../Firmware/messages.cpp:72 ../../Firmware/ultralcd.cpp:1219
-#: ../../Firmware/ultralcd.cpp:1260 ../../Firmware/ultralcd.cpp:1270
+#: ../../Firmware/messages.cpp:76 ../../Firmware/ultralcd.cpp:1245
+#: ../../Firmware/ultralcd.cpp:1274
 msgid "Power failures"
 msgstr "Aramkimaradasok"
 
 #. MSG_PREHEAT c=18
-#: ../../Firmware/ultralcd.cpp:5502
+#: ../../Firmware/ultralcd.cpp:5511
 msgid "Preheat"
 msgstr "Elofutes"
 
 #. MSG_PREHEAT_NOZZLE c=20
-#: ../../Firmware/messages.cpp:73 ../../Firmware/ultralcd.cpp:2280
+#: ../../Firmware/messages.cpp:77 ../../Firmware/ultralcd.cpp:2283
 msgid "Preheat the nozzle!"
 msgstr "Futsd fel a fuvokat!"
 
 #. MSG_WIZARD_HEATING c=20 r=3
-#: ../../Firmware/messages.cpp:116 ../../Firmware/ultralcd.cpp:2900
-#: ../../Firmware/ultralcd.cpp:3924 ../../Firmware/ultralcd.cpp:3926
+#: ../../Firmware/messages.cpp:120 ../../Firmware/ultralcd.cpp:2898
+#: ../../Firmware/ultralcd.cpp:3897 ../../Firmware/ultralcd.cpp:3899
 msgid "Preheating nozzle. Please wait."
 msgstr "Fuvoka futese folyamatban. Kerlek, varj."
 
 #. MSG_PREHEATING_TO_CUT c=20
-#: ../../Firmware/ultralcd.cpp:1988
+#: ../../Firmware/ultralcd.cpp:2001
 msgid "Preheating to cut"
 msgstr "Melegites vagashoz"
 
 #. MSG_PREHEATING_TO_EJECT c=20
-#: ../../Firmware/ultralcd.cpp:1985
+#: ../../Firmware/ultralcd.cpp:1998
 msgid "Preheating to eject"
 msgstr "Melegites kiadashoz"
 
 #. MSG_PREHEATING_TO_LOAD c=20
-#: ../../Firmware/ultralcd.cpp:1976
+#: ../../Firmware/ultralcd.cpp:1989
 msgid "Preheating to load"
 msgstr "Felfutes betolteshez"
 
 #. MSG_PREHEATING_TO_UNLOAD c=20
-#: ../../Firmware/ultralcd.cpp:1981
+#: ../../Firmware/ultralcd.cpp:1994
 msgid "Preheating to unload"
 msgstr "Felfutes kiadashoz"
+
+#. MSG_PROGRESS_PREPARE_BLADE c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:22
+#: ../../Firmware/mmu2_progress_converter.cpp:53
+msgid "Preparing blade"
+msgstr "Penge elokeszites"
 
 #. MSG_PRESS_KNOB c=20
 #: ../../Firmware/ultralcd.cpp:1809
@@ -1405,38 +1645,33 @@ msgid "Press the knob"
 msgstr "Nyomd meg a gombot"
 
 #. MSG_PRESS_TO_PREHEAT c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:11611
+#: ../../Firmware/Marlin_main.cpp:11563
 msgid "Press the knob to preheat nozzle and continue."
 msgstr "Nyomd meg a gombot a folytatashoz es a fuvoka felfutesehez."
 
-#. MSG_RESUME_NOZZLE_TEMP c=20 r=4
-#: ../../Firmware/mmu.cpp:727
-msgid "Press the knob to resume nozzle temperature."
-msgstr "Nyomd meg a gombot a fuvoka ismetelt felfutesehez."
-
 #. MSG_PRINT_ABORTED c=20
-#: ../../Firmware/messages.cpp:75 ../../Firmware/ultralcd.cpp:852
+#: ../../Firmware/messages.cpp:79 ../../Firmware/ultralcd.cpp:871
 msgid "Print aborted"
 msgstr "Nyomt. megszakitva"
 
 #. MSG_PRINT_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7324
+#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7322
 msgid "Print fan:"
 msgstr "Targyhuto:"
 
 #. MSG_CARD_MENU c=18
-#: ../../Firmware/messages.cpp:20 ../../Firmware/ultralcd.cpp:5535
+#: ../../Firmware/messages.cpp:20 ../../Firmware/ultralcd.cpp:5544
 msgid "Print from SD"
 msgstr "Nyomtatas SD-rol"
 
 #. MSG_PRINT_PAUSED c=20
-#: ../../Firmware/ultralcd.cpp:866
+#: ../../Firmware/ultralcd.cpp:885
 msgid "Print paused"
 msgstr "Nyomt. szuneteltetve"
 
 #. MSG_PRINT_TIME c=19
-#: ../../Firmware/ultralcd.cpp:2366
+#: ../../Firmware/ultralcd.cpp:2364
 msgid "Print time"
 msgstr "Nyomtatasi ido"
 
@@ -1446,7 +1681,7 @@ msgid "Printer IP Addr:"
 msgstr "Nyomtato IP cime:"
 
 #. MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:1548 ../../Firmware/messages.cpp:42
+#: ../../Firmware/Marlin_main.cpp:1526 ../../Firmware/messages.cpp:42
 msgid ""
 "Printer has not been calibrated yet. Please follow the manual, chapter First "
 "steps, section Calibration flow."
@@ -1455,12 +1690,12 @@ msgstr ""
 "lepesek fejezetenek Kalibracio menete bekezdeset."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
-#: ../../Firmware/util.cpp:299
+#: ../../Firmware/util.cpp:289
 msgid "Printer nozzle diameter differs from the G-code. Continue?"
 msgstr "A nyomtato fuvoka atmeroje elter a G-kodtol. Folytasasm?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
-#: ../../Firmware/util.cpp:305
+#: ../../Firmware/util.cpp:295
 msgid ""
 "Printer nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
@@ -1468,67 +1703,114 @@ msgstr ""
 "A nyomtato fuvoka atmeroje elter a G-kodtol. Ellenorizd az erteket a "
 "beallitasokban. Nyomtatas megallitva."
 
+#. MSG_DESC_PULLEY_STALLED c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:240
+msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
+msgstr "Gorgo motor nem mozog. Ellenorizd hogy tud-e mozogni es a kabelezest."
+
+#. MSG_PROGRESS_PUSH_FILAMENT c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:23
+#: ../../Firmware/mmu2_progress_converter.cpp:54
+msgid "Pushing filament"
+msgstr "Filament benyomasa"
+
+#. MSG_TITLE_QUEUE_FULL c=20
+#: ../../Firmware/mmu2/errors_list.h:150 ../../Firmware/mmu2/errors_list.h:188
+msgid "QUEUE FULL"
+msgstr "SOR TELE"
+
 #. MSG_RPI_PORT c=13
-#: ../../Firmware/messages.cpp:139 ../../Firmware/ultralcd.cpp:4834
+#: ../../Firmware/messages.cpp:143 ../../Firmware/ultralcd.cpp:4805
 msgid "RPi port"
-msgstr ""
+msgstr "RPi port"
 
 #. MSG_BED_CORRECTION_REAR c=14
-#: ../../Firmware/ultralcd.cpp:2755
+#: ../../Firmware/ultralcd.cpp:2753
 msgid "Rear side [μm]"
 msgstr "Hatso old.[μm]"
 
 #. MSG_RECOVERING_PRINT c=20
-#: ../../Firmware/Marlin_main.cpp:10954
+#: ../../Firmware/Marlin_main.cpp:10899
 msgid "Recovering print"
 msgstr "Nyomt. visszaallit"
 
 #. MSG_REMOVE_OLD_FILAMENT c=20 r=5
-#: ../../Firmware/mmu.cpp:831
+#: ../../Firmware/Marlin_main.cpp:3461
 msgid "Remove old filament and press the knob to start loading new filament."
 msgstr ""
 "Vedd ki a regi filamentet, majd nyomd meg a gombot az uj filament "
 "betoltesehez."
 
 #. MSG_RENAME c=18
-#: ../../Firmware/ultralcd.cpp:5426
+#: ../../Firmware/ultralcd.cpp:5435
 msgid "Rename"
 msgstr "Atnevezes"
 
+#. MSG_DESC_INVALID_TOOL c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:229 ../../Firmware/mmu2/errors_list.h:267
+msgid ""
+"Requested filament tool is not available on this hardware. Check the G-code "
+"for tool index out of range (T0-T4)."
+msgstr ""
+"A kert szerszam nem erheto el ezen a hardveren. Nezd meg az T0-T4 indexen "
+"kivuli ertekeket a G kodban."
+
 #. MSG_RESET c=14
-#: ../../Firmware/messages.cpp:80 ../../Firmware/ultralcd.cpp:2756
-#: ../../Firmware/ultralcd.cpp:5427
+#: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:2754
+#: ../../Firmware/ultralcd.cpp:5436
 msgid "Reset"
 msgstr "Ujrainditas"
 
+#. MSG_BTN_RESTART_MMU c=9
+#: ../../Firmware/mmu2/errors_list.h:283 ../../Firmware/mmu2/errors_list.h:293
+msgid "Reset MMU"
+msgstr "MMUreszet"
+
 #. MSG_CALIBRATE_BED_RESET c=18
-#: ../../Firmware/ultralcd.cpp:4917
+#: ../../Firmware/ultralcd.cpp:4888
 msgid "Reset XYZ calibr."
 msgstr "XYZ kal. nullazas"
 
 #. MSG_RESUME_PRINT c=18
-#: ../../Firmware/Marlin_main.cpp:655 ../../Firmware/messages.cpp:81
-#: ../../Firmware/ultralcd.cpp:5521 ../../Firmware/ultralcd.cpp:5523
+#: ../../Firmware/Marlin_main.cpp:644 ../../Firmware/messages.cpp:85
+#: ../../Firmware/ultralcd.cpp:5530 ../../Firmware/ultralcd.cpp:5532
 msgid "Resume print"
 msgstr "Nyomt. folytatasa"
 
 #. MSG_RESUMING_PRINT c=20
-#: ../../Firmware/messages.cpp:82 ../../Firmware/ultralcd.cpp:665
+#: ../../Firmware/messages.cpp:86 ../../Firmware/ultralcd.cpp:674
 msgid "Resuming print"
 msgstr "Nyomtatas folytatasa"
 
+#. MSG_PROGRESS_RETRACT_FINDA c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:28
+#: ../../Firmware/mmu2_progress_converter.cpp:59
+msgid "Retract from FINDA"
+msgstr "FINDAtol visszahuz"
+
+#. MSG_BTN_RETRY c=5
+#: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
+msgid "Retry"
+msgstr "Ujra"
+
+#. MSG_PROGRESS_RETURN_SELECTOR c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:25
+#: ../../Firmware/mmu2_progress_converter.cpp:56
+msgid "Returning selector"
+msgstr "Szelektor vissza"
+
 #. MSG_RIGHT c=10
-#: ../../Firmware/ultralcd.cpp:2497
+#: ../../Firmware/ultralcd.cpp:2495
 msgid "Right"
 msgstr "Jobb"
 
 #. MSG_BED_CORRECTION_RIGHT c=14
-#: ../../Firmware/ultralcd.cpp:2753
+#: ../../Firmware/ultralcd.cpp:2751
 msgid "Right side[μm]"
 msgstr "Jobb old.[μm]"
 
 #. MSG_WIZARD_RERUN c=20 r=7
-#: ../../Firmware/ultralcd.cpp:3884
+#: ../../Firmware/ultralcd.cpp:3857
 msgid ""
 "Running Wizard will delete current calibration results and start from the "
 "beginning. Continue?"
@@ -1536,69 +1818,81 @@ msgstr ""
 "A Varazslo futtatasa nullazza a jelenlegi kalibracios ertekeket es elolrol "
 "fog mindent kezdeni. Folytatod?"
 
-#. MSG_RUNOUTS c=7
-#: ../../Firmware/ultralcd.cpp:1271
-msgid "Runouts"
-msgstr "Kifutas"
-
 #. MSG_SD_CARD c=8
-#: ../../Firmware/messages.cpp:135 ../../Firmware/ultralcd.cpp:4395
-#: ../../Firmware/ultralcd.cpp:4397 ../../Firmware/ultralcd.cpp:4414
-#: ../../Firmware/ultralcd.cpp:4416
+#: ../../Firmware/messages.cpp:139 ../../Firmware/ultralcd.cpp:4393
+#: ../../Firmware/ultralcd.cpp:4395 ../../Firmware/ultralcd.cpp:4412
+#: ../../Firmware/ultralcd.cpp:4414
 msgid "SD card"
 msgstr "SDkartya"
 
+#. MSG_TITLE_SELECTOR_CANNOT_HOME c=20
+#: ../../Firmware/mmu2/errors_list.h:125 ../../Firmware/mmu2/errors_list.h:162
+msgid "SELECTOR CANNOT HOME"
+msgstr "SZELEKTOR NEM HOMEOL"
+
+#. MSG_TITLE_SELECTOR_CANNOT_MOVE c=20
+#: ../../Firmware/mmu2/errors_list.h:124 ../../Firmware/mmu2/errors_list.h:163
+msgid "SELECTOR CANNOT MOVE"
+msgstr "SZELEKTOR NEM MOZOG"
+
 #. MSG_STOPPED c=20
-#: ../../Firmware/Marlin_main.cpp:9747 ../../Firmware/messages.cpp:108
+#: ../../Firmware/Marlin_main.cpp:9706 ../../Firmware/messages.cpp:112
 msgid "STOPPED."
 msgstr "MEGALLITVA."
 
 #. MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=20 r=3
-#: ../../Firmware/Marlin_main.cpp:3297 ../../Firmware/Marlin_main.cpp:3317
-#: ../../Firmware/mesh_bed_calibration.cpp:2234 ../../Firmware/messages.cpp:40
+#: ../../Firmware/Marlin_main.cpp:3286 ../../Firmware/Marlin_main.cpp:3308
+#: ../../Firmware/mesh_bed_calibration.cpp:2233 ../../Firmware/messages.cpp:40
 msgid "Searching bed calibration point"
 msgstr "Kalibracios pont keresese az asztalon"
 
 #. MSG_SELECT c=18
-#: ../../Firmware/ultralcd.cpp:5419
+#: ../../Firmware/ultralcd.cpp:5428
 msgid "Select"
 msgstr "Kivalasztas"
 
 #. MSG_SELECT_FIL_1ST_LAYERCAL c=20 r=7
-#: ../../Firmware/ultralcd.cpp:3966
+#: ../../Firmware/ultralcd.cpp:3932
 msgid ""
 "Select a filament for the First Layer Calibration and select it in the on-"
 "screen menu."
 msgstr "Valassz egy filamentet az elso reteg kalibraciojahoz a menubol."
 
 #. MSG_SELECT_EXTRUDER c=20
-#: ../../Firmware/Marlin_main.cpp:8608 ../../Firmware/messages.cpp:50
+#: ../../Firmware/Marlin_main.cpp:3519 ../../Firmware/Tcodes.cpp:35
+#: ../../Firmware/Tcodes.cpp:51 ../../Firmware/messages.cpp:52
 msgid "Select extruder:"
 msgstr "Extruder valasztas:"
 
 #. MSG_SELECT_FILAMENT c=20
-#: ../../Firmware/Marlin_main.cpp:8577 ../../Firmware/Marlin_main.cpp:8604
-#: ../../Firmware/messages.cpp:51 ../../Firmware/ultralcd.cpp:3834
+#: ../../Firmware/Tcodes.cpp:33 ../../Firmware/messages.cpp:53
+#: ../../Firmware/ultralcd.cpp:3805
 msgid "Select filament:"
 msgstr "Valassz filamentet:"
 
 #. MSG_SELECT_LANGUAGE c=18
-#: ../../Firmware/messages.cpp:95 ../../Firmware/ultralcd.cpp:3679
-#: ../../Firmware/ultralcd.cpp:4841
+#: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:3650
+#: ../../Firmware/ultralcd.cpp:4812
 msgid "Select language"
 msgstr "Valassz nyelvet"
 
 #. MSG_SEL_PREHEAT_TEMP c=20 r=6
-#: ../../Firmware/ultralcd.cpp:4122
+#: ../../Firmware/ultralcd.cpp:4084
 msgid "Select nozzle preheat temperature which matches your material."
 msgstr ""
 "Valaszd ki a fuvoka homersekletet, amelyik megfelel az altalad hasznalt "
 "anyaghoz ajanlott homersekletnek."
 
 #. MSG_SELECT_TEMP_MATCHES_MATERIAL c=20 r=4
-#: ../../Firmware/ultralcd.cpp:3971
+#: ../../Firmware/ultralcd.cpp:3937
 msgid "Select temperature which matches your material."
 msgstr "Valassz homersekletet, ami megfelel a filamenthez."
+
+#. MSG_PROGRESS_SELECT_SLOT c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:21
+#: ../../Firmware/mmu2_progress_converter.cpp:52
+msgid "Selecting fil. slot"
+msgstr "Fil.poz.kivalasztasa"
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6522
@@ -1606,28 +1900,28 @@ msgid "Self test OK"
 msgstr "Ondiagnosztika OK"
 
 #. MSG_SELFTEST_START c=20
-#: ../../Firmware/ultralcd.cpp:6290
+#: ../../Firmware/ultralcd.cpp:6295
 msgid "Self test start"
 msgstr "Ondiagnosztika indul"
 
 #. MSG_SELFTEST c=18
-#: ../../Firmware/ultralcd.cpp:4904
+#: ../../Firmware/ultralcd.cpp:4875
 msgid "Selftest"
 msgstr "Ondiagnosztika"
 
 #. MSG_SELFTEST_ERROR c=20
-#: ../../Firmware/ultralcd.cpp:6962
+#: ../../Firmware/ultralcd.cpp:6961
 msgid "Selftest error!"
 msgstr "Ondiagnosztika hiba!"
 
 #. MSG_SELFTEST_FAILED c=20
-#: ../../Firmware/messages.cpp:85 ../../Firmware/ultralcd.cpp:6526
-#: ../../Firmware/ultralcd.cpp:7049 ../../Firmware/ultralcd.cpp:7314
+#: ../../Firmware/messages.cpp:89 ../../Firmware/ultralcd.cpp:6526
+#: ../../Firmware/ultralcd.cpp:7048 ../../Firmware/ultralcd.cpp:7312
 msgid "Selftest failed"
 msgstr "Ondiag. sikertelen"
 
 #. MSG_FORCE_SELFTEST c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:1567
+#: ../../Firmware/Marlin_main.cpp:1545
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
 msgstr ""
 "A pontos szenzor nelkuli homing erdekeben lefuttatom az ondiagnosztikat."
@@ -1638,36 +1932,36 @@ msgid "Sensor info"
 msgstr "Szenzor info"
 
 #. MSG_FS_VERIFIED c=20 r=3
-#: ../../Firmware/ultralcd.cpp:6254
+#: ../../Firmware/ultralcd.cpp:6262
 msgid "Sensor verified, remove the filament now."
 msgstr "Szenzor OK, vedd ki a filamentet most."
 
 #. MSG_SET_TEMPERATURE c=20
-#: ../../Firmware/ultralcd.cpp:2773
+#: ../../Firmware/ultralcd.cpp:2771
 msgid "Set temperature:"
 msgstr "Homerseklet beall.:"
 
 #. MSG_SETTINGS c=18
-#: ../../Firmware/messages.cpp:94 ../../Firmware/ultralcd.cpp:3491
-#: ../../Firmware/ultralcd.cpp:3696 ../../Firmware/ultralcd.cpp:4206
-#: ../../Firmware/ultralcd.cpp:5580 ../../Firmware/ultralcd.cpp:5827
-#: ../../Firmware/ultralcd.cpp:5880
+#: ../../Firmware/messages.cpp:98 ../../Firmware/ultralcd.cpp:3508
+#: ../../Firmware/ultralcd.cpp:3667 ../../Firmware/ultralcd.cpp:4168
+#: ../../Firmware/ultralcd.cpp:5593 ../../Firmware/ultralcd.cpp:5825
+#: ../../Firmware/ultralcd.cpp:5878
 msgid "Settings"
 msgstr "Beallitasok"
 
 #. MSG_SEVERE_SKEW c=14
-#: ../../Firmware/ultralcd.cpp:2540
+#: ../../Firmware/ultralcd.cpp:2538
 msgid "Severe skew"
 msgstr "NagyMerol.hiba"
 
 #. MSG_SHEET c=10
 #: ../../Firmware/menu.cpp:209 ../../Firmware/menu.cpp:221
-#: ../../Firmware/messages.cpp:60
+#: ../../Firmware/messages.cpp:64
 msgid "Sheet"
 msgstr "Acellap"
 
 #. MSG_SHEET_OFFSET c=20 r=4
-#: ../../Firmware/ultralcd.cpp:3824
+#: ../../Firmware/ultralcd.cpp:3795
 msgid ""
 "Sheet %.7s\n"
 "Z offset: %+1.3fmm\n"
@@ -1680,18 +1974,18 @@ msgstr ""
 "%cUjrainditas"
 
 #. MSG_SHOW_END_STOPS c=18
-#: ../../Firmware/ultralcd.cpp:4915
+#: ../../Firmware/ultralcd.cpp:4886
 msgid "Show end stops"
 msgstr "Vegallaskapcsolok"
 
 #. MSG_SILENT c=7
-#: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:4361
-#: ../../Firmware/ultralcd.cpp:4456 ../../Firmware/ultralcd.cpp:5778
+#: ../../Firmware/messages.cpp:107 ../../Firmware/ultralcd.cpp:4359
+#: ../../Firmware/ultralcd.cpp:4454 ../../Firmware/ultralcd.cpp:5776
 msgid "Silent"
 msgstr "Halk"
 
 #. MSG_SLIGHT_SKEW c=14
-#: ../../Firmware/ultralcd.cpp:2539
+#: ../../Firmware/ultralcd.cpp:2537
 msgid "Slight skew"
 msgstr "Kis merol.hiba"
 
@@ -1705,102 +1999,137 @@ msgstr ""
 "konyvtaron belul."
 
 #. MSG_ZLEVELING_ENFORCED c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:3060
+#: ../../Firmware/Marlin_main.cpp:3052
 msgid "Some problem encountered, Z-leveling enforced ..."
 msgstr "Hiba tortent, Z szintezes indul..."
 
 #. MSG_SORT c=7
-#: ../../Firmware/messages.cpp:136 ../../Firmware/ultralcd.cpp:4403
-#: ../../Firmware/ultralcd.cpp:4404 ../../Firmware/ultralcd.cpp:4405
+#: ../../Firmware/messages.cpp:140 ../../Firmware/ultralcd.cpp:4401
+#: ../../Firmware/ultralcd.cpp:4402 ../../Firmware/ultralcd.cpp:4403
 msgid "Sort"
 msgstr "Rendez"
 
 #. MSG_SORTING_FILES c=20
 #: ../../Firmware/cardreader.cpp:862 ../../Firmware/cardreader.cpp:929
-#: ../../Firmware/messages.cpp:96
+#: ../../Firmware/messages.cpp:100
 msgid "Sorting files"
 msgstr "Fajlok rendezese"
 
 #. MSG_SOUND c=9
-#: ../../Firmware/messages.cpp:140 ../../Firmware/ultralcd.cpp:4450
-#: ../../Firmware/ultralcd.cpp:4453 ../../Firmware/ultralcd.cpp:4456
-#: ../../Firmware/ultralcd.cpp:4459 ../../Firmware/ultralcd.cpp:4462
+#: ../../Firmware/messages.cpp:144 ../../Firmware/ultralcd.cpp:4448
+#: ../../Firmware/ultralcd.cpp:4451 ../../Firmware/ultralcd.cpp:4454
+#: ../../Firmware/ultralcd.cpp:4457 ../../Firmware/ultralcd.cpp:4460
 msgid "Sound"
 msgstr "Hang"
 
 #. MSG_SPEED c=15
-#: ../../Firmware/ultralcd.cpp:5718
+#: ../../Firmware/ultralcd.cpp:5731
 msgid "Speed"
 msgstr "Sebesseg"
 
 #. MSG_SELFTEST_FAN_YES c=19
-#: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:7166
-#: ../../Firmware/ultralcd.cpp:7181 ../../Firmware/ultralcd.cpp:7189
+#: ../../Firmware/messages.cpp:92 ../../Firmware/ultralcd.cpp:7164
+#: ../../Firmware/ultralcd.cpp:7179 ../../Firmware/ultralcd.cpp:7187
 msgid "Spinning"
 msgstr "Forog"
 
 #. MSG_TEMP_CAL_WARNING c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:4885
+#: ../../Firmware/Marlin_main.cpp:4910
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
 msgstr "Stabil 21-26C homerseklet es egy merev allvany (asztal) szukseges."
 
 #. MSG_STATISTICS c=18
-#: ../../Firmware/ultralcd.cpp:5585
+#: ../../Firmware/ultralcd.cpp:5598
 msgid "Statistics"
 msgstr "Statisztika"
 
 #. MSG_STEALTH c=7
-#: ../../Firmware/messages.cpp:105 ../../Firmware/ultralcd.cpp:4338
-#: ../../Firmware/ultralcd.cpp:4382 ../../Firmware/ultralcd.cpp:5770
+#: ../../Firmware/messages.cpp:109 ../../Firmware/ultralcd.cpp:4336
+#: ../../Firmware/ultralcd.cpp:4380 ../../Firmware/ultralcd.cpp:5768
 msgid "Stealth"
 msgstr "Halk"
 
 #. MSG_STEEL_SHEETS c=18
-#: ../../Firmware/messages.cpp:61 ../../Firmware/ultralcd.cpp:4763
-#: ../../Firmware/ultralcd.cpp:5416
+#: ../../Firmware/messages.cpp:65 ../../Firmware/ultralcd.cpp:4726
+#: ../../Firmware/ultralcd.cpp:5425
 msgid "Steel sheets"
 msgstr "Acellapok"
 
+#. MSG_BTN_STOP c=5
+#: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:295
+msgid "Stop"
+msgstr "Allj"
+
 #. MSG_STOP_PRINT c=18
-#: ../../Firmware/messages.cpp:107 ../../Firmware/ultralcd.cpp:5528
-#: ../../Firmware/ultralcd.cpp:5987
+#: ../../Firmware/messages.cpp:111 ../../Firmware/ultralcd.cpp:5537
+#: ../../Firmware/ultralcd.cpp:5996
 msgid "Stop print"
 msgstr "Nyomt. megallitasa"
 
 #. MSG_STRICT c=8
-#: ../../Firmware/messages.cpp:128 ../../Firmware/ultralcd.cpp:4499
-#: ../../Firmware/ultralcd.cpp:4581 ../../Firmware/ultralcd.cpp:4620
-#: ../../Firmware/ultralcd.cpp:4661
+#: ../../Firmware/messages.cpp:132 ../../Firmware/ultralcd.cpp:4497
+#: ../../Firmware/ultralcd.cpp:4579 ../../Firmware/ultralcd.cpp:4618
+#: ../../Firmware/ultralcd.cpp:4659
 msgid "Strict"
 msgstr "Szigoru"
 
 #. MSG_SUPPORT c=18
-#: ../../Firmware/ultralcd.cpp:5594
+#: ../../Firmware/ultralcd.cpp:5607
 msgid "Support"
 msgstr "Tamogatas"
 
 #. MSG_SELFTEST_SWAPPED c=16
-#: ../../Firmware/ultralcd.cpp:7021
+#: ../../Firmware/ultralcd.cpp:7020
 msgid "Swapped"
 msgstr "Felcserelve"
 
 #. MSG_THERMAL_ANOMALY c=20
-#: ../../Firmware/messages.cpp:166 ../../Firmware/temperature.cpp:2442
+#: ../../Firmware/messages.cpp:170 ../../Firmware/temperature.cpp:2440
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "Homersekl. anomalia"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
-#: ../../Firmware/temperature.cpp:2899
+#: ../../Firmware/temperature.cpp:2897
 msgid "TM autotune failed"
-msgstr ""
+msgstr "HM kalib. sikertelen"
+
+#. MSG_TITLE_TMC_DRIVER_ERROR c=20
+#: ../../Firmware/mmu2/errors_list.h:134 ../../Firmware/mmu2/errors_list.h:172
+#: ../../Firmware/mmu2/errors_list.h:173 ../../Firmware/mmu2/errors_list.h:174
+msgid "TMC DRIVER ERROR"
+msgstr "TMC DRIVER HIBA"
+
+#. MSG_TITLE_TMC_DRIVER_RESET c=20
+#: ../../Firmware/mmu2/errors_list.h:137 ../../Firmware/mmu2/errors_list.h:175
+#: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:177
+msgid "TMC DRIVER RESET"
+msgstr "TMC DRIVER RESZET"
+
+#. MSG_TITLE_TMC_DRIVER_SHORTED c=20
+#: ../../Firmware/mmu2/errors_list.h:143 ../../Firmware/mmu2/errors_list.h:181
+#: ../../Firmware/mmu2/errors_list.h:182 ../../Firmware/mmu2/errors_list.h:183
+msgid "TMC DRIVER SHORTED"
+msgstr "TMC DRIVER ZARLAT"
+
+#. MSG_TITLE_TMC_OVERHEAT_ERROR c=20
+#: ../../Firmware/mmu2/errors_list.h:131 ../../Firmware/mmu2/errors_list.h:169
+#: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:171
+msgid "TMC OVERHEAT ERROR"
+msgstr "TMC TULHEVULES HIBA"
+
+#. MSG_TITLE_TMC_UNDERVOLTAGE_ERROR c=20
+#: ../../Firmware/mmu2/errors_list.h:140 ../../Firmware/mmu2/errors_list.h:178
+#: ../../Firmware/mmu2/errors_list.h:179 ../../Firmware/mmu2/errors_list.h:180
+msgid "TMC UNDERVOLTAGE ERR"
+msgstr "TMC ALACSONY FESZ."
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
-#: ../../Firmware/temperature.cpp:2884
+#: ../../Firmware/temperature.cpp:2882
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Homers. modell kalib"
 
 #. MSG_TEMPERATURE c=18
-#: ../../Firmware/ultralcd.cpp:4797
+#: ../../Firmware/ultralcd.cpp:4759
 msgid "Temperature"
 msgstr "Homerseklet"
 
@@ -1809,8 +2138,38 @@ msgstr "Homerseklet"
 msgid "Temperatures"
 msgstr "Homersekletek"
 
+#. MSG_TESTING_FILAMENT c=20
+#: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2.cpp:426
+msgid "Testing filament"
+msgstr "Filament tesztelese"
+
+#. MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:205 ../../Firmware/mmu2/errors_list.h:244
+msgid ""
+"The Idler cannot home properly. Check for anything blocking its movement."
+msgstr ""
+"A gorgo nem tud rendesen homeolni. Nezd meg, hogy gatolja-e valami a "
+"mozgasat."
+
+#. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+#: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:269
+msgid ""
+"The MMU unit reports its FW version incompatible with the printer's "
+"firmware. Make sure the MMU firmware is up to date."
+msgstr ""
+"Az MMU FW verzioja nem kompatibilis a nyomtatoeval. Kerlek frissitsd az MMU "
+"firmwaret."
+
+#. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
+msgid ""
+"The Selector cannot home properly. Check for anything blocking its movement."
+msgstr ""
+"A szelektor nem tud rendesen homeolni. Nezd meg, hogy gatolja-e valami a "
+"mozgasat."
+
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
-#: ../../Firmware/ultralcd.cpp:3974
+#: ../../Firmware/ultralcd.cpp:3940
 msgid ""
 "The printer will start printing a zig-zag line. Rotate the knob until you "
 "reach the optimal height. Check the pictures in the handbook (Calibration "
@@ -1821,7 +2180,7 @@ msgstr ""
 "Kalibracio fejezeteben."
 
 #. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
-#: ../../Firmware/Marlin_main.cpp:1561 ../../Firmware/messages.cpp:43
+#: ../../Firmware/Marlin_main.cpp:1539 ../../Firmware/messages.cpp:43
 msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
@@ -1830,56 +2189,88 @@ msgstr ""
 "fejezetenek Kalibracio menete bekezdeset."
 
 #. MSG_SORT_TIME c=8
-#: ../../Firmware/messages.cpp:137 ../../Firmware/ultralcd.cpp:4403
+#: ../../Firmware/messages.cpp:141 ../../Firmware/ultralcd.cpp:4401
 msgid "Time"
 msgstr "Ido"
 
 #. MSG_TIMEOUT c=12
-#: ../../Firmware/messages.cpp:154 ../../Firmware/ultralcd.cpp:5865
+#: ../../Firmware/messages.cpp:158 ../../Firmware/ultralcd.cpp:5863
 msgid "Timeout"
 msgstr "Idotullepes"
 
 #. MSG_TOTAL c=6
-#: ../../Firmware/messages.cpp:97 ../../Firmware/ultralcd.cpp:1149
-#: ../../Firmware/ultralcd.cpp:1297
+#: ../../Firmware/messages.cpp:101 ../../Firmware/ultralcd.cpp:1167
+#: ../../Firmware/ultralcd.cpp:1300
 msgid "Total"
 msgstr "Ossz."
 
 #. MSG_TOTAL_FAILURES c=20
-#: ../../Firmware/messages.cpp:98 ../../Firmware/ultralcd.cpp:1192
-#: ../../Firmware/ultralcd.cpp:1218 ../../Firmware/ultralcd.cpp:1328
+#: ../../Firmware/messages.cpp:102 ../../Firmware/ultralcd.cpp:1214
+#: ../../Firmware/ultralcd.cpp:1244 ../../Firmware/ultralcd.cpp:1330
 msgid "Total failures"
 msgstr "Ossz. hiba"
 
 #. MSG_TOTAL_FILAMENT c=19
-#: ../../Firmware/ultralcd.cpp:2387
+#: ../../Firmware/ultralcd.cpp:2385
 msgid "Total filament"
 msgstr "Osszes filament"
 
 #. MSG_TOTAL_PRINT_TIME c=19
-#: ../../Firmware/ultralcd.cpp:2388
+#: ../../Firmware/ultralcd.cpp:2386
 msgid "Total print time"
 msgstr "Ossz. nyomt. ido"
 
 #. MSG_TUNE c=18
-#: ../../Firmware/ultralcd.cpp:5500
+#: ../../Firmware/ultralcd.cpp:5509
 msgid "Tune"
 msgstr "Finomhangolas"
 
-#. MSG_UNLOAD_FILAMENT c=18
-#: ../../Firmware/messages.cpp:111 ../../Firmware/ultralcd.cpp:5564
-#: ../../Firmware/ultralcd.cpp:5578
+#. MSG_TITLE_UNLOAD_MANUALLY c=20
+#: ../../Firmware/mmu2/errors_list.h:153 ../../Firmware/mmu2/errors_list.h:191
+msgid "UNLOAD MANUALLY"
+msgstr "VEDD KI KEZZEL"
+
+#. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
+#: ../../Firmware/mmu2/errors_list.h:233 ../../Firmware/mmu2/errors_list.h:271
+msgid ""
+"Unexpected FINDA reading. Ensure no filament is under FINDA and the selector "
+"is free. Check FINDA connection."
+msgstr ""
+"Varatlan FINDA ertek. Gyozodj meg rola hogy nincs a FINDA alatt filament es "
+"a szelektor ures. Nezd meg a FINDA csatlakozasat."
+
+#. MSG_BTN_UNLOAD c=6
+#: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
+msgid "Unload"
+msgstr "Kiadas"
+
+#. MSG_UNLOAD_FILAMENT c=16
+#: ../../Firmware/messages.cpp:115 ../../Firmware/ultralcd.cpp:5574
+#: ../../Firmware/ultralcd.cpp:5591
 msgid "Unload filament"
 msgstr "Filament kiadasa"
 
 #. MSG_UNLOADING_FILAMENT c=20
-#: ../../Firmware/messages.cpp:112 ../../Firmware/mmu.cpp:957
-#: ../../Firmware/ultralcd.cpp:5197
+#: ../../Firmware/Marlin_main.cpp:3502 ../../Firmware/messages.cpp:116
+#: ../../Firmware/mmu2_progress_converter.cpp:50
+#: ../../Firmware/ultralcd.cpp:5193
 msgid "Unloading filament"
 msgstr "Filament kiadasa"
 
+#. MSG_PROGRESS_UNLOAD_FINDA c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:11
+#: ../../Firmware/mmu2_progress_converter.cpp:37
+msgid "Unloading to FINDA"
+msgstr "Kiadas a FINDAhoz"
+
+#. MSG_PROGRESS_UNLOAD_PULLEY c=20
+#: ../../Firmware/mmu2_progress_converter.cpp:12
+#: ../../Firmware/mmu2_progress_converter.cpp:38
+msgid "Unloading to pulley"
+msgstr "Kiadas a gorgohoz"
+
 #. MSG_FIL_FAILED c=20 r=5
-#: ../../Firmware/ultralcd.cpp:6258
+#: ../../Firmware/ultralcd.cpp:6265
 msgid "Verification failed, remove the filament and try again."
 msgstr "Ellenorzes sikertelen, vedd ki a filamentet es probald ujra."
 
@@ -1888,8 +2279,14 @@ msgstr "Ellenorzes sikertelen, vedd ki a filamentet es probald ujra."
 msgid "Voltages"
 msgstr "Feszultsegek"
 
+#. MSG_TITLE_TMC_WARNING_TMC_TOO_HOT c=20
+#: ../../Firmware/mmu2/errors_list.h:128 ../../Firmware/mmu2/errors_list.h:166
+#: ../../Firmware/mmu2/errors_list.h:167 ../../Firmware/mmu2/errors_list.h:168
+msgid "WARNING TMC TOO HOT"
+msgstr "FIGYELEM A TMC FORRO"
+
 #. MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-#: ../../Firmware/ultralcd.cpp:3534
+#: ../../Firmware/ultralcd.cpp:3551
 msgid ""
 "WARNING:\n"
 "Crash detection\n"
@@ -1902,68 +2299,68 @@ msgstr ""
 "Halk modban"
 
 #. MSG_USERWAIT c=20
-#: ../../Firmware/Marlin_main.cpp:4090
+#: ../../Firmware/Marlin_main.cpp:4115
 msgid "Wait for user..."
 msgstr "Var. a felhasznalora"
 
 #. MSG_WAITING_TEMP_PINDA c=20 r=3
-#: ../../Firmware/ultralcd.cpp:2881
+#: ../../Firmware/ultralcd.cpp:2879
 msgid "Waiting for PINDA probe cooling"
 msgstr "A PINDA szenzor kihuleset varom."
 
 #. MSG_WAITING_TEMP c=20 r=4
-#: ../../Firmware/ultralcd.cpp:2913
+#: ../../Firmware/ultralcd.cpp:2911
 msgid "Waiting for nozzle and bed cooling"
 msgstr "A fuvoka es az asztal kihuleset varom."
 
 #. MSG_WARN c=8
-#: ../../Firmware/messages.cpp:127 ../../Firmware/ultralcd.cpp:4496
-#: ../../Firmware/ultralcd.cpp:4578 ../../Firmware/ultralcd.cpp:4617
-#: ../../Firmware/ultralcd.cpp:4658
+#: ../../Firmware/messages.cpp:131 ../../Firmware/ultralcd.cpp:4494
+#: ../../Firmware/ultralcd.cpp:4576 ../../Firmware/ultralcd.cpp:4615
+#: ../../Firmware/ultralcd.cpp:4656
 msgid "Warn"
 msgstr "Figylem."
 
 #. MSG_CHANGED_BOTH c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:1527
+#: ../../Firmware/Marlin_main.cpp:1505
 msgid "Warning: both printer type and motherboard type changed."
 msgstr "Figyelem: a nyomtato es az alaplap tipusa is megvaltozott."
 
 #. MSG_CHANGED_MOTHERBOARD c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:1519
+#: ../../Firmware/Marlin_main.cpp:1497
 msgid "Warning: motherboard type changed."
 msgstr "Figyelem: az alaplap tipusa megvaltozott."
 
 #. MSG_CHANGED_PRINTER c=20 r=4
-#: ../../Firmware/Marlin_main.cpp:1523
+#: ../../Firmware/Marlin_main.cpp:1501
 msgid "Warning: printer type changed."
 msgstr "Figyelem: a nyomtato tipusa megvaltozott."
 
 #. MSG_UNLOAD_SUCCESSFUL c=20 r=2
-#: ../../Firmware/Marlin_main.cpp:3542
+#: ../../Firmware/Marlin_main.cpp:3574
 msgid "Was filament unload successful?"
 msgstr "Sikerult kivenni a filamentet?"
 
 #. MSG_SELFTEST_WIRINGERROR c=18
-#: ../../Firmware/messages.cpp:93 ../../Firmware/ultralcd.cpp:6973
-#: ../../Firmware/ultralcd.cpp:6977 ../../Firmware/ultralcd.cpp:6997
-#: ../../Firmware/ultralcd.cpp:7003 ../../Firmware/ultralcd.cpp:7027
+#: ../../Firmware/messages.cpp:97 ../../Firmware/ultralcd.cpp:6972
+#: ../../Firmware/ultralcd.cpp:6976 ../../Firmware/ultralcd.cpp:6996
+#: ../../Firmware/ultralcd.cpp:7002 ../../Firmware/ultralcd.cpp:7026
 msgid "Wiring error"
 msgstr "Kabelezesi hiba"
 
 #. MSG_WIZARD c=17
-#: ../../Firmware/ultralcd.cpp:4895
+#: ../../Firmware/ultralcd.cpp:4866
 msgid "Wizard"
 msgstr "Varazslo"
 
 #. MSG_X_CORRECTION c=13
-#: ../../Firmware/ultralcd.cpp:4210
+#: ../../Firmware/ultralcd.cpp:4172
 msgid "X-correct:"
 msgstr "X-korrekcio:"
 
 #. MSG_XFLASH c=18
-#: ../../Firmware/ultralcd.cpp:5596
+#: ../../Firmware/ultralcd.cpp:5609
 msgid "XFLASH init"
-msgstr ""
+msgstr "XFLASH inicializal"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1721
@@ -1971,120 +2368,138 @@ msgid "XYZ cal. details"
 msgstr "XYZ kal. reszlet"
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
-#: ../../Firmware/ultralcd.cpp:3333
+#: ../../Firmware/ultralcd.cpp:3356
 msgid "XYZ calibration all right. Skew will be corrected automatically."
 msgstr ""
 "XYZ kalibracio OK. Az esetleges X/Y merolegessegi hiba automatikusan "
 "korrigalva lesz."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
-#: ../../Firmware/ultralcd.cpp:3330
+#: ../../Firmware/ultralcd.cpp:3353
 msgid "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 msgstr ""
 "XYZ kalibracio sikerult. Az X/Y tengelyeken enyhe merolegessegi hiba van."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
-#: ../../Firmware/ultralcd.cpp:3311
+#: ../../Firmware/ultralcd.cpp:3334
 msgid "XYZ calibration compromised. Front calibration points not reachable."
 msgstr ""
 "Az XYZ kalibracio sikertelen. Az elulso kalibracios pontok nem erhetoek el."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
-#: ../../Firmware/ultralcd.cpp:3317
+#: ../../Firmware/ultralcd.cpp:3340
 msgid ""
 "XYZ calibration compromised. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ kalibracio nem jo. Bal elso kal. pont nem elerheto."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
-#: ../../Firmware/ultralcd.cpp:3314
+#: ../../Firmware/ultralcd.cpp:3337
 msgid ""
 "XYZ calibration compromised. Right front calibration point not reachable."
 msgstr ""
 "Az XYZ kalibracio sikertelen. A jobb kalibracios pontok nem erhetoek el."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
-#: ../../Firmware/ultralcd.cpp:3293
+#: ../../Firmware/ultralcd.cpp:3316
 msgid "XYZ calibration failed. Bed calibration point was not found."
 msgstr ""
 "Az XYZ kalibracio sikertelen. Az asztal kalibracios pontja nem erheto el."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
-#: ../../Firmware/ultralcd.cpp:3299
+#: ../../Firmware/ultralcd.cpp:3322
 msgid "XYZ calibration failed. Front calibration points not reachable."
 msgstr ""
 "Az XYZ kalibracio sikertelen. Az elulso kalibracios pontok nem erhetoek el."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
-#: ../../Firmware/ultralcd.cpp:3305
+#: ../../Firmware/ultralcd.cpp:3328
 msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ kalibracio sikertelen. Bal elso kal. pont nem elerheto."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
-#: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3296
-#: ../../Firmware/ultralcd.cpp:3324
+#: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3319
+#: ../../Firmware/ultralcd.cpp:3347
 msgid "XYZ calibration failed. Please consult the manual."
 msgstr "XYZ kalibracio sikertelen. Kerlek, nezz bele a kezikonyvbe."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
-#: ../../Firmware/ultralcd.cpp:3302
+#: ../../Firmware/ultralcd.cpp:3325
 msgid "XYZ calibration failed. Right front calibration point not reachable."
 msgstr ""
 "Az XYZ kalibracio sikertelen. A jobb kalibracios pontok nem erhetoek el."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
-#: ../../Firmware/ultralcd.cpp:3327
+#: ../../Firmware/ultralcd.cpp:3350
 msgid "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
 msgstr "XYZ kalibracio OK. Az X/Y tengelyek merolegesek. Gratulalok!"
 
 #. MSG_Y_DIST_FROM_MIN c=20
-#: ../../Firmware/ultralcd.cpp:2494
+#: ../../Firmware/ultralcd.cpp:2492
 msgid "Y distance from min"
 msgstr "Y-minimum tavolsag"
 
 #. MSG_Y_CORRECTION c=13
-#: ../../Firmware/ultralcd.cpp:4211
+#: ../../Firmware/ultralcd.cpp:4173
 msgid "Y-correct:"
 msgstr "Y-korrekcio:"
 
 #. MSG_YES c=4
-#: ../../Firmware/messages.cpp:120 ../../Firmware/ultralcd.cpp:2216
-#: ../../Firmware/ultralcd.cpp:2800 ../../Firmware/ultralcd.cpp:3180
-#: ../../Firmware/ultralcd.cpp:4785 ../../Firmware/ultralcd.cpp:5989
+#: ../../Firmware/messages.cpp:124 ../../Firmware/ultralcd.cpp:2228
+#: ../../Firmware/ultralcd.cpp:2798 ../../Firmware/ultralcd.cpp:3170
+#: ../../Firmware/ultralcd.cpp:4747 ../../Firmware/ultralcd.cpp:5998
 msgid "Yes"
 msgstr "Igen"
 
+#. MSG_FW_VERSION_ALPHA c=20 r=8
+#: ../../Firmware/Marlin_main.cpp:835
+msgid ""
+"You are using firmware alpha version. This is development version. Using "
+"this version is not recommended and may cause printer damage."
+msgstr ""
+"A firmware alfa verziojat hasznalod. Ez egy fejlesztoknek szant verzio es "
+"nem ajanlott a hasznalata."
+
+#. MSG_FW_VERSION_BETA c=20 r=8
+#: ../../Firmware/Marlin_main.cpp:836
+msgid ""
+"You are using firmware beta version. This is development version. Using this "
+"version is not recommended and may cause printer damage."
+msgstr ""
+"A firmware beta verziojat hasznalod. Ez egy fejlesztoknek szant verzio es "
+"nem ajanlott a hasznalata."
+
 #. MSG_WIZARD_QUIT c=20 r=8
-#: ../../Firmware/messages.cpp:117 ../../Firmware/ultralcd.cpp:4187
+#: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4149
 msgid "You can always resume the Wizard from Calibration -> Wizard."
 msgstr "A Varazsolt barmikor elered a Kalibracio -> Varazslo menubol."
 
 #. MSG_Z_CORRECTION c=13
-#: ../../Firmware/ultralcd.cpp:4212
+#: ../../Firmware/ultralcd.cpp:4174
 msgid "Z-correct:"
 msgstr "Z-korrekcio:"
 
 #. MSG_Z_PROBE_NR c=14
-#: ../../Firmware/messages.cpp:146 ../../Firmware/ultralcd.cpp:5835
+#: ../../Firmware/messages.cpp:150 ../../Firmware/ultralcd.cpp:5833
 msgid "Z-probe nr."
 msgstr "Z meres szama"
 
 #. MSG_MEASURED_OFFSET c=20
-#: ../../Firmware/ultralcd.cpp:2565
+#: ../../Firmware/ultralcd.cpp:2563
 msgid "[0;0] point offset"
 msgstr "[0;0] pont offszet"
 
 #. MSG_PRESS c=20 r=2
-#: ../../Firmware/ultralcd.cpp:2154
+#: ../../Firmware/ultralcd.cpp:2170
 msgid "and press the knob"
 msgstr "es nyomd meg a gombot"
 
 #. MSG_TO_LOAD_FIL c=20
-#: ../../Firmware/ultralcd.cpp:1816
+#: ../../Firmware/ultralcd.cpp:1817
 msgid "to load filament"
 msgstr "filam. betoltesehez"
 
 #. MSG_TO_UNLOAD_FIL c=20
-#: ../../Firmware/ultralcd.cpp:1820
+#: ../../Firmware/ultralcd.cpp:1821
 msgid "to unload filament"
 msgstr "filament kiadasahoz"
 
@@ -2094,18 +2509,76 @@ msgid "unknown"
 msgstr "ismeretlen"
 
 #. MSG_IR_UNKNOWN c=18
-#: ../../Firmware/fsensor.cpp:182 ../../Firmware/messages.cpp:162
+#: ../../Firmware/Filament_sensor.cpp:291 ../../Firmware/messages.cpp:166
 msgid "unknown state"
 msgstr "ismeretlen allapot"
 
 #. MSG_REFRESH c=18
-#: ../../Firmware/messages.cpp:78 ../../Firmware/ultralcd.cpp:6077
-#: ../../Firmware/ultralcd.cpp:6080
+#: ../../Firmware/messages.cpp:82 ../../Firmware/ultralcd.cpp:6086
+#: ../../Firmware/ultralcd.cpp:6089
 msgid "🔃Refresh"
 msgstr "🔃Frissites"
+
+#~ msgid ""
+#~ "Autoloading filament available only when filament sensor is turned on..."
+#~ msgstr "Filament autom. betolteste csak bekapcs. fil. szenzorral mukodik."
 
 #~ msgid "Crash detected. Resume print?"
 #~ msgstr "Utkozes erzekelve. Folytassam a nyomtatast?"
 
+#~ msgid "Cutting filament"
+#~ msgstr "Filament vagasa"
+
+#~ msgid "ERROR: Filament sensor is not responding, please check connection."
+#~ msgstr "HIBA: A fil. szenzor nem valaszol, ellenorizd a csatlakozast."
+
+#~ msgid "FS v0.3 or older"
+#~ msgstr "FS v0.3 v. regebbi"
+
+#~ msgid "FS v0.4 or newer"
+#~ msgstr "FS v0.4 vagy ujabb"
+
+#~ msgid "Fix the issue and then press button on MMU unit."
+#~ msgstr "Hozd helyre a hibat, majd nyomd meg a gombot az MMU egysegen."
+
+#~ msgid "Load all"
+#~ msgstr "Osszes betolt."
+
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117. Elso reteg kalibr."
+
+#~ msgid "MK3 firmware detected on MK3S printer"
+#~ msgstr "MK3 firmver telepitve MK3S nyomtatora"
+
+#~ msgid "MK3S firmware detected on MK3 printer"
+#~ msgstr "MK3S firmver eszlelve MK3 nyomtaton"
+
+#~ msgid "MMU OK. Resuming position..."
+#~ msgstr "MMU OK. Pozicio visszaallitasa..."
+
+#~ msgid "MMU OK. Resuming temperature..."
+#~ msgstr "MMU OK. Homerseklet visszaallitasa..."
+
+#~ msgid "MMU OK. Resuming..."
+#~ msgstr "MMU OK. Folytatom..."
+
+#~ msgid "MMU load failed"
+#~ msgstr "MMU betolt.hiba"
+
+#~ msgid "MMU needs user attention."
+#~ msgstr "Az MMU felhasznaloi figyelmet igenyel."
+
+#~ msgid "MMU power fails"
+#~ msgstr "MMU tap hibak"
+
+#~ msgid "Please remove filament and then press the knob."
+#~ msgstr "Kerlek, tavolitsd el a filamentet, majd nyomd meg a gombot."
+
+#~ msgid "Please update firmware in your MMU2. Waiting for reset."
+#~ msgstr "Kerlek, frissitsd az MMU2 firmverjet. Varom az ujrainditast."
+
+#~ msgid "Press the knob to resume nozzle temperature."
+#~ msgstr "Nyomd meg a gombot a fuvoka ismetelt felfutesehez."
+
+#~ msgid "Runouts"
+#~ msgstr "Kifutas"
