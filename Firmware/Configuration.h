@@ -26,6 +26,10 @@ extern const char _sPrinterMmuName[] PROGMEM;
 
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
+#ifndef FW_FLAVERSION
+#define FW_FLAVERSION 0
+#endif
+
 // The full version string and repository source are set via cmake
 #ifndef CMAKE_CONTROL
 #define FW_COMMIT_NR 6853
