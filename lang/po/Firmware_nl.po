@@ -1232,12 +1232,6 @@ msgstr "Model"
 msgid "More details online."
 msgstr "Meer details online."
 
-#. MSG_BTN_MORE c=5
-#: ../../Firmware/mmu2/errors_list.h:287
-#: ../../Firmware/mmu2_error_converter.cpp:153
-msgid "More⏬"
-msgstr "Meer⏬"
-
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:95 ../../Firmware/ultralcd.cpp:6981
 #: ../../Firmware/ultralcd.cpp:6990 ../../Firmware/ultralcd.cpp:7008
