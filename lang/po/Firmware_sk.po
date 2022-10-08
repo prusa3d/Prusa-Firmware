@@ -456,7 +456,7 @@ msgstr ""
 "Chcete opakovat posledny krok a pozmenit vzdialenost medzi tryskou a "
 "podlozkou?"
 
-#. MSG_BTN_CONTINUE c=5
+#. MSG_BTN_CONTINUE c=8
 #: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:292
 msgid "Done"
 msgstr "Hotov"
@@ -1776,7 +1776,7 @@ msgstr "Obnovenie tlace"
 msgid "Retract from FINDA"
 msgstr "Vybrat z FINDA"
 
-#. MSG_BTN_RETRY c=5
+#. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
 msgid "Retry"
 msgstr "Znova"
@@ -2040,7 +2040,7 @@ msgstr "Tichy"
 msgid "Steel sheets"
 msgstr "Platne"
 
-#. MSG_BTN_STOP c=5
+#. MSG_BTN_STOP c=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:295
 msgid "Stop"
 msgstr "Zast."
@@ -2222,7 +2222,7 @@ msgstr ""
 "Neocakavane nacitanie FINDA. Skontrolujte, ze filament nie je pod FINDA a "
 "selektor je volny. Skontrolujte pripojenie FINDA."
 
-#. MSG_BTN_UNLOAD c=6
+#. MSG_BTN_UNLOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
 msgid "Unload"
 msgstr "Vysuv"

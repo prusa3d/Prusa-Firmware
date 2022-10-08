@@ -459,7 +459,7 @@ msgstr ""
 "Wilt u de laatste stap herhalen om de afstand tussen de tuit en de bed "
 "opnieuw in te stellen?"
 
-#. MSG_BTN_CONTINUE c=5
+#. MSG_BTN_CONTINUE c=8
 #: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:292
 msgid "Done"
 msgstr "Klaar"
@@ -1784,7 +1784,7 @@ msgstr "Hervatten print"
 msgid "Retract from FINDA"
 msgstr "Intrekken van FINDA"
 
-#. MSG_BTN_RETRY c=5
+#. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
 msgid "Retry"
 msgstr "Retry"
@@ -2056,7 +2056,7 @@ msgstr "Stil"
 msgid "Steel sheets"
 msgstr "Staalplaten"
 
-#. MSG_BTN_STOP c=5
+#. MSG_BTN_STOP c=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:295
 msgid "Stop"
 msgstr "Stop"
@@ -2238,7 +2238,7 @@ msgstr ""
 "Onverwachte FINDA-aflezing. Zorg ervoor dat er geen filament onder FINDA zit"
 " en dat de selecteur vrij is. Controleer de FINDA-verbinding."
 
-#. MSG_BTN_UNLOAD c=6
+#. MSG_BTN_UNLOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
 msgid "Unload"
 msgstr "Ontla."

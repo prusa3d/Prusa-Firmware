@@ -434,7 +434,7 @@ msgid ""
 "heatbed?"
 msgstr ""
 
-#. MSG_BTN_CONTINUE c=5
+#. MSG_BTN_CONTINUE c=8
 #: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:292
 msgid "Done"
 msgstr ""
@@ -1707,7 +1707,7 @@ msgstr ""
 msgid "Retract from FINDA"
 msgstr ""
 
-#. MSG_BTN_RETRY c=5
+#. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
 msgid "Retry"
 msgstr ""
@@ -1963,7 +1963,7 @@ msgstr ""
 msgid "Steel sheets"
 msgstr ""
 
-#. MSG_BTN_STOP c=5
+#. MSG_BTN_STOP c=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:295
 msgid "Stop"
 msgstr ""
@@ -2134,7 +2134,7 @@ msgid ""
 " is free. Check FINDA connection."
 msgstr ""
 
-#. MSG_BTN_UNLOAD c=6
+#. MSG_BTN_UNLOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
 msgid "Unload"
 msgstr ""
