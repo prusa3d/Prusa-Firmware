@@ -573,10 +573,13 @@ void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
             raise_z(MMU_ERR_Z_PAUSE_LIFT);
 
             // move XY aside
-            current_position[X_AXIS] = MMU_ERR_X_PAUSE_POS;
-            current_position[Y_AXIS] = MMU_ERR_Y_PAUSE_POS;
-            plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
-            st_synchronize();
+            if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS])
+            {
+                current_position[X_AXIS] = MMU_ERR_X_PAUSE_POS;
+                current_position[Y_AXIS] = MMU_ERR_Y_PAUSE_POS;
+                plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
+                st_synchronize();
+            }
         }
 
         if (turn_off_nozzle){
