@@ -621,6 +621,8 @@ void lcdui_print_status_line(void) {
         case CustomMsg::M117:   // M117 Set the status line message on the LCD
         case CustomMsg::Status: // Nothing special, print status message normally
         case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
+        case CustomMsg::FilamentLoading: // If loading filament, print status
+        case CustomMsg::MMUProgress: // MMU Progress Codes
             lcd_print_pad(lcd_status_message, LCD_WIDTH);
         break;
         case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
@@ -642,9 +644,6 @@ void lcdui_print_status_line(void) {
                     custom_message_state--;
                 }
             }
-            break;
-        case CustomMsg::FilamentLoading: // If loading filament, print status
-            lcd_print_pad(lcd_status_message, LCD_WIDTH);
             break;
         case CustomMsg::PidCal: // PID tuning in progress
             lcd_print_pad(lcd_status_message, LCD_WIDTH);
@@ -669,10 +668,6 @@ void lcdui_print_status_line(void) {
             break;
         case CustomMsg::Resuming: // Resuming
             lcd_puts_at_P(0, 3, _T(MSG_RESUMING_PRINT));
-            break;
-        case CustomMsg::MMUProgress:
-            // set up at mmu2_reporting.cpp, just do nothing here
-            lcd_print(lcd_status_message);
             break;
         }
     }
