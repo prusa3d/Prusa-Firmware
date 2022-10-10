@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 include(cmake/Utilities.cmake)
 include(cmake/GetGitRevisionDescription.cmake)
+include(cmake/ReproducibleBuild.cmake)
 
 set(PROJECT_VERSION_SUFFIX
     "<auto>"
@@ -236,39 +237,8 @@ list(TRANSFORM AVR_SOURCES PREPEND ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/)
 # Target configuration
 #
 if(CMAKE_CROSSCOMPILING)
-  # Reproducible build support
-  function(set_reproducible_sources source_list prefix)
-    foreach(file IN LISTS ${source_list})
-      get_filename_component(base ${file} NAME)
-      set(target "${prefix}${base}")
-      set_property(
-        SOURCE ${file}
-        APPEND
-        PROPERTY COMPILE_OPTIONS "-frandom-seed=${target}.o"
-        )
-    endforeach()
-  endfunction()
-
-  function(set_reproducible_target target)
-    set_target_properties(${target} PROPERTIES STATIC_LIBRARY_OPTIONS "-D")
-  endfunction()
-
-  set_reproducible_sources(AVR_SOURCES "core/")
-
-  add_link_options(-fdebug-prefix-map=${CMAKE_SOURCE_DIR}=)
-  add_link_options(-fdebug-prefix-map=${CMAKE_BINARY_DIR}=)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "8")
-    add_compile_options(-ffile-prefix-map=${CMAKE_SOURCE_DIR}=)
-  endif()
-
   # TODO: get date from the last git commit to set as epoch
-  set(ENV{SOURCE_DATE_EPOCH} 0)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8")
-    string(TIMESTAMP SOURCE_DATE_EPOCH "%Y-%m-%d")
-    add_compile_definitions(SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}")
-    string(TIMESTAMP SOURCE_TIME_EPOCH "%H:%M:%S")
-    add_compile_definitions(SOURCE_TIME_EPOCH="${SOURCE_TIME_EPOCH}")
-  endif()
+  set_source_epoch(0)
 
   # default optimization flags
   set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
@@ -318,6 +288,7 @@ set_target_properties(ALL_MULTILANG PROPERTIES EXCLUDE_FROM_ALL FALSE)
 function(add_base_binary variant_name)
   add_executable(${variant_name} ${FW_SOURCES} ${FW_HEADERS} ${VARIANT_CFG_DST})
   set_target_properties(${variant_name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  set_reproducible_target(${variant_name})
 
   target_include_directories(
     ${variant_name}
@@ -361,9 +332,6 @@ function(add_base_binary variant_name)
 endfunction()
 
 function(fw_add_variant variant_name)
-  # Set FW_SOURCES to be reproducible in this variant as it's set in a separate project
-  set_reproducible_sources(FW_SOURCES "Firmware/")
-
   set(variant_header "variants/${variant_name}.h")
   string(REPLACE "1_75mm_" "" variant_name "${variant_name}")
   string(REPLACE "-E3Dv6full" "" variant_name "${variant_name}")
