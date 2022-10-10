@@ -39,7 +39,7 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 // - ToolChange shall not try to push filament into the very tip of the nozzle
 // to have some space for additional G-code to tune the extruded filament length
 // in the profile
-static constexpr float MMU2_TOOL_CHANGE_LOAD_LENGTH = 30.0F;
+static constexpr float MMU2_TOOL_CHANGE_LOAD_LENGTH = 5.0F;//30.0F;
 
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
 static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F; // mm/s
@@ -907,7 +907,7 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc){
                 // After the MMU knows the FSENSOR is triggered it will:
                 // 1. Push the filament by additional 30mm (see fsensorToNozzle)
                 // 2. Disengage the idler and push another 5mm.
-                current_position[E_AXIS] += 30.0f + 2.0f;
+                current_position[E_AXIS] += MMU2_TOOL_CHANGE_LOAD_LENGTH + 2.0f;
                 plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                 break;
             case FilamentState::NOT_PRESENT:
