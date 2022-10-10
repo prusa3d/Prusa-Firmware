@@ -1121,6 +1121,9 @@ void setup()
 	puts_P(PSTR(" " FW_VERSION_FULL));
 	puts_P(PSTR(" repo " FW_REPOSITORY));
 	puts_P(PSTR(" date " SOURCE_DATE_EPOCH));
+#ifdef STRING_CONFIG_H_AUTHOR
+	puts_P(PSTR(" author " STRING_CONFIG_H_AUTHOR));
+#endif
 
 	// by default the MMU shall remain disabled - PFW-1418
 	if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0)) {
@@ -1219,16 +1222,6 @@ void setup()
 
 	//SERIAL_ECHORPGM(MSG_MARLIN);
 	//SERIAL_ECHOLNRPGM(VERSION_STRING);
-
-#ifdef STRING_VERSION_CONFIG_H
-#ifdef STRING_CONFIG_H_AUTHOR
-	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_n(" Last Updated: "));////MSG_CONFIGURATION_VER
-	SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
-	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR
-	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
-#endif
-#endif
 
 	SERIAL_ECHO_START;
 	SERIAL_ECHORPGM(_n(" Free Memory: "));////MSG_FREE_MEMORY
