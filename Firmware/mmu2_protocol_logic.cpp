@@ -8,6 +8,17 @@ namespace MMU2 {
 
 static const uint8_t supportedMmuFWVersion[3] PROGMEM = { 2, 1, 3 };
 
+const uint8_t ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
+    8, // FINDA state
+    0x1b, // Selector slot
+    0x1c, // Idler slot
+};
+
+const uint8_t ProtocolLogic::regs16Addrs[ProtocolLogic::regs16Count] PROGMEM = {
+    4, // MMU errors - aka statistics
+    0x1a, // Pulley position [mm]
+};
+
 void ProtocolLogic::CheckAndReportAsyncEvents() {
     // even when waiting for a query period, we need to report a change in filament sensor's state
     // - it is vital for a precise synchronization of moves of the printer and the MMU
@@ -22,9 +33,36 @@ void ProtocolLogic::SendQuery() {
     scopeState = ScopeState::QuerySent;
 }
 
-void ProtocolLogic::SendFINDAQuery() {
-    SendMsg(RequestMsg(RequestMsgCodes::Finda, 0));
-    scopeState = ScopeState::FINDAReqSent;
+void ProtocolLogic::StartReading8bitRegisters() {
+    regIndex = 0;
+    SendReadRegister(pgm_read_byte(regs8Addrs + regIndex), ScopeState::Reading8bitRegisters);
+}
+
+void ProtocolLogic::ProcessRead8bitRegister(){
+    regs8[regIndex] = rsp.paramValue;
+    ++regIndex;
+    if(regIndex >= regs8Count){
+        // proceed with reading 16bit registers
+        StartReading16bitRegisters();
+    } else {
+        SendReadRegister(pgm_read_byte(regs8Addrs + regIndex), ScopeState::Reading8bitRegisters);
+    }
+}
+
+void ProtocolLogic::StartReading16bitRegisters() {
+    regIndex = 0;
+    SendReadRegister(pgm_read_byte(regs16Addrs + regIndex), ScopeState::Reading16bitRegisters);
+}
+
+ProtocolLogic::ScopeState __attribute__((noinline)) ProtocolLogic::ProcessRead16bitRegister(ProtocolLogic::ScopeState stateAtEnd){
+    regs16[regIndex] = rsp.paramValue;
+    ++regIndex;
+    if(regIndex >= regs16Count){
+        return stateAtEnd;
+    } else {
+        SendReadRegister(pgm_read_byte(regs16Addrs + regIndex), ScopeState::Reading16bitRegisters);
+    }
+    return ScopeState::Reading16bitRegisters;
 }
 
 void ProtocolLogic::SendAndUpdateFilamentSensor() {
@@ -313,14 +351,13 @@ StepStatus ProtocolLogic::CommandStep() {
     case ScopeState::QuerySent:
         return ProcessCommandQueryResponse();
     case ScopeState::FilamentSensorStateSent:
-        SendFINDAQuery();
+        StartReading8bitRegisters();
         return Processing;
-    case ScopeState::FINDAReqSent:
-        findaPressed = rsp.paramValue;
-        SendReadRegister(4, ScopeState::StatisticsSent);
+    case ScopeState::Reading8bitRegisters:
+        ProcessRead8bitRegister();
         return Processing;
-    case ScopeState::StatisticsSent:
-        scopeState = ScopeState::Wait;
+    case ScopeState::Reading16bitRegisters:
+        scopeState = ProcessRead16bitRegister(ScopeState::Wait);
         return Processing;
     case ScopeState::ButtonSent:
         if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
@@ -371,7 +408,7 @@ StepStatus ProtocolLogic::IdleStep() {
                 // The user pushed a button on the MMU. Save it, do what we need to do
                 // to prepare, then pass it back to the MMU so it can work its magic.
                 buttonCode = static_cast<Buttons>(rsp.paramValue);
-                SendFINDAQuery();
+                StartReading8bitRegisters();
                 return ButtonPushed;
             case ResponseMsgParamCodes::Processing:
                 // @@TODO we may actually use this branch to report progress of manual operation on the MMU
@@ -382,29 +419,27 @@ StepStatus ProtocolLogic::IdleStep() {
                 break;
             default:
                 errorCode = static_cast<ErrorCode>(rsp.paramValue);
-                SendFINDAQuery(); // continue Idle state without restarting the communication
+                StartReading8bitRegisters(); // continue Idle state without restarting the communication
                 return CommandError;
             }
             break;
         default:
             return ProtocolError;
         }
-        SendFINDAQuery();
+        StartReading8bitRegisters();
         return Processing;
-    case ScopeState::FINDAReqSent:
-        findaPressed = rsp.paramValue;
-        SendReadRegister(4, ScopeState::StatisticsSent);
+    case ScopeState::Reading8bitRegisters:
+        ProcessRead8bitRegister();
         return Processing;
-    case ScopeState::StatisticsSent:
-        failStatistics = rsp.paramValue;
-        scopeState = ScopeState::Ready;
-        return Finished;
+    case ScopeState::Reading16bitRegisters:
+        scopeState = ProcessRead16bitRegister(ScopeState::Ready);
+        return scopeState == ScopeState::Ready ? Finished : Processing;
     case ScopeState::ButtonSent:
         if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
             // Button was accepted, decrement the retry.
             mmu2.DecrementRetryAttempts();
         }
-        SendFINDAQuery();
+        StartReading8bitRegisters();
         return Processing;
     case ScopeState::ReadRegisterSent:
         if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
@@ -444,8 +479,9 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart)
     , progressCode(ProgressCode::OK)
     , buttonCode(NoButton)
     , lastFSensor((uint8_t)WhereIsFilament())
-    , findaPressed(false)
-    , failStatistics(0)
+    , regs8 { 0, 0, 0 }
+    , regs16 { 0, 0 }
+    , regIndex(0)
     , mmuFwVersion { 0, 0, 0 }
 {}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <avr/pgmspace.h>
 // #include <array> //@@TODO Don't we have STL for AVR somewhere?
 template<typename T, uint8_t N>
 class array {
@@ -110,11 +111,11 @@ public:
     }
 
     inline bool FindaPressed() const {
-        return findaPressed;
+        return regs8[0];
     }
 
     inline uint16_t FailStatistics() const {
-        return failStatistics;
+        return regs16[0];
     }
 
     inline uint8_t MmuFwVersionMajor() const {
@@ -187,10 +188,10 @@ private:
         QuerySent,
         CommandSent,
         FilamentSensorStateSent,
-        FINDAReqSent,
-        StatisticsSent,
+        Reading8bitRegisters,
+        Reading16bitRegisters,
         ButtonSent,
-        ReadRegisterSent,
+        ReadRegisterSent, // standalone requests for reading registers - from higher layers
         WriteRegisterSent,
 
         // States which do not expect a message - MSb set
@@ -217,7 +218,10 @@ private:
     /// So far, the only such a case is the filament sensor, but there can be more like this in the future.
     void CheckAndReportAsyncEvents();
     void SendQuery();
-    void SendFINDAQuery();
+    void StartReading8bitRegisters();
+    void ProcessRead8bitRegister();
+    void StartReading16bitRegisters();
+    ScopeState ProcessRead16bitRegister(ProtocolLogic::ScopeState stateAtEnd);
     void SendAndUpdateFilamentSensor();
     void SendButton(uint8_t btn);
     void SendVersion(uint8_t stage);
@@ -278,7 +282,7 @@ private:
     State state; ///< internal state of ProtocolLogic
 
     Protocol protocol; ///< protocol codec
-    
+
     array<uint8_t, 16> lastReceivedBytes; ///< remembers the last few bytes of incoming communication for diagnostic purposes
     uint8_t lrb;
 
@@ -290,8 +294,19 @@ private:
 
     uint8_t lastFSensor; ///< last state of filament sensor
 
-    bool findaPressed;
-    uint16_t failStatistics;
+    // 8bit registers
+    static constexpr uint8_t regs8Count = 3;
+    static_assert(regs8Count > 0); // code is not ready for empty lists of registers
+    static const uint8_t regs8Addrs[regs8Count] PROGMEM;
+    uint8_t regs8[regs8Count];
+
+    // 16bit registers
+    static constexpr uint8_t regs16Count = 2;
+    static_assert(regs16Count > 0); // code is not ready for empty lists of registers
+    static const uint8_t regs16Addrs[regs16Count] PROGMEM;
+    uint16_t regs16[regs16Count];
+
+    uint8_t regIndex;
 
     uint8_t mmuFwVersion[3];
     uint16_t mmuFwVersionBuild;
