@@ -39,7 +39,9 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 // - ToolChange shall not try to push filament into the very tip of the nozzle
 // to have some space for additional G-code to tune the extruded filament length
 // in the profile
-// Beware - this value is sent to the MMU upon line up, it is written into its 8bit register 0x0b
+// Beware - this value is used to initialize the MMU logic layer - it will be sent to the MMU upon line up (written into its 8bit register 0x0b)
+// However - in the G-code we can get a request to set the extra load distance at runtime to something else (M708 A0xb Xsomething).
+// The printer intercepts such a call and sets its extra load distance to match the new value as well.
 static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = 5; // mm
 
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
@@ -198,6 +200,12 @@ bool MMU2::ReadRegister(uint8_t address){
 bool MMU2::WriteRegister(uint8_t address, uint16_t data){
     if( ! WaitForMMUReady())
         return false;
+
+    // special case - intercept requests of extra loading distance and perform the change even on the printer's side
+    if( address == 0x0b ){
+        logic.PlanExtraLoadDistance(data);
+    }
+
     logic.WriteRegister(address, data); // we may signal the accepted/rejected status of the response as return value of this function
     manage_response(false, false);
     return true;
@@ -906,8 +914,8 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc){
                 loadFilamentStarted = false;
                 // After the MMU knows the FSENSOR is triggered it will:
                 // 1. Push the filament by additional 30mm (see fsensorToNozzle)
-                // 2. Disengage the idler and push another 5mm.
-                current_position[E_AXIS] += MMU2_TOOL_CHANGE_LOAD_LENGTH + 2.0f;
+                // 2. Disengage the idler and push another 2mm.
+                current_position[E_AXIS] += logic.ExtraLoadDistance() + 2;
                 plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                 break;
             case FilamentState::NOT_PRESENT:
