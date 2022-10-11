@@ -70,9 +70,10 @@ public:
     };
 
     /// Source of operation error
-    enum ReportErrorSource: uint8_t {
+    enum ErrorSource: uint8_t {
         ErrorSourcePrinter = 0,
         ErrorSourceMMU = 1,
+        ErrorSourceNone = 0xFF,
     };
 
     /// Perform a reset of the MMU
@@ -164,6 +165,9 @@ public:
     /// @returns Current error code
     inline ErrorCode MMUCurrentErrorCode() const { return logic.Error(); }
 
+    /// @returns Last error source
+    inline ErrorSource MMULastErrorSource() const { return lastErrorSource; }
+
     /// @returns the version of the connected MMU FW.
     /// In the future we'll return the trully detected FW version
     Version GetMMUFWVersion()const {
@@ -218,7 +222,7 @@ private:
     /// Reports an error into attached ExtUIs
     /// @param ec error code, see ErrorCode
     /// @param res reporter error source, is either Printer (0) or MMU (1)
-    void ReportError(ErrorCode ec, uint8_t res);
+    void ReportError(ErrorCode ec, ErrorSource res);
 
     /// Reports progress of operations into attached ExtUIs
     /// @param pc progress code, see ProgressCode
@@ -264,6 +268,7 @@ private:
     
     ProgressCode lastProgressCode = ProgressCode::OK;
     ErrorCode lastErrorCode = ErrorCode::MMU_NOT_RESPONDING;
+    ErrorSource lastErrorSource = ErrorSource::ErrorSourceNone;
     Buttons lastButton = Buttons::NoButton;
 
     StepStatus logicStepLastStatus;
