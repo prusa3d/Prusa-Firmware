@@ -92,6 +92,17 @@ public:
     void ReadRegister(uint8_t address);
     void WriteRegister(uint8_t address, uint16_t data);
 
+    /// Sets the extra load distance to be reported to the MMU.
+    /// Beware - this call doesn't send anything to the MMU.
+    /// The MMU gets the newly set value either by a communication restart or via an explicit WriteRegister call
+    inline void PlanExtraLoadDistance(uint8_t eld_mm){
+        initRegs8[0] = eld_mm;
+    }
+    /// @returns the currently preset extra load distance
+    inline uint8_t ExtraLoadDistance()const {
+        return initRegs8[0];
+    }
+
     /// Step the state machine
     StepStatus Step();
 
