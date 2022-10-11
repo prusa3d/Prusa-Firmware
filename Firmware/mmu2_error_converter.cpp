@@ -84,13 +84,13 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     // Need to be placed before TMC-related errors in order to process couples of error bits between single ones
     // and to keep the code size down.
     if (ec & (uint16_t)ErrorCode::TMC_PULLEY_BIT) {
-        if (ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
             return FindErrorIndex(ERR_ELECTRICAL_PULLEY_SELFTEST_FAILED);
     } else if (ec & (uint16_t)ErrorCode::TMC_SELECTOR_BIT) {
-        if (ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
             return FindErrorIndex(ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED);
     } else if (ec & (uint16_t)ErrorCode::TMC_IDLER_BIT) {
-        if (ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
             return FindErrorIndex(ERR_ELECTRICAL_IDLER_SELFTEST_FAILED);
     }
 
