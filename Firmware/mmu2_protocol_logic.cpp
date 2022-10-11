@@ -19,6 +19,10 @@ const uint8_t ProtocolLogic::regs16Addrs[ProtocolLogic::regs16Count] PROGMEM = {
     0x1a, // Pulley position [mm]
 };
 
+const uint8_t ProtocolLogic::initRegs8Addrs[ProtocolLogic::initRegs8Count] PROGMEM = {
+    0x0b, // extra load distance
+};
+
 void ProtocolLogic::CheckAndReportAsyncEvents() {
     // even when waiting for a query period, we need to report a change in filament sensor's state
     // - it is vital for a precise synchronization of moves of the printer and the MMU
@@ -63,6 +67,21 @@ ProtocolLogic::ScopeState __attribute__((noinline)) ProtocolLogic::ProcessRead16
         SendReadRegister(pgm_read_byte(regs16Addrs + regIndex), ScopeState::Reading16bitRegisters);
     }
     return ScopeState::Reading16bitRegisters;
+}
+
+void ProtocolLogic::StartWritingInitRegisters() {
+    regIndex = 0;
+    SendWriteRegister(pgm_read_byte(initRegs8Addrs + regIndex), initRegs8[regIndex], ScopeState::WritingInitRegisters);
+}
+
+bool __attribute__((noinline)) ProtocolLogic::ProcessWritingInitRegister(){
+    ++regIndex;
+    if(regIndex >= initRegs8Count){
+        return true;
+    } else {
+        SendWriteRegister(pgm_read_byte(initRegs8Addrs + regIndex), initRegs8[regIndex], ScopeState::WritingInitRegisters);
+    }
+    return false;
 }
 
 void ProtocolLogic::SendAndUpdateFilamentSensor() {
@@ -262,9 +281,12 @@ StepStatus ProtocolLogic::StartSeqStep() {
             SendVersion(3);
         } else {
             mmuFwVersionBuild = rsp.paramValue; // just register the build number
-            // Start General Interrogation after line up.
-            // For now we just send the state of the filament sensor, but we may request
-            // data point states from the MMU as well. TBD in the future, especially with another protocol
+            // Start General Interrogation after line up - initial parametrization is started
+            StartWritingInitRegisters();
+        }
+        return Processing;
+    case ScopeState::WritingInitRegisters:
+        if( ProcessWritingInitRegister() ){
             SendAndUpdateFilamentSensor();
         }
         return Processing;
@@ -465,7 +487,7 @@ StepStatus ProtocolLogic::IdleStep() {
     return Finished;
 }
 
-ProtocolLogic::ProtocolLogic(MMU2Serial *uart)
+ProtocolLogic::ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance)
     : currentScope(Scope::Stopped)
     , scopeState(ScopeState::Ready)
     , plannedRq(RequestMsgCodes::unknown, 0)
@@ -481,6 +503,7 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart)
     , lastFSensor((uint8_t)WhereIsFilament())
     , regs8 { 0, 0, 0 }
     , regs16 { 0, 0 }
+    , initRegs8 { extraLoadDistance }
     , regIndex(0)
     , mmuFwVersion { 0, 0, 0 }
 {}

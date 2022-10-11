@@ -71,7 +71,7 @@ public:
 /// Logic layer of the MMU vs. printer communication protocol
 class ProtocolLogic {
 public:
-    ProtocolLogic(MMU2Serial *uart);
+    ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance);
 
     /// Start/Enable communication with the MMU
     void Start();
@@ -190,6 +190,7 @@ private:
         FilamentSensorStateSent,
         Reading8bitRegisters,
         Reading16bitRegisters,
+        WritingInitRegisters,
         ButtonSent,
         ReadRegisterSent, // standalone requests for reading registers - from higher layers
         WriteRegisterSent,
@@ -222,6 +223,9 @@ private:
     void ProcessRead8bitRegister();
     void StartReading16bitRegisters();
     ScopeState ProcessRead16bitRegister(ProtocolLogic::ScopeState stateAtEnd);
+    void StartWritingInitRegisters();
+    /// @returns true when all registers have been written into the MMU
+    bool ProcessWritingInitRegister();
     void SendAndUpdateFilamentSensor();
     void SendButton(uint8_t btn);
     void SendVersion(uint8_t stage);
@@ -305,6 +309,12 @@ private:
     static_assert(regs16Count > 0); // code is not ready for empty lists of registers
     static const uint8_t regs16Addrs[regs16Count] PROGMEM;
     uint16_t regs16[regs16Count];
+
+    // 8bit init values to be sent to the MMU after line up
+    static constexpr uint8_t initRegs8Count = 1;
+    static_assert(initRegs8Count > 0); // code is not ready for empty lists of registers
+    static const uint8_t initRegs8Addrs[initRegs8Count] PROGMEM;
+    uint8_t initRegs8[initRegs8Count];
 
     uint8_t regIndex;
 
