@@ -39,7 +39,8 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 // - ToolChange shall not try to push filament into the very tip of the nozzle
 // to have some space for additional G-code to tune the extruded filament length
 // in the profile
-static constexpr float MMU2_TOOL_CHANGE_LOAD_LENGTH = 5.0F;//30.0F;
+// Beware - this value is sent to the MMU upon line up, it is written into its 8bit register 0x0b
+static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = 5; // mm
 
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
 static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F; // mm/s
@@ -102,7 +103,7 @@ MMU2 mmu2;
 
 MMU2::MMU2()
     : is_mmu_error_monitor_active(false)
-    , logic(&mmu2Serial)
+    , logic(&mmu2Serial, MMU2_TOOL_CHANGE_LOAD_LENGTH)
     , extruder(MMU2_NO_TOOL)
     , tool_change_extruder(MMU2_NO_TOOL)
     , resume_position()
