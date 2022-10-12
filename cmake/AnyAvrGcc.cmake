@@ -2,9 +2,7 @@ get_filename_component(PROJECT_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
 include("${PROJECT_CMAKE_DIR}/Utilities.cmake")
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR avr)
-set(CMAKE_CROSSCOMPILING 1)
-get_dependency_directory("avr-gcc" AVR_TOOLCHAIN_DIR)
-message( "tc dir is ${AVR_TOOLCHAIN_DIR}")
+
 #
 # Utilities
 
@@ -27,6 +25,7 @@ set(TOOLCHAIN_PREFIX avr-)
 
 if(AVR_TOOLCHAIN_DIR)
   # using toolchain set by AvrGcc.cmake (locked version)
+  message("ToolChain dir is ${AVR_TOOLCHAIN_DIR}")
   set(BINUTILS_PATH "${AVR_TOOLCHAIN_DIR}/bin")
 else()
   # search for ANY avr-gcc toolchain

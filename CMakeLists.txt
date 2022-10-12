@@ -92,6 +92,7 @@ message("Language maximum size (from config.h): ${LANG_MAX_SIZE} bytes")
 # Ditto, this in xflash_layout.h but needs invocation of the preprocessor... :-/
 set(LANG_BIN_MAX 249856)
 
+# Check GCC Version
 get_recommended_gcc_version(RECOMMENDED_TOOLCHAIN_VERSION)
 if(CMAKE_CROSSCOMPILING AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL
                             ${RECOMMENDED_TOOLCHAIN_VERSION}

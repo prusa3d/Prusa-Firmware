@@ -47,9 +47,9 @@ dependencies = {
     'avr-gcc': {
         'version': '7.3.0',
         'url': {
-            'Linux': 'http://downloads.arduino.cc/tools/avr-gcc-7.3.0-atmel3.6.1-arduino7-x86_64-pc-linux-gnu.tar.bz2',
-            'Windows': 'http://downloads.arduino.cc/tools/avr-gcc-7.3.0-atmel3.6.1-arduino7-i686-w64-mingw32.zip',
-            'Darwin': 'http://downloads.arduino.cc/tools/avr-gcc-7.3.0-atmel3.6.1-arduino7-x86_64-apple-darwin14.tar.bz2',
+            'Linux': 'https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/avr8-gnu-toolchain-3.7.0.1796-linux.any.x86_64.tar.gz',
+            'Windows': 'https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/avr8-gnu-toolchain-3.7.0.1796-win32.any.x86_64.zip',
+            'Darwin': 'https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/avr8-gnu-toolchain-osx-3.7.0.518-darwin.any.x86_64.tar.gz',
         },
     },
     'prusa3dboards': {
@@ -141,6 +141,15 @@ def install_dependency(dependency):
     fix_executable_permissions(dependency, installation_directory)
 
 
+def get_dependency_version(dependency):
+    return dependencies[dependency]['version']
+
+
+def get_dependency_directory(dependency) -> Path:
+    version = dependencies[dependency]['version']
+    return Path(directory_for_dependency(dependency, version))
+
+
 def main() -> int:
     parser = ArgumentParser()
     # yapf: disable
@@ -155,8 +164,7 @@ def main() -> int:
 
     if args.print_dependency_version:
         try:
-            version = dependencies[args.print_dependency_version]['version']
-            print(version)
+            print(get_dependency_version(args.print_dependency_version))
             return 0
         except KeyError:
             print('Unknown dependency "%s"' % args.print_dependency_version)
@@ -164,10 +172,7 @@ def main() -> int:
 
     if args.print_dependency_directory:
         try:
-            dependency = args.print_dependency_directory
-            version = dependencies[dependency]['version']
-            install_dir = directory_for_dependency(dependency, version)
-            print(install_dir)
+            print(get_dependency_directory(args.print_dependency_directory))
             return 0
         except KeyError:
             print('Unknown dependency "%s"' % args.print_dependency_directory)
