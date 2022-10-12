@@ -141,6 +141,15 @@ def install_dependency(dependency):
     fix_executable_permissions(dependency, installation_directory)
 
 
+def get_dependency_version(dependency):
+    return dependencies[dependency]['version']
+
+
+def get_dependency_directory(dependency) -> Path:
+    version = dependencies[dependency]['version']
+    return Path(directory_for_dependency(dependency, version))
+
+
 def main() -> int:
     parser = ArgumentParser()
     # yapf: disable
@@ -155,8 +164,7 @@ def main() -> int:
 
     if args.print_dependency_version:
         try:
-            version = dependencies[args.print_dependency_version]['version']
-            print(version)
+            print(get_dependency_version(args.print_dependency_version))
             return 0
         except KeyError:
             print('Unknown dependency "%s"' % args.print_dependency_version)
@@ -164,10 +172,7 @@ def main() -> int:
 
     if args.print_dependency_directory:
         try:
-            dependency = args.print_dependency_directory
-            version = dependencies[dependency]['version']
-            install_dir = directory_for_dependency(dependency, version)
-            print(install_dir)
+            print(get_dependency_directory(args.print_dependency_directory))
             return 0
         except KeyError:
             print('Unknown dependency "%s"' % args.print_dependency_directory)
