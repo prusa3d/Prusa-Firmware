@@ -4,16 +4,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Wed 16 Mar 2022 09:25:06 AM CET\n"
-"PO-Revision-Date: Wed 16 Mar 2022 09:25:06 AM CET\n"
+"PO-Revision-Date: 2022-10-07 14:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.7\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 3.1.1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #. MSG_IR_03_OR_OLDER c=18
 #: ../../Firmware/Filament_sensor.cpp:287
@@ -63,7 +63,7 @@ msgstr "Abece"
 #. MSG_ALWAYS c=6
 #: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4287
 msgid "Always"
-msgstr ""
+msgstr "Mindig"
 
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1406
@@ -89,7 +89,7 @@ msgstr "Autom."
 #: ../../Firmware/Marlin_main.cpp:3261 ../../Firmware/messages.cpp:9
 #: ../../Firmware/ultralcd.cpp:4871
 msgid "Auto home"
-msgstr ""
+msgstr "Auto homeolas"
 
 #. MSG_AUTO_POWER c=10
 #: ../../Firmware/messages.cpp:106 ../../Firmware/ultralcd.cpp:4362
@@ -112,7 +112,7 @@ msgstr "Autom. betoltes be, nyomd meg a gombot es helyzed be a filamentet."
 #: ../../Firmware/mmu2_progress_converter.cpp:16
 #: ../../Firmware/mmu2_progress_converter.cpp:42
 msgid "Avoiding grind"
-msgstr ""
+msgstr "Daralas megelozese"
 
 #. MSG_SELFTEST_AXIS c=16
 #: ../../Firmware/ultralcd.cpp:7014
@@ -205,7 +205,7 @@ msgstr "Fenyero"
 #. MSG_TITLE_COMMUNICATION_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:147 ../../Firmware/mmu2/errors_list.h:185
 msgid "COMMUNICATION ERROR"
-msgstr ""
+msgstr "KOMUNIKACIOS HIBA"
 
 #. MSG_CALIBRATE_BED c=18
 #: ../../Firmware/ultralcd.cpp:4877
@@ -260,12 +260,13 @@ msgstr "Kalibracio kesz"
 #: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
 #: ../../Firmware/mmu2/errors_list.h:245
 msgid "Can't move Selector or Idler."
-msgstr ""
+msgstr "Nem tudom mozgatni a Fejet vagy a Gorgot"
 
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:266
 msgid "Cannot perform the action, filament is already loaded. Unload it first."
 msgstr ""
+"A muvelet nem hajthato vegre, a filament mar be van toltve. Vedd ki elobb."
 
 #. MSG_SD_REMOVED c=20
 #: ../../Firmware/ultralcd.cpp:7700
@@ -275,7 +276,7 @@ msgstr "Kartya eltavolitva"
 #. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5547
 msgid "Change SD card"
-msgstr ""
+msgstr "Cserelj SD kartyat"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5506
@@ -421,7 +422,7 @@ msgstr "Sotet"
 #. MSG_BTN_DISABLE_MMU c=9
 #: ../../Firmware/mmu2/errors_list.h:286 ../../Firmware/mmu2/errors_list.h:296
 msgid "Disable"
-msgstr ""
+msgstr "Letilt"
 
 #. MSG_DISABLE_STEPPERS c=18
 #: ../../Firmware/ultralcd.cpp:4764
@@ -433,7 +434,7 @@ msgstr "Motorok kikapcsol."
 #: ../../Firmware/mmu2_progress_converter.cpp:36
 #: ../../Firmware/mmu2_progress_converter.cpp:44
 msgid "Disengaging idler"
-msgstr ""
+msgstr "Gorgo levalasztasa"
 
 #. MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: ../../Firmware/Marlin_main.cpp:1530 ../../Firmware/Marlin_main.cpp:3400
@@ -456,10 +457,10 @@ msgstr ""
 "Meg szeretned ismetelni az utolso lepest, hogy finomhangold a fuvoka es az "
 "asztal kozotti tavolsagot?"
 
-#. MSG_BTN_CONTINUE c=8
+#. MSG_BTN_CONTINUE c=5
 #: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:292
 msgid "Done"
-msgstr ""
+msgstr "Kesz"
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4176
@@ -470,25 +471,25 @@ msgstr "E-korrekcio:"
 #: ../../Firmware/mmu2_progress_converter.cpp:19
 #: ../../Firmware/mmu2_progress_converter.cpp:48
 msgid "ERR Help filament"
-msgstr ""
+msgstr "HIBA SEGITS A FILAM."
 
 #. MSG_PROGRESS_ERR_INTERNAL c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:18
 #: ../../Firmware/mmu2_progress_converter.cpp:47
 msgid "ERR Internal"
-msgstr ""
+msgstr "Belso hiba"
 
 #. MSG_PROGRESS_ERR_TMC c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:20
 #: ../../Firmware/mmu2_progress_converter.cpp:49
 msgid "ERR TMC failed"
-msgstr ""
+msgstr "TMC HIBA"
 
 #. MSG_PROGRESS_WAIT_USER c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:17
 #: ../../Firmware/mmu2_progress_converter.cpp:46
 msgid "ERR Wait for User"
-msgstr ""
+msgstr "Felh. varakozas HIBA"
 
 #. MSG_ERROR c=10
 #: ../../Firmware/messages.cpp:29 ../../Firmware/ultralcd.cpp:2282
@@ -528,14 +529,14 @@ msgstr "Vegallaskapcsolok"
 #: ../../Firmware/mmu2_progress_converter.cpp:35
 #: ../../Firmware/mmu2_progress_converter.cpp:45
 msgid "Engaging idler"
-msgstr ""
+msgstr "Gorgo becsatolasa"
 
 #. MSG_EXTRUDER c=17
 #: ../../Firmware/Marlin_main.cpp:3519 ../../Firmware/Tcodes.cpp:35
 #: ../../Firmware/Tcodes.cpp:51 ../../Firmware/messages.cpp:30
 #: ../../Firmware/ultralcd.cpp:3512
 msgid "Extruder"
-msgstr ""
+msgstr "Extruder"
 
 #. MSG_EXTRUDER_FAN_SPEED c=16
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
@@ -546,7 +547,7 @@ msgstr "Extruder vent.:"
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
 msgid "Extruder info"
-msgstr ""
+msgstr "Extruder info"
 
 #. MSG_FSENSOR_AUTOLOAD c=13
 #: ../../Firmware/messages.cpp:45 ../../Firmware/ultralcd.cpp:4230
@@ -558,23 +559,23 @@ msgstr "F. autobetolt"
 #: ../../Firmware/messages.cpp:46 ../../Firmware/ultralcd.cpp:4232
 #: ../../Firmware/ultralcd.cpp:4239
 msgid "F. jam detect"
-msgstr ""
+msgstr "Dugul. eszlel"
 
 #. MSG_FSENSOR_RUNOUT c=13
 #: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4229
 #: ../../Firmware/ultralcd.cpp:4236
 msgid "F. runout"
-msgstr ""
+msgstr "F. fogyas"
 
 #. MSG_TITLE_FIL_ALREADY_LOADED c=20
 #: ../../Firmware/mmu2/errors_list.h:148 ../../Firmware/mmu2/errors_list.h:186
 msgid "FILAMENT ALREADY LOA"
-msgstr ""
+msgstr "FILAMENT MAR BENT"
 
 #. MSG_TITLE_FINDA_DIDNT_TRIGGER c=20
 #: ../../Firmware/mmu2/errors_list.h:118 ../../Firmware/mmu2/errors_list.h:156
 msgid "FINDA DIDNT TRIGGER"
-msgstr ""
+msgstr "FINDA NEM KAPCSOLT"
 
 #. MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:197 ../../Firmware/mmu2/errors_list.h:237
@@ -582,6 +583,8 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
+"A FINDA nem kapcsolt filament kiadas kozben. Vedd ki kezzel. Ellenorizd a "
+"fil. utjat es a FINDA mukodeset."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:196 ../../Firmware/mmu2/errors_list.h:236
@@ -589,11 +592,13 @@ msgid ""
 "FINDA didn't trigger while loading the filament. Ensure the filament can "
 "move and FINDA works."
 msgstr ""
+"A FINDA nem kapcsolt filament betoltese kozben. Ellenorizd a fil. utjat es a "
+"FINDA mukodeset."
 
 #. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
 #: ../../Firmware/mmu2/errors_list.h:119 ../../Firmware/mmu2/errors_list.h:157
 msgid "FINDA: FILAM. STUCK"
-msgstr ""
+msgstr "FINDA: FIL. SZORULT"
 
 #. MSG_FS_ACTION c=10
 #: ../../Firmware/messages.cpp:152 ../../Firmware/ultralcd.cpp:4245
@@ -604,22 +609,22 @@ msgstr "FSz akcio"
 #. MSG_TITLE_FSENSOR_DIDNT_TRIGGER c=20
 #: ../../Firmware/mmu2/errors_list.h:120 ../../Firmware/mmu2/errors_list.h:158
 msgid "FSENSOR DIDNT TRIGG."
-msgstr ""
+msgstr "FSZENZOR NEM KAPCSOL"
 
 #. MSG_TITLE_FSENSOR_TOO_EARLY c=20
 #: ../../Firmware/mmu2/errors_list.h:123 ../../Firmware/mmu2/errors_list.h:161
 msgid "FSENSOR TOO EARLY"
-msgstr ""
+msgstr "FSZENZ. TUL HAMAR"
 
 #. MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
 #: ../../Firmware/mmu2/errors_list.h:121 ../../Firmware/mmu2/errors_list.h:159
 msgid "FSENSOR: FIL. STUCK"
-msgstr ""
+msgstr "FSZENZOR: F SZORULT"
 
 #. MSG_TITLE_FW_RUNTIME_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:152 ../../Firmware/mmu2/errors_list.h:190
 msgid "FW RUNTIME ERROR"
-msgstr ""
+msgstr "FW FUTAS HIBA"
 
 #. MSG_FAIL_STATS c=18
 #: ../../Firmware/ultralcd.cpp:5602
@@ -659,25 +664,25 @@ msgstr "Vent.proba"
 #: ../../Firmware/mmu2_progress_converter.cpp:13
 #: ../../Firmware/mmu2_progress_converter.cpp:39
 msgid "Feeding to FINDA"
-msgstr ""
+msgstr "FINDAhoz toltes"
 
 #. MSG_PROGRESS_FEED_FSENSOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:31
 #: ../../Firmware/mmu2_progress_converter.cpp:62
 msgid "Feeding to FSensor"
-msgstr ""
+msgstr "Fszenzorhoz toltes"
 
 #. MSG_PROGRESS_FEED_EXTRUDER c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:14
 #: ../../Firmware/mmu2_progress_converter.cpp:40
 msgid "Feeding to extruder"
-msgstr ""
+msgstr "Extruderhez toltes"
 
 #. MSG_PROGRESS_FEED_NOZZLE c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:15
 #: ../../Firmware/mmu2_progress_converter.cpp:41
 msgid "Feeding to nozzle"
-msgstr ""
+msgstr "Fuvokahoz toltes"
 
 #. MSG_FIL_RUNOUTS c=15
 #: ../../Firmware/messages.cpp:32 ../../Firmware/ultralcd.cpp:1246
@@ -697,7 +702,7 @@ msgstr "Fil. szenzor"
 #: ../../Firmware/Tcodes.cpp:33 ../../Firmware/messages.cpp:33
 #: ../../Firmware/ultralcd.cpp:3806
 msgid "Filament"
-msgstr ""
+msgstr "Filament"
 
 #. MSG_FILAMENT_CLEAN c=20 r=2
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2290
@@ -723,6 +728,8 @@ msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
 msgstr ""
+"A filament szenzor nem kapcsolt ki a filament kiadasa kozben. Ellenorizd a "
+"filament utjat es a szenort."
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:198 ../../Firmware/mmu2/errors_list.h:238
@@ -730,6 +737,8 @@ msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the "
 "filament reached the fsensor and the sensor works."
 msgstr ""
+"A filament szenzor nem kapcsolt be a filament betoltese kozben. Ellenorizd a "
+"filament utjat es a szenort."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:201 ../../Firmware/mmu2/errors_list.h:241
@@ -737,6 +746,8 @@ msgid ""
 "Filament sensor triggered too early while loading to extruder. Check there "
 "isn't anything stuck in PTFE tube. Check that sensor reads properly."
 msgstr ""
+"A filament szenzor tul hamar kapcsolt a filament extruderbe toltesekor. "
+"Ellenorizd a PTFE csovet es a szenzort."
 
 #. MSG_FILAMENT_USED c=19
 #: ../../Firmware/ultralcd.cpp:2363
@@ -770,7 +781,7 @@ msgstr ""
 #. MSG_FLOW c=15
 #: ../../Firmware/ultralcd.cpp:5737
 msgid "Flow"
-msgstr ""
+msgstr "Flow"
 
 #. MSG_SELFTEST_PART_FAN c=20
 #: ../../Firmware/messages.cpp:87 ../../Firmware/ultralcd.cpp:6995
@@ -837,7 +848,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4656 ../../Firmware/ultralcd.cpp:4659
 #: ../../Firmware/ultralcd.cpp:4662
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:4670
@@ -898,7 +909,7 @@ msgstr "Magas ero"
 #: ../../Firmware/mmu2_progress_converter.cpp:29
 #: ../../Firmware/mmu2_progress_converter.cpp:60
 msgid "Homing"
-msgstr ""
+msgstr "Homeolas"
 
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4041
@@ -913,17 +924,17 @@ msgstr "Lefuttatom a Z kalibraciot."
 #. MSG_TITLE_IDLER_CANNOT_HOME c=20
 #: ../../Firmware/mmu2/errors_list.h:127 ../../Firmware/mmu2/errors_list.h:164
 msgid "IDLER CANNOT HOME"
-msgstr ""
+msgstr "GORGO NEM MOZOG"
 
 #. MSG_TITLE_IDLER_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:126 ../../Firmware/mmu2/errors_list.h:165
 msgid "IDLER CANNOT MOVE"
-msgstr ""
+msgstr "GORGO NEM MOZOG"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:149 ../../Firmware/mmu2/errors_list.h:187
 msgid "INVALID TOOL"
-msgstr ""
+msgstr "HELYTELEN SZERSZAM"
 
 #. MSG_ADDITIONAL_SHEETS c=20 r=9
 #: ../../Firmware/ultralcd.cpp:4115
@@ -937,7 +948,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2530
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Bed kalibracio pontositasa"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:117 ../../Firmware/ultralcd.cpp:5487
@@ -947,7 +958,7 @@ msgstr "Info kepernyo"
 #. MSG_INIT_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5554
 msgid "Init. SD card"
-msgstr ""
+msgstr "SD kartya inic."
 
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2165
@@ -969,6 +980,8 @@ msgid ""
 "Internal runtime error. Try resetting the MMU unit or updating the firmware. "
 "If the issue persists, contact support."
 msgstr ""
+"Futas kozbeni hiba. Inditsd ujra az MMU-t vagy frissitsd a firmwaret. Ha a "
+"problema fennall, fordulj a supporthoz."
 
 #. MSG_FILAMENT_LOADED c=20 r=2
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3827
@@ -1040,7 +1053,7 @@ msgstr "Z magassag beall."
 #: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5098
 #: ../../Firmware/ultralcd.cpp:5178
 msgid "Load All"
-msgstr ""
+msgstr "Ossz.bet"
 
 #. MSG_LOAD_FILAMENT c=17
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:5100
@@ -1052,7 +1065,7 @@ msgstr "Filament betolt."
 #. MSG_LOAD_TO_EXTRUDER c=18
 #: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:5572
 msgid "Load to extruder"
-msgstr ""
+msgstr "Extruderbe toltes"
 
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:5573
@@ -1086,12 +1099,12 @@ msgstr "Hangos"
 #. MSG_TITLE_FW_UPDATE_NEEDED c=20
 #: ../../Firmware/mmu2/errors_list.h:151 ../../Firmware/mmu2/errors_list.h:189
 msgid "MMU FW UPDATE NEEDED"
-msgstr ""
+msgstr "MMU FW FRISSIT. KELL"
 
 #. MSG_DESC_QUEUE_FULL c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:230 ../../Firmware/mmu2/errors_list.h:268
 msgid "MMU Firmware internal error, please reset the MMU."
-msgstr ""
+msgstr "MMU Firmware hiba, kerlek inditsd ujra az MMU-t"
 
 #. MSG_MMU_MODE c=8
 #: ../../Firmware/messages.cpp:138 ../../Firmware/ultralcd.cpp:4379
@@ -1102,12 +1115,12 @@ msgstr "MMU Mod"
 #. MSG_TITLE_MMU_NOT_RESPONDING c=20
 #: ../../Firmware/mmu2/errors_list.h:146 ../../Firmware/mmu2/errors_list.h:184
 msgid "MMU NOT RESPONDING"
-msgstr ""
+msgstr "MMU NEM VALASZOL"
 
 #. MSG_MMU_RESTORE_TEMP c=20 r=4
 #: ../../Firmware/mmu2.cpp:598
 msgid "MMU Retry: Restoring temperature..."
-msgstr ""
+msgstr "MMU Ujra: Homerseklet visszaallitasa"
 
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1187
@@ -1126,6 +1139,8 @@ msgid ""
 "MMU unit not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
+"Az MMU helytelenul valaszol. Nezd meg a kabelezest es a konnektorokat. Ha a "
+"problema fennall, keresd a supportot."
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:226 ../../Firmware/mmu2/errors_list.h:264
@@ -1133,6 +1148,8 @@ msgid ""
 "MMU unit not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
+"Az MMU nem valaszol. Nezd meg a kabelezest es a konnektorokat. Ha a problema "
+"fennall, keresd a supportot."
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1679
@@ -1212,13 +1229,19 @@ msgstr "Modell"
 #: ../../Firmware/mmu2/errors_list.h:261 ../../Firmware/mmu2/errors_list.h:262
 #: ../../Firmware/mmu2/errors_list.h:263
 msgid "More details online."
-msgstr ""
+msgstr "Tovabbi reszletek a neten."
+
+#. MSG_BTN_MORE c=5
+#: ../../Firmware/mmu2/errors_list.h:287
+#: ../../Firmware/mmu2_error_converter.cpp:153
+msgid "More⏬"
+msgstr "Tobb⏬"
 
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:95 ../../Firmware/ultralcd.cpp:6981
 #: ../../Firmware/ultralcd.cpp:6990 ../../Firmware/ultralcd.cpp:7008
 msgid "Motor"
-msgstr ""
+msgstr "Motor"
 
 #. MSG_MOVE_X c=18
 #: ../../Firmware/ultralcd.cpp:3509
@@ -1244,7 +1267,7 @@ msgstr "Tengely mozgatasa"
 #: ../../Firmware/mmu2_progress_converter.cpp:30
 #: ../../Firmware/mmu2_progress_converter.cpp:61
 msgid "Moving selector"
-msgstr ""
+msgstr "Szelektor mozgatasa"
 
 #. MSG_NA c=3
 #: ../../Firmware/menu.cpp:196 ../../Firmware/messages.cpp:128
@@ -1253,7 +1276,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4230 ../../Firmware/ultralcd.cpp:4232
 #: ../../Firmware/ultralcd.cpp:5834
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:199
@@ -1291,7 +1314,7 @@ msgstr "Nincs"
 #: ../../Firmware/ultralcd.cpp:4379 ../../Firmware/ultralcd.cpp:4395
 #: ../../Firmware/ultralcd.cpp:4414 ../../Firmware/ultralcd.cpp:5761
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #. MSG_SELFTEST_NOTCONNECTED c=20
 #: ../../Firmware/ultralcd.cpp:6968
@@ -1338,7 +1361,7 @@ msgstr "Fuv. atm."
 #: ../../Firmware/mmu2_progress_converter.cpp:8
 #: ../../Firmware/mmu2_progress_converter.cpp:34
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #. MSG_OFF c=3
 #: ../../Firmware/SpoolJoin.cpp:40 ../../Firmware/menu.cpp:467
@@ -1380,7 +1403,7 @@ msgstr "Egyszer"
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9677 ../../Firmware/messages.cpp:168
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "SZUNET HOMERSEK.HIBA"
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1036
@@ -1425,13 +1448,13 @@ msgstr "PINDA kalibracio sikeres es aktiv. A Beallitasok ->PINDA kal."
 #. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:122 ../../Firmware/mmu2/errors_list.h:160
 msgid "PULLEY CANNOT MOVE"
-msgstr ""
+msgstr "GORGO NEM MOZOG"
 
 #. MSG_PROGRESS_PARK_SELECTOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:26
 #: ../../Firmware/mmu2_progress_converter.cpp:57
 msgid "Parking selector"
-msgstr ""
+msgstr "Szelektor parkolasa"
 
 #. MSG_PAUSE c=5
 #: ../../Firmware/messages.cpp:154 ../../Firmware/ultralcd.cpp:4248
@@ -1448,7 +1471,7 @@ msgstr "Nyomtatas szunet"
 #: ../../Firmware/mmu2_progress_converter.cpp:24
 #: ../../Firmware/mmu2_progress_converter.cpp:55
 msgid "Performing cut"
-msgstr ""
+msgstr "Filament vagas"
 
 #. MSG_PAPER c=20 r=10
 #: ../../Firmware/Marlin_main.cpp:3306 ../../Firmware/messages.cpp:72
@@ -1614,7 +1637,7 @@ msgstr "Felfutes kiadashoz"
 #: ../../Firmware/mmu2_progress_converter.cpp:22
 #: ../../Firmware/mmu2_progress_converter.cpp:53
 msgid "Preparing blade"
-msgstr ""
+msgstr "Penge elokeszites"
 
 #. MSG_PRESS_KNOB c=20
 #: ../../Firmware/ultralcd.cpp:1809
@@ -1683,23 +1706,23 @@ msgstr ""
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:240
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
-msgstr ""
+msgstr "Gorgo motor nem mozog. Ellenorizd hogy tud-e mozogni es a kabelezest."
 
 #. MSG_PROGRESS_PUSH_FILAMENT c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:23
 #: ../../Firmware/mmu2_progress_converter.cpp:54
 msgid "Pushing filament"
-msgstr ""
+msgstr "Filament benyomasa"
 
 #. MSG_TITLE_QUEUE_FULL c=20
 #: ../../Firmware/mmu2/errors_list.h:150 ../../Firmware/mmu2/errors_list.h:188
 msgid "QUEUE FULL"
-msgstr ""
+msgstr "SOR TELE"
 
 #. MSG_RPI_PORT c=13
 #: ../../Firmware/messages.cpp:143 ../../Firmware/ultralcd.cpp:4805
 msgid "RPi port"
-msgstr ""
+msgstr "RPi port"
 
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:2753
@@ -1729,6 +1752,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
+"A kert szerszam nem erheto el ezen a hardveren. Nezd meg az T0-T4 indexen "
+"kivuli ertekeket a G kodban."
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:2754
@@ -1739,7 +1764,7 @@ msgstr "Ujrainditas"
 #. MSG_BTN_RESTART_MMU c=9
 #: ../../Firmware/mmu2/errors_list.h:283 ../../Firmware/mmu2/errors_list.h:293
 msgid "Reset MMU"
-msgstr ""
+msgstr "MMUreszet"
 
 #. MSG_CALIBRATE_BED_RESET c=18
 #: ../../Firmware/ultralcd.cpp:4888
@@ -1761,18 +1786,18 @@ msgstr "Nyomtatas folytatasa"
 #: ../../Firmware/mmu2_progress_converter.cpp:28
 #: ../../Firmware/mmu2_progress_converter.cpp:59
 msgid "Retract from FINDA"
-msgstr ""
+msgstr "FINDAtol visszahuz"
 
-#. MSG_BTN_RETRY c=8
+#. MSG_BTN_RETRY c=5
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
 msgid "Retry"
-msgstr ""
+msgstr "Ujra"
 
 #. MSG_PROGRESS_RETURN_SELECTOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:25
 #: ../../Firmware/mmu2_progress_converter.cpp:56
 msgid "Returning selector"
-msgstr ""
+msgstr "Szelektor vissza"
 
 #. MSG_RIGHT c=10
 #: ../../Firmware/ultralcd.cpp:2495
@@ -1803,12 +1828,12 @@ msgstr "SDkartya"
 #. MSG_TITLE_SELECTOR_CANNOT_HOME c=20
 #: ../../Firmware/mmu2/errors_list.h:125 ../../Firmware/mmu2/errors_list.h:162
 msgid "SELECTOR CANNOT HOME"
-msgstr ""
+msgstr "SZELEKTOR NEM HOMEOL"
 
 #. MSG_TITLE_SELECTOR_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:124 ../../Firmware/mmu2/errors_list.h:163
 msgid "SELECTOR CANNOT MOVE"
-msgstr ""
+msgstr "SZELEKTOR NEM MOZOG"
 
 #. MSG_STOPPED c=20
 #: ../../Firmware/Marlin_main.cpp:9706 ../../Firmware/messages.cpp:112
@@ -1867,7 +1892,7 @@ msgstr "Valassz homersekletet, ami megfelel a filamenthez."
 #: ../../Firmware/mmu2_progress_converter.cpp:21
 #: ../../Firmware/mmu2_progress_converter.cpp:52
 msgid "Selecting fil. slot"
-msgstr ""
+msgstr "Fil.poz.kivalasztasa"
 
 #. MSG_SELFTEST_OK c=20
 #: ../../Firmware/ultralcd.cpp:6522
@@ -2030,10 +2055,10 @@ msgstr "Halk"
 msgid "Steel sheets"
 msgstr "Acellapok"
 
-#. MSG_BTN_STOP c=8
+#. MSG_BTN_STOP c=5
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:295
 msgid "Stop"
-msgstr ""
+msgstr "Allj"
 
 #. MSG_STOP_PRINT c=18
 #: ../../Firmware/messages.cpp:111 ../../Firmware/ultralcd.cpp:5537
@@ -2061,47 +2086,47 @@ msgstr "Felcserelve"
 #. MSG_THERMAL_ANOMALY c=20
 #: ../../Firmware/messages.cpp:170 ../../Firmware/temperature.cpp:2440
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "Homersekl. anomalia"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
 #: ../../Firmware/temperature.cpp:2897
 msgid "TM autotune failed"
-msgstr ""
+msgstr "HM kalib. sikertelen"
 
 #. MSG_TITLE_TMC_DRIVER_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:134 ../../Firmware/mmu2/errors_list.h:172
 #: ../../Firmware/mmu2/errors_list.h:173 ../../Firmware/mmu2/errors_list.h:174
 msgid "TMC DRIVER ERROR"
-msgstr ""
+msgstr "TMC DRIVER HIBA"
 
 #. MSG_TITLE_TMC_DRIVER_RESET c=20
 #: ../../Firmware/mmu2/errors_list.h:137 ../../Firmware/mmu2/errors_list.h:175
 #: ../../Firmware/mmu2/errors_list.h:176 ../../Firmware/mmu2/errors_list.h:177
 msgid "TMC DRIVER RESET"
-msgstr ""
+msgstr "TMC DRIVER RESZET"
 
 #. MSG_TITLE_TMC_DRIVER_SHORTED c=20
 #: ../../Firmware/mmu2/errors_list.h:143 ../../Firmware/mmu2/errors_list.h:181
 #: ../../Firmware/mmu2/errors_list.h:182 ../../Firmware/mmu2/errors_list.h:183
 msgid "TMC DRIVER SHORTED"
-msgstr ""
+msgstr "TMC DRIVER ZARLAT"
 
 #. MSG_TITLE_TMC_OVERHEAT_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:131 ../../Firmware/mmu2/errors_list.h:169
 #: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:171
 msgid "TMC OVERHEAT ERROR"
-msgstr ""
+msgstr "TMC TULHEVULES HIBA"
 
 #. MSG_TITLE_TMC_UNDERVOLTAGE_ERROR c=20
 #: ../../Firmware/mmu2/errors_list.h:140 ../../Firmware/mmu2/errors_list.h:178
 #: ../../Firmware/mmu2/errors_list.h:179 ../../Firmware/mmu2/errors_list.h:180
 msgid "TMC UNDERVOLTAGE ERR"
-msgstr ""
+msgstr "TMC ALACSONY FESZ."
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2882
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Homers. modell kalib"
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4759
@@ -2116,13 +2141,15 @@ msgstr "Homersekletek"
 #. MSG_TESTING_FILAMENT c=20
 #: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2.cpp:426
 msgid "Testing filament"
-msgstr ""
+msgstr "Filament tesztelese"
 
 #. MSG_DESC_IDLER_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:205 ../../Firmware/mmu2/errors_list.h:244
 msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
+"A gorgo nem tud rendesen homeolni. Nezd meg, hogy gatolja-e valami a "
+"mozgasat."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:269
@@ -2130,12 +2157,16 @@ msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
+"Az MMU FW verzioja nem kompatibilis a nyomtatoeval. Kerlek frissitsd az MMU "
+"firmwaret."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
 msgstr ""
+"A szelektor nem tud rendesen homeolni. Nezd meg, hogy gatolja-e valami a "
+"mozgasat."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:3940
@@ -2197,7 +2228,7 @@ msgstr "Finomhangolas"
 #. MSG_TITLE_UNLOAD_MANUALLY c=20
 #: ../../Firmware/mmu2/errors_list.h:153 ../../Firmware/mmu2/errors_list.h:191
 msgid "UNLOAD MANUALLY"
-msgstr ""
+msgstr "VEDD KI KEZZEL"
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:233 ../../Firmware/mmu2/errors_list.h:271
@@ -2205,11 +2236,13 @@ msgid ""
 "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector "
 "is free. Check FINDA connection."
 msgstr ""
+"Varatlan FINDA ertek. Gyozodj meg rola hogy nincs a FINDA alatt filament es "
+"a szelektor ures. Nezd meg a FINDA csatlakozasat."
 
-#. MSG_BTN_UNLOAD c=8
+#. MSG_BTN_UNLOAD c=6
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
 msgid "Unload"
-msgstr ""
+msgstr "Kiadas"
 
 #. MSG_UNLOAD_FILAMENT c=16
 #: ../../Firmware/messages.cpp:115 ../../Firmware/ultralcd.cpp:5574
@@ -2228,13 +2261,13 @@ msgstr "Filament kiadasa"
 #: ../../Firmware/mmu2_progress_converter.cpp:11
 #: ../../Firmware/mmu2_progress_converter.cpp:37
 msgid "Unloading to FINDA"
-msgstr ""
+msgstr "Kiadas a FINDAhoz"
 
 #. MSG_PROGRESS_UNLOAD_PULLEY c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:12
 #: ../../Firmware/mmu2_progress_converter.cpp:38
 msgid "Unloading to pulley"
-msgstr ""
+msgstr "Kiadas a gorgohoz"
 
 #. MSG_FIL_FAILED c=20 r=5
 #: ../../Firmware/ultralcd.cpp:6265
@@ -2250,7 +2283,7 @@ msgstr "Feszultsegek"
 #: ../../Firmware/mmu2/errors_list.h:128 ../../Firmware/mmu2/errors_list.h:166
 #: ../../Firmware/mmu2/errors_list.h:167 ../../Firmware/mmu2/errors_list.h:168
 msgid "WARNING TMC TOO HOT"
-msgstr ""
+msgstr "FIGYELEM A TMC FORRO"
 
 #. MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3551
@@ -2327,7 +2360,7 @@ msgstr "X-korrekcio:"
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5609
 msgid "XFLASH init"
-msgstr ""
+msgstr "XFLASH inicializal"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1721
@@ -2357,7 +2390,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3340
 msgid ""
 "XYZ calibration compromised. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ kalibracio nem jo. Bal elso kal. pont nem elerheto."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3337
@@ -2381,7 +2414,7 @@ msgstr ""
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3328
 msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ kalibracio sikertelen. Bal elso kal. pont nem elerheto."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3319
@@ -2423,6 +2456,8 @@ msgid ""
 "You are using firmware alpha version. This is development version. Using "
 "this version is not recommended and may cause printer damage."
 msgstr ""
+"A firmware alfa verziojat hasznalod. Ez egy fejlesztoknek szant verzio es "
+"nem ajanlott a hasznalata."
 
 #. MSG_FW_VERSION_BETA c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:836
@@ -2430,6 +2465,8 @@ msgid ""
 "You are using firmware beta version. This is development version. Using this "
 "version is not recommended and may cause printer damage."
 msgstr ""
+"A firmware beta verziojat hasznalod. Ez egy fejlesztoknek szant verzio es "
+"nem ajanlott a hasznalata."
 
 #. MSG_WIZARD_QUIT c=20 r=8
 #: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4149
