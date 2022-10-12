@@ -297,32 +297,19 @@ const char STR_SEPARATOR[] PROGMEM = "------------";
 
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
-    char c;
-    uint8_t n = LCD_WIDTH - 1;
+    uint8_t len = LCD_WIDTH - 1;
     lcd_set_cursor(0, row);
-	lcd_print((lcd_encoder == menu_item)?'>':' ');
-    while( ((c = *longFilename) != '\0') && (n>0) )
-    {
-        lcd_print(c);
-        longFilename++;
-        n--;
-    }
-    lcd_space(n);
+    lcd_print((lcd_encoder == menu_item)?'>':' ');
+    lcd_print_pad(longFilename, len);
 }
+
 static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* longFilename)
 {
-    char c;
-    uint8_t n = LCD_WIDTH - 2;
+    uint8_t len = LCD_WIDTH - 2;
     lcd_set_cursor(0, row);
-	lcd_print((lcd_encoder == menu_item)?'>':' ');
-	lcd_print(LCD_STR_FOLDER[0]);
-    while( ((c = *longFilename) != '\0') && (n>0) )
-    {
-        lcd_print(c);
-        longFilename++;
-        n--;
-    }
-    lcd_space(n);
+    lcd_print((lcd_encoder == menu_item)?'>':' ');
+    lcd_print(LCD_STR_FOLDER[0]);
+    lcd_print_pad(longFilename, len);
 }
 
 
