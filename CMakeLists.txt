@@ -381,12 +381,11 @@ function(fw_add_variant variant_name)
 
     add_custom_command(
       OUTPUT ${LANG_BIN}
-      #[[
-      # Check po file:
-      #COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-check.py --no-warning --map ${LANG_MAP} ${PO_FILE}
-      #]]
+      # Check po file for errors _only_
+      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-check.py --errors-only --map ${LANG_MAP} ${PO_FILE}
+      # Build the catalog
       COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
-      # Check bin size:
+      # Check bin size
       COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_MAX_SIZE} -DLANG_FILE=${LANG_BIN} -P
               ${PROJECT_CMAKE_DIR}/Check_lang_size.cmake
       DEPENDS ${LANG_MAP} ${PO_FILE}
