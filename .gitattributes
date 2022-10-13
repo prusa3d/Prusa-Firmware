@@ -1,1 +1,2 @@
-lang/po/*.po text eol=crlf
+lang/po/*.po text eol=crlf diff=po
+lang/po/*.pot text diff=po
