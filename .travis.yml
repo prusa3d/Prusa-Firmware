@@ -37,7 +37,12 @@ jobs:
     - stage: tests
       script: ./.github/travis/cmake-test.sh
 
+    # language checks
+    - stage: lang
+      script: ./.github/travis/cmake-lang.sh
+
 stages:
   - cmake
+  - lang
   - legacy
   - tests
