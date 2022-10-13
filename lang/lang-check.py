@@ -211,7 +211,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
         return (errors == 0)
 
     # Missing translation
-    if len(translation) == 0 and (known_msgid or warn_empty):
+    if len(translation) == 0 and (warn_empty or (not no_warning and known_msgid)):
         errors += 1
         if rows == 1:
             print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
