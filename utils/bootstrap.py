@@ -53,11 +53,11 @@ dependencies = {
         },
     },
     'prusa3dboards': {
-        'version': '1.0.5-2',
+        'version': '1.0.6',
         'url': {
-            'Linux': 'https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-1.0.5-2.tar.bz2',
-            'Windows': 'https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-1.0.5-2.tar.bz2',
-            'Darwin': 'https://raw.githubusercontent.com/prusa3d/Arduino_Boards/devel/IDE_Board_Manager/prusa3dboards-1.0.5-2.tar.bz2',
+            'Linux': 'https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.6.tar.bz2',
+            'Windows': 'https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.6.tar.bz2',
+            'Darwin': 'https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-1.0.6.tar.bz2',
         }
     },
 }
