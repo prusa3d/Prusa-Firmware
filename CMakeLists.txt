@@ -294,8 +294,7 @@ function(add_base_binary variant_name)
   target_include_directories(
     ${variant_name}
     PRIVATE ${PRUSA_BOARDS_DIR}/cores/prusa_einsy_rambo/
-            ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/
-            ${CMAKE_SOURCE_DIR}/Firmware
+            ${PRUSA_BOARDS_DIR}/variants/prusa_einsy_rambo/ ${CMAKE_SOURCE_DIR}/Firmware
     )
 
   target_link_libraries(${variant_name} avr_core)
@@ -373,20 +372,34 @@ function(fw_add_variant variant_name)
     COMMENT "Generating ${variant_name} language map"
     )
 
+  # Base targets for language checks
+  add_custom_target(check_lang_${variant_name})
+  add_dependencies(check_lang check_lang_${variant_name})
+
   # Build language catalogs
   set(LANG_BINS "")
   foreach(LANG IN LISTS SELECTED_LANGUAGES)
     set(LANG_BIN ${LANG_TMP_DIR}/${variant_name}_${LANG}.bin)
     set(PO_FILE "${CMAKE_SOURCE_DIR}/lang/po/Firmware_${LANG}.po")
 
+    # Full language checks
+    add_custom_target(
+      check_lang_${variant_name}_${LANG}
+      COMMENT "Checking ${variant_name} language ${LANG}"
+      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-check.py --map ${LANG_MAP} ${PO_FILE}
+      DEPENDS ${LANG_MAP} ${PO_FILE}
+      USES_TERMINAL
+      )
+    add_dependencies(check_lang_${variant_name} check_lang_${variant_name}_${LANG})
+    add_dependencies(check_lang_${LANG} check_lang_${variant_name}_${LANG})
+
     add_custom_command(
       OUTPUT ${LANG_BIN}
-      #[[
-      # Check po file:
-      #COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lang/lang-check.py --no-warning --map ${LANG_MAP} ${PO_FILE}
-      #]]
+      # Check po file for errors _only_
+      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-check.py --errors-only --map ${LANG_MAP} ${PO_FILE}
+      # Build the catalog
       COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
-      # Check bin size:
+      # Check bin size
       COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_MAX_SIZE} -DLANG_FILE=${LANG_BIN} -P
               ${PROJECT_CMAKE_DIR}/Check_lang_size.cmake
       DEPENDS ${LANG_MAP} ${PO_FILE}
@@ -470,6 +483,13 @@ function(fw_add_variant variant_name)
 endfunction()
 
 if(CMAKE_CROSSCOMPILING)
+
+  # Main target for language checks
+  add_custom_target(check_lang)
+  foreach(LANG IN LISTS SELECTED_LANGUAGES)
+    add_custom_target(check_lang_${LANG})
+    add_dependencies(check_lang check_lang_${LANG})
+  endforeach()
 
   # build a list of all supported variants
   file(

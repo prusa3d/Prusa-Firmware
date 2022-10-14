@@ -211,7 +211,7 @@ def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty,
         return (errors == 0)
 
     # Missing translation
-    if len(translation) == 0 and (known_msgid or warn_empty):
+    if len(translation) == 0 and (warn_empty or (not no_warning and known_msgid)):
         errors += 1
         if rows == 1:
             print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
@@ -308,6 +308,9 @@ def main():
         "--no-suggest", action="store_true",
         help="Disable suggestions")
     parser.add_argument(
+        "--errors-only", action="store_true",
+        help="Only check errors")
+    parser.add_argument(
         "--pot", action="store_true",
         help="Do not check translations")
     parser.add_argument(
@@ -330,6 +333,10 @@ def main():
     if not os.path.isfile(args.po):
         print("{}: file does not exist or is not a regular file".format(args.po), file=stderr)
         return 1
+
+    if args.errors_only:
+        args.no_warning = True
+        args.no_suggest = True
 
     # load the symbol map to supress empty (but unused) translation warnings
     msgids = None
