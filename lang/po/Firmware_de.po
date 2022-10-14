@@ -561,7 +561,7 @@ msgstr "F. autoladen"
 #: ../../Firmware/messages.cpp:46 ../../Firmware/ultralcd.cpp:4232
 #: ../../Firmware/ultralcd.cpp:4239
 msgid "F. jam detect"
-msgstr ""
+msgstr "F. Stau erk."
 
 #. MSG_FSENSOR_RUNOUT c=13
 #: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4229
@@ -1448,7 +1448,7 @@ msgid ""
 "PINDA calibration is finished and active. It can be disabled in menu "
 "Settings->PINDA cal."
 msgstr ""
-"PINDA Kalibrierung ist fertig + aktiv. Es kann ausgeschaltet werden im Menu "
+"PINDA Kalibrierung ist fertig + aktiv. Es kann ausgeschaltet werden im Menü "
 "Einstellungen -> PINDA kal."
 
 #. MSG_TITLE_PULLEY_CANNOT_MOVE c=20
@@ -1865,7 +1865,7 @@ msgid ""
 "screen menu."
 msgstr ""
 "Wählen Sie ein Filament für Erste- Schichtkalibrierung aus und wählen Sie es "
-"im On-Screen-Menu aus."
+"im On-Screen-Menü aus."
 
 #. MSG_SELECT_EXTRUDER c=20
 #: ../../Firmware/Marlin_main.cpp:3519 ../../Firmware/Tcodes.cpp:35
@@ -2476,7 +2476,7 @@ msgstr ""
 #: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4149
 msgid "You can always resume the Wizard from Calibration -> Wizard."
 msgstr ""
-"Sie können den Assistenten immer im Menu neu starten: Kalibrierung -> "
+"Sie können den Assistenten immer im Menü neu starten: Kalibrierung -> "
 "Assistent"
 
 #. MSG_Z_CORRECTION c=13
