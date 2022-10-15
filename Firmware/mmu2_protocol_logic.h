@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <avr/pgmspace.h>
 // #include <array> //@@TODO Don't we have STL for AVR somewhere?
 template<typename T, uint8_t N>
 class array {
@@ -70,7 +71,7 @@ public:
 /// Logic layer of the MMU vs. printer communication protocol
 class ProtocolLogic {
 public:
-    ProtocolLogic(MMU2Serial *uart);
+    ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance);
 
     /// Start/Enable communication with the MMU
     void Start();
@@ -91,6 +92,17 @@ public:
     void ReadRegister(uint8_t address);
     void WriteRegister(uint8_t address, uint16_t data);
 
+    /// Sets the extra load distance to be reported to the MMU.
+    /// Beware - this call doesn't send anything to the MMU.
+    /// The MMU gets the newly set value either by a communication restart or via an explicit WriteRegister call
+    inline void PlanExtraLoadDistance(uint8_t eld_mm){
+        initRegs8[0] = eld_mm;
+    }
+    /// @returns the currently preset extra load distance
+    inline uint8_t ExtraLoadDistance()const {
+        return initRegs8[0];
+    }
+
     /// Step the state machine
     StepStatus Step();
 
@@ -110,11 +122,11 @@ public:
     }
 
     inline bool FindaPressed() const {
-        return findaPressed;
+        return regs8[0];
     }
 
     inline uint16_t FailStatistics() const {
-        return failStatistics;
+        return regs16[0];
     }
 
     inline uint8_t MmuFwVersionMajor() const {
@@ -187,10 +199,11 @@ private:
         QuerySent,
         CommandSent,
         FilamentSensorStateSent,
-        FINDAReqSent,
-        StatisticsSent,
+        Reading8bitRegisters,
+        Reading16bitRegisters,
+        WritingInitRegisters,
         ButtonSent,
-        ReadRegisterSent,
+        ReadRegisterSent, // standalone requests for reading registers - from higher layers
         WriteRegisterSent,
 
         // States which do not expect a message - MSb set
@@ -217,7 +230,13 @@ private:
     /// So far, the only such a case is the filament sensor, but there can be more like this in the future.
     void CheckAndReportAsyncEvents();
     void SendQuery();
-    void SendFINDAQuery();
+    void StartReading8bitRegisters();
+    void ProcessRead8bitRegister();
+    void StartReading16bitRegisters();
+    ScopeState ProcessRead16bitRegister(ProtocolLogic::ScopeState stateAtEnd);
+    void StartWritingInitRegisters();
+    /// @returns true when all registers have been written into the MMU
+    bool ProcessWritingInitRegister();
     void SendAndUpdateFilamentSensor();
     void SendButton(uint8_t btn);
     void SendVersion(uint8_t stage);
@@ -278,7 +297,7 @@ private:
     State state; ///< internal state of ProtocolLogic
 
     Protocol protocol; ///< protocol codec
-    
+
     array<uint8_t, 16> lastReceivedBytes; ///< remembers the last few bytes of incoming communication for diagnostic purposes
     uint8_t lrb;
 
@@ -290,8 +309,25 @@ private:
 
     uint8_t lastFSensor; ///< last state of filament sensor
 
-    bool findaPressed;
-    uint16_t failStatistics;
+    // 8bit registers
+    static constexpr uint8_t regs8Count = 3;
+    static_assert(regs8Count > 0); // code is not ready for empty lists of registers
+    static const uint8_t regs8Addrs[regs8Count] PROGMEM;
+    uint8_t regs8[regs8Count];
+
+    // 16bit registers
+    static constexpr uint8_t regs16Count = 2;
+    static_assert(regs16Count > 0); // code is not ready for empty lists of registers
+    static const uint8_t regs16Addrs[regs16Count] PROGMEM;
+    uint16_t regs16[regs16Count];
+
+    // 8bit init values to be sent to the MMU after line up
+    static constexpr uint8_t initRegs8Count = 1;
+    static_assert(initRegs8Count > 0); // code is not ready for empty lists of registers
+    static const uint8_t initRegs8Addrs[initRegs8Count] PROGMEM;
+    uint8_t initRegs8[initRegs8Count];
+
+    uint8_t regIndex;
 
     uint8_t mmuFwVersion[3];
     uint16_t mmuFwVersionBuild;

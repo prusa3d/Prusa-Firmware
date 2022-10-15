@@ -3,7 +3,7 @@
 // timer2 is used for System timer.
 
 #include "system_timer.h"
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 
 #ifdef SYSTEM_TIMER_2
 

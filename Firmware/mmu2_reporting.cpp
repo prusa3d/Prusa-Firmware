@@ -11,14 +11,14 @@
 
 namespace MMU2 {
 
-const char * const ProgressCodeToText(uint16_t pc); // we may join progress convertor and reporter together
+const char * ProgressCodeToText(uint16_t pc); // we may join progress convertor and reporter together
 
-void BeginReport(CommandInProgress cip, uint16_t ec) {
+void BeginReport(CommandInProgress /*cip*/, uint16_t ec) {
     custom_message_type = CustomMsg::MMUProgress;
     lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
 }
 
-void EndReport(CommandInProgress cip, uint16_t ec) {
+void EndReport(CommandInProgress /*cip*/, uint16_t /*ec*/) {
     // clear the status msg line - let the printed filename get visible again
     custom_message_type = CustomMsg::Status;
 }
@@ -52,7 +52,7 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     //! |MMU FW update needed|     <- title/header of the error: max 20 characters
     //! |prusa3d.com/ERR04504|     <- URL 20 characters
     //! |FI:1 FS:1  5>3 t201°|     <- status line, t is thermometer symbol
-    //! |>Retry >Done >MoreW |     <- buttons
+    //! |>Retry   >Done    >W|     <- buttons
     bool two_choices = false;
 
     // Read and determine what operations should be shown on the menu
@@ -74,9 +74,9 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
 
     ReportErrorHookSensorLineRender();
-    
+
     // Render the choices
-    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 10 : 7, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
+    lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 18 : 9, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
 }
 
 extern void ReportErrorHookSensorLineRender()
@@ -166,12 +166,13 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
         lcd_print(current_selection == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
         if (two_choices == false)
         {
-            lcd_set_cursor(7, 3);
+            lcd_set_cursor(9, 3);
             lcd_print(current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
-            lcd_set_cursor(13, 3);
+            lcd_set_cursor(18, 3);
             lcd_print(current_selection == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
         } else {
-            lcd_set_cursor(10, 3);
+            // More button for two button screen
+            lcd_set_cursor(18, 3);
             lcd_print(current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
         }
         // Consume rotation event and make feedback sound
@@ -216,8 +217,8 @@ enum class ReportErrorHookStates : uint8_t {
 
 enum ReportErrorHookStates ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
 
-void ReportErrorHook(uint16_t ec, uint8_t res) {
-    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && res == MMU2::ErrorSourceMMU)
+void ReportErrorHook(uint16_t ec) {
+    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU)
     {
         // If the error code suddenly changes to OK, that means
         // a button was pushed on the MMU and the LCD should

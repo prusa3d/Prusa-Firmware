@@ -4,7 +4,7 @@
 //! @brief First layer (Z offset) calibration
 
 #include "first_lay_cal.h"
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 #include "language.h"
 #include "Marlin.h"
 #include "cmdqueue.h"
@@ -48,8 +48,8 @@ void lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
 //! @brief Print intro line
 void lay1cal_intro_line()
 {
-    static const char cmd_intro_mmu_3[] PROGMEM = "G1 X55.0 E32.0 F1073.0";
-    static const char cmd_intro_mmu_4[] PROGMEM = "G1 X5.0 E32.0 F1800.0";
+    static const char cmd_intro_mmu_3[] PROGMEM = "G1 X55.0 E29.0 F1073.0";
+    static const char cmd_intro_mmu_4[] PROGMEM = "G1 X5.0 E29.0 F1800.0";
     static const char cmd_intro_mmu_5[] PROGMEM = "G1 X55.0 E8.0 F2000.0";
     static const char cmd_intro_mmu_6[] PROGMEM = "G1 Z0.3 F1000.0";
     static const char cmd_intro_mmu_7[] PROGMEM = "G92 E0.0";

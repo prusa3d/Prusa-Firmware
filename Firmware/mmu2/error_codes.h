@@ -37,11 +37,11 @@ enum class ErrorCode : uint_fast16_t {
     HOMING_FAILED = 0x8007, ///< generic homing failed error - always reported with the corresponding axis bit set (Idler or Selector) as follows:
     HOMING_SELECTOR_FAILED = HOMING_FAILED | TMC_SELECTOR_BIT, ///< E32903 the Selector was unable to home properly - that means something is blocking its movement
     HOMING_IDLER_FAILED = HOMING_FAILED | TMC_IDLER_BIT, ///< E33031 the Idler was unable to home properly - that means something is blocking its movement
-    STALLED_PULLEY = HOMING_FAILED | TMC_PULLEY_BIT, ///< E32839 for the Pulley "homing" means just stallguard detected during Pulley's operation (Pulley doesn't home)
+    STALLED_PULLEY = HOMING_FAILED | TMC_PULLEY_BIT, ///< E32839 for the Pulley "homing" means just StallGuard detected during Pulley's operation (Pulley doesn't home)
 
     FINDA_VS_EEPROM_DISREPANCY = 0x8008, ///< E32776 FINDA is pressed but we have no such record in EEPROM - this can only happen at the start of the MMU and can be resolved by issuing an Unload command
 
-    FSENSOR_TOO_EARLY = 0x8009, ///< E32777 FSensor triggered while doing FastFeedToExtruder - that means either:
+    FSENSOR_TOO_EARLY = 0x8009, ///< E32777 FSensor triggered while doing FastFeedToBondtech - that means either:
     ///< - the PTFE is too short
     ///< - a piece of filament was left inside - pushed in front of the loaded filament causing the fsensor trigger too early
     ///< - fsensor is faulty producing bogus triggers
@@ -60,7 +60,7 @@ enum class ErrorCode : uint_fast16_t {
 
     /// TMC driver init error - TMC dead or bad communication
     /// - E33344 Pulley TMC driver
-    /// - E33404 Selector TMC driver
+    /// - E33408 Selector TMC driver
     /// - E33536 Idler TMC driver
     /// - E33728 All 3 TMC driver
     TMC_IOIN_MISMATCH = 0x8200,
@@ -105,5 +105,12 @@ enum class ErrorCode : uint_fast16_t {
     /// - E49280 Selector TMC driver
     /// - E49408 Idler TMC driver
     /// - E49600 All 3 TMC driver
-    TMC_OVER_TEMPERATURE_ERROR = 0xC000
+    TMC_OVER_TEMPERATURE_ERROR = 0xC000,
+
+    /// TMC driver - IO pins are unreliable. While in theory it's recoverable, in practice it most likely
+    /// means your hardware is borked (we can't command the drivers reliably via STEP/EN/DIR due to electrical
+    /// issues or hardware fault. Possible "fixable" cause is undervoltage on the 5v logic line.
+    /// Unfixable possible cause: bad or cracked solder joints on the PCB, failed shift register, failed driver.
+    MMU_SOLDERING_NEEDS_ATTENTION = 0xC200,
+
 };

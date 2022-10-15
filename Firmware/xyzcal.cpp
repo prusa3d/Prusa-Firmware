@@ -1,6 +1,6 @@
 //xyzcal.cpp - xyz calibration with image processing
 
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 #ifdef NEW_XYZCAL
 
 #include "xyzcal.h"
@@ -551,7 +551,7 @@ void go_manhattan(int16_t x, int16_t y, int16_t z, int16_t acc, uint16_t min_del
 	// DBG(_n("\n"));
 }
 
-void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t *pixels){
+void __attribute__((noinline)) xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t *pixels){
 	if (!pixels)
 		return;
 	int16_t z_trig;

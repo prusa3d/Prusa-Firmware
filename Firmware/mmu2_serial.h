@@ -12,7 +12,7 @@ public:
     void close();
     int read();
     void flush();
-    size_t write(const uint8_t *buffer, size_t size);
+    void write(const uint8_t *buffer, size_t size);
 };
 
 extern MMU2Serial mmu2Serial;

@@ -79,6 +79,20 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     case (uint16_t)ErrorCode::FINDA_VS_EEPROM_DISREPANCY:
         return FindErrorIndex(ERR_SYSTEM_UNLOAD_MANUALLY);
     }
+    
+    // Electrical issues which can be detected somehow.
+    // Need to be placed before TMC-related errors in order to process couples of error bits between single ones
+    // and to keep the code size down.
+    if (ec & (uint16_t)ErrorCode::TMC_PULLEY_BIT) {
+        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+            return FindErrorIndex(ERR_ELECTRICAL_PULLEY_SELFTEST_FAILED);
+    } else if (ec & (uint16_t)ErrorCode::TMC_SELECTOR_BIT) {
+        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+            return FindErrorIndex(ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED);
+    } else if (ec & (uint16_t)ErrorCode::TMC_IDLER_BIT) {
+        if ((ec & (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION) == (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION)
+            return FindErrorIndex(ERR_ELECTRICAL_IDLER_SELFTEST_FAILED);
+    }
 
     // TMC-related errors - multiple of these can occur at once
     // - in such a case we report the first which gets found/converted into Prusa-Error-Codes (usually the fact, that one TMC has an issue is serious enough)
@@ -132,24 +146,24 @@ uint16_t PrusaErrorCode(uint8_t i){
     return pgm_read_word(errorCodes + i);
 }
 
-const char * const PrusaErrorTitle(uint8_t i){
-    return (const char * const)pgm_read_ptr(errorTitles + i);
+const char * PrusaErrorTitle(uint8_t i){
+    return (const char *)pgm_read_ptr(errorTitles + i);
 }
 
-const char * const PrusaErrorDesc(uint8_t i){
-    return (const char * const)pgm_read_ptr(errorDescs + i);
+const char * PrusaErrorDesc(uint8_t i){
+    return (const char *)pgm_read_ptr(errorDescs + i);
 }
 
 uint8_t PrusaErrorButtons(uint8_t i){
     return pgm_read_byte(errorButtons + i);
 }
 
-const char * const PrusaErrorButtonTitle(uint8_t bi){
+const char * PrusaErrorButtonTitle(uint8_t bi){
     // -1 represents the hidden NoOperation button which is not drawn in any way
-    return (const char * const)pgm_read_ptr(btnOperation + bi - 1);
+    return (const char *)pgm_read_ptr(btnOperation + bi - 1);
 }
 
-const char * const PrusaErrorButtonMore(){
+const char * PrusaErrorButtonMore(){
     return _R(MSG_BTN_MORE);
 }
 

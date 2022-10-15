@@ -1,8 +1,8 @@
 //messages.c
 #include "language.h"
 
-//this is because we need include Configuration_prusa.h (CUSTOM_MENDEL_NAME)
-#include "Configuration_prusa.h"
+//this is because we need CUSTOM_MENDEL_NAME
+#include "Configuration_var.h"
 
 //internationalized messages
 const char MSG_ALWAYS[] PROGMEM_I1 = ISTR("Always"); ////MSG_ALWAYS c=6
@@ -172,6 +172,9 @@ extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");///
 extern const char MSG_LOAD_ALL[] PROGMEM_I1 = ISTR("Load All"); ////MSG_LOAD_ALL c=18
 
 //not internationalized messages
+#if 0
+const char MSG_FW_VERSION_BETA[] PROGMEM_N1 = "You are using a BETA firmware version! It is in a development state! Use this version with CAUTION as it may DAMAGE the printer!"; ////MSG_FW_VERSION_BETA c=20 r=8
+#endif
 const char MSG_SPOOL_JOIN[] PROGMEM_N1 = "SpoolJoin"; ////MSG_SPOOL_JOIN c=13
 const char MSG_FIRMWARE[] PROGMEM_N1 = "Firmware"; ////MSG_FIRMWARE c=8
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_N1 = "FlashAir"; ////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY c=8

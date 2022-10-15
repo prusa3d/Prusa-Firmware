@@ -297,32 +297,19 @@ const char STR_SEPARATOR[] PROGMEM = "------------";
 
 static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* longFilename)
 {
-    char c;
-    uint8_t n = LCD_WIDTH - 1;
+    uint8_t len = LCD_WIDTH - 1;
     lcd_set_cursor(0, row);
-	lcd_print((lcd_encoder == menu_item)?'>':' ');
-    while( ((c = *longFilename) != '\0') && (n>0) )
-    {
-        lcd_print(c);
-        longFilename++;
-        n--;
-    }
-    lcd_space(n);
+    lcd_print((lcd_encoder == menu_item)?'>':' ');
+    lcd_print_pad(longFilename, len);
 }
+
 static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* longFilename)
 {
-    char c;
-    uint8_t n = LCD_WIDTH - 2;
+    uint8_t len = LCD_WIDTH - 2;
     lcd_set_cursor(0, row);
-	lcd_print((lcd_encoder == menu_item)?'>':' ');
-	lcd_print(LCD_STR_FOLDER[0]);
-    while( ((c = *longFilename) != '\0') && (n>0) )
-    {
-        lcd_print(c);
-        longFilename++;
-        n--;
-    }
-    lcd_space(n);
+    lcd_print((lcd_encoder == menu_item)?'>':' ');
+    lcd_print(LCD_STR_FOLDER[0]);
+    lcd_print_pad(longFilename, len);
 }
 
 
@@ -621,6 +608,8 @@ void lcdui_print_status_line(void) {
         case CustomMsg::M117:   // M117 Set the status line message on the LCD
         case CustomMsg::Status: // Nothing special, print status message normally
         case CustomMsg::M0Wait: // M0/M1 Wait command working even from SD
+        case CustomMsg::FilamentLoading: // If loading filament, print status
+        case CustomMsg::MMUProgress: // MMU Progress Codes
             lcd_print_pad(lcd_status_message, LCD_WIDTH);
         break;
         case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
@@ -642,9 +631,6 @@ void lcdui_print_status_line(void) {
                     custom_message_state--;
                 }
             }
-            break;
-        case CustomMsg::FilamentLoading: // If loading filament, print status
-            lcd_print_pad(lcd_status_message, LCD_WIDTH);
             break;
         case CustomMsg::PidCal: // PID tuning in progress
             lcd_print_pad(lcd_status_message, LCD_WIDTH);
@@ -669,10 +655,6 @@ void lcdui_print_status_line(void) {
             break;
         case CustomMsg::Resuming: // Resuming
             lcd_puts_at_P(0, 3, _T(MSG_RESUMING_PRINT));
-            break;
-        case CustomMsg::MMUProgress:
-            // set up at mmu2_reporting.cpp, just do nothing here
-            lcd_print(lcd_status_message);
             break;
         }
     }
@@ -1657,7 +1639,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(PSTR(NOZZLE_TYPE));
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17
-  MENU_ITEM_BACK_P(PSTR(__DATE__));
+  MENU_ITEM_BACK_P(PSTR(SOURCE_DATE_EPOCH));
 
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
   MENU_ITEM_BACK_P(STR_SEPARATOR);
@@ -3165,25 +3147,21 @@ uint8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool all
 //! @param selected Show first choice as selected if true, the second otherwise
 //! @param first_choice text caption of first possible choice
 //! @param second_choice text caption of second possible choice
-//! @param second_col column on LCD where second choice is rendered. If third choice is set, this value is hardcoded to 7
+//! @param second_col column on LCD where second choice is rendered.
 //! @param third_choice text caption of third, optional, choice.
 void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice)
 {
     lcd_set_cursor(0, 3);
     lcd_print(selected == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
     lcd_puts_P(first_choice);
+    lcd_set_cursor(second_col, 3);
+    lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
+    lcd_puts_P(second_choice);
     if (third_choice)
     {
-        lcd_set_cursor(7, 3);
-        lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
-        lcd_puts_P(second_choice);
-        lcd_set_cursor(13, 3);
+        lcd_set_cursor(18, 3);
         lcd_print(selected == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
         lcd_puts_P(third_choice);
-    } else {
-        lcd_set_cursor(second_col, 3);
-        lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
-        lcd_puts_P(second_choice);
     }
 }
 
@@ -7525,12 +7503,12 @@ static void lcd_updatestatus(const char *message, bool progmem = false)
     else
         strncpy(lcd_status_message, message, LCD_WIDTH);
 
-	lcd_status_message[LCD_WIDTH] = 0;
+    lcd_status_message[LCD_WIDTH] = 0;
 
-	SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
+    SERIAL_PROTOCOLLNRPGM(MSG_LCD_STATUS_CHANGED);
 
-	// hack lcd_draw_update to 1, i.e. without clear
-	lcd_draw_update = 1;
+    // hack lcd_draw_update to 1, i.e. without clear
+    lcd_draw_update = 1;
 }
 
 void lcd_setstatus(const char* message)

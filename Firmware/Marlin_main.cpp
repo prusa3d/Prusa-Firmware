@@ -828,30 +828,31 @@ void factory_reset()
 	}
 	KEEPALIVE_STATE(IN_HANDLER);
 }
-
+#if 0
 void show_fw_version_warnings() {
 	if (FW_DEV_VERSION == FW_VERSION_GOLD || FW_DEV_VERSION == FW_VERSION_RC) return;
 	switch (FW_DEV_VERSION) {
-	case(FW_VERSION_ALPHA):   lcd_show_fullscreen_message_and_wait_P(_i("You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage."));   break;////MSG_FW_VERSION_ALPHA c=20 r=8
-	case(FW_VERSION_BETA):    lcd_show_fullscreen_message_and_wait_P(_i("You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."));    break;////MSG_FW_VERSION_BETA c=20 r=8
+	case(FW_VERSION_BETA):    lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA);   break;
+	case(FW_VERSION_ALPHA):
   case(FW_VERSION_DEVEL):
 	case(FW_VERSION_DEBUG):
     lcd_update_enable(false);
     lcd_clear();
-  #if FW_DEV_VERSION == FW_VERSION_DEVEL
+  #if (FW_DEV_VERSION == FW_VERSION_DEVEL || FW_DEV_VERSION == FW_VERSION_ALPHA)
     lcd_puts_at_P(0, 0, PSTR("Development build !!"));
   #else
     lcd_puts_at_P(0, 0, PSTR("Debbugging build !!!"));
   #endif
     lcd_puts_at_P(0, 1, PSTR("May destroy printer!"));
-    lcd_puts_at_P(0, 2, PSTR("ver ")); lcd_puts_P(PSTR(FW_VERSION_FULL));
-    lcd_puts_at_P(0, 3, PSTR(FW_REPOSITORY));
+    lcd_puts_at_P(0, 2, PSTR("FW")); lcd_puts_P(PSTR(FW_VERSION_FULL));
+    lcd_puts_at_P(0, 3, PSTR("Repo: ")); lcd_puts_P(PSTR(FW_REPOSITORY));
     lcd_wait_for_click();
     break;
 //	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
 	}
 	lcd_update_enable(true);
 }
+#endif
 
 #if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
 //! @brief try to check if firmware is on right type of printer
@@ -1216,8 +1217,6 @@ void setup()
 	SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
 	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR
 	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
-	SERIAL_ECHOPGM("Compiled: ");
-	SERIAL_ECHOLNPGM(__DATE__);
 #endif
 #endif
 
@@ -1487,7 +1486,9 @@ void setup()
 #if defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
     check_if_fw_is_on_right_printer();
 #endif //defined(FILAMENT_SENSOR) && defined(FSENSOR_PROBING)
+#if 0
     show_fw_version_warnings();    
+#endif
   }
 
   switch (hw_changed) { 
@@ -1593,17 +1594,17 @@ void setup()
       manage_heater(); // Update temperatures 
 #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
 		printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED));
-#endif 
+#endif
      if ( degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET) ){ 
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Automatic recovery!")); 
-          #endif 
+          #endif
          recover_print(1); 
       } 
       else{ 
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
         puts_P(_N("Normal recovery!")); 
-          #endif 
+          #endif
           if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) == LCD_LEFT_BUTTON_CHOICE) {
               recover_print(0); 
           } else { 
@@ -4570,7 +4571,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
         retract(false,retracted_swap[active_extruder]);
        #else
         retract(false);
-       #endif 
+       #endif
       break;
 #endif //FWRETRACT
 
@@ -11345,11 +11346,11 @@ void restore_print_from_ram_and_continue(float e_move)
     // restore bed temperature (bed can be disabled during a thermal warning)
     if (degBed() != saved_bed_temperature)
         setTargetBed(saved_bed_temperature);
-	fanSpeed = saved_fan_speed;
-	restore_extruder_temperature_from_ram();
-	axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
-	float e = saved_pos[E_AXIS] - e_move;
-	plan_set_e_position(e);
+    fanSpeed = saved_fan_speed;
+    restore_extruder_temperature_from_ram();
+    axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
+    float e = saved_pos[E_AXIS] - e_move;
+    plan_set_e_position(e);
   
   #ifdef FANCHECK
     fans_check_enabled = false;

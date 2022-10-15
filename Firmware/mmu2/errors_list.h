@@ -54,6 +54,9 @@ typedef enum : uint16_t {
     ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_SHORTED = 314,
     ERR_ELECTRICAL_IDLER_TMC_DRIVER_SHORTED = 324,
 
+    ERR_ELECTRICAL_PULLEY_SELFTEST_FAILED = 305,
+    ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED = 315,
+    ERR_ELECTRICAL_IDLER_SELFTEST_FAILED = 325,
 
     ERR_CONNECT = 400,
     ERR_CONNECT_MMU_NOT_RESPONDING = 401,
@@ -104,6 +107,9 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_ELECTRICAL_PULLEY_TMC_DRIVER_SHORTED,
     ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_SHORTED,
     ERR_ELECTRICAL_IDLER_TMC_DRIVER_SHORTED,
+    ERR_ELECTRICAL_PULLEY_SELFTEST_FAILED,
+    ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED,
+    ERR_ELECTRICAL_IDLER_SELFTEST_FAILED,
     ERR_CONNECT_MMU_NOT_RESPONDING,
     ERR_CONNECT_COMMUNICATION_ERROR,
     ERR_SYSTEM_FILAMENT_ALREADY_LOADED, 
@@ -143,6 +149,7 @@ static const char MSG_TITLE_TMC_UNDERVOLTAGE_ERROR[] PROGMEM_I1  = ISTR("TMC UND
 static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1      = ISTR("TMC DRIVER SHORTED"); ////MSG_TITLE_TMC_DRIVER_SHORTED c=20
 //static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
 //static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
+static const char MSG_TITLE_SELFTEST_FAILED[] PROGMEM_I1      = ISTR("MMU SELFTEST FAILED"); ////MSG_TITLE_SELFTEST_FAILED c=20
 static const char MSG_TITLE_MMU_NOT_RESPONDING[] PROGMEM_I1      = ISTR("MMU NOT RESPONDING"); ////MSG_TITLE_MMU_NOT_RESPONDING c=20
 static const char MSG_TITLE_COMMUNICATION_ERROR[] PROGMEM_I1     = ISTR("COMMUNICATION ERROR"); ////MSG_TITLE_COMMUNICATION_ERROR c=20
 static const char MSG_TITLE_FIL_ALREADY_LOADED[] PROGMEM_I1      = ISTR("FILAMENT ALREADY LOA"); ////MSG_TITLE_FIL_ALREADY_LOADED c=20
@@ -181,6 +188,9 @@ static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_TMC_DRIVER_SHORTED),
     _R(MSG_TITLE_TMC_DRIVER_SHORTED),
     _R(MSG_TITLE_TMC_DRIVER_SHORTED),
+    _R(MSG_TITLE_SELFTEST_FAILED),
+    _R(MSG_TITLE_SELFTEST_FAILED),
+    _R(MSG_TITLE_SELFTEST_FAILED),
     _R(MSG_TITLE_MMU_NOT_RESPONDING),
     _R(MSG_TITLE_COMMUNICATION_ERROR),
     _R(MSG_TITLE_FIL_ALREADY_LOADED),
@@ -261,6 +271,9 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_TMC), // descPULLEY_TMC_DRIVER_SHORTED
     _R(MSG_DESC_TMC), // descSELECTOR_TMC_DRIVER_SHORTED
     _R(MSG_DESC_TMC), // descIDLER_TMC_DRIVER_SHORTED
+    _R(MSG_DESC_TMC), // descPULLEY_SELFTEST_FAILED
+    _R(MSG_DESC_TMC), // descSELECTOR_SELFTEST_FAILED
+    _R(MSG_DESC_TMC), // descIDLER_SELFTEST_FAILED
     _R(MSG_DESC_MMU_NOT_RESPONDING),
     _R(MSG_DESC_COMMUNICATION_ERROR),
     _R(MSG_DESC_FILAMENT_ALREADY_LOADED),
@@ -273,18 +286,19 @@ static const char * const errorDescs[] PROGMEM = {
 
 // we have max 3 buttons/operations to select from
 // one of them is "More" to show the explanation text normally hidden in the next screens.
+// It is displayed with W (Double down arrow, special character from CGRAM)
 // 01234567890123456789
-// >bttxt >bttxt>MoreW
-// Therefore at least some of the buttons, which can occur on the screen together, need to be 5-chars long max @@TODO.
+// >bttxt   >bttxt   >W
+// Therefore at least some of the buttons, which can occur on the screen together, can only be 8-chars long max @@TODO.
 // Beware - we only have space for 2 buttons on the LCD while the MMU has 3 buttons
 // -> the left button on the MMU is not used/rendered on the LCD (it is also almost unused on the MMU side)
-static const char MSG_BTN_RETRY[] PROGMEM_I1 = ISTR("Retry"); ////MSG_BTN_RETRY c=5
-static const char MSG_BTN_CONTINUE[] PROGMEM_I1 = ISTR("Done"); ////MSG_BTN_CONTINUE c=5
+static const char MSG_BTN_RETRY[] PROGMEM_I1 = ISTR("Retry"); ////MSG_BTN_RETRY c=8
+static const char MSG_BTN_CONTINUE[] PROGMEM_I1 = ISTR("Done"); ////MSG_BTN_CONTINUE c=8
 static const char MSG_BTN_RESTART_MMU[] PROGMEM_I1 = ISTR("Reset MMU"); ////MSG_BTN_RESTART_MMU c=9
-static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=6
-static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=5
+static const char MSG_BTN_UNLOAD[] PROGMEM_I1 = ISTR("Unload"); ////MSG_BTN_UNLOAD c=8
+static const char MSG_BTN_STOP[] PROGMEM_I1 = ISTR("Stop"); ////MSG_BTN_STOP c=8
 static const char MSG_BTN_DISABLE_MMU[] PROGMEM_I1 = ISTR("Disable"); ////MSG_BTN_DISABLE_MMU c=9
-static const char MSG_BTN_MORE[] PROGMEM_I1 = ISTR("More\x06"); ////MSG_BTN_MORE c=5
+static const char MSG_BTN_MORE[] PROGMEM_N1 = ISTR("\x06"); ////MSG_BTN_MORE c=8
 
 // Used to parse the buttons from Btns().
 static const char * const btnOperation[] PROGMEM = {
@@ -335,6 +349,9 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_TMC_DRIVER_SHORTED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_TMC_DRIVER_SHORTED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_TMC_DRIVER_SHORTED
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_SELFTEST_FAILED
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_SELFTEST_FAILED
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_SELFTEST_FAILED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//MMU_NOT_RESPONDING
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//COMMUNICATION_ERROR
 

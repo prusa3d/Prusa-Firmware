@@ -457,7 +457,7 @@ msgstr ""
 "Vreti sa repetati ultimul pas pentru a reajusta distanta dintre varf si "
 "suprafata de print?"
 
-#. MSG_BTN_CONTINUE c=5
+#. MSG_BTN_CONTINUE c=8
 #: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:292
 msgid "Done"
 msgstr "Gata"
@@ -1227,12 +1227,6 @@ msgstr "Model"
 msgid "More details online."
 msgstr "Mai multe detalii online"
 
-#. MSG_BTN_MORE c=5
-#: ../../Firmware/mmu2/errors_list.h:287
-#: ../../Firmware/mmu2_error_converter.cpp:153
-msgid "More⏬"
-msgstr "More⏬"
-
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:95 ../../Firmware/ultralcd.cpp:6981
 #: ../../Firmware/ultralcd.cpp:6990 ../../Firmware/ultralcd.cpp:7008
@@ -1781,7 +1775,7 @@ msgstr "Reluare print..."
 msgid "Retract from FINDA"
 msgstr "Retract de la FINDA"
 
-#. MSG_BTN_RETRY c=5
+#. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
 msgid "Retry"
 msgstr "Retry"
@@ -2050,7 +2044,7 @@ msgstr "Silent."
 msgid "Steel sheets"
 msgstr "Suprafete print"
 
-#. MSG_BTN_STOP c=5
+#. MSG_BTN_STOP c=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:295
 msgid "Stop"
 msgstr "Stop"
@@ -2230,7 +2224,7 @@ msgstr ""
 "Citire FINDA neasteptata.Asig. ca nu este Fil. sub FINDA si SELECTOR"
 "Verifica conexiune FINDA"
 
-#. MSG_BTN_UNLOAD c=6
+#. MSG_BTN_UNLOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
 msgid "Unload"
 msgstr "Unload"

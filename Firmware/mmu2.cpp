@@ -39,7 +39,10 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 // - ToolChange shall not try to push filament into the very tip of the nozzle
 // to have some space for additional G-code to tune the extruded filament length
 // in the profile
-static constexpr float MMU2_TOOL_CHANGE_LOAD_LENGTH = 30.0F;
+// Beware - this value is used to initialize the MMU logic layer - it will be sent to the MMU upon line up (written into its 8bit register 0x0b)
+// However - in the G-code we can get a request to set the extra load distance at runtime to something else (M708 A0xb Xsomething).
+// The printer intercepts such a call and sets its extra load distance to match the new value as well.
+static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = 5; // mm
 
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
 static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F; // mm/s
@@ -102,7 +105,7 @@ MMU2 mmu2;
 
 MMU2::MMU2()
     : is_mmu_error_monitor_active(false)
-    , logic(&mmu2Serial)
+    , logic(&mmu2Serial, MMU2_TOOL_CHANGE_LOAD_LENGTH)
     , extruder(MMU2_NO_TOOL)
     , tool_change_extruder(MMU2_NO_TOOL)
     , resume_position()
@@ -197,6 +200,12 @@ bool MMU2::ReadRegister(uint8_t address){
 bool MMU2::WriteRegister(uint8_t address, uint16_t data){
     if( ! WaitForMMUReady())
         return false;
+
+    // special case - intercept requests of extra loading distance and perform the change even on the printer's side
+    if( address == 0x0b ){
+        logic.PlanExtraLoadDistance(data);
+    }
+
     logic.WriteRegister(address, data); // we may signal the accepted/rejected status of the response as return value of this function
     manage_response(false, false);
     return true;
@@ -216,7 +225,7 @@ void MMU2::mmu_loop() {
     if (is_mmu_error_monitor_active){
         // Call this every iteration to keep the knob rotation responsive
         // This includes when mmu_loop is called within manage_response
-        ReportErrorHook((uint16_t)lastErrorCode, mmu2.MMUCurrentErrorCode() == ErrorCode::OK ? ErrorSourcePrinter : ErrorSourceMMU);
+        ReportErrorHook((uint16_t)lastErrorCode);
     }
 
     avoidRecursion = false;
@@ -380,6 +389,8 @@ bool MMU2::set_filament_type(uint8_t index, uint8_t type) {
         return false;
     
     // @@TODO - this is not supported in the new MMU yet
+    index = index; // @@TODO
+    type = type; // @@TODO
     // cmd_arg = filamentType;
     // command(MMU_CMD_F0 + index);
 
@@ -571,10 +582,13 @@ void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
             raise_z(MMU_ERR_Z_PAUSE_LIFT);
 
             // move XY aside
-            current_position[X_AXIS] = MMU_ERR_X_PAUSE_POS;
-            current_position[Y_AXIS] = MMU_ERR_Y_PAUSE_POS;
-            plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
-            st_synchronize();
+            if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS])
+            {
+                current_position[X_AXIS] = MMU_ERR_X_PAUSE_POS;
+                current_position[Y_AXIS] = MMU_ERR_Y_PAUSE_POS;
+                plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
+                st_synchronize();
+            }
         }
 
         if (turn_off_nozzle){
@@ -793,7 +807,7 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     }
 }
 
-void MMU2::ReportError(ErrorCode ec, uint8_t res) {
+void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
     // Due to a potential lossy error reporting layers linked to this hook
     // we'd better report everything to make sure especially the error states
     // do not get lost. 
@@ -819,12 +833,13 @@ void MMU2::ReportError(ErrorCode ec, uint8_t res) {
         break;
     }
 
-    ReportErrorHook((uint16_t)ec, res);
-
     if( ec != lastErrorCode ){ // deduplicate: only report changes in error codes into the log
         lastErrorCode = ec;
+        lastErrorSource = res;
         LogErrorEvent_P( _O(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))) );
     }
+
+    ReportErrorHook((uint16_t)ec);
 
     static_assert(mmu2Magic[0] == 'M' 
         && mmu2Magic[1] == 'M' 
@@ -900,8 +915,8 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc){
                 loadFilamentStarted = false;
                 // After the MMU knows the FSENSOR is triggered it will:
                 // 1. Push the filament by additional 30mm (see fsensorToNozzle)
-                // 2. Disengage the idler and push another 5mm.
-                current_position[E_AXIS] += 30.0f + 2.0f;
+                // 2. Disengage the idler and push another 2mm.
+                current_position[E_AXIS] += logic.ExtraLoadDistance() + 2;
                 plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
                 break;
             case FilamentState::NOT_PRESENT:

@@ -5,7 +5,7 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #include "ConfigurationStore.h"
-#include "Configuration_prusa.h"
+#include "Configuration_var.h"
 
 #ifdef MESH_BED_LEVELING
 #include "mesh_bed_leveling.h"

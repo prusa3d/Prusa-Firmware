@@ -456,7 +456,7 @@ msgstr ""
 "Vil du repetere det siste trinnet for å omjustere avstanden mellom dysen og "
 "platen?"
 
-#. MSG_BTN_CONTINUE c=5
+#. MSG_BTN_CONTINUE c=8
 #: ../../Firmware/mmu2/errors_list.h:282 ../../Firmware/mmu2/errors_list.h:292
 msgid "Done"
 msgstr ""
@@ -1207,12 +1207,6 @@ msgstr "Modell"
 msgid "More details online."
 msgstr ""
 
-#. MSG_BTN_MORE c=5
-#: ../../Firmware/mmu2/errors_list.h:287
-#: ../../Firmware/mmu2_error_converter.cpp:153
-msgid "More⏬"
-msgstr ""
-
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:95 ../../Firmware/ultralcd.cpp:6981
 #: ../../Firmware/ultralcd.cpp:6990 ../../Firmware/ultralcd.cpp:7008
@@ -1755,7 +1749,7 @@ msgstr "Gjenopptar print"
 msgid "Retract from FINDA"
 msgstr ""
 
-#. MSG_BTN_RETRY c=5
+#. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
 msgid "Retry"
 msgstr ""
@@ -2018,7 +2012,7 @@ msgstr "Stille"
 msgid "Steel sheets"
 msgstr "Stål plate"
 
-#. MSG_BTN_STOP c=5
+#. MSG_BTN_STOP c=8
 #: ../../Firmware/mmu2/errors_list.h:285 ../../Firmware/mmu2/errors_list.h:295
 msgid "Stop"
 msgstr ""
@@ -2194,7 +2188,7 @@ msgid ""
 "is free. Check FINDA connection."
 msgstr ""
 
-#. MSG_BTN_UNLOAD c=6
+#. MSG_BTN_UNLOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
 msgid "Unload"
 msgstr ""
