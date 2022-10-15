@@ -4030,13 +4030,14 @@ void lcd_wizard(WizState state)
 			}
 			wizard_event = gcode_M45(true, 0);
 			if (wizard_event) {
+				raise_z_above(MIN_Z_FOR_SWAP);
 				//current filament needs to be unloaded and then new filament should be loaded
 				//start to preheat nozzle for unloading remaining PLA filament
 				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA.")); ////MSG_WIZARD_WILL_PREHEAT c=20 r=4
 				wait_preheat();
 				//unload current filament
-				unload_filament(FILAMENTCHANGE_FINALRETRACT, true);
+				unload_filament(FILAMENTCHANGE_FINALRETRACT);
 				//load filament
 				lcd_wizard_load();
 				setTargetHotend(0, 0); //we are finished, cooldown nozzle
@@ -5124,20 +5125,14 @@ static void mmu_loading_test_menu() {
     }
 }
 
-// unload filament for single material printer (used in M702 gcode)
-// @param automatic: If true, unload_filament is part of a unload+load sequence (M600)
-void unload_filament(float unloadLength, bool automatic)
+/// @brief unload filament for single material printer (used in M600 and M702)
+/// @param unloadLength Retract distance for removal (manual reload)
+void unload_filament(float unloadLength)
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
     FSensorBlockRunout fsBlockRunout;
-
-    if (automatic)
-    {
-        // M600
-        raise_z_above(MIN_Z_FOR_SWAP);
-    }
 
     // Retract filament
     current_position[E_AXIS] += -FILAMENT_UNLOAD_PURGE_RETRACT;

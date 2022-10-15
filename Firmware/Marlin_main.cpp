@@ -3544,7 +3544,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     if (MMU2::mmu2.Enabled())
         mmu_M600_unload_filament();
     else
-        unload_filament(FILAMENTCHANGE_FINALRETRACT, true); // unload filament for single material (used also in M702)
+        unload_filament(FILAMENTCHANGE_FINALRETRACT);
     st_synchronize();          // finish moves
     {
         FSensorBlockRunout fsBlockRunout;
