@@ -1507,8 +1507,7 @@ msgstr "Curatati varful pentru calibrare. Apasati butonul cand terminati."
 msgid ""
 "Please insert filament into the extruder, then press the knob to load it."
 msgstr ""
-"Va rugam introduceti filamentul in extruder apoi apasati butonul pentru a-l "
-"incarca."
+"Va rugam introduceti filamentul in extruder apoi apasati butonul pentru a-l incarca."
 
 #. MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3912
@@ -2151,8 +2150,7 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
-msgstr "Selector-ul nu poate reveni corect. Verificati daca exista ceva care blocheza"
-"miscarea."
+msgstr "Selector-ul nu poate reveni corect. Verificati daca exista ceva care blocheza miscarea."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:3940
@@ -2409,8 +2407,7 @@ msgstr "Calibrarea XYZ a esuat. Va rugam consultati manualul."
 #: ../../Firmware/ultralcd.cpp:3325
 msgid "XYZ calibration failed. Right front calibration point not reachable."
 msgstr ""
-"Calibrarea XYZ a esuat. Punctele de calibrare din fata dreapta nu pot fi "
-"atinse."
+"Calibrarea XYZ a esuat. Punctele de calibrare din fata dreapta nu pot fi atinse."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3350
