@@ -118,6 +118,7 @@ MMU2::MMU2()
     , loadingToNozzle(false)
     , inAutoRetry(false)
     , retryAttempts(MAX_RETRIES)
+    , isPossibleEJam(false)
 {
 }
 
@@ -246,6 +247,15 @@ void MMU2::CheckFINDARunout()
         {
             enquecommand_front_P(PSTR("M600")); //save print and run M600 command
         }
+    } else if (FindaDetectsFilament() && CHECK_FSENSOR && fsensor.getMMUJamEnabled() && !fsensor.getFilamentPresent()) {
+        // This is a case where the IR sensor reports false while the FINDA is true. This is called only from state machines where it
+        // is safe to check (Finished)  and won't cause spurious runouts on the FINDA, so I am assuming that is safe to check the fsensor too
+        // since the MMU won't be e.g. in the middle of a toolchange.
+        isPossibleEJam = true;
+        stop_and_save_print_to_ram(0, 0);
+        restore_print_from_ram_and_continue(0);
+        enquecommand_front_P(PSTR("M600")); //save print and run M600 command. This will come back to us via eject_filament and then M600_wait_and_beep 
+        printf_P(PSTR("Jam detected, no filament @ IR! \n"));
     }
 }
 

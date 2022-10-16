@@ -4162,6 +4162,10 @@ static void lcd_fsensor_runout_set() {
     fsensor.setRunoutEnabled(!fsensor.getRunoutEnabled(), true);
 }
 
+static void lcd_fsensor_mmujam_set() {
+    fsensor.setMMUJamEnabled(!fsensor.getMMUJamEnabled());
+}
+
 static void lcd_fsensor_autoload_set() {
     fsensor.setAutoLoadEnabled(!fsensor.getAutoLoadEnabled(), true);
 }
@@ -4206,8 +4210,13 @@ static void lcd_fsensor_settings_menu() {
             MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_RUNOUT), fsensor.getRunoutEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_runout_set);
             MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_AUTOLOAD), fsensor.getAutoLoadEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_autoload_set);
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
-            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM_DETECTION), fsensor.getJamDetectionEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_jam_detection_set);
+            MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_JAM_DETECTION), fsensor.getJamDetectionEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_jam_detection_set);    
 #endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125)
+            // For consideration... Should we have an MMU submenu?
+            if (MMU2::mmu2.Enabled() && fsensor.supportsMMUJam())
+            {
+                MENU_ITEM_TOGGLE_P(_T(MSG_FSENSOR_MMU_JAM_DETECTION), fsensor.getMMUJamEnabled() ? _T(MSG_ON) : _T(MSG_OFF), lcd_fsensor_mmujam_set);    
+            }           
         }
         
         switch(fsensor.getActionOnError()) {

@@ -191,6 +191,13 @@ public:
     // Called by the MMU protocol when a sent button is acknowledged.
     void DecrementRetryAttempts();
 
+    /// @brief  Returns whether this is possibly an extruder grinding trip due to FS=0
+    /// @return True if yes
+    inline bool IsExtruderJamDetected() { return Enabled() && isPossibleEJam; }
+
+    /// @brief  Clears the extruder jam flag once the message has been serviced.
+    inline void ClearExtruderJam() { isPossibleEJam = false; }
+
 private:
     /// Reset the retryAttempts back to the default value
     void ResetRetryAttempts();
@@ -283,6 +290,8 @@ private:
     /// true in case we are doing the LoadToNozzle operation - that means the filament shall be loaded all the way down to the nozzle
     /// unlike the mid-print ToolChange commands, which only load the first ~30mm and then the G-code takes over.
     bool loadingToNozzle;
+
+    bool isPossibleEJam;
     
     bool inAutoRetry;
     uint8_t retryAttempts;

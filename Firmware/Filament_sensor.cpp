@@ -26,6 +26,13 @@ FSensorBlockRunout::~FSensorBlockRunout() {
 //    SERIAL_ECHOLNPGM("FSUnBlockRunout");
 }
 
+enum class RunoutTypeSetting : uint8_t {
+    _Disabled = 0,
+    _Enabled = 1,
+    _Enabled_with_MMU_jam = 2,
+    _Undef = EEPROM_EMPTY_VALUE
+};
+
 # if FILAMENT_SENSOR_TYPE == FSENSOR_IR
 IR_sensor fsensor;
 # elif FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG
@@ -55,10 +62,23 @@ void Filament_sensor::setAutoLoadEnabled(bool state, bool updateEEPROM) {
     }
 }
 
+void Filament_sensor::setMMUJamEnabled(bool state) {
+    mmuJamEnabled = state & MMU2::mmu2.Enabled() && sensorSupportsMMUJam;
+    eeprom_update_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED, (uint8_t)(mmuJamEnabled ? RunoutTypeSetting::_Enabled_with_MMU_jam : RunoutTypeSetting::_Enabled));
+}
+
 void Filament_sensor::setRunoutEnabled(bool state, bool updateEEPROM) {
     runoutEnabled = state;
     if (updateEEPROM) {
-        eeprom_update_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED, state);
+        if (state)
+        {
+            // If on, forward to handle jam setting properly.
+            setMMUJamEnabled(mmuJamEnabled);
+        }
+        else
+        {
+            eeprom_update_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED, state);
+        }
     }
 }
 
@@ -76,7 +96,9 @@ void Filament_sensor::settings_init_common() {
     }
 
     autoLoadEnabled = eeprom_read_byte((uint8_t *)EEPROM_FSENS_AUTOLOAD_ENABLED);
-    runoutEnabled = eeprom_read_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED);
+    RunoutTypeSetting runout = (RunoutTypeSetting)eeprom_read_byte((uint8_t *)EEPROM_FSENS_RUNOUT_ENABLED);
+    runoutEnabled = runout >= RunoutTypeSetting::_Enabled;
+    mmuJamEnabled = runout == RunoutTypeSetting::_Enabled_with_MMU_jam;
     sensorActionOnError = (SensorActionOnError)eeprom_read_byte((uint8_t *)EEPROM_FSENSOR_ACTION_NA);
     if (sensorActionOnError == SensorActionOnError::_Undef) {
         sensorActionOnError = SensorActionOnError::_Continue;
@@ -181,6 +203,7 @@ void IR_sensor::init() {
 //    puts_P(PSTR("fsensor::init()"));
     SET_INPUT(IR_SENSOR_PIN); // input mode
     WRITE(IR_SENSOR_PIN, 1);  // pullup
+    sensorSupportsMMUJam = true;
     settings_init();          // also sets the state to State::initializing
 }
 
