@@ -809,7 +809,7 @@ msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
 msgstr ""
-"Versiune de G-code incorecta. Va rugam pregatiti modelul din nou. Print"
+"Versiune de G-code incorecta. Va rugam pregatiti modelul din nou. Print "
 "anulat."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
@@ -1507,7 +1507,8 @@ msgstr "Curatati varful pentru calibrare. Apasati butonul cand terminati."
 msgid ""
 "Please insert filament into the extruder, then press the knob to load it."
 msgstr ""
-"Va rugam introduceti filamentul in extruder apoi apasati butonul pentru a-l incarca."
+"Va rugam introduceti filamentul in extruder apoi apasati butonul pentru a-l "
+"incarca."
 
 #. MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3912
@@ -2150,7 +2151,8 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
-msgstr "Selector-ul nu poate reveni corect. Verificati daca exista ceva care blocheza miscarea."
+msgstr "Selector-ul nu poate reveni corect. Verificati daca exista ceva care blocheza "
+"miscarea."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:3940
@@ -2365,7 +2367,8 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3334
 msgid "XYZ calibration compromised. Front calibration points not reachable."
 msgstr ""
-"Calibrarea XYZ compromisa. Punctele de calibrare din fata nu pot fi atinse."
+"Calibrarea XYZ compromisa. Punctele de calibrare din fata nu pot fi "
+"atinse."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3340
@@ -2395,7 +2398,8 @@ msgstr ""
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3328
 msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr "Calibrarea XYZ a esuat. Punctul de calibrare stanga fata nu poate fi atinsa."
+msgstr "Calibrarea XYZ a esuat. Punctul de calibrare stanga fata nu poate fi "
+"atinsa."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3319
