@@ -535,11 +535,11 @@ msgstr "Angaziranje klizaca"
 msgid "Extruder"
 msgstr "Ekstruder"
 
-#. MSG_EXTRUDER_FAN_SPEED c=16
+#. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
 #: ../../Firmware/ultralcd.cpp:7319
-msgid "Extruder fan:"
-msgstr "Ekstruder vent:"
+msgid "Hotend fan:"
+msgstr "Hotend vent:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
@@ -1013,7 +1013,7 @@ msgstr "Zadnji neusp. print"
 msgid "Left"
 msgstr "Lijevo"
 
-#. MSG_SELFTEST_EXTRUDER_FAN c=20
+#. MSG_SELFTEST_HOTEND_FAN c=20
 #: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:7001
 #: ../../Firmware/ultralcd.cpp:7147 ../../Firmware/ultralcd.cpp:7152
 msgid "Left hotend fan?"
@@ -1647,7 +1647,7 @@ msgstr "Pritisnite gumb za predgrijavanje mlaznice i nastavite."
 msgid "Print aborted"
 msgstr "Print je prekinut"
 
-#. MSG_PRINT_FAN_SPEED c=16
+#. MSG_PRINT_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1144
 #: ../../Firmware/ultralcd.cpp:7322
 msgid "Print fan:"
