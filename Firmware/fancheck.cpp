@@ -37,7 +37,7 @@ volatile uint8_t fan_check_error = EFCE_OK;
 
 void setExtruderAutoFanState(uint8_t state)
 {
-    //If bit 1 is set (0x02), then the extruder fan speed won't be adjusted according to temperature. Useful for forcing
+    //If bit 1 is set (0x02), then the hotend fan speed won't be adjusted according to temperature. Useful for forcing
     //the fan to either On or Off during certain tests/errors.
 
     fanState = state;
@@ -62,7 +62,7 @@ void countFanSpeed()
     fan_speed[0] = (fan_edge_counter[0] * (float(250) / (_millis() - extruder_autofan_last_check)));
     fan_speed[1] = (fan_edge_counter[1] * (float(250) / (_millis() - extruder_autofan_last_check)));
     /*SERIAL_ECHOPGM("time interval: "); MYSERIAL.println(_millis() - extruder_autofan_last_check);
-    SERIAL_ECHOPGM("extruder fan speed:"); MYSERIAL.print(fan_speed[0]); SERIAL_ECHOPGM("; edge counter:"); MYSERIAL.println(fan_edge_counter[0]);
+    SERIAL_ECHOPGM("hotend fan speed:"); MYSERIAL.print(fan_speed[0]); SERIAL_ECHOPGM("; edge counter:"); MYSERIAL.println(fan_edge_counter[0]);
     SERIAL_ECHOPGM("print fan speed:"); MYSERIAL.print(fan_speed[1]); SERIAL_ECHOPGM("; edge counter:"); MYSERIAL.println(fan_edge_counter[1]);
     SERIAL_ECHOLNPGM(" ");*/
     fan_edge_counter[0] = 0;
@@ -101,7 +101,7 @@ void fanSpeedError(unsigned char _fan) {
     }
     switch (_fan) {
     case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
-        fanSpeedErrorBeep(PSTR("Extruder fan speed is lower than expected"), MSG_FANCHECK_EXTRUDER);
+        fanSpeedErrorBeep(PSTR("Hotend fan speed is lower than expected"), MSG_FANCHECK_HOTEND);
         break;
     case 1:
         fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), MSG_FANCHECK_PRINT);
@@ -114,10 +114,10 @@ void checkFanSpeed()
     uint8_t max_fan_errors[2];
 #ifdef FAN_SOFT_PWM
     max_fan_errors[1] = 3;  // 15 seconds (Print fan)
-    max_fan_errors[0] = 2;  // 10 seconds (Extruder fan)
+    max_fan_errors[0] = 2;  // 10 seconds (Hotend fan)
 #else //FAN_SOFT_PWM
     max_fan_errors[1] = 15; // 15 seconds (Print fan)
-    max_fan_errors[0] = 5;  // 5  seconds (Extruder fan)
+    max_fan_errors[0] = 5;  // 5  seconds (Hotend fan)
 #endif //FAN_SOFT_PWM
 
     if(fans_check_enabled)
