@@ -81,7 +81,7 @@
 #define PS_ON_PIN           -1
 #define KILL_PIN            -1  // 80 with Smart Controller LCD
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
-#define TACH_0				30	// noctua extruder fan
+#define TACH_0				30	// noctua hotend fan
 
 
 //#define KILL_PIN            32

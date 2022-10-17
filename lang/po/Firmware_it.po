@@ -537,11 +537,11 @@ msgstr ""
 msgid "Extruder"
 msgstr "Estrusore"
 
-#. MSG_EXTRUDER_FAN_SPEED c=16
+#. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1131
 #: ../../Firmware/ultralcd.cpp:7302
-msgid "Extruder fan:"
-msgstr "Vent. estrusore:"
+msgid "Hotend fan:"
+msgstr "Ventola hotend:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1709
@@ -1003,7 +1003,7 @@ msgstr "Errori ultima stampa"
 msgid "Left"
 msgstr "Sinistra"
 
-#. MSG_SELFTEST_EXTRUDER_FAN c=20
+#. MSG_SELFTEST_HOTEND_FAN c=20
 #: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:6984
 #: ../../Firmware/ultralcd.cpp:7130 ../../Firmware/ultralcd.cpp:7135
 msgid "Left hotend fan?"
@@ -1636,7 +1636,7 @@ msgstr "Premete la manopola per preriscaldare l'ugello e continuare."
 msgid "Print aborted"
 msgstr "Stampa interrotta"
 
-#. MSG_PRINT_FAN_SPEED c=16
+#. MSG_PRINT_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1131
 #: ../../Firmware/ultralcd.cpp:7305
 msgid "Print fan:"
