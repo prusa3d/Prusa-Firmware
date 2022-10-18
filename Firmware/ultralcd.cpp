@@ -6001,7 +6001,7 @@ void lcd_sdcard_menu()
 				lcd_update_enabled = true;
 			}
 			_md->fileCnt = card.getnrfilenames();
-			_md->sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
+			_md->sdSort = farm_mode ? SD_SORT_NONE : eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 			_md->menuState = _standard;
 			_md->row = -1; // assume that no SD file/dir is currently selected. Once they are rendered, it will be changed to the correct row for the _scrolling state.
 		}
