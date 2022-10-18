@@ -117,8 +117,8 @@ if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_u
 //! | 1     | Smooth2   |
 //! | 2     | Textur1   |
 //! | 3     | Textur2   |
-//! | 4     | Satin 1   |
-//! | 5     | Satin 2   |
+//! | 4     | Satin     |
+//! | 5     | NylonPA   |
 //! | 6     | Custom1   |
 //! | 7     | Custom2   |
 //!
@@ -136,17 +136,23 @@ void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
     {
         strcpy_P(sheetName.c, PSTR("Textur"));
     }
+    else if (index < 5)
+    {
+        strcpy_P(sheetName.c, PSTR("Satin  "));
+    }
     else if (index < 6)
     {
-        strcpy_P(sheetName.c, PSTR("Satin "));
+        strcpy_P(sheetName.c, PSTR("NylonPA"));
     }
     else
     {
         strcpy_P(sheetName.c, PSTR("Custom"));
     }
-
-    sheetName.c[6] = '0' + ((index % 2)+1);
-    sheetName.c[7] = '\0';
+    if (index <4 || index >5)
+    {
+        sheetName.c[6] = '0' + ((index % 2)+1);
+        sheetName.c[7] = '\0';
+    }
 }
 
 //! @brief Get next initialized sheet
