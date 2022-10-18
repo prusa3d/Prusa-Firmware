@@ -4355,37 +4355,6 @@ while (0)
 #define SETTINGS_MMU_MODE
 #endif //MMU_FORCE_STEALTH_MODE
 
-#ifdef SDCARD_SORT_ALPHA
-#define SETTINGS_SD \
-do\
-{\
-    if (card.ToshibaFlashAir_isEnabled())\
-        MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY, lcd_toshiba_flash_air_compatibility_toggle);\
-    else\
-        MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_NORMAL), lcd_toshiba_flash_air_compatibility_toggle);\
-\
-    uint8_t sdSort;\
-    sdSort = eeprom_read_byte((uint8_t*) EEPROM_SD_SORT);\
-    switch (sdSort)\
-    {\
-      case SD_SORT_TIME: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_TIME), lcd_sort_type_set); break;\
-      case SD_SORT_ALPHA: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_ALPHA), lcd_sort_type_set); break;\
-      default: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_NONE), lcd_sort_type_set);\
-    }\
-}\
-while (0)
-#else // SDCARD_SORT_ALPHA
-#define SETTINGS_SD \
-do\
-{\
-    if (card.ToshibaFlashAir_isEnabled())\
-        MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY, lcd_toshiba_flash_air_compatibility_toggle);\
-    else\
-        MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_NORMAL), lcd_toshiba_flash_air_compatibility_toggle);\
-}\
-while (0)
-#endif // SDCARD_SORT_ALPHA
-
 /*
 #define SETTINGS_MBL_MODE \
 do\
@@ -4782,7 +4751,20 @@ static void lcd_settings_menu()
 	MENU_ITEM_SUBMENU_P(_T(MSG_SELECT_LANGUAGE), lcd_language_menu);
 #endif //(LANG_MODE != 0)
 
-	SETTINGS_SD;
+    if (!farm_mode) { //SD related settings are not available in farm mode
+        if (card.ToshibaFlashAir_isEnabled())
+            MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY, lcd_toshiba_flash_air_compatibility_toggle);
+        else
+            MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_NORMAL), lcd_toshiba_flash_air_compatibility_toggle);
+#ifdef SDCARD_SORT_ALPHA
+        switch (eeprom_read_byte((uint8_t*) EEPROM_SD_SORT)) {
+            case SD_SORT_TIME: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_TIME), lcd_sort_type_set); break;
+            case SD_SORT_ALPHA: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_ALPHA), lcd_sort_type_set); break;
+            default: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_NONE), lcd_sort_type_set);
+        }
+    }
+#endif //SDCARD_SORT_ALPHA
+
 	SETTINGS_SOUND;
 
 #ifdef LCD_BL_PIN
