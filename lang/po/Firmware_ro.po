@@ -591,8 +591,9 @@ msgstr ""
 msgid ""
 "FINDA didn't trigger while loading the filament. Ensure the filament can "
 "move and FINDA works."
-msgstr "FINDA nu sa declansat in timpul incarcarii"
-"Asigurativa ca filamentul se misca si FINDA functioneaza"
+msgstr ""
+"FINDA nu sa declansat in timpul incarcarii. "
+"Asigurativa ca filamentul se misca si FINDA functioneaza."
 
 #. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
 #: ../../Firmware/mmu2/errors_list.h:119 ../../Firmware/mmu2/errors_list.h:157
@@ -727,8 +728,8 @@ msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
 msgstr ""
-"Senzorul de filament nu s-a oprint la descare filament Asigurativa ca filamentul"
-"se misca si senzorul functioneaza"
+"Senzorul de filament nu s-a oprint la descare filament Asigurativa ca "
+"filamentul se misca si senzorul functioneaza."
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:198 ../../Firmware/mmu2/errors_list.h:238
@@ -736,7 +737,7 @@ msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the "
 "filament reached the fsensor and the sensor works."
 msgstr ""
-"Senzorul de filament nu s-a declansast in timpul incarcarii Fil. Asigurativa"
+"Senzorul de filament nu s-a declansast in timpul incarcarii Fil. Asigurativa "
 "ca filamentul a ajuns la fsenzor si senzorul functioneaza."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
@@ -745,7 +746,7 @@ msgid ""
 "Filament sensor triggered too early while loading to extruder. Check there "
 "isn't anything stuck in PTFE tube. Check that sensor reads properly."
 msgstr ""
-"FSenzor sa declansat prea devreme in timpul incarc. in extrud. Verifica daca"
+"FSenzor sa declansat prea devreme in timpul incarc. in extrud. Verifica daca "
 "nu este nimic blocat in tub-ul PTFE. Verifica daca senz. funct. corect."
 
 #. MSG_FILAMENT_USED c=19
@@ -976,8 +977,8 @@ msgid ""
 "Internal runtime error. Try resetting the MMU unit or updating the firmware. "
 "If the issue persists, contact support."
 msgstr ""
-"ERR de rulare interna. Incercati sa resetati unitatea MMU sau actualizati firmwarul."
-"Daca problema persista, contactati dep. support"
+"ERR de rulare interna. Incercati sa resetati unitatea MMU sau actualizati "
+"firmwarul. Daca problema persista, contactati dep. support"
 
 #. MSG_FILAMENT_LOADED c=20 r=2
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3827
@@ -1135,7 +1136,7 @@ msgid ""
 "MMU unit not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
 msgstr ""
-"Unitatea MMU nu raspunde corect. Verificati cablajul si conectorii. Daca"
+"Unitatea MMU nu raspunde corect. Verificati cablajul si conectorii. Daca "
 "problema persista, contactati dep. support"
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
@@ -1144,7 +1145,7 @@ msgid ""
 "MMU unit not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"Unitatea MMU nu raspunde corect. Verificati cablajul si conectorii. Daca"
+"Unitatea MMU nu raspunde. Verificati cablajul si conectorii. Daca "
 "problema persista, contactati dep. support"
 
 #. MSG_MMU_CONNECTED c=18
@@ -1177,7 +1178,7 @@ msgstr "Distorsiune"
 #: ../../Firmware/Marlin_main.cpp:3282
 #: ../../Firmware/mesh_bed_calibration.cpp:2836 ../../Firmware/messages.cpp:66
 msgid "Measuring reference height of calibration point"
-msgstr "Masurare distanta de referinta pentru punctul de calib."
+msgstr "Masurare distanta de referinta pentru punctul de calibrare."
 
 #. MSG_MESH c=12
 #: ../../Firmware/messages.cpp:148 ../../Firmware/ultralcd.cpp:5830
@@ -1694,7 +1695,9 @@ msgstr ""
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:240
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
-msgstr "Motorul Pully sa blocat. Asigurativa ca scripetele se poate misca si verificati cablajul."
+msgstr ""
+"Motorul Pully sa blocat. Asigurativa ca scripetele se poate misca si "
+"verificati cablajul."
 
 #. MSG_PROGRESS_PUSH_FILAMENT c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:23
@@ -1739,7 +1742,7 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"Instrumentul de Fil. solicitat nu este disponibil pe acest hardware. Verifica"
+"Instrumentul de Fil. solicitat nu este disponibil pe acest hardware. Verifica "
 "G-codul ptr indexul instrum. in afara intervalului (T0-T4)."
 
 #. MSG_RESET c=14
@@ -2136,7 +2139,9 @@ msgstr "Testare filament"
 #: ../../Firmware/mmu2/errors_list.h:205 ../../Firmware/mmu2/errors_list.h:244
 msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
-msgstr "Idler-ul nu poate reveni corect. Verificati daca exista ceva care blocheza miscarea."
+msgstr ""
+"Idler-ul nu poate reveni corect. Verificati daca exista ceva care blocheza "
+"miscarea."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:269
@@ -2144,14 +2149,15 @@ msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
-"Versiune FW MMU este incompatibil cu cea a imprimantei."
+"Versiune FW MMU este incompatibil cu cea a imprimantei. "
 "Asigurati-va ca FW MMU este actualizat."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
-msgstr "Selector-ul nu poate reveni corect. Verificati daca exista ceva care blocheza "
+msgstr ""
+"Selector-ul nu poate reveni corect. Verificati daca exista ceva care blocheza "
 "miscarea."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
@@ -2221,8 +2227,8 @@ msgid ""
 "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector "
 "is free. Check FINDA connection."
 msgstr ""
-"Citire FINDA neasteptata.Asig. ca nu este Fil. sub FINDA si SELECTOR"
-"Verifica conexiune FINDA"
+"Citire FINDA neasteptata. Asig. ca nu este Fil. sub FINDA si selector-ul "
+"este liber. Verifica conexiune FINDA."
 
 #. MSG_BTN_UNLOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
@@ -2374,14 +2380,17 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3340
 msgid ""
 "XYZ calibration compromised. Left front calibration point not reachable."
-msgstr "Calibrarea XYZ compromisa. Punctele de calibrare din fata stanga nu pot fi atinse."
+msgstr ""
+"Calibrarea XYZ compromisa. Punctele de calibrare din fata stanga nu pot fi "
+"atinse."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3337
 msgid ""
 "XYZ calibration compromised. Right front calibration point not reachable."
 msgstr ""
-"Calibrarea XYZ compromisa. Punctele de calibrare din fata dreapta nu pot fi atinse."
+"Calibrarea XYZ compromisa. Punctele de calibrare din fata dreapta nu pot fi "
+"atinse."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3316
@@ -2398,7 +2407,8 @@ msgstr ""
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3328
 msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr "Calibrarea XYZ a esuat. Punctul de calibrare stanga fata nu poate fi "
+msgstr ""
+"Calibrarea XYZ a esuat. Punctul de calibrare stanga fata nu poate fi "
 "atinsa."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
@@ -2411,7 +2421,8 @@ msgstr "Calibrarea XYZ a esuat. Va rugam consultati manualul."
 #: ../../Firmware/ultralcd.cpp:3325
 msgid "XYZ calibration failed. Right front calibration point not reachable."
 msgstr ""
-"Calibrarea XYZ a esuat. Punctele de calibrare din fata dreapta nu pot fi atinse."
+"Calibrarea XYZ a esuat. Punctele de calibrare din fata dreapta nu pot fi "
+"atinse."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3350
@@ -2441,7 +2452,7 @@ msgid ""
 "You are using firmware alpha version. This is development version. Using "
 "this version is not recommended and may cause printer damage."
 msgstr ""
-"Utilizati vers.alfa de FW. Acesta este vers. de dezvoltare. Folosind"
+"Utilizati vers.alfa de FW. Acesta este vers. de dezvoltare. Folosind "
 "aceasta versiune nu este recomandata si poate cauza deteriorarea imprimantei"
 
 #. MSG_FW_VERSION_BETA c=20 r=8
@@ -2450,7 +2461,7 @@ msgid ""
 "You are using firmware beta version. This is development version. Using this "
 "version is not recommended and may cause printer damage."
 msgstr ""
-"Utilizati vers. beta de FW. Acesta este vers. de dezvoltare. Folosind"
+"Utilizati vers. beta de FW. Acesta este vers. de dezvoltare. Folosind "
 "aceasta versiune nu este recomandata si poate cauza deteriorarea imprimantei"
 
 #. MSG_WIZARD_QUIT c=20 r=8
