@@ -537,11 +537,11 @@ msgstr "Zapojenie idlera"
 msgid "Extruder"
 msgstr "Extruder"
 
-#. MSG_EXTRUDER_FAN_SPEED c=16
+#. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
 #: ../../Firmware/ultralcd.cpp:7319
-msgid "Extruder fan:"
-msgstr "Extruder vent.:"
+msgid "Hotend fan:"
+msgstr "Hotend vent.:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
@@ -1012,7 +1012,7 @@ msgstr "Zlyhanie posl. tlace"
 msgid "Left"
 msgstr "Vlavo"
 
-#. MSG_SELFTEST_EXTRUDER_FAN c=20
+#. MSG_SELFTEST_HOTEND_FAN c=20
 #: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:7001
 #: ../../Firmware/ultralcd.cpp:7147 ../../Firmware/ultralcd.cpp:7152
 msgid "Left hotend fan?"
@@ -1642,7 +1642,7 @@ msgstr "Pre nahriatie trysky a pokracovanie stlacte tlacidlo."
 msgid "Print aborted"
 msgstr "Tlac prerusena"
 
-#. MSG_PRINT_FAN_SPEED c=16
+#. MSG_PRINT_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1144
 #: ../../Firmware/ultralcd.cpp:7322
 msgid "Print fan:"
