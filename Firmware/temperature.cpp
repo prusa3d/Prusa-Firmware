@@ -886,7 +886,7 @@ void soft_pwm_init()
   OCR2B = 128;
   ENABLE_SOFT_PWM_INTERRUPT();
 
-  timer4_init(); //for tone and Extruder fan PWM
+  timer4_init(); //for tone and Hotend fan PWM
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)

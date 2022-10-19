@@ -480,11 +480,11 @@ msgstr "Eindstops"
 msgid "Extruder"
 msgstr "Extruder"
 
-#. MSG_EXTRUDER_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7321
-msgid "Extruder fan:"
-msgstr "Extruder fan:"
+#. MSG_HOTEND_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7319
+msgid "Hotend fan:"
+msgstr "Hotend fan:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
@@ -830,9 +830,9 @@ msgstr "Laatste printfouten"
 msgid "Left"
 msgstr "Links"
 
-#. MSG_SELFTEST_EXTRUDER_FAN c=20
-#: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:7002
-#: ../../Firmware/ultralcd.cpp:7149 ../../Firmware/ultralcd.cpp:7154
+#. MSG_SELFTEST_HOTEND_FAN c=20
+#: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:7001
+#: ../../Firmware/ultralcd.cpp:7147 ../../Firmware/ultralcd.cpp:7152
 msgid "Left hotend fan?"
 msgstr "Linker hotend fan?"
 
@@ -1421,9 +1421,9 @@ msgstr "Druk op de knop om de temperatuur van de tuit te hervatten."
 msgid "Print aborted"
 msgstr "Print afgebroken"
 
-#. MSG_PRINT_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7324
+#. MSG_PRINT_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7322
 msgid "Print fan:"
 msgstr "Print fan:"
 
