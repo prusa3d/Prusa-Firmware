@@ -91,6 +91,19 @@ The new language needs to be explicitly added to the list of bundled languages i
 
 At this point the new language should be picked-up normally. See [how to build an internationalized firmware](#building-an-internationalized-firmware) and use ``lang-check.py`` for [previewing the translation](#typo-or-incorrect-translation-in-existing-text) without having to perform a complete rebuild.
 
+### Diffing translations
+
+po/pot files contain file+line annotations for each translation which are convenient while translating but result in unwieldy diffs.
+
+To alleviate the problem when using git you can add the following snippet to your ``~/.config/git/config`` or ``~/.gitconfig`` file to automatically remove position changes using the ``msgcat`` utility:
+
+```
+[diff "po"]
+        textconv = msgcat --no-location --sort-output
+```
+
+This requires ``gettext`` to be installed.
+
 ## Internal details
 
 TODO
