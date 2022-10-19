@@ -1178,7 +1178,7 @@ msgstr "Distorsiune"
 #: ../../Firmware/Marlin_main.cpp:3282
 #: ../../Firmware/mesh_bed_calibration.cpp:2836 ../../Firmware/messages.cpp:66
 msgid "Measuring reference height of calibration point"
-msgstr "Masurare distanta de referinta pentru punctul de calibrare."
+msgstr "Masurare distanta de referinta pentru punctul de calib."
 
 #. MSG_MESH c=12
 #: ../../Firmware/messages.cpp:148 ../../Firmware/ultralcd.cpp:5830
