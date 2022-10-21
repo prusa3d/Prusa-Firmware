@@ -690,7 +690,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4658 ../../Firmware/ultralcd.cpp:4661
 #: ../../Firmware/ultralcd.cpp:4664
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4672
@@ -1535,7 +1535,7 @@ msgstr ""
 #. MSG_RUNOUTS c=7
 #: ../../Firmware/ultralcd.cpp:1271
 msgid "Runouts"
-msgstr ""
+msgstr "Rulaje"
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:135 ../../Firmware/ultralcd.cpp:4395
