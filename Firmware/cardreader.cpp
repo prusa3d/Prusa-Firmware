@@ -803,7 +803,7 @@ void CardReader::presort() {
 	// Throw away old sort index
 	flush_presort();
 	
-	if (farm_mode || IS_SD_INSERTED == false) return; //sorting is not used in farm mode
+	if (IS_SD_INSERTED == false) return; //sorting is not used in farm mode
 	uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 
 	KEEPALIVE_STATE(IN_HANDLER);
@@ -814,7 +814,7 @@ void CardReader::presort() {
 		// Never sort more than the max allowed
 		// If you use folders to organize, 20 may be enough
 		if (fileCnt > SDSORT_LIMIT) {
-			if (sdSort != SD_SORT_NONE) {
+			if ((sdSort != SD_SORT_NONE) && !farm_mode) {
 				lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=6
 			}
 			fileCnt = SDSORT_LIMIT;
@@ -833,7 +833,7 @@ void CardReader::presort() {
 			sort_entries[i] = position >> 5;
 		}
 
-		if ((fileCnt > 1) && (sdSort != SD_SORT_NONE)) {
+		if ((fileCnt > 1) && (sdSort != SD_SORT_NONE) && !farm_mode) {
 
 #ifdef SORTING_SPEEDTEST
 			LongTimer sortingSpeedtestTimer;
