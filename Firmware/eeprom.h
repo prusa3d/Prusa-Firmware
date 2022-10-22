@@ -343,6 +343,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0CAE 3246 | float   | EEPROM_TEMP_MODEL_E                   | ???          | ff ff ff ffh          | Temp model error threshold (K/s)                  | Temp model   | D3 Ax0cae C4
 | 0x0CAD 3245 | uint8   | EEPROM_FSENSOR_JAM_DETECTION          | 01h 1        | ff/01                 | fsensor pat9125 jam detection feature             | LCD menu     | D3 Ax0cad C1
 | 0x0CAC 3244 | uint8   | EEPROM_MMU_ENABLED                    | 01h 1        | ff/01                 | MMU enabled                                       | LCD menu     | D3 Ax0cac C1
+| 0x0CA8 3240 | uint32  | EEPROM_TOTAL_TOOLCHANGE_COUNT         | ???          | ff ff ff ffh          | MMU toolchange counter over printers lifetime     | LCD statistic| D3 Ax0ca8 C4
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -568,8 +569,9 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
 #define EEPROM_FSENSOR_JAM_DETECTION (EEPROM_TEMP_MODEL_E-1) // uint8_t
 #define EEPROM_MMU_ENABLED (EEPROM_FSENSOR_JAM_DETECTION-1) // uint8_t
+#define EEPROM_TOTAL_TOOLCHANGE_COUNT (EEPROM_MMU_ENABLED-4)
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_MMU_ENABLED
+#define EEPROM_LAST_ITEM EEPROM_TOTAL_TOOLCHANGE_COUNT
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

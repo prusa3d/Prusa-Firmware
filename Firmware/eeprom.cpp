@@ -62,6 +62,7 @@ void eeprom_init()
     if (eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) == 0xffff) eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
     if (eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
     if (eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+    if (eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT) == 0xffffffff) eeprom_update_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, 0);
     if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == EEPROM_EMPTY_VALUE)
     {
         eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
