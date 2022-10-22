@@ -116,6 +116,7 @@ static void lcd_menu_xyz_offset();
 static void lcd_menu_fails_stats_mmu();
 static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
+static void lcd_menu_toolchange_stats_mmu_total();
 static void mmu_unload_filament();
 static void lcd_v2_calibration();
 //static void lcd_menu_show_sensors_state();      // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
@@ -1158,6 +1159,7 @@ static void lcd_menu_fails_stats_mmu()
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_mmu_print);
 	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_mmu_total);
+    MENU_ITEM_SUBMENU_P(_O(PSTR("Toolchange count")), lcd_menu_toolchange_stats_mmu_total);
 	MENU_END();
 }
 
@@ -1214,6 +1216,27 @@ static void lcd_menu_fails_stats_mmu_total()
         lcd_quick_feedback();
         menu_back();
     }
+}
+
+//! @brief Show Total Failures Statistics MMU
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Toolchange count:   |
+//! |          4294967295|
+//! |                    |
+//! |                    |
+//! ----------------------
+//! @endcode
+static void lcd_menu_toolchange_stats_mmu_total()
+{
+    lcd_clear();
+    uint32_t toolchanges = eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT);
+    lcd_set_cursor(0, 0);
+	lcd_puts_P(PSTR("Toolchange count:"));
+    lcd_set_cursor(10, 1);
+    lcd_print(toolchanges);
+    menu_back_if_clicked_fb();
 }
 
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
