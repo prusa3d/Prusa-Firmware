@@ -1211,12 +1211,13 @@ static void lcd_menu_fails_stats_mmu_total()
 //! @endcode
 static void lcd_menu_toolchange_stats_mmu_total()
 {
-    lcd_clear();
-    uint32_t toolchanges = eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT);
-    lcd_set_cursor(0, 0);
-	lcd_puts_P(PSTR("Toolchange count:"));
-    lcd_set_cursor(10, 1);
-    lcd_print(toolchanges);
+    ON_MENU_ENTER(
+        lcd_set_cursor(0, 0);
+        lcd_puts_P(PSTR("Toolchange count:"));
+        lcd_set_cursor(10, 1);
+        lcd_print(eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT));
+    );
+
     menu_back_if_clicked_fb();
 }
 

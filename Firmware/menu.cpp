@@ -29,6 +29,7 @@ uint8_t menu_line = 0;
 uint8_t menu_item = 0;
 uint8_t menu_row = 0;
 uint8_t menu_top = 0;
+static bool menu_changed; // flag to indicate a new menu was entered
 
 uint8_t menu_clicked = 0;
 
@@ -53,6 +54,7 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 		menu_menu = menu;
 		lcd_encoder = encoder;
 		menu_top = 0; //reset menu view. Needed if menu_back() is called from deep inside a menu, such as Support
+		menu_changed = true;
 		CRITICAL_SECTION_END;
 		if (reset_menu_state)
 			menu_data_reset();
@@ -345,6 +347,11 @@ uint8_t menu_item_back_P(const char* str)
 
 bool __attribute__((noinline)) menu_item_leave(){
     return ((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving;
+}
+
+bool menu_item_enter() {
+    menu_changed = false;
+    return !menu_changed;
 }
 
 uint8_t menu_item_function_P(const char* str, menu_func_t func)
