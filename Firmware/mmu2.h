@@ -193,7 +193,7 @@ public:
     // Called by the MMU protocol when a sent button is acknowledged.
     void DecrementRetryAttempts();
 
-    /// increments tool change counter in EEPROM
+    /// Updates toolchange counter in EEPROM
     /// ATmega2560 EEPROM has only 100'000 write/erase cycles
     /// so we can't call this function on every tool change.
     void update_tool_change_counter_eeprom();
@@ -201,6 +201,7 @@ public:
     /// @return count for toolchange in current print
     inline uint16_t read_toolchange_counter() const { return toolchange_counter; };
 
+    /// Set toolchange counter to zero
     inline void reset_toolchange_counter() { toolchange_counter = 0; };
 
 private:
