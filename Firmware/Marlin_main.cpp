@@ -702,10 +702,7 @@ static void factory_reset_stats(){
     eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
     eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
 
-    eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
-    eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
-    eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
-    eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+    failstats_reset_print();
 
     eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
     eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
@@ -714,8 +711,6 @@ static void factory_reset_stats(){
 
     eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
     eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-    eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
-    eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
 }
 
 // Factory reset function
