@@ -301,6 +301,12 @@ void MMU2::DecrementRetryAttempts(){
     }
 }
 
+void MMU2::increment_tool_change_counter()
+{
+    uint32_t toolchanges = eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT);
+    eeprom_write_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, ++toolchanges);
+}
+
 bool MMU2::tool_change(uint8_t index) {
     if( ! WaitForMMUReady())
         return false;
@@ -331,10 +337,7 @@ bool MMU2::tool_change(uint8_t index) {
         // @@TODO really report onto the serial? May be for the Octoprint? Not important now
         //        SERIAL_ECHO_START();
         //        SERIAL_ECHOLNPAIR(MSG_ACTIVE_EXTRUDER, int(extruder));
-        
-        // Update toolchange counter
-        uint32_t toolchanges = eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT);
-        eeprom_write_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, ++toolchanges);
+        increment_tool_change_counter();
     }
     return true;
 }
@@ -365,9 +368,7 @@ bool MMU2::tool_change(char code, uint8_t slot) {
         extruder = slot;
         SpoolJoin::spooljoin.setSlot(slot);
         set_extrude_min_temp(EXTRUDE_MINTEMP);
-        // Update toolchange counter
-        uint32_t toolchanges = eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT);
-        eeprom_write_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, ++toolchanges);
+        increment_tool_change_counter();
     } break;
 
     case 'c': {
@@ -518,10 +519,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
         SpoolJoin::spooljoin.setSlot(index);
 
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
-
-        // Update toolchange count
-        uint32_t toolchanges = eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT);
-        eeprom_write_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, ++toolchanges);
+        increment_tool_change_counter();
     }
     lcd_update_enable(true);
     return true;
