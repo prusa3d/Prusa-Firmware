@@ -192,6 +192,9 @@ public:
     void DecrementRetryAttempts();
 
 private:
+    /// increments tool change counter in EEPROM
+    void increment_tool_change_counter();
+
     /// Reset the retryAttempts back to the default value
     void ResetRetryAttempts();
     /// Perform software self-reset of the MMU (sends an X0 command)
