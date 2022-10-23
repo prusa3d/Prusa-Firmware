@@ -114,6 +114,11 @@ extern uint8_t menu_item_back_P(const char* str);
 #define ON_MENU_LEAVE(func) do { if (menu_item_leave()){ func } } while (0)
 extern bool menu_item_leave();
 
+/// Entering a new menu
+/// @param func lines of code to run once upon enter a menu or submenu
+#define ON_MENU_ENTER(func) do { if (menu_item_enter()){ func } } while (0)
+extern bool menu_item_enter();
+
 #define MENU_ITEM_FUNCTION_P(str, func) do { if (menu_item_function_P(str, func)) return; } while (0)
 extern uint8_t menu_item_function_P(const char* str, menu_func_t func);
 
