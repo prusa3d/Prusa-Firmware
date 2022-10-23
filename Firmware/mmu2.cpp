@@ -118,6 +118,7 @@ MMU2::MMU2()
     , loadingToNozzle(false)
     , inAutoRetry(false)
     , retryAttempts(MAX_RETRIES)
+    , toolchange_counter(0)
 {
 }
 
@@ -301,10 +302,11 @@ void MMU2::DecrementRetryAttempts(){
     }
 }
 
-void MMU2::increment_tool_change_counter()
+void MMU2::update_tool_change_counter_eeprom()
 {
     uint32_t toolchanges = eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT);
-    eeprom_write_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, ++toolchanges);
+    eeprom_update_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, toolchanges + (uint32_t)read_toolchange_counter());
+    reset_toolchange_counter();
 }
 
 bool MMU2::tool_change(uint8_t index) {
