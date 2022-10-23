@@ -1197,13 +1197,10 @@ static void lcd_menu_fails_stats_mmu_print()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_mmu_total()
 {
-    static uint8_t first_time_opening_menu = 0;
-    if (!first_time_opening_menu) {
-        // Send S3 Query; MMU responds with "S3 A%u" where %u is the number of drive errors
+    ON_MENU_ENTER(
         MMU2::mmu2.get_statistics();
-        first_time_opening_menu = 1;
-    }
-    lcd_timeoutToStatus.stop(); //infinite timeout
+        lcd_timeoutToStatus.stop(); //infinite timeout
+    );
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n"/* " %-16.16S%-3d\n" " %-16.16S%-3d"*/), 
         _T(MSG_TOTAL_FAILURES),
@@ -1212,7 +1209,6 @@ static void lcd_menu_fails_stats_mmu_total()
         //_i("MMU power fails"), clamp999( mmu_power_failures )); ////MSG_MMU_POWER_FAILS c=15
     if (lcd_clicked())
     {
-        first_time_opening_menu = 0;
         lcd_quick_feedback();
         menu_back();
     }
