@@ -9849,6 +9849,10 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
 
 	total_filament_used = 0;
 
+  if (MMU2::mmu2.Enabled())
+  {
+    MMU2::mmu2.update_tool_change_counter_eeprom();
+  }
 }
 
 float calculate_extruder_multiplier(float diameter) {

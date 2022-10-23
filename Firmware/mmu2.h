@@ -182,7 +182,7 @@ public:
     bool is_mmu_error_monitor_active;
 
     /// Method to read-only mmu_print_saved
-    bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
+    inline bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
 
     /// Automagically "press" a Retry button if we have any retry attempts left
     bool RetryIfPossible(uint16_t ec);
@@ -191,9 +191,19 @@ public:
     // Called by the MMU protocol when a sent button is acknowledged.
     void DecrementRetryAttempts();
 
-private:
     /// increments tool change counter in EEPROM
-    void increment_tool_change_counter();
+    /// ATmega2560 EEPROM has only 100'000 write/erase cycles
+    /// so we can't call this function on every tool change.
+    void update_tool_change_counter_eeprom();
+
+    /// @return count for toolchange in current print
+    inline uint16_t read_toolchange_counter() const { return toolchange_counter; };
+
+    inline void reset_toolchange_counter() { toolchange_counter = 0; };
+
+private:
+    // Increment the toolchange counter via SRAM to reserve EEPROM write cycles
+    inline void increment_tool_change_counter() { ++toolchange_counter; };
 
     /// Reset the retryAttempts back to the default value
     void ResetRetryAttempts();
@@ -289,6 +299,7 @@ private:
     
     bool inAutoRetry;
     uint8_t retryAttempts;
+    uint16_t toolchange_counter;
 };
 
 /// following Marlin's way of doing stuff - one and only instance of MMU implementation in the code base
