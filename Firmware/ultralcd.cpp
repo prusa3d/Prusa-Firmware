@@ -214,7 +214,7 @@ enum class FanCheck : uint_least8_t {
 /**
  * Try to check fan working and wiring.
  *
- * @param _fan i fan number 0 means extruder fan, 1 means print fan.
+ * @param _fan i fan number 0 means hotend fan, 1 means print fan.
  *
  * @returns a TestError noerror, extruderFan, printFan or swappedFan.
  */
@@ -1111,8 +1111,8 @@ static void pgmtext_with_colon(const char *ipgmLabel, char *dst, uint8_t dstSize
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Extruder fan:   0000|	MSG_EXTRUDER_FAN_SPEED c=16
-//! |Print fan:      0000|	MSG_PRINT_FAN_SPEED c=16
+//! |Hotend fan:     0000|	MSG_HOTEND_FAN_SPEED c=15
+//! |Print fan:      0000|	MSG_PRINT_FAN_SPEED c=15
 //! |                    |
 //! |                    |
 //! ----------------------
@@ -1123,7 +1123,7 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 
     lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
-	lcd_printf_P(PSTR("%-16.16S%-4d\n" "%-16.16S%-4d\n"), _T(MSG_EXTRUDER_FAN_SPEED), 60*fan_speed[0], _T(MSG_PRINT_FAN_SPEED), 60*fan_speed[1] ); 
+	lcd_printf_P(PSTR("%-15.15S%-5d\n" "%-15.15S%-5d\n"), _T(MSG_HOTEND_FAN_SPEED), 60*fan_speed[0], _T(MSG_PRINT_FAN_SPEED), 60*fan_speed[1] ); 
     menu_back_if_clicked();
 }
 
@@ -5256,22 +5256,22 @@ static bool fan_error_selftest()
 	fanSpeedSoftPwm = 255;
 #endif //FAN_SOFT_PWM
     manage_heater(); //enables print fan
-    setExtruderAutoFanState(3); //force enables the extruder fan
+    setExtruderAutoFanState(3); //force enables the hotend fan
 #ifdef FAN_SOFT_PWM
     extruder_autofan_last_check = _millis();
     fan_measuring = true;
 #endif //FAN_SOFT_PWM
-    _delay(1000); //delay_keep_alive would turn off extruder fan, because temerature is too low (maybe)
+    _delay(1000); //delay_keep_alive would turn off hotend fan, because temerature is too low (maybe)
     manage_heater();
     fanSpeed = 0;
-	setExtruderAutoFanState(1); //releases lock on the extruder fan
+	setExtruderAutoFanState(1); //releases lock on the hotend fan
 #ifdef FAN_SOFT_PWM
     fanSpeedSoftPwm = 0;
 #endif //FAN_SOFT_PWM
     manage_heater();
 #ifdef TACH_0
-    if (fan_speed[0] <= 20) { //extruder fan error
-        LCD_ALERTMESSAGERPGM(MSG_FANCHECK_EXTRUDER);
+    if (fan_speed[0] <= 20) { //hotend fan error
+        LCD_ALERTMESSAGERPGM(MSG_FANCHECK_HOTEND);
         return 1;
     }
 #endif
@@ -6297,7 +6297,7 @@ bool lcd_selftest()
 
 	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_0))
-	switch (lcd_selftest_fan_auto(0)){		// check extruder Fan
+	switch (lcd_selftest_fan_auto(0)){		// check hotend fan
     case FanCheck::SwappedFan:
         _swapped_fan = true; // swapped is merely a hint (checked later)
         // FALLTHRU
@@ -6341,7 +6341,7 @@ bool lcd_selftest()
 	}
 
 	if (_swapped_fan) {
-		//turn on print fan and check that left extruder fan is not spinning
+		//turn on print fan and check that left hotend fan is not spinning
 		_result = lcd_selftest_manual_fan_check(1, true);
 		if (_result) {
 			//print fan is stil turned on; check that it is spinning
@@ -6999,7 +6999,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_print(_error_1);
 		break;
 	case TestError::ExtruderFan:
-		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_EXTRUDER_FAN));
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_HOTEND_FAN));
 		lcd_puts_at_P(0, 3, _T(MSG_SELFTEST_WIRINGERROR));
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
@@ -7146,12 +7146,12 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	{
 	case 0:
 		// extruder cooling fan
-		lcd_puts_at_P(0, 1, check_opposite ? _T(MSG_SELFTEST_PART_FAN) : _T(MSG_SELFTEST_EXTRUDER_FAN));
+		lcd_puts_at_P(0, 1, check_opposite ? _T(MSG_SELFTEST_PART_FAN) : _T(MSG_SELFTEST_HOTEND_FAN));
 		setExtruderAutoFanState(3);
 		break;
 	case 1:
 		// object cooling fan
-		lcd_puts_at_P(0, 1, check_opposite ? _T(MSG_SELFTEST_EXTRUDER_FAN) : _T(MSG_SELFTEST_PART_FAN));
+		lcd_puts_at_P(0, 1, check_opposite ? _T(MSG_SELFTEST_HOTEND_FAN) : _T(MSG_SELFTEST_PART_FAN));
 		SET_OUTPUT(FAN_PIN);
 #ifdef FAN_SOFT_PWM
 		fanSpeedSoftPwm = 255;
@@ -7258,10 +7258,10 @@ static FanCheck lcd_selftest_fan_auto(uint8_t _fan)
 
 	switch (_fan) {
 	case 0:
-        setExtruderAutoFanState(3); // extruder fan
+        setExtruderAutoFanState(3); // hotend fan
         lcd_selftest_setfan(0); // print fan off
         lcd_selftest_measure_fans(2, 18, 2);
-        setExtruderAutoFanState(0); // extruder fan off
+        setExtruderAutoFanState(0); // hotend fan off
 		if (fan_speed[0] < failThr) {
 			return FanCheck::ExtruderFan;
 		}
@@ -7318,7 +7318,7 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 	if ((screen >= TestScreen::ExtruderFan) && (screen <= TestScreen::FansOk))
 	{
 		//SERIAL_ECHOLNPGM("Fan test");
-		lcd_puts_at_P(0, 2, _T(MSG_EXTRUDER_FAN_SPEED));
+		lcd_puts_at_P(0, 2, _T(MSG_HOTEND_FAN_SPEED));
 		lcd_set_cursor(18, 2);
 		(screen < TestScreen::PrintFan) ? lcd_print(_indicator) : lcd_print("OK");
 		lcd_puts_at_P(0, 3, _T(MSG_PRINT_FAN_SPEED));

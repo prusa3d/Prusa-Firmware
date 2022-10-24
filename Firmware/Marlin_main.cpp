@@ -1266,7 +1266,7 @@ void setup()
     temp_mgr_init();
 
 #ifdef EXTRUDER_ALTFAN_DETECT
-	SERIAL_ECHORPGM(_n("Extruder fan type: "));
+	SERIAL_ECHORPGM(_n("Hotend fan type: "));
 	if (extruder_altfan_detect())
 		SERIAL_ECHOLNRPGM(PSTR("ALTFAN"));
 	else

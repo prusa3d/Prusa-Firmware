@@ -478,11 +478,11 @@ msgstr "Finecorsa"
 msgid "Extruder"
 msgstr "Estrusore"
 
-#. MSG_EXTRUDER_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7321
-msgid "Extruder fan:"
-msgstr "Vent. estrusore:"
+#. MSG_HOTEND_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1131
+#: ../../Firmware/ultralcd.cpp:7302
+msgid "Hotend fan:"
+msgstr "Ventola hotend:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
@@ -828,9 +828,9 @@ msgstr "Errori ultima stampa"
 msgid "Left"
 msgstr "Sinistra"
 
-#. MSG_SELFTEST_EXTRUDER_FAN c=20
-#: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:7002
-#: ../../Firmware/ultralcd.cpp:7149 ../../Firmware/ultralcd.cpp:7154
+#. MSG_SELFTEST_HOTEND_FAN c=20
+#: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:6984
+#: ../../Firmware/ultralcd.cpp:7130 ../../Firmware/ultralcd.cpp:7135
 msgid "Left hotend fan?"
 msgstr "Vent SX hotend?"
 
@@ -1418,9 +1418,9 @@ msgstr "Premete la manopola per recuperare la temperatura dell'ugello."
 msgid "Print aborted"
 msgstr "Stampa interrotta"
 
-#. MSG_PRINT_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7324
+#. MSG_PRINT_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1131
+#: ../../Firmware/ultralcd.cpp:7305
 msgid "Print fan:"
 msgstr "Vent.stam:"
 

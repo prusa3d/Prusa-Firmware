@@ -32,8 +32,8 @@ const char MSG_FANS_CHECK[] PROGMEM_I1 = ISTR("Fans check"); ////MSG_FANS_CHECK 
 const char MSG_FIL_RUNOUTS[] PROGMEM_I1 = ISTR("Fil. runouts"); ////MSG_FIL_RUNOUTS c=15
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////MSG_FILAMENT c=17
 const char MSG_FAN_SPEED[] PROGMEM_I1 = ISTR("Fan speed"); ////MSG_FAN_SPEED c=14
-const char MSG_EXTRUDER_FAN_SPEED[] PROGMEM_I1 = ISTR("Extruder fan:");////MSG_EXTRUDER_FAN_SPEED c=16
-const char MSG_PRINT_FAN_SPEED[] PROGMEM_I1 = ISTR("Print fan:"); ////MSG_PRINT_FAN_SPEED c=16
+const char MSG_HOTEND_FAN_SPEED[] PROGMEM_I1 = ISTR("Hotend fan:");////MSG_HOTEND_FAN_SPEED c=15
+const char MSG_PRINT_FAN_SPEED[] PROGMEM_I1 = ISTR("Print fan:"); ////MSG_PRINT_FAN_SPEED c=15
 const char MSG_FILAMENT_CLEAN[] PROGMEM_I1 = ISTR("Filament extruding & with correct color?"); ////MSG_FILAMENT_CLEAN c=20 r=2
 const char MSG_FILAMENT_LOADED[] PROGMEM_I1 = ISTR("Is filament loaded?"); ////MSG_FILAMENT_LOADED c=20 r=2
 const char MSG_FILAMENTCHANGE[] PROGMEM_I1 = ISTR("Change filament"); ////MSG_FILAMENTCHANGE c=18
@@ -81,7 +81,7 @@ const char MSG_RESET[] PROGMEM_I1 = ISTR("Reset"); ////MSG_RESET c=14
 const char MSG_RESUME_PRINT[] PROGMEM_I1 = ISTR("Resume print"); ////MSG_RESUME_PRINT c=18
 const char MSG_RESUMING_PRINT[] PROGMEM_I1 = ISTR("Resuming print"); ////MSG_RESUMING_PRINT c=20
 const char MSG_SELFTEST_PART_FAN[] PROGMEM_I1 = ISTR("Front print fan?"); ////MSG_SELFTEST_PART_FAN c=20
-const char MSG_SELFTEST_EXTRUDER_FAN[] PROGMEM_I1 = ISTR("Left hotend fan?"); ////MSG_SELFTEST_EXTRUDER_FAN c=20
+const char MSG_SELFTEST_HOTEND_FAN[] PROGMEM_I1 = ISTR("Left hotend fan?"); ////MSG_SELFTEST_HOTEND_FAN c=20
 const char MSG_SELFTEST_FAILED[] PROGMEM_I1 = ISTR("Selftest failed"); ////MSG_SELFTEST_FAILED c=20
 const char MSG_SELFTEST_FAN[] PROGMEM_I1 = ISTR("Fan test"); ////MSG_SELFTEST_FAN c=20
 const char MSG_SELFTEST_FAN_NO[] PROGMEM_I1 = ISTR("Not spinning"); ////MSG_SELFTEST_FAN_NO c=19
@@ -204,8 +204,8 @@ const char MSG_OCTOPRINT_PAUSED[] PROGMEM_N1 = "// action:paused"; ////
 const char MSG_OCTOPRINT_ASK_RESUME[] PROGMEM_N1 = "// action:resume"; ////
 const char MSG_OCTOPRINT_RESUMED[] PROGMEM_N1 = "// action:resumed"; ////
 const char MSG_OCTOPRINT_CANCEL[] PROGMEM_N1 = "// action:cancel"; ////
-const char MSG_FANCHECK_EXTRUDER[] PROGMEM_N1 = "Err: EXTR. FAN ERROR"; ////c=20
-const char MSG_FANCHECK_PRINT[] PROGMEM_N1 = "Err: PRINT FAN ERROR"; ////c=20
+const char MSG_FANCHECK_HOTEND[] PROGMEM_N1 = "Err:HOTEND FAN ERROR"; ////c=20
+const char MSG_FANCHECK_PRINT[] PROGMEM_N1 = "Err:PRINT FAN ERROR"; ////c=20
 const char MSG_M112_KILL[] PROGMEM_N1 = "M112 called. Emergency Stop."; ////c=20
 const char MSG_ADVANCE_K[] PROGMEM_N1 = "Advance K:"; ////c=13
 const char MSG_POWERPANIC_DETECTED[] PROGMEM_N1 = "POWER PANIC DETECTED"; ////c=20

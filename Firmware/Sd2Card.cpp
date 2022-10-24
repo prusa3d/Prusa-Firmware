@@ -311,13 +311,16 @@ bool Sd2Card::init(uint8_t sckRateID) {
   // must supply min of 74 clock cycles with CS high.
   for (uint8_t i = 0; i < 10; i++) spiSend(0XFF);
 
+  WRITE(MISO, 1); // temporarily enable the MISO line pullup
   // command to go idle in SPI mode
   while ((status_ = cardCommand(CMD0, 0)) != R1_IDLE_STATE) {
     if (((uint16_t)_millis() - t0) > SD_INIT_TIMEOUT) {
+      WRITE(MISO, 0); // disable the MISO line pullup
       error(SD_CARD_ERROR_CMD0);
       goto fail;
     }
   }
+  WRITE(MISO, 0); // disable the MISO line pullup
 
   // send 0xFF until 0xFF received to give card some clock cycles
   t0 = (uint16_t)_millis();

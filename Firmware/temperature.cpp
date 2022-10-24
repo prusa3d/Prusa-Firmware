@@ -886,7 +886,7 @@ void soft_pwm_init()
   OCR2B = 128;
   ENABLE_SOFT_PWM_INTERRUPT();
 
-  timer4_init(); //for tone and Extruder fan PWM
+  timer4_init(); //for tone and Hotend fan PWM
 }
 
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
@@ -2906,6 +2906,7 @@ void temp_model_autotune(int16_t temp, bool selftest)
         temp_model_report_settings();
     }
 
+    lcd_consume_click();
     menu_unset_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
 }
 

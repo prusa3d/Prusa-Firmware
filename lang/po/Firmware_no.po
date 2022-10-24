@@ -478,11 +478,11 @@ msgstr "Endesensorer"
 msgid "Extruder"
 msgstr "Ekstruder"
 
-#. MSG_EXTRUDER_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7321
-msgid "Extruder fan:"
-msgstr "Ekstrudervifte:"
+#. MSG_HOTEND_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7319
+msgid "Hotend fan:"
+msgstr "Hotend-vifte:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
@@ -822,11 +822,11 @@ msgstr "Siste printfeil"
 msgid "Left"
 msgstr "Venstre"
 
-#. MSG_SELFTEST_EXTRUDER_FAN c=20
-#: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:7002
-#: ../../Firmware/ultralcd.cpp:7149 ../../Firmware/ultralcd.cpp:7154
+#. MSG_SELFTEST_HOTEND_FAN c=20
+#: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:7001
+#: ../../Firmware/ultralcd.cpp:7147 ../../Firmware/ultralcd.cpp:7152
 msgid "Left hotend fan?"
-msgstr "Venst. ekstr. vifte?"
+msgstr "Venst. hotendvifte?"
 
 #. MSG_BED_CORRECTION_LEFT c=14
 #: ../../Firmware/ultralcd.cpp:2752
@@ -1410,9 +1410,9 @@ msgstr "Trykk valghjulet for å fortsette oppvarming."
 msgid "Print aborted"
 msgstr "Print avbrutt"
 
-#. MSG_PRINT_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7324
+#. MSG_PRINT_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7322
 msgid "Print fan:"
 msgstr "Printvifte:"
 

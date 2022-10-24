@@ -4,16 +4,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Wed 16 Mar 2022 09:25:10 AM CET\n"
-"PO-Revision-Date: Wed 16 Mar 2022 09:25:10 AM CET\n"
+"PO-Revision-Date: 2022-10-14 23:39+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.7\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #. MSG_IR_03_OR_OLDER c=18
 #: ../../Firmware/fsensor.cpp:178 ../../Firmware/messages.cpp:161
@@ -61,7 +61,7 @@ msgstr "Abeceda"
 #. MSG_ALWAYS c=6
 #: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4308
 msgid "Always"
-msgstr ""
+msgstr "Uvijek"
 
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1405
@@ -81,7 +81,7 @@ msgstr "Pomoc"
 #. MSG_AUTO c=6
 #: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5864
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. MSG_AUTO_HOME c=18
 #: ../../Firmware/Marlin_main.cpp:3271 ../../Firmware/messages.cpp:9
@@ -128,7 +128,7 @@ msgstr "Duljina osi"
 #: ../../Firmware/messages.cpp:59 ../../Firmware/ultralcd.cpp:2751
 #: ../../Firmware/ultralcd.cpp:5861 ../../Firmware/ultralcd.cpp:7838
 msgid "Back"
-msgstr "Vrati"
+msgstr "Natrag"
 
 #. MSG_BED c=13
 #: ../../Firmware/Marlin_main.cpp:2051 ../../Firmware/Marlin_main.cpp:4767
@@ -258,7 +258,7 @@ msgstr "Kartica je uklonjena"
 #. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5538
 msgid "Change SD card"
-msgstr ""
+msgstr "Promjeni SD karti."
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5497
@@ -476,11 +476,11 @@ msgstr "Granicnici"
 msgid "Extruder"
 msgstr "Ekstruder"
 
-#. MSG_EXTRUDER_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7321
-msgid "Extruder fan:"
-msgstr "Ekstruder vent:"
+#. MSG_HOTEND_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7319
+msgid "Hotend fan:"
+msgstr "Hotend vent:"
 
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
@@ -563,7 +563,7 @@ msgstr "Fil. senzor"
 #: ../../Firmware/Marlin_main.cpp:8577 ../../Firmware/Marlin_main.cpp:8604
 #: ../../Firmware/messages.cpp:33 ../../Firmware/ultralcd.cpp:3835
 msgid "Filament"
-msgstr ""
+msgstr "Filament"
 
 #. MSG_FILAMENT_CLEAN c=20 r=2
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2287
@@ -687,7 +687,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4658 ../../Firmware/ultralcd.cpp:4661
 #: ../../Firmware/ultralcd.cpp:4664
 msgid "Gcode"
-msgstr ""
+msgstr "Gkod"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4672
@@ -766,7 +766,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2531
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Poboljšanje točke kalibracije podloge"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:5478
@@ -776,7 +776,7 @@ msgstr "Info zaslon"
 #. MSG_INIT_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5545
 msgid "Init. SD card"
-msgstr ""
+msgstr "Obrada SD kartice"
 
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2152
@@ -826,9 +826,9 @@ msgstr "Zadnji neusp. print"
 msgid "Left"
 msgstr "Lijevo"
 
-#. MSG_SELFTEST_EXTRUDER_FAN c=20
-#: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:7002
-#: ../../Firmware/ultralcd.cpp:7149 ../../Firmware/ultralcd.cpp:7154
+#. MSG_SELFTEST_HOTEND_FAN c=20
+#: ../../Firmware/messages.cpp:88 ../../Firmware/ultralcd.cpp:7001
+#: ../../Firmware/ultralcd.cpp:7147 ../../Firmware/ultralcd.cpp:7152
 msgid "Left hotend fan?"
 msgstr "Lijevi hotend vent?"
 
@@ -861,7 +861,7 @@ msgstr "Live podesavanje Z"
 #. MSG_LOAD_ALL c=18
 #: ../../Firmware/ultralcd.cpp:5120
 msgid "Load all"
-msgstr "Napuni sve"
+msgstr "Puni sve"
 
 #. MSG_LOAD_FILAMENT c=17
 #: ../../Firmware/messages.cpp:54 ../../Firmware/ultralcd.cpp:5122
@@ -1020,13 +1020,13 @@ msgstr "Promjena moda u tijeku..."
 #: ../../Firmware/ultralcd.cpp:4578 ../../Firmware/ultralcd.cpp:4581
 #: ../../Firmware/ultralcd.cpp:4584
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:91 ../../Firmware/ultralcd.cpp:6982
 #: ../../Firmware/ultralcd.cpp:6991 ../../Firmware/ultralcd.cpp:7009
 msgid "Motor"
-msgstr ""
+msgstr "Motor"
 
 #. MSG_MOVE_X c=18
 #: ../../Firmware/ultralcd.cpp:3492
@@ -1055,7 +1055,7 @@ msgstr "Pomaknite os"
 #: ../../Firmware/ultralcd.cpp:4276 ../../Firmware/ultralcd.cpp:5737
 #: ../../Firmware/ultralcd.cpp:5836
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:199
@@ -1093,7 +1093,7 @@ msgstr "Nema"
 #: ../../Firmware/ultralcd.cpp:4381 ../../Firmware/ultralcd.cpp:4397
 #: ../../Firmware/ultralcd.cpp:4416 ../../Firmware/ultralcd.cpp:5763
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #. MSG_SELFTEST_NOTCONNECTED c=20
 #: ../../Firmware/ultralcd.cpp:6969
@@ -1148,7 +1148,7 @@ msgstr "Mlaznica."
 #: ../../Firmware/ultralcd.cpp:5836 ../../Firmware/ultralcd.cpp:7841
 #: ../../Firmware/ultralcd.cpp:7845
 msgid "Off"
-msgstr ""
+msgstr "Off"
 
 #. MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 #: ../../Firmware/Marlin_main.cpp:1535
@@ -1165,7 +1165,7 @@ msgstr "Pronadene stare postavke. Postavit ce se zadani PID, Esteps itd."
 #: ../../Firmware/ultralcd.cpp:5836 ../../Firmware/ultralcd.cpp:7841
 #: ../../Firmware/ultralcd.cpp:7845
 msgid "On"
-msgstr ""
+msgstr "On"
 
 #. MSG_SOUND_ONCE c=7
 #: ../../Firmware/messages.cpp:142 ../../Firmware/ultralcd.cpp:4453
@@ -1175,7 +1175,7 @@ msgstr "Jednom"
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9718 ../../Firmware/messages.cpp:164
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "PAUZIRAN TERMAL EROR"
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1017
@@ -1414,9 +1414,9 @@ msgstr "Pritisnite gumb za nastavak temperature mlaznice."
 msgid "Print aborted"
 msgstr "Print je prekinut"
 
-#. MSG_PRINT_FAN_SPEED c=16
-#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1126
-#: ../../Firmware/ultralcd.cpp:7324
+#. MSG_PRINT_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:36 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7322
 msgid "Print fan:"
 msgstr "Vent printa:"
 
@@ -1438,7 +1438,7 @@ msgstr "Vrijeme printanja"
 #. MSG_PRINTER_IP c=18
 #: ../../Firmware/ultralcd.cpp:1711
 msgid "Printer IP Addr:"
-msgstr ""
+msgstr "Printer IP Adr:"
 
 #. MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1548 ../../Firmware/messages.cpp:42
@@ -1609,12 +1609,12 @@ msgstr "Pocetak selftesta"
 #. MSG_SELFTEST c=18
 #: ../../Firmware/ultralcd.cpp:4904
 msgid "Selftest"
-msgstr ""
+msgstr "Selftest"
 
 #. MSG_SELFTEST_ERROR c=20
 #: ../../Firmware/ultralcd.cpp:6962
 msgid "Selftest error!"
-msgstr ""
+msgstr "Selftest error!"
 
 #. MSG_SELFTEST_FAILED c=20
 #: ../../Firmware/messages.cpp:85 ../../Firmware/ultralcd.cpp:6526
@@ -1785,17 +1785,17 @@ msgstr "Zamjenjeno"
 #. MSG_THERMAL_ANOMALY c=20
 #: ../../Firmware/messages.cpp:166 ../../Firmware/temperature.cpp:2442
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "TERMALNA ANOMALIJA"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
 #: ../../Firmware/temperature.cpp:2899
 msgid "TM autotune failed"
-msgstr ""
+msgstr "TM autotune nije usp"
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2884
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Temp. autptune model"
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4797
@@ -1959,7 +1959,7 @@ msgstr "X-ispravan:"
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5596
 msgid "XFLASH init"
-msgstr ""
+msgstr "XFLASH  validacija"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1721
@@ -1987,6 +1987,7 @@ msgstr ""
 msgid ""
 "XYZ calibration compromised. Left front calibration point not reachable."
 msgstr ""
+"XYZ kalibracija je ugrozena. Lijeva prednja tocka kalibracije nije dostupna."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3314
@@ -2011,6 +2012,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3305
 msgid "XYZ calibration failed. Left front calibration point not reachable."
 msgstr ""
+"XYZ kalibracija nije uspjela. Lijeva prednja tocka kalibracije nije dostupna."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3296
