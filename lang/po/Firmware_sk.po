@@ -537,12 +537,6 @@ msgstr "Zapojenie idlera"
 msgid "Extruder"
 msgstr "Extruder"
 
-#. MSG_HOTEND_FAN_SPEED c=15
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
-#: ../../Firmware/ultralcd.cpp:7319
-msgid "Hotend fan:"
-msgstr "Hotend vent.:"
-
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
 msgid "Extruder info"
@@ -908,6 +902,12 @@ msgstr "Vys. vykon"
 msgid "Homing"
 msgstr "Navrat"
 
+#. MSG_HOTEND_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7319
+msgid "Hotend fan:"
+msgstr "Hotend vent.:"
+
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4041
 msgid "I will run xyz calibration now. It will take approx. 12 mins."
@@ -1117,9 +1117,15 @@ msgstr "MMU NOT RESPONDING"
 msgid "MMU Retry: Restoring temperature..."
 msgstr "MMU: Obnovenie teploty..."
 
+#. MSG_TITLE_SELFTEST_FAILED c=20
+#: ../../Firmware/mmu2/errors_list.h:152 ../../Firmware/mmu2/errors_list.h:191
+#: ../../Firmware/mmu2/errors_list.h:192 ../../Firmware/mmu2/errors_list.h:193
+msgid "MMU SELFTEST FAILED"
+msgstr "MMU SAMOTEST ZLYHAL"
+
 #. MSG_MMU_FAILS c=15
-#: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1187
-#: ../../Firmware/ultralcd.cpp:1215
+#: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1161
+#: ../../Firmware/ultralcd.cpp:1189
 msgid "MMU fails"
 msgstr "Zlyhanie MMU"
 
@@ -2426,24 +2432,6 @@ msgstr "Korekcia Y:"
 msgid "Yes"
 msgstr "Ano"
 
-#. MSG_FW_VERSION_ALPHA c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:835
-msgid ""
-"You are using firmware alpha version. This is development version. Using "
-"this version is not recommended and may cause printer damage."
-msgstr ""
-"Pouzivate ALPHA verziu firmveru. Toto je vyvojova verzia. Pouzivanie tejto "
-"verzie sa neodporuca a moze sposobit poskodenie tlaciarne."
-
-#. MSG_FW_VERSION_BETA c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:836
-msgid ""
-"You are using firmware beta version. This is development version. Using this "
-"version is not recommended and may cause printer damage."
-msgstr ""
-"Pouzivate BETA verziu firmveru. Toto je vyvojova verzia. Pouzivanie tejto "
-"verzie sa neodporuca a moze sposobit poskodenie tlaciarne."
-
 #. MSG_WIZARD_QUIT c=20 r=8
 #: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4149
 msgid "You can always resume the Wizard from Calibration -> Wizard."
@@ -2557,3 +2545,17 @@ msgstr "🔃Obnovit"
 
 #~ msgid "Press the knob to resume nozzle temperature."
 #~ msgstr "Pre pokracovanie nahrievania trysky stlacte tlacidlo."
+
+#~ msgid ""
+#~ "You are using firmware alpha version. This is development version. Using "
+#~ "this version is not recommended and may cause printer damage."
+#~ msgstr ""
+#~ "Pouzivate ALPHA verziu firmveru. Toto je vyvojova verzia. Pouzivanie "
+#~ "tejto verzie sa neodporuca a moze sposobit poskodenie tlaciarne."
+
+#~ msgid ""
+#~ "You are using firmware beta version. This is development version. Using "
+#~ "this version is not recommended and may cause printer damage."
+#~ msgstr ""
+#~ "Pouzivate BETA verziu firmveru. Toto je vyvojova verzia. Pouzivanie tejto "
+#~ "verzie sa neodporuca a moze sposobit poskodenie tlaciarne."

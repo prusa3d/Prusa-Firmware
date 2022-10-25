@@ -540,12 +540,6 @@ msgstr "Koppel spanrol"
 msgid "Extruder"
 msgstr "Extruder"
 
-#. MSG_HOTEND_FAN_SPEED c=15
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
-#: ../../Firmware/ultralcd.cpp:7319
-msgid "Hotend fan:"
-msgstr "Hotend fan:"
-
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
 msgid "Extruder info"
@@ -561,7 +555,7 @@ msgstr "F. autoladen"
 #: ../../Firmware/messages.cpp:46 ../../Firmware/ultralcd.cpp:4232
 #: ../../Firmware/ultralcd.cpp:4239
 msgid "F. jam detect"
-msgstr ""
+msgstr "F.Jam ontdek."
 
 #. MSG_FSENSOR_RUNOUT c=13
 #: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4229
@@ -913,6 +907,12 @@ msgstr "Hoog verm."
 msgid "Homing"
 msgstr "Startpositie"
 
+#. MSG_HOTEND_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7319
+msgid "Hotend fan:"
+msgstr "Hotend fan:"
+
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4041
 msgid "I will run xyz calibration now. It will take approx. 12 mins."
@@ -1123,9 +1123,15 @@ msgstr "MMU REAGEERT NIET"
 msgid "MMU Retry: Restoring temperature..."
 msgstr "MMU Retry: Temperatuur herstellen..."
 
+#. MSG_TITLE_SELFTEST_FAILED c=20
+#: ../../Firmware/mmu2/errors_list.h:152 ../../Firmware/mmu2/errors_list.h:191
+#: ../../Firmware/mmu2/errors_list.h:192 ../../Firmware/mmu2/errors_list.h:193
+msgid "MMU SELFTEST FAILED"
+msgstr "MMU ZELFTEST MISLUKT"
+
 #. MSG_MMU_FAILS c=15
-#: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1187
-#: ../../Firmware/ultralcd.cpp:1215
+#: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1161
+#: ../../Firmware/ultralcd.cpp:1189
 msgid "MMU fails"
 msgstr "MMU fout"
 
@@ -1702,7 +1708,8 @@ msgstr ""
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:240
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
-msgstr "Riemschijf motor is vastgelopen. Controleer of de poelie kan bewegen en "
+msgstr ""
+"Riemschijf motor is vastgelopen. Controleer of de poelie kan bewegen en "
 "controleer de bedrading."
 
 #. MSG_PROGRESS_PUSH_FILAMENT c=20
@@ -2149,8 +2156,8 @@ msgstr "Teste filament"
 msgid ""
 "The Idler cannot home properly. Check for anything blocking its movement."
 msgstr ""
-"Het spanrol kan niet goed bewegen. Controleer of er iets de beweging"
-" blokkeert."
+"Het spanrol kan niet goed bewegen. Controleer of er iets de beweging "
+"blokkeert."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:231 ../../Firmware/mmu2/errors_list.h:269
@@ -2158,14 +2165,16 @@ msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
-"De MMU meldt dat zijn FW-versie niet compatibel is met de firmware van"
-" de printer. Controleer of de MMU-firmware up-to-date is."
+"De MMU meldt dat zijn FW-versie niet compatibel is met de firmware van de "
+"printer. Controleer of de MMU-firmware up-to-date is."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
-msgstr "De selector kan niet startpositie finden. Controleer of er iets in de weg zit."
+msgstr ""
+"De selector kan niet startpositie finden. Controleer of er iets in de weg "
+"zit."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:3940
@@ -2235,8 +2244,8 @@ msgid ""
 "Unexpected FINDA reading. Ensure no filament is under FINDA and the selector "
 "is free. Check FINDA connection."
 msgstr ""
-"Onverwachte FINDA-aflezing. Zorg ervoor dat er geen filament onder FINDA zit"
-" en dat de selecteur vrij is. Controleer de FINDA-verbinding."
+"Onverwachte FINDA-aflezing. Zorg ervoor dat er geen filament onder FINDA zit "
+"en dat de selecteur vrij is. Controleer de FINDA-verbinding."
 
 #. MSG_BTN_UNLOAD c=8
 #: ../../Firmware/mmu2/errors_list.h:284 ../../Firmware/mmu2/errors_list.h:294
@@ -2443,20 +2452,6 @@ msgstr "Y-correctie:"
 #: ../../Firmware/ultralcd.cpp:4747 ../../Firmware/ultralcd.cpp:5998
 msgid "Yes"
 msgstr "Ja"
-
-#. MSG_FW_VERSION_ALPHA c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:835
-msgid ""
-"You are using firmware alpha version. This is development version. Using "
-"this version is not recommended and may cause printer damage."
-msgstr ""
-
-#. MSG_FW_VERSION_BETA c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:836
-msgid ""
-"You are using firmware beta version. This is development version. Using this "
-"version is not recommended and may cause printer damage."
-msgstr ""
 
 #. MSG_WIZARD_QUIT c=20 r=8
 #: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4149
