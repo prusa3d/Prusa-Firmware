@@ -564,7 +564,7 @@ msgstr "F. kork føle"
 #: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4229
 #: ../../Firmware/ultralcd.cpp:4236
 msgid "F. runout"
-msgstr "F. Löput"
+msgstr "F. Løput"
 
 #. MSG_TITLE_FIL_ALREADY_LOADED c=20
 #: ../../Firmware/mmu2/errors_list.h:148 ../../Firmware/mmu2/errors_list.h:186
@@ -574,7 +574,7 @@ msgstr "FILAMENT ALLEREDE LA"
 #. MSG_TITLE_FINDA_DIDNT_TRIGGER c=20
 #: ../../Firmware/mmu2/errors_list.h:118 ../../Firmware/mmu2/errors_list.h:156
 msgid "FINDA DIDNT TRIGGER"
-msgstr "FINDA IKKE UTLÖST"
+msgstr "FINDA IKKE UTLØST"
 
 #. MSG_DESC_FINDA_DIDNT_GO_OFF c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:197 ../../Firmware/mmu2/errors_list.h:237
@@ -821,7 +821,7 @@ msgstr ""
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code sliced for en nyere fastvarevare. Fortsette?"
+msgstr "G-code sliced for nyere fastvare. Fortsette?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:377
@@ -829,7 +829,7 @@ msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
 msgstr ""
-"G-code sliced for en nyere fastvaremvare. Vennligst oppdater systemet. Print "
+"G-code sliced for nyere fastvare. Vennligst oppdater systemet. Print "
 "avbrutt."
 
 #. MSG_GCODE c=8
@@ -1104,7 +1104,7 @@ msgstr "MMU SVARER IKKE"
 #. MSG_MMU_RESTORE_TEMP c=20 r=4
 #: ../../Firmware/mmu2.cpp:598
 msgid "MMU Retry: Restoring temperature..."
-msgstr ""
+msgstr "MMU Retry: gjenoppretter temperatur..."
 
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1187
@@ -1122,14 +1122,14 @@ msgstr "MMU lastefeil"
 msgid ""
 "MMU unit not responding correctly. Check the wiring and connectors. If the "
 "issue persists, contact support."
-msgstr ""
+msgstr "MMU enhet svarer ikke riktig. Sjekk ledninger og koblinger. Hvis problemet vedvarer, kontakt støtte"
 
 #. MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:226 ../../Firmware/mmu2/errors_list.h:264
 msgid ""
 "MMU unit not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
-msgstr ""
+msgstr "MMU enhet svarer ikke. Sjekk ledninger og koblinger. Hvis problemet vedvarer, kontakt støtte"
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1679
@@ -1255,7 +1255,7 @@ msgstr " -"
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:199
 msgid "New firmware version available:"
-msgstr "Ny fastvaremvare tilgjengelig:"
+msgstr "Ny fastvare tilgjengelig:"
 
 #. MSG_NO c=4
 #: ../../Firmware/messages.cpp:70 ../../Firmware/ultralcd.cpp:2802
@@ -2402,14 +2402,14 @@ msgstr "Ja"
 msgid ""
 "You are using firmware alpha version. This is development version. Using "
 "this version is not recommended and may cause printer damage."
-msgstr ""
+msgstr "Du bruker fastvare i betaversjon. Dette er en utviklerversjon. Å bruke denne versjonen er ikke anbefalt og kan skade printeren"
 
 #. MSG_FW_VERSION_BETA c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:836
 msgid ""
 "You are using firmware beta version. This is development version. Using this "
 "version is not recommended and may cause printer damage."
-msgstr ""
+msgstr "Du bruker fastvare i betaversjon. Dette er en utviklerversjon. Å bruke denne versjonen er ikke anbefalt og kan skade printeren"
 
 #. MSG_WIZARD_QUIT c=20 r=8
 #: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4149
