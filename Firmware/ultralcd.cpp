@@ -1040,7 +1040,7 @@ void lcd_commands()
 			lcd_commands_type = LcdCommands::Idle;
 		}
 	}
-
+#ifdef TEMP_MODEL
     if (lcd_commands_type == LcdCommands::TempModel) {
         if (lcd_commands_step == 0) {
             lcd_commands_step = 3;
@@ -1060,7 +1060,7 @@ void lcd_commands()
             lcd_commands_type = LcdCommands::Idle;
         }
     }
-
+#endif //TEMP_MODEL
 }
 
 void lcd_return_to_status()
