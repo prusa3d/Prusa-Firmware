@@ -218,6 +218,7 @@ void PID_autotune(float temp, int extruder, int ncycles);
 
 #ifdef TEMP_MODEL
 void temp_model_set_enabled(bool enabled);
+bool temp_model_valid();
 void temp_model_set_warn_beep(bool enabled);
 void temp_model_set_params(float C = NAN, float P = NAN, float Ta_corr = NAN, float warn = NAN, float err = NAN);
 void temp_model_set_resistance(uint8_t index, float R);

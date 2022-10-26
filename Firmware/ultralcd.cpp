@@ -1034,6 +1034,25 @@ void lcd_commands()
 		}
 	}
 
+    if (lcd_commands_type == LcdCommands::TempModel) {
+        if (lcd_commands_step == 0) {
+            lcd_commands_step = 3;
+        }
+        if (lcd_commands_step == 3) {
+            enquecommand_P(PSTR("M310 A F0"));
+            lcd_commands_step = 2;
+        }
+        if (lcd_commands_step ==2 && temp_model_valid()) {
+            enquecommand_P(PSTR("M310 S1"));
+            lcd_commands_step = 1;
+        }
+        //if (lcd_commands_step == 1 && calibrated()) {
+        if (lcd_commands_step == 1 && temp_model_valid()) {
+            enquecommand_P(PSTR("M500"));
+            lcd_commands_step = 0;
+            lcd_commands_type = LcdCommands::Idle;
+        }
+    }
 
 }
 
@@ -4843,6 +4862,9 @@ static void lcd_calibration_menu()
 	    MENU_ITEM_FUNCTION_P(_T(MSG_PINDA_CALIBRATION), lcd_calibrate_pinda);
     }
   }
+#ifdef TEMP_MODEL
+    MENU_ITEM_SUBMENU_P(_n("Temp Model cal."), lcd_temp_model_cal);
+#endif //TEMP_MODEL
   
   MENU_END();
 }
@@ -5941,6 +5963,14 @@ void lcd_print_stop()
     lcd_commands_type = LcdCommands::StopPrint;
     lcd_return_to_status();
 }
+
+#ifdef TEMP_MODEL
+void lcd_temp_model_cal()
+{
+    lcd_commands_type = LcdCommands::TempModel;
+    lcd_return_to_status();
+}
+#endif //TEMP_MODEL
 
 void lcd_sdcard_stop()
 {
