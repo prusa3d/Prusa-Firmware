@@ -47,6 +47,9 @@ void lcd_pause_print();
 void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
+#ifdef TEMP_MODEL
+void lcd_temp_model_cal();
+#endif //TEMP_MODEL
 void lcd_load_filament_color_check();
 
 extern void lcd_belttest();
@@ -107,6 +110,9 @@ enum class LcdCommands : uint_least8_t
 	LongPause,
 	PidExtruder,
 	Layer1Cal,
+#ifdef TEMP_MODEL
+    TempModel,
+#endif //TEMP_MODEL
 };
 
 extern LcdCommands lcd_commands_type;

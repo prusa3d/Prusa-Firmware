@@ -2506,6 +2506,7 @@ static void temp_model_reset_enabled(bool enabled)
 {
     TempMgrGuard temp_mgr_guard;
     temp_model::enabled = enabled;
+    temp_model::valid = enabled;
     temp_model::data.flag_bits.uninitialized = true;
 }
 
@@ -2516,11 +2517,19 @@ void temp_model_set_enabled(bool enabled)
         TempMgrGuard temp_mgr_guard;
         temp_model::enabled = enabled;
         temp_model::setup();
+        temp_model::valid = true;
     }
 
     // verify that the model has been enabled
-    if(enabled && !temp_model::enabled)
+    if(enabled && !temp_model::enabled) {
         SERIAL_ECHOLNPGM("TM: invalid parameters, cannot enable");
+        temp_model::valid = false;
+    }
+}
+
+bool temp_model_valid()
+{
+  return temp_model::valid;
 }
 
 void temp_model_set_warn_beep(bool enabled)
@@ -2582,6 +2591,7 @@ void temp_model_reset_settings()
     temp_model::data.err = TEMP_MODEL_E;
     temp_model::warn_beep = true;
     temp_model::enabled = false;
+    temp_model::valid = false;
 }
 
 void temp_model_load_settings()
@@ -2779,21 +2789,24 @@ static bool autotune(int16_t cal_temp)
 {
     uint16_t samples;
     float e;
-
+    char tm_message[20];
     // bootstrap C/R values without fan
     set_fan_speed(0);
 
     for(uint8_t i = 0; i != 2; ++i) {
-        const char* PROGMEM verb = (i == 0? PSTR("initial"): PSTR("refining"));
-
+        const char* PROGMEM verb = (i == 0? PSTR("inital"): PSTR("refine"));
         target_temperature[0] = 0;
         if(current_temperature[0] >= TEMP_MODEL_CAL_Tl) {
-            printf_P(PSTR("TM: cooling down to %dC\n"), TEMP_MODEL_CAL_Tl);
+            sprintf_P(tm_message, PSTR("TM: cool down <%dC"), TEMP_MODEL_CAL_Tl);
+            SERIAL_ECHOLN(tm_message);
+            lcd_setstatus(tm_message);
             cooldown(TEMP_MODEL_CAL_Tl);
             wait(10000);
         }
 
-        printf_P(PSTR("TM: %S C estimation\n"), verb);
+        sprintf_P(tm_message, PSTR("TM: %S C est."), verb);
+        SERIAL_ECHOLN(tm_message);
+        lcd_setstatus(tm_message);
         target_temperature[0] = cal_temp;
         samples = record();
         if(temp_error_state.v || !samples)
@@ -2813,7 +2826,9 @@ static bool autotune(int16_t cal_temp)
         if(i) break; // we don't need to refine R
         wait(30000); // settle PID regulation
 
-        printf_P(PSTR("TM: %S R estimation @ %dC\n"), verb, cal_temp);
+        sprintf_P(tm_message, PSTR("TM: %S R %dC"), verb, cal_temp);
+        SERIAL_ECHOLN(tm_message);
+        lcd_setstatus(tm_message);
         samples = record();
         if(temp_error_state.v || !samples)
             return true;
@@ -2837,7 +2852,9 @@ static bool autotune(int16_t cal_temp)
         set_fan_speed(speed);
         wait(10000);
 
-        printf_P(PSTR("TM: R[%u] estimation\n"), (unsigned)i);
+        sprintf_P(tm_message, PSTR("TM: R[%u] estimat."), (unsigned)i);
+        SERIAL_ECHOLN(tm_message);
+        lcd_setstatus(tm_message);
         samples = record();
         if(temp_error_state.v || !samples)
             return true;
@@ -2873,30 +2890,33 @@ static bool autotune(int16_t cal_temp)
 
 void temp_model_autotune(int16_t temp, bool selftest)
 {
+    char tm_message[20];
     if(moves_planned() || printer_active()) {
-        SERIAL_ECHOLNPGM("TM: printer needs to be idle for calibration");
+        sprintf_P(tm_message, PSTR("TM: Cal. NOT IDLE"));
+        SERIAL_ECHOLN(tm_message);
+        lcd_setstatuspgm(tm_message);
         return;
     }
 
     // lockout the printer during calibration
     KEEPALIVE_STATE(IN_PROCESS);
     menu_set_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
-    lcd_setstatuspgm(_i("Temp. model autotune")); ////MSG_TEMP_MODEL_AUTOTUNE c=20
     lcd_return_to_status();
 
     // set the model checking state during self-calibration
     bool was_enabled = temp_model::enabled;
     temp_model_reset_enabled(selftest);
 
-    SERIAL_ECHOLNPGM("TM: autotune start");
+    SERIAL_ECHOLNPGM("TM: calibration start");
     bool err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
 
     // always reset temperature
     disable_heater();
 
     if(err) {
-        SERIAL_ECHOLNPGM("TM: autotune failed");
-        lcd_setstatuspgm(_i("TM autotune failed")); ////MSG_TM_AUTOTUNE_FAILED c=20
+        sprintf_P(tm_message, PSTR("TM: calibr. failed!"));
+        SERIAL_ECHOLN(tm_message);
+        lcd_setstatuspgm(tm_message); ////MSG_TM_AUTOTUNE_FAILED c=20
         if(temp_error_state.v)
             temp_model_cal::set_fan_speed(255);
     } else {
