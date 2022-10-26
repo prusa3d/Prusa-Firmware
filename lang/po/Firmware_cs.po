@@ -927,7 +927,7 @@ msgstr "IDLER: CHYBA HOMINGU"
 #. MSG_TITLE_IDLER_CANNOT_MOVE c=20
 #: ../../Firmware/mmu2/errors_list.h:126 ../../Firmware/mmu2/errors_list.h:165
 msgid "IDLER CANNOT MOVE"
-msgstr "CHYBA POHYBU ILDERU"
+msgstr "CHYBA POHYBU IDLERU"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:149 ../../Firmware/mmu2/errors_list.h:187
@@ -946,7 +946,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2530
 msgid "Improving bed calibration point"
-msgstr "Zlepsovani kalibracniho bodu"
+msgstr "Upresnovani kalibracniho bodu"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:117 ../../Firmware/ultralcd.cpp:5487
@@ -1701,7 +1701,7 @@ msgstr ""
 #: ../../Firmware/mmu2/errors_list.h:200 ../../Firmware/mmu2/errors_list.h:240
 msgid "Pulley motor stalled. Ensure the pulley can move and check the wiring."
 msgstr ""
-"Motor idleru se zastavil. Ujistete se, ze neni pohyb blokovan a zkontrolujte "
+"Kladkový motor se zastavil. Ujistete se, ze neni pohyb blokovan a zkontrolujte "
 "zapojeni."
 
 #. MSG_PROGRESS_PUSH_FILAMENT c=20
@@ -2256,7 +2256,7 @@ msgstr "Vysunuti k FINDA"
 #: ../../Firmware/mmu2_progress_converter.cpp:12
 #: ../../Firmware/mmu2_progress_converter.cpp:38
 msgid "Unloading to pulley"
-msgstr "Vysunuti k idleru"
+msgstr "Vysunuti ke kladce"
 
 #. MSG_FIL_FAILED c=20 r=5
 #: ../../Firmware/ultralcd.cpp:6265
