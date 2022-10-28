@@ -267,7 +267,9 @@ msgstr "Select./Idler blocat"
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:266
 msgid "Cannot perform the action, filament is already loaded. Unload it first."
-msgstr "Nu se poate efectua actiunea, filamentul este incarcat.Descarcati-l mai intai."
+msgstr ""
+"Nu se poate efectua actiunea, filamentul este incarcat.Descarcati-l mai "
+"intai."
 
 #. MSG_SD_REMOVED c=20
 #: ../../Firmware/ultralcd.cpp:7700
@@ -538,12 +540,6 @@ msgstr "Cuplare idler"
 msgid "Extruder"
 msgstr "Extruder"
 
-#. MSG_HOTEND_FAN_SPEED c=15
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
-#: ../../Firmware/ultralcd.cpp:7319
-msgid "Hotend fan:"
-msgstr "Vent. hotend:"
-
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
 msgid "Extruder info"
@@ -583,8 +579,8 @@ msgid ""
 "FINDA didn't switch off while unloading filament. Try unloading manually. "
 "Ensure filament can move and FINDA works."
 msgstr ""
-"FINDA nu sa oprit la descarcare Fil.Incercati descar. manuala. "
-"Asigurativa ca FINDA functioneaza."
+"FINDA nu sa oprit la descarcare Fil.Incercati descar. manuala. Asigurativa "
+"ca FINDA functioneaza."
 
 #. MSG_DESC_FINDA_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:196 ../../Firmware/mmu2/errors_list.h:236
@@ -592,8 +588,8 @@ msgid ""
 "FINDA didn't trigger while loading the filament. Ensure the filament can "
 "move and FINDA works."
 msgstr ""
-"FINDA nu sa declansat in timpul incarcarii. "
-"Asigurativa ca filamentul se misca si FINDA functioneaza."
+"FINDA nu sa declansat in timpul incarcarii. Asigurativa ca filamentul se "
+"misca si FINDA functioneaza."
 
 #. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
 #: ../../Firmware/mmu2/errors_list.h:119 ../../Firmware/mmu2/errors_list.h:157
@@ -910,6 +906,12 @@ msgstr "Put. max"
 msgid "Homing"
 msgstr "Homing"
 
+#. MSG_HOTEND_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7319
+msgid "Hotend fan:"
+msgstr "Vent. hotend:"
+
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4041
 msgid "I will run xyz calibration now. It will take approx. 12 mins."
@@ -1119,6 +1121,12 @@ msgstr "MMU NU RASPUNDE"
 msgid "MMU Retry: Restoring temperature..."
 msgstr "MMU: Restabilirea temperaturii..."
 
+#. MSG_TITLE_SELFTEST_FAILED c=20
+#: ../../Firmware/mmu2/errors_list.h:152 ../../Firmware/mmu2/errors_list.h:191
+#: ../../Firmware/mmu2/errors_list.h:192 ../../Firmware/mmu2/errors_list.h:193
+msgid "MMU SELFTEST FAILED"
+msgstr "MMU AUTOTEST. ESUATA"
+
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1187
 #: ../../Firmware/ultralcd.cpp:1215
@@ -1145,8 +1153,8 @@ msgid ""
 "MMU unit not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"Unitatea MMU nu raspunde. Verificati cablajul si conectorii. Daca "
-"problema persista, contactati dep. support"
+"Unitatea MMU nu raspunde. Verificati cablajul si conectorii. Daca problema "
+"persista, contactati dep. support"
 
 #. MSG_MMU_CONNECTED c=18
 #: ../../Firmware/ultralcd.cpp:1679
@@ -1742,8 +1750,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"Instrumentul de Fil. solicitat nu este disponibil pe acest hardware. Verifica "
-"G-codul ptr indexul instrum. in afara intervalului (T0-T4)."
+"Instrumentul de Fil. solicitat nu este disponibil pe acest hardware. "
+"Verifica G-codul ptr indexul instrum. in afara intervalului (T0-T4)."
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:2754
@@ -2149,16 +2157,16 @@ msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
-"Versiune FW MMU este incompatibil cu cea a imprimantei. "
-"Asigurati-va ca FW MMU este actualizat."
+"Versiune FW MMU este incompatibil cu cea a imprimantei. Asigurati-va ca FW "
+"MMU este actualizat."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:202 ../../Firmware/mmu2/errors_list.h:242
 msgid ""
 "The Selector cannot home properly. Check for anything blocking its movement."
 msgstr ""
-"Selector-ul nu poate reveni corect. Verificati daca exista ceva care blocheza "
-"miscarea."
+"Selector-ul nu poate reveni corect. Verificati daca exista ceva care "
+"blocheza miscarea."
 
 #. MSG_WIZARD_V2_CAL_2 c=20 r=12
 #: ../../Firmware/ultralcd.cpp:3940
@@ -2373,8 +2381,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3334
 msgid "XYZ calibration compromised. Front calibration points not reachable."
 msgstr ""
-"Calibrarea XYZ compromisa. Punctele de calibrare din fata nu pot fi "
-"atinse."
+"Calibrarea XYZ compromisa. Punctele de calibrare din fata nu pot fi atinse."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3340
@@ -2408,8 +2415,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3328
 msgid "XYZ calibration failed. Left front calibration point not reachable."
 msgstr ""
-"Calibrarea XYZ a esuat. Punctul de calibrare stanga fata nu poate fi "
-"atinsa."
+"Calibrarea XYZ a esuat. Punctul de calibrare stanga fata nu poate fi atinsa."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3319
@@ -2445,24 +2451,6 @@ msgstr "Corect. Y:"
 #: ../../Firmware/ultralcd.cpp:4747 ../../Firmware/ultralcd.cpp:5998
 msgid "Yes"
 msgstr "Da"
-
-#. MSG_FW_VERSION_ALPHA c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:835
-msgid ""
-"You are using firmware alpha version. This is development version. Using "
-"this version is not recommended and may cause printer damage."
-msgstr ""
-"Utilizati vers.alfa de FW. Acesta este vers. de dezvoltare. Folosind "
-"aceasta versiune nu este recomandata si poate cauza deteriorarea imprimantei"
-
-#. MSG_FW_VERSION_BETA c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:836
-msgid ""
-"You are using firmware beta version. This is development version. Using this "
-"version is not recommended and may cause printer damage."
-msgstr ""
-"Utilizati vers. beta de FW. Acesta este vers. de dezvoltare. Folosind "
-"aceasta versiune nu este recomandata si poate cauza deteriorarea imprimantei"
 
 #. MSG_WIZARD_QUIT c=20 r=8
 #: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4149
@@ -2576,3 +2564,19 @@ msgstr "🔃Reimprospata"
 
 #~ msgid "Press the knob to resume nozzle temperature."
 #~ msgstr "Apasati butonul pentru a restabili temperatura extruder-ului."
+
+#~ msgid ""
+#~ "You are using firmware alpha version. This is development version. Using "
+#~ "this version is not recommended and may cause printer damage."
+#~ msgstr ""
+#~ "Utilizati vers.alfa de FW. Acesta este vers. de dezvoltare. Folosind "
+#~ "aceasta versiune nu este recomandata si poate cauza deteriorarea "
+#~ "imprimantei"
+
+#~ msgid ""
+#~ "You are using firmware beta version. This is development version. Using "
+#~ "this version is not recommended and may cause printer damage."
+#~ msgstr ""
+#~ "Utilizati vers. beta de FW. Acesta este vers. de dezvoltare. Folosind "
+#~ "aceasta versiune nu este recomandata si poate cauza deteriorarea "
+#~ "imprimantei"

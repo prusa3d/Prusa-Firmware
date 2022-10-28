@@ -515,12 +515,6 @@ msgstr ""
 msgid "Extruder"
 msgstr ""
 
-#. MSG_HOTEND_FAN_SPEED c=15
-#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
-#: ../../Firmware/ultralcd.cpp:7319
-msgid "Hotend fan:"
-msgstr ""
-
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
 msgid "Extruder info"
@@ -866,6 +860,12 @@ msgstr ""
 msgid "Homing"
 msgstr ""
 
+#. MSG_HOTEND_FAN_SPEED c=15
+#: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
+#: ../../Firmware/ultralcd.cpp:7319
+msgid "Hotend fan:"
+msgstr ""
+
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4041
 msgid "I will run xyz calibration now. It will take approx. 12 mins."
@@ -1074,6 +1074,12 @@ msgstr ""
 #. MSG_MMU_FAILS c=15
 #: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1187
 #: ../../Firmware/ultralcd.cpp:1215
+msgid "MMU SELFTEST FAILED"
+msgstr ""
+
+#. MSG_MMU_FAILS c=15
+#: ../../Firmware/messages.cpp:68 ../../Firmware/ultralcd.cpp:1161
+#: ../../Firmware/ultralcd.cpp:1189
 msgid "MMU fails"
 msgstr ""
 
@@ -2331,20 +2337,6 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:2798 ../../Firmware/ultralcd.cpp:3170
 #: ../../Firmware/ultralcd.cpp:4747 ../../Firmware/ultralcd.cpp:5998
 msgid "Yes"
-msgstr ""
-
-#. MSG_FW_VERSION_ALPHA c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:835
-msgid ""
-"You are using firmware alpha version. This is development version. Using "
-"this version is not recommended and may cause printer damage."
-msgstr ""
-
-#. MSG_FW_VERSION_BETA c=20 r=8
-#: ../../Firmware/Marlin_main.cpp:836
-msgid ""
-"You are using firmware beta version. This is development version. Using this"
-" version is not recommended and may cause printer damage."
 msgstr ""
 
 #. MSG_WIZARD_QUIT c=20 r=8
