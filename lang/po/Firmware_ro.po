@@ -435,7 +435,7 @@ msgstr ""
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4214
 msgid "E-correct:"
-msgstr "E-correct:"
+msgstr "E-correctie:"
 
 #. MSG_ERROR c=10
 #: ../../Firmware/messages.cpp:29 ../../Firmware/ultralcd.cpp:2279
@@ -560,7 +560,7 @@ msgstr "Epuizari fil."
 #: ../../Firmware/ultralcd.cpp:4244 ../../Firmware/ultralcd.cpp:5737
 #: ../../Firmware/ultralcd.cpp:5741 ../../Firmware/ultralcd.cpp:5745
 msgid "Fil. sensor"
-msgstr "Senzor fil."
+msgstr "Senzor Fil."
 
 #. MSG_FILAMENT c=17
 #: ../../Firmware/Marlin_main.cpp:8577 ../../Firmware/Marlin_main.cpp:8604
@@ -862,7 +862,7 @@ msgstr "Reglare Z live"
 #. MSG_LOAD_ALL c=18
 #: ../../Firmware/ultralcd.cpp:5120
 msgid "Load all"
-msgstr "Incarcati toate"
+msgstr "Incarca toate"
 
 #. MSG_LOAD_FILAMENT c=17
 #: ../../Firmware/messages.cpp:54 ../../Firmware/ultralcd.cpp:5122
@@ -1988,7 +1988,8 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:3317
 msgid ""
 "XYZ calibration compromised. Left front calibration point not reachable."
-msgstr "Calibrarea XYZ compromisa. Punctele de calibrare din fata stanga nu pot fi"
+msgstr ""
+"Calibrarea XYZ compromisa. Punctele de calibrare din fata stanga nu pot fi "
 "atinse."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
@@ -2069,7 +2070,7 @@ msgstr "Nr. Z-probe"
 #. MSG_MEASURED_OFFSET c=20
 #: ../../Firmware/ultralcd.cpp:2565
 msgid "[0;0] point offset"
-msgstr "compensare origine"
+msgstr "[0;0] offset origine"
 
 #. MSG_PRESS c=20 r=2
 #: ../../Firmware/ultralcd.cpp:2154

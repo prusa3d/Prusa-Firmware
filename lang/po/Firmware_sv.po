@@ -61,7 +61,7 @@ msgstr "Alfabet"
 #. MSG_ALWAYS c=6
 #: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4308
 msgid "Always"
-msgstr ""
+msgstr "Alltid"
 
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1405
@@ -76,12 +76,12 @@ msgstr "Är båda Z-vagnarna helt uppe?"
 #. MSG_SOUND_BLIND c=7
 #: ../../Firmware/messages.cpp:143 ../../Firmware/ultralcd.cpp:4459
 msgid "Assist"
-msgstr ""
+msgstr "Assist"
 
 #. MSG_AUTO c=6
 #: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5864
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. MSG_AUTO_HOME c=18
 #: ../../Firmware/Marlin_main.cpp:3271 ../../Firmware/messages.cpp:9
@@ -203,7 +203,7 @@ msgstr "Ljusstyrka"
 #. MSG_CALIBRATE_BED c=18
 #: ../../Firmware/ultralcd.cpp:4906
 msgid "Calibrate XYZ"
-msgstr "Kalibrerar XYZ"
+msgstr "Kalibrera XYZ"
 
 #. MSG_HOMEYZ c=18
 #: ../../Firmware/messages.cpp:48 ../../Firmware/ultralcd.cpp:4908
@@ -231,7 +231,7 @@ msgid ""
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end "
 "stoppers. Click when done."
 msgstr ""
-"Kalibrerar Z. Vrid vredet för att flytta Z-slädarna upp till ändstoppen. "
+"Kalibrerar Z. Vrid vredet för att flytta Z-slädarna upp till ändstopp. "
 "Klicka när du är klar."
 
 #. MSG_CALIBRATING_HOME c=20
@@ -257,7 +257,7 @@ msgstr "Kort borttaget"
 #. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5538
 msgid "Change SD card"
-msgstr ""
+msgstr "Byt ut SD-kort"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5497
@@ -403,7 +403,7 @@ msgstr "Datum:"
 #. MSG_DIM c=6
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5864
 msgid "Dim"
-msgstr ""
+msgstr "Dim"
 
 #. MSG_DISABLE_STEPPERS c=18
 #: ../../Firmware/ultralcd.cpp:4802
@@ -427,8 +427,8 @@ msgid ""
 "Do you want to repeat last step to readjust distance between nozzle and "
 "heatbed?"
 msgstr ""
-"Vill du upprepa det sista steget för att justera avståndet mellan munstycket "
-"och värmebädden?"
+"Vill du upprepa sista steget för justera avståndet mellan munstycket och "
+"bädden?"
 
 #. MSG_EXTRUDER_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4214
@@ -475,7 +475,7 @@ msgstr "Ändlägen"
 #: ../../Firmware/Marlin_main.cpp:8608 ../../Firmware/messages.cpp:30
 #: ../../Firmware/ultralcd.cpp:3495
 msgid "Extruder"
-msgstr ""
+msgstr "Extruder"
 
 #. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1144
@@ -486,7 +486,7 @@ msgstr "Hotend-fläkt:"
 #. MSG_INFO_EXTRUDER c=18
 #: ../../Firmware/ultralcd.cpp:1722
 msgid "Extruder info"
-msgstr ""
+msgstr "Extruder info"
 
 #. MSG_FSENSOR_AUTOLOAD c=13
 #: ../../Firmware/messages.cpp:44 ../../Firmware/ultralcd.cpp:4229
@@ -524,7 +524,7 @@ msgstr "Felstatistik MMU"
 #. MSG_FALSE_TRIGGERING c=20
 #: ../../Firmware/ultralcd.cpp:7031
 msgid "False triggering"
-msgstr "Felaktig utlösare"
+msgstr "Felaktig triggning"
 
 #. MSG_FAN_SPEED c=14
 #: ../../Firmware/messages.cpp:34 ../../Firmware/ultralcd.cpp:5723
@@ -558,13 +558,13 @@ msgstr "Fil. avbrott"
 #: ../../Firmware/ultralcd.cpp:4244 ../../Firmware/ultralcd.cpp:5737
 #: ../../Firmware/ultralcd.cpp:5741 ../../Firmware/ultralcd.cpp:5745
 msgid "Fil. sensor"
-msgstr ""
+msgstr "Fil. sensor"
 
 #. MSG_FILAMENT c=17
 #: ../../Firmware/Marlin_main.cpp:8577 ../../Firmware/Marlin_main.cpp:8604
 #: ../../Firmware/messages.cpp:33 ../../Firmware/ultralcd.cpp:3835
 msgid "Filament"
-msgstr "Mata ut filament"
+msgstr "Filament"
 
 #. MSG_FILAMENT_CLEAN c=20 r=2
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2287
@@ -582,7 +582,7 @@ msgstr "Filament ej laddat"
 #: ../../Firmware/ultralcd.cpp:7030 ../../Firmware/ultralcd.cpp:7034
 #: ../../Firmware/ultralcd.cpp:7330
 msgid "Filament sensor"
-msgstr ""
+msgstr "Filament sensor"
 
 #. MSG_FILAMENT_USED c=19
 #: ../../Firmware/ultralcd.cpp:2365
@@ -632,7 +632,7 @@ msgstr "Frontfläkt?"
 #. MSG_BED_CORRECTION_FRONT c=14
 #: ../../Firmware/ultralcd.cpp:2754
 msgid "Front side[μm]"
-msgstr ""
+msgstr "Frontsida[μm]"
 
 #. MSG_SELFTEST_FANS c=20
 #: ../../Firmware/ultralcd.cpp:7020
@@ -642,7 +642,7 @@ msgstr "Front/vänster fläkt"
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=4
 #: ../../Firmware/util.cpp:418
 msgid "G-code sliced for a different level. Continue?"
-msgstr "G-kod genererad för en annan nivå. Fortsätta?"
+msgstr "G-code genererad för en annan nivå. Fortsätta?"
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=7
 #: ../../Firmware/util.cpp:424
@@ -650,14 +650,14 @@ msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
 msgstr ""
-"G-kod genererad för en annan nivå. Vänligen re-generera modellen igen. "
-"Utskriften avbröts."
+"G-code genererad för en annan nivå. Vänligen re-generera modellen igen. Utskriften "
+"avbröts."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 #: ../../Firmware/messages.cpp:131 ../../Firmware/util.cpp:335
 #: ../../Firmware/util.cpp:471
 msgid "G-code sliced for a different printer type. Continue?"
-msgstr "G-kod genererad för en annan skrivartyp. Fortsätta?"
+msgstr "G-code genererad för en annan skrivartyp. Fortsätta?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:132 ../../Firmware/util.cpp:341
@@ -666,13 +666,13 @@ msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again. "
 "Print cancelled."
 msgstr ""
-"G-kod genererad för en annan skrivartyp. Vänligen re-generera modellen igen. "
+"G-code genererad för en annan skrivartyp. Vänligen re-generera modellen igen. "
 "Utskriften avbröts."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 #: ../../Firmware/util.cpp:385
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-kod genererad för en nyare firmware. Fortsätta?"
+msgstr "G-code genererad för en nyare firmware. Fortsätta?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:391
@@ -680,7 +680,7 @@ msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
 msgstr ""
-"G-kod genererad för en nyare firmware. Vänligen uppdatera firmware. "
+"G-code genererad för en nyare firmware. Vänligen uppdatera firmware. "
 "Utskriften avbröts."
 
 #. MSG_GCODE c=8
@@ -688,7 +688,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4658 ../../Firmware/ultralcd.cpp:4661
 #: ../../Firmware/ultralcd.cpp:4664
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4672
@@ -768,7 +768,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2531
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Förbättrar bäddens kalibreringspunkt"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:5478
@@ -778,7 +778,7 @@ msgstr "Infoskärm"
 #. MSG_INIT_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5545
 msgid "Init. SD card"
-msgstr ""
+msgstr "Init. SD-kort"
 
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2152
@@ -797,7 +797,7 @@ msgstr ""
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3855
 #: ../../Firmware/ultralcd.cpp:4108 ../../Firmware/ultralcd.cpp:4111
 msgid "Is filament loaded?"
-msgstr "Är filament isatt?"
+msgstr "Är filament laddat?"
 
 #. MSG_STEEL_SHEET_CHECK c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:3312 ../../Firmware/Marlin_main.cpp:4886
@@ -808,7 +808,7 @@ msgstr "Ligger metallskiva på värmebädden?"
 #. MSG_ITERATION c=12
 #: ../../Firmware/mesh_bed_calibration.cpp:2253 ../../Firmware/messages.cpp:49
 msgid "Iteration"
-msgstr ""
+msgstr "Iteration"
 
 #. MSG_LAST_PRINT c=18
 #: ../../Firmware/messages.cpp:52 ../../Firmware/ultralcd.cpp:1148
@@ -977,7 +977,7 @@ msgstr "Magnets komp."
 #: ../../Firmware/ultralcd.cpp:5131 ../../Firmware/ultralcd.cpp:5154
 #: ../../Firmware/ultralcd.cpp:5173 ../../Firmware/ultralcd.cpp:5717
 msgid "Main"
-msgstr "Huvudsaklig"
+msgstr "Huvudmeny"
 
 #. MSG_MEASURED_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2537
@@ -1010,7 +1010,7 @@ msgstr "Bäddytsjustering"
 #: ../../Firmware/ultralcd.cpp:5778 ../../Firmware/ultralcd.cpp:5779
 #: ../../Firmware/ultralcd.cpp:5780 ../../Firmware/ultralcd.cpp:5864
 msgid "Mode"
-msgstr ""
+msgstr "Mode"
 
 #. MSG_MODE_CHANGE_IN_PROGRESS c=20 r=3
 #: ../../Firmware/ultralcd.cpp:3598
@@ -1028,7 +1028,7 @@ msgstr "Modell"
 #: ../../Firmware/messages.cpp:91 ../../Firmware/ultralcd.cpp:6982
 #: ../../Firmware/ultralcd.cpp:6991 ../../Firmware/ultralcd.cpp:7009
 msgid "Motor"
-msgstr ""
+msgstr "Motor"
 
 #. MSG_MOVE_X c=18
 #: ../../Firmware/ultralcd.cpp:3492
@@ -1057,12 +1057,12 @@ msgstr "Flytta axlar"
 #: ../../Firmware/ultralcd.cpp:4276 ../../Firmware/ultralcd.cpp:5737
 #: ../../Firmware/ultralcd.cpp:5836
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:199
 msgid "New firmware version available:"
-msgstr "Ny firmware version tillgänglig:"
+msgstr "Ny firmware vers tillgänglig:"
 
 #. MSG_NO c=4
 #: ../../Firmware/messages.cpp:66 ../../Firmware/ultralcd.cpp:2804
@@ -1095,7 +1095,7 @@ msgstr "Ingen"
 #: ../../Firmware/ultralcd.cpp:4381 ../../Firmware/ultralcd.cpp:4397
 #: ../../Firmware/ultralcd.cpp:4416 ../../Firmware/ultralcd.cpp:5763
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #. MSG_SELFTEST_NOTCONNECTED c=20
 #: ../../Firmware/ultralcd.cpp:6969
@@ -1154,9 +1154,8 @@ msgstr "Av"
 #. MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 #: ../../Firmware/Marlin_main.cpp:1535
 msgid "Old settings found. Default PID, Esteps etc. will be set."
-msgstr ""
-"Gamla inställningar hittades. Standard PID, Esteps etc. kommer att ställas "
-"in."
+msgstr "Gamla inställningar funna. Standard PID, Esteps etc. kommer att ställas in."
+
 
 #. MSG_ON c=3
 #: ../../Firmware/messages.cpp:123 ../../Firmware/ultralcd.cpp:4244
@@ -1178,7 +1177,7 @@ msgstr "En gång"
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9718 ../../Firmware/messages.cpp:164
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "PAUSAT TERMISKT FEL"
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1017
@@ -1444,7 +1443,7 @@ msgstr "Utskriftstid"
 #. MSG_PRINTER_IP c=18
 #: ../../Firmware/ultralcd.cpp:1711
 msgid "Printer IP Addr:"
-msgstr ""
+msgstr "Skrivarens IP adr:"
 
 #. MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:1548 ../../Firmware/messages.cpp:42
@@ -1458,7 +1457,7 @@ msgstr ""
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 #: ../../Firmware/util.cpp:299
 msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr "Skrivarmunstyckets diameter skiljer sig från G-koden. Fortsätta?"
+msgstr "Skrivarmunstyckets diameter skiljer sig från G-codeen. Fortsätta?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:305
@@ -1466,13 +1465,13 @@ msgid ""
 "Printer nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
-"Skrivarmunstyckets diameter skiljer sig från G-koden. Kontrollera värdet i "
+"Skrivarmunstyckets diameter skiljer sig från G-codeen. Kontrollera värdet i "
 "inställningarna. Utskriften avbröts."
 
 #. MSG_RPI_PORT c=13
 #: ../../Firmware/messages.cpp:139 ../../Firmware/ultralcd.cpp:4834
 msgid "RPi port"
-msgstr ""
+msgstr "RPi port"
 
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:2755
@@ -1635,7 +1634,7 @@ msgstr ""
 #. MSG_INFO_SENSORS c=18
 #: ../../Firmware/ultralcd.cpp:1723
 msgid "Sensor info"
-msgstr "Sensorinformation"
+msgstr "Sensorinfo"
 
 #. MSG_FS_VERIFIED c=20 r=3
 #: ../../Firmware/ultralcd.cpp:6254
@@ -1777,7 +1776,7 @@ msgstr "Strikt"
 #. MSG_SUPPORT c=18
 #: ../../Firmware/ultralcd.cpp:5594
 msgid "Support"
-msgstr ""
+msgstr "Support"
 
 #. MSG_SELFTEST_SWAPPED c=16
 #: ../../Firmware/ultralcd.cpp:7021
@@ -1787,17 +1786,17 @@ msgstr "Utbytt"
 #. MSG_THERMAL_ANOMALY c=20
 #: ../../Firmware/messages.cpp:166 ../../Firmware/temperature.cpp:2442
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "TERMISK ANOMALI"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
 #: ../../Firmware/temperature.cpp:2899
 msgid "TM autotune failed"
-msgstr ""
+msgstr "TM autoinst fallerad"
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2884
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Temp modell autoinst"
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4797
@@ -1825,8 +1824,8 @@ msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
 msgstr ""
-"Det finns fortfarande ett behov av att göra Z-kalibrering. Vänligen följ "
-"manualen, kapitel Första stegen, avsnitt Kalibreringsflöde."
+"Det finns fortfarande ett behov av att göra Z-kalibrering. Följ manualen, "
+"kap Första stegen, avs Kalibreringsflöde."
 
 #. MSG_SORT_TIME c=8
 #: ../../Firmware/messages.cpp:137 ../../Firmware/ultralcd.cpp:4403
@@ -1836,29 +1835,29 @@ msgstr "Tid"
 #. MSG_TIMEOUT c=12
 #: ../../Firmware/messages.cpp:154 ../../Firmware/ultralcd.cpp:5865
 msgid "Timeout"
-msgstr ""
+msgstr "Timeout"
 
 #. MSG_TOTAL c=6
 #: ../../Firmware/messages.cpp:97 ../../Firmware/ultralcd.cpp:1149
 #: ../../Firmware/ultralcd.cpp:1297
 msgid "Total"
-msgstr ""
+msgstr "Total"
 
 #. MSG_TOTAL_FAILURES c=20
 #: ../../Firmware/messages.cpp:98 ../../Firmware/ultralcd.cpp:1192
 #: ../../Firmware/ultralcd.cpp:1218 ../../Firmware/ultralcd.cpp:1328
 msgid "Total failures"
-msgstr "Totala misslyckanden"
+msgstr "Totala fel"
 
 #. MSG_TOTAL_FILAMENT c=19
 #: ../../Firmware/ultralcd.cpp:2387
 msgid "Total filament"
-msgstr "Totalt filament"
+msgstr "Total filament"
 
 #. MSG_TOTAL_PRINT_TIME c=19
 #: ../../Firmware/ultralcd.cpp:2388
 msgid "Total print time"
-msgstr "Total utskriftstid"
+msgstr "Tot utskriftstid"
 
 #. MSG_TUNE c=18
 #: ../../Firmware/ultralcd.cpp:5500
@@ -1880,7 +1879,7 @@ msgstr "Tar bort filament"
 #. MSG_FIL_FAILED c=20 r=5
 #: ../../Firmware/ultralcd.cpp:6258
 msgid "Verification failed, remove the filament and try again."
-msgstr "Verifieringen misslyckades, ta bort filamentet och försök igen."
+msgstr "Verifieringen felade, ta bort filamentet, försök igen."
 
 #. MSG_MENU_VOLTAGES c=18
 #: ../../Firmware/ultralcd.cpp:1732
@@ -1935,7 +1934,7 @@ msgstr "Varning: moderkortstyp ändrad."
 #. MSG_CHANGED_PRINTER c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1523
 msgid "Warning: printer type changed."
-msgstr "Varning: skrivartyp har ändrats."
+msgstr "Varning: skrivartyp ändrats."
 
 #. MSG_UNLOAD_SUCCESSFUL c=20 r=2
 #: ../../Firmware/Marlin_main.cpp:3542
@@ -1962,7 +1961,7 @@ msgstr "X-korrektion:"
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5596
 msgid "XFLASH init"
-msgstr ""
+msgstr "XFLASH init"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1721
@@ -1972,7 +1971,7 @@ msgstr "XYZ kal. detaljer"
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3333
 msgid "XYZ calibration all right. Skew will be corrected automatically."
-msgstr "XYZ-kalibrering är ok. Skevhet kommer att korrigeras automatiskt."
+msgstr "XYZ-kalibrering ok. Skevhet kommer att korrigeras automatiskt."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3330
@@ -1982,49 +1981,46 @@ msgstr "XYZ-kalibrering ok. X/Y-axlarna är mycket lite skeva. Bra jobbat!"
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3311
 msgid "XYZ calibration compromised. Front calibration points not reachable."
-msgstr ""
-"XYZ-kalibrering komprometterad. Främre kalibreringspunkter kan inte nås."
+msgstr "XYZ-kalibrering komprometterad. Främre kalibreringspunkt kan ej nås."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3317
 msgid ""
 "XYZ calibration compromised. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ-kalibrering komprometterad. Främre vä kalibreringspunkt kan ej nås."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3314
 msgid ""
 "XYZ calibration compromised. Right front calibration point not reachable."
 msgstr ""
-"XYZ-kalibrering komprometterad. Höger främre kalibreringspunkter kan inte "
-"nås."
+"XYZ-kalibrering komprometterad. Främre hö kalibreringspunkter kan ej nås."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3293
 msgid "XYZ calibration failed. Bed calibration point was not found."
-msgstr "XYZ-kalibrering misslyckades. Bäddkalibreringspunkterna hittades inte."
+msgstr "XYZ-kalibrering felade. Kalibreringspunkter ej funna."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3299
 msgid "XYZ calibration failed. Front calibration points not reachable."
-msgstr "XYZ-kalibrering misslyckades. Främre kalibreringspunkter kan inte nås."
+msgstr "XYZ-kalibrering felade. Främre kalibreringspunkt kan ej nås."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3305
 msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ-kalibrering felade. Främre vä kalibreringspunkt kan ej nås."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3296
 #: ../../Firmware/ultralcd.cpp:3324
 msgid "XYZ calibration failed. Please consult the manual."
-msgstr "XYZ-kalibrering misslyckades. Se bruksanvisningen."
+msgstr "XYZ-kalibrering felade. Se bruksanvisningen."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3302
 msgid "XYZ calibration failed. Right front calibration point not reachable."
-msgstr ""
-"XYZ-kalibrering misslyckades. Höger främre kalibreringspunkt kan inte nås."
+msgstr "XYZ-kalibrering felade. Höger främre kalibreringspunkt kan ej nås."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3327
@@ -2039,7 +2035,7 @@ msgstr "Y avstånd från min"
 #. MSG_Y_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4211
 msgid "Y-correct:"
-msgstr "Y-korrektion:"
+msgstr "Y-korrekt:"
 
 #. MSG_YES c=4
 #: ../../Firmware/messages.cpp:120 ../../Firmware/ultralcd.cpp:2216
@@ -2071,7 +2067,7 @@ msgstr "[0;0] punktförskjutn"
 #. MSG_PRESS c=20 r=2
 #: ../../Firmware/ultralcd.cpp:2154
 msgid "and press the knob"
-msgstr "och tryck på knappen"
+msgstr "och tryck på knapp"
 
 #. MSG_TO_LOAD_FIL c=20
 #: ../../Firmware/ultralcd.cpp:1816
@@ -2091,7 +2087,7 @@ msgstr "okänd"
 #. MSG_IR_UNKNOWN c=18
 #: ../../Firmware/fsensor.cpp:182 ../../Firmware/messages.cpp:162
 msgid "unknown state"
-msgstr "okänt tillstånd"
+msgstr "okänt stat"
 
 #. MSG_REFRESH c=18
 #: ../../Firmware/messages.cpp:78 ../../Firmware/ultralcd.cpp:6077
