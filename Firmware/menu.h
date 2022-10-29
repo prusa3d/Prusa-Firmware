@@ -58,7 +58,6 @@ extern uint8_t menu_row;
 extern uint8_t menu_top;
 extern uint8_t menu_clicked;
 extern uint8_t menu_leaving;
-extern bool menu_changed;
 
 //function pointer to the currently active menu
 extern menu_func_t menu_menu;
@@ -115,7 +114,6 @@ extern bool menu_item_leave();
 
 /// Entering a new menu
 /// @param func lines of code to run once upon enter a menu or submenu
-#define ON_MENU_ENTER(func) do { if (menu_changed){ menu_changed = false; func } } while (0)
 
 #define MENU_ITEM_FUNCTION_P(str, func) do { if (menu_item_function_P(str, func)) return; } while (0)
 extern uint8_t menu_item_function_P(const char* str, menu_func_t func);
