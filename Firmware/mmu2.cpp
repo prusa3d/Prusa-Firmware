@@ -839,7 +839,12 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
         LogErrorEvent_P( _O(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))) );
     }
 
-    ReportErrorHook((uint16_t)ec);
+    if( !mmu2.RetryIfPossible((uint16_t)ec) ) {
+        // If retry attempts are all used up
+        // or if 'Retry' operation is not available
+        // raise the MMU error sceen and wait for user input
+        ReportErrorHook((uint16_t)ec);
+    }
 
     static_assert(mmu2Magic[0] == 'M' 
         && mmu2Magic[1] == 'M' 
