@@ -185,6 +185,8 @@ public:
     bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
 
     /// Automagically "press" a Retry button if we have any retry attempts left
+    /// @param ec ErrorCode enum value
+    /// @returns true if auto-retry is ongoing, false when retry is unavailable or retry attempts are all used up
     bool RetryIfPossible(uint16_t ec);
 
     /// Decrement the retry attempts, if in a retry. 

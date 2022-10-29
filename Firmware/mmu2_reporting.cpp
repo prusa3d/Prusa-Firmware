@@ -224,13 +224,6 @@ void ReportErrorHook(uint16_t ec) {
         // a button was pushed on the MMU and the LCD should
         // dismiss the error screen until MMU raises a new error
         ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
-    } else {
-        // attempt an automatic Retry button
-        if( ReportErrorHookState == ReportErrorHookStates::MONITOR_SELECTION ){
-            if( mmu2.RetryIfPossible(ec) ){
-                ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
-            }
-        }
     }
 
     const uint8_t ei = PrusaErrorCodeIndex(ec);
