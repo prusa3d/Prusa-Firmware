@@ -1197,10 +1197,17 @@ static void lcd_menu_fails_stats_mmu_print()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_mmu_total()
 {
-    ON_MENU_ENTER(
+    typedef struct
+    {
+        bool initialized;              // 1byte
+    } _menu_data_t;
+    static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
+    _menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
+    if(_md->initialized) {
         MMU2::mmu2.get_statistics();
         lcd_timeoutToStatus.stop(); //infinite timeout
-    );
+        _md->initialized = false;
+    }
     lcd_home();
     lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n"/* " %-16.16S%-3d\n" " %-16.16S%-3d"*/), 
         _T(MSG_TOTAL_FAILURES),
@@ -1226,12 +1233,19 @@ static void lcd_menu_fails_stats_mmu_total()
 //! @endcode
 static void lcd_menu_toolchange_stats_mmu_total()
 {
-    ON_MENU_ENTER(
+    typedef struct
+    {
+        bool initialized;              // 1byte
+    } _menu_data_t;
+    static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
+    _menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
+    if(_md->initialized) {
         lcd_set_cursor(0, 0);
         lcd_puts_P(PSTR("Toolchange count:"));
         lcd_set_cursor(10, 1);
         lcd_print(eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT));
-    );
+        _md->initialized = false;
+    }
 
     menu_back_if_clicked_fb();
 }
