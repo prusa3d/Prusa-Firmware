@@ -666,6 +666,8 @@ void MMU2::CheckUserInput(){
     case RestartMMU:
         Reset(ResetPin); // we cannot do power cycle on the MK3
         // ... but mmu2_power.cpp knows this and triggers a soft-reset instead.
+        state = xState::Connecting;
+        logic.Start();  // Wait for the MMU to be ready
         break;
     case DisableMMU:
         Stop(); // Poweroff handles updating the EEPROM shutoff.
