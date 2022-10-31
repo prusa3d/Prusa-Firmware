@@ -100,14 +100,14 @@ msgstr "Auto Leist"
 #. MSG_AUTOLOAD_FILAMENT c=18
 #: ../../Firmware/ultralcd.cpp:5584
 msgid "AutoLoad filament"
-msgstr "AutoLaden Filament"
+msgstr "Auto-Laden Filament"
 
 #. MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:2301
 msgid ""
 "Autoloading filament is active, just press the knob and insert filament..."
 msgstr ""
-"Automatisches Laden Filament ist aktiv, Knopf drücken und Filament "
+"Automatisches Filament-Laden ist aktiv, Knopf drücken und Filament "
 "einlegen..."
 
 #. MSG_PROGRESS_AVOID_GRIND c=20
@@ -278,7 +278,7 @@ msgstr "SD Karte entfernt"
 #. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5547
 msgid "Change SD card"
-msgstr "Wechsel SD Karte"
+msgstr "SD-Karte wechseln"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5506
@@ -509,7 +509,7 @@ msgstr "Filamentauswurf"
 #: ../../Firmware/mmu2_progress_converter.cpp:27
 #: ../../Firmware/mmu2_progress_converter.cpp:58
 msgid "Ejecting filament"
-msgstr "werfe Filament aus"
+msgstr "Werfe Filament aus"
 
 #. MSG_SELFTEST_ENDSTOP c=16
 #: ../../Firmware/ultralcd.cpp:6984
