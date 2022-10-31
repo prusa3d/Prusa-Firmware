@@ -107,7 +107,7 @@ msgstr "AutoLaden Filament"
 msgid ""
 "Autoloading filament is active, just press the knob and insert filament..."
 msgstr ""
-"Automatisches Laden Filament ist aktiv, Knopf drücken und Filament "
+"Automatisches Filament Laden ist aktiv, Knopf drücken und Filament "
 "einlegen..."
 
 #. MSG_PROGRESS_AVOID_GRIND c=20
@@ -514,7 +514,7 @@ msgstr "Filamentauswurf"
 #: ../../Firmware/mmu2_progress_converter.cpp:27
 #: ../../Firmware/mmu2_progress_converter.cpp:58
 msgid "Ejecting filament"
-msgstr "werfe Filament aus"
+msgstr "Werfe Filament aus"
 
 #. MSG_SELFTEST_ENDSTOP c=16
 #: ../../Firmware/ultralcd.cpp:6966
