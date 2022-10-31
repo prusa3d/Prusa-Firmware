@@ -43,7 +43,7 @@
   - [X] **Maintained**  since January 2022
 
 - **Norwegian / Norsk**
-  - Maintainers: **@pkg2000**
+  - Maintainers: **@OS-kar** and **@pkg2000**
   - Co-maintainers: **@trondkla**
   - Contributors:
   - [X] **Active**      since May 2022

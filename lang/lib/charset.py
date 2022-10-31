@@ -86,6 +86,7 @@ TRANS_CHARS = {
     'Ô': 'O', #sk
     'œ': 'o', #fr
     'ø': 'ö', #sv,no
+    'Ø': 'ö', #sv,no
     'Ö': 'ö', #de,sv,no,hu
     'ő': 'o', #hu
     'Ő': 'O', #hu
