@@ -7535,6 +7535,13 @@ void lcd_setstatuspgm(const char* message)
         lcd_updatestatus(message, true);
 }
 
+void lcd_setstatus_serial(const char* message)
+{
+    if (lcd_message_check(LCD_STATUS_NONE))
+        lcd_updatestatus(message);
+    SERIAL_ECHOLN(message);
+}
+
 void lcd_setalertstatus_(const char* message, uint8_t severity, bool progmem)
 {
     if (lcd_message_check(severity)) {

@@ -2792,19 +2792,21 @@ static bool autotune(int16_t cal_temp)
     set_fan_speed(0);
 
     for(uint8_t i = 0; i != 2; ++i) {
-        const char* PROGMEM verb = (i == 0? PSTR("inital"): PSTR("refine"));
+        const char* PROGMEM verb = (i == 0? PSTR("initial"): PSTR("refine"));
         target_temperature[0] = 0;
         if(current_temperature[0] >= TEMP_MODEL_CAL_Tl) {
+//!01234567890123456789|
+//!TM: cool down <50C  |
             sprintf_P(tm_message, PSTR("TM: cool down <%dC"), TEMP_MODEL_CAL_Tl);
-            SERIAL_ECHOLN(tm_message);
-            lcd_setstatus(tm_message);
+            lcd_setstatus_serial(tm_message);
             cooldown(TEMP_MODEL_CAL_Tl);
             wait(10000);
         }
-
+//!01234567890123456789|
+//!TM: initial R est.  |
+//!TM: refine R est.   |
         sprintf_P(tm_message, PSTR("TM: %S C est."), verb);
-        SERIAL_ECHOLN(tm_message);
-        lcd_setstatus(tm_message);
+        lcd_setstatus_serial(tm_message);
         target_temperature[0] = cal_temp;
         samples = record();
         if(temp_error_state.v || !samples)
@@ -2823,10 +2825,11 @@ static bool autotune(int16_t cal_temp)
         wait_temp();
         if(i) break; // we don't need to refine R
         wait(30000); // settle PID regulation
-
+//!01234567890123456789|
+//!TM: initial R 230C  |
+//!TM: refine R 230C   |
         sprintf_P(tm_message, PSTR("TM: %S R %dC"), verb, cal_temp);
-        SERIAL_ECHOLN(tm_message);
-        lcd_setstatus(tm_message);
+        lcd_setstatus_serial(tm_message);
         samples = record();
         if(temp_error_state.v || !samples)
             return true;
@@ -2849,10 +2852,10 @@ static bool autotune(int16_t cal_temp)
         uint8_t speed = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
         set_fan_speed(speed);
         wait(10000);
-
+//!01234567890123456789|
+//!TM: R[15] estimat.  |
         sprintf_P(tm_message, PSTR("TM: R[%u] estimat."), (unsigned)i);
-        SERIAL_ECHOLN(tm_message);
-        lcd_setstatus(tm_message);
+        lcd_setstatus_serial(tm_message);
         samples = record();
         if(temp_error_state.v || !samples)
             return true;
@@ -2890,9 +2893,10 @@ void temp_model_autotune(int16_t temp, bool selftest)
 {
     char tm_message[20];
     if(moves_planned() || printer_active()) {
+//!01234567890123456789|
+//!TM: Cal. NOT ILDE   |
         sprintf_P(tm_message, PSTR("TM: Cal. NOT IDLE"));
-        SERIAL_ECHOLN(tm_message);
-        lcd_setstatuspgm(tm_message);
+        lcd_setstatus_serial(tm_message);
         return;
     }
 
@@ -2904,7 +2908,6 @@ void temp_model_autotune(int16_t temp, bool selftest)
     // set the model checking state during self-calibration
     bool was_enabled = temp_model::enabled;
     temp_model_reset_enabled(selftest);
-
     SERIAL_ECHOLNPGM("TM: calibration start");
     bool err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
 
@@ -2912,9 +2915,10 @@ void temp_model_autotune(int16_t temp, bool selftest)
     disable_heater();
 
     if(err) {
+//!01234567890123456789|
+//!TM: calibr. failed! |
         sprintf_P(tm_message, PSTR("TM: calibr. failed!"));
-        SERIAL_ECHOLN(tm_message);
-        lcd_setstatuspgm(tm_message); ////MSG_TM_AUTOTUNE_FAILED c=20
+        lcd_setstatus_serial(tm_message);
         if(temp_error_state.v)
             temp_model_cal::set_fan_speed(255);
     } else {
