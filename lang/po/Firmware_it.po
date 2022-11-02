@@ -61,7 +61,7 @@ msgstr "Alfabeti"
 #. MSG_ALWAYS c=6
 #: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4308
 msgid "Always"
-msgstr ""
+msgstr "Sempre"
 
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1405
@@ -257,7 +257,7 @@ msgstr "SD rimossa"
 #. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5538
 msgid "Change SD card"
-msgstr ""
+msgstr "Cambia scheda SD"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5497
@@ -408,7 +408,7 @@ msgstr "Scuro"
 #. MSG_DISABLE_STEPPERS c=18
 #: ../../Firmware/ultralcd.cpp:4802
 msgid "Disable steppers"
-msgstr "Disabilita motori"
+msgstr "Disattiva motori"
 
 #. MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 #: ../../Firmware/Marlin_main.cpp:1552 ../../Firmware/Marlin_main.cpp:3411
@@ -689,7 +689,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4658 ../../Firmware/ultralcd.cpp:4661
 #: ../../Firmware/ultralcd.cpp:4664
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4672
@@ -768,7 +768,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2531
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Miglioramento punto di calibrazione del piatto"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:5478
@@ -778,7 +778,7 @@ msgstr "Schermata info"
 #. MSG_INIT_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5545
 msgid "Init. SD card"
-msgstr ""
+msgstr "Inizial. scheda SD"
 
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2152
@@ -863,7 +863,7 @@ msgstr "Compensazione Z"
 #. MSG_LOAD_ALL c=18
 #: ../../Firmware/ultralcd.cpp:5120
 msgid "Load all"
-msgstr "Caricare tutti"
+msgstr "Carica tutti"
 
 #. MSG_LOAD_FILAMENT c=17
 #: ../../Firmware/messages.cpp:54 ../../Firmware/ultralcd.cpp:5122
@@ -1177,7 +1177,7 @@ msgstr "Singolo"
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9718 ../../Firmware/messages.cpp:164
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "PAUSA ERRORE TERMICO"
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1017
@@ -1788,17 +1788,17 @@ msgstr "Scambiato"
 #. MSG_THERMAL_ANOMALY c=20
 #: ../../Firmware/messages.cpp:166 ../../Firmware/temperature.cpp:2442
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "ANOMALIA TERMICA"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
 #: ../../Firmware/temperature.cpp:2899
 msgid "TM autotune failed"
-msgstr ""
+msgstr "Autocal. MT fallita"
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2884
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Cal. modello termico"
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4797
@@ -1964,7 +1964,7 @@ msgstr "Correzione-X:"
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5596
 msgid "XFLASH init"
-msgstr ""
+msgstr "Inizializza XFLASH"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1721
@@ -2015,7 +2015,7 @@ msgstr "Calibrazione XYZ fallita. Punti anteriori non raggiungibili."
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3305
 msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr ""
+msgstr "Calibrazione XYZ fallita. Punto anteriore sinistro non raggiungibile."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3296

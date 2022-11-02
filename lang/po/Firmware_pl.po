@@ -61,7 +61,7 @@ msgstr "Alfab"
 #. MSG_ALWAYS c=6
 #: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4308
 msgid "Always"
-msgstr ""
+msgstr "Zawsze"
 
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1405
@@ -81,7 +81,7 @@ msgstr "Asyst."
 #. MSG_AUTO c=6
 #: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5864
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. MSG_AUTO_HOME c=18
 #: ../../Firmware/Marlin_main.cpp:3271 ../../Firmware/messages.cpp:9
@@ -141,7 +141,7 @@ msgstr "Stol"
 #: ../../Firmware/Marlin_main.cpp:6260 ../../Firmware/messages.cpp:14
 #: ../../Firmware/ultralcd.cpp:575
 msgid "Bed Heating"
-msgstr "Grzanie stolu.."
+msgstr "Grzanie stolu"
 
 #. MSG_BED_DONE c=20
 #: ../../Firmware/Marlin_main.cpp:6298 ../../Firmware/messages.cpp:13
@@ -257,7 +257,7 @@ msgstr "Karta wyjeta"
 #. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5538
 msgid "Change SD card"
-msgstr ""
+msgstr "Zmiana karty SD"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5497
@@ -565,7 +565,7 @@ msgstr "Czuj. filam."
 #: ../../Firmware/Marlin_main.cpp:8577 ../../Firmware/Marlin_main.cpp:8604
 #: ../../Firmware/messages.cpp:33 ../../Firmware/ultralcd.cpp:3835
 msgid "Filament"
-msgstr ""
+msgstr "Filament"
 
 #. MSG_FILAMENT_CLEAN c=20 r=2
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2287
@@ -687,7 +687,7 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4658 ../../Firmware/ultralcd.cpp:4661
 #: ../../Firmware/ultralcd.cpp:4664
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4672
@@ -765,7 +765,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2531
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Poprawa punktu kalibracji stolu"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:5478
@@ -775,7 +775,7 @@ msgstr "Ekran informacyjny"
 #. MSG_INIT_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5545
 msgid "Init. SD card"
-msgstr ""
+msgstr "Inic. karty SD"
 
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2152
@@ -1020,7 +1020,7 @@ msgstr "Trwa zmiana trybu..."
 #: ../../Firmware/ultralcd.cpp:4578 ../../Firmware/ultralcd.cpp:4581
 #: ../../Firmware/ultralcd.cpp:4584
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #. MSG_SELFTEST_MOTOR c=18
 #: ../../Firmware/messages.cpp:91 ../../Firmware/ultralcd.cpp:6982
@@ -1093,7 +1093,7 @@ msgstr "Brak"
 #: ../../Firmware/ultralcd.cpp:4381 ../../Firmware/ultralcd.cpp:4397
 #: ../../Firmware/ultralcd.cpp:4416 ../../Firmware/ultralcd.cpp:5763
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #. MSG_SELFTEST_NOTCONNECTED c=20
 #: ../../Firmware/ultralcd.cpp:6969
@@ -1175,7 +1175,7 @@ msgstr "1-raz"
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9718 ../../Firmware/messages.cpp:164
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "PAUZA BLAD TERMICZNY"
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1017
@@ -1493,7 +1493,7 @@ msgstr "Zmien nazwe"
 #: ../../Firmware/messages.cpp:80 ../../Firmware/ultralcd.cpp:2756
 #: ../../Firmware/ultralcd.cpp:5427
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #. MSG_CALIBRATE_BED_RESET c=18
 #: ../../Firmware/ultralcd.cpp:4917
@@ -1607,7 +1607,7 @@ msgstr "Selftest startuje"
 #. MSG_SELFTEST c=18
 #: ../../Firmware/ultralcd.cpp:4904
 msgid "Selftest"
-msgstr ""
+msgstr "Selftest"
 
 #. MSG_SELFTEST_ERROR c=20
 #: ../../Firmware/ultralcd.cpp:6962
@@ -1783,17 +1783,17 @@ msgstr "Zamieniono"
 #. MSG_THERMAL_ANOMALY c=20
 #: ../../Firmware/messages.cpp:166 ../../Firmware/temperature.cpp:2442
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "THERMAL ANOMALY"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
 #: ../../Firmware/temperature.cpp:2899
 msgid "TM autotune failed"
-msgstr ""
+msgstr "Blad TM autotune"
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2884
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Autotune modelu temp"
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4797
@@ -1959,7 +1959,7 @@ msgstr "Korekcja-X:"
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5596
 msgid "XFLASH init"
-msgstr ""
+msgstr "XFLASH init"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1721

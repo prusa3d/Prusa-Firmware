@@ -1578,7 +1578,7 @@ msgstr ""
 #. MSG_RUNOUTS c=7
 #: ../../Firmware/ultralcd.cpp:1271
 msgid "Runouts"
-msgstr ""
+msgstr "Výbehy"
 
 #. MSG_SD_CARD c=8
 #: ../../Firmware/messages.cpp:135 ../../Firmware/ultralcd.cpp:4395
