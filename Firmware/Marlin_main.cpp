@@ -2173,6 +2173,7 @@ bool calibrate_z_auto()
 	//	current_position[axis] = 0;
 	//	plan_set_position_curposXYZE();
 	tmc2130_home_exit();
+	enable_endstops(false);
 	current_position[Z_AXIS] = 0;
 	plan_set_position_curposXYZE();
 	set_destination_to_current();
