@@ -261,7 +261,7 @@ msgstr "Kalibrering ferdig"
 #: ../../Firmware/mmu2/errors_list.h:203 ../../Firmware/mmu2/errors_list.h:243
 #: ../../Firmware/mmu2/errors_list.h:245
 msgid "Can't move Selector or Idler."
-msgstr "kan ikke flytte velger eller tomgangshjul"
+msgstr "Kan ikke flytte velger eller tomgangshjul"
 
 #. MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:228 ../../Firmware/mmu2/errors_list.h:266
@@ -585,7 +585,7 @@ msgid ""
 "FINDA didn't trigger while loading the filament. Ensure the filament can "
 "move and FINDA works."
 msgstr ""
-"FINDA ble ikke trigger under lasting av filament."
+"FINDA ble ikke trigger under lasting av filament. "
 "Sikre at filamentet kan beveges og FINDA fungerer."
 
 #. MSG_TITLE_FINDA_DIDNT_GO_OFF c=20
@@ -721,7 +721,7 @@ msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
 msgstr ""
-"Filament sensor skrudde ikke av imens filamentet lastet ut."
+"Filament sensor skrudde ikke av imens filamentet lastet ut. "
 "Sikre at filamentet kan beveges og sensoren fungerer."
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
@@ -730,8 +730,8 @@ msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the "
 "filament reached the fsensor and the sensor works."
 msgstr ""
-"Filament sensor ble ikke utløst imens filamentet ble lastet."
-"sikre at filamentet rekker fsensor og at sensoren fungerer."
+"Filament sensor ble ikke utløst imens filamentet ble lastet. "
+"Sikre at filamentet rekker fsensor og at sensoren fungerer."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:201 ../../Firmware/mmu2/errors_list.h:241
@@ -1736,7 +1736,7 @@ msgstr "Gi nytt navn"
 msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
-msgstr "Forespurt filamentverktøy er ikke tilgjengelig på denne maskinvaren. Sjekk g-koden for verktøys-inteks ut av rekkevidde (T0-T4)"
+msgstr "Forespurt filamentverktøy er ikke tilgjengelig på denne maskinvaren. Sjekk g-code for verktøys-inteks ut av rekkevidde (T0-T4)"
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:2754
@@ -1774,7 +1774,7 @@ msgstr "ta tilbake fra FINDA"
 #. MSG_BTN_RETRY c=8
 #: ../../Firmware/mmu2/errors_list.h:281 ../../Firmware/mmu2/errors_list.h:291
 msgid "Retry"
-msgstr "etry"
+msgstr "Retry"
 
 #. MSG_PROGRESS_RETURN_SELECTOR c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:25
@@ -2234,13 +2234,13 @@ msgstr "Laster ut filament"
 #: ../../Firmware/mmu2_progress_converter.cpp:11
 #: ../../Firmware/mmu2_progress_converter.cpp:37
 msgid "Unloading to FINDA"
-msgstr "utlaster til FINDA"
+msgstr "Utlaster til FINDA"
 
 #. MSG_PROGRESS_UNLOAD_PULLEY c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:12
 #: ../../Firmware/mmu2_progress_converter.cpp:38
 msgid "Unloading to pulley"
-msgstr "utlaster til trinse"
+msgstr "Utlaster til trinse"
 
 #. MSG_FIL_FAILED c=20 r=5
 #: ../../Firmware/ultralcd.cpp:6265
