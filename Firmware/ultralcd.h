@@ -21,6 +21,7 @@ void ultralcd_init();
 // Set the current status message (equivalent to LCD_STATUS_NONE)
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
+void lcd_setstatus_serial(const char* message);
 
 //! return to the main status screen and display the alert message
 //! Beware - it has sideeffects:
