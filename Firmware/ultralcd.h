@@ -21,6 +21,7 @@ void ultralcd_init();
 // Set the current status message (equivalent to LCD_STATUS_NONE)
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
+void lcd_setstatus_serial(const char* message);
 
 //! return to the main status screen and display the alert message
 //! Beware - it has sideeffects:
@@ -47,6 +48,9 @@ void lcd_pause_print();
 void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
+#ifdef TEMP_MODEL
+void lcd_temp_model_cal();
+#endif //TEMP_MODEL
 void lcd_load_filament_color_check();
 
 extern void lcd_belttest();
@@ -114,6 +118,9 @@ enum class LcdCommands : uint_least8_t
 	LongPause,
 	PidExtruder,
 	Layer1Cal,
+#ifdef TEMP_MODEL
+    TempModel,
+#endif //TEMP_MODEL
 };
 
 extern LcdCommands lcd_commands_type;
