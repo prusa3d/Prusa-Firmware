@@ -105,7 +105,7 @@ msgstr "AutoLast filament"
 msgid ""
 "Autoloading filament available only when filament sensor is turned on..."
 msgstr ""
-"Autolasting av fil. er aktivert. Trykk på knappen og sett inn filament..."
+"Autolasting av fil. er kun tilgjengelig når fil.- sensoren er skrudd på..."
 
 #. MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:2301
