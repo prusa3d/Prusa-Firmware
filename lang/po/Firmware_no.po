@@ -61,7 +61,7 @@ msgstr "Alfabet"
 #. MSG_ALWAYS c=6
 #: ../../Firmware/messages.cpp:8 ../../Firmware/ultralcd.cpp:4308
 msgid "Always"
-msgstr ""
+msgstr "Alltid"
 
 #. MSG_AMBIENT c=14
 #: ../../Firmware/ultralcd.cpp:1405
@@ -81,7 +81,7 @@ msgstr "Hjelp"
 #. MSG_AUTO c=6
 #: ../../Firmware/messages.cpp:157 ../../Firmware/ultralcd.cpp:5864
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. MSG_AUTO_HOME c=18
 #: ../../Firmware/Marlin_main.cpp:3271 ../../Firmware/messages.cpp:9
@@ -105,7 +105,7 @@ msgstr "AutoLast filament"
 msgid ""
 "Autoloading filament available only when filament sensor is turned on..."
 msgstr ""
-"Autolasting av fil. er kun tilgjengelig når fil.- sensoren er skrudd på..."
+"Autolasting av fil. er aktivert. Trykk på knappen og sett inn filament..."
 
 #. MSG_AUTOLOADING_ENABLED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:2301
@@ -258,7 +258,7 @@ msgstr "Kort fjernet"
 #. MSG_CNG_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5538
 msgid "Change SD card"
-msgstr ""
+msgstr "Bytt SD kort"
 
 #. MSG_FILAMENTCHANGE c=18
 #: ../../Firmware/messages.cpp:39 ../../Firmware/ultralcd.cpp:5497
@@ -439,7 +439,7 @@ msgstr "E-korreksjon:"
 #. MSG_ERROR c=10
 #: ../../Firmware/messages.cpp:29 ../../Firmware/ultralcd.cpp:2279
 msgid "ERROR:"
-msgstr ""
+msgstr "FEIL:"
 
 #. MSG_FSENS_NOT_RESPONDING c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3562
@@ -559,19 +559,19 @@ msgstr "Tomt filament"
 #: ../../Firmware/ultralcd.cpp:4244 ../../Firmware/ultralcd.cpp:5737
 #: ../../Firmware/ultralcd.cpp:5741 ../../Firmware/ultralcd.cpp:5745
 msgid "Fil. sensor"
-msgstr ""
+msgstr "Fil. Sensor"
 
 #. MSG_FILAMENT c=17
 #: ../../Firmware/Marlin_main.cpp:8577 ../../Firmware/Marlin_main.cpp:8604
 #: ../../Firmware/messages.cpp:33 ../../Firmware/ultralcd.cpp:3835
 msgid "Filament"
-msgstr ""
+msgstr "Filament"
 
 #. MSG_FILAMENT_CLEAN c=20 r=2
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2287
 #: ../../Firmware/ultralcd.cpp:2293
 msgid "Filament extruding & with correct color?"
-msgstr "Filament kommer ut og har riktig farge?"
+msgstr "Kommer Filament ut og har riktig farge?"
 
 #. MSG_NOT_LOADED c=19
 #: ../../Firmware/ultralcd.cpp:2217
@@ -669,7 +669,7 @@ msgstr ""
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 #: ../../Firmware/util.cpp:385
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code sliced for en nyere systemvare. Fortsette?"
+msgstr "G-code sliced for nyere fastvare. Fortsette?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:391
@@ -677,7 +677,7 @@ msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
 msgstr ""
-"G-code sliced for en nyere systemvare. Vennligst oppdater systemet. Print "
+"G-code sliced for nyere fastvare. Vennligst oppdater systemet. Print "
 "avbrutt."
 
 #. MSG_GCODE c=8
@@ -685,13 +685,13 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:4658 ../../Firmware/ultralcd.cpp:4661
 #: ../../Firmware/ultralcd.cpp:4664
 msgid "Gcode"
-msgstr ""
+msgstr "Gcode"
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:99 ../../Firmware/ultralcd.cpp:4672
 #: ../../Firmware/ultralcd.cpp:4726 ../../Firmware/ultralcd.cpp:4818
 msgid "HW Setup"
-msgstr ""
+msgstr "GW oppsett"
 
 #. MSG_SELFTEST_HEATERTHERMISTOR c=20
 #: ../../Firmware/ultralcd.cpp:6968
@@ -763,7 +763,7 @@ msgstr ""
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2531
 msgid "Improving bed calibration point"
-msgstr ""
+msgstr "Forbedrer seng kalibreringspunkt"
 
 #. MSG_INFO_SCREEN c=18
 #: ../../Firmware/messages.cpp:113 ../../Firmware/ultralcd.cpp:5478
@@ -773,7 +773,7 @@ msgstr "Infoskjerm"
 #. MSG_INIT_SDCARD c=18
 #: ../../Firmware/ultralcd.cpp:5545
 msgid "Init. SD card"
-msgstr ""
+msgstr "Init. SD kort"
 
 #. MSG_INSERT_FILAMENT c=20
 #: ../../Firmware/ultralcd.cpp:2152
@@ -887,7 +887,7 @@ msgstr "Laster filament"
 #. MSG_LOOSE_PULLEY c=20
 #: ../../Firmware/ultralcd.cpp:7008
 msgid "Loose pulley"
-msgstr "Løs talje"
+msgstr "Løs reim"
 
 #. MSG_SOUND_LOUD c=7
 #: ../../Firmware/messages.cpp:141 ../../Firmware/ultralcd.cpp:4450
@@ -1022,7 +1022,7 @@ msgstr "Modell"
 #: ../../Firmware/messages.cpp:91 ../../Firmware/ultralcd.cpp:6982
 #: ../../Firmware/ultralcd.cpp:6991 ../../Firmware/ultralcd.cpp:7009
 msgid "Motor"
-msgstr ""
+msgstr "Motor"
 
 #. MSG_MOVE_X c=18
 #: ../../Firmware/ultralcd.cpp:3492
@@ -1056,7 +1056,7 @@ msgstr " -"
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:199
 msgid "New firmware version available:"
-msgstr "Ny systemvare tilgjengelig:"
+msgstr "Ny fastvare tilgjengelig:"
 
 #. MSG_NO c=4
 #: ../../Firmware/messages.cpp:66 ../../Firmware/ultralcd.cpp:2804
@@ -1089,7 +1089,7 @@ msgstr "Ingen"
 #: ../../Firmware/ultralcd.cpp:4381 ../../Firmware/ultralcd.cpp:4397
 #: ../../Firmware/ultralcd.cpp:4416 ../../Firmware/ultralcd.cpp:5763
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #. MSG_SELFTEST_NOTCONNECTED c=20
 #: ../../Firmware/ultralcd.cpp:6969
@@ -1148,7 +1148,7 @@ msgstr "Av"
 #: ../../Firmware/Marlin_main.cpp:1535
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr ""
-"Gamle verdier funnet Standarinnstillinger for PID, motor etc. blir satt."
+"Gamle verdier funnet Standarinnstillinger for PID, Esteg etc. blir satt."
 
 #. MSG_ON c=3
 #: ../../Firmware/messages.cpp:123 ../../Firmware/ultralcd.cpp:4244
@@ -1170,7 +1170,7 @@ msgstr "En gang"
 #. MSG_PAUSED_THERMAL_ERROR c=20
 #: ../../Firmware/Marlin_main.cpp:9718 ../../Firmware/messages.cpp:164
 msgid "PAUSED THERMAL ERROR"
-msgstr ""
+msgstr "PAUSET THERMISK FEIL"
 
 #. MSG_PID_RUNNING c=20
 #: ../../Firmware/ultralcd.cpp:1017
@@ -1197,7 +1197,7 @@ msgstr "PINDA varmes"
 #: ../../Firmware/messages.cpp:109 ../../Firmware/ultralcd.cpp:654
 #: ../../Firmware/ultralcd.cpp:4830 ../../Firmware/ultralcd.cpp:4920
 msgid "PINDA cal."
-msgstr ""
+msgstr "PINDA kal."
 
 #. MSG_PINDA_CAL_FAILED c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3361
@@ -1217,7 +1217,7 @@ msgstr ""
 #. MSG_PAUSE c=5
 #: ../../Firmware/messages.cpp:150 ../../Firmware/ultralcd.cpp:4707
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #. MSG_PAUSE_PRINT c=18
 #: ../../Firmware/messages.cpp:69 ../../Firmware/ultralcd.cpp:5507
@@ -1460,7 +1460,7 @@ msgstr ""
 #. MSG_RPI_PORT c=13
 #: ../../Firmware/messages.cpp:139 ../../Firmware/ultralcd.cpp:4834
 msgid "RPi port"
-msgstr ""
+msgstr "RPi port"
 
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:2755
@@ -1561,7 +1561,7 @@ msgstr "Velg filamenttype for Førstelags- kalibrering."
 #. MSG_SELECT_EXTRUDER c=20
 #: ../../Firmware/Marlin_main.cpp:8608 ../../Firmware/messages.cpp:50
 msgid "Select extruder:"
-msgstr ""
+msgstr "Velg ekstruder:"
 
 #. MSG_SELECT_FILAMENT c=20
 #: ../../Firmware/Marlin_main.cpp:8577 ../../Firmware/Marlin_main.cpp:8604
@@ -1770,17 +1770,17 @@ msgstr "Byttet"
 #. MSG_THERMAL_ANOMALY c=20
 #: ../../Firmware/messages.cpp:166 ../../Firmware/temperature.cpp:2442
 msgid "THERMAL ANOMALY"
-msgstr ""
+msgstr "THERMISK ANOMALI"
 
 #. MSG_TM_AUTOTUNE_FAILED c=20
 #: ../../Firmware/temperature.cpp:2899
 msgid "TM autotune failed"
-msgstr ""
+msgstr "TM autotune feilet"
 
 #. MSG_TEMP_MODEL_AUTOTUNE c=20
 #: ../../Firmware/temperature.cpp:2884
 msgid "Temp. model autotune"
-msgstr ""
+msgstr "Temp. model autotune"
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4797
@@ -1904,7 +1904,7 @@ msgstr "Venter på dyse- og platenedkjøling"
 #: ../../Firmware/ultralcd.cpp:4578 ../../Firmware/ultralcd.cpp:4617
 #: ../../Firmware/ultralcd.cpp:4658
 msgid "Warn"
-msgstr "Advar"
+msgstr "Advarsel"
 
 #. MSG_CHANGED_BOTH c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527
@@ -1946,7 +1946,7 @@ msgstr "X-korreksjon:"
 #. MSG_XFLASH c=18
 #: ../../Firmware/ultralcd.cpp:5596
 msgid "XFLASH init"
-msgstr ""
+msgstr "XFLASH init"
 
 #. MSG_XYZ_DETAILS c=18
 #: ../../Firmware/ultralcd.cpp:1721
@@ -1972,7 +1972,7 @@ msgstr "XYZ kalibreringen feilet. Front kalibreringspunkt ikke nådd."
 #: ../../Firmware/ultralcd.cpp:3317
 msgid ""
 "XYZ calibration compromised. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ kalibrasjon feilet. Fremre venstre kalibrerings kan ikke nås."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3314
@@ -1993,7 +1993,7 @@ msgstr "XYZ kalibreringen feilet. Front kalibreringspunkt ikke nådd."
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
 #: ../../Firmware/ultralcd.cpp:3305
 msgid "XYZ calibration failed. Left front calibration point not reachable."
-msgstr ""
+msgstr "XYZ kalibreringen feilet. Fremre venstre kalibreringspunkt kan ikke nås"
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3296
