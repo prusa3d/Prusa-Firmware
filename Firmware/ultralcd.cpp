@@ -956,40 +956,29 @@ void lcd_commands()
 #ifdef PRUSA_FARM
 	if (lcd_commands_type == LcdCommands::FarmModeConfirm)   /// farm mode confirm
 	{
-
 		if (lcd_commands_step == 0) { lcd_commands_step = 6; }
 
-		if (lcd_commands_step == 1 && !blocks_queued())
+		if (!blocks_queued())
 		{
-			lcd_commands_step = 0;
-			lcd_commands_type = LcdCommands::Idle;
+			switch (lcd_commands_step)
+			{
+			case 1:
+				lcd_commands_type = LcdCommands::Idle;
+				break;
+			case 4:
+				enquecommand_P(PSTR("G90"));
+				enquecommand_P(PSTR("G1 X"  STRINGIFY(X_CANCEL_POS) " Y" STRINGIFY(Y_CANCEL_POS) " E0 F7000"));
+				break;
+			case 6:
+				enquecommand_P(PSTR("G91"));
+				enquecommand_P(PSTR("G1 Z15 F1500"));
+				st_synchronize();
+				break;
+			default:
+				break;
+			}
+			lcd_commands_step--;
 		}
-		if (lcd_commands_step == 2 && !blocks_queued())
-		{
-			lcd_commands_step = 1;
-		}
-		if (lcd_commands_step == 3 && !blocks_queued())
-		{
-			lcd_commands_step = 2;
-		}
-		if (lcd_commands_step == 4 && !blocks_queued())
-		{
-			enquecommand_P(PSTR("G90"));
-			enquecommand_P(PSTR("G1 X"  STRINGIFY(X_CANCEL_POS) " Y" STRINGIFY(Y_CANCEL_POS) " E0 F7000"));
-			lcd_commands_step = 3;
-		}
-		if (lcd_commands_step == 5 && !blocks_queued())
-		{
-			lcd_commands_step = 4;
-		}
-		if (lcd_commands_step == 6 && !blocks_queued())
-		{
-			enquecommand_P(PSTR("G91"));
-			enquecommand_P(PSTR("G1 Z15 F1500"));
-			st_synchronize();
-			lcd_commands_step = 5;
-		}
-
 	}
 #endif //PRUSA_FARM
 
