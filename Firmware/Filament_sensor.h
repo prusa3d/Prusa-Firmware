@@ -52,6 +52,12 @@ public:
     void setRunoutEnabled(bool state, bool updateEEPROM = false);
     bool getRunoutEnabled() const { return runoutEnabled; }
     
+    void setMMUJamEnabled(bool state);
+    bool getMMUJamEnabled() const { return runoutEnabled; }
+
+    // This should be overloaded on a per-sensor basis whether it can support jams or not.
+    bool supportsMMUJam() const { return sensorSupportsMMUJam; }
+
     void setActionOnError(SensorActionOnError state, bool updateEEPROM = false);
     SensorActionOnError getActionOnError() const { return sensorActionOnError; }
     
@@ -79,6 +85,8 @@ protected:
     State state;
     bool autoLoadEnabled;
     bool runoutEnabled;
+    bool mmuJamEnabled;
+    bool sensorSupportsMMUJam = false;
     bool oldFilamentPresent; //for creating filament presence switching events.
     bool postponedLoadEvent; //this event lasts exactly one update cycle. It is long enough to be able to do polling for load event.
     ShortTimer eventBlankingTimer;

@@ -3455,7 +3455,12 @@ static void mmu_M600_wait_and_beep() {
     KEEPALIVE_STATE(PAUSED_FOR_USER);
 
     int counterBeep = 0;
-    lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
+    if (MMU2::mmu2.IsExtruderJamDetected()) {
+        lcd_display_message_fullscreen_P(_i("Possible extruder jam/grinding (FS=0). Fix problem and press the knob.")); ////MSG_FIX_MMU_JAM c=20 r=5
+        MMU2::mmu2.ClearExtruderJam();
+    } else {
+        lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
+    }
     bool bFirst = true;
 
     while (!lcd_clicked()) {
