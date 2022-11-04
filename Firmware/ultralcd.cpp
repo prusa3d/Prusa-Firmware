@@ -3313,8 +3313,8 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
             // The right and maybe the center point out of reach.
             msg = _i("XYZ calibration failed. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
         else
-            // The left and maybe the center point out of reach.
-            msg = _i("XYZ calibration failed. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
+            // The left and maybe the center point out of reach. //@todo Why isn't it found in the firmware.map
+            msg = _n("XYZ calibration failed. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
         lcd_show_fullscreen_message_and_wait_P(msg);
     } else {
         if (point_too_far_mask != 0) {
@@ -3325,8 +3325,8 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
                 // The right and maybe the center point out of reach.
                 msg = _i("XYZ calibration compromised. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
             else
-                // The left and maybe the center point out of reach.
-                msg = _i("XYZ calibration compromised. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+                // The left and maybe the center point out of reach. //@todo Why isn't it found in the firmware.map
+                msg = _n("XYZ calibration compromised. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
             lcd_show_fullscreen_message_and_wait_P(msg);
         }
         if (point_too_far_mask == 0 || result > 0) {
