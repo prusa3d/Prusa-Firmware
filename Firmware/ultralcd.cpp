@@ -4270,10 +4270,7 @@ static void lcd_fsensor_settings_menu() {
 
 static void settingsSpoolJoin()
 {
-    if (MMU2::mmu2.Enabled())
-    {
-        MENU_ITEM_TOGGLE_P(MSG_SPOOL_JOIN, SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
-    }
+    MENU_ITEM_TOGGLE_P(MSG_SPOOL_JOIN, SpoolJoin::spooljoin.isSpoolJoinEnabled() ? _T(MSG_ON) : _T(MSG_OFF), SpoolJoin::spooljoin.toggleSpoolJoin);
 }
 
 #define SETTINGS_SPOOLJOIN \
@@ -4286,22 +4283,19 @@ while(0)\
 #ifdef MMU_HAS_CUTTER
 static void settingsCutter()
 {
-    if (MMU2::mmu2.Enabled())
+    if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
     {
-        if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
-        {
-            MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ON), lcd_cutter_enabled);
-        }
+        MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ON), lcd_cutter_enabled);
+    }
 #ifdef MMU_ALWAYS_CUT
-        else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
-        {
-            MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ALWAYS), lcd_cutter_enabled);
-        }
+    else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    {
+        MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ALWAYS), lcd_cutter_enabled);
+    }
 #endif
-        else
-        {
-            MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_OFF), lcd_cutter_enabled);
-        }
+    else
+    {
+        MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_OFF), lcd_cutter_enabled);
     }
 }
 
@@ -4419,6 +4413,7 @@ do\
 while (0)
 */
 
+// TODO: Rename 'Load to extruder' to 'Loading test'
 #define SETTINGS_MMU_LOAD_TEST \
 do\
 {\
@@ -4755,15 +4750,15 @@ static void lcd_settings_menu()
     MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
 #endif //FILAMENT_SENSOR
 
-	SETTINGS_SPOOLJOIN;
-
-	SETTINGS_CUTTER;
-
     MENU_ITEM_TOGGLE_P(PSTR("MMU"), eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED) ? _T(MSG_ON) : _T(MSG_OFF), mmu_enable_switch);
 
     if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
     {
+        SETTINGS_SPOOLJOIN;
+        SETTINGS_CUTTER;
         MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
+        SETTINGS_MMU_MODE;
+        SETTINGS_MMU_LOAD_TEST;
     }
 
 	MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
@@ -4775,10 +4770,6 @@ static void lcd_settings_menu()
         bSettings=true;                              // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
         MENU_ITEM_SUBMENU_P(_T(MSG_HW_SETUP), lcd_hw_setup_menu);
     }
-    
-	SETTINGS_MMU_MODE;
-
-	SETTINGS_MMU_LOAD_TEST;
 
 	MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bed_leveling_settings);
 
