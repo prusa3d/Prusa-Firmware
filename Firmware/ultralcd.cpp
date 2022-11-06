@@ -4419,6 +4419,13 @@ do\
 while (0)
 */
 
+#define SETTINGS_MMU_LOAD_TEST \
+do\
+{\
+    MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_TO_EXTRUDER), mmu_load_to_extruder_menu); \
+}\
+while (0)
+
 #define SETTINGS_SOUND \
 do\
 {\
@@ -4770,6 +4777,8 @@ static void lcd_settings_menu()
     }
     
 	SETTINGS_MMU_MODE;
+
+	SETTINGS_MMU_LOAD_TEST;
 
 	MENU_ITEM_SUBMENU_P(_T(MSG_MESH_BED_LEVELING), lcd_mesh_bed_leveling_settings);
 
@@ -5565,7 +5574,6 @@ static void lcd_main_menu()
     if ( ! ( IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) ) ) {
         if (MMU2::mmu2.Enabled()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), mmu_load_filament_menu);
-            MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_TO_EXTRUDER), mmu_load_to_extruder_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
             MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FILAMENT), mmu_fil_eject_menu);
