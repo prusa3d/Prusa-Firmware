@@ -3321,7 +3321,7 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
             msg = _i("XYZ calibration failed. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
         else
             // The left and maybe the center point out of reach.
-            msg = _i("XYZ calibration failed. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
+            msg = _n("XYZ calibration failed. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
         lcd_show_fullscreen_message_and_wait_P(msg);
     } else {
         if (point_too_far_mask != 0) {
@@ -3333,7 +3333,7 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
                 msg = _i("XYZ calibration compromised. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
             else
                 // The left and maybe the center point out of reach.
-                msg = _i("XYZ calibration compromised. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+                msg = _n("XYZ calibration compromised. Left front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
             lcd_show_fullscreen_message_and_wait_P(msg);
         }
         if (point_too_far_mask == 0 || result > 0) {
@@ -7638,7 +7638,10 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
-	backlight_wake();
+    // Wake up the LCD backlight and,
+    // start LCD inactivity timer
+    lcd_timeoutToStatus.start();
+    backlight_wake();
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE)
     {
         // disable longpress during re-entry, while homing, calibration or if a serious error
