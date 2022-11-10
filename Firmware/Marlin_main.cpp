@@ -3538,6 +3538,9 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     memcpy(lastpos, current_position, sizeof(lastpos));
 
+    // Turn off the fan
+    fanSpeed = 0;
+
     // Retract E
     current_position[E_AXIS] += e_shift;
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
