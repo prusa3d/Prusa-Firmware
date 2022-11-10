@@ -2992,6 +2992,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             if (lcd_clicked()) {
                 // Abort a move if in progress.
                 planner_abort_hard();
+                planner_aborted = false;
                 while (lcd_clicked()) ;
                 _delay(10);
                 while (lcd_clicked()) ;
