@@ -584,25 +584,21 @@ void lcdui_print_status_line(void) {
         lcd_status_message_timeout.expired_cont(LCD_STATUS_INFO_TIMEOUT))
     {
         // If printing from SD, show what we are printing
-		const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
+        const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
         if(strlen(longFilenameOLD) > LCD_WIDTH) {
             uint8_t gh = scrollstuff;
             while (((gh - scrollstuff) < LCD_WIDTH)) {
+                lcd_putc_at(gh - scrollstuff, 3, longFilenameOLD[gh - 1]);
                 if (longFilenameOLD[gh] == '\0') {
-                    lcd_set_cursor(gh - scrollstuff, 3);
-                    lcd_print(longFilenameOLD[gh - 1]);
                     scrollstuff = 0;
-                    gh = scrollstuff;
-                    break;
+                    break; // Exit while loop
                 } else {
-                    lcd_set_cursor(gh - scrollstuff, 3);
-                    lcd_print(longFilenameOLD[gh - 1]);
                     gh++;
                 }
             }
             scrollstuff++;
         } else {
-            lcd_printf_P(PSTR("%-20s"), longFilenameOLD);
+            lcd_print_pad(longFilenameOLD, LCD_WIDTH);
         }
     } else { // Otherwise check for other special events
         switch (custom_message_type) {
