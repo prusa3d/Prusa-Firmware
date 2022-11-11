@@ -226,8 +226,12 @@ private:
     /// Along with the mmu_loop method, this loops until a response from the MMU is received and acts upon.
     /// In case of an error, it parks the print head and turns off nozzle heating
     void manage_response(const bool move_axes, const bool turn_off_nozzle);
-    
-    /// Performs one step of the protocol logic state machine 
+
+    /// The inner private implementation of mmu_loop()
+    /// which is NOT (!!!) recursion-guarded. Use caution - but we do need it during waiting for hotend resume to keep comms alive!
+    void mmu_loop_inner();
+
+    /// Performs one step of the protocol logic state machine
     /// and reports progress and errors if needed to attached ExtUIs.
     /// Updates the global state of MMU (Active/Connecting/Stopped) at runtime, see @ref State
     StepStatus LogicStep();

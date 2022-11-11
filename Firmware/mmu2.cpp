@@ -221,6 +221,13 @@ void MMU2::mmu_loop() {
         return;
     avoidRecursion = true;
 
+    mmu_loop_inner();
+
+    avoidRecursion = false;
+}
+
+void MMU2::mmu_loop_inner()
+{
     logicStepLastStatus = LogicStep(); // it looks like the mmu_loop doesn't need to be a blocking call
 
     if (is_mmu_error_monitor_active){
@@ -228,8 +235,6 @@ void MMU2::mmu_loop() {
         // This includes when mmu_loop is called within manage_response
         ReportErrorHook((uint16_t)lastErrorCode);
     }
-
-    avoidRecursion = false;
 }
 
 void MMU2::CheckFINDARunout()
@@ -630,9 +635,10 @@ void MMU2::ResumeHotendTemp() {
         lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); ////MSG_MMU_RESTORE_TEMP c=20 r=4
         //@todo better report the event and let the GUI do its work somewhere else
         ReportErrorHookSensorLineRender();
-        waitForHotendTargetTemp(1000, []{
-            ReportErrorHookDynamicRender();
+        waitForHotendTargetTemp(100, [this]{
             manage_inactivity(true);
+            this->mmu_loop_inner(); // This keeps the comms alive, the call in manage_inactivity is blocked by recursion guard.
+            ReportErrorHookDynamicRender();
         });
         lcd_update_enable(true); // temporary hack to stop this locking the printer...
         LogEchoEvent_P(PSTR("Hotend temperature reached"));
