@@ -585,20 +585,11 @@ void lcdui_print_status_line(void) {
     {
         // If printing from SD, show what we are printing
         const char* longFilenameOLD = (card.longFilename[0] ? card.longFilename : card.filename);
-        if(strlen(longFilenameOLD) > LCD_WIDTH) {
-            uint8_t gh = scrollstuff;
-            while (((gh - scrollstuff) < LCD_WIDTH)) {
-                lcd_putc_at(gh - scrollstuff, 3, longFilenameOLD[gh - 1]);
-                if (longFilenameOLD[gh] == '\0') {
-                    scrollstuff = 0;
-                    break; // Exit while loop
-                } else {
-                    gh++;
-                }
-            }
+        if( lcd_print_pad(&longFilenameOLD[scrollstuff], LCD_WIDTH) )
+        {
             scrollstuff++;
         } else {
-            lcd_print_pad(longFilenameOLD, LCD_WIDTH);
+            scrollstuff = 0;
         }
     } else { // Otherwise check for other special events
         switch (custom_message_type) {
