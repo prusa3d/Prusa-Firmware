@@ -556,18 +556,18 @@ void menu_progressbar_init(uint16_t total, const char* title)
 	progressbar_total = total;
 	
 	lcd_set_cursor(0, 1);
-	lcd_printf_P(PSTR("%-20.20S\n"), title);
+	lcd_printf_P(PSTR("%-20.20S"), title);
 }
 
 void menu_progressbar_update(uint16_t newVal)
 {
-	uint8_t newCnt = (newVal * LCD_WIDTH) / progressbar_total;
-	if (newCnt > LCD_WIDTH)
-		newCnt = LCD_WIDTH;
-	while (newCnt--)
-	{
-		lcd_print(LCD_STR_SOLID_BLOCK[0]);
-	}
+	// Calculate how many blocks are in progress bar
+	uint8_t blocks = (newVal * LCD_WIDTH) / progressbar_total;
+	if (blocks > LCD_WIDTH)
+		blocks = LCD_WIDTH;
+	// Render progress bar
+	lcd_set_cursor(0, 2);
+	while (blocks--) lcd_print(LCD_STR_SOLID_BLOCK[0]);
 }
 
 void menu_progressbar_finish(void)
