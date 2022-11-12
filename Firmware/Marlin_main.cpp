@@ -8767,7 +8767,7 @@ Sigma_Exit:
   @n Tc Load to nozzle after filament was prepared by Tc and extruder nozzle is already heated.
   */
   else if(code_seen('T')){
-        TCodes(strchr_pointer, code_value());
+        TCodes(strchr_pointer, code_value_uint8());
   } // end if(code_seen('T')) (end of T codes)
   /*!
   #### End of T-Codes
