@@ -6140,28 +6140,20 @@ void lcd_sdcard_menu()
 				_md->offset = 0; //redraw once again from the beginning.
 			if (_md->lcd_scrollTimer.expired(300) || rewindFlag)
 			{
-				uint8_t i = LCD_WIDTH - ((_md->isDir)?2:1);
+				uint8_t len = LCD_WIDTH - ((_md->isDir)? 2 : 1);
 				lcd_set_cursor(0, _md->row);
 				lcd_print('>');
 				if (_md->isDir)
 					lcd_print(LCD_STR_FOLDER[0]);
-				for (; i != 0; i--)
+
+				if( lcd_print_pad(&_md->scrollPointer[_md->offset], len) )
 				{
-					const char* c = (_md->scrollPointer + _md->offset + ((LCD_WIDTH - ((_md->isDir)?2:1)) - i));
-					lcd_print(c[0]);
-					if (c[1])
-						_md->lcd_scrollTimer.start();
-					else
-					{
-						_md->lcd_scrollTimer.stop();
-						break; //stop at the end of the string
-					}
+					_md->lcd_scrollTimer.start();
+					_md->offset++;
+				} else {
+					// stop at the end of the string
+					_md->lcd_scrollTimer.stop();
 				}
-				if (i != 0) //adds spaces if string is incomplete or at the end (instead of null).
-				{
-					lcd_space(i);
-				}
-				_md->offset++;
 			}
 			if (rewindFlag) //go back to sd_menu.
 			{
