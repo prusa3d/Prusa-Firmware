@@ -229,12 +229,14 @@ private:
 
     /// The inner private implementation of mmu_loop()
     /// which is NOT (!!!) recursion-guarded. Use caution - but we do need it during waiting for hotend resume to keep comms alive!
-    void mmu_loop_inner();
+    /// @param reportErrors true if Errors should raise MMU Error screen, false otherwise
+    void mmu_loop_inner(bool reportErrors);
 
     /// Performs one step of the protocol logic state machine
     /// and reports progress and errors if needed to attached ExtUIs.
     /// Updates the global state of MMU (Active/Connecting/Stopped) at runtime, see @ref State
-    StepStatus LogicStep();
+    /// @param reportErrors true if Errors should raise MMU Error screen, false otherwise
+    StepStatus LogicStep(bool reportErrors);
     
     void filament_ramming();
     void execute_extruder_sequence(const E_Step *sequence, uint8_t steps);
