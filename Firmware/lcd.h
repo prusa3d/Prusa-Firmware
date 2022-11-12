@@ -53,7 +53,7 @@ extern void lcd_printNumber(unsigned long n, uint8_t base);
 extern void lcd_printFloat(double number, uint8_t digits);
 
 extern void lcd_print(const char*);
-extern void lcd_print_pad(const char*, uint8_t len);
+extern char lcd_print_pad(const char* s, uint8_t len);
 extern void lcd_print(char, int = 0);
 extern void lcd_print(unsigned char, int = 0);
 extern void lcd_print(int, int = 10);
