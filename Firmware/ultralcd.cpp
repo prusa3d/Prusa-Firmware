@@ -2992,6 +2992,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             if (lcd_clicked()) {
                 // Abort a move if in progress.
                 planner_abort_hard();
+                planner_aborted = false;
                 while (lcd_clicked()) ;
                 _delay(10);
                 while (lcd_clicked()) ;
@@ -3008,7 +3009,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
         uint8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z~carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
         if (result == LCD_BUTTON_TIMEOUT)
             goto canceled;
-        else if (result == LCD_MIDDLE_BUTTON_CHOICE)
+        else if (result == LCD_LEFT_BUTTON_CHOICE)
             goto calibrated;
         // otherwise perform another round of the Z up dialog.
     }
