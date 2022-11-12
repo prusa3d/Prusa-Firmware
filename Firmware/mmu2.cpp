@@ -221,14 +221,14 @@ void MMU2::mmu_loop() {
         return;
     avoidRecursion = true;
 
-    mmu_loop_inner();
+    mmu_loop_inner(true);
 
     avoidRecursion = false;
 }
 
-void MMU2::mmu_loop_inner()
+void __attribute__((noinline)) MMU2::mmu_loop_inner(bool reportErrors)
 {
-    logicStepLastStatus = LogicStep(); // it looks like the mmu_loop doesn't need to be a blocking call
+    logicStepLastStatus = LogicStep(reportErrors); // it looks like the mmu_loop doesn't need to be a blocking call
 
     if (is_mmu_error_monitor_active){
         // Call this every iteration to keep the knob rotation responsive
@@ -637,7 +637,7 @@ void MMU2::ResumeHotendTemp() {
         ReportErrorHookSensorLineRender();
         waitForHotendTargetTemp(100, []{
             manage_inactivity(true);
-            mmu2.mmu_loop_inner();
+            mmu2.mmu_loop_inner(false);
             ReportErrorHookDynamicRender();
         });
         lcd_update_enable(true); // temporary hack to stop this locking the printer...
@@ -768,7 +768,7 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
     }
 }
 
-StepStatus MMU2::LogicStep() {
+StepStatus MMU2::LogicStep(bool reportErrors) {
     CheckUserInput(); // Process any buttons before proceeding with another MMU Query
     StepStatus ss = logic.Step();
     switch (ss) {
@@ -779,30 +779,36 @@ StepStatus MMU2::LogicStep() {
     case Processing:
         OnMMUProgressMsg(logic.Progress());
         break;
-    case CommandError:
-        ReportError(logic.Error(), ErrorSourceMMU);
-        break;
-    case CommunicationTimeout:
-        state = xState::Connecting;
-        ReportError(ErrorCode::MMU_NOT_RESPONDING, ErrorSourcePrinter);
-        break;
-    case ProtocolError:
-        state = xState::Connecting;
-        ReportError(ErrorCode::PROTOCOL_ERROR, ErrorSourcePrinter);
-        break;
-    case VersionMismatch:
-        StopKeepPowered();
-        ReportError(ErrorCode::VERSION_MISMATCH, ErrorSourcePrinter);
-        break;
     case ButtonPushed:
         lastButton = logic.Button();
         LogEchoEvent_P(PSTR("MMU Button pushed"));
         CheckUserInput(); // Process the button immediately
         break;
     default:
-        break;
+        if(reportErrors) {
+            switch (ss)
+            {
+            case CommandError:
+                ReportError(logic.Error(), ErrorSourceMMU);
+                break;
+            case CommunicationTimeout:
+                state = xState::Connecting;
+                ReportError(ErrorCode::MMU_NOT_RESPONDING, ErrorSourcePrinter);
+                break;
+            case ProtocolError:
+                state = xState::Connecting;
+                ReportError(ErrorCode::PROTOCOL_ERROR, ErrorSourcePrinter);
+                break;
+            case VersionMismatch:
+                StopKeepPowered();
+                ReportError(ErrorCode::VERSION_MISMATCH, ErrorSourcePrinter);
+                break;
+            default:
+                break;
+            }
+        }
     }
-    
+
     if( logic.Running() ){
         state = xState::Active;
     }
