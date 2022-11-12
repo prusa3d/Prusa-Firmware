@@ -635,9 +635,9 @@ void MMU2::ResumeHotendTemp() {
         lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); ////MSG_MMU_RESTORE_TEMP c=20 r=4
         //@todo better report the event and let the GUI do its work somewhere else
         ReportErrorHookSensorLineRender();
-        waitForHotendTargetTemp(100, [this]{
+        waitForHotendTargetTemp(100, []{
             manage_inactivity(true);
-            this->mmu_loop_inner(); // This keeps the comms alive, the call in manage_inactivity is blocked by recursion guard.
+            mmu2.mmu_loop_inner();
             ReportErrorHookDynamicRender();
         });
         lcd_update_enable(true); // temporary hack to stop this locking the printer...
