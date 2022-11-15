@@ -4730,7 +4730,7 @@ static void lcd_settings_menu()
 
     MENU_ITEM_TOGGLE_P(PSTR("MMU"), eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED) ? _T(MSG_ON) : _T(MSG_OFF), mmu_enable_switch);
 
-    if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
+    if (MMU2::mmu2.Enabled())
     {
         SETTINGS_SPOOLJOIN;
         SETTINGS_CUTTER;
@@ -5720,9 +5720,11 @@ static void lcd_tune_menu()
     MENU_ITEM_SUBMENU_P(_T(MSG_FSENSOR), lcd_fsensor_settings_menu);
 #endif //FILAMENT_SENSOR
 
-	SETTINGS_SPOOLJOIN;
-
-	SETTINGS_CUTTER;
+    if (MMU2::mmu2.Enabled())
+    {
+        SETTINGS_SPOOLJOIN;
+        SETTINGS_CUTTER;
+    }
 
 	MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
 
