@@ -60,7 +60,7 @@ extern const char MSG_SELECT_FILAMENT[];
 extern const char MSG_LAST_PRINT[];
 extern const char MSG_LAST_PRINT_FAILURES[];
 extern const char MSG_LOAD_FILAMENT[];
-extern const char MSG_LOAD_TO_EXTRUDER[];
+extern const char MSG_LOADING_TEST[];
 extern const char MSG_LOADING_FILAMENT[];
 extern const char MSG_TESTING_FILAMENT[];
 extern const char MSG_M117_V2_CALIBRATION[];

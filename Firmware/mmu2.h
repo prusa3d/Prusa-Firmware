@@ -140,7 +140,9 @@ public:
     /// It behaves very similarly like a ToolChange, but it doesn't load the filament
     /// all the way down to the nozzle. The sole purpose of this operation
     /// is to check, that the filament will be ready for printing.
-    bool load_to_extruder(uint8_t index);
+    /// @param index index of slot to be tested
+    /// @returns true
+    bool loading_test(uint8_t index);
 
     /// @returns the active filament slot index (0-4) or 0xff in case of no active tool
     uint8_t get_current_tool() const;
