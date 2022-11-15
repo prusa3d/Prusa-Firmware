@@ -4753,12 +4753,16 @@ static void lcd_settings_menu()
     MENU_ITEM_TOGGLE_P(PSTR("MMU"), eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED) ? _T(MSG_ON) : _T(MSG_OFF), mmu_enable_switch);
 
     if (MMU2::mmu2.Enabled())
-    {
+    { // Only show menus when communicating with MMU
         SETTINGS_SPOOLJOIN;
         SETTINGS_CUTTER;
-        MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
         SETTINGS_MMU_MODE;
         SETTINGS_MMU_LOAD_TEST;
+    }
+
+    if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED))
+    { // Communication with MMU not required to reset MMU
+        MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
     }
 
 	MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
