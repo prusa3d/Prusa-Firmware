@@ -455,7 +455,7 @@ void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_print(slot + 1);
 }
 
-bool MMU2::load_to_extruder(uint8_t index){
+bool MMU2::loading_test(uint8_t index){
     FullScreenMsg(_T(MSG_TESTING_FILAMENT), index);
     tool_change(index);
     st_synchronize();
