@@ -6,6 +6,10 @@ import polib
 import regex
 import sys
 import lib.charset as cs
+from pathlib import Path, PurePosixPath
+
+BASE_DIR: Path = Path.cwd()
+FILE_LIST: list[Path] = []
 
 def line_warning(path, line, msg):
     print(f'{path}:{line}: {msg}', file=sys.stderr)
@@ -43,7 +47,7 @@ def index_to_line(index, lines):
 
 
 def extract_file(path, catalog, warn_skipped=False):
-    source = open(path).read()
+    source = open(path, encoding="utf-8").read()
     newlines = newline_positions(source)
 
     # match internationalized quoted strings
@@ -144,7 +148,7 @@ def extract_file(path, catalog, warn_skipped=False):
 
 
 def extract_refs(path, catalog):
-    source = open(path).read()
+    source = open(path, encoding="utf-8").read()
     newlines = newline_positions(source)
 
     # match message catalog references to add backrefs
@@ -261,13 +265,25 @@ def main():
     ap.add_argument('file', nargs='+', help='Input files')
     args = ap.parse_args()
 
+    for path in args.file:
+        if not Path(path).exists():
+            # assume its regex
+            for file in sorted(BASE_DIR.glob(path)):
+                FILE_LIST.append(file)
+        else:
+            FILE_LIST.append(Path(path))
+
+    # Convert the path to relative and use Posix format
+    for index, absolute_path in enumerate(FILE_LIST[:]):
+        FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(BASE_DIR)
+
     # extract strings
     catalog = {}
-    for path in args.file:
+    for path in FILE_LIST:
         extract_file(path, catalog, warn_skipped=args.warn_skipped)
 
     # process backreferences in a 2nd pass
-    for path in args.file:
+    for path in FILE_LIST:
         extract_refs(path, catalog)
 
     # check the catalog entries
