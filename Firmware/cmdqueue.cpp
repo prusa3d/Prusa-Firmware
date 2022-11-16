@@ -620,10 +620,7 @@ void get_command()
           card.checkautostart(true);
 
           if (farm_mode)
-          {
-              prusa_statistics(6);
-              lcd_commands_type = LcdCommands::FarmModeConfirm;
-          }
+            prusa_statistics(6);
       }
   }
 

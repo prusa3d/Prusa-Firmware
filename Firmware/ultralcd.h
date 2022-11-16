@@ -114,7 +114,6 @@ enum class LcdCommands : uint_least8_t
 	Idle,
 	LoadFilament,
 	StopPrint,
-	FarmModeConfirm,
 	LongPause,
 	PidExtruder,
 	Layer1Cal,
