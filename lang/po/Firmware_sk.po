@@ -835,13 +835,6 @@ msgstr ""
 "G-code je pripraveny pre novsi firmware. Prosim aktualizujte firmware. Tlac "
 "zrusena."
 
-#. MSG_GCODE c=8
-#: ../../Firmware/messages.cpp:134 ../../Firmware/ultralcd.cpp:4611
-#: ../../Firmware/ultralcd.cpp:4614 ../../Firmware/ultralcd.cpp:4617
-#: ../../Firmware/ultralcd.cpp:4620
-msgid "Gcode"
-msgstr "G-code"
-
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:4628
 #: ../../Firmware/ultralcd.cpp:4647 ../../Firmware/ultralcd.cpp:4747

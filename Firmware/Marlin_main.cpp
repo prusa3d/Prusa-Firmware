@@ -4337,22 +4337,6 @@ void process_commands()
                 plan_set_z_position(current_position[Z_AXIS]);
             }
         }
-
-//-//
-/*
-    } else if(code_seen("rrr")) {
-MYSERIAL.println("=== checking ===");
-MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODE),DEC);
-MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER),DEC);
-MYSERIAL.println(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM),DEC);
-MYSERIAL.println(farm_mode,DEC);
-MYSERIAL.println(eCheckMode,DEC);
-    } else if(code_seen("www")) {
-MYSERIAL.println("=== @ FF ===");
-eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,0xFF);
-eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,0xFF);
-eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
-*/
     } else if (code_seen_P(PSTR("nozzle"))) { // PRUSA nozzle
           uint16_t nDiameter;
           if(code_seen('D'))
@@ -4369,52 +4353,8 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
                eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
                }
           else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
-
-//-// !!! SupportMenu
-/*
-// musi byt PRED "PRUSA model"
-    } else if (code_seen("smodel")) { //! PRUSA smodel
-          size_t nOffset;
-// ! -> "l"
-          strchr_pointer+=5*sizeof(*strchr_pointer); // skip 1st - 5th char (~ 'smode')
-          nOffset=strspn(strchr_pointer+1," \t\n\r\v\f");
-          if(*(strchr_pointer+1+nOffset))
-               printer_smodel_check(strchr_pointer);
-          else SERIAL_PROTOCOLLN(PRINTER_NAME);
-    } else if (code_seen("model")) { //! PRUSA model
-          uint16_t nPrinterModel;
-          strchr_pointer+=4*sizeof(*strchr_pointer); // skip 1st - 4th char (~ 'mode')
-          nPrinterModel=(uint16_t)code_value_long();
-          if(nPrinterModel!=0)
-               printer_model_check(nPrinterModel);
-          else SERIAL_PROTOCOLLN(PRINTER_TYPE);
-    } else if (code_seen("version")) { //! PRUSA version
-          strchr_pointer+=7*sizeof(*strchr_pointer); // skip 1st - 7th char (~ 'version')
-          while(*strchr_pointer==' ')             // skip leading spaces
-               strchr_pointer++;
-          if(*strchr_pointer!=0)
-               fw_version_check(strchr_pointer);
-          else SERIAL_PROTOCOLLN(FW_VERSION);
-    } else if (code_seen("gcode")) { //! PRUSA gcode
-          uint16_t nGcodeLevel;
-          strchr_pointer+=4*sizeof(*strchr_pointer); // skip 1st - 4th char (~ 'gcod')
-          nGcodeLevel=(uint16_t)code_value_long();
-          if(nGcodeLevel!=0)
-               gcode_level_check(nGcodeLevel);
-          else SERIAL_PROTOCOLLN(GCODE_LEVEL);
-*/
-	}	
-    //else if (code_seen('Cal')) {
-		//  lcd_calibration();
-	  // }
-
-  } 
-  // This prevents reading files with "^" in their names.
-  // Since it is unclear, if there is some usage of this construct,
-  // it will be deprecated in 3.9 alpha a possibly completely removed in the future:
-  // else if (code_seen('^')) {
-  //  // nothing, this is a version line
-  // }
+    }
+  }
   else if(code_seen('G'))
   {
 	gcode_in_progress = code_value_short();

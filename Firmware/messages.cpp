@@ -131,7 +131,6 @@ const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////MSG_NONE c=8
 const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////MSG_WARN c=8
 const char MSG_STRICT[] PROGMEM_I1 = ISTR("Strict"); ////MSG_STRICT c=8
 const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////MSG_MODEL c=8
-const char MSG_GCODE[] PROGMEM_I1 = ISTR("Gcode"); ////MSG_GCODE c=8
 const char MSG_GCODE_DIFF_PRINTER_CONTINUE[] PROGMEM_I1 = ISTR("G-code sliced for a different printer type. Continue?"); ////MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 const char MSG_GCODE_DIFF_PRINTER_CANCELLED[] PROGMEM_I1 =ISTR("G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."); ////MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////MSG_NOZZLE_DIAMETER c=10
