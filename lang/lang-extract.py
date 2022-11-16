@@ -268,14 +268,14 @@ def main():
     for path in args.file:
         if not Path(path).exists():
             # assume its regex
-            for file in sorted(Path.cwd().glob(path)):
+            for file in sorted(BASE_DIR.glob(path)):
                 FILE_LIST.append(file)
         else:
             FILE_LIST.append(Path(path))
 
     # Convert the path to relative and use Posix format
     for index, absolute_path in enumerate(FILE_LIST[:]):
-        FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(Path.cwd())
+        FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(BASE_DIR)
 
     # extract strings
     catalog = {}
