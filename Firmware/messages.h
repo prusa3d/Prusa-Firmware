@@ -136,7 +136,6 @@ extern const char MSG_NONE[];
 extern const char MSG_WARN[];
 extern const char MSG_STRICT[];
 extern const char MSG_MODEL[];
-extern const char MSG_GCODE[];
 extern const char MSG_GCODE_DIFF_PRINTER_CONTINUE[];
 extern const char MSG_GCODE_DIFF_PRINTER_CANCELLED[];
 extern const char MSG_NOZZLE_DIAMETER[];

@@ -4604,47 +4604,6 @@ do\
 }\
 while (0)
 
-#if 0 // temporarily unused
-static void lcd_check_gcode_set(void)
-{
-switch(oCheckGcode)
-     {
-     case ClCheckGcode::_None:
-          oCheckGcode=ClCheckGcode::_Warn;
-          break;
-     case ClCheckGcode::_Warn:
-          oCheckGcode=ClCheckGcode::_Strict;
-          break;
-     case ClCheckGcode::_Strict:
-          oCheckGcode=ClCheckGcode::_None;
-          break;
-     default:
-          oCheckGcode=ClCheckGcode::_None;
-     }
-eeprom_update_byte((uint8_t*)EEPROM_CHECK_GCODE,(uint8_t)oCheckGcode);
-}
-#endif
-
-#define SETTINGS_GCODE \
-do\
-{\
-    switch(oCheckGcode)\
-         {\
-         case ClCheckGcode::_None:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_GCODE), _T(MSG_NONE), lcd_check_gcode_set);\
-              break;\
-         case ClCheckGcode::_Warn:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_GCODE), _T(MSG_WARN), lcd_check_gcode_set);\
-              break;\
-         case ClCheckGcode::_Strict:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_GCODE), _T(MSG_STRICT), lcd_check_gcode_set);\
-              break;\
-         default:\
-              MENU_ITEM_TOGGLE_P(_T(MSG_GCODE), _T(MSG_NONE), lcd_check_gcode_set);\
-         }\
-}\
-while (0)
-
 static void lcd_checking_menu(void)
 {
 MENU_BEGIN();
@@ -4652,8 +4611,6 @@ MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
 SETTINGS_MODE;
 SETTINGS_MODEL;
 SETTINGS_VERSION;
-//-// temporarily disabled
-//SETTINGS_GCODE;
 MENU_END();
 }
 
