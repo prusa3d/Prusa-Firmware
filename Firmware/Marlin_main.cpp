@@ -609,13 +609,13 @@ void crashdet_detected(uint8_t mask)
 
 	if (mask & X_AXIS_MASK)
 	{
-		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_X, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) + 1);
-		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) + 1);
+		eeprom_increment_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 1);
+		eeprom_increment_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, 1);
 	}
 	if (mask & Y_AXIS_MASK)
 	{
-		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) + 1);
-		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
+		eeprom_increment_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 1);
+		eeprom_increment_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, 1);
 	}
 
 	lcd_update_enable(true);
@@ -1444,9 +1444,7 @@ void setup()
 
 #endif //(LANG_MODE != 0)
 
-	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
-		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
-	}
+	eeprom_init_default_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
 		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
@@ -1457,12 +1455,9 @@ void setup()
 		}
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 	}
-	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
-		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
-	}
-	if (eeprom_read_byte((uint8_t*)EEPROM_SD_SORT) == 255) {
-		eeprom_write_byte((uint8_t*)EEPROM_SD_SORT, 0);
-	}
+	eeprom_init_default_byte((uint8_t*)EEPROM_UVLO, 0);
+	eeprom_init_default_byte((uint8_t*)EEPROM_SD_SORT, 0);
+
 	//mbl_mode_init();
 	mbl_settings_init();
 	SilentModeMenu_MMU = eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH);
@@ -10686,8 +10681,8 @@ void uvlo_()
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 
     // Increment power failure counter
-	eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
-	eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
+	eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT, 1);
+	eeprom_increment_word((uint16_t*)EEPROM_POWER_COUNT_TOT, 1);
 
     printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
     WRITE(BEEPER,HIGH);

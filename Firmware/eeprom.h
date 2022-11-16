@@ -612,6 +612,12 @@ struct SheetName
 void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName);
 int8_t eeprom_next_initialized_sheet(int8_t sheet);
 void eeprom_switch_to_next_sheet();
+
+void eeprom_increment_byte(uint8_t *__p, uint8_t inc);
+void eeprom_increment_word(uint16_t *__p, uint8_t inc);
+
+void eeprom_init_default_byte(uint8_t *__p, uint8_t def);
+void eeprom_init_default_word(uint16_t *__p, uint16_t def);
 #endif
 
 #endif // EEPROM_H

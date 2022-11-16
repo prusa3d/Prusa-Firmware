@@ -49,19 +49,19 @@ bool eeprom_is_sheet_initialized(uint8_t sheet_num)
 
 void eeprom_init()
 {
-    if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
-    if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
-    if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 0);
-    if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
-    if (eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_POWER_COUNT_TOT, 0);
-    if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, 0);
-    if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, 0);
-    if (eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, 0);
+    eeprom_init_default_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
+    eeprom_init_default_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
+    eeprom_init_default_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 0);
+    eeprom_init_default_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
+    eeprom_init_default_word((uint16_t*)EEPROM_POWER_COUNT_TOT, 0);
+    eeprom_init_default_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, 0);
+    eeprom_init_default_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, 0);
+    eeprom_init_default_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, 0);
 
-    if (eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) == 0xffff) eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
-    if (eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) == 0xffff) eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-    if (eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
-    if (eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+    eeprom_init_default_word((uint16_t*)EEPROM_MMU_FAIL_TOT, 0);
+    eeprom_init_default_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, 0);
+    eeprom_init_default_byte((uint8_t*)EEPROM_MMU_FAIL, 0);
+    eeprom_init_default_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, 0);
     if (eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT) == 0xffffffff) eeprom_update_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, 0);
     if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == EEPROM_EMPTY_VALUE)
     {
@@ -102,12 +102,12 @@ if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_u
 	if (eeprom_read_dword((uint32_t*)EEPROM_JOB_ID) == EEPROM_EMPTY_VALUE32)
 		eeprom_update_dword((uint32_t*)EEPROM_JOB_ID, 0);
 
-    if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255) {
+    if (eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME) == 0xffffffff) {
         eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
         eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
     }
 //Set Cutter OFF if 0xff
-    if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_CUTTER_ENABLED, 0);
+    eeprom_init_default_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
 }
 
 //! @brief Get default sheet name for index
@@ -180,4 +180,22 @@ void eeprom_switch_to_next_sheet()
 
     sheet = eeprom_next_initialized_sheet(sheet);
     if (sheet >= 0) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet);
+}
+
+void __attribute__((noinline)) eeprom_increment_byte(uint8_t *__p, uint8_t inc){
+    eeprom_update_byte(__p, eeprom_read_byte(__p) + inc);
+}
+
+void __attribute__((noinline)) eeprom_increment_word(uint16_t *__p, uint8_t inc){
+    eeprom_update_word(__p, eeprom_read_word(__p) + inc);
+}
+
+void __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t def){
+    if (eeprom_read_byte(__p) == 0xff)
+        eeprom_write_byte(__p, def);
+}
+
+void __attribute__((noinline)) eeprom_init_default_word(uint16_t *__p, uint16_t def){
+    if (eeprom_read_word(__p) == 0xffff)
+        eeprom_write_word(__p, def);
 }
