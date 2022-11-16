@@ -46,7 +46,10 @@ enum class ErrorCode : uint_fast16_t {
     ///< - a piece of filament was left inside - pushed in front of the loaded filament causing the fsensor trigger too early
     ///< - fsensor is faulty producing bogus triggers
 
-    MOVE_FAILED = 0x800a, ///< generic move failed error - always reported with the corresponding axis bit set (Idler or Selector) as follows:
+    FINDA_FLICKERS = 0x800a, ///< FINDA flickers - seems to be badly calibrated and happens to be pressed at spots where it used to be not pressed before.
+    ///< The user is obliged to inspect FINDA and tune its switching
+
+    MOVE_FAILED = 0x800b, ///< generic move failed error - always reported with the corresponding axis bit set (Idler or Selector) as follows:
     MOVE_SELECTOR_FAILED = MOVE_FAILED | TMC_SELECTOR_BIT, ///< E32905 the Selector was unable to move to desired position properly - that means something is blocking its movement, e.g. a piece of filament got out of pulley body
     MOVE_IDLER_FAILED = MOVE_FAILED | TMC_IDLER_BIT, ///< E33033 the Idler was unable to move - unused at the time of creation, but added for completeness
     MOVE_PULLEY_FAILED = MOVE_FAILED | TMC_PULLEY_BIT, ///< E32841 the Pulley was unable to move - unused at the time of creation, but added for completeness
