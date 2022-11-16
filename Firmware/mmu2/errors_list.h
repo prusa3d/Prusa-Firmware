@@ -22,6 +22,7 @@ typedef enum : uint16_t {
 
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE = 105,
     ERR_MECHANICAL_FSENSOR_TOO_EARLY = 106,
+    ERR_MECHANICAL_INSPECT_FINDA = 107,
     ERR_MECHANICAL_SELECTOR_CANNOT_HOME = 115,
     ERR_MECHANICAL_SELECTOR_CANNOT_MOVE = 116,
     ERR_MECHANICAL_IDLER_CANNOT_HOME = 125,
@@ -85,6 +86,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF,
     ERR_MECHANICAL_PULLEY_CANNOT_MOVE,
     ERR_MECHANICAL_FSENSOR_TOO_EARLY,
+    ERR_MECHANICAL_INSPECT_FINDA,
     ERR_MECHANICAL_SELECTOR_CANNOT_HOME,
     ERR_MECHANICAL_SELECTOR_CANNOT_MOVE,
     ERR_MECHANICAL_IDLER_CANNOT_HOME,
@@ -127,6 +129,7 @@ static const char MSG_TITLE_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1   = ISTR("FSENSOR
 static const char MSG_TITLE_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1    = ISTR("FSENSOR: FIL. STUCK"); ////MSG_TITLE_FSENSOR_DIDNT_GO_OFF c=20
 static const char MSG_TITLE_PULLEY_CANNOT_MOVE[] PROGMEM_I1      = ISTR("PULLEY CANNOT MOVE"); ////MSG_TITLE_PULLEY_CANNOT_MOVE c=20
 static const char MSG_TITLE_FSENSOR_TOO_EARLY[] PROGMEM_I1       = ISTR("FSENSOR TOO EARLY"); ////MSG_TITLE_FSENSOR_TOO_EARLY c=20
+static const char MSG_TITLE_INSPECT_FINDA[] PROGMEM_I1           = ISTR("INSPECT FINDA"); ////MSG_TITLE_INSPECT_FINDA c=20
 static const char MSG_TITLE_SELECTOR_CANNOT_MOVE[] PROGMEM_I1    = ISTR("SELECTOR CANNOT MOVE"); ////MSG_TITLE_SELECTOR_CANNOT_MOVE c=20
 static const char MSG_TITLE_SELECTOR_CANNOT_HOME[] PROGMEM_I1    = ISTR("SELECTOR CANNOT HOME"); ////MSG_TITLE_SELECTOR_CANNOT_HOME c=20
 static const char MSG_TITLE_IDLER_CANNOT_MOVE[] PROGMEM_I1       = ISTR("IDLER CANNOT MOVE"); ////MSG_TITLE_IDLER_CANNOT_MOVE c=20
@@ -166,6 +169,7 @@ static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_FSENSOR_DIDNT_GO_OFF),
     _R(MSG_TITLE_PULLEY_CANNOT_MOVE),
     _R(MSG_TITLE_FSENSOR_TOO_EARLY),
+    _R(MSG_TITLE_INSPECT_FINDA),
     _R(MSG_TITLE_SELECTOR_CANNOT_HOME),
     _R(MSG_TITLE_SELECTOR_CANNOT_MOVE),
     _R(MSG_TITLE_IDLER_CANNOT_HOME),
@@ -209,6 +213,7 @@ static const char MSG_DESC_FSENSOR_DIDNT_TRIGGER[] PROGMEM_I1 = ISTR("Filament s
 static const char MSG_DESC_FSENSOR_DIDNT_GO_OFF[] PROGMEM_I1 = ISTR("Filament sensor didn't switch off while unloading filament. Ensure filament can move and the sensor works."); ////MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
 static const char MSG_DESC_PULLEY_STALLED[] PROGMEM_I1 = ISTR("Pulley motor stalled. Ensure the pulley can move and check the wiring."); ////MSG_DESC_PULLEY_STALLED c=20 r=8
 static const char MSG_DESC_FSENSOR_TOO_EARLY[] PROGMEM_I1 = ISTR("Filament sensor triggered too early while loading to extruder. Check there isn't anything stuck in PTFE tube. Check that sensor reads properly."); ////MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
+static const char MSG_DESC_INSPECT_FINDA[] PROGMEM_I1 = ISTR("Selector can't move due to FINDA detecting a filament. Make sure no filament is in selector and FINDA works properly."); ////MSG_DESC_INSPECT_FINDA c=20 r=8
 static const char MSG_DESC_SELECTOR_CANNOT_HOME[] PROGMEM_I1 = ISTR("The Selector cannot home properly. Check for anything blocking its movement."); ////MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 static const char MSG_DESC_CANNOT_MOVE[] PROGMEM_I1 = ISTR("Can't move Selector or Idler."); /////MSG_DESC_CANNOT_MOVE c=20 r=4
 //static const char MSG_DESC_SELECTOR_CANNOT_MOVE[] PROGMEM_I1 = ISTR("The Selector cannot move. Check for anything blocking its movement. Check the wiring is correct.");
@@ -249,6 +254,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_FSENSOR_DIDNT_GO_OFF),
     _R(MSG_DESC_PULLEY_STALLED),
     _R(MSG_DESC_FSENSOR_TOO_EARLY),
+    _R(MSG_DESC_INSPECT_FINDA),
     _R(MSG_DESC_SELECTOR_CANNOT_HOME),
     _R(MSG_DESC_CANNOT_MOVE),
     _R(MSG_DESC_IDLER_CANNOT_HOME),
@@ -325,6 +331,7 @@ static const uint8_t errorButtons[] PROGMEM = {
 
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//PULLEY_STALLED
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//FSENSOR_TOO_EARLY
+    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//INSPECT_FINDA
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//SELECTOR_CANNOT_HOME
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//SELECTOR_CANNOT_MOVE
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//IDLER_CANNOT_HOME

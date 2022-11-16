@@ -47,7 +47,9 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF);
     case (uint16_t)ErrorCode::FSENSOR_TOO_EARLY:
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_TOO_EARLY);
-        
+    case (uint16_t)ErrorCode::FINDA_FLICKERS:
+        return FindErrorIndex(ERR_MECHANICAL_INSPECT_FINDA);
+
     case (uint16_t)ErrorCode::STALLED_PULLEY:
     case (uint16_t)ErrorCode::MOVE_PULLEY_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_PULLEY_CANNOT_MOVE);
@@ -205,6 +207,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER:
     case ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF:
     case ERR_MECHANICAL_FSENSOR_TOO_EARLY:
+    case ERR_MECHANICAL_INSPECT_FINDA:
     case ERR_MECHANICAL_SELECTOR_CANNOT_HOME:
     case ERR_MECHANICAL_SELECTOR_CANNOT_MOVE:
     case ERR_MECHANICAL_IDLER_CANNOT_HOME:
