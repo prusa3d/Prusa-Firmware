@@ -190,12 +190,20 @@ void __attribute__((noinline)) eeprom_increment_word(uint16_t *__p) {
     eeprom_write_word(__p, eeprom_read_word(__p) + 1);
 }
 
+void __attribute__((noinline)) eeprom_increment_dword(uint32_t *__p) {
+    eeprom_write_dword(__p, eeprom_read_dword(__p) + 1);
+}
+
 void __attribute__((noinline)) eeprom_add_byte(uint8_t *__p, uint8_t add) {
     eeprom_write_byte(__p, eeprom_read_byte(__p) + add);
 }
 
 void __attribute__((noinline)) eeprom_add_word(uint16_t *__p, uint16_t add) {
     eeprom_write_word(__p, eeprom_read_word(__p) + add);
+}
+
+void __attribute__((noinline)) eeprom_add_dword(uint32_t *__p, uint32_t add) {
+    eeprom_write_dword(__p, eeprom_read_dword(__p) + add);
 }
 
 void __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t def) {
@@ -206,4 +214,9 @@ void __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t de
 void __attribute__((noinline)) eeprom_init_default_word(uint16_t *__p, uint16_t def) {
     if (eeprom_read_word(__p) == 0xffff)
         eeprom_write_word(__p, def);
+}
+
+void __attribute__((noinline)) eeprom_init_default_dword(uint32_t *__p, uint32_t def) {
+    if (eeprom_read_dword(__p) == 0xffffffff)
+        eeprom_write_dword(__p, def);
 }

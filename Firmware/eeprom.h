@@ -615,12 +615,15 @@ void eeprom_switch_to_next_sheet();
 
 void eeprom_increment_byte(uint8_t *__p);
 void eeprom_increment_word(uint16_t *__p);
+void eeprom_increment_dword(uint32_t *__p);
 
 void eeprom_add_byte(uint8_t *__p, uint8_t add);
 void eeprom_add_word(uint16_t *__p, uint16_t add);
+void eeprom_add_dword(uint32_t *__p, uint32_t add);
 
 void eeprom_init_default_byte(uint8_t *__p, uint8_t def);
 void eeprom_init_default_word(uint16_t *__p, uint16_t def);
+void eeprom_init_default_dword(uint32_t *__p, uint32_t def);
 #endif
 
 #endif // EEPROM_H
