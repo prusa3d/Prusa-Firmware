@@ -26,7 +26,7 @@ void eeprom_init()
     eeprom_init_default_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, 0);
     eeprom_init_default_byte((uint8_t*)EEPROM_MMU_FAIL, 0);
     eeprom_init_default_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, 0);
-    if (eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT) == 0xffffffff) eeprom_update_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, 0);
+    eeprom_init_default_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT, 0);
     if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == EEPROM_EMPTY_VALUE)
     {
         eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
@@ -50,17 +50,12 @@ void eeprom_init()
     check_babystep();
 
 #ifdef PINDA_TEMP_COMP
-if (eeprom_read_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_PINDA_TEMP_COMPENSATION, 0);
+    eeprom_init_default_byte((uint8_t*)EEPROM_PINDA_TEMP_COMPENSATION, 0);
 #endif //PINDA_TEMP_COMP
 
-	if (eeprom_read_dword((uint32_t*)EEPROM_JOB_ID) == EEPROM_EMPTY_VALUE32)
-		eeprom_update_dword((uint32_t*)EEPROM_JOB_ID, 0);
-
-    if (eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME) == 0xffffffff) {
-        eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-        eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
-    }
-//Set Cutter OFF if 0xff
+    eeprom_init_default_dword((uint32_t*)EEPROM_JOB_ID, 0);
+    eeprom_init_default_dword((uint32_t*)EEPROM_TOTALTIME, 0);
+    eeprom_init_default_dword((uint32_t*)EEPROM_FILAMENTUSED, 0);
     eeprom_init_default_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
 }
 
@@ -184,19 +179,31 @@ void __attribute__((noinline)) eeprom_add_dword(uint32_t *__p, uint32_t add) {
 }
 
 
-void __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t def) {
-    if (eeprom_read_byte(__p) == EEPROM_EMPTY_VALUE)
+uint8_t __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t def) {
+    uint8_t val = eeprom_read_byte(__p);
+    if (val == EEPROM_EMPTY_VALUE) {
         eeprom_write_byte(__p, def);
+        return def;
+    }
+    return val;
 }
 
-void __attribute__((noinline)) eeprom_init_default_word(uint16_t *__p, uint16_t def) {
-    if (eeprom_read_word(__p) == EEPROM_EMPTY_VALUE16)
+uint16_t __attribute__((noinline)) eeprom_init_default_word(uint16_t *__p, uint16_t def) {
+    uint16_t val = eeprom_read_word(__p);
+    if (val == EEPROM_EMPTY_VALUE16) {
         eeprom_write_word(__p, def);
+        return def;
+    }
+    return val;
 }
 
-void __attribute__((noinline)) eeprom_init_default_dword(uint32_t *__p, uint32_t def) {
-    if (eeprom_read_dword(__p) == EEPROM_EMPTY_VALUE32)
+uint32_t __attribute__((noinline)) eeprom_init_default_dword(uint32_t *__p, uint32_t def) {
+    uint32_t val = eeprom_read_dword(__p);
+    if (val == EEPROM_EMPTY_VALUE32) {
         eeprom_write_dword(__p, def);
+        return def;
+    }
+    return val;
 }
 
 void __attribute__((noinline)) eeprom_init_default_float(float *__p, float def) {
