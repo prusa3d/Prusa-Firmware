@@ -3125,11 +3125,7 @@ void mbl_settings_init() {
 //magnet elimination: use aaproximate Z-coordinate instead of measured values for points which are near magnets
 	eeprom_init_default_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION, 1);
 	eeprom_init_default_byte((uint8_t*)EEPROM_MBL_POINTS_NR, 3);
-	mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
-	if (mbl_z_probe_nr == 0xFF) {
-		mbl_z_probe_nr = 3;
-		eeprom_update_byte((uint8_t*)EEPROM_MBL_PROBE_NR, mbl_z_probe_nr);
-	}
+	mbl_z_probe_nr = eeprom_init_default_byte((uint8_t*)EEPROM_MBL_PROBE_NR, 3);
 }
 
 //parameter ix: index of mesh bed leveling point in X-axis (for meas_points == 7 is valid range from 0 to 6; for meas_points == 3 is valid range from 0 to 2 )  

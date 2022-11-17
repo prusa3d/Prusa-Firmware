@@ -390,12 +390,8 @@ void prusa_statistics_update_from_lcd_update() {
 }
 
 void farm_mode_init() {
-    farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
-    if (farm_mode == 0xFF) {
-        farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
-        eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
-    }
-    else if (farm_mode) {
+    farm_mode = eeprom_init_default_byte((uint8_t*)EEPROM_FARM_MODE, 0); 
+    if (farm_mode) {
         no_response = true; //we need confirmation by recieving PRUSA thx
         prusa_statistics(8);
 #ifdef HAS_SECOND_SERIAL_PORT

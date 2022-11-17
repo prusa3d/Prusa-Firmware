@@ -244,7 +244,6 @@ enum class WizState : uint8_t
 
 void lcd_wizard(WizState state);
 
-extern void lcd_experimental_toggle();
 extern void lcd_experimental_menu();
 
 uint8_t lcdui_print_extruder(void);
