@@ -140,15 +140,23 @@ bool __attribute__((noinline)) eeprom_is_sheet_initialized(uint8_t sheet_num) {
     return (eeprom_read_word(reinterpret_cast<uint16_t*>(&(EEPROM_Sheets_base->s[sheet_num].z_offset))) != EEPROM_EMPTY_VALUE16);
 }
 
+
 bool __attribute__((noinline)) eeprom_is_initialized_block(const void *__p, size_t __n) {
-    const uint8_t *top = (const uint8_t*)__p + __n;
-    for (const uint8_t *p = (const uint8_t *)__p; p < top; p++) {
-        if (eeprom_read_byte(p) != EEPROM_EMPTY_VALUE)
+    const uint8_t *p = (const uint8_t*)__p;
+    while (__n--) {
+        if (eeprom_read_byte(p++) != EEPROM_EMPTY_VALUE)
             return true;
     }
     return false;
 }
 
+void eeprom_update_block_P(const void *__src, void *__dst, size_t __n) {
+    const uint8_t *src = (const uint8_t*)__src;
+    uint8_t *dst = (uint8_t*)__dst;
+    while (__n--) {
+        eeprom_update_byte(dst++, pgm_read_byte(src++));
+    }
+}
 
 void __attribute__((noinline)) eeprom_increment_byte(uint8_t *__p) {
     eeprom_write_byte(__p, eeprom_read_byte(__p) + 1);
@@ -191,7 +199,17 @@ void __attribute__((noinline)) eeprom_init_default_dword(uint32_t *__p, uint32_t
         eeprom_write_dword(__p, def);
 }
 
+void __attribute__((noinline)) eeprom_init_default_float(float *__p, float def) {
+    if (eeprom_read_dword((uint32_t*)__p) == EEPROM_EMPTY_VALUE32)
+        eeprom_write_float(__p, def);
+}
+
 void __attribute__((noinline)) eeprom_init_default_block(void *__p, size_t __n, const void *def) {
     if (!eeprom_is_initialized_block(__p, __n))
         eeprom_update_block(def, __p, __n);
+}
+
+void __attribute__((noinline)) eeprom_init_default_block_P(void *__p, size_t __n, const void *def) {
+    if (!eeprom_is_initialized_block(__p, __n))
+        eeprom_update_block_P(def, __p, __n);
 }

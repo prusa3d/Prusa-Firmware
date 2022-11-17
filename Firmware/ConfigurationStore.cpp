@@ -198,17 +198,6 @@ static const M500_conf default_conf PROGMEM =
 };
 
 
-static bool is_uninitialized(void* addr, uint8_t len)
-{
-    while(len--)
-    {
-        if(reinterpret_cast<uint8_t*>(addr)[len] != 0xff)
-            return false;
-    }
-    return true;
-}
-
-
 //! @brief Read M500 configuration
 //! @retval true Succeeded. Stored settings retrieved or default settings retrieved in case EEPROM cs was empty.
 //! @retval false Failed. Default settings has been retrieved, because of version mismatch
@@ -219,27 +208,23 @@ bool Config_RetrieveSettings()
     //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << cs.version << "]");
     if (strncmp_P(ver, cs.version, sizeof(EEPROM_VERSION)) == 0)  // version number match
     {
+        // Initialize arc interpolation settings in eeprom if they are not already
+        eeprom_init_default_float(&EEPROM_M500_base->mm_per_arc_segment, pgm_read_float(&default_conf.mm_per_arc_segment));
+        eeprom_init_default_float(&EEPROM_M500_base->min_mm_per_arc_segment, pgm_read_float(&default_conf.min_mm_per_arc_segment));
+        eeprom_init_default_byte(&EEPROM_M500_base->n_arc_correction, pgm_read_byte(&default_conf.n_arc_correction));
+        eeprom_init_default_word(&EEPROM_M500_base->min_arc_segments, pgm_read_word(&default_conf.min_arc_segments));
+        eeprom_init_default_word(&EEPROM_M500_base->arc_segments_per_sec, pgm_read_word(&default_conf.arc_segments_per_sec));
+        
+        // Initialize the travel_acceleration in eeprom if not already
+        eeprom_init_default_float(&EEPROM_M500_base->travel_acceleration, pgm_read_float(&default_conf.travel_acceleration));
+
+        // Initialize the max_feedrate_silent and max_acceleration_units_per_sq_second_silent in eeprom if not already
+        eeprom_init_default_block(&EEPROM_M500_base->max_feedrate_silent, sizeof(EEPROM_M500_base->max_feedrate_silent), default_conf.max_feedrate_silent);
+        eeprom_init_default_block(&EEPROM_M500_base->max_acceleration_units_per_sq_second_silent, sizeof(EEPROM_M500_base->max_acceleration_units_per_sq_second_silent), default_conf.max_acceleration_units_per_sq_second_silent);
+
+        // load the CS to RAM
         eeprom_read_block(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
         calculate_extruder_multipliers();
-
-    //if max_feedrate_silent and max_acceleration_units_per_sq_second_silent were never stored to eeprom, use default values:
-        for (uint8_t i = 0; i < (sizeof(cs.max_feedrate_silent)/sizeof(cs.max_feedrate_silent[0])); ++i)
-        {
-            const uint32_t erased = 0xffffffff;
-            if (is_uninitialized(&(cs.max_feedrate_silent[i]), sizeof(float))) {
-                memcpy_P(&cs.max_feedrate_silent[i],&default_conf.max_feedrate_silent[i], sizeof(cs.max_feedrate_silent[i]));
-            }
-            if (erased == cs.max_acceleration_units_per_sq_second_silent[i]) {
-                memcpy_P(&cs.max_acceleration_units_per_sq_second_silent[i],&default_conf.max_acceleration_units_per_sq_second_silent[i],sizeof(cs.max_acceleration_units_per_sq_second_silent[i]));
-            }
-        }
-        // Initialize arc interpolation settings if they are not already
-        if (is_uninitialized(&cs.mm_per_arc_segment, sizeof(cs.mm_per_arc_segment))) cs.mm_per_arc_segment = default_conf.mm_per_arc_segment;
-        if (is_uninitialized(&cs.min_mm_per_arc_segment, sizeof(cs.min_mm_per_arc_segment))) cs.min_mm_per_arc_segment = default_conf.min_mm_per_arc_segment;
-        if (is_uninitialized(&cs.n_arc_correction, sizeof(cs.n_arc_correction))) cs.n_arc_correction = default_conf.n_arc_correction;
-        if (is_uninitialized(&cs.min_arc_segments, sizeof(cs.min_arc_segments))) cs.min_arc_segments = default_conf.min_arc_segments;
-        if (is_uninitialized(&cs.arc_segments_per_sec, sizeof(cs.arc_segments_per_sec))) cs.arc_segments_per_sec = default_conf.arc_segments_per_sec;
-
 
 #ifdef TMC2130
     for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)
@@ -264,9 +249,6 @@ bool Config_RetrieveSettings()
     tmc2130_set_res(Z_AXIS, cs.axis_ustep_resolution[Z_AXIS]);
     tmc2130_set_res(E_AXIS, cs.axis_ustep_resolution[E_AXIS]);
 #endif //TMC2130
-
-        if(is_uninitialized(&cs.travel_acceleration, sizeof(cs.travel_acceleration)))
-            cs.travel_acceleration = cs.acceleration;
 
 		reset_acceleration_rates();
 
