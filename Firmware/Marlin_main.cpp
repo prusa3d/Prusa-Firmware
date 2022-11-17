@@ -609,13 +609,13 @@ void crashdet_detected(uint8_t mask)
 
 	if (mask & X_AXIS_MASK)
 	{
-		eeprom_increment_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 1);
-		eeprom_increment_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, 1);
+		eeprom_increment_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
+		eeprom_increment_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
 	}
 	if (mask & Y_AXIS_MASK)
 	{
-		eeprom_increment_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 1);
-		eeprom_increment_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, 1);
+		eeprom_increment_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
+		eeprom_increment_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
 	}
 
 	lcd_update_enable(true);
@@ -10678,8 +10678,8 @@ void uvlo_()
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 
     // Increment power failure counter
-	eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT, 1);
-	eeprom_increment_word((uint16_t*)EEPROM_POWER_COUNT_TOT, 1);
+	eeprom_increment_byte((uint8_t*)EEPROM_POWER_COUNT);
+	eeprom_increment_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
 
     printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
     WRITE(BEEPER,HIGH);

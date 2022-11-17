@@ -182,20 +182,28 @@ void eeprom_switch_to_next_sheet()
     if (sheet >= 0) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet);
 }
 
-void __attribute__((noinline)) eeprom_increment_byte(uint8_t *__p, uint8_t inc){
-    eeprom_update_byte(__p, eeprom_read_byte(__p) + inc);
+void __attribute__((noinline)) eeprom_increment_byte(uint8_t *__p) {
+    eeprom_write_byte(__p, eeprom_read_byte(__p) + 1);
 }
 
-void __attribute__((noinline)) eeprom_increment_word(uint16_t *__p, uint8_t inc){
-    eeprom_update_word(__p, eeprom_read_word(__p) + inc);
+void __attribute__((noinline)) eeprom_increment_word(uint16_t *__p) {
+    eeprom_write_word(__p, eeprom_read_word(__p) + 1);
 }
 
-void __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t def){
+void __attribute__((noinline)) eeprom_add_byte(uint8_t *__p, uint8_t add) {
+    eeprom_write_byte(__p, eeprom_read_byte(__p) + add);
+}
+
+void __attribute__((noinline)) eeprom_add_word(uint16_t *__p, uint16_t add) {
+    eeprom_write_word(__p, eeprom_read_word(__p) + add);
+}
+
+void __attribute__((noinline)) eeprom_init_default_byte(uint8_t *__p, uint8_t def) {
     if (eeprom_read_byte(__p) == 0xff)
         eeprom_write_byte(__p, def);
 }
 
-void __attribute__((noinline)) eeprom_init_default_word(uint16_t *__p, uint16_t def){
+void __attribute__((noinline)) eeprom_init_default_word(uint16_t *__p, uint16_t def) {
     if (eeprom_read_word(__p) == 0xffff)
         eeprom_write_word(__p, def);
 }
