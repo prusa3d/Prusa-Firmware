@@ -3090,16 +3090,18 @@ static void gcode_G80()
 #endif // SUPPORT_VERBOSITY
 
     for (uint8_t i = 0; i < 4; ++i) {
-        unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
+        static const char codes[4] PROGMEM = { 'L', 'R', 'F', 'B' };
+        static uint8_t *const eep_addresses[4] PROGMEM = {
+          (uint8_t*)EEPROM_BED_CORRECTION_LEFT,
+          (uint8_t*)EEPROM_BED_CORRECTION_RIGHT,
+          (uint8_t*)EEPROM_BED_CORRECTION_FRONT,
+          (uint8_t*)EEPROM_BED_CORRECTION_REAR,
+        };
         long correction = 0;
-        if (code_seen(codes[i]))
+        if (code_seen(pgm_read_byte(&codes[i])))
             correction = code_value_long();
-        else if (eeprom_bed_correction_valid) {
-            unsigned char *addr = (i < 2) ?
-                                  ((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
-                                  ((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
-            correction = eeprom_read_int8(addr);
-        }
+        else if (eeprom_bed_correction_valid)
+            correction = (int8_t)eeprom_read_byte((uint8_t*)pgm_read_ptr(&eep_addresses[i]));
         if (correction == 0)
             continue;
 
