@@ -624,9 +624,9 @@ void eeprom_add_byte(uint8_t *__p, uint8_t add);
 void eeprom_add_word(uint16_t *__p, uint16_t add);
 void eeprom_add_dword(uint32_t *__p, uint32_t add);
 
-void eeprom_init_default_byte(uint8_t *__p, uint8_t def);
-void eeprom_init_default_word(uint16_t *__p, uint16_t def);
-void eeprom_init_default_dword(uint32_t *__p, uint32_t def);
+uint8_t eeprom_init_default_byte(uint8_t *__p, uint8_t def);
+uint16_t eeprom_init_default_word(uint16_t *__p, uint16_t def);
+uint32_t eeprom_init_default_dword(uint32_t *__p, uint32_t def);
 void eeprom_init_default_float(float *__p, float def);
 void eeprom_init_default_block(void *__p, size_t __n, const void *def);
 void eeprom_init_default_block_P(void *__p, size_t __n, const void *def);

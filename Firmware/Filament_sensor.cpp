@@ -481,8 +481,8 @@ void PAT9125_sensor::filJam() {
     jamDetection = false;
     stop_and_save_print_to_ram(0, 0);
     restore_print_from_ram_and_continue(0);
-    eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t *)EEPROM_FERROR_COUNT) + 1);
-    eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t *)EEPROM_FERROR_COUNT_TOT) + 1);
+    eeprom_increment_byte((uint8_t *)EEPROM_FERROR_COUNT);
+    eeprom_increment_word((uint16_t *)EEPROM_FERROR_COUNT_TOT);
     enquecommand_front_P((PSTR("M600")));
 }
 
