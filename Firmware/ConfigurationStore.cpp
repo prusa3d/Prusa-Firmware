@@ -210,11 +210,10 @@ static bool is_uninitialized(void* addr, uint8_t len)
 
 
 //! @brief Read M500 configuration
-//! @retval true Succeeded. Stored settings retrieved or default settings retrieved in case EEPROM has been erased.
-//! @retval false Failed. Default settings has been retrieved, because of older version or corrupted data.
+//! @retval true Succeeded. Stored settings retrieved or default settings retrieved in case EEPROM cs was empty.
+//! @retval false Failed. Default settings has been retrieved, because of version mismatch
 bool Config_RetrieveSettings()
 {
-  bool previous_settings_retrieved = true;
     static const char ver[4] PROGMEM = EEPROM_VERSION;
     eeprom_read_block(reinterpret_cast<uint8_t*>(cs.version), reinterpret_cast<uint8_t*>(EEPROM_M500_base->version), sizeof(cs.version));
     //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << cs.version << "]");
@@ -283,16 +282,13 @@ bool Config_RetrieveSettings()
     else
     {
         Config_ResetDefault();
-    //Return false to inform user that eeprom version was changed and firmware is using default hardcoded settings now.
-    //In case that storing to eeprom was not used yet, do not inform user that hardcoded settings are used.
-    if (eeprom_read_byte(reinterpret_cast<uint8_t*>(&(EEPROM_M500_base->version[0]))) != 0xFF ||
-      eeprom_read_byte(reinterpret_cast<uint8_t*>(&(EEPROM_M500_base->version[1]))) != 0xFF ||
-      eeprom_read_byte(reinterpret_cast<uint8_t*>(&(EEPROM_M500_base->version[2]))) != 0xFF)
-    {
-      previous_settings_retrieved = false;
+        //Return false to inform user that eeprom version was changed and firmware is using default hardcoded settings now.
+        //In case that storing to eeprom was not used yet, do not inform user that hardcoded settings are used.
+        if (eeprom_is_initialized_block(EEPROM_M500_base->version, sizeof(EEPROM_M500_base->version))) {
+            return false;
+        }
     }
-    }
-  return previous_settings_retrieved;
+    return true;
 }
 #endif
 
