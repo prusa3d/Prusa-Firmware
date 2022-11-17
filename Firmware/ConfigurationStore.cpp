@@ -292,9 +292,6 @@ bool Config_RetrieveSettings()
       previous_settings_retrieved = false;
     }
     }
-    #ifdef EEPROM_CHITCHAT
-      Config_PrintSettings();
-    #endif
   return previous_settings_retrieved;
 }
 #endif
