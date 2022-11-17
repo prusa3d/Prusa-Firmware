@@ -615,6 +615,7 @@ bool eeprom_is_sheet_initialized(uint8_t sheet_num);
 
 bool eeprom_is_initialized_block(const void *__p, size_t __n);
 void eeprom_update_block_P(const void *__src, void *__dst, size_t __n);
+void eeprom_toggle(uint8_t *__p);
 
 void eeprom_increment_byte(uint8_t *__p);
 void eeprom_increment_word(uint16_t *__p);

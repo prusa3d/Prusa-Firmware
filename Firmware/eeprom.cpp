@@ -153,6 +153,10 @@ void eeprom_update_block_P(const void *__src, void *__dst, size_t __n) {
     }
 }
 
+void eeprom_toggle(uint8_t *__p) {
+    eeprom_write_byte(__p, !eeprom_read_byte(__p));
+}
+
 void __attribute__((noinline)) eeprom_increment_byte(uint8_t *__p) {
     eeprom_write_byte(__p, eeprom_read_byte(__p) + 1);
 }

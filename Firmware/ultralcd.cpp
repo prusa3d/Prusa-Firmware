@@ -4605,12 +4605,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     if (_md->status == 0 || lcd_draw_update)
     {
         _md->status = 1;
-        _md->experimental_menu_visibility = eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY);
-        if (_md->experimental_menu_visibility == EEPROM_EMPTY_VALUE)
-        {
-            _md->experimental_menu_visibility = 0;
-            eeprom_update_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY, _md->experimental_menu_visibility);
-        }
+        _md->experimental_menu_visibility = eeprom_init_default_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY, 0);
     }
 
 
@@ -7527,7 +7522,7 @@ void menu_lcd_longpress_func(void)
     {
         // only toggle the experimental menu visibility flag
         lcd_quick_feedback();
-        lcd_experimental_toggle();
+        eeprom_toggle((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY);
         return;
     }
 
@@ -7689,16 +7684,6 @@ void lcd_crash_detect_disable()
     eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00);
 }
 #endif
-
-void lcd_experimental_toggle()
-{
-    uint8_t oldVal = eeprom_read_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY);
-    if (oldVal == EEPROM_EMPTY_VALUE)
-        oldVal = 0;
-    else
-        oldVal = !oldVal;
-    eeprom_update_byte((uint8_t *)EEPROM_EXPERIMENTAL_VISIBILITY, oldVal);
-}
 
 #ifdef TMC2130
 void UserECool_toggle(){
