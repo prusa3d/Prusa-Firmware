@@ -18,69 +18,16 @@
 
 M500_conf cs;
 
-//! @brief Write data to EEPROM
-//! @param pos destination in EEPROM, 0 is start
-//! @param value value to be written
-//! @param size size of type pointed by value
-//! @param name name of variable written, used only for debug input if DEBUG_EEPROM_WRITE defined
-//! @retval true success
-//! @retval false failed
-#ifdef DEBUG_EEPROM_WRITE
-static bool EEPROM_writeData(uint8_t* pos, uint8_t* value, uint8_t size, const char* name)
-#else //DEBUG_EEPROM_WRITE
-static bool EEPROM_writeData(uint8_t* pos, uint8_t* value, uint8_t size, const char*)
-#endif //DEBUG_EEPROM_WRITE
-{
-#ifdef DEBUG_EEPROM_WRITE
-	printf_P(PSTR("EEPROM_WRITE_VAR addr=0x%04x size=0x%02x name=%s\n"), pos, size, name);
-#endif //DEBUG_EEPROM_WRITE
-  while (size--)
-  {
-
-        eeprom_update_byte(pos, *value);
-        if (eeprom_read_byte(pos) != *value) {
-            SERIAL_ECHOLNPGM("EEPROM Error");
-            return false;
-        }
-
-    pos++;
-    value++;
-  }
-    return true;
-}
-
-#ifdef DEBUG_EEPROM_READ
-static void EEPROM_readData(uint8_t* pos, uint8_t* value, uint8_t size, const char* name)
-#else //DEBUG_EEPROM_READ
-static void EEPROM_readData(uint8_t* pos, uint8_t* value, uint8_t size, const char*)
-#endif //DEBUG_EEPROM_READ
-{
-#ifdef DEBUG_EEPROM_READ
-	printf_P(PSTR("EEPROM_READ_VAR addr=0x%04x size=0x%02x name=%s\n"), pos, size, name);
-#endif //DEBUG_EEPROM_READ
-    while(size--)
-    {
-        *value = eeprom_read_byte(pos);
-        pos++;
-        value++;
-    }
-}
-
 #define EEPROM_VERSION "V2"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings()
 {
-  strcpy(cs.version,"000"); //!< invalidate data first @TODO use erase to save one erase cycle
-  
-  if (EEPROM_writeData(reinterpret_cast<uint8_t*>(EEPROM_M500_base),reinterpret_cast<uint8_t*>(&cs),sizeof(cs),0), "cs, invalid version")
-  {
+  strcpy(cs.version, EEPROM_VERSION);
+  eeprom_update_block(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
 #ifdef TEMP_MODEL
-      temp_model_save_settings();
+  temp_model_save_settings();
 #endif
-      strcpy(cs.version,EEPROM_VERSION); //!< validate data if write succeed
-      EEPROM_writeData(reinterpret_cast<uint8_t*>(EEPROM_M500_base->version), reinterpret_cast<uint8_t*>(cs.version), sizeof(cs.version), "cs.version valid");
-  }
 
   SERIAL_ECHO_START;
   SERIAL_ECHOLNPGM("Settings Stored");
@@ -269,12 +216,11 @@ bool Config_RetrieveSettings()
 {
   bool previous_settings_retrieved = true;
     char ver[4]=EEPROM_VERSION;
-    EEPROM_readData(reinterpret_cast<uint8_t*>(EEPROM_M500_base->version), reinterpret_cast<uint8_t*>(cs.version), sizeof(cs.version), "cs.version"); //read stored version
+    eeprom_read_block(reinterpret_cast<uint8_t*>(cs.version), reinterpret_cast<uint8_t*>(EEPROM_M500_base->version), sizeof(cs.version));
     //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << cs.version << "]");
     if (strncmp(ver,cs.version,3) == 0)  // version number match
     {
-
-        EEPROM_readData(reinterpret_cast<uint8_t*>(EEPROM_M500_base), reinterpret_cast<uint8_t*>(&cs), sizeof(cs), "cs");
+        eeprom_read_block(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
         calculate_extruder_multipliers();
 
     //if max_feedrate_silent and max_acceleration_units_per_sq_second_silent were never stored to eeprom, use default values:
