@@ -230,31 +230,26 @@ void MMU2::mmu_loop() {
     avoidRecursion = false;
 }
 
-void __attribute__((noinline)) MMU2::mmu_loop_inner(bool reportErrors)
-{
+void __attribute__((noinline)) MMU2::mmu_loop_inner(bool reportErrors) {
     logicStepLastStatus = LogicStep(reportErrors); // it looks like the mmu_loop doesn't need to be a blocking call
 
-    if (is_mmu_error_monitor_active){
+    if (is_mmu_error_monitor_active) {
         // Call this every iteration to keep the knob rotation responsive
         // This includes when mmu_loop is called within manage_response
         ReportErrorHook((uint16_t)lastErrorCode);
     }
 }
 
-void MMU2::CheckFINDARunout()
-{
+void MMU2::CheckFINDARunout() {
     // Check for FINDA filament runout
     if (!FindaDetectsFilament() && CHECK_FSENSOR) {
         SERIAL_ECHOLNPGM("FINDA filament runout!");
         stop_and_save_print_to_ram(0, 0);
         restore_print_from_ram_and_continue(0);
-        if (SpoolJoin::spooljoin.isSpoolJoinEnabled() && get_current_tool() != (uint8_t)FILAMENT_UNKNOWN) // Can't auto if F=?
-        {
-            enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
-        }
-        else
-        {
-            enquecommand_front_P(PSTR("M600")); //save print and run M600 command
+        if (SpoolJoin::spooljoin.isSpoolJoinEnabled() && get_current_tool() != (uint8_t)FILAMENT_UNKNOWN){ // Can't auto if F=?
+            enquecommand_front_P(PSTR("M600 AUTO")); // save print and run M600 command
+        } else {
+            enquecommand_front_P(PSTR("M600")); // save print and run M600 command
         }
     }
 }
@@ -303,19 +298,40 @@ void MMU2::ResetRetryAttempts(){
     retryAttempts = MAX_RETRIES;
 }
 
-void MMU2::DecrementRetryAttempts(){
-    if (inAutoRetry && retryAttempts)
-    {
+void MMU2::DecrementRetryAttempts() {
+    if (inAutoRetry && retryAttempts) {
         SERIAL_ECHOLNPGM("DecrementRetryAttempts");
         retryAttempts--;
     }
 }
 
-void MMU2::update_tool_change_counter_eeprom()
-{
-    uint32_t toolchanges = eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT);
+void MMU2::update_tool_change_counter_eeprom() {
+    uint32_t toolchanges = eeprom_read_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT);
     eeprom_update_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, toolchanges + (uint32_t)read_toolchange_counter());
     reset_toolchange_counter();
+}
+
+void MMU2::MMU2::ToolChangeCommon(uint8_t index){
+    tool_change_extruder = index;
+    do {
+        for(;;) {
+            logic.ToolChange(index); // let the MMU pull the filament out and push a new one in
+            if( manage_response(true, true) )
+                break;
+            // otherwise: failed to perform the command - unload first and then let it run again
+            unload();
+        }
+        // reset current position to whatever the planner thinks it is
+        plan_set_e_position(current_position[E_AXIS]);
+    } while (0); // while not successfully fed into etruder's PTFE tube
+
+    extruder = index; //filament change is finished
+    SpoolJoin::spooljoin.setSlot(index);
+
+    // @@TODO really report onto the serial? May be for the Octoprint? Not important now
+    //        SERIAL_ECHO_START();
+    //        SERIAL_ECHOLNPAIR(MSG_ACTIVE_EXTRUDER, int(extruder));
+    increment_tool_change_counter();
 }
 
 bool MMU2::tool_change(uint8_t index) {
@@ -323,8 +339,7 @@ bool MMU2::tool_change(uint8_t index) {
         return false;
 
     if (index != extruder) {
-        if (!IS_SD_PRINTING && !usb_timer.running())
-        {
+        if (!IS_SD_PRINTING && !usb_timer.running()) {
             // If Tcodes are used manually through the serial
             // we need to unload manually as well
             unload();
@@ -332,25 +347,8 @@ bool MMU2::tool_change(uint8_t index) {
 
         ReportingRAII rep(CommandInProgress::ToolChange);
         FSensorBlockRunout blockRunout;
-
         st_synchronize();
-
-        tool_change_extruder = index;
-        logic.ToolChange(index); // let the MMU pull the filament out and push a new one in
-        if( ! manage_response(true, true) ){
-            // @@TODO failed to perform the command - retry
-            ;
-        }
-        // reset current position to whatever the planner thinks it is
-        plan_set_e_position(current_position[E_AXIS]);
-
-        extruder = index; //filament change is finished
-        SpoolJoin::spooljoin.setSlot(index);
-
-        // @@TODO really report onto the serial? May be for the Octoprint? Not important now
-        //        SERIAL_ECHO_START();
-        //        SERIAL_ECHOLNPAIR(MSG_ACTIVE_EXTRUDER, int(extruder));
-        increment_tool_change_counter();
+        ToolChangeCommon(index);
     }
     return true;
 }
@@ -437,11 +435,12 @@ bool MMU2::unload() {
         ReportingRAII rep(CommandInProgress::UnloadFilament);
         filament_ramming();
 
-        logic.UnloadFilament();
-        if( ! manage_response(false, true) ){
-            // @@TODO failed to perform the command - retry
-            ;
-        }
+        // we assume the printer managed to relieve filament tip from the gears,
+        // so repeating that part in case of an MMU restart is not necessary
+        do {
+            logic.UnloadFilament();
+        } while( ! manage_response(false, true) );
+
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 
         // no active tool
@@ -489,11 +488,10 @@ bool MMU2::load_filament(uint8_t index) {
     FullScreenMsg(_T(MSG_LOADING_FILAMENT), index);
 
     ReportingRAII rep(CommandInProgress::LoadFilament);
-    logic.LoadFilament(index);
-    if( ! manage_response(false, false) ){
-        // @@TODO failed to perform the command - retry
-        ;
-    }
+    do {
+        logic.LoadFilament(index);
+    } while( ! manage_response(false, false) );
+
     Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 
     lcd_update_enable(true);
@@ -529,28 +527,11 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
             filament_ramming();
         }
 
-        tool_change_extruder = index;
-        logic.ToolChange(index);
-        if( ! manage_response(true, true) ){
-            // @@TODO failed to perform the command - retry
-            ;
-        }
-
-        // The MMU's idler is disengaged at this point
-        // That means the MK3/S now has fully control
-
-        // reset current position to whatever the planner thinks it is
-        st_synchronize();
-        plan_set_e_position(current_position[E_AXIS]);
+        ToolChangeCommon(index);
 
         // Finish loading to the nozzle with finely tuned steps.
         execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
-
-        extruder = index;
-        SpoolJoin::spooljoin.setSlot(index);
-
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
-        increment_tool_change_counter();
     }
     lcd_update_enable(true);
     return true;
