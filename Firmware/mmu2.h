@@ -227,7 +227,8 @@ private:
 
     /// Along with the mmu_loop method, this loops until a response from the MMU is received and acts upon.
     /// In case of an error, it parks the print head and turns off nozzle heating
-    void manage_response(const bool move_axes, const bool turn_off_nozzle);
+    /// @returns false if the command could not have been completed (MMU interrupted)
+    [[nodiscard]] bool manage_response(const bool move_axes, const bool turn_off_nozzle);
 
     /// The inner private implementation of mmu_loop()
     /// which is NOT (!!!) recursion-guarded. Use caution - but we do need it during waiting for hotend resume to keep comms alive!

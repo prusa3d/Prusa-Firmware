@@ -295,11 +295,9 @@ StepStatus ProtocolLogic::StartSeqStep() {
         return Processing; // Returning Finished is not a good idea in case of a fast error recovery
         // - it tells the printer, that the command which experienced a protocol error and recovered successfully actually terminated.
         // In such a case we must return "Processing" in order to keep the MMU state machine running and prevent the printer from executing next G-codes.
-        break;
     default:
         return VersionMismatch;
     }
-    return Finished;
 }
 
 StepStatus ProtocolLogic::DelayedRestartWait() {
@@ -344,9 +342,16 @@ StepStatus ProtocolLogic::ProcessCommandQueryResponse() {
         SendAndUpdateFilamentSensor();
         return ButtonPushed;
     case ResponseMsgParamCodes::Finished:
-        progressCode = ProgressCode::OK;
-        scopeState = ScopeState::Ready;
-        return Finished;
+        // We must check whether the "finished" is actually related to the command issued into the MMU
+        // It can also be an X0 F which means MMU just successfully restarted.
+        if( ReqMsg().code == rsp.request.code && ReqMsg().value == rsp.request.value ){
+            progressCode = ProgressCode::OK;
+            scopeState = ScopeState::Ready;
+            return Finished;
+        } else {
+            // got response to some other command - the originally issued command was interrupted!
+            return Interrupted;
+        }
     default:
         return ProtocolError;
     }
