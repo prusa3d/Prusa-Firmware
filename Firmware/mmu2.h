@@ -104,9 +104,9 @@ public:
     void mmu_loop();
 
     /// The main MMU command - select a different slot
-    /// @param index of the slot to be selected
+    /// @param slot of the slot to be selected
     /// @returns false if the operation cannot be performed (Stopped)
-    bool tool_change(uint8_t index);
+    bool tool_change(uint8_t slot);
     
     /// Handling of special Tx, Tc, T? commands
     bool tool_change(char code, uint8_t slot);
@@ -118,20 +118,20 @@ public:
 
     /// Load (insert) filament just into the MMU (not into printer's nozzle)
     /// @returns false if the operation cannot be performed (Stopped)
-    bool load_filament(uint8_t index);
+    bool load_filament(uint8_t slot);
     
     /// Load (push) filament from the MMU into the printer's nozzle
     /// @returns false if the operation cannot be performed (Stopped or cold extruder)
-    bool load_filament_to_nozzle(uint8_t index);
+    bool load_filament_to_nozzle(uint8_t slot);
 
     /// Move MMU's selector aside and push the selected filament forward.
     /// Usable for improving filament's tip or pulling the remaining piece of filament out completely.
-    bool eject_filament(uint8_t index, bool recover);
+    bool eject_filament(uint8_t slot, bool recover);
 
     /// Issue a Cut command into the MMU
     /// Requires unloaded filament from the printer (obviously)
     /// @returns false if the operation cannot be performed (Stopped)
-    bool cut_filament(uint8_t index);
+    bool cut_filament(uint8_t slot);
 
     /// Issue a planned request for statistics data from MMU
     void get_statistics();
@@ -140,9 +140,9 @@ public:
     /// It behaves very similarly like a ToolChange, but it doesn't load the filament
     /// all the way down to the nozzle. The sole purpose of this operation
     /// is to check, that the filament will be ready for printing.
-    /// @param index index of slot to be tested
+    /// @param slot index of slot to be tested
     /// @returns true
-    bool loading_test(uint8_t index);
+    bool loading_test(uint8_t slot);
 
     /// @returns the active filament slot index (0-4) or 0xff in case of no active tool
     uint8_t get_current_tool() const;
@@ -150,7 +150,7 @@ public:
     /// @returns The filament slot index (0 to 4) that will be loaded next, 0xff in case of no active tool change 
     uint8_t get_tool_change_tool() const;
 
-    bool set_filament_type(uint8_t index, uint8_t type);
+    bool set_filament_type(uint8_t slot, uint8_t type);
 
     /// Issue a "button" click into the MMU - to be used from Error screens of the MMU
     /// to select one of the 3 possible options to resolve the issue
@@ -285,7 +285,7 @@ private:
     bool WaitForMMUReady();
 
     /// Common processing of pushing filament into the extruder - shared by tool_change, load_to_nozzle and probably others
-    void ToolChangeCommon(uint8_t index);
+    void ToolChangeCommon(uint8_t slot);
 
     ProtocolLogic logic; ///< implementation of the protocol logic layer
     uint8_t extruder; ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet

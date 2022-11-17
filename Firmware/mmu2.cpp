@@ -311,11 +311,11 @@ void MMU2::update_tool_change_counter_eeprom() {
     reset_toolchange_counter();
 }
 
-void MMU2::MMU2::ToolChangeCommon(uint8_t index){
-    tool_change_extruder = index;
+void MMU2::MMU2::ToolChangeCommon(uint8_t slot){
+    tool_change_extruder = slot;
     do {
         for(;;) {
-            logic.ToolChange(index); // let the MMU pull the filament out and push a new one in
+            logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
             if( manage_response(true, true) )
                 break;
             // otherwise: failed to perform the command - unload first and then let it run again
@@ -325,8 +325,8 @@ void MMU2::MMU2::ToolChangeCommon(uint8_t index){
         plan_set_e_position(current_position[E_AXIS]);
     } while (0); // while not successfully fed into etruder's PTFE tube
 
-    extruder = index; //filament change is finished
-    SpoolJoin::spooljoin.setSlot(index);
+    extruder = slot; //filament change is finished
+    SpoolJoin::spooljoin.setSlot(slot);
 
     // @@TODO really report onto the serial? May be for the Octoprint? Not important now
     //        SERIAL_ECHO_START();
@@ -334,11 +334,11 @@ void MMU2::MMU2::ToolChangeCommon(uint8_t index){
     increment_tool_change_counter();
 }
 
-bool MMU2::tool_change(uint8_t index) {
+bool MMU2::tool_change(uint8_t slot) {
     if( ! WaitForMMUReady())
         return false;
 
-    if (index != extruder) {
+    if (slot != extruder) {
         if (!IS_SD_PRINTING && !usb_timer.running()) {
             // If Tcodes are used manually through the serial
             // we need to unload manually as well
@@ -348,7 +348,7 @@ bool MMU2::tool_change(uint8_t index) {
         ReportingRAII rep(CommandInProgress::ToolChange);
         FSensorBlockRunout blockRunout;
         st_synchronize();
-        ToolChangeCommon(index);
+        ToolChangeCommon(slot);
     }
     return true;
 }
@@ -406,12 +406,12 @@ uint8_t MMU2::get_tool_change_tool() const {
     return tool_change_extruder == MMU2_NO_TOOL ? (uint8_t)FILAMENT_UNKNOWN : tool_change_extruder;
 }
 
-bool MMU2::set_filament_type(uint8_t index, uint8_t type) {
+bool MMU2::set_filament_type(uint8_t slot, uint8_t type) {
     if( ! WaitForMMUReady())
         return false;
     
     // @@TODO - this is not supported in the new MMU yet
-    index = index; // @@TODO
+    slot = slot; // @@TODO
     type = type; // @@TODO
     // cmd_arg = filamentType;
     // command(MMU_CMD_F0 + index);
@@ -450,12 +450,12 @@ bool MMU2::unload() {
     return true;
 }
 
-bool MMU2::cut_filament(uint8_t index){
+bool MMU2::cut_filament(uint8_t slot){
     if( ! WaitForMMUReady())
         return false;
 
     ReportingRAII rep(CommandInProgress::CutFilament);
-    logic.CutFilament(index);
+    logic.CutFilament(slot);
     if( ! manage_response(false, true) ){
         // @@TODO failed to perform the command - retry
         ;
@@ -472,24 +472,24 @@ void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_print(slot + 1);
 }
 
-bool MMU2::loading_test(uint8_t index){
-    FullScreenMsg(_T(MSG_TESTING_FILAMENT), index);
-    tool_change(index);
+bool MMU2::loading_test(uint8_t slot){
+    FullScreenMsg(_T(MSG_TESTING_FILAMENT), slot);
+    tool_change(slot);
     st_synchronize();
     unload();
     lcd_update_enable(true);
     return true;
 }
 
-bool MMU2::load_filament(uint8_t index) {
+bool MMU2::load_filament(uint8_t slot) {
     if( ! WaitForMMUReady())
         return false;
 
-    FullScreenMsg(_T(MSG_LOADING_FILAMENT), index);
+    FullScreenMsg(_T(MSG_LOADING_FILAMENT), slot);
 
     ReportingRAII rep(CommandInProgress::LoadFilament);
     do {
-        logic.LoadFilament(index);
+        logic.LoadFilament(slot);
     } while( ! manage_response(false, false) );
 
     Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
@@ -509,7 +509,7 @@ struct LoadingToNozzleRAII {
     }
 };
 
-bool MMU2::load_filament_to_nozzle(uint8_t index) {
+bool MMU2::load_filament_to_nozzle(uint8_t slot) {
     if( ! WaitForMMUReady())
         return false;
 
@@ -517,7 +517,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
 
     WaitForHotendTargetTempBeep();
 
-    FullScreenMsg(_T(MSG_LOADING_FILAMENT), index);
+    FullScreenMsg(_T(MSG_LOADING_FILAMENT), slot);
     {
         // used for MMU-menu operation "Load to Nozzle"
         ReportingRAII rep(CommandInProgress::ToolChange);
@@ -527,7 +527,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
             filament_ramming();
         }
 
-        ToolChangeCommon(index);
+        ToolChangeCommon(slot);
 
         // Finish loading to the nozzle with finely tuned steps.
         execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
@@ -537,7 +537,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
     return true;
 }
 
-bool MMU2::eject_filament(uint8_t index, bool recover) {
+bool MMU2::eject_filament(uint8_t slot, bool recover) {
     if( ! WaitForMMUReady())
         return false;
 
@@ -545,7 +545,7 @@ bool MMU2::eject_filament(uint8_t index, bool recover) {
     current_position[E_AXIS] -= MMU2_FILAMENTCHANGE_EJECT_FEED;
     plan_buffer_line_curposXYZE(2500.F / 60.F);
     st_synchronize();
-    logic.EjectFilament(index);
+    logic.EjectFilament(slot);
     if( ! manage_response(false, false) ){
         // @@TODO failed to perform the command - retry
         ;
