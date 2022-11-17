@@ -33,7 +33,8 @@ class ProtocolLogic;
 enum StepStatus : uint_fast8_t {
     Processing = 0,
     MessageReady, ///< a message has been successfully decoded from the received bytes
-    Finished,
+    Finished, ///< Scope finished successfully
+    Interrupted, ///< received "Finished" message related to a different command than originally issued (most likely the MMU restarted while doing something)
     CommunicationTimeout, ///< the MMU failed to respond to a request within a specified time frame
     ProtocolError,        ///< bytes read from the MMU didn't form a valid response
     CommandRejected,      ///< the MMU rejected the command due to some other command in progress, may be the user is operating the MMU locally (button commands)

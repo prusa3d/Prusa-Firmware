@@ -193,8 +193,10 @@ void MMU2::PowerOn(){
 bool MMU2::ReadRegister(uint8_t address){
     if( ! WaitForMMUReady())
         return false;
-    logic.ReadRegister(address); // we may signal the accepted/rejected status of the response as return value of this function
-    manage_response(false, false);
+    do {
+        logic.ReadRegister(address); // we may signal the accepted/rejected status of the response as return value of this function
+    } while( ! manage_response(false, false) );
+
     return true;
 }
 
@@ -207,8 +209,10 @@ bool MMU2::WriteRegister(uint8_t address, uint16_t data){
         logic.PlanExtraLoadDistance(data);
     }
 
-    logic.WriteRegister(address, data); // we may signal the accepted/rejected status of the response as return value of this function
-    manage_response(false, false);
+    do {
+        logic.WriteRegister(address, data); // we may signal the accepted/rejected status of the response as return value of this function
+    } while( ! manage_response(false, false) );
+
     return true;
 }
 
@@ -333,8 +337,10 @@ bool MMU2::tool_change(uint8_t index) {
 
         tool_change_extruder = index;
         logic.ToolChange(index); // let the MMU pull the filament out and push a new one in
-        manage_response(true, true);
-        
+        if( ! manage_response(true, true) ){
+            // @@TODO failed to perform the command - retry
+            ;
+        }
         // reset current position to whatever the planner thinks it is
         plan_set_e_position(current_position[E_AXIS]);
 
@@ -371,7 +377,10 @@ bool MMU2::tool_change(char code, uint8_t slot) {
         st_synchronize();
         tool_change_extruder = slot;
         logic.ToolChange(slot);
-        manage_response(false, false);
+        if( ! manage_response(false, false) ){
+            // @@TODO failed to perform the command - retry
+            ;
+        }
         extruder = slot;
         SpoolJoin::spooljoin.setSlot(slot);
         set_extrude_min_temp(EXTRUDE_MINTEMP);
@@ -409,7 +418,10 @@ bool MMU2::set_filament_type(uint8_t index, uint8_t type) {
     // cmd_arg = filamentType;
     // command(MMU_CMD_F0 + index);
 
-    manage_response(false, false); // true, true); -- Comment: how is it possible for a filament type set to fail?
+    if( ! manage_response(false, false) ){
+        // @@TODO failed to perform the command - retry
+        ;
+    } // true, true); -- Comment: how is it possible for a filament type set to fail?
     
     return true;
 }
@@ -426,7 +438,10 @@ bool MMU2::unload() {
         filament_ramming();
 
         logic.UnloadFilament();
-        manage_response(false, true);
+        if( ! manage_response(false, true) ){
+            // @@TODO failed to perform the command - retry
+            ;
+        }
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 
         // no active tool
@@ -442,7 +457,10 @@ bool MMU2::cut_filament(uint8_t index){
 
     ReportingRAII rep(CommandInProgress::CutFilament);
     logic.CutFilament(index);
-    manage_response(false, true);
+    if( ! manage_response(false, true) ){
+        // @@TODO failed to perform the command - retry
+        ;
+    }
     
     return true;
 }
@@ -472,7 +490,10 @@ bool MMU2::load_filament(uint8_t index) {
 
     ReportingRAII rep(CommandInProgress::LoadFilament);
     logic.LoadFilament(index);
-    manage_response(false, false);
+    if( ! manage_response(false, false) ){
+        // @@TODO failed to perform the command - retry
+        ;
+    }
     Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 
     lcd_update_enable(true);
@@ -510,7 +531,10 @@ bool MMU2::load_filament_to_nozzle(uint8_t index) {
 
         tool_change_extruder = index;
         logic.ToolChange(index);
-        manage_response(true, true);
+        if( ! manage_response(true, true) ){
+            // @@TODO failed to perform the command - retry
+            ;
+        }
 
         // The MMU's idler is disengaged at this point
         // That means the MK3/S now has fully control
@@ -541,7 +565,10 @@ bool MMU2::eject_filament(uint8_t index, bool recover) {
     plan_buffer_line_curposXYZE(2500.F / 60.F);
     st_synchronize();
     logic.EjectFilament(index);
-    manage_response(false, false);
+    if( ! manage_response(false, false) ){
+        // @@TODO failed to perform the command - retry
+        ;
+    }
 
     if (recover) {
         //        LCD_MESSAGEPGM(MSG_MMU2_EJECT_RECOVER);
@@ -559,7 +586,10 @@ bool MMU2::eject_filament(uint8_t index, bool recover) {
         
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
         // logic.Command(); //@@TODO command(MMU_CMD_R0);
-        manage_response(false, false);
+        if( ! manage_response(false, false) ){
+            // @@TODO failed to perform the command - retry
+            ;
+        }
     }
 
     // no active tool
@@ -702,7 +732,7 @@ void MMU2::CheckUserInput(){
 /// It is closely related to mmu_loop() (which corresponds to our ProtocolLogic::Step()), which does NOT perform any blocking wait for a command to finish.
 /// But - in case of an error, the command is not yet finished, but we must react accordingly - move the printhead elsewhere, stop heating, eat a cat or so.
 /// That's what's being done here...
-void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
+bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
     mmu_print_saved = SavedState::None;
 
     KEEPALIVE_STATE(IN_PROCESS);
@@ -741,10 +771,13 @@ void MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             ResumeUnpark(); // We can now travel back to the tower or wherever we were when we saved.
             ResetRetryAttempts(); // Reset the retry counter.
             st_synchronize(); 
-            return;
+            return true;
+        case Interrupted:
+            // now what :D ... big bad ... ramming, unload, retry the whole command originally issued
+            return false;
         case VersionMismatch: // this basically means the MMU will be disabled until reconnected
             CheckUserInput();
-            return;
+            return true;
         case CommandError:
             // Don't proceed to the park/save if we are doing an autoretry.
             if (inAutoRetry){
@@ -783,6 +816,9 @@ StepStatus MMU2::LogicStep(bool reportErrors) {
         lastButton = logic.Button();
         LogEchoEvent_P(PSTR("MMU Button pushed"));
         CheckUserInput(); // Process the button immediately
+        break;
+    case Interrupted:
+        // can be silently handed over to a higher layer, no processing necessary at this spot
         break;
     default:
         if(reportErrors) {
