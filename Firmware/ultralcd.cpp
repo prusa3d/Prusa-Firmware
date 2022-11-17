@@ -1056,8 +1056,12 @@ void lcd_commands()
         //if (lcd_commands_step == 1 && calibrated()) {
         if (lcd_commands_step == 1 && temp_model_valid()) {
             enquecommand_P(PSTR("M500"));
-            lcd_commands_step = 0;
-            lcd_commands_type = LcdCommands::Idle;
+            if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+                lcd_wizard(WizState::IsFil);
+            } else {
+                lcd_commands_step = 0;
+                lcd_commands_type = LcdCommands::Idle;
+            }
         }
     }
 #endif //TEMP_MODEL
@@ -4077,6 +4081,9 @@ void lcd_wizard(WizState state)
 			case CALIBRATION_STATUS_ASSEMBLED: state = S::Selftest; break; //run selftest
 			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = S::Xyz; break; //run xyz cal.
 			case CALIBRATION_STATUS_Z_CALIBRATION: state = S::Z; break; //run z cal.
+#ifdef TEMP_MODEL
+			case CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION: state = S::TempModel; break; //run temp model cal.
+#endif //TEMP_MODEL
 			case CALIBRATION_STATUS_LIVE_ADJUST: state = S::IsFil; break; //run live adjust
 			case CALIBRATION_STATUS_CALIBRATED: end = true; eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0); break;
 			default: state = S::Selftest; break; //if calibration status is unknown, run wizard from the beginning
@@ -4094,8 +4101,13 @@ void lcd_wizard(WizState state)
 		case S::Xyz:
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run xyz calibration now. It will take approx. 12 mins."));////MSG_WIZARD_XYZ_CAL c=20 r=8
 			wizard_event = gcode_M45(false, 0);
-			if (wizard_event) state = S::IsFil;
-			else end = true;
+			if (wizard_event) {
+#ifdef TEMP_MODEL
+			state = S::TempModel;
+#else
+			state = S::IsFil;
+#endif //TEMP_MODEL
+			} else end = true;
 			break;
 		case S::Z:
 			lcd_show_fullscreen_message_and_wait_P(_i("Please remove shipping helpers first."));////MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
@@ -4119,6 +4131,13 @@ void lcd_wizard(WizState state)
 			}
 			else end = true;
 			break;
+#ifdef TEMP_MODEL
+		case S::TempModel:
+			lcd_show_fullscreen_message_and_wait_P(_i("Temp model cal. takes apporx. 12 mins."));////MSG_TM_CAL c=20 r=4
+			lcd_commands_type = LcdCommands::TempModel;
+			end = true; // Leave wizard temporarily for Temp model cal.
+			break;
+#endif //TEMP_MODEL
 		case S::IsFil:
 		    //start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
@@ -4195,6 +4214,10 @@ void lcd_wizard(WizState state)
 	case S::Z: //z cal.
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
 		break;
+#ifdef TEMP_MODEL
+	case S::TempModel: //Temp model calibration
+//		break;
+#endif //TEMP_MODEL
 	case S::Finish: //we are finished
 
 		msg = _T(MSG_WIZARD_DONE);

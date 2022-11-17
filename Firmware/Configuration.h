@@ -545,7 +545,12 @@ enum CalibrationStatus
 	// For the wizard: factory assembled, needs to run Z calibration.
 	CALIBRATION_STATUS_Z_CALIBRATION = 240,
 
-	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
+#ifdef TEMP_MODEL
+	// The XYZ calibration has been performed, needs to run Temp model calibration.
+	CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION = 235,
+#endif //TEMP_MODEL
+
+// The XYZ calibration AND OR Temp model calibartion has been performed, now it remains to run the V2Calibration.gcode.
 	CALIBRATION_STATUS_LIVE_ADJUST = 230,
 
     // Calibrated, ready to print.
