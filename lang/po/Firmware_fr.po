@@ -940,6 +940,11 @@ msgstr "ECHEC MOUV.T IDLER"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:197
+msgid "INSPECT FINDA"
+msgstr ""
+
+#. MSG_TITLE_INVALID_TOOL c=20
+#: ../../Firmware/mmu2/errors_list.h:159 ../../Firmware/mmu2/errors_list.h:201
 msgid "INVALID TOOL"
 msgstr "OUTIL INVALIDE"
 
@@ -1069,15 +1074,15 @@ msgstr "Tout Charger"
 msgid "Load filament"
 msgstr "Charger filament"
 
-#. MSG_LOAD_TO_EXTRUDER c=18
-#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:5546
-msgid "Load to extruder"
-msgstr "Charger vers extr."
-
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:5547
 msgid "Load to nozzle"
 msgstr "Charger la buse"
+
+#. MSG_LOADING_TEST c=18
+#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:4419
+msgid "Loading Test"
+msgstr ""
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -2531,6 +2536,9 @@ msgstr "🔃Rafraichir"
 
 #~ msgid "Load all"
 #~ msgstr "Charger un par un"
+
+#~ msgid "Load to extruder"
+#~ msgstr "Charger vers extr."
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117 Cal. 1ere couche"

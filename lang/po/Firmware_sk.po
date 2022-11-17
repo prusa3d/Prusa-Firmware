@@ -930,6 +930,11 @@ msgstr "IDLER CANNOT MOVE"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:197
+msgid "INSPECT FINDA"
+msgstr ""
+
+#. MSG_TITLE_INVALID_TOOL c=20
+#: ../../Firmware/mmu2/errors_list.h:159 ../../Firmware/mmu2/errors_list.h:201
 msgid "INVALID TOOL"
 msgstr "INVALID TOOL"
 
@@ -1057,15 +1062,15 @@ msgstr "Zaviest vsetko"
 msgid "Load filament"
 msgstr "Zaviest filament"
 
-#. MSG_LOAD_TO_EXTRUDER c=18
-#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:5546
-msgid "Load to extruder"
-msgstr "Zaviest do extr."
-
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:5547
 msgid "Load to nozzle"
 msgstr "Zaved. do trysky"
+
+#. MSG_LOADING_TEST c=18
+#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:4419
+msgid "Loading Test"
+msgstr ""
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -2495,6 +2500,9 @@ msgstr "🔃Obnovit"
 
 #~ msgid "Load all"
 #~ msgstr "Zaviest vsetko"
+
+#~ msgid "Load to extruder"
+#~ msgstr "Zaviest do extr."
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117 Kal. prvej vrstvy"

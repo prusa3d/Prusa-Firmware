@@ -934,6 +934,11 @@ msgstr "IDLER NU SE MISCA"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:197
+msgid "INSPECT FINDA"
+msgstr ""
+
+#. MSG_TITLE_INVALID_TOOL c=20
+#: ../../Firmware/mmu2/errors_list.h:159 ../../Firmware/mmu2/errors_list.h:201
 msgid "INVALID TOOL"
 msgstr "INSTRUMENT INVALID"
 
@@ -1061,15 +1066,15 @@ msgstr "Incarca toate"
 msgid "Load filament"
 msgstr "Incarca filament"
 
-#. MSG_LOAD_TO_EXTRUDER c=18
-#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:5546
-msgid "Load to extruder"
-msgstr "Incarc la extruder"
-
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:5547
 msgid "Load to nozzle"
 msgstr "Incarca la varf"
+
+#. MSG_LOADING_TEST c=18
+#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:4419
+msgid "Loading Test"
+msgstr ""
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -2511,6 +2516,9 @@ msgstr "🔃Reimprospata"
 
 #~ msgid "Load all"
 #~ msgstr "Incarcati toate"
+
+#~ msgid "Load to extruder"
+#~ msgstr "Incarc la extruder"
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117 Cal. first layer"

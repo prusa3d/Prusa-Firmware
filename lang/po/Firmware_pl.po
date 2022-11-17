@@ -931,6 +931,11 @@ msgstr "DOCISK NIE RUSZA SIE"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:197
+msgid "INSPECT FINDA"
+msgstr ""
+
+#. MSG_TITLE_INVALID_TOOL c=20
+#: ../../Firmware/mmu2/errors_list.h:159 ../../Firmware/mmu2/errors_list.h:201
 msgid "INVALID TOOL"
 msgstr "BLEDNE NARZEDZIE"
 
@@ -1060,15 +1065,15 @@ msgstr "Zalad. wszystkie"
 msgid "Load filament"
 msgstr "Ladowanie fil."
 
-#. MSG_LOAD_TO_EXTRUDER c=18
-#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:5546
-msgid "Load to extruder"
-msgstr "Zalad. do ekstr."
-
 #. MSG_LOAD_TO_NOZZLE c=18
 #: ../../Firmware/ultralcd.cpp:5547
 msgid "Load to nozzle"
 msgstr "Zaladuj do dyszy"
+
+#. MSG_LOADING_TEST c=18
+#: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:4419
+msgid "Loading Test"
+msgstr ""
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -2507,6 +2512,9 @@ msgstr "🔃Odswiezac"
 
 #~ msgid "Load all"
 #~ msgstr "Zalad. wszystkie"
+
+#~ msgid "Load to extruder"
+#~ msgstr "Zalad. do ekstr."
 
 #~ msgid "M117 First layer cal."
 #~ msgstr "M117 Kal. 1. warstwy"
