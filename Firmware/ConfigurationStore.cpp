@@ -15,24 +15,9 @@
 #include "tmc2130.h"
 #endif
 
-
 M500_conf cs;
 
 #define EEPROM_VERSION "V2"
-
-#ifdef EEPROM_SETTINGS
-void Config_StoreSettings()
-{
-  strcpy(cs.version, EEPROM_VERSION);
-  eeprom_update_block(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
-#ifdef TEMP_MODEL
-  temp_model_save_settings();
-#endif
-
-  SERIAL_ECHO_START;
-  SERIAL_ECHOLNPGM("Settings Stored");
-}
-#endif //EEPROM_SETTINGS
 
 
 #ifndef DISABLE_M503
@@ -198,15 +183,27 @@ static const M500_conf default_conf PROGMEM =
 };
 
 
+void Config_StoreSettings()
+{
+  strcpy_P(cs.version, default_conf.version);
+  eeprom_update_block(reinterpret_cast<uint8_t*>(&cs), reinterpret_cast<uint8_t*>(EEPROM_M500_base), sizeof(cs));
+#ifdef TEMP_MODEL
+  temp_model_save_settings();
+#endif
+
+  SERIAL_ECHO_START;
+  SERIAL_ECHOLNPGM("Settings Stored");
+}
+
+
 //! @brief Read M500 configuration
 //! @retval true Succeeded. Stored settings retrieved or default settings retrieved in case EEPROM cs was empty.
 //! @retval false Failed. Default settings has been retrieved, because of version mismatch
 bool Config_RetrieveSettings()
 {
-    static const char ver[4] PROGMEM = EEPROM_VERSION;
     eeprom_read_block(reinterpret_cast<uint8_t*>(cs.version), reinterpret_cast<uint8_t*>(EEPROM_M500_base->version), sizeof(cs.version));
     //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << cs.version << "]");
-    if (strncmp_P(ver, cs.version, sizeof(EEPROM_VERSION)) == 0)  // version number match
+    if (strncmp_P(cs.version, default_conf.version, sizeof(EEPROM_VERSION)) == 0)  // version number match
     {
         // Initialize arc interpolation settings in eeprom if they are not already
         eeprom_init_default_float(&EEPROM_M500_base->mm_per_arc_segment, pgm_read_float(&default_conf.mm_per_arc_segment));
