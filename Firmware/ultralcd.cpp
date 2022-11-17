@@ -4047,7 +4047,7 @@ void lcd_wizard(WizState state)
     FORCE_BL_ON_START;
 	
     while (!end) {
-		printf_P(PSTR("Wizard state: %d\n"), state);
+		printf_P(PSTR("Wizard state: %d\n"), (uint8_t)state);
 		switch (state) {
 		case S::Run: //Run wizard?
 			
@@ -4204,7 +4204,7 @@ void lcd_wizard(WizState state)
     
     FORCE_BL_ON_END;
     
-	printf_P(_N("Wizard end state: %d\n"), state);
+	printf_P(_N("Wizard end state: %d\n"), (uint8_t)state);
 	switch (state) { //final message
 	case S::Restore: //printer was already calibrated
 		msg = _T(MSG_WIZARD_DONE);
