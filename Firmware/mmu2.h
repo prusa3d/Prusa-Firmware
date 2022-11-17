@@ -284,6 +284,9 @@ private:
     /// @returns false if the MMU is not ready to perform the command (for whatever reason)
     bool WaitForMMUReady();
 
+    /// Common processing of pushing filament into the extruder - shared by tool_change, load_to_nozzle and probably others
+    void ToolChangeCommon(uint8_t index);
+
     ProtocolLogic logic; ///< implementation of the protocol logic layer
     uint8_t extruder; ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet
     uint8_t tool_change_extruder; ///< only used for UI purposes
