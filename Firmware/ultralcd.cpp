@@ -1055,12 +1055,11 @@ void lcd_commands()
         }
         //if (lcd_commands_step == 1 && calibrated()) {
         if (lcd_commands_step == 1 && temp_model_valid()) {
+            lcd_commands_step = 0;
+            lcd_commands_type = LcdCommands::Idle;
             enquecommand_P(PSTR("M500"));
             if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
                 lcd_wizard(WizState::IsFil);
-            } else {
-                lcd_commands_step = 0;
-                lcd_commands_type = LcdCommands::Idle;
             }
         }
     }
@@ -4038,8 +4037,12 @@ void lcd_wizard(WizState state)
 {
     using S = WizState;
 	bool end = false;
+<<<<<<< HEAD
 	int8_t wizard_event;
 	const char *msg = NULL;
+=======
+	uint8_t wizard_event;
+>>>>>>> b147fcee (XYZ calibration fixes)
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
 	if (state != S::Run) eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
@@ -4204,6 +4207,7 @@ void lcd_wizard(WizState state)
     
     FORCE_BL_ON_END;
     
+    const char *msg = NULL;
 	printf_P(_N("Wizard end state: %d\n"), (uint8_t)state);
 	switch (state) { //final message
 	case S::Restore: //printer was already calibrated
@@ -4216,23 +4220,23 @@ void lcd_wizard(WizState state)
 		break;
 #ifdef TEMP_MODEL
 	case S::TempModel: //Temp model calibration
-//		break;
+		break;
 #endif //TEMP_MODEL
 	case S::Finish: //we are finished
-
 		msg = _T(MSG_WIZARD_DONE);
 		lcd_reset_alert_level();
 		lcd_setstatuspgm(MSG_WELCOME);
 		lcd_return_to_status(); 
 		break;
-
+    case S::Preheat:
+    case S::Lay1CalCold:
+    case S::Lay1CalHot:
+        break;
 	default:
 		msg = _T(MSG_WIZARD_QUIT);
 		break;
-
 	}
-	if (!((S::Lay1CalCold == state) || (S::Lay1CalHot == state) || (S::Preheat == state)))
-	{
+	if (msg) {
 		lcd_show_fullscreen_message_and_wait_P(msg);
 	}
 	lcd_update_enable(true);
