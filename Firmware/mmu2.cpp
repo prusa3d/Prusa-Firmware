@@ -311,7 +311,7 @@ void MMU2::update_tool_change_counter_eeprom() {
     reset_toolchange_counter();
 }
 
-void MMU2::MMU2::ToolChangeCommon(uint8_t slot){
+void MMU2::ToolChangeCommon(uint8_t slot){
     tool_change_extruder = slot;
     do {
         for(;;) {
@@ -320,10 +320,15 @@ void MMU2::MMU2::ToolChangeCommon(uint8_t slot){
                 break;
             // otherwise: failed to perform the command - unload first and then let it run again
             unload();
+            // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
+            // but honestly - if the MMU restarts during every toolchange,
+            // something else is seriously broken and stopping a print is probably our best option.
         }
         // reset current position to whatever the planner thinks it is
         plan_set_e_position(current_position[E_AXIS]);
     } while (0); // while not successfully fed into etruder's PTFE tube
+    // when we run out of feeding retries, we should call an unload + cut before trying again.
+    // + we need some error screen report
 
     extruder = slot; //filament change is finished
     SpoolJoin::spooljoin.setSlot(slot);
