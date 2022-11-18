@@ -347,9 +347,12 @@ StepStatus ProtocolLogic::ProcessCommandQueryResponse() {
         if( ReqMsg().code == rsp.request.code && ReqMsg().value == rsp.request.value ){
             progressCode = ProgressCode::OK;
             scopeState = ScopeState::Ready;
+            rq = RequestMsg(RequestMsgCodes::unknown, 0); // clear the successfully finished request
             return Finished;
         } else {
             // got response to some other command - the originally issued command was interrupted!
+            static const char intr[] PROGMEM = "Intr2"; // @@TODO clean up
+            MMU2_ERROR_MSGRPGM(intr);
             return Interrupted;
         }
     default:
@@ -437,11 +440,19 @@ StepStatus ProtocolLogic::IdleStep() {
                 buttonCode = static_cast<Buttons>(rsp.paramValue);
                 StartReading8bitRegisters();
                 return ButtonPushed;
+            case ResponseMsgParamCodes::Finished:
+                if( ReqMsg().code != RequestMsgCodes::unknown ){
+                    // got reset while doing some other command - the originally issued command was interrupted!
+                    // this must be solved by the upper layer, protocol logic doesn't have all the context (like unload before trying again)
+                    static const char intr[] PROGMEM = "Intr1"; // @@TODO cleanup
+                    MMU2_ERROR_MSGRPGM(intr);
+                    IdleRestart();
+                    return Interrupted;
+                }
+                [[fallthrough]];
             case ResponseMsgParamCodes::Processing:
                 // @@TODO we may actually use this branch to report progress of manual operation on the MMU
                 // The MMU sends e.g. X0 P27 after its restart when the user presses an MMU button to move the Selector
-                // For now let's behave just like "finished"
-            case ResponseMsgParamCodes::Finished:
                 errorCode = ErrorCode::OK;
                 break;
             default:
