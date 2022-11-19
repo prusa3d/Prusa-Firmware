@@ -351,8 +351,6 @@ StepStatus ProtocolLogic::ProcessCommandQueryResponse() {
             return Finished;
         } else {
             // got response to some other command - the originally issued command was interrupted!
-            static const char intr[] PROGMEM = "Intr2"; // @@TODO clean up
-            MMU2_ERROR_MSGRPGM(intr);
             return Interrupted;
         }
     default:
@@ -444,8 +442,6 @@ StepStatus ProtocolLogic::IdleStep() {
                 if( ReqMsg().code != RequestMsgCodes::unknown ){
                     // got reset while doing some other command - the originally issued command was interrupted!
                     // this must be solved by the upper layer, protocol logic doesn't have all the context (like unload before trying again)
-                    static const char intr[] PROGMEM = "Intr1"; // @@TODO cleanup
-                    MMU2_ERROR_MSGRPGM(intr);
                     IdleRestart();
                     return Interrupted;
                 }
