@@ -1159,7 +1159,7 @@ static void lcd_menu_fails_stats_mmu_total() {
         _T(MSG_TOTAL_FAILURES),
         _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ),
         _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
-        _i("MMU power fails"), clamp999( MMU2::mmu2.TMCFailures() ));
+        _T(MSG_MMU_POWER_FAILS), clamp999( MMU2::mmu2.TMCFailures() ));
     menu_back_if_clicked_fb();
 }
 
