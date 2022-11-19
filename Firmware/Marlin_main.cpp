@@ -2725,13 +2725,6 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 
       clean_up_after_endstop_move(l_feedmultiply);
       endstops_hit_on_purpose();
-#ifndef MESH_BED_LEVELING
-//-// Oct 2019 :: this part of code is (from) now probably un-compilable
-      // If MESH_BED_LEVELING is not active, then it is the original Prusa i3.
-      // Offer the user to load the baby step value, which has been adjusted at the previous print session.
-      if(card.sdprinting && eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z))
-          lcd_adjust_z();
-#endif
 
     // Load the machine correction matrix
     world2machine_initialize();
