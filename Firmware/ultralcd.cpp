@@ -1410,12 +1410,12 @@ static void lcd_menu_voltages()
     float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
     lcd_home();
     lcd_printf_P(PSTR(" PWR:      %4.1fV\n" " BED:      %4.1fV"), volt_pwr, volt_bed);
-#ifdef IR_SENSOR_ANALOG
-    lcd_printf_P(PSTR("\n IR :       %3.1fV"), fsensor.Raw2Voltage(fsensor.getVoltRaw()));
-#endif //IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
+    lcd_printf_P(PSTR("\n IR :       %3.1fV"), Raw2Voltage(fsensor.getVoltRaw()));
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
     menu_back_if_clicked();
 }
-#endif //defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || defined(IR_SENSOR_ANALOG)
+#endif //defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN) || (defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG))
 
 #ifdef TMC2130
 //! @brief Show Belt Status
@@ -1648,7 +1648,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR("Fil. sensor v.:"));
   MENU_ITEM_BACK_P(fsensor.getIRVersionText());
-#endif // IR_SENSOR_ANALOG
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
 	if (MMU2::mmu2.Enabled())
@@ -4505,7 +4505,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
     //! Fsensor Detection isn't ready for mmu yet it is temporarily disabled.
     //! @todo Don't forget to remove this as soon Fsensor Detection works with mmu
     if(!MMU2::mmu2.Enabled()) MENU_ITEM_FUNCTION_P(PSTR("Fsensor Detection"), lcd_detect_IRsensor);
-#endif //IR_SENSOR_ANALOG
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 
     if (_md->experimental_menu_visibility)
     {
@@ -6010,7 +6010,7 @@ static void lcd_detect_IRsensor(){
         lcd_show_fullscreen_message_and_wait_P(_i("Verification failed, remove the filament and try again."));////MSG_FIL_FAILED c=20 r=4
     }
 }
-#endif //IR_SENSOR_ANALOG
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 
 static void lcd_selftest_v()
 {
@@ -6236,17 +6236,6 @@ bool lcd_selftest()
 				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //FILAMENT_SENSOR_TYPE == FSENSOR_PAT9125
-#if 0
-	// Intentionally disabled - that's why we moved the detection to runtime by just checking the two voltages.
-	// The idea is not to force the user to remove and insert the filament on an assembled printer.
-//defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
-			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filament sensor
-			_result = lcd_selftest_IRsensor();
-			if (_result)
-			{
-				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //filament sensor OK
-			}
-#endif //IR_SENSOR_ANALOG
         }
     }
 #endif //FILAMENT_SENSOR
