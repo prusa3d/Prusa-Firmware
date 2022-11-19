@@ -880,6 +880,16 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
         lastErrorCode = ec;
         lastErrorSource = res;
         LogErrorEvent_P( _O(PrusaErrorTitle(PrusaErrorCodeIndex((uint16_t)ec))) );
+
+        if( ec != ErrorCode::OK ){
+            IncrementMMUFails();
+
+            // check if it is a "power" failure - we consider TMC-related errors as power failures
+            if( (uint16_t)ec & 0x7e00 ){ // @@TODO can be optimized to uint8_t operation
+                // TMC-related errors are from 0x8200 higher
+                IncrementTMCFailures();
+            }
+        }
     }
 
     if( !mmu2.RetryIfPossible((uint16_t)ec) ) {

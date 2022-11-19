@@ -233,14 +233,6 @@ void ReportErrorHook(uint16_t ec) {
     case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:
         ReportErrorHookStaticRender(ei);
         ReportErrorHookState = ReportErrorHookStates::MONITOR_SELECTION;
-        IncrementMMUFails();
-
-        // check if it is a "power" failure - we consider TMC-related errors as power failures
-        if( (uint16_t)ec & 0x7e00 ){ // @@TODO can be optimized to uint8_t operation
-            // TMC-related errors are from 0x8200 higher
-            // we can increment a power error at this spot
-            mmu2.IncrementTMCFailures();
-        }
         [[fallthrough]];
     case (uint8_t)ReportErrorHookStates::MONITOR_SELECTION:
         mmu2.is_mmu_error_monitor_active = true;
