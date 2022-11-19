@@ -320,10 +320,13 @@ bool MMU2::VerifyFilamentEnteredPTFE()
     // If the filament sensor reads 0 at any moment, then report FAILURE
     current_position[E_AXIS] += MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - logic.ExtraLoadDistance();
     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+    current_position[E_AXIS] -= (MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - logic.ExtraLoadDistance());
+    plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
 
     while(blocks_queued())
     {
         // Wait for move to finish and monitor the fsensor the entire time
+        // A single 0 reading will set the bit.
         fsensorState |= !fsensor.getFilamentPresent();
     }
 
@@ -333,10 +336,6 @@ bool MMU2::VerifyFilamentEnteredPTFE()
         return false;
     } else {
         // else, happy printing! :)
-        // Revert the movements
-        current_position[E_AXIS] -= (MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - logic.ExtraLoadDistance());
-        plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
-        st_synchronize();
         return true;
     }
 }
