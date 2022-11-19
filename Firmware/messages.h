@@ -72,6 +72,7 @@ extern const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[];
 extern const char MSG_CALIBRATION[];
 extern const char MSG_MMU_FAILS[];
 extern const char MSG_MMU_LOAD_FAILS[];
+extern const char MSG_MMU_POWER_FAILS[];
 extern const char MSG_NO[];
 extern const char MSG_NOZZLE[];
 extern const char MSG_PAPER[];

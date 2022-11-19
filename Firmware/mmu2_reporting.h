@@ -46,4 +46,11 @@ bool MMUAvailable();
 /// Global Enable/Disable use MMU (to be stored in EEPROM)
 bool UseMMU();
 
+/// Increments EEPROM cell - number of failed loads into the nozzle
+/// Note: technically, this is not an MMU error but an error of the printer.
+void IncrementLoadFails();
+
+/// Increments EEPROM cell - number of MMU errors
+void IncrementMMUFails();
+
 } // namespace

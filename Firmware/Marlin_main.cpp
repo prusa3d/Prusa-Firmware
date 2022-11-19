@@ -9747,20 +9747,21 @@ bool setTargetedHotend(int code, uint8_t &extruder)
   return false;
 }
 
-void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time) //_total_filament_used unit: mm/100; print time in s
-{
-	uint32_t _previous_filament = eeprom_init_default_dword((uint32_t *)EEPROM_FILAMENTUSED, 0); //_previous_filament unit: cm
-	uint32_t _previous_time = eeprom_init_default_dword((uint32_t *)EEPROM_TOTALTIME, 0); //_previous_time unit: min
+void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time) { //_total_filament_used unit: mm/100; print time in s
+    uint32_t _previous_filament = eeprom_init_default_dword((uint32_t *)EEPROM_FILAMENTUSED, 0); //_previous_filament unit: cm
+    uint32_t _previous_time = eeprom_init_default_dword((uint32_t *)EEPROM_TOTALTIME, 0);        //_previous_time unit: min
 
-	eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + (_total_print_time/60)); //EEPROM_TOTALTIME unit: min
-	eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (_total_filament_used / 1000));
+    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + (_total_print_time / 60)); // EEPROM_TOTALTIME unit: min
+    eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (_total_filament_used / 1000));
 
-	total_filament_used = 0;
+    total_filament_used = 0;
 
-  if (MMU2::mmu2.Enabled())
-  {
-    MMU2::mmu2.update_tool_change_counter_eeprom();
-  }
+    if (MMU2::mmu2.Enabled()) {
+        eeprom_add_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, MMU2::mmu2.ToolChangeCounter());
+        // @@TODO why were EEPROM_MMU_FAIL_TOT and EEPROM_MMU_LOAD_FAIL_TOT behaving differently - i.e. updated with every change?
+        MMU2::mmu2.ClearToolChangeCounter();
+        MMU2::mmu2.ClearTMCFailures(); // not stored into EEPROM
+    }
 }
 
 float calculate_extruder_multiplier(float diameter) {

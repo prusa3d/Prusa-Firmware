@@ -1123,11 +1123,14 @@ static void lcd_menu_fails_stats_mmu()
 //! |                    |
 //! ----------------------
 //! @endcode
-static void lcd_menu_fails_stats_mmu_print()
-{
-	lcd_timeoutToStatus.stop(); //infinite timeout
+static void lcd_menu_fails_stats_mmu_print() {
+    lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
-    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n" " %-16.16S%-3d"), 
+    lcd_printf_P(
+        PSTR("%S\n"
+             " %-16.16S%-3d\n"
+             " %-16.16S%-3d"
+        ),
         _T(MSG_LAST_PRINT_FAILURES),
         _T(MSG_MMU_FAILS), clamp999( eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) ),
         _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) ));
@@ -1144,31 +1147,20 @@ static void lcd_menu_fails_stats_mmu_print()
 //! | MMU power fails 000|	MSG_MMU_POWER_FAILS c=15
 //! ----------------------
 //! @endcode
-//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
-static void lcd_menu_fails_stats_mmu_total()
-{
-    typedef struct
-    {
-        bool initialized;              // 1byte
-    } _menu_data_t;
-    static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
-    _menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
-    if(_md->initialized) {
-        MMU2::mmu2.get_statistics();
-        lcd_timeoutToStatus.stop(); //infinite timeout
-        _md->initialized = false;
-    }
+static void lcd_menu_fails_stats_mmu_total() {
+    lcd_timeoutToStatus.stop(); //infinite timeout
     lcd_home();
-    lcd_printf_P(PSTR("%S\n" " %-16.16S%-3d\n"/* " %-16.16S%-3d\n" " %-16.16S%-3d"*/), 
+    lcd_printf_P(
+        PSTR("%S\n"
+             " %-16.16S%-3d\n"
+             " %-16.16S%-3d\n"
+             " %-16.16S%-3d"
+        ),
         _T(MSG_TOTAL_FAILURES),
-        _T(MSG_MMU_FAILS), clamp999( MMU2::mmu2.TotalFailStatistics() ));//,
-        //_T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
-        //_i("MMU power fails"), clamp999( mmu_power_failures )); ////MSG_MMU_POWER_FAILS c=15
-    if (lcd_clicked())
-    {
-        lcd_quick_feedback();
-        menu_back();
-    }
+        _T(MSG_MMU_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) ),
+        _T(MSG_MMU_LOAD_FAILS), clamp999( eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) ),
+        _i("MMU power fails"), clamp999( MMU2::mmu2.TMCFailures() ));
+    menu_back_if_clicked_fb();
 }
 
 //! @brief Show Total Failures Statistics MMU
