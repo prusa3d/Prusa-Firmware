@@ -306,9 +306,43 @@ void MMU2::DecrementRetryAttempts() {
     }
 }
 
+bool MMU2::FSensorCalibrationCheck()
+{
+    st_synchronize();
+
+    if (!fsensor.getFilamentPresent()) return false;
+
+    uint8_t fsensorState = 0;
+    // MMU has finished its load, move filament back by ExtraLoadDistance
+    // If Fsensor reads 0 at any moment, then report FAILURE
+    current_position[E_AXIS] -= logic.ExtraLoadDistance();
+    plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+
+    while(blocks_queued())
+    {
+        // Wait for move to finish and monitor the fsensor the entire time
+        // a single 0 (1) reading is enough to fail the test
+        fsensorState |= !fsensor.getFilamentPresent();
+    }
+
+    if (fsensorState)
+    {
+        return false;
+    } else {
+        // else, happy printing! :)
+        // Revert the movements
+        current_position[E_AXIS] += logic.ExtraLoadDistance();
+        plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+        st_synchronize();
+        return true;
+    }
+}
+
 void MMU2::ToolChangeCommon(uint8_t slot){
+    bool calibrationCheckResult = true;
     tool_change_extruder = slot;
     do {
+        if (!calibrationCheckResult) unload(); // TODO cut filament
         for(;;) {
             logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
             if( manage_response(true, true) )
@@ -324,7 +358,8 @@ void MMU2::ToolChangeCommon(uint8_t slot){
         }
         // reset current position to whatever the planner thinks it is
         plan_set_e_position(current_position[E_AXIS]);
-    } while (0); // while not successfully fed into etruder's PTFE tube
+        calibrationCheckResult = FSensorCalibrationCheck();
+    } while (!calibrationCheckResult); // while not successfully fed into etruder's PTFE tube
     // when we run out of feeding retries, we should call an unload + cut before trying again.
     // + we need some error screen report
 

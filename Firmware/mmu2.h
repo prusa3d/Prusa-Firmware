@@ -280,6 +280,14 @@ private:
     /// @returns false if the MMU is not ready to perform the command (for whatever reason)
     bool WaitForMMUReady();
 
+    /// Redundancy test. After MMU completes a tool-change command
+    /// the printer will retract the filament by a distance set by the
+    //  Extra Loading Distance MMU register. If the Fsensor untriggers
+    /// at any moment the test fails. Else test passes, and the E-motor retraction
+    /// is reverted.
+    /// @returns false if test fails, true otherwise
+    bool FSensorCalibrationCheck();
+
     /// Common processing of pushing filament into the extruder - shared by tool_change, load_to_nozzle and probably others
     void ToolChangeCommon(uint8_t slot);
 
