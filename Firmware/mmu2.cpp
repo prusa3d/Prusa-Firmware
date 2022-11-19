@@ -918,7 +918,17 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
             IncrementMMUFails();
 
             // check if it is a "power" failure - we consider TMC-related errors as power failures
-            if( (uint16_t)ec & 0x7e00 ){ // @@TODO can be optimized to uint8_t operation
+            static constexpr uint16_t tmcMask =
+                ( (uint16_t)ErrorCode::TMC_IOIN_MISMATCH
+                | (uint16_t)ErrorCode::TMC_RESET
+                | (uint16_t)ErrorCode::TMC_UNDERVOLTAGE_ON_CHARGE_PUMP
+                | (uint16_t)ErrorCode::TMC_SHORT_TO_GROUND
+                | (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_WARN
+                | (uint16_t)ErrorCode::TMC_OVER_TEMPERATURE_ERROR
+                | (uint16_t)ErrorCode::MMU_SOLDERING_NEEDS_ATTENTION ) & 0x7fffU; // skip the top bit
+            static_assert(tmcMask == 0x7e00); // just make sure we fail compilation if any of the TMC error codes change
+
+            if ((uint16_t)ec & tmcMask) { // @@TODO can be optimized to uint8_t operation
                 // TMC-related errors are from 0x8200 higher
                 IncrementTMCFailures();
             }
