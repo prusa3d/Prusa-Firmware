@@ -44,8 +44,8 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 // The printer intercepts such a call and sets its extra load distance to match the new value as well.
 static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = 5; // mm
 
-static constexpr uint8_t MMU2_EXTRUDER_PTFE_LENGTH = 42.3f; // mm
-static constexpr uint8_t MMU2_EXTRUDER_HEATBREAK_LENGTH  = 17.7f; // mm
+static constexpr float MMU2_EXTRUDER_PTFE_LENGTH = 42.3f; // mm
+static constexpr float MMU2_EXTRUDER_HEATBREAK_LENGTH  = 17.7f; // mm
 
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
 static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F; // mm/s
