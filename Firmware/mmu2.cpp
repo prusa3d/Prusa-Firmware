@@ -340,9 +340,9 @@ bool MMU2::VerifyFilamentEnteredPTFE()
 }
 
 void MMU2::ToolChangeCommon(uint8_t slot){
-    tool_change_extruder = slot;
     for(;;) { // while not successfully fed into extruder's PTFE tube
         for(;;) {
+            tool_change_extruder = slot;
             logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
             if( manage_response(true, true) )
                 break;
