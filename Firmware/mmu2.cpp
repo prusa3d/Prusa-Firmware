@@ -334,7 +334,7 @@ bool MMU2::VerifyFilamentEnteredPTFE()
     } else {
         // else, happy printing! :)
         // Revert the movements
-        current_position[E_AXIS] -= MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH;
+        current_position[E_AXIS] -= (MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH);
         plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
         st_synchronize();
         return true;
