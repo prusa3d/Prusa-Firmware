@@ -280,11 +280,10 @@ private:
     /// @returns false if the MMU is not ready to perform the command (for whatever reason)
     bool WaitForMMUReady();
 
-    /// Redundancy test. After MMU completes a tool-change command
-    /// the printer will retract the filament by a distance set by the
-    //  Extra Loading Distance MMU register. If the Fsensor untriggers
-    /// at any moment the test fails. Else test passes, and the E-motor retraction
-    /// is reverted.
+    /// After MMU completes a tool-change command
+    /// the printer will push the filament by a constant distance. If the Fsensor untriggers
+    /// at any moment the test fails. Else the test passes, and the E-motor retracts the
+    /// filament back to its original position.
     /// @returns false if test fails, true otherwise
     bool VerifyFilamentEnteredPTFE();
 
