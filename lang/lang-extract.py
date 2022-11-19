@@ -4,12 +4,21 @@ import bisect
 import codecs
 import polib
 import regex
+import os
 import sys
 import lib.charset as cs
 from pathlib import Path, PurePosixPath
 
-BASE_DIR: Path = Path.cwd()
 FILE_LIST: list[Path] = []
+
+# Absolute path
+BASE_DIR: Path = Path.cwd().resolve()
+PO_DIR: Path = BASE_DIR / "po"
+
+# Pathlib can't change the working directory yet
+# The script is currently made to assume the working
+# directory is ./lang/po
+os.chdir(PO_DIR)
 
 def line_warning(path, line, msg):
     print(f'{path}:{line}: {msg}', file=sys.stderr)
@@ -267,15 +276,15 @@ def main():
 
     for path in args.file:
         if not Path(path).exists():
-            # assume its regex
-            for file in sorted(BASE_DIR.glob(path)):
+            # assume its regex, search for files that match pattern
+            for file in sorted(PO_DIR.glob(path)):
                 FILE_LIST.append(file)
         else:
             FILE_LIST.append(Path(path))
 
     # Convert the path to relative and use Posix format
     for index, absolute_path in enumerate(FILE_LIST[:]):
-        FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(BASE_DIR)
+        FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(PO_DIR)
 
     # extract strings
     catalog = {}
