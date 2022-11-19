@@ -220,8 +220,7 @@ enum class ReportErrorHookStates : uint8_t {
 enum ReportErrorHookStates ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
 
 void ReportErrorHook(uint16_t ec) {
-    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU)
-    {
+    if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
         // If the error code suddenly changes to OK, that means
         // a button was pushed on the MMU and the LCD should
         // dismiss the error screen until MMU raises a new error
@@ -230,17 +229,23 @@ void ReportErrorHook(uint16_t ec) {
 
     const uint8_t ei = PrusaErrorCodeIndex(ec);
 
-    switch ((uint8_t)ReportErrorHookState)
-    {
+    switch ((uint8_t)ReportErrorHookState) {
     case (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN:
         ReportErrorHookStaticRender(ei);
         ReportErrorHookState = ReportErrorHookStates::MONITOR_SELECTION;
-        // Fall through
+        IncrementMMUFails();
+
+        // check if it is a "power" failure - we consider TMC-related errors as power failures
+        if( (uint16_t)ec & 0x7e00 ){ // @@TODO can be optimized to uint8_t operation
+            // TMC-related errors are from 0x8200 higher
+            // we can increment a power error at this spot
+            mmu2.IncrementTMCFailures();
+        }
+        [[fallthrough]];
     case (uint8_t)ReportErrorHookStates::MONITOR_SELECTION:
         mmu2.is_mmu_error_monitor_active = true;
         ReportErrorHookDynamicRender(); // Render dynamic characters
-        switch (ReportErrorHookMonitor(ei))
-        {
+        switch (ReportErrorHookMonitor(ei)) {
             case 0:
                 // No choice selected, return to loop()
                 break;
@@ -276,8 +281,7 @@ void ReportErrorHook(uint16_t ec) {
 }
 
 void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
-    if (cip != CommandInProgress::NoCommand)
-    {
+    if (cip != CommandInProgress::NoCommand) {
         custom_message_type = CustomMsg::MMUProgress;
         lcd_setstatuspgm( _T(ProgressCodeToText(ec)) );
     } else {
@@ -286,6 +290,16 @@ void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
         // being printed
         custom_message_type = CustomMsg::Status;
     }
+}
+
+void IncrementLoadFails(){
+    eeprom_increment_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL);
+    eeprom_increment_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT);
+}
+
+void IncrementMMUFails(){
+    eeprom_increment_byte((uint8_t *)EEPROM_MMU_FAIL);
+    eeprom_increment_word((uint16_t *)EEPROM_MMU_FAIL_TOT);
 }
 
 } // namespace MMU2

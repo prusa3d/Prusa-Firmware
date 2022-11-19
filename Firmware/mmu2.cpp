@@ -119,6 +119,7 @@ MMU2::MMU2()
     , inAutoRetry(false)
     , retryAttempts(MAX_RETRIES)
     , toolchange_counter(0)
+    , tmcFailures(0)
 {
 }
 
@@ -305,12 +306,6 @@ void MMU2::DecrementRetryAttempts() {
     }
 }
 
-void MMU2::update_tool_change_counter_eeprom() {
-    uint32_t toolchanges = eeprom_read_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT);
-    eeprom_update_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, toolchanges + (uint32_t)read_toolchange_counter());
-    reset_toolchange_counter();
-}
-
 void MMU2::ToolChangeCommon(uint8_t slot){
     tool_change_extruder = slot;
     do {
@@ -319,10 +314,13 @@ void MMU2::ToolChangeCommon(uint8_t slot){
             if( manage_response(true, true) )
                 break;
             // otherwise: failed to perform the command - unload first and then let it run again
+            IncrementMMUFails();
             unload();
             // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
             // but honestly - if the MMU restarts during every toolchange,
             // something else is seriously broken and stopping a print is probably our best option.
+
+            // IncrementLoadFails(); // this should be contained in the while condition
         }
         // reset current position to whatever the planner thinks it is
         plan_set_e_position(current_position[E_AXIS]);
@@ -336,7 +334,7 @@ void MMU2::ToolChangeCommon(uint8_t slot){
     // @@TODO really report onto the serial? May be for the Octoprint? Not important now
     //        SERIAL_ECHO_START();
     //        SERIAL_ECHOLNPAIR(MSG_ACTIVE_EXTRUDER, int(extruder));
-    increment_tool_change_counter();
+    ++toolchange_counter;
 }
 
 bool MMU2::tool_change(uint8_t slot) {
@@ -378,16 +376,8 @@ bool MMU2::tool_change(char code, uint8_t slot) {
     case 'x': {
         set_extrude_min_temp(0); // Allow cold extrusion since Tx only loads to the gears not nozzle
         st_synchronize();
-        tool_change_extruder = slot;
-        logic.ToolChange(slot);
-        if( ! manage_response(false, false) ){
-            // @@TODO failed to perform the command - retry
-            ;
-        }
-        extruder = slot;
-        SpoolJoin::spooljoin.setSlot(slot);
+        ToolChangeCommon(slot); // the only difference was manage_response(false, false), but probably good enough
         set_extrude_min_temp(EXTRUDE_MINTEMP);
-        increment_tool_change_counter();
     } break;
 
     case 'c': {
@@ -442,9 +432,12 @@ bool MMU2::unload() {
 
         // we assume the printer managed to relieve filament tip from the gears,
         // so repeating that part in case of an MMU restart is not necessary
-        do {
+        for(;;) {
             logic.UnloadFilament();
-        } while( ! manage_response(false, true) );
+            if( manage_response(false, true) )
+                break;
+            IncrementMMUFails();
+        }
 
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 
@@ -460,12 +453,14 @@ bool MMU2::cut_filament(uint8_t slot){
         return false;
 
     ReportingRAII rep(CommandInProgress::CutFilament);
-    logic.CutFilament(slot);
-    if( ! manage_response(false, true) ){
-        // @@TODO failed to perform the command - retry
-        ;
+
+    for(;;){
+        logic.CutFilament(slot);
+        if( manage_response(false, true) )
+            break;
+        IncrementMMUFails();
     }
-    
+
     return true;
 }
 
@@ -493,9 +488,12 @@ bool MMU2::load_filament(uint8_t slot) {
     FullScreenMsg(_T(MSG_LOADING_FILAMENT), slot);
 
     ReportingRAII rep(CommandInProgress::LoadFilament);
-    do {
+    for(;;) {
         logic.LoadFilament(slot);
-    } while( ! manage_response(false, false) );
+        if( manage_response(false, false) )
+            break;
+        IncrementMMUFails();
+    }
 
     Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 
