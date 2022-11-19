@@ -306,7 +306,7 @@ void MMU2::DecrementRetryAttempts() {
     }
 }
 
-bool MMU2::FSensorCalibrationCheck()
+bool MMU2::VerifyFilamentEnteredPTFE()
 {
     st_synchronize();
 
@@ -327,6 +327,7 @@ bool MMU2::FSensorCalibrationCheck()
 
     if (fsensorState)
     {
+        IncrementLoadFails();
         return false;
     } else {
         // else, happy printing! :)
@@ -339,10 +340,8 @@ bool MMU2::FSensorCalibrationCheck()
 }
 
 void MMU2::ToolChangeCommon(uint8_t slot){
-    bool calibrationCheckResult = true;
     tool_change_extruder = slot;
-    do {
-        if (!calibrationCheckResult) unload(); // TODO cut filament
+    for(;;) { // while not successfully fed into extruder's PTFE tube
         for(;;) {
             logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
             if( manage_response(true, true) )
@@ -353,15 +352,14 @@ void MMU2::ToolChangeCommon(uint8_t slot){
             // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
             // but honestly - if the MMU restarts during every toolchange,
             // something else is seriously broken and stopping a print is probably our best option.
-
-            // IncrementLoadFails(); // this should be contained in the while condition
         }
         // reset current position to whatever the planner thinks it is
         plan_set_e_position(current_position[E_AXIS]);
-        calibrationCheckResult = FSensorCalibrationCheck();
-    } while (!calibrationCheckResult); // while not successfully fed into etruder's PTFE tube
-    // when we run out of feeding retries, we should call an unload + cut before trying again.
-    // + we need some error screen report
+        if (VerifyFilamentEnteredPTFE()) break;
+        else { // Prepare a retry attempt
+            unload(); // TODO cut filament
+        }
+    }
 
     extruder = slot; //filament change is finished
     SpoolJoin::spooljoin.setSlot(slot);

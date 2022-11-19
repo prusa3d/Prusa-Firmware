@@ -286,7 +286,7 @@ private:
     /// at any moment the test fails. Else test passes, and the E-motor retraction
     /// is reverted.
     /// @returns false if test fails, true otherwise
-    bool FSensorCalibrationCheck();
+    bool VerifyFilamentEnteredPTFE();
 
     /// Common processing of pushing filament into the extruder - shared by tool_change, load_to_nozzle and probably others
     void ToolChangeCommon(uint8_t slot);
