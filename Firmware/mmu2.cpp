@@ -44,6 +44,9 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 // The printer intercepts such a call and sets its extra load distance to match the new value as well.
 static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = 5; // mm
 
+static constexpr uint8_t MMU2_EXTRUDER_PTFE_LENGTH = 42.3f; // mm
+static constexpr uint8_t MMU2_EXTRUDER_HEATBREAK_LENGTH  = 17.7f; // mm
+
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
 static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F; // mm/s
 
@@ -313,15 +316,14 @@ bool MMU2::VerifyFilamentEnteredPTFE()
     if (!fsensor.getFilamentPresent()) return false;
 
     uint8_t fsensorState = 0;
-    // MMU has finished its load, move filament back by ExtraLoadDistance
-    // If Fsensor reads 0 at any moment, then report FAILURE
-    current_position[E_AXIS] -= logic.ExtraLoadDistance();
+    // MMU has finished its load, push the filament further by some defined constant length
+    // If the filament sensor reads 0 at any moment, then report FAILURE
+    current_position[E_AXIS] += MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH;
     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
 
     while(blocks_queued())
     {
         // Wait for move to finish and monitor the fsensor the entire time
-        // a single 0 (1) reading is enough to fail the test
         fsensorState |= !fsensor.getFilamentPresent();
     }
 
@@ -332,7 +334,7 @@ bool MMU2::VerifyFilamentEnteredPTFE()
     } else {
         // else, happy printing! :)
         // Revert the movements
-        current_position[E_AXIS] += logic.ExtraLoadDistance();
+        current_position[E_AXIS] -= MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH;
         plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
         st_synchronize();
         return true;
