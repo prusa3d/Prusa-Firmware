@@ -441,24 +441,27 @@ void lcdui_print_percent_done(void)
 // Scenario 3: "?>[nr.]"
 //              [nr.] ranges from 1 to 5.
 //              There is no filament currently loaded, but [nr.] is currently being loaded via tool change
-// Scenario 4: "[nr1.] > [nr2.]"
+// Scenario 4: "[nr.]>?"
+//              [nr.] ranges from 1 to 5.
+//              This scenario indicates a bug in the firmware if ? is on the right side
+// Scenario 5: "[nr1.]>[nr2.]"
 //              [nr1.] ranges from 1 to 5.
 //              [nr2.] ranges from 1 to 5.
 //              Filament [nr1.] was loaded, but [nr2.] is currently being loaded via tool change
+// Scenario 6: "?>?"
+//              This scenario should not be possible and indicates a bug in the firmware
 uint8_t lcdui_print_extruder(void) {
-    uint8_t chars = 0;
+    uint8_t chars = 1;
+    lcd_space(1);
     if (MMU2::mmu2.get_current_tool() == MMU2::mmu2.get_tool_change_tool()) {
-        if (MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN) {
-            chars = lcd_printf_P(_N(" F?"));
-        } else {
-            chars = lcd_printf_P(_N(" F%u"), MMU2::mmu2.get_current_tool() + 1);
-        }
+        lcd_putc('F');
+        lcd_putc(MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN ? '?' : MMU2::mmu2.get_current_tool() + 1);
+        chars += 2;
     } else {
-        if (MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN) {
-            chars = lcd_printf_P(_N(" ?>%u"), MMU2::mmu2.get_tool_change_tool() + 1);
-        } else {
-            chars = lcd_printf_P(_N(" %u>%u"), MMU2::mmu2.get_current_tool() + 1, MMU2::mmu2.get_tool_change_tool() + 1);
-        }
+        lcd_putc(MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN ? '?' : MMU2::mmu2.get_current_tool() + 1);
+        lcd_putc('>');
+        lcd_putc(MMU2::mmu2.get_tool_change_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN ? '?' : MMU2::mmu2.get_tool_change_tool() + 1);
+        chars += 3;
     }
     return chars;
 }
