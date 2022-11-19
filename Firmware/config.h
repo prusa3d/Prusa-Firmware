@@ -5,21 +5,17 @@
 #include "Configuration_var.h"
 #include "pins.h"
 
-#if (defined(VOLT_IR_PIN) && defined(IR_SENSOR))
-// TODO: IR_SENSOR_ANALOG currently disabled as being incompatible with the new thermal regulation
-// # define IR_SENSOR_ANALOG
-#endif
 
 //ADC configuration
-#ifndef IR_SENSOR_ANALOG
-#define ADC_CHAN_MSK      0b0000001001011111 //used AD channels bit mask (0,1,2,3,4,6,9)
-#define ADC_DIDR_MSK      0b0000001001011111 //AD channels DIDR mask (1 ~ disabled digital input)
-#define ADC_CHAN_CNT      7         //number of used channels)
-#else //!IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 #define ADC_CHAN_MSK      0b0000001101011111 //used AD channels bit mask (0,1,2,3,4,6,8,9)
 #define ADC_DIDR_MSK      0b0000001001011111 //AD channels DIDR mask (1 ~ disabled digital input)
 #define ADC_CHAN_CNT      8         //number of used channels)
-#endif //!IR_SENSOR_ANALOG
+#else
+#define ADC_CHAN_MSK      0b0000001001011111 //used AD channels bit mask (0,1,2,3,4,6,9)
+#define ADC_DIDR_MSK      0b0000001001011111 //AD channels DIDR mask (1 ~ disabled digital input)
+#define ADC_CHAN_CNT      7         //number of used channels)
+#endif
 #define ADC_OVRSAMPL      16        //oversampling multiplier
 #define ADC_CALLBACK      adc_callback //callback function ()
 

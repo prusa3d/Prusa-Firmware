@@ -62,10 +62,6 @@ extern int current_voltage_raw_pwr;
 extern int current_voltage_raw_bed;
 #endif
 
-#ifdef IR_SENSOR_ANALOG
-extern uint16_t current_voltage_raw_IR;
-#endif //IR_SENSOR_ANALOG
-
 extern bool bedPWMDisabled;
 
 #ifdef PIDTEMP

@@ -160,7 +160,7 @@ extern bool FarmOrUserECool();
 
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 void printf_IRSensorAnalogBoardChange();
-#endif //IR_SENSOR_ANALOG
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
 
 extern int8_t SilentModeMenu;
 

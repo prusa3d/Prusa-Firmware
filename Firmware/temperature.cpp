@@ -2093,9 +2093,9 @@ void adc_callback()
 #ifdef VOLT_BED_PIN
     current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
 #endif
-#ifdef IR_SENSOR_ANALOG
-    current_voltage_raw_IR = adc_values[ADC_PIN_IDX(VOLT_IR_PIN)];
-#endif //IR_SENSOR_ANALOG
+#if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
+    fsensor.voltUpdate(adc_values[ADC_PIN_IDX(VOLT_IR_PIN)]);
+#endif //defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
     adc_values_ready = true;
 }
 
