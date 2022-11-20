@@ -4106,6 +4106,7 @@ void lcd_wizard(WizState state)
 			wizard_event = gcode_M45(false, 0);
 			if (wizard_event) {
 #ifdef TEMP_MODEL
+			lcd_reset_alert_level();
 			state = S::TempModel;
 #else
 			state = S::IsFil;
