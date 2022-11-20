@@ -636,12 +636,20 @@ void MMU2::Home(uint8_t mode){
     logic.Home(mode);
 }
 
-void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
+void MMU2::SaveHotendTemp(bool turn_off_nozzle) {
+    if (mmu_print_saved & SavedState::Cooldown) return;
+
+    if (turn_off_nozzle && !(mmu_print_saved & SavedState::CooldownPending)){
+        resume_hotend_temp = degTargetHotend(active_extruder);
+        mmu_print_saved |= SavedState::CooldownPending;
+        LogEchoEvent_P(PSTR("Heater cooldown pending"));
+    }
+}
+
+void MMU2::SaveAndPark(bool move_axes) {
     if (mmu_print_saved == SavedState::None) { // First occurrence. Save current position, park print head, disable nozzle heater.
         LogEchoEvent_P(PSTR("Saving and parking"));
         st_synchronize();
-      
-        resume_hotend_temp = degTargetHotend(active_extruder);
 
         if (move_axes){
             mmu_print_saved |= SavedState::ParkExtruder;
@@ -661,13 +669,6 @@ void MMU2::SaveAndPark(bool move_axes, bool turn_off_nozzle) {
                 plan_buffer_line_curposXYZE(NOZZLE_PARK_XY_FEEDRATE);
                 st_synchronize();
             }
-        }
-
-        if (turn_off_nozzle){
-            mmu_print_saved |= SavedState::CooldownPending;
-            LogEchoEvent_P(PSTR("Heater cooldown pending"));
-            // This just sets the flag that we should timeout and shut off the nozzle in 30 minutes...
-            //setAllTargetHotends(0);
         }
     }
     // keep the motors powered forever (until some other strategy is chosen)
@@ -806,6 +807,7 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
         case Finished: 
             // command/operation completed, let Marlin continue its work
             // the E may have some more moves to finish - wait for them
+            ResumeHotendTemp();
             ResumeUnpark(); // We can now travel back to the tower or wherever we were when we saved.
             ResetRetryAttempts(); // Reset the retry counter.
             st_synchronize(); 
@@ -817,15 +819,15 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             CheckUserInput();
             return true;
         case CommandError:
-            // Don't proceed to the park/save if we are doing an autoretry.
-            if (inAutoRetry){
-                continue;
-            }
-            [[fallthrough]];
         case CommunicationTimeout:
         case ProtocolError:
-            SaveAndPark(move_axes, turn_off_nozzle); // and wait for the user to resolve the problem
-            CheckUserInput();
+        case ButtonPushed:
+            if (!inAutoRetry){
+                // Don't proceed to the park/save if we are doing an autoretry.
+                SaveAndPark(move_axes);
+                SaveHotendTemp(turn_off_nozzle);
+                CheckUserInput();
+            }
             break;
         case CommunicationRecovered: // @@TODO communication recovered and may be an error recovered as well
             // may be the logic layer can detect the change of state a respond with one "Recovered" to be handled here

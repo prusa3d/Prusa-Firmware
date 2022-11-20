@@ -256,9 +256,13 @@ private:
     void OnMMUProgressMsgChanged(ProgressCode pc);
     /// Repeated calls when progress code remains the same
     void OnMMUProgressMsgSame(ProgressCode pc);
-    
+
+    /// @brief Save hotend temperature and set flag to cooldown hotend after 60 minutes
+    /// @param turn_off_nozzle if true, the hotend temperature will be set to 0degC after 60 minutes
+    void SaveHotendTemp(bool turn_off_nozzle);
+
     /// Save print and park the print head
-    void SaveAndPark(bool move_axes, bool turn_off_nozzle);
+    void SaveAndPark(bool move_axes);
 
     /// Resume hotend temperature, if it was cooled. Safe to call if we aren't saved.
     void ResumeHotendTemp();
