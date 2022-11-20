@@ -349,6 +349,12 @@ void MMU2::ToolChangeCommon(uint8_t slot){
                 break;
             // otherwise: failed to perform the command - unload first and then let it run again
             IncrementMMUFails();
+
+            // just in case we stood in an error screen for too long and the hotend got cold
+            ResumeHotendTemp();
+            // if the extruder has been parked, it will get unparked once the ToolChange command finishes OK
+            // - so no ResumeUnpark() at this spot
+
             unload();
             // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
             // but honestly - if the MMU restarts during every toolchange,
@@ -771,7 +777,7 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             if (!nozzleTimeout.running()){
                 nozzleTimeout.start();
                 LogEchoEvent_P(PSTR("Cooling Timeout started"));
-            } else if (nozzleTimeout.expired(DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul)){ // mins->msec. TODO: do we use the global or have our own independent timeout
+            } else if (nozzleTimeout.expired(DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul)){ // mins->msec.
                 mmu_print_saved &= ~(SavedState::CooldownPending);
                 mmu_print_saved |= SavedState::Cooldown;
                 setAllTargetHotends(0);
