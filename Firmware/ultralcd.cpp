@@ -1189,12 +1189,12 @@ static void lcd_menu_toolchange_stats_mmu_total()
     } _menu_data_t;
     static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
     _menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
-    if(_md->initialized) {
+    if(!_md->initialized) {
         lcd_set_cursor(0, 0);
         lcd_puts_P(PSTR("Toolchange count:"));
         lcd_set_cursor(10, 1);
         lcd_print(eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT));
-        _md->initialized = false;
+        _md->initialized = true;
     }
 
     menu_back_if_clicked_fb();
