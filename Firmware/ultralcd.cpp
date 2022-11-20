@@ -4037,12 +4037,7 @@ void lcd_wizard(WizState state)
 {
     using S = WizState;
 	bool end = false;
-<<<<<<< HEAD
-	int8_t wizard_event;
-	const char *msg = NULL;
-=======
 	uint8_t wizard_event;
->>>>>>> b147fcee (XYZ calibration fixes)
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
 	if (state != S::Run) eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
