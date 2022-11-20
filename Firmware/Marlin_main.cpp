@@ -1549,7 +1549,7 @@ void setup()
 	  }
 #ifdef TEMP_MODEL
 	  else if (calibration_status() == CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION) {
-		  lcd_show_fullscreen_message_and_wait_P(_i("Temp model calibration not calibrated yet."));////MSG_TEMP_MODEL_NOT_CAL c=20 c=4
+		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_NOT_CAL));
 		  lcd_update_enable(true);
 	  }
 #endif //TEMP_MODEL
@@ -3414,7 +3414,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				{
 #ifdef TEMP_MODEL
 					calibration_status_store(CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION);
-					if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) lcd_show_fullscreen_message_and_wait_P(_i("Temp model calibration not calibrated yet."));
+					if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_NOT_CAL));
 #else
 					// Calibration valid, the machine should be able to print. Advise the user to run the V2Calibration.gcode.
 					calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);

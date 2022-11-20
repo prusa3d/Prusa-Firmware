@@ -164,6 +164,7 @@ const char MSG_IR_UNKNOWN[] PROGMEM_I1 = ISTR("unknown state");////MSG_IR_UNKNOW
 extern const char MSG_PAUSED_THERMAL_ERROR[] PROGMEM_I1 = ISTR("PAUSED THERMAL ERROR");////MSG_PAUSED_THERMAL_ERROR c=20
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");////MSG_THERMAL_ANOMALY c=20
+extern const char MSG_TM_NOT_CAL[] PROGMEM_I1 = ISTR("Temp model not calibrated yet.");////MSG_TM_NOT_CAL c=20 r=4
 #endif
 
 //not internationalized messages
