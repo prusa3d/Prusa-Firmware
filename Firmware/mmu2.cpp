@@ -1016,7 +1016,7 @@ void MMU2::OnMMUProgressMsgChanged(ProgressCode pc){
     }
 }
 
-void __attribute__((noiniline)) MMU2::HelpUnloadToFinda(){
+void __attribute__((noinline)) MMU2::HelpUnloadToFinda(){
     current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH;
     plan_buffer_line_curposXYZE(MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE);
 }
