@@ -328,6 +328,8 @@ bool MMU2::VerifyFilamentEnteredPTFE()
         // Wait for move to finish and monitor the fsensor the entire time
         // A single 0 reading will set the bit.
         fsensorState |= !fsensor.getFilamentPresent();
+        manage_heater();
+        manage_inactivity(true);
     }
 
     if (fsensorState)
