@@ -51,8 +51,8 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
 static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F; // mm/s
 
 // The first the MMU does is initialise its axis. Meanwhile the E-motor will unload 20mm of filament in approx. 1 second.
-static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH = 20.0f; // mm
-static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE = 20.0f; // mm/s
+static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH = 80.0f; // mm
+static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE = 80.0f; // mm/s
 
 static constexpr uint8_t MMU2_NO_TOOL = 99;
 static constexpr uint32_t MMU_BAUD = 115200;
@@ -735,6 +735,18 @@ void MMU2::CheckUserInput(){
         SERIAL_ECHOLN(btn);
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
         Button(btn);
+
+        // A quick hack: for specific error codes move the E-motor every time.
+        // Not sure if we can rely on the fsensor.
+        // Just plan the move, let the MMU take over when it is ready
+        switch(lastErrorCode){
+        case ErrorCode::FSENSOR_DIDNT_SWITCH_OFF:
+        case ErrorCode::FSENSOR_TOO_EARLY:
+            HelpUnloadToFinda();
+            break;
+        default:
+            break;
+        }
         break;
     case RestartMMU:
         Reset(ResetPin); // we cannot do power cycle on the MK3
@@ -990,8 +1002,7 @@ void MMU2::OnMMUProgressMsgChanged(ProgressCode pc){
             // We're likely recovering from an MMU error
             st_synchronize();
             unloadFilamentStarted = true;
-            current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH;
-            plan_buffer_line_curposXYZE(MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE);
+            HelpUnloadToFinda();
         }
         break;
     case ProgressCode::FeedingToFSensor:
@@ -1005,13 +1016,17 @@ void MMU2::OnMMUProgressMsgChanged(ProgressCode pc){
     }
 }
 
+void __attribute__((noiniline)) MMU2::HelpUnloadToFinda(){
+    current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH;
+    plan_buffer_line_curposXYZE(MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE);
+}
+
 void MMU2::OnMMUProgressMsgSame(ProgressCode pc){
     switch (pc) {
     case ProgressCode::UnloadingToFinda:
         if (unloadFilamentStarted && !blocks_queued()) { // Only plan a move if there is no move ongoing
             if (fsensor.getFilamentPresent()) {
-                current_position[E_AXIS] -= MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH;
-                plan_buffer_line_curposXYZE(MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE);
+                HelpUnloadToFinda();
             } else {
                 unloadFilamentStarted = false;
             }
