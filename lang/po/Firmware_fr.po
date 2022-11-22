@@ -1802,7 +1802,7 @@ msgstr "ANOMALIE THERMIQUE"
 
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
-msgid "Temp model cal. takes apporx. 12 mins."
+msgid "Temp model cal. takes approx. 12 mins."
 msgstr "L'étalonnage du modèle de température prend environ 12 minutes."
 
 #. MSG_TM_NOT_CAL c=20 r=4

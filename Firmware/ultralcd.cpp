@@ -4132,7 +4132,7 @@ void lcd_wizard(WizState state)
 			break;
 #ifdef TEMP_MODEL
 		case S::TempModel:
-			lcd_show_fullscreen_message_and_wait_P(_i("Temp model cal. takes apporx. 12 mins."));////MSG_TM_CAL c=20 r=4
+			lcd_show_fullscreen_message_and_wait_P(_i("Temp model cal. takes approx. 12 mins."));////MSG_TM_CAL c=20 r=4
 			lcd_commands_type = LcdCommands::TempModel;
 			end = true; // Leave wizard temporarily for Temp model cal.
 			break;

@@ -1773,14 +1773,14 @@ msgstr "THERMISK ANOMALI"
 
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
-msgid "Temp model cal. takes apporx. 12 mins."
-msgstr ""
+msgid "Temp model cal. takes approx. 12 mins."
+msgstr "Temp modell kal. tar omtrent 12 min."
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
 #: ../../Firmware/messages.cpp:170
 msgid "Temp model not calibrated yet."
-msgstr ""
+msgstr "Temp modell ikke kalibrert enda."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4816
