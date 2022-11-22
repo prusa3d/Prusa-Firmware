@@ -1783,7 +1783,7 @@ msgstr "TEPLOTNI VYJIMKA"
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
 msgid "Temp model cal. takes approx. 12 mins."
-msgstr "Kalkulace teplotního modelu trvá přibližně. 12 minut."
+msgstr "Kalibrace teplotního modelu trvá asi 12 minut."
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
