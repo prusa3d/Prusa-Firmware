@@ -169,6 +169,9 @@ extern const char MSG_PAUSED_THERMAL_ERROR[];
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[];
 #endif
+extern const char MSG_NOZZLE_CNG_MENU [];
+extern const char MSG_NOZZLE_CNG_READ_HELP [];
+extern const char MSG_NOZZLE_CNG_CHANGED [];
 
 //not internationalized messages
 #if 0

@@ -1061,6 +1061,52 @@ void lcd_commands()
         }
     }
 #endif //TEMP_MODEL
+
+	if (lcd_commands_type == LcdCommands::NozzleCNG)
+	{
+        if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
+        {
+            switch(lcd_commands_step)
+            {
+            case 0:
+                lcd_commands_step = 3;
+                break;
+            case 3:
+                lcd_show_fullscreen_message_and_wait_P(_T(MSG_NOZZLE_CNG_READ_HELP));
+                enquecommand_P(PSTR("G28W"));
+                enquecommand_P(PSTR("G1 X125 Y10 Z150 F1000"));
+                enquecommand_P(PSTR("M109 S280"));
+#ifdef TEMP_MODEL
+                //enquecommand_P(PSTR("M310 S0"));
+                temp_model_set_enabled(false);
+#endif //TEMP_MODEL
+                lcd_commands_step = 2;
+                break;
+            case 2:
+                //|0123456789012456789|
+                //|Hotend at 280C!
+                //|Nozzle changed and
+                //|tightend to specs?
+                //| Yes     No
+                enquecommand_P(PSTR("M84 XY"));
+                if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
+#ifdef TEMP_MODEL
+                //enquecommand_P(PSTR("M310 S1"));
+                temp_model_set_enabled(true);
+#endif //TEMP_MODEL
+                //enquecommand_P(PSTR("M104 S0"));
+                setTargetHotendSafe(0,0);
+                lcd_commands_step = 1;
+                }
+                break;
+            case 1:
+                lcd_setstatuspgm(MSG_WELCOME);
+                lcd_commands_step = 0;
+                lcd_commands_type = LcdCommands::Idle;
+                break;
+            }
+        }
+    }
 }
 
 void lcd_return_to_status()
@@ -4755,6 +4801,12 @@ static void sheets_menu()
     MENU_END();
 }
 
+static void nozzle_change()
+{
+    lcd_commands_type = LcdCommands::NozzleCNG;
+    lcd_return_to_status();
+}
+
 void lcd_hw_setup_menu(void)                      // can not be "static"
 {
     typedef struct
@@ -4782,6 +4834,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
     MENU_ITEM_SUBMENU_P(_T(MSG_STEEL_SHEETS), sheets_menu);
     SETTINGS_NOZZLE;
+    MENU_ITEM_FUNCTION_P(_T(MSG_NOZZLE_CNG_MENU),nozzle_change);
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);  ////MSG_CHECKS c=18
 
 #ifdef IR_SENSOR_ANALOG

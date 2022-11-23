@@ -618,6 +618,15 @@ msgstr "Corrige el problema y pulsa el boton en la unidad MMU."
 msgid "Flow"
 msgstr "Flujo"
 
+#. MSG_NOZZLE_CNG_READ_HELP c=20 r=4
+#: ../../Firmware/messages.cpp:173 ../../Firmware/ultralcd.cpp:1019
+msgid ""
+"For a Nozzle change please read\n"
+"prusa.io/nozzle-mk3s"
+msgstr ""
+"Para un cambio de boquilla por fa. lea\n"
+"prusa.io/nozzle-mk3s"
+
 #. MSG_SELFTEST_PART_FAN c=20
 #: ../../Firmware/messages.cpp:83 ../../Firmware/ultralcd.cpp:7026
 #: ../../Firmware/ultralcd.cpp:7179 ../../Firmware/ultralcd.cpp:7184
@@ -739,6 +748,12 @@ msgstr ""
 #: ../../Firmware/ultralcd.cpp:5802
 msgid "High power"
 msgstr "Rend.pleno"
+
+#. MSG_NOZZLE_CNG_CHANGED c=20 r=6
+#: ../../Firmware/messages.cpp:174 ../../Firmware/ultralcd.cpp:1036
+msgid "Hotend at 280C! Nozzle changed and tightened to specs?"
+msgstr "Calentador a 280C! Se ha cambiado la boquilla y se ha ajustado a "
+"las especificaciones?"
 
 #. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1145
@@ -1133,6 +1148,11 @@ msgstr "Ahora retira la prueba de la lamina de acero."
 #: ../../Firmware/ultralcd.cpp:5742 ../../Firmware/ultralcd.cpp:5904
 msgid "Nozzle"
 msgstr "Boquilla"
+
+#. MSG_NOZZLE_CNG_MENU c=18
+#: ../../Firmware/messages.cpp:173 ../../Firmware/ultralcd.cpp:4580
+msgid "Nozzle change"
+msgstr "Cambio de boquilla"
 
 #. MSG_NOZZLE_DIAMETER c=10
 #: ../../Firmware/messages.cpp:133 ../../Firmware/ultralcd.cpp:4565
