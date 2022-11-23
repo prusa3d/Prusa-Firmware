@@ -10,7 +10,24 @@
 
 // Allocate the version string in the program memory. Otherwise the string lands either on the stack or in the global RAM.
 static const char FW_VERSION_STR[] PROGMEM = FW_VERSION;
-static const uint16_t FW_VERSION_NR[4] PROGMEM = { FW_MAJOR, FW_MINOR, FW_REVISION, FW_COMMIT_NR };
+static const uint16_t FW_VERSION_NR[4] PROGMEM = {
+    FW_MAJOR,
+    FW_MINOR,
+    FW_REVISION,
+#ifndef FW_FLAVOR
+    FW_COMMIT_NR
+#else
+#   if FW_DEV_VERSION == FW_VERSION_ALPHA
+    FIRMWARE_REVISION_ALPHA + FW_FLAVERSION
+#   elif FW_DEV_VERSION == FW_VERSION_BETA
+    FIRMWARE_REVISION_BETA + FW_FLAVERSION
+#   elif FW_DEV_VERSION == FW_VERSION_RC
+    FIRMWARE_REVISION_RC + FW_FLAVERSION
+#   elif FW_DEV_VERSION == FW_VERSION_GOLD
+    0
+#   endif
+#endif
+};
 
 const char* FW_VERSION_STR_P()
 {
@@ -24,10 +41,10 @@ const char* FW_PRUSA3D_MAGIC_STR_P()
     return FW_PRUSA3D_MAGIC_STR;
 }
 
-const char STR_REVISION_DEV  [] PROGMEM = "dev";
-const char STR_REVISION_ALPHA[] PROGMEM = "alpha";
-const char STR_REVISION_BETA [] PROGMEM = "beta";
-const char STR_REVISION_RC   [] PROGMEM = "rc";
+const char STR_REVISION_DEV  [] PROGMEM = "DEV";
+const char STR_REVISION_ALPHA[] PROGMEM = "ALPHA";
+const char STR_REVISION_BETA [] PROGMEM = "BETA";
+const char STR_REVISION_RC   [] PROGMEM = "RC";
 
 inline bool is_whitespace_or_nl(char c)
 {
@@ -44,78 +61,84 @@ inline bool is_digit(char c)
     return c >= '0' && c <= '9';
 }
 
+char const * __attribute__((noinline)) Number(char const *str, uint16_t *v){
+    *v = 0;
+    while(is_digit(*str)){
+        *v *= 10;
+        *v += *str - '0';
+        ++str;
+    }
+    return str;
+}
+
+bool __attribute__((noinline)) Tag(const char *str, const char *tag_P, uint8_t tagSize, uint16_t tagMask, uint16_t *v){
+    if( ! strncmp_P(str, tag_P, tagSize) ){
+        Number(str + tagSize, v);
+        *v |= tagMask;
+        return true;
+    }
+    return false;
+}
+
 // Parse a major.minor.revision version number.
 // Return true if valid.
-inline bool parse_version(const char *str, uint16_t version[4])
-{   
-#if 0
-    SERIAL_ECHOPGM("Parsing version string ");
-    SERIAL_ECHO(str);
-    SERIAL_ECHOLNPGM("");
-#endif
-
-    const char *major = str;
-    const char *p = str;
-    while (is_digit(*p)) ++ p;
-    if (*p != '.')
-        return false;
-    const char *minor = ++ p;
-    while (is_digit(*p)) ++ p;
-    if (*p != '.')
-        return false;
-    const char *rev = ++ p;
-    while (is_digit(*p)) ++ p;
-    if (! is_whitespace_or_nl_or_eol(*p) && *p != '-')
-        return false;
-
-    char *endptr = NULL;
-    version[0] = strtol(major, &endptr, 10);
-    if (endptr != minor - 1)
-        return false;
-    version[1] = strtol(minor, &endptr, 10);
-    if (endptr != rev - 1)
-        return false;
-    version[2] = strtol(rev, &endptr, 10);
-    if (endptr != p)
-        return false;
+bool parse_version(const char *str, uint16_t version[4]) {
+    for(uint8_t i = 0; i < 2; ++i){
+        str = Number(str, version + i);
+        if (*str != '.')
+            return false;
+        ++str;
+    }
+    str = Number(str, version + 2);
 
     version[3] = FIRMWARE_REVISION_RELEASED;
-    if (*p ++ == '-') {
-        const char *q = p;
-        while (! is_whitespace_or_nl_or_eol(*q))
-            ++ q;
-        uint8_t n = q - p;
-        if (n == strlen_P(STR_REVISION_DEV) && strncmp_P(p, STR_REVISION_DEV, n) == 0)
-            version[3] = FIRMWARE_REVISION_DEV;
-        else if (n == strlen_P(STR_REVISION_ALPHA) && strncmp_P(p, STR_REVISION_ALPHA, n) == 0)
-            version[3] = FIRMWARE_REVISION_ALPHA;
-        else if (n == strlen_P(STR_REVISION_BETA) && strncmp_P(p, STR_REVISION_BETA, n) == 0)
-            version[3] = FIRMWARE_REVISION_BETA;
-        else if ((n == 2 || n == 3) && (p[0] == 'r' || p[0] == 'R') && (p[1] == 'c' || p[1] == 'C')) {
-            if (n == 2)
-                version[3] = FIRMWARE_REVISION_RC;
-            else {
-                if (is_digit(p[2]))
-                    version[3] = FIRMWARE_REVISION_RC + p[2] - '1';
-                else
-                    return false;
-            }
-        } else
-            return false;
+
+    // skip everything else until eol or '-'
+    for(;;){
+        if(is_whitespace_or_nl_or_eol(*str)){
+            // speculatively reached the end of line, silently ignoring anything which is not a '-'
+            return true;
+        }
+        if( *str == '-'){
+            break; // tag expected
+        }
+        ++str;
     }
 
-#if 0
-    SERIAL_ECHOPGM("Version parsed, major: ");
-    SERIAL_ECHO(version[0]);
-    SERIAL_ECHOPGM(", minor: ");
-    SERIAL_ECHO(version[1]);
-    SERIAL_ECHOPGM(", revision: ");
-    SERIAL_ECHO(version[2]);
-    SERIAL_ECHOPGM(", flavor: ");
-    SERIAL_ECHO(version[3]);
-    SERIAL_ECHOLNPGM("");
-#endif
-    return true;
+//    SERIAL_ECHOPGM("parse_version: ");
+//    SERIAL_ECHO(version[0]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(version[1]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(version[2]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHOLN(version[3]);
+    if (*str++ == '-') {
+        switch(*str){
+        case 'A': // expect ALPHA
+            static_assert(sizeof(STR_REVISION_ALPHA) == 6);
+            return Tag( str, STR_REVISION_ALPHA, sizeof(STR_REVISION_ALPHA) - 1, FIRMWARE_REVISION_ALPHA, version + 3);
+        case 'B': // expect BETA
+            static_assert(sizeof(STR_REVISION_BETA) == 5);
+            return Tag( str, STR_REVISION_BETA, sizeof(STR_REVISION_BETA) - 1, FIRMWARE_REVISION_BETA, version + 3);
+        case 'D': // expect DEV
+            static_assert(sizeof(STR_REVISION_DEV) == 4);
+            return Tag( str, STR_REVISION_DEV, sizeof(STR_REVISION_DEV) - 1, FIRMWARE_REVISION_DEV, version + 3);
+        case 'R': // expect RC
+            static_assert(sizeof(STR_REVISION_RC) == 3);
+            return Tag( str, STR_REVISION_RC, sizeof(STR_REVISION_RC) - 1, FIRMWARE_REVISION_RC, version + 3);
+        default: return false; // fail everything else
+            }
+    }
+//    SERIAL_ECHOPGM("parse_version with tag: ");
+//    SERIAL_ECHO(version[0]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(version[1]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(version[2]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHOLN(version[3]);
+    return false;
 }
 
 inline bool strncmp_PP(const char *p1, const char *p2, uint8_t n)
@@ -357,12 +380,25 @@ void fw_version_check(const char *pVersion) {
         return;
     if ((nCompareValueResult < COMPARE_VALUE_EQUAL) && oCheckVersion == ClCheckVersion::_Warn)
         return;
-    // SERIAL_ECHO_START;
-    // SERIAL_ECHOLNPGM("Printer FW version differs from the G-code ...");
-    // SERIAL_ECHOPGM("actual  : ");
-    // SERIAL_ECHOLN(FW_VERSION);
-    // SERIAL_ECHOPGM("expected: ");
-    // SERIAL_ECHOLN(pVersion);
+//    SERIAL_ECHO_START;
+//    SERIAL_ECHOLNPGM("Printer FW version differs from the G-code ...");
+//    SERIAL_ECHOPGM("actual  : ");
+//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MAJOR));
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MINOR));
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_REVISION));
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_FLAVOR));
+//    SERIAL_ECHOPGM("\nexpected: ");
+//    SERIAL_ECHO(aVersion[0]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(aVersion[1]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHO(aVersion[2]);
+//    SERIAL_ECHO('.');
+//    SERIAL_ECHOLN(aVersion[3]);
+
     switch (oCheckVersion) {
     case ClCheckVersion::_Warn:
         //          lcd_show_fullscreen_message_and_wait_P(_i("Printer FW version differs from the G-code. Continue?"));
