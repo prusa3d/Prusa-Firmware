@@ -775,6 +775,15 @@ msgstr ""
 msgid "Flow"
 msgstr "Prutok"
 
+#. MSG_NOZZLE_CNG_READ_HELP c=20 r=4
+#: ../../Firmware/messages.cpp:173 ../../Firmware/ultralcd.cpp:1019
+msgid ""
+"For a Nozzle change please read\n"
+"prusa.io/nozzle-mk3s"
+msgstr ""
+"Pro výměnu trysek si přečtěte\n"
+"prusa.io/nozzle-mk3s"
+
 #. MSG_SELFTEST_PART_FAN c=20
 #: ../../Firmware/messages.cpp:87 ../../Firmware/ultralcd.cpp:6977
 #: ../../Firmware/ultralcd.cpp:7129 ../../Firmware/ultralcd.cpp:7134
@@ -894,6 +903,11 @@ msgstr "Vys. vykon"
 #: ../../Firmware/mmu2_progress_converter.cpp:60
 msgid "Homing"
 msgstr "Homing"
+
+#. MSG_NOZZLE_CNG_CHANGED c=20 r=6
+#: ../../Firmware/messages.cpp:174 ../../Firmware/ultralcd.cpp:1036
+msgid "Hotend at 280C! Nozzle changed and tightened to specs?"
+msgstr "Hotend při 280C! Tryska vyměněna a dotažena podle specifikací?"
 
 #. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1137
@@ -1344,6 +1358,11 @@ msgstr "Nyni odstrante testovaci vytisk z tiskoveho platu."
 #: ../../Firmware/ultralcd.cpp:5707 ../../Firmware/ultralcd.cpp:5854
 msgid "Nozzle"
 msgstr "Tryska"
+
+#. MSG_NOZZLE_CNG_MENU c=18
+#: ../../Firmware/messages.cpp:173 ../../Firmware/ultralcd.cpp:4580
+msgid "Nozzle change"
+msgstr "Výměna trysek"
 
 #. MSG_NOZZLE_DIAMETER c=10
 #: ../../Firmware/messages.cpp:137 ../../Firmware/ultralcd.cpp:4502
