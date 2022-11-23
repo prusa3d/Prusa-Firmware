@@ -3879,11 +3879,11 @@ static void lcd_wizard_load() {
     } else {
         lcd_show_fullscreen_message_and_wait_P(
             _i("Please insert filament into the extruder, then press the knob to load it.")); ////MSG_WIZARD_LOAD_FILAMENT c=20 r=6
+        lcd_update_enable(false);
+        lcd_clear();
+        lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
+        loading_flag = true;
     }
-    lcd_update_enable(false);
-    lcd_clear();
-    lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
-    loading_flag = true;
     gcode_M701(FILAMENTCHANGE_FIRSTFEED, 0);
     //enquecommand_P(PSTR("M701"));
 }
