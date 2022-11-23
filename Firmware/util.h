@@ -4,17 +4,12 @@
 extern const char* FW_VERSION_STR_P();
 
 // Definition of a firmware flavor numerical values.
-enum FirmwareRevisionFlavorType
-{
-    FIRMWARE_REVISION_DEV = 0,
-    FIRMWARE_REVISION_ALPHA = 1,
-    FIRMWARE_REVISION_BETA = 2,
-    FIRMWARE_REVISION_RC,
-    FIRMWARE_REVISION_RC2,
-    FIRMWARE_REVISION_RC3,
-    FIRMWARE_REVISION_RC4,
-    FIRMWARE_REVISION_RC5,
-    FIRMWARE_REVISION_RELEASED = 127
+enum FirmwareRevisionFlavorType : uint16_t {
+    FIRMWARE_REVISION_RELEASED = 0,
+    FIRMWARE_REVISION_DEV = 0x0100,
+    FIRMWARE_REVISION_ALPHA = 0x0200,
+    FIRMWARE_REVISION_BETA = 0x0300,
+    FIRMWARE_REVISION_RC = 0x0400
 };
 
 extern bool show_upgrade_dialog_if_version_newer(const char *version_string);
