@@ -839,6 +839,7 @@ void print_stop();
 
 void lcd_commands()
 {
+    // printf_P(PSTR("lcd_commands begin, lcd_commands_type=%u, lcd_commands_step=%u\n"), (uint8_t)lcd_commands_type, lcd_commands_step);
     if (planner_aborted) {
         // we are still within an aborted command. do not process any LCD command until we return
         return;
@@ -1072,7 +1073,10 @@ void lcd_commands()
                 lcd_commands_step = 3;
                 break;
             case 3:
+                lcd_update_enabled = false; //hack to avoid lcd_update recursion.
                 lcd_show_fullscreen_message_and_wait_P(_T(MSG_NOZZLE_CNG_READ_HELP));
+                lcd_update_enabled = true;
+                lcd_draw_update = 2; //force lcd clear and update after the stack unwinds.
                 enquecommand_P(PSTR("G28W"));
                 enquecommand_P(PSTR("G1 X125 Y10 Z150 F1000"));
                 enquecommand_P(PSTR("M109 S280"));
@@ -1089,6 +1093,7 @@ void lcd_commands()
                 //|tightend to specs?
                 //| Yes     No
                 enquecommand_P(PSTR("M84 XY"));
+                lcd_update_enabled = false; //hack to avoid lcd_update recursion.
                 if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
 #ifdef TEMP_MODEL
                 //enquecommand_P(PSTR("M310 S1"));
@@ -1098,6 +1103,7 @@ void lcd_commands()
                 setTargetHotendSafe(0,0);
                 lcd_commands_step = 1;
                 }
+                lcd_update_enabled = true;
                 break;
             case 1:
                 lcd_setstatuspgm(MSG_WELCOME);
