@@ -1803,13 +1803,13 @@ msgstr "ANOMALIE THERMIQUE"
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
 msgid "Temp model cal. takes approx. 12 mins."
-msgstr "L'étalonnage du modèle de température prend environ 12 minutes."
+msgstr "Cal. du modele temp. dure env. 12 min."
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
 #: ../../Firmware/messages.cpp:170
 msgid "Temp model not calibrated yet."
-msgstr "Le modèle de température n'est pas encore calibré."
+msgstr "Modele de temp. non calibre."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4816
