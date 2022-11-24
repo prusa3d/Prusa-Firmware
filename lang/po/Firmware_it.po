@@ -2122,13 +2122,13 @@ msgstr "TMC UNDERVOLTAGE ERR"
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
 msgid "Temp model cal. takes approx. 12 mins."
-msgstr "La calibrazione del modello di temperatura richiede circa 12 minuti."
+msgstr "Calib mod temp richiede circa 12 min."
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
 #: ../../Firmware/messages.cpp:170
 msgid "Temp model not calibrated yet."
-msgstr "Modello di temperatura non ancora calibrato."
+msgstr "Modello temp non calibrato."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4717

@@ -2129,13 +2129,13 @@ msgstr "ERROR SBRVOLTAJE TMC"
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
 msgid "Temp model cal. takes approx. 12 mins."
-msgstr "La calibración del modelo de temperatura tarda aprox. 12 minutos."
+msgstr "Cal. modelo temp. tarda 12 mins. aprox."
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
 #: ../../Firmware/messages.cpp:170
 msgid "Temp model not calibrated yet."
-msgstr "El modelo de temperatura aún no está calibrado."
+msgstr "Modelo temp. todavia sin cal."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4717

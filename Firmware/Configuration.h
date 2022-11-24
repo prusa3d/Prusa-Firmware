@@ -555,7 +555,7 @@ enum CalibrationStatus
 	CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION = 235,
 #endif //TEMP_MODEL
 
-// The XYZ calibration AND OR Temp model calibartion has been performed, now it remains to run the V2Calibration.gcode.
+// The XYZ calibration AND OR Temp model calibration has been performed, now it remains to run the V2Calibration.gcode.
 	CALIBRATION_STATUS_LIVE_ADJUST = 230,
 
     // Calibrated, ready to print.
