@@ -81,11 +81,9 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     lcd_show_choices_prompt_P(two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE, _T(PrusaErrorButtonTitle(button_op_middle)), _T(two_choices ? PrusaErrorButtonMore() : PrusaErrorButtonTitle(button_op_right)), two_choices ? 18 : 9, two_choices ? nullptr : _T(PrusaErrorButtonMore()));
 }
 
-extern void ReportErrorHookSensorLineRender()
-{
+void ReportErrorHookSensorLineRender(){
     // Render static characters in third line
-    lcd_set_cursor(0, 2);
-    lcd_printf_P(PSTR("FI:  FS:    >  %c   %c"), LCD_STR_THERMOMETER[0], LCD_STR_DEGREE[0]);
+    lcd_puts_at_P(0, 2, PSTR("FI:  FS:    >  " LCD_STR_THERMOMETER "   " LCD_STR_DEGREE));
 }
 
 
