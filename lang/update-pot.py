@@ -15,7 +15,7 @@ import shutil
 import subprocess
 from subprocess import CalledProcessError
 
-BASE_DIR: Path = Path.cwd().resolve()
+BASE_DIR: Path = Path.absolute(Path(__file__).parent)
 PROJECT_DIR: Path = BASE_DIR.parent
 PO_DIR: Path = BASE_DIR / "po"
 
@@ -45,11 +45,12 @@ def main():
             print(error)
 
     # Run the lang-extract.py script
+    SCRIPT_PATH = BASE_DIR.joinpath("lang-extract.py")
     try:
         subprocess.check_call(
             [
                 "python",
-                "lang-extract.py",
+                SCRIPT_PATH,
                 "--no-missing",
                 "-s",
                 "-o",

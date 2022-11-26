@@ -12,7 +12,7 @@ from pathlib import Path, PurePosixPath
 FILE_LIST: list[Path] = []
 
 # Absolute path
-BASE_DIR: Path = Path.cwd().resolve()
+BASE_DIR: Path = Path.absolute(Path(__file__).parent)
 PO_DIR: Path = BASE_DIR / "po"
 
 # Pathlib can't change the working directory yet

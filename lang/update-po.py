@@ -12,7 +12,7 @@ from pathlib import Path
 import polib
 from polib import POFile
 
-BASE_DIR: Path = Path.cwd()
+BASE_DIR: Path = Path.absolute(Path(__file__).parent)
 PO_DIR: Path = BASE_DIR / "po"
 PO_FILE_LIST: list[Path] = []
 POT_REFERENCE: POFile = polib.pofile(PO_DIR/'Firmware.pot')
