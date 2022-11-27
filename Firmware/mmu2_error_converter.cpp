@@ -53,17 +53,17 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     case (uint16_t)ErrorCode::STALLED_PULLEY:
     case (uint16_t)ErrorCode::MOVE_PULLEY_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_PULLEY_CANNOT_MOVE);
-        
+
     case (uint16_t)ErrorCode::HOMING_SELECTOR_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_SELECTOR_CANNOT_HOME);
     case (uint16_t)ErrorCode::MOVE_SELECTOR_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_SELECTOR_CANNOT_MOVE);
-        
+
     case (uint16_t)ErrorCode::HOMING_IDLER_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_IDLER_CANNOT_HOME);
     case (uint16_t)ErrorCode::MOVE_IDLER_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_IDLER_CANNOT_MOVE);
-        
+
     case (uint16_t)ErrorCode::MMU_NOT_RESPONDING:
         return FindErrorIndex(ERR_CONNECT_MMU_NOT_RESPONDING);
     case (uint16_t)ErrorCode::PROTOCOL_ERROR:
@@ -81,7 +81,7 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
     case (uint16_t)ErrorCode::FINDA_VS_EEPROM_DISREPANCY:
         return FindErrorIndex(ERR_SYSTEM_UNLOAD_MANUALLY);
     }
-    
+
     // Electrical issues which can be detected somehow.
     // Need to be placed before TMC-related errors in order to process couples of error bits between single ones
     // and to keep the code size down.
@@ -180,14 +180,14 @@ Buttons ButtonPressed(uint16_t ec) {
     if (buttonSelectedOperation == ButtonOperations::NoOperation) {
         return NoButton; // no button
     }
-    
+
     ResetOnExit ros; // clear buttonSelectedOperation on exit from this call
     return ButtonAvailable(ec);
 }
 
 Buttons ButtonAvailable(uint16_t ec) {
     uint8_t ei = PrusaErrorCodeIndex(ec);
-    
+
     // The list of responses which occur in mmu error dialogs
     // Return button index or perform some action on the MK3 by itself (like restart MMU)
     // Based on Prusa-Error-Codes errors_list.h
@@ -221,7 +221,7 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
-        
+
     case ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT:
     case ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT:
     case ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT:
@@ -234,30 +234,30 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
-        
+
     case ERR_TEMPERATURE_PULLEY_TMC_OVERHEAT_ERROR:
     case ERR_TEMPERATURE_SELECTOR_TMC_OVERHEAT_ERROR:
     case ERR_TEMPERATURE_IDLER_TMC_OVERHEAT_ERROR:
-        
+
     case ERR_ELECTRICAL_PULLEY_TMC_DRIVER_ERROR:
     case ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_ERROR:
     case ERR_ELECTRICAL_IDLER_TMC_DRIVER_ERROR:
-        
+
     case ERR_ELECTRICAL_PULLEY_TMC_DRIVER_RESET:
     case ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_RESET:
     case ERR_ELECTRICAL_IDLER_TMC_DRIVER_RESET:
-        
+
     case ERR_ELECTRICAL_PULLEY_TMC_UNDERVOLTAGE_ERROR:
     case ERR_ELECTRICAL_SELECTOR_TMC_UNDERVOLTAGE_ERROR:
     case ERR_ELECTRICAL_IDLER_TMC_UNDERVOLTAGE_ERROR:
-        
+
     case ERR_ELECTRICAL_PULLEY_TMC_DRIVER_SHORTED:
     case ERR_ELECTRICAL_SELECTOR_TMC_DRIVER_SHORTED:
     case ERR_ELECTRICAL_IDLER_TMC_DRIVER_SHORTED:
-        
+
     case ERR_CONNECT_MMU_NOT_RESPONDING:
     case ERR_CONNECT_COMMUNICATION_ERROR:
-        
+
     case ERR_SYSTEM_QUEUE_FULL:
     case ERR_SYSTEM_FW_RUNTIME_ERROR:
     case ERR_SYSTEM_UNLOAD_MANUALLY:
@@ -286,7 +286,7 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
-        
+
     case ERR_SYSTEM_INVALID_TOOL:
         switch (buttonSelectedOperation) {
         case ButtonOperations::StopPrint: // "Stop print"
@@ -300,7 +300,7 @@ Buttons ButtonAvailable(uint16_t ec) {
     default:
         break;
     }
-    
+
     return NoButton;
 }
 
