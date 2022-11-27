@@ -367,7 +367,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//QUEUE_FULL
     Btns(ButtonOperations::DisableMMU, ButtonOperations::NoOperation),//FW_UPDATE_NEEDED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//FW_RUNTIME_ERROR
-    Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//UNLOAD_MANUALLY
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//UNLOAD_MANUALLY
 };
 
 static_assert( sizeof(errorCodes) / sizeof(errorCodes[0]) == sizeof(errorDescs) / sizeof (errorDescs[0]));
