@@ -2,9 +2,6 @@
 
 """
 Portable script to update po files on most platforms
-Make sure the .pot file is up-to-date first by
-by calling within the ./po folder:
-python ../lang-extract.py --no-missing -s -o Firmware.pot ../../Firmware/[a-zA-Z]*.[ch]* ../../Firmware/mmu2/[a-zA-Z]*.[ch]*
 """
 
 import argparse
