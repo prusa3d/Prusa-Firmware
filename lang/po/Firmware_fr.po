@@ -787,7 +787,7 @@ msgid ""
 "For a Nozzle change please read\n"
 "prusa.io/nozzle-mk3s"
 msgstr ""
-"For a Nozzle change please read\n"
+"Pour un changement de buse, lire\n"
 "prusa.io/nozzle-mk3s"
 
 #. MSG_SELFTEST_PART_FAN c=20
@@ -916,7 +916,7 @@ msgstr "Mise a zero"
 #. MSG_NOZZLE_CNG_CHANGED c=20 r=6
 #: ../../Firmware/messages.cpp:174 ../../Firmware/ultralcd.cpp:1036
 msgid "Hotend at 280C! Nozzle changed and tightened to specs?"
-msgstr "Hotend at 280C! Nozzle changed and tightened to specs?"
+msgstr "Hotend à 280C! Buse changée et resserrée aux spécifications?"
 
 #. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1137
