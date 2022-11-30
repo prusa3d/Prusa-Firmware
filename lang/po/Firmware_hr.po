@@ -2117,13 +2117,13 @@ msgstr "TMC NISKA VOLTAZA"
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
 msgid "Temp model cal. takes approx. 12 mins."
-msgstr ""
+msgstr "Temp model kal. traje cca. 12 min."
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
 #: ../../Firmware/messages.cpp:170
 msgid "Temp model not calibrated yet."
-msgstr ""
+msgstr "Temp model još nije kalibriran."
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4717
