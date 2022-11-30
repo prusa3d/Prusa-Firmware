@@ -2125,6 +2125,17 @@ msgstr "TMC CHYBA: PREHRATI"
 msgid "TMC UNDERVOLTAGE ERR"
 msgstr "TMC CHYBA NIZKE NAP."
 
+#. MSG_TM_CAL c=20 r=4
+#: ../../Firmware/ultralcd.cpp:4054
+msgid "Temp model cal. takes approx. 12 mins."
+msgstr "Kalibrace teplotního modelu trvá asi 12 minut."
+
+#. MSG_TM_NOT_CAL c=20 r=4
+#: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
+#: ../../Firmware/messages.cpp:170
+msgid "Temp model not calibrated yet."
+msgstr "Teplotní model zatím nebyl kalibrován."
+
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4717
 msgid "Temperature"

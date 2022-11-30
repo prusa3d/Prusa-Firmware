@@ -1000,9 +1000,12 @@ void lcd_commands()
         }
         //if (lcd_commands_step == 1 && calibrated()) {
         if (lcd_commands_step == 1 && temp_model_valid()) {
-            enquecommand_P(PSTR("M500"));
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
+            enquecommand_P(PSTR("M500"));
+            if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+                lcd_wizard(WizState::IsFil);
+            }
         }
     }
 #endif //TEMP_MODEL
@@ -3916,7 +3919,6 @@ void lcd_wizard(WizState state)
     using S = WizState;
 	bool end = false;
 	uint8_t wizard_event;
-	const char *msg = NULL;
 	// Make sure EEPROM_WIZARD_ACTIVE is true if entering using different entry point
 	// other than WizState::Run - it is useful for debugging wizard.
 	if (state != S::Run) eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
@@ -3924,7 +3926,7 @@ void lcd_wizard(WizState state)
     FORCE_BL_ON_START;
 	
     while (!end) {
-		printf_P(PSTR("Wizard state: %d\n"), state);
+		printf_P(PSTR("Wizard state: %d\n"), (uint8_t)state);
 		switch (state) {
 		case S::Run: //Run wizard?
 			
@@ -3958,6 +3960,9 @@ void lcd_wizard(WizState state)
 			case CALIBRATION_STATUS_ASSEMBLED: state = S::Selftest; break; //run selftest
 			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = S::Xyz; break; //run xyz cal.
 			case CALIBRATION_STATUS_Z_CALIBRATION: state = S::Z; break; //run z cal.
+#ifdef TEMP_MODEL
+			case CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION: state = S::TempModel; break; //run temp model cal.
+#endif //TEMP_MODEL
 			case CALIBRATION_STATUS_LIVE_ADJUST: state = S::IsFil; break; //run live adjust
 			case CALIBRATION_STATUS_CALIBRATED: end = true; eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0); break;
 			default: state = S::Selftest; break; //if calibration status is unknown, run wizard from the beginning
@@ -3975,8 +3980,14 @@ void lcd_wizard(WizState state)
 		case S::Xyz:
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run xyz calibration now. It will take approx. 12 mins."));////MSG_WIZARD_XYZ_CAL c=20 r=8
 			wizard_event = gcode_M45(false, 0);
-			if (wizard_event) state = S::IsFil;
-			else end = true;
+			if (wizard_event) {
+#ifdef TEMP_MODEL
+			lcd_reset_alert_level();
+			state = S::TempModel;
+#else
+			state = S::IsFil;
+#endif //TEMP_MODEL
+			} else end = true;
 			break;
 		case S::Z:
 			lcd_show_fullscreen_message_and_wait_P(_i("Please remove shipping helpers first."));////MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
@@ -4002,6 +4013,13 @@ void lcd_wizard(WizState state)
 			}
 			else end = true;
 			break;
+#ifdef TEMP_MODEL
+		case S::TempModel:
+			lcd_show_fullscreen_message_and_wait_P(_i("Temp model cal. takes approx. 12 mins."));////MSG_TM_CAL c=20 r=4
+			lcd_commands_type = LcdCommands::TempModel;
+			end = true; // Leave wizard temporarily for Temp model cal.
+			break;
+#endif //TEMP_MODEL
 		case S::IsFil:
 		    //start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
@@ -4062,7 +4080,8 @@ void lcd_wizard(WizState state)
     
     FORCE_BL_ON_END;
     
-	printf_P(_N("Wizard end state: %d\n"), state);
+    const char *msg = NULL;
+	printf_P(_N("Wizard end state: %d\n"), (uint8_t)state);
 	switch (state) { //final message
 	case S::Restore: //printer was already calibrated
 		msg = _T(MSG_WIZARD_DONE);
@@ -4072,21 +4091,25 @@ void lcd_wizard(WizState state)
 	case S::Z: //z cal.
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
 		break;
+#ifdef TEMP_MODEL
+	case S::TempModel: //Temp model calibration
+		break;
+#endif //TEMP_MODEL
 	case S::Finish: //we are finished
-
 		msg = _T(MSG_WIZARD_DONE);
 		lcd_reset_alert_level();
 		lcd_setstatuspgm(MSG_WELCOME);
 		lcd_return_to_status(); 
 		break;
-
+    case S::Preheat:
+    case S::Lay1CalCold:
+    case S::Lay1CalHot:
+        break;
 	default:
 		msg = _T(MSG_WIZARD_QUIT);
 		break;
-
 	}
-	if (!((S::Lay1CalCold == state) || (S::Lay1CalHot == state) || (S::Preheat == state)))
-	{
+	if (msg) {
 		lcd_show_fullscreen_message_and_wait_P(msg);
 	}
 	lcd_update_enable(true);
