@@ -3135,6 +3135,11 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
             char c = char(pgm_read_byte(msg));
             if (c == '~')
                 c = ' ';
+            else if (c == '\n') {
+                // Abort early if '\n' is encontered.
+                // This character is used to force the following words to be printed on the next line.
+                break;
+            }
             lcd_print(c);
         }
     }
