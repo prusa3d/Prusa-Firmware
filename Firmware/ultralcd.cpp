@@ -1094,7 +1094,7 @@ void lcd_commands()
                 //| Yes     No
                 enquecommand_P(PSTR("M84 XY"));
                 lcd_update_enabled = false; //hack to avoid lcd_update recursion.
-                if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
+                if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false, true)) {
 #ifdef TEMP_MODEL
                 //enquecommand_P(PSTR("M310 S1"));
                 temp_model_set_enabled(true);
