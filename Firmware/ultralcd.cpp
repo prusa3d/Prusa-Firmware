@@ -823,6 +823,7 @@ void print_stop();
 
 void lcd_commands()
 {
+    // printf_P(PSTR("lcd_commands begin, lcd_commands_type=%u, lcd_commands_step=%u\n"), (uint8_t)lcd_commands_type, lcd_commands_step);
     if (planner_aborted) {
         // we are still within an aborted command. do not process any LCD command until we return
         return;
@@ -1005,6 +1006,57 @@ void lcd_commands()
         }
     }
 #endif //TEMP_MODEL
+
+	if (lcd_commands_type == LcdCommands::NozzleCNG)
+	{
+        if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
+        {
+            switch(lcd_commands_step)
+            {
+            case 0:
+                lcd_commands_step = 3;
+                break;
+            case 3:
+                lcd_update_enabled = false; //hack to avoid lcd_update recursion.
+                lcd_show_fullscreen_message_and_wait_P(_T(MSG_NOZZLE_CNG_READ_HELP));
+                lcd_update_enabled = true;
+                lcd_draw_update = 2; //force lcd clear and update after the stack unwinds.
+                enquecommand_P(PSTR("G28 W"));
+                enquecommand_P(PSTR("G1 X125 Y10 Z150 F1000"));
+                enquecommand_P(PSTR("M109 S280"));
+#ifdef TEMP_MODEL
+                //enquecommand_P(PSTR("M310 S0"));
+                temp_model_set_enabled(false);
+#endif //TEMP_MODEL
+                lcd_commands_step = 2;
+                break;
+            case 2:
+                //|0123456789012456789|
+                //|Hotend at 280C!
+                //|Nozzle changed and
+                //|tightend to specs?
+                //| Yes     No
+                enquecommand_P(PSTR("M84 XY"));
+                lcd_update_enabled = false; //hack to avoid lcd_update recursion.
+                if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
+#ifdef TEMP_MODEL
+                //enquecommand_P(PSTR("M310 S1"));
+                temp_model_set_enabled(true);
+#endif //TEMP_MODEL
+                //enquecommand_P(PSTR("M104 S0"));
+                setTargetHotendSafe(0,0);
+                lcd_commands_step = 1;
+                }
+                lcd_update_enabled = true;
+                break;
+            case 1:
+                lcd_setstatuspgm(MSG_WELCOME);
+                lcd_commands_step = 0;
+                lcd_commands_type = LcdCommands::Idle;
+                break;
+            }
+        }
+    }
 }
 
 void lcd_return_to_status()
@@ -2942,6 +2994,11 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
             char c = char(pgm_read_byte(msg));
             if (c == '~')
                 c = ' ';
+            else if (c == '\n') {
+                // Abort early if '\n' is encontered.
+                // This character is used to force the following words to be printed on the next line.
+                break;
+            }
             lcd_print(c);
         }
     }
@@ -4503,6 +4560,12 @@ static void sheets_menu()
     MENU_END();
 }
 
+static void nozzle_change()
+{
+    lcd_commands_type = LcdCommands::NozzleCNG;
+    lcd_return_to_status();
+}
+
 void lcd_hw_setup_menu(void)                      // can not be "static"
 {
     typedef struct
@@ -4525,6 +4588,7 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 
     MENU_ITEM_SUBMENU_P(_T(MSG_STEEL_SHEETS), sheets_menu);
     SETTINGS_NOZZLE;
+    MENU_ITEM_FUNCTION_P(_T(MSG_NOZZLE_CNG_MENU),nozzle_change);
     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);  ////MSG_CHECKS c=18
 
 #if defined(FILAMENT_SENSOR) && (FILAMENT_SENSOR_TYPE == FSENSOR_IR_ANALOG)
