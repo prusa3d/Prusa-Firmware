@@ -1077,7 +1077,7 @@ void lcd_commands()
                 lcd_show_fullscreen_message_and_wait_P(_T(MSG_NOZZLE_CNG_READ_HELP));
                 lcd_update_enabled = true;
                 lcd_draw_update = 2; //force lcd clear and update after the stack unwinds.
-                enquecommand_P(PSTR("G28W"));
+                enquecommand_P(PSTR("G28 W"));
                 enquecommand_P(PSTR("G1 X125 Y10 Z150 F1000"));
                 enquecommand_P(PSTR("M109 S280"));
 #ifdef TEMP_MODEL
