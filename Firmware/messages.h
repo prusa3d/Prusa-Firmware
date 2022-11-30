@@ -170,6 +170,9 @@ extern const char MSG_PAUSED_THERMAL_ERROR[];
 extern const char MSG_THERMAL_ANOMALY[];
 extern const char MSG_TM_NOT_CAL[];
 #endif
+extern const char MSG_NOZZLE_CNG_MENU [];
+extern const char MSG_NOZZLE_CNG_READ_HELP [];
+extern const char MSG_NOZZLE_CNG_CHANGED [];
 
 //not internationalized messages
 #if 0

@@ -114,6 +114,7 @@ enum class LcdCommands : uint_least8_t
 #ifdef TEMP_MODEL
     TempModel,
 #endif //TEMP_MODEL
+    NozzleCNG,
 };
 
 extern LcdCommands lcd_commands_type;
