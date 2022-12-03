@@ -5863,14 +5863,14 @@ void print_stop()
         fanSpeed = 0;
     }
 
-    if (MMU2::mmu2.Enabled())
+    if (MMU2::mmu2.Enabled() && MMU2::mmu2.FindaDetectsFilament())
     {
         if (isPrintPaused)
         {
             // Restore temperature saved in ram after pausing print
             restore_extruder_temperature_from_ram();
         }
-        MMU2::mmu2.unload(); //M702 C
+        MMU2::mmu2.unload(); // M702
     }
 
     lcd_cooldown(); //turns off heaters and fan; goes to status screen.
