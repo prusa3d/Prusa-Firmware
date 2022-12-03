@@ -8011,10 +8011,9 @@ Sigma_Exit:
 	
     */
     case 862: // M862: print checking
-          float nDummy;
-          uint8_t nCommand;
-          nCommand=(uint8_t)(modff(code_value(),&nDummy)*10.0+0.5);
-          switch((ClPrintChecking)nCommand)
+    {
+        ClPrintChecking nCommand = static_cast<ClPrintChecking>(strtol(strchr_pointer+5, NULL, 10));
+        switch(nCommand)
                {
                case ClPrintChecking::_Nozzle:     // ~ .1
                     uint16_t nDiameter;
@@ -8064,7 +8063,8 @@ Sigma_Exit:
                          SERIAL_PROTOCOLLN(GCODE_LEVEL);
                     break;
                }
-    break;
+        break;
+    }
 
 #ifdef LIN_ADVANCE
     /*!
