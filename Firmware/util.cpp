@@ -501,7 +501,7 @@ lcd_update_enable(true);           // display / status-line recovery
      }
 }
 
-void fSetMmuMode(bool bMMu) {
+void __attribute__((noinline)) fSetMmuMode(bool bMMu) {
     if (bMMu) {
         nPrinterType = pgm_read_word(&_nPrinterMmuType);
         sPrinterName = _sPrinterMmuName;
