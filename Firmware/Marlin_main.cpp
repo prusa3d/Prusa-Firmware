@@ -8050,21 +8050,21 @@ Sigma_Exit:
                          SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
                     break;
                case ClPrintChecking::_Model:      // ~ .2
+                    fSetMmuMode(MMU2::mmu2.Enabled());
                     if(code_seen('P'))
                          {
                          uint16_t nPrinterModel;
                          nPrinterModel=(uint16_t)code_value_long();
                          // based on current state of MMU (active/stopped/connecting) perform a runtime update of the printer type
-                         fSetMmuMode(MMU2::mmu2.Enabled());
                          printer_model_check(nPrinterModel);
                          }
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLN(nPrinterType);
                     break;
                case ClPrintChecking::_Smodel:     // ~ .3
+                    fSetMmuMode(MMU2::mmu2.Enabled());
                     if(code_seen('P'))
                     {
-                        fSetMmuMode(MMU2::mmu2.Enabled());
                         printer_smodel_check(strchr_pointer);
                     }
                     else if(code_seen('Q'))
