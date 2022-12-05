@@ -782,6 +782,8 @@ msgid ""
 "For a Nozzle change please read\n"
 "prusa.io/nozzle-mk3s"
 msgstr ""
+"Pre vymenu trysky si precitajte\n"
+"prusa.io/nozzle-mk3s"
 
 #. MSG_SELFTEST_PART_FAN c=20
 #: ../../Firmware/messages.cpp:87 ../../Firmware/ultralcd.cpp:6977
@@ -905,7 +907,7 @@ msgstr "Navrat"
 #. MSG_NOZZLE_CNG_CHANGED c=20 r=6
 #: ../../Firmware/messages.cpp:174 ../../Firmware/ultralcd.cpp:1036
 msgid "Hotend at 280C! Nozzle changed and tightened to specs?"
-msgstr ""
+msgstr "Hotend ma 280C! Tryska je vymenena a utiahnuta podla specifikacie?"
 
 #. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1137
@@ -1360,7 +1362,7 @@ msgstr "Tryska"
 #. MSG_NOZZLE_CNG_MENU c=18
 #: ../../Firmware/messages.cpp:173 ../../Firmware/ultralcd.cpp:4580
 msgid "Nozzle change"
-msgstr ""
+msgstr "Vymena trysky"
 
 #. MSG_NOZZLE_DIAMETER c=10
 #: ../../Firmware/messages.cpp:137 ../../Firmware/ultralcd.cpp:4502
