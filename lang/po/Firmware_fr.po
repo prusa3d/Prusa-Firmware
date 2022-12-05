@@ -138,13 +138,13 @@ msgstr "Retour"
 #: ../../Firmware/ultralcd.cpp:1397 ../../Firmware/ultralcd.cpp:5708
 #: ../../Firmware/ultralcd.cpp:5863
 msgid "Bed"
-msgstr "Lit"
+msgstr "Plateau"
 
 #. MSG_BED_HEATING c=20
 #: ../../Firmware/Marlin_main.cpp:6290 ../../Firmware/messages.cpp:14
 #: ../../Firmware/ultralcd.cpp:569
 msgid "Bed Heating"
-msgstr "Chauffe du lit"
+msgstr "Chauffe du plateau"
 
 #. MSG_BED_DONE c=20
 #: ../../Firmware/Marlin_main.cpp:6328 ../../Firmware/messages.cpp:13
@@ -173,7 +173,7 @@ msgstr ""
 #. MSG_SELFTEST_BEDHEATER c=20
 #: ../../Firmware/ultralcd.cpp:6953
 msgid "Bed/Heater"
-msgstr "Lit/Chauffage"
+msgstr "Plateau/Chauffage"
 
 #. MSG_BELT_STATUS c=18
 #: ../../Firmware/messages.cpp:17 ../../Firmware/ultralcd.cpp:1450
@@ -300,28 +300,28 @@ msgstr "Change correctement?"
 #: ../../Firmware/messages.cpp:21 ../../Firmware/ultralcd.cpp:6169
 #: ../../Firmware/ultralcd.cpp:7285
 msgid "Checking X axis"
-msgstr "Verification axe X"
+msgstr "Verific. axe X"
 
 #. MSG_CHECKING_Y c=20
 #: ../../Firmware/messages.cpp:22 ../../Firmware/ultralcd.cpp:6178
 #: ../../Firmware/ultralcd.cpp:7286
 msgid "Checking Y axis"
-msgstr "Verification axe Y"
+msgstr "Verific. axe Y"
 
 #. MSG_SELFTEST_CHECK_Z c=20
 #: ../../Firmware/ultralcd.cpp:7287
 msgid "Checking Z axis"
-msgstr "Verification axe Z"
+msgstr "Verific. axe Z"
 
 #. MSG_SELFTEST_CHECK_BED c=20
 #: ../../Firmware/messages.cpp:93 ../../Firmware/ultralcd.cpp:7288
 msgid "Checking bed"
-msgstr "Verif. plateau chauf"
+msgstr "Verif. plateau"
 
 #. MSG_SELFTEST_CHECK_ENDSTOPS c=20
 #: ../../Firmware/ultralcd.cpp:7284
 msgid "Checking endstops"
-msgstr "Verification butees"
+msgstr "Verific. butees"
 
 #. MSG_CHECKING_FILE c=17
 #: ../../Firmware/ultralcd.cpp:7383
@@ -447,7 +447,7 @@ msgid ""
 "Please follow the manual, chapter First steps, section First layer "
 "calibration."
 msgstr ""
-"La distance entre la pointe de la buse et la surface du plateau n'a pas "
+"La distance entre de la buse et du plateau n'a pas "
 "encore ete reglee. Suivez le manuel, chapitre Premiers pas, section "
 "Calibration de la premiere couche."
 
@@ -458,7 +458,7 @@ msgid ""
 "heatbed?"
 msgstr ""
 "Voulez-vous refaire l'etape pour reajuster la hauteur entre la buse et le "
-"plateau chauffant?"
+"plateau?"
 
 #. MSG_BTN_CONTINUE c=8
 #: ../../Firmware/mmu2/errors_list.h:296 ../../Firmware/mmu2/errors_list.h:306
@@ -1012,7 +1012,7 @@ msgstr "Fil. est-il charge?"
 #: ../../Firmware/Marlin_main.cpp:3298 ../../Firmware/Marlin_main.cpp:4908
 #: ../../Firmware/messages.cpp:110 ../../Firmware/ultralcd.cpp:4039
 msgid "Is steel sheet on heatbed?"
-msgstr "Est la plaque sur le plat. chauffant?"
+msgstr "Est la plaque sur le plateau?"
 
 #. MSG_ITERATION c=12
 #: ../../Firmware/mesh_bed_calibration.cpp:2252 ../../Firmware/messages.cpp:51
@@ -1352,8 +1352,8 @@ msgstr "Ne tourne pas"
 msgid ""
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
 msgstr ""
-"Maintenant je vais calibrer la distance entre la pointe de la buse et la "
-"surface du plateau chauffant."
+"Maintenant je vais calibrer la distance entre de la buse et la "
+"surface du plateau."
 
 #. MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4048
@@ -1533,7 +1533,7 @@ msgstr "Verifiez:"
 #. MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4099
 msgid "Please clean heatbed and then press the knob."
-msgstr "Nettoyez plateau chauffant en acier et appuyez sur le bouton."
+msgstr "Nettoyez la plaque en acier et appuyez sur le bouton."
 
 #. MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3277 ../../Firmware/messages.cpp:24
@@ -1571,7 +1571,7 @@ msgstr "Ouvrez l'idler et retirez le filament manuellement."
 #: ../../Firmware/mesh_bed_calibration.cpp:2795 ../../Firmware/messages.cpp:74
 #: ../../Firmware/ultralcd.cpp:4041
 msgid "Please place steel sheet on heatbed."
-msgstr "Placez la plaque en acier sur le plateau chauffant."
+msgstr "Placez la plaque en acier sur le plateau."
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:11529 ../../Firmware/Marlin_main.cpp:11582
@@ -1593,7 +1593,7 @@ msgstr "Retirez d'abord les protections de transport."
 #: ../../Firmware/Marlin_main.cpp:3300 ../../Firmware/Marlin_main.cpp:4918
 #: ../../Firmware/messages.cpp:83
 msgid "Please remove steel sheet from heatbed."
-msgstr "Retirez la plaque en acier du plateau chauffant."
+msgstr "Retirez la plaque en acier du plateau."
 
 #. MSG_RUN_XYZ c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:4894
@@ -2342,7 +2342,7 @@ msgstr "Attente du refroidissement de la sonde PINDA"
 #. MSG_WAITING_TEMP c=20 r=4
 #: ../../Firmware/ultralcd.cpp:2904
 msgid "Waiting for nozzle and bed cooling"
-msgstr "Attente du refroidissement des buse et plateau chauffant"
+msgstr "Attente du refroidissement des buse et plateau"
 
 #. MSG_WARN c=8
 #: ../../Firmware/messages.cpp:131 ../../Firmware/ultralcd.cpp:4452
