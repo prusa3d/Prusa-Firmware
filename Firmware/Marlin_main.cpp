@@ -8049,27 +8049,27 @@ Sigma_Exit:
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
                     break;
-               case ClPrintChecking::_Model:      // ~ .2
-                    fSetMmuMode(MMU2::mmu2.Enabled());
+               case ClPrintChecking::_Model: {    // ~ .2
+                    uint16_t type = nPrinterType(MMU2::mmu2.Enabled());
                     if(code_seen('P'))
                          {
                          uint16_t nPrinterModel;
                          nPrinterModel=(uint16_t)code_value_long();
                          // based on current state of MMU (active/stopped/connecting) perform a runtime update of the printer type
-                         printer_model_check(nPrinterModel);
+                         printer_model_check(nPrinterModel, type);
                          }
                     else if(code_seen('Q'))
-                         SERIAL_PROTOCOLLN(nPrinterType);
-                    break;
-               case ClPrintChecking::_Smodel:     // ~ .3
-                    fSetMmuMode(MMU2::mmu2.Enabled());
+                         SERIAL_PROTOCOLLN(type);
+               } break;
+               case ClPrintChecking::_Smodel: {    // ~ .3
+                    const char *type = sPrinterType(MMU2::mmu2.Enabled());
                     if(code_seen('P'))
                     {
-                        printer_smodel_check(strchr_pointer);
+                        printer_smodel_check(strchr_pointer, type);
                     }
                     else if(code_seen('Q'))
-                         SERIAL_PROTOCOLLNRPGM(sPrinterName);
-                    break;
+                         SERIAL_PROTOCOLLNRPGM(type);
+               } break;
                case ClPrintChecking::_Version:    // ~ .4
                     if(code_seen('P'))
                          fw_version_check(++strchr_pointer);

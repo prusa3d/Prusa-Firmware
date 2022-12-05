@@ -328,15 +328,15 @@ void nozzle_diameter_check(uint16_t nDiameter) {
     }
 }
 
-void printer_model_check(uint16_t nPrinterModel) {
+void printer_model_check(uint16_t nPrinterModel, uint16_t actualPrinterModel) {
     if (oCheckModel == ClCheckModel::_None)
         return;
-    if (nPrinterModel == nPrinterType)
+    if (nPrinterModel == actualPrinterModel)
         return;
     // SERIAL_ECHO_START;
     // SERIAL_ECHOLNPGM("Printer model differs from the G-code ...");
     // SERIAL_ECHOPGM("actual  : ");
-    // SERIAL_ECHOLN(nPrinterType);
+    // SERIAL_ECHOLN(actualPrinterModel);
     // SERIAL_ECHOPGM("expected: ");
     // SERIAL_ECHOLN(nPrinterModel);
     switch (oCheckModel) {
@@ -470,16 +470,16 @@ if(!pStrEnd)
 return pStrBegin;
 }
 
-void printer_smodel_check(const char *pStrPos) {
+void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel) {
 char* pResult;
 size_t nLength,nPrinterNameLength;
 
-nPrinterNameLength = strlen_P(sPrinterName);
+nPrinterNameLength = strlen_P(actualPrinterSModel);
 pResult=code_string(pStrPos,&nLength);
 
 if(pResult != NULL && nLength == nPrinterNameLength) {
      // Only compare them if the lengths match
-     if (strncmp_P(pResult, sPrinterName, nLength) == 0) return;
+     if (strncmp_P(pResult, actualPrinterSModel, nLength) == 0) return;
 }
 
 switch(oCheckModel)
@@ -501,13 +501,21 @@ lcd_update_enable(true);           // display / status-line recovery
      }
 }
 
-void __attribute__((noinline)) fSetMmuMode(bool bMMu) {
+uint16_t nPrinterType(bool bMMu) {
     if (bMMu) {
-        nPrinterType = pgm_read_word(&_nPrinterMmuType);
-        sPrinterName = _sPrinterMmuName;
-    } else {
-        nPrinterType = pgm_read_word(&_nPrinterType);
-        sPrinterName = _sPrinterName;
+        return pgm_read_word(&_nPrinterMmuType);
+    }
+    else {
+        return pgm_read_word(&_nPrinterType);
+    }
+}
+
+const char *sPrinterType(bool bMMu) {
+    if (bMMu) {
+        return _sPrinterMmuName;
+    }
+    else {
+        return _sPrinterName;
     }
 }
 
