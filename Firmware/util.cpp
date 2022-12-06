@@ -390,27 +390,28 @@ void fw_version_check(const char *pVersion) {
     nCompareValueResult += mCompareValue(aVersion[3], eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_FLAVOR));
     if (nCompareValueResult == COMPARE_VALUE_EQUAL)
         return;
-    if ((nCompareValueResult < COMPARE_VALUE_EQUAL) && oCheckVersion == ClCheckVersion::_Warn)
+    if ((nCompareValueResult < COMPARE_VALUE_EQUAL) && (oCheckVersion == ClCheckVersion::_Warn || oCheckVersion == ClCheckVersion::_Strict))
         return;
-    // SERIAL_ECHO_START;
-    // SERIAL_ECHOLNPGM("Printer FW version differs from the G-code ...");
-    // SERIAL_ECHOPGM("actual  : ");
-//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MAJOR));
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MINOR));
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_REVISION));
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_FLAVOR));
-//    SERIAL_ECHOPGM("\nexpected: ");
-//    SERIAL_ECHO(aVersion[0]);
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(aVersion[1]);
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(aVersion[2]);
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHOLN(aVersion[3]);
-
+/*
+    SERIAL_ECHO_START;
+    SERIAL_ECHOLNPGM("Printer FW version differs from the G-code ...");
+    SERIAL_ECHOPGM("actual  : ");
+    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MAJOR));
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MINOR));
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_REVISION));
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_FLAVOR));
+    SERIAL_ECHOPGM("\nexpected: ");
+    SERIAL_ECHO(aVersion[0]);
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(aVersion[1]);
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(aVersion[2]);
+    SERIAL_ECHO('.');
+    SERIAL_ECHOLN(aVersion[3]);
+*/
     switch (oCheckVersion) {
     case ClCheckVersion::_Warn:
         //          lcd_show_fullscreen_message_and_wait_P(_i("Printer FW version differs from the G-code. Continue?"));

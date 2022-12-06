@@ -20,7 +20,7 @@ extern PGM_P sPrinterName;
 #define FW_MINOR 12
 #define FW_REVISION 0
 #define FW_FLAVOR RC      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
-#define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed.
+#define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
 #ifndef FW_FLAVOR
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION)
 #else
