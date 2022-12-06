@@ -4,12 +4,16 @@
 extern const char* FW_VERSION_STR_P();
 
 // Definition of a firmware flavor numerical values.
+// To keep it short as possible
+// DEVs/ALPHAs/BETAs limited to max 8 flavor versions
+// RCs limited to 32 flavor versions
+// Final Release always 64 as highest
 enum FirmwareRevisionFlavorType : uint16_t {
-    FIRMWARE_REVISION_RELEASED = 0,
-    FIRMWARE_REVISION_DEV = 0x0100,
-    FIRMWARE_REVISION_ALPHA = 0x0200,
-    FIRMWARE_REVISION_BETA = 0x0300,
-    FIRMWARE_REVISION_RC = 0x0400
+    FIRMWARE_REVISION_RELEASED = 0x0040,
+    FIRMWARE_REVISION_DEV = 0x0000,
+    FIRMWARE_REVISION_ALPHA = 0x008,
+    FIRMWARE_REVISION_BETA = 0x0010,
+    FIRMWARE_REVISION_RC = 0x0020
 };
 
 extern bool show_upgrade_dialog_if_version_newer(const char *version_string);
