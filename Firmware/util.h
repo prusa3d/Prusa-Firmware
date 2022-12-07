@@ -87,12 +87,13 @@ extern ClCheckGcode oCheckGcode;
 
 void fCheckModeInit();
 void nozzle_diameter_check(uint16_t nDiameter);
-void printer_model_check(uint16_t nPrinterModel);
-void printer_smodel_check(const char* pStrPos);
+void printer_model_check(uint16_t nPrinterModel, uint16_t actualPrinterModel);
+void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel);
 void fw_version_check(const char *pVersion);
 void gcode_level_check(uint16_t nGcodeLevel);
 
-void fSetMmuMode(bool bMMu);
+uint16_t nPrinterType(bool bMMu);
+const char *sPrinterType(bool bMMu);
 
 #define IP4_STR_SIZE 16
 extern void ip4_to_str(char* dest, uint8_t* IP);
