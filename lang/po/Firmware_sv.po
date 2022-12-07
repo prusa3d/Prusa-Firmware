@@ -623,6 +623,8 @@ msgid ""
 "For a Nozzle change please read\n"
 "prusa.io/nozzle-mk3s"
 msgstr ""
+"För byte av munstycke, läs"
+"prusa.io/nozzle-mk3s"
 
 #. MSG_SELFTEST_PART_FAN c=20
 #: ../../Firmware/messages.cpp:83 ../../Firmware/ultralcd.cpp:7026
@@ -749,7 +751,7 @@ msgstr "Hög kraft"
 #. MSG_NOZZLE_CNG_CHANGED c=20 r=6
 #: ../../Firmware/messages.cpp:174 ../../Firmware/ultralcd.cpp:1036
 msgid "Hotend at 280C! Nozzle changed and tightened to specs?"
-msgstr ""
+msgstr "Hotend temperatur är 280C! Är munstycket bytt och spänt enligt specs?"
 
 #. MSG_HOTEND_FAN_SPEED c=15
 #: ../../Firmware/messages.cpp:35 ../../Firmware/ultralcd.cpp:1145
@@ -1148,7 +1150,7 @@ msgstr "Munstycke"
 #. MSG_NOZZLE_CNG_MENU c=18
 #: ../../Firmware/messages.cpp:173 ../../Firmware/ultralcd.cpp:4580
 msgid "Nozzle change"
-msgstr ""
+msgstr "Munstycksbyte"
 
 #. MSG_NOZZLE_DIAMETER c=10
 #: ../../Firmware/messages.cpp:133 ../../Firmware/ultralcd.cpp:4565
