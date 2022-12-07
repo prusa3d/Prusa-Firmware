@@ -58,8 +58,6 @@ CMake support is experimental. There is no guarantee at this time. If you have p
 We now return to your regularly scheduled Firmware Build."
   )
 
-option(SECONDARY_LANGUAGES "Secondary language support in the firmware" ON)
-
 # Language configuration
 set(MAIN_LANGUAGES
     cs de es fr it pl
