@@ -9,7 +9,7 @@ public:
     array() = default;
     inline constexpr T* begin()const { return data; }
     inline constexpr T* end()const { return data + N; }
-    constexpr uint8_t size()const { return N; }
+    static constexpr uint8_t size() { return N; }
     inline T &operator[](uint8_t i){
         return data[i];
     }
