@@ -22,17 +22,15 @@ void LogEchoEvent_P(const char *msg);
 
 #define SERIAL_MMU2() { serialprintPGM(mmu2Magic); }
 
-#define MMU2_ECHO_MSG(S) do{ SERIAL_ECHO_START; SERIAL_MMU2(); SERIAL_ECHO(S); }while(0)
-#define MMU2_ERROR_MSG(S) MMU2_ECHO_MSG(S) //!@todo Decide MMU2 errors  on serial line
+#define MMU2_ECHO_MSGLN(S) do{ SERIAL_ECHO_START; SERIAL_MMU2(); SERIAL_ECHOLN(S); }while(0)
+#define MMU2_ERROR_MSGLN(S) MMU2_ECHO_MSGLN(S) //!@todo Decide MMU2 errors  on serial line
 #define MMU2_ECHO_MSGRPGM(S) do{ SERIAL_ECHO_START; SERIAL_MMU2(); SERIAL_ECHORPGM(S); }while(0)
 #define MMU2_ERROR_MSGRPGM(S) MMU2_ECHO_MSGRPGM(S) //!@todo Decide MMU2 errors  on serial line
 
 #else // #ifndef UNITTEST
 
-#define MMU2_ECHO_MSG(S) /* */
-#define MMU2_ERROR_MSG(S) /* */
-#define SERIAL_ECHO(S) /* */
-#define SERIAL_ECHOLN(S) /* */
+#define MMU2_ECHO_MSGLN(S) /* */
+#define MMU2_ERROR_MSGLN(S) /* */
 #define MMU2_ECHO_MSGRPGM(S) /* */
 #define MMU2_ERROR_MSGRPGM(S) /* */
 
