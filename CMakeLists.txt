@@ -49,8 +49,6 @@ message(
 
 set(FN_PREFIX "FW${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}")
 
-option(SECONDARY_LANGUAGES "Secondary language support in the firmware" ON)
-
 # Language configuration
 set(MAIN_LANGUAGES
     cs de es fr it pl
