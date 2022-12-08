@@ -693,7 +693,7 @@ void ProtocolLogic::FormatLastResponseMsgAndClearLRB(char *dst) {
 }
 
 void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size) {
-    constexpr uint_fast8_t rqs = modules::protocol::Protocol::MaxRequestSize() + 2;
+    constexpr uint_fast8_t rqs = modules::protocol::Protocol::MaxRequestSize() + 1;
     char tmp[rqs] = ">";
     static char lastMsg[rqs] = "";
     for (uint8_t i = 0; i < size; ++i) {
@@ -704,9 +704,8 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size) {
             b = '.';
         tmp[i + 1] = b;
     }
-    tmp[size + 1] = '\n';
-    tmp[size + 2] = 0;
-    if (!strncmp_P(tmp, PSTR(">S0*99.\n"), rqs) && !strncmp(lastMsg, tmp, rqs)) {
+    tmp[size + 1] = 0;
+    if (!strncmp_P(tmp, PSTR(">S0*99."), rqs) && !strncmp(lastMsg, tmp, rqs)) {
         // @@TODO we skip the repeated request msgs for now
         // to avoid spoiling the whole log just with ">S0" messages
         // especially when the MMU is not connected.
@@ -714,7 +713,7 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size) {
         // trying to find the MMU, but since it has been reliable in the past
         // we can live without it for now.
     } else {
-        MMU2_ECHO_MSG(tmp);
+        MMU2_ECHO_MSGLN(tmp);
     }
     memcpy(lastMsg, tmp, rqs);
 }
@@ -731,8 +730,7 @@ void ProtocolLogic::LogError(const char *reason_P) {
 void ProtocolLogic::LogResponse() {
     char lrb[lastReceivedBytes.size()];
     FormatLastResponseMsgAndClearLRB(lrb);
-    MMU2_ECHO_MSG(lrb);
-    SERIAL_ECHOLN();
+    MMU2_ECHO_MSGLN(lrb);
 }
 
 StepStatus ProtocolLogic::SuppressShortDropOuts(const char *msg_P, StepStatus ss) {
