@@ -255,4 +255,6 @@ uint8_t lcdui_print_extruder(void);
 extern void lcd_pinda_temp_compensation_toggle();
 #endif //PINDA_TEMP_COMP
 
+extern void lcd_heat_bed_on_load_toggle();
+
 #endif //ULTRALCD_H

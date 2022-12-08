@@ -1824,12 +1824,42 @@ bool bFilamentPreheatState;
 bool bFilamentAction=false;
 static bool bFilamentWaitingFlag=false;
 
+bool shouldPreheatOnlyNozzle() {
+    uint8_t eeprom_setting = eeprom_read_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT);
+    if (eeprom_setting != 0)
+        return false;
+
+    switch(eFilamentAction) {
+        case FilamentAction::Load:
+        case FilamentAction::AutoLoad:
+        case FilamentAction::UnLoad:
+        case FilamentAction::MmuLoad:
+        case FilamentAction::MmuUnLoad:
+        case FilamentAction::MmuEject:
+        case FilamentAction::MmuCut:
+            return true;
+        default:
+            return false;
+    }
+}
+
+void lcd_print_target_temps_first_line(){
+    lcd_set_cursor(0, 0);
+    lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
+    lcd_set_cursor(10, 0);
+    int targetBedTemp = (int) degTargetBed();
+    if (targetBedTemp) {
+        lcdui_print_temp(LCD_STR_BEDTEMP[0], (int) degBed(), targetBedTemp);
+    } else {
+        lcd_space(10);
+    }
+}
+
 static void mFilamentPrompt()
 {
 uint8_t nLevel;
 
-lcd_set_cursor(0,0);
-lcdui_print_temp(LCD_STR_THERMOMETER[0],(int)degHotend(0),(int)degTargetHotend(0));
+lcd_print_target_temps_first_line();
 lcd_puts_at_P(0,1, _i("Press the knob"));                 ////MSG_PRESS_KNOB c=20
 lcd_set_cursor(0,2);
 switch(eFilamentAction)
@@ -1891,14 +1921,10 @@ switch(eFilamentAction)
 
 void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 {
-    static int nTargetOld;
-    static int nTargetBedOld;
     uint8_t nLevel;
 
-    nTargetOld = target_temperature[0];
-    nTargetBedOld = target_temperature_bed;
-    setTargetHotend0((float )nTemp);
-    setTargetBed((float) nTempBed);
+    setTargetHotend0((float)nTemp);
+    if (!shouldPreheatOnlyNozzle()) setTargetBed((float)nTempBed);
 
     {
         const FilamentAction action = eFilamentAction;
@@ -2033,8 +2059,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
         }
 
         if (bFilamentWaitingFlag) {
-            lcd_set_cursor(0, 0);
-            lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
+            lcd_print_target_temps_first_line();
         }
 
         if (lcd_clicked())
@@ -2043,13 +2068,8 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             if (!bFilamentPreheatState)
             {
                 setTargetHotend0(0.0);
-                setTargetBed(0.0);
+                if (!isPrintPaused) setTargetBed(0.0);
                 menu_back();
-            }
-            else
-            {
-                setTargetHotend0((float )nTargetOld);
-                setTargetBed((float) nTargetBedOld);
             }
             menu_back();
             if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
@@ -2155,16 +2175,17 @@ void lcd_generic_preheat_menu()
     }
     else
     {
-        MENU_ITEM_SUBMENU_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)),mFilamentItem_PLA);
-        MENU_ITEM_SUBMENU_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)),mFilamentItem_PET);
-        MENU_ITEM_SUBMENU_P(PSTR("ASA  -  " STRINGIFY(ASA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ASA_PREHEAT_HPB_TEMP)),mFilamentItem_ASA);
-        MENU_ITEM_SUBMENU_P(PSTR("PC   -  " STRINGIFY(PC_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PC_PREHEAT_HPB_TEMP)),mFilamentItem_PC);
-        MENU_ITEM_SUBMENU_P(PSTR("PVB  -  " STRINGIFY(PVB_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PVB_PREHEAT_HPB_TEMP)),mFilamentItem_PVB);
-        MENU_ITEM_SUBMENU_P(PSTR("PA   -  " STRINGIFY(PA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PA_PREHEAT_HPB_TEMP)),mFilamentItem_PA);
-        MENU_ITEM_SUBMENU_P(PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)),mFilamentItem_ABS);
-        MENU_ITEM_SUBMENU_P(PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)),mFilamentItem_HIPS);
-        MENU_ITEM_SUBMENU_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)),mFilamentItem_PP);
-        MENU_ITEM_SUBMENU_P(PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)),mFilamentItem_FLEX);
+        bool bPreheatOnlyNozzle = shouldPreheatOnlyNozzle();
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)) : PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)  "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)) , mFilamentItem_PLA);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP)) : PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP)  "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)) , mFilamentItem_PET);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("ASA  -  " STRINGIFY(ASA_PREHEAT_HOTEND_TEMP)) : PSTR("ASA  -  " STRINGIFY(ASA_PREHEAT_HOTEND_TEMP)  "/" STRINGIFY(ASA_PREHEAT_HPB_TEMP)) , mFilamentItem_ASA);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("PC   -  " STRINGIFY(PC_PREHEAT_HOTEND_TEMP))  : PSTR("PC   -  " STRINGIFY(PC_PREHEAT_HOTEND_TEMP)   "/" STRINGIFY(PC_PREHEAT_HPB_TEMP))  , mFilamentItem_PC);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("PVB  -  " STRINGIFY(PVB_PREHEAT_HOTEND_TEMP)) : PSTR("PVB  -  " STRINGIFY(PVB_PREHEAT_HOTEND_TEMP)  "/" STRINGIFY(PVB_PREHEAT_HPB_TEMP)) , mFilamentItem_PVB);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("PA   -  " STRINGIFY(PA_PREHEAT_HOTEND_TEMP))  : PSTR("PA   -  " STRINGIFY(PA_PREHEAT_HOTEND_TEMP)   "/" STRINGIFY(PA_PREHEAT_HPB_TEMP))  , mFilamentItem_PA);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP)) : PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP)  "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)) , mFilamentItem_ABS);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP)): PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)), mFilamentItem_HIPS);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP))  : PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP)   "/" STRINGIFY(PP_PREHEAT_HPB_TEMP))  , mFilamentItem_PP);
+        MENU_ITEM_SUBMENU_P(bPreheatOnlyNozzle ? PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP)): PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)), mFilamentItem_FLEX);
     }
     if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) && eFilamentAction == FilamentAction::Preheat) MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
     MENU_END();
@@ -4730,6 +4751,9 @@ static void lcd_settings_menu()
         MENU_ITEM_SUBMENU_P(_T(MSG_BRIGHTNESS), lcd_backlight_menu);
     }
 #endif //LCD_BL_PIN
+
+    //! Enables/disables the bed heating while heating the nozzle for loading/unloading filament
+    MENU_ITEM_TOGGLE_P(_N("HeatBedOnLoad"), eeprom_read_byte((uint8_t *)EEPROM_HEAT_BED_ON_LOAD_FILAMENT) ? _T(MSG_YES) : _T(MSG_NO), lcd_heat_bed_on_load_toggle);
 
 	if (farm_mode)
 	{
@@ -7766,3 +7790,13 @@ void lcd_pinda_temp_compensation_toggle()
 	SERIAL_ECHOLN(pinda_temp_compensation);
 }
 #endif //PINDA_TEMP_COMP
+
+void lcd_heat_bed_on_load_toggle()
+{
+    uint8_t value = eeprom_read_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT);
+    if (value > 1)
+        value = 1;
+    else
+        value = !value;
+    eeprom_update_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT, value);
+}
