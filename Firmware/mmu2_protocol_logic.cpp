@@ -705,7 +705,7 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size) {
         tmp[i + 1] = b;
     }
     tmp[size + 1] = 0;
-    if (!strncmp_P(tmp, PSTR(">S0*99."), rqs) && !strncmp(lastMsg, tmp, rqs)) {
+    if (!strncmp_P(tmp, PSTR(">S0*c6."), rqs) && !strncmp(lastMsg, tmp, rqs)) {
         // @@TODO we skip the repeated request msgs for now
         // to avoid spoiling the whole log just with ">S0" messages
         // especially when the MMU is not connected.
