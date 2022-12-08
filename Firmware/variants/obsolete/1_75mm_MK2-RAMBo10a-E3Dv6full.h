@@ -322,6 +322,10 @@ PREHEAT SETTINGS
 #define FLEX_PREHEAT_HOTEND_TEMP 230
 #define FLEX_PREHEAT_HPB_TEMP 50
 
+#define PHA_PREHEAT_HOTEND_TEMP 195
+#define PHA_PREHEAT_HPB_TEMP 0
+#define PHA_PREHEAT_FAN_SPEED 0
+
 /*------------------------------------
 THERMISTORS SETTINGS
 *------------------------------------*/

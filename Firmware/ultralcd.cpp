@@ -2128,6 +2128,12 @@ static void mFilamentItem_PVB()
     mFilamentItem(PVB_PREHEAT_HOTEND_TEMP, PVB_PREHEAT_HPB_TEMP);
 }
 
+static void mFilamentItem_PHA()
+{
+    bFilamentPreheatState = false;
+    mFilamentItem(PHA_PREHEAT_HOTEND_TEMP, PHA_PREHEAT_HPB_TEMP);
+}
+
 void mFilamentBack()
 {
     if (eFilamentAction == FilamentAction::AutoLoad ||
@@ -2165,6 +2171,7 @@ void lcd_generic_preheat_menu()
         MENU_ITEM_SUBMENU_P(PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)),mFilamentItem_HIPS);
         MENU_ITEM_SUBMENU_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)),mFilamentItem_PP);
         MENU_ITEM_SUBMENU_P(PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)),mFilamentItem_FLEX);
+        MENU_ITEM_SUBMENU_P(PSTR("PHA  -  " STRINGIFY(PHA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PHA_PREHEAT_HPB_TEMP)),mFilamentItem_PHA);
     }
     if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) && eFilamentAction == FilamentAction::Preheat) MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
     MENU_END();
