@@ -49,15 +49,6 @@ message(
 
 set(FN_PREFIX "FW${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX_SHORT}")
 
-message(
-  WARNING
-    "
-***************** YOUR ATTENTION PLEASE *****************
-CMake support is experimental. There is no guarantee at this time. If you have problems you are encouraged to fall back to the tried-and-true methods.
-*********************** THANK YOU **********************
-We now return to your regularly scheduled Firmware Build."
-  )
-
 option(SECONDARY_LANGUAGES "Secondary language support in the firmware" ON)
 
 # Language configuration
