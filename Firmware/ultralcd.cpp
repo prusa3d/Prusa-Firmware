@@ -5937,31 +5937,18 @@ void lcd_temp_model_cal()
 
 void lcd_sdcard_stop()
 {
+    // Show static message
+    lcd_puts_at_P(0, 0, _T(MSG_STOP_PRINT));
+    lcd_putc_at(0, 1, '\n');
 
-	lcd_puts_at_P(0, 0, _T(MSG_STOP_PRINT));
-	lcd_puts_at_P(2, 2, _T(MSG_NO));
-	lcd_puts_at_P(2, 3, _T(MSG_YES));
-	lcd_putc_at(0, 2, ' ');
-	lcd_putc_at(0, 3, ' ');
+    MENU_BEGIN();
+    // Skip first two LCD rows used by static message
+    if(menu_row == 0) menu_row = 2;
 
-	if ((int32_t)lcd_encoder > 2) { lcd_encoder = 2; }
-	if ((int32_t)lcd_encoder < 1) { lcd_encoder = 1; }
-	
-	lcd_putc_at(0, 1 + lcd_encoder, '>');
-
-	if (lcd_clicked())
-	{
-		Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
-		if ((int32_t)lcd_encoder == 1)
-		{
-			lcd_return_to_status();
-		}
-		if ((int32_t)lcd_encoder == 2)
-		{
-			lcd_print_stop();
-		}
-	}
-
+    // Show No options first, the default selection
+    MENU_ITEM_FUNCTION_P(_T(MSG_NO), lcd_return_to_status);
+    MENU_ITEM_FUNCTION_P(_T(MSG_YES), lcd_print_stop);
+    MENU_END();
 }
 
 void lcd_sdcard_menu()
