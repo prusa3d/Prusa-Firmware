@@ -942,7 +942,7 @@ msgstr "IDLER NU SE MISCA"
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:156 ../../Firmware/mmu2/errors_list.h:197
 msgid "INSPECT FINDA"
-msgstr ""
+msgstr "Verifica FINDA"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:159 ../../Firmware/mmu2/errors_list.h:201
@@ -1021,7 +1021,7 @@ msgstr "Ultimul print"
 #: ../../Firmware/messages.cpp:55 ../../Firmware/ultralcd.cpp:1179
 #: ../../Firmware/ultralcd.cpp:1266 ../../Firmware/ultralcd.cpp:1321
 msgid "Last print failures"
-msgstr "Err. ultimului print"
+msgstr "Erorile ultim. print"
 
 #. MSG_LEFT c=10
 #: ../../Firmware/ultralcd.cpp:2487
@@ -1081,7 +1081,7 @@ msgstr "Incarca la varf"
 #. MSG_LOADING_TEST c=18
 #: ../../Firmware/messages.cpp:57 ../../Firmware/ultralcd.cpp:4419
 msgid "Loading Test"
-msgstr ""
+msgstr "Incarcare Test"
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -1641,12 +1641,12 @@ msgstr "Preincalzire..."
 #. MSG_PREHEATING_TO_LOAD c=20
 #: ../../Firmware/ultralcd.cpp:1982
 msgid "Preheating to load"
-msgstr "Preincalzire load"
+msgstr "Preincalz. incarcare"
 
 #. MSG_PREHEATING_TO_UNLOAD c=20
 #: ../../Firmware/ultralcd.cpp:1987
 msgid "Preheating to unload"
-msgstr "Preincalzire unload"
+msgstr "Preincalz. scoatere"
 
 #. MSG_PROGRESS_PREPARE_BLADE c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:22
@@ -1968,7 +1968,7 @@ msgstr "Setari"
 #. MSG_SEVERE_SKEW c=14
 #: ../../Firmware/ultralcd.cpp:2531
 msgid "Severe skew"
-msgstr "Dist. severa"
+msgstr "Deform. severa"
 
 #. MSG_SHEET c=10
 #: ../../Firmware/menu.cpp:209 ../../Firmware/menu.cpp:221
