@@ -3062,7 +3062,7 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	// Until confirmed by a button click.
 	for (;;) {
-		if (!multi_screen) {
+		if (msg_next == NULL) {
 			lcd_set_cursor(19, 3);
 			// Display the confirm char.
 			lcd_print(LCD_STR_CONFIRM[0]);
@@ -3085,12 +3085,6 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
             if (msg_next == NULL)
                 msg_next = msg;
             msg_next = lcd_display_message_fullscreen_P(msg_next);
-			if (msg_next == NULL) {
-
-				lcd_set_cursor(19, 3);
-				// Display the confirm char.
-				lcd_print(LCD_STR_CONFIRM[0]);
-			}
         }
     }
 }
