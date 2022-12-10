@@ -7,9 +7,7 @@ import regex
 import os
 import sys
 import lib.charset as cs
-from pathlib import Path, PurePosixPath
-
-FILE_LIST: list[Path] = []
+from pathlib import Path
 
 # Absolute path
 BASE_DIR: Path = Path.absolute(Path(__file__).parent)
@@ -274,25 +272,13 @@ def main():
     ap.add_argument('file', nargs='+', help='Input files')
     args = ap.parse_args()
 
-    for path in args.file:
-        if not Path(path).exists():
-            # assume its regex, search for files that match pattern
-            for file in sorted(PO_DIR.glob(path)):
-                FILE_LIST.append(file)
-        else:
-            FILE_LIST.append(Path(path))
-
-    # Convert the path to relative and use Posix format
-    for index, absolute_path in enumerate(FILE_LIST[:]):
-        FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(PO_DIR)
-
     # extract strings
     catalog = {}
-    for path in FILE_LIST:
+    for path in args.file:
         extract_file(path, catalog, warn_skipped=args.warn_skipped)
 
     # process backreferences in a 2nd pass
-    for path in FILE_LIST:
+    for path in args.file:
         extract_refs(path, catalog)
 
     # check the catalog entries

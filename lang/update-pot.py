@@ -15,14 +15,21 @@ import shutil
 import subprocess
 from subprocess import CalledProcessError
 
+# Constants
 BASE_DIR: Path = Path.absolute(Path(__file__).parent)
 PROJECT_DIR: Path = BASE_DIR.parent
 PO_DIR: Path = BASE_DIR / "po"
 
+# Regex pattern to search for source files
 SEARCH_REGEX: str = "[a-zA-Z]*.[ch]*"
+
+# Folders to search for messages
 SEARCH_PATHS: list[str] = ["./Firmware", "./Firmware/mmu2"]
 
+
 def main():
+    # List of source files to extract messages from
+    FILE_LIST: list[Path] = []
 
     # Start by creating a back-up of the current Firmware.pot
     shutil.copy(PO_DIR / "Firmware.pot", PO_DIR / "Firmware.pot.bak")
@@ -34,15 +41,32 @@ def main():
 
     # We want to search for the C/C++ files relative to the .po/ directory
     # Lets append to the search path an absolute path.
-    for index, search_path in enumerate(SEARCH_PATHS[:]):
+    for index, search_path in enumerate(SEARCH_PATHS.copy()):
         try:
             # Example: Converts ./Firmware to ../../Firmware
             SEARCH_PATHS[index] = PurePath(rel_path).joinpath(search_path)
 
             # Example: Convert ../../Firmware to ../../Firmware/[a-zA-Z]*.[ch]*
-            SEARCH_PATHS[index] = PurePosixPath(SEARCH_PATHS[index]).joinpath(SEARCH_REGEX)
+            SEARCH_PATHS[index] = PurePosixPath(SEARCH_PATHS[index]).joinpath(
+                SEARCH_REGEX
+            )
         except ValueError as error:
             print(error)
+
+    # If operating system is Windows, then the script must expand
+    # the regex expression with glob. On Linux and Mac, the operating
+    # system takes care of expanding the glob for you. We only need to
+    # do this manually on Windows.
+    if sys.platform == "win32":
+        for pattern in SEARCH_PATHS:
+            for file in sorted(PO_DIR.glob(str(pattern))):
+                FILE_LIST.append(file)
+
+        # Convert the path to relative and use Posix format
+        for index, absolute_path in enumerate(FILE_LIST.copy()):
+            FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(PO_DIR)
+    else:
+        FILE_LIST = SEARCH_PATHS
 
     # Run the lang-extract.py script
     SCRIPT_PATH = BASE_DIR.joinpath("lang-extract.py")
@@ -55,8 +79,7 @@ def main():
                 "-s",
                 "-o",
                 "./Firmware.pot",
-                SEARCH_PATHS[0],
-                SEARCH_PATHS[1],
+                *FILE_LIST,
             ]
         )
     except CalledProcessError as error:
