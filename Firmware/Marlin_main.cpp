@@ -7846,6 +7846,7 @@ Sigma_Exit:
 
     /*!
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
+    It is processed much earlier as to bypass the cmdqueue.
     */
     case 603: {
         lcd_print_stop();
