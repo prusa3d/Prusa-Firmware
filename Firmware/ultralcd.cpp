@@ -3876,6 +3876,9 @@ static void lcd_wizard_load() {
     if (MMU2::mmu2.Enabled()) {
         lcd_show_fullscreen_message_and_wait_P(
             _i("Please insert filament into the first tube of the MMU, then press the knob to load it.")); ////MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
+        // NOTE: a full screen message showing which filament is being inserted
+        // is performed by M701. For this reason MSG_LOADING_FILAMENT is not
+        // used here when a MMU is used.
     } else {
         lcd_show_fullscreen_message_and_wait_P(
             _i("Please insert filament into the extruder, then press the knob to load it.")); ////MSG_WIZARD_LOAD_FILAMENT c=20 r=6
