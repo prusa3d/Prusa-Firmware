@@ -3190,9 +3190,6 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
             if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS) {
                 return LCD_BUTTON_TIMEOUT;
             }
-            manage_heater();
-            manage_inactivity(true);
-
             if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
                 if (msg_next == NULL) {
                     if (third_choice) { // third_choice is not nullptr, safe to dereference
