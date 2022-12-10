@@ -3008,14 +3008,8 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
 {
     lcd_set_cursor(0, 0);
     const char *msgend = msg;
-    uint8_t row = 0;
     bool multi_screen = false;
-    for (; row < 4; ++ row) {
-        while (pgm_is_whitespace(msg))
-            ++ msg;
-        if (pgm_read_byte(msg) == 0)
-            // End of the message.
-            break;
+    for (uint8_t row = 0; row < LCD_HEIGHT; ++ row) {
         lcd_set_cursor(0, row);
         uint8_t linelen = min(strlen_P(msg), LCD_WIDTH);
         const char *msgend2 = msg + linelen;
@@ -3023,8 +3017,6 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
         if (row == 3 && linelen == LCD_WIDTH) {
             // Last line of the display, full line shall be displayed.
             // Find out, whether this message will be split into multiple screens.
-            while (pgm_is_whitespace(msgend))
-                ++ msgend;
             multi_screen = pgm_read_byte(msgend) != 0;
             if (multi_screen)
                 msgend = (msgend2 -= 2);
