@@ -53,20 +53,14 @@ def main():
         except ValueError as error:
             print(error)
 
-    # If operating system is Windows, then the script must expand
-    # the regex expression with glob. On Linux and Mac, the operating
-    # system takes care of expanding the glob for you. We only need to
-    # do this manually on Windows.
-    if sys.platform == "win32":
-        for pattern in SEARCH_PATHS:
-            for file in sorted(PO_DIR.glob(str(pattern))):
-                FILE_LIST.append(file)
+    # Extend the glob and append all found files into FILE_LIST
+    for pattern in SEARCH_PATHS:
+        for file in sorted(PO_DIR.glob(str(pattern))):
+            FILE_LIST.append(file)
 
-        # Convert the path to relative and use Posix format
-        for index, absolute_path in enumerate(FILE_LIST.copy()):
-            FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(PO_DIR)
-    else:
-        FILE_LIST = SEARCH_PATHS
+    # Convert the path to relative and use Posix format
+    for index, absolute_path in enumerate(FILE_LIST.copy()):
+        FILE_LIST[index] = PurePosixPath(absolute_path).relative_to(PO_DIR)
 
     # Run the lang-extract.py script
     SCRIPT_PATH = BASE_DIR.joinpath("lang-extract.py")
