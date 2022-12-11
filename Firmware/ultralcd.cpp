@@ -2990,7 +2990,6 @@ static inline bool pgm_is_interpunction(const char *c_addr)
  */
 static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
 {
-    lcd_set_cursor(0, 0);
     const char *msgend = msg;
     bool multi_screen = false;
     for (uint8_t row = 0; row < LCD_HEIGHT; ++ row) {
