@@ -2995,6 +2995,15 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
     bool multi_screen = false;
     for (uint8_t row = 0; row < LCD_HEIGHT; ++ row) {
         lcd_set_cursor(0, row);
+
+        // Previous row ended with a complete word, so the first character in the
+        // next row is a whitespace. We can skip the whitespace on a new line.
+        if (pgm_is_whitespace(msg) && ++msg == nullptr)
+        {
+            // End of the message.
+            break;
+        }
+
         uint8_t linelen = min(strlen_P(msg), LCD_WIDTH);
         const char *msgend2 = msg + linelen;
         msgend = msgend2;
