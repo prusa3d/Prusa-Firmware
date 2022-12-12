@@ -2504,7 +2504,6 @@ static void temp_model_reset_enabled(bool enabled)
 {
     TempMgrGuard temp_mgr_guard;
     temp_model::enabled = enabled;
-    temp_model::valid = enabled;
     temp_model::data.flag_bits.uninitialized = true;
 }
 
@@ -2515,19 +2514,11 @@ void temp_model_set_enabled(bool enabled)
         TempMgrGuard temp_mgr_guard;
         temp_model::enabled = enabled;
         temp_model::setup();
-        temp_model::valid = true;
     }
 
     // verify that the model has been enabled
-    if(enabled && !temp_model::enabled) {
+    if(enabled && !temp_model::enabled)
         SERIAL_ECHOLNPGM("TM: invalid parameters, cannot enable");
-        temp_model::valid = false;
-    }
-}
-
-bool temp_model_valid()
-{
-  return temp_model::valid;
 }
 
 void temp_model_set_warn_beep(bool enabled)
@@ -2588,7 +2579,6 @@ void temp_model_reset_settings()
     temp_model::data.err = TEMP_MODEL_E;
     temp_model::warn_beep = true;
     temp_model::enabled = true;
-    temp_model::valid = false;
 }
 
 void temp_model_load_settings()
@@ -2886,8 +2876,12 @@ static bool autotune(int16_t cal_temp)
 
 } // namespace temp_model_cal
 
+static bool temp_model_autotune_err = true;
+
 void temp_model_autotune(int16_t temp, bool selftest)
 {
+    temp_model_autotune_err = true;
+
     char tm_message[LCD_WIDTH+1];
     if(moves_planned() || printer_active()) {
         sprintf_P(tm_message, PSTR("TM: Cal. NOT IDLE"));
@@ -2905,12 +2899,12 @@ void temp_model_autotune(int16_t temp, bool selftest)
     temp_model_reset_enabled(selftest);
 
     SERIAL_ECHOLNPGM("TM: calibration start");
-    bool err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
+    temp_model_autotune_err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
 
     // always reset temperature
     disable_heater();
 
-    if(err) {
+    if(temp_model_autotune_err) {
         sprintf_P(tm_message, PSTR("TM: calibr. failed!"));
         lcd_setstatus_serial(tm_message);
         if(temp_error_state.v)
@@ -2924,6 +2918,11 @@ void temp_model_autotune(int16_t temp, bool selftest)
 
     lcd_consume_click();
     menu_unset_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
+}
+
+bool temp_model_autotune_result()
+{
+    return !temp_model_autotune_err;
 }
 
 #ifdef TEMP_MODEL_DEBUG

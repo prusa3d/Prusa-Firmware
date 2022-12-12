@@ -60,7 +60,6 @@ struct model_data
 };
 
 static bool enabled;          // model check enabled
-static bool valid = false;    // model is valid
 static bool warn_beep = true; // beep on warning threshold
 static model_data data;       // default heater data
 
