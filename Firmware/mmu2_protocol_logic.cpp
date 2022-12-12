@@ -124,8 +124,6 @@ struct OldMMUFWDetector {
             return State::MatchingPart;
         } else if(ok == 1 && c == 'k'){
             ++ok;
-            return State::MatchingPart;
-        } else if(ok == 2 && c == '\n'){
             return State::Matched;
         }
         return State::SomethingElse;
@@ -154,10 +152,8 @@ StepStatus ProtocolLogic::ExpectingMessage() {
             // consume old MMU FW's data if any -> avoid confusion of protocol decoder
             auto old = oldMMUh4x0r.Detect(c);
             if( old == OldMMUFWDetector::State::Matched ){
-                // hack bad FW version - BEWARE - we silently assume that the first query is an "S0"
-                // The old MMU FW responds with "ok\n" and we fake the response to a bad FW version at this spot
-                rsp = ResponseMsg(RequestMsg(RequestMsgCodes::Version, 0), ResponseMsgParamCodes::Accepted, 0);
-                return MessageReady;
+                // Old MMU FW 1.0.6 detected. Firmwares are incompatible.
+                return VersionMismatch;
             } else if( old == OldMMUFWDetector::State::MatchingPart ){
                 break;
             }
@@ -171,7 +167,7 @@ StepStatus ProtocolLogic::ExpectingMessage() {
     if (bytesConsumed != 0) {
         RecordUARTActivity(); // something has happened on the UART, update the timeout record
         return Processing;    // consumed some bytes, but message still not ready
-    } else if (Elapsed(linkLayerTimeout)) {
+    } else if (Elapsed(linkLayerTimeout) && currentScope != Scope::Stopped) {
         return CommunicationTimeout;
     }
     return Processing;
@@ -794,7 +790,6 @@ StepStatus ProtocolLogic::Step() {
         break;
     case VersionMismatch:
         LogError(PSTR("Version mismatch"));
-        Stop(); // cannot continue
         break;
     case ProtocolError:
         currentStatus = HandleProtocolError();
