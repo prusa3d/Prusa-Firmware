@@ -1041,27 +1041,35 @@ void lcd_commands()
 			lcd_commands_type = LcdCommands::Idle;
 		}
 	}
+
 #ifdef TEMP_MODEL
-    if (lcd_commands_type == LcdCommands::TempModel) {
-        if (lcd_commands_step == 0) {
+    if (lcd_commands_type == LcdCommands::TempModel && cmd_buffer_empty())
+    {
+        switch (lcd_commands_step)
+        {
+        case 0:
             lcd_commands_step = 3;
-        }
-        if (lcd_commands_step == 3) {
-            enquecommand_P(PSTR("M310 A F0"));
+            [[fallthrough]];
+
+        case 3:
+            enquecommand_P(PSTR("M310 A F1"));
             lcd_commands_step = 2;
-        }
-        if (lcd_commands_step ==2 && temp_model_valid()) {
-            enquecommand_P(PSTR("M310 S1"));
+            break;
+
+        case 2:
+            if (temp_model_autotune_result())
+                enquecommand_P(PSTR("M500"));
             lcd_commands_step = 1;
-        }
-        //if (lcd_commands_step == 1 && calibrated()) {
-        if (lcd_commands_step == 1 && temp_model_valid()) {
+            break;
+
+        case 1:
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
-            enquecommand_P(PSTR("M500"));
-            if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+            if ((eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) && temp_model_autotune_result()) {
+                // calibration successful, resume the wizard
                 lcd_wizard(WizState::IsFil);
             }
+            break;
         }
     }
 #endif //TEMP_MODEL
@@ -4271,10 +4279,6 @@ void lcd_wizard(WizState state)
 	case S::Z: //z cal.
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
 		break;
-#ifdef TEMP_MODEL
-	case S::TempModel: //Temp model calibration
-		break;
-#endif //TEMP_MODEL
 	case S::Finish: //we are finished
 		msg = _T(MSG_WIZARD_DONE);
 		lcd_reset_alert_level();
@@ -4284,6 +4288,9 @@ void lcd_wizard(WizState state)
     case S::Preheat:
     case S::Lay1CalCold:
     case S::Lay1CalHot:
+#ifdef TEMP_MODEL
+	case S::TempModel: // exiting for calibration
+#endif //TEMP_MODEL
         break;
 	default:
 		msg = _T(MSG_WIZARD_QUIT);
