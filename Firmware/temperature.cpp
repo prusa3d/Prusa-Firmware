@@ -2583,14 +2583,13 @@ void temp_model_reset_settings()
 
     temp_model::data.P = TEMP_MODEL_P;
     temp_model::data.C = TEMP_MODEL_C;
-    temp_model::data.R[0] = TEMP_MODEL_R;
-    for(uint8_t i = 1; i != TEMP_MODEL_R_SIZE; ++i)
-        temp_model::data.R[i] = NAN;
+    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
+        temp_model::data.R[i] = pgm_read_float(TEMP_MODEL_R_DEFAULT + i);
     temp_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
     temp_model::data.warn = TEMP_MODEL_W;
     temp_model::data.err = TEMP_MODEL_E;
     temp_model::warn_beep = true;
-    temp_model::enabled = false;
+    temp_model::enabled = true;
     temp_model::valid = false;
 }
 
@@ -2846,6 +2845,10 @@ static bool autotune(int16_t cal_temp)
     wait(30000);
 
     for(int8_t i = TEMP_MODEL_R_SIZE - 1; i > 0; i -= TEMP_MODEL_CAL_R_STEP) {
+        // always disable the checker while estimating fan resistance as the difference
+        // (esp with 3rd-party blowers) can be massive
+        temp_model::data.R[i] = NAN;
+
         uint8_t speed = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
         set_fan_speed(speed);
         wait(10000);
