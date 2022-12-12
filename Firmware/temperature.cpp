@@ -2882,6 +2882,11 @@ static bool temp_model_autotune_err = true;
 
 void temp_model_autotune(int16_t temp, bool selftest)
 {
+    float orig_C, orig_R[TEMP_MODEL_R_SIZE];
+    bool orig_enabled;
+    static_assert(sizeof(orig_R) == sizeof(temp_model::data.R));
+
+    // fail-safe error state
     temp_model_autotune_err = true;
 
     char tm_message[LCD_WIDTH+1];
@@ -2896,10 +2901,13 @@ void temp_model_autotune(int16_t temp, bool selftest)
     menu_set_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
     lcd_return_to_status();
 
-    // set the model checking state during self-calibration
-    bool was_enabled = temp_model::enabled;
+    // save the original model data and set the model checking state during self-calibration
+    orig_C = temp_model::data.C;
+    memcpy(orig_R, temp_model::data.R, sizeof(temp_model::data.R));
+    orig_enabled = temp_model::enabled;
     temp_model_reset_enabled(selftest);
 
+    // autotune
     SERIAL_ECHOLNPGM("TM: calibration start");
     temp_model_autotune_err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
 
@@ -2911,10 +2919,18 @@ void temp_model_autotune(int16_t temp, bool selftest)
         lcd_setstatus_serial(tm_message);
         if(temp_error_state.v)
             temp_model_cal::set_fan_speed(255);
+
+        // show calibrated values before overwriting them
+        temp_model_report_settings();
+
+        // restore original state
+        temp_model::data.C = orig_C;
+        memcpy(temp_model::data.R, orig_R, sizeof(temp_model::data.R));
+        temp_model_set_enabled(orig_enabled);
     } else {
         lcd_setstatuspgm(MSG_WELCOME);
         temp_model_cal::set_fan_speed(0);
-        temp_model_set_enabled(was_enabled);
+        temp_model_set_enabled(orig_enabled);
         temp_model_report_settings();
     }
 
