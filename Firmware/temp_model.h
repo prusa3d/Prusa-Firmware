@@ -15,6 +15,7 @@ constexpr uint8_t TEMP_MODEL_LAG_SIZE = (TEMP_MODEL_LAG / TEMP_MGR_INTV + 0.5);
 
 // resistance values for all fan levels
 constexpr uint8_t TEMP_MODEL_R_SIZE = (1 << FAN_SOFT_PWM_BITS);
+static const float TEMP_MODEL_R_DEFAULT[TEMP_MODEL_R_SIZE] PROGMEM = TEMP_MODEL_Rv;
 
 namespace temp_model {
 

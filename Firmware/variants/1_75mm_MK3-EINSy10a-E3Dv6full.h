@@ -437,6 +437,9 @@
 #define TEMP_MODEL_CAL_Th 230 // Default calibration working temperature (C)
 #define TEMP_MODEL_CAL_Tl 50  // Default calibration cooling temperature (C)
 
+// fall-back resistance vector (R0-15)
+#define TEMP_MODEL_Rv {TEMP_MODEL_R, 18.4, 16.7, 15.2, 14.1, 13.3, 12.7, 12.1, 11.7, 11.3, 11., 10.8, 10.6, 10.4, 10.2, 10.1}
+
 
 /*------------------------------------
  MOTOR CURRENT SETTINGS
