@@ -1029,6 +1029,9 @@ void lcd_commands()
 	{
         if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
         {
+#ifdef TEMP_MODEL
+            static bool was_enabled;
+#endif //TEMP_MODEL
             switch(lcd_commands_step)
             {
             case 0:
@@ -1043,7 +1046,7 @@ void lcd_commands()
                 enquecommand_P(PSTR("G1 X125 Y10 Z150 F1000"));
                 enquecommand_P(PSTR("M109 S280"));
 #ifdef TEMP_MODEL
-                //enquecommand_P(PSTR("M310 S0"));
+                was_enabled = temp_model_enabled();
                 temp_model_set_enabled(false);
 #endif //TEMP_MODEL
                 lcd_commands_step = 2;
@@ -1057,13 +1060,11 @@ void lcd_commands()
                 enquecommand_P(PSTR("M84 XY"));
                 lcd_update_enabled = false; //hack to avoid lcd_update recursion.
                 if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
+                    setAllTargetHotends(0);
 #ifdef TEMP_MODEL
-                //enquecommand_P(PSTR("M310 S1"));
-                temp_model_set_enabled(true);
+                    temp_model_set_enabled(was_enabled);
 #endif //TEMP_MODEL
-                //enquecommand_P(PSTR("M104 S0"));
-                setTargetHotendSafe(0,0);
-                lcd_commands_step = 1;
+                    lcd_commands_step = 1;
                 }
                 lcd_update_enabled = true;
                 break;
