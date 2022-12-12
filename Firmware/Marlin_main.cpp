@@ -11260,12 +11260,17 @@ void restore_print_from_ram_and_continue(float e_move)
 	if ((fan_check_error != EFCE_OK) && (fan_check_error != EFCE_FIXED)) return;
     if (fan_check_error == EFCE_FIXED) fan_check_error = EFCE_OK; //reenable serial stream processing if printing from usb
 #endif
-	
+
+    // Make sure fan is turned off
+    fanSpeed = 0;
+
     // restore bed temperature (bed can be disabled during a thermal warning)
     if (degBed() != saved_bed_temperature)
         setTargetBed(saved_bed_temperature);
-    fanSpeed = saved_fan_speed;
     restore_extruder_temperature_from_ram();
+
+    // Restore saved fan speed
+    fanSpeed = saved_fan_speed;
     axis_relative_modes ^= (-saved_extruder_relative_mode ^ axis_relative_modes) & E_AXIS_MASK;
     float e = saved_pos[E_AXIS] - e_move;
     plan_set_e_position(e);
