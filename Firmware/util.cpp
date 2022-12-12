@@ -378,39 +378,39 @@ return((uint8_t)ClCompareValue::_Equal);
 }
 
 void fw_version_check(const char *pVersion) {
-    uint16_t aVersion[4];
-    uint8_t nCompareValueResult;
-
     if (oCheckVersion == ClCheckVersion::_None)
         return;
+
+    uint16_t aVersion[4];
+    uint8_t nCompareValueResult;
     parse_version(pVersion, aVersion);
     nCompareValueResult = mCompareValue(aVersion[0], eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MAJOR)) << 6;
     nCompareValueResult += mCompareValue(aVersion[1], eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MINOR)) << 4;
     nCompareValueResult += mCompareValue(aVersion[2], eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_REVISION)) << 2;
     nCompareValueResult += mCompareValue(aVersion[3], eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_FLAVOR));
-    if (nCompareValueResult == COMPARE_VALUE_EQUAL)
+    if (nCompareValueResult <= COMPARE_VALUE_EQUAL)
         return;
-    if ((nCompareValueResult < COMPARE_VALUE_EQUAL) && oCheckVersion == ClCheckVersion::_Warn)
-        return;
-    // SERIAL_ECHO_START;
-    // SERIAL_ECHOLNPGM("Printer FW version differs from the G-code ...");
-    // SERIAL_ECHOPGM("actual  : ");
-//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MAJOR));
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MINOR));
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_REVISION));
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_FLAVOR));
-//    SERIAL_ECHOPGM("\nexpected: ");
-//    SERIAL_ECHO(aVersion[0]);
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(aVersion[1]);
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHO(aVersion[2]);
-//    SERIAL_ECHO('.');
-//    SERIAL_ECHOLN(aVersion[3]);
 
+/*
+    SERIAL_ECHO_START;
+    SERIAL_ECHOLNPGM("Printer FW version differs from the G-code ...");
+    SERIAL_ECHOPGM("actual  : ");
+    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MAJOR));
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_MINOR));
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_REVISION));
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(eeprom_read_word((uint16_t *)EEPROM_FIRMWARE_VERSION_FLAVOR));
+    SERIAL_ECHOPGM("\nexpected: ");
+    SERIAL_ECHO(aVersion[0]);
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(aVersion[1]);
+    SERIAL_ECHO('.');
+    SERIAL_ECHO(aVersion[2]);
+    SERIAL_ECHO('.');
+    SERIAL_ECHOLN(aVersion[3]);
+*/
     switch (oCheckVersion) {
     case ClCheckVersion::_Warn:
         //          lcd_show_fullscreen_message_and_wait_P(_i("Printer FW version differs from the G-code. Continue?"));
@@ -430,37 +430,35 @@ void fw_version_check(const char *pVersion) {
     }
 }
 
-void gcode_level_check(uint16_t nGcodeLevel)
-{
-if(oCheckGcode==ClCheckGcode::_None)
-     return;
-if(nGcodeLevel==(uint16_t)GCODE_LEVEL)
-     return;
-if((nGcodeLevel<(uint16_t)GCODE_LEVEL)&&(oCheckGcode==ClCheckGcode::_Warn))
-     return;
-//SERIAL_ECHO_START;
-//SERIAL_ECHOLNPGM("Printer G-code level differs from the G-code ...");
-//SERIAL_ECHOPGM("actual  : ");
-//SERIAL_ECHOLN(GCODE_LEVEL);
-//SERIAL_ECHOPGM("expected: ");
-//SERIAL_ECHOLN(nGcodeLevel);
-switch(oCheckGcode)
-     {
-     case ClCheckGcode::_Warn:
-//          lcd_show_fullscreen_message_and_wait_P(_i("Printer G-code level differs from the G-code. Continue?"));
-lcd_display_message_fullscreen_P(_i("G-code sliced for a different level. Continue?"));////MSG_GCODE_DIFF_CONTINUE c=20 r=4
-lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
-//???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
-lcd_update_enable(true);           // display / status-line recovery
-          break;
-     case ClCheckGcode::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code sliced for a different level. Please re-slice the model again. Print cancelled."));////MSG_GCODE_DIFF_CANCELLED c=20 r=7
-          lcd_print_stop();
-          break;
-     case ClCheckGcode::_None:
-     case ClCheckGcode::_Undef:
-          break;
-     }
+void gcode_level_check(uint16_t nGcodeLevel) {
+    if (oCheckGcode == ClCheckGcode::_None)
+        return;
+    if (nGcodeLevel <= (uint16_t)GCODE_LEVEL)
+        return;
+
+    // SERIAL_ECHO_START;
+    // SERIAL_ECHOLNPGM("Printer G-code level differs from the G-code ...");
+    // SERIAL_ECHOPGM("actual  : ");
+    // SERIAL_ECHOLN(GCODE_LEVEL);
+    // SERIAL_ECHOPGM("expected: ");
+    // SERIAL_ECHOLN(nGcodeLevel);
+    switch (oCheckGcode) {
+    case ClCheckGcode::_Warn:
+        //          lcd_show_fullscreen_message_and_wait_P(_i("Printer G-code level differs from the G-code. Continue?"));
+        lcd_display_message_fullscreen_P(_i("G-code sliced for a different level. Continue?")); ////MSG_GCODE_DIFF_CONTINUE c=20 r=4
+        lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
+        //???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+        lcd_update_enable(true); // display / status-line recovery
+        break;
+    case ClCheckGcode::_Strict:
+        lcd_show_fullscreen_message_and_wait_P(
+            _i("G-code sliced for a different level. Please re-slice the model again. Print cancelled.")); ////MSG_GCODE_DIFF_CANCELLED c=20 r=7
+        lcd_print_stop();
+        break;
+    case ClCheckGcode::_None:
+    case ClCheckGcode::_Undef:
+        break;
+    }
 }
 
 //-// -> cmdqueue ???
