@@ -2509,6 +2509,11 @@ static void temp_model_reset_enabled(bool enabled)
     temp_model::data.flag_bits.uninitialized = true;
 }
 
+bool temp_model_enabled()
+{
+    return temp_model::enabled;
+}
+
 void temp_model_set_enabled(bool enabled)
 {
     // set the enabled flag
