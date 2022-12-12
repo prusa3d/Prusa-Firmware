@@ -8657,16 +8657,6 @@ Sigma_Exit:
     }
     break;
 
-    /*!
-    ### M999 - Restart after being stopped <a href="https://reprap.org/wiki/G-code#M999:_Restart_after_being_stopped_by_error">M999: Restart after being stopped by error</a>
-    @todo Usually doesn't work. Should be fixed or removed. Most of the time, if `Stopped` it set, the print fails and is unrecoverable.
-    */
-    case 999:
-      Stopped = false;
-      lcd_reset_alert_level();
-//@@TODO      gcode_LastN = Stopped_gcode_LastN;
-      FlushSerialRequestResend();
-    break;
 	/*!
 	#### End of M-Commands
     */
