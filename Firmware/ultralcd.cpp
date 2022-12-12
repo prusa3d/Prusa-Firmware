@@ -6804,11 +6804,7 @@ static bool lcd_selfcheck_endstops()
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {
-	uint8_t _counter = 0;
 	uint8_t _progress = 0;
-	bool _stepresult = false;
-	bool _docycle = true;
-
 	int _checked_snapshot = (_isbed) ? degBed() : degHotend(0);
 	int _opposite_snapshot = (_isbed) ? degHotend(0) : degBed();
 	uint8_t _cycles = (_isbed) ? 180 : 60; //~ 90s / 30s
@@ -6818,13 +6814,13 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	manage_heater();
 	manage_inactivity(true);
 
-	do {
-		_counter++;
-		_docycle = (_counter < _cycles) ? true : false;
-
+    for(uint8_t _counter = 0; _counter < _cycles && !Stopped; ++_counter)
+    {
 		manage_heater();
 		manage_inactivity(true);
-		_progress = (_isbed) ? lcd_selftest_screen(TestScreen::Bed, _progress, 2, false, 400) : lcd_selftest_screen(TestScreen::Hotend, _progress, 2, false, 400);
+		_progress = (_isbed?
+			lcd_selftest_screen(TestScreen::Bed, _progress, 2, false, 400) :
+			lcd_selftest_screen(TestScreen::Hotend, _progress, 2, false, 400));
 		/*if (_isbed) {
 			MYSERIAL.print("Bed temp:");
 			MYSERIAL.println(degBed());
@@ -6834,8 +6830,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 			MYSERIAL.println(degHotend(0));
 		}*/
 		if(_counter%5 == 0) serialecho_temperatures(); //show temperatures once in two seconds
-
-	} while (_docycle); 
+	}
 
 	target_temperature[0] = 0;
 	target_temperature_bed = 0;
@@ -6851,21 +6846,26 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	MYSERIAL.println(_opposite_result);
 	*/
 
-	if (_opposite_result < ((_isbed) ? 30 : 9))
-	{
-		if (_checked_result >= ((_isbed) ? 9 : 30))
-		{
-			_stepresult = true;
-		}
-		else
-		{
-			lcd_selftest_error(TestError::Heater, "", "");
-		}
-	}
-	else
-	{
-		lcd_selftest_error(TestError::Bed, "", "");
-	}
+    bool _stepresult = false;
+    if (Stopped)
+    {
+        // thermal error occurred while heating the nozzle
+        lcd_selftest_error(TestError::Heater, "", "");
+    }
+    else
+    {
+        if (_opposite_result < ((_isbed) ? 30 : 9))
+        {
+            if (_checked_result >= ((_isbed) ? 9 : 30))
+                _stepresult = true;
+            else
+                lcd_selftest_error(TestError::Heater, "", "");
+        }
+        else
+        {
+            lcd_selftest_error(TestError::Bed, "", "");
+        }
+    }
 
 	manage_heater();
 	manage_inactivity(true);
