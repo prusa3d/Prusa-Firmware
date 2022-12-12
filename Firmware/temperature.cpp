@@ -2787,7 +2787,8 @@ static bool autotune(int16_t cal_temp)
 {
     uint16_t samples;
     float e;
-    char tm_message[20];
+    char tm_message[LCD_WIDTH+1];
+
     // bootstrap C/R values without fan
     set_fan_speed(0);
 
@@ -2884,7 +2885,7 @@ static bool autotune(int16_t cal_temp)
 
 void temp_model_autotune(int16_t temp, bool selftest)
 {
-    char tm_message[20];
+    char tm_message[LCD_WIDTH+1];
     if(moves_planned() || printer_active()) {
         sprintf_P(tm_message, PSTR("TM: Cal. NOT IDLE"));
         lcd_setstatus_serial(tm_message);
