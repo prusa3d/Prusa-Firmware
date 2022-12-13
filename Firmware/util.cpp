@@ -415,10 +415,7 @@ void gcode_level_check(uint16_t nGcodeLevel) {
     );
 }
 
-//-// -> cmdqueue ???
-#define PRINTER_NAME_LENGTH ((sizeof(PRINTER_MMU_NAME) > sizeof(PRINTER_NAME)) ? (sizeof(PRINTER_MMU_NAME) - 1) : (sizeof(PRINTER_NAME) - 1))
 #define GCODE_DELIMITER '"'
-#define ELLIPSIS "..."
 
 char *code_string(const char *pStr, size_t *nLength) {
 char* pStrBegin;
