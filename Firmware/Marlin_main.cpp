@@ -9612,9 +9612,6 @@ void ThermalStop(bool allow_pause)
         } else {
             // We got a hard thermal error and/or there is no print going on. Just stop.
             lcd_print_stop();
-
-            // Also prevent further menu entry
-            menu_set_block(MENU_BLOCK_THERMAL_ERROR);
         }
 
         // Report the status on the serial, switch to a busy state
