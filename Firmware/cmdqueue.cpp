@@ -374,8 +374,7 @@ void get_command()
 		  long gcode_N = -1; // seen line number
 
 		  // Line numbers must be first in buffer
-		  if ((strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("PRUSA")) == NULL) &&
-			  (*cmd_head == 'N')) {
+		  if (*cmd_head == 'N') {
 
 			  // Line number met: decode the number, then move cmd_start past all spaces.
 			  gcode_N = (strtol(cmd_head+1, &cmd_start, 10));
@@ -419,12 +418,9 @@ void get_command()
 				  serial_count = 0;
 				  return;
 			  }
-
-			  // Don't parse N again with code_seen('N')
-			  *cmd_head = '$';
 		}
         // if we don't receive 'N' but still see '*'
-        if ((*cmd_head != 'N') && (*cmd_head != '$') && (strchr(cmd_start, '*') != NULL))
+        if (*(cmd_head != 'N') && (strchr(cmd_start, '*') != NULL))
         {
             SERIAL_ERROR_START;
             SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM
@@ -467,12 +463,21 @@ void get_command()
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
-        SERIAL_ECHO(cmdbuffer+bufindw+CMDHDRSIZE);
+        SERIAL_ECHO(cmd_start);
         SERIAL_ECHOLNPGM("");
 #endif /* CMDBUFFER_DEBUG */
 
-        // Store command itself
-        bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
+        // Store the command itself (without line number or checksum)
+        size_t cmd_len;
+        if (cmd_head == cmd_start)
+            cmd_len = strlen(cmd_start) + 1;
+        else {
+            // strip the line number
+            cmd_len = 0;
+            do { cmd_head[cmd_len] = cmd_start[cmd_len]; }
+            while (cmd_head[cmd_len++]);
+        }
+        bufindw += cmd_len + CMDHDRSIZE;
         if (bufindw == sizeof(cmdbuffer))
             bufindw = 0;
         ++ buflen;
