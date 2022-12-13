@@ -438,11 +438,16 @@ void get_command()
         if(strcmp_P(cmd_start, PSTR("M112")) == 0)
           kill(MSG_M112_KILL, 2);
 
+        // Bypass Stopped for some commands
+        bool allow_when_stopped = false;
+        if(strncmp_P(cmd_start, PSTR("M310"), 4) == 0)
+            allow_when_stopped = true;
+
         // Handle the USB timer
         if ((*cmd_start == 'G') && !IS_SD_PRINTING)
             usb_timer.start();
 
-        if (Stopped == true) {
+        if (allow_when_stopped == false && Stopped == true) {
             // Stopped can be set either during error states (thermal error: cannot continue), or
             // when a printer-initiated action is processed. In such case the printer will send to
             // the host an action, but cannot know if the action has been processed while new
