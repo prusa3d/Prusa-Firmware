@@ -4046,7 +4046,6 @@ void process_commands()
 #endif /* CMDBUFFER_DEBUG */
   
   unsigned long codenum; //throw away variable
-  char *starpos = NULL;
 #ifdef ENABLE_AUTO_BED_LEVELING
   float x_tmp, y_tmp, z_tmp, real_z;
 #endif
@@ -4074,9 +4073,6 @@ void process_commands()
     */
     if (code_seen_P(PSTR("M117"))) //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
     {
-        starpos = (strchr(strchr_pointer + 5, '*'));
-        if (starpos != NULL)
-            *(starpos) = '\0';
         lcd_setstatus(strchr_pointer + 5);
         custom_message_type = CustomMsg::M117;
     }
@@ -4107,8 +4103,6 @@ void process_commands()
             codenum = code_value_long() * 1000; // seconds to wait
             hasS = codenum > 0;
         }
-        starpos = strchr(src, '*');
-        if (starpos != NULL) *(starpos) = '\0';
         while (*src == ' ') ++src;
         custom_message_type = CustomMsg::M0Wait;
         if (!hasP && !hasS && *src != '\0') {
@@ -5388,9 +5382,6 @@ void process_commands()
     
     */
     case 23: 
-      starpos = (strchr(strchr_pointer + 4,'*'));
-	  if(starpos!=NULL)
-        *(starpos)='\0';
       card.openFileReadFilteredGcode(strchr_pointer + 4, true);
       break;
 
@@ -5464,12 +5455,6 @@ void process_commands()
 	### M28 - Start SD write <a href="https://reprap.org/wiki/G-code#M28:_Begin_write_to_SD_card">M28: Begin write to SD card</a>
     */
     case 28: 
-      starpos = (strchr(strchr_pointer + 4,'*'));
-      if(starpos != NULL){
-        char* npos = strchr(CMDBUFFER_CURRENT_STRING, 'N');
-        strchr_pointer = strchr(npos,' ') + 1;
-        *(starpos) = '\0';
-      }
       card.openFileWrite(strchr_pointer+4);
       break;
 
@@ -5491,12 +5476,6 @@ void process_commands()
     case 30:
       if (card.cardOK){
         card.closefile();
-        starpos = (strchr(strchr_pointer + 4,'*'));
-        if(starpos != NULL){
-          char* npos = strchr(CMDBUFFER_CURRENT_STRING, 'N');
-          strchr_pointer = strchr(npos,' ') + 1;
-          *(starpos) = '\0';
-        }
         card.removeFile(strchr_pointer + 4);
       }
       break;
@@ -5511,7 +5490,6 @@ void process_commands()
         st_synchronize();
 
       }
-      starpos = (strchr(strchr_pointer + 4,'*'));
 
       const char* namestartpos = (strchr(strchr_pointer + 4,'!'));   //find ! to indicate filename string start.
       if(namestartpos==NULL)
@@ -5520,9 +5498,6 @@ void process_commands()
       }
       else
         namestartpos++; //to skip the '!'
-
-      if(starpos!=NULL)
-        *(starpos)='\0';
 
       bool call_procedure=(code_seen('P'));
 
@@ -5560,12 +5535,6 @@ void process_commands()
     
     */
     case 928: 
-      starpos = (strchr(strchr_pointer + 5,'*'));
-      if(starpos != NULL){
-        char* npos = strchr(CMDBUFFER_CURRENT_STRING, 'N');
-        strchr_pointer = strchr(npos,' ') + 1;
-        *(starpos) = '\0';
-      }
       card.openLogFile(strchr_pointer+5);
       break;
 
