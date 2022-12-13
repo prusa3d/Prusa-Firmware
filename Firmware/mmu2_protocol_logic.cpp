@@ -715,7 +715,7 @@ void ProtocolLogic::LogRequestMsg(const uint8_t *txbuff, uint8_t size) {
     } else {
         MMU2_ECHO_MSGLN(tmp);
     }
-    memcpy(lastMsg, tmp, rqs);
+    strncpy(lastMsg, tmp, rqs);
 }
 
 void ProtocolLogic::LogError(const char *reason_P) {
