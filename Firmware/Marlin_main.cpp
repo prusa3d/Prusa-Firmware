@@ -4071,9 +4071,10 @@ void process_commands()
         - TMC_SET_STEP
         - TMC_SET_CHOP
     */
-    if (code_seen_P(PSTR("M117"))) //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
+    if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("M117"), 4) == 0) //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
     {
-        lcd_setstatus(strchr_pointer + 5);
+        const char *src = CMDBUFFER_CURRENT_STRING + 4;
+        lcd_setstatus(*src? src + 1: src);
         custom_message_type = CustomMsg::M117;
     }
 
@@ -4091,8 +4092,9 @@ void process_commands()
     - `string` - Must for M1 and optional for M0 message to display on the LCD
     */
 
-    else if (code_seen_P(PSTR("M0")) || code_seen_P(PSTR("M1 "))) {// M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
-        const char *src = strchr_pointer + 2;
+    else if ((strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("M0"), 2) == 0)
+          || (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("M1 "), 3) == 0)) { // M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
+        const char *src = CMDBUFFER_CURRENT_STRING + 2;
         codenum = 0;
         bool hasP = false, hasS = false;
         if (code_seen('P')) {
@@ -4246,7 +4248,7 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-  else if(code_seen_P(PSTR("PRUSA"))){ 
+  else if(strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("PRUSA"), 5) == 0) {
     /*!
     ---------------------------------------------------------------------------------
     ### PRUSA - Internal command set <a href="https://reprap.org/wiki/G-code#G98:_Activate_farm_mode">G98: Activate farm mode - Notes</a>
@@ -6559,15 +6561,7 @@ Sigma_Exit:
       break;
 
       
-      /*
-        M117 moved up to get the high priority
-
-    case 117: // M117 display message
-      starpos = (strchr(strchr_pointer + 5,'*'));
-      if(starpos!=NULL)
-        *(starpos)='\0';
-      lcd_setstatus(strchr_pointer + 5);
-      break;*/
+    /* M117 moved up to get higher priority */
 
 #ifdef M120_M121_ENABLED
     /*!
