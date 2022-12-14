@@ -4053,13 +4053,6 @@ void process_commands()
   // PRUSA GCODES
   KEEPALIVE_STATE(IN_HANDLER);
     /*!
-
-    ---------------------------------------------------------------------------------
-    ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
-    This causes the given message to be shown in the status line on an attached LCD.
-    It is processed early as to allow printing messages that contain G, M, N or T.
-
-    ---------------------------------------------------------------------------------
     ### Special internal commands
     These are used by internal functions to process certain actions in the right order. Some of these are also usable by the user.
     They are processed early as the commands are complex (strings).
@@ -4071,76 +4064,7 @@ void process_commands()
         - TMC_SET_STEP
         - TMC_SET_CHOP
     */
-    if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("M117"), 4) == 0) //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
-    {
-        const char *src = CMDBUFFER_CURRENT_STRING + 4;
-        lcd_setstatus(*src? src + 1: src);
-        custom_message_type = CustomMsg::M117;
-    }
-
-    /*!
-    ### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#M0:_Stop_or_Unconditional_stop">M0: Stop or Unconditional stop</a>
-    #### Usage
-
-      M0 [P<ms<] [S<sec>] [string]
-      M1 [P<ms>] [S<sec>] [string] 
-
-    #### Parameters
-  
-    - `P<ms>`  - Expire time, in milliseconds
-    - `S<sec>` - Expire time, in seconds
-    - `string` - Must for M1 and optional for M0 message to display on the LCD
-    */
-
-    else if ((strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("M0"), 2) == 0)
-          || (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("M1 "), 3) == 0)) { // M0 and M1 - (Un)conditional stop - Wait for user button press on LCD
-        const char *src = CMDBUFFER_CURRENT_STRING + 2;
-        codenum = 0;
-        bool hasP = false, hasS = false;
-        if (code_seen('P')) {
-            codenum = code_value_long(); // milliseconds to wait
-            hasP = codenum > 0;
-        }
-        if (code_seen('S')) {
-            codenum = code_value_long() * 1000; // seconds to wait
-            hasS = codenum > 0;
-        }
-        while (*src == ' ') ++src;
-        custom_message_type = CustomMsg::M0Wait;
-        if (!hasP && !hasS && *src != '\0') {
-            lcd_setstatus(src);
-        } else {
-            // farmers want to abuse a bug from the previous firmware releases
-            // - they need to see the filename on the status screen instead of "Wait for user..."
-            // So we won't update the message in farm mode...
-            if( ! farm_mode){ 
-                LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=20
-            } else {
-                custom_message_type = CustomMsg::Status; // let the lcd display the name of the printed G-code file in farm mode
-            }
-        }
-        lcd_ignore_click();				//call lcd_ignore_click also for else ???
-        st_synchronize();
-        previous_millis_cmd.start();
-        if (codenum > 0 ) {
-            codenum += _millis();  // keep track of when we started waiting
-            KEEPALIVE_STATE(PAUSED_FOR_USER);
-            while(_millis() < codenum && !lcd_clicked()) {
-                manage_heater();
-                manage_inactivity(true);
-                lcd_update(0);
-            }
-            KEEPALIVE_STATE(IN_HANDLER);
-            lcd_ignore_click(false);
-        } else {
-            marlin_wait_for_click();
-        }
-        if (IS_SD_PRINTING)
-            custom_message_type = CustomMsg::Status;
-        else
-            LCD_MESSAGERPGM(MSG_WELCOME);
-    }
-
+	if (false) {} // allow chaining of optional next else if blocks
 #ifdef TMC2130
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
 	{
@@ -5331,6 +5255,70 @@ void process_commands()
 
     switch(mcode_in_progress)
     {
+
+    /*!
+    ### M0, M1 - Stop the printer <a href="https://reprap.org/wiki/G-code#M0:_Stop_or_Unconditional_stop">M0: Stop or Unconditional stop</a>
+    #### Usage
+
+      M0 [P<ms<] [S<sec>] [string]
+      M1 [P<ms>] [S<sec>] [string]
+
+    #### Parameters
+
+    - `P<ms>`  - Expire time, in milliseconds
+    - `S<sec>` - Expire time, in seconds
+    - `string` - Must for M1 and optional for M0 message to display on the LCD
+    */
+
+    case 0:
+    case 1: {
+        const char *src = strchr_pointer + 2;
+        codenum = 0;
+        bool hasP = false, hasS = false;
+        if (code_seen('P')) {
+            codenum = code_value_long(); // milliseconds to wait
+            hasP = codenum > 0;
+        }
+        if (code_seen('S')) {
+            codenum = code_value_long() * 1000; // seconds to wait
+            hasS = codenum > 0;
+        }
+        while (*src == ' ') ++src;
+        custom_message_type = CustomMsg::M0Wait;
+        if (!hasP && !hasS && *src != '\0') {
+            lcd_setstatus(src);
+        } else {
+            // farmers want to abuse a bug from the previous firmware releases
+            // - they need to see the filename on the status screen instead of "Wait for user..."
+            // So we won't update the message in farm mode...
+            if( ! farm_mode){
+                LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=20
+            } else {
+                custom_message_type = CustomMsg::Status; // let the lcd display the name of the printed G-code file in farm mode
+            }
+        }
+        lcd_ignore_click();				//call lcd_ignore_click also for else ???
+        st_synchronize();
+        previous_millis_cmd.start();
+        if (codenum > 0 ) {
+            codenum += _millis();  // keep track of when we started waiting
+            KEEPALIVE_STATE(PAUSED_FOR_USER);
+            while(_millis() < codenum && !lcd_clicked()) {
+                manage_heater();
+                manage_inactivity(true);
+                lcd_update(0);
+            }
+            KEEPALIVE_STATE(IN_HANDLER);
+            lcd_ignore_click(false);
+        } else {
+            marlin_wait_for_click();
+        }
+        if (IS_SD_PRINTING)
+            custom_message_type = CustomMsg::Status;
+        else
+            LCD_MESSAGERPGM(MSG_WELCOME);
+    }
+    break;
 
     /*!
 	### M17 - Enable all axes <a href="https://reprap.org/wiki/G-code#M17:_Enable.2FPower_all_stepper_motors">M17: Enable/Power all stepper motors</a>
@@ -6562,8 +6550,15 @@ Sigma_Exit:
 		gcode_M114();
       break;
 
-      
-    /* M117 moved up to get higher priority */
+    /*!
+    ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
+    */
+    case 117: {
+        const char *src = strchr_pointer;
+        lcd_setstatus(*src? src + 1: src);
+        custom_message_type = CustomMsg::M117;
+    }
+    break;
 
 #ifdef M120_M121_ENABLED
     /*!
