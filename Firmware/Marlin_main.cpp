@@ -4353,8 +4353,9 @@ void process_commands()
           else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
     }
   }
-  else if(code_seen('G'))
+  else if(*CMDBUFFER_CURRENT_STRING == 'G')
   {
+	strchr_pointer = CMDBUFFER_CURRENT_STRING;
 	gcode_in_progress = code_value_short();
 //	printf_P(_N("BEGIN G-CODE=%u\n"), gcode_in_progress);
     switch (gcode_in_progress)
@@ -5312,8 +5313,9 @@ void process_commands()
   
   */
 
-  else if(code_seen('M'))
+  else  if(*CMDBUFFER_CURRENT_STRING == 'M')
   {
+	  strchr_pointer = CMDBUFFER_CURRENT_STRING;
 
 	  int index;
 	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
@@ -8649,7 +8651,8 @@ Sigma_Exit:
   @n Tx Same as T?, except nozzle doesn't have to be preheated. Tc must be placed after extruder nozzle is preheated to finish filament load.
   @n Tc Load to nozzle after filament was prepared by Tc and extruder nozzle is already heated.
   */
-  else if(code_seen('T')){
+  else if(*CMDBUFFER_CURRENT_STRING == 'T') {
+        strchr_pointer = CMDBUFFER_CURRENT_STRING;
         TCodes(strchr_pointer, code_value_uint8());
   } // end if(code_seen('T')) (end of T codes)
   /*!
@@ -8660,8 +8663,9 @@ Sigma_Exit:
   *---------------------------------------------------------------------------------
   *# D codes
   */
-  else if (code_seen('D')) // D codes (debug)
+  else if(*CMDBUFFER_CURRENT_STRING == 'D') // D codes (debug)
   {
+    strchr_pointer = CMDBUFFER_CURRENT_STRING;
     switch(code_value_short())
     {
 
