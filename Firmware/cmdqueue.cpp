@@ -419,15 +419,21 @@ void get_command()
 				  return;
 			  }
 		}
-        // if we don't receive 'N' but still see '*'
-        if (*(cmd_head != 'N') && (strchr(cmd_start, '*') != NULL))
+        else
         {
-            SERIAL_ERROR_START;
-            SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM
-            SERIAL_ERRORLN(gcode_LastN);
-			FlushSerialRequestResend();
-            serial_count = 0;
-            return;
+            // move cmd_start past all spaces
+            while (*cmd_start == ' ') ++cmd_start;
+
+            // if we didn't receive 'N' but still see '*'
+            if (strchr(cmd_start, '*') != NULL)
+            {
+                SERIAL_ERROR_START;
+                SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM
+                SERIAL_ERRORLN(gcode_LastN);
+                FlushSerialRequestResend();
+                serial_count = 0;
+                return;
+            }
         }
 
         // Handle KILL early, even when Stopped
