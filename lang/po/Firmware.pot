@@ -758,7 +758,7 @@ msgstr ""
 
 #. MSG_BED_CORRECTION_FRONT c=14
 #: ../../Firmware/ultralcd.cpp:2745
-msgid "Front side[μm]"
+msgid "Front side[µm]"
 msgstr ""
 
 #. MSG_SELFTEST_FANS c=20
@@ -984,7 +984,7 @@ msgstr ""
 
 #. MSG_BED_CORRECTION_LEFT c=14
 #: ../../Firmware/ultralcd.cpp:2743
-msgid "Left side [μm]"
+msgid "Left side [µm]"
 msgstr ""
 
 #. MSG_BL_HIGH c=12
@@ -1671,7 +1671,7 @@ msgstr ""
 
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:2746
-msgid "Rear side [μm]"
+msgid "Rear side [µm]"
 msgstr ""
 
 #. MSG_RECOVERING_PRINT c=20
@@ -1747,7 +1747,7 @@ msgstr ""
 
 #. MSG_BED_CORRECTION_RIGHT c=14
 #: ../../Firmware/ultralcd.cpp:2744
-msgid "Right side[μm]"
+msgid "Right side[µm]"
 msgstr ""
 
 #. MSG_WIZARD_RERUN c=20 r=7

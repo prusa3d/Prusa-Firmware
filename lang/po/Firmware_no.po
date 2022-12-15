@@ -792,8 +792,8 @@ msgstr "Fremre printvifte?"
 
 #. MSG_BED_CORRECTION_FRONT c=14
 #: ../../Firmware/ultralcd.cpp:2745
-msgid "Front side[μm]"
-msgstr "Fremsiden [μm]"
+msgid "Front side[µm]"
+msgstr "Fremsiden [µm]"
 
 #. MSG_SELFTEST_FANS c=20
 #: ../../Firmware/ultralcd.cpp:7001
@@ -1029,8 +1029,8 @@ msgstr "Venst. hotendvifte?"
 
 #. MSG_BED_CORRECTION_LEFT c=14
 #: ../../Firmware/ultralcd.cpp:2743
-msgid "Left side [μm]"
-msgstr "Vens. side[μm]"
+msgid "Left side [µm]"
+msgstr "Vens. side[µm]"
 
 #. MSG_BL_HIGH c=12
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5834
@@ -1731,8 +1731,8 @@ msgstr "RPi port"
 
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:2746
-msgid "Rear side [μm]"
-msgstr "Baksiden [μm]"
+msgid "Rear side [µm]"
+msgstr "Baksiden [µm]"
 
 #. MSG_RECOVERING_PRINT c=20
 #: ../../Firmware/Marlin_main.cpp:10896
@@ -1809,8 +1809,8 @@ msgstr "Høyre"
 
 #. MSG_BED_CORRECTION_RIGHT c=14
 #: ../../Firmware/ultralcd.cpp:2744
-msgid "Right side[μm]"
-msgstr "Høyre side[μm]"
+msgid "Right side[µm]"
+msgstr "Høyre side[µm]"
 
 #. MSG_WIZARD_RERUN c=20 r=7
 #: ../../Firmware/ultralcd.cpp:3846
