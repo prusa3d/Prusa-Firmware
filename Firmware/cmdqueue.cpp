@@ -421,10 +421,10 @@ void get_command()
 			  }
 
 			  // Don't parse N again with code_seen('N')
-			  cmdbuffer[bufindw + CMDHDRSIZE] = '$';
+			  *cmd_head = '$';
 		}
         // if we don't receive 'N' but still see '*'
-        if ((*cmd_head != 'N') && (cmdbuffer[bufindw + CMDHDRSIZE] != '$') && (strchr(cmd_start, '*') != NULL))
+        if ((*cmd_head != 'N') && (*cmd_head != '$') && (strchr(cmd_start, '*') != NULL))
         {
             SERIAL_ERROR_START;
             SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM
