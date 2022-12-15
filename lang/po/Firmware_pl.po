@@ -634,9 +634,9 @@ msgid "Front print fan?"
 msgstr "Przedni went. druku?"
 
 #. MSG_BED_CORRECTION_FRONT c=14
-#: ../../Firmware/ultralcd.cpp:2773
-msgid "Front side[μm]"
-msgstr "Przod [μm]"
+#: ../../Firmware/ultralcd.cpp:2745
+msgid "Front side[µm]"
+msgstr "Przod [µm]"
 
 #. MSG_SELFTEST_FANS c=20
 #: ../../Firmware/ultralcd.cpp:7050
@@ -847,9 +847,9 @@ msgid "Left hotend fan?"
 msgstr "Lewy went hotendu?"
 
 #. MSG_BED_CORRECTION_LEFT c=14
-#: ../../Firmware/ultralcd.cpp:2771
-msgid "Left side [μm]"
-msgstr "Lewo [μm]"
+#: ../../Firmware/ultralcd.cpp:2743
+msgid "Left side [µm]"
+msgstr "Lewo [µm]"
 
 #. MSG_BL_HIGH c=12
 #: ../../Firmware/messages.cpp:152 ../../Firmware/ultralcd.cpp:5884
@@ -1489,9 +1489,9 @@ msgid "RPi port"
 msgstr "Port RPi"
 
 #. MSG_BED_CORRECTION_REAR c=14
-#: ../../Firmware/ultralcd.cpp:2774
-msgid "Rear side [μm]"
-msgstr "Tyl [μm]"
+#: ../../Firmware/ultralcd.cpp:2746
+msgid "Rear side [µm]"
+msgstr "Tyl [µm]"
 
 #. MSG_RECOVERING_PRINT c=20
 #: ../../Firmware/Marlin_main.cpp:10954
@@ -1536,9 +1536,9 @@ msgid "Right"
 msgstr "Prawa"
 
 #. MSG_BED_CORRECTION_RIGHT c=14
-#: ../../Firmware/ultralcd.cpp:2772
-msgid "Right side[μm]"
-msgstr "Prawo [μm]"
+#: ../../Firmware/ultralcd.cpp:2744
+msgid "Right side[µm]"
+msgstr "Prawo [µm]"
 
 #. MSG_WIZARD_RERUN c=20 r=7
 #: ../../Firmware/ultralcd.cpp:3903
