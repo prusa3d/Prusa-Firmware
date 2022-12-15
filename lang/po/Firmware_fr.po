@@ -447,9 +447,8 @@ msgid ""
 "Please follow the manual, chapter First steps, section First layer "
 "calibration."
 msgstr ""
-"La distance entre de la buse et du plateau n'a pas "
-"encore ete reglee. Suivez le manuel, chapitre Premiers pas, section "
-"Calibration de la premiere couche."
+"La distance entre de la buse et du plateau n'a pas encore ete reglee. Suivez "
+"le manuel, chap. Premiers pas - Calibration de la premiere couche."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ../../Firmware/ultralcd.cpp:4096
@@ -718,7 +717,7 @@ msgstr "Filament non charge"
 #: ../../Firmware/ultralcd.cpp:7011 ../../Firmware/ultralcd.cpp:7015
 #: ../../Firmware/ultralcd.cpp:7310
 msgid "Filament sensor"
-msgstr "Capteur de fil."
+msgstr "Capteur Fil."
 
 #. MSG_DESC_FSENSOR_DIDNT_GO_OFF c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:209 ../../Firmware/mmu2/errors_list.h:249
@@ -726,8 +725,8 @@ msgid ""
 "Filament sensor didn't switch off while unloading filament. Ensure filament "
 "can move and the sensor works."
 msgstr ""
-"Capteur de filament non desactive lors du dechargement du filament. Assurez-"
-"vous que le filament peut bouger et que le capteur fonctionne."
+"Capteur de f. non desactive lors du dechargement du filament. Assurez-vous "
+"que le filament peut bouger et que le capteur fonctionne."
 
 #. MSG_DESC_FSENSOR_DIDNT_TRIGGER c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:208 ../../Firmware/mmu2/errors_list.h:248
@@ -735,8 +734,8 @@ msgid ""
 "Filament sensor didn't trigger while loading the filament. Ensure the "
 "filament reached the fsensor and the sensor works."
 msgstr ""
-"Capteur de filament non declenche lors du chargement du filament. Assurez-"
-"vous que le filament a atteint le capteur f et que le capteur fonctionne."
+"Capteur de f. non declenche lors du chargement du filament. Assurez-vous que "
+"le filament a atteint le capteur f et que le capteur fonctionne."
 
 #. MSG_DESC_FSENSOR_TOO_EARLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:211 ../../Firmware/mmu2/errors_list.h:251
@@ -744,7 +743,7 @@ msgid ""
 "Filament sensor triggered too early while loading to extruder. Check there "
 "isn't anything stuck in PTFE tube. Check that sensor reads properly."
 msgstr ""
-"Capteur de filament declenche trop tot lors du chargement dans l'extrudeur. "
+"Capteur de f. declenche trop tot lors du chargement dans l'extrudeur. "
 "Verifiez le tube PTFE. Verifiez que le capteur fonctionne."
 
 #. MSG_FILAMENT_USED c=19
@@ -773,8 +772,8 @@ msgstr "Cal. 1ere couche"
 #: ../../Firmware/ultralcd.cpp:4021
 msgid "First, I will run the selftest to check most common assembly problems."
 msgstr ""
-"D'abord, je vais lancer le Auto-test pour verifier les problemes "
-"d'assemblage les plus communs."
+"Je vais lancer le Auto-test pour verifier les problemes d'assemblage les "
+"plus communs."
 
 #. MSG_FLOW c=15
 #: ../../Firmware/ultralcd.cpp:5711
@@ -817,8 +816,8 @@ msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
 msgstr ""
-"Le G-code a ete prepare pour un niveau different. Veuillez decouper le "
-"modele a nouveau. L'impression a ete annulee."
+"G-code a ete prepare pour un niveau different. Decouper le modele a nouveau. "
+"Impression annulée."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
@@ -834,8 +833,8 @@ msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again. "
 "Print cancelled."
 msgstr ""
-"Le G-code a ete prepare pour une autre version de l'imprimante. Veuillez "
-"decouper le modele a nouveau. L'impression a ete annulee."
+"G-code pour un type d'imprimante différent. Decouper le modele a nouveau. "
+"Impression annulée."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
 #: ../../Firmware/util.cpp:370
@@ -849,8 +848,8 @@ msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
 msgstr ""
-"Le G-code a ete prepare pour une version plus recente du firmware. Veuillez "
-"mettre a jour le firmware. L'impression annulee."
+"G-code a ete prepare pour un nouveau firmware. Mettre a jour le firmware. "
+"Impression annulee."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:4628
@@ -887,9 +886,9 @@ msgid ""
 "setup process, in which the Z-axis will be calibrated. Then, you will be "
 "ready to print."
 msgstr ""
-"Bonjour, je suis votre imprimante Original Prusa i3. Je vais vous "
-"accompagner au cours d'un bref processus de reglage, qui permettra de "
-"calibrer le Z-axis. Apres cela, tout sera pret pour imprimer."
+"Bonjour, je suis votre imprimante Original Prusa i3. Je vais vous guider au "
+"cours d'un bref processus de reglage, qui permettra de calibrer le Z-axis. "
+"Apres cela, tout sera pret pour imprimer."
 
 #. MSG_WIZARD_WELCOME c=20 r=7
 #: ../../Firmware/messages.cpp:122 ../../Firmware/ultralcd.cpp:4000
@@ -898,7 +897,7 @@ msgid ""
 "through the setup process?"
 msgstr ""
 "Bonjour, je suis votre imprimante Original Prusa i3. Voulez-vous que je vous "
-"guide a travers le processus d'installation?"
+"guide dans le processus d'installation?"
 
 #. MSG_HIGH_POWER c=10
 #: ../../Firmware/messages.cpp:105 ../../Firmware/ultralcd.cpp:4345
@@ -999,8 +998,8 @@ msgid ""
 "Internal runtime error. Try resetting the MMU unit or updating the firmware. "
 "If the issue persists, contact support."
 msgstr ""
-"Erreur d'execution interne. Essayez de reinitialiser l'unite MMU ou de "
-"mettre a jour le firmware. Si le probleme persiste, contactez le support."
+"Erreur d'execution interne. Essayez de reinitialiser MMU ou de mettre a jour "
+"le firmware. Si le probleme persiste, contactez le support."
 
 #. MSG_FILAMENT_LOADED c=20 r=2
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3816
@@ -1123,7 +1122,7 @@ msgstr "MAJ FW MMU NECESS."
 #. MSG_DESC_QUEUE_FULL c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:240 ../../Firmware/mmu2/errors_list.h:281
 msgid "MMU Firmware internal error, please reset the MMU."
-msgstr "Erreur interne du firmware du MMU, veuillez reinitialiser le MMU."
+msgstr "Erreur interne du firmware du MMU, reinitialiser le MMU."
 
 #. MSG_MMU_MODE c=8
 #: ../../Firmware/messages.cpp:138 ../../Firmware/ultralcd.cpp:4368
@@ -1352,8 +1351,8 @@ msgstr "Ne tourne pas"
 msgid ""
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
 msgstr ""
-"Maintenant je vais calibrer la distance entre de la buse et la "
-"surface du plateau."
+"Maintenant je vais calibrer la distance entre de la buse et la surface du "
+"plateau."
 
 #. MSG_WIZARD_WILL_PREHEAT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4048
@@ -1517,7 +1516,7 @@ msgid ""
 "Please check our handbook and fix the problem. Then resume the Wizard by "
 "rebooting the printer."
 msgstr ""
-"Merci de consulter notre manuel et de corriger le probleme. Poursuivez alors "
+"Consultez notre manuel et de corriger le probleme. Poursuivez alors "
 "l'assistant en redemarrant l'imprimante."
 
 #. MSG_CHECK_IR_CONNECTION c=20 r=4
@@ -1554,8 +1553,8 @@ msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
 msgstr ""
-"Veuillez inserer le filament dans le premier tube du MMU, puis appuyez sur "
-"le bouton pour le charger."
+"Inserer le filament dans le premier tube du MMU, puis appuyez sur le bouton "
+"pour le charger."
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3824
@@ -1713,14 +1712,12 @@ msgid ""
 "steps, section Calibration flow."
 msgstr ""
 "L'imprimante n'a pas encore ete calibree. Suivez le manuel, chapitre "
-"Premiers pas, section Processus de calibration."
+"Premiers pas - Processus de calibration."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
 #: ../../Firmware/util.cpp:289
 msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr ""
-"Diametre de la buse dans les reglages ne correspond pas a celui dans le G-"
-"Code. Continuer?"
+msgstr "Diamètre de la buse diffère du modèle dans le G-Code. Continuer?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
@@ -1728,8 +1725,8 @@ msgid ""
 "Printer nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
-"Diametre de la buse dans les reglages ne correspond pas a celui dans le G-"
-"Code. Merci de verifier le parametre dans les reglages. Impression annulee."
+"Diamètre de la buse diffère du modèle dans le G-Code. Vérifiez la valeur. "
+"Impression annulee."
 
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:210 ../../Firmware/mmu2/errors_list.h:250
@@ -1886,7 +1883,7 @@ msgid ""
 "screen menu."
 msgstr ""
 "Choisissez un filament pour la Calibration de la Premiere Couche et "
-"selectionnez-le depuis le menu a l'ecran."
+"selectionnez-le dans le menu."
 
 #. MSG_SELECT_EXTRUDER c=20
 #: ../../Firmware/Marlin_main.cpp:3516 ../../Firmware/Tcodes.cpp:35
@@ -2207,8 +2204,7 @@ msgid ""
 "chapter)."
 msgstr ""
 "L'imprimante commencera a imprimer une ligne en zig-zag. Tournez le bouton "
-"jusqu'a atteindre la hauteur optimale. Consultez les photos dans le manuel "
-"(chapitre Calibration)."
+"jusqu'a atteindre la hauteur optimale. Consultez les photos dans le manuel."
 
 #. MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=9
 #: ../../Firmware/Marlin_main.cpp:1535 ../../Firmware/messages.cpp:43
@@ -2216,8 +2212,8 @@ msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
 msgstr ""
-"Il faut toujours effectuer la Calibration Z. Veuillez suivre le manuel, "
-"chapitre Premiers pas, section Processus de calibration."
+"Il faut toujours effectuer la Calibration Z. Suivre le manuel, chapitre "
+"Premiers pas - Processus de calibration."
 
 #. MSG_SORT_TIME c=8
 #: ../../Firmware/messages.cpp:141 ../../Firmware/ultralcd.cpp:4780
