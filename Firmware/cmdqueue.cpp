@@ -444,7 +444,7 @@ void get_command()
             allow_when_stopped = true;
 
         // Handle the USB timer
-        if ((*cmd_start == 'G') && !IS_SD_PRINTING)
+        if ((*cmd_start == 'G') && !(IS_SD_PRINTING))
             usb_timer.start();
 
         if (allow_when_stopped == false && Stopped == true) {
