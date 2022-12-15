@@ -2,10 +2,9 @@
 CUSTOM_CHARS = {
     '\x06': '⏬',
     '\x04': '🔃',
-    '\xe4': 'µ',
     '\xdf': '°',
     '\xe1': 'ä',
-    '\xe4': 'μ',
+    '\xe4': 'µ', #on keyboard AltGr+m it is \xC2\xB5
     '\xef': 'ö',
     '\xf5': 'ü',
 }

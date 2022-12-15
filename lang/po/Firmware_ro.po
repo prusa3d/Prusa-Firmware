@@ -796,8 +796,8 @@ msgstr "Vent. print?"
 
 #. MSG_BED_CORRECTION_FRONT c=14
 #: ../../Firmware/ultralcd.cpp:2745
-msgid "Front side[μm]"
-msgstr "Fata [μm]"
+msgid "Front side[µm]"
+msgstr "Fata [µm]"
 
 #. MSG_SELFTEST_FANS c=20
 #: ../../Firmware/ultralcd.cpp:7001
@@ -1036,8 +1036,8 @@ msgstr "Vent. hotend?"
 
 #. MSG_BED_CORRECTION_LEFT c=14
 #: ../../Firmware/ultralcd.cpp:2743
-msgid "Left side [μm]"
-msgstr "Stanga [μm]"
+msgid "Left side [µm]"
+msgstr "Stanga [µm]"
 
 #. MSG_BL_HIGH c=12
 #: ../../Firmware/messages.cpp:156 ../../Firmware/ultralcd.cpp:5834
@@ -1743,8 +1743,8 @@ msgstr "Port RPi"
 
 #. MSG_BED_CORRECTION_REAR c=14
 #: ../../Firmware/ultralcd.cpp:2746
-msgid "Rear side [μm]"
-msgstr "Spate [μm]"
+msgid "Rear side [µm]"
+msgstr "Spate [µm]"
 
 #. MSG_RECOVERING_PRINT c=20
 #: ../../Firmware/Marlin_main.cpp:10896
@@ -1822,8 +1822,8 @@ msgstr "Dreapta"
 
 #. MSG_BED_CORRECTION_RIGHT c=14
 #: ../../Firmware/ultralcd.cpp:2744
-msgid "Right side[μm]"
-msgstr "Dreapta [μm]"
+msgid "Right side[µm]"
+msgstr "Dreapta [µm]"
 
 #. MSG_WIZARD_RERUN c=20 r=7
 #: ../../Firmware/ultralcd.cpp:3846
