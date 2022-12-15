@@ -606,8 +606,8 @@ msgid "Front print fan?"
 msgstr ""
 
 #. MSG_BED_CORRECTION_FRONT c=14
-#: ../../Firmware/ultralcd.cpp:2773
-msgid "Front side[μm]"
+#: ../../Firmware/ultralcd.cpp:2745
+msgid "Front side[µm]"
 msgstr ""
 
 #. MSG_SELFTEST_FANS c=20
@@ -807,8 +807,8 @@ msgid "Left hotend fan?"
 msgstr ""
 
 #. MSG_BED_CORRECTION_LEFT c=14
-#: ../../Firmware/ultralcd.cpp:2771
-msgid "Left side [μm]"
+#: ../../Firmware/ultralcd.cpp:2743
+msgid "Left side [µm]"
 msgstr ""
 
 #. MSG_BL_HIGH c=12
@@ -1435,8 +1435,8 @@ msgid "RPi port"
 msgstr ""
 
 #. MSG_BED_CORRECTION_REAR c=14
-#: ../../Firmware/ultralcd.cpp:2774
-msgid "Rear side [μm]"
+#: ../../Firmware/ultralcd.cpp:2746
+msgid "Rear side [µm]"
 msgstr ""
 
 #. MSG_RECOVERING_PRINT c=20
@@ -1482,8 +1482,8 @@ msgid "Right"
 msgstr ""
 
 #. MSG_BED_CORRECTION_RIGHT c=14
-#: ../../Firmware/ultralcd.cpp:2772
-msgid "Right side[μm]"
+#: ../../Firmware/ultralcd.cpp:2744
+msgid "Right side[µm]"
 msgstr ""
 
 #. MSG_WIZARD_RERUN c=20 r=7

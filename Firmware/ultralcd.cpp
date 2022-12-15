@@ -2787,10 +2787,10 @@ void lcd_adjust_bed_reset(void)
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Settings:           |	MSG_SETTINGS
-//! |Left side [μm]:     |	MSG_BED_CORRECTION_LEFT
-//! |Right side[μm]:     |	MSG_BED_CORRECTION_RIGHT
-//! |Front side[μm]:     |	MSG_BED_CORRECTION_FRONT
-//! |Rear side [μm]:     |	MSG_BED_CORRECTION_REAR
+//! |Left side [µm]:     |	MSG_BED_CORRECTION_LEFT
+//! |Right side[µm]:     |	MSG_BED_CORRECTION_RIGHT
+//! |Front side[µm]:     |	MSG_BED_CORRECTION_FRONT
+//! |Rear side [µm]:     |	MSG_BED_CORRECTION_REAR
 //! |Reset               |	MSG_BED_CORRECTION_RESET
 //! ----------------------
 //! @endcode
