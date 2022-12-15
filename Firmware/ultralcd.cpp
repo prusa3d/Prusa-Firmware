@@ -4756,7 +4756,7 @@ static void lcd_settings_menu()
 #endif //LCD_BL_PIN
 
     //! Enables/disables the bed heating while heating the nozzle for loading/unloading filament
-    MENU_ITEM_TOGGLE_P(_N("HeatBedOnLoad"), eeprom_read_byte((uint8_t *)EEPROM_HEAT_BED_ON_LOAD_FILAMENT) ? _T(MSG_YES) : _T(MSG_NO), lcd_heat_bed_on_load_toggle);
+    MENU_ITEM_TOGGLE_P(_N("HBed on load"), eeprom_read_byte((uint8_t *)EEPROM_HEAT_BED_ON_LOAD_FILAMENT) ? _T(MSG_YES) : _T(MSG_NO), lcd_heat_bed_on_load_toggle); ////MSG_HEAT_BED_ON_LOAD c=12
 
 	if (farm_mode)
 	{
