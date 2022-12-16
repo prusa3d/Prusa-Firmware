@@ -697,8 +697,7 @@ void __attribute__ ((naked)) __attribute__ ((section (".init3"))) stopWatchdogOn
 }
 }
 
-void softReset()
-{
+void softReset(void) {
     cli();
 #ifdef WATCHDOG
     // If the watchdog support is enabled, use that for resetting. The timeout value is customized
