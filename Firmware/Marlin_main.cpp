@@ -84,6 +84,7 @@
 #include "Prusa_farm.h"
 
 #include <avr/wdt.h>
+#include <util/atomic.h>
 #include <avr/pgmspace.h>
 
 #include "Tcodes.h"
@@ -692,10 +693,11 @@ void watchdogEarlyDisable(void) {
     // leaving it enabled when jumping to the program. This could cause another watchdog reset
     // during setup() if not handled properly. So to avoid any issue of this kind, stop the
     // watchdog timer manually.
-    cli();
-    wdt_reset();
-    MCUSR &= ~_BV(WDRF);
-    wdt_disable();
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+      wdt_reset();
+      MCUSR &= ~_BV(WDRF);
+      wdt_disable();
+    }
 }
 
 void softReset(void) {
