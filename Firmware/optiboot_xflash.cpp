@@ -55,9 +55,7 @@ static void putch(char ch) {
 static void verifySpace() {
   if (getch() != CRC_EOP) {
     putch(STK_FAILED);
-    wdt_enable(WDTO_15MS); // shorten WD timeout
-    while (1)           // and busy-loop so that WD causes
-      ;             //  a reset and app start.
+    softReset();
   }
   putch(STK_INSYNC);
 }
@@ -300,7 +298,7 @@ uint8_t optiboot_xflash_enter()
     }
     else if (ch == STK_LEAVE_PROGMODE) { /* 'Q' */
       // Adaboot no-wait mod
-      wdt_enable(WDTO_15MS);
+      wdt_enable(WATCHDOG_SOFT_RESET_VALUE);
       verifySpace();
     }
     else {

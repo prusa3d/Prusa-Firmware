@@ -688,7 +688,24 @@ void failstats_reset_print()
 void softReset()
 {
     cli();
-    wdt_enable(WDTO_15MS);
+#ifdef WATCHDOG
+    // If the watchdog support is enabled, use that for resetting. The timeout value is customized
+    // for each board since the miniRambo ships with a bootloader which doesn't properly handle the
+    // WDT. In order to avoid bootlooping, the watchdog is set to a value large enough for the
+    // usual timeout of the bootloader to pass.
+    wdt_enable(WATCHDOG_SOFT_RESET_VALUE);
+#else
+    #warning WATCHDOG not defined. See the following comment for more details about the implications
+    // In case the watchdog is not enabled, the reset is acomplished by jumping to the bootloader
+    // vector manually. This however is somewhat dangerous since the peripherals don't get reset
+    // by this operation. Considering this is not going to be used in any production firmware,
+    // it can be left as is and just be cautious with it. The only way to accomplish a peripheral
+    // reset is by an external reset, by a watchdog reset or by a power cycle. All of these options
+    // can't be accomplished just from software. One way to minimize the dangers of this is by
+    // setting all dangerous pins to INPUT before jumping to the bootloader, but that still doesn't
+    // reset other peripherals such as UART, timers, INT, PCINT, etc...
+    asm volatile("jmp 0x3E000");
+#endif
     while(1);
 }
 
@@ -4273,17 +4290,13 @@ void process_commands()
 			MMU2::mmu2.Reset(MMU2::MMU2::Software);
 		}
 		else if (code_seen_P(PSTR("RESET"))) { // PRUSA RESET
-#ifdef WATCHDOG
 #if defined(XFLASH) && defined(BOOTAPP)
             boot_app_magic = BOOT_APP_MAGIC;
             boot_app_flags = BOOT_APP_FLG_RUN;
 #endif //defined(XFLASH) && defined(BOOTAPP)
             softReset();
-#elif defined(BOOTAPP) //this is a safety precaution. This is because the new bootloader turns off the heaters, but the old one doesn't. The watchdog should be used most of the time.
-            asm volatile("jmp 0x3E000");
-#endif
-        }
-	else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
+    }
+    else if (code_seen_P(PSTR("SN"))) { // PRUSA SN
         char SN[20];
         eeprom_read_block(SN, (uint8_t*)EEPROM_PRUSA_SN, 20);
         if (SN[19])
