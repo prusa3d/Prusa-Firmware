@@ -685,16 +685,17 @@ void failstats_reset_print()
 	eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
 }
 
-extern "C" {
-void __attribute__ ((naked)) __attribute__ ((section (".init3"))) stopWatchdogOnInit(void) {
+void watchdogEarlyDisable(void) {
     // Regardless if the watchdog support is enabled or not, disable the watchdog very early
     // after the program starts since there's no danger in doing this.
     // The reason for this is because old bootloaders might not handle the watchdog timer at all,
     // leaving it enabled when jumping to the program. This could cause another watchdog reset
     // during setup() if not handled properly. So to avoid any issue of this kind, stop the
     // watchdog timer manually.
+    cli();
+    wdt_reset();
+    MCUSR &= ~_BV(WDRF);
     wdt_disable();
-}
 }
 
 void softReset(void) {
@@ -1063,6 +1064,8 @@ static void xflash_err_msg()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+  watchdogEarlyDisable();
+
 	timer2_init(); // enables functional millis
 
 
