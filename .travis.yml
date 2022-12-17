@@ -3,7 +3,10 @@ language: minimal
 
 cache:
   directories:
-    .dependencies/
+    # cmake project dependencies
+    - .dependencies/
+    # legacy PF-build dependencies
+    - ./../PF-build-env/
 
 before_install:
   # Prepare the dependencies for the old build environment
