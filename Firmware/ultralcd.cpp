@@ -5477,7 +5477,7 @@ static void lcd_main_menu()
     }
 #ifdef TEMP_MODEL
     else if(Stopped) {
-        MENU_ITEM_SUBMENU_P(_T(MSG_ACK_ERROR), lcd_print_stop);
+        MENU_ITEM_SUBMENU_P(_T(MSG_TM_ACK_ERROR), lcd_print_stop);
     }
 #endif
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code

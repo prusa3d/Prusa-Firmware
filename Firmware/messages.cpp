@@ -169,7 +169,7 @@ extern const char MSG_PAUSED_THERMAL_ERROR[] PROGMEM_I1 = ISTR("PAUSED THERMAL E
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[] PROGMEM_I1 = ISTR("THERMAL ANOMALY");////MSG_THERMAL_ANOMALY c=20
 extern const char MSG_TM_NOT_CAL[] PROGMEM_I1 = ISTR("Temp model not calibrated yet.");////MSG_TM_NOT_CAL c=20 r=4
-extern const char MSG_ACK_ERROR[] PROGMEM_I1 = ISTR("Acknowledge error");////MSG_ACK_ERROR c=17
+extern const char MSG_TM_ACK_ERROR[] PROGMEM_I1 = ISTR("Clear TM error");////MSG_TM_ACK_ERROR c=18
 #endif
 extern const char MSG_LOAD_ALL[] PROGMEM_I1 = ISTR("Load All"); ////MSG_LOAD_ALL c=18
 extern const char MSG_NOZZLE_CNG_MENU [] PROGMEM_I1 = ISTR("Nozzle change");////MSG_NOZZLE_CNG_MENU c=18
