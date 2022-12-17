@@ -819,7 +819,7 @@ void lcd_status_screen()                          // NOT static due to using ins
 	}
 }
 
-void print_stop();
+void lcd_print_stop_finish();
 
 void lcd_commands()
 {
@@ -837,7 +837,7 @@ void lcd_commands()
             lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
             lcd_commands_type = LcdCommands::Idle;
             lcd_commands_step = 0;
-            print_stop();
+            lcd_print_stop_finish();
         }
     }
 
@@ -5863,7 +5863,7 @@ static void lcd_sd_updir()
 }
 
 // continue stopping the print from the main loop after lcd_print_stop() is called
-void print_stop()
+void lcd_print_stop_finish()
 {
     // save printing time
     stoptime = _millis();
@@ -5908,9 +5908,9 @@ void print_stop()
 
 void lcd_print_stop()
 {
-    // UnconditionalStop() will internally cause planner_abort_hard(), meaning we _cannot_ plan
-    // any more move in this call! Any further move must happen inside print_stop(), which is called
-    // by the main loop one iteration later.
+    // UnconditionalStop() will internally cause planner_abort_hard(), meaning we _cannot_ plan any
+    // more move in this call! Any further move must happen inside lcd_print_stop_finish(), which is
+    // called by the main loop one iteration later.
     UnconditionalStop();
 
     if (!card.sdprinting) {
