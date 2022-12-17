@@ -5637,6 +5637,11 @@ static void lcd_main_menu()
     if((IS_SD_PRINTING || usb_timer.running() || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling)) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
+#ifdef TEMP_MODEL
+    else if(Stopped) {
+        MENU_ITEM_SUBMENU_P(_T(MSG_ACK_ERROR), lcd_print_stop);
+    }
+#endif
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
     if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal) {
         if (!card.isFileOpen()) {
