@@ -1764,7 +1764,6 @@ void handle_temp_error()
         } else {
             temp_error_state.v = 0;
             WRITE(BEEPER, LOW);
-            menu_unset_block(MENU_BLOCK_THERMAL_ERROR);
 
             // hotend error was transitory and disappeared, re-enable bed
             if (!target_temperature_bed)

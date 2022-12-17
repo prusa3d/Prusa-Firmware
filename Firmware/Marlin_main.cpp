@@ -9585,14 +9585,14 @@ void UnconditionalStop()
 // WARNING: This function is called *continuously* during a thermal failure.
 //
 // This either pauses (for thermal model errors) or stops *without recovery* depending on
-// "allow_pause". If pause is allowed, this forces a printer-initiated instantanenous pause (just
-// like an LCD pause) that bypasses the host pausing functionality. In this state the printer is
-// kept in busy state and *must* be recovered from the LCD.
-void ThermalStop(bool allow_pause)
+// "allow_recovery". If recovery is allowed, this forces a printer-initiated instantanenous pause
+// (just like an LCD pause) that bypasses the host pausing functionality. In this state the printer
+// is kept in busy state and *must* be recovered from the LCD.
+void ThermalStop(bool allow_recovery)
 {
     if(Stopped == false) {
         Stopped = true;
-        if(allow_pause && (IS_SD_PRINTING || usb_timer.running())) {
+        if(allow_recovery && (IS_SD_PRINTING || usb_timer.running())) {
             if (!isPrintPaused) {
                 lcd_setalertstatuspgm(_T(MSG_PAUSED_THERMAL_ERROR), LCD_STATUS_CRITICAL);
 
@@ -9625,13 +9625,15 @@ void ThermalStop(bool allow_pause)
         // Make a warning sound! We cannot use Sound_MakeCustom as this would stop further moves.
         // Turn on the speaker here (if not already), and turn it off when back in the main loop.
         WRITE(BEEPER, HIGH);
-    }
 
-    // Return to the status screen to stop any pending menu action which could have been
-    // started by the user while stuck in the Stopped state. This also ensures the NEW
-    // error is immediately shown.
-    if (menu_menu != lcd_status_screen)
+        // Always return to the status screen to ensure the NEW error is immediately shown.
         lcd_return_to_status();
+
+        if(!allow_recovery) {
+            // prevent menu access for all fatal errors
+            menu_set_block(MENU_BLOCK_THERMAL_ERROR);
+        }
+    }
 }
 
 bool IsStopped() { return Stopped; };
