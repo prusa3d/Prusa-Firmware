@@ -666,7 +666,7 @@ void crashdet_cancel()
 	saved_printing = false;
 	tmc2130_sg_stop_on_crash = true;
 	if (saved_printing_type == PRINTING_TYPE_SD) {
-		lcd_print_stop();
+		print_stop();
 	}else if(saved_printing_type == PRINTING_TYPE_USB){
 		SERIAL_ECHOLNRPGM(MSG_OCTOPRINT_CANCEL); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
 		cmdqueue_reset();
@@ -7848,7 +7848,7 @@ Sigma_Exit:
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */
     case 603: {
-        lcd_print_stop();
+        print_stop();
     }
     break;
 
@@ -9611,7 +9611,7 @@ void ThermalStop(bool allow_pause)
             }
         } else {
             // We got a hard thermal error and/or there is no print going on. Just stop.
-            lcd_print_stop();
+            print_stop();
         }
 
         // Report the status on the serial, switch to a busy state

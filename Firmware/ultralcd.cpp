@@ -5906,7 +5906,7 @@ void lcd_print_stop_finish()
     axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
 }
 
-void lcd_print_stop()
+void print_stop(bool interactive)
 {
     // UnconditionalStop() will internally cause planner_abort_hard(), meaning we _cannot_ plan any
     // more move in this call! Any further move must happen inside lcd_print_stop_finish(), which is
@@ -5925,9 +5925,19 @@ void lcd_print_stop()
     pause_time = 0;
     isPrintPaused = false;
 
+    if (interactive) {
+        // acknowledged by the user from the LCD: resume processing USB commands again
+        Stopped = false;
+    }
+
     // return to status is required to continue processing in the main loop!
     lcd_commands_type = LcdCommands::StopPrint;
     lcd_return_to_status();
+}
+
+void lcd_print_stop()
+{
+    print_stop(true);
 }
 
 #ifdef TEMP_MODEL
