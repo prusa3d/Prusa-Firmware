@@ -7702,13 +7702,13 @@ void lcd_setalertstatus_(const char* message, uint8_t severity, bool progmem)
         bool same = !(progmem?
             strcmp_P(lcd_status_message, message):
             strcmp(lcd_status_message, message));
-        lcd_updatestatus(message, progmem);
         lcd_status_message_timeout.start();
         lcd_status_message_level = severity;
         custom_message_type = CustomMsg::Status;
         custom_message_state = 0;
         if (!same) {
             // do not kick the user out of the menus if the message is unchanged
+            lcd_updatestatus(message, progmem);
             lcd_return_to_status();
         }
     }
