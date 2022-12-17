@@ -2440,6 +2440,7 @@ void handle_warning()
                 lcd_setalertstatuspgm(_T(MSG_THERMAL_ANOMALY), LCD_STATUS_INFO);
                 WRITE(BEEPER, HIGH);
             }
+            first = false;
         } else {
             if(warn_beep) TOGGLE(BEEPER);
         }
