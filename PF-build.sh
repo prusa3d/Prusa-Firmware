@@ -588,18 +588,11 @@ echo ""
 # Start: Check if build exists and creates it if not
 check_create_build_folders()
 {
-if [ ! -d "../PF-build-dl" ]; then
-    mkdir ../PF-build-dl || failures 9
-fi
-
-cd ../PF-build-dl || failures 10
-BUILD_ENV_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
-
-# Check if PF-build-env-<version> exists and downloads + creates it if not
+# Check if PF-build-env/<version> exists and downloads + creates it if not
 # The build environment is based on the supported Arduino IDE portable version with some changes
-if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
-    echo "$(tput setaf 6)PF-build-env-$BUILD_ENV is missing ... creating it now for you$(tput sgr 0)"
-    mkdir ../PF-build-env-$BUILD_ENV
+if [ ! -d "../PF-build-env/$BUILD_ENV" ]; then
+    echo "$(tput setaf 6)PF-build-env/$BUILD_ENV is missing ... creating it now for you$(tput sgr 0)"
+    mkdir -p ../PF-build-env/$BUILD_ENV
     if [ $OUTPUT == "1" ] ; then
         sleep 2
     fi
@@ -610,6 +603,13 @@ fi
 # Start: Download and extract supported Arduino IDE depending on OS
 download_prepare_arduinoIDE()
 {
+if [ ! -d "../PF-build-dl" ]; then
+    mkdir ../PF-build-dl || failures 9
+fi
+
+cd ../PF-build-dl || failures 10
+BUILD_ENV_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+
 # Windows
 if [ $TARGET_OS == "windows" ]; then
     if [ ! -f "arduino-$ARDUINO_ENV-windows.zip" ]; then
@@ -620,14 +620,14 @@ if [ $TARGET_OS == "windows" ]; then
         wget https://downloads.arduino.cc/arduino-$ARDUINO_ENV-windows.zip || failures 8
         echo "$(tput sgr 0)"
     fi
-    if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
+    if [[ ! -d "../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env/$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
         echo "$(tput setaf 6)Unzipping Windows 32/64-bit Arduino IDE portable...$(tput setaf 2)"
         if [ $OUTPUT == "1" ] ; then
             sleep 2
         fi
-        unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env-$BUILD_ENV || failures 11
-        mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
-        echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+        unzip arduino-$ARDUINO_ENV-windows.zip -d ../PF-build-env/$BUILD_ENV || failures 11
+        mv ../PF-build-env/$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
+        echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env/$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
         echo "$(tput sgr0)"
     fi
 fi
@@ -642,14 +642,14 @@ if [ $TARGET_OS == "linux" ]; then
         wget --no-check-certificate https://downloads.arduino.cc/arduino-$ARDUINO_ENV-linux$Processor.tar.xz || failures 8
         echo "$(tput sgr 0)"
     fi
-    if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
+    if [[ ! -d "../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" && ! -e "../PF-build-env/$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
         echo "$(tput setaf 6)Unzipping Linux $Processor Arduino IDE portable...$(tput setaf 2)"
         if [ $OUTPUT == "1" ] ; then
             sleep 2
         fi
-        tar -xvf arduino-$ARDUINO_ENV-linux$Processor.tar.xz -C ../PF-build-env-$BUILD_ENV/ || failures 11
-        mv ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
-        echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+        tar -xvf arduino-$ARDUINO_ENV-linux$Processor.tar.xz -C ../PF-build-env/$BUILD_ENV/ || failures 11
+        mv ../PF-build-env/$BUILD_ENV/arduino-$ARDUINO_ENV ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor
+        echo "# arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env/$BUILD_ENV/arduino-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
         echo "$(tput sgr0)"
     fi
 fi
@@ -659,27 +659,27 @@ fi
 # Start: Make Arduino IDE portable
 portable_ArduinoIDE()
 {
-if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/ ]; then
-    mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/
+if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/ ]; then
+    mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/
 fi
 
-if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/ ]; then
-    mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable
+if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/ ]; then
+    mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable
 fi
-if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/output/ ]; then
-    mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/output
+if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/output/ ]; then
+    mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/output
 fi
-if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/ ]; then
-    mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages
+if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/ ]; then
+    mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages
 fi
-if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/sketchbook/ ]; then
-    mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/sketchbook
+if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/sketchbook/ ]; then
+    mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/sketchbook
 fi
-if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/sketchbook/libraries/ ]; then
-    mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/sketchbook/libraries
+if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/sketchbook/libraries/ ]; then
+    mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/sketchbook/libraries
 fi
-if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/staging/ ]; then
-    mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/staging
+if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/staging/ ]; then
+    mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/staging
 fi
 }
 # End: Make Arduino IDE portable
@@ -687,23 +687,23 @@ fi
 # Start: Change Arduino IDE preferences
 change_ArduinoIDEpreferances()
 {
-if [ ! -e ../PF-build-env-$BUILD_ENV/Preferences-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt ]; then
+if [ ! -e ../PF-build-env/$BUILD_ENV/Preferences-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt ]; then
     echo "$(tput setaf 6)Setting $ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor Arduino IDE preferences for portable GUI usage...$(tput setaf 2)"
     if [ $OUTPUT == "1" ] ; then
         sleep 2
     fi
     echo "update.check"
-    sed -i 's/update.check = true/update.check = false/g' ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
+    sed -i 's/update.check = true/update.check = false/g' ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
     echo "board"
-    sed -i "s/board = uno/board = $BOARD/g" ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
+    sed -i "s/board = uno/board = $BOARD/g" ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
     echo "editor.linenumbers"
-    sed -i 's/editor.linenumbers = false/editor.linenumbers = true/g' ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
+    sed -i 's/editor.linenumbers = false/editor.linenumbers = true/g' ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
     echo "boardsmanager.additional.urls"
-    echo "boardsmanager.additional.urls=$BOARD_URL" >>../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
-    echo "build.verbose=true" >>../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
-    echo "compiler.cache_core=false" >>../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
-    echo "compiler.warning_level=all" >>../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
-    echo "# Preferences-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env-$BUILD_ENV/Preferences-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+    echo "boardsmanager.additional.urls=$BOARD_URL" >>../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
+    echo "build.verbose=true" >>../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
+    echo "compiler.cache_core=false" >>../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
+    echo "compiler.warning_level=all" >>../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/lib/preferences.txt
+    echo "# Preferences-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor" >> ../PF-build-env/$BUILD_ENV/Preferences-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
     echo "$(tput sgr0)"
 fi
 }
@@ -720,27 +720,27 @@ if [ ! -f "$BOARD_FILENAME-$BOARD_VERSION.tar.bz2" ]; then
     fi
     wget $BOARD_FILE_URL || failures 8
 fi
-if [[ ! -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION" || ! -e "../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
+if [[ ! -d "../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION" || ! -e "../PF-build-env/$BUILD_ENV/$BOARD_FILENAME-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]]; then
     echo "$(tput setaf 6)Unzipping $BOARD_PACKAGE_NAME Arduino IDE portable...$(tput setaf 2)"
     if [ $OUTPUT == "1" ] ; then
         sleep 2
     fi
-    tar -xvf $BOARD_FILENAME-$BOARD_VERSION.tar.bz2 -C ../PF-build-env-$BUILD_ENV/ || failures 11
-    if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME ]; then
-        mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME
+    tar -xvf $BOARD_FILENAME-$BOARD_VERSION.tar.bz2 -C ../PF-build-env/$BUILD_ENV/ || failures 11
+    if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME ]; then
+        mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME
     fi
-    if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME ]; then
-        mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME
+    if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME ]; then
+        mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME
     fi
-    if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware ]; then
-        mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware
+    if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware ]; then
+        mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware
     fi
-    if [ ! -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr ]; then
-        mkdir ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr
+    if [ ! -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr ]; then
+        mkdir ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr
     fi
     
-    mv ../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$BOARD_VERSION ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION
-    echo "# $BOARD_FILENAME-$BOARD_VERSION" >> ../PF-build-env-$BUILD_ENV/$BOARD_FILENAME-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+    mv ../PF-build-env/$BUILD_ENV/$BOARD_FILENAME-$BOARD_VERSION ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION
+    echo "# $BOARD_FILENAME-$BOARD_VERSION" >> ../PF-build-env/$BUILD_ENV/$BOARD_FILENAME-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
 
     echo "$(tput sgr 0)"
 fi    
@@ -755,13 +755,13 @@ if [[ "$BOARD_VERSION" == "1.0.3" || "$BOARD_VERSION" == "1.0.2" || "$BOARD_VERS
         wget $PF_BUILD_FILE_URL || failures 8
         echo "$(tput sgr 0)"
     fi
-    if [ ! -e "../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]; then
+    if [ ! -e "../PF-build-env/$BUILD_ENV/PF-build-env/$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt" ]; then
         echo "$(tput setaf 6)Unzipping Prusa Firmware build environment...$(tput setaf 2)"
         if [ $OUTPUT == "1" ] ; then
             sleep 2
         fi
-        unzip -o PF-build-env-WinLin-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || failures 11
-        echo "# PF-build-env-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor-$BUILD_ENV" >> ../PF-build-env-$BUILD_ENV/PF-build-env-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+        unzip -o PF-build-env-WinLin-$BUILD_ENV.zip -d ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || failures 11
+        echo "# PF-build-env-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor-$BUILD_ENV" >> ../PF-build-env/$BUILD_ENV/PF-build-env/$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
         echo "$(tput sgr0)"
     fi
 fi
@@ -771,14 +771,14 @@ fi
 # Start: Check if User updated Arduino IDE 1.8.5 boardsmanager and tools
 check_ArduinoIDE_User_interaction()
 {
-if [ -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools" ]; then
+if [ -d "../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools" ]; then
     echo "$(tput setaf 6)Arduino IDE boards / tools have been manually updated...$"
     echo "Please don't update the 'Arduino AVR boards' as this will prevent running this script (tput setaf 2)"
     if [ $OUTPUT == "1" ] ; then
         sleep 2
     fi
 fi    
-if [ -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2" ]; then
+if [ -d "../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2" ]; then
     echo "$(tput setaf 6)PrusaReasearch compatible tools have been manually updated...$(tput setaf 2)"
     if [ $OUTPUT == "1" ] ; then
         sleep 2
@@ -787,13 +787,13 @@ if [ -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Proc
     if [ $OUTPUT == "1" ] ; then
         sleep 2
     fi
-    cp -f ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/hardware/tools/avr/avr/lib/ldscripts/avr6.xn ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/avr/lib/ldscripts/avr6.xn
-    echo "# PF-build-env-portable-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor-$BUILD_ENV" >> ../PF-build-env-$BUILD_ENV/PF-build-env-portable-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
+    cp -f ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/hardware/tools/avr/avr/lib/ldscripts/avr6.xn ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/avr/lib/ldscripts/avr6.xn
+    echo "# PF-build-env-portable-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor-$BUILD_ENV" >> ../PF-build-env/$BUILD_ENV/PF-build-env-portable-$BUILD_ENV-$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor.txt
     echo "$(tput sgr0)"
 fi    
-if [ -d "../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools/avr-gcc/5.4.0-atmel3.6.1-arduino2" ]; then
+if [ -d "../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor/portable/packages/arduino/tools/avr-gcc/5.4.0-atmel3.6.1-arduino2" ]; then
     echo "$(tput setaf 1)Arduino IDE tools have been updated manually to a non supported version!!!"
-    echo "Delete ../PF-build-env-$BUILD_ENV and start the script again"
+    echo "Delete ../PF-build-env/$BUILD_ENV and start the script again"
     echo "Script will not continue until this have been fixed $(tput setaf 2)"
     if [ $OUTPUT == "1" ] ; then
         sleep 2
@@ -948,10 +948,10 @@ fi
 #### Start: Set needed Paths
 set_paths()
 {
-cd ../PF-build-env-$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || failures 10
+cd ../PF-build-env/$BUILD_ENV/$ARDUINO_ENV-$BOARD_VERSION-$TARGET_OS-$Processor || failures 10
 BUILD_ENV_PATH="$( pwd -P )"
 
-cd ../..
+cd ../../..
 
 #Checkif BUILD_PATH exists and if not creates it
 if [ ! -d "Prusa-Firmware-build" ]; then
@@ -1593,14 +1593,16 @@ echo "Prepare build env"
 get_arguments
 set_build_env_variables
 output_useful_data
-check_create_build_folders
 
 #### Download/set needed apps and dependencies
-download_prepare_arduinoIDE
-portable_ArduinoIDE
-change_ArduinoIDEpreferances
-download_prepare_Prusa_build_files
-check_ArduinoIDE_User_interaction
+if [ ! -d "../PF-build-env/$BUILD_ENV" ]; then
+    check_create_build_folders
+    download_prepare_arduinoIDE
+    portable_ArduinoIDE
+    change_ArduinoIDEpreferances
+    download_prepare_Prusa_build_files
+    check_ArduinoIDE_User_interaction
+fi
 
 #### Start 
 set_paths
