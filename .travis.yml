@@ -1,6 +1,10 @@
 dist: focal
 language: minimal
 
+cache:
+  directories:
+    .dependencies/
+
 before_install:
   # Prepare the dependencies for the old build environment
   - sudo apt-get install -y python3-polib python3-pyelftools python3-regex
