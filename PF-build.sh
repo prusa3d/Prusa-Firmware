@@ -513,17 +513,13 @@ fi
 # Start: Check python ... needed during language build
 check_python()
 {
-if ! type python > /dev/null; then
+if ! type python3 > /dev/null; then
     if [ $TARGET_OS == "windows" ]; then
         echo "$(tput setaf 1)Missing 'python3' which is important to run this script"
         failures 4
     elif [ $TARGET_OS == "linux" ]; then
-        echo "$(tput setaf 1)Missing 'python' which is important to run this script"
-        echo "As Python 2.x will not be maintained from 2020 please,"
-        echo "install it with the command $(tput setaf 2)'sudo apt-get install python3'."
-        echo "Check which version of Python3 has been installed using 'ls /usr/bin/python3*'"
-        echo "Use 'sudo ln -sf /usr/bin/python3.x /usr/bin/python' (where 'x' is your version number) to make it default.$(tput sgr0)"
-        #sudo apt-get update && apt-get install python3 && ln -sf /usr/bin/python3 /usr/bin/python
+        echo "$(tput setaf 1)Missing 'python3' which is important to run this script"
+        echo "Install it with the command $(tput setaf 2)'sudo apt-get install python3'."
         failures 4
     fi
 fi
