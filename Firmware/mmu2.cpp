@@ -14,7 +14,6 @@
 #include "strlen_cx.h"
 #include "temperature.h"
 #include "ultralcd.h"
-#include "cardreader.h" // for IS_SD_PRINTING
 #include "SpoolJoin.h"
 
 // As of FW 3.12 we only support building the FW with only one extruder, all the multi-extruder infrastructure will be removed.
@@ -246,7 +245,7 @@ void __attribute__((noinline)) MMU2::mmu_loop_inner(bool reportErrors) {
 
 void MMU2::CheckFINDARunout() {
     // Check for FINDA filament runout
-    if (!FindaDetectsFilament() && CHECK_FSENSOR) {
+    if (!FindaDetectsFilament() && check_fsensor()) {
         SERIAL_ECHOLNPGM("FINDA filament runout!");
         stop_and_save_print_to_ram(0, 0);
         restore_print_from_ram_and_continue(0);
@@ -384,9 +383,9 @@ bool MMU2::tool_change(uint8_t slot) {
         return false;
 
     if (slot != extruder) {
-        if (!IS_SD_PRINTING && !usb_timer.running()) {
+        if (FindaDetectsFilament()) {
             // If Tcodes are used manually through the serial
-            // we need to unload manually as well
+            // we need to unload manually as well -- but only if FINDA detects filament
             unload();
         }
 

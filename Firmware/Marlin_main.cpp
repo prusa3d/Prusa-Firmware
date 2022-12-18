@@ -563,6 +563,14 @@ bool __attribute__((noinline)) printer_active() {
         || mesh_bed_leveling_flag;
 }
 
+// Currently only used in one place, allowed to be inlined
+bool check_fsensor() {
+    return (IS_SD_PRINTING || usb_timer.running())
+        && mcode_in_progress != 600
+        && !saved_printing
+        && e_active();
+}
+
 bool fans_check_enabled = true;
 
 #ifdef TMC2130
