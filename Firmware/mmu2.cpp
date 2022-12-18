@@ -355,7 +355,7 @@ bool MMU2::tool_change(char code, uint8_t slot) {
 
     case 'c': {
         waitForHotendTargetTemp(100, []{});
-        execute_load_to_nozzle_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
+        execute_load_to_nozzle_sequence();
     } break;
     }
 
@@ -506,7 +506,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t slot) {
         ToolChangeCommon(slot);
 
         // Finish loading to the nozzle with finely tuned steps.
-        execute_load_to_nozzle_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
+        execute_load_to_nozzle_sequence();
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
     }
     lcd_update_enable(true);
@@ -837,11 +837,11 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     }
 }
 
-void MMU2::execute_load_to_nozzle_sequence(const E_Step *sequence, uint8_t steps) {
+void MMU2::execute_load_to_nozzle_sequence() {
     st_synchronize();
     // Compensate for configurable Extra Loading Distance
     current_position[E_AXIS] -= logic.ExtraLoadDistance();
-    execute_extruder_sequence(sequence, steps);
+    execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
 }
 
 void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
