@@ -22,7 +22,6 @@
 #include "pins.h"
 #include "Timer.h"
 #include "mmu2.h"
-#include "cardreader.h" // for IS_SD_PRINTING
 extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
@@ -364,7 +363,7 @@ extern bool printer_active();
 //! Instead, the fsensor uses another state variable :( , which is set to true, when the M600 command is enqued
 //! and is reset to false when the fsensor returns into its filament runout finished handler
 //! I'd normally change this macro, but who knows what would happen in the MMU :)
-#define CHECK_FSENSOR ((IS_SD_PRINTING || usb_timer.running()) && (mcode_in_progress != 600) && !saved_printing && e_active())
+bool check_fsensor();
 
 extern void calculate_extruder_multipliers();
 

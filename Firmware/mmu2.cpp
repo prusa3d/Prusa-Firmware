@@ -245,7 +245,7 @@ void __attribute__((noinline)) MMU2::mmu_loop_inner(bool reportErrors) {
 
 void MMU2::CheckFINDARunout() {
     // Check for FINDA filament runout
-    if (!FindaDetectsFilament() && CHECK_FSENSOR) {
+    if (!FindaDetectsFilament() && check_fsensor()) {
         SERIAL_ECHOLNPGM("FINDA filament runout!");
         stop_and_save_print_to_ram(0, 0);
         restore_print_from_ram_and_continue(0);
