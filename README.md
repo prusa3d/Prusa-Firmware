@@ -54,7 +54,7 @@ Prusa-Firmware depends on a pinned version of `avr-gcc` and the external `prusa3
     # automatically setup dependencies
     ./utils/bootstrap.py
 
-which will download and unpack them inside the `.dependencies` directory. `./utils/bootstrap.py` will also install `cmake`, `ninja` and the required python packages if missing, although installing those through is system's package manager is usually preferred.
+which will download and unpack them inside the `.dependencies` directory. `./utils/bootstrap.py` will also install `cmake`, `ninja` and the required python packages if missing, although installing those through the system's package manager is usually preferred.
 
 You can then proceed by creating a build directory, configure for AVR and build:
 
