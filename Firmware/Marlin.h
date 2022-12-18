@@ -22,6 +22,7 @@
 #include "pins.h"
 #include "Timer.h"
 #include "mmu2.h"
+#include "cardreader.h" // for IS_SD_PRINTING
 extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
