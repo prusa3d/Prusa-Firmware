@@ -115,8 +115,35 @@ PF-build currently assumes a Debian/Ubuntu (or derivative) distribution.
 
 
 ## Windows
-### VSCode
-TODO
+### Visual Studio Code (VSCode)
+#### Prerequisites
+
+* [Visual Studio Code](https://code.visualstudio.com/)
+* [CMake Tools plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
+* [Python](https://www.python.org/)
+* [Git Bash](https://git-scm.com/downloads)
+
+#### First time setup
+
+Start by cloning the Prusa-Firmware repository
+
+    git clone https://github.com/prusa3d/Prusa-Firmware
+
+Open the `Prusa-Firmware` folder in VScode.
+
+Open a new terminal in VScode (Terminal→New Terminal) and run
+
+    python .\utils\bootstrap.py
+
+This will download all dependencies required to build the firmware. You should see a `.dependencies` folder in the Prusa-Firmware folder.
+
+Reload VScode so the CMake plugin can pick up the project's CMake kit correctly.
+
+### Building
+
+To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S-EINSy10a_EN-only`)and select the small icon which shows "Build" when hovered over.
+
+The built .hex file can then be found in folder `Prusa-Firmware/build`
 
 ### Arduino (Legacy)
 TODO
