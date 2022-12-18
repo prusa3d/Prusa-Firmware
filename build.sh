@@ -1,4 +1,9 @@
 #!/bin/bash 
+echo "***************************************************"
+echo "WARNING: build.sh will be removed soon, do not use!"
+echo "Switch your build to cmake or use PF-build.sh      "
+echo "***************************************************"
+
 BUILD_ENV="1.0.8"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 LANGUAGES=$1
