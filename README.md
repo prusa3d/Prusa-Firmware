@@ -163,4 +163,33 @@ Building with Arduino IDE results in a *limited* firmware:
 
 For these reasons, you should think twice before reporting issues for a firmware built with Arduino. If you find a bug in the firmware, building and testing using CMake should be your first thought. Issues regarding Arduino builds are answered by the community and are not officially supported.
 
-TODO
+
+### Environment preparation
+
+Install "Arduino Software IDE" from the official website https://www.arduino.cc -> Software -> Downloads. Version 1.8.19 or higher is required.
+
+Setup Arduino to install and use the Prusa board definitions:
+
+- Open Arduino and navigate to File -> Preferences -> Settings
+- To the text field "Additional Boards Manager URLs" add `https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json`
+- Open Board manager (Tools -> Board -> Board manager)
+- Install "Prusa Research AVR Boards by Prusa Research"
+
+
+### Source code preparation
+
+Clone or download this repository to your local drive.
+
+In the subdirectory `Firmware/variants/` select the configuration file (.h) corresponding to your printer model and manually copy it to `Firmware/Configuration_prusa.h`
+
+Run "Arduino IDE", then
+
+- Open the file `Firmware/Firmware.ino`
+- Select the target board with Tools -> Board -> "PrusaResearch Einsy RAMBo"
+- Open `Firmware/config.h` and change LANG_MODE to 0.
+
+
+### Compilation and upload
+
+- Run the compilation Sketch -> Verify/Compile
+- Upload the result code into the connected printer Sketch -> Upload
