@@ -149,3 +149,18 @@ After updating the kit, you may need to reload VScode.
 To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S-EINSy10a_EN-only`)and select the small icon which shows "Build" when hovered over.
 
 The built .hex file can then be found in folder `Prusa-Firmware/build`
+
+
+## Arduino IDE (deprecated)
+
+Using Arduino IDE is still possible, but _no longer supported_. Prusa-Firmware requires a complex multi-step build process that cannot be done automatically with just the IDE. For a long time we provided instructions to use Arduino in combination with shell scripts, however starting with 3.13 the build system has been completely switched to `cmake`.
+
+Building with Arduino IDE results in a *limited* firmware:
+
+- Arduino IDE can only build a single, english-only variant at a time that you manually have to select
+- The build will not be reproducible (meaning you will likely get a different binary every time you build the same sources)
+- You need to download, patch and select the correct board definitions by hand
+
+For these reasons, you should think twice before reporting issues for a firmware built with Arduino. If you find a bug in the firmware, building and testing using CMake should be your first thought. Issues regarding Arduino builds are answered by the community and are not officially supported.
+
+TODO
