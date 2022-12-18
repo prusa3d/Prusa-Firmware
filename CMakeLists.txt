@@ -178,7 +178,6 @@ set(FW_SOURCES
     SpoolJoin.cpp
     stepper.cpp
     swi2c.c
-    swspi.cpp
     Tcodes.cpp
     temperature.cpp
     timer02.c

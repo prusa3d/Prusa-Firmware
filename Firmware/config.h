@@ -31,7 +31,6 @@
 #define SWI2C_TMO         2048 //2048 cycles timeout
 
 //PAT9125 configuration
-//#define PAT9125_SWSPI // software SPI mode (incomplete)
 #ifdef SWI2C_SCL
 #define PAT9125_SWI2C   // software I2C mode
 #else

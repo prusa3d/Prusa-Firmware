@@ -27,10 +27,7 @@
 #define PAT9125_ORIENTATION		0x19
 #define PAT9125_BANK_SELECTION	0x7f
 
-
-#if defined(PAT9125_SWSPI)
-#include "swspi.h"
-#elif defined(PAT9125_SWI2C)
+#if defined(PAT9125_SWI2C)
 #include "swi2c.h"
 #elif defined(PAT9125_I2C)
 #include "twi.h"
@@ -109,10 +106,7 @@ extern FILE _uartout;
 
 uint8_t pat9125_probe()
 {
-#if defined(PAT9125_SWSPI)
-    swspi_init();
-  #error not implemented
-#elif defined(PAT9125_SWI2C)
+#if defined(PAT9125_SWI2C)
     swi2c_init();
     return swi2c_check(PAT9125_I2C_ADDR) == 0;
 #elif defined(PAT9125_I2C)
@@ -247,12 +241,7 @@ uint8_t pat9125_update_bs(void)
 static uint8_t pat9125_rd_reg(uint8_t addr)
 {
 	uint8_t data = 0;
-#if defined(PAT9125_SWSPI)
-	swspi_start();
-	swspi_tx(addr & 0x7f);
-	data = swspi_rx();
-	swspi_stop();
-#elif defined(PAT9125_SWI2C)
+#if defined(PAT9125_SWI2C)
 	if (!swi2c_readByte_A8(PAT9125_I2C_ADDR, addr, &data)) //NO ACK error
         goto error;
 #elif defined(PAT9125_I2C)
@@ -269,12 +258,7 @@ static uint8_t pat9125_rd_reg(uint8_t addr)
 
 static void pat9125_wr_reg(uint8_t addr, uint8_t data)
 {
-#if defined(PAT9125_SWSPI)
-	swspi_start();
-	swspi_tx(addr | 0x80);
-	swspi_tx(data);
-	swspi_stop();
-#elif defined(PAT9125_SWI2C)
+#if defined(PAT9125_SWI2C)
 	if (!swi2c_writeByte_A8(PAT9125_I2C_ADDR, addr, &data)) //NO ACK error
         goto error;
 #elif defined(PAT9125_I2C)
