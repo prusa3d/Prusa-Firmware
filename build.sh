@@ -8,15 +8,15 @@ if [ ! -d "build-env" ]; then
 fi
 cd build-env || exit 2
 
-if [ ! -d "../../PF-build-env-$BUILD_ENV-build" ]; then
+if [ ! -d "../../PF-build-env/$BUILD_ENV-build" ]; then
     if [ ! -f "PF-build-env-Linux64-$BUILD_ENV.zip" ]; then
         #wget https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-Linux64/PF-build-env-Linux64-$BUILD_ENV.zip || exit 3
         wget https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-Linux64/PF-build-env-Linux64-$BUILD_ENV.zip || exit 3
     fi
-    unzip -q PF-build-env-Linux64-$BUILD_ENV.zip -d ../../PF-build-env-$BUILD_ENV-build || exit 4
+    unzip -q PF-build-env-Linux64-$BUILD_ENV.zip -d ../../PF-build-env/$BUILD_ENV-build || exit 4
 fi
 
-cd ../../PF-build-env-$BUILD_ENV-build || exit 5
+cd ../../PF-build-env/$BUILD_ENV-build || exit 5
 BUILD_ENV_PATH="$( pwd -P )"
 
 cd ..
@@ -42,6 +42,7 @@ fi
 $BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board PrusaResearch:avr:prusa_einsy_rambo --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit 9
 
 export ARDUINO=$BUILD_ENV_PATH
+export OUTDIR=$BUILD_PATH
 
 if [ -z $LANGUAGES ]; then
     cd $SCRIPT_PATH/lang
