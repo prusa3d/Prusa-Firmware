@@ -23,9 +23,9 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 // Beware - this value is used to initialize the MMU logic layer - it will be sent to the MMU upon line up (written into its 8bit register 0x0b)
 // However - in the G-code we can get a request to set the extra load distance at runtime to something else (M708 A0xb Xsomething).
 // The printer intercepts such a call and sets its extra load distance to match the new value as well.
-static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = 5; // mm
+static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = 5 + 16; // mm
 
-static constexpr float MMU2_EXTRUDER_PTFE_LENGTH = 42.3f; // mm
+static constexpr float MMU2_EXTRUDER_PTFE_LENGTH = 50.f; // mm
 static constexpr float MMU2_EXTRUDER_HEATBREAK_LENGTH  = 17.7f; // mm
 
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
