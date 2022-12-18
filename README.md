@@ -137,9 +137,14 @@ Open a new terminal in VScode (Terminal→New Terminal) and run
 
 This will download all dependencies required to build the firmware. You should see a `.dependencies` folder in the Prusa-Firmware folder.
 
-Reload VScode so the CMake plugin can pick up the project's CMake kit correctly.
+Reload VScode. If all works correctly you should see the VScode automatically configuring the CMake project for you. If this doesn't happen you likely need to set the CMake kit; This can be done in two ways:
 
-### Building
+1. Type `Ctrl+Shift+P` and search for `CMake: Select a Kit`. Select `avr-gcc`. If none appear, Scan for kits first.
+2. If 1) does not work for some reason, as a last resort you can edit the CMake Tools settings. Search for "Additional Kits" and add `.vscode/cmake-kits.json` to the list.
+
+After updating the kit, you may need to reload VScode.
+
+#### Building
 
 To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S-EINSy10a_EN-only`)and select the small icon which shows "Build" when hovered over.
 
