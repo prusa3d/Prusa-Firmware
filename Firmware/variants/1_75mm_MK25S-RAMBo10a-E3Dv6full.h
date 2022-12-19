@@ -502,6 +502,8 @@
 
 //#define SUPPORT_VERBOSITY
 
+#define MMU_CONFIG_FILE "mmu2/variants/config_MMU2S.h"
+
 #define MMU_FILAMENT_COUNT 5
 
 #define MMU_REQUIRED_FW_BUILDNR 132
