@@ -2586,6 +2586,7 @@ void temp_model_reset_settings()
     temp_model::data.err = TEMP_MODEL_E;
     temp_model::warn_beep = true;
     temp_model::enabled = true;
+    temp_model::data.flag_bits.uninitialized = true;
 }
 
 void temp_model_load_settings()
