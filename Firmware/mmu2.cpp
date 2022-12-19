@@ -249,9 +249,9 @@ bool MMU2::VerifyFilamentEnteredPTFE()
     uint8_t fsensorState = 0;
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
-    current_position[E_AXIS] += MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - MMU2_LOAD_DISTANCE_PAST_GEARS;
+    current_position[E_AXIS] += MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION);
     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
-    current_position[E_AXIS] -= (MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - MMU2_LOAD_DISTANCE_PAST_GEARS);
+    current_position[E_AXIS] -= (MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION));
     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
 
     while(blocks_queued())
@@ -840,7 +840,7 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
 void MMU2::execute_load_to_nozzle_sequence() {
     st_synchronize();
     // Compensate for configurable Extra Loading Distance
-    current_position[E_AXIS] -= MMU2_LOAD_DISTANCE_PAST_GEARS;
+    current_position[E_AXIS] -= (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION);
     execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
 }
 
