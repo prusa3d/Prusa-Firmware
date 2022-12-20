@@ -342,6 +342,11 @@ msgstr "Kontrola senzoru"
 msgid "Checks"
 msgstr "Kontrola"
 
+#. MSG_TM_ACK_ERROR c=18
+#: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5490
+msgid "Clear TM error"
+msgstr "Vymazat chybu TM"
+
 #. MSG_NOT_COLOR c=19
 #: ../../Firmware/ultralcd.cpp:2223
 msgid "Color not correct"
