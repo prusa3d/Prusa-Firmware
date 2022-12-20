@@ -919,9 +919,9 @@ msgstr "Hotend-fläkt:"
 
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4030
-msgid "I will run xyz calibration now. It will take approx. 12 mins."
+msgid "I will run xyz calibration now. It will take up to 24 mins."
 msgstr ""
-"Jag kommer att utföra en xyz-kalibrering nu. Det kommer att ta ca. 12 min."
+"Jag kommer att utföra en xyz-kalibrering nu. Det tar upp till 24 min."
 
 #. MSG_WIZARD_Z_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4038
