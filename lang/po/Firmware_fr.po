@@ -344,6 +344,11 @@ msgstr "Verif. des capteurs"
 msgid "Checks"
 msgstr "Verifications"
 
+#. MSG_TM_ACK_ERROR c=18
+#: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5490
+msgid "Clear TM error"
+msgstr "Effacer l'error TM"
+
 #. MSG_NOT_COLOR c=19
 #: ../../Firmware/ultralcd.cpp:2223
 msgid "Color not correct"
