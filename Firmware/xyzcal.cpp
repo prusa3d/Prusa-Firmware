@@ -135,10 +135,10 @@ pos_mm_t pos_2_mm(float pos){
 	return pos * 0.01f;
 }
 
-void xyzcal_meassure_enter(void)
+void xyzcal_meassure_center(void)
 {
-	DBG(_n("xyzcal_meassure_enter\n"));
-
+	DBG(_n("xyzcal_meassure_center\n"));
+	lcd_puts_at_P(4,3,PSTR("Measure center  ")); ////MSG_MEASURE_CENTER c=16
 	// disable heaters and stop motion before we initialize sm4
 	disable_heater();
 	st_synchronize();
@@ -158,6 +158,8 @@ void xyzcal_meassure_enter(void)
 void xyzcal_meassure_leave(void)
 {
 	DBG(_n("xyzcal_meassure_leave\n"));
+	lcd_set_cursor(4,3);
+	lcd_space(16);
 
 	// resync planner position from counters (changed by xyzcal_update_pos)
 	planner_reset_position();
@@ -569,6 +571,8 @@ void xyzcal_scan_pixels_32x32_Zhop(int16_t cx, int16_t cy, int16_t min_z, int16_
 			sm4_set_dir(X_AXIS, d);
             //@size=242
 			DBG(_n("%d\n"), 64 - (r * 2 + d)); ///< to keep OctoPrint connection alive
+			lcd_set_cursor(4,3);
+			lcd_printf_P(PSTR("Countdown: %d "),64 - (r * 2 + d)); ////MSG_COUNTDOWN c=12
 
 			for (uint8_t c = 0; c < 32; c++){ ///< X axis
 				/// move to the next point and move Z up diagonally (if needed)
@@ -1002,7 +1006,7 @@ BedSkewOffsetDetectionResultType xyzcal_scan_and_process(){
 BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy(void) {
     // DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-	xyzcal_meassure_enter();
+	xyzcal_meassure_center();
 	if (xyzcal_searchZ())
 		ret = xyzcal_scan_and_process();
 	xyzcal_meassure_leave();
