@@ -761,9 +761,9 @@ msgid "Hotend fan:"
 msgstr "Ventola hotend:"
 
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
-#: ../../Firmware/ultralcd.cpp:4094
-msgid "I will run xyz calibration now. It will take approx. 12 mins."
-msgstr "Adesso avviero una Calibrazione XYZ. Puo durare circa 12 min."
+#: ../../Firmware/ultralcd.cpp:4030
+msgid "I will run xyz calibration now. It will take up to 24 mins."
+msgstr "Adesso avviero una Calibrazione XYZ. Puo durare fino a 24 min."
 
 #. MSG_WIZARD_Z_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4102
