@@ -1041,27 +1041,42 @@ void lcd_commands()
 			lcd_commands_type = LcdCommands::Idle;
 		}
 	}
+
 #ifdef TEMP_MODEL
-    if (lcd_commands_type == LcdCommands::TempModel) {
-        if (lcd_commands_step == 0) {
+    if (lcd_commands_type == LcdCommands::TempModel && cmd_buffer_empty())
+    {
+        switch (lcd_commands_step)
+        {
+        case 0:
             lcd_commands_step = 3;
-        }
-        if (lcd_commands_step == 3) {
-            enquecommand_P(PSTR("M310 A F0"));
+            [[fallthrough]];
+
+        case 3:
+            enquecommand_P(PSTR("M310 A F1"));
             lcd_commands_step = 2;
-        }
-        if (lcd_commands_step ==2 && temp_model_valid()) {
-            enquecommand_P(PSTR("M310 S1"));
+            break;
+
+        case 2:
+            if (temp_model_autotune_result())
+                enquecommand_P(PSTR("M500"));
             lcd_commands_step = 1;
-        }
-        //if (lcd_commands_step == 1 && calibrated()) {
-        if (lcd_commands_step == 1 && temp_model_valid()) {
+            break;
+
+        case 1:
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
-            enquecommand_P(PSTR("M500"));
-            if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
-                lcd_wizard(WizState::IsFil);
+
+            if (temp_model_autotune_result()) {
+                if (calibration_status() == CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION) {
+                    // move to the next calibration step if not fully calibrated
+                    calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+                }
+                if ((eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1)) {
+                    // successful: resume the wizard
+                    lcd_wizard(WizState::IsFil);
+                }
             }
+            break;
         }
     }
 #endif //TEMP_MODEL
@@ -1070,6 +1085,9 @@ void lcd_commands()
 	{
         if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
         {
+#ifdef TEMP_MODEL
+            static bool was_enabled;
+#endif //TEMP_MODEL
             switch(lcd_commands_step)
             {
             case 0:
@@ -1084,7 +1102,7 @@ void lcd_commands()
                 enquecommand_P(PSTR("G1 X125 Y10 Z150 F1000"));
                 enquecommand_P(PSTR("M109 S280"));
 #ifdef TEMP_MODEL
-                //enquecommand_P(PSTR("M310 S0"));
+                was_enabled = temp_model_enabled();
                 temp_model_set_enabled(false);
 #endif //TEMP_MODEL
                 lcd_commands_step = 2;
@@ -1098,13 +1116,11 @@ void lcd_commands()
                 enquecommand_P(PSTR("M84 XY"));
                 lcd_update_enabled = false; //hack to avoid lcd_update recursion.
                 if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false, true)) {
+                    setAllTargetHotends(0);
 #ifdef TEMP_MODEL
-                //enquecommand_P(PSTR("M310 S1"));
-                temp_model_set_enabled(true);
+                    temp_model_set_enabled(was_enabled);
 #endif //TEMP_MODEL
-                //enquecommand_P(PSTR("M104 S0"));
-                setTargetHotendSafe(0,0);
-                lcd_commands_step = 1;
+                    lcd_commands_step = 1;
                 }
                 lcd_update_enabled = true;
                 break;
@@ -4271,10 +4287,6 @@ void lcd_wizard(WizState state)
 	case S::Z: //z cal.
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
 		break;
-#ifdef TEMP_MODEL
-	case S::TempModel: //Temp model calibration
-		break;
-#endif //TEMP_MODEL
 	case S::Finish: //we are finished
 		msg = _T(MSG_WIZARD_DONE);
 		lcd_reset_alert_level();
@@ -4284,6 +4296,9 @@ void lcd_wizard(WizState state)
     case S::Preheat:
     case S::Lay1CalCold:
     case S::Lay1CalHot:
+#ifdef TEMP_MODEL
+	case S::TempModel: // exiting for calibration
+#endif //TEMP_MODEL
         break;
 	default:
 		msg = _T(MSG_WIZARD_QUIT);
@@ -6996,11 +7011,7 @@ static bool lcd_selfcheck_endstops()
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {
-	uint8_t _counter = 0;
 	uint8_t _progress = 0;
-	bool _stepresult = false;
-	bool _docycle = true;
-
 	int _checked_snapshot = (_isbed) ? degBed() : degHotend(0);
 	int _opposite_snapshot = (_isbed) ? degHotend(0) : degBed();
 	uint8_t _cycles = (_isbed) ? 180 : 60; //~ 90s / 30s
@@ -7010,13 +7021,13 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	manage_heater();
 	manage_inactivity(true);
 
-	do {
-		_counter++;
-		_docycle = (_counter < _cycles) ? true : false;
-
+    for(uint8_t _counter = 0; _counter < _cycles && !Stopped; ++_counter)
+    {
 		manage_heater();
 		manage_inactivity(true);
-		_progress = (_isbed) ? lcd_selftest_screen(TestScreen::Bed, _progress, 2, false, 400) : lcd_selftest_screen(TestScreen::Hotend, _progress, 2, false, 400);
+		_progress = (_isbed?
+			lcd_selftest_screen(TestScreen::Bed, _progress, 2, false, 400) :
+			lcd_selftest_screen(TestScreen::Hotend, _progress, 2, false, 400));
 		/*if (_isbed) {
 			MYSERIAL.print("Bed temp:");
 			MYSERIAL.println(degBed());
@@ -7026,8 +7037,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 			MYSERIAL.println(degHotend(0));
 		}*/
 		if(_counter%5 == 0) serialecho_temperatures(); //show temperatures once in two seconds
-
-	} while (_docycle); 
+	}
 
 	target_temperature[0] = 0;
 	target_temperature_bed = 0;
@@ -7043,21 +7053,26 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	MYSERIAL.println(_opposite_result);
 	*/
 
-	if (_opposite_result < ((_isbed) ? 30 : 9))
-	{
-		if (_checked_result >= ((_isbed) ? 9 : 30))
-		{
-			_stepresult = true;
-		}
-		else
-		{
-			lcd_selftest_error(TestError::Heater, "", "");
-		}
-	}
-	else
-	{
-		lcd_selftest_error(TestError::Bed, "", "");
-	}
+    bool _stepresult = false;
+    if (Stopped)
+    {
+        // thermal error occurred while heating the nozzle
+        lcd_selftest_error(TestError::Heater, "", "");
+    }
+    else
+    {
+        if (_opposite_result < ((_isbed) ? 30 : 9))
+        {
+            if (_checked_result >= ((_isbed) ? 9 : 30))
+                _stepresult = true;
+            else
+                lcd_selftest_error(TestError::Heater, "", "");
+        }
+        else
+        {
+            lcd_selftest_error(TestError::Bed, "", "");
+        }
+    }
 
 	manage_heater();
 	manage_inactivity(true);

@@ -2506,8 +2506,12 @@ static void temp_model_reset_enabled(bool enabled)
 {
     TempMgrGuard temp_mgr_guard;
     temp_model::enabled = enabled;
-    temp_model::valid = enabled;
     temp_model::data.flag_bits.uninitialized = true;
+}
+
+bool temp_model_enabled()
+{
+    return temp_model::enabled;
 }
 
 void temp_model_set_enabled(bool enabled)
@@ -2517,19 +2521,11 @@ void temp_model_set_enabled(bool enabled)
         TempMgrGuard temp_mgr_guard;
         temp_model::enabled = enabled;
         temp_model::setup();
-        temp_model::valid = true;
     }
 
     // verify that the model has been enabled
-    if(enabled && !temp_model::enabled) {
+    if(enabled && !temp_model::enabled)
         SERIAL_ECHOLNPGM("TM: invalid parameters, cannot enable");
-        temp_model::valid = false;
-    }
-}
-
-bool temp_model_valid()
-{
-  return temp_model::valid;
 }
 
 void temp_model_set_warn_beep(bool enabled)
@@ -2583,15 +2579,14 @@ void temp_model_reset_settings()
 
     temp_model::data.P = TEMP_MODEL_P;
     temp_model::data.C = TEMP_MODEL_C;
-    temp_model::data.R[0] = TEMP_MODEL_R;
-    for(uint8_t i = 1; i != TEMP_MODEL_R_SIZE; ++i)
-        temp_model::data.R[i] = NAN;
+    for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
+        temp_model::data.R[i] = pgm_read_float(TEMP_MODEL_R_DEFAULT + i);
     temp_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
     temp_model::data.warn = TEMP_MODEL_W;
     temp_model::data.err = TEMP_MODEL_E;
     temp_model::warn_beep = true;
-    temp_model::enabled = false;
-    temp_model::valid = false;
+    temp_model::enabled = true;
+    temp_model::data.flag_bits.uninitialized = true;
 }
 
 void temp_model_load_settings()
@@ -2794,7 +2789,8 @@ static bool autotune(int16_t cal_temp)
 {
     uint16_t samples;
     float e;
-    char tm_message[20];
+    char tm_message[LCD_WIDTH+1];
+
     // bootstrap C/R values without fan
     set_fan_speed(0);
 
@@ -2802,16 +2798,12 @@ static bool autotune(int16_t cal_temp)
         const char* PROGMEM verb = (i == 0? PSTR("initial"): PSTR("refine"));
         target_temperature[0] = 0;
         if(current_temperature[0] >= TEMP_MODEL_CAL_Tl) {
-//!01234567890123456789|
-//!TM: cool down <50C  |
             sprintf_P(tm_message, PSTR("TM: cool down <%dC"), TEMP_MODEL_CAL_Tl);
             lcd_setstatus_serial(tm_message);
             cooldown(TEMP_MODEL_CAL_Tl);
             wait(10000);
         }
-//!01234567890123456789|
-//!TM: initial R est.  |
-//!TM: refine R est.   |
+
         sprintf_P(tm_message, PSTR("TM: %S C est."), verb);
         lcd_setstatus_serial(tm_message);
         target_temperature[0] = cal_temp;
@@ -2832,9 +2824,7 @@ static bool autotune(int16_t cal_temp)
         wait_temp();
         if(i) break; // we don't need to refine R
         wait(30000); // settle PID regulation
-//!01234567890123456789|
-//!TM: initial R 230C  |
-//!TM: refine R 230C   |
+
         sprintf_P(tm_message, PSTR("TM: %S R %dC"), verb, cal_temp);
         lcd_setstatus_serial(tm_message);
         samples = record();
@@ -2856,11 +2846,14 @@ static bool autotune(int16_t cal_temp)
     wait(30000);
 
     for(int8_t i = TEMP_MODEL_R_SIZE - 1; i > 0; i -= TEMP_MODEL_CAL_R_STEP) {
+        // always disable the checker while estimating fan resistance as the difference
+        // (esp with 3rd-party blowers) can be massive
+        temp_model::data.R[i] = NAN;
+
         uint8_t speed = 256 / TEMP_MODEL_R_SIZE * (i + 1) - 1;
         set_fan_speed(speed);
         wait(10000);
-//!01234567890123456789|
-//!TM: R[15] estimat.  |
+
         sprintf_P(tm_message, PSTR("TM: R[%u] estimat."), (unsigned)i);
         lcd_setstatus_serial(tm_message);
         samples = record();
@@ -2896,12 +2889,19 @@ static bool autotune(int16_t cal_temp)
 
 } // namespace temp_model_cal
 
+static bool temp_model_autotune_err = true;
+
 void temp_model_autotune(int16_t temp, bool selftest)
 {
-    char tm_message[20];
+    float orig_C, orig_R[TEMP_MODEL_R_SIZE];
+    bool orig_enabled;
+    static_assert(sizeof(orig_R) == sizeof(temp_model::data.R));
+
+    // fail-safe error state
+    temp_model_autotune_err = true;
+
+    char tm_message[LCD_WIDTH+1];
     if(moves_planned() || printer_active()) {
-//!01234567890123456789|
-//!TM: Cal. NOT ILDE   |
         sprintf_P(tm_message, PSTR("TM: Cal. NOT IDLE"));
         lcd_setstatus_serial(tm_message);
         return;
@@ -2912,31 +2912,46 @@ void temp_model_autotune(int16_t temp, bool selftest)
     menu_set_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
     lcd_return_to_status();
 
-    // set the model checking state during self-calibration
-    bool was_enabled = temp_model::enabled;
+    // save the original model data and set the model checking state during self-calibration
+    orig_C = temp_model::data.C;
+    memcpy(orig_R, temp_model::data.R, sizeof(temp_model::data.R));
+    orig_enabled = temp_model::enabled;
     temp_model_reset_enabled(selftest);
+
+    // autotune
     SERIAL_ECHOLNPGM("TM: calibration start");
-    bool err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
+    temp_model_autotune_err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
 
     // always reset temperature
     disable_heater();
 
-    if(err) {
-//!01234567890123456789|
-//!TM: calibr. failed! |
+    if(temp_model_autotune_err) {
         sprintf_P(tm_message, PSTR("TM: calibr. failed!"));
         lcd_setstatus_serial(tm_message);
         if(temp_error_state.v)
             temp_model_cal::set_fan_speed(255);
+
+        // show calibrated values before overwriting them
+        temp_model_report_settings();
+
+        // restore original state
+        temp_model::data.C = orig_C;
+        memcpy(temp_model::data.R, orig_R, sizeof(temp_model::data.R));
+        temp_model_set_enabled(orig_enabled);
     } else {
         lcd_setstatuspgm(MSG_WELCOME);
         temp_model_cal::set_fan_speed(0);
-        temp_model_set_enabled(was_enabled);
+        temp_model_set_enabled(orig_enabled);
         temp_model_report_settings();
     }
 
     lcd_consume_click();
     menu_unset_block(MENU_BLOCK_TEMP_MODEL_AUTOTUNE);
+}
+
+bool temp_model_autotune_result()
+{
+    return !temp_model_autotune_err;
 }
 
 #ifdef TEMP_MODEL_DEBUG

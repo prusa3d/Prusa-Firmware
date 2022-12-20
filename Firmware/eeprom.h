@@ -92,6 +92,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0FF7 4087 | uint8   | EEPROM_CALIBRATION_STATUS             | ffh 255      | ffh 255               | Assembled _default_                               | ???          | D3 Ax0ff7 C1
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Calibrated                                        | ^            | ^
 | ^           | ^       | ^                                     | e6h 230      | ^                     | needs Live Z adjustment                           | ^            | ^
+| ^           | ^       | ^                                     | ebh 235      | ^                     | needs Temp Model calibration                      | ^            | ^
 | ^           | ^       | ^                                     | f0h 240      | ^               __P__ | needs Z calibration                               | ^            | ^
 | ^           | ^       | ^                                     | fah 250      | ^                     | needs XYZ calibration                             | ^            | ^
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Unknown                                           | ^            | ^
