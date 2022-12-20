@@ -324,6 +324,11 @@ msgstr "Provjera senzora"
 msgid "Checks"
 msgstr "Provjere"
 
+#. MSG_TM_ACK_ERROR c=18
+#: ../../Firmware/messages.cpp:172 ../../Firmware/ultralcd.cpp:5490
+msgid "Clear TM error"
+msgstr "Obriši TM pogrešku"
+
 #. MSG_NOT_COLOR c=19
 #: ../../Firmware/ultralcd.cpp:2237
 msgid "Color not correct"
