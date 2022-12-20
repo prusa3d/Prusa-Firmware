@@ -759,9 +759,9 @@ msgid "Hotend fan:"
 msgstr "Hotend vent:"
 
 #. MSG_WIZARD_XYZ_CAL c=20 r=8
-#: ../../Firmware/ultralcd.cpp:4094
-msgid "I will run xyz calibration now. It will take approx. 12 mins."
-msgstr "Sada cu pokrenuti xyz kalibraciju. Trebat ce cca. 12 min."
+#: ../../Firmware/ultralcd.cpp:4030
+msgid "I will run xyz calibration now. It will take up to 24 mins."
+msgstr "Sada cu pokrenuti xyz kalibraciju. Trebat ce do 24 min."
 
 #. MSG_WIZARD_Z_CAL c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4102
