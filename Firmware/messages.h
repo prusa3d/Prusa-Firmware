@@ -173,6 +173,7 @@ extern const char MSG_PAUSED_THERMAL_ERROR[];
 #ifdef TEMP_MODEL
 extern const char MSG_THERMAL_ANOMALY[];
 extern const char MSG_TM_NOT_CAL[];
+extern const char MSG_TM_ACK_ERROR[];
 #endif
 extern const char MSG_LOAD_ALL[];
 extern const char MSG_NOZZLE_CNG_MENU [];

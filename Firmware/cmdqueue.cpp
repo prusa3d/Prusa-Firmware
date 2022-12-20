@@ -366,22 +366,24 @@ void get_command()
         comment_mode = false; //for new command
         return;
       }
-      cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
+      cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; // terminate string
+      char* cmd_head = cmdbuffer+bufindw+CMDHDRSIZE; // current command pointer
+      char* cmd_start = cmd_head; // pointer past the line number (if any)
+
       if(!comment_mode){
-		  
-		  long gcode_N = -1;
+		  long gcode_N = -1; // seen line number
 
 		  // Line numbers must be first in buffer
-
 		  if ((strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("PRUSA")) == NULL) &&
-			  (cmdbuffer[bufindw+CMDHDRSIZE] == 'N')) {
+			  (*cmd_head == 'N')) {
 
-			  // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
-			  // and Marlin tests, whether the successive lines are stamped with an increasing line number ID
-			  gcode_N = (strtol(cmdbuffer+bufindw+CMDHDRSIZE+1, NULL, 10));
-			  if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("M110")) == NULL) ) {
-				  // M110 - set current line number.
-				  // Line numbers not sent in succession.
+			  // Line number met: decode the number, then move cmd_start past all spaces.
+			  gcode_N = (strtol(cmd_head+1, &cmd_start, 10));
+			  while (*cmd_start == ' ') ++cmd_start;
+
+			  // Test whether the successive lines are stamped with an increasing line number ID.
+			  if(gcode_N != gcode_LastN+1 && strncmp_P(cmd_start, PSTR("M110"), 4)) {
+				  // Line numbers not sent in succession and M110 not seen.
 				  SERIAL_ERROR_START;
 				  SERIAL_ERRORRPGM(_n("Line Number is not Last Line Number+1, Last Line: "));////MSG_ERR_LINE_NO
 				  SERIAL_ERRORLN(gcode_LastN);
@@ -391,10 +393,10 @@ void get_command()
 				  return;
 			  }
 
-			  if((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*')) != NULL)
+			  if((strchr_pointer = strchr(cmd_start, '*')) != NULL)
 			  {
 				  byte checksum = 0;
-				  char *p = cmdbuffer+bufindw+CMDHDRSIZE;
+				  char *p = cmd_head;
 				  while (p != strchr_pointer)
 					  checksum = checksum^(*p++);
 				  if (code_value_short() != (int16_t)checksum) {
@@ -419,12 +421,11 @@ void get_command()
 			  }
 
 			  // Don't parse N again with code_seen('N')
-			  cmdbuffer[bufindw + CMDHDRSIZE] = '$';
+			  *cmd_head = '$';
 		}
         // if we don't receive 'N' but still see '*'
-        if ((cmdbuffer[bufindw + CMDHDRSIZE] != 'N') && (cmdbuffer[bufindw + CMDHDRSIZE] != '$') && (strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*') != NULL))
+        if ((*cmd_head != 'N') && (*cmd_head != '$') && (strchr(cmd_start, '*') != NULL))
         {
-
             SERIAL_ERROR_START;
             SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM
             SERIAL_ERRORLN(gcode_LastN);
@@ -432,16 +433,21 @@ void get_command()
             serial_count = 0;
             return;
         }
+
         // Handle KILL early, even when Stopped
-        if(strcmp(cmdbuffer+bufindw+CMDHDRSIZE, "M112") == 0)
+        if(strcmp_P(cmd_start, PSTR("M112")) == 0)
           kill(MSG_M112_KILL, 2);
+
+        // Bypass Stopped for some commands
+        bool allow_when_stopped = false;
+        if(strncmp_P(cmd_start, PSTR("M310"), 4) == 0)
+            allow_when_stopped = true;
+
         // Handle the USB timer
-        if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
-            if (!IS_SD_PRINTING) {
-                usb_timer.start();
-            }
-        }
-        if (Stopped == true) {
+        if ((*cmd_start == 'G') && !(IS_SD_PRINTING))
+            usb_timer.start();
+
+        if (allow_when_stopped == false && Stopped == true) {
             // Stopped can be set either during error states (thermal error: cannot continue), or
             // when a printer-initiated action is processed. In such case the printer will send to
             // the host an action, but cannot know if the action has been processed while new

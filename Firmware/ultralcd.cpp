@@ -819,7 +819,7 @@ void lcd_status_screen()                          // NOT static due to using ins
 	}
 }
 
-void print_stop();
+void lcd_print_stop_finish();
 
 void lcd_commands()
 {
@@ -837,7 +837,7 @@ void lcd_commands()
             lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
             lcd_commands_type = LcdCommands::Idle;
             lcd_commands_step = 0;
-            print_stop();
+            lcd_print_stop_finish();
         }
     }
 
@@ -5456,7 +5456,7 @@ static void lcd_main_menu()
 
     if ( moves_planned() || printer_active() ) {
         MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE c=18
-    } else {
+    } else if (!Stopped) {
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
     }
 
@@ -5485,6 +5485,11 @@ static void lcd_main_menu()
     if((IS_SD_PRINTING || usb_timer.running() || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling)) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
+#ifdef TEMP_MODEL
+    else if(Stopped) {
+        MENU_ITEM_SUBMENU_P(_T(MSG_TM_ACK_ERROR), lcd_print_stop);
+    }
+#endif
 #ifdef SDSUPPORT //!@todo SDSUPPORT undefined creates several issues in source code
     if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal) {
         if (!card.isFileOpen()) {
@@ -5515,7 +5520,7 @@ static void lcd_main_menu()
         }
     }
 
-    if ( ! ( IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal) ) ) {
+    if ( ! ( IS_SD_PRINTING || usb_timer.running() || (lcd_commands_type == LcdCommands::Layer1Cal || Stopped) ) ) {
         if (MMU2::mmu2.Enabled()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), mmu_load_filament_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
@@ -5873,7 +5878,7 @@ static void lcd_sd_updir()
 }
 
 // continue stopping the print from the main loop after lcd_print_stop() is called
-void print_stop()
+void lcd_print_stop_finish()
 {
     // save printing time
     stoptime = _millis();
@@ -5916,11 +5921,11 @@ void print_stop()
     axis_relative_modes = E_AXIS_MASK; //XYZ absolute, E relative
 }
 
-void lcd_print_stop()
+void print_stop(bool interactive)
 {
-    // UnconditionalStop() will internally cause planner_abort_hard(), meaning we _cannot_ plan
-    // any more move in this call! Any further move must happen inside print_stop(), which is called
-    // by the main loop one iteration later.
+    // UnconditionalStop() will internally cause planner_abort_hard(), meaning we _cannot_ plan any
+    // more move in this call! Any further move must happen inside lcd_print_stop_finish(), which is
+    // called by the main loop one iteration later.
     UnconditionalStop();
 
     if (!card.sdprinting) {
@@ -5935,9 +5940,19 @@ void lcd_print_stop()
     pause_time = 0;
     isPrintPaused = false;
 
+    if (interactive) {
+        // acknowledged by the user from the LCD: resume processing USB commands again
+        Stopped = false;
+    }
+
     // return to status is required to continue processing in the main loop!
     lcd_commands_type = LcdCommands::StopPrint;
     lcd_return_to_status();
+}
+
+void lcd_print_stop()
+{
+    print_stop(true);
 }
 
 #ifdef TEMP_MODEL
@@ -7503,13 +7518,13 @@ void lcd_setalertstatus_(const char* message, uint8_t severity, bool progmem)
         bool same = !(progmem?
             strcmp_P(lcd_status_message, message):
             strcmp(lcd_status_message, message));
-        lcd_updatestatus(message, progmem);
         lcd_status_message_timeout.start();
         lcd_status_message_level = severity;
         custom_message_type = CustomMsg::Status;
         custom_message_state = 0;
         if (!same) {
             // do not kick the user out of the menus if the message is unchanged
+            lcd_updatestatus(message, progmem);
             lcd_return_to_status();
         }
     }
@@ -7541,7 +7556,7 @@ void menu_lcd_longpress_func(void)
     // start LCD inactivity timer
     lcd_timeoutToStatus.start();
     backlight_wake();
-    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE)
+    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE || Stopped)
     {
         // disable longpress during re-entry, while homing, calibration or if a serious error
         lcd_quick_feedback();
