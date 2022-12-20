@@ -14,6 +14,8 @@
 #define SWI2C_SDA      20 //SDA on P3
 #define SWI2C_SCL      84 //PH2 on P3, sensor cable must be rewired
 
+// This should be long enough to safely exit the bootloader when it uses the default timeout (~1-2s)
+#define WATCHDOG_SOFT_RESET_VALUE WDTO_2S
 
 
 #define X_STEP_PIN             37
