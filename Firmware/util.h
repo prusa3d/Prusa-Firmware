@@ -16,10 +16,9 @@ enum FirmwareRevisionFlavorType : uint16_t {
     FIRMWARE_REVISION_RC = 0x0020
 };
 
-extern bool show_upgrade_dialog_if_version_newer(const char *version_string);
-extern bool force_selftest_if_fw_version();
-
-extern void update_current_firmware_version_to_eeprom();
+bool show_upgrade_dialog_if_version_newer(const char *version_string);
+bool eeprom_fw_version_older_than(const uint16_t (&req_ver)[4]);
+void update_current_firmware_version_to_eeprom();
 
 
 
