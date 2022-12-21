@@ -1830,7 +1830,7 @@ void lcd_set_filament_autoload() {
 #if defined(FILAMENT_SENSOR) && defined(PAT9125)
 void lcd_set_filament_oq_meass()
 {
-     fsensor_oq_meassure_set(!fsensor_oq_meassure_enabled);
+     fsensor_oq_measure_set(!fsensor_oq_measure_enabled);
 }
 #endif
 
@@ -6524,7 +6524,7 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 	
 	st_synchronize();
 
-	tmc2130_sg_meassure_start(axis);
+	tmc2130_sg_measure_start(axis);
 
 	current_position_init = st_get_position_mm(axis);
 
@@ -6537,7 +6537,7 @@ static bool lcd_selfcheck_axis_sg(uint8_t axis) {
 
 	st_synchronize();
 
-	uint16_t sg1 = tmc2130_sg_meassure_stop();
+	uint16_t sg1 = tmc2130_sg_measure_stop();
 	printf_P(PSTR("%c AXIS SG1=%d\n"), 'X'+axis, sg1);
 	eeprom_write_word(((uint16_t*)((axis == X_AXIS)?EEPROM_BELTSTATUS_X:EEPROM_BELTSTATUS_Y)), sg1);
 
