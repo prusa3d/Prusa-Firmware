@@ -344,10 +344,10 @@ bool xyzcal_spiral8(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	return ret;
 }
 
-#ifdef XYZCAL_MEASSURE_PINDA_HYSTEREZIS
-int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t samples)
+#ifdef XYZCAL_MEASSURE_PINDA_HYSTERESIS
+int8_t xyzcal_measure_pinda_hysteresis(int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t samples)
 {
-	DBG(_n("xyzcal_meassure_pinda_hysterezis\n"));
+	DBG(_n("xyzcal_measure_pinda_hysteresis\n"));
 	int8_t ret = -1; // PINDA signal error
 	int16_t z = _Z;
 	int16_t sum_up = 0;
@@ -384,7 +384,7 @@ int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t d
 			if (abs(up - dn) > XYZCAL_PINDA_HYST_DIF)
 				ret = -2; // difference between up-dn to high
 			else if ((hyst < XYZCAL_PINDA_HYST_MIN) || (hyst > XYZCAL_PINDA_HYST_MAX))
-				ret = -3; // hysterezis out of range
+				ret = -3; // hysteresis out of range
 			else
 				ret = hyst;
 		}
@@ -392,7 +392,7 @@ int8_t xyzcal_meassure_pinda_hysterezis(int16_t min_z, int16_t max_z, uint16_t d
 	xyzcal_lineXYZ_to(_X, _Y, z, delay_us, 0);
 	return ret;
 }
-#endif //XYZCAL_MEASSURE_PINDA_HYSTEREZIS
+#endif //XYZCAL_MEASSURE_PINDA_HYSTERESIS
 
 void print_hysteresis(int16_t min_z, int16_t max_z, int16_t step){
 	int16_t delay_us = 600;
