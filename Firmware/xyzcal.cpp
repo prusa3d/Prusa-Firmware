@@ -135,9 +135,9 @@ pos_mm_t pos_2_mm(float pos){
 	return pos * 0.01f;
 }
 
-void xyzcal_meassure_enter(void)
+void xyzcal_measure_enter(void)
 {
-	DBG(_n("xyzcal_meassure_enter\n"));
+	DBG(_n("xyzcal_measure_enter\n"));
 	lcd_puts_at_P(4,3,PSTR("Measure center  ")); ////MSG_MEASURE_CENTER c=16
 	// disable heaters and stop motion before we initialize sm4
 	disable_heater();
@@ -155,9 +155,9 @@ void xyzcal_meassure_enter(void)
 	sm4_calc_delay_cb = xyzcal_calc_delay;
 }
 
-void xyzcal_meassure_leave(void)
+void xyzcal_measure_leave(void)
 {
-	DBG(_n("xyzcal_meassure_leave\n"));
+	DBG(_n("xyzcal_measure_leave\n"));
 	lcd_set_cursor(4,3);
 	lcd_space(16);
 
@@ -344,7 +344,7 @@ bool xyzcal_spiral8(int16_t cx, int16_t cy, int16_t z0, int16_t dz, int16_t radi
 	return ret;
 }
 
-#ifdef XYZCAL_MEASSURE_PINDA_HYSTERESIS
+#ifdef XYZCAL_MEASURE_PINDA_HYSTERESIS
 int8_t xyzcal_measure_pinda_hysteresis(int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t samples)
 {
 	DBG(_n("xyzcal_measure_pinda_hysteresis\n"));
@@ -392,7 +392,7 @@ int8_t xyzcal_measure_pinda_hysteresis(int16_t min_z, int16_t max_z, uint16_t de
 	xyzcal_lineXYZ_to(_X, _Y, z, delay_us, 0);
 	return ret;
 }
-#endif //XYZCAL_MEASSURE_PINDA_HYSTERESIS
+#endif //XYZCAL_MEASURE_PINDA_HYSTERESIS
 
 void print_hysteresis(int16_t min_z, int16_t max_z, int16_t step){
 	int16_t delay_us = 600;
@@ -1006,10 +1006,10 @@ BedSkewOffsetDetectionResultType xyzcal_scan_and_process(){
 BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy(void) {
     // DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-	xyzcal_meassure_enter();
+	xyzcal_measure_enter();
 	if (xyzcal_searchZ())
 		ret = xyzcal_scan_and_process();
-	xyzcal_meassure_leave();
+	xyzcal_measure_leave();
 	return ret;
 }
 
