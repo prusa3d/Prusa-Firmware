@@ -135,9 +135,9 @@ pos_mm_t pos_2_mm(float pos){
 	return pos * 0.01f;
 }
 
-void xyzcal_meassure_center(void)
+void xyzcal_meassure_enter(void)
 {
-	DBG(_n("xyzcal_meassure_center\n"));
+	DBG(_n("xyzcal_meassure_enter\n"));
 	lcd_puts_at_P(4,3,PSTR("Measure center  ")); ////MSG_MEASURE_CENTER c=16
 	// disable heaters and stop motion before we initialize sm4
 	disable_heater();
@@ -1006,7 +1006,7 @@ BedSkewOffsetDetectionResultType xyzcal_scan_and_process(){
 BedSkewOffsetDetectionResultType xyzcal_find_bed_induction_sensor_point_xy(void) {
     // DBG(_n("xyzcal_find_bed_induction_sensor_point_xy x=%ld y=%ld z=%ld\n"), count_position[X_AXIS], count_position[Y_AXIS], count_position[Z_AXIS]);
 	BedSkewOffsetDetectionResultType ret = BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-	xyzcal_meassure_center();
+	xyzcal_meassure_enter();
 	if (xyzcal_searchZ())
 		ret = xyzcal_scan_and_process();
 	xyzcal_meassure_leave();

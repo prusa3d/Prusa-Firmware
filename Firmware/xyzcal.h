@@ -5,8 +5,7 @@
 
 #include "mesh_bed_calibration.h"
 
-extern void xyzcal_meassure_center(void);
-
+extern void xyzcal_meassure_enter(void);
 extern void xyzcal_meassure_leave(void);
 
 extern bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda);
