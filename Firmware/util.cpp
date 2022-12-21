@@ -181,32 +181,23 @@ inline int8_t is_provided_version_newer(const char *version_string)
     return 0;
 }
 
-bool force_selftest_if_fw_version()
+bool eeprom_fw_version_older_than(const uint16_t (&ver_req)[4])
 {
-	//if fw version used before flashing new firmware (fw version currently stored in eeprom) is lower then 3.1.2-RC2, function returns true to force selftest
+    uint16_t ver_eeprom[4];
 
-	uint16_t ver_eeprom[4];
-	uint16_t ver_with_calibration[4] = {3, 1, 2, 4}; //hardcoded 3.1.2-RC2 version
-	bool force_selftest = false;
+    ver_eeprom[0] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR);
+    ver_eeprom[1] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR);
+    ver_eeprom[2] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION);
+    ver_eeprom[3] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR);
 
-	ver_eeprom[0] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR);
-	ver_eeprom[1] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR);
-	ver_eeprom[2] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION);
-	ver_eeprom[3] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR);
+    for (uint8_t i = 0; i < 4; ++i) {
+        if (ver_req[i] > ver_eeprom[i])
+            return true;
+        else if (ver_req[i] < ver_eeprom[i])
+            break;
+    }
 
-	for (uint8_t i = 0; i < 4; ++i) {
-		if (ver_with_calibration[i] > ver_eeprom[i]) {
-			force_selftest = true;
-			break;
-		}
-		else if (ver_with_calibration[i] < ver_eeprom[i])
-			break;
-	}
-
-	//force selftest also in case that version used before flashing new firmware was 3.2.0-RC1
-	if ((ver_eeprom[0] == 3) && (ver_eeprom[1] == 2) && (ver_eeprom[2] == 0) && (ver_eeprom[3] == 3)) force_selftest = true;
-	
-	return force_selftest;
+    return false;
 }
 
 bool show_upgrade_dialog_if_version_newer(const char *version_string)

@@ -1559,9 +1559,8 @@ void setup()
   }
 
 #if !defined (DEBUG_DISABLE_FORCE_SELFTEST) && defined (TMC2130)
-  if (force_selftest_if_fw_version() && calibration_status() < CALIBRATION_STATUS_ASSEMBLED) {
+  if (eeprom_fw_version_older_than({3, 2, 0, 4}) && calibration_status() < CALIBRATION_STATUS_ASSEMBLED) {
 	  lcd_show_fullscreen_message_and_wait_P(_i("Selftest will be run to calibrate accurate sensorless rehoming."));////MSG_FORCE_SELFTEST c=20 r=8
-	  update_current_firmware_version_to_eeprom();
 	  lcd_selftest();
   }
 #endif //TMC2130 && !DEBUG_DISABLE_FORCE_SELFTEST
