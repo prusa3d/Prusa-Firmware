@@ -93,9 +93,9 @@ extern void tmc2130_home_enter(uint8_t axes_mask);
 //exit homing (called from homeaxis after homing ends)
 extern void tmc2130_home_exit();
 
-//start stallguard meassuring for single axis
+//start stallguard measuring for single axis
 extern void tmc2130_sg_measure_start(uint8_t axis);
-//stop current stallguard meassuring and report result
+//stop current stallguard measuring and report result
 extern uint16_t tmc2130_sg_measure_stop();
 
 extern void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
