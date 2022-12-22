@@ -309,7 +309,7 @@ void MMU2::ToolChangeCommon(uint8_t slot){
             break;
         } else {
             // failed autoretry, report an error by forcing a "printer" error into the MMU infrastructure - it is a hack to leverage existing code
-            logic.SetPrinterError(ErrorCode::TRY_LOAD_UNLOAD_FAILED);
+            logic.SetPrinterError(ErrorCode::LOAD_TO_EXTRUDER_FAILED);
             SaveAndPark(true);
             SaveHotendTemp(true);
             // We only have to wait for the user to fix the issue and press "Retry".
