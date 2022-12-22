@@ -40,6 +40,7 @@ enum StepStatus : uint_fast8_t {
     CommandRejected,      ///< the MMU rejected the command due to some other command in progress, may be the user is operating the MMU locally (button commands)
     CommandError,         ///< the command in progress stopped due to unrecoverable error, user interaction required
     VersionMismatch,      ///< the MMU reports its firmware version incompatible with our implementation
+    PrinterError,         ///< printer's explicit error - MMU is fine, but the printer was unable to complete the requested operation
     CommunicationRecovered,
     ButtonPushed, ///< The MMU reported the user pushed one of its three buttons.
 };
@@ -141,6 +142,19 @@ public:
     inline uint8_t MmuFwVersionRevision() const {
         return mmuFwVersion[2];
     }
+
+    inline void SetPrinterError(ErrorCode ec){
+        explicitPrinterError = ec;
+    }
+    inline void ClearPrinterError(){
+        explicitPrinterError = ErrorCode::OK;
+    }
+    inline bool IsPrinterError()const {
+        return explicitPrinterError != ErrorCode::OK;
+    }
+    inline ErrorCode PrinterError() const {
+        return explicitPrinterError;
+    }
 #ifndef UNITTEST
 private:
 #endif
@@ -161,6 +175,8 @@ private:
     void LogResponse();
     StepStatus SwitchFromIdleToCommand();
     void SwitchFromStartToIdle();
+
+    ErrorCode explicitPrinterError;
 
     enum class State : uint_fast8_t {
         Stopped,      ///< stopped for whatever reason
