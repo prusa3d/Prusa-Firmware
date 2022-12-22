@@ -3212,7 +3212,8 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
         for (uint8_t i = 0; i < 100; ++i) {
             delay_keep_alive(50);
             if (allow_timeouting && _millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS) {
-                return LCD_BUTTON_TIMEOUT;
+                current_selection = LCD_BUTTON_TIMEOUT;
+                goto exit;
             }
             manage_heater();
             manage_inactivity(true);
@@ -3247,10 +3248,7 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
             if (lcd_clicked()) {
                 Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
                 if (msg_next == NULL) {
-                    KEEPALIVE_STATE(IN_HANDLER);
-                    lcd_set_custom_characters();
-                    lcd_update_enable(true);
-                    return current_selection;
+                    goto exit;
                 } else
                     break;
             }
@@ -3265,6 +3263,11 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
             lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
         }
     }
+exit:
+    KEEPALIVE_STATE(IN_HANDLER);
+    lcd_set_custom_characters();
+    lcd_update_enable(true);
+    return current_selection;
 }
 
 //! @brief Display and wait for a Yes/No choice using the last line of the LCD
