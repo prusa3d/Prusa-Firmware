@@ -275,29 +275,49 @@ bool MMU2::VerifyFilamentEnteredPTFE()
 
 void MMU2::ToolChangeCommon(uint8_t slot){
     for(;;) { // while not successfully fed into extruder's PTFE tube
-        for(;;) {
-            tool_change_extruder = slot;
-            logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
-            if( manage_response(true, true) )
+        uint8_t retries = 3;
+        for(/*nothing*/; retries; --retries){
+            for(;;) {
+                tool_change_extruder = slot;
+                logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
+                if( manage_response(true, true) )
+                    break;
+                // otherwise: failed to perform the command - unload first and then let it run again
+                IncrementMMUFails();
+
+                // just in case we stood in an error screen for too long and the hotend got cold
+                ResumeHotendTemp();
+                // if the extruder has been parked, it will get unparked once the ToolChange command finishes OK
+                // - so no ResumeUnpark() at this spot
+
+                unload();
+                // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
+                // but honestly - if the MMU restarts during every toolchange,
+                // something else is seriously broken and stopping a print is probably our best option.
+            }
+            // reset current position to whatever the planner thinks it is
+            plan_set_e_position(current_position[E_AXIS]);
+            if (VerifyFilamentEnteredPTFE()){
                 break;
-            // otherwise: failed to perform the command - unload first and then let it run again
-            IncrementMMUFails();
-
-            // just in case we stood in an error screen for too long and the hotend got cold
-            ResumeHotendTemp();
-            // if the extruder has been parked, it will get unparked once the ToolChange command finishes OK
-            // - so no ResumeUnpark() at this spot
-
-            unload();
-            // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
-            // but honestly - if the MMU restarts during every toolchange,
-            // something else is seriously broken and stopping a print is probably our best option.
+            } else { // Prepare a retry attempt
+                unload(); // @@TODO cut filament
+                // cut_filament(slot);
+            }
         }
-        // reset current position to whatever the planner thinks it is
-        plan_set_e_position(current_position[E_AXIS]);
-        if (VerifyFilamentEnteredPTFE()) break;
-        else { // Prepare a retry attempt
-            unload(); // TODO cut filament
+        if( retries ){
+            // we were successful in pushing the filament into the nozzle
+            break;
+        } else {
+            // failed autoretry, report an error by forcing a "printer" error into the MMU infrastructure - it is a hack to leverage existing code
+            logic.SetPrinterError(ErrorCode::TRY_LOAD_UNLOAD_FAILED);
+            SaveAndPark(true);
+            SaveHotendTemp(true);
+            // We only have to wait for the user to fix the issue and press "Retry".
+            // @@TODO Do we need to process the return value of manage_response?
+            manage_response(true, true);
+            logic.ClearPrinterError();
+            ResumeHotendTemp();
+            ResumeUnpark();
         }
     }
 
@@ -747,6 +767,7 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             // now what :D ... big bad ... ramming, unload, retry the whole command originally issued
             return false;
         case VersionMismatch: // this basically means the MMU will be disabled until reconnected
+        case PrinterError:
             CheckUserInput();
             return true;
         case CommandError:
@@ -809,6 +830,9 @@ StepStatus MMU2::LogicStep(bool reportErrors) {
             case VersionMismatch:
                 StopKeepPowered();
                 ReportError(ErrorCode::VERSION_MISMATCH, ErrorSourcePrinter);
+                break;
+            case PrinterError:
+                ReportError(logic.PrinterError(), ErrorSourcePrinter);
                 break;
             default:
                 break;

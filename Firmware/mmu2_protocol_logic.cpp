@@ -800,7 +800,8 @@ StepStatus ProtocolLogic::Step() {
     default:
         break;
     }
-    return currentStatus;
+    // special handling of explicit printer errors
+    return IsPrinterError() ? StepStatus::PrinterError : currentStatus;
 }
 
 uint8_t ProtocolLogic::CommandInProgress() const {
