@@ -291,7 +291,7 @@ void fCheckModeInit() {
 static void render_M862_warnings(const char* warning, const char* strict, uint8_t check)
 {
     if (check == 1) { // Warning, stop print if user selects 'No'
-        if (lcd_show_fullscreen_message_yes_no_and_wait_P(warning)) {
+        if (lcd_show_fullscreen_message_yes_no_and_wait_P(warning, true, LCD_LEFT_BUTTON_CHOICE) == LCD_MIDDLE_BUTTON_CHOICE) {
             lcd_print_stop();
         }
     } else if (check == 2) { // Strict, always stop print
