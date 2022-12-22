@@ -239,6 +239,7 @@ private:
     
     void filament_ramming();
     void execute_extruder_sequence(const E_Step *sequence, uint8_t steps);
+    void execute_load_to_nozzle_sequence();
 
     /// Reports an error into attached ExtUIs
     /// @param ec error code, see ErrorCode

@@ -23,7 +23,9 @@ static constexpr float MMU2_LOAD_TO_NOZZLE_LENGTH = 87.0F + 5.0F;
 // Beware - this value is used to initialize the MMU logic layer - it will be sent to the MMU upon line up (written into its 8bit register 0x0b)
 // However - in the G-code we can get a request to set the extra load distance at runtime to something else (M708 A0xb Xsomething).
 // The printer intercepts such a call and sets its extra load distance to match the new value as well.
-static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = 5; // mm
+static constexpr float MMU2_FILAMENT_SENSOR_POSITION = 0; // mm
+static constexpr float MMU2_LOAD_DISTANCE_PAST_GEARS = 5; // mm
+static constexpr uint8_t MMU2_TOOL_CHANGE_LOAD_LENGTH = static_cast<uint8_t>(MMU2_FILAMENT_SENSOR_POSITION + MMU2_LOAD_DISTANCE_PAST_GEARS); // mm
 
 static constexpr float MMU2_EXTRUDER_PTFE_LENGTH = 42.3f; // mm
 static constexpr float MMU2_EXTRUDER_HEATBREAK_LENGTH  = 17.7f; // mm
@@ -64,7 +66,7 @@ static constexpr E_Step ramming_sequence[] PROGMEM = {
     { -35.0F,   2000.0F / 60.F},
 };
 
-static constexpr E_Step load_to_nozzle_sequence[] PROGMEM = { 
-    { 10.0F,  810.0F / 60.F}, // feed rate = 13.5mm/s - Load fast until filament reach end of nozzle
-    { 25.0F,  198.0F / 60.F}, // feed rate = 3.3mm/s  - Load slower once filament is out of the nozzle
+static constexpr E_Step load_to_nozzle_sequence[] PROGMEM = {
+    { MMU2_EXTRUDER_PTFE_LENGTH,       810.0F / 60.F}, // feed rate = 13.5mm/s - Load fast while not at heatbreak
+    { MMU2_EXTRUDER_HEATBREAK_LENGTH,  198.0F / 60.F}, // feed rate = 3.3mm/s  - Load slower once filament reaches heatbreak
 };

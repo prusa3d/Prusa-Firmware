@@ -23,8 +23,6 @@ static_assert(EXTRUDERS==1);
 
 namespace MMU2 {
 
-void execute_extruder_sequence(const E_Step *sequence, int steps);
-
 template<typename F>
 void waitForHotendTargetTemp(uint16_t delay, F f){
     while (((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5)) {
@@ -251,9 +249,9 @@ bool MMU2::VerifyFilamentEnteredPTFE()
     uint8_t fsensorState = 0;
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
-    current_position[E_AXIS] += MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - logic.ExtraLoadDistance();
+    current_position[E_AXIS] += MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION);
     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
-    current_position[E_AXIS] -= (MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - logic.ExtraLoadDistance());
+    current_position[E_AXIS] -= (MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION));
     plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
 
     while(blocks_queued())
@@ -357,7 +355,7 @@ bool MMU2::tool_change(char code, uint8_t slot) {
 
     case 'c': {
         waitForHotendTargetTemp(100, []{});
-        execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
+        execute_load_to_nozzle_sequence();
     } break;
     }
 
@@ -508,7 +506,7 @@ bool MMU2::load_filament_to_nozzle(uint8_t slot) {
         ToolChangeCommon(slot);
 
         // Finish loading to the nozzle with finely tuned steps.
-        execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
+        execute_load_to_nozzle_sequence();
         Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
     }
     lcd_update_enable(true);
@@ -837,6 +835,13 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
         st_synchronize();
         step++;
     }
+}
+
+void MMU2::execute_load_to_nozzle_sequence() {
+    st_synchronize();
+    // Compensate for configurable Extra Loading Distance
+    current_position[E_AXIS] -= (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION);
+    execute_extruder_sequence((const E_Step *)load_to_nozzle_sequence, sizeof(load_to_nozzle_sequence) / sizeof (load_to_nozzle_sequence[0]));
 }
 
 void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
