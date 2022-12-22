@@ -6554,8 +6554,8 @@ Sigma_Exit:
     ### M117 - Display Message <a href="https://reprap.org/wiki/G-code#M117:_Display_Message">M117: Display Message</a>
     */
     case 117: {
-        const char *src = strchr_pointer;
-        lcd_setstatus(*src? src + 1: src);
+        const char *src = strchr_pointer + 4; // "M117"
+        lcd_setstatus(*src == ' '? src + 1: src);
         custom_message_type = CustomMsg::M117;
     }
     break;
