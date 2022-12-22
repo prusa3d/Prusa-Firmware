@@ -250,9 +250,9 @@ bool MMU2::VerifyFilamentEnteredPTFE()
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
     current_position[E_AXIS] += MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION);
-    plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+    plan_buffer_line_curposXYZE(MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
     current_position[E_AXIS] -= (MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION));
-    plan_buffer_line_curposXYZE(MMU2_LOAD_TO_NOZZLE_FEED_RATE);
+    plan_buffer_line_curposXYZE(MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
 
     while(blocks_queued())
     {

@@ -33,6 +33,8 @@ static constexpr float MMU2_EXTRUDER_HEATBREAK_LENGTH  = 17.7f; // mm
 static constexpr float MMU2_LOAD_TO_NOZZLE_FEED_RATE = 20.0F; // mm/s
 static constexpr float MMU2_UNLOAD_TO_FINDA_FEED_RATE = 120.0F; // mm/s
 
+static constexpr float MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE = 50.0F; // mm/s
+
 // The first the MMU does is initialise its axis. Meanwhile the E-motor will unload 20mm of filament in approx. 1 second.
 static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_LENGTH = 80.0f; // mm
 static constexpr float MMU2_RETRY_UNLOAD_TO_FINDA_FEED_RATE = 80.0f; // mm/s
