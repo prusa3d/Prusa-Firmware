@@ -162,18 +162,11 @@ ISR(INT6_vect) {
 
 bool extruder_altfan_detect()
 {
+    // override isAltFan setting for detection
+    altfanStatus.isAltfan = 0;
     setExtruderAutoFanState(3);
 
     SET_INPUT(TACH_0);
-
-    uint8_t overrideVal = eeprom_read_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE);
-    if (overrideVal == EEPROM_EMPTY_VALUE)
-    {
-        overrideVal = (calibration_status() == CALIBRATION_STATUS_CALIBRATED) ? 1 : 0;
-        eeprom_update_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE, overrideVal);
-    }
-    altfanStatus.altfanOverride = overrideVal;
-
     CRITICAL_SECTION_START;
     EICRB &= ~(1 << ISC61);
     EICRB |= (1 << ISC60);
@@ -187,8 +180,11 @@ bool extruder_altfan_detect()
     EIMSK &= ~(1 << INT6);
 
     countFanSpeed();
+
+    // restore fan state
     altfanStatus.isAltfan = fan_speed[0] > 100;
     setExtruderAutoFanState(1);
+
     return altfanStatus.isAltfan;
 }
 
