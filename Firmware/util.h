@@ -100,3 +100,35 @@ const char *sPrinterType(bool bMMu);
 
 #define IP4_STR_SIZE 16
 extern void ip4_to_str(char* dest, uint8_t* IP);
+
+// Calibration status of the machine
+// (unsigned char*)EEPROM_CALIBRATION_STATUS_V2
+typedef uint8_t CalibrationStatus;
+const CalibrationStatus CALIBRATION_STATUS_SELFTEST    = 0b00000001; // Selftest
+const CalibrationStatus CALIBRATION_STATUS_XYZ         = 0b00000010; // XYZ calibration
+const CalibrationStatus CALIBRATION_STATUS_Z           = 0b00000100; // Z calibration
+#ifdef TEMP_MODEL
+const CalibrationStatus CALIBRATION_STATUS_TEMP_MODEL  = 0b00001000; // Temperature model calibration
+#endif
+const CalibrationStatus CALIBRATION_STATUS_LIVE_ADJUST = 0b00010000; // 1st layer calibration
+const CalibrationStatus CALIBRATION_STATUS_UNKNOWN     = 0b10000000; // Freshly assembled or unknown status
+
+// Calibration steps performed by the wizard
+const CalibrationStatus CALIBRATION_WIZARD_STEPS =
+    CALIBRATION_STATUS_SELFTEST |
+    CALIBRATION_STATUS_XYZ |
+    CALIBRATION_STATUS_Z |
+#ifdef TEMP_MODEL
+    CALIBRATION_STATUS_TEMP_MODEL |
+#endif
+    CALIBRATION_STATUS_LIVE_ADJUST;
+
+// Calibration steps enforced after service prep
+const CalibrationStatus CALIBRATION_FORCE_PREP = CALIBRATION_STATUS_Z;
+
+bool calibration_status_get(CalibrationStatus components);
+void calibration_status_set(CalibrationStatus components);
+void calibration_status_clear(CalibrationStatus components);
+
+// PINDA has an independent calibration flag
+inline bool calibration_status_pinda() { return eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA); }

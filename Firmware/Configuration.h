@@ -524,36 +524,6 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 #define DEFAULT_NOMINAL_FILAMENT_DIA  1.75  //Enter the diameter (in mm) of the filament generally used (3.0 mm or 1.75 mm). Used by the volumetric extrusion.
 
-// Calibration status of the machine, to be stored into the EEPROM,
-// (unsigned char*)EEPROM_CALIBRATION_STATUS
-enum CalibrationStatus
-{
-	// Freshly assembled, needs to peform a self-test and the XYZ calibration.
-	CALIBRATION_STATUS_ASSEMBLED = 255,
-
-	// For the wizard: self test has been performed, now the XYZ calibration is needed.
-	CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
-
-	// For the wizard: factory assembled, needs to run Z calibration.
-	CALIBRATION_STATUS_Z_CALIBRATION = 240,
-
-#ifdef TEMP_MODEL
-	// The XYZ calibration has been performed, needs to run Temp model calibration.
-	CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION = 235,
-#endif //TEMP_MODEL
-
-// The XYZ calibration AND OR Temp model calibration has been performed, now it remains to run the V2Calibration.gcode.
-	CALIBRATION_STATUS_LIVE_ADJUST = 230,
-
-    // Calibrated, ready to print.
-    CALIBRATION_STATUS_CALIBRATED = 1,
-
-    // Legacy: resetted by issuing a G86 G-code.
-    // This value can only be expected after an upgrade from the initial MK2 firmware releases.
-    // Currently the G86 sets the calibration status to 
-    CALIBRATION_STATUS_UNKNOWN = 0,
-};
-
 // Try to maintain a minimum distance from the bed even when Z is
 // unknown when doing the following operations
 #define MIN_Z_FOR_LOAD    50 // lcd filament loading or autoload
