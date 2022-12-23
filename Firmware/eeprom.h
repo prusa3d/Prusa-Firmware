@@ -345,7 +345,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0CAD 3245 | uint8   | EEPROM_FSENSOR_JAM_DETECTION          | 01h 1        | ff/01                 | fsensor pat9125 jam detection feature             | LCD menu     | D3 Ax0cad C1
 | 0x0CAC 3244 | uint8   | EEPROM_MMU_ENABLED                    | 01h 1        | ff/01                 | MMU enabled                                       | LCD menu     | D3 Ax0cac C1
 | 0x0CA8 3240 | uint32  | EEPROM_TOTAL_TOOLCHANGE_COUNT         | ???          | ff ff ff ffh          | MMU toolchange counter over printers lifetime     | LCD statistic| D3 Ax0ca8 C4
-| 0x0CA7 3239 | uint8   | EEPROM_HEAT_BED_ON_LOAD_FILAMENT      | ffh 255      | ffh 255               | Heat bed on load filament unknown state           | LCD menu     | D3 Ax0d02 C1
+| 0x0CA7 3239 | uint8   | EEPROM_HEAT_BED_ON_LOAD_FILAMENT      | ffh 255      | ffh 255               | Heat bed on load filament unknown state           | LCD menu     | D3 Ax0ca7 C1
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Do not heat bed on load filament                  | ^            | ^
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Heat bed on load filament                         | ^            | ^
 
