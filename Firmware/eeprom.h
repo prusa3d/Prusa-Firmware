@@ -89,13 +89,13 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0FFA 4090 | uint16  | EEPROM_BABYSTEP_Y                     | ???          | ff ffh 65535          | Babystep for Y axis _unsued_                      | ^            | D3 Ax0ffa C2
 | 0x0FF8 4088 | uint16  | EEPROM_BABYSTEP_Z                     | ???          | ff ffh 65535          | Babystep for Z axis _lagacy_                      | ^            | D3 Ax0ff8 C2
 | ^           | ^       | ^                                     | ^            | ^                     | multiple values stored now in EEPROM_Sheets_base  | ^            | ^
-| 0x0FF7 4087 | uint8   | EEPROM_CALIBRATION_STATUS             | ffh 255      | ffh 255               | Assembled _default_                               | ???          | D3 Ax0ff7 C1
+| 0x0FF7 4087 | uint8   | EEPROM_CALIBRATION_STATUS_V1          | ffh 255      | ffh 255               | Calibration status (<v3.12)                       | ???          | D3 Ax0ff7 C1
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Calibrated                                        | ^            | ^
 | ^           | ^       | ^                                     | e6h 230      | ^                     | needs Live Z adjustment                           | ^            | ^
 | ^           | ^       | ^                                     | ebh 235      | ^                     | needs Temp Model calibration                      | ^            | ^
 | ^           | ^       | ^                                     | f0h 240      | ^               __P__ | needs Z calibration                               | ^            | ^
 | ^           | ^       | ^                                     | fah 250      | ^                     | needs XYZ calibration                             | ^            | ^
-| ^           | ^       | ^                                     | 00h 0        | ^                     | Unknown                                           | ^            | ^
+| ^           | ^       | ^                                     | 00h 0        | ^                     | Unknown (legacy)                                  | ^            | ^
 | 0x0FF5 4085 | uint16  | EEPROM_BABYSTEP_Z0                    | ???          | ff ffh 65535          | Babystep for Z ???                                | ???          | D3 Ax0ff5 C2
 | 0x0FF1 4081 | unint32 | EEPROM_FILAMENTUSED                   | ???          | 00 00 00 00h 0 __S/P__| Filament used in meters                           | ???          | D3 Ax0ff1 C4
 | 0x0FED 4077 | unint32 | EEPROM_TOTALTIME                      | ???          | 00 00 00 00h 0 __S/P__| Total print time                                  | ???          | D3 Ax0fed C4
@@ -348,6 +348,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0CA7 3239 | uint8   | EEPROM_HEAT_BED_ON_LOAD_FILAMENT      | ffh 255      | ffh 255               | Heat bed on load filament unknown state           | LCD menu     | D3 Ax0ca7 C1
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Do not heat bed on load filament                  | ^            | ^
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Heat bed on load filament                         | ^            | ^
+| 0x0CA6 3238 | uint8   | EEPROM_CALIBRATION_STATUS_V2          | ffh 255      | ffh 255               | Calibration status (>=v3.12)                      | ???          | D3 Ax0ca6 C1
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -370,7 +371,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_BABYSTEP_X 4092 //unused
 #define EEPROM_BABYSTEP_Y 4090 //unused
 #define EEPROM_BABYSTEP_Z 4088 //legacy, multiple values stored now in EEPROM_Sheets_base
-#define EEPROM_CALIBRATION_STATUS 4087
+#define EEPROM_CALIBRATION_STATUS_V1 4087 // legacy, used up to v3.11
 #define EEPROM_BABYSTEP_Z0 4085
 #define EEPROM_FILAMENTUSED 4081
 // uint32_t
@@ -575,9 +576,10 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_MMU_ENABLED (EEPROM_FSENSOR_JAM_DETECTION-1) // uint8_t
 #define EEPROM_TOTAL_TOOLCHANGE_COUNT (EEPROM_MMU_ENABLED-4)
 #define EEPROM_HEAT_BED_ON_LOAD_FILAMENT (EEPROM_TOTAL_TOOLCHANGE_COUNT-1) //uint8
+#define EEPROM_CALIBRATION_STATUS_V2 (EEPROM_HEAT_BED_ON_LOAD_FILAMENT-1) //uint8
 
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_HEAT_BED_ON_LOAD_FILAMENT
+#define EEPROM_LAST_ITEM EEPROM_CALIBRATION_STATUS_V2
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
