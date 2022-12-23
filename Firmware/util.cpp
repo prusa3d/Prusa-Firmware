@@ -522,3 +522,24 @@ void ip4_to_str(char* dest, uint8_t* IP)
 {
     sprintf_P(dest, PSTR("%u.%u.%u.%u"), IP[0], IP[1], IP[2], IP[3]);
 }
+
+
+bool calibration_status_get(CalibrationStatus components)
+{
+    CalibrationStatus status = eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2);
+    return ((status & components) == components);
+}
+
+void calibration_status_set(CalibrationStatus components)
+{
+    CalibrationStatus status = eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2);
+    status |= components;
+    eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2, status);
+}
+
+void calibration_status_clear(CalibrationStatus components)
+{
+    CalibrationStatus status = eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2);
+    status &= ~components;
+    eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2, status);
+}
