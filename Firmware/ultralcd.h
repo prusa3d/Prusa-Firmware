@@ -235,11 +235,9 @@ enum class WizState : uint8_t
     TempModel,      //!< Temp model calibration
 #endif //TEMP_MODEL
     IsFil,          //!< Is filament loaded? First step of 1st layer calibration
-    PreheatPla,     //!< waiting for preheat nozzle for PLA
     Preheat,        //!< Preheat for any material
     LoadFilCold,    //!< Load filament for MMU
     LoadFilHot,     //!< Load filament without MMU
-    IsPla,          //!< Is PLA filament?
     Lay1CalCold,    //!< First layer calibration, temperature not selected yet
     Lay1CalHot,     //!< First layer calibration, temperature already selected
     RepeatLay1Cal,  //!< Repeat first layer calibration?
