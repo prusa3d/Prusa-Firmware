@@ -66,7 +66,6 @@
 
 #include "menu.h"
 #include "ultralcd.h"
-#include "conv2str.h"
 #include "backlight.h"
 
 #include "planner.h"
@@ -11043,8 +11042,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 	sprintf_P(cmd, PSTR("M220 S%d"), feedmultiply_rec);
 	enquecommand(cmd);
   // Set the fan speed saved at the power panic.
-	strcpy_P(cmd, PSTR("M106 S"));
-	strcat(cmd, itostr3(int(fan_speed_rec)));
+	sprintf_P(cmd, PSTR("M106 S%u"), fan_speed_rec);
 	enquecommand(cmd);
 
   // Set a position in the file.
