@@ -3369,13 +3369,8 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				bool result = sample_mesh_and_store_reference();
 				if (result)
 				{
-                    if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
-                    {
-                        // Shipped, the nozzle height has been set already. The user can start printing now.
-                        calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-                    }
-                    final_result = true;
-                    // babystep_apply();
+					calibration_status_set(CALIBRATION_STATUS_Z);
+					final_result = true;
 				}
 			}
 			else
@@ -3422,14 +3417,10 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				lcd_bed_calibration_show_result(result, point_too_far_mask);
 				if (result >= 0)
 				{
-#ifdef TEMP_MODEL
-					calibration_status_store(CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION);
-					if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_NOT_CAL));
-#else
 					// Calibration valid, the machine should be able to print. Advise the user to run the V2Calibration.gcode.
-					calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
-					if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
-#endif //TEMP_MODEL
+					calibration_status_set(CALIBRATION_STATUS_XYZ | CALIBRATION_STATUS_Z);
+					if (!eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE))
+						lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
 					final_result = true;
 				}
 			}
@@ -4887,7 +4878,7 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
             break;
         }
 
-        if (calibration_status() >= CALIBRATION_STATUS_XYZ_CALIBRATION) {
+        if (!calibration_status_get(CALIBRATION_STATUS_XYZ)) {
             //we need to know accurate position of first calibration point
             //if xyz calibration was not performed yet, interrupt temperature calibration and inform user that xyz cal. is needed
             lcd_show_fullscreen_message_and_wait_P(_i("Please run XYZ calibration first.")); ////MSG_RUN_XYZ c=20 r=4
@@ -5688,7 +5679,9 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
         eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
         // Reset the skew and offset in both RAM and EEPROM.
+        calibration_status_clear(CALIBRATION_STATUS_XYZ);
         reset_bed_offset_and_skew();
+
         // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
         // the planner will not perform any adjustments in the XY plane. 
         // Wait for the motors to stop and update the current position with the absolute values.
