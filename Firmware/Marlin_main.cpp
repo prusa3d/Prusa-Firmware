@@ -178,15 +178,6 @@ uint8_t axis_relative_modes = 0;
 
 int feedmultiply=100; //100->1 200->2
 int extrudemultiply=100; //100->1 200->2
-int extruder_multiply[EXTRUDERS] = {100
-  #if EXTRUDERS > 1
-    , 100
-    #if EXTRUDERS > 2
-      , 100
-    #endif
-  #endif
-};
-
 
 bool homing_flag = false;
 
@@ -7195,34 +7186,22 @@ Sigma_Exit:
 	### M221 - Set extrude factor override percentage <a href="https://reprap.org/wiki/G-code#M221:_Set_extrude_factor_override_percentage">M221: Set extrude factor override percentage</a>
 	#### Usage
     
-        M221 [ S | T ]
+        M221 [ S ]
     
     #### Parameters
 	- `S` - Extrude factor override percentage (0..100 or higher), default 100%
-	- `T` - Extruder drive number (Prusa Firmware only), default 0 if not set.
     */
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
     {
         if (code_seen('S'))
         {
-            int tmp_code = code_value_short();
-            if (code_seen('T'))
-            {
-                uint8_t extruder;
-                if (setTargetedHotend(221, extruder))
-                    break;
-                extruder_multiply[extruder] = tmp_code;
-            }
-            else
-            {
-                extrudemultiply = tmp_code ;
-            }
+            extrudemultiply = code_value_short();
+            calculate_extruder_multipliers();
         }
         else
         {
             printf_P(PSTR("%i%%\n"), extrudemultiply);
         }
-        calculate_extruder_multipliers();
     }
     break;
 
