@@ -598,7 +598,7 @@ void dcode_9()
 void dcode_10()
 {//Tell the printer that XYZ calibration went OK
 	LOG("D10 - XYZ calibration = OK\n");
-	calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
+	calibration_status_set(CALIBRATION_STATUS_XYZ);
 }
 
     /*!
