@@ -1063,16 +1063,11 @@ void lcd_commands()
         case 1:
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
-
-            if (temp_model_autotune_result()) {
-                if (calibration_status() == CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION) {
-                    // move to the next calibration step if not fully calibrated
-                    calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
-                }
-                if ((eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1)) {
-                    // successful: resume the wizard
-                    lcd_wizard(WizState::IsFil);
-                }
+            bool res = temp_model_autotune_result();
+            if (res) calibration_status_set(CALIBRATION_STATUS_TEMP_MODEL);
+            if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
+                // resume the wizard
+                lcd_wizard(res ? WizState::Restore : WizState::Failed);
             }
             break;
         }
