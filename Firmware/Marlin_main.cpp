@@ -76,7 +76,6 @@
 #include "cardreader.h"
 #include "ConfigurationStore.h"
 #include "language.h"
-#include "pins_arduino.h"
 #include "math.h"
 #include "util.h"
 #include "Timer.h"
