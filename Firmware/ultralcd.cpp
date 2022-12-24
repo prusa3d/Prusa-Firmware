@@ -2702,7 +2702,7 @@ static void lcd_babystep_z()
 		}
 
 		// same logic as in babystep_load
-	    if (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST)
+	    if (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST))
 			_md->babystepMemZ = 0;
 
 		_md->babystepMemMMZ = _md->babystepMemZ/cs.axis_steps_per_unit[Z_AXIS];
@@ -2744,7 +2744,7 @@ static void lcd_babystep_z()
 #ifdef PINDA_THERMISTOR        
 		eeprom_update_byte(&(EEPROM_Sheets_base->s[active_sheet].pinda_temp),current_temperature_pinda);
 #endif //PINDA_THERMISTOR
-		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+		calibration_status_set(CALIBRATION_STATUS_LIVE_ADJUST);
 	}
 	if (LCD_CLICKED) menu_back();
 }
@@ -3740,7 +3740,7 @@ void lcd_first_layer_calibration_reset()
     MenuData* menuData = (MenuData*)&(menu_data[0]);
 
     if(LCD_CLICKED || !eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))) ||
-            (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST) ||
+            (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST)) ||
             (0 == static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>
             (&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))))
     {
@@ -5344,10 +5344,8 @@ static void lcd_reset_sheet()
 	if (selected_sheet == eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))
 	{
         eeprom_switch_to_next_sheet();
-        if((-1 == eeprom_next_initialized_sheet(0)) && (CALIBRATION_STATUS_CALIBRATED == calibration_status()))
-        {
-            calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
-        }
+        if (-1 == eeprom_next_initialized_sheet(0))
+            calibration_status_clear(CALIBRATION_STATUS_LIVE_ADJUST);
 	}
 
 	menu_back();

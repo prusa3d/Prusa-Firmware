@@ -3362,8 +3362,9 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			else
 			{
 				// Reset the baby step value and the baby step applied flag.
-				calibration_status_store(CALIBRATION_STATUS_XYZ_CALIBRATION);
-                    eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
+				calibration_status_clear(CALIBRATION_STATUS_LIVE_ADJUST);
+				eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
+
 				// Complete XYZ calibration.
 				uint8_t point_too_far_mask = 0;
 				BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
@@ -5142,7 +5143,7 @@ void process_commands()
         (Prusa3D specific)
         */
         case 86:
-            calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+            calibration_status_clear(CALIBRATION_STATUS_LIVE_ADJUST);
             break;
            
 
@@ -5153,7 +5154,7 @@ void process_commands()
         (Prusa3D specific)
         */
         case 87:
-			calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+            calibration_status_set(CALIBRATION_STATUS_LIVE_ADJUST);
             break;
 
         /*!
@@ -5605,9 +5606,9 @@ void process_commands()
     */
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
 
-		// Reset the baby step value and the baby step applied flag.
-		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
-          eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
+        // Reset the baby step value and the baby step applied flag.
+        calibration_status_clear(CALIBRATION_STATUS_LIVE_ADJUST);
+        eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
 
         // Reset the skew and offset in both RAM and EEPROM.
         reset_bed_offset_and_skew();
