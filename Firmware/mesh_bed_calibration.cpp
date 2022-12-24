@@ -1,5 +1,6 @@
 #include "Configuration.h"
 #include "ConfigurationStore.h"
+#include "util.h"
 #include "language.h"
 #include "mesh_bed_calibration.h"
 #include "mesh_bed_leveling.h"
@@ -3044,7 +3045,7 @@ void babystep_load()
 {
 	babystepLoadZ = 0;
     // Apply Z height correction aka baby stepping before mesh bed leveling gets activated.
-    if (calibration_status() < CALIBRATION_STATUS_LIVE_ADJUST)
+    if (calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST))
     {
         check_babystep(); //checking if babystep is in allowed range, otherwise setting babystep to 0
         
