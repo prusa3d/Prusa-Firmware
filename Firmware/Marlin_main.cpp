@@ -9879,7 +9879,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 			or when current temp falls outside the hysteresis after target temp was reached */
 			if ((residencyStart == -1 && target_direction && (degHotend(extruder) >= (degTargetHotend(extruder) - TEMP_WINDOW))) ||
 				(residencyStart == -1 && !target_direction && (degHotend(extruder) <= (degTargetHotend(extruder) + TEMP_WINDOW))) ||
-				(residencyStart > -1 && labs(degHotend(extruder) - degTargetHotend(extruder)) > TEMP_HYSTERESIS))
+				(residencyStart > -1 && fabs(degHotend(extruder) - degTargetHotend(extruder)) > TEMP_HYSTERESIS))
 			{
 				residencyStart = _millis();
 			}
