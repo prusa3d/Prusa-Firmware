@@ -2882,7 +2882,7 @@ static void gcode_G80()
         run = true;
         repeatcommand_front(); // repeat G80 with all its parameters
         enquecommand_front_P(G28W0);
-        break;
+        return;
     }
     run = false;
 #endif //PINDA_THERMISTOR
@@ -10468,12 +10468,12 @@ static void temp_compensation_start() {
 	if ((int)degHotend(active_extruder) > extrude_min_temp) {
 		current_position[E_AXIS] -= default_retraction;
 	}
-	plan_buffer_line_curposXYZE(400, active_extruder);
+	plan_buffer_line_curposXYZE(400);
 	
 	current_position[X_AXIS] = PINDA_PREHEAT_X;
 	current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 	current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-	plan_buffer_line_curposXYZE(3000 / 60, active_extruder);
+	plan_buffer_line_curposXYZE(3000 / 60);
 	st_synchronize();
 	while (fabs(degBed() - target_temperature_bed) > 1) delay_keep_alive(1000);
 
@@ -10492,7 +10492,7 @@ static void temp_compensation_apply() {
 	int z_shift = 0;
 	float z_shift_mm;
 
-	if (calibration_status() == CALIBRATION_STATUS_CALIBRATED) {
+	if (calibration_status_pinda()) {
 		if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 60 && target_temperature_bed <= 100) {
 			i_add = (target_temperature_bed - 60) / 10;
 			z_shift = eeprom_read_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + i_add);
