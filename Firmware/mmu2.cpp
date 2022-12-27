@@ -317,7 +317,7 @@ void MMU2::ToolChangeCommon(uint8_t slot){
         // Please see CheckUserInput() for details how we "leave" manage_response.
         // If manage_response returns false at this spot (MMU operation interrupted aka MMU reset)
         // we can safely continue because the MMU is not doing an operation now.
-        manage_response(true, true);
+        static_cast<void>(manage_response(true, true)); // yes, I'd like to silence [[nodiscard]] warning at this spot by casting to void
     }
 
     extruder = slot; //filament change is finished
