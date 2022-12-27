@@ -496,7 +496,8 @@ StepStatus ProtocolLogic::IdleStep() {
 }
 
 ProtocolLogic::ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance)
-    : currentScope(Scope::Stopped)
+    : explicitPrinterError(ErrorCode::OK)
+    , currentScope(Scope::Stopped)
     , scopeState(ScopeState::Ready)
     , plannedRq(RequestMsgCodes::unknown, 0)
     , lastUARTActivityMs(0)

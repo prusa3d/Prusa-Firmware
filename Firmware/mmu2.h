@@ -294,6 +294,7 @@ private:
 
     /// Common processing of pushing filament into the extruder - shared by tool_change, load_to_nozzle and probably others
     void ToolChangeCommon(uint8_t slot);
+    bool ToolChangeCommonOnce(uint8_t slot);
 
     void HelpUnloadToFinda();
 

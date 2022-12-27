@@ -273,52 +273,52 @@ bool MMU2::VerifyFilamentEnteredPTFE()
     }
 }
 
-void MMU2::ToolChangeCommon(uint8_t slot){
-    for(;;) { // while not successfully fed into extruder's PTFE tube
-        uint8_t retries = 3;
-        for(/*nothing*/; retries; --retries){
-            for(;;) {
-                tool_change_extruder = slot;
-                logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
-                if( manage_response(true, true) )
-                    break;
-                // otherwise: failed to perform the command - unload first and then let it run again
-                IncrementMMUFails();
-
-                // just in case we stood in an error screen for too long and the hotend got cold
-                ResumeHotendTemp();
-                // if the extruder has been parked, it will get unparked once the ToolChange command finishes OK
-                // - so no ResumeUnpark() at this spot
-
-                unload();
-                // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
-                // but honestly - if the MMU restarts during every toolchange,
-                // something else is seriously broken and stopping a print is probably our best option.
-            }
-            // reset current position to whatever the planner thinks it is
-            plan_set_e_position(current_position[E_AXIS]);
-            if (VerifyFilamentEnteredPTFE()){
+bool MMU2::ToolChangeCommonOnce(uint8_t slot){
+    static_assert(MAX_RETRIES > 1); // need >1 retries to do the cut in the last attempt
+    for(uint8_t retries = MAX_RETRIES; retries; --retries){
+        for(;;) {
+            tool_change_extruder = slot;
+            logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
+            if( manage_response(true, true) )
                 break;
-            } else { // Prepare a retry attempt
-                unload(); // @@TODO cut filament
-                // cut_filament(slot);
+            // otherwise: failed to perform the command - unload first and then let it run again
+            IncrementMMUFails();
+
+            // just in case we stood in an error screen for too long and the hotend got cold
+            ResumeHotendTemp();
+            // if the extruder has been parked, it will get unparked once the ToolChange command finishes OK
+            // - so no ResumeUnpark() at this spot
+
+            unload();
+            // if we run out of retries, we must do something ... may be raise an error screen and allow the user to do something
+            // but honestly - if the MMU restarts during every toolchange,
+            // something else is seriously broken and stopping a print is probably our best option.
+        }
+        // reset current position to whatever the planner thinks it is
+        plan_set_e_position(current_position[E_AXIS]);
+        if (VerifyFilamentEnteredPTFE()){
+            return true; // success
+        } else { // Prepare a retry attempt
+            unload();
+            if( retries == 1 && eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) == EEPROM_MMU_CUTTER_ENABLED_enabled){
+                cut_filament(slot); // try cutting filament tip at the last attempt
             }
         }
-        if( retries ){
-            // we were successful in pushing the filament into the nozzle
-            break;
-        } else {
-            // failed autoretry, report an error by forcing a "printer" error into the MMU infrastructure - it is a hack to leverage existing code
-            logic.SetPrinterError(ErrorCode::LOAD_TO_EXTRUDER_FAILED);
-            SaveAndPark(true);
-            SaveHotendTemp(true);
-            // We only have to wait for the user to fix the issue and press "Retry".
-            // @@TODO Do we need to process the return value of manage_response?
-            manage_response(true, true);
-            logic.ClearPrinterError();
-            ResumeHotendTemp();
-            ResumeUnpark();
-        }
+    }
+    return false; // couldn't accomplish the task
+}
+
+void MMU2::ToolChangeCommon(uint8_t slot){
+    while( ! ToolChangeCommonOnce(slot) ){ // while not successfully fed into extruder's PTFE tube
+        // failed autoretry, report an error by forcing a "printer" error into the MMU infrastructure - it is a hack to leverage existing code
+        logic.SetPrinterError(ErrorCode::LOAD_TO_EXTRUDER_FAILED);
+        SaveAndPark(true);
+        SaveHotendTemp(true);
+        // We only have to wait for the user to fix the issue and press "Retry".
+        // Please see CheckUserInput() for details how we "leave" manage_response.
+        // If manage_response returns false at this spot (MMU operation interrupted aka MMU reset)
+        // we can safely continue because the MMU is not doing an operation now.
+        manage_response(true, true);
     }
 
     extruder = slot; //filament change is finished
@@ -686,6 +686,11 @@ void MMU2::CheckUserInput(){
         SERIAL_ECHOPGM("CheckUserInput-btnLMR ");
         SERIAL_ECHOLN(btn);
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
+
+        // In case of LOAD_TO_EXTRUDER_FAILED sending a button into the MMU has an interesting side effect
+        // - it triggers the standalone LoadFilament function on the current active slot.
+        // Considering the fact, that we are recovering from a failed load to extruder, this side effect is actually quite beneficial
+        // - it checks if the filament is correctly loaded in the MMU (we assume the user was playing with the filament to recover from the failed load)
         Button(btn);
 
         // A quick hack: for specific error codes move the E-motor every time.
@@ -695,6 +700,13 @@ void MMU2::CheckUserInput(){
         case ErrorCode::FSENSOR_DIDNT_SWITCH_OFF:
         case ErrorCode::FSENSOR_TOO_EARLY:
             HelpUnloadToFinda();
+            break;
+        case ErrorCode::LOAD_TO_EXTRUDER_FAILED:
+            // A horrible hack - clear the explicit printer error allowing manage_response to recover on MMU's Finished state
+            // Moreover - if the MMU is currently doing something (like the LoadFilament - see comment above)
+            // we'll actually wait for it automagically in manage_response and after it finishes correctly,
+            // we'll issue another command (like toolchange)
+            logic.ClearPrinterError();
             break;
         default:
             break;
@@ -767,9 +779,13 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             // now what :D ... big bad ... ramming, unload, retry the whole command originally issued
             return false;
         case VersionMismatch: // this basically means the MMU will be disabled until reconnected
-        case PrinterError:
             CheckUserInput();
             return true;
+        case PrinterError:
+            CheckUserInput();
+            // if button pressed "Done", return true, otherwise stay within manage_response
+            // Please see CheckUserInput() for details how we "leave" manage_response
+            break;
         case CommandError:
         case CommunicationTimeout:
         case ProtocolError:
