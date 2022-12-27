@@ -770,9 +770,10 @@ static void factory_reset(char level)
 	case 3: // Level 3: Preparation after being serviced
 		// Force language selection at the next boot up.
 		lang_reset();
-		// Force the "Follow calibration flow" message at the next boot up.
-		calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
-		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 2); //run wizard
+
+		// Force the wizard in "Follow calibration flow" mode at the next boot up
+		calibration_status_clear(CALIBRATION_FORCE_PREP);
+		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 2);
 		farm_disable();
 
 #ifdef FILAMENT_SENSOR
