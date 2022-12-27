@@ -1520,45 +1520,51 @@ void setup()
 	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=6
 	  Config_StoreSettings();
   }
-  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) >= 1) {
-	  lcd_wizard(WizState::Run);
-  }
-  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
-	  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
-		  calibration_status() == CALIBRATION_STATUS_UNKNOWN || 
-		  calibration_status() == CALIBRATION_STATUS_XYZ_CALIBRATION) {
-		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
-            eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),0);
-		  // Show the message.
-		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_CALIBRATION_FLOW));
-	  }
-#ifdef TEMP_MODEL
-	  else if (calibration_status() == CALIBRATION_STATUS_TEMP_MODEL_CALIBRATION) {
-		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_NOT_CAL));
-		  lcd_update_enable(true);
-	  }
-#endif //TEMP_MODEL
-	  else if (calibration_status() == CALIBRATION_STATUS_LIVE_ADJUST) {
-		  // Show the message.
-		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
-		  lcd_update_enable(true);
-	  }
-	  else if (calibration_status() == CALIBRATION_STATUS_CALIBRATED && eeprom_read_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE) && calibration_status_pinda() == false) {
-		  //lcd_show_fullscreen_message_and_wait_P(_i("Temperature calibration has not been run yet"));////MSG_PINDA_NOT_CALIBRATED c=20 r=4
-		  lcd_update_enable(true);
-	  }
-	  else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
-		  // Show the message.
-		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_Z_CALIBRATION_FLOW));
-	  }
+
+  // handle calibration status upgrade
+  bool run_wizard = false;
+  if (calibration_status_get(CALIBRATION_STATUS_UNKNOWN)) {
+      CalibrationStatus calibration_status = 0;
+      if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V1) == 1) {
+          // calibrated printer upgraded from FW<3.12
+          calibration_status |= (CALIBRATION_STATUS_SELFTEST | CALIBRATION_STATUS_XYZ | CALIBRATION_STATUS_Z | CALIBRATION_STATUS_LIVE_ADJUST);
+
+          if (eeprom_fw_version_older_than({3, 2, 0, 4})) {
+              // printer upgraded from FW<3.2.0.4 and requires re-running selftest
+              lcd_show_fullscreen_message_and_wait_P(_i("Selftest will be run to calibrate accurate sensorless rehoming."));////MSG_FORCE_SELFTEST c=20 r=8
+              calibration_status &= ~CALIBRATION_STATUS_SELFTEST;
+              run_wizard = true;
+          }
+      }
+      eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2, calibration_status);
   }
 
-#if !defined (DEBUG_DISABLE_FORCE_SELFTEST) && defined (TMC2130)
-  if (eeprom_fw_version_older_than({3, 2, 0, 4}) && calibration_status() < CALIBRATION_STATUS_ASSEMBLED) {
-	  lcd_show_fullscreen_message_and_wait_P(_i("Selftest will be run to calibrate accurate sensorless rehoming."));////MSG_FORCE_SELFTEST c=20 r=8
-	  lcd_selftest();
+  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
+      // first time run of wizard or service prep
+      lcd_wizard(WizState::Run);
   }
-#endif //TMC2130 && !DEBUG_DISABLE_FORCE_SELFTEST
+  else if (run_wizard) {
+      // some wizard steps required by the upgrade checks
+      lcd_wizard(WizState::Restore);
+  }
+  else {
+      if (!calibration_status_get(CALIBRATION_STATUS_SELFTEST)) {
+          // aborted or missing wizard: show a single warning
+          lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_CALIBRATION_FLOW));
+      }
+      else if (!calibration_status_get(CALIBRATION_STATUS_Z)) {
+          // wizard reset after service prep
+          lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_Z_CALIBRATION_FLOW));
+      } else {
+          // warn about other important steps individually
+          if (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST))
+              lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
+#ifdef TEMP_MODEL
+          if (!calibration_status_get(CALIBRATION_STATUS_TEMP_MODEL))
+              lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_NOT_CAL));
+#endif //TEMP_MODEL
+      }
+  }
 
   KEEPALIVE_STATE(IN_PROCESS);
 #endif //DEBUG_DISABLE_STARTMSGS
