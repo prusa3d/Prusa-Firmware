@@ -241,7 +241,8 @@ enum class WizState : uint8_t
     Lay1CalCold,    //!< First layer calibration, temperature not selected yet
     Lay1CalHot,     //!< First layer calibration, temperature already selected
     RepeatLay1Cal,  //!< Repeat first layer calibration?
-    Finish,         //!< Deactivate wizard
+    Finish,         //!< Deactivate wizard (success)
+    Failed,         //!< Deactivate wizard (failure)
 };
 
 void lcd_wizard(WizState state);
