@@ -66,7 +66,6 @@
 
 #include "menu.h"
 #include "ultralcd.h"
-#include "conv2str.h"
 #include "backlight.h"
 
 #include "planner.h"
@@ -77,7 +76,6 @@
 #include "cardreader.h"
 #include "ConfigurationStore.h"
 #include "language.h"
-#include "pins_arduino.h"
 #include "math.h"
 #include "util.h"
 #include "Timer.h"
@@ -115,10 +113,6 @@
 #include "Wire.h"
 #endif
 
-#ifdef ULTRALCD
-#include "ultralcd.h"
-#endif
-
 #if NUM_SERVOS > 0
 #include "Servo.h"
 #endif
@@ -131,8 +125,6 @@
 
 #define VERSION_STRING  "1.0.2"
 
-
-#include "ultralcd.h"
 #include "sound.h"
 
 #include "cmdqueue.h"
@@ -7338,7 +7330,7 @@ Sigma_Exit:
       break;
     #endif // NUM_SERVOS > 0
 
-    #if (LARGE_FLASH == true && ( BEEPER > 0 || defined(ULTRALCD) || defined(LCD_USE_I2C_BUZZER)))
+    #if (LARGE_FLASH == true && BEEPER > 0 )
     
     /*!
 	### M300 - Play tone <a href="https://reprap.org/wiki/G-code#M300:_Play_beep_sound">M300: Play beep sound</a>
@@ -11043,8 +11035,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 	sprintf_P(cmd, PSTR("M220 S%d"), feedmultiply_rec);
 	enquecommand(cmd);
   // Set the fan speed saved at the power panic.
-	strcpy_P(cmd, PSTR("M106 S"));
-	strcat(cmd, itostr3(int(fan_speed_rec)));
+	sprintf_P(cmd, PSTR("M106 S%u"), fan_speed_rec);
 	enquecommand(cmd);
 
   // Set a position in the file.
