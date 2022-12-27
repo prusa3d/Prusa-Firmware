@@ -49,6 +49,8 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         return FindErrorIndex(ERR_MECHANICAL_FSENSOR_TOO_EARLY);
     case (uint16_t)ErrorCode::FINDA_FLICKERS:
         return FindErrorIndex(ERR_MECHANICAL_INSPECT_FINDA);
+    case (uint16_t)ErrorCode::LOAD_TO_EXTRUDER_FAILED:
+        return FindErrorIndex(ERR_MECHANICAL_LOAD_TO_EXTRUDER_FAILED);
 
     case (uint16_t)ErrorCode::STALLED_PULLEY:
     case (uint16_t)ErrorCode::MOVE_PULLEY_FAILED:
@@ -222,7 +224,14 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
-        
+    case ERR_MECHANICAL_LOAD_TO_EXTRUDER_FAILED:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::Continue: // User solved the serious mechanical problem by hand - there is no other way around
+            return Middle;
+        default:
+            break;
+        }
+        break;
     case ERR_TEMPERATURE_PULLEY_WARNING_TMC_TOO_HOT:
     case ERR_TEMPERATURE_SELECTOR_WARNING_TMC_TOO_HOT:
     case ERR_TEMPERATURE_IDLER_WARNING_TMC_TOO_HOT:
