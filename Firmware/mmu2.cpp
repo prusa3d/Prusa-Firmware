@@ -311,9 +311,8 @@ bool MMU2::ToolChangeCommonOnce(uint8_t slot){
 void MMU2::ToolChangeCommon(uint8_t slot){
     while( ! ToolChangeCommonOnce(slot) ){ // while not successfully fed into extruder's PTFE tube
         // failed autoretry, report an error by forcing a "printer" error into the MMU infrastructure - it is a hack to leverage existing code
+        // @@TODO theoretically logic layer may not need to be spoiled with the printer error - may be just the manage_response needs it...
         logic.SetPrinterError(ErrorCode::LOAD_TO_EXTRUDER_FAILED);
-        SaveAndPark(true);
-        SaveHotendTemp(true);
         // We only have to wait for the user to fix the issue and press "Retry".
         // Please see CheckUserInput() for details how we "leave" manage_response.
         // If manage_response returns false at this spot (MMU operation interrupted aka MMU reset)
@@ -685,12 +684,24 @@ void MMU2::CheckUserInput(){
     case Right:
         SERIAL_ECHOPGM("CheckUserInput-btnLMR ");
         SERIAL_ECHOLN(btn);
+
+        // clear the explicit printer error as soon as possible so that the MMU error screens + reporting doesn't get too confused
+        if( lastErrorCode == ErrorCode::LOAD_TO_EXTRUDER_FAILED ){
+            // A horrible hack - clear the explicit printer error allowing manage_response to recover on MMU's Finished state
+            // Moreover - if the MMU is currently doing something (like the LoadFilament - see comment above)
+            // we'll actually wait for it automagically in manage_response and after it finishes correctly,
+            // we'll issue another command (like toolchange)
+            logic.ClearPrinterError();
+            lastErrorSource = ErrorSourceMMU; // this seems to help clearing the error screen
+        }
+
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
 
         // In case of LOAD_TO_EXTRUDER_FAILED sending a button into the MMU has an interesting side effect
         // - it triggers the standalone LoadFilament function on the current active slot.
         // Considering the fact, that we are recovering from a failed load to extruder, this side effect is actually quite beneficial
         // - it checks if the filament is correctly loaded in the MMU (we assume the user was playing with the filament to recover from the failed load)
+        // Moreover, the "button" makes all the nice things like temp recovery
         Button(btn);
 
         // A quick hack: for specific error codes move the E-motor every time.
@@ -700,13 +711,6 @@ void MMU2::CheckUserInput(){
         case ErrorCode::FSENSOR_DIDNT_SWITCH_OFF:
         case ErrorCode::FSENSOR_TOO_EARLY:
             HelpUnloadToFinda();
-            break;
-        case ErrorCode::LOAD_TO_EXTRUDER_FAILED:
-            // A horrible hack - clear the explicit printer error allowing manage_response to recover on MMU's Finished state
-            // Moreover - if the MMU is currently doing something (like the LoadFilament - see comment above)
-            // we'll actually wait for it automagically in manage_response and after it finishes correctly,
-            // we'll issue another command (like toolchange)
-            logic.ClearPrinterError();
             break;
         default:
             break;
@@ -782,6 +786,8 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
             CheckUserInput();
             return true;
         case PrinterError:
+            SaveAndPark(move_axes);
+            SaveHotendTemp(turn_off_nozzle);
             CheckUserInput();
             // if button pressed "Done", return true, otherwise stay within manage_response
             // Please see CheckUserInput() for details how we "leave" manage_response
