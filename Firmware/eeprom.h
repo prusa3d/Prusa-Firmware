@@ -292,7 +292,7 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0D9D 3485 | uint16  | ^                                     | 00 00h 0     | ff ffh 65535          | 8th sheet - Z offset                              | ^            | D3 Ax0d9d C2
 | 0x0D9F 3487 | uint8   | ^                                     | 00h 0        | ffh 255               | 8th sheet - bed temp                              | ^            | D3 Ax0d9f C1
 | 0x0DA0 3488 | uint8   | ^                                     | 00h 0        | ffh 255               | 8th sheet - PINDA temp                            | ^            | D3 Ax0da0 C1
-| 0x0DA1 3489 | uint8   | ???                                   | 00h 0        | ffh 255               | ???                                               | ???          | D3 Ax0da1 C1
+| 0x0DA1 3489 | uint8   | active_sheet                          | 00h 0        | ffh 255               | Active sheet index                                | ^            | D3 Ax0da1 C1
 | 0x0D48 3400 | uint8   | EEPROM_FSENSOR_PCB                    | ffh 255      | ffh 255               | Filament Sensor type IR unknown                   | LCD Support  | D3 Ax0d48 C1
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Filament Sensor type IR 0.3 or older              | ^            | ^
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Filament Sensor type IR 0.4 or newer              | ^            | ^
@@ -342,6 +342,12 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | 0x0CB6 3254 | float   | EEPROM_TEMP_MODEL_Ta_corr             | ???          | ff ff ff ffh          | Temp model ambient temperature correction (K)     | Temp model   | D3 Ax0cb6 C4
 | 0x0CB2 3250 | float   | EEPROM_TEMP_MODEL_W                   | ???          | ff ff ff ffh          | Temp model warning threshold (K/s)                | Temp model   | D3 Ax0cb2 C4
 | 0x0CAE 3246 | float   | EEPROM_TEMP_MODEL_E                   | ???          | ff ff ff ffh          | Temp model error threshold (K/s)                  | Temp model   | D3 Ax0cae C4
+| 0x0CAD 3245 | uint8   | EEPROM_FSENSOR_JAM_DETECTION          | 01h 1        | ff/01                 | fsensor pat9125 jam detection feature             | LCD menu     | D3 Ax0cad C1
+| 0x0CAC 3244 | uint8   | EEPROM_MMU_ENABLED                    | 01h 1        | ff/01                 | MMU enabled                                       | LCD menu     | D3 Ax0cac C1
+| 0x0CA8 3240 | uint32  | EEPROM_TOTAL_TOOLCHANGE_COUNT         | ???          | ff ff ff ffh          | MMU toolchange counter over printers lifetime     | LCD statistic| D3 Ax0ca8 C4
+| 0x0CA7 3239 | uint8   | EEPROM_HEAT_BED_ON_LOAD_FILAMENT      | ffh 255      | ffh 255               | Heat bed on load filament unknown state           | LCD menu     | D3 Ax0d02 C1
+| ^           | ^       | ^                                     | 00h 0        | ^                     | Do not heat bed on load filament                  | ^            | ^
+| ^           | ^       | ^                                     | 01h 1        | ^                     | Heat bed on load filament                         | ^            | ^
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -565,8 +571,13 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_TEMP_MODEL_W (EEPROM_TEMP_MODEL_Ta_corr-4) // float
 #define EEPROM_TEMP_MODEL_E (EEPROM_TEMP_MODEL_W-4) // float
 
+#define EEPROM_FSENSOR_JAM_DETECTION (EEPROM_TEMP_MODEL_E-1) // uint8_t
+#define EEPROM_MMU_ENABLED (EEPROM_FSENSOR_JAM_DETECTION-1) // uint8_t
+#define EEPROM_TOTAL_TOOLCHANGE_COUNT (EEPROM_MMU_ENABLED-4)
+#define EEPROM_HEAT_BED_ON_LOAD_FILAMENT (EEPROM_TOTAL_TOOLCHANGE_COUNT-1) //uint8
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_TEMP_MODEL_E
+#define EEPROM_LAST_ITEM EEPROM_HEAT_BED_ON_LOAD_FILAMENT
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
