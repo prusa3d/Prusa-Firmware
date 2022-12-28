@@ -9672,18 +9672,18 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 			SERIAL_PROTOCOL((int)extruder);
 
 #ifdef TEMP_RESIDENCY_TIME
-				SERIAL_PROTOCOLPGM(" W:");
-				if (residencyStart > -1)
-				{
-					codenum = ((TEMP_RESIDENCY_TIME * 1000UL) - (_millis() - residencyStart)) / 1000UL;
-					SERIAL_PROTOCOLLN(codenum);
-				}
-				else
-				{
-					SERIAL_PROTOCOLLN('?');
-				}
+			SERIAL_PROTOCOLPGM(" W:");
+			if (residencyStart > -1)
+			{
+				codenum = ((TEMP_RESIDENCY_TIME * 1000UL) - (_millis() - residencyStart)) / 1000UL;
+				SERIAL_PROTOCOLLN(codenum);
+			}
+			else
+			{
+				SERIAL_PROTOCOLLN('?');
+			}
 #else
-				SERIAL_PROTOCOLLN();
+			SERIAL_PROTOCOLLN();
 #endif
 		}
 		delay_keep_alive(1000);
