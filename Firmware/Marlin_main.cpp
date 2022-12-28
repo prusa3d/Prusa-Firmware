@@ -4378,8 +4378,8 @@ void process_commands()
         }
       }
       st_synchronize();
-      delay_keep_alive(codenum);
       previous_millis_cmd.start();
+      delay_keep_alive(codenum);
       break;
 
 
