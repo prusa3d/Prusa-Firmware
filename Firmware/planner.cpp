@@ -712,10 +712,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Rest here until there is room in the buffer.
   if (block_buffer_tail == next_buffer_head) {
       do {
-          manage_heater(); 
-          // Vojtech: Don't disable motors inside the planner!
-          manage_inactivity(false); 
-          lcd_update(0);
+          delay_keep_alive(0);
       } while (block_buffer_tail == next_buffer_head);
   }
 #ifdef PLANNER_DIAGNOSTICS
