@@ -6,7 +6,7 @@
 
 namespace MMU2 {
 
-static const uint8_t supportedMmuFWVersion[3] PROGMEM = { 2, 1, 5 };
+static const uint8_t supportedMmuFWVersion[3] PROGMEM = { 2, 1, 6 };
 
 const uint8_t ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
     8, // FINDA state
