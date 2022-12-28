@@ -51,6 +51,8 @@ uint8_t PrusaErrorCodeIndex(uint16_t ec) {
         return FindErrorIndex(ERR_MECHANICAL_INSPECT_FINDA);
     case (uint16_t)ErrorCode::LOAD_TO_EXTRUDER_FAILED:
         return FindErrorIndex(ERR_MECHANICAL_LOAD_TO_EXTRUDER_FAILED);
+    case (uint16_t)ErrorCode::FILAMENT_EJECTED:
+        return FindErrorIndex(ERR_SYSTEM_FILAMENT_EJECTED);
 
     case (uint16_t)ErrorCode::STALLED_PULLEY:
     case (uint16_t)ErrorCode::MOVE_PULLEY_FAILED:
@@ -310,6 +312,15 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
+    case ERR_SYSTEM_FILAMENT_EJECTED:
+        switch (buttonSelectedOperation) {
+        case ButtonOperations::Continue: // "Continue" - eject filament completed
+            return Middle;
+        default:
+            break;
+        }
+        break;
+
     default:
         break;
     }

@@ -72,6 +72,7 @@ typedef enum : uint16_t {
     ERR_SYSTEM_FW_UPDATE_NEEDED = 504,
     ERR_SYSTEM_FW_RUNTIME_ERROR = 505,
     ERR_SYSTEM_UNLOAD_MANUALLY = 506,
+    ERR_SYSTEM_FILAMENT_EJECTED = 507,
 
     ERR_OTHER = 900
 } err_num_t;
@@ -121,7 +122,8 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_SYSTEM_QUEUE_FULL, 
     ERR_SYSTEM_FW_UPDATE_NEEDED, 
     ERR_SYSTEM_FW_RUNTIME_ERROR,
-    ERR_SYSTEM_UNLOAD_MANUALLY
+    ERR_SYSTEM_UNLOAD_MANUALLY,
+    ERR_SYSTEM_FILAMENT_EJECTED
 };
 
 // @@TODO some of the strings are duplicates, can be merged into one     01234567890123456789
@@ -164,6 +166,7 @@ static const char MSG_TITLE_QUEUE_FULL[] PROGMEM_I1              = ISTR("QUEUE F
 static const char MSG_TITLE_FW_UPDATE_NEEDED[] PROGMEM_I1        = ISTR("MMU FW UPDATE NEEDED"); ////MSG_TITLE_FW_UPDATE_NEEDED c=20
 static const char MSG_TITLE_FW_RUNTIME_ERROR[] PROGMEM_I1        = ISTR("FW RUNTIME ERROR"); ////MSG_TITLE_FW_RUNTIME_ERROR c=20
 static const char MSG_TITLE_UNLOAD_MANUALLY[] PROGMEM_I1         = ISTR("UNLOAD MANUALLY"); ////MSG_TITLE_UNLOAD_MANUALLY c=20
+static const char MSG_TITLE_FILAMENT_EJECTED[] PROGMEM_I1        = ISTR("FILAMENT EJECTED"); ////MSG_TITLE_FILAMENT_EJECTED c=20
 
 static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_FINDA_DIDNT_TRIGGER),
@@ -206,7 +209,8 @@ static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_QUEUE_FULL),
     _R(MSG_TITLE_FW_UPDATE_NEEDED),
     _R(MSG_TITLE_FW_RUNTIME_ERROR),
-    _R(MSG_TITLE_UNLOAD_MANUALLY)
+    _R(MSG_TITLE_UNLOAD_MANUALLY),
+    _R(MSG_TITLE_FILAMENT_EJECTED)
 };
 
 // @@TODO looking at the texts, they can be composed of several parts and/or parametrized (could save a lot of space ;) )
@@ -251,6 +255,7 @@ static const char MSG_DESC_QUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal
 static const char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit reports its FW version incompatible with the printer's firmware. Make sure the MMU firmware is up to date."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU unit or updating the firmware. If the issue persists, contact support."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Filament detected unexpectedly. Ensure no filament is loaded. Check the sensors and wiring."); ////MSG_DESC_UNLOAD_MANUALLY c=20 r=8
+static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU unit."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
 
 static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_FINDA_DIDNT_TRIGGER),
@@ -293,7 +298,8 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_QUEUE_FULL),
     _R(MSG_DESC_FW_UPDATE_NEEDED),
     _R(MSG_DESC_FW_RUNTIME_ERROR),
-    _R(MSG_DESC_UNLOAD_MANUALLY)
+    _R(MSG_DESC_UNLOAD_MANUALLY),
+    _R(MSG_DESC_FILAMENT_EJECTED)
 };
 
 // we have max 3 buttons/operations to select from
@@ -375,6 +381,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::DisableMMU, ButtonOperations::NoOperation),//FW_UPDATE_NEEDED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//FW_RUNTIME_ERROR
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//UNLOAD_MANUALLY
+    Btns(ButtonOperations::Continue, ButtonOperations::NoOperation),//FILAMENT_EJECTED
 };
 
 static_assert( sizeof(errorCodes) / sizeof(errorCodes[0]) == sizeof(errorDescs) / sizeof (errorDescs[0]));
