@@ -1333,10 +1333,7 @@ void st_synchronize()
 			lcd_update(0);
 		}
 #else //TMC2130
-		manage_heater();
-		// Vojtech: Don't disable motors inside the planner!
-		manage_inactivity(true);
-		lcd_update(0);
+		delay_keep_alive(0);
 #endif //TMC2130
 	}
 }

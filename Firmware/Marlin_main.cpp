@@ -4378,13 +4378,8 @@ void process_commands()
         }
       }
       st_synchronize();
-      codenum += _millis();  // keep track of when we started waiting
+      delay_keep_alive(codenum);
       previous_millis_cmd.start();
-      while(_millis() < codenum) {
-        manage_heater();
-        manage_inactivity();
-        lcd_update(0);
-      }
       break;
 
 
@@ -5285,9 +5280,7 @@ void process_commands()
             codenum += _millis();  // keep track of when we started waiting
             KEEPALIVE_STATE(PAUSED_FOR_USER);
             while(_millis() < codenum && !lcd_clicked()) {
-                manage_heater();
-                manage_inactivity(true);
-                lcd_update(0);
+                delay_keep_alive(0);
             }
             KEEPALIVE_STATE(IN_HANDLER);
             lcd_ignore_click(false);
@@ -6168,24 +6161,17 @@ Sigma_Exit:
 		{
           setTargetBed(code_value());
         }
-        codenum = _millis();
-        
+
         cancel_heatup = false;
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
         while ( (!cancel_heatup) && (target_direction ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false))) )
         {
-          if(( _millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
-          {
-			  if (!farm_mode) {
-				  serialecho_temperatures();
-			  }
-				  codenum = _millis();
-			  
+          //Print Temp Reading every 1 second while heating up.
+          if (!farm_mode) {
+            serialecho_temperatures();
           }
-          manage_heater();
-          manage_inactivity();
-          lcd_update(0);
+          delay_keep_alive(1000);
         }
         LCD_MESSAGERPGM(_T(MSG_BED_DONE));
 		heating_status = HeatingStatus::BED_HEATING_COMPLETE;
@@ -7129,9 +7115,7 @@ Sigma_Exit:
             }
 
             while(digitalRead(pin_number) != target){
-              manage_heater();
-              manage_inactivity();
-              lcd_update(0);
+              delay_keep_alive(0);
             }
           }
         }
@@ -7772,7 +7756,6 @@ Sigma_Exit:
 		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
 		SERIAL_PROTOCOLLN(set_target_pinda);
 
-		codenum = _millis();
 		cancel_heatup = false;
 
 		bool is_pinda_cooling = false;
@@ -7781,17 +7764,12 @@ Sigma_Exit:
 		}
 
 		while ( ((!is_pinda_cooling) && (!cancel_heatup) && (current_temperature_pinda < set_target_pinda)) || (is_pinda_cooling && (current_temperature_pinda > set_target_pinda)) ) {
-			if ((_millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
-			{
-				SERIAL_PROTOCOLPGM("P:");
-				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
-				SERIAL_PROTOCOL('/');
-				SERIAL_PROTOCOLLN(set_target_pinda);
-				codenum = _millis();
-			}
-			manage_heater();
-			manage_inactivity();
-			lcd_update(0);
+			//Print Temp Reading every 1 second while waiting.
+			SERIAL_PROTOCOLPGM("P:");
+			SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
+			SERIAL_PROTOCOL('/');
+			SERIAL_PROTOCOLLN(set_target_pinda);
+			delay_keep_alive(1000);
 		}
 		LCD_MESSAGERPGM(MSG_OK);
 
@@ -9686,13 +9664,12 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 #else
 	while (target_direction ? (isHeatingHotend(tmp_extruder)) : (isCoolingHotend(tmp_extruder) && (CooldownNoWait == false))) {
 #endif //TEMP_RESIDENCY_TIME
-		if ((_millis() - codenum) > 1000UL)
-		{ //Print Temp Reading and remaining time every 1 second while heating up/cooling down
-			if (!farm_mode) {
-				SERIAL_PROTOCOLPGM("T:");
-				SERIAL_PROTOCOL_F(degHotend(extruder), 1);
-				SERIAL_PROTOCOLPGM(" E:");
-				SERIAL_PROTOCOL((int)extruder);
+		//Print Temp Reading and remaining time every 1 second while heating up/cooling down
+		if (!farm_mode) {
+			SERIAL_PROTOCOLPGM("T:");
+			SERIAL_PROTOCOL_F(degHotend(extruder), 1);
+			SERIAL_PROTOCOLPGM(" E:");
+			SERIAL_PROTOCOL((int)extruder);
 
 #ifdef TEMP_RESIDENCY_TIME
 				SERIAL_PROTOCOLPGM(" W:");
@@ -9705,24 +9682,20 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 				{
 					SERIAL_PROTOCOLLN('?');
 				}
-			}
 #else
 				SERIAL_PROTOCOLLN();
 #endif
-				codenum = _millis();
 		}
-			manage_heater();
-			manage_inactivity(true); //do not disable steppers
-			lcd_update(0);
+		delay_keep_alive(1000);
 #ifdef TEMP_RESIDENCY_TIME
-			/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
-			or when current temp falls outside the hysteresis after target temp was reached */
-			if ((residencyStart == -1 && target_direction && (degHotend(extruder) >= (degTargetHotend(extruder) - TEMP_WINDOW))) ||
-				(residencyStart == -1 && !target_direction && (degHotend(extruder) <= (degTargetHotend(extruder) + TEMP_WINDOW))) ||
-				(residencyStart > -1 && fabs(degHotend(extruder) - degTargetHotend(extruder)) > TEMP_HYSTERESIS))
-			{
-				residencyStart = _millis();
-			}
+		/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
+		or when current temp falls outside the hysteresis after target temp was reached */
+		if ((residencyStart == -1 && target_direction && (degHotend(extruder) >= (degTargetHotend(extruder) - TEMP_WINDOW))) ||
+			(residencyStart == -1 && !target_direction && (degHotend(extruder) <= (degTargetHotend(extruder) + TEMP_WINDOW))) ||
+			(residencyStart > -1 && fabs(degHotend(extruder) - degTargetHotend(extruder)) > TEMP_HYSTERESIS))
+		{
+			residencyStart = _millis();
+		}
 #endif //TEMP_RESIDENCY_TIME
 	}
 }
@@ -11425,9 +11398,7 @@ void marlin_wait_for_click()
     lcd_consume_click();
     while(!lcd_clicked())
     {
-        manage_heater();
-        manage_inactivity(true);
-        lcd_update(0);
+        delay_keep_alive(0);
     }
     KEEPALIVE_STATE(busy_state_backup);
 }
