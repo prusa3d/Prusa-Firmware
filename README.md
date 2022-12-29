@@ -76,8 +76,9 @@ When building the following targets are available:
 
 - `ninja ALL_MULTILANG`: build all multi-language targets (default)
 - `ninja ALL_ENGLISH`: build all single-language targets
-- `ninja VARIANT_EN-only`: build the single-language version of `VARIANT`
-- `ninja VARIANT_Multilang`: build the multi-language version of `VARIANT`
+- `ninja ALL_FIRMWARE`: build all single and multi-language targets
+- `ninja VARIANT_ENGLISH`: build the single-language version of `VARIANT`
+- `ninja VARIANT_MULTILANG`: build the multi-language version of `VARIANT`
 - `ninja check_lang`: build and check all language translations
 - `ninja check_lang_ISO`: build and check all variants with language `ISO`
 - `ninja check_lang_VARIANT`: build and check all languages for `VARIANT`
@@ -146,7 +147,7 @@ After updating the kit, you may need to reload VScode.
 
 #### Building
 
-To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S-EINSy10a_EN-only`)and select the small icon which shows "Build" when hovered over.
+To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S-EINSy10a_ENGLISH`)and select the small icon which shows "Build" when hovered over.
 
 The built .hex file can then be found in folder `Prusa-Firmware/build`
 
