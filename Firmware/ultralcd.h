@@ -69,7 +69,12 @@ void lcd_crash_detect_enable();
 void lcd_crash_detect_disable();
 #endif
 
-extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
+enum LCDButtonChoice : int_fast8_t {
+    LCD_LEFT_BUTTON_CHOICE = 1,
+    LCD_MIDDLE_BUTTON_CHOICE = 0,
+    LCD_BUTTON_TIMEOUT      = -1,
+};
+
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
 
 extern void lcd_return_to_status();
