@@ -5085,7 +5085,7 @@ static void mmu_eject_filament(uint8_t filament) {
 }
 
 static void mmu_fil_eject_menu() {
-    if (bFilamentAction) {
+    if (bFilamentAction || (!MMU2::mmu2.FindaDetectsFilament())) {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
@@ -5103,7 +5103,7 @@ static inline void mmu_cut_filament_wrapper(uint8_t index){
 }
 
 static void mmu_cut_filament_menu() {
-    if (bFilamentAction) {
+    if (bFilamentAction || (!MMU2::mmu2.FindaDetectsFilament())) {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
