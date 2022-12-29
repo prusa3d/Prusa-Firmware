@@ -181,19 +181,19 @@ inline int8_t is_provided_version_newer(const char *version_string)
     return 0;
 }
 
-bool eeprom_fw_version_older_than(const uint16_t (&ver_req)[4])
+bool eeprom_fw_version_older_than_p(const uint16_t (&ver_req)[4])
 {
     uint16_t ver_eeprom[4];
-
     ver_eeprom[0] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR);
     ver_eeprom[1] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR);
     ver_eeprom[2] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION);
     ver_eeprom[3] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR);
 
     for (uint8_t i = 0; i < 4; ++i) {
-        if (ver_req[i] > ver_eeprom[i])
+        uint16_t v = pgm_read_word(&ver_req[i]);
+        if (v > ver_eeprom[i])
             return true;
-        else if (ver_req[i] < ver_eeprom[i])
+        else if (v < ver_eeprom[i])
             break;
     }
 
