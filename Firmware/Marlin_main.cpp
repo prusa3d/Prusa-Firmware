@@ -1540,7 +1540,7 @@ void setup()
 	  Config_StoreSettings();
   }
 
-  // handle calibration status upgrade
+  // handle FW and calibration status upgrade
   bool run_wizard = false;
   if (calibration_status_get(CALIBRATION_STATUS_UNKNOWN)) {
       CalibrationStatus calibration_status = 0;
@@ -1557,6 +1557,7 @@ void setup()
       }
       eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2, calibration_status);
   }
+  update_current_firmware_version_to_eeprom();
 
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
       // first time run of wizard or service prep
@@ -1590,9 +1591,6 @@ void setup()
   lcd_update_enable(true);
   lcd_clear();
   lcd_update(2);
-  // Store the currently running firmware into an eeprom,
-  // so the next time the firmware gets updated, it will know from which version it has been updated.
-  update_current_firmware_version_to_eeprom();
 
 #ifdef TMC2130
   	tmc2130_home_origin[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_X_ORIGIN);
