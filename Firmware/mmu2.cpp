@@ -444,15 +444,20 @@ bool MMU2::cut_filament(uint8_t slot){
     if( ! WaitForMMUReady())
         return false;
 
-    ReportingRAII rep(CommandInProgress::CutFilament);
+    if( FindaDetectsFilament() ){
+        unload();
+    }
 
+    ReportingRAII rep(CommandInProgress::CutFilament);
     for(;;){
         logic.CutFilament(slot);
         if( manage_response(false, true) )
             break;
         IncrementMMUFails();
     }
-
+    extruder = MMU2_NO_TOOL;
+    tool_change_extruder = MMU2_NO_TOOL;
+    Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
     return true;
 }
 
@@ -536,44 +541,21 @@ bool MMU2::eject_filament(uint8_t slot, bool recover) {
     if( ! WaitForMMUReady())
         return false;
 
+    if( FindaDetectsFilament() ){
+        unload();
+    }
+
     ReportingRAII rep(CommandInProgress::EjectFilament);
-    current_position[E_AXIS] -= MMU2_FILAMENTCHANGE_EJECT_FEED;
-    plan_buffer_line_curposXYZE(2500.F / 60.F);
-    st_synchronize();
-    logic.EjectFilament(slot);
-    if( ! manage_response(false, false) ){
-        // @@TODO failed to perform the command - retry
-        ;
+    for(;;) {
+        logic.EjectFilament(slot);
+        if( manage_response(false, true) )
+            break;
+        IncrementMMUFails();
     }
-
-    if (recover) {
-        //        LCD_MESSAGEPGM(MSG_MMU2_EJECT_RECOVER);
-        Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
-//@@TODO        wait_for_user = true;
-        
-        //#if ENABLED(HOST_PROMPT_SUPPORT)
-        //        host_prompt_do(PROMPT_USER_CONTINUE, PSTR("MMU2 Eject Recover"), PSTR("Continue"));
-        //#endif
-        //#if ENABLED(EXTENSIBLE_UI)
-        //        ExtUI::onUserConfirmRequired_P(PSTR("MMU2 Eject Recover"));
-        //#endif
-        
-//@@TODO        while (wait_for_user) idle(true);
-        
-        Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
-        // logic.Command(); //@@TODO command(MMU_CMD_R0);
-        if( ! manage_response(false, false) ){
-            // @@TODO failed to perform the command - retry
-            ;
-        }
-    }
-
-    // no active tool
     extruder = MMU2_NO_TOOL;
     tool_change_extruder = MMU2_NO_TOOL;
     Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
 //    disable_E0();
-
     return true;
 }
 
