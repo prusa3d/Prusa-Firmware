@@ -6827,6 +6827,10 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 	target_temperature[0] = (_isbed) ? 0 : 200;
 	target_temperature_bed = (_isbed) ? 100 : 0;
+#ifdef TEMP_MODEL
+	bool tm_was_enabled = temp_model_enabled();
+	temp_model_set_enabled(false);
+#endif //TEMP_MODEL
 	manage_heater();
 	manage_inactivity(true);
 
@@ -6863,26 +6867,21 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	*/
 
     bool _stepresult = false;
-    if (Stopped)
+    if (Stopped || _opposite_result < ((_isbed) ? 30 : 9))
     {
-        // thermal error occurred while heating the nozzle
-        lcd_selftest_error(TestError::Heater, "", "");
+        if (!Stopped && _checked_result >= ((_isbed) ? 9 : 30))
+            _stepresult = true;
+        else
+            lcd_selftest_error(TestError::Heater, "", "");
     }
     else
     {
-        if (_opposite_result < ((_isbed) ? 30 : 9))
-        {
-            if (_checked_result >= ((_isbed) ? 9 : 30))
-                _stepresult = true;
-            else
-                lcd_selftest_error(TestError::Heater, "", "");
-        }
-        else
-        {
-            lcd_selftest_error(TestError::Bed, "", "");
-        }
+        lcd_selftest_error(TestError::Bed, "", "");
     }
 
+#ifdef TEMP_MODEL
+	temp_model_set_enabled(tm_was_enabled);
+#endif //TEMP_MODEL
 	manage_heater();
 	manage_inactivity(true);
 	return _stepresult;
