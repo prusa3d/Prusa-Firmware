@@ -325,7 +325,7 @@ function(fw_add_variant variant_name)
   string(REPLACE "-E3Dv6full" "" variant_name "${variant_name}")
 
   # Single-language build
-  set(FW_EN "${variant_name}_EN-only")
+  set(FW_EN "${variant_name}_ENGLISH")
   set(FW_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_EN}.hex)
 
   add_base_binary(${FW_EN})
@@ -341,8 +341,8 @@ function(fw_add_variant variant_name)
   add_dependencies(ALL_ENGLISH ${FW_EN})
 
   # Multi-language build/s
-  set(FW_LANG_BASE "${variant_name}_Multilang_base")
-  set(FW_LANG_PATCH "${variant_name}_Multilang_patch")
+  set(FW_LANG_BASE "${variant_name}_lang_base")
+  set(FW_LANG_PATCH "${variant_name}_lang_patch")
   add_base_binary(${FW_LANG_BASE})
   target_compile_definitions(${FW_LANG_BASE} PUBLIC LANG_MODE=1 FW_VARIANT="${variant_header}")
 
@@ -399,7 +399,7 @@ function(fw_add_variant variant_name)
   string(FIND ${variant_name} "MK3" HAS_XFLASH)
   if(${HAS_XFLASH} GREATER_EQUAL 0)
     # X-Flash based build (catalogs appended to patched binary)
-    set(FW_LANG_FINAL "${variant_name}_Multilang")
+    set(FW_LANG_FINAL "${variant_name}_MULTILANG")
     set(LANG_HEX ${CMAKE_BINARY_DIR}/${FN_PREFIX}-${FW_LANG_FINAL}.hex)
     set(LANG_CATBIN ${LANG_TMP_DIR}/${variant_name}_cat.bin)
     set(LANG_CATHEX ${LANG_TMP_DIR}/${variant_name}_cat.hex)
