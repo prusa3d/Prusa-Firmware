@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 
+extern const uint16_t FW_VERSION_NR[4];
 extern const char* FW_VERSION_STR_P();
 
 // Definition of a firmware flavor numerical values.

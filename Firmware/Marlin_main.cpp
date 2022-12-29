@@ -1553,10 +1553,15 @@ void setup()
               // printer upgraded from FW<3.2.0.4 and requires re-running selftest
               lcd_show_fullscreen_message_and_wait_P(_i("Selftest will be run to calibrate accurate sensorless rehoming."));////MSG_FORCE_SELFTEST c=20 r=8
               calibration_status &= ~CALIBRATION_STATUS_SELFTEST;
-              run_wizard = true;
           }
       }
       eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_V2, calibration_status);
+  }
+  if (eeprom_fw_version_older_than_p(FW_VERSION_NR)) {
+      if (!calibration_status_get(CALIBRATION_WIZARD_STEPS)) {
+          // we just did a FW upgrade and some (new) wizard step is missing: resume the wizard
+          run_wizard = true;
+      }
   }
   update_current_firmware_version_to_eeprom();
 
