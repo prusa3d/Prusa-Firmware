@@ -3827,6 +3827,7 @@ void lcd_wizard() {
 		result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Running Wizard will delete current calibration results and start from the beginning. Continue?"), false);////MSG_WIZARD_RERUN c=20 r=7
 	}
 	if (result) {
+		calibration_status_clear(CALIBRATION_WIZARD_STEPS);
 		lcd_wizard(WizState::Run);
 	} else {
 		lcd_return_to_status();
@@ -3984,7 +3985,6 @@ void lcd_wizard(WizState state)
 				if (wizard_event == LCD_LEFT_BUTTON_CHOICE) {
 					state = S::Restore;
 					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
-					calibration_status_clear(CALIBRATION_WIZARD_STEPS);
 				} else {
 					// user interrupted
 					eeprom_update_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
