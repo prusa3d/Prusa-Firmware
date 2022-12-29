@@ -1529,7 +1529,8 @@ void setup()
           // calibrated printer upgraded from FW<3.12
           calibration_status |= (CALIBRATION_STATUS_SELFTEST | CALIBRATION_STATUS_XYZ | CALIBRATION_STATUS_Z | CALIBRATION_STATUS_LIVE_ADJUST);
 
-          if (eeprom_fw_version_older_than({3, 2, 0, 4})) {
+          static const uint16_t v3_2_0_4[] PROGMEM = {3, 2, 0, 4};
+          if (eeprom_fw_version_older_than_p(v3_2_0_4)) {
               // printer upgraded from FW<3.2.0.4 and requires re-running selftest
               lcd_show_fullscreen_message_and_wait_P(_i("Selftest will be run to calibrate accurate sensorless rehoming."));////MSG_FORCE_SELFTEST c=20 r=8
               calibration_status &= ~CALIBRATION_STATUS_SELFTEST;
