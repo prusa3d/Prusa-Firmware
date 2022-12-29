@@ -440,33 +440,36 @@ bool MMU2::unload() {
     return true;
 }
 
-bool MMU2::cut_filament(uint8_t slot){
-    if( ! WaitForMMUReady())
-        return false;
-
-    if( FindaDetectsFilament() ){
-        unload();
-    }
-
-    ReportingRAII rep(CommandInProgress::CutFilament);
-    for(;;){
-        logic.CutFilament(slot);
-        if( manage_response(false, true) )
-            break;
-        IncrementMMUFails();
-    }
-    extruder = MMU2_NO_TOOL;
-    tool_change_extruder = MMU2_NO_TOOL;
-    Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
-    return true;
-}
-
 void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_update_enable(false);
     lcd_clear();
     lcd_puts_at_P(0, 1, pgmS);
     lcd_print(' ');
     lcd_print(slot + 1);
+}
+
+bool MMU2::cut_filament(uint8_t slot){
+    if( ! WaitForMMUReady())
+        return false;
+
+    FullScreenMsg(_T(MSG_CUT_FILAMENT), slot);
+    {
+        if( FindaDetectsFilament() ){
+            unload();
+        }
+
+        ReportingRAII rep(CommandInProgress::CutFilament);
+        for(;;){
+            logic.CutFilament(slot);
+            if( manage_response(false, true) )
+                break;
+            IncrementMMUFails();
+        }
+    }
+    extruder = MMU2_NO_TOOL;
+    tool_change_extruder = MMU2_NO_TOOL;
+    Sound_MakeSound(e_SOUND_TYPE_StandardConfirm);
+    return true;
 }
 
 bool MMU2::loading_test(uint8_t slot){
@@ -541,16 +544,19 @@ bool MMU2::eject_filament(uint8_t slot, bool recover) {
     if( ! WaitForMMUReady())
         return false;
 
-    if( FindaDetectsFilament() ){
-        unload();
-    }
+    FullScreenMsg(_T(MSG_EJECT_FILAMENT), slot);
+    {
+        if( FindaDetectsFilament() ){
+            unload();
+        }
 
-    ReportingRAII rep(CommandInProgress::EjectFilament);
-    for(;;) {
-        logic.EjectFilament(slot);
-        if( manage_response(false, true) )
-            break;
-        IncrementMMUFails();
+        ReportingRAII rep(CommandInProgress::EjectFilament);
+        for(;;) {
+            logic.EjectFilament(slot);
+            if( manage_response(false, true) )
+                break;
+            IncrementMMUFails();
+        }
     }
     extruder = MMU2_NO_TOOL;
     tool_change_extruder = MMU2_NO_TOOL;
