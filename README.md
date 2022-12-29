@@ -147,7 +147,7 @@ After updating the kit, you may need to reload VScode.
 
 #### Building
 
-To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S-EINSy10a_ENGLISH`)and select the small icon which shows "Build" when hovered over.
+To start building a firmware, click the CMake Tools plugin icon on the far left side. You will get a very large list of targets to build. Find the firmware you'd like to build (like `MK3S-EINSy10a_ENGLISH`) and select the small icon which shows "Build" when hovered over.
 
 The built .hex file can then be found in folder `Prusa-Firmware/build`
 
@@ -187,10 +187,10 @@ Run "Arduino IDE", then
 
 - Open the file `Firmware/Firmware.ino`
 - Select the target board with Tools -> Board -> "PrusaResearch Einsy RAMBo"
-- Open `Firmware/config.h` and change LANG_MODE to 0.
+- Open `Firmware/config.h` and change `LANG_MODE` to 0.
 
 
 ### Compilation and upload
 
-- Run the compilation Sketch -> Verify/Compile
-- Upload the result code into the connected printer Sketch -> Upload
+- Run the compilation: Sketch -> Verify/Compile
+- Upload the result code into the connected printer: Sketch -> Upload
