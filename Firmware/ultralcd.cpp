@@ -1109,7 +1109,7 @@ static void lcd_menu_fails_stats_mmu()
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_mmu_print);
 	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_mmu_total);
-	MENU_ITEM_SUBMENU_P(_N("Toolchange count"), lcd_menu_toolchange_stats_mmu_total);
+	MENU_ITEM_SUBMENU_P(_i("Toolchange count"), lcd_menu_toolchange_stats_mmu_total);
 	MENU_END();
 }
 
