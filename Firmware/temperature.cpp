@@ -2372,20 +2372,20 @@ void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, fl
 }
 
 // clear error flags and mark as uninitialized
-void reinitialize()
+static void reinitialize()
 {
     data.flags = 1; // shorcut to reset all error flags
     warning_state.assert = false; // explicitly clear assertions
 }
 
 // verify calibration status and trigger a model reset if valid
-void setup()
+static void setup()
 {
     if(!calibrated()) enabled = false;
     reinitialize();
 }
 
-bool calibrated()
+static bool calibrated()
 {
     if(!(data.P >= 0)) return false;
     if(!(data.C >= 0)) return false;
@@ -2399,7 +2399,7 @@ bool calibrated()
     return true;
 }
 
-void check()
+static void check()
 {
     if(!enabled) return;
 
@@ -2428,7 +2428,7 @@ void check()
     }
 }
 
-void handle_warning()
+static void handle_warning()
 {
     // update values
     float warn = data.warn;
@@ -2461,7 +2461,7 @@ void handle_warning()
 }
 
 #ifdef TEMP_MODEL_DEBUG
-void log_usr()
+static void log_usr()
 {
     if(!log_buf.enabled) return;
 
@@ -2491,7 +2491,7 @@ void log_usr()
         (int)cur_pwm, (unsigned long)cur_temp_b, (unsigned long)cur_amb_b);
 }
 
-void log_isr()
+static void log_isr()
 {
     if(!log_buf.enabled) return;
 
