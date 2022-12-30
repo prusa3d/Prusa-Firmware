@@ -2479,7 +2479,7 @@ void gcode_M105(uint8_t extruder)
 
     SERIAL_PROTOCOLPGM(" @:");
 #ifdef EXTRUDER_WATTS
-    SERIAL_PROTOCOL((EXTRUDER_WATTS * getHeaterPower(tmp_extruder))/127);
+    SERIAL_PROTOCOL((EXTRUDER_WATTS * getHeaterPower(extruder))/127);
     SERIAL_PROTOCOLPGM("W");
 #else
     SERIAL_PROTOCOL(getHeaterPower(extruder));
