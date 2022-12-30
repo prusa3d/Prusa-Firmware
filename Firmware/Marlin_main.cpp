@@ -7366,8 +7366,7 @@ Sigma_Exit:
       break;
     #endif // NUM_SERVOS > 0
 
-    #if (LARGE_FLASH == true && ( BEEPER > 0 || defined(ULTRALCD) || defined(LCD_USE_I2C_BUZZER)))
-    
+    #if (LARGE_FLASH == true && BEEPER > 0 )
     /*!
 	### M300 - Play tone <a href="https://reprap.org/wiki/G-code#M300:_Play_beep_sound">M300: Play beep sound</a>
 	In Prusa Firmware the defaults are `100Hz` and `1000ms`, so that `M300` without parameters will beep for a second.
@@ -7381,12 +7380,19 @@ Sigma_Exit:
     */
     case 300: // M300
     {
-      uint16_t beepS = code_seen('S') ? code_value() : 0;
       uint16_t beepP = code_seen('P') ? code_value() : 1000;
-      #if BEEPER > 0
-      if (beepP > 0)
-        Sound_MakeCustom(beepP,beepS,false);
-      #endif
+      uint16_t beepS;
+      if (!code_seen('S'))
+          beepS = 0;
+      else {
+          beepS = code_value();
+          if (!beepS) {
+              // handle S0 as a pause
+              _delay(beepP);
+              break;
+          }
+      }
+      Sound_MakeCustom(beepP, beepS, false);
     }
     break;
     #endif // M300
