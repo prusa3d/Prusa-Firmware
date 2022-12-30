@@ -9792,7 +9792,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 	while ((!cancel_heatup) && ((residencyStart == -1) ||
 		(residencyStart >= 0 && (((unsigned int)(_millis() - residencyStart)) < (TEMP_RESIDENCY_TIME * 1000UL))))) {
 #else
-	while (target_direction ? (isHeatingHotend(tmp_extruder)) : (isCoolingHotend(tmp_extruder) && (CooldownNoWait == false))) {
+	while (target_direction ? isHeatingHotend(active_extruder) : isCoolingHotend(active_extruder)) {
 #endif //TEMP_RESIDENCY_TIME
 		if ((_millis() - codenum) > 1000UL)
 		{ //Print Temp Reading and remaining time every 1 second while heating up/cooling down
@@ -9813,12 +9813,11 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 				{
 					SERIAL_PROTOCOLLN('?');
 				}
-			}
 #else
 				SERIAL_PROTOCOLLN();
 #endif
 				codenum = _millis();
-		}
+			}
 			manage_heater();
 			manage_inactivity(true); //do not disable steppers
 			lcd_update(0);
@@ -9832,6 +9831,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 				residencyStart = _millis();
 			}
 #endif //TEMP_RESIDENCY_TIME
+		}
 	}
 }
 
