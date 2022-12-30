@@ -216,16 +216,6 @@ float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
 float max_pos[3] = { X_MAX_POS, Y_MAX_POS, Z_MAX_POS };
 bool axis_known_position[3] = {false, false, false};
 
-// Extruder offset
-#if EXTRUDERS > 1
-  #define NUM_EXTRUDER_OFFSETS 2 // only in XY plane
-float extruder_offset[NUM_EXTRUDER_OFFSETS][EXTRUDERS] = {
-#if defined(EXTRUDER_OFFSET_X) && defined(EXTRUDER_OFFSET_Y)
-  EXTRUDER_OFFSET_X, EXTRUDER_OFFSET_Y
-#endif
-};
-#endif
-
 int fanSpeed=0;
 uint8_t newFanSpeed = 0;
 
@@ -3985,7 +3975,6 @@ extern uint8_t st_backlash_y;
 //!@n M208 - set recover=unretract length S[positive mm surplus to the M207 S*] F[feedrate mm/sec]
 //!@n M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.
 //!@n M214 - Set Arc Parameters (Use M500 to store in eeprom) P<MM_PER_ARC_SEGMENT> S<MIN_MM_PER_ARC_SEGMENT> R<MIN_ARC_SEGMENTS> F<ARC_SEGMENTS_PER_SEC>
-//!@n M218 - set hotend offset (in mm): T<extruder_number> X<offset_on_X> Y<offset_on_Y>
 //!@n M220 S<factor in percent>- set speed factor override percentage
 //!@n M221 S<factor in percent>- set extrude factor override percentage
 //!@n M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
@@ -7065,45 +7054,6 @@ Sigma_Exit:
         cs.min_arc_segments = r;
         cs.arc_segments_per_sec = f;
     }break;
-    #if EXTRUDERS > 1
-
-    /*!
-	### M218 - Set hotend offset <a href="https://reprap.org/wiki/G-code#M218:_Set_Hotend_Offset">M218: Set Hotend Offset</a>
-	In Prusa Firmware this G-code is only active if `EXTRUDERS` is higher then 1 in the source code. On Original i3 Prusa MK2/s MK2.5/s MK3/s it is not active.
-    #### Usage
-    
-        M218 [ X | Y ]
-        
-    #### Parameters
-    - `X` - X offset
-    - `Y` - Y offset
-    */
-    case 218: // M218 - set hotend offset (in mm), T<extruder_number> X<offset_on_X> Y<offset_on_Y>
-    {
-      uint8_t extruder;
-      if(setTargetedHotend(218, extruder)){
-        break;
-      }
-      if(code_seen('X'))
-      {
-        extruder_offset[X_AXIS][extruder] = code_value();
-      }
-      if(code_seen('Y'))
-      {
-        extruder_offset[Y_AXIS][extruder] = code_value();
-      }
-      SERIAL_ECHO_START;
-      SERIAL_ECHORPGM(MSG_HOTEND_OFFSET);
-      for(extruder = 0; extruder < EXTRUDERS; extruder++)
-      {
-         SERIAL_ECHO(" ");
-         SERIAL_ECHO(extruder_offset[X_AXIS][extruder]);
-         SERIAL_ECHO(",");
-         SERIAL_ECHO(extruder_offset[Y_AXIS][extruder]);
-      }
-      SERIAL_ECHOLN("");
-    }break;
-    #endif
 
     /*!
 	### M220 Set feedrate percentage <a href="https://reprap.org/wiki/G-code#M220:_Set_speed_factor_override_percentage">M220: Set speed factor override percentage</a>
