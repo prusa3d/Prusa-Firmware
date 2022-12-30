@@ -68,6 +68,7 @@ int8_t FSensorStateMenu = 1;
 
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
+static bool extraPurgeNeeded = false; ///< lcd_commands - detect if extra purge after MMU-toolchange is necessary or not
 
 CustomMsg custom_message_type = CustomMsg::Status;
 uint8_t custom_message_state = 0;
@@ -874,14 +875,14 @@ void lcd_commands()
                 lcd_commands_step = 10;
                 break;
             case 10:
-                lay1cal_load_filament(cmd1, lay1cal_filament);
+                extraPurgeNeeded = lay1cal_load_filament(cmd1, lay1cal_filament);
                 lcd_commands_step = 9;
                 break;
             case 9:
                 lcd_clear();
                 menu_depth = 0;
                 menu_submenu(lcd_babystep_z);
-                lay1cal_intro_line();
+                lay1cal_intro_line(extraPurgeNeeded);
                 lcd_commands_step = 8;
                 break;
             case 8:

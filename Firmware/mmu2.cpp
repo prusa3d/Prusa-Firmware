@@ -7,6 +7,7 @@
 #include "mmu2_progress_converter.h"
 #include "mmu2_reporting.h"
 
+#include "cardreader.h" // for IS_SD_PRINTING
 #include "Marlin.h"
 #include "language.h"
 #include "messages.h"
@@ -334,7 +335,10 @@ bool MMU2::tool_change(uint8_t slot) {
         return false;
 
     if (slot != extruder) {
-        if (FindaDetectsFilament()) {
+        if (/*FindaDetectsFilament()*/
+            /*!IS_SD_PRINTING && !usb_timer.running()*/
+            ! printer_active()
+            ) {
             // If Tcodes are used manually through the serial
             // we need to unload manually as well -- but only if FINDA detects filament
             unload();
@@ -385,7 +389,7 @@ void MMU2::get_statistics() {
     logic.Statistics();
 }
 
-uint8_t MMU2::get_current_tool() const {
+uint8_t __attribute__((noinline)) MMU2::get_current_tool() const {
     return extruder == MMU2_NO_TOOL ? (uint8_t)FILAMENT_UNKNOWN : extruder;
 }
 

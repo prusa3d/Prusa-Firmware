@@ -32,21 +32,39 @@ void lay1cal_wait_preheat()
 //! @brief Load filament
 //! @param cmd_buffer character buffer needed to format gcodes
 //! @param filament filament to use (applies for MMU only)
-void lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
+//! @returns true if extra purge distance is needed in case of MMU prints (after a toolchange), otherwise false
+bool lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
 {
     if (MMU2::mmu2.Enabled())
     {
         enquecommand_P(PSTR("M83"));
         enquecommand_P(PSTR("G1 Y-3.0 F1000.0"));
         enquecommand_P(PSTR("G1 Z0.4 F1000.0"));
-        sprintf_P(cmd_buffer, PSTR("T%d"), filament);
-        enquecommand(cmd_buffer);
-    }
 
+        uint8_t currentTool = MMU2::mmu2.get_current_tool();
+        if(currentTool == filament ){
+            // already have the correct tool loaded - do nothing
+            return false;
+        } else if( currentTool != (uint8_t)MMU2::FILAMENT_UNKNOWN){
+            // some other slot is loaded, perform an unload first
+            enquecommand_P(PSTR("M702"));
+        }
+        // perform a toolchange
+        // sprintf_P(cmd_buffer, PSTR("T%d"), filament);
+        // rewriting the trivial T<filament> g-code command saves 30B:
+        cmd_buffer[0] = 'T';
+        cmd_buffer[1] = filament + '0';
+        cmd_buffer[2] = 0;
+
+        enquecommand(cmd_buffer);
+        return true;
+    }
+    return false;
 }
 
 //! @brief Print intro line
-void lay1cal_intro_line()
+//! @param extraPurgeNeeded false if the first MMU-related "G1 E29" have to be skipped because the nozzle is already full of filament
+void lay1cal_intro_line(bool extraPurgeNeeded)
 {
     static const char cmd_intro_mmu_3[] PROGMEM = "G1 X55.0 E29.0 F1073.0";
     static const char cmd_intro_mmu_4[] PROGMEM = "G1 X5.0 E29.0 F1800.0";
@@ -61,8 +79,10 @@ void lay1cal_intro_line()
 
     static const char * const intro_mmu_cmd[] PROGMEM =
     {
+        // first 2 items are only relevant if filament was not loaded - i.e. extraPurgeNeeded == true
         cmd_intro_mmu_3,
         cmd_intro_mmu_4,
+
         cmd_intro_mmu_5,
         cmd_intro_mmu_6,
         cmd_intro_mmu_7,
@@ -75,7 +95,7 @@ void lay1cal_intro_line()
 
     if (MMU2::mmu2.Enabled())
     {
-        for (uint8_t i = 0; i < (sizeof(intro_mmu_cmd)/sizeof(intro_mmu_cmd[0])); ++i)
+        for (uint8_t i = (extraPurgeNeeded ? 0 : 2); i < (sizeof(intro_mmu_cmd)/sizeof(intro_mmu_cmd[0])); ++i)
         {
             enquecommand_P(static_cast<char*>(pgm_read_ptr(&intro_mmu_cmd[i])));
         }
