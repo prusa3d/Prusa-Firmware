@@ -2371,11 +2371,18 @@ void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, fl
     flag_bits.warning = (fabsf(dT_err_f) > warn_s);
 }
 
+// clear error flags and mark as uninitialized
+void reinitialize()
+{
+    data.flags = 1; // shorcut to reset all error flags
+    warning_state.assert = false; // explicitly clear assertions
+}
+
 // verify calibration status and trigger a model reset if valid
 void setup()
 {
     if(!calibrated()) enabled = false;
-    data.flag_bits.uninitialized = true;
+    reinitialize();
 }
 
 bool calibrated()
@@ -2506,7 +2513,7 @@ static void temp_model_reset_enabled(bool enabled)
 {
     TempMgrGuard temp_mgr_guard;
     temp_model::enabled = enabled;
-    temp_model::data.flag_bits.uninitialized = true;
+    temp_model::reinitialize();
 }
 
 bool temp_model_enabled()
@@ -2586,7 +2593,7 @@ void temp_model_reset_settings()
     temp_model::data.err = TEMP_MODEL_E;
     temp_model::warn_beep = true;
     temp_model::enabled = true;
-    temp_model::data.flag_bits.uninitialized = true;
+    temp_model::reinitialize();
 }
 
 void temp_model_load_settings()
