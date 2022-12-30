@@ -3091,7 +3091,7 @@ static void gcode_G80()
     }
 #endif // SUPPORT_VERBOSITY
     const constexpr uint8_t sides = 4;
-    long correction[sides] = {0};
+    int8_t correction[sides] = {0};
     for (uint8_t i = 0; i < sides; ++i) {
         static const char codes[sides] PROGMEM = { 'L', 'R', 'F', 'B' };
         static uint8_t *const eep_addresses[sides] PROGMEM = {
@@ -3101,19 +3101,22 @@ static void gcode_G80()
           (uint8_t*)EEPROM_BED_CORRECTION_REAR,
         };
         if (code_seen(pgm_read_byte(&codes[i])))
-            correction[i] = code_value_long();
-        else if (eeprom_bed_correction_valid)
+        { // Verify value is within allowed range
+            int32_t temp = code_value_long();
+            if (labs(temp) > BED_ADJUSTMENT_UM_MAX) {
+                SERIAL_ERROR_START;
+                SERIAL_ECHOPGM("Excessive bed leveling correction: ");
+                SERIAL_ECHO(temp);
+                SERIAL_ECHOLNPGM(" microns");
+                correction[i] = 0;
+            } else {
+              // Value is valid, save it
+              correction[i] = (int8_t)temp;
+            }
+        } else if (eeprom_bed_correction_valid)
             correction[i] = (int8_t)eeprom_read_byte((uint8_t*)pgm_read_ptr(&eep_addresses[i]));
         if (correction[i] == 0)
             continue;
-
-        if (labs(correction[i]) > BED_ADJUSTMENT_UM_MAX) {
-            SERIAL_ERROR_START;
-            SERIAL_ECHOPGM("Excessive bed leveling correction: ");
-            SERIAL_ECHO(correction[i]);
-            SERIAL_ECHOLNPGM(" microns");
-            correction[i] = 0;
-        }
     }
     for (uint8_t row = 0; row < nMeasPoints; ++row) {
         for (uint8_t col = 0; col < nMeasPoints; ++col) {
