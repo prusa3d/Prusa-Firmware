@@ -143,7 +143,7 @@ void plan_init();
 // millimaters. Feed rate specifies the speed of the motion.
 
 #ifdef ENABLE_AUTO_BED_LEVELING
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const uint8_t &extruder);
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate);
 
 // Get the position applying the bed level matrix if enabled
 vector_3 plan_get_position();
@@ -159,7 +159,7 @@ void plan_buffer_line_destinationXYZE(float feed_rate);
 
 void plan_set_position_curposXYZE();
 
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_start_position = NULL, uint16_t segment_idx = 0);
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const float* gcode_start_position = NULL, uint16_t segment_idx = 0);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
 #endif // ENABLE_AUTO_BED_LEVELING
 

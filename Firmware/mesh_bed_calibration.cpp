@@ -912,13 +912,13 @@ void world2machine_update_current()
 
 static inline void go_xyz(float x, float y, float z, float fr)
 {
-    plan_buffer_line(x, y, z, current_position[E_AXIS], fr, active_extruder);
+    plan_buffer_line(x, y, z, current_position[E_AXIS], fr);
     st_synchronize();
 }
 
 static inline void go_xy(float x, float y, float fr)
 {
-    plan_buffer_line(x, y, current_position[Z_AXIS], current_position[E_AXIS], fr, active_extruder);
+    plan_buffer_line(x, y, current_position[Z_AXIS], current_position[E_AXIS], fr);
     st_synchronize();
 }
 
@@ -3029,7 +3029,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
 // To replace loading of the babystep correction.
 static void shift_z(float delta)
 {
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - delta, current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - delta, current_position[E_AXIS], homing_feedrate[Z_AXIS]/40);
     st_synchronize();
     plan_set_z_position(current_position[Z_AXIS]);
 }

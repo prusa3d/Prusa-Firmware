@@ -1985,7 +1985,7 @@ static void run_z_probe() {
 
     // move down until you find the bed
     float zPosition = -10;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60, active_extruder);
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60);
     st_synchronize();
 
         // we have to let the planner know where we are right now as it is not where we said to go.
@@ -1994,13 +1994,13 @@ static void run_z_probe() {
 
     // move up the retract distance
     zPosition += home_retract_mm(Z_AXIS);
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60, active_extruder);
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60);
     st_synchronize();
 
     // move back down slowly to find bed
     feedrate = homing_feedrate[Z_AXIS]/4;
     zPosition -= home_retract_mm(Z_AXIS) * 2;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60, active_extruder);
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60);
     st_synchronize();
 
     current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
@@ -3625,11 +3625,11 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         }
 
         // Move XY back
-        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED);
         st_synchronize();
 
         // Move Z back
-        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
+        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED);
         st_synchronize();
 
         // Set E position to original
@@ -5689,7 +5689,7 @@ void process_commands()
         world2machine_revert_to_uncorrected();
         // Move the print head close to the bed.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40);
         st_synchronize();
         // Home in the XY plane.
         set_destination_to_current();
@@ -5705,7 +5705,7 @@ void process_commands()
         clean_up_after_endstop_move(l_feedmultiply);
         // Print head up.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40);
         st_synchronize();
         lcd_update_enable(true);
         break;
@@ -5810,8 +5810,7 @@ void process_commands()
         plan_bed_level_matrix.set_to_identity();
 	plan_buffer_line( X_current, Y_current, Z_start_location,
 			ext_position,
-    			homing_feedrate[Z_AXIS]/60,
-			active_extruder);
+    			homing_feedrate[Z_AXIS]/60);
         st_synchronize();
 
 //
@@ -5824,8 +5823,7 @@ void process_commands()
 
 	plan_buffer_line( X_probe_location, Y_probe_location, Z_start_location,
 			ext_position,
-    			homing_feedrate[X_AXIS]/60,
-			active_extruder);
+    			homing_feedrate[X_AXIS]/60);
         st_synchronize();
 
 	current_position[X_AXIS] = X_current = st_get_position_mm(X_AXIS);
@@ -5846,8 +5844,7 @@ void process_commands()
 
 	plan_buffer_line( X_probe_location, Y_probe_location, Z_start_location,
 			ext_position,
-    			homing_feedrate[X_AXIS]/60,
-			active_extruder);
+    			homing_feedrate[X_AXIS]/60);
         st_synchronize();
 	current_position[Z_AXIS] = Z_current = st_get_position_mm(Z_AXIS);
 
@@ -5946,7 +5943,7 @@ void process_commands()
 			SERIAL_PROTOCOLPGM("\n");
 
 		plan_buffer_line( X_probe_location, Y_probe_location, Z_start_location, 
-				  current_position[E_AXIS], homing_feedrate[Z_AXIS]/60, active_extruder);
+				  current_position[E_AXIS], homing_feedrate[Z_AXIS]/60);
         	st_synchronize();
 
 	}
@@ -9223,7 +9220,7 @@ uint16_t restore_interrupted_gcode() {
 }
 
 #ifdef MESH_BED_LEVELING
-void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder, uint16_t start_segment_idx = 0) {
+void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, uint16_t start_segment_idx = 0) {
         float dx = x - current_position[X_AXIS];
         float dy = y - current_position[Y_AXIS];
         uint16_t n_segments = 0;
@@ -9246,13 +9243,13 @@ void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const
                                  current_position[Y_AXIS] + t * dy,
                                  current_position[Z_AXIS] + t * dz,
                                  current_position[E_AXIS] + t * de,
-                                 feed_rate, extruder, current_position, i);
+                                 feed_rate, current_position, i);
                 if (planner_aborted)
                     return;
             }
         }
         // The rest of the path.
-        plan_buffer_line(x, y, z, e, feed_rate, extruder, current_position);
+        plan_buffer_line(x, y, z, e, feed_rate, current_position);
     }
 #endif  // MESH_BED_LEVELING
     
@@ -9267,7 +9264,7 @@ void prepare_move(uint16_t start_segment_idx)
   }
   else {
 #ifdef MESH_BED_LEVELING
-    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder, start_segment_idx);
+    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), start_segment_idx);
 #else
      plan_buffer_line_destinationXYZE(feedrate*feedmultiply*(1./(60.f*100.f)));
 #endif
@@ -9279,7 +9276,7 @@ void prepare_move(uint16_t start_segment_idx)
 void prepare_arc_move(bool isclockwise, uint16_t start_segment_idx) {
     float r = hypot(offset[X_AXIS], offset[Y_AXIS]); // Compute arc radius for mc_arc
     // Trace the arc
-    mc_arc(current_position, destination, offset, feedrate * feedmultiply / 60 / 100.0, r, isclockwise, active_extruder, start_segment_idx);
+    mc_arc(current_position, destination, offset, feedrate * feedmultiply / 60 / 100.0, r, isclockwise, start_segment_idx);
     // As far as the parser is concerned, the position is now == target. In reality the
     // motion control system might still be processing the action and the real tool position
     // in any intermediate location.
@@ -9447,7 +9444,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
      float oldedes=destination[E_AXIS];
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS],
                       destination[E_AXIS]+EXTRUDER_RUNOUT_EXTRUDE*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_unit[E_AXIS],
-                      EXTRUDER_RUNOUT_SPEED/60.*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_unit[E_AXIS], active_extruder);
+                      EXTRUDER_RUNOUT_SPEED/60.*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_unit[E_AXIS]);
      current_position[E_AXIS]=oldepos;
      destination[E_AXIS]=oldedes;
      plan_set_e_position(oldepos);
@@ -10319,7 +10316,7 @@ static void temp_compensation_apply() {
 			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / cs.axis_steps_per_unit[Z_AXIS];
 		}
 		printf_P(_N("\nZ shift applied:%.3f\n"), z_shift_mm);
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40);
 		st_synchronize();
 		plan_set_z_position(current_position[Z_AXIS]);
 	}
@@ -11252,11 +11249,11 @@ void restore_print_from_ram_and_continue(float e_move)
     }
 
 	//first move print head in XY to the saved position:
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13);
 	//then move Z
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13);
 	//and finaly unretract (35mm/s)
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_RFEED);
 	st_synchronize();
 
   #ifdef FANCHECK

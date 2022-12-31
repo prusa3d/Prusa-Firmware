@@ -276,7 +276,6 @@ your extruder heater takes 2 minutes to hit the target on heating.
 #define DISABLE_Y 0
 #define DISABLE_Z 0
 #define DISABLE_E 0// For all extruders
-#define DISABLE_INACTIVE_EXTRUDER 1 //disable only inactive extruders and keep active extruder enabled
 
 
 // ENDSTOP SETTINGS:
