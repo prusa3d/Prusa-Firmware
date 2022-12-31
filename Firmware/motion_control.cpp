@@ -26,7 +26,7 @@
 
 // The arc is approximated by generating a huge number of tiny, linear segments. The length of each 
 // segment is configured in settings.mm_per_arc_segment.  
-void mc_arc(const float* position, float* target, const float* offset, float feed_rate, float radius, bool isclockwise, uint8_t extruder, uint16_t start_segment_idx)
+void mc_arc(const float* position, float* target, const float* offset, float feed_rate, float radius, bool isclockwise, uint16_t start_segment_idx)
 {
     float start_position[4];
     memcpy(start_position, position, sizeof(start_position));
@@ -153,7 +153,7 @@ void mc_arc(const float* position, float* target, const float* offset, float fee
             clamp_to_software_endstops(start_position);
             // Insert the segment into the buffer
             if (i >= start_segment_idx)
-                plan_buffer_line(start_position[X_AXIS], start_position[Y_AXIS], start_position[Z_AXIS], start_position[E_AXIS], feed_rate, extruder, position, i);
+                plan_buffer_line(start_position[X_AXIS], start_position[Y_AXIS], start_position[Z_AXIS], start_position[E_AXIS], feed_rate, position, i);
             // Handle the situation where the planner is aborted hard.
             if (planner_aborted)
                 return;
@@ -162,5 +162,5 @@ void mc_arc(const float* position, float* target, const float* offset, float fee
     // Clamp to the target position.
     clamp_to_software_endstops(target);
     // Ensure last segment arrives at target location.
-    plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], feed_rate, extruder, position, 0);
+    plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], feed_rate, position, 0);
 }
