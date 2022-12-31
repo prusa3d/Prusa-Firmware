@@ -921,12 +921,7 @@ block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-p
   if(block->steps_y.wide != 0) enable_y();
   #endif
   if(block->steps_z.wide != 0) enable_z();
-
-  // Enable extruder
-  if(block->steps_e.wide != 0)
-  {
-    enable_e0();
-  }
+  if(block->steps_e.wide != 0) enable_e0();
 
   if (block->steps_e.wide == 0)
   {
