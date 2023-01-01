@@ -154,26 +154,6 @@ uint8_t menu_item_ret(void)
 	return 1;
 }
 
-/*
-int menu_draw_item_printf_P(char type_char, const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	int ret = 0;
-    lcd_set_cursor(0, menu_row);
-	if (lcd_encoder == menu_item)
-		lcd_print('>');
-	else
-		lcd_print(' ');
-	int cnt = vfprintf_P(lcdout, format, args);
-	for (int i = cnt; i < 18; i++)
-		lcd_print(' ');
-	lcd_print(type_char);
-	va_end(args);
-	return ret;
-}
-*/
-
 static char menu_selection_mark(){
 	return (lcd_encoder == menu_item)?'>':' ';
 }
@@ -181,7 +161,9 @@ static char menu_selection_mark(){
 static void menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
-    lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
+    lcd_putc(menu_selection_mark());
+    lcd_print_pad_P(str, LCD_WIDTH - 2);
+    lcd_putc(type_char);
 }
 
 static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const uint8_t settings)
@@ -197,7 +179,7 @@ static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const u
     sprintf_P(lineStr, PSTR("%c%-18.18S"), (settings & 0x01)?'>':' ', str);
     sprintf_P(lineStr + LCD_WIDTH - ((settings & 0x02)?strlen_P(toggle):strlen(toggle)) - 3, (settings & 0x02)?PSTR("[%S]%c"):PSTR("[%s]%c"), toggle, eol);
     if (!(settings & 0x04)) lcd_set_cursor(0, menu_row);
-    fputs(lineStr, lcdout);
+    lcd_print_pad(lineStr, LCD_WIDTH);
 }
 
 //! @brief Format sheet name
@@ -233,7 +215,9 @@ static void menu_draw_item_select_sheet_E(char type_char, const Sheet &sheet)
     lcd_set_cursor(0, menu_row);
     SheetFormatBuffer buffer;
     menu_format_sheet_select_E(sheet, buffer);
-    lcd_printf_P(PSTR("%c%-18.18s%c"), menu_selection_mark(), buffer.c, type_char);
+    lcd_putc(menu_selection_mark());
+    lcd_print_pad(buffer.c, LCD_WIDTH - 2);
+    lcd_putc(type_char);
 }
 
 
@@ -242,25 +226,19 @@ static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
     lcd_set_cursor(0, menu_row);
     SheetFormatBuffer buffer;
     menu_format_sheet_E(sheet, buffer);
-    lcd_printf_P(PSTR("%c%-18.18s%c"), menu_selection_mark(), buffer.c, type_char);
+    lcd_putc(menu_selection_mark());
+    lcd_print_pad(buffer.c, LCD_WIDTH - 2);
+    lcd_putc(type_char);
 }
 
 static void menu_draw_item_puts_P(char type_char, const char* str, char num)
 {
     lcd_set_cursor(0, menu_row);
-    lcd_printf_P(PSTR("%c%-.16S "), menu_selection_mark(), str);
+    lcd_putc(menu_selection_mark());
+    lcd_print_pad_P(str, LCD_WIDTH - 3);
     lcd_putc(num);
-    lcd_putc_at(19, menu_row, type_char);
+    lcd_putc(type_char);
 }
-
-/*
-int menu_draw_item_puts_P_int16(char type_char, const char* str, int16_t val, )
-{
-    lcd_set_cursor(0, menu_row);
-	int cnt = lcd_printf_P(PSTR("%c%-18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
-	return cnt;
-}
-*/
 
 void menu_item_dummy(void)
 {
@@ -558,7 +536,8 @@ void menu_progressbar_init(uint16_t total, const char* title)
 	progressbar_total = total;
 	
 	lcd_set_cursor(0, 1);
-	lcd_printf_P(PSTR("%-20.20S\n"), title);
+	lcd_print_pad_P(title, LCD_WIDTH);
+	lcd_set_cursor(0, 2);
 }
 
 void menu_progressbar_update(uint16_t newVal)

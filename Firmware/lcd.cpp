@@ -538,6 +538,16 @@ char lcd_print_pad(const char* s, uint8_t len)
     return *s;
 }
 
+char lcd_print_pad_P(const char* s, uint8_t len)
+{
+    while (len && pgm_read_byte(s)) {
+        lcd_write(pgm_read_byte(s++));
+        --len;
+    }
+    lcd_space(len);
+    return *s;
+}
+
 void lcd_print(char c, int base)
 {
 	lcd_print((long) c, base);
