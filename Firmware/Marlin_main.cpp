@@ -9792,7 +9792,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 	while ((!cancel_heatup) && ((residencyStart == -1) ||
 		(residencyStart >= 0 && (((unsigned int)(_millis() - residencyStart)) < (TEMP_RESIDENCY_TIME * 1000UL))))) {
 #else
-	while (target_direction ? isHeatingHotend(active_extruder) : isCoolingHotend(active_extruder)) {
+	while (target_direction ? isHeatingHotend(active_extruder) : (isCoolingHotend(active_extruder) && (CooldownNoWait == false))) {
 #endif //TEMP_RESIDENCY_TIME
 		if ((_millis() - codenum) > 1000UL)
 		{ //Print Temp Reading and remaining time every 1 second while heating up/cooling down
