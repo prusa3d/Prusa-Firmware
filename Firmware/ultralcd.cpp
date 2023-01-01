@@ -731,27 +731,27 @@ void lcd_status_screen()                          // NOT static due to using ins
 {
 	static uint8_t lcd_status_update_delay = 0;
 #ifdef ULTIPANEL_FEEDMULTIPLY
-	// Dead zone at 100% feedrate
-	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
-		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
-	{
-		lcd_encoder = 0;
-		feedmultiply = 100;
-	}
-	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
-	{
-		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
-		lcd_encoder = 0;
-	}
-	else if (feedmultiply != 100)
-	{
-		feedmultiply += int(lcd_encoder);
-		lcd_encoder = 0;
+	// lcd_encoder is incremented in menu_lcd_lcdupdate_func()
+	// For each knob rotation, lcd_encoder increments by 1
+	if (abs(lcd_encoder)) {
+		// Update the feedrate multiplier if:
+		// 1. feedmultiply is not at 100% (it was changed before)
+		// 2. User has rotated the knob outside the 10% deadzone. 
+		//    This requires at least ENCODER_FEEDRATE_DEADZONE knob
+		//    rotation events so the feedrate multiplier is not
+		//    changed accidentally.
+		if (feedmultiply != 100) {
+			feedmultiply += lcd_encoder;
+			lcd_encoder = 0;
+		} else if (lcd_encoder > ENCODER_FEEDRATE_DEADZONE) {
+			// clockwise knob rotation
+			feedmultiply += (lcd_encoder - ENCODER_FEEDRATE_DEADZONE);
+			lcd_encoder = 0;
+		} else if (lcd_encoder < -ENCODER_FEEDRATE_DEADZONE) {
+			// counter-clockwise knob rotation
+			feedmultiply += (lcd_encoder + ENCODER_FEEDRATE_DEADZONE);
+			lcd_encoder = 0;
+		}
 	}
 #endif //ULTIPANEL_FEEDMULTIPLY
 
