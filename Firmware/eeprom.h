@@ -349,6 +349,16 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 00h 0        | ^                     | Do not heat bed on load filament                  | ^            | ^
 | ^           | ^       | ^                                     | 01h 1        | ^                     | Heat bed on load filament                         | ^            | ^
 | 0x0CA6 3238 | uint8   | EEPROM_CALIBRATION_STATUS_V2          | ffh 255      | ffh 255               | Calibration status (>=v3.12)                      | ???          | D3 Ax0ca6 C1
+| ^           | ^       | ^                                     | 00h 0        | ^                     | Unknown                                           | ^            | ^
+| ^           | ^       | ^                                     | 01h 1        | ^                     | Selftest passed                                   | ^            | ^
+| ^           | ^       | ^                                     | 02h 2        | ^                     | XYZ cal passed                                    | ^            | ^
+| ^           | ^       | ^                                     | 04h 4        | ^                     | Z cal passed                                      | ^            | ^
+| ^           | ^       | ^                                     | 08h 8        | ^                     | Temp model cal passed                             | ^            | ^
+| ^           | ^       | ^                                     | 10h 16       | ^                     | Live Adjust set                                   | ^            | ^
+| ^           | ^       | ^                                     | 20h 32       | ^                     | Free bit                                          | ^            | ^
+| ^           | ^       | ^                                     | 40h 64       | ^                     | Free bit                                          | ^            | ^
+| ^           | ^       | ^                                     | 80h 128      | ^                     | Free bit                                          | ^            | ^
+| ^           | ^       | ^                                     | 1fh 31       | ^                     | All Wizard steps passed                           | ^            | ^
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
