@@ -51,7 +51,7 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     //! When an MMU error occurs, the LCD content will look like this:
     //! |01234567890123456789|
     //! |MMU FW update needed|     <- title/header of the error: max 20 characters
-    //! |prusa3d.com/ERR04504|     <- URL 20 characters
+    //! |prusa.io/04504      |     <- URL max 20 characters
     //! |FI:1 FS:1  5>3 t201°|     <- status line, t is thermometer symbol
     //! |>Retry   >Done    >W|     <- buttons
     bool two_choices = false;
@@ -72,7 +72,7 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
     lcd_clear();
 
     // Print title and header
-    lcd_printf_P(PSTR("%.20S\nprusa3d.com/ERR04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
+    lcd_printf_P(PSTR("%.20S\nprusa.io/04%hu"), _T(PrusaErrorTitle(ei)), PrusaErrorCode(ei) );
 
     ReportErrorHookSensorLineRender();
 
