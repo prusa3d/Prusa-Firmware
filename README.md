@@ -27,7 +27,7 @@ The workflow should be pretty straightforward for anyone with development experi
     # configure and build
     mkdir build
     cd build
-    cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE=../cmake/AvrGcc.cmake
+    cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/AvrGcc.cmake
     ninja
 
 
@@ -61,7 +61,7 @@ You can then proceed by creating a build directory, configure for AVR and build:
     # configure
     mkdir build
     cd build
-    cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE=../cmake/AvrGcc.cmake
+    cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/AvrGcc.cmake
 
     # build
     ninja
