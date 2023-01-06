@@ -126,12 +126,12 @@ public:
 
     /// Move MMU's selector aside and push the selected filament forward.
     /// Usable for improving filament's tip or pulling the remaining piece of filament out completely.
-    bool eject_filament(uint8_t slot, bool recover);
+    bool eject_filament(uint8_t slot, bool enableFullScreenMsg = true);
 
     /// Issue a Cut command into the MMU
     /// Requires unloaded filament from the printer (obviously)
     /// @returns false if the operation cannot be performed (Stopped)
-    bool cut_filament(uint8_t slot);
+    bool cut_filament(uint8_t slot, bool enableFullScreenMsg = true);
 
     /// Issue a planned request for statistics data from MMU
     void get_statistics();

@@ -302,7 +302,7 @@ bool MMU2::ToolChangeCommonOnce(uint8_t slot){
         } else { // Prepare a retry attempt
             unload();
             if( retries == 2 && eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) == EEPROM_MMU_CUTTER_ENABLED_enabled){
-                cut_filament(slot); // try cutting filament tip at the last attempt
+                cut_filament(slot, false); // try cutting filament tip at the last attempt
             }
         }
     }
@@ -452,11 +452,13 @@ void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_print(slot + 1);
 }
 
-bool MMU2::cut_filament(uint8_t slot){
+bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /* = true */){
     if( ! WaitForMMUReady())
         return false;
 
-    FullScreenMsg(_T(MSG_CUT_FILAMENT), slot);
+    if( enableFullScreenMsg ){
+        FullScreenMsg(_T(MSG_CUT_FILAMENT), slot);
+    }
     {
         if( FindaDetectsFilament() ){
             unload();
@@ -544,11 +546,13 @@ bool MMU2::load_filament_to_nozzle(uint8_t slot) {
     return true;
 }
 
-bool MMU2::eject_filament(uint8_t slot, bool recover) {
+bool MMU2::eject_filament(uint8_t slot, bool enableFullScreenMsg /* = true */) {
     if( ! WaitForMMUReady())
         return false;
 
-    FullScreenMsg(_T(MSG_EJECT_FILAMENT), slot);
+    if( enableFullScreenMsg ){
+        FullScreenMsg(_T(MSG_EJECT_FILAMENT), slot);
+    }
     {
         if( FindaDetectsFilament() ){
             unload();
