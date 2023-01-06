@@ -300,7 +300,7 @@ bool MMU2::ToolChangeCommonOnce(uint8_t slot){
             return true; // success
         } else { // Prepare a retry attempt
             unload();
-            if( retries == 1 && eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) == EEPROM_MMU_CUTTER_ENABLED_enabled){
+            if( retries == 2 && eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) == EEPROM_MMU_CUTTER_ENABLED_enabled){
                 cut_filament(slot); // try cutting filament tip at the last attempt
             }
         }
@@ -683,6 +683,8 @@ void MMU2::CheckUserInput(){
             // we'll actually wait for it automagically in manage_response and after it finishes correctly,
             // we'll issue another command (like toolchange)
             logic.ClearPrinterError();
+            lastErrorCode = ErrorCode::OK;
+            lastErrorSource = ErrorSourceNone; // this seems to help clearing the error screen
         }
 
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
