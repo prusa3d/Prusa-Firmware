@@ -214,7 +214,6 @@ bool MMU2::WaitForMMUReady(){
 
 bool MMU2::RetryIfPossible(uint16_t ec){
     if( retryAttempts ){
-        SERIAL_ECHOPGM("retryAttempts=");SERIAL_ECHOLN((uint16_t)retryAttempts);
         SetButtonResponse(ButtonOperations::Retry);
         // check, that Retry is actually allowed on that operation
         if( ButtonAvailable(ec) != NoButton ){
@@ -684,17 +683,14 @@ void MMU2::CheckUserInput(){
             // we'll actually wait for it automagically in manage_response and after it finishes correctly,
             // we'll issue another command (like toolchange)
             logic.ClearPrinterError();
-            lastErrorSource = ErrorSourceMMU; // this seems to help clearing the error screen
         }
 
         ResumeHotendTemp(); // Recover the hotend temp before we attempt to do anything else...
 
-        // In case of LOAD_TO_EXTRUDER_FAILED sending a button into the MMU has an interesting side effect
-        // - it triggers the standalone LoadFilament function on the current active slot.
-        // Considering the fact, that we are recovering from a failed load to extruder, this side effect is actually quite beneficial
-        // - it checks if the filament is correctly loaded in the MMU (we assume the user was playing with the filament to recover from the failed load)
-        // Moreover, the "button" makes all the nice things like temp recovery
-        Button(btn);
+        if (mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
+            // Do not send a button to the MMU unless the MMU is in error state
+            Button(btn);
+        }
 
         // A quick hack: for specific error codes move the E-motor every time.
         // Not sure if we can rely on the fsensor.
