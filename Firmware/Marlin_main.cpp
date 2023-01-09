@@ -6206,14 +6206,7 @@ Sigma_Exit:
           if(( _millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
           {
 			  if (!farm_mode) {
-				  float tt = degHotend(active_extruder);
-				  SERIAL_PROTOCOLPGM("T:");
-				  SERIAL_PROTOCOL(tt);
-				  SERIAL_PROTOCOLPGM(" E:");
-				  SERIAL_PROTOCOL((int)active_extruder);
-				  SERIAL_PROTOCOLPGM(" B:");
-				  SERIAL_PROTOCOL_F(degBed(), 1);
-				  SERIAL_PROTOCOLLN();
+				  serialecho_temperatures();
 			  }
 				  codenum = _millis();
 			  
