@@ -1037,7 +1037,7 @@ void lcd_commands()
                 lcd_update_enabled = true;
                 lcd_draw_update = 2; //force lcd clear and update after the stack unwinds.
                 enquecommand_P(PSTR("G28 W"));
-                enquecommand_P(PSTR("G1 X125 Y10 Z150 F1000"));
+                enquecommand_P(PSTR("G1 X125 Z200 F1000"));
                 enquecommand_P(PSTR("M109 S280"));
 #ifdef TEMP_MODEL
                 was_enabled = temp_model_enabled();
