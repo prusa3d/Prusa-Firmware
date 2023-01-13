@@ -5987,23 +5987,19 @@ Sigma_Exit:
         break;
     }
     /*!
-	### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
-	#### Usage
+  ### M104 - Set hotend temperature <a href="https://reprap.org/wiki/G-code#M104:_Set_Extruder_Temperature">M104: Set Extruder Temperature</a>
+  #### Usage
     
-	    M104 [ S ]
+      M104 [ S ]
     
-	#### Parameters
+  #### Parameters
        - `S` - Target temperature
     */
     case 104: // M104
     {
-          uint8_t extruder;
-          if(setTargetedHotend(104,extruder)){
-            break;
-          }
           if (code_seen('S'))
           {
-              setTargetHotendSafe(code_value(), extruder);
+              setTargetHotendSafe(code_value(), active_extruder);
           }
           break;
     }
