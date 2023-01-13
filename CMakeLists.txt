@@ -353,7 +353,7 @@ function(fw_add_variant variant_name)
   add_custom_command(
     OUTPUT ${LANG_MAP}
     COMMAND ${CMAKE_OBJCOPY} -O binary ${FW_LANG_BASE} ${FW_LANG_PATCH}.bin
-    COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-map.py ${FW_LANG_BASE} ${FW_LANG_PATCH}.bin > ${LANG_MAP}
+    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-map.py ${FW_LANG_BASE} ${FW_LANG_PATCH}.bin > ${LANG_MAP}
     COMMAND ${CMAKE_OBJCOPY} -I binary -O ihex ${FW_LANG_PATCH}.bin ${FW_LANG_PATCH}.hex
     DEPENDS ${FW_LANG_BASE}
     BYPRODUCTS ${FW_LANG_PATCH}.bin ${FW_LANG_PATCH}.hex
@@ -384,9 +384,9 @@ function(fw_add_variant variant_name)
     add_custom_command(
       OUTPUT ${LANG_BIN}
       # Check po file for errors _only_
-      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-check.py --errors-only --map ${LANG_MAP} ${PO_FILE}
+      COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-check.py --errors-only --map ${LANG_MAP} ${PO_FILE}
       # Build the catalog
-      COMMAND ${CMAKE_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
+      COMMAND "${Python3_EXECUTABLE}" ${CMAKE_SOURCE_DIR}/lang/lang-build.py ${LANG_MAP} ${PO_FILE} ${LANG_BIN}
       # Check bin size
       COMMAND ${CMAKE_COMMAND} -DLANG_MAX_SIZE=${LANG_MAX_SIZE} -DLANG_FILE=${LANG_BIN} -P
               ${PROJECT_CMAKE_DIR}/Check_lang_size.cmake
