@@ -398,7 +398,6 @@ AutoReportFeatures autoReportFeatures;
 //=============================Routines======================================
 //===========================================================================
 
-static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
@@ -6104,10 +6103,6 @@ Sigma_Exit:
     */
     case 109:
     {
-      uint8_t extruder;
-      if(setTargetedHotend(109, extruder)){
-        break;
-      }
       LCD_MESSAGERPGM(_T(MSG_HEATING));
 	  heating_status = HeatingStatus::EXTRUDER_HEATING;
       prusa_statistics(1);
@@ -6116,9 +6111,9 @@ Sigma_Exit:
         autotemp_enabled=false;
       #endif
       if (code_seen('S')) {
-          setTargetHotendSafe(code_value(), extruder);
+          setTargetHotendSafe(code_value(), active_extruder);
             } else if (code_seen('R')) {
-                setTargetHotendSafe(code_value(), extruder);
+                setTargetHotendSafe(code_value(), active_extruder);
       }
       #ifdef AUTOTEMP
         if (code_seen('S')) autotemp_min=code_value();
@@ -6133,11 +6128,11 @@ Sigma_Exit:
       codenum = _millis();
 
       /* See if we are heating up or cooling down */
-      target_direction = isHeatingHotend(extruder); // true if heating, false if cooling
+      target_direction = isHeatingHotend(active_extruder); // true if heating, false if cooling
 
       cancel_heatup = false;
 
-	  wait_for_heater(codenum, extruder); //loops until target temperature is reached
+      wait_for_heater(codenum, active_extruder); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
 		heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
@@ -9622,32 +9617,6 @@ void setPwmFrequency(uint8_t pin, int val)
   }
 }
 #endif //FAST_PWM_FAN
-
-//! @brief Get and validate extruder number
-//!
-//! If it is not specified, active_extruder is returned in parameter extruder.
-//! @param [in] code M code number
-//! @param [out] extruder
-//! @return error
-//! @retval true Invalid extruder specified in T code
-//! @retval false Valid extruder specified in T code, or not specifiead
-
-bool setTargetedHotend(int code, uint8_t &extruder)
-{
-  extruder = active_extruder;
-  if(code_seen('T')) {
-      extruder = code_value_uint8();
-    if(extruder >= EXTRUDERS) {
-      SERIAL_ECHO_START;
-      serialprintPGM(PSTR("M"));
-      SERIAL_ECHO(code);
-      SERIAL_ECHOPGM(" Invalid extruder ");
-      SERIAL_PROTOCOLLN((int)extruder);
-      return true;
-    }
-  }
-  return false;
-}
 
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time) { //_total_filament_used unit: mm/100; print time in s
     uint32_t _previous_filament = eeprom_init_default_dword((uint32_t *)EEPROM_FILAMENTUSED, 0); //_previous_filament unit: cm
