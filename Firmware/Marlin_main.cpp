@@ -402,7 +402,7 @@ static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
-static void gcode_M105(uint8_t extruder);
+static void gcode_M105();
 
 #ifndef PINDA_THERMISTOR
 static void temp_compensation_start();
@@ -1676,7 +1676,7 @@ void host_autoreport()
     if (autoReportFeatures.TimerExpired())
     {
         if(autoReportFeatures.Temp()){
-            gcode_M105(active_extruder);
+            gcode_M105();
         }
         if(autoReportFeatures.Pos()){
             gcode_M114();
@@ -2441,27 +2441,23 @@ void force_high_power_mode(bool start_high_power_section) {
 }
 #endif //TMC2130
 
-void gcode_M105(uint8_t extruder)
+void gcode_M105()
 {
 #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
     SERIAL_PROTOCOLPGM("T:");
-    SERIAL_PROTOCOL_F(degHotend(extruder),1);
+    SERIAL_PROTOCOL_F(degHotend(active_extruder),1);
     SERIAL_PROTOCOLPGM(" /");
-    SERIAL_PROTOCOL_F(degTargetHotend(extruder),1);
+    SERIAL_PROTOCOL_F(degTargetHotend(active_extruder),1);
 #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
     SERIAL_PROTOCOLPGM(" B:");
     SERIAL_PROTOCOL_F(degBed(),1);
     SERIAL_PROTOCOLPGM(" /");
     SERIAL_PROTOCOL_F(degTargetBed(),1);
 #endif //TEMP_BED_PIN
-    for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
-        SERIAL_PROTOCOLPGM(" T");
-        SERIAL_PROTOCOL(cur_extruder);
-        SERIAL_PROTOCOL(':');
-        SERIAL_PROTOCOL_F(degHotend(cur_extruder),1);
-        SERIAL_PROTOCOLPGM(" /");
-        SERIAL_PROTOCOL_F(degTargetHotend(cur_extruder),1);
-    }
+    SERIAL_PROTOCOLPGM(" T0:");
+    SERIAL_PROTOCOL_F(degHotend(active_extruder),1);
+    SERIAL_PROTOCOLPGM(" /");
+    SERIAL_PROTOCOL_F(degTargetHotend(active_extruder),1);
 #else
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(_n("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS
@@ -2469,10 +2465,10 @@ void gcode_M105(uint8_t extruder)
 
     SERIAL_PROTOCOLPGM(" @:");
 #ifdef EXTRUDER_WATTS
-    SERIAL_PROTOCOL((EXTRUDER_WATTS * getHeaterPower(tmp_extruder))/127);
+    SERIAL_PROTOCOL((EXTRUDER_WATTS * getHeaterPower(active_extruder))/127);
     SERIAL_PROTOCOLPGM("W");
 #else
-    SERIAL_PROTOCOL(getHeaterPower(extruder));
+    SERIAL_PROTOCOL(getHeaterPower(active_extruder));
 #endif
 
     SERIAL_PROTOCOLPGM(" B@:");
@@ -2508,23 +2504,19 @@ void gcode_M105(uint8_t extruder)
         SERIAL_PROTOCOLPGM(" Rxb->");
         SERIAL_PROTOCOL_F(raw, 5);
 #endif
-        for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
-            SERIAL_PROTOCOLPGM("  T");
-            SERIAL_PROTOCOL(cur_extruder);
-            SERIAL_PROTOCOLPGM(":");
-            SERIAL_PROTOCOL_F(degHotend(cur_extruder),1);
-            SERIAL_PROTOCOLPGM("C->");
-            raw = rawHotendTemp(cur_extruder);
-            SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
-            SERIAL_PROTOCOLPGM(" Rt");
-            SERIAL_PROTOCOL(cur_extruder);
-            SERIAL_PROTOCOLPGM("->");
-            SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
-            SERIAL_PROTOCOLPGM(" Rx");
-            SERIAL_PROTOCOL(cur_extruder);
-            SERIAL_PROTOCOLPGM("->");
-            SERIAL_PROTOCOL_F(raw, 5);
-        }
+        SERIAL_PROTOCOLPGM("  T0:");
+        SERIAL_PROTOCOL_F(degHotend(active_extruder),1);
+        SERIAL_PROTOCOLPGM("C->");
+        raw = rawHotendTemp(active_extruder);
+        SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
+        SERIAL_PROTOCOLPGM(" Rt");
+        SERIAL_PROTOCOL(active_extruder);
+        SERIAL_PROTOCOLPGM("->");
+        SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
+        SERIAL_PROTOCOLPGM(" Rx");
+        SERIAL_PROTOCOL(active_extruder);
+        SERIAL_PROTOCOLPGM("->");
+        SERIAL_PROTOCOL_F(raw, 5);
     }
 #endif
     SERIAL_PROTOCOLLN();
@@ -6038,35 +6030,28 @@ Sigma_Exit:
       break;
 
     /*!
-	### M105 - Report temperatures <a href="https://reprap.org/wiki/G-code#M105:_Get_Extruder_Temperature">M105: Get Extruder Temperature</a>
-	Prints temperatures:
-	
-	  - `T:`  - Hotend (actual / target)
-	  - `B:`  - Bed (actual / target)
-	  - `Tx:` - x Tool (actual / target)
-	  - `@:`  - Hotend power
-	  - `B@:` - Bed power
-	  - `P:`  - PINDAv2 actual (only MK2.5/s and MK3/s)
-	  - `A:`  - Ambient actual (only MK3/s)
-	
-	_Example:_
-	
-	    ok T:20.2 /0.0 B:19.1 /0.0 T0:20.2 /0.0 @:0 B@:0 P:19.8 A:26.4
-	
+  ### M105 - Report temperatures <a href="https://reprap.org/wiki/G-code#M105:_Get_Extruder_Temperature">M105: Get Extruder Temperature</a>
+  Prints temperatures:
+  
+    - `T:`  - Hotend (actual / target)
+    - `B:`  - Bed (actual / target)
+    - `Tx:` - x Tool (actual / target)
+    - `@:`  - Hotend power
+    - `B@:` - Bed power
+    - `P:`  - PINDAv2 actual (only MK2.5/s and MK3/s)
+    - `A:`  - Ambient actual (only MK3/s)
+
+  _Example:_
+
+      ok T:20.2 /0.0 B:19.1 /0.0 T0:20.2 /0.0 @:0 B@:0 P:19.8 A:26.4
+
     */
     case 105:
     {
-      uint8_t extruder;
-      if(setTargetedHotend(105, extruder)){
-        break;
-      }
-      
       SERIAL_PROTOCOLPGM("ok ");
-      gcode_M105(extruder);
-      
+      gcode_M105();
       cmdqueue_pop_front(); //prevent an ok after the command since this command uses an ok at the beginning.
       cmdbuffer_front_already_processed = true;
-      
       break;
     }
 
