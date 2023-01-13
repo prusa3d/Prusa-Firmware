@@ -536,7 +536,10 @@ void set_temp_error(TempErrorSource source, uint8_t index, TempErrorType type)
 
     // keep disabling heaters and keep fans on as long as the condition is asserted
     disable_heater();
-    hotendFanSetFullSpeed();
+    if (type != TempErrorType::min)
+    { // No need to enable fan for MINTEMP
+      hotendFanSetFullSpeed();
+    }
 
     // set the initial error source to the highest priority error
     if(!temp_error_state.error || (uint8_t)type < temp_error_state.type) {
