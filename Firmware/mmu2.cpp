@@ -33,7 +33,8 @@ void waitForHotendTargetTemp(uint16_t delay, F f){
 }
 
 void WaitForHotendTargetTempBeep(){
-    waitForHotendTargetTemp(3000, []{ Sound_MakeSound(e_SOUND_TYPE_StandardPrompt); } );
+    waitForHotendTargetTemp(3000, []{ });
+    Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
 }
 
 MMU2 mmu2;
