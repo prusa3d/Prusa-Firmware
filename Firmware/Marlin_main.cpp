@@ -3542,15 +3542,14 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     plan_buffer_line_curposXYZE(FILAMENTCHANGE_XYFEED);
     st_synchronize();
 
-    // Beep, manage nozzle heater and wait for user to start unload filament
-    if (!MMU2::mmu2.Enabled())
-        M600_wait_for_user(HotendTempBckp);
-
     // Unload filament
-    if (MMU2::mmu2.Enabled())
+    if (MMU2::mmu2.Enabled()) {
         mmu_M600_unload_filament();
-    else
+    } else {
+        // Beep, manage nozzle heater and wait for user to start unload filament
+        M600_wait_for_user(HotendTempBckp);
         unload_filament(FILAMENTCHANGE_FINALRETRACT);
+    }
     st_synchronize();          // finish moves
     {
         FSensorBlockRunout fsBlockRunout;
