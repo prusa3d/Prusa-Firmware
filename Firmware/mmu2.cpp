@@ -234,8 +234,8 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
     uint8_t fsensorState = 0;
     // MMU has finished its load, push the filament further by some defined constant length
     // If the filament sensor reads 0 at any moment, then report FAILURE
-    MoveE(MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION), MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
-    MoveE(-(MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION)), MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
+    MoveE(MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH + MMU2_VERIFY_LOAD_TO_NOZZLE_TWEAK - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION), MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
+    MoveE(-(MMU2_EXTRUDER_PTFE_LENGTH + MMU2_EXTRUDER_HEATBREAK_LENGTH + MMU2_VERIFY_LOAD_TO_NOZZLE_TWEAK - (logic.ExtraLoadDistance() - MMU2_FILAMENT_SENSOR_POSITION)), MMU2_VERIFY_LOAD_TO_NOZZLE_FEED_RATE);
 
     while (planner_any_moves()) {
         // Wait for move to finish and monitor the fsensor the entire time
