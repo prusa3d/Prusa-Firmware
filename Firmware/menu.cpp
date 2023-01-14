@@ -173,13 +173,22 @@ static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const u
     //a = selection mark. If it's set(1), then '>' will be used as the first character on the line. Else leave blank
     //b = toggle string is from progmem
     //c = do not set cursor at all. Must be handled externally.
-    char lineStr[LCD_WIDTH + 1];
-    const char eol = (toggle == NULL)?LCD_STR_ARROW_RIGHT[0]:' ';
+    uint8_t is_progmem = settings & 0x02;
+    const char eol = (toggle == NULL) ? LCD_STR_ARROW_RIGHT[0] : ' ';
     if (toggle == NULL) toggle = _T(MSG_NA);
-    sprintf_P(lineStr, PSTR("%c%-18.18S"), (settings & 0x01)?'>':' ', str);
-    sprintf_P(lineStr + LCD_WIDTH - ((settings & 0x02)?strlen_P(toggle):strlen(toggle)) - 3, (settings & 0x02)?PSTR("[%S]%c"):PSTR("[%s]%c"), toggle, eol);
+    uint8_t len = 4 + (is_progmem ? strlen_P(toggle) : strlen(toggle));
     if (!(settings & 0x04)) lcd_set_cursor(0, menu_row);
-    lcd_print_pad(lineStr, LCD_WIDTH);
+    lcd_putc((settings & 0x01) ? '>' : ' ');
+    lcd_print_pad_P(str, LCD_WIDTH - len);
+    lcd_putc('[');
+    if (is_progmem)
+    {
+        lcd_puts_P(toggle);
+    } else {
+        lcd_print(toggle);
+    }
+    lcd_putc(']');
+    lcd_putc(eol);
 }
 
 //! @brief Format sheet name
