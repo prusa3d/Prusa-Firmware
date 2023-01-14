@@ -54,7 +54,12 @@ extern void lcd_printFloat(double number, uint8_t digits);
 
 extern void lcd_print(const char*);
 extern char lcd_print_pad(const char* s, uint8_t len);
-char lcd_print_pad_P(const char* s, uint8_t len);
+
+/// @brief print a string from PROGMEM with left-adjusted padding
+/// @param s string from PROGMEM.
+/// @param len maximum number of characters to print, including padding. Ranges from 0 to LCD_WIDTH.
+/// @return number of padded bytes. 0 means there was no padding.
+uint8_t lcd_print_pad_P(const char* s, uint8_t len);
 extern void lcd_print(char, int = 0);
 extern void lcd_print(unsigned char, int = 0);
 extern void lcd_print(int, int = 10);

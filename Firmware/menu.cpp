@@ -242,11 +242,11 @@ static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
 
 static void menu_draw_item_puts_P(char type_char, const char* str, char num)
 {
-    lcd_set_cursor(0, menu_row);
-    lcd_putc(menu_selection_mark());
-    lcd_print_pad_P(str, LCD_WIDTH - 3);
-    lcd_putc(num);
-    lcd_putc(type_char);
+    const uint8_t max_strlen = LCD_WIDTH - 3;
+    lcd_putc_at(0, menu_row, menu_selection_mark());
+    uint8_t len = lcd_print_pad_P(str, max_strlen);
+    lcd_putc_at((max_strlen - len) + 2, menu_row, num);
+    lcd_putc_at(LCD_WIDTH - 1, menu_row, type_char);
 }
 
 void menu_item_dummy(void)
