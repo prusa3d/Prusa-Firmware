@@ -10336,9 +10336,7 @@ void serialecho_temperatures() {
 	float tt = degHotend(active_extruder);
 	SERIAL_PROTOCOLPGM("T:");
 	SERIAL_PROTOCOL(tt);
-	SERIAL_PROTOCOLPGM(" E:");
-	SERIAL_PROTOCOL((int)active_extruder);
-	SERIAL_PROTOCOLPGM(" B:");
+	SERIAL_PROTOCOLPGM(" E:0 B:");
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN();
 }
