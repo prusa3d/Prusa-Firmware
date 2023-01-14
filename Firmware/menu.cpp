@@ -435,13 +435,21 @@ static void menu_draw_P(char chr, const char* str, int16_t val);
 template<>
 void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 {
-	int text_len = strlen_P(str);
-	if (text_len > 15) text_len = 15;
-	char spaces[LCD_WIDTH + 1] = {0};
-    memset(spaces,' ', LCD_WIDTH);
-	if (val <= -100) spaces[15 - text_len - 1] = 0;
-	else spaces[15 - text_len] = 0;
-	lcd_printf_P(menu_fmt_int3, chr, str, spaces, val);
+	// The LCD row position is controlled externally. We may only modify the column here
+	lcd_putc(chr);
+	uint8_t len = lcd_print_pad_P(str, LCD_WIDTH - 1);
+	lcd_set_cursor_column((LCD_WIDTH - 1) - len + 1);
+	lcd_putc(':');
+
+	// The value is right adjusted, set the cursor then render the value
+	if (val < 10) { // 1 digit
+		lcd_set_cursor_column(LCD_WIDTH - 1);
+	} else if (val < 100) { // 2 digits
+		lcd_set_cursor_column(LCD_WIDTH - 2);
+	} else { // 3 digits
+		lcd_set_cursor_column(LCD_WIDTH - 3);
+	}
+	lcd_print(val);
 }
 
 template<>

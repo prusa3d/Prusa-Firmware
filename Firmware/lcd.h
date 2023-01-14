@@ -37,6 +37,10 @@ extern void lcd_no_autoscroll(void);*/
 
 extern void lcd_set_cursor(uint8_t col, uint8_t row);
 
+/// @brief Change the cursor column position while preserving the current row position
+/// @param col column number, ranges from 0 to LCD_WIDTH - 1
+void lcd_set_cursor_column(uint8_t col);
+
 extern void lcd_createChar_P(uint8_t, const uint8_t*);
 
 

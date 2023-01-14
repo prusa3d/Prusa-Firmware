@@ -329,13 +329,31 @@ void lcd_no_autoscroll(void)
 }
 #endif
 
-void lcd_set_cursor(uint8_t col, uint8_t row)
+/// @brief set the current LCD row
+/// @param row LCD row number, ranges from 0 to LCD_HEIGHT - 1
+static void FORCE_INLINE lcd_set_current_row(uint8_t row)
+{
+	lcd_currline = min(row, LCD_HEIGHT - 1);
+}
+
+/// @brief Calculate the LCD row offset
+/// @param row LCD row number, ranges from 0 to LCD_HEIGHT - 1
+/// @return row offset which the LCD register understands
+static uint8_t __attribute__((noinline)) lcd_get_row_offset(uint8_t row)
 {
 	uint8_t row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-	if (row >= LCD_HEIGHT)
-		row = LCD_HEIGHT - 1;    // we count rows starting w/0
-	lcd_currline = row;  
-	lcd_command(LCD_SETDDRAMADDR | (col + row_offsets[row]));
+	return row_offsets[min(row, LCD_HEIGHT - 1)];
+}
+
+void lcd_set_cursor(uint8_t col, uint8_t row)
+{
+	lcd_set_current_row(row);
+	lcd_command(LCD_SETDDRAMADDR | (col + lcd_get_row_offset(lcd_currline)));
+}
+
+void lcd_set_cursor_column(uint8_t col)
+{
+	lcd_command(LCD_SETDDRAMADDR | (col + lcd_get_row_offset(lcd_currline)));
 }
 
 // Allows us to fill the first 8 CGRAM locations
