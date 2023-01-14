@@ -2508,13 +2508,9 @@ void gcode_M105()
         SERIAL_PROTOCOLPGM("C->");
         raw = rawHotendTemp(active_extruder);
         SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
-        SERIAL_PROTOCOLPGM(" Rt");
-        SERIAL_PROTOCOL(active_extruder);
-        SERIAL_PROTOCOLPGM("->");
+        SERIAL_PROTOCOLPGM(" Rt0->");
         SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
-        SERIAL_PROTOCOLPGM(" Rx");
-        SERIAL_PROTOCOL(active_extruder);
-        SERIAL_PROTOCOLPGM("->");
+        SERIAL_PROTOCOLPGM(" Rx0->");
         SERIAL_PROTOCOL_F(raw, 5);
     }
 #endif
