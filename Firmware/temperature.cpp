@@ -32,7 +32,7 @@
 #include "stepper.h"
 #include "ultralcd.h"
 #include "menu.h"
-#include "sound.h"
+#include "util.h"
 #include "fancheck.h"
 #include "messages.h"
 #include "language.h"
@@ -2944,6 +2944,7 @@ void temp_model_autotune(int16_t temp, bool selftest)
         memcpy(temp_model::data.R, orig_R, sizeof(temp_model::data.R));
         temp_model_set_enabled(orig_enabled);
     } else {
+        calibration_status_set(CALIBRATION_STATUS_TEMP_MODEL);
         lcd_setstatuspgm(MSG_WELCOME);
         temp_model_cal::set_fan_speed(0);
         temp_model_set_enabled(orig_enabled);
