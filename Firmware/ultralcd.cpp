@@ -1009,7 +1009,6 @@ void lcd_commands()
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
             bool res = temp_model_autotune_result();
-            if (res) calibration_status_set(CALIBRATION_STATUS_TEMP_MODEL);
             if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
                 // resume the wizard
                 lcd_wizard(res ? WizState::Restore : WizState::Failed);
