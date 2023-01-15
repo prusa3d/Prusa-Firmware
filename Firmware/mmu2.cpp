@@ -739,9 +739,7 @@ bool MMU2::manage_response(const bool move_axes, const bool turn_off_nozzle) {
         // - still running -> wait normally in idle()
         // - failed -> then do the safety moves on the printer like before
         // - finished ok -> proceed with reading other commands
-        manage_heater();
-        manage_inactivity(true); // calls LogicStep() and remembers its return status
-        lcd_update(0);
+        delay_keep_alive(0); // calls LogicStep() and remembers its return status
 
         if (mmu_print_saved & SavedState::CooldownPending){
             if (!nozzleTimeout.running()){

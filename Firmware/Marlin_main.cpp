@@ -5285,9 +5285,7 @@ void process_commands()
             codenum += _millis();  // keep track of when we started waiting
             KEEPALIVE_STATE(PAUSED_FOR_USER);
             while(_millis() < codenum && !lcd_clicked()) {
-                manage_heater();
-                manage_inactivity(true);
-                lcd_update(0);
+                delay_keep_alive(0);
             }
             KEEPALIVE_STATE(IN_HANDLER);
             lcd_ignore_click(false);
@@ -9711,9 +9709,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 #endif
 				codenum = _millis();
 		}
-			manage_heater();
-			manage_inactivity(true); //do not disable steppers
-			lcd_update(0);
+		delay_keep_alive(0); //do not disable steppers
 #ifdef TEMP_RESIDENCY_TIME
 			/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
 			or when current temp falls outside the hysteresis after target temp was reached */
@@ -11425,9 +11421,7 @@ void marlin_wait_for_click()
     lcd_consume_click();
     while(!lcd_clicked())
     {
-        manage_heater();
-        manage_inactivity(true);
-        lcd_update(0);
+        delay_keep_alive(0);
     }
     KEEPALIVE_STATE(busy_state_backup);
 }
