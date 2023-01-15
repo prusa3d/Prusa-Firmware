@@ -32,5 +32,7 @@ void checkExtruderAutoFans();
 #endif
 
 void checkFans();
+void resetFanCheck(); // resets the fan measuring state
+
 void hotendFanSetFullSpeed();
 void hotendDefaultAutoFanState();
