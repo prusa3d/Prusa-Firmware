@@ -343,7 +343,7 @@ static void FORCE_INLINE lcd_set_current_row(uint8_t row)
 /// @return row offset which the LCD register understands
 static uint8_t __attribute__((noinline)) lcd_get_row_offset(uint8_t row)
 {
-	return pgm_read_byte(row_offsets[min(row, LCD_HEIGHT - 1)]);
+	return pgm_read_byte(row_offsets + min(row, LCD_HEIGHT - 1));
 }
 
 void lcd_set_cursor(uint8_t col, uint8_t row)
