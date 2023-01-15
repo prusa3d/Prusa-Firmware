@@ -66,6 +66,8 @@
 #define LCD_RS_FLAG 0x01
 #define LCD_HALF_FLAG 0x02
 
+constexpr uint8_t row_offsets[] PROGMEM = { 0x00, 0x40, 0x14, 0x54 };
+
 FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
 uint8_t lcd_displayfunction = 0;
@@ -341,8 +343,7 @@ static void FORCE_INLINE lcd_set_current_row(uint8_t row)
 /// @return row offset which the LCD register understands
 static uint8_t __attribute__((noinline)) lcd_get_row_offset(uint8_t row)
 {
-	uint8_t row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-	return row_offsets[min(row, LCD_HEIGHT - 1)];
+	return pgm_read_byte(row_offsets[min(row, LCD_HEIGHT - 1)]);
 }
 
 void lcd_set_cursor(uint8_t col, uint8_t row)
