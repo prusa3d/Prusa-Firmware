@@ -101,7 +101,7 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     uint8_t ret = 0;
     bool two_choices = false;
     static int8_t enc_dif = lcd_encoder_diff;
-    static uint8_t reset_button_selection = 1;
+    static uint8_t reset_button_selection;
 
     if (lcd_encoder_diff == 0)
     {
