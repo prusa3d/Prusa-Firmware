@@ -2209,12 +2209,11 @@ bool calibrate_z_auto()
 	plan_buffer_line_destinationXYZE(feedrate / 60);
 	st_synchronize();
 	enable_endstops(endstops_enabled);
-	if (PRINTER_TYPE == PRINTER_MK3) {
-		current_position[Z_AXIS] = Z_MAX_POS + 2.0;
-	}
-	else {
-		current_position[Z_AXIS] = Z_MAX_POS + 9.0;
-	}
+  #ifdef BONDTECH_LGX
+	   current_position[Z_AXIS] = Z_MAX_POS + 4.0;
+  #else
+	  current_position[Z_AXIS] = Z_MAX_POS + 2.0;
+  #endif
 	plan_set_position_curposXYZE();
 	return true;
 }

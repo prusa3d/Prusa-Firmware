@@ -1,0 +1,5 @@
+Compile Prusa-firmware with Git-bash installed
+open Git-bash
+change to your source code folder
+run "bash PF-build.sh"
+follow the instructions
