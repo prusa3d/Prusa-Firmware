@@ -1619,7 +1619,7 @@ void setup()
           if (!calibration_status_get(CALIBRATION_STATUS_LIVE_ADJUST))
               lcd_show_fullscreen_message_and_wait_P(_T(MSG_BABYSTEP_Z_NOT_SET));
 #ifdef TEMP_MODEL
-          if (!calibration_status_get(CALIBRATION_STATUS_TEMP_MODEL))
+          if (!calibration_status_get(CALIBRATION_STATUS_TEMP_MODEL) && temp_model_enabled())
               lcd_show_fullscreen_message_and_wait_P(_T(MSG_TM_NOT_CAL));
 #endif //TEMP_MODEL
       }
