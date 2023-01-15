@@ -101,6 +101,7 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
     uint8_t ret = 0;
     bool two_choices = false;
     static int8_t enc_dif = lcd_encoder_diff;
+    static uint8_t reset_button_selection = 1;
 
     if (lcd_encoder_diff == 0)
     {
@@ -122,6 +123,14 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
 
     static int8_t current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
     static int8_t choice_selected = -1;
+
+    if (reset_button_selection) {
+        // If a new error screen is shown, we must reset the button selection
+        // Default selection is different depending on how many buttons are present
+        current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
+        choice_selected = -1;
+        reset_button_selection = 0;
+    }
 
     // Check if knob was rotated
     if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
@@ -203,9 +212,8 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
         ret = 2;
     }
 
-    // Reset static variables to their default value
-    current_selection = two_choices ? LCD_LEFT_BUTTON_CHOICE : LCD_MIDDLE_BUTTON_CHOICE;
-    choice_selected = -1;
+    // Next MMU error screen should reset the choice selection
+    reset_button_selection = 1;
     return ret;
 }
 
