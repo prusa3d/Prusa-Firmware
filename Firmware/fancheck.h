@@ -33,3 +33,4 @@ void checkExtruderAutoFans();
 
 void checkFans();
 void hotendFanSetFullSpeed();
+void hotendDefaultAutoFanState();
