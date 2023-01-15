@@ -5256,7 +5256,12 @@ void lcd_resume_print()
     st_synchronize();
     custom_message_type = CustomMsg::Resuming;
     isPrintPaused = false;
-    Stopped = false; // resume processing USB commands again
+
+    // resume processing USB commands again and restore hotend fan state (in case the print was
+    // stopped due to a thermal error)
+    hotendDefaultAutoFanState();
+    Stopped = false;
+
     restore_print_from_ram_and_continue(default_retraction);
     pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
     refresh_cmd_timeout();
@@ -5884,6 +5889,9 @@ void lcd_print_stop_finish()
     } else {
         // Turn off the print fan
         fanSpeed = 0;
+
+        // restore the auto hotend state
+        hotendDefaultAutoFanState();
     }
 
     if (MMU2::mmu2.Enabled() && MMU2::mmu2.FindaDetectsFilament())
