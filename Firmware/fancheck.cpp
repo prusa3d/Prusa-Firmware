@@ -294,3 +294,13 @@ void hotendFanSetFullSpeed()
 #endif //FAN_SOFT_PWM
     fanSpeed = 255;
 }
+
+void hotendDefaultAutoFanState()
+{
+#if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1)
+#ifdef EXTRUDER_ALTFAN_DETECT
+    altfanStatus.altfanOverride = eeprom_read_byte((uint8_t*)EEPROM_ALTFAN_OVERRIDE);
+#endif
+    setExtruderAutoFanState(1);
+#endif
+}
