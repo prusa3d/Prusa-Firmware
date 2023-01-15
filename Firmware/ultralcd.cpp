@@ -3847,10 +3847,7 @@ void lcd_language()
 	lcd_draw_update = 2;
 	while ((menu_menu != lcd_status_screen) && (!lang_is_selected()))
 	{
-		_delay(50);
-		lcd_update(0);
-		manage_heater();
-		manage_inactivity(true);
+		delay_keep_alive(50);
 	}
 	if (lang_is_selected())
 		lcd_return_to_status();
