@@ -6670,8 +6670,9 @@ bool lcd_selftest()
 	
 	if (_result)
 	{
-		lcd_setstatuspgm(_i("Self test OK"));////MSG_SELFTEST_OK c=20
 		calibration_status_set(CALIBRATION_STATUS_SELFTEST);
+		lcd_setstatuspgm(_i("Self test OK"));////MSG_SELFTEST_OK c=20
+		lcd_return_to_status();
 	}
 	else
 	{
