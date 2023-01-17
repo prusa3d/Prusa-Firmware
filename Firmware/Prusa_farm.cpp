@@ -4,7 +4,6 @@
 #include "cmdqueue.h"
 #include "temperature.h"
 #include "cardreader.h"
-#include "conv2str.h"
 #include "util.h"
 #include "ultralcd.h"
 #include "Filament_sensor.h"
@@ -86,9 +85,9 @@ static void prusa_stat_printinfo() {
     SERIAL_ECHOPGM("[TFU:");
     SERIAL_ECHO(total_filament_used);
     SERIAL_ECHOPGM("][PCD:");
-    SERIAL_ECHO(itostr3(card.percentDone()));
+    SERIAL_ECHO((int)card.percentDone());
     SERIAL_ECHOPGM("][FEM:");
-    SERIAL_ECHO(itostr3(feedmultiply));
+    SERIAL_ECHO(feedmultiply);
     SERIAL_ECHOPGM("][FNM:");
     SERIAL_ECHO(card.longFilename[0] ? card.longFilename : card.filename);
     SERIAL_ECHOPGM("][TIM:");

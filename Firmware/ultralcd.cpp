@@ -5,7 +5,6 @@
 
 #include "temperature.h"
 #include "ultralcd.h"
-#include "conv2str.h"
 #include "Marlin.h"
 #include "language.h"
 #include "cardreader.h"
@@ -628,9 +627,7 @@ void lcdui_print_status_line(void) {
             lcd_print_pad(lcd_status_message, LCD_WIDTH);
             if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0) {
                 lcd_set_cursor(10, 3);
-                lcd_print(itostr3(pid_cycle));
-                lcd_print('/');
-                lcd_print(itostr3left(pid_number_of_cycles));
+                lcd_printf_P(PSTR("%3d/%-3d"), pid_cycle, pid_number_of_cycles);
             }
             break;
         case CustomMsg::TempCal: // PINDA temp calibration in progress
@@ -4490,16 +4487,14 @@ static void lcd_nozzle_diameter_cycle(void) {
 #define SETTINGS_NOZZLE \
 do\
 {\
-    float fNozzleDiam;\
     switch(oNozzleDiameter)\
     {\
-        case ClNozzleDiameter::_Diameter_250: fNozzleDiam = 0.25f; break;\
-        case ClNozzleDiameter::_Diameter_400: fNozzleDiam = 0.4f; break;\
-        case ClNozzleDiameter::_Diameter_600: fNozzleDiam = 0.6f; break;\
-        case ClNozzleDiameter::_Diameter_800: fNozzleDiam = 0.8f; break;\
-        default: fNozzleDiam = 0.4f; break;\
+        case ClNozzleDiameter::_Diameter_250: MENU_ITEM_TOGGLE_P(_T(MSG_NOZZLE_DIAMETER), PSTR("0.25"), lcd_nozzle_diameter_cycle); break;\
+        case ClNozzleDiameter::_Diameter_Undef: \
+        case ClNozzleDiameter::_Diameter_400: MENU_ITEM_TOGGLE_P(_T(MSG_NOZZLE_DIAMETER), PSTR("0.40"), lcd_nozzle_diameter_cycle); break;\
+        case ClNozzleDiameter::_Diameter_600: MENU_ITEM_TOGGLE_P(_T(MSG_NOZZLE_DIAMETER), PSTR("0.60"), lcd_nozzle_diameter_cycle); break;\
+        case ClNozzleDiameter::_Diameter_800: MENU_ITEM_TOGGLE_P(_T(MSG_NOZZLE_DIAMETER), PSTR("0.80"), lcd_nozzle_diameter_cycle); break;\
     }\
-    MENU_ITEM_TOGGLE(_T(MSG_NOZZLE_DIAMETER), ftostr12ns(fNozzleDiam), lcd_nozzle_diameter_cycle);\
 }\
 while (0)
 
