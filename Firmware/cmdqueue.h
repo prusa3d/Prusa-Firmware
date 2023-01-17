@@ -75,15 +75,4 @@ static inline long    code_value_long()    { return strtol(strchr_pointer+1, NUL
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
 static inline uint8_t code_value_uint8()   { return uint8_t(strtol(strchr_pointer+1, NULL, 10)); };
 
-static inline float code_value_float()
-{
-    char* e = strchr(strchr_pointer, 'E');
-    if (!e) return strtod(strchr_pointer + 1, NULL);
-    *e = 0;
-    float ret = strtod(strchr_pointer + 1, NULL);
-    *e = 'E';
-    return ret;
-}
-
-
 #endif //CMDQUEUE_H

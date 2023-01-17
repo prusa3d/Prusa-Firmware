@@ -2047,7 +2047,7 @@ static float probe_pt(float x, float y, float z_before) {
     *  K<factor>                  Set advance K factor
     */
 inline void gcode_M900() {
-    float newK = code_seen('K') ? code_value_float() : -2;
+    float newK = code_seen('K') ? code_value() : -2;
 #ifdef LA_NOCOMPAT
     if (newK >= 0 && newK < LA_K_MAX)
         extruder_advance_K = newK;
@@ -5961,11 +5961,11 @@ Sigma_Exit:
         if(code_seen('Q')) print_percent_done_silent = code_value_uint8();
         if(code_seen('S')) print_time_remaining_silent = code_value();
         if(code_seen('C')){
-            float print_time_to_change_normal_f = code_value_float();
+            float print_time_to_change_normal_f = code_value();
             print_time_to_change_normal = ( print_time_to_change_normal_f <= 0 ) ? PRINT_TIME_REMAINING_INIT : print_time_to_change_normal_f;
         }
         if(code_seen('D')){
-            float print_time_to_change_silent_f = code_value_float();
+            float print_time_to_change_silent_f = code_value();
             print_time_to_change_silent = ( print_time_to_change_silent_f <= 0 ) ? PRINT_TIME_REMAINING_INIT : print_time_to_change_silent_f;
         }
         {
@@ -6991,8 +6991,8 @@ Sigma_Exit:
     case 214: //!@n M214 - Set Arc Parameters (Use M500 to store in eeprom) P<MM_PER_ARC_SEGMENT> S<MIN_MM_PER_ARC_SEGMENT> R<MIN_ARC_SEGMENTS> F<ARC_SEGMENTS_PER_SEC>
     {
         // Extract all possible parameters if they appear
-        float p = code_seen('P') ? code_value_float() : cs.mm_per_arc_segment;
-        float s = code_seen('S') ? code_value_float() : cs.min_mm_per_arc_segment;
+        float p = code_seen('P') ? code_value() : cs.mm_per_arc_segment;
+        float s = code_seen('S') ? code_value() : cs.min_mm_per_arc_segment;
         unsigned char n = code_seen('N') ? code_value() : cs.n_arc_correction;
         unsigned short r = code_seen('R') ? code_value() : cs.min_arc_segments;
         unsigned short f = code_seen('F') ? code_value() : cs.arc_segments_per_sec;
@@ -7922,7 +7922,7 @@ Sigma_Exit:
     case 862: // M862: print checking
           float nDummy;
           uint8_t nCommand;
-          nCommand=(uint8_t)(modff(code_value_float(),&nDummy)*10.0+0.5);
+          nCommand=(uint8_t)(modff(code_value(),&nDummy)*10.0+0.5);
           switch((ClPrintChecking)nCommand)
                {
                case ClPrintChecking::_Nozzle:     // ~ .1
