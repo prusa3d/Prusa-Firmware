@@ -2,7 +2,6 @@
 #include "cmdqueue.h"
 #include "cardreader.h"
 #include "ultralcd.h"
-#include "conv2str.h"
 #include "menu.h"
 #include "stepper.h"
 #include "temperature.h"
@@ -578,9 +577,9 @@ void CardReader::getStatus(bool arg_P)
         SERIAL_PROTOCOL('/');
         SERIAL_PROTOCOLLN(filesize);
         uint16_t time = ( _millis() - starttime ) / 60000U;
-        SERIAL_PROTOCOL(itostr2(time/60));
+        SERIAL_PROTOCOL((int)(time / 60));
         SERIAL_PROTOCOL(':');
-        SERIAL_PROTOCOLLN(itostr2(time%60));
+        SERIAL_PROTOCOLLN((int)(time % 60));
     }
     else
         SERIAL_PROTOCOLLNPGM("Not SD printing");

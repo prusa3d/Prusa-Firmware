@@ -131,7 +131,6 @@ set(FW_SOURCES
     cmdqueue.cpp
     Configuration.cpp
     ConfigurationStore.cpp
-    conv2str.cpp
     Dcodes.cpp
     eeprom.cpp
     fancheck.cpp
