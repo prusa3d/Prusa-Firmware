@@ -94,12 +94,11 @@ extern uint8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, b
 
 #ifndef TMC2130
 extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
+extern void lcd_diag_show_end_stops();
 #endif
 
 // Show the result of the calibration process on the LCD screen.
-  extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
-
-extern void lcd_diag_show_end_stops();
+extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
 
 
 #define LCD_MESSAGEPGM(x) lcd_setstatuspgm(PSTR(x))
