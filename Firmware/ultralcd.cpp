@@ -3358,7 +3358,11 @@ void lcd_temp_cal_show_result(bool result) {
 }
 
 static void lcd_show_end_stops() {
+        #if FILAMENT_SENSOR_TYPE == FSENSOR_IR
+	lcd_puts_at_P(0, 0, (READ(IR_SENSOR_PIN)) ? (PSTR("E1 EMPTY ")) : (PSTR("E0 LOADED")));
+	#else
 	lcd_puts_at_P(0, 0, (PSTR("End stops diag")));
+	#endif
 	lcd_puts_at_P(0, 1, (READ(X_MIN_PIN) ^ (bool)X_MIN_ENDSTOP_INVERTING) ? (PSTR("X1")) : (PSTR("X0")));
 	lcd_puts_at_P(0, 2, (READ(Y_MIN_PIN) ^ (bool)Y_MIN_ENDSTOP_INVERTING) ? (PSTR("Y1")) : (PSTR("Y0")));
 	lcd_puts_at_P(0, 3, (READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING) ? (PSTR("Z1")) : (PSTR("Z0")));
