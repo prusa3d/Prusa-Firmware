@@ -3357,6 +3357,7 @@ void lcd_temp_cal_show_result(bool result) {
 	lcd_update(2);
 }
 
+#ifndef TMC2130
 static void lcd_show_end_stops() {
 	lcd_puts_at_P(0, 0, (PSTR("End stops diag")));
 	lcd_puts_at_P(0, 1, (READ(X_MIN_PIN) ^ (bool)X_MIN_ENDSTOP_INVERTING) ? (PSTR("X1")) : (PSTR("X0")));
@@ -3364,16 +3365,11 @@ static void lcd_show_end_stops() {
 	lcd_puts_at_P(0, 3, (READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING) ? (PSTR("Z1")) : (PSTR("Z0")));
 }
 
-#ifndef TMC2130
 static void menu_show_end_stops() {
     lcd_show_end_stops();
     if (LCD_CLICKED) menu_back();
 }
-#endif // not defined TMC2130
 
-// Lets the user move the Z carriage up to the end stoppers.
-// When done, it sets the current Z to Z_MAX_POS and returns true.
-// Otherwise the Z calibration is not changed and false is returned.
 void lcd_diag_show_end_stops()
 {
     lcd_clear();
@@ -3389,6 +3385,7 @@ void lcd_diag_show_end_stops()
     lcd_clear();
     lcd_return_to_status();
 }
+#endif // not defined TMC2130
 
 static void lcd_print_state(uint8_t state)
 {
