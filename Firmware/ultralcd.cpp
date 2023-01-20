@@ -3971,7 +3971,7 @@ void lcd_wizard() {
 	bool result = true;
 	if (calibration_status_get(CALIBRATION_WIZARD_STEPS)) {
 		// calibration already performed: ask before clearing the previous status
-		result = !lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Running Wizard will delete current calibration results and start from the beginning. Continue?"), false);////MSG_WIZARD_RERUN c=20 r=7
+		result = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Running Wizard will delete current calibration results and start from the beginning. Continue?"), false);////MSG_WIZARD_RERUN c=20 r=7
 	}
 	if (result) {
 		calibration_status_clear(CALIBRATION_WIZARD_STEPS);
