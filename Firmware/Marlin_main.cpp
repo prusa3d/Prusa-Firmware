@@ -1255,9 +1255,6 @@ void setup()
     temp_mgr_init();
 
 #ifdef EXTRUDER_ALTFAN_DETECT
-    if (eeprom_read_byte((uint8_t*)EEPROM_ALTFAN_OVERRIDE) == EEPROM_EMPTY_VALUE) {
-        eeprom_update_byte((uint8_t*)EEPROM_ALTFAN_OVERRIDE, 0);
-    }
     SERIAL_ECHORPGM(_n("Hotend fan type: "));
     if (extruder_altfan_detect())
         SERIAL_ECHOLNRPGM(PSTR("ALTFAN"));
