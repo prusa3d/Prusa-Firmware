@@ -8022,7 +8022,9 @@ Sigma_Exit:
     */
     case 862: // M862: print checking
     {
-        ClPrintChecking nCommand = static_cast<ClPrintChecking>(strtol(strchr_pointer+5, NULL, 10));
+        // Read the decimal by multiplying the float value by 10 e.g. 862.1 becomes 8621
+        // This method consumes less flash memory compared to checking the string length.
+        ClPrintChecking nCommand = static_cast<ClPrintChecking>((uint16_t)(code_value()*10) - 8620u);
         switch(nCommand)
                {
                case ClPrintChecking::_Nozzle:     // ~ .1
