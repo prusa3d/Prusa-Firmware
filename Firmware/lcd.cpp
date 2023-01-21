@@ -621,7 +621,7 @@ void lcd_print(double n, int digits)
 void lcd_printNumber(unsigned long n, uint8_t base)
 {
 	unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars. 
-	unsigned long i = 0;
+	uint8_t i = 0;
 	if (n == 0)
 	{
 		lcd_print('0');

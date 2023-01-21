@@ -312,7 +312,7 @@ void MarlinSerial::println(double n, int digits)
 void MarlinSerial::printNumber(unsigned long n, uint8_t base)
 {
   unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars. 
-  unsigned long i = 0;
+  uint8_t i = 0;
 
   if (n == 0) {
     print('0');
