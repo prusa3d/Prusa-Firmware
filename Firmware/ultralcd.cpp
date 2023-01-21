@@ -2597,12 +2597,11 @@ static void lcd_menu_xyz_skew()
 	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////MSG_SLIGHT_SKEW c=14
 	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////MSG_SEVERE_SKEW c=14
 	);
+	lcd_set_cursor(15, 0);
 	if (angleDiff < 100){
-		lcd_set_cursor(15,0);
 		lcd_printf_P(_N("%3.2f\x01"), _deg(angleDiff));
-	}
-	else{
-		lcd_puts_at_P(15,0, _T(MSG_NA));
+	} else {
+		lcd_puts_P(_T(MSG_NA));
 	}
     if (lcd_clicked())
         menu_goto(lcd_menu_xyz_offset, 0, true, true);
@@ -2622,19 +2621,10 @@ static void lcd_menu_xyz_offset()
 {
     lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
     lcd_puts_at_P(0, 1, separator);
-    lcd_puts_at_P(0, 2, PSTR("X"));
-    lcd_puts_at_P(0, 3, PSTR("Y"));
 
-    float vec_x[2];
-    float vec_y[2];
-    float cntr[2];
-    world2machine_read_valid(vec_x, vec_y, cntr);
-
-    for (uint_least8_t i = 0; i < 2; i++)
-    {
-        lcd_set_cursor((cntr[i] < 0) ? 13 : 14, i+2);
-        lcd_print(cntr[i]);
-        lcd_puts_at_P(18, i + 2, PSTR("mm"));
+    for (uint8_t i = 0; i < 2; i++) {
+        lcd_set_cursor(0, i + 2);
+        lcd_printf_P(PSTR("%c%17.2fmm"), 'X' + i, eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4*i)));
     }
     menu_back_if_clicked();
 }

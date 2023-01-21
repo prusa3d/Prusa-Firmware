@@ -54,7 +54,6 @@ extern int lcd_printf_P(const char* format, ...);
 extern void lcd_space(uint8_t n);
 
 extern void lcd_printNumber(unsigned long n, uint8_t base);
-extern void lcd_printFloat(double number, uint8_t digits);
 
 extern void lcd_print(const char*);
 extern char lcd_print_pad(const char* s, uint8_t len);
@@ -70,7 +69,6 @@ extern void lcd_print(int, int = 10);
 extern void lcd_print(unsigned int, int = 10);
 extern void lcd_print(long, int = 10);
 extern void lcd_print(unsigned long, int = 10);
-extern void lcd_print(double, int = 2);
 
 //! @brief Clear screen
 #define ESC_2J     "\x1b[2J"
