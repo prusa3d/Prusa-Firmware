@@ -164,6 +164,9 @@ bool extruder_altfan_detect()
 {
     // override isAltFan setting for detection
     altfanStatus.isAltfan = 0;
+
+    // During initialisation, use the EEPROM value
+    altfanStatus.altfanOverride = eeprom_read_byte((uint8_t *)EEPROM_ALTFAN_OVERRIDE);
     setExtruderAutoFanState(3);
 
     SET_INPUT(TACH_0);
