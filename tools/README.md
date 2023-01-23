@@ -75,7 +75,7 @@ The parser is not strict, and will consume most serial logs with/without timesta
 
 By default the decoded trace is written to the standard output as a tab-separated table. If `--plot` is used, produce a graph into the requested output file instead:
 
-    ./tml_decode -o graph.png serial.log
+    ./tml_decode -p graph.png serial.log
 
 When plotting the [Matplotlib](https://matplotlib.org/) module is required.
 

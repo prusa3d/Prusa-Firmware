@@ -75,7 +75,7 @@ def plot_therm_dump(data, output, title):
 def main():
     ap = argparse.ArgumentParser(description='Decode (or plot) the TML trace contained in the serial LOG',
                                  epilog="""
-        The TML trace needs to be enabled by issuing "M155 S1 C3" and "D70 S1" to the printer. By
+        The TML trace needs to be enabled by issuing "M155 S1 C3" and "D70 S1" to the printer.
         Output the decoded trace to standard output by default. If --plot is provided, produce a
         graph into IMG directly instead.
     """)
