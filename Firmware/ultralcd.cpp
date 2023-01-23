@@ -995,6 +995,7 @@ void lcd_commands()
             [[fallthrough]];
 
         case 3:
+            temp_model_set_warn_beep(false);
             enquecommand_P(PSTR("M310 A F1"));
             lcd_commands_step = 2;
             break;
@@ -1008,6 +1009,7 @@ void lcd_commands()
         case 1:
             lcd_commands_step = 0;
             lcd_commands_type = LcdCommands::Idle;
+            temp_model_set_warn_beep(true);
             bool res = temp_model_autotune_result();
             if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE)) {
                 // resume the wizard
