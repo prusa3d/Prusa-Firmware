@@ -35,7 +35,7 @@ fontTable = [
 
 # from the default character set:
     CustomCharacter('ä', 0xe1),
-    CustomCharacter('μ', 0xe4),
+    CustomCharacter('µ', 0xe4),
     CustomCharacter('ö', 0xef),
     CustomCharacter('ü', 0xf5),
 ]
