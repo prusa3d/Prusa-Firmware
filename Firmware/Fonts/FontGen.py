@@ -18,7 +18,7 @@ fontTable = [
     CustomCharacter('°', 0x81, '\\xdf'),
     CustomCharacter('🌡', 0x82, 'h'),
     CustomCharacter('⬏', 0x83, '^'),
-    CustomCharacter('🗘', 0x84, '\\xf3'),
+    CustomCharacter('🔃', 0x84, '\\xf3'),
     CustomCharacter('🗀', 0x85, '\\xdb'),
     CustomCharacter('»', 0x86, '>'),
     CustomCharacter('🕑', 0x87, '\\xe5'),
