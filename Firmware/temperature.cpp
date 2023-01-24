@@ -1232,11 +1232,7 @@ FORCE_INLINE static void soft_pwm_core()
   static unsigned char state_timer_heater_b = 0;
 #endif
 #endif
-  
-#if defined(FILWIDTH_PIN) &&(FILWIDTH_PIN > -1)
-  static unsigned long raw_filwidth_value = 0;  //added for filament width sensor
-#endif
-  
+
 #ifndef SLOW_PWM_HEATERS
   /*
    * standard PWM modulation
