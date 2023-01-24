@@ -29,7 +29,8 @@ enum class ClPrintChecking:uint_least8_t
     _Model=2,
     _Smodel=3,
     _Version=4,
-    _Gcode=5
+    _Gcode=5,
+    _ActiveSheet=6
 };
 
 enum class ClNozzleDiameter:uint_least8_t
@@ -93,6 +94,7 @@ void printer_model_check(uint16_t nPrinterModel, uint16_t actualPrinterModel);
 void printer_smodel_check(const char *pStrPos, const char *actualPrinterSModel);
 void fw_version_check(const char *pVersion);
 void gcode_level_check(uint16_t nGcodeLevel);
+void active_sheet_check(uint8_t sheetIdx);
 
 uint16_t nPrinterType(bool bMMu);
 const char *sPrinterType(bool bMMu);

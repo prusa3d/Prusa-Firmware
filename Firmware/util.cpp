@@ -389,6 +389,29 @@ void gcode_level_check(uint16_t nGcodeLevel) {
     );
 }
 
+
+void active_sheet_check(uint8_t sheetIdx) {
+    if (oCheckModel == ClCheckModel::_None)
+        return;
+
+    int8_t activeSheetIdx = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+    if (sheetIdx == activeSheetIdx)
+        return;
+
+    // SERIAL_ECHO_START;
+    // SERIAL_ECHOLNPGM("Printer G-code level differs from the G-code ...");
+    // SERIAL_ECHOPGM("actual  : ");
+    // SERIAL_ECHOLN(activeSheetIdx);
+    // SERIAL_ECHOPGM("expected: ");
+    // SERIAL_ECHOLN(sheetIdx);
+        
+    render_M862_warnings(
+        _i("Printer active sheet differs from the G-code. Continue?") ////MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+        ,_i("Printer active sheet differs from the G-code. Please check the value in settings. Print cancelled.") ////MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+        ,(uint8_t)oCheckMode
+    );
+}
+
 #define GCODE_DELIMITER '"'
 
 char *code_string(const char *pStr, size_t *nLength) {
