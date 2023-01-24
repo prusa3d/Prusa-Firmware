@@ -22,7 +22,7 @@ fontTable = [
     CustomCharacter('🗀', 0x85, '\\xdb'),
     CustomCharacter('»', 0x86, '>'),
     CustomCharacter('🕑', 0x87, '\\xe5'),
-    CustomCharacter('↡', 0x88, '\\x7e'),
+    CustomCharacter('⏬', 0x88, '\\x7e'),
     CustomCharacter('✔', 0x89, '\\x7e'),
     CustomCharacter('ă', 0x8a, 'a'),
     CustomCharacter('â', 0x8b, 'a'),
