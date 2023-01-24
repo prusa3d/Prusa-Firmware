@@ -371,7 +371,9 @@ void lcd_set_cursor(uint8_t col, uint8_t row)
 
 void lcd_set_cursor_column(uint8_t col)
 {
-	lcd_command(LCD_SETDDRAMADDR | (col + lcd_get_row_offset(lcd_currline)));
+	uint8_t addr = col + lcd_get_row_offset(lcd_currline);
+	lcd_ddram_address = addr;
+	lcd_command(LCD_SETDDRAMADDR | addr);
 }
 
 // Allows us to fill the first 8 CGRAM locations
