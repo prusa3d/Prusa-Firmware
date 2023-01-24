@@ -835,24 +835,27 @@ const CustomCharacter Font[] PROGMEM = {
 };
 
 static void lcd_print_custom(uint8_t c) {
-	if (lcd_custom_index >= 8) { //ran out of custom characters. Use the alternate character.
-		lcd_send(pgm_read_byte(&Font[c - 0x80].alternate), HIGH);
-		lcd_ddram_address++; // no need for preventing ddram overflow
-		return;
-	}
-	
+	uint8_t charToSend;
 	// check if we already have the character in the lcd memory
 	for (uint8_t i = 0; i < 8; i++) {
 		if (lcd_custom_characters[i] == c) {
-			lcd_send(i, HIGH);
-			lcd_ddram_address++; // no need for preventing ddram overflow
-			return;
+			// send the found custom character id
+			charToSend = i;
+			goto sendChar;
 		}
 	}
-	// character not in memory. Add it
-	lcd_createChar_P(lcd_custom_index, Font[c - 0x80].data);
-	lcd_custom_characters[lcd_custom_index] = c;
-	lcd_send(lcd_custom_index, HIGH);
+
+	// character not in memory.
+	if (lcd_custom_index >= 8) { //ran out of custom characters. Use the alternate character.
+		charToSend = pgm_read_byte(&Font[c - 0x80].alternate);
+	}
+	else { //create a new custom character and send it
+		lcd_createChar_P(lcd_custom_index, Font[c - 0x80].data);
+		lcd_custom_characters[lcd_custom_index] = c;
+		charToSend = lcd_custom_index++;
+	}
+
+sendChar:
+	lcd_send(charToSend, HIGH);
 	lcd_ddram_address++; // no need for preventing ddram overflow
-	lcd_custom_index++;
 }
