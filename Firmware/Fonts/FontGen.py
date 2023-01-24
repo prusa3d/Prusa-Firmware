@@ -24,6 +24,14 @@ fontTable = [
     CustomCharacter('🕑', 0x87, '\\xe5'),
     CustomCharacter('↡', 0x88, '\\x7e'),
     CustomCharacter('✔', 0x89, '\\x7e'),
+    CustomCharacter('ă', 0x8a, 'a'),
+    CustomCharacter('â', 0x8b, 'a'),
+    CustomCharacter('î', 0x8c, 'i'),
+    CustomCharacter('ș', 0x8d, 's'),
+    CustomCharacter('ț', 0x8e, 't'),
+    CustomCharacter('Î', 0x8f, 'I'),
+    CustomCharacter('Ș', 0x90, 'S'),
+    CustomCharacter('Ț', 0x91, 'T'),
 
 # from the default character set:
     CustomCharacter('ä', 0xe1),
@@ -51,7 +59,7 @@ def generateFont():
     
     CharList = [Char.attrib for Char in root.iter("CHAR")]
     
-    f = open(os.path.join(sys.path[0], "FontTable.h"), "w")
+    f = open(os.path.join(sys.path[0], "FontTable.h"), "w", encoding='utf8')
     for x in range(len(fontTable)):
         if fontTable[x].default >= 0xE0:
             continue
