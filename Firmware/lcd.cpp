@@ -244,17 +244,18 @@ void lcd_refresh_noclear(void)
     lcd_begin(0);
 }
 
+// Clear display, set cursor position to zero and unshift the display. It does not clear the custom characters memory
 void lcd_clear(void)
 {
-	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
+	lcd_command(LCD_CLEARDISPLAY, 1600);
 	lcd_currline = 0;
 	lcd_ddram_address = 0;
 }
 
+// Set cursor position to zero and in DDRAM. It does not unshift the display.
 void lcd_home(void)
 {
-	lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero
-	lcd_currline = 0;
+	lcd_set_cursor(0, 0);
 	lcd_ddram_address = 0;
 }
 
