@@ -2509,7 +2509,6 @@ static void lcd_menu_xyz_skew()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_xyz_offset()
 {
-    lcd_home();
     lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
     lcd_puts_at_P(0, 1, STR_SEPARATOR);
 
@@ -2861,7 +2860,6 @@ static inline bool pgm_is_interpunction(const char *c_addr)
  */
 static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
 {
-    lcd_home();
     const char *msgend = msg;
     bool multi_screen = false;
     for (uint8_t row = 0; row < LCD_HEIGHT; ++ row) {
@@ -3209,7 +3207,6 @@ void lcd_temp_cal_show_result(bool result) {
 
 #ifndef TMC2130
 static void lcd_show_end_stops() {
-	lcd_home();
 	lcd_puts_at_P(0, 0, (PSTR("End stops diag")));
 	lcd_puts_at_P(0, 1, (READ(X_MIN_PIN) ^ (bool)X_MIN_ENDSTOP_INVERTING) ? (PSTR("X1")) : (PSTR("X0")));
 	lcd_puts_at_P(0, 2, (READ(Y_MIN_PIN) ^ (bool)Y_MIN_ENDSTOP_INVERTING) ? (PSTR("Y1")) : (PSTR("Y0")));
