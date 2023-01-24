@@ -189,7 +189,7 @@ struct CustomCharacter {
     const char alternate;
 };
 
-extern uint8_t lcd_custom_index;
+extern void lcd_invalidate_custom_characters();
 
 //! @brief Consume click and longpress event
 inline void lcd_consume_click()

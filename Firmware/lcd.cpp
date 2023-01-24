@@ -70,19 +70,19 @@ constexpr uint8_t row_offsets[] PROGMEM = { 0x00, 0x40, 0x14, 0x54 };
 
 FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
-uint8_t lcd_displayfunction = 0;
-uint8_t lcd_displaycontrol = 0;
-uint8_t lcd_displaymode = 0;
+static uint8_t lcd_displayfunction = 0;
+static uint8_t lcd_displaycontrol = 0;
+static uint8_t lcd_displaymode = 0;
 
 uint8_t lcd_currline;
-uint8_t lcd_ddram_address; // no need for preventing ddram overflow
+static uint8_t lcd_ddram_address; // no need for preventing ddram overflow
 
 #ifdef VT100
 uint8_t lcd_escape[8];
 #endif
 
-uint8_t lcd_custom_characters[8] = {0};
-uint8_t lcd_custom_index = 0;
+static uint8_t lcd_custom_characters[8] = {0};
+static uint8_t lcd_custom_index = 0;
 
 static void lcd_display(void);
 
@@ -172,10 +172,8 @@ static void lcd_begin(uint8_t clear)
 {
 	lcd_currline = 0;
 	lcd_ddram_address = 0;
-	lcd_custom_index = 0;
 
-	lcd_custom_index = 0;
-	memset(lcd_custom_characters, 0, sizeof(lcd_custom_characters));
+	lcd_invalidate_custom_characters();
 
 	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 4500); // wait min 4.1ms
 	// second try
@@ -251,7 +249,6 @@ void lcd_clear(void)
 	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
 	lcd_currline = 0;
 	lcd_ddram_address = 0;
-	lcd_custom_index = 0;
 }
 
 void lcd_home(void)
@@ -259,7 +256,6 @@ void lcd_home(void)
 	lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero
 	lcd_currline = 0;
 	lcd_ddram_address = 0;
-	lcd_custom_index = 0;
 }
 
 // Turn the display on/off (quickly)
@@ -858,4 +854,8 @@ static void lcd_print_custom(uint8_t c) {
 sendChar:
 	lcd_send(charToSend, HIGH);
 	lcd_ddram_address++; // no need for preventing ddram overflow
+}
+
+void lcd_invalidate_custom_characters() {
+	lcd_custom_index = 0;
 }
