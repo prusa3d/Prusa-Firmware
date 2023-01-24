@@ -1747,8 +1747,8 @@ bool shouldPreheatOnlyNozzle() {
     }
 }
 
-void lcd_print_target_temps_first_line(){
-    lcd_set_cursor(0, 0);
+void lcd_print_target_temps_first_line() {
+    lcd_home();
     lcdui_print_temp(LCD_STR_THERMOMETER[0], (int) degHotend(0), (int) degTargetHotend(0));
     lcd_set_cursor(10, 0);
     int targetBedTemp = (int) degTargetBed();
