@@ -3936,6 +3936,7 @@ extern uint8_t st_backlash_y;
 //!@n M114 - Output current position to serial port
 //!@n M115 - Capabilities string
 //!@n M117 - display message
+//!@n M118 - Serial print
 //!@n M119 - Output Endstop status to serial port
 //!@n M123 - Tachometer value
 //!@n M126 - Solenoid Air Valve Open (BariCUDA support by jmil)
@@ -6509,6 +6510,31 @@ Sigma_Exit:
         const char *src = strchr_pointer + 4; // "M117"
         lcd_setstatus(*src == ' '? src + 1: src);
         custom_message_type = CustomMsg::M117;
+    }
+    break;
+
+    /*!
+    ### M118 - Serial print <a href="https://reprap.org/wiki/G-code#M118:_Echo_message_on_host">M118: Serial print</a>
+    */
+    case 118: {
+        bool hasE, hasA = false;
+        char *p = strchr_pointer;
+        
+        for (uint8_t i = 2; i--;) {
+          // A1, E1, and Pn are always parsed out
+          if (!((p[0] == 'A' || p[0] == 'E') && p[1] == '1')) break;
+          switch (p[0]) {
+            case 'A': hasA = true; break;
+            case 'E': hasE = true; break;
+          }
+          p += 2;
+          while (*p == ' ') ++p;
+        }
+
+        if (hasE) SERIAL_ECHO_START;
+        if (hasA) SERIAL_ECHO("//");
+
+        SERIAL_ECHOLN(p);
     }
     break;
 
