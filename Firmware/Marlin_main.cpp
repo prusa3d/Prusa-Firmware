@@ -7394,7 +7394,8 @@ Sigma_Exit:
     {
         // parse all parameters
         float P = NAN, C = NAN, R = NAN, E = NAN, W = NAN, T = NAN;
-        int8_t I = -1, S = -1, B = -1, A = -1, F = -1;
+        int8_t I = -1, S = -1, B = -1, F = -1;
+        int16_t A = -1;
         if(code_seen('C')) C = code_value();
         if(code_seen('P')) P = code_value();
         if(code_seen('I')) I = code_value_short();
