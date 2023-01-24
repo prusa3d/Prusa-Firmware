@@ -627,6 +627,7 @@ void lcdui_print_status_line(void) {
 //! @endcode
 void lcdui_print_status_screen(void)
 {
+    lcd_frame_start();
 	lcd_home(); //line 0
 
     //Print the hotend temperature (9 chars total)
@@ -680,7 +681,6 @@ void lcdui_print_status_screen(void)
 #ifndef DEBUG_DISABLE_LCD_STATUS_LINE
 	lcdui_print_status_line();
 #endif //DEBUG_DISABLE_LCD_STATUS_LINE
-
 }
 
 static void lcdui_refresh(uint8_t clear = true)
@@ -2862,6 +2862,7 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
 {
     const char *msgend = msg;
     bool multi_screen = false;
+    lcd_frame_start();
     for (uint8_t row = 0; row < LCD_HEIGHT; ++ row) {
         lcd_set_cursor(0, row);
 
