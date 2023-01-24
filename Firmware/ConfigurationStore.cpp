@@ -106,6 +106,15 @@ void Config_PrintSettings(uint8_t level)
 #ifdef THERMAL_MODEL
     thermal_model_report_settings();
 #endif
+    // Report Active sheet
+    {
+      const int8_t sheetNR = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+      char sheetName[8] = {0};
+      eeprom_read_block(sheetName, EEPROM_Sheets_base->s[sheetNR].name, 7);
+      printf_P(PSTR(
+          "%SActive sheet: %d %s\n"),
+          echomagic, sheetNR, sheetName);
+    }
 }
 #endif
 
