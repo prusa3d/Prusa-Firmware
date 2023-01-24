@@ -73,6 +73,7 @@ void menu_start(void)
 		menu_top = lcd_encoder;
     menu_line = menu_top;
     menu_clicked = lcd_clicked(); // Consume click event
+	if (lcd_draw_update) lcd_frame_start();
 }
 
 void menu_end(void)

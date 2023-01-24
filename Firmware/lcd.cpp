@@ -82,7 +82,6 @@ uint8_t lcd_escape[8];
 #endif
 
 static uint8_t lcd_custom_characters[8] = {0};
-static uint8_t lcd_custom_index = 0;
 
 static void lcd_display(void);
 
@@ -101,6 +100,7 @@ static void lcd_no_autoscroll(void);
 #endif
 
 static void lcd_print_custom(uint8_t c);
+static void lcd_invalidate_custom_characters();
 
 #ifdef VT100
 void lcd_escape_write(uint8_t chr);
@@ -244,12 +244,13 @@ void lcd_refresh_noclear(void)
     lcd_begin(0);
 }
 
-// Clear display, set cursor position to zero and unshift the display. It does not clear the custom characters memory
+// Clear display, set cursor position to zero and unshift the display. It also invalidates all custom characters
 void lcd_clear(void)
 {
 	lcd_command(LCD_CLEARDISPLAY, 1600);
 	lcd_currline = 0;
 	lcd_ddram_address = 0;
+	lcd_invalidate_custom_characters();
 }
 
 // Set cursor position to zero and in DDRAM. It does not unshift the display.
@@ -831,25 +832,36 @@ const CustomCharacter Font[] PROGMEM = {
 #include "Fonts/FontTable.h"
 };
 
+// #define DEBUG_CUSTOM_CHARACTERS
+
 static void lcd_print_custom(uint8_t c) {
 	uint8_t charToSend;
 	// check if we already have the character in the lcd memory
-	for (uint8_t i = 0; i < lcd_custom_index; i++) {
-		if (lcd_custom_characters[i] == c) {
-			// send the found custom character id
-			charToSend = i;
+	for (uint8_t i = 0; i < 8; i++) {
+		if ((lcd_custom_characters[i] & 0x7F) == (c & 0x7F)) {
+			lcd_custom_characters[i] = c; // mark the custom character as used
+			charToSend = i; // send the found custom character id
+#ifdef DEBUG_CUSTOM_CHARACTERS
+			printf_P(PSTR("found char %02x at index %u\n"), c, i);
+#endif // DEBUG_CUSTOM_CHARACTERS
 			goto sendChar;
 		}
 	}
 
-	// character not in memory.
-	if (lcd_custom_index >= 8) { //ran out of custom characters. Use the alternate character.
-		charToSend = pgm_read_byte(&Font[c - 0x80].alternate);
-	}
-	else { //create a new custom character and send it
-		lcd_createChar_P(lcd_custom_index, Font[c - 0x80].data);
-		lcd_custom_characters[lcd_custom_index] = c;
-		charToSend = lcd_custom_index++;
+	// in case no empty slot is found, use the alternate character.
+	charToSend = pgm_read_byte(&Font[c - 0x80].alternate);
+
+	// try to find a slot where it could be placed
+	for (uint8_t i = 0; i < 8; i++) {
+		if (lcd_custom_characters[i] == 0x7F) { //found an empty slot. create a new custom character and send it
+			lcd_createChar_P(i, Font[c - 0x80].data);
+			lcd_custom_characters[i] = c; // mark the custom character as used
+#ifdef DEBUG_CUSTOM_CHARACTERS
+			printf_P(PSTR("new char %02x at slot %u\n"), c, i);
+#endif // DEBUG_CUSTOM_CHARACTERS
+			charToSend = i;
+			break;
+		}
 	}
 
 sendChar:
@@ -857,6 +869,31 @@ sendChar:
 	lcd_ddram_address++; // no need for preventing ddram overflow
 }
 
-void lcd_invalidate_custom_characters() {
-	lcd_custom_index = 0;
+static void lcd_invalidate_custom_characters() {
+	memset(lcd_custom_characters, 0x7F, sizeof(lcd_custom_characters));
+}
+
+void lcd_frame_start() {
+	// check all custom characters and discard unused ones
+	for (uint8_t i = 0; i < 8; i++) {
+		uint8_t c = lcd_custom_characters[i];
+		if (c == 0x7F) { //slot empty
+			continue;
+		}
+		else if (c & 0x80) { //slot was used on the last frame update, mark it as potentially unused this time
+			lcd_custom_characters[i] = c & 0x7F;
+		}
+		else { //character is no longer used (or invalid?), mark it as unused
+			lcd_custom_characters[i] = 0x7F;
+		}
+		
+	}
+	
+#ifdef DEBUG_CUSTOM_CHARACTERS
+	printf_P(PSTR("frame start:"));
+	for (uint8_t i = 0; i < 8; i++) {
+		printf_P(PSTR(" %02x"), lcd_custom_characters[i]);
+	}
+	printf_P(PSTR("\n"));
+#endif // DEBUG_CUSTOM_CHARACTERS
 }
