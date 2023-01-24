@@ -6515,6 +6515,14 @@ Sigma_Exit:
 
     /*!
     ### M118 - Serial print <a href="https://reprap.org/wiki/G-code#M118:_Echo_message_on_host">M118: Serial print</a>
+    #### Usage
+
+        M118 [ A1 | E1 ] [ String ]
+
+    #### Parameters
+    - `A1` - Prepend // to denote a comment or action command. Hosts like OctoPrint can interpret such commands to perform special actions. See your host’s documentation.
+    - `E1` - Prepend echo: to the message. Some hosts will display echo messages differently when preceded by echo:.
+    - `String` - Message string. If omitted, a blank line will be sent.
     */
     case 118: {
         bool hasE, hasA = false;
