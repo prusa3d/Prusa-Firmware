@@ -837,7 +837,7 @@ const CustomCharacter Font[] PROGMEM = {
 static void lcd_print_custom(uint8_t c) {
 	uint8_t charToSend;
 	// check if we already have the character in the lcd memory
-	for (uint8_t i = 0; i < 8; i++) {
+	for (uint8_t i = 0; i < lcd_custom_index; i++) {
 		if (lcd_custom_characters[i] == c) {
 			// send the found custom character id
 			charToSend = i;
