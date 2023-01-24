@@ -842,7 +842,7 @@ static void lcd_print_custom(uint8_t c) {
 			lcd_custom_characters[i] = c; // mark the custom character as used
 			charToSend = i; // send the found custom character id
 #ifdef DEBUG_CUSTOM_CHARACTERS
-			printf_P(PSTR("found char %02x at index %u\n"), c, i);
+			printf_P(PSTR("found char %02x at slot %u\n"), c, i);
 #endif // DEBUG_CUSTOM_CHARACTERS
 			goto sendChar;
 		}
@@ -857,7 +857,7 @@ static void lcd_print_custom(uint8_t c) {
 			lcd_createChar_P(i, Font[c - 0x80].data);
 			lcd_custom_characters[i] = c; // mark the custom character as used
 #ifdef DEBUG_CUSTOM_CHARACTERS
-			printf_P(PSTR("new char %02x at slot %u\n"), c, i);
+			printf_P(PSTR("created char %02x at slot %u\n"), c, i);
 #endif // DEBUG_CUSTOM_CHARACTERS
 			charToSend = i;
 			break;
@@ -884,6 +884,9 @@ void lcd_frame_start() {
 			lcd_custom_characters[i] = c & 0x7F;
 		}
 		else { //character is no longer used (or invalid?), mark it as unused
+#ifdef DEBUG_CUSTOM_CHARACTERS
+			printf_P(PSTR("discarded char %02x at slot %u\n"), c, i);
+#endif // DEBUG_CUSTOM_CHARACTERS
 			lcd_custom_characters[i] = 0x7F;
 		}
 		
