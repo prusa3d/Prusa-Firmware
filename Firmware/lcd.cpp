@@ -75,10 +75,14 @@ uint8_t lcd_displaycontrol = 0;
 uint8_t lcd_displaymode = 0;
 
 uint8_t lcd_currline;
+uint8_t lcd_ddram_address; // no need for preventing ddram overflow
 
 #ifdef VT100
 uint8_t lcd_escape[8];
 #endif
+
+uint8_t lcd_custom_characters[8] = {0};
+uint8_t lcd_custom_index = 0;
 
 static void lcd_display(void);
 
@@ -95,6 +99,8 @@ static void lcd_rightToLeft(void);
 static void lcd_autoscroll(void);
 static void lcd_no_autoscroll(void);
 #endif
+
+static void lcd_print_custom(uint8_t c);
 
 #ifdef VT100
 void lcd_escape_write(uint8_t chr);
@@ -144,24 +150,32 @@ static void lcd_command(uint8_t value, uint16_t duration = LCD_DEFAULT_DELAY)
 
 static void lcd_write(uint8_t value)
 {
-	if (value == '\n')
-	{
+	if (value == '\n') {
 		if (lcd_currline > 3) lcd_currline = -1;
 		lcd_set_cursor(0, lcd_currline + 1); // LF
-		return;
+	}
+	else if ((value >= 0x80) && (value <= 0xDF)) {
+		lcd_print_custom(value);
 	}
 	#ifdef VT100
-	if (lcd_escape[0] || (value == 0x1b)){
+	else if (lcd_escape[0] || (value == '\e')) {
 		lcd_escape_write(value);
-		return;
 	}
 	#endif
-	lcd_send(value, HIGH);
+	else {
+		lcd_send(value, HIGH);
+		lcd_ddram_address++; // no need for preventing ddram overflow
+	}
 }
 
 static void lcd_begin(uint8_t clear)
 {
 	lcd_currline = 0;
+	lcd_ddram_address = 0;
+	lcd_custom_index = 0;
+
+	lcd_custom_index = 0;
+	memset(lcd_custom_characters, 0, sizeof(lcd_custom_characters));
 
 	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 4500); // wait min 4.1ms
 	// second try
@@ -225,25 +239,27 @@ void lcd_init(void)
 void lcd_refresh(void)
 {
     lcd_begin(1);
-    lcd_set_custom_characters();
 }
 
 void lcd_refresh_noclear(void)
 {
     lcd_begin(0);
-    lcd_set_custom_characters();
 }
 
 void lcd_clear(void)
 {
 	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
 	lcd_currline = 0;
+	lcd_ddram_address = 0;
+	lcd_custom_index = 0;
 }
 
 void lcd_home(void)
 {
 	lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero
 	lcd_currline = 0;
+	lcd_ddram_address = 0;
+	lcd_custom_index = 0;
 }
 
 // Turn the display on/off (quickly)
@@ -348,7 +364,9 @@ static uint8_t __attribute__((noinline)) lcd_get_row_offset(uint8_t row)
 void lcd_set_cursor(uint8_t col, uint8_t row)
 {
 	lcd_set_current_row(row);
-	lcd_command(LCD_SETDDRAMADDR | (col + lcd_get_row_offset(lcd_currline)));
+    uint8_t addr = col + lcd_get_row_offset(lcd_currline);
+	lcd_ddram_address = addr;
+	lcd_command(LCD_SETDDRAMADDR | addr);
 }
 
 void lcd_set_cursor_column(uint8_t col)
@@ -364,6 +382,7 @@ void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
   lcd_command(LCD_SETCGRAMADDR | (location << 3));
   for (uint8_t i = 0; i < 8; i++)
     lcd_send(pgm_read_byte(&charmap[i]), HIGH);
+  lcd_command(LCD_SETDDRAMADDR | lcd_ddram_address); // no need for masking the address
 }
 
 #ifdef VT100
@@ -426,7 +445,7 @@ void lcd_escape_write(uint8_t chr)
 			break;
 		case '2':
 			if (chr == 'J') // escape = "\x1b[2J"
-				{ lcd_clear(); lcd_currline = 0; break; } // EraseScreen
+				{ lcd_clear(); break; } // EraseScreen
 		default:
 			if (e_2_is_num && // escape = "\x1b[%1d"
 				((chr == ';') || // escape = "\x1b[%1d;"
@@ -809,151 +828,29 @@ void lcd_buttons_update(void)
 ////////////////////////////////////////////////////////////////////////////////
 // Custom character data
 
-const uint8_t lcd_chardata_bedTemp[8] PROGMEM = {
-	0b00000,
-	0b11111,
-	0b10101,
-	0b10001,
-	0b10101,
-	0b11111,
-	0b00000,
-	0b00000}; //thanks Sonny Mounicou
+const CustomCharacter Font[] PROGMEM = {
+#include "Fonts/FontTable.h"
+};
 
-const uint8_t lcd_chardata_degree[8] PROGMEM = {
-	0b01100,
-	0b10010,
-	0b10010,
-	0b01100,
-	0b00000,
-	0b00000,
-	0b00000,
-	0b00000};
-
-const uint8_t lcd_chardata_thermometer[8] PROGMEM = {
-	0b00100,
-	0b01010,
-	0b01010,
-	0b01010,
-	0b01010,
-	0b10001,
-	0b10001,
-	0b01110};
-
-const uint8_t lcd_chardata_uplevel[8] PROGMEM = {
-	0b00100,
-	0b01110,
-	0b11111,
-	0b00100,
-	0b11100,
-	0b00000,
-	0b00000,
-	0b00000}; //thanks joris
-
-const uint8_t lcd_chardata_refresh[8] PROGMEM = {
-	0b00000,
-	0b00110,
-	0b11001,
-	0b11000,
-	0b00011,
-	0b10011,
-	0b01100,
-	0b00000}; //thanks joris
-
-const uint8_t lcd_chardata_folder[8] PROGMEM = {
-	0b00000,
-	0b11100,
-	0b11111,
-	0b10001,
-	0b10001,
-	0b11111,
-	0b00000,
-	0b00000}; //thanks joris
-
-/*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	0b11100,
-	0b10000,
-	0b11000,
-	0b10111,
-	0b00101,
-	0b00110,
-	0b00101,
-	0b00000};*/ //thanks Sonny Mounicou
-
-/*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	0b11100,
-	0b10100,
-	0b11000,
-	0b10100,
-	0b00000,
-	0b00111,
-	0b00010,
-	0b00010};*/
-
-/*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	0b01100,
-	0b10011,
-	0b00000,
-	0b01100,
-	0b10011,
-	0b00000,
-	0b01100,
-	0b10011};*/
-
-const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
-	0b00000,
-	0b00100,
-	0b10010,
-	0b01001,
-	0b10010,
-	0b00100,
-	0b00000,
-	0b00000};
-
-const uint8_t lcd_chardata_clock[8] PROGMEM = {
-	0b00000,
-	0b01110,
-	0b10011,
-	0b10101,
-	0b10001,
-	0b01110,
-	0b00000,
-	0b00000}; //thanks Sonny Mounicou
-
-void lcd_set_custom_characters(void)
-{
-	lcd_createChar_P(LCD_STR_BEDTEMP[0], lcd_chardata_bedTemp);
-	lcd_createChar_P(LCD_STR_DEGREE[0], lcd_chardata_degree);
-	lcd_createChar_P(LCD_STR_THERMOMETER[0], lcd_chardata_thermometer);
-	lcd_createChar_P(LCD_STR_UPLEVEL[0], lcd_chardata_uplevel);
-	lcd_createChar_P(LCD_STR_REFRESH[0], lcd_chardata_refresh);
-	lcd_createChar_P(LCD_STR_FOLDER[0], lcd_chardata_folder);
-	lcd_createChar_P(LCD_STR_FEEDRATE[0], lcd_chardata_feedrate);
-	lcd_createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
+static void lcd_print_custom(uint8_t c) {
+	if (lcd_custom_index >= 8) { //ran out of custom characters. Use the alternate character.
+		lcd_send(pgm_read_byte(&Font[c - 0x80].alternate), HIGH);
+		lcd_ddram_address++; // no need for preventing ddram overflow
+		return;
+	}
+	
+	// check if we already have the character in the lcd memory
+	for (uint8_t i = 0; i < 8; i++) {
+		if (lcd_custom_characters[i] == c) {
+			lcd_send(i, HIGH);
+			lcd_ddram_address++; // no need for preventing ddram overflow
+			return;
+		}
+	}
+	// character not in memory. Add it
+	lcd_createChar_P(lcd_custom_index, Font[c - 0x80].data);
+	lcd_custom_characters[lcd_custom_index] = c;
+	lcd_send(lcd_custom_index, HIGH);
+	lcd_ddram_address++; // no need for preventing ddram overflow
+	lcd_custom_index++;
 }
-
-const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
-	0b00000,
-	0b00000,
-	0b10001,
-	0b01010,
-	0b00100,
-	0b10001,
-	0b01010,
-	0b00100};
-
-const uint8_t lcd_chardata_confirm[8] PROGMEM = {
-	0b00000,
-	0b00001,
-	0b00011,
-	0b10110,
-	0b11100,
-	0b01000,
-	0b00000,
-	0b00000};
-
-void lcd_set_custom_characters_nextpage(void)
-{
-	lcd_createChar_P(LCD_STR_ARROW_2_DOWN[0], lcd_chardata_arr2down);
-	lcd_createChar_P(LCD_STR_CONFIRM[0], lcd_chardata_confirm);
-}
-

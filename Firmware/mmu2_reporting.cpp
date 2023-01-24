@@ -71,7 +71,6 @@ static void ReportErrorHookStaticRender(uint8_t ei) {
         two_choices = true;
     }
 
-    lcd_set_custom_characters_nextpage();
     lcd_update_enable(false);
     lcd_clear();
 
@@ -261,7 +260,6 @@ void ReportErrorHook(CommandInProgress /*cip*/, ErrorCode ec, uint8_t /*es*/) {
                 break;
             case 2:
                 // Exit error screen and enable lcd updates
-                lcd_set_custom_characters();
                 lcd_update_enable(true);
                 lcd_return_to_status();
                 sound_wait_for_user_reset();
@@ -275,7 +273,6 @@ void ReportErrorHook(CommandInProgress /*cip*/, ErrorCode ec, uint8_t /*es*/) {
         return; // Always return to loop() to let MMU trigger a call to ReportErrorHook again
         break;
     case (uint8_t)ReportErrorHookStates::DISMISS_ERROR_SCREEN:
-        lcd_set_custom_characters();
         lcd_update_enable(true);
         lcd_return_to_status();
         sound_wait_for_user_reset();

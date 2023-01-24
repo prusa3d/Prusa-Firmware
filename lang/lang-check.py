@@ -134,10 +134,10 @@ def wrap_text(text, cols):
     return ret
 
 def ign_char_first(c):
-    return c.isalnum() or c in {'%', '?'}
+    return c.isalnum() or c in ['%', '?'] or c in [chr(c) for c in range(0x80, 0xE0)]
 
 def ign_char_last(c):
-    return c.isalnum() or c in {'.', "'"}
+    return c.isalnum() or c in ['.', '\''] or c in [chr(c) for c in range(0x80, 0xE0)]
 
 # Print_anyway is used to reduce code copypasta.
 # specifically, if we have all the info here to construct the "normal" message as well, it's done here
