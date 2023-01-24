@@ -313,7 +313,7 @@ static void menu_item_sdfile(const char* str_fn, char* str_fnl)
 // Print temperature (nozzle/bed) (9 chars total)
 void lcdui_print_temp(char type, int val_current, int val_target)
 {
-	int chars = lcd_printf_P(_N("%c%3d/%d%c"), type, val_current, val_target, LCD_STR_DEGREE[0]);
+	int chars = lcd_printf_P(_N("%c%3d/%d" LCD_STR_DEGREE), type, val_current, val_target);
 	lcd_space(9 - chars);
 }
 
@@ -352,7 +352,7 @@ void lcdui_print_planner_diag(void)
 // Print feedrate (8 chars total)
 void lcdui_print_feedrate(void)
 {
-	int chars = lcd_printf_P(_N("%c%3d%%"), LCD_STR_FEEDRATE[0], feedmultiply);
+	int chars = lcd_printf_P(_N(LCD_STR_FEEDRATE "%3d%%"), feedmultiply);
 	lcd_space(8 - chars);
 }
 
@@ -487,12 +487,12 @@ void lcdui_print_time(void)
         }
 
         if (print_t < 6000) //time<100h
-            chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
+            chars = lcd_printf_P(_N(LCD_STR_CLOCK "%02u:%02u%c%c"), print_t / 60, print_t % 60, suff, suff_doubt);
         else //time>=100h
-            chars = lcd_printf_P(_N("%c%3uh %c%c"), LCD_STR_CLOCK[0], print_t / 60, suff, suff_doubt);
+            chars = lcd_printf_P(_N(LCD_STR_CLOCK "%3uh %c%c"), print_t / 60, suff, suff_doubt);
     }
     else
-        chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
+        chars = lcd_printf_P(_N(LCD_STR_CLOCK "--:--  "));
     lcd_space(8 - chars);
 }
 
@@ -627,8 +627,7 @@ void lcdui_print_status_line(void) {
 //! @endcode
 void lcdui_print_status_screen(void)
 {
-
-    lcd_set_cursor(0, 0); //line 0
+	lcd_home(); //line 0
 
     //Print the hotend temperature (9 chars total)
 	lcdui_print_temp(LCD_STR_THERMOMETER[0], (int)(degHotend(0) + 0.5), (int)(degTargetHotend(0) + 0.5));
@@ -1338,7 +1337,7 @@ static void lcd_menu_temperatures_line(const char *ipgmLabel, int value){
     static const size_t maxChars = 15;
     char tmp[maxChars];
     pgmtext_with_colon(ipgmLabel, tmp, maxChars);
-    lcd_printf_P(PSTR(" %s%3d\x01 \n"), tmp, value); // no need to add -14.14 to string alignment
+    lcd_printf_P(PSTR(" %s%3d" LCD_STR_DEGREE " \n"), tmp, value); // no need to add -14.14 to string alignment
 }
 
 //! @brief Show Temperatures
@@ -2480,8 +2479,8 @@ static void lcd_menu_xyz_skew()
 	lcd_printf_P(_N(
 	  "%-14.14S:\n"
 	  "%S\n"
-	  "%-14.14S:%3.2f\x01\n"
-	  "%-14.14S:%3.2f\x01"
+	  "%-14.14S:%3.2f" LCD_STR_DEGREE "\n"
+	  "%-14.14S:%3.2f" LCD_STR_DEGREE
 	 ),
 	 _i("Measured skew"),  ////MSG_MEASURED_SKEW c=14
 	 STR_SEPARATOR,
@@ -2490,7 +2489,7 @@ static void lcd_menu_xyz_skew()
 	);
 	lcd_set_cursor(15, 0);
 	if (angleDiff < 100){
-		lcd_printf_P(_N("%3.2f\x01"), _deg(angleDiff));
+		lcd_printf_P(_N("%3.2f" LCD_STR_DEGREE), _deg(angleDiff));
 	} else {
 		lcd_puts_P(_T(MSG_NA));
 	}
@@ -2510,6 +2509,7 @@ static void lcd_menu_xyz_skew()
 //! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_xyz_offset()
 {
+    lcd_home();
     lcd_puts_at_P(0, 0, _i("[0;0] point offset"));////MSG_MEASURED_OFFSET c=20
     lcd_puts_at_P(0, 1, STR_SEPARATOR);
 
@@ -2596,7 +2596,7 @@ static void lcd_babystep_z()
 	{
 	    SheetFormatBuffer buffer;
 	    menu_format_sheet_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], buffer);
-	    lcd_set_cursor(0, 0);
+	    lcd_home();
 	    lcd_print(buffer.c);
 	    lcd_set_cursor(0, 1);
 		menu_draw_float13(_i("Adjusting Z"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=13
@@ -2861,6 +2861,7 @@ static inline bool pgm_is_interpunction(const char *c_addr)
  */
 static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
 {
+    lcd_home();
     const char *msgend = msg;
     bool multi_screen = false;
     for (uint8_t row = 0; row < LCD_HEIGHT; ++ row) {
@@ -2906,8 +2907,6 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg)
     }
 
     if (multi_screen) {
-        // Display the "next screen" indicator character.
-        lcd_set_custom_characters_nextpage();
         // Display the double down arrow.
         lcd_putc_at(19, 3, LCD_STR_ARROW_2_DOWN[0]);
     }
@@ -2935,7 +2934,6 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
     LcdUpdateDisabler lcdUpdateDisabler;
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
-	lcd_set_custom_characters_nextpage();
 	lcd_consume_click();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	// Until confirmed by a button click.
@@ -2950,7 +2948,6 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
             if (lcd_clicked()) {
 				if (msg_next == NULL) {
 					KEEPALIVE_STATE(IN_HANDLER);
-					lcd_set_custom_characters();
 					return;
 				}
 				else {
@@ -3039,7 +3036,6 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
 ) {
     const char *msg_next = msg ? lcd_display_message_fullscreen_P(msg) : NULL;
     bool multi_screen = msg_next != NULL;
-    lcd_set_custom_characters_nextpage();
 
     // Initial status/prompt on single-screen messages
     uint8_t current_selection = default_selection;
@@ -3102,7 +3098,6 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
     }
 exit:
     KEEPALIVE_STATE(IN_HANDLER);
-    lcd_set_custom_characters();
     // Enable LCD updates again. We may not call lcd_update_enable(true)
     // because it may create a recursion scenario when the caller of lcd_show_multiscreen_message_with_choices_and_wait_P
     // is a submenu lcd_update_enable(true) will cause another call to the submenu immediately
@@ -3214,6 +3209,7 @@ void lcd_temp_cal_show_result(bool result) {
 
 #ifndef TMC2130
 static void lcd_show_end_stops() {
+	lcd_home();
 	lcd_puts_at_P(0, 0, (PSTR("End stops diag")));
 	lcd_puts_at_P(0, 1, (READ(X_MIN_PIN) ^ (bool)X_MIN_ENDSTOP_INVERTING) ? (PSTR("X1")) : (PSTR("X0")));
 	lcd_puts_at_P(0, 2, (READ(Y_MIN_PIN) ^ (bool)Y_MIN_ENDSTOP_INVERTING) ? (PSTR("Y1")) : (PSTR("Y0")));
@@ -3587,8 +3583,8 @@ void lcd_first_layer_calibration_reset()
 
     char sheet_name[sizeof(Sheet::name)];
     eeprom_read_block(sheet_name, &EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, sizeof(Sheet::name));
-    lcd_set_cursor(0, 0);
-    float offset = static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))/cs.axis_steps_per_mm[Z_AXIS];
+    lcd_home();
+    float offset = static_cast<int16_t>(eeprom_read_word(reinterpret_cast<uint16_t*>(&EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)))/cs.axis_steps_per_unit[Z_AXIS];
     lcd_printf_P(_i("Sheet %.7s\nZ offset: %+1.3fmm\n%cContinue\n%cReset"),////MSG_SHEET_OFFSET c=20 r=4
             sheet_name, offset, menuData->reset ? ' ' : '>', menuData->reset ? '>' : ' ');// \n denotes line break, %.7s is replaced by 7 character long sheet name, %+1.3f is replaced by 6 character long floating point number, %c is replaced by > or white space (one character) based on whether first or second option is selected. % denoted place holders can not be reordered.
 
@@ -5059,7 +5055,7 @@ static void lcd_rename_sheet_menu()
     if (lcd_encoder > '\x7F') lcd_encoder = '\x7F';
 
     menuData->name[menuData->selected] = lcd_encoder;
-    lcd_set_cursor(0,0);
+    lcd_home();
     for (uint_least8_t i = 0; i < sizeof(Sheet::name); ++i)
     {
         lcd_putc(menuData->name[i]);
@@ -6849,8 +6845,10 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 
 	lcd_update_enable(false);
 	const char _indicator = (_progress >= _progress_scale) ? '-' : '|';
-	if (_clear) lcd_clear();
-	lcd_set_cursor(0, 0);
+	if (_clear) 
+		lcd_clear();
+	else
+		lcd_home();
 
 	if (screen == TestScreen::ExtruderFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));
 	if (screen == TestScreen::PrintFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));

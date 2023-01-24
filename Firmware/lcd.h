@@ -171,21 +171,25 @@ private:
 ////////////////////////////////////
 
 //Custom characters defined in the first 8 characters of the LCD
-#define LCD_STR_BEDTEMP      "\x00"
-#define LCD_STR_DEGREE       "\x01"
-#define LCD_STR_THERMOMETER  "\x02"
-#define LCD_STR_UPLEVEL      "\x03"
-#define LCD_STR_REFRESH      "\x04"
-#define LCD_STR_FOLDER       "\x05"
-#define LCD_STR_FEEDRATE     "\x06"
-#define LCD_STR_ARROW_2_DOWN "\x06"
-#define LCD_STR_CLOCK        "\x07"
-#define LCD_STR_CONFIRM      "\x07"
 #define LCD_STR_ARROW_RIGHT  "\x7E" //from the default character set
+#define LCD_STR_BEDTEMP      "\x80"
+#define LCD_STR_DEGREE       "\x81"
+#define LCD_STR_THERMOMETER  "\x82"
+#define LCD_STR_UPLEVEL      "\x83"
+#define LCD_STR_REFRESH      "\x84"
+#define LCD_STR_FOLDER       "\x85"
+#define LCD_STR_FEEDRATE     "\x86"
+#define LCD_STR_CLOCK        "\x87"
+#define LCD_STR_ARROW_2_DOWN "\x88"
+#define LCD_STR_CONFIRM      "\x89"
 #define LCD_STR_SOLID_BLOCK  "\xFF"  //from the default character set
 
-extern void lcd_set_custom_characters(void);
-extern void lcd_set_custom_characters_nextpage(void);
+struct CustomCharacter {
+    const uint8_t data[8];
+    const char alternate;
+};
+
+extern uint8_t lcd_custom_index;
 
 //! @brief Consume click and longpress event
 inline void lcd_consume_click()
