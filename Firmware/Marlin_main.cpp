@@ -6985,7 +6985,7 @@ Sigma_Exit:
     - `R` - An int representing the minimum number of segments per arcs of any radius,
             except when the results in segment lengths greater than or less than the minimum
             and maximum segment length.  Set to 0 to disable.
-    - 'F' - An int representing the number of segments per second, unless this results in segment lengths
+    - `F` - An int representing the number of segments per second, unless this results in segment lengths
             greater than or less than the minimum and maximum segment length.  Set to 0 to disable.
     */
     case 214: //!@n M214 - Set Arc Parameters (Use M500 to store in eeprom) P<MM_PER_ARC_SEGMENT> S<MIN_MM_PER_ARC_SEGMENT> R<MIN_ARC_SEGMENTS> F<ARC_SEGMENTS_PER_SEC>
