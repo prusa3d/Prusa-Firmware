@@ -1,5 +1,6 @@
 /// @file
 /// MK3 / Marlin1 implementation of support routines for the MMU2
+#include "mmu2_marlin.h"
 #include "Marlin.h"
 #include "stepper.h"
 #include "planner.h"
@@ -13,9 +14,8 @@ void MoveE(float delta, float feedRate) {
     plan_buffer_line_curposXYZE(feedRate);
 }
 
-float raise_z(float delta) {
-    // @@TODO
-    return 0.0F;
+float MoveRaiseZ(float delta) {
+    return raise_z(delta);
 }
 
 void planner_synchronize() {
@@ -27,7 +27,7 @@ bool planner_any_moves() {
 }
 
 float planner_get_machine_position_E_mm(){
-// @@TODO    return Planner::get_machine_position_mm()[3];
+    return current_position[E_AXIS];
 }
 
 float planner_get_current_position_E(){
@@ -82,7 +82,7 @@ void marlin_manage_inactivity(bool b){
 
 void marlin_idle(bool b){
     manage_heater();
-    manage_inactivity(true);
+    manage_inactivity(b);
 }
 
 int16_t thermal_degTargetHotend() {
