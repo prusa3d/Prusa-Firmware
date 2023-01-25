@@ -1,7 +1,16 @@
 #include "mmu2_protocol_logic.h"
 #include "mmu2_log.h"
 #include "mmu2_fsensor.h"
+
+#ifdef __AVR__
+// on MK3/S/+ we shuffle the timers a bit, thus "_millis" may not equal "millis"
 #include "system_timer.h"
+#else
+// irrelevant on Buddy FW, just keep "_millis" as "millis"
+#include <wiring_time.h>
+#define _millis millis
+#endif
+
 #include <string.h>
 
 namespace MMU2 {
@@ -20,7 +29,8 @@ const uint8_t ProtocolLogic::regs16Addrs[ProtocolLogic::regs16Count] PROGMEM = {
 };
 
 const uint8_t ProtocolLogic::initRegs8Addrs[ProtocolLogic::initRegs8Count] PROGMEM = {
-    0x0b, // extra load distance
+    0x0b, // extra load distance [mm]
+    0x14, // pulley slow feedrate [mm/s]
 };
 
 void ProtocolLogic::CheckAndReportAsyncEvents() {
@@ -112,9 +122,12 @@ void ProtocolLogic::SendWriteRegister(uint8_t index, uint16_t value, ScopeState 
 // searches for "ok\n" in the incoming serial data (that's the usual response of the old MMU FW)
 struct OldMMUFWDetector {
     uint8_t ok;
-    inline constexpr OldMMUFWDetector():ok(0) { }
+    inline constexpr OldMMUFWDetector()
+        : ok(0) {}
     
-    enum class State : uint8_t { MatchingPart, SomethingElse, Matched };
+    enum class State : uint8_t { MatchingPart,
+        SomethingElse,
+        Matched };
     
     /// @returns true when "ok\n" gets detected
     State Detect(uint8_t c){
@@ -144,6 +157,7 @@ StepStatus ProtocolLogic::ExpectingMessage() {
         case DecodeStatus::MessageCompleted:
             rsp = protocol.GetResponseMsg();
             LogResponse();
+            // @@TODO reset direction of communication
             RecordUARTActivity(); // something has happened on the UART, update the timeout record
             return MessageReady;
         case DecodeStatus::NeedMoreData:
@@ -386,7 +400,7 @@ StepStatus ProtocolLogic::CommandStep() {
     case ScopeState::ButtonSent:
         if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
             // Button was accepted, decrement the retry.
-            mmu2.DecrementRetryAttempts();
+            DecrementRetryAttempts();
         }
         SendAndUpdateFilamentSensor();
         break;
@@ -467,7 +481,7 @@ StepStatus ProtocolLogic::IdleStep() {
     case ScopeState::ButtonSent:
         if (rsp.paramCode == ResponseMsgParamCodes::Accepted) {
             // Button was accepted, decrement the retry.
-            mmu2.DecrementRetryAttempts();
+            DecrementRetryAttempts();
         }
         StartReading8bitRegisters();
         return Processing;
@@ -495,7 +509,7 @@ StepStatus ProtocolLogic::IdleStep() {
     return Finished;
 }
 
-ProtocolLogic::ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance)
+ProtocolLogic::ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance, uint8_t pulleySlowFeedrate)
     : explicitPrinterError(ErrorCode::OK)
     , currentScope(Scope::Stopped)
     , scopeState(ScopeState::Ready)
@@ -510,12 +524,16 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance)
     , progressCode(ProgressCode::OK)
     , buttonCode(NoButton)
     , lastFSensor((uint8_t)WhereIsFilament())
-    , regs8 { 0, 0, 0 }
-    , regs16 { 0, 0 }
-    , initRegs8 { extraLoadDistance }
     , regIndex(0)
-    , mmuFwVersion { 0, 0, 0 }
-{}
+    , retryAttempts(MAX_RETRIES)
+    , inAutoRetry(false)
+{
+    // @@TODO currently, I don't see a way of writing the initialization better :(
+    // I'd like to write something like: initRegs8 { extraLoadDistance, pulleySlowFeedrate }
+    // avr-gcc seems to like such a syntax, ARM gcc doesn't
+    initRegs8[0] = extraLoadDistance;
+    initRegs8[1] = pulleySlowFeedrate;
+}
 
 void ProtocolLogic::Start() {
     state = State::InitSequence;
@@ -809,6 +827,18 @@ uint8_t ProtocolLogic::CommandInProgress() const {
     if (currentScope != Scope::Command)
         return 0;
     return (uint8_t)ReqMsg().code;
+}
+
+void ProtocolLogic::DecrementRetryAttempts() {
+    if (inAutoRetry && retryAttempts) {
+        SERIAL_ECHOLNPGM("DecrementRetryAttempts");
+        retryAttempts--;
+    }
+}
+
+void ProtocolLogic::ResetRetryAttempts() {
+    SERIAL_ECHOLNPGM("ResetRetryAttempts");
+    retryAttempts = MAX_RETRIES;
 }
 
 bool DropOutFilter::Record(StepStatus ss) {

@@ -1,7 +1,15 @@
 #pragma once
 #include <stdint.h>
 #include <avr/pgmspace.h>
-// #include <array> //@@TODO Don't we have STL for AVR somewhere?
+
+#ifdef __AVR__
+#include "mmu2/error_codes.h"
+#include "mmu2/progress_codes.h"
+#include "mmu2/buttons.h"
+#include "mmu2_protocol.h"
+
+// #include <array> std array is not available on AVR ... we need to "fake" it
+namespace std {
 template<typename T, uint8_t N>
 class array {
     T data[N];
@@ -14,16 +22,25 @@ public:
         return data[i];
     }
 };
+}
+#else
 
-#include "mmu2/error_codes.h"
-#include "mmu2/progress_codes.h"
-#include "mmu2/buttons.h"
-#include "mmu2_protocol.h"
+#include <array>
+#include "../../../../../../Prusa-Firmware-MMU/src/logic/error_codes.h"
+#include "../../../../../../Prusa-Firmware-MMU/src/logic/progress_codes.h"
+
+// prevent ARM HAL macros from breaking our code
+#undef CRC
+#include "../../../../../../Prusa-Firmware-MMU/src/modules/protocol.h"
+#include "buttons.h"
+#endif
 
 #include "mmu2_serial.h"
 
 /// New MMU2 protocol logic
 namespace MMU2 {
+
+static constexpr uint8_t MAX_RETRIES = 3U;
 
 using namespace modules::protocol;
 
@@ -73,7 +90,7 @@ public:
 /// Logic layer of the MMU vs. printer communication protocol
 class ProtocolLogic {
 public:
-    ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance);
+    ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance, uint8_t pulleySlowFeedrate);
 
     /// Start/Enable communication with the MMU
     void Start();
@@ -141,6 +158,21 @@ public:
 
     inline uint8_t MmuFwVersionRevision() const {
         return mmuFwVersion[2];
+    }
+
+    /// Current number of retry attempts left
+    constexpr uint8_t RetryAttempts() const { return retryAttempts; }
+
+    /// Decrement the retry attempts, if in a retry.
+    /// Called by the MMU protocol when a sent button is acknowledged.
+    void DecrementRetryAttempts();
+
+    /// Reset the retryAttempts back to the default value
+    void ResetRetryAttempts();
+
+    constexpr bool InAutoRetry() const { return inAutoRetry; }
+    void SetInAutoRetry(bool iar) {
+        inAutoRetry = iar;
     }
 
     inline void SetPrinterError(ErrorCode ec){
@@ -315,7 +347,7 @@ private:
 
     Protocol protocol; ///< protocol codec
 
-    array<uint8_t, 16> lastReceivedBytes; ///< remembers the last few bytes of incoming communication for diagnostic purposes
+    std::array<uint8_t, 16> lastReceivedBytes; ///< remembers the last few bytes of incoming communication for diagnostic purposes
     uint8_t lrb;
 
     MMU2Serial *uart; ///< UART interface
@@ -330,31 +362,27 @@ private:
     static constexpr uint8_t regs8Count = 3;
     static_assert(regs8Count > 0); // code is not ready for empty lists of registers
     static const uint8_t regs8Addrs[regs8Count] PROGMEM;
-    uint8_t regs8[regs8Count];
+    uint8_t regs8[regs8Count] = { 0, 0, 0 };
 
     // 16bit registers
     static constexpr uint8_t regs16Count = 2;
     static_assert(regs16Count > 0); // code is not ready for empty lists of registers
     static const uint8_t regs16Addrs[regs16Count] PROGMEM;
-    uint16_t regs16[regs16Count];
+    uint16_t regs16[regs16Count] = { 0, 0 };
 
     // 8bit init values to be sent to the MMU after line up
-    static constexpr uint8_t initRegs8Count = 1;
+    static constexpr uint8_t initRegs8Count = 2;
     static_assert(initRegs8Count > 0); // code is not ready for empty lists of registers
     static const uint8_t initRegs8Addrs[initRegs8Count] PROGMEM;
     uint8_t initRegs8[initRegs8Count];
 
     uint8_t regIndex;
 
-    uint8_t mmuFwVersion[3];
+    uint8_t mmuFwVersion[3] = { 0, 0, 0 };
     uint16_t mmuFwVersionBuild;
 
-    friend class ProtocolLogicPartBase;
-    friend class Stopped;
-    friend class Command;
-    friend class Idle;
-    friend class StartSeq;
-    friend class DelayedRestart;
+    uint8_t retryAttempts;
+    bool inAutoRetry;
 
     friend class MMU2;
 };

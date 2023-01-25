@@ -1,18 +1,23 @@
 /// @file
 #pragma once
+
+#include "mmu2_state.h"
+#include "mmu2_marlin.h"
+
+#ifdef __AVR__
 #include "mmu2_protocol_logic.h"
+typedef float feedRate_t;
+#else
+
+#include "protocol_logic.h"
+#include "../../Marlin/src/core/macros.h"
+#include "../../Marlin/src/core/types.h"
+#include <atomic>
+#endif
 
 struct E_Step;
 
 namespace MMU2 {
-
-static constexpr uint8_t MAX_RETRIES = 3U;
-
-/// @@TODO hmmm, 12 bytes... may be we can reduce that
-struct xyz_pos_t {
-    float xyz[3];
-    xyz_pos_t()=default;
-};
 
 // general MMU setup for MK3
 enum : uint8_t {
@@ -36,22 +41,8 @@ public:
     /// Stops the protocol logic, closes the UART, powers OFF the MMU
     void Stop();
     
-    /// States of a printer with the MMU:
-    /// - Active
-    /// - Connecting
-    /// - Stopped
-    /// 
-    /// When the printer's FW starts, the MMU2 mode is either Stopped or NotResponding (based on user's preference).
-    /// When the MMU successfully establishes communication, the state changes to Active.
-    enum class xState : uint_fast8_t {
-        Active, ///< MMU has been detected, connected, communicates and is ready to be worked with.
-        Connecting, ///< MMU is connected but it doesn't communicate (yet). The user wants the MMU, but it is not ready to be worked with.
-        Stopped ///< The user doesn't want the printer to work with the MMU. The MMU itself is not powered and does not work at all.
-    };
-    
     inline xState State() const { return state; }
     
-    // @@TODO temporary wrappers to make old gcc survive the code
     inline bool Enabled()const { return State() == xState::Active; }
 
     /// Different levels of resetting the MMU
@@ -96,7 +87,6 @@ public:
     /// @param data Data to write to register
     /// @returns true upon success
     bool WriteRegister(uint8_t address, uint16_t data);
-
 
     /// The main loop of MMU processing.
     /// Doesn't loop (block) inside, performs just one step of logic state machines.
@@ -184,16 +174,12 @@ public:
     bool is_mmu_error_monitor_active;
 
     /// Method to read-only mmu_print_saved
-    inline bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
+    bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
 
     /// Automagically "press" a Retry button if we have any retry attempts left
     /// @param ec ErrorCode enum value
     /// @returns true if auto-retry is ongoing, false when retry is unavailable or retry attempts are all used up
     bool RetryIfPossible(uint16_t ec);
-
-    /// Decrement the retry attempts, if in a retry. 
-    // Called by the MMU protocol when a sent button is acknowledged.
-    void DecrementRetryAttempts();
 
     /// @return count for toolchange in current print
     inline uint16_t ToolChangeCounter() const { return toolchange_counter; };
@@ -206,8 +192,6 @@ public:
     inline void ClearTMCFailures() { tmcFailures = 0; }
 
 private:
-    /// Reset the retryAttempts back to the default value
-    void ResetRetryAttempts();
     /// Perform software self-reset of the MMU (sends an X0 command)
     void ResetX0();
     
@@ -258,6 +242,20 @@ private:
     /// Repeated calls when progress code remains the same
     void OnMMUProgressMsgSame(ProgressCode pc);
 
+    /// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
+    // void LogErrorEvent(const char *msg);
+    /// Report the msg into the general logging subsystem.
+    /// On the AVR platform this variant reads the input string from PROGMEM.
+    /// On the ARM platform it calls LogErrorEvent directly (silently expecting the compiler to optimize it away)
+    void LogErrorEvent_P(const char *msg_P);
+
+    /// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
+    // void LogEchoEvent(const char *msg);
+    /// Report the msg into the general logging subsystem.
+    /// On the AVR platform this variant reads the input string from PROGMEM.
+    /// On the ARM platform it calls LogEchoEvent directly (silently expecting the compiler to optimize it away)
+    void LogEchoEvent_P(const char *msg_P);
+
     /// @brief Save hotend temperature and set flag to cooldown hotend after 60 minutes
     /// @param turn_off_nozzle if true, the hotend temperature will be set to 0degC after 60 minutes
     void SaveHotendTemp(bool turn_off_nozzle);
@@ -302,7 +300,7 @@ private:
     uint8_t extruder; ///< currently active slot in the MMU ... somewhat... not sure where to get it from yet
     uint8_t tool_change_extruder; ///< only used for UI purposes
 
-    xyz_pos_t resume_position;
+    pos3d resume_position;
     int16_t resume_hotend_temp;
     
     ProgressCode lastProgressCode = ProgressCode::OK;
@@ -322,9 +320,6 @@ private:
     /// true in case we are doing the LoadToNozzle operation - that means the filament shall be loaded all the way down to the nozzle
     /// unlike the mid-print ToolChange commands, which only load the first ~30mm and then the G-code takes over.
     bool loadingToNozzle;
-    
-    bool inAutoRetry;
-    uint8_t retryAttempts;
     uint16_t toolchange_counter;
     uint16_t tmcFailures;
 };
