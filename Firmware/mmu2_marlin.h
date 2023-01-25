@@ -24,7 +24,7 @@ struct pos3d {
 
 void MoveE(float delta, float feedRate);
 
-float raise_z(float delta);
+float MoveRaiseZ(float delta);
 
 void planner_synchronize();
 bool planner_any_moves();

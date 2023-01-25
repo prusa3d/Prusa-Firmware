@@ -152,6 +152,7 @@ set(FW_SOURCES
     mmu2_error_converter.cpp
     mmu2_fsensor.cpp
     mmu2_log.cpp
+    mmu2_marlin1.cpp
     mmu2_power.cpp
     mmu2_progress_converter.cpp
     mmu2_protocol.cpp

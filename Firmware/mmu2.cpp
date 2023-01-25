@@ -577,7 +577,7 @@ void MMU2::SaveAndPark(bool move_axes) {
             resume_position = planner_current_position(); // save current pos
 
             // lift Z
-            raise_z(MMU_ERR_Z_PAUSE_LIFT);
+            MoveRaiseZ(MMU_ERR_Z_PAUSE_LIFT);
 
             // move XY aside
             if (all_axes_homed()) {
