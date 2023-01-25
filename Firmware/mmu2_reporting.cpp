@@ -217,7 +217,7 @@ enum class ReportErrorHookStates : uint8_t {
 
 enum ReportErrorHookStates ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
 
-void ReportErrorHook(uint16_t ec) {
+void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
     if (mmu2.MMUCurrentErrorCode() == ErrorCode::OK && mmu2.MMULastErrorSource() == MMU2::ErrorSourceMMU) {
         // If the error code suddenly changes to OK, that means
         // a button was pushed on the MMU and the LCD should
@@ -290,6 +290,46 @@ void IncrementLoadFails(){
 void IncrementMMUFails(){
     eeprom_increment_byte((uint8_t *)EEPROM_MMU_FAIL);
     eeprom_increment_word((uint16_t *)EEPROM_MMU_FAIL_TOT);
+}
+
+void MakeSound(SoundType s){
+    Sound_MakeSound( (eSOUND_TYPE)s);
+}
+
+static void FullScreenMsg(const char *pgmS, uint8_t slot){
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_puts_at_P(0, 1, pgmS);
+    lcd_print(' ');
+    lcd_print(slot + 1);
+}
+
+void FullScreenMsgCut(uint8_t slot){
+    FullScreenMsg(_T(MSG_CUT_FILAMENT), slot);
+}
+
+void FullScreenMsgEject(uint8_t slot){
+    FullScreenMsg(_T(MSG_EJECT_FILAMENT), slot);
+}
+
+void FullScreenMsgTest(uint8_t slot){
+    FullScreenMsg(_T(MSG_TESTING_FILAMENT), slot);
+}
+
+void FullScreenMsgLoad(uint8_t slot){
+    FullScreenMsg(_T(MSG_LOADING_FILAMENT), slot);
+}
+
+void FullScreenMsgRestoringTemperature(){
+    lcd_display_message_fullscreen_P(_i("MMU Retry: Restoring temperature...")); ////MSG_MMU_RESTORE_TEMP c=20 r=4
+}
+
+void ScreenUpdateEnable(){
+    lcd_update_enable(true);
+}
+
+void ScreenClear(){
+    lcd_clear();
 }
 
 } // namespace MMU2

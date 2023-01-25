@@ -9,7 +9,8 @@ namespace MMU2 {
 enum class FilamentState : uint_fast8_t {
     NOT_PRESENT = 0, ///< filament sensor doesn't see the filament
     AT_FSENSOR = 1, ///< filament detected by the filament sensor, but the nozzle has not detected the filament yet
-    IN_NOZZLE = 2 ///< filament detected by the filament sensor and also loaded in the nozzle
+    IN_NOZZLE = 2, ///< filament detected by the filament sensor and also loaded in the nozzle
+    UNAVAILABLE = 3  ///< sensor not available (likely not connected due broken cable)
 };
 
 FilamentState WhereIsFilament();

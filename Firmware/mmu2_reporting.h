@@ -22,13 +22,12 @@ void BeginReport(CommandInProgress cip, uint16_t ec);
 /// Called at the end of every MMU operation
 void EndReport(CommandInProgress cip, uint16_t ec);
 
-/**
- * @brief Called when the MMU or MK3S sends operation error (even repeatedly).
- * Render MMU error screen on the LCD. This must be non-blocking
- * and allow the MMU and printer to communicate with each other.
- * @param[in] ec error code
- */
-void ReportErrorHook(uint16_t ec);
+/// @brief Called when the MMU or MK3S sends operation error (even repeatedly).
+/// Render MMU error screen on the LCD. This must be non-blocking
+/// and allow the MMU and printer to communicate with each other.
+/// @param[in] ec error code
+/// @param[in] es error source
+void ReportErrorHook(CommandInProgress cip, uint16_t ec, uint8_t es);
 
 /// Called when the MMU sends operation progress update
 void ReportProgressHook(CommandInProgress cip, uint16_t ec);
@@ -52,5 +51,22 @@ void IncrementLoadFails();
 
 /// Increments EEPROM cell - number of MMU errors
 void IncrementMMUFails();
+
+// Beware: enum values intentionally chosen to match the 8bit FW to save code size
+enum SoundType {
+    Prompt = 2,
+    Confirm = 3
+};
+
+void MakeSound(SoundType s);
+
+void FullScreenMsgCut(uint8_t slot);
+void FullScreenMsgEject(uint8_t slot);
+void FullScreenMsgTest(uint8_t slot);
+void FullScreenMsgLoad(uint8_t slot);
+void FullScreenMsgRestoringTemperature();
+
+void ScreenUpdateEnable();
+void ScreenClear();
 
 } // namespace
