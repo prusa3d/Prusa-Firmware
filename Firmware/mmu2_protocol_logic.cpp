@@ -3,12 +3,12 @@
 #include "mmu2_fsensor.h"
 
 #ifdef __AVR__
-// on MK3/S/+ we shuffle the timers a bit, thus "_millis" may not equal "millis"
-#include "system_timer.h"
+    // on MK3/S/+ we shuffle the timers a bit, thus "_millis" may not equal "millis"
+    #include "system_timer.h"
 #else
-// irrelevant on Buddy FW, just keep "_millis" as "millis"
-#include <wiring_time.h>
-#define _millis millis
+    // irrelevant on Buddy FW, just keep "_millis" as "millis"
+    #include <wiring_time.h>
+    #define _millis millis
 #endif
 
 #include <string.h>
@@ -18,13 +18,13 @@ namespace MMU2 {
 static const uint8_t supportedMmuFWVersion[3] PROGMEM = { 2, 1, 6 };
 
 const uint8_t ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
-    8, // FINDA state
+    8,    // FINDA state
     0x1b, // Selector slot
     0x1c, // Idler slot
 };
 
 const uint8_t ProtocolLogic::regs16Addrs[ProtocolLogic::regs16Count] PROGMEM = {
-    4, // MMU errors - aka statistics
+    4,    // MMU errors - aka statistics
     0x1a, // Pulley position [mm]
 };
 
@@ -52,10 +52,10 @@ void ProtocolLogic::StartReading8bitRegisters() {
     SendReadRegister(pgm_read_byte(regs8Addrs + regIndex), ScopeState::Reading8bitRegisters);
 }
 
-void ProtocolLogic::ProcessRead8bitRegister(){
+void ProtocolLogic::ProcessRead8bitRegister() {
     regs8[regIndex] = rsp.paramValue;
     ++regIndex;
-    if(regIndex >= regs8Count){
+    if (regIndex >= regs8Count) {
         // proceed with reading 16bit registers
         StartReading16bitRegisters();
     } else {
@@ -68,10 +68,10 @@ void ProtocolLogic::StartReading16bitRegisters() {
     SendReadRegister(pgm_read_byte(regs16Addrs + regIndex), ScopeState::Reading16bitRegisters);
 }
 
-ProtocolLogic::ScopeState __attribute__((noinline)) ProtocolLogic::ProcessRead16bitRegister(ProtocolLogic::ScopeState stateAtEnd){
+ProtocolLogic::ScopeState __attribute__((noinline)) ProtocolLogic::ProcessRead16bitRegister(ProtocolLogic::ScopeState stateAtEnd) {
     regs16[regIndex] = rsp.paramValue;
     ++regIndex;
-    if(regIndex >= regs16Count){
+    if (regIndex >= regs16Count) {
         return stateAtEnd;
     } else {
         SendReadRegister(pgm_read_byte(regs16Addrs + regIndex), ScopeState::Reading16bitRegisters);
@@ -84,9 +84,9 @@ void ProtocolLogic::StartWritingInitRegisters() {
     SendWriteRegister(pgm_read_byte(initRegs8Addrs + regIndex), initRegs8[regIndex], ScopeState::WritingInitRegisters);
 }
 
-bool __attribute__((noinline)) ProtocolLogic::ProcessWritingInitRegister(){
+bool __attribute__((noinline)) ProtocolLogic::ProcessWritingInitRegister() {
     ++regIndex;
-    if(regIndex >= initRegs8Count){
+    if (regIndex >= initRegs8Count) {
         return true;
     } else {
         SendWriteRegister(pgm_read_byte(initRegs8Addrs + regIndex), initRegs8[regIndex], ScopeState::WritingInitRegisters);
@@ -114,7 +114,7 @@ void ProtocolLogic::SendReadRegister(uint8_t index, ScopeState nextState) {
     scopeState = nextState;
 }
 
-void ProtocolLogic::SendWriteRegister(uint8_t index, uint16_t value, ScopeState nextState){
+void ProtocolLogic::SendWriteRegister(uint8_t index, uint16_t value, ScopeState nextState) {
     SendWriteMsg(RequestMsg(RequestMsgCodes::Write, index, value));
     scopeState = nextState;
 }
@@ -124,18 +124,18 @@ struct OldMMUFWDetector {
     uint8_t ok;
     inline constexpr OldMMUFWDetector()
         : ok(0) {}
-    
+
     enum class State : uint8_t { MatchingPart,
         SomethingElse,
         Matched };
-    
+
     /// @returns true when "ok\n" gets detected
-    State Detect(uint8_t c){
+    State Detect(uint8_t c) {
         // consume old MMU FW's data if any -> avoid confusion of protocol decoder
-        if(ok == 0 && c == 'o'){
+        if (ok == 0 && c == 'o') {
             ++ok;
             return State::MatchingPart;
-        } else if(ok == 1 && c == 'k'){
+        } else if (ok == 1 && c == 'k') {
             ++ok;
             return State::Matched;
         }
@@ -146,9 +146,9 @@ struct OldMMUFWDetector {
 StepStatus ProtocolLogic::ExpectingMessage() {
     int bytesConsumed = 0;
     int c = -1;
-    
+
     OldMMUFWDetector oldMMUh4x0r; // old MMU FW hacker ;)
-        
+
     // try to consume as many rx bytes as possible (until a message has been completed)
     while ((c = uart->read()) >= 0) {
         ++bytesConsumed;
@@ -162,16 +162,16 @@ StepStatus ProtocolLogic::ExpectingMessage() {
             return MessageReady;
         case DecodeStatus::NeedMoreData:
             break;
-        case DecodeStatus::Error:{
+        case DecodeStatus::Error: {
             // consume old MMU FW's data if any -> avoid confusion of protocol decoder
             auto old = oldMMUh4x0r.Detect(c);
-            if( old == OldMMUFWDetector::State::Matched ){
+            if (old == OldMMUFWDetector::State::Matched) {
                 // Old MMU FW 1.0.6 detected. Firmwares are incompatible.
                 return VersionMismatch;
-            } else if( old == OldMMUFWDetector::State::MatchingPart ){
+            } else if (old == OldMMUFWDetector::State::MatchingPart) {
                 break;
             }
-            }
+        }
             [[fallthrough]]; // otherwise
         default:
             RecordUARTActivity(); // something has happened on the UART, update the timeout record
@@ -195,7 +195,7 @@ void ProtocolLogic::SendMsg(RequestMsg rq) {
     RecordUARTActivity();
 }
 
-void ProtocolLogic::SendWriteMsg(RequestMsg rq){
+void ProtocolLogic::SendWriteMsg(RequestMsg rq) {
     uint8_t txbuff[Protocol::MaxRequestSize()];
     uint8_t len = Protocol::EncodeWriteRequest(rq.value, rq.value2, txbuff);
     uart->write(txbuff, len);
@@ -242,7 +242,7 @@ StepStatus ProtocolLogic::ProcessVersionResponse(uint8_t stage) {
 }
 
 StepStatus ProtocolLogic::ScopeStep() {
-    if ( ! ExpectsResponse() ) {
+    if (!ExpectsResponse()) {
         // we are waiting for something
         switch (currentScope) {
         case Scope::DelayedRestart:
@@ -296,7 +296,7 @@ StepStatus ProtocolLogic::StartSeqStep() {
         }
         return Processing;
     case ScopeState::WritingInitRegisters:
-        if( ProcessWritingInitRegister() ){
+        if (ProcessWritingInitRegister()) {
             SendAndUpdateFilamentSensor();
         }
         return Processing;
@@ -354,7 +354,7 @@ StepStatus ProtocolLogic::ProcessCommandQueryResponse() {
     case ResponseMsgParamCodes::Finished:
         // We must check whether the "finished" is actually related to the command issued into the MMU
         // It can also be an X0 F which means MMU just successfully restarted.
-        if( ReqMsg().code == rsp.request.code && ReqMsg().value == rsp.request.value ){
+        if (ReqMsg().code == rsp.request.code && ReqMsg().value == rsp.request.value) {
             progressCode = ProgressCode::OK;
             scopeState = ScopeState::Ready;
             rq = RequestMsg(RequestMsgCodes::unknown, 0); // clear the successfully finished request
@@ -449,7 +449,7 @@ StepStatus ProtocolLogic::IdleStep() {
                 StartReading8bitRegisters();
                 return ButtonPushed;
             case ResponseMsgParamCodes::Finished:
-                if( ReqMsg().code != RequestMsgCodes::unknown ){
+                if (ReqMsg().code != RequestMsgCodes::unknown) {
                     // got reset while doing some other command - the originally issued command was interrupted!
                     // this must be solved by the upper layer, protocol logic doesn't have all the context (like unload before trying again)
                     IdleRestart();
@@ -526,8 +526,7 @@ ProtocolLogic::ProtocolLogic(MMU2Serial *uart, uint8_t extraLoadDistance, uint8_
     , lastFSensor((uint8_t)WhereIsFilament())
     , regIndex(0)
     , retryAttempts(MAX_RETRIES)
-    , inAutoRetry(false)
-{
+    , inAutoRetry(false) {
     // @@TODO currently, I don't see a way of writing the initialization better :(
     // I'd like to write something like: initRegs8 { extraLoadDistance, pulleySlowFeedrate }
     // avr-gcc seems to like such a syntax, ARM gcc doesn't
@@ -583,11 +582,11 @@ void ProtocolLogic::Home(uint8_t mode) {
     PlanGenericRequest(RequestMsg(RequestMsgCodes::Home, mode));
 }
 
-void ProtocolLogic::ReadRegister(uint8_t address){
+void ProtocolLogic::ReadRegister(uint8_t address) {
     PlanGenericRequest(RequestMsg(RequestMsgCodes::Read, address));
 }
 
-void ProtocolLogic::WriteRegister(uint8_t address, uint16_t data){
+void ProtocolLogic::WriteRegister(uint8_t address, uint16_t data) {
     PlanGenericRequest(RequestMsg(RequestMsgCodes::Write, address, data));
 }
 
@@ -599,23 +598,23 @@ void ProtocolLogic::PlanGenericRequest(RequestMsg rq) {
 }
 
 bool ProtocolLogic::ActivatePlannedRequest() {
-    switch(plannedRq.code){
+    switch (plannedRq.code) {
     case RequestMsgCodes::Button:
         // only issue the button to the MMU and do not restart the state machines
         SendButton(plannedRq.value);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
         return true;
     case RequestMsgCodes::Read:
-        SendReadRegister(plannedRq.value, ScopeState::ReadRegisterSent );
+        SendReadRegister(plannedRq.value, ScopeState::ReadRegisterSent);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
         return true;
     case RequestMsgCodes::Write:
-        SendWriteRegister(plannedRq.value, plannedRq.value2, ScopeState::WriteRegisterSent );
+        SendWriteRegister(plannedRq.value, plannedRq.value2, ScopeState::WriteRegisterSent);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
         return true;
     case RequestMsgCodes::unknown:
         return false;
-    default:// commands
+    default: // commands
         currentScope = Scope::Command;
         SetRequestMsg(plannedRq);
         plannedRq = RequestMsg(RequestMsgCodes::unknown, 0);
