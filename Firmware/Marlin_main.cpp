@@ -6472,7 +6472,7 @@ Sigma_Exit:
     - `String` - Message string. If omitted, a blank line will be sent.
     */
     case 118: {
-        bool hasE, hasA = false;
+        bool hasE = false, hasA = false;
         char *p = strchr_pointer;
         
         for (uint8_t i = 2; i--;) {
@@ -6487,7 +6487,7 @@ Sigma_Exit:
         }
 
         if (hasE) SERIAL_ECHO_START;
-        if (hasA) SERIAL_ECHO("//");
+        if (hasA) SERIAL_ECHOPGM("//");
 
         SERIAL_ECHOLN(p);
     }
