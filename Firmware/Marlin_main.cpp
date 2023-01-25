@@ -6972,7 +6972,7 @@ Sigma_Exit:
     }break;
     #endif // FWRETRACT
     /*!
-    ### M214 - Set Arc configuration values (Use M500 to store in eeprom)
+    ### M214 - Set Arc configuration values (Use M500 to store in eeprom) <a href="https://reprap.org/wiki/G-code#M214:_Set_Arc_configuration_values">M214: Set Arc configuration values</a>
 
     #### Usage
 
