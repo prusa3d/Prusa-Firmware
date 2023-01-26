@@ -357,6 +357,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 20h 32       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 40h 64       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 80h 128      | ^                     | Unknown                                           | ^            | ^
+| 0x0CA5 3237 | float   | EEPROM_TEMP_MODEL_U                   | ???          | ff ff ff ffh          | Temp model linear temperature coefficient (W/K/W) | Temp model   | D3 Ax0ca5 C4
+| 0x0CA1 3233 | float   | EEPROM_TEMP_MODEL_V                   | ???          | ff ff ff ffh          | Temp model linear temperature intercept (W/W)     | Temp model   | D3 Ax0ca1 C4
+| 0x0C9D 3229 | float   | EEPROM_TEMP_MODEL_D                   | ???          | ff ff ff ffh          | Temp model sim. 1st order IIR filter factor       | Temp model   | D3 Ax0c9d C4
+| 0x0C99 3225 | uint16  | EEPROM_TEMP_MODEL_L                   | 0-2160       | ff ffh                | Temp model sim. response lag (ms)                 | Temp model   | D3 Ax0c99 C2
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -586,8 +590,13 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_HEAT_BED_ON_LOAD_FILAMENT (EEPROM_MMU_MATERIAL_CHANGES-1) //uint8
 #define EEPROM_CALIBRATION_STATUS_V2 (EEPROM_HEAT_BED_ON_LOAD_FILAMENT-1) //uint8
 
+#define EEPROM_TEMP_MODEL_U (EEPROM_CALIBRATION_STATUS_V2-4) //float
+#define EEPROM_TEMP_MODEL_V (EEPROM_TEMP_MODEL_U-4) //float
+#define EEPROM_TEMP_MODEL_D (EEPROM_TEMP_MODEL_V-4) //float
+#define EEPROM_TEMP_MODEL_L (EEPROM_TEMP_MODEL_D-2) //uint16_t
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_CALIBRATION_STATUS_V2
+#define EEPROM_LAST_ITEM EEPROM_TEMP_MODEL_L
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
