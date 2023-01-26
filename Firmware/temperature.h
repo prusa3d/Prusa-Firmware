@@ -184,7 +184,8 @@ void PID_autotune(float temp, int extruder, int ncycles);
 bool temp_model_enabled(); // return temperature model state
 void temp_model_set_enabled(bool enabled);
 void temp_model_set_warn_beep(bool enabled);
-void temp_model_set_params(float C = NAN, float P = NAN, float Ta_corr = NAN, float warn = NAN, float err = NAN);
+void temp_model_set_params(float P=NAN, float U=NAN, float V=NAN, float C=NAN, float D=NAN,
+    int16_t L=-1, float Ta_corr=NAN, float warn=NAN, float err=NAN);
 void temp_model_set_resistance(uint8_t index, float R);
 
 void temp_model_report_settings();

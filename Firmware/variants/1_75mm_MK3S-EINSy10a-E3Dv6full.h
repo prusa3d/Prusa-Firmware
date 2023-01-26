@@ -419,12 +419,17 @@
 #define TEMP_MODEL_DEBUG 1    // extended runtime logging
 
 #define TEMP_MODEL_P 38.      // heater power (W)
+#define TEMP_MODEL_U 1.       // linear temperature coefficient (W/K/power)
+#define TEMP_MODEL_V 0.       // linear temperature intercept (W/power)
 
 #define TEMP_MODEL_C 12.1     // initial guess for heatblock capacitance (J/K)
 #define TEMP_MODEL_Cl 5       // C estimation lower limit
 #define TEMP_MODEL_Ch 20      // C estimation upper limit
 #define TEMP_MODEL_C_thr 0.01 // C estimation iteration threshold
 #define TEMP_MODEL_C_itr 30   // C estimation iteration limit
+
+#define TEMP_MODEL_fS 0.065   // sim. 1st order IIR filter factor (f=100/27)
+#define TEMP_MODEL_LAG 2100   // sim. response lag (ms, 0-2160)
 
 #define TEMP_MODEL_R 20.5     // initial guess for heatblock resistance (K/W)
 #define TEMP_MODEL_Rl 5       // R estimation lower limit
@@ -433,8 +438,6 @@
 #define TEMP_MODEL_R_itr 30   // R estimation iteration limit
 
 #define TEMP_MODEL_Ta_corr -7 // Default ambient temperature correction
-#define TEMP_MODEL_LAG 2.1    // Temperature transport delay (s)
-
 #define TEMP_MODEL_W 1.2      // Default warning threshold (K/s)
 #define TEMP_MODEL_E 1.74     // Default error threshold (K/s)
 
