@@ -2356,7 +2356,7 @@ void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, fl
     uint8_t dT_next_idx = (dT_lag_idx == (TEMP_MODEL_LAG_SIZE - 1) ? 0: dT_lag_idx + 1);
     float dT_lag = dT_lag_buf[dT_next_idx];
     float dT_lag_prev = dT_lag_buf[dT_lag_idx];
-    float dT_f = iir_mul(dT_lag_prev, dT, TEMP_MODEL_fS, dT);
+    float dT_f = iir_mul(dT_lag_prev, dT, fS, dT);
     dT_lag_buf[dT_next_idx] = dT_f;
     dT_lag_idx = dT_next_idx;
 
@@ -2389,6 +2389,7 @@ static bool calibrated()
 {
     if(!(data.P > 0)) return false;
     if(!(data.C > 0)) return false;
+    if(isnan(data.fS)) return false;
     if(!(data.Ta_corr != NAN)) return false;
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i) {
         if(!(temp_model::data.R[i] >= 0))
