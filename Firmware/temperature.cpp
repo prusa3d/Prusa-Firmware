@@ -2320,9 +2320,10 @@ void model_data::reset(uint8_t heater_pwm _UNUSED, uint8_t fan_pwm _UNUSED,
     C_i = (TEMP_MGR_INTV / C);
     warn_s = warn * TEMP_MGR_INTV;
     err_s = err * TEMP_MGR_INTV;
+    dT_lag_size = L / (uint16_t)(TEMP_MGR_INTV * 1000);
 
     // initial values
-    for(uint8_t i = 0; i != TEMP_MODEL_LAG_SIZE; ++i)
+    for(uint8_t i = 0; i != TEMP_MODEL_MAX_LAG_SIZE; ++i)
         dT_lag_buf[i] = NAN;
     dT_lag_idx = 0;
     dT_err_prev = 0;
@@ -2354,7 +2355,7 @@ void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, fl
     float dT = (dP - dPl) * C_i; // expected temperature difference (K)
 
     // filter and lag dT
-    uint8_t dT_next_idx = (dT_lag_idx == (TEMP_MODEL_LAG_SIZE - 1) ? 0: dT_lag_idx + 1);
+    uint8_t dT_next_idx = (dT_lag_idx == (dT_lag_size - 1) ? 0: dT_lag_idx + 1);
     float dT_lag = dT_lag_buf[dT_next_idx];
     float dT_lag_prev = dT_lag_buf[dT_lag_idx];
     float dT_f = iir_mul(dT_lag_prev, dT, fS, dT);
@@ -2393,6 +2394,7 @@ static bool calibrated()
     if(isnan(data.V)) return false;
     if(!(data.C > 0)) return false;
     if(isnan(data.fS)) return false;
+    if(!(data.L > 0)) return false;
     if(!(data.Ta_corr != NAN)) return false;
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i) {
         if(!(temp_model::data.R[i] >= 0))
@@ -2550,6 +2552,14 @@ static void temp_model_set_lag(uint16_t ms)
 {
     static const uint16_t intv_ms = (uint16_t)(TEMP_MGR_INTV * 1000);
     temp_model::data.L = ((ms + intv_ms/2) / intv_ms) * intv_ms;
+
+    // ensure there is at least one lag sample for filtering
+    if(temp_model::data.L < intv_ms)
+        temp_model::data.L = intv_ms;
+
+    // do not exceed the maximum lag buffer
+    if(temp_model::data.L > (intv_ms * TEMP_MODEL_MAX_LAG_SIZE))
+        temp_model::data.L = intv_ms * TEMP_MODEL_MAX_LAG_SIZE;
 }
 
 void temp_model_set_params(float P, float U, float V, float C, float D, int16_t L, float Ta_corr, float warn, float err)
