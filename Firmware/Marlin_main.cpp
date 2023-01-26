@@ -6473,7 +6473,7 @@ Sigma_Exit:
     */
     case 118: {
         bool hasE = false, hasA = false;
-        char *p = strchr_pointer;
+        char *p = strchr_pointer + 5;
         
         for (uint8_t i = 2; i--;) {
           // A1, E1, and Pn are always parsed out
