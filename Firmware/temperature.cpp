@@ -2343,6 +2343,7 @@ void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, fl
     const float cur_R = R[fan_pwm]; // resistance at current fan power (K/W)
 
     float dP = P * heater_scale; // current power [W]
+    dP *= (cur_heater_temp * U) + V; // linear temp. correction
     float dPl = (cur_heater_temp - cur_ambient_temp) / cur_R; // [W] leakage power
     float dT = (dP - dPl) * C_i; // expected temperature difference (K)
 
@@ -2382,6 +2383,8 @@ static void setup()
 static bool calibrated()
 {
     if(!(data.P > 0)) return false;
+    if(isnan(data.U)) return false;
+    if(isnan(data.V)) return false;
     if(!(data.C > 0)) return false;
     if(isnan(data.fS)) return false;
     if(!(data.Ta_corr != NAN)) return false;
