@@ -2381,8 +2381,8 @@ static void setup()
 
 static bool calibrated()
 {
-    if(!(data.P >= 0)) return false;
-    if(!(data.C >= 0)) return false;
+    if(!(data.P > 0)) return false;
+    if(!(data.C > 0)) return false;
     if(!(data.Ta_corr != NAN)) return false;
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i) {
         if(!(temp_model::data.R[i] >= 0))
