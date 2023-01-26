@@ -2540,15 +2540,27 @@ void temp_model_set_warn_beep(bool enabled)
     temp_model::warn_beep = enabled;
 }
 
-void temp_model_set_params(float C, float P, float Ta_corr, float warn, float err)
+// set the model lag rounding to the effective sample resolution, ensuring the reported/stored lag
+// matches the current model constraints (future-proofing for model changes)
+static void temp_model_set_lag(uint16_t ms)
+{
+    static const uint16_t intv_ms = (uint16_t)(TEMP_MGR_INTV * 1000);
+    temp_model::data.L = ((ms + intv_ms/2) / intv_ms) * intv_ms;
+}
+
+void temp_model_set_params(float P, float U, float V, float C, float D, int16_t L, float Ta_corr, float warn, float err)
 {
     TempMgrGuard temp_mgr_guard;
 
-    if(!isnan(C) && C > 0) temp_model::data.C = C;
     if(!isnan(P) && P > 0) temp_model::data.P = P;
+    if(!isnan(U)) temp_model::data.U = U;
+    if(!isnan(V)) temp_model::data.V = V;
+    if(!isnan(C) && C > 0) temp_model::data.C = C;
+    if(!isnan(D)) temp_model::data.fS = D;
+    if(L >= 0) temp_model_set_lag(L);
     if(!isnan(Ta_corr)) temp_model::data.Ta_corr = Ta_corr;
-    if(!isnan(err) && err > 0) temp_model::data.err = err;
     if(!isnan(warn) && warn > 0) temp_model::data.warn = warn;
+    if(!isnan(err) && err > 0) temp_model::data.err = err;
 
     // ensure warn <= err
     if (temp_model::data.warn > temp_model::data.err)
@@ -2573,8 +2585,9 @@ void temp_model_report_settings()
     SERIAL_ECHOLNPGM("Temperature Model settings:");
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         printf_P(PSTR("%S  M310 I%u R%.2f\n"), echomagic, (unsigned)i, (double)temp_model::data.R[i]);
-    printf_P(PSTR("%S  M310 P%.2f C%.2f S%u B%u E%.2f W%.2f T%.2f\n"),
-        echomagic, (double)temp_model::data.P, (double)temp_model::data.C,
+    printf_P(PSTR("%S  M310 P%.2f U%.4f V%.2f C%.2f D%.4f L%u S%u B%u E%.2f W%.2f T%.2f\n"),
+        echomagic, (double)temp_model::data.P, (double)temp_model::data.U, (double)temp_model::data.V,
+        (double)temp_model::data.C, (double)temp_model::data.fS, (unsigned)temp_model::data.L,
         (unsigned)temp_model::enabled, (unsigned)temp_model::warn_beep,
         (double)temp_model::data.err, (double)temp_model::data.warn,
         (double)temp_model::data.Ta_corr);
@@ -2585,7 +2598,11 @@ void temp_model_reset_settings()
     TempMgrGuard temp_mgr_guard;
 
     temp_model::data.P = TEMP_MODEL_P;
+    temp_model::data.U = TEMP_MODEL_U;
+    temp_model::data.V = TEMP_MODEL_V;
     temp_model::data.C = TEMP_MODEL_C;
+    temp_model::data.fS = TEMP_MODEL_fS;
+    temp_model::data.L = (uint16_t)(TEMP_MODEL_LAG / (TEMP_MGR_INTV * 1000) + 0.5) * (uint16_t)(TEMP_MGR_INTV * 1000);
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         temp_model::data.R[i] = pgm_read_float(TEMP_MODEL_R_DEFAULT + i);
     temp_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
@@ -2601,9 +2618,21 @@ void temp_model_load_settings()
     static_assert(TEMP_MODEL_R_SIZE == 16); // ensure we don't desync with the eeprom table
     TempMgrGuard temp_mgr_guard;
 
+    // handle upgrade from a model without UVDL (FW<3.13)
+    // WARNING: this only works as long as UVDL are the same constants/model type as FW 3.12,
+    //          it needs to consider the upgrading FW version otherwise!
+    eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_U, TEMP_MODEL_U);
+    eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_V, TEMP_MODEL_V);
+    eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_D, TEMP_MODEL_fS);
+    eeprom_init_default_word((uint16_t*)EEPROM_TEMP_MODEL_L, TEMP_MODEL_LAG);
+
     temp_model::enabled = eeprom_read_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE);
     temp_model::data.P = eeprom_read_float((float*)EEPROM_TEMP_MODEL_P);
+    temp_model::data.U = eeprom_read_float((float*)EEPROM_TEMP_MODEL_U);
+    temp_model::data.V = eeprom_read_float((float*)EEPROM_TEMP_MODEL_V);
     temp_model::data.C = eeprom_read_float((float*)EEPROM_TEMP_MODEL_C);
+    temp_model::data.fS = eeprom_read_float((float*)EEPROM_TEMP_MODEL_D);
+    temp_model_set_lag(eeprom_read_word((uint16_t*)EEPROM_TEMP_MODEL_L));
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         temp_model::data.R[i] = eeprom_read_float((float*)EEPROM_TEMP_MODEL_R + i);
     temp_model::data.Ta_corr = eeprom_read_float((float*)EEPROM_TEMP_MODEL_Ta_corr);
@@ -2621,7 +2650,11 @@ void temp_model_save_settings()
 {
     eeprom_update_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE, temp_model::enabled);
     eeprom_update_float((float*)EEPROM_TEMP_MODEL_P, temp_model::data.P);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_U, temp_model::data.U);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_V, temp_model::data.V);
     eeprom_update_float((float*)EEPROM_TEMP_MODEL_C, temp_model::data.C);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_D, temp_model::data.fS);
+    eeprom_update_word((uint16_t*)EEPROM_TEMP_MODEL_L, temp_model::data.L);
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         eeprom_update_float((float*)EEPROM_TEMP_MODEL_R + i, temp_model::data.R[i]);
     eeprom_update_float((float*)EEPROM_TEMP_MODEL_Ta_corr, temp_model::data.Ta_corr);
