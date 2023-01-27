@@ -103,8 +103,7 @@ typedef struct {
   uint32_t initial_rate;              // The jerk-adjusted step rate at start of block  
   uint32_t final_rate;                // The minimal rate at exit
   uint32_t acceleration_steps_per_s2; // acceleration steps/sec^2
-  //FIXME does it have to be int? Probably uint8_t would be just fine. Need to change in other places as well
-  int fan_speed;
+  uint8_t fan_speed; // Print fan speed, ranges from 0 to 255
   volatile char busy;
 
 
