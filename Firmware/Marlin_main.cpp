@@ -216,7 +216,7 @@ float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
 float max_pos[3] = { X_MAX_POS, Y_MAX_POS, Z_MAX_POS };
 bool axis_known_position[3] = {false, false, false};
 
-int fanSpeed=0;
+uint8_t fanSpeed = 0;
 uint8_t newFanSpeed = 0;
 
 #ifdef FWRETRACT
@@ -336,7 +336,7 @@ static int saved_feedmultiply2 = 0;
 float saved_extruder_temperature = 0.0; //!< Active extruder temperature
 float saved_bed_temperature = 0.0;
 static bool saved_extruder_relative_mode = false;
-int saved_fan_speed = 0; //!< Print fan speed
+uint8_t saved_fan_speed = 0; //!< Print fan speed
 //! @}
 
 static int saved_feedmultiply_mm = 100;
@@ -3433,7 +3433,7 @@ void gcode_M114()
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
 void gcode_M123()
 {
-  printf_P(_N("E0:%d RPM PRN1:%d RPM E0@:%u PRN1@:%d\n"), 60*fan_speed[active_extruder], 60*fan_speed[1], newFanSpeed, fanSpeed);
+  printf_P(_N("E0:%d RPM PRN1:%d RPM E0@:%u PRN1@:%u\n"), 60*fan_speed[active_extruder], 60*fan_speed[1], newFanSpeed, fanSpeed);
 }
 #endif //FANCHECK and TACH_0 or TACH_1
 
@@ -3499,7 +3499,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     //First backup current position and settings
     int feedmultiplyBckp = feedmultiply;
     float HotendTempBckp = degTargetHotend(active_extruder);
-    int fanSpeedBckp = fanSpeed;
+    uint8_t fanSpeedBckp = fanSpeed;
 
     memcpy(lastpos, current_position, sizeof(lastpos));
 
@@ -9590,7 +9590,7 @@ void ThermalStop(bool allow_recovery)
                 // original values after the pause handler is called.
                 float bed_temp = saved_bed_temperature;
                 float ext_temp = saved_extruder_temperature;
-                int fan_speed = saved_fan_speed;
+                uint8_t fan_speed = saved_fan_speed;
                 lcd_pause_print();
                 saved_bed_temperature = bed_temp;
                 saved_extruder_temperature = ext_temp;

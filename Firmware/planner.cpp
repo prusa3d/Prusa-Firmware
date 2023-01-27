@@ -530,11 +530,11 @@ bool e_active()
 
 void check_axes_activity()
 {
-  unsigned char x_active = 0;
-  unsigned char y_active = 0;  
-  unsigned char z_active = 0;
-  unsigned char e_active = 0;
-  unsigned char tail_fan_speed = fanSpeed;
+  uint8_t x_active = 0;
+  uint8_t y_active = 0;  
+  uint8_t z_active = 0;
+  uint8_t e_active = 0;
+  uint8_t tail_fan_speed = fanSpeed;
   block_t *block;
 
   if(block_buffer_tail != block_buffer_head)

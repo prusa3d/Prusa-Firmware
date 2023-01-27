@@ -2796,7 +2796,7 @@ void lcd_wait_for_heater() {
 void lcd_wait_for_cool_down() {
 	setTargetHotend(0);
 	setTargetBed(0);
-	int fanSpeedBckp = fanSpeed;
+	uint8_t fanSpeedBckp = fanSpeed;
 	fanSpeed = 255;
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(_i("Waiting for nozzle and bed cooling"));////MSG_WAITING_TEMP c=20 r=4
@@ -5553,7 +5553,7 @@ static void lcd_tune_menu()
 	MENU_ITEM_EDIT_int3_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
 	MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 10);
 
-	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);//5
+	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), (int16_t*)&fanSpeed, 0, 255);//5
 	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);//6////MSG_FLOW c=15
 #ifdef LA_LIVE_K
 	MENU_ITEM_EDIT_advance_K();//7
@@ -5678,7 +5678,7 @@ static void lcd_control_temperature_menu()
 #if TEMP_SENSOR_BED != 0
   MENU_ITEM_EDIT_int3_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 3);
 #endif
-  MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
+  MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), (int16_t*)&fanSpeed, 0, 255);
 #if defined AUTOTEMP && (TEMP_SENSOR_0 != 0)
 //MENU_ITEM_EDIT removed, following code must be redesigned if AUTOTEMP enabled
   MENU_ITEM_EDIT(bool, MSG_AUTOTEMP, &autotemp_enabled);
