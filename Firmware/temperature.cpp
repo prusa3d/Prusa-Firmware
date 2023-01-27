@@ -2209,7 +2209,7 @@ ISR(TIMERx_COMPA_vect)
 
 void disable_heater()
 {
-  setAllTargetHotends(0);
+  setTargetHotend(0);
   setTargetBed(0);
 
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {

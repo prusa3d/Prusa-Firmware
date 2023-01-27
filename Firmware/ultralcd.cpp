@@ -961,7 +961,7 @@ void lcd_commands()
 		if (lcd_commands_step == 2 && !pidTuningRunning()) { //saving to eeprom
 			custom_message_state = 0;
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
-			setAllTargetHotends(0);  // reset all hotends temperature including the number displayed on the main screen
+			setTargetHotend(0);
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
 				sprintf_P(cmd1, PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
 				enquecommand(cmd1);
@@ -1052,7 +1052,7 @@ void lcd_commands()
                 enquecommand_P(PSTR("M84 XY"));
                 lcd_update_enabled = false; //hack to avoid lcd_update recursion.
                 if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_NOZZLE_CNG_CHANGED), false) == LCD_LEFT_BUTTON_CHOICE) {
-                    setAllTargetHotends(0);
+                    setTargetHotend(0);
 #ifdef TEMP_MODEL
                     temp_model_set_enabled(was_enabled);
 #endif //TEMP_MODEL
@@ -1105,7 +1105,7 @@ static void lcd_move_menu_axis();
 
 static void lcd_cooldown()
 {
-  setAllTargetHotends(0);
+  setTargetHotend(0);
   setTargetBed(0);
   fanSpeed = 0;
   lcd_return_to_status();
@@ -1896,11 +1896,9 @@ switch(eFilamentAction)
 #endif //FILAMENT_SENSOR
     ) {
      nLevel=2;
-     if(!bFilamentPreheatState)
-          {
-          nLevel++;
-//          setTargetHotend0(0.0);                  // uncoment if return to base-state is required
-          }
+     if(!bFilamentPreheatState) {
+        nLevel++;
+     }
      menu_back(nLevel);
      switch(eFilamentAction)
           {
@@ -1931,7 +1929,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 {
     uint8_t nLevel;
 
-    setTargetHotend0((float)nTemp);
+    setTargetHotend((float)nTemp);
     if (!shouldPreheatOnlyNozzle()) setTargetBed((float)nTempBed);
 
     {
@@ -2075,8 +2073,8 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             bFilamentWaitingFlag = false;
             if (!bFilamentPreheatState)
             {
-                setTargetHotend0(0.0);
-                if (!isPrintPaused) setTargetBed(0.0);
+                setTargetHotend(0);
+                if (!isPrintPaused) setTargetBed(0);
                 menu_back();
             }
             menu_back();
@@ -2831,7 +2829,7 @@ void pid_extruder()
 
 #ifdef PINDA_THERMISTOR
 bool lcd_wait_for_pinda(float temp) {
-	setAllTargetHotends(0);
+	setTargetHotend(0);
 	setTargetBed(0);
 	LongTimer pinda_timeout;
 	pinda_timeout.start();
@@ -2865,7 +2863,7 @@ void lcd_wait_for_heater() {
 }
 
 void lcd_wait_for_cool_down() {
-	setAllTargetHotends(0);
+	setTargetHotend(0);
 	setTargetBed(0);
 	int fanSpeedBckp = fanSpeed;
 	fanSpeed = 255;
@@ -4024,14 +4022,14 @@ void lcd_wizard(WizState state)
 				raise_z_above(MIN_Z_FOR_SWAP);
 				//current filament needs to be unloaded and then new filament should be loaded
 				//start to preheat nozzle for unloading remaining PLA filament
-				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
+				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
 				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA.")); ////MSG_WIZARD_WILL_PREHEAT c=20 r=4
 				wait_preheat();
 				//unload current filament
 				unload_filament(FILAMENTCHANGE_FINALRETRACT);
 				//load filament
 				lcd_wizard_load();
-				setTargetHotend(0, 0); //we are finished, cooldown nozzle
+				setTargetHotend(0); //we are finished, cooldown nozzle
 				state = S::Restore;
 			}
 			break;
@@ -4044,7 +4042,7 @@ void lcd_wizard(WizState state)
 #endif //TEMP_MODEL
 		case S::IsFil:
 		    //start to preheat nozzle and bed to save some time later
-			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
+			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), true);
 			if (wizard_event == LCD_LEFT_BUTTON_CHOICE) {
@@ -7010,17 +7008,15 @@ static bool selftest_irsensor()
     {
     public:
         TempBackup():
-            m_temp(degTargetHotend(active_extruder)),
-            m_extruder(active_extruder){}
-        ~TempBackup(){setTargetHotend(m_temp,m_extruder);}
+            m_temp(degTargetHotend(active_extruder)){}
+        ~TempBackup(){setTargetHotend(m_temp);}
     private:
         float m_temp;
-        uint8_t m_extruder;
     };
     uint8_t progress;
     {
         TempBackup tempBackup;
-        setTargetHotend(ABS_PREHEAT_HOTEND_TEMP,active_extruder);
+        setTargetHotend(ABS_PREHEAT_HOTEND_TEMP);
         progress = lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
     }
     progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
