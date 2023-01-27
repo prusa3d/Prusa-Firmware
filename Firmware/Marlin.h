@@ -278,7 +278,7 @@ extern float destination[NUM_AXIS] ;
 extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
-extern int fanSpeed;
+extern uint8_t fanSpeed; //!< Print fan speed, ranges from 0 to 255
 extern uint8_t newFanSpeed;
 extern float default_retraction;
 
@@ -340,7 +340,7 @@ extern uint8_t saved_printing_type;
 
 extern float saved_extruder_temperature; //!< Active extruder temperature
 extern float saved_bed_temperature; //!< Bed temperature
-extern int saved_fan_speed; //!< Print fan speed
+extern uint8_t saved_fan_speed; //!< Print fan speed, ranges from 0 to 255
 
 //estimated time to end of the print
 extern uint8_t print_percent_done_normal;
