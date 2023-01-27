@@ -216,9 +216,7 @@ void checkHitEndstops()
      card.sdprinting = false;
      card.closefile();
      quickStop();
-     setTargetHotend0(0);
-     setTargetHotend1(0);
-     setTargetHotend2(0);
+     setTargetHotend(0);
    }
 #endif
  }

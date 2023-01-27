@@ -163,7 +163,7 @@ static void trace() {
 
 void serial_read_stream() {
 
-    setAllTargetHotends(0);
+    setTargetHotend(0);
     setTargetBed(0);
 
     lcd_clear();

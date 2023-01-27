@@ -96,7 +96,7 @@ void fanSpeedError(unsigned char _fan) {
     }
     else {
         // Nothing is going on, but still turn off heaters and report the error
-        setTargetHotend0(0);
+        setTargetHotend(0);
         heating_status = HeatingStatus::NO_HEATING;
     }
     switch (_fan) {

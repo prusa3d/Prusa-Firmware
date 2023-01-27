@@ -611,7 +611,7 @@ void crashdet_detected(uint8_t mask)
 	if (automatic_recovery_after_crash) {
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}else{
-		setTargetHotend(0, active_extruder);
+		setTargetHotend(0);
 
         // notify the user of *all* the axes previously affected, not just the last one
         lcd_update_enable(false);
@@ -3223,7 +3223,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	if (!onlyZ)
 	{
 		setTargetBed(0);
-		setAllTargetHotends(0);
+		setTargetHotend(0);
 		adjust_bed_reset(); //reset bed level correction
 	}
 
@@ -3501,7 +3501,7 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
         slot = choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER));
     }
 
-    setTargetHotend(nozzle_temp, active_extruder);
+    setTargetHotend(nozzle_temp);
 
     MMU2::mmu2.load_filament_to_nozzle(slot);
 
@@ -4787,7 +4787,6 @@ void process_commands()
         if (start_temp < current_temperature_pinda) start_temp += 5;
         printf_P(_N("start temperature: %.1f\n"), start_temp);
 
-//			setTargetHotend(200, 0);
         setTargetBed(70 + (start_temp - 30));
 
         custom_message_type = CustomMsg::TempCal;
@@ -4843,7 +4842,6 @@ void process_commands()
             printf_P(_N("\nStep: %d/6\n"), i + 2);
             custom_message_state = i + 2;
             setTargetBed(50 + 10 * (temp - 30) / 5);
-//				setTargetHotend(255, 0);
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line_curposXYZE(3000 / 60);
             current_position[X_AXIS] = PINDA_PREHEAT_X;
@@ -5988,7 +5986,7 @@ Sigma_Exit:
     {
           if (code_seen('S'))
           {
-              setTargetHotendSafe(code_value(), active_extruder);
+              setTargetHotend(code_value());
           }
           break;
     }
@@ -6101,9 +6099,9 @@ Sigma_Exit:
         autotemp_enabled=false;
       #endif
       if (code_seen('S')) {
-          setTargetHotendSafe(code_value(), active_extruder);
+          setTargetHotend(code_value());
             } else if (code_seen('R')) {
-                setTargetHotendSafe(code_value(), active_extruder);
+                setTargetHotend(code_value());
       }
       #ifdef AUTOTEMP
         if (code_seen('S')) autotemp_min=code_value();
@@ -9273,7 +9271,7 @@ static void handleSafetyTimer()
     else if (safetyTimer.expired(farm_mode?FARM_DEFAULT_SAFETYTIMER_TIME_ms:safetytimer_inactive_time))
     {
         setTargetBed(0);
-        setAllTargetHotends(0);
+        setTargetHotend(0);
         lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED c=20 r=4
     }
 }
@@ -10303,7 +10301,7 @@ void long_pause() //long pause print
 
     // Stop heaters
     heating_status = HeatingStatus::NO_HEATING;
-    setAllTargetHotends(0);
+    setTargetHotend(0);
 
     // Lift z
     raise_z(Z_PAUSE_LIFT);
@@ -10369,7 +10367,7 @@ void uvlo_()
     // Stop all heaters
     uint8_t saved_target_temperature_bed = target_temperature_bed;
     uint16_t saved_target_temperature_ext = target_temperature[active_extruder];
-    setAllTargetHotends(0);
+    setTargetHotend(0);
     setTargetBed(0);
 
     // Calculate the file position, from which to resume this print.
@@ -10541,7 +10539,7 @@ void uvlo_tiny()
 #endif //TMC2130
 
     // Stop all heaters
-    setAllTargetHotends(0);
+    setTargetHotend(0);
     setTargetBed(0);
 
     // When power is interrupted on the _first_ recovery an attempt can be made to raise the
@@ -11083,7 +11081,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 void restore_extruder_temperature_from_ram() {
     if (degTargetHotend(active_extruder) != saved_extruder_temperature)
     {
-        setTargetHotendSafe(saved_extruder_temperature, active_extruder);
+        setTargetHotend(saved_extruder_temperature);
         heating_status = HeatingStatus::EXTRUDER_HEATING;
         wait_for_heater(_millis(), active_extruder);
         heating_status = HeatingStatus::EXTRUDER_HEATING_COMPLETE;
@@ -11334,18 +11332,16 @@ void M600_wait_for_user(float HotendTempBckp) {
 				if (_millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
 					lcd_display_message_fullscreen_P(_i("Press the knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
-					setAllTargetHotends(0);
+					setTargetHotend(0);
 					st_synchronize();
 					disable_e0();
-					disable_e1();
-					disable_e2();
 				}
 				break;
 			case 1: //nozzle target temperature is set to zero, waiting for user to start nozzle preheat
 				delay_keep_alive(4);
 		
 				if (lcd_clicked()) {
-					setTargetHotend(HotendTempBckp, active_extruder);
+					setTargetHotend(HotendTempBckp);
 					lcd_wait_for_heater();
 
 					wait_for_user_state = 2;
