@@ -55,11 +55,12 @@ function(objcopy target format suffix)
     )
 endfunction()
 
-function(report_size target)
+function(report_size target mcu)
   add_custom_command(
     TARGET ${target} POST_BUILD
     COMMAND echo "" # visually separate the output
-    COMMAND "${CMAKE_SIZE_UTIL}" -B "$<TARGET_FILE:${target}>"
+    COMMAND echo -n "${target} "
+    COMMAND "${CMAKE_SIZE_UTIL}" -C --mcu=${mcu} "$<TARGET_FILE:${target}>"
     USES_TERMINAL
     )
 endfunction()

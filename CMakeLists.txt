@@ -235,11 +235,12 @@ if(CMAKE_CROSSCOMPILING)
   set(CMAKE_C_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 
   # mcu and target-related settings
+  set(TARGET_MCU "atmega2560")
   add_compile_options(
-    -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10819 -DARDUINO_AVR_PRUSA_EINSY_RAMBO
+    -mmcu=${TARGET_MCU} -DF_CPU=16000000L -DARDUINO=10819 -DARDUINO_AVR_PRUSA_EINSY_RAMBO
     -DARDUINO_ARCH_AVR
     )
-  add_link_options(-mmcu=atmega2560 -Wl,-u,vfprintf -lprintf_flt -lm)
+  add_link_options(-mmcu=${TARGET_MCU} -Wl,-u,vfprintf -lprintf_flt -lm)
 
   # disable some C++ language features
   add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>)
@@ -303,12 +304,7 @@ function(add_base_binary variant_name)
     )
 
   # inform about the firmware's size in terminal
-  add_custom_command(
-    TARGET ${variant_name}
-    POST_BUILD
-    COMMAND ${CMAKE_SIZE_UTIL} -C --mcu=atmega2560 ${variant_name}
-    )
-  report_size(${variant_name})
+  report_size(${variant_name} ${TARGET_MCU})
 
   # generate linker map file
   target_link_options(
