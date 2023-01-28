@@ -1,0 +1,66 @@
+name: pr-size
+
+on:
+  pull_request:
+    branches: [ MK3, MK3_* ]
+
+env:
+    TARGETS: "MK3S-EINSy10a_ENGLISH MK3-EINSy10a_ENGLISH"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # setup base required dependencies
+    - name: Setup dependencies
+      run: |
+          sudo apt-get install cmake ninja-build python3-pyelftools python3-regex python3-polib
+
+    # build the PR branch
+    - name: Checkout PR
+      uses: actions/checkout@v3
+
+    - name: Setup build dependencies
+      run: |
+          ./utils/bootstrap.py
+
+    - name: Build PR
+      run: |
+          rm -rf build-pr
+          mkdir build-pr
+          cd build-pr
+          cmake .. -DCMAKE_TOOLCHAIN_FILE="../cmake/AvrGcc.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja
+          ninja $TARGETS
+
+    # save pr-size for later use
+    - name: Save pr-size from PR
+      run: |
+          cp -f ./.github/workflows/pr-size.sh build-pr
+
+    # build the base branch
+    - name: Checkout base
+      uses: actions/checkout@v3
+      with:
+        clean: false
+        ref: ${{ github.event.pull_request.base.ref }}
+
+    - name: Build base
+      run: |
+          rm -rf build-base
+          mkdir build-base
+          cd build-base
+          cmake .. -DCMAKE_TOOLCHAIN_FILE="../cmake/AvrGcc.cmake" -DCMAKE_BUILD_TYPE=Release -G Ninja
+          ninja $TARGETS
+
+    # extract/show build differences
+    - name: Calculate binary changes
+      run: |
+          rm -rf build-changes
+          ./build-pr/pr-size.sh build-changes build-base build-pr $TARGETS
+
+    - name: Add PR Comment
+      uses: mshick/add-pr-comment@v2
+      with:
+        message-path: build-changes
