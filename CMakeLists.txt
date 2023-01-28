@@ -306,6 +306,7 @@ function(add_base_binary variant_name)
   add_custom_command(
     TARGET ${variant_name}
     POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo_append "${variant_name} "
     COMMAND ${CMAKE_SIZE_UTIL} -C --mcu=atmega2560 ${variant_name}
     )
   report_size(${variant_name})
