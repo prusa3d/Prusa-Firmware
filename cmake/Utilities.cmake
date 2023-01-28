@@ -58,7 +58,6 @@ endfunction()
 function(report_size target)
   add_custom_command(
     TARGET ${target} POST_BUILD
-    COMMAND echo "" # visually separate the output
     COMMAND "${CMAKE_SIZE_UTIL}" -B "$<TARGET_FILE:${target}>"
     USES_TERMINAL
     )
