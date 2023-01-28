@@ -2545,15 +2545,16 @@ void temp_model_set_warn_beep(bool enabled)
 static void temp_model_set_lag(uint16_t ms)
 {
     static const uint16_t intv_ms = (uint16_t)(TEMP_MGR_INTV * 1000);
-    temp_model::data.L = ((ms + intv_ms/2) / intv_ms) * intv_ms;
+    uint16_t samples = ((ms + intv_ms/2) / intv_ms);
 
-    // ensure there is at least one lag sample for filtering
-    if(temp_model::data.L < intv_ms)
-        temp_model::data.L = intv_ms;
+    // ensure we do not exceed the maximum lag buffer and have at least one lag sample for filtering
+    if(samples < 1)
+        samples = 1;
+    else if(samples > TEMP_MODEL_MAX_LAG_SIZE)
+        samples = TEMP_MODEL_MAX_LAG_SIZE;
 
-    // do not exceed the maximum lag buffer
-    if(temp_model::data.L > (intv_ms * TEMP_MODEL_MAX_LAG_SIZE))
-        temp_model::data.L = intv_ms * TEMP_MODEL_MAX_LAG_SIZE;
+    // round back to ms
+    temp_model::data.L = samples * intv_ms;
 }
 
 void temp_model_set_params(float P, float U, float V, float C, float D, int16_t L, float Ta_corr, float warn, float err)
