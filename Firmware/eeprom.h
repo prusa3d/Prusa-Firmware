@@ -620,7 +620,6 @@ enum
 
 #ifdef __cplusplus
 void eeprom_init();
-bool eeprom_is_sheet_initialized(uint8_t sheet_num);
 struct SheetName
 {
     char c[sizeof(Sheet::name) + 1];
@@ -628,6 +627,26 @@ struct SheetName
 void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName);
 int8_t eeprom_next_initialized_sheet(int8_t sheet);
 void eeprom_switch_to_next_sheet();
+bool eeprom_is_sheet_initialized(uint8_t sheet_num);
+
+bool eeprom_is_initialized_block(const void *__p, size_t __n);
+void eeprom_update_block_P(const void *__src, void *__dst, size_t __n);
+void eeprom_toggle(uint8_t *__p);
+
+void eeprom_increment_byte(uint8_t *__p);
+void eeprom_increment_word(uint16_t *__p);
+void eeprom_increment_dword(uint32_t *__p);
+
+void eeprom_add_byte(uint8_t *__p, uint8_t add);
+void eeprom_add_word(uint16_t *__p, uint16_t add);
+void eeprom_add_dword(uint32_t *__p, uint32_t add);
+
+uint8_t eeprom_init_default_byte(uint8_t *__p, uint8_t def);
+uint16_t eeprom_init_default_word(uint16_t *__p, uint16_t def);
+uint32_t eeprom_init_default_dword(uint32_t *__p, uint32_t def);
+void eeprom_init_default_float(float *__p, float def);
+void eeprom_init_default_block(void *__p, size_t __n, const void *def);
+void eeprom_init_default_block_P(void *__p, size_t __n, const void *def);
 #endif
 
 #endif // EEPROM_H
