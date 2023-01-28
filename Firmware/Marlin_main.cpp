@@ -9472,6 +9472,8 @@ void ThermalStop(bool allow_recovery)
 {
     if(Stopped == false) {
         Stopped = true;
+
+        // Either pause or stop the print
         if(allow_recovery && (IS_SD_PRINTING || usb_timer.running())) {
             if (!isPrintPaused) {
                 lcd_setalertstatuspgm(_T(MSG_PAUSED_THERMAL_ERROR), LCD_STATUS_CRITICAL);
@@ -9494,8 +9496,8 @@ void ThermalStop(bool allow_recovery)
             print_stop();
         }
 
-        // Report the status on the serial, switch to a busy state
-        SERIAL_ERROR_START;
+        // Report the error on the serial
+        serialprintPGM(allow_recovery ? echomagic : errormagic);
         SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
 
         // Eventually report the stopped status on the lcd (though this is usually overridden by a
