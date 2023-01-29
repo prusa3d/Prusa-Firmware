@@ -34,7 +34,7 @@ void LogEchoEvent_P(const char *msg);
         do {                     \
             SERIAL_ECHO_START;   \
             SERIAL_MMU2();       \
-            SERIAL_ECHO(S);      \
+            SERIAL_ECHORPGM(S);  \
         } while (0)
     #define MMU2_ERROR_MSGRPGM(S) MMU2_ECHO_MSGRPGM(S) //!@todo Decide MMU2 errors  on serial line
     #define MMU2_ECHO_MSG(S)     \
