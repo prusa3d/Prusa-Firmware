@@ -117,7 +117,7 @@ void Filament_sensor::triggerFilamentInserted() {
             || eeprom_read_byte((uint8_t *)EEPROM_WIZARD_ACTIVE)
             )
         ) {
-        filAutoLoad();
+        lcd_AutoLoadFilament();
     }
 }
 
@@ -141,16 +141,6 @@ void Filament_sensor::triggerFilamentRemoved() {
     }
 }
 
-void Filament_sensor::filAutoLoad() {
-    eFilamentAction = FilamentAction::AutoLoad;
-    if (target_temperature[0] >= EXTRUDE_MINTEMP) {
-        bFilamentPreheatState = true;
-        menu_submenu(mFilamentItemForce);
-    } else {
-        menu_submenu(lcd_generic_preheat_menu);
-        lcd_timeoutToStatus.start();
-    }
-}
 
 void Filament_sensor::filRunout() {
 //    SERIAL_ECHOLNPGM("filRunout");

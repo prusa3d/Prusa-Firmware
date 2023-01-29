@@ -2318,6 +2318,11 @@ static void lcd_LoadFilament()
     preheat_or_continue();
 }
 
+void lcd_AutoLoadFilament() {
+    eFilamentAction = FilamentAction::AutoLoad;
+    preheat_or_continue();
+}
+
 
 //! @brief Show filament used a print time
 //!

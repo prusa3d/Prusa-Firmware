@@ -200,6 +200,7 @@ void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentItemForce();
 void lcd_generic_preheat_menu();
 void unload_filament(float unloadLength);
+void lcd_AutoLoadFilament();
 
 
 void lcd_wait_for_heater();
