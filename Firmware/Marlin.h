@@ -199,6 +199,7 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 #if defined(E0_ENABLE_PIN) && (E0_ENABLE_PIN > -1)
   #define enable_e0() WRITE(E0_ENABLE_PIN, E_ENABLE_ON)
   #define disable_e0() WRITE(E0_ENABLE_PIN,!E_ENABLE_ON)
+  #define is_enabled_e0() READ(E0_ENABLE_PIN)
 #else
   #define enable_e0()  /* nothing */
   #define disable_e0() /* nothing */

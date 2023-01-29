@@ -511,23 +511,6 @@ void getHighESpeed()
 }
 #endif
 
-bool e_active()
-{
-	unsigned char e_active = 0;
-	block_t *block;
-  if(block_buffer_tail != block_buffer_head)
-  {
-    uint8_t block_index = block_buffer_tail;
-    while(block_index != block_buffer_head)
-    {
-      block = &block_buffer[block_index];
-      if(block->steps_e.wide != 0) e_active++;
-      block_index = (block_index+1) & (BLOCK_BUFFER_SIZE - 1);
-    }
-  }
-  return (e_active > 0) ? true : false ;
-}
-
 void check_axes_activity()
 {
   unsigned char x_active = 0;

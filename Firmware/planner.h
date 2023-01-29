@@ -179,8 +179,6 @@ void plan_reset_next_e();
 inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
 inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
 
-extern bool e_active();
-
 void check_axes_activity();
 
 // Use M203 to override by software

@@ -541,7 +541,7 @@ bool check_fsensor() {
     return (IS_SD_PRINTING || usb_timer.running())
         && mcode_in_progress != 600
         && !saved_printing
-        && e_active();
+        && is_enabled_e0();
 }
 
 bool fans_check_enabled = true;
