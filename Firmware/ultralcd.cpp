@@ -2329,9 +2329,9 @@ void lcd_menu_statistics()
 	{
 		const float _met = ((float)total_filament_used) / (100000.f);
 		const uint32_t _t = (_millis() - starttime) / 1000ul;
-		const uint32_t _h = _t / 3600;
-		const uint8_t _m = (_t - (_h * 3600ul)) / 60ul;
-		const uint8_t _s = _t - ((_h * 3600ul) + (_m * 60ul));
+		const uint32_t _h = (_t / 60) / 60;
+		const uint8_t _m = (_t / 60) % 60;
+		const uint8_t _s = _t % 60;
 
         lcd_home();
 		lcd_printf_P(_N(
@@ -2351,9 +2351,9 @@ void lcd_menu_statistics()
 		uint8_t _hours, _minutes;
 		uint32_t _days;
 		float _filament_m = (float)_filament/100;
-		_days = _time / 1440;
-		_hours = (_time - (_days * 1440)) / 60;
-		_minutes = _time - ((_days * 1440) + (_hours * 60));
+		_days  = (_time / 60) / 24;
+		_hours = (_time / 60) % 24;
+		_minutes = _time % 60;
 
 		lcd_home();
 		lcd_printf_P(_N(
