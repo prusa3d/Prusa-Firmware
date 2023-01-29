@@ -57,6 +57,11 @@ static void lcd_mesh_bed_leveling_settings();
 static void lcd_backlight_menu();
 #endif
 
+FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
+static bool bFilamentPreheatState;
+static bool bFilamentAction = false;
+static bool bFilamentWaitingFlag = false;
+
 int8_t ReInitLCD = 0;
 uint8_t scrollstuff = 0;
 
@@ -1755,11 +1760,6 @@ void lcd_cutter_enabled()
     }
 }
 #endif //MMU_HAS_CUTTER
-
-FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
-bool bFilamentPreheatState;
-bool bFilamentAction=false;
-static bool bFilamentWaitingFlag=false;
 
 bool shouldPreheatOnlyNozzle() {
     uint8_t eeprom_setting = eeprom_read_byte((uint8_t*)EEPROM_HEAT_BED_ON_LOAD_FILAMENT);
