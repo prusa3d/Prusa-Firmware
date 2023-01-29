@@ -306,8 +306,9 @@ extern float retract_recover_length_swap;
 
 extern uint8_t host_keepalive_interval;
 
-extern unsigned long starttime;
-extern unsigned long stoptime;
+extern uint32_t starttime; // milliseconds
+extern uint32_t pause_time; // milliseconds
+extern uint32_t start_pause_print; // milliseconds
 extern ShortTimer usb_timer;
 extern bool processing_tcode;
 extern bool homing_flag;
@@ -327,11 +328,6 @@ extern int fan_speed[2];
 // Active extruder becomes a #define to make the whole firmware compilable.
 // We may even remove the references to it wherever possible in the future
 #define active_extruder 0
-
-//Long pause
-extern unsigned long pause_time;
-extern unsigned long start_pause_print;
-extern unsigned long t_fan_rising_edge;
 
 extern bool mesh_bed_leveling_flag;
 

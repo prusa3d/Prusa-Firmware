@@ -638,9 +638,8 @@ void get_command()
           card.closefile();
 
           SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
-          stoptime=_millis();
           char time[30];
-          uint32_t t = (stoptime-starttime-pause_time) / 60000;
+          uint32_t t = (_millis() - starttime - pause_time) / 60000;
           pause_time = 0;
           int hours, minutes;
           minutes = t % 60;
