@@ -173,9 +173,7 @@ int extrudemultiply=100; //100->1 200->2
 
 bool homing_flag = false;
 
-unsigned long pause_time = 0;
-unsigned long start_pause_print = _millis();
-unsigned long t_fan_rising_edge = _millis();
+static uint32_t t_fan_rising_edge;
 LongTimer safetyTimer;
 static LongTimer crashDetTimer;
 
@@ -306,8 +304,9 @@ unsigned long max_inactive_time = 0;
 static unsigned long stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l;
 static unsigned long safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul;
 
-unsigned long starttime=0;
-unsigned long stoptime=0;
+uint32_t starttime;
+uint32_t pause_time;
+uint32_t start_pause_print;
 ShortTimer usb_timer;
 
 bool Stopped=false;
@@ -5515,12 +5514,11 @@ void process_commands()
     */
     case 31: //M31 take time since the start of the SD print or an M109 command
       {
-      stoptime=_millis();
       char time[30];
-      unsigned long t=(stoptime-starttime)/1000;
-      int sec,min;
-      min=t/60;
-      sec=t%60;
+      uint32_t t = (_millis() - starttime) / 1000;
+      int16_t sec, min;
+      min = t / 60;
+      sec = t % 60;
       sprintf_P(time, PSTR("%i min, %i sec"), min, sec);
       SERIAL_ECHO_START;
       SERIAL_ECHOLN(time);

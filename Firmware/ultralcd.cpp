@@ -5715,11 +5715,8 @@ static void lcd_sd_updir()
 // continue stopping the print from the main loop after lcd_print_stop() is called
 void lcd_print_stop_finish()
 {
-    // save printing time
-    stoptime = _millis();
-
     // Convert the time from ms to minutes, divide by 60 * 1000
-    uint32_t t = (stoptime - starttime - pause_time) / 60000;
+    uint32_t t = (_millis() - starttime - pause_time) / 60000;
     save_statistics(total_filament_used, t);
 
     // lift Z
