@@ -124,7 +124,7 @@ static void lcd_v2_calibration();
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
 static void mmu_loading_test_menu();
-static void preheat_or_continue();
+static void preheat_or_continue(FilamentAction action);
 
 #ifdef MMU_HAS_CUTTER
 static void mmu_cut_filament_menu();
@@ -2129,16 +2129,14 @@ void lcd_generic_preheat_menu()
     MENU_END();
 }
 
-void lcd_unLoadFilament()
+static void lcd_unLoadFilament()
 {
-     eFilamentAction=FilamentAction::UnLoad;
-     preheat_or_continue();
+     preheat_or_continue(FilamentAction::UnLoad);
 }
 
 static void mmu_unload_filament()
 {
-    eFilamentAction = FilamentAction::MmuUnLoad;
-    preheat_or_continue();
+    preheat_or_continue(FilamentAction::MmuUnLoad);
 }
 
 
@@ -2281,7 +2279,8 @@ static void lcd_menu_AutoLoadFilament()
 }
 #endif //FILAMENT_SENSOR
 
-static void preheat_or_continue() {
+static void preheat_or_continue(FilamentAction action) {
+    eFilamentAction = action;
     if (target_temperature[0] >= extrude_min_temp) {
         bFilamentPreheatState = true;
         mFilamentItem(target_temperature[0], target_temperature_bed);
@@ -2292,13 +2291,11 @@ static void preheat_or_continue() {
 
 static void lcd_LoadFilament()
 {
-    eFilamentAction = FilamentAction::Load;
-    preheat_or_continue();
+    preheat_or_continue(FilamentAction::Load);
 }
 
 void lcd_AutoLoadFilament() {
-    eFilamentAction = FilamentAction::AutoLoad;
-    preheat_or_continue();
+    preheat_or_continue(FilamentAction::AutoLoad);
 }
 
 
@@ -4901,8 +4898,7 @@ static void mmu_load_to_nozzle_menu() {
             MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', lcd_mmu_load_to_nozzle_wrapper, i); ////MSG_LOAD_FILAMENT c=16
         MENU_END();
     } else {
-        eFilamentAction = FilamentAction::MmuLoad;
-        preheat_or_continue();
+        preheat_or_continue(FilamentAction::MmuLoad);
     }
 }
 
@@ -4919,8 +4915,7 @@ static void mmu_fil_eject_menu() {
             MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FROM_MMU), i + '1', mmu_eject_filament, i); ////MSG_EJECT_FROM_MMU c=16
         MENU_END();
     } else {
-        eFilamentAction = FilamentAction::MmuEject;
-        preheat_or_continue();
+        preheat_or_continue(FilamentAction::MmuEject);
     }
 }
 
@@ -4937,8 +4932,7 @@ static void mmu_cut_filament_menu() {
             MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), i + '1', mmu_cut_filament_wrapper, i); ////MSG_CUT_FILAMENT c=16
         MENU_END();
     } else {
-        eFilamentAction=FilamentAction::MmuCut;
-        preheat_or_continue();
+        preheat_or_continue(FilamentAction::MmuCut);
     }
 }
 #endif //MMU_HAS_CUTTER
@@ -4962,8 +4956,7 @@ static void mmu_loading_test_menu() {
             MENU_ITEM_FUNCTION_NR_P(_T(MSG_LOAD_FILAMENT), i + '1', loading_test_wrapper, i); ////MSG_LOAD_FILAMENT c=16
         MENU_END();
     } else {
-        eFilamentAction = FilamentAction::MmuLoadingTest;
-        preheat_or_continue();
+        preheat_or_continue(FilamentAction::MmuLoadingTest);
     }
 }
 
