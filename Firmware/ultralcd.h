@@ -194,8 +194,6 @@ enum class FilamentAction : uint_least8_t
 };
 
 extern FilamentAction eFilamentAction;
-extern bool bFilamentPreheatState;
-extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void lcd_generic_preheat_menu();
 void unload_filament(float unloadLength);
