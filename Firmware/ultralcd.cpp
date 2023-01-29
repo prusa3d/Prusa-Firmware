@@ -2139,12 +2139,6 @@ void lcd_generic_preheat_menu()
     MENU_END();
 }
 
-void mFilamentItemForce()
-{
-mFilamentItem(target_temperature[0],target_temperature_bed);
-}
-
-
 void lcd_unLoadFilament()
 {
      eFilamentAction=FilamentAction::UnLoad;
