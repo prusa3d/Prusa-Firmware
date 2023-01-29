@@ -92,7 +92,7 @@ static void prusa_stat_printinfo() {
     SERIAL_ECHO(card.longFilename[0] ? card.longFilename : card.filename);
     SERIAL_ECHOPGM("][TIM:");
     if (starttime != 0) {
-        SERIAL_ECHO(_millis() / 1000 - starttime / 1000);
+        SERIAL_ECHO((_millis() - starttime) / 1000);
     }
     else {
         SERIAL_ECHO(0);

@@ -626,11 +626,11 @@ void get_command()
           SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
           stoptime=_millis();
           char time[30];
-          unsigned long t=(stoptime-starttime-pause_time)/1000;
+          uint32_t t = (stoptime-starttime-pause_time) / 60000;
           pause_time = 0;
           int hours, minutes;
-          minutes=(t/60)%60;
-          hours=t/60/60;
+          minutes = t % 60;
+          hours = t / 60;
           save_statistics(total_filament_used, t);
           sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
           SERIAL_ECHO_START;
