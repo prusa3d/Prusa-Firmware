@@ -183,7 +183,7 @@ static LongTimer crashDetTimer;
 
 bool mesh_bed_leveling_flag = false;
 
-unsigned long total_filament_used;
+uint32_t total_filament_used;
 HeatingStatus heating_status;
 uint8_t heating_status_counter;
 bool loading_flag = false;
@@ -9691,11 +9691,11 @@ void setPwmFrequency(uint8_t pin, int val)
 }
 #endif //FAST_PWM_FAN
 
-void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time) { //_total_filament_used unit: mm/100; print time in s
-    uint32_t _previous_filament = eeprom_init_default_dword((uint32_t *)EEPROM_FILAMENTUSED, 0); //_previous_filament unit: cm
+void save_statistics(uint32_t _total_filament_used, uint32_t _total_print_time) {
+    uint32_t _previous_filament = eeprom_init_default_dword((uint32_t *)EEPROM_FILAMENTUSED, 0); //_previous_filament unit: meter
     uint32_t _previous_time = eeprom_init_default_dword((uint32_t *)EEPROM_TOTALTIME, 0);        //_previous_time unit: min
 
-    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + (_total_print_time / 60)); // EEPROM_TOTALTIME unit: min
+    eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + _total_print_time); // EEPROM_TOTALTIME unit: min
     eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (_total_filament_used / 1000));
 
     total_filament_used = 0;

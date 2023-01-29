@@ -498,11 +498,11 @@ void lcdui_print_time(void)
             print_t = print_tr;
             suff = 'R';
         } else 
-            print_t = _millis() / 60000 - starttime / 60000;
+            print_t = (_millis() - starttime) / 60000;
 
         if (feedmultiply != 100 && (print_t == print_tr || print_t == print_tc)) {
             suff_doubt = '?';
-            print_t = 100ul * print_t / feedmultiply;
+            print_t = (100 * print_t) / feedmultiply;
         }
 
         if (print_t < 6000) //time<100h
@@ -2346,8 +2346,8 @@ void lcd_menu_statistics()
 	}
 	else
 	{
-		unsigned long _filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED);
-		unsigned long _time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME); //in minutes
+		uint32_t _filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED); // in meters
+		uint32_t _time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME); // in minutes
 		uint8_t _hours, _minutes;
 		uint32_t _days;
 		float _filament_m = (float)_filament/100;
@@ -5672,7 +5672,9 @@ void lcd_print_stop_finish()
 {
     // save printing time
     stoptime = _millis();
-    unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
+
+    // Convert the time from ms to minutes, divide by 60 * 1000
+    uint32_t t = (stoptime - starttime - pause_time) / 60000;
     save_statistics(total_filament_used, t);
 
     // lift Z
