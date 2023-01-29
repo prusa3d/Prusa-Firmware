@@ -278,7 +278,6 @@ bool MMU2::ToolChangeCommonOnce(uint8_t slot){
     static_assert(MAX_RETRIES > 1); // need >1 retries to do the cut in the last attempt
     for(uint8_t retries = MAX_RETRIES; retries; --retries){
         for(;;) {
-            disable_e0(); // it may seem counterintuitive to disable the E-motor, but it gets enabled in the planner whenever the E-motor is to move
             tool_change_extruder = slot;
             logic.ToolChange(slot); // let the MMU pull the filament out and push a new one in
             if( manage_response(true, true) )
@@ -430,7 +429,6 @@ bool MMU2::unload() {
         // we assume the printer managed to relieve filament tip from the gears,
         // so repeating that part in case of an MMU restart is not necessary
         for(;;) {
-            disable_e0();
             logic.UnloadFilament();
             if( manage_response(false, true) )
                 break;
@@ -468,7 +466,6 @@ bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /* = true */){
 
         ReportingRAII rep(CommandInProgress::CutFilament);
         for(;;){
-            disable_e0();
             logic.CutFilament(slot);
             if( manage_response(false, true) )
                 break;
@@ -498,7 +495,6 @@ bool MMU2::load_filament(uint8_t slot) {
 
     ReportingRAII rep(CommandInProgress::LoadFilament);
     for(;;) {
-        disable_e0();
         logic.LoadFilament(slot);
         if( manage_response(false, false) )
             break;
@@ -564,7 +560,6 @@ bool MMU2::eject_filament(uint8_t slot, bool enableFullScreenMsg /* = true */) {
 
         ReportingRAII rep(CommandInProgress::EjectFilament);
         for(;;) {
-            disable_e0();
             logic.EjectFilament(slot);
             if( manage_response(false, true) )
                 break;
@@ -590,7 +585,6 @@ void MMU2::SaveHotendTemp(bool turn_off_nozzle) {
     if (mmu_print_saved & SavedState::Cooldown) return;
 
     if (turn_off_nozzle && !(mmu_print_saved & SavedState::CooldownPending)){
-        disable_e0();
         resume_hotend_temp = degTargetHotend(active_extruder);
         mmu_print_saved |= SavedState::CooldownPending;
         LogEchoEvent_P(PSTR("Heater cooldown pending"));
@@ -600,7 +594,6 @@ void MMU2::SaveHotendTemp(bool turn_off_nozzle) {
 void MMU2::SaveAndPark(bool move_axes) {
     if (mmu_print_saved == SavedState::None) { // First occurrence. Save current position, park print head, disable nozzle heater.
         LogEchoEvent_P(PSTR("Saving and parking"));
-        disable_e0();
         st_synchronize();
 
         if (move_axes){
