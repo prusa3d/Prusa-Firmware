@@ -4728,6 +4728,7 @@ void process_commands()
             SERIAL_ECHOLNPGM("No PINDA thermistor");
             break;
         }
+#ifdef PINDA_TEMP_COMP
 
         if (!calibration_status_get(CALIBRATION_STATUS_XYZ)) {
             //we need to know accurate position of first calibration point
@@ -4876,7 +4877,7 @@ void process_commands()
         }
         lcd_temp_cal_show_result(true);
         homing_flag = false;
-
+#endif // PINDA_TEMP_COMP
 #else //PINDA_THERMISTOR
 
 		setTargetBed(PINDA_MIN_T);
