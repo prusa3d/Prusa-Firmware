@@ -11,7 +11,7 @@ namespace MMU2 {
 
 void MoveE(float delta, float feedRate) {
     current_position[E_AXIS] += delta;
-    plan_buffer_line_curposXYZE(feedRate);
+    planner_line_to_current_position(feedRate);
 }
 
 float MoveRaiseZ(float delta) {
@@ -40,7 +40,11 @@ void planner_set_current_position_E(float e){
 
 void planner_line_to_current_position(float feedRate_mm_s){
      plan_buffer_line_curposXYZE(feedRate_mm_s);
-     st_synchronize();
+}
+
+void planner_line_to_current_position_sync(float feedRate_mm_s){
+    planner_line_to_current_position(feedRate_mm_s);
+    planner_synchronize();
 }
 
 pos3d planner_current_position(){
@@ -48,23 +52,20 @@ pos3d planner_current_position(){
 }
 
 void motion_do_blocking_move_to_xy(float rx, float ry, float feedRate_mm_s){
-        current_position[X_AXIS] = rx;
-        current_position[Y_AXIS] = ry;
-        plan_buffer_line_curposXYZE(feedRate_mm_s);
-        st_synchronize();
+    current_position[X_AXIS] = rx;
+    current_position[Y_AXIS] = ry;
+    planner_line_to_current_position_sync(feedRate_mm_s);
 }
 
 void motion_do_blocking_move_to_z(float z, float feedRate_mm_s){
-        current_position[Z_AXIS] = z;
-        plan_buffer_line_curposXYZE(feedRate_mm_s);
-        st_synchronize();
+    current_position[Z_AXIS] = z;
+    planner_line_to_current_position_sync(feedRate_mm_s);
 }
 
 void nozzle_park() {
     current_position[X_AXIS] = MMU_ERR_X_PAUSE_POS;
     current_position[Y_AXIS] = MMU_ERR_Y_PAUSE_POS;
-    planner_line_to_current_position(NOZZLE_PARK_XY_FEEDRATE);
-    st_synchronize();
+    planner_line_to_current_position_sync(NOZZLE_PARK_XY_FEEDRATE);
 }
 
 bool marlin_printingIsActive() {

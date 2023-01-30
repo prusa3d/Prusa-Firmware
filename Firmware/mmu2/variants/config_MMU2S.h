@@ -43,7 +43,7 @@ static constexpr uint8_t MMU2_NO_TOOL = 99;
 static constexpr uint32_t MMU_BAUD = 115200;
 
 struct E_Step {
-    float extrude;       ///< extrude distance in mm
+    float extrude;  ///< extrude distance in mm
     float feedRate; ///< feed rate in mm/s
 };
 

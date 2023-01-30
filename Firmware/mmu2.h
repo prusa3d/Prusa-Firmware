@@ -175,7 +175,7 @@ public:
     bool is_mmu_error_monitor_active;
 
     /// Method to read-only mmu_print_saved
-    bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
+    inline bool MMU_PRINT_SAVED() const { return mmu_print_saved != SavedState::None; }
 
     /// Automagically "press" a Retry button if we have any retry attempts left
     /// @param ec ErrorCode enum value
@@ -242,20 +242,6 @@ private:
     void OnMMUProgressMsgChanged(ProgressCode pc);
     /// Repeated calls when progress code remains the same
     void OnMMUProgressMsgSame(ProgressCode pc);
-
-    /// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
-    // void LogErrorEvent(const char *msg);
-    /// Report the msg into the general logging subsystem.
-    /// On the AVR platform this variant reads the input string from PROGMEM.
-    /// On the ARM platform it calls LogErrorEvent directly (silently expecting the compiler to optimize it away)
-    void LogErrorEvent_P(const char *msg_P);
-
-    /// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
-    // void LogEchoEvent(const char *msg);
-    /// Report the msg into the general logging subsystem.
-    /// On the AVR platform this variant reads the input string from PROGMEM.
-    /// On the ARM platform it calls LogEchoEvent directly (silently expecting the compiler to optimize it away)
-    void LogEchoEvent_P(const char *msg_P);
 
     /// @brief Save hotend temperature and set flag to cooldown hotend after 60 minutes
     /// @param turn_off_nozzle if true, the hotend temperature will be set to 0degC after 60 minutes

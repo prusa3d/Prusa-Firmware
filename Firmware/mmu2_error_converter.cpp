@@ -19,7 +19,7 @@ constexpr InputIt find_if_cx(InputIt first, InputIt last, UnaryPredicate p) {
     return last;
 }
 
-// Making a constexpr FindError should instruct the compiler to optimize the ConvertMMUErrorCode
+// Making a constexpr FindError should instruct the compiler to optimize the PrusaErrorCodeIndex
 // in such a way that no searching will ever be done at runtime.
 // A call to FindError then compiles to a single instruction even on the AVR.
 static constexpr uint8_t FindErrorIndex(uint16_t pec) {

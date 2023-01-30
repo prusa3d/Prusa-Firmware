@@ -12,10 +12,14 @@ namespace MMU2 {
 
 /// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
 /// @param msg pointer to a string in PROGMEM
+/// On the AVR platform this variant reads the input string from PROGMEM.
+/// On the ARM platform it calls LogErrorEvent directly (silently expecting the compiler to optimize it away)
 void LogErrorEvent_P(const char *msg);
 
 /// Report the msg into the general logging subsystem (through Marlin's SERIAL_ECHO stuff)
 /// @param msg pointer to a string in PROGMEM
+/// On the AVR platform this variant reads the input string from PROGMEM.
+/// On the ARM platform it calls LogErrorEvent directly (silently expecting the compiler to optimize it away)
 void LogEchoEvent_P(const char *msg);
 
 } // namespace
