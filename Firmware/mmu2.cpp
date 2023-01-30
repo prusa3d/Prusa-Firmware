@@ -836,9 +836,9 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     const E_Step *step = sequence;
     for (uint8_t i = 0; i < steps; i++) {
         const float es = pgm_read_float(&(step->extrude));
-        const feedRate_t fr_mm_m = pgm_read_float(&(step->feedRate));
+        const feedRate_t fr_mm_s = pgm_read_float(&(step->feedRate));
         planner_set_current_position_E(planner_get_current_position_E() + es);
-        planner_line_to_current_position(MMM_TO_MMS(fr_mm_m));
+        planner_line_to_current_position(fr_mm_s);
 
         step++;
     }
@@ -1010,26 +1010,6 @@ void MMU2::OnMMUProgressMsgSame(ProgressCode pc) {
         // do nothing yet
         break;
     }
-}
-
-//void MMU2::LogErrorEvent(const char *msg) {
-//    MMU2_ERROR_MSG(msg);
-//    SERIAL_ECHOLN();
-//}
-
-void MMU2::LogErrorEvent_P(const char *msg_P) {
-    MMU2_ERROR_MSGRPGM(msg_P);
-    SERIAL_ECHOLN();
-}
-
-//void MMU2::LogEchoEvent(const char *msg) {
-//    MMU2_ECHO_MSG(msg);
-//    SERIAL_ECHOLN();
-//}
-
-void MMU2::LogEchoEvent_P(const char *msg_P) {
-    MMU2_ECHO_MSGRPGM(msg_P);
-    SERIAL_ECHOLN();
 }
 
 } // namespace MMU2

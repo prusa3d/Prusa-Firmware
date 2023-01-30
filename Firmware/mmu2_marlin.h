@@ -32,6 +32,7 @@ float planner_get_machine_position_E_mm();
 float planner_get_current_position_E();
 void planner_set_current_position_E(float e);
 void planner_line_to_current_position(float feedRate_mm_s);
+void planner_line_to_current_position_sync(float feedRate_mm_s);
 pos3d planner_current_position();
 
 void motion_do_blocking_move_to_xy(float rx, float ry, float feedRate_mm_s);
