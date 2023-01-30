@@ -476,43 +476,48 @@ void PAT9125_sensor::filJam() {
 }
 
 bool PAT9125_sensor::updatePAT9125() {
-    if (jamDetection) {
-        int16_t _stepCount = getStepCount();
-        if (abs(_stepCount) >= chunkSteps) { // end of chunk. Check distance
-            resetStepCount();
-            if (!pat9125_update()) { // get up to date data. reinit on error.
-                init();              // try to reinit.
-            }
-            bool fsDir = (pat9125_y - oldPos) > 0;
-            bool stDir = _stepCount > 0;
-            if (fsDir != stDir) {
-                jamErrCnt++;
-            } else if (jamErrCnt) {
-                jamErrCnt--;
-            }
-            oldPos = pat9125_y;
-        }
-        if (jamErrCnt > 10) {
-            jamErrCnt = 0;
-            filJam();
-        }
-    }
-
     if (!pollingTimer.running() || pollingTimer.expired(pollingPeriod)) {
         pollingTimer.start();
         if (!pat9125_update()) {
             init(); // try to reinit.
         }
 
-        bool present = (pat9125_s < 17) || (pat9125_s >= 17 && pat9125_b >= 50);
+        // Detecting presence of transparent or black filament is difficult.
+        // With or without filament, sensor readings are very close:
+        // pat9125_s == 17 and pat9125_b == 50..80
+        // To prevent false runouts:
+        // if filament moves, assume it is present.
+        bool filament_moves = pat9125_y != oldPos_presence;
+        oldPos_presence = pat9125_y;
+
+        bool present = (pat9125_s < 17) || (pat9125_s >= 17 && (pat9125_b >= presence_threshold || filament_moves)); // without filament Support -> Sensor info -> pat9125_b == 47..50
         if (present != filterFilPresent) {
             filter++;
+            if (filter >= filterCnt) {
+                filter = 0;
+                filterFilPresent = present;
+            }
         } else if (filter) {
             filter--;
         }
-        if (filter >= filterCnt) {
-            filter = 0;
-            filterFilPresent = present;
+
+        if (jamDetection) {
+            int16_t _stepCount = getStepCount();
+            if (abs(_stepCount) >= chunkSteps) { // end of chunk. Check distance
+                resetStepCount();
+                int16_t optical_move = pat9125_y - oldPos;
+                oldPos = pat9125_y;
+                bool feed_ok = _stepCount > 0 ? optical_move > 1 : optical_move < -1;
+                if (!feed_ok) {
+                    jamErrCnt++;
+                    if (jamErrCnt > 10) {
+                        jamErrCnt = 0;
+                        filJam();
+                    }
+                } else if (jamErrCnt) {
+                    jamErrCnt--;
+                }
+            }
         }
     }
     return (filter == 0); // return stability
