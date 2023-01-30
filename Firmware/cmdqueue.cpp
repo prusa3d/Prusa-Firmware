@@ -545,7 +545,7 @@ void get_command()
     char serial_char = (char)n;
     if( serial_char == '\n'
      || serial_char == '\r'
-     || ((serial_char == '#' || serial_char == ':') )
+     || serial_char == '#'
      || serial_count >= (MAX_CMD_SIZE - 1)
      || n==-1
     ){
