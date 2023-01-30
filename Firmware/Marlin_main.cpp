@@ -3525,7 +3525,11 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     st_synchronize();
 
     //Beep, manage nozzle heater and wait for user to start unload filament
-    if(!mmu_enabled) M600_wait_for_user(HotendTempBckp);
+    if(!mmu_enabled)
+    {
+      fanSpeed = 0;
+      M600_wait_for_user(HotendTempBckp);
+    } 
 
     lcd_change_fil_state = 0;
 
