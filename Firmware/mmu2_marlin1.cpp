@@ -99,7 +99,7 @@ void thermal_setExtrudeMintemp(int16_t t) {
 }
 
 void thermal_setTargetHotend(int16_t t) {
-    setTargetHotend(t, 0);
+    setTargetHotend(t);
 }
 
 void safe_delay_keep_alive(uint16_t t) {
