@@ -482,13 +482,21 @@ bool PAT9125_sensor::updatePAT9125() {
             init(); // try to reinit.
         }
 
+        #if 0
         // Detecting presence of transparent or black filament is difficult.
-        // With or without filament, sensor readings are very close:
+        // if with or without filament, sensor readings are very close:
         // pat9125_s == 17 and pat9125_b == 50..80
         // To prevent false runouts:
         // if filament moves, assume it is present.
         bool filament_moves = pat9125_y != oldPos_presence;
         oldPos_presence = pat9125_y;
+        #else
+        // if no-reflection idler plug is used,
+        // https://github.com/prusa3d/Original-Prusa-i3/pull/173
+        // without filament pat9125_s == 17 and pat9125_b == 9..20 then
+        // filament moves are not needed for presence detection
+        static constexpr bool filament_moves = false;
+        #endif
 
         bool present = (pat9125_s < 17) || (pat9125_s >= 17 && (pat9125_b >= presence_threshold || filament_moves)); // without filament Support -> Sensor info -> pat9125_b == 47..50
         if (present != filterFilPresent) {
@@ -497,8 +505,8 @@ bool PAT9125_sensor::updatePAT9125() {
                 filter = 0;
                 filterFilPresent = present;
             }
-        } else if (filter) {
-            filter--;
+        } else {
+          filter = 0;
         }
 
         if (jamDetection) {
@@ -514,8 +522,8 @@ bool PAT9125_sensor::updatePAT9125() {
                         jamErrCnt = 0;
                         filJam();
                     }
-                } else if (jamErrCnt) {
-                    jamErrCnt--;
+                } else {
+                    jamErrCnt = 0;
                 }
             }
         }
