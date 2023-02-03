@@ -45,7 +45,7 @@ void menu_data_reset(void)
 	memset(&menu_data, 0, sizeof(menu_data));
 }
 
-void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state)
+void menu_goto(menu_func_t menu, const int8_t encoder, const bool feedback, bool reset_menu_state)
 {
 	CRITICAL_SECTION_START;
 	if (menu_menu != menu)
@@ -65,12 +65,6 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 
 void menu_start(void)
 {
-    if (lcd_encoder > 0x8000) lcd_encoder = 0;
-    if (lcd_encoder < 0)
-    {
-        lcd_encoder = 0;
-		Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-    }
     if (lcd_encoder < menu_top)
 		menu_top = lcd_encoder;
     menu_line = menu_top;
@@ -84,7 +78,7 @@ void menu_end(void)
 		lcd_encoder = menu_item - 1;
 		Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 	}
-	if (((uint8_t)lcd_encoder) >= menu_top + LCD_HEIGHT)
+	if (lcd_encoder >= (menu_top + LCD_HEIGHT))
 	{
 		menu_top = lcd_encoder - LCD_HEIGHT + 1;
 		lcd_draw_update = 1;
@@ -429,11 +423,7 @@ const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
 
-template<typename T>
-static void menu_draw_P(char chr, const char* str, int16_t val);
-
-template<>
-void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
+void menu_draw_item_P(char chr, const char* str, int16_t val)
 {
 	// The LCD row position is controlled externally. We may only modify the column here
 	lcd_putc(chr);
@@ -452,17 +442,17 @@ void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 	lcd_print(val);
 }
 
-template<>
-void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
+template<typename T>
+void menu_draw_edit_P(char chr, const char* str, T val)
 {
     menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
-    float factor = 1.0f + static_cast<float>(val) / 1000.0f;
-    if (val <= _md->minEditValue)
+    if (val <= (T)(_md->minEditValue))
     {
         menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
     }
     else
     {
+        float factor = 1.0f + static_cast<float>(val) / 1000.0f;
         lcd_printf_P(menu_fmt_float13, chr, str, factor);
     }
 }
@@ -498,25 +488,26 @@ void menu_draw_float13(const char* str, float val)
 }
 
 template <typename T>
-static void _menu_edit_P(void)
+static void _menu_edit_P()
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
 	{
-		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
-		else if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
+		if (_md->currentValue < _md->minEditValue) _md->currentValue = _md->minEditValue;
+		else if (_md->currentValue > _md->maxEditValue) _md->currentValue = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
-		menu_draw_P<T>(' ', _md->editLabel, (int)lcd_encoder);
+		menu_draw_edit_P<T>(' ', _md->editLabel, (T)_md->currentValue);
 	}
 	if (LCD_CLICKED)
 	{
-		*((T)(_md->editValue)) = lcd_encoder;
+		// Save the value
+		*((T*)(_md->editValue)) = _md->currentValue;
 		menu_back_no_reset();
 	}
 }
 
 template <typename T>
-uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val)
+uint8_t menu_item_edit_P(const char* str, T pval, T min_val, T max_val)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (menu_item == menu_line)
@@ -524,16 +515,16 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 		if (lcd_draw_update) 
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_P<T>(menu_selection_mark(), str, *pval);
+			menu_draw_item_P(menu_selection_mark(), str, (int16_t)pval);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_submenu_no_reset(_menu_edit_P<T>);
 			_md->editLabel = str;
-			_md->editValue = pval;
+			_md->editValue = &pval;
+			_md->currentValue = pval;
 			_md->minEditValue = min_val;
 			_md->maxEditValue = max_val;
-			lcd_encoder = *pval;
 			return menu_item_ret();
 		}
 	}
@@ -541,8 +532,9 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 	return 0;
 }
 
-template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
-template uint8_t menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
+template uint8_t menu_item_edit_P<int16_t>(const char* str, int16_t pval, int16_t min_val, int16_t max_val);
+template uint8_t menu_item_edit_P<uint8_t>(const char* str, uint8_t pval, uint8_t min_val, uint8_t max_val);
+template uint8_t menu_item_edit_P<int8_t>(const char* str, int8_t pval, int8_t min_val, int8_t max_val);
 
 static uint8_t progressbar_block_count = 0;
 static uint16_t progressbar_total = 0;

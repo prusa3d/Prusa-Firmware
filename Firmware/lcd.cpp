@@ -632,7 +632,7 @@ void lcd_printNumber(unsigned long n, uint8_t base)
 }
 
 uint8_t lcd_draw_update = 2;
-int32_t lcd_encoder = 0;
+int8_t lcd_encoder = 0;
 uint8_t lcd_encoder_bits = 0;
 int8_t lcd_encoder_diff = 0;
 

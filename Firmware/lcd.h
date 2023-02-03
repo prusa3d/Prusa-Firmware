@@ -98,7 +98,7 @@ typedef void (*lcd_lcdupdate_func_t)(void);
 //Set to none-zero when the LCD needs to draw, decreased after every draw. Set to 2 in LCD routines so the LCD gets at least 1 full redraw (first redraw is partial)
 extern uint8_t lcd_draw_update;
 
-extern int32_t lcd_encoder;
+extern int8_t lcd_encoder; // Increments with each knob rotation. Only useful when LCD updates are enabled!
 
 extern uint8_t lcd_encoder_bits;
 

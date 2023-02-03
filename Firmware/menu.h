@@ -20,9 +20,10 @@ typedef struct
 {
     //Variables used when editing values.
     const char* editLabel;
-    void* editValue;
-    int32_t minEditValue;
-    int32_t maxEditValue;
+    void* editValue; // Pointer to variable which the menu will modify when knob is clicked
+    int16_t currentValue; // current value shown on the LCD. Value is not saved until the knob is clicked
+    int16_t minEditValue; // Constant set by menu
+    int16_t maxEditValue; // Constant set by menu
 } menu_data_edit_t;
 
 extern uint8_t menu_data[MENU_DATA_SIZE];
@@ -64,7 +65,12 @@ extern menu_func_t menu_menu;
 
 extern void menu_data_reset(void);
 
-extern void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state);
+/// @brief Go to a specific LCD menu
+/// @param menu pointer to function which runs the menu. If equal to the currently running menu, nothing happens
+/// @param encoder starting menu row position, ranges from 0 to 127
+/// @param feedback if true, a feedback sound is played when the menu changes
+/// @param reset_menu_state if true, any background menu data is erased
+void menu_goto(menu_func_t menu, const int8_t encoder, const bool feedback, bool reset_menu_state);
 
 #define MENU_BEGIN() menu_start(); for(menu_row = 0; menu_row < LCD_HEIGHT; menu_row++, menu_line++) { menu_item = 0;
 void menu_start(void);
@@ -142,11 +148,9 @@ struct SheetFormatBuffer
 
 extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer);
 
-
-#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
-//#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) MENU_ITEM_EDIT(int3, str, pval, minval, maxval)
 template <typename T>
-extern uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val);
+uint8_t menu_item_edit_P(const char* str, T pval, T min_val, T max_val);
+#define MENU_ITEM_EDIT_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
 
 extern void menu_progressbar_init(uint16_t total, const char* title);
 extern void menu_progressbar_update(uint16_t newVal);
