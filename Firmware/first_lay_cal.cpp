@@ -18,6 +18,7 @@
 //! @param extrusion_width extrusion width in mm
 //! @param extrusion_length extrusion length in mm
 //! @return filament length in mm which needs to be extruded to form line
+__attribute__((noinline))
 static constexpr float count_e(float layer_height, float extrusion_width, float extrusion_length, float filament_diameter=1.75f)
 {
     return (extrusion_length * ((M_PI * pow(layer_height, 2)) / 4 + layer_height * (extrusion_width - layer_height))) / ((M_PI * pow(filament_diameter, 2)) / 4);
