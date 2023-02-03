@@ -46,7 +46,6 @@ void lay1cal_wait_preheat()
         PSTR("M190"),
         PSTR("M109"),
         PSTR("G28"),
-        PSTR("G92 E0.0")
         zero_extrusion
     };
 
