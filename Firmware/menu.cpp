@@ -442,11 +442,10 @@ void menu_draw_item_P(char chr, const char* str, int16_t val)
 	lcd_print(val);
 }
 
-template<typename T>
-void menu_draw_edit_P(char chr, const char* str, T val)
+void menu_draw_edit_P(char chr, const char* str, int16_t val)
 {
     menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
-    if (val <= (T)(_md->minEditValue))
+    if (val <= _md->minEditValue)
     {
         menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
     }
@@ -496,7 +495,7 @@ static void _menu_edit_P()
 		if (_md->currentValue < _md->minEditValue) _md->currentValue = _md->minEditValue;
 		else if (_md->currentValue > _md->maxEditValue) _md->currentValue = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
-		menu_draw_edit_P<T>(' ', _md->editLabel, (T)_md->currentValue);
+		menu_draw_edit_P(' ', _md->editLabel, _md->currentValue);
 	}
 	if (LCD_CLICKED)
 	{
@@ -512,7 +511,7 @@ uint8_t menu_item_edit_P(const char* str, T pval, T min_val, T max_val)
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (menu_item == menu_line)
 	{
-		if (lcd_draw_update) 
+		if (lcd_draw_update)
 		{
 			lcd_set_cursor(0, menu_row);
 			menu_draw_item_P(menu_selection_mark(), str, (int16_t)pval);
