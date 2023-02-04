@@ -633,6 +633,7 @@ void lcd_printNumber(unsigned long n, uint8_t base)
 
 uint8_t lcd_draw_update = 2;
 int8_t lcd_encoder = 0;
+uint8_t limit_lcd_encoder = 0;
 uint8_t lcd_encoder_bits = 0;
 int8_t lcd_encoder_diff = 0;
 
@@ -653,6 +654,19 @@ static ShortTimer buttonBlanking;
 ShortTimer longPressTimer;
 LongTimer lcd_timeoutToStatus;
 
+/// @brief Handle updating lcd_encoder
+/// @details some parts of the menus rely on lcd_encoder to not go below 0. In that case limit_lcd_encoder should be set to 1
+void lcd_update_encoder()
+{
+	int16_t lcd_encoder_limit = lcd_encoder + (lcd_encoder_diff / ENCODER_PULSES_PER_STEP);
+	if ((limit_lcd_encoder && lcd_encoder_limit < 0) || lcd_encoder_limit > INT8_MAX) {
+		Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+	} else {
+		lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
+		Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+	}
+	lcd_encoder = constrain(lcd_encoder_limit, limit_lcd_encoder ? 0 : INT8_MIN, INT8_MAX);
+}
 
 //! @brief Was button clicked?
 //!

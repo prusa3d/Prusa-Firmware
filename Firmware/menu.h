@@ -149,7 +149,7 @@ struct SheetFormatBuffer
 extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer);
 
 template <typename T>
-uint8_t menu_item_edit_P(const char* str, T pval, T min_val, T max_val);
+uint8_t menu_item_edit_P(const char* str, T *pval, T min_val, T max_val);
 #define MENU_ITEM_EDIT_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
 
 extern void menu_progressbar_init(uint16_t total, const char* title);

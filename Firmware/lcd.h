@@ -99,6 +99,9 @@ typedef void (*lcd_lcdupdate_func_t)(void);
 extern uint8_t lcd_draw_update;
 
 extern int8_t lcd_encoder; // Increments with each knob rotation. Only useful when LCD updates are enabled!
+extern uint8_t limit_lcd_encoder; // If 1, then lcd_encoder will be constrained to range [0, 127], else [-127, 127] is allowed
+
+void lcd_update_encoder();
 
 extern uint8_t lcd_encoder_bits;
 

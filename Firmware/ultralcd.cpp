@@ -2722,10 +2722,10 @@ void lcd_adjust_bed(void)
         eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_VALID, 1);
     );
     MENU_ITEM_BACK_P(_T(MSG_BACK));
-    MENU_ITEM_EDIT_P(_i("Left side [\xe4m]"), _md->left,  (int8_t)(-BED_ADJUSTMENT_UM_MAX), (int8_t)(BED_ADJUSTMENT_UM_MAX));////MSG_BED_CORRECTION_LEFT c=14
-    MENU_ITEM_EDIT_P(_i("Right side[\xe4m]"), _md->right, (int8_t)(-BED_ADJUSTMENT_UM_MAX), (int8_t)(BED_ADJUSTMENT_UM_MAX));////MSG_BED_CORRECTION_RIGHT c=14
-    MENU_ITEM_EDIT_P(_i("Front side[\xe4m]"), _md->front, (int8_t)(-BED_ADJUSTMENT_UM_MAX), (int8_t)(BED_ADJUSTMENT_UM_MAX));////MSG_BED_CORRECTION_FRONT c=14
-    MENU_ITEM_EDIT_P(_i("Rear side [\xe4m]"), _md->rear,  (int8_t)(-BED_ADJUSTMENT_UM_MAX), (int8_t)(BED_ADJUSTMENT_UM_MAX));////MSG_BED_CORRECTION_REAR c=14
+    MENU_ITEM_EDIT_P(_i("Left side [\xe4m]"), &_md->left,  (int8_t)(-BED_ADJUSTMENT_UM_MAX), (int8_t)(BED_ADJUSTMENT_UM_MAX));////MSG_BED_CORRECTION_LEFT c=14
+    MENU_ITEM_EDIT_P(_i("Right side[\xe4m]"), &_md->right, (int8_t)(-BED_ADJUSTMENT_UM_MAX), (int8_t)(BED_ADJUSTMENT_UM_MAX));////MSG_BED_CORRECTION_RIGHT c=14
+    MENU_ITEM_EDIT_P(_i("Front side[\xe4m]"), &_md->front, (int8_t)(-BED_ADJUSTMENT_UM_MAX), (int8_t)(BED_ADJUSTMENT_UM_MAX));////MSG_BED_CORRECTION_FRONT c=14
+    MENU_ITEM_EDIT_P(_i("Rear side [\xe4m]"), &_md->rear,  (int8_t)(-BED_ADJUSTMENT_UM_MAX), (int8_t)(BED_ADJUSTMENT_UM_MAX));////MSG_BED_CORRECTION_REAR c=14
     MENU_ITEM_FUNCTION_P(_T(MSG_RESET), lcd_adjust_bed_reset);
     MENU_END();
 }
@@ -4068,11 +4068,11 @@ void lcd_settings_linearity_correction_menu(void)
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
 	//tmc2130_wave_fac[X_AXIS]
 
-	MENU_ITEM_EDIT_P(_i("X-correct:"),  tmc2130_wave_fac[X_AXIS],  (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), (uint8_t)(TMC2130_WAVE_FAC1000_MAX));////MSG_X_CORRECTION c=13
-	MENU_ITEM_EDIT_P(_i("Y-correct:"),  tmc2130_wave_fac[Y_AXIS],  (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), (uint8_t)(TMC2130_WAVE_FAC1000_MAX));////MSG_Y_CORRECTION c=13
-	MENU_ITEM_EDIT_P(_i("Z-correct:"),  tmc2130_wave_fac[Z_AXIS],  (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), (uint8_t)(TMC2130_WAVE_FAC1000_MAX));////MSG_Z_CORRECTION c=13
+	MENU_ITEM_EDIT_P(_i("X-correct:"),  &tmc2130_wave_fac[X_AXIS],  (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), (uint8_t)(TMC2130_WAVE_FAC1000_MAX));////MSG_X_CORRECTION c=13
+	MENU_ITEM_EDIT_P(_i("Y-correct:"),  &tmc2130_wave_fac[Y_AXIS],  (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), (uint8_t)(TMC2130_WAVE_FAC1000_MAX));////MSG_Y_CORRECTION c=13
+	MENU_ITEM_EDIT_P(_i("Z-correct:"),  &tmc2130_wave_fac[Z_AXIS],  (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), (uint8_t)(TMC2130_WAVE_FAC1000_MAX));////MSG_Z_CORRECTION c=13
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
-	MENU_ITEM_EDIT_P(_i("E-correct:"),  tmc2130_wave_fac[E_AXIS],  (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), (uint8_t)(TMC2130_WAVE_FAC1000_MAX));////MSG_EXTRUDER_CORRECTION c=13
+	MENU_ITEM_EDIT_P(_i("E-correct:"),  &tmc2130_wave_fac[E_AXIS],  (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), (uint8_t)(TMC2130_WAVE_FAC1000_MAX));////MSG_EXTRUDER_CORRECTION c=13
 	MENU_END();
 }
 #endif // TMC2130
@@ -5573,13 +5573,13 @@ static void lcd_tune_menu()
 
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN)); //1
-	MENU_ITEM_EDIT_P(_i("Speed"), feedmultiply, 10, 999);//2////MSG_SPEED c=15
+	MENU_ITEM_EDIT_P(_i("Speed"), &feedmultiply, 10, 999);//2////MSG_SPEED c=15
 
-	MENU_ITEM_EDIT_P(_T(MSG_NOZZLE), target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
-	MENU_ITEM_EDIT_P(_T(MSG_BED), target_temperature_bed, 0, BED_MAXTEMP - 10);
+	MENU_ITEM_EDIT_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
+	MENU_ITEM_EDIT_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 10);
 
-	MENU_ITEM_EDIT_P(_T(MSG_FAN_SPEED), (uint8_t)fanSpeed, (uint8_t)0, (uint8_t)255);//5
-	MENU_ITEM_EDIT_P(_i("Flow"), extrudemultiply, 10, 999);//6////MSG_FLOW c=15
+	MENU_ITEM_EDIT_P(_T(MSG_FAN_SPEED), (uint8_t *)&fanSpeed, (uint8_t)0, (uint8_t)255);//5
+	MENU_ITEM_EDIT_P(_i("Flow"), &extrudemultiply, 10, 999);//6////MSG_FLOW c=15
 #ifdef LA_LIVE_K
 	MENU_ITEM_EDIT_advance_K();//7
 #endif
@@ -5704,10 +5704,10 @@ static void lcd_backlight_menu()
     );
 
     MENU_ITEM_BACK_P(_T(MSG_BACK));
-    MENU_ITEM_EDIT_P(_T(MSG_BL_HIGH), backlightLevel_HIGH, backlightLevel_LOW, (uint8_t)255);
-    MENU_ITEM_EDIT_P(_T(MSG_BL_LOW), backlightLevel_LOW, (uint8_t)0, backlightLevel_HIGH);
+    MENU_ITEM_EDIT_P(_T(MSG_BL_HIGH), &backlightLevel_HIGH, backlightLevel_LOW, (uint8_t)255);
+    MENU_ITEM_EDIT_P(_T(MSG_BL_LOW), &backlightLevel_LOW, (uint8_t)0, backlightLevel_HIGH);
     MENU_ITEM_TOGGLE_P(_T(MSG_MODE), ((backlightMode==BACKLIGHT_MODE_BRIGHT) ? _T(MSG_BRIGHT) : ((backlightMode==BACKLIGHT_MODE_DIM) ? _T(MSG_DIM) : _T(MSG_AUTO))), backlight_mode_toggle);
-    MENU_ITEM_EDIT_P(_T(MSG_TIMEOUT), backlightTimer_period, 1, 999);
+    MENU_ITEM_EDIT_P(_T(MSG_TIMEOUT), &backlightTimer_period, 1, 999);
 
     MENU_END();
 }
@@ -5718,18 +5718,18 @@ static void lcd_control_temperature_menu()
   MENU_BEGIN();
   MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
 #if TEMP_SENSOR_0 != 0
-  MENU_ITEM_EDIT_P(_T(MSG_NOZZLE), target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
+  MENU_ITEM_EDIT_P(_T(MSG_NOZZLE), &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
 #endif
 #if TEMP_SENSOR_1 != 0
-  MENU_ITEM_EDIT_P(_n("Nozzle2"), target_temperature[1], 0, HEATER_1_MAXTEMP - 10);
+  MENU_ITEM_EDIT_P(_n("Nozzle2"), &target_temperature[1], 0, HEATER_1_MAXTEMP - 10);
 #endif
 #if TEMP_SENSOR_2 != 0
-  MENU_ITEM_EDIT_P(_n("Nozzle3"), target_temperature[2], 0, HEATER_2_MAXTEMP - 10);
+  MENU_ITEM_EDIT_P(_n("Nozzle3"), &target_temperature[2], 0, HEATER_2_MAXTEMP - 10);
 #endif
 #if TEMP_SENSOR_BED != 0
-  MENU_ITEM_EDIT_P(_T(MSG_BED), target_temperature_bed, 0, BED_MAXTEMP - 3);
+  MENU_ITEM_EDIT_P(_T(MSG_BED), &target_temperature_bed, 0, BED_MAXTEMP - 3);
 #endif
-  MENU_ITEM_EDIT_P(_T(MSG_FAN_SPEED), (uint8_t)fanSpeed, (uint8_t)0, (uint8_t)255);
+  MENU_ITEM_EDIT_P(_T(MSG_FAN_SPEED), (uint8_t*)&fanSpeed, (uint8_t)0, (uint8_t)255);
 #if defined AUTOTEMP && (TEMP_SENSOR_0 != 0)
 //MENU_ITEM_EDIT removed, following code must be redesigned if AUTOTEMP enabled
   MENU_ITEM_EDIT(bool, MSG_AUTOTEMP, &autotemp_enabled);
@@ -7555,17 +7555,7 @@ void menu_lcd_lcdupdate_func(void)
 			if (lcd_draw_update == 0) lcd_draw_update = 1;
 
 			// Constrain lcd_encoder between 0 and 127
-			int16_t lcd_encoder_limit = lcd_encoder + (lcd_encoder_diff / ENCODER_PULSES_PER_STEP);
-			if (lcd_encoder_limit > INT8_MAX) {
-				lcd_encoder = INT8_MAX;
-				Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-			} else if (lcd_encoder_limit < 0) {
-				lcd_encoder = 0;
-				Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
-			} else {
-				lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
-				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
-			}
+			lcd_update_encoder();
 			lcd_encoder_diff = 0;
 			lcd_timeoutToStatus.start();
 		}

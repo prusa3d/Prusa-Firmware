@@ -65,10 +65,17 @@ void menu_goto(menu_func_t menu, const int8_t encoder, const bool feedback, bool
 
 void menu_start(void)
 {
+	limit_lcd_encoder = 1;
     if (lcd_encoder < menu_top)
 		menu_top = lcd_encoder;
     menu_line = menu_top;
     menu_clicked = LCD_CLICKED;
+	if (menu_clicked)
+	{
+		// if a menu item is clicked, then remove the limit
+		// if we enter a submenu, menu_start will re-enable the limit
+		limit_lcd_encoder = 0;
+	}
 }
 
 void menu_end(void)
@@ -85,6 +92,7 @@ void menu_end(void)
 		menu_line = menu_top - 1;
 		menu_row = -1;
 	}
+	
 }
 
 void menu_back(uint8_t nLevel)
@@ -442,17 +450,17 @@ void menu_draw_item_P(char chr, const char* str, int16_t val)
 	lcd_print(val);
 }
 
-void menu_draw_edit_P(char chr, const char* str, int16_t val)
+
+void menu_draw_edit_P(char chr, const char* str, int16_t val, bool is_float)
 {
     menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
-    if (val <= _md->minEditValue)
-    {
+    if (val <= _md->minEditValue) {
         menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
-    }
-    else
-    {
-        float factor = 1.0f + static_cast<float>(val) / 1000.0f;
+    } else if (is_float) {
+		float factor = 1.0f + static_cast<float>(val) / 1000.0f;
         lcd_printf_P(menu_fmt_float13, chr, str, factor);
+	} else {
+        menu_draw_item_P(chr, str, val);
     }
 }
 
@@ -498,19 +506,21 @@ static void _menu_edit_P()
 
 		// Constrain the value in case it's outside the allowed limits
 		_md->currentValue = constrain(_md->currentValue, _md->minEditValue, _md->maxEditValue);
+
+		// Render the updated value
 		lcd_set_cursor(0, 1);
-		menu_draw_edit_P(' ', _md->editLabel, _md->currentValue);
+		menu_draw_edit_P(' ', _md->editLabel, _md->currentValue, sizeof(T) > 2);
 	}
 	if (LCD_CLICKED)
 	{
 		// Save the value
-		*((T*)(_md->editValue)) = _md->currentValue;
+		*(T*)_md->editValue = (T)_md->currentValue;
 		menu_back_no_reset();
 	}
 }
 
 template <typename T>
-uint8_t menu_item_edit_P(const char* str, T pval, T min_val, T max_val)
+uint8_t menu_item_edit_P(const char* str, T *pval, T min_val, T max_val)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (menu_item == menu_line)
@@ -518,14 +528,14 @@ uint8_t menu_item_edit_P(const char* str, T pval, T min_val, T max_val)
 		if (lcd_draw_update)
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_item_P(menu_selection_mark(), str, (int16_t)pval);
+			menu_draw_edit_P(menu_selection_mark(), str, (int16_t)*pval, sizeof(T) > 2);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_submenu_no_reset(_menu_edit_P<T>);
 			_md->editLabel = str;
-			_md->editValue = &pval;
-			_md->currentValue = pval;
+			_md->editValue = pval;
+			_md->currentValue = *pval;
 			_md->minEditValue = min_val;
 			_md->maxEditValue = max_val;
 			return menu_item_ret();
@@ -535,9 +545,9 @@ uint8_t menu_item_edit_P(const char* str, T pval, T min_val, T max_val)
 	return 0;
 }
 
-template uint8_t menu_item_edit_P<int16_t>(const char* str, int16_t pval, int16_t min_val, int16_t max_val);
-template uint8_t menu_item_edit_P<uint8_t>(const char* str, uint8_t pval, uint8_t min_val, uint8_t max_val);
-template uint8_t menu_item_edit_P<int8_t>(const char* str, int8_t pval, int8_t min_val, int8_t max_val);
+template uint8_t menu_item_edit_P<int16_t>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
+template uint8_t menu_item_edit_P<uint8_t>(const char* str, uint8_t *pval, uint8_t min_val, uint8_t max_val);
+template uint8_t menu_item_edit_P<int8_t>(const char* str, int8_t *pval, int8_t min_val, int8_t max_val);
 
 static uint8_t progressbar_block_count = 0;
 static uint16_t progressbar_total = 0;
