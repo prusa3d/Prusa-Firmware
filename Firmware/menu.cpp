@@ -492,8 +492,12 @@ static void _menu_edit_P()
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
 	{
-		if (_md->currentValue < _md->minEditValue) _md->currentValue = _md->minEditValue;
-		else if (_md->currentValue > _md->maxEditValue) _md->currentValue = _md->maxEditValue;
+		// Increment the current value
+		_md->currentValue += lcd_encoder;
+		lcd_encoder = 0;
+
+		// Constrain the value in case it's outside the allowed limits
+		_md->currentValue = constrain(_md->currentValue, _md->minEditValue, _md->maxEditValue);
 		lcd_set_cursor(0, 1);
 		menu_draw_edit_P(' ', _md->editLabel, _md->currentValue);
 	}
