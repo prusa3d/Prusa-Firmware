@@ -473,7 +473,7 @@ void __attribute__((noinline)) menu_draw_edit_P(char chr, const char* str, int16
     menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
     if (val <= _md->minEditValue) {
         menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
-    } if (isFloat) {
+    } else if (isFloat) {
         float temp = menu_edit_convert_to_float(val, 3);
         lcd_printf_P(menu_fmt_float13, chr, str, temp);
     } else {
