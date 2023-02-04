@@ -429,7 +429,7 @@ const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
 
-static __attribute__((noinline)) float menu_edit_convert_to_float(const int16_t val, const uint8_t decimals)
+static float menu_edit_convert_to_float(const int16_t val, const uint8_t decimals)
 {
 	return ((float)val / (10 * decimals));
 }
@@ -440,7 +440,7 @@ static int16_t menu_edit_convert_from_float(const float val, const uint8_t decim
 }
 
 template <typename T>
-static __attribute__((noinline)) T menu_edit_get_current_value(T val, const uint8_t decimals)
+static T menu_edit_get_current_value(T val, const uint8_t decimals)
 {
 	if (sizeof(T) > 2) {
 		return menu_edit_convert_from_float(val, decimals);
