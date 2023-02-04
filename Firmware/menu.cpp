@@ -425,11 +425,29 @@ uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 	return 0;
 }
 
-const char menu_fmt_int3[] PROGMEM = "%c%.15S:%s%3d";
-
 const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
+
+static __attribute__((noinline)) float menu_edit_convert_to_float(const int16_t val, const uint8_t decimals)
+{
+	return ((float)val / (10 * decimals));
+}
+
+static int16_t menu_edit_convert_from_float(const float val, const uint8_t decimals)
+{
+	return (int16_t)(val * 10 * decimals);
+}
+
+template <typename T>
+static __attribute__((noinline)) T menu_edit_get_current_value(T val, const uint8_t decimals)
+{
+	if (sizeof(T) > 2) {
+		return menu_edit_convert_from_float(val, decimals);
+	} else {
+		return val;
+	}
+}
 
 void menu_draw_item_P(char chr, const char* str, int16_t val)
 {
@@ -450,16 +468,15 @@ void menu_draw_item_P(char chr, const char* str, int16_t val)
 	lcd_print(val);
 }
 
-
-void menu_draw_edit_P(char chr, const char* str, int16_t val, bool is_float)
+void __attribute__((noinline)) menu_draw_edit_P(char chr, const char* str, int16_t val, uint8_t isFloat)
 {
     menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
     if (val <= _md->minEditValue) {
         menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
-    } else if (is_float) {
-		float factor = 1.0f + static_cast<float>(val) / 1000.0f;
-        lcd_printf_P(menu_fmt_float13, chr, str, factor);
-	} else {
+    } if (isFloat) {
+        float temp = menu_edit_convert_to_float(val, 3);
+        lcd_printf_P(menu_fmt_float13, chr, str, temp);
+    } else {
         menu_draw_item_P(chr, str, val);
     }
 }
@@ -514,28 +531,33 @@ static void _menu_edit_P()
 	if (LCD_CLICKED)
 	{
 		// Save the value
-		*(T*)_md->editValue = (T)_md->currentValue;
+		if (sizeof(T) > 2) {
+			*(T*)_md->editValue = menu_edit_convert_to_float(_md->currentValue, _md->decimals);
+		} else {
+			*(T*)_md->editValue = _md->currentValue;
+		}
 		menu_back_no_reset();
 	}
 }
 
-template <typename T>
-uint8_t menu_item_edit_P(const char* str, T *pval, T min_val, T max_val)
+template <typename T, typename D>
+uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pval, const D min_val, const D max_val, const uint8_t decimals)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
+	_md->decimals = decimals;
 	if (menu_item == menu_line)
 	{
 		if (lcd_draw_update)
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_edit_P(menu_selection_mark(), str, (int16_t)*pval, sizeof(T) > 2);
+			menu_draw_edit_P(menu_selection_mark(), str, menu_edit_get_current_value<T>(*pval, decimals), sizeof(T) > 2);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_submenu_no_reset(_menu_edit_P<T>);
 			_md->editLabel = str;
 			_md->editValue = pval;
-			_md->currentValue = *pval;
+			_md->currentValue = menu_edit_get_current_value<T>(*pval, decimals);
 			_md->minEditValue = min_val;
 			_md->maxEditValue = max_val;
 			return menu_item_ret();
@@ -545,9 +567,10 @@ uint8_t menu_item_edit_P(const char* str, T *pval, T min_val, T max_val)
 	return 0;
 }
 
-template uint8_t menu_item_edit_P<int16_t>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
-template uint8_t menu_item_edit_P<uint8_t>(const char* str, uint8_t *pval, uint8_t min_val, uint8_t max_val);
-template uint8_t menu_item_edit_P<int8_t>(const char* str, int8_t *pval, int8_t min_val, int8_t max_val);
+template uint8_t menu_item_edit_P<float, int16_t>(const char* str, float* const pval, const int16_t min_val, const int16_t max_val, const uint8_t decimals);
+template uint8_t menu_item_edit_P<int16_t, int16_t>(const char* str, int16_t* const pval, const int16_t min_val, const int16_t max_val, const uint8_t decimals);
+template uint8_t menu_item_edit_P<uint8_t, uint8_t>(const char* str, uint8_t* const pval, const uint8_t min_val, const uint8_t max_val, const uint8_t decimals);
+template uint8_t menu_item_edit_P<int8_t, int8_t>(const char* str, int8_t* const pval, const int8_t min_val, const int8_t max_val, const uint8_t decimals);
 
 static uint8_t progressbar_block_count = 0;
 static uint16_t progressbar_total = 0;

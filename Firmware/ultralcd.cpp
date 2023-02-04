@@ -5490,60 +5490,6 @@ static void lcd_colorprint_change() {
 	lcd_draw_update = 3;
 }
 
-
-#ifdef LA_LIVE_K
-// @wavexx: looks like there's no generic float editing function in menu.cpp so we
-//          redefine our custom handling functions to mimick other tunables
-const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6S";
-
-static void lcd_advance_draw_K(char chr, float val)
-{
-    if (val <= 0)
-        lcd_printf_P(menu_fmt_float13off, chr, MSG_ADVANCE_K, _T(MSG_OFF));
-    else
-        lcd_printf_P(menu_fmt_float13, chr, MSG_ADVANCE_K, val);
-}
-
-static void lcd_advance_edit_K(void)
-{
-    if (lcd_draw_update)
-    {
-        if (lcd_encoder < 0) lcd_encoder = 0;
-        if (lcd_encoder > 999) lcd_encoder = 999;
-        lcd_set_cursor(0, 1);
-        lcd_advance_draw_K(' ', 0.01 * lcd_encoder);
-    }
-    if (LCD_CLICKED)
-    {
-        extruder_advance_K = 0.01 * lcd_encoder;
-        menu_back_no_reset();
-    }
-}
-
-static uint8_t lcd_advance_K()
-{
-    if (menu_item == menu_line)
-    {
-        if (lcd_draw_update)
-        {
-            lcd_set_cursor(0, menu_row);
-            lcd_advance_draw_K((lcd_encoder == menu_item)?'>':' ', extruder_advance_K);
-        }
-        if (menu_clicked && (lcd_encoder == menu_item))
-        {
-            menu_submenu_no_reset(lcd_advance_edit_K);
-            lcd_encoder = 100. * extruder_advance_K;
-            return menu_item_ret();
-        }
-    }
-    menu_item++;
-    return 0;
-}
-
-#define MENU_ITEM_EDIT_advance_K() do { if (lcd_advance_K()) return; } while (0)
-#endif
-
-
 static void lcd_tune_menu()
 {
 	typedef struct
@@ -5581,8 +5527,8 @@ static void lcd_tune_menu()
 	MENU_ITEM_EDIT_P(_T(MSG_FAN_SPEED), (uint8_t *)&fanSpeed, (uint8_t)0, (uint8_t)255);//5
 	MENU_ITEM_EDIT_P(_i("Flow"), &extrudemultiply, 10, 999);//6////MSG_FLOW c=15
 #ifdef LA_LIVE_K
-	MENU_ITEM_EDIT_advance_K();//7
-#endif
+	MENU_ITEM_EDIT_FLOAT_P(MSG_ADVANCE_K, &extruder_advance_K, 0, 999, 2);//7
+#endif // LA_LIVE_K
 #ifdef FILAMENTCHANGEENABLE
     if (!farm_mode)
         MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//8

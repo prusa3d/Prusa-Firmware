@@ -24,6 +24,7 @@ typedef struct
     int16_t currentValue; // current value shown on the LCD. Value is not saved until the knob is clicked
     int16_t minEditValue; // Constant set by menu
     int16_t maxEditValue; // Constant set by menu
+    uint8_t decimals; // denotes number of decimals places when editing floats
 } menu_data_edit_t;
 
 extern uint8_t menu_data[MENU_DATA_SIZE];
@@ -148,9 +149,14 @@ struct SheetFormatBuffer
 
 extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer);
 
-template <typename T>
-uint8_t menu_item_edit_P(const char* str, T *pval, T min_val, T max_val);
+// NOTE: due to memory restrictions, we're limited to use int16_t for minval and maxval
+//       especially when floats are used for pval
+template <typename T, typename D>
+uint8_t menu_item_edit_P(const char* str, T* const pval, const D min_val, const D max_val, const uint8_t decimals = 3);
 #define MENU_ITEM_EDIT_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
+
+// Same as MENU_ITEM_EDIT_P but gives control of number of decimal places in pval
+#define MENU_ITEM_EDIT_FLOAT_P(str, pval, minval, maxval, decimals) do { if (menu_item_edit_P(str, pval, minval, maxval, (uint8_t)decimals)) return; } while (0)
 
 extern void menu_progressbar_init(uint16_t total, const char* title);
 extern void menu_progressbar_update(uint16_t newVal);
