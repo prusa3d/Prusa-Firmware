@@ -16,17 +16,6 @@ typedef struct
     int8_t position;
 } menu_record_t;
 
-typedef struct
-{
-    //Variables used when editing values.
-    const char* editLabel;
-    void* editValue; // Pointer to variable which the menu will modify when knob is clicked
-    int16_t currentValue; // current value shown on the LCD. Value is not saved until the knob is clicked
-    int16_t minEditValue; // Constant set by menu
-    int16_t maxEditValue; // Constant set by menu
-    uint8_t decimals; // denotes number of decimals places when editing floats
-} menu_data_edit_t;
-
 extern uint8_t menu_data[MENU_DATA_SIZE];
 
 extern uint8_t menu_depth;
@@ -206,6 +195,17 @@ static const constexpr uint8_t PRINT_FAN_EDIT_MENU[] PROGMEM = {
     0,   // Minimum value
     255, // Maximum value
     LCD_JUMP_FAN_SPEED    // Jump value
+};
+
+template <typename D>
+struct menu_data_edit_t
+{
+    const char* editLabel;
+    void* editValue; // Pointer to variable which the menu will modify when knob is clicked
+    D currentValue; // current value shown on the LCD. Value is not saved until the knob is clicked
+    D minEditValue; // Constant set by menu
+    D maxEditValue; // Constant set by menu
+    uint8_t decimals; // denotes number of decimals places when editing floats
 };
 
 // The backlight menu has limits which can change at runtime. So we

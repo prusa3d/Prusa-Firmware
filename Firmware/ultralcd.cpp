@@ -2668,8 +2668,8 @@ static void lcd_babystep_z()
 
 
 typedef struct
-{   // 12 bytes + 5 bytes = 17 bytes total
-    menu_data_edit_t reserved; // 12 bytes reserved for number editing functions
+{   // 11 bytes + 5 bytes = 16 bytes total
+    menu_data_edit_t<int16_t> reserved; // 11 bytes reserved for number editing functions
     int8_t status;             // 1 byte
     int8_t left;               // 1 byte
     int8_t right;              // 1 byte
@@ -5494,7 +5494,7 @@ static void lcd_tune_menu()
 {
 	typedef struct
 	{
-	    menu_data_edit_t reserved; //!< reserved for number editing functions
+		menu_data_edit_t<int16_t> reserved; //!< reserved for number editing functions
 		int8_t  status; //!< To recognize, whether the menu has been just initialized.
 		//! Backup of extrudemultiply, to recognize, that the value has been changed and
 		//! it needs to be applied.

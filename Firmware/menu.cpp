@@ -36,7 +36,7 @@ uint8_t menu_leaving = 0;
 
 menu_func_t menu_menu = 0;
 
-static_assert(sizeof(menu_data)>= sizeof(menu_data_edit_t),"menu_data_edit_t doesn't fit into menu_data");
+static_assert(sizeof(menu_data)>= sizeof(menu_data_edit_t<int16_t>),"menu_data_edit_t doesn't fit into menu_data");
 
 void menu_data_reset(void)
 {
@@ -508,10 +508,10 @@ void menu_draw_float13(const char* str, float val)
 	lcd_printf_P(menu_fmt_float13, ' ', str, val);
 }
 
-template <typename T>
+template <typename T, typename D>
 static void _menu_edit_P()
 {
-	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
+	menu_data_edit_t<D>* _md = (menu_data_edit_t<D>*)&(menu_data[0]);
 	if (lcd_draw_update)
 	{
 		// Increment the current value
@@ -540,8 +540,6 @@ static void _menu_edit_P()
 template <typename T, typename D>
 uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pval, const D* settings, const uint8_t is_progmem, const uint8_t decimals)
 {
-	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
-	_md->decimals = decimals;
 	if (menu_item == menu_line)
 	{
 		if (lcd_draw_update)
@@ -551,11 +549,13 @@ uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pva
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
+			menu_data_edit_t<D>* _md = (menu_data_edit_t<D>*)&(menu_data[0]);
 			// Initialise the menu data before opening edit menu
 			D jumpEditValue = 0;
 			_md->editLabel = str;
 			_md->editValue = pval;
 			_md->currentValue = menu_edit_get_current_value<T>(*pval, decimals);
+			_md->decimals = decimals;
 			if (!is_progmem) {
 				_md->minEditValue = (D)settings[0];
 				_md->maxEditValue = (D)settings[1];
@@ -581,7 +581,7 @@ uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pva
 			}
 
 			// Render the editing menu
-			menu_submenu_no_reset(_menu_edit_P<T>);
+			menu_submenu_no_reset(_menu_edit_P<T, D>);
 
 			return menu_item_ret();
 		}
