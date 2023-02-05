@@ -455,7 +455,7 @@ void menu_draw_item_P(char chr, const char* str, int16_t val)
 	lcd_putc(chr);
 	uint8_t len = lcd_print_pad_P(str, LCD_WIDTH - 1);
 	lcd_set_cursor_column((LCD_WIDTH - 1) - len + 1);
-	lcd_putc(':');
+	lcd_putc(' ');
 
 	// The value is right adjusted, set the cursor then render the value
 	if (val < 10) { // 1 digit
@@ -470,10 +470,7 @@ void menu_draw_item_P(char chr, const char* str, int16_t val)
 
 void __attribute__((noinline)) menu_draw_edit_P(char chr, const char* str, int16_t val, uint8_t isFloat)
 {
-    menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
-    if (val <= _md->minEditValue) {
-        menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
-    } else if (isFloat) {
+    if (isFloat) {
         float temp = menu_edit_convert_to_float(val, 3);
         lcd_printf_P(menu_fmt_float13, chr, str, temp);
     } else {
