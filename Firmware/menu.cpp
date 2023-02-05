@@ -541,7 +541,7 @@ static void _menu_edit_P()
 }
 
 template <typename T, typename D>
-uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pval, const D min_val, const D max_val, const uint8_t decimals)
+uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pval, const D* settings, const uint8_t is_progmem, const uint8_t decimals)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	_md->decimals = decimals;
@@ -554,12 +554,38 @@ uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pva
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_submenu_no_reset(_menu_edit_P<T>);
+			// Initialise the menu data before opening edit menu
+			D jumpEditValue = 0;
 			_md->editLabel = str;
 			_md->editValue = pval;
 			_md->currentValue = menu_edit_get_current_value<T>(*pval, decimals);
-			_md->minEditValue = min_val;
-			_md->maxEditValue = max_val;
+			if (!is_progmem) {
+				_md->minEditValue = (D)settings[0];
+				_md->maxEditValue = (D)settings[1];
+				jumpEditValue = settings[2];
+			} else { // Handle limits stored in PROGMEM
+				if (sizeof(D) == 1) {
+					// Data type is either int8_t or uint8_t
+					_md->minEditValue = (D)pgm_read_byte(settings);
+					_md->maxEditValue = (D)pgm_read_byte(settings + 1);
+					jumpEditValue = (D)pgm_read_byte(settings + 2);
+				} else {
+					// We restrict the data type to 2 bytes (int16_t)
+					_md->minEditValue = (D)pgm_read_word(settings);
+					_md->maxEditValue = (D)pgm_read_word(settings + 1);
+					jumpEditValue = (D)pgm_read_word(settings + 2);
+				}
+			}
+
+			if (!_md->currentValue && jumpEditValue) {
+				// If current value is 0, and the jump value is defined (not zero)
+				// set the current value to the jump value to save time.
+				_md->currentValue = jumpEditValue;
+			}
+
+			// Render the editing menu
+			menu_submenu_no_reset(_menu_edit_P<T>);
+
 			return menu_item_ret();
 		}
 	}
@@ -567,10 +593,10 @@ uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pva
 	return 0;
 }
 
-template uint8_t menu_item_edit_P<float, int16_t>(const char* str, float* const pval, const int16_t min_val, const int16_t max_val, const uint8_t decimals);
-template uint8_t menu_item_edit_P<int16_t, int16_t>(const char* str, int16_t* const pval, const int16_t min_val, const int16_t max_val, const uint8_t decimals);
-template uint8_t menu_item_edit_P<uint8_t, uint8_t>(const char* str, uint8_t* const pval, const uint8_t min_val, const uint8_t max_val, const uint8_t decimals);
-template uint8_t menu_item_edit_P<int8_t, int8_t>(const char* str, int8_t* const pval, const int8_t min_val, const int8_t max_val, const uint8_t decimals);
+template uint8_t menu_item_edit_P<float, int16_t>(const char* str, float* const pval, const int16_t* settings, const uint8_t is_progmem, const uint8_t decimals);
+template uint8_t menu_item_edit_P<int16_t, int16_t>(const char* str, int16_t* const pval, const int16_t* settings, const uint8_t is_progmem, const uint8_t decimals);
+template uint8_t menu_item_edit_P<uint8_t, uint8_t>(const char* str, uint8_t* const pval, const uint8_t* settings, const uint8_t is_progmem, const uint8_t decimals);
+template uint8_t menu_item_edit_P<int8_t, int8_t>(const char* str, int8_t* const pval, const int8_t* settings, const uint8_t is_progmem, const uint8_t decimals);
 
 static uint8_t progressbar_block_count = 0;
 static uint16_t progressbar_total = 0;

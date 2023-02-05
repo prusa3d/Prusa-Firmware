@@ -149,14 +149,86 @@ struct SheetFormatBuffer
 
 extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer);
 
+static const constexpr int16_t TEMPERATURE_NOZZLE_EDIT_MENU[] PROGMEM = {
+    0, // Minimum value
+    HEATER_0_MAXTEMP - 10, // Maximum value
+    LCD_JUMP_HOTEND_TEMP // Jump value
+};
+
+static const constexpr int16_t TEMPERATURE_BED_EDIT_MENU[] PROGMEM = {
+    0, // Minimum value
+    BED_MAXTEMP - 3, // Maximum value
+    LCD_JUMP_BED_TEMP // Jump value
+};
+
+static const constexpr int16_t SPEED_EDIT_MENU[] PROGMEM = {
+    10, // Minimum value
+    999, // Maximum value
+    0 // Jump value
+};
+
+static const constexpr int16_t FLOW_EDIT_MENU[] PROGMEM = {
+    10, // Minimum value
+    999, // Maximum value
+    0 // Jump value
+};
+
+static const constexpr int16_t BACKLIGHT_TIMER_EDIT_MENU[] PROGMEM = {
+    1, // Minimum value
+    999, // Maximum value
+    0 // Jump value
+};
+
+#ifdef LA_LIVE_K
+static const constexpr int16_t ADJUST_K_EDIT_MENU[] PROGMEM = {
+    1, // Minimum value
+    999, // Maximum value
+    0 // Jump value
+};
+#endif // LA_LIVE_K
+
+static const constexpr int8_t ADJUST_BED_OFFSET_EDIT_MENU[] PROGMEM = {
+    (int8_t)-BED_ADJUSTMENT_UM_MAX, // Minimum value
+    (int8_t)BED_ADJUSTMENT_UM_MAX, // Maximum value
+    0 // Jump value
+};
+
+#ifdef TMC2130
+#include "tmc2130.h"
+static const constexpr uint8_t TMC_LINEARITY_CORRECTION_EDIT_MENU[] PROGMEM = {
+    (uint8_t)(TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP), // Minimum value
+    (uint8_t)(TMC2130_WAVE_FAC1000_MAX), // Maximum value
+    0 // Jump value
+};
+#endif //TMC2130
+
+static const constexpr uint8_t PRINT_FAN_EDIT_MENU[] PROGMEM = {
+    0,   // Minimum value
+    255, // Maximum value
+    LCD_JUMP_FAN_SPEED    // Jump value
+};
+
+// The backlight menu has limits which can change at runtime. So we
+// cannot save them in PROGMEM. In this case gather the data and 
+// place them in an array which the menu_item_edit function understands
+#define INIT_ARR(VAR_NAME, ...) uint8_t VAR_NAME[] = {__VA_ARGS__}
+#define MENU_ITEM_EDIT_MANUAL_P(str, pval, minval, maxval, jumpval) \
+do { \
+    INIT_ARR(buf, minval, maxval, jumpval); \
+    MENU_ITEM_EDIT_ISPROGMEM_P(str, pval, buf, 0); \
+} while (0) \
+
 // NOTE: due to memory restrictions, we're limited to use int16_t for minval and maxval
 //       especially when floats are used for pval
 template <typename T, typename D>
-uint8_t menu_item_edit_P(const char* str, T* const pval, const D min_val, const D max_val, const uint8_t decimals = 3);
-#define MENU_ITEM_EDIT_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
+uint8_t menu_item_edit_P(const char* str, T* const pval, const D* settings, const uint8_t is_progmem = 1, const uint8_t decimals = 3);
+#define MENU_ITEM_EDIT_P(str, pval, settings) do { if (menu_item_edit_P(str, pval, settings)) return; } while (0)
 
-// Same as MENU_ITEM_EDIT_P but gives control of number of decimal places in pval
-#define MENU_ITEM_EDIT_FLOAT_P(str, pval, minval, maxval, decimals) do { if (menu_item_edit_P(str, pval, minval, maxval, (uint8_t)decimals)) return; } while (0)
+// Variant of MENU_ITEM_EDIT_P which gives control over the optional progmem argument
+#define MENU_ITEM_EDIT_ISPROGMEM_P(str, pval, settings, is_progmem) do { if (menu_item_edit_P(str, pval, settings, is_progmem)) return; } while (0)
+
+// Variant of MENU_ITEM_EDIT_P whicch gives control of number of decimal places in pval. Only intended for float.
+#define MENU_ITEM_EDIT_FLOAT_P(str, pval, settings, decimals) do { if (menu_item_edit_P(str, pval, settings, (uint8_t)decimals)) return; } while (0)
 
 extern void menu_progressbar_init(uint16_t total, const char* title);
 extern void menu_progressbar_update(uint16_t newVal);
