@@ -26,7 +26,7 @@ void eeprom_init()
     eeprom_init_default_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, 0);
     eeprom_init_default_byte((uint8_t*)EEPROM_MMU_FAIL, 0);
     eeprom_init_default_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, 0);
-    eeprom_init_default_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT, 0);
+    eeprom_init_default_dword((uint32_t*)EEPROM_MMU_MATERIAL_CHANGES, 0);
     if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == EEPROM_EMPTY_VALUE)
     {
         eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);

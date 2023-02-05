@@ -105,6 +105,7 @@ extern const char MSG_SETTINGS[];
 extern const char MSG_SELECT_LANGUAGE[];
 extern const char MSG_SORTING_FILES[];
 extern const char MSG_TOTAL[];
+extern const char MSG_MATERIAL_CHANGES[];
 extern const char MSG_TOTAL_FAILURES[];
 extern const char MSG_HW_SETUP[];
 extern const char MSG_MODE[];
