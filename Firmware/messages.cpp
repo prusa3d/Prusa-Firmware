@@ -100,6 +100,7 @@ const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////MSG_SETTINGS c=18
 const char MSG_SELECT_LANGUAGE[] PROGMEM_I1 = ISTR("Select language"); ////MSG_SELECT_LANGUAGE c=18
 const char MSG_SORTING_FILES[] PROGMEM_I1 = ISTR("Sorting files"); ////MSG_SORTING_FILES c=20
 const char MSG_TOTAL[] PROGMEM_I1 = ISTR("Total"); ////MSG_TOTAL c=6
+const char MSG_MATERIAL_CHANGES[] PROGMEM_I1 = ISTR("Material changes"); ////MSG_MATERIAL_CHANGES c=18
 const char MSG_TOTAL_FAILURES[] PROGMEM_I1 = ISTR("Total failures"); ////MSG_TOTAL_FAILURES c=20
 const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////MSG_HW_SETUP c=18
 const char MSG_MODE[] PROGMEM_I1 = ISTR("Mode"); ////MSG_MODE c=6

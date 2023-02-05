@@ -1160,10 +1160,10 @@ static uint16_t __attribute__((noinline)) clamp999(uint16_t v){
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! | Main               |	MSG_MAIN c=18
-//! | Last print         |	MSG_LAST_PRINT c=18
-//! | Total              |	MSG_TOTAL c=6
-//! |                    |
+//! | Main               |  MSG_MAIN c=18
+//! | Last print         |  MSG_LAST_PRINT c=18
+//! | Total              |  MSG_TOTAL c=6
+//! | Material changes   |  MSG_MATERIAL_CHANGES c=18
 //! ----------------------
 //! @endcode
 static void lcd_menu_fails_stats_mmu()
@@ -1172,7 +1172,7 @@ static void lcd_menu_fails_stats_mmu()
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_T(MSG_LAST_PRINT), lcd_menu_fails_stats_mmu_print);
 	MENU_ITEM_SUBMENU_P(_T(MSG_TOTAL), lcd_menu_fails_stats_mmu_total);
-	MENU_ITEM_SUBMENU_P(_i("Toolchange count"), lcd_menu_toolchange_stats_mmu_total);
+	MENU_ITEM_SUBMENU_P(_T(MSG_MATERIAL_CHANGES), lcd_menu_toolchange_stats_mmu_total);
 	MENU_END();
 }
 
@@ -1230,7 +1230,7 @@ static void lcd_menu_fails_stats_mmu_total() {
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Toolchange count:   |
+//! |Material changes:   ||
 //! |          4294967295|
 //! |                    |
 //! |                    |
@@ -1245,10 +1245,11 @@ static void lcd_menu_toolchange_stats_mmu_total()
     static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
     _menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
     if(!_md->initialized) {
-        lcd_set_cursor(0, 0);
-        lcd_puts_P(PSTR("Toolchange count:"));
+        lcd_clear();
+        lcd_puts_P(_T(MSG_MATERIAL_CHANGES)); /// MSG_MATERIAL_CHANGES c=18
+        lcd_putc(':');
         lcd_set_cursor(10, 1);
-        lcd_print(eeprom_read_dword((uint32_t*)EEPROM_TOTAL_TOOLCHANGE_COUNT));
+        lcd_print(eeprom_read_dword((uint32_t*)EEPROM_MMU_MATERIAL_CHANGES));
         _md->initialized = true;
     }
 

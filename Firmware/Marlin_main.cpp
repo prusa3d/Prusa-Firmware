@@ -722,7 +722,7 @@ static void factory_reset_stats(){
 
     eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
     eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-    eeprom_update_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, 0);
+    eeprom_update_dword((uint32_t *)EEPROM_MMU_MATERIAL_CHANGES, 0);
 }
 
 // Factory reset function
@@ -9617,7 +9617,7 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
     total_filament_used = 0;
 
     if (MMU2::mmu2.Enabled()) {
-        eeprom_add_dword((uint32_t *)EEPROM_TOTAL_TOOLCHANGE_COUNT, MMU2::mmu2.ToolChangeCounter());
+        eeprom_add_dword((uint32_t *)EEPROM_MMU_MATERIAL_CHANGES, MMU2::mmu2.ToolChangeCounter());
         // @@TODO why were EEPROM_MMU_FAIL_TOT and EEPROM_MMU_LOAD_FAIL_TOT behaving differently - i.e. updated with every change?
         MMU2::mmu2.ClearToolChangeCounter();
         MMU2::mmu2.ClearTMCFailures(); // not stored into EEPROM
