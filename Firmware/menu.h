@@ -205,6 +205,7 @@ struct menu_data_edit_t
     D currentValue; // current value shown on the LCD. Value is not saved until the knob is clicked
     D minEditValue; // Constant set by menu
     D maxEditValue; // Constant set by menu
+    D jumpEditValue; // Constant set by menu
     uint8_t decimals; // denotes number of decimals places when editing floats
 };
 

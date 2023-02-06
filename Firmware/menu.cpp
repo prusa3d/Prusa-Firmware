@@ -439,8 +439,8 @@ static int16_t menu_edit_convert_from_float(const float val, const uint8_t decim
 	return (int16_t)(val * 10 * decimals);
 }
 
-template <typename T>
-static T menu_edit_get_current_value(T val, const uint8_t decimals)
+template <typename T, typename D>
+static D menu_edit_get_current_value(T val, const uint8_t decimals)
 {
 	if (sizeof(T) > 2) {
 		return menu_edit_convert_from_float(val, decimals);
@@ -448,6 +448,7 @@ static T menu_edit_get_current_value(T val, const uint8_t decimals)
 		return val;
 	}
 }
+
 
 void menu_draw_item_P(char chr, const char* str, int16_t val)
 {
@@ -545,39 +546,26 @@ uint8_t __attribute__((noinline)) menu_item_edit_P(const char* str, T* const pva
 		if (lcd_draw_update)
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_edit_P(menu_selection_mark(), str, menu_edit_get_current_value<T>(*pval, decimals), sizeof(T) > 2);
+			menu_draw_edit_P(menu_selection_mark(), str, menu_edit_get_current_value<T, D>(*pval, decimals), sizeof(T) > 2);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_data_edit_t<D>* _md = (menu_data_edit_t<D>*)&(menu_data[0]);
 			// Initialise the menu data before opening edit menu
-			D jumpEditValue = 0;
 			_md->editLabel = str;
 			_md->editValue = pval;
-			_md->currentValue = menu_edit_get_current_value<T>(*pval, decimals);
+			_md->currentValue = menu_edit_get_current_value<T, D>(*pval, decimals);
 			_md->decimals = decimals;
 			if (!is_progmem) {
-				_md->minEditValue = (D)settings[0];
-				_md->maxEditValue = (D)settings[1];
-				jumpEditValue = settings[2];
+				memcpy(&_md->minEditValue, settings, sizeof(D)*3);
 			} else { // Handle limits stored in PROGMEM
-				if (sizeof(D) == 1) {
-					// Data type is either int8_t or uint8_t
-					_md->minEditValue = (D)pgm_read_byte(settings);
-					_md->maxEditValue = (D)pgm_read_byte(settings + 1);
-					jumpEditValue = (D)pgm_read_byte(settings + 2);
-				} else {
-					// We restrict the data type to 2 bytes (int16_t)
-					_md->minEditValue = (D)pgm_read_word(settings);
-					_md->maxEditValue = (D)pgm_read_word(settings + 1);
-					jumpEditValue = (D)pgm_read_word(settings + 2);
-				}
+				memcpy_P(&_md->minEditValue, settings, sizeof(D)*3);
 			}
 
-			if (!_md->currentValue && jumpEditValue) {
+			if (!_md->currentValue && _md->jumpEditValue) {
 				// If current value is 0, and the jump value is defined (not zero)
 				// set the current value to the jump value to save time.
-				_md->currentValue = jumpEditValue;
+				_md->currentValue = _md->jumpEditValue;
 			}
 
 			// Render the editing menu
