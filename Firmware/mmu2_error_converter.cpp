@@ -271,9 +271,6 @@ Buttons ButtonAvailable(uint16_t ec) {
     case ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED:
     case ERR_ELECTRICAL_IDLER_SELFTEST_FAILED:
 
-    case ERR_CONNECT_MMU_NOT_RESPONDING:
-    case ERR_CONNECT_COMMUNICATION_ERROR:
-        
     case ERR_SYSTEM_QUEUE_FULL:
     case ERR_SYSTEM_FW_RUNTIME_ERROR:
         switch (buttonSelectedOperation) {
@@ -283,10 +280,14 @@ Buttons ButtonAvailable(uint16_t ec) {
             break;
         }
         break;
+    case ERR_CONNECT_MMU_NOT_RESPONDING:
+    case ERR_CONNECT_COMMUNICATION_ERROR:
     case ERR_SYSTEM_FW_UPDATE_NEEDED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::DisableMMU: // "Disable"
             return DisableMMU;
+        case ButtonOperations::RestartMMU: // "RestartMMU"
+            return RestartMMU;
         default:
             break;
         }

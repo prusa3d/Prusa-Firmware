@@ -372,13 +372,13 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_SELFTEST_FAILED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_SELFTEST_FAILED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_SELFTEST_FAILED
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//MMU_NOT_RESPONDING
-    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//COMMUNICATION_ERROR
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::DisableMMU),//MMU_NOT_RESPONDING
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::DisableMMU),//COMMUNICATION_ERROR
 
     Btns(ButtonOperations::Unload, ButtonOperations::Continue),//FILAMENT_ALREADY_LOADED
     Btns(ButtonOperations::StopPrint, ButtonOperations::RestartMMU),//INVALID_TOOL
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//QUEUE_FULL
-    Btns(ButtonOperations::DisableMMU, ButtonOperations::NoOperation),//FW_UPDATE_NEEDED
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::DisableMMU),//FW_UPDATE_NEEDED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//FW_RUNTIME_ERROR
     Btns(ButtonOperations::Retry, ButtonOperations::NoOperation),//UNLOAD_MANUALLY
     Btns(ButtonOperations::Continue, ButtonOperations::NoOperation),//FILAMENT_EJECTED
