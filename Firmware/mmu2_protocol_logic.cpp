@@ -1,6 +1,7 @@
 #include "mmu2_protocol_logic.h"
 #include "mmu2_log.h"
 #include "mmu2_fsensor.h"
+#include "mmu2_supported_version.h"
 
 #ifdef __AVR__
     // on MK3/S/+ we shuffle the timers a bit, thus "_millis" may not equal "millis"
@@ -15,7 +16,7 @@
 
 namespace MMU2 {
 
-static const uint8_t supportedMmuFWVersion[3] PROGMEM = { 2, 1, 6 };
+const uint8_t supportedMmuFWVersion[3] PROGMEM = { mmuVersionMajor, mmuVersionMinor, mmuVersionPatch };
 
 const uint8_t ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
     8,    // FINDA state
