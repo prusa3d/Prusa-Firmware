@@ -239,11 +239,6 @@ static void lcd_babystep_z();
 static void lcd_sdcard_menu();
 static void lcd_sheet_menu();
 
-#ifdef DELTA_CALIBRATION_MENU
-static void lcd_delta_calibrate_menu();
-#endif // DELTA_CALIBRATION_MENU
-
-
 /* Different types of actions that can be used in menu items. */
 static void menu_action_sdfile(const char* filename);
 static void menu_action_sddirectory(const char* filename);
@@ -254,27 +249,6 @@ static void menu_action_sddirectory(const char* filename);
 #define STATE_OFF 0
 #define STATE_ON 1
 
-/*
-#define MENU_ITEM(type, label, args...) do { \
-    if (menu_item == menu_line) { \
-      if (lcd_draw_update) { \
-        const char* _label_pstr = (label); \
-        if (lcd_encoder == menu_item) { \
-          lcd_implementation_drawmenu_ ## type ## _selected (menu_row, _label_pstr , ## args ); \
-        }else{\
-          lcd_implementation_drawmenu_ ## type (menu_row, _label_pstr , ## args ); \
-        }\
-      }\
-      if (menu_clicked && (lcd_encoder == menu_item)) {\
-        lcd_quick_feedback(); \
-        menu_action_ ## type ( args ); \
-        return;\
-      }\
-    }\
-    menu_item++;\
-  } while(0)
-*/
-
 #if (SDCARDDETECT > 0)
 bool lcd_oldcardstatus;
 #endif
@@ -284,15 +258,8 @@ uint8_t selected_sheet = 0;
 bool ignore_click = false;
 bool wait_for_unclick;
 
-// place-holders for Ki and Kd edits
-#ifdef PIDTEMP
-// float raw_Ki, raw_Kd;
-#endif
-
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
 bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
-
-
 
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
@@ -1815,18 +1782,6 @@ void lcd_cutter_enabled()
     }
 }
 #endif //MMU_HAS_CUTTER
-
-void lcd_set_filament_autoload() {
-     fsensor.setAutoLoadEnabled(!fsensor.getAutoLoadEnabled());
-}
-
-#if defined(FILAMENT_SENSOR) && defined(PAT9125)
-void lcd_set_filament_oq_meass()
-{
-     fsensor_oq_measure_set(!fsensor_oq_measure_enabled);
-}
-#endif
-
 
 FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
 bool bFilamentPreheatState;
@@ -5792,12 +5747,6 @@ static void lcd_backlight_menu()
 
 static void lcd_control_temperature_menu()
 {
-#ifdef PIDTEMP
-  // set up temp variables - undo the default scaling
-//  raw_Ki = unscalePID_i(Ki);
-//  raw_Kd = unscalePID_d(Kd);
-#endif
-
   MENU_BEGIN();
   MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
 #if TEMP_SENSOR_0 != 0
