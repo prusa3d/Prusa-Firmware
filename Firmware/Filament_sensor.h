@@ -181,7 +181,10 @@ private:
     ShortTimer pollingTimer;
     uint8_t filter;
     uint8_t filterFilPresent;
+    #define PLUG_REFLEX_WORKAROUND 0
+    #if PLUG_REFLEX_WORKAROUND
     int16_t oldPos_presence;
+    #endif
     
     bool jamDetection;
     int16_t oldPos;

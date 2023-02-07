@@ -482,7 +482,7 @@ bool PAT9125_sensor::updatePAT9125() {
             init(); // try to reinit.
         }
 
-        #if 0
+        #if PLUG_REFLEX_WORKAROUND
         // Detecting presence of transparent or black filament is difficult.
         // if with or without filament, sensor readings are very close:
         // pat9125_s == 17 and pat9125_b == 50..80
