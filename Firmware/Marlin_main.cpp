@@ -3195,16 +3195,6 @@ static void gcode_G80()
     mesh_bed_leveling_flag = false;
 }
 
-
-void adjust_bed_reset()
-{
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT, 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR, 0);
-}
-
 //! @brief Calibrate XYZ
 //! @param onlyZ if true, calibrate only Z axis
 //! @param verbosity_level
@@ -3224,7 +3214,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	{
 		setTargetBed(0);
 		setTargetHotend(0);
-		adjust_bed_reset(); //reset bed level correction
+		eeprom_adjust_bed_reset(); //reset bed level correction
 	}
 
 	// Disable the default update procedure of the display. We will do a modal dialog.

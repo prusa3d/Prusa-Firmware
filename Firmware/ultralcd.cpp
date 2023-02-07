@@ -2746,11 +2746,7 @@ static_assert(sizeof(menu_data)>= sizeof(_menu_data_adjust_bed_t),"_menu_data_ad
 
 void lcd_adjust_bed_reset(void)
 {
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT , 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR , 0);
+	eeprom_adjust_bed_reset();
 	_menu_data_adjust_bed_t* _md = (_menu_data_adjust_bed_t*)&(menu_data[0]);
 	_md->status = 0;
 }

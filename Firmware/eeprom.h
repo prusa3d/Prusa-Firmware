@@ -620,6 +620,7 @@ enum
 
 #ifdef __cplusplus
 void eeprom_init();
+void eeprom_adjust_bed_reset();
 struct SheetName
 {
     char c[sizeof(Sheet::name) + 1];
