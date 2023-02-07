@@ -834,12 +834,8 @@ void MMU2::execute_extruder_sequence(const E_Step *sequence, uint8_t steps) {
     Enable_E0();
 
     const E_Step *step = sequence;
-    for (uint8_t i = 0; i < steps; i++) {
-        const float es = pgm_read_float(&(step->extrude));
-        const feedRate_t fr_mm_s = pgm_read_float(&(step->feedRate));
-        planner_set_current_position_E(planner_get_current_position_E() + es);
-        planner_line_to_current_position(fr_mm_s);
-
+    for (uint8_t i = steps; i ; --i) {
+        MoveE(pgm_read_float(&(step->extrude)), pgm_read_float(&(step->feedRate)));
         step++;
     }
     planner_synchronize(); // it looks like it's better to sync the moves at the end - smoother move (if the sequence is not too long).
