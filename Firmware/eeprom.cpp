@@ -62,6 +62,14 @@ void eeprom_init()
 
 }
 
+void eeprom_adjust_bed_reset() {
+    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_VALID, 1);
+    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_LEFT, 0);
+    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_RIGHT, 0);
+    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_FRONT, 0);
+    eeprom_update_byte((uint8_t*)EEPROM_BED_CORRECTION_REAR, 0);
+}
+
 //! @brief Get default sheet name for index
 //!
 //! | index | sheetName |
