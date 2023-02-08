@@ -2133,14 +2133,14 @@ msgstr "TMC UNDERVOLTAGE ERR"
 
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
-msgid "Temp model cal. takes approx. 12 mins."
-msgstr "Výpočet teplotného modelu trvá približne 12 minút."
+msgid "Thermal model cal. takes approx. 12 mins. See\nprusa.io/tm-cal"
+msgstr "Výpočet termálny modelu trvá asi 12 min. Pozri\nprusa.io/tm-cal"
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
 #: ../../Firmware/messages.cpp:170
-msgid "Temp model not calibrated yet."
-msgstr "Teplotný model zatiaľ nebol kalibrovaný"
+msgid "Thermal model not calibrated yet."
+msgstr "Termálny model zatiaľ nebol kalibrovaný"
 
 #. MSG_TEMPERATURE c=18
 #: ../../Firmware/ultralcd.cpp:4717
