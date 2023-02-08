@@ -4032,9 +4032,9 @@ void lcd_wizard(WizState state)
 			break;
 #ifdef TEMP_MODEL
 		case S::TempModel:
-			lcd_show_fullscreen_message_and_wait_P(_i("Temp model cal. takes approx. 12 mins."));////MSG_TM_CAL c=20 r=4
+			lcd_show_fullscreen_message_and_wait_P(_i("Thermal model cal. takes approx. 12 mins. See\nprusa.io/tm-cal"));////MSG_TM_CAL c=20 r=4
 			lcd_commands_type = LcdCommands::TempModel;
-			end = true; // Leave wizard temporarily for Temp model cal.
+			end = true; // Leave wizard temporarily for TM cal.
 			break;
 #endif //TEMP_MODEL
 		case S::IsFil:
@@ -4806,7 +4806,7 @@ static void lcd_calibration_menu()
 #endif
   }
 #ifdef TEMP_MODEL
-    MENU_ITEM_SUBMENU_P(_n("Temp Model cal."), lcd_temp_model_cal);
+    MENU_ITEM_SUBMENU_P(_n("Thermal Model cal."), lcd_temp_model_cal);
 #endif //TEMP_MODEL
   
   MENU_END();
