@@ -12,10 +12,19 @@
 #endif
 
 #include <string.h>
+#include "mmu2_supported_version.h"
 
 namespace MMU2 {
 
-static const uint8_t supportedMmuFWVersion[3] PROGMEM = { 2, 1, 6 };
+/// Beware:
+/// Changing the supportedMmuVersion numbers requires patching MSG_DESC_FW_UPDATE_NEEDED and all its related translations by hand.
+///
+/// The message reads:
+///   "The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.6."
+///
+/// Currently, this is not possible to perform automatically at compile time with the existing languages/translations infrastructure.
+/// To save space a "dumb" solution was chosen + a few static_assert checks in errors_list.h preventing the code from compiling when the string doesn't match.
+static constexpr uint8_t supportedMmuFWVersion[3] PROGMEM = { mmuVersionMajor, mmuVersionMinor, mmuVersionPatch };
 
 const uint8_t ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
     8,    // FINDA state
