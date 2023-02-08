@@ -6,6 +6,8 @@
 #include "../language.h"
 #include <avr/pgmspace.h>
 #include "buttons.h"
+#include "../strlen_cx.h"
+#include "../mmu2_supported_version.h"
 
 namespace MMU2 {
 
@@ -252,10 +254,17 @@ static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not
 static const char MSG_DESC_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); ////MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
 static const char MSG_DESC_INVALID_TOOL[] PROGMEM_I1 = ISTR("Requested filament tool is not available on this hardware. Check the G-code for tool index out of range (T0-T4)."); ////MSG_DESC_INVALID_TOOL c=20 r=8
 static const char MSG_DESC_QUEUE_FULL[] PROGMEM_I1 = ISTR("MMU Firmware internal error, please reset the MMU."); ////MSG_DESC_QUEUE_FULL c=20 r=8
-static const char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit reports its FW version incompatible with the printer's firmware. Make sure the MMU firmware is up to date."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 static const char MSG_DESC_FW_RUNTIME_ERROR[] PROGMEM_I1 = ISTR("Internal runtime error. Try resetting the MMU unit or updating the firmware. If the issue persists, contact support."); ////MSG_DESC_FW_RUNTIME_ERROR c=20 r=11
 static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Filament detected unexpectedly. Ensure no filament is loaded. Check the sensors and wiring."); ////MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU unit."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
+
+// Read explanation in mmu2_protocol_logic.cpp -> supportedMmuFWVersion
+static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.6."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+static constexpr uint8_t szFWUN = sizeof(MSG_DESC_FW_UPDATE_NEEDED);
+// at least check the individual version characters in MSG_DESC_FW_UPDATE_NEEDED
+static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 7] == ('0' + mmuVersionMajor));
+static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 5] == ('0' + mmuVersionMinor));
+static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 3] == ('0' + mmuVersionPatch));
 
 static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_FINDA_DIDNT_TRIGGER),
