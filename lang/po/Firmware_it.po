@@ -822,7 +822,7 @@ msgstr ""
 "G-code processato per un livello diverso. Per favore esegui nuovamente lo "
 "slice del modello. Stampa annullata."
 
-#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
 #: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
@@ -838,7 +838,7 @@ msgstr ""
 "G-code processato per una stampante diversa. Per favore esegui nuovamente lo "
 "slice del modello. Stampa annullata."
 
-#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
 msgstr "G-code processato per un firmware piu recente. Continuare?"
@@ -1711,15 +1711,15 @@ msgstr ""
 "Stampante non ancora calibrata. Si prega di seguire il manuale, capitolo "
 "Primi Passi, sezione Sequenza di Calibrazione."
 
-#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
-msgid "Printer nozzle diameter differs from the G-code. Continue?"
+msgid "Nozzle diameter differs from the G-code. Continue?"
 msgstr "Diametro ugello diverso da G-Code. Continuare?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
+"Nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
 "Diametro ugello diverso dal G-Code. Controlla il valore nelle impostazioni. "

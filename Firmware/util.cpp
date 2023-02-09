@@ -307,8 +307,8 @@ void nozzle_diameter_check(uint16_t nDiameter) {
     // SERIAL_ECHOLN((float)(nDiameter/1000.0));
 
     render_M862_warnings(
-        _i("Printer nozzle diameter differs from the G-code. Continue?") ////MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
-        ,_i("Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled.") ////MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
+        _T(MSG_NOZZLE_DIFFERS_CONTINUE)
+        ,_T(MSG_NOZZLE_DIFFERS_CANCELLED)
         ,(uint8_t)oCheckMode
     );
 
@@ -380,8 +380,8 @@ void fw_version_check(const char *pVersion) {
 */
 
     render_M862_warnings(
-        _i("G-code sliced for a newer firmware. Continue?") ////MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
-        ,_i("G-code sliced for a newer firmware. Please update the firmware. Print cancelled.") ////MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
+        _T(MSG_GCODE_NEWER_FIRMWARE_CONTINUE)
+        ,_T(MSG_GCODE_NEWER_FIRMWARE_CANCELLED)
         ,(uint8_t)oCheckVersion
     );
 }
@@ -400,8 +400,8 @@ void gcode_level_check(uint16_t nGcodeLevel) {
     // SERIAL_ECHOLN(nGcodeLevel);
 
     render_M862_warnings(
-        _i("G-code sliced for a different level. Continue?") ////MSG_GCODE_DIFF_CONTINUE c=20 r=4
-        ,_i("G-code sliced for a different level. Please re-slice the model again. Print cancelled.") ////MSG_GCODE_DIFF_CANCELLED c=20 r=7
+        _T(MSG_GCODE_DIFF_CONTINUE)
+        ,_T(MSG_GCODE_DIFF_CANCELLED)
         ,(uint8_t)oCheckGcode
     );
 }

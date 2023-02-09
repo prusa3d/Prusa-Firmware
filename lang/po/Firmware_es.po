@@ -821,11 +821,11 @@ msgstr ""
 "Codigo G laminado para un nivel diferente. Por favor relamina el modelo de "
 "nuevo. Impresion cancelada."
 
-#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
 #: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
-msgstr "Codigo G laminado para un tipo de impresora diferente. Continuar?"
+msgstr "Codigo G laminado para un tipo de impresora dif.Cont.?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:136 ../../Firmware/util.cpp:329
@@ -837,7 +837,7 @@ msgstr ""
 "Codigo G laminado para una impresora diferente. Por favor relamina el modelo "
 "de nuevo. Impresion cancelada."
 
-#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
 msgstr "Codigo G laminado para nuevo firmware. Continuar?"
@@ -1715,15 +1715,15 @@ msgstr ""
 "Impresora no esta calibrada todavia. Por favor usa el manual capitulo "
 "Primeros pasos Calibracion flujo."
 
-#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
-msgid "Printer nozzle diameter differs from the G-code. Continue?"
+msgid "Nozzle diameter differs from the G-code. Continue?"
 msgstr "Diametro nozzle impresora difiere de cod.G. Continuar?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
+"Nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
 "Diametro nozzle Impresora difiere de cod.G. Comprueba los valores en "

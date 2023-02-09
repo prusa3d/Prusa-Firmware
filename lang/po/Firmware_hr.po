@@ -818,7 +818,7 @@ msgstr ""
 "G-kod izrezan za drugu razinu. Molimo ponovo izrezite model. Print je "
 "otkazan."
 
-#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
 #: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
@@ -834,7 +834,7 @@ msgstr ""
 "G-kod izrezan za drugu vrstu printera. Molimo ponovo izrezite model. Print "
 "je otkazan."
 
-#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
 msgstr "G-kod izrezan za noviji firmware. Nastavite?"
@@ -1705,15 +1705,15 @@ msgstr ""
 "Printer jos nije kalibriran. Molimo slijedite prirucnik, poglavlje Prvi "
 "koraci, odjeljak Tijek kalibracije."
 
-#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
-msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr "Promjer mlaznice printera razlikuje se od G-koda. Nastavite?"
+msgid "Nozzle diameter differs from the G-code. Continue?"
+msgstr "Promjer mlaznice razlikuje se od G-koda. Nastavite?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
+"Nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
 "Promjer mlaznice printera razlikuje se od G-koda. Molimo provjerite "
