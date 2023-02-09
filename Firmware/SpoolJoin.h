@@ -21,12 +21,6 @@ public:
     /// @brief Called when EEPROM is ready to be read
     void initSpoolJoinStatus();
 
-    /// @brief Enable SpoolJoin
-    inline void enableSpoolJoin() { updateSpoolJoinStatus(EEPROM::Enabled); };
-
-    /// @brief Disable SpoolJoin
-    inline void disableSpoolJoin() { updateSpoolJoinStatus(EEPROM::Disabled); };
-
     /// @brief Toggle SpoolJoin
     static void toggleSpoolJoin();
 
@@ -44,13 +38,6 @@ public:
     uint8_t nextSlot();
 
 private:
-    /// @brief Update EEPROM
-    /// @param newStatus Status to write into EEPROM
-    void updateSpoolJoinStatus(EEPROM newStatus);
-
-    /// @brief SpoolJoin status
-    enum EEPROM status;
-
     /// @brief Currently used slot, ranges from 0 to 4
     uint8_t currentMMUSlot;
 };
