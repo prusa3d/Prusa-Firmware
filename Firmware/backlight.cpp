@@ -91,20 +91,12 @@ void backlight_init()
     backlightSupport = !READ(LCD_BL_PIN);
     if (!backlightSupport) return;
 
-//initialize backlight
-    backlightMode = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_MODE);
-    if (backlightMode == 0xFF) //set default values
-    {
-        backlightMode = BACKLIGHT_MODE_AUTO;
-        backlightLevel_HIGH = 130;
-        backlightLevel_LOW = 50;
-        backlightTimer_period = 10; //in seconds
-        backlight_save();
-    }
-    backlightLevel_HIGH = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH);
-    backlightLevel_LOW = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW);
-    backlightTimer_period = eeprom_read_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT);
-    
+    //initialize backlight
+    backlightMode = eeprom_init_default_byte((uint8_t *)EEPROM_BACKLIGHT_MODE, BACKLIGHT_MODE_AUTO);
+    backlightLevel_HIGH = eeprom_init_default_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, 130);
+    backlightLevel_LOW = eeprom_init_default_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW, 50);
+    backlightTimer_period = eeprom_init_default_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT, 10); // in seconds
+
     SET_OUTPUT(LCD_BL_PIN);
     backlightTimer_reset();
 }
