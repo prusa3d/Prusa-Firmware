@@ -823,7 +823,7 @@ msgstr ""
 "Versiune de G-code incorecta. Va rugam pregatiti modelul din nou. Print "
 "anulat."
 
-#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
 #: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
@@ -839,7 +839,7 @@ msgstr ""
 "G-code pregatit pentru un alt tip de printer. Va rugam pregatiti modelul din "
 "nou. Print anulat."
 
-#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
 msgstr "G-code pregatit pentru firmware mai nou. Continuati?"
@@ -1709,18 +1709,18 @@ msgstr ""
 "Imprimanta nu a fost calibrata inca. Va rugam sa folositi manualul, "
 "capitolul First steps, sectiunea Calibration flow."
 
-#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
-msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr "Diametrul varfului este diferit de cel din G-code. Continuati?"
+msgid "Nozzle diameter differs from the G-code. Continue?"
+msgstr "Diametrul varfului diferă t de cel din G-code. Continuati?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
+"Nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
-"Diametrul varfului este diferit de cel din G-code. Va rugam verificati "
+"Diametrul varfului diferă de cel din G-code. Va rugam verificati "
 "valoarea in setari. Print anulat."
 
 #. MSG_DESC_PULLEY_STALLED c=20 r=8

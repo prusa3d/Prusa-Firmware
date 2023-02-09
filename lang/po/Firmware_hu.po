@@ -821,11 +821,11 @@ msgstr ""
 "A G-kod mas szintre lett elokesztve. Szeleteld ujra a modellt. Nyomtatas "
 "megallitva."
 
-#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
 #: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
-msgstr "A G-kod mas nyomtato tipusra lett elokesztve. Folytassam?"
+msgstr "A G-kod mas nyomtato tipusra lett elokesztve.Folytassam?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:136 ../../Firmware/util.cpp:329
@@ -837,10 +837,10 @@ msgstr ""
 "A G-kod mas nyomtato tipusra lett elokesztve. Szeleteld ujra a modellt. "
 "Nyomtatas megallitva."
 
-#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "A G-kod ujabb firmverre lett elokesztve. Folytassam?"
+msgstr "A G-kod ujabb firmverre lett elokesztve.Folytassam?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:377
@@ -1712,15 +1712,15 @@ msgstr ""
 "A nyomtato meg nem volt bekalibralva. Kerlek, kovesd az utmutato Elso "
 "lepesek fejezetenek Kalibracio menete bekezdeset."
 
-#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
-msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr "A nyomtato fuvoka atmeroje elter a G-kodtol. Folytasasm?"
+msgid "Nozzle diameter differs from the G-code. Continue?"
+msgstr "A fuvoka atmeroje elter a G-kodtol. Folytasasm?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
+"Nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
 "A nyomtato fuvoka atmeroje elter a G-kodtol. Ellenorizd az erteket a "

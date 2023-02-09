@@ -819,11 +819,11 @@ msgstr ""
 "G-code je pripraven pro jinou verzi. Prosim preslicujte model znovu. Tisk "
 "zrusen."
 
-#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
 #: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
-msgstr "G-code je pripraven pro jiny typ tiskarny. Pokracovat?"
+msgstr "G-code je pripraven pro jiny typ tiskarny.Pokracovat?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:136 ../../Firmware/util.cpp:329
@@ -835,10 +835,10 @@ msgstr ""
 "G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. "
 "Tisk zrusen."
 
-#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code je pripraven pro novejsi firmware. Pokracovat?"
+msgstr "G-code je pripraven pro novejsi firmware.Pokracovat?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:377
@@ -1705,15 +1705,15 @@ msgstr ""
 "Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, "
 "kapitola Zaciname, odstavec Postup kalibrace."
 
-#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
-msgid "Printer nozzle diameter differs from the G-code. Continue?"
+msgid "Nozzle diameter differs from the G-code. Continue?"
 msgstr "Prumer trysky tiskarny se lisi od G-code. Pokracovat?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
+"Nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
 "Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. "

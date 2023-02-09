@@ -820,7 +820,7 @@ msgstr ""
 "G-code genererad för en annan nivå. Vänligen re-generera modellen igen. "
 "Utskriften avbröts."
 
-#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
 #: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
@@ -836,7 +836,7 @@ msgstr ""
 "G-code genererad för en annan skrivartyp. Vänligen re-generera modellen "
 "igen. Utskriften avbröts."
 
-#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
 msgstr "G-code genererad för en nyare firmware. Fortsätta?"
@@ -1711,15 +1711,15 @@ msgstr ""
 "Skrivaren har inte kalibrerats ännu. Vänligen följ manualen, kapitel Första "
 "stegen, avsnitt Kalibreringsflöde."
 
-#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
-msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr "Skrivarmunstyckets diameter skiljer sig från G-codeen. Fortsätta?"
+msgid "Nozzle diameter differs from the G-code. Continue?"
+msgstr "Munstycksdiametern skiljer sig från G-codeen. Fortsätta?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
+"Nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
 "Skrivarmunstyckets diameter skiljer sig från G-codeen. Kontrollera värdet i "

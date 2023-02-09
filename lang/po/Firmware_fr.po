@@ -824,12 +824,12 @@ msgstr ""
 "G-code a ete prepare pour un niveau different. Decouper le modele a nouveau. "
 "Impression annulée."
 
-#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=5
+#. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
 #: ../../Firmware/util.cpp:454
 msgid "G-code sliced for a different printer type. Continue?"
 msgstr ""
-"Le G-code a ete prepare pour une autre version de l'imprimante. Continuer?"
+"G-code a ete prepare pour un type d'im- primante dif. Cont.?"
 
 #. MSG_GCODE_DIFF_PRINTER_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:136 ../../Firmware/util.cpp:329
@@ -841,11 +841,11 @@ msgstr ""
 "G-code pour un type d'imprimante différent. Decouper le modele a nouveau. "
 "Impression annulée."
 
-#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=5
+#. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
 msgstr ""
-"Le G-code a ete prepare pour une version plus recente du firmware. Continuer?"
+"G-code a ete prepare pour une FW version plus recente. Cont.?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:377
@@ -1719,18 +1719,18 @@ msgstr ""
 "L'imprimante n'a pas encore ete calibree. Suivez le manuel, chapitre "
 "Premiers pas - Processus de calibration."
 
-#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=5
+#. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
-msgid "Printer nozzle diameter differs from the G-code. Continue?"
-msgstr "Diamètre de la buse diffère du modèle dans le G-Code. Continuer?"
+msgid "Nozzle diameter differs from the G-code. Continue?"
+msgstr "Diamètre de la buse diffère du G-Code. Continuer?"
 
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Printer nozzle diameter differs from the G-code. Please check the value in "
+"Nozzle diameter differs from the G-code. Please check the value in "
 "settings. Print cancelled."
 msgstr ""
-"Diamètre de la buse diffère du modèle dans le G-Code. Vérifiez la valeur. "
+"Diamètre de la buse diffère du G-Code. Vérifiez la valeur. "
 "Impression annulee."
 
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
