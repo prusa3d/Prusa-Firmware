@@ -23,16 +23,8 @@ static void Sound_DoSound_Blind_Alert(void);
 
 void Sound_Init(void)
 {
-SET_OUTPUT(BEEPER);
-eSoundMode=(eSOUND_MODE)eeprom_read_byte((uint8_t*)EEPROM_SOUND_MODE);
-if(eSoundMode==e_SOUND_MODE_NULL)
-     Sound_Default();                             // je potreba provest i ulozeni do EEPROM
-}
-
-void Sound_Default(void)
-{
-eSoundMode=e_SOUND_MODE_DEFAULT;
-Sound_SaveMode();
+     SET_OUTPUT(BEEPER);
+     eSoundMode = static_cast<eSOUND_MODE>(eeprom_init_default_byte((uint8_t*)EEPROM_SOUND_MODE, e_SOUND_MODE_DEFAULT));
 }
 
 void Sound_SaveMode(void)
