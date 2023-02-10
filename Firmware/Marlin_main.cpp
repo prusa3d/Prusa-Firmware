@@ -3429,35 +3429,14 @@ static void mmu_M600_wait_and_beep() {
     // Beep and wait for user to remove old filament and prepare new filament for load
     KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-    int counterBeep = 0;
     lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament.")); ////MSG_REMOVE_OLD_FILAMENT c=20 r=5
-    bool bFirst = true;
 
     while (!lcd_clicked()) {
         manage_heater();
         manage_inactivity(true);
-
-#if BEEPER > 0
-        if (counterBeep == 500) {
-            counterBeep = 0;
-        }
-        SET_OUTPUT(BEEPER);
-        if (counterBeep == 0) {
-            if ((eSoundMode == e_SOUND_MODE_BLIND) || (eSoundMode == e_SOUND_MODE_LOUD) || ((eSoundMode == e_SOUND_MODE_ONCE) && bFirst)) {
-                bFirst = false;
-                WRITE(BEEPER, HIGH);
-            }
-        }
-        if (counterBeep == 20) {
-            WRITE(BEEPER, LOW);
-        }
-
-        counterBeep++;
-#endif // BEEPER > 0
-
-        delay_keep_alive(4);
+        sound_wait_for_user();
     }
-    WRITE(BEEPER, LOW);
+    sound_wait_for_user_reset();
 }
 
 /**
@@ -11288,34 +11267,14 @@ void M600_wait_for_user(float HotendTempBckp) {
 
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-		int counterBeep = 0;
 		unsigned long waiting_start_time = _millis();
 		uint8_t wait_for_user_state = 0;
 		lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
-		bool bFirst=true;
 
 		while (!(wait_for_user_state == 0 && lcd_clicked())){
 			manage_heater();
 			manage_inactivity(true);
-
-			#if BEEPER > 0
-			if (counterBeep == 500) {
-				counterBeep = 0;
-			}
-			SET_OUTPUT(BEEPER);
-			if (counterBeep == 0) {
-				if((eSoundMode==e_SOUND_MODE_BLIND)|| (eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
-				{
-					bFirst=false;
-					WRITE(BEEPER, HIGH);
-				}
-			}
-			if (counterBeep == 20) {
-				WRITE(BEEPER, LOW);
-			}
-				
-			counterBeep++;
-			#endif //BEEPER > 0
+      if (wait_for_user_state != 2) sound_wait_for_user();
 			
 			switch (wait_for_user_state) {
 			case 0: //nozzle is hot, waiting for user to press the knob to unload filament
@@ -11335,28 +11294,22 @@ void M600_wait_for_user(float HotendTempBckp) {
 				if (lcd_clicked()) {
 					setTargetHotend(HotendTempBckp);
 					lcd_wait_for_heater();
-
 					wait_for_user_state = 2;
 				}
 				break;
 			case 2: //waiting for nozzle to reach target temperature
-
 				if (fabs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
 					lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
 					waiting_start_time = _millis();
 					wait_for_user_state = 0;
-				}
-				else {
-					counterBeep = 20; //beeper will be inactive during waiting for nozzle preheat
+				} else {
 					lcd_set_cursor(1, 4);
 					lcd_printf_P(PSTR("%3d"), (int16_t)degHotend(active_extruder));
 				}
 				break;
-
 			}
-
 		}
-		WRITE(BEEPER, LOW);
+		sound_wait_for_user_reset();
 }
 
 void M600_load_filament_movements()

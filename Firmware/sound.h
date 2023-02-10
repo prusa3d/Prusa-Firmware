@@ -38,6 +38,8 @@ extern void Sound_Default(void);
 extern void Sound_CycleState(void);
 extern void Sound_MakeSound(eSOUND_TYPE eSoundType);
 extern void Sound_MakeCustom(uint16_t ms,uint16_t tone_ ,bool critical);
+void sound_wait_for_user();
+void sound_wait_for_user_reset();
 
 //static void Sound_DoSound_Echo(void);
 //static void Sound_DoSound_Prompt(void);
