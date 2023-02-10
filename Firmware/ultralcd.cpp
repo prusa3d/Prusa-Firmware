@@ -927,7 +927,7 @@ void lcd_commands()
                 enquecommand_P(PSTR("G1 X10 Y180 F4000")); //Go to parking position
                 if (MMU2::mmu2.Enabled()) enquecommand_P(PSTR("M702")); //unload from nozzle
                 enquecommand_P(PSTR("M84"));// disable motors
-                lcd_return_to_status(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
+                menu_leaving = 1; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
                 lcd_commands_step = 1;
                 break;
             case 1:
