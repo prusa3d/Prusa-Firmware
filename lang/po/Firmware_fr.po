@@ -844,8 +844,7 @@ msgstr ""
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr ""
-"G-code a ete prepare pour une FW version plus recente. Cont.?"
+msgstr "G-code a ete prepare pour une FW version plus recente. Cont.?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:377
