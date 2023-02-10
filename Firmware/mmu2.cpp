@@ -907,9 +907,6 @@ void MMU2::ReportError(ErrorCode ec, ErrorSource res) {
         // or if 'Retry' operation is not available
         // raise the MMU error sceen and wait for user input
         ReportErrorHook((CommandInProgress)logic.CommandInProgress(), (uint16_t)ec, uint8_t(lastErrorSource));
-
-        // Beep when error screen is shown for the first time
-        MakeSound(Prompt);
     }
 
     static_assert(mmu2Magic[0] == 'M'

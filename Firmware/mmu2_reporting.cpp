@@ -243,6 +243,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
     case (uint8_t)ReportErrorHookStates::MONITOR_SELECTION:
         mmu2.is_mmu_error_monitor_active = true;
         ReportErrorHookDynamicRender(); // Render dynamic characters
+        sound_wait_for_user();
         switch (ReportErrorHookMonitor(ei)) {
             case 0:
                 // No choice selected, return to loop()
@@ -252,13 +253,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
                 ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
                 break;
             case 2:
-                // Exit error screen and enable lcd updates
-                lcd_set_custom_characters();
-                lcd_update_enable(true);
-                lcd_return_to_status();
-                // Reset the state in case a new error is reported
-                mmu2.is_mmu_error_monitor_active = false;
-                ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
+                ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
                 break;
             default:
                 break;
@@ -269,6 +264,7 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
         lcd_set_custom_characters();
         lcd_update_enable(true);
         lcd_return_to_status();
+        sound_wait_for_user_reset();
         // Reset the state in case a new error is reported
         mmu2.is_mmu_error_monitor_active = false;
         ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
