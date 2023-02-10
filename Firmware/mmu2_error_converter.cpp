@@ -199,15 +199,6 @@ Buttons ButtonAvailable(uint16_t ec) {
     switch ( PrusaErrorCode(ei) ) {
     case ERR_MECHANICAL_FINDA_DIDNT_TRIGGER:
     case ERR_MECHANICAL_FINDA_DIDNT_GO_OFF:
-        switch (buttonSelectedOperation) {
-        case ButtonOperations::Retry: // "Repeat action"
-            return Middle;
-        case ButtonOperations::Continue: // "Continue"
-            return Right;
-        default:
-            break;
-        }
-        break;
     case ERR_MECHANICAL_FSENSOR_DIDNT_TRIGGER:
     case ERR_MECHANICAL_FSENSOR_DIDNT_GO_OFF:
     case ERR_MECHANICAL_FSENSOR_TOO_EARLY:
@@ -227,6 +218,7 @@ Buttons ButtonAvailable(uint16_t ec) {
         }
         break;
     case ERR_MECHANICAL_LOAD_TO_EXTRUDER_FAILED:
+    case ERR_SYSTEM_FILAMENT_EJECTED:
         switch (buttonSelectedOperation) {
         case ButtonOperations::Continue: // User solved the serious mechanical problem by hand - there is no other way around
             return Middle;
@@ -309,14 +301,6 @@ Buttons ButtonAvailable(uint16_t ec) {
             return StopPrint;
         case ButtonOperations::RestartMMU: // "Restart MMU"
             return RestartMMU;
-        default:
-            break;
-        }
-        break;
-    case ERR_SYSTEM_FILAMENT_EJECTED:
-        switch (buttonSelectedOperation) {
-        case ButtonOperations::Continue: // "Continue" - eject filament completed
-            return Middle;
         default:
             break;
         }
