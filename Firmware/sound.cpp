@@ -207,13 +207,11 @@ void sound_wait_for_user() {
           }
           bFirst = true;
      }
-     
+
      // Handle case where there should be continous beeps
-     if (beep_timer.expired(CONTINOUS_BEEP_PERIOD))
-     {
+     if (beep_timer.expired_cont(CONTINOUS_BEEP_PERIOD)) {
           beep_timer.start();
-          if (eSoundMode == e_SOUND_MODE_LOUD)
-          {
+          if (eSoundMode == e_SOUND_MODE_LOUD) {
                Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
           } else {
                // Assist (lower volume sound)
