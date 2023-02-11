@@ -3089,16 +3089,12 @@ uint8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool all
 //! @param third_choice text caption of third, optional, choice.
 void lcd_show_choices_prompt_P(uint8_t selected, const char *first_choice, const char *second_choice, uint8_t second_col, const char *third_choice)
 {
-    lcd_set_cursor(0, 3);
-    lcd_print(selected == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
+    lcd_putc_at(0, 3, selected == LCD_LEFT_BUTTON_CHOICE ? '>': ' ');
     lcd_puts_P(first_choice);
-    lcd_set_cursor(second_col, 3);
-    lcd_print(selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
+    lcd_putc_at(second_col, 3, selected == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
     lcd_puts_P(second_choice);
-    if (third_choice)
-    {
-        lcd_set_cursor(18, 3);
-        lcd_print(selected == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
+    if (third_choice) {
+        lcd_putc_at(18, 3, selected == LCD_RIGHT_BUTTON_CHOICE ? '>': ' ');
         lcd_puts_P(third_choice);
     }
 }
