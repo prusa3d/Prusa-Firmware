@@ -253,7 +253,14 @@ void ReportErrorHook(CommandInProgress /*cip*/, uint16_t ec, uint8_t /*es*/) {
                 ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
                 break;
             case 2:
-                ReportErrorHookState = ReportErrorHookStates::DISMISS_ERROR_SCREEN;
+                // Exit error screen and enable lcd updates
+                lcd_set_custom_characters();
+                lcd_update_enable(true);
+                lcd_return_to_status();
+                sound_wait_for_user_reset();
+                // Reset the state in case a new error is reported
+                mmu2.is_mmu_error_monitor_active = false;
+                ReportErrorHookState = ReportErrorHookStates::RENDER_ERROR_SCREEN;
                 break;
             default:
                 break;
