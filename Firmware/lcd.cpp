@@ -15,6 +15,7 @@
 #include "fastio.h"
 //-//
 #include "sound.h"
+#include "backlight.h"
 
 #define LCD_DEFAULT_DELAY 100
 
@@ -638,6 +639,7 @@ int8_t lcd_encoder_diff = 0;
 uint8_t lcd_buttons = 0;
 uint8_t lcd_button_pressed = 0;
 uint8_t lcd_update_enabled = 1;
+static bool lcd_backlight_wake_trigger; // Flag set by interrupt when the knob is pressed or rotated
 
 uint32_t lcd_next_update_millis = 0;
 
@@ -695,8 +697,16 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 {
 	if (lcd_draw_update < lcdDrawUpdateOverride)
 		lcd_draw_update = lcdDrawUpdateOverride;
-	if (!lcd_update_enabled)
-		return;
+
+	if (lcd_backlight_wake_trigger) {
+		lcd_backlight_wake_trigger = false;
+		backlight_wake();
+	}
+
+	backlight_update();
+
+	if (!lcd_update_enabled) return;
+
 	if (lcd_lcdupdate_func)
 		lcd_lcdupdate_func();
 }
@@ -742,6 +752,7 @@ void lcd_buttons_update(void)
         if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
             buttonBlanking.start();
             safetyTimer.start();
+            lcd_backlight_wake_trigger = true; // flag event, knob pressed
             if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
             {
                 longPressTimer.start();
@@ -776,6 +787,7 @@ void lcd_buttons_update(void)
 	if (lcd_buttons & EN_B) enc |= B10;
 	if (enc != lcd_encoder_bits)
 	{
+		lcd_backlight_wake_trigger = true; // flag event, knob rotated
 		switch (enc)
 		{
 		case encrot0:

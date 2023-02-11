@@ -7446,7 +7446,6 @@ void menu_lcd_longpress_func(void)
     // Wake up the LCD backlight and,
     // start LCD inactivity timer
     lcd_timeoutToStatus.start();
-    backlight_wake();
     if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z || menu_block_mask != MENU_BLOCK_NONE || Stopped)
     {
         // disable longpress during re-entry, while homing, calibration or if a serious error
@@ -7551,7 +7550,6 @@ void menu_lcd_lcdupdate_func(void)
 		}
 	}
 #endif//CARDINSERTED
-	backlight_update();
 	if (lcd_next_update_millis < _millis())
 	{
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
@@ -7562,13 +7560,11 @@ void menu_lcd_lcdupdate_func(void)
 			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 			lcd_encoder_diff = 0;
 			lcd_timeoutToStatus.start();
-			backlight_wake();
 		}
 
 		if (LCD_CLICKED)
 		{
 			lcd_timeoutToStatus.start();
-			backlight_wake();
 		}
 
 		(*menu_menu)();
