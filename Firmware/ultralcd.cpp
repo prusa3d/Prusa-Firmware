@@ -5376,7 +5376,7 @@ static void lcd_main_menu()
         MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT c=18
     }
 
-    if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused) {
+    if (mesh_bed_leveling_flag == false && homing_flag == false && !isPrintPaused && !processing_tcode) {
         if (usb_timer.running()) {
             MENU_ITEM_FUNCTION_P(_T(MSG_PAUSE_PRINT), lcd_pause_usb_print);
         } else if (IS_SD_PRINTING) {
@@ -5398,7 +5398,7 @@ static void lcd_main_menu()
             }
         }
     }
-    if((IS_SD_PRINTING || usb_timer.running() || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling)) {
+    if((IS_SD_PRINTING || usb_timer.running() || isPrintPaused) && (custom_message_type != CustomMsg::MeshBedLeveling) && !processing_tcode) {
         MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
     }
 #ifdef TEMP_MODEL

@@ -312,6 +312,7 @@ unsigned long stoptime=0;
 ShortTimer usb_timer;
 
 bool Stopped=false;
+bool processing_tcode; // Helper variable to block certain functions while T-code is being processed
 
 #if NUM_SERVOS > 0
   Servo servos[NUM_SERVOS];
@@ -8535,7 +8536,9 @@ Sigma_Exit:
   */
   else if(*CMDBUFFER_CURRENT_STRING == 'T') {
         strchr_pointer = CMDBUFFER_CURRENT_STRING;
+        processing_tcode = true;
         TCodes(strchr_pointer, code_value_uint8());
+        processing_tcode = false;
   } // end if(code_seen('T')) (end of T codes)
   /*!
   #### End of T-Codes
