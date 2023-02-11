@@ -203,7 +203,7 @@ void sound_wait_for_user() {
      // Handle case where only one beep is needed
      if (!bFirst) {
           if (eSoundMode == e_SOUND_MODE_ONCE) {
-               Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
+               Sound_MakeCustom(80, 0, false);
           }
           bFirst = true;
      }
@@ -212,7 +212,7 @@ void sound_wait_for_user() {
      if (beep_timer.expired_cont(CONTINOUS_BEEP_PERIOD)) {
           beep_timer.start();
           if (eSoundMode == e_SOUND_MODE_LOUD) {
-               Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
+               Sound_MakeCustom(80, 0, false);
           } else {
                // Assist (lower volume sound)
                Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
