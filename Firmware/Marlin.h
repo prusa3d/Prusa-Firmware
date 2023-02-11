@@ -304,6 +304,7 @@ extern uint8_t host_keepalive_interval;
 extern unsigned long starttime;
 extern unsigned long stoptime;
 extern ShortTimer usb_timer;
+extern bool processing_tcode;
 extern bool homing_flag;
 extern bool loading_flag;
 extern unsigned long total_filament_used;
