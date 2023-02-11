@@ -201,10 +201,9 @@ void sound_wait_for_user() {
      if (eSoundMode == e_SOUND_MODE_SILENT) return;
 
      // Handle case where only one beep is needed
-     if (!bFirst) {
-          if (eSoundMode == e_SOUND_MODE_ONCE) {
-               Sound_MakeCustom(80, 0, false);
-          }
+     if (eSoundMode == e_SOUND_MODE_ONCE) {
+          if (bFirst) return;
+          Sound_MakeCustom(80, 0, false);
           bFirst = true;
      }
 
