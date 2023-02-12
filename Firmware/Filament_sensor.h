@@ -176,7 +176,7 @@ public:
     void settings_init();
 private:
     static constexpr uint16_t pollingPeriod = 10; //[ms]
-    static constexpr uint8_t filterCnt = 10; //how many checks need to be done in order to determine the filament presence precisely.
+    static constexpr uint8_t filterCnt = 5; //how many checks need to be done in order to determine the filament presence precisely.
     static constexpr uint8_t presence_threshold = 50; // TODO: eeprom config. Remove filament and Support -> Sensor info -> B: value of pat9125_b when pat9125_s >= 17
     ShortTimer pollingTimer;
     uint8_t filter;
