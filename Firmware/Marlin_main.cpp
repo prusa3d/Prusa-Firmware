@@ -11385,6 +11385,10 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	card.sdprinting = false;
 //	card.closefile();
 	saved_printing = true;
+
+  // Enable stepper driver interrupt to move Z axis. This should be fine as the planner and
+  // command queues are empty, SD card printing is disabled, usb is inhibited.
+  planner_aborted = false;
   // We may have missed a stepper timer interrupt. Be safe than sorry, reset the stepper timer before re-enabling interrupts.
   st_reset_timer();
 	sei();
