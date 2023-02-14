@@ -30,6 +30,10 @@ The workflow should be pretty straightforward for anyone with development experi
     cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../cmake/AvrGcc.cmake
     ninja
 
+#### my variant (MK3S+)
+    cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DFW_VARIANTS=1_75mm_MK3S-EINSy10a-E3Dv6full -DCMAKE_TOOLCHAIN_FILE=../cmake/AvrGcc.cmake
+    ninja MK3S-EINSy10a_ENGLISH
+
 
 #### Detailed CMake guide
 Building with cmake requires:
