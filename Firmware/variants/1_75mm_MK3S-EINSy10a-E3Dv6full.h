@@ -71,7 +71,7 @@
 #define Y_MAX_POS 212.5
 #define Y_MIN_POS -4 //orig -4
 //#define Z_MAX_POS 210
-#define Z_MAX_POS 280       // modified Z-height with MUTANT v2 upgrade with regular E3D print mount
+#define Z_MAX_POS 275       // modified Z-height with MUTANT v2 upgrade with regular E3D print mount
 #define Z_MIN_POS 0.15
 
 // Canceled home position
