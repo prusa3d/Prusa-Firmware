@@ -71,7 +71,7 @@
 #define Y_MAX_POS 212.5
 #define Y_MIN_POS -4 //orig -4
 //#define Z_MAX_POS 210
-#define Z_MAX_POS 275       // modified Z-height with MUTANT v2 upgrade with regular E3D print mount
+#define Z_MAX_POS 280       // modified Z-height with MUTANT v2 upgrade with regular E3D print mount
 #define Z_MIN_POS 0.15
 
 // Canceled home position
@@ -137,7 +137,7 @@
 #define UVLO_SUPPORT
 
 // Fan check
-#define FANCHECK
+//#define FANCHECK
 
 // Safety timer
 #define SAFETYTIMER
@@ -357,8 +357,8 @@
 #define EXTRUDER_2_AUTO_FAN_PIN   -1
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
-#define EXTRUDER_ALTFAN_DETECT
-#define EXTRUDER_ALTFAN_SPEED_SILENT 128
+// #define EXTRUDER_ALTFAN_DETECT
+// #define EXTRUDER_ALTFAN_SPEED_SILENT 128
 
 #define FANCHECK_AUTO_PRINT_FAN_THRS 70 //[RPS] - Used during selftest to identify swapped fans automatically
 #define FANCHECK_AUTO_FAIL_THRS 20 //[RPS] - Used during selftest to identify a faulty fan
