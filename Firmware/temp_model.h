@@ -5,7 +5,12 @@
 
 #include "planner.h"
 
-constexpr uint8_t TEMP_MODEL_CAL_S = 60;     // Maximum recording lenght during calibration (s)
+// shortcuts to get model defaults
+#define __TEMP_MODEL_DEF(MODEL, VAR) TEMP_MODEL_##MODEL##_##VAR
+#define _TEMP_MODEL_DEF(MODEL, VAR)  __TEMP_MODEL_DEF(MODEL, VAR)
+#define TEMP_MODEL_DEF(VAR)          _TEMP_MODEL_DEF(TEMP_MODEL_DEFAULT, VAR)
+
+constexpr uint8_t TEMP_MODEL_CAL_S = 60;     // Maximum recording length during calibration (s)
 constexpr uint8_t TEMP_MODEL_CAL_R_STEP = 4; // Fan interpolation steps during calibration
 constexpr float TEMP_MODEL_fE = 0.05;        // error filter (1st-order IIR factor)
 
@@ -14,7 +19,7 @@ constexpr uint8_t TEMP_MODEL_MAX_LAG_SIZE = 8; // * TEMP_MGR_INTV = 2160
 
 // resistance values for all fan levels
 constexpr uint8_t TEMP_MODEL_R_SIZE = (1 << FAN_SOFT_PWM_BITS);
-static const float TEMP_MODEL_R_DEFAULT[TEMP_MODEL_R_SIZE] PROGMEM = TEMP_MODEL_Rv;
+static const float TEMP_MODEL_R_DEFAULT[TEMP_MODEL_R_SIZE] PROGMEM = TEMP_MODEL_DEF(Rv);
 
 namespace temp_model {
 
