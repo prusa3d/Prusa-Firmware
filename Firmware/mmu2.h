@@ -106,7 +106,7 @@ public:
     /// Unload of filament in collaboration with the MMU.
     /// That includes rotating the printer's extruder in order to release filament.
     /// @returns false if the operation cannot be performed (Stopped or cold extruder)
-    bool unload();
+    bool unload(bool enableFullScreenMsg = true);
 
     /// Load (insert) filament just into the MMU (not into printer's nozzle)
     /// @returns false if the operation cannot be performed (Stopped)

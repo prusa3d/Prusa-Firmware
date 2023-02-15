@@ -114,10 +114,10 @@ static void lcd_menu_fails_stats_mmu();
 static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
 static void lcd_menu_toolchange_stats_mmu_total();
-static void mmu_unload_filament();
 static void lcd_v2_calibration();
 //static void lcd_menu_show_sensors_state();      // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
+static void mmu_unload_filament_menu();
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
 static void mmu_loading_test_menu();
@@ -1886,7 +1886,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             nLevel = bFilamentPreheatState ? 1 : 2;
             bFilamentAction = true;
             menu_back(nLevel);
-            MMU2::mmu2.unload();
+            menu_submenu(mmu_unload_filament_menu);
             break;
         case FilamentAction::MmuEject:
             nLevel = bFilamentPreheatState ? 1 : 2;
@@ -2096,12 +2096,6 @@ static void lcd_unLoadFilament()
 {
      preheat_or_continue(FilamentAction::UnLoad);
 }
-
-static void mmu_unload_filament()
-{
-    preheat_or_continue(FilamentAction::MmuUnLoad);
-}
-
 
 void lcd_wait_interact() {
 
@@ -4796,6 +4790,26 @@ static void mmu_load_to_nozzle_menu() {
     }
 }
 
+static void mmu_unload_filament_menu() {
+    if (bFilamentAction) {
+        // Exit the menu, keep in mind MENU_ITEM_SUBMENU_P
+        // will repeatedly call mmu_unload_filament_menu()
+        // which will result in a FW crash if the menu is not exited
+        // Ideally we would want to use MENU_ITEM_FUNCTION_P(), but
+        // it is complicated due to using the preheat menu in case
+        // the nozzle is cold.
+        lcd_return_to_status();
+
+        // Execute the unload
+        MMU2::mmu2.unload(true);
+
+        // Force re-draw of LCD upon menu exit (also ignore any pending knob clicks)
+        lcd_quick_feedback();
+    } else {
+        preheat_or_continue(FilamentAction::MmuUnLoad);
+    }
+}
+
 static void mmu_eject_filament(uint8_t filament) {
     menu_back();
     MMU2::mmu2.eject_filament(filament, true);
@@ -5226,7 +5240,7 @@ static void lcd_main_menu()
         if (MMU2::mmu2.Enabled()) {
             MENU_ITEM_SUBMENU_P(_T(MSG_PRELOAD_TO_MMU), mmu_preload_filament_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
-            MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
+            MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament_menu);
             MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), mmu_fil_eject_menu);
 #ifdef  MMU_HAS_CUTTER
             if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0) {
@@ -5558,7 +5572,7 @@ void lcd_print_stop_finish()
             // Restore temperature saved in ram after pausing print
             restore_extruder_temperature_from_ram();
         }
-        MMU2::mmu2.unload(); // M702
+        MMU2::mmu2.unload(true); // M702
     }
 
     lcd_cooldown(); //turns off heaters and fan; goes to status screen.
@@ -6685,7 +6699,7 @@ static bool selftest_irsensor()
         progress = lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
     }
     progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
-    MMU2::mmu2.unload();
+    MMU2::mmu2.unload(false);
 
     for(uint_least8_t i = 0; i < 200; ++i)
     {

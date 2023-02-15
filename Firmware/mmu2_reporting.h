@@ -71,6 +71,7 @@ enum SoundType {
 
 void MakeSound(SoundType s);
 
+void FullScreenMsgUnload(uint8_t slot);
 void FullScreenMsgCut(uint8_t slot);
 void FullScreenMsgEject(uint8_t slot);
 void FullScreenMsgTest(uint8_t slot);

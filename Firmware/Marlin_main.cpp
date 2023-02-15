@@ -3434,15 +3434,8 @@ static void mmu_M600_wait_and_beep() {
 static void mmu_M600_unload_filament() {
     if (MMU2::mmu2.get_current_tool() == (uint8_t)MMU2::FILAMENT_UNKNOWN) return;
 
-    lcd_update_enable(false);
-    lcd_clear();
-    lcd_puts_at_P(0, 1, _T(MSG_UNLOADING_FILAMENT));
-    lcd_print(' ');
-    lcd_print(MMU2::mmu2.get_current_tool() + 1);
-
     // unload just current filament for multimaterial printers (used also in M702)
-    MMU2::mmu2.unload();
-    lcd_update_enable(true);
+    MMU2::mmu2.unload(true);
 }
 
 /// @brief load filament for mmu v2
@@ -5337,7 +5330,7 @@ void process_commands()
       {
         if (MMU2::mmu2.FindaDetectsFilament() && !fsensor.getFilamentPresent())
         { // Filament only half way into the PTFE. Unload the filament.
-          MMU2::mmu2.unload();
+          MMU2::mmu2.unload(false);
           // Tx and Tc gcodes take care of loading the filament to the nozzle.
         }
       }
@@ -8416,7 +8409,7 @@ Sigma_Exit:
         float delta = raise_z(z_target);
 
         // Unload filament
-        if (MMU2::mmu2.Enabled())  MMU2::mmu2.unload();
+        if (MMU2::mmu2.Enabled())  MMU2::mmu2.unload(true);
         else unload_filament(unloadLength);
 
         // Restore Z axis

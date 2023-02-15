@@ -370,7 +370,7 @@ bool MMU2::tool_change(uint8_t slot) {
             !marlin_printingIsActive()) {
             // If Tcodes are used manually through the serial
             // we need to unload manually as well -- but only if FINDA detects filament
-            unload();
+            unload(false);
         }
 
         ReportingRAII rep(CommandInProgress::ToolChange);
@@ -463,14 +463,22 @@ void MMU2::UnloadInner() {
     tool_change_extruder = MMU2_NO_TOOL;
 }
 
-bool MMU2::unload() {
+bool MMU2::unload(bool enableFullScreenMsg) {
     if (!WaitForMMUReady())
         return false;
 
     WaitForHotendTargetTempBeep();
 
+    if (enableFullScreenMsg) {
+        FullScreenMsgUnload(get_current_tool());
+    }
+
     ReportingRAII rep(CommandInProgress::UnloadFilament);
     UnloadInner();
+
+    if (enableFullScreenMsg) {
+        ScreenUpdateEnable();
+    }
 
     return true;
 }
@@ -494,7 +502,7 @@ bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /*= true*/) {
     }
     {
         if (FindaDetectsFilament()) {
-            unload();
+            unload(false);
         }
 
         ReportingRAII rep(CommandInProgress::CutFilament);
@@ -511,7 +519,7 @@ bool MMU2::loading_test(uint8_t slot) {
     FullScreenMsgTest(slot);
     tool_change(slot);
     planner_synchronize();
-    unload();
+    unload(false);
     ScreenUpdateEnable();
     return true;
 }
@@ -573,7 +581,7 @@ bool MMU2::eject_filament(uint8_t slot, bool enableFullScreenMsg /* = true */) {
     }
     {
         if (FindaDetectsFilament()) {
-            unload();
+            unload(false);
         }
 
         ReportingRAII rep(CommandInProgress::EjectFilament);

@@ -314,7 +314,21 @@ static void FullScreenMsg(const char *pgmS, uint8_t slot){
     lcd_clear();
     lcd_puts_at_P(0, 1, pgmS);
     lcd_print(' ');
-    lcd_print(slot + 1);
+    if (slot > MMU_FILAMENT_COUNT) {
+        // If the current tool is unknown, show '?'
+        // instead of '256'. There is only space for
+        // one digit/character on the display when
+        // unloading for example.
+        lcd_putc('?');
+    } else {
+        lcd_print(slot + 1);
+    }
+    
+    
+}
+
+void FullScreenMsgUnload(uint8_t slot){
+    FullScreenMsg(_T(MSG_UNLOADING_FILAMENT), slot);
 }
 
 void FullScreenMsgCut(uint8_t slot){
