@@ -419,8 +419,8 @@
 #define TEMP_MODEL_DEBUG 1    // extended runtime logging
 
 #define TEMP_MODEL_P 38.      // heater power (W)
-#define TEMP_MODEL_U 1.       // linear temperature coefficient (W/K/power)
-#define TEMP_MODEL_V 0.       // linear temperature intercept (W/power)
+#define TEMP_MODEL_U 0.       // linear temperature coefficient (W/K/power)
+#define TEMP_MODEL_V 1.       // linear temperature intercept (W/power)
 
 #define TEMP_MODEL_C 12.1     // initial guess for heatblock capacitance (J/K)
 #define TEMP_MODEL_Cl 5       // C estimation lower limit
