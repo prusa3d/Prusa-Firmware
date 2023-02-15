@@ -412,6 +412,7 @@
 
 // model-based temperature check
 #define TEMP_MODEL 1          // enable model-based temperature checks
+#define TEMP_MODEL_VER 1      // model parameters version
 #define TEMP_MODEL_DEBUG 1    // extended runtime logging
 
 #define TEMP_MODEL_P 38.      // heater power (W)
