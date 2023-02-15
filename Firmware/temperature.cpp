@@ -2633,13 +2633,13 @@ void temp_model_load_settings()
     static_assert(TEMP_MODEL_R_SIZE == 16); // ensure we don't desync with the eeprom table
     TempMgrGuard temp_mgr_guard;
 
-    // handle upgrade from a model without UVDL (FW<3.13)
-    // WARNING: this only works as long as UVDL are the same constants/model type as FW 3.12,
-    //          it needs to consider the upgrading FW version otherwise!
+    // handle upgrade from a model without UVDL (FW<3.13, TM VER<1): model is retro-compatible,
+    // reset UV to an identity without doing any special handling
     eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_U, TEMP_MODEL_U);
     eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_V, TEMP_MODEL_V);
     eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_D, TEMP_MODEL_fS);
     eeprom_init_default_word((uint16_t*)EEPROM_TEMP_MODEL_L, TEMP_MODEL_LAG);
+    eeprom_init_default_byte((uint8_t*)EEPROM_TEMP_MODEL_VER, TEMP_MODEL_VER);
 
     temp_model::enabled = eeprom_read_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE);
     temp_model::data.P = eeprom_read_float((float*)EEPROM_TEMP_MODEL_P);
