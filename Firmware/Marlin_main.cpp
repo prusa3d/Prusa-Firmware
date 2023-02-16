@@ -1122,7 +1122,8 @@ void setup()
 	SERIAL_ECHO_START;
 	puts_P(PSTR(" " FW_VERSION_FULL));
 
-	if (eeprom_read_byte((uint8_t *)EEPROM_MMU_ENABLED)) {
+	// by default the MMU shall remain disabled - PFW-1418
+	if (eeprom_init_default_byte((uint8_t *)EEPROM_MMU_ENABLED, 0)) {
 		MMU2::mmu2.Start();
 	}
 	SpoolJoin::spooljoin.initSpoolJoinStatus();
