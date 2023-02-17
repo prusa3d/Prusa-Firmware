@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 void lay1cal_wait_preheat();
-void lay1cal_load_filament(char *cmd_buffer, uint8_t filament);
-void lay1cal_intro_line();
+[[nodiscard]] bool lay1cal_load_filament(char *cmd_buffer, uint8_t filament);
+void lay1cal_intro_line(bool skipExtraPurge);
 void lay1cal_before_meander();
 void lay1cal_meander(char *cmd_buffer);
 void lay1cal_square(char *cmd_buffer, uint8_t i);

@@ -15,7 +15,7 @@ extern FILE _uart2io;
 #define uart2io (&_uart2io)
 
 
-extern void uart2_init(void);
+extern void uart2_init(uint32_t baudRate);
 
 extern int8_t uart2_rx_str_P(const char* str);
 

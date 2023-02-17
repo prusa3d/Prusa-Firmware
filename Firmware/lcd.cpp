@@ -66,6 +66,8 @@
 #define LCD_RS_FLAG 0x01
 #define LCD_HALF_FLAG 0x02
 
+constexpr uint8_t row_offsets[] PROGMEM = { 0x00, 0x40, 0x14, 0x54 };
+
 FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
 uint8_t lcd_displayfunction = 0;
@@ -329,13 +331,30 @@ void lcd_no_autoscroll(void)
 }
 #endif
 
+/// @brief set the current LCD row
+/// @param row LCD row number, ranges from 0 to LCD_HEIGHT - 1
+static void FORCE_INLINE lcd_set_current_row(uint8_t row)
+{
+	lcd_currline = min(row, LCD_HEIGHT - 1);
+}
+
+/// @brief Calculate the LCD row offset
+/// @param row LCD row number, ranges from 0 to LCD_HEIGHT - 1
+/// @return row offset which the LCD register understands
+static uint8_t __attribute__((noinline)) lcd_get_row_offset(uint8_t row)
+{
+	return pgm_read_byte(row_offsets + min(row, LCD_HEIGHT - 1));
+}
+
 void lcd_set_cursor(uint8_t col, uint8_t row)
 {
-	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-	if (row >= LCD_HEIGHT)
-		row = LCD_HEIGHT - 1;    // we count rows starting w/0
-	lcd_currline = row;  
-	lcd_command(LCD_SETDDRAMADDR | (col + row_offsets[row]));
+	lcd_set_current_row(row);
+	lcd_command(LCD_SETDDRAMADDR | (col + lcd_get_row_offset(lcd_currline)));
+}
+
+void lcd_set_cursor_column(uint8_t col)
+{
+	lcd_command(LCD_SETDDRAMADDR | (col + lcd_get_row_offset(lcd_currline)));
 }
 
 // Allows us to fill the first 8 CGRAM locations
@@ -344,7 +363,7 @@ void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
 {
   location &= 0x7; // we only have 8 locations 0-7
   lcd_command(LCD_SETCGRAMADDR | (location << 3));
-  for (int i=0; i<8; i++)
+  for (uint8_t i = 0; i < 8; i++)
     lcd_send(pgm_read_byte(&charmap[i]), HIGH);
 }
 
@@ -486,9 +505,15 @@ void lcd_escape_write(uint8_t chr)
 #endif //VT100
 
 
-int lcd_putc(int c)
+int lcd_putc(char c)
 {
 	return fputc(c, lcdout);
+}
+
+int lcd_putc_at(uint8_t c, uint8_t r, char ch)
+{
+	lcd_set_cursor(c, r);
+	return fputc(ch, lcdout);
 }
 
 int lcd_puts_P(const char* str)
@@ -520,6 +545,26 @@ void lcd_space(uint8_t n)
 void lcd_print(const char* s)
 {
 	while (*s) lcd_write(*(s++));
+}
+
+char lcd_print_pad(const char* s, uint8_t len)
+{
+    while (len && *s) {
+        lcd_write(*(s++));
+        --len;
+    }
+    lcd_space(len);
+    return *s;
+}
+
+uint8_t lcd_print_pad_P(const char* s, uint8_t len)
+{
+    while (len && pgm_read_byte(s)) {
+        lcd_write(pgm_read_byte(s++));
+        --len;
+    }
+    lcd_space(len);
+    return len;
 }
 
 void lcd_print(char c, int base)
@@ -567,16 +612,10 @@ void lcd_print(unsigned long n, int base)
 		lcd_printNumber(n, base);
 }
 
-void lcd_print(double n, int digits)
-{
-  lcd_printFloat(n, digits);
-}
-
-
 void lcd_printNumber(unsigned long n, uint8_t base)
 {
 	unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars. 
-	unsigned long i = 0;
+	uint8_t i = 0;
 	if (n == 0)
 	{
 		lcd_print('0');
@@ -591,37 +630,6 @@ void lcd_printNumber(unsigned long n, uint8_t base)
 		lcd_print((char) (buf[i - 1] < 10 ?	'0' + buf[i - 1] : 'A' + buf[i - 1] - 10));
 }
 
-void lcd_printFloat(double number, uint8_t digits) 
-{ 
-	// Handle negative numbers
-	if (number < 0.0)
-	{
-		lcd_print('-');
-		number = -number;
-	}
-	// Round correctly so that print(1.999, 2) prints as "2.00"
-	double rounding = 0.5;
-	for (uint8_t i=0; i<digits; ++i)
-		rounding /= 10.0;
-	number += rounding;
-	// Extract the integer part of the number and print it
-	unsigned long int_part = (unsigned long)number;
-	double remainder = number - (double)int_part;
-	lcd_print(int_part);
-	// Print the decimal point, but only if there are digits beyond
-	if (digits > 0)
-		lcd_print('.'); 
-	// Extract digits from the remainder one at a time
-	while (digits-- > 0)
-	{
-		remainder *= 10.0;
-		int toPrint = int(remainder);
-		lcd_print(toPrint);
-		remainder -= toPrint; 
-	} 
-}
-
-
 uint8_t lcd_draw_update = 2;
 int32_t lcd_encoder = 0;
 uint8_t lcd_encoder_bits = 0;
@@ -632,13 +640,10 @@ uint8_t lcd_button_pressed = 0;
 uint8_t lcd_update_enabled = 1;
 
 uint32_t lcd_next_update_millis = 0;
-uint8_t lcd_status_update_delay = 0;
 
 
 
 lcd_longpress_func_t lcd_longpress_func = 0;
-
-lcd_charsetup_func_t lcd_charsetup_func = 0;
 
 lcd_lcdupdate_func_t lcd_lcdupdate_func = 0;
 
@@ -698,6 +703,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 
 void lcd_update_enable(uint8_t enabled)
 {
+	// printf_P(PSTR("lcd_update_enable(%u -> %u)\n"), lcd_update_enabled, enabled);
 	if (lcd_update_enabled != enabled)
 	{
 		lcd_update_enabled = enabled;
@@ -712,8 +718,6 @@ void lcd_update_enable(uint8_t enabled)
 			lcd_next_update_millis = _millis() - 1;
 			// Full update.
 			lcd_clear();
-			if (lcd_charsetup_func)
-				lcd_charsetup_func();
 			lcd_update(2);
 		} else
 		{
@@ -722,6 +726,10 @@ void lcd_update_enable(uint8_t enabled)
 	}
 }
 
+bool lcd_longpress_trigger = 0;
+
+// WARNING: this function is called from the temperature ISR.
+//          Only update flags, but do not perform any menu/lcd operation!
 void lcd_buttons_update(void)
 {
     static uint8_t lcd_long_press_active = 0;
@@ -731,7 +739,6 @@ void lcd_buttons_update(void)
 
     if (READ(BTN_ENC) == 0)
     { //button is pressed
-        lcd_timeoutToStatus.start();
         if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
             buttonBlanking.start();
             safetyTimer.start();
@@ -743,9 +750,7 @@ void lcd_buttons_update(void)
             else if (longPressTimer.expired(LONG_PRESS_TIME))
             {
                 lcd_long_press_active = 1;
-                //long press is not possible in modal mode
-                if (lcd_longpress_func && lcd_update_enabled)
-                    lcd_longpress_func();
+                lcd_longpress_trigger = 1;
             }
         }
     }
@@ -916,28 +921,6 @@ const uint8_t lcd_chardata_clock[8] PROGMEM = {
 	B00000,
 	B00000}; //thanks Sonny Mounicou
 
-const uint8_t lcd_chardata_arrup[8] PROGMEM = {
-	B00100,
-	B01110,
-	B11111,
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B00000};
-
-const uint8_t lcd_chardata_arrdown[8] PROGMEM = {
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B00000,
-	B10001,
-	B01010,
-	B00100};
-
-
-
 void lcd_set_custom_characters(void)
 {
 	lcd_createChar_P(LCD_STR_BEDTEMP[0], lcd_chardata_bedTemp);
@@ -948,28 +931,6 @@ void lcd_set_custom_characters(void)
 	lcd_createChar_P(LCD_STR_FOLDER[0], lcd_chardata_folder);
 	lcd_createChar_P(LCD_STR_FEEDRATE[0], lcd_chardata_feedrate);
 	lcd_createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
-	//lcd_createChar_P(LCD_STR_ARROW_UP[0], lcd_chardata_arrup);
-	//lcd_createChar_P(LCD_STR_ARROW_DOWN[0], lcd_chardata_arrdown);
-}
-
-void lcd_set_custom_characters_arrows(void)
-{
-	lcd_createChar_P(1, lcd_chardata_arrdown);
-}
-
-const uint8_t lcd_chardata_progress[8] PROGMEM = {
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111};
-
-void lcd_set_custom_characters_progress(void)
-{
-	lcd_createChar_P(1, lcd_chardata_progress);
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
@@ -993,12 +954,7 @@ const uint8_t lcd_chardata_confirm[8] PROGMEM = {
 
 void lcd_set_custom_characters_nextpage(void)
 {
-	lcd_createChar_P(1, lcd_chardata_arr2down);
-	lcd_createChar_P(2, lcd_chardata_confirm);
-}
-
-void lcd_set_custom_characters_degree(void)
-{
-	lcd_createChar_P(1, lcd_chardata_degree);
+	lcd_createChar_P(LCD_STR_ARROW_2_DOWN[0], lcd_chardata_arr2down);
+	lcd_createChar_P(LCD_STR_CONFIRM[0], lcd_chardata_confirm);
 }
 

@@ -73,12 +73,11 @@ typedef struct {
   // steps_x.y,z, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
   dda_isteps_t steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
   dda_usteps_t step_event_count;            // The number of step events required to complete this block
-  long acceleration_rate;                   // The acceleration rate used for acceleration calculation
+  uint32_t acceleration_rate;               // The acceleration rate used for acceleration calculation
   unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
-  unsigned char active_extruder;            // Selects the active extruder
   // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
-  long accelerate_until;                    // The index of the step event on which to stop acceleration
-  long decelerate_after;                    // The index of the step event on which to start decelerating
+  uint32_t accelerate_until;                // The index of the step event on which to stop acceleration
+  uint32_t decelerate_after;                // The index of the step event on which to start decelerating
 
   // Fields used by the motion planner to manage acceleration
 //  float speed_x, speed_y, speed_z, speed_e;        // Nominal mm/sec for each axis
@@ -100,13 +99,12 @@ typedef struct {
 
   // Settings for the trapezoid generator (runs inside an interrupt handler).
   // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
-  //FIXME nominal_rate, initial_rate and final_rate are limited to uint16_t by MultiU24X24toH16 in the stepper interrupt anyway!
   unsigned long nominal_rate;                        // The nominal step rate for this block in step_events/sec 
   unsigned long initial_rate;                        // The jerk-adjusted step rate at start of block  
   unsigned long final_rate;                          // The minimal rate at exit
   unsigned long acceleration_st;                     // acceleration steps/sec^2
-  //FIXME does it have to be unsigned long? Probably uint8_t would be just fine.
-  unsigned long fan_speed;
+  //FIXME does it have to be int? Probably uint8_t would be just fine. Need to change in other places as well
+  int fan_speed;
   volatile char busy;
 
 
@@ -123,7 +121,8 @@ typedef struct {
 #endif
 
   // Save/recovery state data
-  float gcode_target[NUM_AXIS];     // Target (abs mm) of the original Gcode instruction
+  float gcode_start_position[NUM_AXIS]; // Start (abs mm) of the original Gcode instruction
+  uint16_t segment_idx;             // The index of the for loop that generates segments
   uint16_t gcode_feedrate;          // Default and/or move feedrate
   uint16_t sdlen;                   // Length of the Gcode instruction
 } block_t;
@@ -144,7 +143,7 @@ void plan_init();
 // millimaters. Feed rate specifies the speed of the motion.
 
 #ifdef ENABLE_AUTO_BED_LEVELING
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const uint8_t &extruder);
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate);
 
 // Get the position applying the bed level matrix if enabled
 vector_3 plan_get_position();
@@ -154,9 +153,13 @@ vector_3 plan_get_position();
 /// plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], ...
 /// saves almost 5KB.
 /// The performance penalty is negligible, since these planned lines are usually maintenance moves with the extruder.
-void plan_buffer_line_curposXYZE(float feed_rate, uint8_t extruder);
+void plan_buffer_line_curposXYZE(float feed_rate);
 
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target = NULL);
+void plan_buffer_line_destinationXYZE(float feed_rate);
+
+void plan_set_position_curposXYZE();
+
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const float* gcode_start_position = NULL, uint16_t segment_idx = 0);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
 #endif // ENABLE_AUTO_BED_LEVELING
 
@@ -173,6 +176,9 @@ void plan_set_e_position(const float &e);
 // Reset the E position to zero at the start of the next segment
 void plan_reset_next_e();
 
+inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
+inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
+
 extern bool e_active();
 
 void check_axes_activity();
@@ -186,7 +192,6 @@ extern unsigned long* max_acceleration_units_per_sq_second;
 extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
 extern long position[NUM_AXIS];
-extern uint8_t maxlimit_status;
 
 
 #ifdef AUTOTEMP
@@ -196,16 +201,20 @@ extern uint8_t maxlimit_status;
     extern float autotemp_factor;
 #endif
 
-    
 
+// Check for BLOCK_BUFFER_SIZE requirements
+static_assert(!(BLOCK_BUFFER_SIZE & (BLOCK_BUFFER_SIZE - 1)),
+              "BLOCK_BUFFER_SIZE must be a power of two");
+static_assert(BLOCK_BUFFER_SIZE <= (UINT8_MAX>>1),
+              "BLOCK_BUFFER_SIZE too large for uint8_t");
 
 extern block_t block_buffer[BLOCK_BUFFER_SIZE];            // A ring buffer for motion instfructions
 // Index of the next block to be pushed into the planner queue.
-extern volatile unsigned char block_buffer_head;
+extern volatile uint8_t block_buffer_head;
 // Index of the first block in the planner queue.
 // This is the block, which is being currently processed by the stepper routine, 
 // or which is first to be processed by the stepper routine.
-extern volatile unsigned char block_buffer_tail; 
+extern volatile uint8_t block_buffer_tail;
 // Called when the current block is no longer needed. Discards the block and makes the memory
 // available for new blocks.    
 FORCE_INLINE void plan_discard_current_block()  
@@ -240,20 +249,24 @@ FORCE_INLINE uint8_t moves_planned() {
 }
 
 FORCE_INLINE bool planner_queue_full() {
-    unsigned char next_block_index = block_buffer_head;
+    uint8_t next_block_index = block_buffer_head;
     if (++ next_block_index == BLOCK_BUFFER_SIZE)
         next_block_index = 0; 
     return block_buffer_tail == next_block_index;
 }
 
+// Reset machine position from stepper counters
+extern void planner_reset_position();
+
 // Abort the stepper routine, clean up the block queue,
 // wait for the steppers to stop,
 // update planner's current position and the current_position of the front end.
 extern void planner_abort_hard();
-extern bool waiting_inside_plan_buffer_line_print_aborted;
+extern bool planner_aborted;
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
-void set_extrude_min_temp(float temp);
+extern int extrude_min_temp;
+void set_extrude_min_temp(int temp);
 #endif
 
 void reset_acceleration_rates();
@@ -261,7 +274,7 @@ void reset_acceleration_rates();
 
 void update_mode_profile();
 
-unsigned char number_of_blocks();
+uint8_t number_of_blocks();
 
 // #define PLANNER_DIAGNOSTICS
 #ifdef PLANNER_DIAGNOSTICS

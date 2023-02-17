@@ -26,7 +26,6 @@
 // offset == offset from current xyz, axis_XXX defines circle plane in tool space, axis_linear is
 // the direction of helical travel, radius == circle radius, isclockwise boolean. Used
 // for vector transformation direction.
-void mc_arc(float *position, float *target, float *offset, unsigned char axis_0, unsigned char axis_1,
-  unsigned char axis_linear, float feed_rate, float radius, unsigned char isclockwise, uint8_t extruder);
-  
+void mc_arc(const float *position, float *target, const float *offset, float feed_rate, float radius, bool isclockwise, uint16_t start_segment_idx);
+
 #endif

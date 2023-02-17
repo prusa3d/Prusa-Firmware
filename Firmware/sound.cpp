@@ -23,16 +23,8 @@ static void Sound_DoSound_Blind_Alert(void);
 
 void Sound_Init(void)
 {
-SET_OUTPUT(BEEPER);
-eSoundMode=(eSOUND_MODE)eeprom_read_byte((uint8_t*)EEPROM_SOUND_MODE);
-if(eSoundMode==e_SOUND_MODE_NULL)
-     Sound_Default();                             // je potreba provest i ulozeni do EEPROM
-}
-
-void Sound_Default(void)
-{
-eSoundMode=e_SOUND_MODE_DEFAULT;
-Sound_SaveMode();
+     SET_OUTPUT(BEEPER);
+     eSoundMode = static_cast<eSOUND_MODE>(eeprom_init_default_byte((uint8_t*)EEPROM_SOUND_MODE, e_SOUND_MODE_DEFAULT));
 }
 
 void Sound_SaveMode(void)
@@ -63,30 +55,14 @@ Sound_SaveMode();
 }
 
 //if critical is true then silend and once mode is ignored
-void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
+void __attribute__((noinline)) Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
     backlight_wake();
-     if (!critical){
-          if (eSoundMode != e_SOUND_MODE_SILENT){
-               if(!tone_){
-                    WRITE(BEEPER, HIGH);
-                    _delay(ms);
-                    WRITE(BEEPER, LOW);
-               }
-               else{
-                    _tone(BEEPER, tone_);
-                    _delay(ms);
-                    _noTone(BEEPER);
-               }
-          }
-     }
-     else{
-          if(!tone_){
+     if (critical || eSoundMode != e_SOUND_MODE_SILENT) {
+          if(!tone_) {
                WRITE(BEEPER, HIGH);
                _delay(ms);
                WRITE(BEEPER, LOW);
-               _delay(ms);
-          }
-          else{
+          } else {
                _tone(BEEPER, tone_);
                _delay(ms);
                _noTone(BEEPER);
@@ -129,7 +105,7 @@ switch(eSoundMode)
                Sound_DoSound_Encoder_Move();
           if(eSoundType==e_SOUND_TYPE_BlindAlert)
                Sound_DoSound_Blind_Alert();
-               break;
+          break;
      default:
           break;
      }
@@ -198,4 +174,47 @@ for(nI=0;nI<nMax;nI++)
      WRITE(BEEPER,LOW);
      delayMicroseconds(500);
      }
+}
+
+static int16_t constexpr CONTINOUS_BEEP_PERIOD = 2000; // in ms
+static ShortTimer beep_timer; // Timer to keep track of continous beeping
+static bool bFirst; // true if the first beep has occurred, e_SOUND_MODE_ONCE
+
+/// @brief Handles sound when waiting for user input
+/// the function must be non-blocking. It is up to the caller
+/// to call this function repeatedly.
+/// Make sure to call sound_wait_for_user_reset() when the user has clicked the knob
+///     Loud - should continuously beep
+///     Silent - should be silent
+///     Once - should beep once
+///     Assist/Blind - as loud with beep and click on knob rotation and press
+void sound_wait_for_user() {
+#if BEEPER > 0
+     if (eSoundMode == e_SOUND_MODE_SILENT) return;
+
+     // Handle case where only one beep is needed
+     if (eSoundMode == e_SOUND_MODE_ONCE) {
+          if (bFirst) return;
+          Sound_MakeCustom(80, 0, false);
+          bFirst = true;
+     }
+
+     // Handle case where there should be continous beeps
+     if (beep_timer.expired_cont(CONTINOUS_BEEP_PERIOD)) {
+          beep_timer.start();
+          if (eSoundMode == e_SOUND_MODE_LOUD) {
+               Sound_MakeCustom(80, 0, false);
+          } else {
+               // Assist (lower volume sound)
+               Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+          }
+     }
+#endif // BEEPER > 0
+}
+
+/// @brief Resets the global state of sound_wait_for_user()
+void sound_wait_for_user_reset()
+{
+     beep_timer.stop();
+     bFirst = false;
 }

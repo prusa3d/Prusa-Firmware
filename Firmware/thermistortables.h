@@ -1213,6 +1213,8 @@ const short temptable_1047[][2] PROGMEM = {
 #endif
 
 #if (THERMISTORAMBIENT == 2000) //100k thermistor NTCG104LH104JT1
+# define AMBIENT_RAW_HI_TEMP 0
+# define AMBIENT_RAW_LO_TEMP 16383
 const short temptable_2000[][2] PROGMEM = {
 // Source: https://product.tdk.com/info/en/catalog/datasheets/503021/tpd_ntc-thermistor_ntcg_en.pdf
 // Calculated using 4.7kohm pullup, voltage divider math, and manufacturer provided temp/resistance

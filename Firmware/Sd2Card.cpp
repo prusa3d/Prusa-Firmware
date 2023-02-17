@@ -205,14 +205,14 @@ uint32_t Sd2Card::cardSize() {
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectHigh() {
-  digitalWrite(chipSelectPin_, HIGH);
+  WRITE(SDSS, 1);
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectLow() {
 #ifndef SOFTWARE_SPI
   spiInit(spiRate_);
 #endif  // SOFTWARE_SPI
-  digitalWrite(chipSelectPin_, LOW);
+  WRITE(SDSS, 0);
 }
 //------------------------------------------------------------------------------
 /** Erase a range of blocks.
@@ -283,26 +283,25 @@ bool Sd2Card::eraseSingleBlockEnable() {
  * the value zero, false, is returned for failure.  The reason for failure
  * can be determined by calling errorCode() and errorData().
  */
-bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
+bool Sd2Card::init(uint8_t sckRateID) {
   errorCode_ = type_ = 0;
-  chipSelectPin_ = chipSelectPin;
   // 16-bit init start time allows over a minute
   uint16_t t0 = (uint16_t)_millis();
   uint32_t arg;
 
   // set pin modes
-  pinMode(chipSelectPin_, OUTPUT);
   chipSelectHigh();
-  pinMode(SPI_MISO_PIN, INPUT);
-  pinMode(SPI_MOSI_PIN, OUTPUT);
-  pinMode(SPI_SCK_PIN, OUTPUT);
+  SET_OUTPUT(SDSS);
+  SET_INPUT(MISO);
+  SET_OUTPUT(MOSI);
+  SET_OUTPUT(SCK);
 
 #ifndef SOFTWARE_SPI
   // SS must be in output mode even it is not chip select
-  pinMode(SS_PIN, OUTPUT);
+  SET_OUTPUT(SS);
   // set SS high - may be chip select for another SPI device
 #if SET_SPI_SS_HIGH
-  digitalWrite(SS_PIN, HIGH);
+  WRITE(SS, 1);
 #endif  // SET_SPI_SS_HIGH
   // set SCK rate for initialization commands
   spiRate_ = SPI_SD_INIT_RATE;
@@ -312,13 +311,16 @@ bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
   // must supply min of 74 clock cycles with CS high.
   for (uint8_t i = 0; i < 10; i++) spiSend(0XFF);
 
+  WRITE(MISO, 1); // temporarily enable the MISO line pullup
   // command to go idle in SPI mode
   while ((status_ = cardCommand(CMD0, 0)) != R1_IDLE_STATE) {
     if (((uint16_t)_millis() - t0) > SD_INIT_TIMEOUT) {
+      WRITE(MISO, 0); // disable the MISO line pullup
       error(SD_CARD_ERROR_CMD0);
       goto fail;
     }
   }
+  WRITE(MISO, 0); // disable the MISO line pullup
 
   // send 0xFF until 0xFF received to give card some clock cycles
   t0 = (uint16_t)_millis();
@@ -767,6 +769,9 @@ uint8_t Sd2Card::waitStartBlock(void) {
 
 // Toshiba FlashAir support, copied from 
 // https://flashair-developers.com/en/documents/tutorials/arduino/
+// However, the official website was closed in September 2019.
+// There is an archived website (written in Japanese).
+// https://flashair-developers.github.io/website/docs/tutorials/arduino/2.html
 
 //------------------------------------------------------------------------------
 /** Perform Extention Read. */
@@ -774,7 +779,7 @@ uint8_t Sd2Card::readExt(uint32_t arg, uint8_t* dst, uint16_t count) {
   uint16_t i;
 
   // send command and argument.
-  if (cardCommand(CMD48, arg)) {
+  if (cardCommand(CMD48, arg) && cardCommand(CMD17, arg)) { // CMD48 for W-03, CMD17 for W-04
     error(SD_CARD_ERROR_CMD48);
     goto fail;
   }

@@ -14,6 +14,9 @@ extern "C" {
 ///! Initializes TIMER0 for fast PWM mode-driven bed heating
 extern void timer0_init(void);
 
+///! Initializes TIMER2 for time keeping and temperature interrupt
+extern void timer2_init(void);
+
 ///! Reimplemented original millis() using timer2
 extern unsigned long millis2(void);
 
@@ -22,13 +25,6 @@ extern unsigned long micros2(void);
 
 ///! Reimplemented original delay() using timer2
 extern void delay2(unsigned long ms);
-
-///! Reimplemented original tone() using timer2
-///! Does not perform any PWM tone generation, it just sets the beeper pin to 1
-extern void tone2(uint8_t _pin, unsigned int frequency/*, unsigned long duration*/);
-
-///! Turn off beeping - set beeper pin to 0
-extern void noTone2(uint8_t _pin);
 
 #if defined(__cplusplus)
 }

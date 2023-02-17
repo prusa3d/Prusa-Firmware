@@ -12,12 +12,21 @@ extern const uint16_t _nPrinterType;
 extern const char _sPrinterName[] PROGMEM;
 extern const uint16_t _nPrinterMmuType;
 extern const char _sPrinterMmuName[] PROGMEM;
-extern uint16_t nPrinterType;
-extern PGM_P sPrinterName;
 
 // Firmware version
-#define FW_VERSION "3.9.0"
-#define FW_COMMIT_NR   3175
+#define FW_MAJOR 3
+#define FW_MINOR 13
+#define FW_REVISION 0
+#define FW_FLAVOR ALPHA      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
+#define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
+#ifndef FW_FLAVOR
+    #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION)
+#else
+    #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION) "-" STR(FW_FLAVOR) "" STR(FW_FLAVERSION)
+#endif
+
+#define FW_COMMIT_NR 6054
+
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
@@ -52,7 +61,14 @@ extern PGM_P sPrinterName;
 #undef DEBUG_BUILD
 #endif
 
-#include "Configuration_prusa.h"
+#ifndef SOURCE_DATE_EPOCH
+#define SOURCE_DATE_EPOCH __DATE__
+#endif
+#ifndef SOURCE_TIME_EPOCH
+#define SOURCE_TIME_EPOCH __TIME__
+#endif
+
+#include "Configuration_var.h"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -67,9 +83,7 @@ extern PGM_P sPrinterName;
 // startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
 // build by the user have been successfully uploaded into firmware.
 
-//#define STRING_VERSION "1.0.2"
-
-#define STRING_VERSION_CONFIG_H __DATE__ " " __TIME__ // build date and time
+#define STRING_VERSION_CONFIG_H SOURCE_DATE_EPOCH " " SOURCE_TIME_EPOCH // build date and time
 #define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.
@@ -262,7 +276,6 @@ your extruder heater takes 2 minutes to hit the target on heating.
 #define DISABLE_Y 0
 #define DISABLE_Z 0
 #define DISABLE_E 0// For all extruders
-#define DISABLE_INACTIVE_EXTRUDER 1 //disable only inactive extruders and keep active extruder enabled
 
 
 // ENDSTOP SETTINGS:
@@ -413,18 +426,11 @@ your extruder heater takes 2 minutes to hit the target on heating.
 //Manual homing switch locations:
 // For deltabots this means top and center of the Cartesian print volume.
 
-
-// Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
-// The offset has to be X=0, Y=0 for the extruder 0 hotend (default extruder).
-// For the other hotends it is their distance from the extruder 0 hotend.
-// #define EXTRUDER_OFFSET_X {0.0, 20.00} // (in mm) for each extruder, offset of the hotend on the X axis
-// #define EXTRUDER_OFFSET_Y {0.0, 5.00}  // (in mm) for each extruder, offset of the hotend on the Y axis
-
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
 #define DEFAULT_XJERK                10       // (mm/sec)
 #define DEFAULT_YJERK                10       // (mm/sec)
 #define DEFAULT_ZJERK                 0.4     // (mm/sec)
-#define DEFAULT_EJERK                 2.5     // (mm/sec)
+#define DEFAULT_EJERK                 4.5     // (mm/sec)
 
 //===========================================================================
 //=============================Additional Features===========================
@@ -433,22 +439,13 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // Custom M code points
 #define CUSTOM_M_CODES
 #ifdef CUSTOM_M_CODES
+#ifdef ENABLE_AUTO_BED_LEVELING
   #define CUSTOM_M_CODE_SET_Z_PROBE_OFFSET 851
   #define Z_PROBE_OFFSET_RANGE_MIN -15
   #define Z_PROBE_OFFSET_RANGE_MAX -5
-#endif
+#endif // ENABLE_AUTO_BED_LEVELING
+#endif // CUSTOM_M_CODES
 
-
-// EEPROM
-// The microcontroller can store settings in the EEPROM, e.g. max velocity...
-// M500 - stores parameters in EEPROM
-// M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
-// M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
-//define this to enable EEPROM support
-//#define EEPROM_SETTINGS
-//to disable EEPROM Serial responses and decrease program space by ~1700 byte: comment this out:
-// please keep turned on if you can.
-//#define EEPROM_CHITCHAT
 
 // Host Keepalive
 //
@@ -477,11 +474,6 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 // Increase the FAN pwm frequency. Removes the PWM noise but increases heating in the FET/Arduino
 //#define FAST_PWM_FAN
-
-// Temperature status LEDs that display the hotend and bet temperature.
-// If all hotends and bed temperature and temperature setpoint are < 54C then the BLUE led is on.
-// Otherwise the RED led is on. There is 1C hysteresis.
-//#define TEMP_STAT_LEDS
 
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not ass annoying as with the hardware PWM. On the other hand, if this frequency
@@ -524,39 +516,14 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 #define DEFAULT_NOMINAL_FILAMENT_DIA  1.75  //Enter the diameter (in mm) of the filament generally used (3.0 mm or 1.75 mm). Used by the volumetric extrusion.
 
-// Calibration status of the machine, to be stored into the EEPROM,
-// (unsigned char*)EEPROM_CALIBRATION_STATUS
-enum CalibrationStatus
-{
-	// Freshly assembled, needs to peform a self-test and the XYZ calibration.
-	CALIBRATION_STATUS_ASSEMBLED = 255,
-
-	// For the wizard: self test has been performed, now the XYZ calibration is needed.
-	CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
-
-	// For the wizard: factory assembled, needs to run Z calibration.
-	CALIBRATION_STATUS_Z_CALIBRATION = 240,
-
-	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
-	CALIBRATION_STATUS_LIVE_ADJUST = 230,
-
-    // Calibrated, ready to print.
-    CALIBRATION_STATUS_CALIBRATED = 1,
-
-    // Legacy: resetted by issuing a G86 G-code.
-    // This value can only be expected after an upgrade from the initial MK2 firmware releases.
-    // Currently the G86 sets the calibration status to 
-    CALIBRATION_STATUS_UNKNOWN = 0,
-};
-
 // Try to maintain a minimum distance from the bed even when Z is
 // unknown when doing the following operations
-#define MIN_Z_FOR_LOAD    50
-#define MIN_Z_FOR_UNLOAD  20
-#define MIN_Z_FOR_PREHEAT 10
+#define MIN_Z_FOR_LOAD    50 // lcd filament loading or autoload
+#define MIN_Z_FOR_UNLOAD  50 // lcd filament unloading
+#define MIN_Z_FOR_SWAP    27 // filament change (including M600)
+#define MIN_Z_FOR_PREHEAT 10 // lcd preheat
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"
-
 
 #endif //__CONFIGURATION_H

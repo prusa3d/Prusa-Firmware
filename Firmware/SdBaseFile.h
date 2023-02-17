@@ -281,8 +281,10 @@ class SdBaseFile {
   static void printFatDate(uint16_t fatDate);
   static void printFatTime( uint16_t fatTime);
   bool printName();
+protected:  
   int16_t read();
   int16_t read(void* buf, uint16_t nbyte);
+public:
   int8_t readDir(dir_t* dir, char* longFilename);
   static bool remove(SdBaseFile* dirFile, const char* path);
   bool remove();
@@ -321,7 +323,7 @@ class SdBaseFile {
   SdVolume* volume() const {return vol_;}
   int16_t write(const void* buf, uint16_t nbyte);
 //------------------------------------------------------------------------------
- private:
+ protected:
   // allow SdFat to set cwd_
   friend class SdFat;
   // global pointer to cwd dir

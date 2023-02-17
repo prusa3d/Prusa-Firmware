@@ -10,16 +10,6 @@
 #endif
 #define BED_CHECK_INTERVAL 5000 //ms between checks in bang-bang control
 
-#ifdef PIDTEMP
-  // this adds an experimental additional term to the heating power, proportional to the extrusion speed.
-  // if Kc is chosen well, the additional required power due to increased melting should be compensated.
-  #define PID_ADD_EXTRUSION_RATE
-  #ifdef PID_ADD_EXTRUSION_RATE
-    #define  DEFAULT_Kc (1) //heating power=Kc*(e_speed)
-  #endif
-#endif
-
-
 //automatic temperature: The hot end target temperature is calculated by all the buffered lines of gcode.
 //The maximum buffered steps/sec of the extruder motor are called "se".
 //You enter the autotemp mode by a M109 S<mintemp> B<maxtemp> F<factor>
@@ -62,8 +52,19 @@
 // before setting a PWM value. (Does not work with software PWM for fan on Sanguinololu)
 #define FAN_KICKSTART_TIME 800
 
-
-
+/**
+ * Auto-report all at once with M155 S<seconds> C[bitmask] with single timer
+ * 
+ * bit 0 = Auto-report temperatures
+ * bit 1 = Auto-report fans
+ * bit 2 = Auto-report position
+ * bit 3 = free
+ * bit 4 = free
+ * bit 5 = free
+ * bit 6 = free
+ * bit 7 = free
+*/
+#define AUTO_REPORT
 
 //===========================================================================
 //=============================Mechanical Settings===========================
@@ -152,7 +153,6 @@
 #define Z_HOME_RETRACT_MM 2
 //#define QUICK_HOME  //if this is defined, if both x and y are to be homed, a diagonal move will be performed initially.
 
-#define AXIS_RELATIVE_MODES {0, 0, 0, 0}
 #define MAX_STEP_FREQUENCY 40000 // Max step frequency for Ultimaker (5000 pps / half step). Toshiba steppers are 4x slower, but Prusa3D does not use those.
 //By default pololu step drivers require an active high signal. However, some high power drivers require an active low signal as step.
 #define INVERT_X_STEP_PIN 0
@@ -221,34 +221,28 @@
 * SD sorting uses static allocation (as set by SDSORT_LIMIT), allowing the
 * compiler to calculate the worst-case usage and throw an error if the SRAM
 * limit is exceeded.
-*
-*  - SDSORT_USES_RAM provides faster sorting via a static directory buffer.
-*  - SDSORT_USES_STACK does the same, but uses a local stack-based buffer.
-*  - SDSORT_CACHE_NAMES will retain the sorted file listing in RAM. (Expensive!)
-*  - SDSORT_DYNAMIC_RAM only uses RAM when the SD menu is visible. (Use with caution!)
 */
 	#define SDCARD_SORT_ALPHA //Alphabetical sorting of SD files menu
 	
 	// SD Card Sorting options
-	// In current firmware Prusa Firmware version,
-	// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to 0.
 	#ifdef SDCARD_SORT_ALPHA
 	  #define SD_SORT_TIME 0
 	  #define SD_SORT_ALPHA 1
 	  #define SD_SORT_NONE 2
+	  #define INSERTSORT
+	  // #define SORTING_DUMP
+	  // #define SORTING_SPEEDTEST
 	
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
 	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
-	  #define SDSORT_GCODE       0  // Allow turning sorting on/off with LCD and M34 g-code.
-	  #define SDSORT_USES_RAM    0  // Pre-allocate a static array for faster pre-sorting.
-	  #define SDSORT_USES_STACK  0  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
-	  #define SDSORT_CACHE_NAMES 0  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
-	  #define SDSORT_DYNAMIC_RAM 0  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
 	#endif
 	
 	#if defined(SDCARD_SORT_ALPHA)
-	  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
+	  #define HAS_FOLDER_SORTING (FOLDER_SORTING)
 	#endif
+
+// Enabe this option to get a pretty message whenever the endstop gets hit (as in the position at which the endstop got triggered)
+//#define VERBOSE_CHECK_HIT_ENDSTOPS
 
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.
 //#define ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
@@ -286,16 +280,17 @@
 #define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
-  #define LIN_ADVANCE_K 0  // Unit: mm compression per 1mm/s extruder speed
-  //#define LA_NOCOMPAT    // Disable Linear Advance 1.0 compatibility
-  //#define LA_LIVE_K      // Allow adjusting K in the Tune menu
-  //#define LA_DEBUG       // If enabled, this will generate debug information output over USB.
-  //#define LA_DEBUG_LOGIC // @wavexx: setup logic channels for isr debugging
+  #define LA_K_DEF    0        // Default K factor (Unit: mm compression per 1mm/s extruder speed)
+  #define LA_K_MAX    10       // Maximum acceptable K factor (exclusive, see notes in planner.cpp:plan_buffer_line)
+  #define LA_LA10_MIN LA_K_MAX // Lin. Advance 1.0 threshold value (inclusive)
+  //#define LA_FLOWADJ         // Adjust LA along with flow/M221 for uniform width
+  //#define LA_NOCOMPAT        // Disable Linear Advance 1.0 compatibility
+  //#define LA_LIVE_K          // Allow adjusting K in the Tune menu
+  //#define LA_DEBUG           // If enabled, this will generate debug information output over USB.
+  //#define LA_DEBUG_LOGIC     // @wavexx: setup logic channels for isr debugging
 #endif
 
-// Arc interpretation settings:
-#define MM_PER_ARC_SEGMENT 1
-#define N_ARC_CORRECTION 25
+// Arc interpretation settings : Moved to the variant files.
 
 const unsigned int dropsegments=5; //everything with less than this number of steps will be ignored as move and joined with the next movement
 
@@ -325,6 +320,11 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 // Control heater 0 and heater 1 in parallel.
 //#define HEATERS_PARALLEL
 
+//LCD status clock interval timer to switch between
+// remaining print time
+// and time to change/pause/interaction
+#define CLOCK_INTERVAL_TIME 5
+
 //===========================================================================
 //=============================Buffers           ============================
 //===========================================================================
@@ -345,6 +345,62 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 // 1st byte: the command source (CMDBUFFER_CURRENT_TYPE_USB, CMDBUFFER_CURRENT_TYPE_SDCARD, CMDBUFFER_CURRENT_TYPE_UI or CMDBUFFER_CURRENT_TYPE_CHAINED)
 // 2nd and 3rd byte (LSB first) contains a 16bit length of a command including its preceding comments.
 #define CMDHDRSIZE 3
+
+/**
+ * Advanced Pause for Filament Change
+ *  - Adds the G-code M600 Filament Change to initiate a filament change.
+ *  - This feature is required for the default FILAMENT_RUNOUT_SCRIPT.
+ *
+ * Requirements:
+ *  - For Filament Change parking enable and configure NOZZLE_PARK_FEATURE.
+ *  - For user interaction enable an LCD display, HOST_PROMPT_SUPPORT, or EMERGENCY_PARSER.
+ *
+ * Enable PARK_HEAD_ON_PAUSE to add the G-code M125 Pause and Park.
+ */
+
+#define PAUSE_PARK_RETRACT_FEEDRATE         60  // (mm/s) Initial retract feedrate.
+#define PAUSE_PARK_RETRACT_LENGTH            2  // (mm) Initial retract.
+                                                // This short retract is done immediately, before parking the nozzle.
+#define FILAMENT_CHANGE_UNLOAD_FEEDRATE     10  // (mm/s) Unload filament feedrate. This can be pretty fast.
+#define FILAMENT_CHANGE_UNLOAD_ACCEL        25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
+#define FILAMENT_CHANGE_UNLOAD_LENGTH      100  // (mm) The length of filament for a complete unload.
+                                                //   For Bowden, the full length of the tube and nozzle.
+                                                //   For direct drive, the full length of the nozzle.
+                                                //   Set to 0 for manual unloading.
+#define FILAMENT_CHANGE_SLOW_LOAD_FEEDRATE   6  // (mm/s) Slow move when starting load.
+#define FILAMENT_CHANGE_SLOW_LOAD_LENGTH     0  // (mm) Slow length, to allow time to insert material.
+                                                // 0 to disable start loading and skip to fast load only
+#define FILAMENT_CHANGE_FAST_LOAD_FEEDRATE   6  // (mm/s) Load filament feedrate. This can be pretty fast.
+#define FILAMENT_CHANGE_FAST_LOAD_ACCEL     25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
+#define FILAMENT_CHANGE_FAST_LOAD_LENGTH     0  // (mm) Load length of filament, from extruder gear to nozzle.
+                                                //   For Bowden, the full length of the tube and nozzle.
+                                                //   For direct drive, the full length of the nozzle.
+//#define ADVANCED_PAUSE_CONTINUOUS_PURGE       // Purge continuously up to the purge length until interrupted.
+#define ADVANCED_PAUSE_PURGE_FEEDRATE        3  // (mm/s) Extrude feedrate (after loading). Should be slower than load feedrate.
+#define ADVANCED_PAUSE_PURGE_LENGTH         50  // (mm) Length to extrude after loading.
+                                                //   Set to 0 for manual extrusion.
+                                                //   Filament can be extruded repeatedly from the Filament Change menu
+                                                //   until extrusion is consistent, and to purge old filament.
+#define ADVANCED_PAUSE_RESUME_PRIME          0  // (mm) Extra distance to prime nozzle after returning from park.
+//#define ADVANCED_PAUSE_FANS_PAUSE             // Turn off print-cooling fans while the machine is paused.
+
+                                                // Filament Unload does a Retract, Delay, and Purge first:
+#define FILAMENT_UNLOAD_PURGE_RETRACT       13  // (mm) Unload initial retract length.
+#define FILAMENT_UNLOAD_PURGE_DELAY       5000  // (ms) Delay for the filament to cool after retract.
+#define FILAMENT_UNLOAD_PURGE_LENGTH         8  // (mm) An unretract is done, then this length is purged.
+#define FILAMENT_UNLOAD_PURGE_FEEDRATE      25  // (mm/s) feedrate to purge before unload
+
+#define PAUSE_PARK_NOZZLE_TIMEOUT           45  // (seconds) Time limit before the nozzle is turned off for safety.
+#define FILAMENT_CHANGE_ALERT_BEEPS         10  // Number of alert beeps to play when a response is needed.
+#define PAUSE_PARK_NO_STEPPER_TIMEOUT           // Enable for XYZ steppers to stay powered on during filament change.
+//#define FILAMENT_CHANGE_RESUME_ON_INSERT      // Automatically continue / load filament when runout sensor is triggered again.
+//#define PAUSE_REHEAT_FAST_RESUME              // Reduce number of waits by not prompting again post-timeout before continuing.
+
+//#define PARK_HEAD_ON_PAUSE                    // Park the nozzle during pause and filament change.
+//#define HOME_BEFORE_FILAMENT_CHANGE           // If needed, home before parking for filament change
+
+//#define FILAMENT_LOAD_UNLOAD_GCODES           // Add M701/M702 Load/Unload G-codes, plus Load/Unload in the LCD Prepare menu.
+//#define FILAMENT_UNLOAD_ALL_EXTRUDERS         // Allow M702 to unload all extruders above a minimum target temp (as set by M302)
 
 
 // Firmware based and LCD controlled retract
@@ -373,6 +429,17 @@ const unsigned int dropsegments=5; //everything with less than this number of st
     #error EXTRUDER_RUNOUT_PREVENT currently incompatible with FILAMENTCHANGE
   #endif
 #endif
+
+/**
+ * Include capabilities in M115 output
+ */
+#define EXTENDED_CAPABILITIES_REPORT
+
+/**
+ * Enable M120/M121 G-code commands
+ * 
+ */
+//#define M120_M121_ENABLED  //Be careful enabling and using these G-code commands.
 
 //===========================================================================
 //=============================  Define Defines  ============================
@@ -434,6 +501,10 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 #if TEMP_SENSOR_BED == 0
   #undef BED_MINTEMP
   #undef BED_MAXTEMP
+#endif
+#if TEMP_SENSOR_AMBIENT == 0
+  #undef AMBIENT_MINTEMP
+  #undef AMBIENT_MAXTEMP
 #endif
 
 

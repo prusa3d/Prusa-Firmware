@@ -1,10 +1,10 @@
 //backlight.cpp
 
 #include "backlight.h"
+#include "macros.h"
 #include <avr/eeprom.h>
 #include <Arduino.h>
 #include "eeprom.h"
-#include "Marlin.h"
 #include "pins.h"
 #include "fastio.h"
 #include "Timer.h"
@@ -91,30 +91,22 @@ void backlight_init()
     backlightSupport = !READ(LCD_BL_PIN);
     if (!backlightSupport) return;
 
-//initialize backlight
-    backlightMode = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_MODE);
-    if (backlightMode == 0xFF) //set default values
-    {
-        backlightMode = BACKLIGHT_MODE_AUTO;
-        backlightLevel_HIGH = 130;
-        backlightLevel_LOW = 50;
-        backlightTimer_period = 10; //in seconds
-        backlight_save();
-    }
-    backlightLevel_HIGH = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH);
-    backlightLevel_LOW = eeprom_read_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW);
-    backlightTimer_period = eeprom_read_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT);
-    
+    //initialize backlight
+    backlightMode = eeprom_init_default_byte((uint8_t *)EEPROM_BACKLIGHT_MODE, BACKLIGHT_MODE_AUTO);
+    backlightLevel_HIGH = eeprom_init_default_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, 130);
+    backlightLevel_LOW = eeprom_init_default_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW, 50);
+    backlightTimer_period = eeprom_init_default_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT, 10); // in seconds
+
     SET_OUTPUT(LCD_BL_PIN);
     backlightTimer_reset();
 }
 
 #else //LCD_BL_PIN
 
-void force_bl_on(__attribute__((unused)) bool section_start) {}
+void force_bl_on(bool) {}
 void backlight_update() {}
 void backlight_init() {}
 void backlight_save() {}
-void backlight_wake(__attribute__((unused)) const uint8_t flashNo) {}
+void backlight_wake(const uint8_t) {}
 
 #endif //LCD_BL_PIN

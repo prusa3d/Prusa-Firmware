@@ -48,24 +48,16 @@ void SdFatUtil::set_stack_guard()
 {	
 	uint32_t *stack_guard;
 
-	stack_guard = (uint32_t*)&__bss_end;
+	stack_guard = (uint32_t*)(&__bss_end + STACK_GUARD_MARGIN);
     *stack_guard = STACK_GUARD_TEST_VALUE;
 }
 
 bool SdFatUtil::test_stack_integrity()
 {
-	uint32_t* stack_guard = (uint32_t*)&__bss_end;
+	uint32_t* stack_guard = (uint32_t*)(&__bss_end + STACK_GUARD_MARGIN);
 	return (*stack_guard == STACK_GUARD_TEST_VALUE);
 }
 
-uint32_t SdFatUtil::get_stack_guard_test_value()
-{
-	uint32_t* stack_guard;
-	uint32_t output;
-	stack_guard = (uint32_t*)&__bss_end;
-	output = *stack_guard;
-	return(output);
-}
 //------------------------------------------------------------------------------
 /** %Print a string in flash memory.
  *

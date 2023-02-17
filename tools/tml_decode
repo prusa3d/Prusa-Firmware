@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+import argparse
+import re
+import struct
+
+TM_INTV = 270      # internal temperature regulation interval (ms)
+FAN_MAX_LAG = 2500 # maximum fan lag for reporting (ms)
+
+
+def parse_therm_dump(path):
+    # header
+    yield ['sample', 'ms', 'int', 'pwm', 't_nozzle', 't_ambient', 'fan']
+
+    cnt = 0
+    fan = float('NAN')
+    fan_lag = 0
+
+    for line in open(path):
+        # opportunistically parse M155 fan values
+        m = re.search(r'\bE0:\d+ RPM PRN1:\d+ RPM E0@:\d+ \bPRN1@:(\d+)$', line)
+        if m is not None:
+            fan = int(m.group(1))
+            fan_lag = 0
+        elif fan_lag > int(FAN_MAX_LAG/TM_INTV):
+            fan = float('NAN')
+
+        # search for the D70 TML output signature
+        m = re.search(r'\bTML (\d+) (\d+) ([0-9a-f]+) ([0-9a-f]+) ([0-9a-f]+)$', line)
+        if m is None:
+            continue
+
+        # decode fields
+        skip = int(m.group(1))
+        intv = int(m.group(2)) + TM_INTV
+        pwm = int(m.group(3), 16)
+        t = struct.unpack('f', int(m.group(4), 16).to_bytes(4, 'little'))[0]
+        a = struct.unpack('f', int(m.group(5), 16).to_bytes(4, 'little'))[0]
+
+        # output values
+        ms = cnt * TM_INTV
+        yield [cnt, ms, intv, pwm, t, a, fan]
+        smp = skip + 1
+        cnt += smp
+        fan_lag += smp
+
+
+def plot_therm_dump(data, output, title):
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    plt.gcf().set_size_inches(20, 5)
+    ts = np.array(data['ms']) / 1000
+    colors = iter([x['color'] for x in plt.rcParams['axes.prop_cycle']])
+
+    ax1 = plt.gca()
+    ax1.plot(ts, data['t_nozzle'], c=next(colors), label='Nozzle (C)')
+    ax1.axhline(data['t_ambient'][0], ls='-.', c='k', label='Ambient baseline (C)')
+    ax1.plot(ts, data['t_ambient'], c=next(colors), label='Ambient (C)')
+    ax1.set_ylabel('Temperature (C)')
+    ax1.set_xlabel('Time (s)')
+    ax1.legend(loc='upper left')
+
+    ax2 = plt.twinx()
+    ax2.plot(ts, np.array(data['fan']) / 255 * 100, c=next(colors), label='Fan (%)')
+    ax2.plot(ts, np.array(data['pwm']) / 127 * 100, c=next(colors), label='Heater (%)')
+    ax2.set_ylim(-1, 101)
+    ax2.set_ylabel('Power (%)')
+    ax2.legend(loc='upper right')
+
+    plt.title(title)
+    plt.tight_layout()
+    plt.savefig(output, dpi=300)
+
+
+def main():
+    ap = argparse.ArgumentParser(description='Decode (or plot) the TML trace contained in the serial LOG',
+                                 epilog="""
+        The TML trace needs to be enabled by issuing "M155 S1 C3" and "D70 S1" to the printer.
+        Output the decoded trace to standard output by default. If --plot is provided, produce a
+        graph into IMG directly instead.
+    """)
+    ap.add_argument('log', metavar='LOG', help='Serial log file containing D70 debugging traces')
+    ap.add_argument('--plot', '-p', metavar='IMG', help='Plot trace into IMG (eg: output.png)')
+    args = ap.parse_args()
+
+    if args.plot is None:
+        # just output the streaming trace
+        for line in parse_therm_dump(args.log):
+            print('\t'.join(map(str, line)))
+    else:
+        # convert to dict and plot
+        it = parse_therm_dump(args.log)
+        data = dict(zip(next(it), zip(*it)))
+        plot_therm_dump(data, args.plot, args.log)
+
+
+if __name__ == '__main__':
+    exit(main())

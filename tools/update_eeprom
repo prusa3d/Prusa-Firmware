@@ -1,0 +1,54 @@
+#!/bin/sh
+prg=$(basename "$0")
+
+# parse arguments
+while getopts f:h optname
+do
+  case $optname in
+  f)    port="$OPTARG" ;;
+  *)    help=1 ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+
+old="$1"
+new="$2"
+
+if [ -z "$old" -o "$help" = "-h" -o "$#" -gt 2 ]
+then
+  echo "usage: $0 [-f <port>] <old dump> [<new dump>]" >&2
+  echo "Convert <old dump> to instructions to update instructions." >&2
+  echo "With <new dump>, generate instructions to update EEPROM changes only." >&2
+  echo "Optionally write such changes directly if <port> if given." >&2
+  exit 1
+fi
+
+set -e
+instr=$(mktemp)
+trap "rm -f \"$instr\"" EXIT
+
+convert()
+{
+    sed -ne 's/^\([0-9a-f]\{4,6\}\) \([0-9a-f ]*\)$/D3 Ax\1 C16 X\2/p' "$@"
+}
+
+if [ -z "$new" ]; then
+    # convert the instructions to updates
+    convert "$old" > "$instr"
+else
+    tmp1=$(mktemp)
+    tmp2=$(mktemp)
+    trap "rm -f \"$tmp1\" \"$tmp2\"" EXIT
+
+    convert "$old" > "$tmp1"
+    convert "$new" > "$tmp2"
+
+    comm -13 "$tmp1" "$tmp2" > "$instr"
+fi
+
+# write the instructions if requested
+if [ -z "$port" ]; then
+    cat "$instr"
+else
+    printcore -v "$port" "$instr"
+fi

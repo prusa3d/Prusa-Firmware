@@ -11,15 +11,14 @@
 
 #define PINDA_THERMISTOR
 
-#define SWI2C_SDA      20 //SDA on P3
-#define SWI2C_SCL      21 //SCL on P3
-
 #ifdef MICROMETER_LOGGING
 #define D_DATACLOCK		24	//Y_MAX (green)
 #define D_DATA			30	//X_MAX (blue)
 #define D_REQUIRE		23	//Z_MAX (white)
 #endif //MICROMETER_LOGGING
 
+// This should be long enough to safely exit the bootloader when it uses the default timeout (~1-2s)
+#define WATCHDOG_SOFT_RESET_VALUE WDTO_2S
 
 
 #define X_STEP_PIN             37
@@ -63,17 +62,14 @@
 #define TEMP_PINDA_PIN          1 //A1
 
 
+#define TEMP_TIM 3
+
 
 #define E0_STEP_PIN            34
 #define E0_DIR_PIN             43
 #define E0_ENABLE_PIN          26
 #define E0_MS1_PIN             65
 #define E0_MS2_PIN             66
-
-#ifdef SNMM 
-  #define E_MUX0_PIN 17
-  #define E_MUX1_PIN 16
-#endif
 
 
 #define MOTOR_CURRENT_PWM_XY_PIN 46
@@ -87,7 +83,7 @@
 #define PS_ON_PIN           -1
 #define KILL_PIN            -1  // 80 with Smart Controller LCD
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
-#define TACH_0				30	// noctua extruder fan
+#define TACH_0				30	// noctua hotend fan
 
 
 //#define KILL_PIN            32

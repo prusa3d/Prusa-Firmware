@@ -20,10 +20,12 @@ public:
     Timer();
     void start();
     void stop(){m_isRunning = false;}
-    bool running(){return m_isRunning;}
-    bool expired(T msPeriod);
+    bool running()const {return m_isRunning;}
+    bool expired(T msPeriod); // returns true only once after expiration, then stops running
+    T elapsed(); // returns the time in milliseconds since the timer was started or 0 otherwise
+    bool expired_cont(T msPeriod); // return true when continuosly when expired / not running
 protected:
-    T started(){return m_started;}
+    T started()const {return m_started;}
 private:
     bool m_isRunning;
     T m_started;

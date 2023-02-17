@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "io_atmega2560.h"
 
 // All this is about silencing the heat bed, as it behaves like a loudspeaker.
 // Basically, we want the PWM heating switched at 30Hz (or so) which is a well ballanced
@@ -45,6 +44,12 @@
 // If there are any change requirements in the future, the signal must be checked with an osciloscope again,
 // ad-hoc changes may completely screw things up!
 
+// 2020-01-29 update: we are introducing a new option to the automaton that will allow us to force the output state
+// to either full ON or OFF. This is so that interference during the MBL probing is minimal.
+// To accomplish this goal we use bedPWMDisabled. It is only supposed to be used for brief periods of time as to
+// not make the bed temperature too unstable. Also, careful consideration should be used when using this
+// option as leaving this enabled will also keep the bed output in the state it stopped in.
+
 ///! Definition off finite automaton states
 enum class States : uint8_t {
 	ZERO_START = 0,///< entry point of the automaton - reads the soft_pwm_bed value for the next whole PWM cycle
@@ -53,13 +58,14 @@ enum class States : uint8_t {
 	RISE,          ///< 16 fast PWM cycles with increasing duty up to steady ON
 	RISE_TO_ONE,   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 	ONE,           ///< steady 1 (ON), no change for the whole period 
-	ONE_TO_FALL,   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 	FALL,          ///< 16 fast PWM cycles with decreasing duty down to steady OFF
 	FALL_TO_ZERO   ///< metastate allowing the timer change its state atomically without artefacts on the output pin
 };
 
 ///! Inner states of the finite automaton
 static States state = States::ZERO_START;
+
+bool bedPWMDisabled = 0;
 
 ///! Fast PWM counter is used in the RISE and FALL states (62.5kHz)
 static uint8_t slowCounter = 0;
@@ -93,6 +99,7 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
 {
 	switch(state){
 	case States::ZERO_START:
+		if (bedPWMDisabled) return; // stay in the OFF state and do not change the output pin
 		pwm = soft_pwm_bed << 1;// expecting soft_pwm_bed to be 7bit!
 		if( pwm != 0 ){
 			state = States::ZERO;     // do nothing, let it tick once again after the 30Hz period
@@ -136,6 +143,7 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
 		break;
 	case States::ONE:             // state ONE - we'll either stay in ONE or change to FALL
 		OCR0B = 255;
+		if (bedPWMDisabled) return; // stay in the ON state and do not change the output pin
 		slowCounter += slowInc;   // this does software timer_clk/256 or less
 		if( slowCounter < pwm ){
 			return;
@@ -145,12 +153,6 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
 			return;           // want full duty for the next ONE cycle again - so keep on heating and just wait for the next timer ovf
 		}
 		// otherwise moving towards FALL
-		// @@TODO it looks like ONE_TO_FALL isn't necessary, there are no artefacts at all
-		state = States::ONE;//_TO_FALL;
-//		TCCR0B = (1 << CS00);      // change prescaler to 1, i.e. 62.5kHz
-//		break;
-//	case States::ONE_TO_FALL:
-//		OCR0B = 255;              // zero duty
 		state=States::FALL;
 		fastCounter = fastMax - 1;// we'll do 16-1 cycles of RISE
 		TCNT0 = 255;              // force overflow on the next clock cycle

@@ -1,0 +1,10 @@
+{
+    "cmake.configureOnOpen": true,
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    "cmake.cmakePath": "${workspaceFolder}/.dependencies/cmake-3.22.5/bin/cmake",
+    "cmake.generator": "Ninja",
+    "files.insertFinalNewline": true,
+    "files.associations": {
+        "xlocale": "cpp"
+    }
+}

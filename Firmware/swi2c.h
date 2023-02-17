@@ -13,6 +13,9 @@ extern "C" {
 //initialize
 extern void swi2c_init(void);
 
+//deinit pins
+extern void swi2c_disable(void);
+
 //check device address acknowledge
 extern uint8_t swi2c_check(uint8_t dev_addr);
 

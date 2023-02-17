@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+import argparse
+import sys
+
+from lib.dump import decode_dump
+
+
+def main():
+    # parse the arguments
+    ap = argparse.ArgumentParser(description="""
+        Parse and decode a memory dump obtained from the D2/D21/D23 g-code
+        into readable metadata and binary. The output binary is padded and
+        extended to fit the original address range.
+    """)
+    ap.add_argument('-i', dest='info', action='store_true',
+                    help='display crash info only')
+    ap.add_argument('dump')
+    ap.add_argument('output', nargs='?')
+    args = ap.parse_args()
+
+    # decode the dump data
+    dump = decode_dump(args.dump)
+    if dump is None:
+        return 1
+
+    # output descriptors
+    if args.info:
+        o_fd = None
+        o_md = sys.stdout
+    elif args.output is None:
+        o_fd = sys.stdout.buffer
+        o_md = sys.stderr
+    else:
+        o_fd = open(args.output, 'wb')
+        o_md = sys.stdout
+
+    # output binary
+    if o_fd:
+        o_fd.write(dump.data)
+        o_fd.close()
+
+    # metadata
+    print('   dump type: {typ}\n'
+          'crash reason: {reason}\n'
+          '   registers: {regs}\n'
+          '          PC: {pc}\n'
+          '          SP: {sp}\n'
+          '      ranges: {ranges}'.format(
+              typ=dump.typ,
+              reason=dump.reason.name if dump.reason is not None else 'N/A',
+              regs=dump.regs,
+              pc='{:#x}'.format(dump.pc) if dump.pc is not None else 'N/A',
+              sp='{:#x}'.format(dump.sp) if dump.sp is not None else 'N/A',
+              ranges=str(dump.ranges)),
+          file=o_md)
+
+
+if __name__ == '__main__':
+    exit(main())

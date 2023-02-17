@@ -29,26 +29,26 @@ extern uint8_t menu_data[MENU_DATA_SIZE];
 
 extern uint8_t menu_depth;
 
-//! definition of serious errors possibly blocking the main menu
+//! definition of reasons blocking the main menu
 //! Use them as bit mask, so that the code may set various errors at the same time
 enum ESeriousErrors {
-	SERIOUS_ERR_NONE            = 0,
-	SERIOUS_ERR_MINTEMP_HEATER  = 0x01,
-	SERIOUS_ERR_MINTEMP_BED     = 0x02
+	MENU_BLOCK_NONE                = 0,
+	MENU_BLOCK_THERMAL_ERROR       = 0x01,
+#ifdef TEMP_MODEL
+	MENU_BLOCK_TEMP_MODEL_AUTOTUNE = 0x02,
+#endif
 }; // and possibly others in the future.
 
-//! this is a flag for disabling entering the main menu. If this is set
-//! to anything != 0, the only the main status screen will be shown on the
-//! LCD and the user will be prevented from entering the menu.
-//! Now used only to block doing anything with the printer when there is
-//! the infamous MINTEMP error (SERIOUS_ERR_MINTEMP).
-extern uint8_t menu_block_entering_on_serious_errors;
+//! this is a flag for disabling entering the main menu and longpress. If this is set to anything !=
+//! 0, the only the main status screen will be shown on the LCD and the user will be prevented from
+//! entering the menu.
+extern uint8_t menu_block_mask;
 
-//! a pair of macros for manipulating the serious errors
+//! a pair of macros for manipulating menu entry
 //! a c++ class would have been better
-#define menu_set_serious_error(x) menu_block_entering_on_serious_errors |= x;
-#define menu_unset_serious_error(x) menu_block_entering_on_serious_errors &= ~x;
-#define menu_is_serious_error(x) (menu_block_entering_on_serious_errors & x) != 0
+#define menu_set_block(x) menu_block_mask |= x;
+#define menu_unset_block(x) menu_block_mask &= ~x;
+#define menu_is_blocked(x) (menu_block_mask & x) != 0
 
 extern uint8_t menu_line;
 extern uint8_t menu_item;
@@ -56,16 +56,13 @@ extern uint8_t menu_row;
 
 //scroll offset in the current menu
 extern uint8_t menu_top;
-
 extern uint8_t menu_clicked;
-
-extern uint8_t menu_entering;
 extern uint8_t menu_leaving;
 
 //function pointer to the currently active menu
 extern menu_func_t menu_menu;
 
-
+extern void menu_data_reset(void);
 
 extern void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state);
 
@@ -112,7 +109,8 @@ extern uint8_t menu_item_function_E(const Sheet &sheet, menu_func_t func);
 extern uint8_t menu_item_back_P(const char* str);
 
 // leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
-#define ON_MENU_LEAVE(func) do { if (((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving){ func } } while (0)
+#define ON_MENU_LEAVE(func) do { if (menu_item_leave()){ func } } while (0)
+extern bool menu_item_leave();
 
 #define MENU_ITEM_FUNCTION_P(str, func) do { if (menu_item_function_P(str, func)) return; } while (0)
 extern uint8_t menu_item_function_P(const char* str, menu_func_t func);
@@ -150,5 +148,8 @@ extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 template <typename T>
 extern uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val);
 
+extern void menu_progressbar_init(uint16_t total, const char* title);
+extern void menu_progressbar_update(uint16_t newVal);
+extern void menu_progressbar_finish(void);
 
 #endif //_MENU_H

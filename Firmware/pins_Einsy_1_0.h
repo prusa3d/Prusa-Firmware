@@ -15,14 +15,13 @@
 #define AMBIENT_THERMISTOR
 #define PINDA_THERMISTOR
 
-#define W25X20CL                 // external 256kB flash
+#define PRUSA_SN_SUPPORT //enables the "PRUSA SN" command and 32u2 enhanced firmware support
+
+#define XFLASH                 // external 256kB flash
 #define BOOTAPP                  // bootloader support
+#define WATCHDOG_SOFT_RESET_VALUE WDTO_15MS
 
-
-#define SWI2C_SDA      20 //SDA on P3
-#define SWI2C_SCL      21 //SCL on P3
-
-
+#define XFLASH_PIN_CS          32
 
 #define X_TMC2130_CS           41
 #define X_TMC2130_DIAG         64 // !!! changed from 40 (EINY03)
@@ -80,6 +79,9 @@
 #define VOLT_IR_PIN          8 //A8
 
 
+#define TEMP_TIM 5
+
+
 #define E0_TMC2130_CS       66
 #define E0_TMC2130_DIAG     65
 #define E0_STEP_PIN         34
@@ -120,6 +122,8 @@
 #define TACH_1                 80 
 
 #define IR_SENSOR_PIN 62 //idler sensor @PK0 (digital pin 62/A8)
+
+#define MMU_RST_PIN 76
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.

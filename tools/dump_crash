@@ -1,0 +1,17 @@
+#!/bin/sh
+prg=$(basename "$0")
+port="$1"
+if [ -z "$port" -o "$port" = "-h" ]
+then
+  echo "usage: $0 <port>" >&2
+  echo "Connect to <port> and dump the content of last crash using D21 to stdout" >&2
+  exit 1
+fi
+
+set -e
+tmp=$(mktemp)
+trap "rm -f \"$tmp\"" EXIT
+
+echo D21 > "$tmp"
+printcore -v "$port" "$tmp" 2>&1 | \
+    sed -ne '/^RECV: D21 /,/RECV: ok$/s/^RECV: //p'

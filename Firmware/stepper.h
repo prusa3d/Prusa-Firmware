@@ -69,13 +69,7 @@ void invert_z_endstop(bool endstop_invert);
 
 void checkStepperErrors(); //Print errors detected by the stepper
 
-void finishAndDisableSteppers();
-
 extern block_t *current_block;  // A pointer to the block currently being traced
-extern bool x_min_endstop;
-extern bool x_max_endstop;
-extern bool y_min_endstop;
-extern bool y_max_endstop;
 extern volatile long count_position[NUM_AXIS];
 
 void quickStop();
@@ -92,7 +86,5 @@ void microstep_readings();
 #ifdef BABYSTEPPING
   void babystep(const uint8_t axis,const bool direction); // perform a short step with a single stepper motor, outside of any convention
 #endif
-     
-
 
 #endif

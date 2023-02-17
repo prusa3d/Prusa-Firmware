@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+import argparse
+import struct
+import sys
+
+from lib.dump import DUMP_MAGIC, DUMP_OFFSET, DUMP_SIZE
+
+
+def error(msg):
+    print(msg, file=sys.stderr)
+
+def main():
+    # parse the arguments
+    ap = argparse.ArgumentParser(description="""
+        Extract a crash dump from an external flash image and output
+        the same format produced by the D21 g-code.
+    """)
+    ap.add_argument('image')
+    args = ap.parse_args()
+
+    # read the image
+    off = DUMP_OFFSET
+    with open(args.image, 'rb') as fd:
+        fd.seek(off)
+        data = fd.read(DUMP_SIZE)
+    if len(data) != DUMP_SIZE:
+        error('incorrect image size')
+        return 1
+
+    # check for magic header
+    magic, = struct.unpack('<L', data[:4])
+    if magic != DUMP_MAGIC:
+        error('invalid dump magic or no dump')
+        return 1
+
+    # output D21 dump
+    print('D21 - read crash dump', end='')
+    for i in range(len(data)):
+        if i % 16 == 0:
+            print('\n{:06x} '.format(off + i), end='')
+        print(' {:02x}'.format(data[i]), end='')
+    print('\nok')
+
+
+if __name__ == '__main__':
+    exit(main())
