@@ -316,7 +316,7 @@ void FullScreenMsgCut(uint8_t slot){
 }
 
 void FullScreenMsgEject(uint8_t slot){
-    FullScreenMsg(_T(MSG_EJECT_FILAMENT), slot);
+    FullScreenMsg(_T(MSG_EJECT_FROM_MMU), slot);
 }
 
 void FullScreenMsgTest(uint8_t slot){
