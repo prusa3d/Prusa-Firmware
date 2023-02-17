@@ -3957,6 +3957,7 @@ extern uint8_t st_backlash_y;
 //!@n M552 - Set IP address
 //!@n M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 //!@n M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+//!@n M850 - Set sheet data S[id] Z[offset] L[label] B[bed_temp] P[PINDA_TEMP]
 //!@n M860 - Wait for PINDA thermistor to reach target temperature.
 //!@n M861 - Set / Read PINDA temperature compensation offsets
 //!@n M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
@@ -7717,10 +7718,123 @@ Sigma_Exit:
     /*!
     ### M603 - Stop print <a href="https://reprap.org/wiki/G-code#M603:_Stop_print">M603: Stop print</a>
     */
+
     case 603: {
         print_stop();
     }
     break;
+  
+  case 850: {
+	//! ### M850 - set sheet parameters
+	//! //!@n M850 - Set sheet data S[id] Z[offset] L[label] B[bed_temp] P[PINDA_TEMP]
+	bool bHasZ = false, bHasLabel = false, bHasBed = false, bHasPinda = false;
+	uint8_t iSel = 0;
+	int16_t zraw = 0;
+	float z_val = 0;
+	char strLabel[8];
+	uint8_t iBedC = 0;
+	uint8_t iPindaC = 0;
+	strLabel[7] = '\0'; // null terminate.
+	size_t max_sheets = sizeof(EEPROM_Sheets_base->s)/sizeof(EEPROM_Sheets_base->s[0]);
+	
+	if (code_seen('S')) {
+		iSel = code_value_uint8();
+		if (iSel>=max_sheets)
+		{
+			SERIAL_PROTOCOLPGM("Invalid sheet ID. Allowed: 0..");
+			SERIAL_PROTOCOL(max_sheets-1);
+			SERIAL_PROTOCOLLN("");
+			break; // invalid sheet ID
+		}	
+	} else {
+		break;
+	}
+	if (code_seen('Z')){
+		z_val = code_value();
+		zraw = z_val*cs.axis_steps_per_unit[Z_AXIS];
+		if ((zraw < Z_BABYSTEP_MIN) || (zraw > Z_BABYSTEP_MAX))
+		{
+			SERIAL_PROTOCOLLNPGM(" Z VALUE OUT OF RANGE");
+			break;
+		}	
+		bHasZ = true;
+	}
+	else
+	{
+		zraw = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)));
+		z_val = ((float)zraw/cs.axis_steps_per_unit[Z_AXIS]);
+	}
+	
+	if (code_seen('L'))
+	{
+		bHasLabel = true;
+		char *src = strchr_pointer + 1;
+		while (*src == ' ') ++src;
+		if (*src != '\0')
+		{
+			strncpy(strLabel,src,7);	
+		}
+	}
+	else
+	{
+		eeprom_read_block(strLabel, EEPROM_Sheets_base->s[iSel].name, sizeof(Sheet::name));
+	}
+	
+	if (code_seen('B'))
+	{
+		bHasBed = true;
+		iBedC = code_value_uint8();
+	}
+	else
+	{
+		iBedC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].bed_temp);
+	}
+	
+	if (code_seen('P'))
+	{
+		bHasPinda = true;
+		iPindaC = code_value_uint8();
+	}
+	else
+		iPindaC = eeprom_read_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp);
+	{
+	}
+	
+	SERIAL_PROTOCOLPGM("Sheet ");
+	SERIAL_PROTOCOL((int)iSel);
+	if (!eeprom_is_sheet_initialized(iSel))
+		SERIAL_PROTOCOLLNPGM(" NOT INITIALIZED");
+	
+	if (bHasZ)
+	{
+		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[iSel].z_offset)),zraw);
+	}
+	if (bHasLabel)
+	{
+		eeprom_update_block(strLabel,EEPROM_Sheets_base->s[iSel].name,sizeof(Sheet::name));
+	}
+	if (bHasBed)
+	{
+		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].bed_temp, iBedC);
+	}
+	if (bHasPinda)
+	{
+		eeprom_update_byte(&EEPROM_Sheets_base->s[iSel].pinda_temp, iPindaC);
+	}
+		
+	SERIAL_PROTOCOLPGM(" Z");
+	SERIAL_PROTOCOL_F(z_val,4);
+	SERIAL_PROTOCOLPGM(" R");
+	SERIAL_PROTOCOL((int)zraw);
+	SERIAL_PROTOCOLPGM(" L");
+	SERIAL_PROTOCOL(strLabel);
+	SERIAL_PROTOCOLPGM(" B");
+	SERIAL_PROTOCOL((int)iBedC);
+	SERIAL_PROTOCOLPGM(" P");
+	SERIAL_PROTOCOLLN((int)iPindaC);
+
+	break;
+}
 
 #ifdef PINDA_THERMISTOR
     /*!
