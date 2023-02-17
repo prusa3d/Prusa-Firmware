@@ -3800,6 +3800,26 @@ static void gcode_G92()
     }
 }
 
+/// @brief Helper function to reduce code size in M861 
+/// by extracting common code into one function
+static void gcode_M861_print_pinda_cal_eeprom() {
+    int16_t usteps;
+    for (uint8_t i = 0; i < 6; i++) {
+        usteps = 0;
+        if(i > 0) {
+            usteps = eeprom_read_word((uint16_t*) EEPROM_PROBE_TEMP_SHIFT + (i - 1));
+        }
+        float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
+        i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
+        SERIAL_PROTOCOLPGM(", ");
+        SERIAL_PROTOCOL(35 + (i * 5));
+        SERIAL_PROTOCOLPGM(", ");
+        SERIAL_PROTOCOL(usteps);
+        SERIAL_PROTOCOLPGM(", ");
+        SERIAL_PROTOCOLLN(mm * 1000);
+    }
+}
+
 #ifdef EXTENDED_CAPABILITIES_REPORT
 
 static void cap_line(const char* name, bool ena = false) {
@@ -7906,24 +7926,10 @@ Sigma_Exit:
 	case 861: {
 		const char * const _header = PSTR("index, temp, ustep, um");
 		if (code_seen('?')) { // ? - Print out current EEPROM offset values
-			int16_t usteps = 0;
 			SERIAL_PROTOCOLPGM("PINDA cal status: ");
 			SERIAL_PROTOCOLLN(calibration_status_pinda());
 			SERIAL_PROTOCOLLNRPGM(_header);
-			for (uint8_t i = 0; i < 6; i++)
-			{
-				if(i > 0) {
-					usteps = eeprom_read_word((uint16_t*) EEPROM_PROBE_TEMP_SHIFT + (i - 1));
-				}
-				float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
-				i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
-				SERIAL_PROTOCOLPGM(", ");
-				SERIAL_PROTOCOL(35 + (i * 5));
-				SERIAL_PROTOCOLPGM(", ");
-				SERIAL_PROTOCOL(usteps);
-				SERIAL_PROTOCOLPGM(", ");
-				SERIAL_PROTOCOLLN(mm * 1000);
-			}
+			gcode_M861_print_pinda_cal_eeprom();
 		}
 		else if (code_seen('!')) { // ! - Set factory default values
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
@@ -7955,21 +7961,7 @@ Sigma_Exit:
 					eeprom_update_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + index, usteps);
 					SERIAL_PROTOCOLLNRPGM(MSG_OK);
 					SERIAL_PROTOCOLLNRPGM(_header);
-					for (uint8_t i = 0; i < 6; i++)
-					{
-						usteps = 0;
-						if (i > 0) {
-							usteps = eeprom_read_word((uint16_t*)EEPROM_PROBE_TEMP_SHIFT + (i - 1));
-						}
-						float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
-						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
-						SERIAL_PROTOCOLPGM(", ");
-						SERIAL_PROTOCOL(35 + (i * 5));
-						SERIAL_PROTOCOLPGM(", ");
-						SERIAL_PROTOCOL(usteps);
-						SERIAL_PROTOCOLPGM(", ");
-						SERIAL_PROTOCOLLN(mm * 1000);
-					}
+					gcode_M861_print_pinda_cal_eeprom();
 				}
 			}
 		}
