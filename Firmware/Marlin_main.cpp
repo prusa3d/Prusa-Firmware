@@ -7737,7 +7737,7 @@ Sigma_Exit:
 		break;
 	}
 	if (code_seen('Z')){
-		z_val = code_value_float();
+		z_val = code_value();
 		zraw = z_val*cs.axis_steps_per_unit[Z_AXIS];
 		if ((zraw < Z_BABYSTEP_MIN) || (zraw > Z_BABYSTEP_MAX))
 		{
