@@ -7756,8 +7756,6 @@ Sigma_Exit:
 	{
 		bHasLabel = true;
 		char *src = strchr_pointer + 1;
-		starpos = strchr(src, '*');
-		if (starpos != NULL) *(starpos) = '\0';
 		while (*src == ' ') ++src;
 		if (*src != '\0')
 		{
