@@ -3804,18 +3804,19 @@ static void gcode_G92()
 /// by extracting common code into one function
 static void gcode_M861_print_pinda_cal_eeprom() {
     int16_t usteps;
+    static const char comma_sep[] PROGMEM = ", ";
     for (uint8_t i = 0; i < 6; i++) {
         usteps = 0;
         if(i > 0) {
             usteps = eeprom_read_word((uint16_t*) EEPROM_PROBE_TEMP_SHIFT + (i - 1));
         }
         float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
-        i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
-        SERIAL_PROTOCOLPGM(", ");
+        i == 0 ? SERIAL_PROTOCOLRPGM(MSG_NA) : SERIAL_PROTOCOL(i - 1);
+        SERIAL_PROTOCOLRPGM(comma_sep);
         SERIAL_PROTOCOL(35 + (i * 5));
-        SERIAL_PROTOCOLPGM(", ");
+        SERIAL_PROTOCOLRPGM(comma_sep);
         SERIAL_PROTOCOL(usteps);
-        SERIAL_PROTOCOLPGM(", ");
+        SERIAL_PROTOCOLRPGM(comma_sep);
         SERIAL_PROTOCOLLN(mm * 1000);
     }
 }
