@@ -241,8 +241,7 @@ bool MMU2::VerifyFilamentEnteredPTFE() {
         // Wait for move to finish and monitor the fsensor the entire time
         // A single 0 reading will set the bit.
         fsensorState |= (WhereIsFilament() == FilamentState::NOT_PRESENT);
-        marlin_manage_heater();
-        marlin_manage_inactivity(true);
+        safe_delay_keep_alive(0);
     }
 
     if (fsensorState) {
