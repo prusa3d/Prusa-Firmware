@@ -505,7 +505,7 @@ msgstr "FEIL:"
 #: ../../Firmware/messages.cpp:60 ../../Firmware/ultralcd.cpp:5111
 #: ../../Firmware/ultralcd.cpp:5549
 msgid "Eject from MMU"
-msgstr "Utkast fra MMU"
+msgstr "Løs ut fra MMU"
 
 #. MSG_PROGRESS_EJECT_FILAMENT c=20
 #. @@todo duplicate
