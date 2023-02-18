@@ -5891,8 +5891,7 @@ void lcd_sdcard_menu()
 			if (_md->lcd_scrollTimer.expired(300) || rewindFlag)
 			{
 				uint8_t len = LCD_WIDTH - ((_md->isDir)? 2 : 1);
-				lcd_set_cursor(0, _md->row);
-				lcd_print('>');
+				lcd_putc_at(0, _md->row, '>');
 				if (_md->isDir)
 					lcd_print(LCD_STR_FOLDER[0]);
 
