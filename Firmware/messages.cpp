@@ -211,6 +211,7 @@ const char MSG_Enqueing[] PROGMEM_N1 = "enqueing \""; ////
 const char MSG_ENDSTOPS_HIT[] PROGMEM_N1 = "endstops hit: "; ////
 const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_N1 = "error writing to file"; ////
 const char MSG_OK[] PROGMEM_N1 = "ok"; ////
+const char MSG_OK_CAPS[] PROGMEM_N1 = "OK"; ////
 const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_N1 = "open failed, File: "; ////
 const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////
 const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////

@@ -187,7 +187,7 @@ enum class TestError : uint_least8_t
 };
 
 static uint8_t  lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t _progress_scale, bool _clear, uint16_t _delay);
-static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name, const char *_indicator);
+static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name, const char _indicator);
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	bool _default=false);
 
@@ -7131,12 +7131,8 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 {
 
 	lcd_update_enable(false);
-
-	const char *_indicator = (_progress >= _progress_scale) ? "-" : "|";
-
+	const char _indicator = (_progress >= _progress_scale) ? '-' : '|';
 	if (_clear) lcd_clear();
-
-
 	lcd_set_cursor(0, 0);
 
 	if (screen == TestScreen::ExtruderFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));
@@ -7161,17 +7157,17 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 		//SERIAL_ECHOLNPGM("Fan test");
 		lcd_puts_at_P(0, 2, _T(MSG_HOTEND_FAN_SPEED));
 		lcd_set_cursor(18, 2);
-		(screen < TestScreen::PrintFan) ? lcd_print(_indicator) : lcd_print("OK");
+		(screen < TestScreen::PrintFan) ? (void)lcd_putc(_indicator) : (void)lcd_puts_P(MSG_OK_CAPS);
 		lcd_puts_at_P(0, 3, _T(MSG_PRINT_FAN_SPEED));
 		lcd_set_cursor(18, 3);
-		(screen < TestScreen::FansOk) ? lcd_print(_indicator) : lcd_print("OK");
+		(screen < TestScreen::FansOk) ? (void)lcd_putc(_indicator) : (void)lcd_puts_P(MSG_OK_CAPS);
 	}
 	else if (screen >= TestScreen::Fsensor && screen <= TestScreen::FsensorOk)
 	{
 		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
 		lcd_putc(':');
 		lcd_set_cursor(18, 2);
-		(screen == TestScreen::Fsensor) ? lcd_print(_indicator) : lcd_print("OK");
+		(screen == TestScreen::Fsensor) ? (void)lcd_putc(_indicator) : (void)lcd_puts_P(MSG_OK_CAPS);
 	}
 	else if (screen < TestScreen::Fsensor)
 	{
@@ -7199,7 +7195,7 @@ static uint8_t lcd_selftest_screen(TestScreen screen, uint8_t _progress, uint8_t
 	return (_progress >= _progress_scale * 2) ? 0 : _progress;
 }
 
-static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name_PROGMEM, const char *_indicator)
+static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state, const char *_name_PROGMEM, const char _indicator)
 {
 	lcd_set_cursor(_col, _row);
     uint8_t strlenNameP = strlen_P(_name_PROGMEM);
@@ -7209,13 +7205,12 @@ static void lcd_selftest_screen_step(uint8_t _row, uint8_t _col, uint8_t _state,
 	case 1:
 		lcd_puts_P(_name_PROGMEM);
 		lcd_putc_at(_col + strlenNameP, _row, ':');
-		lcd_set_cursor(_col + strlenNameP + 1, _row);
-		lcd_print(_indicator);
+		lcd_putc(_indicator);
 		break;
 	case 2:
 		lcd_puts_P(_name_PROGMEM);
 		lcd_putc_at(_col + strlenNameP, _row, ':');
-		lcd_puts_at_P(_col + strlenNameP + 1, _row, PSTR("OK"));
+		lcd_puts_P(MSG_OK_CAPS);
 		break;
 	default:
 		lcd_puts_P(_name_PROGMEM);
