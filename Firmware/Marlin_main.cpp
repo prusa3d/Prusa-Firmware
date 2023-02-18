@@ -3803,15 +3803,17 @@ static void gcode_G92()
 /// @brief Helper function to reduce code size in M861 
 /// by extracting common code into one function
 static void gcode_M861_print_pinda_cal_eeprom() {
-    int16_t usteps;
+    int16_t usteps = 0;
+    float mm = 0;
     static const char comma_sep[] PROGMEM = ", ";
     for (uint8_t i = 0; i < 6; i++) {
-        usteps = 0;
         if(i > 0) {
             usteps = eeprom_read_word((uint16_t*) EEPROM_PROBE_TEMP_SHIFT + (i - 1));
+            mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
+            SERIAL_PROTOCOL(i - 1);
+        } else {
+          SERIAL_PROTOCOLRPGM(MSG_NA);
         }
-        float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
-        i == 0 ? SERIAL_PROTOCOLRPGM(MSG_NA) : SERIAL_PROTOCOL(i - 1);
         SERIAL_PROTOCOLRPGM(comma_sep);
         SERIAL_PROTOCOL(35 + (i * 5));
         SERIAL_PROTOCOLRPGM(comma_sep);
