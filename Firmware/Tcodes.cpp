@@ -7,7 +7,6 @@
 #include "stepper.h"
 #include "ultralcd.h"
 #include <avr/pgmspace.h>
-#include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
 
