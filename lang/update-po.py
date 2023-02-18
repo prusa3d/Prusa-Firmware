@@ -37,7 +37,7 @@ def main():
     for po_file in PO_FILE_LIST:
         # Start by creating a back-up of the .po file
         po_file_bak = po_file.with_suffix(".bak")
-        shutil.copy(PO_DIR / po_file, PO_DIR / po_file_bak)
+        shutil.copy(PO_DIR / po_file.name, PO_DIR / po_file_bak.name)
         po = polib.pofile(po_file)
         po.merge(POT_REFERENCE)
         po.save(po_file)
