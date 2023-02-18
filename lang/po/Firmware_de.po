@@ -107,8 +107,7 @@ msgstr "AutoLaden Filament"
 msgid ""
 "Autoloading filament is active, just press the knob and insert filament..."
 msgstr ""
-"Automatisches Filament Laden ist aktiv, Knopf drücken und Filament "
-"einlegen..."
+"Automatisches Fila- ment Laden ist aktiv , Knopf drücken und Filament einlegen..."
 
 #. MSG_PROGRESS_AVOID_GRIND c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:16
