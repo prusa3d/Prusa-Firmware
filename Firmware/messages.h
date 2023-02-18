@@ -215,6 +215,7 @@ extern const char MSG_Enqueing[];
 extern const char MSG_ENDSTOPS_HIT[];
 extern const char MSG_SD_ERR_WRITE_TO_FILE[];
 extern const char MSG_OK[];
+extern const char MSG_OK_CAPS[];
 extern const char MSG_SD_OPEN_FILE_FAIL[];
 extern const char MSG_ENDSTOP_OPEN[];
 extern const char MSG_POWERUP[];
