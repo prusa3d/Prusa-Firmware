@@ -423,7 +423,6 @@ void setup_fan_interrupt();
 
 extern bool recover_machine_state_after_power_panic();
 extern void restore_print_from_eeprom(bool mbl_was_active);
-extern void position_menu();
 
 extern void print_world_coordinates();
 extern void print_physical_coordinates();
