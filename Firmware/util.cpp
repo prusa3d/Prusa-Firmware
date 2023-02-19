@@ -240,11 +240,11 @@ void update_current_firmware_version_to_eeprom()
     eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR,   (uint16_t)pgm_read_word(&FW_VERSION_NR[3]));
 }
 
-ClNozzleDiameter oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
-ClCheckMode oCheckMode=ClCheckMode::_None;
-ClCheckModel oCheckModel=ClCheckModel::_None;
-ClCheckVersion oCheckVersion=ClCheckVersion::_None;
-ClCheckGcode oCheckGcode=ClCheckGcode::_None;
+ClNozzleDiameter oNozzleDiameter;
+ClCheckMode oCheckMode;
+ClCheckModel oCheckModel;
+ClCheckVersion oCheckVersion;
+ClCheckGcode oCheckGcode;
 
 void fCheckModeInit() {
     oCheckMode = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_MODE, farm_mode ? (uint8_t) ClCheckMode::_Strict : (uint8_t)ClCheckMode::_Warn);
