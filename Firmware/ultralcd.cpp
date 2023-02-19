@@ -50,7 +50,6 @@
 
 #include "Prusa_farm.h"
 
-int clock_interval = 0;
 static void lcd_sd_updir();
 static void lcd_mesh_bed_leveling_settings();
 #ifdef LCD_BL_PIN
@@ -451,6 +450,7 @@ void lcdui_print_cmd_diag(void)
 // Print time (8 chars total)
 void lcdui_print_time(void)
 {
+    static uint8_t clock_interval; // max value is 10: CLOCK_INTERVAL_TIME * 2
     //if remaining print time estimation is available print it else print elapsed time
     int chars = 0;
     if (printer_active()) {
