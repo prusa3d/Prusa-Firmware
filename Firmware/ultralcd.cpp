@@ -4211,6 +4211,10 @@ static void SETTINGS_SILENT_MODE() {
     }
 }
 
+void SETTINGS_FANS_CHECK() {
+    MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+}
+
 #ifndef MMU_FORCE_STEALTH_MODE
 #define SETTINGS_MMU_MODE \
 do\
@@ -4557,7 +4561,7 @@ static void lcd_settings_menu()
         MENU_ITEM_FUNCTION_P(PSTR("Reset MMU"), mmu_reset);
     }
 
-    MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+    SETTINGS_FANS_CHECK();
     SETTINGS_SILENT_MODE();
 
     if(!farm_mode)
@@ -5528,7 +5532,7 @@ static void lcd_tune_menu()
         SETTINGS_CUTTER;
     }
 
-    MENU_ITEM_TOGGLE_P(_T(MSG_FANS_CHECK), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
+    SETTINGS_FANS_CHECK();
     SETTINGS_SILENT_MODE();
     SETTINGS_MMU_MODE;
     SETTINGS_SOUND;
