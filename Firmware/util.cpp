@@ -247,36 +247,15 @@ ClCheckVersion oCheckVersion=ClCheckVersion::_None;
 ClCheckGcode oCheckGcode=ClCheckGcode::_None;
 
 void fCheckModeInit() {
-    oCheckMode = (ClCheckMode)eeprom_read_byte((uint8_t *)EEPROM_CHECK_MODE);
-    if (oCheckMode == ClCheckMode::_Undef) {
-        oCheckMode = ClCheckMode::_Warn;
-        eeprom_update_byte((uint8_t *)EEPROM_CHECK_MODE, (uint8_t)oCheckMode);
-    }
-    if (farm_mode) {
-        oCheckMode = ClCheckMode::_Strict;
-        eeprom_init_default_word((uint16_t *)EEPROM_NOZZLE_DIAMETER_uM, EEPROM_NOZZLE_DIAMETER_uM_DEFAULT);
-    }
-    oNozzleDiameter = (ClNozzleDiameter)eeprom_read_byte((uint8_t *)EEPROM_NOZZLE_DIAMETER);
-    if ((oNozzleDiameter == ClNozzleDiameter::_Diameter_Undef) && !farm_mode) {
-        oNozzleDiameter = ClNozzleDiameter::_Diameter_400;
-        eeprom_update_byte((uint8_t *)EEPROM_NOZZLE_DIAMETER, (uint8_t)oNozzleDiameter);
-        eeprom_update_word((uint16_t *)EEPROM_NOZZLE_DIAMETER_uM, EEPROM_NOZZLE_DIAMETER_uM_DEFAULT);
-    }
-    oCheckModel = (ClCheckModel)eeprom_read_byte((uint8_t *)EEPROM_CHECK_MODEL);
-    if (oCheckModel == ClCheckModel::_Undef) {
-        oCheckModel = ClCheckModel::_Warn;
-        eeprom_update_byte((uint8_t *)EEPROM_CHECK_MODEL, (uint8_t)oCheckModel);
-    }
-    oCheckVersion = (ClCheckVersion)eeprom_read_byte((uint8_t *)EEPROM_CHECK_VERSION);
-    if (oCheckVersion == ClCheckVersion::_Undef) {
-        oCheckVersion = ClCheckVersion::_Warn;
-        eeprom_update_byte((uint8_t *)EEPROM_CHECK_VERSION, (uint8_t)oCheckVersion);
-    }
-    oCheckGcode = (ClCheckGcode)eeprom_read_byte((uint8_t *)EEPROM_CHECK_GCODE);
-    if (oCheckGcode == ClCheckGcode::_Undef) {
-        oCheckGcode = ClCheckGcode::_Warn;
-        eeprom_update_byte((uint8_t *)EEPROM_CHECK_GCODE, (uint8_t)oCheckGcode);
-    }
+    oCheckMode = (ClCheckMode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_MODE, farm_mode ? (uint8_t) ClCheckMode::_Strict : (uint8_t)ClCheckMode::_Warn);
+
+    // Note, farm mode leaves EEPROM_NOZZLE_DIAMETER setting uninitalised
+    oNozzleDiameter = (ClNozzleDiameter)eeprom_init_default_byte((uint8_t *)EEPROM_NOZZLE_DIAMETER, farm_mode ? (uint8_t)ClNozzleDiameter::_Diameter_Undef : (uint8_t)ClNozzleDiameter::_Diameter_400);
+    eeprom_init_default_word((uint16_t *)EEPROM_NOZZLE_DIAMETER_uM, EEPROM_NOZZLE_DIAMETER_uM_DEFAULT);
+
+    oCheckModel = (ClCheckModel)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_MODEL, (uint8_t)ClCheckModel::_Warn);
+    oCheckVersion = (ClCheckVersion)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_VERSION, (uint8_t)ClCheckVersion::_Warn);
+    oCheckGcode = (ClCheckGcode)eeprom_init_default_byte((uint8_t *)EEPROM_CHECK_GCODE, (uint8_t)ClCheckGcode::_Warn);
 }
 
 static void render_M862_warnings(const char* warning, const char* strict, uint8_t check)
