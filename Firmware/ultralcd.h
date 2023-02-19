@@ -163,7 +163,6 @@ void printf_IRSensorAnalogBoardChange();
 #endif //IR_SENSOR_ANALOG
 
 extern int8_t SilentModeMenu;
-extern uint8_t SilentModeMenu_MMU;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;

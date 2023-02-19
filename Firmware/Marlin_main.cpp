@@ -1465,11 +1465,7 @@ void setup()
 
 	//mbl_mode_init();
 	mbl_settings_init();
-	SilentModeMenu_MMU = eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH);
-	if (SilentModeMenu_MMU == 255) {
-		SilentModeMenu_MMU = 1;
-		eeprom_write_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
-	}
+	eeprom_init_default_byte((uint8_t*)EEPROM_MMU_STEALTH, 1);
 
 #if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	setup_fan_interrupt();
