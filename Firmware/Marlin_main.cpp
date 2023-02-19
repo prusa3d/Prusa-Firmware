@@ -8378,6 +8378,7 @@ Sigma_Exit:
     }
     break;
 
+#ifndef TMC2130
     /*!
 	### M351 - Toggle Microstep Pins <a href="https://reprap.org/wiki/G-code#M351:_Toggle_MS1_MS2_pins_directly">M351: Toggle MS1 MS2 pins directly</a>
     Toggle MS1 MS2 pins directly.
@@ -8411,6 +8412,7 @@ Sigma_Exit:
       #endif
     }
     break;
+#endif // !TMC2130
 
     /*!
     ### M701 - Load filament to extruder <a href="https://reprap.org/wiki/G-code#M701:_Load_filament">M701: Load filament</a>

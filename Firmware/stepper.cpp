@@ -1073,10 +1073,10 @@ void st_init()
 {
 #ifdef TMC2130
 	tmc2130_init(TMCInitParams(false, FarmOrUserECool()));
-#endif //TMC2130
-
+#else
   st_current_init(); //Initialize Digipot Motor Current
   microstep_init(); //Initialize Microstepping Pins
+#endif //TMC2130
 
   //Initialize Dir Pins
   #if defined(X_DIR_PIN) && X_DIR_PIN > -1
@@ -1513,6 +1513,7 @@ void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl e
 }
 #endif
 
+#ifndef TMC2130
 void st_current_init() //Initialize Digipot Motor Current
 {
 #ifdef MOTOR_CURRENT_PWM_XY_PIN
@@ -1541,8 +1542,6 @@ void st_current_init() //Initialize Digipot Motor Current
     TCCR5B = (TCCR5B & ~(_BV(CS50) | _BV(CS51) | _BV(CS52))) | _BV(CS50);
 #endif
 }
-
-
 
 #ifdef MOTOR_CURRENT_PWM_XY_PIN
 void st_current_set(uint8_t driver, int current)
@@ -1576,9 +1575,6 @@ void microstep_init()
   for(int i=0;i<=4;i++) microstep_mode(i,microstep_modes[i]);
   #endif
 }
-
-
-#ifndef TMC2130
 
 void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
 {
@@ -1637,4 +1633,4 @@ void microstep_readings()
       SERIAL_PROTOCOLLN( READ(E1_MS2_PIN));
       #endif
 }
-#endif //TMC2130
+#endif //!TMC2130
