@@ -74,7 +74,7 @@ void menu_start(void)
     if (lcd_encoder < menu_top)
 		menu_top = lcd_encoder;
     menu_line = menu_top;
-    menu_clicked = LCD_CLICKED;
+    menu_clicked = lcd_clicked(); // Consume click
 }
 
 void menu_end(void)
@@ -303,8 +303,6 @@ uint8_t __attribute__((noinline)) menu_item_function_E(const Sheet &sheet, menu_
         if (lcd_draw_update) menu_draw_item_select_sheet_E(' ', sheet);
         if (menu_clicked && (lcd_encoder == menu_item))
         {
-            menu_clicked = false;
-            lcd_consume_click();
             lcd_update_enabled = 0;
             if (func) func();
             lcd_update_enabled = 1;
@@ -341,8 +339,6 @@ uint8_t menu_item_function_P(const char* str, menu_func_t func)
 		if (lcd_draw_update) menu_draw_item_puts_P(' ', str);
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_clicked = false;
-			lcd_consume_click();
 			lcd_update_enabled = 0;
 			if (func) func();
 			lcd_update_enabled = 1;
@@ -369,8 +365,6 @@ uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t)
         if (lcd_draw_update) menu_draw_item_puts_P(' ', str, number);
         if (menu_clicked && (lcd_encoder == menu_item))
         {
-            menu_clicked = false;
-            lcd_consume_click();
             lcd_update_enabled = 0;
             if (func) func(fn_par);
             lcd_update_enabled = 1;
@@ -395,8 +389,6 @@ uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func
 			}
 			else // do the actual toggling
 			{
-				menu_clicked = false;
-				lcd_consume_click();
 				lcd_update_enabled = 0;
 				if (func) func();
 				lcd_update_enabled = 1;
