@@ -1888,7 +1888,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
     lcd_timeoutToStatus.stop();
 
-    if (current_temperature[0] > (target_temperature[0] * 0.95))
+    if (fabs(current_temperature[0] - target_temperature[0]) > TEMP_HYSTERESIS)
     {
         switch (eFilamentAction)
         {
