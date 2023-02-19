@@ -183,7 +183,6 @@ bool mesh_bed_leveling_flag = false;
 
 uint32_t total_filament_used;
 HeatingStatus heating_status;
-uint8_t heating_status_counter;
 bool loading_flag = false;
 
 #define XY_NO_RESTORE_FLAG (mesh_bed_leveling_flag || homing_flag)

@@ -514,6 +514,7 @@ void lcdui_print_time(void)
 
 //! @Brief Print status line on status screen
 void lcdui_print_status_line(void) {
+    static uint8_t heating_status_counter;
     if (heating_status != HeatingStatus::NO_HEATING) { // If heating flag, show progress of heating
         heating_status_counter++;
         if (heating_status_counter > 13) {
