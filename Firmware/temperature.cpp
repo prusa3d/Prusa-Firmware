@@ -2320,9 +2320,10 @@ void model_data::reset(uint8_t heater_pwm _UNUSED, uint8_t fan_pwm _UNUSED,
     C_i = (TEMP_MGR_INTV / C);
     warn_s = warn * TEMP_MGR_INTV;
     err_s = err * TEMP_MGR_INTV;
+    dT_lag_size = L / (uint16_t)(TEMP_MGR_INTV * 1000);
 
     // initial values
-    for(uint8_t i = 0; i != TEMP_MODEL_LAG_SIZE; ++i)
+    for(uint8_t i = 0; i != TEMP_MODEL_MAX_LAG_SIZE; ++i)
         dT_lag_buf[i] = NAN;
     dT_lag_idx = 0;
     dT_err_prev = 0;
@@ -2349,14 +2350,15 @@ void model_data::step(uint8_t heater_pwm, uint8_t fan_pwm, float heater_temp, fl
     const float cur_R = R[fan_pwm]; // resistance at current fan power (K/W)
 
     float dP = P * heater_scale; // current power [W]
+    dP *= (cur_heater_temp * U) + V; // linear temp. correction
     float dPl = (cur_heater_temp - cur_ambient_temp) / cur_R; // [W] leakage power
     float dT = (dP - dPl) * C_i; // expected temperature difference (K)
 
     // filter and lag dT
-    uint8_t dT_next_idx = (dT_lag_idx == (TEMP_MODEL_LAG_SIZE - 1) ? 0: dT_lag_idx + 1);
+    uint8_t dT_next_idx = (dT_lag_idx == (dT_lag_size - 1) ? 0: dT_lag_idx + 1);
     float dT_lag = dT_lag_buf[dT_next_idx];
     float dT_lag_prev = dT_lag_buf[dT_lag_idx];
-    float dT_f = iir_mul(dT_lag_prev, dT, TEMP_MODEL_fS, dT);
+    float dT_f = iir_mul(dT_lag_prev, dT, fS, dT);
     dT_lag_buf[dT_next_idx] = dT_f;
     dT_lag_idx = dT_next_idx;
 
@@ -2388,7 +2390,11 @@ static void setup()
 static bool calibrated()
 {
     if(!(data.P > 0)) return false;
+    if(isnan(data.U)) return false;
+    if(isnan(data.V)) return false;
     if(!(data.C > 0)) return false;
+    if(isnan(data.fS)) return false;
+    if(!(data.L > 0)) return false;
     if(!(data.Ta_corr != NAN)) return false;
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i) {
         if(!(temp_model::data.R[i] >= 0))
@@ -2540,15 +2546,36 @@ void temp_model_set_warn_beep(bool enabled)
     temp_model::warn_beep = enabled;
 }
 
-void temp_model_set_params(float C, float P, float Ta_corr, float warn, float err)
+// set the model lag rounding to the effective sample resolution, ensuring the reported/stored lag
+// matches the current model constraints (future-proofing for model changes)
+static void temp_model_set_lag(uint16_t ms)
+{
+    static const uint16_t intv_ms = (uint16_t)(TEMP_MGR_INTV * 1000);
+    uint16_t samples = ((ms + intv_ms/2) / intv_ms);
+
+    // ensure we do not exceed the maximum lag buffer and have at least one lag sample for filtering
+    if(samples < 1)
+        samples = 1;
+    else if(samples > TEMP_MODEL_MAX_LAG_SIZE)
+        samples = TEMP_MODEL_MAX_LAG_SIZE;
+
+    // round back to ms
+    temp_model::data.L = samples * intv_ms;
+}
+
+void temp_model_set_params(float P, float U, float V, float C, float D, int16_t L, float Ta_corr, float warn, float err)
 {
     TempMgrGuard temp_mgr_guard;
 
-    if(!isnan(C) && C > 0) temp_model::data.C = C;
     if(!isnan(P) && P > 0) temp_model::data.P = P;
+    if(!isnan(U)) temp_model::data.U = U;
+    if(!isnan(V)) temp_model::data.V = V;
+    if(!isnan(C) && C > 0) temp_model::data.C = C;
+    if(!isnan(D)) temp_model::data.fS = D;
+    if(L >= 0) temp_model_set_lag(L);
     if(!isnan(Ta_corr)) temp_model::data.Ta_corr = Ta_corr;
-    if(!isnan(err) && err > 0) temp_model::data.err = err;
     if(!isnan(warn) && warn > 0) temp_model::data.warn = warn;
+    if(!isnan(err) && err > 0) temp_model::data.err = err;
 
     // ensure warn <= err
     if (temp_model::data.warn > temp_model::data.err)
@@ -2573,8 +2600,9 @@ void temp_model_report_settings()
     SERIAL_ECHOLNPGM("Temperature Model settings:");
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         printf_P(PSTR("%S  M310 I%u R%.2f\n"), echomagic, (unsigned)i, (double)temp_model::data.R[i]);
-    printf_P(PSTR("%S  M310 P%.2f C%.2f S%u B%u E%.2f W%.2f T%.2f\n"),
-        echomagic, (double)temp_model::data.P, (double)temp_model::data.C,
+    printf_P(PSTR("%S  M310 P%.2f U%.4f V%.2f C%.2f D%.4f L%u S%u B%u E%.2f W%.2f T%.2f\n"),
+        echomagic, (double)temp_model::data.P, (double)temp_model::data.U, (double)temp_model::data.V,
+        (double)temp_model::data.C, (double)temp_model::data.fS, (unsigned)temp_model::data.L,
         (unsigned)temp_model::enabled, (unsigned)temp_model::warn_beep,
         (double)temp_model::data.err, (double)temp_model::data.warn,
         (double)temp_model::data.Ta_corr);
@@ -2584,13 +2612,17 @@ void temp_model_reset_settings()
 {
     TempMgrGuard temp_mgr_guard;
 
-    temp_model::data.P = TEMP_MODEL_P;
-    temp_model::data.C = TEMP_MODEL_C;
+    temp_model::data.P = TEMP_MODEL_DEF(P);
+    temp_model::data.U = TEMP_MODEL_DEF(U);
+    temp_model::data.V = TEMP_MODEL_DEF(V);
+    temp_model::data.C = TEMP_MODEL_DEF(C);
+    temp_model::data.fS = TEMP_MODEL_DEF(fS);
+    temp_model::data.L = (uint16_t)(TEMP_MODEL_DEF(LAG) / (TEMP_MGR_INTV * 1000) + 0.5) * (uint16_t)(TEMP_MGR_INTV * 1000);
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         temp_model::data.R[i] = pgm_read_float(TEMP_MODEL_R_DEFAULT + i);
     temp_model::data.Ta_corr = TEMP_MODEL_Ta_corr;
-    temp_model::data.warn = TEMP_MODEL_W;
-    temp_model::data.err = TEMP_MODEL_E;
+    temp_model::data.warn = TEMP_MODEL_DEF(W);
+    temp_model::data.err = TEMP_MODEL_DEF(E);
     temp_model::warn_beep = true;
     temp_model::enabled = true;
     temp_model::reinitialize();
@@ -2601,9 +2633,21 @@ void temp_model_load_settings()
     static_assert(TEMP_MODEL_R_SIZE == 16); // ensure we don't desync with the eeprom table
     TempMgrGuard temp_mgr_guard;
 
+    // handle upgrade from a model without UVDL (FW<3.13, TM VER<1): model is retro-compatible,
+    // reset UV to an identity without doing any special handling
+    eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_U, TEMP_MODEL_DEF(U));
+    eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_V, TEMP_MODEL_DEF(V));
+    eeprom_init_default_float((float*)EEPROM_TEMP_MODEL_D, TEMP_MODEL_DEF(fS));
+    eeprom_init_default_word((uint16_t*)EEPROM_TEMP_MODEL_L, TEMP_MODEL_DEF(LAG));
+    eeprom_init_default_byte((uint8_t*)EEPROM_TEMP_MODEL_VER, TEMP_MODEL_DEF(VER));
+
     temp_model::enabled = eeprom_read_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE);
     temp_model::data.P = eeprom_read_float((float*)EEPROM_TEMP_MODEL_P);
+    temp_model::data.U = eeprom_read_float((float*)EEPROM_TEMP_MODEL_U);
+    temp_model::data.V = eeprom_read_float((float*)EEPROM_TEMP_MODEL_V);
     temp_model::data.C = eeprom_read_float((float*)EEPROM_TEMP_MODEL_C);
+    temp_model::data.fS = eeprom_read_float((float*)EEPROM_TEMP_MODEL_D);
+    temp_model_set_lag(eeprom_read_word((uint16_t*)EEPROM_TEMP_MODEL_L));
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         temp_model::data.R[i] = eeprom_read_float((float*)EEPROM_TEMP_MODEL_R + i);
     temp_model::data.Ta_corr = eeprom_read_float((float*)EEPROM_TEMP_MODEL_Ta_corr);
@@ -2621,7 +2665,11 @@ void temp_model_save_settings()
 {
     eeprom_update_byte((uint8_t*)EEPROM_TEMP_MODEL_ENABLE, temp_model::enabled);
     eeprom_update_float((float*)EEPROM_TEMP_MODEL_P, temp_model::data.P);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_U, temp_model::data.U);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_V, temp_model::data.V);
     eeprom_update_float((float*)EEPROM_TEMP_MODEL_C, temp_model::data.C);
+    eeprom_update_float((float*)EEPROM_TEMP_MODEL_D, temp_model::data.fS);
+    eeprom_update_word((uint16_t*)EEPROM_TEMP_MODEL_L, temp_model::data.L);
     for(uint8_t i = 0; i != TEMP_MODEL_R_SIZE; ++i)
         eeprom_update_float((float*)EEPROM_TEMP_MODEL_R + i, temp_model::data.R[i]);
     eeprom_update_float((float*)EEPROM_TEMP_MODEL_Ta_corr, temp_model::data.Ta_corr);
@@ -2802,10 +2850,10 @@ static bool autotune(int16_t cal_temp)
     for(uint8_t i = 0; i != 2; ++i) {
         const char* PROGMEM verb = (i == 0? PSTR("initial"): PSTR("refine"));
         target_temperature[0] = 0;
-        if(current_temperature[0] >= TEMP_MODEL_CAL_Tl) {
-            sprintf_P(tm_message, PSTR("TM: cool down <%dC"), TEMP_MODEL_CAL_Tl);
+        if(current_temperature[0] >= TEMP_MODEL_CAL_T_low) {
+            sprintf_P(tm_message, PSTR("TM: cool down <%dC"), TEMP_MODEL_CAL_T_low);
             lcd_setstatus_serial(tm_message);
-            cooldown(TEMP_MODEL_CAL_Tl);
+            cooldown(TEMP_MODEL_CAL_T_low);
             wait(10000);
         }
 
@@ -2818,10 +2866,11 @@ static bool autotune(int16_t cal_temp)
 
         // we need a high R value for the initial C guess
         if(isnan(temp_model::data.R[0]))
-            temp_model::data.R[0] = TEMP_MODEL_Rh;
+            temp_model::data.R[0] = TEMP_MODEL_CAL_R_high;
 
         e = estimate(samples, &temp_model::data.C,
-            TEMP_MODEL_Cl, TEMP_MODEL_Ch, TEMP_MODEL_C_thr, TEMP_MODEL_C_itr,
+            TEMP_MODEL_CAL_C_low, TEMP_MODEL_CAL_C_high,
+            TEMP_MODEL_CAL_C_thr, TEMP_MODEL_CAL_C_itr,
             0, current_temperature_ambient);
         if(isnan(e))
             return true;
@@ -2837,7 +2886,8 @@ static bool autotune(int16_t cal_temp)
             return true;
 
         e = estimate(samples, &temp_model::data.R[0],
-            TEMP_MODEL_Rl, TEMP_MODEL_Rh, TEMP_MODEL_R_thr, TEMP_MODEL_R_itr,
+            TEMP_MODEL_CAL_R_low, TEMP_MODEL_CAL_R_high,
+            TEMP_MODEL_CAL_R_thr, TEMP_MODEL_CAL_R_itr,
             0, current_temperature_ambient);
         if(isnan(e))
             return true;
@@ -2868,7 +2918,7 @@ static bool autotune(int16_t cal_temp)
         // a fixed fan pwm (the norminal value) is used here, as soft_pwm_fan will be modified
         // during fan measurements and we'd like to include that skew during normal operation.
         e = estimate(samples, &temp_model::data.R[i],
-            TEMP_MODEL_Rl, temp_model::data.R[0], TEMP_MODEL_R_thr, TEMP_MODEL_R_itr,
+            TEMP_MODEL_CAL_R_low, temp_model::data.R[0], TEMP_MODEL_CAL_R_thr, TEMP_MODEL_CAL_R_itr,
             i, current_temperature_ambient);
         if(isnan(e))
             return true;
@@ -2925,7 +2975,7 @@ void temp_model_autotune(int16_t temp, bool selftest)
 
     // autotune
     SERIAL_ECHOLNPGM("TM: calibration start");
-    temp_model_autotune_err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_Th);
+    temp_model_autotune_err = temp_model_cal::autotune(temp > 0 ? temp : TEMP_MODEL_CAL_T_high);
 
     // always reset temperature
     disable_heater();

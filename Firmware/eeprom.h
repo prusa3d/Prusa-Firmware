@@ -357,6 +357,10 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 | ^           | ^       | ^                                     | 20h 32       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 40h 64       | ^                     | Free bit                                          | ^            | ^
 | ^           | ^       | ^                                     | 80h 128      | ^                     | Unknown                                           | ^            | ^
+| 0x0CA5 3237 | float   | EEPROM_TEMP_MODEL_U                   | ???          | ff ff ff ffh          | Temp model linear temperature coefficient (W/K/W) | Temp model   | D3 Ax0ca5 C4
+| 0x0CA1 3233 | float   | EEPROM_TEMP_MODEL_V                   | ???          | ff ff ff ffh          | Temp model linear temperature intercept (W/W)     | Temp model   | D3 Ax0ca1 C4
+| 0x0C9D 3229 | float   | EEPROM_TEMP_MODEL_D                   | ???          | ff ff ff ffh          | Temp model sim. 1st order IIR filter factor       | Temp model   | D3 Ax0c9d C4
+| 0x0C99 3225 | uint16  | EEPROM_TEMP_MODEL_L                   | 0-2160       | ff ffh                | Temp model sim. response lag (ms)                 | Temp model   | D3 Ax0c99 C2
 
 |Address begin|Bit/Type | Name                                  | Valid values | Default/FactoryReset  | Description                                       |Gcode/Function| Debug code
 | :--:        | :--:    | :--:                                  | :--:         | :--:                  | :--:                                              | :--:         | :--:
@@ -586,8 +590,14 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 #define EEPROM_HEAT_BED_ON_LOAD_FILAMENT (EEPROM_TOTAL_TOOLCHANGE_COUNT-1) //uint8
 #define EEPROM_CALIBRATION_STATUS_V2 (EEPROM_HEAT_BED_ON_LOAD_FILAMENT-1) //uint8
 
+#define EEPROM_TEMP_MODEL_U (EEPROM_CALIBRATION_STATUS_V2-4) //float
+#define EEPROM_TEMP_MODEL_V (EEPROM_TEMP_MODEL_U-4) //float
+#define EEPROM_TEMP_MODEL_D (EEPROM_TEMP_MODEL_V-4) //float
+#define EEPROM_TEMP_MODEL_L (EEPROM_TEMP_MODEL_D-2) //uint16_t
+#define EEPROM_TEMP_MODEL_VER (EEPROM_TEMP_MODEL_L-1) //uint8_t
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_CALIBRATION_STATUS_V2
+#define EEPROM_LAST_ITEM EEPROM_TEMP_MODEL_VER
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
@@ -620,7 +630,6 @@ enum
 
 #ifdef __cplusplus
 void eeprom_init();
-bool eeprom_is_sheet_initialized(uint8_t sheet_num);
 struct SheetName
 {
     char c[sizeof(Sheet::name) + 1];
@@ -628,6 +637,26 @@ struct SheetName
 void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName);
 int8_t eeprom_next_initialized_sheet(int8_t sheet);
 void eeprom_switch_to_next_sheet();
+bool eeprom_is_sheet_initialized(uint8_t sheet_num);
+
+bool eeprom_is_initialized_block(const void *__p, size_t __n);
+void eeprom_update_block_P(const void *__src, void *__dst, size_t __n);
+void eeprom_toggle(uint8_t *__p);
+
+void eeprom_increment_byte(uint8_t *__p);
+void eeprom_increment_word(uint16_t *__p);
+void eeprom_increment_dword(uint32_t *__p);
+
+void eeprom_add_byte(uint8_t *__p, uint8_t add);
+void eeprom_add_word(uint16_t *__p, uint16_t add);
+void eeprom_add_dword(uint32_t *__p, uint32_t add);
+
+uint8_t eeprom_init_default_byte(uint8_t *__p, uint8_t def);
+uint16_t eeprom_init_default_word(uint16_t *__p, uint16_t def);
+uint32_t eeprom_init_default_dword(uint32_t *__p, uint32_t def);
+void eeprom_init_default_float(float *__p, float def);
+void eeprom_init_default_block(void *__p, size_t __n, const void *def);
+void eeprom_init_default_block_P(void *__p, size_t __n, const void *def);
 #endif
 
 #endif // EEPROM_H

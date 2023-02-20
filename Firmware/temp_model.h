@@ -5,31 +5,40 @@
 
 #include "planner.h"
 
-constexpr uint8_t TEMP_MODEL_CAL_S = 60;     // Maximum recording lenght during calibration (s)
+// shortcuts to get model defaults
+#define __TEMP_MODEL_DEF(MODEL, VAR) TEMP_MODEL_##MODEL##_##VAR
+#define _TEMP_MODEL_DEF(MODEL, VAR)  __TEMP_MODEL_DEF(MODEL, VAR)
+#define TEMP_MODEL_DEF(VAR)          _TEMP_MODEL_DEF(TEMP_MODEL_DEFAULT, VAR)
+
+constexpr uint8_t TEMP_MODEL_CAL_S = 60;     // Maximum recording length during calibration (s)
 constexpr uint8_t TEMP_MODEL_CAL_R_STEP = 4; // Fan interpolation steps during calibration
-constexpr float TEMP_MODEL_fS = 0.065;       // simulation filter (1st-order IIR factor)
 constexpr float TEMP_MODEL_fE = 0.05;        // error filter (1st-order IIR factor)
 
 // transport delay buffer size (samples)
-constexpr uint8_t TEMP_MODEL_LAG_SIZE = (TEMP_MODEL_LAG / TEMP_MGR_INTV + 0.5);
+constexpr uint8_t TEMP_MODEL_MAX_LAG_SIZE = 8; // * TEMP_MGR_INTV = 2160
 
 // resistance values for all fan levels
 constexpr uint8_t TEMP_MODEL_R_SIZE = (1 << FAN_SOFT_PWM_BITS);
-static const float TEMP_MODEL_R_DEFAULT[TEMP_MODEL_R_SIZE] PROGMEM = TEMP_MODEL_Rv;
+static const float TEMP_MODEL_R_DEFAULT[TEMP_MODEL_R_SIZE] PROGMEM = TEMP_MODEL_DEF(Rv);
 
 namespace temp_model {
 
 struct model_data
 {
     // temporary buffers
-    float dT_lag_buf[TEMP_MODEL_LAG_SIZE]; // transport delay buffer
-    uint8_t dT_lag_idx = 0;                // transport delay buffer index
-    float dT_err_prev = 0;                 // previous temperature delta error
-    float T_prev = 0;                      // last temperature extruder
+    float dT_lag_buf[TEMP_MODEL_MAX_LAG_SIZE]; // transport delay buffer
+    uint8_t dT_lag_size = 0;                   // transport delay buffer size
+    uint8_t dT_lag_idx = 0;                    // transport delay buffer index
+    float dT_err_prev = 0;                     // previous temperature delta error
+    float T_prev = 0;                          // last temperature extruder
 
     // configurable parameters
     float P;                               // heater power (W)
+    float U;                               // linear temperature coefficient (W/K/W)
+    float V;                               // linear temperature intercept (W/W)
     float C;                               // heatblock capacitance (J/K)
+    float fS;                              // sim. 1st order IIR filter factor (f=100/27)
+    uint16_t L;                            // sim. response lag (ms)
     float R[TEMP_MODEL_R_SIZE];            // heatblock resistance for all fan levels (K/W)
     float Ta_corr;                         // ambient temperature correction (K)
 
