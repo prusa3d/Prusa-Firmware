@@ -248,6 +248,9 @@ void cmdqueue_dump_to_serial()
 }
 #endif /* CMDBUFFER_DEBUG */
 
+static const char bufferFull[] PROGMEM = "\" failed: Buffer full!";
+static const char enqueingFront[] PROGMEM = "Enqueing to the front: \"";
+
 //adds an command to the main command buffer
 //thats really done in a non-safe way.
 //needs overworking someday
@@ -283,7 +286,7 @@ void enquecommand(const char *cmd, bool from_progmem)
             SERIAL_PROTOCOLRPGM(cmd);
         else
             SERIAL_ECHO(cmd);
-        SERIAL_ECHOLNPGM("\" failed: Buffer full!");
+        SERIAL_ECHOLNRPGM(bufferFull);
 #ifdef CMDBUFFER_DEBUG
         cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
@@ -307,7 +310,7 @@ void enquecommand_front(const char *cmd, bool from_progmem)
             strcpy(cmdbuffer + bufindr + CMDHDRSIZE, cmd);
         ++ buflen;
         SERIAL_ECHO_START;
-        SERIAL_ECHOPGM("Enqueing to the front: \"");
+        SERIAL_ECHORPGM(enqueingFront);
         SERIAL_ECHO(cmdbuffer + bufindr + CMDHDRSIZE);
         SERIAL_ECHOLNPGM("\"");
 #ifdef CMDBUFFER_DEBUG
@@ -315,12 +318,12 @@ void enquecommand_front(const char *cmd, bool from_progmem)
 #endif /* CMDBUFFER_DEBUG */
     } else {
         SERIAL_ERROR_START;
-        SERIAL_ECHOPGM("Enqueing to the front: \"");
+        SERIAL_ECHORPGM(enqueingFront);
         if (from_progmem)
             SERIAL_PROTOCOLRPGM(cmd);
         else
             SERIAL_ECHO(cmd);
-        SERIAL_ECHOLNPGM("\" failed: Buffer full!");
+        SERIAL_ECHOLNRPGM(bufferFull);
 #ifdef CMDBUFFER_DEBUG
         cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
