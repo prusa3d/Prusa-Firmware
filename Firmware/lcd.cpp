@@ -787,7 +787,6 @@ void lcd_buttons_update(void)
 	if (lcd_buttons & EN_B) enc |= B10;
 	if (enc != lcd_encoder_bits)
 	{
-		lcd_backlight_wake_trigger = true; // flag event, knob rotated
 		switch (enc)
 		{
 		case encrot0:
@@ -814,6 +813,10 @@ void lcd_buttons_update(void)
 			else if (lcd_encoder_bits == encrot0)
 				lcd_encoder_diff--;
 			break;
+		}
+
+		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+			lcd_backlight_wake_trigger = true; // flag event, knob rotated
 		}
 	}
 	lcd_encoder_bits = enc;
