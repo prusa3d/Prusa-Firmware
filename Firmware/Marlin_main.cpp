@@ -875,17 +875,11 @@ static void check_if_fw_is_on_right_printer() {
 uint8_t check_printer_version()
 {
 	uint8_t version_changed = 0;
-	uint16_t printer_type = eeprom_read_word((uint16_t*)EEPROM_PRINTER_TYPE);
-	uint16_t motherboard = eeprom_read_word((uint16_t*)EEPROM_BOARD_TYPE);
+	uint16_t printer_type = eeprom_init_default_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
+	uint16_t motherboard = eeprom_init_default_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
 
-	if (printer_type != PRINTER_TYPE) {
-		if (printer_type == 0xffff) eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
-		else version_changed |= 0b10;
-	}
-	if (motherboard != MOTHERBOARD) {
-		if(motherboard == 0xffff) eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
-		else version_changed |= 0b01;
-	}
+	if (printer_type != PRINTER_TYPE) version_changed |= 0b10;
+	if (motherboard != MOTHERBOARD) version_changed |= 0b01;
 	return version_changed;
 }
 
