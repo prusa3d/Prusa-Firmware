@@ -3704,7 +3704,7 @@ void lcd_v2_calibration()
 	    }
 	    else
 	    {
-	        loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_LEFT_BUTTON_CHOICE);
+	        loaded = !lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
 	        lcd_update_enabled = true;
 
 	    }
@@ -3971,7 +3971,7 @@ void lcd_wizard(WizState state)
 		    //start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
-			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), true);
+			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_LOADED), false, LCD_MIDDLE_BUTTON_CHOICE);
 			if (wizard_event == LCD_LEFT_BUTTON_CHOICE) {
 				state = S::Lay1CalCold;
 			} else { // MIDDLE_BUTTON_CHOICE
