@@ -56,7 +56,6 @@ Sound_SaveMode();
 
 //if critical is true then silend and once mode is ignored
 void __attribute__((noinline)) Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
-    backlight_wake();
      if (critical || eSoundMode != e_SOUND_MODE_SILENT) {
           if(!tone_) {
                WRITE(BEEPER, HIGH);
@@ -127,7 +126,6 @@ static void Sound_DoSound_Blind_Alert(void)
 
  static void Sound_DoSound_Encoder_Move(void)
 {
-    backlight_wake();
 uint8_t nI;
 
  for(nI=0;nI<5;nI++)
@@ -141,7 +139,6 @@ uint8_t nI;
 
 static void Sound_DoSound_Echo(void)
 {
-    backlight_wake();
 uint8_t nI;
 
 for(nI=0;nI<10;nI++)
@@ -163,7 +160,6 @@ WRITE(BEEPER,LOW);
 
 static void Sound_DoSound_Alert(bool bOnce)
 {
-    backlight_wake();
 uint8_t nI,nMax;
 
 nMax=bOnce?1:3;
