@@ -470,14 +470,14 @@ static void _menu_edit_P(void)
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
 	{
-		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
-		else if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
+		// Constrain the value in case it's outside the allowed limits
+		_md->currentValue = constrain(_md->currentValue, _md->minEditValue, _md->maxEditValue);
 		lcd_set_cursor(0, 1);
-		menu_draw_P(' ', _md->editLabel, lcd_encoder);
+		menu_draw_P(' ', _md->editLabel, _md->currentValue);
 	}
 	if (lcd_clicked())
 	{
-		*((T)(_md->editValue)) = lcd_encoder;
+		*((T)(_md->editValue)) = _md->currentValue;
 		menu_back_no_reset();
 	}
 }
