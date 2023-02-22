@@ -704,25 +704,25 @@ void lcd_status_screen()                          // NOT static due to using ins
 	static uint8_t lcd_status_update_delay = 0;
 #ifdef ULTIPANEL_FEEDMULTIPLY
 	// Dead zone at 100% feedrate
-	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
-		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
+	if ((feedmultiply < 100 && (feedmultiply + lcd_encoder) > 100) ||
+		(feedmultiply > 100 && (feedmultiply + lcd_encoder) < 100))
 	{
 		lcd_encoder = 0;
 		feedmultiply = 100;
 	}
-	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
+	if (feedmultiply == 100 && lcd_encoder > ENCODER_FEEDRATE_DEADZONE)
 	{
-		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
+		feedmultiply += lcd_encoder - ENCODER_FEEDRATE_DEADZONE;
 		lcd_encoder = 0;
 	}
-	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
+	else if (feedmultiply == 100 && lcd_encoder < -ENCODER_FEEDRATE_DEADZONE)
 	{
-		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
+		feedmultiply += lcd_encoder + ENCODER_FEEDRATE_DEADZONE;
 		lcd_encoder = 0;
 	}
 	else if (feedmultiply != 100)
 	{
-		feedmultiply += int(lcd_encoder);
+		feedmultiply += lcd_encoder;
 		lcd_encoder = 0;
 	}
 #endif //ULTIPANEL_FEEDMULTIPLY
@@ -2395,7 +2395,7 @@ static void _lcd_move(const char *name, uint8_t axis, int min, int max)
 		refresh_cmd_timeout();
 		if (! planner_queue_full())
 		{
-			current_position[axis] += float((int)lcd_encoder);
+			current_position[axis] += lcd_encoder;
 			if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
 			if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
 			lcd_encoder = 0;
@@ -2423,7 +2423,7 @@ void lcd_move_e()
 			refresh_cmd_timeout();
 			if (! planner_queue_full())
 			{
-				current_position[E_AXIS] += float((int)lcd_encoder);
+				current_position[E_AXIS] += lcd_encoder;
 				lcd_encoder = 0;
 				plan_buffer_line_curposXYZE(manual_feedrate[E_AXIS] / 60);
 				lcd_draw_update = 1;
@@ -2610,7 +2610,7 @@ static void lcd_babystep_z()
 
 	if (lcd_encoder != 0)
 	{
-		_md->babystepMemZ += (int)lcd_encoder;
+		_md->babystepMemZ += lcd_encoder;
 
         if (_md->babystepMemZ < Z_BABYSTEP_MIN) _md->babystepMemZ = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
         else if (_md->babystepMemZ > Z_BABYSTEP_MAX) _md->babystepMemZ = Z_BABYSTEP_MAX; //0
@@ -2724,7 +2724,7 @@ void pid_extruder()
 {
 	lcd_clear();
 	lcd_puts_at_P(0, 0, _i("Set temperature:"));////MSG_SET_TEMPERATURE c=20
-	pid_temp += int(lcd_encoder);
+	pid_temp += lcd_encoder;
 	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
 	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
 	lcd_encoder = 0;
@@ -2825,7 +2825,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
                 _delay(50);
                 if (! planner_queue_full()) {
                     // Only move up, whatever direction the user rotates the encoder.
-                    current_position[Z_AXIS] += fabs(lcd_encoder);
+                    current_position[Z_AXIS] += lcd_encoder;
                     lcd_encoder = 0;
                     plan_buffer_line_curposXYZE(manual_feedrate[Z_AXIS] / 60);
                 }

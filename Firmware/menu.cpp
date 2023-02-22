@@ -64,7 +64,7 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, bool reset_menu_state, 
 
 void menu_start(void)
 {
-    if (lcd_encoder > 0x8000) lcd_encoder = 0;
+    if (lcd_encoder > INT8_MAX) lcd_encoder = 0;
     if (lcd_encoder < 0)
     {
         lcd_encoder = 0;
@@ -473,7 +473,7 @@ static void _menu_edit_P(void)
 		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
 		else if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
-		menu_draw_P(' ', _md->editLabel, (int)lcd_encoder);
+		menu_draw_P(' ', _md->editLabel, lcd_encoder);
 	}
 	if (lcd_clicked())
 	{

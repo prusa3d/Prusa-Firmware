@@ -21,8 +21,8 @@ typedef struct
     //Variables used when editing values.
     const char* editLabel;
     void* editValue;
-    int32_t minEditValue;
-    int32_t maxEditValue;
+    int16_t minEditValue;
+    int16_t maxEditValue;
 } menu_data_edit_t;
 
 extern uint8_t menu_data[MENU_DATA_SIZE];
