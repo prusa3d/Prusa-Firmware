@@ -45,7 +45,7 @@ void menu_data_reset(void)
 	memset(&menu_data, 0, sizeof(menu_data));
 }
 
-void menu_goto(menu_func_t menu, const uint32_t encoder, bool reset_menu_state, const bool feedback)
+void menu_goto(menu_func_t menu, const int16_t encoder, const bool feedback, bool reset_menu_state)
 {
 	CRITICAL_SECTION_START;
 	if (menu_menu != menu)
