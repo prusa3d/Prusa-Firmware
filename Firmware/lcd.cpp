@@ -701,6 +701,12 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 	if (lcd_backlight_wake_trigger) {
 		lcd_backlight_wake_trigger = false;
 		backlight_wake();
+		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
+			// TODO: update lcd_encoder here
+			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+		} else {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+		}
 	}
 
 	backlight_update();

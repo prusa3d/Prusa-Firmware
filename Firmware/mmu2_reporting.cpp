@@ -179,14 +179,12 @@ static uint8_t ReportErrorHookMonitor(uint8_t ei) {
             // More button for two button screen
             lcd_putc_at(18, 3, current_selection == LCD_MIDDLE_BUTTON_CHOICE ? '>': ' ');
         }
-        // Consume rotation event and make feedback sound
+        // Consume rotation event
         enc_dif = lcd_encoder_diff;
-        Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
     }
 
     // Check if knob was clicked and consume the event
     if (lcd_clicked()) {
-        Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
         choice_selected = current_selection;
     } else {
         // continue monitoring

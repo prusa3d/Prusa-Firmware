@@ -2235,8 +2235,7 @@ uint8_t lcd_alright() {
     lcd_consume_click();
     while (1)
     {
-        manage_heater();
-        manage_inactivity(true);
+        delay_keep_alive(0);
 
         if (abs(enc_dif - lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
         {
@@ -2262,13 +2261,11 @@ uint8_t lcd_alright() {
 
             // Consume rotation event and make feedback sound
             enc_dif = lcd_encoder_diff;
-            Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
             _delay(100);
         }
 
         if (lcd_clicked())
         {
-            Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
             lcd_clear();
             lcd_return_to_status();
             return cursor_pos;
@@ -3137,14 +3134,12 @@ uint8_t lcd_show_multiscreen_message_with_choices_and_wait_P(
                     }
                     lcd_show_choices_prompt_P(current_selection, first_choice, second_choice, second_col, third_choice);
                     enc_dif = lcd_encoder_diff;
-                    Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
                 } else {
                     Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
                     break; // turning knob skips waiting loop
                 }
             }
             if (lcd_clicked()) {
-                Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
                 if (msg_next == NULL) {
                     goto exit;
                 } else
@@ -4741,8 +4736,7 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1)
 	{
-		manage_heater();
-		manage_inactivity(true);
+		delay_keep_alive(0);
 
 		if (abs((enc_dif - lcd_encoder_diff)) > 4)
 		{
@@ -4756,7 +4750,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
                 cursor_pos++;
             }
             enc_dif = lcd_encoder_diff;
-			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 		}
 
 		if (cursor_pos > 3)
@@ -4807,7 +4800,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 
 		if (lcd_clicked())
 		{
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 		    KEEPALIVE_STATE(IN_HANDLER);
 			lcd_encoder_diff = 0;
 			return(cursor_pos + first - 1);
@@ -4839,8 +4831,7 @@ char reset_menu() {
 			lcd_puts_at_P(1, i, item[first + i]);
 		}
 
-		manage_heater();
-		manage_inactivity(true);
+		delay_keep_alive(0);
 
 		if (abs((enc_dif - lcd_encoder_diff)) > 4) {
 
@@ -4873,7 +4864,6 @@ char reset_menu() {
 				lcd_puts_at_P(0, 0, PSTR(" \n \n \n "));
 				lcd_set_cursor(0, cursor_pos);
 				lcd_putc('>');
-				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
 			}
@@ -4881,7 +4871,6 @@ char reset_menu() {
 		}
 
 		if (lcd_clicked()) {
-			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			return(cursor_pos + first);
 		}
 
@@ -7504,7 +7493,6 @@ void menu_lcd_lcdupdate_func(void)
 			if (lcd_draw_update == 0)
 			lcd_draw_update = 1;
 			lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
-			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 			lcd_encoder_diff = 0;
 			lcd_timeoutToStatus.start();
 		}
