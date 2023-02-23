@@ -818,8 +818,9 @@ void lcd_buttons_update(void)
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
 			lcd_backlight_wake_trigger = true; // flag event, knob rotated
 		}
+
+		lcd_encoder_bits = enc;
 	}
-	lcd_encoder_bits = enc;
 }
 
 
