@@ -744,8 +744,8 @@ void lcd_buttons_update(void)
 {
     static uint8_t lcd_long_press_active = 0;
 	uint8_t newbutton = 0;
-	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
-	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
+	if (READ(BTN_EN1) == 0) newbutton |= EN_A;
+	if (READ(BTN_EN2) == 0) newbutton |= EN_B;
 
     if (READ(BTN_ENC) == 0)
     { //button is pressed
@@ -782,12 +782,9 @@ void lcd_buttons_update(void)
 
 	lcd_buttons = newbutton;
 	//manage encoder rotation
-	uint8_t enc = 0;
-	if (lcd_buttons & EN_A) enc |= B01;
-	if (lcd_buttons & EN_B) enc |= B10;
-	if (enc != lcd_encoder_bits)
+	if (newbutton != lcd_encoder_bits)
 	{
-		switch (enc)
+		switch (newbutton)
 		{
 		case encrot0:
 			if (lcd_encoder_bits == encrot3)
@@ -819,7 +816,7 @@ void lcd_buttons_update(void)
 			lcd_backlight_wake_trigger = true; // flag event, knob rotated
 		}
 
-		lcd_encoder_bits = enc;
+		lcd_encoder_bits = newbutton;
 	}
 }
 
