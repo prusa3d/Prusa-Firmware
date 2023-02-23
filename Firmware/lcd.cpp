@@ -782,34 +782,15 @@ void lcd_buttons_update(void)
 
 	lcd_buttons = newbutton;
 	//manage encoder rotation
+	#define ENCODER_SPIN(_E1, _E2) switch (lcd_encoder_bits) { case _E1: lcd_encoder_diff++; break; case _E2: lcd_encoder_diff--; }
+
 	if (newbutton != lcd_encoder_bits)
 	{
-		switch (newbutton)
-		{
-		case encrot0:
-			if (lcd_encoder_bits == encrot3)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot1)
-				lcd_encoder_diff--;
-			break;
-		case encrot1:
-			if (lcd_encoder_bits == encrot0)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot2)
-				lcd_encoder_diff--;
-			break;
-		case encrot2:
-			if (lcd_encoder_bits == encrot1)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot3)
-				lcd_encoder_diff--;
-			break;
-		case encrot3:
-			if (lcd_encoder_bits == encrot2)
-				lcd_encoder_diff++;
-			else if (lcd_encoder_bits == encrot0)
-				lcd_encoder_diff--;
-			break;
+		switch (newbutton) {
+			case encrot0: ENCODER_SPIN(encrot3, encrot1); break;
+			case encrot1: ENCODER_SPIN(encrot0, encrot2); break;
+			case encrot2: ENCODER_SPIN(encrot1, encrot3); break;
+			case encrot3: ENCODER_SPIN(encrot2, encrot0); break;
 		}
 
 		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
