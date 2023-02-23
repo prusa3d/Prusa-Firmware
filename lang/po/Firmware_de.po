@@ -502,11 +502,11 @@ msgstr "FEHL. Warte Benutzer"
 msgid "ERROR:"
 msgstr "FEHLER:"
 
-#. MSG_EJECT_FILAMENT c=17
+#. MSG_EJECT_FROM_MMU c=16
 #: ../../Firmware/messages.cpp:60 ../../Firmware/ultralcd.cpp:5111
 #: ../../Firmware/ultralcd.cpp:5549
-msgid "Eject filament"
-msgstr "Filamentauswurf"
+msgid "Eject from MMU"
+msgstr "Auswerf. aus MMU"
 
 #. MSG_PROGRESS_EJECT_FILAMENT c=20
 #. @@todo duplicate

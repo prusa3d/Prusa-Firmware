@@ -57,7 +57,7 @@ const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////MSG_LOAD_
 const char MSG_LOADING_TEST[] PROGMEM_I1 = ISTR("Loading Test"); ////MSG_LOADING_TEST c=18
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////MSG_LOADING_FILAMENT c=20
 const char MSG_TESTING_FILAMENT[] PROGMEM_I1 = ISTR("Testing filament"); ////MSG_TESTING_FILAMENT c=20
-const char MSG_EJECT_FILAMENT[] PROGMEM_I1 = ISTR("Eject filament"); ////MSG_EJECT_FILAMENT c=17
+const char MSG_EJECT_FROM_MMU[] PROGMEM_I1 = ISTR("Eject from MMU"); ////MSG_EJECT_FROM_MMU c=16
 const char MSG_CUT_FILAMENT[] PROGMEM_I1 = ISTR("Cut filament"); ////MSG_CUT_FILAMENT c=17
 const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////MSG_MAIN c=18
 const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////MSG_BACK c=18

@@ -221,7 +221,7 @@ extern const char MSG_ENDSTOP_OPEN[];
 extern const char MSG_POWERUP[];
 extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ENDSTOP_HIT[];
-extern const char MSG_EJECT_FILAMENT[];
+extern const char MSG_EJECT_FROM_MMU[];
 extern const char MSG_CUT_FILAMENT[];
 extern const char MSG_OCTOPRINT_ASK_PAUSE[];
 extern const char MSG_OCTOPRINT_PAUSED[];

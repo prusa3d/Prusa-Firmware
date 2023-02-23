@@ -4981,7 +4981,7 @@ static void mmu_fil_eject_menu() {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
         for (uint8_t i = 0; i < MMU_FILAMENT_COUNT; i++)
-            MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), i + '1', mmu_eject_filament, i); ////MSG_EJECT_FILAMENT c=16
+            MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FROM_MMU), i + '1', mmu_eject_filament, i); ////MSG_EJECT_FROM_MMU c=16
         MENU_END();
     } else {
         eFilamentAction = FilamentAction::MmuEject;
@@ -5309,9 +5309,9 @@ static void lcd_sheet_menu()
 //!
 //! | AutoLoad filament  | not printing + not mmu or paused
 //! | Load filament      | not printing + mmu or paused
-//! | Load to nozzle      | not printing + mmu or paused
+//! | Load to nozzle     | not printing + mmu or paused
 //! | Unload filament    | not printing or paused
-//! | Eject filament     | not printing + mmu or paused
+//! | Eject from MMU     | not printing + mmu or paused
 //! | Cut filament       | not printing + mmu or paused + cut atctive
 //! | Settings           | not printing or paused
 //! | Calibration        | not printing 
@@ -5420,7 +5420,7 @@ static void lcd_main_menu()
             MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), mmu_load_filament_menu);
             MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);////MSG_LOAD_TO_NOZZLE c=18
             MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), mmu_unload_filament);
-            MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FILAMENT), mmu_fil_eject_menu);
+            MENU_ITEM_SUBMENU_P(_T(MSG_EJECT_FROM_MMU), mmu_fil_eject_menu);
 #ifdef  MMU_HAS_CUTTER
             if (eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED) != 0) {
                 MENU_ITEM_SUBMENU_P(_T(MSG_CUT_FILAMENT), mmu_cut_filament_menu);
