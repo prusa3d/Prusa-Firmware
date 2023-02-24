@@ -579,8 +579,8 @@ void ProtocolLogic::CutFilament(uint8_t slot) {
     PlanGenericRequest(RequestMsg(RequestMsgCodes::Cut, slot));
 }
 
-void ProtocolLogic::ResetMMU() {
-    PlanGenericRequest(RequestMsg(RequestMsgCodes::Reset, 0));
+void ProtocolLogic::ResetMMU(uint8_t mode /* = 0 */) {
+    PlanGenericRequest(RequestMsg(RequestMsgCodes::Reset, mode));
 }
 
 void ProtocolLogic::Button(uint8_t index) {

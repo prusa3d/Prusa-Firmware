@@ -259,7 +259,7 @@ static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Filament detecte
 static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU unit."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
 
 // Read explanation in mmu2_protocol_logic.cpp -> supportedMmuFWVersion
-static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.6."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.7."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 static constexpr uint8_t szFWUN = sizeof(MSG_DESC_FW_UPDATE_NEEDED);
 // at least check the individual version characters in MSG_DESC_FW_UPDATE_NEEDED
 static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 7] == ('0' + mmuVersionMajor));

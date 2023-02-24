@@ -91,6 +91,9 @@ void MMU2::Reset(ResetForm level) {
     case CutThePower:
         PowerCycle();
         break;
+    case EraseEEPROM:
+        ResetX42();
+        break;
     default:
         break;
     }
@@ -98,6 +101,10 @@ void MMU2::Reset(ResetForm level) {
 
 void MMU2::ResetX0() {
     logic.ResetMMU(); // Send soft reset
+}
+
+void MMU2::ResetX42(){
+    logic.ResetMMU(42);
 }
 
 void MMU2::TriggerResetPin() {
