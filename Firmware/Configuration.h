@@ -17,7 +17,7 @@ extern const char _sPrinterMmuName[] PROGMEM;
 #define FW_MAJOR 3
 #define FW_MINOR 13
 #define FW_REVISION 0
-#define FW_FLAVOR ALPHA      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
+#define FW_FLAVOR BETA      //uncomment if DEBUG, DEVEL, ALPHA, BETA or RC
 #define FW_FLAVERSION 1     //uncomment if FW_FLAVOR is defined and versioning is needed. Limited to max 8.
 #ifndef FW_FLAVOR
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION)
@@ -25,7 +25,7 @@ extern const char _sPrinterMmuName[] PROGMEM;
     #define FW_VERSION STR(FW_MAJOR) "." STR(FW_MINOR) "." STR(FW_REVISION) "-" STR(FW_FLAVOR) "" STR(FW_FLAVERSION)
 #endif
 
-#define FW_COMMIT_NR 6054
+#define FW_COMMIT_NR 6508
 
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
