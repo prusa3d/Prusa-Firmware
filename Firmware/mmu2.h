@@ -50,7 +50,8 @@ public:
     enum ResetForm : uint8_t {
         Software = 0,   ///< sends a X0 command into the MMU, the MMU will watchdog-reset itself
         ResetPin = 1,   ///< trigger the reset pin of the MMU
-        CutThePower = 2 ///< power off and power on (that includes +5V and +24V power lines)
+        CutThePower = 2, ///< power off and power on (that includes +5V and +24V power lines)
+        EraseEEPROM = 42, ///< erase MMU EEPROM and then perform a software reset
     };
 
     /// Saved print state on error.
@@ -195,6 +196,9 @@ public:
 private:
     /// Perform software self-reset of the MMU (sends an X0 command)
     void ResetX0();
+
+    /// Perform software self-reset of the MMU + erase its EEPROM (sends X2a command)
+    void ResetX42();
 
     /// Trigger reset pin of the MMU
     void TriggerResetPin();

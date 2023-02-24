@@ -105,7 +105,7 @@ public:
     void LoadFilament(uint8_t slot);
     void EjectFilament(uint8_t slot);
     void CutFilament(uint8_t slot);
-    void ResetMMU();
+    void ResetMMU(uint8_t mode = 0);
     void Button(uint8_t index);
     void Home(uint8_t mode);
     void ReadRegister(uint8_t address);
