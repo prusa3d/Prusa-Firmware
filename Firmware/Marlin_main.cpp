@@ -6657,23 +6657,23 @@ Sigma_Exit:
     */
     case 200: // M200 D<millimeters> set filament diameter and set E axis units to cubic millimeters (use S0 to set back to millimeters).
       {
-      if(code_seen('D')) {
-        float diameter = code_value();
-        if (diameter == 0.0) {
-          // setting any extruder filament size disables volumetric on the assumption that
-          // slicers either generate in extruder values as cubic mm or as as filament feeds
-          // for all extruders
-          cs.volumetric_enabled = false;
-        } else {
-          cs.filament_size = code_value();
-          // make sure all extruders have some sane value for the filament size
-          cs.filament_size = (cs.filament_size == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size);
-          cs.volumetric_enabled = true;
+        if(code_seen('D')) {
+          float diameter = code_value();
+          if (diameter == 0.0) {
+            // setting any extruder filament size disables volumetric on the assumption that
+            // slicers either generate in extruder values as cubic mm or as as filament feeds
+            // for all extruders
+            cs.volumetric_enabled = false;
+          } else {
+            cs.filament_size = code_value();
+            // make sure all extruders have some sane value for the filament size
+            cs.filament_size = (cs.filament_size == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size);
+            cs.volumetric_enabled = true;
+          }
+          calculate_extruder_multipliers();
         }
-        calculate_extruder_multipliers();
       }
       break;
-      }
 
     /*!
 	### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#M201:_Set_max_acceleration">M201: Set max printing acceleration</a>
