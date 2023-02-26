@@ -6465,10 +6465,9 @@ Sigma_Exit:
           SERIAL_ECHOPGM(" based on Marlin FIRMWARE_URL:https://github.com/prusa3d/Prusa-Firmware PROTOCOL_VERSION:");
           SERIAL_ECHOPGM(PROTOCOL_VERSION);
           SERIAL_ECHOPGM(" MACHINE_TYPE:");
-          SERIAL_ECHOPGM(CUSTOM_MENDEL_NAME); 
-          SERIAL_ECHOPGM(" EXTRUDER_COUNT:"); 
-          SERIAL_ECHOPGM(STRINGIFY(EXTRUDERS)); 
-          SERIAL_ECHOPGM(" UUID:"); 
+          SERIAL_ECHOPGM(CUSTOM_MENDEL_NAME);
+          SERIAL_ECHOPGM(" EXTRUDER_COUNT:1");
+          SERIAL_ECHOPGM(" UUID:");
           SERIAL_ECHOLNPGM(MACHINE_UUID);
 #ifdef EXTENDED_CAPABILITIES_REPORT
           extended_capabilities_report();
