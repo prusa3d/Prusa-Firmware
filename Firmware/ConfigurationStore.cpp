@@ -85,7 +85,7 @@ void Config_PrintSettings(uint8_t level)
 #endif
   if (cs.volumetric_enabled) {
     printf_P(PSTR("%SFilament settings:\n%S   M200 D%.2f\n"),
-      echomagic, echomagic, cs.filament_size[0]);
+      echomagic, echomagic, cs.filament_size);
   } else {
     printf_P(PSTR("%SFilament settings: Disabled\n"), echomagic);
   }
@@ -151,14 +151,7 @@ static const M500_conf default_conf PROGMEM =
     RETRACT_RECOVER_LENGTH,
     RETRACT_RECOVER_FEEDRATE,
     false,
-    {DEFAULT_NOMINAL_FILAMENT_DIA,
-#if EXTRUDERS > 1
     DEFAULT_NOMINAL_FILAMENT_DIA,
-#if EXTRUDERS > 2
-    DEFAULT_NOMINAL_FILAMENT_DIA,
-#endif
-#endif
-    },
     DEFAULT_MAX_FEEDRATE_SILENT,
     DEFAULT_MAX_ACCELERATION_SILENT,
 #ifdef TMC2130

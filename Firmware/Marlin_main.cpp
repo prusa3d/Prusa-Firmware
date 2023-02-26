@@ -6665,9 +6665,9 @@ Sigma_Exit:
           // for all extruders
           cs.volumetric_enabled = false;
         } else {
-          cs.filament_size[0] = code_value();
+          cs.filament_size = code_value();
           // make sure all extruders have some sane value for the filament size
-          cs.filament_size[0] = (cs.filament_size[0] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[0]);
+          cs.filament_size = (cs.filament_size == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size);
           cs.volumetric_enabled = true;
         }
         calculate_extruder_multipliers();
@@ -9725,13 +9725,7 @@ float calculate_extruder_multiplier(float diameter) {
 }
 
 void calculate_extruder_multipliers() {
-	extruder_multiplier[0] = calculate_extruder_multiplier(cs.filament_size[0]);
-#if EXTRUDERS > 1
-	extruder_multiplier[1] = calculate_extruder_multiplier(cs.filament_size[1]);
-#if EXTRUDERS > 2
-	extruder_multiplier[2] = calculate_extruder_multiplier(cs.filament_size[2]);
-#endif
-#endif
+	extruder_multiplier[0] = calculate_extruder_multiplier(cs.filament_size);
 }
 
 void delay_keep_alive(unsigned int ms)
