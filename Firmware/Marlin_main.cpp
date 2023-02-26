@@ -6647,53 +6647,33 @@ Sigma_Exit:
     #endif //BLINKM
 
     /*!
-	### M200 - Set filament diameter <a href="https://reprap.org/wiki/G-code#M200:_Set_filament_diameter">M200: Set filament diameter</a>
-	#### Usage
-    
-	    M200 [ D | T ]
-	
+  ### M200 - Set filament diameter <a href="https://reprap.org/wiki/G-code#M200:_Set_filament_diameter">M200: Set filament diameter</a>
+  #### Usage
+
+      M200 [ D ]
+
     #### Parameters
-	  - `D` - Diameter in mm
-	  - `T` - Number of extruder (MMUs)
+    - `D` - Diameter in mm
     */
     case 200: // M200 D<millimeters> set filament diameter and set E axis units to cubic millimeters (use S0 to set back to millimeters).
       {
-
-        uint8_t extruder = active_extruder;
-        if(code_seen('T')) {
-          extruder = code_value_uint8();
-		  if(extruder >= EXTRUDERS) {
-            SERIAL_ECHO_START;
-            SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER
-            break;
-          }
-        }
-        if(code_seen('D')) {
-		  float diameter = code_value();
-		  if (diameter == 0.0) {
-			// setting any extruder filament size disables volumetric on the assumption that
-			// slicers either generate in extruder values as cubic mm or as as filament feeds
-			// for all extruders
-		    cs.volumetric_enabled = false;
-		  } else {
-            cs.filament_size[extruder] = code_value();
-			// make sure all extruders have some sane value for the filament size
-			cs.filament_size[0] = (cs.filament_size[0] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[0]);
-            #if EXTRUDERS > 1
-				cs.filament_size[1] = (cs.filament_size[1] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[1]);
-				#if EXTRUDERS > 2
-					cs.filament_size[2] = (cs.filament_size[2] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[2]);
-				#endif
-            #endif
-			cs.volumetric_enabled = true;
-		  }
+      if(code_seen('D')) {
+        float diameter = code_value();
+        if (diameter == 0.0) {
+          // setting any extruder filament size disables volumetric on the assumption that
+          // slicers either generate in extruder values as cubic mm or as as filament feeds
+          // for all extruders
+          cs.volumetric_enabled = false;
         } else {
-          //reserved for setting filament diameter via UFID or filament measuring device
-          break;
+          cs.filament_size[0] = code_value();
+          // make sure all extruders have some sane value for the filament size
+          cs.filament_size[0] = (cs.filament_size[0] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[0]);
+          cs.volumetric_enabled = true;
         }
-		calculate_extruder_multipliers();
+        calculate_extruder_multipliers();
       }
       break;
+      }
 
     /*!
 	### M201 - Set Print Max Acceleration <a href="https://reprap.org/wiki/G-code#M201:_Set_max_acceleration">M201: Set max printing acceleration</a>

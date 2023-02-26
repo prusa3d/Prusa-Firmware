@@ -86,17 +86,9 @@ void Config_PrintSettings(uint8_t level)
   if (cs.volumetric_enabled) {
     printf_P(PSTR("%SFilament settings:\n%S   M200 D%.2f\n"),
       echomagic, echomagic, cs.filament_size[0]);
-#if EXTRUDERS > 1
-    printf_P(PSTR("%S   M200 T1 D%.2f\n"),
-      echomagic, echomagic, cs.filament_size[1]);
-#if EXTRUDERS > 2
-    printf_P(PSTR("%S   M200 T1 D%.2f\n"),
-      echomagic, echomagic, cs.filament_size[2]);
-#endif
-#endif
-    } else {
-        printf_P(PSTR("%SFilament settings: Disabled\n"), echomagic);
-    }
+  } else {
+    printf_P(PSTR("%SFilament settings: Disabled\n"), echomagic);
+  }
 #endif
   if (level >= 10) {
 #ifdef LIN_ADVANCE
