@@ -3223,17 +3223,16 @@ void lcd_temp_cal_show_result(bool result) {
 	disable_e2();
 	setTargetBed(0); //set bed target temperature back to 0
 
-	if (result == true) {
-		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+	// Store boolean result
+	eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, result);
+	eeprom_update_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, result);
+
+	if (result) {
 		SERIAL_ECHOLNPGM("PINDA calibration done. Continue with pressing the knob.");
 		lcd_show_fullscreen_message_and_wait_P(_T(MSG_PINDA_CALIBRATION_DONE));
-		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
-	}
-	else {
-		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
+	} else {
 		SERIAL_ECHOLNPGM("PINDA calibration failed. Continue with pressing the knob.");
 		lcd_show_fullscreen_message_and_wait_P(_i("PINDA calibration failed"));////MSG_PINDA_CAL_FAILED c=20 r=4
-		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 0);
 	}
 	lcd_update_enable(true);
 	lcd_update(2);
