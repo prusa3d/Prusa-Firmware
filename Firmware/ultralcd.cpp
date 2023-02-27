@@ -2747,10 +2747,9 @@ bool lcd_wait_for_pinda(float temp) {
 	while (current_temperature_pinda > temp){
 		lcd_display_message_fullscreen_P(_i("Waiting for PINDA probe cooling"));////MSG_WAITING_TEMP_PINDA c=20 r=3
 
-		lcd_set_cursor(0, 4);
-		lcd_print(LCD_STR_THERMOMETER[0]);
+		lcd_putc_at(0, 4, LCD_STR_THERMOMETER[0]);
 		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)current_temperature_pinda, (int16_t) temp);
-		lcd_print(LCD_STR_DEGREE[0]);
+		lcd_putc(LCD_STR_DEGREE[0]);
 		delay_keep_alive(1000);
 		serialecho_temperatures();
 		if (pinda_timeout.expired(8 * 60 * 1000ul)) { //PINDA cooling from 60 C to 35 C takes about 7 minutes
@@ -2765,10 +2764,9 @@ bool lcd_wait_for_pinda(float temp) {
 
 void lcd_wait_for_heater() {
 		lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-		lcd_set_cursor(0, 4);
-		lcd_print(LCD_STR_THERMOMETER[0]);
+		lcd_putc_at(0, 4, LCD_STR_THERMOMETER[0]);
 		lcd_printf_P(PSTR("%3d/%3d"), (int16_t)degHotend(active_extruder), (int16_t) degTargetHotend(active_extruder));
-		lcd_print(LCD_STR_DEGREE[0]);
+		lcd_putc(LCD_STR_DEGREE[0]);
 }
 
 void lcd_wait_for_cool_down() {
@@ -2779,15 +2777,13 @@ void lcd_wait_for_cool_down() {
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(_i("Waiting for nozzle and bed cooling"));////MSG_WAITING_TEMP c=20 r=4
 
-		lcd_set_cursor(0, 4);
-		lcd_print(LCD_STR_THERMOMETER[0]);
+		lcd_putc_at(0, 4, LCD_STR_THERMOMETER[0]);
 		lcd_printf_P(PSTR("%3d/0"), (int16_t)degHotend(0));
-		lcd_print(LCD_STR_DEGREE[0]);
+		lcd_putc(LCD_STR_DEGREE[0]);
 
-		lcd_set_cursor(9, 4);
-		lcd_print(LCD_STR_BEDTEMP[0]);
+		lcd_putc_at(9, 4, LCD_STR_BEDTEMP[0]);
 		lcd_printf_P(PSTR("%3d/0"), (int16_t)degBed());
-		lcd_print(LCD_STR_DEGREE[0]);
+		lcd_putc(LCD_STR_DEGREE[0]);
 		delay_keep_alive(1000);
 		serialecho_temperatures();
 	}
