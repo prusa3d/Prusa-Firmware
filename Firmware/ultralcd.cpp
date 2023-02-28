@@ -830,7 +830,6 @@ void lcd_commands()
 
 	if (lcd_commands_type == LcdCommands::Layer1Cal)
 	{
-		char cmd1[30];
 		const uint16_t nozzle_dia = eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM);
 		const float extrusion_width = (nozzle_dia + 20)/1000.0f;
 		const float layer_height = 0.2f;
@@ -848,7 +847,7 @@ void lcd_commands()
                 lay1cal_wait_preheat();
                 break;
             case 11:
-                extraPurgeNeeded = lay1cal_load_filament(cmd1, lay1cal_filament);
+                extraPurgeNeeded = lay1cal_load_filament(lay1cal_filament);
                 break;
             case 10:
                 lcd_clear();
@@ -892,8 +891,6 @@ void lcd_commands()
     }
 
 	if (lcd_commands_type == LcdCommands::PidExtruder) {
-		char cmd1[30];
-		
 		if (lcd_commands_step == 0) {
 			custom_message_type = CustomMsg::PidCal;
 			custom_message_state = 1;
@@ -902,9 +899,8 @@ void lcd_commands()
 		}
 		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
 			preparePidTuning(); // ensure we don't move to the next step early
-			sprintf_P(cmd1, PSTR("M303 E0 S%3u"), pid_temp);
 			// setting the correct target temperature (for visualization) is done in PID_autotune
-			enquecommand(cmd1);
+			enquecommandf(PSTR("M303 E0 S%3u"), pid_temp);
 			lcd_setstatuspgm(_i("PID cal."));////MSG_PID_RUNNING c=20
 			lcd_commands_step = 2;
 		}
@@ -913,8 +909,7 @@ void lcd_commands()
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
 			setTargetHotend(0);
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
-				sprintf_P(cmd1, PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
-				enquecommand(cmd1);
+				enquecommandf(PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
 				enquecommand_P(MSG_M500);
 			}
 			else {

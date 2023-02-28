@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <util/atomic.h>
 #include "cmdqueue.h"
 #include "cardreader.h"
@@ -251,6 +252,19 @@ void cmdqueue_dump_to_serial()
 static const char bufferFull[] PROGMEM = "\" failed: Buffer full!";
 static const char enqueingFront[] PROGMEM = "Enqueing to the front: \"";
 
+
+void enquecommandf(const char *fmt, ...)
+{
+    // MAX_CMD_SIZE is 96, but for formatting
+    // string we usually don't need more than 30 bytes
+    char cmd_buffer[30];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf_P(cmd_buffer, sizeof(cmd_buffer), fmt, ap);
+    va_end(ap);
+
+    enquecommand(cmd_buffer, false);
+}
 //adds an command to the main command buffer
 //thats really done in a non-safe way.
 //needs overworking someday
