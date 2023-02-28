@@ -900,7 +900,7 @@ void lcd_commands()
 		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
 			preparePidTuning(); // ensure we don't move to the next step early
 			// setting the correct target temperature (for visualization) is done in PID_autotune
-			enquecommandf(PSTR("M303 E0 S%3u"), pid_temp);
+			enquecommandf_P(PSTR("M303 E0 S%3u"), pid_temp);
 			lcd_setstatuspgm(_i("PID cal."));////MSG_PID_RUNNING c=20
 			lcd_commands_step = 2;
 		}
@@ -909,7 +909,7 @@ void lcd_commands()
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20
 			setTargetHotend(0);
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
-				enquecommandf(PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
+				enquecommandf_P(PSTR("M301 P%.2f I%.2f D%.2f"), _Kp, _Ki, _Kd);
 				enquecommand_P(MSG_M500);
 			}
 			else {
