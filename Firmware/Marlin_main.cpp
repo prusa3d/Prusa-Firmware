@@ -3469,7 +3469,7 @@ static void mmu_M600_load_filament(bool automatic, float nozzle_temp) {
         slot = SpoolJoin::spooljoin.nextSlot();
     } else {
         // Only ask for the slot if automatic/SpoolJoin is off
-        slot = choose_menu_P(_T(MSG_SELECT_EXTRUDER), _T(MSG_EXTRUDER));
+        slot = choose_menu_P(_T(MSG_SELECT_FILAMENT), _T(MSG_FILAMENT));
     }
 
     setTargetHotend(nozzle_temp);
