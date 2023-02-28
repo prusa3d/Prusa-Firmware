@@ -253,7 +253,7 @@ static const char bufferFull[] PROGMEM = "\" failed: Buffer full!";
 static const char enqueingFront[] PROGMEM = "Enqueing to the front: \"";
 
 
-void enquecommandf(const char *fmt, ...)
+void enquecommandf_P(const char *fmt, ...)
 {
     // MAX_CMD_SIZE is 96, but for formatting
     // string we usually don't need more than 30 bytes

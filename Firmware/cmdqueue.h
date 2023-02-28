@@ -64,7 +64,7 @@ extern bool cmd_buffer_empty();
 
 /// @brief Variant of enquecommand which accepts a format string
 /// @param fmt a format string residing in PROGMEM
-void enquecommandf(const char *fmt, ...);
+void enquecommandf_P(const char *fmt, ...);
 extern void enquecommand(const char *cmd, bool from_progmem = false);
 extern void enquecommand_front(const char *cmd, bool from_progmem = false);
 extern void repeatcommand_front();

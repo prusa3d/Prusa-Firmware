@@ -75,7 +75,7 @@ bool lay1cal_load_filament(uint8_t filament)
             enquecommand_P(MSG_M702_NO_LIFT);
         }
         // perform a toolchange
-        enquecommandf(PSTR("T%d"), filament);
+        enquecommandf_P(PSTR("T%d"), filament);
         return true;
     }
     return false;
@@ -123,8 +123,8 @@ void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusi
     else
     {
         static const char fmt1[] PROGMEM = "G1 X%d E%-.3f F1000";
-        enquecommandf(fmt1, 60, count_e(layer_height, extrusion_width * 4.f, 60));
-        enquecommandf(fmt1, 100, count_e(layer_height, extrusion_width * 8.f, 40));
+        enquecommandf_P(fmt1, 60, count_e(layer_height, extrusion_width * 4.f, 60));
+        enquecommandf_P(fmt1, 100, count_e(layer_height, extrusion_width * 8.f, 40));
     }
 }
 
@@ -160,14 +160,14 @@ void lay1cal_meander_start(float layer_height, float extrusion_width)
     enquecommand_P(PSTR("G1 X50 Y155"));
 
     static const char fmt1[] PROGMEM = "G1 Z%-.3f F7200";
-    enquecommandf(fmt1, layer_height);
+    enquecommandf_P(fmt1, layer_height);
 
     enquecommand_P(PSTR("G1 F1080"));
 
-    enquecommandf(extrude_fmt,  75, 155, count_e(layer_height, extrusion_width * 4.f, 25));
-    enquecommandf(extrude_fmt, 100, 155, count_e(layer_height, extrusion_width * 2.f, 25));
-    enquecommandf(extrude_fmt, 200, 155, count_e(layer_height, extrusion_width, 100));
-    enquecommandf(extrude_fmt, 200, 135, count_e(layer_height, extrusion_width, 20));
+    enquecommandf_P(extrude_fmt,  75, 155, count_e(layer_height, extrusion_width * 4.f, 25));
+    enquecommandf_P(extrude_fmt, 100, 155, count_e(layer_height, extrusion_width * 2.f, 25));
+    enquecommandf_P(extrude_fmt, 200, 155, count_e(layer_height, extrusion_width, 100));
+    enquecommandf_P(extrude_fmt, 200, 135, count_e(layer_height, extrusion_width, 20));
 }
 
 //! @brief Print meander
@@ -183,11 +183,11 @@ void lay1cal_meander(float layer_height, float extrusion_width)
     uint8_t x_pos = 50;
     for(uint8_t i = 0; i <= 4; ++i)
     {
-        enquecommandf(extrude_fmt, x_pos, y_pos, long_extrusion);
+        enquecommandf_P(extrude_fmt, x_pos, y_pos, long_extrusion);
 
         y_pos -= short_length;
 
-        enquecommandf(extrude_fmt, x_pos, y_pos, short_extrusion);
+        enquecommandf_P(extrude_fmt, x_pos, y_pos, short_extrusion);
 
         x_pos += long_length;
 
@@ -212,10 +212,10 @@ void lay1cal_square(uint8_t step, float layer_height, float extrusion_width)
 
     for (uint8_t i = step; i < step+4; ++i)
     {
-        enquecommandf(fmt1, 70, (35 - i*short_length * 2), long_extrusion);
-        enquecommandf(fmt1, 70, (35 - (2 * i + 1)*short_length), short_extrusion);
-        enquecommandf(fmt1, 50, (35 - (2 * i + 1)*short_length), long_extrusion);
-        enquecommandf(fmt1, 50, (35 - (i + 1)*short_length * 2), short_extrusion);
+        enquecommandf_P(fmt1, 70, (35 - i*short_length * 2), long_extrusion);
+        enquecommandf_P(fmt1, 70, (35 - (2 * i + 1)*short_length), short_extrusion);
+        enquecommandf_P(fmt1, 50, (35 - (2 * i + 1)*short_length), long_extrusion);
+        enquecommandf_P(fmt1, 50, (35 - (i + 1)*short_length * 2), short_extrusion);
     }
 }
 
