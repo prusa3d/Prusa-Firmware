@@ -3594,10 +3594,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     
         // Recover feed rate
         feedmultiply = feedmultiplyBckp;
-        char cmd[9];
-        sprintf_P(cmd, MSG_M220, feedmultiplyBckp);
-        enquecommand(cmd);
-        
+        enquecommandf(MSG_M220, feedmultiplyBckp);
     }
     
     lcd_setstatuspgm(MSG_WELCOME);
@@ -10768,7 +10765,6 @@ ISR(INT4_vect) {
 }
 
 void recover_print(uint8_t automatic) {
-	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
   lcd_setstatuspgm(_i("Recovering print"));////MSG_RECOVERING_PRINT c=20
@@ -10780,21 +10776,16 @@ void recover_print(uint8_t automatic) {
   // and second also so one may remove the excess priming material.
   if(eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1)
   {
-      sprintf_P(cmd, PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + 25);
-      enquecommand(cmd);
+      enquecommandf(PSTR("G1 Z%.3f F800"), current_position[Z_AXIS] + 25);
   }
 
   // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine
   // transformation status. G28 will not touch Z when MBL is off.
 	enquecommand_P(PSTR("G28 X Y"));
   // Set the target bed and nozzle temperatures and wait.
-	sprintf_P(cmd, PSTR("M104 S%d"), target_temperature[active_extruder]);
-	enquecommand(cmd);
-	sprintf_P(cmd, PSTR("M140 S%d"), target_temperature_bed);
-	enquecommand(cmd);
-	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
-	enquecommand(cmd);
-
+  enquecommandf(PSTR("M104 S%d"), target_temperature[active_extruder]);
+  enquecommandf(PSTR("M140 S%d"), target_temperature_bed);
+  enquecommandf(PSTR("M109 S%d"), target_temperature[active_extruder]);
 	enquecommand_P(MSG_M83); //E axis relative mode
 
     // If not automatically recoreverd (long power loss)
@@ -10802,8 +10793,7 @@ void recover_print(uint8_t automatic) {
         //Extrude some filament to stabilize the pressure
         enquecommand_P(PSTR("G1 E5 F120"));
         // Retract to be consistent with a short pause
-        sprintf_P(cmd, G1_E_F2700, default_retraction);
-        enquecommand(cmd);
+        enquecommandf(G1_E_F2700, default_retraction);
     }
 
 	printf_P(_N("After waiting for temp:\nCurrent pos X_AXIS:%.3f\nCurrent pos Y_AXIS:%.3f\n"), current_position[X_AXIS], current_position[Y_AXIS]);
@@ -10894,7 +10884,6 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 	int feedrate_rec;
 	int feedmultiply_rec;
 	uint8_t fan_speed_rec;
-	char cmd[48];
 	char filename[FILENAME_LENGTH];
 	uint8_t depth = 0;
 	char dir_name[9];
@@ -10926,9 +10915,8 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 	filename[8] = '\0';
 
 	MYSERIAL.print(filename);
-	strcat_P(filename, PSTR(".gco"));
-	sprintf_P(cmd, MSG_M23, filename);
-	enquecommand(cmd);
+  strcat_P(filename, PSTR(".gco"));
+  enquecommandf(MSG_M23, filename);
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
 	MYSERIAL.println(position);
@@ -10939,8 +10927,7 @@ void restore_print_from_eeprom(bool mbl_was_active) {
     float pos_y = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
     if (pos_x != X_COORD_INVALID)
     {
-        sprintf_P(cmd, PSTR("G1 X%f Y%f F3000"), pos_x, pos_y);
-        enquecommand(cmd);
+        enquecommandf(PSTR("G1 X%f Y%f F3000"), pos_x, pos_y);
     }
 
     // Enable MBL and switch to logical positioning
@@ -10948,37 +10935,29 @@ void restore_print_from_eeprom(bool mbl_was_active) {
         enquecommand_P(PSTR("PRUSA MBL V1"));
 
     // Move the Z axis down to the print, in logical coordinates.
-    sprintf_P(cmd, PSTR("G1 Z%f"), eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)));
-	enquecommand(cmd);
+    enquecommandf(PSTR("G1 Z%f"), eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)));
 
     // Restore acceleration settings
     float acceleration = eeprom_read_float((float*)(EEPROM_UVLO_ACCELL));
     float retract_acceleration = eeprom_read_float((float*)(EEPROM_UVLO_RETRACT_ACCELL));
     float travel_acceleration = eeprom_read_float((float*)(EEPROM_UVLO_TRAVEL_ACCELL));
-    sprintf_P(cmd, PSTR("M204 P%f R%f T%f"), acceleration, retract_acceleration, travel_acceleration);
-    enquecommand(cmd);
+    enquecommandf(PSTR("M204 P%f R%f T%f"), acceleration, retract_acceleration, travel_acceleration);
 
   // Unretract.
-    sprintf_P(cmd, G1_E_F2700, default_retraction);
-    enquecommand(cmd);
+    enquecommandf(G1_E_F2700, default_retraction);
   // Recover final E axis position and mode
     float pos_e = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
-    sprintf_P(cmd, PSTR("G92 E%6.3f"), pos_e);
-    enquecommand(cmd);
+    enquecommandf(PSTR("G92 E%6.3f"), pos_e);
     if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
         enquecommand_P(PSTR("M82")); //E axis abslute mode
   // Set the feedrates saved at the power panic.
-	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
-	enquecommand(cmd);
-	sprintf_P(cmd, MSG_M220, feedmultiply_rec);
-	enquecommand(cmd);
+  enquecommandf(PSTR("G1 F%d"), feedrate_rec);
+  enquecommandf(MSG_M220, feedmultiply_rec);
   // Set the fan speed saved at the power panic.
-	sprintf_P(cmd, PSTR("M106 S%u"), fan_speed_rec);
-	enquecommand(cmd);
+  enquecommandf(PSTR("M106 S%u"), fan_speed_rec);
 
   // Set a position in the file.
-  sprintf_P(cmd, PSTR("M26 S%lu"), position);
-  enquecommand(cmd);
+  enquecommandf(PSTR("M26 S%lu"), position);
   enquecommand_P(PSTR("G4 S0")); 
   enquecommand_P(PSTR("PRUSA uvlo"));
 }
@@ -11149,7 +11128,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     // Rather than calling plan_buffer_line directly, push the move into the command queue so that
     // the caller can continue processing. This is used during powerpanic to save the state as we
     // move away from the print.
-    char buf[48];
 
     if(e_move)
     {
@@ -11163,15 +11141,13 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
         // A snprintf would have been a safer call, but since it is not used
         // in the whole program, its implementation would bring more bytes to the total size
         // The behavior of dtostrf 8,3 should be roughly the same as %-0.3
-        sprintf_P(buf, G1_E_F2700, e_move);
-        enquecommand(buf, false);
+        enquecommandf(G1_E_F2700, e_move);
     }
 
     if(z_move)
     {
         // Then lift Z axis
-        sprintf_P(buf, PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]);
-        enquecommand(buf, false);
+        enquecommandf(PSTR("G1 Z%-0.3f F%-0.3f"), saved_pos[Z_AXIS] + z_move, homing_feedrate[Z_AXIS]);
     }
 
     // If this call is invoked from the main Arduino loop() function, let the caller know that the command

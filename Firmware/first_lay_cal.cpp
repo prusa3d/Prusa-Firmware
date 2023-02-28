@@ -58,7 +58,7 @@ void lay1cal_wait_preheat()
 //! @param cmd_buffer character buffer needed to format gcodes
 //! @param filament filament to use (applies for MMU only)
 //! @returns true if extra purge distance is needed in case of MMU prints (after a toolchange), otherwise false
-bool lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
+bool lay1cal_load_filament(uint8_t filament)
 {
     if (MMU2::mmu2.Enabled())
     {
@@ -75,13 +75,7 @@ bool lay1cal_load_filament(char *cmd_buffer, uint8_t filament)
             enquecommand_P(MSG_M702_NO_LIFT);
         }
         // perform a toolchange
-        // sprintf_P(cmd_buffer, PSTR("T%d"), filament);
-        // rewriting the trivial T<filament> g-code command saves 30B:
-        cmd_buffer[0] = 'T';
-        cmd_buffer[1] = filament + '0';
-        cmd_buffer[2] = 0;
-
-        enquecommand(cmd_buffer);
+        enquecommandf(PSTR("T%d"), filament);
         return true;
     }
     return false;
@@ -128,12 +122,9 @@ void lay1cal_intro_line(bool extraPurgeNeeded, float layer_height, float extrusi
     }
     else
     {
-        char cmd_buffer[30];
         static const char fmt1[] PROGMEM = "G1 X%d E%-.3f F1000";
-        sprintf_P(cmd_buffer, fmt1, 60, count_e(layer_height, extrusion_width * 4.f, 60));
-        enquecommand(cmd_buffer);
-        sprintf_P(cmd_buffer, fmt1, 100, count_e(layer_height, extrusion_width * 8.f, 40));
-        enquecommand(cmd_buffer);
+        enquecommandf(fmt1, 60, count_e(layer_height, extrusion_width * 4.f, 60));
+        enquecommandf(fmt1, 100, count_e(layer_height, extrusion_width * 8.f, 40));
     }
 }
 
@@ -166,31 +157,23 @@ void lay1cal_before_meander()
 //! @brief Print meander start
 void lay1cal_meander_start(float layer_height, float extrusion_width)
 {
-    char cmd_buffer[30];
     enquecommand_P(PSTR("G1 X50 Y155"));
 
     static const char fmt1[] PROGMEM = "G1 Z%-.3f F7200";
-    sprintf_P(cmd_buffer, fmt1, layer_height);
-    enquecommand(cmd_buffer);
+    enquecommandf(fmt1, layer_height);
 
     enquecommand_P(PSTR("G1 F1080"));
 
-    sprintf_P(cmd_buffer, extrude_fmt,  75, 155, count_e(layer_height, extrusion_width * 4.f, 25));
-    enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, extrude_fmt, 100, 155, count_e(layer_height, extrusion_width * 2.f, 25));
-    enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, extrude_fmt, 200, 155, count_e(layer_height, extrusion_width, 100));
-    enquecommand(cmd_buffer);
-    sprintf_P(cmd_buffer, extrude_fmt, 200, 135, count_e(layer_height, extrusion_width, 20));
-    enquecommand(cmd_buffer);
+    enquecommandf(extrude_fmt,  75, 155, count_e(layer_height, extrusion_width * 4.f, 25));
+    enquecommandf(extrude_fmt, 100, 155, count_e(layer_height, extrusion_width * 2.f, 25));
+    enquecommandf(extrude_fmt, 200, 155, count_e(layer_height, extrusion_width, 100));
+    enquecommandf(extrude_fmt, 200, 135, count_e(layer_height, extrusion_width, 20));
 }
 
 //! @brief Print meander
 //! @param cmd_buffer character buffer needed to format gcodes
 void lay1cal_meander(float layer_height, float extrusion_width)
 {
-    char cmd_buffer[30];
-
     const float short_length = 20;
     float long_length = 150;
     const float long_extrusion = count_e(layer_height, extrusion_width, long_length);
@@ -200,13 +183,11 @@ void lay1cal_meander(float layer_height, float extrusion_width)
     uint8_t x_pos = 50;
     for(uint8_t i = 0; i <= 4; ++i)
     {
-        sprintf_P(cmd_buffer, extrude_fmt, x_pos, y_pos, long_extrusion);
-        enquecommand(cmd_buffer);
+        enquecommandf(extrude_fmt, x_pos, y_pos, long_extrusion);
 
         y_pos -= short_length;
 
-        sprintf_P(cmd_buffer, extrude_fmt, x_pos, y_pos, short_extrusion);
-        enquecommand(cmd_buffer);
+        enquecommandf(extrude_fmt, x_pos, y_pos, short_extrusion);
 
         x_pos += long_length;
 
@@ -223,7 +204,6 @@ void lay1cal_meander(float layer_height, float extrusion_width)
 //! @param i iteration
 void lay1cal_square(uint8_t step, float layer_height, float extrusion_width)
 {
-    char cmd_buffer[30];
     const float long_length = 20;
     const float short_length = spacing(layer_height, extrusion_width);
     const float long_extrusion = count_e(layer_height, extrusion_width, long_length);
@@ -232,14 +212,10 @@ void lay1cal_square(uint8_t step, float layer_height, float extrusion_width)
 
     for (uint8_t i = step; i < step+4; ++i)
     {
-        sprintf_P(cmd_buffer, fmt1, 70, (35 - i*short_length * 2), long_extrusion);
-        enquecommand(cmd_buffer);
-        sprintf_P(cmd_buffer, fmt1, 70, (35 - (2 * i + 1)*short_length), short_extrusion);
-        enquecommand(cmd_buffer);
-        sprintf_P(cmd_buffer, fmt1, 50, (35 - (2 * i + 1)*short_length), long_extrusion);
-        enquecommand(cmd_buffer);
-        sprintf_P(cmd_buffer, fmt1, 50, (35 - (i + 1)*short_length * 2), short_extrusion);
-        enquecommand(cmd_buffer);
+        enquecommandf(fmt1, 70, (35 - i*short_length * 2), long_extrusion);
+        enquecommandf(fmt1, 70, (35 - (2 * i + 1)*short_length), short_extrusion);
+        enquecommandf(fmt1, 50, (35 - (2 * i + 1)*short_length), long_extrusion);
+        enquecommandf(fmt1, 50, (35 - (i + 1)*short_length * 2), short_extrusion);
     }
 }
 

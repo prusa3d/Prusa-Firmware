@@ -61,6 +61,10 @@ extern void cmdqueue_dump_to_serial_single_line(int nr, const char *p);
 extern void cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
 extern bool cmd_buffer_empty();
+
+/// @brief Variant of enquecommand which accepts a format string
+/// @param fmt a format string residing in PROGMEM
+void enquecommandf(const char *fmt, ...);
 extern void enquecommand(const char *cmd, bool from_progmem = false);
 extern void enquecommand_front(const char *cmd, bool from_progmem = false);
 extern void repeatcommand_front();

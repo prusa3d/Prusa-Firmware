@@ -649,10 +649,8 @@ void CardReader::checkautostart(bool force)
     if(p.name[9]!='~') //skip safety copies
     if(strncmp((char*)p.name,autoname,5)==0)
     {
-      char cmd[30];
       // M23: Select SD file
-      sprintf_P(cmd, MSG_M23, autoname);
-      enquecommand(cmd);
+      enquecommandf(MSG_M23, autoname);
       // M24: Start/resume SD print
       enquecommand_P(MSG_M24);
       found=true;
