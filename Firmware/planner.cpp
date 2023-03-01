@@ -825,9 +825,16 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
     target[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
 #endif // ENABLE_MESH_BED_LEVELING
   target[E_AXIS] = lround(e*cs.axis_steps_per_unit[E_AXIS]);
+
+  // Calculate subtraction to re-use result in many places
+  // This saves memory and speeds up calculations
+  int32_t de = target[E_AXIS] - position[E_AXIS];
+  int32_t dx = target[X_AXIS] - position[X_AXIS];
+  int32_t dy = target[Y_AXIS] - position[Y_AXIS];
+  int32_t dz = target[Z_AXIS] - position[Z_AXIS];
   
   #ifdef PREVENT_DANGEROUS_EXTRUDE
-  if(target[E_AXIS]!=position[E_AXIS])
+  if(de)
   {
     if((int)degHotend(active_extruder)<extrude_min_temp)
     {
@@ -835,17 +842,19 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
       #ifdef LIN_ADVANCE
       position_float[E_AXIS] = e;
       #endif
+      de = 0; // no difference
       SERIAL_ECHO_START;
       SERIAL_ECHOLNRPGM(_n(" cold extrusion prevented"));////MSG_ERR_COLD_EXTRUDE_STOP
     }
     
     #ifdef PREVENT_LENGTHY_EXTRUDE
-    if(labs(target[E_AXIS]-position[E_AXIS])>cs.axis_steps_per_unit[E_AXIS]*EXTRUDE_MAXLENGTH)
+    if(labs(de) > cs.axis_steps_per_unit[E_AXIS]*EXTRUDE_MAXLENGTH)
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
       #ifdef LIN_ADVANCE
       position_float[E_AXIS] = e;
       #endif
+      de = 0; // no difference
       SERIAL_ECHO_START;
       SERIAL_ECHOLNRPGM(_n(" too long extrusion prevented"));////MSG_ERR_LONG_EXTRUDE_STOP
     }
@@ -856,16 +865,16 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Number of steps for each axis
 #ifndef COREXY
 // default non-h-bot planning
-block->steps_x.wide = labs(target[X_AXIS]-position[X_AXIS]);
-block->steps_y.wide = labs(target[Y_AXIS]-position[Y_AXIS]);
+block->steps_x.wide = labs(dx);
+block->steps_y.wide = labs(dy);
 #else
 // corexy planning
 // these equations follow the form of the dA and dB equations on http://www.corexy.com/theory.html
-block->steps_x.wide = labs((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]));
-block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]));
+block->steps_x.wide = labs(dx + dy);
+block->steps_y.wide = labs(dx - dy);
 #endif
-  block->steps_z.wide = labs(target[Z_AXIS]-position[Z_AXIS]);
-  block->steps_e.wide = labs(target[E_AXIS]-position[E_AXIS]);
+  block->steps_z.wide = labs(dz);
+  block->steps_e.wide = labs(de);
   block->step_event_count.wide = max(block->steps_x.wide, max(block->steps_y.wide, max(block->steps_z.wide, block->steps_e.wide)));
 
   // Bail if this is a zero-length block
@@ -879,35 +888,17 @@ block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-p
 
   block->fan_speed = fanSpeed;
 
-  // Compute direction bits for this block 
+  // Compute direction bits for this block
   block->direction_bits = 0;
 #ifndef COREXY
-  if (target[X_AXIS] < position[X_AXIS])
-  {
-    block->direction_bits |= (1<<X_AXIS); 
-  }
-  if (target[Y_AXIS] < position[Y_AXIS])
-  {
-    block->direction_bits |= (1<<Y_AXIS); 
-  }
+  if (dx < 0) block->direction_bits |= _BV(X_AXIS);
+  if (dy < 0) block->direction_bits |= _BV(Y_AXIS);
 #else
-  if ((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]) < 0)
-  {
-    block->direction_bits |= (1<<X_AXIS); 
-  }
-  if ((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]) < 0)
-  {
-    block->direction_bits |= (1<<Y_AXIS); 
-  }
+  if (dx + dy < 0) block->direction_bits |= _BV(X_AXIS);
+  if (dx - dy < 0) block->direction_bits |= _BV(Y_AXIS);
 #endif
-  if (target[Z_AXIS] < position[Z_AXIS])
-  {
-    block->direction_bits |= (1<<Z_AXIS); 
-  }
-  if (target[E_AXIS] < position[E_AXIS])
-  {
-    block->direction_bits |= (1<<E_AXIS); 
-  }
+  if (dz < 0) block->direction_bits |= _BV(Z_AXIS);
+  if (de < 0) block->direction_bits |= _BV(E_AXIS);
 
   //enable active axes
   #ifdef COREXY
@@ -941,17 +932,17 @@ Having the real displacement of the head, we can calculate the total movement le
 */ 
   #ifndef COREXY
     float delta_mm[4];
-    delta_mm[X_AXIS] = (target[X_AXIS]-position[X_AXIS])/cs.axis_steps_per_unit[X_AXIS];
-    delta_mm[Y_AXIS] = (target[Y_AXIS]-position[Y_AXIS])/cs.axis_steps_per_unit[Y_AXIS];
+    delta_mm[X_AXIS] = dx / cs.axis_steps_per_unit[X_AXIS];
+    delta_mm[Y_AXIS] = dy / cs.axis_steps_per_unit[Y_AXIS];
   #else
     float delta_mm[6];
-    delta_mm[X_HEAD] = (target[X_AXIS]-position[X_AXIS])/cs.axis_steps_per_unit[X_AXIS];
-    delta_mm[Y_HEAD] = (target[Y_AXIS]-position[Y_AXIS])/cs.axis_steps_per_unit[Y_AXIS];
-    delta_mm[X_AXIS] = ((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]))/cs.axis_steps_per_unit[X_AXIS];
-    delta_mm[Y_AXIS] = ((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]))/cs.axis_steps_per_unit[Y_AXIS];
+    delta_mm[X_HEAD] = dx / cs.axis_steps_per_unit[X_AXIS];
+    delta_mm[Y_HEAD] = dy / cs.axis_steps_per_unit[Y_AXIS];
+    delta_mm[X_AXIS] = (dx + dy) / cs.axis_steps_per_unit[X_AXIS];
+    delta_mm[Y_AXIS] = (dx - dy) / cs.axis_steps_per_unit[Y_AXIS];
   #endif
-  delta_mm[Z_AXIS] = (target[Z_AXIS]-position[Z_AXIS])/cs.axis_steps_per_unit[Z_AXIS];
-  delta_mm[E_AXIS] = (target[E_AXIS]-position[E_AXIS])/cs.axis_steps_per_unit[E_AXIS];
+  delta_mm[Z_AXIS] = dz / cs.axis_steps_per_unit[Z_AXIS];
+  delta_mm[E_AXIS] = de / cs.axis_steps_per_unit[E_AXIS];
   if ( block->steps_x.wide <=dropsegments && block->steps_y.wide <=dropsegments && block->steps_z.wide <=dropsegments )
   {
     block->millimeters = fabs(delta_mm[E_AXIS]);
