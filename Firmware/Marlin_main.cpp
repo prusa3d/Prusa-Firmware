@@ -11424,7 +11424,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 				}
 				break;
 			case 2: //waiting for nozzle to reach target temperature
-				if (fabs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
+				if (fabs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < TEMP_HYSTERESIS) {
 					lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
 					waiting_start_time = _millis();
 					wait_for_user_state = 0;

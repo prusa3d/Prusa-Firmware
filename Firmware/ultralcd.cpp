@@ -1888,7 +1888,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
     lcd_timeoutToStatus.stop();
 
-    if (current_temperature[0] > (target_temperature[0] * 0.95))
+    if (abs((int)current_temperature[0] - nTemp) > TEMP_HYSTERESIS)
     {
         switch (eFilamentAction)
         {
@@ -3772,7 +3772,7 @@ static void wait_preheat()
     plan_buffer_line_curposXYZE(homing_feedrate[Z_AXIS] / 60);
     delay_keep_alive(2000);
     lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-	while (fabs(degHotend(0) - degTargetHotend(0)) > 3) {
+    while (fabs(degHotend(0) - degTargetHotend(0)) > TEMP_HYSTERESIS) {
         lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 
         lcd_set_cursor(0, 4);
