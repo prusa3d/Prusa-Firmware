@@ -274,8 +274,6 @@ void reset_acceleration_rates();
 
 void update_mode_profile();
 
-uint8_t number_of_blocks();
-
 // #define PLANNER_DIAGNOSTICS
 #ifdef PLANNER_DIAGNOSTICS
 // Diagnostic functions to display planner buffer underflow on the display.

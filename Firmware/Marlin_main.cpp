@@ -10984,9 +10984,6 @@ void restore_print_from_eeprom(bool mbl_was_active) {
 void stop_and_save_print_to_ram(float z_move, float e_move)
 {
 	if (saved_printing) return;
-#if 0
-	unsigned char nplanner_blocks;
-#endif
 	unsigned char nlines;
 	uint16_t sdlen_planner;
 	uint16_t sdlen_cmdqueue;
@@ -10994,16 +10991,12 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 	cli();
 	if (card.sdprinting) {
-#if 0
-		nplanner_blocks = number_of_blocks();
-#endif
 		saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
 		sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
 		saved_sdpos -= sdlen_planner;
 		sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
 		saved_sdpos -= sdlen_cmdqueue;
 		saved_printing_type = PRINTING_TYPE_SD;
-
 	}
 	else if (usb_timer.running()) { //reuse saved_sdpos for storing line number
 		 saved_sdpos = gcode_LastN; //start with line number of command added recently to cmd queue
@@ -11023,7 +11016,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   SERIAL_ECHOPGM("SDPOS="); MYSERIAL.println(card.get_sdpos(), DEC);
   SERIAL_ECHOPGM("SDLEN_PLAN="); MYSERIAL.println(sdlen_planner, DEC);
   SERIAL_ECHOPGM("SDLEN_CMDQ="); MYSERIAL.println(sdlen_cmdqueue, DEC);
-  SERIAL_ECHOPGM("PLANNERBLOCKS="); MYSERIAL.println(int(nplanner_blocks), DEC);
+  SERIAL_ECHOPGM("PLANNERBLOCKS="); MYSERIAL.println(int(moves_planned()), DEC);
   SERIAL_ECHOPGM("SDSAVED="); MYSERIAL.println(saved_sdpos, DEC);
   //SERIAL_ECHOPGM("SDFILELEN="); MYSERIAL.println(card.fileSize(), DEC);
 
