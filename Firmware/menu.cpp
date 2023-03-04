@@ -162,12 +162,10 @@ static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const u
     //xxxxxcba
     //a = selection mark. If it's set(1), then '>' will be used as the first character on the line. Else leave blank
     //b = toggle string is from progmem
-    //c = do not set cursor at all. Must be handled externally.
     uint8_t is_progmem = settings & 0x02;
     const char eol = (toggle == NULL) ? LCD_STR_ARROW_RIGHT[0] : ' ';
     if (toggle == NULL) toggle = _T(MSG_NA);
     uint8_t len = 4 + (is_progmem ? strlen_P(toggle) : strlen(toggle));
-    if (!(settings & 0x04)) lcd_set_cursor(0, menu_row);
     lcd_putc((settings & 0x01) ? '>' : ' ');
     lcd_print_pad_P(str, LCD_WIDTH - len);
     lcd_putc('[');
@@ -411,11 +409,10 @@ const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
 
-template<typename T>
-static void menu_draw_P(char chr, const char* str, int16_t val);
 
-template<>
-void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
+
+template <typename T>
+void menu_draw_P(char chr, const char* str, T val)
 {
 	// The LCD row position is controlled externally. We may only modify the column here
 	lcd_putc(chr);
@@ -434,20 +431,8 @@ void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 	lcd_print(val);
 }
 
-template<>
-void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
-{
-    menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
-    float factor = 1.0f + static_cast<float>(val) / 1000.0f;
-    if (val <= _md->minEditValue)
-    {
-        menu_draw_toggle_puts_P(str, _T(MSG_OFF), 0x04 | 0x02 | (chr=='>'));
-    }
-    else
-    {
-        lcd_printf_P(menu_fmt_float13, chr, str, factor);
-    }
-}
+template void menu_draw_P<int16_t>(char chr, const char* str, int16_t val);
+template void menu_draw_P<uint8_t>(char chr, const char* str, uint8_t val);
 
 //! @brief Draw up to 10 chars of text and a float number in format from +0.0 to +12345.0. The increased range is necessary
 //! for displaying large values of extruder positions, which caused text overflow in the previous implementation.
@@ -488,7 +473,7 @@ static void _menu_edit_P(void)
 		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
 		else if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
-		menu_draw_P<T>(' ', _md->editLabel, (int)lcd_encoder);
+		menu_draw_P(' ', _md->editLabel, (int)lcd_encoder);
 	}
 	if (lcd_clicked())
 	{
@@ -506,7 +491,7 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 		if (lcd_draw_update) 
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_P<T>(menu_selection_mark(), str, *pval);
+			menu_draw_P(menu_selection_mark(), str, *pval);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{

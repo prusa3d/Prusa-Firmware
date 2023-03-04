@@ -146,6 +146,9 @@ extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 template <typename T>
 extern uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val);
 
+template <typename T>
+extern void menu_draw_P(char chr, const char* str, T val);
+
 extern void menu_progressbar_init(uint16_t total, const char* title);
 extern void menu_progressbar_update(uint16_t newVal);
 extern void menu_progressbar_finish(void);

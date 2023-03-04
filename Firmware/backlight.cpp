@@ -14,8 +14,8 @@
 #define BL_FLASH_DELAY_MS 25
 
 bool backlightSupport = 0; //only if it's true will any of the settings be visible to the user
-int16_t backlightLevel_HIGH = 0;
-int16_t backlightLevel_LOW = 0;
+uint8_t backlightLevel_HIGH = 0;
+uint8_t backlightLevel_LOW = 0;
 uint8_t backlightMode = BACKLIGHT_MODE_BRIGHT;
 int16_t backlightTimer_period = 10;
 LongTimer backlightTimer;
@@ -62,8 +62,8 @@ void backlight_wake(const uint8_t flashNo)
 
 void backlight_save() //saves all backlight data to eeprom.
 {
-    eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, (uint8_t)backlightLevel_HIGH);
-    eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW, (uint8_t)backlightLevel_LOW);
+    eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_HIGH, backlightLevel_HIGH);
+    eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_LEVEL_LOW, backlightLevel_LOW);
     eeprom_update_byte((uint8_t *)EEPROM_BACKLIGHT_MODE, backlightMode);
     eeprom_update_word((uint16_t *)EEPROM_BACKLIGHT_TIMEOUT, backlightTimer_period);
 }
