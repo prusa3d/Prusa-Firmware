@@ -545,6 +545,13 @@ bool check_fsensor() {
         && e_active();
 }
 
+bool __attribute__((noinline)) BABYSTEP_ALLOWED() {
+    return (axis_known_position[Z_AXIS]
+        && !homing_flag && !mesh_bed_leveling_flag
+        && ( blocks_queued() || ( !isPrintPaused && (IS_SD_PRINTING || usb_timer.running()) ))
+    );
+}
+
 bool fans_check_enabled = true;
 
 #ifdef TMC2130

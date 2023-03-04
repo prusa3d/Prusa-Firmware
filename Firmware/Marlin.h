@@ -365,6 +365,13 @@ extern bool printer_active();
 //! I'd normally change this macro, but who knows what would happen in the MMU :)
 bool check_fsensor();
 
+//! Condition where Babystepping is allowed:
+//! 1) Axis are trusted: Z-axis position must be known
+//! 2) Not allowed during Homing (printer busy)
+//! 3) Not allowed during Mesh Bed Leveling (printer busy)
+//! 4) Allowed if there are queued blocks OR there is a print job running
+bool BABYSTEP_ALLOWED();
+
 extern void calculate_extruder_multipliers();
 
 // Similar to the default Arduino delay function, 
