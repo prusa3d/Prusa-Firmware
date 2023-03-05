@@ -562,6 +562,11 @@ void lcdui_print_status_line(void) {
             scrollstuff = 0;
         }
     } else { // Otherwise check for other special events
+        if (!lcd_status_message_timeout.expired_cont(LCD_STATUS_DELAYED_TIMEOUT))
+        {
+            return; // Nothing to do, waiting for delay to expire
+        }
+        
         switch (custom_message_type) {
         case CustomMsg::M117:   // M117 Set the status line message on the LCD
         case CustomMsg::Status: // Nothing special, print status message normally
@@ -7396,6 +7401,11 @@ void lcd_setstatus_serial(const char* message)
     if (lcd_message_check(LCD_STATUS_NONE))
         lcd_updatestatus(message);
     SERIAL_ECHOLN(message);
+}
+
+void lcd_reset_status_message_timeout()
+{
+    lcd_status_message_timeout.start();
 }
 
 void lcd_setalertstatus_(const char* message, uint8_t severity, bool progmem)

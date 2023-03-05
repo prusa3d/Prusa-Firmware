@@ -17,11 +17,13 @@ void ultralcd_init();
 #define LCD_STATUS_NONE     0 //< No alert message set
 
 #define LCD_STATUS_INFO_TIMEOUT 20000
+#define LCD_STATUS_DELAYED_TIMEOUT 4000
 
 // Set the current status message (equivalent to LCD_STATUS_NONE)
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
 void lcd_setstatus_serial(const char* message);
+void lcd_reset_status_message_timeout();
 
 //! return to the main status screen and display the alert message
 //! Beware - it has sideeffects:
