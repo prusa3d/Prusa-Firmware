@@ -289,6 +289,11 @@ void ReportProgressHook(CommandInProgress cip, uint16_t ec) {
     }
 }
 
+void TryLoadUnloadProgressbar(uint8_t column, uint8_t row, bool sensorState) {
+    lcd_putc_at(column, row, sensorState ? '_' : LCD_STR_SOLID_BLOCK[0]); // Place character
+    lcd_reset_status_message_timeout();
+}
+
 void IncrementLoadFails(){
     eeprom_increment_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL);
     eeprom_increment_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT);

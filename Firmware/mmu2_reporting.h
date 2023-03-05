@@ -32,6 +32,8 @@ void ReportErrorHook(CommandInProgress cip, uint16_t ec, uint8_t es);
 /// Called when the MMU sends operation progress update
 void ReportProgressHook(CommandInProgress cip, uint16_t ec);
 
+void TryLoadUnloadProgressbar(uint8_t column, uint8_t row, bool sensorState);
+
 /// Remders the sensor status line. Also used by the "resume temperature" screen.
 void ReportErrorHookDynamicRender();
 
