@@ -8,7 +8,7 @@ This is a fork of the original Prusa Firmware. I've modified it to add support f
 
 Please find firmware builds with MeatPack support enabled in the "Releases" section of this repository.
 
-Latest build is here: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.11.0-MeatPack
+Latest build is here: https://github.com/scottmudge/Prusa-Firmware-MeatPack/releases/tag/v3.12.2-meatpack
 
 ---
 
