@@ -415,9 +415,8 @@ void get_command()
 					  checksum = checksum^(*p++);
 				  if (code_value_short() != (int16_t)checksum) {
 					  SERIAL_ERROR_START;
-					  SERIAL_ERRORRPGM(_n("Line Number is not Last Line Number+1, Last Line: "));////MSG_ERR_LINE_NO
+					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH
 					  SERIAL_ERRORLN(gcode_LastN);
-					  //Serial.println(gcode_N);
 					  FlushSerialRequestResend();
 					  serial_count = 0;
 					  return;
