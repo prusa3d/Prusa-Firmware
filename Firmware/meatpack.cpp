@@ -99,7 +99,7 @@ uint8_t MeatPackLookupTbl[16] = {
     '\0' // never used, 0b1111 is used to indicate next 8-bits is a full character
 };
 #else
-inline uint8_t get_char(register uint8_t in) {
+inline uint8_t get_char(const uint8_t in) {
     switch (in) {
     case 0b0000:
         return '0';
@@ -178,7 +178,7 @@ void FORCE_INLINE mp_handle_output_char(const uint8_t c) {
 
 //==========================================================================
 uint8_t FORCE_INLINE mp_unpack_chars(const uint8_t pk, uint8_t* __restrict const chars_out) {
-    register uint8_t out = 0;
+    uint8_t out = 0;
 
 #ifdef USE_LOOKUP_TABLE
     // If lower 4 bytes is 0b1111, the higher 4 are unused, and next char is full.
@@ -233,7 +233,7 @@ void FORCE_INLINE mp_handle_rx_char_inner(const uint8_t c) {
         }
         else {
             uint8_t buf[2] = { 0,0 };
-            register const uint8_t res = mp_unpack_chars(c, buf);
+            const uint8_t res = mp_unpack_chars(c, buf);
 
             if (res & MeatPack_NextPackedFirst) {
                 ++mp_full_char_queue;
@@ -362,7 +362,7 @@ void mp_handle_rx_char(const uint8_t c) {
 uint8_t mp_get_result_char(char* const __restrict out) {
     if (mp_char_out_count > 0) {
         const uint8_t res = mp_char_out_count;
-        for (register uint8_t i = 0; i < mp_char_out_count; ++i)
+        for (uint8_t i = 0; i < mp_char_out_count; ++i)
             out[i] = (char)mp_char_out_buf[i];
         mp_char_out_count = 0;
         return res;
