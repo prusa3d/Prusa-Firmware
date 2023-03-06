@@ -59,7 +59,7 @@ static void __attribute__((noinline)) xfdump_dump_core(dump_header_t& hdr, uint3
 
     // sample SP/PC
     hdr.sp = SP;
-    GETPC(&hdr.pc);
+    hdr.pc = GETPC();
 
     // write header
     static_assert(sizeof(hdr) <= 256, "header is larger than a single page write");

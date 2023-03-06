@@ -10,16 +10,6 @@
 #endif
 #define BED_CHECK_INTERVAL 5000 //ms between checks in bang-bang control
 
-#ifdef PIDTEMP
-  // this adds an experimental additional term to the heating power, proportional to the extrusion speed.
-  // if Kc is chosen well, the additional required power due to increased melting should be compensated.
-  #define PID_ADD_EXTRUSION_RATE
-  #ifdef PID_ADD_EXTRUSION_RATE
-    #define  DEFAULT_Kc (1) //heating power=Kc*(e_speed)
-  #endif
-#endif
-
-
 //automatic temperature: The hot end target temperature is calculated by all the buffered lines of gcode.
 //The maximum buffered steps/sec of the extruder motor are called "se".
 //You enter the autotemp mode by a M109 S<mintemp> B<maxtemp> F<factor>
@@ -239,8 +229,9 @@
 	  #define SD_SORT_TIME 0
 	  #define SD_SORT_ALPHA 1
 	  #define SD_SORT_NONE 2
-	  // #define SHELLSORT
+	  #define INSERTSORT
 	  // #define SORTING_DUMP
+	  // #define SORTING_SPEEDTEST
 	
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
 	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
@@ -249,6 +240,9 @@
 	#if defined(SDCARD_SORT_ALPHA)
 	  #define HAS_FOLDER_SORTING (FOLDER_SORTING)
 	#endif
+
+// Enabe this option to get a pretty message whenever the endstop gets hit (as in the position at which the endstop got triggered)
+//#define VERBOSE_CHECK_HIT_ENDSTOPS
 
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.
 //#define ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
@@ -296,9 +290,7 @@
   //#define LA_DEBUG_LOGIC     // @wavexx: setup logic channels for isr debugging
 #endif
 
-// Arc interpretation settings:
-#define MM_PER_ARC_SEGMENT 1
-#define N_ARC_CORRECTION 25
+// Arc interpretation settings : Moved to the variant files.
 
 const unsigned int dropsegments=5; //everything with less than this number of steps will be ignored as move and joined with the next movement
 

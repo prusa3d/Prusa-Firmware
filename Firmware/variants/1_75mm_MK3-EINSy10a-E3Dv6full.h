@@ -73,6 +73,7 @@
 // Canceled home position
 #define X_CANCEL_POS 50
 #define Y_CANCEL_POS 190
+#define Z_CANCEL_LIFT 50
 
 //Pause print position
 #define X_PAUSE_POS 50
@@ -137,7 +138,6 @@
 // Safety timer
 #define SAFETYTIMER
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
-#define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 // Offline crash dumper
 #define XFLASH_DUMP     // enable dump functionality (including D20/D21/D22)
@@ -168,6 +168,8 @@
 #define DEBUG_DCODE3
 #define DEBUG_DCODE6
 
+//#define DEBUG_PULLUP_CRASH //Test Pullup crash
+
 //#define DEBUG_BUILD
 //#define DEBUG_SEC_LANG   //secondary language debug output at startup
 //#define DEBUG_XFLASH   //debug external spi flash
@@ -176,7 +178,6 @@
 #define DEBUG_DCODES //D codes
 #define DEBUG_STACK_MONITOR        //Stack monitor in stepper ISR
 //#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
-//#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD
 //#define DEBUG_RESUME_PRINT       //Resume/save print debug enable 
 //#define DEBUG_UVLO_AUTOMATIC_RECOVER // Power panic automatic recovery debug output 
 //#define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
@@ -190,7 +191,6 @@
 //#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
 //#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
 //#define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
-//#define DEBUG_DISABLE_PRUSA_STATISTICS //disable prusa_statistics() mesages
 //#define DEBUG_DISABLE_FORCE_SELFTEST //disable force selftest
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
 //#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
@@ -224,6 +224,7 @@
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
+// #define ALLOW_ALL_MRES
 
 #define TMC2130_PWM_GRAD_X  2         // PWMCONF
 #define TMC2130_PWM_AMPL_X  230       // PWMCONF
@@ -354,6 +355,8 @@
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
+#define FANCHECK_AUTO_PRINT_FAN_THRS 70 //[RPS] - Used during selftest to identify swapped fans automatically
+#define FANCHECK_AUTO_FAIL_THRS 20 //[RPS] - Used during selftest to identify a faulty fan
 
 
 /*------------------------------------
@@ -400,19 +403,35 @@
  ADDITIONAL FEATURES SETTINGS
  *------------------------------------*/
 
-// Define Prusa filament runout sensor
-//#define FILAMENT_RUNOUT_SUPPORT
-
-#ifdef FILAMENT_RUNOUT_SUPPORT
-#define FILAMENT_RUNOUT_SENSOR 1
-#endif
-
 // temperature runaway
 #define TEMP_RUNAWAY_BED_HYSTERESIS 5
 #define TEMP_RUNAWAY_BED_TIMEOUT 360
 
 #define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
+
+// model-based temperature check
+#define TEMP_MODEL 1              // enable model-based temperature checks
+#define TEMP_MODEL_DEBUG 1        // extended runtime logging
+
+#define TEMP_MODEL_CAL_C_low 5    // C estimation lower limit
+#define TEMP_MODEL_CAL_C_high 20  // C estimation upper limit
+#define TEMP_MODEL_CAL_C_thr 0.01 // C estimation iteration threshold
+#define TEMP_MODEL_CAL_C_itr 30   // C estimation iteration limit
+
+#define TEMP_MODEL_CAL_R_low 5    // R estimation lower limit
+#define TEMP_MODEL_CAL_R_high 50  // R estimation upper limit
+#define TEMP_MODEL_CAL_R_thr 0.01 // R estimation iteration threshold
+#define TEMP_MODEL_CAL_R_itr 30   // R estimation iteration limit
+
+#define TEMP_MODEL_CAL_T_low 50   // Default calibration cooling temperature (C)
+#define TEMP_MODEL_CAL_T_high 230 // Default calibration working temperature (C)
+
+#define TEMP_MODEL_Ta_corr -7     // Default ambient temperature correction
+
+#include "temp_model/e3d_v6.h"
+#define TEMP_MODEL_DEFAULT E3D_V6 // Default model parameters
+
 
 /*------------------------------------
  MOTOR CURRENT SETTINGS
@@ -504,15 +523,9 @@
 // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
 
-//connect message when communication with monitoring broken
-//#define FARM_CONNECT_MESSAGE
-
 /*-----------------------------------
  PREHEAT SETTINGS
  *------------------------------------*/
-
-#define FARM_PREHEAT_HOTEND_TEMP 250
-#define FARM_PREHEAT_HPB_TEMP 80
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
 #define PLA_PREHEAT_HPB_TEMP 60
@@ -626,13 +639,6 @@
 #define PINDA_STEP_T 10
 #define PINDA_MAX_T 100
 
-#define PING_TIME 60 //time in s
-#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid 0 triggering when dealing with long gcodes
-#define PING_ALLERT_PERIOD 60 //time in s
-
-#define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
-#define NC_BUTTON_LONG_PRESS 15 //time in s
-
 #define LONG_PRESS_TIME 1000 //time in ms for button long press
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
@@ -662,10 +668,24 @@
 
 //#define SUPPORT_VERBOSITY
 
+#define MMU_FILAMENT_COUNT 5
+
 #define MMU_REQUIRED_FW_BUILDNR 83
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
 #define MMU_HAS_CUTTER
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
+
+// Default Arc Interpolation Settings (Now configurable via M214)
+#define DEFAULT_N_ARC_CORRECTION       25 // Number of interpolated segments between corrections.
+/* A value of 1 or less for N_ARC_CORRECTION will trigger the use of Sin and Cos for every arc, which will improve accuracy at the
+   cost of performance*/
+#define DEFAULT_MM_PER_ARC_SEGMENT     1.0f // REQUIRED - The enforced maximum length of an arc segment
+#define DEFAULT_MIN_MM_PER_ARC_SEGMENT 0.5f //the enforced minimum length of an interpolated segment
+   /*  MIN_MM_PER_ARC_SEGMENT Must be smaller than MM_PER_ARC_SEGMENT.  Only has an effect if MIN_ARC_SEGMENTS > 0
+       or ARC_SEGMENTS_PER_SEC > 0 .  If both MIN_ARC_SEGMENTS and ARC_SEGMENTS_PER_SEC is defined, the minimum
+       calculated segment length is used. */
+#define DEFAULT_MIN_ARC_SEGMENTS 20 // The enforced minimum segments in a full circle of the same radius.  Set to 0 to disable
+#define DEFAULT_ARC_SEGMENTS_PER_SEC 0 // Use feedrate to choose segment length. Set to 0 to disable
 
 #endif //__CONFIGURATION_PRUSA_H

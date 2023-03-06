@@ -124,7 +124,7 @@ uint16_t fsensor_oq_sh_sum;
 ClFsensorPCB oFsensorPCB;
 ClFsensorActionNA oFsensorActionNA;
 bool bIRsensorStateFlag=false;
-unsigned long nIRsensorLastTime;
+ShortTimer tIRsensorCheckTimer;
 #endif //IR_SENSOR_ANALOG
 
 void fsensor_stop_and_save_print(void)
@@ -188,7 +188,7 @@ void fsensor_init(void)
 {
 #ifdef PAT9125
 	uint8_t pat9125 = pat9125_init();
-	printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
+	printf_P(PSTR("PAT9125_init:%u\n"), pat9125);
 #endif //PAT9125
 	uint8_t fsensor_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
@@ -237,7 +237,7 @@ bool fsensor_enable(bool bUpdateEEPROM)
 
 	if (mmu_enabled == false) { //filament sensor is pat9125, enable only if it is working
 		uint8_t pat9125 = pat9125_init();
-		printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
+		printf_P(PSTR("PAT9125_init:%u\n"), pat9125);
 		if (pat9125)
 			fsensor_not_responding = false;
 		else
@@ -349,7 +349,7 @@ bool fsensor_check_autoload(void)
 	if (!fsensor_enabled) return false;
 	if (!fsensor_autoload_enabled) return false;
 	if (ir_sensor_detected) {
-		if (digitalRead(IR_SENSOR_PIN) == 1) {
+		if (READ(IR_SENSOR_PIN)) {
 			fsensor_watch_autoload = true;
 		}
 		else if (fsensor_watch_autoload == true) {
@@ -435,8 +435,8 @@ void fsensor_oq_meassure_stop(void)
 {
 	if (!fsensor_enabled) return;
 	if (!fsensor_oq_meassure_enabled) return;
-	printf_P(PSTR("fsensor_oq_meassure_stop, %hhu samples\n"), fsensor_oq_samples);
-	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
+	printf_P(PSTR("fsensor_oq_meassure_stop, %u samples\n"), fsensor_oq_samples);
+	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%u\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * fsensor_chunk_len / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
 	fsensor_oq_meassure = false;
 }
@@ -453,10 +453,10 @@ bool fsensor_oq_result(void)
 	bool res_er_sum = (fsensor_oq_er_sum <= FSENSOR_OQ_MAX_ES);
 	printf_P(_N(" er_sum = %u %S\n"), fsensor_oq_er_sum, (res_er_sum?_OK:_NG));
 	bool res_er_max = (fsensor_oq_er_max <= FSENSOR_OQ_MAX_EM);
-	printf_P(_N(" er_max = %hhu %S\n"), fsensor_oq_er_max, (res_er_max?_OK:_NG));
+	printf_P(_N(" er_max = %u %S\n"), fsensor_oq_er_max, (res_er_max?_OK:_NG));
 	uint8_t yd_avg = ((uint32_t)fsensor_oq_yd_sum * fsensor_chunk_len / fsensor_oq_st_sum);
 	bool res_yd_avg = (yd_avg >= FSENSOR_OQ_MIN_YD) && (yd_avg <= FSENSOR_OQ_MAX_YD);
-	printf_P(_N(" yd_avg = %hhu %S\n"), yd_avg, (res_yd_avg?_OK:_NG));
+	printf_P(_N(" yd_avg = %u %S\n"), yd_avg, (res_yd_avg?_OK:_NG));
 	bool res_yd_max = (fsensor_oq_yd_max <= (yd_avg * FSENSOR_OQ_MAX_PD));
 	printf_P(_N(" yd_max = %u %S\n"), fsensor_oq_yd_max, (res_yd_max?_OK:_NG));
 	bool res_yd_min = (fsensor_oq_yd_min >= (yd_avg / FSENSOR_OQ_MAX_ND));
@@ -472,7 +472,7 @@ bool fsensor_oq_result(void)
 	bool res_sh_avg = (sh_avg <= FSENSOR_OQ_MAX_SH);
 	if (yd_qua >= 8) res_sh_avg = true;
 
-	printf_P(_N(" sh_avg = %hhu %S\n"), sh_avg, (res_sh_avg?_OK:_NG));
+	printf_P(_N(" sh_avg = %u %S\n"), sh_avg, (res_sh_avg?_OK:_NG));
 	bool res = res_er_sum && res_er_max && res_yd_avg && res_yd_max && res_yd_min && res_sh_avg;
 	printf_P(_N("fsensor_oq_result %S\n"), (res?_OK:_NG));
 	return res;
@@ -559,8 +559,8 @@ FORCE_INLINE static void fsensor_isr(int st_cnt)
 #ifdef DEBUG_FSENSOR_LOG
 	if (fsensor_log)
 	{
-		printf_P(_N("FSENSOR cnt=%d dy=%d err=%hhu %S\n"), st_cnt, pat9125_y, fsensor_err_cnt, (fsensor_err_cnt > old_err_cnt)?_N("NG!"):_N("OK"));
-		if (fsensor_oq_meassure) printf_P(_N("FSENSOR st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu yd_max=%u\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max, fsensor_oq_yd_max);
+		printf_P(_N("FSENSOR cnt=%d dy=%d err=%u %S\n"), st_cnt, pat9125_y, fsensor_err_cnt, (fsensor_err_cnt > old_err_cnt)?_N("NG!"):_N("OK"));
+		if (fsensor_oq_meassure) printf_P(_N("FSENSOR st_sum=%u yd_sum=%u er_sum=%u er_max=%u yd_max=%u\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max, fsensor_oq_yd_max);
 	}
 #endif //DEBUG_FSENSOR_LOG
 
@@ -591,9 +591,8 @@ ISR(FSENSOR_INT_PIN_VECT)
 
 void fsensor_setup_interrupt(void)
 {
-
-	pinMode(FSENSOR_INT_PIN, OUTPUT);
-	digitalWrite(FSENSOR_INT_PIN, LOW);
+	WRITE(FSENSOR_INT_PIN, 0);
+	SET_OUTPUT(FSENSOR_INT_PIN);
 	fsensor_int_pin_old = 0;
 
 	//pciSetup(FSENSOR_INT_PIN);
@@ -687,64 +686,10 @@ void fsensor_update(void)
 #else //PAT9125
         if (CHECK_FSENSOR && ir_sensor_detected)
         {
-            if(digitalRead(IR_SENSOR_PIN))
+            if (READ(IR_SENSOR_PIN))
             {                                  // IR_SENSOR_PIN ~ H
-#ifdef IR_SENSOR_ANALOG
-                if(!bIRsensorStateFlag)
-                {
-                    bIRsensorStateFlag=true;
-                    nIRsensorLastTime=_millis();
-                }
-                else
-                {
-                    if((_millis()-nIRsensorLastTime)>IR_SENSOR_STEADY)
-                    {
-                        uint8_t nMUX1,nMUX2;
-                        uint16_t nADC;
-                        bIRsensorStateFlag=false;
-                        // sequence for direct data reading from AD converter
-                        DISABLE_TEMPERATURE_INTERRUPT();
-                        nMUX1=ADMUX;        // ADMUX saving
-                        nMUX2=ADCSRB;
-                        adc_setmux(VOLT_IR_PIN);
-                        ADCSRA|=(1<<ADSC);  // first conversion after ADMUX change discarded (preventively)
-                        while(ADCSRA&(1<<ADSC))
-                            ;
-                        ADCSRA|=(1<<ADSC);  // second conversion used
-                        while(ADCSRA&(1<<ADSC))
-                            ;
-                        nADC=ADC;
-                        ADMUX=nMUX1;        // ADMUX restoring
-                        ADCSRB=nMUX2;
-                        ENABLE_TEMPERATURE_INTERRUPT();
-                        // end of sequence for ...
-                        // Detection of correct function of fsensor v04 - it must NOT read >4.6V
-                        // If it does, it means a disconnected cables or faulty board
-                        if( (oFsensorPCB == ClFsensorPCB::_Rev04) && ( (nADC*OVERSAMPLENR) > IRsensor_Hopen_TRESHOLD ) )
-                        {
-                            fsensor_disable();
-                            fsensor_not_responding = true;
-                            printf_P(PSTR("IR sensor not responding (%d)!\n"),1);
-                            if((ClFsensorActionNA)eeprom_read_byte((uint8_t*)EEPROM_FSENSOR_ACTION_NA)==ClFsensorActionNA::_Pause)
-
-                            // if we are printing and FS action is set to "Pause", force pause the print
-                            if(oFsensorActionNA==ClFsensorActionNA::_Pause)
-                                lcd_pause_print();
-                        }
-                        else
-                        {
-#endif //IR_SENSOR_ANALOG
-                            fsensor_checkpoint_print();
-                            fsensor_enque_M600();
-#ifdef IR_SENSOR_ANALOG
-                        }
-                    }
-                }
-                   }
-                   else
-                   {                                  // IR_SENSOR_PIN ~ L
-                        bIRsensorStateFlag=false;
-#endif //IR_SENSOR_ANALOG
+                fsensor_checkpoint_print();
+                fsensor_enque_M600();
             }
         }
 #endif //PAT9125

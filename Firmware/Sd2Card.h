@@ -28,7 +28,6 @@
  * \brief Sd2Card class for V2 SD/SDHC cards
  */
 #include "SdFatConfig.h"
-#include "Sd2PinMap.h"
 #include "SdInfo.h"
 //------------------------------------------------------------------------------
 // SPI speed is F_CPU/2^(1 + index), 0 <= index <= 6
@@ -133,22 +132,7 @@ uint8_t const SD_CARD_TYPE_SDHC = 3;
 //------------------------------------------------------------------------------
 // SPI pin definitions - do not edit here - change in SdFatConfig.h
 //
-#ifndef SOFTWARE_SPI
-// hardware pin defs
-/** The default chip select pin for the SD card is SS. */
-uint8_t const  SD_CHIP_SELECT_PIN = SS_PIN;
-// The following three pins must not be redefined for hardware SPI.
-/** SPI Master Out Slave In pin */
-uint8_t const  SPI_MOSI_PIN = MOSI_PIN;
-/** SPI Master In Slave Out pin */
-uint8_t const  SPI_MISO_PIN = MISO_PIN;
-/** SPI Clock pin */
-uint8_t const  SPI_SCK_PIN = SCK_PIN;
-
-#else  // SOFTWARE_SPI
-
-/** SPI chip select pin */
-uint8_t const SD_CHIP_SELECT_PIN = SOFT_SPI_CS_PIN;
+#ifdef SOFTWARE_SPI
 /** SPI Master Out Slave In pin */
 uint8_t const SPI_MOSI_PIN = SOFT_SPI_MOSI_PIN;
 /** SPI Master In Slave Out pin */
@@ -176,17 +160,16 @@ class Sd2Card {
   /**
    * \return error code for last error. See Sd2Card.h for a list of error codes.
    */
-  int errorCode() const {return errorCode_;}
+  uint8_t errorCode() const {return errorCode_;}
   /** \return error data for last error. */
-  int errorData() const {return status_;}
+  uint8_t errorData() const {return status_;}
   /**
    * Initialize an SD flash memory card with default clock rate and chip
-   * select pin.  See sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin).
+   * select pin.  See sd2Card::init(uint8_t sckRateID).
    *
    * \return true for success or false for failure.
    */
-  bool init(uint8_t sckRateID = SPI_FULL_SPEED,
-    uint8_t chipSelectPin = SD_CHIP_SELECT_PIN);
+  bool init(uint8_t sckRateID = SPI_FULL_SPEED);
   bool readBlock(uint32_t block, uint8_t* dst);
   /**
    * Read a card's CID register. The CID contains card identification
@@ -232,7 +215,6 @@ class Sd2Card {
 
  private:
   //----------------------------------------------------------------------------
-  uint8_t chipSelectPin_;
   uint8_t errorCode_;
   uint8_t spiRate_;
   uint8_t status_;

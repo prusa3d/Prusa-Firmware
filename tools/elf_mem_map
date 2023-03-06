@@ -4,7 +4,7 @@ import elftools.elf.elffile
 import elftools.dwarf.descriptions
 from collections import namedtuple
 from struct import unpack
-import os
+import re
 
 from lib.dump import decode_dump
 from lib.avr import *
@@ -373,7 +373,7 @@ def main():
         # fetch the memory data
         dump = decode_dump(args.dump)
         if dump is None:
-            return os.EX_DATAERR
+            return 1
 
         # strip padding, if present
         addr_start = dump.ranges[0][0]

@@ -84,7 +84,6 @@ void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
                WRITE(BEEPER, HIGH);
                _delay(ms);
                WRITE(BEEPER, LOW);
-               _delay(ms);
           }
           else{
                _tone(BEEPER, tone_);

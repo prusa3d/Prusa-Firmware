@@ -104,7 +104,7 @@ char *ftostr43(const float &x, uint8_t offset)
 //Float to string with 1.23 format
 char *ftostr12ns(const float &x)
 {
-  long xx = x * 100;
+  int xx = x * 100;
 
   xx = abs(xx);
   conv[0] = (xx / 100) % 10 + '0';

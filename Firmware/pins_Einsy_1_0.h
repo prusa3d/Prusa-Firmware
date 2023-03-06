@@ -19,6 +19,7 @@
 
 #define XFLASH                 // external 256kB flash
 #define BOOTAPP                  // bootloader support
+#define WATCHDOG_SOFT_RESET_VALUE WDTO_15MS
 
 #define XFLASH_PIN_CS          32
 
@@ -76,6 +77,9 @@
 #define VOLT_PWR_PIN         4 //A4
 #define VOLT_BED_PIN         9 //A9
 #define VOLT_IR_PIN          8 //A8
+
+
+#define TEMP_TIM 5
 
 
 #define E0_TMC2130_CS       66

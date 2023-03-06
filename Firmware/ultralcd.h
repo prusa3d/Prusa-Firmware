@@ -5,18 +5,23 @@
 #include "config.h"
 
 extern void menu_lcd_longpress_func(void);
-extern void menu_lcd_charsetup_func(void);
 extern void menu_lcd_lcdupdate_func(void);
 
 // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
 void ultralcd_init();
-void lcd_setstatus(const char* message);
-void lcd_setstatuspgm(const char* message);
 
 //! LCD status severities
-#define LCD_STATUS_CRITICAL 2 //< Heater failure
-#define LCD_STATUS_ALERT    1 //< Other hardware issue
+#define LCD_STATUS_CRITICAL 3 //< Heater failure
+#define LCD_STATUS_ALERT    2 //< Other hardware issue
+#define LCD_STATUS_INFO     1 //< Message times out after a while
 #define LCD_STATUS_NONE     0 //< No alert message set
+
+#define LCD_STATUS_INFO_TIMEOUT 20000
+
+// Set the current status message (equivalent to LCD_STATUS_NONE)
+void lcd_setstatus(const char* message);
+void lcd_setstatuspgm(const char* message);
+void lcd_setstatus_serial(const char* message);
 
 //! return to the main status screen and display the alert message
 //! Beware - it has sideeffects:
@@ -26,19 +31,14 @@ void lcd_setstatuspgm(const char* message);
 void lcd_setalertstatus(const char* message, uint8_t severity = LCD_STATUS_ALERT);
 void lcd_setalertstatuspgm(const char* message, uint8_t severity = LCD_STATUS_ALERT);
 
-//! only update the alert message on the main status screen
-//! has no sideeffects, may be called multiple times
-void lcd_updatestatus(const char *message);
-void lcd_updatestatuspgm(const char *message);
-
-void lcd_reset_alert_level();
+//! Get/reset the current alert level
 uint8_t get_message_level();
+void lcd_reset_alert_level();
+
 void lcd_adjust_z();
 void lcd_pick_babystep();
 void lcd_alright();
 void show_preheat_nozzle_warning();
-void EEPROM_save_B(int pos, int* value);
-void EEPROM_read_B(int pos, int* value);
 void lcd_wait_interact();
 void lcd_loading_filament();
 void lcd_change_success();
@@ -47,10 +47,12 @@ void lcd_sdcard_stop();
 void lcd_pause_print();
 void lcd_pause_usb_print();
 void lcd_resume_print();
-void lcd_print_stop();
-void prusa_statistics(int _message, uint8_t _col_nr = 0);
+void lcd_print_stop(); // interactive print stop
+void print_stop(bool interactive=false);
+#ifdef TEMP_MODEL
+void lcd_temp_model_cal();
+#endif //TEMP_MODEL
 void lcd_load_filament_color_check();
-//void lcd_mylang();
 
 extern void lcd_belttest();
 extern bool lcd_selftest();
@@ -67,7 +69,12 @@ void lcd_crash_detect_enable();
 void lcd_crash_detect_disable();
 #endif
 
-extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
+enum LCDButtonChoice : int_fast8_t {
+    LCD_LEFT_BUTTON_CHOICE = 1,
+    LCD_MIDDLE_BUTTON_CHOICE = 0,
+    LCD_BUTTON_TIMEOUT      = -1,
+};
+
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
 
 extern void lcd_return_to_status();
@@ -75,9 +82,11 @@ extern void lcd_wait_for_click();
 extern bool lcd_wait_for_click_delay(uint16_t nDelay);
 extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
 // 0: no, 1: yes, -1: timeouted
+extern int8_t lcd_show_yes_no_and_wait(bool allow_timeouting = true, bool default_yes = false);
+// 0: no, 1: yes, -1: timeouted
 extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 extern int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes,
-        const char *first_choice, const char *second_choice);
+        const char *first_choice, const char *second_choice, uint8_t second_col = 7);
 extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 // Ask the user to move the Z axis up to the end stoppers and let
 // the user confirm that it has been done.
@@ -108,6 +117,10 @@ enum class LcdCommands : uint_least8_t
 	LongPause,
 	PidExtruder,
 	Layer1Cal,
+#ifdef TEMP_MODEL
+    TempModel,
+#endif //TEMP_MODEL
+    NozzleCNG,
 };
 
 extern LcdCommands lcd_commands_type;
@@ -122,16 +135,12 @@ enum class CustomMsg : uint_least8_t
     TempCal,         //!< PINDA temperature calibration
     TempCompPreheat, //!< Temperature compensation preheat
     M0Wait,          //!< M0/M1 Wait command working even from SD
-    MsgUpdate,       //!< Short message even while printing from SD
-    Resuming,       //!< Resuming message
+    M117,            //!< M117 Set the status line message on the LCD
+    Resuming,        //!< Resuming message
 };
 
 extern CustomMsg custom_message_type;
-extern unsigned int custom_message_state;
-
-extern uint8_t farm_mode;
-extern int farm_timer;
-extern uint8_t farm_status;
+extern uint8_t custom_message_state;
 
 extern bool UserECoolEnabled();
 extern bool FarmOrUserECool();
@@ -168,15 +177,6 @@ void lcd_commands();
 extern bool bSettings;                            // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
 void lcd_hw_setup_menu(void);                     // NOT static due to using inside "util" module ("nozzle_diameter_check()")
 
-
-void change_extr(int extr);
-
-#ifdef SNMM
-void extr_unload_all(); 
-void extr_unload_used();
-#endif //SNMM
-void extr_unload();
-
 enum class FilamentAction : uint_least8_t
 {
     None, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
@@ -192,7 +192,6 @@ enum class FilamentAction : uint_least8_t
 };
 
 extern FilamentAction eFilamentAction;
-extern bool bFilamentFirstRun;
 extern bool bFilamentPreheatState;
 extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
@@ -200,15 +199,10 @@ void mFilamentItemForce();
 void lcd_generic_preheat_menu();
 void unload_filament(bool automatic = false);
 
-void lcd_printer_connected();
-void lcd_ping();
-
-void lcd_calibrate_extruder();
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();
 void lcd_move_e(); // NOT static due to usage in Marlin_main
-void lcd_extr_cal_reset();
 
 void lcd_temp_cal_show_result(bool result);
 #ifdef PINDA_THERMISTOR
@@ -216,16 +210,11 @@ bool lcd_wait_for_pinda(float temp);
 #endif //PINDA_THERMISTOR
 
 
-void bowden_menu();
 char reset_menu();
 uint8_t choose_menu_P(const char *header, const char *item, const char *last_item = nullptr);
 
 void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
-
-void display_loading();
-
-void lcd_set_degree();
 
 #if (LANG_MODE != 0)
 void lcd_language();
@@ -242,16 +231,18 @@ enum class WizState : uint8_t
     Selftest,       //!< self test
     Xyz,            //!< xyz calibration
     Z,              //!< z calibration
+#ifdef TEMP_MODEL
+    TempModel,      //!< Temp model calibration
+#endif //TEMP_MODEL
     IsFil,          //!< Is filament loaded? First step of 1st layer calibration
-    PreheatPla,     //!< waiting for preheat nozzle for PLA
     Preheat,        //!< Preheat for any material
     LoadFilCold,    //!< Load filament for MMU
     LoadFilHot,     //!< Load filament without MMU
-    IsPla,          //!< Is PLA filament?
     Lay1CalCold,    //!< First layer calibration, temperature not selected yet
     Lay1CalHot,     //!< First layer calibration, temperature already selected
     RepeatLay1Cal,  //!< Repeat first layer calibration?
-    Finish,         //!< Deactivate wizard
+    Finish,         //!< Deactivate wizard (success)
+    Failed,         //!< Deactivate wizard (failure)
 };
 
 void lcd_wizard(WizState state);

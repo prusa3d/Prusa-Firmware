@@ -55,6 +55,7 @@
 #include "planner.h"
 #include "stepper.h"
 #include "temperature.h"
+#include "fancheck.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "ConfigurationStore.h"
@@ -67,6 +68,9 @@
 #ifdef TMC2130
 #include "tmc2130.h"
 #endif //TMC2130
+
+#include <util/atomic.h>
+
 
 //===========================================================================
 //=============================public variables ============================
@@ -95,8 +99,6 @@ static float previous_speed[NUM_AXIS]; // Speed of previous path line segment
 static float previous_nominal_speed; // Nominal speed of previous path line segment
 static float previous_safe_speed; // Exit speed limited by a jerk to full halt of a previous last segment.
 
-uint8_t maxlimit_status;
-
 #ifdef AUTOTEMP
 float autotemp_max=250;
 float autotemp_min=210;
@@ -122,7 +124,7 @@ static uint8_t g_cntr_planner_queue_min = 0;
 //=============================private variables ============================
 //===========================================================================
 #ifdef PREVENT_DANGEROUS_EXTRUDE
-float extrude_min_temp=EXTRUDE_MINTEMP;
+int extrude_min_temp = EXTRUDE_MINTEMP;
 #endif
 
 #ifdef LIN_ADVANCE
@@ -459,10 +461,7 @@ void plan_init() {
   #ifdef LIN_ADVANCE
   memset(position_float, 0, sizeof(position_float)); // clear position
   #endif
-  previous_speed[0] = 0.0;
-  previous_speed[1] = 0.0;
-  previous_speed[2] = 0.0;
-  previous_speed[3] = 0.0;
+  memset(previous_speed, 0, sizeof(previous_speed));
   previous_nominal_speed = 0.0;
   plan_reset_next_e_queue = false;
   plan_reset_next_e_sched = false;
@@ -595,17 +594,7 @@ void check_axes_activity()
 #endif
 }
 
-bool waiting_inside_plan_buffer_line_print_aborted = false;
-/*
-void planner_abort_soft()
-{
-    // Empty the queue.
-    while (blocks_queued()) plan_discard_current_block();
-    // Relay to planner wait routine, that the current line shall be canceled.
-    waiting_inside_plan_buffer_line_print_aborted = true;
-    //current_position[i]
-}
-*/
+bool planner_aborted = false;
 
 #ifdef PLANNER_DIAGNOSTICS
 static inline void planner_update_queue_min_counter()
@@ -618,12 +607,8 @@ static inline void planner_update_queue_min_counter()
 
 extern volatile uint32_t step_events_completed; // The number of step events executed in the current block
 
-void planner_abort_hard()
+void planner_reset_position()
 {
-    // Abort the stepper routine and flush the planner queue.
-    DISABLE_STEPPER_DRIVER_INTERRUPT();
-
-    // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
     // First update the planner's current position in the physical motor steps.
     position[X_AXIS] = st_get_position(X_AXIS);
     position[Y_AXIS] = st_get_position(Y_AXIS);
@@ -635,6 +620,7 @@ void planner_abort_hard()
     current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
     current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
     current_position[E_AXIS] = st_get_position_mm(E_AXIS);
+
     // Apply the mesh bed leveling correction to the Z axis.
 #ifdef MESH_BED_LEVELING
     if (mbl.active) {
@@ -667,27 +653,36 @@ void planner_abort_hard()
 #endif
     }
 #endif
-    // Clear the planner queue, reset and re-enable the stepper timer.
-    quickStop();
 
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
-    memcpy(destination, current_position, sizeof(destination));
+    set_destination_to_current();
 #ifdef LIN_ADVANCE
     memcpy(position_float, current_position, sizeof(position_float));
 #endif
+}
+
+void planner_abort_hard()
+{
+    // Abort the stepper routine and flush the planner queue.
+    DISABLE_STEPPER_DRIVER_INTERRUPT();
+
+    // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
+    planner_reset_position();
+
+    // Relay to planner wait routine that the current line shall be canceled.
+    planner_aborted = true;
+
+    // Clear the planner queue, reset and re-enable the stepper timer.
+    quickStop();
+
     // Resets planner junction speeds. Assumes start from rest.
     previous_nominal_speed = 0.0;
-    previous_speed[0] = 0.0;
-    previous_speed[1] = 0.0;
-    previous_speed[2] = 0.0;
-    previous_speed[3] = 0.0;
+    memset(previous_speed, 0, sizeof(previous_speed));
 
+    // Reset position sync requests
     plan_reset_next_e_queue = false;
     plan_reset_next_e_sched = false;
-
-    // Relay to planner wait routine, that the current line shall be canceled.
-    waiting_inside_plan_buffer_line_print_aborted = true;
 }
 
 void plan_buffer_line_curposXYZE(float feed_rate) {
@@ -706,14 +701,17 @@ float junction_deviation = 0.1;
 // Add a new linear movement to the buffer. steps_x, _y and _z is the absolute position in 
 // mm. Microseconds specify how many microseconds the move should take to perform. To aid acceleration
 // calculation the caller must also provide the physical length of the line in millimeters.
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target)
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_start_position, uint16_t segment_idx)
 {
-    // Calculate the buffer head after we push this byte
+  // CRITICAL_SECTION_START; //prevent stack overflow in ISR
+  // printf_P(PSTR("plan_buffer_line(%f, %f, %f, %f, %f, %u, [%f,%f,%f,%f], %u)\n"), x, y, z, e, feed_rate, extruder, gcode_start_position[0], gcode_start_position[1], gcode_start_position[2], gcode_start_position[3], segment_idx);
+  // CRITICAL_SECTION_END;
+
+  // Calculate the buffer head after we push this byte
   uint8_t next_buffer_head = next_block_index(block_buffer_head);
 
-  // If the buffer is full: good! That means we are well ahead of the robot. 
+  // If the buffer is full: good! That means we are well ahead of the robot.
   // Rest here until there is room in the buffer.
-  waiting_inside_plan_buffer_line_print_aborted = false;
   if (block_buffer_tail == next_buffer_head) {
       do {
           manage_heater(); 
@@ -721,18 +719,14 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
           manage_inactivity(false); 
           lcd_update(0);
       } while (block_buffer_tail == next_buffer_head);
-      if (waiting_inside_plan_buffer_line_print_aborted) {
-          // Inside the lcd_update(0) routine the print has been aborted.
-          // Cancel the print, do not plan the current line this routine is waiting on.
-#ifdef PLANNER_DIAGNOSTICS
-          planner_update_queue_min_counter();
-#endif /* PLANNER_DIAGNOSTICS */
-          return;
-      }
   }
 #ifdef PLANNER_DIAGNOSTICS
   planner_update_queue_min_counter();
 #endif /* PLANNER_DIAGNOSTICS */
+  if(planner_aborted) {
+      // avoid planning the block early if aborted
+      return;
+  }
 
   // Prepare to set up new block
   block_t *block = &block_buffer[block_buffer_head];
@@ -743,16 +737,14 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Set sdlen for calculating sd position
   block->sdlen = 0;
 
-  // Save original destination of the move
-  if (gcode_target)
-      memcpy(block->gcode_target, gcode_target, sizeof(block_t::gcode_target));
+  // Save original start position of the move
+  if (gcode_start_position)
+      memcpy(block->gcode_start_position, gcode_start_position, sizeof(block_t::gcode_start_position));
   else
-  {
-      block->gcode_target[X_AXIS] = x;
-      block->gcode_target[Y_AXIS] = y;
-      block->gcode_target[Z_AXIS] = z;
-      block->gcode_target[E_AXIS] = e;
-  }
+      memcpy(block->gcode_start_position, current_position, sizeof(block_t::gcode_start_position));
+  
+  // Save the index of this segment (when a single G0/1/2/3 command plans multiple segments)
+  block->segment_idx = segment_idx;
 
   // Save the global feedrate at scheduling time
   block->gcode_feedrate = feedrate;
@@ -839,7 +831,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   #ifdef PREVENT_DANGEROUS_EXTRUDE
   if(target[E_AXIS]!=position[E_AXIS])
   {
-    if(degHotend(active_extruder)<extrude_min_temp)
+    if((int)degHotend(active_extruder)<extrude_min_temp)
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
       #ifdef LIN_ADVANCE
@@ -1023,7 +1015,7 @@ Having the real displacement of the head, we can calculate the total movement le
     // Calculate speed in mm/second for each axis. No divide by zero due to previous checks.
   float inverse_second = feed_rate * inverse_millimeters;
 
-  int moves_queued = moves_planned();
+  uint8_t moves_queued = moves_planned();
 
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
 #ifdef SLOWDOWN
@@ -1044,14 +1036,12 @@ Having the real displacement of the head, we can calculate the total movement le
   // Calculate and limit speed in mm/sec for each axis
   float current_speed[4];
   float speed_factor = 1.0; //factor <=1 do decrease speed
-//  maxlimit_status &= ~0xf;
   for(int i=0; i < 4; i++)
   {
     current_speed[i] = delta_mm[i] * inverse_second;
 	if(fabs(current_speed[i]) > max_feedrate[i])
 	{
       speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
-	  maxlimit_status |= (1 << i);
 	}
   }
 
@@ -1133,13 +1123,13 @@ Having the real displacement of the head, we can calculate the total movement le
     // Limit acceleration per axis
     //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
     if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS]; maxlimit_status |= (X_AXIS_MASK << 4); }
+	{  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS]; }
     if(((float)block->acceleration_st * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS]; maxlimit_status |= (Y_AXIS_MASK << 4); }
+	{  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS]; }
     if(((float)block->acceleration_st * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[E_AXIS]; maxlimit_status |= (Z_AXIS_MASK << 4); }
+	{  block->acceleration_st = axis_steps_per_sqr_second[E_AXIS]; }
     if(((float)block->acceleration_st * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS]; maxlimit_status |= (E_AXIS_MASK << 4); }
+	{  block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS]; }
   }
   // Acceleration of the segment, in mm/sec^2
   block->acceleration = block->acceleration_st / steps_per_mm;
@@ -1339,8 +1329,12 @@ Having the real displacement of the head, we can calculate the total movement le
   if (block->step_event_count.wide <= 32767)
     block->flag |= BLOCK_FLAG_DDA_LOWRES;
 
-  // Move the buffer head. From now the block may be picked up by the stepper interrupt controller.
-  block_buffer_head = next_buffer_head;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+      // Move the buffer head ensuring the current block hasn't been cancelled from an isr context
+      // (this is possible both during crash detection *and* uvlo, thus needing a global cli)
+      if(planner_aborted) return;
+      block_buffer_head = next_buffer_head;
+  }
 
   // Update position
   memcpy(position, target, sizeof(target)); // position[] = target[]
@@ -1414,10 +1408,7 @@ void plan_set_position(float x, float y, float z, const float &e)
   #endif
   st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
   previous_nominal_speed = 0.0; // Resets planner junction speeds. Assumes start from rest.
-  previous_speed[0] = 0.0;
-  previous_speed[1] = 0.0;
-  previous_speed[2] = 0.0;
-  previous_speed[3] = 0.0;
+  memset(previous_speed, 0, sizeof(previous_speed));
 }
 
 // Only useful in the bed leveling routine, when the mesh bed leveling is off.
@@ -1445,9 +1436,9 @@ void plan_reset_next_e()
 }
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
-void set_extrude_min_temp(float temp)
+void set_extrude_min_temp(int temp)
 {
-  extrude_min_temp=temp;
+  extrude_min_temp = temp;
 }
 #endif
 

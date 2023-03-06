@@ -4,12 +4,6 @@
 
 #include <inttypes.h>
 
-
-#if defined(__cplusplus)
-extern "C" {
-#endif //defined(__cplusplus)
-
-
 extern uint8_t pat9125_PID1;
 extern uint8_t pat9125_PID2;
 
@@ -23,10 +17,5 @@ extern uint8_t pat9125_init(void);
 extern uint8_t pat9125_update(void);    // update all sensor data
 extern uint8_t pat9125_update_y(void);  // update _y only
 extern uint8_t pat9125_update_bs(void); // update _b/_s only
-
-
-#if defined(__cplusplus)
-}
-#endif //defined(__cplusplus)
 
 #endif //PAT9125_H

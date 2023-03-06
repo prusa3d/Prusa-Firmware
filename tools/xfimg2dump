@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import struct
-import os, sys
+import sys
 
 from lib.dump import DUMP_MAGIC, DUMP_OFFSET, DUMP_SIZE
 
@@ -25,13 +25,13 @@ def main():
         data = fd.read(DUMP_SIZE)
     if len(data) != DUMP_SIZE:
         error('incorrect image size')
-        return os.EX_DATAERR
+        return 1
 
     # check for magic header
     magic, = struct.unpack('<L', data[:4])
     if magic != DUMP_MAGIC:
         error('invalid dump magic or no dump')
-        return os.EX_DATAERR
+        return 1
 
     # output D21 dump
     print('D21 - read crash dump', end='')

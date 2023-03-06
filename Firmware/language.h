@@ -26,9 +26,10 @@
 #define PROGMEM_I1 __attribute__((section(".progmem1")))
 #define PROGMEM_N1 __attribute__((section(".progmem2")))
 #define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = s; &__c[0];}))
-#define ISTR(s) s
-#define _i(s) _I(s)
-#define _T(s) s
+#define ISTR(s) (s) // declare a translatable string
+#define _i(s) _I(s) // declare a translatable string and return the translated form
+#define _T(s) (s)   // return translated string from reference
+#define _O(s) (s)   // return original (untranslated) string from reference
 #else //(LANG_MODE == 0)
 // section .loc_sec (originaly .progmem0) will be used for localized translated strings
 #define PROGMEM_I2 __attribute__((section(".loc_sec")))
@@ -40,9 +41,12 @@
 #define ISTR(s) "\xff\xff" s
 #define _i(s) lang_get_translation(_I(s))
 #define _T(s) lang_get_translation(s)
+#define _O(s) (s + 2)
 #endif //(LANG_MODE == 0)
+
 #define _N(s) (__extension__({static const char __c[] PROGMEM_N1 = s; &__c[0];}))
-#define _n(s) _N(s)
+#define _n(s) _N(s) // declare and return untranslated string
+#define _R(s) (s)   // return reference to translatable string (for warning suppression)
 
 /** @brief lang_table_header_t structure - (size= 16byte) */
 typedef struct
@@ -119,9 +123,9 @@ typedef struct
 #ifdef COMMUNITY_LANG_GROUP1_HR
 #define LANG_CODE_HR 0x6872 //!<'hr'
 #endif // COMMUNITY_LANG_GROUP1_HR
-#ifdef COMMUNITY_LANG_GROUP1_LT
+#ifdef COMMUNITY_LANG_GROUP2_LT
 #define LANG_CODE_LT 0x6C74 //!<'lt'
-#endif // COMMUNITY_LANG_GROUP1_LT
+#endif // COMMUNITY_LANG_GROUP2_LT
 #ifdef COMMUNITY_LANG_GROUP1_SK
 #define LANG_CODE_SK 0x736b //!<'sk'
 #endif // COMMUNITY_LANG_GROUP1_SK
@@ -145,9 +149,7 @@ extern uint8_t lang_selected;
 #if (LANG_MODE != 0)
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
-/** @def _SEC_LANG_TABLE
- *  @brief Align table to start of 256 byte page */
-#define _SEC_LANG_TABLE ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00)
+#define _SEC_LANG_TABLE ((uint16_t)&_SEC_LANG)
 #endif //(LANG_MODE != 0)
 
 /** @brief selects language, eeprom is updated in case of success */

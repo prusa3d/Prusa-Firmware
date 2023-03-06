@@ -6,7 +6,8 @@
 #include "pins.h"
 
 #if (defined(VOLT_IR_PIN) && defined(IR_SENSOR))
-# define IR_SENSOR_ANALOG
+// TODO: IR_SENSOR_ANALOG currently disabled as being incompatible with the new thermal regulation
+// # define IR_SENSOR_ANALOG
 #endif
 
 //ADC configuration
@@ -20,7 +21,7 @@
 #define ADC_CHAN_CNT      8         //number of used channels)
 #endif //!IR_SENSOR_ANALOG
 #define ADC_OVRSAMPL      16        //oversampling multiplier
-#define ADC_CALLBACK      adc_ready //callback function ()
+#define ADC_CALLBACK      adc_callback //callback function ()
 
 //SWI2C configuration
 //#define SWI2C_SDA         20 //SDA on P3
@@ -58,7 +59,13 @@
 //#define LANG_MODE              0 // primary language only
 #define LANG_MODE              1 // sec. language support
 
-#define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes). Maximum 32768 bytes
+#define LANG_SIZE_RESERVED     0x3000 // reserved space for secondary language (12288 bytes).
+                                      // 0x3D00 Maximum 15616 bytes as it depends on xflash_layout.h
+                                      // 16 Languages max. per group including stock 
+
+#if (LANG_SIZE_RESERVED % 256)
+  #error "LANG_SIZE_RESERVED should be a multiple of a page size"
+#endif
 
 //Community language support
 #define COMMUNITY_LANG_GROUP 1
@@ -70,17 +77,21 @@
 #define COMMUNITY_LANG_GROUP1_HR // Community Croatian language
 #define COMMUNITY_LANG_GROUP1_SK // Community Slovak language
 #define COMMUNITY_LANG_GROUP1_SV // Community Swedish language
-//#define COMMUNITY_LANG_GROUP1_NO // Community Norwegian language
+#define COMMUNITY_LANG_GROUP1_NO // Community Norwegian language
 //#define COMMUNITY_LANG_GROUP1_DA // Community Danish language
 //#define COMMUNITY_LANG_GROUP1_SL // Community Slovanian language
 //#define COMMUNITY_LANG_GROUP1_LB // Community Luxembourgish language
-//#define COMMUNITY_LANG_GROUP1_LT // Community Lithuanian language
+#endif //COMMUNITY_LANG_GROUP 1
+
+#if (COMMUNITY_LANG_GROUP == 2)
+#define COMMUNITY_LANG_GROUP2_LT // Community Lithuanian language
 //#define COMMUNITY_LANG_GROUP1_QR // Community new language //..use this as a template and replace 'QR'
-#endif
+#endif //COMMUNITY_LANG_GROUP 2
 
 #if (COMMUNITY_LANG_GROUP >=1 )
 #define COMMUNITY_LANGUAGE_SUPPORT
 #endif
+
 // Sanity checks for correct configuration of XFLASH_DUMP options
 #if defined(XFLASH_DUMP) && !defined(XFLASH)
 #error "XFLASH_DUMP requires XFLASH support"
@@ -102,4 +113,11 @@
 #define EMERGENCY_HANDLERS
 #endif
 
+//FARM_MODE
+#if ( LANG_MODE == 0 ) && defined(XFLASH) //Save resources on EINSY and disable FARM_MODE on multi-language version
+#define PRUSA_FARM
+#endif //PRUSA_FARM only in english on EINSYs
+#ifndef XFLASH //enable FARM_MODE on miniRAMBo boards
+#define PRUSA_FARM
+#endif
 #endif //_CONFIG_H

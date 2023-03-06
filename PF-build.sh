@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 2.0.0-Build_70
+# Version: 2.0.2-Build_80
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -85,7 +85,7 @@
 # 15 Feb 2019, 3d-gussner, troubleshooting and minor fixes
 # 16 Feb 2019, 3d-gussner, Script can be run using arguments
 #                          $1 = variant, example "1_75mm_MK3-EINSy10a-E3Dv6full.h" at this moment it is not possible to use ALL
-#                          $2 = multi language OR English only [ALL/EN_ONLY]
+#                          $2 = multi language OR English only [ALL/EN_FARM]
 #                          $3 = development status [GOLD/RC/BETA/ALPHA/DEVEL/DEBUG]
 #                          If one argument is wrong a list of valid one will be shown
 # 13 Mar 2019, 3d-gussner, MKbel updated the Linux build environment to version 1.0.2 with an Fix maximum firmware flash size.
@@ -124,7 +124,7 @@
 #                          After compiling All multi-language variants it makes it easier to find missing or unused translations.
 # 12 May 2020, DRracer   , Cleanup double MK2/s MK25/s `not_tran` and `not_used` files
 # 13 May 2020, leptun    , If cleanup files do not exist don't try to.
-# 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_ONLY. Thank to @leptun for pointing out.
+# 01 Oct 2020, 3d-gussner, Bug fix if using argument EN_FARM. Thank to @leptun for pointing out.
 #                          Change Build number to script commits 'git rev-list --count HEAD PF-build.sh'
 # 02 Oct 2020, 3d-gussner, Add UNKNOWN as argument option
 # 05 Oct 2020, 3d-gussner, Disable pause and warnings using command line with all needed arguments
@@ -173,7 +173,16 @@
 #                          Add selection of language in MK404 for MK2.5/S
 # 10 Feb 2022, 3d-gussner, Add SRCDIR for compatibility with build server
 # 13 Feb 2022, leptun    , Fix -o for "Restoring" messages after failure
-
+# 24 Feb 2022, 3d-gussner, Change to Arduino IDE 1.8.19 and Arduino boards 1.0.5
+#                          Fix DEV_STATUS to set correctly on RC/BETA/ALPHA/DEVEL
+#                          Fix atmegaMK404 Board mem and flash modifications
+#                          Limit atmegaMK404 boards mem to 8,16,32
+# 20 Jun 2022, 3d-gussner, Change to Ardunio_boards v1.0.5-1
+# 20 Jun 2022, wavexx    , New PO-based language translation support
+# 20 Jun 2022, 3d-gussner, fix Mk2.5/S zip after change PO-based language translation support
+# 06 Jul 2022, 3d-gussner, Change to v1.0.8 and Ardunio_boards v1.0.5-2
+# 06 Jul 2022, 3d-gussner, Fix branch check
+# 12 Jul 2022, 3d-gussner, Check if FW_FLAVAVOR and FW_FLAVERSION are correct
 
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 export SRCDIR=$SCRIPT_PATH
@@ -197,6 +206,7 @@ case "$1" in
     22) echo "$(tput setaf 1)PF-build.sh has been interrupted/failed. $(tput setaf 6)Restoring 'config.h'$(tput sgr0)" ; if [ $OUTPUT == "1" ] ; then sleep 5 ; fi ;;
     24) echo "$(tput setaf 1)PF-build.sh stopped due to compiling errors! Try to restore modified files.$(tput sgr0)"; check_script_failed_nr1 ; check_script_failed_nr2 ; cleanup_firmware ; exit 24 ;;
     25) echo "$(tput setaf 1)Failed to execute $(tput sgr0)" ; exit 25 ;;
+    26) echo "$(tput setaf 1)FW_FLAVAVOR or FW_FLAVERSION commented out in 'Firmware/Configuration.h'$(tput sgr0)"; check_script_failed_nr1 ; check_script_failed_nr2 ; cleanup_firmware ; exit 26 ;;
 esac
 }
 #### End: Failures
@@ -230,7 +240,7 @@ while getopts b:c:d:g:h:i:j:l:m:n:o:p:v:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* PF-build.sh Version: 2.0.0-Build_70 *"
+echo "* PF-build.sh Version: 2.0.2-Build_80 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-b$(tput sgr0) Build/commit number"
@@ -256,15 +266,15 @@ echo "  -b : '$(tput setaf 2)Auto$(tput sgr0)' needs git or a number"
 echo "  -c : '$(tput setaf 2)0$(tput sgr0)' clean up, '$(tput setaf 2)1$(tput sgr0)' keep"
 echo "  -d : '$(tput setaf 2)GOLD$(tput sgr0)', '$(tput setaf 2)RC$(tput sgr0)', '$(tput setaf 2)BETA$(tput sgr0)', '$(tput setaf 2)ALPHA$(tput sgr0)', '$(tput setaf 2)DEBUG$(tput sgr0)', '$(tput setaf 2)DEVEL$(tput sgr0)' and '$(tput setaf 2)UNKNOWN$(tput sgr0)'"
 echo "  -g : '$(tput setaf 2)0$(tput sgr0)' no '$(tput setaf 2)1$(tput sgr0)' lite '$(tput setaf 2)2$(tput sgr0)' fancy  '$(tput setaf 2)3$(tput sgr0)' lite  with Quad_HR '$(tput setaf 2)4$(tput sgr0)' fancy with Quad_HR"
-echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.13$(tput sgr0)', '$(tput setaf 2)1.8.19$(tput sgr0)'"
+echo "  -i : '$(tput setaf 2)1.8.5$(tput sgr0)', '$(tput setaf 2)1.8.19$(tput sgr0)'"
 echo "  -j : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
-echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_ONLY$(tput sgr0)' for English only"
+echo "  -l : '$(tput setaf 2)ALL$(tput sgr0)' for multi language or '$(tput setaf 2)EN_FARM$(tput sgr0)' for English only"
 echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes '$(tput setaf 2)2$(tput sgr0)' with MMU2"
 echo "  -n : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -o : '$(tput setaf 2)1$(tput sgr0)' force or '$(tput setaf 2)0$(tput sgr0)' block output and delays"
 echo "  -p : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -v : '$(tput setaf 2)All$(tput sgr0)' or variant file name"
-echo "  -x : '$(tput setaf 2)8$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
+echo "  -x : '$(tput setaf 2)8$(tput sgr0)','$(tput setaf 2)16$(tput sgr0)'or'$(tput setaf 2)32$(tput sgr0)' Kb."
 echo "  -y : '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
 echo
 echo "Example:"
@@ -340,25 +350,21 @@ if [ ! -z "$board_mem_flag" ] ; then
         BOARD_MEM="0x7DFF"
         echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
         OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_RAM-$board_mem_flag"
-    elif [ "$board_mem_flag" == "64" ] ; then
-        BOARD_MEM="0xFFFF"
-        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
-        OUTPUT_FILENAME_SUFFIX="${OUTPUT_FILENAME_SUFFIX}_RAM-$board_mem_flag"
     else
-        echo "Unsupported board mem size chosen. Only '8', '64' are allowed."
+        echo "Unsupported board mem size chosen. Only '8', '16' and '32' are allowed."
         failures 5
     fi
 fi
 
 #Start: Check if Arduino IDE version is correct
 if [ ! -z "$IDE_flag" ]; then
-    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.13" || "$IDE_flag" == "1.8.19" ]]; then
+    if [[ "$IDE_flag" == "1.8.5" || "$IDE_flag" == "1.8.19" ]]; then
         ARDUINO_ENV="${IDE_flag}"
     else
-        ARDUINO_ENV="1.8.5"
+        ARDUINO_ENV="1.8.19"
     fi
 else
-    ARDUINO_ENV="1.8.5"
+    ARDUINO_ENV="1.8.19"
 fi
 #End: Check if Arduino IDE version is correct
 
@@ -524,36 +530,31 @@ fi
 }
 # End: Check python ... needed during language build
 
-#Start: Check gawk ... needed during language build
-check_gawk()
-{
-if ! type gawk > /dev/null; then
-    if [ $TARGET_OS == "linux" ]; then
-        echo "$(tput setaf 1)Missing 'gawk' which is important to run this script"
-        echo "install it with the command $(tput setaf 2)'sudo apt-get install gawk'."
-        #sudo apt-get update && apt-get install gawk
-        failures 4
-    fi
-fi
-}
-#End: Check gawk ... needed during language build
 
 #### Start: Set build environment 
 set_build_env_variables()
 {
-BUILD_ENV="1.0.6"
+BUILD_ENV="1.0.8"
 BOARD="prusa_einsy_rambo"
 BOARD_PACKAGE_NAME="PrusaResearch"
-if [ "$ARDUINO_ENV" == "1.8.13" ]; then
-    BOARD_VERSION="1.0.4"
+if [ "$ARDUINO_ENV" == "1.8.19" ]; then
+    BOARD_VERSION="1.0.6"
 else
     BOARD_VERSION="1.0.4"
 fi
-#BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
-BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
+if [ "$ARDUINO_ENV" == "1.8.19" ]; then
+    BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
+    #BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
+else
+    BOARD_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
+fi
 BOARD_FILENAME="prusa3dboards"
-#BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
-BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+if [ "$ARDUINO_ENV" == "1.8.19" ]; then
+    BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+    #BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+else
+    BOARD_FILE_URL="https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/prusa3dboards-$BOARD_VERSION.tar.bz2"
+fi
 #PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env-1/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
 if [[ "$BOARD_VERSION" == "1.0.3" || "$BOARD_VERSION" == "1.0.2" || "$BOARD_VERSION" == "1.0.1" ]]; then
     PF_BUILD_FILE_URL="https://github.com/prusa3d/PF-build-env/releases/download/$BUILD_ENV-WinLin/PF-build-env-WinLin-$BUILD_ENV.zip"
@@ -868,7 +869,7 @@ else
     fi
 fi
 
-#'-l' argument defines if it is an English only version. Known values EN_ONLY / ALL
+#'-l' argument defines if it is an English only version. Known values EN_FARM / ALL
 #Check default language mode
 MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "^#define LANG_MODE *" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
@@ -883,7 +884,7 @@ if [ -z "$language_flag" ] ; then
                 break
                 ;;
             "English only") 
-                LANGUAGES="EN_ONLY"
+                LANGUAGES="EN_FARM"
                 break
                 ;;
             *)
@@ -892,11 +893,11 @@ if [ -z "$language_flag" ] ; then
         esac
     done
 else
-    if [[ "$language_flag" == "ALL" || "$language_flag" == "EN_ONLY" ]] ; then
+    if [[ "$language_flag" == "ALL" || "$language_flag" == "EN_FARM" ]] ; then
         LANGUAGES=$language_flag
     else
         echo "$(tput setaf 1)Language argument is wrong!$(tput sgr0)"
-        echo "Only $(tput setaf 2)'ALL'$(tput sgr0) or $(tput setaf 2)'EN_ONLY'$(tput sgr0) are allowed as language '-l' argument!"
+        echo "Only $(tput setaf 2)'ALL'$(tput sgr0) or $(tput setaf 2)'EN_FARM'$(tput sgr0) are allowed as language '-l' argument!"
         failures 5
     fi
 fi
@@ -916,7 +917,6 @@ fi
 #Check if Build is selected via argument '-b'
 if [ ! -z "$build_flag" ] ; then
     if [[ "$build_flag" == "Auto" && "$git_available" == "1" ]] ; then
-        echo "Build changed to $build_flag"
         BUILD=$(git rev-list --count HEAD)
     elif [[ $build_flag =~ ^[0-9]+$ ]] ; then
         BUILD=$build_flag
@@ -925,27 +925,26 @@ if [ ! -z "$build_flag" ] ; then
         echo "Only $(tput setaf 2)'Auto' (git needed) or numbers $(tput sgr0) are allowed as build '-b' argument!$(tput sgr0)"
         failures 5
     fi
-    echo "New Build number is: $BUILD"
 fi
 
 #Check git branch has changed
 if [ ! -z "git_available" ]; then
-    BRANCH=""
-    CLEAN_PF_FW_BUILD=0
-else
     BRANCH=$(git branch --show-current)
     echo "Current branch is:" $BRANCH
     if [ ! -f "$SCRIPT_PATH/../PF-build.branch" ]; then
-        echo "$BRANCH" >| $SCRIPT_PATH/../PF-build.branch
+        #echo "$BRANCH" >| $SCRIPT_PATH/../PF-build.branch
         echo "created PF-build.branch file"
     else
         PRE_BRANCH=$(cat "$SCRIPT_PATH/../PF-build.branch")
-        echo "Previous branch was:" $PRE_BRANCH
+        #echo "Previous branch was:" $PRE_BRANCH
         if [ ! "$BRANCH" == "$PRE_BRANCH" ] ; then
             CLEAN_PF_FW_BUILD=1
             echo "$BRANCH" >| $SCRIPT_PATH/../PF-build.branch
         fi
     fi
+else
+    BRANCH=""
+    CLEAN_PF_FW_BUILD=0
 fi
 }
 #### End: Getting arguments for command line compiling
@@ -1009,18 +1008,27 @@ prepare_code_for_compiling()
     MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
     # Check development status
     FW_FLAV=$(grep --max-count=1 "//#define FW_FLAVOR\b" $SCRIPT_PATH/Firmware/Configuration.h|cut -d ' ' -f1)
+    FW_FLAVREV=$(grep --max-count=1 "//#define FW_FLAVERSION\b" $SCRIPT_PATH/Firmware/Configuration.h|cut -d ' ' -f1)
+    if [[ "$FW_FLAV" == "//#define" && -z $FW_FLAVREV ]];then
+        failures 26
+    fi
+    #echo "FLAV:$FW_FLAV"
     if [[ "$FW_FLAV" != "//#define" ]] ; then
         FW_FLAVOR=$(grep --max-count=1 "\bFW_FLAVOR\b" $SCRIPT_PATH/Firmware/Configuration.h| sed -e's/  */ /g'|cut -d ' ' -f3)
-        FW_FLAVERSION=$(grep --max-count=1 "\bFW_FLAVERSION\b" $SCRIPT_PATH/Firmware/Configuration.h| sed -e's/  */ /g'|cut -d ' ' -f3)
-        if [[ "$FW_FLAVOR" != "//#define FW_FLAVOR" ]] ; then
+        #echo "FLAVOR:$FW_FLAVOR"
+        if [[ "$FW_FLAVREV" != "//#define" ]] ; then
+            FW_FLAVERSION=$(grep --max-count=1 "\bFW_FLAVERSION\b" $SCRIPT_PATH/Firmware/Configuration.h| sed -e's/  */ /g'|cut -d ' ' -f3)
             FW="$FW-$FW_FLAVOR"
             DEV_CHECK="$FW_FLAVOR"
+            echo "DEV:$DEV_CHECK"
             if [ ! -z "$FW_FLAVERSION" ] ; then
                 FW="$FW$FW_FLAVERSION"
             fi
+        else
+            failures 26
         fi
     fi
-    DEV_CHECK=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g'|cut -d '-' -f2)
+    #DEV_CHECK=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g'|cut -d '-' -f2)
     if [ -z "$DEV_STATUS_SELECTED" ] ; then
         if [[ "$DEV_CHECK" == *"RC"* ]] ; then
             DEV_STATUS="RC"
@@ -1089,9 +1097,9 @@ prepare_hex_folders()
         if [ $OUTPUT == "1" ] ; then
             read -t 10 -p "Press Enter to continue..."
         fi
-    elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex"  &&  "$LANGUAGES" == "EN_ONLY" ]]; then
+    elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.hex"  &&  "$LANGUAGES" == "EN_FARM" ]]; then
         echo ""
-        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex | xargs -n1 basename
+        ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.hex | xargs -n1 basename
         echo "$(tput setaf 6)This hex file to be compiled already exists! To cancel this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
         if [ $OUTPUT == "1" ] ; then
             read -t 10 -p "Press Enter to continue..."
@@ -1144,13 +1152,13 @@ prepare_variant_for_compiling()
     fi
 
     #Prepare Configuration.h to use the correct FW_DEV_VERSION to prevent LCD messages when connecting with OctoPrint
-    sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
+    sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_.*/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
 
     # set FW_REPOSITORY
     sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
     #Prepare English only or multi-language version to be build
-    if [ $LANGUAGES == "EN_ONLY" ]; then
+    if [ $LANGUAGES == "EN_FARM" ]; then
         echo " "
         echo "English only language firmware will be built"
         sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
@@ -1180,9 +1188,9 @@ prepare_variant_for_compiling()
 compile_en_firmware()
 {
     ## Check board mem size
-    CURRENT_BOARD_MEM=$(grep "#define RAMEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f3|tr -d $'\n')
+    CURRENT_BOARD_MEM=$(grep "#define RAMEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f2 |tr -d ' \t\n\r')
     if [ $CURRENT_BOARD_MEM != "0x21FF" ] ; then
-        echo "Board mem has been already modified or not reset"
+        echo "$(tput setaf 1)Board mem has been modified or not reset$(tput sgr 0)"
         echo "Current:" $CURRENT_BOARD_MEM
         PS3="Select $(tput setaf 2)Yes$(tput sgr 0) if you want to reset it."
         select yn in "Yes" "No"; do
@@ -1190,14 +1198,18 @@ compile_en_firmware()
                 Yes)
                     echo "Resetting board mem size"
                     sed -i -- "s/^#define RAMEND .*$/#define RAMEND          0x21FF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+                    BOARD_MEM_MODIFIED=0
                     break
                     ;;
                 *)
                     echo "Continuing with modified mem size"
+                    BOARD_MEM_MODIFIED=1
                     break
                     ;;
             esac
         done
+    else
+        BOARD_MEM_MODIFIED=0
     fi
     ## Modify board mem size
     if [[ ! -z $BOARD_MEM && "$BOARD_MEM" != "0x21FF" ]] ; then
@@ -1207,13 +1219,14 @@ compile_en_firmware()
         read -t 5 -p "To cancel press $(tput setaf 1)CRTL+C$(tput sgr 0)"
         echo ""
         sed -i -- "s/^#define RAMEND          0x21FF/#define RAMEND          ${BOARD_MEM}/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+        BOARD_MEM_MODIFIED=1
     fi
 
     ## Check board flash size
-    CURRENT_BOARD_FLASH=$(grep "#define FLASHEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f3|tr -d $'\n')
-    CURRENT_BOARD_maximum_size=$(grep "prusa_einsy_rambo.upload.maximum_size" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt |cut -d '=' -f2|tr -d $'\n')
+    CURRENT_BOARD_FLASH=$(grep "#define FLASHEND" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h | sed -e's/.* //g'|cut -d ' ' -f2 |tr -d ' \t\n\r')
+    CURRENT_BOARD_maximum_size=$(grep "prusa_einsy_rambo.upload.maximum_size" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt |cut -d '=' -f2|tr -d ' \t\n\r')
     if [[ $CURRENT_BOARD_FLASH != "0x3FFFF" || $CURRENT_BOARD_maximum_size != "253952" ]] ; then
-        echo "Board flash has been already modified or not reset"
+        echo "$(tput setaf 1)Board flash has been modified or not reset$(tput sgr 0)"
         echo "Current flash size:" $CURRENT_BOARD_FLASH
         echo "Current max.  size:" $CURRENT_BOARD_maximum_size
         PS3="Select $(tput setaf 2)Yes$(tput sgr 0) if you want to reset it."
@@ -1223,18 +1236,22 @@ compile_en_firmware()
                     echo "$(tput setaf 1)Resetting board flash size$(tput sgr 0)"
                     sed -i -- "s/^#define FLASHEND .*$/#define FLASHEND        0x3FFFF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
                     sed -i -- "s/^prusa_einsy_rambo.upload.maximum_size.*/prusa_einsy_rambo.upload.maximum_size=253952/g" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt
+                    BOARD_FLASH_MODIFIED=0
                     break
                     ;;
                 *)
                     echo "$(tput setaf 3)Continuing with modified flash size$(tput sgr 0)"
+                    BOARD_FLASH_MODIFIED=1
                     break
                     ;;
             esac
         done
+    else
+        BOARD_FLASH_MODIFIED=1
     fi
     ## Modify boad flash size
     if [[ ! -z $BOARD_FLASH && "$BOARD_FLASH" != "0x3FFFF" ]] ; then
-        echo "Modifying board flash size (hex):"
+        echo "$(tput setaf 3)Modifying board flash size (hex):$(tput sgr 0)"
         echo "Old flash size:" $CURRENT_BOARD_FLASH
         echo "New flash size:" $BOARD_FLASH
         echo "Old max.  size:" $CURRENT_BOARD_maximum_size
@@ -1242,6 +1259,7 @@ compile_en_firmware()
         read -t 5 -p "To cancel press $(tput setaf 1)CRTL+C$(tput sgr 0)"
         sed -i -- "s/^#define FLASHEND .*/#define FLASHEND        ${BOARD_FLASH}/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
         sed -i -- "s/^prusa_einsy_rambo.upload.maximum_size.*/prusa_einsy_rambo.upload.maximum_size=${BOARD_maximum_size}/g" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt
+        BOARD_FLASH_MODIFIED=1
     fi
 
     #Check if compiler flags are set to Prusa specific needs for the rambo board.
@@ -1310,13 +1328,9 @@ create_multi_firmware()
             ./fw-clean.sh
             echo "$(tput sgr 0)"
         fi
-        # build languages
+        # Combine compiled firmware with languages
         echo "$(tput setaf 3)"
-        ./lang-build.sh || failures 25
-        # Combine compiled firmware with languages 
         ./fw-build.sh || failures 25
-        cp not_tran.txt not_tran_$VARIANT.txt
-        cp not_used.txt not_used_$VARIANT.txt
         echo "$(tput sgr 0)"
         # Check if the motherboard is an EINSY and if so only one hex file will generated
         MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
@@ -1324,14 +1338,14 @@ create_multi_firmware()
         if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
             echo "$(tput setaf 2)Copying multi language firmware for MK3/Einsy board to PF-build-hex folder$(tput sgr 0)"
             # End of "lang.bin" for MK3 and MK3S copy
-            cp -f firmware.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
+            cp -f Firmware-intl.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
             cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
         else
             #Search for created firmware languages
-            langs=$(find firmware_*.hex | cut -d "_" -f2 | cut -d "." -f1)
+            langs=$(find Firmware-intl-en_*.hex | cut -d "_" -f2 | cut -d "." -f1)
             #Copy found firmware_*.hex files 
                 for la in $langs; do
-                    cp -f firmware_$la.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-$la.hex
+                    cp -f Firmware-intl-en_$la.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-$la.hex
                 done
             cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.elf
             echo "$(tput setaf 2)Zip multi language firmware for MK2.5/miniRAMbo board to PF-build-hex folder$(tput sgr 0)"
@@ -1339,12 +1353,7 @@ create_multi_firmware()
                 zip a $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
                 #rm $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
             elif [ $TARGET_OS == "linux" ]; then
-                # Make a copy for MK404 sim of MK2, MK2.5, MK2.5S firmware
-                if [ ! -z "$mk404_flag" ]; then
-                    cp -f firmware_de.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
-                fi
-                # End of MK2, MK2.5, MK2.5S firmware copy
-            zip -j ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
+                zip -j ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME.zip ../../$OUTPUT_FOLDER/$OUTPUT_FILENAME-??.hex
             fi
         fi
 
@@ -1352,29 +1361,30 @@ create_multi_firmware()
     if [[ -z "$clean_flag" || "$clean_flag" == "0" ]]; then
         echo "$(tput setaf 3)"
         ./fw-clean.sh || failures 25
-        ./lang-clean.sh || failures 25
         echo "$(tput sgr 0)"
     fi
 }
 #### End: Create and save Multi Language Prusa Firmware
 
-#### Start: Save EN_ONLY language Prusa Firmware
+#### Start: Save EN_FARM language Prusa Firmware
 save_en_firmware()
 {
     #else
         echo "$(tput setaf 2)Copying English only firmware to PF-build-hex folder$(tput sgr 0)"
-        cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex || failures 12
+        cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.hex || failures 12
         echo "$(tput setaf 2)Copying English only elf file to PF-build-hex folder$(tput sgr 0)"
-        cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.elf || failures 12
+        cp -f $BUILD_PATH/Firmware.ino.elf $SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.elf || failures 12
     #fi
 }
-#### End: Save EN_ONLY language Prusa Firmware
+#### End: Save EN_FARM language Prusa Firmware
 
 #### Start: Cleanup Firmware
 cleanup_firmware()
 {
     if [[ -z "$prusa_flag" || "$prusa_flag" == "0" ]]; then
-        rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || failures 13
+        if [ -e "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
+            rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || failures 13
+        fi
     fi
     # Delete dupblicates
     if find $SCRIPT_PATH/lang/ -name '*RAMBo10a*.txt' -printf 1 -quit | grep -q 1
@@ -1401,8 +1411,8 @@ cleanup_firmware()
     fi
 
     # Restore files to previous state
-    sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
-    sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
+    sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_.*/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
+    sed -i -- 's/^#define FW_REPOSITORY.*/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
     if [ ! -z "$BUILD_ORG" ] ; then
         sed -i -- "s/^#define FW_COMMIT_NR.*/#define FW_COMMIT_NR $BUILD_ORG/g" $SCRIPT_PATH/Firmware/Configuration.h
     fi
@@ -1426,9 +1436,15 @@ cleanup_firmware()
     fi
 
     # Restore build env files to previous state
-    sed -i -- "s/^#define FLASHEND .*$/#define FLASHEND        0x3FFFF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
-    sed -i -- "s/^prusa_einsy_rambo.upload.maximum_size.*/prusa_einsy_rambo.upload.maximum_size=253952/g" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt
-    sed -i -- "s/^#define RAMEND.*/#define RAMEND          0x21FF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+    if [ "$BOARD_MEM_MODIFIED" == "1" ]; then
+        sed -i -- "s/^#define FLASHEND .*$/#define FLASHEND        0x3FFFF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+        echo "$(tput setaf 2)Restored Board Mem$(tput sgr 0)"
+    fi
+    if [ "$BOARD_FLASH_MODIFIED" == "1" ]; then
+        sed -i -- "s/^prusa_einsy_rambo.upload.maximum_size.*/prusa_einsy_rambo.upload.maximum_size=253952/g" $BUILD_ENV_PATH/portable/packages/$BOARD_PACKAGE_NAME/hardware/avr/$BOARD_VERSION/boards.txt
+        sed -i -- "s/^#define RAMEND.*/#define RAMEND          0x21FF/g" $BUILD_ENV_PATH/hardware/tools/avr/avr/include/avr/iom2560.h
+        echo "$(tput setaf 2)Restored Board Flash$(tput sgr 0)"
+    fi
 
 }
 #### End: Prepare code for compiling
@@ -1533,7 +1549,7 @@ if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
     #cd ../MK404/master/build
 
 
-#Decide which hex file to use EN_ONLY or Multi language
+#Decide which hex file to use EN_FARM or Multi language
     if [ "$LANGUAGES" == "ALL" ]; then
         if [[ "$MK404_PRINTER" == "MK3" || "$MK404_PRINTER" == "MK3S" ]]; then
             MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME.hex
@@ -1546,7 +1562,7 @@ if [[ ! -z "$mk404_flag" && "$variant_flag" != "All " ]]; then
             done
         fi
     else
-        MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_ONLY.hex
+        MK404_firmware_file=$SCRIPT_PATH/../$OUTPUT_FOLDER/$OUTPUT_FILENAME-EN_FARM.hex
     fi
 
 # Start MK404
@@ -1572,7 +1588,6 @@ check_OS
 check_wget
 check_zip
 check_python
-check_gawk
 
 #### Check for options/flags
 echo "Check for options"

@@ -30,7 +30,7 @@ uint8_t selectedSerialPort = 0;
 // this is so I can support Attiny series and any other chip without a UART
 #if defined(UBRRH) || defined(UBRR0H) || defined(UBRR1H) || defined(UBRR2H) || defined(UBRR3H)
 
-#if UART_PRESENT(SERIAL_PORT)
+#ifdef HAS_UART
   ring_buffer rx_buffer  =  { { 0 }, 0, 0 };
 #endif
 
@@ -75,7 +75,7 @@ ISR(M_USARTx_RX_vect)
 #endif //DEBUG_DUMP_TO_2ND_SERIAL
 	}
 }
-#ifndef SNMM
+
 ISR(USART1_RX_vect)
 {
 	// Test for a framing error.
@@ -96,7 +96,6 @@ ISR(USART1_RX_vect)
 #endif //DEBUG_DUMP_TO_2ND_SERIAL
 	}
 }
-#endif
 #endif
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -131,8 +130,6 @@ void MarlinSerial::begin(long baud)
   sbi(M_UCSRxB, M_TXENx);
   sbi(M_UCSRxB, M_RXCIEx);
   
-#ifndef SNMM
-
   if (selectedSerialPort == 1) { //set up also the second serial port 
 	  if (useU2X) {
 		  UCSR1A = 1 << U2X1;
@@ -148,9 +145,8 @@ void MarlinSerial::begin(long baud)
 	  
 	  sbi(UCSR1B, RXEN1);
 	  sbi(UCSR1B, TXEN1);
-	  sbi(UCSR1B, RXCIE1);	  
+	  sbi(UCSR1B, RXCIE1);
   }
-#endif
 }
 
 void MarlinSerial::end()
@@ -159,11 +155,9 @@ void MarlinSerial::end()
   cbi(M_UCSRxB, M_TXENx);
   cbi(M_UCSRxB, M_RXCIEx);
 
-#ifndef SNMM
   cbi(UCSR1B, RXEN1);
   cbi(UCSR1B, TXEN1);
   cbi(UCSR1B, RXCIE1);
-#endif
 }
 
 

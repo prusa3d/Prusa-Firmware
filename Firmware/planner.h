@@ -122,7 +122,8 @@ typedef struct {
 #endif
 
   // Save/recovery state data
-  float gcode_target[NUM_AXIS];     // Target (abs mm) of the original Gcode instruction
+  float gcode_start_position[NUM_AXIS]; // Start (abs mm) of the original Gcode instruction
+  uint16_t segment_idx;             // The index of the for loop that generates segments
   uint16_t gcode_feedrate;          // Default and/or move feedrate
   uint16_t sdlen;                   // Length of the Gcode instruction
 } block_t;
@@ -159,7 +160,7 @@ void plan_buffer_line_destinationXYZE(float feed_rate);
 
 void plan_set_position_curposXYZE();
 
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_target = NULL);
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder, const float* gcode_start_position = NULL, uint16_t segment_idx = 0);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
 #endif // ENABLE_AUTO_BED_LEVELING
 
@@ -192,7 +193,6 @@ extern unsigned long* max_acceleration_units_per_sq_second;
 extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
 extern long position[NUM_AXIS];
-extern uint8_t maxlimit_status;
 
 
 #ifdef AUTOTEMP
@@ -256,14 +256,18 @@ FORCE_INLINE bool planner_queue_full() {
     return block_buffer_tail == next_block_index;
 }
 
+// Reset machine position from stepper counters
+extern void planner_reset_position();
+
 // Abort the stepper routine, clean up the block queue,
 // wait for the steppers to stop,
 // update planner's current position and the current_position of the front end.
 extern void planner_abort_hard();
-extern bool waiting_inside_plan_buffer_line_print_aborted;
+extern bool planner_aborted;
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
-void set_extrude_min_temp(float temp);
+extern int extrude_min_temp;
+void set_extrude_min_temp(int temp);
 #endif
 
 void reset_acceleration_rates();

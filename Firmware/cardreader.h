@@ -46,14 +46,14 @@ public:
   void printingHasFinished();
 
   void getfilename(uint16_t nr, const char* const match=NULL);
-  void getfilename_simple(uint32_t position, const char * const match = NULL);
+  void getfilename_simple(uint16_t entry, const char * const match = NULL);
   void getfilename_next(uint32_t position, const char * const match = NULL);
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
   void printAbsFilenameFast();
   void getDirName(char* name, uint8_t level);
-  uint16_t getWorkDirDepth();
+  uint8_t getWorkDirDepth();
   
 
   void ls(ls_param params);
@@ -63,11 +63,8 @@ public:
 
   #ifdef SDCARD_SORT_ALPHA
      void presort();
-	 #ifdef SDSORT_QUICKSORT
-		void swap(uint8_t left, uint8_t right);
-		void quicksort(uint8_t left, uint8_t right);
-	 #endif //SDSORT_QUICKSORT
      void getfilename_sorted(const uint16_t nr, uint8_t sdSort);
+     void getfilename_afterMaxSorting(uint16_t entry, const char * const match = NULL);
   #endif
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
@@ -92,7 +89,7 @@ public:
   bool logging;
   bool sdprinting ;  
   bool cardOK ;
-  char filename[13];
+  char filename[FILENAME_LENGTH];
   // There are scenarios when simple modification time is not enough (on MS Windows)
   // Therefore these timestamps hold the most recent one of creation/modification date/times
   uint16_t crmodTime, crmodDate;
@@ -102,16 +99,17 @@ public:
   int lastnr; //last number of the autostart;
 #ifdef SDCARD_SORT_ALPHA
   bool presort_flag;
-  char dir_names[MAX_DIR_DEPTH][9];
 #endif // SDCARD_SORT_ALPHA
+  char dir_names[MAX_DIR_DEPTH][9];
 private:
   SdFile root,*curDir,workDir,workDirParents[MAX_DIR_DEPTH];
-  uint16_t workDirDepth;
+  uint8_t workDirDepth;
 
   // Sort files and folders alphabetically.
 #ifdef SDCARD_SORT_ALPHA
   uint16_t sort_count;        // Count of sorted items in the current directory
-  uint32_t sort_positions[SDSORT_LIMIT];
+  uint16_t sort_entries[SDSORT_LIMIT];
+  uint16_t lastSortedFilePosition;
 
 #endif // SDCARD_SORT_ALPHA
 
@@ -130,13 +128,10 @@ private:
   char filenames[SD_PROCEDURE_DEPTH][MAXPATHNAMELENGTH];
   uint32_t filesize;
   //int16_t n;
-  unsigned long autostart_atmillis;
+  ShortTimer autostart_atmillis;
   uint32_t sdpos ;
 
-  bool autostart_stilltocheck; //the sd start is delayed, because otherwise the serial cannot answer fast enought to make contact with the hostsoftware.
-  
   uint16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
-  char* diveDirName;
 
   bool diveSubfolder (const char *&fileName);
   void lsDive(const char *prepend, SdFile parent, const char * const match=NULL, LsAction lsAction = LS_GetFilename, ls_param lsParams = ls_param());

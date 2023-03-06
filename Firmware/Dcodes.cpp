@@ -44,7 +44,7 @@ void print_hex_word(daddr_t val)
     print_hex_byte(val & 0xFF);
 }
 
-int parse_hex(char* hex, uint8_t* data, int count)
+int parse_hex(const char* hex, uint8_t* data, int count)
 {
 	int parsed = 0;
 	while (*hex)
@@ -573,6 +573,7 @@ void dcode_9()
 		for (uint8_t i = 0; i < ADC_CHAN_CNT; i++)
 			printf_P(PSTR("\tADC%d=%4d\t(%S)\n"), i, dcode_9_ADC_val(i) >> 4, dcode_9_ADC_name(i));
 	}
+#if 0
 	else
 	{
 		uint8_t index = 0xff;
@@ -588,6 +589,7 @@ void dcode_9()
 			}
 		}
 	}
+#endif
 }
 
     /*!
@@ -596,7 +598,7 @@ void dcode_9()
 void dcode_10()
 {//Tell the printer that XYZ calibration went OK
 	LOG("D10 - XYZ calibration = OK\n");
-	calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
+	calibration_status_set(CALIBRATION_STATUS_XYZ);
 }
 
     /*!
@@ -990,7 +992,7 @@ void __attribute__((noinline)) serial_dump_and_reset(dump_crash_reason reason)
 
     // sample SP/PC
     sp = SP;
-    GETPC(&pc);
+    pc = GETPC();
 
     // extend WDT long enough to allow writing the entire stream
     wdt_enable(WDTO_8S);

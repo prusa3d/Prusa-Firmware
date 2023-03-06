@@ -4,6 +4,7 @@
 #define MMU_H
 
 #include <inttypes.h>
+#include "Timer.h"
 
 
 extern bool mmu_enabled;
@@ -15,6 +16,7 @@ extern uint8_t tmp_extruder;
 
 extern int8_t mmu_finda;
 extern uint32_t mmu_last_finda_response;
+//extern LongTimer mmu_last_finda_response;
 extern bool ir_sensor_detected;
 
 extern int16_t mmu_version;
@@ -100,32 +102,9 @@ extern void mmu_load_to_nozzle();
 extern void mmu_M600_load_filament(bool automatic, float nozzle_temp);
 extern void mmu_M600_wait_and_beep();
 
-extern void extr_mov(float shift, float feed_rate);
-extern void change_extr(int extr);
-extern int get_ext_nr();
-extern void display_loading();
 extern void extr_adj(uint8_t extruder);
 extern void extr_unload();
-
-extern void extr_adj_0();
-extern void extr_adj_1();
-extern void extr_adj_2();
-extern void extr_adj_3();
-extern void extr_adj_4();
 extern void load_all();
-extern void extr_change_0();
-extern void extr_change_1();
-extern void extr_change_2();
-extern void extr_change_3();
-#ifdef SNMM
-extern void extr_unload_all();
-extern void extr_unload_used();
-#endif //SNMM
-extern void extr_unload_0();
-extern void extr_unload_1();
-extern void extr_unload_2();
-extern void extr_unload_3();
-extern void extr_unload_4();
 
 extern bool mmu_check_version();
 extern void mmu_show_warning();

@@ -28,28 +28,24 @@
 #                                               newly import `lang_en_??.txt` files
 # 14 Mar. 2022, 3d-gussner, Check if translation isn't equal to origin
 #############################################################################
-#
-# Expected syntax of the files, which other scripts depend on
-# 'lang_en.txt'
-# 1st line: '#MSG_'<some text>' c='<max chars in a column>' r='<max rows> ; '#MSG' is mandentory while 'c=' and 'r=' aren't but should be there
-# 2nd line: '"'<origin message used in the source code>'"' ; '"' double quotes at the beginning and end of message are mandentory
-# 3rd line: LF ; Line feed is mandantory between messages
-#
-# 'lang_en_??.txt'
-# 1st line: '#MSG_'<some text>' c='<max chars in a column>' r='<max rows> ; '#MSG' is mandentory while 'c=' and 'r=' aren't but should be there
-# 2nd line: '"'<origin message used in the source code>'"' ; '"' double quotes at the beginning and end of message are mandentory
-# 3rd line: '"'<translated message>'"' ; '"' double quotes at the beginning and end of message are mandentory
-# 4th line: LF ; Line feed is mandantory between messages
-#
-"""Check lang files."""
+
+"""Check PO files for formatting errors."""
 from argparse import ArgumentParser
-from traceback import print_exc
 from sys import stdout, stderr, exit
+import codecs
+import polib
 import textwrap
 import re
+import os
+
+from lib import charset as cs
+from lib.io import load_map
+
+COLORIZE = (stdout.isatty() and os.getenv("TERM", "dumb") != "dumb") or os.getenv('NO_COLOR') == "0"
+LCD_WIDTH = 20
 
 def color_maybe(color_attr, text):
-    if stdout.isatty():
+    if COLORIZE:
         return '\033[0;' + str(color_attr) + 'm' + text + '\033[0m'
     else:
         return text
@@ -107,17 +103,15 @@ def highlight_trailing_white(text):
         return ret
 
 def wrap_text(text, cols):
-    # wrap text
-    ret = list(textwrap.TextWrapper(width=cols).wrap(text))
-    if len(ret):
-        # add back trailing whitespace
-        ret[-1] += ' ' * (len(text) - len(text.rstrip()))
+    ret = []
+    for line in text.split('\n'):
+        # wrap each input line in text individually
+        tmp = list(textwrap.TextWrapper(width=cols).wrap(line))
+        if len(ret):
+            # add back trailing whitespace
+            tmp[-1] += ' ' * (len(text) - len(text.rstrip()))
+        ret.extend(tmp)
     return ret
-
-def unescape(text):
-    if '\\' not in text:
-        return text
-    return text.encode('ascii').decode('unicode_escape')
 
 def ign_char_first(c):
     return c.isalnum() or c in {'%', '?'}
@@ -125,252 +119,222 @@ def ign_char_first(c):
 def ign_char_last(c):
     return c.isalnum() or c in {'.', "'"}
 
-def parse_txt(lang, no_warning, warn_empty, information, import_check):
-    """Parse txt file and check strings to display definition."""
-    if lang == "en":
-        file_path = "lang_en.txt"
-    else:
-        if import_check:
-            file_path = "po/new/lang_en_%s.txt" % lang
-        else:
-            file_path = "lang_en_%s.txt" % lang
+def check_translation(entry, msgids, is_pot, no_warning, no_suggest, warn_empty, warn_same, information):
+    """Check strings to display definition."""
 
-    print(green("Start %s lang-check" % lang))
+    # do not check obsolete/deleted entriees
+    if entry.obsolete:
+        return True
 
-    lines = 0
-    with open(file_path) as src:
-        while True:
-            message = src.readline()
-            lines += 1
-            #print(message) #Debug
-            #check syntax 1st line starts with `#MSG`
-            if (message[0:4] != '#MSG'):
-                print(red("[E]: Critical syntax error: 1st line doesn't start with #MSG on line %d" % lines))
-                print(red(message))
-                exit(1)
-            #Check if columns and rows are defined
-            comment = message.split(' ')
-            #Check if columns and rows are defined
-            cols = None
-            rows = None
-            for item in comment[1:]:
-                key, val = item.split('=')
-                if key == 'c':
-                    cols = int(val)
-                    #print ("c=",cols) #Debug
-                elif key == 'r':
-                    rows = int(val)
-                    #print ("r=",rows) #Debug
-                else:
-                    raise RuntimeError(
-                        "Unknown display definition %s on line %d" %
-                        (' '.join(comment), lines))
-            if cols is None and rows is None:
-                if not no_warning:
-                    print(yellow("[W]: No display definition on line %d" % lines))
-                cols = len(source)     # propably fullscreen
-            if rows is None:
-                rows = 1
-            elif rows > 1 and cols != 20:
-                print(yellow("[W]: Multiple rows with odd number of columns on line %d" % lines))
+    # fetch/decode entry for easy access
+    meta = entry.comment.split('\n', 1)[0]
+    source = entry.msgid
+    translation = entry.msgstr
+    line = entry.linenum
+    known_msgid = msgids is None or source in msgids
+    errors = 0
 
-            #Wrap text to 20 chars and rows
-            source = src.readline()[:-1] #read whole line
-            lines += 1
-            #check if 2nd line of origin message beginns and ends with " double quote
-            if (source[0]!="\""):
-                print(red('[E]: Critical syntax error: Missing " double quotes at beginning of message in source on line %d' % lines))
-                print(red(source))
-                exit(1)
-            if (source[-1]=="\""):
-                source = source.strip('"') #remove " double quotes from message 
+    # Check comment syntax (non-empty and include a MSG id)
+    if known_msgid or warn_empty:
+        if len(meta) == 0:
+            print(red("[E]: Translation doesn't contain any comment metadata on line %d" % line))
+            return False
+        if not meta.startswith('MSG'):
+            print(red("[E]: Critical syntax error: comment doesn't start with MSG on line %d" % line))
+            print(red(" comment: " + meta))
+            return False
+
+    # Check if columns and rows are defined
+    tokens = meta.split(' ')
+    cols = None
+    rows = None
+    for item in tokens[1:]:
+        try:
+            key, val = item.split('=')
+            if key == 'c':
+                cols = int(val)
+            elif key == 'r':
+                rows = int(val)
             else:
-                print(red('[E]: Critical syntax error: Missing " double quotes at end of message in source on line %d' % lines))
-                print(red(source))
-                exit(1)
-            #print(source) #Debug
-            if lang != "en":
-                translation = src.readline()[:-1]#read whole line
-                lines += 1
-                #check if 3rd line of translation message beginns and ends with " double quote
-                if (translation[0]!="\""):
-                    print(red('[E]: Critical syntax error: Missing " double quotes at beginning of message in translation on line %d' % lines))
-                    print(red(translation))
-                    exit(1)
-                if (translation[-1]=="\""):
-                    #print ("End ok")
-                    translation = translation.strip('"') #remove " double quote from message
-                else:
-                    print(red('[E]: Critical syntax error: Missing " double quotes at end of message in translation on line %d' % lines))
-                    print(red(translation))
-                    exit(1)
-                #print(translation) #Debug
-                if translation == '\\x00':
-                    # crude hack to handle intentionally-empty translations
-                    translation = ''
-                #check if source is ascii only
-            if source.isascii() == False:
-                print(red('[E]: Critical syntax: Non ascii chars found on line %d' % lines))
-                print(red(source))
-                exit(1)
-            #check if translation is ascii only
-            if lang != "en":
-                if translation.isascii() == False:
-                    print(red('[E]: Critical syntax: Non ascii chars found on line %d' % lines))
-                    print(red(translation))
-                    exit(1)
+                raise ValueError
+        except ValueError:
+            print(red("[E]: Invalid display definition on line %d" % line))
+            print(red(" definition: " + meta))
+            return False
 
-            # handle backslash sequences
-            source = unescape(source)
-            if lang != "en":
-                translation = unescape(translation)
-            
-            #print (translation) #Debug
-            wrapped_source = wrap_text(source, cols)
-            rows_count_source = len(wrapped_source)
-            if lang != "en":
-                wrapped_translation = wrap_text(translation, cols)
-                rows_count_translation = len(wrapped_translation)
+    if not cols:
+        if not no_warning and known_msgid and not rows:
+            errors += 1
+            print(yellow("[W]: No usable display definition on line %d" % line))
+        # probably fullscreen, guess from the message length to continue checking
+        cols = LCD_WIDTH
+    if cols > LCD_WIDTH:
+        errors += 1
+        print(yellow("[W]: Invalid column count on line %d" % line))
+    if not rows:
+        rows = 1
+    elif rows > 1 and cols != LCD_WIDTH:
+        errors += 1
+        print(yellow("[W]: Multiple rows with odd number of columns on line %d" % line))
 
-            # Check for potential errors in the definition
-            if not no_warning:
-                # Incorrect number of rows/cols on the definition
-                if rows == 1 and (len(source) > cols or rows_count_source > rows):
-                    print(yellow('[W]: Source text longer than %d cols as defined on line %d:' % (cols, lines)))
-                    print_ruler(4, cols);
-                    print_truncated(source, cols)
-                    print()
-                elif rows_count_source > rows:
-                    print(yellow('[W]: Wrapped source text longer than %d rows as defined on line %d:' % (rows, lines)))
-                    print_ruler(6, cols);
-                    print_wrapped(wrapped_source, rows, cols)
-                    print()
+    # Check if translation contains unsupported characters
+    invalid_char = cs.translation_check(cs.unicode_to_source(translation))
+    if invalid_char is not None:
+        print(red('[E]: Critical syntax: Unhandled char %s found on line %d' % (repr(invalid_char), line)))
+        print(red(' translation: ' + translation))
+        return False
 
-                # Missing translation
-                if lang != "en":
-                    if len(translation) == 0 and (warn_empty or rows > 1):
-                        if rows == 1:
-                            print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, lines)))
-                        else:
-                            print(yellow("[W]: Empty translation on line %d" % lines))
-                            print_ruler(6, cols);
-                            print_wrapped(wrapped_source, rows, cols)
-                            print()
+    # Pre-process the translation to translated characters for a correct preview and length check
+    translation = cs.trans_replace(translation)
 
+    wrapped_source = wrap_text(source, cols)
+    rows_count_source = len(wrapped_source)
+    wrapped_translation = wrap_text(translation, cols)
+    rows_count_translation = len(wrapped_translation)
 
-                    # Check for translation lenght
-                    if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
-                        print(red('[E]: Text is longer than definition on line %d: cols=%d rows=%d (rows diff=%d)'
-                                % (lines, cols, rows, rows_count_translation-rows)))
-                        print_source_translation(source, translation,
-                                                wrapped_source, wrapped_translation,
-                                                rows, cols)
+    # Incorrect number of rows/cols on the definition
+    if rows == 1 and (len(source) > cols or rows_count_source > rows):
+        errors += 1
+        print(yellow('[W]: Source text longer than %d cols as defined on line %d:' % (cols, line)))
+        print_ruler(4, cols);
+        print_truncated(source, cols)
+        print()
+    elif rows_count_source > rows:
+        errors += 1
+        print(yellow('[W]: Wrapped source text longer than %d rows as defined on line %d:' % (rows, line)))
+        print_ruler(6, cols);
+        print_wrapped(wrapped_source, rows, cols)
+        print()
 
-                    # Different count of % sequences
-                    if source.count('%') != translation.count('%') and len(translation) > 0:
-                        print(red('[E]: Unequal count of %% escapes on line %d:' % (lines)))
-                        print_source_translation(source, translation,
-                                                wrapped_source, wrapped_translation,
-                                                rows, cols)
+    # All further checks are against the translation
+    if is_pot:
+        return (errors == 0)
 
-                    # Different first/last character
-                    if not no_warning and len(source) > 0 and len(translation) > 0:
-                        source_end = source.rstrip()[-1]
-                        translation_end = translation.rstrip()[-1]
-                        start_diff = not (ign_char_first(source[0]) and ign_char_first(translation[0])) and source[0] != translation[0]
-                        end_diff = not (ign_char_last(source_end) and ign_char_last(translation_end)) and source_end != translation_end
-                        if start_diff or end_diff:
-                            if start_diff:
-                                print(yellow('[W]: Differing first punctuation character (%s => %s) on line %d:' % (source[0], translation[0], lines)))
-                            if end_diff:
-                                print(yellow('[W]: Differing last punctuation character (%s => %s) on line %d:' % (source[-1], translation[-1], lines)))
-                            print_source_translation(source, translation,
-                                                    wrapped_source, wrapped_translation,
-                                                    rows, cols)
-                    if not no_warning and source == translation:
-                        print(yellow('[W]: Translation same as origin on line %d:' %lines))
-                        print_source_translation(source, translation,
-                                                wrapped_source, wrapped_translation,
-                                                rows, cols)
-                    #elif information:
-                    #    print(green('[I]: %s' % (message)))
-                    #    print_source_translation(source, translation,
-                    #                            wrapped_source, wrapped_translation,
-                    #                            rows, cols)
+    # Missing translation
+    if len(translation) == 0 and (known_msgid or warn_empty):
+        errors += 1
+        if rows == 1:
+            print(yellow("[W]: Empty translation for \"%s\" on line %d" % (source, line)))
+        else:
+            print(yellow("[W]: Empty translation on line %d" % line))
+            print_ruler(6, cols);
+            print_wrapped(wrapped_source, rows, cols)
+            print()
 
+    # Check for translation lenght
+    if (rows_count_translation > rows) or (rows == 1 and len(translation) > cols):
+        errors += 1
+        print(red('[E]: Text is longer than definition on line %d: cols=%d rows=%d (rows diff=%d)'
+                % (line, cols, rows, rows_count_translation-rows)))
+        print_source_translation(source, translation,
+                                wrapped_source, wrapped_translation,
+                                rows, cols)
 
-                    # Short translation
-                    if not no_warning and len(source) > 0 and len(translation) > 0:
-                        if len(translation.rstrip()) < len(source.rstrip()) / 2:
-                            print(yellow('[W]: Short translation on line %d:' % (lines)))
-                            print_source_translation(source, translation,
-                                                    wrapped_source, wrapped_translation,
-                                                    rows, cols)
-                    #elif information:
-                    #    print(green('[I]: %s' % (message)))
-                    #    print_source_translation(source, translation,
-                    #                            wrapped_source, wrapped_translation,
-                    #                            rows, cols)
+    # Different count of % sequences
+    if source.count('%') != translation.count('%') and len(translation) > 0:
+        errors += 1
+        print(red('[E]: Unequal count of %% escapes on line %d:' % (line)))
+        print_source_translation(source, translation,
+                                wrapped_source, wrapped_translation,
+                                rows, cols)
 
-                    # Incorrect trailing whitespace in translation
-                    if not no_warning and len(translation) > 0 and \
-                     (source.rstrip() == source or (rows == 1 and len(source) == cols)) and \
-                     translation.rstrip() != translation and \
-                     (rows > 1 or len(translation) != len(source)):
-                        print(yellow('[W]: Incorrect trailing whitespace for translation on line %d:' % (lines)))
-                        source = highlight_trailing_white(source)
-                        translation = highlight_trailing_white(translation)
-                        wrapped_translation = highlight_trailing_white(wrapped_translation)
-                        print_source_translation(source, translation,
-                                                wrapped_source, wrapped_translation,
-                                                rows, cols)
-                    elif information:
-                        print(green('[I]: %s' % (message)))
-                        print_source_translation(source, translation,
-                                                wrapped_source, wrapped_translation,
-                                                rows, cols)
+    # Different first/last character
+    if not no_suggest and len(source) > 0 and len(translation) > 0:
+        source_end = source.rstrip()[-1]
+        translation_end = translation.rstrip()[-1]
+        start_diff = not (ign_char_first(source[0]) and ign_char_first(translation[0])) and source[0] != translation[0]
+        end_diff = not (ign_char_last(source_end) and ign_char_last(translation_end)) and source_end != translation_end
+        if start_diff or end_diff:
+            if start_diff:
+                print(yellow('[S]: Differing first punctuation character (%s => %s) on line %d:' % (source[0], translation[0], line)))
+            if end_diff:
+                print(yellow('[S]: Differing last punctuation character (%s => %s) on line %d:' % (source[-1], translation[-1], line)))
+            print_source_translation(source, translation,
+                                    wrapped_source, wrapped_translation,
+                                    rows, cols)
+    if not no_suggest and source == translation and (warn_same or len(source.split(' ', 1)) > 1):
+        print(yellow('[S]: Translation same as original on line %d:' %line))
+        print_source_translation(source, translation,
+                                wrapped_source, wrapped_translation,
+                                rows, cols)
 
+    # Short translation
+    if not no_suggest and len(source) > 0 and len(translation) > 0:
+        if len(translation.rstrip()) < len(source.rstrip()) / 2:
+            print(yellow('[S]: Short translation on line %d:' % (line)))
+            print_source_translation(source, translation,
+                                    wrapped_source, wrapped_translation,
+                                    rows, cols)
 
-            delimiter = src.readline()
-            lines += 1
-            if ("" == delimiter):
-                break
-            elif len(delimiter) != 1:  # empty line
-                print(red('[E]: Critical Syntax error: Missing empty line between messages between lines: %d and %d' % (lines-1,lines)))
-                break
-    print(green("End %s lang-check" % lang))
+    # Incorrect trailing whitespace in translation
+    if not no_warning and len(translation) > 0 and \
+     (source.rstrip() == source or (rows == 1 and len(source) == cols)) and \
+     translation.rstrip() != translation and \
+     (rows > 1 or len(translation) != len(source)):
+        errors += 1
+        print(yellow('[W]: Incorrect trailing whitespace for translation on line %d:' % (line)))
+        source = highlight_trailing_white(source)
+        translation = highlight_trailing_white(translation)
+        wrapped_translation = highlight_trailing_white(wrapped_translation)
+        print_source_translation(source, translation,
+                                wrapped_source, wrapped_translation,
+                                rows, cols)
+
+    # show the information
+    if information and errors == 0:
+        print(green('[I]: %s' % (meta)))
+        print_source_translation(source, translation,
+                                wrapped_source, wrapped_translation,
+                                rows, cols)
+    return (errors == 0)
 
 
 def main():
     """Main function."""
-    parser = ArgumentParser(
-        description=__doc__,
-        usage="%(prog)s lang")
-    parser.add_argument(
-        "lang", nargs='?', default="en", type=str,
-        help="Check lang file (en|cs|da|de|es|fr|hr|hu|it|lb|lt|nl|no|pl|ro|sk|sl|sv)")
+    parser = ArgumentParser(description=__doc__)
+    parser.add_argument("po", help="PO file to check")
     parser.add_argument(
         "--no-warning", action="store_true",
         help="Disable warnings")
     parser.add_argument(
-        "--warn-empty", action="store_true",
-        help="Warn about empty translations")
+        "--no-suggest", action="store_true",
+        help="Disable suggestions")
+    parser.add_argument(
+        "--pot", action="store_true",
+        help="Do not check translations")
     parser.add_argument(
         "--information", action="store_true",
         help="Output all translations")
+    parser.add_argument("--map",
+        help="Provide a map file to suppress warnings about unused translations")
     parser.add_argument(
-        "--import-check", action="store_true",
-        help="Check import file and save informational to file")
+        "--warn-empty", action="store_true",
+        help="Warn about empty definitions and translations even if unused")
+    parser.add_argument(
+        "--warn-same", action="store_true",
+        help="Warn about one-word translations which are identical to the source")
 
+    # load the translations
     args = parser.parse_args()
-    try:
-        parse_txt(args.lang, args.no_warning, args.warn_empty, args.information, args.import_check)
-        return 0
-    except Exception as exc:
-        print_exc()
-        parser.error("%s" % exc)
+    if not os.path.isfile(args.po):
+        print("{}: file does not exist or is not a regular file".format(args.po), file=stderr)
         return 1
 
+    # load the symbol map to supress empty (but unused) translation warnings
+    msgids = None
+    if args.map:
+        msgids = set()
+        for sym in load_map(args.map):
+            if type(sym['data']) == bytes:
+                msgid = cs.source_to_unicode(codecs.decode(sym['data'], 'unicode_escape', 'strict'))
+                msgids.add(msgid)
+
+    # check each translation in turn
+    status = True
+    for translation in polib.pofile(args.po):
+        status &= check_translation(translation, msgids, args.pot, args.no_warning, args.no_suggest,
+                                    args.warn_empty, args.warn_same, args.information)
+    return 0 if status else 1
 
 if __name__ == "__main__":
     exit(main())

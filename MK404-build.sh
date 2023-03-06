@@ -10,7 +10,7 @@
 # 3. Install latest updates with 'sudo apt-get upgrade'
 # 
 #
-# Version: 1.0.0-Build_14
+# Version: 1.0.0-Build_18
 # Change log:
 # 11 Feb 2021, 3d-gussner, Inital
 # 11 Feb 2021, 3d-gussner, Optional flags to check for updates
@@ -22,8 +22,9 @@
 # 18 Jun 2021, 3d-gussner, Added -g 3 and 4 for more details extrusion lines
 # 18 Jun 2021, 3d-gussner, Check for updates is default. Fix update if internet connection is lost.
 # 21 Jun 2021, 3d-gussner, Change board_flash argument to 'y' and firmware_version to 'f'
-# 25 Jan 2021, 3d-gussner, Allow upper and lower case in selection
+# 25 Jan 2022, 3d-gussner, Allow upper and lower case in selection
 #                          Add update option to release OR devel
+# 01 Jul 2022, 3d-gussner, Limit atmegaMK404 boards mem to 8,16,32
 
 #### Start: Failures
 failures()
@@ -35,7 +36,7 @@ case "$1" in
     4) echo "$(tput setaf 1)Some packages are missing please install these!$(tput sgr0)" ; exit 4 ;;
     5) echo "$(tput setaf 1)Wrong printer chosen.$(tput sgr0) Following Printers are supported: MK25, MK25S, MK3 and MK3S" ; exit 5 ;;
     6) echo "$(tput setaf 1)Unsupported board flash size chosen.$(tput sgr0) Only '256', '384', '512', '1024' and '32M' are allowed." ; exit 6 ;;
-    7) echo "$(tput setaf 1)Unsupported board mem size chosen.$(tput sgr0) Only '8', '16', '32' and '64' are allowed." ; exit 7 ;;
+    7) echo "$(tput setaf 1)Unsupported board mem size chosen.$(tput sgr0) Only '8', '16' and '32' are allowed." ; exit 7 ;;
     8) echo "$(tput setaf 1)No firmware version file selected!$(tput sgr0)" ; echo "Add argument -f with path and hex filename to start MK404" ; exit 8 ;;
     9) echo "$(tput setaf 1)Tried to determine MK404 printer from hex file, but failed!$(tput sgr0)" ; "Add argument -p with 'MK25', 'MK25S', 'MK3' or 'MK3S' to start MK404" ; exit 9 ;;
     10) echo "$(tput setaf 1)Missing printer$(tput sgr0)" ; exit 10 ;;
@@ -76,7 +77,7 @@ while getopts c:f:g:m:n:p:u:x:y:?h flag
 # '?' 'h' argument usage and help
 if [ "$help_flag" == "1" ] ; then
 echo "***************************************"
-echo "* MK404-build.sh Version: 1.0.0-Build_14 *"
+echo "* MK404-build.sh Version: 1.0.0-Build_18 *"
 echo "***************************************"
 echo "Arguments:"
 echo "$(tput setaf 2)-c$(tput sgr0) Check for update"
@@ -101,7 +102,7 @@ echo "  -m : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' y
 echo "  -n : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' yes"
 echo "  -p : '$(tput setaf 2)MK25$(tput sgr0)', '$(tput setaf 2)MK25S$(tput sgr0)', '$(tput setaf 2)MK3$(tput sgr0)' or '$(tput setaf 2)MK3S$(tput sgr0)'"
 echo "  -u : '$(tput setaf 2)0$(tput sgr0)' no, '$(tput setaf 2)1$(tput sgr0)' release ', '$(tput setaf 2)2$(tput sgr0)' devel '"
-echo "  -x : '$(tput setaf 2)8$(tput sgr0)',$(tput setaf 2)16$(tput sgr0)',$(tput setaf 2)32$(tput sgr0)' or '$(tput setaf 2)64$(tput sgr0)' Kb."
+echo "  -x : '$(tput setaf 2)8$(tput sgr0)',$(tput setaf 2)16$(tput sgr0)' or $(tput setaf 2)32$(tput sgr0)' Kb."
 echo "  -y : '$(tput setaf 2)256$(tput sgr0)','$(tput setaf 2)384$(tput sgr0)','$(tput setaf 2)512$(tput sgr0)','$(tput setaf 2)1024$(tput sgr0)''$(tput setaf 2)32M$(tput sgr0)'"
 echo
 echo "Example:"
@@ -159,9 +160,6 @@ if [ ! -z "$board_mem_flag" ] ; then
         echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
     elif [ "$board_mem_flag" == "32" ] ; then
         BOARD_MEM="0x7DFF"
-        echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
-    elif [ "$board_mem_flag" == "64" ] ; then
-        BOARD_MEM="0xFFFF"
         echo "Board mem size   :    $board_mem_flag Kb, $BOARD_MEM (hex)"
     else
         failures 7
@@ -318,7 +316,7 @@ check_packages()
 {
 packages=(
 "libelf-dev"
-"gcc-7"
+"gcc"
 "gcc-avr"
 "libglew-dev"
 "freeglut3-dev"

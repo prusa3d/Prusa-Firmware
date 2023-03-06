@@ -8,6 +8,7 @@
 #include "stk500.h"
 #include "bootapp.h"
 #include <avr/wdt.h>
+#include "lcd.h"
 
 #define OPTIBOOT_MAJVER 6
 #define OPTIBOOT_CUSTOMVER 0
@@ -54,9 +55,7 @@ static void putch(char ch) {
 static void verifySpace() {
   if (getch() != CRC_EOP) {
     putch(STK_FAILED);
-    wdt_enable(WDTO_15MS); // shorten WD timeout
-    while (1)           // and busy-loop so that WD causes
-      ;             //  a reset and app start.
+    softReset();
   }
   putch(STK_INSYNC);
 }
@@ -88,8 +87,8 @@ uint8_t optiboot_xflash_enter()
   if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0)) return 1;
   uint8_t ch;
   uint8_t rampz = 0;
-  register uint16_t address = 0;
-  register pagelen_t length;
+  uint16_t address = 0;
+  pagelen_t length;
   // Use the planner's queue for the receive / transmit buffers.
 //  uint8_t *buff = (uint8_t*)block_buffer;
   uint8_t buff[260];
@@ -158,6 +157,9 @@ uint8_t optiboot_xflash_enter()
   spi_init();
   xflash_init();
   wdt_disable();
+
+  lcd_clear();
+  lcd_puts_at_P(0, 1, PSTR(" Upgrading xflash\n Do not disconnect!"));
 
   /* Forever loop: exits by causing WDT reset */
   for (;;) {
@@ -271,7 +273,7 @@ uint8_t optiboot_xflash_enter()
     /* Read memory block mode, length is big endian.  */
     else if(ch == STK_READ_PAGE) {
       uint32_t addr = (((uint32_t)rampz) << 16) | address;
-      register pagelen_t i;
+      pagelen_t i;
       // Read the page length, with the length transferred each nibble separately to work around
       // the Prusa's USB to serial infamous semicolon issue.
       length  = ((pagelen_t)getch()) << 8;
@@ -296,7 +298,7 @@ uint8_t optiboot_xflash_enter()
     }
     else if (ch == STK_LEAVE_PROGMODE) { /* 'Q' */
       // Adaboot no-wait mod
-      wdt_enable(WDTO_15MS);
+      wdt_enable(WATCHDOG_SOFT_RESET_VALUE);
       verifySpace();
     }
     else {

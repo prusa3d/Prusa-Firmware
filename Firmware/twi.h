@@ -26,6 +26,8 @@
 #define TWI_FREQ 400000L
 #endif
 
+#define TWI_TIMEOUT_MS 100
+
 /*
  * Function twi_init
  * Desc     readys twi pins and sets twi bitrate
