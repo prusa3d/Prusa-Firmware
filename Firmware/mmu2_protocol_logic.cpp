@@ -35,6 +35,7 @@ const uint8_t ProtocolLogic::regs8Addrs[ProtocolLogic::regs8Count] PROGMEM = {
 const uint8_t ProtocolLogic::regs16Addrs[ProtocolLogic::regs16Count] PROGMEM = {
     4,    // MMU errors - aka statistics
     0x1a, // Pulley position [mm]
+    0x21, // MCU bandgap voltage
 };
 
 const uint8_t ProtocolLogic::initRegs8Addrs[ProtocolLogic::initRegs8Count] PROGMEM = {

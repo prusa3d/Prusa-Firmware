@@ -62,6 +62,8 @@ typedef enum : uint16_t {
     ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED = 315,
     ERR_ELECTRICAL_IDLER_SELFTEST_FAILED = 325,
 
+    ERR_ELECTRICAL_MCU_UNDERVOLTAGE_VCC = 306,
+
     ERR_CONNECT = 400,
     ERR_CONNECT_MMU_NOT_RESPONDING = 401,
     ERR_CONNECT_COMMUNICATION_ERROR = 402,
@@ -117,6 +119,7 @@ static const constexpr uint16_t errorCodes[] PROGMEM = {
     ERR_ELECTRICAL_PULLEY_SELFTEST_FAILED,
     ERR_ELECTRICAL_SELECTOR_SELFTEST_FAILED,
     ERR_ELECTRICAL_IDLER_SELFTEST_FAILED,
+    ERR_ELECTRICAL_MCU_UNDERVOLTAGE_VCC,
     ERR_CONNECT_MMU_NOT_RESPONDING,
     ERR_CONNECT_COMMUNICATION_ERROR,
     ERR_SYSTEM_FILAMENT_ALREADY_LOADED, 
@@ -160,6 +163,7 @@ static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1      = ISTR("TMC DRI
 //static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
 //static const char MSG_TITLE_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("TMC DRIVER SHORTED");
 static const char MSG_TITLE_SELFTEST_FAILED[] PROGMEM_I1      = ISTR("MMU SELFTEST FAILED"); ////MSG_TITLE_SELFTEST_FAILED c=20
+static const char MSG_TITLE_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1      = ISTR("MCU UNDERVOLTAGE VCC"); ////MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 static const char MSG_TITLE_MMU_NOT_RESPONDING[] PROGMEM_I1      = ISTR("MMU NOT RESPONDING"); ////MSG_TITLE_MMU_NOT_RESPONDING c=20
 static const char MSG_TITLE_COMMUNICATION_ERROR[] PROGMEM_I1     = ISTR("COMMUNICATION ERROR"); ////MSG_TITLE_COMMUNICATION_ERROR c=20
 static const char MSG_TITLE_FIL_ALREADY_LOADED[] PROGMEM_I1      = ISTR("FILAMENT ALREADY LOA"); ////MSG_TITLE_FIL_ALREADY_LOADED c=20
@@ -204,6 +208,7 @@ static const char * const errorTitles [] PROGMEM = {
     _R(MSG_TITLE_SELFTEST_FAILED),
     _R(MSG_TITLE_SELFTEST_FAILED),
     _R(MSG_TITLE_SELFTEST_FAILED),
+    _R(MSG_TITLE_MCU_UNDERVOLTAGE_VCC),
     _R(MSG_TITLE_MMU_NOT_RESPONDING),
     _R(MSG_TITLE_COMMUNICATION_ERROR),
     _R(MSG_TITLE_FIL_ALREADY_LOADED),
@@ -249,6 +254,7 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_PULLEY_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Pulley TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_SELECTOR_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_IDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors. If the issue persists contact support.");
+//static const char MSG_DESC_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1 = ISTR("MMU MCU detected a 5V undervoltage. There might be an issue with the electronics. Check the wiring and connectors"); ////MSG_DESC_MCU_UNDERVOLTAGE_VCC c=20 r=8
 static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU unit not responding. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 static const char MSG_DESC_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); ////MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
@@ -259,7 +265,7 @@ static const char MSG_DESC_UNLOAD_MANUALLY[] PROGMEM_I1 = ISTR("Filament detecte
 static const char MSG_DESC_FILAMENT_EJECTED[] PROGMEM_I1 = ISTR("Remove the ejected filament from the front of the MMU unit."); ////MSG_DESC_FILAMENT_EJECTED c=20 r=8
 
 // Read explanation in mmu2_protocol_logic.cpp -> supportedMmuFWVersion
-static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.8."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
+static constexpr char MSG_DESC_FW_UPDATE_NEEDED[] PROGMEM_I1 = ISTR("The MMU unit firmware version incompatible with the printer's FW. Update to version 2.1.9."); ////MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 static constexpr uint8_t szFWUN = sizeof(MSG_DESC_FW_UPDATE_NEEDED);
 // at least check the individual version characters in MSG_DESC_FW_UPDATE_NEEDED
 static_assert(MSG_DESC_FW_UPDATE_NEEDED[szFWUN - 7] == ('0' + mmuVersionMajor));
@@ -300,6 +306,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_TMC), // descPULLEY_SELFTEST_FAILED
     _R(MSG_DESC_TMC), // descSELECTOR_SELFTEST_FAILED
     _R(MSG_DESC_TMC), // descIDLER_SELFTEST_FAILED
+    _R(MSG_DESC_TMC), // descMSG_DESC_MCU_UNDERVOLTAGE_VCC
     _R(MSG_DESC_MMU_NOT_RESPONDING),
     _R(MSG_DESC_COMMUNICATION_ERROR),
     _R(MSG_DESC_FILAMENT_ALREADY_LOADED),
@@ -381,6 +388,7 @@ static const uint8_t errorButtons[] PROGMEM = {
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//PULLEY_SELFTEST_FAILED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//SELECTOR_SELFTEST_FAILED
     Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//IDLER_SELFTEST_FAILED
+    Btns(ButtonOperations::RestartMMU, ButtonOperations::NoOperation),//MCU_UNDERVOLTAGE_VCC
     Btns(ButtonOperations::RestartMMU, ButtonOperations::DisableMMU),//MMU_NOT_RESPONDING
     Btns(ButtonOperations::RestartMMU, ButtonOperations::DisableMMU),//COMMUNICATION_ERROR
 
