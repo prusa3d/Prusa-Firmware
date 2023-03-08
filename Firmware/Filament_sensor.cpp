@@ -515,7 +515,7 @@ bool PAT9125_sensor::updatePAT9125() {
                 resetStepCount();
                 int16_t optical_move = pat9125_y - oldPos;
                 oldPos = pat9125_y;
-                bool feed_ok = _stepCount > 0 ? optical_move > 8 : optical_move < -8;
+                bool feed_ok = _stepCount > 0 ? optical_move > 7 : optical_move < -7;
                 if (!feed_ok) {
                     jamErrCnt += 2; // feed error counts 2x more than feed ok
                     if (jamErrCnt > 20) {
