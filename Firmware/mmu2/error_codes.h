@@ -56,6 +56,8 @@ enum class ErrorCode : uint_fast16_t {
 
     FILAMENT_EJECTED = 0x800c, ///< Filament was ejected, waiting for user input - technically, this is not an error
 
+    MCU_UNDERVOLTAGE_VCC = 0x800d, ///< MCU VCC rail undervoltage.
+
     LOAD_TO_EXTRUDER_FAILED = 0x802a, ///< E32811 internal error of the printer - try-load-unload sequence detected missing filament -> failed load into the nozzle
     QUEUE_FULL = 0x802b, ///< E32811 internal logic error - attempt to move with a full queue
     VERSION_MISMATCH = 0x802c, ///< E32812 internal error of the printer - incompatible version of the MMU FW
