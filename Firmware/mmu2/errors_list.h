@@ -254,7 +254,7 @@ static const char MSG_DESC_TMC[] PROGMEM_I1 = ISTR("More details online."); ////
 //static const char MSG_DESC_PULLEY_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Pulley TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_SELECTOR_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Selector TMC driver. Check the wiring and connectors. If the issue persists contact support.");
 //static const char MSG_DESC_IDLER_TMC_DRIVER_SHORTED[] PROGMEM_I1 = ISTR("Short circuit on the Idler TMC driver. Check the wiring and connectors. If the issue persists contact support.");
-static const char MSG_DESC_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1 = ISTR("@@TODO"); ////MSG_DESC_MCU_UNDERVOLTAGE_VCC c=20 r=8
+//static const char MSG_DESC_MCU_UNDERVOLTAGE_VCC[] PROGMEM_I1 = ISTR("MMU MCU detected a 5V undervoltage. There might be an issue with the electronics. Check the wiring and connectors"); ////MSG_DESC_MCU_UNDERVOLTAGE_VCC c=20 r=8
 static const char MSG_DESC_MMU_NOT_RESPONDING[] PROGMEM_I1 = ISTR("MMU unit not responding. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_MMU_NOT_RESPONDING c=20 r=8
 static const char MSG_DESC_COMMUNICATION_ERROR[] PROGMEM_I1 = ISTR("MMU unit not responding correctly. Check the wiring and connectors. If the issue persists, contact support."); ////MSG_DESC_COMMUNICATION_ERROR c=20 r=9
 static const char MSG_DESC_FILAMENT_ALREADY_LOADED[] PROGMEM_I1 = ISTR("Cannot perform the action, filament is already loaded. Unload it first."); ////MSG_DESC_FILAMENT_ALREADY_LOADED c=20 r=8
@@ -306,7 +306,7 @@ static const char * const errorDescs[] PROGMEM = {
     _R(MSG_DESC_TMC), // descPULLEY_SELFTEST_FAILED
     _R(MSG_DESC_TMC), // descSELECTOR_SELFTEST_FAILED
     _R(MSG_DESC_TMC), // descIDLER_SELFTEST_FAILED
-    _R(MSG_DESC_MCU_UNDERVOLTAGE_VCC), // descMSG_DESC_MCU_UNDERVOLTAGE_VCC
+    _R(MSG_DESC_TMC), // descMSG_DESC_MCU_UNDERVOLTAGE_VCC
     _R(MSG_DESC_MMU_NOT_RESPONDING),
     _R(MSG_DESC_COMMUNICATION_ERROR),
     _R(MSG_DESC_FILAMENT_ALREADY_LOADED),
