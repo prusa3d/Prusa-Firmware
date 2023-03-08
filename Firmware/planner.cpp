@@ -207,7 +207,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
   if (final_rate > block->nominal_rate)
       final_rate = block->nominal_rate;
 
-  uint32_t acceleration      = block->acceleration_st;
+  uint32_t acceleration      = block->acceleration_steps_per_s2;
   if (acceleration == 0)
       // Don't allow zero acceleration.
       acceleration = 1;
@@ -1008,17 +1008,17 @@ Having the real displacement of the head, we can calculate the total movement le
   // block->step_event_count ... event count of the fastest axis
   // block->millimeters ... Euclidian length of the XYZ movement or the E length, if no XYZ movement.
   float steps_per_mm = block->step_event_count.wide/block->millimeters;
+  uint32_t accel;
   if(block->steps_x.wide == 0 && block->steps_y.wide == 0 && block->steps_z.wide == 0)
   {
-    block->acceleration_st = ceil(cs.retract_acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
+    accel = ceil(cs.retract_acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
     #ifdef LIN_ADVANCE
     block->use_advance_lead = false;
     #endif
   }
   else
   {
-    float acceleration = (block->steps_e.wide == 0? cs.travel_acceleration: cs.acceleration);
-    block->acceleration_st = ceil(acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
+    accel = ceil((block->steps_e.wide ? cs.acceleration : cs.travel_acceleration) * steps_per_mm); // convert to: acceleration steps/sec^2
 
     #ifdef LIN_ADVANCE
     /**
@@ -1054,9 +1054,9 @@ Having the real displacement of the head, we can calculate the total movement le
         if (e_D_ratio > 3.0)
             block->use_advance_lead = false;
         else if (e_D_ratio > 0) {
-            const float max_accel_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * e_D_ratio);
-            if (cs.acceleration > max_accel_per_s2) {
-                block->acceleration_st = ceil(max_accel_per_s2 * steps_per_mm);
+            const float max_accel_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * e_D_ratio) * steps_per_mm;
+            if (accel > max_accel_per_s2) {
+                accel = ceil(max_accel_per_s2);
                 #ifdef LA_DEBUG
                 SERIAL_ECHOLNPGM("LA: Block acceleration limited due to max E-jerk");
                 #endif
@@ -1067,35 +1067,19 @@ Having the real displacement of the head, we can calculate the total movement le
 
     // Limit acceleration per axis
     //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
-    if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS]; }
-    if(((float)block->acceleration_st * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS]; }
-    if(((float)block->acceleration_st * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[E_AXIS]; }
-    if(((float)block->acceleration_st * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
-	{  block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS]; }
+    if(((float)accel * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
+	{  accel = axis_steps_per_sqr_second[X_AXIS]; }
+    if(((float)accel * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
+	{  accel = axis_steps_per_sqr_second[Y_AXIS]; }
+    if(((float)accel * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
+	{  accel = axis_steps_per_sqr_second[E_AXIS]; }
+    if(((float)accel * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
+	{  accel = axis_steps_per_sqr_second[Z_AXIS]; }
   }
   // Acceleration of the segment, in mm/sec^2
-  block->acceleration = block->acceleration_st / steps_per_mm;
-
-#if 0
-  // Oversample diagonal movements by a power of 2 up to 8x
-  // to achieve more accurate diagonal movements.
-  uint8_t bresenham_oversample = 1;
-  for (uint8_t i = 0; i < 3; ++ i) {
-    if (block->nominal_rate >= 5000) // 5kHz
-      break;
-    block->nominal_rate << 1;
-    bresenham_oversample << 1;
-    block->step_event_count << 1;
-  }
-  if (bresenham_oversample > 1)
-    // Lower the acceleration steps/sec^2 to account for the oversampling.
-    block->acceleration_st = (block->acceleration_st + (bresenham_oversample >> 1)) / bresenham_oversample;
-#endif
-
-  block->acceleration_rate = ((float)block->acceleration_st * (16777216.0 / (F_CPU / 8.0)));
+  block->acceleration_steps_per_s2 = accel;
+  block->acceleration = accel / steps_per_mm;
+  block->acceleration_rate = (uint32_t)(accel * (float(1UL << 24) / ((F_CPU) / 8.0f)));
 
   // Start with a safe speed.
   // Safe speed is the speed, from which the machine may halt to stop immediately.
