@@ -429,7 +429,7 @@ msgstr "Scuro"
 #. MSG_BTN_DISABLE_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:334 ../../Firmware/mmu2/errors_list.h:344
 msgid "Disable"
-msgstr "Disattiva"
+msgstr "Disatt."
 
 #. MSG_DISABLE_STEPPERS c=18
 #: ../../Firmware/ultralcd.cpp:4591
@@ -948,7 +948,7 @@ msgstr "IDLER BLOCCATO"
 #. MSG_TITLE_INSPECT_FINDA c=20
 #: ../../Firmware/mmu2/errors_list.h:141 ../../Firmware/mmu2/errors_list.h:184
 msgid "INSPECT FINDA"
-msgstr ""
+msgstr "ISPEZIONA FINDA"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:215
@@ -1088,7 +1088,7 @@ msgstr "Carica ugello"
 #. MSG_LOADING_TEST c=18
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:4308
 msgid "Loading Test"
-msgstr ""
+msgstr "Prova di carica."
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -2507,7 +2507,7 @@ msgstr "Manc. corr. MMU"
 #. MSG_TITLE_FILAMENT_EJECTED c=20
 #: ../../Firmware/mmu2/errors_list.h:175 ../../Firmware/mmu2/errors_list.h:220
 msgid "FILAMENT EJECTED"
-msgstr ""
+msgstr "FILAMENTO ESPULSO"
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:264 ../../Firmware/mmu2/errors_list.h:317
@@ -2515,6 +2515,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
+"Filamento rilevato inaspettatamente. Assicurarsi che non sia caricato alcun"
+" filamento. Controllare i sensori e il cablaggio."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2527,6 +2529,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
+"Caricamento nell' estrusore non riuscito. Ispezionare la forma della punta"
+" del fil. Affinare la calib. del sensore, se necessario."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2542,7 +2546,7 @@ msgstr ""
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr ""
+msgstr "Rimuovere il filamento espulso dalla parte anteriore dell'unità MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2555,6 +2559,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
+"Il selettore non può muoversi perché FINDA rileva un fil. Assicurati"
+" che nessun fil. sia nel selettore e che FINDA funzioni correttamente."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2562,6 +2568,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
+"La versione del firmware dell'unità MMU non è compatibile con il firmware della"
+" stampante. Aggiornamento alla versione 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"

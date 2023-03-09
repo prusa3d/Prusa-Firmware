@@ -428,7 +428,7 @@ msgstr "Svak"
 #. MSG_BTN_DISABLE_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:334 ../../Firmware/mmu2/errors_list.h:344
 msgid "Disable"
-msgstr "Deaktiver"
+msgstr "Deaktiv."
 
 #. MSG_DISABLE_STEPPERS c=18
 #: ../../Firmware/ultralcd.cpp:4591
@@ -941,7 +941,7 @@ msgstr "IDLER CANNOT MOVE"
 #. MSG_TITLE_INSPECT_FINDA c=20
 #: ../../Firmware/mmu2/errors_list.h:141 ../../Firmware/mmu2/errors_list.h:184
 msgid "INSPECT FINDA"
-msgstr ""
+msgstr "KONTROLLER FINDA"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:215
@@ -1080,7 +1080,7 @@ msgstr "Last til dysen"
 #. MSG_LOADING_TEST c=18
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:4308
 msgid "Loading Test"
-msgstr ""
+msgstr "Lastetest"
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -2483,7 +2483,7 @@ msgstr "MMU strøm feil"
 #. MSG_TITLE_FILAMENT_EJECTED c=20
 #: ../../Firmware/mmu2/errors_list.h:175 ../../Firmware/mmu2/errors_list.h:220
 msgid "FILAMENT EJECTED"
-msgstr ""
+msgstr "FILAMENT UTSETTET"
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:264 ../../Firmware/mmu2/errors_list.h:317
@@ -2491,6 +2491,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
+"Filament oppdaget uventet. Pass på at ingen filament er lastet. Sjekk"
+" sensorene og ledningene."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2503,6 +2505,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
+"Lasting til ekstruder mislyktes. Inspiser filamentspissens form. Avgrens"
+" sensorkalibreringen om nødvendig."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2518,7 +2522,7 @@ msgstr ""
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr ""
+msgstr "Fjern det utkastede filamentet fra fronten av MMU-enheten."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2531,6 +2535,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
+"Velgeren kan ikke bevege seg på grunn av at FINDA oppdager en filament. Sørg"
+" for at ingen fil. er i velgeren og at FINDA fungerer som den skal."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2538,6 +2544,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
+"MMU-enhetens fastvareversjon er inkompatibel med skriverens FW. Oppdatering"
+" til versjon 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"

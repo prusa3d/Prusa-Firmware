@@ -943,7 +943,7 @@ msgstr "IDLER CANNOT MOVE"
 #. MSG_TITLE_INSPECT_FINDA c=20
 #: ../../Firmware/mmu2/errors_list.h:141 ../../Firmware/mmu2/errors_list.h:184
 msgid "INSPECT FINDA"
-msgstr ""
+msgstr "KONTROLA FINDA"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:215
@@ -1082,7 +1082,7 @@ msgstr "Zaved. do trysky"
 #. MSG_LOADING_TEST c=18
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:4308
 msgid "Loading Test"
-msgstr ""
+msgstr "Načítavací test"
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -2490,7 +2490,7 @@ msgstr "MMU vyp. prudu"
 #. MSG_TITLE_FILAMENT_EJECTED c=20
 #: ../../Firmware/mmu2/errors_list.h:175 ../../Firmware/mmu2/errors_list.h:220
 msgid "FILAMENT EJECTED"
-msgstr ""
+msgstr "FILAMENT EJECTED"
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:264 ../../Firmware/mmu2/errors_list.h:317
@@ -2498,6 +2498,7 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
+"Neočakávane bolo zistené filament. Uistite sa, že nie je vložené žiadne filament. Skontrolujte snímače a kabeláž."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2510,6 +2511,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
+"Načítanie do extrudéra zlyhalo. Skontrolujte tvar špičky vlákna. V prípade"
+" potreby upravte kalibráciu snímača."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2525,7 +2528,7 @@ msgstr ""
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr ""
+msgstr "Odstráňte vysunuté filament z prednej časti jednotky MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2538,6 +2541,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
+"Selektor sa nemôže pohybovať, pretože FINDA zistila vlákno. Uistite sa, že v"
+" prepínači nie je žiadne vlákno a FINDA funguje správne."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2545,6 +2550,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
+"Verzia firmvéru jednotky MMU nekompatibilná s FW tlačiarne. Aktualizácia na"
+" verziu 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"

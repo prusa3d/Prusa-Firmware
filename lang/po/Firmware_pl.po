@@ -945,7 +945,7 @@ msgstr "DOCISK NIE RUSZA SIE"
 #. MSG_TITLE_INSPECT_FINDA c=20
 #: ../../Firmware/mmu2/errors_list.h:141 ../../Firmware/mmu2/errors_list.h:184
 msgid "INSPECT FINDA"
-msgstr ""
+msgstr "SPRAWDŹ FINDA"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:215
@@ -1086,7 +1086,7 @@ msgstr "Zaladuj do dyszy"
 #. MSG_LOADING_TEST c=18
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:4308
 msgid "Loading Test"
-msgstr ""
+msgstr "Test ładowania"
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -2502,7 +2502,7 @@ msgstr "Zaniki zas. MMU"
 #. MSG_TITLE_FILAMENT_EJECTED c=20
 #: ../../Firmware/mmu2/errors_list.h:175 ../../Firmware/mmu2/errors_list.h:220
 msgid "FILAMENT EJECTED"
-msgstr ""
+msgstr "WYSUNIĘTY FILAMENT"
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:264 ../../Firmware/mmu2/errors_list.h:317
@@ -2510,6 +2510,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
+"Filament wykryto nieoczekiwanie. Upewnij się, że nie załadowano filamentu."
+" Sprawdź czujniki i okablowanie."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2522,6 +2524,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
+"Ładowanie do ekstrudera nie powiodło się. Sprawdź kształt końcówki filamentu."
+" W razie potrzeby doprecyzuj kalibrację czujnika."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2537,7 +2541,7 @@ msgstr ""
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr ""
+msgstr "Usuń wyrzucony filament z przodu jednostki MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2550,6 +2554,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
+"Selektor nie może się poruszyć, ponieważ program FINDA wykrył żarnik. Upewnij się,"
+" że w selektorze nie ma filamentu i że FINDA działa prawidłowo."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2557,6 +2563,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
+"Wersja oprogramowania układowego modułu MMU jest niezgodna z oprogramowaniem"
+" sprzętowym drukarki. Zaktualizuj do wersji 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"

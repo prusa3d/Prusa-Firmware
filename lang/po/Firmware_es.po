@@ -427,7 +427,7 @@ msgstr "Oscuro"
 #. MSG_BTN_DISABLE_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:334 ../../Firmware/mmu2/errors_list.h:344
 msgid "Disable"
-msgstr "Desactiva"
+msgstr "Desact."
 
 #. MSG_DISABLE_STEPPERS c=18
 #: ../../Firmware/ultralcd.cpp:4591
@@ -809,7 +809,7 @@ msgstr "Vents. front/izqui"
 #. MSG_GCODE_DIFF_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:139 ../../Firmware/util.cpp:403
 msgid "G-code sliced for a different level. Continue?"
-msgstr "Codigo G laminado para un nivel diferente. Continuar?"
+msgstr "Codigo G laminado para un nivel dif. Continuar?"
 
 #. MSG_GCODE_DIFF_CANCELLED c=20 r=8
 #: ../../Firmware/messages.cpp:140 ../../Firmware/util.cpp:404
@@ -945,7 +945,7 @@ msgstr "TENSOR: ERROR MOV."
 #. MSG_TITLE_INSPECT_FINDA c=20
 #: ../../Firmware/mmu2/errors_list.h:141 ../../Firmware/mmu2/errors_list.h:184
 msgid "INSPECT FINDA"
-msgstr ""
+msgstr "INSPECCIONAR FINDA"
 
 #. MSG_TITLE_INVALID_TOOL c=20
 #: ../../Firmware/mmu2/errors_list.h:170 ../../Firmware/mmu2/errors_list.h:215
@@ -1086,7 +1086,7 @@ msgstr "Cargar a boquilla"
 #. MSG_LOADING_TEST c=18
 #: ../../Firmware/messages.cpp:56 ../../Firmware/ultralcd.cpp:4308
 msgid "Loading Test"
-msgstr ""
+msgstr "Prueba de carga"
 
 #. MSG_LOADING_COLOR c=20
 #: ../../Firmware/ultralcd.cpp:2194
@@ -1782,8 +1782,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"El filamento solicitado no está disponible en este hardware. Revise el "
-"código G para verificar si el índice de herramienta está fuera de rango "
+"El fil. solicitado no está disponible en este hardware. Revise el "
+"código G para si el índice de herramienta está fuera de rango "
 "(T0-T4)."
 
 #. MSG_RESET c=14
@@ -2509,7 +2509,7 @@ msgstr "Fallo red MMU"
 #. MSG_TITLE_FILAMENT_EJECTED c=20
 #: ../../Firmware/mmu2/errors_list.h:175 ../../Firmware/mmu2/errors_list.h:220
 msgid "FILAMENT EJECTED"
-msgstr ""
+msgstr "FILAMENTO EXPULSADO"
 
 #. MSG_DESC_UNLOAD_MANUALLY c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:264 ../../Firmware/mmu2/errors_list.h:317
@@ -2517,6 +2517,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
+"Filamento detectado inesperadamente. Asegúrese de que no haya ningún filamento"
+" cargado. Compruebe los sensores y el cableado."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2529,6 +2531,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
+"Error al cargar en la extrusora. Inspeccione la forma de la punta del"
+" filamento. Refine la calibración del sensor, si es necesario."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2544,7 +2548,7 @@ msgstr ""
 #. MSG_DESC_FILAMENT_EJECTED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:265 ../../Firmware/mmu2/errors_list.h:318
 msgid "Remove the ejected filament from the front of the MMU unit."
-msgstr ""
+msgstr "Retire el filamento expulsado de la parte frontal de la unidad MMU."
 
 #. MSG_BTN_RESTART_MMU c=8
 #: ../../Firmware/mmu2/errors_list.h:331 ../../Firmware/mmu2/errors_list.h:341
@@ -2557,6 +2561,8 @@ msgid ""
 "Selector can't move due to FINDA detecting a filament. Make sure no filament"
 " is in selector and FINDA works properly."
 msgstr ""
+"El selector no se puede mover debido a que FINDA detecta un filamento. Asegúrese"
+" de que no haya fil. en el selector y que FINDA funcione correctamente."
 
 #. MSG_DESC_FW_UPDATE_NEEDED c=20 r=9
 #: ../../Firmware/mmu2/errors_list.h:268 ../../Firmware/mmu2/errors_list.h:315
@@ -2564,6 +2570,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
+"La versión de firmware de la unidad MMU es incompatible con el FW de la"
+" impresora. Actualizar a la versión 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
