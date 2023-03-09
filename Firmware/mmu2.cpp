@@ -451,6 +451,7 @@ bool MMU2::cut_filament(uint8_t slot, bool enableFullScreenMsg /*= true*/) {
     extruder = MMU2_NO_TOOL;
     tool_change_extruder = MMU2_NO_TOOL;
     MakeSound(SoundType::Confirm);
+    ScreenUpdateEnable();
     return true;
 }
 
