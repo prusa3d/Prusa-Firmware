@@ -384,7 +384,7 @@ msgid ""
 msgstr ""
 
 #. MSG_CUT_FILAMENT c=17
-#: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:315
+#: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:314
 #: ../../Firmware/ultralcd.cpp:5002 ../../Firmware/ultralcd.cpp:5426
 msgid "Cut filament"
 msgstr ""
@@ -478,7 +478,7 @@ msgid "ERROR:"
 msgstr ""
 
 #. MSG_EJECT_FROM_MMU c=16
-#: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2_reporting.cpp:319
+#: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2_reporting.cpp:318
 #: ../../Firmware/ultralcd.cpp:4984 ../../Firmware/ultralcd.cpp:5423
 msgid "Eject from MMU"
 msgstr ""
@@ -1059,7 +1059,7 @@ msgstr ""
 #. MSG_LOADING_FILAMENT c=20
 #: ../../Firmware/Marlin_main.cpp:3606 ../../Firmware/messages.cpp:57
 #: ../../Firmware/mmu2_progress_converter.cpp:51
-#: ../../Firmware/mmu2_reporting.cpp:327 ../../Firmware/ultralcd.cpp:2205
+#: ../../Firmware/mmu2_reporting.cpp:326 ../../Firmware/ultralcd.cpp:2205
 #: ../../Firmware/ultralcd.cpp:3798
 msgid "Loading filament"
 msgstr ""
@@ -1109,7 +1109,7 @@ msgid "MMU NOT RESPONDING"
 msgstr ""
 
 #. MSG_MMU_RESTORE_TEMP c=20 r=4
-#: ../../Firmware/mmu2_reporting.cpp:331
+#: ../../Firmware/mmu2_reporting.cpp:330
 msgid "MMU Retry: Restoring temperature..."
 msgstr ""
 
@@ -2111,7 +2111,7 @@ msgid "Temperatures"
 msgstr ""
 
 #. MSG_TESTING_FILAMENT c=20
-#: ../../Firmware/messages.cpp:58 ../../Firmware/mmu2_reporting.cpp:323
+#: ../../Firmware/messages.cpp:58 ../../Firmware/mmu2_reporting.cpp:322
 msgid "Testing filament"
 msgstr ""
 
@@ -2433,13 +2433,6 @@ msgstr ""
 #. MSG_IR_UNKNOWN c=18
 #: ../../Firmware/Filament_sensor.cpp:293 ../../Firmware/messages.cpp:172
 msgid "unknown state"
-msgstr ""
-
-#. MSG_BTN_MORE c=8
-#. @todo convert to PROGMEM_N1
-#: ../../Firmware/mmu2/errors_list.h:335
-#: ../../Firmware/mmu2_error_converter.cpp:175
-msgid "⏬"
 msgstr ""
 
 #. MSG_REFRESH c=18

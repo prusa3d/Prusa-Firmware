@@ -403,7 +403,7 @@ msgstr ""
 "kapcsolhato be"
 
 #. MSG_CUT_FILAMENT c=17
-#: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:315
+#: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:314
 #: ../../Firmware/ultralcd.cpp:5002 ../../Firmware/ultralcd.cpp:5426
 msgid "Cut filament"
 msgstr "Filament vagasa"
@@ -502,7 +502,7 @@ msgid "ERROR:"
 msgstr "HIBA:"
 
 #. MSG_EJECT_FROM_MMU c=16
-#: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2_reporting.cpp:319
+#: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2_reporting.cpp:318
 #: ../../Firmware/ultralcd.cpp:4984 ../../Firmware/ultralcd.cpp:5423
 msgid "Eject from MMU"
 msgstr "Kiadás az MMUból"
@@ -1097,7 +1097,7 @@ msgstr "Szin tisztitasa"
 #. MSG_LOADING_FILAMENT c=20
 #: ../../Firmware/Marlin_main.cpp:3606 ../../Firmware/messages.cpp:57
 #: ../../Firmware/mmu2_progress_converter.cpp:51
-#: ../../Firmware/mmu2_reporting.cpp:327 ../../Firmware/ultralcd.cpp:2205
+#: ../../Firmware/mmu2_reporting.cpp:326 ../../Firmware/ultralcd.cpp:2205
 #: ../../Firmware/ultralcd.cpp:3798
 msgid "Loading filament"
 msgstr "Filament betoltese"
@@ -1135,7 +1135,7 @@ msgid "MMU NOT RESPONDING"
 msgstr "MMU NEM VALASZOL"
 
 #. MSG_MMU_RESTORE_TEMP c=20 r=4
-#: ../../Firmware/mmu2_reporting.cpp:331
+#: ../../Firmware/mmu2_reporting.cpp:330
 msgid "MMU Retry: Restoring temperature..."
 msgstr "MMU Ujra: Homerseklet visszaallitasa"
 
@@ -2159,7 +2159,7 @@ msgid "Temperatures"
 msgstr "Homersekletek"
 
 #. MSG_TESTING_FILAMENT c=20
-#: ../../Firmware/messages.cpp:58 ../../Firmware/mmu2_reporting.cpp:323
+#: ../../Firmware/messages.cpp:58 ../../Firmware/mmu2_reporting.cpp:322
 msgid "Testing filament"
 msgstr "Filament tesztelese"
 
@@ -2485,13 +2485,6 @@ msgstr "ismeretlen"
 msgid "unknown state"
 msgstr "ismeretlen allapot"
 
-#. MSG_BTN_MORE c=8
-#. @todo convert to PROGMEM_N1
-#: ../../Firmware/mmu2/errors_list.h:335
-#: ../../Firmware/mmu2_error_converter.cpp:175
-msgid "⏬"
-msgstr "⏬"
-
 #. MSG_REFRESH c=18
 #: ../../Firmware/messages.cpp:82 ../../Firmware/ultralcd.cpp:5938
 #: ../../Firmware/ultralcd.cpp:5941
@@ -2569,6 +2562,9 @@ msgid ""
 msgstr ""
 "Az MMU egység firmware-verziója nem kompatibilis a nyomtató FW-vel. "
 "Frissítés a 2.1.9-es verzióra."
+
+#~ msgid "⏬"
+#~ msgstr "⏬"
 
 #~ msgid "Reset MMU"
 #~ msgstr "MMUreszet"

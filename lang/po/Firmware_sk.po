@@ -403,7 +403,7 @@ msgstr ""
 "Normalnom rezime"
 
 #. MSG_CUT_FILAMENT c=17
-#: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:315
+#: ../../Firmware/messages.cpp:60 ../../Firmware/mmu2_reporting.cpp:314
 #: ../../Firmware/ultralcd.cpp:5002 ../../Firmware/ultralcd.cpp:5426
 msgid "Cut filament"
 msgstr "Odstrihnut filam."
@@ -501,7 +501,7 @@ msgid "ERROR:"
 msgstr "ERROR:"
 
 #. MSG_EJECT_FROM_MMU c=16
-#: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2_reporting.cpp:319
+#: ../../Firmware/messages.cpp:59 ../../Firmware/mmu2_reporting.cpp:318
 #: ../../Firmware/ultralcd.cpp:4984 ../../Firmware/ultralcd.cpp:5423
 msgid "Eject from MMU"
 msgstr "Vysunúť z MMU"
@@ -1092,7 +1092,7 @@ msgstr "Cistenie farby"
 #. MSG_LOADING_FILAMENT c=20
 #: ../../Firmware/Marlin_main.cpp:3606 ../../Firmware/messages.cpp:57
 #: ../../Firmware/mmu2_progress_converter.cpp:51
-#: ../../Firmware/mmu2_reporting.cpp:327 ../../Firmware/ultralcd.cpp:2205
+#: ../../Firmware/mmu2_reporting.cpp:326 ../../Firmware/ultralcd.cpp:2205
 #: ../../Firmware/ultralcd.cpp:3798
 msgid "Loading filament"
 msgstr "Zavedenie filamentu"
@@ -1130,7 +1130,7 @@ msgid "MMU NOT RESPONDING"
 msgstr "MMU NOT RESPONDING"
 
 #. MSG_MMU_RESTORE_TEMP c=20 r=4
-#: ../../Firmware/mmu2_reporting.cpp:331
+#: ../../Firmware/mmu2_reporting.cpp:330
 msgid "MMU Retry: Restoring temperature..."
 msgstr "MMU: Obnovenie teploty..."
 
@@ -2150,7 +2150,7 @@ msgid "Temperatures"
 msgstr "Teploty"
 
 #. MSG_TESTING_FILAMENT c=20
-#: ../../Firmware/messages.cpp:58 ../../Firmware/mmu2_reporting.cpp:323
+#: ../../Firmware/messages.cpp:58 ../../Firmware/mmu2_reporting.cpp:322
 msgid "Testing filament"
 msgstr "Kontrola filamentu"
 
@@ -2469,13 +2469,6 @@ msgstr "neznamy"
 msgid "unknown state"
 msgstr "neznamy stav"
 
-#. MSG_BTN_MORE c=8
-#. @todo convert to PROGMEM_N1
-#: ../../Firmware/mmu2/errors_list.h:335
-#: ../../Firmware/mmu2_error_converter.cpp:175
-msgid "⏬"
-msgstr "⏬"
-
 #. MSG_REFRESH c=18
 #: ../../Firmware/messages.cpp:82 ../../Firmware/ultralcd.cpp:5938
 #: ../../Firmware/ultralcd.cpp:5941
@@ -2553,6 +2546,9 @@ msgid ""
 msgstr ""
 "Verzia firmvéru jednotky MMU nekompatibilná s FW tlačiarne. Aktualizácia na "
 "verziu 2.1.9."
+
+#~ msgid "⏬"
+#~ msgstr "⏬"
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
