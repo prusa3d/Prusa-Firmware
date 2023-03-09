@@ -70,7 +70,7 @@ msgstr "Mindig"
 msgid "Ambient"
 msgstr "Kornyezet"
 
-#. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
+#. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2974
 msgid "Are left and right Z~carriages all up?"
 msgstr "A Z tengely a felso vegponton van?"
@@ -185,7 +185,7 @@ msgstr "Szij allapot"
 msgid "Belt test"
 msgstr "Szij teszt"
 
-#. MSG_RECOVER_PRINT c=20 r=2
+#. MSG_RECOVER_PRINT c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:1581 ../../Firmware/Marlin_main.cpp:1603
 #: ../../Firmware/messages.cpp:81
 msgid "Blackout occurred. Recover print?"
@@ -703,7 +703,7 @@ msgstr "Fil. szenzor"
 msgid "Filament"
 msgstr "Filament"
 
-#. MSG_FILAMENT_CLEAN c=20 r=2
+#. MSG_FILAMENT_CLEAN c=20 r=3
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2283
 #: ../../Firmware/ultralcd.cpp:2287
 msgid "Filament extruding & with correct color?"
@@ -1000,13 +1000,13 @@ msgstr ""
 "Futas kozbeni hiba. Inditsd ujra az MMU-t vagy frissitsd a firmwaret. Ha a "
 "problema fennall, fordulj a supporthoz."
 
-#. MSG_FILAMENT_LOADED c=20 r=2
+#. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3816
 #: ../../Firmware/ultralcd.cpp:4063
 msgid "Is filament loaded?"
 msgstr "Filament behelyezve?"
 
-#. MSG_STEEL_SHEET_CHECK c=20 r=2
+#. MSG_STEEL_SHEET_CHECK c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3298 ../../Firmware/Marlin_main.cpp:4908
 #: ../../Firmware/messages.cpp:110 ../../Firmware/ultralcd.cpp:4039
 msgid "Is steel sheet on heatbed?"
@@ -2358,7 +2358,7 @@ msgstr "Figyelem: az alaplap tipusa megvaltozott."
 msgid "Warning: printer type changed."
 msgstr "Figyelem: a nyomtato tipusa megvaltozott."
 
-#. MSG_UNLOAD_SUCCESSFUL c=20 r=2
+#. MSG_UNLOAD_SUCCESSFUL c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3571
 msgid "Was filament unload successful?"
 msgstr "Sikerult kivenni a filamentet?"
