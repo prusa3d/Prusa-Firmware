@@ -55,7 +55,6 @@ extern const char MSG_HEATING[];
 extern const char MSG_HEATING_COMPLETE[];
 extern const char MSG_HOMEYZ[];
 extern const char MSG_ITERATION[];
-extern const char MSG_SELECT_EXTRUDER[];
 extern const char MSG_SELECT_FILAMENT[];
 extern const char MSG_LAST_PRINT[];
 extern const char MSG_LAST_PRINT_FAILURES[];
