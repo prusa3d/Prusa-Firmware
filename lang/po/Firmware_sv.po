@@ -2503,7 +2503,7 @@ msgstr ""
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
 msgid "LOAD TO EXTR. FAILED"
-msgstr ""
+msgstr "LADDA TILL EXTR. MISLYCKADES"
 
 #. MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:283
@@ -2517,7 +2517,7 @@ msgstr ""
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
 msgid "MCU UNDERVOLTAGE VCC"
-msgstr ""
+msgstr "MCU UNDERSPÄNN. VCC"
 
 #. MSG_MATERIAL_CHANGES c=18
 #: ../../Firmware/messages.cpp:102 ../../Firmware/ultralcd.cpp:1121
