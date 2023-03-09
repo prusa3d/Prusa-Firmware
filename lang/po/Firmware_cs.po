@@ -4,16 +4,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Wed 16 Mar 2022 09:24:38 AM CET\n"
-"PO-Revision-Date: Wed 16 Mar 2022 09:24:38 AM CET\n"
+"PO-Revision-Date: 2023-02-23 13:20+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.7\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 3.2.2\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #. MSG_IR_03_OR_OLDER c=18
 #: ../../Firmware/Filament_sensor.cpp:289
@@ -107,8 +107,7 @@ msgstr "AutoZavedeni fil."
 msgid ""
 "Autoloading filament is active, just press the knob and insert filament..."
 msgstr ""
-"Automaticke zavadeni filamentu aktivni, stisknete tlacitko a vlozte "
-"filament..."
+"Automaticke zavadeni filamentu aktivni, stisknete tlacitko a vlozte filament."
 
 #. MSG_PROGRESS_AVOID_GRIND c=20
 #: ../../Firmware/mmu2_progress_converter.cpp:16
@@ -190,7 +189,7 @@ msgstr "Test remenu"
 #: ../../Firmware/Marlin_main.cpp:1581 ../../Firmware/Marlin_main.cpp:1603
 #: ../../Firmware/messages.cpp:81
 msgid "Blackout occurred. Recover print?"
-msgstr "Detekovan vypadek proudu.Obnovit tisk?"
+msgstr "Detekovan vypadek proudu. Obnovit tisk?"
 
 #. MSG_BRIGHT c=6
 #: ../../Firmware/messages.cpp:159 ../../Firmware/ultralcd.cpp:5836
@@ -398,8 +397,8 @@ msgid ""
 "be turned on only in\n"
 "Normal mode"
 msgstr ""
-"Crash detekce muze\n"
-"byt zapnuta pouze v\n"
+"Crash detekce\n"
+"funguje pouze v\n"
 "Normal modu"
 
 #. MSG_CUT_FILAMENT c=17
@@ -449,8 +448,8 @@ msgid ""
 "Please follow the manual, chapter First steps, section First layer "
 "calibration."
 msgstr ""
-"Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim "
-"podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy."
+"Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte podle "
+"manualu, kapitola Zaciname."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ../../Firmware/ultralcd.cpp:4096
@@ -499,11 +498,11 @@ msgstr "ERR: Cekam na uziv."
 msgid "ERROR:"
 msgstr "CHYBA:"
 
-#. MSG_EJECT_FROM_MMU c=16
+#. MSG_EJECT_FILAMENT c=17
 #: ../../Firmware/messages.cpp:60 ../../Firmware/ultralcd.cpp:5111
 #: ../../Firmware/ultralcd.cpp:5549
-msgid "Eject from MMU"
-msgstr "Vysunout z MMU"
+msgid "Eject filament"
+msgstr "Vysunout fil."
 
 #. MSG_PROGRESS_EJECT_FILAMENT c=20
 #. @@todo duplicate
@@ -816,8 +815,7 @@ msgid ""
 "G-code sliced for a different level. Please re-slice the model again. Print "
 "cancelled."
 msgstr ""
-"G-code je pripraven pro jinou verzi. Prosim preslicujte model znovu. Tisk "
-"zrusen."
+"G-code je pripraven pro jinou verzi. Vyslicujte model znovu. Tisk zrusen."
 
 #. MSG_GCODE_DIFF_PRINTER_CONTINUE c=20 r=3
 #: ../../Firmware/messages.cpp:135 ../../Firmware/util.cpp:323
@@ -832,22 +830,20 @@ msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again. "
 "Print cancelled."
 msgstr ""
-"G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. "
-"Tisk zrusen."
+"G-code je pripraven pro jiny typ tiskarny. Vyslicujte model znovu. Tisk "
+"zrusen."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code je pripraven pro novejsi firmware.Pokracovat?"
+msgstr "G-code je pripraven pro novejsi FW. Pokracovat?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:377
 msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
-msgstr ""
-"G-code je pripraven pro novejsi firmware. Prosim aktualizujte firmware. Tisk "
-"zrusen."
+msgstr "G-code je pripraven pro novejsi FW. Aktualizujte FW. Tisk zrusen."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:4628
@@ -956,8 +952,8 @@ msgid ""
 "If you have additional steel sheets, calibrate their presets in Settings - "
 "HW Setup - Steel sheets."
 msgstr ""
-"Mate-li vice tiskovych platu, kalibrujte je v menu Nastaveni - HW nastaveni "
-"- Tiskove platy"
+"Vice tiskovych platu? Kalibrujte je v menu Nastaveni - HW nastaveni - "
+"Tiskove platy"
 
 #. MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=20 r=4
 #: ../../Firmware/mesh_bed_calibration.cpp:2530
@@ -992,8 +988,8 @@ msgid ""
 "Internal runtime error. Try resetting the MMU unit or updating the firmware. "
 "If the issue persists, contact support."
 msgstr ""
-"Interní chyba běhu. Zkuste resetovat MMU nebo aktualizujte firmware. Pokud "
-"chyba pretrvava, kontakujte tech. podporu"
+"Interní chyba. Zkuste resetovat MMU ci aktualizujte FW. Pokud pretrvava, "
+"kontakujte tech. podporu."
 
 #. MSG_FILAMENT_LOADED c=20 r=2
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3816
@@ -1166,7 +1162,7 @@ msgid ""
 "MMU unit not responding. Check the wiring and connectors. If the issue "
 "persists, contact support."
 msgstr ""
-"MMU jednotka neodpovida. Zkontrolujte kabely a jejich zapojeni. Pokud potize "
+"MMU neodpovida. Zkontrolujte kabely a jejich zapojeni. Pokud potize "
 "pretrvavaji, kontaktujte podporu."
 
 #. MSG_MMU_CONNECTED c=18
@@ -1294,7 +1290,7 @@ msgstr "N/A"
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:199
 msgid "New firmware version available:"
-msgstr "Vysla nova verze firmware:"
+msgstr "Vysla nova verze FW:"
 
 #. MSG_NO c=4
 #: ../../Firmware/messages.cpp:70 ../../Firmware/ultralcd.cpp:2795
@@ -1507,13 +1503,13 @@ msgid ""
 "Please check our handbook and fix the problem. Then resume the Wizard by "
 "rebooting the printer."
 msgstr ""
-"Prosim nahlednete do prirucky 3D tiskare a opravte problem. Pote obnovte "
-"Pruvodce restartovanim tiskarny."
+"Nahlednete do prirucky 3D tiskare a opravte problem. Pote obnovte Pruvodce "
+"restartovanim tiskarny."
 
 #. MSG_CHECK_IR_CONNECTION c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6240
 msgid "Please check the IR sensor connection, unload filament if present."
-msgstr "Prosim zkontrolujte zapojeni IR senzoru a vyjmuty filament"
+msgstr "Zkontrolujte zapojeni IR senzoru a vyjmuty filament"
 
 #. MSG_SELFTEST_PLEASECHECK c=20
 #: ../../Firmware/ultralcd.cpp:6944
@@ -1523,20 +1519,18 @@ msgstr "Zkontrolujte:"
 #. MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4099
 msgid "Please clean heatbed and then press the knob."
-msgstr "Prosim ocistete podlozku a stisknete tlacitko."
+msgstr "Ocistete podlozku a stisknete tlacitko."
 
 #. MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3277 ../../Firmware/messages.cpp:24
 msgid "Please clean the nozzle for calibration. Click when done."
-msgstr ""
-"Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
+msgstr "Pro uspesnou kalibraci ocistete trysku. Potvrdte tlacitkem."
 
 #. MSG_WIZARD_LOAD_FILAMENT c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3904
 msgid ""
 "Please insert filament into the extruder, then press the knob to load it."
-msgstr ""
-"Prosim vlozte filament do extruderu a stisknete tlacitko k jeho zavedeni"
+msgstr "Vlozte filament do extruderu a stiskem tlacitka jej zavedete."
 
 #. MSG_MMU_INSERT_FILAMENT_FIRST_TUBE c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3901
@@ -1544,46 +1538,45 @@ msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
 msgstr ""
-"Prosim vlozte filament do prvni trubicky MMU a stisknete tlacitko k jeho "
-"zavedeni"
+"Vlozte filament do prvni trubicky MMU a stisknete tlacitko k jeho zavedeni."
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3824
 msgid "Please load filament first."
-msgstr "Prosim nejdriv zavedte filament"
+msgstr "Nejdriv zavedte filament"
 
 #. MSG_CHECK_IDLER c=20 r=5
 #: ../../Firmware/Marlin_main.cpp:3578
 msgid "Please open idler and remove filament manually."
-msgstr "Prosim otevrete idler a manualne odstrante filament."
+msgstr "Otevrete idler a manualne odstrante filament."
 
 #. MSG_PLACE_STEEL_SHEET c=20 r=5
 #: ../../Firmware/mesh_bed_calibration.cpp:2795 ../../Firmware/messages.cpp:74
 #: ../../Firmware/ultralcd.cpp:4041
 msgid "Please place steel sheet on heatbed."
-msgstr "Umistete prosim tiskovy plat na podlozku"
+msgstr "Umistete tiskovy plat na podlozku"
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:11529 ../../Firmware/Marlin_main.cpp:11582
 #: ../../Firmware/messages.cpp:78
 msgid "Please press the knob to unload filament"
-msgstr "Pro vysunuti filamentu stisknete prosim tlacitko"
+msgstr "Pro vysunuti filamentu stisknete tlacitko"
 
 #. MSG_PULL_OUT_FILAMENT c=20 r=4
 #: ../../Firmware/messages.cpp:80 ../../Firmware/ultralcd.cpp:5195
 msgid "Please pull out filament immediately"
-msgstr "Prosim vyjmete urychlene filament"
+msgstr "Vyjmete urychlene filament"
 
 #. MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 #: ../../Firmware/ultralcd.cpp:4036
 msgid "Please remove shipping helpers first."
-msgstr "Nejprve prosim sundejte transportni soucastky."
+msgstr "Nejprve sundejte transportni soucastky."
 
 #. MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3300 ../../Firmware/Marlin_main.cpp:4918
 #: ../../Firmware/messages.cpp:83
 msgid "Please remove steel sheet from heatbed."
-msgstr "Odstrante prosim tiskovy plat z podlozky."
+msgstr "Odstrante tiskovy plat z podlozky."
 
 #. MSG_RUN_XYZ c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:4894
@@ -1593,7 +1586,7 @@ msgstr "Nejprve spustte kalibraci XYZ."
 #. MSG_UNLOAD_FILAMENT_REPEAT c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6237
 msgid "Please unload the filament first, then repeat this action."
-msgstr "Prosim vyjmete filament a zopakujte tuto akci"
+msgstr "Vyjmete filament a zopakujte tuto akci"
 
 #. MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 #: ../../Firmware/util.cpp:203
@@ -1605,7 +1598,7 @@ msgstr "Prosim aktualizujte."
 #: ../../Firmware/Marlin_main.cpp:7954 ../../Firmware/messages.cpp:75
 #: ../../Firmware/ultralcd.cpp:2195 ../../Firmware/ultralcd.cpp:2206
 msgid "Please wait"
-msgstr "Prosim cekejte"
+msgstr "Cekejte"
 
 #. MSG_POWER_FAILURES c=15
 #: ../../Firmware/messages.cpp:76 ../../Firmware/ultralcd.cpp:1238
@@ -1627,7 +1620,7 @@ msgstr "Predehrejte trysku!"
 #: ../../Firmware/messages.cpp:120 ../../Firmware/ultralcd.cpp:2891
 #: ../../Firmware/ultralcd.cpp:3886 ../../Firmware/ultralcd.cpp:3888
 msgid "Preheating nozzle. Please wait."
-msgstr "Predehrev trysky. Prosim cekejte."
+msgstr "Predehrev trysky. Vyckejte."
 
 #. MSG_PREHEATING_TO_CUT c=20
 #: ../../Firmware/ultralcd.cpp:1994
@@ -1702,8 +1695,8 @@ msgid ""
 "Printer has not been calibrated yet. Please follow the manual, chapter First "
 "steps, section Calibration flow."
 msgstr ""
-"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, "
-"kapitola Zaciname, odstavec Postup kalibrace."
+"Tiskarna nebyla jeste zkalibrovana. Postupujte podle manualu, kapitola "
+"Zaciname."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
@@ -1713,11 +1706,11 @@ msgstr "Prumer trysky tiskarny se lisi od G-code. Pokracovat?"
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Nozzle diameter differs from the G-code. Please check the value in "
-"settings. Print cancelled."
+"Nozzle diameter differs from the G-code. Please check the value in settings. "
+"Print cancelled."
 msgstr ""
-"Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. "
-"Tisk zrusen."
+"Prumer trysky tiskarny se lisi od G-code. Zkontrolujte nastaveni. Tisk "
+"zrusen."
 
 #. MSG_DESC_PULLEY_STALLED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:210 ../../Firmware/mmu2/errors_list.h:250
@@ -1768,8 +1761,8 @@ msgid ""
 "Requested filament tool is not available on this hardware. Check the G-code "
 "for tool index out of range (T0-T4)."
 msgstr ""
-"Pozadovany filament nastroj neni k dispozici na tomto HW. V G-Codu se "
-"nachazi nastrojovy index mimo rozsah (T0-T4)."
+"Pozadovany fil. nastroj neni k dispozici na tomto HW. V G-Codu se nachazi "
+"nastrojovy index mimo rozsah (T0-T4)."
 
 #. MSG_RESET c=14
 #: ../../Firmware/messages.cpp:84 ../../Firmware/ultralcd.cpp:2747
@@ -2132,8 +2125,12 @@ msgstr "TMC CHYBA NIZKE NAP."
 
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
-msgid "Thermal model cal. takes approx. 12 mins. See\nprusa.io/tm-cal"
-msgstr "Kalibrace termálního modelu trvá asi 12 minut. Viz\nprusa.io/tm-cal"
+msgid ""
+"Thermal model cal. takes approx. 12 mins. See\n"
+"prusa.io/tm-cal"
+msgstr ""
+"Kalibrace termálního modelu trvá asi 12 minut. Viz\n"
+"prusa.io/tm-cal"
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
@@ -2169,8 +2166,8 @@ msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
-"MMU jednotka hlasi FW nekompatibilni s FW v tiskarne. Ujistete se, ze mate v "
-"MMU aktualni firmware."
+"MMU hlasi FW nekompatibilni s FW v tiskarne. Ujistete se, ze mate v MMU "
+"aktualni FW."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:212 ../../Firmware/mmu2/errors_list.h:252
@@ -2196,8 +2193,7 @@ msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
 msgstr ""
-"Je potreba kalibrovat osu Z. Prosim postupujte dle prirucky, kapitola "
-"Zaciname, sekce Postup kalibrace."
+"Je potreba kalibrovat osu Z. Postupujte dle prirucky, kapitola Zaciname."
 
 #. MSG_SORT_TIME c=8
 #: ../../Firmware/messages.cpp:141 ../../Firmware/ultralcd.cpp:4780
@@ -2447,7 +2443,7 @@ msgstr "Ano"
 #. MSG_WIZARD_QUIT c=20 r=8
 #: ../../Firmware/messages.cpp:121 ../../Firmware/ultralcd.cpp:4138
 msgid "You can always resume the Wizard from Calibration -> Wizard."
-msgstr "Pruvodce muzete kdykoliv znovu spustit z menu Kalibrace -> Pruvodce"
+msgstr "Pruvodce muzete znovu spustit z menu Kalibrace -> Pruvodce."
 
 #. MSG_Z_CORRECTION c=13
 #: ../../Firmware/ultralcd.cpp:4163
