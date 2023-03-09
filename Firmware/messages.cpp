@@ -49,7 +49,6 @@ const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////MSG_HEATING c=20
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////MSG_HEATING_COMPLETE c=20
 const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////MSG_HOMEYZ c=18
 const char MSG_ITERATION[] PROGMEM_I1 = ISTR("Iteration"); ////MSG_ITERATION c=12
-const char MSG_SELECT_EXTRUDER[] PROGMEM_I1 = ISTR("Select extruder:"); ////MSG_SELECT_EXTRUDER c=20
 const char MSG_SELECT_FILAMENT[] PROGMEM_I1 = ISTR("Select filament:"); ////MSG_SELECT_FILAMENT c=20
 const char MSG_LAST_PRINT[] PROGMEM_I1 = ISTR("Last print"); ////MSG_LAST_PRINT c=18
 const char MSG_LAST_PRINT_FAILURES[] PROGMEM_I1 = ISTR("Last print failures"); ////MSG_LAST_PRINT_FAILURES c=20
