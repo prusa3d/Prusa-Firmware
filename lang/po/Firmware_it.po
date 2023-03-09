@@ -4,16 +4,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Prusa-Firmware\n"
 "POT-Creation-Date: Wed 16 Mar 2022 09:24:52 AM CET\n"
-"PO-Revision-Date: 2022-10-13 22:49+0200\n"
+"PO-Revision-Date: 2023-02-23 13:05+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.7\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 3.2.2\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #. MSG_IR_03_OR_OLDER c=18
 #: ../../Firmware/Filament_sensor.cpp:289
@@ -450,8 +450,7 @@ msgid ""
 "calibration."
 msgstr ""
 "Distanza tra la punta dell'ugello e la superficie del piano non ancora "
-"impostata. Si prega di seguire il manuale, capitolo Primi Passi, sezione "
-"Calibrazione primo strato."
+"impostata. Seguire manuale, Primi Passi, Calibrazione primo strato."
 
 #. MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 #: ../../Firmware/ultralcd.cpp:4096
@@ -835,13 +834,13 @@ msgid ""
 "G-code sliced for a different printer type. Please re-slice the model again. "
 "Print cancelled."
 msgstr ""
-"G-code processato per una stampante diversa. Per favore esegui nuovamente lo "
-"slice del modello. Stampa annullata."
+"G-code processato per un'altra stampante. Per favore rislice il modello. "
+"Annullamento stampa."
 
 #. MSG_GCODE_NEWER_FIRMWARE_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:370
 msgid "G-code sliced for a newer firmware. Continue?"
-msgstr "G-code processato per un firmware piu recente. Continuare?"
+msgstr "G-code processato per un FW piu recente. Continuare?"
 
 #. MSG_GCODE_NEWER_FIRMWARE_CANCELLED c=20 r=8
 #: ../../Firmware/util.cpp:377
@@ -849,8 +848,8 @@ msgid ""
 "G-code sliced for a newer firmware. Please update the firmware. Print "
 "cancelled."
 msgstr ""
-"G-code processato per un firmware piu recente. Per favore aggiorna il "
-"firmware. Stampa annullata."
+"G-code processato per un FW piu recente. Per favore aggiorna il FW. Stampa "
+"annullata."
 
 #. MSG_HW_SETUP c=18
 #: ../../Firmware/messages.cpp:103 ../../Firmware/ultralcd.cpp:4628
@@ -998,7 +997,7 @@ msgid ""
 "If the issue persists, contact support."
 msgstr ""
 "Errore runtime interno. Provare a resettare l'unità MMU o ad aggiornare il "
-"firmware. Se il problema persiste, contattare l'assistenza."
+"FW. Se il problema persiste, contattare l'assistenza."
 
 #. MSG_FILAMENT_LOADED c=20 r=2
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3816
@@ -1121,7 +1120,7 @@ msgstr "AGG FW MMU NECESSARI"
 #. MSG_DESC_QUEUE_FULL c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:240 ../../Firmware/mmu2/errors_list.h:281
 msgid "MMU Firmware internal error, please reset the MMU."
-msgstr "Errore interno firmware MMU, resettare la MMU."
+msgstr "Errore interno FW MMU, resettare la MMU."
 
 #. MSG_MMU_MODE c=8
 #: ../../Firmware/messages.cpp:138 ../../Firmware/ultralcd.cpp:4368
@@ -1299,7 +1298,7 @@ msgstr "N/D"
 #. MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
 #: ../../Firmware/util.cpp:199
 msgid "New firmware version available:"
-msgstr "Nuova vers. firmware disponibile:"
+msgstr "Nuova vers. FW disponibile:"
 
 #. MSG_NO c=4
 #: ../../Firmware/messages.cpp:70 ../../Firmware/ultralcd.cpp:2795
@@ -1514,8 +1513,8 @@ msgid ""
 "Please check our handbook and fix the problem. Then resume the Wizard by "
 "rebooting the printer."
 msgstr ""
-"Per favore consulta il nostro manuale per risolvere il problema. Poi "
-"riprendi il Wizard dopo aver riavviato la stampante."
+"Consulta il manuale per risolvere il problema, poi riavvia la stampante e "
+"riprendi il Wizard."
 
 #. MSG_CHECK_IR_CONNECTION c=20 r=4
 #: ../../Firmware/ultralcd.cpp:6240
@@ -1530,7 +1529,7 @@ msgstr "Verifica:"
 #. MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 #: ../../Firmware/ultralcd.cpp:4099
 msgid "Please clean heatbed and then press the knob."
-msgstr "Per favore pulisci il piatto, poi premi la manopola."
+msgstr "Pulisci il piatto, poi premi la manopola."
 
 #. MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 #: ../../Firmware/Marlin_main.cpp:3277 ../../Firmware/messages.cpp:24
@@ -1550,13 +1549,13 @@ msgid ""
 "Please insert filament into the first tube of the MMU, then press the knob "
 "to load it."
 msgstr ""
-"Per favore inserisci il filamento nel primo tubo del MMU, poi premi la "
-"manopola per caricarlo."
+"Inserisci il filamento nel primo tubo del MMU, poi premi la manopola per "
+"caricarlo."
 
 #. MSG_PLEASE_LOAD_PLA c=20 r=4
 #: ../../Firmware/ultralcd.cpp:3824
 msgid "Please load filament first."
-msgstr "Per favore prima carica il filamento."
+msgstr "Carica il filamento, per favore."
 
 #. MSG_CHECK_IDLER c=20 r=5
 #: ../../Firmware/Marlin_main.cpp:3578
@@ -1567,7 +1566,7 @@ msgstr "Aprire la guida filam. e rimuovere il filam. a mano"
 #: ../../Firmware/mesh_bed_calibration.cpp:2795 ../../Firmware/messages.cpp:74
 #: ../../Firmware/ultralcd.cpp:4041
 msgid "Please place steel sheet on heatbed."
-msgstr "Per favore posizionate la piastra d'acciaio sul piano riscaldato."
+msgstr "Posizionate la piastra d'acciaio sul piano riscaldato."
 
 #. MSG_PRESS_TO_UNLOAD c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:11529 ../../Firmware/Marlin_main.cpp:11582
@@ -1583,7 +1582,7 @@ msgstr "Estrarre il filamento immediatamente"
 #. MSG_REMOVE_SHIPPING_HELPERS c=20 r=3
 #: ../../Firmware/ultralcd.cpp:4036
 msgid "Please remove shipping helpers first."
-msgstr "Per favore rimuovete i materiali da spedizione"
+msgstr "Rimuovete i materiali da spedizione"
 
 #. MSG_REMOVE_STEEL_SHEET c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:3300 ../../Firmware/Marlin_main.cpp:4918
@@ -1709,7 +1708,7 @@ msgid ""
 "steps, section Calibration flow."
 msgstr ""
 "Stampante non ancora calibrata. Si prega di seguire il manuale, capitolo "
-"Primi Passi, sezione Sequenza di Calibrazione."
+"Primi Passi."
 
 #. MSG_NOZZLE_DIFFERS_CONTINUE c=20 r=3
 #: ../../Firmware/util.cpp:289
@@ -1719,8 +1718,8 @@ msgstr "Diametro ugello diverso da G-Code. Continuare?"
 #. MSG_NOZZLE_DIFFERS_CANCELLED c=20 r=9
 #: ../../Firmware/util.cpp:295
 msgid ""
-"Nozzle diameter differs from the G-code. Please check the value in "
-"settings. Print cancelled."
+"Nozzle diameter differs from the G-code. Please check the value in settings. "
+"Print cancelled."
 msgstr ""
 "Diametro ugello diverso dal G-Code. Controlla il valore nelle impostazioni. "
 "Stampa annullata."
@@ -2145,8 +2144,12 @@ msgstr "TMC UNDERVOLTAGE ERR"
 
 #. MSG_TM_CAL c=20 r=4
 #: ../../Firmware/ultralcd.cpp:4054
-msgid "Thermal model cal. takes approx. 12 mins. See\nprusa.io/tm-cal"
-msgstr "Calib mod termico richiede circa 12 min. Vedere\nprusa.io/tm-cal"
+msgid ""
+"Thermal model cal. takes approx. 12 mins. See\n"
+"prusa.io/tm-cal"
+msgstr ""
+"Calib mod termico richiede circa 12 min. Vedere\n"
+"prusa.io/tm-cal"
 
 #. MSG_TM_NOT_CAL c=20 r=4
 #: ../../Firmware/Marlin_main.cpp:1527 ../../Firmware/Marlin_main.cpp:3404
@@ -2183,8 +2186,8 @@ msgid ""
 "The MMU unit reports its FW version incompatible with the printer's "
 "firmware. Make sure the MMU firmware is up to date."
 msgstr ""
-"L'unità MMU segnala la sua versione FW incompatibile con il firmware della "
-"stampante. Verifica che il firmware della MMU sia aggiornato."
+"L'unità MMU segnala la sua versione FW incompatibile con il FW della "
+"stampante. Verifica che il FW della MMU sia aggiornato."
 
 #. MSG_DESC_SELECTOR_CANNOT_HOME c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:212 ../../Firmware/mmu2/errors_list.h:252
@@ -2211,8 +2214,8 @@ msgid ""
 "There is still a need to make Z calibration. Please follow the manual, "
 "chapter First steps, section Calibration flow."
 msgstr ""
-"E ancora necessario effettuare la calibrazione Z. Segui il manuale, capitolo "
-"Primi Passi, sezione Sequenza di Calibrazione."
+"E ancora necessario effettuare la calibrazione Z. Seguire manuale, cap. "
+"Primi Passi - Sequenza di Calibrazione."
 
 #. MSG_SORT_TIME c=8
 #: ../../Firmware/messages.cpp:141 ../../Firmware/ultralcd.cpp:4780
@@ -2432,7 +2435,7 @@ msgstr "Calibrazione XYZ fallita. Punti anteriori non raggiungibili."
 #: ../../Firmware/messages.cpp:16 ../../Firmware/ultralcd.cpp:3308
 #: ../../Firmware/ultralcd.cpp:3336
 msgid "XYZ calibration failed. Please consult the manual."
-msgstr "Calibrazione XYZ fallita. Si prega di consultare il manuale."
+msgstr "Calibraz. XYZ fallita. Consultare manuale."
 
 #. MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=6
 #: ../../Firmware/ultralcd.cpp:3314
