@@ -5428,7 +5428,7 @@ static void lcd_main_menu()
 #endif //MMU_HAS_CUTTER
         } else {
 #ifdef FILAMENT_SENSOR
-            if (fsensor.getAutoLoadEnabled()) {
+            if (fsensor.getAutoLoadEnabled() && fsensor.isEnabled()) {
                 MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=18
             }
             else
