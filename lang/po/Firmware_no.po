@@ -70,7 +70,7 @@ msgstr "Alltid"
 msgid "Ambient"
 msgstr "Omgivelse"
 
-#. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
+#. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2974
 msgid "Are left and right Z~carriages all up?"
 msgstr "Er venstre og høyre Z-vogn helt oppe?"
@@ -186,7 +186,7 @@ msgstr "Beltestatus"
 msgid "Belt test"
 msgstr "Belte test"
 
-#. MSG_RECOVER_PRINT c=20 r=2
+#. MSG_RECOVER_PRINT c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:1581 ../../Firmware/Marlin_main.cpp:1603
 #: ../../Firmware/messages.cpp:81
 msgid "Blackout occurred. Recover print?"
@@ -703,7 +703,7 @@ msgstr "Fil. Sensor"
 msgid "Filament"
 msgstr "Filament"
 
-#. MSG_FILAMENT_CLEAN c=20 r=2
+#. MSG_FILAMENT_CLEAN c=20 r=3
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2283
 #: ../../Firmware/ultralcd.cpp:2287
 msgid "Filament extruding & with correct color?"
@@ -992,13 +992,13 @@ msgstr ""
 "Intern runtime feil. Prøv omstart av MMU enheten eller oppdater fastvaren. "
 "Hvis feilen vedvarer, kontakt kundestøtte."
 
-#. MSG_FILAMENT_LOADED c=20 r=2
+#. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3816
 #: ../../Firmware/ultralcd.cpp:4063
 msgid "Is filament loaded?"
 msgstr "Er filament lastet?"
 
-#. MSG_STEEL_SHEET_CHECK c=20 r=2
+#. MSG_STEEL_SHEET_CHECK c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3298 ../../Firmware/Marlin_main.cpp:4908
 #: ../../Firmware/messages.cpp:110 ../../Firmware/ultralcd.cpp:4039
 msgid "Is steel sheet on heatbed?"
@@ -2337,7 +2337,7 @@ msgstr "Advarsel: Hovedkortype forandret."
 msgid "Warning: printer type changed."
 msgstr "Advarsel: Printertype forandret."
 
-#. MSG_UNLOAD_SUCCESSFUL c=20 r=2
+#. MSG_UNLOAD_SUCCESSFUL c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3571
 msgid "Was filament unload successful?"
 msgstr "Ble filamentet lastet helt ut?"

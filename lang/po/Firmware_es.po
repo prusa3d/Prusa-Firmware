@@ -70,7 +70,7 @@ msgstr "Siemp."
 msgid "Ambient"
 msgstr "Ambiente"
 
-#. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
+#. MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=3
 #: ../../Firmware/ultralcd.cpp:2974
 msgid "Are left and right Z~carriages all up?"
 msgstr "Carros Z izq./der. estan arriba maximo?"
@@ -185,7 +185,7 @@ msgstr "Estado de correa"
 msgid "Belt test"
 msgstr "Test cinturon"
 
-#. MSG_RECOVER_PRINT c=20 r=2
+#. MSG_RECOVER_PRINT c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:1581 ../../Firmware/Marlin_main.cpp:1603
 #: ../../Firmware/messages.cpp:81
 msgid "Blackout occurred. Recover print?"
@@ -701,7 +701,7 @@ msgstr "Sensor Fil."
 msgid "Filament"
 msgstr "Filamento"
 
-#. MSG_FILAMENT_CLEAN c=20 r=2
+#. MSG_FILAMENT_CLEAN c=20 r=3
 #: ../../Firmware/messages.cpp:37 ../../Firmware/ultralcd.cpp:2283
 #: ../../Firmware/ultralcd.cpp:2287
 msgid "Filament extruding & with correct color?"
@@ -998,13 +998,13 @@ msgstr ""
 "Error interno de ejecucion. Intenta reiniciar la MMU o actualizar el "
 "firmware. Si el problema persiste, ponte en contacto con el servicio tecnico."
 
-#. MSG_FILAMENT_LOADED c=20 r=2
+#. MSG_FILAMENT_LOADED c=20 r=3
 #: ../../Firmware/messages.cpp:38 ../../Firmware/ultralcd.cpp:3816
 #: ../../Firmware/ultralcd.cpp:4063
 msgid "Is filament loaded?"
 msgstr "Esta el filamento cargado?"
 
-#. MSG_STEEL_SHEET_CHECK c=20 r=2
+#. MSG_STEEL_SHEET_CHECK c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3298 ../../Firmware/Marlin_main.cpp:4908
 #: ../../Firmware/messages.cpp:110 ../../Firmware/ultralcd.cpp:4039
 msgid "Is steel sheet on heatbed?"
@@ -2370,7 +2370,7 @@ msgstr "Aviso: el tipo de placa ha cambiado."
 msgid "Warning: printer type changed."
 msgstr "Aviso: ha cambiado el tipo de impresora."
 
-#. MSG_UNLOAD_SUCCESSFUL c=20 r=2
+#. MSG_UNLOAD_SUCCESSFUL c=20 r=3
 #: ../../Firmware/Marlin_main.cpp:3571
 msgid "Was filament unload successful?"
 msgstr "Se descargo con exito el filamento?"
