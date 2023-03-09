@@ -2498,7 +2498,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
-"Neočakávane bolo zistené filament. Uistite sa, že nie je vložené žiadne filament. Skontrolujte snímače a kabeláž."
+"Neočakávane bolo zistené filament. Uistite sa, že nie je vložené žiadne "
+"filament. Skontrolujte snímače a kabeláž."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2511,8 +2512,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Načítanie do extrudéra zlyhalo. Skontrolujte tvar špičky vlákna. V prípade"
-" potreby upravte kalibráciu snímača."
+"Načítanie do extrudéra zlyhalo. Skontrolujte tvar špičky vlákna. V prípade "
+"potreby upravte kalibráciu snímača."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2550,8 +2551,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"Verzia firmvéru jednotky MMU nekompatibilná s FW tlačiarne. Aktualizácia na"
-" verziu 2.1.9."
+"Verzia firmvéru jednotky MMU nekompatibilná s FW tlačiarne. Aktualizácia na "
+"verziu 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"

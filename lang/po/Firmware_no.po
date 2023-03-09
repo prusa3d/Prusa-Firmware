@@ -2491,8 +2491,8 @@ msgid ""
 "Filament detected unexpectedly. Ensure no filament is loaded. Check the "
 "sensors and wiring."
 msgstr ""
-"Filament oppdaget uventet. Pass på at ingen filament er lastet. Sjekk"
-" sensorene og ledningene."
+"Filament oppdaget uventet. Pass på at ingen filament er lastet. Sjekk "
+"sensorene og ledningene."
 
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
@@ -2505,8 +2505,8 @@ msgid ""
 "Loading to extruder failed. Inspect the filament tip shape. Refine the "
 "sensor calibration, if needed."
 msgstr ""
-"Lasting til ekstruder mislyktes. Inspiser filamentspissens form. Avgrens"
-" sensorkalibreringen om nødvendig."
+"Lasting til ekstruder mislyktes. Inspiser filamentspissens form. Avgrens "
+"sensorkalibreringen om nødvendig."
 
 #. MSG_TITLE_MCU_UNDERVOLTAGE_VCC c=20
 #: ../../Firmware/mmu2/errors_list.h:166 ../../Firmware/mmu2/errors_list.h:211
@@ -2544,8 +2544,8 @@ msgid ""
 "The MMU unit firmware version incompatible with the printer's FW. Update to "
 "version 2.1.9."
 msgstr ""
-"MMU-enhetens fastvareversjon er inkompatibel med skriverens FW. Oppdatering"
-" til versjon 2.1.9."
+"MMU-enhetens fastvareversjon er inkompatibel med skriverens FW. Oppdatering "
+"til versjon 2.1.9."
 
 #~ msgid "Reset MMU"
 #~ msgstr "Reset MMU"
