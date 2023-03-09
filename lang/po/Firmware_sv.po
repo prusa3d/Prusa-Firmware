@@ -2503,7 +2503,7 @@ msgstr ""
 #. MSG_TITLE_LOAD_TO_EXTRUDER_FAILED c=20
 #: ../../Firmware/mmu2/errors_list.h:142 ../../Firmware/mmu2/errors_list.h:185
 msgid "LOAD TO EXTR. FAILED"
-msgstr "LADDA TILL EXTR. MISLYCKADES"
+msgstr ""
 
 #. MSG_DESC_LOAD_TO_EXTRUDER_FAILED c=20 r=8
 #: ../../Firmware/mmu2/errors_list.h:232 ../../Firmware/mmu2/errors_list.h:283
